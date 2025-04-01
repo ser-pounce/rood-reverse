@@ -1,0 +1,12 @@
+[submodule "tools/maspsx"]
+	path = tools/maspsx
+	url = https://github.com/mkst/maspsx.git
+[submodule "tools/old-gcc"]
+	path = tools/old-gcc
+	url = https://github.com/decompals/old-gcc.git
+[submodule "tools/mkpsxiso"]
+	path = tools/mkpsxiso
+	url = https://github.com/Lameguy64/mkpsxiso.git
+[submodule "tools/decomp-permuter"]
+	path = tools/decomp-permuter
+	url = https://github.com/simonlindholm/decomp-permuter.git

@@ -1,0 +1,9 @@
+.vscode
+build
+data
+config/*.xml
+disks/*
+nonmatchings
+tools/.sysdeps
+tools/python
+**/__pycache__

@@ -1,0 +1,267 @@
+name: &n SLUS_010.40
+sha1: fababcfd4325d42f350d95b3472874affeb0e48c
+options:
+  basename: *n
+  base_path: ../..
+  target_path: data/SLUS_010.40
+  elf_path: build/data/SLUS_010.40.elf
+  platform: psx
+  compiler: GCC
+
+  asm_path: build/src/SLUS_010.40
+  data_path: ""
+  src_path: src/SLUS_010.40
+  hasm_in_src_path: true
+  asset_path: build/assets/SLUS_010.40
+  extensions_path: tools/splat_ext
+
+  ld_dependencies: true
+  o_as_suffix: true
+
+  ld_script_path: build/config/SLUS_010.40/link.ld
+
+  find_file_boundaries: true
+  gp_value: 0x80033674
+  image_type_in_extension: true
+
+  section_order: [.rodata, .text, .data]
+  auto_link_sections: [.data, .rodata]
+
+  symbol_addrs_path: 
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/SLUS_010.40/exports.txt
+
+  undefined_funcs_auto_path: build/config/SLUS_010.40/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/SLUS_010.40/undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: &enc ASCII
+  data_string_encoding: *enc
+  rodata_string_guesser_level: &strLvl 2
+  data_string_guesser_level: *strLvl
+
+segments:
+  - [0, header]
+  - start: 0x800
+    type: code
+    vram: 0x80010000
+    align: 4
+    # bss_size: Please fill out this value when you figure out the bss size
+    subsegments:
+      - [0x800, .rodata, overlays]
+      - [0x814, .rodata, 25AC]
+      - [0x954, .rodata, libspu/SPU]
+      - [0x9A4, .rodata, libspu/S_SI]
+      - [0x9D4, .rodata, libetc/VSYNC]
+      - [0x9E4, .rodata, libetc/INTR]
+      - [0xA54, .rodata, libetc/INTR_DMA]
+      - [0xA84, .rodata, libcd/SYS]
+      - [0xC44, .rodata, libcd/BIOS]
+      - [0xCF4, .rodata, libcd/C_011]
+      - [0xD14, .rodata, libds/DSSYS_2]
+      - [0xD84, .rodata, libds/DSSYS_1]
+      - [0xEE4, .rodata, libc/SPRINTF]
+      - [0xFC4, .rodata, libgpu/FONT]
+      - [0x1064, .rodata, libgpu/SYS]
+      - [0x1284, .rodata, libpad/PADENTRY]
+      - [0x12A4, c, overlays]
+      - [0x22DC, hasm, libgte/MTX_003]
+      - [0x243C, hasm, libgte/MSC00]
+      - [0x24CC, hasm, libgte/PATCHGTE]
+      - [0x25AC, c] # Custom sound lib
+      - [0xE0F4, c, libspu/S_INI]
+      - [0xE254, c, libspu/SPU]
+      - [0xED94, c, libspu/S_DCB]
+      - [0xEDC4, c, libsnd/UT_ROFF]
+      - [0xEDE4, c, libsnd/UT_RON]
+      - [0xEE04, c, libspu/S_Q]
+      - [0xEE84, c, libspu/S_M_INIT]
+      - [0xEEE4, c, libspu/S_SNC]
+      - [0xEF34, c, libspu/S_SR]
+      - [0xF004, c, libspu/S_M_UTIL]
+      - [0xF114, c, libspu/S_SI]
+      - [0xF254, c, libspu/S_SIA]
+      - [0xF294, c, libspu/S_SIC]
+      - [0xF2D4, c, libspu/S_CB]
+      - [0xF304, c, libspu/S_R]
+      - [0xF364, c, libspu/S_W]
+      - [0xF3C4, c, libspu/S_STSA]
+      - [0xF424, c, libspu/S_STM]
+      - [0xF454, c, libspu/S_STC]
+      - [0xF484, c, libspu/S_GVEA]
+      - [0xF4A4, c, libspu/S_SCMV]
+      - [0xF4C4, c, libspu/S_SRMT]
+      - [0xF694, c, libspu/S_SRA]
+      - [0xFB64, c, libspu/S_CRWA]
+      - [0xFD04, c, libspu/S_SRMD]
+      - [0xFD34, c, libspu/S_GRMT]
+      - [0xFD44, c, libsn/SNMAIN]
+      - [0xFEC4, c, libetc/VSYNC]
+      - [0x100D4, c, libetc/INTR]
+      - [0x10794, c, libetc/INTR_VB]
+      - [0x108B4, c, libetc/INTR_DMA]
+      - [0x10B54, c, libetc/VMODE]
+      - [0x10B84, c, libcd/CDROM]
+      - [0x10BB4, c, libcd/SYS]
+      - [0x111C4, c, libcd/BIOS]
+      - [0x12934, c, libcd/C_002]
+      - [0x12994, c, libcd/C_003]
+      - [0x12A14, c, libcd/C_004]
+      - [0x12B04, c, libcd/C_005]
+      - [0x12B94, c, libcd/C_007]
+      - [0x12C44, c, libcd/C_008]
+      - [0x12C84, c, libcd/C_009]
+      - [0x12D44, c, libcd/C_010]
+      - [0x12D64, c, libcd/C_011]
+      - [0x139E4, c, libds/DSSYS_2]
+      - [0x14E94, c, libds/DSSYS_1]
+      - [0x160E4, c, libds/DSSYS_3]
+      - [0x16354, c, libds/DSSYS_4]
+      - [0x16454, c, libds/DSREAD]
+      - [0x16964, c, libds/DSREAD2]
+      - [0x16A64, c, libds/DSREADY]
+      - [0x17004, c, libds/DSCB]
+      - [0x17064, c, libapi/C57]
+      - [0x17074, c, libapi/C68]
+      - [0x17084, c, libapi/C112]
+      - [0x17094, c, libapi/C114]
+      - [0x170B4, c, libapi/C161]
+      - [0x170C4, c, libapi/A07]
+      - [0x170D4, c, libapi/A08]
+      - [0x170E4, c, libapi/A09]
+      - [0x170F4, c, libapi/A10]
+      - [0x17104, c, libapi/A11]
+      - [0x17114, c, libapi/A12]
+      - [0x17124, c, libapi/A13]
+      - [0x17134, c, libapi/A23]
+      - [0x17144, c, libapi/A24]
+      - [0x17154, c, libapi/A25]
+      - [0x17164, c, libapi/A32]
+      - [0x17174, c, libapi/A36]
+      - [0x17184, c, libapi/A37]
+      - [0x17194, c, libapi/A50]
+      - [0x171A4, c, libapi/A52]
+      - [0x171B4, c, libapi/A53]
+      - [0x171C4, c, libapi/A54]
+      - [0x171D4, c, libapi/A67]
+      - [0x171E4, c, libapi/A68]
+      - [0x171F4, c, libapi/A69]
+      - [0x17204, c, libapi/A91]
+      - [0x17214, c, libapi/L10]
+      - [0x17224, c, libapi/COUNTER]
+      - [0x17394, c, libapi/FIRST]
+      - [0x17634, c, libapi/A66]
+      - [0x17644, c, libc/A63]
+      - [0x17664, c, libc/C19]
+      - [0x17674, c, libc/C23]
+      - [0x17684, c, libc/C25]
+      - [0x17694, c, libc/C27]
+      - [0x176A4, c, libc/C42]
+      - [0x176B4, c, libc/C43]
+      - [0x176C4, c, libc/C47]
+      - [0x176D4, c, libc/C48]
+      - [0x176E4, c, libc/C63]
+      - [0x176F4, c, libc/SPRINTF]
+      - [0x17F84, c, libc/C46]
+      - [0x17F94, c, libc/MEMMOVE]
+      - [0x18004, c, libc/MEMCMP]
+      - [0x18054, c, libgpu/FONT]
+      - [0x18AD4, c, libgpu/SYS]
+      - [0x1BA04, c, libgpu/C73]
+      - [0x1BA14, c, libgpu/E00]
+      - [0x1BB04, c, libgpu/E02]
+      - [0x1BB74, c, libgpu/E03]
+      - [0x1BC34, c, libgpu/E04]
+      - [0x1BC74, c, libgpu/P00]
+      - [0x1BCB4, c, libgpu/P01]
+      - [0x1BCD4, c, libgpu/P06]
+      - [0x1BD14, c, libgpu/P07]
+      - [0x1BD54, c, libgpu/P09]
+      - [0x1BD74, c, libgpu/P10]
+      - [0x1BDA4, c, libgpu/P16]
+      - [0x1BDC4, c, libgpu/P17]
+      - [0x1BDE4, c, libgpu/P18]
+      - [0x1BE04, c, libgpu/P20]
+      - [0x1BE24, c, libgpu/P22]
+      - [0x1BE44, c, libgpu/P26]
+      - [0x1BE64, c, libgpu/P27]
+      - [0x1BE84, c, libgpu/P33]
+      - [0x1BEB4, c, libgpu/P34]
+      - [0x1BF44, c, libgpu/P41]
+      - [0x1BFE4, c, libpad/PADENTRY]
+      - [0x1C4A4, c, libpad/PADMAIN]
+      - [0x1D274, c, libapi/L02]
+      - [0x1D284, c, libapi/L03]
+      - [0x1D294, c, libpad/PADCMD]
+      - [0x1DE94, c, libpad/PADIF]
+      - [0x1E4C4, c, libpad/PADPORTD]
+      - [0x1EB24, c, libc/C40]
+      - [0x1EB34, c, libpad/PADSEQD]
+      - [0x1EFF4, c, libpad/WAITRC2]
+      - [0x1F0B4, c, libcard/C171]
+      - [0x1F0C4, c, libcard/C172]
+      - [0x1F0D4, c, libcard/CARD]
+      - [0x1F114, c, libcard/A78]
+      - [0x1F124, c, libcard/A80]
+      - [0x1F134, c, libcard/INIT]
+      - [0x1F234, c, libapi/PAD]
+      - [0x1F534, c, libapi/A18]
+      - [0x1F544, c, libapi/A19]
+      - [0x1F554, c, libapi/A20]
+      - [0x1F564, c, libapi/A21]
+      - [0x1F574, c, libapi/PATCH]
+      - [0x1F614, c, libapi/CHCLRPAD]
+      - [0x1F684, c, libcard/A74]
+      - [0x1F694, c, libcard/A75]
+      - [0x1F6A4, c, libcard/A76]
+      - [0x1F6B4, c, libcard/PATCH]
+      - [0x1F8D4, c, libcard/END]
+      - [0x1F954, c, libcard/FORMAT] # Psyq 4.6 / 4.7
+      - [0x1FD14, c, libcard/A79]
+      - [0x1FD24, c, libcard/A92]
+      - [0x1FD34, .data, libgte/MSC00]
+      - [0x1FD44, .data, 25AC]
+      - [0x1FD48, data]
+      - [0x23034, .data, libapi/COUNTER]
+      - [0x23054, data]
+      - [0x23E80, .data, libgte/PATCHGTE]
+      - [0x23E90, data]
+      - [0x306C8, .data, libapi/CHCLRPAD]
+      - [0x306D8, data]
+  - start: 0x31418
+    type: code
+    vram: 0x80040C18
+    align: 4
+    subsegments:
+      - [0x31418, .rodata, 32154]
+      - [0x31724, c] # Custom gte funcs ?
+      - [0x31D08, c, libgte/MTX_005] # |
+      - [0x31D34, c, libgte/REG13]   # |
+      - [0x31D40, c, libgte/REG12]   # |
+      - [0x31D58, c, libgte/REG11]   # |
+      - [0x31D78, c, libgte/MTX_12]  # |
+      - [0x31D98, c, libgte/MTX_09]  # |
+      - [0x31DC8, c, libgte/MTX_004] # |
+      - [0x31F24, c, libgte/MTX_06]  # |- Presumably compiled as raw ASM 
+      - [0x31F7C, c, libgte/MTX_05]  # |
+      - [0x31FC8, c, libgte/SMP_05]  # |
+      - [0x31FEC, c, libgte/SMP_04]  # |
+      - [0x32014, c, libgte/SMP_02]  # |
+      - [0x32040, c, libgte/CMB_02]  # |
+      - [0x320BC, c, libgte/MTX_07]  # |
+      - [0x320DC, c, libgte/CMB_00]  # |
+      - [0x32154, c] # Custom gte funcs ?
+  - start: 0x32568
+    type: code
+    vram: 0x80041D68
+    align: 4
+    subsegments:
+      - [0x32568, .rodata, 3264C]
+      - [0x325A0, rodata]
+      - [0x3264C, c]
+      - {start: 0x39938, type: .data, name: 3264C, linker_entry: false}
+      - {start: 0x39950, type: rgba16, name: nowLoading, linker_entry: false}
+      - [0x3AD04, .data, 3264C]
+      - [0x3AD30, data]
+  - [0x52800]

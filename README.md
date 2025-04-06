@@ -1,4 +1,7 @@
 # Rood Reverse
+
+[![Discord server](https://discord.com/api/guilds/927723248962142248/widget.png?style=banner2)](https://discord.gg/yWxsd5gvmW)
+
 A decompilation project for Vagrant Story for PlayStation 1, with a goal of enabling interoperability with modern hardware and fixing bugs in the original game.
 
 This project does not include any of the content from the game's disk.

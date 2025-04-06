@@ -7,6 +7,7 @@ PYTHON := python3
 GIT    := git
 CMAKE  := cmake
 DOCKER := docker
+FORMAT := clang-format
 DIFF   := diff
 CAT    := cat
 TOUCH  := touch
@@ -39,6 +40,7 @@ MASFLAGS     := --aspsx-version=2.56 --macro-inc
 SPLATFLAGS   := --disassemble-all
 PERMUTEFLAGS := -j8
 DUMPISOFLAGS  = -x data -s config/$(disk).xml
+FORMATFLAGS  := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: 'Never' }" -i
 RMFLAGS      := -Rf
 DIFFFLAGS    := -s
 WHICHFLAGS   := -s
@@ -58,7 +60,7 @@ ifneq ($(wildcard build/src),)
 deps != find build/src -type f -name *.d
 endif
 build_deps := $(DUMPISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
-sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER)
+sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst build/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 
@@ -69,7 +71,7 @@ all: $(targets)
 format:
 	for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
 	find src/ -type f -name *.h -o -name *.c | xargs \
-		clang-format --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: 'Never' }" -i
+		$(FORMAT) $(FORMATFLAGS)
 
 decompme: IMPORTFLAGS += --decompme
 decompme: $(call src_from_target,$(TARGET)) $(TARGET)

@@ -34,6 +34,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
     - pip
     - gcc-mips-linux-gnu
     - docker-buildx
+    - clang-format
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

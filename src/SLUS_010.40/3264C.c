@@ -39,23 +39,11 @@ typedef struct {
 } LoadImage_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    int unk0[2];
     unsigned short unk8;
     unsigned short unkA;
     unsigned char* unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int unk34[1];
+    int unk10[10];
 } D_80050118_t;
 
 typedef struct {
@@ -109,7 +97,8 @@ typedef struct {
         unsigned char unkE[256][7];
         unsigned short unk70E[254];
     } unk0[14];
-    char unk7E8C[16];
+    char unk7E8C[10];
+    short unk7E96[3];
     int unk7E9C[5][6];
     D_8005DC6C_t unk7F14[5];
     D_8005DC80_t unk7F28[17];
@@ -152,7 +141,7 @@ static void do_wait();
 static void padForceMode();
 static void padResetDefaults(int, void*);
 static void padConnect(int, void*);
-static void padSetActData(int arg0, int arg1, char arg2);
+static void padSetActData(int arg0, int arg1, int arg2);
 static int getCdStatus();
 void func_80042CB0();
 static void func_80043668();
@@ -184,7 +173,7 @@ extern unsigned char D_8004B1B0[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern HeapHeader* D_80050110;
-extern D_80050118_t D_80050118[];
+extern D_80050118_t D_80050118[2];
 extern PortInfo portInfo[2];
 extern HeapHeader heapA;
 extern HeapHeader heapB;
@@ -736,7 +725,7 @@ static void padConnect(int port, void* arg1)
     }
 }
 
-static void padSetActData(int port, int pos, char val)
+static void padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
         portInfo[port].actData[pos] = val;
@@ -771,12 +760,12 @@ static int func_800433B4(unsigned char* arg0, unsigned int arg1, short arg2)
     if (ret != 0) {
         i = ret - 1;
         D_80050118[i].unkC = arg0;
-        D_80050118[i].unk20 = 1;
-        D_80050118[i].unk34[1] = *arg0;
-        D_80050118[i].unk34[2] = 0;
-        D_80050118[i].unk24 = 0;
-        D_80050118[i].unk2C = 0;
-        D_80050118[i].unk14 = 0;
+        D_80050118[i].unk10[4] = 1;
+        D_80050118[i].unk10[10] = *arg0;
+        D_80050118[i].unk10[11] = 0;
+        D_80050118[i].unk10[5] = 0;
+        D_80050118[i].unk10[7] = 0;
+        D_80050118[i].unk10[1] = 0;
         D_80050118[i].unk8 = 1;
         D_80050118[i].unkA = arg2;
         return ret;
@@ -787,8 +776,8 @@ static int func_800433B4(unsigned char* arg0, unsigned int arg1, short arg2)
 static int func_80043470(int arg0)
 {
     int i = arg0 - 1;
-    D_80050118[i].unk2C = 0;
-    D_80050118[i].unk14 = 0;
+    D_80050118[i].unk10[7] = 0;
+    D_80050118[i].unk10[1] = 0;
     D_80050118[i].unkC = 0;
     D_80050118[i].unk8 = 0;
 
@@ -877,12 +866,13 @@ static void func_80043668()
 
     for (i = 0; i < 2; ++i) {
         D_80050118[i].unkC = 0;
-        D_80050118[i].unk2C = 0;
-        D_80050118[i].unk14 = 0;
+        D_80050118[i].unk10[7] = 0;
+        D_80050118[i].unk10[1] = 0;
         D_80050118[i].unk8 = 0;
     }
 }
 
+// https://decomp.me/scratch/SBG7f
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800436B4);
 
 static void func_800438C8(int arg0)
@@ -2708,6 +2698,7 @@ static void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
+// https://decomp.me/scratch/q7o6c
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047910);
 
 static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
@@ -2728,6 +2719,7 @@ static void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int 
     }
 }
 
+// https://decomp.me/scratch/c07RD
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047FFC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800481C0);

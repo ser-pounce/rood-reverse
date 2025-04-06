@@ -81,8 +81,8 @@ typedef struct {
 } D_8005DC6C_t;
 
 typedef struct {
-    char unk0[12];
-    short unkC[2];
+    char unk0[6];
+    short unk6[5];
     int unk10[6];
     D_8005DC6C_t unk28;
 } D_8005DC80_t;
@@ -2722,6 +2722,7 @@ static void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int 
 // https://decomp.me/scratch/c07RD
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047FFC);
 
+// https://decomp.me/scratch/PakFK
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800481C0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800483FC);
@@ -2824,7 +2825,7 @@ void func_80048FF8()
     for (i = 0; i < 17; ++i) {
         D_80055D58.unk7F28[i].unk0[0] = 0;
         D_80055D58.unk7F28[i].unk0[4] = 0;
-        D_80055D58.unk7F28[i].unkC[0] = 0;
+        D_80055D58.unk7F28[i].unk6[3] = 0;
         *((int*)&D_80055D58.unk7F28[i].unk28) = 0x404040;
         D_80055D58.unk7F28[i].unk10[2] = 0x400000;
         D_80055D58.unk7F28[i].unk10[1] = 0x400000;

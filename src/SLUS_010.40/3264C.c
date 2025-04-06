@@ -2758,6 +2758,7 @@ void func_80048A64(unsigned short* arg0, unsigned int arg1, int arg2, unsigned i
     }
 }
 
+// https://decomp.me/scratch/86lQJ
 void func_80048B8C(int, unsigned short*, int, short, int, int, int);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80048B8C);
 

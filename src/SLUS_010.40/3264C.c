@@ -133,6 +133,26 @@ typedef union {
     int i;
 } u_1632;
 
+typedef struct {
+    unsigned short unk0;
+    unsigned short unk2;
+    unsigned short unk4[4];
+    unsigned short unkC[8];
+} D_80060068_t2;
+
+typedef struct {
+    int unk0;
+    short unk4[12];
+    int unk1C;
+    char unk20[8];
+    D_80060068_t2 unk28[6];
+    int unk7C[24];
+} D_80060068_t;
+
+typedef struct D_80061068_t {
+    unsigned short unk0[6];
+} D_80061068_t;
+
 void __main();
 void displayLoadingScreen();
 static void func_80042998();
@@ -170,6 +190,7 @@ static void initRand();
 static void initHeap(HeapHeader* node, unsigned int value);
 
 extern unsigned char D_8004B1B0[];
+extern int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern HeapHeader* D_80050110;
@@ -213,7 +234,9 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern int D_80060068;
+extern char D_8005FFB8[];
+extern D_80060068_t D_80060068;
+extern D_80061068_t D_80061068;
 extern char D_80061074[4];
 extern MATRIX D_1F800014_mat;
 
@@ -588,7 +611,7 @@ static void func_80042A64()
     D_80061074[2] = 0;
     D_80061074[1] = 0;
     D_80061074[0] = 0;
-    D_80060068 = 0;
+    D_80060068.unk0 = 0;
 }
 
 int execTitle()
@@ -620,9 +643,95 @@ static void do_wait() { wait(); }
 
 void func_80042C94(int arg0) { D_80055C88 = arg0; }
 
-void func_80042CA0() { D_80060068 = 1; }
+void func_80042CA0() { D_80060068.unk0 = 1; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80042CB0);
+void func_80069FC4(int, int);
+void func_8008AB68();
+void func_800A1108(int, unsigned char*);
+
+void func_80042CB0()
+{
+    unsigned char sp10[16];
+    int var_a1;
+    int var_a3;
+    int var_s1;
+    int var_t3;
+    int new_var;
+    int var_t4;
+    char var_a0;
+    D_800F19FC_t2* temp_t0;
+    D_80060068_t* temp_t5;
+    int v0;
+    int v0_2;
+    int v1;
+    int v1_2;
+
+    D_80061068 = D_800F1AB0;
+    func_800A1108(0, sp10);
+
+    v0 = (sp10[0] & 0x1F) << 8;
+    v1 = (sp10[2] & 0x1F) << 0xA;
+    D_80061068.unk0[2] = (D_80061068.unk0[2] & 0xE0FF) | v0;
+    D_80061068.unk0[3] = (D_80061068.unk0[3] & 0x83FF) | v1;
+    v1_2 = sp10[1] << 0xD;
+    v0_2 = (sp10[3] >> 6) << 0xD;
+    D_80061068.unk0[1] = ((D_80061068.unk0[1] & 0x1FFF) | v1_2);
+    new_var = D_800F18E8 & 0x3FF;
+    D_80061068.unk0[2] = ((D_80061068.unk0[2] & 0x9FFF) | v0_2);
+    D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
+    for (var_s1 = 0; var_s1 < 32; ++var_s1) {
+        var_a0 = 0;
+        for (var_a3 = 0; var_a3 < 8; ++var_a3) {
+            unsigned int* p = (D_8004B9DC + (((var_s1 * 8) + var_a3) * 13));
+            var_a0 = (*(int*)&var_a0 * 2) | ((p[3] >> 0xF) & 1);
+        }
+        D_8005FFB8[var_s1] = var_a0;
+    }
+    temp_t0 = D_800F19FC->unk38;
+    temp_t5 = &D_80060068;
+    temp_t5->unk4[0] = temp_t0->unk0[12];
+    temp_t5->unk4[1] = temp_t0->unk0[13];
+    temp_t5->unk4[2] = temp_t0->unk0[14];
+    temp_t5->unk4[3] = temp_t0->unk0[15];
+    temp_t5->unk4[4] = temp_t0->unk0[17];
+    temp_t5->unk4[5] = temp_t0->unk0[18];
+    temp_t5->unk4[6] = temp_t0->unk0[19];
+    temp_t5->unk4[7] = temp_t0->unk0[20];
+    temp_t5->unk4[8] = temp_t0->unk0[21];
+    temp_t5->unk4[9] = temp_t0->unk0[22];
+    temp_t5->unk4[10] = temp_t0->unk0[16];
+    temp_t5->unk4[11] = temp_t0->unk954;
+    temp_t5->unk1C = temp_t0->unk948;
+
+    for (var_a3 = 0; var_a3 < 8; ++var_a3) {
+        temp_t5->unk20[var_a3] = temp_t0->unk94C[var_a3];
+    }
+
+    var_t4 = 0;
+    var_t3 = 0;
+
+    for (var_a3 = 0; var_a3 < 6; ++var_a3) {
+        temp_t5->unk28[var_a3].unk0 = temp_t0->unk398[var_a3].unk0;
+        temp_t5->unk28[var_a3].unk2 = temp_t0->unk398[var_a3].unk2;
+
+        for (var_a1 = 0; var_a1 < 4; ++var_a1) {
+            temp_t5->unk28[var_a3].unk4[var_a1] = temp_t0->unk398[var_a3].unk8[var_a1];
+        }
+
+        for (var_a1 = 0; var_a1 < 8; ++var_a1) {
+            temp_t5->unk28[var_a3].unkC[var_a1] = temp_t0->unk398[var_a3].unk10[var_a1];
+        }
+    }
+
+    temp_t5->unk7C[0] = D_800F19FC->unk0[8];
+    temp_t5->unk7C[1] = D_800F19D0[5];
+    temp_t5->unk7C[2] = D_800F19D0[8];
+
+    for (var_s1 = 0; var_s1 < 16; ++var_s1) {
+        func_80069FC4(var_s1, 0);
+    }
+    func_8008AB68();
+}
 
 static void padDisconnectAll()
 {

@@ -1004,6 +1004,7 @@ static void func_800438C8(int arg0)
     }
 }
 
+// https://decomp.me/scratch/egK9S
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80043940);
 
 static void freeHeapR(void* block)

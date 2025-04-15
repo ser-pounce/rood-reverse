@@ -2883,23 +2883,22 @@ void func_80048EC4()
     int i;
     int var_v0;
     unsigned int* var_v1;
-    int(*p)[6] = D_8005DBF4;
+    int(*p)[6] = D_80055D58.unk7E9C;
 
     var_v1 = func_8008EB24();
     for (i = 0; i < 5; ++i) {
-        D_80055D58_t* q = (D_80055D58_t*)((char*)p - 0x7E9C);
-        q->unk7F14[i].unk0 = var_v1[i];
+        D_80055D58.unk7F14[i].unk0 = var_v1[i];
         var_v0 = var_v1[i] & 0xFF00;
         if (var_v0 < 0) {
             var_v0 += 0xFF;
         }
-        q->unk7F14[i].unk1 = (var_v0 >> 8);
+        D_80055D58.unk7F14[i].unk1 = (var_v0 >> 8);
         var_v0 = var_v1[i] & 0xFF0000;
         if (var_v0 < 0) {
             var_v0 += 0xFFFF;
         }
-        q->unk7F14[i].unk2 = (var_v0 >> 0x10);
-        p[i][0] = ((char)var_v1[i] << 0x10);
+        D_80055D58.unk7F14[i].unk2 = (var_v0 >> 16);
+        p[i][0] = ((var_v1[i] & 0xFF) << 16);
         p[i][1] = ((var_v1[i] & 0xFF00) << 8);
         p[i][2] = (var_v1[i] & 0xFF0000);
     }

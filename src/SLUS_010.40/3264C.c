@@ -2820,7 +2820,8 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
     }
 }
 
-void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+{
     char sp10[4];
     short var_t4;
     int var_a1;
@@ -2829,7 +2830,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     int var_v0;
     int var_v1;
     D_8005DC80_t* t1 = &D_80055D58.unk7F28[arg2];
-    int* t2 = t1->unk10; 
+    int* t2 = t1->unk10;
 
     var_t4 = 0;
     switch (arg0) {
@@ -2915,7 +2916,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     var_a1 = var_a1 & 0xFFFF0000;
     var_t0 = var_t0 & 0xFFFF0000;
     var_a2 = var_a2 & 0xFFFF0000;
-    
+
     if (var_a1 > 0x800000) {
         var_a1 = 0x800000;
     }
@@ -2935,9 +2936,9 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
         var_a2 = 0;
     }
     if (arg1 != 0) {
-        t2[3] = ((int) (var_a1 - (t2[0] & 0xFFFF0000)) / (arg1 * 2));
-        t2[4] = ((int) (var_t0 - (t2[1] & 0xFFFF0000)) / (arg1 * 2));
-        t2[5] = ((int) (var_a2 - (t2[2] & 0xFFFF0000)) / (arg1 * 2));
+        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (arg1 * 2));
+        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (arg1 * 2));
+        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (arg1 * 2));
         t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (arg1 * 2));
     } else {
         t2[0] = var_a1;
@@ -2981,7 +2982,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
         if (arg2 != 0) {
             func_800A0768(arg2 - 1, sp10);
         } else {
-            func_8008B430(sp10, ((unsigned short) t1->unk6[3] << 0x10) >> 0x12);
+            func_8008B430(sp10, ((unsigned short)t1->unk6[3] << 0x10) >> 0x12);
         }
     }
 }

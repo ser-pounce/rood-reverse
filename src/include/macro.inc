@@ -1,3 +1,6 @@
+.ifndef .L_MACRO_INC
+.L_MACRO_INC:
+
 .macro glabel label
     .global \label
     \label:
@@ -102,3 +105,5 @@
 .macro GPL sf
     cop2op 26, 0x3E, sf = \sf
 .endm
+
+.endif

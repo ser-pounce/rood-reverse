@@ -258,7 +258,6 @@ segments:
     align: 4
     subsegments:
       - [0x32568, .rodata, 3264C]
-      - [0x325A0, rodata]
       - [0x3264C, c]
       - {start: 0x39938, type: .data, name: 3264C, linker_entry: false}
       - {start: 0x39950, type: rgba16, name: nowLoading, linker_entry: false}

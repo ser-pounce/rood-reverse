@@ -2820,8 +2820,171 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
     }
 }
 
-void func_80047B30(int, int, int, int, int, int);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047B30);
+void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+    char sp10[4];
+    short var_t4;
+    int var_a1;
+    int var_a2;
+    int var_t0;
+    int var_v0;
+    int var_v1;
+    D_8005DC80_t* t1 = &D_80055D58.unk7F28[arg2];
+    int* t2 = t1->unk10; 
+
+    var_t4 = 0;
+    switch (arg0) {
+    case 1:
+        var_a1 = (t2[0] / 2) + (arg3 << 16);
+        var_t0 = (t2[1] / 2) + (arg4 << 16);
+        var_a2 = (t2[2] / 2) + (arg5 << 16);
+        break;
+    case 2:
+        var_t4 = 0x4000;
+        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg3 << 0x10);
+        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg4 << 0x10);
+        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg5 << 0x10);
+        break;
+    case 3:
+        var_t4 = 0x4000;
+        var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
+        var_a1 = var_v1 + (arg3 << 0x10);
+        var_t0 = var_v1 + (arg4 << 0x10);
+        var_a2 = var_v1 + (arg5 << 0x10);
+        break;
+    case 4:
+    case 9:
+        var_a1 = (t1->unk28.unk0 + arg3) << 0x10;
+        var_t0 = (t1->unk28.unk1 + arg4) << 0x10;
+        var_a2 = (t1->unk28.unk2 + arg5) << 0x10;
+        break;
+    case 5:
+        var_t4 = 0x4000;
+        var_a1 = (t1->unk28.unk0 << 0xF) + (arg3 << 0x10);
+        var_t0 = (t1->unk28.unk1 << 0xF) + (arg4 << 0x10);
+        var_a2 = (t1->unk28.unk2 << 0xF) + (arg5 << 0x10);
+        break;
+    case 6:
+        var_t4 = 0x4000;
+        {
+            int v1 = t1->unk28.unk1;
+            int a0 = t1->unk28.unk2;
+            int v0 = t1->unk28.unk0;
+            var_a2 = v1 << 0x10;
+            a0 <<= 0x10;
+            v0 <<= 0x11;
+            v1 <<= 0x11;
+            v0 += v1 + var_a2;
+            v0 += a0;
+            var_a1 = v0 / 6 + (arg3 << 0x10);
+            var_t0 = v0 / 6 + (arg4 << 0x10);
+            var_a2 = v0 / 6 + (arg5 << 0x10);
+        }
+        break;
+    case 7:
+        var_t4 = 0x4000;
+        {
+            int v1 = t1->unk28.unk1;
+            int a0 = t1->unk28.unk2;
+            int v0 = t1->unk28.unk0;
+            var_a2 = v1 << 0x10;
+            a0 <<= 0x10;
+            v0 <<= 0x11;
+            v1 <<= 0x11;
+            v0 += v1 + var_a2;
+            v0 += a0;
+            var_a1 = v0 / 12 + (arg3 << 0x10);
+            var_t0 = v0 / 12 + (arg4 << 0x10);
+            var_a2 = v0 / 12 + (arg5 << 0x10);
+        }
+        break;
+    case 8:
+    case 15:
+        var_a1 = t1->unk28.unk0 << 0x10;
+        var_t0 = t1->unk28.unk1 << 0x10;
+        var_a2 = t1->unk28.unk2 << 0x10;
+        break;
+    case 11:
+        t1->unk0[4] = 0;
+        return;
+    default:
+        var_a1 = t2[0] + (arg3 << 0x10);
+        var_t0 = t2[1] + (arg4 << 0x10);
+        var_a2 = t2[2] + (arg5 << 0x10);
+        break;
+    }
+    var_a1 = var_a1 & 0xFFFF0000;
+    var_t0 = var_t0 & 0xFFFF0000;
+    var_a2 = var_a2 & 0xFFFF0000;
+    
+    if (var_a1 > 0x800000) {
+        var_a1 = 0x800000;
+    }
+    if (var_t0 > 0x800000) {
+        var_t0 = 0x800000;
+    }
+    if (var_a2 > 0x800000) {
+        var_a2 = 0x800000;
+    }
+    if (var_a1 < 0) {
+        var_a1 = 0;
+    }
+    if (var_t0 < 0) {
+        var_t0 = 0;
+    }
+    if (var_a2 < 0) {
+        var_a2 = 0;
+    }
+    if (arg1 != 0) {
+        t2[3] = ((int) (var_a1 - (t2[0] & 0xFFFF0000)) / (arg1 * 2));
+        t2[4] = ((int) (var_t0 - (t2[1] & 0xFFFF0000)) / (arg1 * 2));
+        t2[5] = ((int) (var_a2 - (t2[2] & 0xFFFF0000)) / (arg1 * 2));
+        t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (arg1 * 2));
+    } else {
+        t2[0] = var_a1;
+        t2[1] = var_t0;
+        t2[2] = var_a2;
+        t1->unk6[3] = var_t4;
+    }
+    var_v0 = 1;
+    if (arg1 != 0) {
+        t1->unk0[0] = 1;
+        t1->unk0[1] = 0;
+        t1->unk0[2] = 0;
+        t1->unk0[3] = arg1;
+        t1->unk0[4] = arg0;
+        if (arg0 == 9) {
+            t1->unk6[0] = arg3;
+            t1->unk6[1] = arg4;
+            t1->unk6[2] = arg5;
+        }
+    } else {
+        t1->unk0[0] = 0;
+        var_v0 = t2[0] >> 0x10;
+        if (t2[0] < 0) {
+            var_v1 = t2[0] + 0xFFFF;
+            var_v0 = var_v1 >> 0x10;
+        }
+        sp10[0] = var_v0 - 0x40;
+        var_v0 = t2[1] >> 0x10;
+        if (t2[1] < 0) {
+            var_v1 = t2[1] + 0xFFFF;
+            var_v0 = var_v1 >> 0x10;
+        }
+        sp10[1] = var_v0 - 0x40;
+        var_v0 = t2[2] >> 0x10;
+        if (t2[2] < 0) {
+            var_v1 = t2[2] + 0xFFFF;
+            var_v0 = var_v1 >> 0x10;
+        }
+        sp10[2] = var_v0 - 0x40;
+        sp10[3] = 0;
+        if (arg2 != 0) {
+            func_800A0768(arg2 - 1, sp10);
+        } else {
+            func_8008B430(sp10, ((unsigned short) t1->unk6[3] << 0x10) >> 0x12);
+        }
+    }
+}
 
 static void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {

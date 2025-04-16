@@ -2799,8 +2799,161 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
 }
 
 // https://decomp.me/scratch/NnorQ
-void func_800474DC(int, int, int, int, int);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800474DC);
+void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    int sp10[5];
+    int temp_v0;
+    int var_a1;
+    int var_t0;
+    int var_t1;
+    int i;
+    int(*p)[6] = D_80055D58.unk7E9C;
+
+    for (i = 0; i < 5; ++i) {
+        switch (arg0) {
+        case 1:
+            var_t1 = (p[i][0] / 2) + (arg2 << 0x10);
+            var_t0 = p[i][1] / 2 + (arg3 << 0x10);
+            var_a1 = (p[i][2] / 2) + (arg4 << 0x10);
+            break;
+        case 2:
+            var_t1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg2 << 0x10);
+            var_t0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg3 << 0x10);
+            var_a1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg4 << 0x10);
+            break;
+        case 3:
+            temp_v0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
+            var_t1 = temp_v0 + (arg2 << 0x10);
+            var_t0 = temp_v0 + (arg3 << 0x10);
+            var_a1 = temp_v0 + (arg4 << 0x10);
+            break;
+        case 4:
+        case 9:
+            var_t1 = (D_80055D58.unk7F14[i].unk0 + arg2) << 0x10;
+            var_t0 = (D_80055D58.unk7F14[i].unk1 + arg3) << 0x10;
+            var_a1 = (D_80055D58.unk7F14[i].unk2 + arg4) << 0x10;
+            break;
+        case 5:
+            var_t1 = (D_80055D58.unk7F14[i].unk0 << 0xF) + (arg2 << 0x10);
+            var_t0 = (D_80055D58.unk7F14[i].unk1 << 0xF) + (arg3 << 0x10);
+            var_a1 = (D_80055D58.unk7F14[i].unk2 << 0xF) + (arg4 << 0x10);
+            break;
+        case 6: {
+            int v1 = D_80055D58.unk7F14[i].unk1;
+            int a0 = D_80055D58.unk7F14[i].unk2;
+            int v0 = D_80055D58.unk7F14[i].unk0;
+            var_a1 = v1 << 0x10;
+            a0 <<= 0x10;
+            v0 <<= 0x11;
+            v1 <<= 0x11;
+            v0 += v1 + var_a1;
+            v0 += a0;
+            var_t1 = v0 / 6 + (arg2 << 0x10);
+            var_t0 = v0 / 6 + (arg3 << 0x10);
+            var_a1 = v0 / 6 + (arg4 << 0x10);
+        } break;
+        case 7: {
+            int v1 = D_80055D58.unk7F14[i].unk1;
+            int a0 = D_80055D58.unk7F14[i].unk2;
+            int v0 = D_80055D58.unk7F14[i].unk0;
+            var_a1 = v1 << 0x10;
+            a0 <<= 0x10;
+            v0 <<= 0x11;
+            v1 <<= 0x11;
+            v0 += v1 + var_a1;
+            v0 += a0;
+            var_t1 = v0 / 12 + (arg2 << 0x10);
+            var_t0 = v0 / 12 + (arg3 << 0x10);
+            var_a1 = v0 / 12 + (arg4 << 0x10);
+        } break;
+        case 8:
+            var_t1 = D_80055D58.unk7F14[i].unk0 << 0x10;
+            var_t0 = D_80055D58.unk7F14[i].unk1 << 0x10;
+            var_a1 = D_80055D58.unk7F14[i].unk2 << 0x10;
+            break;
+        case 11:
+            D_80055D58.unk7E8C[8] = 0;
+            return;
+        case 0:
+        default:
+            var_t1 = p[i][0] + (arg2 << 0x10);
+            var_t0 = p[i][1] + (arg3 << 0x10);
+            var_a1 = p[i][2] + (arg4 << 0x10);
+            break;
+        }
+
+        var_t1 &= 0xFFFF0000;
+        var_t0 &= 0xFFFF0000;
+        var_a1 &= 0xFFFF0000;
+
+        if (var_t1 > 0xFF0000) {
+            var_t1 = 0xFF0000;
+        }
+        if (var_t0 > 0xFF0000) {
+            var_t0 = 0xFF0000;
+        }
+        if (var_a1 > 0xFF0000) {
+            var_a1 = 0xFF0000;
+        }
+        if (var_t1 < 0) {
+            var_t1 = 0;
+        }
+        if (var_t0 < 0) {
+            var_t0 = 0;
+        }
+        if (var_a1 < 0) {
+            var_a1 = 0;
+        }
+        if (arg1 != 0) {
+            p[i][3] = (int)(var_t1 - (p[i][0] & 0xFFFF0000)) / (arg1 * 2);
+            p[i][4] = (int)(var_t0 - (p[i][1] & 0xFFFF0000)) / (arg1 * 2);
+            p[i][5] = (int)(var_a1 - (p[i][2] & 0xFFFF0000)) / (arg1 * 2);
+        } else {
+            p[i][0] = var_t1;
+            p[i][1] = var_t0;
+            p[i][2] = var_a1;
+        }
+    }
+
+    if (arg1 != 0) {
+        D_80055D58.unk7E8C[4] = 1;
+        D_80055D58.unk7E8C[5] = 0;
+        D_80055D58.unk7E8C[6] = 0;
+        D_80055D58.unk7E8C[7] = arg1;
+        D_80055D58.unk7E8C[8] = arg0;
+        if (arg0 == 9) {
+            D_80055D58.unk7E96[0] = arg2;
+            D_80055D58.unk7E96[1] = arg3;
+            D_80055D58.unk7E96[2] = arg4;
+        }
+    } else {
+        D_8005DBE8 = 0;
+        for (i = 0; i < 5; ++i) {
+            int temp_a1, var_v0, new_var;
+            temp_v0 = p[i][0];
+
+            if (temp_v0 < 0) {
+                temp_v0 += 0xFFFF;
+            }
+
+            temp_a1 = (temp_v0 >> 0x10);
+            var_v0 = p[i][1];
+
+            if (var_v0 < 0) {
+                var_v0 += 0xFFFF;
+            }
+
+            new_var = temp_a1 + ((var_v0 >> 0x10) << 8);
+            temp_v0 = p[i][2];
+
+            if (temp_v0 < 0) {
+                temp_v0 += 0xFFFF;
+            }
+            sp10[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
+        }
+        func_8008EB30(sp10);
+    }
+}
 
 static void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
 {

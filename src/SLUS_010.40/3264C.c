@@ -2798,6 +2798,7 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
     }
 }
 
+// https://decomp.me/scratch/NnorQ
 void func_800474DC(int, int, int, int, int);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800474DC);
 

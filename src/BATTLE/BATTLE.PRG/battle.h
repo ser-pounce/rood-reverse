@@ -25,8 +25,10 @@ typedef struct {
 
 struct D_80061068_t;
 
+void func_8008B430(char*, int);
 void func_8008EB30(int*);
 unsigned int* func_8008EB24();
+void func_800A0768(int, char*);
 
 extern unsigned short D_800F18E8;
 extern int D_800F19D0[];

@@ -238,6 +238,7 @@ extern int D_8005FE80;
 extern int D_8005FE84;
 extern char D_8005FFB8[];
 extern D_80060068_t D_80060068;
+extern unsigned char D_8006002B;
 extern D_80061068_t D_80061068;
 extern char D_80061074[4];
 extern MATRIX D_1F800014_mat;
@@ -983,8 +984,84 @@ static void func_80043668()
     }
 }
 
-// https://decomp.me/scratch/SBG7f
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800436B4);
+void func_800436B4()
+{
+    int temp_a0;
+    int var_a2_2;
+    int i;
+    int j;
+    int var_v0;
+    unsigned char* temp_t1;
+    int new_var;
+
+    D_80050118[0].unk0[1] = 0;
+    D_80050118[0].unk0[0] = 0;
+
+    for (j = 0; j < 2; ++j) {
+        if (D_80050118[j].unk8 == 0) {
+            continue;
+        }
+
+        temp_t1 = D_80050118[j].unkC;
+
+        if (temp_t1 != 0) {
+            for (i = 0; i < 2; ++i) {
+                int(*a1)[6] = (int(*)[6])D_80050118[j].unk10;
+                if (a1[i][5] == 0) {
+                    temp_a0 = a1[i][4];
+                    a1[i][5] = temp_t1[temp_a0++];
+                    a1[i][1] = a1[i][3] = temp_t1[temp_a0++] << 8;
+                    if (a1[i][5] == 0) {
+                        a1[i][1] = 0;
+                        a1[i][0] = 0;
+                    } else {
+                        new_var = i != 0;
+                        a1[i][3] = temp_t1[temp_a0 + 1] << 8;
+                        if (new_var) {
+                            a1[i][2] = ((a1[i][3] - a1[i][1]) / a1[i][5]);
+                        } else {
+                            a1[i][2] = 0;
+                        }
+                        a1[i][0] = 1;
+                        a1[i][4] += 2;
+                    }
+                }
+                if (a1[i][5] != 0) {
+                    a1[i][1] += a1[i][2];
+                    a1[i][5] -= 1;
+                } else {
+                    a1[i][1] = a1[i][3];
+                }
+
+                D_80050118[0].unk0[i] += a1[i][1];
+                if (D_80050118[0].unk0[i] > 0xFF00) {
+                    D_80050118[0].unk0[i] = 0xFF00;
+                } else if (D_80050118[0].unk0[i] < 0) {
+                    D_80050118[0].unk0[i] = 0;
+                }
+            }
+            D_80050118[j].unk8 = D_80050118[j].unk10[0] | D_80050118[j].unk10[6];
+            if (D_80050118[j].unk8 == 0) {
+                D_80050118[j].unkC = 0;
+            }
+        } else {
+            D_80050118[j].unk8 = 0;
+        }
+    }
+
+    if (D_8006002B != 0) {
+        var_a2_2 = D_80050118[0].unk0[0];
+        if (var_a2_2 < 0) {
+            var_a2_2 += 0xFF;
+        }
+        padSetActData(0, 0, (var_a2_2 >> 8));
+        var_v0 = D_80050118[0].unk0[1];
+        if (var_v0 < 0) {
+            var_v0 += 0xFF;
+        }
+        padSetActData(0, 1, (var_v0 >> 8));
+    }
+}
 
 static void func_800438C8(int arg0)
 {

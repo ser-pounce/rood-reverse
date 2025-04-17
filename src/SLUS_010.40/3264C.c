@@ -3599,12 +3599,103 @@ void func_80048A64(unsigned short* arg0, unsigned int arg1, int arg2, unsigned i
     }
 }
 
-// https://decomp.me/scratch/86lQJ
-void func_80048B8C(int, unsigned short*, int, short, int, int, int);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80048B8C);
+void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short arg4,
+    short arg5, int arg6)
+{
+    int i;
+    short r;
+    int new_var;
+    int new_var2;
+    int new_var3;
+    short g;
+    short b;
+    short a;
+    unsigned short t4;
 
-static void func_80048E68(
-    unsigned short* arg0, int arg1, short arg2, short arg3, short arg4, int arg5)
+    for (i = 0; i < 0x100; ++i) {
+        a = arg1[i];
+        if (a != 0) {
+            switch (arg0) {
+            case 5:
+                t4 = 0x1F;
+                r = arg3 + ((((unsigned char)a) & t4) >> 1);
+                g = arg4 + ((a & 0x3E0) >> 6);
+                b = arg5 + ((a & 0x7C00) >> 11);
+                break;
+
+            case 6:
+                new_var = a & 0x1F;
+                new_var2 = (a & 0x3E0) >> 5;
+                new_var3 = (a & 0x7C00) >> 10;
+                r = arg3 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                g = arg4 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                b = arg5 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                break;
+
+            case 7:
+                new_var = a & 0x1F;
+                new_var2 = (a & 0x3E0) >> 5;
+                new_var3 = (a & 0x7C00) >> 10;
+                r = arg3 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                g = arg4 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                b = arg5 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                break;
+
+            case 0:
+            default:
+                r = arg3 + (a & 0x1F);
+                g = arg4 + ((a & 0x3E0) >> 5);
+                b = arg5 + ((a & 0x7C00) >> 10);
+                break;
+            }
+
+        } else {
+            r = a & 0x1F;
+            t4 = (a & 0x3E0);
+            g = t4 >> 5;
+            b = (a & 0x7C00) >> 10;
+        }
+        t4 = a;
+        t4 = t4 >> 0xF;
+        if (r >= 32) {
+            r = 31;
+        }
+        if (g >= 32) {
+            g = 31;
+        }
+        if (b >= 32) {
+            b = 31;
+        }
+        if ((r << 16) < 1) {
+            r = 0;
+        }
+        if ((g << 16) <= 0) {
+            g = 0;
+        }
+        if ((b << 16) <= 0) {
+            b = 0;
+        }
+        if ((((r | g | b) << 16) == 0) && (a & 0x7FFF)) {
+            b = 1;
+        }
+        if (arg6 != 0) {
+            loadImageSource[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
+            if (D_80055D58.unk0[arg2].unk6[0] == 0) {
+                char* t5 = D_80055D58.unk0[arg2].unkE[i];
+                t5[0] = r;
+                t5[1] = g;
+                t5[2] = b;
+                t5[3] = t4;
+            }
+        }
+        D_80055D58.unk0[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
+    }
+
+    D_80055D58.unk0[0].unk0 = 1;
+}
+
+void func_80048E68(unsigned short* arg0, int arg1, unsigned short arg2,
+    unsigned short arg3, unsigned short arg4, int arg5)
 {
     func_80048B8C(8, arg0, arg1, arg2, arg3, arg4, arg5);
 }

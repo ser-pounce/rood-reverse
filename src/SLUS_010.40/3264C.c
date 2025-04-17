@@ -3508,8 +3508,63 @@ void func_80047FFC()
     }
 }
 
-// https://decomp.me/scratch/PakFK
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800481C0);
+void func_800481C0()
+{
+    char sp18[4];
+    int i;
+    int var_v0;
+    D_8005DC80_t* p = D_80055D58.unk7F28;
+
+    for (i = 0; i < 17; ++i) {
+        int* a2 = p[i].unk10;
+        if (p[i].unk0[0] != 0) {
+            a2[0] += a2[3];
+            a2[1] += a2[4];
+            a2[2] += a2[5];
+
+            var_v0 = a2[0];
+            if (var_v0 < 0) {
+                var_v0 += 0xFFFF;
+            }
+            sp18[0] = (var_v0 >> 16) - 0x40;
+            var_v0 = a2[1];
+            if (var_v0 < 0) {
+                var_v0 += 0xFFFF;
+            }
+            sp18[1] = (var_v0 >> 16) - 0x40;
+            var_v0 = a2[2];
+            if (var_v0 < 0) {
+                var_v0 += 0xFFFF;
+            }
+            sp18[2] = (var_v0 >> 16) - 0x40;
+            sp18[3] = 0;
+
+            if (i != 0) {
+                func_800A0768(i - 1, sp18);
+            } else {
+                p[0].unk6[3] += p[0].unk6[4];
+                func_8008B430(sp18, p[0].unk6[3] >> 2);
+            }
+            ++p[i].unk0[1];
+            if (p[i].unk0[1] >= (p[i].unk0[3] * 2)) {
+                if (p[i].unk0[4] == 9) {
+                    func_80047FC0(4, p[i].unk0[3], i, p[i].unk6[0] / 2, p[i].unk6[1] / 2,
+                        p[i].unk6[2] / 2);
+                    p[i].unk0[4] = 10;
+                } else if (p[i].unk0[4] == 10) {
+                    func_80047B30(
+                        9, p[i].unk0[3], i, p[i].unk6[0], p[i].unk6[1], p[i].unk6[2]);
+                    p[i].unk0[4] = 9;
+                } else if (p[i].unk0[4] == 14) {
+                    func_80047B30(15, p[i].unk0[3], i, 0, 0, 0);
+                    p[i].unk0[4] = 15;
+                } else {
+                    p[i].unk0[0] = 0;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800483FC);
 

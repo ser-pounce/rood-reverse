@@ -88,15 +88,17 @@ typedef struct {
 } D_8005DC80_t;
 
 typedef struct {
-    struct {
-        unsigned short unk0;
-        unsigned short unk2;
-        unsigned char unk4;
-        unsigned char unk5;
-        unsigned char unk6[8];
-        unsigned char unkE[256][7];
-        unsigned short unk70E[254];
-    } unk0[14];
+    unsigned short unk0;
+    unsigned short unk2;
+    unsigned char unk4;
+    unsigned char unk5;
+    unsigned char unk6[8];
+    unsigned char unkE[256][7];
+    unsigned short unk70E[254];
+} D_80055D58_t2;
+
+typedef struct {
+    D_80055D58_t2 unk0[14];
     char unk7E8C[10];
     short unk7E96[3];
     int unk7E9C[5][6];
@@ -2710,16 +2712,169 @@ static void func_80046D58(int arg0)
     }
 }
 
-void func_80046DC0(int, int, int, short, short, short);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80046DC0);
-
-static void func_80047280(
-    int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
+static inline int inline_fn5(short arg0, short arg1, short arg2)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
-        func_80046DC0(arg0, arg1, arg2, arg3, arg4, arg5);
+    return arg2 * 2 + (arg0 >> 5) * 3 + (arg1 >> 10);
+}
+
+void func_80046DC0(
+    int arg0, int arg1, int arg2, int arg3, unsigned short arg4, unsigned short arg5)
+{
+    int i;
+    int var_v0;
+    short temp_t0;
+    int var_t3;
+    int var_t1;
+    int var_a0;
+    int tmp;
+    int t4 = arg4;
+    int t5 = arg5;
+    unsigned char(*t2)[7] = D_80055D58.unk0[arg2].unkE;
+
+    for (i = 0; i < 256; ++i) {
+        temp_t0 = D_80055D58.unk0[arg2].unk70E[i];
+        if ((t2[i][0] + t2[i][1] + t2[i][2] + t2[i][3]) != 0) {
+            switch (arg0) {
+            case 1:
+                tmp = 1;
+                var_t3 = arg3 + (t2[i][0] >> tmp);
+                var_t1 = t4 + (t2[i][1] >> tmp);
+                var_a0 = t5 + (t2[i][2] >> tmp);
+                break;
+            case 2:
+                var_t3 = arg3 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
+                var_t1 = t4 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
+                var_a0 = t5 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
+                break;
+            case 3:
+                var_t3 = arg3 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
+                var_t1 = t4 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
+                var_a0 = t5 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
+                break;
+            case 4:
+            case 9:
+                var_t3 = arg3 + (temp_t0 & 0x1F);
+                var_t1 = t4 + ((temp_t0 & 0x3E0) >> 5);
+                var_a0 = t5 + ((temp_t0 & 0x7C00) >> 0xA);
+                break;
+            case 5:
+                tmp = 0x1F;
+                var_t3 = arg3 + ((temp_t0 & tmp) >> 1);
+                var_t1 = t4 + ((temp_t0 & 0x3E0) >> 6);
+                var_a0 = t5 + ((temp_t0 & 0x7C00) >> 0xB);
+                break;
+            case 6:
+                var_t3 = arg3
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                var_t1 = t4
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                var_a0 = t5
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                break;
+            case 7:
+                var_t3 = arg3
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                var_t1 = t4
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                var_a0 = t5
+                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                break;
+            case 8:
+            case 15:
+                var_t3 = temp_t0 & 0x1F;
+                var_t1 = (temp_t0 & 0x3E0) >> 5;
+                var_a0 = (temp_t0 & 0x7C00) >> 0xA;
+                break;
+            case 11:
+                D_80055D58.unk0[arg2].unk6[4] = 0;
+                return;
+            case 12:
+                tmp = 0x1F;
+                var_t3 = arg3 - (t2[i][0] - tmp);
+                var_t1 = t4 - (t2[i][1] - tmp);
+                var_a0 = t5 - (t2[i][2] - tmp);
+                break;
+            case 13:
+                var_v0 = (temp_t0 & 0x1F) * 3;
+                if (var_v0 < 0) {
+                    var_v0 += 3;
+                }
+                var_t3 = arg3 + (var_v0 >> 2);
+                var_v0 = ((temp_t0 & 0x3E0) >> 5) * 3;
+                if (var_v0 < 0) {
+                    var_v0 += 3;
+                }
+                var_t1 = t4 + (var_v0 >> 2);
+                var_v0 = ((temp_t0 & 0x7C00) >> 0xA) * 3;
+                if (var_v0 < 0) {
+                    var_v0 += 3;
+                }
+                var_a0 = t5 + (var_v0 >> 2);
+                break;
+            default:
+                var_t3 = t2[i][0] + arg3;
+                var_t1 = t2[i][1] + t4;
+                var_a0 = t2[i][2] + t5;
+                break;
+            }
+
+            if ((short)var_t3 >= 0x20) {
+                var_t3 = 0x1F;
+            }
+            if ((short)var_t1 >= 0x20) {
+                var_t1 = 0x1F;
+            }
+            if ((short)var_a0 >= 0x20) {
+                var_a0 = 0x1F;
+            }
+            if ((var_t3 << 0x10) <= 0) {
+                var_t3 = 0;
+            }
+            if ((var_t1 << 0x10) <= 0) {
+                var_t1 = 0;
+            }
+            if ((var_a0 << 0x10) <= 0) {
+                var_a0 = 0;
+            }
+            if (((var_a0 | (var_t3 | var_t1)) << 0x10) == 0) {
+                var_a0 = 1;
+            }
+            if (arg1 != 0) {
+                t2[i][4] = ((var_t3 - t2[i][0]) + 0x1F);
+                t2[i][5] = ((var_t1 - t2[i][1]) + 0x1F);
+                t2[i][6] = ((var_a0 - t2[i][2]) + 0x1F);
+            } else {
+                t2[i][2] = var_a0;
+                t2[i][0] = var_t3;
+                t2[i][1] = var_t1;
+                loadImageSource[arg2][i]
+                    = var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i][3] << 0xF);
+            }
+        } else {
+            t2[i][6] = 0x1F;
+            t2[i][5] = 0x1F;
+            t2[i][4] = 0x1F;
+        }
+    }
+    if (arg1 != 0) {
+        unsigned char* p = D_80055D58.unk0[arg2].unk6;
+        p[0] = 1;
+        p[1] = 0;
+        p[2] = 0;
+        p[3] = arg1;
+        p[4] = arg0;
+        if (arg0 == 9) {
+            p[5] = arg3;
+            p[6] = t4;
+            p[7] = t5;
+        }
+    } else {
+        D_80055D58.unk0[arg2].unk6[0] = 0;
+        D_80055D58.unk0[0].unk0 = 1;
     }
 }
+
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047280);
 
 static inline int inline_fn(int arg0) { return arg0 << 0x10; }
 
@@ -2798,7 +2953,6 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
     }
 }
 
-// https://decomp.me/scratch/NnorQ
 void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
     int sp10[5];

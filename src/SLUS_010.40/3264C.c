@@ -3373,8 +3373,63 @@ static void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int 
     }
 }
 
-// https://decomp.me/scratch/c07RD
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047FFC);
+void func_80047FFC()
+{
+    int sp18[5];
+    int i;
+    int var_v0;
+    int new_var;
+    int new_var2;
+    int var_v1;
+    int(*t1)[6];
+
+    if (D_80055D58.unk7E8C[4] == 0) {
+        return;
+    }
+
+    t1 = D_80055D58.unk7E9C;
+
+    for (i = 0; i < 5; ++i) {
+        t1[i][0] += t1[i][3];
+        t1[i][1] += t1[i][4];
+        t1[i][2] += t1[i][5];
+    }
+
+    for (i = 0; i < 5; ++i) {
+        var_v1 = t1[i][0];
+        if (var_v1 < 0) {
+            var_v1 += 0xFFFF;
+        }
+        var_v0 = t1[i][1];
+        new_var2 = var_v1 >> 16;
+        if (var_v0 < 0) {
+            var_v0 += 0xFFFF;
+        }
+        var_v1 = t1[i][2];
+        new_var = new_var2 + ((var_v0 >> 16) << 8);
+        if (var_v1 < 0) {
+            var_v1 += 0xFFFF;
+        }
+        sp18[i] = new_var + ((var_v1 >> 16) << 16);
+    }
+    func_8008EB30(sp18);
+    D_80055D58.unk7E8C[5] += 1;
+    if (D_80055D58.unk7E8C[5] >= (D_80055D58.unk7E8C[7] * 2)) {
+        if (D_80055D58.unk7E8C[8] == 9) {
+            func_800474DC(4, D_80055D58.unk7E8C[7], D_80055D58.unk7E96[0] / 2,
+                D_80055D58.unk7E96[1] / 2, D_80055D58.unk7E96[2] / 2);
+            D_80055D58.unk7E8C[8] = 10;
+            return;
+        }
+        if (D_80055D58.unk7E8C[8] == 10) {
+            func_800474DC(9, D_80055D58.unk7E8C[7], D_80055D58.unk7E96[0],
+                D_80055D58.unk7E96[1], D_80055D58.unk7E96[2]);
+            D_80055D58.unk7E8C[8] = 9;
+            return;
+        }
+        D_80055D58.unk7E8C[4] = 0;
+    }
+}
 
 // https://decomp.me/scratch/PakFK
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800481C0);

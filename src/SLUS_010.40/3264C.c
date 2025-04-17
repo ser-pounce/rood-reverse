@@ -2717,8 +2717,7 @@ static inline int inline_fn5(short arg0, short arg1, short arg2)
     return arg2 * 2 + (arg0 >> 5) * 3 + (arg1 >> 10);
 }
 
-void func_80046DC0(
-    int arg0, int arg1, int arg2, int arg3, unsigned short arg4, unsigned short arg5)
+void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg5)
 {
     int i;
     int var_v0;
@@ -2727,8 +2726,8 @@ void func_80046DC0(
     int var_t1;
     int var_a0;
     int tmp;
-    int t4 = arg4;
-    int t5 = arg5;
+    int t4 = (unsigned short)arg4;
+    int t5 = (unsigned short)arg5;
     unsigned char(*t2)[7] = D_80055D58.unk0[arg2].unkE;
 
     for (i = 0; i < 256; ++i) {
@@ -2874,7 +2873,14 @@ void func_80046DC0(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047280);
+void func_80047280(int arg0, int arg1, int arg2, short arg3, int arg4, int arg5)
+{
+    if (D_80055D58.unk0[0].unk2 != 0) {
+        do {
+            func_80046DC0(arg0, arg1, arg2, arg3, arg4, arg5);
+        } while (0);
+    }
+}
 
 static inline int inline_fn(int arg0) { return arg0 << 0x10; }
 

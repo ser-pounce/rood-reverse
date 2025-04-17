@@ -3122,8 +3122,74 @@ static void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-// https://decomp.me/scratch/q7o6c
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80047910);
+static inline int inline_fn2(int arg0)
+{
+    if (arg0 < 0) {
+        arg0 += 0xFFFF;
+    }
+    return (arg0 >> 0x10) - 0x40;
+}
+
+void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
+{
+    char sp10[4];
+    D_8005DC80_t* temp_t0;
+    int temp_a1;
+    int temp_t1;
+    int temp_t2;
+    int v0;
+    int* temp_a3;
+
+    if (D_80055D58.unk0[0].unk2 == 0) {
+        return;
+    }
+
+    temp_t0 = &D_80055D58.unk7F28[arg1];
+    temp_a3 = D_80055D58.unk7F28[arg1].unk10;
+    temp_a1 = inline_fn(arg2->unk0);
+    temp_t1 = inline_fn(arg2->unk1);
+    temp_t2 = inline_fn(arg2->unk2);
+
+    if (arg0 != 0) {
+        arg2 = (D_8005DC6C_t*)0xFFFF0000;
+        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
+        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (arg0 * 2));
+        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (arg0 * 2));
+    } else {
+        temp_a3[0] = temp_a1;
+        temp_a3[1] = temp_t1;
+        temp_a3[2] = temp_t2;
+    }
+    if (arg0 != 0) {
+        temp_t0->unk0[0] = 1;
+        temp_t0->unk0[1] = 0;
+        temp_t0->unk0[2] = 0;
+        temp_t0->unk0[3] = arg0;
+        return;
+    }
+    temp_t0->unk0[0] = 0;
+
+    v0 = temp_a3[0];
+    if (v0 < 0) {
+        v0 += 0xFFFF;
+    }
+    sp10[0] = (v0 >> 0x10) - 0x40;
+
+    v0 = temp_a3[1];
+    if (v0 < 0) {
+        v0 += 0xFFFF;
+    }
+    sp10[1] = (v0 >> 0x10) - 0x40;
+
+    sp10[2] = inline_fn2(temp_a3[2]);
+    sp10[3] = 0;
+
+    if (arg1 != 0) {
+        func_800A0768(arg1 - 1, sp10);
+    } else {
+        func_8008B430(sp10, ((unsigned short)temp_t0->unk6[3] << 16) >> 18);
+    }
+}
 
 static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 {

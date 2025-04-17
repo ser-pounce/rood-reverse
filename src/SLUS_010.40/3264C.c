@@ -212,7 +212,7 @@ extern int D_80050470;
 extern int D_80050478[];
 extern int sp2;
 extern int D_80055C88;
-extern int D_80055C90[];
+extern unsigned int D_80055C90[];
 extern D_80055D10_t D_80055D10;
 extern unsigned char dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
@@ -1083,8 +1083,101 @@ static void func_800438C8(int arg0)
     }
 }
 
-// https://decomp.me/scratch/egK9S
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_80043940);
+extern int D_80055C78;
+extern int D_8005DFC0[];
+extern int D_8005DFDC;
+extern unsigned int D_8005E1C0;
+extern int D_8005E1D0;
+extern unsigned int D_8005E238;
+extern char D_80060020[];
+
+int func_80043940()
+{
+    int dummy[2];
+    int i;
+    unsigned int a3;
+
+    D_8005E238 = func_800430F4(0, padBuffer[0]) & 0xFFFF;
+    D_8005E238 |= func_800430F4(16, padBuffer[1]) << 16;
+    padConnect(0, padBuffer);
+    padConnect(16, padBuffer[1]);
+
+    if (portInfo->unk0 != 4) {
+        if (portInfo->unk0 == 7) {
+            D_8005DFC0[2] = portInfo->unk3;
+            D_8005DFC0[3] = portInfo->unk4;
+            D_8005DFC0[0] = portInfo->unk5;
+            D_8005DFC0[1] = portInfo->unk6;
+
+            if (portInfo->unk3 < 16) {
+                D_8005E238 |= 0x8000;
+            }
+            if (portInfo->unk3 >= 241) {
+                D_8005E238 |= 0x2000;
+            }
+
+            if (portInfo->unk4 < 16) {
+                D_8005E238 |= 0x1000;
+            }
+            if (portInfo->unk4 >= 241) {
+                D_8005E238 |= 0x4000;
+            }
+
+            if (portInfo->unk5 < 32) {
+                D_8005E238 |= 0x400;
+            }
+            if (portInfo->unk5 >= 225) {
+                D_8005E238 |= 0x400;
+            }
+
+            if (portInfo->unk6 < 32) {
+                D_8005E238 |= 0x400;
+            }
+            if (portInfo->unk6 >= 225) {
+                D_8005E238 |= 0x400;
+            }
+        } else {
+            D_8005DFC0[1] = 0x80;
+            D_8005DFC0[0] = 0x80;
+            D_8005DFC0[3] = 0x80;
+            D_8005DFC0[2] = 0x80;
+        }
+    } else {
+        D_8005DFC0[1] = 0x80;
+        D_8005DFC0[0] = 0x80;
+        D_8005DFC0[3] = 0x80;
+        D_8005DFC0[2] = 0x80;
+    }
+
+    D_8005E1D0 = ~D_8005E1C0 & D_8005E238;
+    D_80055C78 = D_8005E1C0 & ~D_8005E238;
+    D_8005E1C0 = D_8005E238;
+
+    a3 = D_8005E238;
+    for (i = 0; i < 32; ++i, a3 >>= 1) {
+        if (a3 & 1) {
+            D_80055C90[i] += D_8005E24C;
+        } else {
+            D_80055C90[i] = 0;
+        }
+    }
+
+    D_8005DFDC = D_8005E1D0;
+
+    for (i = 0; i < 32; ++i) {
+        if ((D_80055C90[i] >= 20) && !((D_80055C90[i] - 20) & 3)) {
+            D_8005DFDC |= 1 << i;
+        }
+    }
+
+    if ((D_80055C88 != 0) && ((D_8005E1C0 & 0x90F) == 0x90F) && (D_8005E1D0 & 0x90F)) {
+        D_80060020[10] = 0;
+        D_80060020[11] = 1;
+        resetGame();
+    }
+
+    return 1;
+}
 
 static void freeHeapR(void* block)
 {

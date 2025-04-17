@@ -25,7 +25,7 @@ int func_8004261C(int);
 void func_80042C94(int);
 void func_80042CA0();
 void func_800436B4();
-void func_80043940();
+int func_80043940();
 void freeHeap(void*);
 unsigned long* allocHeap(unsigned int);
 void func_80045988(int, int);

@@ -1,3 +1,5 @@
+
+
 overlaySlots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
 getSp = 0x80010AA4;
@@ -156,8 +158,13 @@ debug_stack_p = 0x80049138;
 debug_stack_sz = 0x8004913C;
 nowLoading_header = 0x80049150;
 nowLoading_data = 0x80049154;
-fileLBAs = 0x8004A530;
-fileSizes = 0x8004AB70;
+soundLBAs = 0x8004A530;
+musicLBAs = 0x8004A6C0;
+seLBAs = 0x8004A9E0;
+soundFileSizes = 0x8004AB70;
+musicFileSizes = 0x8004AD00;
+seFileSizes = 0x8004B020;
+soundFileIDs = 0x8004B1B0;
 randArr = 0x8004FF88;
 randIndex = 0x8005010C;
 portInfo = 0x80050190;

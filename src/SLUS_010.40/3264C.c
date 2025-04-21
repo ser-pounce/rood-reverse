@@ -191,7 +191,33 @@ void execBattle();
 static void initRand();
 static void initHeap(HeapHeader* node, unsigned int value);
 
-extern unsigned char D_8004B1B0[];
+typedef struct {
+    unsigned char wLo;
+    unsigned char wHi;
+    unsigned char hLo;
+    unsigned char hHi;
+} ImgHeader;
+
+void* debug_stack_p = (void*)0x200000;
+unsigned int debug_stack_sz = 0x4000;
+char buildTimestamp[] = "Mar 28 00:09\0\0\0";
+
+EMBED_RGBA16("build/assets/SLUS_010.40/nowLoading.rgba16.bin", nowLoading)
+
+static unsigned char D_8004A504[]
+    = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06, 0x00, 0x04, 0x01,
+          0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
+
+static unsigned char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+extern int soundLBAs[64];
+extern int musicLBAs[200];
+extern int seLBAs[64];
+extern int soundFileSizes[];
+extern int musicFileSizes[];
+extern int seFileSizes[];
+extern unsigned char soundFileIDs[];
 extern int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
@@ -242,33 +268,6 @@ extern unsigned char D_8006002B;
 extern D_80061068_t D_80061068;
 extern char D_80061074[4];
 extern MATRIX D_1F800014_mat;
-
-typedef struct {
-    unsigned char wLo;
-    unsigned char wHi;
-    unsigned char hLo;
-    unsigned char hHi;
-} ImgHeader;
-
-void* debug_stack_p = (void*)0x200000;
-unsigned int debug_stack_sz = 0x4000;
-char buildTimestamp[] = "Mar 28 00:09\0\0\0";
-
-EMBED_RGBA16("build/assets/SLUS_010.40/nowLoading.rgba16.bin", nowLoading)
-
-static unsigned char D_8004A504[]
-    = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06, 0x00, 0x04, 0x01,
-          0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
-
-static unsigned char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-extern int fileLBAs[];
-extern int fileSizes[];
-extern int D_8004A9E0[];
-extern int D_8004B020[];
-extern int D_8004A6C0[];
-extern int D_8004AD00[];
 
 static void loadBattlePrg()
 {
@@ -1912,8 +1911,8 @@ static int func_80045110(int arg0, int arg1)
                     }
                 } while (0);
 
-                cdFile.lba = D_8004A6C0[arg0];
-                cdFile.size = D_8004AD00[arg0];
+                cdFile.lba = musicLBAs[arg0];
+                cdFile.size = musicFileSizes[arg0];
 
                 if ((D_8005E038.unk34[arg] != 0)
                     && (D_8005E038.unk34[arg] != (vs_main_cdQueue_t*)-1)) {
@@ -2344,8 +2343,8 @@ int func_80045DE0(int id, int slot)
     if ((slot - 1u) < 3) {
         if (D_8005E038.unk4C[(slot - 1)] == 0) {
             new_var = slot - 1;
-            cdFile.lba = D_8004A9E0[id];
-            cdFile.size = D_8004B020[id];
+            cdFile.lba = seLBAs[id];
+            cdFile.size = seFileSizes[id];
 
             if ((D_8005E038.unk58[new_var] != 0)
                 && (D_8005E038.unk58[new_var] != (vs_main_cdQueue_t*)-1)) {
@@ -2670,8 +2669,8 @@ static void func_80046678(int file)
     if (((new_var - (var_a0 << 0x10)) == file) || (var_a0 == file)) {
         return;
     }
-    cdFile.lba = fileLBAs[file];
-    cdFile.size = fileSizes[file];
+    cdFile.lba = soundLBAs[file];
+    cdFile.size = soundFileSizes[file];
 
     if (D_8005E0BC) {
         if (D_8005E0BC != (-1)) {
@@ -2688,7 +2687,7 @@ static void func_80046678(int file)
     func_80044BC4(D_8005E038.unk84, D_8005E038.unk80);
 }
 
-static void func_80046770(int arg0) { func_80046678(D_8004B1B0[arg0]); }
+static void func_80046770(int arg0) { func_80046678(soundFileIDs[arg0]); }
 
 static int func_800467A0()
 {

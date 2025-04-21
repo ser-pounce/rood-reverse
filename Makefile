@@ -143,7 +143,7 @@ build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
 	@$(MV) $(disk)_LBA.txt build/config/
 
 build/src/include/lbas.h: build/config/SLUS-01040_LBA.txt
-	$(call builder,Generating $<)
+	$(call builder,Generating $@)
 	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
 disks/$(disk).bin:

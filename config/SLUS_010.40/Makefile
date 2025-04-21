@@ -5,6 +5,7 @@ build/data/SLUS_010.40.elf: LDSCRIPT += \
 build/data/SLUS_010.40.elf: build/assets/SLUS_010.40/nowLoading.rgba16.bin
 
 build/src/SLUS_010.40/3264C.o: CC1FLAGS += -Wno-return-type
+build/src/SLUS_010.40/3264C.o: build/src/include/lbas.h
 
 $(patsubst %,build/src/SLUS_010.40/%.o, \
 	overlays 25AC 31724 32154 3264C \

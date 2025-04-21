@@ -14,6 +14,8 @@ TOUCH  := touch
 ECHO   := echo
 WHICH  := which
 MKDIR  := mkdir
+MV     := mv
+FIND   := find
 
 # Anything below this line should not need editing
 CC1VER  := 2.7.2
@@ -25,26 +27,27 @@ SPLAT   := $(VPYTHON) -m splat split
 IMPORT  := $(VPYTHON) tools/decomp-permuter/import.py
 PERMUTE := $(VPYTHON) tools/decomp-permuter/permuter.py
 RGBA16  := $(VPYTHON) tools/splat_ext/rgba16.py
-DUMPISO := tools/mkpsxiso/build/Release/dumpsxiso
+DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
+MKPSXISO := tools/mkpsxiso/build/Release/mkpsxiso
 
 BCONFIG = build/config/$*
 
-CPPFLAGS      = -nostdinc -I src/include -I include/psx $(CPP_DEPS)
-CC1FLAGS     := -G0 -O2 -Wall -quiet -fno-builtin -Wno-unused
-LDFLAGS       = -nostdlib --build-id=none -EL -x \
-              	-L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
-LDFLAGS_BIN  := --oformat=binary -e 0x0
-LDSCRIPT     := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
-ASFLAGS       = -I src/include $(AS_DEPS) -EL
-MASFLAGS     := --aspsx-version=2.56 --macro-inc
-SPLATFLAGS   := --disassemble-all
-PERMUTEFLAGS := -j8
-DUMPISOFLAGS  = -x data -s config/$(disk).xml
-FORMATFLAGS  := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: 'Never' }" -i
-RMFLAGS      := -Rf
-DIFFFLAGS    := -s
-WHICHFLAGS   := -s
-MKDIRFLAGS   := -p
+CPPFLAGS        = -nostdinc -I src/include -I include/psx $(CPP_DEPS)
+CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -Wno-unused
+LDFLAGS         = -nostdlib --build-id=none -EL -x \
+              	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
+LDFLAGS_BIN    := --oformat=binary -e 0x0
+LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
+ASFLAGS         = -I src/include $(AS_DEPS) -EL
+MASFLAGS       := --aspsx-version=2.56 --macro-inc
+SPLATFLAGS     := --disassemble-all
+PERMUTEFLAGS   := -j8
+DUMPSXISOFLAGS  = -x data -s config/$(disk).xml
+FORMATFLAGS    := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: 'Never' }" -i
+RMFLAGS        := -Rf
+DIFFFLAGS      := -s
+WHICHFLAGS     := -s
+MKDIRFLAGS     := -p
 
 ifeq ($(PERMUTER),)
 CPP_DEPS = -MD -MF $@.d -MT $@
@@ -57,7 +60,7 @@ targets    := $(binaries:%=build/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)
 ifneq ($(wildcard build/src),)
-deps != find build/src -type f -name *.d
+deps != $(FIND) build/src -type f -name *.d
 endif
 build_deps := $(DUMPISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
@@ -70,7 +73,7 @@ all: $(targets)
 
 format:
 	for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
-	find src/ -type f -name *.h -o -name *.c | xargs \
+	$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
 
 decompme: IMPORTFLAGS += --decompme
@@ -134,6 +137,10 @@ ifeq ($(PERMUTER),)
 data/%: | disks/$(disk).bin $(build_deps)
 	$(DUMPISO) $(DUMPISOFLAGS) disks/$(disk).bin
 endif
+
+build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
+	$(MKPSXISO) -lba -noisogen config/$(disk).xml
+	@$(MV) $(disk)_LBA.txt config/
 
 disks/$(disk).bin:
 	@$(ECHO) $@ not found

@@ -2,6 +2,7 @@
 build
 data
 config/*.xml
+config/*_LBA.txt
 disks/*
 nonmatchings
 tools/.sysdeps

@@ -32,7 +32,7 @@ MKPSXISO := tools/mkpsxiso/build/Release/mkpsxiso
 
 BCONFIG = build/config/$*
 
-CPPFLAGS        = -nostdinc -I src/include -I include/psx $(CPP_DEPS)
+CPPFLAGS        = -nostdinc -I src/include -I include/psx -I build/src/include $(CPP_DEPS)
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -EL -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
@@ -140,7 +140,11 @@ endif
 
 build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
 	$(MKPSXISO) -lba -noisogen config/$(disk).xml
-	@$(MV) $(disk)_LBA.txt config/
+	@$(MV) $(disk)_LBA.txt build/config/
+
+build/src/include/lbas.h: build/config/SLUS-01040_LBA.txt
+	$(call builder,Generating $<)
+	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
 disks/$(disk).bin:
 	@$(ECHO) $@ not found
@@ -155,7 +159,7 @@ $(DUMPISO):
 $(VPYTHON):
 	@$(ECHO) Installing virtual python environment to $(VPYDIR)
 	@$(PYTHON) -m venv $(VPYDIR)
-	@$(VPYTHON) -m pip install splat64[mips] toml pycparser
+	@$(VPYTHON) -m pip install splat64[mips] toml pycparser pandas
 
 tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 	@$(MAKE) -C tools/old-gcc/ VERSION=$*

@@ -20,16 +20,16 @@ typedef struct HeapHeader {
 } HeapHeader;
 
 typedef struct {
-    char unk0;
-    char exId;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    char unk6;
-    char lock;
+    unsigned char unk0;
+    unsigned char exId;
+    unsigned char unk2;
+    unsigned char unk3;
+    unsigned char unk4;
+    unsigned char unk5;
+    unsigned char unk6;
+    unsigned char lock;
     unsigned char actData[2];
-    char connected;
+    unsigned char connected;
 } PortInfo;
 
 typedef struct {
@@ -178,7 +178,7 @@ void func_80045754(int, int, int, int);
 static void func_800461CC(int, unsigned int[], unsigned int, int, int);
 static int func_800464FC(int, int, int);
 static void func_80046678(int);
-static void func_80046770();
+static void func_80046770(int);
 static int func_800467A0();
 void func_800468FC();
 void func_80046B3C(int, int, unsigned short*);
@@ -462,7 +462,7 @@ static unsigned char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 6
     0, 78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63,
     63, 63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-extern int D_8004B9DC[];
+extern unsigned int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern HeapHeader* D_80050110;
@@ -520,7 +520,7 @@ static void loadBattlePrg()
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
-    temp_v0 = func_80044B10(&cdFile);
+    temp_v0 = vs_main_enqueueFile(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);
 
     while (temp_v0->unk0[0] != 4) {
@@ -531,7 +531,7 @@ static void loadBattlePrg()
 
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
-    temp_v0 = func_80044B10(&cdFile);
+    temp_v0 = vs_main_enqueueFile(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[1]);
 
     while (temp_v0->unk0[0] != 4) {
@@ -550,7 +550,7 @@ static void loadTitlePrg()
     cdFile.lba = VS_TITLE_PRG_LBA;
     cdFile.size = VS_TITLE_PRG_SIZE;
 
-    temp_v0 = func_80044B10(&cdFile);
+    temp_v0 = vs_main_enqueueFile(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);
 
     while (temp_v0->unk0[0] != 4) {
@@ -569,7 +569,7 @@ static void loadEndingPrg()
     cdFile.lba = VS_ENDING_PRG_LBA;
     cdFile.size = VS_ENDING_PRG_SIZE;
 
-    temp_v0 = func_80044B10(&cdFile);
+    temp_v0 = vs_main_enqueueFile(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);
 
     while (temp_v0->unk0[0] != 4) {
@@ -901,9 +901,7 @@ void func_80042CB0()
     int var_a1;
     int var_a3;
     int var_s1;
-    int var_t3;
     int new_var;
-    int var_t4;
     char var_a0;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
@@ -952,9 +950,6 @@ void func_80042CB0()
     for (var_a3 = 0; var_a3 < 8; ++var_a3) {
         temp_t5->unk20[var_a3] = temp_t0->unk94C[var_a3];
     }
-
-    var_t4 = 0;
-    var_t3 = 0;
 
     for (var_a3 = 0; var_a3 < 6; ++var_a3) {
         temp_t5->unk28[var_a3].unk0 = temp_t0->unk398[var_a3].unk0;
@@ -1013,7 +1008,7 @@ static void padResetDefaults(int port, void* arg1 __attribute__((unused)))
     PadSetActAlign(port, actParams);
 }
 
-int func_800430F4(int arg0, char padBuf[34])
+int func_800430F4(int arg0, unsigned char padBuf[34])
 {
     PortInfo* temp_s0;
     char temp_v0;
@@ -1946,7 +1941,7 @@ static void vs_main_initCdQueue()
     D_80050460.i = 0;
 }
 
-vs_main_cdQueue_t* func_80044B10(CdFile* arg0)
+vs_main_cdQueue_t* vs_main_enqueueFile(CdFile* arg0)
 {
     int i;
 
@@ -2163,7 +2158,7 @@ static int func_80045110(int arg0, int arg1)
                     nop9(0x98, 0);
                 }
 
-                D_8005E038.unk34[arg] = func_80044B10(&cdFile);
+                D_8005E038.unk34[arg] = vs_main_enqueueFile(&cdFile);
 
                 if (D_8005E038.unk24[arg] != 0) {
                     nop9(0x8E, 0);
@@ -2595,7 +2590,7 @@ int func_80045DE0(int id, int slot)
                 nop9(0x8F, 0);
             }
 
-            D_8005E038.unk58[new_var] = func_80044B10(&cdFile);
+            D_8005E038.unk58[new_var] = vs_main_enqueueFile(&cdFile);
 
             if (D_8005E038.unk4C[new_var] != 0) {
                 nop9(0x90, 0);
@@ -2921,7 +2916,7 @@ static void func_80046678(int file)
             nop9(0x93 & 0xFFu, 0);
         }
     }
-    D_8005E038.unk84 = func_80044B10(&cdFile);
+    D_8005E038.unk84 = vs_main_enqueueFile(&cdFile);
     if (D_8005E038.unk80 != 0) {
         nop9(0x94, 0);
     }
@@ -3564,7 +3559,6 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     temp_t2 = inline_fn(arg2->unk2);
 
     if (arg0 != 0) {
-        arg2 = (D_8005DC6C_t*)0xFFFF0000;
         temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
         temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (arg0 * 2));
         temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (arg0 * 2));
@@ -4017,7 +4011,7 @@ void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short a
         if (arg6 != 0) {
             loadImageSource[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
             if (D_80055D58.unk0[arg2].unk6[0] == 0) {
-                char* t5 = D_80055D58.unk0[arg2].unkE[i];
+                unsigned char* t5 = D_80055D58.unk0[arg2].unkE[i];
                 t5[0] = r;
                 t5[1] = g;
                 t5[2] = b;

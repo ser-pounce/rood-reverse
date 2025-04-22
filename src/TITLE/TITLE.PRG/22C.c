@@ -503,7 +503,7 @@ int func_8006A49C(int arg0)
         dirEntBuf[0] = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
         cdFile.lba = 0x14C98;
         cdFile.size = 0x1C000;
-        D_800DC8C8 = func_80044B10(&cdFile);
+        D_800DC8C8 = vs_main_enqueueFile(&cdFile);
         func_80044BC4(D_800DC8C8, D_800DEAB8[0]);
         D_800DC8C4 = 0;
         return 0;
@@ -520,7 +520,7 @@ int func_8006A49C(int arg0)
     case 1:
         cdFile.lba = 0x14CD0;
         cdFile.size = 0x2000;
-        D_800DC8C8 = func_80044B10(&cdFile);
+        D_800DC8C8 = vs_main_enqueueFile(&cdFile);
         func_80044BC4(D_800DC8C8, D_800DEABC);
         D_800DC8C4 = 2;
         break;

@@ -452,7 +452,16 @@ static int seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00092_DAT_SIZE, VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE,
     VS_SEP00095_DAT_SIZE, VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE,
     VS_SEP00098_DAT_SIZE, VS_SEP00099_DAT_SIZE };
-extern unsigned char soundFileIDs[];
+static unsigned char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0,
+    69, 69, 0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76,
+    86, 87, 80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11,
+    11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18,
+    18, 19, 19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24,
+    25, 25, 25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98,
+    95, 96, 97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0,
+    0, 78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63,
+    63, 63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 extern int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
@@ -2922,7 +2931,7 @@ static void func_80046678(int file)
     func_80044BC4(D_8005E038.unk84, D_8005E038.unk80);
 }
 
-static void func_80046770(int arg0) { func_80046678(soundFileIDs[arg0]); }
+static void func_80046770(int arg0) { func_80046678(soundFileMap[arg0]); }
 
 static int func_800467A0()
 {

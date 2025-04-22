@@ -518,8 +518,8 @@ static void loadBattlePrg()
     CdFile cdFile;
     vs_main_cdQueue_t* temp_v0;
 
-    cdFile.lba = 0x44C; // BATTLE.PRG
-    cdFile.size = 0x8D800;
+    cdFile.lba = VS_BATTLE_PRG_LBA;
+    cdFile.size = VS_BATTLE_PRG_SIZE;
     temp_v0 = func_80044B10(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);
 
@@ -529,8 +529,8 @@ static void loadBattlePrg()
 
     func_80044B80(temp_v0);
 
-    cdFile.lba = 0x567; // INITBTL.PRG
-    cdFile.size = 0x2000;
+    cdFile.lba = VS_INITBTL_PRG_LBA;
+    cdFile.size = VS_INITBTL_PRG_SIZE;
     temp_v0 = func_80044B10(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[1]);
 
@@ -547,8 +547,8 @@ static void loadTitlePrg()
     CdFile cdFile;
     vs_main_cdQueue_t* temp_v0;
 
-    cdFile.lba = 0x3E800; // TITLE.PRG
-    cdFile.size = 0x87800;
+    cdFile.lba = VS_TITLE_PRG_LBA;
+    cdFile.size = VS_TITLE_PRG_SIZE;
 
     temp_v0 = func_80044B10(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);
@@ -566,8 +566,8 @@ static void loadEndingPrg()
     CdFile cdFile;
     vs_main_cdQueue_t* temp_v0;
 
-    cdFile.lba = 0x41AC8; // ENDING.PRG
-    cdFile.size = 0x74000;
+    cdFile.lba = VS_ENDING_PRG_LBA;
+    cdFile.size = VS_ENDING_PRG_SIZE;
 
     temp_v0 = func_80044B10(&cdFile);
     func_80044BF4(temp_v0, overlaySlots[0]);

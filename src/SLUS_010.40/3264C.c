@@ -93,7 +93,8 @@ typedef struct {
     unsigned short unk2;
     unsigned char unk4;
     unsigned char unk5;
-    unsigned char unk6[8];
+    unsigned char unk6[5];
+    signed char unkB[3];
     unsigned char unkE[256][7];
     unsigned short unk70E[254];
 } D_80055D58_t2;
@@ -3890,6 +3891,7 @@ void func_800481C0()
     }
 }
 
+// https://decomp.me/scratch/e8cod
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/3264C", func_800483FC);
 
 static void func_80048A3C(int arg0) { D_80055D58.unk0[arg0].unk6[0] = 0; }

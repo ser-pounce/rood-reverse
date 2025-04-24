@@ -1276,10 +1276,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BA24);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BAB8);
 
-void func_8001BB00(func_8001CD08_t* arg0)
-{
-    arg0->unk4[111] = (char)*arg0->unk0++;
-}
+void func_8001BB00(func_8001CD08_t* arg0) { arg0->unk4[111] = (char)*arg0->unk0++; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB24);
 
@@ -1549,8 +1546,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", spuTransferCallback);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
-void func_8001D438(
-    u_int arg0, u_int arg1, u_int arg2, void (*arg3)())
+void func_8001D438(u_int arg0, u_int arg1, u_int arg2, void (*arg3)())
 {
     u_int var_s1;
     u_int var_s4;

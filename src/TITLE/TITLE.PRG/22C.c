@@ -1809,8 +1809,8 @@ void func_8007183C(int w, int h, int screen, int r, int g, int b)
     DrawSync(0);
     FntLoad(960, 0);
     SetDumpFnt(FntOpen(40, 16, 512, 256, 0, 512));
-    PutDispEnv(&vs_main_dispEnv[frameBuf]);
-    PutDrawEnv(&vs_main_drawEnv[frameBuf]);
+    PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
 }
 
 int drawPrims(u_long* ot)
@@ -1818,11 +1818,11 @@ int drawPrims(u_long* ot)
     int dummy[2] __attribute__((unused));
     int temp_s1;
 
-    frameBuf = frameBuf == 0;
+    vs_main_frameBuf = vs_main_frameBuf == 0;
     DrawSync(0);
     temp_s1 = func_8004261C(0);
-    PutDispEnv(frameBuf + vs_main_dispEnv);
-    PutDrawEnv(frameBuf + vs_main_drawEnv);
+    PutDispEnv(vs_main_frameBuf + vs_main_dispEnv);
+    PutDrawEnv(vs_main_frameBuf + vs_main_drawEnv);
     DrawOTag(ot);
     return temp_s1;
 }

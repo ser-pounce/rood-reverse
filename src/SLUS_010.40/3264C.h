@@ -16,7 +16,7 @@ typedef struct {
     void* vram;
 } vs_main_CdQueueSlot;
 
-extern int frameBuf;
+extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;

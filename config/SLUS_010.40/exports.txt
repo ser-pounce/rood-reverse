@@ -270,4 +270,4 @@ memcpy_impl = 0x800490B0;
 bzero_impl = 0x80049110;
 vs_main_drawEnv = 0x8005E0D0;
 vs_main_dispEnv = 0x8005E188;
-frameBuf = 0x8005E210;
+vs_main_frameBuf = 0x8005E210;

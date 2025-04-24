@@ -203,14 +203,13 @@ void* debug_stack_p = (void*)0x200000;
 u_int debug_stack_sz = 0x4000;
 u_char buildTimestamp[] = "Mar 28 00:09\0\0\0";
 
-EMBED_RGBA16("build/assets/SLUS_010.40/nowLoading.rgba16.bin", nowLoading)
+EMBED_RGBA16("build/assets/SLUS_010.40/vs_main_nowLoading.rgba16.bin", vs_main_nowLoading)
 
-static u_char D_8004A504[]
-    = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06, 0x00, 0x04, 0x01,
-          0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
+static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06,
+    0x00, 0x04, 0x01, 0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
 
-static u_char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static u_char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 static int soundLBAs[] = {
     VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA, VS_WAVE0003_DAT_LBA,
@@ -452,16 +451,16 @@ static int seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00092_DAT_SIZE, VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE,
     VS_SEP00095_DAT_SIZE, VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE,
     VS_SEP00098_DAT_SIZE, VS_SEP00099_DAT_SIZE };
-static u_char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0,
-    69, 69, 0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76,
-    86, 87, 80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11,
-    11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18,
-    18, 19, 19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24,
-    25, 25, 25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98,
-    95, 96, 97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0,
-    0, 78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63,
-    63, 63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static u_char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69,
+    0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86, 87,
+    80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11, 11,
+    12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19,
+    19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 25, 25,
+    25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98, 95, 96,
+    97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0, 0, 78,
+    89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63, 63,
+    52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0 };
 extern char D_8004B278[63][16];
 extern char D_8004B668[63][8];
 extern char D_8004B860[63][4];
@@ -605,32 +604,32 @@ static void vs_main_displayLoadingScreen()
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
     VSync(2);
-    setRECT(&rect, (320 - IMG_W(nowLoading_header)) / 2,
-        (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
-        IMG_H(nowLoading_header));
-    LoadImage(&rect, (u_long*)&nowLoading_header + 1);
-    setRECT(&rect, ((320 - IMG_W(nowLoading_header)) / 2) + 320,
-        (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
-        IMG_H(nowLoading_header));
-    LoadImage(&rect, (u_long*)&nowLoading_header + 1);
+    setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2,
+        (224 - IMG_H(vs_main_nowLoading_header)) / 2, IMG_W(vs_main_nowLoading_header),
+        IMG_H(vs_main_nowLoading_header));
+    LoadImage(&rect, (u_long*)&vs_main_nowLoading_header + 1);
+    setRECT(&rect, ((320 - IMG_W(vs_main_nowLoading_header)) / 2) + 320,
+        (224 - IMG_H(vs_main_nowLoading_header)) / 2, IMG_W(vs_main_nowLoading_header),
+        IMG_H(vs_main_nowLoading_header));
+    LoadImage(&rect, (u_long*)&vs_main_nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
 }
 
-static void bufferLoadingScreen()
+static void vs_main_bufferLoadingScreen()
 {
     RECT rect;
 
-    if (frameBuf != 0) {
-        setRECT(&rect, (320 - IMG_W(nowLoading_header)) / 2,
-            (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
-            IMG_H(nowLoading_header));
+    if (vs_main_frameBuf != 0) {
+        setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2,
+            (224 - IMG_H(vs_main_nowLoading_header)) / 2,
+            IMG_W(vs_main_nowLoading_header), IMG_H(vs_main_nowLoading_header));
     } else {
-        setRECT(&rect, (320 - IMG_W(nowLoading_header)) / 2 + 320,
-            (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
-            IMG_H(nowLoading_header));
+        setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2 + 320,
+            (224 - IMG_H(vs_main_nowLoading_header)) / 2,
+            IMG_W(vs_main_nowLoading_header), IMG_H(vs_main_nowLoading_header));
     }
-    LoadImage(&rect, nowLoading_data);
+    LoadImage(&rect, vs_main_nowLoading_data);
     DrawSync(0);
 }
 
@@ -1084,10 +1083,7 @@ static void padSetActData(int port, int pos, int val)
     }
 }
 
-static u_char padGetActData(int port, int pos)
-{
-    return portInfo[port].actData[pos];
-}
+static u_char padGetActData(int port, int pos) { return portInfo[port].actData[pos]; }
 
 static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 {
@@ -1835,8 +1831,7 @@ static void func_800443CC()
                 return;
             }
             if (D_80055D10.unk2C == 1) {
-                memcpy_impl(
-                    ((u_char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
+                memcpy_impl(((u_char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
                     D_80050110 + (D_80055D10.unk40 * 128), 2048);
 
                 ++D_80055D10.unk40;
@@ -2708,8 +2703,7 @@ static int func_80046194()
     return 1;
 }
 
-static void func_800461CC(
-    int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+static void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
 {
     int var_s0;
     void* temp_s1;
@@ -4049,8 +4043,8 @@ void func_80048A64(u_short* arg0, u_int arg1, int arg2, u_int arg3)
     }
 }
 
-void func_80048B8C(int arg0, u_short* arg1, int arg2, short arg3, short arg4,
-    short arg5, int arg6)
+void func_80048B8C(
+    int arg0, u_short* arg1, int arg2, short arg3, short arg4, short arg5, int arg6)
 {
     int i;
     short r;
@@ -4144,8 +4138,8 @@ void func_80048B8C(int arg0, u_short* arg1, int arg2, short arg3, short arg4,
     D_80055D58.unk0[0].unk0 = 1;
 }
 
-void func_80048E68(u_short* arg0, int arg1, u_short arg2,
-    u_short arg3, u_short arg4, int arg5)
+void func_80048E68(
+    u_short* arg0, int arg1, u_short arg2, u_short arg3, u_short arg4, int arg5)
 {
     func_80048B8C(8, arg0, arg1, arg2, arg3, arg4, arg5);
 }

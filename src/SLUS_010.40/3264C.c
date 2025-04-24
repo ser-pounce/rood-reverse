@@ -463,10 +463,10 @@ static unsigned char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 6
     0, 78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63,
     63, 63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-extern signed char D_8004B278[][16];
-extern signed char D_8004B668[][8];
-extern signed char D_8004B860[][4];
-extern signed char D_8004B95C[][2];
+extern signed char D_8004B278[63][16];
+extern signed char D_8004B668[63][8];
+extern signed char D_8004B860[63][4];
+extern signed char D_8004B95C[63][2];
 extern unsigned int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];

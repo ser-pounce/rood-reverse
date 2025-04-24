@@ -262,5 +262,6 @@ segments:
       - [0x39938, .data, 3264C]
       - {start: 0x39950, type: rgba16, name: nowLoading, linker_entry: false}
       - [0x3AD04, .data, 3264C]
-      - [0x3BA78, data]
+      - [0x3BA78, data, 3264C]
+      - [0x40788, bss, 3264C]
   - [0x52800]

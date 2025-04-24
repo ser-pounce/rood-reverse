@@ -39,7 +39,7 @@
     EMBED_BETWEEN(path, symbol##_header, 0, 4)                                           \
     EMBED_FROM(path, symbol##_data, 4)                                                   \
     extern ImgHeader symbol##_header;                                                    \
-    extern unsigned long symbol##_data[];
+    extern u_long symbol##_data[];
 
 #else
 #define INCLUDE_ASM(FOLDER, NAME) void dummy()
@@ -47,7 +47,7 @@
 #define BIOS_STUB(name, table, id)
 #define EMBED_RGBA16(path, symbol)                                                       \
     extern ImgHeader symbol##_header;                                                    \
-    extern unsigned long symbol##_data[];
+    extern u_long symbol##_data[];
 #define __attribute__(x)
 #define __asm__(...)
 #endif // PERMUTER

@@ -1,18 +1,18 @@
 #include "common.h"
 
-extern unsigned char D_80075CC4[];
+extern u_char D_80075CC4[];
 
-void DecDCTvlcBuild(unsigned short* arg0)
+void DecDCTvlcBuild(u_short* arg0)
 {
     int i;
     int j;
     int var_a1;
-    unsigned char* var_a2;
-    unsigned char* var_a3;
+    u_char* var_a2;
+    u_char* var_a3;
 
     i = 0;
     var_a3 = D_80075CC4;
-    var_a2 = (unsigned char*)arg0;
+    var_a2 = (u_char*)arg0;
     do {
         int var_v0 = *var_a3;
         var_a3 += 1;

@@ -6,23 +6,23 @@
 #include <libspu.h>
 #include <libcd.h>
 
-void func_8001286C(unsigned int, int);
+void func_8001286C(u_int, int);
 void func_800135D8(void*, int, int, int);
 int func_80013468(int*);
 void spuWriteComplete();
-void writeSpu(unsigned char*, unsigned int);
+void writeSpu(u_char*, u_int);
 void vs_sound_WaitTransferAvailable();
 int func_80013588(void*, int);
 void func_8001369C();
 static void vs_sound_DoShutdown();
 void func_80013938();
-void func_80013AE8(unsigned int);
+void func_80013AE8(u_int);
 void func_80014FBC(int*, int);
 int func_8001503C(int*, int, int);
-unsigned int func_80018C30(int);
+u_int func_80018C30(int);
 long func_80019A58();
 int func_8001CDD0();
-void func_8001CEA8(unsigned int*, int, int);
+void func_8001CEA8(u_int*, int, int);
 void func_8001D3D4();
 
 extern SpuTransferCallbackProc spuTransferCallback;
@@ -38,20 +38,20 @@ typedef struct {
     int unk4C[5];
     short unk60;
     short unk62[6];
-    unsigned short unk6E[4];
-    unsigned short unk76[3];
-    unsigned short unk7C;
+    u_short unk6E[4];
+    u_short unk76[3];
+    u_short unk7C;
     int unk7E[5];
-    unsigned short unk94;
-    unsigned short unk96[58];
+    u_short unk94;
+    u_short unk96[58];
     short unk10A;
 } D_80036628_t;
 
 typedef struct {
-    unsigned int unk0;
-    unsigned int unk4;
-    unsigned int unk8;
-    unsigned int unkC;
+    u_int unk0;
+    u_int unk4;
+    u_int unk8;
+    u_int unkC;
 } D_800378C0_t;
 
 typedef struct {
@@ -73,18 +73,18 @@ typedef struct {
     int unk8;
     int unkC;
     int unk10;
-    unsigned int unk14;
+    u_int unk14;
     int unk18;
-    unsigned int unk1C;
+    u_int unk1C;
 } func_80012C14_t;
 
 typedef struct {
-    unsigned char* unk0;
+    u_char* unk0;
     short unk4[104];
 } func_8001CD08_t;
 
 int soundEvent = 0;
-extern unsigned char D_8002F560[0x40];
+extern u_char D_8002F560[0x40];
 extern int D_80033690;
 extern short D_800358FE;
 extern D_80035910_t D_80035910;
@@ -96,11 +96,11 @@ extern D_80036770_t D_80036770;
 extern short D_80036780;
 extern short D_80036782;
 extern int D_80037788;
-extern unsigned char spuMemInfo;
+extern u_char spuMemInfo;
 extern int D_800377E0[3];
 extern int* D_800377EC;
 extern volatile int isSpuTransfer;
-extern unsigned short (*D_800377F4)[];
+extern u_short (*D_800377F4)[];
 extern int* D_800377F8;
 extern D_80036628_t* D_80037820;
 extern int D_80037844;
@@ -109,7 +109,7 @@ extern D_800378C0_t D_800378C0;
 extern short D_800378E2;
 extern int D_80039AF8[];
 extern int D_80039AFC;
-extern unsigned int D_80039B08[];
+extern u_int D_80039B08[];
 extern int D_80039B14;
 extern int D_80039BCC;
 extern int D_80039AEC;
@@ -136,7 +136,7 @@ int func_80011DEC(int* arg0)
     if (v1 == 0) {
         D_800377EC = arg0;
         arg0 += 0x180;
-        D_800377F4 = (unsigned short(*)[])arg0;
+        D_800377F4 = (u_short(*)[])arg0;
         arg0 += 0xC0;
         D_800377F8 = arg0;
     }
@@ -165,14 +165,14 @@ int func_80011E40()
     return var_v1;
 }
 
-int func_80011EBC(unsigned int arg0)
+int func_80011EBC(u_int arg0)
 {
     int var_a1;
     D_80036628_t* var_v1;
 
     var_v1 = D_80037820;
     var_a1 = 0;
-    if ((var_v1->unk6E[0] == (unsigned int)arg0)
+    if ((var_v1->unk6E[0] == (u_int)arg0)
         || ((var_v1 = D_80036628, (var_v1 != 0)) && (var_v1->unk6E[0] == arg0))) {
         var_a1 = var_v1->unk62[0];
     }
@@ -181,7 +181,7 @@ int func_80011EBC(unsigned int arg0)
 
 int func_80011F08()
 {
-    return (unsigned short)D_80036770.unk0 | (unsigned short)D_80036770.unk4 << 0x10;
+    return (u_short)D_80036770.unk0 | (u_short)D_80036770.unk4 << 0x10;
 }
 
 short func_80011F24(int arg0)
@@ -212,13 +212,13 @@ int func_80011F90()
     return new_var | (D_80037820->unk76[0] + 1);
 }
 
-unsigned int func_80011FB4(unsigned int arg0)
+u_int func_80011FB4(u_int arg0)
 {
     D_800378C0.unk0 = arg0;
     return func_80018C30(16);
 }
 
-void func_80011FDC(unsigned int arg0)
+void func_80011FDC(u_int arg0)
 {
     D_800378C0.unk0 = arg0;
     func_80018C30(17);
@@ -232,9 +232,9 @@ int func_80012024()
     return 0;
 }
 
-unsigned int func_80012034(unsigned int arg0, int arg1)
+u_int func_80012034(u_int arg0, int arg1)
 {
-    unsigned int temp_v0;
+    u_int temp_v0;
 
     D_800378C0.unk0 = arg0;
     temp_v0 = func_80018C30(25);
@@ -242,7 +242,7 @@ unsigned int func_80012034(unsigned int arg0, int arg1)
     return temp_v0;
 }
 
-unsigned int func_80012080(unsigned int arg0, unsigned int arg1, int arg2)
+u_int func_80012080(u_int arg0, u_int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
@@ -250,20 +250,20 @@ unsigned int func_80012080(unsigned int arg0, unsigned int arg1, int arg2)
     return func_80018C30(26);
 }
 
-void func_800120B8(unsigned int arg0, unsigned int arg1)
+void func_800120B8(u_int arg0, u_int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
     func_80018C30(18);
 }
 
-unsigned int func_800120E8(unsigned int arg0)
+u_int func_800120E8(u_int arg0)
 {
     D_800378C0.unk0 = arg0;
     return func_80018C30(20);
 }
 
-int func_80012110(unsigned int arg0, unsigned int arg1)
+int func_80012110(u_int arg0, u_int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
@@ -275,7 +275,7 @@ void func_8001215C() { func_80018C30(23); }
 
 int func_8001217C(int arg0, int arg1, int arg2, int arg3)
 {
-    unsigned int i = arg0 & 0x3FF;
+    u_int i = arg0 & 0x3FF;
     int ret = D_800377EC[i];
 
     if (ret != -1) {
@@ -345,13 +345,13 @@ int func_80012358(int arg0)
     return 0;
 }
 
-unsigned int func_800123C8(int arg0)
+u_int func_800123C8(int arg0)
 {
-    unsigned int var_a1;
+    u_int var_a1;
 
     var_a1 = 0;
     if (arg0 < 0) {
-        var_a1 = ((unsigned char*)arg0)[9] >> 7;
+        var_a1 = ((u_char*)arg0)[9] >> 7;
     } else if ((*D_800377F4)[arg0] & 0x8000) {
         var_a1 = 1;
     }
@@ -367,19 +367,19 @@ void func_8001240C(int arg0)
     }
 }
 
-void func_80012440(unsigned int arg0)
+void func_80012440(u_int arg0)
 {
     D_800378C0.unk0 = arg0;
     func_80018C30(144);
 }
 
-void func_80012468(unsigned int arg0)
+void func_80012468(u_int arg0)
 {
     D_800378C0.unk0 = arg0;
     func_80018C30(146);
 }
 
-void func_80012490(unsigned int arg0)
+void func_80012490(u_int arg0)
 {
     switch (arg0) {
     case 1:
@@ -397,7 +397,7 @@ void func_80012490(unsigned int arg0)
     }
 }
 
-void func_800124FC(unsigned int arg0)
+void func_800124FC(u_int arg0)
 {
     switch (arg0) {
     case 1:
@@ -431,14 +431,14 @@ void func_800125A8(int arg0)
     func_80018C30(168);
 }
 
-void func_800125D4(unsigned int arg0, int arg1)
+void func_800125D4(u_int arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0x7F;
     func_80018C30(169);
 }
 
-void func_80012608(unsigned int arg0, int arg1, int arg2)
+void func_80012608(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
@@ -461,14 +461,14 @@ void func_80012694(int arg0)
     func_80018C30(170);
 }
 
-void func_800126C0(unsigned int arg0, int arg1)
+void func_800126C0(u_int arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     func_80018C30(171);
 }
 
-void func_800126F4(unsigned int arg0, int arg1, int arg2)
+void func_800126F4(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
@@ -491,14 +491,14 @@ void func_80012780(int arg0)
     func_80018C30(172);
 }
 
-void func_800127AC(unsigned int arg0, int arg1)
+void func_800127AC(u_int arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     func_80018C30(173);
 }
 
-void func_800127E0(unsigned int arg0, int arg1, int arg2)
+void func_800127E0(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
@@ -515,14 +515,14 @@ void func_80012824(int arg0, int arg1, int arg2, int arg3)
     func_80018C30(165);
 }
 
-void func_8001286C(unsigned int arg0, int arg1)
+void func_8001286C(u_int arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0x7F;
     func_80018C30(192);
 }
 
-void func_800128A0(unsigned int arg0, int arg1, int arg2)
+void func_800128A0(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
@@ -530,7 +530,7 @@ void func_800128A0(unsigned int arg0, int arg1, int arg2)
     func_80018C30(193);
 }
 
-void func_800128D8(unsigned int arg0, unsigned int arg1, int arg2, int arg3)
+void func_800128D8(u_int arg0, u_int arg1, int arg2, int arg3)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
@@ -552,7 +552,7 @@ void func_80012940(int arg0, int arg1)
     func_80018C30(201);
 }
 
-void func_80012970(unsigned int arg0, unsigned int arg1, unsigned int arg2)
+void func_80012970(u_int arg0, u_int arg1, u_int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
@@ -573,7 +573,7 @@ void func_800129D0(int arg0, int arg1)
     func_80018C30(209);
 }
 
-void func_80012A04(unsigned int arg0, int arg1, int arg2)
+void func_80012A04(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
@@ -594,7 +594,7 @@ int func_80012A6C(int arg0, int arg1)
     return func_80018C30(213);
 }
 
-void func_80012AA0(unsigned int arg0, int arg1, int arg2)
+void func_80012AA0(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
@@ -608,14 +608,14 @@ void func_80012ADC(int arg0)
     func_80018C30(216);
 }
 
-void func_80012B08(unsigned int arg0, int arg1)
+void func_80012B08(u_int arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     func_80018C30(217);
 }
 
-void func_80012B3C(unsigned int arg0, int arg1, int arg2)
+void func_80012B3C(u_int arg0, int arg1, int arg2)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
@@ -676,7 +676,7 @@ int func_80012C14(func_80012C14_t* arg0, int* arg1, int* arg2)
 
 int func_80012D9C(int* arg0, int* arg1, int* arg2, int arg3)
 {
-    unsigned int i;
+    u_int i;
 
     for (i = 0; i < 3; ++i) {
         if (D_800377E0[i] == arg0[1]) {
@@ -751,7 +751,7 @@ int func_800131DC(void* arg0, int arg1, int arg2)
     return 0;
 }
 
-int func_80013230(unsigned int arg0)
+int func_80013230(u_int arg0)
 {
     if (D_80039AFC & 2) {
         cdlAtv.val0 = cdlAtv.val2 = cdlAtv.val1 = cdlAtv.val3 = (arg0 * 0xB570) >> 0x11;
@@ -793,14 +793,14 @@ void spuSetTransferCallback()
     SpuSetTransferCallback(spuWriteComplete);
 }
 
-void writeSpu(unsigned char* data, unsigned int len)
+void writeSpu(u_char* data, u_int len)
 {
     isSpuTransfer = 1;
     SpuSetTransferCallback(spuWriteComplete);
     SpuWrite(data, len);
 }
 
-void readSpu(unsigned char* data, unsigned int len)
+void readSpu(u_char* data, u_int len)
 {
     spuSetTransferCallback();
     SpuRead(data, len);
@@ -863,31 +863,31 @@ void vs_sound_DoShutdown()
     SpuQuit();
 }
 
-void func_80013ACC(unsigned int arg0)
+void func_80013ACC(u_int arg0)
 {
     *(short*)getScratchAddr(0x762) = arg0;
     *((short*)getScratchAddr(0x762) + 1) = arg0 >> 16;
 }
 
-void func_80013AE8(unsigned int arg0)
+void func_80013AE8(u_int arg0)
 {
     *(short*)getScratchAddr(0x763) = arg0;
     *((short*)getScratchAddr(0x763) + 1) = arg0 >> 16;
 }
 
-void func_80013B04(unsigned int arg0)
+void func_80013B04(u_int arg0)
 {
     *(short*)getScratchAddr(0x766) = arg0;
     *((short*)getScratchAddr(0x766) + 1) = (arg0 >> 0x10);
 }
 
-void func_80013B20(unsigned int arg0)
+void func_80013B20(u_int arg0)
 {
     *(short*)getScratchAddr(0x765) = arg0;
     *((short*)getScratchAddr(0x765) + 1) = (arg0 >> 0x10);
 }
 
-void func_80013B3C(unsigned int arg0)
+void func_80013B3C(u_int arg0)
 {
     *(short*)getScratchAddr(0x764) = arg0;
     *((short*)getScratchAddr(0x764) + 1) = (arg0 >> 0x10);
@@ -900,12 +900,12 @@ void func_80013BA0(int arg0, short arg1)
     ((short(*)[8])getScratchAddr(0x701))[arg0][0] = arg1;
 }
 
-void func_80013BB8(int arg0, unsigned int arg1)
+void func_80013BB8(int arg0, u_int arg1)
 {
     ((short(*)[8])((short*)getScratchAddr(0x701) + 1))[arg0][0] = (arg1 >> 3);
 }
 
-void func_80013BD4(int arg0, unsigned int arg1)
+void func_80013BD4(int arg0, u_int arg1)
 {
     ((short(*)[8])((short*)getScratchAddr(0x703) + 1))[arg0][0] = (arg1 >> 3);
 }
@@ -953,7 +953,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001503C);
 void func_80015080(int arg0)
 {
     short(*var_s1)[4];
-    unsigned int i;
+    u_int i;
     int var_s2;
     int* new_var;
     int new_var2;
@@ -1090,7 +1090,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018218);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018270);
 
-void func_8001833C(signed char* arg0)
+void func_8001833C(char* arg0)
 {
     int c = *arg0;
     D_80036782 = 0;
@@ -1101,7 +1101,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018358);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800183C0);
 
-void func_80018434(signed char* arg0)
+void func_80018434(char* arg0)
 {
     int c = *arg0;
     D_80036780 = 0;
@@ -1124,7 +1124,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018744);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187A4);
 
-void func_800187E4(unsigned short* arg0) { D_80037820->unk6E[1] = *arg0; }
+void func_800187E4(u_short* arg0) { D_80037820->unk6E[1] = *arg0; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187F8);
 
@@ -1178,7 +1178,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019A58);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
 
-int func_8001A1F4(int arg0, unsigned int arg1)
+int func_8001A1F4(int arg0, u_int arg1)
 {
     if ((arg1 - 0x80) < 0x20) {
         if (arg0 & 2) {
@@ -1241,9 +1241,9 @@ void func_8001B6E4(D_80036628_t* arg0) { arg0->unk34 |= 0x40; }
 
 void func_8001B6F8(D_80036628_t* arg0) { arg0->unk34 &= ~0x40; }
 
-void func_8001B70C(unsigned char** arg0)
+void func_8001B70C(u_char** arg0)
 {
-    unsigned char* temp_v1;
+    u_char* temp_v1;
 
     do {
         temp_v1 = *arg0;
@@ -1278,7 +1278,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BAB8);
 
 void func_8001BB00(func_8001CD08_t* arg0)
 {
-    arg0->unk4[111] = (signed char)*arg0->unk0++;
+    arg0->unk4[111] = (char)*arg0->unk0++;
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB24);
@@ -1336,7 +1336,7 @@ void func_8001C36C(short arg0[]) { arg0[78] = 1; }
 
 void func_8001C378() { }
 
-void func_8001C380(unsigned short* arg0)
+void func_8001C380(u_short* arg0)
 {
     if (arg0[50] != 0) {
         arg0[78] = 4;
@@ -1363,9 +1363,9 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C5B0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C628);
 
-void func_8001C66C(unsigned char** arg0)
+void func_8001C66C(u_char** arg0)
 {
-    unsigned char* temp_v1;
+    u_char* temp_v1;
 
     do {
         temp_v1 = *arg0;
@@ -1445,7 +1445,7 @@ void func_8001CD2C() { func_8001B138(); }
 
 void IRQCallbackProc()
 {
-    unsigned int temp_a2;
+    u_int temp_a2;
 
     if (D_80039B08[3] != 0) {
         SpuSetIRQ(SPU_OFF);
@@ -1468,11 +1468,11 @@ void func_8001CE60()
     SpuWrite(temp_s0, 0x800);
 }
 
-void func_8001CEA8(unsigned int* arg0, int arg1, int arg2)
+void func_8001CEA8(u_int* arg0, int arg1, int arg2)
 {
     int temp_v0;
-    unsigned int var_a1;
-    unsigned int* new_var;
+    u_int var_a1;
+    u_int* new_var;
 
     temp_v0 = func_8001CDD0();
     if (temp_v0 == -1) {
@@ -1491,7 +1491,7 @@ void func_8001CEA8(unsigned int* arg0, int arg1, int arg2)
     func_80013AE8(D_80039B08[3]);
 
     D_80039B08[2] = arg0[6];
-    D_80039B08[22] = (unsigned short)arg0[7];
+    D_80039B08[22] = (u_short)arg0[7];
     D_80039B08[4] = temp_v0;
     D_80039B08[3] = (1 << temp_v0) | (1 << (temp_v0 + 1));
     func_80013AE8(D_80039B08[3]);
@@ -1511,7 +1511,7 @@ void func_8001CEA8(unsigned int* arg0, int arg1, int arg2)
         SpuSetTransferCallback(func_8001CE60);
         var_a1 = 0x800;
     }
-    SpuWrite((unsigned char*)D_80039B08[0], var_a1);
+    SpuWrite((u_char*)D_80039B08[0], var_a1);
     if (arg2 != 0) {
         D_80037890[8] |= D_80039B08[3];
     } else {
@@ -1550,10 +1550,10 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", spuTransferCallback);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
 void func_8001D438(
-    unsigned int arg0, unsigned int arg1, unsigned int arg2, void (*arg3)())
+    u_int arg0, u_int arg1, u_int arg2, void (*arg3)())
 {
-    unsigned int var_s1;
-    unsigned int var_s4;
+    u_int var_s1;
+    u_int var_s4;
 
     var_s4 = arg1;
     if ((D_80039B08[3] != 0) && (D_80039B08[5] != 0)) {
@@ -1594,7 +1594,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D614);
 void func_8001D644(int* arg0)
 {
     IRQCallbackProc();
-    func_8001CEA8((unsigned int*)arg0[0], arg0[1], arg0[2]);
+    func_8001CEA8((u_int*)arg0[0], arg0[1], arg0[2]);
     *D_80037890 &= ~D_80039B14;
 }
 

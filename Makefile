@@ -33,7 +33,7 @@ MKPSXISO := tools/mkpsxiso/build/Release/mkpsxiso
 BCONFIG = build/config/$*
 
 CPPFLAGS        = -nostdinc -I src/include -I include/psx -I build/src/include $(CPP_DEPS)
-CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -Wno-unused
+CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -fsigned-char -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -EL -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
 LDFLAGS_BIN    := --oformat=binary -e 0x0

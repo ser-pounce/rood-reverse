@@ -15,21 +15,21 @@
 typedef struct HeapHeader {
     struct HeapHeader* prev;
     struct HeapHeader* next;
-    unsigned int blockSz;
+    u_int blockSz;
     int unkC;
 } HeapHeader;
 
 typedef struct {
-    unsigned char unk0;
-    unsigned char exId;
-    unsigned char unk2;
-    unsigned char unk3;
-    unsigned char unk4;
-    unsigned char unk5;
-    unsigned char unk6;
-    unsigned char lock;
-    unsigned char actData[2];
-    unsigned char connected;
+    u_char unk0;
+    u_char exId;
+    u_char unk2;
+    u_char unk3;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char lock;
+    u_char actData[2];
+    u_char connected;
 } PortInfo;
 
 typedef struct {
@@ -41,30 +41,30 @@ typedef struct {
 
 typedef struct {
     int unk0[2];
-    unsigned short unk8;
-    unsigned short unkA;
-    unsigned char* unkC;
+    u_short unk8;
+    u_short unkA;
+    u_char* unkC;
     int unk10[10];
 } D_80050118_t;
 
 typedef struct {
     int offset;
-    unsigned int unk4;
+    u_int unk4;
     int unk8;
     union {
         struct {
             short unkC;
-            unsigned char unkE;
-            unsigned char unkF[1];
+            u_char unkE;
+            u_char unkF[1];
         } unkC_s;
-        unsigned int unkC_i;
+        u_int unkC_i;
     } unkC_u;
-    unsigned char unk10[2];
-    unsigned int unk14[4];
+    u_char unk10[2];
+    u_int unk14[4];
     void* unk24[4];
     vs_main_CdQueueSlot* unk34[4];
-    unsigned int unk44;
-    unsigned char unk48[4];
+    u_int unk44;
+    u_char unk48[4];
     void* unk4C[3];
     vs_main_CdQueueSlot* unk58[3];
     void* unk64[3];
@@ -75,33 +75,33 @@ typedef struct {
 } D_8005E038_t;
 
 typedef struct {
-    unsigned char unk0;
-    unsigned char unk1;
-    unsigned char unk2;
-    unsigned char unk3;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
 } D_8005DC6C_t;
 
 typedef struct {
-    unsigned char unk0[6];
+    u_char unk0[6];
     short unk6[5];
     int unk10[6];
     D_8005DC6C_t unk28;
 } D_8005DC80_t;
 
 typedef struct {
-    unsigned short unk0;
-    unsigned short unk2;
-    unsigned char unk4;
-    unsigned char unk5;
-    unsigned char unk6[5];
-    signed char unkB[3];
-    unsigned char unkE[256][7];
-    unsigned short unk70E[254];
+    u_short unk0;
+    u_short unk2;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6[5];
+    char unkB[3];
+    u_char unkE[256][7];
+    u_short unk70E[254];
 } D_80055D58_t2;
 
 typedef struct {
     D_80055D58_t2 unk0[14];
-    unsigned char unk7E8C[10];
+    u_char unk7E8C[10];
     short unk7E96[3];
     int unk7E9C[5][6];
     D_8005DC6C_t unk7F14[5];
@@ -109,12 +109,12 @@ typedef struct {
 } D_80055D58_t;
 
 typedef struct {
-    unsigned char status;
-    unsigned char unk1;
-    unsigned char unk2;
-    unsigned char unk3;
-    unsigned int unk4;
-    unsigned int unk8;
+    u_char status;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_int unk4;
+    u_int unk8;
     int cdSector;
     int sectorCount;
     void* vram;
@@ -123,12 +123,12 @@ typedef struct {
     int commandId;
     int unk24;
     int unk28;
-    unsigned int unk2C;
-    unsigned int bufIndex;
+    u_int unk2C;
+    u_int bufIndex;
     int unk34;
-    unsigned int unk38;
-    unsigned int unk3C;
-    unsigned int unk40;
+    u_int unk38;
+    u_int unk3C;
+    u_int unk40;
     int unk44;
 } D_80055D10_t;
 
@@ -138,23 +138,23 @@ typedef union {
 } u_1632;
 
 typedef struct {
-    unsigned short unk0;
-    unsigned short unk2;
-    unsigned short unk4[4];
-    unsigned short unkC[8];
+    u_short unk0;
+    u_short unk2;
+    u_short unk4[4];
+    u_short unkC[8];
 } D_80060068_t2;
 
 typedef struct {
     int unk0;
     short unk4[12];
     int unk1C;
-    unsigned char unk20[8];
+    u_char unk20[8];
     D_80060068_t2 unk28[6];
     int unk7C[24];
 } D_80060068_t;
 
 typedef struct D_80061068_t {
-    unsigned short unk0[6];
+    u_short unk0[6];
 } D_80061068_t;
 
 void __main();
@@ -175,13 +175,13 @@ static void func_80044C74();
 static int func_80045440(int arg0);
 static void func_800455F4();
 void func_80045754(int, int, int, int);
-static void func_800461CC(int, unsigned int[], unsigned int, int, int);
+static void func_800461CC(int, u_int[], u_int, int, int);
 static int func_800464FC(int, int, int);
 static void func_80046678(int);
 static void func_80046770(int);
 static int func_800467A0();
 void func_800468FC();
-void func_80046B3C(int, int, unsigned short*);
+void func_80046B3C(int, int, u_short*);
 void func_80047910(int, int, D_8005DC6C_t*);
 static void func_8004908C();
 static void nop9(int, int);
@@ -190,26 +190,26 @@ void func_8006A5C0();
 int titlePrgMain();
 void execBattle();
 static void initRand();
-static void initHeap(HeapHeader* node, unsigned int value);
+static void initHeap(HeapHeader* node, u_int value);
 
 typedef struct {
-    unsigned char wLo;
-    unsigned char wHi;
-    unsigned char hLo;
-    unsigned char hHi;
+    u_char wLo;
+    u_char wHi;
+    u_char hLo;
+    u_char hHi;
 } ImgHeader;
 
 void* debug_stack_p = (void*)0x200000;
-unsigned int debug_stack_sz = 0x4000;
-unsigned char buildTimestamp[] = "Mar 28 00:09\0\0\0";
+u_int debug_stack_sz = 0x4000;
+u_char buildTimestamp[] = "Mar 28 00:09\0\0\0";
 
 EMBED_RGBA16("build/assets/SLUS_010.40/nowLoading.rgba16.bin", nowLoading)
 
-static unsigned char D_8004A504[]
+static u_char D_8004A504[]
     = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06, 0x00, 0x04, 0x01,
           0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
 
-static unsigned char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
+static u_char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 static int soundLBAs[] = {
@@ -452,7 +452,7 @@ static int seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00092_DAT_SIZE, VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE,
     VS_SEP00095_DAT_SIZE, VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE,
     VS_SEP00098_DAT_SIZE, VS_SEP00099_DAT_SIZE };
-static unsigned char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0,
+static u_char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0,
     69, 69, 0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76,
     86, 87, 80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11,
     11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18,
@@ -462,11 +462,11 @@ static unsigned char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 6
     0, 78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63,
     63, 63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-extern signed char D_8004B278[63][16];
-extern signed char D_8004B668[63][8];
-extern signed char D_8004B860[63][4];
-extern signed char D_8004B95C[63][2];
-extern unsigned int D_8004B9DC[];
+extern char D_8004B278[63][16];
+extern char D_8004B668[63][8];
+extern char D_8004B860[63][4];
+extern char D_8004B95C[63][2];
+extern u_int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern HeapHeader* D_80050110;
@@ -486,35 +486,35 @@ extern int D_80050470;
 extern int D_80050478[];
 extern int sp2;
 extern int D_80055C88;
-extern unsigned int D_80055C90[];
+extern u_int D_80055C90[];
 extern D_80055D10_t D_80055D10;
-extern unsigned char dsControlBuf[11];
+extern u_char dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
-extern unsigned char padBuffer[2][34];
-extern unsigned char D_8005DBE8;
+extern u_char padBuffer[2][34];
+extern u_char D_8005DBE8;
 extern int D_8005DBF4[5][6];
 extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
 extern void* D_8005E08C;
 extern int D_8005E0BC;
-extern unsigned int frameDuration;
+extern u_int frameDuration;
 extern int D_8005E214;
 extern int D_8005E240;
 extern int D_8005E248;
 extern int D_8005E24C;
-extern unsigned short loadImageSource[][256];
+extern u_short loadImageSource[][256];
 extern int D_8005FE70;
 extern int D_8005FE74;
 extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern unsigned char D_8005FFB8[];
+extern u_char D_8005FFB8[];
 extern D_80060068_t D_80060068;
-extern unsigned char D_8006002B;
+extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
-extern signed char D_80061074[4];
+extern char D_80061074[4];
 extern MATRIX D_1F800014_mat;
 
 static void vs_main_loadBattlePrg()
@@ -891,16 +891,16 @@ void func_80042CA0() { D_80060068.unk0 = 1; }
 
 void func_80069FC4(int, int);
 void func_8008AB68();
-void func_800A1108(int, unsigned char*);
+void func_800A1108(int, u_char*);
 
 void func_80042CB0()
 {
-    unsigned char sp10[16];
+    u_char sp10[16];
     int var_a1;
     int var_a3;
     int var_s1;
     int new_var;
-    unsigned char var_a0;
+    u_char var_a0;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -924,7 +924,7 @@ void func_80042CB0()
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         var_a0 = 0;
         for (var_a3 = 0; var_a3 < 8; ++var_a3) {
-            unsigned int* p = (D_8004B9DC + (((var_s1 * 8) + var_a3) * 13));
+            u_int* p = (D_8004B9DC + (((var_s1 * 8) + var_a3) * 13));
             var_a0 = (*(int*)&var_a0 * 2) | ((p[3] >> 0xF) & 1);
         }
         D_8005FFB8[var_s1] = var_a0;
@@ -1006,10 +1006,10 @@ static void padResetDefaults(int port, void* arg1 __attribute__((unused)))
     PadSetActAlign(port, actParams);
 }
 
-int func_800430F4(int arg0, unsigned char padBuf[34])
+int func_800430F4(int arg0, u_char padBuf[34])
 {
     PortInfo* temp_s0;
-    unsigned char temp_v0;
+    u_char temp_v0;
     int var_s1;
 
     if (padBuf[0] != 0) {
@@ -1084,12 +1084,12 @@ static void padSetActData(int port, int pos, int val)
     }
 }
 
-static unsigned char padGetActData(int port, int pos)
+static u_char padGetActData(int port, int pos)
 {
     return portInfo[port].actData[pos];
 }
 
-static int func_800433B4(unsigned char* arg0, unsigned int arg1, short arg2)
+static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 {
     int i;
     int ret = 0;
@@ -1227,7 +1227,7 @@ void func_800436B4()
     int i;
     int j;
     int var_v0;
-    unsigned char* temp_t1;
+    u_char* temp_t1;
     int new_var;
 
     D_80050118[0].unk0[1] = 0;
@@ -1322,16 +1322,16 @@ static void func_800438C8(int arg0)
 extern int D_80055C78;
 extern int D_8005DFC0[];
 extern int D_8005DFDC;
-extern unsigned int D_8005E1C0;
+extern u_int D_8005E1C0;
 extern int D_8005E1D0;
-extern unsigned int D_8005E238;
-extern unsigned char D_80060020[];
+extern u_int D_8005E238;
+extern u_char D_80060020[];
 
 int func_80043940()
 {
     int dummy[2];
     int i;
-    unsigned int a3;
+    u_int a3;
 
     D_8005E238 = func_800430F4(0, padBuffer[0]) & 0xFFFF;
     D_8005E238 |= func_800430F4(16, padBuffer[1]) << 16;
@@ -1475,11 +1475,11 @@ void freeHeap(void* block)
     target->prev = var_a1;
 }
 
-static unsigned long* allocHeapR(unsigned int size)
+static u_long* allocHeapR(u_int size)
 {
     HeapHeader* var_a1;
     HeapHeader* var_a2;
-    unsigned int blockSz;
+    u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
     var_a2 = &heapA;
@@ -1495,7 +1495,7 @@ static unsigned long* allocHeapR(unsigned int size)
                 var_a1 += var_a1->blockSz;
                 var_a1->blockSz = blockSz;
             }
-            return (unsigned long*)(var_a1 + 1);
+            return (u_long*)(var_a1 + 1);
         }
         var_a2 = var_a1;
         if (var_a1 == &heapA) {
@@ -1505,9 +1505,9 @@ static unsigned long* allocHeapR(unsigned int size)
     }
 }
 
-unsigned long* allocHeap(unsigned int size)
+u_long* allocHeap(u_int size)
 {
-    unsigned int blockSz;
+    u_int blockSz;
     HeapHeader* var_a1;
     HeapHeader* var_v1;
 
@@ -1529,7 +1529,7 @@ unsigned long* allocHeap(unsigned int size)
                 temp_v1->next->prev = temp_v1;
                 var_a1->blockSz = blockSz;
             }
-            return (unsigned long*)(var_a1 + 1);
+            return (u_long*)(var_a1 + 1);
         }
         var_v1 = var_a1;
         if (var_a1 == &heapA) {
@@ -1539,7 +1539,7 @@ unsigned long* allocHeap(unsigned int size)
     }
 }
 
-static void initHeap(HeapHeader* node, unsigned int value)
+static void initHeap(HeapHeader* node, u_int value)
 {
     heapA.prev = node;
     heapA.next = node;
@@ -1552,8 +1552,8 @@ static void initHeap(HeapHeader* node, unsigned int value)
     heapB.blockSz = 0;
 }
 
-void diskReadCallback(unsigned char intr, unsigned char* result __attribute__((unused)),
-    unsigned long* arg2 __attribute__((unused)))
+void diskReadCallback(u_char intr, u_char* result __attribute__((unused)),
+    u_long* arg2 __attribute__((unused)))
 {
 
     if ((intr == DslDiskError) || (intr == DslNoIntr) || (D_80055D10.status == 4)) {
@@ -1570,7 +1570,7 @@ void diskReadCallback(unsigned char intr, unsigned char* result __attribute__((u
     D_80055D10.status = 2;
 
     if (D_80055D10.unk2C == 0) {
-        DsGetSector((unsigned char*)D_80055D10.vram + D_80055D10.bufIndex * 2048, 512);
+        DsGetSector((u_char*)D_80055D10.vram + D_80055D10.bufIndex * 2048, 512);
     } else {
         DsGetSector(D_80050110 + D_80055D10.unk3C * 128, 512);
         if (++D_80055D10.unk3C >= 16) {
@@ -1603,7 +1603,7 @@ void diskReadCallback(unsigned char intr, unsigned char* result __attribute__((u
     }
 }
 
-static void cdReadCb(unsigned char arg0, unsigned char* arg1 __attribute__((unused)))
+static void cdReadCb(u_char arg0, u_char* arg1 __attribute__((unused)))
 {
     switch (arg0) {
     case 2:
@@ -1620,7 +1620,7 @@ static void cdReadCb(unsigned char arg0, unsigned char* arg1 __attribute__((unus
     D_80055D10.status = 4;
 }
 
-static void cdSeekCb(unsigned char arg0, unsigned char* arg1 __attribute__((unused)))
+static void cdSeekCb(u_char arg0, u_char* arg1 __attribute__((unused)))
 {
     switch (arg0) {
     case 0:
@@ -1639,7 +1639,7 @@ static void cdSeekCb(unsigned char arg0, unsigned char* arg1 __attribute__((unus
     }
 }
 
-static void pcmReadReady(unsigned char intr, unsigned char arg1[])
+static void pcmReadReady(u_char intr, u_char arg1[])
 {
     switch (intr) {
     case DslComplete:
@@ -1670,7 +1670,7 @@ static void func_80044320()
     }
 }
 
-static int func_80044340(int sector, unsigned int bytes, void* vram)
+static int func_80044340(int sector, u_int bytes, void* vram)
 {
     if (D_80055D10.status == 0) {
         D_80055D10.cdSector = sector;
@@ -1698,7 +1698,7 @@ static void func_800443CC()
 {
     DslATV vol;
     int i;
-    unsigned int seconds;
+    u_int seconds;
 
     switch (D_80055D10.status) {
     case 0:
@@ -1720,7 +1720,7 @@ static void func_800443CC()
             func_80013230(0x7F);
             D_80055D10.pcm.file = 1;
             D_80055D10.pcm.chan = 0;
-            DsControl(DslSetfilter, (unsigned char*)&D_80055D10.pcm, NULL);
+            DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
             DsIntToPos(D_80055D10.cdSector, &D_80055D10.cdLoc);
             D_80055D10.commandId
                 = DsPacket(DslModeRT | DslModeSF, &D_80055D10.cdLoc, DslReadS, NULL, -1);
@@ -1773,7 +1773,7 @@ static void func_800443CC()
                 func_80012940(0x3C, D_80055D10.sectorCount);
                 D_80055D10.pcm.file = 1;
                 D_80055D10.pcm.chan = 0;
-                DsControl(DslSetfilter, (unsigned char*)&D_80055D10.pcm, NULL);
+                DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
                 D_80055D10.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(pcmReadReady);
@@ -1836,7 +1836,7 @@ static void func_800443CC()
             }
             if (D_80055D10.unk2C == 1) {
                 memcpy_impl(
-                    ((unsigned char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
+                    ((u_char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
                     D_80050110 + (D_80055D10.unk40 * 128), 2048);
 
                 ++D_80055D10.unk40;
@@ -1956,7 +1956,7 @@ vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* arg0)
 
 void func_80044B80(vs_main_CdQueueSlot* arg0)
 {
-    if ((unsigned short)arg0->unk0[0] - 2u < 2) {
+    if ((u_short)arg0->unk0[0] - 2u < 2) {
         nop9(0xA3, 0);
     }
     arg0->unk0[0] = 0;
@@ -1964,7 +1964,7 @@ void func_80044B80(vs_main_CdQueueSlot* arg0)
 
 void func_80044BC4(vs_main_CdQueueSlot* arg0, void* arg1)
 {
-    unsigned short temp_a1;
+    u_short temp_a1;
 
     arg0->unk0[0] = 3;
     arg0->vram = arg1;
@@ -2034,7 +2034,7 @@ static void func_80044DD4() { func_80012468(); }
 
 static int func_80044DF4(int arg0)
 {
-    unsigned int new_var;
+    u_int new_var;
     int var_a1;
 
     if (arg0 != 0) {
@@ -2063,13 +2063,13 @@ static int func_80044DF4(int arg0)
 
 static int func_80044EC8(int arg0)
 {
-    unsigned int temp_v0;
+    u_int temp_v0;
 
     if (arg0 != 0) {
         if (D_8005E038.unk24[arg0 - 1] != 0) {
             D_8005E038.offset = arg0;
             temp_v0 = func_800120E8(
-                D_8005E038.unkC_u.unkC_i = (unsigned int)D_8005E038.unk24[arg0 - 1]);
+                D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.unk24[arg0 - 1]);
             if (temp_v0 != 0) {
                 D_8005E038.unk14[arg0 - 1] = temp_v0;
                 D_8005E038.unk4 = temp_v0;
@@ -2081,14 +2081,14 @@ static int func_80044EC8(int arg0)
     return 0;
 }
 
-static int func_80044F60(int arg0, int arg1, unsigned int arg2)
+static int func_80044F60(int arg0, int arg1, u_int arg2)
 {
-    unsigned int temp_v0;
+    u_int temp_v0;
 
     if (arg0 != 0) {
         if (D_8005E038.unk24[arg0 - 1] != 0) {
             D_8005E038.offset = arg0;
-            D_8005E038.unkC_u.unkC_i = (unsigned int)D_8005E038.unk24[arg0 - 1];
+            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.unk24[arg0 - 1];
             temp_v0 = func_80012080(D_8005E038.unkC_u.unkC_i, arg2, arg1);
             if (temp_v0 != 0) {
                 D_8005E038.unk14[arg0 - 1] = temp_v0;
@@ -2103,12 +2103,12 @@ static int func_80044F60(int arg0, int arg1, unsigned int arg2)
 
 static int func_80045000(int arg0, int arg1, int arg2)
 {
-    unsigned int temp_v0;
+    u_int temp_v0;
 
     if (arg0 != 0) {
         if (D_8005E038.unk24[arg0 - 1] != 0) {
             D_8005E038.offset = arg0;
-            D_8005E038.unkC_u.unkC_i = (unsigned int)D_8005E038.unk24[arg0 - 1];
+            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.unk24[arg0 - 1];
             func_800128A0(0, arg2, arg1);
             temp_v0 = func_80011FB4(D_8005E038.unkC_u.unkC_i);
             if (temp_v0 != 0) {
@@ -2125,7 +2125,7 @@ static int func_80045000(int arg0, int arg1, int arg2)
 
 static int func_800450D4() { return D_8005E038.offset; }
 
-static unsigned char func_800450E4()
+static u_char func_800450E4()
 {
     if (D_8005E038.offset != 0) {
         return D_8005E038.unkC_u.unkC_s.unkF[D_8005E038.offset];
@@ -2185,7 +2185,7 @@ static int func_80045270(int arg0)
     return 0;
 }
 
-static int func_800452C8(unsigned int arg0)
+static int func_800452C8(u_int arg0)
 {
     if ((arg0 - 1) < 4) {
         if (D_8005E038.unk34[arg0 - 1] != 0) {
@@ -2313,7 +2313,7 @@ static void func_800455F4()
     }
 }
 
-static void func_80045630(unsigned short arg0)
+static void func_80045630(u_short arg0)
 {
     func_8001217C(arg0, D_8005FE70, 0x80, 0x7F);
 
@@ -2346,7 +2346,7 @@ static void func_800456EC(int arg0, int arg1, int arg2, int arg3)
 
 void func_80045754(int arg0, int arg1, int arg2, int arg3)
 {
-    unsigned short var_s0;
+    u_short var_s0;
     void* var_s0_2;
 
     switch (arg0) {
@@ -2375,7 +2375,7 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xFF000:
         var_s0_2 = D_8005E038.unk4C[D_8005E038.unk44 - 1];
-        var_s0_2 = (unsigned char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
+        var_s0_2 = (u_char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE80, arg2, arg3);
             D_8005FE80 *= 2;
@@ -2388,7 +2388,7 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xF00000:
         var_s0_2 = D_8005E08C;
-        var_s0_2 = (unsigned char*)var_s0_2 + (arg1 + ((int*)D_8005E08C))[1];
+        var_s0_2 = (u_char*)var_s0_2 + (arg1 + ((int*)D_8005E08C))[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE84, arg2, arg3);
             D_8005FE84 *= 2;
@@ -2576,7 +2576,7 @@ static void func_80045DC0() { func_80012B98(); }
 int func_80045DE0(int id, int slot)
 {
     vs_main_CdFile cdFile;
-    unsigned int new_var;
+    u_int new_var;
 
     if ((slot - 1u) < 3) {
         if (D_8005E038.unk4C[(slot - 1)] == 0) {
@@ -2617,7 +2617,7 @@ static int func_80045F0C(int arg0)
     return 0;
 }
 
-static int func_80045F64(unsigned int arg0)
+static int func_80045F64(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
         if (D_8005E038.unk58[arg0 - 1] != 0) {
@@ -2673,7 +2673,7 @@ static int func_80046084(int arg0)
     return 0;
 }
 
-static int func_800460C0(unsigned int arg0)
+static int func_800460C0(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
         if (D_8005E038.unk4C[arg0 - 1] != 0) {
@@ -2691,7 +2691,7 @@ static int func_800460C0(unsigned int arg0)
     return 0;
 }
 
-static int func_80046168(unsigned int arg0)
+static int func_80046168(u_int arg0)
 {
     if (D_8005E038.unk14[16] == 0) {
         D_8005E038.unk14[16] = arg0;
@@ -2709,7 +2709,7 @@ static int func_80046194()
 }
 
 static void func_800461CC(
-    int arg0, unsigned int arg1[], unsigned int arg2, int arg3, int arg4)
+    int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
 {
     int var_s0;
     void* temp_s1;
@@ -2717,7 +2717,7 @@ static void func_800461CC(
     temp_s1 = arg1;
 
     if (arg2 < arg1[0]) {
-        temp_s1 = (unsigned char*)arg1 + (arg1 + arg2)[1];
+        temp_s1 = (u_char*)arg1 + (arg1 + arg2)[1];
         var_s0 = 0;
 
         if (arg0 == 0x180) {
@@ -2746,12 +2746,12 @@ static void func_800461CC(
     }
 }
 
-static void func_800462E8(int arg0, unsigned int* arg1, unsigned int arg2)
+static void func_800462E8(int arg0, u_int* arg1, u_int arg2)
 {
     func_800461CC(arg0, arg1, arg2, 0x80, 0x7F);
 }
 
-static void func_80046310(int arg0, unsigned int arg1[], int arg2, int arg3, int arg4)
+static void func_80046310(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
 {
     int temp_t0;
     int var_v0;
@@ -2777,7 +2777,7 @@ static void func_80046310(int arg0, unsigned int arg1[], int arg2, int arg3, int
         arg3 = 0x140;
     }
 
-    var_v0 = arg3 + ((unsigned int)arg3 >> 0x1F);
+    var_v0 = arg3 + ((u_int)arg3 >> 0x1F);
     var_v0 >>= 1;
     arg3 = var_v0 + 0x30;
     temp_t0 = arg4;
@@ -2803,7 +2803,7 @@ static void func_80046310(int arg0, unsigned int arg1[], int arg2, int arg3, int
     }
 }
 
-static void func_800463BC(int arg0, unsigned int* arg1, int arg2, SVECTOR* vec)
+static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
 {
     int z;
     long sxy;
@@ -2819,7 +2819,7 @@ static void func_800463BC(int arg0, unsigned int* arg1, int arg2, SVECTOR* vec)
 static void func_8004644C(int arg0, int* arg1, int arg2)
 {
     int var_a1;
-    unsigned char* var_a0 = (unsigned char*)arg1 + (arg1 + arg2)[1];
+    u_char* var_a0 = (u_char*)arg1 + (arg1 + arg2)[1];
 
     if (arg2 != 0) {
         var_a1 = 0;
@@ -2832,7 +2832,7 @@ static void func_8004644C(int arg0, int* arg1, int arg2)
 
 static void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
 {
-    int a0 = (int)((unsigned char*)arg1 + (arg2 + arg1)[1]);
+    int a0 = (int)((u_char*)arg1 + (arg2 + arg1)[1]);
 
     if (arg2 == 0) {
         func_8001264C(0, arg0, arg4 & 0xFF, arg3);
@@ -2870,7 +2870,7 @@ static int func_8004659C(int arg0)
     return 0;
 }
 
-static int func_80046608(unsigned int arg0)
+static int func_80046608(u_int arg0)
 {
     if (D_8005E038.unk14[22] == 0) {
         D_8005E038.unk14[22] = arg0;
@@ -3050,13 +3050,13 @@ static void func_80046A38()
     D_8005FE84 = 0x100000;
 }
 
-void func_80046B3C(int arg0, int arg1, unsigned short* arg2)
+void func_80046B3C(int arg0, int arg1, u_short* arg2)
 {
     int i;
-    unsigned short g;
-    unsigned short b;
-    unsigned short r;
-    unsigned char(*p)[7];
+    u_short g;
+    u_short b;
+    u_short r;
+    u_char(*p)[7];
 
     for (i = 0; i < 256; ++i) {
         r = arg2[i] & 0x1F;
@@ -3078,7 +3078,7 @@ void func_80046B3C(int arg0, int arg1, unsigned short* arg2)
     }
 
     if (arg0 != 0) {
-        unsigned char* p = D_80055D58.unk0[arg1].unk6;
+        u_char* p = D_80055D58.unk0[arg1].unk6;
         p[0] = 1;
         p[1] = 0;
         p[2] = 0;
@@ -3088,7 +3088,7 @@ void func_80046B3C(int arg0, int arg1, unsigned short* arg2)
     }
 }
 
-static void func_80046C80(int arg0, int arg1, unsigned short* arg2, int arg3)
+static void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
 {
     if (D_80055D58.unk0[0].unk2 != 0) {
         func_80046B3C(arg0, arg1, arg2 + (arg3 << 4));
@@ -3096,7 +3096,7 @@ static void func_80046C80(int arg0, int arg1, unsigned short* arg2, int arg3)
     }
 }
 
-static void func_80046CC8(int arg0, int arg1, unsigned short* arg2, int arg3)
+static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int i;
 
@@ -3133,9 +3133,9 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
     int var_t1;
     int var_a0;
     int tmp;
-    int t4 = (unsigned short)arg4;
-    int t5 = (unsigned short)arg5;
-    unsigned char(*t2)[7] = D_80055D58.unk0[arg2].unkE;
+    int t4 = (u_short)arg4;
+    int t5 = (u_short)arg5;
+    u_char(*t2)[7] = D_80055D58.unk0[arg2].unkE;
 
     for (i = 0; i < 256; ++i) {
         temp_t0 = D_80055D58.unk0[arg2].unk70E[i];
@@ -3263,7 +3263,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
         }
     }
     if (arg1 != 0) {
-        unsigned char* p = D_80055D58.unk0[arg2].unk6;
+        u_char* p = D_80055D58.unk0[arg2].unk6;
         p[0] = 1;
         p[1] = 0;
         p[2] = 0;
@@ -3539,7 +3539,7 @@ static inline int inline_fn2(int arg0)
 
 void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    unsigned char sp10[4];
+    u_char sp10[4];
     D_8005DC80_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -3593,7 +3593,7 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     if (arg1 != 0) {
         func_800A0768(arg1 - 1, sp10);
     } else {
-        func_8008B430(sp10, ((unsigned short)temp_t0->unk6[3] << 16) >> 18);
+        func_8008B430(sp10, ((u_short)temp_t0->unk6[3] << 16) >> 18);
     }
 }
 
@@ -3607,7 +3607,7 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    unsigned char sp10[4];
+    u_char sp10[4];
     short var_t4;
     int var_a1;
     int var_a2;
@@ -3767,7 +3767,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
         if (arg2 != 0) {
             func_800A0768(arg2 - 1, sp10);
         } else {
-            func_8008B430(sp10, ((unsigned short)t1->unk6[3] << 0x10) >> 0x12);
+            func_8008B430(sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
         }
     }
 }
@@ -3839,7 +3839,7 @@ void func_80047FFC()
 
 void func_800481C0()
 {
-    unsigned char sp18[4];
+    u_char sp18[4];
     int i;
     int var_v0;
     D_8005DC80_t* p = D_80055D58.unk7F28;
@@ -3899,11 +3899,11 @@ void func_800483FC()
 {
     int i;
     int j;
-    unsigned int var_t5;
-    unsigned short temp_a3;
-    unsigned short temp_t2;
-    unsigned short var_a1;
-    unsigned char(*e)[7];
+    u_int var_t5;
+    u_short temp_a3;
+    u_short temp_t2;
+    u_short var_a1;
+    u_char(*e)[7];
     int c;
 
     for (i = 0; i < 14; ++i) {
@@ -4020,16 +4020,16 @@ void func_800483FC()
 
 static void func_80048A3C(int arg0) { D_80055D58.unk0[arg0].unk6[0] = 0; }
 
-void func_80048A64(unsigned short* arg0, unsigned int arg1, int arg2, unsigned int arg3)
+void func_80048A64(u_short* arg0, u_int arg1, int arg2, u_int arg3)
 {
     RECT sp10;
-    unsigned short temp_a0_2;
-    unsigned int i;
-    unsigned char* temp_v1_3;
+    u_short temp_a0_2;
+    u_int i;
+    u_char* temp_v1_3;
 
     if (arg1 >= 14) {
         setRECT(&sp10, arg2 + 0x300, arg1 + 0xE0, arg3, 1);
-        LoadImage(&sp10, (unsigned long*)arg0);
+        LoadImage(&sp10, (u_long*)arg0);
         return;
     }
 
@@ -4049,7 +4049,7 @@ void func_80048A64(unsigned short* arg0, unsigned int arg1, int arg2, unsigned i
     }
 }
 
-void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short arg4,
+void func_80048B8C(int arg0, u_short* arg1, int arg2, short arg3, short arg4,
     short arg5, int arg6)
 {
     int i;
@@ -4060,7 +4060,7 @@ void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short a
     short g;
     short b;
     short a;
-    unsigned short t4;
+    u_short t4;
 
     for (i = 0; i < 0x100; ++i) {
         a = arg1[i];
@@ -4068,7 +4068,7 @@ void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short a
             switch (arg0) {
             case 5:
                 t4 = 0x1F;
-                r = arg3 + ((((unsigned char)a) & t4) >> 1);
+                r = arg3 + ((((u_char)a) & t4) >> 1);
                 g = arg4 + ((a & 0x3E0) >> 6);
                 b = arg5 + ((a & 0x7C00) >> 11);
                 break;
@@ -4131,7 +4131,7 @@ void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short a
         if (arg6 != 0) {
             loadImageSource[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
             if (D_80055D58.unk0[arg2].unk6[0] == 0) {
-                unsigned char* t5 = D_80055D58.unk0[arg2].unkE[i];
+                u_char* t5 = D_80055D58.unk0[arg2].unkE[i];
                 t5[0] = r;
                 t5[1] = g;
                 t5[2] = b;
@@ -4144,8 +4144,8 @@ void func_80048B8C(int arg0, unsigned short* arg1, int arg2, short arg3, short a
     D_80055D58.unk0[0].unk0 = 1;
 }
 
-void func_80048E68(unsigned short* arg0, int arg1, unsigned short arg2,
-    unsigned short arg3, unsigned short arg4, int arg5)
+void func_80048E68(u_short* arg0, int arg1, u_short arg2,
+    u_short arg3, u_short arg4, int arg5)
 {
     func_80048B8C(8, arg0, arg1, arg2, arg3, arg4, arg5);
 }
@@ -4154,7 +4154,7 @@ void func_80048EC4()
 {
     int i;
     int var_v0;
-    unsigned int* var_v1;
+    u_int* var_v1;
     int(*p)[6] = D_80055D58.unk7E9C;
 
     var_v1 = func_8008EB24();
@@ -4223,7 +4223,7 @@ static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unus
 
 static void nop11() { }
 
-void memcpy_impl(void* dest, void* src, unsigned int sz)
+void memcpy_impl(void* dest, void* src, u_int sz)
 {
     __asm__("srl $t0, %2, 4;"
             "beqz $t0, 1f;"

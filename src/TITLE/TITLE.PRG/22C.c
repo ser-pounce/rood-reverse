@@ -16,41 +16,41 @@ typedef struct {
     void* unkC[2];
     int unk14;
     RECT unk18[2];
-    unsigned int frameBuf;
+    u_int frameBuf;
     RECT unk2C;
     int unk34;
 } D_800DEDA8_t;
 
 typedef struct {
-    unsigned char unk0;
-    unsigned char unk1;
+    u_char unk0;
+    u_char unk1;
     short unk2;
-    unsigned int unk4;
-    unsigned char unk8;
-    unsigned char unk9;
-    unsigned char unkA;
-    unsigned char unkB;
+    u_int unk4;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
     int unkC;
     int unk10;
-    unsigned int unk14;
-    unsigned short unk18;
-    unsigned short unk1A;
-    unsigned int unk1C;
+    u_int unk14;
+    u_short unk18;
+    u_short unk1A;
+    u_int unk1C;
 } D_80060020_t;
 
 typedef struct {
-    unsigned char unk0;
-    unsigned char unk1;
+    u_char unk0;
+    u_char unk1;
     short unk2;
-    unsigned char unk4;
-    unsigned char unk5;
-    unsigned char unk6;
-    unsigned char unk7;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
     short unk8;
     short unkA;
     int unkC;
     int unk10;
-    unsigned char unk14[32];
+    u_char unk14[32];
 } D_800DEB18_t;
 
 typedef struct {
@@ -58,20 +58,20 @@ typedef struct {
     int unk28;
 } D_8005FEA0_t;
 
-unsigned char* memcardFilenameFromTemplate(int, int);
-int memcardFileNumberFromFilename(unsigned char*);
+u_char* memcardFilenameFromTemplate(int, int);
+int memcardFileNumberFromFilename(u_char*);
 int func_8006913C(int);
 int func_800691D4(int);
 int func_8006947C(int);
 int func_8006A49C(int);
 void func_8006A778(int, int, int, int);
-void func_8006BC78(unsigned char);
+void func_8006BC78(u_char);
 int func_8006CABC(int);
 int func_8006CE6C(int);
 void playMovie(DslLOC*);
 void func_8006F174();
 int func_8006F2A0(D_800DEDA8_t*);
-unsigned short* func_8006F328(D_800DEDA8_t* arg0);
+u_short* func_8006F328(D_800DEDA8_t* arg0);
 void func_8006F54C();
 void func_8006F954();
 void func_800702AC(int, int, int, int);
@@ -80,89 +80,89 @@ void func_800705AC();
 void func_8007093C();
 
 extern RECT D_800DC928;
-extern unsigned char D_800DC930;
+extern u_char D_800DC930;
 
-unsigned char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
+u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 extern int D_8005DFDC;
 extern int D_8005E1D0;
 extern int D_8005E238;
 extern int D_8005E24C;
 extern int D_8005FEA0[][3];
-extern unsigned char D_8005FFB8[];
-extern unsigned char D_8005FFD8[];
+extern u_char D_8005FFB8[];
+extern u_char D_8005FFD8[];
 extern D_80060020_t D_80060020;
-extern unsigned char D_80060040[];
+extern u_char D_80060040[];
 extern int D_80060064;
-extern unsigned char D_80060068[];
-extern unsigned char D_80060168[];
+extern u_char D_80060068[];
+extern u_char D_80060168[];
 extern int D_80061074[4];
-extern unsigned char D_80061078[];
-extern unsigned char D_80061068[];
-extern unsigned char D_80061598[];
+extern u_char D_80061078[];
+extern u_char D_80061068[];
+extern u_char D_80061598[];
 extern D_80060020_t D_800619D8;
-extern unsigned short eventSpecs[];
+extern u_short eventSpecs[];
 extern int D_800728C0[];
-extern unsigned char* pMemcardFilenameTemplate;
+extern u_char* pMemcardFilenameTemplate;
 extern int D_800728E8[];
-extern unsigned int scrambleSeed;
+extern u_int scrambleSeed;
 extern int D_80072914[];
-extern unsigned char D_80072EF8;
+extern u_char D_80072EF8;
 extern int D_80072EFC[];
 extern int D_80072F04[];
-extern unsigned long D_80072F0C[];
-extern unsigned long D_8007472C[];
+extern u_long D_80072F0C[];
+extern u_long D_8007472C[];
 extern int D_80074AAC;
 extern int D_80074AB0;
-extern unsigned char D_80074C24[];
-extern unsigned char D_80075B24[];
-extern unsigned long D_800AF368[];
-extern unsigned long D_800BD368[];
-extern unsigned long D_800C2268[];
-extern unsigned long D_800D1268[];
-extern unsigned char memcardFilename[32];
-extern unsigned char memcardFilenameAlpha[32];
-extern unsigned char D_800DC8C4;
+extern u_char D_80074C24[];
+extern u_char D_80075B24[];
+extern u_long D_800AF368[];
+extern u_long D_800BD368[];
+extern u_long D_800C2268[];
+extern u_long D_800D1268[];
+extern u_char memcardFilename[32];
+extern u_char memcardFilenameAlpha[32];
+extern u_char D_800DC8C4;
 extern vs_main_CdQueueSlot* D_800DC8C8;
-extern unsigned char D_800DC8CC[];
-extern unsigned char D_800DC8CD;
-extern unsigned char D_800DC8E8;
-extern unsigned char D_800DC8E9;
+extern u_char D_800DC8CC[];
+extern u_char D_800DC8CD;
+extern u_char D_800DC8E8;
+extern u_char D_800DC8E9;
 extern int D_800DC8EC;
-extern unsigned char D_800DC8F0;
-extern unsigned char D_800DC8F1;
-extern unsigned char D_800DC8F2;
-extern unsigned char memcardPort;
-extern unsigned int D_800DE948[][6];
+extern u_char D_800DC8F0;
+extern u_char D_800DC8F1;
+extern u_char D_800DC8F2;
+extern u_char memcardPort;
+extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
 extern void* D_800DEAB8[];
-extern unsigned int* D_800DEABC;
-extern unsigned short* D_800DEAC0;
+extern u_int* D_800DEABC;
+extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf[];
-extern unsigned int (*D_800DEB08)[0x20];
-extern unsigned short D_800DEB0E;
+extern u_int (*D_800DEB08)[0x20];
+extern u_short D_800DEB0E;
 extern int D_800DEB14;
 extern D_800DEB18_t D_800DEB18[10];
 extern int D_800DED28[];
 extern int D_800DED68;
-extern unsigned short* D_800DED6C;
-extern unsigned char D_800DED70;
-extern unsigned char D_800DED71;
-extern unsigned char D_800DED72;
-extern unsigned char D_800DED76;
-extern unsigned int menuDisplayedTime;
+extern u_short* D_800DED6C;
+extern u_char D_800DED70;
+extern u_char D_800DED71;
+extern u_char D_800DED72;
+extern u_char D_800DED76;
+extern u_int menuDisplayedTime;
 extern int D_800DED7C;
 extern DslLOC introMovieLoc;
 extern D_800DEDA8_t D_800DEDA8;
 extern int dslMode;
 extern void* D_800DEDE0;
-extern unsigned short D_800DEDE8;
+extern u_short D_800DEDE8;
 extern void* D_800EFDE8;
 extern void* D_800EFDEC;
 extern void* D_800EFDF0;
 extern void* D_800EFDF4;
-extern unsigned char D_800EFDF8[][8];
+extern u_char D_800EFDF8[][8];
 
 void func_80068A2C()
 {
@@ -177,9 +177,9 @@ void func_80068A8C() { func_80045988(0x7E, 5); }
 
 void func_80068AB0() { func_80045988(0x7E, 6); }
 
-unsigned int scramble(int value)
+u_int scramble(int value)
 {
-    unsigned int seed;
+    u_int seed;
 
     seed = scrambleSeed;
     scrambleSeed = seed * 0x19660D;
@@ -207,7 +207,7 @@ void resetMemcardEventsFrom(int id)
     }
 }
 
-void drawImage(int xy, unsigned long* p, int wh)
+void drawImage(int xy, u_long* p, int wh)
 {
     RECT rect;
 
@@ -217,7 +217,7 @@ void drawImage(int xy, unsigned long* p, int wh)
     DrawSync(0);
 }
 
-void readImage(int xy, unsigned long* p, int wh)
+void readImage(int xy, u_long* p, int wh)
 {
     RECT rect;
 
@@ -227,7 +227,7 @@ void readImage(int xy, unsigned long* p, int wh)
     DrawSync(0);
 }
 
-void rMemcpy(unsigned char* arg0, unsigned char* arg1, int arg2)
+void rMemcpy(u_char* arg0, u_char* arg1, int arg2)
 {
     do {
         --arg2;
@@ -235,7 +235,7 @@ void rMemcpy(unsigned char* arg0, unsigned char* arg1, int arg2)
     } while (arg2 != 0);
 }
 
-unsigned char* memcardFilenameFromTemplate(int port, int fileNo)
+u_char* memcardFilenameFromTemplate(int port, int fileNo)
 {
     memset(memcardFilename, 0, ' ');
     strcpy(memcardFilename, pMemcardFilenameTemplate);
@@ -244,7 +244,7 @@ unsigned char* memcardFilenameFromTemplate(int port, int fileNo)
     return memcardFilename;
 }
 
-unsigned char* memcardFilenameFromTemplateAlpha(int port, int fileNo)
+u_char* memcardFilenameFromTemplateAlpha(int port, int fileNo)
 {
     memset(memcardFilenameAlpha, 0, ' ');
     strcpy(memcardFilenameAlpha, pMemcardFilenameTemplate);
@@ -253,11 +253,11 @@ unsigned char* memcardFilenameFromTemplateAlpha(int port, int fileNo)
     return memcardFilenameAlpha;
 }
 
-unsigned int func_80068D54()
+u_int func_80068D54()
 {
-    unsigned int i;
-    unsigned int var_a2;
-    unsigned int var_a3;
+    u_int i;
+    u_int var_a2;
+    u_int var_a3;
 
     var_a2 = 0;
     var_a3 = 0;
@@ -278,7 +278,7 @@ int func_80068DB4()
     for (i = 0; i < 5; ++i) {
         if ((D_800DEB08[i][1] >= 3) && (D_800DEB08[i][1] == D_80060020.unk4)
             && (D_800DEB08[i][0] == D_80060020.unk14)
-            && ((unsigned short)D_800DEB08[i][5] == D_80060020.unk18)
+            && ((u_short)D_800DEB08[i][5] == D_80060020.unk18)
             && (D_800DEB08[i][2] == D_80060020.unk1C)) {
             return i + 1;
         }
@@ -286,10 +286,10 @@ int func_80068DB4()
     return 0;
 }
 
-int memcardFileNumberFromFilename(unsigned char* filename)
+int memcardFileNumberFromFilename(u_char* filename)
 {
     int i;
-    unsigned char* gameCode;
+    u_char* gameCode;
 
     gameCode = &pMemcardFilenameTemplate[5];
 
@@ -301,24 +301,24 @@ int memcardFileNumberFromFilename(unsigned char* filename)
 
     i = filename[15] - 'A';
 
-    if ((unsigned int)i < 5u) {
+    if ((u_int)i < 5u) {
         return -(filename[15] + -'@');
     }
 
     i = filename[15] - '1';
 
-    if ((unsigned int)i < 5u) {
+    if ((u_int)i < 5u) {
         return filename[15] - '0';
     }
 
     return 0;
 }
 
-int verifySaveChecksums(unsigned char blocks[][0x100], int blockCount)
+int verifySaveChecksums(u_char blocks[][0x100], int blockCount)
 {
     int var_a2;
     int i, j;
-    unsigned char* block;
+    u_char* block;
 
     block = blocks[0];
 
@@ -328,7 +328,7 @@ int verifySaveChecksums(unsigned char blocks[][0x100], int blockCount)
             for (j = 0; j < 0x100; ++j) {
                 var_a2 ^= block[j];
             }
-            if (((unsigned char*)blocks + i)[0x1A4] != var_a2) {
+            if (((u_char*)blocks + i)[0x1A4] != var_a2) {
                 return 1;
             }
         }
@@ -344,7 +344,7 @@ int verifySaveChecksums(unsigned char blocks[][0x100], int blockCount)
     return var_a2 != 0;
 }
 
-void descramble(unsigned int seed, unsigned char* buf, int count)
+void descramble(u_int seed, u_char* buf, int count)
 {
     for (; count != 0; --count) {
         seed *= 0x19660D;
@@ -354,7 +354,7 @@ void descramble(unsigned int seed, unsigned char* buf, int count)
 
 int func_80068F94(int id)
 {
-    unsigned char buf[2][0x100];
+    u_char buf[2][0x100];
     int bytesRead;
     int port;
     int file;
@@ -371,7 +371,7 @@ int func_80068F94(int id)
             if (bytesRead == 0x200) {
                 descramble(*((int*)&buf + 96), &buf[1][132], 124);
                 if (verifySaveChecksums(buf, 2) == 0) {
-                    rMemcpy((unsigned char*)D_800DEB08[id - 1], &buf[1][0x80], 0x80);
+                    rMemcpy((u_char*)D_800DEB08[id - 1], &buf[1][0x80], 0x80);
                     return 0;
                 }
             }
@@ -386,7 +386,7 @@ int memcardSaveIdExists(int id)
     int i;
 
     for (i = 0; i < 15; ++i) {
-        unsigned char* filename = memcardFiles[i]->name;
+        u_char* filename = memcardFiles[i]->name;
         if ((filename != 0) && (memcardFileNumberFromFilename(filename) != 0)) {
             if (filename[15] == id) {
                 return 1;
@@ -417,7 +417,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800691D4);
 
 int createSaveFile(int port, int id)
 {
-    unsigned char* fileName;
+    u_char* fileName;
     long file;
 
     fileName = memcardFilenameFromTemplate((port - 1) * 0x10, id);
@@ -435,7 +435,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006947C);
 int func_800696D0(int arg0)
 {
     int blockCount;
-    unsigned char* temp_s1;
+    u_char* temp_s1;
     void* blocks;
     int* temp_s2;
     int* temp_s4;
@@ -470,7 +470,7 @@ int func_800696D0(int arg0)
     rMemcpy(D_80060168, temp_s1 + 0x63C8, 0xF00);
     rMemcpy(&D_800619D8.unk0, temp_s1 + 0x72C8, 0xB0);
     rMemcpy(D_80061068, temp_s1 + 0x7378, 0xC);
-    rMemcpy((unsigned char*)D_8005FEA0, temp_s1 + 0x7384, 0x114);
+    rMemcpy((u_char*)D_8005FEA0, temp_s1 + 0x7384, 0x114);
     D_80060064 = temp_s4[0x626];
     rMemcpy(D_80061078, temp_s1 + 0x749C, 0x520);
     blocks = D_80060040;
@@ -493,13 +493,13 @@ int func_8006A49C(int arg0)
 {
     vs_main_CdFile cdFile;
     int i;
-    unsigned int event;
+    u_int event;
 
     if (arg0 != 0) {
         D_800DEAB8[0] = allocHeap(0x1C000U);
-        D_800DEABC = (unsigned int*)D_800DEAB8[0] + 0x4500;
-        D_800DEAC0 = (unsigned short*)(D_800DEABC + 0x400);
-        D_800DEB08 = (unsigned int(*)[0x20])(D_800DEABC + 0x800);
+        D_800DEABC = (u_int*)D_800DEAB8[0] + 0x4500;
+        D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
+        D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);
         dirEntBuf[0] = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
         cdFile.lba = 0x14C98;
         cdFile.size = 0x1C000;
@@ -513,7 +513,7 @@ int func_8006A49C(int arg0)
     case 0:
         if (D_800DC8C8->unk0[0] == 4) {
             func_80044B80(D_800DC8C8);
-            drawImage(0x01000320, (unsigned long*)D_800DEAB8[0], 0x010000E0);
+            drawImage(0x01000320, (u_long*)D_800DEAB8[0], 0x010000E0);
             D_800DC8C4 = 1;
         }
         return 0;
@@ -590,7 +590,7 @@ void func_8006A81C(int arg0, int arg1)
     func_8006A778(arg0, D_800728C0[arg1], D_800728E8[arg1], 0xC);
 }
 
-void func_8006A860(int arg0, unsigned int arg1, unsigned int arg2)
+void func_8006A860(int arg0, u_int arg1, u_int arg2)
 {
     do {
         func_8006A778(arg0, ((arg1 / arg2) * 6) | 0x37F40000, 0xA0006, 0xC);
@@ -614,13 +614,13 @@ int countDigits(int val)
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A928);
 
-void func_8006ABB8(unsigned int arg0, int arg1)
+void func_8006ABB8(u_int arg0, int arg1)
 {
     int var_s2;
-    unsigned char* new_var __attribute__((unused));
+    u_char* new_var __attribute__((unused));
     int var_s4;
-    unsigned int var_s3;
-    unsigned int var_s5;
+    u_int var_s3;
+    u_int var_s5;
 
     var_s3 = arg0 - 0x30;
     new_var = &D_800DED70;
@@ -662,7 +662,7 @@ void func_8006ACD8(int arg0, int arg1)
     int var_s2;
     int var_s3;
     int var_s5;
-    unsigned int var_s4;
+    u_int var_s4;
 
     var_s3 = arg1;
     var_s5 = 0;
@@ -711,11 +711,11 @@ void func_8006AE10()
     memset(D_800DEB18, 0, 0x208);
 }
 
-D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, unsigned char* arg3)
+D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
 {
     D_800DEB18_t* temp_s3;
     int i;
-    unsigned int var_v1;
+    u_int var_v1;
 
     temp_s3 = &D_800DEB18[arg0];
     memset(temp_s3, 0, 0x34);
@@ -760,7 +760,7 @@ int func_8006AFBC()
     return (i ^ 0xA) == 0;
 }
 
-int func_8006AFF8(unsigned int arg0, int arg1, int arg2, int arg3)
+int func_8006AFF8(u_int arg0, int arg1, int arg2, int arg3)
 {
     if ((arg0 >> 8) == 0xE) {
         return arg1 + (arg0 & 0xFF);
@@ -785,7 +785,7 @@ int func_8006B138(int arg0)
     int temp_v0;
     int temp_v1;
     int var_a0;
-    unsigned int temp_s1;
+    u_int temp_s1;
 
     if (arg0 != 0) {
         D_800DC8CC[0] = 0;
@@ -797,7 +797,7 @@ int func_8006B138(int arg0)
     temp_s0 = (D_800DC8CC[0] >> 1) + 1;
 
     if ((D_800DC8CC[0] & 1) == 0) {
-        D_800DED6C = &D_800DEAC0[((unsigned short*)(&D_800DEAC0[temp_s0]))[21]];
+        D_800DED6C = &D_800DEAC0[((u_short*)(&D_800DEAC0[temp_s0]))[21]];
         func_8006947C(temp_s0);
         ++D_800DC8CC[0];
     } else {
@@ -860,13 +860,13 @@ int func_8006B288(int arg0)
     return 0;
 }
 
-void func_8006B364(unsigned char* arg0, int arg1, int arg2, int arg3)
+void func_8006B364(u_char* arg0, int arg1, int arg2, int arg3)
 {
     int var_a1;
-    unsigned char temp_t0;
+    u_char temp_t0;
     int new_var;
-    unsigned int temp_v1;
-    unsigned int var_a0;
+    u_int temp_v1;
+    u_int var_a0;
 
     new_var = arg1;
     var_a1 = new_var;
@@ -903,11 +903,11 @@ void func_8006B364(unsigned char* arg0, int arg1, int arg2, int arg3)
     }
 }
 
-unsigned int func_8006B490(unsigned int arg0, unsigned int arg1, unsigned int arg2)
+u_int func_8006B490(u_int arg0, u_int arg1, u_int arg2)
 {
     int temp_a3;
-    unsigned int i;
-    unsigned int var_v1;
+    u_int i;
+    u_int var_v1;
 
     var_v1 = 0;
     for (i = 0; i < 3; ++i) {
@@ -919,10 +919,10 @@ unsigned int func_8006B490(unsigned int arg0, unsigned int arg1, unsigned int ar
     return var_v1;
 }
 
-void func_8006B4EC(int arg0, unsigned int arg1)
+void func_8006B4EC(int arg0, u_int arg1)
 {
-    unsigned int a0;
-    unsigned int a1;
+    u_int a0;
+    u_int a1;
 
     if (arg1 < 9) {
         a0 = func_8006B490(0x6B4100, 0x6C8219, arg1);
@@ -966,7 +966,7 @@ int func_8006CE6C(int arg0)
     case 1:
         temp_v0 = func_8006AE70(D_800DC8E8 + 3,
             (((D_800DC8E8 * 0x10) + 0x12) << 0x10) | 0xFF82, 0xC007E,
-            (unsigned char*)&D_800DEAC0[(&D_800DEAC0[D_800DC8E8])[0x24]]);
+            (u_char*)&D_800DEAC0[(&D_800DEAC0[D_800DC8E8])[0x24]]);
         temp_v0->unk0 = 4;
         temp_v0->unk8 = 0;
         ++D_800DC8E8;
@@ -1067,7 +1067,7 @@ int func_8006D140(int port)
 
         if (temp_v0 != 0) {
             if (temp_v0 == 3) {
-                D_800DC8F2 = (unsigned char)temp_v0;
+                D_800DC8F2 = (u_char)temp_v0;
                 D_800DED6C = D_800DEAC0 + 0x274;
             } else {
                 if (temp_v0 == temp_s0) {
@@ -1194,7 +1194,7 @@ int func_8006E738()
 int func_8006E988()
 {
     struct DIRENTRY dir;
-    unsigned char sp38[0x16];
+    u_char sp38[0x16];
     int temp_s0;
     int i;
     int ret = 0;
@@ -1213,7 +1213,7 @@ int func_8006E988()
         } while (temp_s0 == 0);
 
         if (temp_s0 == 1) {
-            rMemcpy((unsigned char*)sp38, (unsigned char*)pMemcardFilenameTemplate, 0x16);
+            rMemcpy((u_char*)sp38, (u_char*)pMemcardFilenameTemplate, 0x16);
 
             sp38[2] = i + '/';
             sp38[20] = '?';
@@ -1268,7 +1268,7 @@ void func_8006F108(DslLOC* arg0, void (*arg1)())
 {
     DecDCTReset(0);
     DecDCToutCallback(arg1);
-    StSetRing((unsigned long*)D_800DEDE0, 0x40);
+    StSetRing((u_long*)D_800DEDE0, 0x40);
     StSetStream(1, 1, -1, 0, 0);
     playMovie(arg0);
 }
@@ -1278,7 +1278,7 @@ void func_8006F174()
     RECT rect;
     short temp_v1;
     int temp_t0;
-    unsigned int temp_lo;
+    u_int temp_lo;
 
     extern int StCdIntrFlag;
     if (StCdIntrFlag != 0) {
@@ -1308,12 +1308,12 @@ void func_8006F174()
 
 int func_8006F2A0(D_800DEDA8_t* arg0)
 {
-    unsigned long* temp_v0;
+    u_long* temp_v0;
     int i;
 
     i = 0x7D0;
 
-    while ((temp_v0 = (unsigned long*)func_8006F328(arg0)) == 0) {
+    while ((temp_v0 = (u_long*)func_8006F328(arg0)) == 0) {
         if (--i == 0) {
             return -1;
         }
@@ -1325,13 +1325,13 @@ int func_8006F2A0(D_800DEDA8_t* arg0)
     return 0;
 }
 
-unsigned short* func_8006F328(D_800DEDA8_t* arg0)
+u_short* func_8006F328(D_800DEDA8_t* arg0)
 {
     RECT rect;
-    unsigned short* sp18;
-    unsigned short* sp1C;
+    u_short* sp18;
+    u_short* sp1C;
     int i;
-    unsigned int temp_v1;
+    u_int temp_v1;
 
     for (i = 0x7D0; StGetNext((u_long**)&sp18, (u_long**)&sp1C) != 0;) {
         if (--i == 0) {
@@ -1379,14 +1379,14 @@ void func_8006F42C(D_800DEDA8_t* arg0, int arg1 __attribute__((unused)))
 
 void playMovie(DslLOC* arg0)
 {
-    unsigned char params[4];
+    u_char params[4];
 
     params[0] = DslModeSpeed;
     params[1] = 0;
     params[2] = 0;
     params[3] = 0;
     do {
-        while (DsControl(DslSetloc, (unsigned char*)arg0, 0) == 0)
+        while (DsControl(DslSetloc, (u_char*)arg0, 0) == 0)
             ;
         while (DsControl(DslSetmode, params, 0) == 0)
             ;
@@ -1446,7 +1446,7 @@ void func_8006F54C()
             var_a3_2 = (0x1F - i) * 4;
         } else if (i >= 0x14C) {
             var_a3_2 = (i - 0x14B) * 4;
-        } else if ((unsigned short)D_8005E238 != 0) {
+        } else if ((u_short)D_8005E238 != 0) {
             i = 0x14B;
         }
         func_8006A778(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
@@ -1511,18 +1511,18 @@ int func_8006FA54()
     DslLOC loc;
     DISPENV disp;
     int var_s2;
-    unsigned int temp_lo;
+    u_int temp_lo;
 
     var_s2 = 0;
 
     while (1) {
-        DecDCTin((unsigned long*)D_800DEDA8.unk0[D_800DEDA8.unk8], 3);
+        DecDCTin((u_long*)D_800DEDA8.unk0[D_800DEDA8.unk8], 3);
         temp_lo = D_800DEDA8.unk2C.w * D_800DEDA8.unk2C.h;
         DecDCTout(
             D_800DEDA8.unkC[D_800DEDA8.unk14], (int)(temp_lo + (temp_lo >> 0x1F)) >> 1);
 
         while (func_8006F2A0(&D_800DEDA8) == -1) {
-            if ((unsigned int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
+            if ((u_int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
                 loc = introMovieLoc;
             }
             playMovie(&loc);
@@ -1554,7 +1554,7 @@ int func_8006FA54()
     return 0;
 }
 
-void func_8006FC34(int arg0, unsigned char arg1)
+void func_8006FC34(int arg0, u_char arg1)
 {
     D_800EFDF8[arg0][0] = 1;
     D_800EFDF8[arg0][1] = 0;
@@ -1585,14 +1585,14 @@ void func_8006FE30()
     VSync(0);
 }
 
-unsigned long* func_8006FEC4(int arg0)
+u_long* func_8006FEC4(int arg0)
 {
     RECT rect;
-    unsigned long* temp_s4;
+    u_long* temp_s4;
     int i;
-    unsigned char(*var_v0)[8];
-    unsigned long* temp_a1;
-    unsigned long* temp_s0;
+    u_char(*var_v0)[8];
+    u_long* temp_a1;
+    u_long* temp_s0;
 
     i = 9;
     var_v0 = D_800EFDF8;
@@ -1714,7 +1714,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800705AC);
 void func_8007093C()
 {
     int i;
-    unsigned int(*temp_s0)[6];
+    u_int(*temp_s0)[6];
 
     func_800703CC();
     for (i = 0; i < 2; ++i) {
@@ -1831,8 +1831,8 @@ void func_80071B14()
 {
     int i;
     int a1;
-    unsigned short* s0;
-    unsigned char* v0;
+    u_short* s0;
+    u_char* v0;
 
     func_8007183C(0x280, 0xF0, 0x200, 0, 0, 0);
     i = 0x43F;
@@ -1865,7 +1865,7 @@ void func_80071B14()
     bzero_impl(D_80061068, 0xC);
     memcpy_impl(D_80060168, D_80074C24, 0xF00);
 
-    s0 = (unsigned short*)D_80061068;
+    s0 = (u_short*)D_80061068;
     D_8005E24C = 2;
     s0[2] = (s0[2] & 0xE0FF) | 0x400;
     s0[3] = ((s0[3] & 0x83FF) | 0x800);

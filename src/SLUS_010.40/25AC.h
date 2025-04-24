@@ -1,28 +1,28 @@
 #pragma once
-
+#include <sys/types.h>
 int vs_sound_Shutdown();
 int func_80011DAC();
 int func_80011DEC(int* arg0);
-int func_80011EBC(unsigned int);
+int func_80011EBC(u_int);
 int func_80011F08();
 int func_80011F90();
-unsigned int func_80011FB4(unsigned int);
-void func_80011FDC(unsigned int);
+u_int func_80011FB4(u_int);
+void func_80011FDC(u_int);
 void func_80012004();
 int func_80012024();
-unsigned int func_80012080(unsigned int, unsigned int, int);
-unsigned int func_800120E8(unsigned int);
+u_int func_80012080(u_int, u_int, int);
+u_int func_800120E8(u_int);
 int func_8001217C(int, int, int, int);
 int func_800121F0(int, int, int, int);
 void func_80012288(int, int);
 int func_80012358(int);
-unsigned int func_800123C8(int);
+u_int func_800123C8(int);
 void func_8001240C(int);
 void func_80012468();
 void func_8001264C(int, int, int, int);
 void func_80012738(int, int, int, int);
 void func_80012824(int, int, int, int);
-void func_800128A0(unsigned int, int, int);
+void func_800128A0(u_int, int, int);
 void func_80012918(int);
 void func_80012940(int, int);
 void func_800129D0(int, int);
@@ -34,7 +34,7 @@ int func_80012C04();
 int func_80012EBC();
 int func_80013188(void*, int);
 int func_800131DC(void*, int, int);
-int func_80013230(unsigned int);
+int func_80013230(u_int);
 void func_800132C4(void*, int, int);
 void func_80013328();
 void func_80013378(int, int);

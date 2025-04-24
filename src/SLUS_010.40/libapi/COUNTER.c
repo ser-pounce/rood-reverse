@@ -2,11 +2,11 @@
 #include <libapi.h>
 
 typedef struct {
-    unsigned short currentVal;
+    u_short currentVal;
     short : 16;
-    unsigned short mode;
+    u_short mode;
     short : 16;
-    unsigned short targetVal;
+    u_short targetVal;
     short : 16;
     int : 32;
 } RootCounter;
@@ -15,10 +15,10 @@ int (*D_80032834)[2] = (int (*)[2])0x1F801070;
 volatile RootCounter (*D_80032838)[4] = (RootCounter(*)[4])0x1F801100;
 long D_8003283C[4] = { 0x10, 0x20, 0x40, 1 };
 
-long SetRCnt(unsigned long counter, unsigned short targetVal, long mode)
+long SetRCnt(u_long counter, u_short targetVal, long mode)
 {
     int i;
-    unsigned short newMode;
+    u_short newMode;
 
     i = counter & 0xFFFF;
     newMode = 0x48;
@@ -51,7 +51,7 @@ long SetRCnt(unsigned long counter, unsigned short targetVal, long mode)
     return 1;
 }
 
-long GetRCnt(unsigned long spec)
+long GetRCnt(u_long spec)
 {
     int i = spec & 0xFFFF;
     if (i >= 3) {
@@ -60,7 +60,7 @@ long GetRCnt(unsigned long spec)
     return (*D_80032838)[i].currentVal;
 }
 
-long StartRCnt(unsigned long spec)
+long StartRCnt(u_long spec)
 {
     int i;
 
@@ -71,7 +71,7 @@ long StartRCnt(unsigned long spec)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/COUNTER", StopRCnt);
 
-long ResetRCnt(unsigned long spec)
+long ResetRCnt(u_long spec)
 {
     int i;
 

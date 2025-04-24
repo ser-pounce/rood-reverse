@@ -14,7 +14,7 @@ typedef struct {
     D_800F19FC_t3 unk398[6];
     unsigned short unk8C0[68];
     int unk948;
-    char unk94C[8];
+    unsigned char unk94C[8];
     unsigned short unk954;
 } D_800F19FC_t2;
 
@@ -25,10 +25,10 @@ typedef struct {
 
 struct D_80061068_t;
 
-void func_8008B430(char*, int);
+void func_8008B430(unsigned char*, int);
 void func_8008EB30(int*);
 unsigned int* func_8008EB24();
-void func_800A0768(int, char*);
+void func_800A0768(int, unsigned char*);
 
 extern unsigned short D_800F18E8;
 extern int D_800F19D0[];

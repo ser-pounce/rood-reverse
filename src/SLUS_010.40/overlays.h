@@ -1,5 +1,5 @@
 #pragma once
-extern void* const overlaySlots[5];
+extern void* const vs_overlay_slots[5];
 
 void getSp(int*);
 void jumpToTitle(int*);

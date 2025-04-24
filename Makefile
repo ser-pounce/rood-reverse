@@ -139,7 +139,8 @@ data/%: | disks/$(disk).bin $(build_deps)
 endif
 
 build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
-	$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
+	$(call builder,Generating $@)
+	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
 	@$(MV) $(disk)_LBA.txt build/config/
 
 build/src/include/lbas.h: build/config/SLUS-01040_LBA.txt

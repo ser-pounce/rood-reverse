@@ -54,7 +54,7 @@ typedef struct {
     union {
         struct {
             short unkC;
-            char unkE;
+            unsigned char unkE;
             unsigned char unkF[1];
         } unkC_s;
         unsigned int unkC_i;
@@ -62,27 +62,27 @@ typedef struct {
     unsigned char unk10[2];
     unsigned int unk14[4];
     void* unk24[4];
-    vs_main_cdQueue_t* unk34[4];
+    vs_main_CdQueueSlot* unk34[4];
     unsigned int unk44;
-    char unk48[4];
+    unsigned char unk48[4];
     void* unk4C[3];
-    vs_main_cdQueue_t* unk58[3];
+    vs_main_CdQueueSlot* unk58[3];
     void* unk64[3];
     int* unk70[3];
     int fileId;
     void* unk80;
-    vs_main_cdQueue_t* unk84;
+    vs_main_CdQueueSlot* unk84;
 } D_8005E038_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    unsigned char unk0;
+    unsigned char unk1;
+    unsigned char unk2;
+    unsigned char unk3;
 } D_8005DC6C_t;
 
 typedef struct {
-    char unk0[6];
+    unsigned char unk0[6];
     short unk6[5];
     int unk10[6];
     D_8005DC6C_t unk28;
@@ -101,7 +101,7 @@ typedef struct {
 
 typedef struct {
     D_80055D58_t2 unk0[14];
-    char unk7E8C[10];
+    unsigned char unk7E8C[10];
     short unk7E96[3];
     int unk7E9C[5][6];
     D_8005DC6C_t unk7F14[5];
@@ -109,10 +109,10 @@ typedef struct {
 } D_80055D58_t;
 
 typedef struct {
-    char status;
+    unsigned char status;
     unsigned char unk1;
-    char unk2;
-    char unk3;
+    unsigned char unk2;
+    unsigned char unk3;
     unsigned int unk4;
     unsigned int unk8;
     int cdSector;
@@ -148,7 +148,7 @@ typedef struct {
     int unk0;
     short unk4[12];
     int unk1C;
-    char unk20[8];
+    unsigned char unk20[8];
     D_80060068_t2 unk28[6];
     int unk7C[24];
 } D_80060068_t;
@@ -158,7 +158,6 @@ typedef struct D_80061068_t {
 } D_80061068_t;
 
 void __main();
-void displayLoadingScreen();
 static void func_80042998();
 static void func_80042A64();
 static void do_wait();
@@ -171,7 +170,7 @@ void func_80042CB0();
 static void func_80043668();
 static void vs_main_initCdQueue();
 static void func_80044A60();
-static void vs_main_populateQueueSlot(vs_main_cdQueue_t*, void*);
+static void vs_main_populateQueueSlot(vs_main_CdQueueSlot*, void*);
 static void func_80044C74();
 static int func_80045440(int arg0);
 static void func_800455F4();
@@ -202,7 +201,7 @@ typedef struct {
 
 void* debug_stack_p = (void*)0x200000;
 unsigned int debug_stack_sz = 0x4000;
-char buildTimestamp[] = "Mar 28 00:09\0\0\0";
+unsigned char buildTimestamp[] = "Mar 28 00:09\0\0\0";
 
 EMBED_RGBA16("build/assets/SLUS_010.40/nowLoading.rgba16.bin", nowLoading)
 
@@ -481,7 +480,7 @@ extern int D_800501CC;
 extern int D_800501D0;
 extern int D_800501D4;
 extern int D_800501D8;
-extern vs_main_cdQueue_t vs_main_cdQueue[32];
+extern vs_main_CdQueueSlot vs_main_cdQueue[32];
 extern u_1632 D_80050460;
 extern int D_80050470;
 extern int D_80050478[];
@@ -493,7 +492,7 @@ extern unsigned char dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
 extern unsigned char padBuffer[2][34];
-extern char D_8005DBE8;
+extern unsigned char D_8005DBE8;
 extern int D_8005DBF4[5][6];
 extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
@@ -511,22 +510,22 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern char D_8005FFB8[];
+extern unsigned char D_8005FFB8[];
 extern D_80060068_t D_80060068;
 extern unsigned char D_8006002B;
 extern D_80061068_t D_80061068;
 extern signed char D_80061074[4];
 extern MATRIX D_1F800014_mat;
 
-static void loadBattlePrg()
+static void vs_main_loadBattlePrg()
 {
-    CdFile cdFile;
-    vs_main_cdQueue_t* slot;
+    vs_main_CdFile cdFile;
+    vs_main_CdQueueSlot* slot;
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(slot, overlaySlots[0]);
+    vs_main_populateQueueSlot(slot, vs_overlay_slots[0]);
 
     while (slot->unk0[0] != 4) {
         func_8004261C(0);
@@ -537,7 +536,7 @@ static void loadBattlePrg()
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(slot, overlaySlots[1]);
+    vs_main_populateQueueSlot(slot, vs_overlay_slots[1]);
 
     while (slot->unk0[0] != 4) {
         func_8004261C(0);
@@ -547,16 +546,16 @@ static void loadBattlePrg()
     do_wait();
 }
 
-static void loadTitlePrg()
+static void vs_main_loadTitlePrg()
 {
-    CdFile cdFile;
-    vs_main_cdQueue_t* temp_v0;
+    vs_main_CdFile cdFile;
+    vs_main_CdQueueSlot* temp_v0;
 
     cdFile.lba = VS_TITLE_PRG_LBA;
     cdFile.size = VS_TITLE_PRG_SIZE;
 
     temp_v0 = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(temp_v0, overlaySlots[0]);
+    vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
         func_8004261C(0);
@@ -566,16 +565,16 @@ static void loadTitlePrg()
     do_wait();
 }
 
-static void loadEndingPrg()
+static void vs_main_loadEndingPrg()
 {
-    CdFile cdFile;
-    vs_main_cdQueue_t* temp_v0;
+    vs_main_CdFile cdFile;
+    vs_main_CdQueueSlot* temp_v0;
 
     cdFile.lba = VS_ENDING_PRG_LBA;
     cdFile.size = VS_ENDING_PRG_SIZE;
 
     temp_v0 = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(temp_v0, overlaySlots[0]);
+    vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
         func_8004261C(0);
@@ -585,35 +584,35 @@ static void loadEndingPrg()
     do_wait();
 }
 
-static void initScreen(int w, int h, int arg2 __attribute__((unused)),
+static void vs_main_initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
 {
-    SetDefDispEnv(dispEnv, 0, 0, w, h - 0x10);
-    setRECT(&dispEnv[0].screen, 0, 8, 0x100, 0xE0);
-    PutDispEnv(dispEnv);
+    SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 0x10);
+    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 0x100, 0xE0);
+    PutDispEnv(vs_main_dispEnv);
 }
 
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
 
-void displayLoadingScreen()
+static void vs_main_displayLoadingScreen()
 {
     RECT rect;
 
-    initScreen(0x140, 0xF0, D_8005E248, 0, 0, 0);
+    vs_main_initScreen(0x140, 0xF0, D_8005E248, 0, 0, 0);
     setRECT(&rect, 0, 0, 1024, 512);
-    ClearImage2(&rect, 0U, 0U, 0U);
+    ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
     VSync(2);
     setRECT(&rect, (320 - IMG_W(nowLoading_header)) / 2,
         (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
         IMG_H(nowLoading_header));
-    LoadImage(&rect, (unsigned long*)&nowLoading_header + 1);
+    LoadImage(&rect, (u_long*)&nowLoading_header + 1);
     setRECT(&rect, ((320 - IMG_W(nowLoading_header)) / 2) + 320,
         (224 - IMG_H(nowLoading_header)) / 2, IMG_W(nowLoading_header),
         IMG_H(nowLoading_header));
-    LoadImage(&rect, (unsigned long*)&nowLoading_header + 1);
+    LoadImage(&rect, (u_long*)&nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
 }
@@ -668,8 +667,8 @@ static void func_80042420()
     func_80012B98();
     func_80012024();
     func_80012EBC();
-    displayLoadingScreen();
-    loadBattlePrg();
+    vs_main_displayLoadingScreen();
+    vs_main_loadBattlePrg();
     D_80050470 = 1;
     jumpToBattle(&sp);
 }
@@ -688,7 +687,7 @@ static void func_800424E4()
     func_80012B78();
     func_80012B98();
     func_80042CB0();
-    loadEndingPrg();
+    vs_main_loadEndingPrg();
     func_8006A5C0();
     DrawSync(0);
     DrawSync(0);
@@ -836,7 +835,7 @@ static void func_80042A64()
     SetGraphDebug(0);
     ClearImage(&rects[2], 0, 0, 0);
     DrawSync(0);
-    displayLoadingScreen();
+    vs_main_displayLoadingScreen();
     SsUtReverbOn();
     InitGeom();
     DrawSyncCallback(gpuSyncVoidCallback);
@@ -863,11 +862,11 @@ int execTitle()
 {
     getSp(&sp);
     func_80042A64();
-    loadTitlePrg();
+    vs_main_loadTitlePrg();
     D_80050470 = titlePrgMain();
     D_8005E214 = 0;
-    displayLoadingScreen();
-    loadBattlePrg();
+    vs_main_displayLoadingScreen();
+    vs_main_loadBattlePrg();
     getSp(&sp);
     D_8005E240 = 1;
     execBattle();
@@ -901,7 +900,7 @@ void func_80042CB0()
     int var_a3;
     int var_s1;
     int new_var;
-    char var_a0;
+    unsigned char var_a0;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -1010,7 +1009,7 @@ static void padResetDefaults(int port, void* arg1 __attribute__((unused)))
 int func_800430F4(int arg0, unsigned char padBuf[34])
 {
     PortInfo* temp_s0;
-    char temp_v0;
+    unsigned char temp_v0;
     int var_s1;
 
     if (padBuf[0] != 0) {
@@ -1326,7 +1325,7 @@ extern int D_8005DFDC;
 extern unsigned int D_8005E1C0;
 extern int D_8005E1D0;
 extern unsigned int D_8005E238;
-extern char D_80060020[];
+extern unsigned char D_80060020[];
 
 int func_80043940()
 {
@@ -1571,7 +1570,7 @@ void diskReadCallback(unsigned char intr, unsigned char* result __attribute__((u
     D_80055D10.status = 2;
 
     if (D_80055D10.unk2C == 0) {
-        DsGetSector((char*)D_80055D10.vram + D_80055D10.bufIndex * 2048, 512);
+        DsGetSector((unsigned char*)D_80055D10.vram + D_80055D10.bufIndex * 2048, 512);
     } else {
         DsGetSector(D_80050110 + D_80055D10.unk3C * 128, 512);
         if (++D_80055D10.unk3C >= 16) {
@@ -1721,7 +1720,7 @@ static void func_800443CC()
             func_80013230(0x7F);
             D_80055D10.pcm.file = 1;
             D_80055D10.pcm.chan = 0;
-            DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
+            DsControl(DslSetfilter, (unsigned char*)&D_80055D10.pcm, NULL);
             DsIntToPos(D_80055D10.cdSector, &D_80055D10.cdLoc);
             D_80055D10.commandId
                 = DsPacket(DslModeRT | DslModeSF, &D_80055D10.cdLoc, DslReadS, NULL, -1);
@@ -1774,7 +1773,7 @@ static void func_800443CC()
                 func_80012940(0x3C, D_80055D10.sectorCount);
                 D_80055D10.pcm.file = 1;
                 D_80055D10.pcm.chan = 0;
-                DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
+                DsControl(DslSetfilter, (unsigned char*)&D_80055D10.pcm, NULL);
                 D_80055D10.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(pcmReadReady);
@@ -1836,7 +1835,8 @@ static void func_800443CC()
                 return;
             }
             if (D_80055D10.unk2C == 1) {
-                memcpy_impl(((char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
+                memcpy_impl(
+                    ((unsigned char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
                     D_80050110 + (D_80055D10.unk40 * 128), 2048);
 
                 ++D_80055D10.unk40;
@@ -1940,7 +1940,7 @@ static void vs_main_initCdQueue()
     D_80050460.i = 0;
 }
 
-vs_main_cdQueue_t* vs_main_getQueueSlot(CdFile* arg0)
+vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* arg0)
 {
     int i;
 
@@ -1954,7 +1954,7 @@ vs_main_cdQueue_t* vs_main_getQueueSlot(CdFile* arg0)
     nop9(0xA2, 0);
 }
 
-void func_80044B80(vs_main_cdQueue_t* arg0)
+void func_80044B80(vs_main_CdQueueSlot* arg0)
 {
     if ((unsigned short)arg0->unk0[0] - 2u < 2) {
         nop9(0xA3, 0);
@@ -1962,7 +1962,7 @@ void func_80044B80(vs_main_cdQueue_t* arg0)
     arg0->unk0[0] = 0;
 }
 
-void func_80044BC4(vs_main_cdQueue_t* arg0, void* arg1)
+void func_80044BC4(vs_main_CdQueueSlot* arg0, void* arg1)
 {
     unsigned short temp_a1;
 
@@ -1974,9 +1974,9 @@ void func_80044BC4(vs_main_cdQueue_t* arg0, void* arg1)
     arg0->unk0[1] = temp_a1;
 }
 
-static void vs_main_populateQueueSlot(vs_main_cdQueue_t* arg0, void* arg1)
+static void vs_main_populateQueueSlot(vs_main_CdQueueSlot* arg0, void* arg1)
 {
-    vs_main_cdQueue_t* var_v1;
+    vs_main_CdQueueSlot* var_v1;
     int i;
 
     var_v1 = vs_main_cdQueue;
@@ -2002,7 +2002,7 @@ static void func_80044C74()
     D_80055D10.unk44 += 1;
 
     if (D_80050460.i != 0) {
-        vs_main_cdQueue_t* slot = vs_main_cdQueue;
+        vs_main_CdQueueSlot* slot = vs_main_cdQueue;
         i = getCdStatus();
         if (i == 0) {
             for (; i < 32; ++i, ++slot) {
@@ -2135,7 +2135,7 @@ static unsigned char func_800450E4()
 
 static int func_80045110(int arg0, int arg1)
 {
-    CdFile cdFile;
+    vs_main_CdFile cdFile;
 
     if (arg0 > 0 && arg1 > 0) {
         int arg = arg1 - 1;
@@ -2153,7 +2153,7 @@ static int func_80045110(int arg0, int arg1)
                 cdFile.size = musicFileSizes[arg0];
 
                 if ((D_8005E038.unk34[arg] != 0)
-                    && (D_8005E038.unk34[arg] != (vs_main_cdQueue_t*)-1)) {
+                    && (D_8005E038.unk34[arg] != (vs_main_CdQueueSlot*)-1)) {
                     nop9(0x98, 0);
                 }
 
@@ -2196,7 +2196,7 @@ static int func_800452C8(unsigned int arg0)
             }
             if (D_8005E038.unk34[arg0 - 1]->unk0[0] == 6) {
                 func_80044B80(D_8005E038.unk34[arg0 - 1]);
-                D_8005E038.unk34[arg0 - 1] = (vs_main_cdQueue_t*)-1;
+                D_8005E038.unk34[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
             return 1;
@@ -2375,7 +2375,7 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xFF000:
         var_s0_2 = D_8005E038.unk4C[D_8005E038.unk44 - 1];
-        var_s0_2 = (char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
+        var_s0_2 = (unsigned char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE80, arg2, arg3);
             D_8005FE80 *= 2;
@@ -2388,7 +2388,7 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xF00000:
         var_s0_2 = D_8005E08C;
-        var_s0_2 = (char*)var_s0_2 + (arg1 + ((int*)D_8005E08C))[1];
+        var_s0_2 = (unsigned char*)var_s0_2 + (arg1 + ((int*)D_8005E08C))[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE84, arg2, arg3);
             D_8005FE84 *= 2;
@@ -2575,7 +2575,7 @@ static void func_80045DC0() { func_80012B98(); }
 
 int func_80045DE0(int id, int slot)
 {
-    CdFile cdFile;
+    vs_main_CdFile cdFile;
     unsigned int new_var;
 
     if ((slot - 1u) < 3) {
@@ -2585,7 +2585,7 @@ int func_80045DE0(int id, int slot)
             cdFile.size = seFileSizes[id];
 
             if ((D_8005E038.unk58[new_var] != 0)
-                && (D_8005E038.unk58[new_var] != (vs_main_cdQueue_t*)-1)) {
+                && (D_8005E038.unk58[new_var] != (vs_main_CdQueueSlot*)-1)) {
                 nop9(0x8F, 0);
             }
 
@@ -2628,7 +2628,7 @@ static int func_80045F64(unsigned int arg0)
             }
             if (D_8005E038.unk58[arg0 - 1]->unk0[0] == 6) {
                 func_80044B80(D_8005E038.unk58[arg0 - 1]);
-                D_8005E038.unk58[arg0 - 1] = (vs_main_cdQueue_t*)-1;
+                D_8005E038.unk58[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
             return 1;
@@ -2717,7 +2717,7 @@ static void func_800461CC(
     temp_s1 = arg1;
 
     if (arg2 < arg1[0]) {
-        temp_s1 = (char*)arg1 + (arg1 + arg2)[1];
+        temp_s1 = (unsigned char*)arg1 + (arg1 + arg2)[1];
         var_s0 = 0;
 
         if (arg0 == 0x180) {
@@ -2819,7 +2819,7 @@ static void func_800463BC(int arg0, unsigned int* arg1, int arg2, SVECTOR* vec)
 static void func_8004644C(int arg0, int* arg1, int arg2)
 {
     int var_a1;
-    char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
+    unsigned char* var_a0 = (unsigned char*)arg1 + (arg1 + arg2)[1];
 
     if (arg2 != 0) {
         var_a1 = 0;
@@ -2832,7 +2832,7 @@ static void func_8004644C(int arg0, int* arg1, int arg2)
 
 static void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
 {
-    int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
+    int a0 = (int)((unsigned char*)arg1 + (arg2 + arg1)[1]);
 
     if (arg2 == 0) {
         func_8001264C(0, arg0, arg4 & 0xFF, arg3);
@@ -2892,7 +2892,7 @@ static int func_80046634()
 
 static void func_80046678(int file)
 {
-    CdFile cdFile;
+    vs_main_CdFile cdFile;
     int new_var;
     int temp_v1;
     int var_a0;
@@ -3539,7 +3539,7 @@ static inline int inline_fn2(int arg0)
 
 void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    char sp10[4];
+    unsigned char sp10[4];
     D_8005DC80_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -3607,7 +3607,7 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    char sp10[4];
+    unsigned char sp10[4];
     short var_t4;
     int var_a1;
     int var_a2;
@@ -3839,7 +3839,7 @@ void func_80047FFC()
 
 void func_800481C0()
 {
-    char sp18[4];
+    unsigned char sp18[4];
     int i;
     int var_v0;
     D_8005DC80_t* p = D_80055D58.unk7F28;

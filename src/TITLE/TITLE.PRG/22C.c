@@ -23,13 +23,13 @@ typedef struct {
 
 typedef struct {
     unsigned char unk0;
-    char unk1;
+    unsigned char unk1;
     short unk2;
     unsigned int unk4;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
+    unsigned char unk8;
+    unsigned char unk9;
+    unsigned char unkA;
+    unsigned char unkB;
     int unkC;
     int unk10;
     unsigned int unk14;
@@ -42,10 +42,10 @@ typedef struct {
     unsigned char unk0;
     unsigned char unk1;
     short unk2;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
+    unsigned char unk4;
+    unsigned char unk5;
+    unsigned char unk6;
+    unsigned char unk7;
     short unk8;
     short unkA;
     int unkC;
@@ -58,8 +58,8 @@ typedef struct {
     int unk28;
 } D_8005FEA0_t;
 
-char* memcardFilenameFromTemplate(int, int);
-int memcardFileNumberFromFilename(char*);
+unsigned char* memcardFilenameFromTemplate(int, int);
+int memcardFileNumberFromFilename(unsigned char*);
 int func_8006913C(int);
 int func_800691D4(int);
 int func_8006947C(int);
@@ -82,7 +82,7 @@ void func_8007093C();
 extern RECT D_800DC928;
 extern unsigned char D_800DC930;
 
-char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
+unsigned char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 extern int D_8005DFDC;
 extern int D_8005E1D0;
@@ -103,7 +103,7 @@ extern unsigned char D_80061598[];
 extern D_80060020_t D_800619D8;
 extern unsigned short eventSpecs[];
 extern int D_800728C0[];
-extern char* pMemcardFilenameTemplate;
+extern unsigned char* pMemcardFilenameTemplate;
 extern int D_800728E8[];
 extern unsigned int scrambleSeed;
 extern int D_80072914[];
@@ -114,23 +114,23 @@ extern unsigned long D_80072F0C[];
 extern unsigned long D_8007472C[];
 extern int D_80074AAC;
 extern int D_80074AB0;
-extern char D_80074C24[];
-extern char D_80075B24[];
+extern unsigned char D_80074C24[];
+extern unsigned char D_80075B24[];
 extern unsigned long D_800AF368[];
 extern unsigned long D_800BD368[];
 extern unsigned long D_800C2268[];
 extern unsigned long D_800D1268[];
-extern char memcardFilename[32];
-extern char memcardFilenameAlpha[32];
+extern unsigned char memcardFilename[32];
+extern unsigned char memcardFilenameAlpha[32];
 extern unsigned char D_800DC8C4;
-extern vs_main_cdQueue_t* D_800DC8C8;
-extern char D_800DC8CC[];
-extern char D_800DC8CD;
+extern vs_main_CdQueueSlot* D_800DC8C8;
+extern unsigned char D_800DC8CC[];
+extern unsigned char D_800DC8CD;
 extern unsigned char D_800DC8E8;
 extern unsigned char D_800DC8E9;
 extern int D_800DC8EC;
 extern unsigned char D_800DC8F0;
-extern char D_800DC8F1;
+extern unsigned char D_800DC8F1;
 extern unsigned char D_800DC8F2;
 extern unsigned char memcardPort;
 extern unsigned int D_800DE948[][6];
@@ -148,8 +148,8 @@ extern int D_800DED28[];
 extern int D_800DED68;
 extern unsigned short* D_800DED6C;
 extern unsigned char D_800DED70;
-extern char D_800DED71;
-extern char D_800DED72;
+extern unsigned char D_800DED71;
+extern unsigned char D_800DED72;
 extern unsigned char D_800DED76;
 extern unsigned int menuDisplayedTime;
 extern int D_800DED7C;
@@ -235,7 +235,7 @@ void rMemcpy(unsigned char* arg0, unsigned char* arg1, int arg2)
     } while (arg2 != 0);
 }
 
-char* memcardFilenameFromTemplate(int port, int fileNo)
+unsigned char* memcardFilenameFromTemplate(int port, int fileNo)
 {
     memset(memcardFilename, 0, ' ');
     strcpy(memcardFilename, pMemcardFilenameTemplate);
@@ -244,7 +244,7 @@ char* memcardFilenameFromTemplate(int port, int fileNo)
     return memcardFilename;
 }
 
-char* memcardFilenameFromTemplateAlpha(int port, int fileNo)
+unsigned char* memcardFilenameFromTemplateAlpha(int port, int fileNo)
 {
     memset(memcardFilenameAlpha, 0, ' ');
     strcpy(memcardFilenameAlpha, pMemcardFilenameTemplate);
@@ -286,10 +286,10 @@ int func_80068DB4()
     return 0;
 }
 
-int memcardFileNumberFromFilename(char* filename)
+int memcardFileNumberFromFilename(unsigned char* filename)
 {
     int i;
-    char* gameCode;
+    unsigned char* gameCode;
 
     gameCode = &pMemcardFilenameTemplate[5];
 
@@ -328,7 +328,7 @@ int verifySaveChecksums(unsigned char blocks[][0x100], int blockCount)
             for (j = 0; j < 0x100; ++j) {
                 var_a2 ^= block[j];
             }
-            if (((char*)blocks + i)[0x1A4] != var_a2) {
+            if (((unsigned char*)blocks + i)[0x1A4] != var_a2) {
                 return 1;
             }
         }
@@ -386,7 +386,7 @@ int memcardSaveIdExists(int id)
     int i;
 
     for (i = 0; i < 15; ++i) {
-        char* filename = memcardFiles[i]->name;
+        unsigned char* filename = memcardFiles[i]->name;
         if ((filename != 0) && (memcardFileNumberFromFilename(filename) != 0)) {
             if (filename[15] == id) {
                 return 1;
@@ -417,7 +417,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800691D4);
 
 int createSaveFile(int port, int id)
 {
-    char* fileName;
+    unsigned char* fileName;
     long file;
 
     fileName = memcardFilenameFromTemplate((port - 1) * 0x10, id);
@@ -491,7 +491,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A11C);
 
 int func_8006A49C(int arg0)
 {
-    CdFile cdFile;
+    vs_main_CdFile cdFile;
     int i;
     unsigned int event;
 
@@ -1194,7 +1194,7 @@ int func_8006E738()
 int func_8006E988()
 {
     struct DIRENTRY dir;
-    char sp38[0x16];
+    unsigned char sp38[0x16];
     int temp_s0;
     int i;
     int ret = 0;
@@ -1386,7 +1386,7 @@ void playMovie(DslLOC* arg0)
     params[2] = 0;
     params[3] = 0;
     do {
-        while (DsControl(DslSetloc, (u_char*)arg0, 0) == 0)
+        while (DsControl(DslSetloc, (unsigned char*)arg0, 0) == 0)
             ;
         while (DsControl(DslSetmode, params, 0) == 0)
             ;
@@ -1554,7 +1554,7 @@ int func_8006FA54()
     return 0;
 }
 
-void func_8006FC34(int arg0, char arg1)
+void func_8006FC34(int arg0, unsigned char arg1)
 {
     D_800EFDF8[arg0][0] = 1;
     D_800EFDF8[arg0][1] = 0;
@@ -1793,24 +1793,24 @@ void func_8007183C(int w, int h, int screen, int r, int g, int b)
     SetDispMask(0);
     SetGeomOffset(w / 2, h / 2);
     SetGeomScreen(screen);
-    SetDefDrawEnv(drawEnv, 0, 0, w, h - 16);
-    SetDefDispEnv(dispEnv, w, 0, w, h - 16);
-    SetDefDrawEnv(drawEnv + 1, w, 0, w, h - 16);
-    SetDefDispEnv(dispEnv + 1, 0, 0, w, h - 16);
-    setRECT(&dispEnv[0].screen, 0, 8, 256, 224);
-    setRECT(&dispEnv[1].screen, 0, 8, 256, 224);
-    drawEnv[1].dtd = 0;
-    drawEnv[0].dtd = 0;
-    drawEnv[1].isbg = 1;
-    drawEnv[0].isbg = 1;
-    setRGB0(&drawEnv[0], r, g, b);
-    setRGB0(&drawEnv[1], r, g, b);
+    SetDefDrawEnv(vs_main_drawEnv, 0, 0, w, h - 16);
+    SetDefDispEnv(vs_main_dispEnv, w, 0, w, h - 16);
+    SetDefDrawEnv(vs_main_drawEnv + 1, w, 0, w, h - 16);
+    SetDefDispEnv(vs_main_dispEnv + 1, 0, 0, w, h - 16);
+    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
+    setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
+    vs_main_drawEnv[1].dtd = 0;
+    vs_main_drawEnv[0].dtd = 0;
+    vs_main_drawEnv[1].isbg = 1;
+    vs_main_drawEnv[0].isbg = 1;
+    setRGB0(&vs_main_drawEnv[0], r, g, b);
+    setRGB0(&vs_main_drawEnv[1], r, g, b);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     FntLoad(960, 0);
     SetDumpFnt(FntOpen(40, 16, 512, 256, 0, 512));
-    PutDispEnv(&dispEnv[frameBuf]);
-    PutDrawEnv(&drawEnv[frameBuf]);
+    PutDispEnv(&vs_main_dispEnv[frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[frameBuf]);
 }
 
 int drawPrims(u_long* ot)
@@ -1821,8 +1821,8 @@ int drawPrims(u_long* ot)
     frameBuf = frameBuf == 0;
     DrawSync(0);
     temp_s1 = func_8004261C(0);
-    PutDispEnv(frameBuf + dispEnv);
-    PutDrawEnv(frameBuf + drawEnv);
+    PutDispEnv(frameBuf + vs_main_dispEnv);
+    PutDrawEnv(frameBuf + vs_main_drawEnv);
     DrawOTag(ot);
     return temp_s1;
 }

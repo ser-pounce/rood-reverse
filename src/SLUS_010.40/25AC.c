@@ -84,7 +84,7 @@ typedef struct {
 } func_8001CD08_t;
 
 int soundEvent = 0;
-extern char D_8002F560[0x40];
+extern unsigned char D_8002F560[0x40];
 extern int D_80033690;
 extern short D_800358FE;
 extern D_80035910_t D_80035910;
@@ -96,7 +96,7 @@ extern D_80036770_t D_80036770;
 extern short D_80036780;
 extern short D_80036782;
 extern int D_80037788;
-extern char spuMemInfo;
+extern unsigned char spuMemInfo;
 extern int D_800377E0[3];
 extern int* D_800377EC;
 extern volatile int isSpuTransfer;

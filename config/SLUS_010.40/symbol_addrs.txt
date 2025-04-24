@@ -1,6 +1,6 @@
 
 
-overlaySlots = 0x80010000;
+vs_overlay_slots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
 getSp = 0x80010AA4;
 jumpToTitle = 0x80010AB4;
@@ -121,8 +121,7 @@ SAVERA2 = 0x80033680;
 cdlAtv = 0x800365D0;
 spuMemInfo = 0x800377B0;
 isSpuTransfer = 0x800377F0;
-initScreen = 0x80042054;
-displayLoadingScreen = 0x800420BC;
+vs_main_displayLoadingScreen = 0x800420BC;
 resetGame = 0x80042364;
 nop0 = 0x8004272C;
 nop1 = 0x80042734;

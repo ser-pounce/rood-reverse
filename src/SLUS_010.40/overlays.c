@@ -1,7 +1,7 @@
 #include "overlays.h"
 
-void* const overlaySlots[5] = { (void*)0x80068800, (void*)0x800F9800, (void*)0x80102800,
-    (void*)0x800F9800, (void*)0x800F9800 };
+void* const vs_overlay_slots[5] = { (void*)0x80068800, (void*)0x800F9800,
+    (void*)0x80102800, (void*)0x800F9800, (void*)0x800F9800 };
 
 void getSp(int* sp)
 {

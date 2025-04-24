@@ -3,7 +3,7 @@
 vs_overlay_slots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
 getSp = 0x80010AA4;
-jumpToTitle = 0x80010AB4;
+vs_overlay_jumpToTitle = 0x80010AB4;
 jumpToBattle = 0x80010AC4;
 wait = 0x80010AD4;
 _patch_gte = 0x80011CCC;

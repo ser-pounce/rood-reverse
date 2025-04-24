@@ -1,6 +1,6 @@
 #include "3264C.h"
 #include "common.h"
-#include "overlays.h"
+#include "overlay.h"
 #include "../BATTLE/BATTLE.PRG/battle.h"
 #include "lbas.h"
 #include <libapi.h>
@@ -163,8 +163,8 @@ static void func_80042A64();
 static void do_wait();
 static void padForceMode();
 static void padResetDefaults(int, void*);
-static void padConnect(int, void*);
-static void padSetActData(int arg0, int arg1, int arg2);
+static void vs_main_padConnect(int, void*);
+static void vs_main_padSetActData(int arg0, int arg1, int arg2);
 static int getCdStatus();
 void func_80042CB0();
 static void func_80043668();
@@ -633,7 +633,7 @@ static void vs_main_bufferLoadingScreen()
     DrawSync(0);
 }
 
-static void resetGame()
+static void vs_main_resetGame()
 {
     DrawSync(0);
     DrawSync(0);
@@ -641,15 +641,15 @@ static void resetGame()
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
-    padSetActData(0, 0, 0);
-    padSetActData(0, 1, 0);
-    padConnect(0, padBuffer[0]);
-    padConnect(0x10, padBuffer[1]);
+    vs_main_padSetActData(0, 0, 0);
+    vs_main_padSetActData(0, 1, 0);
+    vs_main_padConnect(0, padBuffer[0]);
+    vs_main_padConnect(0x10, padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
     VSync(0xA);
-    jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&sp2);
 }
 
 static void func_80042420()
@@ -657,10 +657,10 @@ static void func_80042420()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    padSetActData(0, 0, 0);
-    padSetActData(0, 1, 0);
-    padConnect(0, padBuffer[0]);
-    padConnect(0x10, padBuffer[1]);
+    vs_main_padSetActData(0, 0, 0);
+    vs_main_padSetActData(0, 1, 0);
+    vs_main_padConnect(0, padBuffer[0]);
+    vs_main_padConnect(0x10, padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -678,10 +678,10 @@ static void func_800424E4()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    padSetActData(0, 0, 0);
-    padSetActData(0, 1, 0);
-    padConnect(0, padBuffer);
-    padConnect(0x10, padBuffer[1]);
+    vs_main_padSetActData(0, 0, 0);
+    vs_main_padSetActData(0, 1, 0);
+    vs_main_padConnect(0, padBuffer);
+    vs_main_padConnect(0x10, padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -691,15 +691,15 @@ static void func_800424E4()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    padSetActData(0, 0, 0);
-    padSetActData(0, 1, 0);
-    padConnect(0, padBuffer);
-    padConnect(0x10, padBuffer[1]);
+    vs_main_padSetActData(0, 0, 0);
+    vs_main_padSetActData(0, 1, 0);
+    vs_main_padConnect(0, padBuffer);
+    vs_main_padConnect(0x10, padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
     D_8005E214 = 1;
-    jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&sp2);
 }
 
 int func_8004261C(int arg0)
@@ -1050,7 +1050,7 @@ int func_800430F4(int arg0, u_char padBuf[34])
     return var_s1;
 }
 
-static void padConnect(int port, void* arg1)
+static void vs_main_padConnect(int port, void* arg1)
 {
     int dummy[5] __attribute__((unused));
     int state;
@@ -1072,7 +1072,7 @@ static void padConnect(int port, void* arg1)
     }
 }
 
-static void padSetActData(int port, int pos, int val)
+static void vs_main_padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
         portInfo[port].actData[pos] = val;
@@ -1286,12 +1286,12 @@ void func_800436B4()
         if (var_a2_2 < 0) {
             var_a2_2 += 0xFF;
         }
-        padSetActData(0, 0, (var_a2_2 >> 8));
+        vs_main_padSetActData(0, 0, (var_a2_2 >> 8));
         var_v0 = D_80050118[0].unk0[1];
         if (var_v0 < 0) {
             var_v0 += 0xFF;
         }
-        padSetActData(0, 1, (var_v0 >> 8));
+        vs_main_padSetActData(0, 1, (var_v0 >> 8));
     }
 }
 
@@ -1331,8 +1331,8 @@ int func_80043940()
 
     D_8005E238 = func_800430F4(0, padBuffer[0]) & 0xFFFF;
     D_8005E238 |= func_800430F4(16, padBuffer[1]) << 16;
-    padConnect(0, padBuffer);
-    padConnect(16, padBuffer[1]);
+    vs_main_padConnect(0, padBuffer);
+    vs_main_padConnect(16, padBuffer[1]);
 
     if (portInfo->unk0 != 4) {
         if (portInfo->unk0 == 7) {
@@ -1405,7 +1405,7 @@ int func_80043940()
     if ((D_80055C88 != 0) && ((D_8005E1C0 & 0x90F) == 0x90F) && (D_8005E1D0 & 0x90F)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
-        resetGame();
+        vs_main_resetGame();
     }
 
     return 1;

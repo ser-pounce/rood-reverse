@@ -3587,7 +3587,7 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     if (arg1 != 0) {
         func_800A0768(arg1 - 1, sp10);
     } else {
-        func_8008B430(sp10, ((u_short)temp_t0->unk6[3] << 16) >> 18);
+        func_8008B430(sp10, temp_t0->unk6[3] >> 2);
     }
 }
 

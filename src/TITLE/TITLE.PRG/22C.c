@@ -1,3 +1,4 @@
+#include "22C.h"
 #include "../SLUS_010.40/3264C.h"
 #include "../SLUS_010.40/31724.h"
 #include "common.h"
@@ -85,8 +86,8 @@ extern u_char D_800DC930;
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 extern int D_8005DFDC;
-extern int D_8005E1D0;
-extern int D_8005E238;
+extern int vs_main_buttonsPressed;
+extern int vs_main_buttonsState;
 extern int D_8005E24C;
 extern int D_8005FEA0[][3];
 extern u_char D_8005FFB8[];
@@ -977,13 +978,13 @@ int func_8006CE6C(int arg0)
     case 3:
         D_800DEB18[D_800DC8E9 + 3].unk4 = 1;
         D_800DEB18[4 - D_800DC8E9].unk4 = 0;
-        if (D_8005E1D0 & 0x60) {
+        if (vs_main_buttonsPressed & 0x60) {
             D_800DED68 = 0;
             for (i = 3; i < 5; ++i) {
                 D_800DEB18[i].unk0 = 4;
                 D_800DEB18[i].unk8 = -0x7E;
             }
-            if (D_8005E1D0 & 0x20) {
+            if (vs_main_buttonsPressed & 0x20) {
                 if ((&D_800DC8E8)[1] == 0) {
                     func_80045988(0x7E, 5);
                     return 1;
@@ -1446,7 +1447,7 @@ void func_8006F54C()
             var_a3_2 = (0x1F - i) * 4;
         } else if (i >= 0x14C) {
             var_a3_2 = (i - 0x14B) * 4;
-        } else if ((u_short)D_8005E238 != 0) {
+        } else if ((u_short)vs_main_buttonsState != 0) {
             i = 0x14B;
         }
         func_8006A778(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
@@ -1547,7 +1548,7 @@ int func_8006FA54()
             SetDispMask(1);
         }
 
-        if ((D_8005E1D0 & 0x820)) {
+        if ((vs_main_buttonsPressed & 0x820)) {
             return 1;
         }
     }
@@ -1785,7 +1786,7 @@ void func_80071254()
     D_80061598[284] = 1;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", titlePrgMain);
+INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", vs_title_exec);
 
 void func_8007183C(int w, int h, int screen, int r, int g, int b)
 {

@@ -1,4 +1,4 @@
-execBattle = 0x800798A4;
+vs_battle_exec = 0x800798A4;
 func_8008B430 = 0x8008B430;
 func_8008EB24 = 0x8008EB24;
 func_8008EB30 = 0x8008EB30;

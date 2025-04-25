@@ -10,6 +10,6 @@ void vs_overlay_getSp(int* sp)
 }
 
 __asm__("jumpFunc vs_overlay_jumpToTitle, vs_main_execTitle;"
-        "jumpFunc vs_overlay_jumpToBattle, execBattle;");
+        "jumpFunc vs_overlay_jumpToBattle, vs_battle_exec;");
 
 void vs_overlay_wait() { __asm__(".nop 4096;"); }

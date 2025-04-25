@@ -1,5 +1,3 @@
-
-
 vs_overlay_slots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
 vs_overlay_getSp = 0x80010AA4;
@@ -131,10 +129,10 @@ initRand = 0x8004274C;
 getRand = 0x800427A8;
 getRands = 0x80042860;
 func_80042BAC = 0x80042BAC;
-main_ = 0x80042C38;
+vs_main_exec = 0x80042C38;
 padDisconnect = 0x80042FDC;
-padForceMode = 0x80042FF0;
-padResetDefaults = 0x80043034;
+vs_main_padForceMode = 0x80042FF0;
+vs_main_padResetDefaults = 0x80043034;
 padConnect = 0x80043250;
 padSetActData = 0x80043320;
 padGetActData = 0x80043388;
@@ -166,7 +164,7 @@ _seFileSizes = 0x8004B020;
 _soundFileMap = 0x8004B1B0;
 randArr = 0x8004FF88;
 randIndex = 0x8005010C;
-portInfo = 0x80050190;
+vs_main_portInfo = 0x80050190;
 heapA = 0x800501A8;
 heapB = 0x800501B8;
 cdReadLoc = 0x800501C8;

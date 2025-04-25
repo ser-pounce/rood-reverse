@@ -1,6 +1,7 @@
 #include "3264C.h"
 #include "common.h"
 #include "overlay.h"
+#include "../TITLE/TITLE.PRG/22C.h"
 #include "../BATTLE/BATTLE.PRG/battle.h"
 #include "lbas.h"
 #include <libapi.h>
@@ -12,21 +13,21 @@
 #include <libgpu.h>
 #include <rand.h>
 
-typedef struct HeapHeader {
-    struct HeapHeader* prev;
-    struct HeapHeader* next;
+typedef struct vs_main_HeapHeader {
+    struct vs_main_HeapHeader* prev;
+    struct vs_main_HeapHeader* next;
     u_int blockSz;
     int unkC;
-} HeapHeader;
+} vs_main_HeapHeader;
 
 typedef struct {
-    u_char unk0;
+    u_char mode;
     u_char exId;
-    u_char unk2;
-    u_char unk3;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
+    u_char states;
+    u_char rStickX;
+    u_char rStickY;
+    u_char lStickX;
+    u_char lStickY;
     u_char lock;
     u_char actData[2];
     u_char connected;
@@ -157,13 +158,20 @@ typedef struct D_80061068_t {
     u_short unk0[6];
 } D_80061068_t;
 
+typedef struct {
+    int lStickX;
+    int lStickY;
+    int rStickX;
+    int rStickY;
+} vs_main_stickPos;
+
 void __main();
 static void func_80042998();
 static void func_80042A64();
 static void vs_main_wait();
-static void padForceMode();
-static void padResetDefaults(int, void*);
-static void vs_main_padConnect(int, void*);
+static void vs_main_padForceMode();
+static void vs_main_padResetDefaults(int, u_char[34]);
+static void vs_main_padConnect(int, u_char[34]);
 static void vs_main_padSetActData(int arg0, int arg1, int arg2);
 static int getCdStatus();
 void func_80042CB0();
@@ -187,9 +195,8 @@ static void func_8004908C();
 static void nop9(int, int);
 static void nop10(int, int);
 void func_8006A5C0();
-int titlePrgMain();
 static void initRand();
-static void initHeap(HeapHeader* node, u_int value);
+static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
 
 typedef struct {
     u_char wLo;
@@ -207,8 +214,8 @@ EMBED_RGBA16("build/assets/SLUS_010.40/_nowLoading.rgba16.bin", _nowLoading)
 static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06,
     0x00, 0x04, 0x01, 0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
 
-static u_char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static u_char vs_main_actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 static int _soundLBAs[] = {
     VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA, VS_WAVE0003_DAT_LBA,
@@ -467,11 +474,11 @@ extern char D_8004B95C[63][2];
 extern u_int D_8004B9DC[];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
-extern HeapHeader* D_80050110;
+extern vs_main_HeapHeader* D_80050110;
 extern D_80050118_t D_80050118[2];
-extern PortInfo portInfo[2];
-extern HeapHeader heapA;
-extern HeapHeader heapB;
+extern PortInfo vs_main_portInfo[2];
+extern vs_main_HeapHeader heapA;
+extern vs_main_HeapHeader heapB;
 extern int randIndex;
 extern DslLOC cdReadLoc;
 extern int D_800501CC;
@@ -514,6 +521,13 @@ extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
 extern char D_80061074[4];
 extern MATRIX D_1F800014_mat;
+extern int vs_main_buttonsReleased;
+extern vs_main_stickPos vs_main_stickPosBuf;
+extern int D_8005DFDC;
+extern u_int vs_main_buttonsPreviousState;
+extern int vs_main_buttonsPressed;
+extern u_int vs_main_buttonsState;
+extern u_char D_80060020[];
 
 static void vs_main_loadBattlePrg()
 {
@@ -679,7 +693,7 @@ static void func_800424E4()
     SetDispMask(0);
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
@@ -692,7 +706,7 @@ static void func_800424E4()
     SetDispMask(0);
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
@@ -809,10 +823,10 @@ static void func_80042998()
     StartCARD();
     _bu_init();
     PadInitDirect(vs_main_padBuffer[0], vs_main_padBuffer[1]);
-    padResetDefaults(0, vs_main_padBuffer[0]);
-    padResetDefaults(0x10, vs_main_padBuffer[1]);
+    vs_main_padResetDefaults(0, vs_main_padBuffer[0]);
+    vs_main_padResetDefaults(0x10, vs_main_padBuffer[1]);
     PadStartCom();
-    padForceMode();
+    vs_main_padForceMode();
     func_80043668();
     SsUtReverbOff();
     DsInit();
@@ -838,13 +852,13 @@ static void func_80042A64()
     InitGeom();
     DrawSyncCallback(gpuSyncVoidCallback);
     VSyncCallback(vSyncVoidCallback);
-    initHeap((HeapHeader*)0x8010C000, 0xF2000U);
+    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000U);
     vs_main_initCdQueue();
     func_80044A60();
     func_800468FC();
     func_80043668();
     D_8005E240 = 0;
-    padForceMode();
+    vs_main_padForceMode();
 
     for (i = 31; i >= 0; --i) {
         D_80055C90[i] = 0;
@@ -861,19 +875,19 @@ int vs_main_execTitle()
     vs_overlay_getSp(&sp);
     func_80042A64();
     vs_main_loadTitlePrg();
-    D_80050470 = titlePrgMain();
+    D_80050470 = vs_title_exec();
     D_8005E214 = 0;
     vs_main_displayLoadingScreen();
     vs_main_loadBattlePrg();
     vs_overlay_getSp(&sp);
     D_8005E240 = 1;
-    execBattle();
+    vs_battle_exec();
     SetDispMask(0);
     func_800455F4();
     return 0;
 }
 
-void main_()
+void vs_main_exec()
 {
     __main();
     func_80042998();
@@ -970,103 +984,101 @@ void func_80042CB0()
     func_8008AB68();
 }
 
-static void padDisconnectAll()
+static void vs_main_padDisconnectAll()
 {
-    portInfo[0].connected = 0;
-    portInfo[1].connected = 0;
+    vs_main_portInfo[0].connected = 0;
+    vs_main_portInfo[1].connected = 0;
 }
 
-static void padForceMode()
+static void vs_main_padForceMode()
 {
-    padDisconnectAll();
+    vs_main_padDisconnectAll();
     if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
         PadSetMainMode(0, 1, 2);
     }
 }
 
-static void padResetDefaults(int port, void* arg1 __attribute__((unused)))
+static void vs_main_padResetDefaults(
+    int portID, u_char padBuf[34] __attribute__((unused)))
 {
-    PortInfo* info;
+    PortInfo* port = &vs_main_portInfo[portID >> 4];
+    port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
-    info = &portInfo[port >> 4];
-    info->exId = PadInfoMode(port, InfoModeCurExID, 0);
-
-    if (info->exId & 0xFF) {
-        info->actData[0] = 0;
-        info->actData[1] = 0;
-        info->lock = 2;
-        PadSetMainMode(port, PadInfoMode(port, InfoModeCurExOffs, 0), info->lock);
+    if (port->exId) {
+        port->actData[0] = 0;
+        port->actData[1] = 0;
+        port->lock = 2;
+        PadSetMainMode(portID, PadInfoMode(portID, InfoModeCurExOffs, 0), port->lock);
     } else {
-        info->actData[0] = 0x40;
-        info->actData[1] = 0;
+        port->actData[0] = 0x40;
+        port->actData[1] = 0;
     }
-    PadSetAct(port, info->actData, 2);
-    PadSetActAlign(port, actParams);
+    PadSetAct(portID, port->actData, 2);
+    PadSetActAlign(portID, vs_main_actParams);
 }
 
-int func_800430F4(int arg0, u_char padBuf[34])
+int vs_main_updatePadState(int portID, u_char padBuf[34])
 {
-    PortInfo* temp_s0;
-    u_char temp_v0;
-    int var_s1;
+    PortInfo* port;
+    u_char mode;
+    int btnStates;
 
     if (padBuf[0] != 0) {
-        temp_s0 = &portInfo[arg0 >> 4];
-        temp_s0->unk6 = -128;
-        temp_s0->unk5 = -128;
-        temp_s0->unk4 = -128;
-        temp_s0->unk3 = -128;
+        port = &vs_main_portInfo[portID >> 4];
+        port->lStickY = 128;
+        port->lStickX = 128;
+        port->rStickY = 128;
+        port->rStickX = 128;
         return 0;
     }
-    temp_s0 = &portInfo[arg0 >> 4];
-    temp_v0 = PadInfoMode(arg0, 1, 0);
-    temp_s0->unk0 = temp_v0;
-    switch (temp_v0) {
+    port = &vs_main_portInfo[portID >> 4];
+    mode = PadInfoMode(portID, InfoModeCurID, 0);
+    port->mode = mode;
+    switch (mode) {
     case 1:
     case 2:
     case 3:
     case 6:
-        var_s1 = 0;
+        btnStates = 0;
         break;
     default:
-        var_s1 = ~((padBuf[2] << 8) | padBuf[3]);
+        btnStates = ~((padBuf[2] << 8) | padBuf[3]);
         break;
     }
 
-    temp_s0->unk0 = PadInfoMode(arg0, 1, 0);
-    if ((temp_s0->unk0 == 5) || (temp_s0->unk0 == 7)) {
-        temp_s0->unk3 = padBuf[6];
-        temp_s0->unk4 = padBuf[7];
-        temp_s0->unk5 = padBuf[4];
-        temp_s0->unk6 = padBuf[5];
+    port->mode = PadInfoMode(portID, InfoModeCurID, 0);
+    if ((port->mode == 5) || (port->mode == 7)) {
+        port->rStickX = padBuf[6];
+        port->rStickY = padBuf[7];
+        port->lStickX = padBuf[4];
+        port->lStickY = padBuf[5];
     } else {
-        temp_s0->unk6 = -128;
-        temp_s0->unk5 = -128;
-        temp_s0->unk4 = -128;
-        temp_s0->unk3 = -128;
+        port->lStickY = 128;
+        port->lStickX = 128;
+        port->rStickY = 128;
+        port->rStickX = 128;
     }
-    temp_s0->unk2 = var_s1;
-    return var_s1;
+    port->states = btnStates;
+    return btnStates;
 }
 
-static void vs_main_padConnect(int port, void* arg1)
+static void vs_main_padConnect(int portID, u_char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
-    int state;
-    PortInfo* info;
 
-    info = &portInfo[port >> 4];
-    state = PadGetState(port);
+    PortInfo* port = &vs_main_portInfo[portID >> 4];
+    int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
-        info->connected = 0;
+        port->connected = 0;
     }
-    if (info->connected == 0) {
-        PadSetAct(port, info->actData, 2);
+    if (port->connected == 0) {
+        PadSetAct(portID, port->actData, sizeof(port->actData));
         if ((state == PadStateFindCTP1)
-            || ((state == PadStateStable) && (PadSetActAlign(port, actParams) != 0))) {
-            padResetDefaults(port, arg1);
-            info->connected = 1;
+            || ((state == PadStateStable)
+                && (PadSetActAlign(portID, vs_main_actParams) != 0))) {
+            vs_main_padResetDefaults(portID, padBuf);
+            port->connected = 1;
         }
     }
 }
@@ -1074,15 +1086,18 @@ static void vs_main_padConnect(int port, void* arg1)
 static void vs_main_padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
-        portInfo[port].actData[pos] = val;
-    } else if (portInfo[port].exId != 0) {
-        portInfo[port].actData[0] = val;
+        vs_main_portInfo[port].actData[pos] = val;
+    } else if (vs_main_portInfo[port].exId != 0) {
+        vs_main_portInfo[port].actData[0] = val;
     } else {
-        portInfo[port].actData[0] = 0x40;
+        vs_main_portInfo[port].actData[0] = 0x40;
     }
 }
 
-static u_char padGetActData(int port, int pos) { return portInfo[port].actData[pos]; }
+static u_char padGetActData(int port, int pos)
+{
+    return vs_main_portInfo[port].actData[pos];
+}
 
 static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 {
@@ -1205,7 +1220,7 @@ static void func_80043668()
 {
     int i;
 
-    padDisconnectAll();
+    vs_main_padDisconnectAll();
 
     for (i = 0; i < 2; ++i) {
         D_80050118[i].unkC = 0;
@@ -1314,86 +1329,78 @@ static void func_800438C8(int arg0)
     }
 }
 
-extern int D_80055C78;
-extern int D_8005DFC0[];
-extern int D_8005DFDC;
-extern u_int D_8005E1C0;
-extern int D_8005E1D0;
-extern u_int D_8005E238;
-extern u_char D_80060020[];
-
 int func_80043940()
 {
     int dummy[2];
     int i;
-    u_int a3;
+    u_int btnState;
 
-    D_8005E238 = func_800430F4(0, vs_main_padBuffer[0]) & 0xFFFF;
-    D_8005E238 |= func_800430F4(16, vs_main_padBuffer[1]) << 16;
-    vs_main_padConnect(0, vs_main_padBuffer);
+    vs_main_buttonsState = vs_main_updatePadState(0, vs_main_padBuffer[0]) & 0xFFFF;
+    vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1]) << 16;
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(16, vs_main_padBuffer[1]);
 
-    if (portInfo->unk0 != 4) {
-        if (portInfo->unk0 == 7) {
-            D_8005DFC0[2] = portInfo->unk3;
-            D_8005DFC0[3] = portInfo->unk4;
-            D_8005DFC0[0] = portInfo->unk5;
-            D_8005DFC0[1] = portInfo->unk6;
+    if (vs_main_portInfo[0].mode != 4) {
+        if (vs_main_portInfo[0].mode == 7) {
+            vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
+            vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
+            vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
+            vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
 
-            if (portInfo->unk3 < 16) {
-                D_8005E238 |= 0x8000;
+            if (vs_main_portInfo[0].rStickX < 16) {
+                vs_main_buttonsState |= 0x8000;
             }
-            if (portInfo->unk3 >= 241) {
-                D_8005E238 |= 0x2000;
-            }
-
-            if (portInfo->unk4 < 16) {
-                D_8005E238 |= 0x1000;
-            }
-            if (portInfo->unk4 >= 241) {
-                D_8005E238 |= 0x4000;
+            if (vs_main_portInfo[0].rStickX >= 241) {
+                vs_main_buttonsState |= 0x2000;
             }
 
-            if (portInfo->unk5 < 32) {
-                D_8005E238 |= 0x400;
+            if (vs_main_portInfo[0].rStickY < 16) {
+                vs_main_buttonsState |= 0x1000;
             }
-            if (portInfo->unk5 >= 225) {
-                D_8005E238 |= 0x400;
+            if (vs_main_portInfo[0].rStickY >= 241) {
+                vs_main_buttonsState |= 0x4000;
             }
 
-            if (portInfo->unk6 < 32) {
-                D_8005E238 |= 0x400;
+            if (vs_main_portInfo[0].lStickX < 32) {
+                vs_main_buttonsState |= 0x400;
             }
-            if (portInfo->unk6 >= 225) {
-                D_8005E238 |= 0x400;
+            if (vs_main_portInfo[0].lStickX >= 225) {
+                vs_main_buttonsState |= 0x400;
+            }
+
+            if (vs_main_portInfo[0].lStickY < 32) {
+                vs_main_buttonsState |= 0x400;
+            }
+            if (vs_main_portInfo[0].lStickY >= 225) {
+                vs_main_buttonsState |= 0x400;
             }
         } else {
-            D_8005DFC0[1] = 0x80;
-            D_8005DFC0[0] = 0x80;
-            D_8005DFC0[3] = 0x80;
-            D_8005DFC0[2] = 0x80;
+            vs_main_stickPosBuf.lStickY = 0x80;
+            vs_main_stickPosBuf.lStickX = 0x80;
+            vs_main_stickPosBuf.rStickY = 0x80;
+            vs_main_stickPosBuf.rStickX = 0x80;
         }
     } else {
-        D_8005DFC0[1] = 0x80;
-        D_8005DFC0[0] = 0x80;
-        D_8005DFC0[3] = 0x80;
-        D_8005DFC0[2] = 0x80;
+        vs_main_stickPosBuf.lStickY = 0x80;
+        vs_main_stickPosBuf.lStickX = 0x80;
+        vs_main_stickPosBuf.rStickY = 0x80;
+        vs_main_stickPosBuf.rStickX = 0x80;
     }
 
-    D_8005E1D0 = ~D_8005E1C0 & D_8005E238;
-    D_80055C78 = D_8005E1C0 & ~D_8005E238;
-    D_8005E1C0 = D_8005E238;
+    vs_main_buttonsPressed = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
+    vs_main_buttonsReleased = vs_main_buttonsPreviousState & ~vs_main_buttonsState;
+    vs_main_buttonsPreviousState = vs_main_buttonsState;
 
-    a3 = D_8005E238;
-    for (i = 0; i < 32; ++i, a3 >>= 1) {
-        if (a3 & 1) {
+    btnState = vs_main_buttonsState;
+    for (i = 0; i < 32; ++i, btnState >>= 1) {
+        if (btnState & 1) {
             D_80055C90[i] += D_8005E24C;
         } else {
             D_80055C90[i] = 0;
         }
     }
 
-    D_8005DFDC = D_8005E1D0;
+    D_8005DFDC = vs_main_buttonsPressed;
 
     for (i = 0; i < 32; ++i) {
         if ((D_80055C90[i] >= 20) && !((D_80055C90[i] - 20) & 3)) {
@@ -1401,7 +1408,7 @@ int func_80043940()
         }
     }
 
-    if ((D_80055C88 != 0) && ((D_8005E1C0 & 0x90F) == 0x90F) && (D_8005E1D0 & 0x90F)) {
+    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & 0x90F) == 0x90F) && (vs_main_buttonsPressed & 0x90F)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
         vs_main_resetGame();
@@ -1412,8 +1419,8 @@ int func_80043940()
 
 static void freeHeapR(void* block)
 {
-    HeapHeader* var_a1 = heapA.prev;
-    HeapHeader* target = (HeapHeader*)block - 1;
+    vs_main_HeapHeader* var_a1 = heapA.prev;
+    vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
         if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
@@ -1442,8 +1449,8 @@ static void freeHeapR(void* block)
 
 void freeHeap(void* block)
 {
-    HeapHeader* var_a1 = heapA.next;
-    HeapHeader* target = (HeapHeader*)block - 1;
+    vs_main_HeapHeader* var_a1 = heapA.next;
+    vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
         if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
@@ -1472,8 +1479,8 @@ void freeHeap(void* block)
 
 static u_long* allocHeapR(u_int size)
 {
-    HeapHeader* var_a1;
-    HeapHeader* var_a2;
+    vs_main_HeapHeader* var_a1;
+    vs_main_HeapHeader* var_a2;
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
@@ -1503,8 +1510,8 @@ static u_long* allocHeapR(u_int size)
 u_long* allocHeap(u_int size)
 {
     u_int blockSz;
-    HeapHeader* var_a1;
-    HeapHeader* var_v1;
+    vs_main_HeapHeader* var_a1;
+    vs_main_HeapHeader* var_v1;
 
     var_v1 = &heapA;
     var_a1 = heapA.next;
@@ -1516,7 +1523,7 @@ u_long* allocHeap(u_int size)
                 var_v1->next = var_a1->next;
                 var_a1->next->prev = var_a1->prev;
             } else {
-                HeapHeader* temp_v1 = var_a1 + blockSz;
+                vs_main_HeapHeader* temp_v1 = var_a1 + blockSz;
                 temp_v1->blockSz = var_a1->blockSz - blockSz;
                 temp_v1->prev = var_a1->prev;
                 temp_v1->next = var_a1->next;
@@ -1534,7 +1541,7 @@ u_long* allocHeap(u_int size)
     }
 }
 
-static void initHeap(HeapHeader* node, u_int value)
+static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
 {
     heapA.prev = node;
     heapA.next = node;
@@ -1848,7 +1855,7 @@ static void func_800443CC()
                 ++D_80055D10.bufIndex;
                 if ((D_80055D10.bufIndex >= D_80055D10.unk8) && (func_80012C04() == 0)) {
                     D_80055D10.status = 0;
-                    freeHeapR((HeapHeader*)D_80050110);
+                    freeHeapR((vs_main_HeapHeader*)D_80050110);
                     D_80050110 = 0;
                 }
             }

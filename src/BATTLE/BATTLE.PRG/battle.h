@@ -29,7 +29,7 @@ void func_8008B430(u_char*, int);
 void func_8008EB30(int*);
 u_int* func_8008EB24();
 void func_800A0768(int, u_char*);
-void execBattle();
+void vs_battle_exec();
 
 extern u_short D_800F18E8;
 extern int D_800F19D0[];

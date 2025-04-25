@@ -167,7 +167,7 @@ tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 	@$(TOUCH) $@
 
 tools/.sysdeps:
-	@$(GIT) submodule update --init --recursive --remote
+	@$(GIT) submodule update --init --recursive
 	@$(WHICH) $(WHICHFLAGS) $(sysdeps) || ($(ECHO) One or more applications are missing: \\n \
 		$(sysdeps); false)
 	@$(TOUCH) $@

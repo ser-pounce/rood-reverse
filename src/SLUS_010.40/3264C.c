@@ -199,11 +199,11 @@ typedef struct {
     u_char hHi;
 } ImgHeader;
 
-void* debug_stack_p = (void*)0x200000;
-u_int debug_stack_sz = 0x4000;
-u_char buildTimestamp[] = "Mar 28 00:09\0\0\0";
+void* vs_main_debug_stack_p = (void*)0x200000;
+u_int vs_main_debug_stack_sz = 0x4000;
+u_char _buildTimestamp[] = "Mar 28 00:09\0\0\0";
 
-EMBED_RGBA16("build/assets/SLUS_010.40/vs_main_nowLoading.rgba16.bin", vs_main_nowLoading)
+EMBED_RGBA16("build/assets/SLUS_010.40/_nowLoading.rgba16.bin", _nowLoading)
 
 static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06,
     0x00, 0x04, 0x01, 0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
@@ -211,7 +211,7 @@ static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0
 static u_char actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-static int soundLBAs[] = {
+static int _soundLBAs[] = {
     VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA, VS_WAVE0003_DAT_LBA,
     VS_WAVE0004_DAT_LBA, VS_WAVE0005_DAT_LBA, VS_WAVE0006_DAT_LBA, VS_WAVE0007_DAT_LBA,
     VS_WAVE0008_DAT_LBA, VS_WAVE0009_DAT_LBA, VS_WAVE0010_DAT_LBA, VS_WAVE0011_DAT_LBA,
@@ -239,7 +239,7 @@ static int soundLBAs[] = {
     VS_WAVE0096_DAT_LBA, VS_WAVE0097_DAT_LBA, VS_WAVE0098_DAT_LBA, VS_WAVE0099_DAT_LBA
     // VS_WAVE0200_DAT_LBA # Unused
 };
-static int musicLBAs[] = { VS_MUSIC000_DAT_LBA, VS_MUSIC001_DAT_LBA, VS_MUSIC002_DAT_LBA,
+static int _musicLBAs[] = { VS_MUSIC000_DAT_LBA, VS_MUSIC001_DAT_LBA, VS_MUSIC002_DAT_LBA,
     VS_MUSIC003_DAT_LBA, VS_MUSIC004_DAT_LBA, VS_MUSIC005_DAT_LBA, VS_MUSIC006_DAT_LBA,
     VS_MUSIC007_DAT_LBA, VS_MUSIC008_DAT_LBA, VS_MUSIC009_DAT_LBA, VS_MUSIC010_DAT_LBA,
     VS_MUSIC011_DAT_LBA, VS_MUSIC012_DAT_LBA, VS_MUSIC013_DAT_LBA, VS_MUSIC014_DAT_LBA,
@@ -290,7 +290,7 @@ static int musicLBAs[] = { VS_MUSIC000_DAT_LBA, VS_MUSIC001_DAT_LBA, VS_MUSIC002
     VS_MUSIC191_DAT_LBA, VS_MUSIC192_DAT_LBA, VS_MUSIC193_DAT_LBA, VS_MUSIC194_DAT_LBA,
     VS_MUSIC195_DAT_LBA, VS_MUSIC196_DAT_LBA, VS_MUSIC197_DAT_LBA, VS_MUSIC198_DAT_LBA,
     VS_MUSIC199_DAT_LBA };
-static int seLBAs[] = { VS_SEP00000_DAT_LBA, VS_SEP00001_DAT_LBA, VS_SEP00002_DAT_LBA,
+static int _seLBAs[] = { VS_SEP00000_DAT_LBA, VS_SEP00001_DAT_LBA, VS_SEP00002_DAT_LBA,
     VS_SEP00003_DAT_LBA, VS_SEP00004_DAT_LBA, VS_SEP00005_DAT_LBA, VS_SEP00006_DAT_LBA,
     VS_SEP00007_DAT_LBA, VS_SEP00008_DAT_LBA, VS_SEP00009_DAT_LBA, VS_SEP00010_DAT_LBA,
     VS_SEP00011_DAT_LBA, VS_SEP00012_DAT_LBA, VS_SEP00013_DAT_LBA, VS_SEP00014_DAT_LBA,
@@ -316,7 +316,7 @@ static int seLBAs[] = { VS_SEP00000_DAT_LBA, VS_SEP00001_DAT_LBA, VS_SEP00002_DA
     VS_SEP00091_DAT_LBA, VS_SEP00092_DAT_LBA, VS_SEP00093_DAT_LBA, VS_SEP00094_DAT_LBA,
     VS_SEP00095_DAT_LBA, VS_SEP00096_DAT_LBA, VS_SEP00097_DAT_LBA, VS_SEP00098_DAT_LBA,
     VS_SEP00099_DAT_LBA };
-static int soundFileSizes[] = { VS_WAVE0000_DAT_SIZE, VS_WAVE0001_DAT_SIZE,
+static off_t _soundFileSizes[] = { VS_WAVE0000_DAT_SIZE, VS_WAVE0001_DAT_SIZE,
     VS_WAVE0002_DAT_SIZE, VS_WAVE0003_DAT_SIZE, VS_WAVE0004_DAT_SIZE,
     VS_WAVE0005_DAT_SIZE, VS_WAVE0006_DAT_SIZE, VS_WAVE0007_DAT_SIZE,
     VS_WAVE0008_DAT_SIZE, VS_WAVE0009_DAT_SIZE, VS_WAVE0010_DAT_SIZE,
@@ -350,7 +350,7 @@ static int soundFileSizes[] = { VS_WAVE0000_DAT_SIZE, VS_WAVE0001_DAT_SIZE,
     VS_WAVE0092_DAT_SIZE, VS_WAVE0093_DAT_SIZE, VS_WAVE0094_DAT_SIZE,
     VS_WAVE0095_DAT_SIZE, VS_WAVE0096_DAT_SIZE, VS_WAVE0097_DAT_SIZE,
     VS_WAVE0098_DAT_SIZE, VS_WAVE0099_DAT_SIZE };
-static int musicFileSizes[] = { VS_MUSIC000_DAT_SIZE, VS_MUSIC001_DAT_SIZE,
+static off_t _musicFileSizes[] = { VS_MUSIC000_DAT_SIZE, VS_MUSIC001_DAT_SIZE,
     VS_MUSIC002_DAT_SIZE, VS_MUSIC003_DAT_SIZE, VS_MUSIC004_DAT_SIZE,
     VS_MUSIC005_DAT_SIZE, VS_MUSIC006_DAT_SIZE, VS_MUSIC007_DAT_SIZE,
     VS_MUSIC008_DAT_SIZE, VS_MUSIC009_DAT_SIZE, VS_MUSIC010_DAT_SIZE,
@@ -417,7 +417,7 @@ static int musicFileSizes[] = { VS_MUSIC000_DAT_SIZE, VS_MUSIC001_DAT_SIZE,
     VS_MUSIC191_DAT_SIZE, VS_MUSIC192_DAT_SIZE, VS_MUSIC193_DAT_SIZE,
     VS_MUSIC194_DAT_SIZE, VS_MUSIC195_DAT_SIZE, VS_MUSIC196_DAT_SIZE,
     VS_MUSIC197_DAT_SIZE, VS_MUSIC198_DAT_SIZE, VS_MUSIC199_DAT_SIZE };
-static int seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
+static off_t _seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00002_DAT_SIZE, VS_SEP00003_DAT_SIZE, VS_SEP00004_DAT_SIZE,
     VS_SEP00005_DAT_SIZE, VS_SEP00006_DAT_SIZE, VS_SEP00007_DAT_SIZE,
     VS_SEP00008_DAT_SIZE, VS_SEP00009_DAT_SIZE, VS_SEP00010_DAT_SIZE,
@@ -451,7 +451,7 @@ static int seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00092_DAT_SIZE, VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE,
     VS_SEP00095_DAT_SIZE, VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE,
     VS_SEP00098_DAT_SIZE, VS_SEP00099_DAT_SIZE };
-static u_char soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69,
+static u_char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69,
     0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86, 87,
     80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11, 11,
     12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19,
@@ -604,14 +604,14 @@ static void vs_main_displayLoadingScreen()
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
     VSync(2);
-    setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2,
-        (224 - IMG_H(vs_main_nowLoading_header)) / 2, IMG_W(vs_main_nowLoading_header),
-        IMG_H(vs_main_nowLoading_header));
-    LoadImage(&rect, (u_long*)&vs_main_nowLoading_header + 1);
-    setRECT(&rect, ((320 - IMG_W(vs_main_nowLoading_header)) / 2) + 320,
-        (224 - IMG_H(vs_main_nowLoading_header)) / 2, IMG_W(vs_main_nowLoading_header),
-        IMG_H(vs_main_nowLoading_header));
-    LoadImage(&rect, (u_long*)&vs_main_nowLoading_header + 1);
+    setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
+        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
+        IMG_H(_nowLoading_header));
+    LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
+    setRECT(&rect, ((320 - IMG_W(_nowLoading_header)) / 2) + 320,
+        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
+        IMG_H(_nowLoading_header));
+    LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
 }
@@ -621,15 +621,15 @@ static void vs_main_bufferLoadingScreen()
     RECT rect;
 
     if (vs_main_frameBuf != 0) {
-        setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2,
-            (224 - IMG_H(vs_main_nowLoading_header)) / 2,
-            IMG_W(vs_main_nowLoading_header), IMG_H(vs_main_nowLoading_header));
+        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
+            (224 - IMG_H(_nowLoading_header)) / 2,
+            IMG_W(_nowLoading_header), IMG_H(_nowLoading_header));
     } else {
-        setRECT(&rect, (320 - IMG_W(vs_main_nowLoading_header)) / 2 + 320,
-            (224 - IMG_H(vs_main_nowLoading_header)) / 2,
-            IMG_W(vs_main_nowLoading_header), IMG_H(vs_main_nowLoading_header));
+        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2 + 320,
+            (224 - IMG_H(_nowLoading_header)) / 2,
+            IMG_W(_nowLoading_header), IMG_H(_nowLoading_header));
     }
-    LoadImage(&rect, vs_main_nowLoading_data);
+    LoadImage(&rect, _nowLoading_data);
     DrawSync(0);
 }
 
@@ -2144,8 +2144,8 @@ static int func_80045110(int arg0, int arg1)
                     }
                 } while (0);
 
-                cdFile.lba = musicLBAs[arg0];
-                cdFile.size = musicFileSizes[arg0];
+                cdFile.lba = _musicLBAs[arg0];
+                cdFile.size = _musicFileSizes[arg0];
 
                 if ((D_8005E038.unk34[arg] != 0)
                     && (D_8005E038.unk34[arg] != (vs_main_CdQueueSlot*)-1)) {
@@ -2576,8 +2576,8 @@ int func_80045DE0(int id, int slot)
     if ((slot - 1u) < 3) {
         if (D_8005E038.unk4C[(slot - 1)] == 0) {
             new_var = slot - 1;
-            cdFile.lba = seLBAs[id];
-            cdFile.size = seFileSizes[id];
+            cdFile.lba = _seLBAs[id];
+            cdFile.size = _seFileSizes[id];
 
             if ((D_8005E038.unk58[new_var] != 0)
                 && (D_8005E038.unk58[new_var] != (vs_main_CdQueueSlot*)-1)) {
@@ -2901,8 +2901,8 @@ static void func_80046678(int file)
     if (((new_var - (var_a0 << 0x10)) == file) || (var_a0 == file)) {
         return;
     }
-    cdFile.lba = soundLBAs[file];
-    cdFile.size = soundFileSizes[file];
+    cdFile.lba = _soundLBAs[file];
+    cdFile.size = _soundFileSizes[file];
 
     if (D_8005E0BC) {
         if (D_8005E0BC != (-1)) {
@@ -2919,7 +2919,7 @@ static void func_80046678(int file)
     func_80044BC4(D_8005E038.unk84, D_8005E038.unk80);
 }
 
-static void func_80046770(int arg0) { func_80046678(soundFileMap[arg0]); }
+static void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
 
 static int func_800467A0()
 {

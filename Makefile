@@ -62,7 +62,7 @@ makefiles  := $(binaries:%=config/%/Makefile)
 ifneq ($(wildcard build/src),)
 deps != $(FIND) build/src -type f -name *.d
 endif
-build_deps := $(DUMPISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
+build_deps := $(DUMPSXISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst build/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
@@ -135,7 +135,7 @@ nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 ifeq ($(PERMUTER),)
 .PRECIOUS: data/%
 data/%: | disks/$(disk).bin $(build_deps)
-	$(DUMPISO) $(DUMPISOFLAGS) disks/$(disk).bin
+	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin
 endif
 
 build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
@@ -153,7 +153,7 @@ disks/$(disk).bin:
 
 $(build_deps): | tools/.sysdeps
 
-$(DUMPISO):
+$(DUMPSXISO):
 	@$(CMAKE) -S tools/mkpsxiso -B tools/mkpsxiso/build --preset release --log-level=ERROR
 	@$(CMAKE) --build tools/mkpsxiso/build -j --config Release
 

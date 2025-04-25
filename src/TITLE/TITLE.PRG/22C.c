@@ -497,7 +497,7 @@ int func_8006A49C(int arg0)
     u_int event;
 
     if (arg0 != 0) {
-        D_800DEAB8[0] = allocHeap(0x1C000U);
+        D_800DEAB8[0] = vs_main_allocHeap(0x1C000U);
         D_800DEABC = (u_int*)D_800DEAB8[0] + 0x4500;
         D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
         D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);
@@ -571,7 +571,7 @@ void func_8006A6E0()
 
     ExitCriticalSection();
     func_80042C94(1);
-    freeHeap(D_800DEAB8[0]);
+    vs_main_freeHeap(D_800DEAB8[0]);
 }
 
 void func_8006A778(int arg0, int arg1, int arg2, int arg3)
@@ -1467,11 +1467,11 @@ void func_8006F81C()
 {
     dslMode = 0x1E0;
     DsIntToPos(0x3EBE8, &introMovieLoc);
-    D_800DEDE0 = allocHeap(0x20000);
-    D_800EFDE8 = allocHeap(0x23000);
-    D_800EFDEC = allocHeap(0x23000);
-    D_800EFDF0 = allocHeap(0x2A00);
-    D_800EFDF4 = allocHeap(0x2A00);
+    D_800DEDE0 = vs_main_allocHeap(0x20000);
+    D_800EFDE8 = vs_main_allocHeap(0x23000);
+    D_800EFDEC = vs_main_allocHeap(0x23000);
+    D_800EFDF0 = vs_main_allocHeap(0x2A00);
+    D_800EFDF4 = vs_main_allocHeap(0x2A00);
     func_8006F0A0(&D_800DEDA8, 0, 0, 0, 0xE0);
     func_8006F108(&introMovieLoc, func_8006F174);
     DecDCTvlcBuild(&D_800DEDE8);
@@ -1492,11 +1492,11 @@ void func_8006F954()
     StUnSetRing();
     while (DsControlB(9U, 0, 0) == 0)
         ;
-    freeHeap(D_800EFDF4);
-    freeHeap(D_800EFDF0);
-    freeHeap(D_800EFDEC);
-    freeHeap(D_800EFDE8);
-    freeHeap(D_800DEDE0);
+    vs_main_freeHeap(D_800EFDF4);
+    vs_main_freeHeap(D_800EFDF0);
+    vs_main_freeHeap(D_800EFDEC);
+    vs_main_freeHeap(D_800EFDE8);
+    vs_main_freeHeap(D_800DEDE0);
     SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
@@ -1607,7 +1607,7 @@ u_long* func_8006FEC4(int arg0)
     func_8006FC34(arg0, 0x40);
     func_8006FC34((arg0 + 1) & 3, 0x60);
     func_8006FC34((arg0 + 3) & 3, 0x20);
-    temp_s4 = allocHeap(0x22380);
+    temp_s4 = vs_main_allocHeap(0x22380);
     temp_s0 = temp_s4 + 0x2800;
     temp_a1 = temp_s0;
     setRECT(&rect, 0xC0, 0x1C0, 0xA0, 0x40);
@@ -1623,7 +1623,7 @@ u_long* func_8006FEC4(int arg0)
     return temp_s4;
 }
 
-void func_80070004(void* arg0) { freeHeap(arg0); }
+void func_80070004(void* arg0) { vs_main_freeHeap(arg0); }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070024);
 

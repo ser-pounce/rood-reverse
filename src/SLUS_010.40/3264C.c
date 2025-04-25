@@ -1013,7 +1013,7 @@ static void vs_main_padResetDefaults(
         port->actData[0] = 0x40;
         port->actData[1] = 0;
     }
-    PadSetAct(portID, port->actData, 2);
+    PadSetAct(portID, port->actData, sizeof(port->actData));
     PadSetActAlign(portID, vs_main_actParams);
 }
 
@@ -1087,7 +1087,7 @@ static void vs_main_padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
         vs_main_portInfo[port].actData[pos] = val;
-    } else if (vs_main_portInfo[port].exId != 0) {
+    } else if (vs_main_portInfo[port].exId) {
         vs_main_portInfo[port].actData[0] = val;
     } else {
         vs_main_portInfo[port].actData[0] = 0x40;
@@ -1230,6 +1230,8 @@ static void func_80043668()
     }
 }
 
+static inline int _abs2(int arg) { return arg < 0 ? arg += 0xFF : arg; }
+
 void func_800436B4()
 {
     int temp_a0;
@@ -1290,22 +1292,14 @@ void func_800436B4()
             if (D_80050118[j].unk8 == 0) {
                 D_80050118[j].unkC = 0;
             }
-        } else {
-            D_80050118[j].unk8 = 0;
+            continue;
         }
+        D_80050118[j].unk8 = 0;
     }
 
     if (D_8006002B != 0) {
-        var_a2_2 = D_80050118[0].unk0[0];
-        if (var_a2_2 < 0) {
-            var_a2_2 += 0xFF;
-        }
-        vs_main_padSetActData(0, 0, (var_a2_2 >> 8));
-        var_v0 = D_80050118[0].unk0[1];
-        if (var_v0 < 0) {
-            var_v0 += 0xFF;
-        }
-        vs_main_padSetActData(0, 1, (var_v0 >> 8));
+        vs_main_padSetActData(0, 0, _abs2(D_80050118[0].unk0[0]) >> 8);
+        vs_main_padSetActData(0, 1, _abs2(D_80050118[0].unk0[1]) >> 8);
     }
 }
 
@@ -1340,51 +1334,53 @@ int func_80043940()
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(16, vs_main_padBuffer[1]);
 
-    if (vs_main_portInfo[0].mode != 4) {
-        if (vs_main_portInfo[0].mode == 7) {
-            vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
-            vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
-            vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
-            vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
+    switch (vs_main_portInfo[0].mode) {
+    case 4:
+        vs_main_stickPosBuf.lStickY = 128;
+        vs_main_stickPosBuf.lStickX = 128;
+        vs_main_stickPosBuf.rStickY = 128;
+        vs_main_stickPosBuf.rStickX = 128;
+        break;
+    case 7:
+        vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
+        vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
+        vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
+        vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
 
-            if (vs_main_portInfo[0].rStickX < 16) {
-                vs_main_buttonsState |= PADLleft;
-            }
-            if (vs_main_portInfo[0].rStickX >= 241) {
-                vs_main_buttonsState |= PADLright;
-            }
-
-            if (vs_main_portInfo[0].rStickY < 16) {
-                vs_main_buttonsState |= PADLup;
-            }
-            if (vs_main_portInfo[0].rStickY >= 241) {
-                vs_main_buttonsState |= PADLdown;
-            }
-
-            if (vs_main_portInfo[0].lStickX < 32) {
-                vs_main_buttonsState |= PADj;
-            }
-            if (vs_main_portInfo[0].lStickX >= 225) {
-                vs_main_buttonsState |= PADj;
-            }
-
-            if (vs_main_portInfo[0].lStickY < 32) {
-                vs_main_buttonsState |= PADj;
-            }
-            if (vs_main_portInfo[0].lStickY >= 225) {
-                vs_main_buttonsState |= PADj;
-            }
-        } else {
-            vs_main_stickPosBuf.lStickY = 0x80;
-            vs_main_stickPosBuf.lStickX = 0x80;
-            vs_main_stickPosBuf.rStickY = 0x80;
-            vs_main_stickPosBuf.rStickX = 0x80;
+        if (vs_main_portInfo[0].rStickX < 16) {
+            vs_main_buttonsState |= PADLleft;
         }
-    } else {
-        vs_main_stickPosBuf.lStickY = 0x80;
-        vs_main_stickPosBuf.lStickX = 0x80;
-        vs_main_stickPosBuf.rStickY = 0x80;
-        vs_main_stickPosBuf.rStickX = 0x80;
+        if (vs_main_portInfo[0].rStickX >= 241) {
+            vs_main_buttonsState |= PADLright;
+        }
+
+        if (vs_main_portInfo[0].rStickY < 16) {
+            vs_main_buttonsState |= PADLup;
+        }
+        if (vs_main_portInfo[0].rStickY >= 241) {
+            vs_main_buttonsState |= PADLdown;
+        }
+
+        if (vs_main_portInfo[0].lStickX < 32) {
+            vs_main_buttonsState |= PADj;
+        }
+        if (vs_main_portInfo[0].lStickX >= 225) {
+            vs_main_buttonsState |= PADj;
+        }
+
+        if (vs_main_portInfo[0].lStickY < 32) {
+            vs_main_buttonsState |= PADj;
+        }
+        if (vs_main_portInfo[0].lStickY >= 225) {
+            vs_main_buttonsState |= PADj;
+        }
+        break;
+    default:
+        vs_main_stickPosBuf.lStickY = 128;
+        vs_main_stickPosBuf.lStickX = 128;
+        vs_main_stickPosBuf.rStickY = 128;
+        vs_main_stickPosBuf.rStickX = 128;
+        break;
     }
 
     vs_main_buttonsPressed = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
@@ -1410,7 +1406,8 @@ int func_80043940()
 
 #define RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
 
-    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET) && (vs_main_buttonsPressed & RESET)) {
+    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET)
+        && (vs_main_buttonsPressed & RESET)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
         vs_main_resetGame();
@@ -1419,7 +1416,7 @@ int func_80043940()
     return 1;
 }
 
-static void freeHeapR(void* block)
+static void vs_main_freeHeapR(void* block)
 {
     vs_main_HeapHeader* var_a1 = heapA.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
@@ -1449,7 +1446,7 @@ static void freeHeapR(void* block)
     target->prev = var_a1;
 }
 
-void freeHeap(void* block)
+void vs_main_freeHeap(void* block)
 {
     vs_main_HeapHeader* var_a1 = heapA.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
@@ -1479,7 +1476,7 @@ void freeHeap(void* block)
     target->prev = var_a1;
 }
 
-static u_long* allocHeapR(u_int size)
+static u_long* vs_main_allocHeapR(u_int size)
 {
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_a2;
@@ -1509,7 +1506,7 @@ static u_long* allocHeapR(u_int size)
     }
 }
 
-u_long* allocHeap(u_int size)
+u_long* vs_main_allocHeap(u_int size)
 {
     u_int blockSz;
     vs_main_HeapHeader* var_a1;
@@ -1850,14 +1847,14 @@ static void func_800443CC()
                 ++D_80055D10.bufIndex;
                 if (D_80055D10.bufIndex >= D_80055D10.unk8) {
                     D_80055D10.status = 0;
-                    freeHeapR(D_80050110);
+                    vs_main_freeHeapR(D_80050110);
                     D_80050110 = 0;
                 }
             } else if (D_80055D10.unk2C == 2) {
                 ++D_80055D10.bufIndex;
                 if ((D_80055D10.bufIndex >= D_80055D10.unk8) && (func_80012C04() == 0)) {
                     D_80055D10.status = 0;
-                    freeHeapR((vs_main_HeapHeader*)D_80050110);
+                    vs_main_freeHeapR((vs_main_HeapHeader*)D_80050110);
                     D_80050110 = 0;
                 }
             }
@@ -2165,7 +2162,7 @@ static int func_80045110(int arg0, int arg1)
                 if (D_8005E038.unk24[arg] != 0) {
                     nop9(0x8E, 0);
                 }
-                D_8005E038.unk24[arg] = allocHeapR(cdFile.size);
+                D_8005E038.unk24[arg] = vs_main_allocHeapR(cdFile.size);
                 func_80044BC4(D_8005E038.unk34[arg], D_8005E038.unk24[arg]);
                 D_8005E038.unk10[arg] = arg0;
             }
@@ -2256,7 +2253,7 @@ static int func_80045440(int arg0)
         return 0;
     }
 
-    freeHeapR(D_8005E038.unk24[arg0 - 1]);
+    vs_main_freeHeapR(D_8005E038.unk24[arg0 - 1]);
     D_8005E038.unk24[arg0 - 1] = 0;
     D_8005E038.unk10[arg0 - 1] = 0;
     return 1;
@@ -2599,7 +2596,7 @@ int func_80045DE0(int id, int slot)
             }
 
             D_8005E038.unk48[new_var] = id;
-            D_8005E038.unk4C[new_var] = allocHeapR(cdFile.size);
+            D_8005E038.unk4C[new_var] = vs_main_allocHeapR(cdFile.size);
             func_80044BC4(D_8005E038.unk58[new_var], D_8005E038.unk4C[new_var]);
 
             return slot;
@@ -2685,7 +2682,7 @@ static int func_800460C0(u_int arg0)
             }
             func_80012288(-2, 0);
             func_80012288(0, 0xFF000);
-            freeHeapR(D_8005E038.unk4C[arg0 - 1]);
+            vs_main_freeHeapR(D_8005E038.unk4C[arg0 - 1]);
             D_8005E038.unk48[arg0 - 1] = 0;
             D_8005E038.unk4C[arg0 - 1] = 0;
             return 1;
@@ -2864,7 +2861,7 @@ static int func_8004659C(int arg0)
     if ((arg0 - 1u) < 3) {
         if (D_8005E038.unk64[arg0 - 1] != 0) {
             func_80013328();
-            freeHeapR(D_8005E038.unk64[arg0 - 1]);
+            vs_main_freeHeapR(D_8005E038.unk64[arg0 - 1]);
             D_8005E038.unk64[arg0 - 1] = 0;
             return 1;
         }
@@ -2922,7 +2919,7 @@ static void func_80046678(int file)
         nop9(0x94, 0);
     }
     new_var = 1;
-    D_8005E038.unk80 = allocHeapR(cdFile.size);
+    D_8005E038.unk80 = vs_main_allocHeapR(cdFile.size);
     D_8005E038.fileId = file;
     func_80044BC4(D_8005E038.unk84, D_8005E038.unk80);
 }
@@ -2939,7 +2936,7 @@ static int func_800467A0()
             if (temp_v0 == 0) {
                 func_80044B80(D_8005E038.unk84);
                 D_8005E038.unk84 = 0;
-                freeHeapR(D_8005E038.unk80);
+                vs_main_freeHeapR(D_8005E038.unk80);
                 D_8005E038.unk80 = 0;
                 D_8005E038.fileId = 0;
                 return 0;
@@ -2947,7 +2944,7 @@ static int func_800467A0()
             if (temp_v0 == -1) {
                 func_80044B80(D_8005E038.unk84);
                 D_8005E038.unk84 = 0;
-                freeHeapR(D_8005E038.unk80);
+                vs_main_freeHeapR(D_8005E038.unk80);
                 D_8005E038.unk80 = 0;
                 D_8005E038.fileId = 0;
                 return -1;
@@ -2962,7 +2959,7 @@ static int func_800467A0()
         if (D_8005E038.unk84->unk0[0] == 6) {
             func_80044B80(D_8005E038.unk84);
             D_8005E038.unk84 = 0;
-            freeHeapR(D_8005E038.unk80);
+            vs_main_freeHeapR(D_8005E038.unk80);
             D_8005E038.unk80 = 0;
             D_8005E038.fileId = 0;
             return -1;
@@ -2991,18 +2988,18 @@ void func_800468FC()
 
     func_80011DAC();
     func_80013230(0x7F);
-    temp_v0 = allocHeapR(0x8800);
+    temp_v0 = vs_main_allocHeapR(0x8800);
     func_8004493C(0xF618, 0x8800, temp_v0);
     func_80012BB8(temp_v0, 1);
-    freeHeapR(temp_v0);
-    temp_v0 = allocHeapR(0x12000);
+    vs_main_freeHeapR(temp_v0);
+    temp_v0 = vs_main_allocHeapR(0x12000);
     func_8004493C(0xF62D, 0x12000, temp_v0);
     func_80012BB8(temp_v0, 1);
-    freeHeapR(temp_v0);
-    temp_v0 = allocHeapR(0x18800);
+    vs_main_freeHeapR(temp_v0);
+    temp_v0 = vs_main_allocHeapR(0x18800);
     func_8004493C(0x10C65, 0x18800, temp_v0);
     func_800131DC(temp_v0, 0, 1);
-    freeHeapR(temp_v0);
+    vs_main_freeHeapR(temp_v0);
     func_8004493C(0x128E0, 0x5800, &D_80050478);
     func_80011DEC(D_80050478);
     D_8005FE70 = 1;

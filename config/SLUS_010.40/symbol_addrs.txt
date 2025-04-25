@@ -2,10 +2,10 @@
 
 vs_overlay_slots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
-getSp = 0x80010AA4;
+vs_overlay_getSp = 0x80010AA4;
 vs_overlay_jumpToTitle = 0x80010AB4;
-jumpToBattle = 0x80010AC4;
-wait = 0x80010AD4;
+vs_overlay_jumpToBattle = 0x80010AC4;
+vs_overlay_wait = 0x80010AD4;
 _patch_gte = 0x80011CCC;
 vs_sound_Shutdown = 0x80011DCC;
 spuWriteComplete = 0x8001347C;

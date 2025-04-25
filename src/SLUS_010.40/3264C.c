@@ -160,7 +160,7 @@ typedef struct D_80061068_t {
 void __main();
 static void func_80042998();
 static void func_80042A64();
-static void do_wait();
+static void vs_main_wait();
 static void padForceMode();
 static void padResetDefaults(int, void*);
 static void vs_main_padConnect(int, void*);
@@ -188,7 +188,6 @@ static void nop9(int, int);
 static void nop10(int, int);
 void func_8006A5C0();
 int titlePrgMain();
-void execBattle();
 static void initRand();
 static void initHeap(HeapHeader* node, u_int value);
 
@@ -451,16 +450,16 @@ static off_t _seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE,
     VS_SEP00092_DAT_SIZE, VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE,
     VS_SEP00095_DAT_SIZE, VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE,
     VS_SEP00098_DAT_SIZE, VS_SEP00099_DAT_SIZE };
-static u_char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69,
-    0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86, 87,
-    80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11, 11,
-    12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19,
-    19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 25, 25,
-    25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98, 95, 96,
-    97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0, 0, 78,
-    89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63, 63,
-    52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static u_char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69,
+    69, 0, 69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86,
+    87, 80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11,
+    11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18,
+    19, 19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 25,
+    25, 25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98, 95,
+    96, 97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0, 0,
+    78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63,
+    63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 extern char D_8004B278[63][16];
 extern char D_8004B668[63][8];
 extern char D_8004B860[63][4];
@@ -542,7 +541,7 @@ static void vs_main_loadBattlePrg()
     }
 
     func_80044B80(slot);
-    do_wait();
+    vs_main_wait();
 }
 
 static void vs_main_loadTitlePrg()
@@ -561,7 +560,7 @@ static void vs_main_loadTitlePrg()
     }
 
     func_80044B80(temp_v0);
-    do_wait();
+    vs_main_wait();
 }
 
 static void vs_main_loadEndingPrg()
@@ -580,7 +579,7 @@ static void vs_main_loadEndingPrg()
     }
 
     func_80044B80(temp_v0);
-    do_wait();
+    vs_main_wait();
 }
 
 static void vs_main_initScreen(int w, int h, int arg2 __attribute__((unused)),
@@ -622,12 +621,12 @@ static void vs_main_bufferLoadingScreen()
 
     if (vs_main_frameBuf != 0) {
         setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
-            (224 - IMG_H(_nowLoading_header)) / 2,
-            IMG_W(_nowLoading_header), IMG_H(_nowLoading_header));
+            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
+            IMG_H(_nowLoading_header));
     } else {
         setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2 + 320,
-            (224 - IMG_H(_nowLoading_header)) / 2,
-            IMG_W(_nowLoading_header), IMG_H(_nowLoading_header));
+            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
+            IMG_H(_nowLoading_header));
     }
     LoadImage(&rect, _nowLoading_data);
     DrawSync(0);
@@ -669,7 +668,7 @@ static void func_80042420()
     vs_main_displayLoadingScreen();
     vs_main_loadBattlePrg();
     D_80050470 = 1;
-    jumpToBattle(&sp);
+    vs_overlay_jumpToBattle(&sp);
 }
 
 static void func_800424E4()
@@ -857,16 +856,16 @@ static void func_80042A64()
     D_80060068.unk0 = 0;
 }
 
-int execTitle()
+int vs_main_execTitle()
 {
-    getSp(&sp);
+    vs_overlay_getSp(&sp);
     func_80042A64();
     vs_main_loadTitlePrg();
     D_80050470 = titlePrgMain();
     D_8005E214 = 0;
     vs_main_displayLoadingScreen();
     vs_main_loadBattlePrg();
-    getSp(&sp);
+    vs_overlay_getSp(&sp);
     D_8005E240 = 1;
     execBattle();
     SetDispMask(0);
@@ -878,11 +877,11 @@ void main_()
 {
     __main();
     func_80042998();
-    getSp(&sp2);
-    execTitle();
+    vs_overlay_getSp(&sp2);
+    vs_main_execTitle();
 }
 
-static void do_wait() { wait(); }
+static void vs_main_wait() { vs_overlay_wait(); }
 
 void func_80042C94(int arg0) { D_80055C88 = arg0; }
 

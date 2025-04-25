@@ -1348,31 +1348,31 @@ int func_80043940()
             vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
 
             if (vs_main_portInfo[0].rStickX < 16) {
-                vs_main_buttonsState |= 0x8000;
+                vs_main_buttonsState |= PADLleft;
             }
             if (vs_main_portInfo[0].rStickX >= 241) {
-                vs_main_buttonsState |= 0x2000;
+                vs_main_buttonsState |= PADLright;
             }
 
             if (vs_main_portInfo[0].rStickY < 16) {
-                vs_main_buttonsState |= 0x1000;
+                vs_main_buttonsState |= PADLup;
             }
             if (vs_main_portInfo[0].rStickY >= 241) {
-                vs_main_buttonsState |= 0x4000;
+                vs_main_buttonsState |= PADLdown;
             }
 
             if (vs_main_portInfo[0].lStickX < 32) {
-                vs_main_buttonsState |= 0x400;
+                vs_main_buttonsState |= PADj;
             }
             if (vs_main_portInfo[0].lStickX >= 225) {
-                vs_main_buttonsState |= 0x400;
+                vs_main_buttonsState |= PADj;
             }
 
             if (vs_main_portInfo[0].lStickY < 32) {
-                vs_main_buttonsState |= 0x400;
+                vs_main_buttonsState |= PADj;
             }
             if (vs_main_portInfo[0].lStickY >= 225) {
-                vs_main_buttonsState |= 0x400;
+                vs_main_buttonsState |= PADj;
             }
         } else {
             vs_main_stickPosBuf.lStickY = 0x80;
@@ -1408,7 +1408,9 @@ int func_80043940()
         }
     }
 
-    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & 0x90F) == 0x90F) && (vs_main_buttonsPressed & 0x90F)) {
+#define RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
+
+    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET) && (vs_main_buttonsPressed & RESET)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
         vs_main_resetGame();

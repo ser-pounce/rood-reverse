@@ -50,5 +50,6 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 - `make decompme TARGET=path/to/nonmatchings/source.asm` uploads the target function to a new decomp.me scratch.
 - `make permute TARGET=path/to/nonmatchings/source.asm` invokes the permuter for the target assembly file. 
 - `make remake -j` will delete and re-split the targets; this can be necessary if the dependency management has failed to identify everything that needs rebuilding (in which case a bug report is appreciated!), or if the configuration has changed enough to be no longer valid (e.g. orphaned .d files). It's good practice to run this before submitting a pull request to make sure everything still works.
+- `make format` formats the source files and symbol addresses for consistency. Please run this before submitting a PR.
 - `make clean` simply deletes the `build` directory
 - `make clean-all` will completely reset the project, including dropping any source changes and data files (but not the disk image). Use with caution.

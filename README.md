@@ -16,6 +16,10 @@ Thanks also to the following amazing projects (and their dependencies):
 - [Old GCC](https://github.com/decompals/old-gcc)
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
 
+## Status
+A significant portion of the main exectuable, including most of the code that handles broad transitions between the game modules, disk and file management, and memory management, has been [decompiled](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/3264C.c).
+Some progress has also been made in the game's [sound module](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/25AC.c), and the [title screen](https://github.com/ser-pounce/rood-reverse/blob/main/src/TITLE/TITLE.PRG/22C.c).
+
 ## (Naive) Quickstart
 1. Fork the project
 2. Install system dependencies and copy disk image (see "Setup" below)

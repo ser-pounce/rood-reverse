@@ -245,6 +245,7 @@ EnablePAD = 0x8002ED74;
 DisablePAD = 0x8002ED88;
 _card_format = 0x8002F284;
 StCdIntrFlag = 0x80039C14;
+vs_math_cosine = 0x80040F24;
 ApplyRotMatrix = 0x80041508;
 SetGeomScreen = 0x80041534;
 SetGeomOffset = 0x80041540;

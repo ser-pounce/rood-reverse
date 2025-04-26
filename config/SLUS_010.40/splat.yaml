@@ -229,11 +229,12 @@ segments:
       - [0x23E90, data]
       - [0x306C8, .data, libapi/CHCLRPAD]
       - [0x306D8, data]
-  - start: 0x31418
+  - start: 0x30A10
     type: code
-    vram: 0x80040C18
+    vram: 0x80040210
     align: 4
     subsegments:
+      - [0x30A10, .rodata, 31724]
       - [0x31418, .rodata, 32154]
       - [0x31724, c] # Custom gte funcs ?
       - [0x31D08, c, libgte/MTX_005] # |

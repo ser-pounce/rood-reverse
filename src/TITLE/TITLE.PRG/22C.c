@@ -1,5 +1,5 @@
 #include "22C.h"
-#include "../SLUS_010.40/3264C.h"
+#include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
 #include "common.h"
 #include <libapi.h>

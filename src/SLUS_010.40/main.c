@@ -1,4 +1,4 @@
-#include "3264C.h"
+#include "main.h"
 #include "common.h"
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"

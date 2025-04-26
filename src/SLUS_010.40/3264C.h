@@ -25,7 +25,7 @@ int func_8004261C(int);
 void func_80042C94(int);
 void func_80042CA0();
 void func_800436B4();
-int func_80043940();
+int vs_main_processPadState();
 void vs_main_freeHeap(void*);
 u_long* vs_main_allocHeap(u_int);
 void func_80045988(int, int);

@@ -109,15 +109,24 @@ typedef struct {
     D_8005DC80_t unk7F28[17];
 } D_80055D58_t;
 
+enum DiskState {
+
+    diskIdle = 0,
+    diskSeekReady = 1,
+    diskReadReady = 2,
+    diskReadError = 4,
+    diskReadInit = 5
+};
+
 typedef struct {
-    u_char status;
+    u_char state;
     u_char unk1;
     u_char unk2;
     u_char unk3;
     u_int unk4;
-    u_int unk8;
+    u_int sectorCount;
     int cdSector;
-    int sectorCount;
+    int byteCount;
     void* vram;
     DslFILTER pcm;
     DslLOC cdLoc;
@@ -125,13 +134,13 @@ typedef struct {
     int unk24;
     int unk28;
     u_int unk2C;
-    u_int bufIndex;
+    u_int sectorBufIndex;
     int unk34;
     u_int unk38;
     u_int unk3C;
     u_int unk40;
     int unk44;
-} D_80055D10_t;
+} vs_main_disk_t;
 
 typedef union {
     short s[0];
@@ -173,11 +182,11 @@ static void vs_main_padForceMode();
 static void vs_main_padResetDefaults(int, u_char[34]);
 static void vs_main_padConnect(int, u_char[34]);
 static void vs_main_padSetActData(int arg0, int arg1, int arg2);
-static int getCdStatus();
+static int vs_main_diskGetState();
 void func_80042CB0();
 static void func_80043668();
 static void vs_main_initCdQueue();
-static void func_80044A60();
+static void vs_main_diskReset();
 static void vs_main_populateQueueSlot(vs_main_CdQueueSlot*, void*);
 static void func_80044C74();
 static int func_80045440(int arg0);
@@ -492,8 +501,8 @@ extern int D_80050478[];
 extern int sp2;
 extern int D_80055C88;
 extern u_int D_80055C90[];
-extern D_80055D10_t D_80055D10;
-extern u_char dsControlBuf[11];
+extern vs_main_disk_t vs_main_disk;
+extern u_char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
 extern u_char vs_main_padBuffer[2][34];
@@ -854,7 +863,7 @@ static void func_80042A64()
     VSyncCallback(vSyncVoidCallback);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000U);
     vs_main_initCdQueue();
-    func_80044A60();
+    vs_main_diskReset();
     func_800468FC();
     func_80043668();
     D_8005E240 = 0;
@@ -1323,7 +1332,7 @@ static void func_800438C8(int arg0)
     }
 }
 
-int func_80043940()
+int vs_main_processPadState()
 {
     int dummy[2];
     int i;
@@ -1553,14 +1562,15 @@ static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
     heapB.blockSz = 0;
 }
 
-void diskReadCallback(u_char intr, u_char* result __attribute__((unused)),
+void vs_main_diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
     u_long* arg2 __attribute__((unused)))
 {
 
-    if ((intr == DslDiskError) || (intr == DslNoIntr) || (D_80055D10.status == 4)) {
+    if ((intr == DslDiskError) || (intr == DslNoIntr)
+        || (vs_main_disk.state == diskReadError)) {
         DsReadyCallback(0);
         DsEndReadySystem();
-        D_80055D10.status = 4;
+        vs_main_disk.state = diskReadError;
         return;
     }
 
@@ -1568,128 +1578,130 @@ void diskReadCallback(u_char intr, u_char* result __attribute__((unused)),
         return;
     }
 
-    D_80055D10.status = 2;
+    vs_main_disk.state = diskReadReady;
 
-    if (D_80055D10.unk2C == 0) {
-        DsGetSector((u_char*)D_80055D10.vram + D_80055D10.bufIndex * 2048, 512);
+    if (vs_main_disk.unk2C == 0) {
+        DsGetSector((u_char*)vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
-        DsGetSector(D_80050110 + D_80055D10.unk3C * 128, 512);
-        if (++D_80055D10.unk3C >= 16) {
-            D_80055D10.unk3C = 0;
+        DsGetSector(D_80050110 + vs_main_disk.unk3C * 128, 512);
+        if (++vs_main_disk.unk3C >= 16) {
+            vs_main_disk.unk3C = 0;
         }
     }
 
-    switch (D_80055D10.unk2C) {
+    switch (vs_main_disk.unk2C) {
     case 0:
-        if (++D_80055D10.bufIndex >= D_80055D10.unk8) {
-            D_80055D10.status = 0;
+        if (++vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
+            vs_main_disk.state = 0;
         }
         break;
     case 1:
-        ++D_80055D10.unk38;
-        ++D_80055D10.unk34;
+        ++vs_main_disk.unk38;
+        ++vs_main_disk.unk34;
         break;
     case 2:
-        ++D_80055D10.unk38;
-        if (++D_80055D10.unk40 >= 16) {
-            D_80055D10.unk40 = 0;
+        ++vs_main_disk.unk38;
+        if (++vs_main_disk.unk40 >= 16) {
+            vs_main_disk.unk40 = 0;
         }
         break;
     default:
         break;
     }
 
-    if (++D_80055D10.unk4 >= D_80055D10.unk8) {
+    if (++vs_main_disk.unk4 >= vs_main_disk.sectorCount) {
         DsEndReadySystem();
     }
 }
 
-static void cdReadCb(u_char arg0, u_char* arg1 __attribute__((unused)))
+static void vs_main_diskReadCommandCallback(
+    u_char intr, u_char result[] __attribute__((unused)))
 {
-    switch (arg0) {
-    case 2:
-        DsStartReadySystem(diskReadCallback, -1);
+    switch (intr) {
+    case DslComplete:
+        DsStartReadySystem(vs_main_diskReadCallback, -1);
         return;
-    case 5:
+    case DslDiskError:
         break;
     default:
         break;
-    case 6:
-    case 0:
+    case DslNoResult:
+    case DslNoIntr:
         return;
     }
-    D_80055D10.status = 4;
+    vs_main_disk.state = diskReadError;
 }
 
-static void cdSeekCb(u_char arg0, u_char* arg1 __attribute__((unused)))
+static void vs_main_diskSeekCommandCallback(
+    u_char intr, u_char result[] __attribute__((unused)))
 {
-    switch (arg0) {
-    case 0:
+    switch (intr) {
+    case DslNoIntr:
         break;
-    case 2:
-        D_80055D10.status = 0;
+    case DslComplete:
+        vs_main_disk.state = diskIdle;
         break;
-    case 5:
-        D_80055D10.status = 4;
+    case DslDiskError:
+        vs_main_disk.state = diskReadError;
         break;
-    case 6:
+    case DslNoResult:
         break;
     default:
-        D_80055D10.status = 4;
+        vs_main_disk.state = diskReadError;
         break;
     }
 }
 
-static void pcmReadReady(u_char intr, u_char arg1[])
+static void vs_main_diskPcmReadReady(u_char intr, u_char result[])
 {
     switch (intr) {
     case DslComplete:
         DsReadyCallback(NULL);
-        D_80055D10.status = 0;
+        vs_main_disk.state = diskIdle;
         break;
     case DslDataReady:
-        if (!(arg1[4] & 0x80)) {
-            D_800501CC = ((arg1[1] >> 4) * 0xA) + (arg1[1] & 0xF);
-            D_800501D0 = arg1[3];
-            D_800501D4 = arg1[4];
-            D_800501D8 = (arg1[6] << 8) | arg1[7];
+        if (!(result[4] & 0x80)) {
+            D_800501CC = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            D_800501D0 = result[3];
+            D_800501D4 = result[4];
+            D_800501D8 = (result[6] << 8) | result[7];
         }
         break;
     case DslDiskError:
         DsReadyCallback(NULL);
-        D_80055D10.status = 8;
+        vs_main_disk.state = 8;
         break;
     }
 }
 
-static int getCdStatus() { return D_80055D10.status; }
+static int vs_main_diskGetState() { return vs_main_disk.state; }
 
-static void func_80044320()
+static void vs_main_diskResetErrorState()
 {
-    if (D_80055D10.status == 4) {
-        D_80055D10.status = 0;
+    if (vs_main_disk.state == diskReadError) {
+        vs_main_disk.state = diskIdle;
     }
 }
 
-static int func_80044340(int sector, u_int bytes, void* vram)
+static int vs_main_diskInitRead(int sector, u_int bytes, void* vram)
 {
-    if (D_80055D10.status == 0) {
-        D_80055D10.cdSector = sector;
-        D_80055D10.sectorCount = bytes;
-        D_80055D10.vram = vram;
-        D_80055D10.unk40 = 0;
-        D_80055D10.unk3C = 0;
-        D_80055D10.bufIndex = 0;
-        D_80055D10.unk34 = 0;
-        D_80055D10.unk4 = 0;
-        D_80055D10.unk3 = 0;
-        D_80055D10.unk38 = 0;
-        D_80055D10.unk8 = bytes >> 11;
-        if (bytes & 0x7FF) {
-            ++D_80055D10.unk8;
+    if (vs_main_disk.state == diskIdle) {
+        vs_main_disk.cdSector = sector;
+        vs_main_disk.byteCount = bytes;
+        vs_main_disk.vram = vram;
+        vs_main_disk.unk40 = 0;
+        vs_main_disk.unk3C = 0;
+        vs_main_disk.sectorBufIndex = 0;
+        vs_main_disk.unk34 = 0;
+        vs_main_disk.unk4 = 0;
+        vs_main_disk.unk3 = 0;
+        vs_main_disk.unk38 = 0;
+        vs_main_disk.sectorCount = bytes / 2048;
+        if (bytes % 2048) {
+            ++vs_main_disk.sectorCount;
         }
-        DsIntToPos(sector, &D_80055D10.cdLoc);
-        D_80055D10.status = 5;
+        DsIntToPos(sector, &vs_main_disk.cdLoc);
+        vs_main_disk.state = diskReadInit;
         return 1;
     }
     return 0;
@@ -1701,15 +1713,15 @@ static void func_800443CC()
     int i;
     u_int seconds;
 
-    switch (D_80055D10.status) {
-    case 0:
+    switch (vs_main_disk.state) {
+    case diskIdle:
     default:
         break;
     case 6:
         if (DsSystemStatus() == DslReady) {
-            D_80055D10.unk1 = 0;
-            D_80055D10.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, dsControlBuf, NULL) == 0)
+            vs_main_disk.unk1 = 0;
+            vs_main_disk.cdLoc.minute = 0;
+            while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -1717,41 +1729,41 @@ static void func_800443CC()
             vol.val3 = 0;
             vol.val1 = 0;
             DsMix(&vol);
-            func_80012918(D_80055D10.sectorCount);
+            func_80012918(vs_main_disk.byteCount);
             func_80013230(0x7F);
-            D_80055D10.pcm.file = 1;
-            D_80055D10.pcm.chan = 0;
-            DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
-            DsIntToPos(D_80055D10.cdSector, &D_80055D10.cdLoc);
-            D_80055D10.commandId
-                = DsPacket(DslModeRT | DslModeSF, &D_80055D10.cdLoc, DslReadS, NULL, -1);
-            DsReadyCallback(pcmReadReady);
-            D_80055D10.status = 7;
+            vs_main_disk.pcm.file = 1;
+            vs_main_disk.pcm.chan = 0;
+            DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
+            DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
+            vs_main_disk.commandId = DsPacket(
+                DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
+            DsReadyCallback(vs_main_diskPcmReadReady);
+            vs_main_disk.state = 7;
         }
-        if (D_80055D10.commandId == 0) {
+        if (vs_main_disk.commandId == 0) {
             DsReadyCallback(0);
-            D_80055D10.status = 8;
-            ++D_80055D10.unk3;
+            vs_main_disk.state = 8;
+            ++vs_main_disk.unk3;
         }
         break;
-    case 5: {
+    case diskReadInit: {
         int status = DsSystemStatus();
         if (status == DslReady) {
-            D_80055D10.unk4 = 0;
-            D_80055D10.bufIndex = 0;
-            if (D_80055D10.sectorCount != 0) {
-                D_80055D10.status = 2;
-                D_80055D10.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &D_80055D10.cdLoc, DslReadN, cdReadCb, -1);
+            vs_main_disk.unk4 = 0;
+            vs_main_disk.sectorBufIndex = 0;
+            if (vs_main_disk.byteCount != 0) {
+                vs_main_disk.state = 2;
+                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
+                    &vs_main_disk.cdLoc, DslReadN, vs_main_diskReadCommandCallback, -1);
             } else {
-                D_80055D10.status = 1;
-                D_80055D10.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &D_80055D10.cdLoc, DslSeekL, cdSeekCb, -1);
+                vs_main_disk.state = 1;
+                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
+                    &vs_main_disk.cdLoc, DslSeekL, vs_main_diskSeekCommandCallback, -1);
             }
 
-            if (D_80055D10.commandId == 0) {
-                D_80055D10.status = 4;
-                ++D_80055D10.unk3;
+            if (vs_main_disk.commandId == 0) {
+                vs_main_disk.state = 4;
+                ++vs_main_disk.unk3;
             }
         }
         break;
@@ -1759,11 +1771,11 @@ static void func_800443CC()
     case 8: {
         int status = DsSystemStatus();
         if (status == DslReady) {
-            D_80055D10.unk4 = 0;
-            ++D_80055D10.unk3;
+            vs_main_disk.unk4 = 0;
+            ++vs_main_disk.unk3;
             seconds = frameDuration / 60;
             if (seconds < 420) {
-                DsIntToPos(D_80055D10.cdSector + (seconds * 75) + (frameDuration % 60),
+                DsIntToPos(vs_main_disk.cdSector + (seconds * 75) + (frameDuration % 60),
                     &cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
@@ -1771,135 +1783,135 @@ static void func_800443CC()
                 vol.val1 = 0;
                 DsMix(&vol);
                 func_80012918(0);
-                func_80012940(0x3C, D_80055D10.sectorCount);
-                D_80055D10.pcm.file = 1;
-                D_80055D10.pcm.chan = 0;
-                DsControl(DslSetfilter, (u_char*)&D_80055D10.pcm, NULL);
-                D_80055D10.commandId
+                func_80012940(0x3C, vs_main_disk.byteCount);
+                vs_main_disk.pcm.file = 1;
+                vs_main_disk.pcm.chan = 0;
+                DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
+                vs_main_disk.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
-                DsReadyCallback(pcmReadReady);
-                D_80055D10.status = 7;
+                DsReadyCallback(vs_main_diskPcmReadReady);
+                vs_main_disk.state = 7;
             } else {
-                D_80055D10.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
-                D_80055D10.status = 0;
+                vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
+                vs_main_disk.state = 0;
                 DsReadyCallback(0);
             }
         }
-        if (D_80055D10.commandId == 0) {
-            D_80055D10.status = 8;
-            ++D_80055D10.unk3;
+        if (vs_main_disk.commandId == 0) {
+            vs_main_disk.state = 8;
+            ++vs_main_disk.unk3;
         }
         break;
     }
-    case 4: {
+    case diskReadError: {
         int status = DsSystemStatus();
-        if (status == 1) {
-            D_80055D10.unk4 = 0;
-            D_80055D10.bufIndex = 0;
-            ++D_80055D10.unk3;
+        if (status == DslReady) {
+            vs_main_disk.unk4 = 0;
+            vs_main_disk.sectorBufIndex = 0;
+            ++vs_main_disk.unk3;
 
-            if (D_80055D10.sectorCount != 0) {
-                D_80055D10.status = 2;
-                D_80055D10.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &D_80055D10.cdLoc, DslReadN, cdReadCb, -1);
+            if (vs_main_disk.byteCount != 0) {
+                vs_main_disk.state = diskReadReady;
+                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
+                    &vs_main_disk.cdLoc, DslReadN, vs_main_diskReadCommandCallback, -1);
             } else {
-                D_80055D10.status = 1;
-                D_80055D10.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &D_80055D10.cdLoc, DslSeekL, cdSeekCb, -1);
+                vs_main_disk.state = diskSeekReady;
+                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
+                    &vs_main_disk.cdLoc, DslSeekL, vs_main_diskSeekCommandCallback, -1);
             }
 
-            if (D_80055D10.commandId == 0) {
-                D_80055D10.status = 4;
-                ++D_80055D10.unk3;
+            if (vs_main_disk.commandId == 0) {
+                vs_main_disk.state = diskReadError;
+                ++vs_main_disk.unk3;
             }
         }
         break;
     }
     case 9:
         func_80012918(0);
-        D_80055D10.commandId = DsCommand(DslPause, NULL, NULL, -1);
-        if (D_80055D10.commandId > 0) {
-            D_80055D10.status = 0;
+        vs_main_disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
+        if (vs_main_disk.commandId > 0) {
+            vs_main_disk.state = diskIdle;
         }
         DsReadyCallback(NULL);
-        D_80055D10.unk1 = 0x80;
-        D_80055D10.cdLoc.minute = 0x80;
-        while (DsControlB(DslSetmode, dsControlBuf, NULL) == 0)
+        vs_main_disk.unk1 = 128;
+        vs_main_disk.cdLoc.minute = 128;
+        while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
             ;
         VSync(3);
         break;
     }
 
-    if (D_80055D10.unk2C != 0) {
+    if (vs_main_disk.unk2C != 0) {
         for (i = 0; i < 16; ++i) {
-            if (D_80055D10.bufIndex >= D_80055D10.unk38) {
+            if (vs_main_disk.sectorBufIndex >= vs_main_disk.unk38) {
                 return;
             }
-            if (D_80055D10.unk2C == 1) {
-                memcpy_impl(((u_char*)D_80055D10.vram + (D_80055D10.bufIndex * 2048)),
-                    D_80050110 + (D_80055D10.unk40 * 128), 2048);
+            if (vs_main_disk.unk2C == 1) {
+                memcpy_impl(
+                    ((u_char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
+                    D_80050110 + (vs_main_disk.unk40 * 128), 2048);
 
-                ++D_80055D10.unk40;
-                if (D_80055D10.unk40 >= 0x10) {
-                    D_80055D10.unk40 = 0;
+                ++vs_main_disk.unk40;
+                if (vs_main_disk.unk40 >= 16) {
+                    vs_main_disk.unk40 = 0;
                 }
-                --D_80055D10.unk34;
-                ++D_80055D10.bufIndex;
-                if (D_80055D10.bufIndex >= D_80055D10.unk8) {
-                    D_80055D10.status = 0;
+                --vs_main_disk.unk34;
+                ++vs_main_disk.sectorBufIndex;
+                if (vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
+                    vs_main_disk.state = diskIdle;
                     vs_main_freeHeapR(D_80050110);
-                    D_80050110 = 0;
+                    D_80050110 = NULL;
                 }
-            } else if (D_80055D10.unk2C == 2) {
-                ++D_80055D10.bufIndex;
-                if ((D_80055D10.bufIndex >= D_80055D10.unk8) && (func_80012C04() == 0)) {
-                    D_80055D10.status = 0;
-                    vs_main_freeHeapR((vs_main_HeapHeader*)D_80050110);
-                    D_80050110 = 0;
+            } else if (vs_main_disk.unk2C == 2) {
+                ++vs_main_disk.sectorBufIndex;
+                if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
+                    && (func_80012C04() == 0)) {
+                    vs_main_disk.state = diskIdle;
+                    vs_main_freeHeapR(D_80050110);
+                    D_80050110 = NULL;
                 }
             }
         }
     }
 }
 
-static int func_8004493C(int arg0, int arg1, void* vram)
+static int func_8004493C(int sector, int bytes, void* vram)
 {
-    int temp_v0;
-
-    temp_v0 = func_80044340(arg0, arg1, vram);
-    if (temp_v0 != 0) {
-        int s4 = 1;
-        int s3 = 2;
+    int result = vs_main_diskInitRead(sector, bytes, vram);
+    if (result != 0) {
+        int seekReady = diskSeekReady;
+        int readReady = diskReadReady;
 
         while (1) {
-            if (getCdStatus() == s4) {
+            if (vs_main_diskGetState() == seekReady) {
                 func_8004261C(0);
-            } else if (getCdStatus() == s3) {
+            } else if (vs_main_diskGetState() == readReady) {
                 func_8004261C(0);
-            } else if (getCdStatus() == 3) {
+            } else if (vs_main_diskGetState() == 3) {
                 func_8004261C(0);
-            } else if (getCdStatus() == 5) {
+            } else if (vs_main_diskGetState() == diskReadInit) {
                 func_8004261C(0);
             } else
                 break;
         }
     }
-    return temp_v0;
+    return result;
 }
 
-static int func_800449E8(int sector, int sectorCount)
+static int func_800449E8(int sector, int byteCount)
 {
-    if (D_80055D10.status == 0) {
-        D_80055D10.cdSector = sector;
-        D_80055D10.sectorCount = sectorCount;
-        D_80055D10.unk40 = 0;
-        D_80055D10.unk3C = 0;
-        D_80055D10.bufIndex = 0;
-        D_80055D10.unk34 = 0;
-        D_80055D10.unk4 = 0;
-        D_80055D10.unk3 = 0;
-        D_80055D10.unk38 = 0;
-        D_80055D10.status = 6;
+    if (vs_main_disk.state == diskIdle) {
+        vs_main_disk.cdSector = sector;
+        vs_main_disk.byteCount = byteCount;
+        vs_main_disk.unk40 = 0;
+        vs_main_disk.unk3C = 0;
+        vs_main_disk.sectorBufIndex = 0;
+        vs_main_disk.unk34 = 0;
+        vs_main_disk.unk4 = 0;
+        vs_main_disk.unk3 = 0;
+        vs_main_disk.unk38 = 0;
+        vs_main_disk.state = 6;
         return 1;
     }
     return 0;
@@ -1907,25 +1919,25 @@ static int func_800449E8(int sector, int sectorCount)
 
 static int func_80044A38()
 {
-    if (D_80055D10.status == 7) {
-        D_80055D10.status = 9;
+    if (vs_main_disk.state == 7) {
+        vs_main_disk.state = 9;
         return 1;
     }
     return 0;
 }
 
-static void func_80044A60()
+static void vs_main_diskReset()
 {
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
-    D_80055D10.unk1 = 0x80;
-    D_80055D10.cdLoc.minute = 0x80;
-    D_80055D10.unk2 = 0;
-    D_80055D10.status = 0;
-    D_80055D10.unk2C = 0;
-    D_80050110 = 0;
-    while (DsControlB(DslSetmode, dsControlBuf, NULL) == 0)
+    vs_main_disk.unk1 = 128;
+    vs_main_disk.cdLoc.minute = 128;
+    vs_main_disk.unk2 = 0;
+    vs_main_disk.state = diskIdle;
+    vs_main_disk.unk2C = 0;
+    D_80050110 = NULL;
+    while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
         ;
     VSync(3);
 }
@@ -1934,30 +1946,30 @@ static void vs_main_initCdQueue()
 {
     int i;
 
-    for (i = 0x1F; i >= 0; --i) {
+    for (i = 31; i >= 0; --i) {
         vs_main_cdQueue[i].unk0[0] = 0;
     }
     D_80050460.i = 0;
 }
 
-vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* arg0)
+vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* file)
 {
     int i;
 
     for (i = 0; i < 32; ++i) {
         if (vs_main_cdQueue[i].unk0[0] == 0) {
             vs_main_cdQueue[i].unk0[0] = 1;
-            vs_main_cdQueue[i].cdFile = *arg0;
+            vs_main_cdQueue[i].cdFile = *file;
             return &vs_main_cdQueue[i];
         }
     }
-    nop9(0xA2, 0);
+    nop9(162, 0);
 }
 
 void func_80044B80(vs_main_CdQueueSlot* arg0)
 {
     if ((u_short)arg0->unk0[0] - 2u < 2) {
-        nop9(0xA3, 0);
+        nop9(163, 0);
     }
     arg0->unk0[0] = 0;
 }
@@ -1999,18 +2011,19 @@ static void func_80044C74()
 {
     int i;
 
-    D_80055D10.unk44 += 1;
+    vs_main_disk.unk44 += 1;
 
     if (D_80050460.i != 0) {
         vs_main_CdQueueSlot* slot = vs_main_cdQueue;
-        i = getCdStatus();
+        i = vs_main_diskGetState();
         if (i == 0) {
             for (; i < 32; ++i, ++slot) {
                 if (slot->unk0[0] == 3) {
                     if (slot->unk0[1] == 0) {
                         slot->unk0[0] = 2;
-                        func_80044340(slot->cdFile.lba, slot->cdFile.size, slot->vram);
-                        D_80055D10.unk44 = 0;
+                        vs_main_diskInitRead(
+                            slot->cdFile.lba, slot->cdFile.size, slot->vram);
+                        vs_main_disk.unk44 = 0;
                         --D_80050460.s[1];
                         ++D_80050460.s[0];
                     } else {

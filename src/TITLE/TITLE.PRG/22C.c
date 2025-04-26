@@ -1163,7 +1163,7 @@ int func_8006E738()
     while (1) {
         func_8004261C(2);
         func_8006E68C();
-        func_80043940();
+        vs_main_processPadState();
         switch (D_800DC930) {
         case 0:
             if (D_800DC930 == 0) {
@@ -1456,7 +1456,7 @@ void func_8006F54C()
         disp.screen.y = 8;
         disp.screen.h = 0xE0;
         VSync(0);
-        func_80043940();
+        vs_main_processPadState();
         PutDispEnv(&disp);
         PutDrawEnv(&draw);
     }
@@ -1531,7 +1531,7 @@ int func_8006FA54()
 
         func_8006F42C(&D_800DEDA8, 0);
         VSync(0);
-        func_80043940();
+        vs_main_processPadState();
 
         if ((VSync(-1) - menuDisplayedTime) >= 0x8F5) {
             return 0;
@@ -1750,7 +1750,7 @@ void func_80070A58()
 {
     func_8007093C();
     VSync(0);
-    func_80043940();
+    vs_main_processPadState();
 }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070A88);

@@ -1974,34 +1974,32 @@ void func_80044B80(vs_main_CdQueueSlot* arg0)
     arg0->unk0[0] = 0;
 }
 
-void func_80044BC4(vs_main_CdQueueSlot* arg0, void* arg1)
+void func_80044BC4(vs_main_CdQueueSlot* arg0, void* vram)
 {
     u_short temp_a1;
 
     arg0->unk0[0] = 3;
-    arg0->vram = arg1;
+    arg0->vram = vram;
     arg0->unkC = 0;
     temp_a1 = D_80050460.s[1];
     D_80050460.s[1] = (temp_a1 + 1);
     arg0->unk0[1] = temp_a1;
 }
 
-static void vs_main_populateQueueSlot(vs_main_CdQueueSlot* arg0, void* arg1)
+static void vs_main_populateQueueSlot(vs_main_CdQueueSlot* slot, void* vram)
 {
-    vs_main_CdQueueSlot* var_v1;
     int i;
+    vs_main_CdQueueSlot* queue = vs_main_cdQueue;
 
-    var_v1 = vs_main_cdQueue;
-
-    for (i = 0; i < 32; ++i, ++var_v1) {
-        if (var_v1->unk0[0] == 3) {
-            ++var_v1->unk0[1];
+    for (i = 0; i < 32; ++i, ++queue) {
+        if (queue->unk0[0] == 3) {
+            ++queue->unk0[1];
         }
     }
-    arg0->unk0[0] = 3;
-    arg0->vram = arg1;
-    arg0->unkC = 0;
-    arg0->unk0[1] = 0;
+    slot->unk0[0] = 3;
+    slot->vram = vram;
+    slot->unkC = 0;
+    slot->unk0[1] = 0;
     ++D_80050460.s[1];
 }
 
@@ -2016,7 +2014,7 @@ static void func_80044C74()
     if (D_80050460.i != 0) {
         vs_main_CdQueueSlot* slot = vs_main_cdQueue;
         i = vs_main_diskGetState();
-        if (i == 0) {
+        if (i == diskIdle) {
             for (; i < 32; ++i, ++slot) {
                 if (slot->unk0[0] == 3) {
                     if (slot->unk0[1] == 0) {
@@ -2157,7 +2155,7 @@ static int func_80045110(int arg0, int arg1)
             if (D_8005E038.unk10[arg] != arg0) {
                 do {
                     if (D_8005E038.unk24[arg] != 0) {
-                        nop10(0x8E, 0);
+                        nop10(142, 0);
                         func_80045440(arg1);
                     }
                 } while (0);
@@ -4032,30 +4030,30 @@ void func_800483FC()
 
 static void func_80048A3C(int arg0) { D_80055D58.unk0[arg0].unk6[0] = 0; }
 
-void func_80048A64(u_short* arg0, u_int arg1, int arg2, u_int arg3)
+void func_80048A64(u_short* img, u_int y, u_int x, u_int w)
 {
-    RECT sp10;
-    u_short temp_a0_2;
+    RECT rect;
+    u_short px;
     u_int i;
-    u_char* temp_v1_3;
+    u_char* dst;
 
-    if (arg1 >= 14) {
-        setRECT(&sp10, arg2 + 0x300, arg1 + 0xE0, arg3, 1);
-        LoadImage(&sp10, (u_long*)arg0);
+    if (y >= 14) {
+        setRECT(&rect, x + 768, y + 224, w, 1);
+        LoadImage(&rect, (u_long*)img);
         return;
     }
 
-    if (D_80055D58.unk0[arg1].unk5 == 0) {
-        D_80055D58.unk0[arg1].unk6[0] = 0;
-        for (i = 0; i < arg3; ++i) {
-            temp_a0_2 = arg0[i];
-            temp_v1_3 = D_80055D58.unk0[arg1].unkE[arg2 + i];
-            loadImageSource[arg1][arg2 + i] = temp_a0_2;
-            D_80055D58.unk0[arg1].unk70E[arg2 + i] = temp_a0_2;
-            temp_v1_3[0] = (temp_a0_2 & 0x1F);
-            temp_v1_3[1] = ((temp_a0_2 & 0x3E0) >> 5);
-            temp_v1_3[2] = ((temp_a0_2 & 0x7C00) >> 0xA);
-            temp_v1_3[3] = ((temp_a0_2 & 0x8000) >> 0xF);
+    if (D_80055D58.unk0[y].unk5 == 0) {
+        D_80055D58.unk0[y].unk6[0] = 0;
+        for (i = 0; i < w; ++i) {
+            px = img[i];
+            dst = D_80055D58.unk0[y].unkE[x + i];
+            loadImageSource[y][x + i] = px;
+            D_80055D58.unk0[y].unk70E[x + i] = px;
+            dst[0] = (px & 0x1F);
+            dst[1] = ((px & 0x3E0) >> 5);
+            dst[2] = ((px & 0x7C00) >> 10);
+            dst[3] = ((px & 0x8000) >> 15);
         }
         D_80055D58.unk0[0].unk0 = 1;
     }
@@ -4118,7 +4116,7 @@ void func_80048B8C(
             b = (a & 0x7C00) >> 10;
         }
         t4 = a;
-        t4 = t4 >> 0xF;
+        t4 = t4 >> 15;
         if (r >= 32) {
             r = 31;
         }

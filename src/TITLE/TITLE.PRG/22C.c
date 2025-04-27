@@ -1625,7 +1625,7 @@ u_long* func_8006FEC4(int arg0)
     return temp_s4;
 }
 
-void func_80070004(void* arg0) { vs_main_freeHeap(arg0); }
+void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
 
 void _drawMenuBg(u_short* bgData, int alpha)
 {
@@ -1688,9 +1688,9 @@ void _drawCopyright(u_short* arg0, int alpha)
     u_short* dst;
 
     src = arg0 + 0xF000;
-    dst = src + 0x10E0;
+    dst = src + (180 * 24);
 
-    for (i = 0; i < 4320; ++i) {
+    for (i = 0; i < (180 * 24); ++i) {
         r1 = src[i];
         r0 = D_800AD1A8[i];
         g0 = r0 & 0x3E0;

@@ -118,6 +118,7 @@ extern int D_80074AB0;
 extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[];
+extern u_short D_800AD1A8[];
 extern u_long D_800AF368[];
 extern u_long D_800BD368[];
 extern u_long D_800C2268[];
@@ -1628,9 +1629,48 @@ void func_80070004(void* arg0) { vs_main_freeHeap(arg0); }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070024);
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070188);
+void _drawCopyright(u_short* arg0, int alpha)
+{
+    RECT rect;
+    int i;
+    int g0;
+    int b0;
+    int bdiff;
+    int rdiff;
+    int gdiff;
+    int r1;
+    int r0;
+    int g1, b1;
+    u_short* src;
+    u_short* dst;
 
-void _setMenuItemClut(int index, int factor, int clut0, int clut1)
+    src = arg0 + 0xF000;
+    dst = src + 0x10E0;
+
+    for (i = 0; i < 4320; ++i) {
+        r1 = src[i];
+        r0 = D_800AD1A8[i];
+        g0 = r0 & 0x3E0;
+        b0 = r0 & 0x7C00;
+        g1 = r1 & 0x3E0;
+        b1 = r1 & 0x7C00;
+        r1 &= 0x1F;
+        r0 &= 0x1F;
+        rdiff = (r1 - r0) * alpha;
+        gdiff = (g1 - g0) * alpha;
+        bdiff = (b1 - b0) * alpha;
+        dst[i] = ((u_int)((((r0 << 5) + rdiff) & 0x3E0) | (((g0 << 5) + gdiff) & 0x7C00)
+                      | (((b0 << 5) + bdiff) & 0xF8000))
+            >> 5);
+    }
+    VSync(2);
+    vs_main_processPadState();
+    setRECT(&rect, 678, 376, 180, 24);
+    LoadImage(&rect, (u_long*)dst);
+    DrawSync(0);
+}
+
+void _setMenuItemClut(int index, int alpha, int clut0, int clut1)
 {
     RECT rect;
     short sp18[16];
@@ -1656,9 +1696,9 @@ void _setMenuItemClut(int index, int factor, int clut0, int clut1)
         g1 = r1 & 0x3E0;
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
-        rdiff = (r1 - r0) * factor;
-        gdiff = (g1 - g0) * factor;
-        bdiff = (b1 - b0) * factor;
+        rdiff = (r1 - r0) * alpha;
+        gdiff = (g1 - g0) * alpha;
+        bdiff = (b1 - b0) * alpha;
         sp18[i] = 0x1F0;
         sp18[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                        | ((b0 * 16 + bdiff) & 0x7C000))

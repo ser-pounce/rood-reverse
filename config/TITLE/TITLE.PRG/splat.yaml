@@ -29,6 +29,7 @@ options:
   symbol_addrs_path: 
     - config/TITLE/TITLE.PRG/symbol_addrs.txt
     - config/TITLE/TITLE.PRG/exports.txt
+    - config/SLUS_010.40/exports.txt
 
   undefined_funcs_auto_path: build/config/TITLE/TITLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/TITLE/TITLE.PRG/undefined_syms_auto.txt

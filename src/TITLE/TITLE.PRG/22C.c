@@ -75,7 +75,7 @@ int func_8006F2A0(D_800DEDA8_t*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
 void func_8006F54C();
 void func_8006F954();
-void func_800702AC(int, int, int, int);
+void _setMenuItemClut(int, int, int, int);
 void func_800703CC();
 void func_800705AC();
 void func_8007093C();
@@ -1629,7 +1629,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070024);
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070188);
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800702AC);
+INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", _setMenuItemClut);
 
 void func_800703CC()
 {
@@ -1687,7 +1687,7 @@ void func_800703CC()
             s1 = D_800EFDF8[i][7];
 
             if (D_800EFDF8[i][1] < 3U) {
-                func_800702AC(i, s1, 0, 1);
+                _setMenuItemClut(i, s1, 0, 1);
             }
             if ((s1 != 0) && (D_800EFDF8[i][4] != 0x40)) {
                 D_800EFDF8[i][7] = s1 - 1;

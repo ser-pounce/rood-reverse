@@ -1627,7 +1627,50 @@ u_long* func_8006FEC4(int arg0)
 
 void func_80070004(void* arg0) { vs_main_freeHeap(arg0); }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070024);
+void _drawMenuBg(u_short* bgData, int alpha)
+{
+    RECT rect;
+    int g0;
+    int b0;
+    int bdiff;
+    int rdiff;
+    int r0;
+    int gdiff;
+    int i;
+    u_short* src;
+    u_short* dst;
+    int r1, g1, b1;
+
+    i = 0;
+    src = bgData + (160 * 64 * 2);
+    dst = src + (160 * 64 * 2);
+
+    for (i = 0; i < (160 * 64 * 2); ++i) {
+        r0 = bgData[i];
+        r1 = src[i];
+        g0 = r0 & 0x3E0;
+        b0 = r0 & 0x7C00;
+        r0 &= 0x1F;
+        g1 = r1 & 0x3E0;
+        b1 = r1 & 0x7C00;
+        r1 &= 0x1F;
+        rdiff = (r0 - r1) * alpha;
+        gdiff = (g0 - g1) * alpha;
+        bdiff = (b0 - b1) * alpha;
+        dst[i] = ((u_int)((((r1 << 5) + rdiff) & 0x3E0) | (((g1 << 5) + gdiff) & 0x7C00)
+                      | (((b1 << 5) + bdiff) & 0xF8000))
+                     >> 5)
+            | 0x8000;
+    }
+    setRECT(&rect, 192, 448, 160, 64);
+    LoadImage(&rect, (u_long*)dst);
+    DrawSync(0);
+    setRECT(&rect, 352, 448, 160, 64);
+    LoadImage(&rect, (u_long*)dst + 0x1400);
+    DrawSync(0);
+    VSync(4);
+    vs_main_processPadState();
+}
 
 void _drawCopyright(u_short* arg0, int alpha)
 {

@@ -15,6 +15,7 @@ deleteUnusedSaves = 0x8006913C;
 createSaveFile = 0x8006941C;
 countDigits = 0x8006A8F8;
 playMovie = 0x8006F4C0;
+_drawMenuBg = 0x80070024;
 _drawCopyright = 0x80070188;
 _setMenuItemClut = 0x800702AC;
 nop1 = 0x8007124C;

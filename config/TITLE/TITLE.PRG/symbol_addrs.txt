@@ -33,6 +33,7 @@ DecDCTvlcBuild = 0x8007279C;
 pMemcardFilenameTemplate = 0x8007288C;
 scrambleSeed = 0x80072890;
 eventSpecs = 0x80072894;
+_menuItemClut = 0x80074AB4;
 memcardFilename = 0x800DC868;
 memcardFilenameAlpha = 0x800DC888;
 D_800DC8CD = 0x800DC8CD;

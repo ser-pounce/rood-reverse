@@ -1644,9 +1644,9 @@ void _setMenuItemClut(int index, int factor, int clut0, int clut1)
     int rdiff;
     int gdiff;
     int bdiff;
-    short* p = sp18;
+    
+    sp18[0] = 0;
 
-    p[0] = 0;
     for (i = 1; i < 16; ++i) {
         r0 = _menuItemClut[clut0][i];
         r1 = _menuItemClut[clut1][i];
@@ -1659,8 +1659,8 @@ void _setMenuItemClut(int index, int factor, int clut0, int clut1)
         rdiff = (r1 - r0) * factor;
         gdiff = (g1 - g0) * factor;
         bdiff = (b1 - b0) * factor;
-        p[i] = 0x1F0;
-        p[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
+        sp18[i] = 0x1F0;
+        sp18[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                     | ((b0 * 16 + bdiff) & 0x7C000))
                    >> 4)
             | 0x8000;

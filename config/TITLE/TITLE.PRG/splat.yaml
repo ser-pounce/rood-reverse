@@ -23,7 +23,7 @@ options:
   gp_value: 0x80033674
   image_type_in_extension: true
 
-  section_order: [.rodata, .text, .data]
+  section_order: [.rodata, .text, .data, .bss]
   auto_link_sections: [.data, .rodata]
 
   symbol_addrs_path: 
@@ -55,4 +55,5 @@ segments:
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, data]
+      - [0x74068, bss]
   - [0x87648]

@@ -1,7 +1,7 @@
 .include "macro.inc"
 .set noreorder
 
-.data 
+.data
 glabel SAVERA2
 .word 0
 

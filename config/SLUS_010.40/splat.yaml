@@ -24,7 +24,7 @@ options:
   gp_value: 0x80033674
   image_type_in_extension: true
 
-  section_order: [.rodata, .text, .data]
+  section_order: [.rodata, .text, .data, .bss]
   auto_link_sections: [.data, .rodata]
 
   symbol_addrs_path: 
@@ -211,7 +211,7 @@ segments:
       - [0x1F554, c, libapi/A20]
       - [0x1F564, c, libapi/A21]
       - [0x1F574, c, libapi/PATCH]
-      - [0x1F614, c, libapi/CHCLRPAD]
+      - [0x1F614, hasm, libapi/CHCLRPAD]
       - [0x1F684, c, libcard/A74]
       - [0x1F694, c, libcard/A75]
       - [0x1F6A4, c, libcard/A76]
@@ -226,9 +226,9 @@ segments:
       - [0x23034, .data, libapi/COUNTER]
       - [0x23054, data]
       - [0x23E80, .data, libgte/PATCHGTE]
-      - [0x23E90, data]
-      - [0x306C8, .data, libapi/CHCLRPAD]
-      - [0x306D8, data]
+      - [0x23E90, bss]
+      - [0x306C8, .bss, libapi/CHCLRPAD]
+      - [0x306D8, bss]
   - start: 0x30A10
     type: code
     vram: 0x80040210

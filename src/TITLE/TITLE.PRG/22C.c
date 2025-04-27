@@ -1644,7 +1644,7 @@ void _setMenuItemClut(int index, int factor, int clut0, int clut1)
     int rdiff;
     int gdiff;
     int bdiff;
-    
+
     sp18[0] = 0;
 
     for (i = 1; i < 16; ++i) {
@@ -1661,8 +1661,8 @@ void _setMenuItemClut(int index, int factor, int clut0, int clut1)
         bdiff = (b1 - b0) * factor;
         sp18[i] = 0x1F0;
         sp18[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
-                    | ((b0 * 16 + bdiff) & 0x7C000))
-                   >> 4)
+                       | ((b0 * 16 + bdiff) & 0x7C000))
+                      >> 4)
             | 0x8000;
     }
     setRECT(&rect, 480, index + 384, 16, 1);

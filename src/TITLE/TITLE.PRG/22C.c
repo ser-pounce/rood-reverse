@@ -115,6 +115,8 @@ extern u_long D_80072F0C[];
 extern u_long D_8007472C[];
 extern int D_80074AAC;
 extern int D_80074AB0;
+extern u_int D_80074AF4[];
+extern u_int D_80076AD4[];
 extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[];
@@ -1569,7 +1571,46 @@ void func_8006FC34(int arg0, u_char arg1)
     D_800EFDF8[arg0][7] = 0;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006FC6C);
+void func_8006FC6C()
+{
+    RECT rect;
+    int j;
+    u_int new_var;
+    u_int i;
+    u_long* temp_v0;
+    u_long* p;
+
+    i = 0;
+    temp_v0 = vs_main_allocHeap(0x99000);
+    p = temp_v0;
+    for (; i < 0xD9B5;) {
+        new_var = D_80076AD4[i++];
+        for (j = new_var & 0xFFFF; j != 0; --j) {
+            *p++ = 0;
+        }
+
+        for (j = new_var >> 0x10; j != 0; --j) {
+            *p++ = D_80076AD4[i++];
+        }
+    }
+    DrawSync(0);
+    setRECT(&rect, 480, 0, 544, 512);
+    LoadImage(&rect, temp_v0);
+    DrawSync(0);
+    setRECT(&rect, 0, 448, 544, 64);
+    LoadImage(&rect, temp_v0 + 0x22000);
+    DrawSync(0);
+
+    for (i = 0; i < 8; ++i) {
+        setRECT(&rect, 480, i + 384, 16, 1);
+        LoadImage(&rect, (u_long*)_menuItemClut);
+        DrawSync(0);
+    }
+    setRECT(&rect, 480, 394, 16, 1);
+    LoadImage(&rect, (u_long*)D_80074AF4);
+    DrawSync(0);
+    vs_main_freeHeap(temp_v0);
+}
 
 void func_8006FE30()
 {

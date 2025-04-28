@@ -1,7 +1,8 @@
+#include "common.h"
 #include "22C.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
-#include "common.h"
+#include "lbas.h"
 #include <libapi.h>
 #include <libds.h>
 #include <libetc.h>
@@ -392,7 +393,7 @@ int memcardSaveIdExists(int id)
 
     for (i = 0; i < 15; ++i) {
         u_char* filename = memcardFiles[i]->name;
-        if ((filename != 0) && (memcardFileNumberFromFilename(filename) != 0)) {
+        if ((filename != NULL) && (memcardFileNumberFromFilename(filename) != 0)) {
             if (filename[15] == id) {
                 return 1;
             }
@@ -506,8 +507,8 @@ int func_8006A49C(int arg0)
         D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
         D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);
         dirEntBuf[0] = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
-        cdFile.lba = 0x14C98;
-        cdFile.size = 0x1C000;
+        cdFile.lba = VS_SPMCIMG_BIN_LBA;
+        cdFile.size = VS_SPMCIMG_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);
         func_80044BC4(D_800DC8C8, D_800DEAB8[0]);
         D_800DC8C4 = 0;
@@ -523,8 +524,9 @@ int func_8006A49C(int arg0)
         }
         return 0;
     case 1:
-        cdFile.lba = 0x14CD0;
-        cdFile.size = 0x2000;
+        cdFile.lba = VS_MCDATA_BIN_LBA; // MCMAN.BIN must immediately follow MCDATA.BIN on
+                                        // the disk
+        cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);
         func_80044BC4(D_800DC8C8, D_800DEABC);
         D_800DC8C4 = 2;

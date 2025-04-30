@@ -128,6 +128,16 @@ extern u_long D_800C2268[];
 extern u_long D_800D1268[];
 extern u_char memcardFilename[32];
 extern u_char memcardFilenameAlpha[32];
+extern u_char D_800DC8AC;
+extern u_char D_800DC8AD;
+extern u_char D_800DC8AE;
+extern u_char D_800DC8AF;
+extern u_char D_800DC8B0;
+extern u_char D_800DC8B1;
+extern int D_800DC8B4;
+extern u_char D_800DEB0C;
+extern u_short D_800DEB10;
+extern u_short D_800DEB12;
 extern u_char D_800DC8C4;
 extern vs_main_CdQueueSlot* D_800DC8C8;
 extern u_char D_800DC8CC[];
@@ -490,7 +500,75 @@ int func_800696D0(int arg0)
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069EA8);
+int func_80069EA8(int arg0)
+{
+    int temp_v0_3;
+    int var_a2;
+    u_char* var_a0;
+    void* temp_s2;
+    int new_var;
+
+    temp_s2 = D_800DEAB8[0] + 0x5C00;
+    if (arg0 != 0) {
+        D_800DC8AD = 0;
+        D_800DC8B1 = 0;
+        D_800DEB0C = 0;
+        D_800DC8AE = arg0 >> 0xC;
+        D_800DC8B0 = (arg0 >> 8) & 1;
+        D_800DC8AF = arg0 & 0xF;
+        D_800DEB12 = 0x50;
+        D_800DEB10 = 0;
+        return 0;
+    }
+
+    switch (D_800DC8AD) {
+    case 0:
+        new_var = 0x140;
+        D_800DEB12 += ((D_800DEB14 - D_800DEB10)
+                          * ((D_800DEB0C * 0x14) - (D_800DEB12 - new_var)))
+            / D_800DEB0E;
+        D_800DEB0C = D_800DC8B1;
+        D_800DEB0E = 0xC0 - (D_800DC8B0 << 7);
+        D_800DEB10 = D_800DEB14;
+
+        memset(temp_s2, 0, 0x5C00);
+
+        if (D_800DC8AF & 8) {
+            var_a0 = memcardFilenameFromTemplateAlpha(D_800DC8AE, D_800DC8AF & 7);
+        } else {
+            var_a0 = memcardFilenameFromTemplate(D_800DC8AE, D_800DC8AF);
+        }
+        D_800DC8B4 = open((char*)var_a0, 0x8001);
+        if (D_800DC8B4 == -1) {
+            D_800DC8B1 += 1;
+            break;
+        }
+        resetMemcardEventsFrom(0);
+        var_a2 = 0x5C00;
+        if (D_800DC8B0 != 0) {
+            var_a2 = 0x2000;
+        }
+        if (read(D_800DC8B4, temp_s2, var_a2) == -1) {
+            close(D_800DC8B4);
+            D_800DC8B1 += 1;
+            break;
+        }
+        D_800DC8AD = 1;
+        // fallthrough
+    case 1:
+        temp_v0_3 = testMemcardEventsFrom(0);
+        if (temp_v0_3 < 4) {
+            close(D_800DC8B4);
+            if (temp_v0_3 == 0) {
+                return 1;
+            }
+            D_800DC8AD = 0;
+            D_800DC8B1 += 1;
+        }
+        break;
+    }
+    return D_800DC8B1 == 3 ? -1 : 0;
+}
 
 INCLUDE_RODATA("build/src/TITLE/TITLE.PRG/nonmatchings/22C", D_8006886C);
 

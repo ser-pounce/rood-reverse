@@ -620,6 +620,7 @@ int countDigits(int val)
     return i;
 }
 
+// https://decomp.me/scratch/AgXZ0
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A928);
 
 void func_8006ABB8(u_int arg0, int arg1)

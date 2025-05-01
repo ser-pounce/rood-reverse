@@ -1876,7 +1876,7 @@ static void func_800443CC()
     }
 }
 
-int func_8004493C(int sector, int bytes, void* vram)
+int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 {
     int result = vs_main_diskInitRead(sector, bytes, vram);
     if (result != 0) {
@@ -3000,18 +3000,18 @@ void func_800468FC()
     func_80011DAC();
     func_80013230(0x7F);
     temp_v0 = vs_main_allocHeapR(0x8800);
-    func_8004493C(0xF618, 0x8800, temp_v0);
+    vs_main_diskLoadFile(0xF618, 0x8800, temp_v0);
     func_80012BB8(temp_v0, 1);
     vs_main_freeHeapR(temp_v0);
     temp_v0 = vs_main_allocHeapR(0x12000);
-    func_8004493C(0xF62D, 0x12000, temp_v0);
+    vs_main_diskLoadFile(0xF62D, 0x12000, temp_v0);
     func_80012BB8(temp_v0, 1);
     vs_main_freeHeapR(temp_v0);
     temp_v0 = vs_main_allocHeapR(0x18800);
-    func_8004493C(0x10C65, 0x18800, temp_v0);
+    vs_main_diskLoadFile(0x10C65, 0x18800, temp_v0);
     func_800131DC(temp_v0, 0, 1);
     vs_main_freeHeapR(temp_v0);
-    func_8004493C(0x128E0, 0x5800, &D_80050478);
+    vs_main_diskLoadFile(0x128E0, 0x5800, &D_80050478);
     func_80011DEC(D_80050478);
     D_8005FE70 = 1;
     D_8005FE74 = 2;

@@ -24,7 +24,7 @@ void _loadSystemDat()
     System_dat_h* buf;
 
     buf = (System_dat_h*)vs_main_allocHeapR(VS_SYSTEM_DAT_SIZE);
-    func_8004493C(VS_SYSTEM_DAT_LBA, VS_SYSTEM_DAT_SIZE, buf);
+    vs_main_diskLoadFile(VS_SYSTEM_DAT_LBA, VS_SYSTEM_DAT_SIZE, buf);
     p_hdr = (RECT*)((char*)buf + buf->unk0);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);

@@ -458,6 +458,7 @@ enum _memCardStates {
     _memCardNew = 2,
     _memCardConfirmed = 3,
     _memCardLoadReady = 4,
+    _memCardLoaded = 5,
 };
 
 enum _memCardEventState {
@@ -541,10 +542,10 @@ int func_8006947C(int arg0)
         if (_card_load(_memCardPort) == 0) {
             break;
         }
-        _memCardState = 5;
+        _memCardState = _memCardLoaded;
         _memCardTimeout = 0;
         // fallthrough
-    case 5:
+    case _memCardLoaded:
         event = testMemcardEvents(SWEVENTS);
         switch (event) {
         case _memCardEventIoEnd:

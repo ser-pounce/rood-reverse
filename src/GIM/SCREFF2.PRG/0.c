@@ -1,16 +1,60 @@
 #include "common.h"
+#include "../../SLUS_010.40/31724.h"
 
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9800);
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    short unk4;
+    short unk6;
+    int unk8;
+} D_800EB9B4_t;
+
+void func_8007DFF0(int, int, int);
+void func_8007E0A8(int, int, int);
+
+extern D_800EB9B4_t* D_800EB9B4;
+
+void func_800F9800(int arg0)
+{
+    D_800EB9B4->unk2 = arg0;
+    if (D_800EB9B4->unk1 == 0) {
+        if (arg0 != 0) {
+            D_800EB9B4->unk1 = 1U;
+            func_8007DFF0(0x1B, 5, 6);
+        }
+    } else if (arg0 == 0) {
+        D_800EB9B4->unk1 = 0U;
+        func_8007E0A8(0x1B, 5, 6);
+    }
+}
 
 INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F986C);
 
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9BC0);
+void func_800F9BC0(short arg0, short arg1)
+{
+    D_800EB9B4->unk4 = arg0;
+    D_800EB9B4->unk6 = arg1;
+}
 
 INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9BD8);
 
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9DE8);
+void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
 
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9DF8);
+int func_800F9DF8(int arg0, int arg1)
+{
+    int temp_s0;
+    int var_s1;
+
+    var_s1 = 8 - ((arg0 + 8) & 0xF);
+    if (var_s1 < 0) {
+        var_s1 = -var_s1;
+    }
+    var_s1 += 0x40;
+    return ((((((vs_math_cosine(arg0 << 6) * arg1 * 0xB) >> 0xF) * var_s1) >> 6) + 0xA0)
+               & 0xFFFF)
+        | ((((((vs_math_sine(arg0 << 6) * arg1) >> 0xC) * var_s1) >> 6) + 0x70) << 0x10);
+}
 
 INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9EBC);
 

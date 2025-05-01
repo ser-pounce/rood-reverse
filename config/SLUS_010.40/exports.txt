@@ -271,6 +271,7 @@ vs_main_freeHeapR = 0x80043C60;
 vs_main_freeHeap = 0x80043D50;
 vs_main_allocHeapR = 0x80043E3C;
 vs_main_allocHeap = 0x80043EC4;
+vs_main_initHeap = 0x80043F74;
 vs_main_getQueueSlot = 0x80044B10;
 memcpy_impl = 0x800490B0;
 bzero_impl = 0x80049110;

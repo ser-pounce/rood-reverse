@@ -134,7 +134,6 @@ vs_main_padResetDefaults = 0x80043034;
 padConnect = 0x80043250;
 padSetActData = 0x80043320;
 padGetActData = 0x80043388;
-init_D_800501A8_list = 0x80043F74;
 vs_main_diskReadCallback = 0x80043FB4;
 vs_main_diskReadCommandCallback = 0x80044148;
 vs_main_diskSeekCommandCallback = 0x800441C4;

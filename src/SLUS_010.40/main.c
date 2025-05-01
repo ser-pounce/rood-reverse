@@ -1549,7 +1549,7 @@ u_long* vs_main_allocHeap(u_int size)
     }
 }
 
-static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
+void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
 {
     heapA.prev = node;
     heapA.next = node;

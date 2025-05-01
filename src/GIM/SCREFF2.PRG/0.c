@@ -10,6 +10,16 @@ typedef struct {
     int unk8;
 } D_800EB9B4_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+} func_800F9EBC_t;
+
 void func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);
 
@@ -43,7 +53,6 @@ void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
 
 int func_800F9DF8(int arg0, int arg1)
 {
-    int temp_s0;
     int var_s1;
 
     var_s1 = 8 - ((arg0 + 8) & 0xF);
@@ -56,6 +65,22 @@ int func_800F9DF8(int arg0, int arg1)
         | ((((((vs_math_sine(arg0 << 6) * arg1) >> 0xC) * var_s1) >> 6) + 0x70) << 0x10);
 }
 
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9EBC);
+func_800F9EBC_t* func_800F9EBC(int arg0, int arg1, func_800F9EBC_t* arg2, u_int* arg3)
+{
+    int var_s2;
+
+    for (var_s2 = arg1; var_s2 < arg1 + 4; ++var_s2) {
+        arg2->unk0 = (*arg3 & 0xFFFFFF) | 0x06000000;
+        arg2->unk4 = 0x32FFFFFF;
+        arg2->unk8 = arg0;
+        arg2->unkC = 0xA0A0A0;
+        arg2->unk10 = func_800F9DF8(var_s2 + 1, 0x80);
+        arg2->unk14 = 0xA0A0A0;
+        arg2->unk18 = func_800F9DF8(var_s2, 0x80);
+        *arg3 = (u_int)((long)arg2 << 8) >> 8;
+        arg2 += 1;
+    }
+    return arg2;
+}
 
 INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9FB8);

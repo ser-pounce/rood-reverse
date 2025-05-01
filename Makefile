@@ -56,9 +56,9 @@ AS_DEPS  = --MD $(@:.o=.d)
 endif
 
 disk       := SLUS-01040
-binaries   := SLUS_010.40 \
-			$(addsuffix .PRG, \
-				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 MENU/MAINMENU ENDING/ENDING)
+binaries   := SLUS_010.40 $(addsuffix .PRG, \
+				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
+				$(addprefix MENU/, MAINMENU MENU0))
 targets    := $(binaries:%=build/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)

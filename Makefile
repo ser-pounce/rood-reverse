@@ -1,21 +1,22 @@
 # Configure these to your needs
-ARCH   := mips-linux-gnu-
-CPP    := $(ARCH)cpp
-LD     := $(ARCH)ld
-AS     := $(ARCH)as
-PYTHON := python3
-GIT    := git
-CMAKE  := cmake
-DOCKER := docker
-FORMAT := clang-format
-DIFF   := diff
-CAT    := cat
-TOUCH  := touch
-ECHO   := echo
-WHICH  := which
-MKDIR  := mkdir
-MV     := mv
-FIND   := find
+ARCH     := mips-linux-gnu-
+CPP      := $(ARCH)cpp
+LD       := $(ARCH)ld
+AS       := $(ARCH)as
+PYTHON   := python3
+GIT      := git
+CMAKE    := cmake
+DOCKER   := docker
+FORMAT   := clang-format
+DIFF     := diff
+CAT      := cat
+TOUCH    := touch
+ECHO     := echo
+WHICH    := which
+MKDIR    := mkdir
+MV       := mv
+FIND     := find
+TRUNCATE := truncate
 
 # Anything below this line should not need editing
 CC1VER  := 2.7.2
@@ -55,7 +56,8 @@ AS_DEPS  = --MD $(@:.o=.d)
 endif
 
 disk       := SLUS-01040
-binaries   := SLUS_010.40 TITLE/TITLE.PRG BATTLE/BATTLE.PRG BATTLE/INITBTL.PRG GIM/SCREFF2.PRG
+binaries   := SLUS_010.40 \
+			$(addsuffix .PRG, TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 MENU/MAINMENU)
 targets    := $(binaries:%=build/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)

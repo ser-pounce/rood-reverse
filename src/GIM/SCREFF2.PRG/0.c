@@ -10,16 +10,6 @@ typedef struct {
     int unk8;
 } D_800EB9B4_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-} func_800F9EBC_t;
-
 void func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);
 

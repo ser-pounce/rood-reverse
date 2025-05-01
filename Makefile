@@ -110,6 +110,7 @@ endif
 build/data/%: build/data/%.elf	
 	$(call builder,Linking $@)
 	@$(LD) $(LDFLAGS_BIN) $< -o $@
+	$(fixup)
 	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
 build/data/%.elf:
@@ -181,6 +182,10 @@ tools/.sysdeps:
 define builder
 @$(ECHO) $1
 @$(MKDIR) $(MKDIRFLAGS) $(@D)
+endef
+
+define pad
+@$(TRUNCATE) -s $1 $@
 endef
 
 # De-crud

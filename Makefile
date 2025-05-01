@@ -57,7 +57,8 @@ endif
 
 disk       := SLUS-01040
 binaries   := SLUS_010.40 \
-			$(addsuffix .PRG, TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 MENU/MAINMENU)
+			$(addsuffix .PRG, \
+				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 MENU/MAINMENU ENDING/ENDING)
 targets    := $(binaries:%=build/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)
@@ -74,8 +75,10 @@ src_from_target = $(patsubst build/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 all: $(targets)
 
 format:
-	for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
-	$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
+	@$(ECHO) Sorting symbols
+	@for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
+	@$(ECHO) Linting source
+	@$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
 
 decompme: IMPORTFLAGS += --decompme

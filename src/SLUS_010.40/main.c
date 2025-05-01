@@ -197,7 +197,7 @@ static int func_800464FC(int, int, int);
 static void func_80046678(int);
 static void func_80046770(int);
 static int func_800467A0();
-void func_800468FC();
+static void _loadMenuSound();
 void func_80046B3C(int, int, u_short*);
 void func_80047910(int, int, D_8005DC6C_t*);
 static void func_8004908C();
@@ -864,7 +864,7 @@ static void func_80042A64()
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000U);
     vs_main_initCdQueue();
     vs_main_diskReset();
-    func_800468FC();
+    _loadMenuSound();
     func_80043668();
     D_8005E240 = 0;
     vs_main_padForceMode();
@@ -2993,25 +2993,25 @@ void func_800468BC(int arg0) { func_8001240C(arg0); }
 
 static void func_800468DC() { func_80012918(0x7FFF); }
 
-void func_800468FC()
+static void _loadMenuSound()
 {
     void* temp_v0;
 
     func_80011DAC();
     func_80013230(0x7F);
-    temp_v0 = vs_main_allocHeapR(0x8800);
-    vs_main_diskLoadFile(0xF618, 0x8800, temp_v0);
+    temp_v0 = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, temp_v0);
     func_80012BB8(temp_v0, 1);
     vs_main_freeHeapR(temp_v0);
-    temp_v0 = vs_main_allocHeapR(0x12000);
-    vs_main_diskLoadFile(0xF62D, 0x12000, temp_v0);
+    temp_v0 = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, temp_v0);
     func_80012BB8(temp_v0, 1);
     vs_main_freeHeapR(temp_v0);
-    temp_v0 = vs_main_allocHeapR(0x18800);
-    vs_main_diskLoadFile(0x10C65, 0x18800, temp_v0);
+    temp_v0 = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, temp_v0);
     func_800131DC(temp_v0, 0, 1);
     vs_main_freeHeapR(temp_v0);
-    vs_main_diskLoadFile(0x128E0, 0x5800, &D_80050478);
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &D_80050478);
     func_80011DEC(D_80050478);
     D_8005FE70 = 1;
     D_8005FE74 = 2;

@@ -143,6 +143,7 @@ nop4 = 0x80044C6C;
 nop5 = 0x800454B0;
 nop6 = 0x800455E4;
 nop7 = 0x800455EC;
+_loadMenuSound = 0x800468FC;
 nop8 = 0x80049090;
 nop9 = 0x80049098;
 nop10 = 0x800490A0;

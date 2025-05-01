@@ -1,5 +1,6 @@
 D_1F800014_mat = 0x1F800014;
 CompMatrix = 0x80011ADC;
+InitGeom = 0x80011C44;
 SpuStart = 0x8001D9DC;
 SsUtReverbOff = 0x8001E5C4;
 SsUtReverbOn = 0x8001E5E4;

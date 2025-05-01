@@ -1,0 +1,51 @@
+name: &n GIM/SCREFF2.PRG
+sha1: 2fbcfe478a4279f1268f85fad365d45f7ceffd86
+options:
+  basename: *n
+  base_path: ../../..
+  target_path: data/GIM/SCREFF2.PRG
+  elf_path: build/data/GIM/SCREFF2.PRG.elf
+  platform: psx
+  compiler: GCC
+
+  asm_path: build/src/GIM/SCREFF2.PRG
+  data_path: ""
+  src_path: src/GIM/SCREFF2.PRG
+  hasm_in_src_path: true
+  asset_path: build/assets/GIM/SCREFF2.PRG
+  extensions_path: tools/splat_ext
+
+  ld_dependencies: true
+  o_as_suffix: true
+
+  ld_script_path: build/config/GIM/SCREFF2.PRG/link.ld
+
+  find_file_boundaries: true
+  gp_value: 0x80033674
+  image_type_in_extension: true
+
+  section_order: [.rodata, .text, .data]
+  auto_link_sections: [.data, .rodata]
+
+  symbol_addrs_path: 
+    - config/GIM/SCREFF2.PRG/symbol_addrs.txt
+    - config/GIM/SCREFF2.PRG/exports.txt
+
+  undefined_funcs_auto_path: build/config/GIM/SCREFF2.PRG/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/GIM/SCREFF2.PRG/undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: &enc ASCII
+  data_string_encoding: *enc
+  rodata_string_guesser_level: &strLvl 2
+  data_string_guesser_level: *strLvl
+
+segments:
+  - start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+      - [0x00, c]
+  - [0x914]

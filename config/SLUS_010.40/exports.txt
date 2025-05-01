@@ -266,6 +266,7 @@ RotTransPers = 0x80041814;
 RotAverage4 = 0x80041840;
 TransMatrix = 0x800418BC;
 RotTransPers4 = 0x800418DC;
+getRand = 0x800427A8;
 vs_main_processPadState = 0x80043940;
 vs_main_freeHeapR = 0x80043C60;
 vs_main_freeHeap = 0x80043D50;

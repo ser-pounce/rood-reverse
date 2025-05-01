@@ -124,7 +124,6 @@ nop1 = 0x80042734;
 nop2 = 0x8004273C;
 nop3 = 0x80042744;
 initRand = 0x8004274C;
-getRand = 0x800427A8;
 getRands = 0x80042860;
 func_80042BAC = 0x80042BAC;
 vs_main_exec = 0x80042C38;

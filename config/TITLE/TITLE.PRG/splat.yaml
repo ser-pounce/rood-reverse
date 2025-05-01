@@ -54,6 +54,7 @@ segments:
       - [0x959C, c, libpress/LIBPRESS]
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
-      - [0xA08C, data]
+      - [0xA08C, .data, 22C]
+      - [0xA09C, data]
       - [0x74068, bss]
   - [0x87648]

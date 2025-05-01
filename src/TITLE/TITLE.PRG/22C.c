@@ -86,6 +86,10 @@ extern u_char D_800DC930;
 
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
+u_char const* pMemcardFilenameTemplate = saveFilenameTemplate;
+u_int scrambleSeed = 0x0019660D;
+u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
+
 extern int D_8005DFDC;
 extern int vs_main_buttonsPressed;
 extern int vs_main_buttonsState;
@@ -103,11 +107,8 @@ extern u_char D_80061078[];
 extern u_char D_80061068[];
 extern u_char D_80061598[];
 extern D_80060020_t D_800619D8;
-extern u_short eventSpecs[];
 extern int D_800728C0[];
-extern u_char* pMemcardFilenameTemplate;
 extern int D_800728E8[];
-extern u_int scrambleSeed;
 extern int D_80072914[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
@@ -128,6 +129,10 @@ extern u_long D_800C2268[];
 extern u_long D_800D1268[];
 extern u_char memcardFilename[32];
 extern u_char memcardFilenameAlpha[32];
+extern u_char _memCardState;
+extern u_char _memCardPort;
+extern u_char D_800DC8AA;
+extern u_char _memCardTimeout;
 extern u_char D_800DC8AC;
 extern u_char D_800DC8AD;
 extern u_char D_800DC8AE;
@@ -202,7 +207,7 @@ u_int scramble(int value)
     return seed >> (32 - value);
 }
 
-int testMemcardEventsFrom(int id)
+int testMemcardEvents(int id)
 {
     int i;
 
@@ -214,7 +219,7 @@ int testMemcardEventsFrom(int id)
     return i;
 }
 
-void resetMemcardEventsFrom(int id)
+void resetMemcardEvents(int id)
 {
     int i;
 
@@ -305,7 +310,7 @@ int func_80068DB4()
 int memcardFileNumberFromFilename(u_char* filename)
 {
     int i;
-    u_char* gameCode;
+    u_char const* gameCode;
 
     gameCode = &pMemcardFilenameTemplate[5];
 
@@ -447,7 +452,119 @@ int createSaveFile(int port, int id)
     return -1;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006947C);
+enum _memCardStates {
+    _memCardInit = 0,
+    _memCardReady = 1,
+    _memCardNew = 2,
+    _memCardConfirmed = 3,
+    _memCardLoadReady = 4,
+};
+
+enum _memCardEventState {
+    _memCardEventIoEnd = 0,
+    _memCardEventError = 1,
+    _memCardEventTimeout = 2,
+    _memCardEventNew = 3,
+    _memCardEventNone = 4,
+};
+
+#define SWEVENTS 0
+#define HWEVENTS 4
+
+int func_8006947C(int arg0)
+{
+    int event;
+
+    if (arg0 != 0) {
+        _memCardPort = (arg0 - 1) * 16;
+        _memCardState = _memCardInit;
+        D_800DC8AA = 0;
+        return 0;
+    }
+    switch (_memCardState) {
+    case _memCardInit:
+        if (++D_800DC8AA >= 4) {
+            return 2;
+        }
+        resetMemcardEvents(SWEVENTS);
+        if (_card_info(_memCardPort) == 0) {
+            break;
+        }
+        _memCardState = _memCardReady;
+        _memCardTimeout = 0;
+        D_800DC8AC = 0;
+        // fallthrough
+    case _memCardReady:
+        switch (testMemcardEvents(SWEVENTS)) {
+        case _memCardEventIoEnd:
+            _memCardState = _memCardLoadReady;
+            break;
+        case _memCardEventError:
+        case _memCardEventTimeout:
+            _memCardState = _memCardInit;
+            break;
+        case _memCardEventNew:
+            _memCardState = _memCardNew;
+            break;
+        case _memCardEventNone:
+            if (_memCardTimeout++ > 64) {
+                _memCardState = _memCardInit;
+            }
+            break;
+        }
+        break;
+    case _memCardNew:
+        resetMemcardEvents(HWEVENTS);
+        if (_card_clear(_memCardPort) == 0) {
+            break;
+        }
+        _memCardState = _memCardConfirmed;
+        _memCardTimeout = 0;
+        D_800DC8AC = 4;
+        // fallthrough
+    case _memCardConfirmed:
+        do {
+            event = testMemcardEvents(HWEVENTS);
+        } while (event == _memCardEventNone);
+        if (event == _memCardEventIoEnd) {
+            _memCardState = _memCardLoadReady;
+            break;
+        }
+        if (event < _memCardEventIoEnd)
+            break;
+        if (event >= _memCardEventNone)
+            break;
+        _memCardState = _memCardInit;
+        break;
+    case _memCardLoadReady:
+        resetMemcardEvents(SWEVENTS);
+        if (_card_load(_memCardPort) == 0) {
+            break;
+        }
+        _memCardState = 5;
+        _memCardTimeout = 0;
+        // fallthrough
+    case 5:
+        event = testMemcardEvents(SWEVENTS);
+        switch (event) {
+        case _memCardEventIoEnd:
+            return D_800DC8AC + 1;
+        case _memCardEventError:
+        case _memCardEventTimeout:
+            _memCardState = _memCardInit;
+            break;
+        case _memCardEventNew:
+            return D_800DC8AC + 3;
+        case _memCardEventNone:
+            if (_memCardTimeout++ > 64) {
+                _memCardState = _memCardInit;
+            }
+            break;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_800696D0(int arg0)
 {
@@ -543,7 +660,7 @@ int func_80069EA8(int arg0)
             D_800DC8B1 += 1;
             break;
         }
-        resetMemcardEventsFrom(0);
+        resetMemcardEvents(0);
         var_a2 = 0x5C00;
         if (D_800DC8B0 != 0) {
             var_a2 = 0x2000;
@@ -556,7 +673,7 @@ int func_80069EA8(int arg0)
         D_800DC8AD = 1;
         // fallthrough
     case 1:
-        temp_v0_3 = testMemcardEventsFrom(0);
+        temp_v0_3 = testMemcardEvents(0);
         if (temp_v0_3 < 4) {
             close(D_800DC8B4);
             if (temp_v0_3 == 0) {

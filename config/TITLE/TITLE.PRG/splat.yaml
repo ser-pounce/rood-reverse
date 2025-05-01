@@ -46,7 +46,6 @@ segments:
     type: code
     vram: 0x80068800
     align: 4
-    # bss_size: Please fill out this value when you figure out the bss size
     subsegments:
       - [0x00, .rodata, 22C]
       - [0x1DC, .rodata, libpress/LIBPRESS]
@@ -55,6 +54,6 @@ segments:
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, .data, 22C]
-      - [0xA09C, data]
+      - [0xA09C, data, 22C]
       - [0x74068, bss]
   - [0x87648]

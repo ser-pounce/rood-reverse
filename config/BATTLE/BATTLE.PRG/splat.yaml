@@ -46,7 +46,6 @@ segments:
     type: code
     vram: 0x80068800
     align: 4
-    # bss_size: Please fill out this value when you figure out the bss size
     subsegments:
       - [0x00, rodata]
       - [0x6C4, rodata]

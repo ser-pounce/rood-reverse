@@ -1425,7 +1425,7 @@ int vs_main_processPadState()
     return 1;
 }
 
-static void vs_main_freeHeapR(void* block)
+void vs_main_freeHeapR(void* block)
 {
     vs_main_HeapHeader* var_a1 = heapA.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
@@ -1485,7 +1485,7 @@ void vs_main_freeHeap(void* block)
     target->prev = var_a1;
 }
 
-static u_long* vs_main_allocHeapR(u_int size)
+u_long* vs_main_allocHeapR(u_int size)
 {
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_a2;
@@ -1876,7 +1876,7 @@ static void func_800443CC()
     }
 }
 
-static int func_8004493C(int sector, int bytes, void* vram)
+int func_8004493C(int sector, int bytes, void* vram)
 {
     int result = vs_main_diskInitRead(sector, bytes, vram);
     if (result != 0) {

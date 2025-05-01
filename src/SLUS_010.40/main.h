@@ -35,3 +35,7 @@ void memcpy_impl(void* arg0, void* arg1, u_int words);
 vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile*);
 void func_80044B80(vs_main_CdQueueSlot*);
 void func_80044BC4(vs_main_CdQueueSlot* arg0, void* arg1);
+void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
+int func_8004493C(int sector, int bytes, void* vram);
+u_long* vs_main_allocHeapR(u_int size);
+void vs_main_freeHeapR(void* block);

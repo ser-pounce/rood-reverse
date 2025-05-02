@@ -156,7 +156,7 @@ extern u_char D_800DC8F2;
 extern u_char memcardPort;
 extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
-extern void* D_800DEAB8[];
+extern void* D_800DEAB8;
 extern u_int* D_800DEABC;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
@@ -575,7 +575,7 @@ int func_800696D0(int arg0)
     int* temp_s2;
     int* temp_s4;
 
-    temp_s1 = D_800DEAB8[0];
+    temp_s1 = D_800DEAB8;
     blocks = temp_s1 + 0x5C00;
     temp_s4 = blocks;
     temp_s2 = (int*)temp_s1 + 0x1760;
@@ -626,7 +626,7 @@ int func_80069EA8(int arg0)
     void* temp_s2;
     int new_var;
 
-    temp_s2 = D_800DEAB8[0] + 0x5C00;
+    temp_s2 = D_800DEAB8 + 0x5C00;
     if (arg0 != 0) {
         D_800DC8AD = 0;
         D_800DC8B1 = 0;
@@ -699,15 +699,15 @@ int func_8006A49C(int arg0)
     u_int event;
 
     if (arg0 != 0) {
-        D_800DEAB8[0] = vs_main_allocHeap(0x1C000U);
-        D_800DEABC = (u_int*)D_800DEAB8[0] + 0x4500;
+        D_800DEAB8 = vs_main_allocHeap(0x1C000U);
+        D_800DEABC = (u_int*)D_800DEAB8 + 0x4500;
         D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
         D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);
         dirEntBuf[0] = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);
-        func_80044BC4(D_800DC8C8, D_800DEAB8[0]);
+        func_80044BC4(D_800DC8C8, D_800DEAB8);
         D_800DC8C4 = 0;
         return 0;
     }
@@ -716,7 +716,7 @@ int func_8006A49C(int arg0)
     case 0:
         if (D_800DC8C8->unk0[0] == 4) {
             func_80044B80(D_800DC8C8);
-            drawImage(0x01000320, (u_long*)D_800DEAB8[0], 0x010000E0);
+            drawImage(0x01000320, (u_long*)D_800DEAB8, 0x010000E0);
             D_800DC8C4 = 1;
         }
         return 0;
@@ -774,7 +774,7 @@ void func_8006A6E0()
 
     ExitCriticalSection();
     func_80042C94(1);
-    vs_main_freeHeap(D_800DEAB8[0]);
+    vs_main_freeHeap(D_800DEAB8);
 }
 
 void func_8006A778(int arg0, int arg1, int arg2, int arg3)

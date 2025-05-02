@@ -47,8 +47,8 @@ segments:
     vram: 0x80068800
     align: 4
     subsegments:
-      - [0x0, .rodata, 138]
-      - [0x138, c]
-      - [0x5BF8, data, 138]
-      - [0x73318, bss, 138]
+      - [0x0, .rodata, D4]
+      - [0xD4, c]
+      - [0x5BFC, data, D4]
+      - [0x73318, bss, D4]
   - [0x73A1C]

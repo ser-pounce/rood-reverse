@@ -1,0 +1,54 @@
+name: &n MENU/MENUD.PRG
+sha1: 0ffc480d1645a4376ddcbe6a1e8a8f1a31973ff4
+options:
+  basename: *n
+  base_path: ../../..
+  target_path: data/MENU/MENUD.PRG
+  elf_path: build/data/MENU/MENUD.PRG.elf
+  platform: psx
+  compiler: GCC
+
+  asm_path: build/src/MENU/MENUD.PRG
+  data_path: ""
+  src_path: src/MENU/MENUD.PRG
+  hasm_in_src_path: true
+  asset_path: build/assets/MENU/MENUD.PRG
+  extensions_path: tools/splat_ext
+
+  ld_dependencies: true
+  o_as_suffix: true
+
+  ld_script_path: build/config/MENU/MENUD.PRG/link.ld
+
+  find_file_boundaries: true
+  gp_value: 0x80033674
+  image_type_in_extension: true
+
+  section_order: [.rodata, .text, .data]
+  auto_link_sections: [.data, .rodata]
+
+  symbol_addrs_path: 
+    - config/MENU/MENUD.PRG/symbol_addrs.txt
+    - config/MENU/MENUD.PRG/exports.txt
+
+  undefined_funcs_auto_path: build/config/MENU/MENUD.PRG/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/MENU/MENUD.PRG/undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: &enc ASCII
+  data_string_encoding: *enc
+  rodata_string_guesser_level: &strLvl 2
+  data_string_guesser_level: *strLvl
+
+segments:
+  - start: 0x0
+    type: code
+    vram: 0x80102800
+    align: 4
+    subsegments:
+      - [0x0, .rodata, 234]
+      - [0x234, c]
+      - [0x6D2C, data, 234]
+      - [0x7230, bss, 234]
+  - [0x7290]

@@ -1840,7 +1840,7 @@ void func_8006F954()
     D_800DED7C = 0;
     DecDCToutCallback(0);
     StUnSetRing();
-    while (DsControlB(9U, 0, 0) == 0)
+    while (DsControlB(DslPause, 0, 0) == 0)
         ;
     vs_main_freeHeap(D_800EFDF4);
     vs_main_freeHeap(D_800EFDF0);
@@ -1898,7 +1898,7 @@ int func_8006FA54()
             SetDispMask(1);
         }
 
-        if ((vs_main_buttonsPressed & 0x820)) {
+        if ((vs_main_buttonsPressed & (PADRright | PADstart))) {
             return 1;
         }
     }

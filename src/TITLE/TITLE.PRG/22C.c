@@ -81,9 +81,6 @@ void func_800703CC();
 void func_800705AC();
 void func_8007093C();
 
-extern RECT D_800DC928;
-extern u_char D_800DC930;
-
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 u_char const* pMemcardFilenameTemplate = saveFilenameTemplate;
@@ -154,6 +151,10 @@ extern u_char D_800DC8F0;
 extern u_char D_800DC8F1;
 extern u_char D_800DC8F2;
 extern u_char memcardPort;
+extern RECT D_800DC928;
+extern u_char D_800DC930;
+extern u_char D_800DC931;
+extern u_char D_800DC932;
 extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
 extern void* D_800DEAB8;
@@ -1002,7 +1003,7 @@ int func_8006B138(int arg0)
     temp_s0 = (D_800DC8CC[0] >> 1) + 1;
 
     if ((D_800DC8CC[0] & 1) == 0) {
-        D_800DED6C = &D_800DEAC0[((u_short*)(&D_800DEAC0[temp_s0]))[21]];
+        D_800DED6C = D_800DEAC0 + (D_800DEAC0 + temp_s0)[21];
         func_8006947C(temp_s0);
         ++D_800DC8CC[0];
     } else {
@@ -1433,7 +1434,68 @@ int func_8006E988()
     return ret;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006EA70);
+u_char func_8006EA70(int arg0)
+{
+    D_800DEB18_t* temp_v0;
+    int i;
+
+    if (arg0 != 0) {
+        D_800DC932 = 1;
+        D_800DC931 = 0;
+        return 0;
+    }
+
+    switch (D_800DC931) {
+    case 0:
+    case 1:
+        temp_v0 = func_8006AE70(D_800DC931 + 1,
+            (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
+            (u_char*)&D_800DEAC0[(D_800DEAC0 + D_800DC931)[0x1A]]);
+        temp_v0->unk0 = 2;
+        temp_v0->unk8 = 0xC2;
+        ++D_800DC931;
+        break;
+    case 2:
+        D_800DC931 += func_8006AFBC();
+        break;
+    case 3:
+        D_800DEB18[D_800DC932].unk4 = 1;
+        D_800DEB18[3 - D_800DC932].unk4 = 0;
+        if (vs_main_buttonsPressed & PADRdown) {
+            func_80045988(0x7E, 7);
+        }
+        if (vs_main_buttonsPressed & PADRright) {
+            D_800DC931 = 4;
+        }
+        if (D_800DC931 == 4) {
+            if (D_800DC932 == 1) {
+                func_80068A8C();
+            } else {
+                func_80068AB0();
+            }
+            D_800DED68 = 0;
+            for (i = 1; i < 3; ++i) {
+                D_800DEB18[i].unk0 = 2;
+                D_800DEB18[i].unk8 = 0x140;
+            }
+            break;
+        }
+        if (D_8005DFDC & 0x5000) {
+            func_80068A68();
+            D_800DC932 = 3 - D_800DC932;
+        }
+        D_800DED68 = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
+        break;
+    case 4:
+        if (func_8006AFBC() != 0) {
+            return D_800DC932;
+        }
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
 
 void func_8006ECF4()
 {

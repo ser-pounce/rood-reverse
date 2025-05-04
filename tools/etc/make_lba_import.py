@@ -16,7 +16,7 @@ if __name__ == '__main__':
             converters={
                 'Name': lambda n: n.removesuffix(';1').replace('.', '_'),
             }
-        ).query('Type == "File"')
+        ).query('Type == "File" or Type == "XA"')
 
         data['define'] = '#define'
         data['fileLBA'] = data['Name'].apply(lambda n: f'VS_{n}_LBA')

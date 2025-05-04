@@ -192,7 +192,7 @@ extern void* D_800EFDF4;
 extern u_char D_800EFDF8[][8];
 
 #define MAKEXY(x, y) (((x) << 16) | (y))
-#define MAKEWH(w, h) (((w) << 16) | (h))
+#define MAKEWH(w, h) MAKEXY(w, h)
 
 void func_80068A2C()
 {
@@ -725,7 +725,7 @@ int func_8006A49C(int arg0)
     case 0:
         if (D_800DC8C8->unk0[0] == 4) {
             func_80044B80(D_800DC8C8);
-            drawImage(0x01000320, (u_long*)D_800DEAB8, 0x010000E0);
+            drawImage(MAKEXY(256, 800), (u_long*)D_800DEAB8, MAKEWH(256, 224));
             D_800DC8C4 = 1;
         }
         return 0;
@@ -1352,24 +1352,18 @@ int func_8006E738()
 {
     int temp_v0;
 
-    drawImage(0x300, D_800C2268, 0xE00040);
-    drawImage(0x010001C0, D_800C2268 + 0x1C00, 0x01000040);
-    drawImage(0x340, D_800AF368, 0xE00040);
-    drawImage(0x380, D_800AF368 + 0x1C00, 0xE00040);
-    drawImage(0x4203C0, D_800BD368, 0x9E0040);
-    drawImage(0xE30300, D_800D1268, 0x10100);
-    D_800DC928.x = 0x280;
-    D_800DC928.y = 0x100;
-    D_800DC928.w = 0x20;
-    D_800DC928.h = 0xF0;
-    ClearImage(&D_800DC928, 0U, 0U, 0U);
+    drawImage(MAKEXY(0, 768), D_800C2268, MAKEWH(224, 64));
+    drawImage(MAKEXY(256, 448), D_800C2268 + 0x1C00, MAKEWH(256, 64));
+    drawImage(MAKEXY(0, 832), D_800AF368, MAKEWH(224, 64));
+    drawImage(MAKEXY(0, 896), D_800AF368 + 0x1C00, MAKEWH(224, 64));
+    drawImage(MAKEXY(66, 960), D_800BD368, MAKEWH(158, 64));
+    drawImage(MAKEXY(227, 768), D_800D1268, MAKEWH(1, 256));
+    setRECT(&D_800DC928, 640, 256, 32, 240);
+    ClearImage(&D_800DC928, 0, 0, 0);
     DrawSync(0);
-    D_800DC928.x = 0x300;
-    D_800DC928.y = 0x100;
-    D_800DC928.w = 0x20;
-    D_800DC928.h = 0xF0;
+    setRECT(&D_800DC928, 768, 256, 32, 240);
     ClearImage(&D_800DC928, 0U, 0U, 0U);
-    drawImage(0x010002A0, D_800D1268 + 0x80, 0xF00060);
+    drawImage(MAKEXY(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
     func_8006E5D0();
     D_800DC930 = 0;
 
@@ -1760,17 +1754,17 @@ void func_8006F54C()
     int var_a3_2;
     int i;
 
-    rect.w = 0x140;
+    rect.w = 320;
     rect.x = 0;
     rect.y = 0;
-    rect.h = 0x200;
+    rect.h = 512;
     ClearImage(&rect, 0, 0, 0);
-    drawImage(0x400140, D_80072F0C, 0x10010);
-    drawImage(0x140, D_80072F0C + 8, 0x300040);
-    SetDefDispEnv(&disp, 0, 0x100, 0x140, 0xF0);
-    SetDefDrawEnv(&draw, 0, 0, 0x140, 0xF0);
+    drawImage(MAKEXY(64, 320), D_80072F0C, MAKEWH(1, 16));
+    drawImage(MAKEXY(0, 320), D_80072F0C + 8, MAKEWH(48, 64));
+    SetDefDispEnv(&disp, 0, 256, 320, 240);
+    SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
-    disp.screen.h = 0xE0;
+    disp.screen.h = 224;
     PutDispEnv(&disp);
     PutDrawEnv(&draw);
     DrawSync(0);
@@ -1786,16 +1780,16 @@ void func_8006F54C()
             var_a3 = (i - 0x14B) * 4;
         }
         func_8006A778(0x580020, 0x10140000, 0x300100, (var_a3 << 0x10) | 5);
-        SetDefDispEnv(&disp, 0, (i & 1) << 8, 0x140, 0xF0);
-        SetDefDrawEnv(&draw, 0, (1 - (i & 1)) << 8, 0x140, 0xF0);
+        SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
+        SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
-        disp.screen.h = 0xE0;
+        disp.screen.h = 224;
         VSync(0);
         PutDispEnv(&disp);
         PutDrawEnv(&draw);
     }
 
-    drawImage(0xF00000, D_8007472C, 0xE0020);
+    drawImage(MAKEXY(240, 0), D_8007472C, MAKEWH(14, 32));
 
     for (i = 0; i < 0x16C; ++i) {
         var_a3_2 = 0;
@@ -1807,10 +1801,10 @@ void func_8006F54C()
             i = 0x14B;
         }
         func_8006A778(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
-        SetDefDispEnv(&disp, 0, (i & 1) << 8, 0x140, 0xF0);
-        SetDefDrawEnv(&draw, 0, (1 - (i & 1)) << 8, 0x140, 0xF0);
+        SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
+        SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
-        disp.screen.h = 0xE0;
+        disp.screen.h = 224;
         VSync(0);
         vs_main_processPadState();
         PutDispEnv(&disp);
@@ -1821,14 +1815,14 @@ void func_8006F54C()
 
 void func_8006F81C()
 {
-    dslMode = 0x1E0;
-    DsIntToPos(0x3EBE8, &introMovieLoc);
+    dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
+    DsIntToPos(VS_TITLE_STR_LBA, &introMovieLoc);
     D_800DEDE0 = vs_main_allocHeap(0x20000);
     D_800EFDE8 = vs_main_allocHeap(0x23000);
     D_800EFDEC = vs_main_allocHeap(0x23000);
     D_800EFDF0 = vs_main_allocHeap(0x2A00);
     D_800EFDF4 = vs_main_allocHeap(0x2A00);
-    func_8006F0A0(&D_800DEDA8, 0, 0, 0, 0xE0);
+    func_8006F0A0(&D_800DEDA8, 0, 0, 0, 224);
     func_8006F108(&introMovieLoc, func_8006F174);
     DecDCTvlcBuild(&D_800DEDE8);
 

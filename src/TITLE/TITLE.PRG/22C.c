@@ -140,6 +140,12 @@ extern u_char D_800DC8AF;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
 extern int D_800DC8B4;
+extern u_char D_800DC8B8;
+extern u_char D_800DC8B9;
+extern u_char D_800DC8BA;
+extern u_char D_800DC8BB;
+extern u_char D_800DC8BC;
+extern int D_800DC8C0;
 extern RECT D_800DC938;
 extern u_char D_800DC940;
 extern u_char D_800DC941;
@@ -163,7 +169,7 @@ extern u_char D_800DC931;
 extern u_char D_800DC932;
 extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
-extern void* D_800DEAB8;
+extern u_char* D_800DEAB8;
 extern u_int* D_800DEABC;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
@@ -700,7 +706,104 @@ int func_80069EA8(int arg0)
 
 INCLUDE_RODATA("build/src/TITLE/TITLE.PRG/nonmatchings/22C", D_8006886C);
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A11C);
+int func_8006A11C(int arg0)
+{
+    int temp_v1_2;
+    int temp_s2;
+    int temp_s3;
+
+    if (arg0 != 0) {
+        D_800DC8BB = 0;
+        D_800DC8BC = 0;
+        D_800DEB0C = 0;
+        D_800DC8BA = arg0 >> 0xC;
+        D_800DC8B9 = arg0 & 7;
+        D_800DEB12 = 0x50;
+        D_800DEB10 = 0;
+        D_800DC8B8 = memcardSaveIdExists(D_800DC8B9 + 0x40);
+        return 0;
+    }
+    switch (D_800DC8B8) {
+    case 0:
+        if (rename((char*)memcardFilenameFromTemplate(D_800DC8BA, D_800DC8B9),
+                (char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9))
+            != 0) {
+            D_800DC8BB = 0;
+            D_800DC8BC = 0;
+            D_800DC8B8 = 1;
+        } else {
+            ++D_800DC8BC;
+            D_800DC8BB = D_800DC8BC >> 4;
+        }
+        break;
+    case 1:
+        temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (0x140 - D_800DEB12)) / D_800DEB0E;
+        D_800DEB10 = D_800DEB14;
+        D_800DEB0E = 0x180;
+        D_800DEB12 += temp_v1_2;
+        D_800DC8C0 = open(
+            (char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9), 0x8002);
+        ;
+        if (D_800DC8C0 == -1) {
+            ++D_800DC8BB;
+            break;
+        }
+        resetMemcardEvents(0);
+        if (write(D_800DC8C0, D_800DEAB8, 0x5C00) == -1) {
+            close(D_800DC8C0);
+            ++D_800DC8BB;
+            break;
+        }
+        D_800DC8B8 = 2;
+        // fallthrough
+    case 2: {
+        temp_s3 = testMemcardEvents(0);
+        if (temp_s3 < 4) {
+            close(D_800DC8C0);
+            if (temp_s3 == 0) {
+                D_800DC8B8 = 3;
+                temp_s2 = D_800DEB12;
+                temp_s3 = D_800DEB10;
+                func_80069EA8((D_800DC8BA << 0xC) | (D_800DC8B9 + 8));
+                D_800DEB12 = temp_s2;
+                D_800DEB10 = temp_s3;
+            } else {
+                ++D_800DC8BB;
+                D_800DC8B8 = 1;
+            }
+        }
+        break;
+    }
+    case 3:
+        temp_s3 = func_80069EA8(0);
+        if (temp_s3 != 0) {
+            if (temp_s3 >= 0) {
+                for (temp_s2 = 0; temp_s2 < 0x5C00; ++temp_s2) {
+                    if (D_800DEAB8[temp_s2] != D_800DEAB8[temp_s2 + 0x5C00]) {
+                        break;
+                    }
+                }
+                if (temp_s2 < 0x5C00) {
+                    return -1;
+                }
+                D_800DC8B8 = 4;
+                break;
+            }
+            return -1;
+        }
+        break;
+    case 4:
+        if (rename((char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9),
+                (char*)memcardFilenameFromTemplate(D_800DC8BA, D_800DC8B9))
+            == 0) {
+            ++D_800DC8BC;
+            D_800DC8BB = (D_800DC8BC >> 4);
+            break;
+        }
+        return 1;
+    }
+    return D_800DC8BB == 3 ? -1 : 0;
+}
 
 int func_8006A49C(int arg0)
 {
@@ -709,7 +812,7 @@ int func_8006A49C(int arg0)
     u_int event;
 
     if (arg0 != 0) {
-        D_800DEAB8 = vs_main_allocHeap(0x1C000U);
+        D_800DEAB8 = (u_char*)vs_main_allocHeap(0x1C000U);
         D_800DEABC = (u_int*)D_800DEAB8 + 0x4500;
         D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
         D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);

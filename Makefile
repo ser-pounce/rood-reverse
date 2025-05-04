@@ -81,7 +81,7 @@ format:
 	@$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
 
-decompme: IMPORTFLAGS += --decompme
+decompme: IMPORTFLAGS += --decompme --preserve-macros "setRECT"
 decompme: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^
 
@@ -102,7 +102,8 @@ clean-all:
 	@$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
 ifeq ($(PERMUTER),)
-build/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt data/% Makefile
+build/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
+						config/%/Makefile Makefile data/%
 	@$(SPLAT) $(SPLATFLAGS) $<
 	@$(TOUCH) $@
 endif

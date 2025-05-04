@@ -55,6 +55,7 @@ D_800DC8E9 = 0x800DC8E9;
 memcardPort = 0x800DC8F3;
 D_800DC931 = 0x800DC931;
 D_800DC932 = 0x800DC932;
+D_800DC941 = 0x800DC941;
 memcardEventDescriptors = 0x800DEA98;
 memcardFiles = 0x800DEAC8;
 dirEntBuf = 0x800DEB04;

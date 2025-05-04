@@ -70,6 +70,7 @@ void func_8006A778(int, int, int, int);
 void func_8006BC78(u_char);
 int func_8006CABC(int);
 int func_8006CE6C(int);
+int func_8006E00C(int);
 void playMovie(DslLOC*);
 void func_8006F174();
 int func_8006F2A0(D_800DEDA8_t*);
@@ -128,6 +129,7 @@ extern u_char memcardFilename[32];
 extern u_char memcardFilenameAlpha[32];
 extern u_char _memCardState;
 extern u_char _memCardPort;
+extern u_char D_800D9280[];
 extern u_char D_800DC8AA;
 extern u_char _memCardTimeout;
 extern u_char D_800DC8AC;
@@ -137,6 +139,9 @@ extern u_char D_800DC8AF;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
 extern int D_800DC8B4;
+extern RECT D_800DC938;
+extern u_char D_800DC940;
+extern u_char D_800DC941;
 extern u_char D_800DEB0C;
 extern u_short D_800DEB10;
 extern u_short D_800DEB12;
@@ -185,6 +190,9 @@ extern void* D_800EFDEC;
 extern void* D_800EFDF0;
 extern void* D_800EFDF4;
 extern u_char D_800EFDF8[][8];
+
+#define MAKEXY(x, y) (((x) << 16) | (y))
+#define MAKEWH(w, h) (((w) << 16) | (h))
 
 void func_80068A2C()
 {
@@ -1434,7 +1442,7 @@ int func_8006E988()
     return ret;
 }
 
-u_char func_8006EA70(int arg0)
+int func_8006EA70(int arg0)
 {
     D_800DEB18_t* temp_v0;
     int i;
@@ -1510,7 +1518,89 @@ void func_8006ECF4()
     DrawPrim(D_800DED28);
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006EDBC);
+void func_8006EDBC(void)
+{
+    int temp_v0_2;
+    int temp_v0;
+
+    drawImage(MAKEXY(0, 768), D_800C2268, MAKEWH(224, 64));
+    drawImage(MAKEXY(256, 448), D_800C2268 + 0x1C00, MAKEWH(256, 64));
+    drawImage(MAKEXY(0, 832), D_800AF368, MAKEWH(224, 64));
+    drawImage(MAKEXY(0, 896), D_800AF368 + 0x1C00, MAKEWH(224, 64));
+    drawImage(MAKEXY(66, 960), D_800BD368, MAKEWH(158, 64));
+    drawImage(MAKEXY(227, 768), D_800D1268, MAKEWH(1, 256));
+    setRECT(&D_800DC938, 640, 256, 32, 240);
+    ClearImage(&D_800DC938, 0, 0, 0);
+    DrawSync(0);
+    setRECT(&D_800DC938, 768, 256, 32, 240);
+    ClearImage(&D_800DC938, 0, 0, 0);
+    drawImage(MAKEWH(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
+    func_8006E5D0();
+
+    D_800DC940 = 0;
+
+    while (1) {
+        func_8004261C(2);
+        func_8006E68C();
+        vs_main_processPadState();
+        scramble(0);
+
+        switch (D_800DC940) {
+        case 0:
+            func_8006A49C(1);
+            D_800DC940 = 1U;
+            continue;
+        case 1:
+            if (func_8006A49C(0) != 0) {
+                func_8006AE10();
+                func_8006E00C(1);
+                D_800DC940 = 2;
+            }
+            continue;
+        case 2:
+            temp_v0 = func_8006E00C(0);
+            if (temp_v0 != 0) {
+                if (temp_v0 < 0) {
+                    D_800DED6C = D_800DEAC0 + 0x335;
+                    func_8006EA70(1);
+                    D_800DC940 = 3;
+                } else {
+                    func_8006A6E0();
+                    func_8006ECF4();
+                    D_800DC941 = 30;
+                    D_800DC940 = 4;
+                    continue;
+                }
+            }
+            func_8006C114();
+            func_8006BC78(D_800DED76);
+            continue;
+        case 3:
+            temp_v0 = func_8006EA70(0);
+            if (temp_v0 != 0) {
+                if (temp_v0 != 1) {
+                    func_8006A6E0();
+                    func_8006ECF4();
+                    D_800DC941 = 30;
+                    D_800DC940 = 4;
+                    continue;
+                }
+                func_8006E00C(1);
+                D_800DC940 = 2;
+            }
+            func_8006C114();
+            func_8006BC78(D_800DED76);
+            continue;
+        case 4:
+            func_8006ECF4();
+            if (--D_800DC941 == 0) {
+                SetDispMask(0);
+                return;
+            }
+            break;
+        }
+    }
+}
 
 void func_8006F0A0(D_800DEDA8_t* arg0, short arg1, short arg2, short arg3, int arg4)
 {

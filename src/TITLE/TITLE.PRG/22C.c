@@ -43,7 +43,8 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char unk1;
-    short unk2;
+    u_char unk2;
+    u_char unk3;
     u_char unk4;
     u_char unk5;
     u_char unk6;
@@ -1514,7 +1515,6 @@ void func_8006ECF4()
 
 void func_8006EDBC(void)
 {
-    int temp_v0_2;
     int temp_v0;
 
     drawImage(MAKEXY(0, 768), D_800C2268, MAKEWH(224, 64));

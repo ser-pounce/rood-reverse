@@ -141,11 +141,11 @@ extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
 extern int D_800DC8B4;
 extern u_char D_800DC8B8;
-extern u_char D_800DC8B9;
-extern u_char D_800DC8BA;
+extern u_char _memcardFileno;
+extern u_char _memcardPort;
 extern u_char D_800DC8BB;
 extern u_char D_800DC8BC;
-extern int D_800DC8C0;
+extern int _saveFileId;
 extern RECT D_800DC938;
 extern u_char D_800DC940;
 extern u_char D_800DC941;
@@ -677,7 +677,7 @@ int func_80069EA8(int arg0)
             D_800DC8B1 += 1;
             break;
         }
-        resetMemcardEvents(0);
+        resetMemcardEvents(SWEVENTS);
         var_a2 = 0x5C00;
         if (D_800DC8B0 != 0) {
             var_a2 = 0x2000;
@@ -690,14 +690,14 @@ int func_80069EA8(int arg0)
         D_800DC8AD = 1;
         // fallthrough
     case 1:
-        temp_v0_3 = testMemcardEvents(0);
-        if (temp_v0_3 < 4) {
+        temp_v0_3 = testMemcardEvents(SWEVENTS);
+        if (temp_v0_3 < _memCardEventNone) {
             close(D_800DC8B4);
             if (temp_v0_3 == 0) {
                 return 1;
             }
             D_800DC8AD = 0;
-            D_800DC8B1 += 1;
+            ++D_800DC8B1;
         }
         break;
     }
@@ -716,17 +716,17 @@ int func_8006A11C(int arg0)
         D_800DC8BB = 0;
         D_800DC8BC = 0;
         D_800DEB0C = 0;
-        D_800DC8BA = arg0 >> 0xC;
-        D_800DC8B9 = arg0 & 7;
+        _memcardPort = arg0 >> 0xC;
+        _memcardFileno = arg0 & 7;
         D_800DEB12 = 0x50;
         D_800DEB10 = 0;
-        D_800DC8B8 = memcardSaveIdExists(D_800DC8B9 + 0x40);
+        D_800DC8B8 = memcardSaveIdExists(_memcardFileno + 0x40);
         return 0;
     }
     switch (D_800DC8B8) {
     case 0:
-        if (rename((char*)memcardFilenameFromTemplate(D_800DC8BA, D_800DC8B9),
-                (char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9))
+        if (rename((char*)memcardFilenameFromTemplate(_memcardPort, _memcardFileno),
+                (char*)memcardFilenameFromTemplateAlpha(_memcardPort, _memcardFileno))
             != 0) {
             D_800DC8BB = 0;
             D_800DC8BC = 0;
@@ -741,30 +741,31 @@ int func_8006A11C(int arg0)
         D_800DEB10 = D_800DEB14;
         D_800DEB0E = 0x180;
         D_800DEB12 += temp_v1_2;
-        D_800DC8C0 = open(
-            (char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9), 0x8002);
+        _saveFileId
+            = open((char*)memcardFilenameFromTemplateAlpha(_memcardPort, _memcardFileno),
+                0x8002);
         ;
-        if (D_800DC8C0 == -1) {
+        if (_saveFileId == -1) {
             ++D_800DC8BB;
             break;
         }
-        resetMemcardEvents(0);
-        if (write(D_800DC8C0, D_800DEAB8, 0x5C00) == -1) {
-            close(D_800DC8C0);
+        resetMemcardEvents(SWEVENTS);
+        if (write(_saveFileId, D_800DEAB8, 0x5C00) == -1) {
+            close(_saveFileId);
             ++D_800DC8BB;
             break;
         }
         D_800DC8B8 = 2;
         // fallthrough
     case 2: {
-        temp_s3 = testMemcardEvents(0);
-        if (temp_s3 < 4) {
-            close(D_800DC8C0);
-            if (temp_s3 == 0) {
+        temp_s3 = testMemcardEvents(SWEVENTS);
+        if (temp_s3 < _memCardEventNone) {
+            close(_saveFileId);
+            if (temp_s3 == _memCardEventIoEnd) {
                 D_800DC8B8 = 3;
                 temp_s2 = D_800DEB12;
                 temp_s3 = D_800DEB10;
-                func_80069EA8((D_800DC8BA << 0xC) | (D_800DC8B9 + 8));
+                func_80069EA8((_memcardPort << 0xC) | (_memcardFileno + 8));
                 D_800DEB12 = temp_s2;
                 D_800DEB10 = temp_s3;
             } else {
@@ -793,8 +794,8 @@ int func_8006A11C(int arg0)
         D_800DC8B8 = 4;
         break;
     case 4:
-        if (rename((char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9),
-                (char*)memcardFilenameFromTemplate(D_800DC8BA, D_800DC8B9))
+        if (rename((char*)memcardFilenameFromTemplateAlpha(_memcardPort, _memcardFileno),
+                (char*)memcardFilenameFromTemplate(_memcardPort, _memcardFileno))
             == 0) {
             ++D_800DC8BC;
             D_800DC8BB = (D_800DC8BC >> 4);

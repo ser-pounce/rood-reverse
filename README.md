@@ -17,8 +17,9 @@ Thanks also to the following amazing projects (and their dependencies):
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
 
 ## Status
-A significant portion of the main exectuable, including most of the code that handles broad transitions between the game modules, disk and file management, and memory management, has been [decompiled](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/main.c).
+A significant portion of the main exectuable, including most of the code that handles broad transitions between the game modules, controller processing, disk and file management, and memory management, has been [decompiled](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/main.c).
 Some progress has also been made in the game's [sound module](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/25AC.c), and the [title screen](https://github.com/ser-pounce/rood-reverse/blob/main/src/TITLE/TITLE.PRG/22C.c).
+All of the obvious executables have been split (although splitting accuracy may vary), and as long as symbols do not change address, and the file sizes do not change, values in the exectuables can already be modified and still result in a working disk image.
 
 ## (Naive) Quickstart
 1. Fork the project

@@ -776,21 +776,21 @@ int func_8006A11C(int arg0)
     }
     case 3:
         temp_s3 = func_80069EA8(0);
-        if (temp_s3 != 0) {
-            if (temp_s3 >= 0) {
-                for (temp_s2 = 0; temp_s2 < 0x5C00; ++temp_s2) {
-                    if (D_800DEAB8[temp_s2] != D_800DEAB8[temp_s2 + 0x5C00]) {
-                        break;
-                    }
-                }
-                if (temp_s2 < 0x5C00) {
-                    return -1;
-                }
-                D_800DC8B8 = 4;
-                break;
-            }
+        if (temp_s3 == 0) {
+            break;
+        }
+        if (temp_s3 < 0) {
             return -1;
         }
+        for (temp_s2 = 0; temp_s2 < 0x5C00; ++temp_s2) {
+            if (D_800DEAB8[temp_s2] != D_800DEAB8[temp_s2 + 0x5C00]) {
+                break;
+            }
+        }
+        if (temp_s2 < 0x5C00) {
+            return -1;
+        }
+        D_800DC8B8 = 4;
         break;
     case 4:
         if (rename((char*)memcardFilenameFromTemplateAlpha(D_800DC8BA, D_800DC8B9),

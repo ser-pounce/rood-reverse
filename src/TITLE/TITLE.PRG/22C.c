@@ -69,6 +69,7 @@ int func_8006947C(int);
 int func_8006A49C(int);
 void func_8006A778(int, int, int, int);
 void func_8006BC78(u_char);
+int func_8006C778(u_char);
 int func_8006CABC(int);
 int func_8006CE6C(int);
 int func_8006E00C(int);
@@ -147,6 +148,9 @@ extern u_char _memcardFileno;
 extern u_char _memcardPort;
 extern u_char D_800DC8BB;
 extern u_char D_800DC8BC;
+extern u_char D_800DC8E0;
+extern u_char D_800DC8E1;
+extern u_char D_800DC8E2;
 extern int _saveFileId;
 extern RECT D_800DC938;
 extern u_char D_800DC940;
@@ -1270,7 +1274,103 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C15C);
 // https://decomp.me/scratch/KxBXc
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006CABC);
+int func_8006CABC(int arg0)
+{
+    D_800DEB18_t* temp_v0;
+    int temp_v0_4;
+    int i;
+
+    if (arg0 != 0) {
+        D_800DC8E2 = arg0 - 1;
+        D_800DC8E1 = 1;
+        D_800DED70 = 0;
+        D_800DC8E0 = 0;
+        return 0;
+    }
+    switch (D_800DC8E0) {
+    case 0:
+        temp_v0 = func_8006AE70(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x94));
+        temp_v0->unk0 = 2;
+        temp_v0->unk8 = 0xB4;
+        temp_v0->unk4 = 1;
+        temp_v0->unk3 = 8;
+        D_800DC8E0 = 1;
+        break;
+    case 1:
+        if (func_8006AFBC() != 0) {
+            temp_v0 = func_8006AE70(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
+            temp_v0->unk0 = 2;
+            temp_v0->unk8 = 0xC2;
+            D_800DC8E0 = 2;
+        }
+        break;
+    case 2:
+        temp_v0 = func_8006AE70(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
+        temp_v0->unk0 = 2;
+        temp_v0->unk8 = 0xC2;
+        D_800DC8E0 = 3;
+        break;
+    case 3:
+        if (func_8006AFBC() != 0) {
+            D_800DC8E0 = 4;
+            D_800DED6C = D_800DEAC0 + 0xB6;
+        }
+        break;
+    case 4:
+        D_800DEB18[D_800DC8E1].unk4 = 1;
+        D_800DEB18[3 - D_800DC8E1].unk4 = 0;
+        if (vs_main_buttonsPressed & 0x40) {
+            func_80045988(0x7E, 6);
+            D_800DED68 = 0;
+            for (i = 0; i < 3; ++i) {
+                D_800DEB18[i].unk0 = 2;
+                D_800DEB18[i].unk8 = 0x140;
+            }
+            D_800DC8E0 = 6;
+        } else if (vs_main_buttonsPressed & 0x20) {
+            func_80045988(0x7E, 5);
+            func_8006C778(D_800DC8E1);
+            D_800DED68 = 0;
+            D_800DC8E0 = 5;
+        } else {
+            if (D_8005DFDC & 0x5000) {
+                func_80045988(0x7E, 4);
+                D_800DC8E1 = 3 - D_800DC8E1;
+            }
+            D_800DED68 = ((((D_800DC8E1 + 1) * 16) + 10) << 16) | 0xB4;
+        }
+        break;
+    case 5:
+        temp_v0 = (D_800DEB18_t*)func_8006C778(0);
+        if (temp_v0 != 0) {
+            if ((int)temp_v0 < 0) {
+                D_800DC8E0 = 1;
+            } else {
+                D_800DC8E0 = 7;
+            }
+        }
+        break;
+    case 6:
+        if (func_8006AFBC() != 0) {
+            if (D_800DC8E2 == 0) {
+                return -1;
+            }
+            D_800DC8E0 = 8;
+        }
+        break;
+    case 7:
+        if (++D_800DED72 >= 0x1F) {
+            return 1;
+        }
+        break;
+    case 8:
+        if (++D_800DED72 < 0x1F) {
+            break;
+        }
+        return -1;
+    }
+    return 0;
+}
 
 int func_8006CE6C(int arg0)
 {
@@ -1299,13 +1399,13 @@ int func_8006CE6C(int arg0)
     case 3:
         D_800DEB18[D_800DC8E9 + 3].unk4 = 1;
         D_800DEB18[4 - D_800DC8E9].unk4 = 0;
-        if (vs_main_buttonsPressed & 0x60) {
+        if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             D_800DED68 = 0;
             for (i = 3; i < 5; ++i) {
                 D_800DEB18[i].unk0 = 4;
                 D_800DEB18[i].unk8 = -0x7E;
             }
-            if (vs_main_buttonsPressed & 0x20) {
+            if (vs_main_buttonsPressed & PADRright) {
                 if ((&D_800DC8E8)[1] == 0) {
                     func_80045988(0x7E, 5);
                     return 1;

@@ -1312,7 +1312,7 @@ void func_800436B4()
     }
 }
 
-static void func_800438C8(int arg0)
+void func_800438C8(int arg0)
 {
     int new_var4;
     int new_var;

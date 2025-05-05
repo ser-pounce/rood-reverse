@@ -97,6 +97,7 @@ extern int D_8005FEA0[][3];
 extern u_char D_8005FFB8[];
 extern u_char D_8005FFD8[];
 extern D_80060020_t D_80060020;
+extern u_char D_8006002B;
 extern u_char D_80060040[];
 extern int D_80060064;
 extern u_char D_80060068[];
@@ -2367,7 +2368,109 @@ void func_80070A58()
     vs_main_processPadState();
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070A88);
+void func_80070A88()
+{
+    int i;
+    int var_s4;
+
+    D_800EFDF8[1][1] = 1;
+    D_800EFDF8[3][1] = 2;
+    D_800EFDF8[3][5] = 0x80;
+    D_800EFDF8[1][5] = 0;
+    D_800EFDF8[2][1] = 3;
+    var_s4 = D_8006002B + 5;
+    func_8006FC34(6, 0x40U);
+    func_8006FC34(5, 0x60U);
+    D_800EFDF8[5][1] = 3;
+    D_800EFDF8[6][1] = 3;
+    _setMenuItemClut(5, 0, 0, 0);
+    _setMenuItemClut(6, 0, 0, 0);
+    for (i = 1; i < 9; ++i) {
+        _setMenuItemClut(2, i * 2, 1, 3);
+        D_800EFDF8[2][4] -= 4;
+        func_80070A58();
+    }
+    D_800EFDF8[0][1] = 0;
+    D_800EFDF8[1][1] = 0;
+    D_800EFDF8[3][1] = 0;
+    for (i = 1; i < 9; ++i) {
+        func_80070A58();
+    }
+
+    for (i = 0; i < 8; ++i) {
+        _setMenuItemClut(var_s4, i * 2, 0, 1);
+        D_800EFDF8[var_s4][3] = i < 4 ? i << 6 : D_800EFDF8[var_s4][3] - 16;
+        func_80070A58();
+    }
+    while (1) {
+        func_80070A58();
+        if (vs_main_buttonsState & (PADstart | PADRright)) {
+            func_80068A8C();
+            D_80060020.unkB = var_s4 - 5;
+            if (var_s4 == 6) {
+                func_800438C8(0);
+            }
+            break;
+        } else if (vs_main_buttonsState & PADRdown) {
+            func_80068AB0();
+            break;
+        } else {
+            if (vs_main_buttonsPressed & (PADLup | PADLdown | PADselect)) {
+                var_s4 = 11 - var_s4;
+                func_80068A68();
+
+                for (i = 1; i < 8; ++i) {
+                    _setMenuItemClut(var_s4, i * 2, 0, 1);
+                    _setMenuItemClut(11 - var_s4, i * 2, 1, 0);
+                    D_800EFDF8[var_s4][3] = i < 4 ? i << 6 : D_800EFDF8[var_s4][3] - 16;
+                    D_800EFDF8[11 - var_s4][3] -= 16;
+                    if (i == 7) {
+                        break;
+                    }
+                    func_80070A58();
+                }
+            }
+        }
+    }
+    func_8006FC34(1, 0);
+    func_8006FC34(3, 0x80);
+    D_800EFDF8[1][1] = 2;
+    D_800EFDF8[1][5] = 32;
+    D_800EFDF8[3][1] = 1;
+    D_800EFDF8[3][5] = 0x60;
+    for (i = 1; i < 9; ++i) {
+        _setMenuItemClut(2, i * 2, 3, 1);
+        D_800EFDF8[2][4] += 4;
+        if (D_800EFDF8[5][2] < 24) {
+            D_800EFDF8[5][2] = 0;
+        } else {
+            D_800EFDF8[5][2] -= 24;
+        }
+        if (D_800EFDF8[6][2] < 24) {
+            D_800EFDF8[6][2] = 0;
+        } else {
+            D_800EFDF8[6][2] -= 24;
+        }
+        if (D_800EFDF8[5][3] != 0) {
+            D_800EFDF8[5][3] -= 16;
+        }
+        if (D_800EFDF8[6][3] != 0) {
+            D_800EFDF8[6][3] -= 16;
+        }
+        func_80070A58();
+    }
+    D_800EFDF8[5][0] = 0;
+    D_800EFDF8[6][0] = 0;
+    D_800EFDF8[2][6] = 0x40;
+    D_800EFDF8[2][3] = 0x40;
+    func_80070A58(2);
+    D_800EFDF8[2][3] = 0x80;
+    func_80070A58();
+    D_800EFDF8[2][3] = 0xC0;
+    func_8007093C();
+    D_800EFDF8[2][7] = 0x10;
+    D_800EFDF8[2][1] = 0;
+}
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80070E64);
 

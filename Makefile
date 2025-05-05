@@ -70,13 +70,17 @@ sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst build/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 
-.PHONY: all format decompme permute clean remake clean-all
+.PHONY: all format sortsyms lintsrc decompme permute clean remake clean-all
 
 all: $(targets)
 
-format:
+format: sortsyms lintsrc
+
+sortsyms:
 	@$(ECHO) Sorting symbols
 	@for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
+
+lintsrc:
 	@$(ECHO) Linting source
 	@$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
@@ -104,7 +108,8 @@ clean-all:
 ifeq ($(PERMUTER),)
 build/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
 						config/%/Makefile Makefile data/%
-	@$(SPLAT) $(SPLATFLAGS) $<
+	@$(call builder, Splitting $*)
+	@$(SPLAT) $(SPLATFLAGS) $< $(if $(DEBUG),,> build/config/$*/splat.log 2> /dev/null)
 	@$(TOUCH) $@
 endif
 
@@ -200,6 +205,6 @@ Makefile $(makefiles) $(deps):: ;
 %.c: %.w %.ch
 
 include $(makefiles)
-ifeq ($(filter decompme permute format clean remake clean-all,$(MAKECMDGOALS)),)
+ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)
 -include $(binaries:%=build/config/%/link.d) $(deps)
 endif

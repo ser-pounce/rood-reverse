@@ -1277,7 +1277,6 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
 int func_8006CABC(int arg0)
 {
     D_800DEB18_t* temp_v0;
-    int temp_v0_4;
     int i;
 
     if (arg0 != 0) {
@@ -1514,6 +1513,7 @@ int func_8006D140(int port)
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006D2F8);
 
+// https://decomp.me/scratch/QD0zT
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006DC14);
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006E00C);

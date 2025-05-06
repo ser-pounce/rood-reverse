@@ -6,6 +6,8 @@
 #define INCLUDE_CMN(SECTION, FOLDER, NAME)                                               \
     __asm__(".pushsection ." #SECTION ";"                                                \
             ".set push;"                                                                 \
+            ".set noat;"                                                                 \
+            ".set noreorder;"                                                            \
             ".include \"" FOLDER "/" #NAME ".s\";"                                       \
             ".set pop;"                                                                  \
             ".popsection")

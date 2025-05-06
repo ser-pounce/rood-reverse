@@ -113,5 +113,3 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041104);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_atan2);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_8004140C);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/31724", D_80040A14);

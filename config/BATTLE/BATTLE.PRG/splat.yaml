@@ -6,18 +6,18 @@ options:
   target_path: data/BATTLE/BATTLE.PRG
   elf_path: build/data/BATTLE/BATTLE.PRG.elf
   platform: psx
-  compiler: GCC
+  compiler: PSYQ
 
   asm_path: build/src/BATTLE/BATTLE.PRG
   data_path: ""
   src_path: src/BATTLE/BATTLE.PRG
-  hasm_in_src_path: true
   asset_path: build/assets/BATTLE/BATTLE.PRG
   extensions_path: tools/splat_ext
 
-  ld_dependencies: true
+  hasm_in_src_path: true
   o_as_suffix: true
 
+  ld_dependencies: true
   ld_script_path: build/config/BATTLE/BATTLE.PRG/link.ld
 
   find_file_boundaries: true
@@ -48,27 +48,17 @@ segments:
     vram: 0x80068800
     align: 4
     subsegments:
-      - [0x00, .rodata, 146C]
-      - [0x6C4, .rodata, 2842C]
-      - [0xC30, .rodata, 35980]
-      - [0xC7C, .rodata, 40564]
-      - [0xCF0, .rodata, 44F14]
-      - [0xDF4, .rodata, 4A0A8]
-      - [0x1010, .rodata, 573B8]
-      - [0x1024, .rodata, 58578]
-      - [0x10F8, .rodata, 5BF94]
-      - [0x1354, .rodata, 6E644]
-      - [0x146C, c]
-      - [0x2842C, c]
-      - [0x35980, c]
-      - [0x40564, c]
-      - [0x44F14, c]
-      - [0x4A0A8, c]
-      - [0x573B8, c]
-      - [0x58578, c]
-      - [0x5BF94, c]
-      - [0x6E644, c]
-      - [0x6FA0C, asm]
-      - [0x7F0F4, c]
+      - [0x00, rodata]
+      - [0x6C4, rodata]
+      - [0xC30, rodata]
+      - [0xC7C, rodata]
+      - [0xCF0, rodata]
+      - [0xDF4, rodata]
+      - [0x1010, rodata]
+      - [0x1024, rodata]
+      - [0x10F8, rodata]
+      - [0x1354, rodata]
+      - [0x146C, asm]
       - [0x7F984, data]
+      - [0x89058, bss]
   - [0x8D124]

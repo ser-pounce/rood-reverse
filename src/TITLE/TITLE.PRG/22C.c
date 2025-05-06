@@ -1726,7 +1726,7 @@ void func_8006ECF4()
     DrawPrim(D_800DED28);
 }
 
-void func_8006EDBC(void)
+void func_8006EDBC()
 {
     int temp_v0;
 
@@ -1741,7 +1741,7 @@ void func_8006EDBC(void)
     DrawSync(0);
     setRECT(&D_800DC938, 768, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
-    drawImage(MAKEWH(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
+    drawImage(MAKEXY(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
     func_8006E5D0();
 
     D_800DC940 = 0;
@@ -1755,7 +1755,7 @@ void func_8006EDBC(void)
         switch (D_800DC940) {
         case 0:
             func_8006A49C(1);
-            D_800DC940 = 1U;
+            D_800DC940 = 1;
             continue;
         case 1:
             if (func_8006A49C(0) != 0) {

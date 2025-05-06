@@ -18,12 +18,6 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_801030A4);
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102AF8);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BD8);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BE8);
-
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010391C);
@@ -55,6 +49,18 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104C30);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104CC4);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C08);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C10);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C18);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C20);
+
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", jtbl_80102C28);
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C48);
 

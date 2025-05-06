@@ -6,18 +6,18 @@ options:
   target_path: data/MENU/MENU4.PRG
   elf_path: build/data/MENU/MENU4.PRG.elf
   platform: psx
-  compiler: GCC
+  compiler: PSYQ
 
   asm_path: build/src/MENU/MENU4.PRG
   data_path: ""
   src_path: src/MENU/MENU4.PRG
-  hasm_in_src_path: true
   asset_path: build/assets/MENU/MENU4.PRG
   extensions_path: tools/splat_ext
 
-  ld_dependencies: true
+  hasm_in_src_path: true
   o_as_suffix: true
 
+  ld_dependencies: true
   ld_script_path: build/config/MENU/MENU4.PRG/link.ld
 
   find_file_boundaries: true

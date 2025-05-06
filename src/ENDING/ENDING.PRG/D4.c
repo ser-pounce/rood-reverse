@@ -106,16 +106,8 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DF70);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DFD0);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006E074);
-
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_80068814);
-
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_8006881C);
-
 INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688A4);
 
 INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688AC);
 
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688B4);
-
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688C0);
+INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006E074);

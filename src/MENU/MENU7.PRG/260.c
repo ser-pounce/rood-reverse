@@ -44,8 +44,6 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801037E8);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103DD0);
 
-INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_8010286C);
-
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);

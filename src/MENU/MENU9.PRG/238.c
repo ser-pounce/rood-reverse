@@ -18,12 +18,6 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FF8);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801031BC);
 
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102818);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102820);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102830);
-
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010337C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104AF8);
@@ -43,6 +37,12 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801051AC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010539C);
+
+INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102820);
+
+INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102830);
+
+INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", jtbl_80102898);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010552C);
 
@@ -71,8 +71,6 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102958);
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102960);
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102968);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102970);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
 
@@ -120,8 +118,5 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801084E4);
 
-void func_80108514(void) { }
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102A18);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102A24);
+void func_80108514(void) {
+}

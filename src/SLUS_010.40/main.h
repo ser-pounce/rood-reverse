@@ -40,3 +40,4 @@ void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);
 u_long* vs_main_allocHeapR(u_int size);
 void vs_main_freeHeapR(void* block);
+void vs_main_padDisconnectAll();

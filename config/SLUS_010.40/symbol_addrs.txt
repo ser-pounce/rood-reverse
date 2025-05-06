@@ -127,7 +127,6 @@ initRand = 0x8004274C;
 getRands = 0x80042860;
 func_80042BAC = 0x80042BAC;
 vs_main_exec = 0x80042C38;
-padDisconnect = 0x80042FDC;
 vs_main_padForceMode = 0x80042FF0;
 vs_main_padResetDefaults = 0x80043034;
 padConnect = 0x80043250;

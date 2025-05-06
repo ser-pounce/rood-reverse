@@ -83,6 +83,8 @@ void _setMenuItemClut(int, int, int, int);
 void func_800703CC();
 void func_800705AC();
 void func_8007093C();
+void func_80071B14();
+void func_80071CE0(int arg0);
 
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
@@ -93,6 +95,7 @@ u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 extern int D_8005DFDC;
 extern int vs_main_buttonsPressed;
 extern int vs_main_buttonsState;
+extern int D_8005E214;
 extern int D_8005E24C;
 extern int D_8005FEA0[][3];
 extern u_char D_8005FFB8[];
@@ -175,6 +178,9 @@ extern u_char D_800DC931;
 extern u_char D_800DC932;
 extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
+extern int D_800DEA48[];
+extern int D_800DEA88;
+extern int D_800DEA8C;
 extern u_char* D_800DEAB8;
 extern u_int* D_800DEABC;
 extern u_short* D_800DEAC0;
@@ -2004,7 +2010,7 @@ void func_8006F54C()
             var_a3_2 = (0x1F - i) * 4;
         } else if (i >= 0x14C) {
             var_a3_2 = (i - 0x14B) * 4;
-        } else if ((u_short)vs_main_buttonsState != 0) {
+        } else if ((vs_main_buttonsState & 0xFFFF) != 0) {
             i = 0x14B;
         }
         func_8006A778(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
@@ -2182,7 +2188,7 @@ void func_8006FE30()
     VSync(0);
 }
 
-u_long* func_8006FEC4(int arg0)
+void* func_8006FEC4(int arg0)
 {
     RECT rect;
     u_long* temp_s4;
@@ -2704,7 +2710,164 @@ void func_80071254()
     D_80061598[284] = 1;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", vs_title_exec);
+int vs_title_exec()
+{
+    RECT rect;
+    int i;
+    int i_5;
+    int i_7;
+    int var_s2;
+    int var_s3;
+    void* temp_s1;
+
+    if (D_8005E214 != 0) {
+        D_8005E214 = 0;
+        D_8004A528 = 0;
+        func_8006EDBC();
+    }
+    func_80071B14();
+    func_80071254();
+    D_800DED7C = 0;
+    ++D_8004A528;
+    var_s2 = func_8006E988();
+
+    do {
+        for (i = 7; i >= 0; --i) {
+            D_800EFDF8[i][0] = 0;
+        }
+
+        func_8006FC6C();
+        func_8006F81C();
+        func_8006FA54();
+        func_8006FE30();
+        SetDispMask(1);
+        temp_s1 = func_8006FEC4(var_s2);
+        for (i = 32; i >= 0; i -= 2) {
+            _drawCopyright(temp_s1, i);
+        }
+        VSync(0);
+        setRECT(&rect, 688, 256, 160, 128);
+        StoreImage(&rect, temp_s1);
+        DrawSync(0);
+        VSync(0);
+        for (i = 32; i >= 0; i -= 4) {
+            _drawMenuBg(temp_s1, i);
+            func_8007093C();
+        }
+        _freeHeap(temp_s1);
+        for (i = 0; i < 8; ++i) {
+            func_80070A58();
+        }
+
+        vs_main_padDisconnectAll();
+        D_800DEA8C = VSync(-1);
+        D_800DEA88 = VSync(-1);
+
+        while (1) {
+            VSync(0);
+            vs_main_processPadState();
+            if (D_800DED7C != 0) {
+                D_800DEA8C = VSync(-1);
+            }
+            if ((vs_main_buttonsState & 0xFFFF) != 0) {
+                D_800DEA88 = VSync(-1);
+            }
+            if (((VSync(-1) - D_800DEA88) >= 0x3E9)
+                && ((VSync(-1) - D_800DEA8C) >= 0x65)) {
+                var_s3 = -1;
+                break;
+            }
+            if (vs_main_buttonsState & (PADRright | PADstart)) {
+                switch (var_s2) {
+                case 0:
+                    var_s3 = nop1();
+                    break;
+                case 1:
+                    var_s3 = 1;
+                    break;
+                case 2:
+                    func_80068A8C();
+                    func_80070A88();
+                    break;
+                case 3:
+                    func_80068A8C();
+                    func_80070E64();
+                    break;
+                }
+
+                if ((var_s2 < 2) && (var_s3 >= 0)) {
+                    break;
+                }
+                D_800DEA88 = VSync(-1);
+            }
+            i_5 = 0;
+            if (vs_main_buttonsState & (PADLup | PADLleft)) {
+                --i_5;
+            }
+            if (vs_main_buttonsState & (PADselect | PADLright | PADLdown)) {
+                ++i_5;
+            }
+            if (i_5 != 0) {
+                var_s2 = (var_s2 + i_5) & 3;
+                func_80068A68();
+                if (i_5 == 1) {
+                    func_8006FC34((var_s2 + 1) & 3, 0x80);
+                    for (i = 0; i < 4; ++i) {
+                        D_800EFDF8[i][1] = 1;
+                        D_800EFDF8[i][5] = D_800EFDF8[i][4] - 32;
+                    }
+                } else {
+                    func_8006FC34((var_s2 - 1) & 3, 0);
+                    for (i = 0; i < 4; ++i) {
+                        D_800EFDF8[i][1] = 2;
+                        D_800EFDF8[i][5] = D_800EFDF8[i][4] + 32;
+                    }
+                }
+                for (i_7 = 0; i_7 < 10; ++i_7) {
+                    func_80070A58();
+                }
+            }
+            func_8007093C();
+        }
+        if (var_s3 >= 0) {
+            if (D_800DED7C != 0) {
+                func_8006F954();
+            }
+            if (var_s3 == 1) {
+                func_80068A8C();
+            } else {
+                func_80068A2C();
+                func_80071CE0(var_s3);
+            }
+        }
+
+        if (var_s3 == -1) {
+            var_s3 = 4 - (D_8004A528 & 1);
+            func_80071CE0(var_s3);
+        }
+        for (i = 0x40; i > 0; --i) {
+            VSync(0);
+            vs_main_processPadState();
+            D_800DEA48[0] = 0x04FFFFFF;
+            D_800DEA48[1] = 0xE1000145;
+            D_800DEA48[2] = 0x62080808;
+            D_800DEA48[3] = 0;
+            D_800DEA48[4] = 0x01E00280;
+            DrawPrim(&D_800DEA48);
+            func_800436B4();
+        }
+        VSync(0);
+        SetDispMask(0);
+        if (var_s3 == 1) {
+            var_s3 = func_8006E738();
+            if (var_s3 == 1) {
+                func_80071CE0(1);
+            }
+        }
+        i = 7;
+    } while (var_s3 < 0);
+    return var_s3;
+}
 
 void func_8007183C(int w, int h, int screen, int r, int g, int b)
 {

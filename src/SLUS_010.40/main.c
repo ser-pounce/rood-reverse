@@ -993,7 +993,7 @@ void func_80042CB0()
     func_8008AB68();
 }
 
-static void vs_main_padDisconnectAll()
+void vs_main_padDisconnectAll()
 {
     vs_main_portInfo[0].connected = 0;
     vs_main_portInfo[1].connected = 0;

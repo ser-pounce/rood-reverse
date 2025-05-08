@@ -2,6 +2,7 @@
 #include "22C.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
+#include "gpu.h"
 #include "lbas.h"
 #include <libapi.h>
 #include <libds.h>
@@ -178,7 +179,7 @@ extern u_char D_800DC931;
 extern u_char D_800DC932;
 extern u_int D_800DE948[][6];
 extern long memcardEventDescriptors[8];
-extern int D_800DEA48[];
+extern VS_TILE _titleScreenFade;
 extern int D_800DEA88;
 extern int D_800DEA8C;
 extern u_char* D_800DEAB8;
@@ -2848,12 +2849,12 @@ int vs_title_exec()
         for (i = 0x40; i > 0; --i) {
             VSync(0);
             vs_main_processPadState();
-            D_800DEA48[0] = 0x04FFFFFF;
-            D_800DEA48[1] = 0xE1000145;
-            D_800DEA48[2] = 0x62080808;
-            D_800DEA48[3] = 0;
-            D_800DEA48[4] = 0x01E00280;
-            DrawPrim(&D_800DEA48);
+            vs_setTag(&_titleScreenFade, primAddrEnd);
+            vs_setTpage(&_titleScreenFade, 320, 0, direct16Bit, semiTransparencySubtract);
+            vs_setRGB0(&_titleScreenFade, primTileSemiTrans, 8, 8, 8);
+            vs_setXY0(&_titleScreenFade, 0, 0);
+            vs_setWH(&_titleScreenFade, 640, 480);
+            DrawPrim(&_titleScreenFade);
             func_800436B4();
         }
         VSync(0);

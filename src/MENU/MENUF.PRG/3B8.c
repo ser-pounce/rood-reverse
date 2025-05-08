@@ -122,16 +122,13 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108A0C);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108AB0);
 
-void func_80108E38(void) {
-}
+void func_80108E38(void) { }
 
-void func_80108E40(void) {
-}
+void func_80108E40(void) { }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108E48);
 
-void func_80108EA0(void) {
-}
+void func_80108EA0(void) { }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108EA8);
 

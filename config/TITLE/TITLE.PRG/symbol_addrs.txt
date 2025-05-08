@@ -62,6 +62,7 @@ memcardPort = 0x800DC8F3;
 D_800DC931 = 0x800DC931;
 D_800DC932 = 0x800DC932;
 D_800DC941 = 0x800DC941;
+_titleScreenFade = 0x800DEA48;
 memcardEventDescriptors = 0x800DEA98;
 memcardFiles = 0x800DEAC8;
 dirEntBuf = 0x800DEB04;

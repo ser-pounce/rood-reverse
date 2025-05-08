@@ -118,5 +118,4 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801084E4);
 
-void func_80108514(void) {
-}
+void func_80108514(void) { }

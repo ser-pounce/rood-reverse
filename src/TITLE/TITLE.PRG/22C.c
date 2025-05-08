@@ -68,7 +68,7 @@ int func_8006913C(int);
 int func_800691D4(int);
 int func_8006947C(int);
 int func_8006A49C(int);
-void func_8006A778(int, int, int, int);
+void _drawSprt(int, int, int, int);
 void func_8006BC78(u_char);
 int func_8006C778(u_char);
 int func_8006CABC(int);
@@ -177,9 +177,9 @@ extern RECT D_800DC928;
 extern u_char D_800DC930;
 extern u_char D_800DC931;
 extern u_char D_800DC932;
-extern u_int D_800DE948[][6];
+extern VS_SPRT D_800DE948[2];
 extern long memcardEventDescriptors[8];
-extern VS_TILE _titleScreenFade;
+extern VS_TILE_TPAGE _titleScreenFade;
 extern int D_800DEA88;
 extern int D_800DEA8C;
 extern u_char* D_800DEAB8;
@@ -191,7 +191,14 @@ extern u_int (*D_800DEB08)[0x20];
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
 extern D_800DEB18_t D_800DEB18[10];
-extern int D_800DED28[];
+extern union {
+    VS_SPRT sprt;
+    VS_TILE_TPAGE tile_tpage;
+    VS_TILE tile;
+    VS_POLY_G4_TPAGE polyG4_tpage;
+    VS_POLY_G4 polyG4;
+    u_long raw[9];
+} _primBuf;
 extern int D_800DED68;
 extern u_short* D_800DED6C;
 extern u_char D_800DED70;
@@ -904,27 +911,27 @@ void func_8006A6E0()
     vs_main_freeHeap(D_800DEAB8);
 }
 
-void func_8006A778(int arg0, int arg1, int arg2, int arg3)
+void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
-    D_800DED28[0] = 0x05000000;
-    D_800DED28[1] = ((arg3 & 0x9FF) | 0xE1000000);
-    D_800DED28[2] = (((0x80 - (arg3 >> 0x10)) * 0x10101) | 0x64000000);
-    D_800DED28[3] = arg0;
-    D_800DED28[4] = arg1;
-    D_800DED28[5] = arg2;
-    DrawPrim(&D_800DED28);
+    vs_setTag(&_primBuf.sprt, primAddrNull);
+    vs_setTpageRaw(&_primBuf.sprt, tpage & 0x9FF);
+    vs_setRGB0Raw(&_primBuf.sprt, primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
+    _primBuf.sprt.x0y0 = xy;
+    _primBuf.sprt.u0v0clut = uvClut;
+    _primBuf.sprt.wh = wh;
+    DrawPrim(&_primBuf);
 }
 
 void func_8006A81C(int arg0, int arg1)
 {
-    func_8006A778(arg0, D_800728C0[arg1], D_800728E8[arg1], 0xC);
+    _drawSprt(arg0, D_800728C0[arg1], D_800728E8[arg1], 0xC);
 }
 
 void func_8006A860(int arg0, u_int arg1, u_int arg2)
 {
     do {
-        func_8006A778(arg0, ((arg1 / arg2) * 6) | 0x37F40000, 0xA0006, 0xC);
+        _drawSprt(arg0, ((arg1 / arg2) * 6) | 0x37F40000, 0xA0006, 0xC);
         arg1 = arg1 % arg2;
         arg2 /= 0xA;
         arg0 += 5;
@@ -946,7 +953,7 @@ int countDigits(int val)
 // https://decomp.me/scratch/AgXZ0
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A928);
 
-void func_8006ABB8(u_int arg0, int arg1)
+void _loadFileAnim(u_int arg0, int arg1)
 {
     int var_s2;
     u_char* new_var __attribute__((unused));
@@ -970,17 +977,18 @@ void func_8006ABB8(u_int arg0, int arg1)
 
     for (var_s5 = 0; var_s5 < 2; ++var_s5) {
         DrawSync(0);
-        D_800DED28[0] = 0x09000000;
-        D_800DED28[2] = (var_s4 | 0x3A000000);
-        D_800DED28[3] = (var_s3 | arg1);
-        D_800DED28[5] = (arg0 | arg1);
-        D_800DED28[7] = (var_s3 | (arg1 + 0x200000));
-        D_800DED28[1] = 0xE1000220;
-        D_800DED28[4] = var_s2;
-        D_800DED28[6] = var_s4;
-        D_800DED28[8] = var_s2;
-        D_800DED28[9] = (arg0 | (arg1 + 0x200000));
-        DrawPrim(D_800DED28);
+        vs_setTag(&_primBuf.polyG4_tpage, primAddrNull);
+        vs_setRGB0Raw(&_primBuf.polyG4_tpage, primPolyG4SemiTrans, var_s4);
+        _primBuf.polyG4_tpage.x0y0 = var_s3 | arg1;
+        _primBuf.polyG4_tpage.x1y1 = arg0 | arg1;
+        _primBuf.polyG4_tpage.x2y2 = var_s3 | (arg1 + 0x200000);
+        vs_setTpage(
+            &_primBuf.polyG4_tpage, 0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.polyG4_tpage.r1g1b1 = var_s2;
+        _primBuf.polyG4_tpage.r2g2b2 = var_s4;
+        _primBuf.polyG4_tpage.r3g3b3 = var_s2;
+        _primBuf.polyG4_tpage.x3y3 = arg0 | (arg1 + 0x200000);
+        DrawPrim(&_primBuf.polyG4_tpage);
         var_s3 = arg0;
         arg0 += 0x10;
         var_s4 = var_s2;
@@ -1006,26 +1014,26 @@ void func_8006ACD8(int arg0, int arg1)
     }
 
     DrawSync(0);
-    D_800DED28[0] = 0x04000000;
-    D_800DED28[1] = 0xE1000220;
-    D_800DED28[2] = (var_s2 | 0x62000000);
-    D_800DED28[3] = (var_s3 | 0x40);
-    D_800DED28[4] = 0x200100;
-    DrawPrim(D_800DED28);
+    vs_setTag(&_primBuf.tile_tpage, primAddrNull);
+    vs_setTpage(&_primBuf.tile_tpage, 0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    vs_setRGB0Raw(&_primBuf.tile_tpage, primTileSemiTrans, var_s2);
+    _primBuf.tile_tpage.x0y0 = var_s3 | 0x40;
+    _primBuf.tile_tpage.wh = vs_getWH(256, 32);
+    DrawPrim(&_primBuf.tile_tpage);
 
     for (var_s4 = 0; var_s4 < 2; ++var_s4) {
         DrawSync(0);
-        D_800DED28[0] = 0x08000000;
+        vs_setTag(&_primBuf.polyG4, primAddrNull);
         temp_v1 = var_s3 + 0xFFF80000;
-        D_800DED28[1] = (var_s5 | 0x3A000000);
-        D_800DED28[2] = (temp_v1 | 0x40);
-        D_800DED28[3] = var_s5;
-        D_800DED28[4] = (temp_v1 | 0x140);
-        D_800DED28[5] = var_s2;
-        D_800DED28[6] = (var_s3 | 0x40);
-        D_800DED28[7] = var_s2;
-        D_800DED28[8] = (var_s3 | 0x140);
-        DrawPrim(D_800DED28);
+        vs_setRGB0Raw(&_primBuf.polyG4, primPolyG4SemiTrans, var_s5);
+        _primBuf.polyG4.x0y0 = temp_v1 | 0x40;
+        _primBuf.polyG4.r1g1b1 = var_s5;
+        _primBuf.polyG4.x1y1 = temp_v1 | 0x140;
+        _primBuf.polyG4.r2g2b2 = var_s2;
+        _primBuf.polyG4.x2y2 = var_s3 | 0x40;
+        _primBuf.polyG4.r3g3b3 = var_s2;
+        _primBuf.polyG4.x3y3 = var_s3 | 0x140;
+        DrawPrim(&_primBuf.raw);
         var_s3 += 0x280000;
         var_s5 = var_s2;
         var_s2 = 0;
@@ -1092,23 +1100,23 @@ int func_8006AFBC()
     return (i ^ 0xA) == 0;
 }
 
-int func_8006AFF8(u_int arg0, int arg1, int arg2, int arg3)
+int func_8006AFF8(u_int arg0, int x, int y, int arg3)
 {
-    if ((arg0 >> 8) == 0xE) {
-        return arg1 + (arg0 & 0xFF);
+    if ((arg0 >> 8) == 14) {
+        return x + (u_char)arg0;
     }
     if (arg0 != 0x8F) {
         DrawSync(0);
-        D_800DED28[0] = 0x05000000;
-        D_800DED28[1] = 0xE100002D;
-        D_800DED28[2] = 0x66808080;
-        D_800DED28[3] = (arg1 & 0xFFFF) | (arg2 << 0x10);
-        D_800DED28[5] = 0xC000C;
-        D_800DED28[4] = ((arg0 - ((arg0 / 21) * 0x15)) * 0xC) | ((arg0 / 21) * 0xC00)
-            | ((((((arg3 * 0x10) + 0x380) >> 4) & 0x3F) | 0x3780) << 0x10);
-        DrawPrim(D_800DED28);
+        vs_setTag(&_primBuf.sprt, primAddrNull);
+        vs_setTpage(&_primBuf.sprt, 832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        vs_setRGB0(&_primBuf.sprt, primSprtSemtTrans, 128, 128, 128);
+        _primBuf.sprt.x0y0 = vs_getYX(y, x);
+        _primBuf.sprt.wh = vs_getWH(12, 12);
+        _primBuf.sprt.u0v0clut
+            = vs_getUV0Clut((arg0 % 21) * 12, (arg0 / 21) * 12, arg3 * 16 + 896, 222);
+        DrawPrim(&_primBuf.raw);
     }
-    return arg1 + D_80072914[arg0];
+    return x + D_80072914[arg0];
 }
 
 int func_8006B138(int arg0)
@@ -1272,8 +1280,8 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006BC78);
 
 void func_8006C114()
 {
-    func_8006A778(0x100, 0x38F00000, 0xB00040, 0x9C);
-    func_8006A778(0, 0x38F00000, 0xB00100, 0x9A);
+    _drawSprt(0x100, 0x38F00000, 0xB00040, 0x9C);
+    _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
 }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C15C);
@@ -1716,15 +1724,16 @@ int func_8006EA70(int arg0)
 
 void func_8006ECF4()
 {
-    func_8006A778(0x100, 0, 0xE00040,
-        (((((1 - D_800DED76) * 0x140) + 0x100) & 0x3FF) >> 6) | 0x140);
-    func_8006A778(0, 0, 0xE00100, (((1 - D_800DED76) * 5) & 0xF) | 0x140);
+    _drawSprt(vs_getXY(256, 0), 0, vs_getWH(64, 224),
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - D_800DED76) * 320 + 256, 0));
+    _drawSprt(0, 0, vs_getWH(256, 224),
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - D_800DED76) * 320, 0));
     DrawSync(0);
-    D_800DED28[0] = 0x03000000;
-    D_800DED28[1] = 0x62080808;
-    D_800DED28[2] = 0;
-    D_800DED28[3] = 0xE00140;
-    DrawPrim(D_800DED28);
+    vs_setTag(&_primBuf.tile, primAddrNull);
+    vs_setRGB0(&_primBuf.tile, primTileSemiTrans, 8, 8, 8);
+    _primBuf.tile.x0y0 = 0;
+    _primBuf.tile.wh = vs_getWH(320, 224);
+    DrawPrim(&_primBuf.tile);
 }
 
 void func_8006EDBC()
@@ -1993,7 +2002,7 @@ void func_8006F54C()
         if (i >= 0x14C) {
             var_a3 = (i - 0x14B) * 4;
         }
-        func_8006A778(0x580020, 0x10140000, 0x300100, (var_a3 << 0x10) | 5);
+        _drawSprt(0x580020, 0x10140000, 0x300100, (var_a3 << 0x10) | 5);
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
@@ -2014,7 +2023,7 @@ void func_8006F54C()
         } else if ((vs_main_buttonsState & 0xFFFF) != 0) {
             i = 0x14B;
         }
-        func_8006A778(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
+        _drawSprt(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
@@ -2438,26 +2447,26 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800705AC);
 void func_8007093C()
 {
     int i;
-    u_int(*temp_s0)[6];
+    VS_SPRT* sprt;
 
     func_800703CC();
     for (i = 0; i < 2; ++i) {
-        temp_s0 = &D_800DE948[0];
-        (*temp_s0)[1] = 0xE1000113;
-        (*temp_s0)[0] = 0x05FFFFFF;
-        (*temp_s0)[2] = 0x64808080;
-        (*temp_s0)[3] = 0x010000B0;
-        (*temp_s0)[4] = 0xC000;
-        (*temp_s0)[5] = 0x4000A0;
-        DrawPrim(&D_800DE948);
-        ++temp_s0;
-        (*temp_s0)[1] = 0xE1000115;
-        (*temp_s0)[0] = 0x05FFFFFF;
-        (*temp_s0)[2] = 0x64808080;
-        (*temp_s0)[3] = 0x014000B0;
-        (*temp_s0)[4] = 0xC020;
-        (*temp_s0)[5] = 0x4000A0;
-        DrawPrim(temp_s0);
+        sprt = &D_800DE948[0];
+        vs_setTpage(sprt, 192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        vs_setTag(sprt, primAddrEnd);
+        vs_setRGB0(sprt, primSprt, 128, 128, 128);
+        sprt->x0y0 = vs_getXY(176, 256);
+        vs_setUV0Clut(sprt, 0, 192, 0, 0);
+        sprt->wh = vs_getWH(160, 64);
+        DrawPrim(sprt);
+        ++sprt;
+        vs_setTpage(sprt, 320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        vs_setTag(sprt, primAddrEnd);
+        vs_setRGB0(sprt, primSprt, 128, 128, 128);
+        sprt->x0y0 = vs_getXY(176, 320);
+        vs_setUV0Clut(sprt, 32, 192, 0, 0);
+        sprt->wh = vs_getWH(160, 64);
+        DrawPrim(sprt);
         func_800705AC();
         if (i == 0) {
             DrawSync(0);
@@ -2850,10 +2859,11 @@ int vs_title_exec()
             VSync(0);
             vs_main_processPadState();
             vs_setTag(&_titleScreenFade, primAddrEnd);
-            vs_setTpage(&_titleScreenFade, 320, 0, direct16Bit, semiTransparencySubtract);
+            vs_setTpage(&_titleScreenFade, 320, 0, direct16Bit, semiTransparencySubtract,
+                ditheringOff);
             vs_setRGB0(&_titleScreenFade, primTileSemiTrans, 8, 8, 8);
-            vs_setXY0(&_titleScreenFade, 0, 0);
-            vs_setWH(&_titleScreenFade, 640, 480);
+            _titleScreenFade.x0y0 = vs_getXY(0, 0);
+            _titleScreenFade.wh = vs_getWH(640, 480);
             DrawPrim(&_titleScreenFade);
             func_800436B4();
         }

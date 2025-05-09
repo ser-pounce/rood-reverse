@@ -66,7 +66,7 @@ u_char* memcardFilenameFromTemplate(int, int);
 int memcardFileNumberFromFilename(u_char*);
 int func_8006913C(int);
 int func_800691D4(int);
-int func_8006947C(int);
+int _memCardHandler(int);
 int func_8006A49C(int);
 void _drawSprt(int, int, int, int);
 void func_8006BC78(u_char);
@@ -146,7 +146,7 @@ extern u_char D_800DC8AE;
 extern u_char D_800DC8AF;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
-extern int D_800DC8B4;
+extern int _memCardFd;
 extern u_char D_800DC8B8;
 extern u_char _memcardFileno;
 extern u_char _memcardPort;
@@ -218,7 +218,7 @@ extern void* D_800EFDF0;
 extern void* D_800EFDF4;
 extern u_char D_800EFDF8[][8];
 
-#define MAKEXY(x, y) (((x) << 16) | (y))
+#define MAKEXY(x, y) (((y) << 16) | (x))
 #define MAKEWH(w, h) MAKEXY(w, h)
 
 void func_80068A2C()
@@ -284,12 +284,12 @@ void readImage(int xy, u_long* p, int wh)
     DrawSync(0);
 }
 
-void rMemcpy(u_char* arg0, u_char* arg1, int arg2)
+void rMemcpy(u_char* dst, u_char* src, int count)
 {
     do {
-        --arg2;
-        arg0[arg2] = arg1[arg2];
-    } while (arg2 != 0);
+        --count;
+        dst[count] = src[count];
+    } while (count != 0);
 }
 
 u_char* memcardFilenameFromTemplate(int port, int fileNo)
@@ -409,32 +409,32 @@ void descramble(u_int seed, u_char* buf, int count)
     }
 }
 
-int func_80068F94(int id)
+int _readSaveData(int id)
 {
-    u_char buf[2][0x100];
+    u_char buf[2][256];
     int bytesRead;
     int port;
     int file;
     int i;
 
-    port = id >> 0xC;
+    port = id >> 12;
     id &= 7;
 
     for (i = 0; i < 3; ++i) {
         file = open(memcardFilenameFromTemplate(port, id), O_RDONLY);
         if (file != -1) {
-            bytesRead = read(file, buf, 0x200);
+            bytesRead = read(file, buf, sizeof(buf));
             close(file);
-            if (bytesRead == 0x200) {
-                descramble(*((int*)&buf + 96), &buf[1][132], 124);
+            if (bytesRead == 512) {
+                descramble(*((int*)&buf[1][128]), &buf[1][132], 124);
                 if (verifySaveChecksums(buf, 2) == 0) {
-                    rMemcpy((u_char*)D_800DEB08[id - 1], &buf[1][0x80], 0x80);
+                    rMemcpy((u_char*)D_800DEB08[id - 1], &buf[1][128], 128);
                     return 0;
                 }
             }
         }
     }
-    memset(D_800DEB08[id - 1], 0, 0x80);
+    memset(D_800DEB08[id - 1], 0, 128);
     return 1;
 }
 
@@ -478,7 +478,7 @@ int createSaveFile(int port, int id)
     u_char* fileName;
     long file;
 
-    fileName = memcardFilenameFromTemplate((port - 1) * 0x10, id);
+    fileName = memcardFilenameFromTemplate((port - 1) * 16, id);
     erase(fileName);
     file = open(fileName, 0x30000 | O_CREAT);
     if (file != -1) {
@@ -508,7 +508,7 @@ enum _memCardEventState {
 #define SWEVENTS 0
 #define HWEVENTS 4
 
-int func_8006947C(int arg0)
+int _memCardHandler(int arg0)
 {
     int event;
 
@@ -618,9 +618,9 @@ int func_800696D0(int arg0)
 
     descramble(*temp_s2, temp_s1 + 0x5D84, 0x5A7C);
 
-    blockCount = 0x5C;
+    blockCount = 92;
     if (arg0 != 0) {
-        blockCount = 0x20;
+        blockCount = 32;
     }
 
     if ((verifySaveChecksums(blocks, blockCount) != 0) || (temp_s2[3] != 0x20000107)) {
@@ -656,9 +656,9 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
 int func_80069EA8(int arg0)
 {
-    int temp_v0_3;
-    int var_a2;
-    u_char* var_a0;
+    int ev;
+    int nBytes;
+    u_char* filename;
     void* temp_s2;
     int new_var;
 
@@ -688,32 +688,32 @@ int func_80069EA8(int arg0)
         memset(temp_s2, 0, 0x5C00);
 
         if (D_800DC8AF & 8) {
-            var_a0 = memcardFilenameFromTemplateAlpha(D_800DC8AE, D_800DC8AF & 7);
+            filename = memcardFilenameFromTemplateAlpha(D_800DC8AE, D_800DC8AF & 7);
         } else {
-            var_a0 = memcardFilenameFromTemplate(D_800DC8AE, D_800DC8AF);
+            filename = memcardFilenameFromTemplate(D_800DC8AE, D_800DC8AF);
         }
-        D_800DC8B4 = open((char*)var_a0, 0x8001);
-        if (D_800DC8B4 == -1) {
-            D_800DC8B1 += 1;
+        _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
+        if (_memCardFd == -1) {
+            ++D_800DC8B1;
             break;
         }
         resetMemcardEvents(SWEVENTS);
-        var_a2 = 0x5C00;
+        nBytes = 0x5C00;
         if (D_800DC8B0 != 0) {
-            var_a2 = 0x2000;
+            nBytes = 0x2000;
         }
-        if (read(D_800DC8B4, temp_s2, var_a2) == -1) {
-            close(D_800DC8B4);
-            D_800DC8B1 += 1;
+        if (read(_memCardFd, temp_s2, nBytes) == -1) {
+            close(_memCardFd);
+            ++D_800DC8B1;
             break;
         }
         D_800DC8AD = 1;
         // fallthrough
     case 1:
-        temp_v0_3 = testMemcardEvents(SWEVENTS);
-        if (temp_v0_3 < _memCardEventNone) {
-            close(D_800DC8B4);
-            if (temp_v0_3 == 0) {
+        ev = testMemcardEvents(SWEVENTS);
+        if (ev < _memCardEventNone) {
+            close(_memCardFd);
+            if (ev == _memCardEventIoEnd) {
                 return 1;
             }
             D_800DC8AD = 0;
@@ -763,7 +763,7 @@ int func_8006A11C(int arg0)
         D_800DEB12 += temp_v1_2;
         _saveFileId
             = open((char*)memcardFilenameFromTemplateAlpha(_memcardPort, _memcardFileno),
-                0x8002);
+                O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
             ++D_800DC8BB;
@@ -850,7 +850,7 @@ int func_8006A49C(int arg0)
     case 0:
         if (D_800DC8C8->unk0[0] == 4) {
             func_80044B80(D_800DC8C8);
-            drawImage(MAKEXY(256, 800), (u_long*)D_800DEAB8, MAKEWH(256, 224));
+            drawImage(MAKEXY(800, 256), (u_long*)D_800DEAB8, MAKEWH(224, 256));
             D_800DC8C4 = 1;
         }
         return 0;
@@ -1134,10 +1134,10 @@ int func_8006B138(int arg0)
 
     if ((D_800DC8CC[0] & 1) == 0) {
         D_800DED6C = D_800DEAC0 + (D_800DEAC0 + temp_s0)[21];
-        func_8006947C(temp_s0);
+        _memCardHandler(temp_s0);
         ++D_800DC8CC[0];
     } else {
-        temp_v1 = func_8006947C(0) & 3;
+        temp_v1 = _memCardHandler(0) & 3;
 
         if (temp_v1 != 0) {
             if (temp_v1 == 1) {
@@ -1172,11 +1172,11 @@ int func_8006B288(int arg0)
     int temp_v0;
 
     if (arg0 != 0) {
-        func_8006947C(arg0 & 3);
+        _memCardHandler(arg0 & 3);
         D_800DC8CC[2] = (arg0 >> 4);
         return 0;
     }
-    temp_v0 = func_8006947C(0);
+    temp_v0 = _memCardHandler(0);
     if (temp_v0 != 0) {
         switch (temp_v0 & D_800DC8CC[2]) {
         case 1:
@@ -1490,12 +1490,12 @@ int func_8006D140(int port)
         return 0;
     case 1:
         if (func_8006AFBC() != 0) {
-            func_8006947C((int)memcardPort);
+            _memCardHandler((int)memcardPort);
             D_800DC8F2 = 2;
         }
         return 0;
     case 2:
-        temp_v0 = func_8006947C(0);
+        temp_v0 = _memCardHandler(0);
 
         if (temp_v0 != 0) {
             if (temp_v0 == 3) {
@@ -1571,18 +1571,18 @@ int func_8006E738()
 {
     int temp_v0;
 
-    drawImage(MAKEXY(0, 768), D_800C2268, MAKEWH(224, 64));
-    drawImage(MAKEXY(256, 448), D_800C2268 + 0x1C00, MAKEWH(256, 64));
-    drawImage(MAKEXY(0, 832), D_800AF368, MAKEWH(224, 64));
-    drawImage(MAKEXY(0, 896), D_800AF368 + 0x1C00, MAKEWH(224, 64));
-    drawImage(MAKEXY(66, 960), D_800BD368, MAKEWH(158, 64));
-    drawImage(MAKEXY(227, 768), D_800D1268, MAKEWH(1, 256));
+    drawImage(MAKEXY(768, 0), D_800C2268, MAKEWH(64, 224));
+    drawImage(MAKEXY(448, 256), D_800C2268 + 0x1C00, MAKEWH(64, 256));
+    drawImage(MAKEXY(832, 0), D_800AF368, MAKEWH(64, 224));
+    drawImage(MAKEXY(896, 0), D_800AF368 + 0x1C00, MAKEWH(64, 224));
+    drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
+    drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
     setRECT(&D_800DC928, 640, 256, 32, 240);
     ClearImage(&D_800DC928, 0, 0, 0);
     DrawSync(0);
     setRECT(&D_800DC928, 768, 256, 32, 240);
     ClearImage(&D_800DC928, 0U, 0U, 0U);
-    drawImage(MAKEXY(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
+    drawImage(MAKEXY(672, 256), D_800D1268 + 0x80, MAKEWH(96, 240));
     func_8006E5D0();
     D_800DC930 = 0;
 
@@ -1633,9 +1633,9 @@ int func_8006E988()
     } while (func_8006A49C(0) == 0);
 
     for (i = 1; i < 3; ++i) {
-        func_8006947C(i);
+        _memCardHandler(i);
         do {
-            temp_s0 = func_8006947C(0) & 3;
+            temp_s0 = _memCardHandler(0) & 3;
             VSync(2);
         } while (temp_s0 == 0);
 
@@ -1736,18 +1736,18 @@ void func_8006EDBC()
 {
     int temp_v0;
 
-    drawImage(MAKEXY(0, 768), D_800C2268, MAKEWH(224, 64));
-    drawImage(MAKEXY(256, 448), D_800C2268 + 0x1C00, MAKEWH(256, 64));
-    drawImage(MAKEXY(0, 832), D_800AF368, MAKEWH(224, 64));
-    drawImage(MAKEXY(0, 896), D_800AF368 + 0x1C00, MAKEWH(224, 64));
-    drawImage(MAKEXY(66, 960), D_800BD368, MAKEWH(158, 64));
-    drawImage(MAKEXY(227, 768), D_800D1268, MAKEWH(1, 256));
+    drawImage(MAKEXY(768, 0), D_800C2268, MAKEWH(64, 224));
+    drawImage(MAKEXY(448, 256), D_800C2268 + 0x1C00, MAKEWH(64, 256));
+    drawImage(MAKEXY(832, 0), D_800AF368, MAKEWH(64, 224));
+    drawImage(MAKEXY(896, 0), D_800AF368 + 0x1C00, MAKEWH(64, 224));
+    drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
+    drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
     setRECT(&D_800DC938, 640, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
     DrawSync(0);
     setRECT(&D_800DC938, 768, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
-    drawImage(MAKEXY(256, 672), D_800D1268 + 0x80, MAKEWH(240, 96));
+    drawImage(MAKEXY(672, 256), D_800D1268 + 0x80, MAKEWH(96, 240));
     func_8006E5D0();
 
     D_800DC940 = 0;
@@ -1978,8 +1978,8 @@ void func_8006F54C()
     rect.y = 0;
     rect.h = 512;
     ClearImage(&rect, 0, 0, 0);
-    drawImage(MAKEXY(64, 320), D_80072F0C, MAKEWH(1, 16));
-    drawImage(MAKEXY(0, 320), D_80072F0C + 8, MAKEWH(48, 64));
+    drawImage(MAKEXY(320, 64), D_80072F0C, MAKEWH(16, 1));
+    drawImage(MAKEXY(320, 0), D_80072F0C + 8, MAKEWH(64, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -2008,7 +2008,7 @@ void func_8006F54C()
         PutDrawEnv(&draw);
     }
 
-    drawImage(MAKEXY(240, 0), D_8007472C, MAKEWH(14, 32));
+    drawImage(MAKEXY(0, 240), D_8007472C, MAKEWH(32, 14));
 
     for (i = 0; i < 0x16C; ++i) {
         var_a3_2 = 0;

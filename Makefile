@@ -85,7 +85,7 @@ lintsrc:
 	@$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
 
-decompme: IMPORTFLAGS += --decompme --preserve-macros "setRECT"
+decompme: IMPORTFLAGS += --decompme --preserve-macros "setRECT|vs_.*"
 decompme: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^
 

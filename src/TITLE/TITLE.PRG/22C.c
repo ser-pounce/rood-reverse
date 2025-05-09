@@ -996,47 +996,43 @@ void _loadFileAnim(u_int arg0, int arg1)
     }
 }
 
-void func_8006ACD8(int arg0, int arg1)
+void func_8006ACD8(int arg0, int y)
 {
-    int temp_v1;
-    int var_s2;
-    int var_s3;
-    int var_s5;
-    u_int var_s4;
-
-    var_s3 = arg1;
-    var_s5 = 0;
+    int yOfst;
+    int colour0;
+    u_int i;
+    int colour1 = 0;
 
     if (D_800DED70 != 0) {
-        var_s2 = arg0 + (arg0 << 15);
+        colour0 = arg0 + (arg0 << 15);
     } else {
-        var_s2 = (arg0 - (arg0 >> 3)) + (arg0 << 8);
+        colour0 = (arg0 - (arg0 >> 3)) + (arg0 << 8);
     }
 
     DrawSync(0);
     vs_setTag(&_primBuf.tile_tpage, primAddrNull);
     vs_setTpage(&_primBuf.tile_tpage, 0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-    vs_setRGB0Raw(&_primBuf.tile_tpage, primTileSemiTrans, var_s2);
-    _primBuf.tile_tpage.x0y0 = var_s3 | 0x40;
+    vs_setRGB0Raw(&_primBuf.tile_tpage, primTileSemiTrans, colour0);
+    _primBuf.tile_tpage.x0y0 = y | 64;
     _primBuf.tile_tpage.wh = vs_getWH(256, 32);
     DrawPrim(&_primBuf.tile_tpage);
 
-    for (var_s4 = 0; var_s4 < 2; ++var_s4) {
+    for (i = 0; i < 2; ++i) {
         DrawSync(0);
         vs_setTag(&_primBuf.polyG4, primAddrNull);
-        temp_v1 = var_s3 + 0xFFF80000;
-        vs_setRGB0Raw(&_primBuf.polyG4, primPolyG4SemiTrans, var_s5);
-        _primBuf.polyG4.x0y0 = temp_v1 | 0x40;
-        _primBuf.polyG4.r1g1b1 = var_s5;
-        _primBuf.polyG4.x1y1 = temp_v1 | 0x140;
-        _primBuf.polyG4.r2g2b2 = var_s2;
-        _primBuf.polyG4.x2y2 = var_s3 | 0x40;
-        _primBuf.polyG4.r3g3b3 = var_s2;
-        _primBuf.polyG4.x3y3 = var_s3 | 0x140;
+        yOfst = y + vs_getXY(0, -8);
+        vs_setRGB0Raw(&_primBuf.polyG4, primPolyG4SemiTrans, colour1);
+        _primBuf.polyG4.x0y0 = yOfst | 64;
+        _primBuf.polyG4.r1g1b1 = colour1;
+        _primBuf.polyG4.x1y1 = yOfst | 320;
+        _primBuf.polyG4.r2g2b2 = colour0;
+        _primBuf.polyG4.x2y2 = y | 64;
+        _primBuf.polyG4.r3g3b3 = colour0;
+        _primBuf.polyG4.x3y3 = y | 320;
         DrawPrim(&_primBuf.raw);
-        var_s3 += 0x280000;
-        var_s5 = var_s2;
-        var_s2 = 0;
+        y += vs_getXY(0, 40);
+        colour1 = colour0;
+        colour0 = 0;
     }
 }
 

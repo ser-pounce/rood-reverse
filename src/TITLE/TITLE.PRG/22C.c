@@ -73,6 +73,7 @@ void func_8006BC78(u_char);
 int func_8006C778(u_char);
 int func_8006CABC(int);
 int func_8006CE6C(int);
+int func_8006DC14(int);
 int func_8006E00C(int);
 void playMovie(DslLOC*);
 void func_8006F174();
@@ -156,12 +157,16 @@ extern u_char D_800DC8E0;
 extern u_char D_800DC8E1;
 extern u_char D_800DC8E2;
 extern int _saveFileId;
+extern u_char D_800DC923;
+extern u_char D_800DC924;
 extern RECT D_800DC938;
 extern u_char D_800DC940;
 extern u_char D_800DC941;
 extern u_char D_800DEB0C;
 extern u_short D_800DEB10;
 extern u_short D_800DEB12;
+extern u_char D_800DED73;
+extern char D_800DED74;
 extern u_char D_800DC8C4;
 extern vs_main_CdQueueSlot* D_800DC8C8;
 extern u_char D_800DC8CC[];
@@ -1526,12 +1531,6 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006D2F8);
 
 // https://decomp.me/scratch/QD0zT
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006DC14);
-
-int func_8006DC14(int);
-extern u_char D_800DC923;
-extern u_char D_800DC924;
-extern u_char D_800DED73;
-extern char D_800DED74;
 
 int func_8006E00C(int arg0)
 {

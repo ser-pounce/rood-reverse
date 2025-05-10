@@ -27,29 +27,10 @@
     __asm__("li $a0, " #id ";"                                                           \
             "syscall 0;");
 
-#define EMBED_BETWEEN(path, symbol, offset, len)                                         \
-    __asm__(".pushsection .data;"                                                        \
-            ".incbin \"" path "\"," #offset "," #len ";"                                 \
-            ".popsection");
-
-#define EMBED_FROM(path, symbol, offset)                                                 \
-    __asm__(".pushsection .data;"                                                        \
-            ".incbin \"" path "\"," #offset ";"                                          \
-            ".popsection");
-
-#define EMBED_RGBA16(path, symbol)                                                       \
-    EMBED_BETWEEN(path, symbol##_header, 0, 4)                                           \
-    EMBED_FROM(path, symbol##_data, 4)                                                   \
-    extern ImgHeader symbol##_header;                                                    \
-    extern u_long symbol##_data[];
-
 #else
 #define INCLUDE_ASM(FOLDER, NAME) void dummy()
 #define INCLUDE_RODATA(FOLDER, NAME)
 #define BIOS_STUB(name, table, id)
-#define EMBED_RGBA16(path, symbol)                                                       \
-    extern ImgHeader symbol##_header;                                                    \
-    extern u_long symbol##_data[];
 #define __attribute__(x)
 #define __asm__(...)
 #endif // PERMUTER

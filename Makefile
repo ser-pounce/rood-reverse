@@ -137,6 +137,12 @@ build/%.o: %.c
 	@$(CAT) $@.d >> build/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
+%rgba16.o: %rgba16.bin
+	$(call builder,Compiling $<)
+	@mips-linux-gnu-objcopy -I binary -O elf32-tradlittlemips \
+	--add-symbol $(@F:%.rgba16.o=%)_header=.data:0 \
+	--add-symbol $(@F:%.rgba16.o=%)_data=.data:4 $< $@
+
 %rgba16.bin: %rgba16.png
 	$(call builder,Converting $<)
 	@$(RGBA16) $< $@

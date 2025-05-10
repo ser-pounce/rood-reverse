@@ -2,7 +2,7 @@ build/data/SLUS_010.40.elf: LDSCRIPT += \
 	config/TITLE/TITLE.PRG/exports.txt \
 	config/BATTLE/BATTLE.PRG/exports.txt
 
-build/data/SLUS_010.40.elf: build/assets/SLUS_010.40/_nowLoading.rgba16.bin
+build/data/SLUS_010.40.elf: build/assets/SLUS_010.40/_nowLoading.rgba16.o
 
 build/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 build/src/SLUS_010.40/main.o: build/src/include/lbas.h

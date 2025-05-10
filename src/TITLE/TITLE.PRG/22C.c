@@ -52,7 +52,10 @@ typedef struct {
     u_char unk7;
     short unk8;
     short unkA;
-    int unkC;
+    union {
+        int i;
+        short s[2];
+    } unkC;
     int unk10;
     u_char unk14[32];
 } D_800DEB18_t;
@@ -61,6 +64,10 @@ typedef struct {
     int unk0[10];
     int unk28;
 } D_8005FEA0_t;
+
+typedef struct {
+    short unk0[2];
+} D_80061074_t;
 
 u_char* memcardFilenameFromTemplate(int, int);
 int memcardFileNumberFromFilename(u_char*);
@@ -109,7 +116,7 @@ extern u_char D_80060040[];
 extern int D_80060064;
 extern u_char D_80060068[];
 extern u_char D_80060168[];
-extern int D_80061074[4];
+extern D_80061074_t D_80061074;
 extern u_char D_80061078[];
 extern u_char D_80061068[];
 extern u_char D_80061598[];
@@ -171,6 +178,14 @@ extern u_char D_800DC8C4;
 extern vs_main_CdQueueSlot* D_800DC8C8;
 extern u_char D_800DC8CC[];
 extern u_char D_800DC8CD;
+extern D_80061074_t D_800DC8D0;
+extern int D_800DC8D4;
+extern u_char D_800DC8D8;
+extern u_char D_800DC8D9;
+extern u_char D_800DC8DA;
+extern u_char D_800DC8DB;
+extern u_char D_800DC8DC;
+extern u_char D_800DC8DD;
 extern u_char D_800DC8E8;
 extern u_char D_800DC8E9;
 extern int D_800DC8EC;
@@ -651,7 +666,7 @@ int func_800696D0(int arg0)
     rMemcpy(D_80061078, temp_s1 + 0x749C, 0x520);
     blocks = D_80060040;
     rMemcpy(D_80060040, temp_s1 + 0x79BC, 0x24);
-    __builtin_memcpy(&D_80061074, temp_s1 + 0x5D90, 4);
+    __builtin_memcpy(&D_80061074, temp_s1 + 0x5D90, sizeof(D_80061074));
     func_80042CA0();
     func_800468BC(D_80060020.unkA);
     return 0;
@@ -1062,7 +1077,7 @@ D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
     memset(temp_s3, 0, 0x34);
     temp_s3->unk0 = 1;
     temp_s3->unk1 = 0xFF;
-    temp_s3->unkC = arg1;
+    temp_s3->unkC.i = arg1;
     temp_s3->unk10 = arg2;
 
     if (arg3 != 0) {
@@ -1285,7 +1300,162 @@ void func_8006C114()
     _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C15C);
+int func_8006C15C(int arg0)
+{
+    D_800DEB18_t* temp_v0_2;
+    int temp_s0;
+    int i;
+
+    if (arg0 != 0) {
+        D_800DC8D9 = arg0;
+        D_800DC8DB = func_80068D54();
+        D_800DC8DA = 0;
+        if (D_800DC8DB == 4) {
+            D_800DC8DA = 2;
+            D_800DC8DB = 2;
+        } else if (D_800DC8DB != 0) {
+            D_800DC8DA = D_800DC8DB - 1;
+            D_800DC8DB = 1;
+        }
+        D_800DC8D4 = -1;
+        D_800DC8DD = 0;
+        D_800DC8D8 = 0;
+        return 0;
+    }
+    switch (D_800DC8D8) {
+    case 0:
+        for (i = 0; i < 5; ++i) {
+            temp_v0_2
+                = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
+            temp_v0_2->unk1 = i;
+            temp_v0_2->unk5 = D_800DEB08[i][1] < 3;
+            temp_v0_2->unk6 = D_800DEB08[i][7];
+        }
+        D_800DC8D8 = 1;
+        D_800DED6C = D_800DEAC0 + 0x13B;
+        // fallthrough
+    case 1:
+        if (vs_main_buttonsPressed & PADRdown) {
+            func_80045988(0x7E, 6);
+            for (i = 5; i < 10; ++i) {
+                func_8006AF78(i);
+            }
+            D_800DED68 = 0;
+            return -1;
+        }
+        for (i = 0; i < 5; ++i) {
+            D_800DEB18[i + 5].unkC.s[1] = (((i - D_800DC8DA) * 0x28) + 0x48);
+            D_800DEB18[i + 5].unk4 = 0;
+        }
+        temp_s0 = D_800DC8DB + D_800DC8DA;
+        if (vs_main_buttonsPressed & PADRright) {
+            if (D_800DEB08[temp_s0][1] >= 3) {
+                func_80045988(0x7E, 5);
+                D_800DEB18[temp_s0 + 5].unk4 = 1;
+                D_800DED68 = 0;
+                func_8006B288(D_800DC8D9 + 0x70);
+                D_800DC8D8 = 2;
+                break;
+            }
+            func_80045988(0x7E, 7);
+        }
+        if (D_8005DFDC & 0x1000) {
+            if (D_800DC8DB == 0) {
+                if (D_800DC8DA != 0) {
+                    --D_800DC8DA;
+                }
+            } else {
+                --D_800DC8DB;
+            }
+        }
+        if (D_8005DFDC & 0x4000) {
+            if (D_800DC8DB == 2) {
+                if (D_800DC8DA < 2) {
+                    ++D_800DC8DA;
+                }
+            } else {
+                ++D_800DC8DB;
+            }
+        }
+        if (temp_s0 != (D_800DC8DB + D_800DC8DA)) {
+            func_80045988(0x7E, 4);
+        }
+        D_800DED68 = (((D_800DC8DB * 0x28) + 0x3E) << 0x10) | 0x18;
+        D_800DEB18[temp_s0 + 5].unk4 = 1;
+        break;
+    case 2:
+        temp_s0 = func_8006B288(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 >= 0) {
+                int new_var;
+                func_80069EA8(((D_800DC8DB + D_800DC8DA) + 1)
+                    | (new_var = ((D_800DC8D9 - 1) << 0x10) | 0x100));
+                D_800DC8D8 = 3;
+                D_800DED6C = D_800DEAC0 + 0x193;
+            } else {
+                D_800DC8D8 = 4;
+            }
+        }
+        break;
+    case 3:
+        temp_s0 = func_80069EA8(0);
+        ++D_800DEB14;
+        if (temp_s0 != 0) {
+            D_800DEB14 = 0;
+            do {
+                D_800DC8DC = 0;
+                if (temp_s0 < 0) {
+                    D_800DED6C = D_800DEAC0 + 0x11E;
+                    break;
+                }
+                switch (func_800696D0(1)) {
+                case 0:
+                    D_800DEB14 = -16;
+                    func_80045988(0x7E, 8);
+                    D_800DC8DC = 16;
+                    D_800DC8D4 = 1;
+                    D_800DED6C = D_800DEAC0 + 0x1B2;
+                    break;
+                case 1:
+                    D_800DED6C = D_800DEAC0 + 0x155;
+                    break;
+                }
+            } while (0);
+
+            D_800DC8D0 = D_80061074;
+            D_800DC8D8 = 4;
+        }
+        break;
+    case 4:
+        if (D_800DC8DC != 0) {
+            --D_800DC8DC;
+        }
+        if (D_800DC8D4 == 1) {
+            ++D_800DC8DD;
+        }
+        if (((u_char)vs_main_buttonsPressed != 0) || (D_800DC8DD == 0x96)) {
+            if (D_800DC8D4 < 0) {
+                func_80045988(0x7E, 6);
+            }
+            D_800DC8D8 = 5;
+        }
+        break;
+    case 5:
+        if (D_800DC8DC != 0) {
+            --D_800DC8DC;
+            break;
+        }
+        if (D_800DC8D4 == 1) {
+            D_80061074 = D_800DC8D0;
+        } else {
+            for (i = 5; i < 10; ++i) {
+                func_8006AF78(i);
+            }
+        }
+        return D_800DC8D4;
+    }
+    return 0;
+}
 
 // https://decomp.me/scratch/KxBXc
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
@@ -3098,7 +3268,7 @@ void func_80071B14()
 
     memcpy_impl(D_8005FFB8, D_80075B24, 0x20);
     bzero_impl(D_8005FFD8, 0x48);
-    bzero_impl(D_80061074, 4);
+    bzero_impl(&D_80061074, sizeof(D_80061074));
     bzero_impl(D_8005FEA0, 0x114);
     D_80060064 = 0;
     bzero_impl(D_80061078, 0x520);

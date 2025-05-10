@@ -214,10 +214,6 @@ typedef struct {
     u_char hHi;
 } ImgHeader;
 
-void* vs_main_debug_stack_p = (void*)0x200000;
-u_int vs_main_debug_stack_sz = 0x4000;
-u_char _buildTimestamp[] = "Mar 28 00:09\0\0\0";
-
 EMBED_RGBA16("build/assets/SLUS_010.40/_nowLoading.rgba16.bin", _nowLoading)
 
 static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06,

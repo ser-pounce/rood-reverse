@@ -259,7 +259,7 @@ segments:
     subsegments:
       - [0x32568, .rodata, main]
       - [0x3264C, c, main]
-      - [0x39938, .data, main]
+      - [0x39938, .data, 2MBYTE.OBJ]
       - {start: 0x39950, type: rgba16, name: _nowLoading, linker_entry: false}
       - [0x3AD04, .data, main]
       - [0x3BA78, data, main]

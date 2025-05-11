@@ -262,6 +262,6 @@ segments:
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgba16, _nowLoading]
       - [0x3AD04, .data, main]
-      - [0x3BA78, data, main]
+      - [0x3BE68, data, main]
       - [0x40788, bss, main]
   - [0x52800]

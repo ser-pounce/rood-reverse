@@ -96,7 +96,15 @@ typedef struct {
     u_char unk5;
     u_char unk6[5];
     char unkB[3];
-    u_char unkE[256][7];
+    struct ColorInfo {
+        u_char r;
+        u_char g;
+        u_char b;
+        u_char a;
+        u_char rindex;
+        u_char gindex;
+        u_char bindex;
+    } unkE[256];
     u_short unk70E[254];
 } D_80055D58_t2;
 
@@ -473,7 +481,73 @@ static u_char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68,
     78, 89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63,
     63, 52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-extern char D_8004B278[63][16];
+char _animOffset16[][16] = {
+    { 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 255 },
+    { 254, 254, 254, 254, 254, 254, 254, 254, 255, 254, 254, 254, 254, 254, 254, 255 },
+    { 254, 254, 254, 254, 254, 255, 254, 254, 254, 254, 255, 254, 254, 254, 254, 255 },
+    { 254, 254, 254, 254, 255, 254, 254, 254, 255, 254, 254, 254, 255, 254, 254, 255 },
+    { 254, 254, 254, 255, 254, 254, 255, 254, 254, 255, 254, 254, 255, 254, 254, 255 },
+    { 254, 254, 255, 254, 254, 255, 254, 254, 255, 254, 255, 254, 254, 255, 254, 255 },
+    { 254, 254, 255, 254, 255, 254, 255, 254, 254, 255, 254, 255, 254, 255, 254, 255 },
+    { 254, 254, 255, 254, 255, 254, 255, 254, 255, 254, 255, 254, 255, 254, 255, 255 },
+    { 254, 255, 254, 255, 254, 255, 254, 255, 255, 254, 255, 254, 255, 254, 255, 255 },
+    { 254, 255, 254, 255, 255, 254, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255 },
+    { 254, 255, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255, 254, 255, 255, 255 },
+    { 254, 255, 255, 254, 255, 255, 255, 254, 255, 255, 255, 254, 255, 255, 255, 255 },
+    { 254, 255, 255, 255, 255, 254, 255, 255, 255, 255, 254, 255, 255, 255, 255, 255 },
+    { 254, 255, 255, 255, 255, 255, 255, 254, 255, 255, 255, 255, 255, 255, 255, 255 },
+    { 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 },
+    { 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0 },
+    { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0 },
+    { 255, 255, 255, 255, 255, 255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 0 },
+    { 255, 255, 255, 255, 255, 0, 255, 255, 255, 255, 0, 255, 255, 255, 255, 0 },
+    { 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 0 },
+    { 255, 255, 255, 0, 255, 255, 0, 255, 255, 0, 255, 255, 0, 255, 255, 0 },
+    { 255, 255, 0, 255, 255, 0, 255, 255, 0, 255, 0, 255, 255, 0, 255, 0 },
+    { 255, 255, 0, 255, 0, 255, 0, 255, 255, 0, 255, 0, 255, 0, 255, 0 },
+    { 255, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 0 },
+    { 255, 0, 255, 0, 255, 0, 255, 0, 0, 255, 0, 255, 0, 255, 0, 0 },
+    { 255, 0, 255, 0, 0, 255, 0, 255, 0, 0, 255, 0, 0, 255, 0, 0 },
+    { 255, 0, 0, 255, 0, 0, 255, 0, 0, 255, 0, 0, 255, 0, 0, 0 },
+    { 255, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 0 },
+    { 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0 },
+    { 255, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },
+    { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 },
+    { 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 },
+    { 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1 },
+    { 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+    { 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1 },
+    { 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1 },
+    { 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1 },
+    { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
+    { 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
+    { 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 },
+    { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2 },
+    { 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2 },
+    { 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2 },
+    { 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2 },
+    { 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2 },
+    { 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2 },
+    { 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2 },
+    { 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 },
+    { 1, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2 },
+    { 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2 },
+    { 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2 },
+    { 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2 },
+    { 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2 },
+    { 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2 },
+    { 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }
+};
+
+extern char _animOffset16[63][16];
 extern char D_8004B668[63][8];
 extern char D_8004B860[63][4];
 extern char D_8004B95C[63][2];
@@ -3063,7 +3137,7 @@ void func_80046B3C(int arg0, int arg1, u_short* arg2)
     u_short g;
     u_short b;
     u_short r;
-    u_char(*p)[7];
+    struct ColorInfo* p;
 
     for (i = 0; i < 256; ++i) {
         r = arg2[i] & 0x1F;
@@ -3073,14 +3147,14 @@ void func_80046B3C(int arg0, int arg1, u_short* arg2)
         p = D_80055D58.unk0[arg1].unkE;
 
         if (arg0 != 0) {
-            p[i][4] = (r - p[i][0]) + 31;
-            p[i][5] = (g - p[i][1]) + 31;
-            p[i][6] = (b - p[i][2]) + 31;
+            p[i].rindex = (r - p[i].r) + 31;
+            p[i].gindex = (g - p[i].g) + 31;
+            p[i].bindex = (b - p[i].b) + 31;
         } else {
-            p[i][0] = r;
-            p[i][1] = g;
-            p[i][2] = b;
-            loadImageSource[arg1][i] = r + (g << 5) + (b << 10) + (p[i][3] << 15);
+            p[i].r = r;
+            p[i].g = g;
+            p[i].b = b;
+            loadImageSource[arg1][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
         }
     }
 
@@ -3142,27 +3216,27 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
     int tmp;
     int t4 = (u_short)arg4;
     int t5 = (u_short)arg5;
-    u_char(*t2)[7] = D_80055D58.unk0[arg2].unkE;
+    struct ColorInfo* t2 = D_80055D58.unk0[arg2].unkE;
 
     for (i = 0; i < 256; ++i) {
         temp_t0 = D_80055D58.unk0[arg2].unk70E[i];
-        if ((t2[i][0] + t2[i][1] + t2[i][2] + t2[i][3]) != 0) {
+        if ((t2[i].r + t2[i].g + t2[i].b + t2[i].a) != 0) {
             switch (arg0) {
             case 1:
                 tmp = 1;
-                var_t3 = arg3 + (t2[i][0] >> tmp);
-                var_t1 = t4 + (t2[i][1] >> tmp);
-                var_a0 = t5 + (t2[i][2] >> tmp);
+                var_t3 = arg3 + (t2[i].r >> tmp);
+                var_t1 = t4 + (t2[i].g >> tmp);
+                var_a0 = t5 + (t2[i].b >> tmp);
                 break;
             case 2:
-                var_t3 = arg3 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
-                var_t1 = t4 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
-                var_a0 = t5 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 6;
+                var_t3 = arg3 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
+                var_t1 = t4 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
+                var_a0 = t5 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
                 break;
             case 3:
-                var_t3 = arg3 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
-                var_t1 = t4 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
-                var_a0 = t5 + ((t2[i][0] * 2) + (t2[i][1] * 3) + t2[i][2]) / 12;
+                var_t3 = arg3 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
+                var_t1 = t4 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
+                var_a0 = t5 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
                 break;
             case 4:
             case 9:
@@ -3203,9 +3277,9 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 return;
             case 12:
                 tmp = 0x1F;
-                var_t3 = arg3 - (t2[i][0] - tmp);
-                var_t1 = t4 - (t2[i][1] - tmp);
-                var_a0 = t5 - (t2[i][2] - tmp);
+                var_t3 = arg3 - (t2[i].r - tmp);
+                var_t1 = t4 - (t2[i].g - tmp);
+                var_a0 = t5 - (t2[i].b - tmp);
                 break;
             case 13:
                 var_v0 = (temp_t0 & 0x1F) * 3;
@@ -3225,9 +3299,9 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 var_a0 = t5 + (var_v0 >> 2);
                 break;
             default:
-                var_t3 = t2[i][0] + arg3;
-                var_t1 = t2[i][1] + t4;
-                var_a0 = t2[i][2] + t5;
+                var_t3 = t2[i].r + arg3;
+                var_t1 = t2[i].g + t4;
+                var_a0 = t2[i].b + t5;
                 break;
             }
 
@@ -3253,20 +3327,20 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 var_a0 = 1;
             }
             if (arg1 != 0) {
-                t2[i][4] = ((var_t3 - t2[i][0]) + 0x1F);
-                t2[i][5] = ((var_t1 - t2[i][1]) + 0x1F);
-                t2[i][6] = ((var_a0 - t2[i][2]) + 0x1F);
+                t2[i].rindex = ((var_t3 - t2[i].r) + 0x1F);
+                t2[i].gindex = ((var_t1 - t2[i].g) + 0x1F);
+                t2[i].bindex = ((var_a0 - t2[i].b) + 0x1F);
             } else {
-                t2[i][2] = var_a0;
-                t2[i][0] = var_t3;
-                t2[i][1] = var_t1;
+                t2[i].b = var_a0;
+                t2[i].r = var_t3;
+                t2[i].g = var_t1;
                 loadImageSource[arg2][i]
-                    = var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i][3] << 0xF);
+                    = var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i].a << 0xF);
             }
         } else {
-            t2[i][6] = 0x1F;
-            t2[i][5] = 0x1F;
-            t2[i][4] = 0x1F;
+            t2[i].bindex = 0x1F;
+            t2[i].gindex = 0x1F;
+            t2[i].rindex = 0x1F;
         }
     }
     if (arg1 != 0) {
@@ -3907,10 +3981,10 @@ void func_800483FC()
     int i;
     int j;
     u_int var_t5;
-    u_short temp_a3;
-    u_short temp_t2;
-    u_short var_a1;
-    u_char(*e)[7];
+    u_short g;
+    u_short r;
+    u_short b;
+    struct ColorInfo* index;
     int c;
 
     for (i = 0; i < 14; ++i) {
@@ -3924,82 +3998,78 @@ void func_800483FC()
             if (D_80055D58.unk0[i].unk6[3] >= 8) {
                 var_t5 = 1;
                 c = D_80055D58.unk0[i].unk6[1];
-                e = D_80055D58.unk0[i].unkE;
+                index = D_80055D58.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
-                    if ((e[j][0] + e[j][1] + e[j][2]) == 0) {
+                    if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
-                    temp_t2 = e[j][0] + D_8004B278[e[j][4]][c];
-                    temp_a3 = e[j][1] + D_8004B278[e[j][5]][c];
-                    var_a1 = e[j][2] + D_8004B278[e[j][6]][c];
-                    if (((var_a1 | (temp_t2 | temp_a3)) << 16) == 0) {
-                        var_a1 = 1;
+                    r = index[j].r + _animOffset16[index[j].rindex][c];
+                    g = index[j].g + _animOffset16[index[j].gindex][c];
+                    b = index[j].b + _animOffset16[index[j].bindex][c];
+                    if (((b | (r | g)) << 16) == 0) {
+                        b = 1;
                     }
-                    e[j][1] = temp_a3;
-                    e[j][2] = var_a1;
-                    e[j][0] = temp_t2;
-                    loadImageSource[i][j]
-                        = temp_t2 + (temp_a3 << 5) + (var_a1 << 10) + (e[j][3] << 15);
+                    index[j].g = g;
+                    index[j].b = b;
+                    index[j].r = r;
+                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else if (D_80055D58.unk0[i].unk6[3] >= 4) {
                 var_t5 = 2;
                 c = D_80055D58.unk0[i].unk6[1];
-                e = D_80055D58.unk0[i].unkE;
+                index = D_80055D58.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
-                    if ((e[j][0] + e[j][1] + e[j][2]) == 0) {
+                    if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
-                    temp_t2 = e[j][0] + D_8004B668[e[j][4]][c];
-                    temp_a3 = e[j][1] + D_8004B668[e[j][5]][c];
-                    var_a1 = e[j][2] + D_8004B668[e[j][6]][c];
-                    if (((var_a1 | (temp_t2 | temp_a3)) << 16) == 0) {
-                        var_a1 = 1;
+                    r = index[j].r + D_8004B668[index[j].rindex][c];
+                    g = index[j].g + D_8004B668[index[j].gindex][c];
+                    b = index[j].b + D_8004B668[index[j].bindex][c];
+                    if (((b | (r | g)) << 16) == 0) {
+                        b = 1;
                     }
-                    e[j][0] = temp_t2;
-                    e[j][1] = temp_a3;
-                    e[j][2] = var_a1;
-                    loadImageSource[i][j]
-                        = temp_t2 + (temp_a3 << 5) + (var_a1 << 10) + (e[j][3] << 15);
+                    index[j].r = r;
+                    index[j].g = g;
+                    index[j].b = b;
+                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else if (D_80055D58.unk0[i].unk6[3] >= 2) {
                 var_t5 = 4;
                 c = D_80055D58.unk0[i].unk6[1];
-                e = D_80055D58.unk0[i].unkE;
+                index = D_80055D58.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
-                    if ((e[j][0] + e[j][1] + e[j][2]) == 0) {
+                    if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
-                    temp_t2 = e[j][0] + D_8004B860[e[j][4]][c];
-                    temp_a3 = e[j][1] + D_8004B860[e[j][5]][c];
-                    var_a1 = e[j][2] + D_8004B860[e[j][6]][c];
-                    if (((var_a1 | (temp_t2 | temp_a3)) << 16) == 0) {
-                        var_a1 = 1;
+                    r = index[j].r + D_8004B860[index[j].rindex][c];
+                    g = index[j].g + D_8004B860[index[j].gindex][c];
+                    b = index[j].b + D_8004B860[index[j].bindex][c];
+                    if (((b | (r | g)) << 16) == 0) {
+                        b = 1;
                     }
-                    e[j][0] = temp_t2;
-                    e[j][1] = temp_a3;
-                    e[j][2] = var_a1;
-                    loadImageSource[i][j]
-                        = temp_t2 + (temp_a3 << 5) + (var_a1 << 10) + (e[j][3] << 15);
+                    index[j].r = r;
+                    index[j].g = g;
+                    index[j].b = b;
+                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else {
                 var_t5 = 8;
                 c = D_80055D58.unk0[i].unk6[1];
-                e = D_80055D58.unk0[i].unkE;
+                index = D_80055D58.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
-                    if ((e[j][0] + e[j][1] + e[j][2]) == 0) {
+                    if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
-                    temp_t2 = e[j][0] + D_8004B95C[e[j][4]][c];
-                    temp_a3 = e[j][1] + D_8004B95C[e[j][5]][c];
-                    var_a1 = e[j][2] + D_8004B95C[e[j][6]][c];
-                    if (((var_a1 | (temp_t2 | temp_a3)) << 16) == 0) {
-                        var_a1 = 1;
+                    r = index[j].r + D_8004B95C[index[j].rindex][c];
+                    g = index[j].g + D_8004B95C[index[j].gindex][c];
+                    b = index[j].b + D_8004B95C[index[j].bindex][c];
+                    if (((b | (r | g)) << 16) == 0) {
+                        b = 1;
                     }
-                    e[j][0] = temp_t2;
-                    e[j][1] = temp_a3;
-                    e[j][2] = var_a1;
-                    loadImageSource[i][j]
-                        = temp_t2 + (temp_a3 << 5) + (var_a1 << 10) + (e[j][3] << 15);
+                    index[j].r = r;
+                    index[j].g = g;
+                    index[j].b = b;
+                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             }
             if (++D_80055D58.unk0[i].unk6[1] >= (16 / var_t5)) {
@@ -4032,7 +4102,7 @@ void func_80048A64(u_short* img, u_int y, u_int x, u_int w)
     RECT rect;
     u_short px;
     u_int i;
-    u_char* dst;
+    struct ColorInfo* dst;
 
     if (y >= 14) {
         setRECT(&rect, x + 768, y + 224, w, 1);
@@ -4044,13 +4114,13 @@ void func_80048A64(u_short* img, u_int y, u_int x, u_int w)
         D_80055D58.unk0[y].unk6[0] = 0;
         for (i = 0; i < w; ++i) {
             px = img[i];
-            dst = D_80055D58.unk0[y].unkE[x + i];
+            dst = &D_80055D58.unk0[y].unkE[x + i];
             loadImageSource[y][x + i] = px;
             D_80055D58.unk0[y].unk70E[x + i] = px;
-            dst[0] = (px & 0x1F);
-            dst[1] = ((px & 0x3E0) >> 5);
-            dst[2] = ((px & 0x7C00) >> 10);
-            dst[3] = ((px & 0x8000) >> 15);
+            dst->r = (px & 0x1F);
+            dst->g = ((px & 0x3E0) >> 5);
+            dst->b = ((px & 0x7C00) >> 10);
+            dst->a = ((px & 0x8000) >> 15);
         }
         D_80055D58.unk0[0].unk0 = 1;
     }
@@ -4060,10 +4130,10 @@ void func_80048B8C(
     int arg0, u_short* arg1, int arg2, short arg3, short arg4, short arg5, int arg6)
 {
     int i;
-    short r;
     int new_var;
     int new_var2;
     int new_var3;
+    short r;
     short g;
     short b;
     short a;
@@ -4138,11 +4208,11 @@ void func_80048B8C(
         if (arg6 != 0) {
             loadImageSource[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
             if (D_80055D58.unk0[arg2].unk6[0] == 0) {
-                u_char* t5 = D_80055D58.unk0[arg2].unkE[i];
-                t5[0] = r;
-                t5[1] = g;
-                t5[2] = b;
-                t5[3] = t4;
+                struct ColorInfo* t5 = &D_80055D58.unk0[arg2].unkE[i];
+                t5->r = r;
+                t5->g = g;
+                t5->b = b;
+                t5->a = t4;
             }
         }
         D_80055D58.unk0[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);

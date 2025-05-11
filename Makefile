@@ -3,6 +3,7 @@ ARCH     := mips-linux-gnu-
 CPP      := $(ARCH)cpp
 LD       := $(ARCH)ld
 AS       := $(ARCH)as
+OBJCOPY  := $(ARCH)objcopy
 PYTHON   := python3
 GIT      := git
 CMAKE    := cmake
@@ -40,6 +41,7 @@ LDFLAGS         = -nostdlib --build-id=none -EL -x \
 LDFLAGS_BIN    := --oformat=binary -e 0x0
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I src/include $(AS_DEPS) -EL -G0
+OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
 MASFLAGS       := --aspsx-version=2.56 --macro-inc
 SPLATFLAGS     := --disassemble-all
 PERMUTEFLAGS   := -j8
@@ -137,11 +139,12 @@ build/%.o: %.c
 	@$(CAT) $@.d >> build/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
+%rgba16.o: filename = $(@F:%.rgba16.o=%)
 %rgba16.o: %rgba16.bin
 	$(call builder,Compiling $<)
-	@mips-linux-gnu-objcopy -I binary -O elf32-tradlittlemips \
-	--add-symbol $(@F:%.rgba16.o=%)_header=.data:0 \
-	--add-symbol $(@F:%.rgba16.o=%)_data=.data:4 $< $@
+	@$(OBJCOPY) $(OBJCOPYFLAGS) \
+	--add-symbol $(filename)_header=.data:0 \
+	--add-symbol $(filename)_data=.data:4 $< $@
 
 %rgba16.bin: %rgba16.png
 	$(call builder,Converting $<)

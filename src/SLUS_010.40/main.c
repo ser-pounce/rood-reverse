@@ -612,6 +612,7 @@ static char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 24
     { 13, 14 }, { 14, 14 }, { 14, 15 }, { 15, 15 }, { 15, 16 }, { 0, 0 } };
 
 extern u_int D_8004B9DC[];
+
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern vs_main_HeapHeader* D_80050110;
@@ -637,7 +638,6 @@ extern u_char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
 extern u_char vs_main_padBuffer[2][34];
-extern u_char D_8005DBE8;
 extern int D_8005DBF4[5][6];
 extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
@@ -659,7 +659,7 @@ extern u_char D_8005FFB8[];
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
-extern char D_80061074[4];
+extern char D_80061074[3980];
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
@@ -3466,7 +3466,7 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
             D_80055D58.unk7E8C[7] = arg0;
             return;
         }
-        D_8005DBE8 = 0;
+        D_80055D58.unk7E8C[4] = 0;
 
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, var_v1;
@@ -3635,7 +3635,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             D_80055D58.unk7E96[2] = arg4;
         }
     } else {
-        D_8005DBE8 = 0;
+        D_80055D58.unk7E8C[4] = 0;
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, new_var;
             temp_v0 = p[i][0];

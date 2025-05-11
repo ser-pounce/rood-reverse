@@ -23,7 +23,7 @@ enum vs_primType {
     primTile = 0x60,
     primTileSemiTrans = primTile | primSemiTrans,
     primSprt = 0x64,
-    primSprtSemtTrans = primSprt | primSemiTrans,
+    primSprtSemtTrans = primSprt | primSemiTrans
 };
 
 typedef struct {
@@ -90,7 +90,7 @@ typedef struct {
 #define vs_setRGB0(p, code, r, g, b)                                                     \
     (p)->r0g0b0code                                                                      \
         = (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
-#define vs_setRGB0Raw(p, code, rgb0) (p)->r0g0b0code = (((code) << 24) | (rgb0))
-#define vs_setUV0Clut(p, u, v, x, y)                                                     \
-    (p)->u0v0clut = (((u) | ((v) << 8)) | (((((y)) << 6) | ((((x)) >> 4) & 0x3f)) << 16))
+#define vs_getRGB0Raw(code, rgb0) (((code) << 24) | (rgb0))
+#define vs_setRGB0Raw(p, code, rgb0) (p)->r0g0b0code = vs_getRGB0Raw((code), (rgb0))
 #define vs_getUV0Clut(u, v, x, y) (((u) | ((v) << 8)) | (getClut((x), (y)) << 16))
+#define vs_setUV0Clut(p, u, v, x, y) (p)->u0v0clut = vs_getUV0Clut((u), (v), (x), (y))

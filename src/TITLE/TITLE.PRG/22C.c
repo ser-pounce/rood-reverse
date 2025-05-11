@@ -126,6 +126,7 @@ extern char D_8006169D;
 extern D_80060020_t D_800619D8;
 extern int D_800728C0[];
 extern int D_800728E8[];
+extern u_char D_80072910[];
 extern int D_80072914[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
@@ -227,7 +228,7 @@ extern union {
     VS_TILE tile;
     VS_POLY_G4_TPAGE polyG4_tpage;
     VS_POLY_G4 polyG4;
-    u_long raw[9];
+    u_long raw[13];
 } _primBuf;
 extern int D_800DED68;
 extern void* D_800DED6C;
@@ -1038,8 +1039,74 @@ int countDigits(int val)
     return i;
 }
 
-// https://decomp.me/scratch/AgXZ0
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006A928);
+void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
+{
+    int temp_a1;
+    int temp_s4;
+    int var_s2;
+    u_int temp_s0;
+    u_int var_s1;
+    u_int var_s4;
+    int new_var;
+    u_int var_s1_2;
+    int new_var2;
+    int new_var3;
+    int new_var4;
+
+    if (arg3 != 0) {
+        var_s1 = (((arg2 * 64) + arg3) - 1) / arg3;
+    } else {
+        var_s1 = 0;
+    }
+
+    var_s4 = ((207 << 16) | (224 << 8)) | 45;
+    if (arg1 != 0) {
+        var_s4 = ((159 << 16) | (120 << 8)) | 220;
+    }
+
+    new_var3 = (var_s4 & 0xFF);
+    temp_a1 = 0x40 - var_s1;
+    temp_s0 = ((((var_s1 * 0xFF) + (new_var3 * temp_a1)) >> 6)
+                  | ((((var_s1 * 0xF0) + (((var_s4 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
+        | ((((2 * (79 * var_s1)) + ((var_s4 >> 16) * temp_a1)) >> 6) << 16);
+
+    DrawSync(0);
+    _primBuf.raw[0] = 0x0C000000;
+    _primBuf.raw[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    _primBuf.raw[2] = vs_getRGB0(primTile, 0, 40, 64);
+    new_var = vs_getWH(66, 5);
+    new_var2 = (var_s1 + 0x90000);
+    _primBuf.raw[3] = arg0++ + 0x80000;
+    _primBuf.raw[4] = vs_getWH(66, 5);
+    _primBuf.raw[5] = vs_getRGB0Raw(primPolyG4, temp_s0);
+    _primBuf.raw[6] = arg0 + 0x90000;
+    _primBuf.raw[7] = var_s4;
+    _primBuf.raw[8] = arg0 + new_var2;
+    _primBuf.raw[9] = temp_s0;
+    _primBuf.raw[10] = arg0 + 0xC0000;
+    _primBuf.raw[11] = var_s4;
+    _primBuf.raw[12] = 0xC0000;
+    _primBuf.raw[12] = arg0 + (var_s1 + _primBuf.raw[12]);
+    DrawPrim(_primBuf.raw);
+
+    var_s1 = countDigits(arg2);
+    temp_s4 = countDigits(arg3);
+    func_8006A81C(arg0 - 1, arg1 + 7);
+    new_var = var_s1 * 6;
+    var_s2 = (arg0 - (new_var - (new_var4 = 0x37))) - (temp_s4 * 5);
+    var_s1_2 = D_80072910[var_s1];
+    do {
+        _drawSprt(var_s2 + 0xFFFF0000, (((arg2 / var_s1_2) << 3) + 0x40) | 0x37F40000,
+            0xC0007, 0xC);
+        arg2 = arg2 % var_s1_2;
+        var_s1_2 /= 10;
+        do {
+            var_s2 += 6;
+        } while (0);
+    } while (var_s1_2 != 0);
+    func_8006A81C(var_s2 + 1, 9);
+    func_8006A860(var_s2 + 6, arg3, D_80072910[temp_s4]);
+}
 
 void _loadFileAnim(u_int arg0, int arg1)
 {

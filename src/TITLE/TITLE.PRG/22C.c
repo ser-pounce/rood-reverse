@@ -71,6 +71,7 @@ typedef struct {
 
 u_char* memcardFilenameFromTemplate(int, int);
 int memcardFileNumberFromFilename(u_char*);
+int _readSaveData(int id);
 int func_8006913C(int);
 int func_800691D4(int);
 void func_80069888(int);
@@ -215,7 +216,7 @@ extern u_char* D_800DEAB8;
 extern u_int* D_800DEABC;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
-extern struct DIRENTRY* dirEntBuf[];
+extern struct DIRENTRY* dirEntBuf;
 extern u_int (*D_800DEB08)[0x20];
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
@@ -500,8 +501,65 @@ int deleteUnusedSaves(int port)
     return ret;
 }
 
-// https://decomp.me/scratch/yelA8
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800691D4);
+int func_800691D4(int port)
+{
+    int temp_v0;
+    int fileNo;
+    int i;
+    int var_s4;
+    struct DIRENTRY* var_s2;
+    u_int* var_v1;
+
+    var_s4 = 15;
+    for (i = 14; i >= 0; --i) {
+        memcardFiles[i] = 0;
+    }
+
+    fileNo = (int)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), dirEntBuf);
+    memcardFiles[0] = (void*)fileNo;
+
+    for (i = 1; (i < 15) && fileNo; ++i) {
+        fileNo = (int)nextfile(dirEntBuf + i);
+        memcardFiles[i] = (void*)fileNo;
+    }
+
+    memset(D_800DEB08, 0, 0x280);
+    temp_v0 = deleteUnusedSaves((port - 1) * 16);
+    if (temp_v0 & 0x80) {
+        return 1;
+    }
+    for (i = 0; i < 15; ++i) {
+        var_s2 = memcardFiles[i];
+        if (var_s2 != 0) {
+            fileNo = memcardFileNumberFromFilename((char*)var_s2->name);
+            if (fileNo != 0) {
+                if (fileNo < 0) {
+                    fileNo = -fileNo;
+                    if ((temp_v0 >> (fileNo - 1)) & 1) {
+                        continue;
+                    }
+                    memset(D_800DEB08[fileNo - 1], 0, 0x80);
+                    D_800DEB08[fileNo - 1][1] = 2;
+                } else if (_readSaveData(((port - 1) << 16) | fileNo) != 0) {
+                    var_s4 += (var_s2->size + 0x1FFF) >> 0xD;
+                }
+            }
+            var_s4 -= (var_s2->size + 0x1FFF) >> 0xD;
+        }
+    }
+
+    var_v1 = D_800DEB08[0];
+    for (; var_s4 >= 3; var_s4 -= 3) {
+        for (i = 0; i < 5; ++i) {
+            if (D_800DEB08[i][1] == 0) {
+                D_800DEB08[i][1] = 1;
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
 
 int createSaveFile(int port, int id)
 {
@@ -867,7 +925,7 @@ int func_8006A49C(int arg0)
         D_800DEABC = (u_int*)D_800DEAB8 + 0x4500;
         D_800DEAC0 = (u_short*)(D_800DEABC + 0x400);
         D_800DEB08 = (u_int(*)[0x20])(D_800DEABC + 0x800);
-        dirEntBuf[0] = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
+        dirEntBuf = (struct DIRENTRY*)(D_800DEABC + 0x8A0);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);

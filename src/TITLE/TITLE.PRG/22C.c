@@ -79,7 +79,7 @@ int _memCardHandler(int);
 int func_8006A49C(int);
 void _drawSprt(int, int, int, int);
 void func_8006BC78(u_char);
-int func_8006C778(u_char);
+int func_8006C778(int);
 int func_8006CABC(int);
 int func_8006CE6C(int);
 int func_8006DC14(int);
@@ -2013,7 +2013,7 @@ int func_8006D2F8(int arg0)
         break;
     case 7:
         if (D_800DC918 == 1) {
-            D_800DC920 += 1;
+            ++D_800DC920;
         }
         if ((u_char)vs_main_buttonsPressed == 0) {
             if (D_800DC920 != 0x96) {
@@ -3624,13 +3624,13 @@ void func_80071B14()
         *v0-- = 0;
     } while (--i >= 0);
 
-    memcpy_impl(D_8005FFB8, D_80075B24, 0x20);
-    bzero_impl(D_8005FFD8, 0x48);
-    bzero_impl(&D_80061074, sizeof(D_80061074));
-    bzero_impl(D_8005FEA0, 0x114);
+    vs_main_memcpy(D_8005FFB8, D_80075B24, 0x20);
+    vs_main_bzero(D_8005FFD8, 0x48);
+    vs_main_bzero(&D_80061074, sizeof(D_80061074));
+    vs_main_bzero(D_8005FEA0, 0x114);
     D_80060064 = 0;
-    bzero_impl(D_80061078, 0x520);
-    bzero_impl(D_80060040, 0x24);
+    vs_main_bzero(D_80061078, 0x520);
+    vs_main_bzero(D_80060040, 0x24);
 
     for (i = 0; i < 8; ++i) {
         for (a1 = 0; a1 < 3; ++a1) {
@@ -3642,11 +3642,11 @@ void func_80071B14()
     }
 
     for (i = 0; i <= 0; ++i) {
-        bzero_impl(&D_80060068[i * 0x100], 0x50);
+        vs_main_bzero(&D_80060068[i * 0x100], 0x50);
     }
 
-    bzero_impl(D_80061068, 0xC);
-    memcpy_impl(D_80060168, D_80074C24, 0xF00);
+    vs_main_bzero(D_80061068, 0xC);
+    vs_main_memcpy(D_80060168, D_80074C24, 0xF00);
 
     s0 = (u_short*)D_80061068;
     D_8005E24C = 2;

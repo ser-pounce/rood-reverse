@@ -1979,7 +1979,7 @@ static void func_800443CC()
                 return;
             }
             if (vs_main_disk.unk2C == 1) {
-                memcpy_impl(
+                vs_main_memcpy(
                     ((u_char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
                     D_80050110 + (vs_main_disk.unk40 * 128), 2048);
 
@@ -4360,7 +4360,7 @@ static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unus
 
 static void nop11() { }
 
-void memcpy_impl(void* dest, void* src, u_int sz)
+void vs_main_memcpy(void* dest, void* src, u_int sz)
 {
     __asm__("srl $t0, %2, 4;"
             "beqz $t0, 1f;"
@@ -4390,7 +4390,7 @@ void memcpy_impl(void* dest, void* src, u_int sz)
         "r"(src), "r"(sz));
 }
 
-void bzero_impl(void* dest, int sz)
+void vs_main_bzero(void* dest, int sz)
 {
     __asm__("and $t0, %1, 0xFFFC;"
             "beqz $t0, 1f;"

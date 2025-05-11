@@ -182,19 +182,26 @@ typedef struct {
     int rStickY;
 } vs_main_stickPos;
 
+typedef struct {
+    char f;
+    char s;
+    char m;
+    char h;
+} Gametime_t;
+
 void __main();
-static void func_80042998();
-static void func_80042A64();
-static void vs_main_wait();
-static void vs_main_padForceMode();
-static void vs_main_padResetDefaults(int, u_char[34]);
+static void _sysInit();
+static void _sysReinit();
+static void _wait();
+static void _padForceMode();
+static void _padResetDefaults(int, u_char[34]);
 static void vs_main_padConnect(int, u_char[34]);
 static void vs_main_padSetActData(int arg0, int arg1, int arg2);
 static int vs_main_diskGetState();
 void func_80042CB0();
 static void func_80043668();
-static void vs_main_initCdQueue();
-static void vs_main_diskReset();
+static void _initCdQueue();
+static void _diskReset();
 static void vs_main_populateQueueSlot(vs_main_CdQueueSlot*, void*);
 static void func_80044C74();
 static int func_80045440(int arg0);
@@ -208,11 +215,11 @@ static int func_800467A0();
 static void _loadMenuSound();
 void func_80046B3C(int, int, u_short*);
 void func_80047910(int, int, D_8005DC6C_t*);
-static void func_8004908C();
+static void _asmNop();
 static void nop9(int, int);
 static void nop10(int, int);
 void func_8006A5C0();
-static void initRand();
+static void _initRand();
 static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
 
 typedef struct {
@@ -231,34 +238,32 @@ static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0
 static u_char vs_main_actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-static int _soundLBAs[] = {
-    VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA, VS_WAVE0003_DAT_LBA,
-    VS_WAVE0004_DAT_LBA, VS_WAVE0005_DAT_LBA, VS_WAVE0006_DAT_LBA, VS_WAVE0007_DAT_LBA,
-    VS_WAVE0008_DAT_LBA, VS_WAVE0009_DAT_LBA, VS_WAVE0010_DAT_LBA, VS_WAVE0011_DAT_LBA,
-    VS_WAVE0012_DAT_LBA, VS_WAVE0013_DAT_LBA, VS_WAVE0014_DAT_LBA, VS_WAVE0015_DAT_LBA,
-    VS_WAVE0016_DAT_LBA, VS_WAVE0017_DAT_LBA, VS_WAVE0018_DAT_LBA, VS_WAVE0019_DAT_LBA,
-    VS_WAVE0020_DAT_LBA, VS_WAVE0021_DAT_LBA, VS_WAVE0022_DAT_LBA, VS_WAVE0023_DAT_LBA,
-    VS_WAVE0024_DAT_LBA, VS_WAVE0025_DAT_LBA, VS_WAVE0026_DAT_LBA, VS_WAVE0027_DAT_LBA,
-    VS_WAVE0028_DAT_LBA, VS_WAVE0029_DAT_LBA, VS_WAVE0030_DAT_LBA, VS_WAVE0031_DAT_LBA,
-    VS_WAVE0032_DAT_LBA, VS_WAVE0033_DAT_LBA, VS_WAVE0034_DAT_LBA, VS_WAVE0035_DAT_LBA,
-    VS_WAVE0036_DAT_LBA, VS_WAVE0037_DAT_LBA, VS_WAVE0038_DAT_LBA, VS_WAVE0039_DAT_LBA,
-    VS_WAVE0040_DAT_LBA, VS_WAVE0041_DAT_LBA, VS_WAVE0042_DAT_LBA, VS_WAVE0043_DAT_LBA,
-    VS_WAVE0044_DAT_LBA, VS_WAVE0045_DAT_LBA, VS_WAVE0046_DAT_LBA, VS_WAVE0047_DAT_LBA,
-    VS_WAVE0048_DAT_LBA, VS_WAVE0049_DAT_LBA, VS_WAVE0050_DAT_LBA, VS_WAVE0051_DAT_LBA,
-    VS_WAVE0052_DAT_LBA, VS_WAVE0053_DAT_LBA, VS_WAVE0054_DAT_LBA, VS_WAVE0055_DAT_LBA,
-    VS_WAVE0056_DAT_LBA, VS_WAVE0057_DAT_LBA, VS_WAVE0058_DAT_LBA, VS_WAVE0059_DAT_LBA,
-    VS_WAVE0060_DAT_LBA, VS_WAVE0061_DAT_LBA, VS_WAVE0062_DAT_LBA, VS_WAVE0063_DAT_LBA,
-    VS_WAVE0064_DAT_LBA, VS_WAVE0065_DAT_LBA, VS_WAVE0066_DAT_LBA, VS_WAVE0067_DAT_LBA,
-    VS_WAVE0068_DAT_LBA, VS_WAVE0069_DAT_LBA, VS_WAVE0070_DAT_LBA, VS_WAVE0071_DAT_LBA,
-    VS_WAVE0072_DAT_LBA, VS_WAVE0073_DAT_LBA, VS_WAVE0074_DAT_LBA, VS_WAVE0075_DAT_LBA,
-    VS_WAVE0076_DAT_LBA, VS_WAVE0077_DAT_LBA, VS_WAVE0078_DAT_LBA, VS_WAVE0079_DAT_LBA,
-    VS_WAVE0080_DAT_LBA, VS_WAVE0081_DAT_LBA, VS_WAVE0082_DAT_LBA, VS_WAVE0083_DAT_LBA,
-    VS_WAVE0084_DAT_LBA, VS_WAVE0085_DAT_LBA, VS_WAVE0086_DAT_LBA, VS_WAVE0087_DAT_LBA,
-    VS_WAVE0088_DAT_LBA, VS_WAVE0089_DAT_LBA, VS_WAVE0090_DAT_LBA, VS_WAVE0091_DAT_LBA,
-    VS_WAVE0092_DAT_LBA, VS_WAVE0093_DAT_LBA, VS_WAVE0094_DAT_LBA, VS_WAVE0095_DAT_LBA,
-    VS_WAVE0096_DAT_LBA, VS_WAVE0097_DAT_LBA, VS_WAVE0098_DAT_LBA, VS_WAVE0099_DAT_LBA
-    // VS_WAVE0200_DAT_LBA # Unused
-};
+static int _soundLBAs[] = { VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA,
+    VS_WAVE0003_DAT_LBA, VS_WAVE0004_DAT_LBA, VS_WAVE0005_DAT_LBA, VS_WAVE0006_DAT_LBA,
+    VS_WAVE0007_DAT_LBA, VS_WAVE0008_DAT_LBA, VS_WAVE0009_DAT_LBA, VS_WAVE0010_DAT_LBA,
+    VS_WAVE0011_DAT_LBA, VS_WAVE0012_DAT_LBA, VS_WAVE0013_DAT_LBA, VS_WAVE0014_DAT_LBA,
+    VS_WAVE0015_DAT_LBA, VS_WAVE0016_DAT_LBA, VS_WAVE0017_DAT_LBA, VS_WAVE0018_DAT_LBA,
+    VS_WAVE0019_DAT_LBA, VS_WAVE0020_DAT_LBA, VS_WAVE0021_DAT_LBA, VS_WAVE0022_DAT_LBA,
+    VS_WAVE0023_DAT_LBA, VS_WAVE0024_DAT_LBA, VS_WAVE0025_DAT_LBA, VS_WAVE0026_DAT_LBA,
+    VS_WAVE0027_DAT_LBA, VS_WAVE0028_DAT_LBA, VS_WAVE0029_DAT_LBA, VS_WAVE0030_DAT_LBA,
+    VS_WAVE0031_DAT_LBA, VS_WAVE0032_DAT_LBA, VS_WAVE0033_DAT_LBA, VS_WAVE0034_DAT_LBA,
+    VS_WAVE0035_DAT_LBA, VS_WAVE0036_DAT_LBA, VS_WAVE0037_DAT_LBA, VS_WAVE0038_DAT_LBA,
+    VS_WAVE0039_DAT_LBA, VS_WAVE0040_DAT_LBA, VS_WAVE0041_DAT_LBA, VS_WAVE0042_DAT_LBA,
+    VS_WAVE0043_DAT_LBA, VS_WAVE0044_DAT_LBA, VS_WAVE0045_DAT_LBA, VS_WAVE0046_DAT_LBA,
+    VS_WAVE0047_DAT_LBA, VS_WAVE0048_DAT_LBA, VS_WAVE0049_DAT_LBA, VS_WAVE0050_DAT_LBA,
+    VS_WAVE0051_DAT_LBA, VS_WAVE0052_DAT_LBA, VS_WAVE0053_DAT_LBA, VS_WAVE0054_DAT_LBA,
+    VS_WAVE0055_DAT_LBA, VS_WAVE0056_DAT_LBA, VS_WAVE0057_DAT_LBA, VS_WAVE0058_DAT_LBA,
+    VS_WAVE0059_DAT_LBA, VS_WAVE0060_DAT_LBA, VS_WAVE0061_DAT_LBA, VS_WAVE0062_DAT_LBA,
+    VS_WAVE0063_DAT_LBA, VS_WAVE0064_DAT_LBA, VS_WAVE0065_DAT_LBA, VS_WAVE0066_DAT_LBA,
+    VS_WAVE0067_DAT_LBA, VS_WAVE0068_DAT_LBA, VS_WAVE0069_DAT_LBA, VS_WAVE0070_DAT_LBA,
+    VS_WAVE0071_DAT_LBA, VS_WAVE0072_DAT_LBA, VS_WAVE0073_DAT_LBA, VS_WAVE0074_DAT_LBA,
+    VS_WAVE0075_DAT_LBA, VS_WAVE0076_DAT_LBA, VS_WAVE0077_DAT_LBA, VS_WAVE0078_DAT_LBA,
+    VS_WAVE0079_DAT_LBA, VS_WAVE0080_DAT_LBA, VS_WAVE0081_DAT_LBA, VS_WAVE0082_DAT_LBA,
+    VS_WAVE0083_DAT_LBA, VS_WAVE0084_DAT_LBA, VS_WAVE0085_DAT_LBA, VS_WAVE0086_DAT_LBA,
+    VS_WAVE0087_DAT_LBA, VS_WAVE0088_DAT_LBA, VS_WAVE0089_DAT_LBA, VS_WAVE0090_DAT_LBA,
+    VS_WAVE0091_DAT_LBA, VS_WAVE0092_DAT_LBA, VS_WAVE0093_DAT_LBA, VS_WAVE0094_DAT_LBA,
+    VS_WAVE0095_DAT_LBA, VS_WAVE0096_DAT_LBA, VS_WAVE0097_DAT_LBA, VS_WAVE0098_DAT_LBA,
+    VS_WAVE0099_DAT_LBA };
 static int _musicLBAs[] = { VS_MUSIC000_DAT_LBA, VS_MUSIC001_DAT_LBA, VS_MUSIC002_DAT_LBA,
     VS_MUSIC003_DAT_LBA, VS_MUSIC004_DAT_LBA, VS_MUSIC005_DAT_LBA, VS_MUSIC006_DAT_LBA,
     VS_MUSIC007_DAT_LBA, VS_MUSIC008_DAT_LBA, VS_MUSIC009_DAT_LBA, VS_MUSIC010_DAT_LBA,
@@ -631,13 +636,13 @@ extern u_1632 D_80050460;
 extern int D_80050470;
 extern int D_80050478[];
 extern int sp2;
-extern int D_80055C88;
+extern int _resetEnabled;
 extern u_int D_80055C90[];
 extern vs_main_disk_t vs_main_disk;
 extern u_char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
-extern u_char vs_main_padBuffer[2][34];
+extern u_char _padBuffer[2][34];
 extern int D_8005DBF4[5][6];
 extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
@@ -647,7 +652,7 @@ extern u_int frameDuration;
 extern int D_8005E214;
 extern int D_8005E240;
 extern int D_8005E248;
-extern int D_8005E24C;
+extern int vs_gametime_tickspeed;
 extern u_short loadImageSource[][256];
 extern int D_8005FE70;
 extern int D_8005FE74;
@@ -659,7 +664,7 @@ extern u_char D_8005FFB8[];
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
-extern char D_80061074[3980];
+extern Gametime_t vs_gametime;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
@@ -680,7 +685,7 @@ static void vs_main_loadBattlePrg()
     vs_main_populateQueueSlot(slot, vs_overlay_slots[0]);
 
     while (slot->unk0[0] != 4) {
-        func_8004261C(0);
+        vs_gametime_update(0);
     }
 
     func_80044B80(slot);
@@ -691,11 +696,11 @@ static void vs_main_loadBattlePrg()
     vs_main_populateQueueSlot(slot, vs_overlay_slots[1]);
 
     while (slot->unk0[0] != 4) {
-        func_8004261C(0);
+        vs_gametime_update(0);
     }
 
     func_80044B80(slot);
-    vs_main_wait();
+    _wait();
 }
 
 static void vs_main_loadTitlePrg()
@@ -710,11 +715,11 @@ static void vs_main_loadTitlePrg()
     vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
-        func_8004261C(0);
+        vs_gametime_update(0);
     }
 
     func_80044B80(temp_v0);
-    vs_main_wait();
+    _wait();
 }
 
 static void vs_main_loadEndingPrg()
@@ -729,11 +734,11 @@ static void vs_main_loadEndingPrg()
     vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
-        func_8004261C(0);
+        vs_gametime_update(0);
     }
 
     func_80044B80(temp_v0);
-    vs_main_wait();
+    _wait();
 }
 
 static void vs_main_initScreen(int w, int h, int arg2 __attribute__((unused)),
@@ -748,7 +753,7 @@ static void vs_main_initScreen(int w, int h, int arg2 __attribute__((unused)),
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
 
-static void vs_main_displayLoadingScreen()
+static void _displayLoadingScreen()
 {
     RECT rect;
 
@@ -786,7 +791,7 @@ static void vs_main_bufferLoadingScreen()
     DrawSync(0);
 }
 
-static void vs_main_resetGame()
+void vs_main_resetGame()
 {
     DrawSync(0);
     DrawSync(0);
@@ -796,8 +801,8 @@ static void vs_main_resetGame()
     DsFlush();
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    vs_main_padConnect(0, _padBuffer[0]);
+    vs_main_padConnect(0x10, _padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -805,27 +810,27 @@ static void vs_main_resetGame()
     vs_overlay_jumpToTitle(&sp2);
 }
 
-static void func_80042420()
+void vs_main_jumpToBattle()
 {
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    vs_main_padConnect(0, _padBuffer[0]);
+    vs_main_padConnect(0x10, _padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
     func_80012024();
     func_80012EBC();
-    vs_main_displayLoadingScreen();
+    _displayLoadingScreen();
     vs_main_loadBattlePrg();
     D_80050470 = 1;
     vs_overlay_jumpToBattle(&sp);
 }
 
-static void func_800424E4()
+void vs_main_jumpToTitle()
 {
     D_8005E240 = 0;
     DrawSync(0);
@@ -833,8 +838,8 @@ static void func_800424E4()
     SetDispMask(0);
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    vs_main_padConnect(0, _padBuffer[0]);
+    vs_main_padConnect(0x10, _padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -846,8 +851,8 @@ static void func_800424E4()
     SetDispMask(0);
     vs_main_padSetActData(0, 0, 0);
     vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    vs_main_padConnect(0, _padBuffer[0]);
+    vs_main_padConnect(0x10, _padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -855,41 +860,41 @@ static void func_800424E4()
     vs_overlay_jumpToTitle(&sp2);
 }
 
-int func_8004261C(int arg0)
+int vs_gametime_update(int arg0)
 {
     int vs = VSync(arg0);
     if (arg0 != 1) {
-        func_8004908C();
+        _asmNop();
     }
 
     func_80044C74();
 
-    if (D_80061074[3] >= 100) {
+    if (vs_gametime.h >= 100) {
         return vs;
     }
 
-    D_80061074[0] += D_8005E24C;
+    vs_gametime.f += vs_gametime_tickspeed;
 
-    if (D_80061074[0] < 60) {
+    if (vs_gametime.f < 60) {
         return vs;
     }
 
-    D_80061074[0] = 0;
+    vs_gametime.f = 0;
 
-    if (++D_80061074[1] < 60) {
+    if (++vs_gametime.s < 60) {
         return vs;
     }
 
-    D_80061074[1] = 0;
+    vs_gametime.s = 0;
 
-    if (++D_80061074[2] < 60) {
+    if (++vs_gametime.m < 60) {
         return vs;
     }
 
-    D_80061074[2] = 0;
+    vs_gametime.m = 0;
 
-    if (++D_80061074[3] >= 100) {
-        D_80061074[3] = 100;
+    if (++vs_gametime.h >= 100) {
+        vs_gametime.h = 100;
     }
     return vs;
 }
@@ -906,7 +911,7 @@ static void nop2() { }
 
 static void nop3() { }
 
-static void initRand()
+static void _initRand()
 {
     int i;
 
@@ -918,7 +923,7 @@ static void initRand()
     randIndex = RANDARRSZ - 1;
 }
 
-static int getRand(int arg0)
+int vs_main_getRand(int arg0)
 {
     int temp_s0;
     int var_a0;
@@ -944,15 +949,16 @@ static int getRand(int arg0)
     return var_a0 >> 0xF;
 }
 
-static int getRands(int arg0)
+int vs_main_getRands(int arg0)
 {
-    return (getRand(arg0) + getRand(arg0) + getRand(arg0) + getRand(arg0) + getRand(arg0)
-               + getRand(arg0) + getRand(arg0) + getRand(arg0) + getRand(arg0)
-               + getRand(arg0) + getRand(arg0) + getRand(arg0))
+    return (vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
+               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
+               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
+               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0))
         / 12;
 }
 
-static void func_80042998()
+static void _sysInit()
 {
     SetVideoMode(MODE_NTSC);
     SetDispMask(0);
@@ -962,20 +968,20 @@ static void func_80042998()
     InitCARD(0);
     StartCARD();
     _bu_init();
-    PadInitDirect(vs_main_padBuffer[0], vs_main_padBuffer[1]);
-    vs_main_padResetDefaults(0, vs_main_padBuffer[0]);
-    vs_main_padResetDefaults(0x10, vs_main_padBuffer[1]);
+    PadInitDirect(_padBuffer[0], _padBuffer[1]);
+    _padResetDefaults(0, _padBuffer[0]);
+    _padResetDefaults(0x10, _padBuffer[1]);
     PadStartCom();
-    vs_main_padForceMode();
+    _padForceMode();
     func_80043668();
     SsUtReverbOff();
     DsInit();
-    initRand();
-    D_80055C88 = 1;
+    _initRand();
+    _resetEnabled = 1;
     D_8005E214 = 0;
 }
 
-static void func_80042A64()
+static void _sysReinit()
 {
     RECT rects[3];
     int i;
@@ -987,37 +993,37 @@ static void func_80042A64()
     SetGraphDebug(0);
     ClearImage(&rects[2], 0, 0, 0);
     DrawSync(0);
-    vs_main_displayLoadingScreen();
+    _displayLoadingScreen();
     SsUtReverbOn();
     InitGeom();
     DrawSyncCallback(gpuSyncVoidCallback);
     VSyncCallback(vSyncVoidCallback);
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000U);
-    vs_main_initCdQueue();
-    vs_main_diskReset();
+    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    _initCdQueue();
+    _diskReset();
     _loadMenuSound();
     func_80043668();
     D_8005E240 = 0;
-    vs_main_padForceMode();
+    _padForceMode();
 
     for (i = 31; i >= 0; --i) {
         D_80055C90[i] = 0;
     }
-    D_80061074[3] = 0;
-    D_80061074[2] = 0;
-    D_80061074[1] = 0;
-    D_80061074[0] = 0;
+    vs_gametime.h = 0;
+    vs_gametime.m = 0;
+    vs_gametime.s = 0;
+    vs_gametime.f = 0;
     D_80060068.unk0 = 0;
 }
 
 int vs_main_execTitle()
 {
     vs_overlay_getSp(&sp);
-    func_80042A64();
+    _sysReinit();
     vs_main_loadTitlePrg();
     D_80050470 = vs_title_exec();
     D_8005E214 = 0;
-    vs_main_displayLoadingScreen();
+    _displayLoadingScreen();
     vs_main_loadBattlePrg();
     vs_overlay_getSp(&sp);
     D_8005E240 = 1;
@@ -1030,20 +1036,16 @@ int vs_main_execTitle()
 void vs_main_exec()
 {
     __main();
-    func_80042998();
+    _sysInit();
     vs_overlay_getSp(&sp2);
     vs_main_execTitle();
 }
 
-static void vs_main_wait() { vs_overlay_wait(); }
+static void _wait() { vs_overlay_wait(); }
 
-void func_80042C94(int arg0) { D_80055C88 = arg0; }
+void vs_main_enableReset(int arg0) { _resetEnabled = arg0; }
 
 void func_80042CA0() { D_80060068.unk0 = 1; }
-
-void func_80069FC4(int, int);
-void func_8008AB68();
-void func_800A1108(int, u_char*);
 
 void func_80042CB0()
 {
@@ -1130,7 +1132,7 @@ void vs_main_padDisconnectAll()
     vs_main_portInfo[1].connected = 0;
 }
 
-static void vs_main_padForceMode()
+static void _padForceMode()
 {
     vs_main_padDisconnectAll();
     if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
@@ -1138,8 +1140,7 @@ static void vs_main_padForceMode()
     }
 }
 
-static void vs_main_padResetDefaults(
-    int portID, u_char padBuf[34] __attribute__((unused)))
+static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unused)))
 {
     PortInfo* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
@@ -1217,7 +1218,7 @@ static void vs_main_padConnect(int portID, u_char padBuf[34])
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable)
                 && (PadSetActAlign(portID, vs_main_actParams) != 0))) {
-            vs_main_padResetDefaults(portID, padBuf);
+            _padResetDefaults(portID, padBuf);
             port->connected = 1;
         }
     }
@@ -1469,10 +1470,10 @@ int vs_main_processPadState()
     int i;
     u_int btnState;
 
-    vs_main_buttonsState = vs_main_updatePadState(0, vs_main_padBuffer[0]) & 0xFFFF;
-    vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1]) << 16;
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(16, vs_main_padBuffer[1]);
+    vs_main_buttonsState = vs_main_updatePadState(0, _padBuffer[0]) & 0xFFFF;
+    vs_main_buttonsState |= vs_main_updatePadState(16, _padBuffer[1]) << 16;
+    vs_main_padConnect(0, _padBuffer[0]);
+    vs_main_padConnect(16, _padBuffer[1]);
 
     switch (vs_main_portInfo[0].mode) {
     case 4:
@@ -1530,7 +1531,7 @@ int vs_main_processPadState()
     btnState = vs_main_buttonsState;
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
-            D_80055C90[i] += D_8005E24C;
+            D_80055C90[i] += vs_gametime_tickspeed;
         } else {
             D_80055C90[i] = 0;
         }
@@ -1546,7 +1547,7 @@ int vs_main_processPadState()
 
 #define RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
 
-    if ((D_80055C88 != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET)
+    if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET)
         && (vs_main_buttonsPressed & RESET)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
@@ -1807,7 +1808,7 @@ static void vs_main_diskPcmReadReady(u_char intr, u_char result[])
 
 static int vs_main_diskGetState() { return vs_main_disk.state; }
 
-static void vs_main_diskResetErrorState()
+static void _diskResetErrorState()
 {
     if (vs_main_disk.state == diskReadError) {
         vs_main_disk.state = diskIdle;
@@ -2016,13 +2017,13 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 
         while (1) {
             if (vs_main_diskGetState() == seekReady) {
-                func_8004261C(0);
+                vs_gametime_update(0);
             } else if (vs_main_diskGetState() == readReady) {
-                func_8004261C(0);
+                vs_gametime_update(0);
             } else if (vs_main_diskGetState() == 3) {
-                func_8004261C(0);
+                vs_gametime_update(0);
             } else if (vs_main_diskGetState() == diskReadInit) {
-                func_8004261C(0);
+                vs_gametime_update(0);
             } else
                 break;
         }
@@ -2057,7 +2058,7 @@ static int func_80044A38()
     return 0;
 }
 
-static void vs_main_diskReset()
+static void _diskReset()
 {
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
@@ -2073,7 +2074,7 @@ static void vs_main_diskReset()
     VSync(3);
 }
 
-static void vs_main_initCdQueue()
+static void _initCdQueue()
 {
     int i;
 
@@ -2368,7 +2369,7 @@ static int func_8004539C(int arg0, int arg1)
     temp_v0 = func_80045110(arg0, arg1);
     if (temp_v0 != 0) {
         while (func_800452C8(arg1) != 0) {
-            func_8004261C(0);
+            vs_gametime_update(0);
         }
     }
     return temp_v0;
@@ -2381,7 +2382,7 @@ static int func_800453F4(int arg0)
     ret = func_80045270(arg0);
     if (ret != 0) {
         while (func_80045350() != 0) {
-            func_8004261C(0);
+            vs_gametime_update(0);
         }
     }
     return ret;
@@ -2800,7 +2801,7 @@ static int func_80046038(int arg0)
     ret = func_80045F0C(arg0);
     if (ret != 0) {
         while (func_80045FEC() != 0) {
-            func_8004261C(0);
+            vs_gametime_update(0);
         }
     }
     return ret;
@@ -3116,7 +3117,7 @@ static void func_8004687C(int arg0)
     func_80046770(arg0);
 
     while (func_800467A0() != 0) {
-        func_8004261C(0);
+        vs_gametime_update(0);
     }
 }
 
@@ -4352,7 +4353,7 @@ void func_80048FF8()
     }
 }
 
-static void func_8004908C() { __asm__(".nop;"); }
+static void _asmNop() { __asm__(".nop;"); }
 
 static void nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 

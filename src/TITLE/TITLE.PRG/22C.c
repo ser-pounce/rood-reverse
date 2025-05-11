@@ -67,7 +67,7 @@ typedef struct {
 
 typedef struct {
     short unk0[2];
-} D_80061074_t;
+} vs_gametime_t;
 
 u_char* memcardFilenameFromTemplate(int, int);
 int memcardFileNumberFromFilename(u_char*);
@@ -107,7 +107,7 @@ extern int D_8005DFDC;
 extern int vs_main_buttonsPressed;
 extern int vs_main_buttonsState;
 extern int D_8005E214;
-extern int D_8005E24C;
+extern int vs_gametime_tickspeed;
 extern int D_8005FEA0[][3];
 extern u_char D_8005FFB8[];
 extern u_char D_8005FFD8[];
@@ -118,7 +118,7 @@ extern u_char D_80060040[];
 extern int D_80060064;
 extern u_char D_80060068[];
 extern u_char D_80060168[];
-extern D_80061074_t D_80061074;
+extern vs_gametime_t vs_gametime;
 extern u_char D_80061078[];
 extern u_char D_80061068[];
 extern u_char D_80061598[];
@@ -182,7 +182,7 @@ extern u_char D_800DC8C4;
 extern vs_main_CdQueueSlot* D_800DC8C8;
 extern u_char D_800DC8CC[];
 extern u_char D_800DC8CD;
-extern D_80061074_t D_800DC8D0;
+extern vs_gametime_t D_800DC8D0;
 extern int D_800DC8D4;
 extern u_char D_800DC8D8;
 extern u_char D_800DC8D9;
@@ -735,7 +735,7 @@ int func_800696D0(int arg0)
     rMemcpy(D_80061078, temp_s1 + 0x749C, 0x520);
     blocks = D_80060040;
     rMemcpy(D_80060040, temp_s1 + 0x79BC, 0x24);
-    __builtin_memcpy(&D_80061074, temp_s1 + 0x5D90, sizeof(D_80061074));
+    __builtin_memcpy(&vs_gametime, temp_s1 + 0x5D90, sizeof(vs_gametime));
     func_80042CA0();
     func_800468BC(D_80060020.unkA);
     return 0;
@@ -959,7 +959,7 @@ int func_8006A49C(int arg0)
 
     if (D_800DC8C8->unk0[0] == 4) {
         func_80044B80(D_800DC8C8);
-        func_80042C94(0);
+        vs_main_enableReset(0);
         EnterCriticalSection();
 
         for (i = 0; i < 8; ++i) {
@@ -996,7 +996,7 @@ void func_8006A6E0()
     }
 
     ExitCriticalSection();
-    func_80042C94(1);
+    vs_main_enableReset(1);
     vs_main_freeHeap(D_800DEAB8);
 }
 
@@ -1557,7 +1557,7 @@ int func_8006C15C(int arg0)
                 }
             } while (0);
 
-            D_800DC8D0 = D_80061074;
+            D_800DC8D0 = vs_gametime;
             D_800DC8D8 = 4;
         }
         break;
@@ -1581,7 +1581,7 @@ int func_8006C15C(int arg0)
             break;
         }
         if (D_800DC8D4 == 1) {
-            D_80061074 = D_800DC8D0;
+            vs_gametime = D_800DC8D0;
         } else {
             for (i = 5; i < 10; ++i) {
                 func_8006AF78(i);
@@ -2281,7 +2281,7 @@ int func_8006E738()
     D_800DC930 = 0;
 
     while (1) {
-        func_8004261C(2);
+        vs_gametime_update(2);
         func_8006E68C();
         vs_main_processPadState();
         switch (D_800DC930) {
@@ -2323,7 +2323,7 @@ int func_8006E988()
     func_8006A49C(1);
 
     do {
-        func_8004261C(2);
+        vs_gametime_update(2);
     } while (func_8006A49C(0) == 0);
 
     for (i = 1; i < 3; ++i) {
@@ -2447,7 +2447,7 @@ void func_8006EDBC()
     D_800DC940 = 0;
 
     while (1) {
-        func_8004261C(2);
+        vs_gametime_update(2);
         func_8006E68C();
         vs_main_processPadState();
         scramble(0);
@@ -3603,7 +3603,7 @@ int drawPrims(u_long* ot)
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
     DrawSync(0);
-    temp_s1 = func_8004261C(0);
+    temp_s1 = vs_gametime_update(0);
     PutDispEnv(vs_main_frameBuf + vs_main_dispEnv);
     PutDrawEnv(vs_main_frameBuf + vs_main_drawEnv);
     DrawOTag(ot);
@@ -3626,7 +3626,7 @@ void func_80071B14()
 
     vs_main_memcpy(D_8005FFB8, D_80075B24, 0x20);
     vs_main_bzero(D_8005FFD8, 0x48);
-    vs_main_bzero(&D_80061074, sizeof(D_80061074));
+    vs_main_bzero(&vs_gametime, sizeof(vs_gametime));
     vs_main_bzero(D_8005FEA0, 0x114);
     D_80060064 = 0;
     vs_main_bzero(D_80061078, 0x520);
@@ -3649,7 +3649,7 @@ void func_80071B14()
     vs_main_memcpy(D_80060168, D_80074C24, 0xF00);
 
     s0 = (u_short*)D_80061068;
-    D_8005E24C = 2;
+    vs_gametime_tickspeed = 2;
     s0[2] = (s0[2] & 0xE0FF) | 0x400;
     s0[3] = ((s0[3] & 0x83FF) | 0x800);
     s0[1] = (s0[1] & 0x1FFF);

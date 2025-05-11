@@ -21,8 +21,8 @@ extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;
 
-int func_8004261C(int);
-void func_80042C94(int);
+int vs_gametime_update(int);
+void vs_main_enableReset(int);
 void func_80042CA0();
 void func_800436B4();
 void func_800438C8(int);

@@ -123,7 +123,8 @@ enum DiskState {
     diskSeekReady = 1,
     diskReadReady = 2,
     diskReadError = 4,
-    diskReadInit = 5
+    diskReadInit = 5,
+    diskCommandFailed = 8
 };
 
 typedef struct {
@@ -195,14 +196,14 @@ static void _sysReinit();
 static void _wait();
 static void _padForceMode();
 static void _padResetDefaults(int, u_char[34]);
-static void vs_main_padConnect(int, u_char[34]);
-static void vs_main_padSetActData(int arg0, int arg1, int arg2);
+static void _padConnect(int, u_char[34]);
+static void _padSetActData(int arg0, int arg1, int arg2);
 static int vs_main_diskGetState();
 void func_80042CB0();
 static void func_80043668();
 static void _initCdQueue();
 static void _diskReset();
-static void vs_main_populateQueueSlot(vs_main_CdQueueSlot*, void*);
+static void _populateQueueSlot(vs_main_CdQueueSlot*, void*);
 static void func_80044C74();
 static int func_80045440(int arg0);
 static void func_800455F4();
@@ -633,7 +634,7 @@ extern int D_800501D4;
 extern int D_800501D8;
 extern vs_main_CdQueueSlot vs_main_cdQueue[32];
 extern u_1632 D_80050460;
-extern int D_80050470;
+extern int vs_main_startState;
 extern int D_80050478[];
 extern int sp2;
 extern int _resetEnabled;
@@ -648,7 +649,7 @@ extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
 extern void* D_8005E08C;
 extern int D_8005E0BC;
-extern u_int frameDuration;
+extern u_int _frameDuration;
 extern int D_8005E214;
 extern int D_8005E240;
 extern int D_8005E248;
@@ -682,7 +683,7 @@ static void vs_main_loadBattlePrg()
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(slot, vs_overlay_slots[0]);
+    _populateQueueSlot(slot, vs_overlay_slots[0]);
 
     while (slot->unk0[0] != 4) {
         vs_gametime_update(0);
@@ -693,7 +694,7 @@ static void vs_main_loadBattlePrg()
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(slot, vs_overlay_slots[1]);
+    _populateQueueSlot(slot, vs_overlay_slots[1]);
 
     while (slot->unk0[0] != 4) {
         vs_gametime_update(0);
@@ -712,7 +713,7 @@ static void vs_main_loadTitlePrg()
     cdFile.size = VS_TITLE_PRG_SIZE;
 
     temp_v0 = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
+    _populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
         vs_gametime_update(0);
@@ -731,7 +732,7 @@ static void vs_main_loadEndingPrg()
     cdFile.size = VS_ENDING_PRG_SIZE;
 
     temp_v0 = vs_main_getQueueSlot(&cdFile);
-    vs_main_populateQueueSlot(temp_v0, vs_overlay_slots[0]);
+    _populateQueueSlot(temp_v0, vs_overlay_slots[0]);
 
     while (temp_v0->unk0[0] != 4) {
         vs_gametime_update(0);
@@ -799,10 +800,10 @@ void vs_main_resetGame()
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
-    vs_main_padSetActData(0, 0, 0);
-    vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, _padBuffer[0]);
-    vs_main_padConnect(0x10, _padBuffer[1]);
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    _padConnect(0, _padBuffer[0]);
+    _padConnect(0x10, _padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -815,10 +816,10 @@ void vs_main_jumpToBattle()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    vs_main_padSetActData(0, 0, 0);
-    vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, _padBuffer[0]);
-    vs_main_padConnect(0x10, _padBuffer[1]);
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    _padConnect(0, _padBuffer[0]);
+    _padConnect(0x10, _padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -826,7 +827,7 @@ void vs_main_jumpToBattle()
     func_80012EBC();
     _displayLoadingScreen();
     vs_main_loadBattlePrg();
-    D_80050470 = 1;
+    vs_main_startState = 1;
     vs_overlay_jumpToBattle(&sp);
 }
 
@@ -836,10 +837,10 @@ void vs_main_jumpToTitle()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    vs_main_padSetActData(0, 0, 0);
-    vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, _padBuffer[0]);
-    vs_main_padConnect(0x10, _padBuffer[1]);
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    _padConnect(0, _padBuffer[0]);
+    _padConnect(0x10, _padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -849,10 +850,10 @@ void vs_main_jumpToTitle()
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    vs_main_padSetActData(0, 0, 0);
-    vs_main_padSetActData(0, 1, 0);
-    vs_main_padConnect(0, _padBuffer[0]);
-    vs_main_padConnect(0x10, _padBuffer[1]);
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    _padConnect(0, _padBuffer[0]);
+    _padConnect(0x10, _padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -907,9 +908,9 @@ static void nop0() { }
 
 static void nop1() { }
 
-static void nop2() { }
+static void _nop2() { }
 
-static void nop3() { }
+static void _nop3() { }
 
 static void _initRand()
 {
@@ -1021,7 +1022,7 @@ int vs_main_execTitle()
     vs_overlay_getSp(&sp);
     _sysReinit();
     vs_main_loadTitlePrg();
-    D_80050470 = vs_title_exec();
+    vs_main_startState = vs_title_exec();
     D_8005E214 = 0;
     _displayLoadingScreen();
     vs_main_loadBattlePrg();
@@ -1158,7 +1159,7 @@ static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unuse
     PadSetActAlign(portID, vs_main_actParams);
 }
 
-int vs_main_updatePadState(int portID, u_char padBuf[34])
+static int _updatePadState(int portID, u_char padBuf[34])
 {
     PortInfo* port;
     u_char mode;
@@ -1203,7 +1204,7 @@ int vs_main_updatePadState(int portID, u_char padBuf[34])
     return btnStates;
 }
 
-static void vs_main_padConnect(int portID, u_char padBuf[34])
+static void _padConnect(int portID, u_char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
@@ -1224,7 +1225,7 @@ static void vs_main_padConnect(int portID, u_char padBuf[34])
     }
 }
 
-static void vs_main_padSetActData(int port, int pos, int val)
+static void _padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
         vs_main_portInfo[port].actData[pos] = val;
@@ -1235,7 +1236,7 @@ static void vs_main_padSetActData(int port, int pos, int val)
     }
 }
 
-static u_char padGetActData(int port, int pos)
+static u_char _padGetActData(int port, int pos)
 {
     return vs_main_portInfo[port].actData[pos];
 }
@@ -1439,8 +1440,8 @@ void func_800436B4()
     }
 
     if (D_8006002B != 0) {
-        vs_main_padSetActData(0, 0, _abs2(D_80050118[0].unk0[0]) >> 8);
-        vs_main_padSetActData(0, 1, _abs2(D_80050118[0].unk0[1]) >> 8);
+        _padSetActData(0, 0, _abs2(D_80050118[0].unk0[0]) >> 8);
+        _padSetActData(0, 1, _abs2(D_80050118[0].unk0[1]) >> 8);
     }
 }
 
@@ -1470,10 +1471,10 @@ int vs_main_processPadState()
     int i;
     u_int btnState;
 
-    vs_main_buttonsState = vs_main_updatePadState(0, _padBuffer[0]) & 0xFFFF;
-    vs_main_buttonsState |= vs_main_updatePadState(16, _padBuffer[1]) << 16;
-    vs_main_padConnect(0, _padBuffer[0]);
-    vs_main_padConnect(16, _padBuffer[1]);
+    vs_main_buttonsState = _updatePadState(0, _padBuffer[0]) & 0xFFFF;
+    vs_main_buttonsState |= _updatePadState(16, _padBuffer[1]) << 16;
+    _padConnect(0, _padBuffer[0]);
+    _padConnect(16, _padBuffer[1]);
 
     switch (vs_main_portInfo[0].mode) {
     case 4:
@@ -1694,7 +1695,7 @@ void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
     heapB.blockSz = 0;
 }
 
-void vs_main_diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
+static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
     u_long* arg2 __attribute__((unused)))
 {
 
@@ -1751,7 +1752,7 @@ static void vs_main_diskReadCommandCallback(
 {
     switch (intr) {
     case DslComplete:
-        DsStartReadySystem(vs_main_diskReadCallback, -1);
+        DsStartReadySystem(_diskReadCallback, -1);
         return;
     case DslDiskError:
         break;
@@ -1801,7 +1802,7 @@ static void vs_main_diskPcmReadReady(u_char intr, u_char result[])
         break;
     case DslDiskError:
         DsReadyCallback(NULL);
-        vs_main_disk.state = 8;
+        vs_main_disk.state = diskCommandFailed;
         break;
     }
 }
@@ -1874,7 +1875,7 @@ static void func_800443CC()
         }
         if (vs_main_disk.commandId == 0) {
             DsReadyCallback(0);
-            vs_main_disk.state = 8;
+            vs_main_disk.state = diskCommandFailed;
             ++vs_main_disk.unk3;
         }
         break;
@@ -1884,30 +1885,30 @@ static void func_800443CC()
             vs_main_disk.unk4 = 0;
             vs_main_disk.sectorBufIndex = 0;
             if (vs_main_disk.byteCount != 0) {
-                vs_main_disk.state = 2;
+                vs_main_disk.state = diskReadReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
                     &vs_main_disk.cdLoc, DslReadN, vs_main_diskReadCommandCallback, -1);
             } else {
-                vs_main_disk.state = 1;
+                vs_main_disk.state = diskSeekReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
                     &vs_main_disk.cdLoc, DslSeekL, vs_main_diskSeekCommandCallback, -1);
             }
 
             if (vs_main_disk.commandId == 0) {
-                vs_main_disk.state = 4;
+                vs_main_disk.state = diskReadError;
                 ++vs_main_disk.unk3;
             }
         }
         break;
     }
-    case 8: {
+    case diskCommandFailed: {
         int status = DsSystemStatus();
         if (status == DslReady) {
             vs_main_disk.unk4 = 0;
             ++vs_main_disk.unk3;
-            seconds = frameDuration / 60;
+            seconds = _frameDuration / 60;
             if (seconds < 420) {
-                DsIntToPos(vs_main_disk.cdSector + (seconds * 75) + (frameDuration % 60),
+                DsIntToPos(vs_main_disk.cdSector + (seconds * 75) + (_frameDuration % 60),
                     &cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
@@ -1925,12 +1926,12 @@ static void func_800443CC()
                 vs_main_disk.state = 7;
             } else {
                 vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
-                vs_main_disk.state = 0;
+                vs_main_disk.state = diskIdle;
                 DsReadyCallback(0);
             }
         }
         if (vs_main_disk.commandId == 0) {
-            vs_main_disk.state = 8;
+            vs_main_disk.state = diskCommandFailed;
             ++vs_main_disk.unk3;
         }
         break;
@@ -2118,7 +2119,7 @@ void func_80044BC4(vs_main_CdQueueSlot* arg0, void* vram)
     arg0->unk0[1] = temp_a1;
 }
 
-static void vs_main_populateQueueSlot(vs_main_CdQueueSlot* slot, void* vram)
+static void _populateQueueSlot(vs_main_CdQueueSlot* slot, void* vram)
 {
     int i;
     vs_main_CdQueueSlot* queue = vs_main_cdQueue;
@@ -2135,7 +2136,7 @@ static void vs_main_populateQueueSlot(vs_main_CdQueueSlot* slot, void* vram)
     ++D_80050460.s[1];
 }
 
-static void nop4() { }
+static void _nop4() { }
 
 static void func_80044C74()
 {

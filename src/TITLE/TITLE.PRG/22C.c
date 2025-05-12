@@ -3565,7 +3565,6 @@ int vs_title_exec()
                 func_80071CE0(1);
             }
         }
-        i = 7;
     } while (var_s3 < 0);
     return var_s3;
 }

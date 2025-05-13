@@ -16,12 +16,14 @@
 #define INCLUDE_RODATA(FOLDER, NAME) INCLUDE_CMN(rodata, FOLDER, NAME)
 
 #define BIOS_STUB(name, table, id)                                                       \
-    __asm__(".set noat;"                                                                 \
+    __asm__(".set push;"                                                                 \
+            ".set noat;"                                                                 \
             ".set noreorder;"                                                            \
             "glabel " #name ";"                                                          \
             "li  $t2, " #table ";"                                                       \
             "jr  $t2;"                                                                   \
-            "li  $t1, " #id ";");
+            "li  $t1, " #id ";"                                                          \
+            ".set pop;");
 
 #define SYSCALL(id)                                                                      \
     __asm__("li $a0, " #id ";"                                                           \

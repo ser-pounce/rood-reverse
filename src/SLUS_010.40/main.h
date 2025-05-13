@@ -32,6 +32,7 @@ void vs_main_freeHeap(void*);
 u_long* vs_main_allocHeap(u_int);
 void func_80045988(int, int);
 void func_800468BC(int);
+void func_800472D0();
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* arg0, void* arg1, u_int words);
 vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile*);

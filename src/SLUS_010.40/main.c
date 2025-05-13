@@ -3231,7 +3231,7 @@ void func_80046B3C(int arg0, int arg1, u_short* arg2)
     }
 }
 
-static void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
+void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
 {
     if (D_80055D58.unk0[0].unk2 != 0) {
         func_80046B3C(arg0, arg1, arg2 + (arg3 << 4));

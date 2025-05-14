@@ -119,7 +119,6 @@ extern int D_80060064;
 extern u_char D_80060068[];
 extern u_char D_80060168[];
 extern vs_gametime_t vs_gametime;
-extern u_char D_80061078[];
 extern u_char D_80061068[];
 extern u_char D_80061598[];
 extern char D_8006169D;

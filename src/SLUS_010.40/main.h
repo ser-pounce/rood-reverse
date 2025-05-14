@@ -22,6 +22,8 @@ extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;
 extern int D_8005E0C8;
 extern int D_8005E248;
+extern int D_80060064;
+extern u_char D_80061078[0x520];
 extern char D_8006169D;
 
 int vs_gametime_update(int);

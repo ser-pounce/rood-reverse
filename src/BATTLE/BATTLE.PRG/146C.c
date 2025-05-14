@@ -3,6 +3,7 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include "2842C.h"
+#include "4A0A8.h"
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
@@ -25,6 +26,7 @@ void func_8006A228(int, int);
 void func_8006F5CC();
 void func_80070F28(int);
 void func_8007138C();
+void func_80073718();
 int func_8007F4B0(int);
 void func_80081020(int, int);
 void func_8008AB80(int);
@@ -41,7 +43,7 @@ extern int D_800F18A8;
 extern int D_800F18B0;
 extern int D_800F18F0;
 extern int D_800F190C;
-extern int D_800F1928[];
+extern int* D_800F1928[];
 extern int D_800F19A0;
 extern int D_800F1A04;
 extern short D_800F1A08;
@@ -333,7 +335,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800735F8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073718);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073870);
+void func_80073870()
+{
+    func_800BEC30();
+    func_80073718();
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073898);
 
@@ -592,7 +598,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BFF8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C050);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C088);
+int func_8007C088(int arg0) { return D_800F1928[arg0][8] & 1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C0AC);
 
@@ -604,7 +610,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C28C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C31C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C348);
+void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, 0, arg1); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C36C);
 
@@ -673,7 +679,11 @@ void func_8007CCAC() { func_800995B0(); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CCCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CCF0);
+void func_8007CCF0(int arg0)
+{
+    D_8005E248 = arg0;
+    SetGeomScreen(arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CD14);
 
@@ -687,7 +697,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CEC0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CF18);
 
-int func_8007CF64(int arg0) { return D_800F1928[arg0]; }
+int* func_8007CF64(int arg0) { return D_800F1928[arg0]; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CF80);
 
@@ -1013,7 +1023,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083C68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083CB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083D08);
+void func_80083D08(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x12, arg2);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083D2C);
 
@@ -1027,15 +1040,30 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083E8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083EDC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083F2C);
+void func_80083F2C(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x15, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083F50);
+void func_80083F50(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x16, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083F74);
+void func_80083F74(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x17, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083F98);
+void func_80083F98(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x18, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083FBC);
+void func_80083FBC(int arg0, int arg1 __attribute__((unused)), int arg2)
+{
+    func_80081020(0x19, arg2);
+}
 
 void func_80083FE0(int arg0, int arg1 __attribute__((unused)), int arg2)
 {

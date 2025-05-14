@@ -652,7 +652,6 @@ extern int D_8005E0BC;
 extern u_int _frameDuration;
 extern int D_8005E214;
 extern int D_8005E240;
-extern int D_8005E248;
 extern int vs_gametime_tickspeed;
 extern u_short loadImageSource[][256];
 extern int D_8005FE70;

@@ -286,6 +286,7 @@ vs_main_bzero = 0x80049110;
 vs_main_startState = 0x80050470;
 vs_main_buttonsReleased = 0x80055C78;
 vs_main_stickPosBuf = 0x8005DFC0;
+D_8005E0C8 = 0x8005E0C8;
 vs_main_drawEnv = 0x8005E0D0;
 vs_main_dispEnv = 0x8005E188;
 vs_main_buttonsPreviousState = 0x8005E1C0;

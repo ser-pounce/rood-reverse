@@ -20,6 +20,7 @@ extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;
+extern int D_8005E0C8;
 extern int D_8005E248;
 extern char D_8006169D;
 

@@ -834,13 +834,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F6D8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F6F8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F718);
+int func_8007F718() {
+    return func_8007F4B0(8) == 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F738);
+int func_8007F738() {
+    return func_8007F4B0(0xA) == 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F758);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F808);
+int func_8007F808() {
+    return func_8007F4B0(0xB) == 0;
+}
 
 int func_8007F828() { return func_8007F4B0(0xC) == 0; }
 

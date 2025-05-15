@@ -1647,7 +1647,7 @@ u_long* vs_main_allocHeapR(u_int size)
     }
 }
 
-u_long* vs_main_allocHeap(u_int size)
+void* vs_main_allocHeap(u_int size)
 {
     u_int blockSz;
     vs_main_HeapHeader* var_a1;
@@ -4355,7 +4355,7 @@ void func_80048FF8()
 
 static void _asmNop() { __asm__(".nop;"); }
 
-static void nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
+void nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
 static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 

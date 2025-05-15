@@ -144,7 +144,6 @@ nop7 = 0x800455EC;
 _loadMenuSound = 0x800468FC;
 _asmNop = 0x8004908C;
 nop8 = 0x80049090;
-nop9 = 0x80049098;
 nop10 = 0x800490A0;
 nop11 = 0x800490A8;
 nop12 = 0x80049130;

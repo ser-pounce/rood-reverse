@@ -281,6 +281,7 @@ vs_main_allocHeap = 0x80043EC4;
 vs_main_initHeap = 0x80043F74;
 vs_main_diskLoadFile = 0x8004493C;
 vs_main_getQueueSlot = 0x80044B10;
+nop9 = 0x80049098;
 vs_main_memcpy = 0x800490B0;
 vs_main_bzero = 0x80049110;
 D_8005046A = 0x8005046A;

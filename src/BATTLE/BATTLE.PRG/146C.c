@@ -11,7 +11,13 @@ typedef struct {
     int unk0;
     int unk4;
     int unk8;
-    int unkC[5];
+    int unkC;
+    int unk10;
+    int unk14;
+    short unk18;
+    short unk1A;
+    short unk1C;
+    short unk1E;
     int unk20;
     int unk24;
     int unk34[3];
@@ -101,6 +107,7 @@ void func_8007B7DC();
 void func_8007BCCC();
 void func_8007BF6C(int);
 void func_8007BFF8(int);
+void func_8007C4E0();
 void func_8007C5C0();
 void func_8007C81C(int, int);
 void func_8007D360();
@@ -259,7 +266,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
 
-void func_8006BAA8(int arg0, u_short* arg1)
+void func_8006BAA8(int arg0 __attribute__((unused)), u_short* arg1)
 {
     if (arg1[0] != 0) {
         arg1[4] = arg1[24];
@@ -601,7 +608,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076F24);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077078);
 
-void func_800770FC(int arg0, int arg1)
+void func_800770FC(int arg0 __attribute__((unused)), int arg1)
 {
     func_8007C8F8_t sp10;
 
@@ -905,7 +912,14 @@ void func_8007C4D4() { D_800F19A0 = 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C4E0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C580);
+void func_8007C580()
+{
+    u_char sp10[16];
+
+    func_8007C4E0();
+    func_800A1108(0, sp10);
+    func_8008B960(sp10[0], sp10[2], sp10[1]);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C5C0);
 
@@ -1316,9 +1330,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082FF4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083430);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800834A4);
+short func_800834A4(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
+{
+    return D_800F1928[*arg2]->unk3C->unk1A - D_800F1928[*arg2]->unk3C->unk18;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800834E4);
+short func_800834E4(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
+{
+    return D_800F1928[*arg2]->unk3C->unk1E - D_800F1928[*arg2]->unk3C->unk1C;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);
 
@@ -1330,7 +1352,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083708);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008379C);
 
-short func_8008381C(int arg0, u_char* arg1) { return D_800F1928[*arg1]->unk3C->unkAC; }
+short func_8008381C(int arg0 __attribute__((unused)), u_char* arg1)
+{
+    return D_800F1928[*arg1]->unk3C->unkAC;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008384C);
 
@@ -1371,7 +1396,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083C68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083CB8);
 
-void func_80083D08(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083D08(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x12, arg2);
 }
@@ -1388,42 +1414,50 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083E8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083EDC);
 
-void func_80083F2C(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083F2C(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x15, arg2);
 }
 
-void func_80083F50(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083F50(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x16, arg2);
 }
 
-void func_80083F74(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083F74(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x17, arg2);
 }
 
-void func_80083F98(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083F98(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x18, arg2);
 }
 
-void func_80083FBC(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083FBC(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x19, arg2);
 }
 
-void func_80083FE0(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80083FE0(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x1A, arg2);
 }
 
-void func_80084004(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80084004(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x1B, arg2);
 }
 
-void func_80084028(int arg0, int arg1 __attribute__((unused)), int arg2)
+void func_80084028(
+    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
 {
     func_80081020(0x1C, arg2);
 }

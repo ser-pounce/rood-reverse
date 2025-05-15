@@ -3664,7 +3664,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-static void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
     if (D_80055D58.unk0[0].unk2 != 0) {
         func_800474DC(arg0, arg1, arg2, arg3, arg4);

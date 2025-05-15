@@ -7,7 +7,8 @@ typedef struct {
     int unk4;
     int unk8;
     int unkC;
-    int unk10;
+    char unk10;
+    char unk11;
 } func_8007C8F8_t;
 
 void func_800918E8(int);

@@ -24,3 +24,4 @@ void func_8009D208();
 void func_8009D854();
 void func_8009E5C4();
 void func_8009F314(int, int, int);
+void func_800A1108(int, u_char*);

@@ -389,7 +389,25 @@ void func_8006D064()
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D0A4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D97C);
+int func_8006D97C(int base, int a, int b)
+{
+    if (b < 0) {
+        if (a >= b) {
+            if (a != 0) {
+                base += a;
+            } else {
+                base += b;
+            }
+        } else {
+            base += b;
+        }
+    } else if ((b >= a) && (a != 0)) {
+        base += a;
+    } else {
+        base += b;
+    }
+    return base;
+}
 
 int _add_min(int base, int a, int b)
 {

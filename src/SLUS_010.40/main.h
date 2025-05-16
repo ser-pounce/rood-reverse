@@ -36,6 +36,8 @@ extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;
 extern u_short D_8005046A;
+extern u_int D_80055C80[];
+extern void* D_8005E0C0[];
 extern int D_8005E0C8;
 extern int D_8005E248;
 extern int D_80060064;

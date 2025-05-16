@@ -80,6 +80,14 @@ typedef struct {
     u_char unk0;
     u_char unk1;
     short unk2;
+    int unk4[9];
+    u_int unk28;
+    u_int unk2C[8];
+    u_int unk4C;
+    int unk50[14];
+    int unk88;
+    int unk8C[8];
+    int unkAC;
 } D_800F1BF8_t;
 
 typedef struct {
@@ -610,7 +618,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007418C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800741D4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007424C);
+int func_8007424C()
+{
+    int ret = 0;
+    if (func_800A0BE0(0) & 0x08000000) {
+        ret = func_800CB45C() == 0;
+    }
+    return ret;
+}
 
 int func_80074294() { return D_800F1868 & 3; }
 
@@ -1151,7 +1166,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D1A8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D260);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D2B4);
+u_int func_8007D2B4(u_int arg0)
+{
+    if ((arg0 - 1) < 0xFF) {
+        return (D_8004B9DC[arg0].unkC >> 0xF) & 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D2FC);
 
@@ -1998,9 +2019,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E2D4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E320);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E370);
+int func_8008E370(int* arg0)
+{
+    if (D_800F1BF8.unkAC != 0) {
+        *arg0 = D_800F1BF8.unk2C[8] / 564;
+        return D_800F1BF8.unkAC;
+    }
+    *arg0 = 0;
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E3B8);
+int func_8008E3B8(int* arg0)
+{
+    if (D_800F1BF8.unk88 != 0) {
+        *arg0 = D_800F1BF8.unk28 / 20;
+        return D_800F1BF8.unk88;
+    }
+    *arg0 = 0;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E400);
 

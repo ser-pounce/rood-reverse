@@ -217,7 +217,6 @@ static void _loadMenuSound();
 void func_80046B3C(int, int, u_short*);
 void func_80047910(int, int, D_8005DC6C_t*);
 static void _asmNop();
-static void nop9(int, int);
 static void nop10(int, int);
 void func_8006A5C0();
 static void _initRand();
@@ -616,8 +615,6 @@ static char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 24
     { 6, 6 }, { 6, 7 }, { 7, 7 }, { 7, 8 }, { 8, 8 }, { 8, 9 }, { 9, 9 }, { 9, 10 },
     { 10, 10 }, { 10, 11 }, { 11, 11 }, { 11, 12 }, { 12, 12 }, { 12, 13 }, { 13, 13 },
     { 13, 14 }, { 14, 14 }, { 14, 15 }, { 15, 15 }, { 15, 16 }, { 0, 0 } };
-
-extern u_int D_8004B9DC[];
 
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
@@ -1049,12 +1046,14 @@ void func_80042CA0() { D_80060068.unk0 = 1; }
 
 void func_80042CB0()
 {
-    u_char sp10[16];
+    unsigned char sp10[16];
     int var_a1;
     int var_a3;
     int var_s1;
+    int var_t3;
     int new_var;
-    u_char var_a0;
+    int var_t4;
+    char var_a0;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -1076,10 +1075,9 @@ void func_80042CB0()
     D_80061068.unk0[2] = ((D_80061068.unk0[2] & 0x9FFF) | v0_2);
     D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        var_a0 = 0;
-        for (var_a3 = 0; var_a3 < 8; ++var_a3) {
-            u_int* p = (D_8004B9DC + (((var_s1 * 8) + var_a3) * 13));
-            var_a0 = (*(int*)&var_a0 * 2) | ((p[3] >> 0xF) & 1);
+        for (var_a0 = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
+            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].unkC;
+            var_a0 = (*(int*)&var_a0 * 2) | ((new_var2 >> 0xF) & 1);
         }
         D_8005FFB8[var_s1] = var_a0;
     }
@@ -1102,6 +1100,9 @@ void func_80042CB0()
     for (var_a3 = 0; var_a3 < 8; ++var_a3) {
         temp_t5->unk20[var_a3] = temp_t0->unk94C[var_a3];
     }
+
+    var_t4 = 0;
+    var_t3 = 0;
 
     for (var_a3 = 0; var_a3 < 6; ++var_a3) {
         temp_t5->unk28[var_a3].unk0 = temp_t0->unk398[var_a3].unk0;

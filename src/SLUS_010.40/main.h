@@ -16,6 +16,23 @@ typedef struct {
     void* vram;
 } vs_main_CdQueueSlot;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    u_int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+} D_8004B9DC_t;
+
+extern D_8004B9DC_t D_8004B9DC[];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];

@@ -1,6 +1,7 @@
 #pragma once
 
 void func_800CB114();
+int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
 int func_800CEEBC();

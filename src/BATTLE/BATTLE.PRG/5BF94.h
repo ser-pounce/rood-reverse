@@ -1,5 +1,7 @@
 #pragma once
 
+void func_800C97BC();
+short* func_800CB66C();
 void func_800CB114();
 int func_800CB45C();
 void func_800CB50C();

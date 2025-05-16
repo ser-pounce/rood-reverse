@@ -297,6 +297,7 @@ vs_main_buttonsPressed = 0x8005E1D0;
 vs_main_frameBuf = 0x8005E210;
 vs_main_buttonsState = 0x8005E238;
 vs_gametime_tickspeed = 0x8005E24C;
+vs_main_skillsLearned = 0x8005FFB8;
 D_80060064 = 0x80060064;
 vs_gametime = 0x80061074;
 D_80061078 = 0x80061078;

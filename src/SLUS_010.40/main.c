@@ -657,7 +657,7 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern u_char D_8005FFB8[];
+extern u_char vs_main_skillsLearned[];
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
@@ -1053,7 +1053,7 @@ void func_80042CB0()
     int var_t3;
     int new_var;
     int var_t4;
-    char var_a0;
+    char skillsLearned;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -1075,11 +1075,11 @@ void func_80042CB0()
     D_80061068.unk0[2] = ((D_80061068.unk0[2] & 0x9FFF) | v0_2);
     D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        for (var_a0 = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
-            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].unkC;
-            var_a0 = (*(int*)&var_a0 * 2) | ((new_var2 >> 0xF) & 1);
+        for (skillsLearned = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
+            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].flags1;
+            skillsLearned = (*(int*)&skillsLearned * 2) | ((new_var2 >> 0xF) & 1);
         }
-        D_8005FFB8[var_s1] = var_a0;
+        vs_main_skillsLearned[var_s1] = skillsLearned;
     }
     temp_t0 = D_800F19FC->unk38;
     temp_t5 = &D_80060068;

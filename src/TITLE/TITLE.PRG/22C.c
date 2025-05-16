@@ -109,7 +109,7 @@ extern int vs_main_buttonsState;
 extern int D_8005E214;
 extern int vs_gametime_tickspeed;
 extern int D_8005FEA0[][3];
-extern u_char D_8005FFB8[];
+extern u_char vs_main_skillsLearned[];
 extern u_char D_8005FFD8[];
 extern D_80060020_t D_80060020;
 extern u_char D_8006002A;
@@ -722,7 +722,7 @@ int func_800696D0(int arg0)
     }
 
     rMemcpy(D_80061598, temp_s1 + 0x5E00, 0x440);
-    rMemcpy(D_8005FFB8, temp_s1 + 0x6240, 0x20);
+    rMemcpy(vs_main_skillsLearned, temp_s1 + 0x6240, 0x20);
     rMemcpy(D_8005FFD8, temp_s1 + 0x6260, 0x48);
     rMemcpy(&D_80060020.unk0, temp_s1 + 0x62A8, 0x20);
     rMemcpy(D_80060068, temp_s1 + 0x62C8, 0x100);
@@ -3622,7 +3622,7 @@ void func_80071B14()
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(D_8005FFB8, D_80075B24, 0x20);
+    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 0x20);
     vs_main_bzero(D_8005FFD8, 0x48);
     vs_main_bzero(&vs_gametime, sizeof(vs_gametime));
     vs_main_bzero(D_8005FEA0, 0x114);

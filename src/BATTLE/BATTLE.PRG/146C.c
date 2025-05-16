@@ -3,6 +3,7 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include "2842C.h"
+#include "44F14.h"
 #include "4A0A8.h"
 #include "5BF94.h"
 #include "6E644.h"
@@ -63,6 +64,8 @@ typedef struct {
     char unk27;
     int unk28[5];
     D_800F1964_t* unk3C;
+    int unk40;
+    int unk44;
 } D_800F1928_t;
 
 typedef struct {
@@ -128,6 +131,7 @@ void func_8006B7BC();
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C();
 void func_8006F5CC();
+void func_8006F89C();
 void func_8006FA20();
 void func_80070278();
 void func_80070F28(int);
@@ -756,7 +760,15 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800792E4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800797BC);
+void func_800797BC()
+{
+    func_800C97BC();
+    if (*func_800CB66C() != 1) {
+        func_8006C40C();
+        func_800CB114();
+        func_8006F89C();
+    }
+}
 
 void func_8007980C()
 {
@@ -1043,7 +1055,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C81C);
 
 void func_8007C874() { func_8007C81C(D_800F1880[0], D_800F1880[13]); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C8A4);
+void func_8007C8A4(int arg0)
+{
+    if ((D_800F1928[arg0] != 0) && (arg0 < 16)) {
+        func_800AE4FC(D_800F1928[arg0]->unk44);
+    }
+}
 
 int func_8007C8F0() { return 0; }
 
@@ -1169,7 +1186,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D260);
 u_int func_8007D2B4(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
-        return (D_8004B9DC[arg0].unkC >> 0xF) & 1;
+        return (D_8004B9DC[arg0].flags1 >> 0xF) & 1;
     }
     return 0;
 }

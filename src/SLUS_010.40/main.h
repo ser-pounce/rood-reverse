@@ -17,19 +17,17 @@ typedef struct {
 } vs_main_CdQueueSlot;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    u_int unkC;
+    u_char skillId;
+    u_char unk1;
+    u_char flags0;
+    u_char cost;
+    int range;
+    int aoe;
+    u_int flags1;
     int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
+    int hitParam0;
+    int hitParam1;
+    char name[24];
 } D_8004B9DC_t;
 
 extern D_8004B9DC_t D_8004B9DC[];

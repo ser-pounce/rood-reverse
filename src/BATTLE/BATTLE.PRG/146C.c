@@ -1246,7 +1246,12 @@ u_int func_8007D2B4(u_int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D2FC);
+void func_8007D2FC(u_int arg0)
+{
+    if ((arg0 - 1) < 0xFF) {
+        D_8004B9DC[arg0].flags1 |= 0x8000;
+    }
+}
 
 void func_8007D340(int arg0) { func_8006A228(arg0, 0); }
 

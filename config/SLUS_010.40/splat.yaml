@@ -262,6 +262,7 @@ segments:
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgba16, _nowLoading]
       - [0x3AD04, .data, main]
-      - [0x3C1DC, data, main]
+      - [0x3C1DC, vsSkillData, _skillData]
+      - [0x3F5DC, data, main]
       - [0x40788, bss, main]
   - [0x52800]

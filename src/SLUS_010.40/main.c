@@ -1076,7 +1076,7 @@ void func_80042CB0()
     D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (skillsLearned = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
-            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].flags1;
+            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].flags;
             skillsLearned = (*(int*)&skillsLearned * 2) | ((new_var2 >> 0xF) & 1);
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;

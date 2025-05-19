@@ -17,20 +17,33 @@ typedef struct {
 } vs_main_CdQueueSlot;
 
 typedef struct {
-    u_char skillId;
-    u_char unk1;
-    u_char flags0;
-    u_char cost;
-    int range;
+    unsigned char id;
+    unsigned char effect;
+    int unk2_0 : 1;
+    int type : 3;
+    int target : 4;
+    unsigned char cost;
+    unsigned char rangeX;
+    unsigned char rangeY;
+    unsigned char rangeZ;
+    int shape : 3;
+    int angle : 5;
     int aoe;
-    u_int flags1;
-    int unk10;
-    int hitParam0;
-    int hitParam1;
+    u_int flags;
+    unsigned char unkD[2];
+    struct {
+        int effect : 7;
+        int hitrateFlags : 6;
+        int hitrateAdj : 3;
+        int damage : 6;
+        int mult : 5;
+        int type : 2;
+        int affinity : 3;
+    } hitParams[2];
     char name[24];
-} D_8004B9DC_t;
+} vs_skill_t;
 
-extern D_8004B9DC_t D_8004B9DC[];
+extern vs_skill_t D_8004B9DC[256];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];

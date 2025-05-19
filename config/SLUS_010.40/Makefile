@@ -2,7 +2,7 @@ build/data/SLUS_010.40.elf: LDSCRIPT += \
 	config/TITLE/TITLE.PRG/exports.txt \
 	config/BATTLE/BATTLE.PRG/exports.txt
 
-build/data/SLUS_010.40.elf: $(addprefix build/assets/SLUS_010.40/, _nowLoading.rgba16.o _skillData.o)
+build/data/SLUS_010.40.elf: $(addprefix build/assets/SLUS_010.40/, _nowLoading.rgba16.o _skillData.o _animData.o)
 
 build/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 build/src/SLUS_010.40/main.o: build/src/include/lbas.h
@@ -12,9 +12,22 @@ build/src/SLUS_010.40/main.o: build/src/include/lbas.h
 	@$(OBJCOPY) $(OBJCOPYFLAGS) \
 	--add-symbol _skillData=.data:0 $< $@
 
+%_animData.o: %_animData.bin
+	$(call builder,Compiling $<)
+	@$(OBJCOPY) $(OBJCOPYFLAGS) \
+	--set-section-alignment .data=4 \
+	--add-symbol _animOffset16=.data:0 \
+	--add-symbol _animOffset8=.data:1008 \
+	--add-symbol _animOffset4=.data:1512 \
+	--add-symbol _animOffset2=.data:1764 $< $@
+
 %_skillData.bin: %_skillData.yaml
 	$(call builder,Converting $<)
 	@$(VPYTHON) tools/splat_ext/vsSkillData.py $< $@
+
+%_animData.bin: %_animData.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) tools/splat_ext/vsAnimData.py $< $@
 
 $(patsubst %,build/src/SLUS_010.40/%.o, \
 	2MBYTE.OBJ overlay 25AC 31724 32154 main \

@@ -34,7 +34,7 @@ options:
   undefined_funcs_auto_path: build/config/SLUS_010.40/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/SLUS_010.40/undefined_syms_auto.txt
 
-  subalign: 2
+  subalign: 4
 
   string_encoding: &enc ASCII
   data_string_encoding: *enc
@@ -262,6 +262,7 @@ segments:
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgba16, _nowLoading]
       - [0x3AD04, .data, main]
+      - [0x3BA78, vsAnimData, _animData]
       - [0x3C1DC, vsSkillData, _skillData]
       - [0x3F5DC, data, main]
       - [0x40788, bss, main]

@@ -2,10 +2,15 @@ build/data/SLUS_010.40.elf: LDSCRIPT += \
 	config/TITLE/TITLE.PRG/exports.txt \
 	config/BATTLE/BATTLE.PRG/exports.txt
 
-build/data/SLUS_010.40.elf: $(addprefix build/assets/SLUS_010.40/, _nowLoading.rgba16.o _skillData.o _animData.o)
+build/data/SLUS_010.40.elf: $(addprefix build/assets/SLUS_010.40/, _nowLoading.rgba16.o _soundFileMap.o _skillData.o _animData.o)
 
 build/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
-build/src/SLUS_010.40/main.o: build/src/include/lbas.h
+build/src/SLUS_010.40/main.o build/src/SLUS_010.40/audioLBAs.o: build/src/include/lbas.h
+
+%_soundFileMap.o: %_soundFileMap.bin
+	$(call builder,Compiling $<)
+	@$(OBJCOPY) $(OBJCOPYFLAGS) \
+	--add-symbol _soundFileMap=.data:0 $< $@
 
 %_skillData.o: %_skillData.bin
 	$(call builder,Compiling $<)
@@ -20,6 +25,10 @@ build/src/SLUS_010.40/main.o: build/src/include/lbas.h
 	--add-symbol _animOffset8=.data:1008 \
 	--add-symbol _animOffset4=.data:1512 \
 	--add-symbol _animOffset2=.data:1764 $< $@
+
+%_soundFileMap.bin: %_soundFileMap.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.splat_ext.vsSoundFileMap $< $@
 
 %_skillData.bin: %_skillData.yaml
 	$(call builder,Converting $<)

@@ -23,11 +23,11 @@ build/src/SLUS_010.40/main.o: build/src/include/lbas.h
 
 %_skillData.bin: %_skillData.yaml
 	$(call builder,Converting $<)
-	@$(VPYTHON) tools/splat_ext/vsSkillData.py $< $@
+	@$(VPYTHON) -m tools.splat_ext.vsSkillData $< $@
 
 %_animData.bin: %_animData.yaml
 	$(call builder,Converting $<)
-	@$(VPYTHON) tools/splat_ext/vsAnimData.py $< $@
+	@$(VPYTHON) -m tools.splat_ext.vsAnimData $< $@
 
 $(patsubst %,build/src/SLUS_010.40/%.o, \
 	2MBYTE.OBJ overlay 25AC 31724 32154 main \

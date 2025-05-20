@@ -1,23 +1,24 @@
+import sys
 from pathlib import Path
-from splat.segtypes.segment import Segment
-from splat.util import options
 import ctypes
 import png
-import sys
+from splat.segtypes.segment import Segment
+from splat.util import options
+
 
 class Pixel(ctypes.LittleEndianStructure):
-     _fields_ = [
-         ("r", ctypes.c_uint16, 5),
-         ("g", ctypes.c_uint16, 5),
-         ("b", ctypes.c_uint16, 5),
-         ("a", ctypes.c_uint16, 1),
-     ]
+    _fields_ = [
+        ("r", ctypes.c_uint16, 5),
+        ("g", ctypes.c_uint16, 5),
+        ("b", ctypes.c_uint16, 5),
+        ("a", ctypes.c_uint16, 1),
+    ]
 
 class Header(ctypes.LittleEndianStructure):
-     _fields_ = [
-         ("w", ctypes.c_uint16),
-         ("h", ctypes.c_uint16),
-     ]
+    _fields_ = [
+        ("w", ctypes.c_uint16),
+        ("h", ctypes.c_uint16),
+    ]
 
 class PSXSegRgba16(Segment):
 
@@ -31,11 +32,9 @@ class PSXSegRgba16(Segment):
         dat = Pixel * (h.w * h.h)
         dat = dat.from_buffer_copy(rom_bytes[self.rom_start + ctypes.sizeof(h):])
 
-        img = bytearray()
-
-        for i in range(dat._length_):
-            p = dat[i]
-            img += bytes((p.r, p.g, p.b, 31 if p.a == 0 else 0))
+        img = bytearray(
+            [channel for p in dat for channel in (p.r, p.g, p.b, 31 if p.a == 0 else 0)]
+        )
 
         path = self.out_path()
         path.parent.mkdir(parents=True, exist_ok=True)

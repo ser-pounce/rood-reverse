@@ -65,7 +65,7 @@ class PSXSegVsAnimData(Segment):
         path = self.out_path()
         path.parent.mkdir(parents=True, exist_ok=True)
     
-        skills = Animations.from_buffer_copy(rom_bytes[self.rom_start:self.rom_end])
+        skills = Animations.from_buffer_copy(rom_bytes[self.rom_start:])
 
         with open(path, "w") as f:
             yaml.dump(ctypes_to_dict(skills), f, sort_keys=False)

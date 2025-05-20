@@ -135,12 +135,12 @@ def ctypes_to_dict(obj):
 def dict_to_ctypes(data, ctype):
     if issubclass(ctype, vsString):
         return ctype(*encode_str(data))
-    elif issubclass(ctype, ctypes.Array):
+    if issubclass(ctype, ctypes.Array):
         arr = ctype()
         for i, item in enumerate(data):
             arr[i] = dict_to_ctypes(item, ctype._type_)
         return arr
-    elif hasattr(ctype, "_fields_"):
+    if hasattr(ctype, "_fields_"):
         inst = ctype()
         for field in ctype._fields_:
             name = field[0]
@@ -160,7 +160,7 @@ class PSXSegVsSkillData(Segment):
         path = self.out_path()
         path.parent.mkdir(parents=True, exist_ok=True)
     
-        skills = Skills.from_buffer_copy(rom_bytes[self.rom_start:self.rom_end])
+        skills = Skills.from_buffer_copy(rom_bytes[self.rom_start:])
 
         with open(path, "w") as f:
             yaml.dump(ctypes_to_dict(skills), f, sort_keys=False)

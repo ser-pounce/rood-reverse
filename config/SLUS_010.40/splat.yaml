@@ -261,7 +261,7 @@ segments:
       - [0x3264C, c, main]
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgba16, _nowLoading]
-      - [0x3AD04, .data, main]
+      - [0x3AD04, vsActParams, _actParams]
       - [0x3AD30, .data, audioLBAs]
       - [0x3B9B0, vsSoundFileMap, _soundFileMap]
       - [0x3BA78, vsAnimData, _animData]

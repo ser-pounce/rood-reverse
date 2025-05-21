@@ -231,13 +231,8 @@ typedef struct {
 
 extern ImgHeader _nowLoading_header;
 extern u_long _nowLoading_data[];
-
-static u_char D_8004A504[] = { 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x07, 0x06,
-    0x00, 0x04, 0x01, 0x00, 0x00, 0x01, 0x11, 0x08, 0x02, 0x06, 0xFF, 0x00, 0x00, 0x00 };
-
-static u_char vs_main_actParams[] = { 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
+extern u_char D_8004A504[24];
+extern u_char _actParams[20];
 extern int _soundLBAs[100];
 extern int _musicLBAs[200];
 extern int _seLBAs[100];
@@ -790,7 +785,7 @@ static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unuse
         port->actData[1] = 0;
     }
     PadSetAct(portID, port->actData, sizeof(port->actData));
-    PadSetActAlign(portID, vs_main_actParams);
+    PadSetActAlign(portID, _actParams);
 }
 
 static int _updatePadState(int portID, u_char padBuf[34])
@@ -852,7 +847,7 @@ static void _padConnect(int portID, u_char padBuf[34])
         PadSetAct(portID, port->actData, sizeof(port->actData));
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable)
-                && (PadSetActAlign(portID, vs_main_actParams) != 0))) {
+                && (PadSetActAlign(portID, _actParams) != 0))) {
             _padResetDefaults(portID, padBuf);
             port->connected = 1;
         }

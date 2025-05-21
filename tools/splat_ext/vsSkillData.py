@@ -1,11 +1,7 @@
 import sys
-from pathlib import Path
 import ctypes
-import yaml
-from splat.segtypes.segment import Segment
-from splat.util import options
+from tools.splat_ext.yamlSegment import YamlSegment
 from tools.splat_ext.vsString import vsString
-from tools.splat_ext.ctypesUtil import ctypes_to_dict, dict_to_ctypes
 
 
 class HitParams(ctypes.LittleEndianStructure):
@@ -47,26 +43,8 @@ class Skills(ctypes.Array):
     _type_ = Skill
     _length_ = 256
 
-class PSXSegVsSkillData(Segment):
-
-    def out_path(self) -> Path:
-        return options.opts.asset_path / self.dir / f"{self.name}.yaml"
-    
-    def split(self, rom_bytes):
-
-        path = self.out_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-    
-        skills = Skills.from_buffer_copy(rom_bytes[self.rom_start:])
-
-        with open(path, "w") as f:
-            yaml.dump(ctypes_to_dict(skills), f, sort_keys=False)
+class PSXSegVsSkillData(YamlSegment):
+    rootType = Skills
 
 if __name__ == "__main__":
-    with open(sys.argv[1], "r") as f:
-        data = yaml.safe_load(f)
-
-    skills = dict_to_ctypes(data, Skills)
-
-    with open(sys.argv[2], "wb") as f:
-        f.write(bytearray(skills))
+    PSXSegVsSkillData.to_bytes(sys.argv[1], sys.argv[2], Skills)

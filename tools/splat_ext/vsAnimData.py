@@ -1,10 +1,6 @@
 import sys
-from pathlib import Path
 import ctypes
-import yaml
-from splat.segtypes.segment import Segment
-from splat.util import options
-from tools.splat_ext.ctypesUtil import ctypes_to_dict, dict_to_ctypes
+from tools.splat_ext.yamlSegment import YamlSegment
 
 
 class Anim16(ctypes.Array):
@@ -31,26 +27,8 @@ class Animations(ctypes.LittleEndianStructure):
          ("anim2", Anim2 * 63),
      ]
 
-class PSXSegVsAnimData(Segment):
-
-    def out_path(self) -> Path:
-        return options.opts.asset_path / self.dir / f"{self.name}.yaml"
-    
-    def split(self, rom_bytes):
-
-        path = self.out_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-    
-        anims = Animations.from_buffer_copy(rom_bytes[self.rom_start:])
-
-        with open(path, "w") as f:
-            yaml.dump(ctypes_to_dict(anims), f, sort_keys=False)
+class PSXSegVsAnimData(YamlSegment):
+    rootType = Animations
 
 if __name__ == "__main__":
-    with open(sys.argv[1], "r") as f:
-        data = yaml.safe_load(f)
-
-    anims = dict_to_ctypes(data, Animations)
-
-    with open(sys.argv[2], "wb") as f:
-        f.write(bytearray(anims))
+    PSXSegVsAnimData.to_bytes(sys.argv[1], sys.argv[2], Animations)

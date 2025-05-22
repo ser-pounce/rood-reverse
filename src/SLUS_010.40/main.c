@@ -294,9 +294,6 @@ extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
 extern int D_8005DFDC;
-extern u_int vs_main_buttonsPreviousState;
-extern int vs_main_buttonsPressed;
-extern u_int vs_main_buttonsState;
 extern u_char D_80060020[];
 
 static void vs_main_loadBattlePrg()

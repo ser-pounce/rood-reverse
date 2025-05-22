@@ -104,7 +104,6 @@ u_int scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern int D_8005DFDC;
-extern int vs_main_buttonsPressed;
 extern int vs_main_buttonsState;
 extern int D_8005E214;
 extern int vs_gametime_tickspeed;

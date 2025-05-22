@@ -2,19 +2,58 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../SLUS_010.40/main.h"
 
 extern char D_80102800;
 extern u_short D_801067DC[][2];
 extern u_char D_8010689C[];
+extern char D_80106918[];
 extern char D_80106928[];
 
-INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80102884);
+void func_80102884(int arg0)
+{
+    int temp_v0;
+    int temp_v0_2;
+    int var_s1;
+    int var_s2;
+    int var_a0;
+
+    var_s2 = 0;
+
+    if (arg0 < 0) {
+        var_s2 = 1;
+        arg0 = -arg0;
+    }
+
+    temp_v0 = func_8008A5D0(0, arg0);
+    func_80100100(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
+    var_s1 = 0xF;
+    var_a0 = vs_main_skills[arg0].cost;
+    D_80106918[15] = 0;
+
+    if (var_s2 != 0) {
+        var_s1 = 0xD;
+        D_80106918[14] = 0x2D;
+        D_80106918[13] = 0x5B;
+    }
+
+    do {
+        var_a0 = func_800CCC54(var_a0);
+        D_80106918[--var_s1] = (var_a0 & 0xF) + 0x30;
+        var_a0 >>= 4;
+        if (var_s2 != 0) {
+            D_80106918[--var_s1] = 0x5B;
+        }
+    } while (var_a0 != 0);
+
+    D_80106918[--var_s1] = 0x23;
+    func_80100100(0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
+}
 
 void func_801029B8(int arg0, int arg1)
 {
     int temp_v0;
     int var_s0;
-    int temp_v0_2;
 
     func_80100100(1, &D_80102800, 8, arg1);
     temp_v0 = arg0;

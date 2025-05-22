@@ -39,6 +39,10 @@ class Skill(ctypes.LittleEndianStructure):
         ("name", vsString(24)),
     ]
 
+__symbols__ = {
+    '_skillData': 0,
+}
+
 class Skills(ctypes.Array):
     _type_ = Skill
     _length_ = 256

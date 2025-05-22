@@ -150,6 +150,15 @@ build/%.o: %.c
 	$(call builder,Converting $<)
 	@$(RGBA16) $< $@
 
+%.o: %.yaml.bin
+	$(call builder,Compiling $<)
+	@$(OBJCOPY) $(OBJCOPYFLAGS) --set-section-alignment .data=4 \
+	$(shell $(VPYTHON) -m tools.splat_ext.symbolBuilder tools.splat_ext.$(*F)) $< $@
+
+%.yaml.bin: %.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.splat_ext.$(*F) $< $@
+
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^
 
@@ -159,12 +168,12 @@ data/%: | disks/$(disk).bin $(build_deps)
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin
 endif
 
-build/config/SLUS-01040_LBA.txt: $(shell $(FIND) data -type f)
+build/config/$(disk)_LBA.txt: $(shell $(FIND) data -type f)
 	$(call builder,Generating $@)
 	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
 	@$(MV) $(disk)_LBA.txt build/config/
 
-build/src/include/lbas.h: build/config/SLUS-01040_LBA.txt
+build/src/include/lbas.h: build/config/$(disk)_LBA.txt
 	$(call builder,Generating $@)
 	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
 

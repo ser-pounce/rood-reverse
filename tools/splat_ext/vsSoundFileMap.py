@@ -7,6 +7,10 @@ class SoundFileMap(ctypes.Array):
     _type_ = ctypes.c_uint8
     _length_ = 200
 
+__symbols__ = {
+    '_soundFileMap': 0,
+}
+
 class PSXSegVsSoundFileMap(YamlSegment):
     rootType = SoundFileMap
     objcopyflags = "--add-symbol _soundFileMap=.data:0"

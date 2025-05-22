@@ -8,7 +8,7 @@ from tools.splat_ext.ctypesUtil import ctypes_to_dict, dict_to_ctypes
 class YamlSegment(Segment):
 
     def out_path(self) -> Path:
-        return options.opts.asset_path / self.dir / f"{self.name}.yaml"
+        return options.opts.asset_path / self.dir / f"{self.name}"
 
     def split(self, rom_bytes):
 

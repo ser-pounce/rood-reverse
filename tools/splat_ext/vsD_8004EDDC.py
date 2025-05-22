@@ -7,6 +7,10 @@ class D_8004EDDC(ctypes.Array):
     _type_ = ctypes.c_uint8
     _length_ = 30
 
+__symbols__ = {
+    'D_8004EDDC': 0,
+}
+
 class PSXSegVsD_8004EDDC(YamlSegment):
     rootType = D_8004EDDC * 8
 

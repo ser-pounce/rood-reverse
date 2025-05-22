@@ -415,7 +415,6 @@ func_800C86AC = 0x800C86AC; // type:func
 func_800C8778 = 0x800C8778; // type:func
 func_800C8C50 = 0x800C8C50; // type:func
 func_800C8E04 = 0x800C8E04; // type:func
-func_800C8E5C = 0x800C8E5C; // type:func
 func_800C8F44 = 0x800C8F44; // type:func
 func_800C8FAC = 0x800C8FAC; // type:func
 func_800C9078 = 0x800C9078; // type:func

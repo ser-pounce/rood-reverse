@@ -1,4 +1,6 @@
 #include "common.h"
+#include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80102884);
 
@@ -18,6 +20,16 @@ INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80103AEC);
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80103E30);
 
-INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80104254);
+void func_80104254()
+{
+    func_800C8E5C_t* temp_v0;
+
+    temp_v0 = func_800C8E5C(0, 0x140, 0x12, 0x8C, 8, &D_800EB9DC[D_800EB9DC[0]]);
+    temp_v0->unk0 = 2;
+    temp_v0->unk18 = 0xB4;
+    temp_v0->unk6 = 1;
+    func_800FFA88(2);
+    func_800FFBC8();
+}
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_801042C8);

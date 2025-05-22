@@ -30,6 +30,7 @@ options:
   symbol_addrs_path: 
     - config/MENU/MENU0.PRG/symbol_addrs.txt
     - config/MENU/MENU0.PRG/exports.txt
+    - config/MENU/MAINMENU.PRG/exports.txt
     - config/SLUS_010.40/exports.txt
 
   undefined_funcs_auto_path: build/config/MENU/MENU0.PRG/undefined_funcs_auto.txt

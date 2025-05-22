@@ -196,7 +196,7 @@ static void _sysReinit();
 static void _wait();
 static void _padForceMode();
 static void _padResetDefaults(int, u_char[34]);
-static void _padConnect(int, u_char[34]);
+void vs_main_padConnect(int, u_char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static int vs_main_diskGetState();
 void func_80042CB0();
@@ -269,7 +269,6 @@ extern vs_main_disk_t vs_main_disk;
 extern u_char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
-extern u_char _padBuffer[2][34];
 extern int D_8005DBF4[5][6];
 extern D_8005E038_t D_8005E038;
 extern int D_8005E03C;
@@ -417,7 +416,7 @@ static void vs_main_bufferLoadingScreen()
     DrawSync(0);
 }
 
-void vs_main_resetGame()
+void _resetGame()
 {
     DrawSync(0);
     DrawSync(0);
@@ -427,8 +426,8 @@ void vs_main_resetGame()
     DsFlush();
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
-    _padConnect(0, _padBuffer[0]);
-    _padConnect(0x10, _padBuffer[1]);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -443,8 +442,8 @@ void vs_main_jumpToBattle()
     SetDispMask(0);
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
-    _padConnect(0, _padBuffer[0]);
-    _padConnect(0x10, _padBuffer[1]);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -464,8 +463,8 @@ void vs_main_jumpToTitle()
     SetDispMask(0);
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
-    _padConnect(0, _padBuffer[0]);
-    _padConnect(0x10, _padBuffer[1]);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     ResetGraph(3);
     func_80012B78();
     func_80012B98();
@@ -477,8 +476,8 @@ void vs_main_jumpToTitle()
     SetDispMask(0);
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
-    _padConnect(0, _padBuffer[0]);
-    _padConnect(0x10, _padBuffer[1]);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
@@ -594,9 +593,9 @@ static void _sysInit()
     InitCARD(0);
     StartCARD();
     _bu_init();
-    PadInitDirect(_padBuffer[0], _padBuffer[1]);
-    _padResetDefaults(0, _padBuffer[0]);
-    _padResetDefaults(0x10, _padBuffer[1]);
+    PadInitDirect(vs_main_padBuffer[0], vs_main_padBuffer[1]);
+    _padResetDefaults(0, vs_main_padBuffer[0]);
+    _padResetDefaults(0x10, vs_main_padBuffer[1]);
     PadStartCom();
     _padForceMode();
     func_80043668();
@@ -705,7 +704,7 @@ void func_80042CB0()
     D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (skillsLearned = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
-            u_int new_var2 = D_8004B9DC[var_s1 * 8 + var_a3].flags;
+            u_int new_var2 = vs_main_skills[var_s1 * 8 + var_a3].flags;
             skillsLearned = (*(int*)&skillsLearned * 2) | ((new_var2 >> 0xF) & 1);
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;
@@ -788,7 +787,7 @@ static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unuse
     PadSetActAlign(portID, _actParams);
 }
 
-static int _updatePadState(int portID, u_char padBuf[34])
+int vs_main_updatePadState(int portID, u_char padBuf[34])
 {
     PortInfo* port;
     u_char mode;
@@ -833,7 +832,7 @@ static int _updatePadState(int portID, u_char padBuf[34])
     return btnStates;
 }
 
-static void _padConnect(int portID, u_char padBuf[34])
+void vs_main_padConnect(int portID, u_char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
@@ -1099,10 +1098,10 @@ int vs_main_processPadState()
     int i;
     u_int btnState;
 
-    vs_main_buttonsState = _updatePadState(0, _padBuffer[0]) & 0xFFFF;
-    vs_main_buttonsState |= _updatePadState(16, _padBuffer[1]) << 16;
-    _padConnect(0, _padBuffer[0]);
-    _padConnect(16, _padBuffer[1]);
+    vs_main_buttonsState = vs_main_updatePadState(0, vs_main_padBuffer[0]) & 0xFFFF;
+    vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1]) << 16;
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(16, vs_main_padBuffer[1]);
 
     switch (vs_main_portInfo[0].mode) {
     case 4:
@@ -1180,7 +1179,7 @@ int vs_main_processPadState()
         && (vs_main_buttonsPressed & RESET)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
-        vs_main_resetGame();
+        _resetGame();
     }
 
     return 1;
@@ -3943,7 +3942,7 @@ void func_80048EC4()
     }
 }
 
-static void func_80048F8C()
+void func_80048F8C()
 {
     RECT rect;
 

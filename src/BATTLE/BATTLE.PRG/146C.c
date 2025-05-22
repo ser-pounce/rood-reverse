@@ -696,7 +696,44 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80075554);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800760CC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007629C);
+int func_8007629C(u_int* otag)
+{
+    int ret;
+    u_int temp_a0;
+
+    vs_main_frameBuf = vs_main_frameBuf == 0;
+    vs_main_getRand(0);
+    SetGeomOffset(160, 112);
+    DrawSync(0);
+    ret = vs_gametime_update(vs_gametime_tickspeed);
+    if (D_8004A52C != 0) {
+        while (1) {
+            vs_gametime_update(2);
+            vs_main_buttonsState = (u_short)vs_main_updatePadState(0, *vs_main_padBuffer);
+            vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1])
+                << 16;
+            vs_main_padConnect(0, vs_main_padBuffer[0]);
+            vs_main_padConnect(16, vs_main_padBuffer[1]);
+            vs_main_buttonsPressed = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
+            temp_a0 = vs_main_buttonsPressed >> 16;
+            vs_main_buttonsReleased
+                = vs_main_buttonsPreviousState & ~vs_main_buttonsState;
+            vs_main_buttonsPreviousState = vs_main_buttonsState;
+            if (temp_a0 & 0x800) {
+                D_8004A52C ^= 1;
+            }
+            if ((temp_a0 & 0x100) || (D_8004A52C == 0)) {
+                break;
+            }
+        }
+    }
+    PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
+    func_80048F8C();
+    DrawOTag((u_long*)otag);
+    FntFlush(-1);
+    return ret;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007647C);
 
@@ -1241,7 +1278,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D260);
 u_int func_8007D2B4(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
-        return (D_8004B9DC[arg0].flags >> 0xF) & 1;
+        return (vs_main_skills[arg0].flags >> 0xF) & 1;
     }
     return 0;
 }
@@ -1249,7 +1286,7 @@ u_int func_8007D2B4(u_int arg0)
 void func_8007D2FC(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
-        D_8004B9DC[arg0].flags |= 0x8000;
+        vs_main_skills[arg0].flags |= 0x8000;
     }
 }
 

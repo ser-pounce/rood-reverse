@@ -20,12 +20,12 @@ class YamlSegment(Segment):
         with open(path, "w") as f:
             yaml.dump(ctypes_to_dict(root_t), f, sort_keys=False)
 
-    @staticmethod
-    def to_bytes(input_path, output_path, rootType):
+    @classmethod
+    def to_bytes(cls, input_path, output_path):
         with open(input_path, "r") as f:
             data = yaml.safe_load(f)
 
-        root_t = dict_to_ctypes(data, rootType)
+        root_t = dict_to_ctypes(data, cls.rootType)
 
         with open(output_path, "wb") as f:
             f.write(bytearray(root_t))

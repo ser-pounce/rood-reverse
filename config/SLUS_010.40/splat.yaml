@@ -266,6 +266,7 @@ segments:
       - [0x3B9B0, vsSoundFileMap, _soundFileMap]
       - [0x3BA78, vsAnimData, _animData]
       - [0x3C1DC, vsSkillData, _skillData]
-      - [0x3F5DC, data, main]
+      - [0x3F5DC, vsD_8004EDDC, D_8004EDDC]
+      - [0x3F6CC, data, main]
       - [0x40788, bss, main]
   - [0x52800]

@@ -27,8 +27,19 @@ class Animations(ctypes.LittleEndianStructure):
          ("anim2", Anim2 * 63),
      ]
 
+__symbols__ = {
+    '_animOffset16': 0,
+	'_animOffset8': ctypes.sizeof(Anim16) * 63,
+	'_animOffset4': ctypes.sizeof(Anim8) * 63,
+	'_animOffset2': ctypes.sizeof(Anim4) * 63,
+}
+
+__symbols__['_animOffset4'] += __symbols__['_animOffset8']
+__symbols__['_animOffset2'] += __symbols__['_animOffset4']
+
+
 class PSXSegVsAnimData(YamlSegment):
     rootType = Animations
 
 if __name__ == "__main__":
-    PSXSegVsAnimData.to_bytes(sys.argv[1], sys.argv[2], Animations)
+    PSXSegVsAnimData.to_bytes(sys.argv[1], sys.argv[2])

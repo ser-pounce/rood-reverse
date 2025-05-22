@@ -44,6 +44,7 @@ typedef struct {
 } vs_skill_t;
 
 extern vs_skill_t D_8004B9DC[256];
+extern u_char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];

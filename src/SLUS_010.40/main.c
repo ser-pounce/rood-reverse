@@ -846,8 +846,7 @@ static void _padConnect(int portID, u_char padBuf[34])
     if (port->connected == 0) {
         PadSetAct(portID, port->actData, sizeof(port->actData));
         if ((state == PadStateFindCTP1)
-            || ((state == PadStateStable)
-                && (PadSetActAlign(portID, _actParams) != 0))) {
+            || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
             _padResetDefaults(portID, padBuf);
             port->connected = 1;
         }

@@ -47,4 +47,4 @@ class PSXSegVsSkillData(YamlSegment):
     rootType = Skills
 
 if __name__ == "__main__":
-    PSXSegVsSkillData.to_bytes(sys.argv[1], sys.argv[2], Skills)
+    PSXSegVsSkillData.to_bytes(sys.argv[1], sys.argv[2])

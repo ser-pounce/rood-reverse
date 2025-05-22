@@ -31,6 +31,11 @@ build/src/SLUS_010.40/main.o build/src/SLUS_010.40/audioLBAs.o: build/src/includ
 	--add-symbol _animOffset8=.data:1008 \
 	--add-symbol _animOffset4=.data:1512 \
 	--add-symbol _animOffset2=.data:1764 $< $@
+	
+%D_8004EDDC.o: %D_8004EDDC.bin
+	$(call builder,Compiling $<)
+	@$(OBJCOPY) $(OBJCOPYFLAGS) \
+	--add-symbol D_8004EDDC=.data:0 $< $@
 
 %_actParams.bin: %_actParams.yaml
 	$(call builder,Converting $<)
@@ -47,6 +52,10 @@ build/src/SLUS_010.40/main.o build/src/SLUS_010.40/audioLBAs.o: build/src/includ
 %_animData.bin: %_animData.yaml
 	$(call builder,Converting $<)
 	@$(VPYTHON) -m tools.splat_ext.vsAnimData $< $@
+
+%D_8004EDDC.bin: %D_8004EDDC.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.splat_ext.vsD_8004EDDC $< $@
 
 $(patsubst %,build/src/SLUS_010.40/%.o, \
 	2MBYTE.OBJ overlay 25AC 31724 32154 main \

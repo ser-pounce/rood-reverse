@@ -21,6 +21,7 @@ void func_800CB114();
 int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
+int func_800CCC54(int);
 int func_800CEEBC();
 void func_800CEF74();
 void func_800CF48C();

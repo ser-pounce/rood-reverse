@@ -3,12 +3,33 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+extern char D_80102800;
 extern u_short D_801067DC[][2];
 extern u_char D_8010689C[];
+extern char D_80106928[];
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80102884);
 
-INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_801029B8);
+void func_801029B8(int arg0, int arg1)
+{
+    int temp_v0;
+    int var_s0;
+    int temp_v0_2;
+
+    func_80100100(1, &D_80102800, 8, arg1);
+    temp_v0 = arg0;
+    var_s0 = 0xF;
+    D_80106928[15] = 0;
+
+    do {
+        temp_v0 = func_800CCC54(temp_v0);
+        D_80106928[--var_s0] = (temp_v0 & 0xF) + 0x30;
+        temp_v0 >>= 4;
+    } while (temp_v0 != 0);
+
+    D_80106928[--var_s0] = 0x23;
+    func_80100100(0, &D_80106928[var_s0], 0x48, arg1);
+}
 
 int func_80102A68(int arg0)
 {

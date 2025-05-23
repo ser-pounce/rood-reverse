@@ -1370,7 +1370,7 @@ int func_8007E180(int arg0)
         D_800F18F8 = arg0;
         return 1;
     }
-    nop9(0x66, 0);
+    vs_main_nop9(0x66, 0);
     return 0;
 }
 
@@ -1380,7 +1380,7 @@ int func_8007E1C0(int arg0)
         D_800F18F8 = 0;
         return 1;
     }
-    nop9(0x67, 0);
+    vs_main_nop9(0x67, 0);
     return 0;
 }
 

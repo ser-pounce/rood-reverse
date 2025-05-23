@@ -203,7 +203,7 @@ void func_80042CB0();
 static void func_80043668();
 static void _initCdQueue();
 static void _diskReset();
-static void _populateQueueSlot(vs_main_CdQueueSlot*, void*);
+static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
 static void func_80044C74();
 static int func_80045440(int arg0);
 static void func_800455F4();
@@ -258,8 +258,11 @@ extern int D_800501CC;
 extern int D_800501D0;
 extern int D_800501D4;
 extern int D_800501D8;
-extern vs_main_CdQueueSlot vs_main_cdQueue[32];
-extern u_1632 D_80050460;
+extern vs_main_CdQueueSlot _cdQueue[32];
+extern struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
 extern int vs_main_startState;
 extern int D_80050478[];
 extern int sp2;
@@ -304,62 +307,62 @@ static void _loadBattlePrg()
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    _populateQueueSlot(slot, vs_overlay_slots[0]);
+    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
-    while (slot->unk0[0] != 4) {
+    while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_gametime_update(0);
     }
 
-    func_80044B80(slot);
+    vs_main_releaseCdQueueSlot(slot);
 
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
     slot = vs_main_getQueueSlot(&cdFile);
-    _populateQueueSlot(slot, vs_overlay_slots[1]);
+    _cdEnqueueUrgent(slot, vs_overlay_slots[1]);
 
-    while (slot->unk0[0] != 4) {
+    while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_gametime_update(0);
     }
 
-    func_80044B80(slot);
+    vs_main_releaseCdQueueSlot(slot);
     _wait();
 }
 
 static void _loadTitlePrg()
 {
     vs_main_CdFile cdFile;
-    vs_main_CdQueueSlot* temp_v0;
+    vs_main_CdQueueSlot* slot;
 
     cdFile.lba = VS_TITLE_PRG_LBA;
     cdFile.size = VS_TITLE_PRG_SIZE;
 
-    temp_v0 = vs_main_getQueueSlot(&cdFile);
-    _populateQueueSlot(temp_v0, vs_overlay_slots[0]);
+    slot = vs_main_getQueueSlot(&cdFile);
+    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
-    while (temp_v0->unk0[0] != 4) {
+    while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_gametime_update(0);
     }
 
-    func_80044B80(temp_v0);
+    vs_main_releaseCdQueueSlot(slot);
     _wait();
 }
 
 static void _loadEndingPrg()
 {
     vs_main_CdFile cdFile;
-    vs_main_CdQueueSlot* temp_v0;
+    vs_main_CdQueueSlot* slot;
 
     cdFile.lba = VS_ENDING_PRG_LBA;
     cdFile.size = VS_ENDING_PRG_SIZE;
 
-    temp_v0 = vs_main_getQueueSlot(&cdFile);
-    _populateQueueSlot(temp_v0, vs_overlay_slots[0]);
+    slot = vs_main_getQueueSlot(&cdFile);
+    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
-    while (temp_v0->unk0[0] != 4) {
+    while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_gametime_update(0);
     }
 
-    func_80044B80(temp_v0);
+    vs_main_releaseCdQueueSlot(slot);
     _wait();
 }
 
@@ -1704,9 +1707,9 @@ static void _initCdQueue()
     int i;
 
     for (i = 31; i >= 0; --i) {
-        vs_main_cdQueue[i].unk0[0] = 0;
+        _cdQueue[i].state = vs_main_CdQueueStateFree;
     }
-    D_80050460.i = 0;
+    *(int*)&_cdQueueCount = 0;
 }
 
 vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* file)
@@ -1714,79 +1717,74 @@ vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile* file)
     int i;
 
     for (i = 0; i < 32; ++i) {
-        if (vs_main_cdQueue[i].unk0[0] == 0) {
-            vs_main_cdQueue[i].unk0[0] = 1;
-            vs_main_cdQueue[i].cdFile = *file;
-            return &vs_main_cdQueue[i];
+        if (_cdQueue[i].state == vs_main_CdQueueStateFree) {
+            _cdQueue[i].state = vs_main_CdQueueStateAllocated;
+            _cdQueue[i].cdFile = *file;
+            return &_cdQueue[i];
         }
     }
-    nop9(162, 0);
+    vs_main_nop9(162, 0);
 }
 
-void func_80044B80(vs_main_CdQueueSlot* arg0)
+void vs_main_releaseCdQueueSlot(vs_main_CdQueueSlot* slot)
 {
-    if ((u_short)arg0->unk0[0] - 2u < 2) {
-        nop9(163, 0);
+    u_short state = slot->state - 2;
+    if (state < vs_main_CdQueueStateLoaded - 2) {
+        vs_main_nop9(163, 0);
     }
-    arg0->unk0[0] = 0;
+    slot->state = vs_main_CdQueueStateFree;
 }
 
-void func_80044BC4(vs_main_CdQueueSlot* arg0, void* vram)
+void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
 {
-    u_short temp_a1;
-
-    arg0->unk0[0] = 3;
-    arg0->vram = vram;
-    arg0->unkC = 0;
-    temp_a1 = D_80050460.s[1];
-    D_80050460.s[1] = (temp_a1 + 1);
-    arg0->unk0[1] = temp_a1;
-}
-
-static void _populateQueueSlot(vs_main_CdQueueSlot* slot, void* vram)
-{
-    int i;
-    vs_main_CdQueueSlot* queue = vs_main_cdQueue;
-
-    for (i = 0; i < 32; ++i, ++queue) {
-        if (queue->unk0[0] == 3) {
-            ++queue->unk0[1];
-        }
-    }
-    slot->unk0[0] = 3;
+    slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unkC = 0;
-    slot->unk0[1] = 0;
-    ++D_80050460.s[1];
+    slot->priority = _cdQueueCount.queued++;
+}
+
+static void _cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
+{
+    int i;
+    vs_main_CdQueueSlot* queue = _cdQueue;
+
+    for (i = 0; i < 32; ++i, ++queue) {
+        if (queue->state == 3) {
+            ++queue->priority;
+        }
+    }
+    slot->state = 3;
+    slot->vram = vram;
+    slot->unkC = 0;
+    slot->priority = 0;
+    ++_cdQueueCount.queued;
 }
 
 static void _nop4() { }
 
 static void func_80044C74()
 {
-    int i;
+    ++vs_main_disk.unk44;
 
-    vs_main_disk.unk44 += 1;
-
-    if (D_80050460.i != 0) {
-        vs_main_CdQueueSlot* slot = vs_main_cdQueue;
-        i = vs_main_diskGetState();
+    if (*(int*)&_cdQueueCount != 0) {
+        vs_main_CdQueueSlot* slot = _cdQueue;
+        int i = vs_main_diskGetState();
         if (i == diskIdle) {
-            for (; i < 32; ++i, ++slot) {
-                if (slot->unk0[0] == 3) {
-                    if (slot->unk0[1] == 0) {
-                        slot->unk0[0] = 2;
+            for (i = 0; i < 32; ++i, ++slot) {
+                if (slot->state == 3) {
+                    if (slot->priority == 0) {
+                        slot->state = 2;
                         vs_main_diskInitRead(
                             slot->cdFile.lba, slot->cdFile.size, slot->vram);
                         vs_main_disk.unk44 = 0;
-                        --D_80050460.s[1];
-                        ++D_80050460.s[0];
+                        --_cdQueueCount.queued;
+                        ++_cdQueueCount.processing;
                     } else {
-                        --slot->unk0[1];
+                        --slot->priority;
                     }
-                } else if (slot->unk0[0] == 2) {
-                    slot->unk0[0] = 4;
-                    --D_80050460.s[0];
+                } else if (slot->state == 2) {
+                    slot->state = 4;
+                    --_cdQueueCount.processing;
                 }
             }
         }
@@ -1922,22 +1920,22 @@ static int func_80045110(int arg0, int arg1)
 
                 if ((D_8005E038.unk34[arg] != 0)
                     && (D_8005E038.unk34[arg] != (vs_main_CdQueueSlot*)-1)) {
-                    nop9(0x98, 0);
+                    vs_main_nop9(0x98, 0);
                 }
 
                 D_8005E038.unk34[arg] = vs_main_getQueueSlot(&cdFile);
 
                 if (D_8005E038.unk24[arg] != 0) {
-                    nop9(0x8E, 0);
+                    vs_main_nop9(0x8E, 0);
                 }
                 D_8005E038.unk24[arg] = vs_main_allocHeapR(cdFile.size);
-                func_80044BC4(D_8005E038.unk34[arg], D_8005E038.unk24[arg]);
+                vs_main_cdEnqueue(D_8005E038.unk34[arg], D_8005E038.unk24[arg]);
                 D_8005E038.unk10[arg] = arg0;
             }
             return arg1;
         }
     }
-    nop9(0x8E, 0);
+    vs_main_nop9(0x8E, 0);
     return 0;
 }
 
@@ -1957,13 +1955,13 @@ static int func_800452C8(u_int arg0)
 {
     if ((arg0 - 1) < 4) {
         if (D_8005E038.unk34[arg0 - 1] != 0) {
-            if (D_8005E038.unk34[arg0 - 1]->unk0[0] == 4) {
-                func_80044B80(D_8005E038.unk34[arg0 - 1]);
+            if (D_8005E038.unk34[arg0 - 1]->state == 4) {
+                vs_main_releaseCdQueueSlot(D_8005E038.unk34[arg0 - 1]);
                 D_8005E038.unk34[arg0 - 1] = 0;
                 return 0;
             }
-            if (D_8005E038.unk34[arg0 - 1]->unk0[0] == 6) {
-                func_80044B80(D_8005E038.unk34[arg0 - 1]);
+            if (D_8005E038.unk34[arg0 - 1]->state == 6) {
+                vs_main_releaseCdQueueSlot(D_8005E038.unk34[arg0 - 1]);
                 D_8005E038.unk34[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
@@ -2354,18 +2352,18 @@ int func_80045DE0(int id, int slot)
 
             if ((D_8005E038.unk58[new_var] != 0)
                 && (D_8005E038.unk58[new_var] != (vs_main_CdQueueSlot*)-1)) {
-                nop9(0x8F, 0);
+                vs_main_nop9(0x8F, 0);
             }
 
             D_8005E038.unk58[new_var] = vs_main_getQueueSlot(&cdFile);
 
             if (D_8005E038.unk4C[new_var] != 0) {
-                nop9(0x90, 0);
+                vs_main_nop9(0x90, 0);
             }
 
             D_8005E038.unk48[new_var] = id;
             D_8005E038.unk4C[new_var] = vs_main_allocHeapR(cdFile.size);
-            func_80044BC4(D_8005E038.unk58[new_var], D_8005E038.unk4C[new_var]);
+            vs_main_cdEnqueue(D_8005E038.unk58[new_var], D_8005E038.unk4C[new_var]);
 
             return slot;
         }
@@ -2389,13 +2387,13 @@ static int func_80045F64(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
         if (D_8005E038.unk58[arg0 - 1] != 0) {
-            if (D_8005E038.unk58[arg0 - 1]->unk0[0] == 4) {
-                func_80044B80(D_8005E038.unk58[arg0 - 1]);
+            if (D_8005E038.unk58[arg0 - 1]->state == 4) {
+                vs_main_releaseCdQueueSlot(D_8005E038.unk58[arg0 - 1]);
                 D_8005E038.unk58[arg0 - 1] = 0;
                 return 0;
             }
-            if (D_8005E038.unk58[arg0 - 1]->unk0[0] == 6) {
-                func_80044B80(D_8005E038.unk58[arg0 - 1]);
+            if (D_8005E038.unk58[arg0 - 1]->state == 6) {
+                vs_main_releaseCdQueueSlot(D_8005E038.unk58[arg0 - 1]);
                 D_8005E038.unk58[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
@@ -2679,17 +2677,17 @@ static void func_80046678(int file)
 
     if (D_8005E0BC) {
         if (D_8005E0BC != (-1)) {
-            nop9(0x93 & 0xFFu, 0);
+            vs_main_nop9(0x93 & 0xFFu, 0);
         }
     }
     D_8005E038.unk84 = vs_main_getQueueSlot(&cdFile);
     if (D_8005E038.unk80 != 0) {
-        nop9(0x94, 0);
+        vs_main_nop9(0x94, 0);
     }
     new_var = 1;
     D_8005E038.unk80 = vs_main_allocHeapR(cdFile.size);
     D_8005E038.fileId = file;
-    func_80044BC4(D_8005E038.unk84, D_8005E038.unk80);
+    vs_main_cdEnqueue(D_8005E038.unk84, D_8005E038.unk80);
 }
 
 static void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
@@ -2699,10 +2697,10 @@ static int func_800467A0()
     int temp_v0;
 
     if (D_8005E038.unk84 != 0) {
-        if (D_8005E038.unk84->unk0[0] == 7) {
+        if (D_8005E038.unk84->state == 7) {
             temp_v0 = func_80012C04();
             if (temp_v0 == 0) {
-                func_80044B80(D_8005E038.unk84);
+                vs_main_releaseCdQueueSlot(D_8005E038.unk84);
                 D_8005E038.unk84 = 0;
                 vs_main_freeHeapR(D_8005E038.unk80);
                 D_8005E038.unk80 = 0;
@@ -2710,7 +2708,7 @@ static int func_800467A0()
                 return 0;
             }
             if (temp_v0 == -1) {
-                func_80044B80(D_8005E038.unk84);
+                vs_main_releaseCdQueueSlot(D_8005E038.unk84);
                 D_8005E038.unk84 = 0;
                 vs_main_freeHeapR(D_8005E038.unk80);
                 D_8005E038.unk80 = 0;
@@ -2719,13 +2717,13 @@ static int func_800467A0()
             }
             return 1;
         }
-        if (D_8005E038.unk84->unk0[0] == 4) {
-            D_8005E038.unk84->unk0[0] = 7;
+        if (D_8005E038.unk84->state == 4) {
+            D_8005E038.unk84->state = 7;
             func_80013188(D_8005E038.unk80, 0);
             return 1;
         }
-        if (D_8005E038.unk84->unk0[0] == 6) {
-            func_80044B80(D_8005E038.unk84);
+        if (D_8005E038.unk84->state == 6) {
+            vs_main_releaseCdQueueSlot(D_8005E038.unk84);
             D_8005E038.unk84 = 0;
             vs_main_freeHeapR(D_8005E038.unk80);
             D_8005E038.unk80 = 0;
@@ -3980,7 +3978,7 @@ void func_80048FF8()
 
 static void _asmNop() { __asm__(".nop;"); }
 
-void nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
+void vs_main_nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
 static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 

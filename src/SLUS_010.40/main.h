@@ -9,8 +9,20 @@ typedef struct {
     int size;
 } vs_main_CdFile;
 
+enum vs_main_CdQueueState {
+    vs_main_CdQueueStateFree = 0,
+    vs_main_CdQueueStateAllocated = 1,
+    vs_main_CdQueueStateReadDone = 2,
+    vs_main_CdQueueStateEnqueued = 3,
+    vs_main_CdQueueStateLoaded = 4,
+    vs_main_CdQueueStateFreeing = 5,
+    vs_main_CdQueueStateFreeingDone = 6,
+    vs_main_CdQueueStateFreeingError = 7,
+};
+
 typedef struct {
-    short unk0[2];
+    short state;
+    short priority;
     vs_main_CdFile cdFile;
     int unkC;
     void* vram;
@@ -86,8 +98,8 @@ void vs_main_freeHeap(void*);
 u_long* vs_main_allocHeapR(u_int);
 void* vs_main_allocHeap(u_int);
 vs_main_CdQueueSlot* vs_main_getQueueSlot(vs_main_CdFile*);
-void func_80044B80(vs_main_CdQueueSlot*);
-void func_80044BC4(vs_main_CdQueueSlot*, void*);
+void vs_main_releaseCdQueueSlot(vs_main_CdQueueSlot*);
+void vs_main_cdEnqueue(vs_main_CdQueueSlot*, void*);
 void func_80045988(int, int);
 void func_800468BC(int);
 void func_80046C80(int, int, u_short*, int);
@@ -95,7 +107,7 @@ void func_800472D0();
 void func_800478E0(int, int, int, int, int);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void*, void*, u_int);
-void nop9(int, int);
+void vs_main_nop9(int, int);
 void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
 void func_80048F8C();
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);

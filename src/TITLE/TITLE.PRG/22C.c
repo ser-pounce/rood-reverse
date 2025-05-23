@@ -928,15 +928,15 @@ int func_8006A49C(int arg0)
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);
-        func_80044BC4(D_800DC8C8, D_800DEAB8);
+        vs_main_cdEnqueue(D_800DC8C8, D_800DEAB8);
         D_800DC8C4 = 0;
         return 0;
     }
 
     switch (D_800DC8C4) {
     case 0:
-        if (D_800DC8C8->unk0[0] == 4) {
-            func_80044B80(D_800DC8C8);
+        if (D_800DC8C8->state == 4) {
+            vs_main_releaseCdQueueSlot(D_800DC8C8);
             drawImage(MAKEXY(800, 256), (u_long*)D_800DEAB8, MAKEWH(224, 256));
             D_800DC8C4 = 1;
         }
@@ -946,7 +946,7 @@ int func_8006A49C(int arg0)
                                         // the disk
         cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
         D_800DC8C8 = vs_main_getQueueSlot(&cdFile);
-        func_80044BC4(D_800DC8C8, D_800DEABC);
+        vs_main_cdEnqueue(D_800DC8C8, D_800DEABC);
         D_800DC8C4 = 2;
         break;
     case 2:
@@ -955,8 +955,8 @@ int func_8006A49C(int arg0)
         return 0;
     }
 
-    if (D_800DC8C8->unk0[0] == 4) {
-        func_80044B80(D_800DC8C8);
+    if (D_800DC8C8->state == 4) {
+        vs_main_releaseCdQueueSlot(D_800DC8C8);
         vs_main_enableReset(0);
         EnterCriticalSection();
 

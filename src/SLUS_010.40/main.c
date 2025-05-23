@@ -296,7 +296,7 @@ extern vs_main_stickPos vs_main_stickPosBuf;
 extern int D_8005DFDC;
 extern u_char D_80060020[];
 
-static void vs_main_loadBattlePrg()
+static void _loadBattlePrg()
 {
     vs_main_CdFile cdFile;
     vs_main_CdQueueSlot* slot;
@@ -325,7 +325,7 @@ static void vs_main_loadBattlePrg()
     _wait();
 }
 
-static void vs_main_loadTitlePrg()
+static void _loadTitlePrg()
 {
     vs_main_CdFile cdFile;
     vs_main_CdQueueSlot* temp_v0;
@@ -344,7 +344,7 @@ static void vs_main_loadTitlePrg()
     _wait();
 }
 
-static void vs_main_loadEndingPrg()
+static void _loadEndingPrg()
 {
     vs_main_CdFile cdFile;
     vs_main_CdQueueSlot* temp_v0;
@@ -363,7 +363,7 @@ static void vs_main_loadEndingPrg()
     _wait();
 }
 
-static void vs_main_initScreen(int w, int h, int arg2 __attribute__((unused)),
+static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
 {
@@ -379,7 +379,7 @@ static void _displayLoadingScreen()
 {
     RECT rect;
 
-    vs_main_initScreen(0x140, 0xF0, D_8005E248, 0, 0, 0);
+    _initScreen(0x140, 0xF0, D_8005E248, 0, 0, 0);
     setRECT(&rect, 0, 0, 1024, 512);
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
@@ -396,7 +396,7 @@ static void _displayLoadingScreen()
     SetDispMask(1);
 }
 
-static void vs_main_bufferLoadingScreen()
+static void _bufferLoadingScreen()
 {
     RECT rect;
 
@@ -413,7 +413,7 @@ static void vs_main_bufferLoadingScreen()
     DrawSync(0);
 }
 
-void _resetGame()
+static void _resetGame()
 {
     DrawSync(0);
     DrawSync(0);
@@ -447,7 +447,7 @@ void vs_main_jumpToBattle()
     func_80012024();
     func_80012EBC();
     _displayLoadingScreen();
-    vs_main_loadBattlePrg();
+    _loadBattlePrg();
     vs_main_startState = 1;
     vs_overlay_jumpToBattle(&sp);
 }
@@ -466,7 +466,7 @@ void vs_main_jumpToTitle()
     func_80012B78();
     func_80012B98();
     func_80042CB0();
-    vs_main_loadEndingPrg();
+    _loadEndingPrg();
     func_8006A5C0();
     DrawSync(0);
     DrawSync(0);
@@ -521,13 +521,13 @@ int vs_gametime_update(int arg0)
     return vs;
 }
 
-static void gpuSyncVoidCallback() { }
+static void _gpuSyncVoidCallback() { }
 
-static void vSyncVoidCallback() { }
+static void _vSyncVoidCallback() { }
 
-static void nop0() { }
+static void _nop0() { }
 
-static void nop1() { }
+static void _nop1() { }
 
 static void _nop2() { }
 
@@ -618,8 +618,8 @@ static void _sysReinit()
     _displayLoadingScreen();
     SsUtReverbOn();
     InitGeom();
-    DrawSyncCallback(gpuSyncVoidCallback);
-    VSyncCallback(vSyncVoidCallback);
+    DrawSyncCallback(_gpuSyncVoidCallback);
+    VSyncCallback(_vSyncVoidCallback);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     _initCdQueue();
     _diskReset();
@@ -642,11 +642,11 @@ int vs_main_execTitle()
 {
     vs_overlay_getSp(&sp);
     _sysReinit();
-    vs_main_loadTitlePrg();
+    _loadTitlePrg();
     vs_main_startState = vs_title_exec();
     D_8005E214 = 0;
     _displayLoadingScreen();
-    vs_main_loadBattlePrg();
+    _loadBattlePrg();
     vs_overlay_getSp(&sp);
     D_8005E240 = 1;
     vs_battle_exec();

@@ -3379,7 +3379,7 @@ void func_80070E64()
     D_800EFDF8[3][1] = 0;
 }
 
-int nop1() { return 0; }
+int _nop1() { return 0; }
 
 void func_80071254()
 {
@@ -3478,7 +3478,7 @@ int vs_title_exec()
             if (vs_main_buttonsState & (PADRright | PADstart)) {
                 switch (var_s2) {
                 case 0:
-                    var_s3 = nop1();
+                    var_s3 = _nop1();
                     break;
                 case 1:
                     var_s3 = 1;

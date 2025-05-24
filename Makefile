@@ -184,8 +184,10 @@ disks/$(disk).bin:
 $(build_deps): | tools/.sysdeps
 
 $(DUMPSXISO):
-	@$(CMAKE) -S tools/mkpsxiso -B tools/mkpsxiso/build --preset release --log-level=ERROR
-	@$(CMAKE) --build tools/mkpsxiso/build -j --config Release
+	@$(ECHO) Building mkpsxiso
+	@$(CMAKE) -S tools/mkpsxiso -B tools/mkpsxiso/build --preset release --log-level=ERROR \
+		$(if $(DEBUG),,> /dev/null)
+	@$(CMAKE) --build tools/mkpsxiso/build -j --config Release $(if $(DEBUG),,> /dev/null)
 
 $(VPYTHON):
 	@$(ECHO) Installing virtual python environment to $(VPYDIR)
@@ -193,7 +195,9 @@ $(VPYTHON):
 	@$(VPYTHON) -m pip install splat64[mips] toml pycparser pandas
 
 tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
-	@$(MAKE) -C tools/old-gcc/ VERSION=$*
+	@$(ECHO) Building GCC $*
+	@$(DOCKER) build -f $< --target export \
+		--output tools/old-gcc/build-gcc-$* tools/old-gcc/ $(if $(DEBUG),,2> /dev/null)
 	@$(TOUCH) $@
 
 tools/.sysdeps:

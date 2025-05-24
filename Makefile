@@ -61,6 +61,7 @@ disk       := SLUS-01040
 binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
+sourcedata := $(binaries:%=data/%)
 targets    := $(binaries:%=build/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)
@@ -164,12 +165,12 @@ nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 
 ifeq ($(PERMUTER),)
 .PRECIOUS: data/%
-$(binaries:%=data/%) &: | disks/$(disk).bin $(build_deps)
-	$(ECHO) Dumping files from disk
+$(sourcedata) &: | disks/$(disk).bin $(build_deps)
+	@$(ECHO) Dumping files from disk
 	@$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
-build/config/$(disk)_LBA.txt: $(shell $(FIND) data -type f)
+build/config/$(disk)_LBA.txt: $(sourcedata)
 	$(call builder,Generating $@)
 	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
 	@$(MV) $(disk)_LBA.txt build/config/

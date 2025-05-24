@@ -70,9 +70,9 @@ typedef struct {
     vs_main_CdQueueSlot* seQueueSlot[3];
     void* unk64[3];
     int* unk70[3];
-    int fileId;
-    void* unk80;
-    vs_main_CdQueueSlot* unk84;
+    int soundFileId;
+    void* soundData;
+    vs_main_CdQueueSlot* soundQueueSlot;
 } D_8005E038_t;
 
 typedef struct {
@@ -1735,7 +1735,7 @@ void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot* slot)
     slot->state = vs_main_CdQueueStateFree;
 }
 
-void vs_main_cdEnqueue(vs_main_CdQueueSlot *slot, void *vram)
+void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
 {
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
@@ -1929,7 +1929,8 @@ static int func_80045110(int arg0, int arg1)
                     vs_main_nop9(0x8E, 0);
                 }
                 D_8005E038.musicData[arg] = vs_main_allocHeapR(cdFile.size);
-                vs_main_cdEnqueue(D_8005E038.musicQueueSlot[arg], D_8005E038.musicData[arg]);
+                vs_main_cdEnqueue(
+                    D_8005E038.musicQueueSlot[arg], D_8005E038.musicData[arg]);
                 D_8005E038.unk10[arg] = arg0;
             }
             return arg1;
@@ -2680,14 +2681,14 @@ static void func_80046678(int file)
             vs_main_nop9(0x93 & 0xFFu, 0);
         }
     }
-    D_8005E038.unk84 = vs_main_allocateCdQueueSlot(&cdFile);
-    if (D_8005E038.unk80 != 0) {
+    D_8005E038.soundQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+    if (D_8005E038.soundData != 0) {
         vs_main_nop9(0x94, 0);
     }
     new_var = 1;
-    D_8005E038.unk80 = vs_main_allocHeapR(cdFile.size);
-    D_8005E038.fileId = file;
-    vs_main_cdEnqueue(D_8005E038.unk84, D_8005E038.unk80);
+    D_8005E038.soundData = vs_main_allocHeapR(cdFile.size);
+    D_8005E038.soundFileId = file;
+    vs_main_cdEnqueue(D_8005E038.soundQueueSlot, D_8005E038.soundData);
 }
 
 static void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
@@ -2696,38 +2697,38 @@ static int func_800467A0()
 {
     int temp_v0;
 
-    if (D_8005E038.unk84 != 0) {
-        if (D_8005E038.unk84->state == 7) {
+    if (D_8005E038.soundQueueSlot != 0) {
+        if (D_8005E038.soundQueueSlot->state == 7) {
             temp_v0 = func_80012C04();
             if (temp_v0 == 0) {
-                vs_main_freeCdQueueSlot(D_8005E038.unk84);
-                D_8005E038.unk84 = 0;
-                vs_main_freeHeapR(D_8005E038.unk80);
-                D_8005E038.unk80 = 0;
-                D_8005E038.fileId = 0;
+                vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
+                D_8005E038.soundQueueSlot = 0;
+                vs_main_freeHeapR(D_8005E038.soundData);
+                D_8005E038.soundData = 0;
+                D_8005E038.soundFileId = 0;
                 return 0;
             }
             if (temp_v0 == -1) {
-                vs_main_freeCdQueueSlot(D_8005E038.unk84);
-                D_8005E038.unk84 = 0;
-                vs_main_freeHeapR(D_8005E038.unk80);
-                D_8005E038.unk80 = 0;
-                D_8005E038.fileId = 0;
+                vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
+                D_8005E038.soundQueueSlot = 0;
+                vs_main_freeHeapR(D_8005E038.soundData);
+                D_8005E038.soundData = 0;
+                D_8005E038.soundFileId = 0;
                 return -1;
             }
             return 1;
         }
-        if (D_8005E038.unk84->state == 4) {
-            D_8005E038.unk84->state = 7;
-            func_80013188(D_8005E038.unk80, 0);
+        if (D_8005E038.soundQueueSlot->state == 4) {
+            D_8005E038.soundQueueSlot->state = 7;
+            func_80013188(D_8005E038.soundData, 0);
             return 1;
         }
-        if (D_8005E038.unk84->state == 6) {
-            vs_main_freeCdQueueSlot(D_8005E038.unk84);
-            D_8005E038.unk84 = 0;
-            vs_main_freeHeapR(D_8005E038.unk80);
-            D_8005E038.unk80 = 0;
-            D_8005E038.fileId = 0;
+        if (D_8005E038.soundQueueSlot->state == 6) {
+            vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
+            D_8005E038.soundQueueSlot = 0;
+            vs_main_freeHeapR(D_8005E038.soundData);
+            D_8005E038.soundData = 0;
+            D_8005E038.soundFileId = 0;
             return -1;
         }
         return 1;
@@ -2804,9 +2805,9 @@ static void func_80046A38()
         D_8005E038.unk70[i] = 0;
     }
 
-    D_8005E038.fileId = 0;
-    D_8005E038.unk80 = 0;
-    D_8005E038.unk84 = 0;
+    D_8005E038.soundFileId = 0;
+    D_8005E038.soundData = 0;
+    D_8005E038.soundQueueSlot = 0;
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;

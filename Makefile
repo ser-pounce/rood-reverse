@@ -164,8 +164,9 @@ nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 
 ifeq ($(PERMUTER),)
 .PRECIOUS: data/%
-data/%: | disks/$(disk).bin $(build_deps)
-	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
+$(binaries:%=data/%) &: | disks/$(disk).bin $(build_deps)
+	$(ECHO) Dumping files from disk
+	@$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
 build/config/$(disk)_LBA.txt: $(shell $(FIND) data -type f)

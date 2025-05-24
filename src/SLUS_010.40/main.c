@@ -13,6 +13,18 @@
 #include <libgpu.h>
 #include <rand.h>
 
+
+enum vs_main_CdQueueState {
+    vs_main_CdQueueStateFree = 0,
+    vs_main_CdQueueStateAllocated = 1,
+    vs_main_CdQueueStateReading = 2,
+    vs_main_CdQueueStateEnqueued = 3,
+    vs_main_CdQueueStateLoaded = 4,
+    vs_main_CdQueueStateFreeing = 5,
+    vs_main_CdQueueStateFreeingDone = 6,
+    vs_main_CdQueueStateFreeingError = 7,
+};
+
 typedef struct vs_main_HeapHeader {
     struct vs_main_HeapHeader* prev;
     struct vs_main_HeapHeader* next;
@@ -49,7 +61,7 @@ typedef struct {
 } D_80050118_t;
 
 typedef struct {
-    int offset;
+    int musicId;
     u_int unk4;
     int unk8;
     union {
@@ -148,7 +160,7 @@ typedef struct {
     u_int unk38;
     u_int unk3C;
     u_int unk40;
-    int unk44;
+    int framesSinceLastRead;
 } vs_main_disk_t;
 
 typedef union {
@@ -204,7 +216,7 @@ static void func_80043668();
 static void _initCdQueue();
 static void _diskReset();
 static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
-static void func_80044C74();
+static void _processCdQueue();
 static int func_80045440(int arg0);
 static void func_800455F4();
 void func_80045754(int, int, int, int);
@@ -492,7 +504,7 @@ int vs_gametime_update(int arg0)
         _asmNop();
     }
 
-    func_80044C74();
+    _processCdQueue();
 
     if (vs_gametime.h >= 100) {
         return vs;
@@ -1762,28 +1774,28 @@ static void _cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
 
 static void _nop4() { }
 
-static void func_80044C74()
+static void _processCdQueue()
 {
-    ++vs_main_disk.unk44;
+    ++vs_main_disk.framesSinceLastRead;
 
     if (*(int*)&_cdQueueCount != 0) {
         vs_main_CdQueueSlot* slot = _cdQueue;
         int i = vs_main_diskGetState();
         if (i == diskIdle) {
             for (i = 0; i < 32; ++i, ++slot) {
-                if (slot->state == 3) {
+                if (slot->state == vs_main_CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
-                        slot->state = 2;
+                        slot->state = vs_main_CdQueueStateReading;
                         vs_main_diskInitRead(
                             slot->cdFile.lba, slot->cdFile.size, slot->vram);
-                        vs_main_disk.unk44 = 0;
+                        vs_main_disk.framesSinceLastRead = 0;
                         --_cdQueueCount.queued;
                         ++_cdQueueCount.processing;
                     } else {
                         --slot->priority;
                     }
-                } else if (slot->state == 2) {
-                    slot->state = 4;
+                } else if (slot->state == vs_main_CdQueueStateReading) {
+                    slot->state = vs_main_CdQueueStateLoaded;
                     --_cdQueueCount.processing;
                 }
             }
@@ -1798,25 +1810,25 @@ static void func_80044DB4() { func_80012004(); }
 
 static void func_80044DD4() { func_80012468(); }
 
-static int func_80044DF4(int arg0)
+static int func_80044DF4(int id)
 {
     u_int new_var;
     int var_a1;
 
-    if (arg0 != 0) {
-        if (D_8005E038.unk14[arg0 - 1] != 0xFFFF) {
-            func_80011FDC(D_8005E038.unk14[arg0 - 1]);
-            D_8005E038.unk14[arg0 - 1] = 0xFFFF;
+    if (id != 0) {
+        if (D_8005E038.unk14[id - 1] != 0xFFFF) {
+            func_80011FDC(D_8005E038.unk14[id - 1]);
+            D_8005E038.unk14[id - 1] = 0xFFFF;
         }
-        if (D_8005E038.offset == arg0) {
-            D_8005E038.offset = 0;
+        if (D_8005E038.musicId == id) {
+            D_8005E038.musicId = 0;
             D_8005E038.unkC_u.unkC_i = 0;
             D_8005E038.unk4 = 0xFFFF;
         }
         return 1;
     }
     func_80012B78();
-    D_8005E038.offset = 0;
+    D_8005E038.musicId = 0;
     D_8005E038.unkC_u.unkC_i = 0;
     D_8005E038.unk4 = 0xFFFF;
 
@@ -1827,74 +1839,74 @@ static int func_80044DF4(int arg0)
     return 1;
 }
 
-static int func_80044EC8(int arg0)
+static int func_80044EC8(int id)
 {
     u_int temp_v0;
 
-    if (arg0 != 0) {
-        if (D_8005E038.musicData[arg0 - 1] != 0) {
-            D_8005E038.offset = arg0;
+    if (id != 0) {
+        if (D_8005E038.musicData[id - 1] != 0) {
+            D_8005E038.musicId = id;
             temp_v0 = func_800120E8(
-                D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[arg0 - 1]);
+                D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1]);
             if (temp_v0 != 0) {
-                D_8005E038.unk14[arg0 - 1] = temp_v0;
+                D_8005E038.unk14[id - 1] = temp_v0;
                 D_8005E038.unk4 = temp_v0;
             }
-            D_8005E038.unk8 = D_8005E038.unk10[arg0 - 1];
+            D_8005E038.unk8 = D_8005E038.unk10[id - 1];
         }
         return D_8005E03C;
     }
     return 0;
 }
 
-static int func_80044F60(int arg0, int arg1, u_int arg2)
+static int func_80044F60(int id, int arg1, u_int arg2)
 {
     u_int temp_v0;
 
-    if (arg0 != 0) {
-        if (D_8005E038.musicData[arg0 - 1] != 0) {
-            D_8005E038.offset = arg0;
-            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[arg0 - 1];
+    if (id != 0) {
+        if (D_8005E038.musicData[id - 1] != 0) {
+            D_8005E038.musicId = id;
+            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1];
             temp_v0 = func_80012080(D_8005E038.unkC_u.unkC_i, arg2, arg1);
             if (temp_v0 != 0) {
-                D_8005E038.unk14[arg0 - 1] = temp_v0;
+                D_8005E038.unk14[id - 1] = temp_v0;
                 D_8005E038.unk4 = temp_v0;
             }
-            D_8005E038.unk8 = D_8005E038.unk10[arg0 - 1];
+            D_8005E038.unk8 = D_8005E038.unk10[id - 1];
         }
         return D_8005E03C;
     }
     return 0;
 }
 
-static int func_80045000(int arg0, int arg1, int arg2)
+static int func_80045000(int id, int arg1, int arg2)
 {
     u_int temp_v0;
 
-    if (arg0 != 0) {
-        if (D_8005E038.musicData[arg0 - 1] != 0) {
-            D_8005E038.offset = arg0;
-            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[arg0 - 1];
+    if (id != 0) {
+        if (D_8005E038.musicData[id - 1] != 0) {
+            D_8005E038.musicId = id;
+            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1];
             func_800128A0(0, arg2, arg1);
             temp_v0 = func_80011FB4(D_8005E038.unkC_u.unkC_i);
             if (temp_v0 != 0) {
-                D_8005E038.unk14[arg0 - 1] = temp_v0;
+                D_8005E038.unk14[id - 1] = temp_v0;
                 D_8005E038.unk4 = temp_v0;
                 func_800128A0(0, arg2, arg1);
             }
-            D_8005E038.unk8 = D_8005E038.unk10[arg0 - 1];
+            D_8005E038.unk8 = D_8005E038.unk10[id - 1];
         }
         return D_8005E03C;
     }
     return 0;
 }
 
-static int func_800450D4() { return D_8005E038.offset; }
+static int func_800450D4() { return D_8005E038.musicId; }
 
 static u_char func_800450E4()
 {
-    if (D_8005E038.offset != 0) {
-        return D_8005E038.unkC_u.unkC_s.unkF[D_8005E038.offset];
+    if (D_8005E038.musicId != 0) {
+        return D_8005E038.unkC_u.unkC_s.unkF[D_8005E038.musicId];
     }
     return 0;
 }
@@ -2040,27 +2052,27 @@ static int func_800454B8(int arg0)
 
 static void func_8004550C(int arg0) { func_800454B8(arg0); }
 
-static int func_8004552C(int arg0, int arg1, int arg2)
+static int func_8004552C(int id, int arg1, int arg2)
 {
-    if (D_8005E038.offset == arg0) {
+    if (D_8005E038.musicId == id) {
         func_800128A0(D_8005E038.unk4, arg2, arg1);
         return 1;
     }
     return 0;
 }
 
-static int func_80045574(int arg0, int arg1, int arg2)
+static int func_80045574(int id, int arg1, int arg2)
 {
-    if (D_8005E038.offset == arg0) {
+    if (D_8005E038.musicId == id) {
         func_800129D0(arg2, arg1);
         return 1;
     }
     return 0;
 }
 
-static int func_800455AC(int arg0, int arg1, int arg2)
+static int func_800455AC(int id, int arg1, int arg2)
 {
-    if (D_8005E038.offset == arg0) {
+    if (D_8005E038.musicId == id) {
         func_80012A6C(arg2, arg1);
         return 1;
     }
@@ -2073,10 +2085,10 @@ static int nop7() { return 0; }
 
 static void func_800455F4()
 {
-    int offset = D_8005E038.offset;
-    if (offset != 0) {
-        func_80044DF4(offset);
-        func_80045440(offset);
+    int id = D_8005E038.musicId;
+    if (id != 0) {
+        func_80044DF4(id);
+        func_80045440(id);
     }
 }
 
@@ -2781,7 +2793,7 @@ static void func_80046A38()
 {
     int i;
 
-    D_8005E038.offset = 0;
+    D_8005E038.musicId = 0;
     D_8005E038.unkC_u.unkC_i = 0;
     D_8005E038.unk8 = 0xFFFF;
     D_8005E038.unk4 = 0xFFFF;

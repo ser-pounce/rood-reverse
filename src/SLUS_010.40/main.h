@@ -9,17 +9,6 @@ typedef struct {
     int size;
 } vs_main_CdFile;
 
-enum vs_main_CdQueueState {
-    vs_main_CdQueueStateFree = 0,
-    vs_main_CdQueueStateAllocated = 1,
-    vs_main_CdQueueStateReadDone = 2,
-    vs_main_CdQueueStateEnqueued = 3,
-    vs_main_CdQueueStateLoaded = 4,
-    vs_main_CdQueueStateFreeing = 5,
-    vs_main_CdQueueStateFreeingDone = 6,
-    vs_main_CdQueueStateFreeingError = 7,
-};
-
 typedef struct {
     short state;
     short priority;

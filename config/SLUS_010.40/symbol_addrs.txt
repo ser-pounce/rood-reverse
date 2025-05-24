@@ -175,3 +175,4 @@ D_80055D58 = 0x80055D58; // size:0x8268
 sp = 0x8005DFD0;
 _frameDuration = 0x8005E1D8;
 loadImageSource = 0x8005E250;
+_processCdQueue = 0x80044C74;

@@ -103,10 +103,7 @@ u_char const* pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
-extern int D_8005DFDC;
-extern int vs_main_buttonsState;
-extern int D_8005E214;
-extern int vs_gametime_tickspeed;
+extern int vs_main_buttonRepeat;
 extern int D_8005FEA0[][3];
 extern u_char vs_main_skillsLearned[];
 extern u_char D_8005FFD8[];
@@ -1492,7 +1489,7 @@ int func_8006C15C(int arg0)
             }
             vs_main_playSfxDefault(0x7E, 7);
         }
-        if (D_8005DFDC & 0x1000) {
+        if (vs_main_buttonRepeat & 0x1000) {
             if (D_800DC8DB == 0) {
                 if (D_800DC8DA != 0) {
                     --D_800DC8DA;
@@ -1501,7 +1498,7 @@ int func_8006C15C(int arg0)
                 --D_800DC8DB;
             }
         }
-        if (D_8005DFDC & 0x4000) {
+        if (vs_main_buttonRepeat & 0x4000) {
             if (D_800DC8DB == 2) {
                 if (D_800DC8DA < 2) {
                     ++D_800DC8DA;
@@ -1651,7 +1648,7 @@ int func_8006CABC(int arg0)
             D_800DED68 = 0;
             D_800DC8E0 = 5;
         } else {
-            if (D_8005DFDC & 0x5000) {
+            if (vs_main_buttonRepeat & 0x5000) {
                 vs_main_playSfxDefault(0x7E, 4);
                 D_800DC8E1 = 3 - D_800DC8E1;
             }
@@ -1732,7 +1729,7 @@ int func_8006CE6C(int arg0)
             vs_main_playSfxDefault(0x7E, 6);
             return -1;
         }
-        if (D_8005DFDC & 0x5000) {
+        if (vs_main_buttonRepeat & 0x5000) {
             vs_main_playSfxDefault(0x7E, 4);
             D_800DC8E9 = 1 - D_800DC8E9;
         }
@@ -1893,7 +1890,7 @@ int func_8006D2F8(int arg0)
                     vs_main_playSfxDefault(0x7E, 7);
                 }
             }
-            if (D_8005DFDC & 0x1000) {
+            if (vs_main_buttonRepeat & 0x1000) {
                 if (D_800DC91F == 0) {
                     if (D_800DC91E != 0) {
                         --D_800DC91E;
@@ -1902,7 +1899,7 @@ int func_8006D2F8(int arg0)
                     --D_800DC91F;
                 }
             }
-            if (D_8005DFDC & 0x4000) {
+            if (vs_main_buttonRepeat & 0x4000) {
                 if (D_800DC91F == 2) {
                     if (D_800DC91E < 2) {
                         ++D_800DC91E;
@@ -2164,7 +2161,7 @@ int func_8006E00C(int arg0)
             D_800DED68 = 0;
             D_800DC923 = 7;
         } else {
-            if (D_8005DFDC & 0x5000) {
+            if (vs_main_buttonRepeat & 0x5000) {
                 vs_main_playSfxDefault(0x7E, 4);
                 D_800DC924 = 3 - D_800DC924;
             }
@@ -2393,7 +2390,7 @@ int func_8006EA70(int arg0)
             }
             break;
         }
-        if (D_8005DFDC & 0x5000) {
+        if (vs_main_buttonRepeat & 0x5000) {
             func_80068A68();
             D_800DC932 = 3 - D_800DC932;
         }
@@ -3418,8 +3415,8 @@ int vs_title_exec()
     int var_s3;
     void* temp_s1;
 
-    if (D_8005E214 != 0) {
-        D_8005E214 = 0;
+    if (vs_main_saveBeforeTitle != 0) {
+        vs_main_saveBeforeTitle = 0;
         D_8004A528 = 0;
         func_8006EDBC();
     }

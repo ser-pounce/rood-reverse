@@ -56,7 +56,7 @@ typedef struct {
     u_short unkA;
     u_char* unkC;
     int unk10[10];
-} D_80050118_t;
+} _padAct_t;
 
 typedef struct {
     int currentMusicId;
@@ -210,7 +210,7 @@ void vs_main_padConnect(int, u_char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static int vs_main_diskGetState();
 void func_80042CB0();
-static void func_80043668();
+static void vs_main_resetPadAct();
 static void _initCdQueue();
 static void _diskReset();
 static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
@@ -258,7 +258,7 @@ extern char _animOffset2[63][2];
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];
 extern vs_main_HeapHeader* D_80050110;
-extern D_80050118_t D_80050118[2];
+extern _padAct_t _padAct[2];
 extern PortInfo vs_main_portInfo[2];
 extern vs_main_HeapHeader heapA;
 extern vs_main_HeapHeader heapB;
@@ -277,7 +277,7 @@ extern int vs_main_startState;
 extern int _sfxData[VS_EFFECT00_DAT_SIZE];
 extern int sp2;
 extern int _resetEnabled;
-extern u_int D_80055C90[];
+extern u_int _buttonHeldFrameCount[];
 extern vs_main_disk_t vs_main_disk;
 extern u_char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
@@ -288,8 +288,8 @@ extern int D_8005E03C;
 extern void* D_8005E08C;
 extern int D_8005E0BC;
 extern u_int _frameDuration;
-extern int D_8005E214;
-extern int D_8005E240;
+extern int vs_main_saveBeforeTitle;
+extern int _inGame;
 extern int vs_gametime_tickspeed;
 extern u_short loadImageSource[][256];
 extern int D_8005FE70;
@@ -306,7 +306,7 @@ extern Gametime_t vs_gametime;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
-extern int D_8005DFDC;
+extern int vs_main_buttonRepeat;
 extern u_char D_80060020[];
 
 static void _loadBattlePrg()
@@ -380,8 +380,8 @@ static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
 {
-    SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 0x10);
-    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 0x100, 0xE0);
+    SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
+    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     PutDispEnv(vs_main_dispEnv);
 }
 
@@ -441,7 +441,7 @@ static void _resetGame()
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
-    VSync(0xA);
+    VSync(10);
     vs_overlay_jumpToTitle(&sp2);
 }
 
@@ -465,9 +465,9 @@ void vs_main_jumpToBattle()
     vs_overlay_jumpToBattle(&sp);
 }
 
-void vs_main_jumpToTitle()
+void vs_main_showEndingAndReturnToTitle()
 {
-    D_8005E240 = 0;
+    _inGame = 0;
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
@@ -491,7 +491,7 @@ void vs_main_jumpToTitle()
     vs_sound_Shutdown();
     SpuQuit();
     ResetGraph(3);
-    D_8005E214 = 1;
+    vs_main_saveBeforeTitle = 1;
     vs_overlay_jumpToTitle(&sp2);
 }
 
@@ -558,7 +558,7 @@ static void _initRand()
     randIndex = RANDARRSZ - 1;
 }
 
-int vs_main_getRand(int arg0)
+int vs_main_getRand(int max)
 {
     int temp_s0;
     int var_a0;
@@ -575,7 +575,7 @@ int vs_main_getRand(int arg0)
     temp_s0 = 0x7FFF - randArr[randIndex];
     randArr[randIndex] = rand();
 
-    var_a0 = temp_s0 * arg0;
+    var_a0 = temp_s0 * max;
 
     if (var_a0 < 0) {
         var_a0 += 0x7FFF;
@@ -584,7 +584,7 @@ int vs_main_getRand(int arg0)
     return var_a0 >> 0xF;
 }
 
-int vs_main_getRands(int arg0)
+int vs_main_getRandNormal(int arg0)
 {
     return (vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
                + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
@@ -608,12 +608,12 @@ static void _sysInit()
     _padResetDefaults(0x10, vs_main_padBuffer[1]);
     PadStartCom();
     _padForceMode();
-    func_80043668();
+    vs_main_resetPadAct();
     SsUtReverbOff();
     DsInit();
     _initRand();
     _resetEnabled = 1;
-    D_8005E214 = 0;
+    vs_main_saveBeforeTitle = 0;
 }
 
 static void _sysReinit()
@@ -637,12 +637,12 @@ static void _sysReinit()
     _initCdQueue();
     _diskReset();
     _loadMenuSound();
-    func_80043668();
-    D_8005E240 = 0;
+    vs_main_resetPadAct();
+    _inGame = 0;
     _padForceMode();
 
     for (i = 31; i >= 0; --i) {
-        D_80055C90[i] = 0;
+        _buttonHeldFrameCount[i] = 0;
     }
     vs_gametime.h = 0;
     vs_gametime.m = 0;
@@ -657,11 +657,11 @@ int vs_main_execTitle()
     _sysReinit();
     _loadTitlePrg();
     vs_main_startState = vs_title_exec();
-    D_8005E214 = 0;
+    vs_main_saveBeforeTitle = 0;
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_overlay_getSp(&sp);
-    D_8005E240 = 1;
+    _inGame = 1;
     vs_battle_exec();
     SetDispMask(0);
     vs_main_stopMusic();
@@ -885,7 +885,7 @@ static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 
     if (arg1 == 0xFF) {
         for (i = 0; i < 2; ++i) {
-            if (D_80050118[i].unk8 == 0) {
+            if (_padAct[i].unk8 == 0) {
                 ret = i + 1;
                 break;
             }
@@ -896,15 +896,15 @@ static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 
     if (ret != 0) {
         i = ret - 1;
-        D_80050118[i].unkC = arg0;
-        D_80050118[i].unk10[4] = 1;
-        D_80050118[i].unk10[10] = *arg0;
-        D_80050118[i].unk10[11] = 0;
-        D_80050118[i].unk10[5] = 0;
-        D_80050118[i].unk10[7] = 0;
-        D_80050118[i].unk10[1] = 0;
-        D_80050118[i].unk8 = 1;
-        D_80050118[i].unkA = arg2;
+        _padAct[i].unkC = arg0;
+        _padAct[i].unk10[4] = 1;
+        _padAct[i].unk10[10] = *arg0;
+        _padAct[i].unk10[11] = 0;
+        _padAct[i].unk10[5] = 0;
+        _padAct[i].unk10[7] = 0;
+        _padAct[i].unk10[1] = 0;
+        _padAct[i].unk8 = 1;
+        _padAct[i].unkA = arg2;
         return ret;
     }
     return 0;
@@ -913,10 +913,10 @@ static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
 static int func_80043470(int arg0)
 {
     int i = arg0 - 1;
-    D_80050118[i].unk10[7] = 0;
-    D_80050118[i].unk10[1] = 0;
-    D_80050118[i].unkC = 0;
-    D_80050118[i].unk8 = 0;
+    _padAct[i].unk10[7] = 0;
+    _padAct[i].unk10[1] = 0;
+    _padAct[i].unkC = 0;
+    _padAct[i].unk8 = 0;
 
     return arg0;
 }
@@ -932,7 +932,7 @@ static int func_800434A4(int arg0, int arg1)
         i = 0;
         if (arg1 != 0) {
             for (; i < 2; ++i) {
-                if (D_80050118[i].unkA == arg1) {
+                if (_padAct[i].unkA == arg1) {
                     func_80043470(i + 1);
                 }
             }
@@ -950,7 +950,7 @@ static int func_800434A4(int arg0, int arg1)
 static int func_80043554(int arg0)
 {
     int v0 = arg0 - 1;
-    D_80050118[v0].unk8 = 0;
+    _padAct[v0].unk8 = 0;
     return arg0;
 }
 
@@ -974,7 +974,7 @@ static int func_8004357C(int arg0)
 static int func_800435DC(int arg0)
 {
     int v0 = arg0 - 1;
-    D_80050118[v0].unk8 = 1;
+    _padAct[v0].unk8 = 1;
     return arg0;
 }
 
@@ -995,17 +995,17 @@ static int func_80043608(int arg0)
     return 0;
 }
 
-static void func_80043668()
+void vs_main_resetPadAct()
 {
     int i;
 
     vs_main_padDisconnectAll();
 
     for (i = 0; i < 2; ++i) {
-        D_80050118[i].unkC = 0;
-        D_80050118[i].unk10[7] = 0;
-        D_80050118[i].unk10[1] = 0;
-        D_80050118[i].unk8 = 0;
+        _padAct[i].unkC = NULL;
+        _padAct[i].unk10[7] = 0;
+        _padAct[i].unk10[1] = 0;
+        _padAct[i].unk8 = 0;
     }
 }
 
@@ -1021,19 +1021,19 @@ void func_800436B4()
     u_char* temp_t1;
     int new_var;
 
-    D_80050118[0].unk0[1] = 0;
-    D_80050118[0].unk0[0] = 0;
+    _padAct[0].unk0[1] = 0;
+    _padAct[0].unk0[0] = 0;
 
     for (j = 0; j < 2; ++j) {
-        if (D_80050118[j].unk8 == 0) {
+        if (_padAct[j].unk8 == 0) {
             continue;
         }
 
-        temp_t1 = D_80050118[j].unkC;
+        temp_t1 = _padAct[j].unkC;
 
         if (temp_t1 != 0) {
             for (i = 0; i < 2; ++i) {
-                int(*a1)[6] = (int(*)[6])D_80050118[j].unk10;
+                int(*a1)[6] = (int(*)[6])_padAct[j].unk10;
                 if (a1[i][5] == 0) {
                     temp_a0 = a1[i][4];
                     a1[i][5] = temp_t1[temp_a0++];
@@ -1060,25 +1060,25 @@ void func_800436B4()
                     a1[i][1] = a1[i][3];
                 }
 
-                D_80050118[0].unk0[i] += a1[i][1];
-                if (D_80050118[0].unk0[i] > 0xFF00) {
-                    D_80050118[0].unk0[i] = 0xFF00;
-                } else if (D_80050118[0].unk0[i] < 0) {
-                    D_80050118[0].unk0[i] = 0;
+                _padAct[0].unk0[i] += a1[i][1];
+                if (_padAct[0].unk0[i] > 0xFF00) {
+                    _padAct[0].unk0[i] = 0xFF00;
+                } else if (_padAct[0].unk0[i] < 0) {
+                    _padAct[0].unk0[i] = 0;
                 }
             }
-            D_80050118[j].unk8 = D_80050118[j].unk10[0] | D_80050118[j].unk10[6];
-            if (D_80050118[j].unk8 == 0) {
-                D_80050118[j].unkC = 0;
+            _padAct[j].unk8 = _padAct[j].unk10[0] | _padAct[j].unk10[6];
+            if (_padAct[j].unk8 == 0) {
+                _padAct[j].unkC = 0;
             }
             continue;
         }
-        D_80050118[j].unk8 = 0;
+        _padAct[j].unk8 = 0;
     }
 
     if (D_8006002B != 0) {
-        _padSetActData(0, 0, _abs2(D_80050118[0].unk0[0]) >> 8);
-        _padSetActData(0, 1, _abs2(D_80050118[0].unk0[1]) >> 8);
+        _padSetActData(0, 0, _abs2(_padAct[0].unk0[0]) >> 8);
+        _padSetActData(0, 1, _abs2(_padAct[0].unk0[1]) >> 8);
     }
 }
 
@@ -1169,17 +1169,17 @@ int vs_main_processPadState()
     btnState = vs_main_buttonsState;
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
-            D_80055C90[i] += vs_gametime_tickspeed;
+            _buttonHeldFrameCount[i] += vs_gametime_tickspeed;
         } else {
-            D_80055C90[i] = 0;
+            _buttonHeldFrameCount[i] = 0;
         }
     }
 
-    D_8005DFDC = vs_main_buttonsPressed;
+    vs_main_buttonRepeat = vs_main_buttonsPressed;
 
     for (i = 0; i < 32; ++i) {
-        if ((D_80055C90[i] >= 20) && !((D_80055C90[i] - 20) & 3)) {
-            D_8005DFDC |= 1 << i;
+        if ((_buttonHeldFrameCount[i] >= 20) && !((_buttonHeldFrameCount[i] - 20) & 3)) {
+            vs_main_buttonRepeat |= 1 << i;
         }
     }
 

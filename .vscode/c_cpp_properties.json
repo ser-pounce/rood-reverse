@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/include/psx/**",
+                "${workspaceFolder}/src/include/**",
+                "${workspaceFolder}/build/src/include/**"
+            ],
+            "defines": [
+                "_LANGUAGE_C"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerArgs": [
+                "-nostdinc "
+            ]
+        }
+    ],
+    "version": 4
+}

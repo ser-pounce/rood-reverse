@@ -1,5 +1,5 @@
 #pragma once
-#include <sys/types.h>
+#include <stddef.h>
 
 #ifndef PERMUTER
 

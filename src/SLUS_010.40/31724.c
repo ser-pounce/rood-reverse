@@ -106,6 +106,8 @@ u_short const _trig_table[] = { 0x0000, 0x1000, 0x0006, 0x1000, 0x000D, 0x1000, 
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_cosine);
 
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_sine);
+
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80040F8C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041104);

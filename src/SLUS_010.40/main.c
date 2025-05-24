@@ -13,16 +13,14 @@
 #include <libgpu.h>
 #include <rand.h>
 
-
 enum vs_main_CdQueueState {
     vs_main_CdQueueStateFree = 0,
     vs_main_CdQueueStateAllocated = 1,
     vs_main_CdQueueStateReading = 2,
     vs_main_CdQueueStateEnqueued = 3,
     vs_main_CdQueueStateLoaded = 4,
-    vs_main_CdQueueStateFreeing = 5,
-    vs_main_CdQueueStateFreeingDone = 6,
-    vs_main_CdQueueStateFreeingError = 7,
+    vs_main_CdQueueStateError = 6,
+    vs_main_CdQueueStateDispatched = 7,
 };
 
 typedef struct vs_main_HeapHeader {
@@ -61,7 +59,7 @@ typedef struct {
 } D_80050118_t;
 
 typedef struct {
-    int musicId;
+    int currentMusicId;
     u_int unk4;
     int unk8;
     union {
@@ -70,14 +68,14 @@ typedef struct {
             u_char unkE;
             u_char unkF[1];
         } unkC_s;
-        u_int unkC_i;
+        void* unkC_i;
     } unkC_u;
     u_char unk10[2];
     u_int unk14[4];
     void* musicData[4];
     vs_main_CdQueueSlot* musicQueueSlot[4];
-    u_int unk44;
-    u_char unk48[4];
+    u_int currentSeId;
+    u_char seIds[4];
     void* seData[3];
     vs_main_CdQueueSlot* seQueueSlot[3];
     void* unk64[3];
@@ -217,9 +215,9 @@ static void _initCdQueue();
 static void _diskReset();
 static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
 static void _processCdQueue();
-static int func_80045440(int arg0);
-static void func_800455F4();
-void func_80045754(int, int, int, int);
+static int vs_main_freeMusic(int arg0);
+static void vs_main_stopMusic();
+void vs_main_playSfx(int, int, int, int);
 static void func_800461CC(int, u_int[], u_int, int, int);
 static int func_800464FC(int, int, int);
 static void func_80046678(int);
@@ -276,7 +274,7 @@ extern struct {
     short queued;
 } _cdQueueCount;
 extern int vs_main_startState;
-extern int D_80050478[];
+extern int _seData[VS_EFFECT00_DAT_SIZE];
 extern int sp2;
 extern int _resetEnabled;
 extern u_int D_80055C90[];
@@ -666,7 +664,7 @@ int vs_main_execTitle()
     D_8005E240 = 1;
     vs_battle_exec();
     SetDispMask(0);
-    func_800455F4();
+    vs_main_stopMusic();
     return 0;
 }
 
@@ -1761,11 +1759,11 @@ static void _cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
     vs_main_CdQueueSlot* queue = _cdQueue;
 
     for (i = 0; i < 32; ++i, ++queue) {
-        if (queue->state == 3) {
+        if (queue->state == vs_main_CdQueueStateEnqueued) {
             ++queue->priority;
         }
     }
-    slot->state = 3;
+    slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unkC = 0;
     slot->priority = 0;
@@ -1820,15 +1818,15 @@ static int func_80044DF4(int id)
             func_80011FDC(D_8005E038.unk14[id - 1]);
             D_8005E038.unk14[id - 1] = 0xFFFF;
         }
-        if (D_8005E038.musicId == id) {
-            D_8005E038.musicId = 0;
+        if (D_8005E038.currentMusicId == id) {
+            D_8005E038.currentMusicId = 0;
             D_8005E038.unkC_u.unkC_i = 0;
             D_8005E038.unk4 = 0xFFFF;
         }
         return 1;
     }
     func_80012B78();
-    D_8005E038.musicId = 0;
+    D_8005E038.currentMusicId = 0;
     D_8005E038.unkC_u.unkC_i = 0;
     D_8005E038.unk4 = 0xFFFF;
 
@@ -1845,9 +1843,9 @@ static int func_80044EC8(int id)
 
     if (id != 0) {
         if (D_8005E038.musicData[id - 1] != 0) {
-            D_8005E038.musicId = id;
-            temp_v0 = func_800120E8(
-                D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1]);
+            D_8005E038.currentMusicId = id;
+            temp_v0
+                = func_800120E8(D_8005E038.unkC_u.unkC_i = D_8005E038.musicData[id - 1]);
             if (temp_v0 != 0) {
                 D_8005E038.unk14[id - 1] = temp_v0;
                 D_8005E038.unk4 = temp_v0;
@@ -1865,8 +1863,8 @@ static int func_80044F60(int id, int arg1, u_int arg2)
 
     if (id != 0) {
         if (D_8005E038.musicData[id - 1] != 0) {
-            D_8005E038.musicId = id;
-            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1];
+            D_8005E038.currentMusicId = id;
+            D_8005E038.unkC_u.unkC_i = D_8005E038.musicData[id - 1];
             temp_v0 = func_80012080(D_8005E038.unkC_u.unkC_i, arg2, arg1);
             if (temp_v0 != 0) {
                 D_8005E038.unk14[id - 1] = temp_v0;
@@ -1885,8 +1883,8 @@ static int func_80045000(int id, int arg1, int arg2)
 
     if (id != 0) {
         if (D_8005E038.musicData[id - 1] != 0) {
-            D_8005E038.musicId = id;
-            D_8005E038.unkC_u.unkC_i = (u_int)D_8005E038.musicData[id - 1];
+            D_8005E038.currentMusicId = id;
+            D_8005E038.unkC_u.unkC_i = D_8005E038.musicData[id - 1];
             func_800128A0(0, arg2, arg1);
             temp_v0 = func_80011FB4(D_8005E038.unkC_u.unkC_i);
             if (temp_v0 != 0) {
@@ -1901,81 +1899,82 @@ static int func_80045000(int id, int arg1, int arg2)
     return 0;
 }
 
-static int func_800450D4() { return D_8005E038.musicId; }
+static int func_800450D4() { return D_8005E038.currentMusicId; }
 
 static u_char func_800450E4()
 {
-    if (D_8005E038.musicId != 0) {
-        return D_8005E038.unkC_u.unkC_s.unkF[D_8005E038.musicId];
+    if (D_8005E038.currentMusicId != 0) {
+        return D_8005E038.unkC_u.unkC_s.unkF[D_8005E038.currentMusicId];
     }
     return 0;
 }
 
-static int func_80045110(int arg0, int arg1)
+int vs_main_loadMusicSlot(int id, int targetSlot)
 {
     vs_main_CdFile cdFile;
 
-    if (arg0 > 0 && arg1 > 0) {
-        int arg = arg1 - 1;
+    if (id > 0 && targetSlot > 0) {
+        int slot = targetSlot - 1;
 
-        if (arg1 < 5) {
-            if (D_8005E038.unk10[arg] != arg0) {
+        if (targetSlot < 5) {
+            if (D_8005E038.unk10[slot] != id) {
                 do {
-                    if (D_8005E038.musicData[arg] != 0) {
+                    if (D_8005E038.musicData[slot] != 0) {
                         nop10(142, 0);
-                        func_80045440(arg1);
+                        vs_main_freeMusic(targetSlot);
                     }
                 } while (0);
 
-                cdFile.lba = _musicLBAs[arg0];
-                cdFile.size = _musicFileSizes[arg0];
+                cdFile.lba = _musicLBAs[id];
+                cdFile.size = _musicFileSizes[id];
 
-                if ((D_8005E038.musicQueueSlot[arg] != 0)
-                    && (D_8005E038.musicQueueSlot[arg] != (vs_main_CdQueueSlot*)-1)) {
+                if ((D_8005E038.musicQueueSlot[slot] != 0)
+                    && (D_8005E038.musicQueueSlot[slot] != (vs_main_CdQueueSlot*)-1)) {
                     vs_main_nop9(0x98, 0);
                 }
 
-                D_8005E038.musicQueueSlot[arg] = vs_main_allocateCdQueueSlot(&cdFile);
+                D_8005E038.musicQueueSlot[slot] = vs_main_allocateCdQueueSlot(&cdFile);
 
-                if (D_8005E038.musicData[arg] != 0) {
+                if (D_8005E038.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
-                D_8005E038.musicData[arg] = vs_main_allocHeapR(cdFile.size);
+                D_8005E038.musicData[slot] = vs_main_allocHeapR(cdFile.size);
                 vs_main_cdEnqueue(
-                    D_8005E038.musicQueueSlot[arg], D_8005E038.musicData[arg]);
-                D_8005E038.unk10[arg] = arg0;
+                    D_8005E038.musicQueueSlot[slot], D_8005E038.musicData[slot]);
+                D_8005E038.unk10[slot] = id;
             }
-            return arg1;
+            return targetSlot;
         }
     }
     vs_main_nop9(0x8E, 0);
     return 0;
 }
 
-static int func_80045270(int arg0)
+static int _loadMusic(int id)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
         if (D_8005E038.musicData[i] == 0) {
-            return func_80045110(arg0, i + 1);
+            return vs_main_loadMusicSlot(id, i + 1);
         }
     }
     return 0;
 }
 
-static int func_800452C8(u_int arg0)
+static int func_800452C8(u_int slot)
 {
-    if ((arg0 - 1) < 4) {
-        if (D_8005E038.musicQueueSlot[arg0 - 1] != 0) {
-            if (D_8005E038.musicQueueSlot[arg0 - 1]->state == 4) {
-                vs_main_freeCdQueueSlot(D_8005E038.musicQueueSlot[arg0 - 1]);
-                D_8005E038.musicQueueSlot[arg0 - 1] = 0;
+    if ((slot - 1) < 4) {
+        if (D_8005E038.musicQueueSlot[slot - 1] != 0) {
+            if (D_8005E038.musicQueueSlot[slot - 1]->state
+                == vs_main_CdQueueStateLoaded) {
+                vs_main_freeCdQueueSlot(D_8005E038.musicQueueSlot[slot - 1]);
+                D_8005E038.musicQueueSlot[slot - 1] = NULL;
                 return 0;
             }
-            if (D_8005E038.musicQueueSlot[arg0 - 1]->state == 6) {
-                vs_main_freeCdQueueSlot(D_8005E038.musicQueueSlot[arg0 - 1]);
-                D_8005E038.musicQueueSlot[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
+            if (D_8005E038.musicQueueSlot[slot - 1]->state == vs_main_CdQueueStateError) {
+                vs_main_freeCdQueueSlot(D_8005E038.musicQueueSlot[slot - 1]);
+                D_8005E038.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
             return 1;
@@ -2002,7 +2001,7 @@ static int func_8004539C(int arg0, int arg1)
 {
     int temp_v0;
 
-    temp_v0 = func_80045110(arg0, arg1);
+    temp_v0 = vs_main_loadMusicSlot(arg0, arg1);
     if (temp_v0 != 0) {
         while (func_800452C8(arg1) != 0) {
             vs_gametime_update(0);
@@ -2015,7 +2014,7 @@ static int func_800453F4(int arg0)
 {
     int ret;
 
-    ret = func_80045270(arg0);
+    ret = _loadMusic(arg0);
     if (ret != 0) {
         while (func_80045350() != 0) {
             vs_gametime_update(0);
@@ -2024,17 +2023,17 @@ static int func_800453F4(int arg0)
     return ret;
 }
 
-static int func_80045440(int arg0)
+static int vs_main_freeMusic(int slotId)
 {
-    func_80044DF4(arg0);
+    func_80044DF4(slotId);
 
-    if (D_8005E038.musicData[arg0 - 1] == 0) {
+    if (D_8005E038.musicData[slotId - 1] == 0) {
         return 0;
     }
 
-    vs_main_freeHeapR(D_8005E038.musicData[arg0 - 1]);
-    D_8005E038.musicData[arg0 - 1] = 0;
-    D_8005E038.unk10[arg0 - 1] = 0;
+    vs_main_freeHeapR(D_8005E038.musicData[slotId - 1]);
+    D_8005E038.musicData[slotId - 1] = 0;
+    D_8005E038.unk10[slotId - 1] = 0;
     return 1;
 }
 
@@ -2054,7 +2053,7 @@ static void func_8004550C(int arg0) { func_800454B8(arg0); }
 
 static int func_8004552C(int id, int arg1, int arg2)
 {
-    if (D_8005E038.musicId == id) {
+    if (D_8005E038.currentMusicId == id) {
         func_800128A0(D_8005E038.unk4, arg2, arg1);
         return 1;
     }
@@ -2063,7 +2062,7 @@ static int func_8004552C(int id, int arg1, int arg2)
 
 static int func_80045574(int id, int arg1, int arg2)
 {
-    if (D_8005E038.musicId == id) {
+    if (D_8005E038.currentMusicId == id) {
         func_800129D0(arg2, arg1);
         return 1;
     }
@@ -2072,7 +2071,7 @@ static int func_80045574(int id, int arg1, int arg2)
 
 static int func_800455AC(int id, int arg1, int arg2)
 {
-    if (D_8005E038.musicId == id) {
+    if (D_8005E038.currentMusicId == id) {
         func_80012A6C(arg2, arg1);
         return 1;
     }
@@ -2083,12 +2082,12 @@ static int nop6() { return 0; }
 
 static int nop7() { return 0; }
 
-static void func_800455F4()
+void vs_main_stopMusic()
 {
-    int id = D_8005E038.musicId;
+    int id = D_8005E038.currentMusicId;
     if (id != 0) {
         func_80044DF4(id);
-        func_80045440(id);
+        vs_main_freeMusic(id);
     }
 }
 
@@ -2123,7 +2122,7 @@ static void func_800456EC(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-void func_80045754(int arg0, int arg1, int arg2, int arg3)
+void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
 {
     u_short var_s0;
     void* var_s0_2;
@@ -2153,7 +2152,7 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
 
         break;
     case 0xFF000:
-        var_s0_2 = D_8005E038.seData[D_8005E038.unk44 - 1];
+        var_s0_2 = D_8005E038.seData[D_8005E038.currentSeId - 1];
         var_s0_2 = (u_char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE80, arg2, arg3);
@@ -2184,9 +2183,12 @@ void func_80045754(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-void func_80045988(int arg0, int arg1) { func_80045754(arg0, arg1, 0x80, 0x7F); }
+void vs_main_playSfxDefault(int arg0, int arg1)
+{
+    vs_main_playSfx(arg0, arg1, 0x80, 0x7F);
+}
 
-int func_800459AC(int coords, int z)
+int vs_main_computeSfxPan(int coords, int z)
 {
     int v0;
     int new_var2;
@@ -2234,17 +2236,17 @@ int func_800459AC(int coords, int z)
     return (coords << 16) + new_var2;
 }
 
-static void func_80045A58(int arg0, int arg1, int coords, int z)
+static void _do_panSfx(int arg0, int arg1, int coords, int z)
 {
-    coords = func_800459AC(coords, z);
+    coords = vs_main_computeSfxPan(coords, z);
     z = coords & 0xFFFF;
     coords = coords >> 0x10;
     if (z > 0) {
-        func_80045754(arg0, arg1, coords, z);
+        vs_main_playSfx(arg0, arg1, coords, z);
     }
 }
 
-static void func_80045AA8(int arg0, int arg1, SVECTOR* vec)
+void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
 {
     int z;
     long coords;
@@ -2254,7 +2256,7 @@ static void func_80045AA8(int arg0, int arg1, SVECTOR* vec)
     SetRotMatrix(&D_1F800014_mat);
     SetTransMatrix(&D_1F800014_mat);
     z = RotTransPers(vec, &coords, &value, &flag);
-    func_80045A58(arg0, arg1, coords, z);
+    _do_panSfx(arg0, arg1, coords, z);
 }
 
 static int func_80045B28(int arg0, int arg1)
@@ -2271,7 +2273,7 @@ static int func_80045B28(int arg0, int arg1)
         break;
     case 0xFF000:
     case 0xF00000:
-        temp_v1 = (int)D_8005E038.seData[D_8005E038.unk44 - 1];
+        temp_v1 = (int)D_8005E038.seData[D_8005E038.currentSeId - 1];
         temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
         break;
     default:
@@ -2352,13 +2354,13 @@ static void func_80045D64(int arg0, int arg1)
 
 static void func_80045DC0() { func_80012B98(); }
 
-int func_80045DE0(int id, int slot)
+int func_80045DE0(int id, u_int slot)
 {
     vs_main_CdFile cdFile;
     u_int index;
 
-    if ((slot - 1u) < 3) {
-        if (D_8005E038.seData[(slot - 1)] == 0) {
+    if (slot - 1 < 3) {
+        if (D_8005E038.seData[slot - 1] == 0) {
             index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
@@ -2374,7 +2376,7 @@ int func_80045DE0(int id, int slot)
                 vs_main_nop9(0x90, 0);
             }
 
-            D_8005E038.unk48[index] = id;
+            D_8005E038.seIds[index] = id;
             D_8005E038.seData[index] = vs_main_allocHeapR(cdFile.size);
             vs_main_cdEnqueue(D_8005E038.seQueueSlot[index], D_8005E038.seData[index]);
 
@@ -2396,16 +2398,16 @@ static int func_80045F0C(int arg0)
     return 0;
 }
 
-static int func_80045F64(u_int arg0)
+static int vs_main_freeSeQueueSlot(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
-        if (D_8005E038.seQueueSlot[arg0 - 1] != 0) {
-            if (D_8005E038.seQueueSlot[arg0 - 1]->state == 4) {
+        if (D_8005E038.seQueueSlot[arg0 - 1] != NULL) {
+            if (D_8005E038.seQueueSlot[arg0 - 1]->state == vs_main_CdQueueStateLoaded) {
                 vs_main_freeCdQueueSlot(D_8005E038.seQueueSlot[arg0 - 1]);
-                D_8005E038.seQueueSlot[arg0 - 1] = 0;
+                D_8005E038.seQueueSlot[arg0 - 1] = NULL;
                 return 0;
             }
-            if (D_8005E038.seQueueSlot[arg0 - 1]->state == 6) {
+            if (D_8005E038.seQueueSlot[arg0 - 1]->state == vs_main_CdQueueStateError) {
                 vs_main_freeCdQueueSlot(D_8005E038.seQueueSlot[arg0 - 1]);
                 D_8005E038.seQueueSlot[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
@@ -2424,7 +2426,7 @@ static int func_80045FEC()
     ret = 0;
     i = 0;
     do {
-        ret |= func_80045F64(++i);
+        ret |= vs_main_freeSeQueueSlot(++i);
     } while (i < 3);
 
     return ret;
@@ -2446,7 +2448,7 @@ static int func_80046038(int arg0)
 static int func_80046084(int arg0)
 {
     if ((arg0 - 1u < 3) && D_8005E038.seData[arg0 - 1] != 0) {
-        D_8005E038.unk44 = arg0;
+        D_8005E038.currentSeId = arg0;
         return 1;
     }
     return 0;
@@ -2456,13 +2458,13 @@ static int func_800460C0(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
         if (D_8005E038.seData[arg0 - 1] != 0) {
-            if (D_8005E038.unk44 == arg0) {
-                D_8005E038.unk44 = 0;
+            if (D_8005E038.currentSeId == arg0) {
+                D_8005E038.currentSeId = 0;
             }
             func_80012288(-2, 0);
             func_80012288(0, 0xFF000);
             vs_main_freeHeapR(D_8005E038.seData[arg0 - 1]);
-            D_8005E038.unk48[arg0 - 1] = 0;
+            D_8005E038.seIds[arg0 - 1] = 0;
             D_8005E038.seData[arg0 - 1] = 0;
             return 1;
         }
@@ -2709,37 +2711,37 @@ static int func_800467A0()
 {
     int temp_v0;
 
-    if (D_8005E038.soundQueueSlot != 0) {
-        if (D_8005E038.soundQueueSlot->state == 7) {
+    if (D_8005E038.soundQueueSlot != NULL) {
+        if (D_8005E038.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
             temp_v0 = func_80012C04();
             if (temp_v0 == 0) {
                 vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
-                D_8005E038.soundQueueSlot = 0;
+                D_8005E038.soundQueueSlot = NULL;
                 vs_main_freeHeapR(D_8005E038.soundData);
-                D_8005E038.soundData = 0;
+                D_8005E038.soundData = NULL;
                 D_8005E038.soundFileId = 0;
                 return 0;
             }
             if (temp_v0 == -1) {
                 vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
-                D_8005E038.soundQueueSlot = 0;
+                D_8005E038.soundQueueSlot = NULL;
                 vs_main_freeHeapR(D_8005E038.soundData);
-                D_8005E038.soundData = 0;
+                D_8005E038.soundData = NULL;
                 D_8005E038.soundFileId = 0;
                 return -1;
             }
             return 1;
         }
-        if (D_8005E038.soundQueueSlot->state == 4) {
-            D_8005E038.soundQueueSlot->state = 7;
+        if (D_8005E038.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+            D_8005E038.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
             func_80013188(D_8005E038.soundData, 0);
             return 1;
         }
-        if (D_8005E038.soundQueueSlot->state == 6) {
+        if (D_8005E038.soundQueueSlot->state == vs_main_CdQueueStateError) {
             vs_main_freeCdQueueSlot(D_8005E038.soundQueueSlot);
-            D_8005E038.soundQueueSlot = 0;
+            D_8005E038.soundQueueSlot = NULL;
             vs_main_freeHeapR(D_8005E038.soundData);
-            D_8005E038.soundData = 0;
+            D_8005E038.soundData = NULL;
             D_8005E038.soundFileId = 0;
             return -1;
         }
@@ -2763,24 +2765,24 @@ static void func_800468DC() { func_80012918(0x7FFF); }
 
 static void _loadMenuSound()
 {
-    void* temp_v0;
+    void* buf;
 
     func_80011DAC();
     func_80013230(0x7F);
-    temp_v0 = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, temp_v0);
-    func_80012BB8(temp_v0, 1);
-    vs_main_freeHeapR(temp_v0);
-    temp_v0 = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, temp_v0);
-    func_80012BB8(temp_v0, 1);
-    vs_main_freeHeapR(temp_v0);
-    temp_v0 = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, temp_v0);
-    func_800131DC(temp_v0, 0, 1);
-    vs_main_freeHeapR(temp_v0);
-    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &D_80050478);
-    func_80011DEC(D_80050478);
+    buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
+    func_80012BB8(buf, 1);
+    vs_main_freeHeapR(buf);
+    buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
+    func_80012BB8(buf, 1);
+    vs_main_freeHeapR(buf);
+    buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
+    func_800131DC(buf, 0, 1);
+    vs_main_freeHeapR(buf);
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &_seData);
+    func_80011DEC(_seData);
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;
@@ -2793,11 +2795,11 @@ static void func_80046A38()
 {
     int i;
 
-    D_8005E038.musicId = 0;
+    D_8005E038.currentMusicId = 0;
     D_8005E038.unkC_u.unkC_i = 0;
     D_8005E038.unk8 = 0xFFFF;
     D_8005E038.unk4 = 0xFFFF;
-    D_8005E038.unk44 = 0;
+    D_8005E038.currentSeId = 0;
 
     for (i = 0; i < 4; ++i) {
         D_8005E038.unk10[i] = 0;
@@ -2807,7 +2809,7 @@ static void func_80046A38()
     }
 
     for (i = 0; i < 3; ++i) {
-        D_8005E038.unk48[i] = 0;
+        D_8005E038.seIds[i] = 0;
         D_8005E038.seData[i] = 0;
         D_8005E038.seQueueSlot[i] = 0;
     }

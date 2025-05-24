@@ -212,9 +212,9 @@ int func_80011F90()
     return new_var | (D_80037820->unk76[0] + 1);
 }
 
-u_int func_80011FB4(u_int arg0)
+u_int func_80011FB4(void* arg0)
 {
-    D_800378C0.unk0 = arg0;
+    D_800378C0.unk0 = (int)arg0;
     return func_80018C30(16);
 }
 
@@ -242,9 +242,9 @@ u_int func_80012034(u_int arg0, int arg1)
     return temp_v0;
 }
 
-u_int func_80012080(u_int arg0, u_int arg1, int arg2)
+u_int func_80012080(void* arg0, u_int arg1, int arg2)
 {
-    D_800378C0.unk0 = arg0;
+    D_800378C0.unk0 = (int)arg0;
     D_800378C0.unk4 = arg1;
     D_800378C0.unk8 = arg2 & 0x7F;
     return func_80018C30(26);
@@ -257,9 +257,9 @@ void func_800120B8(u_int arg0, u_int arg1)
     func_80018C30(18);
 }
 
-u_int func_800120E8(u_int arg0)
+u_int func_800120E8(void* arg0)
 {
-    D_800378C0.unk0 = arg0;
+    D_800378C0.unk0 = (int)arg0;
     return func_80018C30(20);
 }
 

@@ -74,10 +74,10 @@ typedef struct {
     u_int unk14[4];
     void* musicData[4];
     vs_main_CdQueueSlot* musicQueueSlot[4];
-    u_int currentSeId;
-    u_char seIds[4];
-    void* seData[3];
-    vs_main_CdQueueSlot* seQueueSlot[3];
+    u_int currentSfxId;
+    u_char sfxIds[4];
+    void* sfxData[3];
+    vs_main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
     int* unk70[3];
     int soundFileId;
@@ -274,7 +274,7 @@ extern struct {
     short queued;
 } _cdQueueCount;
 extern int vs_main_startState;
-extern int _seData[VS_EFFECT00_DAT_SIZE];
+extern int _sfxData[VS_EFFECT00_DAT_SIZE];
 extern int sp2;
 extern int _resetEnabled;
 extern u_int D_80055C90[];
@@ -2152,7 +2152,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
 
         break;
     case 0xFF000:
-        var_s0_2 = D_8005E038.seData[D_8005E038.currentSeId - 1];
+        var_s0_2 = D_8005E038.sfxData[D_8005E038.currentSfxId - 1];
         var_s0_2 = (u_char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
         if (func_800123C8((int)var_s0_2) != 0) {
             func_800456EC((int)var_s0_2, D_8005FE80, arg2, arg3);
@@ -2273,7 +2273,7 @@ static int func_80045B28(int arg0, int arg1)
         break;
     case 0xFF000:
     case 0xF00000:
-        temp_v1 = (int)D_8005E038.seData[D_8005E038.currentSeId - 1];
+        temp_v1 = (int)D_8005E038.sfxData[D_8005E038.currentSfxId - 1];
         temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
         break;
     default:
@@ -2354,31 +2354,30 @@ static void func_80045D64(int arg0, int arg1)
 
 static void func_80045DC0() { func_80012B98(); }
 
-int func_80045DE0(int id, u_int slot)
+int vs_main_loadSfxSlot(int id, u_int slot)
 {
     vs_main_CdFile cdFile;
-    u_int index;
 
     if (slot - 1 < 3) {
-        if (D_8005E038.seData[slot - 1] == 0) {
-            index = slot - 1;
+        if (D_8005E038.sfxData[slot - 1] == NULL) {
+            u_int index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
 
-            if ((D_8005E038.seQueueSlot[index] != 0)
-                && (D_8005E038.seQueueSlot[index] != (vs_main_CdQueueSlot*)-1)) {
+            if ((D_8005E038.sfxQueueSlot[index] != NULL)
+                && (D_8005E038.sfxQueueSlot[index] != (vs_main_CdQueueSlot*)-1)) {
                 vs_main_nop9(0x8F, 0);
             }
 
-            D_8005E038.seQueueSlot[index] = vs_main_allocateCdQueueSlot(&cdFile);
+            D_8005E038.sfxQueueSlot[index] = vs_main_allocateCdQueueSlot(&cdFile);
 
-            if (D_8005E038.seData[index] != 0) {
+            if (D_8005E038.sfxData[index] != NULL) {
                 vs_main_nop9(0x90, 0);
             }
 
-            D_8005E038.seIds[index] = id;
-            D_8005E038.seData[index] = vs_main_allocHeapR(cdFile.size);
-            vs_main_cdEnqueue(D_8005E038.seQueueSlot[index], D_8005E038.seData[index]);
+            D_8005E038.sfxIds[index] = id;
+            D_8005E038.sfxData[index] = vs_main_allocHeapR(cdFile.size);
+            vs_main_cdEnqueue(D_8005E038.sfxQueueSlot[index], D_8005E038.sfxData[index]);
 
             return slot;
         }
@@ -2386,30 +2385,30 @@ int func_80045DE0(int id, u_int slot)
     return 0;
 }
 
-static int func_80045F0C(int arg0)
+static int _loadSfx(int id)
 {
     int i;
 
     for (i = 0; i < 3; ++i) {
-        if (D_8005E038.seData[i] == 0) {
-            return func_80045DE0(arg0, i + 1);
+        if (D_8005E038.sfxData[i] == 0) {
+            return vs_main_loadSfxSlot(id, i + 1);
         }
     }
     return 0;
 }
 
-static int vs_main_freeSeQueueSlot(u_int arg0)
+int vs_main_freeSfxQueueSlot(u_int slot)
 {
-    if ((arg0 - 1) < 3) {
-        if (D_8005E038.seQueueSlot[arg0 - 1] != NULL) {
-            if (D_8005E038.seQueueSlot[arg0 - 1]->state == vs_main_CdQueueStateLoaded) {
-                vs_main_freeCdQueueSlot(D_8005E038.seQueueSlot[arg0 - 1]);
-                D_8005E038.seQueueSlot[arg0 - 1] = NULL;
+    if ((slot - 1) < 3) {
+        if (D_8005E038.sfxQueueSlot[slot - 1] != NULL) {
+            if (D_8005E038.sfxQueueSlot[slot - 1]->state == vs_main_CdQueueStateLoaded) {
+                vs_main_freeCdQueueSlot(D_8005E038.sfxQueueSlot[slot - 1]);
+                D_8005E038.sfxQueueSlot[slot - 1] = NULL;
                 return 0;
             }
-            if (D_8005E038.seQueueSlot[arg0 - 1]->state == vs_main_CdQueueStateError) {
-                vs_main_freeCdQueueSlot(D_8005E038.seQueueSlot[arg0 - 1]);
-                D_8005E038.seQueueSlot[arg0 - 1] = (vs_main_CdQueueSlot*)-1;
+            if (D_8005E038.sfxQueueSlot[slot - 1]->state == vs_main_CdQueueStateError) {
+                vs_main_freeCdQueueSlot(D_8005E038.sfxQueueSlot[slot - 1]);
+                D_8005E038.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
             }
             return 1;
@@ -2418,37 +2417,33 @@ static int vs_main_freeSeQueueSlot(u_int arg0)
     return 0;
 }
 
-static int func_80045FEC()
+static int _freeSfxSlots()
 {
     int i;
-    int ret;
-
-    ret = 0;
-    i = 0;
-    do {
-        ret |= vs_main_freeSeQueueSlot(++i);
-    } while (i < 3);
-
-    return ret;
-}
-
-static int func_80046038(int arg0)
-{
-    int ret;
-
-    ret = func_80045F0C(arg0);
-    if (ret != 0) {
-        while (func_80045FEC() != 0) {
-            vs_gametime_update(0);
-        }
+    int ret = 0;
+    for (i = 0; i < 3; ++i) {
+        ret |= vs_main_freeSfxQueueSlot(i + 1);
     }
     return ret;
 }
 
+static int _loadAndFreeSfx(int id)
+{
+    int slot;
+
+    slot = _loadSfx(id);
+    if (slot != 0) {
+        while (_freeSfxSlots() != 0) {
+            vs_gametime_update(0);
+        }
+    }
+    return slot;
+}
+
 static int func_80046084(int arg0)
 {
-    if ((arg0 - 1u < 3) && D_8005E038.seData[arg0 - 1] != 0) {
-        D_8005E038.currentSeId = arg0;
+    if ((arg0 - 1u < 3) && D_8005E038.sfxData[arg0 - 1] != 0) {
+        D_8005E038.currentSfxId = arg0;
         return 1;
     }
     return 0;
@@ -2457,15 +2452,15 @@ static int func_80046084(int arg0)
 static int func_800460C0(u_int arg0)
 {
     if ((arg0 - 1) < 3) {
-        if (D_8005E038.seData[arg0 - 1] != 0) {
-            if (D_8005E038.currentSeId == arg0) {
-                D_8005E038.currentSeId = 0;
+        if (D_8005E038.sfxData[arg0 - 1] != 0) {
+            if (D_8005E038.currentSfxId == arg0) {
+                D_8005E038.currentSfxId = 0;
             }
             func_80012288(-2, 0);
             func_80012288(0, 0xFF000);
-            vs_main_freeHeapR(D_8005E038.seData[arg0 - 1]);
-            D_8005E038.seIds[arg0 - 1] = 0;
-            D_8005E038.seData[arg0 - 1] = 0;
+            vs_main_freeHeapR(D_8005E038.sfxData[arg0 - 1]);
+            D_8005E038.sfxIds[arg0 - 1] = 0;
+            D_8005E038.sfxData[arg0 - 1] = 0;
             return 1;
         }
     }
@@ -2781,8 +2776,8 @@ static void _loadMenuSound()
     vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
     func_800131DC(buf, 0, 1);
     vs_main_freeHeapR(buf);
-    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &_seData);
-    func_80011DEC(_seData);
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &_sfxData);
+    func_80011DEC(_sfxData);
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;
@@ -2799,7 +2794,7 @@ static void func_80046A38()
     D_8005E038.unkC_u.unkC_i = 0;
     D_8005E038.unk8 = 0xFFFF;
     D_8005E038.unk4 = 0xFFFF;
-    D_8005E038.currentSeId = 0;
+    D_8005E038.currentSfxId = 0;
 
     for (i = 0; i < 4; ++i) {
         D_8005E038.unk10[i] = 0;
@@ -2809,9 +2804,9 @@ static void func_80046A38()
     }
 
     for (i = 0; i < 3; ++i) {
-        D_8005E038.seIds[i] = 0;
-        D_8005E038.seData[i] = 0;
-        D_8005E038.seQueueSlot[i] = 0;
+        D_8005E038.sfxIds[i] = 0;
+        D_8005E038.sfxData[i] = 0;
+        D_8005E038.sfxQueueSlot[i] = 0;
     }
 
     for (i = 0; i < 3; ++i) {

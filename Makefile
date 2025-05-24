@@ -165,7 +165,7 @@ nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 ifeq ($(PERMUTER),)
 .PRECIOUS: data/%
 data/%: | disks/$(disk).bin $(build_deps)
-	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin
+	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
 build/config/$(disk)_LBA.txt: $(shell $(FIND) data -type f)
@@ -192,7 +192,7 @@ $(DUMPSXISO):
 $(VPYTHON):
 	@$(ECHO) Installing virtual python environment to $(VPYDIR)
 	@$(PYTHON) -m venv $(VPYDIR)
-	@$(VPYTHON) -m pip install splat64[mips] toml pycparser pandas
+	@$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser pandas
 
 tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 	@$(ECHO) Building GCC $*

@@ -134,7 +134,16 @@ enum DiskState {
     diskReadReady = 2,
     diskReadError = 4,
     diskReadInit = 5,
-    diskCommandFailed = 8
+    diskReadXaInit = 6,
+    diskStreamXa = 7,
+    diskCommandFailed = 8,
+    diskStreamXaEnd = 9,
+};
+
+enum cdBufferModes {
+    cdBufferModeNone = 0,
+    cdBufferModeBuffered = 1,
+    cdBufferModeManual = 2,
 };
 
 typedef struct {
@@ -152,12 +161,12 @@ typedef struct {
     int commandId;
     int unk24;
     int unk28;
-    u_int unk2C;
+    u_int bufferMode;
     u_int sectorBufIndex;
     int unk34;
     u_int unk38;
     u_int unk3C;
-    u_int unk40;
+    u_int ringBufIndex;
     int framesSinceLastRead;
 } vs_main_disk_t;
 
@@ -204,13 +213,13 @@ void __main();
 static void _sysInit();
 static void _sysReinit();
 static void _wait();
-static void _padForceMode();
+static void _unlockPadModeSwitch();
 static void _padResetDefaults(int, u_char[34]);
 void vs_main_padConnect(int, u_char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static int vs_main_diskGetState();
 void func_80042CB0();
-static void vs_main_resetPadAct();
+void vs_main_resetPadAct();
 static void _initCdQueue();
 static void _diskReset();
 static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
@@ -584,7 +593,7 @@ int vs_main_getRand(int max)
     return var_a0 >> 0xF;
 }
 
-int vs_main_getRandNormal(int arg0)
+int vs_main_getRandSmoothed(int arg0)
 {
     return (vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
                + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
@@ -607,7 +616,7 @@ static void _sysInit()
     _padResetDefaults(0, vs_main_padBuffer[0]);
     _padResetDefaults(0x10, vs_main_padBuffer[1]);
     PadStartCom();
-    _padForceMode();
+    _unlockPadModeSwitch();
     vs_main_resetPadAct();
     SsUtReverbOff();
     DsInit();
@@ -639,7 +648,7 @@ static void _sysReinit()
     _loadMenuSound();
     vs_main_resetPadAct();
     _inGame = 0;
-    _padForceMode();
+    _unlockPadModeSwitch();
 
     for (i = 31; i >= 0; --i) {
         _buttonHeldFrameCount[i] = 0;
@@ -771,7 +780,7 @@ void vs_main_padDisconnectAll()
     vs_main_portInfo[1].connected = 0;
 }
 
-static void _padForceMode()
+static void _unlockPadModeSwitch()
 {
     vs_main_padDisconnectAll();
     if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
@@ -921,30 +930,27 @@ static int func_80043470(int arg0)
     return arg0;
 }
 
-static int func_800434A4(int arg0, int arg1)
+static int func_800434A4(unsigned int arg0, int arg1)
 {
     int i;
-
-    if ((arg0 - 1u) < 2) {
+    if (arg0 - 1 < 2) {
         return func_80043470(arg0);
     }
-    if (arg0 == 0) {
-        i = 0;
-        if (arg1 != 0) {
-            for (; i < 2; ++i) {
-                if (_padAct[i].unkA == arg1) {
-                    func_80043470(i + 1);
-                }
-            }
-            return 1;
-        }
-        do {
-            ++i;
-            func_80043470(i);
-        } while (i < 2);
-        return 1;
+    if (arg0 != 0) {
+        return 0;
     }
-    return 0;
+    if (arg1 != 0) {
+        for (i = 0; i < 2; ++i) {
+            if (_padAct[i].unkA == arg1) {
+                func_80043470(i + 1);
+            }
+        }
+    } else {
+        for (i = 0; i < 2;) {
+            func_80043470(++i);
+        }
+    }
+    return 1;
 }
 
 static int func_80043554(int arg0)
@@ -962,13 +968,15 @@ static int func_8004357C(int arg0)
         return func_80043554(arg0);
     }
 
-    if (arg0 == 0) {
-        for (i = 0; i < 2;) {
-            func_80043554(++i);
-        }
-        return 1;
+    if (arg0 != 0) {
+        return 0;
     }
-    return 0;
+
+    for (i = 0; i < 2;) {
+        func_80043554(++i);
+    }
+
+    return 1;
 }
 
 static int func_800435DC(int arg0)
@@ -986,13 +994,15 @@ static int func_80043608(int arg0)
         return func_800435DC(arg0);
     }
 
-    if (arg0 == 0) {
-        for (i = 0; i < 2;) {
-            func_800435DC(++i);
-        }
-        return 1;
+    if (arg0 != 0) {
+        return 0;
     }
-    return 0;
+
+    for (i = 0; i < 2;) {
+        func_800435DC(++i);
+    }
+
+    return 1;
 }
 
 void vs_main_resetPadAct()
@@ -1104,7 +1114,7 @@ void func_800438C8(int arg0)
 
 int vs_main_processPadState()
 {
-    int dummy[2];
+    int dummy[2] __attribute__((unused));
     int i;
     u_int btnState;
 
@@ -1183,14 +1193,16 @@ int vs_main_processPadState()
         }
     }
 
-#define RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
+#define VS_RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
 
-    if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & RESET) == RESET)
-        && (vs_main_buttonsPressed & RESET)) {
+    if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & VS_RESET) == VS_RESET)
+        && (vs_main_buttonsPressed & VS_RESET)) {
         D_80060020[10] = 0;
         D_80060020[11] = 1;
         _resetGame();
     }
+
+#undef VS_RESET
 
     return 1;
 }
@@ -1350,7 +1362,7 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
 
     vs_main_disk.state = diskReadReady;
 
-    if (vs_main_disk.unk2C == 0) {
+    if (vs_main_disk.bufferMode == cdBufferModeNone) {
         DsGetSector((u_char*)vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
         DsGetSector(D_80050110 + vs_main_disk.unk3C * 128, 512);
@@ -1359,20 +1371,20 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
         }
     }
 
-    switch (vs_main_disk.unk2C) {
-    case 0:
+    switch (vs_main_disk.bufferMode) {
+    case cdBufferModeNone:
         if (++vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
-            vs_main_disk.state = 0;
+            vs_main_disk.state = diskIdle;
         }
         break;
-    case 1:
+    case cdBufferModeBuffered:
         ++vs_main_disk.unk38;
         ++vs_main_disk.unk34;
         break;
-    case 2:
+    case cdBufferModeManual:
         ++vs_main_disk.unk38;
-        if (++vs_main_disk.unk40 >= 16) {
-            vs_main_disk.unk40 = 0;
+        if (++vs_main_disk.ringBufIndex >= 16) {
+            vs_main_disk.ringBufIndex = 0;
         }
         break;
     default:
@@ -1459,7 +1471,7 @@ static int vs_main_diskInitRead(int sector, u_int bytes, void* vram)
         vs_main_disk.cdSector = sector;
         vs_main_disk.byteCount = bytes;
         vs_main_disk.vram = vram;
-        vs_main_disk.unk40 = 0;
+        vs_main_disk.ringBufIndex = 0;
         vs_main_disk.unk3C = 0;
         vs_main_disk.sectorBufIndex = 0;
         vs_main_disk.unk34 = 0;
@@ -1487,7 +1499,7 @@ static void func_800443CC()
     case diskIdle:
     default:
         break;
-    case 6:
+    case diskReadXaInit:
         if (DsSystemStatus() == DslReady) {
             vs_main_disk.unk1 = 0;
             vs_main_disk.cdLoc.minute = 0;
@@ -1508,7 +1520,7 @@ static void func_800443CC()
             vs_main_disk.commandId = DsPacket(
                 DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
             DsReadyCallback(vs_main_diskPcmReadReady);
-            vs_main_disk.state = 7;
+            vs_main_disk.state = diskStreamXa;
         }
         if (vs_main_disk.commandId == 0) {
             DsReadyCallback(0);
@@ -1560,7 +1572,7 @@ static void func_800443CC()
                 vs_main_disk.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(vs_main_diskPcmReadReady);
-                vs_main_disk.state = 7;
+                vs_main_disk.state = diskStreamXa;
             } else {
                 vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
                 vs_main_disk.state = diskIdle;
@@ -1597,7 +1609,7 @@ static void func_800443CC()
         }
         break;
     }
-    case 9:
+    case diskStreamXaEnd:
         func_80012918(0);
         vs_main_disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
         if (vs_main_disk.commandId > 0) {
@@ -1612,19 +1624,19 @@ static void func_800443CC()
         break;
     }
 
-    if (vs_main_disk.unk2C != 0) {
+    if (vs_main_disk.bufferMode != cdBufferModeNone) {
         for (i = 0; i < 16; ++i) {
             if (vs_main_disk.sectorBufIndex >= vs_main_disk.unk38) {
                 return;
             }
-            if (vs_main_disk.unk2C == 1) {
+            if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
                 vs_main_memcpy(
                     ((u_char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    D_80050110 + (vs_main_disk.unk40 * 128), 2048);
+                    D_80050110 + (vs_main_disk.ringBufIndex * 128), 2048);
 
-                ++vs_main_disk.unk40;
-                if (vs_main_disk.unk40 >= 16) {
-                    vs_main_disk.unk40 = 0;
+                ++vs_main_disk.ringBufIndex;
+                if (vs_main_disk.ringBufIndex >= 16) {
+                    vs_main_disk.ringBufIndex = 0;
                 }
                 --vs_main_disk.unk34;
                 ++vs_main_disk.sectorBufIndex;
@@ -1633,7 +1645,7 @@ static void func_800443CC()
                     vs_main_freeHeapR(D_80050110);
                     D_80050110 = NULL;
                 }
-            } else if (vs_main_disk.unk2C == 2) {
+            } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
                 ++vs_main_disk.sectorBufIndex;
                 if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
                     && (func_80012C04() == 0)) {
@@ -1669,28 +1681,28 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
     return result;
 }
 
-static int func_800449E8(int sector, int byteCount)
+int vs_main_streamXa(int sector, int byteCount)
 {
     if (vs_main_disk.state == diskIdle) {
         vs_main_disk.cdSector = sector;
         vs_main_disk.byteCount = byteCount;
-        vs_main_disk.unk40 = 0;
+        vs_main_disk.ringBufIndex = 0;
         vs_main_disk.unk3C = 0;
         vs_main_disk.sectorBufIndex = 0;
         vs_main_disk.unk34 = 0;
         vs_main_disk.unk4 = 0;
         vs_main_disk.unk3 = 0;
         vs_main_disk.unk38 = 0;
-        vs_main_disk.state = 6;
+        vs_main_disk.state = diskReadXaInit;
         return 1;
     }
     return 0;
 }
 
-static int func_80044A38()
+int vs_main_checkStreamXaEnd()
 {
-    if (vs_main_disk.state == 7) {
-        vs_main_disk.state = 9;
+    if (vs_main_disk.state == diskStreamXa) {
+        vs_main_disk.state = diskStreamXaEnd;
         return 1;
     }
     return 0;
@@ -1705,7 +1717,7 @@ static void _diskReset()
     vs_main_disk.cdLoc.minute = 128;
     vs_main_disk.unk2 = 0;
     vs_main_disk.state = diskIdle;
-    vs_main_disk.unk2C = 0;
+    vs_main_disk.bufferMode = cdBufferModeNone;
     D_80050110 = NULL;
     while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
         ;

@@ -1,4 +1,6 @@
 #include "common.h"
+#include "../SLUS_010.40/main.h"
+#include "lbas.h"
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
@@ -68,7 +70,10 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B910);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9B4);
+void func_8006B9B4()
+{
+    vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9DC);
 

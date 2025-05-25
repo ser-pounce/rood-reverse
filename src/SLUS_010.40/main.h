@@ -72,6 +72,8 @@ extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int D_8004A528;
 extern int D_8004A52C;
+extern vs_main_CdFile D_8004F4CC[];
+extern u_char D_8004FCCC[];
 extern u_short D_8005046A;
 extern u_int D_80055C80[];
 extern void* D_8005E0C0[];

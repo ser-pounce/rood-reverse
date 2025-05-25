@@ -1907,7 +1907,29 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088CE4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088D40);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088E08);
+void func_80088E08(int arg0)
+{
+    vs_main_CdFile sp10;
+    int temp_s0;
+
+    sp10.lba = D_8004F4CC[arg0].lba;
+    sp10.size = D_8004F4CC[arg0].size;
+    if (D_800F1880.unk20 != 0) {
+        vs_main_nop9(0x87, 0);
+    }
+    D_800F1880.unk20 = vs_main_allocateCdQueueSlot(&sp10);
+    if (D_800F1880.unk24 != 0) {
+        vs_main_nop9(0x88, 0);
+    }
+    D_800F1880.unk24 = vs_main_allocHeapR(sp10.size);
+    vs_main_cdEnqueueUrgent(D_800F1880.unk20, D_800F1880.unk24);
+    if (D_800F1880.unk30 != 0) {
+        temp_s0 = D_8004FCCC[arg0];
+        if (func_800450E4() != temp_s0) {
+            func_8004552C(vs_main_soundData.currentMusicId, 0, 0x78);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088EF0);
 

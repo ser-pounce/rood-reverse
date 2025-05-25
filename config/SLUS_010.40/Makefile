@@ -3,7 +3,7 @@ build/data/SLUS_010.40.elf: LDSCRIPT += \
 	config/BATTLE/BATTLE.PRG/exports.txt
 
 build/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
-build/src/SLUS_010.40/main.o build/src/SLUS_010.40/audioLBAs.o: build/src/include/lbas.h
+$(addprefix build/src/SLUS_010.40/, main.o audioLBAs.o zndFiles.o): build/src/include/lbas.h
 
 $(patsubst %,build/src/SLUS_010.40/%.o, \
 	2MBYTE.OBJ overlay 25AC 31724 32154 main \

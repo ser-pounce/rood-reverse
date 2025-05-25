@@ -1912,8 +1912,8 @@ void func_80088E08(int arg0)
     vs_main_CdFile sp10;
     int temp_s0;
 
-    sp10.lba = D_8004F4CC[arg0].lba;
-    sp10.size = D_8004F4CC[arg0].size;
+    sp10.lba = vs_main_zndFiles[arg0].lba;
+    sp10.size = vs_main_zndFiles[arg0].size;
     if (D_800F1880.unk20 != 0) {
         vs_main_nop9(0x87, 0);
     }

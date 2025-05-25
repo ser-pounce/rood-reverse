@@ -291,6 +291,7 @@ vs_main_checkStreamXaEnd = 0x80044A38;
 vs_main_allocateCdQueueSlot = 0x80044B10;
 vs_main_freeCdQueueSlot = 0x80044B80;
 vs_main_cdEnqueue = 0x80044BC4;
+vs_main_cdEnqueueUrgent = 0x80044BF4;
 vs_main_loadMusicSlot = 0x80045110;
 vs_main_freeMusic = 0x80045440;
 vs_main_stopMusic = 0x800455F4;

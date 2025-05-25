@@ -126,6 +126,23 @@ typedef struct {
     short unk2;
 } D_800F1C60_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    vs_main_CdQueueSlot* unk20;
+    void* unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+} D_800F1880_t;
+
 void func_8006C350();
 void func_8006C39C();
 void func_8006C40C();
@@ -180,7 +197,7 @@ extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
 extern int D_800F186C;
-extern int D_800F1880[];
+extern D_800F1880_t D_800F1880;
 extern int D_800F18A8;
 extern int D_800F18B0;
 extern int D_800F18F0;
@@ -1123,7 +1140,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C694);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C81C);
 
-void func_8007C874() { func_8007C81C(D_800F1880[0], D_800F1880[13]); }
+void func_8007C874() { func_8007C81C(D_800F1880.unk0, D_800F1880.unk34); }
 
 void func_8007C8A4(int arg0)
 {
@@ -2247,6 +2264,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EB30);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 
+// https://decomp.me/scratch/sDudx
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EFCC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F0FC);

@@ -185,12 +185,11 @@ static void _unlockPadModeSwitch();
 static void _padResetDefaults(int, u_char[34]);
 void vs_main_padConnect(int, u_char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
-static int vs_main_diskGetState();
+static int _diskGetState();
 void func_80042CB0();
 void vs_main_resetPadAct();
 static void _initCdQueue();
 static void _diskReset();
-static void _cdEnqueueUrgent(vs_main_CdQueueSlot*, void*);
 static void _processCdQueue();
 static int vs_main_freeMusic(int arg0);
 static void vs_main_stopMusic();
@@ -293,7 +292,7 @@ static void _loadBattlePrg()
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -304,7 +303,7 @@ static void _loadBattlePrg()
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    _cdEnqueueUrgent(slot, vs_overlay_slots[1]);
+    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[1]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -323,7 +322,7 @@ static void _loadTitlePrg()
     cdFile.size = VS_TITLE_PRG_SIZE;
 
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -342,7 +341,7 @@ static void _loadEndingPrg()
     cdFile.size = VS_ENDING_PRG_SIZE;
 
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    _cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -1363,8 +1362,7 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
     }
 }
 
-static void vs_main_diskReadCommandCallback(
-    u_char intr, u_char result[] __attribute__((unused)))
+static void _diskReadCommandCallback(u_char intr, u_char result[] __attribute__((unused)))
 {
     switch (intr) {
     case DslComplete:
@@ -1381,8 +1379,7 @@ static void vs_main_diskReadCommandCallback(
     vs_main_disk.state = diskReadError;
 }
 
-static void vs_main_diskSeekCommandCallback(
-    u_char intr, u_char result[] __attribute__((unused)))
+static void _diskSeekCommandCallback(u_char intr, u_char result[] __attribute__((unused)))
 {
     switch (intr) {
     case DslNoIntr:
@@ -1401,7 +1398,7 @@ static void vs_main_diskSeekCommandCallback(
     }
 }
 
-static void vs_main_diskPcmReadReady(u_char intr, u_char result[])
+static void _diskPcmReadReady(u_char intr, u_char result[])
 {
     switch (intr) {
     case DslComplete:
@@ -1423,7 +1420,7 @@ static void vs_main_diskPcmReadReady(u_char intr, u_char result[])
     }
 }
 
-static int vs_main_diskGetState() { return vs_main_disk.state; }
+static int _diskGetState() { return vs_main_disk.state; }
 
 static void _diskResetErrorState()
 {
@@ -1432,7 +1429,7 @@ static void _diskResetErrorState()
     }
 }
 
-static int vs_main_diskInitRead(int sector, u_int bytes, void* vram)
+static int _diskInitRead(int sector, u_int bytes, void* vram)
 {
     if (vs_main_disk.state == diskIdle) {
         vs_main_disk.cdSector = sector;
@@ -1486,7 +1483,7 @@ static void func_800443CC()
             DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
             vs_main_disk.commandId = DsPacket(
                 DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
-            DsReadyCallback(vs_main_diskPcmReadReady);
+            DsReadyCallback(_diskPcmReadReady);
             vs_main_disk.state = diskStreamXa;
         }
         if (vs_main_disk.commandId == 0) {
@@ -1503,11 +1500,11 @@ static void func_800443CC()
             if (vs_main_disk.byteCount != 0) {
                 vs_main_disk.state = diskReadReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, vs_main_diskReadCommandCallback, -1);
+                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
             } else {
                 vs_main_disk.state = diskSeekReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, vs_main_diskSeekCommandCallback, -1);
+                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
             }
 
             if (vs_main_disk.commandId == 0) {
@@ -1538,7 +1535,7 @@ static void func_800443CC()
                 DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
                 vs_main_disk.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
-                DsReadyCallback(vs_main_diskPcmReadReady);
+                DsReadyCallback(_diskPcmReadReady);
                 vs_main_disk.state = diskStreamXa;
             } else {
                 vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
@@ -1562,11 +1559,11 @@ static void func_800443CC()
             if (vs_main_disk.byteCount != 0) {
                 vs_main_disk.state = diskReadReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, vs_main_diskReadCommandCallback, -1);
+                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
             } else {
                 vs_main_disk.state = diskSeekReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, vs_main_diskSeekCommandCallback, -1);
+                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
             }
 
             if (vs_main_disk.commandId == 0) {
@@ -1627,19 +1624,19 @@ static void func_800443CC()
 
 int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 {
-    int result = vs_main_diskInitRead(sector, bytes, vram);
+    int result = _diskInitRead(sector, bytes, vram);
     if (result != 0) {
         int seekReady = diskSeekReady;
         int readReady = diskReadReady;
 
         while (1) {
-            if (vs_main_diskGetState() == seekReady) {
+            if (_diskGetState() == seekReady) {
                 vs_main_gametimeUpdate(0);
-            } else if (vs_main_diskGetState() == readReady) {
+            } else if (_diskGetState() == readReady) {
                 vs_main_gametimeUpdate(0);
-            } else if (vs_main_diskGetState() == 3) {
+            } else if (_diskGetState() == 3) {
                 vs_main_gametimeUpdate(0);
-            } else if (vs_main_diskGetState() == diskReadInit) {
+            } else if (_diskGetState() == diskReadInit) {
                 vs_main_gametimeUpdate(0);
             } else
                 break;
@@ -1732,7 +1729,7 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
     slot->priority = _cdQueueCount.queued++;
 }
 
-static void _cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
 {
     int i;
     vs_main_CdQueueSlot* queue = _cdQueue;
@@ -1757,14 +1754,13 @@ static void _processCdQueue()
 
     if (*(int*)&_cdQueueCount != 0) {
         vs_main_CdQueueSlot* slot = _cdQueue;
-        int i = vs_main_diskGetState();
+        int i = _diskGetState();
         if (i == diskIdle) {
             for (i = 0; i < 32; ++i, ++slot) {
                 if (slot->state == vs_main_CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
                         slot->state = vs_main_CdQueueStateReading;
-                        vs_main_diskInitRead(
-                            slot->cdFile.lba, slot->cdFile.size, slot->vram);
+                        _diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
                         vs_main_disk.framesSinceLastRead = 0;
                         --_cdQueueCount.queued;
                         ++_cdQueueCount.processing;
@@ -1824,13 +1820,12 @@ static int func_80044EC8(int id)
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicId = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0
-                = func_800120E8(vs_main_soundData.currentMusicData);
+            temp_v0 = func_800120E8(vs_main_soundData.currentMusicData);
             if (temp_v0 != 0) {
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
             }
-            vs_main_soundData.unk8 = vs_main_soundData.unk10[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
         return D_8005E03C;
     }
@@ -1850,7 +1845,7 @@ static int func_80044F60(int id, int arg1, u_int arg2)
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
             }
-            vs_main_soundData.unk8 = vs_main_soundData.unk10[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
         return D_8005E03C;
     }
@@ -1872,7 +1867,7 @@ static int func_80045000(int id, int arg1, int arg2)
                 vs_main_soundData.unk4 = temp_v0;
                 func_800128A0(0, arg2, arg1);
             }
-            vs_main_soundData.unk8 = vs_main_soundData.unk10[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
         return D_8005E03C;
     }
@@ -1881,10 +1876,10 @@ static int func_80045000(int id, int arg1, int arg2)
 
 static int func_800450D4() { return vs_main_soundData.currentMusicId; }
 
-static u_char func_800450E4()
+int func_800450E4()
 {
     if (vs_main_soundData.currentMusicId != 0) {
-        return vs_main_soundData.unk10[vs_main_soundData.currentMusicId - 1];
+        return vs_main_soundData.musicIds[vs_main_soundData.currentMusicId - 1];
     }
     return 0;
 }
@@ -1897,7 +1892,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
         int slot = targetSlot - 1;
 
         if (targetSlot < 5) {
-            if (vs_main_soundData.unk10[slot] != id) {
+            if (vs_main_soundData.musicIds[slot] != id) {
                 do {
                     if (vs_main_soundData.musicData[slot] != 0) {
                         nop10(142, 0);
@@ -1909,19 +1904,21 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 cdFile.size = _musicFileSizes[id];
 
                 if ((vs_main_soundData.musicQueueSlot[slot] != 0)
-                    && (vs_main_soundData.musicQueueSlot[slot] != (vs_main_CdQueueSlot*)-1)) {
+                    && (vs_main_soundData.musicQueueSlot[slot]
+                        != (vs_main_CdQueueSlot*)-1)) {
                     vs_main_nop9(0x98, 0);
                 }
 
-                vs_main_soundData.musicQueueSlot[slot] = vs_main_allocateCdQueueSlot(&cdFile);
+                vs_main_soundData.musicQueueSlot[slot]
+                    = vs_main_allocateCdQueueSlot(&cdFile);
 
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
                 vs_main_soundData.musicData[slot] = vs_main_allocHeapR(cdFile.size);
-                vs_main_cdEnqueue(
-                    vs_main_soundData.musicQueueSlot[slot], vs_main_soundData.musicData[slot]);
-                vs_main_soundData.unk10[slot] = id;
+                vs_main_cdEnqueue(vs_main_soundData.musicQueueSlot[slot],
+                    vs_main_soundData.musicData[slot]);
+                vs_main_soundData.musicIds[slot] = id;
             }
             return targetSlot;
         }
@@ -1952,7 +1949,8 @@ static int func_800452C8(u_int slot)
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
                 return 0;
             }
-            if (vs_main_soundData.musicQueueSlot[slot - 1]->state == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.musicQueueSlot[slot - 1]->state
+                == vs_main_CdQueueStateError) {
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
@@ -2013,7 +2011,7 @@ static int vs_main_freeMusic(int slotId)
 
     vs_main_freeHeapR(vs_main_soundData.musicData[slotId - 1]);
     vs_main_soundData.musicData[slotId - 1] = 0;
-    vs_main_soundData.unk10[slotId - 1] = 0;
+    vs_main_soundData.musicIds[slotId - 1] = 0;
     return 1;
 }
 
@@ -2031,7 +2029,7 @@ static int func_800454B8(int arg0)
 
 static void func_8004550C(int arg0) { func_800454B8(arg0); }
 
-static int func_8004552C(int id, int arg1, int arg2)
+int func_8004552C(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicId == id) {
         func_800128A0(vs_main_soundData.unk4, arg2, arg1);
@@ -2357,7 +2355,8 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
             vs_main_soundData.sfxIds[index] = id;
             vs_main_soundData.sfxData[index] = vs_main_allocHeapR(cdFile.size);
-            vs_main_cdEnqueue(vs_main_soundData.sfxQueueSlot[index], vs_main_soundData.sfxData[index]);
+            vs_main_cdEnqueue(
+                vs_main_soundData.sfxQueueSlot[index], vs_main_soundData.sfxData[index]);
 
             return slot;
         }
@@ -2381,12 +2380,14 @@ int vs_main_freeSfxQueueSlot(u_int slot)
 {
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == vs_main_CdQueueStateLoaded) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
+                == vs_main_CdQueueStateLoaded) {
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = NULL;
                 return 0;
             }
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
+                == vs_main_CdQueueStateError) {
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
                 return -1;
@@ -2777,7 +2778,7 @@ static void func_80046A38()
     vs_main_soundData.currentSfxId = 0;
 
     for (i = 0; i < 4; ++i) {
-        vs_main_soundData.unk10[i] = 0;
+        vs_main_soundData.musicIds[i] = 0;
         vs_main_soundData.unk14[i] = 0xFFFF;
         vs_main_soundData.musicData[i] = 0;
         vs_main_soundData.musicQueueSlot[i] = 0;

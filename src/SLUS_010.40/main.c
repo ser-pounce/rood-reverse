@@ -180,7 +180,6 @@ typedef struct {
 void __main();
 static void _sysInit();
 static void _sysReinit();
-static void _wait();
 static void _unlockPadModeSwitch();
 static void _padResetDefaults(int, u_char[34]);
 void vs_main_padConnect(int, u_char[34]);
@@ -310,7 +309,7 @@ static void _loadBattlePrg()
     }
 
     vs_main_freeCdQueueSlot(slot);
-    _wait();
+    vs_main_wait();
 }
 
 static void _loadTitlePrg()
@@ -329,7 +328,7 @@ static void _loadTitlePrg()
     }
 
     vs_main_freeCdQueueSlot(slot);
-    _wait();
+    vs_main_wait();
 }
 
 static void _loadEndingPrg()
@@ -348,7 +347,7 @@ static void _loadEndingPrg()
     }
 
     vs_main_freeCdQueueSlot(slot);
-    _wait();
+    vs_main_wait();
 }
 
 static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
@@ -651,7 +650,7 @@ void vs_main_exec()
     vs_main_execTitle();
 }
 
-static void _wait() { vs_overlay_wait(); }
+void vs_main_wait() { vs_overlay_wait(); }
 
 void vs_main_enableReset(int arg0) { _resetEnabled = arg0; }
 

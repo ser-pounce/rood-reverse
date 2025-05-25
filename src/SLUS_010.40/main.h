@@ -131,3 +131,4 @@ int vs_main_streamXa(int sector, int byteCount);
 int vs_main_checkStreamXaEnd();
 int func_8004552C(int id, int arg1, int arg2);
 int func_800450E4();
+void vs_main_wait();

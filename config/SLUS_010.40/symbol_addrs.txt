@@ -1,4 +1,3 @@
-vs_overlay_slots = 0x80010000;
 jtbl_800100EC = 0x800100EC; // type:jtbl
 vs_overlay_getSp = 0x80010AA4;
 vs_overlay_jumpToTitle = 0x80010AB4;

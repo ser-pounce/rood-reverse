@@ -1,4 +1,23 @@
 #include "common.h"
+#include "lbas.h"
+#include "../SLUS_010.40/main.h"
+#include "../SLUS_010.40/overlay.h"
+#include "../MENU/MAINMENU.PRG/278.h"
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    vs_main_CdQueueSlot* unk4;
+} D_800F51C0_t;
+
+extern int D_800EB5C8[];
+extern char D_800EB9AD;
+extern u_int* D_800EB9D4;
+extern u_char D_800F4E6A;
+extern u_char D_800F4FDB;
+extern D_800F51C0_t D_800F51C0;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -60,7 +79,68 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C86AC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8778);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8C50);
+int func_800C8C50(int arg0)
+{
+    vs_main_CdFile file;
+    int temp_s0;
+    u_int var_v1;
+    void* var_a1;
+    D_800F51C0_t* s1 = &D_800F51C0;
+
+    temp_s0 = arg0 & 0x1F;
+
+    if (temp_s0 == 0x1F) {
+        return 1;
+    }
+
+    if (temp_s0 == 0 && D_800EB9AD > 0) {
+        return 1;
+    }
+
+    if (D_800EB9AD != temp_s0) {
+        D_800EB9AD = temp_s0;
+        s1->unk3 = 1;
+        if (D_800F4E6A != 5) {
+            var_v1 = D_800EB5C8[temp_s0];
+        } else {
+            var_v1 = VS_MAINMENU_PRG_LBA << 8 | 0x12;
+        }
+        file.lba = var_v1 >> 8;
+        file.size = (var_v1 & 0xFF) << 11;
+        s1->unk4 = vs_main_allocateCdQueueSlot(&file);
+        if (temp_s0 == 0) {
+            var_a1 = vs_overlay_slots[1];
+        } else {
+            var_a1 = vs_overlay_slots[2];
+        }
+        vs_main_cdEnqueue(s1->unk4, var_a1);
+    }
+    if (s1->unk3 == 0) {
+        if (D_800EB9D4 != 0) {
+            vs_main_freeHeapR(D_800EB9D4);
+            D_800EB9D4 = 0;
+            func_800FA448();
+        }
+        return 1;
+    }
+    if (s1->unk4->state == 4) {
+        vs_main_freeCdQueueSlot(s1->unk4);
+        vs_main_wait();
+        s1->unk3 = 0;
+        if (D_800F4FDB != 0) {
+            if (D_800F4E6A == 5) {
+                func_800FAEBC(1);
+                return 0;
+            }
+            return 1;
+        }
+        if (temp_s0 == 0) {
+            D_800EB9D4 = (u_int*)vs_main_allocHeapR(0xB400U);
+            func_8010044C(D_800EB9D4);
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 

@@ -1,4 +1,5 @@
 D_1F800014_mat = 0x1F800014;
+vs_overlay_slots = 0x80010000;
 CompMatrix = 0x80011ADC;
 InitGeom = 0x80011C44;
 vs_sound_init = 0x80011DAC;
@@ -274,6 +275,7 @@ vs_main_jumpToBattle = 0x80042420;
 vs_main_showEndingAndReturnToTitle = 0x800424E4;
 vs_main_gametimeUpdate = 0x8004261C;
 vs_main_getRand = 0x800427A8;
+vs_main_wait = 0x80042C74;
 vs_main_enableReset = 0x80042C94;
 vs_main_padDisconnectAll = 0x80042FDC;
 vs_main_updatePadState = 0x800430F4;

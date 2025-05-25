@@ -1,7 +1,7 @@
 #pragma once
 #include <sys/types.h>
-int vs_sound_Shutdown();
-int func_80011DAC();
+int vs_sound_shutdown();
+int vs_sound_init();
 int func_80011DEC(int* arg0);
 int func_80011EBC(u_int);
 int func_80011F08();
@@ -34,7 +34,7 @@ int func_80012C04();
 int func_80012EBC();
 int func_80013188(void*, int);
 int func_800131DC(void*, int, int);
-int func_80013230(u_int);
+int vs_sound_setCdVol(u_int);
 void func_800132C4(void*, int, int);
 void func_80013328();
 void func_80013378(int, int);

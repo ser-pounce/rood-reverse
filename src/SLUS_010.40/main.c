@@ -447,7 +447,7 @@ static void _resetGame()
     _padSetActData(0, 1, 0);
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
-    vs_sound_Shutdown();
+    vs_sound_shutdown();
     SpuQuit();
     ResetGraph(3);
     VSync(10);
@@ -497,7 +497,7 @@ void vs_main_showEndingAndReturnToTitle()
     _padSetActData(0, 1, 0);
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
-    vs_sound_Shutdown();
+    vs_sound_shutdown();
     SpuQuit();
     ResetGraph(3);
     vs_main_saveBeforeTitle = 1;
@@ -1512,7 +1512,7 @@ static void func_800443CC()
             vol.val1 = 0;
             DsMix(&vol);
             func_80012918(vs_main_disk.byteCount);
-            func_80013230(0x7F);
+            vs_sound_setCdVol(0x7F);
             vs_main_disk.pcm.file = 1;
             vs_main_disk.pcm.chan = 0;
             DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
@@ -2774,8 +2774,8 @@ static void _loadMenuSound()
 {
     void* buf;
 
-    func_80011DAC();
-    func_80013230(0x7F);
+    vs_sound_init();
+    vs_sound_setCdVol(0x7F);
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
     func_80012BB8(buf, 1);

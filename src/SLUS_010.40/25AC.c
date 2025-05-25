@@ -3,6 +3,7 @@
 #include <libspu.h>
 #include <libapi.h>
 #include <libetc.h>
+#include <libcd.h>
 
 typedef struct {
     int unk0;
@@ -11,20 +12,34 @@ typedef struct {
     int unkC;
 } D_80036770_t;
 
+static int func_80013588(void*, int);
+static void func_800135D8(void*, int, int, int);
+static void func_8001369C();
+static void _soundInit();
 static void func_80013AE8(u_int);
 static u_int func_80018C30(int);
+static long func_80019A58();
 static void _shutdown();
+static void _writeSpu(u_char* data, u_int len);
 
 extern int _soundEvent;
-extern u_char D_8002F560[0x40];
+extern u_char _soundFlush[64];
 extern short D_800358FE;
+extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
+extern int D_800377E0[3];
+extern u_char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
+extern int D_80039AFC;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80011DAC);
+int vs_sound_init()
+{
+    _soundInit();
+    return 0;
+}
 
-int vs_sound_Shutdown()
+int vs_sound_shutdown()
 {
     _shutdown();
     return 0;
@@ -150,13 +165,44 @@ void func_80012B78() { func_80018C30(240); }
 
 void func_80012B98() { func_80018C30(241); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012BB8);
+void func_80012BB8(void* arg0, int arg1)
+{
+    while (func_80013588(arg0, arg1) == 1)
+        ;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C04);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C14);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012D9C);
+static int func_80012D9C(int* arg0, int* arg1, int* arg2, int arg3)
+{
+    u_int i;
+
+    for (i = 0; i < 3; ++i) {
+        if (D_800377E0[i] == arg0[1]) {
+            D_800377E0[i] = 0;
+        }
+    }
+    switch (arg3) {
+    case 1:
+        *arg1 = 0xA0;
+        *arg2 = 0x13100;
+        D_800377E0[1] = arg0[1];
+        break;
+    case 2:
+        *arg1 = 0xC0;
+        *arg2 = 0x1B100;
+        D_800377E0[2] = arg0[1];
+        break;
+    default:
+        *arg1 = 0x80;
+        *arg2 = 0xB100;
+        D_800377E0[0] = arg0[1];
+        break;
+    }
+    return arg3;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012E50);
 
@@ -174,9 +220,29 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013188);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800131DC);
+int func_800131DC(void* arg0, int arg1, int arg2)
+{
+    int sp10;
+    int sp14;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013230);
+    func_80012D9C((int*)arg0, &sp10, &sp14, arg1);
+    func_800135D8(arg0, arg2, sp10, sp14);
+    return 0;
+}
+
+int vs_sound_setCdVol(u_int arg0)
+{
+    if (D_80039AFC & 2) {
+        _cdlAtv.val0 = _cdlAtv.val2 = _cdlAtv.val1 = _cdlAtv.val3 = (arg0 * 0xB570) >> 0x11;
+    } else {
+        _cdlAtv.val2 = arg0;
+        _cdlAtv.val0 = arg0;
+        _cdlAtv.val3 = 0;
+        _cdlAtv.val1 = 0;
+    }
+    CdMix(&_cdlAtv);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800132C4);
 
@@ -226,12 +292,35 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013938);
+static void _soundInit()
+{
+    int event;
+
+    SpuStart();
+    SpuInitMalloc(4, &_spuMemInfo);
+    SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
+    SpuSetTransferStartAddr(0x1010);
+    _writeSpu(_soundFlush, 64);
+    _waitTransferAvailable();
+    func_8001369C();
+    SpuSetIRQ(SPU_OFF);
+    SpuSetIRQCallback(NULL);
+    while (SetRCnt(RCntCNT2, 0x44E8, RCntMdINTR) == 0)
+        ;
+    while (StartRCnt(RCntCNT2) == 0)
+        ;
+    do {
+        event = OpenEvent(RCntCNT2, EvSpINT, EvMdINTR, func_80019A58);
+        _soundEvent = event;
+    } while (event == -1);
+    while (EnableEvent(_soundEvent) == 0)
+        ;
+}
 
 static void _shutdown()
 {
     if (_isSpuTransfer == 1) {
-        _writeSpu(D_8002F560, 0x40);
+        _writeSpu(_soundFlush, 64);
         _waitTransferAvailable();
     }
     while (StopRCnt(RCntCNT2) == 0)

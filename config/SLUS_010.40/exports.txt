@@ -327,3 +327,5 @@ vs_main_skillsLearned = 0x8005FFB8;
 D_80060064 = 0x80060064;
 vs_gametime = 0x80061074;
 D_80061078 = 0x80061078;
+vs_sound_setCdVol = 0x80013230;
+vs_sound_init = 0x80011DAC;

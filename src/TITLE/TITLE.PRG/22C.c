@@ -3314,7 +3314,7 @@ void func_80070E64()
             var_s3 = (var_s3 + 1) & 1;
             D_80060020.unkA = var_s3;
             func_800468BC(var_s3);
-            func_80013230(0x7F);
+            vs_sound_setCdVol(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
             func_80068AB0();
@@ -3399,7 +3399,7 @@ void func_80071254()
     D_80060020.unkA = var_s2 != 0;
     D_80060020.unkB = (var_s4 != 0);
     func_800468BC(D_80060020.unkA);
-    func_80013230(0x7F);
+    vs_sound_setCdVol(0x7F);
     memset(&D_800619D8, 0, 0xB0);
     D_80061598[1] = 1;
     D_80061598[284] = 1;

@@ -44,6 +44,27 @@ typedef struct {
     char name[24];
 } vs_skill_t;
 
+typedef struct {
+    int currentMusicId;
+    u_int unk4;
+    int unk8;
+    void* currentMusicData;
+    u_char unk10[2];
+    u_int unk14[4];
+    void* musicData[4];
+    vs_main_CdQueueSlot* musicQueueSlot[4];
+    u_int currentSfxId;
+    u_char sfxIds[4];
+    void* sfxData[3];
+    vs_main_CdQueueSlot* sfxQueueSlot[3];
+    void* unk64[3];
+    int* unk70[3];
+    int soundFileId;
+    void* soundData;
+    vs_main_CdQueueSlot* soundQueueSlot;
+} soundData_t;
+
+extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern u_char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
@@ -67,7 +88,7 @@ extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
 
-int vs_gametime_update(int);
+int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();
 void vs_main_showEndingAndReturnToTitle();
 int vs_main_getRand(int);

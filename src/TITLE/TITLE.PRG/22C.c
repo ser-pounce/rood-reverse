@@ -2276,7 +2276,7 @@ int func_8006E738()
     D_800DC930 = 0;
 
     while (1) {
-        vs_gametime_update(2);
+        vs_main_gametimeUpdate(2);
         func_8006E68C();
         vs_main_processPadState();
         switch (D_800DC930) {
@@ -2318,7 +2318,7 @@ int func_8006E988()
     func_8006A49C(1);
 
     do {
-        vs_gametime_update(2);
+        vs_main_gametimeUpdate(2);
     } while (func_8006A49C(0) == 0);
 
     for (i = 1; i < 3; ++i) {
@@ -2442,7 +2442,7 @@ void func_8006EDBC()
     D_800DC940 = 0;
 
     while (1) {
-        vs_gametime_update(2);
+        vs_main_gametimeUpdate(2);
         func_8006E68C();
         vs_main_processPadState();
         scramble(0);
@@ -3597,7 +3597,7 @@ int drawPrims(u_long* ot)
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
     DrawSync(0);
-    temp_s1 = vs_gametime_update(0);
+    temp_s1 = vs_main_gametimeUpdate(0);
     PutDispEnv(vs_main_frameBuf + vs_main_dispEnv);
     PutDrawEnv(vs_main_frameBuf + vs_main_drawEnv);
     DrawOTag(ot);

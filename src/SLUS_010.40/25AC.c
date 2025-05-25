@@ -189,7 +189,7 @@ void func_80012BB8(void* arg0, int arg1)
         ;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C04);
+int vs_sound_spuTransferring() { return _isSpuTransfer; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C14);
 

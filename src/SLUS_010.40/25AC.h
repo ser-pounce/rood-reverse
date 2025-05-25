@@ -30,7 +30,7 @@ int func_80012A6C(int, int);
 void func_80012B78();
 void func_80012B98();
 void func_80012BB8(void*, int);
-int func_80012C04();
+int vs_sound_spuTransferring();
 int func_80012EBC();
 int func_80013188(void*, int);
 int func_800131DC(void*, int, int);

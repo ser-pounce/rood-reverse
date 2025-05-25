@@ -705,10 +705,10 @@ int func_8007629C(u_int* otag)
     vs_main_getRand(0);
     SetGeomOffset(160, 112);
     DrawSync(0);
-    ret = vs_gametime_update(vs_gametime_tickspeed);
+    ret = vs_main_gametimeUpdate(vs_gametime_tickspeed);
     if (D_8004A52C != 0) {
         while (1) {
-            vs_gametime_update(2);
+            vs_main_gametimeUpdate(2);
             vs_main_buttonsState = (u_short)vs_main_updatePadState(0, *vs_main_padBuffer);
             vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1])
                 << 16;

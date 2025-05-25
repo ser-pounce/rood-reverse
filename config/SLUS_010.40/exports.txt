@@ -1,6 +1,8 @@
 D_1F800014_mat = 0x1F800014;
 CompMatrix = 0x80011ADC;
 InitGeom = 0x80011C44;
+vs_sound_init = 0x80011DAC;
+vs_sound_setCdVol = 0x80013230;
 SpuStart = 0x8001D9DC;
 SsUtReverbOff = 0x8001E5C4;
 SsUtReverbOn = 0x8001E5E4;
@@ -327,5 +329,3 @@ vs_main_skillsLearned = 0x8005FFB8;
 D_80060064 = 0x80060064;
 vs_gametime = 0x80061074;
 D_80061078 = 0x80061078;
-vs_sound_setCdVol = 0x80013230;
-vs_sound_init = 0x80011DAC;

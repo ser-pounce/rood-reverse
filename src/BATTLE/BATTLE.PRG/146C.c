@@ -228,7 +228,7 @@ extern short D_800F1CDC;
 extern char D_800F1D28[0x40];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
-extern int D_800F1D78;
+extern int D_800F1D78[20];
 extern char D_800F1D6E;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
@@ -2240,8 +2240,9 @@ void func_8008EB04(int* arg0, int* arg1)
     *arg1 = D_800F1DC4;
 }
 
-int* func_8008EB24() { return &D_800F1D78; }
+int* func_8008EB24() { return D_800F1D78; }
 
+// https://decomp.me/scratch/ck2kr
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EB30);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);

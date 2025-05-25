@@ -12,6 +12,7 @@ typedef struct {
     int unkC;
 } D_80036770_t;
 
+static int func_80013468(int*);
 static int func_80013588(void*, int);
 static void func_800135D8(void*, int, int, int);
 static void func_8001369C();
@@ -28,6 +29,9 @@ extern short D_800358FE;
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
+extern int* D_800377EC;
+extern int* D_800377F8;
+extern u_short (*D_800377F4)[];
 extern u_char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
@@ -45,7 +49,21 @@ int vs_sound_shutdown()
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80011DEC);
+int func_80011DEC(int* arg0)
+{
+    int v1 = func_80013468(arg0);
+
+    arg0 += 4;
+
+    if (v1 == 0) {
+        D_800377EC = arg0;
+        arg0 += 0x180;
+        D_800377F4 = (u_short(*)[])arg0;
+        arg0 += 0xC0;
+        D_800377F8 = arg0;
+    }
+    return v1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80011E40);
 
@@ -233,7 +251,8 @@ int func_800131DC(void* arg0, int arg1, int arg2)
 int vs_sound_setCdVol(u_int arg0)
 {
     if (D_80039AFC & 2) {
-        _cdlAtv.val0 = _cdlAtv.val2 = _cdlAtv.val1 = _cdlAtv.val3 = (arg0 * 0xB570) >> 0x11;
+        _cdlAtv.val0 = _cdlAtv.val2 = _cdlAtv.val1 = _cdlAtv.val3
+            = (arg0 * 0xB570) >> 0x11;
     } else {
         _cdlAtv.val2 = arg0;
         _cdlAtv.val0 = arg0;
@@ -258,7 +277,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800133E0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013418);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013468);
+static int func_80013468(int* arg0) { return *arg0 + 0xB0BEB4BF; }
 
 static void _spuWriteComplete()
 {
@@ -266,7 +285,11 @@ static void _spuWriteComplete()
     _isSpuTransfer = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", spuSetTransferCallback);
+void spuSetTransferCallback()
+{
+    _isSpuTransfer = 1;
+    SpuSetTransferCallback(_spuWriteComplete);
+}
 
 static void _writeSpu(u_char* data, u_int len)
 {
@@ -275,7 +298,11 @@ static void _writeSpu(u_char* data, u_int len)
     SpuWrite(data, len);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", readSpu);
+static void _readSpu(u_char* data, u_int len)
+{
+    spuSetTransferCallback();
+    SpuRead(data, len);
+}
 
 static void _waitTransferAvailable()
 {
@@ -334,7 +361,11 @@ static void _shutdown()
     SpuQuit();
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013ACC);
+static void func_80013ACC(u_int arg0)
+{
+    *(short*)getScratchAddr(0x762) = arg0;
+    *((short*)getScratchAddr(0x762) + 1) = arg0 >> 16;
+}
 
 static void func_80013AE8(u_int arg0)
 {
@@ -342,23 +373,50 @@ static void func_80013AE8(u_int arg0)
     *((short*)getScratchAddr(0x763) + 1) = arg0 >> 16;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013B04);
+static void func_80013B04(u_int arg0)
+{
+    *(short*)getScratchAddr(0x766) = arg0;
+    *((short*)getScratchAddr(0x766) + 1) = (arg0 >> 0x10);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013B20);
+static void func_80013B20(u_int arg0)
+{
+    *(short*)getScratchAddr(0x765) = arg0;
+    *((short*)getScratchAddr(0x765) + 1) = (arg0 >> 0x10);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013B3C);
+static void func_80013B3C(u_int arg0)
+{
+    *(short*)getScratchAddr(0x764) = arg0;
+    *((short*)getScratchAddr(0x764) + 1) = (arg0 >> 0x10);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013B58);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013BA0);
+static void func_80013BA0(int arg0, short arg1)
+{
+    ((short(*)[8])getScratchAddr(0x701))[arg0][0] = arg1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013BB8);
+static void func_80013BB8(int arg0, u_int arg1)
+{
+    ((short(*)[8])((short*)getScratchAddr(0x701) + 1))[arg0][0] = (arg1 >> 3);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013BD4);
+static void func_80013BD4(int arg0, u_int arg1)
+{
+    ((short(*)[8])((short*)getScratchAddr(0x703) + 1))[arg0][0] = (arg1 >> 3);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013BF0);
+static void func_80013BF0(int arg0, short arg1)
+{
+    ((short(*)[8])getScratchAddr(0x702))[arg0][0] = arg1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013C08);
+static void func_80013C08(int arg0, short arg1)
+{
+    ((short(*)[8])((short*)getScratchAddr(0x702) + 1))[arg0][0] = arg1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013C20);
 
@@ -530,10 +588,19 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B84);
 
-void func_80018BD8() {
-}
+void func_80018BD8() { }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", setReverbMode);
+void _setReverbMode(int mode)
+{
+    long curMode;
+
+    SpuGetReverbModeType(&curMode);
+    if (curMode != mode) {
+        SpuSetReverb(SPU_OFF);
+        SpuSetReverbModeType(mode | SPU_REV_MODE_CLEAR_WA);
+        SpuSetReverb(SPU_ON);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018C30);
 
@@ -609,8 +676,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B6F8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B70C);
 
-static void func_8001B72C() {
-}
+static void func_8001B72C() { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B734);
 
@@ -686,13 +752,11 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C30C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C36C);
 
-void func_8001C378() {
-}
+void func_8001C378() { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C380);
 
-void func_8001C39C() {
-}
+void func_8001C39C() { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C3A4);
 

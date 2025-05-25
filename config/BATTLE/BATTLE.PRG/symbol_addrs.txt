@@ -1,4 +1,5 @@
 _add_min = 0x8006D9C4;
+_loadZnd = 0x80088E08;
 func_80095C18 = 0x80095C18; // type:func
 func_80096254 = 0x80096254; // type:func
 func_8009627C = 0x8009627C; // type:func
@@ -812,3 +813,4 @@ func_800E7454 = 0x800E7454; // type:func
 func_800E75EC = 0x800E75EC; // type:func
 func_800E7660 = 0x800E7660; // type:func
 func_800E7698 = 0x800E7698; // type:func
+_evtFile = 0x800F4C52;

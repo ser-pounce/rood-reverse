@@ -1,4 +1,10 @@
 #include "common.h"
+#include "lbas.h"
+#include "../SLUS_010.40/main.h"
+
+extern vs_main_CdQueueSlot* D_800F4BBC;
+extern vs_main_CdFile D_800F4BF0;
+extern short _evtFile;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
@@ -12,7 +18,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE50);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFEBC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C00E8);
+void func_800C00E8(int arg0, void* arg1)
+{
+    D_800F4BF0.size = VS_0000_EVT_SIZE;
+    D_800F4BF0.lba = (_evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
+    D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
+    vs_main_cdEnqueue(D_800F4BBC, arg1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0150);
 

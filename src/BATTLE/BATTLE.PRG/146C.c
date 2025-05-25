@@ -128,7 +128,7 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    int unk4;
+    vs_main_CdFile* unk4;
     int unk8;
     int unkC;
     int unk10;
@@ -141,6 +141,16 @@ typedef struct {
     int unk2C;
     int unk30;
     int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+    int unk44;
+    int unk48;
+    int unk4C;
+    int unk50;
+    int unk54;
+    vs_main_CdQueueSlot* unk58;
+    void* unk5C;
 } D_800F1880_t;
 
 void func_8006C350();
@@ -1907,13 +1917,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088CE4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088D40);
 
-void func_80088E08(int arg0)
+static void _loadZnd(int id)
 {
     vs_main_CdFile sp10;
     int temp_s0;
 
-    sp10.lba = vs_main_zndFiles[arg0].lba;
-    sp10.size = vs_main_zndFiles[arg0].size;
+    sp10.lba = vs_main_zndFiles[id].lba;
+    sp10.size = vs_main_zndFiles[id].size;
     if (D_800F1880.unk20 != 0) {
         vs_main_nop9(0x87, 0);
     }
@@ -1924,7 +1934,7 @@ void func_80088E08(int arg0)
     D_800F1880.unk24 = vs_main_allocHeapR(sp10.size);
     vs_main_cdEnqueueUrgent(D_800F1880.unk20, D_800F1880.unk24);
     if (D_800F1880.unk30 != 0) {
-        temp_s0 = D_8004FCCC[arg0];
+        temp_s0 = D_8004FCCC[id];
         if (func_800450E4() != temp_s0) {
             func_8004552C(vs_main_soundData.currentMusicId, 0, 0x78);
         }
@@ -1949,7 +1959,23 @@ void func_80089CE4() { SetDispMask(1); }
 
 void func_80089D04() { SetDispMask(0); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089D24);
+void func_80089D24(int arg0)
+{
+    vs_main_CdFile file;
+
+    file.lba = D_800F1880.unk4[arg0].lba;
+    file.size = D_800F1880.unk4[arg0].size;
+
+    if (D_800F1880.unk58 != 0) {
+        vs_main_nop9(0x89, 0);
+    }
+    D_800F1880.unk58 = vs_main_allocateCdQueueSlot(&file);
+    if (D_800F1880.unk5C != 0) {
+        vs_main_nop9(0x8A, 0);
+    }
+    D_800F1880.unk5C = vs_main_allocHeapR(file.size);
+    vs_main_cdEnqueueUrgent(D_800F1880.unk58, D_800F1880.unk5C);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089DC0);
 

@@ -8,3 +8,5 @@ build/data/BATTLE/BATTLE.PRG.elf: LDSCRIPT += \
 
 build/src/BATTLE/BATTLE.PRG/%.o: ASFLAGS += -no-pad-sections
 build/src/BATTLE/BATTLE.PRG/%.o: CC1VER := 2.8.0
+
+build/src/BATTLE/BATTLE.PRG/573B8.o: build/src/include/lbas.h

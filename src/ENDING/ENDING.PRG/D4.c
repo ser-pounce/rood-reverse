@@ -17,6 +17,7 @@ void func_8006A888();
 void func_8006A9C0(int*);
 void func_8006AA6C();
 void func_8006AB44(void (*)());
+void func_8006B760();
 void func_8006B884();
 void func_8006B910();
 void func_8006B9DC();
@@ -172,7 +173,9 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B760);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B910);
+void func_8006B910() {
+    func_8006B760();
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 

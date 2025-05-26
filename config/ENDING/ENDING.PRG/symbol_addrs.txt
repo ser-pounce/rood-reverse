@@ -1,0 +1,2 @@
+_illustLbas = 0x800DB730;
+_illustSizes = 0x800DB770;

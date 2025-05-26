@@ -184,7 +184,9 @@ void func_8006B9B4()
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9DC);
+void func_8006B9DC() {
+    vs_main_checkStreamXaEnd();
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9FC);
 

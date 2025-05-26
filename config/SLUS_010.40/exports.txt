@@ -335,3 +335,6 @@ vs_main_skillsLearned = 0x8005FFB8;
 D_80060064 = 0x80060064;
 vs_gametime = 0x80061074;
 D_80061078 = 0x80061078;
+vs_gte_crossProduct = 0x800419A8;
+vs_gte_vectorSquare = 0x80041980;
+vs_gte_cueDepth = 0x80041A00;

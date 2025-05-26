@@ -12,7 +12,7 @@ typedef struct {
     vs_main_CdQueueSlot* unk4;
 } D_800F51C0_t;
 
-extern int D_800EB5C8[];
+extern int _menuLbas[];
 extern char D_800EB9AD;
 extern u_int* D_800EB9D4;
 extern u_char D_800F4E6A;
@@ -101,9 +101,9 @@ int func_800C8C50(int arg0)
         D_800EB9AD = temp_s0;
         s1->unk3 = 1;
         if (D_800F4E6A != 5) {
-            var_v1 = D_800EB5C8[temp_s0];
+            var_v1 = _menuLbas[temp_s0];
         } else {
-            var_v1 = VS_MAINMENU_PRG_LBA << 8 | 0x12;
+            var_v1 = VS_MAINMENU_PRG_LBA << 8 | VS_MAINMENU_PRG_SIZE >> 11;
         }
         file.lba = var_v1 >> 8;
         file.size = (var_v1 & 0xFF) << 11;

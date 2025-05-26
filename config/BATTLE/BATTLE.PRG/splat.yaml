@@ -69,5 +69,7 @@ segments:
       - [0x5BF94, c]
       - [0x6E644, asm]
       - [0x7F984, data]
+      - [0x82DC8, .data, menuLbas]
+      - [0x82E08, data]
       - [0x89058, bss]
   - [0x8D124]

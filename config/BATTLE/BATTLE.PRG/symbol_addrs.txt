@@ -813,4 +813,5 @@ func_800E7454 = 0x800E7454; // type:func
 func_800E75EC = 0x800E75EC; // type:func
 func_800E7660 = 0x800E7660; // type:func
 func_800E7698 = 0x800E7698; // type:func
+_menuLbas = 0x800EB5C8;
 _evtFile = 0x800F4C52;

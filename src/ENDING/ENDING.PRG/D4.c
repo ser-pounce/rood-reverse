@@ -36,6 +36,7 @@ extern int D_800D837C;
 extern int D_800D975C;
 extern int D_800DB09C;
 extern int D_800DB26C;
+extern char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
 extern char D_800DC188;
@@ -46,6 +47,8 @@ extern int D_800DC190;
 extern int* D_800DC194;
 extern short D_800DC198;
 extern short D_800DC19C;
+extern int D_800DC1A0;
+extern int D_800DC1A4;
 extern void* D_800DC1A8[];
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
@@ -159,7 +162,11 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AE54);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF44);
+void func_8006AF44(int arg0, int arg1) {
+    D_800DB72C = 1;
+    D_800DC1A0 = arg1;
+    D_800DC1A4 = arg0;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
 

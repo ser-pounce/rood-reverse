@@ -52,10 +52,7 @@ typedef struct {
     u_char unk7;
     short unk8;
     short unkA;
-    union {
-        int i;
-        short s[2];
-    } unkC;
+    short unkC[2];
     int unk10;
     u_char unk14[32];
 } D_800DEB18_t;
@@ -1194,7 +1191,7 @@ void func_8006AE10()
     D_800DEB14 = 0;
     D_800DED72 = 0;
     D_800DEB0E = 0x180;
-    memset(D_800DEB18, 0, 0x208);
+    memset(D_800DEB18, 0, sizeof(D_800DEB18));
 }
 
 D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
@@ -1204,10 +1201,10 @@ D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
     u_int var_v1;
 
     temp_s3 = &D_800DEB18[arg0];
-    memset(temp_s3, 0, 0x34);
+    memset(temp_s3, 0, sizeof(*temp_s3));
     temp_s3->unk0 = 1;
     temp_s3->unk1 = 0xFF;
-    temp_s3->unkC.i = arg1;
+    *(int*)temp_s3->unkC = arg1;
     temp_s3->unk10 = arg2;
 
     if (arg3 != 0) {
@@ -1474,7 +1471,7 @@ int func_8006C15C(int arg0)
             return -1;
         }
         for (i = 0; i < 5; ++i) {
-            D_800DEB18[i + 5].unkC.s[1] = (((i - D_800DC8DA) * 0x28) + 0x48);
+            D_800DEB18[i + 5].unkC[1] = (((i - D_800DC8DA) * 0x28) + 0x48);
             D_800DEB18[i + 5].unk4 = 0;
         }
         temp_s0 = D_800DC8DB + D_800DC8DA;
@@ -1874,7 +1871,7 @@ int func_8006D2F8(int arg0)
         } else {
             var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                D_800DEB18[i + 5].unkC.s[1] = (((i - D_800DC91E) * 0x28) + 0x48);
+                D_800DEB18[i + 5].unkC[1] = (((i - D_800DC91E) * 0x28) + 0x48);
                 D_800DEB18[i + 5].unk4 = 0;
             }
             temp_s0 = D_800DC91F + D_800DC91E;

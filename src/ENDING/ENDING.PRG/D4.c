@@ -150,7 +150,8 @@ void func_8006A5C0()
     func_8006BD78();
 }
 
-void func_8006A860(DRAWENV* drawenv) {
+void func_8006A860(DRAWENV* drawenv)
+{
     drawenv->isbg = 1;
     drawenv->dtd = 0;
     drawenv->dfe = 0;
@@ -172,7 +173,8 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AB44);
 
-D_800DBB88_t* func_8006ABBC(int arg0) {
+D_800DBB88_t* func_8006ABBC(int arg0)
+{
     if (D_800DBB88.unk8 == 0) {
         D_800DBB88.unk0 = arg0;
         D_800DBB88.unk8 = 1;
@@ -186,7 +188,8 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AE54);
 
-void func_8006AF44(int arg0, int arg1) {
+void func_8006AF44(int arg0, int arg1)
+{
     D_800DB72C = 1;
     D_800DC1A0 = arg1;
     D_800DC1A4 = arg0;
@@ -204,9 +207,7 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B760);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
 
-void func_8006B910() {
-    func_8006B760();
-}
+void func_8006B910() { func_8006B760(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 
@@ -215,9 +216,7 @@ void func_8006B9B4()
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
 
-void func_8006B9DC() {
-    vs_main_checkStreamXaEnd();
-}
+void func_8006B9DC() { vs_main_checkStreamXaEnd(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9FC);
 

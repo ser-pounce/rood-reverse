@@ -10,6 +10,13 @@ typedef struct {
     void* unk10;
 } func_8006DF70_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    short unk8;
+    short unkA;
+} D_800DBB88_t;
+
 void func_8006B9B4();
 void func_8006A0D8();
 void func_8006A860(DRAWENV*);
@@ -39,6 +46,7 @@ extern int D_800DB26C;
 extern char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
+extern D_800DBB88_t D_800DBB88;
 extern char D_800DC188;
 extern char D_800DC189;
 extern char D_800DC18A;
@@ -164,7 +172,15 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AB44);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABBC);
+D_800DBB88_t* func_8006ABBC(int arg0) {
+    if (D_800DBB88.unk8 == 0) {
+        D_800DBB88.unk0 = arg0;
+        D_800DBB88.unk8 = 1;
+        D_800DBB88.unkA = 0;
+        return &D_800DBB88;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);
 

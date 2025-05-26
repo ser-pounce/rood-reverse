@@ -2,6 +2,14 @@
 #include "../SLUS_010.40/main.h"
 #include "lbas.h"
 
+typedef struct {
+    int unk0;
+    void* unk4;
+    void* unk8;
+    void* unkC;
+    void* unk10;
+} func_8006DF70_t;
+
 void func_8006B9B4();
 void func_8006A0D8();
 void func_8006A860(DRAWENV*);
@@ -205,7 +213,23 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006D358);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DA18);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DF70);
+void func_8006DF70(u_int* arg0, func_8006DF70_t* arg1)
+{
+
+    ++arg0;
+    arg1->unk0 = *arg0;
+    ++arg0;
+    if (arg1->unk0 & 8) {
+        arg1->unk4 = arg0 + 1;
+        arg1->unk8 = arg0 + 3;
+        arg0 += *arg0 / 4;
+    } else {
+        arg1->unk4 = 0;
+        arg1->unk8 = 0;
+    }
+    arg1->unkC = arg0 + 1;
+    arg1->unk10 = arg0 + 3;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DFD0);
 

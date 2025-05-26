@@ -142,7 +142,15 @@ void func_8006A5C0()
     func_8006BD78();
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A860);
+void func_8006A860(DRAWENV* drawenv) {
+    drawenv->isbg = 1;
+    drawenv->dtd = 0;
+    drawenv->dfe = 0;
+    drawenv->b0 = 0;
+    drawenv->g0 = 0;
+    drawenv->r0 = 0;
+    drawenv->tpage = 0x20;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A888);
 

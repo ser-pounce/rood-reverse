@@ -12,8 +12,18 @@ typedef struct {
     vs_main_CdQueueSlot* unk4;
 } D_800F51C0_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    short unk2;
+    int unk4;
+    int unk8;
+    vs_main_CdQueueSlot* slot;
+} D_800EB9B4_t;
+
 extern int _menuLbas[];
 extern char D_800EB9AD;
+extern D_800EB9B4_t* D_800EB9B4;
 extern u_int* D_800EB9D4;
 extern u_char D_800F4E6A;
 extern u_char D_800F4FDB;
@@ -232,7 +242,28 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB660);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB66C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB678);
+void _loadScreff2(int arg0)
+{
+    vs_main_CdFile file;
+    D_800EB9B4_t* p = D_800EB9B4;
+    void* const* new_var;
+
+    if (arg0 != 0) {
+        p->unk0 = 1;
+        file.lba = VS_SCREFF2_PRG_LBA;
+        file.size = VS_SCREFF2_PRG_SIZE;
+        p->slot = vs_main_allocateCdQueueSlot(&file);
+        new_var = &vs_overlay_slots[1];
+        vs_main_cdEnqueue(p->slot, *new_var);
+        return;
+    }
+
+    if (p->slot->state == 4) {
+        vs_main_freeCdQueueSlot(p->slot);
+        p->unk0 = 0;
+        vs_main_wait();
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB708);
 

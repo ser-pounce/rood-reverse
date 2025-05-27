@@ -3,6 +3,7 @@
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"
 #include "../BATTLE/BATTLE.PRG/battle.h"
+#include "../ENDING/ENDING.PRG/D4.h"
 #include "lbas.h"
 #include <libapi.h>
 #include <libds.h>
@@ -22,13 +23,6 @@ enum vs_main_CdQueueState {
     vs_main_CdQueueStateError = 6,
     vs_main_CdQueueStateDispatched = 7,
 };
-
-typedef struct vs_main_HeapHeader {
-    struct vs_main_HeapHeader* prev;
-    struct vs_main_HeapHeader* next;
-    u_int blockSz;
-    int unkC;
-} vs_main_HeapHeader;
 
 typedef struct {
     u_char mode;
@@ -178,34 +172,16 @@ typedef struct {
 } Gametime_t;
 
 void __main();
-static void _sysInit();
-static void _sysReinit();
 static void _unlockPadModeSwitch();
 static void _padResetDefaults(int, u_char[34]);
-void vs_main_padConnect(int, u_char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
-static int _diskGetState();
-void func_80042CB0();
-void vs_main_resetPadAct();
 static void _initCdQueue();
 static void _diskReset();
 static void _processCdQueue();
-static int vs_main_freeMusic(int arg0);
-static void vs_main_stopMusic();
-void vs_main_playSfx(int, int, int, int);
-static void func_800461CC(int, u_int[], u_int, int, int);
-static int func_800464FC(int, int, int);
-static void func_80046678(int);
-static void func_80046770(int);
 static int func_800467A0();
 static void _loadMenuSound();
-void func_80046B3C(int, int, u_short*);
-void func_80047910(int, int, D_8005DC6C_t*);
 static void _asmNop();
 static void nop10(int, int);
-void func_8006A5C0();
-static void _initRand();
-static void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
 
 typedef struct {
     u_char wLo;
@@ -2000,7 +1976,7 @@ static int func_800453F4(int arg0)
     return ret;
 }
 
-static int vs_main_freeMusic(int slotId)
+int vs_main_freeMusic(int slotId)
 {
     func_80044DF4(slotId);
 
@@ -2461,7 +2437,7 @@ static int func_80046194()
     return 1;
 }
 
-static void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
 {
     int var_s0;
     void* temp_s1;
@@ -2677,7 +2653,7 @@ static void func_80046678(int file)
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 
-static void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
+void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
 
 static int func_800467A0()
 {

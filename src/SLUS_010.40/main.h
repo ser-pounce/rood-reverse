@@ -64,6 +64,13 @@ typedef struct {
     vs_main_CdQueueSlot* soundQueueSlot;
 } soundData_t;
 
+typedef struct vs_main_HeapHeader {
+    struct vs_main_HeapHeader* prev;
+    struct vs_main_HeapHeader* next;
+    u_int blockSz;
+    int unkC;
+} vs_main_HeapHeader;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern u_char D_8004EDDC[8][30];
@@ -116,9 +123,13 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram);
 void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram);
 int vs_main_loadMusicSlot(int id, int targetSlot);
 void vs_main_playSfxDefault(int, int);
+void vs_main_stopMusic();
+int vs_main_freeMusic(int arg0);
+void func_800461CC(int, u_int[], u_int, int, int);
 void func_800468BC(int);
 void func_80046C80(int, int, u_short*, int);
 void func_800472D0();
+void func_80046770(int);
 void func_800478E0(int, int, int, int, int);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void*, void*, u_int);
@@ -132,3 +143,4 @@ int vs_main_checkStreamXaEnd();
 int func_8004552C(int id, int arg1, int arg2);
 int func_800450E4();
 void vs_main_wait();
+void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);

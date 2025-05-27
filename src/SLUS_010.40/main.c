@@ -568,15 +568,15 @@ static void _sysInit()
 
 static void _sysReinit()
 {
-    RECT rects[3];
     int i;
+    RECT rect0 __attribute__((unused));
+    RECT rect1 __attribute__((unused)) = { .x = 819, .y = 819, .w = 819, .h = 0 };
+    RECT rect2 = { .x = 0, .y = 0, .w = 1024, .h = 512 };
 
-    rects[1] = (RECT) { 819, 819, 819, 0 };
-    rects[2] = (RECT) { 0, 0, 1024, 512 };
     ResetCallback();
     ResetGraph(1);
     SetGraphDebug(0);
-    ClearImage(&rects[2], 0, 0, 0);
+    ClearImage(&rect2, 0, 0, 0);
     DrawSync(0);
     _displayLoadingScreen();
     SsUtReverbOn();

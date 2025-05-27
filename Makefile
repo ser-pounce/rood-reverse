@@ -32,9 +32,10 @@ RGBA16  := $(VPYTHON) tools/splat_ext/rgba16.py
 DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
 MKPSXISO := tools/mkpsxiso/build/Release/mkpsxiso
 
-BCONFIG = build/config/$*
+BUILD   := build
+BCONFIG = $(BUILD)/config/$*
 
-CPPFLAGS        = -nostdinc -I src/include -I include/psx -I build/src/include $(CPP_DEPS)
+CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS)
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -fsigned-char -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -EL -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
@@ -62,18 +63,18 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 sourcedata := $(binaries:%=data/%)
-targets    := $(binaries:%=build/data/%)
+targets    := $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile)
-ifneq ($(wildcard build/src),)
-deps != $(FIND) build/src -type f -name *.d
+ifneq ($(wildcard $(BUILD)/src),)
+deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif
 build_deps := $(DUMPSXISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
-src_from_target = $(patsubst build/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
+src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 
-.PHONY: all format sortsyms lintsrc decompme permute clean remake clean-all
+.PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
 
 all: $(targets)
 
@@ -95,8 +96,11 @@ decompme: $(call src_from_target,$(TARGET)) $(TARGET)
 permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
 	@$(PERMUTE) $(PERMUTEFLAGS) $<
 
+objdiff: CPPFLAGS += -DOBJDIFF
+objdiff: $(targets:%=%.elf)
+
 clean:
-	$(RM) $(RMFLAGS) build
+	$(RM) $(RMFLAGS) $(BUILD)
 
 remake: MAKEFLAGS += --no-print-directory
 remake: clean
@@ -109,35 +113,39 @@ clean-all:
 	@$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
 ifeq ($(PERMUTER),)
-build/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
+$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
 						config/%/Makefile Makefile data/%
 	@$(call builder, Splitting $*)
-	@$(SPLAT) $(SPLATFLAGS) $< $(if $(DEBUG),,> build/config/$*/splat.log 2> /dev/null)
+	@$(SPLAT) $(SPLATFLAGS) $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	@$(TOUCH) $@
 endif
 
-build/data/%: build/data/%.elf	
+$(BUILD)/data/%: $(BUILD)/data/%.elf	
 	$(call builder,Linking $@)
 	@$(LD) $(LDFLAGS_BIN) $< -o $@
 	$(fixup)
 	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
-build/data/%.elf:
+ifeq ($(filter objdiff,$(MAKECMDGOALS)),)
+$(BUILD)/data/%.elf:
 	$(call builder,Linking $@)
 	@$(LD) $(LDFLAGS) -o $@
+else
+$(BUILD)/data/%.elf:
+endif
 
 %.o: %.s
 	$(call builder,Assembling $<)
 	@$(AS) $(ASFLAGS) -no-pad-sections -o $@ $<
 
-build/%.o: %.s
+$(BUILD)/%.o: %.s
 	$(call builder,Assembling $<)
 	@$(AS) $(ASFLAGS) -o $@ $<
 
-build/%.o: %.c
+$(BUILD)/%.o: %.c
 	$(call builder,Compiling $<)
 	@$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
-	@$(CAT) $@.d >> build/$*.d
+	@$(CAT) $@.d >> $(BUILD)/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
 %rgba16.o: filename = $(@F:%.rgba16.o=%)
@@ -170,12 +178,12 @@ $(sourcedata) &: | disks/$(disk).bin $(build_deps)
 	@$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
-build/config/$(disk)_LBA.txt: $(sourcedata)
+$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata)
 	$(call builder,Generating $@)
 	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
-	@$(MV) $(disk)_LBA.txt build/config/
+	@$(MV) $(disk)_LBA.txt $(BUILD)/config/
 
-build/src/include/lbas.h: build/config/$(disk)_LBA.txt
+$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt
 	$(call builder,Generating $@)
 	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
@@ -230,5 +238,5 @@ Makefile $(makefiles) $(deps):: ;
 
 include $(makefiles)
 ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)
--include $(binaries:%=build/config/%/link.d) $(deps)
+-include $(binaries:%=$(BUILD)/config/%/link.d) $(deps)
 endif

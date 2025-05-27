@@ -1,7 +1,7 @@
 #pragma once
 #include <stddef.h>
 
-#ifndef PERMUTER
+#if !defined(PERMUTER) && !defined(OBJDIFF)
 
 #define INCLUDE_CMN(SECTION, FOLDER, NAME)                                               \
     __asm__(".pushsection ." #SECTION ";"                                                \
@@ -32,7 +32,8 @@
 #else
 #define INCLUDE_ASM(FOLDER, NAME) void dummy()
 #define INCLUDE_RODATA(FOLDER, NAME)
-#define BIOS_STUB(name, table, id)
+#if defined(PERMUTER)
 #define __attribute__(x)
 #define __asm__(...)
 #endif // PERMUTER
+#endif // PERMUTER && OBJDIFF

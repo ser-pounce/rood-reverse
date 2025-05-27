@@ -1,5 +1,5 @@
-build/data/BATTLE/INITBTL.PRG.elf: LDSCRIPT += \
+$(BUILD)/data/BATTLE/INITBTL.PRG.elf: LDSCRIPT += \
 	config/SLUS_010.40/exports.txt
-build/src/BATTLE/INITBTL.PRG/%.o: ASFLAGS += -no-pad-sections
-build/src/BATTLE/INITBTL.PRG/%.o: CC1VER := 2.8.0
-build/src/BATTLE/INITBTL.PRG/18.o: build/src/include/lbas.h
+$(BUILD)/src/BATTLE/INITBTL.PRG/%.o: ASFLAGS += -no-pad-sections
+$(BUILD)/src/BATTLE/INITBTL.PRG/%.o: CC1VER := 2.8.0
+$(BUILD)/src/BATTLE/INITBTL.PRG/18.o: $(BUILD)/src/include/lbas.h

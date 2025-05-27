@@ -2,6 +2,7 @@
 #include "22C.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
+#include "../SLUS_010.40/sfx.h"
 #include "gpu.h"
 #include "lbas.h"
 #include <libapi.h>
@@ -66,37 +67,14 @@ typedef struct {
     short unk0[2];
 } vs_gametime_t;
 
-u_char* _memcardFilenameFromTemplate(int, int);
-int memcardFileNumberFromFilename(u_char*);
-int _readSaveData(int id);
-int func_8006913C(int);
-int func_800691D4(int);
-void func_80069888(int);
-int _memCardHandler(int);
-int func_8006A49C(int);
-void _drawSprt(int, int, int, int);
-void func_8006BC78(u_char);
-int func_8006C778(int);
-int func_8006CABC(int);
-int func_8006CE6C(int);
-int func_8006DC14(int);
-int func_8006E00C(int);
 void playMovie(DslLOC*);
-void func_8006F174();
-int func_8006F2A0(D_800DEDA8_t*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
-void func_8006F54C();
-void func_8006F954();
-void _setMenuItemClut(int, int, int, int);
-void func_800703CC();
-void func_800705AC();
-void func_8007093C();
 void func_80071B14();
 void func_80071CE0(int arg0);
 
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
-u_char const* pMemcardFilenameTemplate = saveFilenameTemplate;
+u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
@@ -137,8 +115,8 @@ extern u_long D_800AF368[];
 extern u_long D_800BD368[];
 extern u_long D_800C2268[];
 extern u_long D_800D1268[];
-extern u_char memcardFilename[32];
-extern u_char memcardFilenameAlpha[32];
+extern u_char _memcardFilename[32];
+extern u_char _memcardFilenameAlpha[32];
 extern u_char _memCardState;
 extern u_char _memCardPort;
 extern u_char D_800D9280[];
@@ -245,48 +223,48 @@ extern u_char D_800EFDF8[][8];
 #define MAKEXY(x, y) (((y) << 16) | (x))
 #define MAKEWH(w, h) MAKEXY(w, h)
 
-void func_80068A2C()
+static void _playNewGameSfx()
 {
     vs_main_playSfxDefault(0x7E, 1);
     vs_main_playSfxDefault(0x7E, 2);
     vs_main_playSfxDefault(0x7E, 3);
 }
 
-void func_80068A68() { vs_main_playSfxDefault(0x7E, 4); }
+static void _playMenuChangeSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
 
-void func_80068A8C() { vs_main_playSfxDefault(0x7E, 5); }
+static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
 
-void func_80068AB0() { vs_main_playSfxDefault(0x7E, 6); }
+static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-u_int _scramble(int value)
+static u_int _scramble(int value)
 {
     u_int seed = _scrambleSeed;
     _scrambleSeed = seed * 0x19660D;
     return seed >> (32 - value);
 }
 
-int _testMemcardEvents(int id)
+static int _testMemcardEvents(int type)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if (TestEvent(memcardEventDescriptors[i + id]) == 1) {
+        if (TestEvent(memcardEventDescriptors[i + type]) == 1) {
             return i;
         }
     }
     return i;
 }
 
-void _resetMemcardEvents(int id)
+static void _resetMemcardEvents(int type)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
-        TestEvent(memcardEventDescriptors[i + id]);
+        TestEvent(memcardEventDescriptors[i + type]);
     }
 }
 
-void _drawImage(int xy, u_long* p, int wh)
+static void _drawImage(int xy, u_long* p, int wh)
 {
     RECT rect;
 
@@ -296,7 +274,7 @@ void _drawImage(int xy, u_long* p, int wh)
     DrawSync(0);
 }
 
-void _readImage(int xy, u_long* p, int wh)
+static void _readImage(int xy, u_long* p, int wh)
 {
     RECT rect;
 
@@ -306,7 +284,7 @@ void _readImage(int xy, u_long* p, int wh)
     DrawSync(0);
 }
 
-void _rMemcpy(u_char* dst, u_char* src, int count)
+static void _rMemcpy(u_char* dst, u_char* src, int count)
 {
     do {
         --count;
@@ -314,25 +292,25 @@ void _rMemcpy(u_char* dst, u_char* src, int count)
     } while (count != 0);
 }
 
-u_char* _memcardFilenameFromTemplate(int port, int fileNo)
+static u_char* _memcardFilenameFromTemplate(int port, int fileNo)
 {
-    memset(memcardFilename, 0, ' ');
-    strcpy(memcardFilename, pMemcardFilenameTemplate);
-    memcardFilename[2] = port == 0 ? '0' : '1';
-    memcardFilename[20] = fileNo + '0';
-    return memcardFilename;
+    memset(_memcardFilename, 0, ' ');
+    strcpy(_memcardFilename, _pMemcardFilenameTemplate);
+    _memcardFilename[2] = port == 0 ? '0' : '1';
+    _memcardFilename[20] = fileNo + '0';
+    return _memcardFilename;
 }
 
-u_char* _memcardFilenameFromTemplateAlpha(int port, int fileNo)
+static u_char* _memcardFilenameFromTemplateAlpha(int port, int fileNo)
 {
-    memset(memcardFilenameAlpha, 0, ' ');
-    strcpy(memcardFilenameAlpha, pMemcardFilenameTemplate);
-    memcardFilenameAlpha[2] = port == 0 ? '0' : '1';
-    memcardFilenameAlpha[20] = (fileNo + '@');
-    return memcardFilenameAlpha;
+    memset(_memcardFilenameAlpha, 0, ' ');
+    strcpy(_memcardFilenameAlpha, _pMemcardFilenameTemplate);
+    _memcardFilenameAlpha[2] = port == 0 ? '0' : '1';
+    _memcardFilenameAlpha[20] = (fileNo + '@');
+    return _memcardFilenameAlpha;
 }
 
-u_int func_80068D54()
+static u_int func_80068D54()
 {
     u_int i;
     u_int var_a2;
@@ -351,7 +329,7 @@ u_int func_80068D54()
     return var_a3;
 }
 
-int func_80068DB4()
+static int func_80068DB4()
 {
     int i;
     for (i = 0; i < 5; ++i) {
@@ -365,12 +343,12 @@ int func_80068DB4()
     return 0;
 }
 
-int memcardFileNumberFromFilename(u_char* filename)
+static int _memcardFileNumberFromFilename(u_char* filename)
 {
     int i;
     u_char const* gameCode;
 
-    gameCode = &pMemcardFilenameTemplate[5];
+    gameCode = &_pMemcardFilenameTemplate[5];
 
     for (i = 0; i < 15; ++i) {
         if (gameCode[i] != filename[i]) {
@@ -466,7 +444,7 @@ int memcardSaveIdExists(int id)
 
     for (i = 0; i < 15; ++i) {
         u_char* filename = memcardFiles[i]->name;
-        if ((filename != NULL) && (memcardFileNumberFromFilename(filename) != 0)) {
+        if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)) {
             if (filename[15] == id) {
                 return 1;
             }
@@ -522,7 +500,7 @@ int func_800691D4(int port)
     for (i = 0; i < 15; ++i) {
         var_s2 = memcardFiles[i];
         if (var_s2 != 0) {
-            fileNo = memcardFileNumberFromFilename((char*)var_s2->name);
+            fileNo = _memcardFileNumberFromFilename((char*)var_s2->name);
             if (fileNo != 0) {
                 if (fileNo < 0) {
                     fileNo = -fileNo;
@@ -731,6 +709,7 @@ int func_800696D0(int arg0)
     return 0;
 }
 
+void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
 int func_80069EA8(int arg0)
@@ -1417,6 +1396,7 @@ void func_8006B4EC(int arg0, u_int arg1)
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
 
+void func_8006BC78(u_char);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006BC78);
 
 void func_8006C114()
@@ -1583,6 +1563,7 @@ int func_8006C15C(int arg0)
 }
 
 // https://decomp.me/scratch/KxBXc
+int func_8006C778(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
 
 int func_8006CABC(int arg0)
@@ -2048,6 +2029,7 @@ int func_8006D2F8(int arg0)
 }
 
 // https://decomp.me/scratch/QD0zT
+int func_8006DC14(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006DC14);
 
 int func_8006E00C(int arg0)
@@ -2324,7 +2306,7 @@ int func_8006E988()
         } while (temp_s0 == 0);
 
         if (temp_s0 == 1) {
-            _rMemcpy((u_char*)sp38, (u_char*)pMemcardFilenameTemplate, 0x16);
+            _rMemcpy((u_char*)sp38, (u_char*)_pMemcardFilenameTemplate, 0x16);
 
             sp38[2] = i + '/';
             sp38[20] = '?';
@@ -2374,9 +2356,9 @@ int func_8006EA70(int arg0)
         }
         if (D_800DC931 == 4) {
             if (D_800DC932 == 1) {
-                func_80068A8C();
+                _playMenuSelectSfx();
             } else {
-                func_80068AB0();
+                _playMenuLeaveSfx();
             }
             D_800DED68 = 0;
             for (i = 1; i < 3; ++i) {
@@ -2386,7 +2368,7 @@ int func_8006EA70(int arg0)
             break;
         }
         if (vs_main_buttonRepeat & 0x5000) {
-            func_80068A68();
+            _playMenuChangeSfx();
             D_800DC932 = 3 - D_800DC932;
         }
         D_800DED68 = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
@@ -3122,6 +3104,7 @@ void func_800703CC()
     }
 }
 
+void func_800705AC();
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800705AC);
 
 void func_8007093C()
@@ -3202,19 +3185,19 @@ void func_80070A88()
     while (1) {
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
-            func_80068A8C();
+            _playMenuSelectSfx();
             D_80060020.unkB = var_s4 - 5;
             if (var_s4 == 6) {
                 func_800438C8(0);
             }
             break;
         } else if (vs_main_buttonsState & PADRdown) {
-            func_80068AB0();
+            _playMenuLeaveSfx();
             break;
         } else {
             if (vs_main_buttonsPressed & (PADLup | PADLdown | PADselect)) {
                 var_s4 = 11 - var_s4;
-                func_80068A68();
+                _playMenuChangeSfx();
 
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(var_s4, i * 2, 0, 1);
@@ -3305,19 +3288,19 @@ void func_80070E64()
     while (1) {
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
-            func_80068A8C();
+            _playMenuSelectSfx();
             var_s3 = (var_s3 + 1) & 1;
             D_80060020.unkA = var_s3;
             func_800468BC(var_s3);
             vs_sound_setCdVol(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
-            func_80068AB0();
+            _playMenuLeaveSfx();
             break;
         } else {
             if (vs_main_buttonsPressed & (PADLup | PADLdown | PADselect)) {
                 var_s3 = 0xB - var_s3;
-                func_80068A68();
+                _playMenuChangeSfx();
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(var_s3, i * 2, 0, 1);
                     _setMenuItemClut(0xB - var_s3, i * 2, 1, 0);
@@ -3476,11 +3459,11 @@ int vs_title_exec()
                     var_s3 = 1;
                     break;
                 case 2:
-                    func_80068A8C();
+                    _playMenuSelectSfx();
                     func_80070A88();
                     break;
                 case 3:
-                    func_80068A8C();
+                    _playMenuSelectSfx();
                     func_80070E64();
                     break;
                 }
@@ -3499,7 +3482,7 @@ int vs_title_exec()
             }
             if (i_5 != 0) {
                 var_s2 = (var_s2 + i_5) & 3;
-                func_80068A68();
+                _playMenuChangeSfx();
                 if (i_5 == 1) {
                     func_8006FC34((var_s2 + 1) & 3, 0x80);
                     for (i = 0; i < 4; ++i) {
@@ -3524,9 +3507,9 @@ int vs_title_exec()
                 func_8006F954();
             }
             if (var_s3 == 1) {
-                func_80068A8C();
+                _playMenuSelectSfx();
             } else {
-                func_80068A2C();
+                _playNewGameSfx();
                 func_80071CE0(var_s3);
             }
         }

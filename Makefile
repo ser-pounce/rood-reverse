@@ -20,22 +20,24 @@ FIND     := find
 TRUNCATE := truncate
 
 # Anything below this line should not need editing
-CC1VER  := 2.7.2
-CC1      = tools/old-gcc/build-gcc-$(CC1VER)-psx/cc1
-VPYDIR  := tools/python
-VPYTHON := $(VPYDIR)/bin/$(PYTHON)
-MAS     := $(VPYTHON) tools/maspsx/maspsx.py
-SPLAT   := $(VPYTHON) -m splat split
-IMPORT  := $(VPYTHON) tools/decomp-permuter/import.py
-PERMUTE := $(VPYTHON) tools/decomp-permuter/permuter.py
-RGBA16  := $(VPYTHON) tools/splat_ext/rgba16.py
+CC1VER    := 2.7.2
+CC1        = tools/old-gcc/build-gcc-$(CC1VER)-psx/cc1
+VPYDIR    := tools/python
+VPYTHON   := $(VPYDIR)/bin/$(PYTHON)
+MAS       := $(VPYTHON) tools/maspsx/maspsx.py
+SPLAT     := $(VPYTHON) -m splat split
+IMPORT    := $(VPYTHON) tools/decomp-permuter/import.py
+VSSTRING  := $(VPYTHON) tools/etc/vsStringTransformer.py
+PERMUTE   := $(VPYTHON) tools/decomp-permuter/permuter.py
+RGBA16    := $(VPYTHON) tools/splat_ext/rgba16.py
 DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
-MKPSXISO := tools/mkpsxiso/build/Release/mkpsxiso
+MKPSXISO  := tools/mkpsxiso/build/Release/mkpsxiso
 
 BUILD   := build
 BCONFIG = $(BUILD)/config/$*
 
-CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS)
+CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS) \
+                  -D "__attribute__(x)="
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -fsigned-char -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -EL -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
@@ -144,7 +146,7 @@ $(BUILD)/%.o: %.s
 
 $(BUILD)/%.o: %.c
 	$(call builder,Compiling $<)
-	@$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
+	@$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
 	@$(CAT) $@.d >> $(BUILD)/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
@@ -158,15 +160,6 @@ $(BUILD)/%.o: %.c
 %rgba16.bin: %rgba16.png
 	$(call builder,Converting $<)
 	@$(RGBA16) $< $@
-
-%.o: %.yaml.bin
-	$(call builder,Compiling $<)
-	@$(OBJCOPY) $(OBJCOPYFLAGS) --set-section-alignment .data=4 \
-	$(shell $(VPYTHON) -m tools.splat_ext.symbolBuilder tools.splat_ext.$(*F)) $< $@
-
-%.yaml.bin: %.yaml
-	$(call builder,Converting $<)
-	@$(VPYTHON) -m tools.splat_ext.$(*F) $< $@
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^

@@ -2,7 +2,7 @@ import yaml
 from pathlib import Path
 from splat.segtypes.segment import Segment
 from splat.util import options
-from tools.splat_ext.ctypesUtil import ctypes_to_dict, dict_to_ctypes
+from tools.splat_ext.ctypesUtil import ctypes_to_dict, dict_to_ctypes, dict_to_c_initializer
 
 
 class YamlSegment(Segment):
@@ -29,3 +29,10 @@ class YamlSegment(Segment):
 
         with open(output_path, "wb") as f:
             f.write(bytearray(root_t))
+    
+    @classmethod
+    def to_c_initializer(cls, input_path):
+        with open(input_path, "r") as f:
+            data = yaml.safe_load(f)
+
+        return dict_to_c_initializer(data, cls.rootType)

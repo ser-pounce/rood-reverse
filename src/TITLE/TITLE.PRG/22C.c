@@ -371,34 +371,35 @@ static int _memcardFileNumberFromFilename(u_char* filename)
     return 0;
 }
 
-int verifySaveChecksums(u_char blocks[][0x100], int blockCount)
+static int _verifySaveChecksums(u_char blocks[][0x100], int blockCount)
 {
-    int var_a2;
-    int i, j;
+    int checksum;
+    int i;
+    int j;
     u_char* block;
 
     block = blocks[0];
 
     for (i = 0; i < blockCount; ++i) {
-        var_a2 = 0;
+        checksum = 0;
         if (i != 1) {
-            for (j = 0; j < 0x100; ++j) {
-                var_a2 ^= block[j];
+            for (j = 0; j < 256; ++j) {
+                checksum ^= block[j];
             }
-            if (((u_char*)blocks + i)[0x1A4] != var_a2) {
+            if (((u_char*)blocks + i)[0x1A4] != checksum) {
                 return 1;
             }
         }
-        block += 0x100;
+        block += 256;
     }
 
     block = blocks[1];
-    var_a2 = 0;
+    checksum = 0;
 
-    for (j = 0; j < 0x100; ++j) {
-        var_a2 ^= block[j];
+    for (j = 0; j < 256; ++j) {
+        checksum ^= block[j];
     }
-    return var_a2 != 0;
+    return checksum != 0;
 }
 
 void _descramble(u_int seed, u_char* buf, int count)
@@ -427,7 +428,7 @@ int _readSaveData(int id)
             close(file);
             if (bytesRead == 512) {
                 _descramble(*((int*)&buf[1][128]), &buf[1][132], 124);
-                if (verifySaveChecksums(buf, 2) == 0) {
+                if (_verifySaveChecksums(buf, 2) == 0) {
                     _rMemcpy((u_char*)D_800DEB08[id - 1], &buf[1][128], 128);
                     return 0;
                 }
@@ -680,7 +681,7 @@ int func_800696D0(int arg0)
         blockCount = 32;
     }
 
-    if ((verifySaveChecksums(blocks, blockCount) != 0) || (temp_s2[3] != 0x20000107)) {
+    if ((_verifySaveChecksums(blocks, blockCount) != 0) || (temp_s2[3] != 0x20000107)) {
         do {
             return 1;
         } while (0);

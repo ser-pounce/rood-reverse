@@ -31,7 +31,7 @@ typedef struct {
     int angle : 5;
     int aoe;
     u_int flags;
-    unsigned char unkD[2];
+    int unk10;
     struct {
         int effect : 7;
         int hitrateFlags : 6;

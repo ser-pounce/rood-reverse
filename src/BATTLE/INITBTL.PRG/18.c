@@ -4,6 +4,7 @@
 #include "../BATTLE.PRG/146C.h"
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
+#include <memory.h>
 
 typedef struct {
     size_t unk0;
@@ -86,6 +87,7 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AD8);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);
 
+// https://decomp.me/scratch/b3iic
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);

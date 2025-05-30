@@ -2,6 +2,8 @@
 #include "lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
+#include "../BATTLE.PRG/4A0A8.h"
+#include "../BATTLE.PRG/573B8.h"
 
 typedef struct {
     size_t unk0;
@@ -13,6 +15,8 @@ typedef struct {
     size_t unk18;
     size_t unk1C;
 } System_dat_h;
+
+extern char D_800FAF7C[0x400];
 
 void func_800CA9C0(void*);
 
@@ -74,4 +78,13 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA6B8);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FAAAC);
+void func_800FAAAC() {
+    void* temp_v0;
+
+    D_800F4C08 = 0;
+    D_800F4BE2 = 0;
+    D_800F4C30 = vs_main_allocHeap(0x1800);
+    D_800F4C48 = vs_main_allocHeap(0x80);
+    D_800F4C28 = vs_main_allocHeap(0x400);
+    vs_main_memcpy(D_800F4C28, D_800FAF7C, 0x400);
+}

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "lbas.h"
 #include "../../SLUS_010.40/main.h"
+#include "../BATTLE.PRG/146C.h"
 
 typedef struct {
     size_t unk0;
@@ -57,7 +58,9 @@ void _loadSystemDat()
 
 void func_800F9AB0() { }
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AB8);
+void func_800F9AB8(void) {
+    func_800995B0();
+}
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AD8);
 

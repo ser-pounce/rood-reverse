@@ -73,6 +73,7 @@ typedef struct vs_main_HeapHeader {
 
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
+extern u_char vs_main_skillsLearned[32];
 extern u_char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];

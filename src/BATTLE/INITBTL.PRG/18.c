@@ -16,11 +16,26 @@ typedef struct {
     size_t unk1C;
 } System_dat_h;
 
+void func_800CA9C0(void*);
 extern char D_800FAF7C[0x400];
 
-void func_800CA9C0(void*);
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9818);
+void func_800F9818() {
+    int i;
+    int var_v0;
+
+    for (i = 0; i < 256; ++i) {
+        var_v0 = i;
+        if (i < 0) {
+            var_v0 = i + 7;
+        }
+        if (vs_main_skillsLearned[var_v0 >> 3] & (0x80 >> (i - ((var_v0 >> 3) * 8)))) {
+            vs_main_skills[i].flags |= 0x8000;
+        } else {
+            vs_main_skills[i].flags &= 0xFFFF7FFF;
+        }
+    }
+}
 
 void _loadSystemDat()
 {
@@ -62,7 +77,7 @@ void _loadSystemDat()
 
 void func_800F9AB0() { }
 
-void func_800F9AB8(void) {
+void func_800F9AB8() {
     func_800995B0();
 }
 
@@ -79,8 +94,6 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA6B8);
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
 
 void func_800FAAAC() {
-    void* temp_v0;
-
     D_800F4C08 = 0;
     D_800F4BE2 = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);

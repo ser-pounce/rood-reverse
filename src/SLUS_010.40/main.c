@@ -8065,7 +8065,6 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern u_char vs_main_skillsLearned[];
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern D_80061068_t D_80061068;

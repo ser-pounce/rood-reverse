@@ -17,6 +17,7 @@ typedef struct {
 } System_dat_h;
 
 void func_800CA9C0(void*);
+
 extern char D_800FAF7C[0x400];
 
 
@@ -89,7 +90,26 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA6B8);
+void func_800FA6B8() {
+    vs_main_bzero(D_800F1CE0, 0x20);
+    vs_main_bzero(D_800F1BF8, 0xC4);
+    vs_main_bzero(D_800F1CC8, 0xC);
+    vs_main_bzero(D_800F1BF0, 8);
+    vs_main_bzero(D_800F1BC8, 0x24);
+    D_800F1BA8 = vs_main_allocHeap(0x800);
+    D_800F1BAC = vs_main_allocHeap(0x300);
+    D_800F1CBC = vs_main_allocHeap(0x80);
+    D_800F1BBE = -1;
+    D_800F1BA4 = 0;
+    D_800F1BB6 = 0;
+    D_800F1CD8 = 0;
+    D_800F1BC0 = 0;
+    D_800F1CD6 = 1;
+    D_800F1CD4 = 8;
+    func_8008E88C();
+    func_8008B6B4();
+    func_8008EB30(D_800F1CE0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
 

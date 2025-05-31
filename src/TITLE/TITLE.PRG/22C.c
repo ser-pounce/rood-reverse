@@ -659,9 +659,9 @@ int func_800696D0(int arg0)
     _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, sizeof(D_80061068));
     _rMemcpy((u_char*)&D_8005FEA0, spmcimg + 0x7384, sizeof(D_8005FEA0));
     D_80060064 = temp_s4[0x626];
-    _rMemcpy(D_80061078, spmcimg + 0x749C, 0x520);
+    _rMemcpy(D_80061078, spmcimg + 0x749C, sizeof(D_80061078));
     blocks = D_80060040;
-    _rMemcpy(D_80060040, spmcimg + 0x79BC, 0x24);
+    _rMemcpy(D_80060040, spmcimg + 0x79BC, sizeof(D_80060040));
     __builtin_memcpy(&vs_main_gametime, spmcimg + 0x5D90, sizeof(vs_main_gametime));
     func_80042CA0();
     func_800468BC(D_80060020.unkA);
@@ -865,7 +865,7 @@ static int _loadMemcardMenu(int arg0)
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
         vs_main_cdEnqueue(_mcDataLoad, _spmcimg);
-        _diskState = 0;
+        _diskState = diskStateInit;
         return 0;
     }
 

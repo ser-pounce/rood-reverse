@@ -29,7 +29,7 @@ SPLAT     := $(VPYTHON) -m splat split
 IMPORT    := $(VPYTHON) tools/decomp-permuter/import.py
 VSSTRING  := $(VPYTHON) tools/etc/vsStringTransformer.py
 PERMUTE   := $(VPYTHON) tools/decomp-permuter/permuter.py
-RGBA16    := $(VPYTHON) tools/splat_ext/rgba16.py
+RGBA16    := $(VPYTHON) -m tools.splat_ext.rgba16
 DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
 MKPSXISO  := tools/mkpsxiso/build/Release/mkpsxiso
 

@@ -174,7 +174,7 @@ extern u_char D_8005FFD8[0x48];
 extern D_80060020_t D_80060020;
 extern u_char D_8006002A;
 extern u_char D_8006002B;
-extern u_char D_80060040[];
+extern u_char D_80060040[0x24];
 extern D_80060068_t D_80060068;
 extern u_char D_80060168[0xF00];
 extern vs_Gametime_t vs_main_gametime;

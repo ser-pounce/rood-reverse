@@ -21,8 +21,8 @@ void func_800CA9C0(void*);
 
 extern char D_800FAF7C[0x400];
 
-
-void func_800F9818() {
+void func_800F9818()
+{
     int i;
     int var_v0;
 
@@ -79,9 +79,7 @@ void _loadSystemDat()
 
 void func_800F9AB0() { }
 
-void func_800F9AB8() {
-    func_800995B0();
-}
+void func_800F9AB8() { func_800995B0(); }
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AD8);
 
@@ -92,7 +90,8 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
 
-void func_800FA6B8() {
+void func_800FA6B8()
+{
     vs_main_bzero(D_800F1CE0, 0x20);
     vs_main_bzero(D_800F1BF8, 0xC4);
     vs_main_bzero(D_800F1CC8, 0xC);
@@ -115,7 +114,8 @@ void func_800FA6B8() {
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
 
-void func_800FAAAC() {
+void func_800FAAAC()
+{
     D_800F4C08 = 0;
     D_800F4BE2 = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);

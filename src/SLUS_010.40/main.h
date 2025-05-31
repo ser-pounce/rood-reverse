@@ -9,6 +9,16 @@ typedef struct {
     int size;
 } vs_main_CdFile;
 
+enum vs_main_CdQueueState {
+    vs_main_CdQueueStateFree = 0,
+    vs_main_CdQueueStateAllocated = 1,
+    vs_main_CdQueueStateReading = 2,
+    vs_main_CdQueueStateEnqueued = 3,
+    vs_main_CdQueueStateLoaded = 4,
+    vs_main_CdQueueStateError = 6,
+    vs_main_CdQueueStateDispatched = 7,
+};
+
 typedef struct {
     short state;
     short priority;
@@ -78,7 +88,7 @@ extern u_char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
-extern int D_8004A528;
+extern int vs_main_titleScreenCount;
 extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
 extern u_char D_8004FCCC[];

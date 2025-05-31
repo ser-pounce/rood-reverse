@@ -312,6 +312,7 @@ vs_main_memcpy = 0x800490B0;
 vs_main_bzero = 0x80049110;
 D_8004A504 = 0x8004A504;
 _actParams = 0x8004A51C;
+vs_main_titleScreenCount = 0x8004A528;
 D_8004A52C = 0x8004A52C;
 vs_main_skills = 0x8004B9DC;
 D_8004EDDC = 0x8004EDDC;

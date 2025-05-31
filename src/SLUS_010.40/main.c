@@ -14,16 +14,6 @@
 #include <libgpu.h>
 #include <rand.h>
 
-enum vs_main_CdQueueState {
-    vs_main_CdQueueStateFree = 0,
-    vs_main_CdQueueStateAllocated = 1,
-    vs_main_CdQueueStateReading = 2,
-    vs_main_CdQueueStateEnqueued = 3,
-    vs_main_CdQueueStateLoaded = 4,
-    vs_main_CdQueueStateError = 6,
-    vs_main_CdQueueStateDispatched = 7,
-};
-
 typedef struct {
     u_char mode;
     u_char exId;
@@ -195,7 +185,8 @@ extern u_long _nowLoading_data[];
 
 u_char D_8004A504[]
     = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6, 255, 0, 0, 0 };
-u_char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+u_char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
+int vs_main_titleScreenCount = 0;
 int D_8004A52C = 0;
 int _soundLBAs[] = { VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA,
     VS_WAVE0003_DAT_LBA, VS_WAVE0004_DAT_LBA, VS_WAVE0005_DAT_LBA, VS_WAVE0006_DAT_LBA,
@@ -8019,9 +8010,8 @@ u_char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     { 10, 10, 254, 0, 10, 10, 20, 5, 5, 5, 5, 246, 10, 0, 20, 251, 251, 251, 251, 20, 236,
         0, 64, 31, 8, 0, 3, 0, 255, 255 } };
 
-int D_8004EECC[] = {
-    1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0, 32
-};
+int D_8004EECC[]
+    = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0, 32 };
 
 #define RANDARRSZ 97
 extern int randArr[RANDARRSZ];

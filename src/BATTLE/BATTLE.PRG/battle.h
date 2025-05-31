@@ -23,8 +23,6 @@ typedef struct {
     D_800F19FC_t2* unk38;
 } D_800F19FC_t;
 
-struct D_80061068_t;
-
 void func_80069FC4(int, int);
 void func_8008B430(u_char*, int);
 void func_8008EB30(int*);
@@ -37,4 +35,4 @@ void vs_battle_exec();
 extern u_short D_800F18E8;
 extern int D_800F19D0[];
 extern D_800F19FC_t* D_800F19FC;
-extern struct D_80061068_t D_800F1AB0;
+extern D_80061068_t D_800F1AB0;

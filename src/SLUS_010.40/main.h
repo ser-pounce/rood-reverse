@@ -105,6 +105,16 @@ typedef struct {
     char h;
 } vs_Gametime_t;
 
+typedef struct D_80061068_t {
+    char unk0;
+    char unk1;
+    u_short unk2;
+    u_short unk4;
+    u_short unk6;
+    u_short unk8;
+    u_short unkA;
+} D_80061068_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern u_char vs_main_skillsLearned[32];
@@ -140,6 +150,7 @@ extern u_char D_8006002B;
 extern u_char D_80060040[];
 extern u_char D_80060168[];
 extern vs_Gametime_t vs_main_gametime;
+extern D_80061068_t D_80061068;
 
 int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();

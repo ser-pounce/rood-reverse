@@ -58,7 +58,6 @@ u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char D_80060068[];
-extern u_char D_80061068[];
 extern u_char D_80061598[];
 extern char D_8006169D;
 extern D_80060020_t D_800619D8;
@@ -666,7 +665,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80060068, spmcimg + 0x62C8, 0x100);
     _rMemcpy(D_80060168, spmcimg + 0x63C8, 0xF00);
     _rMemcpy(&D_800619D8.unk0, spmcimg + 0x72C8, 0xB0);
-    _rMemcpy(D_80061068, spmcimg + 0x7378, 0xC);
+    _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, 0xC);
     _rMemcpy((u_char*)D_8005FEA0, spmcimg + 0x7384, 0x114);
     D_80060064 = temp_s4[0x626];
     _rMemcpy(D_80061078, spmcimg + 0x749C, 0x520);
@@ -3588,10 +3587,10 @@ void func_80071B14()
         vs_main_bzero(&D_80060068[i * 0x100], 0x50);
     }
 
-    vs_main_bzero(D_80061068, 0xC);
+    vs_main_bzero(&D_80061068, 0xC);
     vs_main_memcpy(D_80060168, D_80074C24, 0xF00);
 
-    s0 = (u_short*)D_80061068;
+    s0 = (u_short*)&D_80061068;
     vs_gametime_tickspeed = 2;
     s0[2] = (s0[2] & 0xE0FF) | 0x400;
     s0[3] = ((s0[3] & 0x83FF) | 0x800);
@@ -3605,22 +3604,22 @@ void func_80071CE0(int arg0)
     case 0:
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 0;
-        D_80061068[0x0] = 1;
-        D_80061068[0x1] = 0;
+        D_80061068.unk0 = 1;
+        D_80061068.unk1 = 0;
         return;
     case 3:
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 1;
         D_80061598[0xE] = 1;
-        D_80061068[0x0] = 0x14;
-        D_80061068[0x1] = 0;
+        D_80061068.unk0 = 0x14;
+        D_80061068.unk1 = 0;
         return;
     case 4:
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 1;
         D_80061598[0xE] = 1;
-        D_80061068[0x0] = 2;
-        D_80061068[0x1] = 1;
+        D_80061068.unk0 = 2;
+        D_80061068.unk1 = 1;
         return;
     case 1:
         D_80061598[0xC] = 0;

@@ -143,10 +143,6 @@ typedef struct {
     int unk7C[24];
 } D_80060068_t;
 
-typedef struct D_80061068_t {
-    u_short unk0[6];
-} D_80061068_t;
-
 typedef struct {
     int lStickX;
     int lStickY;
@@ -8049,7 +8045,6 @@ extern int D_8005FE80;
 extern int D_8005FE84;
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
-extern D_80061068_t D_80061068;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
@@ -8449,14 +8444,14 @@ void func_80042CB0()
 
     v0 = (sp10[0] & 0x1F) << 8;
     v1 = (sp10[2] & 0x1F) << 0xA;
-    D_80061068.unk0[2] = (D_80061068.unk0[2] & 0xE0FF) | v0;
-    D_80061068.unk0[3] = (D_80061068.unk0[3] & 0x83FF) | v1;
+    D_80061068.unk4 = (D_80061068.unk4 & 0xE0FF) | v0;
+    D_80061068.unk6 = (D_80061068.unk6 & 0x83FF) | v1;
     v1_2 = sp10[1] << 0xD;
     v0_2 = (sp10[3] >> 6) << 0xD;
-    D_80061068.unk0[1] = ((D_80061068.unk0[1] & 0x1FFF) | v1_2);
+    D_80061068.unk2 = ((D_80061068.unk2 & 0x1FFF) | v1_2);
     new_var = D_800F18E8 & 0x3FF;
-    D_80061068.unk0[2] = ((D_80061068.unk0[2] & 0x9FFF) | v0_2);
-    D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
+    D_80061068.unk4 = ((D_80061068.unk4 & 0x9FFF) | v0_2);
+    D_80061068.unk6 = ((D_80061068.unk6 & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (skillsLearned = 0, i = 0; i < 8; ++i) {
             u_int new_var2 = vs_main_skills[var_s1 * 8 + i].flags;

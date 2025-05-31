@@ -28,23 +28,6 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char unk1;
-    short unk2;
-    u_int unk4;
-    u_char unk8;
-    u_char unk9;
-    u_char unkA;
-    u_char unkB;
-    int unkC;
-    int unk10;
-    u_int unk14;
-    u_short unk18;
-    u_short unk1A;
-    u_int unk1C;
-} D_80060020_t;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
     u_char unk2;
     u_char unk3;
     u_char unk4;
@@ -78,15 +61,6 @@ u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
-extern int vs_main_buttonRepeat;
-extern int D_8005FEA0[][3];
-extern u_char vs_main_skillsLearned[];
-extern u_char D_8005FFD8[];
-extern D_80060020_t D_80060020;
-extern u_char D_8006002A;
-extern u_char D_8006002B;
-extern u_char D_80060040[];
-extern int D_80060064;
 extern u_char D_80060068[];
 extern u_char D_80060168[];
 extern vs_gametime_t vs_gametime;

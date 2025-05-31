@@ -81,6 +81,23 @@ typedef struct vs_main_HeapHeader {
     int unkC;
 } vs_main_HeapHeader;
 
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    u_int unk4;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    int unkC;
+    int unk10;
+    u_int unk14;
+    u_short unk18;
+    u_short unk1A;
+    u_int unk1C;
+} D_80060020_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern u_char vs_main_skillsLearned[32];
@@ -104,9 +121,16 @@ extern int vs_gametime_tickspeed;
 extern u_char vs_main_padBuffer[2][34];
 extern u_int vs_main_buttonsPressed;
 extern int vs_main_buttonsPreviousState;
+extern int vs_main_buttonRepeat;
 extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
+extern int D_8005FEA0[][3];
+extern u_char D_8005FFD8[];
+extern D_80060020_t D_80060020;
+extern u_char D_8006002A;
+extern u_char D_8006002B;
+extern u_char D_80060040[];
 
 int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();

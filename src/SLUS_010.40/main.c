@@ -8062,8 +8062,6 @@ extern Gametime_t vs_gametime;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
-extern int vs_main_buttonRepeat;
-extern u_char D_80060020[];
 
 static void _loadBattlePrg()
 {
@@ -8944,8 +8942,8 @@ int vs_main_processPadState()
 
     if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & VS_RESET) == VS_RESET)
         && (vs_main_buttonsPressed & VS_RESET)) {
-        D_80060020[10] = 0;
-        D_80060020[11] = 1;
+        D_80060020.unkA = 0;
+        D_80060020.unkB = 1;
         _resetGame();
     }
 

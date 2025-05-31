@@ -52,10 +52,6 @@ u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
-extern u_char D_80060068[];
-extern u_char D_80061598[];
-extern char D_8006169D;
-extern D_80060020_t D_800619D8;
 extern int D_800728C0[];
 extern int D_800728E8[];
 extern u_char D_80072910[];
@@ -653,15 +649,15 @@ int func_800696D0(int arg0)
         return 0;
     }
 
-    _rMemcpy(D_80061598, spmcimg + 0x5E00, 0x440);
-    _rMemcpy(vs_main_skillsLearned, spmcimg + 0x6240, 0x20);
-    _rMemcpy(D_8005FFD8, spmcimg + 0x6260, 0x48);
-    _rMemcpy(&D_80060020.unk0, spmcimg + 0x62A8, 0x20);
-    _rMemcpy(D_80060068, spmcimg + 0x62C8, 0x100);
-    _rMemcpy(D_80060168, spmcimg + 0x63C8, 0xF00);
-    _rMemcpy(&D_800619D8.unk0, spmcimg + 0x72C8, 0xB0);
-    _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, 0xC);
-    _rMemcpy((u_char*)&D_8005FEA0, spmcimg + 0x7384, 0x114);
+    _rMemcpy(D_80061598, spmcimg + 0x5E00, sizeof(D_80061598));
+    _rMemcpy(vs_main_skillsLearned, spmcimg + 0x6240, sizeof(vs_main_skillsLearned));
+    _rMemcpy(D_8005FFD8, spmcimg + 0x6260, sizeof(D_8005FFD8));
+    _rMemcpy((u_char*)&D_80060020, spmcimg + 0x62A8, sizeof(D_80060020));
+    _rMemcpy((u_char*)&D_80060068, spmcimg + 0x62C8, sizeof(D_80060068));
+    _rMemcpy(D_80060168, spmcimg + 0x63C8, sizeof(D_80060168));
+    _rMemcpy((u_char*)&D_800619D8, spmcimg + 0x72C8, sizeof(D_800619D8));
+    _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, sizeof(D_80061068));
+    _rMemcpy((u_char*)&D_8005FEA0, spmcimg + 0x7384, sizeof(D_8005FEA0));
     D_80060064 = temp_s4[0x626];
     _rMemcpy(D_80061078, spmcimg + 0x749C, 0x520);
     blocks = D_80060040;
@@ -3578,11 +3574,11 @@ void func_80071B14()
     }
 
     for (i = 0; i < 1; ++i) {
-        vs_main_bzero(&D_80060068[i * 0x100], 0x50);
+        vs_main_bzero((u_char*)&D_80060068 + i * 0x100, 0x50);
     }
 
-    vs_main_bzero(&D_80061068, 0xC);
-    vs_main_memcpy(D_80060168, D_80074C24, 0xF00);
+    vs_main_bzero(&D_80061068, sizeof(D_80061068));
+    vs_main_memcpy(D_80060168, D_80074C24, sizeof(D_80060168));
 
     vs_gametime_tickspeed = 2;
     D_80061068.unk4 = (D_80061068.unk4 & 0xE0FF) | 0x400;

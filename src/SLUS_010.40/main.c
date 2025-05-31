@@ -128,22 +128,6 @@ typedef struct {
 } vs_main_disk_t;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_short unk4[4];
-    u_short unkC[8];
-} D_80060068_t2;
-
-typedef struct {
-    int unk0;
-    short unk4[12];
-    int unk1C;
-    u_char unk20[8];
-    D_80060068_t2 unk28[6];
-    int unk7C[24];
-} D_80060068_t;
-
-typedef struct {
     int lStickX;
     int lStickY;
     int rStickX;
@@ -8043,7 +8027,6 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
@@ -8388,7 +8371,7 @@ static void _sysReinit()
     vs_main_gametime.m = 0;
     vs_main_gametime.s = 0;
     vs_main_gametime.f = 0;
-    D_80060068.unk0 = 0;
+    D_80060068.unk0.unk0 = 0;
 }
 
 int vs_main_execTitle()
@@ -8420,7 +8403,7 @@ void vs_main_wait() { vs_overlay_wait(); }
 
 void vs_main_enableReset(int arg0) { _resetEnabled = arg0; }
 
-void func_80042CA0() { D_80060068.unk0 = 1; }
+void func_80042CA0() { D_80060068.unk0.unk0 = 1; }
 
 void func_80042CB0()
 {
@@ -8461,43 +8444,43 @@ void func_80042CB0()
     }
     temp_t0 = D_800F19FC->unk38;
     temp_t5 = &D_80060068;
-    temp_t5->unk4[0] = temp_t0->unk0[12];
-    temp_t5->unk4[1] = temp_t0->unk0[13];
-    temp_t5->unk4[2] = temp_t0->unk0[14];
-    temp_t5->unk4[3] = temp_t0->unk0[15];
-    temp_t5->unk4[4] = temp_t0->unk0[17];
-    temp_t5->unk4[5] = temp_t0->unk0[18];
-    temp_t5->unk4[6] = temp_t0->unk0[19];
-    temp_t5->unk4[7] = temp_t0->unk0[20];
-    temp_t5->unk4[8] = temp_t0->unk0[21];
-    temp_t5->unk4[9] = temp_t0->unk0[22];
-    temp_t5->unk4[10] = temp_t0->unk0[16];
-    temp_t5->unk4[11] = temp_t0->unk954;
-    temp_t5->unk1C = temp_t0->unk948;
+    temp_t5->unk0.unk4[0] = temp_t0->unk0[12];
+    temp_t5->unk0.unk4[1] = temp_t0->unk0[13];
+    temp_t5->unk0.unk4[2] = temp_t0->unk0[14];
+    temp_t5->unk0.unk4[3] = temp_t0->unk0[15];
+    temp_t5->unk0.unk4[4] = temp_t0->unk0[17];
+    temp_t5->unk0.unk4[5] = temp_t0->unk0[18];
+    temp_t5->unk0.unk4[6] = temp_t0->unk0[19];
+    temp_t5->unk0.unk4[7] = temp_t0->unk0[20];
+    temp_t5->unk0.unk4[8] = temp_t0->unk0[21];
+    temp_t5->unk0.unk4[9] = temp_t0->unk0[22];
+    temp_t5->unk0.unk4[10] = temp_t0->unk0[16];
+    temp_t5->unk0.unk4[11] = temp_t0->unk954;
+    temp_t5->unk0.unk1C = temp_t0->unk948;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->unk20[i] = temp_t0->unk94C[i];
+        temp_t5->unk0.unk20[i] = temp_t0->unk94C[i];
     }
 
     var_t4 = 0;
     var_t3 = 0;
 
     for (i = 0; i < 6; ++i) {
-        temp_t5->unk28[i].unk0 = temp_t0->unk398[i].unk0;
-        temp_t5->unk28[i].unk2 = temp_t0->unk398[i].unk2;
+        temp_t5->unk0.unk28[i].unk0 = temp_t0->unk398[i].unk0;
+        temp_t5->unk0.unk28[i].unk2 = temp_t0->unk398[i].unk2;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk28[i].unk4[j] = temp_t0->unk398[i].unk8[j];
+            temp_t5->unk0.unk28[i].unk4[j] = temp_t0->unk398[i].unk8[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk28[i].unkC[j] = temp_t0->unk398[i].unk10[j];
+            temp_t5->unk0.unk28[i].unkC[j] = temp_t0->unk398[i].unk10[j];
         }
     }
 
-    temp_t5->unk7C[0] = D_800F19FC->unk0[8];
-    temp_t5->unk7C[1] = D_800F19D0[5];
-    temp_t5->unk7C[2] = D_800F19D0[8];
+    temp_t5->unk0.unk7C = D_800F19FC->unk0[8];
+    temp_t5->unk0.unk80 = D_800F19D0[5];
+    temp_t5->unk0.unk84 = D_800F19D0[8];
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);

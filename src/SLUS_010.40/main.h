@@ -118,7 +118,29 @@ typedef struct D_80061068_t {
 typedef struct {
     int unk0[10];
     int unk28[8][3];
+    int unk88[35];
 } D_8005FEA0_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_short unk4[4];
+    u_short unkC[8];
+} D_80060068_t2;
+
+typedef struct {
+    struct {
+        int unk0;
+        short unk4[12];
+        int unk1C;
+        u_char unk20[8];
+        D_80060068_t2 unk28[6];
+        int unk7C;
+        int unk80;
+        int unk84;
+    } unk0;
+    int unkDC[9];
+} D_80060068_t;
 
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
@@ -148,14 +170,17 @@ extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
 extern D_8005FEA0_t D_8005FEA0;
-extern u_char D_8005FFD8[];
+extern u_char D_8005FFD8[0x48];
 extern D_80060020_t D_80060020;
 extern u_char D_8006002A;
 extern u_char D_8006002B;
 extern u_char D_80060040[];
-extern u_char D_80060168[];
+extern D_80060068_t D_80060068;
+extern u_char D_80060168[0xF00];
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061068_t D_80061068;
+extern u_char D_80061598[0x440];
+extern int D_800619D8[44];
 
 int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();

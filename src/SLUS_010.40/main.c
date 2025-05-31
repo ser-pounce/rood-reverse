@@ -154,13 +154,6 @@ typedef struct {
     int rStickY;
 } vs_main_stickPos;
 
-typedef struct {
-    char f;
-    char s;
-    char m;
-    char h;
-} Gametime_t;
-
 void __main();
 static void _unlockPadModeSwitch();
 static void _padResetDefaults(int, u_char[34]);
@@ -8047,7 +8040,6 @@ extern int D_8005E0BC;
 extern u_int _frameDuration;
 extern int vs_main_saveBeforeTitle;
 extern int _inGame;
-extern int vs_gametime_tickspeed;
 extern u_short loadImageSource[][256];
 extern int D_8005FE70;
 extern int D_8005FE74;
@@ -8058,7 +8050,6 @@ extern int D_8005FE84;
 extern D_80060068_t D_80060068;
 extern u_char D_8006002B;
 extern D_80061068_t D_80061068;
-extern Gametime_t vs_gametime;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
@@ -8258,32 +8249,32 @@ int vs_main_gametimeUpdate(int arg0)
 
     _processCdQueue();
 
-    if (vs_gametime.h >= 100) {
+    if (vs_main_gametime.h >= 100) {
         return vs;
     }
 
-    vs_gametime.f += vs_gametime_tickspeed;
+    vs_main_gametime.f += vs_gametime_tickspeed;
 
-    if (vs_gametime.f < 60) {
+    if (vs_main_gametime.f < 60) {
         return vs;
     }
 
-    vs_gametime.f = 0;
+    vs_main_gametime.f = 0;
 
-    if (++vs_gametime.s < 60) {
+    if (++vs_main_gametime.s < 60) {
         return vs;
     }
 
-    vs_gametime.s = 0;
+    vs_main_gametime.s = 0;
 
-    if (++vs_gametime.m < 60) {
+    if (++vs_main_gametime.m < 60) {
         return vs;
     }
 
-    vs_gametime.m = 0;
+    vs_main_gametime.m = 0;
 
-    if (++vs_gametime.h >= 100) {
-        vs_gametime.h = 100;
+    if (++vs_main_gametime.h >= 100) {
+        vs_main_gametime.h = 100;
     }
     return vs;
 }
@@ -8398,10 +8389,10 @@ static void _sysReinit()
     for (i = 31; i >= 0; --i) {
         _buttonHeldFrameCount[i] = 0;
     }
-    vs_gametime.h = 0;
-    vs_gametime.m = 0;
-    vs_gametime.s = 0;
-    vs_gametime.f = 0;
+    vs_main_gametime.h = 0;
+    vs_main_gametime.m = 0;
+    vs_main_gametime.s = 0;
+    vs_main_gametime.f = 0;
     D_80060068.unk0 = 0;
 }
 
@@ -8439,8 +8430,8 @@ void func_80042CA0() { D_80060068.unk0 = 1; }
 void func_80042CB0()
 {
     unsigned char sp10[16];
-    int var_a1;
-    int var_a3;
+    int j;
+    int i;
     int var_s1;
     int var_t3;
     int new_var;
@@ -8467,8 +8458,8 @@ void func_80042CB0()
     D_80061068.unk0[2] = ((D_80061068.unk0[2] & 0x9FFF) | v0_2);
     D_80061068.unk0[3] = ((D_80061068.unk0[3] & 0xFC00) | new_var);
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        for (skillsLearned = 0, var_a3 = 0; var_a3 < 8; ++var_a3) {
-            u_int new_var2 = vs_main_skills[var_s1 * 8 + var_a3].flags;
+        for (skillsLearned = 0, i = 0; i < 8; ++i) {
+            u_int new_var2 = vs_main_skills[var_s1 * 8 + i].flags;
             skillsLearned = (*(int*)&skillsLearned * 2) | ((new_var2 >> 0xF) & 1);
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;
@@ -8489,23 +8480,23 @@ void func_80042CB0()
     temp_t5->unk4[11] = temp_t0->unk954;
     temp_t5->unk1C = temp_t0->unk948;
 
-    for (var_a3 = 0; var_a3 < 8; ++var_a3) {
-        temp_t5->unk20[var_a3] = temp_t0->unk94C[var_a3];
+    for (i = 0; i < 8; ++i) {
+        temp_t5->unk20[i] = temp_t0->unk94C[i];
     }
 
     var_t4 = 0;
     var_t3 = 0;
 
-    for (var_a3 = 0; var_a3 < 6; ++var_a3) {
-        temp_t5->unk28[var_a3].unk0 = temp_t0->unk398[var_a3].unk0;
-        temp_t5->unk28[var_a3].unk2 = temp_t0->unk398[var_a3].unk2;
+    for (i = 0; i < 6; ++i) {
+        temp_t5->unk28[i].unk0 = temp_t0->unk398[i].unk0;
+        temp_t5->unk28[i].unk2 = temp_t0->unk398[i].unk2;
 
-        for (var_a1 = 0; var_a1 < 4; ++var_a1) {
-            temp_t5->unk28[var_a3].unk4[var_a1] = temp_t0->unk398[var_a3].unk8[var_a1];
+        for (j = 0; j < 4; ++j) {
+            temp_t5->unk28[i].unk4[j] = temp_t0->unk398[i].unk8[j];
         }
 
-        for (var_a1 = 0; var_a1 < 8; ++var_a1) {
-            temp_t5->unk28[var_a3].unkC[var_a1] = temp_t0->unk398[var_a3].unk10[var_a1];
+        for (j = 0; j < 8; ++j) {
+            temp_t5->unk28[i].unkC[j] = temp_t0->unk398[i].unk10[j];
         }
     }
 

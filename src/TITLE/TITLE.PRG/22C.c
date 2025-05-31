@@ -46,10 +46,6 @@ typedef struct {
     int unk28;
 } D_8005FEA0_t;
 
-typedef struct {
-    short unk0[2];
-} vs_gametime_t;
-
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
 void func_80071B14();
@@ -62,8 +58,6 @@ u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char D_80060068[];
-extern u_char D_80060168[];
-extern vs_gametime_t vs_gametime;
 extern u_char D_80061068[];
 extern u_char D_80061598[];
 extern char D_8006169D;
@@ -126,7 +120,7 @@ extern u_char _diskState;
 extern vs_main_CdQueueSlot* _mcDataLoad;
 extern u_char D_800DC8CC[];
 extern u_char D_800DC8CD;
-extern vs_gametime_t D_800DC8D0;
+extern vs_Gametime_t D_800DC8D0;
 extern int D_800DC8D4;
 extern u_char D_800DC8D8;
 extern u_char D_800DC8D9;
@@ -157,7 +151,7 @@ extern long memcardEventDescriptors[8];
 extern VS_TILE_TPAGE _titleScreenFade;
 extern int D_800DEA88;
 extern int D_800DEA8C;
-extern u_char* _mcSpcimg;
+extern u_char* _spmcimg;
 extern u_int* _mcData;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
@@ -638,17 +632,17 @@ int _memCardHandler(int arg0)
 int func_800696D0(int arg0)
 {
     int blockCount;
-    u_char* temp_s1;
+    u_char* spmcimg;
     void* blocks;
     int* temp_s2;
     int* temp_s4;
 
-    temp_s1 = _mcSpcimg;
-    blocks = temp_s1 + 0x5C00;
+    spmcimg = _spmcimg;
+    blocks = spmcimg + 0x5C00;
     temp_s4 = blocks;
-    temp_s2 = (int*)temp_s1 + 0x1760;
+    temp_s2 = (int*)spmcimg + 0x1760;
 
-    _descramble(*temp_s2, temp_s1 + 0x5D84, 0x5A7C);
+    _descramble(*temp_s2, spmcimg + 0x5D84, 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
@@ -665,20 +659,20 @@ int func_800696D0(int arg0)
         return 0;
     }
 
-    _rMemcpy(D_80061598, temp_s1 + 0x5E00, 0x440);
-    _rMemcpy(vs_main_skillsLearned, temp_s1 + 0x6240, 0x20);
-    _rMemcpy(D_8005FFD8, temp_s1 + 0x6260, 0x48);
-    _rMemcpy(&D_80060020.unk0, temp_s1 + 0x62A8, 0x20);
-    _rMemcpy(D_80060068, temp_s1 + 0x62C8, 0x100);
-    _rMemcpy(D_80060168, temp_s1 + 0x63C8, 0xF00);
-    _rMemcpy(&D_800619D8.unk0, temp_s1 + 0x72C8, 0xB0);
-    _rMemcpy(D_80061068, temp_s1 + 0x7378, 0xC);
-    _rMemcpy((u_char*)D_8005FEA0, temp_s1 + 0x7384, 0x114);
+    _rMemcpy(D_80061598, spmcimg + 0x5E00, 0x440);
+    _rMemcpy(vs_main_skillsLearned, spmcimg + 0x6240, 0x20);
+    _rMemcpy(D_8005FFD8, spmcimg + 0x6260, 0x48);
+    _rMemcpy(&D_80060020.unk0, spmcimg + 0x62A8, 0x20);
+    _rMemcpy(D_80060068, spmcimg + 0x62C8, 0x100);
+    _rMemcpy(D_80060168, spmcimg + 0x63C8, 0xF00);
+    _rMemcpy(&D_800619D8.unk0, spmcimg + 0x72C8, 0xB0);
+    _rMemcpy(D_80061068, spmcimg + 0x7378, 0xC);
+    _rMemcpy((u_char*)D_8005FEA0, spmcimg + 0x7384, 0x114);
     D_80060064 = temp_s4[0x626];
-    _rMemcpy(D_80061078, temp_s1 + 0x749C, 0x520);
+    _rMemcpy(D_80061078, spmcimg + 0x749C, 0x520);
     blocks = D_80060040;
-    _rMemcpy(D_80060040, temp_s1 + 0x79BC, 0x24);
-    __builtin_memcpy(&vs_gametime, temp_s1 + 0x5D90, sizeof(vs_gametime));
+    _rMemcpy(D_80060040, spmcimg + 0x79BC, 0x24);
+    __builtin_memcpy(&vs_main_gametime, spmcimg + 0x5D90, sizeof(vs_main_gametime));
     func_80042CA0();
     func_800468BC(D_80060020.unkA);
     return 0;
@@ -695,7 +689,7 @@ int func_80069EA8(int arg0)
     void* temp_s2;
     int new_var;
 
-    temp_s2 = _mcSpcimg + 0x5C00;
+    temp_s2 = _spmcimg + 0x5C00;
     if (arg0 != 0) {
         D_800DC8AD = 0;
         D_800DC8B1 = 0;
@@ -803,7 +797,7 @@ int func_8006A11C(int arg0)
             break;
         }
         _resetMemcardEvents(SWEVENTS);
-        if (write(_saveFileId, _mcSpcimg, 0x5C00) == -1) {
+        if (write(_saveFileId, _spmcimg, 0x5C00) == -1) {
             close(_saveFileId);
             ++D_800DC8BB;
             break;
@@ -837,7 +831,7 @@ int func_8006A11C(int arg0)
             return -1;
         }
         for (temp_s2 = 0; temp_s2 < 0x5C00; ++temp_s2) {
-            if (_mcSpcimg[temp_s2] != _mcSpcimg[temp_s2 + 0x5C00]) {
+            if (_spmcimg[temp_s2] != _spmcimg[temp_s2 + 0x5C00]) {
                 break;
             }
         }
@@ -872,15 +866,15 @@ static int _loadMemcardMenu(int arg0)
     u_int event;
 
     if (arg0 != 0) {
-        _mcSpcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
-        _mcData = (u_int*)_mcSpcimg + 0x4500;
+        _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        _mcData = (u_int*)_spmcimg + 0x4500;
         D_800DEAC0 = (u_short*)(_mcData + 0x400);
         D_800DEB08 = (u_int(*)[32])(_mcData + 0x800);
         dirEntBuf = (struct DIRENTRY*)(_mcData + 0x8A0);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_mcDataLoad, _mcSpcimg);
+        vs_main_cdEnqueue(_mcDataLoad, _spmcimg);
         _diskState = 0;
         return 0;
     }
@@ -889,7 +883,7 @@ static int _loadMemcardMenu(int arg0)
     case diskStateInit:
         if (_mcDataLoad->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_mcDataLoad);
-            _drawImage(MAKEXY(800, 256), (u_long*)_mcSpcimg, MAKEWH(224, 256));
+            _drawImage(MAKEXY(800, 256), (u_long*)_spmcimg, MAKEWH(224, 256));
             _diskState = diskStateQueueReady;
         }
         return 0;
@@ -947,7 +941,7 @@ void func_8006A6E0()
 
     ExitCriticalSection();
     vs_main_enableReset(1);
-    vs_main_freeHeap(_mcSpcimg);
+    vs_main_freeHeap(_spmcimg);
 }
 
 void _drawSprt(int xy, int uvClut, int wh, int tpage)
@@ -1508,7 +1502,7 @@ int func_8006C15C(int arg0)
                 }
             } while (0);
 
-            D_800DC8D0 = vs_gametime;
+            D_800DC8D0 = vs_main_gametime;
             D_800DC8D8 = 4;
         }
         break;
@@ -1532,7 +1526,7 @@ int func_8006C15C(int arg0)
             break;
         }
         if (D_800DC8D4 == 1) {
-            vs_gametime = D_800DC8D0;
+            vs_main_gametime = D_800DC8D0;
         } else {
             for (i = 5; i < 10; ++i) {
                 func_8006AF78(i);
@@ -1922,7 +1916,7 @@ int func_8006D2F8(int arg0)
         temp_s0 = D_800DC91F + D_800DC91E;
         D_800DED6C = D_800DEAC0 + 0x17B;
         _rMemcpy(&D_800DC8F8, &D_80060020.unk0, 0x20);
-        _rMemcpy(_mcSpcimg + 0xB800, _mcSpcimg + 0x5C00, 0x5C00);
+        _rMemcpy(_spmcimg + 0xB800, _spmcimg + 0x5C00, 0x5C00);
         if (D_800DED74 != 0) {
             D_800DED75 = (*(u_int*)&D_80060020 >> 4) & 1;
             *(int*)&D_80060020 |= 0x10;
@@ -1945,14 +1939,14 @@ int func_8006D2F8(int arg0)
                 memset(D_800DEB08[temp_s2], 0, 0x80);
                 D_800DEB08[temp_s2][1] = 2;
                 D_800DEB18[temp_s2 + 5].unk6 = 0;
-                _rMemcpy(_mcSpcimg + 0x5C00, _mcSpcimg + 0xB800, 0x5C00);
+                _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
                 _rMemcpy(&D_80060020.unk0, &D_800DC8F8, 0x20);
                 D_800DED6C = D_800DEAC0 + 0x102;
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)D_800DEB08[temp_s2], _mcSpcimg + 0x180, 0x80);
+                _rMemcpy((u_char*)D_800DEB08[temp_s2], _spmcimg + 0x180, 0x80);
                 _descramble(
                     D_800DEB08[temp_s2][0], (u_char*)&D_800DEB08[temp_s2][1], 0x7C);
                 D_800DEB18[temp_s2 + 5].unk6 = D_800DEB08[temp_s2][7];
@@ -2037,7 +2031,7 @@ int func_8006E00C(int arg0)
     switch (D_800DC923) {
     case 0:
         if (*(int*)&D_80060020 & 0x10) {
-            memset(_mcSpcimg + 0x79E0, 0, 0x3C00);
+            memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
         } else if (func_8006AFBC() != 0) {
             if (D_80060020.unk4 != 0) {
@@ -2167,7 +2161,7 @@ int func_8006E00C(int arg0)
             }
             if (D_800DC923 == 10) {
                 D_800DED74 = 1;
-                memset(_mcSpcimg + 0x79E0, 0, 0x3C00);
+                memset(_spmcimg + 0x79E0, 0, 0x3C00);
             }
             D_800DC923 = 3;
         }
@@ -3575,7 +3569,7 @@ void func_80071B14()
 
     vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 0x20);
     vs_main_bzero(D_8005FFD8, 0x48);
-    vs_main_bzero(&vs_gametime, sizeof(vs_gametime));
+    vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
     vs_main_bzero(D_8005FEA0, 0x114);
     D_80060064 = 0;
     vs_main_bzero(D_80061078, 0x520);
@@ -3590,7 +3584,7 @@ void func_80071B14()
         }
     }
 
-    for (i = 0; i <= 0; ++i) {
+    for (i = 0; i < 1; ++i) {
         vs_main_bzero(&D_80060068[i * 0x100], 0x50);
     }
 

@@ -115,6 +115,11 @@ typedef struct D_80061068_t {
     u_short unkA;
 } D_80061068_t;
 
+typedef struct {
+    int unk0[10];
+    int unk28[8][3];
+} D_8005FEA0_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern u_char vs_main_skillsLearned[32];
@@ -142,7 +147,7 @@ extern int vs_main_buttonRepeat;
 extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
-extern int D_8005FEA0[][3];
+extern D_8005FEA0_t D_8005FEA0;
 extern u_char D_8005FFD8[];
 extern D_80060020_t D_80060020;
 extern u_char D_8006002A;

@@ -41,11 +41,6 @@ typedef struct {
     u_char unk14[32];
 } D_800DEB18_t;
 
-typedef struct {
-    int unk0[10];
-    int unk28;
-} D_8005FEA0_t;
-
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
 void func_80071B14();
@@ -666,7 +661,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80060168, spmcimg + 0x63C8, 0xF00);
     _rMemcpy(&D_800619D8.unk0, spmcimg + 0x72C8, 0xB0);
     _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, 0xC);
-    _rMemcpy((u_char*)D_8005FEA0, spmcimg + 0x7384, 0x114);
+    _rMemcpy((u_char*)&D_8005FEA0, spmcimg + 0x7384, 0x114);
     D_80060064 = temp_s4[0x626];
     _rMemcpy(D_80061078, spmcimg + 0x749C, 0x520);
     blocks = D_80060040;
@@ -3555,7 +3550,7 @@ int drawPrims(u_long* ot)
 void func_80071B14()
 {
     int i;
-    int a1;
+    int j;
     u_char* v0;
 
     func_8007183C(0x280, 0xF0, 0x200, 0, 0, 0);
@@ -3568,17 +3563,17 @@ void func_80071B14()
     vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 0x20);
     vs_main_bzero(D_8005FFD8, 0x48);
     vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
-    vs_main_bzero(D_8005FEA0, 0x114);
+    vs_main_bzero(&D_8005FEA0, 0x114);
     D_80060064 = 0;
     vs_main_bzero(D_80061078, 0x520);
     vs_main_bzero(D_80060040, 0x24);
 
     for (i = 0; i < 8; ++i) {
-        for (a1 = 0; a1 < 3; ++a1) {
-            ((D_8005FEA0_t*)&D_8005FEA0[i][a1])->unk28 &= 0xFF000000;
-            ((D_8005FEA0_t*)&D_8005FEA0[i][a1])->unk28 |= 0x800000;
-            ((D_8005FEA0_t*)&D_8005FEA0[i][a1])->unk28 &= 0x80FFFFFF;
-            ((D_8005FEA0_t*)&D_8005FEA0[i][a1])->unk28 &= 0x7FFFFFFF;
+        for (j = 0; j < 3; ++j) {
+            D_8005FEA0.unk28[i][j] &= 0xFF000000;
+            D_8005FEA0.unk28[i][j] |= 0x800000;
+            D_8005FEA0.unk28[i][j] &= 0x80FFFFFF;
+            D_8005FEA0.unk28[i][j] &= 0x7FFFFFFF;
         }
     }
 

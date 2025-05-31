@@ -67,7 +67,7 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 sourcedata := $(binaries:%=data/%)
 targets    := $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
-makefiles  := $(binaries:%=config/%/Makefile)
+makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif
@@ -118,7 +118,7 @@ ifeq ($(PERMUTER),)
 $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
 						config/%/Makefile Makefile data/%
 	@$(call builder, Splitting $*)
-	@$(SPLAT) $(SPLATFLAGS) $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
+	@$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	@$(TOUCH) $@
 endif
 

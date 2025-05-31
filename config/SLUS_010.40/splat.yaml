@@ -1,45 +1,18 @@
-name: &n SLUS_010.40
 sha1: fababcfd4325d42f350d95b3472874affeb0e48c
 options:
-  basename: *n
-  base_path: ../..
+  basename: SLUS_010.40
   target_path: data/SLUS_010.40
   elf_path: build/data/SLUS_010.40.elf
-  platform: psx
-  compiler: PSYQ
-
   asm_path: build/src/SLUS_010.40
-  data_path: ""
   src_path: src/SLUS_010.40
   asset_path: build/assets/SLUS_010.40
-  extensions_path: tools/splat_ext
-
-  hasm_in_src_path: true
-  o_as_suffix: true
-
-  ld_dependencies: true
   ld_script_path: build/config/SLUS_010.40/link.ld
-
-  find_file_boundaries: true
-  gp_value: 0x80033674
-  image_type_in_extension: true
-
-  section_order: [.rodata, .text, .data, .bss]
-  auto_link_sections: [.data, .rodata]
-
   symbol_addrs_path: 
     - config/SLUS_010.40/symbol_addrs.txt
     - config/SLUS_010.40/exports.txt
-
   undefined_funcs_auto_path: build/config/SLUS_010.40/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/SLUS_010.40/undefined_syms_auto.txt
-
   subalign: 4
-
-  string_encoding: &enc ASCII
-  data_string_encoding: *enc
-  rodata_string_guesser_level: &strLvl 2
-  data_string_guesser_level: *strLvl
 
 segments:
   - [0, header]

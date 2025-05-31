@@ -5,3 +5,6 @@ $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1FLAGS += -Wno-uninitialized
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1VER := 2.8.0
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h
+
+$(BUILD)/assets/MENU/SPMCIMG.png: data/MENU/SPMCIMG.BIN
+

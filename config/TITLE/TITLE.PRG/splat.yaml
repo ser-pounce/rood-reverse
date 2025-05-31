@@ -1,45 +1,18 @@
-name: &n TITLE/TITLE.PRG
 sha1: f74a76e6215edebf607d0c2af56481050edb139a
 options:
-  basename: *n
-  base_path: ../../..
+  basename: TITLE/TITLE.PRG
   target_path: data/TITLE/TITLE.PRG
   elf_path: build/data/TITLE/TITLE.PRG.elf
-  platform: psx
-  compiler: GCC
-
   asm_path: build/src/TITLE/TITLE.PRG
-  data_path: ""
   src_path: src/TITLE/TITLE.PRG
   asset_path: build/assets/TITLE/TITLE.PRG
-  extensions_path: tools/splat_ext
-
-  ld_dependencies: true
-  o_as_suffix: true
-
   ld_script_path: build/config/TITLE/TITLE.PRG/link.ld
-
-  find_file_boundaries: true
-  gp_value: 0x80033674
-  image_type_in_extension: true
-
-  section_order: [.rodata, .text, .data, .bss]
-  auto_link_sections: [.data, .rodata]
-
   symbol_addrs_path: 
     - config/TITLE/TITLE.PRG/symbol_addrs.txt
     - config/TITLE/TITLE.PRG/exports.txt
     - config/SLUS_010.40/exports.txt
-
   undefined_funcs_auto_path: build/config/TITLE/TITLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/TITLE/TITLE.PRG/undefined_syms_auto.txt
-
-  subalign: 2
-
-  string_encoding: &enc ASCII
-  data_string_encoding: *enc
-  rodata_string_guesser_level: &strLvl 2
-  data_string_guesser_level: *strLvl
 
 segments:
   - start: 0x0

@@ -1,46 +1,18 @@
-name: &n BATTLE/BATTLE.PRG
 sha1: d53aaccc3b3a2fc057d05e0dcea92f7182bc72a9
 options:
-  basename: *n
-  base_path: ../../..
+  basename: BATTLE/BATTLE.PRG
   target_path: data/BATTLE/BATTLE.PRG
   elf_path: build/data/BATTLE/BATTLE.PRG.elf
-  platform: psx
-  compiler: PSYQ
-
   asm_path: build/src/BATTLE/BATTLE.PRG
-  data_path: ""
   src_path: src/BATTLE/BATTLE.PRG
   asset_path: build/assets/BATTLE/BATTLE.PRG
-  extensions_path: tools/splat_ext
-
-  hasm_in_src_path: true
-  o_as_suffix: true
-
-  ld_dependencies: true
   ld_script_path: build/config/BATTLE/BATTLE.PRG/link.ld
-
-  find_file_boundaries: true
-  gp_value: 0x80033674
-  image_type_in_extension: true
-
-  section_order: [.rodata, .text, .data]
-  auto_link_sections: [.data, .rodata]
-
   symbol_addrs_path: 
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
     - config/BATTLE/BATTLE.PRG/exports.txt
     - config/SLUS_010.40/exports.txt
-
   undefined_funcs_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_syms_auto.txt
-
-  subalign: 2
-
-  string_encoding: &enc ASCII
-  data_string_encoding: *enc
-  rodata_string_guesser_level: &strLvl 2
-  data_string_guesser_level: *strLvl
 
 segments:
   - start: 0x0

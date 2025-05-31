@@ -1,3 +1,4 @@
+import sys
 import ctypes
 import png
 
@@ -31,3 +32,8 @@ def to_bytes(png_path):
         output += Pixel(r >> 3, g >> 3, b >> 3, 1 if a == 0 else 0)
         
     return (output, w, h)
+
+if __name__ == '__main__':
+    with open(sys.argv[1], mode="rb") as f:
+        data = f.read()
+    to_png(data, int(sys.argv[2]), int(sys.argv[3]), sys.argv[4])

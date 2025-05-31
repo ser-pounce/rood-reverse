@@ -741,8 +741,6 @@ int func_80069EA8(int arg0)
     return D_800DC8B1 == 3 ? -1 : 0;
 }
 
-INCLUDE_RODATA("build/src/TITLE/TITLE.PRG/nonmatchings/22C", D_8006886C);
-
 int func_8006A11C(int arg0)
 {
     int temp_v1_2;

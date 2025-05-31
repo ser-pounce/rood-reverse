@@ -3556,7 +3556,6 @@ void func_80071B14()
 {
     int i;
     int a1;
-    u_short* s0;
     u_char* v0;
 
     func_8007183C(0x280, 0xF0, 0x200, 0, 0, 0);
@@ -3590,12 +3589,11 @@ void func_80071B14()
     vs_main_bzero(&D_80061068, 0xC);
     vs_main_memcpy(D_80060168, D_80074C24, 0xF00);
 
-    s0 = (u_short*)&D_80061068;
     vs_gametime_tickspeed = 2;
-    s0[2] = (s0[2] & 0xE0FF) | 0x400;
-    s0[3] = ((s0[3] & 0x83FF) | 0x800);
-    s0[1] = (s0[1] & 0x1FFF);
-    s0[2] = ((s0[2] & 0x9FFF) | 0x4000);
+    D_80061068.unk4 = (D_80061068.unk4 & 0xE0FF) | 0x400;
+    D_80061068.unk6 = (D_80061068.unk6 & 0x83FF) | 0x800;
+    D_80061068.unk2 = D_80061068.unk2 & 0x1FFF;
+    D_80061068.unk4 = (D_80061068.unk4 & 0x9FFF) | 0x4000;
 }
 
 void func_80071CE0(int arg0)

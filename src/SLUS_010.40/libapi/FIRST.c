@@ -1,4 +1,10 @@
 #include "common.h"
+#include <strings.h>
+#include <kernel.h>
+
+static void (*D_80039E70)(void*, char*, struct DIRENTRY*);
+static int _dummmy;
+static char D_80039E78[40];
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/FIRST", firstfile);
 

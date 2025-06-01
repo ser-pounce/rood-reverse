@@ -198,6 +198,8 @@ segments:
       - [0x23054, data]
       - [0x23E80, .data, libgte/PATCHGTE]
       - [0x23E90, bss]
+      - [0x2A670, .bss, libapi/FIRST]
+      - [0x2A6A0, bss]
       - [0x306C8, .bss, libapi/CHCLRPAD]
       - [0x306D8, bss]
   - start: 0x30A10

@@ -11,9 +11,11 @@ typedef struct {
     int : 32;
 } RootCounter;
 
-int (*D_80032834)[2] = (int (*)[2])0x1F801070;
-volatile RootCounter (*D_80032838)[4] = (RootCounter(*)[4])0x1F801100;
-long D_8003283C[4] = { 0x10, 0x20, 0x40, 1 };
+enum interruptMask { VBLANK = 1, TMR0 = 0x10, TMR1 = 0x20, TMR2 = 0x40 };
+
+static int (*_interruptReg)[2] = (int (*)[2])0x1F801070;
+static volatile RootCounter (*_rootCounter0)[3] = (RootCounter(*)[3])0x1F801100;
+static long _interruptMasks[4] = { TMR0, TMR1, TMR2, VBLANK };
 
 long SetRCnt(u_long counter, u_short targetVal, long mode)
 {
@@ -27,8 +29,8 @@ long SetRCnt(u_long counter, u_short targetVal, long mode)
         return 0;
     }
 
-    (*D_80032838)[i].mode = 0;
-    (*D_80032838)[i].targetVal = targetVal;
+    (*_rootCounter0)[i].mode = 0;
+    (*_rootCounter0)[i].targetVal = targetVal;
 
     if (i < 2u) {
         if (mode & 0x10) {
@@ -47,7 +49,7 @@ long SetRCnt(u_long counter, u_short targetVal, long mode)
     if ((mode & 0x1000) != 0) {
         newMode |= 0x10;
     }
-    (*D_80032838)[i].mode = newMode;
+    (*_rootCounter0)[i].mode = newMode;
     return 1;
 }
 
@@ -57,7 +59,7 @@ long GetRCnt(u_long spec)
     if (i >= 3) {
         return 0;
     }
-    return (*D_80032838)[i].currentVal;
+    return (*_rootCounter0)[i].currentVal;
 }
 
 long StartRCnt(u_long spec)
@@ -65,11 +67,21 @@ long StartRCnt(u_long spec)
     int i;
 
     i = spec & 0xFFFF;
-    (*D_80032834)[1] |= D_8003283C[i];
+    (*_interruptReg)[1] |= _interruptMasks[i];
     return i < 3;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/COUNTER", StopRCnt);
+__asm__("glabel StopRCnt;"
+        "and    $a0, 0xFFFF;"
+        "sll    $a0, 2;"
+        "lw     $a1, _interruptReg;"
+        "lw     $v0, _interruptMasks($a0);"
+        "lw     $v1, 0x4($a1);"
+        "nor    $v0, $zero, $v0;"
+        "and    $v1, $v0;"
+        "li     $v0, 0x1;"
+        "j      $ra;"
+        "sw     $v1, 0x4($a1)");
 
 long ResetRCnt(u_long spec)
 {
@@ -79,6 +91,6 @@ long ResetRCnt(u_long spec)
     if (i >= 3) {
         return 0;
     }
-    (*((RootCounter(*)[4])D_80032838))[i].currentVal = 0;
+    (*((RootCounter(*)[3])_rootCounter0))[i].currentVal = 0;
     return 1;
 }

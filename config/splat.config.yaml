@@ -10,7 +10,7 @@ options:
   find_file_boundaries: true
   image_type_in_extension: true
   gp_value: 0x80033674
-  section_order: [.rodata, .text, .data, .bss]
+  section_order: [.rodata, .text, .data, .sbss, .bss]
   auto_link_sections: [.data, .rodata]
   subalign: 2
   string_encoding: &enc ASCII

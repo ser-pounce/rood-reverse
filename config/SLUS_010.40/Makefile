@@ -3,8 +3,8 @@ $(BUILD)/data/SLUS_010.40.elf: LDSCRIPT += \
 	config/BATTLE/BATTLE.PRG/exports.txt
 
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
-	--defsym=_exec_start=0x80010000 \
-	--defsym=_globalCtorCount=0x00000000
+	--defsym=.ctors=0x80010000 \
+	--defsym=__nCtors=0x00000000
 
 $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(addprefix $(BUILD)/src/SLUS_010.40/, main.o zndFiles.o): $(BUILD)/src/include/lbas.h

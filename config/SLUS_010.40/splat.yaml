@@ -198,7 +198,7 @@ segments:
       - [0x217DC, data]
       - [0x23034, .data, libapi/COUNTER]
       - [0x23054, data]
-      - [0x23E78, .bss, libsn/SNMAIN]
+      - [0x23E78, .sbss, libsn/SNMAIN]
       - [0x23E80, .bss, libgte/PATCHGTE]
       - [0x23E90, bss]
       - [0x2A670, .bss, libapi/FIRST]

@@ -4,9 +4,7 @@ $(BUILD)/data/SLUS_010.40.elf: LDSCRIPT += \
 
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 	--defsym=_exec_start=0x80010000 \
-	--defsym=_globalCtorCount=0x00000000 \
-	--defsym=D_8002F534=0x8002F534 \
-	--defsym=D_80033680=0x80033680
+	--defsym=_globalCtorCount=0x00000000
 
 $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(addprefix $(BUILD)/src/SLUS_010.40/, main.o zndFiles.o): $(BUILD)/src/include/lbas.h

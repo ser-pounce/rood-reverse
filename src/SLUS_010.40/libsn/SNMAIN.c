@@ -3,7 +3,6 @@
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
 
 extern int D_80030FB0;
-extern void (*vs_overlay_slots)();
 
 void __main()
 {

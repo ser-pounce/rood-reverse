@@ -1,22 +1,31 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
+int _main_called = 0;
+int D_80030FB4 = 0;
 
-extern int D_80030FB0;
+int _execData[] = {
+    0x00000000, 0x80010AA4, 0x0001EA90, // .text
+    0x8002F534, 0x00004140, // .data
+    0x80033680, 0x0000CB28, // .bss
+    0x00067350, 0x00450000 // stack ??
+};
+int D_80033678[2];
+
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
 
 void __main()
 {
     __asm__(";"
-            "lw         $t0, D_80030FB0;"
+            "lw         $t0, _main_called;"
             "addu       $sp, -0x10;"
             "sw         $s0, 0x4($sp);"
             "sw         $s1, 0x8($sp);"
             "sw         $ra, 0xC($sp);"
             "bnez       $t0, 1f;"
             "ori        $t0, $zero, 0x1;"
-            "sw         $t0, D_80030FB0;"
+            "sw         $t0, _main_called;"
             "la         $s0, _exec_start;"
-            "la         $s1, _main_patch;"
+            "la         $s1, _globalCtorCount;"
             "beqz       $s1, 1f;"
             ".nop;"
             "0:"

@@ -1,9 +1,7 @@
 .include "macro.inc"
 .set noreorder
 
-.data
-glabel SAVERA2
-.word 0
+.lcomm SAVERA2, 4
 
 .text
 glabel _patch_gte

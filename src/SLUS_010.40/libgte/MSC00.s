@@ -2,7 +2,7 @@
 .set noreorder
 
 .data 
-glabel SAVERA
+SAVERA:
 .word 0
 
 .text

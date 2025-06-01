@@ -4,13 +4,15 @@ $(BUILD)/data/SLUS_010.40.elf: LDSCRIPT += \
 
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 	--defsym=_exec_start=0x80010000 \
-	--defsym=_main_patch=0x00000000
+	--defsym=_globalCtorCount=0x00000000 \
+	--defsym=D_8002F534=0x8002F534 \
+	--defsym=D_80033680=0x80033680
 
 $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(addprefix $(BUILD)/src/SLUS_010.40/, main.o zndFiles.o): $(BUILD)/src/include/lbas.h
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
-	2MBYTE.OBJ overlay 25AC 31724 32154 main \
+	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31724 32154 main \
 	$(addprefix libgte/, \
 		MTX_005 REG13 REG12 REG11 MTX_12 MTX_09 MTX_004 \
 		MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00 \

@@ -1,15 +1,15 @@
 #include "common.h"
 
-int _main_called = 0;
-int D_80030FB4 = 0;
+static int _main_called = 0;
+static int D_80030FB4 = 0;
 
-int _execData[] = {
+static int _execData[] = {
     0x00000000, 0x80010AA4, 0x0001EA90, // .text
     0x8002F534, 0x00004140, // .data
     0x80033680, 0x0000CB28, // .bss
     0x00067350, 0x00450000 // stack ??
 };
-int D_80033678[2];
+static int D_80033678[2];
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
 

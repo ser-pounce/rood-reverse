@@ -8911,8 +8911,8 @@ int vs_main_processPadState()
 
     if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & VS_RESET) == VS_RESET)
         && (vs_main_buttonsPressed & VS_RESET)) {
-        D_80060020.monoSound = 0;
-        D_80060020.vibrationOn = 1;
+        vs_main_settings.monoSound = 0;
+        vs_main_settings.vibrationOn = 1;
         _resetGame();
     }
 
@@ -10480,7 +10480,7 @@ static void func_8004687C(int arg0)
     }
 }
 
-void vs_main_toggleMonoSound(int arg0) { func_8001240C(arg0); }
+void vs_main_setMonoSound(int arg0) { func_8001240C(arg0); }
 
 static void func_800468DC() { func_80012918(0x7FFF); }
 

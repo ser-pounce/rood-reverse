@@ -142,7 +142,7 @@ extern int D_800DC8EC;
 extern u_char D_800DC8F0;
 extern u_char D_800DC8F1;
 extern u_char D_800DC8F2;
-extern u_char D_800DC8F8;
+extern vs_main_settings_t _settingsBackup;
 extern int D_800DC918;
 extern u_char D_800DC91C;
 extern u_char D_800DC91D;
@@ -324,10 +324,10 @@ static int func_80068DB4()
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((D_800DEB08[i][1] >= 3) && (D_800DEB08[i][1] == D_80060020.unk4)
-            && (D_800DEB08[i][0] == D_80060020.unk14)
-            && ((u_short)D_800DEB08[i][5] == D_80060020.unk18)
-            && (D_800DEB08[i][2] == D_80060020.unk1C)) {
+        if ((D_800DEB08[i][1] >= 3) && (D_800DEB08[i][1] == vs_main_settings.unk4)
+            && (D_800DEB08[i][0] == vs_main_settings.unk14)
+            && ((u_short)D_800DEB08[i][5] == vs_main_settings.unk18)
+            && (D_800DEB08[i][2] == vs_main_settings.unk1C)) {
             return i + 1;
         }
     }
@@ -682,7 +682,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80061598, spmcimg + 0x5E00, sizeof(D_80061598));
     _rMemcpy(vs_main_skillsLearned, spmcimg + 0x6240, sizeof(vs_main_skillsLearned));
     _rMemcpy(D_8005FFD8, spmcimg + 0x6260, sizeof(D_8005FFD8));
-    _rMemcpy((u_char*)&D_80060020, spmcimg + 0x62A8, sizeof(D_80060020));
+    _rMemcpy((u_char*)&vs_main_settings, spmcimg + 0x62A8, sizeof(vs_main_settings));
     _rMemcpy((u_char*)&D_80060068, spmcimg + 0x62C8, sizeof(D_80060068));
     _rMemcpy(D_80060168, spmcimg + 0x63C8, sizeof(D_80060168));
     _rMemcpy((u_char*)&D_800619D8, spmcimg + 0x72C8, sizeof(D_800619D8));
@@ -694,7 +694,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80060040, spmcimg + 0x79BC, sizeof(D_80060040));
     __builtin_memcpy(&vs_main_gametime, spmcimg + 0x5D90, sizeof(vs_main_gametime));
     func_80042CA0();
-    vs_main_toggleMonoSound(D_80060020.monoSound);
+    vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;
 }
 
@@ -1936,11 +1936,12 @@ int func_8006D2F8(int arg0)
     case 5:
         temp_s0 = D_800DC91F + D_800DC91E;
         D_800DED6C = D_800DEAC0 + 0x17B;
-        _rMemcpy(&D_800DC8F8, &D_80060020.unk0, 0x20);
+        _rMemcpy((u_char*)&_settingsBackup, (u_char*)&vs_main_settings,
+            sizeof(_settingsBackup));
         _rMemcpy(_spmcimg + 0xB800, _spmcimg + 0x5C00, 0x5C00);
         if (D_800DED74 != 0) {
-            D_800DED75 = (*(u_int*)&D_80060020 >> 4) & 1;
-            *(int*)&D_80060020 |= 0x10;
+            D_800DED75 = (*(u_int*)&vs_main_settings.unk0 >> 4) & 1;
+            *(int*)&vs_main_settings |= 0x10;
         }
         func_80069888(temp_s0);
         func_8006A11C((temp_s0 + 1) | ((D_800DC91D - 1) << 0x10));
@@ -1955,14 +1956,16 @@ int func_8006D2F8(int arg0)
             if (temp_s0 < 0) {
                 if (D_800DED74 != 0) {
                     u_char v = D_800DED75 & 1;
-                    *(int*)&D_80060020 = (*(int*)&D_80060020 & ~0x10) | (v * 0x10);
+                    *(int*)&vs_main_settings
+                        = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
                 memset(D_800DEB08[temp_s2], 0, 0x80);
                 D_800DEB08[temp_s2][1] = 2;
                 D_800DEB18[temp_s2 + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
-                _rMemcpy(&D_80060020.unk0, &D_800DC8F8, 0x20);
+                _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
+                    sizeof(vs_main_settings));
                 D_800DED6C = D_800DEAC0 + 0x102;
             } else {
                 D_800DED73 = 0;
@@ -2051,11 +2054,11 @@ int func_8006E00C(int arg0)
 
     switch (D_800DC923) {
     case 0:
-        if (*(int*)&D_80060020 & 0x10) {
+        if (*(int*)&vs_main_settings & 0x10) {
             memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
         } else if (func_8006AFBC() != 0) {
-            if (D_80060020.unk4 != 0) {
+            if (vs_main_settings.unk4 != 0) {
                 func_8006B138(1);
                 D_800DC923 = 1;
             } else {
@@ -2170,7 +2173,7 @@ int func_8006E00C(int arg0)
         if (var_a0 != 0) {
             if (D_800DC923 == 11) {
                 if (var_a0 > 0) {
-                    *(int*)&D_80060020 = *(int*)&D_80060020 | 0x10;
+                    *(int*)&vs_main_settings = *(int*)&vs_main_settings | 0x10;
                 }
                 var_a0 = -var_a0;
             }
@@ -2871,15 +2874,15 @@ void* func_8006FEC4(int menuItem)
     _setMenuItemFadeIn((menuItem + 1) & 3, 96);
     _setMenuItemFadeIn((menuItem + 3) & 3, 32);
     temp_s4 = vs_main_allocHeap(0x22380);
-    temp_s0 = temp_s4 + 0x2800;
-    setRECT(&rect, 0xC0, 0x1C0, 0xA0, 0x40);
+    temp_s0 = temp_s4 + 160 * 64;
+    setRECT(&rect, 192, 448, 160, 64);
     StoreImage(&rect, temp_s0);
     DrawSync(0);
-    temp_s0 += 0x1400;
-    setRECT(&rect, 0x160, 0x1C0, 0xA0, 0x40);
+    temp_s0 += 160 * 64 / sizeof(u_short);
+    setRECT(&rect, 352, 448, 160, 64);
     StoreImage(&rect, temp_s0);
     DrawSync(0);
-    setRECT(&rect, 0x2A6, 0x178, 0xB4, 0x18);
+    setRECT(&rect, 678, 376, 180, 24);
     StoreImage(&rect, temp_s0 + 0x3C00);
     DrawSync(0);
     return temp_s4;
@@ -3171,7 +3174,7 @@ static void _menuVibrationSettings()
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
-            D_80060020.vibrationOn = vibrationSetting - 5;
+            vs_main_settings.vibrationOn = vibrationSetting - 5;
             if (vibrationSetting == menuItemVibrationOn) {
                 func_800438C8(0);
             }
@@ -3277,8 +3280,8 @@ static void _menuSoundSettings()
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
             soundSetting = (soundSetting + 1) & 1;
-            D_80060020.monoSound = soundSetting;
-            vs_main_toggleMonoSound(soundSetting);
+            vs_main_settings.monoSound = soundSetting;
+            vs_main_setMonoSound(soundSetting);
             vs_sound_setCdVol(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
@@ -3331,10 +3334,10 @@ static void _menuSoundSettings()
     }
     _menuItemStates[4].enabled = 0;
     _menuItemStates[7].enabled = 0;
-    _menuItemStates[menuItemSound].unk6 = 0x40;
-    _menuItemStates[menuItemSound].unk3 = 0x40;
+    _menuItemStates[menuItemSound].unk6 = 64;
+    _menuItemStates[menuItemSound].unk3 = 64;
     func_80070A58(3);
-    _menuItemStates[menuItemSound].unk3 = 0x80;
+    _menuItemStates[menuItemSound].unk3 = 128;
     func_80070A58();
     _menuItemStates[menuItemSound].unk3 = 0xC0;
     func_8007093C();
@@ -3347,26 +3350,26 @@ int _nop1() { return 0; }
 void func_80071254()
 {
     int monoSound;
-    int var_s4;
+    int vibrationOn;
 
-    var_s4 = D_80060020.vibrationOn;
-    monoSound = D_80060020.monoSound;
-    memset(&D_80060020, 0, 0x20);
-    D_80060020.unk2 = 0x2D8;
-    D_80060020.unk8 = 1;
-    D_80060020.unk9 = 3;
-    *((int*)&D_80060020) |= 0x30;
-    D_80060020.unk1 = 1;
+    vibrationOn = vs_main_settings.vibrationOn;
+    monoSound = vs_main_settings.monoSound;
+    memset(&vs_main_settings, 0, sizeof(vs_main_settings));
+    vs_main_settings.unk2 = 0x2D8;
+    vs_main_settings.unk8 = 1;
+    vs_main_settings.unk9 = 3;
+    *((int*)&vs_main_settings.unk0) |= 0x30;
+    vs_main_settings.unk1 = 1;
     if (vs_main_titleScreenCount == 0) {
         func_8006F54C();
-        var_s4 = 1;
+        vibrationOn = 1;
         monoSound = 0;
     }
-    D_80060020.monoSound = monoSound != 0;
-    D_80060020.vibrationOn = (var_s4 != 0);
-    vs_main_toggleMonoSound(D_80060020.monoSound);
+    vs_main_settings.monoSound = monoSound != 0;
+    vs_main_settings.vibrationOn = vibrationOn != 0;
+    vs_main_setMonoSound(vs_main_settings.monoSound);
     vs_sound_setCdVol(0x7F);
-    memset(&D_800619D8, 0, 0xB0);
+    memset(&D_800619D8, 0, sizeof(D_800619D8));
     D_80061598[1] = 1;
     D_80061598[284] = 1;
 }

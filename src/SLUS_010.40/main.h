@@ -88,15 +88,15 @@ typedef struct {
     u_int unk4;
     u_char unk8;
     u_char unk9;
-    u_char unkA;
-    u_char unkB;
+    u_char monoSound;
+    u_char vibrationOn;
     int unkC;
     int unk10;
     u_int unk14;
     u_short unk18;
     u_short unk1A;
     u_int unk1C;
-} D_80060020_t;
+} vs_main_settings_t;
 
 typedef struct {
     char f;
@@ -171,8 +171,8 @@ extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
 extern D_8005FEA0_t D_8005FEA0;
 extern u_char D_8005FFD8[0x48];
-extern D_80060020_t D_80060020;
-extern u_char D_8006002A;
+extern vs_main_settings_t D_80060020;
+extern u_char vs_main_soundMono;
 extern u_char vs_main_vibrationEnabled;
 extern u_char D_80060040[0x24];
 extern D_80060068_t D_80060068;
@@ -211,7 +211,7 @@ void vs_main_playSfxDefault(int, int);
 void vs_main_stopMusic();
 int vs_main_freeMusic(int arg0);
 void func_800461CC(int, u_int[], u_int, int, int);
-void func_800468BC(int);
+void vs_main_toggleMonoSound(int);
 void func_80046C80(int, int, u_short*, int);
 void func_800472D0();
 void func_80046770(int);

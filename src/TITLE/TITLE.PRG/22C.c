@@ -50,7 +50,7 @@ enum menuItemState {
 
 typedef struct {
     u_char enabled;
-    u_char direction;
+    u_char state;
     u_char unk2;
     u_char unk3;
     u_char pos;
@@ -202,8 +202,10 @@ enum menuItems {
     menuItemContinue = 1,
     menuItemVibration = 2,
     menuItemSound = 3,
+    menuItemSoundMono = 4,
     menuItemVibrationOff = 5,
-    menuItemVibrationOn = 6
+    menuItemVibrationOn = 6,
+    menuItemSoundStereo = 7
 };
 
 #define SWEVENTS 0
@@ -692,7 +694,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80060040, spmcimg + 0x79BC, sizeof(D_80060040));
     __builtin_memcpy(&vs_main_gametime, spmcimg + 0x5D90, sizeof(vs_main_gametime));
     func_80042CA0();
-    func_800468BC(D_80060020.unkA);
+    vs_main_toggleMonoSound(D_80060020.monoSound);
     return 0;
 }
 
@@ -2784,10 +2786,10 @@ int func_8006FA54()
     return 0;
 }
 
-static void _setMenuItemPosition(int menuItem, u_char pos)
+static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
-    _menuItemStates[menuItem].direction = menuItemStateStatic;
+    _menuItemStates[menuItem].state = menuItemStateStatic;
     _menuItemStates[menuItem].unk2 = 0;
     _menuItemStates[menuItem].unk3 = 0;
     _menuItemStates[menuItem].pos = pos;
@@ -2865,9 +2867,9 @@ void* func_8006FEC4(int menuItem)
         _menuItemStates[i].enabled = 0;
     }
 
-    _setMenuItemPosition(menuItem, 64);
-    _setMenuItemPosition((menuItem + 1) & 3, 96);
-    _setMenuItemPosition((menuItem + 3) & 3, 32);
+    _setMenuItemFadeIn(menuItem, 64);
+    _setMenuItemFadeIn((menuItem + 1) & 3, 96);
+    _setMenuItemFadeIn((menuItem + 3) & 3, 32);
     temp_s4 = vs_main_allocHeap(0x22380);
     temp_s0 = temp_s4 + 0x2800;
     setRECT(&rect, 0xC0, 0x1C0, 0xA0, 0x40);
@@ -3029,7 +3031,7 @@ void func_800703CC()
 
             _menuItemStates[i].unk2 = var_a0;
 
-            switch (_menuItemStates[i].direction) {
+            switch (_menuItemStates[i].state) {
             case menuItemStateStatic:
                 if (var_a0 == 128 && _menuItemStates[i].pos == 64) {
                     _menuItemStates[i].unk6 = _menuItemStates[i].pos;
@@ -3048,20 +3050,20 @@ void func_800703CC()
             case menuItemStateUpper:
                 _menuItemStates[i].pos -= 4;
                 if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].direction = 0;
+                    _menuItemStates[i].state = 0;
                 }
                 break;
             case menuItemStateLower:
                 _menuItemStates[i].pos += 4;
                 if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].direction = menuItemStateStatic;
+                    _menuItemStates[i].state = menuItemStateStatic;
                 }
                 break;
             }
 
             alpha = _menuItemStates[i].alpha;
 
-            if (_menuItemStates[i].direction < menuItemStateSubmenu) {
+            if (_menuItemStates[i].state < menuItemStateSubmenu) {
                 _setMenuItemClut(i, alpha, 0, 1);
             }
             if ((alpha != 0) && (_menuItemStates[i].pos != 64)) {
@@ -3135,16 +3137,16 @@ static void _menuVibrationSettings()
     int i;
     int vibrationSetting;
 
-    _menuItemStates[menuItemContinue].direction = menuItemStateUpper;
-    _menuItemStates[menuItemSound].direction = menuItemStateLower;
+    _menuItemStates[menuItemContinue].state = menuItemStateUpper;
+    _menuItemStates[menuItemSound].state = menuItemStateLower;
     _menuItemStates[menuItemSound].targetPos = 128;
     _menuItemStates[menuItemContinue].targetPos = 0;
-    _menuItemStates[menuItemVibration].direction = menuItemStateSubmenu;
+    _menuItemStates[menuItemVibration].state = menuItemStateSubmenu;
     vibrationSetting = vs_main_vibrationEnabled + menuItemVibrationOff;
-    _setMenuItemPosition(menuItemVibrationOn, 64);
-    _setMenuItemPosition(menuItemVibrationOff, 96);
-    _menuItemStates[menuItemVibrationOff].direction = menuItemStateSubmenu;
-    _menuItemStates[menuItemVibrationOn].direction = menuItemStateSubmenu;
+    _setMenuItemFadeIn(menuItemVibrationOn, 64);
+    _setMenuItemFadeIn(menuItemVibrationOff, 96);
+    _menuItemStates[menuItemVibrationOff].state = menuItemStateSubmenu;
+    _menuItemStates[menuItemVibrationOn].state = menuItemStateSubmenu;
     _setMenuItemClut(menuItemVibrationOff, 0, 0, 0);
     _setMenuItemClut(menuItemVibrationOn, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
@@ -3152,9 +3154,9 @@ static void _menuVibrationSettings()
         _menuItemStates[menuItemVibration].pos -= 4;
         func_80070A58();
     }
-    _menuItemStates[menuItemNewGame].direction = menuItemStateStatic;
-    _menuItemStates[menuItemContinue].direction = menuItemStateStatic;
-    _menuItemStates[menuItemSound].direction = menuItemStateStatic;
+    _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
+    _menuItemStates[menuItemContinue].state = menuItemStateStatic;
+    _menuItemStates[menuItemSound].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
         func_80070A58();
     }
@@ -3169,7 +3171,7 @@ static void _menuVibrationSettings()
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
-            D_80060020.unkB = vibrationSetting - 5;
+            D_80060020.vibrationOn = vibrationSetting - 5;
             if (vibrationSetting == menuItemVibrationOn) {
                 func_800438C8(0);
             }
@@ -3196,11 +3198,11 @@ static void _menuVibrationSettings()
             }
         }
     }
-    _setMenuItemPosition(1, 0);
-    _setMenuItemPosition(3, 0x80);
-    _menuItemStates[menuItemContinue].direction = menuItemStateLower;
+    _setMenuItemFadeIn(menuItemContinue, 0);
+    _setMenuItemFadeIn(menuItemSound, 128);
+    _menuItemStates[menuItemContinue].state = menuItemStateLower;
     _menuItemStates[menuItemContinue].targetPos = 32;
-    _menuItemStates[menuItemSound].direction = menuItemStateUpper;
+    _menuItemStates[menuItemSound].state = menuItemStateUpper;
     _menuItemStates[menuItemSound].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(2, i * 2, 3, 1);
@@ -3233,49 +3235,50 @@ static void _menuVibrationSettings()
     _menuItemStates[menuItemVibration].unk3 = 0xC0;
     func_8007093C();
     _menuItemStates[menuItemVibration].alpha = 16;
-    _menuItemStates[menuItemVibration].direction = menuItemStateStatic;
+    _menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
 
 static void _menuSoundSettings()
 {
     int i;
-    int var_s3;
+    int soundSetting;
 
-    _menuItemStates[2].direction = menuItemStateUpper;
-    _menuItemStates[0].direction = menuItemStateLower;
-    _menuItemStates[0].targetPos = 128;
-    _menuItemStates[2].targetPos = 0;
-    _menuItemStates[3].direction = menuItemStateSubmenu;
-    var_s3 = 7 - (D_8006002A * 3);
-    _setMenuItemPosition(7, 0x40U);
-    _setMenuItemPosition(4, 0x60U);
-    _menuItemStates[4].direction = menuItemStateSubmenu;
-    _menuItemStates[7].direction = menuItemStateSubmenu;
-    _setMenuItemClut(4, 0, 0, 0);
-    _setMenuItemClut(7, 0, 0, 0);
+    _menuItemStates[menuItemVibration].state = menuItemStateUpper;
+    _menuItemStates[menuItemNewGame].state = menuItemStateLower;
+    _menuItemStates[menuItemNewGame].targetPos = 128;
+    _menuItemStates[menuItemVibration].targetPos = 0;
+    _menuItemStates[menuItemSound].state = menuItemStateSubmenu;
+    soundSetting = menuItemSoundStereo - (vs_main_soundMono * 3);
+    _setMenuItemFadeIn(menuItemSoundStereo, 64);
+    _setMenuItemFadeIn(menuItemSoundMono, 96);
+    _menuItemStates[menuItemSoundMono].state = menuItemStateSubmenu;
+    _menuItemStates[menuItemSoundStereo].state = menuItemStateSubmenu;
+    _setMenuItemClut(menuItemSoundMono, 0, 0, 0);
+    _setMenuItemClut(menuItemSoundStereo, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(3, i * 2, 1, 3);
-        _menuItemStates[3].pos -= 4;
+        _setMenuItemClut(menuItemSound, i * 2, 1, 3);
+        _menuItemStates[menuItemSound].pos -= 4;
         func_80070A58();
     }
-    _menuItemStates[0].direction = menuItemStateStatic;
-    _menuItemStates[1].direction = menuItemStateStatic;
-    _menuItemStates[2].direction = menuItemStateStatic;
+    _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
+    _menuItemStates[menuItemContinue].state = menuItemStateStatic;
+    _menuItemStates[menuItemVibration].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
         func_80070A58();
     }
     for (i = 0; i < 8; ++i) {
-        _setMenuItemClut(var_s3, i * 2, 0, 1);
-        _menuItemStates[var_s3].unk3 = i < 4 ? i << 6 : _menuItemStates[var_s3].unk3 - 16;
+        _setMenuItemClut(soundSetting, i * 2, 0, 1);
+        _menuItemStates[soundSetting].unk3
+            = i < 4 ? i << 6 : _menuItemStates[soundSetting].unk3 - 16;
         func_80070A58();
     }
     while (1) {
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
-            var_s3 = (var_s3 + 1) & 1;
-            D_80060020.unkA = var_s3;
-            func_800468BC(var_s3);
+            soundSetting = (soundSetting + 1) & 1;
+            D_80060020.monoSound = soundSetting;
+            vs_main_toggleMonoSound(soundSetting);
             vs_sound_setCdVol(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
@@ -3283,14 +3286,14 @@ static void _menuSoundSettings()
             break;
         } else {
             if (vs_main_buttonsPressed & (PADLup | PADLdown | PADselect)) {
-                var_s3 = 0xB - var_s3;
+                soundSetting = 11 - soundSetting;
                 _playMenuChangeSfx();
                 for (i = 1; i < 8; ++i) {
-                    _setMenuItemClut(var_s3, i * 2, 0, 1);
-                    _setMenuItemClut(0xB - var_s3, i * 2, 1, 0);
-                    _menuItemStates[var_s3].unk3
-                        = i < 4 ? i << 6 : _menuItemStates[var_s3].unk3 - 0x10;
-                    _menuItemStates[0xB - var_s3].unk3 -= 0x10;
+                    _setMenuItemClut(soundSetting, i * 2, 0, 1);
+                    _setMenuItemClut(11 - soundSetting, i * 2, 1, 0);
+                    _menuItemStates[soundSetting].unk3
+                        = i < 4 ? i << 6 : _menuItemStates[soundSetting].unk3 - 16;
+                    _menuItemStates[11 - soundSetting].unk3 -= 16;
                     if (i == 7) {
                         break;
                     }
@@ -3299,11 +3302,11 @@ static void _menuSoundSettings()
             }
         }
     }
-    _setMenuItemPosition(2, 0U);
-    _setMenuItemPosition(0, 0x80U);
-    _menuItemStates[2].direction = menuItemStateLower;
+    _setMenuItemFadeIn(2, 0U);
+    _setMenuItemFadeIn(0, 0x80U);
+    _menuItemStates[2].state = menuItemStateLower;
     _menuItemStates[2].targetPos = 32;
-    _menuItemStates[0].direction = menuItemStateUpper;
+    _menuItemStates[0].state = menuItemStateUpper;
     _menuItemStates[0].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(3, i * 2, 3, 1);
@@ -3336,18 +3339,18 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].unk3 = 0xC0;
     func_8007093C();
     _menuItemStates[menuItemSound].alpha = 16;
-    _menuItemStates[menuItemSound].direction = menuItemStateStatic;
+    _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
 int _nop1() { return 0; }
 
 void func_80071254()
 {
-    int var_s2;
+    int monoSound;
     int var_s4;
 
-    var_s4 = D_80060020.unkB;
-    var_s2 = D_80060020.unkA;
+    var_s4 = D_80060020.vibrationOn;
+    monoSound = D_80060020.monoSound;
     memset(&D_80060020, 0, 0x20);
     D_80060020.unk2 = 0x2D8;
     D_80060020.unk8 = 1;
@@ -3357,11 +3360,11 @@ void func_80071254()
     if (vs_main_titleScreenCount == 0) {
         func_8006F54C();
         var_s4 = 1;
-        var_s2 = 0;
+        monoSound = 0;
     }
-    D_80060020.unkA = var_s2 != 0;
-    D_80060020.unkB = (var_s4 != 0);
-    func_800468BC(D_80060020.unkA);
+    D_80060020.monoSound = monoSound != 0;
+    D_80060020.vibrationOn = (var_s4 != 0);
+    vs_main_toggleMonoSound(D_80060020.monoSound);
     vs_sound_setCdVol(0x7F);
     memset(&D_800619D8, 0, 0xB0);
     D_80061598[1] = 1;
@@ -3468,15 +3471,15 @@ int vs_title_exec()
                 menuItem = (menuItem + i) & 3;
                 _playMenuChangeSfx();
                 if (i == 1) {
-                    _setMenuItemPosition((menuItem + 1) & 3, 0x80);
+                    _setMenuItemFadeIn((menuItem + 1) & 3, 0x80);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].direction = menuItemStateUpper;
+                        _menuItemStates[i].state = menuItemStateUpper;
                         _menuItemStates[i].targetPos = _menuItemStates[i].pos - 32;
                     }
                 } else {
-                    _setMenuItemPosition((menuItem - 1) & 3, 0);
+                    _setMenuItemFadeIn((menuItem - 1) & 3, 0);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].direction = menuItemStateLower;
+                        _menuItemStates[i].state = menuItemStateLower;
                         _menuItemStates[i].targetPos = _menuItemStates[i].pos + 32;
                     }
                 }

@@ -115,7 +115,6 @@ _soundFlush = 0x8002F560;
 __initialised = 0x80030FB0;
 __heapbase = 0x80030FB4;
 __heapsize = 0x80030FB8;
-_execData = 0x80030FBC;
 _interruptReg = 0x80032834;
 _rootCounter0 = 0x80032838;
 _interruptMasks = 0x8003283C;

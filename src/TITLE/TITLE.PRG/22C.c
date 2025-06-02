@@ -41,11 +41,11 @@ typedef struct {
     u_char unk14[32];
 } D_800DEB18_t;
 
-enum menuItemDirection {
-    menuItemDirectionStatic = 0,
-    menuItemDirectionUp = 1,
-    menuItemDirectionDown = 2,
-    menuItemDirectionSubmenu = 3
+enum menuItemState {
+    menuItemStateStatic = 0,
+    menuItemStateUpper = 1,
+    menuItemStateLower = 2,
+    menuItemStateSubmenu = 3
 };
 
 typedef struct {
@@ -201,7 +201,9 @@ enum menuItems {
     menuItemNewGame = 0,
     menuItemContinue = 1,
     menuItemVibration = 2,
-    menuItemSound = 3
+    menuItemSound = 3,
+    menuItemVibrationOff = 5,
+    menuItemVibrationOn = 6
 };
 
 #define SWEVENTS 0
@@ -786,8 +788,10 @@ int func_8006A11C(int arg0)
     }
     switch (D_800DC8B8) {
     case 0:
-        if (rename((char*)_memcardFilenameFromTemplate(_memcardManagerPort, _memcardFileno),
-                (char*)_memcardFilenameFromTemplateAlpha(_memcardManagerPort, _memcardFileno))
+        if (rename(
+                (char*)_memcardFilenameFromTemplate(_memcardManagerPort, _memcardFileno),
+                (char*)_memcardFilenameFromTemplateAlpha(
+                    _memcardManagerPort, _memcardFileno))
             != 0) {
             D_800DC8BB = 0;
             D_800DC8BC = 0;
@@ -802,9 +806,9 @@ int func_8006A11C(int arg0)
         D_800DEB10 = D_800DEB14;
         D_800DEB0E = 0x180;
         D_800DEB12 += temp_v1_2;
-        _saveFileId
-            = open((char*)_memcardFilenameFromTemplateAlpha(_memcardManagerPort, _memcardFileno),
-                O_NOWAIT | O_WRONLY);
+        _saveFileId = open(
+            (char*)_memcardFilenameFromTemplateAlpha(_memcardManagerPort, _memcardFileno),
+            O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
             ++D_800DC8BB;
@@ -855,7 +859,8 @@ int func_8006A11C(int arg0)
         D_800DC8B8 = 4;
         break;
     case 4:
-        if (rename((char*)_memcardFilenameFromTemplateAlpha(_memcardManagerPort, _memcardFileno),
+        if (rename((char*)_memcardFilenameFromTemplateAlpha(
+                       _memcardManagerPort, _memcardFileno),
                 (char*)_memcardFilenameFromTemplate(_memcardManagerPort, _memcardFileno))
             == 0) {
             ++D_800DC8BC;
@@ -2782,7 +2787,7 @@ int func_8006FA54()
 static void _setMenuItemPosition(int menuItem, u_char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
-    _menuItemStates[menuItem].direction = menuItemDirectionStatic;
+    _menuItemStates[menuItem].direction = menuItemStateStatic;
     _menuItemStates[menuItem].unk2 = 0;
     _menuItemStates[menuItem].unk3 = 0;
     _menuItemStates[menuItem].pos = pos;
@@ -3025,41 +3030,38 @@ void func_800703CC()
             _menuItemStates[i].unk2 = var_a0;
 
             switch (_menuItemStates[i].direction) {
-            case menuItemDirectionStatic:
-                if (var_a0 == 128) {
-                    if (_menuItemStates[i].pos == 64) {
+            case menuItemStateStatic:
+                if (var_a0 == 128 && _menuItemStates[i].pos == 64) {
+                    _menuItemStates[i].unk6 = _menuItemStates[i].pos;
 
-                        _menuItemStates[i].unk6 = _menuItemStates[i].pos;
-
-                        alpha = _menuItemStates[i].alpha;
-                        if (alpha < 16) {
-                            _menuItemStates[i].unk3 = alpha * 16;
-                            alpha += 4;
-                            if (alpha > 16) {
-                                alpha = 16;
-                            }
-                            _menuItemStates[i].alpha = alpha;
+                    alpha = _menuItemStates[i].alpha;
+                    if (alpha < 16) {
+                        _menuItemStates[i].unk3 = alpha * 16;
+                        alpha += 4;
+                        if (alpha > 16) {
+                            alpha = 16;
                         }
+                        _menuItemStates[i].alpha = alpha;
                     }
                 }
                 break;
-            case menuItemDirectionUp:
+            case menuItemStateUpper:
                 _menuItemStates[i].pos -= 4;
                 if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
                     _menuItemStates[i].direction = 0;
                 }
                 break;
-            case menuItemDirectionDown:
+            case menuItemStateLower:
                 _menuItemStates[i].pos += 4;
                 if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].direction = menuItemDirectionStatic;
+                    _menuItemStates[i].direction = menuItemStateStatic;
                 }
                 break;
             }
 
             alpha = _menuItemStates[i].alpha;
 
-            if (_menuItemStates[i].direction < menuItemDirectionSubmenu) {
+            if (_menuItemStates[i].direction < menuItemStateSubmenu) {
                 _setMenuItemClut(i, alpha, 0, 1);
             }
             if ((alpha != 0) && (_menuItemStates[i].pos != 64)) {
@@ -3071,9 +3073,9 @@ void func_800703CC()
                     _menuItemStates[i].unk3 -= 16;
 
                     if (_menuItemStates[i].unk6 < _menuItemStates[i].pos) {
-                        _menuItemStates[i].unk6  += 2;
+                        _menuItemStates[i].unk6 += 2;
                     } else {
-                        _menuItemStates[i].unk6  -= 2;
+                        _menuItemStates[i].unk6 -= 2;
                     }
                 } else if ((_menuItemStates[i].alpha == 16)
                     && (_menuItemStates[i].unk3 > 128)) {
@@ -3131,43 +3133,44 @@ void func_80070A58()
 static void _menuVibrationSettings()
 {
     int i;
-    int var_s4;
+    int vibrationSetting;
 
-    _menuItemStates[menuItemContinue].direction = menuItemDirectionUp;
-    _menuItemStates[menuItemSound].direction = menuItemDirectionDown;
+    _menuItemStates[menuItemContinue].direction = menuItemStateUpper;
+    _menuItemStates[menuItemSound].direction = menuItemStateLower;
     _menuItemStates[menuItemSound].targetPos = 128;
     _menuItemStates[menuItemContinue].targetPos = 0;
-    _menuItemStates[menuItemVibration].direction = menuItemDirectionSubmenu;
-    var_s4 = D_8006002B + 5;
-    _setMenuItemPosition(6, 64);
-    _setMenuItemPosition(5, 96);
-    _menuItemStates[5].direction = menuItemDirectionSubmenu;
-    _menuItemStates[6].direction = menuItemDirectionSubmenu;
-    _setMenuItemClut(5, 0, 0, 0);
-    _setMenuItemClut(6, 0, 0, 0);
+    _menuItemStates[menuItemVibration].direction = menuItemStateSubmenu;
+    vibrationSetting = vs_main_vibrationEnabled + menuItemVibrationOff;
+    _setMenuItemPosition(menuItemVibrationOn, 64);
+    _setMenuItemPosition(menuItemVibrationOff, 96);
+    _menuItemStates[menuItemVibrationOff].direction = menuItemStateSubmenu;
+    _menuItemStates[menuItemVibrationOn].direction = menuItemStateSubmenu;
+    _setMenuItemClut(menuItemVibrationOff, 0, 0, 0);
+    _setMenuItemClut(menuItemVibrationOn, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemVibration, i * 2, 1, 3);
         _menuItemStates[menuItemVibration].pos -= 4;
         func_80070A58();
     }
-    _menuItemStates[menuItemNewGame].direction = menuItemDirectionStatic;
-    _menuItemStates[menuItemContinue].direction = menuItemDirectionStatic;
-    _menuItemStates[menuItemSound].direction = menuItemDirectionStatic;
+    _menuItemStates[menuItemNewGame].direction = menuItemStateStatic;
+    _menuItemStates[menuItemContinue].direction = menuItemStateStatic;
+    _menuItemStates[menuItemSound].direction = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
         func_80070A58();
     }
 
     for (i = 0; i < 8; ++i) {
-        _setMenuItemClut(var_s4, i * 2, 0, 1);
-        _menuItemStates[var_s4].unk3 = i < 4 ? i << 6 : _menuItemStates[var_s4].unk3 - 16;
+        _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
+        _menuItemStates[vibrationSetting].unk3
+            = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].unk3 - 16;
         func_80070A58();
     }
     while (1) {
         func_80070A58();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
-            D_80060020.unkB = var_s4 - 5;
-            if (var_s4 == 6) {
+            D_80060020.unkB = vibrationSetting - 5;
+            if (vibrationSetting == menuItemVibrationOn) {
                 func_800438C8(0);
             }
             break;
@@ -3176,15 +3179,15 @@ static void _menuVibrationSettings()
             break;
         } else {
             if (vs_main_buttonsPressed & (PADLup | PADLdown | PADselect)) {
-                var_s4 = 11 - var_s4;
+                vibrationSetting = 11 - vibrationSetting;
                 _playMenuChangeSfx();
 
                 for (i = 1; i < 8; ++i) {
-                    _setMenuItemClut(var_s4, i * 2, 0, 1);
-                    _setMenuItemClut(11 - var_s4, i * 2, 1, 0);
-                    _menuItemStates[var_s4].unk3
-                        = i < 4 ? i << 6 : _menuItemStates[var_s4].unk3 - 16;
-                    _menuItemStates[11 - var_s4].unk3 -= 16;
+                    _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
+                    _setMenuItemClut(11 - vibrationSetting, i * 2, 1, 0);
+                    _menuItemStates[vibrationSetting].unk3
+                        = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].unk3 - 16;
+                    _menuItemStates[11 - vibrationSetting].unk3 -= 16;
                     if (i == 7) {
                         break;
                     }
@@ -3195,9 +3198,9 @@ static void _menuVibrationSettings()
     }
     _setMenuItemPosition(1, 0);
     _setMenuItemPosition(3, 0x80);
-    _menuItemStates[menuItemContinue].direction = menuItemDirectionDown;
+    _menuItemStates[menuItemContinue].direction = menuItemStateLower;
     _menuItemStates[menuItemContinue].targetPos = 32;
-    _menuItemStates[menuItemSound].direction = menuItemDirectionUp;
+    _menuItemStates[menuItemSound].direction = menuItemStateUpper;
     _menuItemStates[menuItemSound].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(2, i * 2, 3, 1);
@@ -3230,7 +3233,7 @@ static void _menuVibrationSettings()
     _menuItemStates[menuItemVibration].unk3 = 0xC0;
     func_8007093C();
     _menuItemStates[menuItemVibration].alpha = 16;
-    _menuItemStates[menuItemVibration].direction = menuItemDirectionStatic;
+    _menuItemStates[menuItemVibration].direction = menuItemStateStatic;
 }
 
 static void _menuSoundSettings()
@@ -3238,16 +3241,16 @@ static void _menuSoundSettings()
     int i;
     int var_s3;
 
-    _menuItemStates[2].direction = menuItemDirectionUp;
-    _menuItemStates[0].direction = menuItemDirectionDown;
+    _menuItemStates[2].direction = menuItemStateUpper;
+    _menuItemStates[0].direction = menuItemStateLower;
     _menuItemStates[0].targetPos = 128;
     _menuItemStates[2].targetPos = 0;
-    _menuItemStates[3].direction = menuItemDirectionSubmenu;
+    _menuItemStates[3].direction = menuItemStateSubmenu;
     var_s3 = 7 - (D_8006002A * 3);
     _setMenuItemPosition(7, 0x40U);
     _setMenuItemPosition(4, 0x60U);
-    _menuItemStates[4].direction = menuItemDirectionSubmenu;
-    _menuItemStates[7].direction = menuItemDirectionSubmenu;
+    _menuItemStates[4].direction = menuItemStateSubmenu;
+    _menuItemStates[7].direction = menuItemStateSubmenu;
     _setMenuItemClut(4, 0, 0, 0);
     _setMenuItemClut(7, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
@@ -3255,9 +3258,9 @@ static void _menuSoundSettings()
         _menuItemStates[3].pos -= 4;
         func_80070A58();
     }
-    _menuItemStates[0].direction = menuItemDirectionStatic;
-    _menuItemStates[1].direction = menuItemDirectionStatic;
-    _menuItemStates[2].direction = menuItemDirectionStatic;
+    _menuItemStates[0].direction = menuItemStateStatic;
+    _menuItemStates[1].direction = menuItemStateStatic;
+    _menuItemStates[2].direction = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
         func_80070A58();
     }
@@ -3298,9 +3301,9 @@ static void _menuSoundSettings()
     }
     _setMenuItemPosition(2, 0U);
     _setMenuItemPosition(0, 0x80U);
-    _menuItemStates[2].direction = menuItemDirectionDown;
+    _menuItemStates[2].direction = menuItemStateLower;
     _menuItemStates[2].targetPos = 32;
-    _menuItemStates[0].direction = menuItemDirectionUp;
+    _menuItemStates[0].direction = menuItemStateUpper;
     _menuItemStates[0].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(3, i * 2, 3, 1);
@@ -3333,7 +3336,7 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].unk3 = 0xC0;
     func_8007093C();
     _menuItemStates[menuItemSound].alpha = 16;
-    _menuItemStates[menuItemSound].direction = menuItemDirectionStatic;
+    _menuItemStates[menuItemSound].direction = menuItemStateStatic;
 }
 
 int _nop1() { return 0; }
@@ -3425,7 +3428,8 @@ int vs_title_exec()
             if ((vs_main_buttonsState & 0xFFFF) != 0) {
                 _buttonsLastPressed = VSync(-1);
             }
-            if (((VSync(-1) - _buttonsLastPressed) >= 1001) && ((VSync(-1) - _introMovieLastPlayed) >= 101)) {
+            if (((VSync(-1) - _buttonsLastPressed) >= 1001)
+                && ((VSync(-1) - _introMovieLastPlayed) >= 101)) {
                 selectedOption = menuItemTimeout;
                 break;
             }
@@ -3447,7 +3451,8 @@ int vs_title_exec()
                     break;
                 }
 
-                if ((menuItem < menuItemVibration) && (selectedOption >= menuItemNewGame)) {
+                if ((menuItem < menuItemVibration)
+                    && (selectedOption >= menuItemNewGame)) {
                     break;
                 }
                 _buttonsLastPressed = VSync(-1);
@@ -3465,13 +3470,13 @@ int vs_title_exec()
                 if (i == 1) {
                     _setMenuItemPosition((menuItem + 1) & 3, 0x80);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].direction = menuItemDirectionUp;
+                        _menuItemStates[i].direction = menuItemStateUpper;
                         _menuItemStates[i].targetPos = _menuItemStates[i].pos - 32;
                     }
                 } else {
                     _setMenuItemPosition((menuItem - 1) & 3, 0);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].direction = menuItemDirectionDown;
+                        _menuItemStates[i].direction = menuItemStateLower;
                         _menuItemStates[i].targetPos = _menuItemStates[i].pos + 32;
                     }
                 }

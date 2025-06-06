@@ -28,5 +28,8 @@ segments:
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, .data, 22C]
       - [0xA09C, data, 22C]
+      - [0xE2D4, rgba16Compressed, menuBg, 544, 576]
+      - [0x449A8, data, copyright]
+      - [0x46B68, data]
       - [0x74068, bss]
   - [0x87648]

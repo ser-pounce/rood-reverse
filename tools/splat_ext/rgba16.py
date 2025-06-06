@@ -24,6 +24,11 @@ class PSXSegRgba16(Segment):
         type_extension = f".{self.type}" if options.opts.image_type_in_extension else ""
         return options.opts.asset_path / self.dir / f"{self.name}{type_extension}.png"
     
+    def make_path(self) -> Path:
+        path = self.out_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
+    
     def get_wh(self, rom_bytes):
         if hasattr(self, 'width') and hasattr(self, 'height'):
             return self.width, self.height
@@ -38,10 +43,7 @@ class PSXSegRgba16(Segment):
             return self.rom_start + ctypes.sizeof(Header)
     
     def split(self, rom_bytes):
-
-        path = self.out_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-
+        path = self.make_path()
         to_png(rom_bytes[self.get_data_offset():], *self.get_wh(rom_bytes), path)
 
 

@@ -152,7 +152,7 @@ $(BUILD)/%.o: %.c
 
 %rgba16.o: filename = $(@F:%.rgba16.o=%)
 %rgba16.o: %rgba16.bin
-	$(call builder,Compiling $<)
+	$(call builder,Converting $<)
 	@$(OBJCOPY) $(OBJCOPYFLAGS) \
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4 $< $@

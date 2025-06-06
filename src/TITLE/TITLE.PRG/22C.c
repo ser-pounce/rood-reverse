@@ -2232,7 +2232,7 @@ void func_8006E68C()
     PutDrawEnv(&draw);
 }
 
-static int _displayLoadScreen()
+static int _displayGameLoadScreen()
 {
     int temp_v0;
 
@@ -2397,7 +2397,7 @@ void func_8006ECF4()
     DrawPrim(&_primBuf.tile);
 }
 
-void _displaySaveScreen()
+void _displayGameSaveScreen()
 {
     int temp_v0;
 
@@ -2819,7 +2819,7 @@ void func_8006FC6C()
             *p++ = 0;
         }
 
-        for (j = new_var >> 0x10; j != 0; --j) {
+        for (j = new_var >> 16; j != 0; --j) {
             *p++ = D_80076AD4[i++];
         }
     }
@@ -2842,17 +2842,17 @@ void func_8006FC6C()
     vs_main_freeHeap(temp_v0);
 }
 
-void func_8006FE30()
+static void _blankScreen()
 {
     DISPENV dispenv;
     DRAWENV drawenv;
 
-    SetDefDispEnv(&dispenv, 0x200, 0x10, 0x200, 0x1E0);
+    SetDefDispEnv(&dispenv, 512, 16, 512, 480);
     dispenv.screen.y = 8;
-    dispenv.screen.h = 0xE0;
+    dispenv.screen.h = 224;
     dispenv.isinter = 1;
-    SetDefDrawEnv(&drawenv, 0x200, 0, 0x200, 0x1E0);
-    while (VSync(1) < 0xF8)
+    SetDefDrawEnv(&drawenv, 512, 0, 512, 480);
+    while (VSync(1) < 248)
         ;
     PutDispEnv(&dispenv);
     PutDrawEnv(&drawenv);
@@ -3385,7 +3385,7 @@ int vs_title_exec()
     if (vs_main_saveBeforeTitle != 0) {
         vs_main_saveBeforeTitle = 0;
         vs_main_titleScreenCount = 0;
-        _displaySaveScreen();
+        _displayGameSaveScreen();
     }
     _initTitle();
     func_80071254();
@@ -3401,7 +3401,7 @@ int vs_title_exec()
         func_8006FC6C();
         func_8006F81C();
         func_8006FA54();
-        func_8006FE30();
+        _blankScreen();
         SetDispMask(1);
         temp_s1 = func_8006FEC4(menuItem);
         for (i = 32; i >= 0; i -= 2) {
@@ -3523,7 +3523,7 @@ int vs_title_exec()
         VSync(0);
         SetDispMask(0);
         if (selectedOption == menuItemContinue) {
-            selectedOption = _displayLoadScreen();
+            selectedOption = _displayGameLoadScreen();
             if (selectedOption == menuItemContinue) {
                 func_80071CE0(menuItemContinue);
             }

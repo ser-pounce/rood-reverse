@@ -11,15 +11,22 @@ class Pixel(ctypes.LittleEndianStructure):
         ("a", ctypes.c_uint16, 1),
     ]
 
-def to_png(data, w, h, path):
-    dat = Pixel * (w * h)
-    dat = dat.from_buffer_copy(data)
+def to_rgba8888(data, count):
+    pxls = Pixel * count
+    pxls = pxls.from_buffer_copy(data)
     img = bytearray(
-        [channel for p in dat for channel in (p.r, p.g, p.b, 31 if p.a == 0 else 0)]
+        [channel for p in pxls for channel in (p.r, p.g, p.b, 31 if p.a == 0 else 0)]
     )
+    return img
+
+def to_png(data, w, h, path):
+    img = to_rgba8888(data, w * h)
+    to_png_raw(img, w, h, path)
+        
+def to_png_raw(data, w, h, path):
     with open(path, "wb") as f:
         png.Writer(width=w, height=h, alpha=True, greyscale=False, bitdepth=5) \
-            .write_array(f, img)
+            .write_array(f, data)
 
 def to_bytes(png_path):
 

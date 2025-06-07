@@ -18,5 +18,4 @@ $(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h \
 	@$(OBJCOPY) $(OBJCOPYFLAGS) \
 	--add-symbol _menuBg=.data:0 $< $@
 
-$(BUILD)/assets/MENU/SPMCIMG.png: data/MENU/SPMCIMG.BIN
-
+$(BUILD)/assets/TITLE/TITLE.PRG/menuCopyright.rgba16.bin: rgbflags += noheader

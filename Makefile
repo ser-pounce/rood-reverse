@@ -160,7 +160,7 @@ $(BUILD)/%.o: %.c
 
 %rgba16.bin: %rgba16.png
 	$(call builder,Converting $<)
-	@$(RGBA16) $< $@
+	@$(RGBA16) $< $@ $(rgbflags)
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^

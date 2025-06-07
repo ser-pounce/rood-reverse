@@ -1,4 +1,7 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
+#include <memory.h>
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/FONT", SetDumpFnt);
 

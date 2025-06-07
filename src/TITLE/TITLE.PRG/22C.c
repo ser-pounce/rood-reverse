@@ -2940,7 +2940,7 @@ void _drawMenuBg(u_short* bgData, int alpha)
     vs_main_processPadState();
 }
 
-void _drawCopyright(u_short* arg0, int alpha)
+void _drawMenuCopyright(u_short* arg0, int blendFactor)
 {
     RECT rect;
     int i;
@@ -2967,9 +2967,9 @@ void _drawCopyright(u_short* arg0, int alpha)
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
         r0 &= 0x1F;
-        rdiff = (r1 - r0) * alpha;
-        gdiff = (g1 - g0) * alpha;
-        bdiff = (b1 - b0) * alpha;
+        rdiff = (r1 - r0) * blendFactor;
+        gdiff = (g1 - g0) * blendFactor;
+        bdiff = (b1 - b0) * blendFactor;
         dst[i] = ((u_int)((((r0 << 5) + rdiff) & 0x3E0) | (((g0 << 5) + gdiff) & 0x7C00)
                       | (((b0 << 5) + bdiff) & 0xF8000))
             >> 5);
@@ -3410,7 +3410,7 @@ int vs_title_exec()
         SetDispMask(1);
         temp_s1 = func_8006FEC4(menuItem);
         for (i = 32; i >= 0; i -= 2) {
-            _drawCopyright(temp_s1, i);
+            _drawMenuCopyright(temp_s1, i);
         }
         VSync(0);
         setRECT(&rect, 688, 256, 160, 128);

@@ -82,7 +82,7 @@ extern u_long D_8007472C[];
 extern int D_80074AAC;
 extern int D_80074AB0;
 extern u_int D_80074AF4[];
-extern u_int D_80076AD4[];
+extern u_int _menuBg[];
 extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[];
@@ -2813,14 +2813,19 @@ void func_8006FC6C()
     i = 0;
     temp_v0 = vs_main_allocHeap(0x99000);
     p = temp_v0;
-    for (; i < 0xD9B5;) {
-        new_var = D_80076AD4[i++];
+
+    #ifndef MENUBGSZ
+    #define MENUBGSZ 222932 * sizeof(int)
+    #endif
+
+    for (; i < MENUBGSZ / sizeof(int);) {
+        new_var = _menuBg[i++];
         for (j = new_var & 0xFFFF; j != 0; --j) {
             *p++ = 0;
         }
 
         for (j = new_var >> 16; j != 0; --j) {
-            *p++ = D_80076AD4[i++];
+            *p++ = _menuBg[i++];
         }
     }
     DrawSync(0);

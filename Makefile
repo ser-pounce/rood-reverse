@@ -4,6 +4,7 @@ CPP      := $(ARCH)cpp
 LD       := $(ARCH)ld
 AS       := $(ARCH)as
 OBJCOPY  := $(ARCH)objcopy
+SIZE     := $(ARCH)size
 PYTHON   := python3
 GIT      := git
 CMAKE    := cmake

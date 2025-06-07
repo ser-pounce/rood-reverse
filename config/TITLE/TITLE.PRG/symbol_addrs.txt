@@ -101,3 +101,4 @@ _introMoviePlaying = 0x800DED7C;
 dslMode = 0x800DED80;
 introMovieLoc = 0x800DED88;
 _menuItemStates = 0x800EFDF8;
+_menuBg = 0x80076AD4;

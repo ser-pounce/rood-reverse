@@ -1,9 +1,7 @@
 import sys
-from pathlib import Path
 import ctypes
-from splat.segtypes.segment import Segment
-from splat.util import options
-from tools.etc.rgba16 import to_png, to_bytes
+from tools.splat_ext.img import PSXSegImg
+from tools.etc.rgba16 import to_rgba8888, to_png, to_bytes
 
 
 class Header(ctypes.LittleEndianStructure):
@@ -12,46 +10,28 @@ class Header(ctypes.LittleEndianStructure):
         ("h", ctypes.c_uint16),
     ]
 
-class PSXSegRgba16(Segment):
+class PSXSegRgba16(PSXSegImg):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if len(kwargs['yaml']) > 3:
-            self.width = kwargs['yaml'][3]
-            self.height = kwargs['yaml'][4]
-
-    def out_path(self) -> Path:
-        type_extension = f".{self.type}" if options.opts.image_type_in_extension else ""
-        return options.opts.asset_path / self.dir / f"{self.name}{type_extension}.png"
-    
-    def make_path(self) -> Path:
-        path = self.out_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-        return path
-    
-    def get_wh(self, rom_bytes):
-        if hasattr(self, 'width') and hasattr(self, 'height'):
-            return self.width, self.height
-        else:
-            header = Header.from_buffer_copy(rom_bytes[self.rom_start:])
-            return header.w, header.h
-        
-    def get_data_offset(self):
-        if hasattr(self, 'width') and hasattr(self, 'height'):
-            return self.rom_start
-        else:
-            return self.rom_start + ctypes.sizeof(Header)
+    def needs_header(self):
+        return not (hasattr(self, 'width') and hasattr(self, 'height'))
     
     def split(self, rom_bytes):
+        offset = self.rom_start
+        if (self.needs_header()):
+            header = Header.from_buffer_copy(rom_bytes[self.rom_start:])
+            width, height = header.w, header.h
+            offset += ctypes.sizeof(Header)
+        else:
+            width, height = self.width, self.height
         path = self.make_path()
-        to_png(rom_bytes[self.get_data_offset():], *self.get_wh(rom_bytes), path)
+        img = to_rgba8888(rom_bytes[offset:], width * height)
+        to_png(img, width, height, path)
 
 
 if __name__ == '__main__':
-    data, w, h = to_bytes(sys.argv[1])
-   
+    data, width, height = to_bytes(sys.argv[1])
     with open(sys.argv[2], "wb") as f:
         if len(sys.argv) == 3:
-            header = Header(w, h)
+            header = Header(width, height)
             f.write(bytearray(header))
         f.write(data)

@@ -1,7 +1,7 @@
 import sys
 import ctypes
-from tools.etc.rgba16 import to_png_raw, to_bytes, to_rgba8888
-from tools.splat_ext.rgba16 import PSXSegRgba16
+from tools.etc.rgba16 import to_png, to_bytes, to_rgba8888
+from tools.splat_ext.img import PSXSegImg
 
 
 class BlockHeader(ctypes.LittleEndianStructure):
@@ -10,7 +10,7 @@ class BlockHeader(ctypes.LittleEndianStructure):
         ("rgba", ctypes.c_uint32, 16),
     ]
 
-class PSXSegRgba16Compressed(PSXSegRgba16):
+class PSXSegRgba16Compressed(PSXSegImg):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -28,7 +28,7 @@ class PSXSegRgba16Compressed(PSXSegRgba16):
             i += block.rgba * 4
             
         path = self.make_path()
-        to_png_raw(data, self.width, self.height, path)
+        to_png(data, self.width, self.height, path)
 
 
 if __name__ == '__main__':

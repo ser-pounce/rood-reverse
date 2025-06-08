@@ -237,7 +237,7 @@ segments:
       - [0x32568, .rodata, main]
       - [0x3264C, c, main]
       - [0x39938, .data, 2MBYTE.OBJ]
-      - [0x39950, rgba16, _nowLoading]
+      - [0x39950, rgba16Header, _nowLoading]
       - [0x3AD04, .data, main]
       - [0x3F720, data]
       - [0x3FCCC, .data, zndFiles]

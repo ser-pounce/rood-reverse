@@ -12,7 +12,7 @@ class PSXSegImg(Segment):
 
     def out_path(self) -> Path:
         type_extension = f".{self.type}" if options.opts.image_type_in_extension else ""
-        return options.opts.asset_path / self.dir / f"{self.name}{type_extension}.png"
+        return options.opts.asset_path / self.dir / f"{self.name}{type_extension}.segment.png"
     
     def make_path(self) -> Path:
         path = self.out_path()

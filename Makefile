@@ -30,7 +30,6 @@ SPLAT     := $(VPYTHON) -m splat split
 IMPORT    := $(VPYTHON) tools/decomp-permuter/import.py
 VSSTRING  := $(VPYTHON) tools/etc/vsStringTransformer.py
 PERMUTE   := $(VPYTHON) tools/decomp-permuter/permuter.py
-RGBA16    := $(VPYTHON) -m tools.splat_ext.rgba16
 DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
 MKPSXISO  := tools/mkpsxiso/build/Release/mkpsxiso
 
@@ -151,16 +150,19 @@ $(BUILD)/%.o: %.c
 	@$(CAT) $@.d >> $(BUILD)/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
-%rgba16.o: filename = $(@F:%.rgba16.o=%)
-%rgba16.o: %rgba16.bin
+%.segment.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
+%.segment.o: filename = $(word 1,$(subst ., ,$(@F)))
+%.segment.o: %.segment.bin
 	$(call builder,Converting $<)
-	@$(OBJCOPY) $(OBJCOPYFLAGS) \
-	--add-symbol $(filename)_header=.data:0 \
-	--add-symbol $(filename)_data=.data:4 $< $@
+	@$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-%rgba16.bin: %rgba16.png
+%.segment.bin: %.segment.png
 	$(call builder,Converting $<)
-	@$(RGBA16) $< $@ $(rgbflags)
+	@$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
+
+%rgba16Header.segment.o: OBJCOPYFLAGS += \
+	--add-symbol $(filename)_header=.data:0 \
+	--add-symbol $(filename)_data=.data:4
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^

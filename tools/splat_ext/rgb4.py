@@ -22,7 +22,7 @@ class PSXSegRgb4(PSXSegImg):
 
 
 if __name__ == '__main__':
-    width, height, data, _ = png.Reader(sys.argv[1]).read_flat()
+    _, _, data, _ = png.Reader(sys.argv[1]).read_flat()
     packed = bytearray(
         (data[i] & 0x0F) | ((data[i+1] & 0x0F) << 4)
         for i in range(0, len(data), 2)

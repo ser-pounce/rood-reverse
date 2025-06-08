@@ -105,7 +105,7 @@ extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];
 extern u_long D_800BD368[];
 extern uiTable_t _uiTable;
-extern u_long D_800D1268[];
+extern u_long _saveMenuBg[];
 extern u_char _memcardFilename[32];
 extern u_char _memcardFilenameAlpha[32];
 extern u_char _memCardState;
@@ -2256,13 +2256,13 @@ static int _displayGameLoadScreen()
     _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
     _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
     _drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
-    _drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
+    _drawImage(MAKEXY(768, 227), _saveMenuBg, MAKEWH(256, 1));
     setRECT(&D_800DC928, 640, 256, 32, 240);
     ClearImage(&D_800DC928, 0, 0, 0);
     DrawSync(0);
     setRECT(&D_800DC928, 768, 256, 32, 240);
     ClearImage(&D_800DC928, 0U, 0U, 0U);
-    _drawImage(MAKEXY(672, 256), D_800D1268 + 0x80, MAKEWH(96, 240));
+    _drawImage(MAKEXY(672, 256), _saveMenuBg + 0x80, MAKEWH(96, 240));
     func_8006E5D0();
     _loadScreenMemcardState = 0;
 
@@ -2421,13 +2421,13 @@ void _displayGameSaveScreen()
     _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
     _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
     _drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
-    _drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
+    _drawImage(MAKEXY(768, 227), _saveMenuBg, MAKEWH(256, 1));
     setRECT(&D_800DC938, 640, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
     DrawSync(0);
     setRECT(&D_800DC938, 768, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
-    _drawImage(MAKEXY(672, 256), D_800D1268 + 0x80, MAKEWH(96, 240));
+    _drawImage(MAKEXY(672, 256), _saveMenuBg + 0x80, MAKEWH(96, 240));
     func_8006E5D0();
 
     D_800DC940 = 0;

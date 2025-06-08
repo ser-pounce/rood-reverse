@@ -106,3 +106,4 @@ _displayGameLoadScreen = 0x8006E738;
 _menuCopyright = 0x800AD1A8;
 _fontTable = 0x800AF368;
 _uiTable = 0x800C2268;
+_saveMenuBg = 0x800D1268;

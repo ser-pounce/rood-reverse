@@ -59,6 +59,21 @@ typedef struct {
     u_char alpha;
 } menuItemState_t;
 
+typedef struct {
+    u_char data[220][256 / 2];
+    u_short clut[16][16];
+} fontTable_t;
+
+typedef struct {
+    u_char page0[224][256 / 2];
+    u_char page1[256][256 / 2];
+} uiTable_t;
+
+typedef struct {
+    u_char data[158][256 / 2];
+    u_short clut[16][16];
+} D_800BD368_t;
+
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
 static void _initTitle();
@@ -87,9 +102,9 @@ extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[];
 extern u_short _menuCopyright[];
-extern u_long D_800AF368[];
+extern fontTable_t _fontTable[2];
 extern u_long D_800BD368[];
-extern u_long D_800C2268[];
+extern uiTable_t _uiTable;
 extern u_long D_800D1268[];
 extern u_char _memcardFilename[32];
 extern u_char _memcardFilenameAlpha[32];
@@ -2236,10 +2251,10 @@ static int _displayGameLoadScreen()
 {
     int temp_v0;
 
-    _drawImage(MAKEXY(768, 0), D_800C2268, MAKEWH(64, 224));
-    _drawImage(MAKEXY(448, 256), D_800C2268 + 0x1C00, MAKEWH(64, 256));
-    _drawImage(MAKEXY(832, 0), D_800AF368, MAKEWH(64, 224));
-    _drawImage(MAKEXY(896, 0), D_800AF368 + 0x1C00, MAKEWH(64, 224));
+    _drawImage(MAKEXY(768, 0), (u_long*)&_uiTable.page0, MAKEWH(64, 224));
+    _drawImage(MAKEXY(448, 256), (u_long*)&_uiTable.page1, MAKEWH(64, 256));
+    _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
+    _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
     _drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
     _drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
     setRECT(&D_800DC928, 640, 256, 32, 240);
@@ -2401,10 +2416,10 @@ void _displayGameSaveScreen()
 {
     int temp_v0;
 
-    _drawImage(MAKEXY(768, 0), D_800C2268, MAKEWH(64, 224));
-    _drawImage(MAKEXY(448, 256), D_800C2268 + 0x1C00, MAKEWH(64, 256));
-    _drawImage(MAKEXY(832, 0), D_800AF368, MAKEWH(64, 224));
-    _drawImage(MAKEXY(896, 0), D_800AF368 + 0x1C00, MAKEWH(64, 224));
+    _drawImage(MAKEXY(768, 0), (u_long*)&_uiTable.page0, MAKEWH(64, 224));
+    _drawImage(MAKEXY(448, 256), (u_long*)&_uiTable.page1, MAKEWH(64, 256));
+    _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
+    _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
     _drawImage(MAKEXY(960, 66), D_800BD368, MAKEWH(64, 158));
     _drawImage(MAKEXY(768, 227), D_800D1268, MAKEWH(256, 1));
     setRECT(&D_800DC938, 640, 256, 32, 240);

@@ -86,7 +86,7 @@ extern u_int _menuBg[];
 extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[];
-extern u_short D_800AD1A8[];
+extern u_short _menuCopyright[];
 extern u_long D_800AF368[];
 extern u_long D_800BD368[];
 extern u_long D_800C2268[];
@@ -2960,7 +2960,7 @@ void _drawMenuCopyright(u_short* arg0, int blendFactor)
 
     for (i = 0; i < (180 * 24); ++i) {
         r1 = src[i];
-        r0 = D_800AD1A8[i];
+        r0 = _menuCopyright[i];
         g0 = r0 & 0x3E0;
         b0 = r0 & 0x7C00;
         g1 = r1 & 0x3E0;

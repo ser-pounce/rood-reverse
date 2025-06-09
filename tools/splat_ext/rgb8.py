@@ -17,13 +17,10 @@ class PSXSegRgb8(PSXSegImg):
             for i in range(0, len(raw) - 1, 2):
                 data.extend([raw[i+1], raw[i]])
             img = png.Writer(width=self.width, height=self.height, bitdepth=8)
-            img.write_array(f, data)
+            img.write_array(f, raw)
 
 
 if __name__ == '__main__':
     _, _, data, _ = png.Reader(sys.argv[1]).read_flat()
-    swapped = bytearray()
-    for i in range(0, len(data) - 1, 2):
-        swapped.extend([data[i+1], data[i]])
     with open(sys.argv[2], "wb") as f:
-        f.write(swapped)
+        f.write(data)

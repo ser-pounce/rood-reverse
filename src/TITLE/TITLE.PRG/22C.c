@@ -120,7 +120,7 @@ extern u_char _memCardInitTmeout;
 extern u_char _memCardTimeout;
 extern u_char _memcardEvType;
 extern u_char D_800DC8AD;
-extern u_char D_800DC8AE;
+extern u_char _readCardPort;
 extern u_char D_800DC8AF;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
@@ -137,8 +137,8 @@ extern int _saveFileId;
 extern u_char D_800DC923;
 extern u_char D_800DC924;
 extern RECT D_800DC938;
-extern u_char D_800DC940;
-extern u_char D_800DC941;
+extern u_char _saveScreenState;
+extern u_char _saveScreenFadeTimer;
 extern u_char D_800DEB0C;
 extern u_short D_800DEB10;
 extern u_short D_800DEB12;
@@ -184,7 +184,7 @@ extern u_int* _mcData;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
-extern u_int (*D_800DEB08)[0x20];
+extern u_int (*D_800DEB08)[32];
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
 extern D_800DEB18_t D_800DEB18[10];
@@ -202,7 +202,7 @@ extern u_char D_800DED70;
 extern u_char D_800DED71;
 extern u_char D_800DED72;
 extern u_char D_800DED75;
-extern u_char D_800DED76;
+extern u_char _frameBuf;
 extern u_int _introMovieDisplayedAt;
 extern int _introMoviePlaying;
 extern DslLOC introMovieLoc;
@@ -721,7 +721,7 @@ int func_800696D0(int arg0)
 void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
-int func_80069EA8(int arg0)
+int func_80069EA8(int portFileno)
 {
     int ev;
     int nBytes;
@@ -730,13 +730,13 @@ int func_80069EA8(int arg0)
     int new_var;
 
     temp_s2 = _spmcimg + 0x5C00;
-    if (arg0 != 0) {
+    if (portFileno != 0) {
         D_800DC8AD = 0;
         D_800DC8B1 = 0;
         D_800DEB0C = 0;
-        D_800DC8AE = arg0 >> 0xC;
-        D_800DC8B0 = (arg0 >> 8) & 1;
-        D_800DC8AF = arg0 & 0xF;
+        _readCardPort = portFileno >> 0xC;
+        D_800DC8B0 = (portFileno >> 8) & 1;
+        D_800DC8AF = portFileno & 0xF;
         D_800DEB12 = 0x50;
         D_800DEB10 = 0;
         return 0;
@@ -755,9 +755,9 @@ int func_80069EA8(int arg0)
         memset(temp_s2, 0, 0x5C00);
 
         if (D_800DC8AF & 8) {
-            filename = _memcardFilenameFromTemplateAlpha(D_800DC8AE, D_800DC8AF & 7);
+            filename = _memcardFilenameFromTemplateAlpha(_readCardPort, D_800DC8AF & 7);
         } else {
-            filename = _memcardFilenameFromTemplate(D_800DC8AE, D_800DC8AF);
+            filename = _memcardFilenameFromTemplate(_readCardPort, D_800DC8AF);
         }
         _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
         if (_memCardFd == -1) {
@@ -966,7 +966,7 @@ static int _loadMemcardMenu(int init)
     return 0;
 }
 
-void func_8006A6E0()
+static void _shutdownMemcard()
 {
     int i;
 
@@ -1012,7 +1012,7 @@ void func_8006A860(int arg0, u_int arg1, u_int arg2)
     } while (arg2 != 0);
 }
 
-int countDigits(int val)
+static int countDigits(int val)
 {
     int i;
 
@@ -1104,7 +1104,7 @@ void _loadFileAnim(u_int arg0, int arg1)
     var_s3 = arg0 - 0x30;
     new_var = &D_800DED70;
 
-    if (var_s3 < 0x40U) {
+    if (var_s3 < 0x40) {
         var_s3 = 0x40;
     }
 
@@ -1412,13 +1412,15 @@ void func_8006B4EC(int arg0, u_int arg1)
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
 
-void func_8006BC78(u_char);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006BC78);
+void _drawSaveMenu(u_char);
+INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", _drawSaveMenu);
 
-void func_8006C114()
+static void _drawSaveMenuBg()
 {
-    _drawSprt(0x100, 0x38F00000, 0xB00040, 0x9C);
-    _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
+    _drawSprt(MAKEXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), MAKEWH(64, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
+    _drawSprt(MAKEXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), MAKEWH(256, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }
 
 int func_8006C15C(int arg0)
@@ -1510,7 +1512,7 @@ int func_8006C15C(int arg0)
             if (temp_s0 >= 0) {
                 int new_var;
                 func_80069EA8(((D_800DC8DB + D_800DC8DA) + 1)
-                    | (new_var = ((D_800DC8D9 - 1) << 0x10) | 0x100));
+                    | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 D_800DC8D8 = 3;
                 D_800DED6C = D_800DEAC0 + 0x193;
             } else {
@@ -2095,7 +2097,7 @@ int func_8006E00C(int arg0)
             D_800DED6C = D_800DEAC0 + (temp_v0_2 == -2 ? 0xE3 : 0xF7);
             D_800DC923 = 9;
         } else {
-            func_80069EA8((temp_v0_2 & 7) | ((temp_v0_2 & 0x10) << 0xC));
+            func_80069EA8((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
             D_800DC923 = 2;
         }
         break;
@@ -2214,40 +2216,37 @@ int func_8006E00C(int arg0)
     return 0;
 }
 
-void func_8006E5D0()
+static void _initSaveScreen()
 {
     DISPENV disp;
     DRAWENV draw;
     RECT rect;
 
-    D_800DED76 = 0;
+    _frameBuf = 0;
     SetDefDispEnv(&disp, 320, 0, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
     disp.screen.h = 224;
     PutDispEnv(&disp);
     PutDrawEnv(&draw);
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = 640;
-    rect.h = 240;
+    setRECT(&rect, 0, 0, 640, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     SetDispMask(1);
 }
 
-void func_8006E68C()
+static void _saveScreenSwapBuf()
 {
     DISPENV disp;
     DRAWENV draw;
-    int temp_s0;
+    int offset;
 
-    D_800DED76 = (1 - D_800DED76);
-    temp_s0 = (D_800DED76 & 0xFF) * 0x140;
-    SetDefDispEnv(&disp, 0x140 - temp_s0, 0, 0x140, 0xF0);
-    SetDefDrawEnv(&draw, temp_s0, 0, 0x140, 0xF0);
+    _frameBuf = (1 - _frameBuf);
+    offset = _frameBuf * 320;
+    SetDefDispEnv(&disp, 320 - offset, 0, 320, 240);
+    SetDefDrawEnv(&draw, offset, 0, 320, 240);
     disp.screen.y = 8;
-    disp.screen.h = 0xE0;
+    disp.screen.h = 224;
     PutDispEnv(&disp);
     PutDrawEnv(&draw);
 }
@@ -2268,12 +2267,12 @@ static int _displayGameLoadScreen()
     setRECT(&_gameLoadRect, 768, 256, 32, 240);
     ClearImage(&_gameLoadRect, 0, 0, 0);
     _drawImage(MAKEXY(672, 256), (u_long*)&_saveMenuBg.data, MAKEWH(96, 240));
-    func_8006E5D0();
+    _initSaveScreen();
     _loadScreenMemcardState = 0;
 
     while (1) {
         vs_main_gametimeUpdate(2);
-        func_8006E68C();
+        _saveScreenSwapBuf();
         vs_main_processPadState();
         switch (_loadScreenMemcardState) {
         case 0:
@@ -2292,12 +2291,12 @@ static int _displayGameLoadScreen()
         case 2:
             temp_v0 = func_8006CABC(0);
             if (temp_v0 != 0) {
-                func_8006A6E0();
+                _shutdownMemcard();
                 SetDispMask(0);
                 return temp_v0;
             }
-            func_8006C114();
-            func_8006BC78(D_800DED76);
+            _drawSaveMenuBg();
+            _drawSaveMenu(_frameBuf);
             break;
         }
     }
@@ -2336,7 +2335,7 @@ static int _saveFileExists()
             }
         }
     }
-    func_8006A6E0();
+    _shutdownMemcard();
     return ret;
 }
 
@@ -2403,12 +2402,12 @@ int func_8006EA70(int arg0)
     return 0;
 }
 
-void func_8006ECF4()
+static void _saveScreenExitScreen()
 {
     _drawSprt(vs_getXY(256, 0), 0, vs_getWH(64, 224),
-        getTPage(direct16Bit, semiTransparencySubtract, (1 - D_800DED76) * 320 + 256, 0));
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320 + 256, 0));
     _drawSprt(0, 0, vs_getWH(256, 224),
-        getTPage(direct16Bit, semiTransparencySubtract, (1 - D_800DED76) * 320, 0));
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320, 0));
     DrawSync(0);
     vs_setTag(&_primBuf.tile, primAddrNull);
     vs_setRGB0(&_primBuf.tile, primTileSemiTrans, 8, 8, 8);
@@ -2417,7 +2416,14 @@ void func_8006ECF4()
     DrawPrim(&_primBuf.tile);
 }
 
-void _displayGameSaveScreen()
+enum saveScreenState {
+    saveScreenStateInit = 0,
+    saveScreenStateLoading = 1,
+    saveScreenStateLoaded = 2,
+    saveScreenStateExiting = 4,
+};
+
+static void _displayGameSaveScreen()
 {
     int temp_v0;
 
@@ -2433,65 +2439,65 @@ void _displayGameSaveScreen()
     setRECT(&D_800DC938, 768, 256, 32, 240);
     ClearImage(&D_800DC938, 0, 0, 0);
     _drawImage(MAKEXY(672, 256), (u_long*)&_saveMenuBg.data, MAKEWH(96, 240));
-    func_8006E5D0();
+    _initSaveScreen();
 
-    D_800DC940 = 0;
+    _saveScreenState = saveScreenStateInit;
 
     while (1) {
         vs_main_gametimeUpdate(2);
-        func_8006E68C();
+        _saveScreenSwapBuf();
         vs_main_processPadState();
         _scramble(0);
 
-        switch (D_800DC940) {
-        case 0:
+        switch (_saveScreenState) {
+        case saveScreenStateInit:
             _loadMemcardMenu(1);
-            D_800DC940 = 1;
+            _saveScreenState = saveScreenStateLoading;
             continue;
-        case 1:
+        case saveScreenStateLoading:
             if (_loadMemcardMenu(0) != 0) {
                 func_8006AE10();
                 func_8006E00C(1);
-                D_800DC940 = 2;
+                _saveScreenState = saveScreenStateLoaded;
             }
             continue;
-        case 2:
+        case saveScreenStateLoaded:
             temp_v0 = func_8006E00C(0);
             if (temp_v0 != 0) {
                 if (temp_v0 < 0) {
                     D_800DED6C = D_800DEAC0 + 0x335;
                     func_8006EA70(1);
-                    D_800DC940 = 3;
+                    _saveScreenState = 3;
                 } else {
-                    func_8006A6E0();
-                    func_8006ECF4();
-                    D_800DC941 = 30;
-                    D_800DC940 = 4;
+                    _shutdownMemcard();
+                    _saveScreenExitScreen();
+                    _saveScreenFadeTimer = 30;
+                    _saveScreenState = saveScreenStateExiting;
                     continue;
                 }
             }
-            func_8006C114();
-            func_8006BC78(D_800DED76);
+            _drawSaveMenuBg();
+            _drawSaveMenu(_frameBuf);
             continue;
         case 3:
             temp_v0 = func_8006EA70(0);
             if (temp_v0 != 0) {
                 if (temp_v0 != 1) {
-                    func_8006A6E0();
-                    func_8006ECF4();
-                    D_800DC941 = 30;
-                    D_800DC940 = 4;
+                    _shutdownMemcard();
+                    _saveScreenExitScreen();
+                    _saveScreenFadeTimer = 30;
+                    _saveScreenState = saveScreenStateExiting;
                     continue;
                 }
                 func_8006E00C(1);
-                D_800DC940 = 2;
+                _saveScreenState = saveScreenStateLoaded;
             }
-            func_8006C114();
-            func_8006BC78(D_800DED76);
+            _drawSaveMenuBg();
+            _drawSaveMenu(_frameBuf);
             continue;
-        case 4:
-            func_8006ECF4();
-            if (--D_800DC941 == 0) {
+        case saveScreenStateExiting:
+            _saveScreenExitScreen();
+            if (--_saveScreenFadeTimer == 0) {
                 SetDispMask(0);
                 return;
             }
@@ -2834,9 +2840,9 @@ void func_8006FC6C()
     temp_v0 = vs_main_allocHeap(0x99000);
     p = temp_v0;
 
-    #ifndef MENUBGSZ
-    #define MENUBGSZ 222932 * sizeof(int)
-    #endif
+#ifndef MENUBGSZ
+#define MENUBGSZ 222932 * sizeof(int)
+#endif
 
     for (; i < MENUBGSZ / sizeof(int);) {
         new_var = _menuBg[i++];

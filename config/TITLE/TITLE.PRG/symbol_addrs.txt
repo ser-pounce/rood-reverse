@@ -107,3 +107,5 @@ _menuCopyright = 0x800AD1A8;
 _fontTable = 0x800AF368;
 _uiTable = 0x800C2268;
 _saveMenuBg = 0x800D1268;
+_gameLoadRect = 0x800DC928;
+_debugFont = 0x800BD368;

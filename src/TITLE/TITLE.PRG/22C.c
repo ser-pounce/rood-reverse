@@ -2216,16 +2216,16 @@ void func_8006E5D0()
     RECT rect;
 
     D_800DED76 = 0;
-    SetDefDispEnv(&disp, 0x140, 0, 0x140, 0xF0);
-    SetDefDrawEnv(&draw, 0, 0, 0x140, 0xF0);
+    SetDefDispEnv(&disp, 320, 0, 320, 240);
+    SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
-    disp.screen.h = 0xE0;
+    disp.screen.h = 224;
     PutDispEnv(&disp);
     PutDrawEnv(&draw);
     rect.x = 0;
     rect.y = 0;
-    rect.w = 0x280;
-    rect.h = 0xF0;
+    rect.w = 640;
+    rect.h = 240;
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     SetDispMask(1);

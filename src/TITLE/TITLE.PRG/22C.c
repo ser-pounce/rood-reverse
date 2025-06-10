@@ -104,7 +104,7 @@ typedef struct {
     u_short unk20;
     u_short unk22;
     int unk24[23];
-} D_800DEB08_t;
+} _saveFileInfo_t;
 
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
@@ -139,7 +139,7 @@ extern u_long _debugFont[];
 extern uiTable_t _uiTable;
 extern menuBg_t _saveMenuBg;
 extern u_char _memcardFilename[32];
-extern u_char _memcardFilenameAlpha[32];
+extern u_char _memcardTempFilename[32];
 extern u_char _memCardState;
 extern u_char _memcardPort;
 extern u_char D_800D9280[];
@@ -152,7 +152,7 @@ extern u_char D_800DC8AF;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
 extern int _memCardFd;
-extern u_char D_800DC8B8;
+extern u_char _memcardSaveState;
 extern u_char _memcardFileno;
 extern u_char _memcardManagerPort;
 extern u_char D_800DC8BB;
@@ -206,15 +206,15 @@ extern long memcardEventDescriptors[8];
 extern struct {
     u_long tag;
     VS_TILE_TPAGE tile;
-}  _titleScreenFade;
+} _titleScreenFade;
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
 extern u_char* _spmcimg;
 extern u_int* _mcData;
 extern u_short* D_800DEAC0;
-extern struct DIRENTRY* memcardFiles[15];
+extern struct DIRENTRY* _memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
-extern D_800DEB08_t* D_800DEB08;
+extern _saveFileInfo_t* _saveFileInfo;
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
 extern D_800DEB18_t D_800DEB18[10];
@@ -332,15 +332,15 @@ static void _readImage(int xy, u_long* p, int wh)
     DrawSync(0);
 }
 
-static void _rMemcpy(u_char* dst, u_char const* src, int count)
+static void _rMemcpy(u_char* dst, void const* src, int count)
 {
     do {
         --count;
-        dst[count] = src[count];
+        dst[count] = ((char const*)src)[count];
     } while (count != 0);
 }
 
-static u_char* _memcardFilenameFromTemplate(int port, int fileNo)
+static u_char* _memcardMakeFilename(int port, int fileNo)
 {
     memset(_memcardFilename, 0, ' ');
     strcpy(_memcardFilename, _pMemcardFilenameTemplate);
@@ -349,13 +349,13 @@ static u_char* _memcardFilenameFromTemplate(int port, int fileNo)
     return _memcardFilename;
 }
 
-static u_char* _memcardFilenameFromTemplateAlpha(int port, int fileNo)
+static u_char* _memcardMakeTempFilename(int port, int fileNo)
 {
-    memset(_memcardFilenameAlpha, 0, ' ');
-    strcpy(_memcardFilenameAlpha, _pMemcardFilenameTemplate);
-    _memcardFilenameAlpha[2] = port == 0 ? '0' : '1';
-    _memcardFilenameAlpha[20] = (fileNo + '@');
-    return _memcardFilenameAlpha;
+    memset(_memcardTempFilename, 0, ' ');
+    strcpy(_memcardTempFilename, _pMemcardFilenameTemplate);
+    _memcardTempFilename[2] = port == 0 ? '0' : '1';
+    _memcardTempFilename[20] = (fileNo + '@');
+    return _memcardTempFilename;
 }
 
 static u_int func_80068D54()
@@ -367,9 +367,9 @@ static u_int func_80068D54()
     var_a2 = 0;
     var_a3 = 0;
     for (i = 0; i < 5; ++i) {
-        if (D_800DEB08[i].unk4 >= 3) {
-            if (var_a2 < D_800DEB08[i].unk8) {
-                var_a2 = D_800DEB08[i].unk8;
+        if (_saveFileInfo[i].unk4 >= 3) {
+            if (var_a2 < _saveFileInfo[i].unk8) {
+                var_a2 = _saveFileInfo[i].unk8;
                 var_a3 = i;
             }
         }
@@ -381,10 +381,10 @@ static int func_80068DB4()
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((D_800DEB08[i].unk4 >= 3) && (D_800DEB08[i].unk4 == vs_main_settings.unk4)
-            && (D_800DEB08[i].unk0 == vs_main_settings.unk14)
-            && (D_800DEB08[i].unk14 == vs_main_settings.unk18)
-            && (D_800DEB08[i].unk8 == vs_main_settings.unk1C)) {
+        if ((_saveFileInfo[i].unk4 >= 3) && (_saveFileInfo[i].unk4 == vs_main_settings.unk4)
+            && (_saveFileInfo[i].unk0 == vs_main_settings.unk14)
+            && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
+            && (_saveFileInfo[i].unk8 == vs_main_settings.unk1C)) {
             return i + 1;
         }
     }
@@ -419,38 +419,37 @@ static int _memcardFileNumberFromFilename(u_char* filename)
     return 0;
 }
 
-static int _verifySaveChecksums(u_char blocks[][0x100], int blockCount)
+static int _verifySaveChecksums(u_char data[], int sectorCount)
 {
     int checksum;
     int i;
     int j;
-    u_char* block;
+    u_char* p = data;
 
-    block = blocks[0];
-
-    for (i = 0; i < blockCount; ++i) {
+    for (i = 0; i < sectorCount; ++i) {
         checksum = 0;
         if (i != 1) {
             for (j = 0; j < 256; ++j) {
-                checksum ^= block[j];
+                checksum ^= p[j];
             }
-            if (((u_char*)blocks + i)[0x1A4] != checksum) {
+
+            if (data[(u_int)(420 + i)] != checksum) {
                 return 1;
             }
         }
-        block += 256;
+        p += 256;
     }
 
-    block = blocks[1];
+    p = &data[256];
     checksum = 0;
-
     for (j = 0; j < 256; ++j) {
-        checksum ^= block[j];
+        checksum ^= p[j];
     }
+
     return checksum != 0;
 }
 
-void _descramble(u_int seed, u_char* buf, int count)
+static void _descramble(u_int seed, u_char* buf, int count)
 {
     for (; count != 0; --count) {
         seed *= 0x19660D;
@@ -458,41 +457,41 @@ void _descramble(u_int seed, u_char* buf, int count)
     }
 }
 
-int _readSaveData(int id)
+static int _readSaveDataInfo(int id)
 {
-    u_char buf[2][256];
+    u_char buf[4][128];
     int bytesRead;
     int port;
     int file;
     int i;
-
     port = id >> 12;
     id &= 7;
-
     for (i = 0; i < 3; ++i) {
-        file = open(_memcardFilenameFromTemplate(port, id), O_RDONLY);
+        file = open(_memcardMakeFilename(port, id), O_RDONLY);
         if (file != -1) {
             bytesRead = read(file, buf, sizeof(buf));
             close(file);
-            if (bytesRead == 512) {
-                _descramble(*((int*)&buf[1][128]), &buf[1][132], 124);
-                if (_verifySaveChecksums(buf, 2) == 0) {
-                    _rMemcpy((u_char*)&D_800DEB08[id - 1], &buf[1][128], 128);
+            if (bytesRead == sizeof(buf)) {
+                _descramble(
+                    *((int*)(&buf[3][0])), &buf[3][4], sizeof(buf[3]) - sizeof(int));
+                if (_verifySaveChecksums((u_char*)buf, 2) == 0) {
+                    _rMemcpy((u_char*)(&_saveFileInfo[id - 1]), &buf[3], sizeof(buf[3]));
                     return 0;
                 }
             }
         }
     }
-    memset(&D_800DEB08[id - 1], 0, 128);
+
+    memset(&_saveFileInfo[id - 1], 0, sizeof(_saveFileInfo[id - 1]));
     return 1;
 }
 
-int memcardSaveIdExists(int id)
+static int memcardSaveIdExists(int id)
 {
     int i;
 
     for (i = 0; i < 15; ++i) {
-        u_char* filename = memcardFiles[i]->name;
+        u_char* filename = _memcardFiles[i]->name;
         if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)) {
             if (filename[15] == id) {
                 return 1;
@@ -502,7 +501,7 @@ int memcardSaveIdExists(int id)
     return 0;
 }
 
-int deleteUnusedSaves(int port)
+static int _deleteUnnecessaryTempFiles(int port)
 {
     int i;
     int ret;
@@ -510,7 +509,7 @@ int deleteUnusedSaves(int port)
     ret = 0;
     for (i = 0; i < 5; ++i) {
         if ((memcardSaveIdExists(i + '1') != 0) && (memcardSaveIdExists(i + 'A') != 0)) {
-            if (erase(_memcardFilenameFromTemplateAlpha(port, i + 1)) == 0) {
+            if (erase(_memcardMakeTempFilename(port, i + 1)) == 0) {
                 return 0x80;
             }
             ret |= 1 << i;
@@ -521,54 +520,54 @@ int deleteUnusedSaves(int port)
 
 int func_800691D4(int port)
 {
-    int temp_v0;
+    int tempFilesDeleted;
     int fileNo;
     int i;
     int var_s4;
-    struct DIRENTRY* var_s2;
+    struct DIRENTRY* file;
 
     var_s4 = 15;
     for (i = 14; i >= 0; --i) {
-        memcardFiles[i] = 0;
+        _memcardFiles[i] = NULL;
     }
 
     fileNo = (int)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), dirEntBuf);
-    memcardFiles[0] = (void*)fileNo;
+    _memcardFiles[0] = (void*)fileNo;
 
     for (i = 1; (i < 15) && fileNo; ++i) {
         fileNo = (int)nextfile(dirEntBuf + i);
-        memcardFiles[i] = (void*)fileNo;
+        _memcardFiles[i] = (void*)fileNo;
     }
 
-    memset(D_800DEB08, 0, 0x280);
-    temp_v0 = deleteUnusedSaves((port - 1) * 16);
-    if (temp_v0 & 0x80) {
+    memset(_saveFileInfo, 0, sizeof(_saveFileInfo_t) * 5);
+    tempFilesDeleted = _deleteUnnecessaryTempFiles((port - 1) * 16);
+    if (tempFilesDeleted & 0x80) {
         return 1;
     }
     for (i = 0; i < 15; ++i) {
-        var_s2 = memcardFiles[i];
-        if (var_s2 != 0) {
-            fileNo = _memcardFileNumberFromFilename((char*)var_s2->name);
+        file = _memcardFiles[i];
+        if (file != NULL) {
+            fileNo = _memcardFileNumberFromFilename((char*)file->name);
             if (fileNo != 0) {
                 if (fileNo < 0) {
                     fileNo = -fileNo;
-                    if ((temp_v0 >> (fileNo - 1)) & 1) {
+                    if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
                         continue;
                     }
-                    memset(&D_800DEB08[fileNo - 1], 0, 0x80);
-                    D_800DEB08[fileNo - 1].unk4 = 2;
-                } else if (_readSaveData(((port - 1) << 16) | fileNo) != 0) {
-                    var_s4 += (var_s2->size + 0x1FFF) >> 0xD;
+                    memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
+                    _saveFileInfo[fileNo - 1].unk4 = 2;
+                } else if (_readSaveDataInfo(((port - 1) << 16) | fileNo) != 0) {
+                    var_s4 += (file->size + 0x1FFF) >> 0xD;
                 }
             }
-            var_s4 -= (var_s2->size + 0x1FFF) >> 0xD;
+            var_s4 -= (file->size + 0x1FFF) >> 0xD;
         }
     }
 
     for (; var_s4 >= 3; var_s4 -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (D_800DEB08[i].unk4 == 0) {
-                D_800DEB08[i].unk4 = 1;
+            if (_saveFileInfo[i].unk4 == 0) {
+                _saveFileInfo[i].unk4 = 1;
                 break;
             }
         }
@@ -582,9 +581,9 @@ int createSaveFile(int port, int id)
     u_char* fileName;
     long file;
 
-    fileName = _memcardFilenameFromTemplate((port - 1) * 16, id);
+    fileName = _memcardMakeFilename((port - 1) * 16, id);
     erase(fileName);
-    file = open(fileName, 0x30000 | O_CREAT);
+    file = open(fileName, O_CREAT | (3 << 16));
     if (file != -1) {
         close(file);
         return 0;
@@ -790,9 +789,9 @@ int func_80069EA8(int portFileno)
         memset(temp_s2, 0, 0x5C00);
 
         if (D_800DC8AF & 8) {
-            filename = _memcardFilenameFromTemplateAlpha(_readCardPort, D_800DC8AF & 7);
+            filename = _memcardMakeTempFilename(_readCardPort, D_800DC8AF & 7);
         } else {
-            filename = _memcardFilenameFromTemplate(_readCardPort, D_800DC8AF);
+            filename = _memcardMakeFilename(_readCardPort, D_800DC8AF);
         }
         _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
         if (_memCardFd == -1) {
@@ -826,6 +825,12 @@ int func_80069EA8(int portFileno)
     return D_800DC8B1 == 3 ? -1 : 0;
 }
 
+enum memcardSaveState {
+    memcardSaveStateInit = 0,
+    memcardSaveStateTempFileCreated = 1,
+    memcardSaveStateFileVerified = 4
+};
+
 int func_8006A11C(int arg0)
 {
     int temp_v1_2;
@@ -840,31 +845,31 @@ int func_8006A11C(int arg0)
         _memcardFileno = arg0 & 7;
         D_800DEB12 = 0x50;
         D_800DEB10 = 0;
-        D_800DC8B8 = memcardSaveIdExists(_memcardFileno + 0x40);
+        _memcardSaveState = memcardSaveIdExists(_memcardFileno + 0x40);
         return 0;
     }
-    switch (D_800DC8B8) {
-    case 0:
+    switch (_memcardSaveState) {
+    case memcardSaveStateInit:
         if (rename(
-                (char*)_memcardFilenameFromTemplate(_memcardManagerPort, _memcardFileno),
-                (char*)_memcardFilenameFromTemplateAlpha(
+                (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
+                (char*)_memcardMakeTempFilename(
                     _memcardManagerPort, _memcardFileno))
             != 0) {
             D_800DC8BB = 0;
             D_800DC8BC = 0;
-            D_800DC8B8 = 1;
+            _memcardSaveState = memcardSaveStateTempFileCreated;
         } else {
             ++D_800DC8BC;
             D_800DC8BB = D_800DC8BC >> 4;
         }
         break;
-    case 1:
+    case memcardSaveStateTempFileCreated:
         temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (0x140 - D_800DEB12)) / D_800DEB0E;
         D_800DEB10 = D_800DEB14;
         D_800DEB0E = 0x180;
         D_800DEB12 += temp_v1_2;
         _saveFileId = open(
-            (char*)_memcardFilenameFromTemplateAlpha(_memcardManagerPort, _memcardFileno),
+            (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
             O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
@@ -877,14 +882,14 @@ int func_8006A11C(int arg0)
             ++D_800DC8BB;
             break;
         }
-        D_800DC8B8 = 2;
+        _memcardSaveState = 2;
         // fallthrough
     case 2: {
         temp_s3 = _testMemcardEvents(SWEVENTS);
         if (temp_s3 < _memCardEventNone) {
             close(_saveFileId);
             if (temp_s3 == _memCardEventIoEnd) {
-                D_800DC8B8 = 3;
+                _memcardSaveState = 3;
                 temp_s2 = D_800DEB12;
                 temp_s3 = D_800DEB10;
                 func_80069EA8((_memcardManagerPort << 0xC) | (_memcardFileno + 8));
@@ -892,7 +897,7 @@ int func_8006A11C(int arg0)
                 D_800DEB10 = temp_s3;
             } else {
                 ++D_800DC8BB;
-                D_800DC8B8 = 1;
+                _memcardSaveState = memcardSaveStateTempFileCreated;
             }
         }
         break;
@@ -913,12 +918,12 @@ int func_8006A11C(int arg0)
         if (temp_s2 < 0x5C00) {
             return -1;
         }
-        D_800DC8B8 = 4;
+        _memcardSaveState = 4;
         break;
-    case 4:
-        if (rename((char*)_memcardFilenameFromTemplateAlpha(
+    case memcardSaveStateFileVerified:
+        if (rename((char*)_memcardMakeTempFilename(
                        _memcardManagerPort, _memcardFileno),
-                (char*)_memcardFilenameFromTemplate(_memcardManagerPort, _memcardFileno))
+                (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno))
             == 0) {
             ++D_800DC8BC;
             D_800DC8BB = (D_800DC8BC >> 4);
@@ -945,7 +950,7 @@ static int _loadMemcardMenu(int init)
         _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (u_int*)_spmcimg + 0x4500;
         D_800DEAC0 = (u_short*)(_mcData + 0x400);
-        D_800DEB08 = (D_800DEB08_t*)(_mcData + 0x800);
+        _saveFileInfo = (_saveFileInfo_t*)(_mcData + 0x800);
         dirEntBuf = (struct DIRENTRY*)(_mcData + 0x8A0);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
@@ -1025,7 +1030,8 @@ void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
     _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
-    _primBuf.prim.sprt.r0g0b0code = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
+    _primBuf.prim.sprt.r0g0b0code
+        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
     _primBuf.prim.sprt.x0y0 = xy;
     _primBuf.prim.sprt.u0v0clut = uvClut;
     _primBuf.prim.sprt.wh = wh;
@@ -1087,18 +1093,19 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
     new_var3 = (rgb0 & 0xFF);
     temp_a1 = 0x40 - var_s1;
     rgb1 = ((((var_s1 * 0xFF) + (new_var3 * temp_a1)) >> 6)
-                  | ((((var_s1 * 0xF0) + (((rgb0 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
+               | ((((var_s1 * 0xF0) + (((rgb0 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
         | ((((2 * (79 * var_s1)) + ((rgb0 >> 16) * temp_a1)) >> 6) << 16);
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-    _primBuf.prim.tilePoly.tile.tpage = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    _primBuf.prim.tilePoly.tile.tpage
+        = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
     _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
     new_var = MAKEWH(66, 5);
     new_var2 = (var_s1 + MAKEXY(0, 9));
     _primBuf.prim.tilePoly.tile.x0y0 = arg0++ + MAKEXY(0, 8);
     _primBuf.prim.tilePoly.tile.wh = MAKEWH(66, 5);
-     _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
+    _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
     _primBuf.prim.tilePoly.polyG4.x0y0 = arg0 + MAKEXY(0, 9);
     _primBuf.prim.tilePoly.polyG4.r1g1b1 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x1y1 = arg0 + new_var2;
@@ -1106,7 +1113,8 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
     _primBuf.prim.tilePoly.polyG4.x2y2 = arg0 + MAKEXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x3y3 = MAKEXY(0, 12);
-    _primBuf.prim.tilePoly.polyG4.x3y3 = arg0 + (var_s1 + _primBuf.prim.tilePoly.polyG4.x3y3);
+    _primBuf.prim.tilePoly.polyG4.x3y3
+        = arg0 + (var_s1 + _primBuf.prim.tilePoly.polyG4.x3y3);
     DrawPrim(&_primBuf);
 
     var_s1 = countDigits(arg2);
@@ -1116,9 +1124,9 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
     var_s2 = (arg0 - (new_var - (new_var4 = 0x37))) - (temp_s4 * 5);
     var_s1_2 = D_80072910[var_s1];
     do {
-        _drawSprt(var_s2 - MAKEXY(0, 1), 
-            (((arg2 / var_s1_2) << 3) + 64) | (getClut(832, 223) << 16),
-            MAKEWH(7, 12), getTPage(0, 0, 768, 0));
+        _drawSprt(var_s2 - MAKEXY(0, 1),
+            (((arg2 / var_s1_2) << 3) + 64) | (getClut(832, 223) << 16), MAKEWH(7, 12),
+            getTPage(0, 0, 768, 0));
         arg2 = arg2 % var_s1_2;
         var_s1_2 /= 10;
         do {
@@ -1154,12 +1162,13 @@ void _loadFileAnim(u_int arg0, int arg1)
     for (var_s5 = 0; var_s5 < 2; ++var_s5) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
-        _primBuf.prim.polyG4_tpage.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, var_s4);
+        _primBuf.prim.polyG4_tpage.r0g0b0code
+            = vs_getRGB0Raw(primPolyG4SemiTrans, var_s4);
         _primBuf.prim.polyG4_tpage.x0y0 = var_s3 | arg1;
         _primBuf.prim.polyG4_tpage.x1y1 = arg0 | arg1;
         _primBuf.prim.polyG4_tpage.x2y2 = var_s3 | (arg1 + 0x200000);
-        _primBuf.prim.polyG4_tpage.tpage = vs_getTpage(
-            0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.tpage
+            = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
         _primBuf.prim.polyG4_tpage.r1g1b1 = var_s2;
         _primBuf.prim.polyG4_tpage.r2g2b2 = var_s4;
         _primBuf.prim.polyG4_tpage.r3g3b3 = var_s2;
@@ -1187,7 +1196,8 @@ void func_8006ACD8(int arg0, int y)
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-    _primBuf.prim.tile_tpage.tpage = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.tpage
+        = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
     _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
     _primBuf.prim.tile_tpage.x0y0 = y | 64;
     _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
@@ -1280,7 +1290,8 @@ int func_8006AFF8(u_int arg0, int x, int y, int arg3)
     if (arg0 != 0x8F) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-        _primBuf.prim.sprt.tpage =  vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.tpage
+            = vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
         _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
         _primBuf.prim.sprt.x0y0 = vs_getYX(y, x);
         _primBuf.prim.sprt.wh = vs_getWH(12, 12);
@@ -1446,7 +1457,7 @@ u_int func_8006B4EC(int arg0, u_int arg1)
     return func_8006B490(a0, a1, arg0);
 }
 
-//https://decomp.me/scratch/Dj952
+// https://decomp.me/scratch/Dj952
 void func_8006B5A0(D_800DEB18_t* arg0);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
 
@@ -1489,8 +1500,8 @@ int func_8006C15C(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
             temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = D_800DEB08[i].unk4 < 3;
-            temp_v0_2->unk6 = D_800DEB08[i].unk1C;
+            temp_v0_2->unk5 = _saveFileInfo[i].unk4 < 3;
+            temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
         }
         D_800DC8D8 = 1;
         D_800DED6C = D_800DEAC0 + 0x13B;
@@ -1510,7 +1521,7 @@ int func_8006C15C(int arg0)
         }
         temp_s0 = D_800DC8DB + D_800DC8DA;
         if (vs_main_buttonsPressed & PADRright) {
-            if (D_800DEB08[temp_s0].unk4 >= 3) {
+            if (_saveFileInfo[temp_s0].unk4 >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 D_800DEB18[temp_s0 + 5].unk4 = 1;
                 D_800DED68 = 0;
@@ -1892,8 +1903,8 @@ int func_8006D2F8(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = D_800DEB08[i].unk4 == 0;
-            temp_v0_2->unk6 = D_800DEB08[i].unk1C;
+            temp_v0_2->unk5 = _saveFileInfo[i].unk4 == 0;
+            temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
         }
         D_800DC91C = 1;
         /* fallthrough */
@@ -1911,7 +1922,7 @@ int func_8006D2F8(int arg0)
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
-                if (D_800DEB08[temp_s0].unk4 != 0) {
+                if (_saveFileInfo[temp_s0].unk4 != 0) {
                     vs_main_playSfxDefault(0x7E, 5);
                     D_800DEB18[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
@@ -1955,7 +1966,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
                 temp_s0 = D_800DC91F + D_800DC91E;
-                if (D_800DEB08[temp_s0].unk4 == 1) {
+                if (_saveFileInfo[temp_s0].unk4 == 1) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
                         D_800DED6C = D_800DEAC0 + 0x102;
@@ -2019,8 +2030,8 @@ int func_8006D2F8(int arg0)
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(&D_800DEB08[temp_s2], 0, 0x80);
-                D_800DEB08[temp_s2].unk4 = 2;
+                memset(&_saveFileInfo[temp_s2], 0, 0x80);
+                _saveFileInfo[temp_s2].unk4 = 2;
                 D_800DEB18[temp_s2 + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
@@ -2030,10 +2041,10 @@ int func_8006D2F8(int arg0)
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)&D_800DEB08[temp_s2], _spmcimg + 0x180, 0x80);
+                _rMemcpy((u_char*)&_saveFileInfo[temp_s2], _spmcimg + 0x180, 0x80);
                 _descramble(
-                    D_800DEB08[temp_s2].unk0, (u_char*)&D_800DEB08[temp_s2].unk4, 0x7C);
-                D_800DEB18[temp_s2 + 5].unk6 = D_800DEB08[temp_s2].unk1C;
+                    _saveFileInfo[temp_s2].unk0, (u_char*)&_saveFileInfo[temp_s2].unk4, 0x7C);
+                D_800DEB18[temp_s2 + 5].unk6 = _saveFileInfo[temp_s2].unk1C;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -3171,7 +3182,8 @@ void func_8007093C()
     func_800703CC();
     for (i = 0; i < 2; ++i) {
         sprt = &D_800DE948[0];
-        sprt->sprt.tpage = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->sprt.tpage
+            = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
         sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
         sprt->sprt.x0y0 = vs_getXY(176, 256);
@@ -3179,7 +3191,8 @@ void func_8007093C()
         sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
         ++sprt;
-        sprt->sprt.tpage = vs_getTpage(320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->sprt.tpage
+            = vs_getTpage(320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
         sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
         sprt->sprt.x0y0 = vs_getXY(176, 320);
@@ -3581,8 +3594,8 @@ int vs_title_exec()
             VSync(0);
             vs_main_processPadState();
             _titleScreenFade.tag = vs_getTag(_titleScreenFade.tile, primAddrEnd);
-            _titleScreenFade.tile.tpage = vs_getTpage(320, 0, direct16Bit, semiTransparencySubtract,
-                ditheringOff);
+            _titleScreenFade.tile.tpage = vs_getTpage(
+                320, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
             _titleScreenFade.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
             _titleScreenFade.tile.x0y0 = vs_getXY(0, 0);
             _titleScreenFade.tile.wh = vs_getWH(640, 480);

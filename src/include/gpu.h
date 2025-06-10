@@ -27,7 +27,6 @@ enum vs_primType {
 };
 
 typedef struct {
-    u_long tag;
     u_long tpage;
     u_long r0g0b0code;
     u_long x0y0;
@@ -35,14 +34,12 @@ typedef struct {
 } VS_TILE_TPAGE;
 
 typedef struct {
-    u_long tag;
     u_long r0g0b0code;
     u_long x0y0;
     u_long wh;
 } VS_TILE;
 
 typedef struct {
-    u_long tag;
     u_long tpage;
     u_long r0g0b0code;
     u_long x0y0;
@@ -51,7 +48,6 @@ typedef struct {
 } VS_SPRT;
 
 typedef struct {
-    u_long tag;
     u_long tpage;
     u_long r0g0b0code;
     u_long x0y0;
@@ -64,7 +60,6 @@ typedef struct {
 } VS_POLY_G4_TPAGE;
 
 typedef struct {
-    u_long tag;
     u_long r0g0b0code;
     u_long x0y0;
     u_long r1g1b1;
@@ -78,19 +73,15 @@ typedef struct {
 #define vs_getXY(x, y) (((y) & 0xFFFF) << 16 | ((x) & 0xFFFF))
 #define vs_getYX(y, x) (((x) & 0xFFFF) | ((y) & 0xFFFF) << 16)
 #define vs_getWH(w, h) vs_getXY((w), (h))
-#define vs_setTag(p, addr)                                                               \
-    (p)->tag = (((sizeof(*(p)) / 4 - 1) << 24) | ((addr) & 0xFFFFFF))
+#define vs_getTag(type, addr)                                                               \
+    (((sizeof(type) / 4) << 24) | ((addr) & 0xFFFFFF))
 #define vs_getTpage(x, y, tp, abr, dtd)                                                  \
     ((0xE1 << 24) | (((dtd) & 1) << 9) | getTPage((tp), (abr), (x), (y)))
-#define vs_setTpage(p, x, y, tp, abr, dtd)                                               \
-    (p)->tpage = ((0xE1 << 24) | (((dtd) & 1) << 9) | getTPage((tp), (abr), (x), (y)))
-#define vs_setTpageRaw(p, tpageVal) (p)->tpage = ((0xE1 << 24) | ((tpageVal) & 0xFFFF))
+#define vs_getTpageRaw(tpageVal) ((0xE1 << 24) | ((tpageVal) & 0xFFFF))
 #define vs_getRGB0(code, r, g, b)                                                        \
     (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
 #define vs_setRGB0(p, code, r, g, b)                                                     \
     (p)->r0g0b0code                                                                      \
         = (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
 #define vs_getRGB0Raw(code, rgb0) (((code) << 24) | (rgb0))
-#define vs_setRGB0Raw(p, code, rgb0) (p)->r0g0b0code = vs_getRGB0Raw((code), (rgb0))
 #define vs_getUV0Clut(u, v, x, y) (((u) | ((v) << 8)) | (getClut((x), (y)) << 16))
-#define vs_setUV0Clut(p, u, v, x, y) (p)->u0v0clut = vs_getUV0Clut((u), (v), (x), (y))

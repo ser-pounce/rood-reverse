@@ -37,7 +37,7 @@ typedef struct {
     short unk8;
     short unkA;
     short unkC[2];
-    int unk10;
+    short unk10[2];
     u_char unk14[32];
 } D_800DEB18_t;
 
@@ -78,6 +78,33 @@ typedef struct {
     u_short clut[256];
     u_char data[240][192];
 } menuBg_t;
+
+typedef struct {
+    u_long tag;
+    VS_SPRT sprt;
+} tagsprt_t;
+
+typedef struct {
+    int unk0;
+    u_int unk4;
+    int unk8;
+    int unkC;
+    char unk10;
+    char unk11;
+    char unk12;
+    char unk13;
+    u_short unk14;
+    u_short unk16;
+    u_short unk18;
+    u_short unk1A;
+    u_char unk1C;
+    u_char unk1D;
+    u_char unk1E;
+    u_char unk1F;
+    u_short unk20;
+    u_short unk22;
+    int unk24[23];
+} D_800DEB08_t;
 
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
@@ -174,9 +201,12 @@ extern RECT _gameLoadRect;
 extern u_char _loadScreenMemcardState;
 extern u_char D_800DC931;
 extern u_char D_800DC932;
-extern VS_SPRT D_800DE948[2];
+extern tagsprt_t D_800DE948[2];
 extern long memcardEventDescriptors[8];
-extern VS_TILE_TPAGE _titleScreenFade;
+extern struct {
+    u_long tag;
+    VS_TILE_TPAGE tile;
+}  _titleScreenFade;
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
 extern u_char* _spmcimg;
@@ -184,17 +214,24 @@ extern u_int* _mcData;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
-extern u_int (*D_800DEB08)[32];
+extern D_800DEB08_t* D_800DEB08;
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
 extern D_800DEB18_t D_800DEB18[10];
-extern union {
-    VS_SPRT sprt;
-    VS_TILE_TPAGE tile_tpage;
-    VS_TILE tile;
-    VS_POLY_G4_TPAGE polyG4_tpage;
-    VS_POLY_G4 polyG4;
-    u_long raw[13];
+extern struct {
+    u_long tag;
+    union {
+        VS_SPRT sprt;
+        VS_TILE_TPAGE tile_tpage;
+        VS_TILE tile;
+        VS_POLY_G4_TPAGE polyG4_tpage;
+        VS_POLY_G4 polyG4;
+        struct {
+            VS_TILE_TPAGE tile;
+            VS_POLY_G4 polyG4;
+        } tilePoly;
+        u_long raw[13];
+    } prim;
 } _primBuf;
 extern int D_800DED68;
 extern void* D_800DED6C;
@@ -330,9 +367,9 @@ static u_int func_80068D54()
     var_a2 = 0;
     var_a3 = 0;
     for (i = 0; i < 5; ++i) {
-        if (D_800DEB08[i][1] >= 3) {
-            if (var_a2 < D_800DEB08[i][2]) {
-                var_a2 = D_800DEB08[i][2];
+        if (D_800DEB08[i].unk4 >= 3) {
+            if (var_a2 < D_800DEB08[i].unk8) {
+                var_a2 = D_800DEB08[i].unk8;
                 var_a3 = i;
             }
         }
@@ -344,10 +381,10 @@ static int func_80068DB4()
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((D_800DEB08[i][1] >= 3) && (D_800DEB08[i][1] == vs_main_settings.unk4)
-            && (D_800DEB08[i][0] == vs_main_settings.unk14)
-            && ((u_short)D_800DEB08[i][5] == vs_main_settings.unk18)
-            && (D_800DEB08[i][2] == vs_main_settings.unk1C)) {
+        if ((D_800DEB08[i].unk4 >= 3) && (D_800DEB08[i].unk4 == vs_main_settings.unk4)
+            && (D_800DEB08[i].unk0 == vs_main_settings.unk14)
+            && (D_800DEB08[i].unk14 == vs_main_settings.unk18)
+            && (D_800DEB08[i].unk8 == vs_main_settings.unk1C)) {
             return i + 1;
         }
     }
@@ -440,13 +477,13 @@ int _readSaveData(int id)
             if (bytesRead == 512) {
                 _descramble(*((int*)&buf[1][128]), &buf[1][132], 124);
                 if (_verifySaveChecksums(buf, 2) == 0) {
-                    _rMemcpy((u_char*)D_800DEB08[id - 1], &buf[1][128], 128);
+                    _rMemcpy((u_char*)&D_800DEB08[id - 1], &buf[1][128], 128);
                     return 0;
                 }
             }
         }
     }
-    memset(D_800DEB08[id - 1], 0, 128);
+    memset(&D_800DEB08[id - 1], 0, 128);
     return 1;
 }
 
@@ -489,7 +526,6 @@ int func_800691D4(int port)
     int i;
     int var_s4;
     struct DIRENTRY* var_s2;
-    u_int* var_v1;
 
     var_s4 = 15;
     for (i = 14; i >= 0; --i) {
@@ -519,8 +555,8 @@ int func_800691D4(int port)
                     if ((temp_v0 >> (fileNo - 1)) & 1) {
                         continue;
                     }
-                    memset(D_800DEB08[fileNo - 1], 0, 0x80);
-                    D_800DEB08[fileNo - 1][1] = 2;
+                    memset(&D_800DEB08[fileNo - 1], 0, 0x80);
+                    D_800DEB08[fileNo - 1].unk4 = 2;
                 } else if (_readSaveData(((port - 1) << 16) | fileNo) != 0) {
                     var_s4 += (var_s2->size + 0x1FFF) >> 0xD;
                 }
@@ -529,11 +565,10 @@ int func_800691D4(int port)
         }
     }
 
-    var_v1 = D_800DEB08[0];
     for (; var_s4 >= 3; var_s4 -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (D_800DEB08[i][1] == 0) {
-                D_800DEB08[i][1] = 1;
+            if (D_800DEB08[i].unk4 == 0) {
+                D_800DEB08[i].unk4 = 1;
                 break;
             }
         }
@@ -910,7 +945,7 @@ static int _loadMemcardMenu(int init)
         _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (u_int*)_spmcimg + 0x4500;
         D_800DEAC0 = (u_short*)(_mcData + 0x400);
-        D_800DEB08 = (u_int(*)[32])(_mcData + 0x800);
+        D_800DEB08 = (D_800DEB08_t*)(_mcData + 0x800);
         dirEntBuf = (struct DIRENTRY*)(_mcData + 0x8A0);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
@@ -988,12 +1023,12 @@ static void _shutdownMemcard()
 void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
-    vs_setTag(&_primBuf.sprt, primAddrNull);
-    vs_setTpageRaw(&_primBuf.sprt, tpage & 0x9FF);
-    vs_setRGB0Raw(&_primBuf.sprt, primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
-    _primBuf.sprt.x0y0 = xy;
-    _primBuf.sprt.u0v0clut = uvClut;
-    _primBuf.sprt.wh = wh;
+    _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
+    _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
+    _primBuf.prim.sprt.r0g0b0code = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
+    _primBuf.prim.sprt.x0y0 = xy;
+    _primBuf.prim.sprt.u0v0clut = uvClut;
+    _primBuf.prim.sprt.wh = wh;
     DrawPrim(&_primBuf);
 }
 
@@ -1029,9 +1064,9 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
     int temp_a1;
     int temp_s4;
     int var_s2;
-    u_int temp_s0;
+    u_int rgb1;
     u_int var_s1;
-    u_int var_s4;
+    u_int rgb0;
     int new_var;
     u_int var_s1_2;
     int new_var2;
@@ -1044,35 +1079,35 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
         var_s1 = 0;
     }
 
-    var_s4 = ((207 << 16) | (224 << 8)) | 45;
+    rgb0 = ((207 << 16) | (224 << 8)) | 45;
     if (arg1 != 0) {
-        var_s4 = ((159 << 16) | (120 << 8)) | 220;
+        rgb0 = ((159 << 16) | (120 << 8)) | 220;
     }
 
-    new_var3 = (var_s4 & 0xFF);
+    new_var3 = (rgb0 & 0xFF);
     temp_a1 = 0x40 - var_s1;
-    temp_s0 = ((((var_s1 * 0xFF) + (new_var3 * temp_a1)) >> 6)
-                  | ((((var_s1 * 0xF0) + (((var_s4 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
-        | ((((2 * (79 * var_s1)) + ((var_s4 >> 16) * temp_a1)) >> 6) << 16);
+    rgb1 = ((((var_s1 * 0xFF) + (new_var3 * temp_a1)) >> 6)
+                  | ((((var_s1 * 0xF0) + (((rgb0 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
+        | ((((2 * (79 * var_s1)) + ((rgb0 >> 16) * temp_a1)) >> 6) << 16);
 
     DrawSync(0);
-    _primBuf.raw[0] = 0x0C000000;
-    _primBuf.raw[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
-    _primBuf.raw[2] = vs_getRGB0(primTile, 0, 40, 64);
-    new_var = vs_getWH(66, 5);
-    new_var2 = (var_s1 + 0x90000);
-    _primBuf.raw[3] = arg0++ + 0x80000;
-    _primBuf.raw[4] = vs_getWH(66, 5);
-    _primBuf.raw[5] = vs_getRGB0Raw(primPolyG4, temp_s0);
-    _primBuf.raw[6] = arg0 + 0x90000;
-    _primBuf.raw[7] = var_s4;
-    _primBuf.raw[8] = arg0 + new_var2;
-    _primBuf.raw[9] = temp_s0;
-    _primBuf.raw[10] = arg0 + 0xC0000;
-    _primBuf.raw[11] = var_s4;
-    _primBuf.raw[12] = 0xC0000;
-    _primBuf.raw[12] = arg0 + (var_s1 + _primBuf.raw[12]);
-    DrawPrim(_primBuf.raw);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
+    _primBuf.prim.tilePoly.tile.tpage = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
+    new_var = MAKEWH(66, 5);
+    new_var2 = (var_s1 + MAKEXY(0, 9));
+    _primBuf.prim.tilePoly.tile.x0y0 = arg0++ + MAKEXY(0, 8);
+    _primBuf.prim.tilePoly.tile.wh = MAKEWH(66, 5);
+     _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
+    _primBuf.prim.tilePoly.polyG4.x0y0 = arg0 + MAKEXY(0, 9);
+    _primBuf.prim.tilePoly.polyG4.r1g1b1 = rgb0;
+    _primBuf.prim.tilePoly.polyG4.x1y1 = arg0 + new_var2;
+    _primBuf.prim.tilePoly.polyG4.r2g2b2 = rgb1;
+    _primBuf.prim.tilePoly.polyG4.x2y2 = arg0 + MAKEXY(0, 12);
+    _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
+    _primBuf.prim.tilePoly.polyG4.x3y3 = MAKEXY(0, 12);
+    _primBuf.prim.tilePoly.polyG4.x3y3 = arg0 + (var_s1 + _primBuf.prim.tilePoly.polyG4.x3y3);
+    DrawPrim(&_primBuf);
 
     var_s1 = countDigits(arg2);
     temp_s4 = countDigits(arg3);
@@ -1081,8 +1116,9 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
     var_s2 = (arg0 - (new_var - (new_var4 = 0x37))) - (temp_s4 * 5);
     var_s1_2 = D_80072910[var_s1];
     do {
-        _drawSprt(var_s2 + 0xFFFF0000, (((arg2 / var_s1_2) << 3) + 0x40) | 0x37F40000,
-            0xC0007, 0xC);
+        _drawSprt(var_s2 - MAKEXY(0, 1), 
+            (((arg2 / var_s1_2) << 3) + 64) | (getClut(832, 223) << 16),
+            MAKEWH(7, 12), getTPage(0, 0, 768, 0));
         arg2 = arg2 % var_s1_2;
         var_s1_2 /= 10;
         do {
@@ -1117,18 +1153,18 @@ void _loadFileAnim(u_int arg0, int arg1)
 
     for (var_s5 = 0; var_s5 < 2; ++var_s5) {
         DrawSync(0);
-        vs_setTag(&_primBuf.polyG4_tpage, primAddrNull);
-        vs_setRGB0Raw(&_primBuf.polyG4_tpage, primPolyG4SemiTrans, var_s4);
-        _primBuf.polyG4_tpage.x0y0 = var_s3 | arg1;
-        _primBuf.polyG4_tpage.x1y1 = arg0 | arg1;
-        _primBuf.polyG4_tpage.x2y2 = var_s3 | (arg1 + 0x200000);
-        vs_setTpage(
-            &_primBuf.polyG4_tpage, 0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-        _primBuf.polyG4_tpage.r1g1b1 = var_s2;
-        _primBuf.polyG4_tpage.r2g2b2 = var_s4;
-        _primBuf.polyG4_tpage.r3g3b3 = var_s2;
-        _primBuf.polyG4_tpage.x3y3 = arg0 | (arg1 + 0x200000);
-        DrawPrim(&_primBuf.polyG4_tpage);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
+        _primBuf.prim.polyG4_tpage.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, var_s4);
+        _primBuf.prim.polyG4_tpage.x0y0 = var_s3 | arg1;
+        _primBuf.prim.polyG4_tpage.x1y1 = arg0 | arg1;
+        _primBuf.prim.polyG4_tpage.x2y2 = var_s3 | (arg1 + 0x200000);
+        _primBuf.prim.polyG4_tpage.tpage = vs_getTpage(
+            0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.r1g1b1 = var_s2;
+        _primBuf.prim.polyG4_tpage.r2g2b2 = var_s4;
+        _primBuf.prim.polyG4_tpage.r3g3b3 = var_s2;
+        _primBuf.prim.polyG4_tpage.x3y3 = arg0 | (arg1 + 0x200000);
+        DrawPrim(&_primBuf);
         var_s3 = arg0;
         arg0 += 0x10;
         var_s4 = var_s2;
@@ -1150,26 +1186,26 @@ void func_8006ACD8(int arg0, int y)
     }
 
     DrawSync(0);
-    vs_setTag(&_primBuf.tile_tpage, primAddrNull);
-    vs_setTpage(&_primBuf.tile_tpage, 0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-    vs_setRGB0Raw(&_primBuf.tile_tpage, primTileSemiTrans, colour0);
-    _primBuf.tile_tpage.x0y0 = y | 64;
-    _primBuf.tile_tpage.wh = vs_getWH(256, 32);
-    DrawPrim(&_primBuf.tile_tpage);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
+    _primBuf.prim.tile_tpage.tpage = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
+    _primBuf.prim.tile_tpage.x0y0 = y | 64;
+    _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
+    DrawPrim(&_primBuf);
 
     for (i = 0; i < 2; ++i) {
         DrawSync(0);
-        vs_setTag(&_primBuf.polyG4, primAddrNull);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4, primAddrNull);
         yOfst = y + vs_getXY(0, -8);
-        vs_setRGB0Raw(&_primBuf.polyG4, primPolyG4SemiTrans, colour1);
-        _primBuf.polyG4.x0y0 = yOfst | 64;
-        _primBuf.polyG4.r1g1b1 = colour1;
-        _primBuf.polyG4.x1y1 = yOfst | 320;
-        _primBuf.polyG4.r2g2b2 = colour0;
-        _primBuf.polyG4.x2y2 = y | 64;
-        _primBuf.polyG4.r3g3b3 = colour0;
-        _primBuf.polyG4.x3y3 = y | 320;
-        DrawPrim(&_primBuf.raw);
+        _primBuf.prim.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
+        _primBuf.prim.polyG4.x0y0 = yOfst | 64;
+        _primBuf.prim.polyG4.r1g1b1 = colour1;
+        _primBuf.prim.polyG4.x1y1 = yOfst | 320;
+        _primBuf.prim.polyG4.r2g2b2 = colour0;
+        _primBuf.prim.polyG4.x2y2 = y | 64;
+        _primBuf.prim.polyG4.r3g3b3 = colour0;
+        _primBuf.prim.polyG4.x3y3 = y | 320;
+        DrawPrim(&_primBuf);
         y += vs_getXY(0, 40);
         colour1 = colour0;
         colour0 = 0;
@@ -1198,7 +1234,7 @@ D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
     temp_s3->unk0 = 1;
     temp_s3->unk1 = 0xFF;
     *(int*)temp_s3->unkC = arg1;
-    temp_s3->unk10 = arg2;
+    *(int*)temp_s3->unk10 = arg2;
 
     if (arg3 != NULL) {
         for (i = 0; i < 32;) {
@@ -1243,14 +1279,14 @@ int func_8006AFF8(u_int arg0, int x, int y, int arg3)
     }
     if (arg0 != 0x8F) {
         DrawSync(0);
-        vs_setTag(&_primBuf.sprt, primAddrNull);
-        vs_setTpage(&_primBuf.sprt, 832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
-        vs_setRGB0(&_primBuf.sprt, primSprtSemtTrans, 128, 128, 128);
-        _primBuf.sprt.x0y0 = vs_getYX(y, x);
-        _primBuf.sprt.wh = vs_getWH(12, 12);
-        _primBuf.sprt.u0v0clut
+        _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
+        _primBuf.prim.sprt.tpage =  vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
+        _primBuf.prim.sprt.x0y0 = vs_getYX(y, x);
+        _primBuf.prim.sprt.wh = vs_getWH(12, 12);
+        _primBuf.prim.sprt.u0v0clut
             = vs_getUV0Clut((arg0 % 21) * 12, (arg0 / 21) * 12, arg3 * 16 + 896, 222);
-        DrawPrim(&_primBuf.raw);
+        DrawPrim(&_primBuf);
     }
     return x + D_80072914[arg0];
 }
@@ -1395,7 +1431,7 @@ u_int func_8006B490(u_int arg0, u_int arg1, u_int arg2)
     return var_v1;
 }
 
-void func_8006B4EC(int arg0, u_int arg1)
+u_int func_8006B4EC(int arg0, u_int arg1)
 {
     u_int a0;
     u_int a1;
@@ -1407,9 +1443,11 @@ void func_8006B4EC(int arg0, u_int arg1)
         a0 = D_80072EFC[((arg1 >> 3) - 2)];
         a1 = D_80072F04[((arg1 >> 3) - 2)];
     }
-    func_8006B490(a0, a1, arg0);
+    return func_8006B490(a0, a1, arg0);
 }
 
+//https://decomp.me/scratch/Dj952
+void func_8006B5A0(D_800DEB18_t* arg0);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
 
 void _drawSaveMenu(u_char);
@@ -1451,8 +1489,8 @@ int func_8006C15C(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
             temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = D_800DEB08[i][1] < 3;
-            temp_v0_2->unk6 = D_800DEB08[i][7];
+            temp_v0_2->unk5 = D_800DEB08[i].unk4 < 3;
+            temp_v0_2->unk6 = D_800DEB08[i].unk1C;
         }
         D_800DC8D8 = 1;
         D_800DED6C = D_800DEAC0 + 0x13B;
@@ -1472,7 +1510,7 @@ int func_8006C15C(int arg0)
         }
         temp_s0 = D_800DC8DB + D_800DC8DA;
         if (vs_main_buttonsPressed & PADRright) {
-            if (D_800DEB08[temp_s0][1] >= 3) {
+            if (D_800DEB08[temp_s0].unk4 >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 D_800DEB18[temp_s0 + 5].unk4 = 1;
                 D_800DED68 = 0;
@@ -1854,8 +1892,8 @@ int func_8006D2F8(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = D_800DEB08[i][1] == 0;
-            temp_v0_2->unk6 = D_800DEB08[i][7];
+            temp_v0_2->unk5 = D_800DEB08[i].unk4 == 0;
+            temp_v0_2->unk6 = D_800DEB08[i].unk1C;
         }
         D_800DC91C = 1;
         /* fallthrough */
@@ -1873,7 +1911,7 @@ int func_8006D2F8(int arg0)
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
-                if (D_800DEB08[temp_s0][1] != 0) {
+                if (D_800DEB08[temp_s0].unk4 != 0) {
                     vs_main_playSfxDefault(0x7E, 5);
                     D_800DEB18[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
@@ -1917,7 +1955,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
                 temp_s0 = D_800DC91F + D_800DC91E;
-                if (D_800DEB08[temp_s0][1] == 1) {
+                if (D_800DEB08[temp_s0].unk4 == 1) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
                         D_800DED6C = D_800DEAC0 + 0x102;
@@ -1981,8 +2019,8 @@ int func_8006D2F8(int arg0)
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(D_800DEB08[temp_s2], 0, 0x80);
-                D_800DEB08[temp_s2][1] = 2;
+                memset(&D_800DEB08[temp_s2], 0, 0x80);
+                D_800DEB08[temp_s2].unk4 = 2;
                 D_800DEB18[temp_s2 + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
@@ -1992,10 +2030,10 @@ int func_8006D2F8(int arg0)
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)D_800DEB08[temp_s2], _spmcimg + 0x180, 0x80);
+                _rMemcpy((u_char*)&D_800DEB08[temp_s2], _spmcimg + 0x180, 0x80);
                 _descramble(
-                    D_800DEB08[temp_s2][0], (u_char*)&D_800DEB08[temp_s2][1], 0x7C);
-                D_800DEB18[temp_s2 + 5].unk6 = D_800DEB08[temp_s2][7];
+                    D_800DEB08[temp_s2].unk0, (u_char*)&D_800DEB08[temp_s2].unk4, 0x7C);
+                D_800DEB18[temp_s2 + 5].unk6 = D_800DEB08[temp_s2].unk1C;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -2409,11 +2447,11 @@ static void _saveScreenExitScreen()
     _drawSprt(0, 0, vs_getWH(256, 224),
         getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320, 0));
     DrawSync(0);
-    vs_setTag(&_primBuf.tile, primAddrNull);
-    vs_setRGB0(&_primBuf.tile, primTileSemiTrans, 8, 8, 8);
-    _primBuf.tile.x0y0 = 0;
-    _primBuf.tile.wh = vs_getWH(320, 224);
-    DrawPrim(&_primBuf.tile);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
+    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
+    _primBuf.prim.tile.x0y0 = 0;
+    _primBuf.prim.tile.wh = vs_getWH(320, 224);
+    DrawPrim(&_primBuf);
 }
 
 enum saveScreenState {
@@ -3128,25 +3166,25 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800705AC);
 void func_8007093C()
 {
     int i;
-    VS_SPRT* sprt;
+    tagsprt_t* sprt;
 
     func_800703CC();
     for (i = 0; i < 2; ++i) {
         sprt = &D_800DE948[0];
-        vs_setTpage(sprt, 192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
-        vs_setTag(sprt, primAddrEnd);
-        vs_setRGB0(sprt, primSprt, 128, 128, 128);
-        sprt->x0y0 = vs_getXY(176, 256);
-        vs_setUV0Clut(sprt, 0, 192, 0, 0);
-        sprt->wh = vs_getWH(160, 64);
+        sprt->sprt.tpage = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
+        sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
+        sprt->sprt.x0y0 = vs_getXY(176, 256);
+        sprt->sprt.u0v0clut = vs_getUV0Clut(0, 192, 0, 0);
+        sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
         ++sprt;
-        vs_setTpage(sprt, 320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
-        vs_setTag(sprt, primAddrEnd);
-        vs_setRGB0(sprt, primSprt, 128, 128, 128);
-        sprt->x0y0 = vs_getXY(176, 320);
-        vs_setUV0Clut(sprt, 32, 192, 0, 0);
-        sprt->wh = vs_getWH(160, 64);
+        sprt->sprt.tpage = vs_getTpage(320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
+        sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
+        sprt->sprt.x0y0 = vs_getXY(176, 320);
+        sprt->sprt.u0v0clut = vs_getUV0Clut(32, 192, 0, 0);
+        sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
         func_800705AC();
         if (i == 0) {
@@ -3542,12 +3580,12 @@ int vs_title_exec()
         for (i = 0x40; i > 0; --i) {
             VSync(0);
             vs_main_processPadState();
-            vs_setTag(&_titleScreenFade, primAddrEnd);
-            vs_setTpage(&_titleScreenFade, 320, 0, direct16Bit, semiTransparencySubtract,
+            _titleScreenFade.tag = vs_getTag(_titleScreenFade.tile, primAddrEnd);
+            _titleScreenFade.tile.tpage = vs_getTpage(320, 0, direct16Bit, semiTransparencySubtract,
                 ditheringOff);
-            vs_setRGB0(&_titleScreenFade, primTileSemiTrans, 8, 8, 8);
-            _titleScreenFade.x0y0 = vs_getXY(0, 0);
-            _titleScreenFade.wh = vs_getWH(640, 480);
+            _titleScreenFade.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
+            _titleScreenFade.tile.x0y0 = vs_getXY(0, 0);
+            _titleScreenFade.tile.wh = vs_getWH(640, 480);
             DrawPrim(&_titleScreenFade);
             func_800436B4();
         }

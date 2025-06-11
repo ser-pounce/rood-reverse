@@ -464,9 +464,9 @@ static void _descramble(u_int seed, u_char* buf, int count)
     }
 }
 
-static int _readSaveDataInfo(int id)
+static int _readSaveFileInfo(int id)
 {
-    u_char buf[4][128];
+    _saveFileInfo_t saveInfo[4];
     int bytesRead;
     int port;
     int file;
@@ -476,13 +476,14 @@ static int _readSaveDataInfo(int id)
     for (i = 0; i < 3; ++i) {
         file = open(_memcardMakeFilename(port, id), O_RDONLY);
         if (file != -1) {
-            bytesRead = read(file, buf, sizeof(buf));
+            bytesRead = read(file, saveInfo, sizeof(saveInfo));
             close(file);
-            if (bytesRead == sizeof(buf)) {
-                _descramble(
-                    *((int*)(&buf[3][0])), &buf[3][4], sizeof(buf[3]) - sizeof(int));
-                if (_verifySaveChecksums((u_char*)buf, 2) == 0) {
-                    _rMemcpy((u_char*)(&_saveFileInfo[id - 1]), &buf[3], sizeof(buf[3]));
+            if (bytesRead == sizeof(saveInfo)) {
+                _descramble(saveInfo[3].scrambleSeed, (u_char*)&saveInfo[3].slotState,
+                    sizeof(_saveFileInfo_t) - sizeof(int));
+                if (_verifySaveChecksums((u_char*)saveInfo, 2) == 0) {
+                    _rMemcpy((u_char*)(&_saveFileInfo[id - 1]), &saveInfo[3],
+                        sizeof(saveInfo[3]));
                     return 0;
                 }
             }
@@ -525,7 +526,7 @@ static int _deleteUnnecessaryTempFiles(int port)
     return ret;
 }
 
-int func_800691D4(int port)
+static int _initSaveFileInfo(int port)
 {
     int tempFilesDeleted;
     int fileNo;
@@ -563,7 +564,7 @@ int func_800691D4(int port)
                     }
                     memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
                     _saveFileInfo[fileNo - 1].slotState = slotStateTemp;
-                } else if (_readSaveDataInfo(((port - 1) << 16) | fileNo) != 0) {
+                } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                     slotsAvailable += (file->size + 0x1FFF) >> 13;
                 }
             }
@@ -1332,7 +1333,7 @@ int func_8006B138(int arg0)
 
         if (temp_v1 != 0) {
             if (temp_v1 == 1) {
-                if (func_800691D4(temp_s0) == 0) {
+                if (_initSaveFileInfo(temp_s0) == 0) {
                     temp_v0 = func_80068DB4();
                     var_a0 = temp_v0 != 0;
                     if (var_a0) {

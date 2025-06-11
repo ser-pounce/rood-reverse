@@ -27,11 +27,11 @@ typedef struct {
 
 typedef struct {
     u_char unk0;
-    u_char unk1;
+    u_char slotId;
     u_char unk2;
     u_char unk3;
     u_char unk4;
-    u_char unk5;
+    u_char slotUnused;
     u_char unk6;
     u_char unk7;
     short unk8;
@@ -84,9 +84,15 @@ typedef struct {
     VS_SPRT sprt;
 } tagsprt_t;
 
+enum slotState {
+    slotStateUnused = 0,
+    slotStateAvailable = 1,
+    slotStateTemp = 2,
+};
+
 typedef struct {
-    int unk0;
-    u_int unk4;
+    int scrambleSeed;
+    u_int slotState;
     int unk8;
     int unkC;
     char unk10;
@@ -367,7 +373,7 @@ static u_int func_80068D54()
     var_a2 = 0;
     var_a3 = 0;
     for (i = 0; i < 5; ++i) {
-        if (_saveFileInfo[i].unk4 >= 3) {
+        if (_saveFileInfo[i].slotState >= 3) {
             if (var_a2 < _saveFileInfo[i].unk8) {
                 var_a2 = _saveFileInfo[i].unk8;
                 var_a3 = i;
@@ -381,8 +387,9 @@ static int func_80068DB4()
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((_saveFileInfo[i].unk4 >= 3) && (_saveFileInfo[i].unk4 == vs_main_settings.unk4)
-            && (_saveFileInfo[i].unk0 == vs_main_settings.unk14)
+        if ((_saveFileInfo[i].slotState >= 3)
+            && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
+            && (_saveFileInfo[i].scrambleSeed == vs_main_settings.scrambleSeed)
             && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
             && (_saveFileInfo[i].unk8 == vs_main_settings.unk1C)) {
             return i + 1;
@@ -523,10 +530,10 @@ int func_800691D4(int port)
     int tempFilesDeleted;
     int fileNo;
     int i;
-    int var_s4;
+    int slotsAvailable;
     struct DIRENTRY* file;
 
-    var_s4 = 15;
+    slotsAvailable = 15;
     for (i = 14; i >= 0; --i) {
         _memcardFiles[i] = NULL;
     }
@@ -555,19 +562,19 @@ int func_800691D4(int port)
                         continue;
                     }
                     memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
-                    _saveFileInfo[fileNo - 1].unk4 = 2;
+                    _saveFileInfo[fileNo - 1].slotState = slotStateTemp;
                 } else if (_readSaveDataInfo(((port - 1) << 16) | fileNo) != 0) {
-                    var_s4 += (file->size + 0x1FFF) >> 0xD;
+                    slotsAvailable += (file->size + 0x1FFF) >> 13;
                 }
             }
-            var_s4 -= (file->size + 0x1FFF) >> 0xD;
+            slotsAvailable -= (file->size + 0x1FFF) >> 13;
         }
     }
 
-    for (; var_s4 >= 3; var_s4 -= 3) {
+    for (; slotsAvailable >= 3; slotsAvailable -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4 == 0) {
-                _saveFileInfo[i].unk4 = 1;
+            if (_saveFileInfo[i].slotState == slotStateUnused) {
+                _saveFileInfo[i].slotState = slotStateAvailable;
                 break;
             }
         }
@@ -850,10 +857,8 @@ int func_8006A11C(int arg0)
     }
     switch (_memcardSaveState) {
     case memcardSaveStateInit:
-        if (rename(
-                (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
-                (char*)_memcardMakeTempFilename(
-                    _memcardManagerPort, _memcardFileno))
+        if (rename((char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
+                (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno))
             != 0) {
             D_800DC8BB = 0;
             D_800DC8BC = 0;
@@ -868,9 +873,9 @@ int func_8006A11C(int arg0)
         D_800DEB10 = D_800DEB14;
         D_800DEB0E = 0x180;
         D_800DEB12 += temp_v1_2;
-        _saveFileId = open(
-            (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
-            O_NOWAIT | O_WRONLY);
+        _saveFileId
+            = open((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
+                O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
             ++D_800DC8BB;
@@ -921,8 +926,7 @@ int func_8006A11C(int arg0)
         _memcardSaveState = 4;
         break;
     case memcardSaveStateFileVerified:
-        if (rename((char*)_memcardMakeTempFilename(
-                       _memcardManagerPort, _memcardFileno),
+        if (rename((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
                 (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno))
             == 0) {
             ++D_800DC8BC;
@@ -1242,7 +1246,7 @@ D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
     temp_s3 = &D_800DEB18[arg0];
     memset(temp_s3, 0, sizeof(*temp_s3));
     temp_s3->unk0 = 1;
-    temp_s3->unk1 = 0xFF;
+    temp_s3->slotId = -1;
     *(int*)temp_s3->unkC = arg1;
     *(int*)temp_s3->unk10 = arg2;
 
@@ -1499,8 +1503,8 @@ int func_8006C15C(int arg0)
         for (i = 0; i < 5; ++i) {
             temp_v0_2
                 = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
-            temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = _saveFileInfo[i].unk4 < 3;
+            temp_v0_2->slotId = i;
+            temp_v0_2->slotUnused = _saveFileInfo[i].slotState < 3;
             temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
         }
         D_800DC8D8 = 1;
@@ -1521,7 +1525,7 @@ int func_8006C15C(int arg0)
         }
         temp_s0 = D_800DC8DB + D_800DC8DA;
         if (vs_main_buttonsPressed & PADRright) {
-            if (_saveFileInfo[temp_s0].unk4 >= 3) {
+            if (_saveFileInfo[temp_s0].slotState >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 D_800DEB18[temp_s0 + 5].unk4 = 1;
                 D_800DED68 = 0;
@@ -1874,7 +1878,7 @@ int func_8006D2F8(int arg0)
 {
     D_800DEB18_t* temp_v0_2;
     int temp_s0;
-    int temp_s2;
+    int saveId;
     int var_a1;
     int i;
 
@@ -1902,8 +1906,8 @@ int func_8006D2F8(int arg0)
         for (i = 0; i < 5; ++i) {
             temp_v0_2
                 = func_8006AE70(i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
-            temp_v0_2->unk1 = i;
-            temp_v0_2->unk5 = _saveFileInfo[i].unk4 == 0;
+            temp_v0_2->slotId = i;
+            temp_v0_2->slotUnused = _saveFileInfo[i].slotState == slotStateUnused;
             temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
         }
         D_800DC91C = 1;
@@ -1922,7 +1926,7 @@ int func_8006D2F8(int arg0)
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
-                if (_saveFileInfo[temp_s0].unk4 != 0) {
+                if (_saveFileInfo[temp_s0].slotState != slotStateUnused) {
                     vs_main_playSfxDefault(0x7E, 5);
                     D_800DEB18[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
@@ -1930,10 +1934,10 @@ int func_8006D2F8(int arg0)
                     D_800DC91C = 2;
                     break;
                 } else {
-                    vs_main_playSfxDefault(0x7E, 7);
+                    vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
                 }
             }
-            if (vs_main_buttonRepeat & 0x1000) {
+            if (vs_main_buttonRepeat & PADLup) {
                 if (D_800DC91F == 0) {
                     if (D_800DC91E != 0) {
                         --D_800DC91E;
@@ -1942,7 +1946,7 @@ int func_8006D2F8(int arg0)
                     --D_800DC91F;
                 }
             }
-            if (vs_main_buttonRepeat & 0x4000) {
+            if (vs_main_buttonRepeat & PADLdown) {
                 if (D_800DC91F == 2) {
                     if (D_800DC91E < 2) {
                         ++D_800DC91E;
@@ -1966,7 +1970,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
                 temp_s0 = D_800DC91F + D_800DC91E;
-                if (_saveFileInfo[temp_s0].unk4 == 1) {
+                if (_saveFileInfo[temp_s0].slotState == slotStateAvailable) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
                         D_800DED6C = D_800DEAC0 + 0x102;
@@ -2023,16 +2027,16 @@ int func_8006D2F8(int arg0)
         D_800DEB14 += 1;
         if (temp_s0 != 0) {
             D_8006169D = 0;
-            temp_s2 = D_800DC91F + D_800DC91E;
+            saveId = D_800DC91F + D_800DC91E;
             if (temp_s0 < 0) {
                 if (D_800DED74 != 0) {
                     u_char v = D_800DED75 & 1;
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(&_saveFileInfo[temp_s2], 0, 0x80);
-                _saveFileInfo[temp_s2].unk4 = 2;
-                D_800DEB18[temp_s2 + 5].unk6 = 0;
+                memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
+                _saveFileInfo[saveId].slotState = slotStateTemp;
+                D_800DEB18[saveId + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
                 _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
@@ -2041,10 +2045,12 @@ int func_8006D2F8(int arg0)
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)&_saveFileInfo[temp_s2], _spmcimg + 0x180, 0x80);
-                _descramble(
-                    _saveFileInfo[temp_s2].unk0, (u_char*)&_saveFileInfo[temp_s2].unk4, 0x7C);
-                D_800DEB18[temp_s2 + 5].unk6 = _saveFileInfo[temp_s2].unk1C;
+                _rMemcpy((u_char*)&_saveFileInfo[saveId], _spmcimg + 0x180,
+                    sizeof(_saveFileInfo_t));
+                _descramble(_saveFileInfo[saveId].scrambleSeed,
+                    (u_char*)&_saveFileInfo[saveId].slotState,
+                    sizeof(_saveFileInfo_t) - sizeof(int));
+                D_800DEB18[saveId + 5].unk6 = _saveFileInfo[saveId].unk1C;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -2129,7 +2135,7 @@ int func_8006E00C(int arg0)
             memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
         } else if (func_8006AFBC() != 0) {
-            if (vs_main_settings.unk4 != 0) {
+            if (vs_main_settings.slotState != slotStateUnused) {
                 func_8006B138(1);
                 D_800DC923 = 1;
             } else {

@@ -85,14 +85,14 @@ typedef struct {
     u_char unk0;
     u_char unk1;
     short unk2;
-    u_int unk4;
+    u_int slotState;
     u_char unk8;
     u_char unk9;
     u_char monoSound;
     u_char vibrationOn;
     int unkC;
     int unk10;
-    u_int unk14;
+    u_int scrambleSeed;
     u_short unk18;
     u_short unk1A;
     u_int unk1C;

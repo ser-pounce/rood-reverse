@@ -82,12 +82,12 @@ typedef struct vs_main_HeapHeader {
 } vs_main_HeapHeader;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
+    u_char timingWeaponArmor;
+    u_char cursorMemory;
     short unk2;
     u_int slotState;
-    u_char unk8;
-    u_char unk9;
+    u_char information;
+    u_char simpleMap;
     u_char monoSound;
     u_char vibrationOn;
     int unkC;

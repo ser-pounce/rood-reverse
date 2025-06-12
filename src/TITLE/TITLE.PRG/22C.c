@@ -39,7 +39,7 @@ typedef struct {
     short unkC[2];
     short unk10[2];
     u_char unk14[32];
-} D_800DEB18_t;
+} _saveSlotMenuEntries_t;
 
 enum menuItemState {
     menuItemStateStatic = 0,
@@ -210,8 +210,8 @@ extern vs_Gametime_t D_800DC8D0;
 extern int D_800DC8D4;
 extern u_char D_800DC8D8;
 extern u_char D_800DC8D9;
-extern u_char D_800DC8DA;
-extern u_char D_800DC8DB;
+extern u_char _slotsPage;
+extern u_char _selectedSlot;
 extern u_char D_800DC8DC;
 extern u_char D_800DC8DD;
 extern u_char D_800DC8E8;
@@ -248,7 +248,7 @@ extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
-extern D_800DEB18_t D_800DEB18[10];
+extern _saveSlotMenuEntries_t _saveSlotMenuEntries[10];
 extern struct {
     u_long tag;
     union {
@@ -1263,16 +1263,16 @@ void func_8006AE10()
     D_800DEB14 = 0;
     D_800DED72 = 0;
     D_800DEB0E = 0x180;
-    memset(D_800DEB18, 0, sizeof(D_800DEB18));
+    memset(_saveSlotMenuEntries, 0, sizeof(_saveSlotMenuEntries));
 }
 
-D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
+_saveSlotMenuEntries_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
 {
-    D_800DEB18_t* temp_s3;
+    _saveSlotMenuEntries_t* temp_s3;
     int i;
     u_int var_v1;
 
-    temp_s3 = &D_800DEB18[arg0];
+    temp_s3 = &_saveSlotMenuEntries[arg0];
     memset(temp_s3, 0, sizeof(*temp_s3));
     temp_s3->unk0 = 1;
     temp_s3->slotId = -1;
@@ -1304,13 +1304,13 @@ D_800DEB18_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
     return temp_s3;
 }
 
-void func_8006AF78(int arg0) { memset(&D_800DEB18[arg0], 0, sizeof(D_800DEB18_t)); }
+void func_8006AF78(int arg0) { memset(&_saveSlotMenuEntries[arg0], 0, sizeof(_saveSlotMenuEntries_t)); }
 
 int func_8006AFBC()
 {
     int i;
 
-    for (i = 0; i < 10 && D_800DEB18[i].unk0 < 2; ++i)
+    for (i = 0; i < 10 && _saveSlotMenuEntries[i].unk0 < 2; ++i)
         ;
     return (i ^ 0xA) == 0;
 }
@@ -1491,7 +1491,7 @@ u_int func_8006B4EC(int arg0, u_int arg1)
 }
 
 // https://decomp.me/scratch/Dj952
-void func_8006B5A0(D_800DEB18_t* arg0);
+void func_8006B5A0(_saveSlotMenuEntries_t* arg0);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
 
 void _drawSaveMenu(u_char);
@@ -1507,20 +1507,20 @@ static void _drawSaveMenuBg()
 
 int func_8006C15C(int arg0)
 {
-    D_800DEB18_t* temp_v0_2;
-    int temp_s0;
+    _saveSlotMenuEntries_t* temp_v0_2;
+    int currentSlot;
     int i;
 
     if (arg0 != 0) {
         D_800DC8D9 = arg0;
-        D_800DC8DB = func_80068D54();
-        D_800DC8DA = 0;
-        if (D_800DC8DB == 4) {
-            D_800DC8DA = 2;
-            D_800DC8DB = 2;
-        } else if (D_800DC8DB != 0) {
-            D_800DC8DA = D_800DC8DB - 1;
-            D_800DC8DB = 1;
+        _selectedSlot = func_80068D54();
+        _slotsPage = 0;
+        if (_selectedSlot == 4) {
+            _slotsPage = 2;
+            _selectedSlot = 2;
+        } else if (_selectedSlot != 0) {
+            _slotsPage = _selectedSlot - 1;
+            _selectedSlot = 1;
         }
         D_800DC8D4 = -1;
         D_800DC8DD = 0;
@@ -1549,51 +1549,51 @@ int func_8006C15C(int arg0)
             return -1;
         }
         for (i = 0; i < 5; ++i) {
-            D_800DEB18[i + 5].unkC[1] = (((i - D_800DC8DA) * 0x28) + 0x48);
-            D_800DEB18[i + 5].unk4 = 0;
+            _saveSlotMenuEntries[i + 5].unkC[1] = (((i - _slotsPage) * 0x28) + 0x48);
+            _saveSlotMenuEntries[i + 5].unk4 = 0;
         }
-        temp_s0 = D_800DC8DB + D_800DC8DA;
+        currentSlot = _selectedSlot + _slotsPage;
         if (vs_main_buttonsPressed & PADRright) {
-            if (_saveFileInfo[temp_s0].slotState >= 3) {
+            if (_saveFileInfo[currentSlot].slotState >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                D_800DEB18[temp_s0 + 5].unk4 = 1;
+                _saveSlotMenuEntries[currentSlot + 5].unk4 = 1;
                 D_800DED68 = 0;
                 func_8006B288(D_800DC8D9 + 0x70);
                 D_800DC8D8 = 2;
                 break;
             }
-            vs_main_playSfxDefault(0x7E, 7);
+            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
-        if (vs_main_buttonRepeat & 0x1000) {
-            if (D_800DC8DB == 0) {
-                if (D_800DC8DA != 0) {
-                    --D_800DC8DA;
+        if (vs_main_buttonRepeat & PADLup) {
+            if (_selectedSlot == 0) {
+                if (_slotsPage != 0) {
+                    --_slotsPage;
                 }
             } else {
-                --D_800DC8DB;
+                --_selectedSlot;
             }
         }
-        if (vs_main_buttonRepeat & 0x4000) {
-            if (D_800DC8DB == 2) {
-                if (D_800DC8DA < 2) {
-                    ++D_800DC8DA;
+        if (vs_main_buttonRepeat & PADLdown) {
+            if (_selectedSlot == 2) {
+                if (_slotsPage < 2) {
+                    ++_slotsPage;
                 }
             } else {
-                ++D_800DC8DB;
+                ++_selectedSlot;
             }
         }
-        if (temp_s0 != (D_800DC8DB + D_800DC8DA)) {
+        if (currentSlot != (_selectedSlot + _slotsPage)) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
         }
-        D_800DED68 = (((D_800DC8DB * 0x28) + 0x3E) << 0x10) | 0x18;
-        D_800DEB18[temp_s0 + 5].unk4 = 1;
+        D_800DED68 = (((_selectedSlot * 0x28) + 0x3E) << 0x10) | 0x18;
+        _saveSlotMenuEntries[currentSlot + 5].unk4 = 1;
         break;
     case 2:
-        temp_s0 = func_8006B288(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 >= 0) {
+        currentSlot = func_8006B288(0);
+        if (currentSlot != 0) {
+            if (currentSlot >= 0) {
                 int new_var;
-                func_80069EA8(((D_800DC8DB + D_800DC8DA) + 1)
+                func_80069EA8(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 D_800DC8D8 = 3;
                 D_800DED6C = D_800DEAC0 + 0x193;
@@ -1603,13 +1603,13 @@ int func_8006C15C(int arg0)
         }
         break;
     case 3:
-        temp_s0 = func_80069EA8(0);
+        currentSlot = func_80069EA8(0);
         ++D_800DEB14;
-        if (temp_s0 != 0) {
+        if (currentSlot != 0) {
             D_800DEB14 = 0;
             do {
                 D_800DC8DC = 0;
-                if (temp_s0 < 0) {
+                if (currentSlot < 0) {
                     D_800DED6C = D_800DEAC0 + 0x11E;
                     break;
                 }
@@ -1668,7 +1668,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
 
 int func_8006CABC(int arg0)
 {
-    D_800DEB18_t* temp_v0;
+    _saveSlotMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -1708,14 +1708,14 @@ int func_8006CABC(int arg0)
         }
         break;
     case 4:
-        D_800DEB18[D_800DC8E1].unk4 = 1;
-        D_800DEB18[3 - D_800DC8E1].unk4 = 0;
+        _saveSlotMenuEntries[D_800DC8E1].unk4 = 1;
+        _saveSlotMenuEntries[3 - D_800DC8E1].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             D_800DED68 = 0;
             for (i = 0; i < 3; ++i) {
-                D_800DEB18[i].unk0 = 2;
-                D_800DEB18[i].unk8 = 0x140;
+                _saveSlotMenuEntries[i].unk0 = 2;
+                _saveSlotMenuEntries[i].unk8 = 0x140;
             }
             D_800DC8E0 = 6;
         } else if (vs_main_buttonsPressed & PADRright) {
@@ -1732,7 +1732,7 @@ int func_8006CABC(int arg0)
         }
         break;
     case 5:
-        temp_v0 = (D_800DEB18_t*)func_8006C778(0);
+        temp_v0 = (_saveSlotMenuEntries_t*)func_8006C778(0);
         if (temp_v0 != 0) {
             if ((int)temp_v0 < 0) {
                 D_800DC8E0 = 1;
@@ -1765,7 +1765,7 @@ int func_8006CABC(int arg0)
 
 int func_8006CE6C(int arg0)
 {
-    D_800DEB18_t* temp_v0;
+    _saveSlotMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -1788,13 +1788,13 @@ int func_8006CE6C(int arg0)
         D_800DC8E8 += func_8006AFBC();
         break;
     case 3:
-        D_800DEB18[D_800DC8E9 + 3].unk4 = 1;
-        D_800DEB18[4 - D_800DC8E9].unk4 = 0;
+        _saveSlotMenuEntries[D_800DC8E9 + 3].unk4 = 1;
+        _saveSlotMenuEntries[4 - D_800DC8E9].unk4 = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             D_800DED68 = 0;
             for (i = 3; i < 5; ++i) {
-                D_800DEB18[i].unk0 = 4;
-                D_800DEB18[i].unk8 = -0x7E;
+                _saveSlotMenuEntries[i].unk0 = 4;
+                _saveSlotMenuEntries[i].unk8 = -0x7E;
             }
             if (vs_main_buttonsPressed & PADRright) {
                 if ((&D_800DC8E8)[1] == 0) {
@@ -1905,7 +1905,7 @@ int func_8006D140(int port)
 
 int func_8006D2F8(int arg0)
 {
-    D_800DEB18_t* temp_v0_2;
+    _saveSlotMenuEntries_t* temp_v0_2;
     int temp_s0;
     int saveId;
     int var_a1;
@@ -1950,14 +1950,14 @@ int func_8006D2F8(int arg0)
         } else {
             var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                D_800DEB18[i + 5].unkC[1] = (((i - D_800DC91E) * 0x28) + 0x48);
-                D_800DEB18[i + 5].unk4 = 0;
+                _saveSlotMenuEntries[i + 5].unkC[1] = (((i - D_800DC91E) * 0x28) + 0x48);
+                _saveSlotMenuEntries[i + 5].unk4 = 0;
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
                 if (_saveFileInfo[temp_s0].slotState != slotStateUnused) {
                     vs_main_playSfxDefault(0x7E, 5);
-                    D_800DEB18[temp_s0 + 5].unk4 = 1;
+                    _saveSlotMenuEntries[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
                     func_8006B288(D_800DC91D + 0x70);
                     D_800DC91C = 2;
@@ -1988,7 +1988,7 @@ int func_8006D2F8(int arg0)
                 vs_main_playSfxDefault(0x7E, 4);
             }
             D_800DED68 = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
-            D_800DEB18[temp_s0 + 5].unk4 = 1;
+            _saveSlotMenuEntries[temp_s0 + 5].unk4 = 1;
         }
         break;
     case 2:
@@ -2044,7 +2044,7 @@ int func_8006D2F8(int arg0)
             sizeof(_settingsBackup));
         _rMemcpy(_spmcimg + 0xB800, _spmcimg + 0x5C00, 0x5C00);
         if (D_800DED74 != 0) {
-            D_800DED75 = (*(u_int*)&vs_main_settings.unk0 >> 4) & 1;
+            D_800DED75 = (*(u_int*)&vs_main_settings.timingWeaponArmor >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
         func_80069888(temp_s0);
@@ -2065,7 +2065,7 @@ int func_8006D2F8(int arg0)
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
                 _saveFileInfo[saveId].slotState = slotStateTemp;
-                D_800DEB18[saveId + 5].unk6 = 0;
+                _saveSlotMenuEntries[saveId + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
                 _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
@@ -2079,7 +2079,7 @@ int func_8006D2F8(int arg0)
                 _descramble(_saveFileInfo[saveId].scrambleSeed,
                     (u_char*)&_saveFileInfo[saveId].slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
-                D_800DEB18[saveId + 5].unk6 = _saveFileInfo[saveId].unk1C;
+                _saveSlotMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk1C;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -2139,7 +2139,7 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006DC14);
 
 int func_8006E00C(int arg0)
 {
-    D_800DEB18_t* temp_v0;
+    _saveSlotMenuEntries_t* temp_v0;
     int temp_v0_2;
     int var_a0;
 
@@ -2217,16 +2217,16 @@ int func_8006E00C(int arg0)
         }
         break;
     case 6:
-        D_800DEB18[D_800DC924].unk4 = 1;
-        D_800DEB18[3 - D_800DC924].unk4 = 0;
+        _saveSlotMenuEntries[D_800DC924].unk4 = 1;
+        _saveSlotMenuEntries[3 - D_800DC924].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
-            vs_main_playSfxDefault(0x7E, 6);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             var_a0 = D_800DED73;
             D_800DED68 = 0;
             if (var_a0 < 3) {
                 do {
-                    D_800DEB18[var_a0].unk0 = 2;
-                    D_800DEB18[var_a0].unk8 = 0x140;
+                    _saveSlotMenuEntries[var_a0].unk0 = 2;
+                    _saveSlotMenuEntries[var_a0].unk8 = 0x140;
                     ++var_a0;
                 } while (var_a0 < 3);
             }
@@ -2238,13 +2238,13 @@ int func_8006E00C(int arg0)
                 D_800DC923 = 8;
             }
         } else if (vs_main_buttonsPressed & PADRright) {
-            vs_main_playSfxDefault(0x7E, 5);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             func_8006DC14(D_800DC924);
             D_800DED68 = 0;
             D_800DC923 = 7;
         } else {
-            if (vs_main_buttonRepeat & 0x5000) {
-                vs_main_playSfxDefault(0x7E, 4);
+            if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 D_800DC924 = 3 - D_800DC924;
             }
             D_800DED68 = ((((D_800DC924 + 1) * 16) + 10) << 16) | 0xB4;
@@ -2284,8 +2284,8 @@ int func_8006E00C(int arg0)
                 var_a0 = -var_a0;
             }
             if (var_a0 < 0) {
-                D_800DEB18->unk0 = 2;
-                D_800DEB18->unk8 = 0x140;
+                _saveSlotMenuEntries->unk0 = 2;
+                _saveSlotMenuEntries->unk8 = 0x140;
                 D_800DC923 = 8;
                 break;
             }
@@ -2425,7 +2425,7 @@ static int _saveFileExists()
 
 int func_8006EA70(int arg0)
 {
-    D_800DEB18_t* temp_v0;
+    _saveSlotMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -2448,10 +2448,10 @@ int func_8006EA70(int arg0)
         D_800DC931 += func_8006AFBC();
         break;
     case 3:
-        D_800DEB18[D_800DC932].unk4 = 1;
-        D_800DEB18[3 - D_800DC932].unk4 = 0;
+        _saveSlotMenuEntries[D_800DC932].unk4 = 1;
+        _saveSlotMenuEntries[3 - D_800DC932].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
-            vs_main_playSfxDefault(0x7E, 7);
+            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
         if (vs_main_buttonsPressed & PADRright) {
             D_800DC931 = 4;
@@ -2464,8 +2464,8 @@ int func_8006EA70(int arg0)
             }
             D_800DED68 = 0;
             for (i = 1; i < 3; ++i) {
-                D_800DEB18[i].unk0 = 2;
-                D_800DEB18[i].unk8 = 0x140;
+                _saveSlotMenuEntries[i].unk0 = 2;
+                _saveSlotMenuEntries[i].unk8 = 0x140;
             }
             break;
         }
@@ -3473,10 +3473,10 @@ void func_80071254()
     monoSound = vs_main_settings.monoSound;
     memset(&vs_main_settings, 0, sizeof(vs_main_settings));
     vs_main_settings.unk2 = 0x2D8;
-    vs_main_settings.unk8 = 1;
-    vs_main_settings.unk9 = 3;
-    *((int*)&vs_main_settings.unk0) |= 0x30;
-    vs_main_settings.unk1 = 1;
+    vs_main_settings.information = 1;
+    vs_main_settings.simpleMap = 3;
+    *((int*)&vs_main_settings.timingWeaponArmor) |= 0x30;
+    vs_main_settings.cursorMemory = 1;
     if (vs_main_titleScreenCount == 0) {
         func_8006F54C();
         vibrationOn = 1;

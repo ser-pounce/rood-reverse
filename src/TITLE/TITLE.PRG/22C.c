@@ -112,6 +112,31 @@ typedef struct {
     int unk24[23];
 } _saveFileInfo_t;
 
+typedef struct {
+    u_char unk0[0x5C00];
+    u_char unk5C00[0x180];
+    int scrambleSeed;
+    int unk5C08;
+    int unk5C0C;
+    int unk5C10;
+    vs_Gametime_t gametime;
+    u_char unk5D94[0x6C];
+    u_char unk5E00[0x440];
+    u_char skillsLearned[0x20];
+    u_char unk6260[0x48];
+    vs_main_settings_t settings;
+    D_80060068_t unk62C8;
+    u_char unk63C8[0xF00];
+    u_char unk72C8[0x2C];
+    u_char unk72F4[0x84];
+    D_80061068_t unk7378;
+    D_8005FEA0_t unk7384;
+    int unk7498;
+    u_char unk749C[0x520];
+    u_char unk79BC[0x24];
+    u_char unk79E0[0x3C00];
+} savedata_t;
+
 void playMovie(DslLOC*);
 u_short* func_8006F328(D_800DEDA8_t* arg0);
 static void _initTitle();
@@ -509,7 +534,7 @@ static int memcardSaveIdExists(int id)
     return 0;
 }
 
-static int _deleteUnnecessaryTempFiles(int port)
+static int _deleteRedundantTempFiles(int port)
 {
     int i;
     int ret;
@@ -548,7 +573,7 @@ static int _initSaveFileInfo(int port)
     }
 
     memset(_saveFileInfo, 0, sizeof(_saveFileInfo_t) * 5);
-    tempFilesDeleted = _deleteUnnecessaryTempFiles((port - 1) * 16);
+    tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
     if (tempFilesDeleted & 0x80) {
         return 1;
     }
@@ -599,21 +624,21 @@ int createSaveFile(int port, int id)
     return -1;
 }
 
-enum _memCardStates {
-    _memCardInit = 0,
-    _memCardReady = 1,
-    _memCardNew = 2,
-    _memCardConfirmed = 3,
-    _memCardLoadReady = 4,
-    _memCardLoaded = 5,
+enum memCardStates {
+    memCardInit = 0,
+    memCardReady = 1,
+    memCardNew = 2,
+    memCardConfirmed = 3,
+    memCardLoadReady = 4,
+    memCardLoaded = 5,
 };
 
-enum _memCardEventState {
-    _memCardEventIoEnd = 0,
-    _memCardEventError = 1,
-    _memCardEventTimeout = 2,
-    _memCardEventNew = 3,
-    _memCardEventNone = 4,
+enum memCardEventState {
+    memCardEventIoEnd = 0,
+    memCardEventError = 1,
+    memCardEventTimeout = 2,
+    memCardEventNew = 3,
+    memCardEventNone = 4,
 };
 
 int _memCardHandler(int arg0)
@@ -622,12 +647,12 @@ int _memCardHandler(int arg0)
 
     if (arg0 != 0) {
         _memcardPort = (arg0 - 1) * 16;
-        _memCardState = _memCardInit;
+        _memCardState = memCardInit;
         _memCardInitTmeout = 0;
         return 0;
     }
     switch (_memCardState) {
-    case _memCardInit:
+    case memCardInit:
         if (++_memCardInitTmeout >= 4) {
             return 2;
         }
@@ -635,74 +660,74 @@ int _memCardHandler(int arg0)
         if (_card_info(_memcardPort) == 0) {
             break;
         }
-        _memCardState = _memCardReady;
+        _memCardState = memCardReady;
         _memCardTimeout = 0;
         _memcardEvType = SWEVENTS;
         // fallthrough
-    case _memCardReady:
+    case memCardReady:
         switch (_testMemcardEvents(SWEVENTS)) {
-        case _memCardEventIoEnd:
-            _memCardState = _memCardLoadReady;
+        case memCardEventIoEnd:
+            _memCardState = memCardLoadReady;
             break;
-        case _memCardEventError:
-        case _memCardEventTimeout:
-            _memCardState = _memCardInit;
+        case memCardEventError:
+        case memCardEventTimeout:
+            _memCardState = memCardInit;
             break;
-        case _memCardEventNew:
-            _memCardState = _memCardNew;
+        case memCardEventNew:
+            _memCardState = memCardNew;
             break;
-        case _memCardEventNone:
+        case memCardEventNone:
             if (_memCardTimeout++ > 64) {
-                _memCardState = _memCardInit;
+                _memCardState = memCardInit;
             }
             break;
         }
         break;
-    case _memCardNew:
+    case memCardNew:
         _resetMemcardEvents(HWEVENTS);
         if (_card_clear(_memcardPort) == 0) {
             break;
         }
-        _memCardState = _memCardConfirmed;
+        _memCardState = memCardConfirmed;
         _memCardTimeout = 0;
         _memcardEvType = HWEVENTS;
         // fallthrough
-    case _memCardConfirmed:
+    case memCardConfirmed:
         do {
             event = _testMemcardEvents(HWEVENTS);
-        } while (event == _memCardEventNone);
-        if (event == _memCardEventIoEnd) {
-            _memCardState = _memCardLoadReady;
+        } while (event == memCardEventNone);
+        if (event == memCardEventIoEnd) {
+            _memCardState = memCardLoadReady;
             break;
         }
-        if (event < _memCardEventIoEnd)
+        if (event < memCardEventIoEnd)
             break;
-        if (event >= _memCardEventNone)
+        if (event >= memCardEventNone)
             break;
-        _memCardState = _memCardInit;
+        _memCardState = memCardInit;
         break;
-    case _memCardLoadReady:
+    case memCardLoadReady:
         _resetMemcardEvents(SWEVENTS);
         if (_card_load(_memcardPort) == 0) {
             break;
         }
-        _memCardState = _memCardLoaded;
+        _memCardState = memCardLoaded;
         _memCardTimeout = 0;
         // fallthrough
-    case _memCardLoaded:
+    case memCardLoaded:
         event = _testMemcardEvents(SWEVENTS);
         switch (event) {
-        case _memCardEventIoEnd:
+        case memCardEventIoEnd:
             return _memcardEvType + 1;
-        case _memCardEventError:
-        case _memCardEventTimeout:
-            _memCardState = _memCardInit;
+        case memCardEventError:
+        case memCardEventTimeout:
+            _memCardState = memCardInit;
             break;
-        case _memCardEventNew:
+        case memCardEventNew:
             return _memcardEvType + 3;
-        case _memCardEventNone:
+        case memCardEventNone:
             if (_memCardTimeout++ > 64) {
-                _memCardState = _memCardInit;
+                _memCardState = memCardInit;
             }
             break;
         }
@@ -714,24 +739,25 @@ int _memCardHandler(int arg0)
 int func_800696D0(int arg0)
 {
     int blockCount;
-    u_char* spmcimg;
+    savedata_t* spmcimg;
     void* blocks;
     int* temp_s2;
     int* temp_s4;
 
-    spmcimg = _spmcimg;
-    blocks = spmcimg + 0x5C00;
-    temp_s4 = blocks;
-    temp_s2 = (int*)spmcimg + 0x1760;
+    spmcimg = (savedata_t*)_spmcimg;
+    blocks = spmcimg->unk5C00;
+    temp_s4 = (int*)spmcimg->unk5C00;
+    temp_s2 = &spmcimg->scrambleSeed;
 
-    _descramble(*temp_s2, spmcimg + 0x5D84, 0x5A7C);
+    _descramble(spmcimg->scrambleSeed, (u_char*)&spmcimg->unk5C08, 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
         blockCount = 32;
     }
 
-    if ((_verifySaveChecksums(blocks, blockCount) != 0) || (temp_s2[3] != 0x20000107)) {
+    if ((_verifySaveChecksums(spmcimg->unk5C00, blockCount) != 0)
+        || (temp_s2[3] != 0x20000107)) {
         do {
             return 1;
         } while (0);
@@ -741,20 +767,22 @@ int func_800696D0(int arg0)
         return 0;
     }
 
-    _rMemcpy(D_80061598, spmcimg + 0x5E00, sizeof(D_80061598));
-    _rMemcpy(vs_main_skillsLearned, spmcimg + 0x6240, sizeof(vs_main_skillsLearned));
-    _rMemcpy(D_8005FFD8, spmcimg + 0x6260, sizeof(D_8005FFD8));
-    _rMemcpy((u_char*)&vs_main_settings, spmcimg + 0x62A8, sizeof(vs_main_settings));
-    _rMemcpy((u_char*)&D_80060068, spmcimg + 0x62C8, sizeof(D_80060068));
-    _rMemcpy(D_80060168, spmcimg + 0x63C8, sizeof(D_80060168));
-    _rMemcpy((u_char*)&D_800619D8, spmcimg + 0x72C8, sizeof(D_800619D8));
-    _rMemcpy((u_char*)&D_80061068, spmcimg + 0x7378, sizeof(D_80061068));
-    _rMemcpy((u_char*)&D_8005FEA0, spmcimg + 0x7384, sizeof(D_8005FEA0));
+    _rMemcpy(D_80061598, spmcimg->unk5E00, sizeof(D_80061598));
+    _rMemcpy(
+        vs_main_skillsLearned, spmcimg->skillsLearned, sizeof(vs_main_skillsLearned));
+    _rMemcpy(D_8005FFD8, spmcimg->unk6260, sizeof(D_8005FFD8));
+    _rMemcpy((u_char*)&vs_main_settings, &spmcimg->settings, sizeof(vs_main_settings));
+    _rMemcpy((u_char*)&D_80060068, &spmcimg->unk62C8, sizeof(D_80060068));
+    _rMemcpy(D_80060168, spmcimg->unk63C8, sizeof(D_80060168));
+    _rMemcpy((u_char*)&D_800619D8, spmcimg->unk72C8, sizeof(D_800619D8));
+    _rMemcpy((u_char*)&D_80061068, &spmcimg->unk7378, sizeof(D_80061068));
+    _rMemcpy((u_char*)&D_8005FEA0, &spmcimg->unk7384, sizeof(D_8005FEA0));
     D_80060064 = temp_s4[0x626];
-    _rMemcpy(D_80061078, spmcimg + 0x749C, sizeof(D_80061078));
+    _rMemcpy(D_80061078, spmcimg->unk749C, sizeof(D_80061078));
     blocks = D_80060040;
-    _rMemcpy(D_80060040, spmcimg + 0x79BC, sizeof(D_80060040));
-    __builtin_memcpy(&vs_main_gametime, spmcimg + 0x5D90, sizeof(vs_main_gametime));
+    _rMemcpy(D_80060040, spmcimg->unk79BC, sizeof(D_80060040));
+    vs_main_gametime = spmcimg->gametime;
+
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;
@@ -820,9 +848,9 @@ int func_80069EA8(int portFileno)
         // fallthrough
     case 1:
         ev = _testMemcardEvents(SWEVENTS);
-        if (ev < _memCardEventNone) {
+        if (ev < memCardEventNone) {
             close(_memCardFd);
-            if (ev == _memCardEventIoEnd) {
+            if (ev == memCardEventIoEnd) {
                 return 1;
             }
             D_800DC8AD = 0;
@@ -892,9 +920,9 @@ int func_8006A11C(int arg0)
         // fallthrough
     case 2: {
         temp_s3 = _testMemcardEvents(SWEVENTS);
-        if (temp_s3 < _memCardEventNone) {
+        if (temp_s3 < memCardEventNone) {
             close(_saveFileId);
-            if (temp_s3 == _memCardEventIoEnd) {
+            if (temp_s3 == memCardEventIoEnd) {
                 _memcardSaveState = 3;
                 temp_s2 = D_800DEB12;
                 temp_s3 = D_800DEB10;
@@ -2046,8 +2074,8 @@ int func_8006D2F8(int arg0)
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)&_saveFileInfo[saveId], _spmcimg + 0x180,
-                    sizeof(_saveFileInfo_t));
+                _rMemcpy((u_char*)&_saveFileInfo[saveId],
+                    _spmcimg + sizeof(_saveFileInfo_t) * 3, sizeof(_saveFileInfo_t));
                 _descramble(_saveFileInfo[saveId].scrambleSeed,
                     (u_char*)&_saveFileInfo[saveId].slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));

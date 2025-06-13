@@ -155,7 +155,7 @@ extern int D_80072914[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
 extern int D_80072F04[];
-extern u_long D_80072F0C[];
+extern u_long _publisher[];
 extern u_long D_8007472C[];
 extern int D_80074AAC;
 extern int D_80074AB0;
@@ -1304,7 +1304,10 @@ _saveSlotMenuEntries_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3
     return temp_s3;
 }
 
-void func_8006AF78(int arg0) { memset(&_saveSlotMenuEntries[arg0], 0, sizeof(_saveSlotMenuEntries_t)); }
+void func_8006AF78(int arg0)
+{
+    memset(&_saveSlotMenuEntries[arg0], 0, sizeof(_saveSlotMenuEntries_t));
+}
 
 int func_8006AFBC()
 {
@@ -2685,10 +2688,7 @@ u_short* func_8006F328(D_800DEDA8_t* arg0)
     }
 
     if ((D_80074AAC != sp1C[8]) || (D_80074AB0 != sp1C[9])) {
-        rect.w = 0x1E0;
-        rect.x = 0;
-        rect.y = 0;
-        rect.h = 0x1C0;
+        setRECT(&rect, 0, 0, 0x1E0, 0x1C0);
         ClearImage(&rect, 0, 0, 0);
         D_80074AAC = sp1C[8];
         D_80074AB0 = sp1C[9];
@@ -2748,13 +2748,10 @@ void func_8006F54C()
     int var_a3_2;
     int i;
 
-    rect.w = 320;
-    rect.x = 0;
-    rect.y = 0;
-    rect.h = 512;
+    setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(MAKEXY(320, 64), D_80072F0C, MAKEWH(16, 1));
-    _drawImage(MAKEXY(320, 0), D_80072F0C + 8, MAKEWH(64, 48));
+    _drawImage(MAKEXY(320, 64), _publisher, MAKEWH(16, 1));
+    _drawImage(MAKEXY(320, 0), _publisher + 8, MAKEWH(64, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -2765,15 +2762,16 @@ void func_8006F54C()
     VSync(0);
     SetDispMask(1);
 
-    for (i = 0; i < 0x16C; ++i) {
+    for (i = 0; i < 364; ++i) {
         var_a3 = 0;
-        if (i < 0x20) {
-            var_a3 = (0x1F - i) * 4;
+        if (i < 32) {
+            var_a3 = (31 - i) * 4;
         }
-        if (i >= 0x14C) {
-            var_a3 = (i - 0x14B) * 4;
+        if (i > 331) {
+            var_a3 = (i - 331) * 4;
         }
-        _drawSprt(0x580020, 0x10140000, 0x300100, (var_a3 << 0x10) | 5);
+        _drawSprt(MAKEXY(32, 88), vs_getUV0Clut(0, 0, 320, 64), MAKEWH(256, 48),
+            (var_a3 << 16) | (320 / 64));
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
@@ -2785,16 +2783,17 @@ void func_8006F54C()
 
     _drawImage(MAKEXY(0, 240), D_8007472C, MAKEWH(32, 14));
 
-    for (i = 0; i < 0x16C; ++i) {
+    for (i = 0; i < 364; ++i) {
         var_a3_2 = 0;
-        if (i < 0x20) {
-            var_a3_2 = (0x1F - i) * 4;
-        } else if (i >= 0x14C) {
-            var_a3_2 = (i - 0x14B) * 4;
+        if (i < 32) {
+            var_a3_2 = (31 - i) * 4;
+        } else if (i > 331) {
+            var_a3_2 = (i - 331) * 4;
         } else if ((vs_main_buttonsState & 0xFFFF) != 0) {
-            i = 0x14B;
+            i = 331;
         }
-        _drawSprt(0x680060, 0x3F40F000, 0xD0080, var_a3_2 << 0x10);
+        _drawSprt(MAKEXY(96, 104), vs_getUV0Clut(0, 240, 0, 253), MAKEWH(128, 13),
+            var_a3_2 << 16);
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
         disp.screen.y = 8;
@@ -3464,7 +3463,7 @@ static void _menuSoundSettings()
 
 int _nop1() { return 0; }
 
-void func_80071254()
+void _initSettings()
 {
     int monoSound;
     int vibrationOn;
@@ -3505,7 +3504,7 @@ int vs_title_exec()
         _displayGameSaveScreen();
     }
     _initTitle();
-    func_80071254();
+    _initSettings();
     _introMoviePlaying = 0;
     ++vs_main_titleScreenCount;
     menuItem = _saveFileExists();
@@ -3702,7 +3701,7 @@ static void _initTitle()
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 0x20);
+    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 32);
     vs_main_bzero(D_8005FFD8, 0x48);
     vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
     vs_main_bzero(&D_8005FEA0, 0x114);

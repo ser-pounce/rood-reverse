@@ -81,6 +81,10 @@ typedef struct vs_main_HeapHeader {
     int unkC;
 } vs_main_HeapHeader;
 
+/*enum mainSettings {
+
+};*/
+
 typedef struct {
     u_char timingWeaponArmor;
     u_char cursorMemory;

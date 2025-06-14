@@ -131,3 +131,5 @@ introMovieLoc = 0x800DED88;
 _movieData = 0x800DEDA8;
 _movieRingBuf = 0x800DEDE0;
 _menuItemStates = 0x800EFDF8;
+_displayPublisherAndDeveloper = 0x8006F54C;
+_developer = 0x8007472C;

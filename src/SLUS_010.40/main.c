@@ -8407,7 +8407,7 @@ void func_80042CA0() { D_80060068.unk0.unk0 = 1; }
 
 void func_80042CB0()
 {
-    unsigned char sp10[16];
+    u_char sp10[16];
     int j;
     int i;
     int var_s1;

@@ -28,15 +28,15 @@ typedef struct {
 } vs_main_CdQueueSlot;
 
 typedef struct {
-    unsigned char id;
-    unsigned char effect;
+    u_char id;
+    u_char effect;
     int unk2_0 : 1;
     int type : 3;
     int target : 4;
-    unsigned char cost;
-    unsigned char rangeX;
-    unsigned char rangeY;
-    unsigned char rangeZ;
+    u_char cost;
+    u_char rangeX;
+    u_char rangeY;
+    u_char rangeZ;
     int shape : 3;
     int angle : 5;
     int aoe;

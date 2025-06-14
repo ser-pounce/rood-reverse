@@ -176,13 +176,12 @@ extern u_char _memcardFilename[32];
 extern u_char _memcardTempFilename[32];
 extern u_char _memCardState;
 extern u_char _memcardPort;
-extern u_char D_800D9280[];
 extern u_char _memCardInitTmeout;
 extern u_char _memCardTimeout;
 extern u_char _memcardEvType;
 extern u_char D_800DC8AD;
 extern u_char _readCardPort;
-extern u_char D_800DC8AF;
+extern u_char _readFileNo;
 extern u_char D_800DC8B0;
 extern u_char D_800DC8B1;
 extern int _memCardFd;
@@ -811,7 +810,7 @@ int func_80069EA8(int portFileno)
         D_800DEB0C = 0;
         _readCardPort = portFileno >> 0xC;
         D_800DC8B0 = (portFileno >> 8) & 1;
-        D_800DC8AF = portFileno & 0xF;
+        _readFileNo = portFileno & 0xF;
         D_800DEB12 = 0x50;
         D_800DEB10 = 0;
         return 0;
@@ -829,10 +828,10 @@ int func_80069EA8(int portFileno)
 
         memset(temp_s2, 0, 0x5C00);
 
-        if (D_800DC8AF & 8) {
-            filename = _memcardMakeTempFilename(_readCardPort, D_800DC8AF & 7);
+        if (_readFileNo & 8) {
+            filename = _memcardMakeTempFilename(_readCardPort, _readFileNo & 7);
         } else {
-            filename = _memcardMakeFilename(_readCardPort, D_800DC8AF);
+            filename = _memcardMakeFilename(_readCardPort, _readFileNo);
         }
         _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
         if (_memCardFd == -1) {
@@ -1084,7 +1083,8 @@ void func_8006A81C(int xy, int arg1)
 void func_8006A860(int arg0, u_int arg1, u_int arg2)
 {
     do {
-        _drawSprt(arg0, vs_getUV0Clut(((arg1 / arg2) * 6), 0, 832, 223), MAKEWH(6, 10), getTPage(0, 0, 768, 0));
+        _drawSprt(arg0, vs_getUV0Clut(((arg1 / arg2) * 6), 0, 832, 223), MAKEWH(6, 10),
+            getTPage(0, 0, 768, 0));
         arg1 = arg1 % arg2;
         arg2 /= 10;
         arg0 += 5;

@@ -396,22 +396,22 @@ static u_int func_80068D54()
 {
     u_int i;
     u_int var_a2;
-    u_int var_a3;
+    u_int fileIndex;
 
     var_a2 = 0;
-    var_a3 = 0;
+    fileIndex = 0;
     for (i = 0; i < 5; ++i) {
         if (_saveFileInfo[i].slotState >= 3) {
             if (var_a2 < _saveFileInfo[i].unk8) {
                 var_a2 = _saveFileInfo[i].unk8;
-                var_a3 = i;
+                fileIndex = i;
             }
         }
     }
-    return var_a3;
+    return fileIndex;
 }
 
-static int func_80068DB4()
+static int _getCurrentGameSave()
 {
     int i;
     for (i = 0; i < 5; ++i) {
@@ -503,18 +503,20 @@ static int _readSaveFileInfo(int id)
     id &= 7;
     for (i = 0; i < 3; ++i) {
         file = open(_memcardMakeFilename(port, id), O_RDONLY);
-        if (file != -1) {
-            bytesRead = read(file, saveInfo, sizeof(saveInfo));
-            close(file);
-            if (bytesRead == sizeof(saveInfo)) {
-                _descramble(saveInfo[3].scrambleSeed, (u_char*)&saveInfo[3].slotState,
-                    sizeof(_saveFileInfo_t) - sizeof(int));
-                if (_verifySaveChecksums((u_char*)saveInfo, 2) == 0) {
-                    _rMemcpy((u_char*)(&_saveFileInfo[id - 1]), &saveInfo[3],
-                        sizeof(saveInfo[3]));
-                    return 0;
-                }
-            }
+        if (file == -1) {
+            continue;
+        }
+        bytesRead = read(file, saveInfo, sizeof(saveInfo));
+        close(file);
+        if (bytesRead != sizeof(saveInfo)) {
+            continue;
+        }
+        _descramble(saveInfo[3].scrambleSeed, (u_char*)&saveInfo[3].slotState,
+            sizeof(_saveFileInfo_t) - sizeof(int));
+        if (_verifySaveChecksums((u_char*)saveInfo, 2) == 0) {
+            _rMemcpy(
+                (u_char*)(&_saveFileInfo[id - 1]), &saveInfo[3], sizeof(saveInfo[3]));
+            return 0;
         }
     }
 
@@ -528,10 +530,9 @@ static int memcardSaveIdExists(int id)
 
     for (i = 0; i < 15; ++i) {
         u_char* filename = _memcardFiles[i]->name;
-        if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)) {
-            if (filename[15] == id) {
-                return 1;
-            }
+        if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)
+            && (filename[15] == id)) {
+            return 1;
         }
     }
     return 0;
@@ -1368,7 +1369,7 @@ int func_8006B138(int arg0)
         if (temp_v1 != 0) {
             if (temp_v1 == 1) {
                 if (_initSaveFileInfo(temp_s0) == 0) {
-                    temp_v0 = func_80068DB4();
+                    temp_v0 = _getCurrentGameSave();
                     var_a0 = temp_v0 != 0;
                     if (var_a0) {
                         return temp_v0 + (temp_s1 * 0x10);
@@ -1919,7 +1920,7 @@ int func_8006D2F8(int arg0)
 
     if (arg0 != 0) {
         D_800DC91D = arg0;
-        D_800DC91F = func_80068DB4();
+        D_800DC91F = _getCurrentGameSave();
         if (D_800DC91F) {
             --D_800DC91F;
         }
@@ -2036,7 +2037,7 @@ int func_8006D2F8(int arg0)
         temp_s0 = func_8006B288(0);
         if (temp_s0 != 0) {
             if (temp_s0 >= 0) {
-                D_800DED73 |= (func_80068DB4() == (D_800DC91F + D_800DC91E + 1));
+                D_800DED73 |= (_getCurrentGameSave() == (D_800DC91F + D_800DC91E + 1));
                 D_800DC91C = 5;
             } else {
                 D_800DC91C = 7;

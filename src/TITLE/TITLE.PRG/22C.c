@@ -280,11 +280,11 @@ extern DslLOC introMovieLoc;
 extern MovieData_t _movieData;
 extern int _dslMode;
 extern u_long* _movieRingBuf;
-extern u_short D_800DEDE8;
-extern void* D_800EFDE8;
-extern void* D_800EFDEC;
-extern void* D_800EFDF0;
-extern void* D_800EFDF4;
+extern u_short _vlcTable;
+extern void* _encodedDataBuf0;
+extern void* _encodedDataBuf1;
+extern void* _decodedDataBuf0;
+extern void* _decodedDataBuf1;
 extern menuItemState_t _menuItemStates[8];
 
 enum menuItems {
@@ -2598,35 +2598,35 @@ static void _displayGameSaveScreen()
     }
 }
 
-void func_8006F0A0(MovieData_t* arg0, short arg1, short arg2, short arg3, int arg4)
+static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
 {
-    arg0->frameBufs[0].x = arg1;
-    arg0->renderTarget.x = arg1;
-    arg0->frameBufs[0].y = arg2;
-    arg0->renderTarget.y = arg2;
+    arg0->frameBufs[0].x = x0;
+    arg0->renderTarget.x = x0;
+    arg0->frameBufs[0].y = y0;
+    arg0->renderTarget.y = y0;
     arg0->encodedDataIndex = 0;
     arg0->decodedDataIndex = 0;
-    arg0->frameBufs[1].x = arg3;
+    arg0->frameBufs[1].x = x1;
     arg0->frameBufIndex = 0;
     arg0->renderTarget.w = 24;
     arg0->frameComplete = 0;
-    arg0->encodedData[0] = D_800EFDE8;
-    arg0->encodedData[1] = D_800EFDEC;
-    arg0->decodedData[0] = D_800EFDF0;
-    arg0->decodedData[1] = D_800EFDF4;
-    arg0->frameBufs[1].y = arg4;
+    arg0->encodedData[0] = _encodedDataBuf0;
+    arg0->encodedData[1] = _encodedDataBuf1;
+    arg0->decodedData[0] = _decodedDataBuf0;
+    arg0->decodedData[1] = _decodedDataBuf1;
+    arg0->frameBufs[1].y = y1;
 }
 
-void func_8006F108(DslLOC* loc, void (*dctoutCb)())
+static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)())
 {
     DecDCTReset(0);
     DecDCToutCallback(dctoutCb);
-    StSetRing((u_long*)_movieRingBuf, 0x40);
-    StSetStream(1, 1, -1, 0, 0);
+    StSetRing((u_long*)_movieRingBuf, 64);
+    StSetStream(1, 1, -1, NULL, NULL);
     _playMovie(loc);
 }
 
-void func_8006F174()
+static void _decDCToutCallback()
 {
     RECT rect;
     short rightEdge;
@@ -2649,7 +2649,7 @@ void func_8006F174()
             + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
         dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
-            ((int)(dataSize + (dataSize >> 0x1F))) >> 1);
+            ((int)(dataSize + (dataSize >> 31))) >> 1);
     } else {
         _movieData.frameComplete = 1;
         _movieData.frameBufIndex = _movieData.frameBufIndex < 1;
@@ -2659,12 +2659,12 @@ void func_8006F174()
     LoadImage(&rect, _movieData.decodedData[index]);
 }
 
-int func_8006F2A0(MovieData_t* arg0)
+static int _decodeNextMovieFrame(MovieData_t* arg0)
 {
     u_long* frameData;
     int i;
 
-    i = 0x7D0;
+    i = 2000;
 
     while ((frameData = (u_long*)_getNextMovieFrame(arg0)) == 0) {
         if (--i == 0) {
@@ -2673,7 +2673,7 @@ int func_8006F2A0(MovieData_t* arg0)
     }
 
     arg0->encodedDataIndex = arg0->encodedDataIndex == 0;
-    DecDCTvlc2(frameData, arg0->encodedData[arg0->encodedDataIndex], &D_800DEDE8);
+    DecDCTvlc2(frameData, arg0->encodedData[arg0->encodedDataIndex], &_vlcTable);
     StFreeRing(frameData);
     return 0;
 }
@@ -2811,20 +2811,20 @@ static void _displayPublisherAndDeveloper()
     SetDispMask(0);
 }
 
-static void _initAndPlayIntroMovie()
+static void _initIntroMovie()
 {
     _dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
     DsIntToPos(VS_TITLE_STR_LBA, &introMovieLoc);
     _movieRingBuf = vs_main_allocHeap(0x20000);
-    D_800EFDE8 = vs_main_allocHeap(0x23000);
-    D_800EFDEC = vs_main_allocHeap(0x23000);
-    D_800EFDF0 = vs_main_allocHeap(0x2A00);
-    D_800EFDF4 = vs_main_allocHeap(0x2A00);
-    func_8006F0A0(&_movieData, 0, 0, 0, 224);
-    func_8006F108(&introMovieLoc, func_8006F174);
-    DecDCTvlcBuild(&D_800DEDE8);
+    _encodedDataBuf0 = vs_main_allocHeap(0x23000);
+    _encodedDataBuf1 = vs_main_allocHeap(0x23000);
+    _decodedDataBuf0 = vs_main_allocHeap(0x2A00);
+    _decodedDataBuf1 = vs_main_allocHeap(0x2A00);
+    _initMovieData(&_movieData, 0, 0, 0, 224);
+    _initMoviePlayback(&introMovieLoc, _decDCToutCallback);
+    DecDCTvlcBuild(&_vlcTable);
 
-    while (func_8006F2A0(&_movieData) == -1) {
+    while (_decodeNextMovieFrame(&_movieData) == -1) {
         DslLOC loc = introMovieLoc;
         _playMovie(&loc);
     }
@@ -2840,22 +2840,22 @@ static void _stopIntroMovie()
     StUnSetRing();
     while (DsControlB(DslPause, 0, 0) == 0)
         ;
-    vs_main_freeHeap(D_800EFDF4);
-    vs_main_freeHeap(D_800EFDF0);
-    vs_main_freeHeap(D_800EFDEC);
-    vs_main_freeHeap(D_800EFDE8);
+    vs_main_freeHeap(_decodedDataBuf1);
+    vs_main_freeHeap(_decodedDataBuf0);
+    vs_main_freeHeap(_encodedDataBuf1);
+    vs_main_freeHeap(_encodedDataBuf0);
     vs_main_freeHeap(_movieRingBuf);
     SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
-void func_8006FA04()
+static void _stopMovieIfComplete()
 {
-    if ((_introMoviePlaying != 0) && ((VSync(-1) - _introMovieDisplayedAt) >= 0x1131u)) {
+    if ((_introMoviePlaying != 0) && ((VSync(-1) - _introMovieDisplayedAt) >= 4401)) {
         _stopIntroMovie();
     }
 }
 
-int func_8006FA54()
+static int _playIntroMovie()
 {
     DslLOC loc;
     DISPENV disp;
@@ -2870,7 +2870,7 @@ int func_8006FA54()
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
             (int)(dataSize + (dataSize >> 0x1F)) >> 1);
 
-        while (func_8006F2A0(&_movieData) == -1) {
+        while (_decodeNextMovieFrame(&_movieData) == -1) {
             if ((u_int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
                 loc = introMovieLoc;
             }
@@ -3244,7 +3244,7 @@ void func_8007093C()
             VSync(0);
             func_800436B4();
         } else {
-            func_8006FA04();
+            _stopMovieIfComplete();
         }
     }
 }
@@ -3520,8 +3520,8 @@ int vs_title_exec()
         }
 
         _unpackMenuBg();
-        _initAndPlayIntroMovie();
-        func_8006FA54();
+        _initIntroMovie();
+        _playIntroMovie();
         _blankScreen();
         SetDispMask(1);
         menuData = _initMenu(menuItem);

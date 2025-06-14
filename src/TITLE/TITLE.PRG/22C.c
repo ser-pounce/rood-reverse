@@ -15,15 +15,15 @@
 #include <sys/file.h>
 
 typedef struct {
-    void* unk0[2];
-    int unk8;
-    void* unkC[2];
-    int unk14;
-    RECT unk18[2];
-    u_int frameBuf;
+    void* encodedData[2];
+    int encodedDataIndex;
+    void* decodedData[2];
+    int decodedDataIndex;
+    RECT frameBufs[2];
+    u_int frameBufIndex;
     RECT unk2C;
     int unk34;
-} D_800DEDA8_t;
+} MovieData_t;
 
 typedef struct {
     u_char unk0;
@@ -56,7 +56,7 @@ typedef struct {
     u_char pos;
     u_char targetPos;
     u_char unk6;
-    u_char alpha;
+    u_char blendFactor;
 } menuItemState_t;
 
 typedef struct {
@@ -137,8 +137,8 @@ typedef struct {
     u_char unk79E0[0x3C00];
 } savedata_t;
 
-void playMovie(DslLOC*);
-u_short* func_8006F328(D_800DEDA8_t* arg0);
+static void _playMovie(DslLOC*);
+static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initTitle();
 void func_80071CE0(int arg0);
 
@@ -157,13 +157,13 @@ extern int D_80072EFC[];
 extern int D_80072F04[];
 extern u_long _publisher[];
 extern u_long D_8007472C[];
-extern int D_80074AAC;
-extern int D_80074AB0;
+extern int _movieWidth;
+extern int _movieHeight;
 extern u_int D_80074AF4[];
 extern u_int _menuBg[];
 extern u_short _menuItemClut[][16];
 extern u_char D_80074C24[];
-extern u_char D_80075B24[];
+extern u_char D_80075B24[32];
 extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];
 extern u_long _debugFont[];
@@ -274,9 +274,9 @@ extern u_char _frameBuf;
 extern u_int _introMovieDisplayedAt;
 extern int _introMoviePlaying;
 extern DslLOC introMovieLoc;
-extern D_800DEDA8_t D_800DEDA8;
-extern int dslMode;
-extern void* D_800DEDE0;
+extern MovieData_t _movieData;
+extern int _dslMode;
+extern u_long* _movieRingBuf;
 extern u_short D_800DEDE8;
 extern void* D_800EFDE8;
 extern void* D_800EFDEC;
@@ -2593,40 +2593,40 @@ static void _displayGameSaveScreen()
     }
 }
 
-void func_8006F0A0(D_800DEDA8_t* arg0, short arg1, short arg2, short arg3, int arg4)
+void func_8006F0A0(MovieData_t* arg0, short arg1, short arg2, short arg3, int arg4)
 {
-    arg0->unk18[0].x = arg1;
+    arg0->frameBufs[0].x = arg1;
     arg0->unk2C.x = arg1;
-    arg0->unk18[0].y = arg2;
+    arg0->frameBufs[0].y = arg2;
     arg0->unk2C.y = arg2;
-    arg0->unk8 = 0;
-    arg0->unk14 = 0;
-    arg0->unk18[1].x = arg3;
-    arg0->frameBuf = 0;
-    arg0->unk2C.w = 0x18;
+    arg0->encodedDataIndex = 0;
+    arg0->decodedDataIndex = 0;
+    arg0->frameBufs[1].x = arg3;
+    arg0->frameBufIndex = 0;
+    arg0->unk2C.w = 24;
     arg0->unk34 = 0;
-    arg0->unk0[0] = D_800EFDE8;
-    arg0->unk0[1] = D_800EFDEC;
-    arg0->unkC[0] = D_800EFDF0;
-    arg0->unkC[1] = D_800EFDF4;
-    arg0->unk18[1].y = arg4;
+    arg0->encodedData[0] = D_800EFDE8;
+    arg0->encodedData[1] = D_800EFDEC;
+    arg0->decodedData[0] = D_800EFDF0;
+    arg0->decodedData[1] = D_800EFDF4;
+    arg0->frameBufs[1].y = arg4;
 }
 
-void func_8006F108(DslLOC* arg0, void (*arg1)())
+void func_8006F108(DslLOC* loc, void (*dctoutCb)())
 {
     DecDCTReset(0);
-    DecDCToutCallback(arg1);
-    StSetRing((u_long*)D_800DEDE0, 0x40);
+    DecDCToutCallback(dctoutCb);
+    StSetRing((u_long*)_movieRingBuf, 0x40);
     StSetStream(1, 1, -1, 0, 0);
-    playMovie(arg0);
+    _playMovie(loc);
 }
 
 void func_8006F174()
 {
     RECT rect;
-    short temp_v1;
-    int temp_t0;
-    u_int temp_lo;
+    short rightEdge;
+    int index;
+    u_int dataSize;
 
     extern int StCdIntrFlag;
     if (StCdIntrFlag != 0) {
@@ -2634,75 +2634,75 @@ void func_8006F174()
         StCdIntrFlag = 0;
     }
 
-    temp_t0 = D_800DEDA8.unk14;
-    rect = D_800DEDA8.unk2C;
-    temp_v1 = D_800DEDA8.unk2C.x + D_800DEDA8.unk2C.w;
-    D_800DEDA8.unk14 = D_800DEDA8.unk14 == 0;
-    D_800DEDA8.unk2C.x = temp_v1;
+    index = _movieData.decodedDataIndex;
+    rect = _movieData.unk2C;
+    rightEdge = _movieData.unk2C.x + _movieData.unk2C.w;
+    _movieData.decodedDataIndex = _movieData.decodedDataIndex == 0;
+    _movieData.unk2C.x = rightEdge;
 
-    if (temp_v1 < (D_800DEDA8.unk18[D_800DEDA8.frameBuf].x
-            + D_800DEDA8.unk18[D_800DEDA8.frameBuf].w)) {
-        temp_lo = D_800DEDA8.unk2C.w * D_800DEDA8.unk2C.h;
-        DecDCTout(
-            D_800DEDA8.unkC[D_800DEDA8.unk14], ((int)(temp_lo + (temp_lo >> 0x1F))) >> 1);
+    if (rightEdge < (_movieData.frameBufs[_movieData.frameBufIndex].x
+            + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
+        dataSize = _movieData.unk2C.w * _movieData.unk2C.h;
+        DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
+            ((int)(dataSize + (dataSize >> 0x1F))) >> 1);
     } else {
-        D_800DEDA8.unk34 = 1;
-        D_800DEDA8.frameBuf = D_800DEDA8.frameBuf < 1;
-        D_800DEDA8.unk2C.x = D_800DEDA8.unk18[D_800DEDA8.frameBuf].x;
-        D_800DEDA8.unk2C.y = D_800DEDA8.unk18[D_800DEDA8.frameBuf].y;
+        _movieData.unk34 = 1;
+        _movieData.frameBufIndex = _movieData.frameBufIndex < 1;
+        _movieData.unk2C.x = _movieData.frameBufs[_movieData.frameBufIndex].x;
+        _movieData.unk2C.y = _movieData.frameBufs[_movieData.frameBufIndex].y;
     }
-    LoadImage(&rect, D_800DEDA8.unkC[temp_t0]);
+    LoadImage(&rect, _movieData.decodedData[index]);
 }
 
-int func_8006F2A0(D_800DEDA8_t* arg0)
+int func_8006F2A0(MovieData_t* arg0)
 {
-    u_long* temp_v0;
+    u_long* frameData;
     int i;
 
     i = 0x7D0;
 
-    while ((temp_v0 = (u_long*)func_8006F328(arg0)) == 0) {
+    while ((frameData = (u_long*)_getNextMovieFrame(arg0)) == 0) {
         if (--i == 0) {
             return -1;
         }
     }
 
-    arg0->unk8 = arg0->unk8 == 0;
-    DecDCTvlc2(temp_v0, arg0->unk0[arg0->unk8], &D_800DEDE8);
-    StFreeRing(temp_v0);
+    arg0->encodedDataIndex = arg0->encodedDataIndex == 0;
+    DecDCTvlc2(frameData, arg0->encodedData[arg0->encodedDataIndex], &D_800DEDE8);
+    StFreeRing(frameData);
     return 0;
 }
 
-u_short* func_8006F328(D_800DEDA8_t* arg0)
+static u_short* _getNextMovieFrame(MovieData_t* arg0)
 {
     RECT rect;
-    u_short* sp18;
-    u_short* sp1C;
+    void* addr;
+    StHEADER* header;
     int i;
     u_int temp_v1;
 
-    for (i = 0x7D0; StGetNext((u_long**)&sp18, (u_long**)&sp1C) != 0;) {
+    for (i = 2000; StGetNext((u_long**)&addr, (u_long**)&header) != 0;) {
         if (--i == 0) {
             return 0;
         }
     }
 
-    if ((D_80074AAC != sp1C[8]) || (D_80074AB0 != sp1C[9])) {
-        setRECT(&rect, 0, 0, 0x1E0, 0x1C0);
+    if ((_movieWidth != header->width) || (_movieHeight != header->height)) {
+        setRECT(&rect, 0, 0, 480, 448);
         ClearImage(&rect, 0, 0, 0);
-        D_80074AAC = sp1C[8];
-        D_80074AB0 = sp1C[9];
+        _movieWidth = header->width;
+        _movieHeight = header->height;
     }
-    temp_v1 = D_80074AAC * 3;
-    arg0->unk18[1].w = (int)(temp_v1 + (temp_v1 >> 0x1F)) >> 1;
-    arg0->unk18[0].w = (int)(temp_v1 + (temp_v1 >> 0x1F)) >> 1;
-    arg0->unk18[1].h = D_80074AB0;
-    arg0->unk18[0].h = D_80074AB0;
-    arg0->unk2C.h = D_80074AB0;
-    return sp18;
+    temp_v1 = _movieWidth * 3;
+    arg0->frameBufs[1].w = (int)(temp_v1 + (temp_v1 >> 31)) >> 1;
+    arg0->frameBufs[0].w = (int)(temp_v1 + (temp_v1 >> 31)) >> 1;
+    arg0->frameBufs[1].h = _movieHeight;
+    arg0->frameBufs[0].h = _movieHeight;
+    arg0->unk2C.h = _movieHeight;
+    return addr;
 }
 
-void func_8006F42C(D_800DEDA8_t* arg0, int arg1 __attribute__((unused)))
+void func_8006F42C(MovieData_t* arg0, int arg1 __attribute__((unused)))
 {
     volatile int sp0[2];
     int* new_var;
@@ -2712,9 +2712,9 @@ void func_8006F42C(D_800DEDA8_t* arg0, int arg1 __attribute__((unused)))
     while ((*(new_var = &i)) == 0) {
         if ((--sp0[0]) == 0) {
             arg0->unk34 = 1;
-            arg0->frameBuf = arg0->frameBuf == 0;
-            arg0->unk2C.x = arg0->unk18[arg0->frameBuf].x;
-            arg0->unk2C.y = arg0->unk18[arg0->frameBuf].y;
+            arg0->frameBufIndex = arg0->frameBufIndex == 0;
+            arg0->unk2C.x = arg0->frameBufs[arg0->frameBufIndex].x;
+            arg0->unk2C.y = arg0->frameBufs[arg0->frameBufIndex].y;
         }
         i = arg0->unk34;
     }
@@ -2722,7 +2722,7 @@ void func_8006F42C(D_800DEDA8_t* arg0, int arg1 __attribute__((unused)))
     arg0->unk34 = 0;
 }
 
-void playMovie(DslLOC* arg0)
+static void _playMovie(DslLOC* loc)
 {
     u_char params[4];
 
@@ -2731,12 +2731,12 @@ void playMovie(DslLOC* arg0)
     params[2] = 0;
     params[3] = 0;
     do {
-        while (DsControl(DslSetloc, (u_char*)arg0, 0) == 0)
+        while (DsControl(DslSetloc, (u_char*)loc, NULL) == 0)
             ;
-        while (DsControl(DslSetmode, params, 0) == 0)
+        while (DsControl(DslSetmode, params, NULL) == 0)
             ;
         VSync(3);
-    } while (DsRead2(arg0, dslMode) == 0);
+    } while (DsRead2(loc, _dslMode) == 0);
 }
 
 void func_8006F54C()
@@ -2806,22 +2806,22 @@ void func_8006F54C()
     SetDispMask(0);
 }
 
-void func_8006F81C()
+static void _initAndPlayIntroMovie()
 {
-    dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
+    _dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
     DsIntToPos(VS_TITLE_STR_LBA, &introMovieLoc);
-    D_800DEDE0 = vs_main_allocHeap(0x20000);
+    _movieRingBuf = vs_main_allocHeap(0x20000);
     D_800EFDE8 = vs_main_allocHeap(0x23000);
     D_800EFDEC = vs_main_allocHeap(0x23000);
     D_800EFDF0 = vs_main_allocHeap(0x2A00);
     D_800EFDF4 = vs_main_allocHeap(0x2A00);
-    func_8006F0A0(&D_800DEDA8, 0, 0, 0, 224);
+    func_8006F0A0(&_movieData, 0, 0, 0, 224);
     func_8006F108(&introMovieLoc, func_8006F174);
     DecDCTvlcBuild(&D_800DEDE8);
 
-    while (func_8006F2A0(&D_800DEDA8) == -1) {
+    while (func_8006F2A0(&_movieData) == -1) {
         DslLOC loc = introMovieLoc;
-        playMovie(&loc);
+        _playMovie(&loc);
     }
     _introMoviePlaying = 1;
     _introMovieDisplayedAt = VSync(-1);
@@ -2839,7 +2839,7 @@ static void _stopIntroMovie()
     vs_main_freeHeap(D_800EFDF0);
     vs_main_freeHeap(D_800EFDEC);
     vs_main_freeHeap(D_800EFDE8);
-    vs_main_freeHeap(D_800DEDE0);
+    vs_main_freeHeap(_movieRingBuf);
     SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
@@ -2855,24 +2855,24 @@ int func_8006FA54()
     DslLOC loc;
     DISPENV disp;
     int var_s2;
-    u_int temp_lo;
+    u_int dataSize;
 
     var_s2 = 0;
 
     while (1) {
-        DecDCTin((u_long*)D_800DEDA8.unk0[D_800DEDA8.unk8], 3);
-        temp_lo = D_800DEDA8.unk2C.w * D_800DEDA8.unk2C.h;
-        DecDCTout(
-            D_800DEDA8.unkC[D_800DEDA8.unk14], (int)(temp_lo + (temp_lo >> 0x1F)) >> 1);
+        DecDCTin((u_long*)_movieData.encodedData[_movieData.encodedDataIndex], 3);
+        dataSize = _movieData.unk2C.w * _movieData.unk2C.h;
+        DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
+            (int)(dataSize + (dataSize >> 0x1F)) >> 1);
 
-        while (func_8006F2A0(&D_800DEDA8) == -1) {
+        while (func_8006F2A0(&_movieData) == -1) {
             if ((u_int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
                 loc = introMovieLoc;
             }
-            playMovie(&loc);
+            _playMovie(&loc);
         }
 
-        func_8006F42C(&D_800DEDA8, 0);
+        func_8006F42C(&_movieData, 0);
         VSync(0);
         vs_main_processPadState();
 
@@ -2880,7 +2880,7 @@ int func_8006FA54()
             return 0;
         }
 
-        SetDefDispEnv(&disp, 0, D_800DEDA8.frameBuf == 0 ? 224 : 0, 480, 224);
+        SetDefDispEnv(&disp, 0, _movieData.frameBufIndex == 0 ? 224 : 0, 480, 224);
         disp.screen.h = 224;
         disp.screen.y = 8;
         disp.isrgb24 = 1;
@@ -2907,10 +2907,10 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
     _menuItemStates[menuItem].pos = pos;
     _menuItemStates[menuItem].targetPos = pos;
     _menuItemStates[menuItem].unk6 = pos;
-    _menuItemStates[menuItem].alpha = 0;
+    _menuItemStates[menuItem].blendFactor = 0;
 }
 
-void func_8006FC6C()
+static void _unpackMenuBg()
 {
     RECT rect;
     int j;
@@ -2920,7 +2920,7 @@ void func_8006FC6C()
     u_long* p;
 
     i = 0;
-    temp_v0 = vs_main_allocHeap(0x99000);
+    temp_v0 = vs_main_allocHeap(544 * (512 + 64) * sizeof(u_short));
     p = temp_v0;
 
 #ifndef MENUBGSZ
@@ -2973,12 +2973,12 @@ static void _blankScreen()
     VSync(0);
 }
 
-void* func_8006FEC4(int menuItem)
+void* _initMenu(int menuItem)
 {
     RECT rect;
-    u_long* temp_s4;
+    u_long* p;
+    u_long* offset;
     int i;
-    u_long* temp_s0;
 
     for (i = 9; i >= 0; --i) {
         _menuItemStates[i].enabled = 0;
@@ -2987,24 +2987,24 @@ void* func_8006FEC4(int menuItem)
     _setMenuItemFadeIn(menuItem, 64);
     _setMenuItemFadeIn((menuItem + 1) & 3, 96);
     _setMenuItemFadeIn((menuItem + 3) & 3, 32);
-    temp_s4 = vs_main_allocHeap(0x22380);
-    temp_s0 = temp_s4 + 160 * 64;
+    p = vs_main_allocHeap(0x22380);
+    offset = p + 160 * 64;
     setRECT(&rect, 192, 448, 160, 64);
-    StoreImage(&rect, temp_s0);
+    StoreImage(&rect, offset);
     DrawSync(0);
-    temp_s0 += 160 * 64 / sizeof(u_short);
+    offset += 160 * 64 / sizeof(u_short);
     setRECT(&rect, 352, 448, 160, 64);
-    StoreImage(&rect, temp_s0);
+    StoreImage(&rect, offset);
     DrawSync(0);
     setRECT(&rect, 678, 376, 180, 24);
-    StoreImage(&rect, temp_s0 + 0x3C00);
+    StoreImage(&rect, offset + 160 * 64 * 3 / sizeof(u_short));
     DrawSync(0);
-    return temp_s4;
+    return p;
 }
 
 void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
 
-void _drawMenuBg(u_short* bgData, int alpha)
+void _fadeInMenu(u_short* bgData, int blendFactor)
 {
     RECT rect;
     int g0;
@@ -3031,9 +3031,9 @@ void _drawMenuBg(u_short* bgData, int alpha)
         g1 = r1 & 0x3E0;
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
-        rdiff = (r0 - r1) * alpha;
-        gdiff = (g0 - g1) * alpha;
-        bdiff = (b0 - b1) * alpha;
+        rdiff = (r0 - r1) * blendFactor;
+        gdiff = (g0 - g1) * blendFactor;
+        bdiff = (b0 - b1) * blendFactor;
         dst[i] = ((u_int)((((r1 << 5) + rdiff) & 0x3E0) | (((g1 << 5) + gdiff) & 0x7C00)
                       | (((b1 << 5) + bdiff) & 0xF8000))
                      >> 5)
@@ -3049,7 +3049,7 @@ void _drawMenuBg(u_short* bgData, int alpha)
     vs_main_processPadState();
 }
 
-void _drawMenuCopyright(u_short* arg0, int blendFactor)
+void _fadeInMenuCopyright(u_short* arg0, int blendFactor)
 {
     RECT rect;
     int i;
@@ -3090,10 +3090,10 @@ void _drawMenuCopyright(u_short* arg0, int blendFactor)
     DrawSync(0);
 }
 
-void _setMenuItemClut(int menuItem, int alpha, int clut0, int clut1)
+void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
 {
     RECT rect;
-    short sp18[16];
+    short clut[16];
     int i;
     int r0;
     int g0;
@@ -3105,7 +3105,7 @@ void _setMenuItemClut(int menuItem, int alpha, int clut0, int clut1)
     int gdiff;
     int bdiff;
 
-    sp18[0] = 0;
+    clut[0] = 0;
 
     for (i = 1; i < 16; ++i) {
         r0 = _menuItemClut[clut0][i];
@@ -3116,17 +3116,17 @@ void _setMenuItemClut(int menuItem, int alpha, int clut0, int clut1)
         g1 = r1 & 0x3E0;
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
-        rdiff = (r1 - r0) * alpha;
-        gdiff = (g1 - g0) * alpha;
-        bdiff = (b1 - b0) * alpha;
-        sp18[i] = 0x1F0;
-        sp18[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
+        rdiff = (r1 - r0) * blendFactor;
+        gdiff = (g1 - g0) * blendFactor;
+        bdiff = (b1 - b0) * blendFactor;
+        clut[i] = 0x1F0;
+        clut[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                        | ((b0 * 16 + bdiff) & 0x7C000))
                       >> 4)
             | 0x8000;
     }
     setRECT(&rect, 480, menuItem + 384, 16, 1);
-    LoadImage(&rect, (u_long*)&sp18);
+    LoadImage(&rect, (u_long*)&clut);
     DrawSync(0);
 }
 
@@ -3134,7 +3134,7 @@ void func_800703CC()
 {
     int i;
     int var_a0;
-    int alpha;
+    int blendFactor;
 
     i = 0;
 
@@ -3153,21 +3153,21 @@ void func_800703CC()
                 if (var_a0 == 128 && _menuItemStates[i].pos == 64) {
                     _menuItemStates[i].unk6 = _menuItemStates[i].pos;
 
-                    alpha = _menuItemStates[i].alpha;
-                    if (alpha < 16) {
-                        _menuItemStates[i].unk3 = alpha * 16;
-                        alpha += 4;
-                        if (alpha > 16) {
-                            alpha = 16;
+                    blendFactor = _menuItemStates[i].blendFactor;
+                    if (blendFactor < 16) {
+                        _menuItemStates[i].unk3 = blendFactor * 16;
+                        blendFactor += 4;
+                        if (blendFactor > 16) {
+                            blendFactor = 16;
                         }
-                        _menuItemStates[i].alpha = alpha;
+                        _menuItemStates[i].blendFactor = blendFactor;
                     }
                 }
                 break;
             case menuItemStateUpper:
                 _menuItemStates[i].pos -= 4;
                 if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].state = 0;
+                    _menuItemStates[i].state = menuItemStateStatic;
                 }
                 break;
             case menuItemStateLower:
@@ -3178,13 +3178,13 @@ void func_800703CC()
                 break;
             }
 
-            alpha = _menuItemStates[i].alpha;
+            blendFactor = _menuItemStates[i].blendFactor;
 
             if (_menuItemStates[i].state < menuItemStateSubmenu) {
-                _setMenuItemClut(i, alpha, 0, 1);
+                _setMenuItemClut(i, blendFactor, 0, 1);
             }
-            if ((alpha != 0) && (_menuItemStates[i].pos != 64)) {
-                _menuItemStates[i].alpha = alpha - 1;
+            if ((blendFactor != 0) && (_menuItemStates[i].pos != 64)) {
+                _menuItemStates[i].blendFactor = blendFactor - 1;
             }
 
             if (_menuItemStates[i].unk3 != 0) {
@@ -3196,7 +3196,7 @@ void func_800703CC()
                     } else {
                         _menuItemStates[i].unk6 -= 2;
                     }
-                } else if ((_menuItemStates[i].alpha == 16)
+                } else if ((_menuItemStates[i].blendFactor == 16)
                     && (_menuItemStates[i].unk3 > 128)) {
                     _menuItemStates[i].unk3 -= 16;
                 }
@@ -3353,7 +3353,7 @@ static void _menuVibrationSettings()
     func_80070A58();
     _menuItemStates[menuItemVibration].unk3 = 0xC0;
     func_8007093C();
-    _menuItemStates[menuItemVibration].alpha = 16;
+    _menuItemStates[menuItemVibration].blendFactor = 16;
     _menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
 
@@ -3421,43 +3421,43 @@ static void _menuSoundSettings()
             }
         }
     }
-    _setMenuItemFadeIn(2, 0U);
-    _setMenuItemFadeIn(0, 0x80U);
-    _menuItemStates[2].state = menuItemStateLower;
-    _menuItemStates[2].targetPos = 32;
-    _menuItemStates[0].state = menuItemStateUpper;
-    _menuItemStates[0].targetPos = 96;
+    _setMenuItemFadeIn(menuItemVibration, 0);
+    _setMenuItemFadeIn(menuItemNewGame, 128);
+    _menuItemStates[menuItemVibration].state = menuItemStateLower;
+    _menuItemStates[menuItemVibration].targetPos = 32;
+    _menuItemStates[menuItemNewGame].state = menuItemStateUpper;
+    _menuItemStates[menuItemNewGame].targetPos = 96;
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(3, i * 2, 3, 1);
-        _menuItemStates[3].pos += 4;
-        if (_menuItemStates[4].unk2 < 24) {
-            _menuItemStates[4].unk2 = 0;
+        _setMenuItemClut(menuItemSound, i * 2, 3, 1);
+        _menuItemStates[menuItemSound].pos += 4;
+        if (_menuItemStates[menuItemSoundMono].unk2 < 24) {
+            _menuItemStates[menuItemSoundMono].unk2 = 0;
         } else {
-            _menuItemStates[4].unk2 -= 24;
+            _menuItemStates[menuItemSoundMono].unk2 -= 24;
         }
-        if (_menuItemStates[7].unk2 < 24) {
-            _menuItemStates[7].unk2 = 0;
+        if (_menuItemStates[menuItemSoundStereo].unk2 < 24) {
+            _menuItemStates[menuItemSoundStereo].unk2 = 0;
         } else {
-            _menuItemStates[7].unk2 -= 24;
+            _menuItemStates[menuItemSoundStereo].unk2 -= 24;
         }
-        if (_menuItemStates[4].unk3 != 0) {
-            _menuItemStates[4].unk3 -= 16;
+        if (_menuItemStates[menuItemSoundMono].unk3 != 0) {
+            _menuItemStates[menuItemSoundMono].unk3 -= 16;
         }
-        if (_menuItemStates[7].unk3 != 0) {
-            _menuItemStates[7].unk3 -= 16;
+        if (_menuItemStates[menuItemSoundStereo].unk3 != 0) {
+            _menuItemStates[menuItemSoundStereo].unk3 -= 16;
         }
         func_80070A58();
     }
-    _menuItemStates[4].enabled = 0;
-    _menuItemStates[7].enabled = 0;
+    _menuItemStates[menuItemSoundMono].enabled = 0;
+    _menuItemStates[menuItemSoundStereo].enabled = 0;
     _menuItemStates[menuItemSound].unk6 = 64;
     _menuItemStates[menuItemSound].unk3 = 64;
-    func_80070A58(3);
+    func_80070A58();
     _menuItemStates[menuItemSound].unk3 = 128;
     func_80070A58();
-    _menuItemStates[menuItemSound].unk3 = 0xC0;
+    _menuItemStates[menuItemSound].unk3 = 192;
     func_8007093C();
-    _menuItemStates[menuItemSound].alpha = 16;
+    _menuItemStates[menuItemSound].blendFactor = 16;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
@@ -3496,7 +3496,7 @@ int vs_title_exec()
     int i;
     int menuItem;
     int selectedOption;
-    void* temp_s1;
+    void* menuData;
 
     if (vs_main_saveBeforeTitle != 0) {
         vs_main_saveBeforeTitle = 0;
@@ -3514,25 +3514,25 @@ int vs_title_exec()
             _menuItemStates[i].enabled = 0;
         }
 
-        func_8006FC6C();
-        func_8006F81C();
+        _unpackMenuBg();
+        _initAndPlayIntroMovie();
         func_8006FA54();
         _blankScreen();
         SetDispMask(1);
-        temp_s1 = func_8006FEC4(menuItem);
+        menuData = _initMenu(menuItem);
         for (i = 32; i >= 0; i -= 2) {
-            _drawMenuCopyright(temp_s1, i);
+            _fadeInMenuCopyright(menuData, i);
         }
         VSync(0);
         setRECT(&rect, 688, 256, 160, 128);
-        StoreImage(&rect, temp_s1);
+        StoreImage(&rect, menuData);
         DrawSync(0);
         VSync(0);
         for (i = 32; i >= 0; i -= 4) {
-            _drawMenuBg(temp_s1, i);
+            _fadeInMenu(menuData, i);
             func_8007093C();
         }
-        _freeHeap(temp_s1);
+        _freeHeap(menuData);
         for (i = 0; i < 8; ++i) {
             func_80070A58();
         }
@@ -3550,8 +3550,8 @@ int vs_title_exec()
             if ((vs_main_buttonsState & 0xFFFF) != 0) {
                 _buttonsLastPressed = VSync(-1);
             }
-            if (((VSync(-1) - _buttonsLastPressed) >= 1001)
-                && ((VSync(-1) - _introMovieLastPlayed) >= 101)) {
+            if (((VSync(-1) - _buttonsLastPressed) > 1000)
+                && ((VSync(-1) - _introMovieLastPlayed) > 100)) {
                 selectedOption = menuItemTimeout;
                 break;
             }
@@ -3624,7 +3624,7 @@ int vs_title_exec()
             selectedOption = 4 - (vs_main_titleScreenCount & 1);
             func_80071CE0(selectedOption);
         }
-        for (i = 0x40; i > 0; --i) {
+        for (i = 64; i > 0; --i) {
             VSync(0);
             vs_main_processPadState();
             _titleScreenFade.tag = vs_getTag(_titleScreenFade.tile, primAddrEnd);
@@ -3648,12 +3648,12 @@ int vs_title_exec()
     return selectedOption;
 }
 
-static void _initScreen(int w, int h, int screen, int r, int g, int b)
+static void _initScreen(int w, int h, int distance, int r, int g, int b)
 {
     RECT rect = (RECT) { 0, 0, 1024, 512 };
     SetDispMask(0);
     SetGeomOffset(w / 2, h / 2);
-    SetGeomScreen(screen);
+    SetGeomScreen(distance);
     SetDefDrawEnv(vs_main_drawEnv, 0, 0, w, h - 16);
     SetDefDispEnv(vs_main_dispEnv, w, 0, w, h - 16);
     SetDefDrawEnv(vs_main_drawEnv + 1, w, 0, w, h - 16);
@@ -3694,20 +3694,20 @@ static void _initTitle()
     int j;
     u_char* v0;
 
-    _initScreen(0x280, 0xF0, 0x200, 0, 0, 0);
+    _initScreen(640, 240, 512, 0, 0, 0);
     i = 0x43F;
     v0 = D_80061598 + i;
     do {
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, 32);
-    vs_main_bzero(D_8005FFD8, 0x48);
+    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, sizeof(D_80075B24));
+    vs_main_bzero(D_8005FFD8, sizeof(D_8005FFD8));
     vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
-    vs_main_bzero(&D_8005FEA0, 0x114);
+    vs_main_bzero(&D_8005FEA0, sizeof(D_8005FEA0));
     D_80060064 = 0;
-    vs_main_bzero(D_80061078, 0x520);
-    vs_main_bzero(D_80060040, 0x24);
+    vs_main_bzero(D_80061078, sizeof(D_80061078));
+    vs_main_bzero(D_80060040, sizeof(D_80060040));
 
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 3; ++j) {
@@ -3719,7 +3719,7 @@ static void _initTitle()
     }
 
     for (i = 0; i < 1; ++i) {
-        vs_main_bzero((u_char*)&D_80060068 + i * 0x100, 0x50);
+        vs_main_bzero((u_char*)&D_80060068 + i * sizeof(D_80060068), 0x50);
     }
 
     vs_main_bzero(&D_80061068, sizeof(D_80061068));

@@ -155,8 +155,11 @@ extern int D_80072914[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
 extern int D_80072F04[];
-extern u_long _publisher[];
-extern u_long D_8007472C[];
+extern struct {
+    u_short clut[16];
+    u_long data[0x600];
+} _publisher;
+extern u_long _developer[];
 extern int _movieWidth;
 extern int _movieHeight;
 extern u_int D_80074AF4[];
@@ -2739,7 +2742,7 @@ static void _playMovie(DslLOC* loc)
     } while (DsRead2(loc, _dslMode) == 0);
 }
 
-void func_8006F54C()
+static void _displayPublisherAndDeveloper()
 {
     DISPENV disp;
     DRAWENV draw;
@@ -2750,8 +2753,8 @@ void func_8006F54C()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(MAKEXY(320, 64), _publisher, MAKEWH(16, 1));
-    _drawImage(MAKEXY(320, 0), _publisher + 8, MAKEWH(64, 48));
+    _drawImage(MAKEXY(320, 64), (u_long*)_publisher.clut, MAKEWH(16, 1));
+    _drawImage(MAKEXY(320, 0), _publisher.data, MAKEWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -2781,7 +2784,7 @@ void func_8006F54C()
         PutDrawEnv(&draw);
     }
 
-    _drawImage(MAKEXY(0, 240), D_8007472C, MAKEWH(32, 14));
+    _drawImage(MAKEXY(0, 240), _developer, MAKEWH(128 / 4, 14));
 
     for (i = 0; i < 364; ++i) {
         var_a3_2 = 0;
@@ -3477,7 +3480,7 @@ void _initSettings()
     *((int*)&vs_main_settings.timingWeaponArmor) |= 0x30;
     vs_main_settings.cursorMemory = 1;
     if (vs_main_titleScreenCount == 0) {
-        func_8006F54C();
+        _displayPublisherAndDeveloper();
         vibrationOn = 1;
         monoSound = 0;
     }

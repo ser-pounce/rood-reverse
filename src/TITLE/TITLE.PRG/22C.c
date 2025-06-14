@@ -21,8 +21,8 @@ typedef struct {
     int decodedDataIndex;
     RECT frameBufs[2];
     u_int frameBufIndex;
-    RECT unk2C;
-    int unk34;
+    RECT renderTarget;
+    int frameComplete;
 } MovieData_t;
 
 typedef struct {
@@ -2596,15 +2596,15 @@ static void _displayGameSaveScreen()
 void func_8006F0A0(MovieData_t* arg0, short arg1, short arg2, short arg3, int arg4)
 {
     arg0->frameBufs[0].x = arg1;
-    arg0->unk2C.x = arg1;
+    arg0->renderTarget.x = arg1;
     arg0->frameBufs[0].y = arg2;
-    arg0->unk2C.y = arg2;
+    arg0->renderTarget.y = arg2;
     arg0->encodedDataIndex = 0;
     arg0->decodedDataIndex = 0;
     arg0->frameBufs[1].x = arg3;
     arg0->frameBufIndex = 0;
-    arg0->unk2C.w = 24;
-    arg0->unk34 = 0;
+    arg0->renderTarget.w = 24;
+    arg0->frameComplete = 0;
     arg0->encodedData[0] = D_800EFDE8;
     arg0->encodedData[1] = D_800EFDEC;
     arg0->decodedData[0] = D_800EFDF0;
@@ -2635,21 +2635,21 @@ void func_8006F174()
     }
 
     index = _movieData.decodedDataIndex;
-    rect = _movieData.unk2C;
-    rightEdge = _movieData.unk2C.x + _movieData.unk2C.w;
+    rect = _movieData.renderTarget;
+    rightEdge = _movieData.renderTarget.x + _movieData.renderTarget.w;
     _movieData.decodedDataIndex = _movieData.decodedDataIndex == 0;
-    _movieData.unk2C.x = rightEdge;
+    _movieData.renderTarget.x = rightEdge;
 
     if (rightEdge < (_movieData.frameBufs[_movieData.frameBufIndex].x
             + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
-        dataSize = _movieData.unk2C.w * _movieData.unk2C.h;
+        dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
             ((int)(dataSize + (dataSize >> 0x1F))) >> 1);
     } else {
-        _movieData.unk34 = 1;
+        _movieData.frameComplete = 1;
         _movieData.frameBufIndex = _movieData.frameBufIndex < 1;
-        _movieData.unk2C.x = _movieData.frameBufs[_movieData.frameBufIndex].x;
-        _movieData.unk2C.y = _movieData.frameBufs[_movieData.frameBufIndex].y;
+        _movieData.renderTarget.x = _movieData.frameBufs[_movieData.frameBufIndex].x;
+        _movieData.renderTarget.y = _movieData.frameBufs[_movieData.frameBufIndex].y;
     }
     LoadImage(&rect, _movieData.decodedData[index]);
 }
@@ -2698,7 +2698,7 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0)
     arg0->frameBufs[0].w = (int)(temp_v1 + (temp_v1 >> 31)) >> 1;
     arg0->frameBufs[1].h = _movieHeight;
     arg0->frameBufs[0].h = _movieHeight;
-    arg0->unk2C.h = _movieHeight;
+    arg0->renderTarget.h = _movieHeight;
     return addr;
 }
 
@@ -2706,20 +2706,20 @@ void func_8006F42C(MovieData_t* arg0, int arg1 __attribute__((unused)))
 {
     volatile int sp0[2];
     int* new_var;
-    int i = arg0->unk34;
+    int i = arg0->frameComplete;
     sp0[0] = 0x800000;
 
     while ((*(new_var = &i)) == 0) {
         if ((--sp0[0]) == 0) {
-            arg0->unk34 = 1;
+            arg0->frameComplete = 1;
             arg0->frameBufIndex = arg0->frameBufIndex == 0;
-            arg0->unk2C.x = arg0->frameBufs[arg0->frameBufIndex].x;
-            arg0->unk2C.y = arg0->frameBufs[arg0->frameBufIndex].y;
+            arg0->renderTarget.x = arg0->frameBufs[arg0->frameBufIndex].x;
+            arg0->renderTarget.y = arg0->frameBufs[arg0->frameBufIndex].y;
         }
-        i = arg0->unk34;
+        i = arg0->frameComplete;
     }
 
-    arg0->unk34 = 0;
+    arg0->frameComplete = 0;
 }
 
 static void _playMovie(DslLOC* loc)
@@ -2861,7 +2861,7 @@ int func_8006FA54()
 
     while (1) {
         DecDCTin((u_long*)_movieData.encodedData[_movieData.encodedDataIndex], 3);
-        dataSize = _movieData.unk2C.w * _movieData.unk2C.h;
+        dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
             (int)(dataSize + (dataSize >> 0x1F)) >> 1);
 

@@ -583,22 +583,23 @@ static int _initSaveFileInfo(int port)
     }
     for (i = 0; i < 15; ++i) {
         file = _memcardFiles[i];
-        if (file != NULL) {
-            fileNo = _memcardFileNumberFromFilename((char*)file->name);
-            if (fileNo != 0) {
-                if (fileNo < 0) {
-                    fileNo = -fileNo;
-                    if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
-                        continue;
-                    }
-                    memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
-                    _saveFileInfo[fileNo - 1].slotState = slotStateTemp;
-                } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
-                    slotsAvailable += (file->size + 0x1FFF) >> 13;
-                }
-            }
-            slotsAvailable -= (file->size + 0x1FFF) >> 13;
+        if (file == NULL) {
+            continue;
         }
+        fileNo = _memcardFileNumberFromFilename((char*)file->name);
+        if (fileNo != 0) {
+            if (fileNo < 0) {
+                fileNo = -fileNo;
+                if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
+                    continue;
+                }
+                memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
+                _saveFileInfo[fileNo - 1].slotState = slotStateTemp;
+            } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
+                slotsAvailable += (file->size + 0x1FFF) >> 13;
+            }
+        }
+        slotsAvailable -= (file->size + 0x1FFF) >> 13;
     }
 
     for (; slotsAvailable >= 3; slotsAvailable -= 3) {

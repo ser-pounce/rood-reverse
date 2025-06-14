@@ -1069,24 +1069,24 @@ void _drawSprt(int xy, int uvClut, int wh, int tpage)
     _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
     _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
     _primBuf.prim.sprt.r0g0b0code
-        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x10101));
+        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
     _primBuf.prim.sprt.x0y0 = xy;
     _primBuf.prim.sprt.u0v0clut = uvClut;
     _primBuf.prim.sprt.wh = wh;
     DrawPrim(&_primBuf);
 }
 
-void func_8006A81C(int arg0, int arg1)
+void func_8006A81C(int xy, int arg1)
 {
-    _drawSprt(arg0, D_800728C0[arg1], D_800728E8[arg1], 0xC);
+    _drawSprt(xy, D_800728C0[arg1], D_800728E8[arg1], 0xC);
 }
 
 void func_8006A860(int arg0, u_int arg1, u_int arg2)
 {
     do {
-        _drawSprt(arg0, ((arg1 / arg2) * 6) | 0x37F40000, 0xA0006, 0xC);
+        _drawSprt(arg0, vs_getUV0Clut(((arg1 / arg2) * 6), 0, 832, 223), MAKEWH(6, 10), getTPage(0, 0, 768, 0));
         arg1 = arg1 % arg2;
-        arg2 /= 0xA;
+        arg2 /= 10;
         arg0 += 5;
     } while (arg2 != 0);
 }

@@ -3,10 +3,9 @@
 #include <libetc.h>
 #include <stdio.h>
 
-
 void func_80072050(int);
 void func_80072140(u_long* arg0, u_int arg1);
-void func_800721D0(u_long *buf, int size);
+void func_800721D0(u_long* buf, int size);
 int func_8007225C();
 int func_800722F0();
 u_int func_80072384();
@@ -19,7 +18,6 @@ extern int D_80075BC8[];
 extern int D_80075BCC[];
 extern u_int volatile* D_80075C88;
 
-
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
 /*void DecDCTReset(int mode) {
     if (mode == 0) {
@@ -28,7 +26,8 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTRe
     func_80072050(mode);
 }*/
 
-DECDCTENV* DecDCTGetEnv(DECDCTENV* env) {
+DECDCTENV* DecDCTGetEnv(DECDCTENV* env)
+{
     int* var_a2;
     int i;
     int* var_a1;
@@ -75,47 +74,44 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTPu
     return arg0;
 }*/
 
-void DecDCTin(u_long *buf, int mode) {
+void DecDCTin(u_long* buf, int mode)
+{
     if (mode & 1) {
         *buf &= 0xF7FFFFFF;
     } else {
         *buf |= 0x08000000;
     }
-    
+
     if (mode & 2) {
         *buf |= 0x02000000;
     } else {
         *buf &= 0xFDFFFFFF;
     }
 
-    func_80072140(buf, (u_short) *buf);
+    func_80072140(buf, (u_short)*buf);
 }
 
-void DecDCTout(u_long *buf, int size) {
-    func_800721D0(buf, size);
-}
+void DecDCTout(u_long* buf, int size) { func_800721D0(buf, size); }
 
-int DecDCTinSync(int mode) {
+int DecDCTinSync(int mode)
+{
     if (mode != 0) {
         return (func_80072384() >> 0x1D) & 1;
     }
     return func_8007225C();
 }
 
-int DecDCToutSync(int mode) {
+int DecDCToutSync(int mode)
+{
     if (mode != 0) {
         return (func_80072384() >> 0x18) & 1;
     }
     return func_800722F0();
 }
 
-int DecDCTinCallback(void (*func)()) {
-    return DMACallback(0, func);
-}
+int DecDCTinCallback(void (*func)()) { return DMACallback(0, func); }
 
-int DecDCToutCallback(void (*func)()) {
-    return DMACallback(1, func);
-}
+int DecDCToutCallback(void (*func)()) { return DMACallback(1, func); }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_80072050);
 /*extern int* D_80075C5C;
@@ -215,9 +211,7 @@ int func_800722F0(void) {
 }
 */
 
-u_int func_80072384() {
-    return *D_80075C88;
-}
+u_int func_80072384() { return *D_80075C88; }
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_8007239C);
 /*extern int* D_80075C5C;

@@ -79,6 +79,9 @@ typedef struct {
 #define vs_getTpageRaw(tpageVal) ((0xE1 << 24) | ((tpageVal) & 0xFFFF))
 #define vs_getRGB0(code, r, g, b)                                                        \
     (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
+#define vs_getRGB5551(r, g, b, a)                                                        \
+    (((r) & 0x1F) | (((g) & 0x1F) << 5) | (((b) & 0x1F) << 10) | (((a) & 0x1) << 15))
+#define vs_getRGB888(r, g, b) (((r) & 0xFF) | (((g) & 0xFF) << 8) | (((b) & 0xFF) << 16))
 #define vs_setRGB0(p, code, r, g, b)                                                     \
     (p)->r0g0b0code                                                                      \
         = (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))

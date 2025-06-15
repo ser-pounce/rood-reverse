@@ -179,11 +179,11 @@ extern u_char _memcardPort;
 extern u_char _memCardInitTmeout;
 extern u_char _memCardTimeout;
 extern u_char _memcardEvType;
-extern u_char D_800DC8AD;
+extern u_char _loadSaveDataState;
 extern u_char _readCardPort;
 extern u_char _readFileNo;
-extern u_char D_800DC8B0;
-extern u_char D_800DC8B1;
+extern u_char _isTempSave;
+extern u_char _loadSaveDataErrors;
 extern int _memCardFd;
 extern u_char _memcardSaveState;
 extern u_char _memcardFileno;
@@ -199,7 +199,7 @@ extern u_char D_800DC924;
 extern RECT D_800DC938;
 extern u_char _saveScreenState;
 extern u_char _saveScreenFadeTimer;
-extern u_char D_800DEB0C;
+extern u_char _loadSaveDataErrorOffset;
 extern u_short D_800DEB10;
 extern u_short D_800DEB12;
 extern u_char D_800DED73;
@@ -268,7 +268,7 @@ extern struct {
 } _primBuf;
 extern int D_800DED68;
 extern void* D_800DED6C;
-extern u_char D_800DED70;
+extern u_char _isSaving;
 extern u_char D_800DED71;
 extern u_char D_800DED72;
 extern u_char D_800DED75;
@@ -301,7 +301,7 @@ enum menuItems {
 #define SWEVENTS 0
 #define HWEVENTS 4
 
-#define MAKEXY(x, y) (((y) << 16) | (x))
+#define MAKEXY(x, y) (((y) << 16) + (x))
 #define MAKEWH(w, h) MAKEXY(w, h)
 
 static void _playNewGameSfx()
@@ -795,7 +795,9 @@ int func_800696D0(int arg0)
 void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
-int func_80069EA8(int portFileno)
+enum loadSaveDataState { loadSaveDataStateInit = 0, loadSaveDataStateReading = 1 };
+
+static int _loadSaveData(int portFileno)
 {
     int ev;
     int nBytes;
@@ -805,25 +807,25 @@ int func_80069EA8(int portFileno)
 
     temp_s2 = _spmcimg + 0x5C00;
     if (portFileno != 0) {
-        D_800DC8AD = 0;
-        D_800DC8B1 = 0;
-        D_800DEB0C = 0;
+        _loadSaveDataState = loadSaveDataStateInit;
+        _loadSaveDataErrors = 0;
+        _loadSaveDataErrorOffset = 0;
         _readCardPort = portFileno >> 0xC;
-        D_800DC8B0 = (portFileno >> 8) & 1;
+        _isTempSave = (portFileno >> 8) & 1;
         _readFileNo = portFileno & 0xF;
-        D_800DEB12 = 0x50;
+        D_800DEB12 = 80;
         D_800DEB10 = 0;
         return 0;
     }
 
-    switch (D_800DC8AD) {
-    case 0:
-        new_var = 0x140;
+    switch (_loadSaveDataState) {
+    case loadSaveDataStateInit:
+        new_var = 320;
         D_800DEB12 += ((D_800DEB14 - D_800DEB10)
-                          * ((D_800DEB0C * 0x14) - (D_800DEB12 - new_var)))
+                          * ((_loadSaveDataErrorOffset * 0x14) - (D_800DEB12 - new_var)))
             / D_800DEB0E;
-        D_800DEB0C = D_800DC8B1;
-        D_800DEB0E = 0xC0 - (D_800DC8B0 << 7);
+        _loadSaveDataErrorOffset = _loadSaveDataErrors;
+        D_800DEB0E = 0xC0 - (_isTempSave << 7);
         D_800DEB10 = D_800DEB14;
 
         memset(temp_s2, 0, 0x5C00);
@@ -835,34 +837,34 @@ int func_80069EA8(int portFileno)
         }
         _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
         if (_memCardFd == -1) {
-            ++D_800DC8B1;
+            ++_loadSaveDataErrors;
             break;
         }
         _resetMemcardEvents(SWEVENTS);
         nBytes = 0x5C00;
-        if (D_800DC8B0 != 0) {
+        if (_isTempSave != 0) {
             nBytes = 0x2000;
         }
         if (read(_memCardFd, temp_s2, nBytes) == -1) {
             close(_memCardFd);
-            ++D_800DC8B1;
+            ++_loadSaveDataErrors;
             break;
         }
-        D_800DC8AD = 1;
+        _loadSaveDataState = loadSaveDataStateReading;
         // fallthrough
-    case 1:
+    case loadSaveDataStateReading:
         ev = _testMemcardEvents(SWEVENTS);
         if (ev < memCardEventNone) {
             close(_memCardFd);
             if (ev == memCardEventIoEnd) {
                 return 1;
             }
-            D_800DC8AD = 0;
-            ++D_800DC8B1;
+            _loadSaveDataState = loadSaveDataStateInit;
+            ++_loadSaveDataErrors;
         }
         break;
     }
-    return D_800DC8B1 == 3 ? -1 : 0;
+    return _loadSaveDataErrors == 3 ? -1 : 0;
 }
 
 enum memcardSaveState {
@@ -880,7 +882,7 @@ int func_8006A11C(int arg0)
     if (arg0 != 0) {
         D_800DC8BB = 0;
         D_800DC8BC = 0;
-        D_800DEB0C = 0;
+        _loadSaveDataErrorOffset = 0;
         _memcardManagerPort = arg0 >> 0xC;
         _memcardFileno = arg0 & 7;
         D_800DEB12 = 0x50;
@@ -930,7 +932,7 @@ int func_8006A11C(int arg0)
                 _memcardSaveState = 3;
                 temp_s2 = D_800DEB12;
                 temp_s3 = D_800DEB10;
-                func_80069EA8((_memcardManagerPort << 0xC) | (_memcardFileno + 8));
+                _loadSaveData((_memcardManagerPort << 0xC) | (_memcardFileno + 8));
                 D_800DEB12 = temp_s2;
                 D_800DEB10 = temp_s3;
             } else {
@@ -941,7 +943,7 @@ int func_8006A11C(int arg0)
         break;
     }
     case 3:
-        temp_s3 = func_80069EA8(0);
+        temp_s3 = _loadSaveData(0);
         if (temp_s3 == 0) {
             break;
         }
@@ -1177,45 +1179,45 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
 
 void _loadFileAnim(u_int arg0, int arg1)
 {
-    int var_s2;
     u_char* new_var __attribute__((unused));
-    int var_s4;
+    int gradientColor1;
+    int gradientColor2;
     u_int var_s3;
-    u_int var_s5;
+    u_int i;
 
-    var_s3 = arg0 - 0x30;
-    new_var = &D_800DED70;
+    var_s3 = arg0 - 48;
+    new_var = &_isSaving;
 
-    if (var_s3 < 0x40) {
-        var_s3 = 0x40;
+    if (var_s3 < 64) {
+        var_s3 = 64;
     }
 
-    var_s4 = 0;
-    var_s2 = 0xFFE0;
+    gradientColor1 = 0;
+    gradientColor2 = vs_getRGB888(224, 255, 0);
 
-    if (D_800DED70 != 0) {
-        var_s2 = 0x7F00FF;
+    if (_isSaving != 0) {
+        gradientColor2 = vs_getRGB888(255, 0, 127);
     }
 
-    for (var_s5 = 0; var_s5 < 2; ++var_s5) {
+    for (i = 0; i < 2; ++i) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
         _primBuf.prim.polyG4_tpage.r0g0b0code
-            = vs_getRGB0Raw(primPolyG4SemiTrans, var_s4);
+            = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
         _primBuf.prim.polyG4_tpage.x0y0 = var_s3 | arg1;
         _primBuf.prim.polyG4_tpage.x1y1 = arg0 | arg1;
-        _primBuf.prim.polyG4_tpage.x2y2 = var_s3 | (arg1 + 0x200000);
+        _primBuf.prim.polyG4_tpage.x2y2 = var_s3 | MAKEXY(arg1, 32);
         _primBuf.prim.polyG4_tpage.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-        _primBuf.prim.polyG4_tpage.r1g1b1 = var_s2;
-        _primBuf.prim.polyG4_tpage.r2g2b2 = var_s4;
-        _primBuf.prim.polyG4_tpage.r3g3b3 = var_s2;
-        _primBuf.prim.polyG4_tpage.x3y3 = arg0 | (arg1 + 0x200000);
+        _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
+        _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.x3y3 = arg0 | MAKEXY(arg1, 32);
         DrawPrim(&_primBuf);
         var_s3 = arg0;
-        arg0 += 0x10;
-        var_s4 = var_s2;
-        var_s2 = 0;
+        arg0 += 16;
+        gradientColor1 = gradientColor2;
+        gradientColor2 = 0;
     }
 }
 
@@ -1226,7 +1228,7 @@ void func_8006ACD8(int arg0, int y)
     u_int i;
     int colour1 = 0;
 
-    if (D_800DED70 != 0) {
+    if (_isSaving != 0) {
         colour0 = arg0 + (arg0 << 15);
     } else {
         colour0 = (arg0 - (arg0 >> 3)) + (arg0 << 8);
@@ -1601,7 +1603,7 @@ int func_8006C15C(int arg0)
         if (currentSlot != 0) {
             if (currentSlot >= 0) {
                 int new_var;
-                func_80069EA8(((_selectedSlot + _slotsPage) + 1)
+                _loadSaveData(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 D_800DC8D8 = 3;
                 D_800DED6C = D_800DEAC0 + 0x193;
@@ -1611,7 +1613,7 @@ int func_8006C15C(int arg0)
         }
         break;
     case 3:
-        currentSlot = func_80069EA8(0);
+        currentSlot = _loadSaveData(0);
         ++D_800DEB14;
         if (currentSlot != 0) {
             D_800DEB14 = 0;
@@ -1682,7 +1684,7 @@ int func_8006CABC(int arg0)
     if (arg0 != 0) {
         D_800DC8E2 = arg0 - 1;
         D_800DC8E1 = 1;
-        D_800DED70 = 0;
+        _isSaving = 0;
         D_800DC8E0 = 0;
         return 0;
     }
@@ -2155,7 +2157,7 @@ int func_8006E00C(int arg0)
         D_800DC924 = 1;
         D_800DED74 = 0;
         D_800DED73 = 0;
-        D_800DED70 = 1;
+        _isSaving = 1;
         D_800DC923 = (arg0 - 1) * 3;
         temp_v0 = func_8006AE70(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x89));
         temp_v0->unk0 = 2;
@@ -2189,12 +2191,12 @@ int func_8006E00C(int arg0)
             D_800DED6C = D_800DEAC0 + (temp_v0_2 == -2 ? 0xE3 : 0xF7);
             D_800DC923 = 9;
         } else {
-            func_80069EA8((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
+            _loadSaveData((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
             D_800DC923 = 2;
         }
         break;
     case 2:
-        var_a0 = func_80069EA8(0);
+        var_a0 = _loadSaveData(0);
         if (var_a0 != 0) {
             if ((var_a0 <= 0) || (func_800696D0(0) != 0)) {
                 D_800DC923 = 9;

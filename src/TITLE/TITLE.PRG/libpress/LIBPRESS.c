@@ -1,6 +1,15 @@
 #include "common.h"
+#include <libpress.h>
+#include <libetc.h>
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
+void func_80072050(int);
+
+void DecDCTReset(int mode) {
+    if (mode == 0) {
+        ResetCallback();
+    }
+    func_80072050(mode);
+}
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTGetEnv);
 

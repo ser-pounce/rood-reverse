@@ -9,3 +9,5 @@ $(BUILD)/src/TITLE/TITLE.PRG/22C.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1VER := 2.8.0
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h \
 	$(BUILD)/assets/TITLE/TITLE.PRG/menuBg.rgba16Compressed.segment.o
+
+$(BUILD)/src/TITLE/TITLE.PRG/libpress/%.o: CC1VER := 2.8.0

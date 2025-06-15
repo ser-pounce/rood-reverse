@@ -1,4 +1,5 @@
 #include "common.h"
+#include <libapi.h>
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", SetInitPadFlag);
 

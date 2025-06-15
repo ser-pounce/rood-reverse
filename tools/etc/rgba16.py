@@ -15,10 +15,10 @@ def to_rgba8888(data, count):
     pxls = Pixel * count
     pxls = pxls.from_buffer_copy(data)
     img = bytearray(
-        [channel for p in pxls for channel in (p.r, p.g, p.b, 31 if p.a == 0 else 0)]
+        [channel for p in pxls for channel in (p.r, p.g, p.b, 31 if p.a == 0 else 30)]
     )
     return img
-        
+
 def to_png(data, w, h, path):
     with open(path, "wb") as f:
         png.Writer(width=w, height=h, alpha=True, greyscale=False, bitdepth=5) \
@@ -29,7 +29,8 @@ def to_bytes(png_path):
     output = bytes()
     for i in range(0, len(data), 4):
         r, g, b, a = data[i : i + 4]
-        output += Pixel(r >> 3, g >> 3, b >> 3, 1 if a == 0 else 0)
+        print
+        output += Pixel(r >> 3, g >> 3, b >> 3, 0 if (a >> 3) == 31 else 1)
     return (output, w, h)
 
 if __name__ == '__main__':

@@ -148,6 +148,7 @@ u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
+extern char D_800728B0[];
 extern int D_800728C0[];
 extern int D_800728E8[];
 extern u_char D_80072910[];
@@ -1500,9 +1501,180 @@ u_int func_8006B4EC(int arg0, u_int arg1)
     return func_8006B490(a0, a1, arg0);
 }
 
-// https://decomp.me/scratch/Dj952
-void func_8006B5A0(_saveSlotMenuEntries_t* arg0);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006B5A0);
+void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
+{
+    u_long sp10[130];
+    _saveFileInfo_t* temp_s5;
+    int var_a0;
+    int var_a1;
+    int var_a3;
+    int var_s1;
+    int var_s2;
+    u_int temp_s0;
+    int temp_s4;
+    u_int temp_v1;
+    u_int* var_a1_2;
+    int new_var;
+
+    if (arg0->unk4 != 0) {
+        arg0->unk2 = 8;
+    } else if (arg0->unk2 != 0) {
+        --arg0->unk2;
+    }
+    if (arg0->slotUnused != 0) {
+        arg0->unk2 = 0;
+    }
+    if ((arg0->slotId >= 5) || ((arg0->unkC[1] - 0x48) < 0x51U)) {
+        var_s2 = arg0->unk3;
+        temp_s0 = func_8006B4EC(8 - arg0->unk2, var_s2);
+        temp_s4 = func_8006B4EC(arg0->unk2, var_s2);
+        if (var_s2 & 7) {
+            arg0->unk3 = var_s2 + 1;
+        }
+        var_s2 = arg0->unkC[1] << 16;
+        DrawSync(0);
+        _primBuf.tag = 0x0C000000;
+        _primBuf.prim.tilePoly.tile.tpage = 0xE1000200;
+        _primBuf.prim.tilePoly.tile.r0g0b0code = 0x60000000;
+        _primBuf.prim.tilePoly.tile.x0y0
+            = ((arg0->unkC[0] + 2) & 0xFFFF) | ((arg0->unkC[1] + 2) << 0x10);
+        _primBuf.prim.tilePoly.tile.wh = arg0->unk10[0] | (arg0->unk10[1] << 0x10);
+        _primBuf.prim.tilePoly.polyG4.r0g0b0code = temp_s0 | 0x38000000;
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->unkC[0] | var_s2;
+        _primBuf.prim.tilePoly.polyG4.r1g1b1 = temp_s4;
+        _primBuf.prim.tilePoly.polyG4.x1y1
+            = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF) | var_s2;
+        _primBuf.prim.tilePoly.polyG4.r2g2b2 = temp_s0;
+        _primBuf.prim.tilePoly.polyG4.x2y2
+            = (u_short)arg0->unkC[0] | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.r3g3b3 = temp_s4;
+        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF)
+            | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
+        DrawPrim(&_primBuf);
+        var_a1 = arg0->unkC[0] + 6;
+        for (temp_s0 = 0; (int)temp_s0 < 32; ++temp_s0) {
+            temp_s4 = arg0->unk14[temp_s0];
+            if (temp_s4 == 0xFA) {
+                var_a1 += arg0->unk14[++temp_s0];
+            } else if (temp_s4 != 0xFF) {
+                var_a1 = func_8006AFF8((u_int)temp_s4, var_a1, (int)arg0->unkC[1], 0);
+            } else {
+                break;
+            }
+        }
+        temp_s4 = arg0->slotId;
+        if (temp_s4 < 5) {
+            _readImage(MAKEXY(768, 227), sp10, MAKEWH(256, 1));
+            temp_s5 = &_saveFileInfo[temp_s4];
+            var_s1 = arg0->unk6 - 1;
+            temp_s0 = temp_s5->slotState;
+            if (temp_s0 < 3) {
+                if (temp_s0 == 0) {
+                    var_s1 = -2;
+                } else if (temp_s0 == 2) {
+                    var_s1 = -4;
+                } else if (_isSaving != 0) {
+                    var_s1 = -1;
+                } else {
+                    var_s1 = -5;
+                }
+            } else if (var_s1 >= 0x30) {
+                var_s1 = -3;
+            }
+            if (var_s1 >= 0x20U) {
+                var_a1_2 = _mcData + 0x80;
+            } else {
+                var_a1_2 = _mcData;
+            }
+            _drawImage(MAKEXY(768, 227), (u_long*)var_a1_2, MAKEWH(256, 1));
+            if (var_s1 < 0) {
+                var_a1 = (~var_s1 << 0xD) | 0x38F00040;
+                var_a0 = (arg0->unkC[0] - 0x40) | var_s2;
+                _drawSprt(var_a0, var_a1, 0x200040, ((8 - arg0->unk2) << 0x13) | 0x9C);
+            } else {
+                int v0;
+                var_a1 = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD) | 0x38F00000;
+                var_a0 = (arg0->unkC[0] - 0x40) | var_s2;
+                new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
+                v0 = new_var >> 6;
+                var_a3 = (((8 - arg0->unk2) << 0x13) | 0x90);
+                _drawSprt(var_a0, var_a1, 0x200040, v0 | var_a3);
+            }
+            _drawImage(MAKEXY(768, 227), sp10, MAKEWH(256, 1));
+            func_8006A81C((arg0->unkC[0] - 0x16) | var_s2, 1);
+            func_8006A860((arg0->unkC[0] - 9) | var_s2, temp_s4 + 1, 0xAU);
+            temp_v1 = temp_s5->slotState;
+            if (temp_v1 == 0) {
+                func_8006B364((u_char*)D_800DEAC0 + 0x372, arg0->unkC[0] + 6,
+                    arg0->unkC[1] + 0xA, 3);
+            } else if (temp_v1 == 1) {
+                if (_isSaving == 0) {
+                    func_8006B364((u_char*)D_800DEAC0 + 0x38A, arg0->unkC[0] + 6,
+                        arg0->unkC[1] + 0xA, 3);
+                } else {
+                    func_8006B364((u_char*)D_800DEAC0 + 0x3A0, arg0->unkC[0] + 6,
+                        arg0->unkC[1] + 0xA, 0);
+                }
+            } else {
+                var_s2 = var_s2 + 0x40000;
+                func_8006B364((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
+                    arg0->unkC[0] + 6, arg0->unkC[1] + 4, 0);
+                func_8006A81C(var_s2 | 0xAC, 2);
+                func_8006A81C(var_s2 | 0xBD, 0);
+                temp_s0 = temp_s5->unk1E;
+
+                if (temp_s0 == 0x64) {
+                    func_8006A860(var_s2 | 0xC0, 0x64U, 0x64);
+                    func_8006A81C((var_s2 + 0xFFFF0000) | 0xCF, 6);
+                } else {
+                    func_8006A860(var_s2 | 0xC0, temp_s0, 0xA);
+                    func_8006A81C((var_s2 + 0xFFFF0000) | 0xCA, 6);
+                }
+                func_8006A81C(var_s2 | 0xD9, 3);
+                func_8006A81C(var_s2 | 0xEF, 0);
+                func_8006A860(var_s2 | 0xF2, (u_int)temp_s5->unk14, 0x3E8U);
+                func_8006A81C(var_s2 | 0x10B, 4);
+                func_8006A81C(var_s2 | 0x125, 0);
+                func_8006A860(var_s2 | 0x128, (u_int)temp_s5->unk1D, 0xAU);
+                var_s2 = var_s2 + 0xD0000;
+                if (temp_s5->unk1D != 0) {
+                    _drawSprt(var_s2 | 0x45, 0x37F910F0, 0x100010, 0xC);
+                }
+                func_8006A81C(var_s2 | 0xF0, 5);
+                temp_s0 = temp_s5->unk13;
+                if (temp_s0 == 0x64) {
+                    func_8006A860(var_s2 | 0x107, temp_s0, 0x64);
+                } else {
+                    func_8006A860(var_s2 | 0x10C, temp_s0, 10);
+                }
+                func_8006A81C(var_s2 | 0x117, 0);
+                func_8006A860(var_s2 | 0x11A, (u_int)temp_s5->unk12, 0xAU);
+                func_8006A81C(var_s2 | 0x125, 0);
+                func_8006A860(var_s2 | 0x128, (u_int)temp_s5->unk11, 0xAU);
+                func_8006A928(
+                    var_s2 | 0x58, 0, (int)temp_s5->unk18, (u_int)temp_s5->unk1A);
+                func_8006A928(
+                    var_s2 | 0x9E, 1, (int)temp_s5->unk20, (u_int)temp_s5->unk22);
+                var_s2 = var_s2 + 0xFFEF0000;
+            }
+            if ((arg0->unk4 != 0) && (D_800DEB14 != 0)) {
+                if (D_800DEB14 < 0) {
+                    int v0 = D_800DEB14++;
+                    char* p = D_800728B0 + v0;
+                    func_8006ACD8(-p[17], var_s2);
+                } else {
+                    int new_var3 = 0x140;
+                    _loadFileAnim(D_800DEB12
+                            + (((D_800DEB14 - D_800DEB10)
+                                   * ((_loadSaveDataErrorOffset * 0x14)
+                                       - (D_800DEB12 - new_var3)))
+                                / D_800DEB0E),
+                        var_s2);
+                }
+            }
+        }
+    }
+}
 
 void _drawSaveMenu(u_char);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", _drawSaveMenu);

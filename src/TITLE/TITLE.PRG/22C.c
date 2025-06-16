@@ -1503,15 +1503,15 @@ u_int func_8006B4EC(int arg0, u_int arg1)
 
 void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
 {
-    u_long sp10[130];
-    _saveFileInfo_t* temp_s5;
-    int var_a0;
-    int var_a1;
+    u_long clut[130];
+    _saveFileInfo_t* saveInfo;
+    int xy;
+    int uvClut;
     int var_a3;
     int var_s1;
     int var_s2;
-    u_int temp_s0;
-    int temp_s4;
+    u_int color1;
+    int color2;
     u_int temp_v1;
     u_int* var_a1_2;
     int new_var;
@@ -1526,84 +1526,85 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
     }
     if ((arg0->slotId >= 5) || ((arg0->unkC[1] - 0x48) < 0x51U)) {
         var_s2 = arg0->unk3;
-        temp_s0 = func_8006B4EC(8 - arg0->unk2, var_s2);
-        temp_s4 = func_8006B4EC(arg0->unk2, var_s2);
+        color1 = func_8006B4EC(8 - arg0->unk2, var_s2);
+        color2 = func_8006B4EC(arg0->unk2, var_s2);
         if (var_s2 & 7) {
             arg0->unk3 = var_s2 + 1;
         }
         var_s2 = arg0->unkC[1] << 16;
+
         DrawSync(0);
-        _primBuf.tag = 0x0C000000;
-        _primBuf.prim.tilePoly.tile.tpage = 0xE1000200;
-        _primBuf.prim.tilePoly.tile.r0g0b0code = 0x60000000;
-        _primBuf.prim.tilePoly.tile.x0y0
-            = ((arg0->unkC[0] + 2) & 0xFFFF) | ((arg0->unkC[1] + 2) << 0x10);
+        _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
+        _primBuf.prim.tilePoly.tile.tpage = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->unkC[1] + 2, arg0->unkC[0] + 2);
         _primBuf.prim.tilePoly.tile.wh = arg0->unk10[0] | (arg0->unk10[1] << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r0g0b0code = temp_s0 | 0x38000000;
+        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, color1);
         _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->unkC[0] | var_s2;
-        _primBuf.prim.tilePoly.polyG4.r1g1b1 = temp_s4;
+        _primBuf.prim.tilePoly.polyG4.r1g1b1 = color2;
         _primBuf.prim.tilePoly.polyG4.x1y1
             = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF) | var_s2;
-        _primBuf.prim.tilePoly.polyG4.r2g2b2 = temp_s0;
+        _primBuf.prim.tilePoly.polyG4.r2g2b2 = color1;
         _primBuf.prim.tilePoly.polyG4.x2y2
             = (u_short)arg0->unkC[0] | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r3g3b3 = temp_s4;
+        _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
         _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF)
             | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
         DrawPrim(&_primBuf);
-        var_a1 = arg0->unkC[0] + 6;
-        for (temp_s0 = 0; (int)temp_s0 < 32; ++temp_s0) {
-            temp_s4 = arg0->unk14[temp_s0];
-            if (temp_s4 == 0xFA) {
-                var_a1 += arg0->unk14[++temp_s0];
-            } else if (temp_s4 != 0xFF) {
-                var_a1 = func_8006AFF8((u_int)temp_s4, var_a1, (int)arg0->unkC[1], 0);
+
+        uvClut = arg0->unkC[0] + 6;
+        for (color1 = 0; (int)color1 < 32; ++color1) {
+            color2 = arg0->unk14[color1];
+            if (color2 == 0xFA) {
+                uvClut += arg0->unk14[++color1];
+            } else if (color2 != 0xFF) {
+                uvClut = func_8006AFF8(color2, uvClut, arg0->unkC[1], 0);
             } else {
                 break;
             }
         }
-        temp_s4 = arg0->slotId;
-        if (temp_s4 < 5) {
-            _readImage(MAKEXY(768, 227), sp10, MAKEWH(256, 1));
-            temp_s5 = &_saveFileInfo[temp_s4];
+        color2 = arg0->slotId;
+        if (color2 < 5) {
+            _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
+            saveInfo = &_saveFileInfo[color2];
             var_s1 = arg0->unk6 - 1;
-            temp_s0 = temp_s5->slotState;
-            if (temp_s0 < 3) {
-                if (temp_s0 == 0) {
+            color1 = saveInfo->slotState;
+            if (saveInfo->slotState < 3) {
+                if (saveInfo->slotState == 0) {
                     var_s1 = -2;
-                } else if (temp_s0 == 2) {
+                } else if (saveInfo->slotState == 2) {
                     var_s1 = -4;
                 } else if (_isSaving != 0) {
                     var_s1 = -1;
                 } else {
                     var_s1 = -5;
                 }
-            } else if (var_s1 >= 0x30) {
+            } else if (var_s1 >= 48) {
                 var_s1 = -3;
             }
-            if (var_s1 >= 0x20U) {
-                var_a1_2 = _mcData + 0x80;
+            if (var_s1 >= 32u) {
+                var_a1_2 = _mcData + 128;
             } else {
                 var_a1_2 = _mcData;
             }
             _drawImage(MAKEXY(768, 227), (u_long*)var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {
-                var_a1 = (~var_s1 << 0xD) | 0x38F00040;
-                var_a0 = (arg0->unkC[0] - 0x40) | var_s2;
-                _drawSprt(var_a0, var_a1, 0x200040, ((8 - arg0->unk2) << 0x13) | 0x9C);
+                uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
+                xy = (arg0->unkC[0] - 64) | var_s2;
+                _drawSprt(xy, uvClut, MAKEWH(64, 32), ((8 - arg0->unk2) << 0x13) | 0x9C);
             } else {
                 int v0;
-                var_a1 = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD) | 0x38F00000;
-                var_a0 = (arg0->unkC[0] - 0x40) | var_s2;
+                uvClut = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD) | vs_getUV0Clut(0, 0, 768, 227);
+                xy = (arg0->unkC[0] - 0x40) | var_s2;
                 new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
                 v0 = new_var >> 6;
                 var_a3 = (((8 - arg0->unk2) << 0x13) | 0x90);
-                _drawSprt(var_a0, var_a1, 0x200040, v0 | var_a3);
+                _drawSprt(xy, uvClut, 0x200040, v0 | var_a3);
             }
-            _drawImage(MAKEXY(768, 227), sp10, MAKEWH(256, 1));
+            _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             func_8006A81C((arg0->unkC[0] - 0x16) | var_s2, 1);
-            func_8006A860((arg0->unkC[0] - 9) | var_s2, temp_s4 + 1, 0xAU);
-            temp_v1 = temp_s5->slotState;
+            func_8006A860((arg0->unkC[0] - 9) | var_s2, color2 + 1, 0xAU);
+            temp_v1 = saveInfo->slotState;
             if (temp_v1 == 0) {
                 func_8006B364((u_char*)D_800DEAC0 + 0x372, arg0->unkC[0] + 6,
                     arg0->unkC[1] + 0xA, 3);
@@ -1621,40 +1622,40 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                     arg0->unkC[0] + 6, arg0->unkC[1] + 4, 0);
                 func_8006A81C(var_s2 | 0xAC, 2);
                 func_8006A81C(var_s2 | 0xBD, 0);
-                temp_s0 = temp_s5->unk1E;
+                color1 = saveInfo->unk1E;
 
-                if (temp_s0 == 0x64) {
+                if (color1 == 0x64) {
                     func_8006A860(var_s2 | 0xC0, 0x64U, 0x64);
                     func_8006A81C((var_s2 + 0xFFFF0000) | 0xCF, 6);
                 } else {
-                    func_8006A860(var_s2 | 0xC0, temp_s0, 0xA);
+                    func_8006A860(var_s2 | 0xC0, color1, 0xA);
                     func_8006A81C((var_s2 + 0xFFFF0000) | 0xCA, 6);
                 }
                 func_8006A81C(var_s2 | 0xD9, 3);
                 func_8006A81C(var_s2 | 0xEF, 0);
-                func_8006A860(var_s2 | 0xF2, (u_int)temp_s5->unk14, 0x3E8U);
+                func_8006A860(var_s2 | 0xF2, (u_int)saveInfo->unk14, 0x3E8U);
                 func_8006A81C(var_s2 | 0x10B, 4);
                 func_8006A81C(var_s2 | 0x125, 0);
-                func_8006A860(var_s2 | 0x128, (u_int)temp_s5->unk1D, 0xAU);
+                func_8006A860(var_s2 | 0x128, (u_int)saveInfo->unk1D, 0xAU);
                 var_s2 = var_s2 + 0xD0000;
-                if (temp_s5->unk1D != 0) {
+                if (saveInfo->unk1D != 0) {
                     _drawSprt(var_s2 | 0x45, 0x37F910F0, 0x100010, 0xC);
                 }
                 func_8006A81C(var_s2 | 0xF0, 5);
-                temp_s0 = temp_s5->unk13;
-                if (temp_s0 == 0x64) {
-                    func_8006A860(var_s2 | 0x107, temp_s0, 0x64);
+                color1 = saveInfo->unk13;
+                if (color1 == 0x64) {
+                    func_8006A860(var_s2 | 0x107, color1, 0x64);
                 } else {
-                    func_8006A860(var_s2 | 0x10C, temp_s0, 10);
+                    func_8006A860(var_s2 | 0x10C, color1, 10);
                 }
                 func_8006A81C(var_s2 | 0x117, 0);
-                func_8006A860(var_s2 | 0x11A, (u_int)temp_s5->unk12, 0xAU);
+                func_8006A860(var_s2 | 0x11A, (u_int)saveInfo->unk12, 0xAU);
                 func_8006A81C(var_s2 | 0x125, 0);
-                func_8006A860(var_s2 | 0x128, (u_int)temp_s5->unk11, 0xAU);
+                func_8006A860(var_s2 | 0x128, (u_int)saveInfo->unk11, 0xAU);
                 func_8006A928(
-                    var_s2 | 0x58, 0, (int)temp_s5->unk18, (u_int)temp_s5->unk1A);
+                    var_s2 | 0x58, 0, (int)saveInfo->unk18, (u_int)saveInfo->unk1A);
                 func_8006A928(
-                    var_s2 | 0x9E, 1, (int)temp_s5->unk20, (u_int)temp_s5->unk22);
+                    var_s2 | 0x9E, 1, (int)saveInfo->unk20, (u_int)saveInfo->unk22);
                 var_s2 = var_s2 + 0xFFEF0000;
             }
             if ((arg0->unk4 != 0) && (D_800DEB14 != 0)) {

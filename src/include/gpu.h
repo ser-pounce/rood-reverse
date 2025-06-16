@@ -2,14 +2,14 @@
 #include <sys/types.h>
 #include <libgpu.h>
 
+enum vs_texMode { clut4Bit = 0, clut8Bit = 1, direct16Bit = 2 };
+
 enum vs_semiTransparencyRate {
     semiTransparencyHalf = 0,
     semiTransparencyFull = 1,
     semiTransparencySubtract = 2,
     semiTransparencyQuarterFront = 3
 };
-
-enum vs_texMode { clut4Bit = 0, clut8Bit = 1, direct16Bit = 2 };
 
 enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
 
@@ -73,17 +73,15 @@ typedef struct {
 #define vs_getXY(x, y) (((y) & 0xFFFF) << 16 | ((x) & 0xFFFF))
 #define vs_getYX(y, x) (((x) & 0xFFFF) | ((y) & 0xFFFF) << 16)
 #define vs_getWH(w, h) vs_getXY((w), (h))
+#define vs_getHW(h, w) vs_getYX((w), (h))
 #define vs_getTag(type, addr) (((sizeof(type) / 4) << 24) | ((addr) & 0xFFFFFF))
 #define vs_getTpage(x, y, tp, abr, dtd)                                                  \
     ((0xE1 << 24) | (((dtd) & 1) << 9) | getTPage((tp), (abr), (x), (y)))
 #define vs_getTpageRaw(tpageVal) ((0xE1 << 24) | ((tpageVal) & 0xFFFF))
 #define vs_getRGB0(code, r, g, b)                                                        \
     (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
+#define vs_getRGB0Raw(code, rgb0) (((code) << 24) | (rgb0))
 #define vs_getRGB5551(r, g, b, a)                                                        \
     (((r) & 0x1F) | (((g) & 0x1F) << 5) | (((b) & 0x1F) << 10) | (((a) & 0x1) << 15))
 #define vs_getRGB888(r, g, b) (((r) & 0xFF) | (((g) & 0xFF) << 8) | (((b) & 0xFF) << 16))
-#define vs_setRGB0(p, code, r, g, b)                                                     \
-    (p)->r0g0b0code                                                                      \
-        = (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))
-#define vs_getRGB0Raw(code, rgb0) (((code) << 24) | (rgb0))
 #define vs_getUV0Clut(u, v, x, y) (((u) | ((v) << 8)) | (getClut((x), (y)) << 16))

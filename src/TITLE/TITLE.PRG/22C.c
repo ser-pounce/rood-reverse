@@ -36,8 +36,10 @@ typedef struct {
     u_char unk7;
     short unk8;
     short unkA;
-    short unkC[2];
-    short unk10[2];
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
     u_char unk14[32];
 } _saveSlotMenuEntries_t;
 
@@ -148,6 +150,7 @@ u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _scrambleSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
+extern u_char D_8007289C[];
 extern char D_800728B0[];
 extern int D_800728C0[];
 extern int D_800728E8[];
@@ -1281,8 +1284,8 @@ _saveSlotMenuEntries_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3
     memset(temp_s3, 0, sizeof(*temp_s3));
     temp_s3->unk0 = 1;
     temp_s3->slotId = -1;
-    *(int*)temp_s3->unkC = arg1;
-    *(int*)temp_s3->unk10 = arg2;
+    *(int*)&temp_s3->unkC = arg1;
+    *(int*)&temp_s3->unk10 = arg2;
 
     if (arg3 != NULL) {
         for (i = 0; i < 32;) {
@@ -1521,42 +1524,41 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
     if (arg0->slotUnused != 0) {
         arg0->unk2 = 0;
     }
-    if ((arg0->slotId >= 5) || ((arg0->unkC[1] - 0x48) < 0x51U)) {
+    if ((arg0->slotId >= 5) || ((arg0->unkE - 0x48) < 0x51U)) {
         y = arg0->unk3;
         color1 = func_8006B4EC(8 - arg0->unk2, y);
         color2 = func_8006B4EC(arg0->unk2, y);
         if (y & 7) {
             arg0->unk3 = y + 1;
         }
-        y = arg0->unkC[1] << 16;
+        y = arg0->unkE << 16;
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
         _primBuf.prim.tilePoly.tile.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->unkC[1] + 2, arg0->unkC[0] + 2);
-        _primBuf.prim.tilePoly.tile.wh = arg0->unk10[0] | (arg0->unk10[1] << 0x10);
+        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->unkE + 2, arg0->unkC + 2);
+        _primBuf.prim.tilePoly.tile.wh = arg0->unk10 | (arg0->unk12 << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, color1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->unkC[0] | y;
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->unkC | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = color2;
-        _primBuf.prim.tilePoly.polyG4.x1y1
-            = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF) | y;
+        _primBuf.prim.tilePoly.polyG4.x1y1 = ((arg0->unkC + arg0->unk10) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = color1;
         _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)arg0->unkC[0] | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
+            = (u_short)arg0->unkC | ((arg0->unkE + arg0->unk12) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->unkC[0] + arg0->unk10[0]) & 0xFFFF)
-            | ((arg0->unkC[1] + arg0->unk10[1]) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->unkC + arg0->unk10) & 0xFFFF)
+            | ((arg0->unkE + arg0->unk12) << 0x10);
         DrawPrim(&_primBuf);
 
-        uvClut = arg0->unkC[0] + 6;
+        uvClut = arg0->unkC + 6;
         for (color1 = 0; (int)color1 < 32; ++color1) {
             color2 = arg0->unk14[color1];
             if (color2 == 0xFA) {
                 uvClut += arg0->unk14[++color1];
             } else if (color2 != 0xFF) {
-                uvClut = func_8006AFF8(color2, uvClut, arg0->unkC[1], 0);
+                uvClut = func_8006AFF8(color2, uvClut, arg0->unkE, 0);
             } else {
                 break;
             }
@@ -1588,37 +1590,37 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
             _drawImage(MAKEXY(768, 227), (u_long*)var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {
                 uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
-                xy = (arg0->unkC[0] - 64) | y;
+                xy = (arg0->unkC - 64) | y;
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), ((8 - arg0->unk2) << 0x13) | 0x9C);
             } else {
                 int v0;
                 uvClut = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD)
                     | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (arg0->unkC[0] - 0x40) | y;
+                xy = (arg0->unkC - 0x40) | y;
                 new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
                 v0 = new_var >> 6;
                 var_a3 = (((8 - arg0->unk2) << 0x13) | 0x90);
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            func_8006A81C((arg0->unkC[0] - 0x16) | y, 1);
-            func_8006A860((arg0->unkC[0] - 9) | y, color2 + 1, 0xAU);
+            func_8006A81C((arg0->unkC - 0x16) | y, 1);
+            func_8006A860((arg0->unkC - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->slotState;
             if (temp_v1 == 0) {
-                func_8006B364((u_char*)D_800DEAC0 + 0x372, arg0->unkC[0] + 6,
-                    arg0->unkC[1] + 0xA, 3);
+                func_8006B364(
+                    (u_char*)D_800DEAC0 + 0x372, arg0->unkC + 6, arg0->unkE + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
-                    func_8006B364((u_char*)D_800DEAC0 + 0x38A, arg0->unkC[0] + 6,
-                        arg0->unkC[1] + 0xA, 3);
+                    func_8006B364(
+                        (u_char*)D_800DEAC0 + 0x38A, arg0->unkC + 6, arg0->unkE + 0xA, 3);
                 } else {
-                    func_8006B364((u_char*)D_800DEAC0 + 0x3A0, arg0->unkC[0] + 6,
-                        arg0->unkC[1] + 0xA, 0);
+                    func_8006B364(
+                        (u_char*)D_800DEAC0 + 0x3A0, arg0->unkC + 6, arg0->unkE + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
                 func_8006B364((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
-                    arg0->unkC[0] + 6, arg0->unkC[1] + 4, 0);
+                    arg0->unkC + 6, arg0->unkE + 4, 0);
                 func_8006A81C(y | 0xAC, 2);
                 func_8006A81C(y | 0xBD, 0);
                 color1 = saveInfo->unk1E;
@@ -1674,8 +1676,123 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
     }
 }
 
-void _drawSaveMenu(u_char);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", _drawSaveMenu);
+static void _drawSaveMenu(int arg0)
+{
+    int dummy[2];
+    _saveSlotMenuEntries_t* var_s1;
+    int j;
+    int i;
+    u_int var_s7;
+    int temp_t0;
+    int new_var;
+
+    var_s1 = _saveSlotMenuEntries;
+    var_s7 = 0;
+    if (arg0 != 0) {
+        var_s7 = 320;
+    }
+    _drawSprt(MAKEXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(64, 64), 0x9C);
+    _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64), 0x9A);
+
+    for (i = 0; i < 10; ++i, ++var_s1) {
+        temp_t0 = var_s1->unk0;
+        if (temp_t0 == 2) {
+            if ((var_s1->unkC) < var_s1->unk8) {
+                var_s1->unkC += 32u;
+                if (var_s1->unkC >= var_s1->unk8) {
+                    var_s1->unkC = var_s1->unk8;
+                    var_s1->unk0 = 1;
+                }
+            } else {
+
+                for (j = 1; j < 16; ++j) {
+                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->unkC) {
+                        break;
+                    }
+                }
+                var_s1->unkC = var_s1->unk8 + D_8007289C[j - 1];
+                if (var_s1->unk10 < (0x140 - var_s1->unkC)) {
+                    var_s1->unk10 = (0x140 - var_s1->unkC);
+                }
+                if (var_s1->unkC == var_s1->unk8) {
+                    var_s1->unk0 = 1;
+                }
+            }
+        }
+        if (temp_t0 == 3) {
+            if (var_s1->unkE > var_s1->unk8) {
+                for (j = 1; j < 16; ++j) {
+                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->unkE) {
+                        break;
+                    }
+                }
+                var_s1->unkE = (var_s1->unk8 + D_8007289C[j - 1]);
+            }
+            if (var_s1->unkE == var_s1->unk8) {
+                var_s1->unk0 = 1;
+            }
+        }
+        if (temp_t0 == 4) {
+            if (var_s1->unkC < var_s1->unk8) {
+                for (j = 1; j < 16; ++j) {
+                    if (var_s1->unkC >= (-D_8007289C[j])) {
+                        break;
+                    }
+                }
+                var_s1->unkC = -D_8007289C[j - 1];
+                if (var_s1->unkC == 0) {
+                    var_s1->unk0 = 1;
+                }
+            } else {
+                var_s1->unkC = var_s1->unkC - 0x20;
+                if (var_s1->unk8 >= var_s1->unkC) {
+                    var_s1->unkC = var_s1->unk8;
+                    var_s1->unk0 = 1;
+                }
+            }
+        }
+        if (temp_t0 != 0) {
+            func_8006B5A0(var_s1);
+        }
+    }
+
+    for (i = 1; i < 4; ++i) {
+        new_var = 0x100;
+        _drawSprt(MAKEXY(0, 0xBB - i), (0xBB - i) << 8, MAKEWH(256, 1),
+            (var_s7 >> 6) | (((4 - i) << 0x15) | new_var));
+        _drawSprt(MAKEXY(256, 0xBB - i), (0xBB - i) << 8, MAKEWH(64, 1),
+            (((int)(var_s7 + new_var)) >> 6) | (((4 - i) << 0x15) | new_var));
+    }
+    _drawSprt(MAKEXY(10, 181), 0x37F59140, MAKEWH(33, 7), 0xC);
+    DrawSync(0);
+    _primBuf.tag = 0x03000000;
+    _primBuf.prim.sprt.tpage = 0x60000000;
+    _primBuf.prim.sprt.r0g0b0code = 0xBB0000;
+    _primBuf.prim.sprt.x0y0 = 0x340140;
+    DrawPrim(&_primBuf);
+    if (D_800DED68 != 0) {
+        _drawSprt(D_800DED68, 0x37F83020, MAKEWH(16, 16),
+            (D_800728B0[D_800DED71] << 0x10) | 0xC);
+        D_800DED71 = (D_800DED71 + 1) & 0xF;
+        if (vs_main_buttonsPressed & 0x10) {
+            vs_main_playSfxDefault(0x7E, 7);
+        }
+    } else {
+        D_800DED71 = 0;
+    }
+    if (D_800DED6C != 0) {
+        func_8006B364((u_char*)D_800DED6C, 0x10, 0xC0, 0);
+    }
+    if (D_800DED72 != 0) {
+        DrawSync(0);
+        _primBuf.tag = 0x04000000;
+        _primBuf.prim.sprt.tpage = 0xE1000140;
+        _primBuf.prim.sprt.x0y0 = 0;
+        _primBuf.prim.sprt.u0v0clut = 0xE00140;
+        _primBuf.prim.sprt.r0g0b0code = (D_800DED72 * 0x80808) | 0x62000000;
+        DrawPrim(&_primBuf);
+    }
+}
 
 static void _drawSaveMenuBg()
 {
@@ -1729,7 +1846,7 @@ int func_8006C15C(int arg0)
             return -1;
         }
         for (i = 0; i < 5; ++i) {
-            _saveSlotMenuEntries[i + 5].unkC[1] = (((i - _slotsPage) * 0x28) + 0x48);
+            _saveSlotMenuEntries[i + 5].unkE = (((i - _slotsPage) * 0x28) + 0x48);
             _saveSlotMenuEntries[i + 5].unk4 = 0;
         }
         currentSlot = _selectedSlot + _slotsPage;
@@ -2130,7 +2247,7 @@ int func_8006D2F8(int arg0)
         } else {
             var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                _saveSlotMenuEntries[i + 5].unkC[1] = (((i - D_800DC91E) * 0x28) + 0x48);
+                _saveSlotMenuEntries[i + 5].unkE = (((i - D_800DC91E) * 0x28) + 0x48);
                 _saveSlotMenuEntries[i + 5].unk4 = 0;
             }
             temp_s0 = D_800DC91F + D_800DC91E;

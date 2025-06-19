@@ -115,7 +115,45 @@ typedef struct {
 } _saveFileInfo_t;
 
 typedef struct {
-    u_char unk0[0x5C00];
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_short unk4[32];
+    u_char unk44[0x1C];
+    u_char unk60[0x20];
+    u_char unk80[0x80];
+    u_char unk100[0x80];
+    int unk180;
+    int unk184;
+    int unk188;
+    int unk18C;
+    vs_Gametime_t gameTime;
+    u_short unk194;
+    u_short unk196;
+    u_short unk198;
+    u_short unk19A;
+    u_char unk19C;
+    u_char unk19D;
+    u_char unk19E;
+    u_char unk19F;
+    u_short unk1A0;
+    u_short unk1A2;
+    u_char unk1A4[0x5C];
+    u_char unk200[0x440];
+    u_char unk640[0x20];
+    u_char unk660[0x48];
+    vs_main_settings_t unk6A8;
+    u_char unk6C8[0x100];
+    u_char unk7C8[0xF00];
+    u_char unk16C8[0xB0];
+    D_80061068_t unk1778;
+    D_8005FEA0_t unk1784;
+    int unk1898;
+    u_char unk189C[0x520];
+    u_char unk1DBC[0x24];
+    u_char unk1DE0[0x3C00];
+    u_char unk59E0[0x220];
     u_char unk5C00[0x180];
     int scrambleSeed;
     int unk5C08;
@@ -136,7 +174,8 @@ typedef struct {
     int unk7498;
     u_char unk749C[0x520];
     u_char unk79BC[0x24];
-    u_char unk79E0[0x3C00];
+    u_char unk79E0[0x3800];
+    u_char unkB1E0[0x100];
 } savedata_t;
 
 typedef struct {

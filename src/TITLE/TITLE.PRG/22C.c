@@ -53,7 +53,7 @@ enum menuItemState {
 typedef struct {
     u_char enabled;
     u_char state;
-    u_char unk2;
+    u_char saturation;
     u_char unk3;
     u_char pos;
     u_char targetPos;
@@ -139,6 +139,11 @@ typedef struct {
     u_char unk79E0[0x3C00];
 } savedata_t;
 
+typedef struct {
+    u_long tag;
+    VS_SPRT sprt;
+} menuItemPrim_t;
+
 static void _playMovie(DslLOC*);
 static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initTitle();
@@ -169,6 +174,12 @@ extern int _movieHeight;
 extern u_int D_80074AF4[];
 extern u_int _menuBg[];
 extern u_short _menuItemClut[][16];
+extern int _menuItemCluts2[10];
+extern int _menuItemTpages2[10];
+extern int _menuItemCluts1[10];
+extern int _menuItemTpages1[10];
+extern int _menuItemWh[10];
+extern int _menuItemXy[10];
 extern u_char D_80074C24[];
 extern u_char D_80075B24[32];
 extern u_short _menuCopyright[];
@@ -201,6 +212,7 @@ extern int _saveFileId;
 extern u_char D_800DC923;
 extern u_char D_800DC924;
 extern RECT D_800DC938;
+extern menuItemPrim_t _menuItemPrims[10];
 extern u_char _saveScreenState;
 extern u_char _saveScreenFadeTimer;
 extern u_char _loadSaveDataErrorOffset;
@@ -288,7 +300,7 @@ extern void* _encodedDataBuf0;
 extern void* _encodedDataBuf1;
 extern void* _decodedDataBuf0;
 extern void* _decodedDataBuf1;
-extern menuItemState_t _menuItemStates[8];
+extern menuItemState_t _menuItemStates[10];
 
 enum menuItems {
     menuItemTimeout = -1,
@@ -3196,7 +3208,7 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
     _menuItemStates[menuItem].state = menuItemStateStatic;
-    _menuItemStates[menuItem].unk2 = 0;
+    _menuItemStates[menuItem].saturation = 0;
     _menuItemStates[menuItem].unk3 = 0;
     _menuItemStates[menuItem].pos = pos;
     _menuItemStates[menuItem].targetPos = pos;
@@ -3424,7 +3436,7 @@ void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
     DrawSync(0);
 }
 
-void func_800703CC()
+static void func_800703CC()
 {
     int i;
     int var_a0;
@@ -3434,13 +3446,13 @@ void func_800703CC()
 
     for (i = 0; i < 10; ++i) {
         if (_menuItemStates[i].enabled != 0) {
-            var_a0 = _menuItemStates[i].unk2 + 8;
+            var_a0 = _menuItemStates[i].saturation + 8;
 
             if (var_a0 > 128) {
                 var_a0 = 128;
             }
 
-            _menuItemStates[i].unk2 = var_a0;
+            _menuItemStates[i].saturation = var_a0;
 
             switch (_menuItemStates[i].state) {
             case menuItemStateStatic:
@@ -3499,8 +3511,105 @@ void func_800703CC()
     }
 }
 
-void func_800705AC();
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_800705AC);
+static void _drawMenuItems()
+{
+    int cluts2;
+    int j;
+    menuItemState_t* menuState;
+    int x;
+    int wh;
+    int i;
+    menuItemPrim_t* prim;
+    int saturation;
+
+    prim = _menuItemPrims;
+
+    for (i = 9; i >= 0; --i) {
+        if ((_menuItemStates[i].enabled == 0) || (_menuItemStates[i].unk3 == 0)) {
+            continue;
+        }
+        prim->tag = vs_getTag(prim->sprt, primAddrEnd);
+        prim->sprt.tpage = _menuItemTpages1[i];
+        prim->sprt.r0g0b0code = vs_getRGB0Raw(
+            primSprtSemtTrans, _menuItemStates[i].unk3 * vs_getRGB888(1, 1, 1));
+        if (_menuItemStates[i].state == 3) {
+            prim->sprt.x0y0 = (_menuItemXy[i] + (_menuItemStates[i].unk6 << 16)) + 64;
+        } else {
+            prim->sprt.x0y0 = _menuItemXy[i] + _menuItemStates[i].unk6 * vs_getXY(1, 1);
+        }
+        prim->sprt.u0v0clut = _menuItemCluts1[i];
+        prim->sprt.wh = _menuItemWh[i];
+        DrawPrim(prim);
+        ++prim;
+    }
+
+    for (i = 9; i >= 0; --i) {
+        menuState = _menuItemStates;
+        if (menuState[i].enabled == 0) {
+            continue;
+        }
+        saturation = menuState[i].saturation;
+        x = 192;
+        if (menuState[i].state != 3) {
+            x = menuState[i].pos + 128;
+        }
+
+        cluts2 = _menuItemCluts2[i];
+        wh = 128;
+        if (x < 176) {
+            cluts2 += 176 - x;
+            wh = x - 48;
+            x = 176;
+        }
+        if ((x + wh) > 336) {
+            wh = 336 - x;
+        }
+        wh |= vs_getWH(0, 1);
+
+        for (j = 0; j < 32; ++j) {
+
+            int new_var = j + menuState[i].pos;
+            prim->tag = vs_getTag(prim->sprt, primAddrEnd);
+            prim->sprt.tpage = _menuItemTpages2[i];
+
+            switch ((new_var >> 5) & 3) {
+            case 0:
+                prim->tag = primAddrEnd;
+                break;
+            case 1:
+                prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
+                    ((saturation * (new_var - 32)) >> 5) * vs_getRGB888(1, 1, 1));
+                break;
+            case 2:
+                if (saturation == 128) {
+                    prim->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
+                } else {
+                    prim->sprt.r0g0b0code = vs_getRGB0Raw(
+                        primSprtSemtTrans, saturation * vs_getRGB888(1, 1, 1));
+                }
+                break;
+            case 3:
+                prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
+                    (((saturation * (127 - new_var)) >> 5) * vs_getRGB888(1, 1, 1)));
+                break;
+            }
+
+            if (menuState[i].state == 3) {
+                if (saturation == 128) {
+                    prim->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
+                } else {
+                    prim->sprt.r0g0b0code = vs_getRGB0Raw(
+                        primSprtSemtTrans, saturation * vs_getRGB888(1, 1, 1));
+                }
+            }
+            prim->sprt.x0y0 = x | ((new_var + 240) << 16);
+            prim->sprt.u0v0clut = cluts2 + (j << 8);
+            prim->sprt.wh = wh;
+            DrawPrim(prim);
+            ++prim;
+        }
+    }
+}
 
 void func_8007093C()
 {
@@ -3527,7 +3636,7 @@ void func_8007093C()
         sprt->sprt.u0v0clut = vs_getUV0Clut(32, 192, 0, 0);
         sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
-        func_800705AC();
+        _drawMenuItems();
         if (i == 0) {
             DrawSync(0);
             VSync(0);
@@ -3620,21 +3729,21 @@ static void _menuVibrationSettings()
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(2, i * 2, 3, 1);
         _menuItemStates[2].pos += 4;
-        if (_menuItemStates[5].unk2 < 24) {
-            _menuItemStates[5].unk2 = 0;
+        if (_menuItemStates[menuItemVibrationOff].saturation < 24) {
+            _menuItemStates[menuItemVibrationOff].saturation = 0;
         } else {
-            _menuItemStates[5].unk2 -= 24;
+            _menuItemStates[menuItemVibrationOff].saturation -= 24;
         }
-        if (_menuItemStates[6].unk2 < 24) {
-            _menuItemStates[6].unk2 = 0;
+        if (_menuItemStates[menuItemVibrationOn].saturation < 24) {
+            _menuItemStates[menuItemVibrationOn].saturation = 0;
         } else {
-            _menuItemStates[6].unk2 -= 24;
+            _menuItemStates[menuItemVibrationOn].saturation -= 24;
         }
-        if (_menuItemStates[5].unk3 != 0) {
-            _menuItemStates[5].unk3 -= 16;
+        if (_menuItemStates[menuItemVibrationOff].unk3 != 0) {
+            _menuItemStates[menuItemVibrationOff].unk3 -= 16;
         }
-        if (_menuItemStates[6].unk3 != 0) {
-            _menuItemStates[6].unk3 -= 16;
+        if (_menuItemStates[menuItemVibrationOn].unk3 != 0) {
+            _menuItemStates[menuItemVibrationOn].unk3 -= 16;
         }
         func_80070A58();
     }
@@ -3724,15 +3833,15 @@ static void _menuSoundSettings()
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemSound, i * 2, 3, 1);
         _menuItemStates[menuItemSound].pos += 4;
-        if (_menuItemStates[menuItemSoundMono].unk2 < 24) {
-            _menuItemStates[menuItemSoundMono].unk2 = 0;
+        if (_menuItemStates[menuItemSoundMono].saturation < 24) {
+            _menuItemStates[menuItemSoundMono].saturation = 0;
         } else {
-            _menuItemStates[menuItemSoundMono].unk2 -= 24;
+            _menuItemStates[menuItemSoundMono].saturation -= 24;
         }
-        if (_menuItemStates[menuItemSoundStereo].unk2 < 24) {
-            _menuItemStates[menuItemSoundStereo].unk2 = 0;
+        if (_menuItemStates[menuItemSoundStereo].saturation < 24) {
+            _menuItemStates[menuItemSoundStereo].saturation = 0;
         } else {
-            _menuItemStates[menuItemSoundStereo].unk2 -= 24;
+            _menuItemStates[menuItemSoundStereo].saturation -= 24;
         }
         if (_menuItemStates[menuItemSoundMono].unk3 != 0) {
             _menuItemStates[menuItemSoundMono].unk3 -= 16;

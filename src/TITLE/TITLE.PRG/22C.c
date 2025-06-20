@@ -124,10 +124,7 @@ typedef struct {
     u_char unk60[0x20];
     u_char unk80[0x80];
     u_char unk100[0x80];
-    int unk180;
-    int unk184;
-    int unk188;
-    int unk18C;
+    int unk180[4];
     vs_Gametime_t gameTime;
     u_short unk194;
     u_short unk196;
@@ -144,7 +141,7 @@ typedef struct {
     u_char unk640[0x20];
     u_char unk660[0x48];
     vs_main_settings_t unk6A8;
-    u_char unk6C8[0x100];
+    D_80060068_t unk6C8;
     u_char unk7C8[0xF00];
     u_char unk16C8[0xB0];
     D_80061068_t unk1778;
@@ -154,28 +151,6 @@ typedef struct {
     u_char unk1DBC[0x24];
     u_char unk1DE0[0x3C00];
     u_char unk59E0[0x220];
-    u_char unk5C00[0x180];
-    int scrambleSeed;
-    int unk5C08;
-    int unk5C0C;
-    int unk5C10;
-    vs_Gametime_t gametime;
-    u_char unk5D94[0x6C];
-    u_char unk5E00[0x440];
-    u_char skillsLearned[0x20];
-    u_char unk6260[0x48];
-    vs_main_settings_t settings;
-    D_80060068_t unk62C8;
-    u_char unk63C8[0xF00];
-    u_char unk72C8[0x2C];
-    u_char unk72F4[0x84];
-    D_80061068_t unk7378;
-    D_8005FEA0_t unk7384;
-    int unk7498;
-    u_char unk749C[0x520];
-    u_char unk79BC[0x24];
-    u_char unk79E0[0x3800];
-    u_char unkB1E0[0x100];
 } savedata_t;
 
 typedef struct {
@@ -799,24 +774,24 @@ int func_800696D0(int arg0)
 {
     int blockCount;
     savedata_t* spmcimg;
-    void* blocks;
-    int* temp_s2;
-    int* temp_s4;
+    void* spmcimg2;
+    int* s4;
+    int* unk180;
 
     spmcimg = (savedata_t*)_spmcimg;
-    blocks = spmcimg->unk5C00;
-    temp_s4 = (int*)spmcimg->unk5C00;
-    temp_s2 = &spmcimg->scrambleSeed;
+    spmcimg2 = spmcimg + 1;
+    s4 = (int*)(spmcimg + 1);
+    unk180 = spmcimg[1].unk180;
 
-    _descramble(spmcimg->scrambleSeed, (u_char*)&spmcimg->unk5C08, 0x5A7C);
+    _descramble(spmcimg[1].unk180[0], (u_char*)(&spmcimg[1].unk180[1]), 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
         blockCount = 32;
     }
 
-    if ((_verifySaveChecksums(spmcimg->unk5C00, blockCount) != 0)
-        || (temp_s2[3] != 0x20000107)) {
+    if ((_verifySaveChecksums((u_char*)(spmcimg + 1), blockCount) != 0)
+        || (unk180[3] != 0x20000107)) {
         do {
             return 1;
         } while (0);
@@ -826,22 +801,20 @@ int func_800696D0(int arg0)
         return 0;
     }
 
-    _rMemcpy(D_80061598, spmcimg->unk5E00, sizeof(D_80061598));
-    _rMemcpy(
-        vs_main_skillsLearned, spmcimg->skillsLearned, sizeof(vs_main_skillsLearned));
-    _rMemcpy(D_8005FFD8, spmcimg->unk6260, sizeof(D_8005FFD8));
-    _rMemcpy((u_char*)&vs_main_settings, &spmcimg->settings, sizeof(vs_main_settings));
-    _rMemcpy((u_char*)&D_80060068, &spmcimg->unk62C8, sizeof(D_80060068));
-    _rMemcpy(D_80060168, spmcimg->unk63C8, sizeof(D_80060168));
-    _rMemcpy((u_char*)&D_800619D8, spmcimg->unk72C8, sizeof(D_800619D8));
-    _rMemcpy((u_char*)&D_80061068, &spmcimg->unk7378, sizeof(D_80061068));
-    _rMemcpy((u_char*)&D_8005FEA0, &spmcimg->unk7384, sizeof(D_8005FEA0));
-    D_80060064 = temp_s4[0x626];
-    _rMemcpy(D_80061078, spmcimg->unk749C, sizeof(D_80061078));
-    blocks = D_80060040;
-    _rMemcpy(D_80060040, spmcimg->unk79BC, sizeof(D_80060040));
-    vs_main_gametime = spmcimg->gametime;
-
+    _rMemcpy(D_80061598, spmcimg[1].unk200, sizeof(D_80061598));
+    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
+    _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
+    _rMemcpy((u_char*)(&vs_main_settings), &spmcimg[1].unk6A8, sizeof(vs_main_settings));
+    _rMemcpy((u_char*)(&D_80060068), &spmcimg[1].unk6C8, sizeof(D_80060068));
+    _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy((u_char*)(&D_800619D8), spmcimg[1].unk16C8, sizeof(D_800619D8));
+    _rMemcpy((u_char*)(&D_80061068), &spmcimg[1].unk1778, sizeof(D_80061068));
+    _rMemcpy((u_char*)(&D_8005FEA0), &spmcimg[1].unk1784, sizeof(D_8005FEA0));
+    D_80060064 = s4[0x626];
+    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
+    spmcimg2 = D_80060040;
+    _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));
+    vs_main_gametime = spmcimg[1].gameTime;
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;

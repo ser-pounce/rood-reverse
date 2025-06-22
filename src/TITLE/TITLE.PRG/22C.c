@@ -1625,7 +1625,7 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
             } else {
                 var_a1_2 = &_mcData->unk0[0][0];
             }
-            _drawImage(MAKEXY(768, 227), (u_long*)var_a1_2, MAKEWH(256, 1));
+            _drawImage(MAKEXY(768, 227), var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {
                 uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (arg0->unkC - 64) | y;

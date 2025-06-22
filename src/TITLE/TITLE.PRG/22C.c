@@ -164,6 +164,14 @@ typedef struct {
     VS_SPRT sprt;
 } menuItemPrim_t;
 
+typedef struct {
+    u_long unk0[2][128];
+    u_char unk400[0xC00];
+    u_short unk1000[0x800];
+    _saveFileInfo_t unk2000[5];
+    struct DIRENTRY unk2280;
+} mcdata_t;
+
 static void _playMovie(DslLOC*);
 static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initTitle();
@@ -279,7 +287,7 @@ extern struct {
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
 extern u_char* _spmcimg;
-extern u_int* _mcData;
+extern mcdata_t* _mcData;
 extern u_short* D_800DEAC0;
 extern struct DIRENTRY* _memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
@@ -1020,11 +1028,11 @@ static int _loadMemcardMenu(int init)
     u_int event;
 
     if (init != 0) {
-        _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
-        _mcData = (u_int*)_spmcimg + 0x4500;
-        D_800DEAC0 = (u_short*)(_mcData + 0x400);
-        _saveFileInfo = (_saveFileInfo_t*)(_mcData + 0x800);
-        dirEntBuf = (struct DIRENTRY*)(_mcData + 0x8A0);
+         _spmcimg = (u_char *) vs_main_allocHeap(114688);
+        _mcData = (mcdata_t*)(_spmcimg + 0x11400);
+        D_800DEAC0 = _mcData->unk1000;
+        _saveFileInfo = _mcData->unk2000;
+        dirEntBuf = &_mcData->unk2280;
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
@@ -1543,7 +1551,7 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
     u_int color1;
     int color2;
     u_int temp_v1;
-    u_int* var_a1_2;
+    u_long* var_a1_2;
     int new_var;
 
     if (arg0->unk4 != 0) {
@@ -1613,9 +1621,9 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 var_s1 = -3;
             }
             if (var_s1 >= 32u) {
-                var_a1_2 = _mcData + 128;
+                var_a1_2 = &_mcData->unk0[1][0];
             } else {
-                var_a1_2 = _mcData;
+                var_a1_2 = &_mcData->unk0[0][0];
             }
             _drawImage(MAKEXY(768, 227), (u_long*)var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {

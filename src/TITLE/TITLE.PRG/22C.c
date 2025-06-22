@@ -124,19 +124,21 @@ typedef struct {
     u_char unk60[0x20];
     u_char unk80[0x80];
     u_char unk100[0x80];
-    int unk180[4];
-    vs_Gametime_t gameTime;
-    u_short unk194;
-    u_short unk196;
-    u_short unk198;
-    u_short unk19A;
-    u_char unk19C;
-    u_char unk19D;
-    u_char unk19E;
-    u_char unk19F;
-    u_short unk1A0;
-    u_short unk1A2;
-    u_char unk1A4[0x5C];
+    struct savedata_unk180_t {
+        int unk180[4];
+        vs_Gametime_t gameTime;
+        u_short unk194;
+        u_short unk196;
+        u_short unk198;
+        u_short unk19A;
+        u_char unk19C;
+        u_char unk19D;
+        u_char unk19E;
+        u_char unk19F;
+        u_short unk1A0;
+        u_short unk1A2;
+        u_char unk1A4[0x5C];
+    } unk180;
     u_char unk200[0x440];
     u_char unk640[0x20];
     u_char unk660[0x48];
@@ -149,7 +151,11 @@ typedef struct {
     int unk1898;
     u_char unk189C[0x520];
     u_char unk1DBC[0x24];
-    u_char unk1DE0[0x3C00];
+    struct {
+        u_char unk1DE0[0x3800];
+        u_char unk55E0[0x100];
+        u_char unk56E0[0x300];
+    } unk1DE0;
     u_char unk59E0[0x220];
 } savedata_t;
 
@@ -513,11 +519,11 @@ static int _verifySaveChecksums(u_char data[], int sectorCount)
     return checksum != 0;
 }
 
-static void _descramble(u_int seed, u_char* buf, int count)
+static void _descramble(u_int key, u_char* buf, int count)
 {
     for (; count != 0; --count) {
-        seed *= 0x19660D;
-        *buf++ -= seed >> 24;
+        key *= 0x19660D;
+        *buf++ -= key >> 24;
     }
 }
 
@@ -781,9 +787,9 @@ int func_800696D0(int arg0)
     spmcimg = (savedata_t*)_spmcimg;
     spmcimg2 = spmcimg + 1;
     s4 = (int*)(spmcimg + 1);
-    unk180 = spmcimg[1].unk180;
+    unk180 = spmcimg[1].unk180.unk180;
 
-    _descramble(spmcimg[1].unk180[0], (u_char*)(&spmcimg[1].unk180[1]), 0x5A7C);
+    _descramble(unk180[0], (u_char*)(&unk180[1]), 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
@@ -814,7 +820,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = D_80060040;
     _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));
-    vs_main_gametime = spmcimg[1].gameTime;
+    vs_main_gametime = spmcimg[1].unk180.gameTime;
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;

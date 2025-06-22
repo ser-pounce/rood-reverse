@@ -148,7 +148,6 @@ typedef struct {
 
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
-extern u_char vs_main_skillsLearned[32];
 extern u_char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
@@ -162,8 +161,6 @@ extern u_int D_80055C80[];
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
 extern int D_8005E248;
-extern int D_80060064;
-extern u_char D_80061078[0x520];
 extern char D_8006169D;
 extern int vs_gametime_tickspeed;
 extern u_char vs_main_padBuffer[2][34];
@@ -173,18 +170,25 @@ extern int vs_main_buttonRepeat;
 extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
+
 extern D_8005FEA0_t D_8005FEA0;
+extern u_char vs_main_skillsLearned[32];
 extern u_char D_8005FFD8[0x48];
 extern vs_main_settings_t vs_main_settings;
 extern u_char vs_main_soundMono;
 extern u_char vs_main_vibrationEnabled;
 extern u_char D_80060040[0x24];
+extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern u_char D_80060168[0xF00];
-extern vs_Gametime_t vs_main_gametime;
+extern u_char D_80060168[15][256];
+extern u_char D_80060F68[256];
 extern D_80061068_t D_80061068;
+extern vs_Gametime_t vs_main_gametime;
+extern u_char D_80061078[0x520];
 extern u_char D_80061598[0x440];
+extern char D_800616B4;
 extern int D_800619D8[44];
+extern u_char D_80061A48[64];
 
 int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();

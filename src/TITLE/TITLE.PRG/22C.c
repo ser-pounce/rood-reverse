@@ -822,7 +822,7 @@ int func_800696D0(int arg0)
     _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
     _rMemcpy((u_char*)(&vs_main_settings), &spmcimg[1].unk6A8, sizeof(vs_main_settings));
     _rMemcpy((u_char*)(&D_80060068), &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy((u_char*)D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
     _rMemcpy((u_char*)(&D_800619D8), spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy((u_char*)(&D_80061068), &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy((u_char*)(&D_8005FEA0), &spmcimg[1].unk1784, sizeof(D_8005FEA0));

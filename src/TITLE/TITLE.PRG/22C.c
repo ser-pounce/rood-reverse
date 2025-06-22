@@ -43,7 +43,7 @@ typedef struct {
     u_char unk14[32];
 } _saveSlotMenuEntries_t;
 
-enum menuItemState {
+enum menuItemState_t {
     menuItemStateStatic = 0,
     menuItemStateUpper = 1,
     menuItemStateLower = 2,
@@ -86,7 +86,7 @@ typedef struct {
     VS_SPRT sprt;
 } tagsprt_t;
 
-enum slotState {
+enum slotState_t {
     slotStateUnused = 0,
     slotStateAvailable = 1,
     slotStateTemp = 2,
@@ -94,7 +94,7 @@ enum slotState {
 
 typedef struct {
     int key;
-    u_int slotState;
+    enum slotState_t slotState;
     int unk8;
     int unkC;
     char unk10;
@@ -342,6 +342,14 @@ enum menuItems {
     menuItemVibrationOff = 5,
     menuItemVibrationOn = 6,
     menuItemSoundStereo = 7
+};
+
+enum memCardEventState {
+    memCardEventIoEnd = 0,
+    memCardEventError = 1,
+    memCardEventTimeout = 2,
+    memCardEventNew = 3,
+    memCardEventNone = 4,
 };
 
 #define SWEVENTS 0
@@ -674,35 +682,27 @@ int createSaveFile(int port, int id)
     return -1;
 }
 
-enum memCardStates {
-    memCardInit = 0,
-    memCardReady = 1,
-    memCardNew = 2,
-    memCardConfirmed = 3,
-    memCardLoadReady = 4,
-    memCardLoaded = 5,
-};
-
-enum memCardEventState {
-    memCardEventIoEnd = 0,
-    memCardEventError = 1,
-    memCardEventTimeout = 2,
-    memCardEventNew = 3,
-    memCardEventNone = 4,
-};
-
 int _memCardHandler(int arg0)
 {
+    enum memCardStates {
+        init = 0,
+        ready = 1,
+        new = 2,
+        confirmed = 3,
+        loadReady = 4,
+        loaded = 5,
+    };
+
     int event;
 
     if (arg0 != 0) {
         _memcardPort = (arg0 - 1) * 16;
-        _memCardState = memCardInit;
+        _memCardState = init;
         _memCardInitTmeout = 0;
         return 0;
     }
     switch (_memCardState) {
-    case memCardInit:
+    case init:
         if (++_memCardInitTmeout >= 4) {
             return 2;
         }
@@ -710,74 +710,74 @@ int _memCardHandler(int arg0)
         if (_card_info(_memcardPort) == 0) {
             break;
         }
-        _memCardState = memCardReady;
+        _memCardState = ready;
         _memCardTimeout = 0;
         _memcardEvType = SWEVENTS;
         // fallthrough
-    case memCardReady:
+    case ready:
         switch (_testMemcardEvents(SWEVENTS)) {
         case memCardEventIoEnd:
-            _memCardState = memCardLoadReady;
+            _memCardState = loadReady;
             break;
         case memCardEventError:
         case memCardEventTimeout:
-            _memCardState = memCardInit;
+            _memCardState = init;
             break;
         case memCardEventNew:
-            _memCardState = memCardNew;
+            _memCardState = new;
             break;
         case memCardEventNone:
             if (_memCardTimeout++ > 64) {
-                _memCardState = memCardInit;
+                _memCardState = init;
             }
             break;
         }
         break;
-    case memCardNew:
+    case new:
         _resetMemcardEvents(HWEVENTS);
         if (_card_clear(_memcardPort) == 0) {
             break;
         }
-        _memCardState = memCardConfirmed;
+        _memCardState = confirmed;
         _memCardTimeout = 0;
         _memcardEvType = HWEVENTS;
         // fallthrough
-    case memCardConfirmed:
+    case confirmed:
         do {
             event = _testMemcardEvents(HWEVENTS);
         } while (event == memCardEventNone);
         if (event == memCardEventIoEnd) {
-            _memCardState = memCardLoadReady;
+            _memCardState = loadReady;
             break;
         }
         if (event < memCardEventIoEnd)
             break;
         if (event >= memCardEventNone)
             break;
-        _memCardState = memCardInit;
+        _memCardState = init;
         break;
-    case memCardLoadReady:
+    case loadReady:
         _resetMemcardEvents(SWEVENTS);
         if (_card_load(_memcardPort) == 0) {
             break;
         }
-        _memCardState = memCardLoaded;
+        _memCardState = loaded;
         _memCardTimeout = 0;
         // fallthrough
-    case memCardLoaded:
+    case loaded:
         event = _testMemcardEvents(SWEVENTS);
         switch (event) {
         case memCardEventIoEnd:
             return _memcardEvType + 1;
         case memCardEventError:
         case memCardEventTimeout:
-            _memCardState = memCardInit;
+            _memCardState = init;
             break;
         case memCardEventNew:
             return _memcardEvType + 3;
         case memCardEventNone:
             if (_memCardTimeout++ > 64) {
-                _memCardState = memCardInit;
+                _memCardState = init;
             }
             break;
         }
@@ -839,10 +839,11 @@ int func_800696D0(int arg0)
 void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
-enum loadSaveDataState { loadSaveDataStateInit = 0, loadSaveDataStateReading = 1 };
-
 static int _loadSaveData(int portFileno)
 {
+
+    enum loadSaveDataState { init = 0, reading = 1 };
+
     int ev;
     int nBytes;
     u_char* filename;
@@ -851,7 +852,7 @@ static int _loadSaveData(int portFileno)
 
     temp_s2 = _spmcimg + 0x5C00;
     if (portFileno != 0) {
-        _loadSaveDataState = loadSaveDataStateInit;
+        _loadSaveDataState = init;
         _loadSaveDataErrors = 0;
         _loadSaveDataErrorOffset = 0;
         _readCardPort = portFileno >> 0xC;
@@ -863,7 +864,7 @@ static int _loadSaveData(int portFileno)
     }
 
     switch (_loadSaveDataState) {
-    case loadSaveDataStateInit:
+    case init:
         new_var = 320;
         D_800DEB12 += ((D_800DEB14 - D_800DEB10)
                           * ((_loadSaveDataErrorOffset * 0x14) - (D_800DEB12 - new_var)))
@@ -894,16 +895,16 @@ static int _loadSaveData(int portFileno)
             ++_loadSaveDataErrors;
             break;
         }
-        _loadSaveDataState = loadSaveDataStateReading;
+        _loadSaveDataState = reading;
         // fallthrough
-    case loadSaveDataStateReading:
+    case reading:
         ev = _testMemcardEvents(SWEVENTS);
         if (ev < memCardEventNone) {
             close(_memCardFd);
             if (ev == memCardEventIoEnd) {
                 return 1;
             }
-            _loadSaveDataState = loadSaveDataStateInit;
+            _loadSaveDataState = init;
             ++_loadSaveDataErrors;
         }
         break;
@@ -911,14 +912,17 @@ static int _loadSaveData(int portFileno)
     return _loadSaveDataErrors == 3 ? -1 : 0;
 }
 
-enum memcardSaveState {
-    memcardSaveStateInit = 0,
-    memcardSaveStateTempFileCreated = 1,
-    memcardSaveStateFileVerified = 4
-};
-
 int func_8006A11C(int arg0)
 {
+
+    enum memcardSaveState {
+        init = 0,
+        tempFileCreated = 1,
+        readReady = 2,
+        verifyPending = 3,
+        fileVerified = 4
+    };
+
     int temp_v1_2;
     int temp_s2;
     int temp_s3;
@@ -935,19 +939,19 @@ int func_8006A11C(int arg0)
         return 0;
     }
     switch (_memcardSaveState) {
-    case memcardSaveStateInit:
+    case init:
         if (rename((char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
                 (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno))
             != 0) {
             D_800DC8BB = 0;
             D_800DC8BC = 0;
-            _memcardSaveState = memcardSaveStateTempFileCreated;
+            _memcardSaveState = tempFileCreated;
         } else {
             ++D_800DC8BC;
             D_800DC8BB = D_800DC8BC >> 4;
         }
         break;
-    case memcardSaveStateTempFileCreated:
+    case tempFileCreated:
         temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (0x140 - D_800DEB12)) / D_800DEB0E;
         D_800DEB10 = D_800DEB14;
         D_800DEB0E = 0x180;
@@ -966,14 +970,14 @@ int func_8006A11C(int arg0)
             ++D_800DC8BB;
             break;
         }
-        _memcardSaveState = 2;
+        _memcardSaveState = readReady;
         // fallthrough
-    case 2: {
+    case readReady: {
         temp_s3 = _testMemcardEvents(SWEVENTS);
         if (temp_s3 < memCardEventNone) {
             close(_saveFileId);
             if (temp_s3 == memCardEventIoEnd) {
-                _memcardSaveState = 3;
+                _memcardSaveState = verifyPending;
                 temp_s2 = D_800DEB12;
                 temp_s3 = D_800DEB10;
                 _loadSaveData((_memcardManagerPort << 0xC) | (_memcardFileno + 8));
@@ -981,12 +985,12 @@ int func_8006A11C(int arg0)
                 D_800DEB10 = temp_s3;
             } else {
                 ++D_800DC8BB;
-                _memcardSaveState = memcardSaveStateTempFileCreated;
+                _memcardSaveState = tempFileCreated;
             }
         }
         break;
     }
-    case 3:
+    case verifyPending:
         temp_s3 = _loadSaveData(0);
         if (temp_s3 == 0) {
             break;
@@ -1002,9 +1006,9 @@ int func_8006A11C(int arg0)
         if (temp_s2 < 0x5C00) {
             return -1;
         }
-        _memcardSaveState = 4;
+        _memcardSaveState = fileVerified;
         break;
-    case memcardSaveStateFileVerified:
+    case fileVerified:
         if (rename((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
                 (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno))
             == 0) {
@@ -1017,20 +1021,21 @@ int func_8006A11C(int arg0)
     return D_800DC8BB == 3 ? -1 : 0;
 }
 
-enum diskState {
-    diskStateInit = 0,
-    diskStateQueueReady = 1,
-    diskStateQueueEnqueued = 2,
-};
-
 static int _loadMemcardMenu(int init)
 {
+
+    enum diskState {
+        none = 0,
+        queueReady = 1,
+        enqueued = 2,
+    };
+
     vs_main_CdFile cdFile;
     int i;
     u_int event;
 
     if (init != 0) {
-         _spmcimg = (u_char *) vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
         D_800DEAC0 = _mcData->unk1000;
         _saveFileInfo = _mcData->unk2000;
@@ -1039,27 +1044,27 @@ static int _loadMemcardMenu(int init)
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
         vs_main_cdEnqueue(_mcDataLoad, _spmcimg);
-        _diskState = diskStateInit;
+        _diskState = none;
         return 0;
     }
 
     switch (_diskState) {
-    case diskStateInit:
+    case none:
         if (_mcDataLoad->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_mcDataLoad);
             _drawImage(MAKEXY(800, 256), (u_long*)_spmcimg, MAKEWH(224, 256));
-            _diskState = diskStateQueueReady;
+            _diskState = queueReady;
         }
         return 0;
-    case diskStateQueueReady:
+    case queueReady:
         cdFile.lba = VS_MCDATA_BIN_LBA; // MCMAN.BIN must immediately follow MCDATA.BIN on
                                         // the disk
         cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
         vs_main_cdEnqueue(_mcDataLoad, _mcData);
-        _diskState = diskStateQueueEnqueued;
+        _diskState = enqueued;
         break;
-    case diskStateQueueEnqueued:
+    case enqueued:
         break;
     default:
         return 0;

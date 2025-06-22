@@ -93,7 +93,7 @@ enum slotState {
 };
 
 typedef struct {
-    int scrambleSeed;
+    int key;
     u_int slotState;
     int unk8;
     int unkC;
@@ -172,7 +172,7 @@ void func_80071CE0(int arg0);
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
-u_int _scrambleSeed = 0x0019660D;
+u_int _encodeSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char D_8007289C[];
@@ -353,10 +353,10 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-static u_int _scramble(int value)
+static u_int _encode(int value)
 {
-    u_int seed = _scrambleSeed;
-    _scrambleSeed = seed * 0x19660D;
+    u_int seed = _encodeSeed;
+    _encodeSeed = seed * 0x19660D;
     return seed >> (32 - value);
 }
 
@@ -452,7 +452,7 @@ static int _getCurrentGameSave()
     for (i = 0; i < 5; ++i) {
         if ((_saveFileInfo[i].slotState >= 3)
             && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
-            && (_saveFileInfo[i].scrambleSeed == vs_main_settings.scrambleSeed)
+            && (_saveFileInfo[i].key == vs_main_settings.key)
             && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
             && (_saveFileInfo[i].unk8 == vs_main_settings.unk1C)) {
             return i + 1;
@@ -519,7 +519,7 @@ static int _verifySaveChecksums(u_char data[], int sectorCount)
     return checksum != 0;
 }
 
-static void _descramble(u_int key, u_char* buf, int count)
+static void _decode(u_int key, u_char* buf, int count)
 {
     for (; count != 0; --count) {
         key *= 0x19660D;
@@ -546,7 +546,7 @@ static int _readSaveFileInfo(int id)
         if (bytesRead != sizeof(saveInfo)) {
             continue;
         }
-        _descramble(saveInfo[3].scrambleSeed, (u_char*)&saveInfo[3].slotState,
+        _decode(saveInfo[3].key, (u_char*)&saveInfo[3].slotState,
             sizeof(_saveFileInfo_t) - sizeof(int));
         if (_verifySaveChecksums((u_char*)saveInfo, 2) == 0) {
             _rMemcpy(
@@ -789,7 +789,7 @@ int func_800696D0(int arg0)
     s4 = (int*)(spmcimg + 1);
     unk180 = spmcimg[1].unk180.unk180;
 
-    _descramble(unk180[0], (u_char*)(&unk180[1]), 0x5A7C);
+    _decode(unk180[0], (u_char*)(&unk180[1]), 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
@@ -2403,7 +2403,7 @@ int func_8006D2F8(int arg0)
                 D_800DEB14 = -0x10;
                 _rMemcpy((u_char*)&_saveFileInfo[saveId],
                     _spmcimg + sizeof(_saveFileInfo_t) * 3, sizeof(_saveFileInfo_t));
-                _descramble(_saveFileInfo[saveId].scrambleSeed,
+                _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
                 _saveSlotMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk1C;
@@ -2858,7 +2858,7 @@ static void _displayGameSaveScreen()
         vs_main_gametimeUpdate(2);
         _saveScreenSwapBuf();
         vs_main_processPadState();
-        _scramble(0);
+        _encode(0);
 
         switch (_saveScreenState) {
         case saveScreenStateInit:

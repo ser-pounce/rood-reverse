@@ -166,7 +166,9 @@ typedef struct {
 
 typedef struct {
     u_long unk0[2][128];
-    u_char unk400[0xC00];
+    u_char unk400[7][32];
+    u_char unk4E0[22][128];
+    u_char unkFE0[0x20];
     u_short unk1000[0x800];
     _saveFileInfo_t unk2000[5];
     struct DIRENTRY unk2280;
@@ -1028,8 +1030,8 @@ static int _loadMemcardMenu(int init)
     u_int event;
 
     if (init != 0) {
-         _spmcimg = (u_char *) vs_main_allocHeap(114688);
-        _mcData = (mcdata_t*)(_spmcimg + 0x11400);
+         _spmcimg = (u_char *) vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
         D_800DEAC0 = _mcData->unk1000;
         _saveFileInfo = _mcData->unk2000;
         dirEntBuf = &_mcData->unk2280;

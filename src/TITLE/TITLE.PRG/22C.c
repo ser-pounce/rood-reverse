@@ -1369,7 +1369,7 @@ int func_8006AFBC()
 
     for (i = 0; i < 10 && _saveSlotMenuEntries[i].unk0 < 2; ++i)
         ;
-    return (i ^ 0xA) == 0;
+    return i == 10;
 }
 
 int func_8006AFF8(u_int arg0, int x, int y, int arg3)

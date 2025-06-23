@@ -836,6 +836,7 @@ int func_800696D0(int arg0)
     return 0;
 }
 
+// 
 void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 

@@ -2007,9 +2007,111 @@ int func_8006C15C(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/KxBXc
-int func_8006C778(int);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006C778);
+extern u_char D_800DC8DE;
+extern u_char D_800DC8DF;
+
+int func_8006C778(int arg0)
+{
+    int i;
+
+    if (arg0 != 0) {
+        D_800DC8DF = arg0;
+        D_800DED6C = D_800DEAC0 + 0xC4;
+        D_800DC8DE = 0;
+        return 0;
+    }
+    switch (D_800DC8DE) {
+    case 0:
+        _saveSlotMenuEntries[D_800DC8DF].state = 2;
+        _saveSlotMenuEntries[D_800DC8DF].unk8 = 0xB4;
+        _saveSlotMenuEntries[D_800DC8DF].unk3 = 1;
+        _saveSlotMenuEntries[3 - D_800DC8DF].state = 2;
+        _saveSlotMenuEntries[3 - D_800DC8DF].unk8 = 0x140;
+        D_800DC8DE = 1;
+        break;
+
+    case 1:
+        if (func_8006AFBC() == 0) {
+            break;
+        }
+        if (D_800DC8DF == 2) {
+            _saveSlotMenuEntries[2].state = 3;
+            _saveSlotMenuEntries[2].unk8 = 0x32;
+        }
+        D_800DC8DE = 2;
+        break;
+
+    case 2:
+        if (func_8006AFBC() == 0) {
+            break;
+        }
+        func_8006B288(D_800DC8DF + 0x30);
+        D_800DC8DE = 3;
+        break;
+
+    case 3:
+        i = func_8006B288(0);
+        if (i != 0) {
+            D_800DC8DE = i + 5;
+        }
+        break;
+
+    case 4:
+        if (((u_char)vs_main_buttonsPressed) == 0) {
+            break;
+        }
+        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+        for (i = 1; i < 3; ++i) {
+            _saveSlotMenuEntries[i].state = 2;
+            _saveSlotMenuEntries[i].unk8 = 0x140;
+        }
+        D_800DC8DE = 5;
+        break;
+
+    case 5:
+        if (func_8006AFBC() != 0) {
+            return -1;
+        }
+        break;
+
+    case 6:
+        if (_initSaveFileInfo(D_800DC8DF) != 0) {
+            D_800DED6C = D_800DEAC0 + 0x11E;
+            D_800DC8DE = 4;
+            break;
+        }
+        for (i = 0; i < 5; ++i) {
+            if (_saveFileInfo[i].slotState >= 2) {
+                break;
+            }
+        }
+
+        if (i == 5) {
+            D_800DED6C = D_800DEAC0 + 0x2E2;
+            D_800DC8DE = 4;
+        } else {
+            func_8006C15C(D_800DC8DF);
+            D_800DC8DE = 7;
+        }
+        break;
+
+    case 7:
+        i = func_8006C15C(0);
+        if (i == 0) {
+            break;
+        }
+        if (i < 0) {
+            for (i = 1; i < 3; ++i) {
+                _saveSlotMenuEntries[i].state = 2;
+                _saveSlotMenuEntries[i].unk8 = 0x140;
+            }
+            D_800DC8DE = 5;
+            break;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 int func_8006CABC(int arg0)
 {

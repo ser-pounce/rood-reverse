@@ -102,11 +102,14 @@ typedef struct {
     u_int unk1C;
 } vs_main_settings_t;
 
-typedef struct {
-    char f;
-    char s;
-    char m;
-    char h;
+typedef union {
+    struct {
+        char f;
+        char s;
+        char m;
+        char h;
+    } t;
+    int all;
 } vs_Gametime_t;
 
 typedef struct D_80061068_t {

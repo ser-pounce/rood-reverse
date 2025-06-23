@@ -8227,32 +8227,32 @@ int vs_main_gametimeUpdate(int arg0)
 
     _processCdQueue();
 
-    if (vs_main_gametime.h >= 100) {
+    if (vs_main_gametime.t.h >= 100) {
         return vs;
     }
 
-    vs_main_gametime.f += vs_gametime_tickspeed;
+    vs_main_gametime.t.f += vs_gametime_tickspeed;
 
-    if (vs_main_gametime.f < 60) {
+    if (vs_main_gametime.t.f < 60) {
         return vs;
     }
 
-    vs_main_gametime.f = 0;
+    vs_main_gametime.t.f = 0;
 
-    if (++vs_main_gametime.s < 60) {
+    if (++vs_main_gametime.t.s < 60) {
         return vs;
     }
 
-    vs_main_gametime.s = 0;
+    vs_main_gametime.t.s = 0;
 
-    if (++vs_main_gametime.m < 60) {
+    if (++vs_main_gametime.t.m < 60) {
         return vs;
     }
 
-    vs_main_gametime.m = 0;
+    vs_main_gametime.t.m = 0;
 
-    if (++vs_main_gametime.h >= 100) {
-        vs_main_gametime.h = 100;
+    if (++vs_main_gametime.t.h >= 100) {
+        vs_main_gametime.t.h = 100;
     }
     return vs;
 }
@@ -8367,10 +8367,10 @@ static void _sysReinit()
     for (i = 31; i >= 0; --i) {
         _buttonHeldFrameCount[i] = 0;
     }
-    vs_main_gametime.h = 0;
-    vs_main_gametime.m = 0;
-    vs_main_gametime.s = 0;
-    vs_main_gametime.f = 0;
+    vs_main_gametime.t.h = 0;
+    vs_main_gametime.t.m = 0;
+    vs_main_gametime.t.s = 0;
+    vs_main_gametime.t.f = 0;
     D_80060068.unk0.unk0 = 0;
 }
 

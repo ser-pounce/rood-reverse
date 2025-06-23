@@ -832,15 +832,160 @@ int func_800696D0(int arg0)
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = D_80060040;
     _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));
-    vs_main_gametime = spmcimg[1].unk180.gameTime;
+    vs_main_gametime.t = spmcimg[1].unk180.gameTime.t;
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;
 }
 
-//
-void func_80069888(int);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
+extern char D_800616B4;
+static const u_short D_8006886C[] = {
+    0x7582,
+    0x6082,
+    0x6682,
+    0x7182,
+    0x6082,
+    0x6D82,
+    0x7382,
+    0x4081,
+    0x7282,
+    0x7382,
+    0x6E82,
+    0x7182,
+    0x7882,
+    0x4081,
+    0x6582,
+    0x6882,
+    0x6B82,
+    0x6482,
+    0x4081,
+    0x5082,
+    0x4081,
+    0x4081,
+    0x4081,
+    0x4F82,
+    0x4F82,
+    0x4681,
+    0x4F82,
+    0x4F82,
+    0x4681,
+    0x4F82,
+    0x4F82,
+    0x4081,
+};
+
+void func_80069888(int arg0)
+{
+    int i;
+    int j;
+    int var_a0;
+    savedata_t* savedata;
+    savedata_t* savedata2;
+    savedata_t* savedata3;
+    struct savedata_unk180_t* s5;
+    u_short const* s0 = D_8006886C;
+
+    savedata = (savedata_t*)_spmcimg;
+    savedata2 = savedata + 1;
+    savedata3 = savedata;
+    s5 = &savedata->unk180;
+
+    vs_main_gametime.all = 0;
+    vs_main_settings.unk2 &= 0xFFDF;
+    D_800616B4 = ~(*(u_int*)&vs_main_settings >> 3) & 1;
+    memset(savedata, 0, sizeof(*savedata));
+    savedata->unk0 = 0x53;
+    savedata->unk1 = 0x43;
+    savedata->unk2 = 0x11;
+    savedata->unk3 = 3;
+    _rMemcpy((u_char*)savedata->unk4, s0, sizeof(savedata->unk4));
+    savedata->unk4[19] += (arg0 << 8);
+
+    if (vs_main_gametime.t.h == 0x64) {
+        savedata->unk4[22] = 0x5082;
+    } else {
+        savedata->unk4[23] += ((vs_main_gametime.t.h / 10) << 8);
+        savedata->unk4[24] += ((vs_main_gametime.t.h % 10) << 8);
+        savedata->unk4[26] += ((vs_main_gametime.t.m / 10) << 8);
+        savedata->unk4[27] += ((vs_main_gametime.t.m % 10) << 8);
+        savedata->unk4[29] += ((vs_main_gametime.t.s / 10) << 8);
+        savedata->unk4[30] += ((vs_main_gametime.t.s % 10) << 8);
+    }
+    savedata3->unk4[31] = 0;
+    _rMemcpy(savedata3->unk60, _mcData->unk400[arg0], sizeof(savedata->unk60));
+    _rMemcpy(savedata3->unk80, _mcData->unk4E0[arg0], sizeof(savedata->unk80));
+
+    if (vs_main_settings.slotState == 0) {
+        vs_main_settings.slotState = _encode(0x20);
+        if (vs_main_settings.slotState < 3) {
+            vs_main_settings.slotState = 0x17385CA9;
+        }
+        memset(&savedata2->unk1DE0, 0, sizeof(savedata2->unk1DE0));
+    }
+
+    vs_main_settings.key = _encode(0x20);
+    s5->unk180[0] = vs_main_settings.key;
+    s5->unk180[1] = vs_main_settings.slotState;
+    vs_main_settings.unk1C = 0;
+
+    for (i = 0; i < 5; ++i) {
+        if (_saveFileInfo[i].slotState >= 3) {
+            if (vs_main_settings.unk1C < _saveFileInfo[i].unk8) {
+                vs_main_settings.unk1C = _saveFileInfo[i].unk8;
+            }
+        }
+    }
+    s5->unk180[2] = ++vs_main_settings.unk1C;
+    if (vs_main_settings.unk18 < 0x270F) {
+        ++vs_main_settings.unk18;
+    }
+
+    vs_main_settings.unk1A = 0;
+    s5->unk180[3] = 0x20000107;
+    s5->gameTime.t = vs_main_gametime.t;
+    s5->unk198 = D_80060068.unk0.unk4[0];
+    s5->unk19A = D_80060068.unk0.unk4[1];
+    s5->unk194 = vs_main_settings.unk18;
+    s5->unk196 = vs_main_settings.unk1A;
+    s5->unk19C = 0x30;
+    s5->unk19E = 0;
+    memset(D_80060168[14], 0, sizeof(D_80060168[14]));
+    memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
+    memset(savedata2->unk1DE0.unk55E0, 0, sizeof(savedata2->unk1DE0.unk55E0));
+    s5->unk19D = D_80061598[0];
+    s5->unk1A0 = D_80060068.unk0.unk4[2];
+    s5->unk1A2 = D_80060068.unk0.unk4[3];
+    _rMemcpy(savedata->unk200, D_80061598, sizeof(savedata->unk200));
+    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
+    _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
+    _rMemcpy((u_char*)&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
+    _rMemcpy((u_char*)&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
+    _rMemcpy(savedata->unk7C8, D_80060168, sizeof(savedata->unk7C8));
+    _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
+    _rMemcpy((u_char*)&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
+    _rMemcpy((u_char*)&savedata->unk1784, &D_8005FEA0, sizeof(savedata->unk1784));
+    _rMemcpy((u_char*)&savedata->unk1DE0, &savedata2->unk1DE0, sizeof(savedata->unk1DE0));
+    savedata->unk1898 = D_80060064;
+    _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
+    _rMemcpy(savedata->unk1DBC, D_80060040, sizeof(savedata->unk1DBC));
+    for (i = 0; i < 92; ++i) {
+        var_a0 = 0;
+        if (i != 1) {
+            for (j = 0; j < 256; ++j) {
+                var_a0 ^= _spmcimg[i * 0x100 + j];
+            }
+            s5->unk1A4[i] = var_a0;
+        }
+    }
+    var_a0 = 0;
+    for (j = 0; j < 256; ++j) {
+        var_a0 ^= _spmcimg[j + 256];
+    }
+    s5->unk1A4[1] = var_a0;
+    for (i = 0x184; i < (int)sizeof(savedata_t); ++i) {
+        _spmcimg[i] += _encode(8);
+    }
+}
 
 static int _loadSaveData(int portFileno)
 {
@@ -1972,7 +2117,7 @@ int func_8006C15C(int arg0)
                 }
             } while (0);
 
-            D_800DC8D0 = vs_main_gametime;
+            D_800DC8D0.t = vs_main_gametime.t;
             D_800DC8D8 = 4;
         }
         break;
@@ -1996,7 +2141,7 @@ int func_8006C15C(int arg0)
             break;
         }
         if (D_800DC8D4 == 1) {
-            vs_main_gametime = D_800DC8D0;
+            vs_main_gametime.t = D_800DC8D0.t;
         } else {
             for (i = 5; i < 10; ++i) {
                 func_8006AF78(i);

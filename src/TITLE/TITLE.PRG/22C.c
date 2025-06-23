@@ -331,6 +331,8 @@ extern void* _encodedDataBuf1;
 extern void* _decodedDataBuf0;
 extern void* _decodedDataBuf1;
 extern menuItemState_t _menuItemStates[10];
+extern u_char _stateVar;
+extern u_char D_800DC922;
 
 enum menuItems {
     menuItemTimeout = -1,
@@ -836,7 +838,7 @@ int func_800696D0(int arg0)
     return 0;
 }
 
-// 
+//
 void func_80069888(int);
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_80069888);
 
@@ -2476,9 +2478,125 @@ int func_8006D2F8(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/QD0zT
-int func_8006DC14(int);
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/22C", func_8006DC14);
+int func_8006DC14(int index)
+{
+    enum state {
+        init = 0,
+    };
+
+    int i, j;
+
+    if (index != 0) {
+        D_800DC922 = index;
+        D_800DED6C = D_800DEAC0 + 0xC4;
+        _stateVar = init;
+        return 0;
+    }
+
+    switch (_stateVar) {
+    case init:
+        _saveSlotMenuEntries[D_800DC922].state = 2;
+        _saveSlotMenuEntries[D_800DC922].unk8 = 0xB4;
+        _saveSlotMenuEntries[D_800DC922].unk3 = 1;
+        _saveSlotMenuEntries[3 - D_800DC922].state = 2;
+        _saveSlotMenuEntries[3 - D_800DC922].unk8 = 0x140;
+        _stateVar = 1;
+        break;
+    case 1:
+        if (func_8006AFBC() == 0) {
+            break;
+        }
+        if (D_800DC922 == 2) {
+            _saveSlotMenuEntries[2].state = 3;
+            _saveSlotMenuEntries[2].unk8 = 0x32;
+        }
+        _stateVar = 2;
+        break;
+    case 2:
+        if (func_8006AFBC() != 0) {
+            _memCardHandler(D_800DC922);
+            _stateVar = 3;
+        }
+        break;
+    case 3:
+        i = _memCardHandler(0) & 3;
+        if (i == 0) {
+            break;
+        }
+        switch (i) {
+        case 1:
+            _stateVar = 6;
+            break;
+        case 2:
+            _stateVar = 4;
+            D_800DED6C = D_800DEAC0 + 0xE3;
+            break;
+        case 3:
+            memset(_saveFileInfo, 0, 0x280);
+            for (i = 14; i >= 0; --i) {
+                _memcardFiles[i] = 0;
+            }
+            j = 1;
+            for (i = 4; i >= 0; --i) {
+                _saveFileInfo[i].slotState = j;
+            }
+            func_8006D2F8(D_800DC922);
+            _stateVar = 7;
+            break;
+        }
+        break;
+    case 4:
+        if ((u_char)vs_main_buttonsPressed == 0) {
+            break;
+        }
+        vs_main_playSfxDefault(0x7E, 6);
+        for (i = 1; i < 3; ++i) {
+            _saveSlotMenuEntries[i].state = 2;
+            _saveSlotMenuEntries[i].unk8 = 0x140;
+        }
+        _stateVar = 5;
+        break;
+    case 5:
+        if (func_8006AFBC() != 0) {
+            return -1;
+        }
+        break;
+    case 6:
+        if (_initSaveFileInfo(D_800DC922) != 0) {
+            _stateVar = 4;
+            D_800DED6C = D_800DEAC0 + 0x11E;
+            break;
+        }
+        for (i = 0; i < 5; ++i) {
+            if (_saveFileInfo[i].slotState != 0) {
+                break;
+            }
+        }
+        if (i == 5) {
+            _stateVar = 4;
+            D_800DED6C = D_800DEAC0 + 0x2F1;
+            break;
+        }
+        func_8006D2F8(D_800DC922);
+        _stateVar = 7;
+        break;
+    case 7:
+        i = func_8006D2F8(0);
+        if (i == 0) {
+            break;
+        }
+        if (i < 0) {
+            for (i = 1; i < 3; ++i) {
+                _saveSlotMenuEntries[i].state = 2;
+                _saveSlotMenuEntries[i].unk8 = 0x140;
+            }
+            _stateVar = 5;
+            break;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 int func_8006E00C(int arg0)
 {

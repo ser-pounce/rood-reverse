@@ -181,14 +181,15 @@ extern u_char D_80060040[0x24];
 extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern u_char D_80060168[15][256];
-extern u_char D_80060F68[256];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern u_char D_80061078[0x520];
 extern u_char D_80061598[0x440];
 extern char D_800616B4;
-extern int D_800619D8[44];
-extern u_char D_80061A48[64];
+extern struct {
+    int unk0[28];
+    int unk70[16];
+} D_800619D8;
 
 int vs_main_gametimeUpdate(int);
 void vs_main_jumpToBattle();

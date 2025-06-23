@@ -2812,7 +2812,7 @@ int func_8006EA70(int arg0)
             }
             break;
         }
-        if (vs_main_buttonRepeat & 0x5000) {
+        if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
             _playMenuChangeSfx();
             D_800DC932 = 3 - D_800DC932;
         }

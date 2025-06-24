@@ -126,7 +126,12 @@ typedef struct {
     u_char unk80[0x80];
     u_char unk100[0x80];
     struct savedata_unk180_t {
-        int unk180[4];
+        struct savedata_unk180_2_t {
+            int unk180;
+            int unk184;
+            int unk188;
+            int unk18C;
+        } unk180;
         vs_Gametime_t gameTime;
         u_short unk194;
         u_short unk196;
@@ -793,14 +798,14 @@ static int _applyLoadedSaveFile(int arg0)
     savedata_t* spmcimg;
     void* spmcimg2;
     int* s4;
-    int* unk180;
+    struct savedata_unk180_2_t* unk180;
 
     spmcimg = (savedata_t*)_spmcimg;
     spmcimg2 = spmcimg + 1;
     s4 = (int*)(spmcimg + 1);
-    unk180 = spmcimg[1].unk180.unk180;
+    unk180 = &spmcimg[1].unk180.unk180;
 
-    _decode(unk180[0], (u_char*)(&unk180[1]), 0x5A7C);
+    _decode(unk180->unk180, (u_char*)(&unk180->unk184), 0x5A7C);
 
     blockCount = 92;
     if (arg0 != 0) {
@@ -808,7 +813,7 @@ static int _applyLoadedSaveFile(int arg0)
     }
 
     if ((_verifySaveChecksums((u_char*)(spmcimg + 1), blockCount) != 0)
-        || (unk180[3] != 0x20000107)) {
+        || (unk180->unk18C != 0x20000107)) {
         do {
             return 1;
         } while (0);
@@ -860,7 +865,7 @@ void func_80069888(int arg0)
 
     vs_main_gametime.all = 0;
     vs_main_settings.unk2 &= 0xFFDF;
-    D_800616B4 = ~(*(u_int*)&vs_main_settings >> 3) & 1;
+    vs_main_puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
     memset(savedata, 0, sizeof(*savedata));
     savedata->unk0 = 0x53;
     savedata->unk1 = 0x43;
@@ -869,7 +874,7 @@ void func_80069888(int arg0)
     _rMemcpy((u_char*)savedata->unk4, s0, sizeof(savedata->unk4));
     savedata->unk4[19] += (arg0 << 8);
 
-    if (vs_main_gametime.t.h == 0x64) {
+    if (vs_main_gametime.t.h == 100) {
         savedata->unk4[22] = 0x5082;
     } else {
         savedata->unk4[23] += ((vs_main_gametime.t.h / 10) << 8);
@@ -892,8 +897,8 @@ void func_80069888(int arg0)
     }
 
     vs_main_settings.key = _encode(0x20);
-    s5->unk180[0] = vs_main_settings.key;
-    s5->unk180[1] = vs_main_settings.slotState;
+    s5->unk180.unk180 = vs_main_settings.key;
+    s5->unk180.unk184 = vs_main_settings.slotState;
     vs_main_settings.saveFileGeneration = 0;
 
     for (i = 0; i < 5; ++i) {
@@ -903,13 +908,13 @@ void func_80069888(int arg0)
             }
         }
     }
-    s5->unk180[2] = ++vs_main_settings.saveFileGeneration;
+    s5->unk180.unk188 = ++vs_main_settings.saveFileGeneration;
     if (vs_main_settings.saveCount < 9999) {
         ++vs_main_settings.saveCount;
     }
 
     vs_main_settings.unk1A = 0;
-    s5->unk180[3] = 0x20000107;
+    s5->unk180.unk18C = 0x20000107;
     s5->gameTime.t = vs_main_gametime.t;
     s5->unk198 = D_80060068.unk0.unk4[0];
     s5->unk19A = D_80060068.unk0.unk4[1];

@@ -188,7 +188,7 @@ extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern u_char D_80061078[0x520];
 extern u_char D_80061598[0x440];
-extern char D_800616B4;
+extern char vs_main_puzzleMode;
 extern struct {
     int unk0[28];
     int unk70[16];

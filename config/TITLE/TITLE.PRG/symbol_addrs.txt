@@ -160,3 +160,4 @@ _decodedDataBuf0 = 0x800EFDF0;
 _decodedDataBuf1 = 0x800EFDF4;
 _menuItemStates = 0x800EFDF8;
 _getNewestSaveFile = 0x80068D54;
+_applyLoadedSaveFile = 0x800696D0;

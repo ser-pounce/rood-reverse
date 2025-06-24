@@ -787,7 +787,7 @@ static int _memCardHandler(int port)
     return 0;
 }
 
-int func_800696D0(int arg0)
+static int _applyLoadedSaveFile(int arg0)
 {
     int blockCount;
     savedata_t* spmcimg;
@@ -2102,7 +2102,7 @@ int func_8006C15C(int arg0)
                     D_800DED6C = D_800DEAC0 + 0x11E;
                     break;
                 }
-                switch (func_800696D0(1)) {
+                switch (_applyLoadedSaveFile(1)) {
                 case 0:
                     D_800DEB14 = -16;
                     vs_main_playSfxDefault(0x7E, 8);
@@ -2895,7 +2895,7 @@ int func_8006E00C(int arg0)
     case 2:
         var_a0 = _loadSaveData(0);
         if (var_a0 != 0) {
-            if ((var_a0 <= 0) || (func_800696D0(0) != 0)) {
+            if ((var_a0 <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 D_800DC923 = 9;
                 D_800DED6C = D_800DEAC0 + 247;
             } else {

@@ -17,10 +17,30 @@ Thanks also to the following amazing projects (and their dependencies):
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
 
 ## Status
-Overall decompilation of the executables is somewhere around 8%.
-A significant portion of the main exectuable, including most of the code that handles broad transitions between the game modules, controller processing, disk and file management, and memory management, has been [decompiled](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/main.c).
-Some progress has also been made in the game's [sound module](https://github.com/ser-pounce/rood-reverse/blob/main/src/SLUS_010.40/25AC.c), and the [title screen](https://github.com/ser-pounce/rood-reverse/blob/main/src/TITLE/TITLE.PRG/22C.c).
-All of the obvious executables have been split (although splitting accuracy may vary), and as long as symbols do not change address, and the file sizes do not change, values in the exectuables can already be modified and still result in a working disk image.
+| Category | Matched Code | Total Code | Percent Matched |
+|----------|--------------|------------|-----------------|
+| BATTLE.PRG | 10120 | 517400 | 1.96% |
+| SLUS_010.40 | 37712 | 158036 | 23.86% |
+| TITLE.PRG | 38484 | 40524 | 94.97% |
+| MENUC.PRG | 0 | 37304 | 0.00% |
+| MAINMENU.PRG | 8 | 34204 | 0.02% |
+| MENU7.PRG | 0 | 30804 | 0.00% |
+| MENUB.PRG | 0 | 30752 | 0.00% |
+| MENUD.PRG | 0 | 27384 | 0.00% |
+| MENU3.PRG | 0 | 27212 | 0.00% |
+| MENUF.PRG | 24 | 26144 | 0.09% |
+| ENDING.PRG | 996 | 23336 | 4.27% |
+| MENU9.PRG | 8 | 23268 | 0.03% |
+| MENU5.PRG | 0 | 22304 | 0.00% |
+| MENU4.PRG | 0 | 19240 | 0.00% |
+| MENU8.PRG | 0 | 11472 | 0.00% |
+| MENU0.PRG | 760 | 8660 | 8.78% |
+| MENUE.PRG | 0 | 8640 | 0.00% |
+| MENU2.PRG | 0 | 7724 | 0.00% |
+| INITBTL.PRG | 1060 | 4864 | 21.79% |
+| MENU1.PRG | 0 | 3144 | 0.00% |
+| SCREFF2.PRG | 944 | 2324 | 40.62% |
+| **Total** | **90116** | **1064740** | **8.46%** |
 
 ## (Naive) Quickstart
 1. Fork the project

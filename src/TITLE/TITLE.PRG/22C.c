@@ -683,7 +683,7 @@ int createSaveFile(int port, int id)
     return -1;
 }
 
-int _memCardHandler(int arg0)
+static int _memCardHandler(int port)
 {
     enum memCardStates {
         init = 0,
@@ -696,8 +696,8 @@ int _memCardHandler(int arg0)
 
     int event;
 
-    if (arg0 != 0) {
-        _memcardPort = (arg0 - 1) * 16;
+    if (port != 0) {
+        _memcardPort = (port - 1) * 16;
         _memCardState = init;
         _memCardInitTmeout = 0;
         return 0;

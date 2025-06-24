@@ -1021,7 +1021,7 @@ static int _loadSaveData(int portFileno)
             break;
         }
         _resetMemcardEvents(SWEVENTS);
-        nBytes = 0x5C00;
+        nBytes = sizeof(savedata_t);
         if (_isTempSave != 0) {
             nBytes = 0x2000;
         }
@@ -1049,7 +1049,6 @@ static int _loadSaveData(int portFileno)
 
 int func_8006A11C(int arg0)
 {
-
     enum memcardSaveState {
         init = 0,
         tempFileCreated = 1,
@@ -1059,7 +1058,7 @@ int func_8006A11C(int arg0)
     };
 
     int temp_v1_2;
-    int temp_s2;
+    int i;
     int temp_s3;
 
     if (arg0 != 0) {
@@ -1068,9 +1067,9 @@ int func_8006A11C(int arg0)
         _loadSaveDataErrorOffset = 0;
         _memcardManagerPort = arg0 >> 0xC;
         _memcardFileno = arg0 & 7;
-        D_800DEB12 = 0x50;
+        D_800DEB12 = 80;
         D_800DEB10 = 0;
-        _memcardSaveState = memcardSaveIdExists(_memcardFileno + 0x40);
+        _memcardSaveState = memcardSaveIdExists(_memcardFileno + 'A' - 1);
         return 0;
     }
     switch (_memcardSaveState) {
@@ -1087,9 +1086,9 @@ int func_8006A11C(int arg0)
         }
         break;
     case tempFileCreated:
-        temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (0x140 - D_800DEB12)) / D_800DEB0E;
+        temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (320 - D_800DEB12)) / D_800DEB0E;
         D_800DEB10 = D_800DEB14;
-        D_800DEB0E = 0x180;
+        D_800DEB0E = 384;
         D_800DEB12 += temp_v1_2;
         _saveFileId
             = open((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
@@ -1100,7 +1099,7 @@ int func_8006A11C(int arg0)
             break;
         }
         _resetMemcardEvents(SWEVENTS);
-        if (write(_saveFileId, _spmcimg, 0x5C00) == -1) {
+        if (write(_saveFileId, _spmcimg, sizeof(savedata_t)) == -1) {
             close(_saveFileId);
             ++D_800DC8BB;
             break;
@@ -1113,10 +1112,10 @@ int func_8006A11C(int arg0)
             close(_saveFileId);
             if (temp_s3 == memCardEventIoEnd) {
                 _memcardSaveState = verifyPending;
-                temp_s2 = D_800DEB12;
+                i = D_800DEB12;
                 temp_s3 = D_800DEB10;
-                _loadSaveData((_memcardManagerPort << 0xC) | (_memcardFileno + 8));
-                D_800DEB12 = temp_s2;
+                _loadSaveData((_memcardManagerPort << 12) | (_memcardFileno + 8));
+                D_800DEB12 = i;
                 D_800DEB10 = temp_s3;
             } else {
                 ++D_800DC8BB;
@@ -1133,12 +1132,12 @@ int func_8006A11C(int arg0)
         if (temp_s3 < 0) {
             return -1;
         }
-        for (temp_s2 = 0; temp_s2 < 0x5C00; ++temp_s2) {
-            if (_spmcimg[temp_s2] != _spmcimg[temp_s2 + 0x5C00]) {
+        for (i = 0; i < (int)sizeof(savedata_t); ++i) {
+            if (_spmcimg[i] != _spmcimg[sizeof(savedata_t) + i]) {
                 break;
             }
         }
-        if (temp_s2 < 0x5C00) {
+        if (i < (int)sizeof(savedata_t)) {
             return -1;
         }
         _memcardSaveState = fileVerified;

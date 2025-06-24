@@ -837,7 +837,6 @@ static int _applyLoadedSaveFile(int arg0)
     return 0;
 }
 
-extern char D_800616B4;
 static const u_short D_8006886C[] = {
     0x7582,
     0x6082,

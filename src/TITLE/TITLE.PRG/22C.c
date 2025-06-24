@@ -96,7 +96,7 @@ enum slotState_t {
 typedef struct {
     int key;
     enum slotState_t slotState;
-    int counter;
+    int generation;
     int unkC;
     char unk10;
     char unk11;
@@ -456,8 +456,8 @@ static u_int _getNewestSaveFile()
 
     for (i = 0; i < 5; ++i) {
         if (_saveFileInfo[i].slotState >= 3) {
-            if (maxCounter < _saveFileInfo[i].counter) {
-                maxCounter = _saveFileInfo[i].counter;
+            if (maxCounter < _saveFileInfo[i].generation) {
+                maxCounter = _saveFileInfo[i].generation;
                 fileIndex = i;
             }
         }
@@ -473,7 +473,7 @@ static int _getCurrentGameSave()
             && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
             && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
-            && (_saveFileInfo[i].counter == vs_main_settings.saveFileCounter)) {
+            && (_saveFileInfo[i].generation == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
     }
@@ -925,16 +925,16 @@ void func_80069888(int arg0)
     vs_main_settings.key = _encode(0x20);
     s5->unk180[0] = vs_main_settings.key;
     s5->unk180[1] = vs_main_settings.slotState;
-    vs_main_settings.saveFileCounter = 0;
+    vs_main_settings.saveFileGeneration = 0;
 
     for (i = 0; i < 5; ++i) {
         if (_saveFileInfo[i].slotState >= slotStateInUse) {
-            if (vs_main_settings.saveFileCounter < _saveFileInfo[i].counter) {
-                vs_main_settings.saveFileCounter = _saveFileInfo[i].counter;
+            if (vs_main_settings.saveFileGeneration < _saveFileInfo[i].generation) {
+                vs_main_settings.saveFileGeneration = _saveFileInfo[i].generation;
             }
         }
     }
-    s5->unk180[2] = ++vs_main_settings.saveFileCounter;
+    s5->unk180[2] = ++vs_main_settings.saveFileGeneration;
     if (vs_main_settings.unk18 < 0x270F) {
         ++vs_main_settings.unk18;
     }

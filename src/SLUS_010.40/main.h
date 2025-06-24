@@ -99,7 +99,7 @@ typedef struct {
     u_int key;
     u_short unk18;
     u_short unk1A;
-    u_int saveFileCounter;
+    u_int saveFileGeneration;
 } vs_main_settings_t;
 
 typedef union {

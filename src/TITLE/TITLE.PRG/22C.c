@@ -792,7 +792,7 @@ static int _memCardHandler(int port)
     return 0;
 }
 
-static int _applyLoadedSaveFile(int arg0)
+static int _applyLoadedSaveFile(int verifyOnly)
 {
     int blockCount;
     savedata_t* spmcimg;
@@ -809,7 +809,7 @@ static int _applyLoadedSaveFile(int arg0)
         sizeof(savedata_t) - (u_long) &((savedata_t*)0)->unk180.unk180.slotState);
 
     blockCount = 92;
-    if (arg0 != 0) {
+    if (verifyOnly != 0) {
         blockCount = 32;
     }
 
@@ -820,7 +820,7 @@ static int _applyLoadedSaveFile(int arg0)
         } while (0);
     }
 
-    if (arg0 == 0) {
+    if (verifyOnly == 0) {
         return 0;
     }
 

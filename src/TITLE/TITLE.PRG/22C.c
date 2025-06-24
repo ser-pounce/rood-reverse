@@ -472,7 +472,7 @@ static int _getCurrentGameSave()
         if ((_saveFileInfo[i].slotState >= slotStateInUse)
             && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
-            && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
+            && (_saveFileInfo[i].unk14 == vs_main_settings.saveCount)
             && (_saveFileInfo[i].generation == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
@@ -935,8 +935,8 @@ void func_80069888(int arg0)
         }
     }
     s5->unk180[2] = ++vs_main_settings.saveFileGeneration;
-    if (vs_main_settings.unk18 < 0x270F) {
-        ++vs_main_settings.unk18;
+    if (vs_main_settings.saveCount < 9999) {
+        ++vs_main_settings.saveCount;
     }
 
     vs_main_settings.unk1A = 0;
@@ -944,7 +944,7 @@ void func_80069888(int arg0)
     s5->gameTime.t = vs_main_gametime.t;
     s5->unk198 = D_80060068.unk0.unk4[0];
     s5->unk19A = D_80060068.unk0.unk4[1];
-    s5->unk194 = vs_main_settings.unk18;
+    s5->unk194 = vs_main_settings.saveCount;
     s5->unk196 = vs_main_settings.unk1A;
     s5->unk19C = 0x30;
     s5->unk19E = 0;

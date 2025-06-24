@@ -97,7 +97,7 @@ typedef struct {
     int unkC;
     int unk10;
     u_int key;
-    u_short unk18;
+    u_short saveCount;
     u_short unk1A;
     u_int saveFileGeneration;
 } vs_main_settings_t;

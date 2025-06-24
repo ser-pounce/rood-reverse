@@ -127,8 +127,8 @@ typedef struct {
     u_char unk100[0x80];
     struct savedata_unk180_t {
         struct savedata_unk180_2_t {
-            int unk180;
-            int unk184;
+            int key;
+            int slotState;
             int unk188;
             int unk18C;
         } unk180;
@@ -805,7 +805,8 @@ static int _applyLoadedSaveFile(int arg0)
     s4 = (int*)(spmcimg + 1);
     unk180 = &spmcimg[1].unk180.unk180;
 
-    _decode(unk180->unk180, (u_char*)(&unk180->unk184), 0x5A7C);
+    _decode(unk180->key, (u_char*)(&unk180->slotState),
+        sizeof(savedata_t) - (u_long) &((savedata_t*)0)->unk180.unk180.slotState);
 
     blockCount = 92;
     if (arg0 != 0) {
@@ -897,8 +898,8 @@ void func_80069888(int arg0)
     }
 
     vs_main_settings.key = _encode(0x20);
-    s5->unk180.unk180 = vs_main_settings.key;
-    s5->unk180.unk184 = vs_main_settings.slotState;
+    s5->unk180.key = vs_main_settings.key;
+    s5->unk180.slotState = vs_main_settings.slotState;
     vs_main_settings.saveFileGeneration = 0;
 
     for (i = 0; i < 5; ++i) {

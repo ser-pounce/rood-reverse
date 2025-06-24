@@ -977,7 +977,6 @@ void func_80069888(int arg0)
 
 static int _loadSaveData(int portFileno)
 {
-
     enum loadSaveDataState { init = 0, reading = 1 };
 
     int ev;
@@ -986,7 +985,7 @@ static int _loadSaveData(int portFileno)
     void* temp_s2;
     int new_var;
 
-    temp_s2 = _spmcimg + 0x5C00;
+    temp_s2 = (savedata_t*)_spmcimg + 1;
     if (portFileno != 0) {
         _loadSaveDataState = init;
         _loadSaveDataErrors = 0;
@@ -1003,13 +1002,13 @@ static int _loadSaveData(int portFileno)
     case init:
         new_var = 320;
         D_800DEB12 += ((D_800DEB14 - D_800DEB10)
-                          * ((_loadSaveDataErrorOffset * 0x14) - (D_800DEB12 - new_var)))
+                          * ((_loadSaveDataErrorOffset * 20) - (D_800DEB12 - new_var)))
             / D_800DEB0E;
         _loadSaveDataErrorOffset = _loadSaveDataErrors;
-        D_800DEB0E = 0xC0 - (_isTempSave << 7);
+        D_800DEB0E = 192 - (_isTempSave << 7);
         D_800DEB10 = D_800DEB14;
 
-        memset(temp_s2, 0, 0x5C00);
+        memset(temp_s2, 0, sizeof(savedata_t));
 
         if (_readFileNo & 8) {
             filename = _memcardMakeTempFilename(_readCardPort, _readFileNo & 7);

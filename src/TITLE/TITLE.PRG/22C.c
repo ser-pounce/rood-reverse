@@ -787,13 +787,13 @@ static int _memCardHandler(int port)
         event = _testMemcardEvents(SWEVENTS);
         switch (event) {
         case memCardEventIoEnd:
-            return _memcardEvType + 1;
+            return _memcardEvType + memCardEventError;
         case memCardEventError:
         case memCardEventTimeout:
             _memCardState = init;
             break;
         case memCardEventNew:
-            return _memcardEvType + 3;
+            return _memcardEvType + memCardEventNew;
         case memCardEventNone:
             if (_memCardTimeout++ > 64) {
                 _memCardState = init;
@@ -810,12 +810,12 @@ static int _applyLoadedSaveFile(int verifyOnly)
     int blockCount;
     savedata_t* spmcimg;
     void* spmcimg2;
-    int* s4;
+    savedata_t* s4;
     struct savedata_unk180_2_t* unk180;
 
     spmcimg = (savedata_t*)_spmcimg;
     spmcimg2 = spmcimg + 1;
-    s4 = (int*)(spmcimg + 1);
+    s4 = spmcimg + 1;
     unk180 = &spmcimg[1].unk180.unk180;
 
     _decode(unk180->key, (u_char*)(&unk180->slotState),
@@ -846,7 +846,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy((u_char*)(&D_800619D8), spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy((u_char*)(&D_80061068), &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy((u_char*)(&D_8005FEA0), &spmcimg[1].unk1784, sizeof(D_8005FEA0));
-    D_80060064 = s4[0x626];
+    D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = D_80060040;
     _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));

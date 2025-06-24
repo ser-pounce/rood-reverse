@@ -10,6 +10,7 @@ def get_name_and_category(base_path: Path):
     raise ValueError(f"No valid category in path: {base_path}")
 
 def main(basepath: Path, targetpath: Path):
+    skip_files = {"2842C.o", "6E644.o", "32154.o"}
     units = []
     for base_path in (basepath / "src").rglob("*.o"):
         name, progress_category = get_name_and_category(base_path)
@@ -17,11 +18,12 @@ def main(basepath: Path, targetpath: Path):
         unit = {
             "name": str(name),
             "target_path": str(target_path),
-            "base_path": str(base_path),
             "metadata": {
                 "progress_categories": [str(progress_category)]
             }
         }
+        if base_path.name not in skip_files:
+            unit["base_path"] = str(base_path)
         units.append(unit)
     with open("objdiff.json", "w") as f:
         json.dump({"units": units}, f, indent=2)

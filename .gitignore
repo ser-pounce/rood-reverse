@@ -1,6 +1,6 @@
 .vscode
 build
-target
+base
 data
 objdiff.json
 progress.json

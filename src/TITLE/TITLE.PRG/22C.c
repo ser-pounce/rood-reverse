@@ -102,7 +102,7 @@ typedef struct {
     char unk11;
     char unk12;
     char unk13;
-    u_short unk14;
+    u_short saveCount;
     u_short unk16;
     u_short unk18;
     u_short unk1A;
@@ -472,7 +472,7 @@ static int _getCurrentGameSave()
         if ((_saveFileInfo[i].slotState >= slotStateInUse)
             && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
-            && (_saveFileInfo[i].unk14 == vs_main_settings.saveCount)
+            && (_saveFileInfo[i].saveCount == vs_main_settings.saveCount)
             && (_saveFileInfo[i].generation == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
@@ -1826,10 +1826,10 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 }
                 func_8006A81C(y | 0xD9, 3);
                 func_8006A81C(y | 0xEF, 0);
-                func_8006A860(y | 0xF2, (u_int)saveInfo->unk14, 0x3E8U);
+                func_8006A860(y | 0xF2, saveInfo->saveCount, 0x3E8U);
                 func_8006A81C(y | 0x10B, 4);
                 func_8006A81C(y | 0x125, 0);
-                func_8006A860(y | 0x128, (u_int)saveInfo->unk1D, 0xAU);
+                func_8006A860(y | 0x128, saveInfo->unk1D, 0xAU);
                 y = y + 0xD0000;
                 if (saveInfo->unk1D != 0) {
                     _drawSprt(y | 0x45, 0x37F910F0, 0x100010, 0xC);

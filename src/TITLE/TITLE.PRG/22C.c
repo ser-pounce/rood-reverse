@@ -89,13 +89,14 @@ typedef struct {
 enum slotState_t {
     slotStateUnused = 0,
     slotStateAvailable = 1,
-    slotStateTemp = 2,
+    slotStateTemporary = 2,
+    slotStateInUse = 3
 };
 
 typedef struct {
     int key;
     enum slotState_t slotState;
-    int unk8;
+    int counter;
     int unkC;
     char unk10;
     char unk11;
@@ -447,18 +448,16 @@ static u_char* _memcardMakeTempFilename(int port, int fileNo)
     return _memcardTempFilename;
 }
 
-static u_int func_80068D54()
+static u_int _getNewestSaveFile()
 {
     u_int i;
-    u_int var_a2;
-    u_int fileIndex;
+    u_int maxCounter = 0;
+    u_int fileIndex = 0;
 
-    var_a2 = 0;
-    fileIndex = 0;
     for (i = 0; i < 5; ++i) {
         if (_saveFileInfo[i].slotState >= 3) {
-            if (var_a2 < _saveFileInfo[i].unk8) {
-                var_a2 = _saveFileInfo[i].unk8;
+            if (maxCounter < _saveFileInfo[i].counter) {
+                maxCounter = _saveFileInfo[i].counter;
                 fileIndex = i;
             }
         }
@@ -474,7 +473,7 @@ static int _getCurrentGameSave()
             && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
             && (_saveFileInfo[i].unk14 == vs_main_settings.unk18)
-            && (_saveFileInfo[i].unk8 == vs_main_settings.unk1C)) {
+            && (_saveFileInfo[i].counter == vs_main_settings.unk1C)) {
             return i + 1;
         }
     }
@@ -649,7 +648,7 @@ static int _initSaveFileInfo(int port)
                     continue;
                 }
                 memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
-                _saveFileInfo[fileNo - 1].slotState = slotStateTemp;
+                _saveFileInfo[fileNo - 1].slotState = slotStateTemporary;
             } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                 slotsAvailable += (file->size + 0x1FFF) >> 13;
             }
@@ -929,9 +928,9 @@ void func_80069888(int arg0)
     vs_main_settings.unk1C = 0;
 
     for (i = 0; i < 5; ++i) {
-        if (_saveFileInfo[i].slotState >= 3) {
-            if (vs_main_settings.unk1C < _saveFileInfo[i].unk8) {
-                vs_main_settings.unk1C = _saveFileInfo[i].unk8;
+        if (_saveFileInfo[i].slotState >= slotStateInUse) {
+            if (vs_main_settings.unk1C < _saveFileInfo[i].counter) {
+                vs_main_settings.unk1C = _saveFileInfo[i].counter;
             }
         }
     }
@@ -2003,7 +2002,7 @@ int func_8006C15C(int arg0)
 
     if (arg0 != 0) {
         D_800DC8D9 = arg0;
-        _selectedSlot = func_80068D54();
+        _selectedSlot = _getNewestSaveFile();
         _slotsPage = 0;
         if (_selectedSlot == 4) {
             _slotsPage = 2;
@@ -2656,7 +2655,7 @@ int func_8006D2F8(int arg0)
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
-                _saveFileInfo[saveId].slotState = slotStateTemp;
+                _saveFileInfo[saveId].slotState = slotStateTemporary;
                 _saveSlotMenuEntries[saveId + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;

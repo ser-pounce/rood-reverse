@@ -970,7 +970,7 @@ void func_80069888(int arg0)
         var_a0 ^= _spmcimg[j + 256];
     }
     s5->checksums[1] = var_a0;
-    for (i = 0x184; i < (int)sizeof(savedata_t); ++i) {
+    for (i = (int)&((savedata_t*)0)->unk180.unk180.slotState; i < (int)sizeof(savedata_t); ++i) {
         _spmcimg[i] += _encode(8);
     }
 }

@@ -139,7 +139,7 @@ typedef struct {
             int unk18C;
         } unk180;
         vs_Gametime_t gameTime;
-        u_short unk194;
+        u_short saveCount;
         u_short unk196;
         u_short unk198;
         u_short unk19A;
@@ -149,7 +149,7 @@ typedef struct {
         u_char unk19F;
         u_short unk1A0;
         u_short unk1A2;
-        u_char unk1A4[0x5C];
+        u_char checksums[0x5C];
     } unk180;
     u_char unk200[0x440];
     u_char unk640[0x20];
@@ -536,7 +536,7 @@ static int _verifySaveChecksums(savedata_t data[], int sectorCount)
         checksum ^= p[j];
       }
 
-      if (data->unk180.unk1A4[i] != checksum)
+      if (data->unk180.checksums[i] != checksum)
       {
         return 1;
       }
@@ -932,7 +932,7 @@ void func_80069888(int arg0)
     s5->gameTime.t = vs_main_gametime.t;
     s5->unk198 = D_80060068.unk0.unk4[0];
     s5->unk19A = D_80060068.unk0.unk4[1];
-    s5->unk194 = vs_main_settings.saveCount;
+    s5->saveCount = vs_main_settings.saveCount;
     s5->unk196 = vs_main_settings.unk1A;
     s5->unk19C = 0x30;
     s5->unk19E = 0;
@@ -955,20 +955,21 @@ void func_80069888(int arg0)
     savedata->unk1898 = D_80060064;
     _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
     _rMemcpy(savedata->unk1DBC, D_80060040, sizeof(savedata->unk1DBC));
+
     for (i = 0; i < 92; ++i) {
         var_a0 = 0;
         if (i != 1) {
             for (j = 0; j < 256; ++j) {
                 var_a0 ^= _spmcimg[i * 0x100 + j];
             }
-            s5->unk1A4[i] = var_a0;
+            s5->checksums[i] = var_a0;
         }
     }
     var_a0 = 0;
     for (j = 0; j < 256; ++j) {
         var_a0 ^= _spmcimg[j + 256];
     }
-    s5->unk1A4[1] = var_a0;
+    s5->checksums[1] = var_a0;
     for (i = 0x184; i < (int)sizeof(savedata_t); ++i) {
         _spmcimg[i] += _encode(8);
     }

@@ -1,6 +1,9 @@
 .vscode
 build
+target
 data
+objdiff.json
+progress.json
 config/*.xml
 disks/*
 nonmatchings

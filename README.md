@@ -17,7 +17,7 @@ Thanks also to the following amazing projects (and their dependencies):
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
 
 ## Status
-| Category | Matched Code | Total Code | Percent Matched |
+| Executable | Matched Code | Total Code | Percent Matched |
 |----------|--------------|------------|-----------------|
 | BATTLE.PRG | 10120 | 517400 | 1.96% |
 | SLUS_010.40 | 37712 | 158036 | 23.86% |

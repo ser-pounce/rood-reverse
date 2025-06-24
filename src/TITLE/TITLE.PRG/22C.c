@@ -94,25 +94,31 @@ enum slotState_t {
 };
 
 typedef struct {
-    int key;
     enum slotState_t slotState;
     int generation;
-    int unkC;
-    char unk10;
-    char unk11;
-    char unk12;
-    char unk13;
+    int unk8;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
     u_short saveCount;
+    u_short unk12;
+    u_short unk14;
     u_short unk16;
-    u_short unk18;
-    u_short unk1A;
-    u_char unk1C;
-    u_char unk1D;
-    u_char unk1E;
-    u_char unk1F;
-    u_short unk20;
-    u_short unk22;
-    int unk24[23];
+    u_char unk18;
+    u_char unk19;
+    u_char unk1A;
+    u_char unk1B;
+    u_short unk1C;
+    u_short unk1E;
+    u_short unk20[16];
+} _saveFileSubInfo_t;
+
+typedef struct {
+    int key;
+    _saveFileSubInfo_t unk4;
+    u_char unk44[0x1C];
+    u_char unk60[0x20];
 } _saveFileInfo_t;
 
 typedef struct {
@@ -120,7 +126,7 @@ typedef struct {
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    u_short unk4[32];
+    _saveFileSubInfo_t unk4;
     u_char unk44[0x1C];
     u_char unk60[0x20];
     u_char unk80[0x80];
@@ -460,9 +466,9 @@ static u_int _getNewestSaveFile()
     u_int fileIndex = 0;
 
     for (i = 0; i < 5; ++i) {
-        if (_saveFileInfo[i].slotState >= 3) {
-            if (maxCounter < _saveFileInfo[i].generation) {
-                maxCounter = _saveFileInfo[i].generation;
+        if (_saveFileInfo[i].unk4.slotState >= 3) {
+            if (maxCounter < _saveFileInfo[i].unk4.generation) {
+                maxCounter = _saveFileInfo[i].unk4.generation;
                 fileIndex = i;
             }
         }
@@ -474,11 +480,11 @@ static int _getCurrentGameSave()
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((_saveFileInfo[i].slotState >= slotStateInUse)
-            && (_saveFileInfo[i].slotState == vs_main_settings.slotState)
+        if ((_saveFileInfo[i].unk4.slotState >= slotStateInUse)
+            && (_saveFileInfo[i].unk4.slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
-            && (_saveFileInfo[i].saveCount == vs_main_settings.saveCount)
-            && (_saveFileInfo[i].generation == vs_main_settings.saveFileGeneration)) {
+            && (_saveFileInfo[i].unk4.saveCount == vs_main_settings.saveCount)
+            && (_saveFileInfo[i].unk4.generation == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
     }
@@ -513,34 +519,39 @@ static int _memcardFileNumberFromFilename(u_char* filename)
     return 0;
 }
 
-static int _verifySaveChecksums(u_char data[], int sectorCount)
+static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {
-    int checksum;
-    int i;
-    int j;
-    u_char* p = data;
-
-    for (i = 0; i < sectorCount; ++i) {
-        checksum = 0;
-        if (i != 1) {
-            for (j = 0; j < 256; ++j) {
-                checksum ^= p[j];
-            }
-
-            if (data[(u_int)(420 + i)] != checksum) {
-                return 1;
-            }
-        }
-        p += 256;
-    }
-
-    p = &data[256];
+  int checksum;
+  int i;
+  int j;
+  u_char *p = (u_char*)data;
+    
+  for (i = 0; i < sectorCount; ++i)
+  {
     checksum = 0;
-    for (j = 0; j < 256; ++j) {
+    if (i != 1)
+    {
+      for (j = 0; j < 256; ++j)
+      {
         checksum ^= p[j];
-    }
+      }
 
-    return checksum != 0;
+      if (data->unk180.unk1A4[i] != checksum)
+      {
+        return 1;
+      }
+    }
+    p += 256;
+  }
+
+  p = data->unk100;
+  checksum = 0;
+  for (j = 0; j < 256; ++j)
+  {
+    checksum ^= p[j];
+  }
+
+  return checksum != 0;
 }
 
 static void _decode(u_int key, u_char* buf, int count)
@@ -558,8 +569,10 @@ static int _readSaveFileInfo(int id)
     int port;
     int file;
     int i;
+
     port = id >> 12;
     id &= 7;
+    
     for (i = 0; i < 3; ++i) {
         file = open(_memcardMakeFilename(port, id), O_RDONLY);
         if (file == -1) {
@@ -570,9 +583,9 @@ static int _readSaveFileInfo(int id)
         if (bytesRead != sizeof(saveInfo)) {
             continue;
         }
-        _decode(saveInfo[3].key, (u_char*)&saveInfo[3].slotState,
+        _decode(saveInfo[3].key, (u_char*)&saveInfo[3].unk4.slotState,
             sizeof(_saveFileInfo_t) - sizeof(int));
-        if (_verifySaveChecksums((u_char*)saveInfo, 2) == 0) {
+        if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
             _rMemcpy(
                 (u_char*)(&_saveFileInfo[id - 1]), &saveInfo[3], sizeof(saveInfo[3]));
             return 0;
@@ -653,7 +666,7 @@ static int _initSaveFileInfo(int port)
                     continue;
                 }
                 memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
-                _saveFileInfo[fileNo - 1].slotState = slotStateTemporary;
+                _saveFileInfo[fileNo - 1].unk4.slotState = slotStateTemporary;
             } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                 slotsAvailable += (file->size + 0x1FFF) >> 13;
             }
@@ -663,8 +676,8 @@ static int _initSaveFileInfo(int port)
 
     for (; slotsAvailable >= 3; slotsAvailable -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].slotState == slotStateUnused) {
-                _saveFileInfo[i].slotState = slotStateAvailable;
+            if (_saveFileInfo[i].unk4.slotState == slotStateUnused) {
+                _saveFileInfo[i].unk4.slotState = slotStateAvailable;
                 break;
             }
         }
@@ -813,7 +826,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         blockCount = 32;
     }
 
-    if ((_verifySaveChecksums((u_char*)(spmcimg + 1), blockCount) != 0)
+    if ((_verifySaveChecksums(spmcimg + 1, blockCount) != 0)
         || (unk180->unk18C != 0x20000107)) {
         do {
             return 1;
@@ -872,20 +885,20 @@ void func_80069888(int arg0)
     savedata->unk1 = 0x43;
     savedata->unk2 = 0x11;
     savedata->unk3 = 3;
-    _rMemcpy((u_char*)savedata->unk4, s0, sizeof(savedata->unk4));
-    savedata->unk4[19] += (arg0 << 8);
+    _rMemcpy((u_char*)&savedata->unk4, s0, sizeof(savedata->unk4));
+    savedata->unk4.unk20[3] += (arg0 << 8);
 
     if (vs_main_gametime.t.h == 100) {
-        savedata->unk4[22] = 0x5082;
+        savedata->unk4.unk20[6] = 0x5082;
     } else {
-        savedata->unk4[23] += ((vs_main_gametime.t.h / 10) << 8);
-        savedata->unk4[24] += ((vs_main_gametime.t.h % 10) << 8);
-        savedata->unk4[26] += ((vs_main_gametime.t.m / 10) << 8);
-        savedata->unk4[27] += ((vs_main_gametime.t.m % 10) << 8);
-        savedata->unk4[29] += ((vs_main_gametime.t.s / 10) << 8);
-        savedata->unk4[30] += ((vs_main_gametime.t.s % 10) << 8);
+        savedata->unk4.unk20[7] += ((vs_main_gametime.t.h / 10) << 8);
+        savedata->unk4.unk20[8] += ((vs_main_gametime.t.h % 10) << 8);
+        savedata->unk4.unk20[10] += ((vs_main_gametime.t.m / 10) << 8);
+        savedata->unk4.unk20[11] += ((vs_main_gametime.t.m % 10) << 8);
+        savedata->unk4.unk20[13] += ((vs_main_gametime.t.s / 10) << 8);
+        savedata->unk4.unk20[14] += ((vs_main_gametime.t.s % 10) << 8);
     }
-    savedata3->unk4[31] = 0;
+    savedata3->unk4.unk20[15] = 0;
     _rMemcpy(savedata3->unk60, _mcData->unk400[arg0], sizeof(savedata->unk60));
     _rMemcpy(savedata3->unk80, _mcData->unk4E0[arg0], sizeof(savedata->unk80));
 
@@ -903,9 +916,9 @@ void func_80069888(int arg0)
     vs_main_settings.saveFileGeneration = 0;
 
     for (i = 0; i < 5; ++i) {
-        if (_saveFileInfo[i].slotState >= slotStateInUse) {
-            if (vs_main_settings.saveFileGeneration < _saveFileInfo[i].generation) {
-                vs_main_settings.saveFileGeneration = _saveFileInfo[i].generation;
+        if (_saveFileInfo[i].unk4.slotState >= slotStateInUse) {
+            if (vs_main_settings.saveFileGeneration < _saveFileInfo[i].unk4.generation) {
+                vs_main_settings.saveFileGeneration = _saveFileInfo[i].unk4.generation;
             }
         }
     }
@@ -1735,11 +1748,11 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
             _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             saveInfo = &_saveFileInfo[color2];
             var_s1 = arg0->unk6 - 1;
-            color1 = saveInfo->slotState;
-            if (saveInfo->slotState < 3) {
-                if (saveInfo->slotState == 0) {
+            color1 = saveInfo->unk4.slotState;
+            if (saveInfo->unk4.slotState < 3) {
+                if (saveInfo->unk4.slotState == 0) {
                     var_s1 = -2;
-                } else if (saveInfo->slotState == 2) {
+                } else if (saveInfo->unk4.slotState == 2) {
                     var_s1 = -4;
                 } else if (_isSaving != 0) {
                     var_s1 = -1;
@@ -1772,7 +1785,7 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             func_8006A81C((arg0->unkC - 0x16) | y, 1);
             func_8006A860((arg0->unkC - 9) | y, color2 + 1, 0xAU);
-            temp_v1 = saveInfo->slotState;
+            temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
                 func_8006B364(
                     (u_char*)D_800DEAC0 + 0x372, arg0->unkC + 6, arg0->unkE + 0xA, 3);
@@ -1790,7 +1803,7 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                     arg0->unkC + 6, arg0->unkE + 4, 0);
                 func_8006A81C(y | 0xAC, 2);
                 func_8006A81C(y | 0xBD, 0);
-                color1 = saveInfo->unk1E;
+                color1 = saveInfo->unk4.unk1A;
 
                 if (color1 == 0x64) {
                     func_8006A860(y | 0xC0, 0x64U, 0x64);
@@ -1801,27 +1814,27 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 }
                 func_8006A81C(y | 0xD9, 3);
                 func_8006A81C(y | 0xEF, 0);
-                func_8006A860(y | 0xF2, saveInfo->saveCount, 0x3E8U);
+                func_8006A860(y | 0xF2, saveInfo->unk4.saveCount, 0x3E8U);
                 func_8006A81C(y | 0x10B, 4);
                 func_8006A81C(y | 0x125, 0);
-                func_8006A860(y | 0x128, saveInfo->unk1D, 0xAU);
+                func_8006A860(y | 0x128, saveInfo->unk4.unk19, 0xAU);
                 y = y + 0xD0000;
-                if (saveInfo->unk1D != 0) {
+                if (saveInfo->unk4.unk19 != 0) {
                     _drawSprt(y | 0x45, 0x37F910F0, 0x100010, 0xC);
                 }
                 func_8006A81C(y | 0xF0, 5);
-                color1 = saveInfo->unk13;
+                color1 = saveInfo->unk4.unkF;
                 if (color1 == 0x64) {
                     func_8006A860(y | 0x107, color1, 0x64);
                 } else {
                     func_8006A860(y | 0x10C, color1, 10);
                 }
                 func_8006A81C(y | 0x117, 0);
-                func_8006A860(y | 0x11A, (u_int)saveInfo->unk12, 0xAU);
+                func_8006A860(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
                 func_8006A81C(y | 0x125, 0);
-                func_8006A860(y | 0x128, (u_int)saveInfo->unk11, 0xAU);
-                func_8006A928(y | 0x58, 0, (int)saveInfo->unk18, (u_int)saveInfo->unk1A);
-                func_8006A928(y | 0x9E, 1, (int)saveInfo->unk20, (u_int)saveInfo->unk22);
+                func_8006A860(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
+                func_8006A928(y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);
+                func_8006A928(y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
                 y = y + 0xFFEF0000;
             }
             if ((arg0->unk4 != 0) && (D_800DEB14 != 0)) {
@@ -1997,8 +2010,8 @@ int func_8006C15C(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
-            temp_v0_2->slotUnused = _saveFileInfo[i].slotState < 3;
-            temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
+            temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState < 3;
+            temp_v0_2->unk6 = _saveFileInfo[i].unk4.unk18;
         }
         D_800DC8D8 = 1;
         D_800DED6C = D_800DEAC0 + 0x13B;
@@ -2018,7 +2031,7 @@ int func_8006C15C(int arg0)
         }
         currentSlot = _selectedSlot + _slotsPage;
         if (vs_main_buttonsPressed & PADRright) {
-            if (_saveFileInfo[currentSlot].slotState >= 3) {
+            if (_saveFileInfo[currentSlot].unk4.slotState >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _saveSlotMenuEntries[currentSlot + 5].unk4 = 1;
                 D_800DED68 = 0;
@@ -2200,7 +2213,7 @@ int func_8006C778(int arg0)
             break;
         }
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].slotState >= 2) {
+            if (_saveFileInfo[i].unk4.slotState >= 2) {
                 break;
             }
         }
@@ -2502,8 +2515,8 @@ int func_8006D2F8(int arg0)
             temp_v0_2
                 = func_8006AE70(i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
-            temp_v0_2->slotUnused = _saveFileInfo[i].slotState == slotStateUnused;
-            temp_v0_2->unk6 = _saveFileInfo[i].unk1C;
+            temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState == slotStateUnused;
+            temp_v0_2->unk6 = _saveFileInfo[i].unk4.unk18;
         }
         D_800DC91C = 1;
         /* fallthrough */
@@ -2521,7 +2534,7 @@ int func_8006D2F8(int arg0)
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
-                if (_saveFileInfo[temp_s0].slotState != slotStateUnused) {
+                if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnused) {
                     vs_main_playSfxDefault(0x7E, 5);
                     _saveSlotMenuEntries[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
@@ -2565,7 +2578,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
                 temp_s0 = D_800DC91F + D_800DC91E;
-                if (_saveFileInfo[temp_s0].slotState == slotStateAvailable) {
+                if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
                         D_800DED6C = D_800DEAC0 + 0x102;
@@ -2630,7 +2643,7 @@ int func_8006D2F8(int arg0)
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
-                _saveFileInfo[saveId].slotState = slotStateTemporary;
+                _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
                 _saveSlotMenuEntries[saveId + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
@@ -2643,9 +2656,9 @@ int func_8006D2F8(int arg0)
                 _rMemcpy((u_char*)&_saveFileInfo[saveId],
                     _spmcimg + sizeof(_saveFileInfo_t) * 3, sizeof(_saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
-                    (u_char*)&_saveFileInfo[saveId].slotState,
+                    (u_char*)&_saveFileInfo[saveId].unk4.slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
-                _saveSlotMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk1C;
+                _saveSlotMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -2759,7 +2772,7 @@ int func_8006DC14(int index)
             }
             j = 1;
             for (i = 4; i >= 0; --i) {
-                _saveFileInfo[i].slotState = j;
+                _saveFileInfo[i].unk4.slotState = j;
             }
             func_8006D2F8(D_800DC922);
             _stateVar = 7;
@@ -2789,7 +2802,7 @@ int func_8006DC14(int index)
             break;
         }
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].slotState != 0) {
+            if (_saveFileInfo[i].unk4.slotState != 0) {
                 break;
             }
         }

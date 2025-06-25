@@ -1407,7 +1407,7 @@ static void _fileProcessingAnim(int x, int y)
     }
 }
 
-static void _fileProcessingComplete(int colour, int y)
+static void _fileProcessingCompleteAnim(int colour, int y)
 {
     int yOfst;
     int colour0;
@@ -1497,7 +1497,7 @@ static _fileMenuEntries_t* _initFileMenuEntry(int id, int xy, int wh, u_char* te
     return entry;
 }
 
-void func_8006AF78(int arg0)
+static void _clearFileMenuEntry(int arg0)
 {
     memset(&_fileMenuEntries[arg0], 0, sizeof(_fileMenuEntries_t));
 }
@@ -1733,8 +1733,8 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
         _primBuf.prim.tilePoly.polyG4.x2y2
             = (u_short)arg0->x | ((arg0->y + arg0->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->x + arg0->w) & 0xFFFF)
-            | ((arg0->y + arg0->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3
+            = ((arg0->x + arg0->w) & 0xFFFF) | ((arg0->y + arg0->h) << 0x10);
         DrawPrim(&_primBuf);
 
         uvClut = arg0->x + 6;
@@ -1792,8 +1792,7 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
             _drawInteger((arg0->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
-                func_8006B364(
-                    (u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
+                func_8006B364((u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
                     func_8006B364(
@@ -1848,7 +1847,7 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
                 if (D_800DEB14 < 0) {
                     int v0 = D_800DEB14++;
                     char* p = D_800728B0 + v0;
-                    _fileProcessingComplete(-p[17], y);
+                    _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
                     _fileProcessingAnim(D_800DEB12
@@ -2027,7 +2026,7 @@ int func_8006C15C(int arg0)
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
-                func_8006AF78(i);
+                _clearFileMenuEntry(i);
             }
             D_800DED68 = 0;
             return -1;
@@ -2138,7 +2137,7 @@ int func_8006C15C(int arg0)
             vs_main_gametime.t = D_800DC8D0.t;
         } else {
             for (i = 5; i < 10; ++i) {
-                func_8006AF78(i);
+                _clearFileMenuEntry(i);
             }
         }
         return D_800DC8D4;
@@ -2689,7 +2688,7 @@ int func_8006D2F8(int arg0)
     case 8:
         if (D_800DEB14 == 0) {
             for (i = 5; i < 10; ++i) {
-                func_8006AF78(i);
+                _clearFileMenuEntry(i);
             }
             return D_800DC918;
         }
@@ -2711,7 +2710,7 @@ int func_8006D2F8(int arg0)
         if ((u_char)vs_main_buttonsPressed != 0) {
             vs_main_playSfxDefault(0x7E, 6);
             for (i = 5; i < 10; ++i) {
-                func_8006AF78(i);
+                _clearFileMenuEntry(i);
             }
             return -1;
         }

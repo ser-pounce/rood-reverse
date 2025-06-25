@@ -204,7 +204,7 @@ extern int D_800728C0[];
 extern int D_800728E8[];
 extern u_char _digitsDivisors[];
 extern int _fontCharacterWidths[];
-extern u_char D_80072EF8;
+extern u_char _arrowCharState;
 extern int D_80072EFC[];
 extern int D_80072F04[];
 extern struct {
@@ -1533,8 +1533,8 @@ static int _printCharacter(u_int c, int x, int y, int clut)
 
 int func_8006B138(int arg0)
 {
-    int temp_s0;
-    int temp_v0;
+    int port;
+    int currentSave;
     int temp_v1;
     int var_a0;
     u_int temp_s1;
@@ -1546,22 +1546,21 @@ int func_8006B138(int arg0)
     }
 
     temp_s1 = D_800DC8CC[0] >> 1;
-    temp_s0 = (D_800DC8CC[0] >> 1) + 1;
+    port = (D_800DC8CC[0] >> 1) + 1;
 
     if ((D_800DC8CC[0] & 1) == 0) {
-        D_800DED6C = D_800DEAC0 + (D_800DEAC0 + temp_s0)[21];
-        _memCardHandler(temp_s0);
+        D_800DED6C = D_800DEAC0 + (D_800DEAC0 + port)[21];
+        _memCardHandler(port);
         ++D_800DC8CC[0];
     } else {
         temp_v1 = _memCardHandler(0) & 3;
 
         if (temp_v1 != 0) {
             if (temp_v1 == 1) {
-                if (_initSaveFileInfo(temp_s0) == 0) {
-                    temp_v0 = _getCurrentGameSave();
-                    var_a0 = temp_v0 != 0;
-                    if (var_a0) {
-                        return temp_v0 + (temp_s1 * 0x10);
+                if (_initSaveFileInfo(port) == 0) {
+                    currentSave = _getCurrentGameSave();
+                    if (currentSave != 0) {
+                        return currentSave + (temp_s1 * 0x10);
                     }
                 }
             } else if (temp_v1 == 2) {
@@ -1612,43 +1611,38 @@ int func_8006B288(int arg0)
     return 0;
 }
 
-void func_8006B364(u_char* arg0, int arg1, int arg2, int arg3)
+static void _printString(u_char* text, int x, int y, int clut)
 {
-    int var_a1;
-    u_char temp_t0;
-    int new_var;
-    u_int temp_v1;
-    u_int var_a0;
-
-    new_var = arg1;
-    var_a1 = new_var;
+    u_char arrowState;
+    u_int c;
+    int startX = x;
+    int nextX = x;
 
     while (1) {
-        var_a0 = *arg0++;
-        if (var_a0 < 0xEC) {
-            if (var_a0 < 0xE5) {
-                var_a1 = _printCharacter(var_a0, var_a1, arg2, arg3);
-            } else if (var_a0 == 0xE6) {
-                temp_t0 = (D_80072EF8 + 1) % 12;
-                var_a0 = temp_t0;
-                var_a0 = 0xBC - ((var_a0 & 0xFF) >> 2);
-                D_80072EF8 = temp_t0;
-                var_a1 = _printCharacter(var_a0, var_a1, arg2, arg3);
-            } else if (var_a0 != 0xE7) {
-                if (var_a0 == 0xE8) {
-                    arg2 += 0xD;
-                    var_a1 = new_var;
+        c = *(text++);
+        if (c < vs_char_control) {
+            if (c < vs_char_nonPrinting) {
+                nextX = _printCharacter(c, nextX, y, clut);
+            } else if (c == vs_char_animarrow) {
+                arrowState = (_arrowCharState + 1) % 12;
+                c = vs_char_arrow - (arrowState >> 2);
+                _arrowCharState = arrowState;
+                nextX = _printCharacter(c, nextX, y, clut);
+            } else if (c != vs_char_terminator) {
+                if (c == vs_char_newline) {
+                    y += 13;
+                    nextX = startX;
                 }
             } else {
                 break;
             }
         } else {
-            temp_v1 = *arg0++;
-            if (var_a0 == 0xFA) {
-                if (temp_v1 >= 0xF0) {
-                    var_a1 += -0x100 + temp_v1;
+            u_int control = *(text++);
+            if (c == vs_char_spacing) {
+                if (control >= 0xF0) {
+                    nextX -= 0x100 - control;
                 } else {
-                    var_a1 += temp_v1;
+                    nextX += control;
                 }
             }
         }
@@ -1792,18 +1786,18 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
             _drawInteger((arg0->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
-                func_8006B364((u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
+                _printString((u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
-                    func_8006B364(
+                    _printString(
                         (u_char*)D_800DEAC0 + 0x38A, arg0->x + 6, arg0->y + 0xA, 3);
                 } else {
-                    func_8006B364(
+                    _printString(
                         (u_char*)D_800DEAC0 + 0x3A0, arg0->x + 6, arg0->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
-                func_8006B364((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
+                _printString((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
                     arg0->x + 6, arg0->y + 4, 0);
                 _drawSaveInfoUI(y | 0xAC, 2);
                 _drawSaveInfoUI(y | 0xBD, 0);
@@ -1967,7 +1961,7 @@ static void _drawSaveMenu(int arg0)
         D_800DED71 = 0;
     }
     if (D_800DED6C != 0) {
-        func_8006B364((u_char*)D_800DED6C, 0x10, 0xC0, 0);
+        _printString((u_char*)D_800DED6C, 0x10, 0xC0, 0);
     }
     if (D_800DED72 != 0) {
         DrawSync(0);

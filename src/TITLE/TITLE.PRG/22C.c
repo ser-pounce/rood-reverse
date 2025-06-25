@@ -1659,25 +1659,28 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     for (i = 0; i < 3; ++i) {
         component = ((colour1 >> 16) & 0xFF) * (8 - factor);
         colour1 <<= 8;
-        colourOut = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
+        colourOut
+            = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
         colour2 <<= 8;
     }
     return colourOut;
 }
 
-u_int func_8006B4EC(int arg0, u_int arg1)
+static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
-    u_int a0;
-    u_int a1;
+    u_int color1;
+    u_int color2;
 
-    if (arg1 < 9) {
-        a0 = _interpolateRGB(0x6B4100, 0x6C8219, arg1);
-        a1 = _interpolateRGB(0x330500, 0x262801, arg1);
+    if (innerFactor < 9) {
+        color1 = _interpolateRGB(
+            vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
+        color2 = _interpolateRGB(
+            vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
-        a0 = D_80072EFC[((arg1 >> 3) - 2)];
-        a1 = D_80072F04[((arg1 >> 3) - 2)];
+        color1 = D_80072EFC[((innerFactor >> 3) - 2)];
+        color2 = D_80072F04[((innerFactor >> 3) - 2)];
     }
-    return _interpolateRGB(a0, a1, arg0);
+    return _interpolateRGB(color1, color2, outerFactor);
 }
 
 void func_8006B5A0(_fileMenuEntries_t* arg0)
@@ -1705,8 +1708,8 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
     }
     if ((arg0->slotId >= 5) || ((arg0->y - 0x48) < 0x51U)) {
         y = arg0->unk3;
-        color1 = func_8006B4EC(8 - arg0->unk2, y);
-        color2 = func_8006B4EC(arg0->unk2, y);
+        color1 = _intepolateMenuItemBgColour(8 - arg0->unk2, y);
+        color2 = _intepolateMenuItemBgColour(arg0->unk2, y);
         if (y & 7) {
             arg0->unk3 = y + 1;
         }

@@ -182,8 +182,8 @@ typedef struct {
     u_char unk4E0[22][128];
     u_char unkFE0[0x20];
     u_short unk1000[0x800];
-    _saveFileInfo_t unk2000[5];
-    struct DIRENTRY unk2280;
+    _saveFileInfo_t saveFileInfo[5];
+    struct DIRENTRY direntBuf;
 } mcdata_t;
 
 static void _playMovie(DslLOC*);
@@ -484,7 +484,8 @@ static int _getCurrentGameSave()
             && (_saveFileInfo[i].unk4.slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
             && (_saveFileInfo[i].unk4.saveCount == vs_main_settings.saveCount)
-            && (_saveFileInfo[i].unk4.generation == vs_main_settings.saveFileGeneration)) {
+            && (_saveFileInfo[i].unk4.generation
+                == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
     }
@@ -521,37 +522,32 @@ static int _memcardFileNumberFromFilename(u_char* filename)
 
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {
-  int checksum;
-  int i;
-  int j;
-  u_char *p = (u_char*)data;
-    
-  for (i = 0; i < sectorCount; ++i)
-  {
-    checksum = 0;
-    if (i != 1)
-    {
-      for (j = 0; j < 256; ++j)
-      {
-        checksum ^= p[j];
-      }
+    int checksum;
+    int i;
+    int j;
+    u_char* p = (u_char*)data;
 
-      if (data->unk180.checksums[i] != checksum)
-      {
-        return 1;
-      }
+    for (i = 0; i < sectorCount; ++i) {
+        checksum = 0;
+        if (i != 1) {
+            for (j = 0; j < 256; ++j) {
+                checksum ^= p[j];
+            }
+
+            if (data->unk180.checksums[i] != checksum) {
+                return 1;
+            }
+        }
+        p += 256;
     }
-    p += 256;
-  }
 
-  p = data->unk100;
-  checksum = 0;
-  for (j = 0; j < 256; ++j)
-  {
-    checksum ^= p[j];
-  }
+    p = data->unk100;
+    checksum = 0;
+    for (j = 0; j < 256; ++j) {
+        checksum ^= p[j];
+    }
 
-  return checksum != 0;
+    return checksum != 0;
 }
 
 static void _decode(u_int key, u_char* buf, int count)
@@ -572,7 +568,7 @@ static int _readSaveFileInfo(int id)
 
     port = id >> 12;
     id &= 7;
-    
+
     for (i = 0; i < 3; ++i) {
         file = open(_memcardMakeFilename(port, id), O_RDONLY);
         if (file == -1) {
@@ -819,7 +815,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     unk180 = &spmcimg[1].unk180.unk180;
 
     _decode(unk180->key, (u_char*)(&unk180->slotState),
-        sizeof(savedata_t) - (u_long) &((savedata_t*)0)->unk180.unk180.slotState);
+        sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.slotState);
 
     blockCount = 92;
     if (verifyOnly != 0) {
@@ -970,7 +966,8 @@ void func_80069888(int arg0)
         var_a0 ^= _spmcimg[j + 256];
     }
     s5->checksums[1] = var_a0;
-    for (i = (int)&((savedata_t*)0)->unk180.unk180.slotState; i < (int)sizeof(savedata_t); ++i) {
+    for (i = (int)&((savedata_t*)0)->unk180.unk180.slotState; i < (int)sizeof(savedata_t);
+         ++i) {
         _spmcimg[i] += _encode(8);
     }
 }
@@ -1172,8 +1169,8 @@ static int _loadMemcardMenu(int init)
         _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
         D_800DEAC0 = _mcData->unk1000;
-        _saveFileInfo = _mcData->unk2000;
-        dirEntBuf = &_mcData->unk2280;
+        _saveFileInfo = _mcData->saveFileInfo;
+        dirEntBuf = &_mcData->direntBuf;
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
@@ -1247,7 +1244,7 @@ static void _shutdownMemcard()
     vs_main_freeHeap(_spmcimg);
 }
 
-void _drawSprt(int xy, int uvClut, int wh, int tpage)
+static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
@@ -1260,17 +1257,21 @@ void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawPrim(&_primBuf);
 }
 
-void func_8006A81C(int xy, int id) { _drawSprt(xy, D_800728C0[id], D_800728E8[id], 0xC); }
+static void _drawSaveInfoUI(int xy, int id)
+{
+    _drawSprt(xy, D_800728C0[id], D_800728E8[id],
+        getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
+}
 
-void func_8006A860(int arg0, u_int arg1, u_int arg2)
+static void _drawInteger(int xy, u_int value, u_int placeDivisor)
 {
     do {
-        _drawSprt(arg0, vs_getUV0Clut(((arg1 / arg2) * 6), 0, 832, 223), MAKEWH(6, 10),
-            getTPage(0, 0, 768, 0));
-        arg1 = arg1 % arg2;
-        arg2 /= 10;
-        arg0 += 5;
-    } while (arg2 != 0);
+        _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
+            MAKEWH(6, 10), getTPage(0, 0, 768, 0));
+        value = value % placeDivisor;
+        placeDivisor /= 10;
+        xy += 5;
+    } while (placeDivisor != 0);
 }
 
 static int countDigits(int val)
@@ -1339,7 +1340,7 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
 
     var_s1 = countDigits(arg2);
     temp_s4 = countDigits(arg3);
-    func_8006A81C(arg0 - 1, arg1 + 7);
+    _drawSaveInfoUI(arg0 - 1, arg1 + 7);
     new_var = var_s1 * 6;
     var_s2 = (arg0 - (new_var - (new_var4 = 0x37))) - (temp_s4 * 5);
     var_s1_2 = D_80072910[var_s1];
@@ -1353,8 +1354,8 @@ void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
             var_s2 += 6;
         } while (0);
     } while (var_s1_2 != 0);
-    func_8006A81C(var_s2 + 1, 9);
-    func_8006A860(var_s2 + 6, arg3, D_80072910[temp_s4]);
+    _drawSaveInfoUI(var_s2 + 1, 9);
+    _drawInteger(var_s2 + 6, arg3, D_80072910[temp_s4]);
 }
 
 void _loadFileAnim(u_int arg0, int arg1)
@@ -1782,8 +1783,8 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            func_8006A81C((arg0->unkC - 0x16) | y, 1);
-            func_8006A860((arg0->unkC - 9) | y, color2 + 1, 0xAU);
+            _drawSaveInfoUI((arg0->unkC - 0x16) | y, 1);
+            _drawInteger((arg0->unkC - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
                 func_8006B364(
@@ -1800,40 +1801,42 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 y = y + 0x40000;
                 func_8006B364((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
                     arg0->unkC + 6, arg0->unkE + 4, 0);
-                func_8006A81C(y | 0xAC, 2);
-                func_8006A81C(y | 0xBD, 0);
+                _drawSaveInfoUI(y | 0xAC, 2);
+                _drawSaveInfoUI(y | 0xBD, 0);
                 color1 = saveInfo->unk4.unk1A;
 
                 if (color1 == 0x64) {
-                    func_8006A860(y | 0xC0, 0x64U, 0x64);
-                    func_8006A81C((y + 0xFFFF0000) | 0xCF, 6);
+                    _drawInteger(y | 0xC0, 0x64U, 0x64);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCF, 6);
                 } else {
-                    func_8006A860(y | 0xC0, color1, 0xA);
-                    func_8006A81C((y + 0xFFFF0000) | 0xCA, 6);
+                    _drawInteger(y | 0xC0, color1, 0xA);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCA, 6);
                 }
-                func_8006A81C(y | 0xD9, 3);
-                func_8006A81C(y | 0xEF, 0);
-                func_8006A860(y | 0xF2, saveInfo->unk4.saveCount, 0x3E8U);
-                func_8006A81C(y | 0x10B, 4);
-                func_8006A81C(y | 0x125, 0);
-                func_8006A860(y | 0x128, saveInfo->unk4.unk19, 0xAU);
+                _drawSaveInfoUI(y | 0xD9, 3);
+                _drawSaveInfoUI(y | 0xEF, 0);
+                _drawInteger(y | 0xF2, saveInfo->unk4.saveCount, 0x3E8U);
+                _drawSaveInfoUI(y | 0x10B, 4);
+                _drawSaveInfoUI(y | 0x125, 0);
+                _drawInteger(y | 0x128, saveInfo->unk4.unk19, 0xAU);
                 y = y + 0xD0000;
                 if (saveInfo->unk4.unk19 != 0) {
                     _drawSprt(y | 0x45, 0x37F910F0, 0x100010, 0xC);
                 }
-                func_8006A81C(y | 0xF0, 5);
+                _drawSaveInfoUI(y | 0xF0, 5);
                 color1 = saveInfo->unk4.unkF;
                 if (color1 == 0x64) {
-                    func_8006A860(y | 0x107, color1, 0x64);
+                    _drawInteger(y | 0x107, color1, 0x64);
                 } else {
-                    func_8006A860(y | 0x10C, color1, 10);
+                    _drawInteger(y | 0x10C, color1, 10);
                 }
-                func_8006A81C(y | 0x117, 0);
-                func_8006A860(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
-                func_8006A81C(y | 0x125, 0);
-                func_8006A860(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
-                func_8006A928(y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);
-                func_8006A928(y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
+                _drawSaveInfoUI(y | 0x117, 0);
+                _drawInteger(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
+                _drawSaveInfoUI(y | 0x125, 0);
+                _drawInteger(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
+                func_8006A928(
+                    y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);
+                func_8006A928(
+                    y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
                 y = y + 0xFFEF0000;
             }
             if ((arg0->unk4 != 0) && (D_800DEB14 != 0)) {

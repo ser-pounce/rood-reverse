@@ -19,7 +19,7 @@ typedef struct {
 
 void func_8006B9B4();
 void func_8006A0D8();
-void func_8006A860(DRAWENV*);
+void _drawInteger(DRAWENV*);
 void func_8006A888();
 void func_8006A9C0(int*);
 void func_8006AA6C();
@@ -96,8 +96,8 @@ void func_8006A5C0()
     func_8006B884();
     SetGeomOffset(0xA0, 0x70);
     SetGeomScreen(0x200);
-    func_8006A860(vs_main_drawEnv);
-    func_8006A860(&vs_main_drawEnv[1]);
+    _drawInteger(vs_main_drawEnv);
+    _drawInteger(&vs_main_drawEnv[1]);
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
     func_8006A9C0(&D_8007005C);
@@ -150,7 +150,7 @@ void func_8006A5C0()
     func_8006BD78();
 }
 
-void func_8006A860(DRAWENV* drawenv)
+void _drawInteger(DRAWENV* drawenv)
 {
     drawenv->isbg = 1;
     drawenv->dtd = 0;

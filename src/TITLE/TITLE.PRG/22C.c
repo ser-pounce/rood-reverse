@@ -1502,7 +1502,7 @@ static void _clearFileMenuEntry(int arg0)
     memset(&_fileMenuEntries[arg0], 0, sizeof(_fileMenuEntries_t));
 }
 
-int func_8006AFBC()
+static int _fileMenuEntriesActive()
 {
     int i;
 
@@ -2169,7 +2169,7 @@ int func_8006C778(int arg0)
         break;
 
     case 1:
-        if (func_8006AFBC() == 0) {
+        if (_fileMenuEntriesActive() == 0) {
             break;
         }
         if (D_800DC8DF == 2) {
@@ -2180,7 +2180,7 @@ int func_8006C778(int arg0)
         break;
 
     case 2:
-        if (func_8006AFBC() == 0) {
+        if (_fileMenuEntriesActive() == 0) {
             break;
         }
         func_8006B288(D_800DC8DF + 0x30);
@@ -2207,7 +2207,7 @@ int func_8006C778(int arg0)
         break;
 
     case 5:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             return -1;
         }
         break;
@@ -2273,7 +2273,7 @@ int func_8006CABC(int arg0)
         D_800DC8E0 = 1;
         break;
     case 1:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             temp_v0
                 = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
             temp_v0->state = 2;
@@ -2288,7 +2288,7 @@ int func_8006CABC(int arg0)
         D_800DC8E0 = 3;
         break;
     case 3:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             D_800DC8E0 = 4;
             D_800DED6C = D_800DEAC0 + 0xB6;
         }
@@ -2328,7 +2328,7 @@ int func_8006CABC(int arg0)
         }
         break;
     case 6:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             if (D_800DC8E2 == 0) {
                 return -1;
             }
@@ -2371,7 +2371,7 @@ int func_8006CE6C(int arg0)
         ++D_800DC8E8;
         break;
     case 2:
-        D_800DC8E8 += func_8006AFBC();
+        D_800DC8E8 += _fileMenuEntriesActive();
         break;
     case 3:
         _fileMenuEntries[D_800DC8E9 + 3].unk4 = 1;
@@ -2418,7 +2418,7 @@ int func_8006D084(int arg0)
         }
         return 0;
     case 1:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             return D_800DC8EC;
         }
         return 0;
@@ -2456,7 +2456,7 @@ int func_8006D140(int port)
         }
         return 0;
     case 1:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             _memCardHandler((int)_memcardStatePort);
             D_800DC8F2 = 2;
         }
@@ -2744,7 +2744,7 @@ int func_8006DC14(int index)
         _stateVar = 1;
         break;
     case 1:
-        if (func_8006AFBC() == 0) {
+        if (_fileMenuEntriesActive() == 0) {
             break;
         }
         if (D_800DC922 == 2) {
@@ -2754,7 +2754,7 @@ int func_8006DC14(int index)
         _stateVar = 2;
         break;
     case 2:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             _memCardHandler(D_800DC922);
             _stateVar = 3;
         }
@@ -2798,7 +2798,7 @@ int func_8006DC14(int index)
         _stateVar = 5;
         break;
     case 5:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             return -1;
         }
         break;
@@ -2865,7 +2865,7 @@ int func_8006E00C(int arg0)
         if (*(int*)&vs_main_settings & 0x10) {
             memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
-        } else if (func_8006AFBC() != 0) {
+        } else if (_fileMenuEntriesActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnused) {
                 func_8006B138(1);
                 D_800DC923 = 1;
@@ -2899,7 +2899,7 @@ int func_8006E00C(int arg0)
         }
         break;
     case 3:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             temp_v0
                 = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
             temp_v0->state = 2;
@@ -2914,7 +2914,7 @@ int func_8006E00C(int arg0)
         D_800DC923 = 5;
         break;
     case 5:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             D_800DC923 = 6;
             D_800DED6C = D_800DEAC0 + 0xB6;
         }
@@ -2965,7 +2965,7 @@ int func_8006E00C(int arg0)
         }
         break;
     case 8:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             return -1;
         }
         break;
@@ -3148,7 +3148,7 @@ int func_8006EA70(int arg0)
         ++D_800DC931;
         break;
     case 2:
-        D_800DC931 += func_8006AFBC();
+        D_800DC931 += _fileMenuEntriesActive();
         break;
     case 3:
         _fileMenuEntries[D_800DC932].unk4 = 1;
@@ -3179,7 +3179,7 @@ int func_8006EA70(int arg0)
         D_800DED68 = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
         break;
     case 4:
-        if (func_8006AFBC() != 0) {
+        if (_fileMenuEntriesActive() != 0) {
             return D_800DC932;
         }
         break;

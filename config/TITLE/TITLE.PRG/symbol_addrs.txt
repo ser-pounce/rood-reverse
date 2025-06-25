@@ -168,3 +168,4 @@ _decodedDataBuf0 = 0x800EFDF0;
 _decodedDataBuf1 = 0x800EFDF4;
 _menuItemStates = 0x800EFDF8;
 _clearFileMenuEntry = 0x8006AF78;
+_fileMenuEntriesActive = 0x8006AFBC;

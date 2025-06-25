@@ -182,7 +182,7 @@ typedef struct {
     u_char unk400[7][32];
     u_char unk4E0[22][128];
     u_char unkFE0[0x20];
-    u_short unk1000[0x800];
+    u_short textTable[0x800];
     _saveFileInfo_t saveFileInfo[5];
     struct DIRENTRY direntBuf;
 } mcdata_t;
@@ -306,7 +306,7 @@ extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
 extern u_char* _spmcimg;
 extern mcdata_t* _mcData;
-extern u_short* D_800DEAC0;
+extern u_short* _textTable;
 extern struct DIRENTRY* _memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
@@ -1172,7 +1172,7 @@ static int _loadMemcardMenu(int init)
     if (init != 0) {
         _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
-        D_800DEAC0 = _mcData->unk1000;
+        _textTable = _mcData->textTable;
         _saveFileInfo = _mcData->saveFileInfo;
         dirEntBuf = &_mcData->direntBuf;
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
@@ -1552,7 +1552,7 @@ int func_8006B138(int arg0)
     port = (D_800DC8CC >> 1) + 1;
 
     if ((D_800DC8CC & 1) == 0) {
-        D_800DED6C = D_800DEAC0 + (D_800DEAC0 + port)[21];
+        D_800DED6C = _textTable + (_textTable + port)[21];
         _memcardHandler(port);
         ++D_800DC8CC;
     } else {
@@ -1600,13 +1600,13 @@ int func_8006B288(int arg0)
         case 1:
             return 1;
         case 2:
-            D_800DED6C = D_800DEAC0 + 0xE3;
+            D_800DED6C = _textTable + 0xE3;
             break;
         case 3:
-            D_800DED6C = D_800DEAC0 + 0x2E2;
+            D_800DED6C = _textTable + 0x2E2;
             break;
         default:
-            D_800DED6C = D_800DEAC0 + 0x1DE;
+            D_800DED6C = _textTable + 0x1DE;
             break;
         }
         return -1;
@@ -1794,18 +1794,18 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
                 _printString(
-                    (u_char*)D_800DEAC0 + 0x372, menuEntry->x + 6, menuEntry->y + 0xA, 3);
+                    (u_char*)_textTable + 0x372, menuEntry->x + 6, menuEntry->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
-                    _printString((u_char*)D_800DEAC0 + 0x38A, menuEntry->x + 6,
+                    _printString((u_char*)_textTable + 0x38A, menuEntry->x + 6,
                         menuEntry->y + 0xA, 3);
                 } else {
-                    _printString((u_char*)D_800DEAC0 + 0x3A0, menuEntry->x + 6,
+                    _printString((u_char*)_textTable + 0x3A0, menuEntry->x + 6,
                         menuEntry->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
-                _printString((u_char*)&D_800DEAC0[(&D_800DEAC0[menuEntry->unk6])[41]],
+                _printString((u_char*)&_textTable[(&_textTable[menuEntry->unk6])[41]],
                     menuEntry->x + 6, menuEntry->y + 4, 0);
                 _drawSaveInfoUI(y | 0xAC, 2);
                 _drawSaveInfoUI(y | 0xBD, 0);
@@ -2031,7 +2031,7 @@ static int _selectFileToLoad(int arg0)
             entry->unk6 = _saveFileInfo[i].unk4.unk18;
         }
         _fileToLoadState = handleInput;
-        D_800DED6C = D_800DEAC0 + 315;
+        D_800DED6C = _textTable + 315;
         // fallthrough
     case handleInput:
         if (vs_main_buttonsPressed & PADRdown) {
@@ -2092,7 +2092,7 @@ static int _selectFileToLoad(int arg0)
                 _loadSaveData(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 _fileToLoadState = applyLoad;
-                D_800DED6C = D_800DEAC0 + 0x193;
+                D_800DED6C = _textTable + 0x193;
             } else {
                 _fileToLoadState = loaded;
             }
@@ -2106,7 +2106,7 @@ static int _selectFileToLoad(int arg0)
             do {
                 D_800DC8DC = 0;
                 if (currentSlot < 0) {
-                    D_800DED6C = D_800DEAC0 + 286;
+                    D_800DED6C = _textTable + 286;
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2115,10 +2115,10 @@ static int _selectFileToLoad(int arg0)
                     vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
                     D_800DC8DC = 16;
                     _fileLoaded = 1;
-                    D_800DED6C = D_800DEAC0 + 434;
+                    D_800DED6C = _textTable + 434;
                     break;
                 case 1:
-                    D_800DED6C = D_800DEAC0 + 341;
+                    D_800DED6C = _textTable + 341;
                     break;
                 }
             } while (0);
@@ -2164,7 +2164,7 @@ int func_8006C778(int arg0)
 
     if (arg0 != 0) {
         D_800DC8DF = arg0;
-        D_800DED6C = D_800DEAC0 + 0xC4;
+        D_800DED6C = _textTable + 0xC4;
         D_800DC8DE = 0;
         return 0;
     }
@@ -2224,7 +2224,7 @@ int func_8006C778(int arg0)
 
     case 6:
         if (_initSaveFileInfo(D_800DC8DF) != 0) {
-            D_800DED6C = D_800DEAC0 + 286;
+            D_800DED6C = _textTable + 286;
             D_800DC8DE = 4;
             break;
         }
@@ -2235,7 +2235,7 @@ int func_8006C778(int arg0)
         }
 
         if (i == 5) {
-            D_800DED6C = D_800DEAC0 + 738;
+            D_800DED6C = _textTable + 738;
             D_800DC8DE = 4;
         } else {
             _selectFileToLoad(D_800DC8DF);
@@ -2275,7 +2275,7 @@ int func_8006CABC(int arg0)
     }
     switch (D_800DC8E0) {
     case 0:
-        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(D_800DEAC0 + 0x94));
+        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(_textTable + 0x94));
         entry->state = 2;
         entry->unk8 = 180;
         entry->selected = 1;
@@ -2285,14 +2285,14 @@ int func_8006CABC(int arg0)
     case 1:
         if (_fileMenuEntriesActive() != 0) {
             entry
-                = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(D_800DEAC0 + 0xA2));
+                = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(_textTable + 0xA2));
             entry->state = 2;
             entry->unk8 = 194;
             D_800DC8E0 = 2;
         }
         break;
     case 2:
-        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(D_800DEAC0 + 0xAC));
+        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(_textTable + 0xAC));
         entry->state = 2;
         entry->unk8 = 194;
         D_800DC8E0 = 3;
@@ -2300,7 +2300,7 @@ int func_8006CABC(int arg0)
     case 3:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC8E0 = 4;
-            D_800DED6C = D_800DEAC0 + 182;
+            D_800DED6C = _textTable + 182;
         }
         break;
     case 4:
@@ -2375,7 +2375,7 @@ int func_8006CE6C(int arg0)
     case 1:
         temp_v0 = _initFileMenuEntry(D_800DC8E8 + 3,
             (((D_800DC8E8 * 0x10) + 0x12) << 0x10) | 0xFF82, 0xC007E,
-            (u_char*)&D_800DEAC0[(&D_800DEAC0[D_800DC8E8])[0x24]]);
+            (u_char*)&_textTable[(&_textTable[D_800DC8E8])[0x24]]);
         temp_v0->state = 4;
         temp_v0->unk8 = 0;
         ++D_800DC8E8;
@@ -2415,7 +2415,7 @@ int func_8006D084(int arg0)
 {
     if (arg0 != 0) {
         D_800DC8F1 = 1;
-        D_800DED6C = D_800DEAC0 + 0x2D8;
+        D_800DED6C = _textTable + 0x2D8;
         func_8006CE6C(1);
         D_800DC8F0 = 0;
         return 0;
@@ -2444,7 +2444,7 @@ int func_8006D140(int port)
 
     if (port != 0) {
         _memcardStatePort = port;
-        D_800DED6C = D_800DEAC0 + 0x254;
+        D_800DED6C = _textTable + 0x254;
         func_8006CE6C(1);
         D_800DC8F2 = 0;
         return 0;
@@ -2458,7 +2458,7 @@ int func_8006D140(int port)
 
         if (temp_v0 != 0) {
             if (temp_v0 < 0) {
-                D_800DED6C = D_800DEAC0 + 0x2AE;
+                D_800DED6C = _textTable + 0x2AE;
                 return -1;
             }
 
@@ -2477,12 +2477,12 @@ int func_8006D140(int port)
         if (temp_v0 != 0) {
             if (temp_v0 == 3) {
                 D_800DC8F2 = (u_char)temp_v0;
-                D_800DED6C = D_800DEAC0 + 0x274;
+                D_800DED6C = _textTable + 0x274;
             } else {
                 if (temp_v0 == temp_s0) {
-                    D_800DED6C = D_800DEAC0 + 0xE3;
+                    D_800DED6C = _textTable + 0xE3;
                 } else {
-                    D_800DED6C = D_800DEAC0 + 0x1DE;
+                    D_800DED6C = _textTable + 0x1DE;
                 }
                 return -1;
             }
@@ -2490,7 +2490,7 @@ int func_8006D140(int port)
         return 0;
     case 3:
         if (_card_format((_memcardStatePort - 1) * 0x10) == 0) {
-            D_800DED6C = D_800DEAC0 + 0x2A0;
+            D_800DED6C = _textTable + 0x2A0;
             return -1;
         }
         return 1;
@@ -2538,7 +2538,7 @@ int func_8006D2F8(int arg0)
         D_800DC91C = 1;
         /* fallthrough */
     case 1:
-        D_800DED6C = D_800DEAC0 + 0x13B;
+        D_800DED6C = _textTable + 0x13B;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, 6);
             D_800DED68 = 0;
@@ -2590,7 +2590,7 @@ int func_8006D2F8(int arg0)
     case 2:
         temp_s0 = func_8006B288(0);
         if (temp_s0 != 0) {
-            if (D_800DED6C == (D_800DEAC0 + 0x2E2)) {
+            if (D_800DED6C == (_textTable + 0x2E2)) {
                 func_8006D140(D_800DC91D);
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
@@ -2598,7 +2598,7 @@ int func_8006D2F8(int arg0)
                 if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
-                        D_800DED6C = D_800DEAC0 + 0x102;
+                        D_800DED6C = _textTable + 0x102;
                     } else {
                         D_800DC91C = 5;
                     }
@@ -2635,7 +2635,7 @@ int func_8006D2F8(int arg0)
         break;
     case 5:
         temp_s0 = D_800DC91F + D_800DC91E;
-        D_800DED6C = D_800DEAC0 + 0x17B;
+        D_800DED6C = _textTable + 0x17B;
         _rMemcpy((u_char*)&_settingsBackup, (u_char*)&vs_main_settings,
             sizeof(_settingsBackup));
         _rMemcpy(_spmcimg + 0xB800, _spmcimg + 0x5C00, 0x5C00);
@@ -2666,7 +2666,7 @@ int func_8006D2F8(int arg0)
                 D_800DEB14 = 0;
                 _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
                     sizeof(vs_main_settings));
-                D_800DED6C = D_800DEAC0 + 0x102;
+                D_800DED6C = _textTable + 0x102;
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
@@ -2678,7 +2678,7 @@ int func_8006D2F8(int arg0)
                 _fileMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
-                D_800DED6C = D_800DEAC0 + 0x1AC;
+                D_800DED6C = _textTable + 0x1AC;
             }
             D_800DC91C = 7;
         }
@@ -2710,7 +2710,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 10;
             } else if (createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
                 D_800DC91C = 7;
-                D_800DED6C = D_800DEAC0 + 0x102;
+                D_800DED6C = _textTable + 0x102;
             } else {
                 D_800DC91C = 5;
             }
@@ -2739,7 +2739,7 @@ int func_8006DC14(int index)
 
     if (index != 0) {
         D_800DC922 = index;
-        D_800DED6C = D_800DEAC0 + 0xC4;
+        D_800DED6C = _textTable + 0xC4;
         _stateVar = init;
         return 0;
     }
@@ -2780,7 +2780,7 @@ int func_8006DC14(int index)
             break;
         case 2:
             _stateVar = 4;
-            D_800DED6C = D_800DEAC0 + 0xE3;
+            D_800DED6C = _textTable + 0xE3;
             break;
         case 3:
             memset(_saveFileInfo, 0, 0x280);
@@ -2815,7 +2815,7 @@ int func_8006DC14(int index)
     case 6:
         if (_initSaveFileInfo(D_800DC922) != 0) {
             _stateVar = 4;
-            D_800DED6C = D_800DEAC0 + 0x11E;
+            D_800DED6C = _textTable + 0x11E;
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2825,7 +2825,7 @@ int func_8006DC14(int index)
         }
         if (i == 5) {
             _stateVar = 4;
-            D_800DED6C = D_800DEAC0 + 0x2F1;
+            D_800DED6C = _textTable + 0x2F1;
             break;
         }
         func_8006D2F8(D_800DC922);
@@ -2861,7 +2861,7 @@ int func_8006E00C(int arg0)
         D_800DED73 = 0;
         _isSaving = 1;
         D_800DC923 = (arg0 - 1) * 3;
-        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x89));
+        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(_textTable + 0x89));
         temp_v0->state = 2;
         temp_v0->unk8 = 180;
         temp_v0->innerBlendFactor = 8;
@@ -2890,7 +2890,7 @@ int func_8006E00C(int arg0)
             break;
         }
         if (temp_v0_2 < 0) {
-            D_800DED6C = D_800DEAC0 + (temp_v0_2 == -2 ? 0xE3 : 0xF7);
+            D_800DED6C = _textTable + (temp_v0_2 == -2 ? 0xE3 : 0xF7);
             D_800DC923 = 9;
         } else {
             _loadSaveData((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
@@ -2902,7 +2902,7 @@ int func_8006E00C(int arg0)
         if (var_a0 != 0) {
             if ((var_a0 <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 D_800DC923 = 9;
-                D_800DED6C = D_800DEAC0 + 247;
+                D_800DED6C = _textTable + 247;
             } else {
                 D_800DC923 = 3;
             }
@@ -2911,14 +2911,14 @@ int func_8006E00C(int arg0)
     case 3:
         if (_fileMenuEntriesActive() != 0) {
             temp_v0
-                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
+                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(_textTable + 0xA2));
             temp_v0->state = 2;
             temp_v0->unk8 = 194;
             D_800DC923 = 4;
         }
         break;
     case 4:
-        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
+        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(_textTable + 0xAC));
         temp_v0->state = 2;
         temp_v0->unk8 = 194;
         D_800DC923 = 5;
@@ -2926,7 +2926,7 @@ int func_8006E00C(int arg0)
     case 5:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC923 = 6;
-            D_800DED6C = D_800DEAC0 + 0xB6;
+            D_800DED6C = _textTable + 0xB6;
         }
         break;
     case 6:
@@ -2944,7 +2944,7 @@ int func_8006E00C(int arg0)
                 } while (var_a0 < 3);
             }
             if (D_800DED73 != 0) {
-                D_800DED6C = D_800DEAC0 + 0x311;
+                D_800DED6C = _textTable + 0x311;
                 func_8006CE6C(1);
                 D_800DC923 = 11;
             } else {
@@ -2981,7 +2981,7 @@ int func_8006E00C(int arg0)
         break;
     case 9:
         if ((u_char)vs_main_buttonsPressed != 0) {
-            D_800DED6C = D_800DEAC0 + 0x234;
+            D_800DED6C = _textTable + 0x234;
             func_8006CE6C(1);
             D_800DC923 = 10;
         }
@@ -3152,7 +3152,7 @@ int func_8006EA70(int arg0)
     case 1:
         temp_v0 = _initFileMenuEntry(D_800DC931 + 1,
             (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
-            (u_char*)&D_800DEAC0[(D_800DEAC0 + D_800DC931)[0x1A]]);
+            (u_char*)&_textTable[(_textTable + D_800DC931)[0x1A]]);
         temp_v0->state = 2;
         temp_v0->unk8 = 0xC2;
         ++D_800DC931;
@@ -3262,7 +3262,7 @@ static void _displayGameSaveScreen()
             temp_v0 = func_8006E00C(0);
             if (temp_v0 != 0) {
                 if (temp_v0 < 0) {
-                    D_800DED6C = D_800DEAC0 + 0x335;
+                    D_800DED6C = _textTable + 0x335;
                     func_8006EA70(1);
                     _saveScreenState = 3;
                 } else {

@@ -201,7 +201,7 @@ extern u_char D_8007289C[];
 extern char D_800728B0[];
 extern int D_800728C0[];
 extern int D_800728E8[];
-extern u_char D_80072910[];
+extern u_char _digitsDivisors[];
 extern int D_80072914[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
@@ -1274,7 +1274,7 @@ static void _drawInteger(int xy, u_int value, u_int placeDivisor)
     } while (placeDivisor != 0);
 }
 
-static int countDigits(int val)
+static int _countDigits(int val)
 {
     int i;
 
@@ -1286,91 +1286,95 @@ static int countDigits(int val)
     return i;
 }
 
-void func_8006A928(int arg0, int arg1, int arg2, u_int arg3)
+enum statType { statTypeHP = 0, statTypeMP = 1 };
+
+static void _drawMainStat(int xy, int stat, u_int currentValue, u_int maxValue)
 {
-    int temp_a1;
-    int temp_s4;
-    int var_s2;
+    int currentValueFactor;
+    int maxValueDigits;
     u_int rgb1;
-    u_int var_s1;
+    u_int currentValueDigits;
     u_int rgb0;
-    int new_var;
-    u_int var_s1_2;
-    int new_var2;
-    int new_var3;
+    int wh;
+    u_int placeDivisor;
+    int x1y1;
+    int red;
     int new_var4;
 
-    if (arg3 != 0) {
-        var_s1 = (((arg2 * 64) + arg3) - 1) / arg3;
+    if (maxValue != 0) {
+        currentValueDigits = (((currentValue * 64) + maxValue) - 1) / maxValue;
     } else {
-        var_s1 = 0;
+        currentValueDigits = 0;
     }
 
     rgb0 = ((207 << 16) | (224 << 8)) | 45;
-    if (arg1 != 0) {
+    if (stat != statTypeHP) {
         rgb0 = ((159 << 16) | (120 << 8)) | 220;
     }
 
-    new_var3 = (rgb0 & 0xFF);
-    temp_a1 = 0x40 - var_s1;
-    rgb1 = ((((var_s1 * 0xFF) + (new_var3 * temp_a1)) >> 6)
-               | ((((var_s1 * 0xF0) + (((rgb0 >> 8) & 0xFF) * temp_a1)) >> 6) << 8))
-        | ((((2 * (79 * var_s1)) + ((rgb0 >> 16) * temp_a1)) >> 6) << 16);
+    red = (rgb0 & 0xFF);
+    currentValueFactor = 64 - currentValueDigits;
+    rgb1 = ((((currentValueDigits * 255) + (red * currentValueFactor)) >> 6)
+               | ((((currentValueDigits * 240)
+                       + (((rgb0 >> 8) & 0xFF) * currentValueFactor))
+                      >> 6)
+                   << 8))
+        | ((((2 * (currentValueDigits * 79)) + ((rgb0 >> 16) * currentValueFactor)) >> 6)
+            << 16);
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
     _primBuf.prim.tilePoly.tile.tpage
         = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
     _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
-    new_var = MAKEWH(66, 5);
-    new_var2 = (var_s1 + MAKEXY(0, 9));
-    _primBuf.prim.tilePoly.tile.x0y0 = arg0++ + MAKEXY(0, 8);
-    _primBuf.prim.tilePoly.tile.wh = MAKEWH(66, 5);
+    wh = MAKEWH(66, 5);
+    x1y1 = (currentValueDigits + MAKEXY(0, 9));
+    _primBuf.prim.tilePoly.tile.x0y0 = xy++ + MAKEXY(0, 8);
+    _primBuf.prim.tilePoly.tile.wh = wh;
     _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
-    _primBuf.prim.tilePoly.polyG4.x0y0 = arg0 + MAKEXY(0, 9);
+    _primBuf.prim.tilePoly.polyG4.x0y0 = xy + MAKEXY(0, 9);
     _primBuf.prim.tilePoly.polyG4.r1g1b1 = rgb0;
-    _primBuf.prim.tilePoly.polyG4.x1y1 = arg0 + new_var2;
+    _primBuf.prim.tilePoly.polyG4.x1y1 = xy + x1y1;
     _primBuf.prim.tilePoly.polyG4.r2g2b2 = rgb1;
-    _primBuf.prim.tilePoly.polyG4.x2y2 = arg0 + MAKEXY(0, 12);
+    _primBuf.prim.tilePoly.polyG4.x2y2 = xy + MAKEXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x3y3 = MAKEXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.x3y3
-        = arg0 + (var_s1 + _primBuf.prim.tilePoly.polyG4.x3y3);
+        = xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
     DrawPrim(&_primBuf);
 
-    var_s1 = countDigits(arg2);
-    temp_s4 = countDigits(arg3);
-    _drawSaveInfoUI(arg0 - 1, arg1 + 7);
-    new_var = var_s1 * 6;
-    var_s2 = (arg0 - (new_var - (new_var4 = 0x37))) - (temp_s4 * 5);
-    var_s1_2 = D_80072910[var_s1];
+    currentValueDigits = _countDigits(currentValue);
+    maxValueDigits = _countDigits(maxValue);
+    _drawSaveInfoUI(xy - 1, stat + 7);
+    wh = currentValueDigits * 6;
+    new_var4 = 55;
+    xy = (xy - (wh - new_var4)) - (maxValueDigits * 5);
+    placeDivisor = _digitsDivisors[currentValueDigits];
     do {
-        _drawSprt(var_s2 - MAKEXY(0, 1),
-            (((arg2 / var_s1_2) << 3) + 64) | (getClut(832, 223) << 16), MAKEWH(7, 12),
-            getTPage(0, 0, 768, 0));
-        arg2 = arg2 % var_s1_2;
-        var_s1_2 /= 10;
-        do {
-            var_s2 += 6;
-        } while (0);
-    } while (var_s1_2 != 0);
-    _drawSaveInfoUI(var_s2 + 1, 9);
-    _drawInteger(var_s2 + 6, arg3, D_80072910[temp_s4]);
+        _drawSprt(xy - MAKEXY(0, 1),
+            (((currentValue / placeDivisor) << 3) + 64) | (getClut(832, 223) << 16),
+            MAKEWH(7, 12), getTPage(0, 0, 768, 0));
+        currentValue = currentValue % placeDivisor;
+        placeDivisor /= 10;
+        xy += 6;
+    } while (placeDivisor != 0);
+    _drawSaveInfoUI(xy + 1, 9);
+    _drawInteger(xy + 6, maxValue, _digitsDivisors[maxValueDigits]);
 }
 
-void _loadFileAnim(u_int arg0, int arg1)
+static void _fileLoadingAnim(int x, int y)
 {
     u_char* new_var __attribute__((unused));
     int gradientColor1;
     int gradientColor2;
-    u_int var_s3;
+    u_int leftEdge;
     u_int i;
 
-    var_s3 = arg0 - 48;
+    leftEdge = x - 48;
     new_var = &_isSaving;
 
-    if (var_s3 < 64) {
-        var_s3 = 64;
+    if (leftEdge < 64) {
+        leftEdge = 64;
     }
 
     gradientColor1 = 0;
@@ -1385,18 +1389,18 @@ void _loadFileAnim(u_int arg0, int arg1)
         _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
         _primBuf.prim.polyG4_tpage.r0g0b0code
             = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
-        _primBuf.prim.polyG4_tpage.x0y0 = var_s3 | arg1;
-        _primBuf.prim.polyG4_tpage.x1y1 = arg0 | arg1;
-        _primBuf.prim.polyG4_tpage.x2y2 = var_s3 | MAKEXY(arg1, 32);
+        _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
+        _primBuf.prim.polyG4_tpage.x1y1 = x | y;
+        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + MAKEXY(0, 32));
         _primBuf.prim.polyG4_tpage.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
         _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
         _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
         _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.x3y3 = arg0 | MAKEXY(arg1, 32);
+        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + MAKEXY(0, 32));
         DrawPrim(&_primBuf);
-        var_s3 = arg0;
-        arg0 += 16;
+        leftEdge = x;
+        x += 16;
         gradientColor1 = gradientColor2;
         gradientColor2 = 0;
     }
@@ -1833,9 +1837,9 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 _drawInteger(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
                 _drawSaveInfoUI(y | 0x125, 0);
                 _drawInteger(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
-                func_8006A928(
+                _drawMainStat(
                     y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);
-                func_8006A928(
+                _drawMainStat(
                     y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
                 y = y + 0xFFEF0000;
             }
@@ -1846,7 +1850,7 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                     func_8006ACD8(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _loadFileAnim(D_800DEB12
+                    _fileLoadingAnim(D_800DEB12
                             + (((D_800DEB14 - D_800DEB10)
                                    * ((_loadSaveDataErrorOffset * 0x14)
                                        - (D_800DEB12 - new_var3)))

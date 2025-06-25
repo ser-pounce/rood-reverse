@@ -42,24 +42,14 @@ utf8_table = [
     '', '', '', '', '', '', '', '\0',      # 0xE0
     '\n', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '', '',         # 0xF0
-    '', '', '', '', '', '', '', '',
+    '', '', '\uE0FA', '', '', '', '', '',
 ]
 
-utf8_shift_table = [
-    '', '', '', '', '', '', ' '
-]
 
 def decode(s):
     result = ""
-    shift = False
     for b in s:
-        if b == 0xFA:
-            shift = True
-        elif shift:
-            result += utf8_shift_table[b]
-            shift = False
-        else:
-            result += utf8_table[b]
+        result += utf8_table[b]
     return result
 
 def encode(s):
@@ -73,8 +63,7 @@ def encode(s):
             try:
                 c = utf8_table.index(s[i])
             except ValueError:
-                c = utf8_shift_table.index(s[i])
-                result.append(0xFA)
+                raise ValueError(s)
             i += 1
         result.append(c)
     return bytes(result)

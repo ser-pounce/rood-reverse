@@ -2170,10 +2170,10 @@ int func_8006C778(int arg0)
     switch (D_800DC8DE) {
     case 0:
         _fileMenuEntries[D_800DC8DF].state = 2;
-        _fileMenuEntries[D_800DC8DF].unk8 = 0xB4;
+        _fileMenuEntries[D_800DC8DF].unk8 = 180;
         _fileMenuEntries[D_800DC8DF].innerBlendFactor = 1;
         _fileMenuEntries[3 - D_800DC8DF].state = 2;
-        _fileMenuEntries[3 - D_800DC8DF].unk8 = 0x140;
+        _fileMenuEntries[3 - D_800DC8DF].unk8 = 320;
         D_800DC8DE = 1;
         break;
 
@@ -2183,7 +2183,7 @@ int func_8006C778(int arg0)
         }
         if (D_800DC8DF == 2) {
             _fileMenuEntries[2].state = 3;
-            _fileMenuEntries[2].unk8 = 0x32;
+            _fileMenuEntries[2].unk8 = 50;
         }
         D_800DC8DE = 2;
         break;
@@ -2192,7 +2192,7 @@ int func_8006C778(int arg0)
         if (_fileMenuEntriesActive() == 0) {
             break;
         }
-        func_8006B288(D_800DC8DF + 0x30);
+        func_8006B288(D_800DC8DF + 48);
         D_800DC8DE = 3;
         break;
 
@@ -2210,7 +2210,7 @@ int func_8006C778(int arg0)
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
         for (i = 1; i < 3; ++i) {
             _fileMenuEntries[i].state = 2;
-            _fileMenuEntries[i].unk8 = 0x140;
+            _fileMenuEntries[i].unk8 = 320;
         }
         D_800DC8DE = 5;
         break;
@@ -2223,7 +2223,7 @@ int func_8006C778(int arg0)
 
     case 6:
         if (_initSaveFileInfo(D_800DC8DF) != 0) {
-            D_800DED6C = D_800DEAC0 + 0x11E;
+            D_800DED6C = D_800DEAC0 + 286;
             D_800DC8DE = 4;
             break;
         }
@@ -2234,7 +2234,7 @@ int func_8006C778(int arg0)
         }
 
         if (i == 5) {
-            D_800DED6C = D_800DEAC0 + 0x2E2;
+            D_800DED6C = D_800DEAC0 + 738;
             D_800DC8DE = 4;
         } else {
             _selectFileToLoad(D_800DC8DF);
@@ -2250,7 +2250,7 @@ int func_8006C778(int arg0)
         if (i < 0) {
             for (i = 1; i < 3; ++i) {
                 _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].unk8 = 320;
             }
             D_800DC8DE = 5;
             break;
@@ -2262,7 +2262,7 @@ int func_8006C778(int arg0)
 
 int func_8006CABC(int arg0)
 {
-    _fileMenuEntries_t* temp_v0;
+    _fileMenuEntries_t* entry;
     int i;
 
     if (arg0 != 0) {
@@ -2274,32 +2274,32 @@ int func_8006CABC(int arg0)
     }
     switch (D_800DC8E0) {
     case 0:
-        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x94));
-        temp_v0->state = 2;
-        temp_v0->unk8 = 0xB4;
-        temp_v0->unk4 = 1;
-        temp_v0->innerBlendFactor = 8;
+        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(D_800DEAC0 + 0x94));
+        entry->state = 2;
+        entry->unk8 = 180;
+        entry->unk4 = 1;
+        entry->innerBlendFactor = 8;
         D_800DC8E0 = 1;
         break;
     case 1:
         if (_fileMenuEntriesActive() != 0) {
-            temp_v0
-                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
-            temp_v0->state = 2;
-            temp_v0->unk8 = 0xC2;
+            entry
+                = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(D_800DEAC0 + 0xA2));
+            entry->state = 2;
+            entry->unk8 = 194;
             D_800DC8E0 = 2;
         }
         break;
     case 2:
-        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
-        temp_v0->state = 2;
-        temp_v0->unk8 = 0xC2;
+        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(D_800DEAC0 + 0xAC));
+        entry->state = 2;
+        entry->unk8 = 194;
         D_800DC8E0 = 3;
         break;
     case 3:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC8E0 = 4;
-            D_800DED6C = D_800DEAC0 + 0xB6;
+            D_800DED6C = D_800DEAC0 + 182;
         }
         break;
     case 4:
@@ -2310,7 +2310,7 @@ int func_8006CABC(int arg0)
             D_800DED68 = 0;
             for (i = 0; i < 3; ++i) {
                 _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].unk8 = 320;
             }
             D_800DC8E0 = 6;
         } else if (vs_main_buttonsPressed & PADRright) {
@@ -2323,13 +2323,13 @@ int func_8006CABC(int arg0)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 D_800DC8E1 = 3 - D_800DC8E1;
             }
-            D_800DED68 = ((((D_800DC8E1 + 1) * 16) + 10) << 16) | 0xB4;
+            D_800DED68 = ((((D_800DC8E1 + 1) * 16) + 10) << 16) | 180;
         }
         break;
     case 5:
-        temp_v0 = (_fileMenuEntries_t*)func_8006C778(0);
-        if (temp_v0 != 0) {
-            if ((int)temp_v0 < 0) {
+        entry = (_fileMenuEntries_t*)func_8006C778(0);
+        if (entry != 0) {
+            if ((int)entry < 0) {
                 D_800DC8E0 = 1;
             } else {
                 D_800DC8E0 = 7;
@@ -2345,12 +2345,12 @@ int func_8006CABC(int arg0)
         }
         break;
     case 7:
-        if (++D_800DED72 >= 0x1F) {
+        if (++D_800DED72 > 30) {
             return 1;
         }
         break;
     case 8:
-        if (++D_800DED72 < 0x1F) {
+        if (++D_800DED72 < 31) {
             break;
         }
         return -1;

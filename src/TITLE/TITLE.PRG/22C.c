@@ -203,7 +203,7 @@ extern char D_800728B0[];
 extern int D_800728C0[];
 extern int D_800728E8[];
 extern u_char _digitsDivisors[];
-extern int D_80072914[];
+extern int _fontCharacterWidths[];
 extern u_char D_80072EF8;
 extern int D_80072EFC[];
 extern int D_80072F04[];
@@ -1497,9 +1497,9 @@ static _fileMenuEntries_t* _initFileMenuEntry(int id, int xy, int wh, u_char* te
     return entry;
 }
 
-static void _clearFileMenuEntry(int arg0)
+static void _clearFileMenuEntry(int id)
 {
-    memset(&_fileMenuEntries[arg0], 0, sizeof(_fileMenuEntries_t));
+    memset(&_fileMenuEntries[id], 0, sizeof(_fileMenuEntries_t));
 }
 
 static int _fileMenuEntriesActive()
@@ -1511,12 +1511,12 @@ static int _fileMenuEntriesActive()
     return i == 10;
 }
 
-int func_8006AFF8(u_int arg0, int x, int y, int arg3)
+static int _printCharacter(u_int c, int x, int y, int clut)
 {
-    if ((arg0 >> 8) == 14) {
-        return x + (u_char)arg0;
+    if ((c >> 8) == 14) {
+        return x + (u_char)c;
     }
-    if (arg0 != 0x8F) {
+    if (c != 0x8F) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
         _primBuf.prim.sprt.tpage
@@ -1525,10 +1525,10 @@ int func_8006AFF8(u_int arg0, int x, int y, int arg3)
         _primBuf.prim.sprt.x0y0 = vs_getYX(y, x);
         _primBuf.prim.sprt.wh = vs_getWH(12, 12);
         _primBuf.prim.sprt.u0v0clut
-            = vs_getUV0Clut((arg0 % 21) * 12, (arg0 / 21) * 12, arg3 * 16 + 896, 222);
+            = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
         DrawPrim(&_primBuf);
     }
-    return x + D_80072914[arg0];
+    return x + _fontCharacterWidths[c];
 }
 
 int func_8006B138(int arg0)
@@ -1627,13 +1627,13 @@ void func_8006B364(u_char* arg0, int arg1, int arg2, int arg3)
         var_a0 = *arg0++;
         if (var_a0 < 0xEC) {
             if (var_a0 < 0xE5) {
-                var_a1 = func_8006AFF8(var_a0, var_a1, arg2, arg3);
+                var_a1 = _printCharacter(var_a0, var_a1, arg2, arg3);
             } else if (var_a0 == 0xE6) {
                 temp_t0 = (D_80072EF8 + 1) % 12;
                 var_a0 = temp_t0;
                 var_a0 = 0xBC - ((var_a0 & 0xFF) >> 2);
                 D_80072EF8 = temp_t0;
-                var_a1 = func_8006AFF8(var_a0, var_a1, arg2, arg3);
+                var_a1 = _printCharacter(var_a0, var_a1, arg2, arg3);
             } else if (var_a0 != 0xE7) {
                 if (var_a0 == 0xE8) {
                     arg2 += 0xD;
@@ -1743,7 +1743,7 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
             if (color2 == vs_char_spacing) {
                 uvClut += arg0->text[++color1];
             } else if (color2 != 0xFF) {
-                uvClut = func_8006AFF8(color2, uvClut, arg0->y, 0);
+                uvClut = _printCharacter(color2, uvClut, arg0->y, 0);
             } else {
                 break;
             }

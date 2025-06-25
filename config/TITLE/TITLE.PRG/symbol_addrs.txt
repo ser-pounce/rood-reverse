@@ -169,3 +169,5 @@ _decodedDataBuf1 = 0x800EFDF4;
 _menuItemStates = 0x800EFDF8;
 _clearFileMenuEntry = 0x8006AF78;
 _fileMenuEntriesActive = 0x8006AFBC;
+_printCharacter = 0x8006AFF8;
+_fontCharacterWidths = 0x80072914;

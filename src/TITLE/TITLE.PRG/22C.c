@@ -1362,7 +1362,7 @@ static void _drawMainStat(int xy, int stat, u_int currentValue, u_int maxValue)
     _drawInteger(xy + 6, maxValue, _digitsDivisors[maxValueDigits]);
 }
 
-static void _fileLoadingAnim(int x, int y)
+static void _fileProcessingAnim(int x, int y)
 {
     u_char* new_var __attribute__((unused));
     int gradientColor1;
@@ -1406,7 +1406,7 @@ static void _fileLoadingAnim(int x, int y)
     }
 }
 
-void func_8006ACD8(int arg0, int y)
+static void _fileProcessingComplete(int colour, int y)
 {
     int yOfst;
     int colour0;
@@ -1414,9 +1414,9 @@ void func_8006ACD8(int arg0, int y)
     int colour1 = 0;
 
     if (_isSaving != 0) {
-        colour0 = arg0 + (arg0 << 15);
+        colour0 = colour + (colour << 15);
     } else {
-        colour0 = (arg0 - (arg0 >> 3)) + (arg0 << 8);
+        colour0 = (colour - (colour >> 3)) + (colour << 8);
     }
 
     DrawSync(0);
@@ -1847,10 +1847,10 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
                 if (D_800DEB14 < 0) {
                     int v0 = D_800DEB14++;
                     char* p = D_800728B0 + v0;
-                    func_8006ACD8(-p[17], y);
+                    _fileProcessingComplete(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _fileLoadingAnim(D_800DEB12
+                    _fileProcessingAnim(D_800DEB12
                             + (((D_800DEB14 - D_800DEB10)
                                    * ((_loadSaveDataErrorOffset * 0x14)
                                        - (D_800DEB12 - new_var3)))

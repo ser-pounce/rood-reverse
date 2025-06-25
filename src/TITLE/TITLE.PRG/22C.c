@@ -1619,7 +1619,7 @@ static void _printString(u_char* text, int x, int y, int clut)
     int nextX = x;
 
     while (1) {
-        c = *(text++);
+        c = *text++;
         if (c < vs_char_control) {
             if (c < vs_char_nonPrinting) {
                 nextX = _printCharacter(c, nextX, y, clut);
@@ -1637,7 +1637,7 @@ static void _printString(u_char* text, int x, int y, int clut)
                 break;
             }
         } else {
-            u_int control = *(text++);
+            u_int control = *text++;
             if (c == vs_char_spacing) {
                 if (control >= 0xF0) {
                     nextX -= 0x100 - control;
@@ -1649,20 +1649,20 @@ static void _printString(u_char* text, int x, int y, int clut)
     }
 }
 
-u_int func_8006B490(u_int arg0, u_int arg1, u_int arg2)
+static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 {
-    int temp_a3;
+    int component;
     u_int i;
-    u_int var_v1;
+    u_int colourOut;
 
-    var_v1 = 0;
+    colourOut = 0;
     for (i = 0; i < 3; ++i) {
-        temp_a3 = ((arg0 >> 0x10) & 0xFF) * (8 - arg2);
-        arg0 <<= 8;
-        var_v1 = (var_v1 << 8) + ((temp_a3 + (((arg1 >> 0x10) & 0xFF) * arg2)) >> 3);
-        arg1 <<= 8;
+        component = ((colour1 >> 16) & 0xFF) * (8 - factor);
+        colour1 <<= 8;
+        colourOut = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
+        colour2 <<= 8;
     }
-    return var_v1;
+    return colourOut;
 }
 
 u_int func_8006B4EC(int arg0, u_int arg1)
@@ -1671,13 +1671,13 @@ u_int func_8006B4EC(int arg0, u_int arg1)
     u_int a1;
 
     if (arg1 < 9) {
-        a0 = func_8006B490(0x6B4100, 0x6C8219, arg1);
-        a1 = func_8006B490(0x330500, 0x262801, arg1);
+        a0 = _interpolateRGB(0x6B4100, 0x6C8219, arg1);
+        a1 = _interpolateRGB(0x330500, 0x262801, arg1);
     } else {
         a0 = D_80072EFC[((arg1 >> 3) - 2)];
         a1 = D_80072F04[((arg1 >> 3) - 2)];
     }
-    return func_8006B490(a0, a1, arg0);
+    return _interpolateRGB(a0, a1, arg0);
 }
 
 void func_8006B5A0(_fileMenuEntries_t* arg0)

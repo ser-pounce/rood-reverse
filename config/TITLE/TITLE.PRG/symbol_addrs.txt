@@ -173,3 +173,4 @@ _encodedDataBuf1 = 0x800EFDEC;
 _decodedDataBuf0 = 0x800EFDF0;
 _decodedDataBuf1 = 0x800EFDF4;
 _menuItemStates = 0x800EFDF8;
+_interpolateRGB = 0x8006B490;

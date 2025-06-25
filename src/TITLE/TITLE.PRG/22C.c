@@ -5,6 +5,7 @@
 #include "../SLUS_010.40/sfx.h"
 #include "gpu.h"
 #include "lbas.h"
+#include "vs_string.h"
 #include <libapi.h>
 #include <libds.h>
 #include <libetc.h>
@@ -36,12 +37,12 @@ typedef struct {
     u_char unk7;
     short unk8;
     short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    u_char unk14[32];
-} _saveSlotMenuEntries_t;
+    short x;
+    short y;
+    short w;
+    short h;
+    u_char text[32];
+} _fileMenuEntries_t;
 
 enum menuItemState_t {
     menuItemStateStatic = 0,
@@ -308,7 +309,7 @@ extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
-extern _saveSlotMenuEntries_t _saveSlotMenuEntries[10];
+extern _fileMenuEntries_t _fileMenuEntries[10];
 extern struct {
     u_long tag;
     union {
@@ -1454,58 +1455,58 @@ void func_8006AE10()
     D_800DED68 = 0;
     D_800DEB14 = 0;
     D_800DED72 = 0;
-    D_800DEB0E = 0x180;
-    memset(_saveSlotMenuEntries, 0, sizeof(_saveSlotMenuEntries));
+    D_800DEB0E = 384;
+    memset(_fileMenuEntries, 0, sizeof(_fileMenuEntries));
 }
 
-_saveSlotMenuEntries_t* func_8006AE70(int arg0, int arg1, int arg2, u_char* arg3)
+static _fileMenuEntries_t* _initFileMenuEntry(int id, int xy, int wh, u_char* text)
 {
-    _saveSlotMenuEntries_t* temp_s3;
+    _fileMenuEntries_t* entry;
     int i;
-    u_int var_v1;
+    u_int c;
 
-    temp_s3 = &_saveSlotMenuEntries[arg0];
-    memset(temp_s3, 0, sizeof(*temp_s3));
-    temp_s3->state = 1;
-    temp_s3->slotId = -1;
-    *(int*)&temp_s3->unkC = arg1;
-    *(int*)&temp_s3->unk10 = arg2;
+    entry = &_fileMenuEntries[id];
+    memset(entry, 0, sizeof(*entry));
+    entry->state = 1;
+    entry->slotId = -1;
+    *(int*)&entry->x = xy;
+    *(int*)&entry->w = wh;
 
-    if (arg3 != NULL) {
+    if (text != NULL) {
         for (i = 0; i < 32;) {
-            var_v1 = *arg3++;
-            if (var_v1 == 0xFAu) {
-                temp_s3->unk14[i++] = var_v1;
+            c = *text++;
+            if (c == vs_char_spacing) {
+                entry->text[i++] = c;
                 do {
-                    var_v1 = *(arg3++);
+                    c = *(text++);
                 } while (0);
             } else {
-                if (var_v1 == 0xE7u) {
-                    temp_s3->unk14[i] = 0xFF;
-                    return temp_s3;
+                if (c == vs_char_terminator) {
+                    entry->text[i] = 0xFF;
+                    return entry;
                 }
-                if (var_v1 >= 0xE5u) {
+                if (c >= vs_char_nonPrinting) {
                     continue;
                 }
             }
-            temp_s3->unk14[i++] = var_v1;
+            entry->text[i++] = c;
         }
     } else {
-        temp_s3->unk14[0] = 0xFF;
+        entry->text[0] = 0xFF;
     }
-    return temp_s3;
+    return entry;
 }
 
 void func_8006AF78(int arg0)
 {
-    memset(&_saveSlotMenuEntries[arg0], 0, sizeof(_saveSlotMenuEntries_t));
+    memset(&_fileMenuEntries[arg0], 0, sizeof(_fileMenuEntries_t));
 }
 
 int func_8006AFBC()
 {
     int i;
 
-    for (i = 0; i < 10 && _saveSlotMenuEntries[i].state < 2; ++i)
+    for (i = 0; i < 10 && _fileMenuEntries[i].state < 2; ++i)
         ;
     return i == 10;
 }
@@ -1685,7 +1686,7 @@ u_int func_8006B4EC(int arg0, u_int arg1)
     return func_8006B490(a0, a1, arg0);
 }
 
-void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
+void func_8006B5A0(_fileMenuEntries_t* arg0)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
@@ -1708,41 +1709,41 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
     if (arg0->slotUnused != 0) {
         arg0->unk2 = 0;
     }
-    if ((arg0->slotId >= 5) || ((arg0->unkE - 0x48) < 0x51U)) {
+    if ((arg0->slotId >= 5) || ((arg0->y - 0x48) < 0x51U)) {
         y = arg0->unk3;
         color1 = func_8006B4EC(8 - arg0->unk2, y);
         color2 = func_8006B4EC(arg0->unk2, y);
         if (y & 7) {
             arg0->unk3 = y + 1;
         }
-        y = arg0->unkE << 16;
+        y = arg0->y << 16;
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
         _primBuf.prim.tilePoly.tile.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->unkE + 2, arg0->unkC + 2);
-        _primBuf.prim.tilePoly.tile.wh = arg0->unk10 | (arg0->unk12 << 0x10);
+        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->y + 2, arg0->x + 2);
+        _primBuf.prim.tilePoly.tile.wh = arg0->w | (arg0->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, color1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->unkC | y;
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->x | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = color2;
-        _primBuf.prim.tilePoly.polyG4.x1y1 = ((arg0->unkC + arg0->unk10) & 0xFFFF) | y;
+        _primBuf.prim.tilePoly.polyG4.x1y1 = ((arg0->x + arg0->w) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = color1;
         _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)arg0->unkC | ((arg0->unkE + arg0->unk12) << 0x10);
+            = (u_short)arg0->x | ((arg0->y + arg0->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->unkC + arg0->unk10) & 0xFFFF)
-            | ((arg0->unkE + arg0->unk12) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3 = ((arg0->x + arg0->w) & 0xFFFF)
+            | ((arg0->y + arg0->h) << 0x10);
         DrawPrim(&_primBuf);
 
-        uvClut = arg0->unkC + 6;
+        uvClut = arg0->x + 6;
         for (color1 = 0; (int)color1 < 32; ++color1) {
-            color2 = arg0->unk14[color1];
-            if (color2 == 0xFA) {
-                uvClut += arg0->unk14[++color1];
+            color2 = arg0->text[color1];
+            if (color2 == vs_char_spacing) {
+                uvClut += arg0->text[++color1];
             } else if (color2 != 0xFF) {
-                uvClut = func_8006AFF8(color2, uvClut, arg0->unkE, 0);
+                uvClut = func_8006AFF8(color2, uvClut, arg0->y, 0);
             } else {
                 break;
             }
@@ -1774,37 +1775,37 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
             _drawImage(MAKEXY(768, 227), var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {
                 uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
-                xy = (arg0->unkC - 64) | y;
+                xy = (arg0->x - 64) | y;
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), ((8 - arg0->unk2) << 0x13) | 0x9C);
             } else {
                 int v0;
                 uvClut = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD)
                     | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (arg0->unkC - 0x40) | y;
+                xy = (arg0->x - 0x40) | y;
                 new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
                 v0 = new_var >> 6;
                 var_a3 = (((8 - arg0->unk2) << 0x13) | 0x90);
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            _drawSaveInfoUI((arg0->unkC - 0x16) | y, 1);
-            _drawInteger((arg0->unkC - 9) | y, color2 + 1, 0xAU);
+            _drawSaveInfoUI((arg0->x - 0x16) | y, 1);
+            _drawInteger((arg0->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
                 func_8006B364(
-                    (u_char*)D_800DEAC0 + 0x372, arg0->unkC + 6, arg0->unkE + 0xA, 3);
+                    (u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
                     func_8006B364(
-                        (u_char*)D_800DEAC0 + 0x38A, arg0->unkC + 6, arg0->unkE + 0xA, 3);
+                        (u_char*)D_800DEAC0 + 0x38A, arg0->x + 6, arg0->y + 0xA, 3);
                 } else {
                     func_8006B364(
-                        (u_char*)D_800DEAC0 + 0x3A0, arg0->unkC + 6, arg0->unkE + 0xA, 0);
+                        (u_char*)D_800DEAC0 + 0x3A0, arg0->x + 6, arg0->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
                 func_8006B364((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
-                    arg0->unkC + 6, arg0->unkE + 4, 0);
+                    arg0->x + 6, arg0->y + 4, 0);
                 _drawSaveInfoUI(y | 0xAC, 2);
                 _drawSaveInfoUI(y | 0xBD, 0);
                 color1 = saveInfo->unk4.unk1A;
@@ -1865,14 +1866,14 @@ void func_8006B5A0(_saveSlotMenuEntries_t* arg0)
 static void _drawSaveMenu(int arg0)
 {
     int dummy[2];
-    _saveSlotMenuEntries_t* var_s1;
+    _fileMenuEntries_t* var_s1;
     int j;
     int i;
     u_int var_s7;
     int temp_t0;
     int new_var;
 
-    var_s1 = _saveSlotMenuEntries;
+    var_s1 = _fileMenuEntries;
     var_s7 = 0;
     if (arg0 != 0) {
         var_s7 = 320;
@@ -1883,56 +1884,56 @@ static void _drawSaveMenu(int arg0)
     for (i = 0; i < 10; ++i, ++var_s1) {
         temp_t0 = var_s1->state;
         if (temp_t0 == 2) {
-            if ((var_s1->unkC) < var_s1->unk8) {
-                var_s1->unkC += 32u;
-                if (var_s1->unkC >= var_s1->unk8) {
-                    var_s1->unkC = var_s1->unk8;
+            if ((var_s1->x) < var_s1->unk8) {
+                var_s1->x += 32u;
+                if (var_s1->x >= var_s1->unk8) {
+                    var_s1->x = var_s1->unk8;
                     var_s1->state = 1;
                 }
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->unkC) {
+                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->x) {
                         break;
                     }
                 }
-                var_s1->unkC = var_s1->unk8 + D_8007289C[j - 1];
-                if (var_s1->unk10 < (0x140 - var_s1->unkC)) {
-                    var_s1->unk10 = (0x140 - var_s1->unkC);
+                var_s1->x = var_s1->unk8 + D_8007289C[j - 1];
+                if (var_s1->w < (0x140 - var_s1->x)) {
+                    var_s1->w = (0x140 - var_s1->x);
                 }
-                if (var_s1->unkC == var_s1->unk8) {
+                if (var_s1->x == var_s1->unk8) {
                     var_s1->state = 1;
                 }
             }
         }
         if (temp_t0 == 3) {
-            if (var_s1->unkE > var_s1->unk8) {
+            if (var_s1->y > var_s1->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->unkE) {
+                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->y) {
                         break;
                     }
                 }
-                var_s1->unkE = (var_s1->unk8 + D_8007289C[j - 1]);
+                var_s1->y = (var_s1->unk8 + D_8007289C[j - 1]);
             }
-            if (var_s1->unkE == var_s1->unk8) {
+            if (var_s1->y == var_s1->unk8) {
                 var_s1->state = 1;
             }
         }
         if (temp_t0 == 4) {
-            if (var_s1->unkC < var_s1->unk8) {
+            if (var_s1->x < var_s1->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if (var_s1->unkC >= (-D_8007289C[j])) {
+                    if (var_s1->x >= (-D_8007289C[j])) {
                         break;
                     }
                 }
-                var_s1->unkC = -D_8007289C[j - 1];
-                if (var_s1->unkC == 0) {
+                var_s1->x = -D_8007289C[j - 1];
+                if (var_s1->x == 0) {
                     var_s1->state = 1;
                 }
             } else {
-                var_s1->unkC = var_s1->unkC - 0x20;
-                if (var_s1->unk8 >= var_s1->unkC) {
-                    var_s1->unkC = var_s1->unk8;
+                var_s1->x = var_s1->x - 0x20;
+                if (var_s1->unk8 >= var_s1->x) {
+                    var_s1->x = var_s1->unk8;
                     var_s1->state = 1;
                 }
             }
@@ -1990,7 +1991,7 @@ static void _drawSaveMenuBg()
 
 int func_8006C15C(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0_2;
+    _fileMenuEntries_t* temp_v0_2;
     int currentSlot;
     int i;
 
@@ -2013,8 +2014,8 @@ int func_8006C15C(int arg0)
     switch (D_800DC8D8) {
     case 0:
         for (i = 0; i < 5; ++i) {
-            temp_v0_2
-                = func_8006AE70(i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
+            temp_v0_2 = _initFileMenuEntry(
+                i + 5, (0x480000 + i * 0x280000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
             temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState < 3;
             temp_v0_2->unk6 = _saveFileInfo[i].unk4.unk18;
@@ -2032,14 +2033,14 @@ int func_8006C15C(int arg0)
             return -1;
         }
         for (i = 0; i < 5; ++i) {
-            _saveSlotMenuEntries[i + 5].unkE = (((i - _slotsPage) * 0x28) + 0x48);
-            _saveSlotMenuEntries[i + 5].unk4 = 0;
+            _fileMenuEntries[i + 5].y = (((i - _slotsPage) * 0x28) + 0x48);
+            _fileMenuEntries[i + 5].unk4 = 0;
         }
         currentSlot = _selectedSlot + _slotsPage;
         if (vs_main_buttonsPressed & PADRright) {
             if (_saveFileInfo[currentSlot].unk4.slotState >= 3) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                _saveSlotMenuEntries[currentSlot + 5].unk4 = 1;
+                _fileMenuEntries[currentSlot + 5].unk4 = 1;
                 D_800DED68 = 0;
                 func_8006B288(D_800DC8D9 + 0x70);
                 D_800DC8D8 = 2;
@@ -2069,7 +2070,7 @@ int func_8006C15C(int arg0)
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
         }
         D_800DED68 = (((_selectedSlot * 0x28) + 0x3E) << 0x10) | 0x18;
-        _saveSlotMenuEntries[currentSlot + 5].unk4 = 1;
+        _fileMenuEntries[currentSlot + 5].unk4 = 1;
         break;
     case 2:
         currentSlot = func_8006B288(0);
@@ -2160,11 +2161,11 @@ int func_8006C778(int arg0)
     }
     switch (D_800DC8DE) {
     case 0:
-        _saveSlotMenuEntries[D_800DC8DF].state = 2;
-        _saveSlotMenuEntries[D_800DC8DF].unk8 = 0xB4;
-        _saveSlotMenuEntries[D_800DC8DF].unk3 = 1;
-        _saveSlotMenuEntries[3 - D_800DC8DF].state = 2;
-        _saveSlotMenuEntries[3 - D_800DC8DF].unk8 = 0x140;
+        _fileMenuEntries[D_800DC8DF].state = 2;
+        _fileMenuEntries[D_800DC8DF].unk8 = 0xB4;
+        _fileMenuEntries[D_800DC8DF].unk3 = 1;
+        _fileMenuEntries[3 - D_800DC8DF].state = 2;
+        _fileMenuEntries[3 - D_800DC8DF].unk8 = 0x140;
         D_800DC8DE = 1;
         break;
 
@@ -2173,8 +2174,8 @@ int func_8006C778(int arg0)
             break;
         }
         if (D_800DC8DF == 2) {
-            _saveSlotMenuEntries[2].state = 3;
-            _saveSlotMenuEntries[2].unk8 = 0x32;
+            _fileMenuEntries[2].state = 3;
+            _fileMenuEntries[2].unk8 = 0x32;
         }
         D_800DC8DE = 2;
         break;
@@ -2200,8 +2201,8 @@ int func_8006C778(int arg0)
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
         for (i = 1; i < 3; ++i) {
-            _saveSlotMenuEntries[i].state = 2;
-            _saveSlotMenuEntries[i].unk8 = 0x140;
+            _fileMenuEntries[i].state = 2;
+            _fileMenuEntries[i].unk8 = 0x140;
         }
         D_800DC8DE = 5;
         break;
@@ -2240,8 +2241,8 @@ int func_8006C778(int arg0)
         }
         if (i < 0) {
             for (i = 1; i < 3; ++i) {
-                _saveSlotMenuEntries[i].state = 2;
-                _saveSlotMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].state = 2;
+                _fileMenuEntries[i].unk8 = 0x140;
             }
             D_800DC8DE = 5;
             break;
@@ -2253,7 +2254,7 @@ int func_8006C778(int arg0)
 
 int func_8006CABC(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0;
+    _fileMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -2265,7 +2266,7 @@ int func_8006CABC(int arg0)
     }
     switch (D_800DC8E0) {
     case 0:
-        temp_v0 = func_8006AE70(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x94));
+        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x94));
         temp_v0->state = 2;
         temp_v0->unk8 = 0xB4;
         temp_v0->unk4 = 1;
@@ -2274,14 +2275,15 @@ int func_8006CABC(int arg0)
         break;
     case 1:
         if (func_8006AFBC() != 0) {
-            temp_v0 = func_8006AE70(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
+            temp_v0
+                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
             temp_v0->state = 2;
             temp_v0->unk8 = 0xC2;
             D_800DC8E0 = 2;
         }
         break;
     case 2:
-        temp_v0 = func_8006AE70(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
+        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
         temp_v0->state = 2;
         temp_v0->unk8 = 0xC2;
         D_800DC8E0 = 3;
@@ -2293,14 +2295,14 @@ int func_8006CABC(int arg0)
         }
         break;
     case 4:
-        _saveSlotMenuEntries[D_800DC8E1].unk4 = 1;
-        _saveSlotMenuEntries[3 - D_800DC8E1].unk4 = 0;
+        _fileMenuEntries[D_800DC8E1].unk4 = 1;
+        _fileMenuEntries[3 - D_800DC8E1].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             D_800DED68 = 0;
             for (i = 0; i < 3; ++i) {
-                _saveSlotMenuEntries[i].state = 2;
-                _saveSlotMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].state = 2;
+                _fileMenuEntries[i].unk8 = 0x140;
             }
             D_800DC8E0 = 6;
         } else if (vs_main_buttonsPressed & PADRright) {
@@ -2317,7 +2319,7 @@ int func_8006CABC(int arg0)
         }
         break;
     case 5:
-        temp_v0 = (_saveSlotMenuEntries_t*)func_8006C778(0);
+        temp_v0 = (_fileMenuEntries_t*)func_8006C778(0);
         if (temp_v0 != 0) {
             if ((int)temp_v0 < 0) {
                 D_800DC8E0 = 1;
@@ -2350,7 +2352,7 @@ int func_8006CABC(int arg0)
 
 int func_8006CE6C(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0;
+    _fileMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -2362,7 +2364,7 @@ int func_8006CE6C(int arg0)
     switch (D_800DC8E8) {
     case 0:
     case 1:
-        temp_v0 = func_8006AE70(D_800DC8E8 + 3,
+        temp_v0 = _initFileMenuEntry(D_800DC8E8 + 3,
             (((D_800DC8E8 * 0x10) + 0x12) << 0x10) | 0xFF82, 0xC007E,
             (u_char*)&D_800DEAC0[(&D_800DEAC0[D_800DC8E8])[0x24]]);
         temp_v0->state = 4;
@@ -2373,13 +2375,13 @@ int func_8006CE6C(int arg0)
         D_800DC8E8 += func_8006AFBC();
         break;
     case 3:
-        _saveSlotMenuEntries[D_800DC8E9 + 3].unk4 = 1;
-        _saveSlotMenuEntries[4 - D_800DC8E9].unk4 = 0;
+        _fileMenuEntries[D_800DC8E9 + 3].unk4 = 1;
+        _fileMenuEntries[4 - D_800DC8E9].unk4 = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             D_800DED68 = 0;
             for (i = 3; i < 5; ++i) {
-                _saveSlotMenuEntries[i].state = 4;
-                _saveSlotMenuEntries[i].unk8 = -0x7E;
+                _fileMenuEntries[i].state = 4;
+                _fileMenuEntries[i].unk8 = -0x7E;
             }
             if (vs_main_buttonsPressed & PADRright) {
                 if ((&D_800DC8E8)[1] == 0) {
@@ -2490,7 +2492,7 @@ int func_8006D140(int port)
 
 int func_8006D2F8(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0_2;
+    _fileMenuEntries_t* temp_v0_2;
     int temp_s0;
     int saveId;
     int var_a1;
@@ -2518,8 +2520,8 @@ int func_8006D2F8(int arg0)
     switch (D_800DC91C) {
     case 0:
         for (i = 0; i < 5; ++i) {
-            temp_v0_2
-                = func_8006AE70(i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
+            temp_v0_2 = _initFileMenuEntry(
+                i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
             temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState == slotStateUnused;
             temp_v0_2->unk6 = _saveFileInfo[i].unk4.unk18;
@@ -2535,14 +2537,14 @@ int func_8006D2F8(int arg0)
         } else {
             var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                _saveSlotMenuEntries[i + 5].unkE = (((i - D_800DC91E) * 0x28) + 0x48);
-                _saveSlotMenuEntries[i + 5].unk4 = 0;
+                _fileMenuEntries[i + 5].y = (((i - D_800DC91E) * 0x28) + 0x48);
+                _fileMenuEntries[i + 5].unk4 = 0;
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
                 if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnused) {
                     vs_main_playSfxDefault(0x7E, 5);
-                    _saveSlotMenuEntries[temp_s0 + 5].unk4 = 1;
+                    _fileMenuEntries[temp_s0 + 5].unk4 = 1;
                     D_800DED68 = 0;
                     func_8006B288(D_800DC91D + 0x70);
                     D_800DC91C = 2;
@@ -2573,7 +2575,7 @@ int func_8006D2F8(int arg0)
                 vs_main_playSfxDefault(0x7E, 4);
             }
             D_800DED68 = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
-            _saveSlotMenuEntries[temp_s0 + 5].unk4 = 1;
+            _fileMenuEntries[temp_s0 + 5].unk4 = 1;
         }
         break;
     case 2:
@@ -2650,7 +2652,7 @@ int func_8006D2F8(int arg0)
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
-                _saveSlotMenuEntries[saveId + 5].unk6 = 0;
+                _fileMenuEntries[saveId + 5].unk6 = 0;
                 _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
                 D_800DEB14 = 0;
                 _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
@@ -2664,7 +2666,7 @@ int func_8006D2F8(int arg0)
                 _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].unk4.slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
-                _saveSlotMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
+                _fileMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
                 D_800DED6C = D_800DEAC0 + 0x1AC;
@@ -2735,11 +2737,11 @@ int func_8006DC14(int index)
 
     switch (_stateVar) {
     case init:
-        _saveSlotMenuEntries[D_800DC922].state = 2;
-        _saveSlotMenuEntries[D_800DC922].unk8 = 0xB4;
-        _saveSlotMenuEntries[D_800DC922].unk3 = 1;
-        _saveSlotMenuEntries[3 - D_800DC922].state = 2;
-        _saveSlotMenuEntries[3 - D_800DC922].unk8 = 0x140;
+        _fileMenuEntries[D_800DC922].state = 2;
+        _fileMenuEntries[D_800DC922].unk8 = 0xB4;
+        _fileMenuEntries[D_800DC922].unk3 = 1;
+        _fileMenuEntries[3 - D_800DC922].state = 2;
+        _fileMenuEntries[3 - D_800DC922].unk8 = 0x140;
         _stateVar = 1;
         break;
     case 1:
@@ -2747,8 +2749,8 @@ int func_8006DC14(int index)
             break;
         }
         if (D_800DC922 == 2) {
-            _saveSlotMenuEntries[2].state = 3;
-            _saveSlotMenuEntries[2].unk8 = 0x32;
+            _fileMenuEntries[2].state = 3;
+            _fileMenuEntries[2].unk8 = 0x32;
         }
         _stateVar = 2;
         break;
@@ -2791,8 +2793,8 @@ int func_8006DC14(int index)
         }
         vs_main_playSfxDefault(0x7E, 6);
         for (i = 1; i < 3; ++i) {
-            _saveSlotMenuEntries[i].state = 2;
-            _saveSlotMenuEntries[i].unk8 = 0x140;
+            _fileMenuEntries[i].state = 2;
+            _fileMenuEntries[i].unk8 = 0x140;
         }
         _stateVar = 5;
         break;
@@ -2827,8 +2829,8 @@ int func_8006DC14(int index)
         }
         if (i < 0) {
             for (i = 1; i < 3; ++i) {
-                _saveSlotMenuEntries[i].state = 2;
-                _saveSlotMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].state = 2;
+                _fileMenuEntries[i].unk8 = 0x140;
             }
             _stateVar = 5;
             break;
@@ -2840,7 +2842,7 @@ int func_8006DC14(int index)
 
 int func_8006E00C(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0;
+    _fileMenuEntries_t* temp_v0;
     int temp_v0_2;
     int var_a0;
 
@@ -2850,7 +2852,7 @@ int func_8006E00C(int arg0)
         D_800DED73 = 0;
         _isSaving = 1;
         D_800DC923 = (arg0 - 1) * 3;
-        temp_v0 = func_8006AE70(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x89));
+        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x89));
         temp_v0->state = 2;
         temp_v0->unk8 = 180;
         temp_v0->unk3 = 8;
@@ -2899,14 +2901,15 @@ int func_8006E00C(int arg0)
         break;
     case 3:
         if (func_8006AFBC() != 0) {
-            temp_v0 = func_8006AE70(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
+            temp_v0
+                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(D_800DEAC0 + 0xA2));
             temp_v0->state = 2;
             temp_v0->unk8 = 194;
             D_800DC923 = 4;
         }
         break;
     case 4:
-        temp_v0 = func_8006AE70(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
+        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(D_800DEAC0 + 0xAC));
         temp_v0->state = 2;
         temp_v0->unk8 = 194;
         D_800DC923 = 5;
@@ -2918,16 +2921,16 @@ int func_8006E00C(int arg0)
         }
         break;
     case 6:
-        _saveSlotMenuEntries[D_800DC924].unk4 = 1;
-        _saveSlotMenuEntries[3 - D_800DC924].unk4 = 0;
+        _fileMenuEntries[D_800DC924].unk4 = 1;
+        _fileMenuEntries[3 - D_800DC924].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             var_a0 = D_800DED73;
             D_800DED68 = 0;
             if (var_a0 < 3) {
                 do {
-                    _saveSlotMenuEntries[var_a0].state = 2;
-                    _saveSlotMenuEntries[var_a0].unk8 = 0x140;
+                    _fileMenuEntries[var_a0].state = 2;
+                    _fileMenuEntries[var_a0].unk8 = 0x140;
                     ++var_a0;
                 } while (var_a0 < 3);
             }
@@ -2985,8 +2988,8 @@ int func_8006E00C(int arg0)
                 var_a0 = -var_a0;
             }
             if (var_a0 < 0) {
-                _saveSlotMenuEntries->state = 2;
-                _saveSlotMenuEntries->unk8 = 0x140;
+                _fileMenuEntries->state = 2;
+                _fileMenuEntries->unk8 = 0x140;
                 D_800DC923 = 8;
                 break;
             }
@@ -3126,7 +3129,7 @@ static int _saveFileExists()
 
 int func_8006EA70(int arg0)
 {
-    _saveSlotMenuEntries_t* temp_v0;
+    _fileMenuEntries_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -3138,7 +3141,7 @@ int func_8006EA70(int arg0)
     switch (D_800DC931) {
     case 0:
     case 1:
-        temp_v0 = func_8006AE70(D_800DC931 + 1,
+        temp_v0 = _initFileMenuEntry(D_800DC931 + 1,
             (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
             (u_char*)&D_800DEAC0[(D_800DEAC0 + D_800DC931)[0x1A]]);
         temp_v0->state = 2;
@@ -3149,8 +3152,8 @@ int func_8006EA70(int arg0)
         D_800DC931 += func_8006AFBC();
         break;
     case 3:
-        _saveSlotMenuEntries[D_800DC932].unk4 = 1;
-        _saveSlotMenuEntries[3 - D_800DC932].unk4 = 0;
+        _fileMenuEntries[D_800DC932].unk4 = 1;
+        _fileMenuEntries[3 - D_800DC932].unk4 = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
@@ -3165,8 +3168,8 @@ int func_8006EA70(int arg0)
             }
             D_800DED68 = 0;
             for (i = 1; i < 3; ++i) {
-                _saveSlotMenuEntries[i].state = 2;
-                _saveSlotMenuEntries[i].unk8 = 0x140;
+                _fileMenuEntries[i].state = 2;
+                _fileMenuEntries[i].unk8 = 0x140;
             }
             break;
         }

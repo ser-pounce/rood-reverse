@@ -29,8 +29,8 @@ typedef struct {
 typedef struct {
     u_char state;
     u_char slotId;
-    u_char unk2;
-    u_char unk3;
+    u_char outerBlendFactor;
+    u_char innerBlendFactor;
     u_char unk4;
     u_char slotUnused;
     u_char unk6;
@@ -1683,7 +1683,7 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-void func_8006B5A0(_fileMenuEntries_t* arg0)
+void func_8006B5A0(_fileMenuEntries_t* menuEntry)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
@@ -1698,58 +1698,58 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
     u_long* var_a1_2;
     int new_var;
 
-    if (arg0->unk4 != 0) {
-        arg0->unk2 = 8;
-    } else if (arg0->unk2 != 0) {
-        --arg0->unk2;
+    if (menuEntry->unk4 != 0) {
+        menuEntry->outerBlendFactor = 8;
+    } else if (menuEntry->outerBlendFactor != 0) {
+        --menuEntry->outerBlendFactor;
     }
-    if (arg0->slotUnused != 0) {
-        arg0->unk2 = 0;
+    if (menuEntry->slotUnused != 0) {
+        menuEntry->outerBlendFactor = 0;
     }
-    if ((arg0->slotId >= 5) || ((arg0->y - 0x48) < 0x51U)) {
-        y = arg0->unk3;
-        color1 = _intepolateMenuItemBgColour(8 - arg0->unk2, y);
-        color2 = _intepolateMenuItemBgColour(arg0->unk2, y);
+    if ((menuEntry->slotId >= 5) || ((menuEntry->y - 0x48) < 0x51U)) {
+        y = menuEntry->innerBlendFactor;
+        color1 = _intepolateMenuItemBgColour(8 - menuEntry->outerBlendFactor, y);
+        color2 = _intepolateMenuItemBgColour(menuEntry->outerBlendFactor, y);
         if (y & 7) {
-            arg0->unk3 = y + 1;
+            menuEntry->innerBlendFactor = y + 1;
         }
-        y = arg0->y << 16;
+        y = menuEntry->y << 16;
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
         _primBuf.prim.tilePoly.tile.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(arg0->y + 2, arg0->x + 2);
-        _primBuf.prim.tilePoly.tile.wh = arg0->w | (arg0->h << 0x10);
+        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(menuEntry->y + 2, menuEntry->x + 2);
+        _primBuf.prim.tilePoly.tile.wh = menuEntry->w | (menuEntry->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, color1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)arg0->x | y;
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)menuEntry->x | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = color2;
-        _primBuf.prim.tilePoly.polyG4.x1y1 = ((arg0->x + arg0->w) & 0xFFFF) | y;
+        _primBuf.prim.tilePoly.polyG4.x1y1 = ((menuEntry->x + menuEntry->w) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = color1;
         _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)arg0->x | ((arg0->y + arg0->h) << 0x10);
+            = (u_short)menuEntry->x | ((menuEntry->y + menuEntry->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
         _primBuf.prim.tilePoly.polyG4.x3y3
-            = ((arg0->x + arg0->w) & 0xFFFF) | ((arg0->y + arg0->h) << 0x10);
+            = ((menuEntry->x + menuEntry->w) & 0xFFFF) | ((menuEntry->y + menuEntry->h) << 0x10);
         DrawPrim(&_primBuf);
 
-        uvClut = arg0->x + 6;
+        uvClut = menuEntry->x + 6;
         for (color1 = 0; (int)color1 < 32; ++color1) {
-            color2 = arg0->text[color1];
+            color2 = menuEntry->text[color1];
             if (color2 == vs_char_spacing) {
-                uvClut += arg0->text[++color1];
+                uvClut += menuEntry->text[++color1];
             } else if (color2 != 0xFF) {
-                uvClut = _printCharacter(color2, uvClut, arg0->y, 0);
+                uvClut = _printCharacter(color2, uvClut, menuEntry->y, 0);
             } else {
                 break;
             }
         }
-        color2 = arg0->slotId;
+        color2 = menuEntry->slotId;
         if (color2 < 5) {
             _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             saveInfo = &_saveFileInfo[color2];
-            var_s1 = arg0->unk6 - 1;
+            var_s1 = menuEntry->unk6 - 1;
             color1 = saveInfo->unk4.slotState;
             if (saveInfo->unk4.slotState < 3) {
                 if (saveInfo->unk4.slotState == 0) {
@@ -1772,36 +1772,36 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
             _drawImage(MAKEXY(768, 227), var_a1_2, MAKEWH(256, 1));
             if (var_s1 < 0) {
                 uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
-                xy = (arg0->x - 64) | y;
-                _drawSprt(xy, uvClut, MAKEWH(64, 32), ((8 - arg0->unk2) << 0x13) | 0x9C);
+                xy = (menuEntry->x - 64) | y;
+                _drawSprt(xy, uvClut, MAKEWH(64, 32), ((8 - menuEntry->outerBlendFactor) << 0x13) | 0x9C);
             } else {
                 int v0;
                 uvClut = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD)
                     | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (arg0->x - 0x40) | y;
+                xy = (menuEntry->x - 0x40) | y;
                 new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
                 v0 = new_var >> 6;
-                var_a3 = (((8 - arg0->unk2) << 0x13) | 0x90);
+                var_a3 = (((8 - menuEntry->outerBlendFactor) << 0x13) | 0x90);
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            _drawSaveInfoUI((arg0->x - 0x16) | y, 1);
-            _drawInteger((arg0->x - 9) | y, color2 + 1, 0xAU);
+            _drawSaveInfoUI((menuEntry->x - 0x16) | y, 1);
+            _drawInteger((menuEntry->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
-                _printString((u_char*)D_800DEAC0 + 0x372, arg0->x + 6, arg0->y + 0xA, 3);
+                _printString((u_char*)D_800DEAC0 + 0x372, menuEntry->x + 6, menuEntry->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
                     _printString(
-                        (u_char*)D_800DEAC0 + 0x38A, arg0->x + 6, arg0->y + 0xA, 3);
+                        (u_char*)D_800DEAC0 + 0x38A, menuEntry->x + 6, menuEntry->y + 0xA, 3);
                 } else {
                     _printString(
-                        (u_char*)D_800DEAC0 + 0x3A0, arg0->x + 6, arg0->y + 0xA, 0);
+                        (u_char*)D_800DEAC0 + 0x3A0, menuEntry->x + 6, menuEntry->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
-                _printString((u_char*)&D_800DEAC0[(&D_800DEAC0[arg0->unk6])[41]],
-                    arg0->x + 6, arg0->y + 4, 0);
+                _printString((u_char*)&D_800DEAC0[(&D_800DEAC0[menuEntry->unk6])[41]],
+                    menuEntry->x + 6, menuEntry->y + 4, 0);
                 _drawSaveInfoUI(y | 0xAC, 2);
                 _drawSaveInfoUI(y | 0xBD, 0);
                 color1 = saveInfo->unk4.unk1A;
@@ -1840,7 +1840,7 @@ void func_8006B5A0(_fileMenuEntries_t* arg0)
                     y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
                 y = y + 0xFFEF0000;
             }
-            if ((arg0->unk4 != 0) && (D_800DEB14 != 0)) {
+            if ((menuEntry->unk4 != 0) && (D_800DEB14 != 0)) {
                 if (D_800DEB14 < 0) {
                     int v0 = D_800DEB14++;
                     char* p = D_800728B0 + v0;
@@ -2159,7 +2159,7 @@ int func_8006C778(int arg0)
     case 0:
         _fileMenuEntries[D_800DC8DF].state = 2;
         _fileMenuEntries[D_800DC8DF].unk8 = 0xB4;
-        _fileMenuEntries[D_800DC8DF].unk3 = 1;
+        _fileMenuEntries[D_800DC8DF].innerBlendFactor = 1;
         _fileMenuEntries[3 - D_800DC8DF].state = 2;
         _fileMenuEntries[3 - D_800DC8DF].unk8 = 0x140;
         D_800DC8DE = 1;
@@ -2266,7 +2266,7 @@ int func_8006CABC(int arg0)
         temp_v0->state = 2;
         temp_v0->unk8 = 0xB4;
         temp_v0->unk4 = 1;
-        temp_v0->unk3 = 8;
+        temp_v0->innerBlendFactor = 8;
         D_800DC8E0 = 1;
         break;
     case 1:
@@ -2735,7 +2735,7 @@ int func_8006DC14(int index)
     case init:
         _fileMenuEntries[D_800DC922].state = 2;
         _fileMenuEntries[D_800DC922].unk8 = 0xB4;
-        _fileMenuEntries[D_800DC922].unk3 = 1;
+        _fileMenuEntries[D_800DC922].innerBlendFactor = 1;
         _fileMenuEntries[3 - D_800DC922].state = 2;
         _fileMenuEntries[3 - D_800DC922].unk8 = 0x140;
         _stateVar = 1;
@@ -2851,7 +2851,7 @@ int func_8006E00C(int arg0)
         temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(D_800DEAC0 + 0x89));
         temp_v0->state = 2;
         temp_v0->unk8 = 180;
-        temp_v0->unk3 = 8;
+        temp_v0->innerBlendFactor = 8;
         temp_v0->unk4 = 1;
         D_800DED6C = 0;
         return 0;

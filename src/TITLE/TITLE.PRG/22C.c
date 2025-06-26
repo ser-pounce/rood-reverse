@@ -1626,7 +1626,7 @@ static void _printString(u_char* text, int x, int y, int clut)
         if (c < vs_char_control) {
             if (c < vs_char_nonPrinting) {
                 nextX = _printCharacter(c, nextX, y, clut);
-            } else if (c == vs_char_animarrow) {
+            } else if (c == vs_char_confirm) {
                 arrowState = (_arrowCharState + 1) % 12;
                 c = vs_char_arrow - (arrowState >> 2);
                 _arrowCharState = arrowState;

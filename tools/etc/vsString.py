@@ -28,7 +28,7 @@ utf8_table = [
     '', '', '', '', '', '', '', '',         # 0x70
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '', '‼',        # 0x80
-    '≠', '≦', '≧', '÷', '–', '—', '⋯', '',
+    '≠', '≦', '≧', '÷', '–', '—', '⋯', ' ',
     '!', '"', '#', '$', '%', '&', '\'', '(',# 0x90
     ')', '{', '}', '[', ']', ';', ':', ',',
     '.', '/', '\\', '<', '>', '?', '_', '-',# 0xA0
@@ -39,31 +39,45 @@ utf8_table = [
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '', '',         # 0xD0
     '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '\0',      # 0xE0
-    '\n', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',         # 0xF0
+    '', '', '', '', '', '', '▼', '\0',      # 0xE0
+    '\n', '', '', '\uE0EB', '', '', '', '\uE0EF', # 0xEB is used for alignment
+    '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
     '', '', '\uE0FA', '', '', '', '', '',
 ]
 
 
 def decode(s):
     result = ""
-    for b in s:
-        result += utf8_table[b]
+    i = 0
+    while i < len(s):
+        if s[i] == 0xFA:
+            result += f"|>{s[i + 1]}|"
+            i += 2
+        else:
+            if utf8_table[s[i]] == '':
+                raise ValueError(f"Invalid byte {s[i]} in vsString")
+            result += utf8_table[s[i]]
+            i += 1
     return result
 
 def encode(s):
     result = []
     i = 0
     while i < len(s):
-        if s[i:i+3] == "Lv.":
-            c = utf8_table.index("Lv.")
+        if s[i:i+2] == '|>':
+            i += 2
+            end = s.find('|', i)
+            if end == -1:
+                raise ValueError("Unterminated control")
+            result.extend([0xFA, int(s[i:end].strip())])
+            i += (end - i) + 1
+        elif s[i:i+3] == "Lv.":
+            result.append(utf8_table.index("Lv."))
             i += 3
         else:
             try:
-                c = utf8_table.index(s[i])
+                result.append(utf8_table.index(s[i]))
+                i += 1
             except ValueError:
                 raise ValueError(s)
-            i += 1
-        result.append(c)
     return bytes(result)

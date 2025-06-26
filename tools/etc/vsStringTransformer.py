@@ -1,9 +1,9 @@
 import sys
 import re
-from vsString import encode
+from vsString import encode_raw
 
 def encode_c_string_literal(s):
-    encoded = encode(eval(s))
+    encoded = encode_raw(eval(s))
     byte_array = ', '.join(str(b) for b in encoded)
     return '{' + byte_array + '}'
 

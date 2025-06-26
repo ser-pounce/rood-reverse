@@ -40,7 +40,7 @@ utf8_table = [
     '', '', '', '', '', '', '', '',         # 0xD0
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
-    '\n', '', '', '\uE0EB', '', '', '', '\uE0EF', # 0xEB is used for alignment
+    '\n', '', '', '', '', '', '', '\uE0EF', #
     '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
     '', '', '\uE0FA', '', '', '', '', '',
 ]
@@ -50,7 +50,9 @@ def decode(s):
     result = ""
     i = 0
     while i < len(s):
-        if s[i] == 0xFA:
+        if s[i] == 0xEB: # Alignment
+            i += 1
+        elif s[i] == 0xFA: # Advance glyph position
             result += f"|>{s[i + 1]}|"
             i += 2
         else:
@@ -60,7 +62,7 @@ def decode(s):
             i += 1
     return result
 
-def encode(s):
+def encode_raw(s):
     result = []
     i = 0
     while i < len(s):
@@ -80,4 +82,11 @@ def encode(s):
                 i += 1
             except ValueError:
                 raise ValueError(s)
+    return bytes(result)
+
+def encode(s):
+    result = list(encode_raw(s))
+    result.append(0xE7)
+    if len(result) % 2 == 1:
+        result.append(0xEB)
     return bytes(result)

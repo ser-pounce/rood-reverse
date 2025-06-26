@@ -73,8 +73,8 @@ savePrompt: |-
   Game is not saved.
   Save now?
 saveDisabled: Cannot save during battle.
-fieCorrupt: Corrupted file
 saveLocations: 
+- Corrupted file
 - Breakroom
 - Wine Guild Hall
 - Blackmarket

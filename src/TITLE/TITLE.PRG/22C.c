@@ -34,7 +34,7 @@ typedef struct {
     u_char innerBlendFactor;
     u_char selected;
     u_char slotUnused;
-    u_char unk6;
+    u_char saveLocation;
     u_char unk7;
     short unk8;
     short unkA;
@@ -107,7 +107,7 @@ typedef struct {
     u_short unk12;
     u_short unk14;
     u_short unk16;
-    u_char unk18;
+    u_char saveLocation;
     u_char unk19;
     u_char unk1A;
     u_char unk1B;
@@ -1753,7 +1753,7 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
         if (color2 < 5) {
             _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             saveInfo = &_saveFileInfo[color2];
-            var_s1 = menuEntry->unk6 - 1;
+            var_s1 = menuEntry->saveLocation - 1;
             color1 = saveInfo->unk4.slotState;
             if (saveInfo->unk4.slotState < 3) {
                 if (saveInfo->unk4.slotState == 0) {
@@ -1806,7 +1806,8 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
                 }
             } else {
                 y = y + 0x40000;
-                _printString((u_char*)&_textTable[(&_textTable[menuEntry->unk6])[41]],
+                _printString((u_char*)&_textTable[_textTable[menuEntry->saveLocation
+                                 + VS_MCMAN_INDEX_saveLocations]],
                     menuEntry->x + 6, menuEntry->y + 4, 0);
                 _drawSaveInfoUI(y | 172, 2);
                 _drawSaveInfoUI(y | 189, 0);
@@ -2029,7 +2030,7 @@ static int _selectFileToLoad(int arg0)
                 i + 5, ((72 + i * 40) << 16) | 64, MAKEWH(256, 32), 0);
             entry->slotId = i;
             entry->slotUnused = _saveFileInfo[i].unk4.slotState < slotStateInUse;
-            entry->unk6 = _saveFileInfo[i].unk4.unk18;
+            entry->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
         _fileToLoadState = handleInput;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
@@ -2539,7 +2540,7 @@ int func_8006D2F8(int arg0)
                 i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
             temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState == slotStateUnused;
-            temp_v0_2->unk6 = _saveFileInfo[i].unk4.unk18;
+            temp_v0_2->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
         D_800DC91C = 1;
         /* fallthrough */
@@ -2668,7 +2669,7 @@ int func_8006D2F8(int arg0)
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
-                _fileMenuEntries[saveId + 5].unk6 = 0;
+                _fileMenuEntries[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
                 D_800DEB14 = 0;
@@ -2676,14 +2677,15 @@ int func_8006D2F8(int arg0)
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 D_800DED73 = 0;
-                D_800DEB14 = -0x10;
+                D_800DEB14 = -16;
                 _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(_saveFileInfo_t) * 3,
                     sizeof(_saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].unk4.slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
-                _fileMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
-                vs_main_playSfxDefault(0x7E, 8);
+                _fileMenuEntries[saveId + 5].saveLocation
+                    = _saveFileInfo[saveId].unk4.saveLocation;
+                vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
                 D_800DC918 = 1;
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saved);
             }
@@ -2868,7 +2870,8 @@ int func_8006E00C(int arg0)
         D_800DED73 = 0;
         _isSaving = 1;
         D_800DC923 = (arg0 - 1) * 3;
-        temp_v0 = _initFileMenuEntry(0, 0x220140, 0xC008C, (u_char*)(_textTable + 0x89));
+        temp_v0 = _initFileMenuEntry(
+            0, 0x220140, 0xC008C, (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         temp_v0->state = 2;
         temp_v0->unk8 = 180;
         temp_v0->innerBlendFactor = 8;
@@ -2919,15 +2922,16 @@ int func_8006E00C(int arg0)
         break;
     case 3:
         if (_fileMenuEntriesActive() != 0) {
-            temp_v0
-                = _initFileMenuEntry(1, 0x320140, 0xC007E, (u_char*)(_textTable + 0xA2));
+            temp_v0 = _initFileMenuEntry(
+                1, 0x320140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             temp_v0->state = 2;
             temp_v0->unk8 = 194;
             D_800DC923 = 4;
         }
         break;
     case 4:
-        temp_v0 = _initFileMenuEntry(2, 0x420140, 0xC007E, (u_char*)(_textTable + 0xAC));
+        temp_v0 = _initFileMenuEntry(
+            2, 0x420140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         temp_v0->state = 2;
         temp_v0->unk8 = 194;
         D_800DC923 = 5;
@@ -3163,7 +3167,7 @@ int func_8006EA70(int arg0)
     case 1:
         temp_v0 = _initFileMenuEntry(D_800DC931 + 1,
             (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
-            (u_char*)&_textTable[(_textTable + D_800DC931)[0x1A]]);
+            (u_char*)&_textTable[_textTable[D_800DC931 + VS_MCMAN_INDEX_yesOption]]);
         temp_v0->state = 2;
         temp_v0->unk8 = 0xC2;
         ++D_800DC931;

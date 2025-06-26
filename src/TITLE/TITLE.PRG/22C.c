@@ -330,7 +330,7 @@ extern struct {
     } prim;
 } _primBuf;
 extern int D_800DED68;
-extern u_char* D_800DED6C;
+extern u_char* _fileMenuMessage;
 extern u_char _isSaving;
 extern u_char D_800DED71;
 extern u_char D_800DED72;
@@ -1453,7 +1453,7 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 
 void func_8006AE10()
 {
-    D_800DED6C = NULL;
+    _fileMenuMessage = NULL;
     D_800DED71 = 0;
     D_800DED68 = 0;
     D_800DEB14 = 0;
@@ -1552,7 +1552,8 @@ int func_8006B138(int arg0)
     port = (D_800DC8CC >> 1) + 1;
 
     if ((D_800DC8CC & 1) == 0) {
-        D_800DED6C = (u_char*)(_textTable + (_textTable + port)[21]);
+        _fileMenuMessage
+            = (u_char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
         _memcardHandler(port);
         ++D_800DC8CC;
     } else {
@@ -1600,13 +1601,13 @@ int func_8006B288(int arg0)
         case 1:
             return 1;
         case 2:
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
         case 3:
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_noData);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
             break;
         default:
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_removed);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_removed);
             break;
         }
         return -1;
@@ -1793,15 +1794,15 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
             _drawInteger((menuEntry->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
-                _printString((u_char*)(_textTable + VS_MCMAN_inUse), menuEntry->x + 6,
-                    menuEntry->y + 0xA, 3);
+                _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_inUse),
+                    menuEntry->x + 6, menuEntry->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
-                    _printString((u_char*)(_textTable + VS_MCMAN_empty), menuEntry->x + 6,
-                        menuEntry->y + 0xA, 3);
+                    _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_empty),
+                        menuEntry->x + 6, menuEntry->y + 0xA, 3);
                 } else {
-                    _printString((u_char*)(_textTable + VS_MCMAN_new), menuEntry->x + 6,
-                        menuEntry->y + 0xA, 0);
+                    _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_new),
+                        menuEntry->x + 6, menuEntry->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
@@ -1968,8 +1969,8 @@ static void _drawSaveMenu(int arg0)
     } else {
         D_800DED71 = 0;
     }
-    if (D_800DED6C != NULL) {
-        _printString(D_800DED6C, 16, 192, 0);
+    if (_fileMenuMessage != NULL) {
+        _printString(_fileMenuMessage, 16, 192, 0);
     }
     if (D_800DED72 != 0) {
         DrawSync(0);
@@ -2031,7 +2032,7 @@ static int _selectFileToLoad(int arg0)
             entry->unk6 = _saveFileInfo[i].unk4.unk18;
         }
         _fileToLoadState = handleInput;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectFile);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         // fallthrough
     case handleInput:
         if (vs_main_buttonsPressed & PADRdown) {
@@ -2092,7 +2093,7 @@ static int _selectFileToLoad(int arg0)
                 _loadSaveData(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 _fileToLoadState = applyLoad;
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loading);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loading);
             } else {
                 _fileToLoadState = loaded;
             }
@@ -2106,7 +2107,7 @@ static int _selectFileToLoad(int arg0)
             do {
                 D_800DC8DC = 0;
                 if (currentSlot < 0) {
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
+                    _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2115,10 +2116,11 @@ static int _selectFileToLoad(int arg0)
                     vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
                     D_800DC8DC = 16;
                     _fileLoaded = 1;
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loaded);
+                    _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loaded);
                     break;
                 case 1:
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_fileCorruptDescription);
+                    _fileMenuMessage
+                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -2164,7 +2166,7 @@ int func_8006C778(int arg0)
 
     if (arg0 != 0) {
         D_800DC8DF = arg0;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_checking);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
         D_800DC8DE = 0;
         return 0;
     }
@@ -2224,7 +2226,7 @@ int func_8006C778(int arg0)
 
     case 6:
         if (_initSaveFileInfo(D_800DC8DF) != 0) {
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
             D_800DC8DE = 4;
             break;
         }
@@ -2235,7 +2237,7 @@ int func_8006C778(int arg0)
         }
 
         if (i == 5) {
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_noData);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
             D_800DC8DE = 4;
         } else {
             _selectFileToLoad(D_800DC8DF);
@@ -2275,8 +2277,8 @@ int func_8006CABC(int arg0)
     }
     switch (D_800DC8E0) {
     case 0:
-        entry = _initFileMenuEntry(
-            0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(_textTable + 0x94));
+        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12),
+            (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
         entry->state = 2;
         entry->unk8 = 180;
         entry->selected = 1;
@@ -2285,16 +2287,16 @@ int func_8006CABC(int arg0)
         break;
     case 1:
         if (_fileMenuEntriesActive() != 0) {
-            entry = _initFileMenuEntry(
-                1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(_textTable + 0xA2));
+            entry = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12),
+                (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             entry->state = 2;
             entry->unk8 = 194;
             D_800DC8E0 = 2;
         }
         break;
     case 2:
-        entry = _initFileMenuEntry(
-            2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(_textTable + 0xAC));
+        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12),
+            (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         entry->state = 2;
         entry->unk8 = 194;
         D_800DC8E0 = 3;
@@ -2302,7 +2304,7 @@ int func_8006CABC(int arg0)
     case 3:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC8E0 = 4;
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectSlot);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case 4:
@@ -2376,8 +2378,8 @@ int func_8006CE6C(int arg0)
     case 0:
     case 1:
         temp_v0 = _initFileMenuEntry(D_800DC8E8 + 3,
-            (((D_800DC8E8 * 0x10) + 0x12) << 0x10) | 0xFF82, 0xC007E,
-            (u_char*)&_textTable[(&_textTable[D_800DC8E8])[0x24]]);
+            (((D_800DC8E8 * 16) + 0x12) << 0x10) | 0xFF82, 0xC007E,
+            (u_char*)&_textTable[_textTable[D_800DC8E8 + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->unk8 = 0;
         ++D_800DC8E8;
@@ -2395,7 +2397,7 @@ int func_8006CE6C(int arg0)
                 _fileMenuEntries[i].unk8 = -0x7E;
             }
             if (vs_main_buttonsPressed & PADRright) {
-                if ((&D_800DC8E8)[1] == 0) {
+                if (D_800DC8E9 == 0) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     return 1;
                 }
@@ -2407,7 +2409,7 @@ int func_8006CE6C(int arg0)
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             D_800DC8E9 = 1 - D_800DC8E9;
         }
-        D_800DED68 = ((D_800DC8E9 * 0x10) + 0xA) << 0x10;
+        D_800DED68 = ((D_800DC8E9 * 16) + 10) << 16;
         break;
     }
     return 0;
@@ -2417,7 +2419,7 @@ int func_8006D084(int arg0)
 {
     if (arg0 != 0) {
         D_800DC8F1 = 1;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_overwritePrompt);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
         func_8006CE6C(1);
         D_800DC8F0 = 0;
         return 0;
@@ -2446,7 +2448,7 @@ int func_8006D140(int port)
 
     if (port != 0) {
         _memcardStatePort = port;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatPrompt);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
         func_8006CE6C(1);
         D_800DC8F2 = 0;
         return 0;
@@ -2460,7 +2462,8 @@ int func_8006D140(int port)
 
         if (temp_v0 != 0) {
             if (temp_v0 < 0) {
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatCancelled);
+                _fileMenuMessage
+                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
                 return -1;
             }
 
@@ -2479,12 +2482,13 @@ int func_8006D140(int port)
         if (temp_v0 != 0) {
             if (temp_v0 == 3) {
                 D_800DC8F2 = (u_char)temp_v0;
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatting);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatting);
             } else {
                 if (temp_v0 == temp_s0) {
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
+                    _fileMenuMessage
+                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
                 } else {
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_removed);
+                    _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2492,7 +2496,7 @@ int func_8006D140(int port)
         return 0;
     case 3:
         if (_card_format((_memcardStatePort - 1) * 16) == 0) {
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatFailed);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
             return -1;
         }
         return 1;
@@ -2540,7 +2544,7 @@ int func_8006D2F8(int arg0)
         D_800DC91C = 1;
         /* fallthrough */
     case 1:
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectFile);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             D_800DED68 = 0;
@@ -2592,7 +2596,7 @@ int func_8006D2F8(int arg0)
     case 2:
         temp_s0 = func_8006B288(0);
         if (temp_s0 != 0) {
-            if (D_800DED6C == (u_char*)(_textTable + VS_MCMAN_noData)) {
+            if (_fileMenuMessage == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
                 func_8006D140(D_800DC91D);
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
@@ -2600,7 +2604,8 @@ int func_8006D2F8(int arg0)
                 if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
-                        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
+                        _fileMenuMessage
+                            = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
                     } else {
                         D_800DC91C = 5;
                     }
@@ -2637,7 +2642,7 @@ int func_8006D2F8(int arg0)
         break;
     case 5:
         temp_s0 = D_800DC91F + D_800DC91E;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saving);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saving);
         _rMemcpy(&_settingsBackup, &vs_main_settings, sizeof(_settingsBackup));
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
@@ -2668,7 +2673,7 @@ int func_8006D2F8(int arg0)
                     sizeof(savedata_t));
                 D_800DEB14 = 0;
                 _rMemcpy(&vs_main_settings, &_settingsBackup, sizeof(vs_main_settings));
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
@@ -2680,7 +2685,7 @@ int func_8006D2F8(int arg0)
                 _fileMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saved);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saved);
             }
             D_800DC91C = 7;
         }
@@ -2712,7 +2717,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 10;
             } else if (createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
                 D_800DC91C = 7;
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 D_800DC91C = 5;
             }
@@ -2741,7 +2746,7 @@ int func_8006DC14(int index)
 
     if (index != 0) {
         D_800DC922 = index;
-        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_checking);
+        _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
         _stateVar = init;
         return 0;
     }
@@ -2782,7 +2787,7 @@ int func_8006DC14(int index)
             break;
         case 2:
             _stateVar = 4;
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
         case 3:
             memset(_saveFileInfo, 0, 0x280);
@@ -2817,7 +2822,7 @@ int func_8006DC14(int index)
     case 6:
         if (_initSaveFileInfo(D_800DC922) != 0) {
             _stateVar = 4;
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2827,7 +2832,7 @@ int func_8006DC14(int index)
         }
         if (i == 5) {
             _stateVar = 4;
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_cardFull);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
             break;
         }
         func_8006D2F8(D_800DC922);
@@ -2868,7 +2873,7 @@ int func_8006E00C(int arg0)
         temp_v0->unk8 = 180;
         temp_v0->innerBlendFactor = 8;
         temp_v0->selected = 1;
-        D_800DED6C = NULL;
+        _fileMenuMessage = NULL;
         return 0;
     }
 
@@ -2892,8 +2897,9 @@ int func_8006E00C(int arg0)
             break;
         }
         if (temp_v0_2 < 0) {
-            D_800DED6C = (u_char*)(_textTable
-                + (temp_v0_2 == -2 ? VS_MCMAN_insertError : VS_MCMAN_emptyCard));
+            _fileMenuMessage = (u_char*)(_textTable
+                + (temp_v0_2 == -2 ? VS_MCMAN_OFFSET_insertError
+                                   : VS_MCMAN_OFFSET_emptyCard));
             D_800DC923 = 9;
         } else {
             _loadSaveData((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
@@ -2905,7 +2911,7 @@ int func_8006E00C(int arg0)
         if (var_a0 != 0) {
             if ((var_a0 <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 D_800DC923 = 9;
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_emptyCard);
+                _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
             } else {
                 D_800DC923 = 3;
             }
@@ -2929,7 +2935,7 @@ int func_8006E00C(int arg0)
     case 5:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC923 = 6;
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectSlot);
+            _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case 6:
@@ -2947,7 +2953,8 @@ int func_8006E00C(int arg0)
                 } while (var_a0 < 3);
             }
             if (D_800DED73 != 0) {
-                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_containerFileCorrupt);
+                _fileMenuMessage
+                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerFileCorrupt);
                 func_8006CE6C(1);
                 D_800DC923 = 11;
             } else {
@@ -2984,7 +2991,8 @@ int func_8006E00C(int arg0)
         break;
     case 9:
         if ((u_char)vs_main_buttonsPressed != 0) {
-            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_overwriteContainerWarn);
+            _fileMenuMessage
+                = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwriteContainerWarn);
             func_8006CE6C(1);
             D_800DC923 = 10;
         }
@@ -3265,7 +3273,7 @@ static void _displayGameSaveScreen()
             temp_v0 = func_8006E00C(0);
             if (temp_v0 != 0) {
                 if (temp_v0 < 0) {
-                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_savePrompt);
+                    _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_savePrompt);
                     func_8006EA70(1);
                     _saveScreenState = 3;
                 } else {

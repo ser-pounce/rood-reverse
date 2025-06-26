@@ -170,6 +170,7 @@ D_800DEB10 = 0x800DEB10;
 D_800DEB12 = 0x800DEB12;
 _fileMenuEntries = 0x800DEB18;
 _primBuf = 0x800DED28;
+_fileMenuMessage = 0x800DED6C;
 _isSaving = 0x800DED70;
 _frameBuf = 0x800DED76;
 _introMovieDisplayedAt = 0x800DED78;

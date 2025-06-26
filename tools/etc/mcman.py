@@ -44,7 +44,11 @@ with open(sys.argv[2], "wb") as out:
 
 os.makedirs(os.path.dirname(sys.argv[3]), exist_ok=True)
 with open(sys.argv[3], "w", encoding="utf-8") as h:
-    h.write("#pragma once\n\nenum {\n")
+    h.write("#pragma once\n\nenum mcman_offsets_e {\n")
     for k, v in enums.items():
-        h.write(f"    VS_MCMAN_{k} = {v},\n")
+        h.write(f"    VS_MCMAN_OFFSET_{k} = {v},\n")
+    h.write("};\n\n")
+    h.write("enum mcman_indices_e {\n")
+    for i, (k, v) in enumerate(enums.items()):
+        h.write(f"    VS_MCMAN_INDEX_{k} = {i},\n")
     h.write("};\n")

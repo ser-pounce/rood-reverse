@@ -33,7 +33,7 @@ typedef struct {
     u_char outerBlendFactor;
     u_char innerBlendFactor;
     u_char selected;
-    u_char slotUnused;
+    u_char slotUnavailable;
     u_char saveLocation;
     u_char unk7;
     short unk8;
@@ -89,7 +89,7 @@ typedef struct {
 } tagsprt_t;
 
 enum slotState_t {
-    slotStateUnused = 0,
+    slotStateUnavailable = 0,
     slotStateAvailable = 1,
     slotStateTemporary = 2,
     slotStateInUse = 3
@@ -100,19 +100,19 @@ typedef struct {
     int generation;
     int unk8;
     char unkC;
-    char unkD;
-    char unkE;
-    char unkF;
+    char seconds;
+    char minutes;
+    char hours;
     u_short saveCount;
     u_short unk12;
-    u_short unk14;
-    u_short unk16;
+    u_short currentHP;
+    u_short maxHP;
     u_char saveLocation;
-    u_char unk19;
-    u_char unk1A;
+    u_char clearCount;
+    u_char mapCompletion;
     u_char unk1B;
-    u_short unk1C;
-    u_short unk1E;
+    u_short currentMP;
+    u_short maxMP;
     u_short unk20[16];
 } _saveFileSubInfo_t;
 
@@ -179,7 +179,7 @@ typedef struct {
 } menuItemPrim_t;
 
 typedef struct {
-    u_long unk0[2][128];
+    u_long locationCluts[2][128];
     u_char unk400[7][32];
     u_char unk4E0[22][128];
     u_char unkFE0[0x20];
@@ -689,7 +689,7 @@ static int _initSaveFileInfo(int port)
 
     for (; slotsAvailable >= 3; slotsAvailable -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.slotState == slotStateUnused) {
+            if (_saveFileInfo[i].unk4.slotState == slotStateUnavailable) {
                 _saveFileInfo[i].unk4.slotState = slotStateAvailable;
                 break;
             }
@@ -1310,9 +1310,9 @@ static int _countDigits(int val)
     return i;
 }
 
-enum statType { statTypeHP = 0, statTypeMP = 1 };
+enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
-static void _drawMainStat(int xy, int stat, u_int currentValue, u_int maxValue)
+static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
     int currentValueFactor;
     int maxValueDigits;
@@ -1560,14 +1560,14 @@ enum _findCurrentSave_e {
     findSavePending = 0
 };
 
-static int _findCurrentSave(int arg0)
+static int _findCurrentSave(int init)
 {
     int port;
     int currentSave;
     int event;
     int realPort;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         _findCurrentSaveState = 0;
         _findCurrentSaveSubState = 0;
         return 0;
@@ -1676,7 +1676,7 @@ static void _printString(u_char* text, int x, int y, int clut)
             u_int control = *text++;
             if (c == vs_char_spacing) {
                 if (control >= 0xF0) {
-                    nextX -= 0x100 - control;
+                    nextX -= 256 - control;
                 } else {
                     nextX += control;
                 }
@@ -1719,19 +1719,20 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-void func_8006B5A0(_fileMenuEntries_t* menuEntry)
+static void _drawSaveFileInfo(_fileMenuEntries_t* menuEntry)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
     int xy;
-    int uvClut;
     int var_a3;
-    int var_s1;
+    int location;
+    int x;
     int y;
-    u_int color1;
-    int color2;
-    u_int temp_v1;
-    u_long* var_a1_2;
+    int var1;
+    int var2;
+    int uvClut;
+    int slotState;
+    u_long* locationClut;
     int new_var;
 
     if (menuEntry->selected != 0) {
@@ -1739,13 +1740,13 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
     } else if (menuEntry->outerBlendFactor != 0) {
         --menuEntry->outerBlendFactor;
     }
-    if (menuEntry->slotUnused != 0) {
+    if (menuEntry->slotUnavailable != 0) {
         menuEntry->outerBlendFactor = 0;
     }
     if ((menuEntry->slotId >= 5) || ((menuEntry->y - 72) < 0x51U)) {
         y = menuEntry->innerBlendFactor;
-        color1 = _intepolateMenuItemBgColour(8 - menuEntry->outerBlendFactor, y);
-        color2 = _intepolateMenuItemBgColour(menuEntry->outerBlendFactor, y);
+        var1 = _intepolateMenuItemBgColour(8 - menuEntry->outerBlendFactor, y);
+        var2 = _intepolateMenuItemBgColour(menuEntry->outerBlendFactor, y);
         if (y & 7) {
             menuEntry->innerBlendFactor = y + 1;
         }
@@ -1758,126 +1759,127 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
         _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(menuEntry->y + 2, menuEntry->x + 2);
         _primBuf.prim.tilePoly.tile.wh = menuEntry->w | (menuEntry->h << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, color1);
+        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
         _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)menuEntry->x | y;
-        _primBuf.prim.tilePoly.polyG4.r1g1b1 = color2;
+        _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
         _primBuf.prim.tilePoly.polyG4.x1y1 = ((menuEntry->x + menuEntry->w) & 0xFFFF) | y;
-        _primBuf.prim.tilePoly.polyG4.r2g2b2 = color1;
+        _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
         _primBuf.prim.tilePoly.polyG4.x2y2
             = (u_short)menuEntry->x | ((menuEntry->y + menuEntry->h) << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r3g3b3 = color2;
+        _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
         _primBuf.prim.tilePoly.polyG4.x3y3 = ((menuEntry->x + menuEntry->w) & 0xFFFF)
             | ((menuEntry->y + menuEntry->h) << 0x10);
         DrawPrim(&_primBuf);
 
-        uvClut = menuEntry->x + 6;
-        for (color1 = 0; (int)color1 < 32; ++color1) {
-            color2 = menuEntry->text[color1];
-            if (color2 == vs_char_spacing) {
-                uvClut += menuEntry->text[++color1];
-            } else if (color2 != 0xFF) {
-                uvClut = _printCharacter(color2, uvClut, menuEntry->y, 0);
+        x = menuEntry->x + 6;
+        for (var1 = 0; var1 < 32; ++var1) {
+            var2 = menuEntry->text[var1];
+            if (var2 == vs_char_spacing) {
+                x += menuEntry->text[++var1];
+            } else if (var2 != 0xFF) {
+                x = _printCharacter(var2, x, menuEntry->y, 0);
             } else {
                 break;
             }
         }
-        color2 = menuEntry->slotId;
-        if (color2 < 5) {
+        var2 = menuEntry->slotId;
+        if (var2 < 5) {
             _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            saveInfo = &_saveFileInfo[color2];
-            var_s1 = menuEntry->saveLocation - 1;
-            color1 = saveInfo->unk4.slotState;
+            saveInfo = &_saveFileInfo[var2];
+            location = menuEntry->saveLocation - 1;
+            var1 = saveInfo->unk4.slotState;
             if (saveInfo->unk4.slotState < 3) {
                 if (saveInfo->unk4.slotState == 0) {
-                    var_s1 = -2;
+                    location = -2;
                 } else if (saveInfo->unk4.slotState == 2) {
-                    var_s1 = -4;
+                    location = -4;
                 } else if (_isSaving != 0) {
-                    var_s1 = -1;
+                    location = -1;
                 } else {
-                    var_s1 = -5;
+                    location = -5;
                 }
-            } else if (var_s1 >= 48) {
-                var_s1 = -3;
+            } else if (location >= 48) {
+                location = -3;
             }
-            if (var_s1 >= 32u) {
-                var_a1_2 = &_mcData->unk0[1][0];
+            if (location >= 32u) {
+                locationClut = _mcData->locationCluts[1];
             } else {
-                var_a1_2 = &_mcData->unk0[0][0];
+                locationClut = _mcData->locationCluts[0];
             }
-            _drawImage(MAKEXY(768, 227), var_a1_2, MAKEWH(256, 1));
-            if (var_s1 < 0) {
-                uvClut = (~var_s1 << 13) | vs_getUV0Clut(64, 0, 768, 227);
+            _drawImage(MAKEXY(768, 227), locationClut, MAKEWH(256, 1));
+            if (location < 0) {
+                uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (menuEntry->x - 64) | y;
                 _drawSprt(xy, uvClut, MAKEWH(64, 32),
-                    ((8 - menuEntry->outerBlendFactor) << 0x13) | 0x9C);
+                    ((8 - menuEntry->outerBlendFactor) << 19) | 0x9C);
             } else {
                 int v0;
-                uvClut = ((var_s1 & 8) * 8) | ((var_s1 & 7) << 0xD)
+                uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
                     | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (menuEntry->x - 0x40) | y;
-                new_var = (((var_s1 & 0x30) * 4) + 0x340) & 0x3FF;
+                xy = (menuEntry->x - 64) | y;
+                new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
-                var_a3 = (((8 - menuEntry->outerBlendFactor) << 0x13) | 0x90);
+                var_a3 = (((8 - menuEntry->outerBlendFactor) << 19) | 0x90);
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
             _drawSaveInfoUI((menuEntry->x - 22) | y, vs_uiids_number);
-            _drawInteger((menuEntry->x - 9) | y, color2 + 1, 0xAU);
-            temp_v1 = saveInfo->unk4.slotState;
-            if (temp_v1 == 0) {
+            _drawInteger((menuEntry->x - 9) | y, var2 + 1, 0xAU);
+            slotState = saveInfo->unk4.slotState;
+            if (slotState == slotStateUnavailable) {
                 _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_inUse),
-                    menuEntry->x + 6, menuEntry->y + 0xA, 3);
-            } else if (temp_v1 == 1) {
+                    menuEntry->x + 6, menuEntry->y + 10, 3);
+            } else if (slotState == slotStateAvailable) {
                 if (_isSaving == 0) {
                     _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_empty),
-                        menuEntry->x + 6, menuEntry->y + 0xA, 3);
+                        menuEntry->x + 6, menuEntry->y + 10, 3);
                 } else {
                     _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_new),
-                        menuEntry->x + 6, menuEntry->y + 0xA, 0);
+                        menuEntry->x + 6, menuEntry->y + 10, 0);
                 }
             } else {
-                y = y + 0x40000;
+                y += 4 << 16;
                 _printString((u_char*)&_textTable[_textTable[menuEntry->saveLocation
                                  + VS_MCMAN_INDEX_saveLocations]],
                     menuEntry->x + 6, menuEntry->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
                 _drawSaveInfoUI(y | 189, vs_uiids_colon);
-                color1 = saveInfo->unk4.unk1A;
+                var1 = saveInfo->unk4.mapCompletion;
 
-                if (color1 == 0x64) {
-                    _drawInteger(y | 0xC0, 0x64U, 0x64);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCF, vs_uiids_percent);
+                if (var1 == 100) {
+                    _drawInteger(y | 192, 100, 100);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
                 } else {
-                    _drawInteger(y | 0xC0, color1, 0xA);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCA, vs_uiids_percent);
+                    _drawInteger(y | 192, var1, 10);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
                 }
-                _drawSaveInfoUI(y | 0xD9, vs_uiids_save);
-                _drawSaveInfoUI(y | 0xEF, vs_uiids_colon);
-                _drawInteger(y | 0xF2, saveInfo->unk4.saveCount, 0x3E8U);
-                _drawSaveInfoUI(y | 0x10B, vs_uiids_clear);
-                _drawSaveInfoUI(y | 0x125, vs_uiids_colon);
-                _drawInteger(y | 0x128, saveInfo->unk4.unk19, 0xAU);
-                y = y + 0xD0000;
-                if (saveInfo->unk4.unk19 != 0) {
-                    _drawSprt(y | 0x45, 0x37F910F0, 0x100010, 0xC);
+                _drawSaveInfoUI(y | 217, vs_uiids_save);
+                _drawSaveInfoUI(y | 239, vs_uiids_colon);
+                _drawInteger(y | 242, saveInfo->unk4.saveCount, 1000);
+                _drawSaveInfoUI(y | 267, vs_uiids_clear);
+                _drawSaveInfoUI(y | 293, vs_uiids_colon);
+                _drawInteger(y | 296, saveInfo->unk4.clearCount, 10);
+                y += 13 << 16;
+                if (saveInfo->unk4.clearCount != 0) {
+                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), MAKEWH(16, 16),
+                        getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
                 }
-                _drawSaveInfoUI(y | 0xF0, vs_uiids_time);
-                color1 = saveInfo->unk4.unkF;
-                if (color1 == 0x64) {
-                    _drawInteger(y | 0x107, color1, 0x64);
+                _drawSaveInfoUI(y | 240, vs_uiids_time);
+                var1 = saveInfo->unk4.hours;
+                if (var1 == 100) {
+                    _drawInteger(y | 263, var1, 100);
                 } else {
-                    _drawInteger(y | 0x10C, color1, 10);
+                    _drawInteger(y | 268, var1, 10);
                 }
-                _drawSaveInfoUI(y | 0x117, vs_uiids_colon);
-                _drawInteger(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
-                _drawSaveInfoUI(y | 0x125, vs_uiids_colon);
-                _drawInteger(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
-                _drawMainStat(
-                    y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);
-                _drawMainStat(
-                    y | 0x9E, 1, (int)saveInfo->unk4.unk1C, (u_int)saveInfo->unk4.unk1E);
-                y = y + 0xFFEF0000;
+                _drawSaveInfoUI(y | 279, vs_uiids_colon);
+                _drawInteger(y | 282, saveInfo->unk4.minutes, 10);
+                _drawSaveInfoUI(y | 293, vs_uiids_colon);
+                _drawInteger(y | 296, saveInfo->unk4.seconds, 10);
+                _drawHPMP(
+                    y | 88, statTypeHP, saveInfo->unk4.currentHP, saveInfo->unk4.maxHP);
+                _drawHPMP(
+                    y | 158, statTypeMP, saveInfo->unk4.currentMP, saveInfo->unk4.maxMP);
+                y -= 17 << 16;
             }
             if ((menuEntry->selected != 0) && (D_800DEB14 != 0)) {
                 if (D_800DEB14 < 0) {
@@ -1974,7 +1976,7 @@ static void _drawSaveMenu(int arg0)
             }
         }
         if (temp_t0 != 0) {
-            func_8006B5A0(var_s1);
+            _drawSaveFileInfo(var_s1);
         }
     }
 
@@ -2061,7 +2063,7 @@ static int _selectFileToLoad(int arg0)
             entry = _initFileMenuEntry(
                 i + 5, ((72 + i * 40) << 16) | 64, MAKEWH(256, 32), 0);
             entry->slotId = i;
-            entry->slotUnused = _saveFileInfo[i].unk4.slotState < slotStateInUse;
+            entry->slotUnavailable = _saveFileInfo[i].unk4.slotState < slotStateInUse;
             entry->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
         _fileToLoadState = handleInput;
@@ -2571,7 +2573,8 @@ int func_8006D2F8(int arg0)
             temp_v0_2 = _initFileMenuEntry(
                 i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
             temp_v0_2->slotId = i;
-            temp_v0_2->slotUnused = _saveFileInfo[i].unk4.slotState == slotStateUnused;
+            temp_v0_2->slotUnavailable
+                = _saveFileInfo[i].unk4.slotState == slotStateUnavailable;
             temp_v0_2->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
         D_800DC91C = 1;
@@ -2590,7 +2593,7 @@ int func_8006D2F8(int arg0)
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
-                if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnused) {
+                if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuEntries[temp_s0 + 5].selected = 1;
                     D_800DED68 = 0;
@@ -2919,7 +2922,7 @@ int func_8006E00C(int arg0)
             memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
         } else if (_fileMenuEntriesActive() != 0) {
-            if (vs_main_settings.slotState != slotStateUnused) {
+            if (vs_main_settings.slotState != slotStateUnavailable) {
                 _findCurrentSave(1);
                 D_800DC923 = 1;
             } else {

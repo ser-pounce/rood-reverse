@@ -9,7 +9,7 @@ $(BUILD)/data/MENU/SPMCIMG.BIN: $(BUILD)/assets/MENU/SPMCIMG.BIN.png
 
 $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h &: assets/MENU/MCMAN.yaml
 	$(call builder,Converting $<)
-	@$(VPYTHON) -m tools.etc.mcman $< $@ $(BUILD)/src/include/mcman.h
-	@$(DIFF) $(DIFFFLAGS) $@ $(@:build/%=%)
+	@$(VPYTHON) -m tools.etc.mcman $< $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h
+	@$(DIFF) $(DIFFFLAGS) $(BUILD)/data/MENU/MCMAN.BIN data/MENU/MCMAN.BIN
 
 all: $(BUILD)/data/MENU/SPMCIMG.BIN $(BUILD)/data/MENU/MCMAN.BIN

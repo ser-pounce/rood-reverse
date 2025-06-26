@@ -7,7 +7,7 @@ $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CPPFLAGS += -D MENUBGSZ=$(strip \
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1FLAGS += -Wno-uninitialized
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1VER := 2.8.0
-$(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h \
+$(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h $(BUILD)/src/include/mcman.h \
 	$(BUILD)/assets/TITLE/TITLE.PRG/menuBg.rgba16Compressed.segment.o
 
 $(BUILD)/src/TITLE/TITLE.PRG/libpress/LIBPRESS.o: ASFLAGS += -no-pad-sections

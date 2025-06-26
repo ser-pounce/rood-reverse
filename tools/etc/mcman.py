@@ -1,5 +1,6 @@
 import sys
 import yaml
+import os
 from tools.etc.vsString import encode
 
 if len(sys.argv) < 4:
@@ -33,13 +34,15 @@ for i in range(len(offsets)):
     offsets[i] += count
 for key in enums:
     enums[key] += count
-
+    
+os.makedirs(os.path.dirname(sys.argv[2]), exist_ok=True)
 with open(sys.argv[2], "wb") as out:
     for offset in offsets:
         out.write(offset.to_bytes(2, "little"))
     for s in strings:
         out.write(s)
 
+os.makedirs(os.path.dirname(sys.argv[3]), exist_ok=True)
 with open(sys.argv[3], "w", encoding="utf-8") as h:
     h.write("#pragma once\n\nenum {\n")
     for k, v in enums.items():

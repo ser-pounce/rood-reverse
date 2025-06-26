@@ -6,6 +6,7 @@
 #include "gpu.h"
 #include "lbas.h"
 #include "vs_string.h"
+#include "mcman.h"
 #include <libapi.h>
 #include <libds.h>
 #include <libetc.h>
@@ -200,8 +201,8 @@ u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char D_8007289C[];
 extern char D_800728B0[];
-extern int D_800728C0[];
-extern int D_800728E8[];
+extern int _saveInfoUVClut[];
+extern int _saveInfoWh[];
 extern u_char _digitsDivisors[];
 extern int _fontCharacterWidths[];
 extern u_char _arrowCharState;
@@ -329,7 +330,7 @@ extern struct {
     } prim;
 } _primBuf;
 extern int D_800DED68;
-extern void* D_800DED6C;
+extern u_char* D_800DED6C;
 extern u_char _isSaving;
 extern u_char D_800DED71;
 extern u_char D_800DED72;
@@ -437,11 +438,11 @@ static void _readImage(int xy, u_long* p, int wh)
     DrawSync(0);
 }
 
-static void _rMemcpy(u_char* dst, void const* src, int count)
+static void _rMemcpy(void* dst, void const* src, int count)
 {
     do {
         --count;
-        dst[count] = ((char const*)src)[count];
+        ((u_char*)dst)[count] = ((u_char const*)src)[count];
     } while (count != 0);
 }
 
@@ -586,8 +587,7 @@ static int _readSaveFileInfo(int id)
         _decode(saveInfo[3].key, (u_char*)&saveInfo[3].unk4.slotState,
             sizeof(_saveFileInfo_t) - sizeof(int));
         if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
-            _rMemcpy(
-                (u_char*)(&_saveFileInfo[id - 1]), &saveInfo[3], sizeof(saveInfo[3]));
+            _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof(saveInfo[3]));
             return 0;
         }
     }
@@ -840,12 +840,12 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(D_80061598, spmcimg[1].unk200, sizeof(D_80061598));
     _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
     _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
-    _rMemcpy((u_char*)(&vs_main_settings), &spmcimg[1].unk6A8, sizeof(vs_main_settings));
-    _rMemcpy((u_char*)(&D_80060068), &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy((u_char*)D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
-    _rMemcpy((u_char*)(&D_800619D8), spmcimg[1].unk16C8, sizeof(D_800619D8));
-    _rMemcpy((u_char*)(&D_80061068), &spmcimg[1].unk1778, sizeof(D_80061068));
-    _rMemcpy((u_char*)(&D_8005FEA0), &spmcimg[1].unk1784, sizeof(D_8005FEA0));
+    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
+    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
+    _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
+    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
+    _rMemcpy(&D_8005FEA0, &spmcimg[1].unk1784, sizeof(D_8005FEA0));
     D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = D_80060040;
@@ -885,7 +885,7 @@ void func_80069888(int arg0)
     savedata->unk1 = 0x43;
     savedata->unk2 = 0x11;
     savedata->unk3 = 3;
-    _rMemcpy((u_char*)&savedata->unk4, s0, sizeof(savedata->unk4));
+    _rMemcpy(&savedata->unk4, s0, sizeof(savedata->unk4));
     savedata->unk4.unk20[3] += (arg0 << 8);
 
     if (vs_main_gametime.t.h == 100) {
@@ -945,13 +945,13 @@ void func_80069888(int arg0)
     _rMemcpy(savedata->unk200, D_80061598, sizeof(savedata->unk200));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
     _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
-    _rMemcpy((u_char*)&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
-    _rMemcpy((u_char*)&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
+    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
+    _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
     _rMemcpy(savedata->unk7C8, D_80060168, sizeof(savedata->unk7C8));
     _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
-    _rMemcpy((u_char*)&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
-    _rMemcpy((u_char*)&savedata->unk1784, &D_8005FEA0, sizeof(savedata->unk1784));
-    _rMemcpy((u_char*)&savedata->unk1DE0, &savedata2->unk1DE0, sizeof(savedata->unk1DE0));
+    _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
+    _rMemcpy(&savedata->unk1784, &D_8005FEA0, sizeof(savedata->unk1784));
+    _rMemcpy(&savedata->unk1DE0, &savedata2->unk1DE0, sizeof(savedata->unk1DE0));
     savedata->unk1898 = D_80060064;
     _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
     _rMemcpy(savedata->unk1DBC, D_80060040, sizeof(savedata->unk1DBC));
@@ -1263,7 +1263,7 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 
 static void _drawSaveInfoUI(int xy, int id)
 {
-    _drawSprt(xy, D_800728C0[id], D_800728E8[id],
+    _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id],
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
 }
 
@@ -1453,7 +1453,7 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 
 void func_8006AE10()
 {
-    D_800DED6C = 0;
+    D_800DED6C = NULL;
     D_800DED71 = 0;
     D_800DED68 = 0;
     D_800DEB14 = 0;
@@ -1552,7 +1552,7 @@ int func_8006B138(int arg0)
     port = (D_800DC8CC >> 1) + 1;
 
     if ((D_800DC8CC & 1) == 0) {
-        D_800DED6C = _textTable + (_textTable + port)[21];
+        D_800DED6C = (u_char*)(_textTable + (_textTable + port)[21]);
         _memcardHandler(port);
         ++D_800DC8CC;
     } else {
@@ -1600,13 +1600,13 @@ int func_8006B288(int arg0)
         case 1:
             return 1;
         case 2:
-            D_800DED6C = _textTable + 0xE3;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
             break;
         case 3:
-            D_800DED6C = _textTable + 0x2E2;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_noData);
             break;
         default:
-            D_800DED6C = _textTable + 0x1DE;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_removed);
             break;
         }
         return -1;
@@ -1793,22 +1793,22 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
             _drawInteger((menuEntry->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
-                _printString(
-                    (u_char*)_textTable + 0x372, menuEntry->x + 6, menuEntry->y + 0xA, 3);
+                _printString((u_char*)(_textTable + VS_MCMAN_inUse), menuEntry->x + 6,
+                    menuEntry->y + 0xA, 3);
             } else if (temp_v1 == 1) {
                 if (_isSaving == 0) {
-                    _printString((u_char*)_textTable + 0x38A, menuEntry->x + 6,
+                    _printString((u_char*)(_textTable + VS_MCMAN_empty), menuEntry->x + 6,
                         menuEntry->y + 0xA, 3);
                 } else {
-                    _printString((u_char*)_textTable + 0x3A0, menuEntry->x + 6,
+                    _printString((u_char*)(_textTable + VS_MCMAN_new), menuEntry->x + 6,
                         menuEntry->y + 0xA, 0);
                 }
             } else {
                 y = y + 0x40000;
                 _printString((u_char*)&_textTable[(&_textTable[menuEntry->unk6])[41]],
                     menuEntry->x + 6, menuEntry->y + 4, 0);
-                _drawSaveInfoUI(y | 0xAC, 2);
-                _drawSaveInfoUI(y | 0xBD, 0);
+                _drawSaveInfoUI(y | 172, 2);
+                _drawSaveInfoUI(y | 189, 0);
                 color1 = saveInfo->unk4.unk1A;
 
                 if (color1 == 0x64) {
@@ -1968,8 +1968,8 @@ static void _drawSaveMenu(int arg0)
     } else {
         D_800DED71 = 0;
     }
-    if (D_800DED6C != 0) {
-        _printString((u_char*)D_800DED6C, 0x10, 0xC0, 0);
+    if (D_800DED6C != NULL) {
+        _printString(D_800DED6C, 16, 192, 0);
     }
     if (D_800DED72 != 0) {
         DrawSync(0);
@@ -2031,7 +2031,7 @@ static int _selectFileToLoad(int arg0)
             entry->unk6 = _saveFileInfo[i].unk4.unk18;
         }
         _fileToLoadState = handleInput;
-        D_800DED6C = _textTable + 315;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectFile);
         // fallthrough
     case handleInput:
         if (vs_main_buttonsPressed & PADRdown) {
@@ -2092,7 +2092,7 @@ static int _selectFileToLoad(int arg0)
                 _loadSaveData(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
                 _fileToLoadState = applyLoad;
-                D_800DED6C = _textTable + 0x193;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loading);
             } else {
                 _fileToLoadState = loaded;
             }
@@ -2106,7 +2106,7 @@ static int _selectFileToLoad(int arg0)
             do {
                 D_800DC8DC = 0;
                 if (currentSlot < 0) {
-                    D_800DED6C = _textTable + 286;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2115,10 +2115,10 @@ static int _selectFileToLoad(int arg0)
                     vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
                     D_800DC8DC = 16;
                     _fileLoaded = 1;
-                    D_800DED6C = _textTable + 434;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loaded);
                     break;
                 case 1:
-                    D_800DED6C = _textTable + 341;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -2164,7 +2164,7 @@ int func_8006C778(int arg0)
 
     if (arg0 != 0) {
         D_800DC8DF = arg0;
-        D_800DED6C = _textTable + 0xC4;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_checking);
         D_800DC8DE = 0;
         return 0;
     }
@@ -2224,7 +2224,7 @@ int func_8006C778(int arg0)
 
     case 6:
         if (_initSaveFileInfo(D_800DC8DF) != 0) {
-            D_800DED6C = _textTable + 286;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
             D_800DC8DE = 4;
             break;
         }
@@ -2235,7 +2235,7 @@ int func_8006C778(int arg0)
         }
 
         if (i == 5) {
-            D_800DED6C = _textTable + 738;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_noData);
             D_800DC8DE = 4;
         } else {
             _selectFileToLoad(D_800DC8DF);
@@ -2275,7 +2275,8 @@ int func_8006CABC(int arg0)
     }
     switch (D_800DC8E0) {
     case 0:
-        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(_textTable + 0x94));
+        entry = _initFileMenuEntry(
+            0, MAKEXY(320, 34), MAKEWH(140, 12), (u_char*)(_textTable + 0x94));
         entry->state = 2;
         entry->unk8 = 180;
         entry->selected = 1;
@@ -2284,15 +2285,16 @@ int func_8006CABC(int arg0)
         break;
     case 1:
         if (_fileMenuEntriesActive() != 0) {
-            entry
-                = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(_textTable + 0xA2));
+            entry = _initFileMenuEntry(
+                1, MAKEXY(320, 50), MAKEWH(126, 12), (u_char*)(_textTable + 0xA2));
             entry->state = 2;
             entry->unk8 = 194;
             D_800DC8E0 = 2;
         }
         break;
     case 2:
-        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(_textTable + 0xAC));
+        entry = _initFileMenuEntry(
+            2, MAKEXY(320, 66), MAKEWH(126, 12), (u_char*)(_textTable + 0xAC));
         entry->state = 2;
         entry->unk8 = 194;
         D_800DC8E0 = 3;
@@ -2300,7 +2302,7 @@ int func_8006CABC(int arg0)
     case 3:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC8E0 = 4;
-            D_800DED6C = _textTable + 182;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectSlot);
         }
         break;
     case 4:
@@ -2415,7 +2417,7 @@ int func_8006D084(int arg0)
 {
     if (arg0 != 0) {
         D_800DC8F1 = 1;
-        D_800DED6C = _textTable + 0x2D8;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_overwritePrompt);
         func_8006CE6C(1);
         D_800DC8F0 = 0;
         return 0;
@@ -2444,7 +2446,7 @@ int func_8006D140(int port)
 
     if (port != 0) {
         _memcardStatePort = port;
-        D_800DED6C = _textTable + 0x254;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatPrompt);
         func_8006CE6C(1);
         D_800DC8F2 = 0;
         return 0;
@@ -2458,7 +2460,7 @@ int func_8006D140(int port)
 
         if (temp_v0 != 0) {
             if (temp_v0 < 0) {
-                D_800DED6C = _textTable + 0x2AE;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatCancelled);
                 return -1;
             }
 
@@ -2477,20 +2479,20 @@ int func_8006D140(int port)
         if (temp_v0 != 0) {
             if (temp_v0 == 3) {
                 D_800DC8F2 = (u_char)temp_v0;
-                D_800DED6C = _textTable + 0x274;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatting);
             } else {
                 if (temp_v0 == temp_s0) {
-                    D_800DED6C = _textTable + 0xE3;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
                 } else {
-                    D_800DED6C = _textTable + 0x1DE;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_removed);
                 }
                 return -1;
             }
         }
         return 0;
     case 3:
-        if (_card_format((_memcardStatePort - 1) * 0x10) == 0) {
-            D_800DED6C = _textTable + 0x2A0;
+        if (_card_format((_memcardStatePort - 1) * 16) == 0) {
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_formatFailed);
             return -1;
         }
         return 1;
@@ -2538,9 +2540,9 @@ int func_8006D2F8(int arg0)
         D_800DC91C = 1;
         /* fallthrough */
     case 1:
-        D_800DED6C = _textTable + 0x13B;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
-            vs_main_playSfxDefault(0x7E, 6);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             D_800DED68 = 0;
             D_800DC91C = 8;
         } else {
@@ -2552,7 +2554,7 @@ int func_8006D2F8(int arg0)
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
                 if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnused) {
-                    vs_main_playSfxDefault(0x7E, 5);
+                    vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuEntries[temp_s0 + 5].selected = 1;
                     D_800DED68 = 0;
                     func_8006B288(D_800DC91D + 0x70);
@@ -2590,7 +2592,7 @@ int func_8006D2F8(int arg0)
     case 2:
         temp_s0 = func_8006B288(0);
         if (temp_s0 != 0) {
-            if (D_800DED6C == (_textTable + 0x2E2)) {
+            if (D_800DED6C == (u_char*)(_textTable + VS_MCMAN_noData)) {
                 func_8006D140(D_800DC91D);
                 D_800DC91C = 9;
             } else if (temp_s0 >= 0) {
@@ -2598,7 +2600,7 @@ int func_8006D2F8(int arg0)
                 if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
                     if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
-                        D_800DED6C = _textTable + 0x102;
+                        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
                     } else {
                         D_800DC91C = 5;
                     }
@@ -2635,10 +2637,10 @@ int func_8006D2F8(int arg0)
         break;
     case 5:
         temp_s0 = D_800DC91F + D_800DC91E;
-        D_800DED6C = _textTable + 0x17B;
-        _rMemcpy((u_char*)&_settingsBackup, (u_char*)&vs_main_settings,
-            sizeof(_settingsBackup));
-        _rMemcpy(_spmcimg + 0xB800, _spmcimg + 0x5C00, 0x5C00);
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saving);
+        _rMemcpy(&_settingsBackup, &vs_main_settings, sizeof(_settingsBackup));
+        _rMemcpy(
+            (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
         if (D_800DED74 != 0) {
             D_800DED75 = (*(u_int*)&vs_main_settings.timingWeaponArmor >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
@@ -2662,23 +2664,23 @@ int func_8006D2F8(int arg0)
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
                 _fileMenuEntries[saveId + 5].unk6 = 0;
-                _rMemcpy(_spmcimg + 0x5C00, _spmcimg + 0xB800, 0x5C00);
+                _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
+                    sizeof(savedata_t));
                 D_800DEB14 = 0;
-                _rMemcpy((u_char*)&vs_main_settings, (u_char*)&_settingsBackup,
-                    sizeof(vs_main_settings));
-                D_800DED6C = _textTable + 0x102;
+                _rMemcpy(&vs_main_settings, &_settingsBackup, sizeof(vs_main_settings));
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
             } else {
                 D_800DED73 = 0;
                 D_800DEB14 = -0x10;
-                _rMemcpy((u_char*)&_saveFileInfo[saveId],
-                    _spmcimg + sizeof(_saveFileInfo_t) * 3, sizeof(_saveFileInfo_t));
+                _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(_saveFileInfo_t) * 3,
+                    sizeof(_saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].unk4.slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
                 _fileMenuEntries[saveId + 5].unk6 = _saveFileInfo[saveId].unk4.unk18;
                 vs_main_playSfxDefault(0x7E, 8);
                 D_800DC918 = 1;
-                D_800DED6C = _textTable + 0x1AC;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saved);
             }
             D_800DC91C = 7;
         }
@@ -2710,7 +2712,7 @@ int func_8006D2F8(int arg0)
                 D_800DC91C = 10;
             } else if (createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
                 D_800DC91C = 7;
-                D_800DED6C = _textTable + 0x102;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_saveFailed);
             } else {
                 D_800DC91C = 5;
             }
@@ -2739,7 +2741,7 @@ int func_8006DC14(int index)
 
     if (index != 0) {
         D_800DC922 = index;
-        D_800DED6C = _textTable + 0xC4;
+        D_800DED6C = (u_char*)(_textTable + VS_MCMAN_checking);
         _stateVar = init;
         return 0;
     }
@@ -2780,7 +2782,7 @@ int func_8006DC14(int index)
             break;
         case 2:
             _stateVar = 4;
-            D_800DED6C = _textTable + 0xE3;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_insertError);
             break;
         case 3:
             memset(_saveFileInfo, 0, 0x280);
@@ -2815,7 +2817,7 @@ int func_8006DC14(int index)
     case 6:
         if (_initSaveFileInfo(D_800DC922) != 0) {
             _stateVar = 4;
-            D_800DED6C = _textTable + 0x11E;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_loadfailed);
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2825,7 +2827,7 @@ int func_8006DC14(int index)
         }
         if (i == 5) {
             _stateVar = 4;
-            D_800DED6C = _textTable + 0x2F1;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_cardFull);
             break;
         }
         func_8006D2F8(D_800DC922);
@@ -2866,7 +2868,7 @@ int func_8006E00C(int arg0)
         temp_v0->unk8 = 180;
         temp_v0->innerBlendFactor = 8;
         temp_v0->selected = 1;
-        D_800DED6C = 0;
+        D_800DED6C = NULL;
         return 0;
     }
 
@@ -2890,7 +2892,8 @@ int func_8006E00C(int arg0)
             break;
         }
         if (temp_v0_2 < 0) {
-            D_800DED6C = _textTable + (temp_v0_2 == -2 ? 0xE3 : 0xF7);
+            D_800DED6C = (u_char*)(_textTable
+                + (temp_v0_2 == -2 ? VS_MCMAN_insertError : VS_MCMAN_emptyCard));
             D_800DC923 = 9;
         } else {
             _loadSaveData((temp_v0_2 & 7) | ((temp_v0_2 & 16) << 0xC));
@@ -2902,7 +2905,7 @@ int func_8006E00C(int arg0)
         if (var_a0 != 0) {
             if ((var_a0 <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 D_800DC923 = 9;
-                D_800DED6C = _textTable + 247;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_emptyCard);
             } else {
                 D_800DC923 = 3;
             }
@@ -2926,7 +2929,7 @@ int func_8006E00C(int arg0)
     case 5:
         if (_fileMenuEntriesActive() != 0) {
             D_800DC923 = 6;
-            D_800DED6C = _textTable + 0xB6;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_selectSlot);
         }
         break;
     case 6:
@@ -2944,7 +2947,7 @@ int func_8006E00C(int arg0)
                 } while (var_a0 < 3);
             }
             if (D_800DED73 != 0) {
-                D_800DED6C = _textTable + 0x311;
+                D_800DED6C = (u_char*)(_textTable + VS_MCMAN_containerFileCorrupt);
                 func_8006CE6C(1);
                 D_800DC923 = 11;
             } else {
@@ -2981,7 +2984,7 @@ int func_8006E00C(int arg0)
         break;
     case 9:
         if ((u_char)vs_main_buttonsPressed != 0) {
-            D_800DED6C = _textTable + 0x234;
+            D_800DED6C = (u_char*)(_textTable + VS_MCMAN_overwriteContainerWarn);
             func_8006CE6C(1);
             D_800DC923 = 10;
         }
@@ -3262,7 +3265,7 @@ static void _displayGameSaveScreen()
             temp_v0 = func_8006E00C(0);
             if (temp_v0 != 0) {
                 if (temp_v0 < 0) {
-                    D_800DED6C = _textTable + 0x335;
+                    D_800DED6C = (u_char*)(_textTable + VS_MCMAN_savePrompt);
                     func_8006EA70(1);
                     _saveScreenState = 3;
                 } else {

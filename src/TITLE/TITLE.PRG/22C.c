@@ -363,12 +363,12 @@ enum menuItems {
     menuItemSoundStereo = 7
 };
 
-enum memCardEventState {
-    memCardEventIoEnd = 0,
-    memCardEventError = 1,
-    memCardEventTimeout = 2,
-    memCardEventNew = 3,
-    memCardEventNone = 4,
+enum _testMemcardEvents_t {
+    memcardInternalEventIoEnd = 0,
+    memcardInternalEventError = 1,
+    memcardInternalEventTimeout = 2,
+    memcardInternalEventUnformatted = 3,
+    memcardInternalEventNone = 4,
 };
 
 #define SWEVENTS 0
@@ -397,7 +397,7 @@ static u_int _encode(int value)
     return seed >> (32 - value);
 }
 
-static int _testMemcardEvents(int type)
+static enum _testMemcardEvents_t _testMemcardEvents(int type)
 {
     int i;
 
@@ -686,7 +686,7 @@ static int _initSaveFileInfo(int port)
     return 0;
 }
 
-int createSaveFile(int port, int id)
+static int _createSaveFile(int port, int id)
 {
     u_char* fileName;
     long file;
@@ -705,15 +705,15 @@ enum memcardEventHandler_t {
     memcardEventPending = 0,
     memcardEventIoEnd = 1,
     memcardEventTimeout = 2,
-    memcardEventNew = 3
+    memcardEventUnformatted = 3
 };
 
 static enum memcardEventHandler_t _memcardEventHandler(int port)
 {
-    enum memCardStates {
+    enum states {
         init = 0,
         ready = 1,
-        new = 2,
+        unformatted = 2,
         confirmed = 3,
         loadReady = 4,
         loaded = 5,
@@ -742,24 +742,24 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
         // fallthrough
     case ready:
         switch (_testMemcardEvents(SWEVENTS)) {
-        case memCardEventIoEnd:
+        case memcardInternalEventIoEnd:
             _memCardState = loadReady;
             break;
-        case memCardEventError:
-        case memCardEventTimeout:
+        case memcardInternalEventError:
+        case memcardInternalEventTimeout:
             _memCardState = init;
             break;
-        case memCardEventNew:
-            _memCardState = new;
+        case memcardInternalEventUnformatted:
+            _memCardState = unformatted;
             break;
-        case memCardEventNone:
+        case memcardInternalEventNone:
             if (_memCardTimeout++ > 64) {
                 _memCardState = init;
             }
             break;
         }
         break;
-    case new:
+    case unformatted:
         _resetMemcardEvents(HWEVENTS);
         if (_card_clear(_memcardPort) == 0) {
             break;
@@ -771,14 +771,14 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
     case confirmed:
         do {
             event = _testMemcardEvents(HWEVENTS);
-        } while (event == memCardEventNone);
-        if (event == memCardEventIoEnd) {
+        } while (event == memcardInternalEventNone);
+        if (event == memcardInternalEventIoEnd) {
             _memCardState = loadReady;
             break;
         }
-        if (event < memCardEventIoEnd)
+        if (event < memcardInternalEventIoEnd)
             break;
-        if (event >= memCardEventNone)
+        if (event >= memcardInternalEventNone)
             break;
         _memCardState = init;
         break;
@@ -793,15 +793,15 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
     case loaded:
         event = _testMemcardEvents(SWEVENTS);
         switch (event) {
-        case memCardEventIoEnd:
+        case memcardInternalEventIoEnd:
             return _memcardEvType + memcardEventIoEnd;
-        case memCardEventError:
-        case memCardEventTimeout:
+        case memcardInternalEventError:
+        case memcardInternalEventTimeout:
             _memCardState = init;
             break;
-        case memCardEventNew:
-            return _memcardEvType + memcardEventNew;
-        case memCardEventNone:
+        case memcardInternalEventUnformatted:
+            return _memcardEvType + memcardEventUnformatted;
+        case memcardInternalEventNone:
             if (_memCardTimeout++ > 64) {
                 _memCardState = init;
             }
@@ -1042,9 +1042,9 @@ static int _loadSaveData(int portFileno)
         // fallthrough
     case reading:
         ev = _testMemcardEvents(SWEVENTS);
-        if (ev < memCardEventNone) {
+        if (ev < memcardInternalEventNone) {
             close(_memCardFd);
-            if (ev == memCardEventIoEnd) {
+            if (ev == memcardInternalEventIoEnd) {
                 return 1;
             }
             _loadSaveDataState = init;
@@ -1116,9 +1116,9 @@ int func_8006A11C(int arg0)
         // fallthrough
     case readReady: {
         temp_s3 = _testMemcardEvents(SWEVENTS);
-        if (temp_s3 < memCardEventNone) {
+        if (temp_s3 < memcardInternalEventNone) {
             close(_saveFileId);
-            if (temp_s3 == memCardEventIoEnd) {
+            if (temp_s3 == memcardInternalEventIoEnd) {
                 _memcardSaveState = verifyPending;
                 i = D_800DEB12;
                 temp_s3 = D_800DEB10;
@@ -1541,12 +1541,18 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     return x + _fontCharacterWidths[c];
 }
 
+enum _findCurrentSave_e {
+    findSaveTimeout = -2,
+    findSaveNotFound = -1,
+    findSavePending = 0
+};
+
 static int _findCurrentSave(int arg0)
 {
     int port;
     int currentSave;
     int event;
-    u_int realPort;
+    int realPort;
 
     if (arg0 != 0) {
         _findCurrentSaveState = 0;
@@ -1576,7 +1582,7 @@ static int _findCurrentSave(int arg0)
             } else if (event == memcardEventTimeout) {
                 if (_findCurrentSaveState != 1) {
                     if (_findCurrentSaveSubState != 0) {
-                        return -2;
+                        return findSaveTimeout;
                     }
                 } else {
                     _findCurrentSaveSubState = _findCurrentSaveState;
@@ -1585,27 +1591,38 @@ static int _findCurrentSave(int arg0)
             ++_findCurrentSaveState;
         }
     }
-    return _findCurrentSaveState != 4 ? 0 : -1;
+    return _findCurrentSaveState != 4 ? findSavePending : findSaveNotFound;
 }
 
-int func_8006B288(int arg0)
+enum _memcardEventMask_e {
+    memcardEventMaskIgnoreNone = 0x30,
+    memcardEventMaskAll = 0x70
+};
+
+enum _memcardMaskedHandler_e {
+    memcardMaskedHandlerError = -1,
+    memcardMaskedHandlerPending = 0,
+    memcardMaskedHandlerComplete = 1
+};
+
+static int _memcardMaskedHandler(int portMask)
 {
     int memcardEvent;
 
-    if (arg0 != 0) {
-        _memcardEventHandler(arg0 & 3);
-        _memcardEventMask = (arg0 >> 4);
+    if (portMask != 0) {
+        _memcardEventHandler(portMask & 3);
+        _memcardEventMask = (portMask >> 4);
         return 0;
     }
     memcardEvent = _memcardEventHandler(0);
-    if (memcardEvent != 0) {
+    if (memcardEvent != memcardEventPending) {
         switch (memcardEvent & _memcardEventMask) {
-        case 1:
+        case memcardEventIoEnd:
             return 1;
-        case 2:
+        case memcardEventTimeout:
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
-        case 3:
+        case memcardEventUnformatted:
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
             break;
         default:
@@ -2058,7 +2075,7 @@ static int _selectFileToLoad(int arg0)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuEntries[currentSlot + 5].selected = 1;
                 D_800DED68 = 0;
-                func_8006B288(D_800DC8D9 + 0x70);
+                _memcardMaskedHandler(D_800DC8D9 + memcardEventMaskAll);
                 _fileToLoadState = startLoad;
                 break;
             }
@@ -2089,9 +2106,9 @@ static int _selectFileToLoad(int arg0)
         _fileMenuEntries[currentSlot + 5].selected = 1;
         break;
     case startLoad:
-        currentSlot = func_8006B288(0);
-        if (currentSlot != 0) {
-            if (currentSlot >= 0) {
+        currentSlot = _memcardMaskedHandler(0);
+        if (currentSlot != memcardMaskedHandlerPending) {
+            if (currentSlot >= memcardMaskedHandlerPending) {
                 int new_var;
                 _loadSaveData(((_selectedSlot + _slotsPage) + 1)
                     | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
@@ -2198,13 +2215,13 @@ int func_8006C778(int arg0)
         if (_fileMenuEntriesActive() == 0) {
             break;
         }
-        func_8006B288(D_800DC8DF + 0x30);
+        _memcardMaskedHandler(D_800DC8DF + memcardEventMaskIgnoreNone);
         D_800DC8DE = 3;
         break;
 
     case 3:
-        i = func_8006B288(0);
-        if (i != 0) {
+        i = _memcardMaskedHandler(0);
+        if (i != memcardMaskedHandlerPending) {
             D_800DC8DE = i + 5;
         }
         break;
@@ -2564,7 +2581,7 @@ int func_8006D2F8(int arg0)
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuEntries[temp_s0 + 5].selected = 1;
                     D_800DED68 = 0;
-                    func_8006B288(D_800DC91D + 0x70);
+                    _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
                     D_800DC91C = 2;
                     break;
                 } else {
@@ -2597,15 +2614,15 @@ int func_8006D2F8(int arg0)
         }
         break;
     case 2:
-        temp_s0 = func_8006B288(0);
-        if (temp_s0 != 0) {
+        temp_s0 = _memcardMaskedHandler(0);
+        if (temp_s0 != memcardMaskedHandlerPending) {
             if (_fileMenuMessage == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
                 func_8006D140(D_800DC91D);
                 D_800DC91C = 9;
-            } else if (temp_s0 >= 0) {
+            } else if (temp_s0 >= memcardMaskedHandlerPending) {
                 temp_s0 = D_800DC91F + D_800DC91E;
                 if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
-                    if (createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
+                    if (_createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
                         D_800DC91C = 7;
                         _fileMenuMessage
                             = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
@@ -2625,7 +2642,7 @@ int func_8006D2F8(int arg0)
         temp_s0 = func_8006D084(0);
         if (temp_s0 != 0) {
             if (temp_s0 == 1) {
-                func_8006B288(D_800DC91D + 0x70);
+                _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
                 D_800DC91C = 4;
             } else {
                 D_800DC91C = 1;
@@ -2633,9 +2650,9 @@ int func_8006D2F8(int arg0)
         }
         break;
     case 4:
-        temp_s0 = func_8006B288(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 >= 0) {
+        temp_s0 = _memcardMaskedHandler(0);
+        if (temp_s0 != memcardMaskedHandlerPending) {
+            if (temp_s0 >= memcardMaskedHandlerPending) {
                 D_800DED73 |= (_findCurrentSaveOnActiveMemcard()
                     == (D_800DC91F + D_800DC91E + 1));
                 D_800DC91C = 5;
@@ -2720,7 +2737,7 @@ int func_8006D2F8(int arg0)
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
                 D_800DC91C = 10;
-            } else if (createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
+            } else if (_createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
                 D_800DC91C = 7;
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {

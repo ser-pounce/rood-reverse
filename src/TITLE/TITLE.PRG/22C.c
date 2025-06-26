@@ -371,6 +371,19 @@ enum _testMemcardEvents_t {
     memcardInternalEventNone = 4,
 };
 
+enum vs_fileMenuUiIds_e {
+    vs_uiids_colon = 0,
+    vs_uiids_number = 1,
+    vs_uiids_map = 2,
+    vs_uiids_save = 3,
+    vs_uiids_clear = 4,
+    vs_uiids_time = 5,
+    vs_uiids_percent = 6,
+    vs_uiids_hp = 7,
+    vs_uiids_mp = 8,
+    vs_uiids_dot = 9,
+};
+
 #define SWEVENTS 0
 #define HWEVENTS 4
 
@@ -1268,7 +1281,7 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawPrim(&_primBuf);
 }
 
-static void _drawSaveInfoUI(int xy, int id)
+static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
     _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id],
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
@@ -1356,7 +1369,7 @@ static void _drawMainStat(int xy, int stat, u_int currentValue, u_int maxValue)
 
     currentValueDigits = _countDigits(currentValue);
     maxValueDigits = _countDigits(maxValue);
-    _drawSaveInfoUI(xy - 1, stat + 7);
+    _drawSaveInfoUI(xy - 1, stat + vs_uiids_hp);
     wh = currentValueDigits * 6;
     new_var4 = 55;
     xy = (xy - (wh - new_var4)) - (maxValueDigits * 5);
@@ -1369,7 +1382,7 @@ static void _drawMainStat(int xy, int stat, u_int currentValue, u_int maxValue)
         placeDivisor /= 10;
         xy += 6;
     } while (placeDivisor != 0);
-    _drawSaveInfoUI(xy + 1, 9);
+    _drawSaveInfoUI(xy + 1, vs_uiids_dot);
     _drawInteger(xy + 6, maxValue, _digitsDivisors[maxValueDigits]);
 }
 
@@ -1526,7 +1539,7 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     if ((c >> 8) == 14) {
         return x + (u_char)c;
     }
-    if (c != 0x8F) {
+    if (c != vs_char_space) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
         _primBuf.prim.sprt.tpage
@@ -1809,7 +1822,7 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
-            _drawSaveInfoUI((menuEntry->x - 0x16) | y, 1);
+            _drawSaveInfoUI((menuEntry->x - 22) | y, vs_uiids_number);
             _drawInteger((menuEntry->x - 9) | y, color2 + 1, 0xAU);
             temp_v1 = saveInfo->unk4.slotState;
             if (temp_v1 == 0) {
@@ -1828,37 +1841,37 @@ void func_8006B5A0(_fileMenuEntries_t* menuEntry)
                 _printString((u_char*)&_textTable[_textTable[menuEntry->saveLocation
                                  + VS_MCMAN_INDEX_saveLocations]],
                     menuEntry->x + 6, menuEntry->y + 4, 0);
-                _drawSaveInfoUI(y | 172, 2);
-                _drawSaveInfoUI(y | 189, 0);
+                _drawSaveInfoUI(y | 172, vs_uiids_map);
+                _drawSaveInfoUI(y | 189, vs_uiids_colon);
                 color1 = saveInfo->unk4.unk1A;
 
                 if (color1 == 0x64) {
                     _drawInteger(y | 0xC0, 0x64U, 0x64);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCF, 6);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCF, vs_uiids_percent);
                 } else {
                     _drawInteger(y | 0xC0, color1, 0xA);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCA, 6);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 0xCA, vs_uiids_percent);
                 }
-                _drawSaveInfoUI(y | 0xD9, 3);
-                _drawSaveInfoUI(y | 0xEF, 0);
+                _drawSaveInfoUI(y | 0xD9, vs_uiids_save);
+                _drawSaveInfoUI(y | 0xEF, vs_uiids_colon);
                 _drawInteger(y | 0xF2, saveInfo->unk4.saveCount, 0x3E8U);
-                _drawSaveInfoUI(y | 0x10B, 4);
-                _drawSaveInfoUI(y | 0x125, 0);
+                _drawSaveInfoUI(y | 0x10B, vs_uiids_clear);
+                _drawSaveInfoUI(y | 0x125, vs_uiids_colon);
                 _drawInteger(y | 0x128, saveInfo->unk4.unk19, 0xAU);
                 y = y + 0xD0000;
                 if (saveInfo->unk4.unk19 != 0) {
                     _drawSprt(y | 0x45, 0x37F910F0, 0x100010, 0xC);
                 }
-                _drawSaveInfoUI(y | 0xF0, 5);
+                _drawSaveInfoUI(y | 0xF0, vs_uiids_time);
                 color1 = saveInfo->unk4.unkF;
                 if (color1 == 0x64) {
                     _drawInteger(y | 0x107, color1, 0x64);
                 } else {
                     _drawInteger(y | 0x10C, color1, 10);
                 }
-                _drawSaveInfoUI(y | 0x117, 0);
+                _drawSaveInfoUI(y | 0x117, vs_uiids_colon);
                 _drawInteger(y | 0x11A, (u_int)saveInfo->unk4.unkE, 0xAU);
-                _drawSaveInfoUI(y | 0x125, 0);
+                _drawSaveInfoUI(y | 0x125, vs_uiids_colon);
                 _drawInteger(y | 0x128, (u_int)saveInfo->unk4.unkD, 0xAU);
                 _drawMainStat(
                     y | 0x58, 0, (int)saveInfo->unk4.unk14, (u_int)saveInfo->unk4.unk16);

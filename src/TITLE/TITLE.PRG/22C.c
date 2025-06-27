@@ -284,8 +284,8 @@ extern u_char D_800DC8DC;
 extern u_char _selectMemoryCardState;
 extern u_char _selectedMemoryCard;
 extern u_char _fileLoadCompleteTimer;
-extern u_char D_800DC8E8;
-extern u_char D_800DC8E9;
+extern u_char _yesNoPromptState;
+extern u_char _yesNoPromptNoSelected;
 extern int D_800DC8EC;
 extern u_char D_800DC8F0;
 extern u_char D_800DC8F1;
@@ -392,7 +392,7 @@ enum vs_fileMenuUiIds_e {
 #define SWEVENTS 0
 #define HWEVENTS 4
 
-#define MAKEXY(x, y) (((y) << 16) + (x))
+#define MAKEXY(x, y) (((y) << 16) + ((x) & 0xFFFF))
 #define MAKEWH(w, h) MAKEXY(w, h)
 
 static void _playNewGameSfx()
@@ -2432,41 +2432,49 @@ static int _showLoadMenu(int fadeout)
     return 0;
 }
 
-int func_8006CE6C(int arg0)
+int _yesNoPrompt(int arg0)
 {
+    enum state {
+        initYes = 0,
+        initNo = 1,
+        waitForAnimation = 2,
+        handleInput = 3,
+    };
+
     _fileMenuElements_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
-        D_800DC8E9 = 1;
-        D_800DC8E8 = 0;
+        _yesNoPromptNoSelected = 1;
+        _yesNoPromptState = initYes;
         return 0;
     }
 
-    switch (D_800DC8E8) {
-    case 0:
-    case 1:
-        temp_v0 = _initFileMenuEntry(D_800DC8E8 + 3,
-            (((D_800DC8E8 * 16) + 0x12) << 0x10) | 0xFF82, 0xC007E,
-            (u_char*)&_textTable[_textTable[D_800DC8E8 + VS_MCMAN_INDEX_yesIndent]]);
+    switch (_yesNoPromptState) {
+    case initYes:
+    case initNo:
+        temp_v0 = _initFileMenuEntry(_yesNoPromptState + 3,
+            MAKEXY(-126, _yesNoPromptState * 16 + 18), MAKEWH(126, 12),
+            (u_char*)&_textTable[_textTable[_yesNoPromptState
+                + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
-        ++D_800DC8E8;
+        ++_yesNoPromptState;
         break;
-    case 2:
-        D_800DC8E8 += _fileMenuElementsActive();
+    case waitForAnimation:
+        _yesNoPromptState += _fileMenuElementsActive();
         break;
-    case 3:
-        _fileMenuElements[D_800DC8E9 + 3].selected = 1;
-        _fileMenuElements[4 - D_800DC8E9].selected = 0;
+    case handleInput:
+        _fileMenuElements[_yesNoPromptNoSelected + 3].selected = 1;
+        _fileMenuElements[4 - _yesNoPromptNoSelected].selected = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
                 _fileMenuElements[i].state = 4;
-                _fileMenuElements[i].targetPosition = -0x7E;
+                _fileMenuElements[i].targetPosition = -126;
             }
             if (vs_main_buttonsPressed & PADRright) {
-                if (D_800DC8E9 == 0) {
+                if (_yesNoPromptNoSelected == 0) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     return 1;
                 }
@@ -2474,11 +2482,11 @@ int func_8006CE6C(int arg0)
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             return -1;
         }
-        if (vs_main_buttonRepeat & 0x5000) {
+        if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            D_800DC8E9 = 1 - D_800DC8E9;
+            _yesNoPromptNoSelected = 1 - _yesNoPromptNoSelected;
         }
-        _selectCursorXy = ((D_800DC8E9 * 16) + 10) << 16;
+        _selectCursorXy = (_yesNoPromptNoSelected * 16 + 10) << 16;
         break;
     }
     return 0;
@@ -2489,13 +2497,13 @@ int func_8006D084(int arg0)
     if (arg0 != 0) {
         D_800DC8F1 = 1;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
-        func_8006CE6C(1);
+        _yesNoPrompt(1);
         D_800DC8F0 = 0;
         return 0;
     }
     switch (D_800DC8F0) {
     case 0:
-        D_800DC8EC = func_8006CE6C(0);
+        D_800DC8EC = _yesNoPrompt(0);
         if (D_800DC8EC != 0) {
             D_800DC8F0 = 1;
         }
@@ -2518,7 +2526,7 @@ int func_8006D140(int port)
     if (port != 0) {
         _memcardStatePort = port;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
-        func_8006CE6C(1);
+        _yesNoPrompt(1);
         D_800DC8F2 = 0;
         return 0;
     }
@@ -2527,7 +2535,7 @@ int func_8006D140(int port)
 
     switch (temp_s0) {
     case 0:
-        temp_v0 = func_8006CE6C(0);
+        temp_v0 = _yesNoPrompt(0);
 
         if (temp_v0 != 0) {
             if (temp_v0 < 0) {
@@ -3029,7 +3037,7 @@ int func_8006E00C(int arg0)
             if (D_800DED73 != 0) {
                 _fileMenuMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerFileCorrupt);
-                func_8006CE6C(1);
+                _yesNoPrompt(1);
                 D_800DC923 = 11;
             } else {
                 D_800DC923 = 8;
@@ -3067,13 +3075,13 @@ int func_8006E00C(int arg0)
         if ((u_char)vs_main_buttonsPressed != 0) {
             _fileMenuMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwriteContainerWarn);
-            func_8006CE6C(1);
+            _yesNoPrompt(1);
             D_800DC923 = 10;
         }
         break;
     case 10:
     case 11:
-        var_a0 = func_8006CE6C(0);
+        var_a0 = _yesNoPrompt(0);
         if (var_a0 != 0) {
             if (D_800DC923 == 11) {
                 if (var_a0 > 0) {

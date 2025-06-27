@@ -263,7 +263,7 @@ extern u_char _loadFileMenuFadeout;
 extern int _saveFileId;
 extern u_char _showSaveMenuState;
 extern u_char _showSaveMenuSelectedSlot;
-extern RECT D_800DC938;
+extern RECT _gameSaveScreenClearRect;
 extern menuItemPrim_t _menuItemPrims[10];
 extern u_char _saveScreenState;
 extern u_char _saveScreenFadeTimer;
@@ -277,13 +277,13 @@ extern vs_main_CdQueueSlot* _mcDataLoad;
 extern u_char _findCurrentSaveState;
 extern u_char _findCurrentSaveSubState;
 extern u_char _memcardEventMask;
-extern vs_Gametime_t D_800DC8D0;
+extern vs_Gametime_t _backupTime;
 extern int _fileLoaded;
 extern u_char _fileToLoadState;
-extern u_char D_800DC8D9;
+extern u_char _loadFilesPort;
 extern u_char _slotsPage;
 extern u_char _selectedSlot;
-extern u_char D_800DC8DC;
+extern u_char _fileLoadLeaveTimer;
 extern u_char _selectLoadMemoryCardState;
 extern u_char _selectedMemoryCard;
 extern u_char _fileLoadCompleteTimer;
@@ -319,7 +319,7 @@ extern u_short* _textTable;
 extern struct DIRENTRY* _memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
-extern u_short D_800DEB0E;
+extern u_short _fileProgressTarget;
 extern int _fileProgressCounter;
 extern _fileMenuElements_t _fileMenuElements[10];
 extern struct {
@@ -342,7 +342,7 @@ extern u_char* _selectSaveMemoryCardMessage;
 extern u_char _isSaving;
 extern u_char _selectCursorColor;
 extern u_char _fileMenuScreenFade;
-extern u_char D_800DED75;
+extern u_char _backupMainSetting;
 extern u_char _frameBuf;
 extern u_int _introMovieDisplayedAt;
 extern int _introMoviePlaying;
@@ -1035,9 +1035,9 @@ static int _loadSaveData(int portFileno)
         _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
                                      * ((_loadSaveDataErrorOffset * 20)
                                          - (_fileProgressPosition - new_var)))
-            / D_800DEB0E;
+            / _fileProgressTarget;
         _loadSaveDataErrorOffset = _loadSaveDataErrors;
-        D_800DEB0E = 192 - (_isTempSave << 7);
+        _fileProgressTarget = 192 - (_isTempSave << 7);
         _filePreviousProgressCounter = _fileProgressCounter;
 
         memset(temp_s2, 0, sizeof(savedata_t));
@@ -1120,9 +1120,9 @@ int _saveFile(int arg0)
     case tempFileCreated:
         temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
                         * (320 - _fileProgressPosition))
-            / D_800DEB0E;
+            / _fileProgressTarget;
         _filePreviousProgressCounter = _fileProgressCounter;
-        D_800DEB0E = 384;
+        _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
         _saveFileId
             = open((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
@@ -1491,7 +1491,7 @@ static void _initFileMenu()
     _selectCursorXy = 0;
     _fileProgressCounter = 0;
     _fileMenuScreenFade = 0;
-    D_800DEB0E = 384;
+    _fileProgressTarget = 384;
     memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
@@ -1907,7 +1907,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                             + (((_fileProgressCounter - _filePreviousProgressCounter)
                                    * ((_loadSaveDataErrorOffset * 0x14)
                                        - (_fileProgressPosition - new_var3)))
-                                / D_800DEB0E),
+                                / _fileProgressTarget),
                         y);
                 }
             }
@@ -2047,7 +2047,7 @@ static void _drawFileMenuBg()
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }
 
-static int _selectFileToLoad(int arg0)
+static int _showLoadFilesMenu(int port)
 {
     enum state {
         init = 0,
@@ -2062,8 +2062,8 @@ static int _selectFileToLoad(int arg0)
     int currentSlot;
     int i;
 
-    if (arg0 != 0) {
-        D_800DC8D9 = arg0;
+    if (port != 0) {
+        _loadFilesPort = port;
         _selectedSlot = _getNewestSaveFile();
         _slotsPage = 0;
         if (_selectedSlot == 4) {
@@ -2111,7 +2111,7 @@ static int _selectFileToLoad(int arg0)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuElements[currentSlot + 5].selected = 1;
                 _selectCursorXy = 0;
-                _memcardMaskedHandler(D_800DC8D9 + memcardEventMaskAll);
+                _memcardMaskedHandler(_loadFilesPort + memcardEventMaskAll);
                 _fileToLoadState = startLoad;
                 break;
             }
@@ -2147,7 +2147,7 @@ static int _selectFileToLoad(int arg0)
             if (currentSlot >= memcardMaskedHandlerPending) {
                 int new_var;
                 _loadSaveData(((_selectedSlot + _slotsPage) + 1)
-                    | (new_var = ((D_800DC8D9 - 1) << 16) | 256));
+                    | (new_var = ((_loadFilesPort - 1) << 16) | 256));
                 _fileToLoadState = applyLoad;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_loading);
@@ -2162,7 +2162,7 @@ static int _selectFileToLoad(int arg0)
         if (currentSlot != 0) {
             _fileProgressCounter = 0;
             do {
-                D_800DC8DC = 0;
+                _fileLoadLeaveTimer = 0;
                 if (currentSlot < 0) {
                     _selectSaveMemoryCardMessage
                         = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
@@ -2172,7 +2172,7 @@ static int _selectFileToLoad(int arg0)
                 case 0:
                     _fileProgressCounter = -16;
                     vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
-                    D_800DC8DC = 16;
+                    _fileLoadLeaveTimer = 16;
                     _fileLoaded = 1;
                     _selectSaveMemoryCardMessage
                         = (u_char*)(_textTable + VS_MCMAN_OFFSET_loaded);
@@ -2184,13 +2184,13 @@ static int _selectFileToLoad(int arg0)
                 }
             } while (0);
 
-            D_800DC8D0.t = vs_main_gametime.t;
+            _backupTime.t = vs_main_gametime.t;
             _fileToLoadState = loaded;
         }
         break;
     case loaded:
-        if (D_800DC8DC != 0) {
-            --D_800DC8DC;
+        if (_fileLoadLeaveTimer != 0) {
+            --_fileLoadLeaveTimer;
         }
         if (_fileLoaded == 1) {
             ++_fileLoadCompleteTimer;
@@ -2203,12 +2203,12 @@ static int _selectFileToLoad(int arg0)
         }
         break;
     case exiting:
-        if (D_800DC8DC != 0) {
-            --D_800DC8DC;
+        if (_fileLoadLeaveTimer != 0) {
+            --_fileLoadLeaveTimer;
             break;
         }
         if (_fileLoaded == 1) {
-            vs_main_gametime.t = D_800DC8D0.t;
+            vs_main_gametime.t = _backupTime.t;
         } else {
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
@@ -2311,13 +2311,13 @@ static int _selectLoadMemoryCard(int port)
             _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
             _selectLoadMemoryCardState = leave;
         } else {
-            _selectFileToLoad(_selectedMemoryCard);
+            _showLoadFilesMenu(_selectedMemoryCard);
             _selectLoadMemoryCardState = 7;
         }
         break;
 
     case selectFile:
-        i = _selectFileToLoad(0);
+        i = _showLoadFilesMenu(0);
         if (i == 0) {
             break;
         }
@@ -2761,7 +2761,7 @@ static int _showSaveFilesMenu(int port)
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
         if (_containerDataEmpty != 0) {
-            D_800DED75 = (*(u_int*)&vs_main_settings >> 4) & 1;
+            _backupMainSetting = (*(u_int*)&vs_main_settings >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
         _packageSaveData(val);
@@ -2776,7 +2776,7 @@ static int _showSaveFilesMenu(int port)
             saveId = _saveMenuSelectedSlot + _saveMenuSelectedPage;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
-                    u_char v = D_800DED75 & 1;
+                    u_char v = _backupMainSetting & 1;
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
@@ -3400,11 +3400,11 @@ static void _gameSaveScreen()
     _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
     _drawImage(MAKEXY(960, 66), _debugFont, MAKEWH(64, 158));
     _drawImage(MAKEXY(768, 227), (u_long*)&_saveMenuBg.clut, MAKEWH(256, 1));
-    setRECT(&D_800DC938, 640, 256, 32, 240);
-    ClearImage(&D_800DC938, 0, 0, 0);
+    setRECT(&_gameSaveScreenClearRect, 640, 256, 32, 240);
+    ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
     DrawSync(0);
-    setRECT(&D_800DC938, 768, 256, 32, 240);
-    ClearImage(&D_800DC938, 0, 0, 0);
+    setRECT(&_gameSaveScreenClearRect, 768, 256, 32, 240);
+    ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
     _drawImage(MAKEXY(672, 256), (u_long*)&_saveMenuBg.data, MAKEWH(96, 240));
     _initSaveScreen();
 

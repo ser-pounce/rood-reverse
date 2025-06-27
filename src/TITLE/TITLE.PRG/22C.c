@@ -35,8 +35,8 @@ enum _fileMenuElementState_e {
 typedef struct {
     u_char state;
     u_char slotId;
-    u_char outerBlendFactor;
-    u_char innerBlendFactor;
+    u_char outertextBlendFactor;
+    u_char innertextBlendFactor;
     u_char selected;
     u_char slotUnavailable;
     u_char saveLocation;
@@ -60,12 +60,12 @@ enum menuItemState_t {
 typedef struct {
     u_char enabled;
     u_char state;
-    u_char saturation;
-    u_char unk3;
-    u_char pos;
+    u_char textSaturation;
+    u_char outlineSaturation;
+    u_char textPos;
     u_char targetPos;
-    u_char unk6;
-    u_char blendFactor;
+    u_char outlinePos;
+    u_char textBlendFactor;
 } menuItemState_t;
 
 typedef struct {
@@ -1744,19 +1744,19 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
     int new_var;
 
     if (menuEntry->selected != 0) {
-        menuEntry->outerBlendFactor = 8;
-    } else if (menuEntry->outerBlendFactor != 0) {
-        --menuEntry->outerBlendFactor;
+        menuEntry->outertextBlendFactor = 8;
+    } else if (menuEntry->outertextBlendFactor != 0) {
+        --menuEntry->outertextBlendFactor;
     }
     if (menuEntry->slotUnavailable != 0) {
-        menuEntry->outerBlendFactor = 0;
+        menuEntry->outertextBlendFactor = 0;
     }
     if ((menuEntry->slotId >= 5) || ((menuEntry->y - 72) < 0x51U)) {
-        y = menuEntry->innerBlendFactor;
-        var1 = _intepolateMenuItemBgColour(8 - menuEntry->outerBlendFactor, y);
-        var2 = _intepolateMenuItemBgColour(menuEntry->outerBlendFactor, y);
+        y = menuEntry->innertextBlendFactor;
+        var1 = _intepolateMenuItemBgColour(8 - menuEntry->outertextBlendFactor, y);
+        var2 = _intepolateMenuItemBgColour(menuEntry->outertextBlendFactor, y);
         if (y & 7) {
-            menuEntry->innerBlendFactor = y + 1;
+            menuEntry->innertextBlendFactor = y + 1;
         }
         y = menuEntry->y << 16;
 
@@ -1819,7 +1819,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                 uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (menuEntry->x - 64) | y;
                 _drawSprt(xy, uvClut, MAKEWH(64, 32),
-                    ((8 - menuEntry->outerBlendFactor) << 19) | 0x9C);
+                    ((8 - menuEntry->outertextBlendFactor) << 19) | 0x9C);
             } else {
                 int v0;
                 uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
@@ -1827,7 +1827,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                 xy = (menuEntry->x - 64) | y;
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
-                var_a3 = (((8 - menuEntry->outerBlendFactor) << 19) | 0x90);
+                var_a3 = (((8 - menuEntry->outertextBlendFactor) << 19) | 0x90);
                 _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
             }
             _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
@@ -2237,7 +2237,7 @@ static int _selectLoadMemoryCard(int port)
     case init:
         _fileMenuElements[_selectedMemoryCard].state = fileMenuElementStateAnimateX;
         _fileMenuElements[_selectedMemoryCard].targetPosition = 180;
-        _fileMenuElements[_selectedMemoryCard].innerBlendFactor = 1;
+        _fileMenuElements[_selectedMemoryCard].innertextBlendFactor = 1;
         _fileMenuElements[3 - _selectedMemoryCard].state = fileMenuElementStateAnimateX;
         _fileMenuElements[3 - _selectedMemoryCard].targetPosition = 320;
         _selectLoadMemoryCardState = waitForUnselectedAnimation;
@@ -2358,7 +2358,7 @@ static int _loadFileMenu(int fadeout)
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 180;
         entry->selected = 1;
-        entry->innerBlendFactor = 8;
+        entry->innertextBlendFactor = 8;
         _loadFileMenuState = displaySlot1;
         break;
     case displaySlot1:
@@ -2875,7 +2875,7 @@ static int _selectSaveMemoryCard(int port)
     case init:
         _fileMenuElements[_selectSaveMemoryCardPort].state = fileMenuElementStateAnimateX;
         _fileMenuElements[_selectSaveMemoryCardPort].targetPosition = 180;
-        _fileMenuElements[_selectSaveMemoryCardPort].innerBlendFactor = 1;
+        _fileMenuElements[_selectSaveMemoryCardPort].innertextBlendFactor = 1;
         _fileMenuElements[3 - _selectSaveMemoryCardPort].state
             = fileMenuElementStateAnimateX;
         _fileMenuElements[3 - _selectSaveMemoryCardPort].targetPosition = 320;
@@ -3011,7 +3011,7 @@ static int _showSaveMenu(int initState)
             (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
-        element->innerBlendFactor = 8;
+        element->innertextBlendFactor = 8;
         element->selected = 1;
         _selectSaveMemoryCardMessage = NULL;
         return 0;
@@ -3776,12 +3776,12 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
     _menuItemStates[menuItem].state = menuItemStateStatic;
-    _menuItemStates[menuItem].saturation = 0;
-    _menuItemStates[menuItem].unk3 = 0;
-    _menuItemStates[menuItem].pos = pos;
+    _menuItemStates[menuItem].textSaturation = 0;
+    _menuItemStates[menuItem].outlineSaturation = 0;
+    _menuItemStates[menuItem].textPos = pos;
     _menuItemStates[menuItem].targetPos = pos;
-    _menuItemStates[menuItem].unk6 = pos;
-    _menuItemStates[menuItem].blendFactor = 0;
+    _menuItemStates[menuItem].outlinePos = pos;
+    _menuItemStates[menuItem].textBlendFactor = 0;
 }
 
 static void _unpackMenuBg()
@@ -3878,7 +3878,7 @@ void* _initMenu(int menuItem)
 
 void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
 
-void _fadeInMenu(u_short* bgData, int blendFactor)
+void _fadeInMenu(u_short* bgData, int textBlendFactor)
 {
     RECT rect;
     int g0;
@@ -3905,9 +3905,9 @@ void _fadeInMenu(u_short* bgData, int blendFactor)
         g1 = r1 & 0x3E0;
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
-        rdiff = (r0 - r1) * blendFactor;
-        gdiff = (g0 - g1) * blendFactor;
-        bdiff = (b0 - b1) * blendFactor;
+        rdiff = (r0 - r1) * textBlendFactor;
+        gdiff = (g0 - g1) * textBlendFactor;
+        bdiff = (b0 - b1) * textBlendFactor;
         dst[i] = ((u_int)((((r1 << 5) + rdiff) & 0x3E0) | (((g1 << 5) + gdiff) & 0x7C00)
                       | (((b1 << 5) + bdiff) & 0xF8000))
                      >> 5)
@@ -3923,7 +3923,7 @@ void _fadeInMenu(u_short* bgData, int blendFactor)
     vs_main_processPadState();
 }
 
-void _fadeInMenuCopyright(u_short* arg0, int blendFactor)
+void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
 {
     RECT rect;
     int i;
@@ -3950,9 +3950,9 @@ void _fadeInMenuCopyright(u_short* arg0, int blendFactor)
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
         r0 &= 0x1F;
-        rdiff = (r1 - r0) * blendFactor;
-        gdiff = (g1 - g0) * blendFactor;
-        bdiff = (b1 - b0) * blendFactor;
+        rdiff = (r1 - r0) * textBlendFactor;
+        gdiff = (g1 - g0) * textBlendFactor;
+        bdiff = (b1 - b0) * textBlendFactor;
         dst[i] = ((u_int)((((r0 << 5) + rdiff) & 0x3E0) | (((g0 << 5) + gdiff) & 0x7C00)
                       | (((b0 << 5) + bdiff) & 0xF8000))
             >> 5);
@@ -3964,7 +3964,7 @@ void _fadeInMenuCopyright(u_short* arg0, int blendFactor)
     DrawSync(0);
 }
 
-void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
+void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
 {
     RECT rect;
     short clut[16];
@@ -3990,9 +3990,9 @@ void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
         g1 = r1 & 0x3E0;
         b1 = r1 & 0x7C00;
         r1 &= 0x1F;
-        rdiff = (r1 - r0) * blendFactor;
-        gdiff = (g1 - g0) * blendFactor;
-        bdiff = (b1 - b0) * blendFactor;
+        rdiff = (r1 - r0) * textBlendFactor;
+        gdiff = (g1 - g0) * textBlendFactor;
+        bdiff = (b1 - b0) * textBlendFactor;
         clut[i] = 0x1F0;
         clut[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                        | ((b0 * 16 + bdiff) & 0x7C000))
@@ -4004,76 +4004,77 @@ void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
     DrawSync(0);
 }
 
-static void func_800703CC()
+static void _setTitleMenuState()
 {
     int i;
     int saturation;
-    int blendFactor;
+    int textBlendFactor;
 
     i = 0;
 
     for (i = 0; i < 10; ++i) {
-        if (_menuItemStates[i].enabled != 0) {
-            saturation = _menuItemStates[i].saturation + 8;
+        if (_menuItemStates[i].enabled == 0) {
+            continue;
+        }
+        saturation = _menuItemStates[i].textSaturation + 8;
 
-            if (saturation > 128) {
-                saturation = 128;
-            }
+        if (saturation > 128) {
+            saturation = 128;
+        }
 
-            _menuItemStates[i].saturation = saturation;
+        _menuItemStates[i].textSaturation = saturation;
 
-            switch (_menuItemStates[i].state) {
-            case menuItemStateStatic:
-                if (saturation == 128 && _menuItemStates[i].pos == 64) {
-                    _menuItemStates[i].unk6 = _menuItemStates[i].pos;
-
-                    blendFactor = _menuItemStates[i].blendFactor;
-                    if (blendFactor < 16) {
-                        _menuItemStates[i].unk3 = blendFactor * 16;
-                        blendFactor += 4;
-                        if (blendFactor > 16) {
-                            blendFactor = 16;
-                        }
-                        _menuItemStates[i].blendFactor = blendFactor;
-                    }
-                }
-                break;
-            case menuItemStateUpper:
-                _menuItemStates[i].pos -= 4;
-                if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].state = menuItemStateStatic;
-                }
-                break;
-            case menuItemStateLower:
-                _menuItemStates[i].pos += 4;
-                if (_menuItemStates[i].pos == _menuItemStates[i].targetPos) {
-                    _menuItemStates[i].state = menuItemStateStatic;
-                }
+        switch (_menuItemStates[i].state) {
+        case menuItemStateStatic:
+            if (saturation != 128 || _menuItemStates[i].textPos != 64) {
                 break;
             }
-
-            blendFactor = _menuItemStates[i].blendFactor;
-
-            if (_menuItemStates[i].state < menuItemStateSubmenu) {
-                _setMenuItemClut(i, blendFactor, 0, 1);
-            }
-            if ((blendFactor != 0) && (_menuItemStates[i].pos != 64)) {
-                _menuItemStates[i].blendFactor = blendFactor - 1;
-            }
-
-            if (_menuItemStates[i].unk3 != 0) {
-                if (_menuItemStates[i].unk6 != _menuItemStates[i].pos) {
-                    _menuItemStates[i].unk3 -= 16;
-
-                    if (_menuItemStates[i].unk6 < _menuItemStates[i].pos) {
-                        _menuItemStates[i].unk6 += 2;
-                    } else {
-                        _menuItemStates[i].unk6 -= 2;
-                    }
-                } else if ((_menuItemStates[i].blendFactor == 16)
-                    && (_menuItemStates[i].unk3 > 128)) {
-                    _menuItemStates[i].unk3 -= 16;
+            _menuItemStates[i].outlinePos = _menuItemStates[i].textPos;
+            textBlendFactor = _menuItemStates[i].textBlendFactor;
+            if (textBlendFactor < 16) {
+                _menuItemStates[i].outlineSaturation = textBlendFactor * 16;
+                textBlendFactor += 4;
+                if (textBlendFactor > 16) {
+                    textBlendFactor = 16;
                 }
+                _menuItemStates[i].textBlendFactor = textBlendFactor;
+            }
+            break;
+        case menuItemStateUpper:
+            _menuItemStates[i].textPos -= 4;
+            if (_menuItemStates[i].textPos == _menuItemStates[i].targetPos) {
+                _menuItemStates[i].state = menuItemStateStatic;
+            }
+            break;
+        case menuItemStateLower:
+            _menuItemStates[i].textPos += 4;
+            if (_menuItemStates[i].textPos == _menuItemStates[i].targetPos) {
+                _menuItemStates[i].state = menuItemStateStatic;
+            }
+            break;
+        }
+
+        textBlendFactor = _menuItemStates[i].textBlendFactor;
+
+        if (_menuItemStates[i].state < menuItemStateSubmenu) {
+            _setMenuItemClut(i, textBlendFactor, 0, 1);
+        }
+        if ((textBlendFactor != 0) && (_menuItemStates[i].textPos != 64)) {
+            _menuItemStates[i].textBlendFactor = textBlendFactor - 1;
+        }
+
+        if (_menuItemStates[i].outlineSaturation != 0) {
+            if (_menuItemStates[i].outlinePos != _menuItemStates[i].textPos) {
+                _menuItemStates[i].outlineSaturation -= 16;
+
+                if (_menuItemStates[i].outlinePos < _menuItemStates[i].textPos) {
+                    _menuItemStates[i].outlinePos += 2;
+                } else {
+                    _menuItemStates[i].outlinePos -= 2;
+                }
+            } else if ((_menuItemStates[i].textBlendFactor == 16)
+                && (_menuItemStates[i].outlineSaturation > 128)) {
+                _menuItemStates[i].outlineSaturation -= 16;
             }
         }
     }
@@ -4093,17 +4094,20 @@ static void _drawTitleMenuItems()
     prim = _menuItemPrims;
 
     for (i = 9; i >= 0; --i) {
-        if ((_menuItemStates[i].enabled == 0) || (_menuItemStates[i].unk3 == 0)) {
+        if ((_menuItemStates[i].enabled == 0)
+            || (_menuItemStates[i].outlineSaturation == 0)) {
             continue;
         }
         prim->tag = vs_getTag(prim->sprt, primAddrEnd);
         prim->sprt.tpage = _menuItemTpages1[i];
-        prim->sprt.r0g0b0code = vs_getRGB0Raw(
-            primSprtSemtTrans, _menuItemStates[i].unk3 * vs_getRGB888(1, 1, 1));
+        prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
+            _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
         if (_menuItemStates[i].state == 3) {
-            prim->sprt.x0y0 = (_menuItemXy[i] + (_menuItemStates[i].unk6 << 16)) + 64;
+            prim->sprt.x0y0
+                = (_menuItemXy[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
         } else {
-            prim->sprt.x0y0 = _menuItemXy[i] + _menuItemStates[i].unk6 * vs_getXY(1, 1);
+            prim->sprt.x0y0
+                = _menuItemXy[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
         }
         prim->sprt.u0v0clut = _menuItemCluts1[i];
         prim->sprt.wh = _menuItemWh[i];
@@ -4116,10 +4120,10 @@ static void _drawTitleMenuItems()
         if (menuState[i].enabled == 0) {
             continue;
         }
-        saturation = menuState[i].saturation;
+        saturation = menuState[i].textSaturation;
         x = 192;
         if (menuState[i].state != 3) {
-            x = menuState[i].pos + 128;
+            x = menuState[i].textPos + 128;
         }
 
         cluts2 = _menuItemCluts2[i];
@@ -4136,7 +4140,7 @@ static void _drawTitleMenuItems()
 
         for (j = 0; j < 32; ++j) {
 
-            int new_var = j + menuState[i].pos;
+            int new_var = j + menuState[i].textPos;
             prim->tag = vs_getTag(prim->sprt, primAddrEnd);
             prim->sprt.tpage = _menuItemTpages2[i];
 
@@ -4184,7 +4188,7 @@ static void _drawTitleMenu()
     int i;
     tagsprt_t* sprt;
 
-    func_800703CC();
+    _setTitleMenuState();
     for (i = 0; i < 2; ++i) {
         sprt = _titleMenuItemBg;
         sprt->sprt.tpage
@@ -4241,7 +4245,7 @@ static void _menuVibrationSettings()
     _setMenuItemClut(menuItemVibrationOn, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemVibration, i * 2, 1, 3);
-        _menuItemStates[menuItemVibration].pos -= 4;
+        _menuItemStates[menuItemVibration].textPos -= 4;
         func_80070A58();
     }
     _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
@@ -4253,8 +4257,8 @@ static void _menuVibrationSettings()
 
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
-        _menuItemStates[vibrationSetting].unk3
-            = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].unk3 - 16;
+        _menuItemStates[vibrationSetting].outlineSaturation
+            = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].outlineSaturation - 16;
         func_80070A58();
     }
     while (1) {
@@ -4277,9 +4281,10 @@ static void _menuVibrationSettings()
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
                     _setMenuItemClut(11 - vibrationSetting, i * 2, 1, 0);
-                    _menuItemStates[vibrationSetting].unk3
-                        = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].unk3 - 16;
-                    _menuItemStates[11 - vibrationSetting].unk3 -= 16;
+                    _menuItemStates[vibrationSetting].outlineSaturation = i < 4
+                        ? i * 64
+                        : _menuItemStates[vibrationSetting].outlineSaturation - 16;
+                    _menuItemStates[11 - vibrationSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
                     }
@@ -4296,35 +4301,35 @@ static void _menuVibrationSettings()
     _menuItemStates[menuItemSound].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(2, i * 2, 3, 1);
-        _menuItemStates[2].pos += 4;
-        if (_menuItemStates[menuItemVibrationOff].saturation < 24) {
-            _menuItemStates[menuItemVibrationOff].saturation = 0;
+        _menuItemStates[2].textPos += 4;
+        if (_menuItemStates[menuItemVibrationOff].textSaturation < 24) {
+            _menuItemStates[menuItemVibrationOff].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemVibrationOff].saturation -= 24;
+            _menuItemStates[menuItemVibrationOff].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemVibrationOn].saturation < 24) {
-            _menuItemStates[menuItemVibrationOn].saturation = 0;
+        if (_menuItemStates[menuItemVibrationOn].textSaturation < 24) {
+            _menuItemStates[menuItemVibrationOn].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemVibrationOn].saturation -= 24;
+            _menuItemStates[menuItemVibrationOn].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemVibrationOff].unk3 != 0) {
-            _menuItemStates[menuItemVibrationOff].unk3 -= 16;
+        if (_menuItemStates[menuItemVibrationOff].outlineSaturation != 0) {
+            _menuItemStates[menuItemVibrationOff].outlineSaturation -= 16;
         }
-        if (_menuItemStates[menuItemVibrationOn].unk3 != 0) {
-            _menuItemStates[menuItemVibrationOn].unk3 -= 16;
+        if (_menuItemStates[menuItemVibrationOn].outlineSaturation != 0) {
+            _menuItemStates[menuItemVibrationOn].outlineSaturation -= 16;
         }
         func_80070A58();
     }
     _menuItemStates[menuItemVibrationOff].enabled = 0;
     _menuItemStates[menuItemVibrationOn].enabled = 0;
-    _menuItemStates[menuItemVibration].unk6 = 64;
-    _menuItemStates[menuItemVibration].unk3 = 64;
+    _menuItemStates[menuItemVibration].outlinePos = 64;
+    _menuItemStates[menuItemVibration].outlineSaturation = 64;
     func_80070A58();
-    _menuItemStates[menuItemVibration].unk3 = 128;
+    _menuItemStates[menuItemVibration].outlineSaturation = 128;
     func_80070A58();
-    _menuItemStates[menuItemVibration].unk3 = 192;
+    _menuItemStates[menuItemVibration].outlineSaturation = 192;
     _drawTitleMenu();
-    _menuItemStates[menuItemVibration].blendFactor = 16;
+    _menuItemStates[menuItemVibration].textBlendFactor = 16;
     _menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
 
@@ -4347,7 +4352,7 @@ static void _menuSoundSettings()
     _setMenuItemClut(menuItemSoundStereo, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemSound, i * 2, 1, 3);
-        _menuItemStates[menuItemSound].pos -= 4;
+        _menuItemStates[menuItemSound].textPos -= 4;
         func_80070A58();
     }
     _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
@@ -4358,8 +4363,8 @@ static void _menuSoundSettings()
     }
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(soundSetting, i * 2, 0, 1);
-        _menuItemStates[soundSetting].unk3
-            = i < 4 ? i << 6 : _menuItemStates[soundSetting].unk3 - 16;
+        _menuItemStates[soundSetting].outlineSaturation
+            = i < 4 ? i << 6 : _menuItemStates[soundSetting].outlineSaturation - 16;
         func_80070A58();
     }
     while (1) {
@@ -4381,9 +4386,10 @@ static void _menuSoundSettings()
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(soundSetting, i * 2, 0, 1);
                     _setMenuItemClut(11 - soundSetting, i * 2, 1, 0);
-                    _menuItemStates[soundSetting].unk3
-                        = i < 4 ? i << 6 : _menuItemStates[soundSetting].unk3 - 16;
-                    _menuItemStates[11 - soundSetting].unk3 -= 16;
+                    _menuItemStates[soundSetting].outlineSaturation = i < 4
+                        ? i << 6
+                        : _menuItemStates[soundSetting].outlineSaturation - 16;
+                    _menuItemStates[11 - soundSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
                     }
@@ -4400,35 +4406,35 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemNewGame].targetPos = 96;
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemSound, i * 2, 3, 1);
-        _menuItemStates[menuItemSound].pos += 4;
-        if (_menuItemStates[menuItemSoundMono].saturation < 24) {
-            _menuItemStates[menuItemSoundMono].saturation = 0;
+        _menuItemStates[menuItemSound].textPos += 4;
+        if (_menuItemStates[menuItemSoundMono].textSaturation < 24) {
+            _menuItemStates[menuItemSoundMono].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemSoundMono].saturation -= 24;
+            _menuItemStates[menuItemSoundMono].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemSoundStereo].saturation < 24) {
-            _menuItemStates[menuItemSoundStereo].saturation = 0;
+        if (_menuItemStates[menuItemSoundStereo].textSaturation < 24) {
+            _menuItemStates[menuItemSoundStereo].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemSoundStereo].saturation -= 24;
+            _menuItemStates[menuItemSoundStereo].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemSoundMono].unk3 != 0) {
-            _menuItemStates[menuItemSoundMono].unk3 -= 16;
+        if (_menuItemStates[menuItemSoundMono].outlineSaturation != 0) {
+            _menuItemStates[menuItemSoundMono].outlineSaturation -= 16;
         }
-        if (_menuItemStates[menuItemSoundStereo].unk3 != 0) {
-            _menuItemStates[menuItemSoundStereo].unk3 -= 16;
+        if (_menuItemStates[menuItemSoundStereo].outlineSaturation != 0) {
+            _menuItemStates[menuItemSoundStereo].outlineSaturation -= 16;
         }
         func_80070A58();
     }
     _menuItemStates[menuItemSoundMono].enabled = 0;
     _menuItemStates[menuItemSoundStereo].enabled = 0;
-    _menuItemStates[menuItemSound].unk6 = 64;
-    _menuItemStates[menuItemSound].unk3 = 64;
+    _menuItemStates[menuItemSound].outlinePos = 64;
+    _menuItemStates[menuItemSound].outlineSaturation = 64;
     func_80070A58();
-    _menuItemStates[menuItemSound].unk3 = 128;
+    _menuItemStates[menuItemSound].outlineSaturation = 128;
     func_80070A58();
-    _menuItemStates[menuItemSound].unk3 = 192;
+    _menuItemStates[menuItemSound].outlineSaturation = 192;
     _drawTitleMenu();
-    _menuItemStates[menuItemSound].blendFactor = 16;
+    _menuItemStates[menuItemSound].textBlendFactor = 16;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
@@ -4564,13 +4570,13 @@ int vs_title_exec()
                     _setMenuItemFadeIn((menuItem + 1) & 3, 0x80);
                     for (i = 0; i < 4; ++i) {
                         _menuItemStates[i].state = menuItemStateUpper;
-                        _menuItemStates[i].targetPos = _menuItemStates[i].pos - 32;
+                        _menuItemStates[i].targetPos = _menuItemStates[i].textPos - 32;
                     }
                 } else {
                     _setMenuItemFadeIn((menuItem - 1) & 3, 0);
                     for (i = 0; i < 4; ++i) {
                         _menuItemStates[i].state = menuItemStateLower;
-                        _menuItemStates[i].targetPos = _menuItemStates[i].pos + 32;
+                        _menuItemStates[i].targetPos = _menuItemStates[i].textPos + 32;
                     }
                 }
                 for (i = 0; i < 10; ++i) {

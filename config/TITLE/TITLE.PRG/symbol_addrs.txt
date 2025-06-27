@@ -78,6 +78,7 @@ _freeHeap = 0x80070004;
 _fadeInMenu = 0x80070024;
 _fadeInMenuCopyright = 0x80070188;
 _setMenuItemClut = 0x800702AC;
+_setTitleMenuState = 0x800703CC;
 _drawTitleMenuItems = 0x800705AC;
 _drawTitleMenu = 0x8007093C;
 nop1 = 0x8007124C;

@@ -196,7 +196,7 @@ typedef struct {
 static void _playMovie(DslLOC*);
 static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
-void func_80071CE0(int arg0);
+static void _setTitleExitFlags(int arg0);
 
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
@@ -614,7 +614,7 @@ static int _readSaveFileInfo(int id)
     return 1;
 }
 
-static int memcardSaveIdExists(int id)
+static int _memcardSaveIdExists(int id)
 {
     int i;
 
@@ -635,7 +635,8 @@ static int _deleteRedundantTempFiles(int port)
 
     ret = 0;
     for (i = 0; i < 5; ++i) {
-        if ((memcardSaveIdExists(i + '1') != 0) && (memcardSaveIdExists(i + 'A') != 0)) {
+        if ((_memcardSaveIdExists(i + '1') != 0)
+            && (_memcardSaveIdExists(i + 'A') != 0)) {
             if (erase(_memcardMakeTempFilename(port, i + 1)) == 0) {
                 return 0x80;
             }
@@ -886,7 +887,7 @@ static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x
     0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
     0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
 
-void func_80069888(int arg0)
+void _packageSaveData(int targetFile)
 {
     int i;
     int j;
@@ -911,7 +912,7 @@ void func_80069888(int arg0)
     savedata->unk2 = 0x11;
     savedata->unk3 = 3;
     _rMemcpy(&savedata->unk4, s0, sizeof(savedata->unk4));
-    savedata->unk4.unk20[3] += (arg0 << 8);
+    savedata->unk4.unk20[3] += (targetFile << 8);
 
     if (vs_main_gametime.t.h == 100) {
         savedata->unk4.unk20[6] = 0x5082;
@@ -924,8 +925,8 @@ void func_80069888(int arg0)
         savedata->unk4.unk20[14] += ((vs_main_gametime.t.s % 10) << 8);
     }
     savedata3->unk4.unk20[15] = 0;
-    _rMemcpy(savedata3->unk60, _mcData->unk400[arg0], sizeof(savedata->unk60));
-    _rMemcpy(savedata3->unk80, _mcData->unk4E0[arg0], sizeof(savedata->unk80));
+    _rMemcpy(savedata3->unk60, _mcData->unk400[targetFile], sizeof(savedata->unk60));
+    _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
 
     if (vs_main_settings.slotState == 0) {
         vs_main_settings.slotState = _encode(0x20);
@@ -1074,7 +1075,7 @@ static int _loadSaveData(int portFileno)
     return _loadSaveDataErrors == 3 ? -1 : 0;
 }
 
-int func_8006A11C(int arg0)
+int _saveFile(int arg0)
 {
     enum memcardSaveState {
         init = 0,
@@ -1096,7 +1097,7 @@ int func_8006A11C(int arg0)
         _memcardFileno = arg0 & 7;
         D_800DEB12 = 80;
         D_800DEB10 = 0;
-        _memcardSaveState = memcardSaveIdExists(_memcardFileno + 'A' - 1);
+        _memcardSaveState = _memcardSaveIdExists(_memcardFileno + 'A' - 1);
         return 0;
     }
     switch (_memcardSaveState) {
@@ -2757,12 +2758,12 @@ static int _showSaveFilesMenu(int port)
             D_800DED75 = (*(u_int*)&vs_main_settings >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
-        func_80069888(val);
-        func_8006A11C((val + 1) | ((_saveMenuPort - 1) << 0x10));
+        _packageSaveData(val);
+        _saveFile((val + 1) | ((_saveMenuPort - 1) << 0x10));
         _saveMenuState = validate;
         break;
     case validate:
-        val = func_8006A11C(0);
+        val = _saveFile(0);
         ++D_800DEB14;
         if (val != 0) {
             D_8006169D = 0;
@@ -3576,7 +3577,7 @@ static u_short* _getNextMovieFrame(MovieData_t* movie)
     return addr;
 }
 
-void func_8006F42C(MovieData_t* movie, int arg1 __attribute__((unused)))
+static void _waitForFrame(MovieData_t* movie, int arg1 __attribute__((unused)))
 {
     volatile int sp0[2];
     int* new_var;
@@ -3746,7 +3747,7 @@ static int _playIntroMovie()
             _playMovie(&loc);
         }
 
-        func_8006F42C(&_movieData, 0);
+        _waitForFrame(&_movieData, 0);
         VSync(0);
         vs_main_processPadState();
 
@@ -4593,13 +4594,13 @@ int vs_title_exec()
                 _playMenuSelectSfx();
             } else {
                 _playNewGameSfx();
-                func_80071CE0(selectedOption);
+                _setTitleExitFlags(selectedOption);
             }
         }
 
         if (selectedOption == menuItemTimeout) {
             selectedOption = 4 - (vs_main_titleScreenCount & 1);
-            func_80071CE0(selectedOption);
+            _setTitleExitFlags(selectedOption);
         }
         for (i = 64; i > 0; --i) {
             VSync(0);
@@ -4618,7 +4619,7 @@ int vs_title_exec()
         if (selectedOption == menuItemContinue) {
             selectedOption = _gameLoadScreen();
             if (selectedOption == menuItemContinue) {
-                func_80071CE0(menuItemContinue);
+                _setTitleExitFlags(menuItemContinue);
             }
         }
     } while (selectedOption < menuItemNewGame);
@@ -4709,30 +4710,30 @@ static void _initGameData()
     D_80061068.unk4 = (D_80061068.unk4 & 0x9FFF) | 0x4000;
 }
 
-void func_80071CE0(int arg0)
+static void _setTitleExitFlags(int cause)
 {
-    switch (arg0) {
-    case 0:
+    switch (cause) {
+    case 0: // New Game
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 0;
         D_80061068.unk0 = 1;
         D_80061068.unk1 = 0;
         return;
-    case 3:
+    case 3: // Timeout cutscene1
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 1;
         D_80061598[0xE] = 1;
         D_80061068.unk0 = 0x14;
         D_80061068.unk1 = 0;
         return;
-    case 4:
+    case 4: // Timeout cutscene2
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 1;
         D_80061598[0xE] = 1;
         D_80061068.unk0 = 2;
         D_80061068.unk1 = 1;
         return;
-    case 1:
+    case 1: // Continue
         D_80061598[0xC] = 0;
         D_80061598[0xD] = 0;
         return;

@@ -284,12 +284,12 @@ extern u_char D_800DC8DC;
 extern u_char _selectMemoryCardState;
 extern u_char _selectedMemoryCard;
 extern u_char _fileLoadCompleteTimer;
-extern u_char _yesNoPromptState;
-extern u_char _yesNoPromptNoSelected;
-extern int D_800DC8EC;
-extern u_char D_800DC8F0;
-extern u_char D_800DC8F1;
-extern u_char D_800DC8F2;
+extern u_char _promptConfirmState;
+extern u_char _promptConfirmNoSelected;
+extern int _promptOverwriteSelectedOption;
+extern u_char _promptOverwriteState;
+extern u_char _overwritePromptInitialized;
+extern u_char _promptFormatState;
 extern vs_main_settings_t _settingsBackup;
 extern int D_800DC918;
 extern u_char D_800DC91C;
@@ -2432,7 +2432,7 @@ static int _showLoadMenu(int fadeout)
     return 0;
 }
 
-int _yesNoPrompt(int arg0)
+static int _promptConfirm(int arg0)
 {
     enum state {
         initYes = 0,
@@ -2445,28 +2445,28 @@ int _yesNoPrompt(int arg0)
     int i;
 
     if (arg0 != 0) {
-        _yesNoPromptNoSelected = 1;
-        _yesNoPromptState = initYes;
+        _promptConfirmNoSelected = 1;
+        _promptConfirmState = initYes;
         return 0;
     }
 
-    switch (_yesNoPromptState) {
+    switch (_promptConfirmState) {
     case initYes:
     case initNo:
-        temp_v0 = _initFileMenuEntry(_yesNoPromptState + 3,
-            MAKEXY(-126, _yesNoPromptState * 16 + 18), MAKEWH(126, 12),
-            (u_char*)&_textTable[_textTable[_yesNoPromptState
+        temp_v0 = _initFileMenuEntry(_promptConfirmState + 3,
+            MAKEXY(-126, _promptConfirmState * 16 + 18), MAKEWH(126, 12),
+            (u_char*)&_textTable[_textTable[_promptConfirmState
                 + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
-        ++_yesNoPromptState;
+        ++_promptConfirmState;
         break;
     case waitForAnimation:
-        _yesNoPromptState += _fileMenuElementsActive();
+        _promptConfirmState += _fileMenuElementsActive();
         break;
     case handleInput:
-        _fileMenuElements[_yesNoPromptNoSelected + 3].selected = 1;
-        _fileMenuElements[4 - _yesNoPromptNoSelected].selected = 0;
+        _fileMenuElements[_promptConfirmNoSelected + 3].selected = 1;
+        _fileMenuElements[4 - _promptConfirmNoSelected].selected = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
@@ -2474,7 +2474,7 @@ int _yesNoPrompt(int arg0)
                 _fileMenuElements[i].targetPosition = -126;
             }
             if (vs_main_buttonsPressed & PADRright) {
-                if (_yesNoPromptNoSelected == 0) {
+                if (_promptConfirmNoSelected == 0) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     return 1;
                 }
@@ -2484,33 +2484,33 @@ int _yesNoPrompt(int arg0)
         }
         if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            _yesNoPromptNoSelected = 1 - _yesNoPromptNoSelected;
+            _promptConfirmNoSelected = 1 - _promptConfirmNoSelected;
         }
-        _selectCursorXy = (_yesNoPromptNoSelected * 16 + 10) << 16;
+        _selectCursorXy = (_promptConfirmNoSelected * 16 + 10) << 16;
         break;
     }
     return 0;
 }
 
-int func_8006D084(int arg0)
+static int _promptOverwrite(int init)
 {
-    if (arg0 != 0) {
-        D_800DC8F1 = 1;
+    if (init != 0) {
+        _overwritePromptInitialized = 1;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
-        _yesNoPrompt(1);
-        D_800DC8F0 = 0;
+        _promptConfirm(1);
+        _promptOverwriteState = 0;
         return 0;
     }
-    switch (D_800DC8F0) {
+    switch (_promptOverwriteState) {
     case 0:
-        D_800DC8EC = _yesNoPrompt(0);
-        if (D_800DC8EC != 0) {
-            D_800DC8F0 = 1;
+        _promptOverwriteSelectedOption = _promptConfirm(0);
+        if (_promptOverwriteSelectedOption != 0) {
+            _promptOverwriteState = 1;
         }
         return 0;
     case 1:
         if (_fileMenuElementsActive() != 0) {
-            return D_800DC8EC;
+            return _promptOverwriteSelectedOption;
         }
         return 0;
     default:
@@ -2518,50 +2518,52 @@ int func_8006D084(int arg0)
     }
 }
 
-int func_8006D140(int port)
+static int _promptFormat(int port)
 {
-    int temp_v0;
-    int temp_s0;
+    enum state { promptConfirm = 0, initEvents = 1, handleEvents = 2, format = 3 };
+
+    int val;
+    int state;
 
     if (port != 0) {
         _memcardStatePort = port;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
-        _yesNoPrompt(1);
-        D_800DC8F2 = 0;
+        _promptConfirm(1);
+        _promptFormatState = promptConfirm;
         return 0;
     }
 
-    temp_s0 = D_800DC8F2;
+    state = _promptFormatState;
 
-    switch (temp_s0) {
-    case 0:
-        temp_v0 = _yesNoPrompt(0);
+    switch (state) {
+    case promptConfirm:
+        val = _promptConfirm(0);
 
-        if (temp_v0 != 0) {
-            if (temp_v0 < 0) {
+        if (val != 0) {
+            if (val < 0) {
                 _fileMenuMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
                 return -1;
             }
 
-            D_800DC8F2 = 1;
+            _promptFormatState = initEvents;
         }
         return 0;
-    case 1:
+    case initEvents:
         if (_fileMenuElementsActive() != 0) {
-            _memcardEventHandler((int)_memcardStatePort);
-            D_800DC8F2 = 2;
+            _memcardEventHandler(_memcardStatePort);
+            _promptFormatState = handleEvents;
         }
         return 0;
-    case 2:
-        temp_v0 = _memcardEventHandler(0);
+    case handleEvents:
+        val = _memcardEventHandler(0);
 
-        if (temp_v0 != 0) {
-            if (temp_v0 == 3) {
-                D_800DC8F2 = (u_char)temp_v0;
+        if (val != 0) {
+            if (val == memcardEventUnformatted) {
+                _promptFormatState = format;
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatting);
             } else {
-                if (temp_v0 == temp_s0) {
+                if (val == memcardEventTimeout) {
                     _fileMenuMessage
                         = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
                 } else {
@@ -2571,7 +2573,7 @@ int func_8006D140(int port)
             }
         }
         return 0;
-    case 3:
+    case format:
         if (_card_format((_memcardStatePort - 1) * 16) == 0) {
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
             return -1;
@@ -2675,7 +2677,7 @@ int func_8006D2F8(int arg0)
         temp_s0 = _memcardMaskedHandler(0);
         if (temp_s0 != memcardMaskedHandlerPending) {
             if (_fileMenuMessage == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
-                func_8006D140(D_800DC91D);
+                _promptFormat(D_800DC91D);
                 D_800DC91C = 9;
             } else if (temp_s0 >= memcardMaskedHandlerPending) {
                 temp_s0 = D_800DC91F + D_800DC91E;
@@ -2688,7 +2690,7 @@ int func_8006D2F8(int arg0)
                         D_800DC91C = 5;
                     }
                 } else {
-                    func_8006D084(1);
+                    _promptOverwrite(1);
                     D_800DC91C = 3;
                 }
             } else {
@@ -2697,7 +2699,7 @@ int func_8006D2F8(int arg0)
         }
         break;
     case 3:
-        temp_s0 = func_8006D084(0);
+        temp_s0 = _promptOverwrite(0);
         if (temp_s0 != 0) {
             if (temp_s0 == 1) {
                 _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
@@ -2791,7 +2793,7 @@ int func_8006D2F8(int arg0)
         }
         break;
     case 9:
-        temp_s0 = func_8006D140(0);
+        temp_s0 = _promptFormat(0);
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
                 D_800DC91C = 10;
@@ -3037,7 +3039,7 @@ int func_8006E00C(int arg0)
             if (D_800DED73 != 0) {
                 _fileMenuMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerFileCorrupt);
-                _yesNoPrompt(1);
+                _promptConfirm(1);
                 D_800DC923 = 11;
             } else {
                 D_800DC923 = 8;
@@ -3075,13 +3077,13 @@ int func_8006E00C(int arg0)
         if ((u_char)vs_main_buttonsPressed != 0) {
             _fileMenuMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwriteContainerWarn);
-            _yesNoPrompt(1);
+            _promptConfirm(1);
             D_800DC923 = 10;
         }
         break;
     case 10:
     case 11:
-        var_a0 = _yesNoPrompt(0);
+        var_a0 = _promptConfirm(0);
         if (var_a0 != 0) {
             if (D_800DC923 == 11) {
                 if (var_a0 > 0) {

@@ -284,6 +284,7 @@ vs_main_padDisconnectAll = 0x80042FDC;
 vs_main_updatePadState = 0x800430F4;
 vs_main_padConnect = 0x80043250;
 vs_main_resetPadAct = 0x80043668;
+vs_main_setVibrateParams = 0x800436B4;
 vs_main_processPadState = 0x80043940;
 vs_main_freeHeapR = 0x80043C60;
 vs_main_freeHeap = 0x80043D50;

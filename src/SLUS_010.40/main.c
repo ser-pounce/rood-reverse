@@ -8218,10 +8218,10 @@ void vs_main_showEndingAndReturnToTitle()
     vs_overlay_jumpToTitle(&sp2);
 }
 
-int vs_main_gametimeUpdate(int arg0)
+int vs_main_gametimeUpdate(int vsync)
 {
-    int vs = VSync(arg0);
-    if (arg0 != 1) {
+    int vs = VSync(vsync);
+    if (vsync != 1) {
         _asmNop();
     }
 
@@ -8735,7 +8735,7 @@ void vs_main_resetPadAct()
 
 static inline int _abs2(int arg) { return arg < 0 ? arg += 0xFF : arg; }
 
-void func_800436B4()
+void vs_main_setVibrateParams()
 {
     int temp_a0;
     int var_a2_2;

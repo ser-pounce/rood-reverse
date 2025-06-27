@@ -194,7 +194,7 @@ extern struct {
     int unk70[16];
 } D_800619D8;
 
-int vs_main_gametimeUpdate(int);
+int vs_main_gametimeUpdate(int vsync);
 void vs_main_jumpToBattle();
 void vs_main_showEndingAndReturnToTitle();
 int vs_main_getRand(int);
@@ -207,7 +207,7 @@ void func_80042CB0();
 void vs_main_padDisconnectAll();
 int vs_main_updatePadState(int, u_char[34]);
 void vs_main_padConnect(int, u_char[34]);
-void func_800436B4();
+void vs_main_setVibrateParams();
 void func_800438C8(int);
 int vs_main_processPadState();
 void vs_main_freeHeapR(void*);

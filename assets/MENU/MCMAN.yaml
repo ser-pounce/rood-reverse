@@ -42,7 +42,7 @@ accessing0: |-
 accessing1: |-
   Accessing MEMORY CARDs...
   Do not insert or remove MEMORY CARDs.
-overwriteContainerWarn: |-
+containerWarn: |-
   If you save now, all container contents
   will be lost. Continue?
 formatPrompt: |-
@@ -66,7 +66,7 @@ cardFull: |-
   3 blocks required to save.▼
 yesIndent: "|>16|YES"
 noIndent: "|>16|NO"
-containerFileCorrupt: |-
+containerWarnDataLoss: |-
   Data is not saved correctly. Container contents
   may be lost. Continue?
 savePrompt: |-

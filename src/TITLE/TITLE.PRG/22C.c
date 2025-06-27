@@ -27,6 +27,11 @@ typedef struct {
     int frameComplete;
 } MovieData_t;
 
+enum _fileMenuElementState_e {
+    fileMenuElementStateAnimateX = 2,
+    fileMenuElementStateAnimateY = 3,
+};
+
 typedef struct {
     u_char state;
     u_char slotId;
@@ -36,14 +41,14 @@ typedef struct {
     u_char slotUnavailable;
     u_char saveLocation;
     u_char unk7;
-    short unk8;
+    short targetPosition;
     short unkA;
     short x;
     short y;
     short w;
     short h;
     u_char text[32];
-} _fileMenuEntries_t;
+} _fileMenuElements_t;
 
 enum menuItemState_t {
     menuItemStateStatic = 0,
@@ -276,8 +281,8 @@ extern u_char D_800DC8D9;
 extern u_char _slotsPage;
 extern u_char _selectedSlot;
 extern u_char D_800DC8DC;
-extern u_char D_800DC8DE;
-extern u_char D_800DC8DF;
+extern u_char _selectMemoryCardState;
+extern u_char _selectedMemoryCard;
 extern u_char _fileLoadCompleteTimer;
 extern u_char D_800DC8E8;
 extern u_char D_800DC8E9;
@@ -313,7 +318,7 @@ extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
 extern u_short D_800DEB0E;
 extern int D_800DEB14;
-extern _fileMenuEntries_t _fileMenuEntries[10];
+extern _fileMenuElements_t _fileMenuElements[10];
 extern struct {
     u_long tag;
     union {
@@ -1479,16 +1484,16 @@ void func_8006AE10()
     D_800DEB14 = 0;
     _saveMenuScreenFade = 0;
     D_800DEB0E = 384;
-    memset(_fileMenuEntries, 0, sizeof(_fileMenuEntries));
+    memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-static _fileMenuEntries_t* _initFileMenuEntry(int id, int xy, int wh, u_char* text)
+static _fileMenuElements_t* _initFileMenuEntry(int id, int xy, int wh, u_char* text)
 {
-    _fileMenuEntries_t* entry;
+    _fileMenuElements_t* entry;
     int i;
     u_int c;
 
-    entry = &_fileMenuEntries[id];
+    entry = &_fileMenuElements[id];
     memset(entry, 0, sizeof(*entry));
     entry->state = 1;
     entry->slotId = -1;
@@ -1522,14 +1527,14 @@ static _fileMenuEntries_t* _initFileMenuEntry(int id, int xy, int wh, u_char* te
 
 static void _clearFileMenuEntry(int id)
 {
-    memset(&_fileMenuEntries[id], 0, sizeof(_fileMenuEntries_t));
+    memset(&_fileMenuElements[id], 0, sizeof(_fileMenuElements_t));
 }
 
-static int _fileMenuEntriesActive()
+static int _fileMenuElementsActive()
 {
     int i;
 
-    for (i = 0; i < 10 && _fileMenuEntries[i].state < 2; ++i)
+    for (i = 0; i < 10 && _fileMenuElements[i].state < 2; ++i)
         ;
     return i == 10;
 }
@@ -1608,7 +1613,7 @@ static int _findCurrentSave(int init)
 }
 
 enum _memcardEventMask_e {
-    memcardEventMaskIgnoreNone = 0x30,
+    memcardEventMaskIgnoreNoEvent = 0x30,
     memcardEventMaskAll = 0x70
 };
 
@@ -1719,7 +1724,7 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-static void _drawFileMenuEntry(_fileMenuEntries_t* menuEntry)
+static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
@@ -1903,14 +1908,14 @@ static void _drawFileMenuEntry(_fileMenuEntries_t* menuEntry)
 static void _drawSaveMenu(int framebuf)
 {
     int dummy[2];
-    _fileMenuEntries_t* entry;
+    _fileMenuElements_t* entry;
     int j;
     int i;
     u_int x;
     int state;
     int new_var;
 
-    entry = _fileMenuEntries;
+    entry = _fileMenuElements;
     x = 0;
     if (framebuf != 0) {
         x = 320;
@@ -1923,43 +1928,43 @@ static void _drawSaveMenu(int framebuf)
     for (i = 0; i < 10; ++i, ++entry) {
         state = entry->state;
         if (state == 2) {
-            if ((entry->x) < entry->unk8) {
+            if (entry->x < entry->targetPosition) {
                 entry->x += 32u;
-                if (entry->x >= entry->unk8) {
-                    entry->x = entry->unk8;
+                if (entry->x >= entry->targetPosition) {
+                    entry->x = entry->targetPosition;
                     entry->state = 1;
                 }
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((entry->unk8 + D_8007289C[j]) >= entry->x) {
+                    if ((entry->targetPosition + D_8007289C[j]) >= entry->x) {
                         break;
                     }
                 }
-                entry->x = entry->unk8 + D_8007289C[j - 1];
+                entry->x = entry->targetPosition + D_8007289C[j - 1];
                 if (entry->w < (0x140 - entry->x)) {
                     entry->w = (0x140 - entry->x);
                 }
-                if (entry->x == entry->unk8) {
+                if (entry->x == entry->targetPosition) {
                     entry->state = 1;
                 }
             }
         }
         if (state == 3) {
-            if (entry->y > entry->unk8) {
+            if (entry->y > entry->targetPosition) {
                 for (j = 1; j < 16; ++j) {
-                    if ((entry->unk8 + D_8007289C[j]) >= entry->y) {
+                    if ((entry->targetPosition + D_8007289C[j]) >= entry->y) {
                         break;
                     }
                 }
-                entry->y = (entry->unk8 + D_8007289C[j - 1]);
+                entry->y = (entry->targetPosition + D_8007289C[j - 1]);
             }
-            if (entry->y == entry->unk8) {
+            if (entry->y == entry->targetPosition) {
                 entry->state = 1;
             }
         }
         if (state == 4) {
-            if (entry->x < entry->unk8) {
+            if (entry->x < entry->targetPosition) {
                 for (j = 1; j < 16; ++j) {
                     if (entry->x >= (-D_8007289C[j])) {
                         break;
@@ -1971,8 +1976,8 @@ static void _drawSaveMenu(int framebuf)
                 }
             } else {
                 entry->x = entry->x - 32;
-                if (entry->unk8 >= entry->x) {
-                    entry->x = entry->unk8;
+                if (entry->targetPosition >= entry->x) {
+                    entry->x = entry->targetPosition;
                     entry->state = 1;
                 }
             }
@@ -2043,7 +2048,7 @@ static int _selectFileToLoad(int arg0)
         exiting = 5
     };
 
-    _fileMenuEntries_t* entry;
+    _fileMenuElements_t* entry;
     int currentSlot;
     int i;
 
@@ -2085,8 +2090,8 @@ static int _selectFileToLoad(int arg0)
             return -1;
         }
         for (i = 0; i < 5; ++i) {
-            _fileMenuEntries[i + 5].y = (((i - _slotsPage) * 40) + 72);
-            _fileMenuEntries[i + 5].selected = 0;
+            _fileMenuElements[i + 5].y = (((i - _slotsPage) * 40) + 72);
+            _fileMenuElements[i + 5].selected = 0;
         }
 
         currentSlot = _selectedSlot + _slotsPage;
@@ -2094,7 +2099,7 @@ static int _selectFileToLoad(int arg0)
         if (vs_main_buttonsPressed & PADRright) {
             if (_saveFileInfo[currentSlot].unk4.slotState >= slotStateInUse) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                _fileMenuEntries[currentSlot + 5].selected = 1;
+                _fileMenuElements[currentSlot + 5].selected = 1;
                 _selectCursorXy = 0;
                 _memcardMaskedHandler(D_800DC8D9 + memcardEventMaskAll);
                 _fileToLoadState = startLoad;
@@ -2124,7 +2129,7 @@ static int _selectFileToLoad(int arg0)
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
         }
         _selectCursorXy = ((_selectedSlot * 40 + 62) << 16) | 24;
-        _fileMenuEntries[currentSlot + 5].selected = 1;
+        _fileMenuElements[currentSlot + 5].selected = 1;
         break;
     case startLoad:
         currentSlot = _memcardMaskedHandler(0);
@@ -2201,102 +2206,113 @@ static int _selectFileToLoad(int arg0)
     return 0;
 }
 
-int func_8006C778(int arg0)
+static int _selectMemoryCard(int port)
 {
+    enum state {
+        init = 0,
+        waitForUnselectedAnimation = 1,
+        pollEventsInit = 2,
+        pollEvents = 3,
+        leave = 4,
+        returnNotSelected = 5,
+        pollSuccess = 6,
+        selectFile = 7
+    };
+
     int i;
 
-    if (arg0 != 0) {
-        D_800DC8DF = arg0;
+    if (port != 0) {
+        _selectedMemoryCard = port;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
-        D_800DC8DE = 0;
+        _selectMemoryCardState = init;
         return 0;
     }
-    switch (D_800DC8DE) {
-    case 0:
-        _fileMenuEntries[D_800DC8DF].state = 2;
-        _fileMenuEntries[D_800DC8DF].unk8 = 180;
-        _fileMenuEntries[D_800DC8DF].innerBlendFactor = 1;
-        _fileMenuEntries[3 - D_800DC8DF].state = 2;
-        _fileMenuEntries[3 - D_800DC8DF].unk8 = 320;
-        D_800DC8DE = 1;
+    switch (_selectMemoryCardState) {
+    case init:
+        _fileMenuElements[_selectedMemoryCard].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[_selectedMemoryCard].targetPosition = 180;
+        _fileMenuElements[_selectedMemoryCard].innerBlendFactor = 1;
+        _fileMenuElements[3 - _selectedMemoryCard].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[3 - _selectedMemoryCard].targetPosition = 320;
+        _selectMemoryCardState = waitForUnselectedAnimation;
         break;
 
-    case 1:
-        if (_fileMenuEntriesActive() == 0) {
+    case waitForUnselectedAnimation:
+        if (_fileMenuElementsActive() == 0) {
             break;
         }
-        if (D_800DC8DF == 2) {
-            _fileMenuEntries[2].state = 3;
-            _fileMenuEntries[2].unk8 = 50;
+        if (_selectedMemoryCard == 2) {
+            _fileMenuElements[2].state = fileMenuElementStateAnimateY;
+            _fileMenuElements[2].targetPosition = 50;
         }
-        D_800DC8DE = 2;
+        _selectMemoryCardState = pollEventsInit;
         break;
 
-    case 2:
-        if (_fileMenuEntriesActive() == 0) {
+    case pollEventsInit:
+        if (_fileMenuElementsActive() == 0) {
             break;
         }
-        _memcardMaskedHandler(D_800DC8DF + memcardEventMaskIgnoreNone);
-        D_800DC8DE = 3;
+        _memcardMaskedHandler(_selectedMemoryCard + memcardEventMaskIgnoreNoEvent);
+        _selectMemoryCardState = pollEvents;
         break;
 
-    case 3:
+    case pollEvents:
         i = _memcardMaskedHandler(0);
         if (i != memcardMaskedHandlerPending) {
-            D_800DC8DE = i + 5;
+            _selectMemoryCardState = i + leave + 1;
         }
         break;
 
-    case 4:
+    case leave:
         if (((u_char)vs_main_buttonsPressed) == 0) {
             break;
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
         for (i = 1; i < 3; ++i) {
-            _fileMenuEntries[i].state = 2;
-            _fileMenuEntries[i].unk8 = 320;
+            _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+            _fileMenuElements[i].targetPosition = 320;
         }
-        D_800DC8DE = 5;
+        _selectMemoryCardState = returnNotSelected;
         break;
 
-    case 5:
-        if (_fileMenuEntriesActive() != 0) {
+    case returnNotSelected:
+        if (_fileMenuElementsActive() != 0) {
             return -1;
         }
         break;
 
-    case 6:
-        if (_initSaveFileInfo(D_800DC8DF) != 0) {
+    case pollSuccess:
+        if (_initSaveFileInfo(_selectedMemoryCard) != 0) {
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
-            D_800DC8DE = 4;
+            _selectMemoryCardState = leave;
             break;
         }
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.slotState >= 2) {
+            if (_saveFileInfo[i].unk4.slotState > slotStateAvailable) {
                 break;
             }
         }
 
         if (i == 5) {
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
-            D_800DC8DE = 4;
+            _selectMemoryCardState = leave;
         } else {
-            _selectFileToLoad(D_800DC8DF);
-            D_800DC8DE = 7;
+            _selectFileToLoad(_selectedMemoryCard);
+            _selectMemoryCardState = 7;
         }
         break;
 
-    case 7:
+    case selectFile:
         i = _selectFileToLoad(0);
         if (i == 0) {
             break;
         }
         if (i < 0) {
             for (i = 1; i < 3; ++i) {
-                _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 320;
+                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                _fileMenuElements[i].targetPosition = 320;
             }
-            D_800DC8DE = 5;
+            _selectMemoryCardState = returnNotSelected;
             break;
         }
         return 1;
@@ -2306,7 +2322,7 @@ int func_8006C778(int arg0)
 
 int func_8006CABC(int arg0)
 {
-    _fileMenuEntries_t* entry;
+    _fileMenuElements_t* entry;
     int i;
 
     if (arg0 != 0) {
@@ -2321,17 +2337,17 @@ int func_8006CABC(int arg0)
         entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
         entry->state = 2;
-        entry->unk8 = 180;
+        entry->targetPosition = 180;
         entry->selected = 1;
         entry->innerBlendFactor = 8;
         D_800DC8E0 = 1;
         break;
     case 1:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             entry = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12),
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             entry->state = 2;
-            entry->unk8 = 194;
+            entry->targetPosition = 194;
             D_800DC8E0 = 2;
         }
         break;
@@ -2339,29 +2355,29 @@ int func_8006CABC(int arg0)
         entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         entry->state = 2;
-        entry->unk8 = 194;
+        entry->targetPosition = 194;
         D_800DC8E0 = 3;
         break;
     case 3:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             D_800DC8E0 = 4;
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case 4:
-        _fileMenuEntries[D_800DC8E1].selected = 1;
-        _fileMenuEntries[3 - D_800DC8E1].selected = 0;
+        _fileMenuElements[D_800DC8E1].selected = 1;
+        _fileMenuElements[3 - D_800DC8E1].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
             for (i = 0; i < 3; ++i) {
-                _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 320;
+                _fileMenuElements[i].state = 2;
+                _fileMenuElements[i].targetPosition = 320;
             }
             D_800DC8E0 = 6;
         } else if (vs_main_buttonsPressed & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-            func_8006C778(D_800DC8E1);
+            _selectMemoryCard(D_800DC8E1);
             _selectCursorXy = 0;
             D_800DC8E0 = 5;
         } else {
@@ -2373,7 +2389,7 @@ int func_8006CABC(int arg0)
         }
         break;
     case 5:
-        entry = (_fileMenuEntries_t*)func_8006C778(0);
+        entry = (_fileMenuElements_t*)_selectMemoryCard(0);
         if (entry != 0) {
             if ((int)entry < 0) {
                 D_800DC8E0 = 1;
@@ -2383,7 +2399,7 @@ int func_8006CABC(int arg0)
         }
         break;
     case 6:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             if (D_800DC8E2 == 0) {
                 return -1;
             }
@@ -2406,7 +2422,7 @@ int func_8006CABC(int arg0)
 
 int func_8006CE6C(int arg0)
 {
-    _fileMenuEntries_t* temp_v0;
+    _fileMenuElements_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -2422,20 +2438,20 @@ int func_8006CE6C(int arg0)
             (((D_800DC8E8 * 16) + 0x12) << 0x10) | 0xFF82, 0xC007E,
             (u_char*)&_textTable[_textTable[D_800DC8E8 + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
-        temp_v0->unk8 = 0;
+        temp_v0->targetPosition = 0;
         ++D_800DC8E8;
         break;
     case 2:
-        D_800DC8E8 += _fileMenuEntriesActive();
+        D_800DC8E8 += _fileMenuElementsActive();
         break;
     case 3:
-        _fileMenuEntries[D_800DC8E9 + 3].selected = 1;
-        _fileMenuEntries[4 - D_800DC8E9].selected = 0;
+        _fileMenuElements[D_800DC8E9 + 3].selected = 1;
+        _fileMenuElements[4 - D_800DC8E9].selected = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
-                _fileMenuEntries[i].state = 4;
-                _fileMenuEntries[i].unk8 = -0x7E;
+                _fileMenuElements[i].state = 4;
+                _fileMenuElements[i].targetPosition = -0x7E;
             }
             if (vs_main_buttonsPressed & PADRright) {
                 if (D_800DC8E9 == 0) {
@@ -2473,7 +2489,7 @@ int func_8006D084(int arg0)
         }
         return 0;
     case 1:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             return D_800DC8EC;
         }
         return 0;
@@ -2512,7 +2528,7 @@ int func_8006D140(int port)
         }
         return 0;
     case 1:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             _memcardEventHandler((int)_memcardStatePort);
             D_800DC8F2 = 2;
         }
@@ -2548,7 +2564,7 @@ int func_8006D140(int port)
 
 int func_8006D2F8(int arg0)
 {
-    _fileMenuEntries_t* temp_v0_2;
+    _fileMenuElements_t* temp_v0_2;
     int temp_s0;
     int saveId;
     int var_a1;
@@ -2594,14 +2610,14 @@ int func_8006D2F8(int arg0)
         } else {
             var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                _fileMenuEntries[i + 5].y = (((i - D_800DC91E) * 0x28) + 0x48);
-                _fileMenuEntries[i + 5].selected = 0;
+                _fileMenuElements[i + 5].y = (((i - D_800DC91E) * 0x28) + 0x48);
+                _fileMenuElements[i + 5].selected = 0;
             }
             temp_s0 = D_800DC91F + D_800DC91E;
             if (vs_main_buttonsPressed & PADRright) {
                 if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                    _fileMenuEntries[temp_s0 + 5].selected = 1;
+                    _fileMenuElements[temp_s0 + 5].selected = 1;
                     _selectCursorXy = 0;
                     _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
                     D_800DC91C = 2;
@@ -2632,7 +2648,7 @@ int func_8006D2F8(int arg0)
                 vs_main_playSfxDefault(0x7E, 4);
             }
             _selectCursorXy = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
-            _fileMenuEntries[temp_s0 + 5].selected = 1;
+            _fileMenuElements[temp_s0 + 5].selected = 1;
         }
         break;
     case 2:
@@ -2711,7 +2727,7 @@ int func_8006D2F8(int arg0)
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
-                _fileMenuEntries[saveId + 5].saveLocation = 0;
+                _fileMenuElements[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
                 D_800DEB14 = 0;
@@ -2725,7 +2741,7 @@ int func_8006D2F8(int arg0)
                 _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].unk4.slotState,
                     sizeof(_saveFileInfo_t) - sizeof(int));
-                _fileMenuEntries[saveId + 5].saveLocation
+                _fileMenuElements[saveId + 5].saveLocation
                     = _saveFileInfo[saveId].unk4.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
                 D_800DC918 = 1;
@@ -2797,25 +2813,25 @@ int func_8006DC14(int index)
 
     switch (_stateVar) {
     case init:
-        _fileMenuEntries[D_800DC922].state = 2;
-        _fileMenuEntries[D_800DC922].unk8 = 0xB4;
-        _fileMenuEntries[D_800DC922].innerBlendFactor = 1;
-        _fileMenuEntries[3 - D_800DC922].state = 2;
-        _fileMenuEntries[3 - D_800DC922].unk8 = 0x140;
+        _fileMenuElements[D_800DC922].state = 2;
+        _fileMenuElements[D_800DC922].targetPosition = 0xB4;
+        _fileMenuElements[D_800DC922].innerBlendFactor = 1;
+        _fileMenuElements[3 - D_800DC922].state = 2;
+        _fileMenuElements[3 - D_800DC922].targetPosition = 0x140;
         _stateVar = 1;
         break;
     case 1:
-        if (_fileMenuEntriesActive() == 0) {
+        if (_fileMenuElementsActive() == 0) {
             break;
         }
         if (D_800DC922 == 2) {
-            _fileMenuEntries[2].state = 3;
-            _fileMenuEntries[2].unk8 = 0x32;
+            _fileMenuElements[2].state = 3;
+            _fileMenuElements[2].targetPosition = 0x32;
         }
         _stateVar = 2;
         break;
     case 2:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             _memcardEventHandler(D_800DC922);
             _stateVar = 3;
         }
@@ -2853,13 +2869,13 @@ int func_8006DC14(int index)
         }
         vs_main_playSfxDefault(0x7E, 6);
         for (i = 1; i < 3; ++i) {
-            _fileMenuEntries[i].state = 2;
-            _fileMenuEntries[i].unk8 = 0x140;
+            _fileMenuElements[i].state = 2;
+            _fileMenuElements[i].targetPosition = 0x140;
         }
         _stateVar = 5;
         break;
     case 5:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             return -1;
         }
         break;
@@ -2889,8 +2905,8 @@ int func_8006DC14(int index)
         }
         if (i < 0) {
             for (i = 1; i < 3; ++i) {
-                _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 0x140;
+                _fileMenuElements[i].state = 2;
+                _fileMenuElements[i].targetPosition = 0x140;
             }
             _stateVar = 5;
             break;
@@ -2902,7 +2918,7 @@ int func_8006DC14(int index)
 
 int func_8006E00C(int arg0)
 {
-    _fileMenuEntries_t* temp_v0;
+    _fileMenuElements_t* temp_v0;
     int temp_v0_2;
     int var_a0;
 
@@ -2915,7 +2931,7 @@ int func_8006E00C(int arg0)
         temp_v0 = _initFileMenuEntry(
             0, 0x220140, 0xC008C, (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         temp_v0->state = 2;
-        temp_v0->unk8 = 180;
+        temp_v0->targetPosition = 180;
         temp_v0->innerBlendFactor = 8;
         temp_v0->selected = 1;
         _fileMenuMessage = NULL;
@@ -2927,7 +2943,7 @@ int func_8006E00C(int arg0)
         if (*(int*)&vs_main_settings & 0x10) {
             memset(_spmcimg + 0x79E0, 0, 0x3C00);
             D_800DC923 = 3;
-        } else if (_fileMenuEntriesActive() != 0) {
+        } else if (_fileMenuElementsActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnavailable) {
                 _findCurrentSave(1);
                 D_800DC923 = 1;
@@ -2963,11 +2979,11 @@ int func_8006E00C(int arg0)
         }
         break;
     case 3:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             temp_v0 = _initFileMenuEntry(
                 1, 0x320140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             temp_v0->state = 2;
-            temp_v0->unk8 = 194;
+            temp_v0->targetPosition = 194;
             D_800DC923 = 4;
         }
         break;
@@ -2975,26 +2991,26 @@ int func_8006E00C(int arg0)
         temp_v0 = _initFileMenuEntry(
             2, 0x420140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         temp_v0->state = 2;
-        temp_v0->unk8 = 194;
+        temp_v0->targetPosition = 194;
         D_800DC923 = 5;
         break;
     case 5:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             D_800DC923 = 6;
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case 6:
-        _fileMenuEntries[D_800DC924].selected = 1;
-        _fileMenuEntries[3 - D_800DC924].selected = 0;
+        _fileMenuElements[D_800DC924].selected = 1;
+        _fileMenuElements[3 - D_800DC924].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             var_a0 = D_800DED73;
             _selectCursorXy = 0;
             if (var_a0 < 3) {
                 do {
-                    _fileMenuEntries[var_a0].state = 2;
-                    _fileMenuEntries[var_a0].unk8 = 0x140;
+                    _fileMenuElements[var_a0].state = 2;
+                    _fileMenuElements[var_a0].targetPosition = 0x140;
                     ++var_a0;
                 } while (var_a0 < 3);
             }
@@ -3031,7 +3047,7 @@ int func_8006E00C(int arg0)
         }
         break;
     case 8:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             return -1;
         }
         break;
@@ -3054,8 +3070,8 @@ int func_8006E00C(int arg0)
                 var_a0 = -var_a0;
             }
             if (var_a0 < 0) {
-                _fileMenuEntries->state = 2;
-                _fileMenuEntries->unk8 = 0x140;
+                _fileMenuElements->state = 2;
+                _fileMenuElements->targetPosition = 0x140;
                 D_800DC923 = 8;
                 break;
             }
@@ -3195,7 +3211,7 @@ static int _saveFileExists()
 
 int func_8006EA70(int arg0)
 {
-    _fileMenuEntries_t* temp_v0;
+    _fileMenuElements_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -3211,15 +3227,15 @@ int func_8006EA70(int arg0)
             (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
             (u_char*)&_textTable[_textTable[D_800DC931 + VS_MCMAN_INDEX_yesOption]]);
         temp_v0->state = 2;
-        temp_v0->unk8 = 0xC2;
+        temp_v0->targetPosition = 0xC2;
         ++D_800DC931;
         break;
     case 2:
-        D_800DC931 += _fileMenuEntriesActive();
+        D_800DC931 += _fileMenuElementsActive();
         break;
     case 3:
-        _fileMenuEntries[D_800DC932].selected = 1;
-        _fileMenuEntries[3 - D_800DC932].selected = 0;
+        _fileMenuElements[D_800DC932].selected = 1;
+        _fileMenuElements[3 - D_800DC932].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
@@ -3234,8 +3250,8 @@ int func_8006EA70(int arg0)
             }
             _selectCursorXy = 0;
             for (i = 1; i < 3; ++i) {
-                _fileMenuEntries[i].state = 2;
-                _fileMenuEntries[i].unk8 = 0x140;
+                _fileMenuElements[i].state = 2;
+                _fileMenuElements[i].targetPosition = 0x140;
             }
             break;
         }
@@ -3246,7 +3262,7 @@ int func_8006EA70(int arg0)
         _selectCursorXy = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
         break;
     case 4:
-        if (_fileMenuEntriesActive() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             return D_800DC932;
         }
         break;

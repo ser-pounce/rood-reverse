@@ -1719,7 +1719,7 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-static void _drawSaveFileInfo(_fileMenuEntries_t* menuEntry)
+static void _drawFileMenuEntry(_fileMenuEntries_t* menuEntry)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
@@ -1900,94 +1900,94 @@ static void _drawSaveFileInfo(_fileMenuEntries_t* menuEntry)
     }
 }
 
-static void _drawSaveMenu(int arg0)
+static void _drawSaveMenu(int framebuf)
 {
     int dummy[2];
-    _fileMenuEntries_t* file;
+    _fileMenuEntries_t* entry;
     int j;
     int i;
-    u_int var_s7;
+    u_int x;
     int state;
     int new_var;
 
-    file = _fileMenuEntries;
-    var_s7 = 0;
-    if (arg0 != 0) {
-        var_s7 = 320;
+    entry = _fileMenuEntries;
+    x = 0;
+    if (framebuf != 0) {
+        x = 320;
     }
     _drawSprt(MAKEXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(64, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
     _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 
-    for (i = 0; i < 10; ++i, ++file) {
-        state = file->state;
+    for (i = 0; i < 10; ++i, ++entry) {
+        state = entry->state;
         if (state == 2) {
-            if ((file->x) < file->unk8) {
-                file->x += 32u;
-                if (file->x >= file->unk8) {
-                    file->x = file->unk8;
-                    file->state = 1;
+            if ((entry->x) < entry->unk8) {
+                entry->x += 32u;
+                if (entry->x >= entry->unk8) {
+                    entry->x = entry->unk8;
+                    entry->state = 1;
                 }
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((file->unk8 + D_8007289C[j]) >= file->x) {
+                    if ((entry->unk8 + D_8007289C[j]) >= entry->x) {
                         break;
                     }
                 }
-                file->x = file->unk8 + D_8007289C[j - 1];
-                if (file->w < (0x140 - file->x)) {
-                    file->w = (0x140 - file->x);
+                entry->x = entry->unk8 + D_8007289C[j - 1];
+                if (entry->w < (0x140 - entry->x)) {
+                    entry->w = (0x140 - entry->x);
                 }
-                if (file->x == file->unk8) {
-                    file->state = 1;
+                if (entry->x == entry->unk8) {
+                    entry->state = 1;
                 }
             }
         }
         if (state == 3) {
-            if (file->y > file->unk8) {
+            if (entry->y > entry->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if ((file->unk8 + D_8007289C[j]) >= file->y) {
+                    if ((entry->unk8 + D_8007289C[j]) >= entry->y) {
                         break;
                     }
                 }
-                file->y = (file->unk8 + D_8007289C[j - 1]);
+                entry->y = (entry->unk8 + D_8007289C[j - 1]);
             }
-            if (file->y == file->unk8) {
-                file->state = 1;
+            if (entry->y == entry->unk8) {
+                entry->state = 1;
             }
         }
         if (state == 4) {
-            if (file->x < file->unk8) {
+            if (entry->x < entry->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if (file->x >= (-D_8007289C[j])) {
+                    if (entry->x >= (-D_8007289C[j])) {
                         break;
                     }
                 }
-                file->x = -D_8007289C[j - 1];
-                if (file->x == 0) {
-                    file->state = 1;
+                entry->x = -D_8007289C[j - 1];
+                if (entry->x == 0) {
+                    entry->state = 1;
                 }
             } else {
-                file->x = file->x - 0x20;
-                if (file->unk8 >= file->x) {
-                    file->x = file->unk8;
-                    file->state = 1;
+                entry->x = entry->x - 32;
+                if (entry->unk8 >= entry->x) {
+                    entry->x = entry->unk8;
+                    entry->state = 1;
                 }
             }
         }
         if (state != 0) {
-            _drawSaveFileInfo(file);
+            _drawFileMenuEntry(entry);
         }
     }
 
     for (i = 1; i < 4; ++i) {
         new_var = 256;
         _drawSprt(MAKEXY(0, 187 - i), (187 - i) << 8, MAKEWH(256, 1),
-            (var_s7 >> 6) | (((4 - i) << 21) | new_var));
+            (x >> 6) | (((4 - i) << 21) | new_var));
         _drawSprt(MAKEXY(256, 187 - i), (187 - i) << 8, MAKEWH(64, 1),
-            (((int)(var_s7 + new_var)) >> 6) | (((4 - i) << 21) | new_var));
+            (((int)(x + new_var)) >> 6) | (((4 - i) << 21) | new_var));
     }
     _drawSprt(MAKEXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), MAKEWH(33, 7),
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"

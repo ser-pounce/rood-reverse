@@ -200,7 +200,7 @@ u_int _encodeSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char D_8007289C[];
-extern char D_800728B0[];
+extern char _selectCursorColors[];
 extern int _saveInfoUVClut[];
 extern int _saveInfoWh[];
 extern u_char _digitsDivisors[];
@@ -329,11 +329,11 @@ extern struct {
         u_long raw[13];
     } prim;
 } _primBuf;
-extern int D_800DED68;
+extern int _selectCursorXy;
 extern u_char* _fileMenuMessage;
 extern u_char _isSaving;
-extern u_char D_800DED71;
-extern u_char D_800DED72;
+extern u_char _selectCursorColor;
+extern u_char _saveMenuScreenFade;
 extern u_char D_800DED75;
 extern u_char _frameBuf;
 extern u_int _introMovieDisplayedAt;
@@ -1474,10 +1474,10 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 void func_8006AE10()
 {
     _fileMenuMessage = NULL;
-    D_800DED71 = 0;
-    D_800DED68 = 0;
+    _selectCursorColor = 0;
+    _selectCursorXy = 0;
     D_800DEB14 = 0;
-    D_800DED72 = 0;
+    _saveMenuScreenFade = 0;
     D_800DEB0E = 384;
     memset(_fileMenuEntries, 0, sizeof(_fileMenuEntries));
 }
@@ -1884,7 +1884,7 @@ static void _drawSaveFileInfo(_fileMenuEntries_t* menuEntry)
             if ((menuEntry->selected != 0) && (D_800DEB14 != 0)) {
                 if (D_800DEB14 < 0) {
                     int v0 = D_800DEB14++;
-                    char* p = D_800728B0 + v0;
+                    char* p = _selectCursorColors + v0;
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
@@ -1903,117 +1903,123 @@ static void _drawSaveFileInfo(_fileMenuEntries_t* menuEntry)
 static void _drawSaveMenu(int arg0)
 {
     int dummy[2];
-    _fileMenuEntries_t* var_s1;
+    _fileMenuEntries_t* file;
     int j;
     int i;
     u_int var_s7;
-    int temp_t0;
+    int state;
     int new_var;
 
-    var_s1 = _fileMenuEntries;
+    file = _fileMenuEntries;
     var_s7 = 0;
     if (arg0 != 0) {
         var_s7 = 320;
     }
-    _drawSprt(MAKEXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(64, 64), 0x9C);
-    _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64), 0x9A);
+    _drawSprt(MAKEXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(64, 64),
+        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
+    _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64),
+        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 
-    for (i = 0; i < 10; ++i, ++var_s1) {
-        temp_t0 = var_s1->state;
-        if (temp_t0 == 2) {
-            if ((var_s1->x) < var_s1->unk8) {
-                var_s1->x += 32u;
-                if (var_s1->x >= var_s1->unk8) {
-                    var_s1->x = var_s1->unk8;
-                    var_s1->state = 1;
+    for (i = 0; i < 10; ++i, ++file) {
+        state = file->state;
+        if (state == 2) {
+            if ((file->x) < file->unk8) {
+                file->x += 32u;
+                if (file->x >= file->unk8) {
+                    file->x = file->unk8;
+                    file->state = 1;
                 }
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->x) {
+                    if ((file->unk8 + D_8007289C[j]) >= file->x) {
                         break;
                     }
                 }
-                var_s1->x = var_s1->unk8 + D_8007289C[j - 1];
-                if (var_s1->w < (0x140 - var_s1->x)) {
-                    var_s1->w = (0x140 - var_s1->x);
+                file->x = file->unk8 + D_8007289C[j - 1];
+                if (file->w < (0x140 - file->x)) {
+                    file->w = (0x140 - file->x);
                 }
-                if (var_s1->x == var_s1->unk8) {
-                    var_s1->state = 1;
+                if (file->x == file->unk8) {
+                    file->state = 1;
                 }
             }
         }
-        if (temp_t0 == 3) {
-            if (var_s1->y > var_s1->unk8) {
+        if (state == 3) {
+            if (file->y > file->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if ((var_s1->unk8 + D_8007289C[j]) >= var_s1->y) {
+                    if ((file->unk8 + D_8007289C[j]) >= file->y) {
                         break;
                     }
                 }
-                var_s1->y = (var_s1->unk8 + D_8007289C[j - 1]);
+                file->y = (file->unk8 + D_8007289C[j - 1]);
             }
-            if (var_s1->y == var_s1->unk8) {
-                var_s1->state = 1;
+            if (file->y == file->unk8) {
+                file->state = 1;
             }
         }
-        if (temp_t0 == 4) {
-            if (var_s1->x < var_s1->unk8) {
+        if (state == 4) {
+            if (file->x < file->unk8) {
                 for (j = 1; j < 16; ++j) {
-                    if (var_s1->x >= (-D_8007289C[j])) {
+                    if (file->x >= (-D_8007289C[j])) {
                         break;
                     }
                 }
-                var_s1->x = -D_8007289C[j - 1];
-                if (var_s1->x == 0) {
-                    var_s1->state = 1;
+                file->x = -D_8007289C[j - 1];
+                if (file->x == 0) {
+                    file->state = 1;
                 }
             } else {
-                var_s1->x = var_s1->x - 0x20;
-                if (var_s1->unk8 >= var_s1->x) {
-                    var_s1->x = var_s1->unk8;
-                    var_s1->state = 1;
+                file->x = file->x - 0x20;
+                if (file->unk8 >= file->x) {
+                    file->x = file->unk8;
+                    file->state = 1;
                 }
             }
         }
-        if (temp_t0 != 0) {
-            _drawSaveFileInfo(var_s1);
+        if (state != 0) {
+            _drawSaveFileInfo(file);
         }
     }
 
     for (i = 1; i < 4; ++i) {
-        new_var = 0x100;
-        _drawSprt(MAKEXY(0, 0xBB - i), (0xBB - i) << 8, MAKEWH(256, 1),
-            (var_s7 >> 6) | (((4 - i) << 0x15) | new_var));
-        _drawSprt(MAKEXY(256, 0xBB - i), (0xBB - i) << 8, MAKEWH(64, 1),
-            (((int)(var_s7 + new_var)) >> 6) | (((4 - i) << 0x15) | new_var));
+        new_var = 256;
+        _drawSprt(MAKEXY(0, 187 - i), (187 - i) << 8, MAKEWH(256, 1),
+            (var_s7 >> 6) | (((4 - i) << 21) | new_var));
+        _drawSprt(MAKEXY(256, 187 - i), (187 - i) << 8, MAKEWH(64, 1),
+            (((int)(var_s7 + new_var)) >> 6) | (((4 - i) << 21) | new_var));
     }
-    _drawSprt(MAKEXY(10, 181), 0x37F59140, MAKEWH(33, 7), 0xC);
+    _drawSprt(MAKEXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), MAKEWH(33, 7),
+        getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"
     DrawSync(0);
-    _primBuf.tag = 0x03000000;
-    _primBuf.prim.sprt.tpage = 0x60000000;
-    _primBuf.prim.sprt.r0g0b0code = 0xBB0000;
-    _primBuf.prim.sprt.x0y0 = 0x340140;
-    DrawPrim(&_primBuf);
-    if (D_800DED68 != 0) {
-        _drawSprt(D_800DED68, 0x37F83020, MAKEWH(16, 16),
-            (D_800728B0[D_800DED71] << 0x10) | 0xC);
-        D_800DED71 = (D_800DED71 + 1) & 0xF;
-        if (vs_main_buttonsPressed & 0x10) {
-            vs_main_playSfxDefault(0x7E, 7);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
+    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+    _primBuf.prim.tile.x0y0 = vs_getXY(0, 187);
+    _primBuf.prim.tile.wh = vs_getWH(320, 52);
+    DrawPrim(&_primBuf); // Message dialog background
+    if (_selectCursorXy != 0) {
+        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), MAKEWH(16, 16),
+            (_selectCursorColors[_selectCursorColor] << 16)
+                | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
+        _selectCursorColor = (_selectCursorColor + 1) & 0xF;
+        if (vs_main_buttonsPressed & PADRup) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
     } else {
-        D_800DED71 = 0;
+        _selectCursorColor = 0;
     }
     if (_fileMenuMessage != NULL) {
         _printString(_fileMenuMessage, 16, 192, 0);
     }
-    if (D_800DED72 != 0) {
+    if (_saveMenuScreenFade != 0) {
         DrawSync(0);
-        _primBuf.tag = 0x04000000;
-        _primBuf.prim.sprt.tpage = 0xE1000140;
-        _primBuf.prim.sprt.x0y0 = 0;
-        _primBuf.prim.sprt.u0v0clut = 0xE00140;
-        _primBuf.prim.sprt.r0g0b0code = (D_800DED72 * 0x80808) | 0x62000000;
+        _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
+        _primBuf.prim.tile_tpage.tpage
+            = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+        _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
+        _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
+        _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(
+            primTileSemiTrans, _saveMenuScreenFade * vs_getRGB888(8, 8, 8));
         DrawPrim(&_primBuf);
     }
 }
@@ -2075,7 +2081,7 @@ static int _selectFileToLoad(int arg0)
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
             }
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             return -1;
         }
         for (i = 0; i < 5; ++i) {
@@ -2089,7 +2095,7 @@ static int _selectFileToLoad(int arg0)
             if (_saveFileInfo[currentSlot].unk4.slotState >= slotStateInUse) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuEntries[currentSlot + 5].selected = 1;
-                D_800DED68 = 0;
+                _selectCursorXy = 0;
                 _memcardMaskedHandler(D_800DC8D9 + memcardEventMaskAll);
                 _fileToLoadState = startLoad;
                 break;
@@ -2117,7 +2123,7 @@ static int _selectFileToLoad(int arg0)
         if (currentSlot != (_selectedSlot + _slotsPage)) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
         }
-        D_800DED68 = ((_selectedSlot * 40 + 62) << 16) | 24;
+        _selectCursorXy = ((_selectedSlot * 40 + 62) << 16) | 24;
         _fileMenuEntries[currentSlot + 5].selected = 1;
         break;
     case startLoad:
@@ -2347,7 +2353,7 @@ int func_8006CABC(int arg0)
         _fileMenuEntries[3 - D_800DC8E1].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             for (i = 0; i < 3; ++i) {
                 _fileMenuEntries[i].state = 2;
                 _fileMenuEntries[i].unk8 = 320;
@@ -2356,14 +2362,14 @@ int func_8006CABC(int arg0)
         } else if (vs_main_buttonsPressed & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             func_8006C778(D_800DC8E1);
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             D_800DC8E0 = 5;
         } else {
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 D_800DC8E1 = 3 - D_800DC8E1;
             }
-            D_800DED68 = ((((D_800DC8E1 + 1) * 16) + 10) << 16) | 180;
+            _selectCursorXy = ((((D_800DC8E1 + 1) * 16) + 10) << 16) | 180;
         }
         break;
     case 5:
@@ -2385,12 +2391,12 @@ int func_8006CABC(int arg0)
         }
         break;
     case 7:
-        if (++D_800DED72 > 30) {
+        if (++_saveMenuScreenFade > 30) {
             return 1;
         }
         break;
     case 8:
-        if (++D_800DED72 < 31) {
+        if (++_saveMenuScreenFade < 31) {
             break;
         }
         return -1;
@@ -2426,7 +2432,7 @@ int func_8006CE6C(int arg0)
         _fileMenuEntries[D_800DC8E9 + 3].selected = 1;
         _fileMenuEntries[4 - D_800DC8E9].selected = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
                 _fileMenuEntries[i].state = 4;
                 _fileMenuEntries[i].unk8 = -0x7E;
@@ -2444,7 +2450,7 @@ int func_8006CE6C(int arg0)
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             D_800DC8E9 = 1 - D_800DC8E9;
         }
-        D_800DED68 = ((D_800DC8E9 * 16) + 10) << 16;
+        _selectCursorXy = ((D_800DC8E9 * 16) + 10) << 16;
         break;
     }
     return 0;
@@ -2583,7 +2589,7 @@ int func_8006D2F8(int arg0)
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             D_800DC91C = 8;
         } else {
             var_a1 = 0x104;
@@ -2596,7 +2602,7 @@ int func_8006D2F8(int arg0)
                 if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuEntries[temp_s0 + 5].selected = 1;
-                    D_800DED68 = 0;
+                    _selectCursorXy = 0;
                     _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
                     D_800DC91C = 2;
                     break;
@@ -2625,7 +2631,7 @@ int func_8006D2F8(int arg0)
             if (temp_s0 != (D_800DC91F + D_800DC91E)) {
                 vs_main_playSfxDefault(0x7E, 4);
             }
-            D_800DED68 = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
+            _selectCursorXy = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
             _fileMenuEntries[temp_s0 + 5].selected = 1;
         }
         break;
@@ -2984,7 +2990,7 @@ int func_8006E00C(int arg0)
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             var_a0 = D_800DED73;
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             if (var_a0 < 3) {
                 do {
                     _fileMenuEntries[var_a0].state = 2;
@@ -3003,14 +3009,14 @@ int func_8006E00C(int arg0)
         } else if (vs_main_buttonsPressed & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             func_8006DC14(D_800DC924);
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             D_800DC923 = 7;
         } else {
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 D_800DC924 = 3 - D_800DC924;
             }
-            D_800DED68 = ((((D_800DC924 + 1) * 16) + 10) << 16) | 0xB4;
+            _selectCursorXy = ((((D_800DC924 + 1) * 16) + 10) << 16) | 0xB4;
         }
         break;
     case 7:
@@ -3226,7 +3232,7 @@ int func_8006EA70(int arg0)
             } else {
                 _playMenuLeaveSfx();
             }
-            D_800DED68 = 0;
+            _selectCursorXy = 0;
             for (i = 1; i < 3; ++i) {
                 _fileMenuEntries[i].state = 2;
                 _fileMenuEntries[i].unk8 = 0x140;
@@ -3237,7 +3243,7 @@ int func_8006EA70(int arg0)
             _playMenuChangeSfx();
             D_800DC932 = 3 - D_800DC932;
         }
-        D_800DED68 = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
+        _selectCursorXy = ((((D_800DC932 + 7) * 16) + 10) << 16) | 0xB4;
         break;
     case 4:
         if (_fileMenuEntriesActive() != 0) {

@@ -267,7 +267,7 @@ extern u_char _saveScreenFadeTimer;
 extern u_char _loadSaveDataErrorOffset;
 extern u_short D_800DEB10;
 extern u_short D_800DEB12;
-extern u_char D_800DED73;
+extern u_char _overwritingFile;
 extern u_char D_800DED74;
 extern u_char _diskState;
 extern vs_main_CdQueueSlot* _mcDataLoad;
@@ -291,12 +291,12 @@ extern u_char _promptOverwriteState;
 extern u_char _overwritePromptInitialized;
 extern u_char _promptFormatState;
 extern vs_main_settings_t _settingsBackup;
-extern int D_800DC918;
-extern u_char D_800DC91C;
-extern u_char D_800DC91D;
-extern u_char D_800DC91E;
-extern u_char D_800DC91F;
-extern u_char D_800DC920;
+extern int _saveSuccessful;
+extern u_char _saveMenuState;
+extern u_char _saveMenuPort;
+extern u_char _saveMenuSelectedPage;
+extern u_char _saveMenuSelectedSlot;
+extern u_char _saveMenuLeaveTimer;
 extern u_char _memcardStatePort;
 extern RECT _gameLoadRect;
 extern u_char _loadScreenMemcardState;
@@ -392,7 +392,7 @@ enum vs_fileMenuUiIds_e {
 #define SWEVENTS 0
 #define HWEVENTS 4
 
-#define MAKEXY(x, y) (((y) << 16) + ((x) & 0xFFFF))
+#define MAKEXY(x, y) (((y) << 16) | ((x) & 0xFFFF))
 #define MAKEWH(w, h) MAKEXY(w, h)
 
 static void _playNewGameSfx()
@@ -1487,7 +1487,7 @@ void func_8006AE10()
     memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-static _fileMenuElements_t* _initFileMenuEntry(int id, int xy, int wh, u_char* text)
+static _fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char* text)
 {
     _fileMenuElements_t* entry;
     int i;
@@ -2071,7 +2071,7 @@ static int _selectFileToLoad(int arg0)
     switch (_fileToLoadState) {
     case init:
         for (i = 0; i < 5; ++i) {
-            entry = _initFileMenuEntry(
+            entry = _initFileMenuElement(
                 i + 5, ((72 + i * 40) << 16) | 64, MAKEWH(256, 32), 0);
             entry->slotId = i;
             entry->slotUnavailable = _saveFileInfo[i].unk4.slotState < slotStateInUse;
@@ -2159,7 +2159,7 @@ static int _selectFileToLoad(int arg0)
                 switch (_applyLoadedSaveFile(1)) {
                 case 0:
                     D_800DEB14 = -16;
-                    vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
+                    vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                     D_800DC8DC = 16;
                     _fileLoaded = 1;
                     _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_loaded);
@@ -2346,7 +2346,7 @@ static int _showLoadMenu(int fadeout)
     }
     switch (_showLoadMenuState) {
     case init:
-        entry = _initFileMenuEntry(0, MAKEXY(320, 34), MAKEWH(140, 12),
+        entry = _initFileMenuElement(0, MAKEXY(320, 34), MAKEWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 180;
@@ -2356,7 +2356,7 @@ static int _showLoadMenu(int fadeout)
         break;
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
-            entry = _initFileMenuEntry(1, MAKEXY(320, 50), MAKEWH(126, 12),
+            entry = _initFileMenuElement(1, MAKEXY(320, 50), MAKEWH(126, 12),
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             entry->state = fileMenuElementStateAnimateX;
             entry->targetPosition = 194;
@@ -2364,7 +2364,7 @@ static int _showLoadMenu(int fadeout)
         }
         break;
     case displaySlot2:
-        entry = _initFileMenuEntry(2, MAKEXY(320, 66), MAKEWH(126, 12),
+        entry = _initFileMenuElement(2, MAKEXY(320, 66), MAKEWH(126, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 194;
@@ -2453,7 +2453,7 @@ static int _promptConfirm(int arg0)
     switch (_promptConfirmState) {
     case initYes:
     case initNo:
-        temp_v0 = _initFileMenuEntry(_promptConfirmState + 3,
+        temp_v0 = _initFileMenuElement(_promptConfirmState + 3,
             MAKEXY(-126, _promptConfirmState * 16 + 18), MAKEWH(126, 12),
             (u_char*)&_textTable[_textTable[_promptConfirmState
                 + VS_MCMAN_INDEX_yesIndent]]);
@@ -2584,145 +2584,157 @@ static int _promptFormat(int port)
     }
 }
 
-int func_8006D2F8(int arg0)
+static int _showSaveMenu(int port)
 {
-    _fileMenuElements_t* temp_v0_2;
-    int temp_s0;
+    enum state {
+        init = 0,
+        handleInput = 1,
+        slotSelected = 2,
+        overwritePrompt = 3,
+        initOverwrite = 4,
+        save = 5,
+        validate = 6,
+        leaveTimer = 7,
+        leave = 8,
+        format = 9,
+        leaveError = 10
+    };
+
+    _fileMenuElements_t* element;
+    int val;
     int saveId;
-    int var_a1;
     int i;
 
-    if (arg0 != 0) {
-        D_800DC91D = arg0;
-        D_800DC91F = _findCurrentSaveOnActiveMemcard();
-        if (D_800DC91F) {
-            --D_800DC91F;
+    if (port != 0) {
+        _saveMenuPort = port;
+        _saveMenuSelectedSlot = _findCurrentSaveOnActiveMemcard();
+        if (_saveMenuSelectedSlot) {
+            --_saveMenuSelectedSlot;
         }
-        D_800DC91E = 0;
-        if (D_800DC91F == 4) {
-            D_800DC91E = 2;
-            D_800DC91F = 2;
-        } else if (D_800DC91F != 0) {
-            D_800DC91E = D_800DC91F - 1;
-            D_800DC91F = 1;
+        _saveMenuSelectedPage = 0;
+        if (_saveMenuSelectedSlot == 4) {
+            _saveMenuSelectedPage = 2;
+            _saveMenuSelectedSlot = 2;
+        } else if (_saveMenuSelectedSlot != 0) {
+            _saveMenuSelectedPage = _saveMenuSelectedSlot - 1;
+            _saveMenuSelectedSlot = 1;
         }
-        D_800DC918 = -1;
-        D_800DC920 = 0;
-        D_800DC91C = 0;
+        _saveSuccessful = -1;
+        _saveMenuLeaveTimer = 0;
+        _saveMenuState = init;
         return 0;
     }
-    switch (D_800DC91C) {
-    case 0:
+    switch (_saveMenuState) {
+    case init:
         for (i = 0; i < 5; ++i) {
-            temp_v0_2 = _initFileMenuEntry(
-                i + 5, (i * 0x280000 + 0x480000) | 0x40, 0x200100, 0);
-            temp_v0_2->slotId = i;
-            temp_v0_2->slotUnavailable
+            element = _initFileMenuElement(
+                i + 5, MAKEXY(64, i * 40 + 72), MAKEWH(256, 32), 0);
+            element->slotId = i;
+            element->slotUnavailable
                 = _saveFileInfo[i].unk4.slotState == slotStateUnavailable;
-            temp_v0_2->saveLocation = _saveFileInfo[i].unk4.saveLocation;
+            element->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
-        D_800DC91C = 1;
+        _saveMenuState = handleInput;
         /* fallthrough */
-    case 1:
+    case handleInput:
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
-            D_800DC91C = 8;
+            _saveMenuState = leave;
         } else {
-            var_a1 = 0x104;
             for (i = 0; i < 5; ++i) {
-                _fileMenuElements[i + 5].y = (((i - D_800DC91E) * 0x28) + 0x48);
+                _fileMenuElements[i + 5].y = ((i - _saveMenuSelectedPage) * 40) + 72;
                 _fileMenuElements[i + 5].selected = 0;
             }
-            temp_s0 = D_800DC91F + D_800DC91E;
+            val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
             if (vs_main_buttonsPressed & PADRright) {
-                if (_saveFileInfo[temp_s0].unk4.slotState != slotStateUnavailable) {
+                if (_saveFileInfo[val].unk4.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                    _fileMenuElements[temp_s0 + 5].selected = 1;
+                    _fileMenuElements[val + 5].selected = 1;
                     _selectCursorXy = 0;
-                    _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
-                    D_800DC91C = 2;
+                    _memcardMaskedHandler(_saveMenuPort + memcardEventMaskAll);
+                    _saveMenuState = slotSelected;
                     break;
                 } else {
                     vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
                 }
             }
             if (vs_main_buttonRepeat & PADLup) {
-                if (D_800DC91F == 0) {
-                    if (D_800DC91E != 0) {
-                        --D_800DC91E;
+                if (_saveMenuSelectedSlot == 0) {
+                    if (_saveMenuSelectedPage != 0) {
+                        --_saveMenuSelectedPage;
                     }
                 } else {
-                    --D_800DC91F;
+                    --_saveMenuSelectedSlot;
                 }
             }
             if (vs_main_buttonRepeat & PADLdown) {
-                if (D_800DC91F == 2) {
-                    if (D_800DC91E < 2) {
-                        ++D_800DC91E;
+                if (_saveMenuSelectedSlot == 2) {
+                    if (_saveMenuSelectedPage < 2) {
+                        ++_saveMenuSelectedPage;
                     }
                 } else {
-                    ++D_800DC91F;
+                    ++_saveMenuSelectedSlot;
                 }
             }
-            if (temp_s0 != (D_800DC91F + D_800DC91E)) {
-                vs_main_playSfxDefault(0x7E, 4);
+            if (val != (_saveMenuSelectedSlot + _saveMenuSelectedPage)) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
-            _selectCursorXy = (((D_800DC91F * 0x28) + 0x3E) << 0x10) | 0x18;
-            _fileMenuElements[temp_s0 + 5].selected = 1;
+            _selectCursorXy = MAKEXY(24, _saveMenuSelectedSlot * 40 + 62);
+            _fileMenuElements[val + 5].selected = 1;
         }
         break;
-    case 2:
-        temp_s0 = _memcardMaskedHandler(0);
-        if (temp_s0 != memcardMaskedHandlerPending) {
+    case slotSelected:
+        val = _memcardMaskedHandler(0);
+        if (val != memcardMaskedHandlerPending) {
             if (_fileMenuMessage == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
-                _promptFormat(D_800DC91D);
-                D_800DC91C = 9;
-            } else if (temp_s0 >= memcardMaskedHandlerPending) {
-                temp_s0 = D_800DC91F + D_800DC91E;
-                if (_saveFileInfo[temp_s0].unk4.slotState == slotStateAvailable) {
-                    if (_createSaveFile(D_800DC91D, temp_s0 + 1) != 0) {
-                        D_800DC91C = 7;
+                _promptFormat(_saveMenuPort);
+                _saveMenuState = format;
+            } else if (val > memcardMaskedHandlerError) {
+                val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+                if (_saveFileInfo[val].unk4.slotState == slotStateAvailable) {
+                    if (_createSaveFile(_saveMenuPort, val + 1) != 0) {
+                        _saveMenuState = leaveTimer;
                         _fileMenuMessage
                             = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
                     } else {
-                        D_800DC91C = 5;
+                        _saveMenuState = save;
                     }
                 } else {
                     _promptOverwrite(1);
-                    D_800DC91C = 3;
+                    _saveMenuState = overwritePrompt;
                 }
             } else {
-                D_800DC91C = 7;
+                _saveMenuState = leaveTimer;
             }
         }
         break;
-    case 3:
-        temp_s0 = _promptOverwrite(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 == 1) {
-                _memcardMaskedHandler(D_800DC91D + memcardEventMaskAll);
-                D_800DC91C = 4;
+    case overwritePrompt:
+        val = _promptOverwrite(0);
+        if (val != 0) {
+            if (val == 1) {
+                _memcardMaskedHandler(_saveMenuPort + memcardEventMaskAll);
+                _saveMenuState = initOverwrite;
             } else {
-                D_800DC91C = 1;
+                _saveMenuState = handleInput;
             }
         }
         break;
-    case 4:
-        temp_s0 = _memcardMaskedHandler(0);
-        if (temp_s0 != memcardMaskedHandlerPending) {
-            if (temp_s0 >= memcardMaskedHandlerPending) {
-                D_800DED73 |= (_findCurrentSaveOnActiveMemcard()
-                    == (D_800DC91F + D_800DC91E + 1));
-                D_800DC91C = 5;
+    case initOverwrite:
+        val = _memcardMaskedHandler(0);
+        if (val != memcardMaskedHandlerPending) {
+            if (val > memcardMaskedHandlerError) {
+                _overwritingFile |= (_findCurrentSaveOnActiveMemcard()
+                    == (_saveMenuSelectedSlot + _saveMenuSelectedPage + 1));
+                _saveMenuState = save;
             } else {
-                D_800DC91C = 7;
+                _saveMenuState = leaveTimer;
             }
         }
         break;
-    case 5:
-        temp_s0 = D_800DC91F + D_800DC91E;
+    case save:
+        val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
         _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saving);
         _rMemcpy(&_settingsBackup, &vs_main_settings, sizeof(_settingsBackup));
         _rMemcpy(
@@ -2731,17 +2743,17 @@ int func_8006D2F8(int arg0)
             D_800DED75 = (*(u_int*)&vs_main_settings.timingWeaponArmor >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
-        func_80069888(temp_s0);
-        func_8006A11C((temp_s0 + 1) | ((D_800DC91D - 1) << 0x10));
-        D_800DC91C = 6;
+        func_80069888(val);
+        func_8006A11C((val + 1) | ((_saveMenuPort - 1) << 0x10));
+        _saveMenuState = validate;
         break;
-    case 6:
-        temp_s0 = func_8006A11C(0);
-        D_800DEB14 += 1;
-        if (temp_s0 != 0) {
+    case validate:
+        val = func_8006A11C(0);
+        ++D_800DEB14;
+        if (val != 0) {
             D_8006169D = 0;
-            saveId = D_800DC91F + D_800DC91E;
-            if (temp_s0 < 0) {
+            saveId = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+            if (val < 0) {
                 if (D_800DED74 != 0) {
                     u_char v = D_800DED75 & 1;
                     *(int*)&vs_main_settings
@@ -2756,7 +2768,7 @@ int func_8006D2F8(int arg0)
                 _rMemcpy(&vs_main_settings, &_settingsBackup, sizeof(vs_main_settings));
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
-                D_800DED73 = 0;
+                _overwritingFile = 0;
                 D_800DEB14 = -16;
                 _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(_saveFileInfo_t) * 3,
                     sizeof(_saveFileInfo_t));
@@ -2765,49 +2777,51 @@ int func_8006D2F8(int arg0)
                     sizeof(_saveFileInfo_t) - sizeof(int));
                 _fileMenuElements[saveId + 5].saveLocation
                     = _saveFileInfo[saveId].unk4.saveLocation;
-                vs_main_playSfxDefault(0x7E, VS_SFX_LOADCOMPLETE);
-                D_800DC918 = 1;
+                vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
+                _saveSuccessful = 1;
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saved);
             }
-            D_800DC91C = 7;
+            _saveMenuState = leaveTimer;
         }
         break;
-    case 7:
-        if (D_800DC918 == 1) {
-            ++D_800DC920;
+    case leaveTimer:
+        if (_saveSuccessful == 1) {
+            ++_saveMenuLeaveTimer;
         }
         if ((u_char)vs_main_buttonsPressed == 0) {
-            if (D_800DC920 != 0x96) {
+            if (_saveMenuLeaveTimer != 150) {
                 break;
             }
         }
-        vs_main_playSfxDefault(0x7E, 6);
-        D_800DC91C = 8;
+        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+        _saveMenuState = leave;
         break;
-    case 8:
+    case leave:
         if (D_800DEB14 == 0) {
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
             }
-            return D_800DC918;
+            return _saveSuccessful;
         }
         break;
-    case 9:
-        temp_s0 = _promptFormat(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 < 0) {
-                D_800DC91C = 10;
-            } else if (_createSaveFile(D_800DC91D, D_800DC91E + D_800DC91F + 1) != 0) {
-                D_800DC91C = 7;
+    case format:
+        val = _promptFormat(0);
+        if (val != 0) {
+            if (val < 0) {
+                _saveMenuState = leaveError;
+            } else if (_createSaveFile(_saveMenuPort,
+                           _saveMenuSelectedPage + _saveMenuSelectedSlot + 1)
+                != 0) {
+                _saveMenuState = leaveTimer;
                 _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
-                D_800DC91C = 5;
+                _saveMenuState = save;
             }
         }
         break;
-    case 10:
+    case leaveError:
         if ((u_char)vs_main_buttonsPressed != 0) {
-            vs_main_playSfxDefault(0x7E, 6);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
             }
@@ -2880,7 +2894,7 @@ int func_8006DC14(int index)
             for (i = 4; i >= 0; --i) {
                 _saveFileInfo[i].unk4.slotState = j;
             }
-            func_8006D2F8(D_800DC922);
+            _showSaveMenu(D_800DC922);
             _stateVar = 7;
             break;
         }
@@ -2917,11 +2931,11 @@ int func_8006DC14(int index)
             _fileMenuMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
             break;
         }
-        func_8006D2F8(D_800DC922);
+        _showSaveMenu(D_800DC922);
         _stateVar = 7;
         break;
     case 7:
-        i = func_8006D2F8(0);
+        i = _showSaveMenu(0);
         if (i == 0) {
             break;
         }
@@ -2947,10 +2961,10 @@ int func_8006E00C(int arg0)
     if (arg0 != 0) {
         D_800DC924 = 1;
         D_800DED74 = 0;
-        D_800DED73 = 0;
+        _overwritingFile = 0;
         _isSaving = 1;
         D_800DC923 = (arg0 - 1) * 3;
-        temp_v0 = _initFileMenuEntry(
+        temp_v0 = _initFileMenuElement(
             0, 0x220140, 0xC008C, (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         temp_v0->state = 2;
         temp_v0->targetPosition = 180;
@@ -3002,7 +3016,7 @@ int func_8006E00C(int arg0)
         break;
     case 3:
         if (_fileMenuElementsActive() != 0) {
-            temp_v0 = _initFileMenuEntry(
+            temp_v0 = _initFileMenuElement(
                 1, 0x320140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             temp_v0->state = 2;
             temp_v0->targetPosition = 194;
@@ -3010,7 +3024,7 @@ int func_8006E00C(int arg0)
         }
         break;
     case 4:
-        temp_v0 = _initFileMenuEntry(
+        temp_v0 = _initFileMenuElement(
             2, 0x420140, 0xC007E, (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         temp_v0->state = 2;
         temp_v0->targetPosition = 194;
@@ -3027,7 +3041,7 @@ int func_8006E00C(int arg0)
         _fileMenuElements[3 - D_800DC924].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-            var_a0 = D_800DED73;
+            var_a0 = _overwritingFile;
             _selectCursorXy = 0;
             if (var_a0 < 3) {
                 do {
@@ -3036,7 +3050,7 @@ int func_8006E00C(int arg0)
                     ++var_a0;
                 } while (var_a0 < 3);
             }
-            if (D_800DED73 != 0) {
+            if (_overwritingFile != 0) {
                 _fileMenuMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerFileCorrupt);
                 _promptConfirm(1);
@@ -3245,7 +3259,7 @@ int func_8006EA70(int arg0)
     switch (D_800DC931) {
     case 0:
     case 1:
-        temp_v0 = _initFileMenuEntry(D_800DC931 + 1,
+        temp_v0 = _initFileMenuElement(D_800DC931 + 1,
             (((D_800DC931 * 0x10) + 0x92) << 0x10) | 0x140, 0xC007E,
             (u_char*)&_textTable[_textTable[D_800DC931 + VS_MCMAN_INDEX_yesOption]]);
         temp_v0->state = 2;

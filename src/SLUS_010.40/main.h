@@ -229,7 +229,7 @@ void func_800472D0();
 void func_80046770(int);
 void func_800478E0(int, int, int, int, int);
 void vs_main_bzero(void*, int);
-void vs_main_memcpy(void*, void*, u_int);
+void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
 void func_80048F8C();

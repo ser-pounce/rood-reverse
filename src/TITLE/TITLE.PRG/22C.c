@@ -163,7 +163,7 @@ typedef struct {
     u_char unk660[0x48];
     vs_main_settings_t unk6A8;
     D_80060068_t unk6C8;
-    u_char unk7C8[0xF00];
+    u_char unk7C8[15][256];
     u_char unk16C8[0xB0];
     D_80061068_t unk1778;
     D_8005FEA0_t unk1784;
@@ -195,7 +195,7 @@ typedef struct {
 
 static void _playMovie(DslLOC*);
 static u_short* _getNextMovieFrame(MovieData_t* arg0);
-static void _initTitle();
+static void _initGameData();
 void func_80071CE0(int arg0);
 
 u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
@@ -229,7 +229,7 @@ extern int _menuItemCluts1[10];
 extern int _menuItemTpages1[10];
 extern int _menuItemWh[10];
 extern int _menuItemXy[10];
-extern u_char D_80074C24[];
+extern u_char D_80074C24[15][256];
 extern u_char D_80075B24[32];
 extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];
@@ -302,7 +302,7 @@ extern RECT _gameLoadRect;
 extern u_char _loadScreenMemcardState;
 extern u_char _saveScreenConfirmationState;
 extern u_char _saveScreenConfirmationOption;
-extern tagsprt_t D_800DE948[2];
+extern tagsprt_t _titleMenuItemBg[2];
 extern long memcardEventDescriptors[8];
 extern struct {
     u_long tag;
@@ -3830,7 +3830,7 @@ static void _unpackMenuBg()
     vs_main_freeHeap(temp_v0);
 }
 
-static void _blankScreen()
+static void _initTitleScreen()
 {
     DISPENV dispenv;
     DRAWENV drawenv;
@@ -4007,24 +4007,24 @@ void _setMenuItemClut(int menuItem, int blendFactor, int clut0, int clut1)
 static void func_800703CC()
 {
     int i;
-    int var_a0;
+    int saturation;
     int blendFactor;
 
     i = 0;
 
     for (i = 0; i < 10; ++i) {
         if (_menuItemStates[i].enabled != 0) {
-            var_a0 = _menuItemStates[i].saturation + 8;
+            saturation = _menuItemStates[i].saturation + 8;
 
-            if (var_a0 > 128) {
-                var_a0 = 128;
+            if (saturation > 128) {
+                saturation = 128;
             }
 
-            _menuItemStates[i].saturation = var_a0;
+            _menuItemStates[i].saturation = saturation;
 
             switch (_menuItemStates[i].state) {
             case menuItemStateStatic:
-                if (var_a0 == 128 && _menuItemStates[i].pos == 64) {
+                if (saturation == 128 && _menuItemStates[i].pos == 64) {
                     _menuItemStates[i].unk6 = _menuItemStates[i].pos;
 
                     blendFactor = _menuItemStates[i].blendFactor;
@@ -4079,7 +4079,7 @@ static void func_800703CC()
     }
 }
 
-static void _drawMenuItems()
+static void _drawTitleMenuItems()
 {
     int cluts2;
     int j;
@@ -4179,14 +4179,14 @@ static void _drawMenuItems()
     }
 }
 
-void func_8007093C()
+static void _drawTitleMenu()
 {
     int i;
     tagsprt_t* sprt;
 
     func_800703CC();
     for (i = 0; i < 2; ++i) {
-        sprt = &D_800DE948[0];
+        sprt = _titleMenuItemBg;
         sprt->sprt.tpage
             = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
@@ -4204,7 +4204,7 @@ void func_8007093C()
         sprt->sprt.u0v0clut = vs_getUV0Clut(32, 192, 0, 0);
         sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
-        _drawMenuItems();
+        _drawTitleMenuItems();
         if (i == 0) {
             DrawSync(0);
             VSync(0);
@@ -4217,7 +4217,7 @@ void func_8007093C()
 
 void func_80070A58()
 {
-    func_8007093C();
+    _drawTitleMenu();
     VSync(0);
     vs_main_processPadState();
 }
@@ -4315,15 +4315,15 @@ static void _menuVibrationSettings()
         }
         func_80070A58();
     }
-    _menuItemStates[5].enabled = 0;
-    _menuItemStates[6].enabled = 0;
-    _menuItemStates[menuItemVibration].unk6 = 0x40;
-    _menuItemStates[menuItemVibration].unk3 = 0x40;
+    _menuItemStates[menuItemVibrationOff].enabled = 0;
+    _menuItemStates[menuItemVibrationOn].enabled = 0;
+    _menuItemStates[menuItemVibration].unk6 = 64;
+    _menuItemStates[menuItemVibration].unk3 = 64;
     func_80070A58();
-    _menuItemStates[menuItemVibration].unk3 = 0x80;
+    _menuItemStates[menuItemVibration].unk3 = 128;
     func_80070A58();
-    _menuItemStates[menuItemVibration].unk3 = 0xC0;
-    func_8007093C();
+    _menuItemStates[menuItemVibration].unk3 = 192;
+    _drawTitleMenu();
     _menuItemStates[menuItemVibration].blendFactor = 16;
     _menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
@@ -4427,14 +4427,14 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].unk3 = 128;
     func_80070A58();
     _menuItemStates[menuItemSound].unk3 = 192;
-    func_8007093C();
+    _drawTitleMenu();
     _menuItemStates[menuItemSound].blendFactor = 16;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
-int _nop1() { return 0; }
+int _nop() { return 0; }
 
-void _initSettings()
+void _initEnvironment()
 {
     int monoSound;
     int vibrationOn;
@@ -4474,8 +4474,8 @@ int vs_title_exec()
         vs_main_titleScreenCount = 0;
         _gameSaveScreen();
     }
-    _initTitle();
-    _initSettings();
+    _initGameData();
+    _initEnvironment();
     _introMoviePlaying = 0;
     ++vs_main_titleScreenCount;
     menuItem = _saveFileExists();
@@ -4488,7 +4488,7 @@ int vs_title_exec()
         _unpackMenuBg();
         _initIntroMovie();
         _playIntroMovie();
-        _blankScreen();
+        _initTitleScreen();
         SetDispMask(1);
         menuData = _initMenu(menuItem);
         for (i = 32; i >= 0; i -= 2) {
@@ -4501,7 +4501,7 @@ int vs_title_exec()
         VSync(0);
         for (i = 32; i >= 0; i -= 4) {
             _fadeInMenu(menuData, i);
-            func_8007093C();
+            _drawTitleMenu();
         }
         _freeHeap(menuData);
         for (i = 0; i < 8; ++i) {
@@ -4529,7 +4529,7 @@ int vs_title_exec()
             if (vs_main_buttonsState & (PADRright | PADstart)) {
                 switch (menuItem) {
                 case menuItemNewGame:
-                    selectedOption = _nop1();
+                    selectedOption = _nop();
                     break;
                 case menuItemContinue:
                     selectedOption = menuItemContinue;
@@ -4577,7 +4577,7 @@ int vs_title_exec()
                     func_80070A58();
                 }
             }
-            func_8007093C();
+            _drawTitleMenu();
         }
         if (selectedOption >= menuItemNewGame) {
             if (_introMoviePlaying != 0) {
@@ -4659,7 +4659,7 @@ static int _renderScreen(u_long* ot)
     return vsync;
 }
 
-static void _initTitle()
+static void _initGameData()
 {
     int i;
     int j;

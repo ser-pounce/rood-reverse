@@ -4219,7 +4219,7 @@ static void _drawTitleMenu()
     }
 }
 
-void func_80070A58()
+static void _drawAndSyncTitleMenu()
 {
     _drawTitleMenu();
     VSync(0);
@@ -4246,23 +4246,23 @@ static void _menuVibrationSettings()
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemVibration, i * 2, 1, 3);
         _menuItemStates[menuItemVibration].textPos -= 4;
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
     _menuItemStates[menuItemContinue].state = menuItemStateStatic;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
 
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
         _menuItemStates[vibrationSetting].outlineSaturation
             = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].outlineSaturation - 16;
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     while (1) {
-        func_80070A58();
+        _drawAndSyncTitleMenu();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
             vs_main_settings.vibrationOn = vibrationSetting - 5;
@@ -4288,7 +4288,7 @@ static void _menuVibrationSettings()
                     if (i == 7) {
                         break;
                     }
-                    func_80070A58();
+                    _drawAndSyncTitleMenu();
                 }
             }
         }
@@ -4318,15 +4318,15 @@ static void _menuVibrationSettings()
         if (_menuItemStates[menuItemVibrationOn].outlineSaturation != 0) {
             _menuItemStates[menuItemVibrationOn].outlineSaturation -= 16;
         }
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     _menuItemStates[menuItemVibrationOff].enabled = 0;
     _menuItemStates[menuItemVibrationOn].enabled = 0;
     _menuItemStates[menuItemVibration].outlinePos = 64;
     _menuItemStates[menuItemVibration].outlineSaturation = 64;
-    func_80070A58();
+    _drawAndSyncTitleMenu();
     _menuItemStates[menuItemVibration].outlineSaturation = 128;
-    func_80070A58();
+    _drawAndSyncTitleMenu();
     _menuItemStates[menuItemVibration].outlineSaturation = 192;
     _drawTitleMenu();
     _menuItemStates[menuItemVibration].textBlendFactor = 16;
@@ -4353,22 +4353,22 @@ static void _menuSoundSettings()
     for (i = 1; i < 9; ++i) {
         _setMenuItemClut(menuItemSound, i * 2, 1, 3);
         _menuItemStates[menuItemSound].textPos -= 4;
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
     _menuItemStates[menuItemContinue].state = menuItemStateStatic;
     _menuItemStates[menuItemVibration].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(soundSetting, i * 2, 0, 1);
         _menuItemStates[soundSetting].outlineSaturation
             = i < 4 ? i << 6 : _menuItemStates[soundSetting].outlineSaturation - 16;
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     while (1) {
-        func_80070A58();
+        _drawAndSyncTitleMenu();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
             _playMenuSelectSfx();
             soundSetting = (soundSetting + 1) & 1;
@@ -4393,7 +4393,7 @@ static void _menuSoundSettings()
                     if (i == 7) {
                         break;
                     }
-                    func_80070A58();
+                    _drawAndSyncTitleMenu();
                 }
             }
         }
@@ -4423,15 +4423,15 @@ static void _menuSoundSettings()
         if (_menuItemStates[menuItemSoundStereo].outlineSaturation != 0) {
             _menuItemStates[menuItemSoundStereo].outlineSaturation -= 16;
         }
-        func_80070A58();
+        _drawAndSyncTitleMenu();
     }
     _menuItemStates[menuItemSoundMono].enabled = 0;
     _menuItemStates[menuItemSoundStereo].enabled = 0;
     _menuItemStates[menuItemSound].outlinePos = 64;
     _menuItemStates[menuItemSound].outlineSaturation = 64;
-    func_80070A58();
+    _drawAndSyncTitleMenu();
     _menuItemStates[menuItemSound].outlineSaturation = 128;
-    func_80070A58();
+    _drawAndSyncTitleMenu();
     _menuItemStates[menuItemSound].outlineSaturation = 192;
     _drawTitleMenu();
     _menuItemStates[menuItemSound].textBlendFactor = 16;
@@ -4511,7 +4511,7 @@ int vs_title_exec()
         }
         _freeHeap(menuData);
         for (i = 0; i < 8; ++i) {
-            func_80070A58();
+            _drawAndSyncTitleMenu();
         }
 
         vs_main_padDisconnectAll();
@@ -4580,7 +4580,7 @@ int vs_title_exec()
                     }
                 }
                 for (i = 0; i < 10; ++i) {
-                    func_80070A58();
+                    _drawAndSyncTitleMenu();
                 }
             }
             _drawTitleMenu();

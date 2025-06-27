@@ -81,6 +81,7 @@ _setMenuItemClut = 0x800702AC;
 _setTitleMenuState = 0x800703CC;
 _drawTitleMenuItems = 0x800705AC;
 _drawTitleMenu = 0x8007093C;
+_drawAndSyncTitleMenu = 0x80070A58;
 nop1 = 0x8007124C;
 _initEnvironment = 0x80071254;
 _renderScreen = 0x80071A68;

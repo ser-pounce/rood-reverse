@@ -28,8 +28,11 @@ typedef struct {
 } MovieData_t;
 
 enum _fileMenuElementState_e {
+    fileMenuElementStateInactive = 0,
+    fileMenuElementStateStatic = 1,
     fileMenuElementStateAnimateX = 2,
     fileMenuElementStateAnimateY = 3,
+    fileMenuElementStateAnimateNegX = 4
 };
 
 typedef struct {
@@ -204,7 +207,7 @@ u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _encodeSeed = 0x0019660D;
 u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
-extern u_char D_8007289C[];
+extern u_char _menuElementStops[];
 extern char _selectCursorColors[];
 extern int _saveInfoUVClut[];
 extern int _saveInfoWh[];
@@ -1912,14 +1915,14 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
 static void _drawFileMenu(int framebuf)
 {
     int dummy[2];
-    _fileMenuElements_t* entry;
+    _fileMenuElements_t* element;
     int j;
     int i;
     u_int x;
     int state;
     int new_var;
 
-    entry = _fileMenuElements;
+    element = _fileMenuElements;
     x = 0;
     if (framebuf != 0) {
         x = 320;
@@ -1929,65 +1932,65 @@ static void _drawFileMenu(int framebuf)
     _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 
-    for (i = 0; i < 10; ++i, ++entry) {
-        state = entry->state;
-        if (state == 2) {
-            if (entry->x < entry->targetPosition) {
-                entry->x += 32u;
-                if (entry->x >= entry->targetPosition) {
-                    entry->x = entry->targetPosition;
-                    entry->state = 1;
+    for (i = 0; i < 10; ++i, ++element) {
+        state = element->state;
+        if (state == fileMenuElementStateAnimateX) {
+            if (element->x < element->targetPosition) {
+                element->x += 32;
+                if (element->x >= element->targetPosition) {
+                    element->x = element->targetPosition;
+                    element->state = fileMenuElementStateStatic;
                 }
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((entry->targetPosition + D_8007289C[j]) >= entry->x) {
+                    if ((element->targetPosition + _menuElementStops[j]) >= element->x) {
                         break;
                     }
                 }
-                entry->x = entry->targetPosition + D_8007289C[j - 1];
-                if (entry->w < (0x140 - entry->x)) {
-                    entry->w = (0x140 - entry->x);
+                element->x = element->targetPosition + _menuElementStops[j - 1];
+                if (element->w < (320 - element->x)) {
+                    element->w = 320 - element->x;
                 }
-                if (entry->x == entry->targetPosition) {
-                    entry->state = 1;
+                if (element->x == element->targetPosition) {
+                    element->state = fileMenuElementStateStatic;
                 }
             }
         }
-        if (state == 3) {
-            if (entry->y > entry->targetPosition) {
+        if (state == fileMenuElementStateAnimateY) {
+            if (element->y > element->targetPosition) {
                 for (j = 1; j < 16; ++j) {
-                    if ((entry->targetPosition + D_8007289C[j]) >= entry->y) {
+                    if ((element->targetPosition + _menuElementStops[j]) >= element->y) {
                         break;
                     }
                 }
-                entry->y = (entry->targetPosition + D_8007289C[j - 1]);
+                element->y = (element->targetPosition + _menuElementStops[j - 1]);
             }
-            if (entry->y == entry->targetPosition) {
-                entry->state = 1;
+            if (element->y == element->targetPosition) {
+                element->state = fileMenuElementStateStatic;
             }
         }
-        if (state == 4) {
-            if (entry->x < entry->targetPosition) {
+        if (state == fileMenuElementStateAnimateNegX) {
+            if (element->x < element->targetPosition) {
                 for (j = 1; j < 16; ++j) {
-                    if (entry->x >= (-D_8007289C[j])) {
+                    if (element->x >= -_menuElementStops[j]) {
                         break;
                     }
                 }
-                entry->x = -D_8007289C[j - 1];
-                if (entry->x == 0) {
-                    entry->state = 1;
+                element->x = -_menuElementStops[j - 1];
+                if (element->x == 0) {
+                    element->state = fileMenuElementStateStatic;
                 }
             } else {
-                entry->x = entry->x - 32;
-                if (entry->targetPosition >= entry->x) {
-                    entry->x = entry->targetPosition;
-                    entry->state = 1;
+                element->x = element->x - 32;
+                if (element->targetPosition >= element->x) {
+                    element->x = element->targetPosition;
+                    element->state = fileMenuElementStateStatic;
                 }
             }
         }
-        if (state != 0) {
-            _drawFileMenuEntry(entry);
+        if (state != fileMenuElementStateInactive) {
+            _drawFileMenuEntry(element);
         }
     }
 

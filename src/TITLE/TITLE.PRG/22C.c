@@ -214,8 +214,8 @@ extern int _saveInfoWh[];
 extern u_char _digitsDivisors[];
 extern int _fontCharacterWidths[];
 extern u_char _arrowCharState;
-extern int D_80072EFC[];
-extern int D_80072F04[];
+extern int _menuItemColors1[];
+extern int _menuItemColors2[];
 extern struct {
     u_short clut[16];
     u_long data[0x600];
@@ -223,17 +223,17 @@ extern struct {
 extern u_long _developer[];
 extern int _movieWidth;
 extern int _movieHeight;
-extern u_int D_80074AF4[];
-extern u_int _menuBg[];
-extern u_short _menuItemClut[][16];
-extern int _menuItemCluts2[10];
+extern u_int _menuItemOutlineClut[];
+extern u_int _titleScreenBg[];
+extern u_short _menuItemTextClut[2][16];
+extern int _menuItemTextUv[10];
 extern int _menuItemTpages2[10];
-extern int _menuItemCluts1[10];
-extern int _menuItemTpages1[10];
-extern int _menuItemWh[10];
-extern int _menuItemXy[10];
+extern int _menuItemOutlineUv[10];
+extern int _menuItemOutlineTpages1[10];
+extern int _menuItemOutlineWh[10];
+extern int _menuItemOutlineXy[10];
 extern u_char D_80074C24[15][256];
-extern u_char D_80075B24[32];
+extern u_char _skillsLearned[32];
 extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];
 extern u_long _debugFont[];
@@ -255,8 +255,8 @@ extern int _memCardFd;
 extern u_char _memcardSaveState;
 extern u_char _memcardFileno;
 extern u_char _memcardManagerPort;
-extern u_char D_800DC8BB;
-extern u_char D_800DC8BC;
+extern u_char _saveFileErrorCount;
+extern u_char _renameErrorCount;
 extern u_char _loadFileMenuState;
 extern u_char _loadFileMenuSelectedSlot;
 extern u_char _loadFileMenuFadeout;
@@ -268,8 +268,8 @@ extern menuItemPrim_t _menuItemPrims[10];
 extern u_char _saveScreenState;
 extern u_char _saveScreenFadeTimer;
 extern u_char _loadSaveDataErrorOffset;
-extern u_short D_800DEB10;
-extern u_short D_800DEB12;
+extern u_short _filePreviousProgressCounter;
+extern u_short _fileProgressPosition;
 extern u_char _dataNotSaved;
 extern u_char _containerDataEmpty;
 extern u_char _diskState;
@@ -320,7 +320,7 @@ extern struct DIRENTRY* _memcardFiles[15];
 extern struct DIRENTRY* dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
 extern u_short D_800DEB0E;
-extern int D_800DEB14;
+extern int _fileProgressCounter;
 extern _fileMenuElements_t _fileMenuElements[10];
 extern struct {
     u_long tag;
@@ -1024,20 +1024,21 @@ static int _loadSaveData(int portFileno)
         _readCardPort = portFileno >> 0xC;
         _isTempSave = (portFileno >> 8) & 1;
         _readFileNo = portFileno & 0xF;
-        D_800DEB12 = 80;
-        D_800DEB10 = 0;
+        _fileProgressPosition = 80;
+        _filePreviousProgressCounter = 0;
         return 0;
     }
 
     switch (_loadSaveDataState) {
     case init:
         new_var = 320;
-        D_800DEB12 += ((D_800DEB14 - D_800DEB10)
-                          * ((_loadSaveDataErrorOffset * 20) - (D_800DEB12 - new_var)))
+        _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
+                                     * ((_loadSaveDataErrorOffset * 20)
+                                         - (_fileProgressPosition - new_var)))
             / D_800DEB0E;
         _loadSaveDataErrorOffset = _loadSaveDataErrors;
         D_800DEB0E = 192 - (_isTempSave << 7);
-        D_800DEB10 = D_800DEB14;
+        _filePreviousProgressCounter = _fileProgressCounter;
 
         memset(temp_s2, 0, sizeof(savedata_t));
 
@@ -1093,13 +1094,13 @@ int _saveFile(int arg0)
     int temp_s3;
 
     if (arg0 != 0) {
-        D_800DC8BB = 0;
-        D_800DC8BC = 0;
+        _saveFileErrorCount = 0;
+        _renameErrorCount = 0;
         _loadSaveDataErrorOffset = 0;
         _memcardManagerPort = arg0 >> 0xC;
         _memcardFileno = arg0 & 7;
-        D_800DEB12 = 80;
-        D_800DEB10 = 0;
+        _fileProgressPosition = 80;
+        _filePreviousProgressCounter = 0;
         _memcardSaveState = _memcardSaveIdExists(_memcardFileno + 'A' - 1);
         return 0;
     }
@@ -1108,31 +1109,33 @@ int _saveFile(int arg0)
         if (rename((char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
                 (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno))
             != 0) {
-            D_800DC8BB = 0;
-            D_800DC8BC = 0;
+            _saveFileErrorCount = 0;
+            _renameErrorCount = 0;
             _memcardSaveState = tempFileCreated;
         } else {
-            ++D_800DC8BC;
-            D_800DC8BB = D_800DC8BC >> 4;
+            ++_renameErrorCount;
+            _saveFileErrorCount = _renameErrorCount >> 4;
         }
         break;
     case tempFileCreated:
-        temp_v1_2 = ((D_800DEB14 - D_800DEB10) * (320 - D_800DEB12)) / D_800DEB0E;
-        D_800DEB10 = D_800DEB14;
+        temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
+                        * (320 - _fileProgressPosition))
+            / D_800DEB0E;
+        _filePreviousProgressCounter = _fileProgressCounter;
         D_800DEB0E = 384;
-        D_800DEB12 += temp_v1_2;
+        _fileProgressPosition += temp_v1_2;
         _saveFileId
             = open((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
                 O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
-            ++D_800DC8BB;
+            ++_saveFileErrorCount;
             break;
         }
         _resetMemcardEvents(SWEVENTS);
         if (write(_saveFileId, _spmcimg, sizeof(savedata_t)) == -1) {
             close(_saveFileId);
-            ++D_800DC8BB;
+            ++_saveFileErrorCount;
             break;
         }
         _memcardSaveState = readReady;
@@ -1143,13 +1146,13 @@ int _saveFile(int arg0)
             close(_saveFileId);
             if (temp_s3 == memcardInternalEventIoEnd) {
                 _memcardSaveState = verifyPending;
-                i = D_800DEB12;
-                temp_s3 = D_800DEB10;
+                i = _fileProgressPosition;
+                temp_s3 = _filePreviousProgressCounter;
                 _loadSaveData((_memcardManagerPort << 12) | (_memcardFileno + 8));
-                D_800DEB12 = i;
-                D_800DEB10 = temp_s3;
+                _fileProgressPosition = i;
+                _filePreviousProgressCounter = temp_s3;
             } else {
-                ++D_800DC8BB;
+                ++_saveFileErrorCount;
                 _memcardSaveState = tempFileCreated;
             }
         }
@@ -1177,13 +1180,13 @@ int _saveFile(int arg0)
         if (rename((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
                 (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno))
             == 0) {
-            ++D_800DC8BC;
-            D_800DC8BB = (D_800DC8BC >> 4);
+            ++_renameErrorCount;
+            _saveFileErrorCount = (_renameErrorCount >> 4);
             break;
         }
         return 1;
     }
-    return D_800DC8BB == 3 ? -1 : 0;
+    return _saveFileErrorCount == 3 ? -1 : 0;
 }
 
 static int _loadMemcardMenu(int init)
@@ -1486,7 +1489,7 @@ static void _initFileMenu()
     _selectSaveMemoryCardMessage = NULL;
     _selectCursorColor = 0;
     _selectCursorXy = 0;
-    D_800DEB14 = 0;
+    _fileProgressCounter = 0;
     _fileMenuScreenFade = 0;
     D_800DEB0E = 384;
     memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
@@ -1725,8 +1728,8 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
         color2 = _interpolateRGB(
             vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
-        color1 = D_80072EFC[((innerFactor >> 3) - 2)];
-        color2 = D_80072F04[((innerFactor >> 3) - 2)];
+        color1 = _menuItemColors1[((innerFactor >> 3) - 2)];
+        color2 = _menuItemColors2[((innerFactor >> 3) - 2)];
     }
     return _interpolateRGB(color1, color2, outerFactor);
 }
@@ -1893,17 +1896,17 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                     y | 158, statTypeMP, saveInfo->unk4.currentMP, saveInfo->unk4.maxMP);
                 y -= 17 << 16;
             }
-            if ((menuEntry->selected != 0) && (D_800DEB14 != 0)) {
-                if (D_800DEB14 < 0) {
-                    int v0 = D_800DEB14++;
+            if ((menuEntry->selected != 0) && (_fileProgressCounter != 0)) {
+                if (_fileProgressCounter < 0) {
+                    int v0 = _fileProgressCounter++;
                     char* p = _selectCursorColors + v0;
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _fileProcessingAnim(D_800DEB12
-                            + (((D_800DEB14 - D_800DEB10)
+                    _fileProcessingAnim(_fileProgressPosition
+                            + (((_fileProgressCounter - _filePreviousProgressCounter)
                                    * ((_loadSaveDataErrorOffset * 0x14)
-                                       - (D_800DEB12 - new_var3)))
+                                       - (_fileProgressPosition - new_var3)))
                                 / D_800DEB0E),
                         y);
                 }
@@ -2155,9 +2158,9 @@ static int _selectFileToLoad(int arg0)
         break;
     case applyLoad:
         currentSlot = _loadSaveData(0);
-        ++D_800DEB14;
+        ++_fileProgressCounter;
         if (currentSlot != 0) {
-            D_800DEB14 = 0;
+            _fileProgressCounter = 0;
             do {
                 D_800DC8DC = 0;
                 if (currentSlot < 0) {
@@ -2167,7 +2170,7 @@ static int _selectFileToLoad(int arg0)
                 }
                 switch (_applyLoadedSaveFile(1)) {
                 case 0:
-                    D_800DEB14 = -16;
+                    _fileProgressCounter = -16;
                     vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                     D_800DC8DC = 16;
                     _fileLoaded = 1;
@@ -2767,7 +2770,7 @@ static int _showSaveFilesMenu(int port)
         break;
     case validate:
         val = _saveFile(0);
-        ++D_800DEB14;
+        ++_fileProgressCounter;
         if (val != 0) {
             D_8006169D = 0;
             saveId = _saveMenuSelectedSlot + _saveMenuSelectedPage;
@@ -2782,13 +2785,13 @@ static int _showSaveFilesMenu(int port)
                 _fileMenuElements[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
-                D_800DEB14 = 0;
+                _fileProgressCounter = 0;
                 _rMemcpy(&vs_main_settings, &_settingsBackup, sizeof(vs_main_settings));
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 _dataNotSaved = 0;
-                D_800DEB14 = -16;
+                _fileProgressCounter = -16;
                 _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(_saveFileInfo_t) * 3,
                     sizeof(_saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
@@ -2817,7 +2820,7 @@ static int _showSaveFilesMenu(int port)
         _saveMenuState = leave;
         break;
     case leave:
-        if (D_800DEB14 == 0) {
+        if (_fileProgressCounter == 0) {
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
             }
@@ -3788,50 +3791,50 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
     _menuItemStates[menuItem].textBlendFactor = 0;
 }
 
-static void _unpackMenuBg()
+static void _copyTitleBgData()
 {
     RECT rect;
     int j;
-    u_int new_var;
+    u_int pixelCounts;
     u_int i;
-    u_long* temp_v0;
+    u_long* data;
     u_long* p;
 
     i = 0;
-    temp_v0 = vs_main_allocHeap(544 * (512 + 64) * sizeof(u_short));
-    p = temp_v0;
+    data = vs_main_allocHeap(544 * (512 + 64) * sizeof(u_short));
+    p = data;
 
 #ifndef MENUBGSZ
 #define MENUBGSZ 222932 * sizeof(int)
 #endif
 
     for (; i < MENUBGSZ / sizeof(int);) {
-        new_var = _menuBg[i++];
-        for (j = new_var & 0xFFFF; j != 0; --j) {
+        pixelCounts = _titleScreenBg[i++];
+        for (j = pixelCounts & 0xFFFF; j != 0; --j) {
             *p++ = 0;
         }
 
-        for (j = new_var >> 16; j != 0; --j) {
-            *p++ = _menuBg[i++];
+        for (j = pixelCounts >> 16; j != 0; --j) {
+            *p++ = _titleScreenBg[i++];
         }
     }
     DrawSync(0);
     setRECT(&rect, 480, 0, 544, 512);
-    LoadImage(&rect, temp_v0);
+    LoadImage(&rect, data);
     DrawSync(0);
     setRECT(&rect, 0, 448, 544, 64);
-    LoadImage(&rect, temp_v0 + 0x22000);
+    LoadImage(&rect, data + 0x22000); // Outlines and menu BG
     DrawSync(0);
 
     for (i = 0; i < 8; ++i) {
         setRECT(&rect, 480, i + 384, 16, 1);
-        LoadImage(&rect, (u_long*)_menuItemClut);
+        LoadImage(&rect, (u_long*)_menuItemTextClut);
         DrawSync(0);
     }
     setRECT(&rect, 480, 394, 16, 1);
-    LoadImage(&rect, (u_long*)D_80074AF4);
+    LoadImage(&rect, (u_long*)_menuItemOutlineClut);
     DrawSync(0);
-    vs_main_freeHeap(temp_v0);
+    vs_main_freeHeap(data);
 }
 
 static void _initTitleScreen()
@@ -3986,8 +3989,8 @@ void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
     clut[0] = 0;
 
     for (i = 1; i < 16; ++i) {
-        r0 = _menuItemClut[clut0][i];
-        r1 = _menuItemClut[clut1][i];
+        r0 = _menuItemTextClut[clut0][i];
+        r1 = _menuItemTextClut[clut1][i];
         g0 = r0 & 0x3E0;
         b0 = r0 & 0x7C00;
         r0 &= 0x1F;
@@ -4086,7 +4089,7 @@ static void _setTitleMenuState()
 
 static void _drawTitleMenuItems()
 {
-    int cluts2;
+    int textUv;
     int j;
     menuItemState_t* menuState;
     int x;
@@ -4103,18 +4106,18 @@ static void _drawTitleMenuItems()
             continue;
         }
         prim->tag = vs_getTag(prim->sprt, primAddrEnd);
-        prim->sprt.tpage = _menuItemTpages1[i];
+        prim->sprt.tpage = _menuItemOutlineTpages1[i];
         prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
             _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
-        if (_menuItemStates[i].state == 3) {
+        if (_menuItemStates[i].state == menuItemStateSubmenu) {
             prim->sprt.x0y0
-                = (_menuItemXy[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
+                = (_menuItemOutlineXy[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
         } else {
             prim->sprt.x0y0
-                = _menuItemXy[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
+                = _menuItemOutlineXy[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
         }
-        prim->sprt.u0v0clut = _menuItemCluts1[i];
-        prim->sprt.wh = _menuItemWh[i];
+        prim->sprt.u0v0clut = _menuItemOutlineUv[i];
+        prim->sprt.wh = _menuItemOutlineWh[i];
         DrawPrim(prim);
         ++prim;
     }
@@ -4130,10 +4133,10 @@ static void _drawTitleMenuItems()
             x = menuState[i].textPos + 128;
         }
 
-        cluts2 = _menuItemCluts2[i];
+        textUv = _menuItemTextUv[i];
         wh = 128;
         if (x < 176) {
-            cluts2 += 176 - x;
+            textUv += 176 - x;
             wh = x - 48;
             x = 176;
         }
@@ -4143,7 +4146,6 @@ static void _drawTitleMenuItems()
         wh |= vs_getWH(0, 1);
 
         for (j = 0; j < 32; ++j) {
-
             int new_var = j + menuState[i].textPos;
             prim->tag = vs_getTag(prim->sprt, primAddrEnd);
             prim->sprt.tpage = _menuItemTpages2[i];
@@ -4179,7 +4181,7 @@ static void _drawTitleMenuItems()
                 }
             }
             prim->sprt.x0y0 = x | ((new_var + 240) << 16);
-            prim->sprt.u0v0clut = cluts2 + (j << 8);
+            prim->sprt.u0v0clut = textUv + (j << 8);
             prim->sprt.wh = wh;
             DrawPrim(prim);
             ++prim;
@@ -4495,7 +4497,7 @@ int vs_title_exec()
             _menuItemStates[i].enabled = 0;
         }
 
-        _unpackMenuBg();
+        _copyTitleBgData();
         _initIntroMovie();
         _playIntroMovie();
         _initTitleScreen();
@@ -4682,7 +4684,7 @@ static void _initGameData()
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(vs_main_skillsLearned, D_80075B24, sizeof(D_80075B24));
+    vs_main_memcpy(vs_main_skillsLearned, _skillsLearned, sizeof(_skillsLearned));
     vs_main_bzero(D_8005FFD8, sizeof(D_8005FFD8));
     vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
     vs_main_bzero(&D_8005FEA0, sizeof(D_8005FEA0));

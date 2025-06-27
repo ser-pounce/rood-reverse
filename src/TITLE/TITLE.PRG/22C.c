@@ -201,12 +201,9 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
-
-u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
+u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 u_int _encodeSeed = 0x0019660D;
 u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-
 extern u_char _menuElementStops[];
 extern char _selectCursorColors[];
 extern int _saveInfoUVClut[];
@@ -233,7 +230,7 @@ extern int _menuItemOutlineWh[10];
 extern int _menuItemOutlineXy[10];
 extern u_char D_80074C24[15][256];
 extern u_char _skillsLearned[32];
-
+// _vlcStaticTable = 0x80075CC4; ??
 extern u_int _titleScreenBg[];
 extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];

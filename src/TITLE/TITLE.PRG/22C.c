@@ -193,7 +193,7 @@ typedef struct {
     u_char unkFE0[0x20];
     u_short textTable[0x800];
     _saveFileInfo_t saveFileInfo[5];
-    struct DIRENTRY direntBuf;
+    struct DIRENTRY _dirEntBuf;
 } mcdata_t;
 
 static void _playMovie(DslLOC*);
@@ -205,7 +205,7 @@ u_char const saveFilenameTemplate[] = "bu00:BASLUS-01040VAG0";
 
 u_char const* _pMemcardFilenameTemplate = saveFilenameTemplate;
 u_int _encodeSeed = 0x0019660D;
-u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
+u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 
 extern u_char _menuElementStops[];
 extern char _selectCursorColors[];
@@ -223,9 +223,8 @@ extern struct {
 extern u_long _developer[];
 extern int _movieWidth;
 extern int _movieHeight;
-extern u_int _menuItemOutlineClut[];
-extern u_int _titleScreenBg[];
 extern u_short _menuItemTextClut[2][16];
+extern u_int _menuItemOutlineClut[];
 extern int _menuItemTextUv[10];
 extern int _menuItemTpages2[10];
 extern int _menuItemOutlineUv[10];
@@ -234,11 +233,14 @@ extern int _menuItemOutlineWh[10];
 extern int _menuItemOutlineXy[10];
 extern u_char D_80074C24[15][256];
 extern u_char _skillsLearned[32];
+
+extern u_int _titleScreenBg[];
 extern u_short _menuCopyright[];
 extern fontTable_t _fontTable[2];
 extern u_long _debugFont[];
 extern uiTable_t _uiTable;
 extern menuBg_t _saveMenuBg;
+
 extern u_char _memcardFilename[32];
 extern u_char _memcardTempFilename[32];
 extern u_char _memCardState;
@@ -257,21 +259,7 @@ extern u_char _memcardFileno;
 extern u_char _memcardManagerPort;
 extern u_char _saveFileErrorCount;
 extern u_char _renameErrorCount;
-extern u_char _loadFileMenuState;
-extern u_char _loadFileMenuSelectedSlot;
-extern u_char _loadFileMenuFadeout;
 extern int _saveFileId;
-extern u_char _showSaveMenuState;
-extern u_char _showSaveMenuSelectedSlot;
-extern RECT _gameSaveScreenClearRect;
-extern menuItemPrim_t _menuItemPrims[10];
-extern u_char _saveScreenState;
-extern u_char _saveScreenFadeTimer;
-extern u_char _loadSaveDataErrorOffset;
-extern u_short _filePreviousProgressCounter;
-extern u_short _fileProgressPosition;
-extern u_char _dataNotSaved;
-extern u_char _containerDataEmpty;
 extern u_char _diskState;
 extern vs_main_CdQueueSlot* _mcDataLoad;
 extern u_char _findCurrentSaveState;
@@ -284,15 +272,19 @@ extern u_char _loadFilesPort;
 extern u_char _slotsPage;
 extern u_char _selectedSlot;
 extern u_char _fileLoadLeaveTimer;
+extern u_char _fileLoadCompleteTimer;
 extern u_char _selectLoadMemoryCardState;
 extern u_char _selectedMemoryCard;
-extern u_char _fileLoadCompleteTimer;
+extern u_char _loadFileMenuState;
+extern u_char _loadFileMenuSelectedSlot;
+extern u_char _loadFileMenuFadeout;
 extern u_char _promptConfirmState;
 extern u_char _promptConfirmNoSelected;
 extern int _promptOverwriteSelectedOption;
 extern u_char _promptOverwriteState;
 extern u_char _overwritePromptInitialized;
 extern u_char _promptFormatState;
+extern u_char _memcardStatePort;
 extern vs_main_settings_t _settingsBackup;
 extern int _saveSuccessful;
 extern u_char _saveMenuState;
@@ -300,26 +292,36 @@ extern u_char _saveMenuPort;
 extern u_char _saveMenuSelectedPage;
 extern u_char _saveMenuSelectedSlot;
 extern u_char _saveMenuLeaveTimer;
-extern u_char _memcardStatePort;
+extern u_char _selectSaveMemoryCardState;
+extern u_char _selectSaveMemoryCardPort;
+extern u_char _showSaveMenuState;
+extern u_char _showSaveMenuSelectedSlot;
 extern RECT _gameLoadRect;
 extern u_char _loadScreenMemcardState;
 extern u_char _saveScreenConfirmationState;
 extern u_char _saveScreenConfirmationOption;
+extern RECT _gameSaveScreenClearRect;
+extern u_char _saveScreenState;
+extern u_char _saveScreenFadeTimer;
+extern menuItemPrim_t _menuItemPrims[10];
 extern tagsprt_t _titleMenuItemBg[2];
-extern long memcardEventDescriptors[8];
 extern struct {
     u_long tag;
     VS_TILE_TPAGE tile;
 } _titleScreenFade;
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
+extern long _memcardEventDescriptors[8];
 extern u_char* _spmcimg;
 extern mcdata_t* _mcData;
 extern u_short* _textTable;
 extern struct DIRENTRY* _memcardFiles[15];
-extern struct DIRENTRY* dirEntBuf;
+extern struct DIRENTRY* _dirEntBuf;
 extern _saveFileInfo_t* _saveFileInfo;
+extern u_char _loadSaveDataErrorOffset;
 extern u_short _fileProgressTarget;
+extern u_short _filePreviousProgressCounter;
+extern u_short _fileProgressPosition;
 extern int _fileProgressCounter;
 extern _fileMenuElements_t _fileMenuElements[10];
 extern struct {
@@ -342,13 +344,15 @@ extern u_char* _selectSaveMemoryCardMessage;
 extern u_char _isSaving;
 extern u_char _selectCursorColor;
 extern u_char _fileMenuScreenFade;
+extern u_char _dataNotSaved;
+extern u_char _containerDataEmpty;
 extern u_char _backupMainSetting;
 extern u_char _frameBuf;
 extern u_int _introMovieDisplayedAt;
 extern int _introMoviePlaying;
-extern DslLOC introMovieLoc;
-extern MovieData_t _movieData;
 extern int _dslMode;
+extern DslLOC _introMovieLoc;
+extern MovieData_t _movieData;
 extern u_long* _movieRingBuf;
 extern u_short _vlcTable;
 extern void* _encodedDataBuf0;
@@ -356,8 +360,6 @@ extern void* _encodedDataBuf1;
 extern void* _decodedDataBuf0;
 extern void* _decodedDataBuf1;
 extern menuItemState_t _menuItemStates[10];
-extern u_char _selectSaveMemoryCardState;
-extern u_char _selectSaveMemoryCardPort;
 
 enum menuItems {
     menuItemTimeout = -1,
@@ -423,7 +425,7 @@ static enum _testMemcardEvents_t _testMemcardEvents(int type)
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if (TestEvent(memcardEventDescriptors[i + type]) == 1) {
+        if (TestEvent(_memcardEventDescriptors[i + type]) == 1) {
             return i;
         }
     }
@@ -435,7 +437,7 @@ static void _resetMemcardEvents(int type)
     int i;
 
     for (i = 0; i < 4; ++i) {
-        TestEvent(memcardEventDescriptors[i + type]);
+        TestEvent(_memcardEventDescriptors[i + type]);
     }
 }
 
@@ -662,11 +664,11 @@ static int _initSaveFileInfo(int port)
         _memcardFiles[i] = NULL;
     }
 
-    fileNo = (int)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), dirEntBuf);
+    fileNo = (int)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
     _memcardFiles[0] = (void*)fileNo;
 
     for (i = 1; (i < 15) && fileNo; ++i) {
-        fileNo = (int)nextfile(dirEntBuf + i);
+        fileNo = (int)nextfile(_dirEntBuf + i);
         _memcardFiles[i] = (void*)fileNo;
     }
 
@@ -1207,7 +1209,7 @@ static int _loadMemcardMenu(int init)
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
         _textTable = _mcData->textTable;
         _saveFileInfo = _mcData->saveFileInfo;
-        dirEntBuf = &_mcData->direntBuf;
+        _dirEntBuf = &_mcData->_dirEntBuf;
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
@@ -1248,14 +1250,14 @@ static int _loadMemcardMenu(int init)
             if (i & 4) {
                 event = HwCARD;
             }
-            memcardEventDescriptors[i]
-                = OpenEvent(event, eventSpecs[i & 3], EvMdNOINTR, NULL);
+            _memcardEventDescriptors[i]
+                = OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, NULL);
         }
 
         ExitCriticalSection();
 
         for (i = 0; i < 8; ++i) {
-            EnableEvent(memcardEventDescriptors[i]);
+            EnableEvent(_memcardEventDescriptors[i]);
         }
         return 1;
     }
@@ -1267,13 +1269,13 @@ static void _shutdownMemcard()
     int i;
 
     for (i = 0; i < 8; ++i) {
-        DisableEvent(memcardEventDescriptors[i]);
+        DisableEvent(_memcardEventDescriptors[i]);
     }
 
     EnterCriticalSection();
 
     for (i = 0; i < 8; ++i) {
-        CloseEvent(memcardEventDescriptors[i]);
+        CloseEvent(_memcardEventDescriptors[i]);
     }
 
     ExitCriticalSection();
@@ -3690,18 +3692,18 @@ static void _displayPublisherAndDeveloper()
 static void _initIntroMovie()
 {
     _dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
-    DsIntToPos(VS_TITLE_STR_LBA, &introMovieLoc);
+    DsIntToPos(VS_TITLE_STR_LBA, &_introMovieLoc);
     _movieRingBuf = vs_main_allocHeap(0x20000);
     _encodedDataBuf0 = vs_main_allocHeap(0x23000);
     _encodedDataBuf1 = vs_main_allocHeap(0x23000);
     _decodedDataBuf0 = vs_main_allocHeap(0x2A00);
     _decodedDataBuf1 = vs_main_allocHeap(0x2A00);
     _initMovieData(&_movieData, 0, 0, 0, 224);
-    _initMoviePlayback(&introMovieLoc, _decDCToutCallback);
+    _initMoviePlayback(&_introMovieLoc, _decDCToutCallback);
     DecDCTvlcBuild(&_vlcTable);
 
     while (_decodeNextMovieFrame(&_movieData) == -1) {
-        DslLOC loc = introMovieLoc;
+        DslLOC loc = _introMovieLoc;
         _playMovie(&loc);
     }
     _introMoviePlaying = 1;
@@ -3748,7 +3750,7 @@ static int _playIntroMovie()
 
         while (_decodeNextMovieFrame(&_movieData) == -1) {
             if ((u_int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
-                loc = introMovieLoc;
+                loc = _introMovieLoc;
             }
             _playMovie(&loc);
         }

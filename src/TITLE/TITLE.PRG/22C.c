@@ -201,9 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern RECT _gameSaveScreenClearRect;
-extern u_char _saveScreenState;
-extern u_char _saveScreenFadeTimer;
 extern menuItemPrim_t _menuItemPrims[10];
 extern tagsprt_t _titleMenuItemBg[2];
 extern struct {
@@ -3352,14 +3349,14 @@ static int _saveScreenConfirmation(int init)
     };
 
     static u_char state;
-    static u_char _saveScreenConfirmationOption;
+    static u_char confirm;
     static u_char _[5] __attribute__((unused));
 
     _fileMenuElements_t* elem;
     int i;
 
     if (init != 0) {
-        _saveScreenConfirmationOption = 1;
+        confirm = 1;
         state = initSlot1;
         return 0;
     }
@@ -3379,8 +3376,8 @@ static int _saveScreenConfirmation(int init)
         state += _fileMenuElementsActive();
         break;
     case handleInput:
-        _fileMenuElements[_saveScreenConfirmationOption].selected = 1;
-        _fileMenuElements[3 - _saveScreenConfirmationOption].selected = 0;
+        _fileMenuElements[confirm].selected = 1;
+        _fileMenuElements[3 - confirm].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
@@ -3388,7 +3385,7 @@ static int _saveScreenConfirmation(int init)
             state = returnSelectedOption;
         }
         if (state == returnSelectedOption) {
-            if (_saveScreenConfirmationOption == 1) {
+            if (confirm == 1) {
                 _playMenuSelectSfx();
             } else {
                 _playMenuLeaveSfx();
@@ -3402,13 +3399,13 @@ static int _saveScreenConfirmation(int init)
         }
         if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
             _playMenuChangeSfx();
-            _saveScreenConfirmationOption = 3 - _saveScreenConfirmationOption;
+            confirm = 3 - confirm;
         }
-        _selectCursorXy = vs_getXY(180, (_saveScreenConfirmationOption + 7) * 16 + 10);
+        _selectCursorXy = vs_getXY(180, (confirm + 7) * 16 + 10);
         break;
     case returnSelectedOption:
         if (_fileMenuElementsActive() != 0) {
-            return _saveScreenConfirmationOption;
+            return confirm;
         }
         break;
     }
@@ -3433,6 +3430,11 @@ static void _gameSaveScreen()
 {
     enum state { init = 0, loading = 1, loaded = 2, confirmation = 3, exit = 4 };
 
+    static RECT rect;
+    static u_char state;
+    static u_char fadeTimer;
+    static u_char _[6] __attribute__((unused));
+
     int val;
 
     _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
@@ -3441,15 +3443,15 @@ static void _gameSaveScreen()
     _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
     _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
-    setRECT(&_gameSaveScreenClearRect, 640, 256, 32, 240);
-    ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
+    setRECT(&rect, 640, 256, 32, 240);
+    ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
-    setRECT(&_gameSaveScreenClearRect, 768, 256, 32, 240);
-    ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
+    setRECT(&rect, 768, 256, 32, 240);
+    ClearImage(&rect, 0, 0, 0);
     _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
 
-    _saveScreenState = init;
+    state = init;
 
     while (1) {
         vs_main_gametimeUpdate(2);
@@ -3457,16 +3459,16 @@ static void _gameSaveScreen()
         vs_main_processPadState();
         _encode(0);
 
-        switch (_saveScreenState) {
+        switch (state) {
         case init:
             _loadMemcardMenu(1);
-            _saveScreenState = loading;
+            state = loading;
             continue;
         case loading:
             if (_loadMemcardMenu(0) != 0) {
                 _initFileMenu();
                 _showSaveMenu(1);
-                _saveScreenState = loaded;
+                state = loaded;
             }
             continue;
         case loaded:
@@ -3476,12 +3478,12 @@ static void _gameSaveScreen()
                     _selectSaveMemoryCardMessage
                         = (u_char*)(_textTable + VS_MCMAN_OFFSET_savePrompt);
                     _saveScreenConfirmation(1);
-                    _saveScreenState = confirmation;
+                    state = confirmation;
                 } else {
                     _shutdownMemcard();
                     _saveScreenExitScreen();
-                    _saveScreenFadeTimer = 30;
-                    _saveScreenState = exit;
+                    fadeTimer = 30;
+                    state = exit;
                     continue;
                 }
             }
@@ -3494,19 +3496,19 @@ static void _gameSaveScreen()
                 if (val != 1) {
                     _shutdownMemcard();
                     _saveScreenExitScreen();
-                    _saveScreenFadeTimer = 30;
-                    _saveScreenState = exit;
+                    fadeTimer = 30;
+                    state = exit;
                     continue;
                 }
                 _showSaveMenu(1);
-                _saveScreenState = loaded;
+                state = loaded;
             }
             _drawFileMenuBg();
             _drawFileMenu(_frameBuf);
             continue;
         case exit:
             _saveScreenExitScreen();
-            if (--_saveScreenFadeTimer == 0) {
+            if (--fadeTimer == 0) {
                 SetDispMask(0);
                 return;
             }

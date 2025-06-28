@@ -393,10 +393,11 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
 u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
-u_int _encodeSeed = 0x0019660D;
 
 static u_int _encode(int value)
 {
+    static u_int _encodeSeed = 0x0019660D;
+
     u_int seed = _encodeSeed;
     _encodeSeed = seed * 0x19660D;
     return seed >> (32 - value);
@@ -450,44 +451,6 @@ static void _rMemcpy(void* dst, void const* src, int count)
         ((u_char*)dst)[count] = ((u_char const*)src)[count];
     } while (count != 0);
 }
-
-u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
-    224, 248, 255, 255, 255, 255 };
-char _cursorFileOpSaturation[]
-    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
-int _saveInfoUVClut[]
-    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
-          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
-          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
-          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
-          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
-int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
-    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
-    vs_getXY(5, 7) };
-u_char _digitDivisors[] = { 0, 1, 10, 100 };
-int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
-    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
-    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
-    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
-    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-u_char _arrowCharState[4] = { 0 };
-int _menuItemColors1[]
-    = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
-int _menuItemColors2[] = {
-    vs_getRGB888(0x08, 0x08, 0x20),
-    vs_getRGB888(0x10, 0x10, 0x08),
-};
 
 static u_char* _memcardMakeFilename(int port, int fileNo)
 {
@@ -752,10 +715,7 @@ enum memcardEventHandler_e {
     memcardEventUnformatted = 3
 };
 
-enum memcardEvents_e {
-    memcardEventsSw = 0,
-    memcardEventsHw = 4
-};
+enum memcardEvents_e { memcardEventsSw = 0, memcardEventsHw = 4 };
 
 static enum memcardEventHandler_e _memcardEventHandler(int port)
 {
@@ -1216,6 +1176,8 @@ int _saveFile(int arg0)
     return _saveFileErrorCount == 3 ? -1 : 0;
 }
 
+u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
+
 static int _loadMemcardMenu(int init)
 {
 
@@ -1321,6 +1283,20 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawPrim(&_primBuf);
 }
 
+u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
+    224, 248, 255, 255, 255, 255 };
+char _cursorFileOpSaturation[]
+    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
+int _saveInfoUVClut[]
+    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
+          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
+          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
+          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
+          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
+    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
+    vs_getXY(5, 7) };
+
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
     _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id],
@@ -1351,6 +1327,8 @@ static int _countDigits(int val)
 }
 
 enum statType_e { statTypeHP = 0, statTypeMP = 1 };
+
+u_char _digitDivisors[] = { 0, 1, 10, 100 };
 
 static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
@@ -1574,6 +1552,22 @@ static int _fileMenuElementsActive()
     return i == 10;
 }
 
+int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
+    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
+    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
+    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
+    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
+
 static int _printCharacter(u_int c, int x, int y, int clut)
 {
     if ((c >> 8) == 14) {
@@ -1689,6 +1683,8 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
+u_char _arrowCharState[4] = { 0 };
+
 static void _printString(u_char* text, int x, int y, int clut)
 {
     u_char arrowState;
@@ -1743,6 +1739,13 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     }
     return colourOut;
 }
+
+int _menuItemColors1[]
+    = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
+int _menuItemColors2[] = {
+    vs_getRGB888(0x08, 0x08, 0x20),
+    vs_getRGB888(0x10, 0x10, 0x08),
+};
 
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {

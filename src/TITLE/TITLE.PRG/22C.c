@@ -201,11 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern int _promptOverwriteSelectedOption;
-extern u_char _promptOverwriteState;
-extern u_char _overwritePromptInitialized;
-extern u_char _promptFormatState;
-extern u_char _memcardStatePort;
 extern vs_main_settings_t _settingsBackup;
 extern int _saveSuccessful;
 extern u_char _saveMenuState;
@@ -2536,24 +2531,28 @@ static int _promptConfirm(int arg0)
 
 static int _promptOverwrite(int init)
 {
+    static int confirmed;
+    static u_char state;
+    static u_char initialized;
+
     if (init != 0) {
-        _overwritePromptInitialized = 1;
+        initialized = 1;
         _selectSaveMemoryCardMessage
             = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
         _promptConfirm(1);
-        _promptOverwriteState = 0;
+        state = 0;
         return 0;
     }
-    switch (_promptOverwriteState) {
+    switch (state) {
     case 0:
-        _promptOverwriteSelectedOption = _promptConfirm(0);
-        if (_promptOverwriteSelectedOption != 0) {
-            _promptOverwriteState = 1;
+        confirmed = _promptConfirm(0);
+        if (confirmed != 0) {
+            state = 1;
         }
         return 0;
     case 1:
         if (_fileMenuElementsActive() != 0) {
-            return _promptOverwriteSelectedOption;
+            return confirmed;
         }
         return 0;
     default:
@@ -2561,23 +2560,23 @@ static int _promptOverwrite(int init)
     }
 }
 
-static int _promptFormat(int port)
+static int _promptFormat(int initPort)
 {
     enum state { promptConfirm = 0, initEvents = 1, handleEvents = 2, format = 3 };
 
-    int val;
-    int state;
+    static u_char state;
+    static u_char port;
 
-    if (port != 0) {
-        _memcardStatePort = port;
+    int val;
+
+    if (initPort != 0) {
+        port = initPort;
         _selectSaveMemoryCardMessage
             = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
         _promptConfirm(1);
-        _promptFormatState = promptConfirm;
+        state = promptConfirm;
         return 0;
     }
-
-    state = _promptFormatState;
 
     switch (state) {
     case promptConfirm:
@@ -2590,13 +2589,13 @@ static int _promptFormat(int port)
                 return -1;
             }
 
-            _promptFormatState = initEvents;
+            state = initEvents;
         }
         return 0;
     case initEvents:
         if (_fileMenuElementsActive() != 0) {
-            _memcardEventHandler(_memcardStatePort);
-            _promptFormatState = handleEvents;
+            _memcardEventHandler(port);
+            state = handleEvents;
         }
         return 0;
     case handleEvents:
@@ -2604,7 +2603,7 @@ static int _promptFormat(int port)
 
         if (val != 0) {
             if (val == memcardEventUnformatted) {
-                _promptFormatState = format;
+                state = format;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatting);
             } else {
@@ -2620,7 +2619,7 @@ static int _promptFormat(int port)
         }
         return 0;
     case format:
-        if (_card_format((_memcardStatePort - 1) * 16) == 0) {
+        if (_card_format((port - 1) * 16) == 0) {
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
             return -1;

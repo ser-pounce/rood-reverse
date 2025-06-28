@@ -252,9 +252,6 @@ extern void* _encodedDataBuf1;
 extern void* _decodedDataBuf0;
 extern void* _decodedDataBuf1;
 
-// titleScreen.c
-extern menuItemState_t _menuItemStates[10];
-
 enum menuItems {
     menuItemTimeout = -1,
     menuItemNewGame = 0,
@@ -1209,6 +1206,8 @@ static void _shutdownMemcard()
     vs_main_freeHeap(_spmcimg);
 }
 
+// 
+
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
@@ -1222,9 +1221,9 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawPrim(&_primBuf);
 }
 
-u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
+static u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
     224, 248, 255, 255, 255, 255 };
-char _cursorFileOpSaturation[]
+static char _cursorFileOpSaturation[]
     = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
@@ -1441,43 +1440,43 @@ static void _initFileMenu()
 
 static _fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char* text)
 {
-    _fileMenuElements_t* entry;
+    _fileMenuElements_t* element;
     int i;
     u_int c;
 
-    entry = &_fileMenuElements[id];
-    memset(entry, 0, sizeof(*entry));
-    entry->state = 1;
-    entry->slotId = -1;
-    *(int*)&entry->x = xy;
-    *(int*)&entry->w = wh;
+    element = &_fileMenuElements[id];
+    memset(element, 0, sizeof(*element));
+    element->state = 1;
+    element->slotId = -1;
+    *(int*)&element->x = xy;
+    *(int*)&element->w = wh;
 
     if (text != NULL) {
         for (i = 0; i < 32;) {
             c = *text++;
             if (c == vs_char_spacing) {
-                entry->text[i++] = c;
+                element->text[i++] = c;
                 do {
                     c = *(text++);
                 } while (0);
             } else {
                 if (c == vs_char_terminator) {
-                    entry->text[i] = 0xFF;
-                    return entry;
+                    element->text[i] = 0xFF;
+                    return element;
                 }
                 if (c >= vs_char_nonPrinting) {
                     continue;
                 }
             }
-            entry->text[i++] = c;
+            element->text[i++] = c;
         }
     } else {
-        entry->text[0] = 0xFF;
+        element->text[0] = 0xFF;
     }
-    return entry;
+    return element;
 }
 
-static void _clearFileMenuEntry(int id)
+static void _clearFileMenuElement(int id)
 {
     memset(&_fileMenuElements[id], 0, sizeof(_fileMenuElements_t));
 }
@@ -1710,7 +1709,7 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
+static void _drawFileMenuElement(_fileMenuElements_t* element)
 {
     u_long clut[130];
     _saveFileInfo_t* saveInfo;
@@ -1726,22 +1725,22 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
     u_long* locationClut;
     int new_var;
 
-    if (menuEntry->selected != 0) {
-        menuEntry->outertextBlendFactor = 8;
-    } else if (menuEntry->outertextBlendFactor != 0) {
-        --menuEntry->outertextBlendFactor;
+    if (element->selected != 0) {
+        element->outertextBlendFactor = 8;
+    } else if (element->outertextBlendFactor != 0) {
+        --element->outertextBlendFactor;
     }
-    if (menuEntry->slotUnavailable != 0) {
-        menuEntry->outertextBlendFactor = 0;
+    if (element->slotUnavailable != 0) {
+        element->outertextBlendFactor = 0;
     }
-    if ((menuEntry->slotId >= 5) || ((menuEntry->y - 72) < 0x51U)) {
-        y = menuEntry->innertextBlendFactor;
-        var1 = _intepolateMenuItemBgColour(8 - menuEntry->outertextBlendFactor, y);
-        var2 = _intepolateMenuItemBgColour(menuEntry->outertextBlendFactor, y);
+    if ((element->slotId >= 5) || ((element->y - 72) < 0x51U)) {
+        y = element->innertextBlendFactor;
+        var1 = _intepolateMenuItemBgColour(8 - element->outertextBlendFactor, y);
+        var2 = _intepolateMenuItemBgColour(element->outertextBlendFactor, y);
         if (y & 7) {
-            menuEntry->innertextBlendFactor = y + 1;
+            element->innertextBlendFactor = y + 1;
         }
-        y = menuEntry->y << 16;
+        y = element->y << 16;
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
@@ -1749,36 +1748,36 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
         _primBuf.prim.tilePoly.tile.x0y0
-            = ((menuEntry->x + 2) & 0xFFFF) | (menuEntry->y + 2) << 16;
-        _primBuf.prim.tilePoly.tile.wh = menuEntry->w | (menuEntry->h << 0x10);
+            = ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
+        _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)menuEntry->x | y;
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
-        _primBuf.prim.tilePoly.polyG4.x1y1 = ((menuEntry->x + menuEntry->w) & 0xFFFF) | y;
+        _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
         _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)menuEntry->x | ((menuEntry->y + menuEntry->h) << 0x10);
+            = (u_short)element->x | ((element->y + element->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 = ((menuEntry->x + menuEntry->w) & 0xFFFF)
-            | ((menuEntry->y + menuEntry->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3 = ((element->x + element->w) & 0xFFFF)
+            | ((element->y + element->h) << 0x10);
         DrawPrim(&_primBuf);
 
-        x = menuEntry->x + 6;
+        x = element->x + 6;
         for (var1 = 0; var1 < 32; ++var1) {
-            var2 = menuEntry->text[var1];
+            var2 = element->text[var1];
             if (var2 == vs_char_spacing) {
-                x += menuEntry->text[++var1];
+                x += element->text[++var1];
             } else if (var2 != 0xFF) {
-                x = _printCharacter(var2, x, menuEntry->y, 0);
+                x = _printCharacter(var2, x, element->y, 0);
             } else {
                 break;
             }
         }
-        var2 = menuEntry->slotId;
+        var2 = element->slotId;
         if (var2 < 5) {
             _readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
             saveInfo = &_saveFileInfo[var2];
-            location = menuEntry->saveLocation - 1;
+            location = element->saveLocation - 1;
             var1 = saveInfo->unk4.slotState;
             if (saveInfo->unk4.slotState < 3) {
                 if (saveInfo->unk4.slotState == 0) {
@@ -1801,39 +1800,39 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
             _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
             if (location < 0) {
                 uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
-                xy = (menuEntry->x - 64) | y;
+                xy = (element->x - 64) | y;
                 _drawSprt(xy, uvClut, vs_getWH(64, 32),
-                    ((8 - menuEntry->outertextBlendFactor) << 19) | 0x9C);
+                    ((8 - element->outertextBlendFactor) << 19) | 0x9C);
             } else {
                 int v0;
                 uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
                     | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (menuEntry->x - 64) | y;
+                xy = (element->x - 64) | y;
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
-                var_a3 = (((8 - menuEntry->outertextBlendFactor) << 19) | 0x90);
+                var_a3 = (((8 - element->outertextBlendFactor) << 19) | 0x90);
                 _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
             }
             _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
-            _drawSaveInfoUI((menuEntry->x - 22) | y, vs_uiids_number);
-            _drawInteger((menuEntry->x - 9) | y, var2 + 1, 0xAU);
+            _drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
+            _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.slotState;
             if (slotState == slotStateUnavailable) {
                 _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_inUse),
-                    menuEntry->x + 6, menuEntry->y + 10, 3);
+                    element->x + 6, element->y + 10, 3);
             } else if (slotState == slotStateAvailable) {
                 if (_isSaving == 0) {
                     _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_empty),
-                        menuEntry->x + 6, menuEntry->y + 10, 3);
+                        element->x + 6, element->y + 10, 3);
                 } else {
                     _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_new),
-                        menuEntry->x + 6, menuEntry->y + 10, 0);
+                        element->x + 6, element->y + 10, 0);
                 }
             } else {
                 y += 4 << 16;
-                _printString((u_char*)&_textTable[_textTable[menuEntry->saveLocation
+                _printString((u_char*)&_textTable[_textTable[element->saveLocation
                                  + VS_MCMAN_INDEX_saveLocations]],
-                    menuEntry->x + 6, menuEntry->y + 4, 0);
+                    element->x + 6, element->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
                 _drawSaveInfoUI(y | 189, vs_uiids_colon);
                 var1 = saveInfo->unk4.mapCompletion;
@@ -1873,7 +1872,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                     y | 158, statTypeMP, saveInfo->unk4.currentMP, saveInfo->unk4.maxMP);
                 y -= 17 << 16;
             }
-            if ((menuEntry->selected != 0) && (_fileProgressCounter != 0)) {
+            if ((element->selected != 0) && (_fileProgressCounter != 0)) {
                 if (_fileProgressCounter < 0) {
                     char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
                     _fileProcessingCompleteAnim(-p[17], y);
@@ -1969,7 +1968,7 @@ static void _drawFileMenu(int framebuf)
             }
         }
         if (state != fileMenuElementStateInactive) {
-            _drawFileMenuEntry(element);
+            _drawFileMenuElement(element);
         }
     }
 
@@ -2043,7 +2042,7 @@ static int _showLoadFilesMenu(int initPort)
     static u_char leaveTimer;
     static u_char completeTimer;
 
-    _fileMenuElements_t* entry;
+    _fileMenuElements_t* element;
     int currentSlot;
     int i;
 
@@ -2066,11 +2065,11 @@ static int _showLoadFilesMenu(int initPort)
     switch (state) {
     case init:
         for (i = 0; i < 5; ++i) {
-            entry = _initFileMenuElement(
+            element = _initFileMenuElement(
                 i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
-            entry->slotId = i;
-            entry->slotUnavailable = _saveFileInfo[i].unk4.slotState < slotStateInUse;
-            entry->saveLocation = _saveFileInfo[i].unk4.saveLocation;
+            element->slotId = i;
+            element->slotUnavailable = _saveFileInfo[i].unk4.slotState < slotStateInUse;
+            element->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
         state = handleInput;
         _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
@@ -2079,7 +2078,7 @@ static int _showLoadFilesMenu(int initPort)
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
-                _clearFileMenuEntry(i);
+                _clearFileMenuElement(i);
             }
             _selectCursorXy = 0;
             return -1;
@@ -2196,7 +2195,7 @@ static int _showLoadFilesMenu(int initPort)
             vs_main_gametime.t = backupTime.t;
         } else {
             for (i = 5; i < 10; ++i) {
-                _clearFileMenuEntry(i);
+                _clearFileMenuElement(i);
             }
         }
         return fileLoaded;
@@ -2341,7 +2340,7 @@ static int _loadFileMenu(int initFadeout)
     static u_char fadeout;
     static u_char _[5] __attribute__((unused));
 
-    _fileMenuElements_t* entry;
+    _fileMenuElements_t* element;
     int i;
 
     if (initFadeout != 0) {
@@ -2353,28 +2352,28 @@ static int _loadFileMenu(int initFadeout)
     }
     switch (state) {
     case init:
-        entry = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
+        element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
-        entry->state = fileMenuElementStateAnimateX;
-        entry->targetPosition = 180;
-        entry->selected = 1;
-        entry->innertextBlendFactor = 8;
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 180;
+        element->selected = 1;
+        element->innertextBlendFactor = 8;
         state = displaySlot1;
         break;
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
-            entry = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
+            element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
-            entry->state = fileMenuElementStateAnimateX;
-            entry->targetPosition = 194;
+            element->state = fileMenuElementStateAnimateX;
+            element->targetPosition = 194;
             state = displaySlot2;
         }
         break;
     case displaySlot2:
-        entry = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
+        element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
-        entry->state = fileMenuElementStateAnimateX;
-        entry->targetPosition = 194;
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 194;
         state = waitForSlotAnimation;
         break;
     case waitForSlotAnimation:
@@ -2409,9 +2408,9 @@ static int _loadFileMenu(int initFadeout)
         }
         break;
     case slotSelected:
-        entry = (_fileMenuElements_t*)_selectLoadMemoryCard(0);
-        if (entry != 0) {
-            if ((int)entry < 0) {
+        element = (_fileMenuElements_t*)_selectLoadMemoryCard(0);
+        if (element != 0) {
+            if ((int)element < 0) {
                 state = displaySlot1;
             } else {
                 state = fadeAndReturnSelected;
@@ -2831,7 +2830,7 @@ static int _showSaveFilesMenu(int initPort)
     case leave:
         if (_fileProgressCounter == 0) {
             for (i = 5; i < 10; ++i) {
-                _clearFileMenuEntry(i);
+                _clearFileMenuElement(i);
             }
             return saveSuccessful;
         }
@@ -2854,7 +2853,7 @@ static int _showSaveFilesMenu(int initPort)
         if ((u_char)vs_main_buttonsPressed != 0) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
-                _clearFileMenuEntry(i);
+                _clearFileMenuElement(i);
             }
             return -1;
         }
@@ -3823,6 +3822,7 @@ static int _playIntroMovie()
 // titleScreen.c
 
 extern u_short _menuItemTextClut[2][16];
+extern menuItemState_t _menuItemStates[10];
 
 static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
@@ -4507,6 +4507,8 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].textBlendFactor = 16;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
+
+// main.c
 
 int _nop() { return 0; }
 

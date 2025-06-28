@@ -201,9 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _selectSaveMemoryCardPort;
-extern u_char _showSaveMenuState;
-extern u_char _showSaveMenuSelectedSlot;
 extern RECT _gameLoadRect;
 extern u_char _loadScreenMemcardState;
 extern u_char _saveScreenConfirmationState;
@@ -2883,7 +2880,7 @@ static int _showSaveFilesMenu(int initPort)
     return 0;
 }
 
-static int _selectSaveMemoryCard(int port)
+static int _selectSaveMemoryCard(int initPort)
 {
     enum state {
         init = 0,
@@ -2896,41 +2893,42 @@ static int _selectSaveMemoryCard(int port)
         showSaveMenu = 7
     };
 
-    static u_char _selectSaveMemoryCardState;
+    static u_char state;
+    static u_char port;
 
     int i, j;
 
-    if (port != 0) {
-        _selectSaveMemoryCardPort = port;
+    if (initPort != 0) {
+        port = initPort;
         _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
-        _selectSaveMemoryCardState = init;
+        state = init;
         return 0;
     }
 
-    switch (_selectSaveMemoryCardState) {
+    switch (state) {
     case init:
-        _fileMenuElements[_selectSaveMemoryCardPort].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[_selectSaveMemoryCardPort].targetPosition = 180;
-        _fileMenuElements[_selectSaveMemoryCardPort].innertextBlendFactor = 1;
-        _fileMenuElements[3 - _selectSaveMemoryCardPort].state
+        _fileMenuElements[port].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[port].targetPosition = 180;
+        _fileMenuElements[port].innertextBlendFactor = 1;
+        _fileMenuElements[3 - port].state
             = fileMenuElementStateAnimateX;
-        _fileMenuElements[3 - _selectSaveMemoryCardPort].targetPosition = 320;
-        _selectSaveMemoryCardState = waitForUnselectedAnimation;
+        _fileMenuElements[3 - port].targetPosition = 320;
+        state = waitForUnselectedAnimation;
         break;
     case waitForUnselectedAnimation:
         if (_fileMenuElementsActive() == 0) {
             break;
         }
-        if (_selectSaveMemoryCardPort == 2) {
+        if (port == 2) {
             _fileMenuElements[2].state = fileMenuElementStateAnimateY;
             _fileMenuElements[2].targetPosition = 50;
         }
-        _selectSaveMemoryCardState = waitForAnimation;
+        state = waitForAnimation;
         break;
     case waitForAnimation:
         if (_fileMenuElementsActive() != 0) {
-            _memcardEventHandler(_selectSaveMemoryCardPort);
-            _selectSaveMemoryCardState = handleEvents;
+            _memcardEventHandler(port);
+            state = handleEvents;
         }
         break;
     case handleEvents:
@@ -2940,10 +2938,10 @@ static int _selectSaveMemoryCard(int port)
         }
         switch (i) {
         case memcardEventIoEnd:
-            _selectSaveMemoryCardState = initSaveMenu;
+            state = initSaveMenu;
             break;
         case memcardEventTimeout:
-            _selectSaveMemoryCardState = animateLeave;
+            state = animateLeave;
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
@@ -2956,8 +2954,8 @@ static int _selectSaveMemoryCard(int port)
             for (i = 4; i >= 0; --i) {
                 _saveFileInfo[i].unk4.slotState = j;
             }
-            _showSaveFilesMenu(_selectSaveMemoryCardPort);
-            _selectSaveMemoryCardState = showSaveMenu;
+            _showSaveFilesMenu(port);
+            state = showSaveMenu;
             break;
         }
         break;
@@ -2970,7 +2968,7 @@ static int _selectSaveMemoryCard(int port)
             _fileMenuElements[i].state = fileMenuElementStateAnimateX;
             _fileMenuElements[i].targetPosition = 320;
         }
-        _selectSaveMemoryCardState = leave;
+        state = leave;
         break;
     case leave:
         if (_fileMenuElementsActive() != 0) {
@@ -2978,8 +2976,8 @@ static int _selectSaveMemoryCard(int port)
         }
         break;
     case initSaveMenu:
-        if (_initSaveFileInfo(_selectSaveMemoryCardPort) != 0) {
-            _selectSaveMemoryCardState = animateLeave;
+        if (_initSaveFileInfo(port) != 0) {
+            state = animateLeave;
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
             break;
@@ -2990,13 +2988,13 @@ static int _selectSaveMemoryCard(int port)
             }
         }
         if (i == 5) {
-            _selectSaveMemoryCardState = animateLeave;
+            state = animateLeave;
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
             break;
         }
-        _showSaveFilesMenu(_selectSaveMemoryCardPort);
-        _selectSaveMemoryCardState = showSaveMenu;
+        _showSaveFilesMenu(port);
+        state = showSaveMenu;
         break;
     case showSaveMenu:
         i = _showSaveFilesMenu(0);
@@ -3008,7 +3006,7 @@ static int _selectSaveMemoryCard(int port)
                 _fileMenuElements[i].state = fileMenuElementStateAnimateX;
                 _fileMenuElements[i].targetPosition = 320;
             }
-            _selectSaveMemoryCardState = leave;
+            state = leave;
             break;
         }
         return 1;
@@ -3033,16 +3031,20 @@ static int _showSaveMenu(int initState)
         discardChanges = 11,
     };
 
+    static u_char state;
+    static u_char selectedFile;
+    static u_char _[3] __attribute__((unused));
+
     _fileMenuElements_t* element;
     int currentSave;
     int val;
 
     if (initState != 0) {
-        _showSaveMenuSelectedSlot = 1;
+        selectedFile = 1;
         _containerDataEmpty = 0;
         _dataNotSaved = 0;
         _isSaving = 1;
-        _showSaveMenuState = (initState - 1) * 3;
+        state = (initState - 1) * 3;
         element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         element->state = fileMenuElementStateAnimateX;
@@ -3053,18 +3055,18 @@ static int _showSaveMenu(int initState)
         return 0;
     }
 
-    switch (_showSaveMenuState) {
+    switch (state) {
     case init:
         if (*(int*)&vs_main_settings & 0x10) {
             memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
                 sizeof(((savedata_t*)_spmcimg + 1)->containerData));
-            _showSaveMenuState = initSlot1;
+            state = initSlot1;
         } else if (_fileMenuElementsActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnavailable) {
                 _findCurrentSave(1);
-                _showSaveMenuState = saveExists;
+                state = saveExists;
             } else {
-                _showSaveMenuState = initSlot1;
+                state = initSlot1;
             }
         }
         break;
@@ -3077,21 +3079,21 @@ static int _showSaveMenu(int initState)
             _selectSaveMemoryCardMessage = (u_char*)(_textTable
                 + (currentSave == findSaveTimeout ? VS_MCMAN_OFFSET_insertError
                                                   : VS_MCMAN_OFFSET_emptyCard));
-            _showSaveMenuState = containerWarn;
+            state = containerWarn;
         } else {
             _loadSaveData((currentSave & 7) | ((currentSave & 16) << 12));
-            _showSaveMenuState = loadSave;
+            state = loadSave;
         }
         break;
     case loadSave:
         val = _loadSaveData(0);
         if (val != 0) {
             if ((val <= 0) || (_applyLoadedSaveFile(0) != 0)) {
-                _showSaveMenuState = containerWarn;
+                state = containerWarn;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
             } else {
-                _showSaveMenuState = initSlot1;
+                state = initSlot1;
             }
         }
         break;
@@ -3101,7 +3103,7 @@ static int _showSaveMenu(int initState)
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
-            _showSaveMenuState = initSlot2;
+            state = initSlot2;
         }
         break;
     case initSlot2:
@@ -3109,18 +3111,18 @@ static int _showSaveMenu(int initState)
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
-        _showSaveMenuState = waitForSlotAnimation;
+        state = waitForSlotAnimation;
         break;
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
-            _showSaveMenuState = handleInput;
+            state = handleInput;
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case handleInput:
-        _fileMenuElements[_showSaveMenuSelectedSlot].selected = 1;
-        _fileMenuElements[3 - _showSaveMenuSelectedSlot].selected = 0;
+        _fileMenuElements[selectedFile].selected = 1;
+        _fileMenuElements[3 - selectedFile].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             val = _dataNotSaved;
@@ -3136,28 +3138,28 @@ static int _showSaveMenu(int initState)
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerWarnDataLoss);
                 _promptConfirm(1);
-                _showSaveMenuState = discardChanges;
+                state = discardChanges;
             } else {
-                _showSaveMenuState = returnNoSave;
+                state = returnNoSave;
             }
         } else if (vs_main_buttonsPressed & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-            _selectSaveMemoryCard(_showSaveMenuSelectedSlot);
+            _selectSaveMemoryCard(selectedFile);
             _selectCursorXy = 0;
-            _showSaveMenuState = selectCard;
+            state = selectCard;
         } else {
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-                _showSaveMenuSelectedSlot = 3 - _showSaveMenuSelectedSlot;
+                selectedFile = 3 - selectedFile;
             }
-            _selectCursorXy = vs_getXY(180, (_showSaveMenuSelectedSlot + 1) * 16 + 10);
+            _selectCursorXy = vs_getXY(180, (selectedFile + 1) * 16 + 10);
         }
         break;
     case selectCard:
         val = _selectSaveMemoryCard(0);
         if (val != 0) {
             if (val < 0) {
-                _showSaveMenuState = initSlot1;
+                state = initSlot1;
                 break;
             }
             _initFileMenu(val);
@@ -3174,14 +3176,14 @@ static int _showSaveMenu(int initState)
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
             _promptConfirm(1);
-            _showSaveMenuState = eraseContainerData;
+            state = eraseContainerData;
         }
         break;
     case eraseContainerData:
     case discardChanges:
         val = _promptConfirm(0);
         if (val != 0) {
-            if (_showSaveMenuState == discardChanges) {
+            if (state == discardChanges) {
                 if (val > 0) {
                     *(int*)&vs_main_settings = *(int*)&vs_main_settings | 0x10;
                 }
@@ -3190,15 +3192,15 @@ static int _showSaveMenu(int initState)
             if (val < 0) {
                 _fileMenuElements[0].state = fileMenuElementStateAnimateX;
                 _fileMenuElements[0].targetPosition = 320;
-                _showSaveMenuState = returnNoSave;
+                state = returnNoSave;
                 break;
             }
-            if (_showSaveMenuState == eraseContainerData) {
+            if (state == eraseContainerData) {
                 _containerDataEmpty = 1;
                 memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
                     sizeof(((savedata_t*)_spmcimg + 1)->containerData));
             }
-            _showSaveMenuState = initSlot1;
+            state = initSlot1;
         }
         break;
     }

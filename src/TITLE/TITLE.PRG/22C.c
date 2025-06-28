@@ -201,48 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
-u_int _encodeSeed = 0x0019660D;
-u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
-    224, 248, 255, 255, 255, 255 };
-char _cursorFileOpSaturation[]
-    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
-int _saveInfoUVClut[]
-    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
-          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
-          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
-          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
-          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
-int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
-    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
-    vs_getXY(5, 7) };
-u_char _digitDivisors[] = { 0, 1, 10, 100 };
-int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
-    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
-    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
-    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
-    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-u_char _arrowCharState[4] = { 0 };
-int _menuItemColors1[] = {
-    vs_getRGB888(0x40, 0x30, 0x66),
-    vs_getRGB888(0x40, 0x38, 0x20)
-};
-int _menuItemColors2[] = {
-    vs_getRGB888(0x08, 0x08, 0x20),
-    vs_getRGB888(0x10, 0x10, 0x08),
-};
-
 extern struct {
     u_short clut[16];
     u_long data[0x600];
@@ -424,9 +382,6 @@ enum vs_fileMenuUiIds_e {
 #define SWEVENTS 0
 #define HWEVENTS 4
 
-#define MAKEXY(x, y) (((y) << 16) | ((x) & 0xFFFF))
-#define MAKEWH(w, h) MAKEXY(w, h)
-
 static void _playNewGameSfx()
 {
     vs_main_playSfxDefault(0x7E, 1);
@@ -439,6 +394,9 @@ static void _playMenuChangeSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANG
 static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
+
+u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+u_int _encodeSeed = 0x0019660D;
 
 static u_int _encode(int value)
 {
@@ -495,6 +453,46 @@ static void _rMemcpy(void* dst, void const* src, int count)
         ((u_char*)dst)[count] = ((u_char const*)src)[count];
     } while (count != 0);
 }
+
+u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
+u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
+    224, 248, 255, 255, 255, 255 };
+char _cursorFileOpSaturation[]
+    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
+int _saveInfoUVClut[]
+    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
+          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
+          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
+          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
+          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
+    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
+    vs_getXY(5, 7) };
+u_char _digitDivisors[] = { 0, 1, 10, 100 };
+int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
+    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
+    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
+    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
+    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
+u_char _arrowCharState[4] = { 0 };
+int _menuItemColors1[] = {
+    vs_getRGB888(0x40, 0x30, 0x66),
+    vs_getRGB888(0x40, 0x38, 0x20)
+};
+int _menuItemColors2[] = {
+    vs_getRGB888(0x08, 0x08, 0x20),
+    vs_getRGB888(0x10, 0x10, 0x08),
+};
 
 static u_char* _memcardMakeFilename(int port, int fileNo)
 {
@@ -1249,7 +1247,7 @@ static int _loadMemcardMenu(int init)
     case none:
         if (_mcDataLoad->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_mcDataLoad);
-            _drawImage(MAKEXY(800, 256), (u_long*)_spmcimg, MAKEWH(224, 256));
+            _drawImage(vs_getXY(800, 256), (u_long*)_spmcimg, vs_getWH(224, 256));
             _diskState = queueReady;
         }
         return 0;
@@ -1333,7 +1331,7 @@ static void _drawInteger(int xy, u_int value, u_int placeDivisor)
 {
     do {
         _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
-            MAKEWH(6, 10), getTPage(0, 0, 768, 0));
+            vs_getWH(6, 10), getTPage(0, 0, 768, 0));
         value = value % placeDivisor;
         placeDivisor /= 10;
         xy += 5;
@@ -1393,18 +1391,18 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
     _primBuf.prim.tilePoly.tile.tpage
         = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
     _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
-    wh = MAKEWH(66, 5);
-    x1y1 = (currentValueDigits + MAKEXY(0, 9));
-    _primBuf.prim.tilePoly.tile.x0y0 = xy++ + MAKEXY(0, 8);
+    wh = vs_getWH(66, 5);
+    x1y1 = (currentValueDigits + vs_getXY(0, 9));
+    _primBuf.prim.tilePoly.tile.x0y0 = xy++ + vs_getXY(0, 8);
     _primBuf.prim.tilePoly.tile.wh = wh;
     _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
-    _primBuf.prim.tilePoly.polyG4.x0y0 = xy + MAKEXY(0, 9);
+    _primBuf.prim.tilePoly.polyG4.x0y0 = xy + vs_getXY(0, 9);
     _primBuf.prim.tilePoly.polyG4.r1g1b1 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x1y1 = xy + x1y1;
     _primBuf.prim.tilePoly.polyG4.r2g2b2 = rgb1;
-    _primBuf.prim.tilePoly.polyG4.x2y2 = xy + MAKEXY(0, 12);
+    _primBuf.prim.tilePoly.polyG4.x2y2 = xy + vs_getXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
-    _primBuf.prim.tilePoly.polyG4.x3y3 = MAKEXY(0, 12);
+    _primBuf.prim.tilePoly.polyG4.x3y3 = vs_getXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.x3y3
         = xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
     DrawPrim(&_primBuf);
@@ -1417,9 +1415,9 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
     xy = (xy - (wh - new_var4)) - (maxValueDigits * 5);
     placeDivisor = _digitDivisors[currentValueDigits];
     do {
-        _drawSprt(xy - MAKEXY(0, 1),
+        _drawSprt(xy - vs_getXY(0, 1),
             (((currentValue / placeDivisor) << 3) + 64) | (getClut(832, 223) << 16),
-            MAKEWH(7, 12), getTPage(0, 0, 768, 0));
+            vs_getWH(7, 12), getTPage(0, 0, 768, 0));
         currentValue = currentValue % placeDivisor;
         placeDivisor /= 10;
         xy += 6;
@@ -1457,13 +1455,13 @@ static void _fileProcessingAnim(int x, int y)
             = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
         _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
         _primBuf.prim.polyG4_tpage.x1y1 = x | y;
-        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + MAKEXY(0, 32));
+        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
         _primBuf.prim.polyG4_tpage.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
         _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
         _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
         _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + MAKEXY(0, 32));
+        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
         DrawPrim(&_primBuf);
         leftEdge = x;
         x += 16;
@@ -1828,7 +1826,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
         }
         var2 = menuEntry->slotId;
         if (var2 < 5) {
-            _readImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
+            _readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
             saveInfo = &_saveFileInfo[var2];
             location = menuEntry->saveLocation - 1;
             var1 = saveInfo->unk4.slotState;
@@ -1850,11 +1848,11 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
             } else {
                 locationClut = _mcData->locationCluts[0];
             }
-            _drawImage(MAKEXY(768, 227), locationClut, MAKEWH(256, 1));
+            _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
             if (location < 0) {
                 uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (menuEntry->x - 64) | y;
-                _drawSprt(xy, uvClut, MAKEWH(64, 32),
+                _drawSprt(xy, uvClut, vs_getWH(64, 32),
                     ((8 - menuEntry->outertextBlendFactor) << 19) | 0x9C);
             } else {
                 int v0;
@@ -1864,9 +1862,9 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
                 var_a3 = (((8 - menuEntry->outertextBlendFactor) << 19) | 0x90);
-                _drawSprt(xy, uvClut, MAKEWH(64, 32), v0 | var_a3);
+                _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
             }
-            _drawImage(MAKEXY(768, 227), clut, MAKEWH(256, 1));
+            _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
             _drawSaveInfoUI((menuEntry->x - 22) | y, vs_uiids_number);
             _drawInteger((menuEntry->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.slotState;
@@ -1905,7 +1903,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
                 _drawInteger(y | 296, saveInfo->unk4.clearCount, 10);
                 y += 13 << 16;
                 if (saveInfo->unk4.clearCount != 0) {
-                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), MAKEWH(16, 16),
+                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
                         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
                 }
                 _drawSaveInfoUI(y | 240, vs_uiids_time);
@@ -1958,9 +1956,9 @@ static void _drawFileMenu(int framebuf)
     if (framebuf != 0) {
         x = 320;
     }
-    _drawSprt(MAKEXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(64, 64),
+    _drawSprt(vs_getXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(64, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(MAKEXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), MAKEWH(256, 64),
+    _drawSprt(vs_getXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(256, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 
     for (i = 0; i < 10; ++i, ++element) {
@@ -2027,12 +2025,12 @@ static void _drawFileMenu(int framebuf)
 
     for (i = 1; i < 4; ++i) {
         new_var = 256;
-        _drawSprt(MAKEXY(0, 187 - i), (187 - i) << 8, MAKEWH(256, 1),
+        _drawSprt(vs_getXY(0, 187 - i), (187 - i) << 8, vs_getWH(256, 1),
             (x >> 6) | (((4 - i) << 21) | new_var));
-        _drawSprt(MAKEXY(256, 187 - i), (187 - i) << 8, MAKEWH(64, 1),
+        _drawSprt(vs_getXY(256, 187 - i), (187 - i) << 8, vs_getWH(64, 1),
             (((int)(x + new_var)) >> 6) | (((4 - i) << 21) | new_var));
     }
-    _drawSprt(MAKEXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), MAKEWH(33, 7),
+    _drawSprt(vs_getXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), vs_getWH(33, 7),
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
@@ -2041,7 +2039,7 @@ static void _drawFileMenu(int framebuf)
     _primBuf.prim.tile.wh = vs_getWH(320, 52);
     DrawPrim(&_primBuf); // Message dialog background
     if (_selectCursorXy != 0) {
-        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), MAKEWH(16, 16),
+        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), vs_getWH(16, 16),
             (_cursorFileOpSaturation[_selectCursorColor] << 16)
                 | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
         _selectCursorColor = (_selectCursorColor + 1) & 0xF;
@@ -2069,9 +2067,9 @@ static void _drawFileMenu(int framebuf)
 
 static void _drawFileMenuBg()
 {
-    _drawSprt(MAKEXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), MAKEWH(64, 176),
+    _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(MAKEXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), MAKEWH(256, 176),
+    _drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }
 
@@ -2110,7 +2108,7 @@ static int _showLoadFilesMenu(int port)
     case init:
         for (i = 0; i < 5; ++i) {
             entry = _initFileMenuElement(
-                i + 5, ((72 + i * 40) << 16) | 64, MAKEWH(256, 32), 0);
+                i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
             entry->slotId = i;
             entry->slotUnavailable = _saveFileInfo[i].unk4.slotState < slotStateInUse;
             entry->saveLocation = _saveFileInfo[i].unk4.saveLocation;
@@ -2388,7 +2386,7 @@ static int _loadFileMenu(int fadeout)
     }
     switch (_loadFileMenuState) {
     case init:
-        entry = _initFileMenuElement(0, MAKEXY(320, 34), MAKEWH(140, 12),
+        entry = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 180;
@@ -2398,7 +2396,7 @@ static int _loadFileMenu(int fadeout)
         break;
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
-            entry = _initFileMenuElement(1, MAKEXY(320, 50), MAKEWH(126, 12),
+            entry = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             entry->state = fileMenuElementStateAnimateX;
             entry->targetPosition = 194;
@@ -2406,7 +2404,7 @@ static int _loadFileMenu(int fadeout)
         }
         break;
     case displaySlot2:
-        entry = _initFileMenuElement(2, MAKEXY(320, 66), MAKEWH(126, 12),
+        entry = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 194;
@@ -2497,7 +2495,7 @@ static int _promptConfirm(int arg0)
     case initYes:
     case initNo:
         temp_v0 = _initFileMenuElement(_promptConfirmState + 3,
-            MAKEXY(-126, _promptConfirmState * 16 + 18), MAKEWH(126, 12),
+            vs_getXY(-126 & 0xFFFF, _promptConfirmState * 16 + 18), vs_getWH(126, 12),
             (u_char*)&_textTable[_textTable[_promptConfirmState
                 + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
@@ -2676,7 +2674,7 @@ static int _showSaveFilesMenu(int port)
     case init:
         for (i = 0; i < 5; ++i) {
             element = _initFileMenuElement(
-                i + 5, MAKEXY(64, i * 40 + 72), MAKEWH(256, 32), 0);
+                i + 5, vs_getXY(64, i * 40 + 72), vs_getWH(256, 32), 0);
             element->slotId = i;
             element->slotUnavailable
                 = _saveFileInfo[i].unk4.slotState == slotStateUnavailable;
@@ -2729,7 +2727,7 @@ static int _showSaveFilesMenu(int port)
             if (val != (_saveMenuSelectedSlot + _saveMenuSelectedPage)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
-            _selectCursorXy = MAKEXY(24, _saveMenuSelectedSlot * 40 + 62);
+            _selectCursorXy = vs_getXY(24, _saveMenuSelectedSlot * 40 + 62);
             _fileMenuElements[val + 5].selected = 1;
         }
         break;
@@ -3042,7 +3040,7 @@ static int _showSaveMenu(int initState)
         _dataNotSaved = 0;
         _isSaving = 1;
         _showSaveMenuState = (initState - 1) * 3;
-        element = _initFileMenuElement(0, MAKEXY(320, 34), MAKEWH(140, 12),
+        element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
@@ -3096,7 +3094,7 @@ static int _showSaveMenu(int initState)
         break;
     case initSlot1:
         if (_fileMenuElementsActive() != 0) {
-            element = _initFileMenuElement(1, MAKEXY(320, 50), MAKEWH(126, 12),
+            element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
@@ -3104,7 +3102,7 @@ static int _showSaveMenu(int initState)
         }
         break;
     case initSlot2:
-        element = _initFileMenuElement(2, MAKEXY(320, 66), MAKEWH(126, 12),
+        element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
@@ -3149,7 +3147,7 @@ static int _showSaveMenu(int initState)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 _showSaveMenuSelectedSlot = 3 - _showSaveMenuSelectedSlot;
             }
-            _selectCursorXy = MAKEXY(180, (_showSaveMenuSelectedSlot + 1) * 16 + 10);
+            _selectCursorXy = vs_getXY(180, (_showSaveMenuSelectedSlot + 1) * 16 + 10);
         }
         break;
     case selectCard:
@@ -3249,18 +3247,18 @@ static int _gameLoadScreen()
 
     int exit;
 
-    _drawImage(MAKEXY(768, 0), (u_long*)&_uiTable.page0, MAKEWH(64, 224));
-    _drawImage(MAKEXY(448, 256), (u_long*)&_uiTable.page1, MAKEWH(64, 256));
-    _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
-    _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
-    _drawImage(MAKEXY(960, 66), _debugFont, MAKEWH(64, 158));
-    _drawImage(MAKEXY(768, 227), (u_long*)&_saveMenuBg.clut, MAKEWH(256, 1));
+    _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
+    _drawImage(vs_getXY(448, 256), (u_long*)&_uiTable.page1, vs_getWH(64, 256));
+    _drawImage(vs_getXY(832, 0), (u_long*)&_fontTable[0], vs_getWH(64, 224));
+    _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
+    _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
+    _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
     setRECT(&_gameLoadRect, 640, 256, 32, 240);
     ClearImage(&_gameLoadRect, 0, 0, 0);
     DrawSync(0);
     setRECT(&_gameLoadRect, 768, 256, 32, 240);
     ClearImage(&_gameLoadRect, 0, 0, 0);
-    _drawImage(MAKEXY(672, 256), (u_long*)&_saveMenuBg.data, MAKEWH(96, 240));
+    _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
     _loadScreenMemcardState = init;
 
@@ -3355,7 +3353,7 @@ static int _saveScreenConfirmation(int init)
     case initSlot1:
     case initSlot2:
         elem = _initFileMenuElement(_saveScreenConfirmationState + 1,
-            MAKEXY(320, _saveScreenConfirmationState * 16 + 146), MAKEWH(126, 12),
+            vs_getXY(320, _saveScreenConfirmationState * 16 + 146), vs_getWH(126, 12),
             (u_char*)&_textTable[_textTable[_saveScreenConfirmationState
                 + VS_MCMAN_INDEX_yesOption]]);
         elem->state = fileMenuElementStateAnimateX;
@@ -3391,7 +3389,7 @@ static int _saveScreenConfirmation(int init)
             _playMenuChangeSfx();
             _saveScreenConfirmationOption = 3 - _saveScreenConfirmationOption;
         }
-        _selectCursorXy = MAKEXY(180, (_saveScreenConfirmationOption + 7) * 16 + 10);
+        _selectCursorXy = vs_getXY(180, (_saveScreenConfirmationOption + 7) * 16 + 10);
         break;
     case returnSelectedOption:
         if (_fileMenuElementsActive() != 0) {
@@ -3422,18 +3420,18 @@ static void _gameSaveScreen()
 
     int val;
 
-    _drawImage(MAKEXY(768, 0), (u_long*)&_uiTable.page0, MAKEWH(64, 224));
-    _drawImage(MAKEXY(448, 256), (u_long*)&_uiTable.page1, MAKEWH(64, 256));
-    _drawImage(MAKEXY(832, 0), (u_long*)&_fontTable[0], MAKEWH(64, 224));
-    _drawImage(MAKEXY(896, 0), (u_long*)&_fontTable[1], MAKEWH(64, 224));
-    _drawImage(MAKEXY(960, 66), _debugFont, MAKEWH(64, 158));
-    _drawImage(MAKEXY(768, 227), (u_long*)&_saveMenuBg.clut, MAKEWH(256, 1));
+    _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
+    _drawImage(vs_getXY(448, 256), (u_long*)&_uiTable.page1, vs_getWH(64, 256));
+    _drawImage(vs_getXY(832, 0), (u_long*)&_fontTable[0], vs_getWH(64, 224));
+    _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
+    _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
+    _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
     setRECT(&_gameSaveScreenClearRect, 640, 256, 32, 240);
     ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
     DrawSync(0);
     setRECT(&_gameSaveScreenClearRect, 768, 256, 32, 240);
     ClearImage(&_gameSaveScreenClearRect, 0, 0, 0);
-    _drawImage(MAKEXY(672, 256), (u_long*)&_saveMenuBg.data, MAKEWH(96, 240));
+    _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
 
     _saveScreenState = init;
@@ -3659,8 +3657,8 @@ static void _displayPublisherAndDeveloper()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(MAKEXY(320, 64), (u_long*)_publisher.clut, MAKEWH(16, 1));
-    _drawImage(MAKEXY(320, 0), _publisher.data, MAKEWH(256 / 4, 48));
+    _drawImage(vs_getXY(320, 64), (u_long*)_publisher.clut, vs_getWH(16, 1));
+    _drawImage(vs_getXY(320, 0), _publisher.data, vs_getWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -3679,7 +3677,7 @@ static void _displayPublisherAndDeveloper()
         if (i > 331) {
             var_a3 = (i - 331) * 4;
         }
-        _drawSprt(MAKEXY(32, 88), vs_getUV0Clut(0, 0, 320, 64), MAKEWH(256, 48),
+        _drawSprt(vs_getXY(32, 88), vs_getUV0Clut(0, 0, 320, 64), vs_getWH(256, 48),
             (var_a3 << 16) | (320 / 64));
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
@@ -3690,7 +3688,7 @@ static void _displayPublisherAndDeveloper()
         PutDrawEnv(&draw);
     }
 
-    _drawImage(MAKEXY(0, 240), _developer, MAKEWH(128 / 4, 14));
+    _drawImage(vs_getXY(0, 240), _developer, vs_getWH(128 / 4, 14));
 
     for (i = 0; i < 364; ++i) {
         var_a3_2 = 0;
@@ -3701,7 +3699,7 @@ static void _displayPublisherAndDeveloper()
         } else if ((vs_main_buttonsState & 0xFFFF) != 0) {
             i = 331;
         }
-        _drawSprt(MAKEXY(96, 104), vs_getUV0Clut(0, 240, 0, 253), MAKEWH(128, 13),
+        _drawSprt(vs_getXY(96, 104), vs_getUV0Clut(0, 240, 0, 253), vs_getWH(128, 13),
             var_a3_2 << 16);
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);

@@ -70,7 +70,7 @@ typedef struct {
     u_long x3y3;
 } VS_POLY_G4;
 
-#define vs_getXY(x, y) (((y) & 0xFFFF) << 16 | ((x) & 0xFFFF))
+#define vs_getXY(x, y) (((y)) << 16 | ((x)))
 #define vs_getYX(y, x) (((x) & 0xFFFF) | ((y) & 0xFFFF) << 16)
 #define vs_getWH(w, h) vs_getXY((w), (h))
 #define vs_getHW(h, w) vs_getYX((w), (h))

@@ -201,10 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _diskState;
-extern vs_main_CdQueueSlot* _mcDataLoad;
-extern u_char _findCurrentSaveState;
-extern u_char _findCurrentSaveSubState;
 extern u_char _memcardEventMask;
 extern vs_Gametime_t _backupTime;
 extern int _fileLoaded;
@@ -1058,9 +1054,9 @@ int _saveFile(int portFile)
     static u_char file;
     static u_char port;
     static u_char errors;
-    static u_char _renameErrorCount;
+    static u_char renameErrors;
     static u_char dummy[3] __attribute__((unused));
-    static int _saveFileId;
+    static int fd;
 
     int temp_v1_2;
     int i;
@@ -1068,7 +1064,7 @@ int _saveFile(int portFile)
 
     if (portFile != 0) {
         errors = 0;
-        _renameErrorCount = 0;
+        renameErrors = 0;
         _loadSaveDataErrorOffset = 0;
         port = portFile >> 0xC;
         file = portFile & 7;
@@ -1083,11 +1079,11 @@ int _saveFile(int portFile)
                 (char*)_memcardMakeTempFilename(port, file))
             != 0) {
             errors = 0;
-            _renameErrorCount = 0;
+            renameErrors = 0;
             state = tempFileCreated;
         } else {
-            ++_renameErrorCount;
-            errors = _renameErrorCount >> 4;
+            ++renameErrors;
+            errors = renameErrors >> 4;
         }
         break;
     case tempFileCreated:
@@ -1097,17 +1093,17 @@ int _saveFile(int portFile)
         _filePreviousProgressCounter = _fileProgressCounter;
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
-        _saveFileId
+        fd
             = open((char*)_memcardMakeTempFilename(port, file),
                 O_NOWAIT | O_WRONLY);
         ;
-        if (_saveFileId == -1) {
+        if (fd == -1) {
             ++errors;
             break;
         }
         _resetMemcardEvents(memcardEventsSw);
-        if (write(_saveFileId, _spmcimg, sizeof(savedata_t)) == -1) {
-            close(_saveFileId);
+        if (write(fd, _spmcimg, sizeof(savedata_t)) == -1) {
+            close(fd);
             ++errors;
             break;
         }
@@ -1116,7 +1112,7 @@ int _saveFile(int portFile)
     case readReady: {
         temp_s3 = _testMemcardEvents(memcardEventsSw);
         if (temp_s3 < memcardInternalEventNone) {
-            close(_saveFileId);
+            close(fd);
             if (temp_s3 == memcardInternalEventIoEnd) {
                 state = verifyPending;
                 i = _fileProgressPosition;
@@ -1153,8 +1149,8 @@ int _saveFile(int portFile)
         if (rename((char*)_memcardMakeTempFilename(port, file),
                 (char*)_memcardMakeFilename(port, file))
             == 0) {
-            ++_renameErrorCount;
-            errors = (_renameErrorCount >> 4);
+            ++renameErrors;
+            errors = (renameErrors >> 4);
             break;
         }
         return 1;
@@ -1167,11 +1163,15 @@ u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
 static int _loadMemcardMenu(int init)
 {
 
-    enum diskState {
+    enum state {
         none = 0,
         queueReady = 1,
         enqueued = 2,
     };
+
+    static u_char state;
+    static u_char dummy[3] __attribute__((unused));
+    static vs_main_CdQueueSlot* cdQueueSlot;
 
     vs_main_CdFile cdFile;
     int i;
@@ -1185,27 +1185,27 @@ static int _loadMemcardMenu(int init)
         _dirEntBuf = &_mcData->_dirEntBuf;
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
-        _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_mcDataLoad, _spmcimg);
-        _diskState = none;
+        cdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(cdQueueSlot, _spmcimg);
+        state = none;
         return 0;
     }
 
-    switch (_diskState) {
+    switch (state) {
     case none:
-        if (_mcDataLoad->state == vs_main_CdQueueStateLoaded) {
-            vs_main_freeCdQueueSlot(_mcDataLoad);
+        if (cdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(cdQueueSlot);
             _drawImage(vs_getXY(800, 256), (u_long*)_spmcimg, vs_getWH(224, 256));
-            _diskState = queueReady;
+            state = queueReady;
         }
         return 0;
     case queueReady:
         cdFile.lba = VS_MCDATA_BIN_LBA; // MCMAN.BIN must immediately follow MCDATA.BIN on
                                         // the disk
         cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
-        _mcDataLoad = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_mcDataLoad, _mcData);
-        _diskState = enqueued;
+        cdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(cdQueueSlot, _mcData);
+        state = enqueued;
         break;
     case enqueued:
         break;
@@ -1213,8 +1213,8 @@ static int _loadMemcardMenu(int init)
         return 0;
     }
 
-    if (_mcDataLoad->state == vs_main_CdQueueStateLoaded) {
-        vs_main_freeCdQueueSlot(_mcDataLoad);
+    if (cdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        vs_main_freeCdQueueSlot(cdQueueSlot);
         vs_main_enableReset(0);
         EnterCriticalSection();
 
@@ -1582,25 +1582,28 @@ enum _findCurrentSave_e {
 
 static int _findCurrentSave(int init)
 {
+    static u_char state;
+    static u_char subState;
+
     int port;
     int currentSave;
     int event;
     int realPort;
 
     if (init != 0) {
-        _findCurrentSaveState = 0;
-        _findCurrentSaveSubState = 0;
+        state = 0;
+        subState = 0;
         return 0;
     }
 
-    realPort = _findCurrentSaveState >> 1;
+    realPort = state >> 1;
     port = realPort + 1;
 
-    if ((_findCurrentSaveState & 1) == 0) {
+    if ((state & 1) == 0) {
         _selectSaveMemoryCardMessage
             = (u_char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
-        ++_findCurrentSaveState;
+        ++state;
     } else {
         event = _memcardEventHandler(0) & 3;
 
@@ -1613,18 +1616,18 @@ static int _findCurrentSave(int init)
                     }
                 }
             } else if (event == memcardEventTimeout) {
-                if (_findCurrentSaveState != 1) {
-                    if (_findCurrentSaveSubState != 0) {
+                if (state != 1) {
+                    if (subState != 0) {
                         return findSaveTimeout;
                     }
                 } else {
-                    _findCurrentSaveSubState = _findCurrentSaveState;
+                    subState = state;
                 }
             }
-            ++_findCurrentSaveState;
+            ++state;
         }
     }
-    return _findCurrentSaveState != 4 ? findSavePending : findSaveNotFound;
+    return state != 4 ? findSavePending : findSaveNotFound;
 }
 
 enum _memcardEventMask_e {

@@ -201,13 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern tagsprt_t _titleMenuItemBg[2];
-extern struct {
-    u_long tag;
-    VS_TILE_TPAGE tile;
-} _titleScreenFade;
-extern int _buttonsLastPressed;
-extern int _introMovieLastPlayed;
 extern long _memcardEventDescriptors[8];
 extern u_char* _spmcimg;
 extern mcdata_t* _mcData;
@@ -245,6 +238,8 @@ extern u_char _dataNotSaved;
 extern u_char _containerDataEmpty;
 extern u_char _backupMainSetting;
 extern u_char _frameBuf;
+
+// movie.c
 extern u_int _introMovieDisplayedAt;
 extern int _introMoviePlaying;
 extern int _dslMode;
@@ -256,6 +251,8 @@ extern void* _encodedDataBuf0;
 extern void* _encodedDataBuf1;
 extern void* _decodedDataBuf0;
 extern void* _decodedDataBuf1;
+
+// titleScreen.c
 extern menuItemState_t _menuItemStates[10];
 
 enum menuItems {
@@ -1053,9 +1050,7 @@ int _saveFile(int portFile)
         _filePreviousProgressCounter = _fileProgressCounter;
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
-        fd
-            = open((char*)_memcardMakeTempFilename(port, file),
-                O_NOWAIT | O_WRONLY);
+        fd = open((char*)_memcardMakeTempFilename(port, file), O_NOWAIT | O_WRONLY);
         ;
         if (fd == -1) {
             ++errors;
@@ -2137,8 +2132,8 @@ static int _showLoadFilesMenu(int initPort)
         if (currentSlot != memcardMaskedHandlerPending) {
             if (currentSlot >= memcardMaskedHandlerPending) {
                 int new_var;
-                _loadSaveData(((selectedSlot + page) + 1)
-                    | (new_var = ((port - 1) << 16) | 256));
+                _loadSaveData(
+                    ((selectedSlot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
                 state = applyLoad;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_loading);
@@ -2473,8 +2468,7 @@ static int _promptConfirm(int arg0)
     case initNo:
         temp_v0 = _initFileMenuElement(state + 3,
             vs_getXY(-126 & 0xFFFF, state * 16 + 18), vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[state
-                + VS_MCMAN_INDEX_yesIndent]]);
+            (u_char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
         ++state;
@@ -2762,8 +2756,8 @@ static int _showSaveFilesMenu(int initPort)
         val = _memcardMaskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
             if (val > memcardMaskedHandlerError) {
-                _dataNotSaved |= (_findCurrentSaveOnActiveMemcard()
-                    == (fileSlot + page + 1));
+                _dataNotSaved
+                    |= (_findCurrentSaveOnActiveMemcard() == (fileSlot + page + 1));
                 state = save;
             } else {
                 state = leaveWithTimer;
@@ -2848,9 +2842,7 @@ static int _showSaveFilesMenu(int initPort)
         if (val != 0) {
             if (val < 0) {
                 state = leaveError;
-            } else if (_createSaveFile(port,
-                           page + fileSlot + 1)
-                != 0) {
+            } else if (_createSaveFile(port, page + fileSlot + 1) != 0) {
                 state = leaveWithTimer;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
@@ -2902,8 +2894,7 @@ static int _selectSaveMemoryCard(int initPort)
         _fileMenuElements[port].state = fileMenuElementStateAnimateX;
         _fileMenuElements[port].targetPosition = 180;
         _fileMenuElements[port].innertextBlendFactor = 1;
-        _fileMenuElements[3 - port].state
-            = fileMenuElementStateAnimateX;
+        _fileMenuElements[3 - port].state = fileMenuElementStateAnimateX;
         _fileMenuElements[3 - port].targetPosition = 320;
         state = waitForUnselectedAnimation;
         break;
@@ -3363,10 +3354,9 @@ static int _saveScreenConfirmation(int init)
     switch (state) {
     case initSlot1:
     case initSlot2:
-        elem = _initFileMenuElement(state + 1,
-            vs_getXY(320, state * 16 + 146), vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[state
-                + VS_MCMAN_INDEX_yesOption]]);
+        elem = _initFileMenuElement(state + 1, vs_getXY(320, state * 16 + 146),
+            vs_getWH(126, 12),
+            (u_char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesOption]]);
         elem->state = fileMenuElementStateAnimateX;
         elem->targetPosition = 194;
         ++state;
@@ -4160,9 +4150,9 @@ static void _setTitleMenuState()
 static void _drawTitleMenuItems()
 {
 
-    static menuItemPrim_t _menuItemPrims[341];
+    static menuItemPrim_t primBuf[341];
     static u_char _[8] __attribute__((unused));
-    
+
     int textUv;
     int j;
     menuItemState_t* menuState;
@@ -4172,7 +4162,7 @@ static void _drawTitleMenuItems()
     menuItemPrim_t* prim;
     int saturation;
 
-    prim = _menuItemPrims;
+    prim = primBuf;
 
     for (i = 9; i >= 0; --i) {
         if ((_menuItemStates[i].enabled == 0)
@@ -4265,12 +4255,15 @@ static void _drawTitleMenuItems()
 
 static void _drawTitleMenu()
 {
+    static tagsprt_t sprtBuf[10];
+    static u_char _[16] __attribute__((unused));
+
     int i;
     tagsprt_t* sprt;
 
     _setTitleMenuState();
     for (i = 0; i < 2; ++i) {
-        sprt = _titleMenuItemBg;
+        sprt = sprtBuf;
         sprt->sprt.tpage
             = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
@@ -4549,6 +4542,15 @@ void _initEnvironment()
 
 int vs_title_exec()
 {
+    static struct {
+        u_long tag;
+        VS_TILE_TPAGE tile;
+        u_char _[44];
+    } fileBuf;
+    static int buttonsLastPressed;
+    static int introMovieLastPlayed;
+    static u_char _[8] __attribute__((unused));
+
     RECT rect;
     int i;
     int menuItem;
@@ -4595,20 +4597,20 @@ int vs_title_exec()
         }
 
         vs_main_padDisconnectAll();
-        _introMovieLastPlayed = VSync(-1);
-        _buttonsLastPressed = VSync(-1);
+        introMovieLastPlayed = VSync(-1);
+        buttonsLastPressed = VSync(-1);
 
         while (1) {
             VSync(0);
             vs_main_processPadState();
             if (_introMoviePlaying != 0) {
-                _introMovieLastPlayed = VSync(-1);
+                introMovieLastPlayed = VSync(-1);
             }
             if ((vs_main_buttonsState & 0xFFFF) != 0) {
-                _buttonsLastPressed = VSync(-1);
+                buttonsLastPressed = VSync(-1);
             }
-            if (((VSync(-1) - _buttonsLastPressed) > 1000)
-                && ((VSync(-1) - _introMovieLastPlayed) > 100)) {
+            if (((VSync(-1) - buttonsLastPressed) > 1000)
+                && ((VSync(-1) - introMovieLastPlayed) > 100)) {
                 selectedOption = menuItemTimeout;
                 break;
             }
@@ -4634,7 +4636,7 @@ int vs_title_exec()
                     && (selectedOption >= menuItemNewGame)) {
                     break;
                 }
-                _buttonsLastPressed = VSync(-1);
+                buttonsLastPressed = VSync(-1);
             }
             i = 0;
             if (vs_main_buttonsState & (PADLup | PADLleft)) {
@@ -4684,13 +4686,13 @@ int vs_title_exec()
         for (i = 64; i > 0; --i) {
             VSync(0);
             vs_main_processPadState();
-            _titleScreenFade.tag = vs_getTag(_titleScreenFade.tile, primAddrEnd);
-            _titleScreenFade.tile.tpage = vs_getTpage(
+            fileBuf.tag = vs_getTag(fileBuf.tile, primAddrEnd);
+            fileBuf.tile.tpage = vs_getTpage(
                 320, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
-            _titleScreenFade.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
-            _titleScreenFade.tile.x0y0 = vs_getXY(0, 0);
-            _titleScreenFade.tile.wh = vs_getWH(640, 480);
-            DrawPrim(&_titleScreenFade);
+            fileBuf.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
+            fileBuf.tile.x0y0 = vs_getXY(0, 0);
+            fileBuf.tile.wh = vs_getWH(640, 480);
+            DrawPrim(&fileBuf);
             vs_main_setVibrateParams();
         }
         VSync(0);

@@ -201,33 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern struct {
-    u_short clut[16];
-    u_long data[0x600];
-} _publisher;
-extern u_long _developer[];
-extern int _movieWidth;
-extern int _movieHeight;
-extern u_short _menuItemTextClut[2][16];
-extern u_int _menuItemOutlineClut[];
-extern int _menuItemTextUv[10];
-extern int _menuItemTpages2[10];
-extern int _menuItemOutlineUv[10];
-extern int _menuItemOutlineTpages1[10];
-extern int _menuItemOutlineWh[10];
-extern int _menuItemOutlineXy[10];
-extern u_char D_80074C24[15][256];
-extern u_char _skillsLearned[32];
-// _vlcStaticTable = 0x80075CC4; ??
-extern u_int _titleScreenBg[];
-extern u_short _menuCopyright[];
-extern fontTable_t _fontTable[2];
-extern u_long _debugFont[];
-extern uiTable_t _uiTable;
-extern menuBg_t _saveMenuBg;
-
-extern u_char _memcardEvType;
-extern u_char _loadSaveDataState;
 extern u_char _readCardPort;
 extern u_char _readFileNo;
 extern u_char _isTempSave;
@@ -290,9 +263,13 @@ extern struct {
 } _titleScreenFade;
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
+extern long _memcardEventDescriptors[8];
 extern u_char* _spmcimg;
 extern mcdata_t* _mcData;
 extern u_short* _textTable;
+extern struct DIRENTRY* _memcardFiles[15];
+extern struct DIRENTRY* _dirEntBuf;
+extern _saveFileInfo_t* _saveFileInfo;
 extern u_char _loadSaveDataErrorOffset;
 extern u_short _fileProgressTarget;
 extern u_short _filePreviousProgressCounter;
@@ -361,7 +338,6 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_dot = 9,
 };
 
-
 // sfx.c
 
 static void _playNewGameSfx()
@@ -377,15 +353,9 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-
 // memorycard.c
 
-u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
-
-extern long _memcardEventDescriptors[8];
-extern _saveFileInfo_t* _saveFileInfo;
-extern struct DIRENTRY* _memcardFiles[15];
-extern struct DIRENTRY* _dirEntBuf;
+u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 
@@ -464,24 +434,24 @@ static void _rMemcpy(void* dst, void const* src, int count)
 
 static u_char* _memcardMakeFilename(int port, int fileNo)
 {
-    static u_char _memcardFilename[32];
-    
-    memset(_memcardFilename, 0, ' ');
-    strcpy(_memcardFilename, _pMemcardFilenameTemplate);
-    _memcardFilename[2] = port == 0 ? '0' : '1';
-    _memcardFilename[20] = fileNo + '0';
-    return _memcardFilename;
+    static u_char filename[32];
+
+    memset(filename, 0, ' ');
+    strcpy(filename, _memcardFilenameTemplate);
+    filename[2] = port == 0 ? '0' : '1';
+    filename[20] = fileNo + '0';
+    return filename;
 }
 
 static u_char* _memcardMakeTempFilename(int port, int fileNo)
 {
-    static u_char _memcardTempFilename[32];
-    
-    memset(_memcardTempFilename, 0, ' ');
-    strcpy(_memcardTempFilename, _pMemcardFilenameTemplate);
-    _memcardTempFilename[2] = port == 0 ? '0' : '1';
-    _memcardTempFilename[20] = (fileNo + 'A' - 1);
-    return _memcardTempFilename;
+    static u_char filename[32];
+
+    memset(filename, 0, ' ');
+    strcpy(filename, _memcardFilenameTemplate);
+    filename[2] = port == 0 ? '0' : '1';
+    filename[20] = (fileNo + 'A' - 1);
+    return filename;
 }
 
 static u_int _getNewestSaveFile()
@@ -522,7 +492,7 @@ static int _memcardFileNumberFromFilename(u_char* filename)
     int i;
     u_char const* gameCode;
 
-    gameCode = &_pMemcardFilenameTemplate[5];
+    gameCode = &_memcardFilenameTemplate[5];
 
     for (i = 0; i < 15; ++i) {
         if (gameCode[i] != filename[i]) {
@@ -737,7 +707,8 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
     static u_char port;
     static u_char initTimeout;
     static u_char timeout;
-    
+    static u_char eventType;
+
     int event;
 
     if (initPort != 0) {
@@ -757,7 +728,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         }
         state = ready;
         timeout = 0;
-        _memcardEvType = memcardEventsSw;
+        eventType = memcardEventsSw;
         // fallthrough
     case ready:
         switch (_testMemcardEvents(memcardEventsSw)) {
@@ -785,7 +756,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         }
         state = confirmed;
         timeout = 0;
-        _memcardEvType = memcardEventsHw;
+        eventType = memcardEventsHw;
         // fallthrough
     case confirmed:
         do {
@@ -813,13 +784,13 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         event = _testMemcardEvents(memcardEventsSw);
         switch (event) {
         case memcardInternalEventIoEnd:
-            return _memcardEvType + memcardEventIoEnd;
+            return eventType + memcardEventIoEnd;
         case memcardInternalEventError:
         case memcardInternalEventTimeout:
             state = init;
             break;
         case memcardInternalEventUnformatted:
-            return _memcardEvType + memcardEventUnformatted;
+            return eventType + memcardEventUnformatted;
         case memcardInternalEventNone:
             if (timeout++ > 64) {
                 state = init;
@@ -1005,7 +976,9 @@ void _packageSaveData(int targetFile)
 
 static int _loadSaveData(int portFileno)
 {
-    enum loadSaveDataState { init = 0, reading = 1 };
+    enum state { init = 0, reading = 1 };
+
+    static u_char state;
 
     int ev;
     int nBytes;
@@ -1015,7 +988,7 @@ static int _loadSaveData(int portFileno)
 
     temp_s2 = (savedata_t*)_spmcimg + 1;
     if (portFileno != 0) {
-        _loadSaveDataState = init;
+        state = init;
         _loadSaveDataErrors = 0;
         _loadSaveDataErrorOffset = 0;
         _readCardPort = portFileno >> 0xC;
@@ -1026,7 +999,7 @@ static int _loadSaveData(int portFileno)
         return 0;
     }
 
-    switch (_loadSaveDataState) {
+    switch (state) {
     case init:
         new_var = 320;
         _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
@@ -1059,7 +1032,7 @@ static int _loadSaveData(int portFileno)
             ++_loadSaveDataErrors;
             break;
         }
-        _loadSaveDataState = reading;
+        state = reading;
         // fallthrough
     case reading:
         ev = _testMemcardEvents(memcardEventsSw);
@@ -1068,7 +1041,7 @@ static int _loadSaveData(int portFileno)
             if (ev == memcardInternalEventIoEnd) {
                 return 1;
             }
-            _loadSaveDataState = init;
+            state = init;
             ++_loadSaveDataErrors;
         }
         break;
@@ -3251,6 +3224,31 @@ static void _saveScreenSwapBuf()
     PutDrawEnv(&draw);
 }
 
+extern struct {
+    u_short clut[16];
+    u_long data[0x600];
+} _publisher;
+extern u_long _developer[];
+extern int _movieWidth;
+extern int _movieHeight;
+extern u_short _menuItemTextClut[2][16];
+extern u_int _menuItemOutlineClut[];
+extern int _menuItemTextUv[10];
+extern int _menuItemTpages2[10];
+extern int _menuItemOutlineUv[10];
+extern int _menuItemOutlineTpages1[10];
+extern int _menuItemOutlineWh[10];
+extern int _menuItemOutlineXy[10];
+extern u_char D_80074C24[15][256];
+extern u_char _skillsLearned[32];
+// _vlcStaticTable = 0x80075CC4; ??
+extern u_int _titleScreenBg[];
+extern u_short _menuCopyright[];
+extern fontTable_t _fontTable[2];
+extern u_long _debugFont[];
+extern uiTable_t _uiTable;
+extern menuBg_t _saveMenuBg;
+
 static int _gameLoadScreen()
 {
     enum state {
@@ -3330,7 +3328,7 @@ static int _saveFileExists()
         } while (memCardState == memcardEventPending);
 
         if (memCardState == memcardEventIoEnd) {
-            _rMemcpy(filename, _pMemcardFilenameTemplate, sizeof(filename));
+            _rMemcpy(filename, _memcardFilenameTemplate, sizeof(filename));
 
             filename[2] = i + '/';
             filename[20] = '?';

@@ -1,3 +1,4 @@
+
 _playNewGameSfx = 0x80068A2C;
 _playMenuChangeSfx = 0x80068A68;
 _playMenuSelectSfx = 0x80068A8C;
@@ -100,7 +101,7 @@ DecDCToutCallback = 0x8007202C;
 DecDCTvlcSize2 = 0x8007241C;
 DecDCTvlc2 = 0x8007244C;
 DecDCTvlcBuild = 0x8007279C;
-_pMemcardFilenameTemplate = 0x8007288C;
+_memcardFilenameTemplate = 0x8007288C;
 _encodeSeed = 0x80072890;
 _eventSpecs = 0x80072894;
 _menuElementStops = 0x8007289C;

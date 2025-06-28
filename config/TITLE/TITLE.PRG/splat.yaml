@@ -27,7 +27,7 @@ segments:
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, .data, 22C]
-      - [0xA09C, data, 22C]
+      - [0xA110, data, 22C]
       - [0xA70C, rgba16, publisherClut, 16, 1]
       - [0xA72C, rgb4, publisher, 256, 48]
       - [0xBF2C, rgb4, developer, 128, 13]

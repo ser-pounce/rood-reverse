@@ -14,7 +14,7 @@ def decompose_vs_getUV0Clut(val):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 vs_getUV0Clut_from_int.py <hex_value>")
+        print("Usage: python3 vs_getUV0Clut.py <hex_value>")
         sys.exit(1)
     val = int(sys.argv[1], 16)
     print(decompose_vs_getUV0Clut(val))

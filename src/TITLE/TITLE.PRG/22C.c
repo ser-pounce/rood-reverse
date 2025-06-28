@@ -204,10 +204,19 @@ static void _setTitleExitFlags(int arg0);
 u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 u_int _encodeSeed = 0x0019660D;
 u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-extern u_char _menuElementStops[];
-extern char _selectCursorColors[];
-extern int _saveInfoUVClut[];
-extern int _saveInfoWh[];
+u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
+    224, 248, 255, 255, 255, 255 };
+char _cursorFileOpSaturation[]
+    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
+int _saveInfoUVClut[]
+    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
+          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
+          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
+          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
+          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
+    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
+    vs_getXY(5, 7) };
 extern u_char _digitsDivisors[];
 extern int _fontCharacterWidths[];
 extern u_char _arrowCharState;
@@ -1897,8 +1906,7 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
             }
             if ((menuEntry->selected != 0) && (_fileProgressCounter != 0)) {
                 if (_fileProgressCounter < 0) {
-                    int v0 = _fileProgressCounter++;
-                    char* p = _selectCursorColors + v0;
+                    char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
@@ -2013,7 +2021,7 @@ static void _drawFileMenu(int framebuf)
     DrawPrim(&_primBuf); // Message dialog background
     if (_selectCursorXy != 0) {
         _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), MAKEWH(16, 16),
-            (_selectCursorColors[_selectCursorColor] << 16)
+            (_cursorFileOpSaturation[_selectCursorColor] << 16)
                 | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
         _selectCursorColor = (_selectCursorColor + 1) & 0xF;
         if (vs_main_buttonsPressed & PADRup) {

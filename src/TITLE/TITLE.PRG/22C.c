@@ -201,14 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern vs_main_settings_t _settingsBackup;
-extern int _saveSuccessful;
-extern u_char _saveMenuState;
-extern u_char _saveMenuPort;
-extern u_char _saveMenuSelectedPage;
-extern u_char _saveMenuSelectedSlot;
-extern u_char _saveMenuLeaveTimer;
-extern u_char _selectSaveMemoryCardState;
 extern u_char _selectSaveMemoryCardPort;
 extern u_char _showSaveMenuState;
 extern u_char _showSaveMenuSelectedSlot;
@@ -2566,6 +2558,7 @@ static int _promptFormat(int initPort)
 
     static u_char state;
     static u_char port;
+    static int _ __attribute__((unused));
 
     int val;
 
@@ -2630,7 +2623,7 @@ static int _promptFormat(int initPort)
     }
 }
 
-static int _showSaveFilesMenu(int port)
+static int _showSaveFilesMenu(int initPort)
 {
     enum state {
         init = 0,
@@ -2640,37 +2633,45 @@ static int _showSaveFilesMenu(int port)
         initOverwrite = 4,
         save = 5,
         validate = 6,
-        leaveTimer = 7,
+        leaveWithTimer = 7,
         leave = 8,
         format = 9,
         leaveError = 10
     };
+
+    static vs_main_settings_t settingsBackup;
+    static int saveSuccessful;
+    static u_char state;
+    static u_char port;
+    static u_char page;
+    static u_char fileSlot;
+    static u_char leaveTimer;
 
     _fileMenuElements_t* element;
     int val;
     int saveId;
     int i;
 
-    if (port != 0) {
-        _saveMenuPort = port;
-        _saveMenuSelectedSlot = _findCurrentSaveOnActiveMemcard();
-        if (_saveMenuSelectedSlot) {
-            --_saveMenuSelectedSlot;
+    if (initPort != 0) {
+        port = initPort;
+        fileSlot = _findCurrentSaveOnActiveMemcard();
+        if (fileSlot) {
+            --fileSlot;
         }
-        _saveMenuSelectedPage = 0;
-        if (_saveMenuSelectedSlot == 4) {
-            _saveMenuSelectedPage = 2;
-            _saveMenuSelectedSlot = 2;
-        } else if (_saveMenuSelectedSlot != 0) {
-            _saveMenuSelectedPage = _saveMenuSelectedSlot - 1;
-            _saveMenuSelectedSlot = 1;
+        page = 0;
+        if (fileSlot == 4) {
+            page = 2;
+            fileSlot = 2;
+        } else if (fileSlot != 0) {
+            page = fileSlot - 1;
+            fileSlot = 1;
         }
-        _saveSuccessful = -1;
-        _saveMenuLeaveTimer = 0;
-        _saveMenuState = init;
+        saveSuccessful = -1;
+        leaveTimer = 0;
+        state = init;
         return 0;
     }
-    switch (_saveMenuState) {
+    switch (state) {
     case init:
         for (i = 0; i < 5; ++i) {
             element = _initFileMenuElement(
@@ -2680,54 +2681,54 @@ static int _showSaveFilesMenu(int port)
                 = _saveFileInfo[i].unk4.slotState == slotStateUnavailable;
             element->saveLocation = _saveFileInfo[i].unk4.saveLocation;
         }
-        _saveMenuState = handleInput;
+        state = handleInput;
         /* fallthrough */
     case handleInput:
         _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
-            _saveMenuState = leave;
+            state = leave;
         } else {
             for (i = 0; i < 5; ++i) {
-                _fileMenuElements[i + 5].y = ((i - _saveMenuSelectedPage) * 40) + 72;
+                _fileMenuElements[i + 5].y = ((i - page) * 40) + 72;
                 _fileMenuElements[i + 5].selected = 0;
             }
-            val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+            val = fileSlot + page;
             if (vs_main_buttonsPressed & PADRright) {
                 if (_saveFileInfo[val].unk4.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuElements[val + 5].selected = 1;
                     _selectCursorXy = 0;
-                    _memcardMaskedHandler(_saveMenuPort + memcardEventMaskAll);
-                    _saveMenuState = slotSelected;
+                    _memcardMaskedHandler(port + memcardEventMaskAll);
+                    state = slotSelected;
                     break;
                 } else {
                     vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
                 }
             }
             if (vs_main_buttonRepeat & PADLup) {
-                if (_saveMenuSelectedSlot == 0) {
-                    if (_saveMenuSelectedPage != 0) {
-                        --_saveMenuSelectedPage;
+                if (fileSlot == 0) {
+                    if (page != 0) {
+                        --page;
                     }
                 } else {
-                    --_saveMenuSelectedSlot;
+                    --fileSlot;
                 }
             }
             if (vs_main_buttonRepeat & PADLdown) {
-                if (_saveMenuSelectedSlot == 2) {
-                    if (_saveMenuSelectedPage < 2) {
-                        ++_saveMenuSelectedPage;
+                if (fileSlot == 2) {
+                    if (page < 2) {
+                        ++page;
                     }
                 } else {
-                    ++_saveMenuSelectedSlot;
+                    ++fileSlot;
                 }
             }
-            if (val != (_saveMenuSelectedSlot + _saveMenuSelectedPage)) {
+            if (val != (fileSlot + page)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
-            _selectCursorXy = vs_getXY(24, _saveMenuSelectedSlot * 40 + 62);
+            _selectCursorXy = vs_getXY(24, fileSlot * 40 + 62);
             _fileMenuElements[val + 5].selected = 1;
         }
         break;
@@ -2736,24 +2737,24 @@ static int _showSaveFilesMenu(int port)
         if (val != memcardMaskedHandlerPending) {
             if (_selectSaveMemoryCardMessage
                 == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
-                _promptFormat(_saveMenuPort);
-                _saveMenuState = format;
+                _promptFormat(port);
+                state = format;
             } else if (val > memcardMaskedHandlerError) {
-                val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+                val = fileSlot + page;
                 if (_saveFileInfo[val].unk4.slotState == slotStateAvailable) {
-                    if (_createSaveFile(_saveMenuPort, val + 1) != 0) {
-                        _saveMenuState = leaveTimer;
+                    if (_createSaveFile(port, val + 1) != 0) {
+                        state = leaveWithTimer;
                         _selectSaveMemoryCardMessage
                             = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
                     } else {
-                        _saveMenuState = save;
+                        state = save;
                     }
                 } else {
                     _promptOverwrite(1);
-                    _saveMenuState = overwritePrompt;
+                    state = overwritePrompt;
                 }
             } else {
-                _saveMenuState = leaveTimer;
+                state = leaveWithTimer;
             }
         }
         break;
@@ -2761,10 +2762,10 @@ static int _showSaveFilesMenu(int port)
         val = _promptOverwrite(0);
         if (val != 0) {
             if (val == 1) {
-                _memcardMaskedHandler(_saveMenuPort + memcardEventMaskAll);
-                _saveMenuState = initOverwrite;
+                _memcardMaskedHandler(port + memcardEventMaskAll);
+                state = initOverwrite;
             } else {
-                _saveMenuState = handleInput;
+                state = handleInput;
             }
         }
         break;
@@ -2773,17 +2774,17 @@ static int _showSaveFilesMenu(int port)
         if (val != memcardMaskedHandlerPending) {
             if (val > memcardMaskedHandlerError) {
                 _dataNotSaved |= (_findCurrentSaveOnActiveMemcard()
-                    == (_saveMenuSelectedSlot + _saveMenuSelectedPage + 1));
-                _saveMenuState = save;
+                    == (fileSlot + page + 1));
+                state = save;
             } else {
-                _saveMenuState = leaveTimer;
+                state = leaveWithTimer;
             }
         }
         break;
     case save:
-        val = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+        val = fileSlot + page;
         _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saving);
-        _rMemcpy(&_settingsBackup, &vs_main_settings, sizeof(_settingsBackup));
+        _rMemcpy(&settingsBackup, &vs_main_settings, sizeof(settingsBackup));
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
         if (_containerDataEmpty != 0) {
@@ -2791,15 +2792,15 @@ static int _showSaveFilesMenu(int port)
             *(int*)&vs_main_settings |= 0x10;
         }
         _packageSaveData(val);
-        _saveFile((val + 1) | ((_saveMenuPort - 1) << 0x10));
-        _saveMenuState = validate;
+        _saveFile((val + 1) | ((port - 1) << 0x10));
+        state = validate;
         break;
     case validate:
         val = _saveFile(0);
         ++_fileProgressCounter;
         if (val != 0) {
             D_8006169D = 0;
-            saveId = _saveMenuSelectedSlot + _saveMenuSelectedPage;
+            saveId = fileSlot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
                     u_char v = _backupMainSetting & 1;
@@ -2812,7 +2813,7 @@ static int _showSaveFilesMenu(int port)
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
                 _fileProgressCounter = 0;
-                _rMemcpy(&vs_main_settings, &_settingsBackup, sizeof(vs_main_settings));
+                _rMemcpy(&vs_main_settings, &settingsBackup, sizeof(vs_main_settings));
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
@@ -2826,46 +2827,46 @@ static int _showSaveFilesMenu(int port)
                 _fileMenuElements[saveId + 5].saveLocation
                     = _saveFileInfo[saveId].unk4.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
-                _saveSuccessful = 1;
+                saveSuccessful = 1;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_saved);
             }
-            _saveMenuState = leaveTimer;
+            state = leaveWithTimer;
         }
         break;
-    case leaveTimer:
-        if (_saveSuccessful == 1) {
-            ++_saveMenuLeaveTimer;
+    case leaveWithTimer:
+        if (saveSuccessful == 1) {
+            ++leaveTimer;
         }
         if ((u_char)vs_main_buttonsPressed == 0) {
-            if (_saveMenuLeaveTimer != 150) {
+            if (leaveTimer != 150) {
                 break;
             }
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-        _saveMenuState = leave;
+        state = leave;
         break;
     case leave:
         if (_fileProgressCounter == 0) {
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuEntry(i);
             }
-            return _saveSuccessful;
+            return saveSuccessful;
         }
         break;
     case format:
         val = _promptFormat(0);
         if (val != 0) {
             if (val < 0) {
-                _saveMenuState = leaveError;
-            } else if (_createSaveFile(_saveMenuPort,
-                           _saveMenuSelectedPage + _saveMenuSelectedSlot + 1)
+                state = leaveError;
+            } else if (_createSaveFile(port,
+                           page + fileSlot + 1)
                 != 0) {
-                _saveMenuState = leaveTimer;
+                state = leaveWithTimer;
                 _selectSaveMemoryCardMessage
                     = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
-                _saveMenuState = save;
+                state = save;
             }
         }
         break;
@@ -2894,6 +2895,8 @@ static int _selectSaveMemoryCard(int port)
         initSaveMenu = 6,
         showSaveMenu = 7
     };
+
+    static u_char _selectSaveMemoryCardState;
 
     int i, j;
 

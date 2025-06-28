@@ -226,12 +226,6 @@ extern u_long _debugFont[];
 extern uiTable_t _uiTable;
 extern menuBg_t _saveMenuBg;
 
-extern u_char _memcardFilename[32];
-extern u_char _memcardTempFilename[32];
-extern u_char _memCardState;
-extern u_char _memcardPort;
-extern u_char _memCardInitTmeout;
-extern u_char _memCardTimeout;
 extern u_char _memcardEvType;
 extern u_char _loadSaveDataState;
 extern u_char _readCardPort;
@@ -296,13 +290,9 @@ extern struct {
 } _titleScreenFade;
 extern int _buttonsLastPressed;
 extern int _introMovieLastPlayed;
-extern long _memcardEventDescriptors[8];
 extern u_char* _spmcimg;
 extern mcdata_t* _mcData;
 extern u_short* _textTable;
-extern struct DIRENTRY* _memcardFiles[15];
-extern struct DIRENTRY* _dirEntBuf;
-extern _saveFileInfo_t* _saveFileInfo;
 extern u_char _loadSaveDataErrorOffset;
 extern u_short _fileProgressTarget;
 extern u_short _filePreviousProgressCounter;
@@ -358,14 +348,6 @@ enum menuItems {
     menuItemSoundStereo = 7
 };
 
-enum _testMemcardEvents_t {
-    memcardInternalEventIoEnd = 0,
-    memcardInternalEventError = 1,
-    memcardInternalEventTimeout = 2,
-    memcardInternalEventUnformatted = 3,
-    memcardInternalEventNone = 4,
-};
-
 enum vs_fileMenuUiIds_e {
     vs_uiids_colon = 0,
     vs_uiids_number = 1,
@@ -378,6 +360,9 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_mp = 8,
     vs_uiids_dot = 9,
 };
+
+
+// sfx.c
 
 static void _playNewGameSfx()
 {
@@ -392,7 +377,32 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
+
+// memorycard.c
+
 u_char const* _pMemcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+
+extern long _memcardEventDescriptors[8];
+extern _saveFileInfo_t* _saveFileInfo;
+extern struct DIRENTRY* _memcardFiles[15];
+extern struct DIRENTRY* _dirEntBuf;
+
+enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
+
+enum testMemcardEvents_e {
+    memcardInternalEventIoEnd,
+    memcardInternalEventError,
+    memcardInternalEventTimeout,
+    memcardInternalEventUnformatted,
+    memcardInternalEventNone,
+};
+
+enum memcardEventHandler_e {
+    memcardEventPending = 0,
+    memcardEventIoEnd = 1,
+    memcardEventTimeout = 2,
+    memcardEventUnformatted = 3
+};
 
 static u_int _encode(int value)
 {
@@ -403,7 +413,7 @@ static u_int _encode(int value)
     return seed >> (32 - value);
 }
 
-static enum _testMemcardEvents_t _testMemcardEvents(int type)
+static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
     int i;
 
@@ -415,7 +425,7 @@ static enum _testMemcardEvents_t _testMemcardEvents(int type)
     return i;
 }
 
-static void _resetMemcardEvents(int type)
+static void _resetMemcardEvents(enum memcardEvents_e type)
 {
     int i;
 
@@ -424,23 +434,23 @@ static void _resetMemcardEvents(int type)
     }
 }
 
-static void _drawImage(int xy, u_long* p, int wh)
+static void _drawImage(int xy, void* buffer, int wh)
 {
     RECT rect;
 
     *(int*)&rect.x = xy;
     *(int*)&rect.w = wh;
-    LoadImage(&rect, p);
+    LoadImage(&rect, buffer);
     DrawSync(0);
 }
 
-static void _readImage(int xy, u_long* p, int wh)
+static void _readImage(int xy, void* buffer, int wh)
 {
     RECT rect;
 
     *(int*)&rect.x = xy;
     *(int*)&rect.w = wh;
-    StoreImage(&rect, p);
+    StoreImage(&rect, buffer);
     DrawSync(0);
 }
 
@@ -454,6 +464,8 @@ static void _rMemcpy(void* dst, void const* src, int count)
 
 static u_char* _memcardMakeFilename(int port, int fileNo)
 {
+    static u_char _memcardFilename[32];
+    
     memset(_memcardFilename, 0, ' ');
     strcpy(_memcardFilename, _pMemcardFilenameTemplate);
     _memcardFilename[2] = port == 0 ? '0' : '1';
@@ -463,10 +475,12 @@ static u_char* _memcardMakeFilename(int port, int fileNo)
 
 static u_char* _memcardMakeTempFilename(int port, int fileNo)
 {
+    static u_char _memcardTempFilename[32];
+    
     memset(_memcardTempFilename, 0, ' ');
     strcpy(_memcardTempFilename, _pMemcardFilenameTemplate);
     _memcardTempFilename[2] = port == 0 ? '0' : '1';
-    _memcardTempFilename[20] = (fileNo + '@');
+    _memcardTempFilename[20] = (fileNo + 'A' - 1);
     return _memcardTempFilename;
 }
 
@@ -708,16 +722,7 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
-enum memcardEventHandler_e {
-    memcardEventPending = 0,
-    memcardEventIoEnd = 1,
-    memcardEventTimeout = 2,
-    memcardEventUnformatted = 3
-};
-
-enum memcardEvents_e { memcardEventsSw = 0, memcardEventsHw = 4 };
-
-static enum memcardEventHandler_e _memcardEventHandler(int port)
+static enum memcardEventHandler_e _memcardEventHandler(int initPort)
 {
     enum states {
         init = 0,
@@ -728,53 +733,58 @@ static enum memcardEventHandler_e _memcardEventHandler(int port)
         loaded = 5,
     };
 
+    static u_char state;
+    static u_char port;
+    static u_char initTimeout;
+    static u_char timeout;
+    
     int event;
 
-    if (port != 0) {
-        _memcardPort = (port - 1) * 16;
-        _memCardState = init;
-        _memCardInitTmeout = 0;
+    if (initPort != 0) {
+        port = (initPort - 1) * 16;
+        state = init;
+        initTimeout = 0;
         return memcardEventPending;
     }
-    switch (_memCardState) {
+    switch (state) {
     case init:
-        if (++_memCardInitTmeout >= 4) {
+        if (++initTimeout >= 4) {
             return memcardEventTimeout;
         }
         _resetMemcardEvents(memcardEventsSw);
-        if (_card_info(_memcardPort) == 0) {
+        if (_card_info(port) == 0) {
             break;
         }
-        _memCardState = ready;
-        _memCardTimeout = 0;
+        state = ready;
+        timeout = 0;
         _memcardEvType = memcardEventsSw;
         // fallthrough
     case ready:
         switch (_testMemcardEvents(memcardEventsSw)) {
         case memcardInternalEventIoEnd:
-            _memCardState = loadReady;
+            state = loadReady;
             break;
         case memcardInternalEventError:
         case memcardInternalEventTimeout:
-            _memCardState = init;
+            state = init;
             break;
         case memcardInternalEventUnformatted:
-            _memCardState = unformatted;
+            state = unformatted;
             break;
         case memcardInternalEventNone:
-            if (_memCardTimeout++ > 64) {
-                _memCardState = init;
+            if (timeout++ > 64) {
+                state = init;
             }
             break;
         }
         break;
     case unformatted:
         _resetMemcardEvents(memcardEventsHw);
-        if (_card_clear(_memcardPort) == 0) {
+        if (_card_clear(port) == 0) {
             break;
         }
-        _memCardState = confirmed;
-        _memCardTimeout = 0;
+        state = confirmed;
+        timeout = 0;
         _memcardEvType = memcardEventsHw;
         // fallthrough
     case confirmed:
@@ -782,22 +792,22 @@ static enum memcardEventHandler_e _memcardEventHandler(int port)
             event = _testMemcardEvents(memcardEventsHw);
         } while (event == memcardInternalEventNone);
         if (event == memcardInternalEventIoEnd) {
-            _memCardState = loadReady;
+            state = loadReady;
             break;
         }
         if (event < memcardInternalEventIoEnd)
             break;
         if (event >= memcardInternalEventNone)
             break;
-        _memCardState = init;
+        state = init;
         break;
     case loadReady:
         _resetMemcardEvents(memcardEventsSw);
-        if (_card_load(_memcardPort) == 0) {
+        if (_card_load(port) == 0) {
             break;
         }
-        _memCardState = loaded;
-        _memCardTimeout = 0;
+        state = loaded;
+        timeout = 0;
         // fallthrough
     case loaded:
         event = _testMemcardEvents(memcardEventsSw);
@@ -806,13 +816,13 @@ static enum memcardEventHandler_e _memcardEventHandler(int port)
             return _memcardEvType + memcardEventIoEnd;
         case memcardInternalEventError:
         case memcardInternalEventTimeout:
-            _memCardState = init;
+            state = init;
             break;
         case memcardInternalEventUnformatted:
             return _memcardEvType + memcardEventUnformatted;
         case memcardInternalEventNone:
-            if (_memCardTimeout++ > 64) {
-                _memCardState = init;
+            if (timeout++ > 64) {
+                state = init;
             }
             break;
         }

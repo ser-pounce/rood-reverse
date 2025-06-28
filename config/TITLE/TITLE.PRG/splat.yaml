@@ -50,5 +50,6 @@ segments:
       - [0x60A68, rgb4, uiTex1, 256, 256]
       - [0x68A68, rgba16, saveMenuBgClut, 256, 1]
       - [0x68C68, rgb8, saveMenuBg, 192, 240]
-      - [0x74068, bss]
+      - [0x74068, .bss, 22C]
+      - [0x740AC, bss]
   - [0x87648]

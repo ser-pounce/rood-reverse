@@ -201,11 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern int _memCardFd;
-extern u_char _memcardSaveState;
-extern u_char _memcardFileno;
-extern u_char _memcardManagerPort;
-extern u_char _saveFileErrorCount;
 extern u_char _renameErrorCount;
 extern int _saveFileId;
 extern u_char _diskState;
@@ -975,10 +970,12 @@ static int _loadSaveData(int portFileno)
     enum state { init = 0, reading = 1 };
 
     static u_char state;
-    static u_char _readCardPort;
-    static u_char _readFileNo;
-    static u_char _isTempSave;
-    static u_char _loadSaveDataErrors;
+    static u_char port;
+    static u_char file;
+    static u_char isTempSave;
+    static u_char errors;
+    static short dummy __attribute__((unused));
+    static int _memCardFd;
 
     int ev;
     int nBytes;
@@ -989,11 +986,11 @@ static int _loadSaveData(int portFileno)
     temp_s2 = (savedata_t*)_spmcimg + 1;
     if (portFileno != 0) {
         state = init;
-        _loadSaveDataErrors = 0;
+        errors = 0;
         _loadSaveDataErrorOffset = 0;
-        _readCardPort = portFileno >> 0xC;
-        _isTempSave = (portFileno >> 8) & 1;
-        _readFileNo = portFileno & 0xF;
+        port = portFileno >> 0xC;
+        isTempSave = (portFileno >> 8) & 1;
+        file = portFileno & 0xF;
         _fileProgressPosition = 80;
         _filePreviousProgressCounter = 0;
         return 0;
@@ -1006,30 +1003,30 @@ static int _loadSaveData(int portFileno)
                                      * ((_loadSaveDataErrorOffset * 20)
                                          - (_fileProgressPosition - new_var)))
             / _fileProgressTarget;
-        _loadSaveDataErrorOffset = _loadSaveDataErrors;
-        _fileProgressTarget = 192 - (_isTempSave << 7);
+        _loadSaveDataErrorOffset = errors;
+        _fileProgressTarget = 192 - (isTempSave << 7);
         _filePreviousProgressCounter = _fileProgressCounter;
 
         memset(temp_s2, 0, sizeof(savedata_t));
 
-        if (_readFileNo & 8) {
-            filename = _memcardMakeTempFilename(_readCardPort, _readFileNo & 7);
+        if (file & 8) {
+            filename = _memcardMakeTempFilename(port, file & 7);
         } else {
-            filename = _memcardMakeFilename(_readCardPort, _readFileNo);
+            filename = _memcardMakeFilename(port, file);
         }
         _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
         if (_memCardFd == -1) {
-            ++_loadSaveDataErrors;
+            ++errors;
             break;
         }
         _resetMemcardEvents(memcardEventsSw);
         nBytes = sizeof(savedata_t);
-        if (_isTempSave != 0) {
+        if (isTempSave != 0) {
             nBytes = 0x2000;
         }
         if (read(_memCardFd, temp_s2, nBytes) == -1) {
             close(_memCardFd);
-            ++_loadSaveDataErrors;
+            ++errors;
             break;
         }
         state = reading;
@@ -1042,16 +1039,16 @@ static int _loadSaveData(int portFileno)
                 return 1;
             }
             state = init;
-            ++_loadSaveDataErrors;
+            ++errors;
         }
         break;
     }
-    return _loadSaveDataErrors == 3 ? -1 : 0;
+    return errors == 3 ? -1 : 0;
 }
 
-int _saveFile(int arg0)
+int _saveFile(int portFile)
 {
-    enum memcardSaveState {
+    enum state {
         init = 0,
         tempFileCreated = 1,
         readReady = 2,
@@ -1059,32 +1056,37 @@ int _saveFile(int arg0)
         fileVerified = 4
     };
 
+    static u_char state;
+    static u_char file;
+    static u_char port;
+    static u_char errors;
+
     int temp_v1_2;
     int i;
     int temp_s3;
 
-    if (arg0 != 0) {
-        _saveFileErrorCount = 0;
+    if (portFile != 0) {
+        errors = 0;
         _renameErrorCount = 0;
         _loadSaveDataErrorOffset = 0;
-        _memcardManagerPort = arg0 >> 0xC;
-        _memcardFileno = arg0 & 7;
+        port = portFile >> 0xC;
+        file = portFile & 7;
         _fileProgressPosition = 80;
         _filePreviousProgressCounter = 0;
-        _memcardSaveState = _memcardSaveIdExists(_memcardFileno + 'A' - 1);
+        state = _memcardSaveIdExists(file + 'A' - 1);
         return 0;
     }
-    switch (_memcardSaveState) {
+    switch (state) {
     case init:
-        if (rename((char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno),
-                (char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno))
+        if (rename((char*)_memcardMakeFilename(port, file),
+                (char*)_memcardMakeTempFilename(port, file))
             != 0) {
-            _saveFileErrorCount = 0;
+            errors = 0;
             _renameErrorCount = 0;
-            _memcardSaveState = tempFileCreated;
+            state = tempFileCreated;
         } else {
             ++_renameErrorCount;
-            _saveFileErrorCount = _renameErrorCount >> 4;
+            errors = _renameErrorCount >> 4;
         }
         break;
     case tempFileCreated:
@@ -1095,35 +1097,35 @@ int _saveFile(int arg0)
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
         _saveFileId
-            = open((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
+            = open((char*)_memcardMakeTempFilename(port, file),
                 O_NOWAIT | O_WRONLY);
         ;
         if (_saveFileId == -1) {
-            ++_saveFileErrorCount;
+            ++errors;
             break;
         }
         _resetMemcardEvents(memcardEventsSw);
         if (write(_saveFileId, _spmcimg, sizeof(savedata_t)) == -1) {
             close(_saveFileId);
-            ++_saveFileErrorCount;
+            ++errors;
             break;
         }
-        _memcardSaveState = readReady;
+        state = readReady;
         // fallthrough
     case readReady: {
         temp_s3 = _testMemcardEvents(memcardEventsSw);
         if (temp_s3 < memcardInternalEventNone) {
             close(_saveFileId);
             if (temp_s3 == memcardInternalEventIoEnd) {
-                _memcardSaveState = verifyPending;
+                state = verifyPending;
                 i = _fileProgressPosition;
                 temp_s3 = _filePreviousProgressCounter;
-                _loadSaveData((_memcardManagerPort << 12) | (_memcardFileno + 8));
+                _loadSaveData((port << 12) | (file + 8));
                 _fileProgressPosition = i;
                 _filePreviousProgressCounter = temp_s3;
             } else {
-                ++_saveFileErrorCount;
-                _memcardSaveState = tempFileCreated;
+                ++errors;
+                state = tempFileCreated;
             }
         }
         break;
@@ -1144,19 +1146,19 @@ int _saveFile(int arg0)
         if (i < (int)sizeof(savedata_t)) {
             return -1;
         }
-        _memcardSaveState = fileVerified;
+        state = fileVerified;
         break;
     case fileVerified:
-        if (rename((char*)_memcardMakeTempFilename(_memcardManagerPort, _memcardFileno),
-                (char*)_memcardMakeFilename(_memcardManagerPort, _memcardFileno))
+        if (rename((char*)_memcardMakeTempFilename(port, file),
+                (char*)_memcardMakeFilename(port, file))
             == 0) {
             ++_renameErrorCount;
-            _saveFileErrorCount = (_renameErrorCount >> 4);
+            errors = (_renameErrorCount >> 4);
             break;
         }
         return 1;
     }
-    return _saveFileErrorCount == 3 ? -1 : 0;
+    return errors == 3 ? -1 : 0;
 }
 
 u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };

@@ -201,8 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _renameErrorCount;
-extern int _saveFileId;
 extern u_char _diskState;
 extern vs_main_CdQueueSlot* _mcDataLoad;
 extern u_char _findCurrentSaveState;
@@ -975,7 +973,7 @@ static int _loadSaveData(int portFileno)
     static u_char isTempSave;
     static u_char errors;
     static short dummy __attribute__((unused));
-    static int _memCardFd;
+    static int fd;
 
     int ev;
     int nBytes;
@@ -1014,8 +1012,8 @@ static int _loadSaveData(int portFileno)
         } else {
             filename = _memcardMakeFilename(port, file);
         }
-        _memCardFd = open((char*)filename, O_NOWAIT | O_RDONLY);
-        if (_memCardFd == -1) {
+        fd = open((char*)filename, O_NOWAIT | O_RDONLY);
+        if (fd == -1) {
             ++errors;
             break;
         }
@@ -1024,8 +1022,8 @@ static int _loadSaveData(int portFileno)
         if (isTempSave != 0) {
             nBytes = 0x2000;
         }
-        if (read(_memCardFd, temp_s2, nBytes) == -1) {
-            close(_memCardFd);
+        if (read(fd, temp_s2, nBytes) == -1) {
+            close(fd);
             ++errors;
             break;
         }
@@ -1034,7 +1032,7 @@ static int _loadSaveData(int portFileno)
     case reading:
         ev = _testMemcardEvents(memcardEventsSw);
         if (ev < memcardInternalEventNone) {
-            close(_memCardFd);
+            close(fd);
             if (ev == memcardInternalEventIoEnd) {
                 return 1;
             }
@@ -1060,6 +1058,9 @@ int _saveFile(int portFile)
     static u_char file;
     static u_char port;
     static u_char errors;
+    static u_char _renameErrorCount;
+    static u_char dummy[3] __attribute__((unused));
+    static int _saveFileId;
 
     int temp_v1_2;
     int i;

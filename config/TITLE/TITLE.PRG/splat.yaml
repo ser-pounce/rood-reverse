@@ -51,5 +51,4 @@ segments:
       - [0x68A68, rgba16, _saveMenuBg, 256, 1]
       - [0x68C68, rgb8, _saveMenuBgData, 192, 240]
       - [0x74068, .bss, 22C]
-      - [0x76298, bss]
   - [0x87648]

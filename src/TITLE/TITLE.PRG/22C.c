@@ -217,11 +217,32 @@ int _saveInfoUVClut[]
 int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
     vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
     vs_getXY(5, 7) };
-extern u_char _digitsDivisors[];
-extern int _fontCharacterWidths[];
-extern u_char _arrowCharState;
-extern int _menuItemColors1[];
-extern int _menuItemColors2[];
+u_char _digitDivisors[] = { 0, 1, 10, 100 };
+int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
+    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
+    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
+    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
+    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
+u_char _arrowCharState[4] = { 0 };
+int _menuItemColors1[] = {
+    vs_getRGB888(0x40, 0x30, 0x66),
+    vs_getRGB888(0x40, 0x38, 0x20)
+};
+int _menuItemColors2[] = {
+    vs_getRGB888(0x08, 0x08, 0x20),
+    vs_getRGB888(0x10, 0x10, 0x08),
+};
+
 extern struct {
     u_short clut[16];
     u_long data[0x600];
@@ -1394,7 +1415,7 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
     wh = currentValueDigits * 6;
     new_var4 = 55;
     xy = (xy - (wh - new_var4)) - (maxValueDigits * 5);
-    placeDivisor = _digitsDivisors[currentValueDigits];
+    placeDivisor = _digitDivisors[currentValueDigits];
     do {
         _drawSprt(xy - MAKEXY(0, 1),
             (((currentValue / placeDivisor) << 3) + 64) | (getClut(832, 223) << 16),
@@ -1404,7 +1425,7 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
         xy += 6;
     } while (placeDivisor != 0);
     _drawSaveInfoUI(xy + 1, vs_uiids_dot);
-    _drawInteger(xy + 6, maxValue, _digitsDivisors[maxValueDigits]);
+    _drawInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
 }
 
 static void _fileProcessingAnim(int x, int y)
@@ -1683,9 +1704,9 @@ static void _printString(u_char* text, int x, int y, int clut)
             if (c < vs_char_nonPrinting) {
                 nextX = _printCharacter(c, nextX, y, clut);
             } else if (c == vs_char_confirm) {
-                arrowState = (_arrowCharState + 1) % 12;
+                arrowState = (_arrowCharState[0] + 1) % 12;
                 c = vs_char_arrow - (arrowState >> 2);
-                _arrowCharState = arrowState;
+                _arrowCharState[0] = arrowState;
                 nextX = _printCharacter(c, nextX, y, clut);
             } else if (c != vs_char_terminator) {
                 if (c == vs_char_newline) {

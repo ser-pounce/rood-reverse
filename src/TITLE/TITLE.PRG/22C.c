@@ -485,10 +485,8 @@ int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
     12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
     12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
 u_char _arrowCharState[4] = { 0 };
-int _menuItemColors1[] = {
-    vs_getRGB888(0x40, 0x30, 0x66),
-    vs_getRGB888(0x40, 0x38, 0x20)
-};
+int _menuItemColors1[]
+    = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
 int _menuItemColors2[] = {
     vs_getRGB888(0x08, 0x08, 0x20),
     vs_getRGB888(0x10, 0x10, 0x08),
@@ -1585,7 +1583,7 @@ static int _printCharacter(u_int c, int x, int y, int clut)
         _primBuf.prim.sprt.tpage
             = vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
         _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
-        _primBuf.prim.sprt.x0y0 = vs_getYX(y, x);
+        _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
         _primBuf.prim.sprt.wh = vs_getWH(12, 12);
         _primBuf.prim.sprt.u0v0clut
             = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
@@ -1799,7 +1797,8 @@ static void _drawFileMenuEntry(_fileMenuElements_t* menuEntry)
         _primBuf.prim.tilePoly.tile.tpage
             = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 = vs_getYX(menuEntry->y + 2, menuEntry->x + 2);
+        _primBuf.prim.tilePoly.tile.x0y0
+            = ((menuEntry->x + 2) & 0xFFFF) | (menuEntry->y + 2) << 16;
         _primBuf.prim.tilePoly.tile.wh = menuEntry->w | (menuEntry->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
         _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)menuEntry->x | y;

@@ -201,10 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _readCardPort;
-extern u_char _readFileNo;
-extern u_char _isTempSave;
-extern u_char _loadSaveDataErrors;
 extern int _memCardFd;
 extern u_char _memcardSaveState;
 extern u_char _memcardFileno;
@@ -979,6 +975,10 @@ static int _loadSaveData(int portFileno)
     enum state { init = 0, reading = 1 };
 
     static u_char state;
+    static u_char _readCardPort;
+    static u_char _readFileNo;
+    static u_char _isTempSave;
+    static u_char _loadSaveDataErrors;
 
     int ev;
     int nBytes;

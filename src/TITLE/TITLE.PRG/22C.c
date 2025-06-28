@@ -379,9 +379,6 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_dot = 9,
 };
 
-#define SWEVENTS 0
-#define HWEVENTS 4
-
 static void _playNewGameSfx()
 {
     vs_main_playSfxDefault(0x7E, 1);
@@ -748,14 +745,19 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
-enum memcardEventHandler_t {
+enum memcardEventHandler_e {
     memcardEventPending = 0,
     memcardEventIoEnd = 1,
     memcardEventTimeout = 2,
     memcardEventUnformatted = 3
 };
 
-static enum memcardEventHandler_t _memcardEventHandler(int port)
+enum memcardEvents_e {
+    memcardEventsSw = 0,
+    memcardEventsHw = 4
+};
+
+static enum memcardEventHandler_e _memcardEventHandler(int port)
 {
     enum states {
         init = 0,
@@ -779,16 +781,16 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
         if (++_memCardInitTmeout >= 4) {
             return memcardEventTimeout;
         }
-        _resetMemcardEvents(SWEVENTS);
+        _resetMemcardEvents(memcardEventsSw);
         if (_card_info(_memcardPort) == 0) {
             break;
         }
         _memCardState = ready;
         _memCardTimeout = 0;
-        _memcardEvType = SWEVENTS;
+        _memcardEvType = memcardEventsSw;
         // fallthrough
     case ready:
-        switch (_testMemcardEvents(SWEVENTS)) {
+        switch (_testMemcardEvents(memcardEventsSw)) {
         case memcardInternalEventIoEnd:
             _memCardState = loadReady;
             break;
@@ -807,17 +809,17 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
         }
         break;
     case unformatted:
-        _resetMemcardEvents(HWEVENTS);
+        _resetMemcardEvents(memcardEventsHw);
         if (_card_clear(_memcardPort) == 0) {
             break;
         }
         _memCardState = confirmed;
         _memCardTimeout = 0;
-        _memcardEvType = HWEVENTS;
+        _memcardEvType = memcardEventsHw;
         // fallthrough
     case confirmed:
         do {
-            event = _testMemcardEvents(HWEVENTS);
+            event = _testMemcardEvents(memcardEventsHw);
         } while (event == memcardInternalEventNone);
         if (event == memcardInternalEventIoEnd) {
             _memCardState = loadReady;
@@ -830,7 +832,7 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
         _memCardState = init;
         break;
     case loadReady:
-        _resetMemcardEvents(SWEVENTS);
+        _resetMemcardEvents(memcardEventsSw);
         if (_card_load(_memcardPort) == 0) {
             break;
         }
@@ -838,7 +840,7 @@ static enum memcardEventHandler_t _memcardEventHandler(int port)
         _memCardTimeout = 0;
         // fallthrough
     case loaded:
-        event = _testMemcardEvents(SWEVENTS);
+        event = _testMemcardEvents(memcardEventsSw);
         switch (event) {
         case memcardInternalEventIoEnd:
             return _memcardEvType + memcardEventIoEnd;
@@ -1077,7 +1079,7 @@ static int _loadSaveData(int portFileno)
             ++_loadSaveDataErrors;
             break;
         }
-        _resetMemcardEvents(SWEVENTS);
+        _resetMemcardEvents(memcardEventsSw);
         nBytes = sizeof(savedata_t);
         if (_isTempSave != 0) {
             nBytes = 0x2000;
@@ -1090,7 +1092,7 @@ static int _loadSaveData(int portFileno)
         _loadSaveDataState = reading;
         // fallthrough
     case reading:
-        ev = _testMemcardEvents(SWEVENTS);
+        ev = _testMemcardEvents(memcardEventsSw);
         if (ev < memcardInternalEventNone) {
             close(_memCardFd);
             if (ev == memcardInternalEventIoEnd) {
@@ -1157,7 +1159,7 @@ int _saveFile(int arg0)
             ++_saveFileErrorCount;
             break;
         }
-        _resetMemcardEvents(SWEVENTS);
+        _resetMemcardEvents(memcardEventsSw);
         if (write(_saveFileId, _spmcimg, sizeof(savedata_t)) == -1) {
             close(_saveFileId);
             ++_saveFileErrorCount;
@@ -1166,7 +1168,7 @@ int _saveFile(int arg0)
         _memcardSaveState = readReady;
         // fallthrough
     case readReady: {
-        temp_s3 = _testMemcardEvents(SWEVENTS);
+        temp_s3 = _testMemcardEvents(memcardEventsSw);
         if (temp_s3 < memcardInternalEventNone) {
             close(_saveFileId);
             if (temp_s3 == memcardInternalEventIoEnd) {

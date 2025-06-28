@@ -201,8 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _selectLoadMemoryCardState;
-extern u_char _selectedMemoryCard;
 extern u_char _loadFileMenuState;
 extern u_char _loadFileMenuSelectedSlot;
 extern u_char _loadFileMenuFadeout;
@@ -2241,7 +2239,7 @@ static int _showLoadFilesMenu(int initPort)
     return 0;
 }
 
-static int _selectLoadMemoryCard(int port)
+static int _selectLoadMemoryCard(int initPort)
 {
     enum state {
         init = 0,
@@ -2254,47 +2252,50 @@ static int _selectLoadMemoryCard(int port)
         selectFile = 7
     };
 
+    static u_char state;
+    static u_char port;
+
     int i;
 
-    if (port != 0) {
-        _selectedMemoryCard = port;
+    if (initPort != 0) {
+        port = initPort;
         _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
-        _selectLoadMemoryCardState = init;
+        state = init;
         return 0;
     }
-    switch (_selectLoadMemoryCardState) {
+    switch (state) {
     case init:
-        _fileMenuElements[_selectedMemoryCard].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[_selectedMemoryCard].targetPosition = 180;
-        _fileMenuElements[_selectedMemoryCard].innertextBlendFactor = 1;
-        _fileMenuElements[3 - _selectedMemoryCard].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[3 - _selectedMemoryCard].targetPosition = 320;
-        _selectLoadMemoryCardState = waitForUnselectedAnimation;
+        _fileMenuElements[port].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[port].targetPosition = 180;
+        _fileMenuElements[port].innertextBlendFactor = 1;
+        _fileMenuElements[3 - port].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[3 - port].targetPosition = 320;
+        state = waitForUnselectedAnimation;
         break;
 
     case waitForUnselectedAnimation:
         if (_fileMenuElementsActive() == 0) {
             break;
         }
-        if (_selectedMemoryCard == 2) {
+        if (port == 2) {
             _fileMenuElements[2].state = fileMenuElementStateAnimateY;
             _fileMenuElements[2].targetPosition = 50;
         }
-        _selectLoadMemoryCardState = pollEventsInit;
+        state = pollEventsInit;
         break;
 
     case pollEventsInit:
         if (_fileMenuElementsActive() == 0) {
             break;
         }
-        _memcardMaskedHandler(_selectedMemoryCard + memcardEventMaskIgnoreNoEvent);
-        _selectLoadMemoryCardState = pollEvents;
+        _memcardMaskedHandler(port + memcardEventMaskIgnoreNoEvent);
+        state = pollEvents;
         break;
 
     case pollEvents:
         i = _memcardMaskedHandler(0);
         if (i != memcardMaskedHandlerPending) {
-            _selectLoadMemoryCardState = i + leave + 1;
+            state = i + leave + 1;
         }
         break;
 
@@ -2307,7 +2308,7 @@ static int _selectLoadMemoryCard(int port)
             _fileMenuElements[i].state = fileMenuElementStateAnimateX;
             _fileMenuElements[i].targetPosition = 320;
         }
-        _selectLoadMemoryCardState = returnNotSelected;
+        state = returnNotSelected;
         break;
 
     case returnNotSelected:
@@ -2317,10 +2318,10 @@ static int _selectLoadMemoryCard(int port)
         break;
 
     case pollSuccess:
-        if (_initSaveFileInfo(_selectedMemoryCard) != 0) {
+        if (_initSaveFileInfo(port) != 0) {
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
-            _selectLoadMemoryCardState = leave;
+            state = leave;
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2331,10 +2332,10 @@ static int _selectLoadMemoryCard(int port)
 
         if (i == 5) {
             _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
-            _selectLoadMemoryCardState = leave;
+            state = leave;
         } else {
-            _showLoadFilesMenu(_selectedMemoryCard);
-            _selectLoadMemoryCardState = 7;
+            _showLoadFilesMenu(port);
+            state = 7;
         }
         break;
 
@@ -2348,7 +2349,7 @@ static int _selectLoadMemoryCard(int port)
                 _fileMenuElements[i].state = fileMenuElementStateAnimateX;
                 _fileMenuElements[i].targetPosition = 320;
             }
-            _selectLoadMemoryCardState = returnNotSelected;
+            state = returnNotSelected;
             break;
         }
         return 1;

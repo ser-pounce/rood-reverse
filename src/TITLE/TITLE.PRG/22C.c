@@ -326,8 +326,8 @@ enum memcardEventHandler_e {
 static u_int _encode(int value)
 {
     static u_int _encodeSeed = 0x0019660D;
-
     u_int seed = _encodeSeed;
+
     _encodeSeed = seed * 0x19660D;
     return seed >> (32 - value);
 }
@@ -439,9 +439,7 @@ static int _findCurrentSaveOnActiveMemcard()
 static int _memcardFileNumberFromFilename(u_char* filename)
 {
     int i;
-    u_char const* gameCode;
-
-    gameCode = &_memcardFilenameTemplate[5];
+    u_char const* gameCode = &_memcardFilenameTemplate[5];
 
     for (i = 0; i < 15; ++i) {
         if (gameCode[i] != filename[i]) {
@@ -451,13 +449,13 @@ static int _memcardFileNumberFromFilename(u_char* filename)
 
     i = filename[15] - 'A';
 
-    if ((u_int)i < 5u) {
-        return -(filename[15] + -'@');
+    if (i < 5u) {
+        return -(filename[15] - 'A' + 1);
     }
 
     i = filename[15] - '1';
 
-    if ((u_int)i < 5u) {
+    if (i < 5u) {
         return filename[15] - '0';
     }
 
@@ -505,16 +503,15 @@ static void _decode(u_int key, u_char* buf, int count)
 static int _readSaveFileInfo(int id)
 {
     _saveFileInfo_t saveInfo[4];
-    int bytesRead;
-    int port;
-    int file;
     int i;
+    int port = id >> 12;
 
-    port = id >> 12;
     id &= 7;
 
     for (i = 0; i < 3; ++i) {
-        file = open(_memcardMakeFilename(port, id), O_RDONLY);
+        int bytesRead;
+        int file = open(_memcardMakeFilename(port, id), O_RDONLY);
+
         if (file == -1) {
             continue;
         }
@@ -552,9 +549,8 @@ static int _memcardSaveIdExists(int id)
 static int _deleteRedundantTempFiles(int port)
 {
     int i;
-    int ret;
+    int ret = 0;
 
-    ret = 0;
     for (i = 0; i < 5; ++i) {
         if ((_memcardSaveIdExists(i + '1') != 0)
             && (_memcardSaveIdExists(i + 'A') != 0)) {
@@ -569,13 +565,11 @@ static int _deleteRedundantTempFiles(int port)
 
 static int _initSaveFileInfo(int port)
 {
-    int tempFilesDeleted;
     int fileNo;
     int i;
-    int slotsAvailable;
-    struct DIRENTRY* file;
+    int tempFilesDeleted;
+    int slotsAvailable = 15;
 
-    slotsAvailable = 15;
     for (i = 14; i >= 0; --i) {
         _memcardFiles[i] = NULL;
     }
@@ -594,7 +588,8 @@ static int _initSaveFileInfo(int port)
         return 1;
     }
     for (i = 0; i < 15; ++i) {
-        file = _memcardFiles[i];
+        struct DIRENTRY* file = _memcardFiles[i];
+
         if (file == NULL) {
             continue;
         }
@@ -628,10 +623,9 @@ static int _initSaveFileInfo(int port)
 
 static int _createSaveFile(int port, int id)
 {
-    u_char* fileName;
     long file;
+    u_char* fileName = _memcardMakeFilename((port - 1) * 16, id);
 
-    fileName = _memcardMakeFilename((port - 1) * 16, id);
     erase(fileName);
     file = open(fileName, O_CREAT | (3 << 16));
     if (file != -1) {
@@ -754,15 +748,10 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
 static int _applyLoadedSaveFile(int verifyOnly)
 {
     int blockCount;
-    savedata_t* spmcimg;
-    void* spmcimg2;
-    savedata_t* s4;
-    struct savedata_unk180_2_t* unk180;
-
-    spmcimg = (savedata_t*)_spmcimg;
-    spmcimg2 = spmcimg + 1;
-    s4 = spmcimg + 1;
-    unk180 = &spmcimg[1].unk180.unk180;
+    savedata_t* spmcimg = (savedata_t*)_spmcimg;
+    void* spmcimg2 = spmcimg + 1;
+    savedata_t* s4 = spmcimg + 1;
+    struct savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
 
     _decode(unk180->key, (u_char*)(&unk180->slotState),
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.slotState);
@@ -812,16 +801,11 @@ void _packageSaveData(int targetFile)
     int i;
     int j;
     int var_a0;
-    savedata_t* savedata;
-    savedata_t* savedata2;
-    savedata_t* savedata3;
-    struct savedata_unk180_t* s5;
     u_short const* s0 = D_8006886C;
-
-    savedata = (savedata_t*)_spmcimg;
-    savedata2 = savedata + 1;
-    savedata3 = savedata;
-    s5 = &savedata->unk180;
+    savedata_t* savedata = (savedata_t*)_spmcimg;
+    savedata_t* savedata2 = savedata + 1;
+    savedata_t* savedata3 = savedata;
+    struct savedata_unk180_t* s5 = &savedata->unk180;
 
     vs_main_gametime.all = 0;
     vs_main_settings.unk2 &= 0xFFDF;
@@ -935,13 +919,8 @@ static int _loadSaveData(int portFileno)
     static short _ __attribute__((unused));
     static int fd;
 
-    int ev;
-    int nBytes;
-    u_char* filename;
-    void* temp_s2;
-    int new_var;
+    void* temp_s2 = (savedata_t*)_spmcimg + 1;
 
-    temp_s2 = (savedata_t*)_spmcimg + 1;
     if (portFileno != 0) {
         state = init;
         errors = 0;
@@ -955,8 +934,11 @@ static int _loadSaveData(int portFileno)
     }
 
     switch (state) {
-    case init:
-        new_var = 320;
+    case init: {
+        int nBytes;
+        u_char* filename;
+        int new_var = 320;
+        
         _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
                                      * ((_loadSaveDataErrorOffset * 20)
                                          - (_fileProgressPosition - new_var)))
@@ -988,18 +970,20 @@ static int _loadSaveData(int portFileno)
             break;
         }
         state = reading;
+    }
         // fallthrough
-    case reading:
-        ev = _testMemcardEvents(memcardEventsSw);
-        if (ev < memcardInternalEventNone) {
+    case reading: {
+        int event = _testMemcardEvents(memcardEventsSw);
+        if (event < memcardInternalEventNone) {
             close(fd);
-            if (ev == memcardInternalEventIoEnd) {
+            if (event == memcardInternalEventIoEnd) {
                 return 1;
             }
             state = init;
             ++errors;
         }
         break;
+    }
     }
     return errors == 3 ? -1 : 0;
 }

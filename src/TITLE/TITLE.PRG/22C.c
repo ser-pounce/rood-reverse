@@ -3231,7 +3231,7 @@ extern menuBg_t _saveMenuBg;
 
 static int _gameLoadScreen()
 {
-    
+
     enum state {
         init = 0,
         loadMemcardMenu = 1,
@@ -3493,7 +3493,7 @@ static void _gameSaveScreen()
     }
 }
 
-//movie.c
+// movie.c
 
 extern int _movieWidth;
 extern int _movieHeight;
@@ -3850,10 +3850,10 @@ static void _copyTitleBgData()
 #ifndef MENUBGSZ
 #define MENUBGSZ 222932 * sizeof(int)
 #endif
-    
+
     for (; i < MENUBGSZ / sizeof(int);) {
         extern u_int _titleScreenBg[];
-    
+
         pixelCounts = _titleScreenBg[i++];
         for (j = pixelCounts & 0xFFFF; j != 0; --j) {
             *p++ = 0;
@@ -3995,7 +3995,7 @@ void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
 
     for (i = 0; i < (180 * 24); ++i) {
         extern u_short _menuCopyright[];
-        
+
         r1 = src[i];
         r0 = _menuCopyright[i];
         g0 = r0 & 0x3E0;

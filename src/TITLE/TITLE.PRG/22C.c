@@ -201,10 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern RECT _gameLoadRect;
-extern u_char _loadScreenMemcardState;
-extern u_char _saveScreenConfirmationState;
-extern u_char _saveScreenConfirmationOption;
 extern RECT _gameSaveScreenClearRect;
 extern u_char _saveScreenState;
 extern u_char _saveScreenFadeTimer;
@@ -3256,6 +3252,9 @@ static int _gameLoadScreen()
         loadFileMenu = 2,
     };
 
+    static RECT rect;
+    static u_char state;
+
     int exit;
 
     _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
@@ -3264,31 +3263,31 @@ static int _gameLoadScreen()
     _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
     _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
-    setRECT(&_gameLoadRect, 640, 256, 32, 240);
-    ClearImage(&_gameLoadRect, 0, 0, 0);
+    setRECT(&rect, 640, 256, 32, 240);
+    ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
-    setRECT(&_gameLoadRect, 768, 256, 32, 240);
-    ClearImage(&_gameLoadRect, 0, 0, 0);
+    setRECT(&rect, 768, 256, 32, 240);
+    ClearImage(&rect, 0, 0, 0);
     _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
-    _loadScreenMemcardState = init;
+    state = init;
 
     while (1) {
         vs_main_gametimeUpdate(2);
         _saveScreenSwapBuf();
         vs_main_processPadState();
-        switch (_loadScreenMemcardState) {
+        switch (state) {
         case init:
-            if (_loadScreenMemcardState == 0) {
+            if (state == 0) {
                 _loadMemcardMenu(1);
-                _loadScreenMemcardState = loadMemcardMenu;
+                state = loadMemcardMenu;
             }
             break;
         case loadMemcardMenu:
             if (_loadMemcardMenu(0) != 0) {
                 _initFileMenu();
                 _loadFileMenu(2);
-                _loadScreenMemcardState = loadFileMenu;
+                state = loadFileMenu;
             }
             break;
         case loadFileMenu:
@@ -3344,35 +3343,40 @@ static int _saveFileExists()
 
 static int _saveScreenConfirmation(int init)
 {
-    enum {
+    enum state {
         initSlot1 = 0,
         initSlot2 = 1,
         waitForSlotAnimation = 2,
         handleInput = 3,
         returnSelectedOption = 4
     };
+
+    static u_char state;
+    static u_char _saveScreenConfirmationOption;
+    static u_char _[5] __attribute__((unused));
+
     _fileMenuElements_t* elem;
     int i;
 
     if (init != 0) {
         _saveScreenConfirmationOption = 1;
-        _saveScreenConfirmationState = initSlot1;
+        state = initSlot1;
         return 0;
     }
 
-    switch (_saveScreenConfirmationState) {
+    switch (state) {
     case initSlot1:
     case initSlot2:
-        elem = _initFileMenuElement(_saveScreenConfirmationState + 1,
-            vs_getXY(320, _saveScreenConfirmationState * 16 + 146), vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[_saveScreenConfirmationState
+        elem = _initFileMenuElement(state + 1,
+            vs_getXY(320, state * 16 + 146), vs_getWH(126, 12),
+            (u_char*)&_textTable[_textTable[state
                 + VS_MCMAN_INDEX_yesOption]]);
         elem->state = fileMenuElementStateAnimateX;
         elem->targetPosition = 194;
-        ++_saveScreenConfirmationState;
+        ++state;
         break;
     case waitForSlotAnimation:
-        _saveScreenConfirmationState += _fileMenuElementsActive();
+        state += _fileMenuElementsActive();
         break;
     case handleInput:
         _fileMenuElements[_saveScreenConfirmationOption].selected = 1;
@@ -3381,9 +3385,9 @@ static int _saveScreenConfirmation(int init)
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
         if (vs_main_buttonsPressed & PADRright) {
-            _saveScreenConfirmationState = returnSelectedOption;
+            state = returnSelectedOption;
         }
-        if (_saveScreenConfirmationState == returnSelectedOption) {
+        if (state == returnSelectedOption) {
             if (_saveScreenConfirmationOption == 1) {
                 _playMenuSelectSfx();
             } else {

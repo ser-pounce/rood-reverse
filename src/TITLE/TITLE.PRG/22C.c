@@ -201,7 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern menuItemPrim_t _menuItemPrims[10];
 extern tagsprt_t _titleMenuItemBg[2];
 extern struct {
     u_long tag;
@@ -4160,6 +4159,10 @@ static void _setTitleMenuState()
 
 static void _drawTitleMenuItems()
 {
+
+    static menuItemPrim_t _menuItemPrims[341];
+    static u_char _[8] __attribute__((unused));
+    
     int textUv;
     int j;
     menuItemState_t* menuState;

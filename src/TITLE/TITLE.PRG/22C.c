@@ -3224,33 +3224,14 @@ static void _saveScreenSwapBuf()
     PutDrawEnv(&draw);
 }
 
-extern struct {
-    u_short clut[16];
-    u_long data[0x600];
-} _publisher;
-extern u_long _developer[];
-extern int _movieWidth;
-extern int _movieHeight;
-extern u_short _menuItemTextClut[2][16];
-extern u_int _menuItemOutlineClut[];
-extern int _menuItemTextUv[10];
-extern int _menuItemTpages2[10];
-extern int _menuItemOutlineUv[10];
-extern int _menuItemOutlineTpages1[10];
-extern int _menuItemOutlineWh[10];
-extern int _menuItemOutlineXy[10];
-extern u_char D_80074C24[15][256];
-extern u_char _skillsLearned[32];
-// _vlcStaticTable = 0x80075CC4; ??
-extern u_int _titleScreenBg[];
-extern u_short _menuCopyright[];
-extern fontTable_t _fontTable[2];
+extern fontTable_t _fontTable[];
 extern u_long _debugFont[];
 extern uiTable_t _uiTable;
 extern menuBg_t _saveMenuBg;
 
 static int _gameLoadScreen()
 {
+    
     enum state {
         init = 0,
         loadMemcardMenu = 1,
@@ -3512,6 +3493,11 @@ static void _gameSaveScreen()
     }
 }
 
+//movie.c
+
+extern int _movieWidth;
+extern int _movieHeight;
+
 static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
 {
     arg0->frameBufs[0].x = x0;
@@ -3660,6 +3646,12 @@ static void _playMovie(DslLOC* loc)
 
 static void _displayPublisherAndDeveloper()
 {
+    extern struct {
+        u_short clut[16];
+        u_long data[0x600];
+    } _publisher;
+    extern u_long _developer[];
+
     DISPENV disp;
     DRAWENV draw;
     RECT rect;
@@ -3817,6 +3809,19 @@ static int _playIntroMovie()
     return 0;
 }
 
+// titleScreen.c
+
+extern u_short _menuItemTextClut[2][16];
+extern u_int _menuItemOutlineClut[];
+extern int _menuItemTextUv[10];
+extern int _menuItemTpages2[10];
+extern int _menuItemOutlineUv[10];
+extern int _menuItemOutlineTpages1[10];
+extern int _menuItemOutlineWh[10];
+extern int _menuItemOutlineXy[10];
+extern u_char D_80074C24[15][256];
+extern u_char _skillsLearned[32];
+
 static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
@@ -3845,8 +3850,10 @@ static void _copyTitleBgData()
 #ifndef MENUBGSZ
 #define MENUBGSZ 222932 * sizeof(int)
 #endif
-
+    
     for (; i < MENUBGSZ / sizeof(int);) {
+        extern u_int _titleScreenBg[];
+    
         pixelCounts = _titleScreenBg[i++];
         for (j = pixelCounts & 0xFFFF; j != 0; --j) {
             *p++ = 0;
@@ -3987,6 +3994,8 @@ void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
     dst = src + (180 * 24);
 
     for (i = 0; i < (180 * 24); ++i) {
+        extern u_short _menuCopyright[];
+        
         r1 = src[i];
         r0 = _menuCopyright[i];
         g0 = r0 & 0x3E0;

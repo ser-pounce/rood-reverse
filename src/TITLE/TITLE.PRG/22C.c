@@ -795,13 +795,13 @@ static int _applyLoadedSaveFile(int verifyOnly)
     return 0;
 }
 
-static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
-    0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
-    0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
-    0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
-
 void _packageSaveData(int targetFile)
 {
+    static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
+        0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
+        0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
+        0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
+
     int i;
     int j;
     int var_a0;
@@ -1113,17 +1113,15 @@ int _saveFile(int portFile)
     return errors == 3 ? -1 : 0;
 }
 
-u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-
 static int _loadMemcardMenu(int init)
 {
-
     enum state {
         none = 0,
         queueReady = 1,
         enqueued = 2,
     };
 
+    static u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
     static u_char state;
     static u_char _[3] __attribute__((unused));
     static vs_main_CdQueueSlot* cdQueueSlot;
@@ -1228,18 +1226,19 @@ u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176
     224, 248, 255, 255, 255, 255 };
 char _cursorFileOpSaturation[]
     = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
-int _saveInfoUVClut[]
-    = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
-          vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
-          vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
-          vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
-          vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
-int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8), vs_getXY(22, 8),
-    vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10), vs_getXY(16, 9), vs_getXY(18, 9),
-    vs_getXY(5, 7) };
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
+    static int _saveInfoUVClut[]
+        = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
+              vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
+              vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
+              vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
+              vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+    static int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
+        vs_getXY(22, 8), vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10),
+        vs_getXY(16, 9), vs_getXY(18, 9), vs_getXY(5, 7) };
+
     _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id],
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
 }
@@ -1269,10 +1268,9 @@ static int _countDigits(int val)
 
 enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
-u_char _digitDivisors[] = { 0, 1, 10, 100 };
-
 static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
+    static u_char _digitDivisors[] = { 0, 1, 10, 100 };
     int currentValueFactor;
     int maxValueDigits;
     u_int rgb1;
@@ -1493,24 +1491,25 @@ static int _fileMenuElementsActive()
     return i == 10;
 }
 
-int _fontCharacterWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9, 7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8,
-    9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8, 6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5,
-    6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
-    7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 6, 12, 12, 12, 12, 12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12,
-    12, 6, 6, 3, 3, 3, 4, 6, 12, 6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-
 static int _printCharacter(u_int c, int x, int y, int clut)
 {
+    static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9,
+        7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8, 9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8,
+        6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5, 6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 6, 12, 12, 12, 12,
+        12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12, 12, 6, 6, 3, 3, 3, 4, 6, 12,
+        6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12 };
+
     if ((c >> 8) == 14) {
         return x + (u_char)c;
     }
@@ -1526,7 +1525,7 @@ static int _printCharacter(u_int c, int x, int y, int clut)
             = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
         DrawPrim(&_primBuf);
     }
-    return x + _fontCharacterWidths[c];
+    return x + glyphWidths[c];
 }
 
 enum _findCurrentSave_e {
@@ -1630,11 +1629,11 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
-u_char _arrowCharState[4] = { 0 };
-
 static void _printString(u_char* text, int x, int y, int clut)
 {
-    u_char arrowState;
+    static u_char arrowState = 0;
+
+    u_char tempArrowState;
     u_int c;
     int startX = x;
     int nextX = x;
@@ -1645,9 +1644,9 @@ static void _printString(u_char* text, int x, int y, int clut)
             if (c < vs_char_nonPrinting) {
                 nextX = _printCharacter(c, nextX, y, clut);
             } else if (c == vs_char_confirm) {
-                arrowState = (_arrowCharState[0] + 1) % 12;
-                c = vs_char_arrow - (arrowState >> 2);
-                _arrowCharState[0] = arrowState;
+                tempArrowState = (arrowState + 1) % 12;
+                c = vs_char_arrow - (tempArrowState >> 2);
+                arrowState = tempArrowState;
                 nextX = _printCharacter(c, nextX, y, clut);
             } else if (c != vs_char_terminator) {
                 if (c == vs_char_newline) {
@@ -1687,15 +1686,15 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     return colourOut;
 }
 
-int _menuItemColors1[]
-    = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
-int _menuItemColors2[] = {
-    vs_getRGB888(0x08, 0x08, 0x20),
-    vs_getRGB888(0x10, 0x10, 0x08),
-};
-
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
+    static int colors1[]
+        = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
+    static int colors2[] = {
+        vs_getRGB888(0x08, 0x08, 0x20),
+        vs_getRGB888(0x10, 0x10, 0x08),
+    };
+
     u_int color1;
     u_int color2;
 
@@ -1705,8 +1704,8 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
         color2 = _interpolateRGB(
             vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
-        color1 = _menuItemColors1[((innerFactor >> 3) - 2)];
-        color2 = _menuItemColors2[((innerFactor >> 3) - 2)];
+        color1 = colors1[((innerFactor >> 3) - 2)];
+        color2 = colors2[((innerFactor >> 3) - 2)];
     }
     return _interpolateRGB(color1, color2, outerFactor);
 }
@@ -3232,7 +3231,6 @@ extern menuBg_t _saveMenuBg;
 
 static int _gameLoadScreen()
 {
-
     enum state {
         init = 0,
         loadMemcardMenu = 1,
@@ -3508,9 +3506,6 @@ static void _gameSaveScreen()
 
 // movie.c
 
-extern int _movieWidth;
-extern int _movieHeight;
-
 static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
 {
     arg0->frameBufs[0].x = x0;
@@ -3593,6 +3588,9 @@ static int _decodeNextMovieFrame(MovieData_t* movie)
 
 static u_short* _getNextMovieFrame(MovieData_t* movie)
 {
+    extern int _movieWidth;
+    extern int _movieHeight;
+
     RECT rect;
     void* addr;
     StHEADER* header;
@@ -3825,15 +3823,6 @@ static int _playIntroMovie()
 // titleScreen.c
 
 extern u_short _menuItemTextClut[2][16];
-extern u_int _menuItemOutlineClut[];
-extern int _menuItemTextUv[10];
-extern int _menuItemTpages2[10];
-extern int _menuItemOutlineUv[10];
-extern int _menuItemOutlineTpages1[10];
-extern int _menuItemOutlineWh[10];
-extern int _menuItemOutlineXy[10];
-extern u_char D_80074C24[15][256];
-extern u_char _skillsLearned[32];
 
 static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
@@ -3849,6 +3838,8 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
 
 static void _copyTitleBgData()
 {
+    extern u_int _menuItemOutlineClut[];
+
     RECT rect;
     int j;
     u_int pixelCounts;
@@ -4149,6 +4140,12 @@ static void _setTitleMenuState()
 
 static void _drawTitleMenuItems()
 {
+    extern int _menuItemTextUv[10];
+    extern int _menuItemTpages2[10];
+    extern int _menuItemOutlineUv[10];
+    extern int _menuItemOutlineTpages1[10];
+    extern int _menuItemOutlineWh[10];
+    extern int _menuItemOutlineXy[10];
 
     static menuItemPrim_t primBuf[341];
     static u_char _[8] __attribute__((unused));
@@ -4749,6 +4746,9 @@ static int _renderScreen(u_long* ot)
 
 static void _initGameData()
 {
+    extern u_char D_80074C24[15][256];
+    extern u_char _skillsLearned[32];
+
     int i;
     int j;
     u_char* v0;

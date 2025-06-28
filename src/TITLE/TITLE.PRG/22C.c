@@ -201,11 +201,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern u_char _loadFileMenuState;
-extern u_char _loadFileMenuSelectedSlot;
-extern u_char _loadFileMenuFadeout;
-extern u_char _promptConfirmState;
-extern u_char _promptConfirmNoSelected;
 extern int _promptOverwriteSelectedOption;
 extern u_char _promptOverwriteState;
 extern u_char _overwritePromptInitialized;
@@ -2357,7 +2352,7 @@ static int _selectLoadMemoryCard(int initPort)
     return 0;
 }
 
-static int _loadFileMenu(int fadeout)
+static int _loadFileMenu(int initFadeout)
 {
     enum state {
         init = 0,
@@ -2371,17 +2366,22 @@ static int _loadFileMenu(int fadeout)
         fadeAndReturnNotSelected = 8,
     };
 
+    static u_char state;
+    static u_char selectedFile;
+    static u_char fadeout;
+    static u_char _[5] __attribute__((unused));
+
     _fileMenuElements_t* entry;
     int i;
 
-    if (fadeout != 0) {
-        _loadFileMenuFadeout = fadeout - 1;
-        _loadFileMenuSelectedSlot = 1;
+    if (initFadeout != 0) {
+        fadeout = initFadeout - 1;
+        selectedFile = 1;
         _isSaving = 0;
-        _loadFileMenuState = init;
+        state = init;
         return 0;
     }
-    switch (_loadFileMenuState) {
+    switch (state) {
     case init:
         entry = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
             (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
@@ -2389,7 +2389,7 @@ static int _loadFileMenu(int fadeout)
         entry->targetPosition = 180;
         entry->selected = 1;
         entry->innertextBlendFactor = 8;
-        _loadFileMenuState = displaySlot1;
+        state = displaySlot1;
         break;
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
@@ -2397,7 +2397,7 @@ static int _loadFileMenu(int fadeout)
                 (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             entry->state = fileMenuElementStateAnimateX;
             entry->targetPosition = 194;
-            _loadFileMenuState = displaySlot2;
+            state = displaySlot2;
         }
         break;
     case displaySlot2:
@@ -2405,18 +2405,18 @@ static int _loadFileMenu(int fadeout)
             (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         entry->state = fileMenuElementStateAnimateX;
         entry->targetPosition = 194;
-        _loadFileMenuState = waitForSlotAnimation;
+        state = waitForSlotAnimation;
         break;
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
-            _loadFileMenuState = handleInput;
+            state = handleInput;
             _selectSaveMemoryCardMessage
                 = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case handleInput:
-        _fileMenuElements[_loadFileMenuSelectedSlot].selected = 1;
-        _fileMenuElements[3 - _loadFileMenuSelectedSlot].selected = 0;
+        _fileMenuElements[selectedFile].selected = 1;
+        _fileMenuElements[3 - selectedFile].selected = 0;
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
@@ -2424,36 +2424,36 @@ static int _loadFileMenu(int fadeout)
                 _fileMenuElements[i].state = fileMenuElementStateAnimateX;
                 _fileMenuElements[i].targetPosition = 320;
             }
-            _loadFileMenuState = exit;
+            state = exit;
         } else if (vs_main_buttonsPressed & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-            _selectLoadMemoryCard(_loadFileMenuSelectedSlot);
+            _selectLoadMemoryCard(selectedFile);
             _selectCursorXy = 0;
-            _loadFileMenuState = slotSelected;
+            state = slotSelected;
         } else {
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-                _loadFileMenuSelectedSlot = 3 - _loadFileMenuSelectedSlot;
+                selectedFile = 3 - selectedFile;
             }
-            _selectCursorXy = ((((_loadFileMenuSelectedSlot + 1) * 16) + 10) << 16) | 180;
+            _selectCursorXy = ((((selectedFile + 1) * 16) + 10) << 16) | 180;
         }
         break;
     case slotSelected:
         entry = (_fileMenuElements_t*)_selectLoadMemoryCard(0);
         if (entry != 0) {
             if ((int)entry < 0) {
-                _loadFileMenuState = displaySlot1;
+                state = displaySlot1;
             } else {
-                _loadFileMenuState = fadeAndReturnSelected;
+                state = fadeAndReturnSelected;
             }
         }
         break;
     case exit:
         if (_fileMenuElementsActive() != 0) {
-            if (_loadFileMenuFadeout == 0) {
+            if (fadeout == 0) {
                 return -1;
             }
-            _loadFileMenuState = fadeAndReturnNotSelected;
+            state = fadeAndReturnNotSelected;
         }
         break;
     case fadeAndReturnSelected:
@@ -2479,32 +2479,36 @@ static int _promptConfirm(int arg0)
         handleInput = 3,
     };
 
+    static u_char state;
+    static u_char cancelled;
+    static u_char _[2] __attribute__((unused));
+
     _fileMenuElements_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
-        _promptConfirmNoSelected = 1;
-        _promptConfirmState = initYes;
+        cancelled = 1;
+        state = initYes;
         return 0;
     }
 
-    switch (_promptConfirmState) {
+    switch (state) {
     case initYes:
     case initNo:
-        temp_v0 = _initFileMenuElement(_promptConfirmState + 3,
-            vs_getXY(-126 & 0xFFFF, _promptConfirmState * 16 + 18), vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[_promptConfirmState
+        temp_v0 = _initFileMenuElement(state + 3,
+            vs_getXY(-126 & 0xFFFF, state * 16 + 18), vs_getWH(126, 12),
+            (u_char*)&_textTable[_textTable[state
                 + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
-        ++_promptConfirmState;
+        ++state;
         break;
     case waitForAnimation:
-        _promptConfirmState += _fileMenuElementsActive();
+        state += _fileMenuElementsActive();
         break;
     case handleInput:
-        _fileMenuElements[_promptConfirmNoSelected + 3].selected = 1;
-        _fileMenuElements[4 - _promptConfirmNoSelected].selected = 0;
+        _fileMenuElements[cancelled + 3].selected = 1;
+        _fileMenuElements[4 - cancelled].selected = 0;
         if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
             _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
@@ -2512,7 +2516,7 @@ static int _promptConfirm(int arg0)
                 _fileMenuElements[i].targetPosition = -126;
             }
             if (vs_main_buttonsPressed & PADRright) {
-                if (_promptConfirmNoSelected == 0) {
+                if (cancelled == 0) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     return 1;
                 }
@@ -2522,9 +2526,9 @@ static int _promptConfirm(int arg0)
         }
         if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            _promptConfirmNoSelected = 1 - _promptConfirmNoSelected;
+            cancelled = 1 - cancelled;
         }
-        _selectCursorXy = (_promptConfirmNoSelected * 16 + 10) << 16;
+        _selectCursorXy = (cancelled * 16 + 10) << 16;
         break;
     }
     return 0;

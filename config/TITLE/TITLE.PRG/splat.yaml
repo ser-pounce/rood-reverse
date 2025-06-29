@@ -27,11 +27,8 @@ segments:
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, .data, 22C]
-      - [0xA70C, rgba16, publisherClut, 16, 1]
-      - [0xA72C, rgb4, publisher, 256, 48]
-      - [0xBF2C, rgb4, developer, 128, 13]
-      - [0xC26C, rgba16, developerClut, 16, 2]
-      - [0xC2AC, data]
+      - {start: 0xA72C, type: rgb4, name: publisher, width: 256, height: 48, linker_entry: false}
+      - {start: 0xBF2C, type: rgb4, name: developer, width: 128, height: 13, linker_entry: false}
       - [0xC2B4, rgba16, menuItemClut, 16, 2]
       - [0xC2F4, rgba16, _menuItemOutlineClut, 16, 2]
       - [0xC334, data]

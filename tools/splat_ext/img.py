@@ -6,7 +6,10 @@ class PSXSegImg(Segment):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if len(kwargs['yaml']) > 3:
+        if isinstance(kwargs['yaml'], dict) and "width" in kwargs['yaml'] and "height" in kwargs['yaml']:
+            self.width = kwargs['yaml']["width"]
+            self.height = kwargs['yaml']["height"]
+        elif len(kwargs['yaml']) > 3:
             self.width = kwargs['yaml'][3]
             self.height = kwargs['yaml'][4]
 

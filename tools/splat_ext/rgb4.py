@@ -1,4 +1,5 @@
 import sys
+import os
 import png
 from tools.splat_ext.img import PSXSegImg
 
@@ -29,3 +30,8 @@ if __name__ == '__main__':
     )
     with open(sys.argv[2], "wb") as f:
         f.write(packed)
+        
+    header_path = sys.argv[2] + ".dat"
+    with open(header_path, "w") as h:
+        for byte in packed:
+            h.write(f"0x{byte:02X},")

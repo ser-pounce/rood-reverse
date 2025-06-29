@@ -3523,10 +3523,27 @@ static int _decodeNextMovieFrame(MovieData_t* movie)
     return 0;
 }
 
+static short publisherClut[] = { 0x0000, 0x8842, 0x9084, 0x98C6, 0xA108, 0xA94A, 0xB18C,
+    0xC210, 0xC631, 0xCE73, 0xD6B5, 0xDEF7, 0xE739, 0xEF7B, 0xF7BD, 0xFFFF };
+
+static u_char publisher[] = {
+    #include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.segment.bin.dat"
+};
+
+static u_char developer[] = {
+    #include "../../assets/TITLE/TITLE.PRG/developer.rgb4.segment.bin.dat"
+};
+
+static short developerClut[][16]
+    = { { 0x8000, 0x0842, 0x0C63, 0x18A5, 0x0C35, 0x2529, 0x2115, 0x318C, 0x39CE,
+            0x4631, 0x5294, 0x5AD6, 0x6318, 0x6B5A, 0x77BD, 0x7FFF },
+            { 0x8000, 0x0842, 0x0C63, 0x18A5, 0x0C35, 0x2529, 0x2115, 0x318C, 0x39CE,
+                0x4631, 0x5294, 0x5AD6, 0x6318, 0x6B5A, 0x77BD, 0x7FFF } };
+
 static u_short* _getNextMovieFrame(MovieData_t* movie)
 {
-    extern int _movieWidth;
-    extern int _movieHeight;
+    static int _movieWidth = 0;
+    static int _movieHeight = 0;
 
     RECT rect;
     void* addr;
@@ -3594,13 +3611,6 @@ static void _playMovie(DslLOC* loc)
 
 static void _displayPublisherAndDeveloper()
 {
-    typedef struct {
-        u_short clut[16];
-        u_long data[0x600];
-    } publisher_t;
-
-    extern publisher_t _publisher;
-    extern u_long _developer[];
 
     DISPENV disp;
     DRAWENV draw;
@@ -3611,8 +3621,8 @@ static void _displayPublisherAndDeveloper()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(320, 64), (u_long*)_publisher.clut, vs_getWH(16, 1));
-    _drawImage(vs_getXY(320, 0), _publisher.data, vs_getWH(256 / 4, 48));
+    _drawImage(vs_getXY(320, 64), (u_long*)publisherClut, vs_getWH(16, 1));
+    _drawImage(vs_getXY(320, 0), (u_long*)(&publisherClut + 1), vs_getWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -3642,7 +3652,7 @@ static void _displayPublisherAndDeveloper()
         PutDrawEnv(&draw);
     }
 
-    _drawImage(vs_getXY(0, 240), _developer, vs_getWH(128 / 4, 14));
+    _drawImage(vs_getXY(0, 240), developer, vs_getWH(128 / 4, 14));
 
     for (i = 0; i < 364; ++i) {
         var_a3_2 = 0;

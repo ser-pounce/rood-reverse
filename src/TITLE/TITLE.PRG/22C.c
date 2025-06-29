@@ -3598,10 +3598,12 @@ static void _playMovie(DslLOC* loc)
 
 static void _displayPublisherAndDeveloper()
 {
-    extern struct {
+    typedef struct {
         u_short clut[16];
         u_long data[0x600];
-    } _publisher;
+    } publisher_t;
+
+    extern publisher_t _publisher;
     extern u_long _developer[];
 
     DISPENV disp;

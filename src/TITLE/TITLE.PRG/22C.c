@@ -208,7 +208,7 @@ typedef struct {
             VS_TILE_TPAGE tile;
             VS_POLY_G4 polyG4;
         } tilePoly;
-        u_long raw[13];
+        u_long raw[15];
     } prim;
 } primBuf_t;
 
@@ -756,7 +756,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     return 0;
 }
 
-void _packageSaveData(int targetFile)
+static void _packageSaveData(int targetFile)
 {
     static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
         0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
@@ -960,7 +960,7 @@ static int _loadSaveData(int portFileno)
     return errors == 3 ? -1 : 0;
 }
 
-int _saveFile(int portFile)
+static int _saveFile(int portFile)
 {
     enum state {
         init = 0,
@@ -1175,7 +1175,6 @@ static void _shutdownMemcard()
 static _fileMenuElements_t _fileMenuElements[10];
 static u_char _2[8];
 static primBuf_t _primBuf;
-static u_char _3[8];
 
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
@@ -3169,7 +3168,7 @@ static int _showSaveMenu(int initState)
 }
 
 static u_char _frameBuf;
-static u_char _4;
+static u_char _3;
 
 static void _initSaveScreen()
 {
@@ -3491,12 +3490,12 @@ static void _gameSaveScreen()
 static u_int _introMovieDisplayedAt;
 static int _introMoviePlaying;
 static int _dslMode;
-static u_char _5[4];
+static u_char _4[4];
 static DslLOC _introMovieLoc;
-static u_char _6[28];
+static u_char _5[28];
 static MovieData_t _movieData;
 static u_long* _movieRingBuf;
-static u_char _8[4];
+static u_char _6[4];
 static DECDCTTAB _vlcTable;
 static void* _encodedDataBuf0;
 static void* _encodedDataBuf1;
@@ -3901,7 +3900,7 @@ static void _initTitleScreen()
     VSync(0);
 }
 
-void* _initMenu(int menuItem)
+static void* _initMenu(int menuItem)
 {
     RECT rect;
     u_long* p;
@@ -3930,9 +3929,9 @@ void* _initMenu(int menuItem)
     return p;
 }
 
-void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
+static void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
 
-void _fadeInMenu(u_short* bgData, int textBlendFactor)
+static void _fadeInMenu(u_short* bgData, int textBlendFactor)
 {
     RECT rect;
     int g0;
@@ -3977,7 +3976,7 @@ void _fadeInMenu(u_short* bgData, int textBlendFactor)
     vs_main_processPadState();
 }
 
-void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
+static void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
 {
     RECT rect;
     int i;
@@ -4020,7 +4019,7 @@ void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
     DrawSync(0);
 }
 
-void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
+static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
 {
     RECT rect;
     short clut[16];
@@ -4508,9 +4507,9 @@ static void _menuSoundSettings()
 
 // main.c
 
-int _nop() { return 0; }
+static int _nop() { return 0; }
 
-void _initEnvironment()
+static void _initEnvironment()
 {
     int monoSound;
     int vibrationOn;

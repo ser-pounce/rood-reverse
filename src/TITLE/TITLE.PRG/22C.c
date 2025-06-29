@@ -4144,10 +4144,54 @@ static void _drawTitleMenuItems()
         VS_SPRT sprt;
     } menuItemPrim_t;
 
-    extern int _menuItemTextUv[10];
-    extern int _menuItemTpages2[10];
-    extern int _menuItemOutlineUv[10];
-    extern int _menuItemOutlineTpages1[10];
+    static int _menuItemTextUv[] = {
+        vs_getUV0Clut(128, 224, 480, 384),
+        vs_getUV0Clut(0, 224, 480, 385),
+        vs_getUV0Clut(128, 224, 480, 386),
+        vs_getUV0Clut(0, 224, 480, 387),
+        vs_getUV0Clut(0, 224, 480, 388),
+        vs_getUV0Clut(0, 224, 480, 389),
+        vs_getUV0Clut(128, 224, 480, 390),
+        vs_getUV0Clut(128, 224, 480, 391),
+        vs_getUV0Clut(128, 224, 480, 392),
+        vs_getUV0Clut(0, 224, 480, 393)
+    };
+    static int _menuItemTextTpages[] = {
+        vs_getTpage(512, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(832, 256, clut4Bit, semiTransparencyFull, ditheringOff)
+    };
+    static int _menuItemOutlineUv[] = {
+        vs_getUV0Clut(0, 192, 480, 394),
+        vs_getUV0Clut(0, 192, 480, 394),
+        vs_getUV0Clut(0, 192, 480, 394),
+        vs_getUV0Clut(128, 0, 480, 394),
+        vs_getUV0Clut(144, 192, 480, 394),
+        vs_getUV0Clut(160, 192, 480, 394),
+        vs_getUV0Clut(160, 192, 480, 394),
+        vs_getUV0Clut(128, 64, 480, 394),
+        vs_getUV0Clut(128, 0, 480, 394),
+        vs_getUV0Clut(128, 64, 480, 394)
+    };
+    static int _menuItemOutlineTpages[10] = {
+        vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff)
+    };
     extern int _menuItemOutlineWh[10];
     extern int _menuItemOutlineXy[10];
 
@@ -4171,7 +4215,7 @@ static void _drawTitleMenuItems()
             continue;
         }
         prim->tag = vs_getTag(prim->sprt, primAddrEnd);
-        prim->sprt.tpage = _menuItemOutlineTpages1[i];
+        prim->sprt.tpage = _menuItemOutlineTpages[i];
         prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
             _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
         if (_menuItemStates[i].state == menuItemStateSubmenu) {
@@ -4213,7 +4257,7 @@ static void _drawTitleMenuItems()
         for (j = 0; j < 32; ++j) {
             int new_var = j + menuState[i].textPos;
             prim->tag = vs_getTag(prim->sprt, primAddrEnd);
-            prim->sprt.tpage = _menuItemTpages2[i];
+            prim->sprt.tpage = _menuItemTextTpages[i];
 
             switch ((new_var >> 5) & 3) {
             case 0:

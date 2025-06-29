@@ -4144,13 +4144,13 @@ static void _drawTitleMenuItems()
         VS_SPRT sprt;
     } menuItemPrim_t;
 
-    static int _menuItemTextUv[]
+    static int textUvs[]
         = { vs_getUV0Clut(128, 224, 480, 384), vs_getUV0Clut(0, 224, 480, 385),
               vs_getUV0Clut(128, 224, 480, 386), vs_getUV0Clut(0, 224, 480, 387),
               vs_getUV0Clut(0, 224, 480, 388), vs_getUV0Clut(0, 224, 480, 389),
               vs_getUV0Clut(128, 224, 480, 390), vs_getUV0Clut(128, 224, 480, 391),
               vs_getUV0Clut(128, 224, 480, 392), vs_getUV0Clut(0, 224, 480, 393) };
-    static int _menuItemTextTpages[]
+    static int textTpages[]
         = { vs_getTpage(512, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
@@ -4161,13 +4161,13 @@ static void _drawTitleMenuItems()
               vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(832, 256, clut4Bit, semiTransparencyFull, ditheringOff) };
-    static int _menuItemOutlineUv[]
+    static int outlineUvs[]
         = { vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(0, 192, 480, 394),
               vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(128, 0, 480, 394),
               vs_getUV0Clut(144, 192, 480, 394), vs_getUV0Clut(160, 192, 480, 394),
               vs_getUV0Clut(160, 192, 480, 394), vs_getUV0Clut(128, 64, 480, 394),
               vs_getUV0Clut(128, 0, 480, 394), vs_getUV0Clut(128, 64, 480, 394) };
-    static int _menuItemOutlineTpages[10]
+    static int outlineTpages[]
         = { vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
@@ -4178,21 +4178,12 @@ static void _drawTitleMenuItems()
               vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff),
               vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff) };
-    static int _menuItemOutlineWh[] = { vs_getWH(144, 64), vs_getWH(160, 64),
-        vs_getWH(160, 64), vs_getWH(128, 64), vs_getWH(112, 64), vs_getWH(96, 64),
-        vs_getWH(96, 64), vs_getWH(128, 64), vs_getWH(128, 64), vs_getWH(128, 64) };
-    static int _menuItemOutlineXy[10] = {
-        0x00E00078,
-        0x00E00070,
-        0x00E00070,
-        0x00E00080,
-        0x00E00088,
-        0x00E00090,
-        0x00E00090,
-        0x00E00080,
-        0x00E00080,
-        0x00E00080,
-    };
+    static int outlineWhs[] = { vs_getWH(144, 64), vs_getWH(160, 64), vs_getWH(160, 64),
+        vs_getWH(128, 64), vs_getWH(112, 64), vs_getWH(96, 64), vs_getWH(96, 64),
+        vs_getWH(128, 64), vs_getWH(128, 64), vs_getWH(128, 64) };
+    static int outlineXys[] = { vs_getXY(120, 224), vs_getXY(112, 224),
+        vs_getXY(112, 224), vs_getXY(128, 224), vs_getXY(136, 224), vs_getXY(144, 224),
+        vs_getXY(144, 224), vs_getXY(128, 224), vs_getXY(128, 224), vs_getXY(128, 224) };
 
     static menuItemPrim_t primBuf[341];
     static u_char _[8] __attribute__((unused));
@@ -4214,18 +4205,18 @@ static void _drawTitleMenuItems()
             continue;
         }
         prim->tag = vs_getTag(prim->sprt, primAddrEnd);
-        prim->sprt.tpage = _menuItemOutlineTpages[i];
+        prim->sprt.tpage = outlineTpages[i];
         prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
             _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
         if (_menuItemStates[i].state == menuItemStateSubmenu) {
             prim->sprt.x0y0
-                = (_menuItemOutlineXy[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
+                = (outlineXys[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
         } else {
             prim->sprt.x0y0
-                = _menuItemOutlineXy[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
+                = outlineXys[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
         }
-        prim->sprt.u0v0clut = _menuItemOutlineUv[i];
-        prim->sprt.wh = _menuItemOutlineWh[i];
+        prim->sprt.u0v0clut = outlineUvs[i];
+        prim->sprt.wh = outlineWhs[i];
         DrawPrim(prim);
         ++prim;
     }
@@ -4241,7 +4232,7 @@ static void _drawTitleMenuItems()
             x = menuState[i].textPos + 128;
         }
 
-        textUv = _menuItemTextUv[i];
+        textUv = textUvs[i];
         wh = 128;
         if (x < 176) {
             textUv += 176 - x;
@@ -4256,7 +4247,7 @@ static void _drawTitleMenuItems()
         for (j = 0; j < 32; ++j) {
             int new_var = j + menuState[i].textPos;
             prim->tag = vs_getTag(prim->sprt, primAddrEnd);
-            prim->sprt.tpage = _menuItemTextTpages[i];
+            prim->sprt.tpage = textTpages[i];
 
             switch ((new_var >> 5) & 3) {
             case 0:

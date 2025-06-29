@@ -18,6 +18,8 @@ extern int D_80075BC8[];
 extern int D_80075BCC[];
 extern u_int volatile* D_80075C88;
 
+// Commented out functions only match with GCC 2.8.0, but this breaks the others.
+
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
 /*void DecDCTReset(int mode) {
     if (mode == 0) {

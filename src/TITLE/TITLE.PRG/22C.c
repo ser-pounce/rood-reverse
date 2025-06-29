@@ -1,7 +1,5 @@
-#include "common.h"
 #include "22C.h"
 #include "../SLUS_010.40/main.h"
-#include "../SLUS_010.40/31724.h"
 #include "../SLUS_010.40/sfx.h"
 #include "gpu.h"
 #include "lbas.h"
@@ -12,7 +10,6 @@
 #include <libetc.h>
 #include <libpress.h>
 #include <libspu.h>
-#include <memory.h>
 #include <strings.h>
 #include <sys/file.h>
 

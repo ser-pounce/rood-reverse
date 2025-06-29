@@ -217,51 +217,6 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);
 
-extern long _memcardEventDescriptors[8];
-extern u_char* _spmcimg;
-extern mcdata_t* _mcData;
-extern u_short* _textTable;
-extern u_char _0[4] __attribute__((unused));
-extern struct DIRENTRY* _memcardFiles[15];
-extern struct DIRENTRY* _dirEntBuf;
-extern _saveFileInfo_t* _saveFileInfo;
-extern u_char _loadSaveDataErrorOffset;
-extern u_char _1 __attribute__((unused));
-extern u_short _fileProgressTarget;
-extern u_short _filePreviousProgressCounter;
-extern u_short _fileProgressPosition;
-extern int _fileProgressCounter;
-extern _fileMenuElements_t _fileMenuElements[10];
-extern u_char _2[8] __attribute__((unused));
-extern primBuf_t _primBuf;
-extern u_char _3[8] __attribute__((unused));
-extern int _selectCursorXy;
-extern u_char* _selectSaveMemoryCardMessage;
-extern u_char _isSaving;
-extern u_char _selectCursorColor;
-extern u_char _fileMenuScreenFade;
-extern u_char _dataNotSaved;
-extern u_char _containerDataEmpty;
-extern u_char _backupMainSetting;
-extern u_char _frameBuf;
-extern u_char _4 __attribute__((unused));
-
-// movie.c
-extern u_int _introMovieDisplayedAt;
-extern int _introMoviePlaying;
-extern int _dslMode;
-extern u_char _5[4] __attribute__((unused));
-extern DslLOC _introMovieLoc;
-extern u_char _6[28] __attribute__((unused));
-extern MovieData_t _movieData;
-extern u_long* _movieRingBuf;
-extern u_char _8[4] __attribute__((unused));
-extern DECDCTTAB _vlcTable;
-extern void* _encodedDataBuf0;
-extern void* _encodedDataBuf1;
-extern void* _decodedDataBuf0;
-extern void* _decodedDataBuf1;
-
 enum menuItems {
     menuItemTimeout = -1,
     menuItemNewGame = 0,
@@ -331,6 +286,8 @@ static u_int _encode(int value)
     _encodeSeed = seed * 0x19660D;
     return seed >> (32 - value);
 }
+
+static long _memcardEventDescriptors[8];
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -402,6 +359,14 @@ static u_char* _memcardMakeTempFilename(int port, int fileNo)
     filename[20] = (fileNo + 'A' - 1);
     return filename;
 }
+
+static u_char* _spmcimg;
+static mcdata_t* _mcData;
+static u_short* _textTable;
+static u_char _0[4];
+static struct DIRENTRY* _memcardFiles[15];
+static struct DIRENTRY* _dirEntBuf;
+static _saveFileInfo_t* _saveFileInfo;
 
 static u_int _getNewestSaveFile()
 {
@@ -907,6 +872,13 @@ void _packageSaveData(int targetFile)
     }
 }
 
+static u_char _loadSaveDataErrorOffset;
+static u_char _1;
+static u_short _fileProgressTarget;
+static u_short _filePreviousProgressCounter;
+static u_short _fileProgressPosition;
+static int _fileProgressCounter;
+
 static int _loadSaveData(int portFileno)
 {
     enum state { init = 0, reading = 1 };
@@ -938,7 +910,7 @@ static int _loadSaveData(int portFileno)
         int nBytes;
         u_char* filename;
         int new_var = 320;
-        
+
         _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
                                      * ((_loadSaveDataErrorOffset * 20)
                                          - (_fileProgressPosition - new_var)))
@@ -1200,7 +1172,10 @@ static void _shutdownMemcard()
     vs_main_freeHeap(_spmcimg);
 }
 
-//
+static _fileMenuElements_t _fileMenuElements[10];
+static u_char _2[8];
+static primBuf_t _primBuf;
+static u_char _3[8];
 
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
@@ -1336,6 +1311,10 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
     _drawInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
 }
 
+static int _selectCursorXy;
+static u_char* _selectSaveMemoryCardMessage;
+static u_char _isSaving;
+
 static void _fileProcessingAnim(int x, int y)
 {
     u_char* new_var __attribute__((unused));
@@ -1420,6 +1399,9 @@ static void _fileProcessingCompleteAnim(int colour, int y)
         colour0 = 0;
     }
 }
+
+static u_char _selectCursorColor;
+static u_char _fileMenuScreenFade;
 
 static void _initFileMenu()
 {
@@ -2598,6 +2580,10 @@ static int _promptFormat(int initPort)
     }
 }
 
+static u_char _dataNotSaved;
+static u_char _containerDataEmpty;
+static u_char _backupMainSetting;
+
 static int _showSaveFilesMenu(int initPort)
 {
     enum state {
@@ -3182,6 +3168,9 @@ static int _showSaveMenu(int initState)
     return 0;
 }
 
+static u_char _frameBuf;
+static u_char _4;
+
 static void _initSaveScreen()
 {
     DISPENV disp;
@@ -3498,6 +3487,21 @@ static void _gameSaveScreen()
 }
 
 // movie.c
+
+static u_int _introMovieDisplayedAt;
+static int _introMoviePlaying;
+static int _dslMode;
+static u_char _5[4];
+static DslLOC _introMovieLoc;
+static u_char _6[28];
+static MovieData_t _movieData;
+static u_long* _movieRingBuf;
+static u_char _8[4];
+static DECDCTTAB _vlcTable;
+static void* _encodedDataBuf0;
+static void* _encodedDataBuf1;
+static void* _decodedDataBuf0;
+static void* _decodedDataBuf1;
 
 static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
 {
@@ -3816,7 +3820,7 @@ static int _playIntroMovie()
 // titleScreen.c
 
 extern u_short _menuItemTextClut[2][16];
-extern menuItemState_t _menuItemStates[10];
+static menuItemState_t _menuItemStates[10];
 
 static void _setMenuItemFadeIn(int menuItem, u_char pos)
 {
@@ -4699,53 +4703,6 @@ int vs_title_exec()
     } while (selectedOption < menuItemNewGame);
     return selectedOption;
 }
-
-static long _memcardEventDescriptors[8];
-static u_char* _spmcimg;
-static mcdata_t* _mcData;
-static u_short* _textTable;
-static u_char _0[4];
-static struct DIRENTRY* _memcardFiles[15];
-static struct DIRENTRY* _dirEntBuf;
-static _saveFileInfo_t* _saveFileInfo;
-static u_char _loadSaveDataErrorOffset;
-static u_char _1;
-static u_short _fileProgressTarget;
-static u_short _filePreviousProgressCounter;
-static u_short _fileProgressPosition;
-static int _fileProgressCounter;
-static _fileMenuElements_t _fileMenuElements[10];
-static u_char _2[8];
-static primBuf_t _primBuf;
-static u_char _3[8];
-static int _selectCursorXy;
-static u_char* _selectSaveMemoryCardMessage;
-static u_char _isSaving;
-static u_char _selectCursorColor;
-static u_char _fileMenuScreenFade;
-static u_char _dataNotSaved;
-static u_char _containerDataEmpty;
-static u_char _backupMainSetting;
-static u_char _frameBuf;
-static u_char _4;
-
-// movie.c
-static u_int _introMovieDisplayedAt;
-static int _introMoviePlaying;
-static int _dslMode;
-static u_char _5[4];
-static DslLOC _introMovieLoc;
-static u_char _6[28];
-static MovieData_t _movieData;
-static u_long* _movieRingBuf;
-static u_char _8[4];
-static DECDCTTAB _vlcTable;
-static void* _encodedDataBuf0;
-static void* _encodedDataBuf1;
-static void* _decodedDataBuf0;
-static void* _decodedDataBuf1;
-
-static menuItemState_t _menuItemStates[10];
 
 static void _initScreen(int w, int h, int distance, int r, int g, int b)
 {

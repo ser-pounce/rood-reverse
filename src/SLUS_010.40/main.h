@@ -138,7 +138,18 @@ typedef struct {
 typedef struct {
     struct {
         int unk0;
-        short unk4[12];
+        short currentHP;
+        short maxHP;
+        short currentMP;
+        short maxMP;
+        short unkC;
+        short unkE;
+        short unk10;
+        short unk12;
+        short unk14;
+        short unk16;
+        short unk18;
+        short unk1A;
         int unk1C;
         u_char unk20[8];
         D_80060068_t2 unk28[6];

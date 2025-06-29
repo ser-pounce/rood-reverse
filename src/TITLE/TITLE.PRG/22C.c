@@ -28,10 +28,7 @@ typedef struct {
     enum slotState_e slotState;
     int generation;
     int unk8;
-    char unkC;
-    char seconds;
-    char minutes;
-    char hours;
+    vs_Gametime_t gameTime;
     u_short saveCount;
     u_short unk12;
     u_short currentHP;
@@ -54,8 +51,8 @@ typedef struct {
 
 typedef struct {
     int key;
-    int slotState;
-    int unk188;
+    enum slotState_e slotState;
+    int generation;
     int unk18C;
 } savedata_unk180_2_t;
 
@@ -64,14 +61,14 @@ typedef struct {
     vs_Gametime_t gameTime;
     u_short saveCount;
     u_short unk196;
-    u_short unk198;
-    u_short unk19A;
-    u_char unk19C;
-    u_char unk19D;
-    u_char unk19E;
+    u_short currentHP;
+    u_short maxHP;
+    u_char saveLocation;
+    u_char clearCount;
+    u_char mapCompletion;
     u_char unk19F;
-    u_short unk1A0;
-    u_short unk1A2;
+    u_short currentMP;
+    u_short maxMP;
     u_char checksums[0x5C];
 } savedata_unk180_t;
 
@@ -82,13 +79,7 @@ typedef struct {
 } containerData_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    saveFileSubInfo_t unk4;
-    u_char unk44[0x1C];
-    u_char unk60[0x20];
+    saveFileInfo_t fileInfo;
     u_char unk80[0x80];
     u_char unk100[0x80];
     savedata_unk180_t unk180;
@@ -107,19 +98,6 @@ typedef struct {
     containerData_t containerData;
     u_char unk59E0[0x220];
 } savedata_t;
-
-enum vs_fileMenuUiIds_e {
-    vs_uiids_colon = 0,
-    vs_uiids_number = 1,
-    vs_uiids_map = 2,
-    vs_uiids_save = 3,
-    vs_uiids_clear = 4,
-    vs_uiids_time = 5,
-    vs_uiids_percent = 6,
-    vs_uiids_hp = 7,
-    vs_uiids_mp = 8,
-    vs_uiids_dot = 9,
-};
 
 // memorycard.c
 
@@ -630,7 +608,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     return 0;
 }
 
-static void _packageSaveData(int targetFile)
+static void _packageGameClearSaveData(int targetFile)
 {
     static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
         0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
@@ -650,25 +628,26 @@ static void _packageSaveData(int targetFile)
     vs_main_settings.unk2 &= 0xFFDF;
     vs_main_puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
     memset(savedata, 0, sizeof(*savedata));
-    savedata->unk0 = 0x53;
-    savedata->unk1 = 0x43;
-    savedata->unk2 = 0x11;
-    savedata->unk3 = 3;
-    _rMemcpy(&savedata->unk4, s0, sizeof(savedata->unk4));
-    savedata->unk4.unk20[3] += (targetFile << 8);
+    ((u_char*)&savedata->fileInfo.key)[0] = 0x53;
+    ((u_char*)&savedata->fileInfo.key)[1] = 0x43;
+    ((u_char*)&savedata->fileInfo.key)[2] = 0x11;
+    ((u_char*)&savedata->fileInfo.key)[3] = 3;
+    _rMemcpy(&savedata->fileInfo.unk4, s0, sizeof(savedata->fileInfo.unk4));
+    savedata->fileInfo.unk4.unk20[3] += (targetFile << 8);
 
     if (vs_main_gametime.t.h == 100) {
-        savedata->unk4.unk20[6] = 0x5082;
+        savedata->fileInfo.unk4.unk20[6] = 0x5082;
     } else {
-        savedata->unk4.unk20[7] += ((vs_main_gametime.t.h / 10) << 8);
-        savedata->unk4.unk20[8] += ((vs_main_gametime.t.h % 10) << 8);
-        savedata->unk4.unk20[10] += ((vs_main_gametime.t.m / 10) << 8);
-        savedata->unk4.unk20[11] += ((vs_main_gametime.t.m % 10) << 8);
-        savedata->unk4.unk20[13] += ((vs_main_gametime.t.s / 10) << 8);
-        savedata->unk4.unk20[14] += ((vs_main_gametime.t.s % 10) << 8);
+        savedata->fileInfo.unk4.unk20[7] += ((vs_main_gametime.t.h / 10) << 8);
+        savedata->fileInfo.unk4.unk20[8] += ((vs_main_gametime.t.h % 10) << 8);
+        savedata->fileInfo.unk4.unk20[10] += ((vs_main_gametime.t.m / 10) << 8);
+        savedata->fileInfo.unk4.unk20[11] += ((vs_main_gametime.t.m % 10) << 8);
+        savedata->fileInfo.unk4.unk20[13] += ((vs_main_gametime.t.s / 10) << 8);
+        savedata->fileInfo.unk4.unk20[14] += ((vs_main_gametime.t.s % 10) << 8);
     }
-    savedata3->unk4.unk20[15] = 0;
-    _rMemcpy(savedata3->unk60, _mcData->unk400[targetFile], sizeof(savedata->unk60));
+    savedata3->fileInfo.unk4.unk20[15] = 0;
+    _rMemcpy(savedata3->fileInfo.unk60, _mcData->unk400[targetFile],
+        sizeof(savedata->fileInfo.unk60));
     _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
 
     if (vs_main_settings.slotState == 0) {
@@ -691,7 +670,7 @@ static void _packageSaveData(int targetFile)
             }
         }
     }
-    s5->unk180.unk188 = ++vs_main_settings.saveFileGeneration;
+    s5->unk180.generation = ++vs_main_settings.saveFileGeneration;
     if (vs_main_settings.saveCount < 9999) {
         ++vs_main_settings.saveCount;
     }
@@ -699,18 +678,18 @@ static void _packageSaveData(int targetFile)
     vs_main_settings.unk1A = 0;
     s5->unk180.unk18C = 0x20000107;
     s5->gameTime.t = vs_main_gametime.t;
-    s5->unk198 = D_80060068.unk0.unk4[0];
-    s5->unk19A = D_80060068.unk0.unk4[1];
+    s5->currentHP = D_80060068.unk0.currentHP;
+    s5->maxHP = D_80060068.unk0.maxHP;
     s5->saveCount = vs_main_settings.saveCount;
     s5->unk196 = vs_main_settings.unk1A;
-    s5->unk19C = 0x30;
-    s5->unk19E = 0;
+    s5->saveLocation = 0x30;
+    s5->mapCompletion = 0;
     memset(D_80060168[14], 0, sizeof(D_80060168[14]));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
     memset(savedata2->containerData.unk55E0, 0, sizeof(savedata2->containerData.unk55E0));
-    s5->unk19D = D_80061598[0];
-    s5->unk1A0 = D_80060068.unk0.unk4[2];
-    s5->unk1A2 = D_80060068.unk0.unk4[3];
+    s5->clearCount = D_80061598[0];
+    s5->currentMP = D_80060068.unk0.currentMP;
+    s5->maxMP = D_80060068.unk0.maxMP;
     _rMemcpy(savedata->unk200, D_80061598, sizeof(savedata->unk200));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
     _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
@@ -1104,6 +1083,19 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     _primBuf.prim.sprt.wh = wh;
     DrawPrim(&_primBuf);
 }
+
+enum vs_fileMenuUiIds_e {
+    vs_uiids_colon = 0,
+    vs_uiids_number = 1,
+    vs_uiids_map = 2,
+    vs_uiids_save = 3,
+    vs_uiids_clear = 4,
+    vs_uiids_time = 5,
+    vs_uiids_percent = 6,
+    vs_uiids_hp = 7,
+    vs_uiids_mp = 8,
+    vs_uiids_dot = 9,
+};
 
 static u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
     200, 224, 248, 255, 255, 255, 255 };
@@ -1747,16 +1739,16 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
                 }
                 _drawSaveInfoUI(y | 240, vs_uiids_time);
-                var1 = saveInfo->unk4.hours;
+                var1 = saveInfo->unk4.gameTime.t.h;
                 if (var1 == 100) {
                     _drawInteger(y | 263, var1, 100);
                 } else {
                     _drawInteger(y | 268, var1, 10);
                 }
                 _drawSaveInfoUI(y | 279, vs_uiids_colon);
-                _drawInteger(y | 282, saveInfo->unk4.minutes, 10);
+                _drawInteger(y | 282, saveInfo->unk4.gameTime.t.m, 10);
                 _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->unk4.seconds, 10);
+                _drawInteger(y | 296, saveInfo->unk4.gameTime.t.s, 10);
                 _drawHPMP(
                     y | 88, statTypeHP, saveInfo->unk4.currentHP, saveInfo->unk4.maxHP);
                 _drawHPMP(
@@ -2667,7 +2659,7 @@ static int _showSaveFilesMenu(int initPort)
             _backupMainSetting = (*(u_int*)&vs_main_settings >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
-        _packageSaveData(val);
+        _packageGameClearSaveData(val);
         _saveFile((val + 1) | ((port - 1) << 0x10));
         state = validate;
         break;

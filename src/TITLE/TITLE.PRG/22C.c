@@ -1,6 +1,5 @@
 #include "common.h"
 #include "22C.h"
-#include "sfx.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
 #include "../SLUS_010.40/sfx.h"
@@ -16,6 +15,19 @@
 #include <memory.h>
 #include <strings.h>
 #include <sys/file.h>
+
+static void _playNewGameSfx()
+{
+    vs_main_playSfxDefault(0x7E, 1);
+    vs_main_playSfxDefault(0x7E, 2);
+    vs_main_playSfxDefault(0x7E, 3);
+}
+
+static void _playMenuChangeSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
+
+static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
+
+static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
 enum slotState_e {
     slotStateUnavailable = 0,
@@ -94,8 +106,6 @@ typedef struct {
     containerData_t containerData;
     u_char unk59E0[0x220];
 } savedata_t;
-
-// memorycard.c
 
 u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
@@ -661,8 +671,10 @@ static void _packageGameClearSaveData(int targetFile)
 
     for (i = 0; i < 5; ++i) {
         if (_saveFileInfo[i].unk4.base.slotState >= slotStateInUse) {
-            if (vs_main_settings.saveFileGeneration < _saveFileInfo[i].unk4.base.generation) {
-                vs_main_settings.saveFileGeneration = _saveFileInfo[i].unk4.base.generation;
+            if (vs_main_settings.saveFileGeneration
+                < _saveFileInfo[i].unk4.base.generation) {
+                vs_main_settings.saveFileGeneration
+                    = _saveFileInfo[i].unk4.base.generation;
             }
         }
     }
@@ -715,8 +727,8 @@ static void _packageGameClearSaveData(int targetFile)
         var_a0 ^= _spmcimg[j + 256];
     }
     s5->checksums[1] = var_a0;
-    for (i = (int)&((savedata_t*)0)->unk180.unk180.base.slotState; i < (int)sizeof(savedata_t);
-         ++i) {
+    for (i = (int)&((savedata_t*)0)->unk180.unk180.base.slotState;
+         i < (int)sizeof(savedata_t); ++i) {
         _spmcimg[i] += _encode(8);
     }
 }
@@ -1745,10 +1757,10 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 _drawInteger(y | 282, saveInfo->unk4.stats.gameTime.t.m, 10);
                 _drawSaveInfoUI(y | 293, vs_uiids_colon);
                 _drawInteger(y | 296, saveInfo->unk4.stats.gameTime.t.s, 10);
-                _drawHPMP(
-                    y | 88, statTypeHP, saveInfo->unk4.stats.currentHP, saveInfo->unk4.stats.maxHP);
-                _drawHPMP(
-                    y | 158, statTypeMP, saveInfo->unk4.stats.currentMP, saveInfo->unk4.stats.maxMP);
+                _drawHPMP(y | 88, statTypeHP, saveInfo->unk4.stats.currentHP,
+                    saveInfo->unk4.stats.maxHP);
+                _drawHPMP(y | 158, statTypeMP, saveInfo->unk4.stats.currentMP,
+                    saveInfo->unk4.stats.maxMP);
                 y -= 17 << 16;
             }
             if ((element->selected != 0) && (_fileProgressCounter != 0)) {
@@ -1947,7 +1959,8 @@ static int _showLoadFilesMenu(int initPort)
             element = _initFileMenuElement(
                 i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
             element->slotId = i;
-            element->slotUnavailable = _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
+            element->slotUnavailable
+                = _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
@@ -3404,8 +3417,6 @@ static void _gameSaveScreen()
     }
 }
 
-// movie.c
-
 typedef struct {
     void* encodedData[2];
     int encodedDataIndex;
@@ -3750,8 +3761,6 @@ static int _playIntroMovie()
     }
     return 0;
 }
-
-// titleScreen.c
 
 enum menuItemState_e {
     menuItemStateStatic = 0,
@@ -4479,8 +4488,6 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].textBlendFactor = 16;
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
-
-// main.c
 
 static void _initGameData();
 static void _setTitleExitFlags(int arg0);

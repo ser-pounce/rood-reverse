@@ -22,8 +22,8 @@ segments:
     subsegments:
       - [0x00, .rodata, 22C]
       - [0x1DC, .rodata, libpress/LIBPRESS]
-      - [0x22C, c]
-#      - [0x68A0, c]
+      - [0x22C, c, sfx]
+      - [0x2D4, c, 22C]
       - [0x959C, c, libpress/LIBPRESS]
       - [0x9C1C, c, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]

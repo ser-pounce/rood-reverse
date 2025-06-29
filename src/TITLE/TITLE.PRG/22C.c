@@ -1,5 +1,6 @@
 #include "common.h"
 #include "22C.h"
+#include "sfx.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
 #include "../SLUS_010.40/sfx.h"
@@ -16,87 +17,7 @@
 #include <strings.h>
 #include <sys/file.h>
 
-typedef struct {
-    void* encodedData[2];
-    int encodedDataIndex;
-    void* decodedData[2];
-    int decodedDataIndex;
-    RECT frameBufs[2];
-    u_int frameBufIndex;
-    RECT renderTarget;
-    int frameComplete;
-} MovieData_t;
-
-enum _fileMenuElementState_e {
-    fileMenuElementStateInactive = 0,
-    fileMenuElementStateStatic = 1,
-    fileMenuElementStateAnimateX = 2,
-    fileMenuElementStateAnimateY = 3,
-    fileMenuElementStateAnimateNegX = 4
-};
-
-typedef struct {
-    u_char state;
-    u_char slotId;
-    u_char outertextBlendFactor;
-    u_char innertextBlendFactor;
-    u_char selected;
-    u_char slotUnavailable;
-    u_char saveLocation;
-    u_char unk7;
-    short targetPosition;
-    short unkA;
-    short x;
-    short y;
-    short w;
-    short h;
-    u_char text[32];
-} _fileMenuElements_t;
-
-enum menuItemState_t {
-    menuItemStateStatic = 0,
-    menuItemStateUpper = 1,
-    menuItemStateLower = 2,
-    menuItemStateSubmenu = 3
-};
-
-typedef struct {
-    u_char enabled;
-    u_char state;
-    u_char textSaturation;
-    u_char outlineSaturation;
-    u_char textPos;
-    u_char targetPos;
-    u_char outlinePos;
-    u_char textBlendFactor;
-} menuItemState_t;
-
-typedef struct {
-    u_char data[220][256 / 2];
-    u_short clut[16][16];
-} fontTable_t;
-
-typedef struct {
-    u_char page0[224][256 / 2];
-    u_char page1[256][256 / 2];
-} uiTable_t;
-
-typedef struct {
-    u_char data[158][256 / 2];
-    u_short clut[16][16];
-} _debugFont_t;
-
-typedef struct {
-    u_short clut[256];
-    u_char data[240][192];
-} menuBg_t;
-
-typedef struct {
-    u_long tag;
-    VS_SPRT sprt;
-} tagsprt_t;
-
-enum slotState_t {
+enum slotState_e {
     slotStateUnavailable = 0,
     slotStateAvailable = 1,
     slotStateTemporary = 2,
@@ -104,7 +25,7 @@ enum slotState_t {
 };
 
 typedef struct {
-    enum slotState_t slotState;
+    enum slotState_e slotState;
     int generation;
     int unk8;
     char unkC;
@@ -122,45 +43,55 @@ typedef struct {
     u_short currentMP;
     u_short maxMP;
     u_short unk20[16];
-} _saveFileSubInfo_t;
+} saveFileSubInfo_t;
 
 typedef struct {
     int key;
-    _saveFileSubInfo_t unk4;
+    saveFileSubInfo_t unk4;
     u_char unk44[0x1C];
     u_char unk60[0x20];
-} _saveFileInfo_t;
+} saveFileInfo_t;
+
+typedef struct {
+    int key;
+    int slotState;
+    int unk188;
+    int unk18C;
+} savedata_unk180_2_t;
+
+typedef struct {
+    savedata_unk180_2_t unk180;
+    vs_Gametime_t gameTime;
+    u_short saveCount;
+    u_short unk196;
+    u_short unk198;
+    u_short unk19A;
+    u_char unk19C;
+    u_char unk19D;
+    u_char unk19E;
+    u_char unk19F;
+    u_short unk1A0;
+    u_short unk1A2;
+    u_char checksums[0x5C];
+} savedata_unk180_t;
+
+typedef struct {
+    u_char containerData[0x3800];
+    u_char unk55E0[0x100];
+    u_char unk56E0[0x300];
+} containerData_t;
 
 typedef struct {
     u_char unk0;
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    _saveFileSubInfo_t unk4;
+    saveFileSubInfo_t unk4;
     u_char unk44[0x1C];
     u_char unk60[0x20];
     u_char unk80[0x80];
     u_char unk100[0x80];
-    struct savedata_unk180_t {
-        struct savedata_unk180_2_t {
-            int key;
-            int slotState;
-            int unk188;
-            int unk18C;
-        } unk180;
-        vs_Gametime_t gameTime;
-        u_short saveCount;
-        u_short unk196;
-        u_short unk198;
-        u_short unk19A;
-        u_char unk19C;
-        u_char unk19D;
-        u_char unk19E;
-        u_char unk19F;
-        u_short unk1A0;
-        u_short unk1A2;
-        u_char checksums[0x5C];
-    } unk180;
+    savedata_unk180_t unk180;
     u_char unk200[0x440];
     u_char unk640[0x20];
     u_char unk660[0x48];
@@ -173,61 +104,9 @@ typedef struct {
     int unk1898;
     u_char unk189C[0x520];
     u_char unk1DBC[0x24];
-    struct {
-        u_char containerData[0x3800];
-        u_char unk55E0[0x100];
-        u_char unk56E0[0x300];
-    } containerData;
+    containerData_t containerData;
     u_char unk59E0[0x220];
 } savedata_t;
-
-typedef struct {
-    u_long tag;
-    VS_SPRT sprt;
-} menuItemPrim_t;
-
-typedef struct {
-    u_long locationCluts[2][128];
-    u_char unk400[7][32];
-    u_char unk4E0[22][128];
-    u_char unkFE0[0x20];
-    u_short textTable[0x800];
-    _saveFileInfo_t saveFileInfo[5];
-    struct DIRENTRY _dirEntBuf;
-} mcdata_t;
-
-typedef struct {
-    u_long tag;
-    union {
-        VS_SPRT sprt;
-        VS_TILE_TPAGE tile_tpage;
-        VS_TILE tile;
-        VS_POLY_G4_TPAGE polyG4_tpage;
-        VS_POLY_G4 polyG4;
-        struct {
-            VS_TILE_TPAGE tile;
-            VS_POLY_G4 polyG4;
-        } tilePoly;
-        u_long raw[15];
-    } prim;
-} primBuf_t;
-
-static void _playMovie(DslLOC*);
-static u_short* _getNextMovieFrame(MovieData_t* arg0);
-static void _initGameData();
-static void _setTitleExitFlags(int arg0);
-
-enum menuItems {
-    menuItemTimeout = -1,
-    menuItemNewGame = 0,
-    menuItemContinue = 1,
-    menuItemVibration = 2,
-    menuItemSound = 3,
-    menuItemSoundMono = 4,
-    menuItemVibrationOff = 5,
-    menuItemVibrationOn = 6,
-    menuItemSoundStereo = 7
-};
 
 enum vs_fileMenuUiIds_e {
     vs_uiids_colon = 0,
@@ -241,21 +120,6 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_mp = 8,
     vs_uiids_dot = 9,
 };
-
-// sfx.c
-
-static void _playNewGameSfx()
-{
-    vs_main_playSfxDefault(0x7E, 1);
-    vs_main_playSfxDefault(0x7E, 2);
-    vs_main_playSfxDefault(0x7E, 3);
-}
-
-static void _playMenuChangeSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
-
-static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
-
-static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
 // memorycard.c
 
@@ -360,13 +224,23 @@ static u_char* _memcardMakeTempFilename(int port, int fileNo)
     return filename;
 }
 
+typedef struct {
+    u_long locationCluts[2][128];
+    u_char unk400[7][32];
+    u_char unk4E0[22][128];
+    u_char unkFE0[0x20];
+    u_short textTable[0x800];
+    saveFileInfo_t saveFileInfo[5];
+    struct DIRENTRY _dirEntBuf;
+} mcdata_t;
+
 static u_char* _spmcimg;
 static mcdata_t* _mcData;
 static u_short* _textTable;
-static u_char _0[4];
+static u_char _0[4] __attribute__((unused));
 static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
-static _saveFileInfo_t* _saveFileInfo;
+static saveFileInfo_t* _saveFileInfo;
 
 static u_int _getNewestSaveFile()
 {
@@ -467,7 +341,7 @@ static void _decode(u_int key, u_char* buf, int count)
 
 static int _readSaveFileInfo(int id)
 {
-    _saveFileInfo_t saveInfo[4];
+    saveFileInfo_t saveInfo[4];
     int i;
     int port = id >> 12;
 
@@ -486,7 +360,7 @@ static int _readSaveFileInfo(int id)
             continue;
         }
         _decode(saveInfo[3].key, (u_char*)&saveInfo[3].unk4.slotState,
-            sizeof(_saveFileInfo_t) - sizeof(int));
+            sizeof(saveFileInfo_t) - sizeof(int));
         if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
             _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof(saveInfo[3]));
             return 0;
@@ -547,7 +421,7 @@ static int _initSaveFileInfo(int port)
         _memcardFiles[i] = (void*)fileNo;
     }
 
-    memset(_saveFileInfo, 0, sizeof(_saveFileInfo_t) * 5);
+    memset(_saveFileInfo, 0, sizeof(saveFileInfo_t) * 5);
     tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
     if (tempFilesDeleted & 0x80) {
         return 1;
@@ -565,7 +439,7 @@ static int _initSaveFileInfo(int port)
                 if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
                     continue;
                 }
-                memset(&_saveFileInfo[fileNo - 1], 0, sizeof(_saveFileInfo_t));
+                memset(&_saveFileInfo[fileNo - 1], 0, sizeof(saveFileInfo_t));
                 _saveFileInfo[fileNo - 1].unk4.slotState = slotStateTemporary;
             } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                 slotsAvailable += (file->size + 0x1FFF) >> 13;
@@ -602,7 +476,7 @@ static int _createSaveFile(int port, int id)
 
 static enum memcardEventHandler_e _memcardEventHandler(int initPort)
 {
-    enum states {
+    enum state {
         init = 0,
         ready = 1,
         unformatted = 2,
@@ -716,7 +590,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     savedata_t* spmcimg = (savedata_t*)_spmcimg;
     void* spmcimg2 = spmcimg + 1;
     savedata_t* s4 = spmcimg + 1;
-    struct savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
+    savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
 
     _decode(unk180->key, (u_char*)(&unk180->slotState),
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.slotState);
@@ -770,7 +644,7 @@ static void _packageSaveData(int targetFile)
     savedata_t* savedata = (savedata_t*)_spmcimg;
     savedata_t* savedata2 = savedata + 1;
     savedata_t* savedata3 = savedata;
-    struct savedata_unk180_t* s5 = &savedata->unk180;
+    savedata_unk180_t* s5 = &savedata->unk180;
 
     vs_main_gametime.all = 0;
     vs_main_settings.unk2 &= 0xFFDF;
@@ -873,7 +747,7 @@ static void _packageSaveData(int targetFile)
 }
 
 static u_char _loadSaveDataErrorOffset;
-static u_char _1;
+static u_char _1 __attribute__((unused));
 static u_short _fileProgressTarget;
 static u_short _filePreviousProgressCounter;
 static u_short _fileProgressPosition;
@@ -1076,7 +950,7 @@ static int _saveFile(int portFile)
     return errors == 3 ? -1 : 0;
 }
 
-static int _loadMemcardMenu(int init)
+static int _initMemcard(int init)
 {
     enum state {
         none = 0,
@@ -1172,8 +1046,50 @@ static void _shutdownMemcard()
     vs_main_freeHeap(_spmcimg);
 }
 
-static _fileMenuElements_t _fileMenuElements[10];
-static u_char _2[8];
+enum fileMenuElementState_e {
+    fileMenuElementStateInactive = 0,
+    fileMenuElementStateStatic = 1,
+    fileMenuElementStateAnimateX = 2,
+    fileMenuElementStateAnimateY = 3,
+    fileMenuElementStateAnimateNegX = 4
+};
+
+typedef struct {
+    u_char state;
+    u_char slotId;
+    u_char outertextBlendFactor;
+    u_char innertextBlendFactor;
+    u_char selected;
+    u_char slotUnavailable;
+    u_char saveLocation;
+    u_char unk7;
+    short targetPosition;
+    short unkA;
+    short x;
+    short y;
+    short w;
+    short h;
+    u_char text[32];
+} fileMenuElements_t;
+
+typedef struct {
+    u_long tag;
+    union {
+        VS_SPRT sprt;
+        VS_TILE_TPAGE tile_tpage;
+        VS_TILE tile;
+        VS_POLY_G4_TPAGE polyG4_tpage;
+        VS_POLY_G4 polyG4;
+        struct {
+            VS_TILE_TPAGE tile;
+            VS_POLY_G4 polyG4;
+        } tilePoly;
+        u_long raw[15];
+    } prim;
+} primBuf_t;
+
+static fileMenuElements_t _fileMenuElements[10];
+static u_char _2[8] __attribute__((unused));
 static primBuf_t _primBuf;
 
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
@@ -1413,9 +1329,9 @@ static void _initFileMenu()
     memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-static _fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char* text)
+static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char* text)
 {
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int i;
     u_int c;
 
@@ -1453,7 +1369,7 @@ static _fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char*
 
 static void _clearFileMenuElement(int id)
 {
-    memset(&_fileMenuElements[id], 0, sizeof(_fileMenuElements_t));
+    memset(&_fileMenuElements[id], 0, sizeof(fileMenuElements_t));
 }
 
 static int _fileMenuElementsActive()
@@ -1684,10 +1600,10 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-static void _drawFileMenuElement(_fileMenuElements_t* element)
+static void _drawFileMenuElement(fileMenuElements_t* element)
 {
     u_long clut[130];
-    _saveFileInfo_t* saveInfo;
+    saveFileInfo_t* saveInfo;
     int xy;
     int var_a3;
     int location;
@@ -1868,7 +1784,7 @@ static void _drawFileMenuElement(_fileMenuElements_t* element)
 static void _drawFileMenu(int framebuf)
 {
     int _[2];
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int j;
     int i;
     u_int x;
@@ -2017,7 +1933,7 @@ static int _showLoadFilesMenu(int initPort)
     static u_char leaveTimer;
     static u_char completeTimer;
 
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int currentSlot;
     int i;
 
@@ -2315,7 +2231,7 @@ static int _loadFileMenu(int initFadeout)
     static u_char fadeout;
     static u_char _[5] __attribute__((unused));
 
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int i;
 
     if (initFadeout != 0) {
@@ -2383,7 +2299,7 @@ static int _loadFileMenu(int initFadeout)
         }
         break;
     case slotSelected:
-        element = (_fileMenuElements_t*)_selectLoadMemoryCard(0);
+        element = (fileMenuElements_t*)_selectLoadMemoryCard(0);
         if (element != 0) {
             if ((int)element < 0) {
                 state = displaySlot1;
@@ -2427,7 +2343,7 @@ static int _promptConfirm(int arg0)
     static u_char cancelled;
     static u_char _[2] __attribute__((unused));
 
-    _fileMenuElements_t* temp_v0;
+    fileMenuElements_t* temp_v0;
     int i;
 
     if (arg0 != 0) {
@@ -2607,7 +2523,7 @@ static int _showSaveFilesMenu(int initPort)
     static u_char fileSlot;
     static u_char leaveTimer;
 
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int val;
     int saveId;
     int i;
@@ -2767,7 +2683,7 @@ static int _showSaveFilesMenu(int initPort)
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(&_saveFileInfo[saveId], 0, sizeof(_saveFileInfo_t));
+                memset(&_saveFileInfo[saveId], 0, sizeof(saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.slotState = slotStateTemporary;
                 _fileMenuElements[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
@@ -2779,11 +2695,11 @@ static int _showSaveFilesMenu(int initPort)
             } else {
                 _dataNotSaved = 0;
                 _fileProgressCounter = -16;
-                _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(_saveFileInfo_t) * 3,
-                    sizeof(_saveFileInfo_t));
+                _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(saveFileInfo_t) * 3,
+                    sizeof(saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
                     (u_char*)&_saveFileInfo[saveId].unk4.slotState,
-                    sizeof(_saveFileInfo_t) - sizeof(int));
+                    sizeof(saveFileInfo_t) - sizeof(int));
                 _fileMenuElements[saveId + 5].saveLocation
                     = _saveFileInfo[saveId].unk4.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
@@ -2995,7 +2911,7 @@ static int _showSaveMenu(int initState)
     static u_char selectedFile;
     static u_char _[3] __attribute__((unused));
 
-    _fileMenuElements_t* element;
+    fileMenuElements_t* element;
     int currentSave;
     int val;
 
@@ -3168,7 +3084,7 @@ static int _showSaveMenu(int initState)
 }
 
 static u_char _frameBuf;
-static u_char _3;
+static u_char _3 __attribute__((unused));
 
 static void _initSaveScreen()
 {
@@ -3204,6 +3120,21 @@ static void _saveScreenSwapBuf()
     PutDispEnv(&disp);
     PutDrawEnv(&draw);
 }
+
+typedef struct {
+    u_char data[220][256 / 2];
+    u_short clut[16][16];
+} fontTable_t;
+
+typedef struct {
+    u_char page0[224][256 / 2];
+    u_char page1[256][256 / 2];
+} uiTable_t;
+
+typedef struct {
+    u_short clut[256];
+    u_char data[240][192];
+} menuBg_t;
 
 extern fontTable_t _fontTable[];
 extern u_long _debugFont[];
@@ -3245,12 +3176,12 @@ static int _gameLoadScreen()
         switch (state) {
         case init:
             if (state == 0) {
-                _loadMemcardMenu(1);
+                _initMemcard(1);
                 state = loadMemcardMenu;
             }
             break;
         case loadMemcardMenu:
-            if (_loadMemcardMenu(0) != 0) {
+            if (_initMemcard(0) != 0) {
                 _initFileMenu();
                 _loadFileMenu(2);
                 state = loadFileMenu;
@@ -3278,11 +3209,11 @@ static int _saveFileExists()
     int i;
     int ret = 0;
 
-    _loadMemcardMenu(1);
+    _initMemcard(1);
 
     do {
         vs_main_gametimeUpdate(2);
-    } while (_loadMemcardMenu(0) == 0);
+    } while (_initMemcard(0) == 0);
 
     for (i = 1; i <= 2; ++i) {
         _memcardEventHandler(i);
@@ -3321,7 +3252,7 @@ static int _saveScreenConfirmation(int init)
     static u_char confirm;
     static u_char _[5] __attribute__((unused));
 
-    _fileMenuElements_t* elem;
+    fileMenuElements_t* elem;
     int i;
 
     if (init != 0) {
@@ -3429,11 +3360,11 @@ static void _gameSaveScreen()
 
         switch (state) {
         case init:
-            _loadMemcardMenu(1);
+            _initMemcard(1);
             state = loading;
             continue;
         case loading:
-            if (_loadMemcardMenu(0) != 0) {
+            if (_initMemcard(0) != 0) {
                 _initFileMenu();
                 _showSaveMenu(1);
                 state = loaded;
@@ -3487,15 +3418,29 @@ static void _gameSaveScreen()
 
 // movie.c
 
+typedef struct {
+    void* encodedData[2];
+    int encodedDataIndex;
+    void* decodedData[2];
+    int decodedDataIndex;
+    RECT frameBufs[2];
+    u_int frameBufIndex;
+    RECT renderTarget;
+    int frameComplete;
+} MovieData_t;
+
+static void _playMovie(DslLOC*);
+static u_short* _getNextMovieFrame(MovieData_t* arg0);
+
 static u_int _introMovieDisplayedAt;
 static int _introMoviePlaying;
 static int _dslMode;
-static u_char _4[4];
+static u_char _4[4] __attribute__((unused));
 static DslLOC _introMovieLoc;
-static u_char _5[28];
+static u_char _5[28] __attribute__((unused));
 static MovieData_t _movieData;
 static u_long* _movieRingBuf;
-static u_char _6[4];
+static u_char _6[4] __attribute__((unused));
 static DECDCTTAB _vlcTable;
 static void* _encodedDataBuf0;
 static void* _encodedDataBuf1;
@@ -3818,6 +3763,24 @@ static int _playIntroMovie()
 
 // titleScreen.c
 
+enum menuItemState_e {
+    menuItemStateStatic = 0,
+    menuItemStateUpper = 1,
+    menuItemStateLower = 2,
+    menuItemStateSubmenu = 3
+};
+
+typedef struct {
+    u_char enabled;
+    u_char state;
+    u_char textSaturation;
+    u_char outlineSaturation;
+    u_char textPos;
+    u_char targetPos;
+    u_char outlinePos;
+    u_char textBlendFactor;
+} menuItemState_t;
+
 extern u_short _menuItemTextClut[2][16];
 static menuItemState_t _menuItemStates[10];
 
@@ -4137,6 +4100,11 @@ static void _setTitleMenuState()
 
 static void _drawTitleMenuItems()
 {
+    typedef struct {
+        u_long tag;
+        VS_SPRT sprt;
+    } menuItemPrim_t;
+
     extern int _menuItemTextUv[10];
     extern int _menuItemTpages2[10];
     extern int _menuItemOutlineUv[10];
@@ -4249,6 +4217,11 @@ static void _drawTitleMenuItems()
 
 static void _drawTitleMenu()
 {
+    typedef struct {
+        u_long tag;
+        VS_SPRT sprt;
+    } tagsprt_t;
+
     static tagsprt_t sprtBuf[10];
     static u_char _[16] __attribute__((unused));
 
@@ -4292,6 +4265,18 @@ static void _drawAndSyncTitleMenu()
     VSync(0);
     vs_main_processPadState();
 }
+
+enum menuItems {
+    menuItemTimeout = -1,
+    menuItemNewGame = 0,
+    menuItemContinue = 1,
+    menuItemVibration = 2,
+    menuItemSound = 3,
+    menuItemSoundMono = 4,
+    menuItemVibrationOff = 5,
+    menuItemVibrationOn = 6,
+    menuItemSoundStereo = 7
+};
 
 static void _menuVibrationSettings()
 {
@@ -4506,6 +4491,9 @@ static void _menuSoundSettings()
 }
 
 // main.c
+
+static void _initGameData();
+static void _setTitleExitFlags(int arg0);
 
 static int _nop() { return 0; }
 

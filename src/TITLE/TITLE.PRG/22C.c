@@ -3787,7 +3787,23 @@ typedef struct {
     u_char textBlendFactor;
 } menuItemState_t;
 
-extern u_short _menuItemTextClut[2][16];
+static u_short _menuItemTextClut[][16] = {
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 2, 1), vs_getRGB5551(2, 0, 3, 1),
+        vs_getRGB5551(3, 0, 4, 1), vs_getRGB5551(6, 0, 0, 1), vs_getRGB5551(9, 1, 0, 1),
+        vs_getRGB5551(11, 2, 0, 1), vs_getRGB5551(13, 3, 0, 1),
+        vs_getRGB5551(14, 2, 0, 1), vs_getRGB5551(15, 3, 0, 1),
+        vs_getRGB5551(16, 4, 0, 1), vs_getRGB5551(16, 3, 0, 1),
+        vs_getRGB5551(16, 4, 0, 1), vs_getRGB5551(17, 5, 0, 1),
+        vs_getRGB5551(18, 7, 0, 1), vs_getRGB5551(19, 8, 0, 1) },
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 2, 1), vs_getRGB5551(5, 3, 5, 1),
+        vs_getRGB5551(7, 5, 7, 1), vs_getRGB5551(11, 8, 7, 1),
+        vs_getRGB5551(16, 12, 9, 1), vs_getRGB5551(20, 15, 10, 1),
+        vs_getRGB5551(24, 18, 11, 1), vs_getRGB5551(28, 19, 11, 1),
+        vs_getRGB5551(31, 21, 10, 1), vs_getRGB5551(27, 22, 15, 1),
+        vs_getRGB5551(31, 22, 12, 1), vs_getRGB5551(31, 23, 13, 1),
+        vs_getRGB5551(31, 25, 16, 1), vs_getRGB5551(31, 27, 18, 1),
+        vs_getRGB5551(31, 28, 19, 1) }
+};
 static menuItemState_t _menuItemStates[10];
 
 static void _setMenuItemFadeIn(int menuItem, u_char pos)
@@ -3804,7 +3820,24 @@ static void _setMenuItemFadeIn(int menuItem, u_char pos)
 
 static void _copyTitleBgData()
 {
-    extern u_int _menuItemOutlineClut[];
+    static u_short _menuItemOutlineClut[][16]
+        = { { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1),
+                vs_getRGB5551(0, 0, 4, 1), vs_getRGB5551(0, 0, 5, 1),
+                vs_getRGB5551(0, 0, 8, 1), vs_getRGB5551(0, 0, 10, 1),
+                vs_getRGB5551(0, 0, 12, 1), vs_getRGB5551(0, 0, 14, 1),
+                vs_getRGB5551(0, 0, 15, 1), vs_getRGB5551(0, 0, 18, 1),
+                vs_getRGB5551(0, 0, 20, 1), vs_getRGB5551(0, 0, 22, 1),
+                vs_getRGB5551(0, 0, 24, 1), vs_getRGB5551(0, 0, 26, 1),
+                vs_getRGB5551(1, 1, 29, 1), vs_getRGB5551(2, 3, 31, 1) },
+
+              { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 3, 1),
+                  vs_getRGB5551(0, 0, 3, 1), vs_getRGB5551(4, 2, 0, 1),
+                  vs_getRGB5551(3, 0, 7, 1), vs_getRGB5551(7, 3, 3, 1),
+                  vs_getRGB5551(12, 7, 4, 1), vs_getRGB5551(19, 12, 1, 1),
+                  vs_getRGB5551(24, 17, 1, 1), vs_getRGB5551(28, 20, 1, 1),
+                  vs_getRGB5551(30, 20, 1, 1), vs_getRGB5551(31, 22, 0, 1),
+                  vs_getRGB5551(31, 22, 2, 1), vs_getRGB5551(26, 20, 10, 1),
+                  vs_getRGB5551(31, 25, 4, 1), vs_getRGB5551(28, 23, 10, 1) } };
 
     RECT rect;
     int j;

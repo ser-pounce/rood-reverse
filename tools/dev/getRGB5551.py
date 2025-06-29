@@ -13,4 +13,4 @@ if __name__ == "__main__":
         print("Usage: python3 getRGB5551.py <hex_value>")
         sys.exit(1)
     val = int(sys.argv[1], 16)
-    print(invert_vs_getRGB5551(val))
+    print(f"vs_getRGB5551{invert_vs_getRGB5551(val)}")

@@ -136,7 +136,7 @@ enum slotState_e {
 
 typedef struct {
     enum slotState_e slotState;
-    int generation;
+    u_int generation;
     int unk8;
 } saveBase_t;
 
@@ -161,7 +161,7 @@ typedef struct {
 } saveFileSubInfo_t;
 
 typedef struct {
-    int key;
+    u_int key;
     saveFileSubInfo_t unk4;
     char unk44[0x1C];
     char unk60[0x20];
@@ -385,7 +385,7 @@ static int _deleteRedundantTempFiles(int port)
 
 static int _initSaveFileInfo(int port)
 {
-    int fileNo;
+    long fileNo;
     int i;
     int tempFilesDeleted;
     int slotsAvailable = 15;
@@ -394,11 +394,11 @@ static int _initSaveFileInfo(int port)
         _memcardFiles[i] = NULL;
     }
 
-    fileNo = (int)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
+    fileNo = (long)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
     _memcardFiles[0] = (void*)fileNo;
 
     for (i = 1; (i < 15) && fileNo; ++i) {
-        fileNo = (int)nextfile(_dirEntBuf + i);
+        fileNo = (long)nextfile(_dirEntBuf + i);
         _memcardFiles[i] = (void*)fileNo;
     }
 
@@ -618,7 +618,7 @@ static void _packageGameClearSaveData(int targetFile)
         0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
         0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
 
-    int i;
+    long i;
     int j;
     int var_a0;
     u_short const* s0 = D_8006886C;
@@ -724,7 +724,7 @@ static void _packageGameClearSaveData(int targetFile)
         var_a0 ^= _spmcimg[j + 256];
     }
     s5->checksums[1] = var_a0;
-    for (i = (int)&((savedata_t*)0)->unk180.unk180.base.slotState;
+    for (i = (long)&((savedata_t*)0)->unk180.unk180.base.slotState;
          i < (int)sizeof(savedata_t); ++i) {
         _spmcimg[i] += _encode(8);
     }
@@ -1103,7 +1103,7 @@ enum vs_fileMenuUiIds_e {
 static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
     200, 224, 248, 255, 255, 255, 255 };
 static signed char _cursorFileOpSaturation[]
-    = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
+    = { 0, -56, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8 };
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
@@ -2085,7 +2085,7 @@ static int _showLoadFilesMenu(int initPort)
     return 0;
 }
 
-static int _selectLoadMemoryCard(int initPort)
+static long _selectLoadMemoryCard(int initPort)
 {
     enum state {
         init = 0,
@@ -2290,7 +2290,7 @@ static int _loadFileMenu(int initFadeout)
     case slotSelected:
         element = (fileMenuElements_t*)_selectLoadMemoryCard(0);
         if (element != 0) {
-            if ((int)element < 0) {
+            if ((long)element < 0) {
                 state = displaySlot1;
             } else {
                 state = fadeAndReturnSelected;
@@ -3586,7 +3586,7 @@ static void _waitForFrame(MovieData_t* movie, int arg1 __attribute__((unused)))
 
 static void _playMovie(DslLOC* loc)
 {
-    char params[4];
+    u_char params[4];
 
     params[0] = DslModeSpeed;
     params[1] = 0;

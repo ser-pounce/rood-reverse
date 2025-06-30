@@ -183,7 +183,7 @@ extern int vs_main_buttonsPreviousState;
 extern int vs_main_buttonRepeat;
 extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
-extern int vs_main_saveBeforeTitle;
+extern int vs_main_saveGameClearData;
 
 extern D_8005FEA0_t D_8005FEA0;
 extern char vs_main_skillsLearned[32];

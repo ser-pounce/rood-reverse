@@ -4604,8 +4604,8 @@ int vs_title_exec()
     int selectedOption;
     void* menuData;
 
-    if (vs_main_saveBeforeTitle != 0) {
-        vs_main_saveBeforeTitle = 0;
+    if (vs_main_saveGameClearData != 0) {
+        vs_main_saveGameClearData = 0;
         vs_main_titleScreenCount = 0;
         _gameSaveScreen();
     }

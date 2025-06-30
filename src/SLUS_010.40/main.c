@@ -25,14 +25,7 @@ typedef struct {
     char lock;
     char actData[2];
     char connected;
-} PortInfo;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-} LoadImage_t;
+} portInfo_t;
 
 typedef struct {
     int unk0[2];
@@ -40,7 +33,7 @@ typedef struct {
     u_short unkA;
     char* unkC;
     int unk10[10];
-} _padAct_t;
+} padAct_t;
 
 typedef struct {
     char unk0;
@@ -84,7 +77,7 @@ typedef struct {
     D_8005DC80_t unk7F28[17];
 } D_80055D58_t;
 
-enum DiskState {
+enum diskState_e {
 
     diskIdle = 0,
     diskSeekReady = 1,
@@ -97,7 +90,7 @@ enum DiskState {
     diskStreamXaEnd = 9,
 };
 
-enum cdBufferModes {
+enum cdBufferModes_e {
     cdBufferModeNone = 0,
     cdBufferModeBuffered = 1,
     cdBufferModeManual = 2,
@@ -118,7 +111,7 @@ typedef struct {
     int commandId;
     int unk24;
     int unk28;
-    u_int bufferMode;
+    enum cdBufferModes_e bufferMode;
     u_int sectorBufIndex;
     int unk34;
     u_int unk38;
@@ -151,9 +144,9 @@ typedef struct {
     char wHi;
     char hLo;
     char hHi;
-} ImgHeader;
+} imgHeader_t;
 
-extern ImgHeader _nowLoading_header;
+extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
 char D_8004A504[]
@@ -7987,9 +7980,9 @@ int D_8004EECC[]
     = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0, 32 };
 
 extern int randArr[97];
-extern vs_main_HeapHeader* D_80050110;
-extern _padAct_t _padAct[2];
-extern PortInfo vs_main_portInfo[2];
+extern vs_main_HeapHeader* _cdReadBuffer;
+extern padAct_t _padAct[2];
+extern portInfo_t vs_main_portInfo[2];
 extern vs_main_HeapHeader heapA;
 extern vs_main_HeapHeader heapB;
 extern int randIndex;
@@ -8017,7 +8010,7 @@ extern int D_8005E03C;
 extern void* D_8005E08C;
 extern int D_8005E0BC;
 extern u_int _frameDuration;
-extern int vs_main_saveBeforeTitle;
+extern int vs_main_saveGameClearData;
 extern int _inGame;
 extern u_short loadImageSource[][256];
 extern int D_8005FE70;
@@ -8213,7 +8206,7 @@ void vs_main_showEndingAndReturnToTitle()
     vs_sound_shutdown();
     SpuQuit();
     ResetGraph(3);
-    vs_main_saveBeforeTitle = 1;
+    vs_main_saveGameClearData = 1;
     vs_overlay_jumpToTitle(&sp2);
 }
 
@@ -8335,7 +8328,7 @@ static void _sysInit()
     DsInit();
     _initRand();
     _resetEnabled = 1;
-    vs_main_saveBeforeTitle = 0;
+    vs_main_saveGameClearData = 0;
 }
 
 static void _sysReinit()
@@ -8379,7 +8372,7 @@ int vs_main_execTitle()
     _sysReinit();
     _loadTitlePrg();
     vs_main_startState = vs_title_exec();
-    vs_main_saveBeforeTitle = 0;
+    vs_main_saveGameClearData = 0;
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_overlay_getSp(&sp);
@@ -8400,7 +8393,7 @@ void vs_main_exec()
 
 void vs_main_wait() { vs_overlay_wait(); }
 
-void vs_main_enableReset(int arg0) { _resetEnabled = arg0; }
+void vs_main_enableReset(int enable) { _resetEnabled = enable; }
 
 void func_80042CA0() { D_80060068.unk0.unk0 = 1; }
 
@@ -8503,7 +8496,7 @@ static void _unlockPadModeSwitch()
 
 static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
 {
-    PortInfo* port = &vs_main_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
@@ -8521,7 +8514,7 @@ static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)
 
 int vs_main_updatePadState(int portID, char padBuf[34])
 {
-    PortInfo* port;
+    portInfo_t* port;
     char mode;
     int btnStates;
 
@@ -8568,7 +8561,7 @@ void vs_main_padConnect(int portID, char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
-    PortInfo* port = &vs_main_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
@@ -9076,9 +9069,9 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
     vs_main_disk.state = diskReadReady;
 
     if (vs_main_disk.bufferMode == cdBufferModeNone) {
-        DsGetSector((char*)vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
+        DsGetSector(vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
-        DsGetSector(D_80050110 + vs_main_disk.unk3C * 128, 512);
+        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 128, 512);
         if (++vs_main_disk.unk3C >= 16) {
             vs_main_disk.unk3C = 0;
         }
@@ -9169,7 +9162,7 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
 
 static int _diskGetState() { return vs_main_disk.state; }
 
-static void _diskResetErrorState()
+static void _diskClearError()
 {
     if (vs_main_disk.state == diskReadError) {
         vs_main_disk.state = diskIdle;
@@ -9343,7 +9336,7 @@ static void func_800443CC()
             if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
                 vs_main_memcpy(
                     ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    D_80050110 + (vs_main_disk.ringBufIndex * 128), 2048);
+                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 128), 2048);
 
                 ++vs_main_disk.ringBufIndex;
                 if (vs_main_disk.ringBufIndex >= 16) {
@@ -9353,16 +9346,16 @@ static void func_800443CC()
                 ++vs_main_disk.sectorBufIndex;
                 if (vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
                     vs_main_disk.state = diskIdle;
-                    vs_main_freeHeapR(D_80050110);
-                    D_80050110 = NULL;
+                    vs_main_freeHeapR(_cdReadBuffer);
+                    _cdReadBuffer = NULL;
                 }
             } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
                 ++vs_main_disk.sectorBufIndex;
                 if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
                     && (vs_sound_spuTransferring() == 0)) {
                     vs_main_disk.state = diskIdle;
-                    vs_main_freeHeapR(D_80050110);
-                    D_80050110 = NULL;
+                    vs_main_freeHeapR(_cdReadBuffer);
+                    _cdReadBuffer = NULL;
                 }
             }
         }
@@ -9429,7 +9422,7 @@ static void _diskReset()
     vs_main_disk.unk2 = 0;
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
-    D_80050110 = NULL;
+    _cdReadBuffer = NULL;
     while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
         ;
     VSync(3);
@@ -9621,7 +9614,7 @@ static int func_80045000(int id, int arg1, int arg2)
     return 0;
 }
 
-static int func_800450D4() { return vs_main_soundData.currentMusicId; }
+static int vs_main_getCurrentMusicId() { return vs_main_soundData.currentMusicId; }
 
 int func_800450E4()
 {
@@ -9686,7 +9679,7 @@ static int _loadMusic(int id)
     return 0;
 }
 
-static int func_800452C8(u_int slot)
+static int vs_main_clearMusicLoadSlot(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
@@ -9708,7 +9701,7 @@ static int func_800452C8(u_int slot)
     return 0;
 }
 
-static int func_80045350()
+static int vs_main_clearMusicLoadQueue()
 {
     int i;
     int ret;
@@ -9716,32 +9709,32 @@ static int func_80045350()
     ret = 0;
     i = 0;
     do {
-        ret |= func_800452C8(++i);
+        ret |= vs_main_clearMusicLoadSlot(++i);
     } while (i < 4);
 
     return ret;
 }
 
-static int func_8004539C(int arg0, int arg1)
-{
-    int temp_v0;
-
-    temp_v0 = vs_main_loadMusicSlot(arg0, arg1);
-    if (temp_v0 != 0) {
-        while (func_800452C8(arg1) != 0) {
-            vs_main_gametimeUpdate(0);
-        }
-    }
-    return temp_v0;
-}
-
-static int func_800453F4(int arg0)
+static int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
 {
     int ret;
 
-    ret = _loadMusic(arg0);
+    ret = vs_main_loadMusicSlot(id, targetSlot);
     if (ret != 0) {
-        while (func_80045350() != 0) {
+        while (vs_main_clearMusicLoadSlot(targetSlot) != 0) {
+            vs_main_gametimeUpdate(0);
+        }
+    }
+    return ret;
+}
+
+static int func_800453F4(int id)
+{
+    int ret;
+
+    ret = _loadMusic(id);
+    if (ret != 0) {
+        while (vs_main_clearMusicLoadQueue() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }

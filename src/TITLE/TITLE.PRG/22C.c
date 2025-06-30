@@ -3523,8 +3523,14 @@ static int _decodeNextMovieFrame(MovieData_t* movie)
     return 0;
 }
 
-static short publisherClut[] = { 0x0000, 0x8842, 0x9084, 0x98C6, 0xA108, 0xA94A, 0xB18C,
-    0xC210, 0xC631, 0xCE73, 0xD6B5, 0xDEF7, 0xE739, 0xEF7B, 0xF7BD, 0xFFFF };
+static short publisherClut[] = { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(2, 2, 2, 1),
+    vs_getRGB5551(4, 4, 4, 1), vs_getRGB5551(6, 6, 6, 1), vs_getRGB5551(8, 8, 8, 1),
+    vs_getRGB5551(10, 10, 10, 1), vs_getRGB5551(12, 12, 12, 1),
+    vs_getRGB5551(16, 16, 16, 1), vs_getRGB5551(17, 17, 17, 1),
+    vs_getRGB5551(19, 19, 19, 1), vs_getRGB5551(21, 21, 21, 1),
+    vs_getRGB5551(23, 23, 23, 1), vs_getRGB5551(25, 25, 25, 1),
+    vs_getRGB5551(27, 27, 27, 1), vs_getRGB5551(29, 29, 29, 1),
+    vs_getRGB5551(31, 31, 31, 1) };
 
 static u_char publisher[] = {
 #include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.segment.bin.dat"
@@ -3534,11 +3540,22 @@ static u_char developer[] = {
 #include "../../assets/TITLE/TITLE.PRG/developer.rgb4.segment.bin.dat"
 };
 
-static short developerClut[][16]
-    = { { 0x8000, 0x0842, 0x0C63, 0x18A5, 0x0C35, 0x2529, 0x2115, 0x318C, 0x39CE, 0x4631,
-            0x5294, 0x5AD6, 0x6318, 0x6B5A, 0x77BD, 0x7FFF },
-          { 0x8000, 0x0842, 0x0C63, 0x18A5, 0x0C35, 0x2529, 0x2115, 0x318C, 0x39CE,
-              0x4631, 0x5294, 0x5AD6, 0x6318, 0x6B5A, 0x77BD, 0x7FFF } };
+static short developerClut[][16] = {
+    { vs_getRGB5551(0, 0, 0, 1), vs_getRGB5551(2, 2, 2, 0), vs_getRGB5551(3, 3, 3, 0),
+        vs_getRGB5551(5, 5, 6, 0), vs_getRGB5551(21, 1, 3, 0), vs_getRGB5551(9, 9, 9, 0),
+        vs_getRGB5551(21, 8, 8, 0), vs_getRGB5551(12, 12, 12, 0),
+        vs_getRGB5551(14, 14, 14, 0), vs_getRGB5551(17, 17, 17, 0),
+        vs_getRGB5551(20, 20, 20, 0), vs_getRGB5551(22, 22, 22, 0),
+        vs_getRGB5551(24, 24, 24, 0), vs_getRGB5551(26, 26, 26, 0),
+        vs_getRGB5551(29, 29, 29, 0), vs_getRGB5551(31, 31, 31, 0) },
+    { vs_getRGB5551(0, 0, 0, 1), vs_getRGB5551(2, 2, 2, 0), vs_getRGB5551(3, 3, 3, 0),
+        vs_getRGB5551(5, 5, 6, 0), vs_getRGB5551(21, 1, 3, 0), vs_getRGB5551(9, 9, 9, 0),
+        vs_getRGB5551(21, 8, 8, 0), vs_getRGB5551(12, 12, 12, 0),
+        vs_getRGB5551(14, 14, 14, 0), vs_getRGB5551(17, 17, 17, 0),
+        vs_getRGB5551(20, 20, 20, 0), vs_getRGB5551(22, 22, 22, 0),
+        vs_getRGB5551(24, 24, 24, 0), vs_getRGB5551(26, 26, 26, 0),
+        vs_getRGB5551(29, 29, 29, 0), vs_getRGB5551(31, 31, 31, 0) }
+};
 
 static u_short* _getNextMovieFrame(MovieData_t* movie)
 {

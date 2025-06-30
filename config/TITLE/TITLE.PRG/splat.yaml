@@ -29,7 +29,7 @@ segments:
       - [0xA08C, .data, 22C]
       - {start: 0xA72C, type: rgb4, name: publisher, width: 256, height: 48, linker_entry: false}
       - {start: 0xBF2C, type: rgb4, name: developer, width: 128, height: 13, linker_entry: false}
-      - [0xD344, data, libpress/LIBPRESS]
+      - [0xD344, .data, libpress/LIBPRESS]
       - [0xD494, .data, libpress/VLC_C]
       - [0xD4C4, .data, libpress/BUILD]
       - [0xE2D4, rgba16Compressed, _titleScreenBg, 544, 576]

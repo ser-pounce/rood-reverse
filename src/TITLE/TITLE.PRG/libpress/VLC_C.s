@@ -6,7 +6,7 @@ decodeSize:
 D_80075C98:
 .zero 36
 D_80075CBC:
-.zero 8
+.zero 4
 
 .set noat
 .set noreorder

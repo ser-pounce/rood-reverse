@@ -1,4 +1,0 @@
-DecDCTReset = 0x80071D9C;
-DecDCTPutEnv = 0x80071E5C;
-DecDCTvlcSize2 = 0x8007241C;
-DecDCTvlc2 = 0x8007244C;

@@ -104,7 +104,7 @@ typedef struct {
     u_char unk59E0[0x220];
 } savedata_t;
 
-u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+static u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 

@@ -9667,7 +9667,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
     return 0;
 }
 
-static int _loadMusic(int id)
+static int _loadMusicIntoFreeSlot(int id)
 {
     int i;
 
@@ -9728,11 +9728,11 @@ static int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
     return ret;
 }
 
-static int func_800453F4(int id)
+static int _loadMusicIntoFreeSlotAndClearQueue(int id)
 {
     int ret;
 
-    ret = _loadMusic(id);
+    ret = _loadMusicIntoFreeSlot(id);
     if (ret != 0) {
         while (vs_main_clearMusicLoadQueue() != 0) {
             vs_main_gametimeUpdate(0);
@@ -10158,27 +10158,27 @@ static int _loadAndFreeSfx(int id)
     return slot;
 }
 
-static int func_80046084(int arg0)
+int vs_main_setCurrentSfx(int id)
 {
-    if ((arg0 - 1u < 3) && vs_main_soundData.sfxData[arg0 - 1] != 0) {
-        vs_main_soundData.currentSfxId = arg0;
+    if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != 0) {
+        vs_main_soundData.currentSfxId = id;
         return 1;
     }
     return 0;
 }
 
-static int func_800460C0(u_int arg0)
+int vs_main_freeSfx(u_int id)
 {
-    if ((arg0 - 1) < 3) {
-        if (vs_main_soundData.sfxData[arg0 - 1] != 0) {
-            if (vs_main_soundData.currentSfxId == arg0) {
+    if ((id - 1) < 3) {
+        if (vs_main_soundData.sfxData[id - 1] != 0) {
+            if (vs_main_soundData.currentSfxId == id) {
                 vs_main_soundData.currentSfxId = 0;
             }
             func_80012288(-2, 0);
             func_80012288(0, 0xFF000);
-            vs_main_freeHeapR(vs_main_soundData.sfxData[arg0 - 1]);
-            vs_main_soundData.sfxIds[arg0 - 1] = 0;
-            vs_main_soundData.sfxData[arg0 - 1] = 0;
+            vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+            vs_main_soundData.sfxIds[id - 1] = 0;
+            vs_main_soundData.sfxData[id - 1] = 0;
             return 1;
         }
     }
@@ -10383,7 +10383,7 @@ static int func_80046634()
     return 0;
 }
 
-static void func_80046678(int file)
+static void _loadSoundFile(int file)
 {
     vs_main_CdFile cdFile;
     int new_var;
@@ -10418,7 +10418,7 @@ static void func_80046678(int file)
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 
-void func_80046770(int arg0) { func_80046678(_soundFileMap[arg0]); }
+void vs_main_loadSoundFile(int id) { _loadSoundFile(_soundFileMap[id]); }
 
 static int func_800467A0()
 {
@@ -10465,7 +10465,7 @@ static int func_800467A0()
 
 static void func_8004687C(int arg0)
 {
-    func_80046770(arg0);
+    vs_main_loadSoundFile(arg0);
 
     while (func_800467A0() != 0) {
         vs_main_gametimeUpdate(0);

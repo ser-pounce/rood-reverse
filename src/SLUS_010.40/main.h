@@ -237,7 +237,7 @@ void func_800461CC(int, u_int[], u_int, int, int);
 void vs_main_setMonoSound(int);
 void func_80046C80(int, int, u_short*, int);
 void func_800472D0();
-void func_80046770(int);
+void vs_main_loadSoundFile(int);
 void func_800478E0(int, int, int, int, int);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);

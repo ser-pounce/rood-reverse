@@ -4,11 +4,11 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
-extern char D_80102800;
+extern signed char D_80102800;
 extern u_short D_801067DC[][2];
-extern u_char D_8010689C[];
-extern char D_80106918[];
-extern char D_80106928[];
+extern char D_8010689C[];
+extern signed char D_80106918[];
+extern signed char D_80106928[];
 
 void func_80102884(int arg0)
 {

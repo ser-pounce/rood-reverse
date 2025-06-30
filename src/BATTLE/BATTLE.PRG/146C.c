@@ -16,11 +16,11 @@ typedef struct {
 
 typedef struct {
     u_char unk0;
-    u_char unk1;
+    char unk1;
     short unk2;
     short unk4;
-    u_char unk6;
-    u_char unk7;
+    char unk6;
+    char unk7;
     int unk8;
     int unkC;
     int unk10;
@@ -43,8 +43,8 @@ typedef struct {
     int unk24;
     int unk34[3];
     short unk40;
-    u_char unk42;
-    u_char unk43;
+    char unk42;
+    char unk43;
     int unk38[158];
     short unkAC;
     short unkAE;
@@ -64,8 +64,8 @@ typedef struct {
     short unk1E;
     int unk20;
     short unk24;
-    char unk26;
-    char unk27;
+    signed char unk26;
+    signed char unk27;
     int unk28[5];
     D_800F1964_t* unk3C;
     int unk40;
@@ -84,8 +84,8 @@ typedef struct {
 } D_800F1A78_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
+    char unk0;
+    char unk1;
     short unk2;
     int unk4[9];
     u_int unk28;
@@ -99,19 +99,19 @@ typedef struct {
 
 typedef struct {
     int unk0[12];
-    u_char unk30;
-    u_char unk31;
-    u_char unk32;
-    u_char unk33;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
     short unk34[17];
     short unk56;
 } D_800F1C84_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    signed char unk0;
+    signed char unk1;
+    signed char unk2;
+    signed char unk3;
     int unk4;
     int unk8;
     int unkC;
@@ -183,7 +183,7 @@ void func_8007C4E0();
 void func_8007C5C0();
 void func_8007C81C(int, int);
 void func_8007D360();
-int func_8007F4B0(int arg0, u_char* arg1);
+int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
 void func_80081020(int, int);
 short func_80081148(int, int, int, int, int, int);
@@ -192,13 +192,13 @@ void func_8008A6FC();
 int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008574C(int, D_800F1964_t*, int);
-void func_8008B960(u_char, u_char, u_char);
+void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
 void func_80089D04();
 void func_80088554();
 void func_80089CE4();
-int func_8008B4C8(u_char arg0);
+int func_8008B4C8(char arg0);
 void func_8008C40C();
 
 extern int D_800E8498;
@@ -211,7 +211,7 @@ extern D_800F1880_t D_800F1880;
 extern int D_800F18A8;
 extern int D_800F18B0;
 extern int D_800F18F0;
-extern u_char D_800F18F8;
+extern char D_800F18F8;
 extern int* D_800F1900;
 extern int D_800F190C;
 extern D_800F1928_t* D_800F1928[];
@@ -239,7 +239,7 @@ extern int D_800F1B9C;
 extern u_short D_800F1BA4;
 extern short* D_800F1BA8;
 extern short D_800F1BB6;
-extern u_char D_800F1BBE;
+extern char D_800F1BBE;
 extern D_800F1BF8_t D_800F1BF8;
 extern int* D_800F1C5C;
 extern D_800F1C60_t* D_800F1C60;
@@ -250,18 +250,18 @@ extern D_800F1C84_t* D_800F1C84;
 extern int* D_800F1CA4;
 extern u_int D_800F1CA8;
 extern int D_800F1CB8;
-extern u_char D_800F1CD6;
+extern char D_800F1CD6;
 extern short D_800F1CDC;
-extern char D_800F1D28[0x40];
+extern signed char D_800F1D28[0x40];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
 extern int D_800F1D78[20];
-extern char D_800F1D6E;
+extern signed char D_800F1D6E;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
 extern short D_800F1DC4;
-extern char D_800F1DC9;
-extern u_char D_800F1DCA;
+extern signed char D_800F1DC9;
+extern char D_800F1DCA;
 extern u_short* D_800F1DD4;
 
 extern int D_1F800000[];
@@ -1128,7 +1128,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C4E0);
 
 void func_8007C580()
 {
-    u_char sp10[16];
+    char sp10[16];
 
     func_8007C4E0();
     func_800A1108(0, sp10);
@@ -1139,7 +1139,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C5C0);
 
 void func_8007C654()
 {
-    u_char sp10[16];
+    char sp10[16];
 
     func_8007C5C0();
     func_800A1108(0, sp10);
@@ -1278,7 +1278,7 @@ u_int func_8007CF80(int arg0)
     return var_a2;
 }
 
-u_char func_8007CFCC(int arg0)
+char func_8007CFCC(int arg0)
 {
     if (D_800F1928[arg0] != 0) {
         return D_800F1928[arg0]->unk26;
@@ -1455,12 +1455,12 @@ int func_8007F558() { return 1; }
 
 int func_8007F560() { return 1; }
 
-int func_8007F568(int arg0 __attribute__((unused)), u_char* arg1)
+int func_8007F568(int arg0 __attribute__((unused)), char* arg1)
 {
     return func_8007F518(arg1) == 2;
 }
 
-int func_8007F58C(int arg0 __attribute__((unused)), u_char* arg1)
+int func_8007F58C(int arg0 __attribute__((unused)), char* arg1)
 {
     return func_8007F518(arg1) != 2;
 }
@@ -1471,39 +1471,39 @@ int func_8007F5B8() { return 0; }
 
 int func_8007F5C0() { return 0; }
 
-int func_8007F5C8(int arg0, u_char* arg1) { return func_8007F4B0(5, arg1) == 0; }
+int func_8007F5C8(int arg0, char* arg1) { return func_8007F4B0(5, arg1) == 0; }
 
-int func_8007F5E8(int arg0, u_char* arg1) { return func_8007F4B0(7, arg1) == 0; }
+int func_8007F5E8(int arg0, char* arg1) { return func_8007F4B0(7, arg1) == 0; }
 
-int func_8007F608(int arg0, u_char* arg1) { return func_8007F4B0(9, arg1) == 0; }
+int func_8007F608(int arg0, char* arg1) { return func_8007F4B0(9, arg1) == 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F628);
 
-int func_8007F6D8(int arg0, u_char* arg1) { return func_8007F4B0(4, arg1) == 0; }
+int func_8007F6D8(int arg0, char* arg1) { return func_8007F4B0(4, arg1) == 0; }
 
-int func_8007F6F8(int arg0, u_char* arg1) { return func_8007F4B0(6, arg1) == 0; }
+int func_8007F6F8(int arg0, char* arg1) { return func_8007F4B0(6, arg1) == 0; }
 
-int func_8007F718(int arg0, u_char* arg1) { return func_8007F4B0(8, arg1) == 0; }
+int func_8007F718(int arg0, char* arg1) { return func_8007F4B0(8, arg1) == 0; }
 
-int func_8007F738(int arg0, u_char* arg1) { return func_8007F4B0(0xA, arg1) == 0; }
+int func_8007F738(int arg0, char* arg1) { return func_8007F4B0(0xA, arg1) == 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F758);
 
-int func_8007F808(int arg0, u_char* arg1) { return func_8007F4B0(0xB, arg1) == 0; }
+int func_8007F808(int arg0, char* arg1) { return func_8007F4B0(0xB, arg1) == 0; }
 
-int func_8007F828(int arg0, u_char* arg1) { return func_8007F4B0(0xC, arg1) == 0; }
+int func_8007F828(int arg0, char* arg1) { return func_8007F4B0(0xC, arg1) == 0; }
 
-int func_8007F848(int arg0, u_char* arg1) { return func_8007F4B0(0x12, arg1) == 0; }
+int func_8007F848(int arg0, char* arg1) { return func_8007F4B0(0x12, arg1) == 0; }
 
-int func_8007F868(int arg0, u_char* arg1) { return func_8007F4B0(0x11, arg1) == 0; }
+int func_8007F868(int arg0, char* arg1) { return func_8007F4B0(0x11, arg1) == 0; }
 
-int func_8007F888(int arg0, u_char* arg1) { return func_8007F4B0(0xD, arg1) == 0; }
+int func_8007F888(int arg0, char* arg1) { return func_8007F4B0(0xD, arg1) == 0; }
 
-int func_8007F8A8(int arg0, u_char* arg1) { return func_8007F4B0(0xE, arg1) == 0; }
+int func_8007F8A8(int arg0, char* arg1) { return func_8007F4B0(0xE, arg1) == 0; }
 
-int func_8007F8C8(int arg0, u_char* arg1) { return func_8007F4B0(0xF, arg1) == 0; }
+int func_8007F8C8(int arg0, char* arg1) { return func_8007F4B0(0xF, arg1) == 0; }
 
-int func_8007F8E8(int arg0, u_char* arg1) { return func_8007F4B0(0x10, arg1) == 0; }
+int func_8007F8E8(int arg0, char* arg1) { return func_8007F4B0(0x10, arg1) == 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F908);
 
@@ -1521,7 +1521,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FBD0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FC6C);
 
-int func_8007FD08(int arg0, u_char* arg1) { return func_8007F4B0(0x1D, arg1) == 0; }
+int func_8007FD08(int arg0, char* arg1) { return func_8007F4B0(0x1D, arg1) == 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FD28);
 
@@ -2077,7 +2077,7 @@ void func_8008B4B0() { D_800F1BB6 = 0; }
 
 void func_8008B4BC(int arg0) { D_800F1BA4 = arg0; }
 
-int func_8008B4C8(u_char arg0) { return D_800F1CD6 = arg0; }
+int func_8008B4C8(char arg0) { return D_800F1CD6 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B4D8);
 
@@ -2178,9 +2178,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D2C0);
 
-u_char func_8008D3D0() { return D_800F1C84->unk30; }
+char func_8008D3D0() { return D_800F1C84->unk30; }
 
-u_char func_8008D3E8() { return D_800F1C84->unk31; }
+char func_8008D3E8() { return D_800F1C84->unk31; }
 
 short func_8008D400() { return D_800F1C84->unk34[0xE]; }
 
@@ -2258,7 +2258,7 @@ void func_8008E480(int arg0)
 
 short func_8008E4AC() { return D_800F1C84->unk56; }
 
-u_char func_8008E4C4() { return D_800F1C84->unk32; }
+char func_8008E4C4() { return D_800F1C84->unk32; }
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068BEC);
 

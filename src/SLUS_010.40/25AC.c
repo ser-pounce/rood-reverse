@@ -21,10 +21,10 @@ static void func_80013AE8(u_int);
 static u_int func_80018C30(int);
 static long func_80019A58();
 static void _shutdown();
-static void _writeSpu(u_char* data, u_int len);
+static void _writeSpu(char* data, u_int len);
 
 extern int _soundEvent;
-extern u_char _soundFlush[64];
+extern char _soundFlush[64];
 extern short D_800358FE;
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
@@ -32,7 +32,7 @@ extern int D_800377E0[3];
 extern int* D_800377EC;
 extern int* D_800377F8;
 extern u_short (*D_800377F4)[];
-extern u_char _spuMemInfo;
+extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
 extern int D_80039AFC;
@@ -291,14 +291,14 @@ void spuSetTransferCallback()
     SpuSetTransferCallback(_spuWriteComplete);
 }
 
-static void _writeSpu(u_char* data, u_int len)
+static void _writeSpu(char* data, u_int len)
 {
     _isSpuTransfer = 1;
     SpuSetTransferCallback(_spuWriteComplete);
     SpuWrite(data, len);
 }
 
-static void _readSpu(u_char* data, u_int len)
+static void _readSpu(char* data, u_int len)
 {
     spuSetTransferCallback();
     SpuRead(data, len);

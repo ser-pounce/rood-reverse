@@ -15,16 +15,16 @@
 #include <rand.h>
 
 typedef struct {
-    u_char mode;
-    u_char exId;
-    u_char states;
-    u_char rStickX;
-    u_char rStickY;
-    u_char lStickX;
-    u_char lStickY;
-    u_char lock;
-    u_char actData[2];
-    u_char connected;
+    char mode;
+    char exId;
+    char states;
+    char rStickX;
+    char rStickY;
+    char lStickX;
+    char lStickY;
+    char lock;
+    char actData[2];
+    char connected;
 } PortInfo;
 
 typedef struct {
@@ -38,19 +38,19 @@ typedef struct {
     int unk0[2];
     u_short unk8;
     u_short unkA;
-    u_char* unkC;
+    char* unkC;
     int unk10[10];
 } _padAct_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
 } D_8005DC6C_t;
 
 typedef struct {
-    u_char unk0[6];
+    char unk0[6];
     short unk6[5];
     int unk10[6];
     D_8005DC6C_t unk28;
@@ -59,15 +59,15 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short unk2;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6[5];
-    char unkB[3];
+    char unk4;
+    char unk5;
+    char unk6[5];
+    signed char unkB[3];
     struct ColorInfo {
-        u_char r;
-        u_char g;
-        u_char b;
-        u_char a;
+        char r;
+        char g;
+        char b;
+        char a;
         u_char rindex;
         u_char gindex;
         u_char bindex;
@@ -77,7 +77,7 @@ typedef struct {
 
 typedef struct {
     D_80055D58_t2 unk0[14];
-    u_char unk7E8C[10];
+    char unk7E8C[10];
     short unk7E96[3];
     int unk7E9C[5][6];
     D_8005DC6C_t unk7F14[5];
@@ -104,10 +104,10 @@ enum cdBufferModes {
 };
 
 typedef struct {
-    u_char state;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
+    char state;
+    char unk1;
+    char unk2;
+    char unk3;
     u_int unk4;
     u_int sectorCount;
     int cdSector;
@@ -136,7 +136,7 @@ typedef struct {
 
 void __main();
 static void _unlockPadModeSwitch();
-static void _padResetDefaults(int, u_char[34]);
+static void _padResetDefaults(int, char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static void _initCdQueue();
 static void _diskReset();
@@ -147,18 +147,18 @@ static void _asmNop();
 static void nop10(int, int);
 
 typedef struct {
-    u_char wLo;
-    u_char wHi;
-    u_char hLo;
-    u_char hHi;
+    char wLo;
+    char wHi;
+    char hLo;
+    char hHi;
 } ImgHeader;
 
 extern ImgHeader _nowLoading_header;
 extern u_long _nowLoading_data[];
 
-u_char D_8004A504[]
+char D_8004A504[]
     = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6, 255, 0, 0, 0 };
-u_char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
+char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
 int vs_main_titleScreenCount = 0;
 int D_8004A52C = 0;
 int _soundLBAs[] = { VS_WAVE0000_DAT_LBA, VS_WAVE0001_DAT_LBA, VS_WAVE0002_DAT_LBA,
@@ -399,17 +399,17 @@ int _seFileSizes[] = { VS_SEP00000_DAT_SIZE, VS_SEP00001_DAT_SIZE, VS_SEP00002_D
     VS_SEP00093_DAT_SIZE, VS_SEP00094_DAT_SIZE, VS_SEP00095_DAT_SIZE,
     VS_SEP00096_DAT_SIZE, VS_SEP00097_DAT_SIZE, VS_SEP00098_DAT_SIZE,
     VS_SEP00099_DAT_SIZE };
-u_char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69, 0,
-    69, 69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86, 87,
-    80, 88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11, 11,
-    12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19,
-    19, 19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 25, 25,
-    25, 25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98, 95, 96,
-    97, 97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0, 0, 78,
-    89, 90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63, 63,
-    52, 51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0 };
-char _animOffset16[][16] = {
+char _soundFileMap[] = { 0, 65, 66, 66, 68, 69, 67, 85, 68, 93, 69, 68, 0, 69, 69, 0, 69,
+    69, 69, 69, 69, 68, 62, 61, 68, 68, 68, 68, 68, 57, 56, 72, 74, 77, 76, 86, 87, 80,
+    88, 55, 70, 81, 70, 73, 75, 78, 89, 90, 79, 84, 10, 10, 10, 10, 11, 11, 11, 11, 12,
+    12, 12, 12, 13, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19, 19,
+    19, 19, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 25, 25, 25,
+    25, 0, 0, 0, 0, 0, 85, 0, 0, 91, 91, 91, 91, 91, 91, 91, 0, 60, 94, 98, 95, 96, 97,
+    97, 82, 83, 0, 0, 59, 58, 72, 74, 77, 76, 86, 87, 80, 88, 0, 0, 0, 0, 0, 0, 78, 89,
+    90, 79, 84, 0, 99, 99, 99, 99, 92, 64, 64, 64, 54, 53, 53, 53, 53, 53, 63, 63, 63, 52,
+    51, 50, 52, 49, 47, 46, 45, 45, 45, 44, 44, 43, 42, 41, 40, 39, 38, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0 };
+signed char _animOffset16[][16] = {
     { 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 255 },
     { 254, 254, 254, 254, 254, 254, 254, 254, 255, 254, 254, 254, 254, 254, 254, 255 },
     { 254, 254, 254, 254, 254, 255, 254, 254, 254, 254, 255, 254, 254, 254, 254, 255 },
@@ -474,7 +474,7 @@ char _animOffset16[][16] = {
     { 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2 },
     { 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }
 };
-char _animOffset8[][8] = { { 252, 252, 252, 252, 252, 252, 252, 253 },
+signed char _animOffset8[][8] = { { 252, 252, 252, 252, 252, 252, 252, 253 },
     { 252, 252, 252, 252, 253, 252, 252, 253 },
     { 252, 252, 253, 252, 252, 253, 252, 253 },
     { 252, 252, 253, 252, 253, 252, 253, 253 },
@@ -511,7 +511,7 @@ char _animOffset8[][8] = { { 252, 252, 252, 252, 252, 252, 252, 253 },
     { 2, 3, 3, 3, 3, 3, 3, 3 }, { 3, 3, 3, 3, 3, 3, 3, 3 }, { 3, 3, 3, 3, 3, 3, 3, 4 },
     { 3, 3, 3, 4, 3, 3, 3, 4 }, { 3, 3, 4, 3, 3, 4, 3, 4 }, { 3, 4, 3, 4, 3, 4, 3, 4 },
     { 3, 4, 3, 4, 4, 3, 4, 4 }, { 3, 4, 4, 4, 3, 4, 4, 4 }, { 3, 4, 4, 4, 4, 4, 4, 4 } };
-char _animOffset4[][4] = { { 248, 248, 248, 249 }, { 248, 248, 249, 249 },
+signed char _animOffset4[][4] = { { 248, 248, 248, 249 }, { 248, 248, 249, 249 },
     { 248, 249, 249, 249 }, { 248, 249, 249, 250 }, { 249, 249, 249, 250 },
     { 249, 249, 250, 250 }, { 249, 250, 250, 250 }, { 249, 250, 250, 251 },
     { 250, 250, 250, 251 }, { 250, 250, 251, 251 }, { 250, 251, 251, 251 },
@@ -528,7 +528,7 @@ char _animOffset4[][4] = { { 248, 248, 248, 249 }, { 248, 248, 249, 249 },
     { 4, 5, 4, 5 }, { 4, 5, 5, 5 }, { 5, 5, 5, 5 }, { 5, 5, 5, 6 }, { 5, 6, 5, 6 },
     { 5, 6, 6, 6 }, { 6, 6, 6, 6 }, { 6, 6, 6, 7 }, { 6, 7, 6, 7 }, { 6, 7, 7, 7 },
     { 7, 7, 7, 7 }, { 7, 7, 7, 8 }, { 7, 8, 7, 8 }, { 7, 8, 8, 8 } };
-char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 241, 243 },
+signed char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 241, 243 },
     { 242, 243 }, { 242, 244 }, { 243, 244 }, { 243, 245 }, { 244, 245 }, { 244, 246 },
     { 245, 246 }, { 245, 247 }, { 246, 247 }, { 246, 248 }, { 247, 248 }, { 247, 249 },
     { 248, 249 }, { 248, 250 }, { 249, 250 }, { 249, 251 }, { 250, 251 }, { 250, 252 },
@@ -7966,8 +7966,8 @@ vs_skill_t vs_main_skills[] = { { .id = 0,
         .name = "AGL-down\000\000cel\000\000\000er|>6|100\000" } };
 #pragma vsstring(end)
 
-u_char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 4, 6, 248, 248, 6, 4, 4, 0, 4, 250, 8, 8, 250, 252, 252, 0, 172,
         13, 1, 0, 6, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 2, 251, 251, 1, 1, 5, 5, 0, 2, 5, 5, 255, 255, 251, 251, 0, 208,
@@ -8009,7 +8009,7 @@ extern int sp2;
 extern int _resetEnabled;
 extern u_int _buttonHeldFrameCount[];
 extern vs_main_disk_t vs_main_disk;
-extern u_char vs_main_dsControlBuf[11];
+extern char vs_main_dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
 extern int D_8005DBF4[5][6];
@@ -8026,7 +8026,7 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern u_char vs_main_vibrationEnabled;
+extern char vs_main_vibrationEnabled;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 extern vs_main_stickPos vs_main_stickPosBuf;
@@ -8406,14 +8406,14 @@ void func_80042CA0() { D_80060068.unk0.unk0 = 1; }
 
 void func_80042CB0()
 {
-    u_char sp10[16];
+    char sp10[16];
     int j;
     int i;
     int var_s1;
     int var_t3;
     int new_var;
     int var_t4;
-    char skillsLearned;
+    signed char skillsLearned;
     D_800F19FC_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -8501,7 +8501,7 @@ static void _unlockPadModeSwitch()
     }
 }
 
-static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unused)))
+static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
 {
     PortInfo* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
@@ -8519,10 +8519,10 @@ static void _padResetDefaults(int portID, u_char padBuf[34] __attribute__((unuse
     PadSetActAlign(portID, _actParams);
 }
 
-int vs_main_updatePadState(int portID, u_char padBuf[34])
+int vs_main_updatePadState(int portID, char padBuf[34])
 {
     PortInfo* port;
-    u_char mode;
+    char mode;
     int btnStates;
 
     if (padBuf[0] != 0) {
@@ -8564,7 +8564,7 @@ int vs_main_updatePadState(int portID, u_char padBuf[34])
     return btnStates;
 }
 
-void vs_main_padConnect(int portID, u_char padBuf[34])
+void vs_main_padConnect(int portID, char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
@@ -8595,12 +8595,12 @@ static void _padSetActData(int port, int pos, int val)
     }
 }
 
-static u_char _padGetActData(int port, int pos)
+static char _padGetActData(int port, int pos)
 {
     return vs_main_portInfo[port].actData[pos];
 }
 
-static int func_800433B4(u_char* arg0, u_int arg1, short arg2)
+static int func_800433B4(char* arg0, u_int arg1, short arg2)
 {
     int i;
     int ret = 0;
@@ -8741,7 +8741,7 @@ void vs_main_setVibrateParams()
     int i;
     int j;
     int var_v0;
-    u_char* temp_t1;
+    char* temp_t1;
     int new_var;
 
     _padAct[0].unk0[1] = 0;
@@ -9076,7 +9076,7 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
     vs_main_disk.state = diskReadReady;
 
     if (vs_main_disk.bufferMode == cdBufferModeNone) {
-        DsGetSector((u_char*)vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
+        DsGetSector((char*)vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
         DsGetSector(D_80050110 + vs_main_disk.unk3C * 128, 512);
         if (++vs_main_disk.unk3C >= 16) {
@@ -9226,7 +9226,7 @@ static void func_800443CC()
             vs_sound_setCdVol(0x7F);
             vs_main_disk.pcm.file = 1;
             vs_main_disk.pcm.chan = 0;
-            DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
+            DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
             DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
             vs_main_disk.commandId = DsPacket(
                 DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
@@ -9279,7 +9279,7 @@ static void func_800443CC()
                 func_80012940(0x3C, vs_main_disk.byteCount);
                 vs_main_disk.pcm.file = 1;
                 vs_main_disk.pcm.chan = 0;
-                DsControl(DslSetfilter, (u_char*)&vs_main_disk.pcm, NULL);
+                DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
                 vs_main_disk.commandId
                     = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
@@ -9342,7 +9342,7 @@ static void func_800443CC()
             }
             if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
                 vs_main_memcpy(
-                    ((u_char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
+                    ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
                     D_80050110 + (vs_main_disk.ringBufIndex * 128), 2048);
 
                 ++vs_main_disk.ringBufIndex;
@@ -9875,7 +9875,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xFF000:
         var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        var_s0_2 = (u_char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
+        var_s0_2 = (char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
         if (func_800123C8(var_s0_2) != 0) {
             func_800456EC(var_s0_2, D_8005FE80, arg2, arg3);
             D_8005FE80 *= 2;
@@ -9888,7 +9888,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
         break;
     case 0xF00000:
         var_s0_2 = D_8005E08C;
-        var_s0_2 = (u_char*)D_8005E08C + (arg1 + ((int*)D_8005E08C))[1];
+        var_s0_2 = (char*)D_8005E08C + (arg1 + ((int*)D_8005E08C))[1];
         if (func_800123C8(var_s0_2) != 0) {
             func_800456EC(var_s0_2, D_8005FE84, arg2, arg3);
             D_8005FE84 *= 2;
@@ -10217,7 +10217,7 @@ void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
     temp_s1 = arg1;
 
     if (arg2 < arg1[0]) {
-        temp_s1 = (u_char*)arg1 + (arg1 + arg2)[1];
+        temp_s1 = (char*)arg1 + (arg1 + arg2)[1];
         var_s0 = 0;
 
         if (arg0 == 0x180) {
@@ -10319,7 +10319,7 @@ static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
 static void func_8004644C(int arg0, int* arg1, int arg2)
 {
     int var_a1;
-    u_char* var_a0 = (u_char*)arg1 + (arg1 + arg2)[1];
+    char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
 
     if (arg2 != 0) {
         var_a1 = 0;
@@ -10332,7 +10332,7 @@ static void func_8004644C(int arg0, int* arg1, int arg2)
 
 static void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
 {
-    int a0 = (int)((u_char*)arg1 + (arg2 + arg1)[1]);
+    int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
 
     if (arg2 == 0) {
         func_8001264C(0, arg0, arg4 & 0xFF, arg3);
@@ -10578,7 +10578,7 @@ void func_80046B3C(int arg0, int arg1, u_short* arg2)
     }
 
     if (arg0 != 0) {
-        u_char* p = D_80055D58.unk0[arg1].unk6;
+        char* p = D_80055D58.unk0[arg1].unk6;
         p[0] = 1;
         p[1] = 0;
         p[2] = 0;
@@ -10763,7 +10763,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
         }
     }
     if (arg1 != 0) {
-        u_char* p = D_80055D58.unk0[arg2].unk6;
+        char* p = D_80055D58.unk0[arg2].unk6;
         p[0] = 1;
         p[1] = 0;
         p[2] = 0;
@@ -11039,7 +11039,7 @@ static inline int inline_fn2(int arg0)
 
 void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    u_char sp10[4];
+    char sp10[4];
     D_8005DC80_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -11107,7 +11107,7 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    u_char sp10[4];
+    char sp10[4];
     short var_t4;
     int var_a1;
     int var_a2;
@@ -11339,7 +11339,7 @@ void func_80047FFC()
 
 void func_800481C0()
 {
-    u_char sp18[4];
+    char sp18[4];
     int i;
     int var_v0;
     D_8005DC80_t* p = D_80055D58.unk7F28;
@@ -11564,7 +11564,7 @@ void func_80048B8C(
             switch (arg0) {
             case 5:
                 t4 = 0x1F;
-                r = arg3 + ((((u_char)a) & t4) >> 1);
+                r = arg3 + ((((char)a) & t4) >> 1);
                 g = arg4 + ((a & 0x3E0) >> 6);
                 b = arg5 + ((a & 0x7C00) >> 11);
                 break;

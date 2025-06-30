@@ -14,7 +14,7 @@ typedef struct {
     D_800F19FC_t3 unk398[6];
     u_short unk8C0[68];
     int unk948;
-    u_char unk94C[8];
+    char unk94C[8];
     u_short unk954;
 } D_800F19FC_t2;
 
@@ -24,12 +24,12 @@ typedef struct {
 } D_800F19FC_t;
 
 void func_80069FC4(int, int);
-void func_8008B430(u_char*, int);
+void func_8008B430(char*, int);
 void func_8008EB30(int*);
 u_int* func_8008EB24();
 void func_8008AB68();
-void func_800A0768(int, u_char*);
-void func_800A1108(int, u_char*);
+void func_800A0768(int, char*);
+void func_800A1108(int, char*);
 void vs_battle_exec();
 
 extern u_short D_800F18E8;

@@ -19,7 +19,7 @@ typedef struct {
 
 void func_800CA9C0(void*);
 
-extern char D_800FAF7C[0x400];
+extern signed char D_800FAF7C[0x400];
 
 void func_800F9818()
 {
@@ -47,33 +47,33 @@ void _loadSystemDat()
 
     buf = (System_dat_h*)vs_main_allocHeapR(VS_SYSTEM_DAT_SIZE);
     vs_main_diskLoadFile(VS_SYSTEM_DAT_LBA, VS_SYSTEM_DAT_SIZE, buf);
-    p_hdr = (RECT*)((char*)buf + buf->unk0);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk0);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((char*)buf + buf->unk4);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk4);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((char*)buf + buf->unk8);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk8);
     func_80048A64((u_short*)p_hdr + 2, 0xF, 0, p_hdr->x);
-    p_hdr = (RECT*)((char*)buf + buf->unkC);
+    p_hdr = (RECT*)((signed char*)buf + buf->unkC);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((char*)buf + buf->unk10);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk10);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((char*)buf + buf->unk14);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk14);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((char*)buf + buf->unk18);
+    p_hdr = (RECT*)((signed char*)buf + buf->unk18);
     setRECT(&rect, 0x300, 0xF0, p_hdr->x, p_hdr->y);
     LoadImage(&rect, (u_long*)p_hdr + 1);
     DrawSync(0);
-    func_800CA9C0((char*)buf + buf->unk1C);
+    func_800CA9C0((signed char*)buf + buf->unk1C);
     vs_main_freeHeapR(buf);
 }
 

@@ -38,7 +38,7 @@ BCONFIG = $(BUILD)/config/$*
 
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS) \
                   -D "__attribute__(x)="
-CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -fsigned-char -Wno-unused
+CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -EL -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
 LDFLAGS_BIN    := --oformat=binary -e 0x0

@@ -2,8 +2,8 @@
 #include "../../SLUS_010.40/31724.h"
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
+    char unk0;
+    char unk1;
     short unk2;
     short unk4;
     short unk6;

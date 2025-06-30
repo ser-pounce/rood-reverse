@@ -1,12 +1,12 @@
 #pragma once
 
 typedef struct {
-    char unk0;
-    char unk1;
+    signed char unk0;
+    signed char unk1;
     short unk2;
     short unk4;
-    char unk6;
-    char unk7;
+    signed char unk6;
+    signed char unk7;
     int unk8;
     int unkC;
     int unk10;

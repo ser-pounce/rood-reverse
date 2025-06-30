@@ -26,7 +26,7 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-static u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 
@@ -101,13 +101,13 @@ static void _rMemcpy(void* dst, void const* src, int count)
 {
     do {
         --count;
-        ((u_char*)dst)[count] = ((u_char const*)src)[count];
+        ((char*)dst)[count] = ((char const*)src)[count];
     } while (count != 0);
 }
 
-static u_char* _memcardMakeFilename(int port, int fileNo)
+static char* _memcardMakeFilename(int port, int fileNo)
 {
-    static u_char filename[32];
+    static char filename[32];
 
     memset(filename, 0, ' ');
     strcpy(filename, _memcardFilenameTemplate);
@@ -116,9 +116,9 @@ static u_char* _memcardMakeFilename(int port, int fileNo)
     return filename;
 }
 
-static u_char* _memcardMakeTempFilename(int port, int fileNo)
+static char* _memcardMakeTempFilename(int port, int fileNo)
 {
-    static u_char filename[32];
+    static char filename[32];
 
     memset(filename, 0, ' ');
     strcpy(filename, _memcardFilenameTemplate);
@@ -146,10 +146,10 @@ typedef struct {
     u_short unk12;
     u_short currentHP;
     u_short maxHP;
-    u_char saveLocation;
-    u_char clearCount;
-    u_char mapCompletion;
-    u_char unk1B;
+    char saveLocation;
+    char clearCount;
+    char mapCompletion;
+    char unk1B;
     u_short currentMP;
     u_short maxMP;
 } stats_t;
@@ -163,24 +163,24 @@ typedef struct {
 typedef struct {
     int key;
     saveFileSubInfo_t unk4;
-    u_char unk44[0x1C];
-    u_char unk60[0x20];
+    char unk44[0x1C];
+    char unk60[0x20];
 } saveFileInfo_t;
 
 typedef struct {
     u_long locationCluts[2][128];
-    u_char unk400[7][32];
-    u_char unk4E0[22][128];
-    u_char unkFE0[0x20];
+    char unk400[7][32];
+    char unk4E0[22][128];
+    char unkFE0[0x20];
     u_short textTable[0x800];
     saveFileInfo_t saveFileInfo[5];
     struct DIRENTRY _dirEntBuf;
 } mcdata_t;
 
-static u_char* _spmcimg;
+static char* _spmcimg;
 static mcdata_t* _mcData;
 static u_short* _textTable;
-static u_char _0[4] __attribute__((unused));
+static char _0[4] __attribute__((unused));
 static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
 static saveFileInfo_t* _saveFileInfo;
@@ -218,10 +218,10 @@ static int _findCurrentSaveOnActiveMemcard()
     return 0;
 }
 
-static int _memcardFileNumberFromFilename(u_char* filename)
+static int _memcardFileNumberFromFilename(char* filename)
 {
     int i;
-    u_char const* gameCode = &_memcardFilenameTemplate[5];
+    char const* gameCode = &_memcardFilenameTemplate[5];
 
     for (i = 0; i < 15; ++i) {
         if (gameCode[i] != filename[i]) {
@@ -252,34 +252,34 @@ typedef struct {
 typedef struct {
     savedata_unk180_2_t unk180;
     stats_t stats;
-    u_char checksums[0x5C];
+    char checksums[0x5C];
 } savedata_unk180_t;
 
 typedef struct {
-    u_char containerData[0x3800];
-    u_char unk55E0[0x100];
-    u_char unk56E0[0x300];
+    char containerData[0x3800];
+    char unk55E0[0x100];
+    char unk56E0[0x300];
 } containerData_t;
 
 typedef struct {
     saveFileInfo_t fileInfo;
-    u_char unk80[0x80];
-    u_char unk100[0x80];
+    char unk80[0x80];
+    char unk100[0x80];
     savedata_unk180_t unk180;
-    u_char unk200[0x440];
-    u_char unk640[0x20];
-    u_char unk660[0x48];
+    char unk200[0x440];
+    char unk640[0x20];
+    char unk660[0x48];
     vs_main_settings_t unk6A8;
     D_80060068_t unk6C8;
-    u_char unk7C8[15][256];
-    u_char unk16C8[0xB0];
+    char unk7C8[15][256];
+    char unk16C8[0xB0];
     D_80061068_t unk1778;
     D_8005FEA0_t unk1784;
     int unk1898;
-    u_char unk189C[0x520];
-    u_char unk1DBC[0x24];
+    char unk189C[0x520];
+    char unk1DBC[0x24];
     containerData_t containerData;
-    u_char unk59E0[0x220];
+    char unk59E0[0x220];
 } savedata_t;
 
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
@@ -287,7 +287,7 @@ static int _verifySaveChecksums(savedata_t data[], int sectorCount)
     int checksum;
     int i;
     int j;
-    u_char* p = (u_char*)data;
+    char* p = (char*)data;
 
     for (i = 0; i < sectorCount; ++i) {
         checksum = 0;
@@ -312,11 +312,11 @@ static int _verifySaveChecksums(savedata_t data[], int sectorCount)
     return checksum != 0;
 }
 
-static void _decode(u_int key, u_char* buf, int count)
+static void _decode(u_int key, void* buf, int count)
 {
     for (; count != 0; --count) {
         key *= 0x19660D;
-        *buf++ -= key >> 24;
+        *((char*)buf++) -= key >> 24;
     }
 }
 
@@ -340,7 +340,7 @@ static int _readSaveFileInfo(int id)
         if (bytesRead != sizeof(saveInfo)) {
             continue;
         }
-        _decode(saveInfo[3].key, (u_char*)&saveInfo[3].unk4.base.slotState,
+        _decode(saveInfo[3].key, &saveInfo[3].unk4.base.slotState,
             sizeof(saveFileInfo_t) - sizeof(int));
         if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
             _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof(saveInfo[3]));
@@ -357,7 +357,7 @@ static int _memcardSaveIdExists(int id)
     int i;
 
     for (i = 0; i < 15; ++i) {
-        u_char* filename = _memcardFiles[i]->name;
+        char* filename = _memcardFiles[i]->name;
         if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)
             && (filename[15] == id)) {
             return 1;
@@ -413,7 +413,7 @@ static int _initSaveFileInfo(int port)
         if (file == NULL) {
             continue;
         }
-        fileNo = _memcardFileNumberFromFilename((char*)file->name);
+        fileNo = _memcardFileNumberFromFilename(file->name);
         if (fileNo != 0) {
             if (fileNo < 0) {
                 fileNo = -fileNo;
@@ -444,7 +444,7 @@ static int _initSaveFileInfo(int port)
 static int _createSaveFile(int port, int id)
 {
     long file;
-    u_char* fileName = _memcardMakeFilename((port - 1) * 16, id);
+    char* fileName = _memcardMakeFilename((port - 1) * 16, id);
 
     erase(fileName);
     file = open(fileName, O_CREAT | (3 << 16));
@@ -466,11 +466,11 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         loaded = 5,
     };
 
-    static u_char state;
-    static u_char port;
-    static u_char initTimeout;
-    static u_char timeout;
-    static u_char eventType;
+    static char state;
+    static char port;
+    static char initTimeout;
+    static char timeout;
+    static char eventType;
 
     int event;
 
@@ -573,7 +573,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     savedata_t* s4 = spmcimg + 1;
     savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
 
-    _decode(unk180->key, (u_char*)(&unk180->base.slotState),
+    _decode(unk180->key, &unk180->base.slotState,
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.base.slotState);
 
     blockCount = 92;
@@ -631,10 +631,10 @@ static void _packageGameClearSaveData(int targetFile)
     vs_main_settings.unk2 &= 0xFFDF;
     vs_main_puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
     memset(savedata, 0, sizeof(*savedata));
-    ((u_char*)&savedata->fileInfo.key)[0] = 0x53;
-    ((u_char*)&savedata->fileInfo.key)[1] = 0x43;
-    ((u_char*)&savedata->fileInfo.key)[2] = 0x11;
-    ((u_char*)&savedata->fileInfo.key)[3] = 3;
+    ((char*)&savedata->fileInfo.key)[0] = 0x53;
+    ((char*)&savedata->fileInfo.key)[1] = 0x43;
+    ((char*)&savedata->fileInfo.key)[2] = 0x11;
+    ((char*)&savedata->fileInfo.key)[3] = 3;
     _rMemcpy(&savedata->fileInfo.unk4, s0, sizeof(savedata->fileInfo.unk4));
     savedata->fileInfo.unk4.unk20[3] += (targetFile << 8);
 
@@ -730,8 +730,8 @@ static void _packageGameClearSaveData(int targetFile)
     }
 }
 
-static u_char _loadSaveDataErrorOffset;
-static u_char _1 __attribute__((unused));
+static char _loadSaveDataErrorOffset;
+static char _1 __attribute__((unused));
 static u_short _fileProgressTarget;
 static u_short _filePreviousProgressCounter;
 static u_short _fileProgressPosition;
@@ -741,11 +741,11 @@ static int _loadSaveData(int portFileno)
 {
     enum state { init = 0, reading = 1 };
 
-    static u_char state;
-    static u_char port;
-    static u_char file;
-    static u_char isTempSave;
-    static u_char errors;
+    static char state;
+    static char port;
+    static char file;
+    static char isTempSave;
+    static char errors;
     static short _ __attribute__((unused));
     static int fd;
 
@@ -766,7 +766,7 @@ static int _loadSaveData(int portFileno)
     switch (state) {
     case init: {
         int nBytes;
-        u_char* filename;
+        char* filename;
         int new_var = 320;
 
         _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
@@ -784,7 +784,7 @@ static int _loadSaveData(int portFileno)
         } else {
             filename = _memcardMakeFilename(port, file);
         }
-        fd = open((char*)filename, O_NOWAIT | O_RDONLY);
+        fd = open(filename, O_NOWAIT | O_RDONLY);
         if (fd == -1) {
             ++errors;
             break;
@@ -828,12 +828,12 @@ static int _saveFile(int portFile)
         fileVerified = 4
     };
 
-    static u_char state;
-    static u_char file;
-    static u_char port;
-    static u_char errors;
-    static u_char renameErrors;
-    static u_char _[3] __attribute__((unused));
+    static char state;
+    static char file;
+    static char port;
+    static char errors;
+    static char renameErrors;
+    static char _[3] __attribute__((unused));
     static int fd;
 
     int temp_v1_2;
@@ -853,8 +853,7 @@ static int _saveFile(int portFile)
     }
     switch (state) {
     case init:
-        if (rename((char*)_memcardMakeFilename(port, file),
-                (char*)_memcardMakeTempFilename(port, file))
+        if (rename(_memcardMakeFilename(port, file), _memcardMakeTempFilename(port, file))
             != 0) {
             errors = 0;
             renameErrors = 0;
@@ -871,7 +870,7 @@ static int _saveFile(int portFile)
         _filePreviousProgressCounter = _fileProgressCounter;
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
-        fd = open((char*)_memcardMakeTempFilename(port, file), O_NOWAIT | O_WRONLY);
+        fd = open(_memcardMakeTempFilename(port, file), O_NOWAIT | O_WRONLY);
         ;
         if (fd == -1) {
             ++errors;
@@ -922,8 +921,7 @@ static int _saveFile(int portFile)
         state = fileVerified;
         break;
     case fileVerified:
-        if (rename((char*)_memcardMakeTempFilename(port, file),
-                (char*)_memcardMakeFilename(port, file))
+        if (rename(_memcardMakeTempFilename(port, file), _memcardMakeFilename(port, file))
             == 0) {
             ++renameErrors;
             errors = (renameErrors >> 4);
@@ -943,8 +941,8 @@ static int _initMemcard(int init)
     };
 
     static u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-    static u_char state;
-    static u_char _[3] __attribute__((unused));
+    static char state;
+    static char _[3] __attribute__((unused));
     static vs_main_CdQueueSlot* cdQueueSlot;
 
     vs_main_CdFile cdFile;
@@ -952,7 +950,7 @@ static int _initMemcard(int init)
     u_int event;
 
     if (init != 0) {
-        _spmcimg = (u_char*)vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        _spmcimg = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
         _textTable = _mcData->textTable;
         _saveFileInfo = _mcData->saveFileInfo;
@@ -969,7 +967,7 @@ static int _initMemcard(int init)
     case none:
         if (cdQueueSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(cdQueueSlot);
-            _drawImage(vs_getXY(800, 256), (u_long*)_spmcimg, vs_getWH(224, 256));
+            _drawImage(vs_getXY(800, 256), _spmcimg, vs_getWH(224, 256));
             state = queueReady;
         }
         return 0;
@@ -1039,21 +1037,21 @@ enum fileMenuElementState_e {
 };
 
 typedef struct {
-    u_char state;
-    u_char slotId;
-    u_char outertextBlendFactor;
-    u_char innertextBlendFactor;
-    u_char selected;
-    u_char slotUnavailable;
-    u_char saveLocation;
-    u_char unk7;
+    char state;
+    char slotId;
+    char outertextBlendFactor;
+    char innertextBlendFactor;
+    char selected;
+    char slotUnavailable;
+    char saveLocation;
+    char unk7;
     short targetPosition;
     short unkA;
     short x;
     short y;
     short w;
     short h;
-    u_char text[32];
+    char text[32];
 } fileMenuElements_t;
 
 typedef struct {
@@ -1073,7 +1071,7 @@ typedef struct {
 } primBuf_t;
 
 static fileMenuElements_t _fileMenuElements[10];
-static u_char _2[8] __attribute__((unused));
+static char _2[8] __attribute__((unused));
 static primBuf_t _primBuf;
 
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
@@ -1102,9 +1100,9 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_dot = 9,
 };
 
-static u_char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
+static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
     200, 224, 248, 255, 255, 255, 255 };
-static char _cursorFileOpSaturation[]
+static signed char _cursorFileOpSaturation[]
     = { 0, 200, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248 };
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
@@ -1150,7 +1148,7 @@ enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
 static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
-    static u_char _digitDivisors[] = { 0, 1, 10, 100 };
+    static char _digitDivisors[] = { 0, 1, 10, 100 };
     int currentValueFactor;
     int maxValueDigits;
     u_int rgb1;
@@ -1224,12 +1222,12 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
 }
 
 static int _selectCursorXy;
-static u_char* _selectSaveMemoryCardMessage;
-static u_char _isSaving;
+static char* _memoryCardMessage;
+static char _isSaving;
 
 static void _fileProcessingAnim(int x, int y)
 {
-    u_char* new_var __attribute__((unused));
+    char* new_var __attribute__((unused));
     int gradientColor1;
     int gradientColor2;
     u_int leftEdge;
@@ -1313,11 +1311,11 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 }
 
 static u_char _selectCursorColor;
-static u_char _fileMenuScreenFade;
+static char _fileMenuScreenFade;
 
 static void _initFileMenu()
 {
-    _selectSaveMemoryCardMessage = NULL;
+    _memoryCardMessage = NULL;
     _selectCursorColor = 0;
     _selectCursorXy = 0;
     _fileProgressCounter = 0;
@@ -1326,7 +1324,7 @@ static void _initFileMenu()
     memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, u_char* text)
+static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
 {
     fileMenuElements_t* element;
     int i;
@@ -1398,7 +1396,7 @@ static int _printCharacter(u_int c, int x, int y, int clut)
         12, 12, 12 };
 
     if ((c >> 8) == 14) {
-        return x + (u_char)c;
+        return x + (char)c;
     }
     if (c != vs_char_space) {
         DrawSync(0);
@@ -1423,8 +1421,8 @@ enum _findCurrentSave_e {
 
 static int _findCurrentSave(int init)
 {
-    static u_char state;
-    static u_char subState;
+    static char state;
+    static char subState;
 
     int port;
     int currentSave;
@@ -1441,8 +1439,8 @@ static int _findCurrentSave(int init)
     port = realPort + 1;
 
     if ((state & 1) == 0) {
-        _selectSaveMemoryCardMessage
-            = (u_char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
+        _memoryCardMessage
+            = (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
         ++state;
     } else {
@@ -1484,8 +1482,8 @@ enum _memcardMaskedHandler_e {
 
 static int _memcardMaskedHandler(int portMask)
 {
-    static u_char mask;
-    static u_char _ __attribute__((unused));
+    static char mask;
+    static char _ __attribute__((unused));
 
     int event;
 
@@ -1500,15 +1498,13 @@ static int _memcardMaskedHandler(int portMask)
         case memcardEventIoEnd:
             return 1;
         case memcardEventTimeout:
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
-            _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
             break;
         default:
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_removed);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
             break;
         }
         return -1;
@@ -1516,11 +1512,11 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
-static void _printString(u_char* text, int x, int y, int clut)
+static void _printString(char* text, int x, int y, int clut)
 {
-    static u_char arrowState = 0;
+    static char arrowState = 0;
 
-    u_char tempArrowState;
+    char tempArrowState;
     u_int c;
     int startX = x;
     int nextX = x;
@@ -1706,19 +1702,19 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.base.slotState;
             if (slotState == slotStateUnavailable) {
-                _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_inUse),
-                    element->x + 6, element->y + 10, 3);
+                _printString((char*)(_textTable + VS_MCMAN_OFFSET_inUse), element->x + 6,
+                    element->y + 10, 3);
             } else if (slotState == slotStateAvailable) {
                 if (_isSaving == 0) {
-                    _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_empty),
+                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_empty),
                         element->x + 6, element->y + 10, 3);
                 } else {
-                    _printString((u_char*)(_textTable + VS_MCMAN_OFFSET_new),
+                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_new),
                         element->x + 6, element->y + 10, 0);
                 }
             } else {
                 y += 4 << 16;
-                _printString((u_char*)&_textTable[_textTable[element->saveLocation
+                _printString((char*)&_textTable[_textTable[element->saveLocation
                                  + VS_MCMAN_INDEX_saveLocations]],
                     element->x + 6, element->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
@@ -1762,7 +1758,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             }
             if ((element->selected != 0) && (_fileProgressCounter != 0)) {
                 if (_fileProgressCounter < 0) {
-                    char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
+                    signed char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
@@ -1886,8 +1882,8 @@ static void _drawFileMenu(int framebuf)
     } else {
         _selectCursorColor = 0;
     }
-    if (_selectSaveMemoryCardMessage != NULL) {
-        _printString(_selectSaveMemoryCardMessage, 16, 192, 0);
+    if (_memoryCardMessage != NULL) {
+        _printString(_memoryCardMessage, 16, 192, 0);
     }
     if (_fileMenuScreenFade != 0) {
         DrawSync(0);
@@ -1923,12 +1919,12 @@ static int _showLoadFilesMenu(int initPort)
 
     static vs_Gametime_t backupTime;
     static int fileLoaded;
-    static u_char state;
-    static u_char port;
-    static u_char page;
-    static u_char selectedSlot;
-    static u_char leaveTimer;
-    static u_char completeTimer;
+    static char state;
+    static char port;
+    static char page;
+    static char selectedSlot;
+    static char leaveTimer;
+    static char completeTimer;
 
     fileMenuElements_t* element;
     int currentSlot;
@@ -1961,7 +1957,7 @@ static int _showLoadFilesMenu(int initPort)
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
-        _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         // fallthrough
     case handleInput:
         if (vs_main_buttonsPressed & PADRdown) {
@@ -2022,8 +2018,7 @@ static int _showLoadFilesMenu(int initPort)
                 _loadSaveData(
                     ((selectedSlot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
                 state = applyLoad;
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_loading);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loading);
             } else {
                 state = loaded;
             }
@@ -2037,8 +2032,7 @@ static int _showLoadFilesMenu(int initPort)
             do {
                 leaveTimer = 0;
                 if (currentSlot < 0) {
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2047,12 +2041,11 @@ static int _showLoadFilesMenu(int initPort)
                     vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                     leaveTimer = 16;
                     fileLoaded = 1;
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_loaded);
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loaded);
                     break;
                 case 1:
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_fileCorruptDescription);
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -2068,7 +2061,7 @@ static int _showLoadFilesMenu(int initPort)
         if (fileLoaded == 1) {
             ++completeTimer;
         }
-        if (((u_char)vs_main_buttonsPressed != 0) || (completeTimer == 150)) {
+        if (((char)vs_main_buttonsPressed != 0) || (completeTimer == 150)) {
             if (fileLoaded < 0) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             }
@@ -2105,14 +2098,14 @@ static int _selectLoadMemoryCard(int initPort)
         selectFile = 7
     };
 
-    static u_char state;
+    static char state;
     static u_char port;
 
     int i;
 
     if (initPort != 0) {
         port = initPort;
-        _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
         state = init;
         return 0;
     }
@@ -2153,7 +2146,7 @@ static int _selectLoadMemoryCard(int initPort)
         break;
 
     case leave:
-        if (((u_char)vs_main_buttonsPressed) == 0) {
+        if (((char)vs_main_buttonsPressed) == 0) {
             break;
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
@@ -2172,8 +2165,7 @@ static int _selectLoadMemoryCard(int initPort)
 
     case pollSuccess:
         if (_initSaveFileInfo(port) != 0) {
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
             state = leave;
             break;
         }
@@ -2184,7 +2176,7 @@ static int _selectLoadMemoryCard(int initPort)
         }
 
         if (i == 5) {
-            _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
             state = leave;
         } else {
             _showLoadFilesMenu(port);
@@ -2224,10 +2216,10 @@ static int _loadFileMenu(int initFadeout)
         fadeAndReturnNotSelected = 8,
     };
 
-    static u_char state;
+    static char state;
     static u_char selectedFile;
-    static u_char fadeout;
-    static u_char _[5] __attribute__((unused));
+    static char fadeout;
+    static char _[5] __attribute__((unused));
 
     fileMenuElements_t* element;
     int i;
@@ -2242,7 +2234,7 @@ static int _loadFileMenu(int initFadeout)
     switch (state) {
     case init:
         element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
-            (u_char*)(_textTable + VS_MCMAN_OFFSET_load));
+            (char*)(_textTable + VS_MCMAN_OFFSET_load));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
         element->selected = 1;
@@ -2252,7 +2244,7 @@ static int _loadFileMenu(int initFadeout)
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
             element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
-                (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
             state = displaySlot2;
@@ -2260,7 +2252,7 @@ static int _loadFileMenu(int initFadeout)
         break;
     case displaySlot2:
         element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
-            (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
         state = waitForSlotAnimation;
@@ -2268,8 +2260,7 @@ static int _loadFileMenu(int initFadeout)
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
             state = handleInput;
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case handleInput:
@@ -2337,9 +2328,9 @@ static int _promptConfirm(int arg0)
         handleInput = 3,
     };
 
-    static u_char state;
-    static u_char cancelled;
-    static u_char _[2] __attribute__((unused));
+    static char state;
+    static char cancelled;
+    static char _[2] __attribute__((unused));
 
     fileMenuElements_t* temp_v0;
     int i;
@@ -2355,7 +2346,7 @@ static int _promptConfirm(int arg0)
     case initNo:
         temp_v0 = _initFileMenuElement(state + 3,
             vs_getXY(-126 & 0xFFFF, state * 16 + 18), vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesIndent]]);
+            (char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
         ++state;
@@ -2394,13 +2385,12 @@ static int _promptConfirm(int arg0)
 static int _promptOverwrite(int init)
 {
     static int confirmed;
-    static u_char state;
-    static u_char initialized;
+    static char state;
+    static char initialized;
 
     if (init != 0) {
         initialized = 1;
-        _selectSaveMemoryCardMessage
-            = (u_char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
         _promptConfirm(1);
         state = 0;
         return 0;
@@ -2426,16 +2416,15 @@ static int _promptFormat(int initPort)
 {
     enum state { promptConfirm = 0, initEvents = 1, handleEvents = 2, format = 3 };
 
-    static u_char state;
-    static u_char port;
+    static char state;
+    static char port;
     static int _ __attribute__((unused));
 
     int val;
 
     if (initPort != 0) {
         port = initPort;
-        _selectSaveMemoryCardMessage
-            = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
         _promptConfirm(1);
         state = promptConfirm;
         return 0;
@@ -2447,8 +2436,8 @@ static int _promptFormat(int initPort)
 
         if (val != 0) {
             if (val < 0) {
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
+                _memoryCardMessage
+                    = (char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
                 return -1;
             }
 
@@ -2467,15 +2456,13 @@ static int _promptFormat(int initPort)
         if (val != 0) {
             if (val == memcardEventUnformatted) {
                 state = format;
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatting);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatting);
             } else {
                 if (val == memcardEventTimeout) {
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
                 } else {
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_removed);
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2483,8 +2470,7 @@ static int _promptFormat(int initPort)
         return 0;
     case format:
         if (_card_format((port - 1) * 16) == 0) {
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
             return -1;
         }
         return 1;
@@ -2493,9 +2479,9 @@ static int _promptFormat(int initPort)
     }
 }
 
-static u_char _dataNotSaved;
-static u_char _containerDataEmpty;
-static u_char _backupMainSetting;
+static char _dataNotSaved;
+static char _containerDataEmpty;
+static char _backupMainSetting;
 
 static int _showSaveFilesMenu(int initPort)
 {
@@ -2515,11 +2501,11 @@ static int _showSaveFilesMenu(int initPort)
 
     static vs_main_settings_t settingsBackup;
     static int saveSuccessful;
-    static u_char state;
-    static u_char port;
-    static u_char page;
-    static u_char fileSlot;
-    static u_char leaveTimer;
+    static char state;
+    static char port;
+    static char page;
+    static char fileSlot;
+    static char leaveTimer;
 
     fileMenuElements_t* element;
     int val;
@@ -2558,7 +2544,7 @@ static int _showSaveFilesMenu(int initPort)
         state = handleInput;
         /* fallthrough */
     case handleInput:
-        _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         if (vs_main_buttonsPressed & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
@@ -2609,8 +2595,7 @@ static int _showSaveFilesMenu(int initPort)
     case slotSelected:
         val = _memcardMaskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
-            if (_selectSaveMemoryCardMessage
-                == (u_char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
+            if (_memoryCardMessage == (char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
                 _promptFormat(port);
                 state = format;
             } else if (val > memcardMaskedHandlerError) {
@@ -2618,8 +2603,8 @@ static int _showSaveFilesMenu(int initPort)
                 if (_saveFileInfo[val].unk4.base.slotState == slotStateAvailable) {
                     if (_createSaveFile(port, val + 1) != 0) {
                         state = leaveWithTimer;
-                        _selectSaveMemoryCardMessage
-                            = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                        _memoryCardMessage
+                            = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
                     } else {
                         state = save;
                     }
@@ -2657,7 +2642,7 @@ static int _showSaveFilesMenu(int initPort)
         break;
     case save:
         val = fileSlot + page;
-        _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_saving);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saving);
         _rMemcpy(&settingsBackup, &vs_main_settings, sizeof(settingsBackup));
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
@@ -2677,7 +2662,7 @@ static int _showSaveFilesMenu(int initPort)
             saveId = fileSlot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
-                    u_char v = _backupMainSetting & 1;
+                    char v = _backupMainSetting & 1;
                     *(int*)&vs_main_settings
                         = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
@@ -2688,22 +2673,20 @@ static int _showSaveFilesMenu(int initPort)
                     sizeof(savedata_t));
                 _fileProgressCounter = 0;
                 _rMemcpy(&vs_main_settings, &settingsBackup, sizeof(vs_main_settings));
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 _dataNotSaved = 0;
                 _fileProgressCounter = -16;
                 _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(saveFileInfo_t) * 3,
                     sizeof(saveFileInfo_t));
                 _decode(_saveFileInfo[saveId].key,
-                    (u_char*)&_saveFileInfo[saveId].unk4.base.slotState,
+                    &_saveFileInfo[saveId].unk4.base.slotState,
                     sizeof(saveFileInfo_t) - sizeof(int));
                 _fileMenuElements[saveId + 5].saveLocation
                     = _saveFileInfo[saveId].unk4.stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                 saveSuccessful = 1;
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_saved);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saved);
             }
             state = leaveWithTimer;
         }
@@ -2712,7 +2695,7 @@ static int _showSaveFilesMenu(int initPort)
         if (saveSuccessful == 1) {
             ++leaveTimer;
         }
-        if ((u_char)vs_main_buttonsPressed == 0) {
+        if ((char)vs_main_buttonsPressed == 0) {
             if (leaveTimer != 150) {
                 break;
             }
@@ -2735,15 +2718,14 @@ static int _showSaveFilesMenu(int initPort)
                 state = leaveError;
             } else if (_createSaveFile(port, page + fileSlot + 1) != 0) {
                 state = leaveWithTimer;
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
             } else {
                 state = save;
             }
         }
         break;
     case leaveError:
-        if ((u_char)vs_main_buttonsPressed != 0) {
+        if ((char)vs_main_buttonsPressed != 0) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuElement(i);
@@ -2768,14 +2750,14 @@ static int _selectSaveMemoryCard(int initPort)
         showSaveMenu = 7
     };
 
-    static u_char state;
+    static char state;
     static u_char port;
 
     int i, j;
 
     if (initPort != 0) {
         port = initPort;
-        _selectSaveMemoryCardMessage = (u_char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
         state = init;
         return 0;
     }
@@ -2816,8 +2798,7 @@ static int _selectSaveMemoryCard(int initPort)
             break;
         case memcardEventTimeout:
             state = animateLeave;
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
             memset(_saveFileInfo, 0, sizeof(*_saveFileInfo) * 5);
@@ -2834,7 +2815,7 @@ static int _selectSaveMemoryCard(int initPort)
         }
         break;
     case animateLeave:
-        if ((u_char)vs_main_buttonsPressed == 0) {
+        if ((char)vs_main_buttonsPressed == 0) {
             break;
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
@@ -2852,8 +2833,7 @@ static int _selectSaveMemoryCard(int initPort)
     case initSaveMenu:
         if (_initSaveFileInfo(port) != 0) {
             state = animateLeave;
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2863,8 +2843,7 @@ static int _selectSaveMemoryCard(int initPort)
         }
         if (i == 5) {
             state = animateLeave;
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
             break;
         }
         _showSaveFilesMenu(port);
@@ -2905,9 +2884,9 @@ static int _showSaveMenu(int initState)
         discardChanges = 11,
     };
 
-    static u_char state;
+    static char state;
     static u_char selectedFile;
-    static u_char _[3] __attribute__((unused));
+    static char _[3] __attribute__((unused));
 
     fileMenuElements_t* element;
     int currentSave;
@@ -2920,12 +2899,12 @@ static int _showSaveMenu(int initState)
         _isSaving = 1;
         state = (initState - 1) * 3;
         element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
-            (u_char*)(_textTable + VS_MCMAN_OFFSET_save));
+            (char*)(_textTable + VS_MCMAN_OFFSET_save));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
         element->innertextBlendFactor = 8;
         element->selected = 1;
-        _selectSaveMemoryCardMessage = NULL;
+        _memoryCardMessage = NULL;
         return 0;
     }
 
@@ -2950,7 +2929,7 @@ static int _showSaveMenu(int initState)
             break;
         }
         if (currentSave < findSavePending) {
-            _selectSaveMemoryCardMessage = (u_char*)(_textTable
+            _memoryCardMessage = (char*)(_textTable
                 + (currentSave == findSaveTimeout ? VS_MCMAN_OFFSET_insertError
                                                   : VS_MCMAN_OFFSET_emptyCard));
             state = containerWarn;
@@ -2964,8 +2943,7 @@ static int _showSaveMenu(int initState)
         if (val != 0) {
             if ((val <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 state = containerWarn;
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
             } else {
                 state = initSlot1;
             }
@@ -2974,7 +2952,7 @@ static int _showSaveMenu(int initState)
     case initSlot1:
         if (_fileMenuElementsActive() != 0) {
             element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
-                (u_char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
             state = initSlot2;
@@ -2982,7 +2960,7 @@ static int _showSaveMenu(int initState)
         break;
     case initSlot2:
         element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
-            (u_char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
         state = waitForSlotAnimation;
@@ -2990,8 +2968,7 @@ static int _showSaveMenu(int initState)
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
             state = handleInput;
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
         break;
     case handleInput:
@@ -3009,8 +2986,8 @@ static int _showSaveMenu(int initState)
                 } while (val < 3);
             }
             if (_dataNotSaved != 0) {
-                _selectSaveMemoryCardMessage
-                    = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerWarnDataLoss);
+                _memoryCardMessage
+                    = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarnDataLoss);
                 _promptConfirm(1);
                 state = discardChanges;
             } else {
@@ -3046,9 +3023,8 @@ static int _showSaveMenu(int initState)
         }
         break;
     case containerWarn:
-        if ((u_char)vs_main_buttonsPressed != 0) {
-            _selectSaveMemoryCardMessage
-                = (u_char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
+        if ((char)vs_main_buttonsPressed != 0) {
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
             _promptConfirm(1);
             state = eraseContainerData;
         }
@@ -3081,8 +3057,8 @@ static int _showSaveMenu(int initState)
     return 0;
 }
 
-static u_char _frameBuf;
-static u_char _3 __attribute__((unused));
+static char _frameBuf;
+static char _3 __attribute__((unused));
 
 static void _initSaveScreen()
 {
@@ -3120,18 +3096,18 @@ static void _saveScreenSwapBuf()
 }
 
 typedef struct {
-    u_char data[220][256 / 2];
+    char data[220][256 / 2];
     u_short clut[16][16];
 } fontTable_t;
 
 typedef struct {
-    u_char page0[224][256 / 2];
-    u_char page1[256][256 / 2];
+    char page0[224][256 / 2];
+    char page1[256][256 / 2];
 } uiTable_t;
 
 typedef struct {
     u_short clut[256];
-    u_char data[240][192];
+    char data[240][192];
 } menuBg_t;
 
 extern fontTable_t _fontTable[];
@@ -3148,22 +3124,22 @@ static int _gameLoadScreen()
     };
 
     static RECT rect;
-    static u_char state;
+    static char state;
 
     int exit;
 
-    _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
-    _drawImage(vs_getXY(448, 256), (u_long*)&_uiTable.page1, vs_getWH(64, 256));
-    _drawImage(vs_getXY(832, 0), (u_long*)&_fontTable[0], vs_getWH(64, 224));
-    _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
+    _drawImage(vs_getXY(768, 0), &_uiTable.page0, vs_getWH(64, 224));
+    _drawImage(vs_getXY(448, 256), &_uiTable.page1, vs_getWH(64, 256));
+    _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
+    _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
+    _drawImage(vs_getXY(768, 227), &_saveMenuBg.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
+    _drawImage(vs_getXY(672, 256), &_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
     state = init;
 
@@ -3202,7 +3178,7 @@ static int _gameLoadScreen()
 static int _saveFileExists()
 {
     struct DIRENTRY dir;
-    u_char filename[22];
+    char filename[22];
     int memCardState;
     int i;
     int ret = 0;
@@ -3246,9 +3222,9 @@ static int _saveScreenConfirmation(int init)
         returnSelectedOption = 4
     };
 
-    static u_char state;
+    static char state;
     static u_char confirm;
-    static u_char _[5] __attribute__((unused));
+    static char _[5] __attribute__((unused));
 
     fileMenuElements_t* elem;
     int i;
@@ -3264,7 +3240,7 @@ static int _saveScreenConfirmation(int init)
     case initSlot2:
         elem = _initFileMenuElement(state + 1, vs_getXY(320, state * 16 + 146),
             vs_getWH(126, 12),
-            (u_char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesOption]]);
+            (char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesOption]]);
         elem->state = fileMenuElementStateAnimateX;
         elem->targetPosition = 194;
         ++state;
@@ -3328,24 +3304,24 @@ static void _gameSaveScreen()
     enum state { init = 0, loading = 1, loaded = 2, confirmation = 3, exit = 4 };
 
     static RECT rect;
-    static u_char state;
-    static u_char fadeTimer;
-    static u_char _[6] __attribute__((unused));
+    static char state;
+    static char fadeTimer;
+    static char _[6] __attribute__((unused));
 
     int val;
 
-    _drawImage(vs_getXY(768, 0), (u_long*)&_uiTable.page0, vs_getWH(64, 224));
-    _drawImage(vs_getXY(448, 256), (u_long*)&_uiTable.page1, vs_getWH(64, 256));
-    _drawImage(vs_getXY(832, 0), (u_long*)&_fontTable[0], vs_getWH(64, 224));
-    _drawImage(vs_getXY(896, 0), (u_long*)&_fontTable[1], vs_getWH(64, 224));
+    _drawImage(vs_getXY(768, 0), &_uiTable.page0, vs_getWH(64, 224));
+    _drawImage(vs_getXY(448, 256), &_uiTable.page1, vs_getWH(64, 256));
+    _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
+    _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), (u_long*)&_saveMenuBg.clut, vs_getWH(256, 1));
+    _drawImage(vs_getXY(768, 227), &_saveMenuBg.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), (u_long*)&_saveMenuBg.data, vs_getWH(96, 240));
+    _drawImage(vs_getXY(672, 256), &_saveMenuBg.data, vs_getWH(96, 240));
     _initSaveScreen();
 
     state = init;
@@ -3372,8 +3348,7 @@ static void _gameSaveScreen()
             val = _showSaveMenu(0);
             if (val != 0) {
                 if (val < 0) {
-                    _selectSaveMemoryCardMessage
-                        = (u_char*)(_textTable + VS_MCMAN_OFFSET_savePrompt);
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_savePrompt);
                     _saveScreenConfirmation(1);
                     state = confirmation;
                 } else {
@@ -3415,7 +3390,7 @@ static void _gameSaveScreen()
 }
 
 typedef struct {
-    void* encodedData[2];
+    u_long* encodedData[2];
     int encodedDataIndex;
     void* decodedData[2];
     int decodedDataIndex;
@@ -3431,12 +3406,12 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static u_int _introMovieDisplayedAt;
 static int _introMoviePlaying;
 static int _dslMode;
-static u_char _4[4] __attribute__((unused));
+static char _4[4] __attribute__((unused));
 static DslLOC _introMovieLoc;
-static u_char _5[28] __attribute__((unused));
+static char _5[28] __attribute__((unused));
 static MovieData_t _movieData;
 static u_long* _movieRingBuf;
-static u_char _6[4] __attribute__((unused));
+static char _6[4] __attribute__((unused));
 static DECDCTTAB _vlcTable;
 static void* _encodedDataBuf0;
 static void* _encodedDataBuf1;
@@ -3466,7 +3441,7 @@ static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)())
 {
     DecDCTReset(0);
     DecDCToutCallback(dctoutCb);
-    StSetRing((u_long*)_movieRingBuf, 64);
+    StSetRing(_movieRingBuf, 64);
     StSetStream(1, 1, -1, NULL, NULL);
     _playMovie(loc);
 }
@@ -3532,11 +3507,11 @@ static short publisherClut[] = { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(2, 2, 
     vs_getRGB5551(27, 27, 27, 1), vs_getRGB5551(29, 29, 29, 1),
     vs_getRGB5551(31, 31, 31, 1) };
 
-static u_char publisher[] = {
+static char publisher[] = {
 #include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.segment.bin.dat"
 };
 
-static u_char developer[] = {
+static char developer[] = {
 #include "../../assets/TITLE/TITLE.PRG/developer.rgb4.segment.bin.dat"
 };
 
@@ -3611,7 +3586,7 @@ static void _waitForFrame(MovieData_t* movie, int arg1 __attribute__((unused)))
 
 static void _playMovie(DslLOC* loc)
 {
-    u_char params[4];
+    char params[4];
 
     params[0] = DslModeSpeed;
     params[1] = 0;
@@ -3638,8 +3613,8 @@ static void _displayPublisherAndDeveloper()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(320, 64), (u_long*)publisherClut, vs_getWH(16, 1));
-    _drawImage(vs_getXY(320, 0), (u_long*)(&publisherClut + 1), vs_getWH(256 / 4, 48));
+    _drawImage(vs_getXY(320, 64), publisherClut, vs_getWH(16, 1));
+    _drawImage(vs_getXY(320, 0), &publisherClut + 1, vs_getWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -3748,7 +3723,7 @@ static int _playIntroMovie()
     var_s2 = 0;
 
     while (1) {
-        DecDCTin((u_long*)_movieData.encodedData[_movieData.encodedDataIndex], 3);
+        DecDCTin(_movieData.encodedData[_movieData.encodedDataIndex], 3);
         dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
             (int)(dataSize + (dataSize >> 0x1F)) >> 1);
@@ -3794,14 +3769,14 @@ enum menuItemState_e {
 };
 
 typedef struct {
-    u_char enabled;
-    u_char state;
-    u_char textSaturation;
-    u_char outlineSaturation;
-    u_char textPos;
-    u_char targetPos;
-    u_char outlinePos;
-    u_char textBlendFactor;
+    char enabled;
+    char state;
+    char textSaturation;
+    char outlineSaturation;
+    char textPos;
+    char targetPos;
+    char outlinePos;
+    char textBlendFactor;
 } menuItemState_t;
 
 static u_short _menuItemTextClut[][16] = {
@@ -3823,7 +3798,7 @@ static u_short _menuItemTextClut[][16] = {
 };
 static menuItemState_t _menuItemStates[10];
 
-static void _setMenuItemFadeIn(int menuItem, u_char pos)
+static void _setMenuItemFadeIn(int menuItem, char pos)
 {
     _menuItemStates[menuItem].enabled = 1;
     _menuItemStates[menuItem].state = menuItemStateStatic;
@@ -4203,7 +4178,7 @@ static void _drawTitleMenuItems()
         vs_getXY(144, 224), vs_getXY(128, 224), vs_getXY(128, 224), vs_getXY(128, 224) };
 
     static menuItemPrim_t primBuf[341];
-    static u_char _[8] __attribute__((unused));
+    static char _[8] __attribute__((unused));
 
     int textUv;
     int j;
@@ -4313,7 +4288,7 @@ static void _drawTitleMenu()
     } tagsprt_t;
 
     static tagsprt_t sprtBuf[10];
-    static u_char _[16] __attribute__((unused));
+    static char _[16] __attribute__((unused));
 
     int i;
     tagsprt_t* sprt;
@@ -4617,11 +4592,11 @@ int vs_title_exec()
     static struct {
         u_long tag;
         VS_TILE_TPAGE tile;
-        u_char _[44];
+        char _[44];
     } fileBuf;
     static int buttonsLastPressed;
     static int introMovieLastPlayed;
-    static u_char _[8] __attribute__((unused));
+    static char _[8] __attribute__((unused));
 
     RECT rect;
     int i;
@@ -4992,7 +4967,7 @@ static void _initGameData()
 
     int i;
     int j;
-    u_char* v0;
+    char* v0;
 
     _initScreen(640, 240, 512, 0, 0, 0);
     i = 0x43F;
@@ -5019,7 +4994,7 @@ static void _initGameData()
     }
 
     for (i = 0; i < 1; ++i) {
-        vs_main_bzero((u_char*)&D_80060068 + i * sizeof(D_80060068), 0x50);
+        vs_main_bzero((char*)&D_80060068 + i * sizeof(D_80060068), 0x50);
     }
 
     vs_main_bzero(&D_80061068, sizeof(D_80061068));

@@ -5,16 +5,16 @@
 #include "../MENU/MAINMENU.PRG/278.h"
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
     vs_main_CdQueueSlot* unk4;
 } D_800F51C0_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
+    signed char unk0;
+    signed char unk1;
     short unk2;
     int unk4;
     int unk8;
@@ -22,11 +22,11 @@ typedef struct {
 } D_800EB9B4_t;
 
 extern int _menuLbas[];
-extern char D_800EB9AD;
+extern signed char D_800EB9AD;
 extern D_800EB9B4_t* D_800EB9B4;
 extern u_int* D_800EB9D4;
-extern u_char D_800F4E6A;
-extern u_char D_800F4FDB;
+extern char D_800F4E6A;
+extern char D_800F4FDB;
 extern D_800F51C0_t D_800F51C0;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);

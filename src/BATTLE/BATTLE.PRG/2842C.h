@@ -1,14 +1,14 @@
 #pragma once
 
 typedef struct {
-    char unk0;
-    char unk1;
+    signed char unk0;
+    signed char unk1;
     short unk2;
     int unk4;
     int unk8;
     int unkC;
-    char unk10;
-    char unk11;
+    signed char unk10;
+    signed char unk11;
 } func_8007C8F8_t;
 
 void func_800918E8(int);
@@ -27,4 +27,4 @@ void func_8009E5C4();
 void func_8009F314(int, int, int);
 void func_800A0A1C(int, int);
 int func_800A0BE0(int);
-void func_800A1108(int, u_char*);
+void func_800A1108(int, char*);

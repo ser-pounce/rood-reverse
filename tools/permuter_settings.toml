@@ -2,4 +2,4 @@ compiler_type = "gcc"
 
 [decompme]
 compilers."mips-linux-gnu-cpp" = "gcc2.8.0-psx"
-flags = "-O2 -G0 -g -Wall -fsigned-char"
+flags = "-O2 -G0 -g -Wall -funsigned-char"

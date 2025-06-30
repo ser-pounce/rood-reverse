@@ -28,15 +28,15 @@ typedef struct {
 } vs_main_CdQueueSlot;
 
 typedef struct {
-    u_char id;
-    u_char effect;
+    char id;
+    char effect;
     int unk2_0 : 1;
     int type : 3;
     int target : 4;
-    u_char cost;
-    u_char rangeX;
-    u_char rangeY;
-    u_char rangeZ;
+    char cost;
+    char rangeX;
+    char rangeY;
+    char rangeZ;
     int shape : 3;
     int angle : 5;
     int aoe;
@@ -51,7 +51,7 @@ typedef struct {
         int type : 2;
         int affinity : 3;
     } hitParams[2];
-    char name[24];
+    signed char name[24];
 } vs_skill_t;
 
 typedef struct {
@@ -59,12 +59,12 @@ typedef struct {
     u_int unk4;
     int unk8;
     void* currentMusicData;
-    u_char musicIds[4];
+    char musicIds[4];
     u_int unk14[4];
     void* musicData[4];
     vs_main_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;
-    u_char sfxIds[4];
+    char sfxIds[4];
     void* sfxData[3];
     vs_main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
@@ -86,14 +86,14 @@ typedef struct vs_main_HeapHeader {
 };*/
 
 typedef struct {
-    u_char timingWeaponArmor;
-    u_char cursorMemory;
+    char timingWeaponArmor;
+    char cursorMemory;
     short unk2;
     u_int slotState;
-    u_char information;
-    u_char simpleMap;
-    u_char monoSound;
-    u_char vibrationOn;
+    char information;
+    char simpleMap;
+    char monoSound;
+    char vibrationOn;
     int unkC;
     int unk10;
     u_int key;
@@ -104,17 +104,17 @@ typedef struct {
 
 typedef union {
     struct {
-        char f;
-        char s;
-        char m;
-        char h;
+        signed char f;
+        signed char s;
+        signed char m;
+        signed char h;
     } t;
     int all;
 } vs_Gametime_t;
 
 typedef struct D_80061068_t {
-    char unk0;
-    char unk1;
+    signed char unk0;
+    signed char unk1;
     u_short unk2;
     u_short unk4;
     u_short unk6;
@@ -151,7 +151,7 @@ typedef struct {
         short unk18;
         short unk1A;
         int unk1C;
-        u_char unk20[8];
+        char unk20[8];
         D_80060068_t2 unk28[6];
         int unk7C;
         int unk80;
@@ -162,22 +162,22 @@ typedef struct {
 
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
-extern u_char D_8004EDDC[8][30];
+extern char D_8004EDDC[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_titleScreenCount;
 extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
-extern u_char D_8004FCCC[];
+extern char D_8004FCCC[];
 extern u_short D_8005046A;
 extern u_int D_80055C80[];
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
 extern int D_8005E248;
-extern char D_8006169D;
+extern signed char D_8006169D;
 extern int vs_gametime_tickspeed;
-extern u_char vs_main_padBuffer[2][34];
+extern char vs_main_padBuffer[2][34];
 extern u_int vs_main_buttonsPressed;
 extern int vs_main_buttonsPreviousState;
 extern int vs_main_buttonRepeat;
@@ -186,20 +186,20 @@ extern int vs_main_buttonsState;
 extern int vs_main_saveBeforeTitle;
 
 extern D_8005FEA0_t D_8005FEA0;
-extern u_char vs_main_skillsLearned[32];
-extern u_char D_8005FFD8[0x48];
+extern char vs_main_skillsLearned[32];
+extern char D_8005FFD8[0x48];
 extern vs_main_settings_t vs_main_settings;
-extern u_char vs_main_soundMono;
-extern u_char vs_main_vibrationEnabled;
-extern u_char D_80060040[0x24];
+extern char vs_main_soundMono;
+extern char vs_main_vibrationEnabled;
+extern char D_80060040[0x24];
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern u_char D_80060168[15][256];
+extern char D_80060168[15][256];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
-extern u_char D_80061078[0x520];
-extern u_char D_80061598[0x440];
-extern char vs_main_puzzleMode;
+extern char D_80061078[0x520];
+extern char D_80061598[0x440];
+extern signed char vs_main_puzzleMode;
 extern struct {
     int unk0[28];
     int unk70[16];
@@ -216,8 +216,8 @@ void vs_main_enableReset(int);
 void func_80042CA0();
 void func_80042CB0();
 void vs_main_padDisconnectAll();
-int vs_main_updatePadState(int, u_char[34]);
-void vs_main_padConnect(int, u_char[34]);
+int vs_main_updatePadState(int, char[34]);
+void vs_main_padConnect(int, char[34]);
 void vs_main_setVibrateParams();
 void func_800438C8(int);
 int vs_main_processPadState();

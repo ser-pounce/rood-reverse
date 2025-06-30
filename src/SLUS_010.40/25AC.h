@@ -17,7 +17,7 @@ int func_800121F0(void*, int, int, int);
 void func_80012288(int, int);
 void* func_80012358(int);
 u_int func_800123C8(void*);
-void func_8001240C(int);
+void vs_sound_setMonoSound(int);
 void func_80012468();
 void func_8001264C(int, int, int, int);
 void func_80012738(int, int, int, int);

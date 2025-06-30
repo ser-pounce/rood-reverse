@@ -113,7 +113,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012358);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800123C8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001240C);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", vs_sound_setMonoSound);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012440);
 

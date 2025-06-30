@@ -134,7 +134,7 @@ static void _padSetActData(int arg0, int arg1, int arg2);
 static void _initCdQueue();
 static void _diskReset();
 static void _processCdQueue();
-static int func_800467A0();
+static int vs_main_processSoundQueue();
 static void _loadMenuSound();
 static void _asmNop();
 static void nop10(int, int);
@@ -7982,7 +7982,7 @@ int D_8004EECC[]
 extern int randArr[97];
 extern vs_main_HeapHeader* _cdReadBuffer;
 extern padAct_t _padAct[2];
-extern portInfo_t vs_main_portInfo[2];
+extern portInfo_t _portInfo[2];
 extern vs_main_HeapHeader heapA;
 extern vs_main_HeapHeader heapB;
 extern int randIndex;
@@ -8002,7 +8002,7 @@ extern int sp2;
 extern int _resetEnabled;
 extern u_int _buttonHeldFrameCount[];
 extern vs_main_disk_t vs_main_disk;
-extern char vs_main_dsControlBuf[11];
+extern char _dsControlBuf[11];
 extern D_80055D58_t D_80055D58;
 extern int sp;
 extern int D_8005DBF4[5][6];
@@ -8482,8 +8482,8 @@ void func_80042CB0()
 
 void vs_main_padDisconnectAll()
 {
-    vs_main_portInfo[0].connected = 0;
-    vs_main_portInfo[1].connected = 0;
+    _portInfo[0].connected = 0;
+    _portInfo[1].connected = 0;
 }
 
 static void _unlockPadModeSwitch()
@@ -8496,7 +8496,7 @@ static void _unlockPadModeSwitch()
 
 static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
 {
-    portInfo_t* port = &vs_main_portInfo[portID >> 4];
+    portInfo_t* port = &_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
@@ -8519,14 +8519,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     int btnStates;
 
     if (padBuf[0] != 0) {
-        port = &vs_main_portInfo[portID >> 4];
+        port = &_portInfo[portID >> 4];
         port->lStickY = 128;
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
         return 0;
     }
-    port = &vs_main_portInfo[portID >> 4];
+    port = &_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
     switch (mode) {
@@ -8561,7 +8561,7 @@ void vs_main_padConnect(int portID, char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
-    portInfo_t* port = &vs_main_portInfo[portID >> 4];
+    portInfo_t* port = &_portInfo[portID >> 4];
     int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
@@ -8580,18 +8580,15 @@ void vs_main_padConnect(int portID, char padBuf[34])
 static void _padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
-        vs_main_portInfo[port].actData[pos] = val;
-    } else if (vs_main_portInfo[port].exId) {
-        vs_main_portInfo[port].actData[0] = val;
+        _portInfo[port].actData[pos] = val;
+    } else if (_portInfo[port].exId) {
+        _portInfo[port].actData[0] = val;
     } else {
-        vs_main_portInfo[port].actData[0] = 0x40;
+        _portInfo[port].actData[0] = 0x40;
     }
 }
 
-static char _padGetActData(int port, int pos)
-{
-    return vs_main_portInfo[port].actData[pos];
-}
+static char _padGetActData(int port, int pos) { return _portInfo[port].actData[pos]; }
 
 static int func_800433B4(char* arg0, u_int arg1, short arg2)
 {
@@ -8829,7 +8826,7 @@ int vs_main_processPadState()
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(16, vs_main_padBuffer[1]);
 
-    switch (vs_main_portInfo[0].mode) {
+    switch (_portInfo[0].mode) {
     case 4:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -8837,36 +8834,36 @@ int vs_main_processPadState()
         vs_main_stickPosBuf.rStickX = 128;
         break;
     case 7:
-        vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
-        vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
-        vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
-        vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
+        vs_main_stickPosBuf.rStickX = _portInfo[0].rStickX;
+        vs_main_stickPosBuf.rStickY = _portInfo[0].rStickY;
+        vs_main_stickPosBuf.lStickX = _portInfo[0].lStickX;
+        vs_main_stickPosBuf.lStickY = _portInfo[0].lStickY;
 
-        if (vs_main_portInfo[0].rStickX < 16) {
+        if (_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
-        if (vs_main_portInfo[0].rStickX >= 241) {
+        if (_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
 
-        if (vs_main_portInfo[0].rStickY < 16) {
+        if (_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
-        if (vs_main_portInfo[0].rStickY >= 241) {
+        if (_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
 
-        if (vs_main_portInfo[0].lStickX < 32) {
+        if (_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (vs_main_portInfo[0].lStickX >= 225) {
+        if (_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
 
-        if (vs_main_portInfo[0].lStickY < 32) {
+        if (_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (vs_main_portInfo[0].lStickY >= 225) {
+        if (_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
         break;
@@ -9207,7 +9204,7 @@ static void func_800443CC()
         if (DsSystemStatus() == DslReady) {
             vs_main_disk.unk1 = 0;
             vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
+            while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -9322,7 +9319,7 @@ static void func_800443CC()
         DsReadyCallback(NULL);
         vs_main_disk.unk1 = 128;
         vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
+        while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
             ;
         VSync(3);
         break;
@@ -9423,7 +9420,7 @@ static void _diskReset()
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, vs_main_dsControlBuf, NULL) == 0)
+    while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
         ;
     VSync(3);
 }
@@ -10420,7 +10417,7 @@ static void _loadSoundFile(int file)
 
 void vs_main_loadSoundFile(int id) { _loadSoundFile(_soundFileMap[id]); }
 
-static int func_800467A0()
+int vs_main_processSoundQueue()
 {
     int temp_v0;
 
@@ -10463,16 +10460,16 @@ static int func_800467A0()
     return 0;
 }
 
-static void func_8004687C(int arg0)
+void vs_main_loadAndWaitSoundSlot(int id)
 {
-    vs_main_loadSoundFile(arg0);
+    vs_main_loadSoundFile(id);
 
-    while (func_800467A0() != 0) {
+    while (vs_main_processSoundQueue() != 0) {
         vs_main_gametimeUpdate(0);
     }
 }
 
-void vs_main_setMonoSound(int arg0) { func_8001240C(arg0); }
+void vs_main_setMonoSound(int set) { vs_sound_setMonoSound(set); }
 
 static void func_800468DC() { func_80012918(0x7FFF); }
 
@@ -10504,7 +10501,7 @@ static void _loadMenuSound()
     D_8005FE84 = 0x100000;
 }
 
-static void func_80046A38()
+void vs_main_resetSound()
 {
     int i;
 
@@ -10517,24 +10514,24 @@ static void func_80046A38()
     for (i = 0; i < 4; ++i) {
         vs_main_soundData.musicIds[i] = 0;
         vs_main_soundData.unk14[i] = 0xFFFF;
-        vs_main_soundData.musicData[i] = 0;
-        vs_main_soundData.musicQueueSlot[i] = 0;
+        vs_main_soundData.musicData[i] = NULL;
+        vs_main_soundData.musicQueueSlot[i] = NULL;
     }
 
     for (i = 0; i < 3; ++i) {
         vs_main_soundData.sfxIds[i] = 0;
-        vs_main_soundData.sfxData[i] = 0;
-        vs_main_soundData.sfxQueueSlot[i] = 0;
+        vs_main_soundData.sfxData[i] = NULL;
+        vs_main_soundData.sfxQueueSlot[i] = NULL;
     }
 
     for (i = 0; i < 3; ++i) {
-        vs_main_soundData.unk64[i] = 0;
-        vs_main_soundData.unk70[i] = 0;
+        vs_main_soundData.unk64[i] = NULL;
+        vs_main_soundData.unk70[i] = NULL;
     }
 
     vs_main_soundData.soundFileId = 0;
-    vs_main_soundData.soundData = 0;
-    vs_main_soundData.soundQueueSlot = 0;
+    vs_main_soundData.soundData = NULL;
+    vs_main_soundData.soundQueueSlot = NULL;
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;
@@ -10543,7 +10540,7 @@ static void func_80046A38()
     D_8005FE84 = 0x100000;
 }
 
-void func_80046B3C(int arg0, int arg1, u_short* arg2)
+static void func_80046B3C(int arg0, int arg1, u_short* arg2)
 {
     int i;
     u_short g;

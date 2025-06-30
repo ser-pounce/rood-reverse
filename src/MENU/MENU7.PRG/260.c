@@ -1,14 +1,29 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102A60);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102ADC);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102B3C);
+static void _drawImage(int xy, void* arg1, int wh) {
+    RECT rect;
+
+    *(int*)&rect.x = xy;
+    *(int*)&rect.w = wh;
+    LoadImage(&rect, arg1);
+    DrawSync(0);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102B6C);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102B9C);
+static void _rMemcpy(void* dst, void const* src, int count)
+{
+    do {
+        --count;
+        ((char*)dst)[count] = ((char const*)src)[count];
+    } while (count != 0);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102BBC);
 

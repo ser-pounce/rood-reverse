@@ -1,0 +1,2 @@
+_drawImage = 0x80102B3C;
+_rMemcpy = 0x80102B9C;

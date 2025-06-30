@@ -175,7 +175,6 @@ void func_80072050(int arg0) {
 static u_int volatile* D_80075C84 = (u_int volatile*)0x1F801820;
 static u_int volatile* D_80075C88 = (u_int volatile*)0x1F801824;
 static u_int volatile* D_80075C8C = (u_int volatile*)0x1F8010F0;
-static u_int _ = 0;
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_80072140);
 /*extern int** D_80075C54;

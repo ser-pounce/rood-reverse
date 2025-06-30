@@ -1,0 +1,2 @@
+DecDCTReset = 0x80071D9C;
+DecDCTPutEnv = 0x80071E5C;

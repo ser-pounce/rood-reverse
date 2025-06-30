@@ -26,84 +26,6 @@ static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELEC
 
 static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-enum slotState_e {
-    slotStateUnavailable = 0,
-    slotStateAvailable = 1,
-    slotStateTemporary = 2,
-    slotStateInUse = 3
-};
-
-typedef struct {
-    enum slotState_e slotState;
-    int generation;
-    int unk8;
-} saveBase_t;
-
-typedef struct {
-    vs_Gametime_t gameTime;
-    u_short saveCount;
-    u_short unk12;
-    u_short currentHP;
-    u_short maxHP;
-    u_char saveLocation;
-    u_char clearCount;
-    u_char mapCompletion;
-    u_char unk1B;
-    u_short currentMP;
-    u_short maxMP;
-} stats_t;
-
-typedef struct {
-    saveBase_t base;
-    stats_t stats;
-    u_short unk20[16];
-} saveFileSubInfo_t;
-
-typedef struct {
-    int key;
-    saveFileSubInfo_t unk4;
-    u_char unk44[0x1C];
-    u_char unk60[0x20];
-} saveFileInfo_t;
-
-typedef struct {
-    int key;
-    saveBase_t base;
-} savedata_unk180_2_t;
-
-typedef struct {
-    savedata_unk180_2_t unk180;
-    stats_t stats;
-    u_char checksums[0x5C];
-} savedata_unk180_t;
-
-typedef struct {
-    u_char containerData[0x3800];
-    u_char unk55E0[0x100];
-    u_char unk56E0[0x300];
-} containerData_t;
-
-typedef struct {
-    saveFileInfo_t fileInfo;
-    u_char unk80[0x80];
-    u_char unk100[0x80];
-    savedata_unk180_t unk180;
-    u_char unk200[0x440];
-    u_char unk640[0x20];
-    u_char unk660[0x48];
-    vs_main_settings_t unk6A8;
-    D_80060068_t unk6C8;
-    u_char unk7C8[15][256];
-    u_char unk16C8[0xB0];
-    D_80061068_t unk1778;
-    D_8005FEA0_t unk1784;
-    int unk1898;
-    u_char unk189C[0x520];
-    u_char unk1DBC[0x24];
-    containerData_t containerData;
-    u_char unk59E0[0x220];
-} savedata_t;
-
 static u_char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
@@ -205,6 +127,46 @@ static u_char* _memcardMakeTempFilename(int port, int fileNo)
     return filename;
 }
 
+enum slotState_e {
+    slotStateUnavailable = 0,
+    slotStateAvailable = 1,
+    slotStateTemporary = 2,
+    slotStateInUse = 3
+};
+
+typedef struct {
+    enum slotState_e slotState;
+    int generation;
+    int unk8;
+} saveBase_t;
+
+typedef struct {
+    vs_Gametime_t gameTime;
+    u_short saveCount;
+    u_short unk12;
+    u_short currentHP;
+    u_short maxHP;
+    u_char saveLocation;
+    u_char clearCount;
+    u_char mapCompletion;
+    u_char unk1B;
+    u_short currentMP;
+    u_short maxMP;
+} stats_t;
+
+typedef struct {
+    saveBase_t base;
+    stats_t stats;
+    u_short unk20[16];
+} saveFileSubInfo_t;
+
+typedef struct {
+    int key;
+    saveFileSubInfo_t unk4;
+    u_char unk44[0x1C];
+    u_char unk60[0x20];
+} saveFileInfo_t;
+
 typedef struct {
     u_long locationCluts[2][128];
     u_char unk400[7][32];
@@ -281,6 +243,44 @@ static int _memcardFileNumberFromFilename(u_char* filename)
 
     return 0;
 }
+
+typedef struct {
+    int key;
+    saveBase_t base;
+} savedata_unk180_2_t;
+
+typedef struct {
+    savedata_unk180_2_t unk180;
+    stats_t stats;
+    u_char checksums[0x5C];
+} savedata_unk180_t;
+
+typedef struct {
+    u_char containerData[0x3800];
+    u_char unk55E0[0x100];
+    u_char unk56E0[0x300];
+} containerData_t;
+
+typedef struct {
+    saveFileInfo_t fileInfo;
+    u_char unk80[0x80];
+    u_char unk100[0x80];
+    savedata_unk180_t unk180;
+    u_char unk200[0x440];
+    u_char unk640[0x20];
+    u_char unk660[0x48];
+    vs_main_settings_t unk6A8;
+    D_80060068_t unk6C8;
+    u_char unk7C8[15][256];
+    u_char unk16C8[0xB0];
+    D_80061068_t unk1778;
+    D_8005FEA0_t unk1784;
+    int unk1898;
+    u_char unk189C[0x520];
+    u_char unk1DBC[0x24];
+    containerData_t containerData;
+    u_char unk59E0[0x220];
+} savedata_t;
 
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {

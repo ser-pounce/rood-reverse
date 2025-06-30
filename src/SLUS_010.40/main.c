@@ -7986,8 +7986,7 @@ u_char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 int D_8004EECC[]
     = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0, 32 };
 
-#define RANDARRSZ 97
-extern int randArr[RANDARRSZ];
+extern int randArr[97];
 extern vs_main_HeapHeader* D_80050110;
 extern _padAct_t _padAct[2];
 extern PortInfo vs_main_portInfo[2];
@@ -8275,10 +8274,10 @@ static void _initRand()
 
     srand(1);
 
-    for (i = 0; i < RANDARRSZ; ++i) {
+    for (i = 0; i < (int)(sizeof(randArr) / sizeof(randArr[0])); ++i) {
         randArr[i] = rand();
     }
-    randIndex = RANDARRSZ - 1;
+    randIndex = (sizeof(randArr) / sizeof(randArr[0])) - 1;
 }
 
 int vs_main_getRand(int max)
@@ -8287,7 +8286,7 @@ int vs_main_getRand(int max)
     int var_a0;
     int var_v0;
 
-    var_v0 = randArr[randIndex] * RANDARRSZ;
+    var_v0 = randArr[randIndex] * (sizeof(randArr) / sizeof(randArr[0]));
 
     if (var_v0 < 0) {
         var_v0 += 0x7FFF;

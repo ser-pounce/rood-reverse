@@ -30,3 +30,5 @@ _fileMenuScreenFade = 0x8010B0AA;
 _drawSprt = 0x801046C0;
 _drawInteger = 0x801047A8;
 _primBuf = 0x8010B060;
+_spmcimg = 0x8010ADF0;
+_shutdownMemcard = 0x80104618;

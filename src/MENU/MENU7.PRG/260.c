@@ -1,5 +1,6 @@
 #include "common.h"
-#include "../../src/SLUS_010.40/main.h"
+#include "../../SLUS_010.40/main.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "gpu.h" 
 #include <memory.h>
 #include <libapi.h>
@@ -114,6 +115,7 @@ extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
+extern char* _spmcimg;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -384,7 +386,24 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
+void _shutdownMemcard() {
+    int i;
+
+    for (i = 0; i < 8; ++i) {
+        DisableEvent(_memcardEventDescriptors[i]);
+    }
+
+    EnterCriticalSection();
+
+    for (i = 0; i < 8; ++i) {
+        CloseEvent(_memcardEventDescriptors[i]);
+    }
+
+    ExitCriticalSection();
+    vs_main_enableReset(1);
+    vs_main_freeHeap(_spmcimg);
+    func_8007E0A8(0x1D, 3, 6);
+}
 
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {

@@ -326,7 +326,36 @@ static void _decode(u_int key, void* buf, int count)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102EF4);
+static int _readSaveFileInfo(int id) {
+    saveFileInfo_t saveInfo[4];
+    int i;
+    int port = id >> 12;
+
+    id &= 7;
+
+    for (i = 0; i < 3; ++i) {
+        int bytesRead;
+        int file = open(_memcardMakeFilename(port, id), 1);
+
+        if (file == -1) {
+            continue;
+        }
+        bytesRead = read(file, saveInfo, sizeof(saveInfo));
+        close(file);
+        if (bytesRead != sizeof(saveInfo)) {
+            continue;
+        }
+        _decode(saveInfo[3].key, &saveInfo[3].unk4.base.slotState,
+            sizeof(saveFileInfo_t) - sizeof(int));
+        if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
+            _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof(saveInfo[3]));
+            return 0;
+        }
+    }
+
+    memset(&_saveFileInfo[id - 1], 0, sizeof(_saveFileInfo[id - 1]));
+    return 1;
+}
 
 static int _memcardSaveIdExists(int id)
 {
@@ -342,7 +371,7 @@ static int _memcardSaveIdExists(int id)
     return 0;
 }
 
-int _deleteRedundantTempFiles(int port)
+static int _deleteRedundantTempFiles(int port)
 {
     int i;
     int ret = 0;
@@ -377,7 +406,7 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
-int _memcardEventHandler(int);
+static int _memcardEventHandler(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardEventHandler);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103630);
@@ -468,7 +497,7 @@ static void _initFileMenu()
     memset(&_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
+static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
 {
     fileMenuElements_t* element;
     int i;
@@ -531,7 +560,7 @@ enum memcardEventHandler_e {
     memcardEventUnformatted = 3
 };
 
-int _memcardMaskedHandler(int portMask)
+static int _memcardMaskedHandler(int portMask)
 {
     extern char _memcardMask;
     int event;
@@ -663,7 +692,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801085B0);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801086DC);
 
-void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
+static void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
 {
     int r0;
     int r1;

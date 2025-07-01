@@ -8970,7 +8970,7 @@ void vs_main_freeHeap(void* block)
     target->prev = var_a1;
 }
 
-u_long* vs_main_allocHeapR(u_int size)
+void* vs_main_allocHeapR(u_int size)
 {
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_a2;

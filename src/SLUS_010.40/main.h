@@ -223,7 +223,7 @@ void func_800438C8(int);
 int vs_main_processPadState();
 void vs_main_freeHeapR(void*);
 void vs_main_freeHeap(void*);
-u_long* vs_main_allocHeapR(u_int);
+void* vs_main_allocHeapR(u_int);
 void* vs_main_allocHeap(u_int);
 vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile*);
 void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot*);

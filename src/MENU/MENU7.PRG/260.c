@@ -1,9 +1,11 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include "mcman.h"
 #include "vs_string.h"
+#include "lbas.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -119,6 +121,8 @@ extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
 extern char* _spmcimg;
 extern u_short* _textTable;
+extern void* D_8010A930;
+extern u_int* D_8010AB10;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -326,7 +330,8 @@ static void _decode(u_int key, void* buf, int count)
     }
 }
 
-static int _readSaveFileInfo(int id) {
+static int _readSaveFileInfo(int id)
+{
     saveFileInfo_t saveInfo[4];
     int i;
     int port = id >> 12;
@@ -335,7 +340,7 @@ static int _readSaveFileInfo(int id) {
 
     for (i = 0; i < 3; ++i) {
         int bytesRead;
-        int file = open(_memcardMakeFilename(port, id), 1);
+        int file = open(_memcardMakeFilename(port, id), O_RDONLY);
 
         if (file == -1) {
             continue;
@@ -690,9 +695,43 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801085B0);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801086DC);
+static int _initGameOver(int arg0)
+{
 
-static void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
+    extern vs_main_CdQueueSlot* _initGameOverQueueSlot;
+    extern int _initGameOverState;
+
+    vs_main_CdFile cdFile;
+    u_int* temp_v0;
+
+    if (arg0 != 0) {
+        cdFile.lba = VS_GAMEOVER_BIN_LBA;
+        cdFile.size = VS_GAMEOVER_BIN_SIZE;
+        _initGameOverQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        D_8010AB10 = vs_main_allocHeapR(VS_GAMEOVER_BIN_SIZE);
+        vs_main_cdEnqueue(_initGameOverQueueSlot, D_8010AB10);
+        _initGameOverState = 0;
+        return 0;
+    }
+    switch (_initGameOverState) {
+    case 0:
+        if (_initGameOverQueueSlot->state == 4) {
+            vs_main_freeCdQueueSlot(_initGameOverQueueSlot);
+            func_800CCDA8(0x01000340, D_8010AB10, 0x800018);
+            func_800CCDA8(0x01800340, &D_8010A930, 0x10030);
+            _initGameOverState = 1;
+        }
+        return 0;
+    case 1:
+        vs_main_freeHeapR(D_8010AB10);
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+static void _setMenuItemClut(
+    short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
 {
     int r0;
     int r1;

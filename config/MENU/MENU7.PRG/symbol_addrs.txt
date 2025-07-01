@@ -18,6 +18,7 @@ _drawSprt = 0x801046C0;
 _drawInteger = 0x801047A8;
 _countDigits = 0x80104840;
 _initFileMenu = 0x80104D58;
+_initFileMenuElement = 0x80104DB8;
 _memcardMaskedHandler = 0x801051F4;
 _interpolateRGB = 0x801053FC;
 _intepolateMenuItemBgColour = 0x80105458;

@@ -3,6 +3,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "gpu.h"
 #include "mcman.h"
+#include "vs_string.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -467,7 +468,43 @@ static void _initFileMenu()
     memset(&_fileMenuElements, 0, sizeof(_fileMenuElements));
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104DB8);
+fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
+{
+    fileMenuElements_t* element;
+    int i;
+    u_int c;
+
+    element = &_fileMenuElements[id];
+    memset(element, 0, sizeof(*element));
+    element->state = 1;
+    element->slotId = -1;
+    *(int*)&element->x = xy;
+    *(int*)&element->w = wh;
+
+    if (text != 0) {
+        for (i = 0; i < 32;) {
+            c = *text++;
+            if (c == vs_char_spacing) {
+                element->text[i++] = c;
+                do {
+                    c = *(text++);
+                } while (0);
+            } else {
+                if (c == vs_char_terminator) {
+                    element->text[i] = 0xFF;
+                    return element;
+                }
+                if (c >= vs_char_nonPrinting) {
+                    continue;
+                }
+            }
+            element->text[i++] = c;
+        }
+    } else {
+        element->text[0] = 0xFF;
+    }
+    return element;
+}
 
 static void func_80104EC0(int arg0)
 {

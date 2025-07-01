@@ -110,7 +110,7 @@ static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
     return i;
 }
 
-void _resetMemcardEvents(int type)
+static void _resetMemcardEvents(int type)
 {
     int i;
 
@@ -147,10 +147,18 @@ static void _rMemcpy(void* dst, void const* src, int count)
     } while (count != 0);
 }
 
-char* _memcardMakeFilename(int, int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardMakeFilename);
+static char* _memcardMakeFilename(int port, int fileNo)
+{
+    extern char _filename0[32];
 
-char* _memcardMakeTempFilename(int port, int fileNo)
+    memset(_filename0, 0, ' ');
+    strcpy(_filename0, _memcardFilenameTemplate);
+    _filename0[2] = port == 0 ? '0' : '1';
+    _filename0[20] = fileNo + '0';
+    return _filename0;
+}
+
+static char* _memcardMakeTempFilename(int port, int fileNo)
 {
     extern char _filename1[32];
 
@@ -161,7 +169,7 @@ char* _memcardMakeTempFilename(int port, int fileNo)
     return _filename1;
 }
 
-u_int _getNewestSaveFile()
+static u_int _getNewestSaveFile()
 {
     u_int i;
     u_int maxCounter = 0;
@@ -178,7 +186,21 @@ u_int _getNewestSaveFile()
     return fileIndex;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102D14);
+static int func_80102D14()
+{
+    int i;
+    for (i = 0; i < 5; ++i) {
+        if ((_saveFileInfo[i].unk4.base.slotState >= slotStateInUse)
+            && (_saveFileInfo[i].unk4.base.slotState == vs_main_settings.slotState)
+            && (_saveFileInfo[i].key == vs_main_settings.key)
+            && (_saveFileInfo[i].unk4.stats.saveCount == vs_main_settings.saveCount)
+            && (_saveFileInfo[i].unk4.base.generation
+                == vs_main_settings.saveFileGeneration)) {
+            return i + 1;
+        }
+    }
+    return 0;
+}
 
 static int _memcardFileNumberFromFilename(char* filename)
 {
@@ -226,7 +248,7 @@ INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103134);
 
-int _createSaveFile(int port, int id)
+static int _createSaveFile(int port, int id)
 {
     long file;
     char* fileName = _memcardMakeFilename((port - 1) * 16, id);
@@ -254,10 +276,10 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
 
-void func_801046C0(int, int, int, int);
+static void func_801046C0(int, int, int, int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801046C0);
 
-void func_80104764(int arg0, int id)
+static void func_80104764(int arg0, int id)
 {
     func_801046C0(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
 }
@@ -282,7 +304,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104B00);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
 
-void _initFileMenu()
+static void _initFileMenu()
 {
     _memoryCardMessage = 0;
     _selectCursorColor = 0;
@@ -295,12 +317,12 @@ void _initFileMenu()
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104DB8);
 
-void func_80104EC0(int arg0)
+static void func_80104EC0(int arg0)
 {
     memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0]));
 }
 
-int func_80104F04()
+static int func_80104F04()
 {
     int i;
 
@@ -317,7 +339,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801051F4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801052D0);
 
-u_int func_801053FC(u_int arg0, u_int arg1, int arg2)
+static u_int func_801053FC(u_int arg0, u_int arg1, int arg2)
 {
     int temp_a3;
     u_int i;
@@ -339,7 +361,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010550C);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105BE4);
 
-void func_80106080()
+static void func_80106080()
 {
     func_801046C0(0x100, 0x38F00000, 0xB00040, 0x9C);
     func_801046C0(0, 0x38F00000, 0xB00100, 0x9A);
@@ -375,7 +397,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80108CE8);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010903C);
 
-int func_8010928C(int arg0, int arg1)
+static int func_8010928C(int arg0, int arg1)
 {
     int i;
     int var_a3;

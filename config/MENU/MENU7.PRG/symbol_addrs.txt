@@ -12,6 +12,7 @@ _createSaveFile = 0x8010337C;
 _countDigits = 0x80104840;
 _initFileMenu = 0x80104D58;
 _memcardFilenameTemplate = 0x8010A2B4;
+_filename0 = 0x8010AA40;
 _filename1 = 0x8010AA60;
 _memcardEventDescriptors = 0x8010ADD0;
 _saveFileInfo = 0x8010AE40;

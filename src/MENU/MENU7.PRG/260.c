@@ -123,6 +123,7 @@ extern char* _spmcimg;
 extern u_short* _textTable;
 extern void* D_8010A930;
 extern u_int* D_8010AB10;
+extern char _isSaving;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -487,7 +488,48 @@ static int _countDigits(int val)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104870);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104B00);
+static void _fileProcessingAnim(int x, int y) {
+     char* new_var __attribute__((unused));
+    int gradientColor1;
+    int gradientColor2;
+    u_int leftEdge;
+    u_int i;
+
+    leftEdge = x - 48;
+    new_var = &_isSaving;
+
+    if (leftEdge < 64) {
+        leftEdge = 64;
+    }
+
+    gradientColor1 = 0;
+    gradientColor2 = vs_getRGB888(224, 255, 0);
+
+    if (_isSaving != 0) {
+        gradientColor2 = vs_getRGB888(255, 0, 127);
+    }
+
+    for (i = 0; i < 2; ++i) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
+        _primBuf.prim.polyG4_tpage.r0g0b0code
+            = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
+        _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
+        _primBuf.prim.polyG4_tpage.x1y1 = x | y;
+        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
+        _primBuf.prim.polyG4_tpage.tpage
+            = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
+        _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
+        DrawPrim(&_primBuf);
+        leftEdge = x;
+        x += 16;
+        gradientColor1 = gradientColor2;
+        gradientColor2 = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
 

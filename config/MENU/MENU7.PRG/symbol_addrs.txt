@@ -51,3 +51,5 @@ _selectCursorXy = 0x8010B0A0;
 _memoryCardMessage = 0x8010B0A4;
 _selectCursorColor = 0x8010B0A9;
 _fileMenuScreenFade = 0x8010B0AA;
+_isSaving = 0x8010B0A8;
+_fileProcessingAnim = 0x80104B00;

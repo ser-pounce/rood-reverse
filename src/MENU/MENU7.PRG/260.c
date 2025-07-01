@@ -117,6 +117,7 @@ extern u_short D_8010AA2C[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
 extern char* _spmcimg;
+extern u_short* _textTable;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -375,7 +376,8 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801033DC);
+int _memcardEventHandler(int);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardEventHandler);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103630);
 
@@ -485,7 +487,42 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104F40);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105080);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801051F4);
+enum memcardEventHandler_e {
+    memcardEventPending = 0,
+    memcardEventIoEnd = 1,
+    memcardEventTimeout = 2,
+    memcardEventUnformatted = 3
+};
+
+int _memcardMaskedHandler(int portMask)
+{
+    extern char _memcardMask;
+    int event;
+
+    if (portMask != 0) {
+        _memcardEventHandler(portMask & 3);
+        _memcardMask = (portMask >> 4);
+        return 0;
+    }
+    event = _memcardEventHandler(0);
+    if (event != memcardEventPending) {
+        switch (event & _memcardMask) {
+        case memcardEventIoEnd:
+            return 1;
+        case memcardEventTimeout:
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            break;
+        case memcardEventUnformatted:
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            break;
+        default:
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
+            break;
+        }
+        return -1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801052D0);
 
@@ -539,12 +576,12 @@ static void func_80106080()
 static int _promptConfirm(int arg0);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _promptConfirm);
 
-extern int _promptOverwriteConfirmed;
-extern char _promptOverwriteInitialized;
-extern char _promptOverwriteState;
-extern u_short* _textTable;
+static int _promptOverwrite(int arg0)
+{
+    extern int _promptOverwriteConfirmed;
+    extern char _promptOverwriteInitialized;
+    extern char _promptOverwriteState;
 
-static int _promptOverwrite(int arg0) {
     int temp_v0;
 
     if (arg0 != 0) {
@@ -589,7 +626,8 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801085B0);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801086DC);
 
-void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1) {
+void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
+{
     int r0;
     int r1;
     int g0;
@@ -602,7 +640,7 @@ void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short*
     int i;
 
     clut[0] = 0;
-    
+
     for (i = 1; i < 16; ++i) {
         r0 = clut0[i];
         r1 = clut1[i];

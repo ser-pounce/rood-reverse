@@ -119,7 +119,7 @@ extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
-extern char* _spmcimg;
+extern void* _spmcimg;
 extern u_short* _textTable;
 extern void* D_8010A930;
 extern u_int* D_8010AB10;
@@ -775,7 +775,50 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107E98);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801085B0);
+void func_80103630(int);
+extern vs_main_CdQueueSlot* D_8010AB04;
+extern savedata_t* _opMcImg;
+
+int func_801085B0(int arg0)
+{
+    vs_main_CdFile file;
+    void* new_var2;
+    vs_Gametime_t sp18;
+    int lba;
+    vs_Gametime_t* new_var;
+
+    switch (arg0) {
+    case 0:
+        new_var = &sp18;
+        if (D_8010AB04->state == 4) {
+            vs_main_freeCdQueueSlot(D_8010AB04);
+            sp18.t = vs_main_gametime.t;
+            _spmcimg = _opMcImg - 1;
+            func_80103630(1);
+            vs_main_gametime.t = sp18.t;
+            new_var2 = _opMcImg;
+            vs_main_freeHeapR(new_var2);
+            return 1;
+        }
+        return 0;
+    case 1:
+        lba = VS_OPMCIMG1_BIN_LBA;
+        break;
+    case 2:
+        lba = VS_OPMCIMG2_BIN_LBA;
+        break;
+    default:
+        return 0;
+    }
+
+    file.lba = lba;
+    file.size = VS_OPMCIMG1_BIN_SIZE;
+    D_8010AB04 = vs_main_allocateCdQueueSlot(&file);
+    new_var2 = vs_main_allocHeapR(sizeof(*_opMcImg));
+    _opMcImg = new_var2;
+    vs_main_cdEnqueue(D_8010AB04, _opMcImg);
+    return 0;
+}
 
 static int _initGameOver(int arg0)
 {

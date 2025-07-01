@@ -40,6 +40,7 @@ _memcardMask = 0x8010AAA6;
 _promptOverwriteConfirmed = 0x8010AAB0;
 _promptOverwriteState = 0x8010AAB4;
 _promptOverwriteInitialized = 0x8010AAB5;
+_opMcImg = 0x8010AB08;
 _initGameOverQueueSlot = 0x8010AB0C;
 _initGameOverState = 0x8010AB14;
 _memcardEventDescriptors = 0x8010ADD0;

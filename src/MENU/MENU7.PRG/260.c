@@ -97,6 +97,7 @@ extern long _memcardEventDescriptors[8];
 extern int D_8010A2E4[];
 extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
+extern struct DIRENTRY* _memcardFiles[15];
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -240,7 +241,18 @@ static void _decode(u_int key, void* buf, int count)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102EF4);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010300C);
+int func_8010300C(int id) {
+    int i;
+
+    for (i = 0; i < 15; ++i) {
+        char* filename = _memcardFiles[i]->name;
+        if ((filename != 0) && (_memcardFileNumberFromFilename(filename) != 0)
+            && (filename[15] == id)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010309C);
 

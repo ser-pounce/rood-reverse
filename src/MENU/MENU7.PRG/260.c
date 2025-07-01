@@ -1,7 +1,7 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "gpu.h" 
+#include "gpu.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -386,7 +386,8 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
-void _shutdownMemcard() {
+static void _shutdownMemcard()
+{
     int i;
 
     for (i = 0; i < 8; ++i) {
@@ -423,7 +424,8 @@ static void func_80104764(int xy, int id)
     _drawSprt(xy, D_8010A2E4[id], D_8010A30C[id], 0xC);
 }
 
-static void _drawInteger(int xy, u_int value, u_int placeDivisor) {
+static void _drawInteger(int xy, u_int value, u_int placeDivisor)
+{
     do {
         _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
             vs_getWH(6, 10), getTPage(0, 0, 768, 0));
@@ -486,23 +488,42 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801051F4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801052D0);
 
-static u_int func_801053FC(u_int arg0, u_int arg1, int arg2)
+static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 {
-    int temp_a3;
+    int component;
     u_int i;
-    u_int ret;
+    u_int colourOut;
 
-    ret = 0;
+    colourOut = 0;
     for (i = 0; i < 3; ++i) {
-        temp_a3 = ((arg0 >> 16) & 0xFF) * (8 - arg2);
-        arg0 <<= 8;
-        ret = (ret << 8) + ((temp_a3 + (((arg1 >> 16) & 0xFF) * arg2)) >> 3);
-        arg1 <<= 8;
+        component = ((colour1 >> 16) & 0xFF) * (8 - factor);
+        colour1 <<= 8;
+        colourOut
+            = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
+        colour2 <<= 8;
     }
-    return ret;
+    return colourOut;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105458);
+static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
+{
+    extern int colors1[];
+    extern int colors2[];
+
+    u_int color1;
+    u_int color2;
+
+    if (innerFactor < 9) {
+        color1 = _interpolateRGB(
+            vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
+        color2 = _interpolateRGB(
+            vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
+    } else {
+        color1 = colors1[((innerFactor >> 3) - 2)];
+        color2 = colors2[((innerFactor >> 3) - 2)];
+    }
+    return _interpolateRGB(color1, color2, outerFactor);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010550C);
 

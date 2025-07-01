@@ -1,7 +1,6 @@
 #include "common.h"
 #include "../../src/SLUS_010.40/main.h"
-#include <libgte.h>
-#include <libgpu.h>
+#include "gpu.h" 
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -370,15 +369,23 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
 
-static void func_801046C0(int, int, int, int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801046C0);
+static void _drawSprt(int, int, int, int);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _drawSprt);
 
 static void func_80104764(int arg0, int id)
 {
-    func_801046C0(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
+    _drawSprt(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801047A8);
+static void _drawInteger(int xy, u_int value, u_int placeDivisor) {
+    do {
+        _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
+            vs_getWH(6, 10), getTPage(0, 0, 768, 0));
+        value = value % placeDivisor;
+        placeDivisor /= 10;
+        xy += 5;
+    } while (placeDivisor != 0);
+}
 
 static int _countDigits(int val)
 {
@@ -457,8 +464,8 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105BE4);
 
 static void func_80106080()
 {
-    func_801046C0(0x100, 0x38F00000, 0xB00040, 0x9C);
-    func_801046C0(0, 0x38F00000, 0xB00100, 0x9A);
+    _drawSprt(0x100, 0x38F00000, 0xB00040, 0x9C);
+    _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
 }
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801060C8);

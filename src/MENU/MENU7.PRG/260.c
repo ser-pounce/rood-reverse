@@ -488,8 +488,9 @@ static int _countDigits(int val)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104870);
 
-static void _fileProcessingAnim(int x, int y) {
-     char* new_var __attribute__((unused));
+static void _fileProcessingAnim(int x, int y)
+{
+    char* new_var __attribute__((unused));
     int gradientColor1;
     int gradientColor2;
     u_int leftEdge;
@@ -596,7 +597,8 @@ static int func_80104F04()
     return i == 10;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104F40);
+int _printCharacter(u_int c, int x, int y, int clut);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _printCharacter);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105080);
 
@@ -637,7 +639,45 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801052D0);
+void _printString(char* text, int x, int y, int clut)
+{
+    extern char arrowState;
+
+    char tempArrowState;
+    u_int c;
+    int startX = x;
+    int nextX = x;
+
+    while (1) {
+        c = *text++;
+        if (c < vs_char_control) {
+            if (c < vs_char_nonPrinting) {
+                nextX = _printCharacter(c, nextX, y, clut);
+            } else if (c == vs_char_confirm) {
+                tempArrowState = (arrowState + 1) % 12;
+                c = vs_char_arrow - (tempArrowState >> 2);
+                arrowState = tempArrowState;
+                nextX = _printCharacter(c, nextX, y, clut);
+            } else if (c != vs_char_terminator) {
+                if (c == vs_char_newline) {
+                    y += 13;
+                    nextX = startX;
+                }
+            } else {
+                break;
+            }
+        } else {
+            u_int control = *text++;
+            if (c == vs_char_spacing) {
+                if (control >= 0xF0) {
+                    nextX -= 256 - control;
+                } else {
+                    nextX += control;
+                }
+            }
+        }
+    }
+}
 
 static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 {

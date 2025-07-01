@@ -29,3 +29,4 @@ _selectCursorColor = 0x8010B0A9;
 _fileMenuScreenFade = 0x8010B0AA;
 _drawSprt = 0x801046C0;
 _drawInteger = 0x801047A8;
+_primBuf = 0x8010B060;

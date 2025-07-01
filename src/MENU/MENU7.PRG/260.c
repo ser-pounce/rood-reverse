@@ -82,6 +82,22 @@ typedef struct {
     char text[32];
 } fileMenuElements_t;
 
+typedef struct {
+    u_long tag;
+    union {
+        VS_SPRT sprt;
+        VS_TILE_TPAGE tile_tpage;
+        VS_TILE tile;
+        VS_POLY_G4_TPAGE polyG4_tpage;
+        VS_POLY_G4 polyG4;
+        struct {
+            VS_TILE_TPAGE tile;
+            VS_POLY_G4 polyG4;
+        } tilePoly;
+        u_long raw[15];
+    } prim;
+} primBuf_t;
+
 extern char const* _memcardFilenameTemplate;
 
 extern saveFileInfo_t* _saveFileInfo;
@@ -97,6 +113,7 @@ extern int D_8010A2E4[];
 extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
 extern struct DIRENTRY* _memcardFiles[15];
+extern primBuf_t _primBuf;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -369,12 +386,22 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
 
-static void _drawSprt(int, int, int, int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _drawSprt);
-
-static void func_80104764(int arg0, int id)
+static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
-    _drawSprt(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
+    DrawSync(0);
+    _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
+    _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
+    _primBuf.prim.sprt.r0g0b0code
+        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
+    _primBuf.prim.sprt.x0y0 = xy;
+    _primBuf.prim.sprt.u0v0clut = uvClut;
+    _primBuf.prim.sprt.wh = wh;
+    DrawPrim(&_primBuf);
+}
+
+static void func_80104764(int xy, int id)
+{
+    _drawSprt(xy, D_8010A2E4[id], D_8010A30C[id], 0xC);
 }
 
 static void _drawInteger(int xy, u_int value, u_int placeDivisor) {

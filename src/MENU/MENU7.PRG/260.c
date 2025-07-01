@@ -229,7 +229,73 @@ static int _memcardFileNumberFromFilename(char* filename)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102E28);
+typedef struct {
+    int key;
+    saveBase_t base;
+} savedata_unk180_2_t;
+
+typedef struct {
+    savedata_unk180_2_t unk180;
+    stats_t stats;
+    char checksums[0x5C];
+} savedata_unk180_t;
+
+typedef struct {
+    char containerData[0x3800];
+    char unk55E0[0x100];
+    char unk56E0[0x300];
+} containerData_t;
+
+typedef struct {
+    saveFileInfo_t fileInfo;
+    char unk80[0x80];
+    char unk100[0x80];
+    savedata_unk180_t unk180;
+    char unk200[0x440];
+    char unk640[0x20];
+    char unk660[0x48];
+    vs_main_settings_t unk6A8;
+    D_80060068_t unk6C8;
+    char unk7C8[15][256];
+    char unk16C8[0xB0];
+    D_80061068_t unk1778;
+    D_8005FEA0_t unk1784;
+    int unk1898;
+    char unk189C[0x520];
+    char unk1DBC[0x24];
+    containerData_t containerData;
+    char unk59E0[0x220];
+} savedata_t;
+
+static int _verifySaveChecksums(savedata_t data[], int sectorCount)
+{
+    int checksum;
+    int i;
+    int j;
+    char* p = (char*)data;
+
+    for (i = 0; i < sectorCount; ++i) {
+        checksum = 0;
+        if (i != 1) {
+            for (j = 0; j < 256; ++j) {
+                checksum ^= p[j];
+            }
+
+            if (data->unk180.checksums[i] != checksum) {
+                return 1;
+            }
+        }
+        p += 256;
+    }
+
+    p = data->unk100;
+    checksum = 0;
+    for (j = 0; j < 256; ++j) {
+        checksum ^= p[j];
+    }
+
+    return checksum != 0;
+}
 
 static void _decode(u_int key, void* buf, int count)
 {
@@ -241,7 +307,8 @@ static void _decode(u_int key, void* buf, int count)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102EF4);
 
-int func_8010300C(int id) {
+static int _memcardSaveIdExists(int id)
+{
     int i;
 
     for (i = 0; i < 15; ++i) {
@@ -254,7 +321,22 @@ int func_8010300C(int id) {
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010309C);
+int _deleteRedundantTempFiles(int port)
+{
+    int i;
+    int ret = 0;
+
+    for (i = 0; i < 5; ++i) {
+        if ((_memcardSaveIdExists(i + '1') != 0)
+            && (_memcardSaveIdExists(i + 'A') != 0)) {
+            if (erase(_memcardMakeTempFilename(port, i + 1)) == 0) {
+                return 0x80;
+            }
+            ret |= 1 << i;
+        }
+    }
+    return ret;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 

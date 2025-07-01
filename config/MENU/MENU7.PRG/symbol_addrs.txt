@@ -7,3 +7,5 @@ _countDigits = 0x80104840;
 _saveFileInfo = 0x8010AE40;
 _createSaveFile = 0x8010337C;
 _memcardMakeFilename = 0x80102BBC;
+_resetMemcardEvents = 0x80102ADC;
+_memcardEventDescriptors = 0x8010ADD0;

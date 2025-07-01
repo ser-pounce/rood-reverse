@@ -50,7 +50,15 @@ extern saveFileInfo_t* _saveFileInfo;
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102A60);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102ADC);
+extern long _memcardEventDescriptors[8];
+
+void _resetMemcardEvents(int type) {
+    int i;
+
+    for (i = 0; i < 4; ++i) {
+        TestEvent(_memcardEventDescriptors[i + type]);
+    }
+}
 
 static void _drawImage(int xy, void* arg1, int wh)
 {

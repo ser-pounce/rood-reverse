@@ -2,6 +2,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "gpu.h"
+#include "mcman.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -535,9 +536,40 @@ static void func_80106080()
     _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801060C8);
+static int _promptConfirm(int arg0);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _promptConfirm);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801062E0);
+extern int _promptOverwriteConfirmed;
+extern char _promptOverwriteInitialized;
+extern char _promptOverwriteState;
+extern u_short* _textTable;
+
+static int _promptOverwrite(int arg0) {
+    int temp_v0;
+
+    if (arg0 != 0) {
+        _promptOverwriteInitialized = 1;
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
+        _promptConfirm(1);
+        _promptOverwriteState = 0;
+        return 0;
+    }
+    switch (_promptOverwriteState) {
+    case 0:
+        temp_v0 = _promptConfirm(0);
+        _promptOverwriteConfirmed = temp_v0;
+        if (temp_v0 != 0) {
+            _promptOverwriteState = 1;
+        }
+        break;
+    case 1:
+        if (func_80104F04() != 0) {
+            return _promptOverwriteConfirmed;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010639C);
 

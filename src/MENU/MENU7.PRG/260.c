@@ -557,7 +557,38 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801085B0);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801086DC);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801087F0);
+void _setMenuItemClut(short* clut, int textBlendFactor, u_short* clut0, u_short* clut1) {
+    int r0;
+    int r1;
+    int g0;
+    int g1;
+    int b0;
+    int b1;
+    int rdiff;
+    int gdiff;
+    int bdiff;
+    int i;
+
+    clut[0] = 0;
+    
+    for (i = 1; i < 16; ++i) {
+        r0 = clut0[i];
+        r1 = clut1[i];
+        g0 = r0 & 0x3E0;
+        b0 = r0 & 0x7C00;
+        r0 &= 0x1F;
+        g1 = r1 & 0x3E0;
+        b1 = r1 & 0x7C00;
+        r1 &= 0x1F;
+        rdiff = (r1 - r0) * textBlendFactor;
+        gdiff = (g1 - g0) * textBlendFactor;
+        bdiff = (b1 - b0) * textBlendFactor;
+        clut[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
+                       | ((b0 * 16 + bdiff) & 0x7C000))
+                      >> 4)
+            | 0x8000;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801088B4);
 

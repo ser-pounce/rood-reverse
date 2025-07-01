@@ -36,3 +36,4 @@ _selectCursorXy = 0x8010B0A0;
 _memoryCardMessage = 0x8010B0A4;
 _selectCursorColor = 0x8010B0A9;
 _fileMenuScreenFade = 0x8010B0AA;
+_setMenuItemClut = 0x801087F0;

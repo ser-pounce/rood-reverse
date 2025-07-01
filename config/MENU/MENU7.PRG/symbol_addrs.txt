@@ -1,2 +1,7 @@
 _drawImage = 0x80102B3C;
+_readImage = 0x80102B6C;
 _rMemcpy = 0x80102B9C;
+_getNewestSaveFile = 0x80102CB4;
+_decode = 0x80102EBC;
+_countDigits = 0x80104840;
+_saveFileInfo = 0x8010AE40;

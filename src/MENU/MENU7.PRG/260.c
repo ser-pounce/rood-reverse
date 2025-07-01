@@ -1,12 +1,57 @@
 #include "common.h"
+#include "../../src/SLUS_010.40/main.h"
 #include <libgte.h>
 #include <libgpu.h>
+#include <memory.h>
+
+enum slotState_e {
+    slotStateUnavailable = 0,
+    slotStateAvailable = 1,
+    slotStateTemporary = 2,
+    slotStateInUse = 3
+};
+
+typedef struct {
+    enum slotState_e slotState;
+    u_int generation;
+    int unk8;
+} saveBase_t;
+
+typedef struct {
+    vs_Gametime_t gameTime;
+    u_short saveCount;
+    u_short unk12;
+    u_short currentHP;
+    u_short maxHP;
+    char saveLocation;
+    char clearCount;
+    char mapCompletion;
+    char unk1B;
+    u_short currentMP;
+    u_short maxMP;
+} stats_t;
+
+typedef struct {
+    saveBase_t base;
+    stats_t stats;
+    u_short unk20[16];
+} saveFileSubInfo_t;
+
+typedef struct {
+    u_int key;
+    saveFileSubInfo_t unk4;
+    char unk44[0x1C];
+    char unk60[0x20];
+} saveFileInfo_t;
+
+extern saveFileInfo_t* _saveFileInfo;
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102A60);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102ADC);
 
-static void _drawImage(int xy, void* arg1, int wh) {
+static void _drawImage(int xy, void* arg1, int wh)
+{
     RECT rect;
 
     *(int*)&rect.x = xy;
@@ -15,7 +60,15 @@ static void _drawImage(int xy, void* arg1, int wh) {
     DrawSync(0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102B6C);
+static void _readImage(int xy, void* buffer, int wh)
+{
+    RECT rect;
+
+    *(int*)&rect.x = xy;
+    *(int*)&rect.w = wh;
+    StoreImage(&rect, buffer);
+    DrawSync(0);
+}
 
 static void _rMemcpy(void* dst, void const* src, int count)
 {
@@ -29,7 +82,22 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102BBC);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102C38);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102CB4);
+u_int _getNewestSaveFile()
+{
+    u_int i;
+    u_int maxCounter = 0;
+    u_int fileIndex = 0;
+
+    for (i = 0; i < 5; ++i) {
+        if (_saveFileInfo[i].unk4.base.slotState >= 3) {
+            if (maxCounter < _saveFileInfo[i].unk4.base.generation) {
+                maxCounter = _saveFileInfo[i].unk4.base.generation;
+                fileIndex = i;
+            }
+        }
+    }
+    return fileIndex;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102D14);
 
@@ -37,7 +105,13 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102DAC);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102E28);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102EBC);
+static void _decode(u_int key, void* buf, int count)
+{
+    for (; count != 0; --count) {
+        key *= 0x19660D;
+        *((char*)buf++) -= key >> 24;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102EF4);
 
@@ -65,13 +139,30 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
 
+void func_801046C0(int, int, int, int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801046C0);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104764);
+extern int D_8010A2E4[];
+extern int D_8010A30C[];
+
+void func_80104764(int arg0, int id)
+{
+    func_801046C0(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801047A8);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104840);
+static int _countDigits(int val)
+{
+    int i;
+
+    i = 0;
+    do {
+        val /= 10;
+        ++i;
+    } while (val != 0);
+    return i;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104870);
 
@@ -79,13 +170,25 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104B00);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
 
+extern char D_8010AE50[][0x34];
+
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104D58);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104DB8);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104EC0);
+void func_80104EC0(int arg0) { memset(D_8010AE50[arg0], 0, sizeof(D_8010AE50[arg0])); }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104F04);
+int func_80104F04()
+{
+    int i;
+
+    for (i = 0; i < 10; ++i) {
+        if (D_8010AE50[i][0] >= 2) {
+            break;
+        }
+    }
+    return (i ^ 10) == 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104F40);
 
@@ -95,7 +198,21 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801051F4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801052D0);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801053FC);
+u_int func_801053FC(u_int arg0, u_int arg1, int arg2)
+{
+    int temp_a3;
+    u_int i;
+    u_int ret;
+
+    ret = 0;
+    for (i = 0; i < 3; ++i) {
+        temp_a3 = ((arg0 >> 16) & 0xFF) * (8 - arg2);
+        arg0 <<= 8;
+        ret = (ret << 8) + ((temp_a3 + (((arg1 >> 16) & 0xFF) * arg2)) >> 3);
+        arg1 <<= 8;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105458);
 
@@ -103,7 +220,11 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010550C);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105BE4);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106080);
+void func_80106080()
+{
+    func_801046C0(0x100, 0x38F00000, 0xB00040, 0x9C);
+    func_801046C0(0, 0x38F00000, 0xB00100, 0x9A);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801060C8);
 
@@ -135,7 +256,23 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80108CE8);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010903C);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010928C);
+extern u_short D_8010AA2C[];
+
+int func_8010928C(int arg0, int arg1)
+{
+    int i;
+    int var_a3;
+
+    i = 0;
+    var_a3 = 0;
+
+    if (arg0 > 0) {
+        do {
+            var_a3 += D_8010AA2C[i++];
+        } while (i < arg0);
+    }
+    return arg1 + (var_a3 * 2);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 

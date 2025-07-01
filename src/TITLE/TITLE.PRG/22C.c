@@ -47,7 +47,7 @@ enum memcardEventHandler_e {
 
 static u_int _encode(int value)
 {
-    static u_int _encodeSeed = 0x0019660D;
+    static u_int _encodeSeed = 0x19660D;
     u_int seed = _encodeSeed;
 
     _encodeSeed = seed * 0x19660D;

@@ -46,11 +46,46 @@ typedef struct {
     char unk60[0x20];
 } saveFileInfo_t;
 
+enum fileMenuElementState_e {
+    fileMenuElementStateInactive = 0,
+    fileMenuElementStateStatic = 1,
+    fileMenuElementStateAnimateX = 2,
+    fileMenuElementStateAnimateY = 3,
+    fileMenuElementStateAnimateNegX = 4
+};
+
+typedef struct {
+    char state;
+    char slotId;
+    char outertextBlendFactor;
+    char innertextBlendFactor;
+    char selected;
+    char slotUnavailable;
+    char saveLocation;
+    char unk7;
+    short targetPosition;
+    short unkA;
+    short x;
+    short y;
+    short w;
+    short h;
+    char text[32];
+} fileMenuElements_t;
+
 extern saveFileInfo_t* _saveFileInfo;
+extern fileMenuElements_t _fileMenuElements[10];
+extern short _fileProgressTarget;
+extern int _fileProgressCounter;
+extern int _selectCursorXy;
+extern char* _memoryCardMessage;
+extern char _selectCursorColor;
+extern char _fileMenuScreenFade;
+extern long _memcardEventDescriptors[8];
+extern int D_8010A2E4[];
+extern int D_8010A30C[];
+extern u_short D_8010AA2C[];
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102A60);
-
-extern long _memcardEventDescriptors[8];
 
 void _resetMemcardEvents(int type) {
     int i;
@@ -164,9 +199,6 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104618);
 void func_801046C0(int, int, int, int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801046C0);
 
-extern int D_8010A2E4[];
-extern int D_8010A30C[];
-
 void func_80104764(int arg0, int id)
 {
     func_801046C0(arg0, D_8010A2E4[id], D_8010A30C[id], 0xC);
@@ -192,24 +224,28 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104B00);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
 
-extern char D_8010AE50[][0x34];
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104D58);
+void _initFileMenu() {
+    _memoryCardMessage = 0;
+    _selectCursorColor = 0;
+    _selectCursorXy = 0;
+    _fileProgressCounter = 0;
+    _fileMenuScreenFade = 0;
+    _fileProgressTarget = 0x180;
+    memset(&_fileMenuElements, 0, sizeof(_fileMenuElements));
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104DB8);
 
-void func_80104EC0(int arg0) { memset(D_8010AE50[arg0], 0, sizeof(D_8010AE50[arg0])); }
+void func_80104EC0(int arg0) { memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0])); }
 
 int func_80104F04()
 {
     int i;
 
-    for (i = 0; i < 10; ++i) {
-        if (D_8010AE50[i][0] >= 2) {
-            break;
-        }
-    }
-    return (i ^ 10) == 0;
+    for (i = 0; i < 10 && _fileMenuElements[i].state < fileMenuElementStateAnimateX; ++i)
+        ;
+    return i == 10;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104F40);
@@ -277,8 +313,6 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801088B4);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80108CE8);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010903C);
-
-extern u_short D_8010AA2C[];
 
 int func_8010928C(int arg0, int arg1)
 {

@@ -5,3 +5,5 @@ _getNewestSaveFile = 0x80102CB4;
 _decode = 0x80102EBC;
 _countDigits = 0x80104840;
 _saveFileInfo = 0x8010AE40;
+_createSaveFile = 0x8010337C;
+_memcardMakeFilename = 0x80102BBC;

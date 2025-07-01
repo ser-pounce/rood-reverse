@@ -3,6 +3,8 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include <memory.h>
+#include <libapi.h>
+#include <sys/file.h>
 
 enum slotState_e {
     slotStateUnavailable = 0,
@@ -78,7 +80,8 @@ static void _rMemcpy(void* dst, void const* src, int count)
     } while (count != 0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102BBC);
+char* _memcardMakeFilename(int, int);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardMakeFilename);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102C38);
 
@@ -123,7 +126,18 @@ INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103134);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010337C);
+int _createSaveFile(int port, int id) {
+    long file;
+    char* fileName = _memcardMakeFilename((port - 1) * 16, id);
+
+    erase(fileName);
+    file = open(fileName, O_CREAT | (3 << 16));
+    if (file != -1) {
+        close(file);
+        return 0;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801033DC);
 

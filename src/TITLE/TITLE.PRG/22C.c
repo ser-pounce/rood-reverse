@@ -123,7 +123,7 @@ static char* _memcardMakeTempFilename(int port, int fileNo)
     memset(filename, 0, ' ');
     strcpy(filename, _memcardFilenameTemplate);
     filename[2] = port == 0 ? '0' : '1';
-    filename[20] = (fileNo + 'A' - 1);
+    filename[20] = fileNo + 'A' - 1;
     return filename;
 }
 

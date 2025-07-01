@@ -5,6 +5,7 @@
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
+#include <string.h>
 
 enum slotState_e {
     slotStateUnavailable = 0,
@@ -12,6 +13,16 @@ enum slotState_e {
     slotStateTemporary = 2,
     slotStateInUse = 3
 };
+
+enum testMemcardEvents_e {
+    memcardInternalEventIoEnd,
+    memcardInternalEventError,
+    memcardInternalEventTimeout,
+    memcardInternalEventUnformatted,
+    memcardInternalEventNone,
+};
+
+enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 
 typedef struct {
     enum slotState_e slotState;
@@ -72,6 +83,8 @@ typedef struct {
     char text[32];
 } fileMenuElements_t;
 
+extern char const* _memcardFilenameTemplate;
+
 extern saveFileInfo_t* _saveFileInfo;
 extern fileMenuElements_t _fileMenuElements[10];
 extern short _fileProgressTarget;
@@ -85,9 +98,20 @@ extern int D_8010A2E4[];
 extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102A60);
+static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
+{
+    int i;
 
-void _resetMemcardEvents(int type) {
+    for (i = 0; i < 4; ++i) {
+        if (TestEvent(_memcardEventDescriptors[i + type]) == 1) {
+            return i;
+        }
+    }
+    return i;
+}
+
+void _resetMemcardEvents(int type)
+{
     int i;
 
     for (i = 0; i < 4; ++i) {
@@ -126,7 +150,16 @@ static void _rMemcpy(void* dst, void const* src, int count)
 char* _memcardMakeFilename(int, int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardMakeFilename);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102C38);
+char* _memcardMakeTempFilename(int port, int fileNo)
+{
+    extern char _filename1[32];
+
+    memset(_filename1, 0, ' ');
+    strcpy(_filename1, _memcardFilenameTemplate);
+    _filename1[2] = port == 0 ? '0' : '1';
+    _filename1[20] = fileNo + 'A' - 1;
+    return _filename1;
+}
 
 u_int _getNewestSaveFile()
 {
@@ -147,7 +180,31 @@ u_int _getNewestSaveFile()
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102D14);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102DAC);
+static int _memcardFileNumberFromFilename(char* filename)
+{
+    int i;
+    char const* gameCode = &_memcardFilenameTemplate[5];
+
+    for (i = 0; i < 15; ++i) {
+        if (gameCode[i] != filename[i]) {
+            return 0;
+        }
+    }
+
+    i = filename[15] - 'A';
+
+    if (i < 5u) {
+        return -(filename[15] - 'A' + 1);
+    }
+
+    i = filename[15] - '1';
+
+    if (i < 5u) {
+        return filename[15] - '0';
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80102E28);
 
@@ -169,7 +226,8 @@ INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103134);
 
-int _createSaveFile(int port, int id) {
+int _createSaveFile(int port, int id)
+{
     long file;
     char* fileName = _memcardMakeFilename((port - 1) * 16, id);
 
@@ -224,8 +282,8 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104B00);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
 
-
-void _initFileMenu() {
+void _initFileMenu()
+{
     _memoryCardMessage = 0;
     _selectCursorColor = 0;
     _selectCursorXy = 0;
@@ -237,7 +295,10 @@ void _initFileMenu() {
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104DB8);
 
-void func_80104EC0(int arg0) { memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0])); }
+void func_80104EC0(int arg0)
+{
+    memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0]));
+}
 
 int func_80104F04()
 {

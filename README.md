@@ -4,7 +4,7 @@
 
 A decompilation project for Vagrant Story for PlayStation 1, with a goal of enabling interoperability with modern hardware and fixing bugs in the original game.
 
-This project does not include any of the content from the game's disk.
+This project does not contain any of the original files from the game disk, you must own a copy of the game.
 
 Heavily inspired by the incredible work of the [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) team.
 

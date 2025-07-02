@@ -532,7 +532,45 @@ static void _fileProcessingAnim(int x, int y)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104C20);
+static void _fileProcessingCompleteAnim(int colour, int y) {
+    int yOfst;
+    int colour0;
+    u_int i;
+    int colour1 = 0;
+
+    if (_isSaving != 0) {
+        colour0 = colour + (colour << 15);
+    } else {
+        colour0 = (colour - (colour >> 3)) + (colour << 8);
+    }
+
+    DrawSync(0);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
+    _primBuf.prim.tile_tpage.tpage
+        = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
+    _primBuf.prim.tile_tpage.x0y0 = y | 64;
+    _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
+    DrawPrim(&_primBuf);
+
+    for (i = 0; i < 2; ++i) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4, primAddrNull);
+        yOfst = y + vs_getXY(0, -8);
+        _primBuf.prim.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
+        _primBuf.prim.polyG4.x0y0 = yOfst | 64;
+        _primBuf.prim.polyG4.r1g1b1 = colour1;
+        _primBuf.prim.polyG4.x1y1 = yOfst | 320;
+        _primBuf.prim.polyG4.r2g2b2 = colour0;
+        _primBuf.prim.polyG4.x2y2 = y | 64;
+        _primBuf.prim.polyG4.r3g3b3 = colour0;
+        _primBuf.prim.polyG4.x3y3 = y | 320;
+        DrawPrim(&_primBuf);
+        y += vs_getXY(0, 40);
+        colour1 = colour0;
+        colour0 = 0;
+    }
+}
 
 static void _initFileMenu()
 {

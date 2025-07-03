@@ -150,6 +150,16 @@ typedef struct {
     } prim;
 } primBuf_t;
 
+typedef struct {
+    u_long locationCluts[2][128];
+    char unk400[7][32];
+    char unk4E0[22][128];
+    char unkFE0[0x20];
+    u_short textTable[0x800];
+    saveFileInfo_t saveFileInfo[5];
+    struct DIRENTRY _dirEntBuf;
+} mcdata_t;
+
 void func_800C02E0();
 void func_800C02E8();
 void func_800C02F0();
@@ -189,6 +199,7 @@ extern char D_8010AA2A;
 extern int D_8010ADA8;
 extern char D_8010ADAC;
 extern char D_8010ADAD;
+extern mcdata_t* _mcData;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -550,7 +561,82 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103DD0);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801043C4);
+static int _initMemcard(int init)
+{
+    enum state {
+        none = 0,
+        queueReady = 1,
+        enqueued = 2,
+    };
+
+    extern u_short _eventSpecs[];
+    extern vs_main_CdQueueSlot* _initMemcardCdQueueSlot;
+    extern char _initMemcardState;
+
+    vs_main_CdFile cdFile;
+    int i;
+    u_int event;
+
+    if (init != 0) {
+        func_8007DFF0(0x1D, 3, 6);
+        _spmcimg = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
+        _textTable = _mcData->textTable;
+        _saveFileInfo = _mcData->saveFileInfo;
+        _dirEntBuf = &_mcData->_dirEntBuf;
+        cdFile.lba = VS_SPMCIMG_BIN_LBA;
+        cdFile.size = VS_SPMCIMG_BIN_SIZE;
+        _initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(_initMemcardCdQueueSlot, _spmcimg);
+        _initMemcardState = none;
+        return 0;
+    }
+
+    switch (_initMemcardState) {
+    case none:
+        if (_initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(_initMemcardCdQueueSlot);
+            _drawImage(vs_getXY(800, 256), _spmcimg, vs_getWH(224, 256));
+            _initMemcardState = queueReady;
+        }
+        return 0;
+    case queueReady:
+        cdFile.lba = VS_MCDATA_BIN_LBA; // MCMAN.BIN must immediately follow MCDATA.BIN on
+                                        // the disk
+        cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
+        _initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(_initMemcardCdQueueSlot, _mcData);
+        _initMemcardState = enqueued;
+        break;
+    case enqueued:
+        break;
+    default:
+        return 0;
+    }
+
+    if (_initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        vs_main_freeCdQueueSlot(_initMemcardCdQueueSlot);
+        vs_main_enableReset(0);
+        EnterCriticalSection();
+
+        for (i = 0; i < 8; ++i) {
+            event = SwCARD;
+            if (i & 4) {
+                event = HwCARD;
+            }
+            _memcardEventDescriptors[i]
+                = OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, 0);
+        }
+
+        ExitCriticalSection();
+
+        for (i = 0; i < 8; ++i) {
+            EnableEvent(_memcardEventDescriptors[i]);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 static void _shutdownMemcard()
 {

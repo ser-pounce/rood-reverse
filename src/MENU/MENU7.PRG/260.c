@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
+#include "../SLUS_010.40/sfx.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
@@ -10,6 +11,7 @@
 #include <libapi.h>
 #include <sys/file.h>
 #include <string.h>
+#include <libetc.h>
 
 enum slotState_e {
     slotStateUnavailable = 0,
@@ -887,8 +889,68 @@ static void func_80106080()
     _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
 }
 
-static int _promptConfirm(int arg0);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _promptConfirm);
+static int _promptConfirm(int arg0)
+{
+    enum state {
+        initYes = 0,
+        initNo = 1,
+        waitForAnimation = 2,
+        handleInput = 3,
+    };
+
+    extern char _promptConfirmState;
+    extern char _promptConfirmCancelled;
+
+    fileMenuElements_t* temp_v0;
+    int i;
+
+    if (arg0 != 0) {
+        _promptConfirmCancelled = 1;
+        _promptConfirmState = initYes;
+        return 0;
+    }
+
+    switch (_promptConfirmState) {
+    case initYes:
+    case initNo:
+        temp_v0 = _initFileMenuElement(_promptConfirmState + 3,
+            vs_getXY(-126 & 0xFFFF, _promptConfirmState * 16 + 18), vs_getWH(126, 12),
+            (char*)&_textTable[_textTable[_promptConfirmState
+                + VS_MCMAN_INDEX_yesIndent]]);
+        temp_v0->state = 4;
+        temp_v0->targetPosition = 0;
+        ++_promptConfirmState;
+        break;
+    case waitForAnimation:
+        _promptConfirmState += _fileMenuElementsActive();
+        break;
+    case handleInput:
+        _fileMenuElements[_promptConfirmCancelled + 3].selected = 1;
+        _fileMenuElements[4 - _promptConfirmCancelled].selected = 0;
+        if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
+            _selectCursorXy = 0;
+            for (i = 3; i < 5; ++i) {
+                _fileMenuElements[i].state = 4;
+                _fileMenuElements[i].targetPosition = -126;
+            }
+            if (vs_main_buttonsPressed & PADRright) {
+                if (_promptConfirmCancelled == 0) {
+                    vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
+                    return 1;
+                }
+            }
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+            return -1;
+        }
+        if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            _promptConfirmCancelled = 1 - _promptConfirmCancelled;
+        }
+        _selectCursorXy = (_promptConfirmCancelled * 16 + 10) << 16;
+        break;
+    }
+    return 0;
+}
 
 static int _promptOverwrite(int arg0)
 {

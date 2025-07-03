@@ -109,7 +109,7 @@ typedef union {
         signed char m;
         signed char h;
     } t;
-    int all;
+    u_int all;
 } vs_Gametime_t;
 
 typedef struct D_80061068_t {

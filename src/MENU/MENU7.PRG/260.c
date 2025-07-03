@@ -28,6 +28,13 @@ enum testMemcardEvents_e {
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 
+enum memcardEventHandler_e {
+    memcardEventPending = 0,
+    memcardEventIoEnd = 1,
+    memcardEventTimeout = 2,
+    memcardEventUnformatted = 3
+};
+
 typedef struct {
     enum slotState_e slotState;
     u_int generation;
@@ -213,7 +220,7 @@ static u_int _getNewestSaveFile()
     return fileIndex;
 }
 
-static int func_80102D14()
+static int _findCurrentSaveOnActiveMemcard()
 {
     int i;
     for (i = 0; i < 5; ++i) {
@@ -396,7 +403,8 @@ static int _deleteRedundantTempFiles(int port)
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103134);
+static int _initSaveFileInfo(int port);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _initSaveFileInfo);
 
 static int _createSaveFile(int port, int id)
 {
@@ -532,7 +540,8 @@ static void _fileProcessingAnim(int x, int y)
     }
 }
 
-static void _fileProcessingCompleteAnim(int colour, int y) {
+static void _fileProcessingCompleteAnim(int colour, int y)
+{
     int yOfst;
     int colour0;
     u_int i;
@@ -635,17 +644,85 @@ static int func_80104F04()
     return i == 10;
 }
 
-int _printCharacter(u_int c, int x, int y, int clut);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _printCharacter);
+static int _printCharacter(u_int c, int x, int y, int clut)
+{
+    extern int glyphWidths[];
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105080);
+    if ((c >> 8) == 14) {
+        return x + (char)c;
+    }
+    if (c != vs_char_space) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
+        _primBuf.prim.sprt.tpage
+            = vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
+        _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
+        _primBuf.prim.sprt.wh = vs_getWH(12, 12);
+        _primBuf.prim.sprt.u0v0clut
+            = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
+        DrawPrim(&_primBuf);
+    }
+    return x + glyphWidths[c];
+}
 
-enum memcardEventHandler_e {
-    memcardEventPending = 0,
-    memcardEventIoEnd = 1,
-    memcardEventTimeout = 2,
-    memcardEventUnformatted = 3
+void func_800FFC04(u_short*);
+extern char _findCurrentSaveState;
+extern char _findCurrentSaveSubState;
+
+enum _findCurrentSave_e {
+    findSaveTimeout = -2,
+    findSaveNotFound = -1,
+    findSavePending = 0
 };
+
+static int _findCurrentSave(int init)
+{
+    int port;
+    int currentSave;
+    int event;
+    int realPort;
+
+    if (init != 0) {
+        _findCurrentSaveState = 0;
+        _findCurrentSaveSubState = 0;
+        return 0;
+    }
+
+    realPort = _findCurrentSaveState >> 1;
+    port = realPort + 1;
+
+    if ((_findCurrentSaveState & 1) == 0) {
+        func_800FFC04(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
+        _memoryCardMessage
+            = (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
+        _memcardEventHandler(realPort + 1);
+        ++_findCurrentSaveState;
+    } else {
+        event = _memcardEventHandler(0) & 3;
+
+        if (event != memcardEventPending) {
+            if (event == memcardEventIoEnd) {
+                if (_initSaveFileInfo(realPort + 1) == 0) {
+                    currentSave = _findCurrentSaveOnActiveMemcard();
+                    if (currentSave != 0) {
+                        return currentSave + (realPort * 16);
+                    }
+                }
+            } else if (event == memcardEventTimeout) {
+                if (_findCurrentSaveState != 1) {
+                    if (_findCurrentSaveSubState != 0) {
+                        return findSaveTimeout;
+                    }
+                } else {
+                    _findCurrentSaveSubState = _findCurrentSaveState;
+                }
+            }
+            ++_findCurrentSaveState;
+        }
+    }
+    return _findCurrentSaveState != 4 ? findSavePending : findSaveNotFound;
+}
 
 static int _memcardMaskedHandler(int portMask)
 {
@@ -865,7 +942,6 @@ static int _initGameOver(int arg0)
     extern int _initGameOverState;
 
     vs_main_CdFile cdFile;
-    u_int* temp_v0;
 
     if (arg0 != 0) {
         cdFile.lba = VS_GAMEOVER_BIN_LBA;
@@ -956,6 +1032,8 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109778);
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
 
+void func_80109D64();
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109D64);
+// https://decomp.me/scratch/Apjn5
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109EB8);

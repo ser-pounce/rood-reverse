@@ -68,6 +68,44 @@ typedef struct {
     char unk60[0x20];
 } saveFileInfo_t;
 
+typedef struct {
+    int key;
+    saveBase_t base;
+} savedata_unk180_2_t;
+
+typedef struct {
+    savedata_unk180_2_t unk180;
+    stats_t stats;
+    char checksums[0x5C];
+} savedata_unk180_t;
+
+typedef struct {
+    char containerData[0x3800];
+    char unk55E0[0x100];
+    char unk56E0[0x300];
+} containerData_t;
+
+typedef struct {
+    saveFileInfo_t fileInfo;
+    char unk80[0x80];
+    char unk100[0x80];
+    savedata_unk180_t unk180;
+    char unk200[0x440];
+    char unk640[0x20];
+    char unk660[0x48];
+    vs_main_settings_t unk6A8;
+    D_80060068_t unk6C8;
+    char unk7C8[15][256];
+    char unk16C8[0xB0];
+    D_80061068_t unk1778;
+    D_8005FEA0_t unk1784;
+    int unk1898;
+    char unk189C[0x520];
+    char unk1DBC[0x24];
+    containerData_t containerData;
+    char unk59E0[0x220];
+} savedata_t;
+
 enum fileMenuElementState_e {
     fileMenuElementStateInactive = 0,
     fileMenuElementStateStatic = 1,
@@ -131,6 +169,8 @@ extern u_short* _textTable;
 extern void* D_8010A930;
 extern u_int* D_8010AB10;
 extern char _isSaving;
+extern vs_main_CdQueueSlot* D_8010AB04;
+extern savedata_t* _opMcImg;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -262,44 +302,6 @@ static int _memcardFileNumberFromFilename(char* filename)
     return 0;
 }
 
-typedef struct {
-    int key;
-    saveBase_t base;
-} savedata_unk180_2_t;
-
-typedef struct {
-    savedata_unk180_2_t unk180;
-    stats_t stats;
-    char checksums[0x5C];
-} savedata_unk180_t;
-
-typedef struct {
-    char containerData[0x3800];
-    char unk55E0[0x100];
-    char unk56E0[0x300];
-} containerData_t;
-
-typedef struct {
-    saveFileInfo_t fileInfo;
-    char unk80[0x80];
-    char unk100[0x80];
-    savedata_unk180_t unk180;
-    char unk200[0x440];
-    char unk640[0x20];
-    char unk660[0x48];
-    vs_main_settings_t unk6A8;
-    D_80060068_t unk6C8;
-    char unk7C8[15][256];
-    char unk16C8[0xB0];
-    D_80061068_t unk1778;
-    D_8005FEA0_t unk1784;
-    int unk1898;
-    char unk189C[0x520];
-    char unk1DBC[0x24];
-    containerData_t containerData;
-    char unk59E0[0x220];
-} savedata_t;
-
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {
     int checksum;
@@ -423,7 +425,50 @@ static int _createSaveFile(int port, int id)
 static int _memcardEventHandler(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardEventHandler);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103630);
+int _applyLoadedSaveFile(int verifyOnly) {
+    int blockCount;
+    savedata_t* spmcimg = (savedata_t*)_spmcimg;
+    void* spmcimg2 = spmcimg + 1;
+    savedata_t* s4 = spmcimg + 1;
+    savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
+
+    _decode(unk180->key, &unk180->base.slotState,
+        sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.base.slotState);
+
+    blockCount = 92;
+    if (verifyOnly != 0) {
+        blockCount = 32;
+    }
+
+    if ((_verifySaveChecksums(spmcimg + 1, blockCount) != 0)
+        || (unk180->base.unk8 != 0x20000107)) {
+        do {
+            return 1;
+        } while (0);
+    }
+
+    if (verifyOnly == 0) {
+        return 0;
+    }
+
+    _rMemcpy(D_80061598, spmcimg[1].unk200, sizeof(D_80061598));
+    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
+    _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
+    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
+    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
+    _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
+    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
+    _rMemcpy(&D_8005FEA0, &spmcimg[1].unk1784, sizeof(D_8005FEA0));
+    D_80060064 = s4->unk1898;
+    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
+    spmcimg2 = D_80060040;
+    _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));
+    vs_main_gametime.t = spmcimg[1].unk180.stats.gameTime.t;
+    func_80042CA0();
+    vs_main_setMonoSound(vs_main_settings.monoSound);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801037E8);
 
@@ -890,10 +935,6 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107E98);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
 
-void func_80103630(int);
-extern vs_main_CdQueueSlot* D_8010AB04;
-extern savedata_t* _opMcImg;
-
 int func_801085B0(int arg0)
 {
     vs_main_CdFile file;
@@ -909,7 +950,7 @@ int func_801085B0(int arg0)
             vs_main_freeCdQueueSlot(D_8010AB04);
             sp18.t = vs_main_gametime.t;
             _spmcimg = _opMcImg - 1;
-            func_80103630(1);
+            _applyLoadedSaveFile(1);
             vs_main_gametime.t = sp18.t;
             new_var2 = _opMcImg;
             vs_main_freeHeapR(new_var2);

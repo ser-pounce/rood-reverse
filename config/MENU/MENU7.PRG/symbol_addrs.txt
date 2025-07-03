@@ -64,3 +64,4 @@ _memoryCardMessage = 0x8010B0A4;
 _isSaving = 0x8010B0A8;
 _selectCursorColor = 0x8010B0A9;
 _fileMenuScreenFade = 0x8010B0AA;
+_applyLoadedSaveFile = 0x80103630;

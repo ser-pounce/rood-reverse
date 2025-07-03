@@ -425,7 +425,8 @@ static int _createSaveFile(int port, int id)
 static int _memcardEventHandler(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardEventHandler);
 
-int _applyLoadedSaveFile(int verifyOnly) {
+static int _applyLoadedSaveFile(int verifyOnly)
+{
     int blockCount;
     savedata_t* spmcimg = (savedata_t*)_spmcimg;
     void* spmcimg2 = spmcimg + 1;
@@ -680,7 +681,7 @@ static void func_80104EC0(int arg0)
     memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0]));
 }
 
-static int func_80104F04()
+static int _fileMenuElementsActive()
 {
     int i;
 
@@ -799,7 +800,7 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
-void _printString(char* text, int x, int y, int clut)
+static void _printString(char* text, int x, int y, int clut)
 {
     extern char arrowState;
 
@@ -913,7 +914,7 @@ static int _promptOverwrite(int arg0)
         }
         break;
     case 1:
-        if (func_80104F04() != 0) {
+        if (_fileMenuElementsActive() != 0) {
             return _promptOverwriteConfirmed;
         }
         break;
@@ -921,7 +922,76 @@ static int _promptOverwrite(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010639C);
+static int _promptFormat(int initPort)
+{
+    enum _promptFormatState {
+        promptConfirm = 0,
+        initEvents = 1,
+        handleEvents = 2,
+        format = 3
+    };
+
+    extern char _promptFormatState;
+    extern char _promptFormatPort;
+
+    int val;
+
+    if (initPort != 0) {
+        _promptFormatPort = initPort;
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
+        _promptConfirm(1);
+        _promptFormatState = promptConfirm;
+        return 0;
+    }
+
+    switch (_promptFormatState) {
+    case promptConfirm:
+        val = _promptConfirm(0);
+
+        if (val != 0) {
+            if (val < 0) {
+                _memoryCardMessage
+                    = (char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
+                return -1;
+            }
+
+            _promptFormatState = initEvents;
+        }
+        return 0;
+    case initEvents:
+        if (_fileMenuElementsActive() != 0) {
+            _memcardEventHandler(_promptFormatPort);
+            _promptFormatState = handleEvents;
+        }
+        return 0;
+    case handleEvents:
+        val = _memcardEventHandler(0);
+
+        if (val != 0) {
+            if (val == memcardEventUnformatted) {
+                _promptFormatState = format;
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatting);
+            } else {
+                if (val == memcardEventTimeout) {
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+                } else {
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
+                }
+                return -1;
+            }
+        }
+        return 0;
+    case format:
+        if (_card_format((_promptFormatPort - 1) * 16) == 0) {
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
+            return -1;
+        }
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106554);
 
@@ -935,7 +1005,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107E98);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
 
-int func_801085B0(int arg0)
+static int func_801085B0(int arg0)
 {
     vs_main_CdFile file;
     void* new_var2;

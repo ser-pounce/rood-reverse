@@ -150,6 +150,15 @@ typedef struct {
     } prim;
 } primBuf_t;
 
+void func_800C02E0();
+void func_800C02E8();
+void func_800C02F0();
+void func_800C02F8();
+signed char* func_800C8E48(int);
+char func_800CCD40(char, int);
+void func_800FA8E0(int);
+int func_800FA9D0();
+
 extern char const* _memcardFilenameTemplate;
 
 extern saveFileInfo_t* _saveFileInfo;
@@ -174,6 +183,12 @@ extern char _isSaving;
 extern vs_main_CdQueueSlot* D_8010AB04;
 extern savedata_t* _opMcImg;
 extern struct DIRENTRY* _dirEntBuf;
+extern u_short D_8010A9D0;
+extern u_short D_8010A9D4;
+extern char D_8010AA2A;
+extern int D_8010ADA8;
+extern char D_8010ADAC;
+extern char D_8010ADAD;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -1237,7 +1252,67 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801088B4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80108CE8);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010903C);
+int func_8010903C(int arg0)
+{
+    func_800C8E5C_t* temp_v0;
+    u_int var_s0;
+
+    if (arg0 != 0) {
+        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9D0);
+        temp_v0->unk0 = 2;
+        temp_v0->unk18 = 0xC2;
+        D_8010ADAC = 0;
+        D_8010ADA8 = (arg0 - 1) & 1;
+        D_8010ADAD = (char)(arg0 >> 2);
+        return 0;
+    }
+    switch (D_8010ADAC) {
+    case 0:
+        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9D4);
+        temp_v0->unk0 = 2;
+        temp_v0->unk18 = 0xC2;
+        D_8010ADAC = 1;
+        break;
+    case 1:
+        D_8010ADAC += func_800FA9D0();
+        break;
+    case 2:
+        func_800C8E48(D_8010ADA8 + 0x1E)[6] = 1;
+        func_800C8E48(0x1F - D_8010ADA8)[6] = 0;
+        var_s0 = vs_main_buttonsPressed;
+        if (D_8010ADAD == 0) {
+            if (var_s0 & 0x10) {
+                var_s0 -= 16;
+                func_800C02E0();
+            }
+        }
+        if (var_s0 & 0x70) {
+            if ((D_8010ADA8 != 0) || (var_s0 & 0x50)) {
+                func_800C02E8();
+                func_800FA8E0(0x28);
+                D_8010ADA8 = -1;
+            } else {
+                func_800C02F0();
+                func_800FA8E0(0);
+                D_8010ADA8 = 1;
+            }
+            D_8010ADAC = 3;
+        } else {
+            D_8010AA2A = func_800CCD40(D_8010AA2A, D_8010ADA8 + 8);
+            if (vs_main_buttonRepeat & 0x5000) {
+                func_800C02F8();
+                D_8010ADA8 = 1 - D_8010ADA8;
+            }
+        }
+        break;
+    case 3:
+        if (func_800FA9D0() != 0) {
+            return D_8010ADA8;
+        }
+        break;
+    }
+    return 0;
+}
 
 static int func_8010928C(int arg0, int arg1)
 {

@@ -173,7 +173,7 @@ extern char const* _memcardFilenameTemplate;
 
 extern saveFileInfo_t* _saveFileInfo;
 extern fileMenuElements_t _fileMenuElements[10];
-extern short _fileProgressTarget;
+extern u_short _fileProgressTarget;
 extern int _fileProgressCounter;
 extern int _selectCursorXy;
 extern char* _memoryCardMessage;
@@ -557,7 +557,89 @@ static int _applyLoadedSaveFile(int verifyOnly)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801037E8);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80103DD0);
+extern char _loadSaveDataErrorOffset;
+extern u_short _filePreviousProgressCounter;
+extern u_short _fileProgressPosition;
+
+static int _loadSaveData(int portFileno)
+{
+    enum state { init = 0, reading = 1 };
+
+    extern char _loadSaveDataState;
+    extern char _loadSaveDataPort;
+    extern char _loadSaveDataFile;
+    extern char _loadSaveDataErrors;
+    extern char _isTempSave;
+    extern int _loadSaveDataFd;
+
+    void* temp_s2 = (savedata_t*)_spmcimg + 1;
+
+    if (portFileno != 0) {
+        _loadSaveDataState = init;
+        _loadSaveDataErrors = 0;
+        _loadSaveDataErrorOffset = 0;
+        _loadSaveDataPort = portFileno >> 0xC;
+        _isTempSave = (portFileno >> 8) & 1;
+        _loadSaveDataFile = portFileno & 0xF;
+        _fileProgressPosition = 80;
+        _filePreviousProgressCounter = 0;
+        return 0;
+    }
+
+    switch (_loadSaveDataState) {
+    case init: {
+        int nBytes;
+        char* filename;
+        int new_var = 320;
+
+        _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
+                                     * ((_loadSaveDataErrorOffset * 20)
+                                         - (_fileProgressPosition - new_var)))
+            / _fileProgressTarget;
+        _loadSaveDataErrorOffset = _loadSaveDataErrors;
+        _fileProgressTarget = 192 - (_isTempSave << 7);
+        _filePreviousProgressCounter = _fileProgressCounter;
+
+        memset(temp_s2, 0, sizeof(savedata_t));
+
+        if (_loadSaveDataFile & 8) {
+            filename = _memcardMakeTempFilename(_loadSaveDataPort, _loadSaveDataFile & 7);
+        } else {
+            filename = _memcardMakeFilename(_loadSaveDataPort, _loadSaveDataFile);
+        }
+        _loadSaveDataFd = open(filename, 0x8000 | 1);
+        if (_loadSaveDataFd == -1) {
+            ++_loadSaveDataErrors;
+            break;
+        }
+        _resetMemcardEvents(memcardEventsSw);
+        nBytes = sizeof(savedata_t);
+        if (_isTempSave != 0) {
+            nBytes = 0x2000;
+        }
+        if (read(_loadSaveDataFd, temp_s2, nBytes) == -1) {
+            close(_loadSaveDataFd);
+            ++_loadSaveDataErrors;
+            break;
+        }
+        _loadSaveDataState = reading;
+    }
+        // fallthrough
+    case reading: {
+        int event = _testMemcardEvents(memcardEventsSw);
+        if (event < memcardInternalEventNone) {
+            close(_loadSaveDataFd);
+            if (event == memcardInternalEventIoEnd) {
+                return 1;
+            }
+            _loadSaveDataState = init;
+            ++_loadSaveDataErrors;
+        }
+        break;
+    }
+    }
+    return _loadSaveDataErrors == 3 ? -1 : 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
 
@@ -714,9 +796,10 @@ static int _countDigits(int val)
 
 enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
-void func_80104870(int xy, enum statType_e stat, u_int currentValue, u_int maxValue) {
+void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
+{
     extern char _digitDivisors[];
-    
+
     int currentValueFactor;
     int maxValueDigits;
     u_int rgb1;

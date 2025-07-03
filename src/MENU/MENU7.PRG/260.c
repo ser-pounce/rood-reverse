@@ -173,6 +173,7 @@ extern u_int* D_8010AB10;
 extern char _isSaving;
 extern vs_main_CdQueueSlot* D_8010AB04;
 extern savedata_t* _opMcImg;
+extern struct DIRENTRY* _dirEntBuf;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -407,8 +408,63 @@ static int _deleteRedundantTempFiles(int port)
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
-static int _initSaveFileInfo(int port);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _initSaveFileInfo);
+static int _initSaveFileInfo(int port)
+{
+    long fileNo;
+    int i;
+    int tempFilesDeleted;
+    int slotsAvailable = 15;
+
+    for (i = 14; i >= 0; --i) {
+        _memcardFiles[i] = 0;
+    }
+
+    fileNo = (long)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
+    _memcardFiles[0] = (void*)fileNo;
+
+    for (i = 1; (i < 15) && fileNo; ++i) {
+        fileNo = (long)nextfile(_dirEntBuf + i);
+        _memcardFiles[i] = (void*)fileNo;
+    }
+
+    memset(_saveFileInfo, 0, sizeof(saveFileInfo_t) * 5);
+    tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
+    if (tempFilesDeleted & 0x80) {
+        return 1;
+    }
+    for (i = 0; i < 15; ++i) {
+        struct DIRENTRY* file = _memcardFiles[i];
+
+        if (file == 0) {
+            continue;
+        }
+        fileNo = _memcardFileNumberFromFilename(file->name);
+        if (fileNo != 0) {
+            if (fileNo < 0) {
+                fileNo = -fileNo;
+                if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
+                    continue;
+                }
+                memset(&_saveFileInfo[fileNo - 1], 0, sizeof(saveFileInfo_t));
+                _saveFileInfo[fileNo - 1].unk4.base.slotState = slotStateTemporary;
+            } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
+                slotsAvailable += (file->size + 0x1FFF) >> 13;
+            }
+        }
+        slotsAvailable -= (file->size + 0x1FFF) >> 13;
+    }
+
+    for (; slotsAvailable >= 3; slotsAvailable -= 3) {
+        for (i = 0; i < 5; ++i) {
+            if (_saveFileInfo[i].unk4.base.slotState == slotStateUnavailable) {
+                _saveFileInfo[i].unk4.base.slotState = slotStateAvailable;
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
 
 static int _createSaveFile(int port, int id)
 {

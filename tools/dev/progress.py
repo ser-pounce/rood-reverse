@@ -21,7 +21,7 @@ sorted_categories = sorted(
     reverse=True
 )
 
-print("| Category | Matched Code | Total Code | Percent Matched |")
+print("| Executable | Matched Code | Total Code | Percent Matched |")
 print("|----------|--------------|------------|-----------------|")
 
 total_matched = 0

@@ -1,3 +1,4 @@
+
 _testMemcardEvents = 0x80102A60;
 _resetMemcardEvents = 0x80102ADC;
 _drawImage = 0x80102B3C;
@@ -18,6 +19,7 @@ _createSaveFile = 0x8010337C;
 _memcardEventHandler = 0x801033DC;
 _applyLoadedSaveFile = 0x80103630;
 _loadSaveData = 0x80103DD0;
+_saveFile = 0x80104044;
 _initMemcard = 0x801043C4;
 _shutdownMemcard = 0x80104618;
 _drawSprt = 0x801046C0;
@@ -63,6 +65,12 @@ _loadSaveDataFile = 0x8010AA87;
 _isTempSave = 0x8010AA88;
 _loadSaveDataErrors = 0x8010AA89;
 _loadSaveDataFd = 0x8010AA8C;
+_saveFileState = 0x8010AA90;
+_saveFileFile = 0x8010AA91;
+_saveFilePort = 0x8010AA92;
+_saveFileErrors = 0x8010AA93;
+_saveFileRenameErrors = 0x8010AA94;
+_saveFileFd = 0x8010AA98;
 _initMemcardState = 0x8010AA9C;
 _initMemcardCdQueueSlot = 0x8010AAA0;
 _findCurrentSaveState = 0x8010AAA4;

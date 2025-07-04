@@ -185,7 +185,7 @@ extern int D_8010A30C[];
 extern u_short D_8010AA2C[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
-extern void* _spmcimg;
+extern char* _spmcimg;
 extern u_short* _textTable;
 extern void* D_8010A930;
 extern u_int* D_8010AB10;
@@ -754,7 +754,121 @@ static int _loadSaveData(int portFileno)
     return _loadSaveDataErrors == 3 ? -1 : 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80104044);
+static int _saveFile(int portFile)
+{
+    enum _saveFileState {
+        init = 0,
+        tempFileCreated = 1,
+        readReady = 2,
+        verifyPending = 3,
+        fileVerified = 4
+    };
+
+    extern char _saveFileState;
+    extern char _saveFileFile;
+    extern char _saveFilePort;
+    extern char _saveFileErrors;
+    extern char _saveFileRenameErrors;
+    extern int _saveFileFd;
+
+    int temp_v1_2;
+    int i;
+    int temp_s3;
+
+    if (portFile != 0) {
+        _saveFileErrors = 0;
+        _saveFileRenameErrors = 0;
+        _loadSaveDataErrorOffset = 0;
+        _saveFilePort = portFile >> 0xC;
+        _saveFileFile = portFile & 7;
+        _fileProgressPosition = 80;
+        _filePreviousProgressCounter = 0;
+        _saveFileState = _memcardSaveIdExists(_saveFileFile + 'A' - 1);
+        return 0;
+    }
+    switch (_saveFileState) {
+    case init:
+        if (rename(_memcardMakeFilename(_saveFilePort, _saveFileFile),
+                _memcardMakeTempFilename(_saveFilePort, _saveFileFile))
+            != 0) {
+            _saveFileErrors = 0;
+            _saveFileRenameErrors = 0;
+            _saveFileState = tempFileCreated;
+        } else {
+            ++_saveFileRenameErrors;
+            _saveFileErrors = _saveFileRenameErrors >> 4;
+        }
+        break;
+    case tempFileCreated:
+        temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
+                        * (320 - _fileProgressPosition))
+            / _fileProgressTarget;
+        _filePreviousProgressCounter = _fileProgressCounter;
+        _fileProgressTarget = 384;
+        _fileProgressPosition += temp_v1_2;
+        _saveFileFd = open(
+            _memcardMakeTempFilename(_saveFilePort, _saveFileFile), 0x8000 | 0x0002);
+        ;
+        if (_saveFileFd == -1) {
+            ++_saveFileErrors;
+            break;
+        }
+        _resetMemcardEvents(memcardEventsSw);
+        if (write(_saveFileFd, _spmcimg, sizeof(savedata_t)) == -1) {
+            close(_saveFileFd);
+            ++_saveFileErrors;
+            break;
+        }
+        _saveFileState = readReady;
+        // fallthrough
+    case readReady: {
+        temp_s3 = _testMemcardEvents(memcardEventsSw);
+        if (temp_s3 < memcardInternalEventNone) {
+            close(_saveFileFd);
+            if (temp_s3 == memcardInternalEventIoEnd) {
+                _saveFileState = verifyPending;
+                i = _fileProgressPosition;
+                temp_s3 = _filePreviousProgressCounter;
+                _loadSaveData((_saveFilePort << 12) | (_saveFileFile + 8));
+                _fileProgressPosition = i;
+                _filePreviousProgressCounter = temp_s3;
+            } else {
+                ++_saveFileErrors;
+                _saveFileState = tempFileCreated;
+            }
+        }
+        break;
+    }
+    case verifyPending:
+        temp_s3 = _loadSaveData(0);
+        if (temp_s3 == 0) {
+            break;
+        }
+        if (temp_s3 < 0) {
+            return -1;
+        }
+        for (i = 0; i < (int)sizeof(savedata_t); ++i) {
+            if (_spmcimg[i] != _spmcimg[sizeof(savedata_t) + i]) {
+                break;
+            }
+        }
+        if (i < (int)sizeof(savedata_t)) {
+            return -1;
+        }
+        _saveFileState = fileVerified;
+        break;
+    case fileVerified:
+        if (rename(_memcardMakeTempFilename(_saveFilePort, _saveFileFile),
+                _memcardMakeFilename(_saveFilePort, _saveFileFile))
+            == 0) {
+            ++_saveFileRenameErrors;
+            _saveFileErrors = (_saveFileRenameErrors >> 4);
+            break;
+        }
+        return 1;
+    }
+    return _saveFileErrors == 3 ? -1 : 0;
+}
 
 static int _initMemcard(int init)
 {
@@ -1658,7 +1772,7 @@ static int func_801085B0(int arg0)
         if (D_8010AB04->state == 4) {
             vs_main_freeCdQueueSlot(D_8010AB04);
             sp18.t = vs_main_gametime.t;
-            _spmcimg = _opMcImg - 1;
+            _spmcimg = (char*)(_opMcImg - 1);
             _applyLoadedSaveFile(1);
             vs_main_gametime.t = sp18.t;
             new_var2 = _opMcImg;

@@ -1636,7 +1636,6 @@ int func_80108CE8(char* arg0)
         D_8010ADA4 = D_80061599;
         _initGameOver(1);
         *arg0 = 1;
-    default:
         break;
     case 1:
         if (_initGameOver(0) == 0) {
@@ -1647,19 +1646,20 @@ int func_80108CE8(char* arg0)
         // Fallthrough
     case 2:
         temp_v0 = func_801088B4(0);
-        if (temp_v0 != 0) {
-            D_8010ADA0 = 0x10;
-            if (temp_v0 != 2) {
-                temp_v0 = D_80061598[0xAB];
-                if (((temp_v0 - 1) < 2U) && (D_80061598[0] == 0)) {
-                    func_801085B0(temp_v0);
-                    *arg0 = 6;
-                } else {
-                    *arg0 = 3;
-                }
+        if (temp_v0 == 0) {
+            break;
+        }
+        D_8010ADA0 = 0x10;
+        if (temp_v0 != 2) {
+            temp_v0 = D_80061598[0xAB];
+            if (((temp_v0 - 1) < 2U) && (D_80061598[0] == 0)) {
+                func_801085B0(temp_v0);
+                *arg0 = 6;
             } else {
-                *arg0 = 7;
+                *arg0 = 3;
             }
+        } else {
+            *arg0 = 7;
         }
         break;
     case 3:

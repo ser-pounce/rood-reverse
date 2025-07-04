@@ -143,3 +143,5 @@ _fileMenuScreenFade = 0x8010B0AA;
 _dataNotSaved = 0x8010B0AB;
 _containerDataEmpty = 0x8010B0AC;
 _backupMainSetting = 0x8010B0AD;
+_drawFileMenuBg = 0x80106080;
+

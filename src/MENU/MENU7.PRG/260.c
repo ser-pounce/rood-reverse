@@ -1882,10 +1882,12 @@ static void _drawFileMenu(int framebuf)
     }
 }
 
-static void func_80106080()
+static void _drawFileMenuBg()
 {
-    _drawSprt(0x100, 0x38F00000, 0xB00040, 0x9C);
-    _drawSprt(0, 0x38F00000, 0xB00100, 0x9A);
+    _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
+    _drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }
 
 static int _promptConfirm(int arg0)
@@ -3336,7 +3338,7 @@ int func_80108CE8(char* arg0)
         if (_initMemcard(0) != 0) {
             _loadFileMenu(2);
             *arg0 = 5;
-            func_80106080();
+            _drawFileMenuBg();
             _drawFileMenu(vs_main_frameBuf);
         }
         break;
@@ -3355,7 +3357,7 @@ int func_80108CE8(char* arg0)
             D_8006163C = 0;
             vs_main_jumpToBattle();
         } else {
-            func_80106080();
+            _drawFileMenuBg();
             _drawFileMenu(vs_main_frameBuf);
         }
         break;
@@ -3466,9 +3468,29 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109778);
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
 
-void func_80109D64();
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109D64);
-// https://decomp.me/scratch/Apjn5
+extern char* D_8010AA3C;
+
+void func_80109D64() {
+    char time[4];
+    int temp_v0;
+    int i;
+
+    *(int*)&time = vs_main_gametime.all;
+    if (time[3] >= 100) {
+        *(int*)&time = 0;
+        time[3] = 0;
+        func_800C6828("1", 0xC800D8, D_1F800000[1] - 5);
+    } else {
+        time[0] = ((((time[0] << 14) + vs_battle_encode(15)) * 5u) >> 14) / 3;
+    }
+    for (i = 0; i < 4; ++i) {
+        temp_v0 = func_800CCC54(time[i]);
+        D_8010AA3C[9 - i * 3] = (temp_v0 >> 4) + 0x30;
+        D_8010AA3C[10 - i * 3] = (temp_v0 & 0xF) + 0x30;
+    }
+    func_800C6828(D_8010AA3C, 0xC800E0, D_1F800000[1] - 5);
+    func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
+}
 
 int func_80109EB8(char* arg0)
 {

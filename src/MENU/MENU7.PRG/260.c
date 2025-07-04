@@ -1362,9 +1362,9 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
     return element;
 }
 
-static void func_80104EC0(int arg0)
+static void _clearFileMenuElement(int id)
 {
-    memset(&_fileMenuElements[arg0], 0, sizeof(_fileMenuElements[arg0]));
+    memset(&_fileMenuElements[id], 0, sizeof(_fileMenuElements[id]));
 }
 
 static int _fileMenuElementsActive()
@@ -2013,14 +2013,186 @@ static int _selectSaveMemoryCard(int initPort)
 int func_80107268(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107268);
 
-int _showLoadFilesMenu(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _showLoadFilesMenu);
+static int _showLoadFilesMenu(int initPort)
+{
+    enum _showLoadFilesMenuState {
+        init = 0,
+        handleInput = 1,
+        startLoad = 2,
+        applyLoad = 3,
+        loaded = 4,
+        exiting = 5
+    };
 
-#define VS_SFX_MENUCHANGE 4
-#define VS_SFX_MENUSELECT 5
-#define VS_SFX_MENULEAVE 6
-#define VS_SFX_INVALID 7
-#define VS_SFX_FILEOPCOMPLETE 8
+    extern vs_Gametime_t _showLoadFilesMenuBackupTime;
+    extern int _showLoadFilesMenuFileLoaded;
+    extern char _showLoadFilesMenuState;
+    extern char _showLoadFilesMenuPort;
+    extern char _showLoadFilesMenuPage;
+    extern char _showLoadFilesMenuSelectedSlot;
+    extern char _showLoadFilesMenuLeaveTimer;
+    extern char _showLoadFilesMenuCompleteTimer;
+
+    fileMenuElements_t* element;
+    int currentSlot;
+    int i;
+
+    if (initPort != 0) {
+        _showLoadFilesMenuPort = initPort;
+        _showLoadFilesMenuSelectedSlot = _getNewestSaveFile();
+        _showLoadFilesMenuPage = 0;
+        if (_showLoadFilesMenuSelectedSlot == 4) {
+            _showLoadFilesMenuPage = 2;
+            _showLoadFilesMenuSelectedSlot = 2;
+        } else if (_showLoadFilesMenuSelectedSlot != 0) {
+            _showLoadFilesMenuPage = _showLoadFilesMenuSelectedSlot - 1;
+            _showLoadFilesMenuSelectedSlot = 1;
+        }
+        _showLoadFilesMenuFileLoaded = -1;
+        _showLoadFilesMenuCompleteTimer = 0;
+        _showLoadFilesMenuState = init;
+        return 0;
+    }
+    switch (_showLoadFilesMenuState) {
+    case init:
+        for (i = 0; i < 5; ++i) {
+            element = _initFileMenuElement(
+                i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
+            element->slotId = i;
+            element->slotUnavailable
+                = _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
+            element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
+        }
+        _showLoadFilesMenuState = handleInput;
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
+        // fallthrough
+    case handleInput:
+        if (vs_main_buttonsPressed & PADRdown) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+            for (i = 5; i < 10; ++i) {
+                _clearFileMenuElement(i);
+            }
+            _selectCursorXy = 0;
+            return -1;
+        }
+        for (i = 0; i < 5; ++i) {
+            _fileMenuElements[i + 5].y = (((i - _showLoadFilesMenuPage) * 40) + 72);
+            _fileMenuElements[i + 5].selected = 0;
+        }
+
+        currentSlot = _showLoadFilesMenuSelectedSlot + _showLoadFilesMenuPage;
+
+        if (vs_main_buttonsPressed & PADRright) {
+            if (_saveFileInfo[currentSlot].unk4.base.slotState >= slotStateInUse) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
+                _fileMenuElements[currentSlot + 5].selected = 1;
+                _selectCursorXy = 0;
+                _memcardMaskedHandler(_showLoadFilesMenuPort + memcardEventMaskAll);
+                _showLoadFilesMenuState = startLoad;
+                break;
+            }
+            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
+        }
+        if (vs_main_buttonRepeat & PADLup) {
+            if (_showLoadFilesMenuSelectedSlot == 0) {
+                if (_showLoadFilesMenuPage != 0) {
+                    --_showLoadFilesMenuPage;
+                }
+            } else {
+                --_showLoadFilesMenuSelectedSlot;
+            }
+        }
+        if (vs_main_buttonRepeat & PADLdown) {
+            if (_showLoadFilesMenuSelectedSlot == 2) {
+                if (_showLoadFilesMenuPage < 2) {
+                    ++_showLoadFilesMenuPage;
+                }
+            } else {
+                ++_showLoadFilesMenuSelectedSlot;
+            }
+        }
+        if (currentSlot != (_showLoadFilesMenuSelectedSlot + _showLoadFilesMenuPage)) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+        }
+        _selectCursorXy = ((_showLoadFilesMenuSelectedSlot * 40 + 62) << 16) | 24;
+        _fileMenuElements[currentSlot + 5].selected = 1;
+        break;
+    case startLoad:
+        currentSlot = _memcardMaskedHandler(0);
+        if (currentSlot != memcardMaskedHandlerPending) {
+            if (currentSlot >= memcardMaskedHandlerPending) {
+                int new_var;
+                _loadSaveData(
+                    ((_showLoadFilesMenuSelectedSlot + _showLoadFilesMenuPage) + 1)
+                    | (new_var = ((_showLoadFilesMenuPort - 1) << 16) | 256));
+                _showLoadFilesMenuState = applyLoad;
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loading);
+            } else {
+                _showLoadFilesMenuState = loaded;
+            }
+        }
+        break;
+    case applyLoad:
+        currentSlot = _loadSaveData(0);
+        ++_fileProgressCounter;
+        if (currentSlot != 0) {
+            _fileProgressCounter = 0;
+            do {
+                _showLoadFilesMenuLeaveTimer = 0;
+                if (currentSlot < 0) {
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+                    break;
+                }
+                switch (_applyLoadedSaveFile(1)) {
+                case 0:
+                    _fileProgressCounter = -16;
+                    vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
+                    _showLoadFilesMenuLeaveTimer = 16;
+                    _showLoadFilesMenuFileLoaded = 1;
+                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loaded);
+                    break;
+                case 1:
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_OFFSET_fileCorruptDescription);
+                    break;
+                }
+            } while (0);
+
+            _showLoadFilesMenuBackupTime.t = vs_main_gametime.t;
+            _showLoadFilesMenuState = loaded;
+        }
+        break;
+    case loaded:
+        if (_showLoadFilesMenuLeaveTimer != 0) {
+            --_showLoadFilesMenuLeaveTimer;
+        }
+        if (_showLoadFilesMenuFileLoaded == 1) {
+            ++_showLoadFilesMenuCompleteTimer;
+        }
+        if (((char)vs_main_buttonsPressed != 0)
+            || (_showLoadFilesMenuCompleteTimer == 150)) {
+            if (_showLoadFilesMenuFileLoaded < 0) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+            }
+            _showLoadFilesMenuState = exiting;
+        }
+        break;
+    case exiting:
+        if (_showLoadFilesMenuLeaveTimer != 0) {
+            --_showLoadFilesMenuLeaveTimer;
+            break;
+        }
+        if (_showLoadFilesMenuFileLoaded == 1) {
+            vs_main_gametime.t = _showLoadFilesMenuBackupTime.t;
+        } else {
+            for (i = 5; i < 10; ++i) {
+                _clearFileMenuElement(i);
+            }
+        }
+        return _showLoadFilesMenuFileLoaded;
+    }
+    return 0;
+}
 
 static long _selectLoadMemoryCard(int initPort)
 {

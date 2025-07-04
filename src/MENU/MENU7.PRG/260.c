@@ -1,6 +1,8 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../SLUS_010.40/sfx.h"
+#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/8170.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
@@ -206,6 +208,7 @@ extern signed char D_8006163C;
 extern u_short D_8010AB80[];
 extern int D_8010ADA0;
 extern int D_8010ADA4;
+extern char D_8006163F;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -1626,6 +1629,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106554);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106E70);
 
+int func_80107268(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107268);
 
 int _showLoadFilesMenu(int);
@@ -2057,4 +2061,139 @@ void func_80109D64();
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109D64);
 // https://decomp.me/scratch/Apjn5
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109EB8);
+int func_80109EB8(char* arg0)
+{
+    u_short* sp10[2][2];
+    int sp20[2];
+    RECT rect;
+    int temp_s0;
+    int new_var;
+
+    if (*arg0 < 0xB) {
+        func_80109D64();
+    }
+
+    switch (*arg0) {
+    case 3:
+        _initMemcard(1);
+        *arg0 = 4;
+        break;
+    case 4:
+        if ((func_800FA9D0() == 0) || (_initMemcard(0) == 0)) {
+            break;
+        }
+        // Fallthrough
+    case 5:
+        new_var = 1;
+        for (temp_s0 = 0; temp_s0 < 2; ++temp_s0) {
+            sp10[temp_s0][0] = &_textTable[*(u_short*)((u_int*)_textTable + temp_s0)];
+            sp10[temp_s0][new_var] = _textTable + 0x344;
+            sp20[temp_s0] = 0;
+        }
+        D_800F4E6B = func_8008A4FC();
+        if (!(D_800F4E6B & 0xFF) || (D_8006163F != 0)) {
+            sp20[0] |= 1;
+        }
+        temp_s0 = vs_main_settings.cursorMemory;
+        if (*arg0 != 4) {
+            vs_main_settings.cursorMemory = 1;
+        }
+        func_801005E0(2, 0x143, (u_short**)sp10, sp20);
+        vs_main_settings.cursorMemory = temp_s0;
+        func_8008A4DC(0);
+        *arg0 = 6;
+        break;
+    case 6:
+        temp_s0 = func_801008C8() + 1;
+        if (temp_s0 != 0) {
+            if (temp_s0 > 0) {
+                func_800FA8E0(6);
+                _initFileMenu();
+                switch (temp_s0) {
+                case 1:
+                    *arg0 = 7;
+                    break;
+                case 2:
+                    *arg0 = 9;
+                    break;
+                }
+            } else {
+                func_8008A4DC(1);
+                func_800FA8E0(0x28);
+                if (temp_s0 == -2) {
+                    *arg0 = 0xC;
+                } else {
+                    *arg0 = 0xB;
+                }
+            }
+        } else {
+            if ((D_800F4E6B != 0) && (D_8006163F != 0) && (func_801008B0() == 0)) {
+                func_800C8E04(1);
+                D_800F514C = 0xB;
+            } else {
+                D_800F514C = 0;
+            }
+        }
+        break;
+    case 7:
+        if (func_800FA9D0() != 0) {
+            func_80107268(1);
+            *arg0 = 8;
+        }
+        break;
+    case 8:
+        if (func_80107268(0) != 0) {
+            *arg0 = 5;
+        }
+        func_80105BE4(vs_main_frameBuf);
+        break;
+    case 9:
+        if (func_800FA9D0() != 0) {
+            func_801081DC(1);
+            *arg0 = 0xA;
+        }
+        break;
+    case 10:
+        temp_s0 = func_801081DC(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 < 0) {
+                *arg0 = 5;
+                break;
+            }
+            setRECT(&rect, 0, 0, 0x280, 0xF0);
+            DrawSync(0);
+            ClearImage(&rect, 0, 0, 0);
+            _shutdownMemcard();
+            *arg0 = 0;
+            DrawSync(0);
+            vs_main_jumpToBattle();
+            break;
+        }
+        func_80105BE4(vs_main_frameBuf);
+        break;
+    case 11:
+        func_800FFA88(0);
+        func_800FFBA8();
+        func_800FFB68(0);
+        *arg0 = 0xD;
+        break;
+    case 12:
+        func_800FFA88(0);
+        func_800FFBA8();
+        func_800FFB68(0);
+        *arg0 = 0xE;
+        break;
+    case 13:
+    case 14:
+        if (D_801022D8 != 0) {
+            break;
+        }
+        _shutdownMemcard();
+        if (*arg0 == 0xE) {
+            D_800F51C0 = 7;
+        }
+        *arg0 = 0;
+        return 1;
+    }
+    return 0;
+}

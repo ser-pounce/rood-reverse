@@ -14,6 +14,7 @@ typedef struct {
     short unk18;
 } func_800C8E5C_t;
 
+void func_800C8E04(int);
 func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, u_short*);
 void func_800C97BC();
 short* func_800CB66C();
@@ -31,3 +32,6 @@ void func_800CF830();
 void func_800CF920();
 
 extern u_short D_800EB9DC[];
+extern char D_800F4E6B;
+extern short D_800F514C;
+extern signed char D_800F51C0;

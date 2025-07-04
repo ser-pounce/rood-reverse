@@ -4,6 +4,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include "mcman.h"
@@ -189,7 +190,7 @@ extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
 extern char* _spmcimg;
 extern u_short* _textTable;
-extern void* D_8010A930;
+extern u_short D_8010A930[];
 extern u_int* D_8010AB10;
 extern char _isSaving;
 extern vs_main_CdQueueSlot* D_8010AB04;
@@ -210,6 +211,14 @@ extern int D_8010ADA0;
 extern int D_8010ADA4;
 extern char D_8006163F;
 extern char D_800F4F70;
+extern short D_8010AB20[];
+extern int D_8010AB60;
+extern int D_8010AB64;
+extern int D_8010AB68;
+extern int D_8010AB6C;
+extern int D_8010AB70;
+extern int D_8010AB74;
+extern u_int* D_1F800000[];
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -2074,7 +2083,7 @@ static int _initGameOver(int arg0)
         if (_initGameOverQueueSlot->state == 4) {
             vs_main_freeCdQueueSlot(_initGameOverQueueSlot);
             func_800CCDA8(0x01000340, D_8010AB10, 0x800018);
-            func_800CCDA8(0x01800340, &D_8010A930, 0x10030);
+            func_800CCDA8(0x01800340, D_8010A930, 0x10030);
             _initGameOverState = 1;
         }
         return 0;
@@ -2121,8 +2130,115 @@ static void _setMenuItemClut(
     }
 }
 
-int func_801088B4(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801088B4);
+int func_801088B4(int arg0)
+{
+    u_int* temp_s4;
+    u_int* temp_t0;
+
+    temp_s4 = D_1F800000[2];
+
+    if (arg0 != 0) {
+        D_8010AB60 = 0;
+        D_8010AB64 = 0;
+        D_8010AB68 = 0;
+        D_8010AB6C = 0;
+        D_8010AB70 = 0;
+        D_8010AB74 = 0;
+        return 0;
+    }
+    if (D_8010AB60 < 0) {
+        temp_t0 = D_1F800000[0];
+        temp_t0[0] = (*temp_s4 & 0xFFFFFF) | 0x04000000;
+        temp_t0[1] = 0xE1000140;
+        temp_t0[3] = 0;
+        temp_t0[4] = 0xF00140;
+        temp_t0[2] = (((D_8010AB60 + 0x80) * 0x20202) | 0x62000000);
+        *temp_s4 = ((u_long)temp_t0 << 8) >> 8;
+        D_1F800000[0] = temp_t0 + 5;
+        D_8010AB60 += 8;
+        if (D_8010AB60 == 0) {
+            SetDispMask(0);
+            return D_8010AB74 + 1;
+        }
+        return 0;
+    }
+    if (D_8010AB60 < 0x80) {
+        D_8010AB60 += 8;
+    } else {
+        if (vs_main_buttonsPressed & 0x820) {
+            func_800C02F0();
+            func_8004552C(1, 0, 0x3C);
+            D_8010AB60 = -0x80;
+            return 0;
+        }
+        if (vs_main_buttonsPressed & 0x5100) {
+            func_800C02F8();
+            D_8010AB74 = 1 - D_8010AB74;
+        }
+        if (D_8010AB74 == 0) {
+            if (D_8010AB6C < 0x10) {
+                D_8010AB64 = D_8010AB6C * 0x10;
+                D_8010AB6C += 4;
+                if (D_8010AB6C >= 0x11) {
+                    D_8010AB6C = 0x10;
+                }
+            } else {
+                if (D_8010AB64 >= 0x90) {
+                    D_8010AB64 -= 0x10;
+                } else {
+                    D_8010AB64 = 0x80;
+                }
+                if (D_8010AB68 < 0x10) {
+                    D_8010AB68 = 0;
+                } else {
+                    D_8010AB68 -= 0x10;
+                }
+            }
+            if (D_8010AB70 != 0) {
+                D_8010AB70 -= 1;
+            }
+        } else {
+            if (D_8010AB70 < 0x10) {
+                D_8010AB68 = D_8010AB70 * 0x10;
+                D_8010AB70 += 4;
+                if (D_8010AB70 >= 0x11) {
+                    D_8010AB70 = 0x10;
+                }
+            } else {
+                if (D_8010AB68 >= 0x90) {
+                    D_8010AB68 -= 0x10;
+                } else {
+                    D_8010AB68 = 0x80;
+                }
+                if (D_8010AB64 < 0x10) {
+                    D_8010AB64 = 0;
+                } else {
+                    D_8010AB64 -= 0x10;
+                }
+            }
+            if (D_8010AB6C != 0) {
+                D_8010AB6C -= 1;
+            }
+        }
+    }
+
+    _setMenuItemClut(D_8010AB20, D_8010AB6C, D_8010A930, D_8010A930 + 0x30);
+    _setMenuItemClut(D_8010AB20 + 0x10, D_8010AB70, D_8010A930, D_8010A930 + 0x30);
+    func_800CCDA8(0x01800340, &D_8010AB20, 0x10020);
+    temp_t0 = func_800C0230(D_8010AB60, 0x800070, 0x200060, temp_s4);
+    temp_t0[1] = 0xE100001D;
+    temp_t0[4] = 0x60340000;
+    temp_t0 = func_800C0230(D_8010AB60, 0xA00070, 0x200060, temp_s4);
+    temp_t0[1] = 0xE100001D;
+    temp_t0[4] = 0x60352000;
+    temp_t0 = func_800C0230(D_8010AB64 | 0x100, 0x800070, 0x200060, temp_s4);
+    temp_t0[1] = 0xE100001D;
+    temp_t0[4] = 0x60364000;
+    temp_t0 = func_800C0230(D_8010AB68 | 0x100, 0xA00070, 0x200060, temp_s4);
+    temp_t0[1] = 0xE100001D;
+    temp_t0[4] = 0x60366000;
+    return 0;
+}
 
 int func_80108CE8(char* arg0)
 {

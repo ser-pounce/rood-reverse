@@ -2010,8 +2010,205 @@ static int _selectSaveMemoryCard(int initPort)
     return 0;
 }
 
-int func_80107268(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107268);
+extern char _dataNotSaved;
+extern char _containerDataEmpty;
+
+static int _showSaveMenu(int initState)
+{
+    enum _showSaveMenuState {
+        init = 0,
+        saveExists = 1,
+        loadSave = 2,
+        initSlot1 = 3,
+        initSlot2 = 4,
+        waitForSlotAnimation = 5,
+        handleInput = 6,
+        selectCard = 7,
+        returnNoSave = 8,
+        containerWarn = 9,
+        eraseContainerData = 10,
+        discardChanges = 11,
+    };
+
+    extern char _showSaveMenuState;
+    extern u_char _showSaveMenuSelectedFile;
+
+    u_short sp10 = 0xE7E7;
+    fileMenuElements_t* element;
+    int currentSave;
+    int val;
+
+    if (initState != 0) {
+        _showSaveMenuSelectedFile = 1;
+        _containerDataEmpty = 0;
+        if (D_80060021 != 0) {
+            _showSaveMenuSelectedFile = D_800F4F70 + 1;
+        }
+        _dataNotSaved = 0;
+        _isSaving = 1;
+        _showSaveMenuState = (initState - 1) * 3;
+        element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
+            (char*)(_textTable + VS_MCMAN_OFFSET_save));
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 180;
+        element->innertextBlendFactor = 8;
+        element->selected = 1;
+        _memoryCardMessage = 0;
+        func_800FFC04(&sp10);
+        return 0;
+    }
+
+    switch (_showSaveMenuState) {
+    case init:
+        if (*(int*)&vs_main_settings & 0x10) {
+            memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
+                sizeof(((savedata_t*)_spmcimg + 1)->containerData));
+            _showSaveMenuState = initSlot1;
+        } else if (_fileMenuElementsActive() != 0) {
+            if (vs_main_settings.slotState != slotStateUnavailable) {
+                _findCurrentSave(1);
+                _showSaveMenuState = saveExists;
+            } else {
+                _showSaveMenuState = initSlot1;
+            }
+        }
+        break;
+    case saveExists:
+        currentSave = _findCurrentSave(0);
+        if (currentSave == findSavePending) {
+            break;
+        }
+        if (currentSave < findSavePending) {
+            _memoryCardMessage = (char*)(_textTable
+                + (currentSave == findSaveTimeout ? VS_MCMAN_OFFSET_insertError
+                                                  : VS_MCMAN_OFFSET_emptyCard));
+            _showSaveMenuState = containerWarn;
+        } else {
+            _loadSaveData((currentSave & 7) | ((currentSave & 16) << 12));
+            _showSaveMenuState = loadSave;
+        }
+        break;
+    case loadSave:
+        val = _loadSaveData(0);
+        if (val != 0) {
+            if ((val <= 0) || (_applyLoadedSaveFile(0) != 0)) {
+                _showSaveMenuState = containerWarn;
+                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
+            } else {
+                _showSaveMenuState = initSlot1;
+            }
+        }
+        break;
+    case initSlot1:
+        if (_fileMenuElementsActive() != 0) {
+            element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
+                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+            element->state = fileMenuElementStateAnimateX;
+            element->targetPosition = 194;
+            _showSaveMenuState = initSlot2;
+        }
+        break;
+    case initSlot2:
+        element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
+            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 194;
+        _showSaveMenuState = waitForSlotAnimation;
+        break;
+    case waitForSlotAnimation:
+        if (_fileMenuElementsActive() != 0) {
+            func_800FFC04(&sp10);
+            _showSaveMenuState = handleInput;
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+        }
+        break;
+    case handleInput:
+        _fileMenuElements[_showSaveMenuSelectedFile].selected = 1;
+        _fileMenuElements[3 - _showSaveMenuSelectedFile].selected = 0;
+        if (vs_main_buttonsPressed & PADRdown) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+            val = _dataNotSaved;
+            _selectCursorXy = 0;
+            if (val < 3) {
+                do {
+                    _fileMenuElements[val].state = fileMenuElementStateAnimateX;
+                    _fileMenuElements[val].targetPosition = 320;
+                    ++val;
+                } while (val < 3);
+            }
+            if (_dataNotSaved != 0) {
+                _memoryCardMessage
+                    = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarnDataLoss);
+                _promptConfirm(1);
+                _showSaveMenuState = discardChanges;
+            } else {
+                _showSaveMenuState = returnNoSave;
+            }
+        } else if (vs_main_buttonsPressed & PADRright) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
+            _selectSaveMemoryCard(_showSaveMenuSelectedFile);
+            _selectCursorXy = 0;
+            _showSaveMenuState = selectCard;
+        } else {
+            if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+                _showSaveMenuSelectedFile = 3 - _showSaveMenuSelectedFile;
+                D_800F4F70 = _showSaveMenuSelectedFile - 1;
+            }
+            _selectCursorXy = vs_getXY(180, (_showSaveMenuSelectedFile + 1) * 16 + 10);
+        }
+        break;
+    case selectCard:
+        val = _selectSaveMemoryCard(0);
+        if (val != 0) {
+            if (val < 0) {
+                _showSaveMenuState = initSlot1;
+                break;
+            }
+            _initFileMenu(val);
+            return 1;
+        }
+        break;
+    case returnNoSave:
+        if (_fileMenuElementsActive() != 0) {
+            return -1;
+        }
+        break;
+    case containerWarn:
+        if ((char)vs_main_buttonsPressed != 0) {
+            func_800FFC04(&sp10);
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
+            _promptConfirm(1);
+            _showSaveMenuState = eraseContainerData;
+        }
+        break;
+    case eraseContainerData:
+    case discardChanges:
+        val = _promptConfirm(0);
+        if (val != 0) {
+            if (_showSaveMenuState == discardChanges) {
+                if (val > 0) {
+                    *(int*)&vs_main_settings = *(int*)&vs_main_settings | 0x10;
+                }
+                val = -val;
+            }
+            if (val < 0) {
+                _fileMenuElements[0].state = fileMenuElementStateAnimateX;
+                _fileMenuElements[0].targetPosition = 320;
+                _showSaveMenuState = returnNoSave;
+                break;
+            }
+            if (_showSaveMenuState == eraseContainerData) {
+                _containerDataEmpty = 1;
+                memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
+                    sizeof(((savedata_t*)_spmcimg + 1)->containerData));
+            }
+            _showSaveMenuState = initSlot1;
+        }
+        break;
+    }
+    return 0;
+}
 
 static int _showLoadFilesMenu(int initPort)
 {
@@ -2915,12 +3112,12 @@ int func_80109EB8(char* arg0)
         break;
     case 7:
         if (func_800FA9D0() != 0) {
-            func_80107268(1);
+            _showSaveMenu(1);
             *arg0 = 8;
         }
         break;
     case 8:
-        if (func_80107268(0) != 0) {
+        if (_showSaveMenu(0) != 0) {
             *arg0 = 5;
         }
         _drawFileMenu(vs_main_frameBuf);

@@ -8,3 +8,5 @@ void func_80100100(int, signed char*, int, int);
 void func_801005E0(int, int, u_short**, int*);
 int func_801008B0();
 int func_801008C8();
+
+extern char D_80060021;

@@ -209,6 +209,7 @@ extern u_short D_8010AB80[];
 extern int D_8010ADA0;
 extern int D_8010ADA4;
 extern char D_8006163F;
+extern char D_800F4F70;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -1759,8 +1760,126 @@ static long _selectLoadMemoryCard(int initPort)
     return 0;
 }
 
-int func_801081DC(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
+static int _loadFileMenu(int initFadeout)
+{
+    enum _loadFileMenuState {
+        init = 0,
+        displaySlot1 = 1,
+        displaySlot2 = 2,
+        waitForSlotAnimation = 3,
+        handleInput = 4,
+        slotSelected = 5,
+        exit = 6,
+        fadeAndReturnSelected = 7,
+        fadeAndReturnNotSelected = 8,
+    };
+
+    extern char _loadFileMenuState;
+    extern u_char _loadFileMenuSelectedFile;
+    extern char _loadFileMenuFadeout;
+
+    fileMenuElements_t* element;
+    int i;
+
+    if (initFadeout != 0) {
+        _loadFileMenuFadeout = initFadeout - 1;
+        _loadFileMenuSelectedFile = 1;
+
+        if (D_80060021 != 0) {
+            _loadFileMenuSelectedFile = D_800F4F70 + 1;
+        }
+        _isSaving = 0;
+        _loadFileMenuState = init;
+        return 0;
+    }
+    switch (_loadFileMenuState) {
+    case init:
+        element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
+            (char*)(_textTable + VS_MCMAN_OFFSET_load));
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 180;
+        element->selected = 1;
+        element->innertextBlendFactor = 8;
+        _loadFileMenuState = displaySlot1;
+        break;
+    case displaySlot1:
+        if (_fileMenuElementsActive() != 0) {
+            element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
+                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+            element->state = fileMenuElementStateAnimateX;
+            element->targetPosition = 194;
+            _loadFileMenuState = displaySlot2;
+        }
+        break;
+    case displaySlot2:
+        element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
+            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+        element->state = fileMenuElementStateAnimateX;
+        element->targetPosition = 194;
+        _loadFileMenuState = waitForSlotAnimation;
+        break;
+    case waitForSlotAnimation:
+        if (_fileMenuElementsActive() != 0) {
+            _loadFileMenuState = handleInput;
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+        }
+        break;
+    case handleInput:
+        _fileMenuElements[_loadFileMenuSelectedFile].selected = 1;
+        _fileMenuElements[3 - _loadFileMenuSelectedFile].selected = 0;
+        if (vs_main_buttonsPressed & PADRdown) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+            _selectCursorXy = 0;
+            for (i = 0; i < 3; ++i) {
+                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                _fileMenuElements[i].targetPosition = 320;
+            }
+            _loadFileMenuState = exit;
+        } else if (vs_main_buttonsPressed & PADRright) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
+            _selectLoadMemoryCard(_loadFileMenuSelectedFile);
+            _selectCursorXy = 0;
+            _loadFileMenuState = slotSelected;
+        } else {
+            if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+                _loadFileMenuSelectedFile = 3 - _loadFileMenuSelectedFile;
+                D_800F4F70 = _loadFileMenuSelectedFile - 1;
+            }
+            _selectCursorXy = ((((_loadFileMenuSelectedFile + 1) * 16) + 10) << 16) | 180;
+        }
+        break;
+    case slotSelected:
+        element = (fileMenuElements_t*)_selectLoadMemoryCard(0);
+        if (element != 0) {
+            if ((long)element < 0) {
+                _loadFileMenuState = displaySlot1;
+            } else {
+                _loadFileMenuState = fadeAndReturnSelected;
+            }
+        }
+        break;
+    case exit:
+        if (_fileMenuElementsActive() != 0) {
+            if (_loadFileMenuFadeout == 0) {
+                return -1;
+            }
+            _loadFileMenuState = fadeAndReturnNotSelected;
+        }
+        break;
+    case fadeAndReturnSelected:
+        if (++_fileMenuScreenFade > 30) {
+            return 1;
+        }
+        break;
+    case fadeAndReturnNotSelected:
+        if (++_fileMenuScreenFade < 31) {
+            break;
+        }
+        return -1;
+    }
+    return 0;
+}
 
 static int func_801085B0(int arg0)
 {
@@ -1925,7 +2044,7 @@ int func_80108CE8(char* arg0)
         break;
     case 4:
         if (_initMemcard(0) != 0) {
-            func_801081DC(2);
+            _loadFileMenu(2);
             *arg0 = 5;
             func_80106080();
             func_80105BE4(vs_main_frameBuf);
@@ -1933,7 +2052,7 @@ int func_80108CE8(char* arg0)
         break;
     case 5:
         SetDispMask(1);
-        temp_v0 = func_801081DC(0);
+        temp_v0 = _loadFileMenu(0);
         if (temp_v0 != 0) {
             _shutdownMemcard();
             SetDispMask(0);
@@ -2149,12 +2268,12 @@ int func_80109EB8(char* arg0)
         break;
     case 9:
         if (func_800FA9D0() != 0) {
-            func_801081DC(1);
+            _loadFileMenu(1);
             *arg0 = 0xA;
         }
         break;
     case 10:
-        temp_s0 = func_801081DC(0);
+        temp_s0 = _loadFileMenu(0);
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
                 *arg0 = 5;

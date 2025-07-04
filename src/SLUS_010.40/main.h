@@ -252,3 +252,4 @@ int func_8004552C(int id, int arg1, int arg2);
 int func_800450E4();
 void vs_main_wait();
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
+void vs_main_resetGame();

@@ -200,6 +200,12 @@ extern int D_8010ADA8;
 extern char D_8010ADAC;
 extern char D_8010ADAD;
 extern mcdata_t* _mcData;
+extern vs_main_settings_t D_8010AD80;
+extern char D_80061599;
+extern signed char D_8006163C;
+extern u_short D_8010AB80[];
+extern int D_8010ADA0;
+extern int D_8010ADA4;
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -1316,6 +1322,7 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010550C);
 
+void func_80105BE4(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105BE4);
 
 static void func_80106080()
@@ -1500,6 +1507,7 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010787C);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107E98);
 
+int func_801081DC(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);
 
 static int func_801085B0(int arg0)
@@ -1612,9 +1620,106 @@ static void _setMenuItemClut(
     }
 }
 
+int func_801088B4(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801088B4);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80108CE8);
+int func_80108CE8(char* arg0)
+{
+    RECT rect;
+    int temp_v0;
+
+    switch (*arg0) {
+    case 0:
+        func_8007E0A8(0x1F, 1, 6);
+        func_8008A4DC(0);
+        D_8010AD80 = vs_main_settings;
+        D_8010ADA4 = D_80061599;
+        _initGameOver(1);
+        *arg0 = 1;
+    default:
+        break;
+    case 1:
+        if (_initGameOver(0) == 0) {
+            break;
+        }
+        *arg0 = 2;
+        func_801088B4(1);
+        // Fallthrough
+    case 2:
+        temp_v0 = func_801088B4(0);
+        if (temp_v0 != 0) {
+            D_8010ADA0 = 0x10;
+            if (temp_v0 != 2) {
+                temp_v0 = D_80061598[0xAB];
+                if (((temp_v0 - 1) < 2U) && (D_80061598[0] == 0)) {
+                    func_801085B0(temp_v0);
+                    *arg0 = 6;
+                } else {
+                    *arg0 = 3;
+                }
+            } else {
+                *arg0 = 7;
+            }
+        }
+        break;
+    case 3:
+        _initMemcard(1);
+        _initFileMenu();
+        setRECT(&rect, 0x280, 0x1FF, 0x100, 1);
+        StoreImage(&rect, (u_long*)D_8010AB80);
+        DrawSync(0);
+        func_80048A64(D_8010AB80, 3U, 0U, 0x100U);
+        *arg0 = 4;
+        break;
+    case 4:
+        if (_initMemcard(0) != 0) {
+            func_801081DC(2);
+            *arg0 = 5;
+            func_80106080();
+            func_80105BE4(vs_main_frameBuf);
+        }
+        break;
+    case 5:
+        SetDispMask(1);
+        temp_v0 = func_801081DC(0);
+        if (temp_v0 != 0) {
+            _shutdownMemcard();
+            SetDispMask(0);
+            if (temp_v0 < 0) {
+                D_8010ADA0 = 1;
+                *arg0 = 7;
+                break;
+            }
+            vs_main_freeMusic(1);
+            D_8006163C = 0;
+            vs_main_jumpToBattle();
+        } else {
+            func_80106080();
+            func_80105BE4(vs_main_frameBuf);
+        }
+        break;
+    case 6:
+        if (func_801085B0(0) != 0) {
+            vs_main_settings = D_8010AD80;
+            D_80061598[1] = D_8010ADA4;
+            vs_main_freeMusic(1);
+            vs_main_setMonoSound(vs_main_settings.monoSound);
+            D_80061598[0xA4] = 0;
+            vs_main_jumpToBattle();
+        }
+        break;
+    case 7:
+        if (D_8010ADA0 != 0) {
+            D_8010ADA0 -= 1;
+        } else {
+            vs_main_freeMusic(1);
+            vs_main_resetGame();
+        }
+        break;
+    }
+    D_8006163C = 1;
+    return 0;
+}
 
 int func_8010903C(int arg0)
 {

@@ -8141,7 +8141,7 @@ static void _bufferLoadingScreen()
     DrawSync(0);
 }
 
-static void _resetGame()
+void vs_main_resetGame()
 {
     DrawSync(0);
     DrawSync(0);
@@ -8902,7 +8902,7 @@ int vs_main_processPadState()
         && (vs_main_buttonsPressed & VS_RESET)) {
         vs_main_settings.monoSound = 0;
         vs_main_settings.vibrationOn = 1;
-        _resetGame();
+        vs_main_resetGame();
     }
 
 #undef VS_RESET

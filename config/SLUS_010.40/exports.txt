@@ -274,6 +274,7 @@ RotTransPers4 = 0x800418DC;
 vs_gte_vectorSquare = 0x80041980;
 vs_gte_crossProduct = 0x800419A8;
 vs_gte_cueDepth = 0x80041A00;
+vs_main_resetGame = 0x80042364;
 vs_main_jumpToBattle = 0x80042420;
 vs_main_showEndingAndReturnToTitle = 0x800424E4;
 vs_main_gametimeUpdate = 0x8004261C;

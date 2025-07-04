@@ -125,7 +125,6 @@ _spuMemInfo = 0x800377B0;
 _isSpuTransfer = 0x800377F0;
 _trig_table = 0x80040210;
 _displayLoadingScreen = 0x800420BC;
-_resetGame = 0x80042364;
 _nop0 = 0x8004272C;
 _nop1 = 0x80042734;
 _nop2 = 0x8004273C;

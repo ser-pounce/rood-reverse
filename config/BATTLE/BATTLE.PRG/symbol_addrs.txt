@@ -468,7 +468,6 @@ func_800CCA90 = 0x800CCA90; // type:func
 func_800CCB9C = 0x800CCB9C; // type:func
 func_800CCC1C = 0x800CCC1C; // type:func
 func_800CCC54 = 0x800CCC54; // type:func
-func_800CCC8C = 0x800CCC8C; // type:func
 func_800CCCB8 = 0x800CCCB8; // type:func
 func_800CCD00 = 0x800CCD00; // type:func
 func_800CCD40 = 0x800CCD40; // type:func

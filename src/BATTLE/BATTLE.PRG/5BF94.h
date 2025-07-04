@@ -23,7 +23,7 @@ int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
 int func_800CCC54(int);
-u_int _encode(int value);
+u_int vs_battle_encode(int value);
 void func_800CCDA8(int, void*, int);
 int func_800CEEBC();
 void func_800CEF74();

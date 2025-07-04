@@ -1458,10 +1458,135 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010550C);
+static void _drawFileMenuElement(fileMenuElements_t* element);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _drawFileMenuElement);
 
-void func_80105BE4(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80105BE4);
+extern signed char _cursorFileOpSaturation[];
+extern char _menuElementStops[];
+
+static void _drawFileMenu(int framebuf)
+{
+    int _[2];
+    fileMenuElements_t* element;
+    int j;
+    int i;
+    u_int x;
+    int state;
+    int new_var;
+
+    element = _fileMenuElements;
+    x = 0;
+    if (framebuf != 0) {
+        x = 320;
+    }
+    _drawSprt(vs_getXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(64, 64),
+        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
+    _drawSprt(vs_getXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(256, 64),
+        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
+
+    for (i = 0; i < 10; ++i, ++element) {
+        state = element->state;
+        if (state == fileMenuElementStateAnimateX) {
+            if (element->x < element->targetPosition) {
+                element->x += 32;
+                if (element->x >= element->targetPosition) {
+                    element->x = element->targetPosition;
+                    element->state = fileMenuElementStateStatic;
+                }
+            } else {
+
+                for (j = 1; j < 16; ++j) {
+                    if ((element->targetPosition + _menuElementStops[j]) >= element->x) {
+                        break;
+                    }
+                }
+                element->x = element->targetPosition + _menuElementStops[j - 1];
+                if (element->w < (320 - element->x)) {
+                    element->w = 320 - element->x;
+                }
+                if (element->x == element->targetPosition) {
+                    element->state = fileMenuElementStateStatic;
+                }
+            }
+        }
+        if (state == fileMenuElementStateAnimateY) {
+            if (element->y > element->targetPosition) {
+                for (j = 1; j < 16; ++j) {
+                    if ((element->targetPosition + _menuElementStops[j]) >= element->y) {
+                        break;
+                    }
+                }
+                element->y = (element->targetPosition + _menuElementStops[j - 1]);
+            }
+            if (element->y == element->targetPosition) {
+                element->state = fileMenuElementStateStatic;
+            }
+        }
+        if (state == fileMenuElementStateAnimateNegX) {
+            if (element->x < element->targetPosition) {
+                for (j = 1; j < 16; ++j) {
+                    if (element->x >= -_menuElementStops[j]) {
+                        break;
+                    }
+                }
+                element->x = -_menuElementStops[j - 1];
+                if (element->x == 0) {
+                    element->state = fileMenuElementStateStatic;
+                }
+            } else {
+                element->x = element->x - 32;
+                if (element->targetPosition >= element->x) {
+                    element->x = element->targetPosition;
+                    element->state = fileMenuElementStateStatic;
+                }
+            }
+        }
+        if (state != fileMenuElementStateInactive) {
+            _drawFileMenuElement(element);
+        }
+    }
+
+    for (i = 1; i < 4; ++i) {
+        new_var = 256;
+        _drawSprt(vs_getXY(0, 187 - i), (187 - i) << 8, vs_getWH(256, 1),
+            (x >> 6) | (((4 - i) << 21) | new_var));
+        _drawSprt(vs_getXY(256, 187 - i), (187 - i) << 8, vs_getWH(64, 1),
+            (((int)(x + new_var)) >> 6) | (((4 - i) << 21) | new_var));
+    }
+    _drawSprt(vs_getXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), vs_getWH(33, 7),
+        getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"
+    DrawSync(0);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
+    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+    _primBuf.prim.tile.x0y0 = vs_getXY(0, 187);
+    _primBuf.prim.tile.wh = vs_getWH(320, 52);
+    DrawPrim(&_primBuf); // Message dialog background
+    if (_selectCursorXy != 0) {
+        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), vs_getWH(16, 16),
+            (_cursorFileOpSaturation[_selectCursorColor] << 16)
+                | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
+        _selectCursorColor = (_selectCursorColor + 1) & 0xF;
+        if (vs_main_buttonsPressed & PADRup) {
+            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
+        }
+    } else {
+        _selectCursorColor = 0;
+    }
+    if (_memoryCardMessage != 0) {
+        _printString(_memoryCardMessage, 16, 192, 0);
+    }
+    if (_fileMenuScreenFade != 0) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
+        _primBuf.prim.tile_tpage.tpage
+            = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+        _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
+        _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
+        _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(
+            primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
+        DrawPrim(&_primBuf);
+    }
+}
 
 static void func_80106080()
 {
@@ -2293,7 +2418,7 @@ int func_80108CE8(char* arg0)
             _loadFileMenu(2);
             *arg0 = 5;
             func_80106080();
-            func_80105BE4(vs_main_frameBuf);
+            _drawFileMenu(vs_main_frameBuf);
         }
         break;
     case 5:
@@ -2312,7 +2437,7 @@ int func_80108CE8(char* arg0)
             vs_main_jumpToBattle();
         } else {
             func_80106080();
-            func_80105BE4(vs_main_frameBuf);
+            _drawFileMenu(vs_main_frameBuf);
         }
         break;
     case 6:
@@ -2510,7 +2635,7 @@ int func_80109EB8(char* arg0)
         if (func_80107268(0) != 0) {
             *arg0 = 5;
         }
-        func_80105BE4(vs_main_frameBuf);
+        _drawFileMenu(vs_main_frameBuf);
         break;
     case 9:
         if (func_800FA9D0() != 0) {
@@ -2534,7 +2659,7 @@ int func_80109EB8(char* arg0)
             vs_main_jumpToBattle();
             break;
         }
-        func_80105BE4(vs_main_frameBuf);
+        _drawFileMenu(vs_main_frameBuf);
         break;
     case 11:
         func_800FFA88(0);

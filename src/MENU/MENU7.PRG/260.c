@@ -1213,7 +1213,18 @@ static int _findCurrentSave(int init)
     return _findCurrentSaveState != 4 ? findSavePending : findSaveNotFound;
 }
 
-static int _memcardMaskedHandler(int portMask)
+enum _memcardEventMask_e {
+    memcardEventMaskIgnoreNoEvent = 0x30,
+    memcardEventMaskAll = 0x70
+};
+
+enum _memcardMaskedHandler_e {
+    memcardMaskedHandlerError = -1,
+    memcardMaskedHandlerPending = 0,
+    memcardMaskedHandlerComplete = 1
+};
+
+static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
 {
     extern char _memcardMask;
     int event;
@@ -1221,13 +1232,13 @@ static int _memcardMaskedHandler(int portMask)
     if (portMask != 0) {
         _memcardEventHandler(portMask & 3);
         _memcardMask = (portMask >> 4);
-        return 0;
+        return memcardMaskedHandlerPending;
     }
     event = _memcardEventHandler(0);
     if (event != memcardEventPending) {
         switch (event & _memcardMask) {
         case memcardEventIoEnd:
-            return 1;
+            return memcardMaskedHandlerComplete;
         case memcardEventTimeout:
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
             break;
@@ -1238,9 +1249,9 @@ static int _memcardMaskedHandler(int portMask)
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
             break;
         }
-        return -1;
+        return memcardMaskedHandlerError;
     }
-    return 0;
+    return memcardMaskedHandlerPending;
 }
 
 static void _printString(char* text, int x, int y, int clut)
@@ -1503,9 +1514,132 @@ INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106E70);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107268);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_8010787C);
+int _showLoadFilesMenu(int);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _showLoadFilesMenu);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107E98);
+#define VS_SFX_MENUCHANGE 4
+#define VS_SFX_MENUSELECT 5
+#define VS_SFX_MENULEAVE 6
+#define VS_SFX_INVALID 7
+#define VS_SFX_FILEOPCOMPLETE 8
+
+static long _selectLoadMemoryCard(int initPort)
+{
+    enum _selectLoadMemoryCardState {
+        init = 0,
+        waitForUnselectedAnimation = 1,
+        pollEventsInit = 2,
+        pollEvents = 3,
+        leave = 4,
+        returnNotSelected = 5,
+        pollSuccess = 6,
+        selectFile = 7
+    };
+
+    extern char _selectLoadMemoryCardState;
+    extern u_char _selectLoadMemoryCardPort;
+
+    int i;
+
+    if (initPort != 0) {
+        _selectLoadMemoryCardPort = initPort;
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _selectLoadMemoryCardState = init;
+        return 0;
+    }
+    switch (_selectLoadMemoryCardState) {
+    case init:
+        _fileMenuElements[_selectLoadMemoryCardPort].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[_selectLoadMemoryCardPort].targetPosition = 180;
+        _fileMenuElements[_selectLoadMemoryCardPort].innertextBlendFactor = 1;
+        _fileMenuElements[3 - _selectLoadMemoryCardPort].state
+            = fileMenuElementStateAnimateX;
+        _fileMenuElements[3 - _selectLoadMemoryCardPort].targetPosition = 320;
+        _selectLoadMemoryCardState = waitForUnselectedAnimation;
+        break;
+
+    case waitForUnselectedAnimation:
+        if (_fileMenuElementsActive() == 0) {
+            break;
+        }
+        if (_selectLoadMemoryCardPort == 2) {
+            _fileMenuElements[2].state = fileMenuElementStateAnimateY;
+            _fileMenuElements[2].targetPosition = 50;
+        }
+        _selectLoadMemoryCardState = pollEventsInit;
+        break;
+
+    case pollEventsInit:
+        if (_fileMenuElementsActive() == 0) {
+            break;
+        }
+        _memcardMaskedHandler(_selectLoadMemoryCardPort + memcardEventMaskIgnoreNoEvent);
+        _selectLoadMemoryCardState = pollEvents;
+        break;
+
+    case pollEvents:
+        i = _memcardMaskedHandler(0);
+        if (i != memcardMaskedHandlerPending) {
+            _selectLoadMemoryCardState = i + leave + 1;
+        }
+        break;
+
+    case leave:
+        if (((char)vs_main_buttonsPressed) == 0) {
+            break;
+        }
+        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+        for (i = 1; i < 3; ++i) {
+            _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+            _fileMenuElements[i].targetPosition = 320;
+        }
+        _selectLoadMemoryCardState = returnNotSelected;
+        break;
+
+    case returnNotSelected:
+        if (_fileMenuElementsActive() != 0) {
+            return -1;
+        }
+        break;
+
+    case pollSuccess:
+        if (_initSaveFileInfo(_selectLoadMemoryCardPort) != 0) {
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            _selectLoadMemoryCardState = leave;
+            break;
+        }
+        for (i = 0; i < 5; ++i) {
+            if (_saveFileInfo[i].unk4.base.slotState > slotStateAvailable) {
+                break;
+            }
+        }
+
+        if (i == 5) {
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            _selectLoadMemoryCardState = leave;
+        } else {
+            _showLoadFilesMenu(_selectLoadMemoryCardPort);
+            _selectLoadMemoryCardState = 7;
+        }
+        break;
+
+    case selectFile:
+        i = _showLoadFilesMenu(0);
+        if (i == 0) {
+            break;
+        }
+        if (i < 0) {
+            for (i = 1; i < 3; ++i) {
+                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                _fileMenuElements[i].targetPosition = 320;
+            }
+            _selectLoadMemoryCardState = returnNotSelected;
+            break;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 int func_801081DC(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801081DC);

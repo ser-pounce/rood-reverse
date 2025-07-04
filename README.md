@@ -24,7 +24,7 @@ Thanks also to the following amazing projects (and their dependencies):
 | TITLE.PRG | 39380 | 40528 | 97.17% |
 | MENUC.PRG | 0 | 37304 | 0.00% |
 | MAINMENU.PRG | 8 | 34204 | 0.02% |
-| MENU7.PRG | 25992 | 30804 | 84.38% |
+| MENU7.PRG | 28084 | 30804 | 91.17% |
 | MENUB.PRG | 0 | 30752 | 0.00% |
 | MENUD.PRG | 0 | 27384 | 0.00% |
 | MENU3.PRG | 0 | 27212 | 0.00% |
@@ -40,7 +40,7 @@ Thanks also to the following amazing projects (and their dependencies):
 | INITBTL.PRG | 1060 | 4864 | 21.79% |
 | MENU1.PRG | 0 | 3144 | 0.00% |
 | SCREFF2.PRG | 944 | 2324 | 40.62% |
-| **Total** | **117004** | **1064744** | **10.99%** |
+| **Total** | **119096** | **1064744** | **11.19%** |
 
 ## (Naive) Quickstart
 1. Fork the project

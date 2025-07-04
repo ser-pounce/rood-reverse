@@ -23,6 +23,7 @@ int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
 int func_800CCC54(int);
+u_int _encode(int value);
 void func_800CCDA8(int, void*, int);
 int func_800CEEBC();
 void func_800CEF74();
@@ -33,5 +34,6 @@ void func_800CF920();
 
 extern u_short D_800EB9DC[];
 extern char D_800F4E6B;
+extern int D_800F4EA0;
 extern short D_800F514C;
 extern signed char D_800F51C0;

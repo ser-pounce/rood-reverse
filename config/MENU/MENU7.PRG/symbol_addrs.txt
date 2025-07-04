@@ -18,6 +18,7 @@ _initSaveFileInfo = 0x80103134;
 _createSaveFile = 0x8010337C;
 _memcardEventHandler = 0x801033DC;
 _applyLoadedSaveFile = 0x80103630;
+_packageGameSaveData = 0x801037E8;
 _loadSaveData = 0x80103DD0;
 _saveFile = 0x80104044;
 _initMemcard = 0x801043C4;

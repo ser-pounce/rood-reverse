@@ -681,7 +681,123 @@ static int _applyLoadedSaveFile(int verifyOnly)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801037E8);
+static void _packageGameSaveData(int targetFile)
+{
+    static const u_short D_8010286C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
+        0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
+        0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
+        0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
+
+    long i;
+    int j;
+    int var_a0;
+    u_short const* s0 = D_8010286C;
+    savedata_t* savedata = (savedata_t*)_spmcimg;
+    savedata_t* savedata2 = savedata + 1;
+    savedata_t* savedata3 = savedata;
+    savedata_unk180_t* s5 = &savedata->unk180;
+
+    func_80042CB0();
+    memset(savedata, 0, sizeof(*savedata));
+    ((char*)&savedata->fileInfo.key)[0] = 0x53;
+    ((char*)&savedata->fileInfo.key)[1] = 0x43;
+    ((char*)&savedata->fileInfo.key)[2] = 0x11;
+    ((char*)&savedata->fileInfo.key)[3] = 3;
+    _rMemcpy(&savedata->fileInfo.unk4, s0, sizeof(savedata->fileInfo.unk4));
+    savedata->fileInfo.unk4.unk20[3] += (targetFile << 8);
+
+    if (vs_main_gametime.t.h == 100) {
+        savedata->fileInfo.unk4.unk20[6] = 0x5082;
+    } else {
+        savedata->fileInfo.unk4.unk20[7] += ((vs_main_gametime.t.h / 10) << 8);
+        savedata->fileInfo.unk4.unk20[8] += ((vs_main_gametime.t.h % 10) << 8);
+        savedata->fileInfo.unk4.unk20[10] += ((vs_main_gametime.t.m / 10) << 8);
+        savedata->fileInfo.unk4.unk20[11] += ((vs_main_gametime.t.m % 10) << 8);
+        savedata->fileInfo.unk4.unk20[13] += ((vs_main_gametime.t.s / 10) << 8);
+        savedata->fileInfo.unk4.unk20[14] += ((vs_main_gametime.t.s % 10) << 8);
+    }
+    savedata3->fileInfo.unk4.unk20[15] = 0;
+    _rMemcpy(savedata3->fileInfo.unk60, _mcData->unk400[targetFile],
+        sizeof(savedata->fileInfo.unk60));
+    _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
+
+    if (vs_main_settings.slotState == 0) {
+        vs_main_settings.slotState = _encode(0x20);
+        if (vs_main_settings.slotState < 3) {
+            vs_main_settings.slotState = 0x17385CA9;
+        }
+        if (!(D_800F4EA0 & 0x400)) {
+            memset(&savedata2->containerData, 0, sizeof(savedata2->containerData));
+        }
+    }
+
+    vs_main_settings.key = _encode(0x20);
+    s5->unk180.key = vs_main_settings.key;
+    s5->unk180.base.slotState = vs_main_settings.slotState;
+    vs_main_settings.saveFileGeneration = 0;
+
+    for (i = 0; i < 5; ++i) {
+        if (_saveFileInfo[i].unk4.base.slotState >= slotStateInUse) {
+            if (vs_main_settings.saveFileGeneration
+                < _saveFileInfo[i].unk4.base.generation) {
+                vs_main_settings.saveFileGeneration
+                    = _saveFileInfo[i].unk4.base.generation;
+            }
+        }
+    }
+    s5->unk180.base.generation = ++vs_main_settings.saveFileGeneration;
+    if (vs_main_settings.saveCount < 9999) {
+        ++vs_main_settings.saveCount;
+    }
+    if (vs_main_settings.unk1A < 9999) {
+        ++vs_main_settings.unk1A;
+    }
+
+    s5->unk180.base.unk8 = 0x20000107;
+    s5->stats.gameTime.t = vs_main_gametime.t;
+    s5->stats.currentHP = D_80060068.unk0.currentHP;
+    s5->stats.maxHP = D_80060068.unk0.maxHP;
+    s5->stats.saveCount = vs_main_settings.saveCount;
+    s5->stats.unk12 = vs_main_settings.unk1A;
+    s5->stats.saveLocation = D_800F4E6B;
+    s5->stats.mapCompletion = func_8008E5F0();
+    s5->stats.clearCount = D_80061598[0];
+    s5->stats.currentMP = D_80060068.unk0.currentMP;
+    s5->stats.maxMP = D_80060068.unk0.maxMP;
+    _rMemcpy(savedata->unk200, D_80061598, sizeof(savedata->unk200));
+    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
+    _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
+    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
+    _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
+    _rMemcpy(savedata->unk7C8, D_80060168, sizeof(savedata->unk7C8));
+    _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
+    _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
+    _rMemcpy(&savedata->unk1784, &D_8005FEA0, sizeof(savedata->unk1784));
+    _rMemcpy(&savedata->containerData, &savedata2->containerData,
+        sizeof(savedata->containerData));
+    savedata->unk1898 = D_80060064;
+    _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
+    _rMemcpy(savedata->unk1DBC, D_80060040, sizeof(savedata->unk1DBC));
+
+    for (i = 0; i < 92; ++i) {
+        var_a0 = 0;
+        if (i != 1) {
+            for (j = 0; j < 256; ++j) {
+                var_a0 ^= _spmcimg[i * 0x100 + j];
+            }
+            s5->checksums[i] = var_a0;
+        }
+    }
+    var_a0 = 0;
+    for (j = 0; j < 256; ++j) {
+        var_a0 ^= _spmcimg[j + 256];
+    }
+    s5->checksums[1] = var_a0;
+    for (i = (long)&((savedata_t*)0)->unk180.unk180.base.slotState;
+         i < (int)sizeof(savedata_t); ++i) {
+        _spmcimg[i] += _encode(8);
+    }
+}
 
 extern char _loadSaveDataErrorOffset;
 extern u_short _filePreviousProgressCounter;

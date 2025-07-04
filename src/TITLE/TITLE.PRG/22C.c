@@ -611,7 +611,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     return 0;
 }
 
-static void _packageGameClearSaveData(int targetFile)
+static void _packageGameSaveData(int targetFile)
 {
     static const u_short D_8006886C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
         0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
@@ -2650,7 +2650,7 @@ static int _showSaveFilesMenu(int initPort)
             _backupMainSetting = (*(u_int*)&vs_main_settings >> 4) & 1;
             *(int*)&vs_main_settings |= 0x10;
         }
-        _packageGameClearSaveData(val);
+        _packageGameSaveData(val);
         _saveFile((val + 1) | ((port - 1) << 0x10));
         state = validate;
         break;

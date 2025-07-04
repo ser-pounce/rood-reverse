@@ -1574,11 +1574,189 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
-static void _drawFileMenuElement(fileMenuElements_t* element);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _drawFileMenuElement);
-
-extern signed char _cursorFileOpSaturation[];
 extern char _menuElementStops[];
+extern signed char _cursorFileOpSaturation[];
+
+static void _drawFileMenuElement(fileMenuElements_t* element)
+{
+    u_long clut[130];
+    saveFileInfo_t* saveInfo;
+    int xy;
+    int var_a3;
+    int location;
+    int x;
+    int y;
+    int var1;
+    int var2;
+    int uvClut;
+    int slotState;
+    u_long* locationClut;
+    int new_var;
+
+    if (element->selected != 0) {
+        element->outertextBlendFactor = 8;
+    } else if (element->outertextBlendFactor != 0) {
+        --element->outertextBlendFactor;
+    }
+    if (element->slotUnavailable != 0) {
+        element->outertextBlendFactor = 0;
+    }
+    if ((element->slotId >= 5) || ((element->y - 72) < 0x51U)) {
+        y = element->innertextBlendFactor;
+        var1 = _intepolateMenuItemBgColour(8 - element->outertextBlendFactor, y);
+        var2 = _intepolateMenuItemBgColour(element->outertextBlendFactor, y);
+        if (y & 7) {
+            element->innertextBlendFactor = y + 1;
+        }
+        y = element->y << 16;
+
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
+        _primBuf.prim.tilePoly.tile.tpage
+            = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+        _primBuf.prim.tilePoly.tile.x0y0
+            = ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
+        _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
+        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
+        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
+        _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
+        _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
+        _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
+        _primBuf.prim.tilePoly.polyG4.x2y2
+            = (u_short)element->x | ((element->y + element->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
+        _primBuf.prim.tilePoly.polyG4.x3y3
+            = ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
+        DrawPrim(&_primBuf);
+
+        x = element->x + 6;
+        for (var1 = 0; var1 < 32; ++var1) {
+            var2 = element->text[var1];
+            if (var2 == vs_char_spacing) {
+                x += element->text[++var1];
+            } else if (var2 != 0xFF) {
+                x = _printCharacter(var2, x, element->y, 0);
+            } else {
+                break;
+            }
+        }
+        var2 = element->slotId;
+        if (var2 < 5) {
+            _readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
+            saveInfo = &_saveFileInfo[var2];
+            location = element->saveLocation - 1;
+            var1 = saveInfo->unk4.base.slotState;
+            if (saveInfo->unk4.base.slotState < 3) {
+                if (saveInfo->unk4.base.slotState == 0) {
+                    location = -2;
+                } else if (saveInfo->unk4.base.slotState == 2) {
+                    location = -4;
+                } else if (_isSaving != 0) {
+                    location = -1;
+                } else {
+                    location = -5;
+                }
+            } else if (location >= 48) {
+                location = -3;
+            }
+            if (location >= 32u) {
+                locationClut = _mcData->locationCluts[1];
+            } else {
+                locationClut = _mcData->locationCluts[0];
+            }
+            _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
+            if (location < 0) {
+                uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
+                xy = (element->x - 64) | y;
+                _drawSprt(xy, uvClut, vs_getWH(64, 32),
+                    ((8 - element->outertextBlendFactor) << 19) | 0x9C);
+            } else {
+                int v0;
+                uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
+                    | vs_getUV0Clut(0, 0, 768, 227);
+                xy = (element->x - 64) | y;
+                new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
+                v0 = new_var >> 6;
+                var_a3 = (((8 - element->outertextBlendFactor) << 19) | 0x90);
+                _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
+            }
+            _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
+            _drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
+            _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
+            slotState = saveInfo->unk4.base.slotState;
+            if (slotState == slotStateUnavailable) {
+                _printString((char*)(_textTable + VS_MCMAN_OFFSET_inUse), element->x + 6,
+                    element->y + 10, 3);
+            } else if (slotState == slotStateAvailable) {
+                if (_isSaving == 0) {
+                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_empty),
+                        element->x + 6, element->y + 10, 3);
+                } else {
+                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_new),
+                        element->x + 6, element->y + 10, 0);
+                }
+            } else {
+                y += 4 << 16;
+                _printString((char*)&_textTable[_textTable[element->saveLocation
+                                 + VS_MCMAN_INDEX_saveLocations]],
+                    element->x + 6, element->y + 4, 0);
+                _drawSaveInfoUI(y | 172, vs_uiids_map);
+                _drawSaveInfoUI(y | 189, vs_uiids_colon);
+                var1 = saveInfo->unk4.stats.mapCompletion;
+
+                if (var1 == 100) {
+                    _drawInteger(y | 192, 100, 100);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
+                } else {
+                    _drawInteger(y | 192, var1, 10);
+                    _drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
+                }
+                _drawSaveInfoUI(y | 217, vs_uiids_save);
+                _drawSaveInfoUI(y | 239, vs_uiids_colon);
+                _drawInteger(y | 242, saveInfo->unk4.stats.saveCount, 1000);
+                _drawSaveInfoUI(y | 267, vs_uiids_clear);
+                _drawSaveInfoUI(y | 293, vs_uiids_colon);
+                _drawInteger(y | 296, saveInfo->unk4.stats.clearCount, 10);
+                y += 13 << 16;
+                if (saveInfo->unk4.stats.clearCount != 0) {
+                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
+                        getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
+                }
+                _drawSaveInfoUI(y | 240, vs_uiids_time);
+                var1 = saveInfo->unk4.stats.gameTime.t.h;
+                if (var1 == 100) {
+                    _drawInteger(y | 263, var1, 100);
+                } else {
+                    _drawInteger(y | 268, var1, 10);
+                }
+                _drawSaveInfoUI(y | 279, vs_uiids_colon);
+                _drawInteger(y | 282, saveInfo->unk4.stats.gameTime.t.m, 10);
+                _drawSaveInfoUI(y | 293, vs_uiids_colon);
+                _drawInteger(y | 296, saveInfo->unk4.stats.gameTime.t.s, 10);
+                _drawHPMP(y | 88, statTypeHP, saveInfo->unk4.stats.currentHP,
+                    saveInfo->unk4.stats.maxHP);
+                _drawHPMP(y | 158, statTypeMP, saveInfo->unk4.stats.currentMP,
+                    saveInfo->unk4.stats.maxMP);
+                y -= 17 << 16;
+            }
+            if ((element->selected != 0) && (_fileProgressCounter != 0)) {
+                if (_fileProgressCounter < 0) {
+                    signed char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
+                    _fileProcessingCompleteAnim(-p[17], y);
+                } else {
+                    int new_var3 = 0x140;
+                    _fileProcessingAnim(_fileProgressPosition
+                            + (((_fileProgressCounter - _filePreviousProgressCounter)
+                                   * ((_loadSaveDataErrorOffset * 0x14)
+                                       - (_fileProgressPosition - new_var3)))
+                                / _fileProgressTarget),
+                        y);
+                }
+            }
+        }
+    }
+}
 
 static void _drawFileMenu(int framebuf)
 {

@@ -1626,9 +1626,139 @@ static int _promptFormat(int initPort)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106554);
+static int _showSaveFilesMenu(int initPort);
+INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _showSaveFilesMenu);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80106E70);
+static int _selectSaveMemoryCard(int initPort)
+{
+    enum _selectSaveMemoryCardState {
+        init = 0,
+        waitForUnselectedAnimation = 1,
+        waitForAnimation = 2,
+        handleEvents = 3,
+        animateLeave = 4,
+        leave = 5,
+        initSaveMenu = 6,
+        showSaveMenu = 7
+    };
+
+    extern char _selectSaveMemoryCardState;
+    extern u_char _selectSaveMemoryCardPort;
+
+    int i, j;
+
+    if (initPort != 0) {
+        _selectSaveMemoryCardPort = initPort;
+        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _selectSaveMemoryCardState = init;
+        return 0;
+    }
+
+    switch (_selectSaveMemoryCardState) {
+    case init:
+        _fileMenuElements[_selectSaveMemoryCardPort].state = fileMenuElementStateAnimateX;
+        _fileMenuElements[_selectSaveMemoryCardPort].targetPosition = 180;
+        _fileMenuElements[_selectSaveMemoryCardPort].innertextBlendFactor = 1;
+        _fileMenuElements[3 - _selectSaveMemoryCardPort].state
+            = fileMenuElementStateAnimateX;
+        _fileMenuElements[3 - _selectSaveMemoryCardPort].targetPosition = 320;
+        _selectSaveMemoryCardState = waitForUnselectedAnimation;
+        break;
+    case waitForUnselectedAnimation:
+        if (_fileMenuElementsActive() == 0) {
+            break;
+        }
+        if (_selectSaveMemoryCardPort == 2) {
+            _fileMenuElements[2].state = fileMenuElementStateAnimateY;
+            _fileMenuElements[2].targetPosition = 50;
+        }
+        _selectSaveMemoryCardState = waitForAnimation;
+        break;
+    case waitForAnimation:
+        if (_fileMenuElementsActive() != 0) {
+            _memcardEventHandler(_selectSaveMemoryCardPort);
+            _selectSaveMemoryCardState = handleEvents;
+        }
+        break;
+    case handleEvents:
+        i = _memcardEventHandler(0) & 3;
+        if (i == 0) {
+            break;
+        }
+        switch (i) {
+        case memcardEventIoEnd:
+            _selectSaveMemoryCardState = initSaveMenu;
+            break;
+        case memcardEventTimeout:
+            _selectSaveMemoryCardState = animateLeave;
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            break;
+        case memcardEventUnformatted:
+            memset(_saveFileInfo, 0, sizeof(*_saveFileInfo) * 5);
+            for (i = 14; i >= 0; --i) {
+                _memcardFiles[i] = 0;
+            }
+            j = slotStateAvailable;
+            for (i = 4; i >= 0; --i) {
+                _saveFileInfo[i].unk4.base.slotState = j;
+            }
+            _showSaveFilesMenu(_selectSaveMemoryCardPort);
+            _selectSaveMemoryCardState = showSaveMenu;
+            break;
+        }
+        break;
+    case animateLeave:
+        if ((char)vs_main_buttonsPressed == 0) {
+            break;
+        }
+        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
+        for (i = 1; i < 3; ++i) {
+            _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+            _fileMenuElements[i].targetPosition = 320;
+        }
+        _selectSaveMemoryCardState = leave;
+        break;
+    case leave:
+        if (_fileMenuElementsActive() != 0) {
+            return -1;
+        }
+        break;
+    case initSaveMenu:
+        if (_initSaveFileInfo(_selectSaveMemoryCardPort) != 0) {
+            _selectSaveMemoryCardState = animateLeave;
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            break;
+        }
+        for (i = 0; i < 5; ++i) {
+            if (_saveFileInfo[i].unk4.base.slotState != slotStateUnavailable) {
+                break;
+            }
+        }
+        if (i == 5) {
+            _selectSaveMemoryCardState = animateLeave;
+            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
+            break;
+        }
+        _showSaveFilesMenu(_selectSaveMemoryCardPort);
+        _selectSaveMemoryCardState = showSaveMenu;
+        break;
+    case showSaveMenu:
+        i = _showSaveFilesMenu(0);
+        if (i == 0) {
+            break;
+        }
+        if (i < 0) {
+            for (i = 1; i < 3; ++i) {
+                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                _fileMenuElements[i].targetPosition = 320;
+            }
+            _selectSaveMemoryCardState = leave;
+            break;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 int func_80107268(int);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80107268);

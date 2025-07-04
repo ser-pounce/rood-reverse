@@ -506,8 +506,115 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
-static int _memcardEventHandler(int);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", _memcardEventHandler);
+static enum memcardEventHandler_e _memcardEventHandler(int initPort)
+{
+    enum _memcardEventHandlerState {
+        init = 0,
+        ready = 1,
+        unformatted = 2,
+        confirmed = 3,
+        loadReady = 4,
+        loaded = 5,
+    };
+
+    extern char _memcardEventHandlerState;
+    extern char _memcardEventHandlerPort;
+    extern char _memcardEventHandlerInitTimeout;
+    extern char _memcardEventHandlerTimeout;
+    extern char _memcardEventHandlerEventType;
+
+    int event;
+
+    if (initPort != 0) {
+        _memcardEventHandlerPort = (initPort - 1) * 16;
+        _memcardEventHandlerState = init;
+        _memcardEventHandlerInitTimeout = 0;
+        return memcardEventPending;
+    }
+    switch (_memcardEventHandlerState) {
+    case init:
+        if (++_memcardEventHandlerInitTimeout >= 4) {
+            return memcardEventTimeout;
+        }
+        _resetMemcardEvents(memcardEventsSw);
+        if (_card_info(_memcardEventHandlerPort) == 0) {
+            break;
+        }
+        _memcardEventHandlerState = ready;
+        _memcardEventHandlerTimeout = 0;
+        _memcardEventHandlerEventType = memcardEventsSw;
+        // fallthrough
+    case ready:
+        switch (_testMemcardEvents(memcardEventsSw)) {
+        case memcardInternalEventIoEnd:
+            _memcardEventHandlerState = loadReady;
+            break;
+        case memcardInternalEventError:
+        case memcardInternalEventTimeout:
+            _memcardEventHandlerState = init;
+            break;
+        case memcardInternalEventUnformatted:
+            _memcardEventHandlerState = unformatted;
+            break;
+        case memcardInternalEventNone:
+            if (_memcardEventHandlerTimeout++ > 64) {
+                _memcardEventHandlerState = init;
+            }
+            break;
+        }
+        break;
+    case unformatted:
+        _resetMemcardEvents(memcardEventsHw);
+        if (_card_clear(_memcardEventHandlerPort) == 0) {
+            break;
+        }
+        _memcardEventHandlerState = confirmed;
+        _memcardEventHandlerTimeout = 0;
+        _memcardEventHandlerEventType = memcardEventsHw;
+        // fallthrough
+    case confirmed:
+        do {
+            event = _testMemcardEvents(memcardEventsHw);
+        } while (event == memcardInternalEventNone);
+        if (event == memcardInternalEventIoEnd) {
+            _memcardEventHandlerState = loadReady;
+            break;
+        }
+        if (event < memcardInternalEventIoEnd)
+            break;
+        if (event >= memcardInternalEventNone)
+            break;
+        _memcardEventHandlerState = init;
+        break;
+    case loadReady:
+        _resetMemcardEvents(memcardEventsSw);
+        if (_card_load(_memcardEventHandlerPort) == 0) {
+            break;
+        }
+        _memcardEventHandlerState = loaded;
+        _memcardEventHandlerTimeout = 0;
+        // fallthrough
+    case loaded:
+        event = _testMemcardEvents(memcardEventsSw);
+        switch (event) {
+        case memcardInternalEventIoEnd:
+            return _memcardEventHandlerEventType + memcardEventIoEnd;
+        case memcardInternalEventError:
+        case memcardInternalEventTimeout:
+            _memcardEventHandlerState = init;
+            break;
+        case memcardInternalEventUnformatted:
+            return _memcardEventHandlerEventType + memcardEventUnformatted;
+        case memcardInternalEventNone:
+            if (_memcardEventHandlerTimeout++ > 64) {
+                _memcardEventHandlerState = init;
+            }
+            break;
+        }
+        break;
+    }
+    return memcardEventPending;
+}
 
 static int _applyLoadedSaveFile(int verifyOnly)
 {

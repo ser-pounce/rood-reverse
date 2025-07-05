@@ -19,12 +19,12 @@ Thanks also to the following amazing projects (and their dependencies):
 ## Status
 | Executable | Matched Code | Total Code | Percent Matched |
 |----------|--------------|------------|-----------------|
-| BATTLE.PRG | 10120 | 517400 | 1.96% |
+| BATTLE.PRG | 10176 | 517400 | 1.97% |
 | SLUS_010.40 | 37712 | 158036 | 23.86% |
 | TITLE.PRG | 39380 | 40528 | 97.17% |
 | MENUC.PRG | 0 | 37304 | 0.00% |
 | MAINMENU.PRG | 8 | 34204 | 0.02% |
-| MENU7.PRG | 28084 | 30804 | 91.17% |
+| MENU7.PRG | 29600 | 30804 | 96.09% |
 | MENUB.PRG | 0 | 30752 | 0.00% |
 | MENUD.PRG | 0 | 27384 | 0.00% |
 | MENU3.PRG | 0 | 27212 | 0.00% |
@@ -40,7 +40,7 @@ Thanks also to the following amazing projects (and their dependencies):
 | INITBTL.PRG | 1060 | 4864 | 21.79% |
 | MENU1.PRG | 0 | 3144 | 0.00% |
 | SCREFF2.PRG | 944 | 2324 | 40.62% |
-| **Total** | **119096** | **1064744** | **11.19%** |
+| **Total** | **120668** | **1064744** | **11.33%** |
 
 ## (Naive) Quickstart
 1. Fork the project

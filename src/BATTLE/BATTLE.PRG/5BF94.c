@@ -291,7 +291,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCA90);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCB9C);
 
-void vs_battle_rMemzero(void* arg0, int arg1) {
+void vs_battle_rMemzero(void* arg0, int arg1)
+{
     int* var_v0;
 
     var_v0 = arg0 + arg1;
@@ -300,7 +301,8 @@ void vs_battle_rMemzero(void* arg0, int arg1) {
     } while (arg0 != var_v0);
 }
 
-void vs_battle_rMemcpy(char* dest, char const* src, int size) {
+void vs_battle_rMemcpy(char* dest, char const* src, int size)
+{
     do {
         --size;
         dest[size] = src[size];

@@ -3471,7 +3471,8 @@ INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
 
 extern char* D_8010AA3C;
 
-void func_80109D64() {
+void func_80109D64()
+{
     char time[4];
     int temp_v0;
     int i;

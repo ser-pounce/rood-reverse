@@ -291,7 +291,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCA90);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCB9C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCC1C);
+void vs_battle_rMemzero(void* arg0, int arg1) {
+    int* var_v0;
+
+    var_v0 = arg0 + arg1;
+    do {
+        *(int*)--var_v0 = 0;
+    } while (arg0 != var_v0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCC34);
 

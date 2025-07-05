@@ -257,8 +257,8 @@ typedef struct {
 
 typedef struct {
     char containerData[0x3800];
-    char unk55E0[0x100];
-    char unk56E0[0x300];
+    char unk3800[0x100];
+    char unk3900[0x300];
 } containerData_t;
 
 typedef struct {
@@ -691,7 +691,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.mapCompletion = 0;
     memset(D_80060168[14], 0, sizeof(D_80060168[14]));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
-    memset(savedata2->containerData.unk55E0, 0, sizeof(savedata2->containerData.unk55E0));
+    memset(savedata2->containerData.unk3800, 0, sizeof(savedata2->containerData.unk3800));
     s5->stats.clearCount = D_80061598[0];
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;

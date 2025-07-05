@@ -86,8 +86,8 @@ typedef struct {
 
 typedef struct {
     char containerData[0x3800];
-    char unk55E0[0x100];
-    char unk56E0[0x300];
+    char unk3800[0x100];
+    char unk3900[0x300];
 } containerData_t;
 
 typedef struct {
@@ -180,7 +180,7 @@ extern u_short _fileProgressTarget;
 extern int _fileProgressCounter;
 extern int _selectCursorXy;
 extern char* _memoryCardMessage;
-extern char _selectCursorColor;
+extern u_char _selectCursorColor;
 extern char _fileMenuScreenFade;
 extern long _memcardEventDescriptors[8];
 extern int D_8010A2E4[];
@@ -3446,7 +3446,7 @@ int func_8010903C(int arg0)
     return 0;
 }
 
-static int func_8010928C(int arg0, int arg1)
+static u_short* func_8010928C(int arg0, u_short* arg1)
 {
     int i;
     int var_a3;
@@ -3459,7 +3459,7 @@ static int func_8010928C(int arg0, int arg1)
             var_a3 += D_8010AA2C[i++];
         } while (i < arg0);
     }
-    return arg1 + (var_a3 * 2);
+    return arg1 + var_a3;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);

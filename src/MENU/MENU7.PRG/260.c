@@ -85,7 +85,7 @@ typedef struct {
 } savedata_unk180_t;
 
 typedef struct {
-    char containerData[0x3800];
+    u_short containerData[0x1C00];
     char unk3800[0x100];
     char unk3900[0x300];
 } containerData_t;
@@ -185,7 +185,7 @@ extern char _fileMenuScreenFade;
 extern long _memcardEventDescriptors[8];
 extern int D_8010A2E4[];
 extern int D_8010A30C[];
-extern u_short D_8010AA2C[];
+extern u_short _containerOffsets[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
 extern char* _spmcimg;
@@ -3446,22 +3446,23 @@ int func_8010903C(int arg0)
     return 0;
 }
 
-static u_short* func_8010928C(int arg0, u_short* arg1)
+static u_short* _getContainerOffset(int section, containerData_t* arg1)
 {
     int i;
-    int var_a3;
+    int offset;
 
     i = 0;
-    var_a3 = 0;
+    offset = 0;
 
-    if (arg0 > 0) {
+    if (section > 0) {
         do {
-            var_a3 += D_8010AA2C[i++];
-        } while (i < arg0);
+            offset += _containerOffsets[i++];
+        } while (i < section);
     }
-    return arg1 + var_a3;
+    return arg1->containerData + offset;
 }
 
+void func_801092C4(containerData_t* arg0, int arg1, containerData_t* arg2);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109778);

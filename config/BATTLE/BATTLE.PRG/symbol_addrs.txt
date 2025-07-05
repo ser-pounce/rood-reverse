@@ -466,7 +466,6 @@ func_800CC580 = 0x800CC580; // type:func
 func_800CC5C0 = 0x800CC5C0; // type:func
 func_800CCA90 = 0x800CCA90; // type:func
 func_800CCB9C = 0x800CCB9C; // type:func
-vs_battle_rMemzero = 0x800CCC1C; // type:func
 func_800CCC54 = 0x800CCC54; // type:func
 func_800CCCB8 = 0x800CCCB8; // type:func
 func_800CCD00 = 0x800CCD00; // type:func

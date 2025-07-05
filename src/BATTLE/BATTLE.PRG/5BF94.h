@@ -24,6 +24,7 @@ int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
 void vs_battle_rMemzero();
+void vs_battle_rMemcpy(char* dest, char const* src, int size);
 int func_800CCC54(int);
 u_int vs_battle_encode(int value);
 void func_800CCDA8(int, void*, int);

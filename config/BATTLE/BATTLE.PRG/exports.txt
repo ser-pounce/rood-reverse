@@ -7,3 +7,5 @@ func_800C8E5C = 0x800C8E5C;
 vs_battle_encode = 0x800CCC8C;
 D_800EB9DC = 0x800EB9DC;
 vs_battle_rMemzero = 0x800CCC1C;
+vs_battle_rMemcpy = 0x800CCC34;
+vs_battle_copyAligned = 0x800C01C0;

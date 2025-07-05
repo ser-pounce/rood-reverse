@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../SLUS_010.40/sfx.h"
+#include "../MAINMENU.PRG/278.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -3465,7 +3466,210 @@ static u_short* _getContainerOffset(int section, containerData_t* arg1)
 void func_801092C4(containerData_t* arg0, int arg1, containerData_t* arg2);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_80109778);
+extern char D_80102578;
+extern u_short D_8010A9BA;
+extern u_short D_8010A9D8;
+extern u_short D_8010A9E2;
+
+int func_80109778(char* arg0)
+{
+    func_800C8E5C_t* temp_v0_3;
+    int temp_s0;
+    u_short* var_a0;
+    char temp_a0;
+    int var_v0;
+
+    switch (*arg0) {
+    case 0:
+        vs_battle_playSfx10();
+        D_80102578 = ((*(u_int*)&vs_main_settings) >> 4) & 1;
+        D_8010245C = vs_main_allocHeapR(0x14730);
+        vs_battle_rMemzero(D_8010245C, 0x14730);
+        func_800FBD80(0x10);
+        func_800C8E04(1);
+        func_8010903C(5);
+        func_800FFC04(&D_8010A9BA);
+        *arg0 = 1;
+        break;
+    case 1:
+        temp_s0 = func_8010903C(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 >= 0) {
+                _initMemcard(1);
+                func_800FFB68(1);
+                func_800FFA88(2);
+                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9D8);
+                temp_v0_3->unk0 = 2;
+                temp_v0_3->unk18 = 0xB4;
+                temp_v0_3->unk6 = 1;
+                *arg0 = 2;
+            } else {
+                *arg0 = 16;
+            }
+        }
+        break;
+    case 2:
+        if ((func_800FA9D0() != 0) && (_initMemcard(0) != 0)) {
+            func_8008A4DC(0);
+            func_800CB654(1);
+            D_800EB9B0 = 0x200000;
+            func_80100414(0x7FE, 0x80);
+            _initFileMenu();
+            if ((*(u_int*)&vs_main_settings) & 0x10) {
+                vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
+                *arg0 = 7;
+            } else {
+                _findCurrentSave(1);
+                *arg0 = 3;
+            }
+        }
+        break;
+    case 3:
+        temp_s0 = _findCurrentSave(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 < 0) {
+                if (temp_s0 == -2) {
+                    var_a0 = _textTable + 0xE3;
+                } else {
+                    var_a0 = _textTable + 0xF7;
+                }
+                func_800FFC04(var_a0);
+                *arg0 = 4;
+            } else {
+                _loadSaveData((temp_s0 & 7) | ((temp_s0 & 0x10) << 0xC));
+                *arg0 = 6;
+            }
+        }
+        break;
+    case 4:
+        if ((char)vs_main_buttonsPressed != 0) {
+            func_800FFC04(_textTable + 0x234);
+            func_8010903C(2);
+            *arg0 = 5;
+        }
+        break;
+    case 5:
+        temp_s0 = func_8010903C(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 < 0) {
+                *arg0 = 0xE;
+            } else {
+                (*(u_int*)&vs_main_settings) |= 0x10;
+                vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
+                *arg0 = 7;
+            }
+        }
+        break;
+    case 6:
+        temp_s0 = _loadSaveData(0);
+        if (temp_s0 != 0) {
+            if ((temp_s0 > 0) && (_applyLoadedSaveFile(0) == 0)) {
+                *arg0 = 7;
+                break;
+            }
+            var_a0 = _textTable + 0xF7;
+            func_800FFC04(var_a0);
+            *arg0 = 4;
+        }
+        break;
+    case 7:
+        vs_battle_memcpy(D_8010245C, (short*)D_80060168, 0xF00);
+        vs_battle_memcpy(D_8010245C + 0xF00, (short*)&D_800619D8, 0xB0);
+        vs_battle_memcpy(D_8010245C + 0xFB0, (short*)(_spmcimg + 0x79E0), 0x3C00);
+        _shutdownMemcard();
+        *arg0 = 8;
+        temp_a0 = D_800F51C0[0];
+        D_800F51C0[0] = 0xE;
+        D_800F51C0[1] = temp_a0;
+        break;
+    case 8:
+        if (func_800FA9D0() != 0) {
+            _initMemcard(1);
+            *arg0 = 9;
+        }
+        break;
+    case 9:
+        if (_initMemcard(0) != 0) {
+            temp_s0 = D_800F51C0[1];
+            if (temp_s0 != 0) {
+                func_800C8E04(1);
+                if (temp_s0 == 1) {
+                    func_8010903C(1);
+                    func_800FFC04(&D_8010A9E2);
+                    *arg0 = 0xC;
+                } else {
+                    *arg0 = 0xA;
+                }
+            } else {
+                *arg0 = 0xD;
+            }
+        }
+        break;
+    case 10:
+        func_801092C4((containerData_t*)(_spmcimg + 0x79E0), (int)(D_8010245C + 0xC430),
+            D_8010245C + 0x10030);
+        _showSaveMenu(2);
+        *arg0 = 0xB;
+        break;
+    case 11:
+        temp_s0 = _showSaveMenu(0);
+        if (temp_s0 != 0) {
+            if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
+                func_800C8E04(1);
+                func_8010903C(1);
+                func_800FFC04(&D_8010A9E2);
+                *arg0 = 0xC;
+            } else {
+                *arg0 = 0xE;
+            }
+        }
+        _drawFileMenu(vs_main_frameBuf);
+        break;
+    case 12:
+        temp_s0 = func_8010903C(0);
+        if (temp_s0 != 0) {
+            if (temp_s0 == 1) {
+                *arg0 = 0xA;
+                break;
+            }
+            *arg0 = 0xD;
+        }
+        break;
+    case 13: {
+        char v0 = (*(int*)&vs_main_settings);
+        char v1 = D_80102578 & 1;
+        *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
+        vs_battle_memcpy((short*)D_80060168, (short*)D_8010245C, 0xF00);
+        vs_battle_memcpy((short*)&D_800619D8, D_8010245C + 0xF00, 0xB0);
+    }
+        /* fallthrough */
+    case 14:
+        func_8008A4DC(1);
+        func_800CB654(0);
+        D_800EB9B0 = 0;
+        func_800FA8E0(0x28);
+        func_80100414(-4, 0x80);
+        *arg0 = 0xF;
+        break;
+    case 15:
+        func_800FFA88(0);
+        func_800FFBA8();
+        func_800FFB68(0);
+        if (func_800FA9D0() != 0) {
+            _shutdownMemcard();
+            *arg0 = 0x10;
+        }
+        break;
+    case 16:
+        if ((func_800CD064(7) == 0) && (D_801022D8 == 0)) {
+            vs_main_freeHeapR(D_8010245C);
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
 
@@ -3623,7 +3827,7 @@ int func_80109EB8(char* arg0)
         }
         _shutdownMemcard();
         if (*arg0 == 0xE) {
-            D_800F51C0 = 7;
+            D_800F51C0[0] = 7;
         }
         *arg0 = 0;
         return 1;

@@ -27,6 +27,7 @@ void vs_battle_rMemzero();
 void vs_battle_rMemcpy(char* dest, char const* src, int size);
 int func_800CCC54(int);
 u_int vs_battle_encode(int value);
+int func_800CD064(int);
 void func_800CCDA8(int, void*, int);
 int func_800CEEBC();
 void func_800CEF74();
@@ -36,7 +37,8 @@ void func_800CF830();
 void func_800CF920();
 
 extern u_short D_800EB9DC[];
+extern int D_800EB9B0;
 extern char D_800F4E6B;
 extern int D_800F4EA0;
 extern short D_800F514C;
-extern signed char D_800F51C0;
+extern char D_800F51C0[8];

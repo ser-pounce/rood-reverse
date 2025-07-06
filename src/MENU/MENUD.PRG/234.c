@@ -98,9 +98,16 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103F64);
 
+void func_80103FD4(); 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103FD4);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104034);
+void func_80104034(int arg0 __attribute__((unused)), int arg1) {
+    D_80109A7C = 0;
+    D_80109A7D = 0;
+    func_80103FD4();
+    func_800FBBD4(arg1);
+    func_800FBEA4(1);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104078);
 

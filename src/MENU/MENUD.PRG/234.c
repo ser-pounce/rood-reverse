@@ -1,6 +1,11 @@
 #include "common.h"
 
 typedef struct {
+    char unk0[0x2318];
+    u_short unk2318[1][0xE];
+} func_80103D14_t;
+
+typedef struct {
     u_short unk0;
     char unk2;
 } func_801055D0_t;
@@ -37,7 +42,18 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103B20);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103C9C);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D14);
+int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2) {
+    u_short var_v1;
+
+    var_v1 = 0;
+    if (arg0 == 5) {
+        var_v1 = arg2->unk2318[arg1][0];
+        if (!(var_v1 & 0x80)) {
+            var_v1 = 0;
+        }
+    }
+    return var_v1 & 0x7F;
+}
 
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;

@@ -31,30 +31,46 @@ static short* func_80102C94(int arg0, func_80102C94_t* arg1)
     int i;
     int var_a3;
 
-    i = 0;
     var_a3 = 0;
-    if (arg0 > 0) {
-        do {
-            var_a3 += D_80109944[i++];
-        } while (i < arg0);
+    for (i = 0; i < arg0; ++i) {
+        var_a3 += D_80109944[i];
     }
     return arg1->unk3C00 + var_a3;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102CD0);
+static int func_80102CD0(int arg0, int arg1, u_short* arg2) {
+    int i;
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D28);
+    for (i = 0; i < D_80109944[arg0]; ++i) {
+        if (arg2[i] == (arg1 + 1)) {
+            return i + 1;
+        }
+    }
+    return 0;
+}
+
+static void func_80102D28(int arg0, int arg1, u_short* arg2)
+{
+    int i;
+
+    for (i = 0; i < D_80109944[arg0]; ++i) {
+        if (arg2[i] == 0) {
+            arg2[i] = arg1 + 1;
+            return;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102F88);
 
-short func_80103070(int, void*);
+static short func_80103070(int, void*);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103070);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
 
-void func_801031A0();
+static void func_801031A0();
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
 static void func_80103270()
@@ -101,7 +117,7 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103F64);
 
-void func_80103FD4();
+static void func_80103FD4();
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103FD4);
 
 static void func_80104034(int arg0 __attribute__((unused)), int arg1)
@@ -185,7 +201,17 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801068BC);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106948);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801069B0);
+static int func_801069B0(int arg0, int arg1)
+{
+    int i;
+
+    for (i = 0; i < 64; ++i) {
+        if (D_8010245C->unkC3B0[i] == ((arg0 << 8) | (arg1 + 1))) {
+            return i + 1;
+        }
+    }
+    return 0;
+}
 
 static void func_80106A04(int arg0, int arg1)
 {

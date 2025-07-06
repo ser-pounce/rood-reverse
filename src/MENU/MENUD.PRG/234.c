@@ -39,7 +39,16 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103C9C);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D14);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D50);
+extern signed char D_80109A7B;
+extern signed char D_80109A7C;
+extern signed char D_80109A7D;
+
+void func_80103D50(signed char arg0)
+{
+    D_80109A7B = arg0;
+    D_80109A7C = arg0;
+    D_80109A7D = arg0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D6C);
 
@@ -85,7 +94,8 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105378);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
 
-int func_801055D0(int arg0, func_801055D0_t* arg1) {
+int func_801055D0(int arg0, func_801055D0_t* arg1)
+{
     if (arg0 == 0) {
         return -arg1->unk0;
     }

@@ -86,12 +86,6 @@ typedef struct {
 } savedata_unk180_t;
 
 typedef struct {
-    u_short containerData[0x1C00];
-    char unk3800[0x100];
-    char unk3900[0x300];
-} containerData_t;
-
-typedef struct {
     saveFileInfo_t fileInfo;
     char unk80[0x80];
     char unk100[0x80];
@@ -3447,7 +3441,7 @@ int func_8010903C(int arg0)
     return 0;
 }
 
-static u_short* _getContainerOffset(int section, containerData_t* arg1)
+static void* _getContainerOffset(int section, void* arg1)
 {
     int i;
     int offset;
@@ -3460,10 +3454,10 @@ static u_short* _getContainerOffset(int section, containerData_t* arg1)
             offset += _containerOffsets[i++];
         } while (i < section);
     }
-    return arg1->containerData + offset;
+    return ((containerData_t*)arg1)->containerData + offset;
 }
 
-void func_801092C4(containerData_t* arg0, int arg1, containerData_t* arg2);
+void func_801092C4(void* arg0, void* arg1, void* arg2);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
 extern char D_80102578;
@@ -3483,8 +3477,8 @@ int func_80109778(char* arg0)
     case 0:
         vs_battle_playSfx10();
         D_80102578 = ((*(u_int*)&vs_main_settings) >> 4) & 1;
-        D_8010245C = vs_main_allocHeapR(0x14730);
-        vs_battle_rMemzero(D_8010245C, 0x14730);
+        D_8010245C = vs_main_allocHeapR(sizeof(*D_8010245C));
+        vs_battle_rMemzero(D_8010245C, sizeof(*D_8010245C));
         func_800FBD80(0x10);
         func_800C8E04(1);
         func_8010903C(5);
@@ -3573,9 +3567,10 @@ int func_80109778(char* arg0)
         }
         break;
     case 7:
-        vs_battle_memcpy(D_8010245C, (short*)D_80060168, 0xF00);
-        vs_battle_memcpy(D_8010245C + 0xF00, (short*)&D_800619D8, 0xB0);
-        vs_battle_memcpy(D_8010245C + 0xFB0, (short*)(_spmcimg + 0x79E0), 0x3C00);
+        vs_battle_memcpy(D_8010245C->unk0, D_80060168, sizeof(D_8010245C->unk0));
+        vs_battle_memcpy(&D_8010245C->unkF00, &D_800619D8, sizeof(D_8010245C->unkF00));
+        vs_battle_memcpy(
+            &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
         _shutdownMemcard();
         *arg0 = 8;
         temp_a0 = D_800F51C0[0];
@@ -3606,8 +3601,8 @@ int func_80109778(char* arg0)
         }
         break;
     case 10:
-        func_801092C4((containerData_t*)(_spmcimg + 0x79E0), (int)(D_8010245C + 0xC430),
-            D_8010245C + 0x10030);
+        func_801092C4((containerData_t*)(_spmcimg + 0x79E0), &D_8010245C->unkC430,
+            D_8010245C->unk10030);
         _showSaveMenu(2);
         *arg0 = 0xB;
         break;
@@ -3639,8 +3634,8 @@ int func_80109778(char* arg0)
         char v0 = (*(int*)&vs_main_settings);
         char v1 = D_80102578 & 1;
         *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
-        vs_battle_memcpy((short*)D_80060168, (short*)D_8010245C, 0xF00);
-        vs_battle_memcpy((short*)&D_800619D8, D_8010245C + 0xF00, 0xB0);
+        vs_battle_memcpy(D_80060168, D_8010245C->unk0, sizeof(D_8010245C->unk0));
+        vs_battle_memcpy(&D_800619D8, &D_8010245C->unkF00, sizeof(D_8010245C->unkF00));
     }
         /* fallthrough */
     case 14:

@@ -1,9 +1,24 @@
 #pragma once
 #include <stddef.h>
 
+typedef struct {
+    u_short containerData[0x1C00];
+    char unk3800[0x100];
+    char unk3900[0x300];
+} containerData_t;
+
+typedef struct {
+    char unk0[15][256];
+    D_800619D8_t unkF00;
+    containerData_t unkFB0;
+    char unk4BB0[0x7880];
+    containerData_t unkC430;
+    char unk10030[0x4700];
+} D_8010245C_t;
+
 void func_800FA448();
 void func_800FAEBC(int);
 void func_800FBD80(int);
 void func_8010044C(u_int*);
 
-extern void* D_8010245C;
+extern D_8010245C_t* D_8010245C;

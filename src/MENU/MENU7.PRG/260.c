@@ -3457,7 +3457,7 @@ static void* _getContainerOffset(int section, void* arg1)
     return ((containerData_t*)arg1)->containerData + offset;
 }
 
-void func_801092C4(void* arg0, void* arg1, void* arg2);
+void func_801092C4(containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
 extern char D_80102578;

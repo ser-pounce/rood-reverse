@@ -13,7 +13,7 @@ typedef struct {
     containerData_t unkFB0;
     char unk4BB0[0x7880];
     containerData_t unkC430;
-    char unk10030[0x4700];
+    signed char unk10030[0x4700];
 } D_8010245C_t;
 
 void func_800FA448();

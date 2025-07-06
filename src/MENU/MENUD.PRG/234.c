@@ -1,5 +1,10 @@
 #include "common.h"
 
+typedef struct {
+    u_short unk0;
+    char unk2;
+} func_801055D0_t;
+
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102A34);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
@@ -80,7 +85,12 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105378);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801055D0);
+int func_801055D0(int arg0, func_801055D0_t* arg1) {
+    if (arg0 == 0) {
+        return -arg1->unk0;
+    }
+    return arg1->unk2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801055F0);
 

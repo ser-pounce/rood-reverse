@@ -11,6 +11,12 @@ typedef struct {
     char unk2;
 } func_801055D0_t;
 
+typedef struct {
+    containerData_t unk0;
+    short unk3C00[1];
+} func_80102C94_t;
+
+extern u_short D_80109944[];
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;
 extern signed char D_80109A7D;
@@ -20,7 +26,19 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102A34);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102C94);
+short* func_80102C94(int arg0, func_80102C94_t* arg1) {
+    int i;
+    int var_a3;
+
+    i = 0;
+    var_a3 = 0;
+    if (arg0 > 0) {
+        do {
+            var_a3 += D_80109944[i++];
+        } while (i < arg0);
+    }
+    return arg1->unk3C00 + var_a3;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102CD0);
 

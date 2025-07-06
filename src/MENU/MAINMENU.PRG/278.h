@@ -12,7 +12,8 @@ typedef struct {
     char unk0[15][256];
     D_800619D8_t unkF00;
     containerData_t unkFB0;
-    char unk4BB0[0x7880];
+    char unk4BB0[0x7800];
+    u_short unkC3B0[0x40];
     containerData_t unkC430;
     signed char unk10030[0x4700];
 } D_8010245C_t;

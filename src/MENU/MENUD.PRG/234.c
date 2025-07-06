@@ -26,7 +26,8 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102A34);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
 
-short* func_80102C94(int arg0, func_80102C94_t* arg1) {
+static short* func_80102C94(int arg0, func_80102C94_t* arg1)
+{
     int i;
     int var_a3;
 
@@ -56,10 +57,11 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
 void func_801031A0();
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
-void func_80103270() {
+static void func_80103270()
+{
     short* s0 = &D_80109A82;
     func_801031A0();
-    D_80109A82 = func_80103070(6, D_8010245C->unk4BB0);
+    D_80109A82 = func_80103070(6, &D_8010245C->unk4BB0);
 }
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801032AC);
@@ -72,7 +74,8 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103B20);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103C9C);
 
-int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2) {
+static int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2)
+{
     u_short var_v1;
 
     var_v1 = 0;
@@ -85,7 +88,7 @@ int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2) {
     return var_v1 & 0x7F;
 }
 
-void func_80103D50(signed char arg0)
+static void func_80103D50(signed char arg0)
 {
     D_80109A7B = arg0;
     D_80109A7C = arg0;
@@ -98,10 +101,11 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103F64);
 
-void func_80103FD4(); 
+void func_80103FD4();
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103FD4);
 
-void func_80104034(int arg0 __attribute__((unused)), int arg1) {
+static void func_80104034(int arg0 __attribute__((unused)), int arg1)
+{
     D_80109A7C = 0;
     D_80109A7D = 0;
     func_80103FD4();
@@ -143,7 +147,7 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105378);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
 
-int func_801055D0(int arg0, func_801055D0_t* arg1)
+static int func_801055D0(int arg0, func_801055D0_t* arg1)
 {
     if (arg0 == 0) {
         return -arg1->unk0;
@@ -183,7 +187,20 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106948);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801069B0);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106A04);
+static void func_80106A04(int arg0, int arg1)
+{
+    int i;
+    u_short* var_v1;
+
+    i = 0;
+    var_v1 = (u_short*)D_8010245C + 0x61D8;
+    for (i = 0; i < 64; ++i) {
+        if (var_v1[i] == 0) {
+            var_v1[i] = ((arg0 << 8) | (arg1 + 1));
+            return;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106A50);
 

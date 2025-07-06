@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include "../../SLUS_010.40/main.h"
 
 typedef struct {
     u_short containerData[0x1C00];

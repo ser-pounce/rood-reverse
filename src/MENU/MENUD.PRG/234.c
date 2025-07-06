@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../MAINMENU.PRG/278.h"
 
 typedef struct {
     char unk0[0x2318];
@@ -9,6 +10,11 @@ typedef struct {
     u_short unk0;
     char unk2;
 } func_801055D0_t;
+
+extern signed char D_80109A7B;
+extern signed char D_80109A7C;
+extern signed char D_80109A7D;
+extern short D_80109A82;
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102A34);
 
@@ -24,13 +30,19 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102F88);
 
+short func_80103070(int, void*);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103070);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
 
+void func_801031A0();
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103270);
+void func_80103270() {
+    short* s0 = &D_80109A82;
+    func_801031A0();
+    D_80109A82 = func_80103070(6, D_8010245C->unk4BB0);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801032AC);
 
@@ -54,10 +66,6 @@ int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2) {
     }
     return var_v1 & 0x7F;
 }
-
-extern signed char D_80109A7B;
-extern signed char D_80109A7C;
-extern signed char D_80109A7D;
 
 void func_80103D50(signed char arg0)
 {

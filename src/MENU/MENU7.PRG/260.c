@@ -3433,12 +3433,15 @@ int func_80108CE8(char* arg0)
 
 static u_short D_8010A9B0[] = { 0x5, 0x10, 0x12, 0x14, 0x19, 0x2B0C, 0x2628, 0x8F2E,
     0x2B37, 0x8F28, 0x3226, 0x3731, 0x2C24, 0x2831, 0xA535, 0xEBE7, 0x0E22, 0xE71C,
-    0x1817, 0xEBE7, 0x180C, 0x1D17, 0x120A, 0x0E17, 0xE71B, 0x2B1D };
-extern char D_8010AA2A;
+    0x1817, 0xEBE7, 0x180C, 0x1D17, 0x120A, 0x0E17, 0xE71B, 0x2B1D, 0x8F28, 0x3226,
+    0x3731, 0x2C24, 0x2831, 0x8F35, 0x3537, 0x3124, 0x2436, 0x3726, 0x322C, 0x8F31,
+    0x2C3A, 0x2F2F, 0x258F, 0x8F28, 0x2426, 0x2631, 0x2F28, 0x282F, 0xE827, 0x292C,
+    0x2A8F, 0x3024, 0x8F28, 0x362C, 0x318F, 0x3732, 0x368F, 0x3924, 0x2728, 0x8FA0,
+    0x241C, 0x2839, 0xE7A5 };
+static char D_8010AA2A = 0;
 
 int func_8010903C(int arg0)
 {
-
     func_800C8E5C_t* temp_v0;
     u_int var_s0;
 
@@ -3448,7 +3451,7 @@ int func_8010903C(int arg0)
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 0;
         D_8010ADA8 = (arg0 - 1) & 1;
-        D_8010ADAD = (char)(arg0 >> 2);
+        D_8010ADAD = arg0 >> 2;
         return 0;
     }
     switch (D_8010ADAC) {
@@ -3499,9 +3502,10 @@ int func_8010903C(int arg0)
     return 0;
 }
 
+static u_short _containerOffsets[] = { 0x20, 0x40, 0x40, 0x20, 0x40, 0xC0, 0x100, 0x2 };
+
 static void* _getContainerOffset(int section, void* arg1)
 {
-    extern u_short _containerOffsets[];
 
     int i;
     int offset;
@@ -3722,11 +3726,9 @@ int func_80109778(char* arg0)
     return 0;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
-
 void func_80109D64()
 {
-    extern char* D_8010AA3C;
+    static char* _playTime = "00:00:00:00";
 
     char time[4];
     int temp_v0;
@@ -3742,10 +3744,11 @@ void func_80109D64()
     }
     for (i = 0; i < 4; ++i) {
         temp_v0 = func_800CCC54(time[i]);
-        D_8010AA3C[9 - i * 3] = (temp_v0 >> 4) + 0x30;
-        D_8010AA3C[10 - i * 3] = (temp_v0 & 0xF) + 0x30;
+        // BUG: invalid write to .rodata
+        _playTime[9 - i * 3] = (temp_v0 >> 4) + 0x30;
+        _playTime[10 - i * 3] = (temp_v0 & 0xF) + 0x30;
     }
-    func_800C6828(D_8010AA3C, 0xC800E0, D_1F800000[1] - 5);
+    func_800C6828(_playTime, 0xC800E0, D_1F800000[1] - 5);
     func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 

@@ -25,6 +25,5 @@ segments:
       - [0x0, .rodata, 260]
       - [0x260, c]
       - [0x7AB4, .data, 260]
-      - [0x81E4, data]
       - [0x8240, bss, 260]
   - [0x88AE]

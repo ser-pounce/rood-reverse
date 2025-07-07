@@ -69,6 +69,7 @@ colors1 = 0x8010A920;
 colors2 = 0x8010A928;
 _menuItemTextClut = 0x8010A930;
 _containerOffsets = 0x8010AA2C;
+_playTime = 0x8010AA3C;
 _filename0 = 0x8010AA40;
 _filename1 = 0x8010AA60;
 _memcardEventHandlerState = 0x8010AA80;

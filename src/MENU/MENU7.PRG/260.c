@@ -3129,7 +3129,8 @@ static int _initGameOver(int arg0)
 
     static vs_main_CdQueueSlot* queueSlot;
     static u_int* _gameOverBin;
-    extern int _initGameOverState;
+    static int _initGameOverState;
+    static char _[8] __attribute__((unused));
 
     vs_main_CdFile cdFile;
 
@@ -3198,13 +3199,14 @@ extern u_int* D_1F800000[];
 
 int func_801088B4(int arg0)
 {
-    extern short D_8010AB20[];
-    extern int D_8010AB60;
-    extern int D_8010AB64;
-    extern int D_8010AB68;
-    extern int D_8010AB6C;
-    extern int D_8010AB70;
-    extern int D_8010AB74;
+    static short D_8010AB20[32];
+    static int D_8010AB60;
+    static int D_8010AB64;
+    static int D_8010AB68;
+    static int D_8010AB6C;
+    static int D_8010AB70;
+    static int D_8010AB74;
+    static char _[8] __attribute__((unused));
 
     u_int* temp_s4;
     u_int* temp_t0;
@@ -3315,10 +3317,10 @@ int func_801088B4(int arg0)
     return 0;
 }
 
-extern u_short D_8010AB80[];
-extern vs_main_settings_t D_8010AD80;
-extern int D_8010ADA0;
-extern int D_8010ADA4;
+static u_short D_8010AB80[256];
+static vs_main_settings_t D_8010AD80;
+static int D_8010ADA0;
+static int D_8010ADA4;
 
 int func_80108CE8(char* arg0)
 {

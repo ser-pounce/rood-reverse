@@ -38,7 +38,8 @@ static short* func_80102C94(int arg0, func_80102C94_t* arg1)
     return arg1->unk3C00 + var_a3;
 }
 
-static int func_80102CD0(int arg0, int arg1, u_short* arg2) {
+static int func_80102CD0(int arg0, int arg1, u_short* arg2)
+{
     int i;
 
     for (i = 0; i < D_80109944[arg0]; ++i) {

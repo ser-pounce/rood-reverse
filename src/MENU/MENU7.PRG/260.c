@@ -1,5 +1,4 @@
 #include "common.h"
-#include "../../SLUS_010.40/main.h"
 #include "../SLUS_010.40/sfx.h"
 #include "../MAINMENU.PRG/278.h"
 #include "../MAINMENU.PRG/413C.h"
@@ -167,7 +166,7 @@ char func_800CCD40(char, int);
 void func_800FA8E0(int);
 int func_800FA9D0();
 
-extern char const* _memcardFilenameTemplate;
+char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 extern saveFileInfo_t* _saveFileInfo;
 extern fileMenuElements_t _fileMenuElements[10];
@@ -178,22 +177,15 @@ extern char* _memoryCardMessage;
 extern u_char _selectCursorColor;
 extern char _fileMenuScreenFade;
 extern long _memcardEventDescriptors[8];
-extern int D_8010A2E4[];
-extern int D_8010A30C[];
-extern u_short _containerOffsets[];
 extern struct DIRENTRY* _memcardFiles[15];
 extern primBuf_t _primBuf;
 extern char* _spmcimg;
 extern u_short* _textTable;
-extern u_short D_8010A930[];
 extern u_int* D_8010AB10;
 extern char _isSaving;
 extern vs_main_CdQueueSlot* D_8010AB04;
 extern savedata_t* _opMcImg;
 extern struct DIRENTRY* _dirEntBuf;
-extern u_short D_8010A9D0;
-extern u_short D_8010A9D4;
-extern char D_8010AA2A;
 extern int D_8010ADA8;
 extern char D_8010ADAC;
 extern char D_8010ADAD;
@@ -445,8 +437,6 @@ static int _deleteRedundantTempFiles(int port)
     }
     return ret;
 }
-
-INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102800);
 
 static int _initSaveFileInfo(int port)
 {
@@ -1002,7 +992,7 @@ static int _initMemcard(int init)
         enqueued = 2,
     };
 
-    extern u_short _eventSpecs[];
+    static u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
     extern vs_main_CdQueueSlot* _initMemcardCdQueueSlot;
     extern char _initMemcardState;
 
@@ -1104,6 +1094,11 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawPrim(&_primBuf);
 }
 
+static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
+    200, 224, 248, 255, 255, 255, 255 };
+static signed char _cursorFileOpSaturation[]
+    = { 0, -56, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8 };
+
 enum vs_fileMenuUiIds_e {
     vs_uiids_colon = 0,
     vs_uiids_number = 1,
@@ -1119,7 +1114,16 @@ enum vs_fileMenuUiIds_e {
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
-    _drawSprt(xy, D_8010A2E4[id], D_8010A30C[id], 0xC);
+    static int _saveInfoUVClut[]
+        = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
+              vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
+              vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
+              vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
+              vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+    static int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
+        vs_getXY(22, 8), vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10),
+        vs_getXY(16, 9), vs_getXY(18, 9), vs_getXY(5, 7) };
+    _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id], 0xC);
 }
 
 static void _drawInteger(int xy, u_int value, u_int placeDivisor)
@@ -1149,7 +1153,7 @@ enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
 void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
-    extern char _digitDivisors[];
+    static char _digitDivisors[] = { 0, 1, 10, 100 };
 
     int currentValueFactor;
     int maxValueDigits;
@@ -1373,7 +1377,22 @@ static int _fileMenuElementsActive()
 
 static int _printCharacter(u_int c, int x, int y, int clut)
 {
-    extern int glyphWidths[];
+    static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9,
+        7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8, 9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8,
+        6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5, 6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 6, 12, 12, 12, 12,
+        12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12, 12, 6, 6, 3, 3, 3, 4, 6, 12,
+        6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12 };
 
     if ((c >> 8) == 14) {
         return x + (char)c;
@@ -1494,7 +1513,7 @@ static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
 
 static void _printString(char* text, int x, int y, int clut)
 {
-    extern char arrowState;
+    static char arrowState = 0;
 
     char tempArrowState;
     u_int c;
@@ -1551,8 +1570,12 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
-    extern int colors1[];
-    extern int colors2[];
+    static int colors1[]
+        = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
+    static int colors2[] = {
+        vs_getRGB888(0x08, 0x08, 0x20),
+        vs_getRGB888(0x10, 0x10, 0x08),
+    };
 
     u_int color1;
     u_int color2;
@@ -1568,9 +1591,6 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     }
     return _interpolateRGB(color1, color2, outerFactor);
 }
-
-extern char _menuElementStops[];
-extern signed char _cursorFileOpSaturation[];
 
 static void _drawFileMenuElement(fileMenuElements_t* element)
 {
@@ -3102,6 +3122,37 @@ static int func_801085B0(int arg0)
     return 0;
 }
 
+static u_short _menuItemTextClut[][16] = {
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(1, 1, 1, 1), vs_getRGB5551(1, 1, 3, 1),
+        vs_getRGB5551(3, 1, 0, 1), vs_getRGB5551(1, 0, 6, 1), vs_getRGB5551(6, 1, 1, 1),
+        vs_getRGB5551(11, 2, 0, 1), vs_getRGB5551(16, 5, 0, 1),
+        vs_getRGB5551(19, 8, 0, 1), vs_getRGB5551(23, 10, 0, 1),
+        vs_getRGB5551(24, 10, 0, 1), vs_getRGB5551(24, 11, 0, 1),
+        vs_getRGB5551(26, 11, 0, 1), vs_getRGB5551(25, 11, 3, 1),
+        vs_getRGB5551(27, 14, 0, 1), vs_getRGB5551(27, 13, 2, 1) },
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(1, 1, 1, 1), vs_getRGB5551(1, 1, 3, 1),
+        vs_getRGB5551(3, 1, 0, 1), vs_getRGB5551(1, 0, 6, 1), vs_getRGB5551(6, 1, 1, 1),
+        vs_getRGB5551(11, 2, 0, 1), vs_getRGB5551(16, 5, 0, 1),
+        vs_getRGB5551(19, 8, 0, 1), vs_getRGB5551(23, 10, 0, 1),
+        vs_getRGB5551(24, 10, 0, 1), vs_getRGB5551(24, 11, 0, 1),
+        vs_getRGB5551(26, 11, 0, 1), vs_getRGB5551(25, 11, 3, 1),
+        vs_getRGB5551(27, 14, 0, 1), vs_getRGB5551(27, 13, 2, 1) },
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 2, 1), vs_getRGB5551(0, 0, 4, 1),
+        vs_getRGB5551(0, 0, 6, 1), vs_getRGB5551(0, 0, 8, 1), vs_getRGB5551(0, 0, 10, 1),
+        vs_getRGB5551(0, 0, 12, 1), vs_getRGB5551(0, 0, 14, 1),
+        vs_getRGB5551(0, 0, 15, 1), vs_getRGB5551(0, 0, 17, 1),
+        vs_getRGB5551(0, 0, 20, 1), vs_getRGB5551(0, 0, 22, 1),
+        vs_getRGB5551(0, 0, 24, 1), vs_getRGB5551(0, 0, 23, 1),
+        vs_getRGB5551(0, 0, 29, 1), vs_getRGB5551(0, 0, 31, 1) },
+    { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(1, 1, 3, 1), vs_getRGB5551(2, 2, 7, 1),
+        vs_getRGB5551(4, 3, 2, 1), vs_getRGB5551(5, 4, 7, 1), vs_getRGB5551(8, 6, 6, 1),
+        vs_getRGB5551(13, 10, 9, 1), vs_getRGB5551(19, 14, 10, 1),
+        vs_getRGB5551(23, 18, 12, 1), vs_getRGB5551(27, 21, 14, 1),
+        vs_getRGB5551(29, 22, 15, 1), vs_getRGB5551(31, 23, 13, 1),
+        vs_getRGB5551(31, 24, 16, 1), vs_getRGB5551(29, 25, 21, 1),
+        vs_getRGB5551(31, 26, 18, 1), vs_getRGB5551(31, 27, 22, 1) }
+};
+
 static int _initGameOver(int arg0)
 {
 
@@ -3124,7 +3175,7 @@ static int _initGameOver(int arg0)
         if (_initGameOverQueueSlot->state == 4) {
             vs_main_freeCdQueueSlot(_initGameOverQueueSlot);
             func_800CCDA8(0x01000340, D_8010AB10, 0x800018);
-            func_800CCDA8(0x01800340, D_8010A930, 0x10030);
+            func_800CCDA8(0x01800340, _menuItemTextClut, 0x10030);
             _initGameOverState = 1;
         }
         return 0;
@@ -3263,8 +3314,9 @@ int func_801088B4(int arg0)
         }
     }
 
-    _setMenuItemClut(D_8010AB20, D_8010AB6C, D_8010A930, D_8010A930 + 0x30);
-    _setMenuItemClut(D_8010AB20 + 0x10, D_8010AB70, D_8010A930, D_8010A930 + 0x30);
+    _setMenuItemClut(D_8010AB20, D_8010AB6C, _menuItemTextClut[0], _menuItemTextClut[3]);
+    _setMenuItemClut(
+        D_8010AB20 + 0x10, D_8010AB70, _menuItemTextClut[0], _menuItemTextClut[3]);
     func_800CCDA8(0x01800340, &D_8010AB20, 0x10020);
     temp_t0 = func_800C0230(D_8010AB60, 0x800070, 0x200060, temp_s4);
     temp_t0[1] = 0xE100001D;
@@ -3379,13 +3431,19 @@ int func_80108CE8(char* arg0)
     return 0;
 }
 
+static u_short D_8010A9B0[] = { 0x5, 0x10, 0x12, 0x14, 0x19, 0x2B0C, 0x2628, 0x8F2E,
+    0x2B37, 0x8F28, 0x3226, 0x3731, 0x2C24, 0x2831, 0xA535, 0xEBE7, 0x0E22, 0xE71C,
+    0x1817, 0xEBE7, 0x180C, 0x1D17, 0x120A, 0x0E17, 0xE71B, 0x2B1D };
+extern char D_8010AA2A;
+
 int func_8010903C(int arg0)
 {
+
     func_800C8E5C_t* temp_v0;
     u_int var_s0;
 
     if (arg0 != 0) {
-        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9D0);
+        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9B0[16]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 0;
@@ -3395,7 +3453,7 @@ int func_8010903C(int arg0)
     }
     switch (D_8010ADAC) {
     case 0:
-        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9D4);
+        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9B0[18]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 1;
@@ -3443,6 +3501,8 @@ int func_8010903C(int arg0)
 
 static void* _getContainerOffset(int section, void* arg1)
 {
+    extern u_short _containerOffsets[];
+
     int i;
     int offset;
 
@@ -3461,11 +3521,6 @@ void func_801092C4(
     containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
-extern char D_80102578;
-extern u_short D_8010A9BA;
-extern u_short D_8010A9D8;
-extern u_short D_8010A9E2;
-
 int func_80109778(char* arg0)
 {
     func_800C8E5C_t* temp_v0_3;
@@ -3483,7 +3538,7 @@ int func_80109778(char* arg0)
         func_800FBD80(0x10);
         func_800C8E04(1);
         func_8010903C(5);
-        func_800FFC04(&D_8010A9BA);
+        func_800FFC04(&D_8010A9B0[5]);
         *arg0 = 1;
         break;
     case 1:
@@ -3493,7 +3548,7 @@ int func_80109778(char* arg0)
                 _initMemcard(1);
                 func_800FFB68(1);
                 func_800FFA88(2);
-                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9D8);
+                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9B0[20]);
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->unk18 = 0xB4;
                 temp_v0_3->unk6 = 1;
@@ -3591,7 +3646,7 @@ int func_80109778(char* arg0)
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
                     func_8010903C(1);
-                    func_800FFC04(&D_8010A9E2);
+                    func_800FFC04(&D_8010A9B0[25]);
                     *arg0 = 0xC;
                 } else {
                     *arg0 = 0xA;
@@ -3613,7 +3668,7 @@ int func_80109778(char* arg0)
             if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
                 func_800C8E04(1);
                 func_8010903C(1);
-                func_800FFC04(&D_8010A9E2);
+                func_800FFC04(&D_8010A9B0[25]);
                 *arg0 = 0xC;
             } else {
                 *arg0 = 0xE;
@@ -3669,10 +3724,10 @@ int func_80109778(char* arg0)
 
 INCLUDE_RODATA("build/src/MENU/MENU7.PRG/nonmatchings/260", D_80102A0C);
 
-extern char* D_8010AA3C;
-
 void func_80109D64()
 {
+    extern char* D_8010AA3C;
+
     char time[4];
     int temp_v0;
     int i;

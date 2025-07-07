@@ -26,3 +26,4 @@ void func_800FBEA4(int);
 void func_8010044C(u_int*);
 
 extern D_8010245C_t* D_8010245C;
+extern char D_80102578;

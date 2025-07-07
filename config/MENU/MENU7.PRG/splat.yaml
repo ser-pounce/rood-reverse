@@ -12,6 +12,7 @@ options:
     - config/MENU/MENU7.PRG/exports.txt
     - config/SLUS_010.40/exports.txt
     - config/BATTLE/BATTLE.PRG/exports.txt
+    - config/MENU/MAINMENU.PRG/exports.txt
   undefined_funcs_auto_path: build/config/MENU/MENU7.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU7.PRG/undefined_syms_auto.txt
 
@@ -23,6 +24,7 @@ segments:
     subsegments:
       - [0x0, .rodata, 260]
       - [0x260, c]
-      - [0x7AB4, data, 260]
+      - [0x7AB4, .data, 260]
+      - [0x81E4, data]
       - [0x8240, bss, 260]
   - [0x88AE]

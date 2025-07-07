@@ -204,6 +204,9 @@ extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];
 extern char D_80061598[0x440];
+extern char D_80061599;
+extern signed char D_8006163C;
+extern char D_8006163F;
 extern signed char vs_main_puzzleMode;
 extern D_800619D8_t D_800619D8;
 

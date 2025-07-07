@@ -40,5 +40,6 @@ extern u_short D_800EB9DC[];
 extern int D_800EB9B0;
 extern char D_800F4E6B;
 extern int D_800F4EA0;
+extern char D_800F4F70;
 extern short D_800F514C;
 extern char D_800F51C0[8];

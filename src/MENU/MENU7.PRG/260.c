@@ -168,44 +168,25 @@ int func_800FA9D0();
 
 char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
+extern long _memcardEventDescriptors[8];
+extern char* _spmcimg;
+extern mcdata_t* _mcData;
+extern u_short* _textTable;
+extern struct DIRENTRY* _memcardFiles[15];
+extern struct DIRENTRY* _dirEntBuf;
 extern saveFileInfo_t* _saveFileInfo;
-extern fileMenuElements_t _fileMenuElements[10];
+extern char _loadSaveDataErrorOffset;
 extern u_short _fileProgressTarget;
+extern u_short _filePreviousProgressCounter;
+extern u_short _fileProgressPosition;
 extern int _fileProgressCounter;
+extern fileMenuElements_t _fileMenuElements[10];
+extern primBuf_t _primBuf;
 extern int _selectCursorXy;
 extern char* _memoryCardMessage;
+extern char _isSaving;
 extern u_char _selectCursorColor;
 extern char _fileMenuScreenFade;
-extern long _memcardEventDescriptors[8];
-extern struct DIRENTRY* _memcardFiles[15];
-extern primBuf_t _primBuf;
-extern char* _spmcimg;
-extern u_short* _textTable;
-extern u_int* D_8010AB10;
-extern char _isSaving;
-extern vs_main_CdQueueSlot* D_8010AB04;
-extern savedata_t* _opMcImg;
-extern struct DIRENTRY* _dirEntBuf;
-extern int D_8010ADA8;
-extern char D_8010ADAC;
-extern char D_8010ADAD;
-extern mcdata_t* _mcData;
-extern vs_main_settings_t D_8010AD80;
-extern char D_80061599;
-extern signed char D_8006163C;
-extern u_short D_8010AB80[];
-extern int D_8010ADA0;
-extern int D_8010ADA4;
-extern char D_8006163F;
-extern char D_800F4F70;
-extern short D_8010AB20[];
-extern int D_8010AB60;
-extern int D_8010AB64;
-extern int D_8010AB68;
-extern int D_8010AB6C;
-extern int D_8010AB70;
-extern int D_8010AB74;
-extern u_int* D_1F800000[];
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -258,24 +239,24 @@ static void _rMemcpy(void* dst, void const* src, int count)
 
 static char* _memcardMakeFilename(int port, int fileNo)
 {
-    extern char _filename0[32];
+    static char _filename[32];
 
-    memset(_filename0, 0, ' ');
-    strcpy(_filename0, _memcardFilenameTemplate);
-    _filename0[2] = port == 0 ? '0' : '1';
-    _filename0[20] = fileNo + '0';
-    return _filename0;
+    memset(_filename, 0, ' ');
+    strcpy(_filename, _memcardFilenameTemplate);
+    _filename[2] = port == 0 ? '0' : '1';
+    _filename[20] = fileNo + '0';
+    return _filename;
 }
 
 static char* _memcardMakeTempFilename(int port, int fileNo)
 {
-    extern char _filename1[32];
+    static char _filename[32];
 
-    memset(_filename1, 0, ' ');
-    strcpy(_filename1, _memcardFilenameTemplate);
-    _filename1[2] = port == 0 ? '0' : '1';
-    _filename1[20] = fileNo + 'A' - 1;
-    return _filename1;
+    memset(_filename, 0, ' ');
+    strcpy(_filename, _memcardFilenameTemplate);
+    _filename[2] = port == 0 ? '0' : '1';
+    _filename[20] = fileNo + 'A' - 1;
+    return _filename;
 }
 
 static u_int _getNewestSaveFile()
@@ -512,7 +493,7 @@ static int _createSaveFile(int port, int id)
 
 static enum memcardEventHandler_e _memcardEventHandler(int initPort)
 {
-    enum _memcardEventHandlerState {
+    enum state {
         init = 0,
         ready = 1,
         unformatted = 2,
@@ -521,59 +502,59 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         loaded = 5,
     };
 
-    extern char _memcardEventHandlerState;
-    extern char _memcardEventHandlerPort;
-    extern char _memcardEventHandlerInitTimeout;
-    extern char _memcardEventHandlerTimeout;
+    static char state;
+    static char port;
+    static char initTimeout;
+    static char timeout;
     extern char _memcardEventHandlerEventType;
 
     int event;
 
     if (initPort != 0) {
-        _memcardEventHandlerPort = (initPort - 1) * 16;
-        _memcardEventHandlerState = init;
-        _memcardEventHandlerInitTimeout = 0;
+        port = (initPort - 1) * 16;
+        state = init;
+        initTimeout = 0;
         return memcardEventPending;
     }
-    switch (_memcardEventHandlerState) {
+    switch (state) {
     case init:
-        if (++_memcardEventHandlerInitTimeout >= 4) {
+        if (++initTimeout >= 4) {
             return memcardEventTimeout;
         }
         _resetMemcardEvents(memcardEventsSw);
-        if (_card_info(_memcardEventHandlerPort) == 0) {
+        if (_card_info(port) == 0) {
             break;
         }
-        _memcardEventHandlerState = ready;
-        _memcardEventHandlerTimeout = 0;
+        state = ready;
+        timeout = 0;
         _memcardEventHandlerEventType = memcardEventsSw;
         // fallthrough
     case ready:
         switch (_testMemcardEvents(memcardEventsSw)) {
         case memcardInternalEventIoEnd:
-            _memcardEventHandlerState = loadReady;
+            state = loadReady;
             break;
         case memcardInternalEventError:
         case memcardInternalEventTimeout:
-            _memcardEventHandlerState = init;
+            state = init;
             break;
         case memcardInternalEventUnformatted:
-            _memcardEventHandlerState = unformatted;
+            state = unformatted;
             break;
         case memcardInternalEventNone:
-            if (_memcardEventHandlerTimeout++ > 64) {
-                _memcardEventHandlerState = init;
+            if (timeout++ > 64) {
+                state = init;
             }
             break;
         }
         break;
     case unformatted:
         _resetMemcardEvents(memcardEventsHw);
-        if (_card_clear(_memcardEventHandlerPort) == 0) {
+        if (_card_clear(port) == 0) {
             break;
         }
-        _memcardEventHandlerState = confirmed;
-        _memcardEventHandlerTimeout = 0;
+        state = confirmed;
+        timeout = 0;
         _memcardEventHandlerEventType = memcardEventsHw;
         // fallthrough
     case confirmed:
@@ -581,22 +562,22 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
             event = _testMemcardEvents(memcardEventsHw);
         } while (event == memcardInternalEventNone);
         if (event == memcardInternalEventIoEnd) {
-            _memcardEventHandlerState = loadReady;
+            state = loadReady;
             break;
         }
         if (event < memcardInternalEventIoEnd)
             break;
         if (event >= memcardInternalEventNone)
             break;
-        _memcardEventHandlerState = init;
+        state = init;
         break;
     case loadReady:
         _resetMemcardEvents(memcardEventsSw);
-        if (_card_load(_memcardEventHandlerPort) == 0) {
+        if (_card_load(port) == 0) {
             break;
         }
-        _memcardEventHandlerState = loaded;
-        _memcardEventHandlerTimeout = 0;
+        state = loaded;
+        timeout = 0;
         // fallthrough
     case loaded:
         event = _testMemcardEvents(memcardEventsSw);
@@ -605,13 +586,13 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
             return _memcardEventHandlerEventType + memcardEventIoEnd;
         case memcardInternalEventError:
         case memcardInternalEventTimeout:
-            _memcardEventHandlerState = init;
+            state = init;
             break;
         case memcardInternalEventUnformatted:
             return _memcardEventHandlerEventType + memcardEventUnformatted;
         case memcardInternalEventNone:
-            if (_memcardEventHandlerTimeout++ > 64) {
-                _memcardEventHandlerState = init;
+            if (timeout++ > 64) {
+                state = init;
             }
             break;
         }
@@ -783,10 +764,6 @@ static void _packageGameSaveData(int targetFile)
         _spmcimg[i] += vs_battle_encode(8);
     }
 }
-
-extern char _loadSaveDataErrorOffset;
-extern u_short _filePreviousProgressCounter;
-extern u_short _fileProgressPosition;
 
 static int _loadSaveData(int portFileno)
 {
@@ -3083,6 +3060,9 @@ static int _loadFileMenu(int initFadeout)
 
 static int func_801085B0(int arg0)
 {
+    extern vs_main_CdQueueSlot* D_8010AB04;
+    extern savedata_t* _opMcImg;
+
     vs_main_CdFile file;
     void* new_var2;
     vs_Gametime_t sp18;
@@ -3158,6 +3138,7 @@ static int _initGameOver(int arg0)
 
     extern vs_main_CdQueueSlot* _initGameOverQueueSlot;
     extern int _initGameOverState;
+    extern u_int* D_8010AB10;
 
     vs_main_CdFile cdFile;
 
@@ -3222,8 +3203,18 @@ static void _setMenuItemClut(
     }
 }
 
+extern u_int* D_1F800000[];
+
 int func_801088B4(int arg0)
 {
+    extern short D_8010AB20[];
+    extern int D_8010AB60;
+    extern int D_8010AB64;
+    extern int D_8010AB68;
+    extern int D_8010AB6C;
+    extern int D_8010AB70;
+    extern int D_8010AB74;
+
     u_int* temp_s4;
     u_int* temp_t0;
 
@@ -3333,8 +3324,14 @@ int func_801088B4(int arg0)
     return 0;
 }
 
+extern u_short D_8010AB80[];
+extern vs_main_settings_t D_8010AD80;
+extern int D_8010ADA0;
+extern int D_8010ADA4;
+
 int func_80108CE8(char* arg0)
 {
+
     RECT rect;
     int temp_v0;
 
@@ -3442,6 +3439,10 @@ static char D_8010AA2A = 0;
 
 int func_8010903C(int arg0)
 {
+    extern int D_8010ADA8;
+    extern char D_8010ADAC;
+    extern char D_8010ADAD;
+
     func_800C8E5C_t* temp_v0;
     u_int var_s0;
 

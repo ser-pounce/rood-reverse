@@ -23,6 +23,7 @@ void func_800FAEBC(int);
 void func_800FBBD4(int);
 void func_800FBD80(int);
 void func_800FBEA4(int);
+void func_800FC268(int);
 void func_8010044C(u_int*);
 
 extern D_8010245C_t* D_8010245C;

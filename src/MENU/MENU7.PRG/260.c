@@ -3499,7 +3499,6 @@ static u_short _containerOffsets[] = { 0x20, 0x40, 0x40, 0x20, 0x40, 0xC0, 0x100
 
 static void* _getContainerOffset(int section, void* arg1)
 {
-
     int i;
     int offset;
 

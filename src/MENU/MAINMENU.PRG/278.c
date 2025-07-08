@@ -26,11 +26,11 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA448);
 
 void func_800FA568() { }
 
-void func_800FA570() {
+void func_800FA570()
+{
     func_8009967C();
     func_800995B0();
 }
-
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA598);
 
@@ -38,7 +38,16 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA810);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA854);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA8A0);
+void func_800FA8A0(int arg0)
+{
+    func_800C8E48_t* temp_v0;
+
+    temp_v0 = func_800C8E48(arg0);
+    if (temp_v0->unk0 != 0) {
+        temp_v0->unk0 = 2;
+        temp_v0->unk18 = 0x140;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA8E0);
 
@@ -58,7 +67,8 @@ INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/278", D_800F9814);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FB3C8);
 
-int func_800FBB64(int arg0) {
+int func_800FBB64(int arg0)
+{
     do {
         arg0 = (arg0 + 1) & 3;
     } while (!((D_80102544 >> arg0) & 1));
@@ -69,7 +79,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBB8C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBBD4);
 
-void func_800FBD0C(int arg0, int arg1, int arg2, int arg3) {
+void func_800FBD0C(int arg0, int arg1, int arg2, int arg3)
+{
     D_80102480[0] = arg0;
     D_80102480[1] = arg1;
     D_80102480[2] = arg2;

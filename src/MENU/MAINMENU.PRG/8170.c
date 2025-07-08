@@ -7,7 +7,8 @@
 void func_80101970();
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/8170", func_80101970);
 
-void func_80101F38() {
+void func_80101F38()
+{
     int var_s0;
 
     var_s0 = D_801022D8;

@@ -23,9 +23,15 @@ typedef struct {
     vs_main_CdQueueSlot* unk4;
 } D_800F51C0_t;
 
+typedef struct {
+    char unk0;
+    char unk2[23];
+    short unk18;
+} func_800C8E48_t;
+
 void func_800C6828(char const*, int, u_int*);
 void func_800C8E04(int);
-signed char* func_800C8E48(int);
+func_800C8E48_t* func_800C8E48(int);
 func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, u_short*);
 void func_800C97BC();
 short* func_800CB66C();

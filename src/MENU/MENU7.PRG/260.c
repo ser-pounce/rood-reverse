@@ -168,25 +168,7 @@ int func_800FA9D0();
 
 char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-extern long _memcardEventDescriptors[8];
-extern char* _spmcimg;
-extern mcdata_t* _mcData;
-extern u_short* _textTable;
-extern struct DIRENTRY* _memcardFiles[15];
-extern struct DIRENTRY* _dirEntBuf;
-extern saveFileInfo_t* _saveFileInfo;
-extern char _loadSaveDataErrorOffset;
-extern u_short _fileProgressTarget;
-extern u_short _filePreviousProgressCounter;
-extern u_short _fileProgressPosition;
-extern int _fileProgressCounter;
-extern fileMenuElements_t _fileMenuElements[10];
-extern primBuf_t _primBuf;
-extern int _selectCursorXy;
-extern char* _memoryCardMessage;
-extern char _isSaving;
-extern u_char _selectCursorColor;
-extern char _fileMenuScreenFade;
+static long _memcardEventDescriptors[8];
 
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
@@ -258,6 +240,14 @@ static char* _memcardMakeTempFilename(int port, int fileNo)
     _filename[20] = fileNo + 'A' - 1;
     return _filename;
 }
+
+static char* _spmcimg;
+static mcdata_t* _mcData;
+static u_short* _textTable;
+static char _0[4] __attribute__((unused));
+static struct DIRENTRY* _memcardFiles[15];
+static struct DIRENTRY* _dirEntBuf;
+static saveFileInfo_t* _saveFileInfo;
 
 static u_int _getNewestSaveFile()
 {
@@ -765,6 +755,13 @@ static void _packageGameSaveData(int targetFile)
     }
 }
 
+static char _loadSaveDataErrorOffset;
+static char _1[1] __attribute__((unused));
+static u_short _fileProgressTarget;
+static u_short _filePreviousProgressCounter;
+static u_short _fileProgressPosition;
+static int _fileProgressCounter;
+
 static int _loadSaveData(int portFileno)
 {
     enum state { init = 0, reading = 1 };
@@ -1058,6 +1055,10 @@ static void _shutdownMemcard()
     func_8007E0A8(0x1D, 3, 6);
 }
 
+static fileMenuElements_t _fileMenuElements[10];
+static char _2[8] __attribute__((unused));
+static primBuf_t _primBuf;
+
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
@@ -1204,6 +1205,10 @@ void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
     _drawInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
 }
 
+static int _selectCursorXy;
+static char* _memoryCardMessage;
+static char _isSaving;
+
 static void _fileProcessingAnim(int x, int y)
 {
     char* new_var __attribute__((unused));
@@ -1288,6 +1293,9 @@ static void _fileProcessingCompleteAnim(int colour, int y)
         colour0 = 0;
     }
 }
+
+static u_char _selectCursorColor;
+static char _fileMenuScreenFade;
 
 static void _initFileMenu()
 {
@@ -2047,7 +2055,7 @@ static int _promptFormat(int initPort)
     }
 }
 
-extern char _dataNotSaved;
+static char _dataNotSaved;
 extern char _containerDataEmpty;
 extern char _backupMainSetting;
 
@@ -3317,13 +3325,12 @@ int func_801088B4(int arg0)
     return 0;
 }
 
-static u_short D_8010AB80[256];
-static vs_main_settings_t D_8010AD80;
-static int D_8010ADA0;
-static int D_8010ADA4;
-
 int func_80108CE8(char* arg0)
 {
+    static u_short D_8010AB80[256];
+    static vs_main_settings_t D_8010AD80;
+    static int D_8010ADA0;
+    static int D_8010ADA4;
 
     RECT rect;
     int temp_v0;
@@ -3432,9 +3439,10 @@ static char D_8010AA2A = 0;
 
 int func_8010903C(int arg0)
 {
-    extern int D_8010ADA8;
-    extern char D_8010ADAC;
-    extern char D_8010ADAD;
+    static int D_8010ADA8;
+    static char D_8010ADAC;
+    static char D_8010ADAD;
+    static char _[34] __attribute__((unused));
 
     func_800C8E5C_t* temp_v0;
     u_int var_s0;

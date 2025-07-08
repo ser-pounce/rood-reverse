@@ -26,5 +26,4 @@ segments:
       - [0x260, c]
       - [0x7AB4, .data, 260]
       - [0x8240, .bss, 260]
-      - [0x85A8, bss]
   - [0x88AE]

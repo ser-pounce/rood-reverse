@@ -1,16 +1,8 @@
 #include "common.h"
+#include "5BF94.h"
 #include "lbas.h"
-#include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/278.h"
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_main_CdQueueSlot* unk4;
-} D_800F51C0_t;
 
 typedef struct {
     signed char unk0;
@@ -27,7 +19,6 @@ extern D_800EB9B4_t* D_800EB9B4;
 extern u_int* D_800EB9D4;
 extern char D_800F4E6A;
 extern char D_800F4FDB;
-extern D_800F51C0_t D_800F51C0;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 

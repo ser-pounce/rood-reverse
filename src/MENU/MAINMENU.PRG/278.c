@@ -1,7 +1,10 @@
 #include "common.h"
+#include "278.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
+#include "../BATTLE/BATTLE.PRG/5BF94.h"
 
 extern char D_80102480[];
+extern char D_80102544;
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A78);
 
@@ -55,7 +58,12 @@ INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/278", D_800F9814);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FB3C8);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBB64);
+int func_800FBB64(int arg0) {
+    do {
+        arg0 = (arg0 + 1) & 3;
+    } while (!((D_80102544 >> arg0) & 1));
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBB8C);
 

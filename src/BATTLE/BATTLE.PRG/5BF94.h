@@ -1,4 +1,5 @@
 #pragma once
+#include "../SLUS_010.40/main.h"
 
 typedef struct {
     signed char unk0;
@@ -14,8 +15,17 @@ typedef struct {
     short unk18;
 } func_800C8E5C_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_main_CdQueueSlot* unk4;
+} D_800F51C0_t;
+
 void func_800C6828(char const*, int, u_int*);
 void func_800C8E04(int);
+signed char* func_800C8E48(int);
 func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, u_short*);
 void func_800C97BC();
 short* func_800CB66C();
@@ -26,6 +36,7 @@ void func_800CB654(int);
 void vs_battle_rMemzero();
 void vs_battle_rMemcpy(char* dest, char const* src, int size);
 int func_800CCC54(int);
+char func_800CCD40(char, int);
 u_int vs_battle_encode(int value);
 int func_800CD064(int);
 void func_800CCDA8(int, void*, int);
@@ -44,4 +55,4 @@ extern char D_800F4E6B;
 extern int D_800F4EA0;
 extern char D_800F4F70;
 extern short D_800F514C;
-extern char D_800F51C0[8];
+extern D_800F51C0_t D_800F51C0;

@@ -157,15 +157,6 @@ typedef struct {
     struct DIRENTRY _dirEntBuf;
 } mcdata_t;
 
-void func_800C02E0();
-void func_800C02E8();
-void func_800C02F0();
-void func_800C02F8();
-signed char* func_800C8E48(int);
-char func_800CCD40(char, int);
-void func_800FA8E0(int);
-int func_800FA9D0();
-
 char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 static long _memcardEventDescriptors[8];
@@ -3635,9 +3626,9 @@ int func_80109778(char* arg0)
             &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
         _shutdownMemcard();
         *arg0 = 8;
-        temp_a0 = D_800F51C0[0];
-        D_800F51C0[0] = 0xE;
-        D_800F51C0[1] = temp_a0;
+        temp_a0 = D_800F51C0.unk0;
+        D_800F51C0.unk0 = 0xE;
+        D_800F51C0.unk1 = temp_a0;
         break;
     case 8:
         if (func_800FA9D0() != 0) {
@@ -3647,7 +3638,7 @@ int func_80109778(char* arg0)
         break;
     case 9:
         if (_initMemcard(0) != 0) {
-            temp_s0 = D_800F51C0[1];
+            temp_s0 = D_800F51C0.unk1;
             if (temp_s0 != 0) {
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
@@ -3883,7 +3874,7 @@ int func_80109EB8(char* arg0)
         }
         _shutdownMemcard();
         if (*arg0 == 0xE) {
-            D_800F51C0[0] = 7;
+            D_800F51C0.unk0 = 7;
         }
         *arg0 = 0;
         return 1;

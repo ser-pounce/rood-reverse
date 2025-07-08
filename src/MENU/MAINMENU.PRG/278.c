@@ -1,4 +1,7 @@
 #include "common.h"
+#include "../BATTLE/BATTLE.PRG/146C.h"
+
+extern char D_80102480[];
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A78);
 
@@ -18,9 +21,13 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA3FC);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA448);
 
-void func_800FA568(void) { }
+void func_800FA568() { }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA570);
+void func_800FA570() {
+    func_8009967C();
+    func_800995B0();
+}
+
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA598);
 
@@ -54,7 +61,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBB8C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBBD4);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBD0C);
+void func_800FBD0C(int arg0, int arg1, int arg2, int arg3) {
+    D_80102480[0] = arg0;
+    D_80102480[1] = arg1;
+    D_80102480[2] = arg2;
+    D_80102480[3] = arg3;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBD28);
 

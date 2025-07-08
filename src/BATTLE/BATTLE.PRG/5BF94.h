@@ -27,6 +27,7 @@ typedef struct {
     char unk0;
     char unk2[23];
     short unk18;
+    char unk20[0x26];
 } func_800C8E48_t;
 
 void func_800C6828(char const*, int, u_int*);

@@ -20,7 +20,7 @@ segments:
   - start: 0x0
     type: code
     vram: 0x80102800
-    align: 4
+    align: 2
     subsegments:
       - [0x0, .rodata, 260]
       - [0x260, c]

@@ -2056,8 +2056,8 @@ static int _promptFormat(int initPort)
 }
 
 static char _dataNotSaved;
-extern char _containerDataEmpty;
-extern char _backupMainSetting;
+static char _containerDataEmpty;
+static char _backupMainSetting;
 
 static int _showSaveFilesMenu(int initPort)
 {

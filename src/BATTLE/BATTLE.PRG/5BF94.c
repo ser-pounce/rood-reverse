@@ -3,6 +3,7 @@
 #include "573B8.h"
 #include "146C.h"
 #include "lbas.h"
+#include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/278.h"
 
@@ -19,6 +20,7 @@ extern int _menuLbas[];
 extern signed char D_800EB9AD;
 extern D_800EB9B4_t* D_800EB9B4;
 extern u_int* D_800EB9D4;
+extern char D_800EBD68[];
 extern char D_800F4E6A;
 extern char D_800F4FDB;
 
@@ -193,7 +195,55 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAB40);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CABE0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CACD0);
+int func_800CACD0(int arg0, int arg1)
+{
+    int i;
+    u_short var_a1;
+    int var_a0;
+    void* temp_v0;
+
+    if (D_800F51C0.unk0 == 0x3F) {
+        D_800F4E6A = 0;
+        D_800F4FDB = 0;
+        D_800F4EA0 = func_800CABE0(arg1);
+        D_800F4E98[1] = 0;
+        D_800F51C0.unk0 = arg0;
+        D_800F4E98[0] = 1;
+        if (arg1 == 0) {
+            vs_battle_playSfx10();
+        }
+        if (D_800EB9C0 == 0) {
+            D_800EB9AD = -1;
+            func_8007E180(6);
+            temp_v0 = vs_main_allocHeapR(0xB24);
+            var_a1 = D_80060022;
+            D_800F4E8C = temp_v0 + 0xA00;
+            D_800EB9C0 = temp_v0;
+            D_800F4E84 = temp_v0 + 0xA60;
+            for (i = 0; i < 3; ++i) {
+                for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
+                     ++var_a0) {
+                    if ((vs_main_skills[var_a0].flags >> 0xF) & 1) {
+                        var_a1 |= 1 << i;
+                        break;
+                    }
+                }
+            }
+
+            if (D_80061598[0xB5] != 0) {
+                var_a1 |= 1;
+            }
+            if (D_80061598[0xAB] >= 3) {
+                var_a1 |= 0x120;
+            }
+            D_80060022 = var_a1;
+            func_800C930C(2);
+        }
+        return 1;
+    }
+    func_800C02E0();
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAEAC);
 

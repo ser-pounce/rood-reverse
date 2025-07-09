@@ -200,6 +200,7 @@ extern char D_80060040[0x24];
 extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern char D_80060168[15][256];
+extern int D_80060268;
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];

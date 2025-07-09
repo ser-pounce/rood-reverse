@@ -1,4 +1,5 @@
 #include "common.h"
+#include "234.h"
 #include "../MAINMENU.PRG/278.h"
 
 typedef struct {

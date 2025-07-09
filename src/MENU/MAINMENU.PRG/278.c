@@ -1,14 +1,19 @@
 #include "common.h"
 #include "278.h"
+#include "../SLUS_010.40/main.h"
+#include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
+#include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
+int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 int func_800FA9D0();
 void func_800FBD28(int, int, int, int);
 void func_800FC208(int, int, int, int);
+void func_800FCCE8(void*, int, int, int);
 void func_800FCECC(int*, int, int, int);
 
 extern int D_80102034;
@@ -16,6 +21,7 @@ extern short D_80102134;
 extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
+extern int* D_8010246C;
 extern char D_80102480[];
 extern short D_801024A8[];
 extern char D_801024B9;
@@ -31,6 +37,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9E0C);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9EB8);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA188);
+
+// https://decomp.me/scratch/CaaPC
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA238);
 
@@ -105,7 +113,19 @@ int func_800FAA20()
     return temp_s0 == 5;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FAA5C);
+int func_800FAA5C(int arg0)
+{
+    if (arg0 & 0x40) {
+        D_800F51C0.unk0 = 0;
+        func_800C930C(1);
+        return 0;
+    }
+    if (D_800F4FDB == 0) {
+        func_8007E0A8(0x1A, 3, 6);
+    }
+    D_800F51C0.unk0 = 0x7F;
+    return 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FAAC8);
 
@@ -179,7 +199,17 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FCC0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FCCE8);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FCE40);
+void func_800FCE40(int arg0, int arg1, int arg2, int arg3)
+{
+    int sp10[90];
+
+    if (D_8010246C == &D_80060268) {
+        func_8006B02C(sp10, arg0);
+    } else {
+        func_80102BB0(sp10, arg0, D_80109A8C);
+    }
+    func_800FCCE8(sp10, arg1, arg2, arg3);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FCECC);
 

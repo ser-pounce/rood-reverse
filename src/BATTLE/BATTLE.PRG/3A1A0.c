@@ -1,4 +1,5 @@
 #include "common.h"
+#include "3A1A0.h"
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 

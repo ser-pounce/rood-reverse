@@ -1,5 +1,7 @@
 #include "common.h"
 #include "5BF94.h"
+#include "573B8.h"
+#include "146C.h"
 #include "lbas.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/278.h"

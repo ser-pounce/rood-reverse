@@ -2,6 +2,7 @@
 #include <libetc.h>
 #include <libgte.h>
 #include <libgpu.h>
+#include "146C.h"
 #include "2842C.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -82,20 +83,6 @@ typedef struct {
 typedef struct {
     short unk0[2];
 } D_800F1A78_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    int unk4[9];
-    u_int unk28;
-    u_int unk2C[8];
-    u_int unk4C;
-    int unk50[14];
-    int unk88;
-    int unk8C[8];
-    int unkAC;
-} D_800F1BF8_t;
 
 typedef struct {
     int unk0[12];
@@ -181,7 +168,7 @@ void func_8007BF6C(int);
 void func_8007BFF8(int);
 void func_8007C4E0();
 void func_8007C5C0();
-void func_8007C81C(int, int);
+int func_8007C81C(int, int);
 void func_8007D360();
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
@@ -239,7 +226,7 @@ extern int D_800F1B9C;
 extern u_short D_800F1BA4;
 extern short* D_800F1BA8;
 extern short D_800F1BB6;
-extern char D_800F1BBE;
+extern short D_800F1BBE;
 extern D_800F1BF8_t D_800F1BF8;
 extern int* D_800F1C5C;
 extern D_800F1C60_t* D_800F1C60;
@@ -1150,7 +1137,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C694);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C81C);
 
-void func_8007C874() { func_8007C81C(D_800F1880.unk0, D_800F1880.unk34); }
+int func_8007C874() { return func_8007C81C(D_800F1880.unk0, D_800F1880.unk34); }
 
 void func_8007C8A4(int arg0)
 {
@@ -2022,7 +2009,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
-void func_8008AB68() { D_8006169D = D_800F1BBE + 1; }
+void func_8008AB68() { D_8006169D = (char)D_800F1BBE + 1; }
 
 int func_8008AB80(int arg0)
 {

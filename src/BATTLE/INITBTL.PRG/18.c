@@ -93,7 +93,7 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
 void func_800FA6B8()
 {
     vs_main_bzero(D_800F1CE0, 0x20);
-    vs_main_bzero(D_800F1BF8, 0xC4);
+    vs_main_bzero(&D_800F1BF8, sizeof(D_800F1BF8));
     vs_main_bzero(D_800F1CC8, 0xC);
     vs_main_bzero(D_800F1BF0, 8);
     vs_main_bzero(D_800F1BC8, 0x24);

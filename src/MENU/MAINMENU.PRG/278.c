@@ -61,10 +61,10 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA598);
 
 void func_800FA810(int arg0)
 {
-    func_800C8E48_t* temp_v0 = func_800C8E48(arg0 + 0x20);
+    func_800C8E5C_t* temp_v0 = func_800C8E48(arg0 + 0x20);
     if (temp_v0->unk0 != 0) {
         temp_v0->unk0 = 5;
-        temp_v0->unk18 = -temp_v0->unk2[0];
+        temp_v0->unk18 = -temp_v0->unk1;
     }
 }
 
@@ -81,7 +81,7 @@ void func_800FA854(int arg0)
 
 void func_800FA8A0(int arg0)
 {
-    func_800C8E48_t* temp_v0;
+    func_800C8E5C_t* temp_v0;
 
     temp_v0 = func_800C8E48(arg0);
     if (temp_v0->unk0 != 0) {

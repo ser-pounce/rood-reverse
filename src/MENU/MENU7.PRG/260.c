@@ -3458,8 +3458,8 @@ int func_8010903C(int arg0)
         D_8010ADAC += func_800FA9D0();
         break;
     case 2:
-        func_800C8E48(D_8010ADA8 + 0x1E)->unk2[5] = 1;
-        func_800C8E48(0x1F - D_8010ADA8)->unk2[5] = 0;
+        func_800C8E48(D_8010ADA8 + 0x1E)->unk6 = 1;
+        func_800C8E48(0x1F - D_8010ADA8)->unk6 = 0;
         var_s0 = vs_main_buttonsPressed;
         if (D_8010ADAD == 0) {
             if (var_s0 & 0x10) {

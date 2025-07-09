@@ -2,17 +2,22 @@
 #include "../SLUS_010.40/main.h"
 
 typedef struct {
-    signed char unk0;
-    signed char unk1;
+    char unk0;
+    char unk1;
     short unk2;
     short unk4;
     signed char unk6;
     signed char unk7;
     int unk8;
-    int unkC;
+    char unkC;
+    char unkD;
+    short unkE;
     int unk10;
-    int unk14;
+    short unk14;
+    short unk16;
     short unk18;
+    short unk1A;
+    char unk1C[24];
 } func_800C8E5C_t;
 
 typedef struct {
@@ -23,16 +28,9 @@ typedef struct {
     vs_main_CdQueueSlot* unk4;
 } D_800F51C0_t;
 
-typedef struct {
-    char unk0;
-    char unk2[23];
-    short unk18;
-    char unk20[0x26];
-} func_800C8E48_t;
-
 void func_800C6828(char const*, int, u_int*);
 void func_800C8E04(int);
-func_800C8E48_t* func_800C8E48(int);
+func_800C8E5C_t* func_800C8E48(int);
 func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, u_short*);
 void func_800C930C(int);
 void func_800C97BC();
@@ -41,7 +39,7 @@ void func_800CB114();
 int func_800CB45C();
 void func_800CB50C();
 void func_800CB654(int);
-void vs_battle_rMemzero();
+void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(char* dest, char const* src, int size);
 int func_800CCC54(int);
 char func_800CCD40(char, int);

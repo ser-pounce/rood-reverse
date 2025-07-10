@@ -1,7 +1,7 @@
 #include "common.h"
 #include "5BF94.h"
-#include "573B8.h"
 #include "146C.h"
+#include "573B8.h"
 #include "lbas.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
@@ -185,7 +185,51 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9078);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C97BC);
+void func_800C97BC()
+{
+    func_800C8E5C_t* var_s2;
+    int temp_s1;
+    int temp_v0;
+    int i;
+    int var_s0;
+
+    var_s2 = D_800EB9C0;
+    var_s0 = D_800F51C0.unk0;
+
+    if (var_s0 == 0x7F) {
+        *D_800F4E98 = 2;
+        D_800F51C0.unk0 = 0x3F;
+    }
+
+    temp_s1 = var_s0 & 0x3F;
+
+    if (temp_s1 != 0x3F) {
+        if (func_800C8C50(0) != 0) {
+            if (D_800F4E6A == 5) {
+                func_800FAEBC(0);
+                return;
+            }
+            func_800FAAC8(var_s0);
+            return;
+        }
+        if (temp_s1 == 0) {
+            temp_v0 = func_800C930C(0);
+            if (temp_v0 != 0) {
+                var_s0 = 0x1F;
+                if (temp_v0 > 0) {
+                    var_s0 = temp_v0 | 0x40;
+                }
+                D_800F51C0.unk0 = var_s0;
+            }
+        }
+        if ((var_s0 >= 0x1F) || (temp_s1 == 0)) {
+            for (i = 0; i < 10; ++i) {
+                func_800C9078(var_s2);
+                ++var_s2;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C98C0);
 
@@ -309,7 +353,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAFB4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB030);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB114);
+void func_800CB114()
+{
+    if (D_800EB9C0 != 0) {
+        func_8007E1C0(6);
+        vs_main_freeHeapR(D_800EB9C0);
+        D_800EB9C0 = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB158);
 

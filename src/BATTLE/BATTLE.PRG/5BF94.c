@@ -173,9 +173,7 @@ int func_800C8C50(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 
-func_800C8E5C_t* func_800C8E48(int arg0) {
-    return D_800EB9C0 + arg0;
-}
+func_800C8E5C_t* func_800C8E48(int arg0) { return D_800EB9C0 + arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E5C);
 
@@ -215,7 +213,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA97C);
 
-void func_800CA9C0(void* arg0) {
+void func_800CA9C0(void* arg0)
+{
     D_800EB9AC = 0;
     D_800EB9AD = 0;
     D_800EB9AE = 0;
@@ -239,7 +238,7 @@ void func_800CA9C0(void* arg0) {
     vs_battle_rMemzero(D_800F4E98, sizeof(D_800F4E98));
     vs_battle_rMemzero(D_800F4FE0, sizeof(D_800F4FE0));
     vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
-    D_800F4EE8 = (D_800F4EE8_t){{0}};
+    D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
     func_800CCDA8(0x340, arg0, 0xE00040);
     func_800CCDA8(0x380, arg0 + 0x7000, 0xE00040);

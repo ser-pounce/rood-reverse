@@ -396,7 +396,7 @@ void func_8006C478() { }
 
 void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
 
-void func_8006C4A4() { func_800CF830(); }
+void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C4C4);
 

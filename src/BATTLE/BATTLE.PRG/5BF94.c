@@ -6,6 +6,7 @@
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/278.h"
+#include <memory.h>
 
 typedef struct {
     signed char unk0;
@@ -16,9 +17,32 @@ typedef struct {
     vs_main_CdQueueSlot* slot;
 } D_800EB9B4_t;
 
+typedef struct {
+    char unk0[0xF2];
+} D_800F4EE8_t;
+
+void func_800CA97C();
+
 extern int _menuLbas[];
+extern signed char D_800EB9AC;
 extern signed char D_800EB9AD;
+extern signed char D_800EB9AE;
+extern signed char D_800EB9AF;
 extern D_800EB9B4_t* D_800EB9B4;
+extern int D_800EB9B8;
+extern int D_800EB9BC;
+extern signed char D_800EB9CC;
+extern signed char D_800EB9CD;
+extern signed char D_800EB9CE;
+extern int D_800EB9D0;
+extern int D_800EB9D8;
+extern u_long D_800F4CD0;
+extern char D_800F4E70[16];
+extern signed char D_800F4E90;
+extern int D_800F4ED4;
+extern D_800F4EE8_t D_800F4EE8;
+extern char D_800F4FE0[0x30];
+extern u_long* D_800F51B8;
 extern u_int* D_800EB9D4;
 extern char D_800EBD68[];
 extern char D_800F4E6A;
@@ -149,7 +173,9 @@ int func_800C8C50(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E48);
+func_800C8E5C_t* func_800C8E48(int arg0) {
+    return D_800EB9C0 + arg0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E5C);
 
@@ -189,7 +215,38 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA97C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA9C0);
+void func_800CA9C0(void* arg0) {
+    D_800EB9AC = 0;
+    D_800EB9AD = 0;
+    D_800EB9AE = 0;
+    D_800EB9B0 = 0;
+    D_800F4ED4 = 0;
+    D_800EB9B4 = 0;
+    D_800EB9B8 = 0;
+    D_800EB9BC = 0;
+    D_800EB9C0 = 0;
+    D_800EB9CE = 0;
+    D_800F4E90 = 0;
+    D_800EB9AF = 0;
+    D_800EB9CC = 0;
+    D_800EB9CD = 0;
+    D_800EB9D0 = 0xFFFFFF;
+    D_800EB9D4 = 0;
+    D_800EB9D8 = 0;
+    func_800CA97C();
+    vs_battle_rMemzero(&D_800F51C0, 8);
+    D_800F51C0.unk0 = 0x3F;
+    vs_battle_rMemzero(D_800F4E98, sizeof(D_800F4E98));
+    vs_battle_rMemzero(D_800F4FE0, sizeof(D_800F4FE0));
+    vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
+    D_800F4EE8 = (D_800F4EE8_t){{0}};
+    D_800F51B8 = &D_800F4CD0;
+    func_800CCDA8(0x340, arg0, 0xE00040);
+    func_800CCDA8(0x380, arg0 + 0x7000, 0xE00040);
+    func_800CCDA8(0x4203C0, arg0 + 0xE000, 0x9E0040);
+    DrawSync(0);
+    ClearOTag(D_800F51B8, 0x22);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAB40);
 

@@ -17,7 +17,7 @@ typedef struct {
     short unk16;
     short unk18;
     short unk1A;
-    char unk1C[24];
+    char unk1C[36];
 } func_800C8E5C_t;
 
 typedef struct {
@@ -56,12 +56,12 @@ void func_800CF920();
 
 extern u_short D_800EB9DC[];
 extern int D_800EB9B0;
-extern void* D_800EB9C0;
+extern func_800C8E5C_t* D_800EB9C0;
 extern char D_800F4E6A;
 extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern void* D_800F4E8C;
-extern short D_800F4E98[];
+extern short D_800F4E98[4];
 extern int D_800F4EA0;
 extern char D_800F4F70;
 extern char D_800F4FDB;

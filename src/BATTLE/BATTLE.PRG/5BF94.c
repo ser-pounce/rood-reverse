@@ -36,17 +36,18 @@ extern signed char D_800EB9CD;
 extern signed char D_800EB9CE;
 extern int D_800EB9D0;
 extern int D_800EB9D8;
+extern u_int* D_800EB9D4;
+extern char D_800EBD68[];
+extern char D_800F4E6A;
 extern u_long D_800F4CD0;
 extern char D_800F4E70[16];
+extern char D_800F4FDB;
 extern signed char D_800F4E90;
 extern int D_800F4ED4;
 extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4FE0[0x30];
 extern u_long* D_800F51B8;
-extern u_int* D_800EB9D4;
-extern char D_800EBD68[];
-extern char D_800F4E6A;
-extern char D_800F4FDB;
+extern int D_800F55E8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -76,7 +77,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6540);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6828);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6850);
+void func_800C6850(char* arg0) {
+    *arg0 = 0xE7;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C685C);
 
@@ -649,7 +652,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1DE4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1DFC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E20);
+void func_800D1E20(int arg0) {
+    D_800F55E8 = arg0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E2C);
 
@@ -701,7 +706,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D474C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4778);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D47C0);
+int func_800D47C0() {
+    return 2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D47C8);
 
@@ -739,7 +746,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4D64);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4D98);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DA8);
+int func_800D4DA8() {
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
 

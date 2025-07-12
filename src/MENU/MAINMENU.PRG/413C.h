@@ -3,6 +3,7 @@
 void func_800FFA88(int);
 void func_800FFA94();
 void func_800FFB68(int);
+void func_800FFB90(int);
 void func_800FFBA8();
 void func_800FFBC8();
 void func_80100100(int, char const*, int, int);

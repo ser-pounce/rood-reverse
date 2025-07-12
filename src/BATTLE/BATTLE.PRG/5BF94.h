@@ -58,6 +58,7 @@ void func_800CF920();
 extern u_short D_800EB9DC[];
 extern int D_800EB9B0;
 extern func_800C8E5C_t* D_800EB9C0;
+extern char D_800EBBC8[];
 extern char D_800F4E6A;
 extern char D_800F4E6B;
 extern void* D_800F4E84;

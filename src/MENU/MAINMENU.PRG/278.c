@@ -1,5 +1,6 @@
 #include "common.h"
 #include "278.h"
+#include "413C.h"
 #include "../SLUS_010.40/main.h"
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
@@ -8,29 +9,20 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-} D_8010229C_t;
-
-typedef struct {
-    D_8010229C_t* unk0;
-    void* unk4;
-} func_800FD0E0_t;
-
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 int func_800FA9D0();
+void func_800FB3C8(int);
 void func_800FBD28(int, int, int, int);
 void func_800FC208(int, int, int, int);
+void func_800FCAA4(int, u_short**, int*, void*);
+void func_800FCC0C(int, u_short**, int*, void*);
 void func_800FCCE8(void*, int, int, int);
 void func_800FCECC(int*, int, int, int);
 
 extern int D_80102034;
+extern int D_801020F4;
+extern u_char D_801020F8;
 extern short D_80102134;
 extern short D_80102136;
 extern short D_80102138;
@@ -167,7 +159,45 @@ void func_800FBB8C(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FBBD4);
+void func_800FBBD4(int arg0)
+{
+    int var_s1;
+    int var_s0;
+
+    var_s1 = 1;
+    if (arg0 != 0) {
+        if (arg0 > 0) {
+            D_801024B9 = 3;
+            func_800FBB8C(arg0);
+        }
+        D_801020F4 = arg0;
+        D_801020F8 = 10;
+        return;
+    }
+    var_s0 = D_801024B9;
+    if (D_801020F4 > 0) {
+        var_s1 = -D_800EBBC8[D_801020F8];
+        if (D_801020F8 != 0) {
+            --D_801020F8;
+        } else if (vs_main_buttonsPressed & 0x80) {
+            var_s0 = func_800FBB64(var_s0);
+            if (var_s0 != D_801024B9) {
+                vs_main_playSfxDefault(0x7E, 14);
+            } else {
+                func_800C02E0();
+            }
+        }
+    } else {
+        if (D_801020F8 != 0) {
+            --D_801020F8;
+            var_s1 = (D_801020F8 - 10) * 24;
+        }
+    }
+    if (var_s1 <= 0) {
+        func_800FB3C8(var_s1);
+    }
+    D_801024B9 = var_s0;
+}
 
 void func_800FBD0C(int arg0, int arg1, int arg2, int arg3)
 {
@@ -237,7 +267,8 @@ void func_800FD084(int arg0, int arg1, int arg2, int arg3)
     func_800FCECC(sp10, arg1, arg2, arg3);
 }
 
-void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3) {
+void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+{
     vs_battle_memcpy(arg3, D_80102540 + ((*arg0 + D_80102540)[-0x8C]), 0x60);
     arg1->unk0 = (D_8010229C + *arg0);
     arg1->unk4 = arg3;

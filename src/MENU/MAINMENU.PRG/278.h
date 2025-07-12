@@ -18,6 +18,20 @@ typedef struct {
     signed char unk10030[0x4700];
 } D_8010245C_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+} D_8010229C_t;
+
+typedef struct {
+    D_8010229C_t* unk0;
+    void* unk4;
+} func_800FD0E0_t;
+
 void func_800FA448();
 void func_800FA8E0(int);
 int func_800FA9D0();
@@ -27,6 +41,7 @@ void func_800FBBD4(int);
 void func_800FBD80(int);
 void func_800FBEA4(int);
 void func_800FC268(int);
+void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_8010044C(u_int*);
 
 extern D_8010245C_t* D_8010245C;

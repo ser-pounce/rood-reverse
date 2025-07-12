@@ -8,6 +8,20 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+} D_8010229C_t;
+
+typedef struct {
+    D_8010229C_t* unk0;
+    void* unk4;
+} func_800FD0E0_t;
+
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 int func_800FA9D0();
@@ -21,11 +35,13 @@ extern short D_80102134;
 extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
+extern D_8010229C_t* D_8010229C;
 extern int* D_8010246C;
 extern char D_80102480[];
 extern short D_801024A8[];
 extern char D_801024B9;
 extern char D_801024C0[];
+extern u_short* D_80102540;
 extern char D_80102544;
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A78);
@@ -39,12 +55,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9EB8);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA188);
 
 // https://decomp.me/scratch/CaaPC
-
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA238);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA2CC);
 
 // https://decomp.me/scratch/MADRl
+// Seems to require GCC 2.7.2-970404
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA3FC);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA448);
@@ -221,7 +237,12 @@ void func_800FD084(int arg0, int arg1, int arg2, int arg3)
     func_800FCECC(sp10, arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FD0E0);
+void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3) {
+    vs_battle_memcpy(arg3, D_80102540 + ((*arg0 + D_80102540)[-0x8C]), 0x60);
+    arg1->unk0 = (D_8010229C + *arg0);
+    arg1->unk4 = arg3;
+    *arg2 = 0x58000000;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FD17C);
 

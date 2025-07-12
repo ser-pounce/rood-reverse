@@ -11,8 +11,6 @@ int func_800722F0();
 u_int func_80072384();
 int DMACallback(int, void (*)());
 
-extern u_int volatile* D_80075C88;
-
 // Commented out functions only match with GCC 2.8.0, but this breaks the others.
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);

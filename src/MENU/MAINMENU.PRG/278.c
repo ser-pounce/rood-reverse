@@ -8,6 +8,7 @@
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
+#include <libetc.h>
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
@@ -19,6 +20,62 @@ void func_800FCAA4(int, u_short**, int*, void*);
 void func_800FCC0C(int, u_short**, int*, void*);
 void func_800FCCE8(void*, int, int, int);
 void func_800FCECC(int*, int, int, int);
+
+void func_8009E634(void*, int);
+void func_800AD008(void*, void*);
+int func_800AD494(void*, char, u_short**);
+void func_800AFA28(void*, void*, int);
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC[0x168];
+    int unk5AC;
+    int unk5B0;
+    int unk5B4;
+    char unk5B8;
+    char unk5B9;
+    char unk5BA;
+    char unk5BB;
+    short unk5BC;
+    short unk5BE;
+    int unk5C0;
+    int unk5C4;
+    int unk5C8;
+    char unk5CC;
+    char unk5CD;
+    short unk5CE;
+    int unk5D0;
+    int unk5D4;
+    int unk5D8;
+    int unk5DC;
+    int unk5E0[0x40];
+    char unk6E0;
+    char unk6E1;
+    char unk6E2;
+    char unk6E3;
+    int unk6E4[8];
+    char unk704[0x550];
+    char unkC54[0x540];
+    short unk1194;
+    short unk1196;
+    int unk1198[0x1B9];
+    int unk187C;
+} D_800F4538_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    char unk10;
+    char unk11;
+} D_800F4588_t;
+
+extern D_800F4538_t* D_800F4538;
+extern D_800F4588_t* D_800F4588[];
+extern char D_800F49DC;
 
 extern int D_80102034;
 extern int D_801020F4;
@@ -32,7 +89,7 @@ extern int* D_8010246C;
 extern char D_80102480[];
 extern short D_801024A8[];
 extern char D_801024B9;
-extern char D_801024C0[];
+extern short D_801024C0[];
 extern u_short* D_80102540;
 extern char D_80102544;
 
@@ -44,11 +101,38 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9E0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9EB8);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA188);
+int func_800FA188(int arg0, int arg1, int* arg2)
+{
+    D_800F45E0_t* temp_v1;
+    int temp_a3;
+    int i;
+    int var_t2;
+    int var_t3;
+
+    var_t2 = 0;
+    var_t3 = 0;
+    for (i = 0; i < 16; ++i) {
+        temp_v1 = D_800F45E0[i];
+        if (temp_v1 != 0) {
+            temp_a3 = temp_v1->unk8;
+            if (!(temp_v1->unk8 & 1) && !(temp_a3 & 0xF00) && (temp_v1->unk1A == 0)
+                && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
+                if ((temp_v1->unk16C & 0x30) == 0x20) {
+                    var_t3 = 1;
+                } else {
+                    var_t2 -= 0x80;
+                }
+            }
+        }
+    }
+    *arg2 = var_t2;
+    return var_t3;
+}
 
 // https://decomp.me/scratch/CaaPC
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA238);
 
+// https://decomp.me/scratch/Uc9JU
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800FA2CC);
 
 // https://decomp.me/scratch/MADRl
@@ -179,7 +263,7 @@ void func_800FBBD4(int arg0)
         var_s1 = -D_800EBBC8[D_801020F8];
         if (D_801020F8 != 0) {
             --D_801020F8;
-        } else if (vs_main_buttonsPressed & 0x80) {
+        } else if (vs_main_buttonsPressed & PADRleft) {
             var_s0 = func_800FBB64(var_s0);
             if (var_s0 != D_801024B9) {
                 vs_main_playSfxDefault(0x7E, 14);

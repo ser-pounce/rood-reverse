@@ -7,7 +7,8 @@ typedef struct {
     int unkC;
     int unk10;
     int unk14;
-    int unk18;
+    short unk18;
+    short unk1A;
     short unk1C;
     short unk1E;
     int unk20[15];
@@ -15,6 +16,8 @@ typedef struct {
     char unk5D;
     char unk5E;
     char unk5F;
+    char unk60[0x10C];
+    int unk16C;
 } D_800F45E0_t;
 
 extern D_800F45E0_t* D_800F45E0[];

@@ -6,25 +6,20 @@
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
+#include "../BATTLE/BATTLE.PRG/40564.h"
+#include "../BATTLE/BATTLE.PRG/44F14.h"
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
-int func_800FA238(int arg0, int arg1, int arg2);
-void func_800FA3FC(int arg0);
-int func_800FA9D0();
-void func_800FB3C8(int);
-void func_800FBD28(int, int, int, int);
-void func_800FC208(int, int, int, int);
-void func_800FCAA4(int, u_short**, int*, void*);
-void func_800FCC0C(int, u_short**, int*, void*);
-void func_800FCCE8(void*, int, int, int);
-void func_800FCECC(int*, int, int, int);
-
-void func_8009E634(void*, int);
-void func_800AD008(void*, void*);
-int func_800AD494(void*, char, u_short**);
-void func_800AFA28(void*, void*, int);
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    char unk10;
+    char unk11;
+} D_800F4588_t;
 
 typedef struct {
     int unk0;
@@ -64,19 +59,21 @@ typedef struct {
     int unk187C;
 } D_800F4538_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    char unk10;
-    char unk11;
-} D_800F4588_t;
+int func_800FA238(int arg0, int arg1, int arg2);
+void func_800FA3FC(int arg0);
+int func_800FA9D0();
+void func_800FB3C8(int);
+void func_800FBD28(int, int, int, int);
+void func_800FC208(int, int, int, int);
+void func_800FCAA4(int, u_short**, int*, void*);
+void func_800FCC0C(int, u_short**, int*, void*);
+void func_800FCCE8(void*, int, int, int);
+void func_800FCECC(int*, int, int, int);
 
 extern D_800F4538_t* D_800F4538;
+extern D_800F4538_t* D_800F453C;
 extern D_800F4588_t* D_800F4588[];
 extern char D_800F49DC;
-
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "40564.h"
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8D64);
 

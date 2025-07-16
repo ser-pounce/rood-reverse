@@ -24,6 +24,7 @@ void func_8009CFA0();
 void func_8009D208();
 void func_8009D854();
 void func_8009E5C4();
+void func_8009E634(void*, int);
 void func_8009F314(int, int, int);
 void func_8009FD5C(int);
 void func_8009FE74(int);

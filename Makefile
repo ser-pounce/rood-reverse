@@ -21,8 +21,8 @@ FIND     := find
 TRUNCATE := truncate
 
 # Anything below this line should not need editing
-CC1VER    := 2.7.2
-CC1        = tools/old-gcc/build-gcc-$(CC1VER)-psx/cc1
+CC1VER    := 2.7.2-psx
+CC1        = tools/old-gcc/build-gcc-$(CC1VER)/cc1
 VPYDIR    := tools/python
 VPYTHON   := $(VPYDIR)/bin/$(PYTHON)
 MAS       := $(VPYTHON) tools/maspsx/maspsx.py
@@ -71,7 +71,7 @@ makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif
-build_deps := $(DUMPSXISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%-psx/cc1,2.7.2 2.8.0)
+build_deps := $(DUMPSXISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))

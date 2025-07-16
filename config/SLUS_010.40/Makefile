@@ -17,4 +17,4 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 	) \
 ): ASFLAGS += -no-pad-sections
 
-$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ overlay 25AC main): CC1VER := 2.8.0
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ overlay 25AC main): CC1VER := 2.8.0-psx

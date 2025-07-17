@@ -52,8 +52,7 @@ typedef struct {
     char unk11;
 } D_800F4588_t;
 
-extern D_800F4538_t* D_800F4538;
-extern D_800F4538_t* D_800F453C;
+extern D_800F4538_t* D_800F4538[];
 extern D_800F4588_t* D_800F4588[];
 extern char D_800F49DC;
 
@@ -61,7 +60,33 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A78);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9CB0);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9E0C);
+void func_8009CFB0(int);
+
+void func_800F9E0C()
+{
+    void* sp10[2];
+    void* temp_s1;
+    
+    temp_s1 = D_800F4538[1];
+    sp10[0] = D_800F4588[2];
+    sp10[1] = D_800F4588[3];
+    
+    func_8009CFB0(1);
+    vs_main_freeHeap(temp_s1);
+    
+    temp_s1 = D_800F4538[16];
+    
+    if (temp_s1 != 0) {
+        func_8009CFB0(0x10);
+        vs_main_freeHeap(temp_s1);
+    }
+    if (sp10[0] != 0) {
+        vs_main_freeHeap(sp10[0]);
+    }
+    if (sp10[1] != 0) {
+        vs_main_freeHeap(sp10[1]);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9EB8);
 
@@ -122,7 +147,7 @@ void func_800FA2CC()
     D_800F4588_t* temp_v1;
     D_800F4588_t** var_a0;
 
-    temp_s1 = D_800F4538;
+    temp_s1 = D_800F4538[0];
 
     for (i = 0; i < 2; ++i) {
         D_800F4588_t* var_a0 = D_800F4588[i];

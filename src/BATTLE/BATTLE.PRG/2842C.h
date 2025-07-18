@@ -20,6 +20,7 @@ void func_80098160();
 void func_80098B38(int, int);
 void func_800995B0();
 int func_800995E8(func_8007C8F8_t*);
+void func_8009C378(void*, void*);
 void func_8009CC20(int, int);
 void func_8009CE9C();
 void func_8009CFA0();

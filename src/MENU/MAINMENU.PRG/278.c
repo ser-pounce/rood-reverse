@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../SLUS_010.40/main.h"
+#include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../BATTLE/BATTLE.PRG/40564.h"
@@ -65,9 +66,6 @@ typedef struct {
 extern D_800F4538_t* D_800F4538[];
 extern D_800F4538_t* D_800F4588[];
 extern char D_800F49DC;
-
-int func_8009967C();
-void func_8009C378(void*, void*);
 
 void func_800F9A78(int arg0)
 {

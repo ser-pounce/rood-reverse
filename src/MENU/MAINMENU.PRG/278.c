@@ -9,10 +9,23 @@ typedef struct {
     int unk0;
     int unk4;
     int unk8;
-    int unkC[0x168];
+    short unkC;
+    char unkE;
+    char unkF;
+    char unk10;
+    char unk11;
+    char unk12;
+    char unk13;
+    int unk14[0x166];
     int unk5AC;
-    int unk5B0;
-    int unk5B4;
+    char unk5B0;
+    char unk5B1;
+    char unk5B2;
+    char unk5B3;
+    char unk5B4;
+    char unk5B5;
+    char unk5B6;
+    char unk5B7;
     char unk5B8;
     char unk5B9;
     char unk5BA;
@@ -27,55 +40,118 @@ typedef struct {
     short unk5CE;
     int unk5D0;
     int unk5D4;
-    int unk5D8;
+    void* unk5D8;
     int unk5DC;
     int unk5E0[0x40];
     char unk6E0;
     char unk6E1;
     char unk6E2;
     char unk6E3;
-    int unk6E4[8];
+    short unk6E4;
+    short unk6E6;
+    short unk6E8[14];
     char unk704[0x550];
     char unkC54[0x540];
     short unk1194;
     short unk1196;
-    int unk1198[0x1B9];
+    int unk1198[0x199];
+    char unk17FC;
+    u_char unk17FD;
+    short unk17FE;
+    int unk1800[0x1F];
     int unk187C;
 } D_800F4538_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    char unk10;
-    char unk11;
-} D_800F4588_t;
-
 extern D_800F4538_t* D_800F4538[];
-extern D_800F4588_t* D_800F4588[];
+extern D_800F4538_t* D_800F4588[];
 extern char D_800F49DC;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A78);
+int func_8009967C();
+void func_8009C378(void*, void*);
+
+void func_800F9A78(int arg0)
+{
+    func_8007C8F8_t sp10;
+    D_800F4538_t* temp_s0;
+    D_800F4538_t* temp_s2;
+    int i;
+    D_800F4538_t* temp_s3;
+    void* temp_v0;
+
+    temp_s2 = D_800F4538[arg0];
+    temp_s3 = vs_main_allocHeap(0x1900U);
+    sp10.unk0 = 2;
+    sp10.unk1 = 1;
+    sp10.unk2 = temp_s2->unk6E6;
+    sp10.unk8 = arg0;
+    sp10.unk4 = temp_s3;
+    sp10.unk10 = 0xFF;
+    sp10.unk13 = temp_s2->unk10;
+    sp10.unk12 = 0;
+    func_800995E8(&sp10);
+
+    if (temp_s2->unk17FD >= 2) {
+        temp_s0 = D_800F4538[temp_s2->unk17FD];
+        temp_v0 = vs_main_allocHeap(0x1900);
+        sp10.unk0 = 2;
+        sp10.unk1 = 0x10;
+        sp10.unk2 = temp_s0->unk6E6;
+        sp10.unk8 = temp_s2->unk17FD;
+        sp10.unk4 = temp_v0;
+        sp10.unk10 = 1;
+        sp10.unk11 = 0xFC;
+        sp10.unk13 = temp_s2->unk10;
+        sp10.unk12 = 0;
+        func_800995E8(&sp10);
+    }
+    for (i = 0; i < 2; ++i) {
+        temp_s0 = D_800F4588[(temp_s2->unkF * 2) + i];
+        if (temp_s0 != 0) {
+            temp_v0 = vs_main_allocHeap(0x5E8);
+            sp10.unk0 = 4;
+            sp10.unk1 = i + 2;
+            sp10.unk2 = temp_s0->unkE;
+            sp10.unk8 = arg0 * 2 + i;
+            sp10.unk4 = temp_v0;
+            sp10.unk10 = 1;
+            sp10.unk11 = temp_s0->unkC;
+            sp10.unk12 = ((u_int)temp_s0->unk8 >> 0xC) & 0xF;
+            func_800995E8(&sp10);
+        }
+    }
+
+    while (func_8009967C() != 0)
+        ;
+
+    temp_s3->unk5D4 = temp_s2->unk5D4;
+
+    if (temp_s2->unkF == 0) {
+        temp_s3->unk5D8 = vs_main_allocHeap(0x7800);
+        func_8009C378(temp_s3->unk5D8, temp_s2->unk5D8);
+    } else {
+        temp_s3->unk5D8 = temp_s2->unk5D8;
+    }
+    temp_s3->unk5B1 = temp_s2->unk5B1;
+    temp_s3->unk5B4 = temp_s2->unk5B4;
+    temp_s3->unk5B5 = temp_s2->unk5B5;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9CB0);
-
-void func_8009CFB0(int);
 
 void func_800F9E0C()
 {
     void* sp10[2];
     void* temp_s1;
-    
+
     temp_s1 = D_800F4538[1];
     sp10[0] = D_800F4588[2];
     sp10[1] = D_800F4588[3];
-    
+
     func_8009CFB0(1);
     vs_main_freeHeap(temp_s1);
-    
+
     temp_s1 = D_800F4538[16];
-    
+
     if (temp_s1 != 0) {
         func_8009CFB0(0x10);
         vs_main_freeHeap(temp_s1);
@@ -144,13 +220,11 @@ void func_800FA2CC()
     int i_2;
     char* temp_s0;
     D_800F4538_t* temp_s1;
-    D_800F4588_t* temp_v1;
-    D_800F4588_t** var_a0;
 
     temp_s1 = D_800F4538[0];
 
     for (i = 0; i < 2; ++i) {
-        D_800F4588_t* var_a0 = D_800F4588[i];
+        D_800F4538_t* var_a0 = D_800F4588[i];
         if (var_a0 != 0) {
             if (temp_s1->unk8 & 0x800000) {
                 var_a0->unk11 = 0x40;

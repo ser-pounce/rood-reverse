@@ -31,7 +31,7 @@ void func_8008B6B4();
 void func_8008E88C();
 void func_8008EB30(signed char*);
 void func_800995B0();
-void func_8009967C();
+int func_8009967C();
 
 extern u_short D_800F1BA4;
 extern short* D_800F1BA8;

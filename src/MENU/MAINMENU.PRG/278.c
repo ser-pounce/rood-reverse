@@ -10,7 +10,10 @@
 #include "../BATTLE/BATTLE.PRG/4A0A8.h"
 
 typedef struct {
-    int unk0;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
     int unk4;
     int unk8;
     char unkC;
@@ -161,7 +164,6 @@ void func_800F9CB0()
     int i;
     D_800F4538_t* temp_s0;
     int new_var;
-    int new_var2;
     int new_var3;
 
     temp_s0 = D_800F4538[1];
@@ -172,13 +174,12 @@ void func_800F9CB0()
         }
     }
 
-    new_var2 = ~0x10;
     func_8009D468(1, i);
     temp_s0->unk1C = 0;
     new_var = temp_s0->unk8 & (~1);
     temp_s0->unk1E = 0;
     temp_s0->unk20 = 0;
-    *((int*)(&temp_s0->unk5B0)) &= new_var2;
+    *((int*)(&temp_s0->unk5B0)) &= ~0x10;
     temp_s0->unk8 = new_var & 0xFFFF7FFF;
     sp10[0] = 0xFF;
     sp10[1] = 0xFF;
@@ -190,14 +191,14 @@ void func_800F9CB0()
     if (D_800F4538[16] == 0) {
         func_8009F940(1, 1, &sp18, sp10);
     } else {
-        D_800F4538[16]->unk8 = D_800F4538[16]->unk8 & ~1;
+        D_800F4538[16]->unk8 &= ~1;
     }
     sp10[0] = 0;
     sp10[1] = 0;
     sp10[2] = 0;
     func_800A0768(1, sp10);
     func_800A07FC(1, 0);
-    temp_s0->unk648 = (int)(temp_s0->unk648 & 0xFFFEFFFF);
+    temp_s0->unk648 &= 0xFFFEFFFF;
 }
 
 void func_800F9E0C()
@@ -214,14 +215,14 @@ void func_800F9E0C()
 
     temp_s1 = D_800F4538[16];
 
-    if (temp_s1 != 0) {
+    if (temp_s1 != NULL) {
         func_8009CFB0(0x10);
         vs_main_freeHeap(temp_s1);
     }
-    if (sp10[0] != 0) {
+    if (sp10[0] != NULL) {
         vs_main_freeHeap(sp10[0]);
     }
-    if (sp10[1] != 0) {
+    if (sp10[1] != NULL) {
         vs_main_freeHeap(sp10[1]);
     }
 }
@@ -239,10 +240,10 @@ int func_800F9EB8(int arg0)
     int new_var3;
 
     temp_s1 = D_800F4538[1];
-    if (temp_s1 == 0) {
+    if (temp_s1 == NULL) {
         return -1;
     }
-    if ((char)temp_s1->unk0 == 0) {
+    if (temp_s1->unk0 == 0) {
         return -1;
     }
     if (temp_s1->unk8 & 1) {
@@ -258,7 +259,7 @@ int func_800F9EB8(int arg0)
         func_800AEAE8(temp_s1);
     }
     func_800B28A8(temp_s1, arg0, 0);
-    if (temp_s1->unk17FD >= 2) {
+    if (temp_s1->unk17FD > 1) {
         func_800AB4F0(D_800F4538[16]);
     }
 
@@ -310,15 +311,16 @@ int func_800FA188(int arg0, int arg1, int* arg2)
     var_t3 = 0;
     for (i = 0; i < 16; ++i) {
         temp_v1 = D_800F45E0[i];
-        if (temp_v1 != 0) {
-            temp_a3 = temp_v1->unk8;
-            if (!(temp_v1->unk8 & 1) && !(temp_a3 & 0xF00) && (temp_v1->unk1A == 0)
-                && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
-                if ((temp_v1->unk16C & 0x30) == 0x20) {
-                    var_t3 = 1;
-                } else {
-                    var_t2 -= 0x80;
-                }
+        if (temp_v1 == NULL) {
+            continue;
+        }
+        temp_a3 = temp_v1->unk8;
+        if (!(temp_v1->unk8 & 1) && !(temp_a3 & 0xF00) && (temp_v1->unk1A == 0)
+            && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
+            if ((temp_v1->unk16C & 0x30) == 0x20) {
+                var_t3 = 1;
+            } else {
+                var_t2 -= 0x80;
             }
         }
     }

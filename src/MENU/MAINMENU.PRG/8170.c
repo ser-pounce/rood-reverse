@@ -1,6 +1,6 @@
 #include "common.h"
 #include "8170.h"
-#include "278.h"
+#include "C48.h"
 #include "413C.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 

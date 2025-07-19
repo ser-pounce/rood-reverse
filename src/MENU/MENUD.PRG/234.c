@@ -1,6 +1,6 @@
 #include "common.h"
 #include "234.h"
-#include "../MAINMENU.PRG/278.h"
+#include "../MAINMENU.PRG/C48.h"
 
 typedef struct {
     char unk0[0x2318];

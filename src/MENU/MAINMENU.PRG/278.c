@@ -1,4 +1,5 @@
 #include "common.h"
+#include "278.h"
 #include "../SLUS_010.40/main.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
@@ -327,7 +328,7 @@ int func_800FA188(int arg0, int arg1, int* arg2)
     return var_t3;
 }
 
-int func_800FA238(int arg0, int arg1, int arg2)
+static int func_800FA238(int arg0, int arg1, int arg2)
 {
     D_800F45E0_t* new_var2;
     int temp_a3;

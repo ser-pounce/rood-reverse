@@ -1,6 +1,6 @@
 #include "common.h"
 #include "../SLUS_010.40/sfx.h"
-#include "../MAINMENU.PRG/278.h"
+#include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"

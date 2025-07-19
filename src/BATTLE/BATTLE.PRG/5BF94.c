@@ -7,7 +7,7 @@
 #include "lbas.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
-#include "../MENU/MAINMENU.PRG/278.h"
+#include "../MENU/MAINMENU.PRG/C48.h"
 #include <memory.h>
 
 typedef struct {

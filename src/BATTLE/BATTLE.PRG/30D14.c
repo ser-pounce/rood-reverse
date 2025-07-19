@@ -1,4 +1,6 @@
 #include "common.h"
+#include "30D14.h"
+#include "../SLUS_010.40/main.h"
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
@@ -60,11 +62,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D208);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D270);
 
-void func_8009D458(void) {
-}
+void func_8009D458(void) { }
 
-void func_8009D460(void) {
-}
+void func_8009D460(void) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D468);
 

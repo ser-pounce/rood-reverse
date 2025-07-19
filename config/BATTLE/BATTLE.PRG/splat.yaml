@@ -21,7 +21,8 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 146C]
-      - [0x6C4, rodata, 2842C]
+      - [0x6C4, .rodata, 2842C]
+      - [0xB9C, .rodata, 30D14]
       - [0xC30, .rodata, 3A1A0]
       - [0xC7C, .rodata, 40564]
       - [0xCF0, .rodata, 44F14]
@@ -31,7 +32,10 @@ segments:
       - [0x10F8, .rodata, 5BF94]
       - [0x1354, rodata, 6E644]
       - [0x146C, c]
-      - [0x2842C, asm]
+      - [0x2842C, c]
+      - [0x2EA3C, asm]
+      - [0x30D14, c]
+      - [0x38C1C, asm]
       - [0x3A1A0, c]
       - [0x40564, c]
       - [0x44F14, c]

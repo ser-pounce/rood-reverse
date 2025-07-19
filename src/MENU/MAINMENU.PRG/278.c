@@ -99,7 +99,7 @@ void func_800F9A78(int arg0)
     void* temp_v0;
 
     temp_s2 = D_800F4538[arg0];
-    temp_s3 = vs_main_allocHeap(0x1900U);
+    temp_s3 = vs_main_allocHeap(0x1900);
     sp10.unk0 = 2;
     sp10.unk1 = 1;
     sp10.unk2 = temp_s2->unk6E6;

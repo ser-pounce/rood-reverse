@@ -17,7 +17,13 @@ typedef struct {
     char unk11;
     char unk12;
     char unk13;
-    int unk14[0x166];
+    int unk14;
+    int unk18;
+    short unk1C;
+    short unk1E;
+    short unk20;
+    short unk22;
+    int unk24[0x162];
     int unk5AC;
     char unk5B0;
     char unk5B1;
@@ -43,7 +49,9 @@ typedef struct {
     int unk5D4;
     void* unk5D8;
     int unk5DC;
-    int unk5E0[0x40];
+    int unk5E0[0x1A];
+    int unk648;
+    int unk64C[0x25];
     char unk6E0;
     char unk6E1;
     char unk6E2;
@@ -134,7 +142,51 @@ void func_800F9A78(int arg0)
     temp_s3->unk5B5 = temp_s2->unk5B5;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9CB0);
+void func_800F9CB0()
+{
+    char sp10[3];
+    int sp18;
+    int i;
+    D_800F4538_t* temp_s0;
+    int new_var;
+    int new_var2;
+    int new_var3;
+
+    temp_s0 = D_800F4538[1];
+
+    for (i = 0; i < 2; ++i) {
+        if (D_800F4588[i + 2] != 0) {
+            D_800F4588[i + 2]->unk8 |= 0x10;
+        }
+    }
+
+    new_var2 = ~0x10;
+    func_8009D468(1, i);
+    temp_s0->unk1C = 0;
+    new_var = temp_s0->unk8 & (~1);
+    temp_s0->unk1E = 0;
+    temp_s0->unk20 = 0;
+    *((int*)(&temp_s0->unk5B0)) &= new_var2;
+    temp_s0->unk8 = new_var & 0xFFFF7FFF;
+    sp10[0] = 0xFF;
+    sp10[1] = 0xFF;
+    sp10[2] = 0xFF;
+    sp18 = ((((sp18 & (~0xFF)) | 2) & 0xFFFF00FF) | 0xFE00);
+    new_var3 = 0x20000;
+    sp18 = (sp18 & 0xFE02) | new_var3;
+    sp18 |= 0x10000000;
+    if (D_800F4538[16] == 0) {
+        func_8009F940(1, 1, &sp18, sp10);
+    } else {
+        D_800F4538[16]->unk8 = D_800F4538[16]->unk8 & ~1;
+    }
+    sp10[0] = 0;
+    sp10[1] = 0;
+    sp10[2] = 0;
+    func_800A0768(1, sp10);
+    func_800A07FC(1, 0);
+    temp_s0->unk648 = (int)(temp_s0->unk648 & 0xFFFEFFFF);
+}
 
 void func_800F9E0C()
 {

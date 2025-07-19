@@ -5,12 +5,17 @@
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../BATTLE/BATTLE.PRG/40564.h"
 #include "../BATTLE/BATTLE.PRG/44F14.h"
+#include "../BATTLE/BATTLE.PRG/4A0A8.h"
 
 typedef struct {
-    int unk0;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
     int unk4;
     int unk8;
-    short unkC;
+    char unkC;
+    u_char unkD;
     char unkE;
     char unkF;
     char unk10;
@@ -23,7 +28,8 @@ typedef struct {
     short unk1E;
     short unk20;
     short unk22;
-    int unk24[0x162];
+    int unk24[18];
+    int unk6C[42][8];
     int unk5AC;
     char unk5B0;
     char unk5B1;
@@ -58,7 +64,14 @@ typedef struct {
     char unk6E3;
     short unk6E4;
     short unk6E6;
-    short unk6E8[14];
+    short unk6E8[6];
+    signed char unk6F4;
+    signed char unk6F5;
+    signed char unk6F6;
+    char unk6F7;
+    int unk6F8;
+    int unk6FC;
+    int unk700;
     char unk704[0x550];
     char unkC54[0x540];
     short unk1194;
@@ -214,7 +227,77 @@ void func_800F9E0C()
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9EB8);
+static inline int inline_fn(int arg0, u_int arg1) { return arg0 + arg1; }
+
+int func_800F9EB8(int arg0)
+{
+    int _[2] __attribute__((unused));
+    int i;
+    D_800F4538_t* temp_a0;
+    int* temp_s0;
+    D_800F4538_t* temp_s1;
+    int new_var2;
+    int new_var3;
+
+    temp_s1 = D_800F4538[1];
+    if (temp_s1 == 0) {
+        return -1;
+    }
+    if (temp_s1->unk0 == 0) {
+        return -1;
+    }
+    if (temp_s1->unk8 & 1) {
+        return -1;
+    }
+    func_800AECA0(arg0);
+    temp_s1->unk5B2
+        = ((int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F)) >> 1);
+    if (temp_s1->unk8 & 4) {
+        func_800AB4F0(temp_s1);
+        func_800AF6E8(temp_s1);
+    } else {
+        func_800AEAE8(temp_s1);
+    }
+    func_800B28A8(temp_s1, arg0, 0);
+    if (temp_s1->unk17FD >= 2) {
+        func_800AB4F0(D_800F4538[16]);
+    }
+
+    if (temp_s1->unk17FD != 0) {
+        int* p = (int*)0x1F800000;
+        new_var2 = (temp_s1->unk6F7 * 4) + 0xC0;
+        p[1] += new_var2;
+        temp_s1->unk1C += temp_s1->unk6F4;
+        temp_s1->unk1E += temp_s1->unk6F5;
+        temp_s1->unk20 += temp_s1->unk6F6;
+        func_800B002C(temp_s1, temp_s1->unk17FD);
+        func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
+        p = (int*)0x1F800000;
+        new_var3 = (temp_s1->unk6F7 * 4) + 0xC0;
+        p[1] -= new_var3;
+        temp_s1->unk1C -= temp_s1->unk6F4;
+        temp_s1->unk1E -= temp_s1->unk6F5;
+        temp_s1->unk20 -= temp_s1->unk6F6;
+    }
+    if ((temp_s1->unk8 & 0x1000)) {
+        return -2;
+    }
+
+    for (i = 0; i < 2; ++i) {
+        temp_a0 = D_800F4588[inline_fn(i, 2)];
+        if ((temp_a0 != 0) && (temp_a0->unk8 & 0x10)) {
+            temp_s0 = temp_s1->unk6C[temp_a0->unkD];
+            temp_s0[5] -= temp_s1->unk6F4;
+            temp_s0[6] -= temp_s1->unk6F5;
+            temp_s0[7] -= temp_s1->unk6F6;
+            func_800B217C(temp_a0, temp_s0);
+            temp_s0[5] += temp_s1->unk6F4;
+            temp_s0[6] += temp_s1->unk6F5;
+            temp_s0[7] += temp_s1->unk6F6;
+        }
+    }
+    return 0;
+}
 
 int func_800FA188(int arg0, int arg1, int* arg2)
 {

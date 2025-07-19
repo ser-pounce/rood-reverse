@@ -10,10 +10,7 @@
 #include "../BATTLE/BATTLE.PRG/4A0A8.h"
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    int unk0;
     int unk4;
     int unk8;
     char unkC;
@@ -245,7 +242,7 @@ int func_800F9EB8(int arg0)
     if (temp_s1 == 0) {
         return -1;
     }
-    if (temp_s1->unk0 == 0) {
+    if ((char)temp_s1->unk0 == 0) {
         return -1;
     }
     if (temp_s1->unk8 & 1) {

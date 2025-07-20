@@ -239,8 +239,21 @@ void func_800FA92C(int arg0, int arg1) {
     }
 }
 
-// https://decomp.me/scratch/qPGiA
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FA9D0);
+int func_800FA9D0() {
+    func_800C8E5C_t* var_a0;
+    int var_v0;
+    int i;
+
+    var_a0 = func_800C8E48(0);
+    
+    for (i = 0; i < 0x28; ++i) {
+        if (var_a0->unk0 >= 2) {
+           return 0;
+        }
+        ++var_a0;
+    }
+    return 1;
+}
 
 int func_800FAA20()
 {

@@ -5,6 +5,7 @@
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
+#include "../BATTLE/BATTLE.PRG/30D14.h"
 #include "../BATTLE/BATTLE.PRG/44F14.h"
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
@@ -21,7 +22,8 @@ void func_800FCC0C(int, u_short**, int*, void*);
 void func_800FCCE8(void*, int, int, int);
 void func_800FCECC(int*, int, int, int);
 
-extern char D_800F49DC;
+extern short D_80102014[];
+extern short D_8010202C[];
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;
@@ -72,7 +74,111 @@ void func_800FA570()
     func_800995B0();
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FA598);
+int func_800FA598(short* arg0, int arg1)
+{
+    int var_a2;
+    int var_a3;
+    int i;
+    int var_t0;
+    int var_t1;
+    int var_t2;
+    int var_v1;
+
+    var_t2 = 0;
+    var_t1 = 0;
+    var_a3 = 0;
+    var_a2 = 0;
+
+    if (arg1 != 1) {
+        if (arg1 == 0) {
+            for (i = 0; i < 6; ++i) {
+                if (var_a3 < arg0[156 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[156 + i];
+                    var_t1 = i;
+                } else if (var_a2 < arg0[156 + i]) {
+                    var_a2 = arg0[156 + i];
+                }
+            }
+            for (i = 0; i < 7; ++i) {
+                if (var_a3 < arg0[172 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[172 + i];
+                    var_t1 = i;
+                    var_t2 = 1;
+                } else if (var_a2 < arg0[172 + i]) {
+                    var_a2 = arg0[172 + i];
+                }
+            }
+        } else {
+            // Hack, couldn't match code placement with anything else
+            goto lbl;
+        }
+    } else if (arg1 == 1) {
+        for (i = 0; i < 6; ++i) {
+            if (var_a3 < arg0[130 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[130 + i];
+                var_t1 = i;
+            } else if (var_a2 < arg0[130 + i]) {
+                var_a2 = arg0[130 + i];
+            }
+        }
+
+        for (i = 0; i < 7; ++i) {
+            if (var_a3 < arg0[146 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[146 + i];
+                var_t1 = i;
+                var_t2 = 1;
+            } else if (var_a2 < arg0[146 + i]) {
+                var_a2 = arg0[146 + i];
+            }
+        }
+    } else {
+    lbl:
+        for (i = 0; i < 6; ++i) {
+            if (var_a3 < arg0[44 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[44 + i];
+                var_t1 = i;
+            } else if (var_a2 < arg0[44 + i]) {
+                var_a2 = arg0[44 + i];
+            }
+        }
+        for (i = 0; i < 7; ++i) {
+            if (var_a3 < arg0[60 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[60 + i];
+                var_t1 = i;
+                var_t2 = 1;
+            } else if (var_a2 < arg0[60 + i]) {
+                var_a2 = arg0[60 + i];
+            }
+        }
+    }
+
+    var_t0 = 0;
+    for (i = 0; i < 11; ++i) {
+        if (var_a2 < D_80102014[i]) {
+            var_t0 = i;
+            break;
+        }
+    }
+    var_v1 = 0;
+    for (i = 0; i < 3; ++i) {
+        if (var_a3 < D_8010202C[i]) {
+            var_v1 = i;
+            break;
+        }
+    }
+
+    {
+        int a = (var_t2 * 6) + var_t1;
+        int b = var_t0 + (var_v1 * 256);
+        return b + (a << 0x10);
+    }
+}
 
 void func_800FA810(int arg0)
 {

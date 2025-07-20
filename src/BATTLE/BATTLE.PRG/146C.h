@@ -22,11 +22,33 @@ typedef struct {
     u_short unk4;
     u_short unk6;
     u_short unk8[4];
-    u_short unk10[102];
+    u_short unk10[8];
+    u_short unk20[76];
+    short unkB8;
+    u_char unkBA;
+    u_char unkBB;
+    int unkBC[7];
+    int unkD8;
 } D_800F19FC_t3;
 
 typedef struct {
-    u_short unk0[460];
+    u_short unk0[30];
+    u_short unk3C[134];
+    char unk148;
+    u_char unk149;
+    short unk14A;
+    int unk14C[0x22];
+    u_short unk1D4[0x6D];
+    u_char unk2AE;
+    char unk2AF;
+    int unk2B0[34];
+    u_short unk338;
+    short unk33A;
+    int unk33C[12];
+    short unk36C;
+    char unk36E;
+    u_char unk36F;
+    int unk370[10];
     D_800F19FC_t3 unk398[6];
     u_short unk8C0[68];
     int unk948;
@@ -42,6 +64,10 @@ typedef struct {
 void func_80069FC4(int, int);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int);
+void func_8006B8C0(void*, u_short*);
+void func_8006B9E0(void*, u_short*);
+void func_8006BAA8(void*, u_short*);
+void func_8006BADC(void*, u_short*);
 void func_8006CE50();
 int func_8007C874();
 void func_8007DFF0(int, int, int);

@@ -38,7 +38,31 @@ extern short D_801024C0[];
 extern u_short* D_80102540;
 extern char D_80102544;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FA448);
+void func_800FA448()
+{
+    D_800F19FC_t2* temp_s1;
+    int i;
+
+    temp_s1 = D_800F19FC->unk38;
+
+    if (temp_s1->unk149 != 0) {
+        func_8006B8C0(D_80060148[temp_s1->unk149], temp_s1->unk3C);
+    }
+
+    if (temp_s1->unk2AE != 0) {
+        func_8006B9E0(D_80060238[temp_s1->unk2AE], temp_s1->unk1D4);
+    }
+
+    for (i = 0; i < 6; ++i) {
+        if (temp_s1->unk398[i].unkBA != 0) {
+            func_8006BAA8(D_80060780[temp_s1->unk398[i].unkBA], temp_s1->unk398[i].unk20);
+        }
+    }
+
+    if (temp_s1->unk36F != 0) {
+        func_8006BADC(D_80060780[temp_s1->unk36F], &temp_s1->unk338);
+    }
+}
 
 void func_800FA568() { }
 

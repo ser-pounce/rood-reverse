@@ -7,3 +7,5 @@ typedef struct {
 } func_8009C378_t;
 
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
+void func_800A0768(int, char*);
+void func_800A1108(int, char*);

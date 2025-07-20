@@ -2,7 +2,8 @@
 #include "common.h"
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"
-#include "../BATTLE/BATTLE.PRG/battle.h"
+#include "../BATTLE/BATTLE.PRG/146C.h"
+#include "../BATTLE/BATTLE.PRG/30D14.h"
 #include "../ENDING/ENDING.PRG/D4.h"
 #include "lbas.h"
 #include <libapi.h>

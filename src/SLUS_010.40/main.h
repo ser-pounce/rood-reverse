@@ -1,5 +1,6 @@
 #pragma once
 #include "25AC.h"
+#include "D_80061068_t.h"
 #include <sys/types.h>
 #include <libgte.h>
 #include <libgpu.h>
@@ -111,16 +112,6 @@ typedef union {
     } t;
     u_int all;
 } vs_Gametime_t;
-
-typedef struct D_80061068_t {
-    signed char unk0;
-    signed char unk1;
-    u_short unk2;
-    u_short unk4;
-    u_short unk6;
-    u_short unk8;
-    u_short unkA;
-} D_80061068_t;
 
 typedef struct {
     int unk0[10];

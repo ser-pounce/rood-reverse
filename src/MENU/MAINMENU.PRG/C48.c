@@ -222,7 +222,22 @@ void func_800FA8E0(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FA92C);
+void func_800FA92C(int arg0, int arg1) {
+    func_800C8E5C_t* temp_v0;
+    int var_s0;
+
+    for (var_s0 = arg1 * 10; var_s0 < 30; ++var_s0) {
+        func_800FA8A0(var_s0);
+    }
+    
+    temp_v0 = func_800C8E48(arg0 + (arg1 * 10));
+    temp_v0->unk0 = 4;
+    temp_v0->unk18 = 0xB4;
+    temp_v0->unk1A = (arg1 * 16) + 18;
+    if (temp_v0->unk2 == 0) {
+        temp_v0->unk2 = 1;
+    }
+}
 
 // https://decomp.me/scratch/qPGiA
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FA9D0);

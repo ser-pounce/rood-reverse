@@ -4,7 +4,8 @@
 typedef struct {
     char unk0;
     char unk1;
-    short unk2;
+    char unk2;
+    char unk3;
     short unk4;
     signed char unk6;
     signed char unk7;

@@ -32,7 +32,7 @@ extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
 extern D_8010229C_t* D_8010229C;
-extern int* D_8010246C;
+extern char* D_8010246C;
 extern char D_80102480[];
 extern short D_801024A8[];
 extern char D_801024B9;
@@ -74,8 +74,7 @@ void func_800FA570()
     func_800995B0();
 }
 
-int func_800FA598(short* arg0, int arg1)
-{
+int func_800FA598(short* arg0, unsigned int arg1) {
     int var_a2;
     int var_a3;
     int i;
@@ -89,8 +88,8 @@ int func_800FA598(short* arg0, int arg1)
     var_a3 = 0;
     var_a2 = 0;
 
-    if (arg1 != 1) {
-        if (arg1 == 0) {
+    switch (arg1) {
+        case 0:
             for (i = 0; i < 6; ++i) {
                 if (var_a3 < arg0[156 + i]) {
                     var_a2 = var_a3;
@@ -110,54 +109,56 @@ int func_800FA598(short* arg0, int arg1)
                     var_a2 = arg0[172 + i];
                 }
             }
-        } else {
-            // Hack, couldn't match code placement with anything else
-            goto lbl;
-        }
-    } else if (arg1 == 1) {
-        for (i = 0; i < 6; ++i) {
-            if (var_a3 < arg0[130 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[130 + i];
-                var_t1 = i;
-            } else if (var_a2 < arg0[130 + i]) {
-                var_a2 = arg0[130 + i];
+        break;
+        
+        case 1:
+            for (i = 0; i < 6; ++i) {
+                if (var_a3 < arg0[130 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[130 + i];
+                    var_t1 = i;
+                } else if (var_a2 < arg0[130 + i]) {
+                    var_a2 = arg0[130 + i];
+                }
             }
-        }
-
-        for (i = 0; i < 7; ++i) {
-            if (var_a3 < arg0[146 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[146 + i];
-                var_t1 = i;
-                var_t2 = 1;
-            } else if (var_a2 < arg0[146 + i]) {
-                var_a2 = arg0[146 + i];
+            
+            for (i = 0; i < 7; ++i) {
+                if (var_a3 < arg0[146 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[146 + i];
+                    var_t1 = i;
+                    var_t2 = 1;
+                } else if (var_a2 < arg0[146 + i]) {
+                    var_a2 = arg0[146 + i];
+                }
             }
-        }
-    } else {
-    lbl:
-        for (i = 0; i < 6; ++i) {
-            if (var_a3 < arg0[44 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[44 + i];
-                var_t1 = i;
-            } else if (var_a2 < arg0[44 + i]) {
-                var_a2 = arg0[44 + i];
+        break;
+        
+        case 100: // arbitrary
+        default:
+            for (i = 0; i < 6; ++i) {
+                if (var_a3 < arg0[44 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[44 + i];
+                    var_t1 = i;
+                } else if (var_a2 < arg0[44 + i]) {
+                    var_a2 = arg0[44 + i];
+                }
             }
-        }
-        for (i = 0; i < 7; ++i) {
-            if (var_a3 < arg0[60 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[60 + i];
-                var_t1 = i;
-                var_t2 = 1;
-            } else if (var_a2 < arg0[60 + i]) {
-                var_a2 = arg0[60 + i];
+        
+            for (i = 0; i < 7; ++i) {
+                if (var_a3 < arg0[60 + i]) {
+                    var_a2 = var_a3;
+                    var_a3 = arg0[60 + i];
+                    var_t1 = i;
+                    var_t2 = 1;
+                } else if (var_a2 < arg0[60 + i]) {
+                    var_a2 = arg0[60 + i];
+                }
             }
-        }
+        break;
     }
-
+    
     var_t0 = 0;
     for (i = 0; i < 11; ++i) {
         if (var_a2 < D_80102014[i]) {
@@ -172,7 +173,7 @@ int func_800FA598(short* arg0, int arg1)
             break;
         }
     }
-
+    
     {
         int a = (var_t2 * 6) + var_t1;
         int b = var_t0 + (var_v1 * 256);
@@ -247,7 +248,7 @@ int func_800FA9D0() {
     var_a0 = func_800C8E48(0);
     
     for (i = 0; i < 0x28; ++i) {
-        if (var_a0->unk0 >= 2) {
+        if (var_a0->unk0 > 1) {
            return 0;
         }
         ++var_a0;
@@ -390,7 +391,7 @@ void func_800FCE40(int arg0, int arg1, int arg2, int arg3)
 {
     int sp10[90];
 
-    if (D_8010246C == &D_80060268) {
+    if (D_8010246C == D_80060168[1]) {
         func_8006B02C(sp10, arg0);
     } else {
         func_80102BB0(sp10, arg0, D_80109A8C);

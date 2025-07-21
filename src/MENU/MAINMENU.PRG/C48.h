@@ -35,7 +35,7 @@ typedef struct {
 void func_800FA448();
 void func_800FA8E0(int);
 int func_800FA9D0();
-void func_800FAAC8();
+void func_800FAAC8(int);
 void func_800FAEBC(int);
 void func_800FBBD4(int);
 void func_800FBD80(int);

@@ -11,6 +11,15 @@
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
+typedef struct {
+    int unk0;
+    signed char unk4;
+    signed char unk5;
+    signed char unk6;
+    signed char unk7;
+    signed char unk8[8];
+} D_80102460_t;
+
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 int func_800FA9D0();
@@ -32,13 +41,16 @@ extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
 extern D_8010229C_t* D_8010229C;
+extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
 extern char D_80102480[];
+extern char D_801024A1;
 extern short D_801024A8[];
 extern char D_801024B9;
 extern short D_801024C0[];
 extern u_short* D_80102540;
 extern char D_80102544;
+extern char D_80102545;
 
 void func_800FA448()
 {
@@ -74,7 +86,8 @@ void func_800FA570()
     func_800995B0();
 }
 
-int func_800FA598(short* arg0, unsigned int arg1) {
+int func_800FA598(short* arg0, unsigned int arg1)
+{
     int var_a2;
     int var_a3;
     int i;
@@ -89,76 +102,76 @@ int func_800FA598(short* arg0, unsigned int arg1) {
     var_a2 = 0;
 
     switch (arg1) {
-        case 0:
-            for (i = 0; i < 6; ++i) {
-                if (var_a3 < arg0[156 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[156 + i];
-                    var_t1 = i;
-                } else if (var_a2 < arg0[156 + i]) {
-                    var_a2 = arg0[156 + i];
-                }
+    case 0:
+        for (i = 0; i < 6; ++i) {
+            if (var_a3 < arg0[156 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[156 + i];
+                var_t1 = i;
+            } else if (var_a2 < arg0[156 + i]) {
+                var_a2 = arg0[156 + i];
             }
-            for (i = 0; i < 7; ++i) {
-                if (var_a3 < arg0[172 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[172 + i];
-                    var_t1 = i;
-                    var_t2 = 1;
-                } else if (var_a2 < arg0[172 + i]) {
-                    var_a2 = arg0[172 + i];
-                }
+        }
+        for (i = 0; i < 7; ++i) {
+            if (var_a3 < arg0[172 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[172 + i];
+                var_t1 = i;
+                var_t2 = 1;
+            } else if (var_a2 < arg0[172 + i]) {
+                var_a2 = arg0[172 + i];
             }
+        }
         break;
-        
-        case 1:
-            for (i = 0; i < 6; ++i) {
-                if (var_a3 < arg0[130 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[130 + i];
-                    var_t1 = i;
-                } else if (var_a2 < arg0[130 + i]) {
-                    var_a2 = arg0[130 + i];
-                }
+
+    case 1:
+        for (i = 0; i < 6; ++i) {
+            if (var_a3 < arg0[130 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[130 + i];
+                var_t1 = i;
+            } else if (var_a2 < arg0[130 + i]) {
+                var_a2 = arg0[130 + i];
             }
-            
-            for (i = 0; i < 7; ++i) {
-                if (var_a3 < arg0[146 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[146 + i];
-                    var_t1 = i;
-                    var_t2 = 1;
-                } else if (var_a2 < arg0[146 + i]) {
-                    var_a2 = arg0[146 + i];
-                }
+        }
+
+        for (i = 0; i < 7; ++i) {
+            if (var_a3 < arg0[146 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[146 + i];
+                var_t1 = i;
+                var_t2 = 1;
+            } else if (var_a2 < arg0[146 + i]) {
+                var_a2 = arg0[146 + i];
             }
+        }
         break;
-        
-        case 100: // arbitrary
-        default:
-            for (i = 0; i < 6; ++i) {
-                if (var_a3 < arg0[44 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[44 + i];
-                    var_t1 = i;
-                } else if (var_a2 < arg0[44 + i]) {
-                    var_a2 = arg0[44 + i];
-                }
+
+    case 100: // arbitrary
+    default:
+        for (i = 0; i < 6; ++i) {
+            if (var_a3 < arg0[44 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[44 + i];
+                var_t1 = i;
+            } else if (var_a2 < arg0[44 + i]) {
+                var_a2 = arg0[44 + i];
             }
-        
-            for (i = 0; i < 7; ++i) {
-                if (var_a3 < arg0[60 + i]) {
-                    var_a2 = var_a3;
-                    var_a3 = arg0[60 + i];
-                    var_t1 = i;
-                    var_t2 = 1;
-                } else if (var_a2 < arg0[60 + i]) {
-                    var_a2 = arg0[60 + i];
-                }
+        }
+
+        for (i = 0; i < 7; ++i) {
+            if (var_a3 < arg0[60 + i]) {
+                var_a2 = var_a3;
+                var_a3 = arg0[60 + i];
+                var_t1 = i;
+                var_t2 = 1;
+            } else if (var_a2 < arg0[60 + i]) {
+                var_a2 = arg0[60 + i];
             }
+        }
         break;
     }
-    
+
     var_t0 = 0;
     for (i = 0; i < 11; ++i) {
         if (var_a2 < D_80102014[i]) {
@@ -173,7 +186,7 @@ int func_800FA598(short* arg0, unsigned int arg1) {
             break;
         }
     }
-    
+
     {
         int a = (var_t2 * 6) + var_t1;
         int b = var_t0 + (var_v1 * 256);
@@ -223,14 +236,15 @@ void func_800FA8E0(int arg0)
     }
 }
 
-void func_800FA92C(int arg0, int arg1) {
+void func_800FA92C(int arg0, int arg1)
+{
     func_800C8E5C_t* temp_v0;
     int var_s0;
 
     for (var_s0 = arg1 * 10; var_s0 < 30; ++var_s0) {
         func_800FA8A0(var_s0);
     }
-    
+
     temp_v0 = func_800C8E48(arg0 + (arg1 * 10));
     temp_v0->unk0 = 4;
     temp_v0->unk18 = 0xB4;
@@ -240,16 +254,16 @@ void func_800FA92C(int arg0, int arg1) {
     }
 }
 
-int func_800FA9D0() {
+int func_800FA9D0()
+{
     func_800C8E5C_t* var_a0;
-    int var_v0;
     int i;
 
     var_a0 = func_800C8E48(0);
-    
+
     for (i = 0; i < 0x28; ++i) {
         if (var_a0->unk0 > 1) {
-           return 0;
+            return 0;
         }
         ++var_a0;
     }
@@ -431,7 +445,20 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD270);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD404);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD504);
+void func_800FD504(int arg0)
+{
+    int i;
+    D_80102460_t* temp_a2;
+
+    temp_a2 = &D_80102460[arg0 - 1];
+    for (i = 0; i < 4; ++i) {
+        D_801024C0[i + 0x20] = temp_a2->unk8[i];
+    }
+    func_800FBD28(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    D_80102545 = 4;
+    D_801024A1 = arg0;
+    func_800FBB8C(4);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD5A0);
 

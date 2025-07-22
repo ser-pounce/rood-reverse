@@ -6,6 +6,7 @@ void func_800FFB68(int);
 void func_800FFB90(int);
 void func_800FFBA8();
 void func_800FFBC8();
+void func_800FFC04(u_short*);
 void func_80100100(int, char const*, int, int);
 void func_80100164();
 void func_80100414(int, int);

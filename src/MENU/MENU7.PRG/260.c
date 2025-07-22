@@ -89,7 +89,7 @@ typedef struct {
     char unk80[0x80];
     char unk100[0x80];
     savedata_unk180_t unk180;
-    char unk200[0x440];
+    char stateFlags[0x440];
     char unk640[0x20];
     char unk660[0x48];
     vs_main_settings_t unk6A8;
@@ -609,7 +609,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         return 0;
     }
 
-    _rMemcpy(D_80061598, spmcimg[1].unk200, sizeof(D_80061598));
+    _rMemcpy(vs_main_stateFlags, spmcimg[1].stateFlags, sizeof(vs_main_stateFlags));
     _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
     _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
@@ -708,10 +708,10 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = D_800F4E6B;
     s5->stats.mapCompletion = func_8008E5F0();
-    s5->stats.clearCount = D_80061598[0];
+    s5->stats.clearCount = vs_main_stateFlags[0];
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
-    _rMemcpy(savedata->unk200, D_80061598, sizeof(savedata->unk200));
+    _rMemcpy(savedata->stateFlags, vs_main_stateFlags, sizeof(savedata->stateFlags));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
     _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
@@ -1387,8 +1387,6 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     }
     return x + glyphWidths[c];
 }
-
-void func_800FFC04(u_short*);
 
 enum _findCurrentSave_e {
     findSaveTimeout = -2,
@@ -3196,7 +3194,7 @@ static void _setMenuItemClut(
 
 extern u_int* D_1F800000[];
 
-int func_801088B4(int arg0)
+static int func_801088B4(int arg0)
 {
     static short D_8010AB20[32];
     static int D_8010AB60;
@@ -3316,7 +3314,7 @@ int func_801088B4(int arg0)
     return 0;
 }
 
-int func_80108CE8(char* arg0)
+int vs_saveMenu_execGameOver(char* arg0)
 {
     static u_short D_8010AB80[256];
     static vs_main_settings_t D_8010AD80;
@@ -3349,8 +3347,8 @@ int func_80108CE8(char* arg0)
         }
         D_8010ADA0 = 0x10;
         if (temp_v0 != 2) {
-            temp_v0 = D_80061598[0xAB];
-            if (((temp_v0 - 1) < 2U) && (D_80061598[0] == 0)) {
+            temp_v0 = vs_main_stateFlags[0xAB];
+            if (((temp_v0 - 1) < 2U) && (vs_main_stateFlags[0] == 0)) {
                 func_801085B0(temp_v0);
                 *arg0 = 6;
             } else {
@@ -3389,7 +3387,7 @@ int func_80108CE8(char* arg0)
                 break;
             }
             vs_main_freeMusic(1);
-            D_8006163C = 0;
+            vs_main_stateFlags[0xA4] = 0;
             vs_main_jumpToBattle();
         } else {
             _drawFileMenuBg();
@@ -3399,10 +3397,10 @@ int func_80108CE8(char* arg0)
     case 6:
         if (func_801085B0(0) != 0) {
             vs_main_settings = D_8010AD80;
-            D_80061598[1] = D_8010ADA4;
+            vs_main_stateFlags[1] = D_8010ADA4;
             vs_main_freeMusic(1);
             vs_main_setMonoSound(vs_main_settings.monoSound);
-            D_80061598[0xA4] = 0;
+            vs_main_stateFlags[0xA4] = 0;
             vs_main_jumpToBattle();
         }
         break;
@@ -3415,7 +3413,7 @@ int func_80108CE8(char* arg0)
         }
         break;
     }
-    D_8006163C = 1;
+    vs_main_stateFlags[0xA4] = 1;
     return 0;
 }
 
@@ -3428,7 +3426,7 @@ static u_short D_8010A9B0[] = { 0x5, 0x10, 0x12, 0x14, 0x19, 0x2B0C, 0x2628, 0x8
     0x241C, 0x2839, 0xE7A5 };
 static char D_8010AA2A = 0;
 
-int func_8010903C(int arg0)
+static int func_8010903C(int arg0)
 {
     static int D_8010ADA8;
     static char D_8010ADAC;
@@ -3517,7 +3515,7 @@ void func_801092C4(
     containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
-int func_80109778(char* arg0)
+int vs_saveMenu_exec(char* arg0)
 {
     func_800C8E5C_t* temp_v0_3;
     int temp_s0;
@@ -3718,7 +3716,7 @@ int func_80109778(char* arg0)
     return 0;
 }
 
-void func_80109D64()
+static void func_80109D64()
 {
     static char* _playTime = "00:00:00:00";
 
@@ -3744,7 +3742,7 @@ void func_80109D64()
     func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
-int func_80109EB8(char* arg0)
+static int func_80109EB8(char* arg0)
 {
     u_short* sp10[2][2];
     int sp20[2];

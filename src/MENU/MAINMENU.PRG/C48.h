@@ -35,6 +35,7 @@ typedef struct {
 typedef struct {
     u_short unk0;
     char unk2;
+    char unk3;
 } func_800FD17C_t;
 
 void func_800FA448();

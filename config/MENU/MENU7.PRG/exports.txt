@@ -1,0 +1,2 @@
+vs_saveMenu_execGameOver = 0x80108CE8;
+vs_saveMenu_exec = 0x80109778;

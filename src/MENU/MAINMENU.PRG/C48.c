@@ -40,7 +40,7 @@ void func_800FBD28(int, int, int, int);
 void func_800FC208(int, int, int, int);
 void func_800FC85C(int*, int*, int, int);
 void func_800FCAA4(int, u_short**, int*, void*);
-void func_800FCC0C(int, u_short**, int*, void*);
+void func_800FCC0C(int, int*, int*, void*);
 void func_800FCCE8(void*, int, int, int);
 void func_800FCECC(int*, int, int, int);
 
@@ -452,15 +452,15 @@ void func_800FD084(int arg0, int arg1, int arg2, int arg3)
 
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
-    vs_battle_memcpy(arg3, D_80102540 + ((arg0->unk0 + D_80102540)[-0x8C]), 0x60);
-    arg1->unk0 = (D_8010229C + arg0->unk0);
+    vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
+    arg1->unk0 = &D_8010229C[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = 0x58000000;
 }
 
 void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
-    vs_battle_memcpy(arg3, D_80102540 + ((arg0->unk0 + D_80102540)[-0x8C]), 0x60);
+    vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
     arg1->unk0 = &D_8010229C[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = arg0->unk2 << 9;
@@ -481,7 +481,7 @@ void func_800FD504(int arg0)
 {
     int i;
     D_80102460_t* temp_a2 = &D_80102460[arg0 - 1];
-    
+
     for (i = 0; i < 4; ++i) {
         D_801024C0[i + 0x20] = temp_a2->unk8[i];
     }
@@ -495,15 +495,16 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD5A0);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD700);
 
-void func_800FD878(int arg0) {
+void func_800FD878(int arg0)
+{
     int i;
     D_80102458_t* temp_a2 = &D_80102458[arg0 - 1];
-    
+
     for (i = 0; i < 16; ++i) {
         D_801024C0[i] = temp_a2->unk8[i & 7];
         D_801024C0[i + 0x10] = temp_a2->unk10[i & 7];
     }
-    
+
     func_800FBD28(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
     D_80102545 = 0x40;
     D_801024A1 = arg0;

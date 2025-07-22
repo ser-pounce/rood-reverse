@@ -32,6 +32,11 @@ typedef struct {
     void* unk4;
 } func_800FD0E0_t;
 
+typedef struct {
+    u_short unk0;
+    char unk2;
+} func_800FD17C_t;
+
 void func_800FA448();
 void func_800FA8E0(int);
 int func_800FA9D0();
@@ -41,7 +46,7 @@ void func_800FBBD4(int);
 void func_800FBD80(int);
 void func_800FBEA4(int);
 void func_800FC268(int);
-void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
+void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_8010044C(u_int*);
 
 extern D_8010245C_t* D_8010245C;

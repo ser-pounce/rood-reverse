@@ -397,7 +397,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC85C);
 
-void func_800FCA08(int arg0, int* arg1, int arg2, int arg3) {
+void func_800FCA08(int arg0, int* arg1, int arg2, int arg3)
+{
     int sp10[102];
 
     if (D_80102470 == D_80060168) {
@@ -437,15 +438,21 @@ void func_800FD084(int arg0, int arg1, int arg2, int arg3)
     func_800FCECC(sp10, arg1, arg2, arg3);
 }
 
-void func_800FD0E0(u_short* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
-    vs_battle_memcpy(arg3, D_80102540 + ((*arg0 + D_80102540)[-0x8C]), 0x60);
-    arg1->unk0 = (D_8010229C + *arg0);
+    vs_battle_memcpy(arg3, D_80102540 + ((arg0->unk0 + D_80102540)[-0x8C]), 0x60);
+    arg1->unk0 = (D_8010229C + arg0->unk0);
     arg1->unk4 = arg3;
     *arg2 = 0x58000000;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD17C);
+void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+{
+    vs_battle_memcpy(arg3, D_80102540 + ((arg0->unk0 + D_80102540)[-0x8C]), 0x60);
+    arg1->unk0 = &D_8010229C[arg0->unk0];
+    arg1->unk4 = arg3;
+    *arg2 = arg0->unk2 << 9;
+}
 
 void func_800FD220()
 {

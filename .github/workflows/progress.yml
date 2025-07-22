@@ -1,0 +1,14 @@
+name: Copy progress report
+on: push
+jobs:
+  upload-progress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: SLUS_010.40_report
+          path: progress.json

@@ -277,6 +277,7 @@ int func_800FAA5C(int arg0)
     return 1;
 }
 
+// https://decomp.me/scratch/b42Kb
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FAAC8);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FAEBC);

@@ -21,6 +21,17 @@ typedef struct {
     signed char unk8[8];
 } D_80102460_t;
 
+typedef struct {
+    int unk0;
+    char unk4;
+    signed char unk5;
+    signed char unk6;
+    signed char unk7;
+    signed char unk8[8];
+    signed char unk10[8];
+    int unk18;
+} D_80102458_t;
+
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 int func_800FA9D0();
@@ -43,6 +54,7 @@ extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
 extern D_8010229C_t* D_8010229C;
+extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
 extern char (*D_80102470)[256];
@@ -468,9 +480,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD404);
 void func_800FD504(int arg0)
 {
     int i;
-    D_80102460_t* temp_a2;
-
-    temp_a2 = &D_80102460[arg0 - 1];
+    D_80102460_t* temp_a2 = &D_80102460[arg0 - 1];
+    
     for (i = 0; i < 4; ++i) {
         D_801024C0[i + 0x20] = temp_a2->unk8[i];
     }
@@ -484,4 +495,17 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD5A0);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD700);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD878);
+void func_800FD878(int arg0) {
+    int i;
+    D_80102458_t* temp_a2 = &D_80102458[arg0 - 1];
+    
+    for (i = 0; i < 16; ++i) {
+        D_801024C0[i] = temp_a2->unk8[i & 7];
+        D_801024C0[i + 0x10] = temp_a2->unk10[i & 7];
+    }
+    
+    func_800FBD28(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    D_80102545 = 0x40;
+    D_801024A1 = arg0;
+    func_800FBB8C(3);
+}

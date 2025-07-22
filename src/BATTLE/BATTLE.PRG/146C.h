@@ -62,6 +62,7 @@ typedef struct {
 } D_800F19FC_t;
 
 void func_80069FC4(int, int);
+void func_8006AEAC(int*, int);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int);
 void func_8006B8C0(void*, u_short*);

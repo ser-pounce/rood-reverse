@@ -2,6 +2,7 @@
 #include "C48.h"
 #include "413C.h"
 #include "../SLUS_010.40/main.h"
+#include "../MENUC.PRG/168.h"
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
@@ -26,6 +27,7 @@ int func_800FA9D0();
 void func_800FB3C8(int);
 void func_800FBD28(int, int, int, int);
 void func_800FC208(int, int, int, int);
+void func_800FC85C(int*, int*, int, int);
 void func_800FCAA4(int, u_short**, int*, void*);
 void func_800FCC0C(int, u_short**, int*, void*);
 void func_800FCCE8(void*, int, int, int);
@@ -43,6 +45,7 @@ extern short D_8010213A;
 extern D_8010229C_t* D_8010229C;
 extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
+extern char (*D_80102470)[256];
 extern char D_80102480[];
 extern char D_801024A1;
 extern short D_801024A8[];
@@ -394,7 +397,17 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC85C);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCA08);
+void func_800FCA08(int arg0, int* arg1, int arg2, int arg3) {
+    int sp10[102];
+
+    if (D_80102470 == D_80060168) {
+        func_8006AEAC(sp10, arg0);
+    } else {
+        func_80102A34(sp10, arg0, D_80109A8C);
+    }
+    func_800FC85C(sp10, arg1, arg2, arg3);
+    *arg1 = arg0 + 8;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCAA4);
 

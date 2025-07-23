@@ -1,5 +1,4 @@
 import sys
-import os
 import png
 from tools.splat_ext.img import PSXSegImg
 

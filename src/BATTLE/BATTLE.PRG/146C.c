@@ -2008,7 +2008,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
-void func_8008AB68() { D_8006169D = (char)D_800F1BBE + 1; }
+void func_8008AB68() { vs_main_stateFlags.unk105 = (char)D_800F1BBE + 1; }
 
 int func_8008AB80(int arg0)
 {

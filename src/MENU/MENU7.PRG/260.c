@@ -609,7 +609,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         return 0;
     }
 
-    _rMemcpy(vs_main_stateFlags, spmcimg[1].stateFlags, sizeof(vs_main_stateFlags));
+    _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof(vs_main_stateFlags));
     _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
     _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
@@ -708,10 +708,10 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = D_800F4E6B;
     s5->stats.mapCompletion = func_8008E5F0();
-    s5->stats.clearCount = vs_main_stateFlags[0];
+    s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
-    _rMemcpy(savedata->stateFlags, vs_main_stateFlags, sizeof(savedata->stateFlags));
+    _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof(savedata->stateFlags));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
     _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
@@ -2222,7 +2222,7 @@ static int _showSaveFilesMenu(int initPort)
         val = _saveFile(0);
         ++_fileProgressCounter;
         if (val != 0) {
-            D_8006169D = 0;
+            vs_main_stateFlags.unk105 = 0;
             saveId = slot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
@@ -3314,30 +3314,30 @@ static int func_801088B4(int arg0)
     return 0;
 }
 
-int vs_saveMenu_execGameOver(char* arg0)
+int vs_saveMenu_execGameOver(char* state)
 {
     static u_short D_8010AB80[256];
-    static vs_main_settings_t D_8010AD80;
+    static vs_main_settings_t settingsBackup;
     static int D_8010ADA0;
     static int D_8010ADA4;
 
     RECT rect;
     int temp_v0;
 
-    switch (*arg0) {
+    switch (*state) {
     case 0:
         func_8007E0A8(0x1F, 1, 6);
         func_8008A4DC(0);
-        D_8010AD80 = vs_main_settings;
-        D_8010ADA4 = D_80061599;
+        settingsBackup = vs_main_settings;
+        D_8010ADA4 = vs_main_stateFlags.unk1;
         _initGameOver(1);
-        *arg0 = 1;
+        *state = 1;
         break;
     case 1:
         if (_initGameOver(0) == 0) {
             break;
         }
-        *arg0 = 2;
+        *state = 2;
         func_801088B4(1);
         // Fallthrough
     case 2:
@@ -3347,15 +3347,15 @@ int vs_saveMenu_execGameOver(char* arg0)
         }
         D_8010ADA0 = 0x10;
         if (temp_v0 != 2) {
-            temp_v0 = vs_main_stateFlags[0xAB];
-            if (((temp_v0 - 1) < 2U) && (vs_main_stateFlags[0] == 0)) {
+            temp_v0 = vs_main_stateFlags.unkAB;
+            if (((temp_v0 - 1) < 2U) && (vs_main_stateFlags.clearCount == 0)) {
                 func_801085B0(temp_v0);
-                *arg0 = 6;
+                *state = 6;
             } else {
-                *arg0 = 3;
+                *state = 3;
             }
         } else {
-            *arg0 = 7;
+            *state = 7;
         }
         break;
     case 3:
@@ -3365,12 +3365,12 @@ int vs_saveMenu_execGameOver(char* arg0)
         StoreImage(&rect, (u_long*)D_8010AB80);
         DrawSync(0);
         func_80048A64(D_8010AB80, 3U, 0U, 0x100U);
-        *arg0 = 4;
+        *state = 4;
         break;
     case 4:
         if (_initMemcard(0) != 0) {
             _loadFileMenu(2);
-            *arg0 = 5;
+            *state = 5;
             _drawFileMenuBg();
             _drawFileMenu(vs_main_frameBuf);
         }
@@ -3383,11 +3383,11 @@ int vs_saveMenu_execGameOver(char* arg0)
             SetDispMask(0);
             if (temp_v0 < 0) {
                 D_8010ADA0 = 1;
-                *arg0 = 7;
+                *state = 7;
                 break;
             }
             vs_main_freeMusic(1);
-            vs_main_stateFlags[0xA4] = 0;
+            vs_main_stateFlags.gameOver = 0;
             vs_main_jumpToBattle();
         } else {
             _drawFileMenuBg();
@@ -3396,11 +3396,11 @@ int vs_saveMenu_execGameOver(char* arg0)
         break;
     case 6:
         if (func_801085B0(0) != 0) {
-            vs_main_settings = D_8010AD80;
-            vs_main_stateFlags[1] = D_8010ADA4;
+            vs_main_settings = settingsBackup;
+            vs_main_stateFlags.unk1 = D_8010ADA4;
             vs_main_freeMusic(1);
             vs_main_setMonoSound(vs_main_settings.monoSound);
-            vs_main_stateFlags[0xA4] = 0;
+            vs_main_stateFlags.gameOver = 0;
             vs_main_jumpToBattle();
         }
         break;
@@ -3413,7 +3413,7 @@ int vs_saveMenu_execGameOver(char* arg0)
         }
         break;
     }
-    vs_main_stateFlags[0xA4] = 1;
+    vs_main_stateFlags.gameOver = 1;
     return 0;
 }
 
@@ -3772,7 +3772,7 @@ static int func_80109EB8(char* arg0)
             sp20[temp_s0] = 0;
         }
         D_800F4E6B = func_8008A4FC();
-        if (!(D_800F4E6B & 0xFF) || (D_8006163F != 0)) {
+        if (!(D_800F4E6B & 0xFF) || (vs_main_stateFlags.unkA7 != 0)) {
             sp20[0] |= 1;
         }
         temp_s0 = vs_main_settings.cursorMemory;
@@ -3808,7 +3808,8 @@ static int func_80109EB8(char* arg0)
                 }
             }
         } else {
-            if ((D_800F4E6B != 0) && (D_8006163F != 0) && (func_801008B0() == 0)) {
+            if ((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0)
+                && (func_801008B0() == 0)) {
                 func_800C8E04(1);
                 D_800F514C = 0xB;
             } else {

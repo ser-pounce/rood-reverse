@@ -592,7 +592,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         return 0;
     }
 
-    _rMemcpy(vs_main_stateFlags, spmcimg[1].unk200, sizeof(vs_main_stateFlags));
+    _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof(vs_main_stateFlags));
     _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
     _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
@@ -629,7 +629,7 @@ static void _packageGameSaveData(int targetFile)
 
     vs_main_gametime.all = 0;
     vs_main_settings.unk2 &= 0xFFDF;
-    vs_main_puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
+    vs_main_stateFlags.puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
     memset(savedata, 0, sizeof(*savedata));
     ((char*)&savedata->fileInfo.key)[0] = 0x53;
     ((char*)&savedata->fileInfo.key)[1] = 0x43;
@@ -692,10 +692,10 @@ static void _packageGameSaveData(int targetFile)
     memset(D_80060168[14], 0, sizeof(D_80060168[14]));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
     memset(savedata2->containerData.unk3800, 0, sizeof(savedata2->containerData.unk3800));
-    s5->stats.clearCount = vs_main_stateFlags[0];
+    s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
-    _rMemcpy(savedata->unk200, vs_main_stateFlags, sizeof(savedata->unk200));
+    _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof(savedata->unk200));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
     _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
@@ -2658,7 +2658,7 @@ static int _showSaveFilesMenu(int initPort)
         val = _saveFile(0);
         ++_fileProgressCounter;
         if (val != 0) {
-            D_8006169D = 0;
+            vs_main_stateFlags.unk105 = 0;
             saveId = fileSlot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
@@ -4583,8 +4583,8 @@ static void _initEnvironment()
     vs_main_setMonoSound(vs_main_settings.monoSound);
     vs_sound_setCdVol(0x7F);
     memset(&D_800619D8, 0, sizeof(D_800619D8));
-    vs_main_stateFlags[1] = 1;
-    vs_main_stateFlags[284] = 1;
+    vs_main_stateFlags.unk1 = 1;
+    vs_main_stateFlags.puzzleMode = 1;
 }
 
 int vs_title_exec()
@@ -4971,7 +4971,7 @@ static void _initGameData()
 
     _initScreen(640, 240, 512, 0, 0, 0);
     i = 0x43F;
-    v0 = vs_main_stateFlags + i;
+    v0 = ((char*)&vs_main_stateFlags) + i;
     do {
         *v0-- = 0;
     } while (--i >= 0);
@@ -5011,32 +5011,32 @@ static void _setTitleExitFlags(int cause)
 {
     switch (cause) {
     case 0: // New Game
-        vs_main_stateFlags[0xC] = 0;
-        vs_main_stateFlags[0xD] = 0;
+        vs_main_stateFlags.unkC = 0;
+        vs_main_stateFlags.unkD = 0;
         D_80061068.unk0 = 1;
         D_80061068.unk1 = 0;
         return;
     case 3: // Timeout cutscene1
-        vs_main_stateFlags[0xC] = 0;
-        vs_main_stateFlags[0xD] = 1;
-        vs_main_stateFlags[0xE] = 1;
+        vs_main_stateFlags.unkC = 0;
+        vs_main_stateFlags.unkD = 1;
+        vs_main_stateFlags.unkE = 1;
         D_80061068.unk0 = 0x14;
         D_80061068.unk1 = 0;
         return;
     case 4: // Timeout cutscene2
-        vs_main_stateFlags[0xC] = 0;
-        vs_main_stateFlags[0xD] = 1;
-        vs_main_stateFlags[0xE] = 1;
+        vs_main_stateFlags.unkC = 0;
+        vs_main_stateFlags.unkD = 1;
+        vs_main_stateFlags.unkE = 1;
         D_80061068.unk0 = 2;
         D_80061068.unk1 = 1;
         return;
     case 1: // Continue
-        vs_main_stateFlags[0xC] = 0;
-        vs_main_stateFlags[0xD] = 0;
+        vs_main_stateFlags.unkC = 0;
+        vs_main_stateFlags.unkD = 0;
         return;
     default:
-        vs_main_stateFlags[0xC] = 0;
-        vs_main_stateFlags[0xD] = 0;
+        vs_main_stateFlags.unkC = 0;
+        vs_main_stateFlags.unkD = 0;
         return;
     }
 }

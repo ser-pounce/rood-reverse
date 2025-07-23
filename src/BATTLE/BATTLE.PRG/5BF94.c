@@ -427,10 +427,10 @@ int func_800CACD0(int arg0, int arg1)
                 }
             }
 
-            if (vs_main_stateFlags[0xB5] != 0) {
+            if (vs_main_stateFlags.unkB5 != 0) {
                 var_a1 |= 1;
             }
-            if (vs_main_stateFlags[0xAB] >= 3) {
+            if (vs_main_stateFlags.unkAB >= 3) {
                 var_a1 |= 0x120;
             }
             D_80060022 = var_a1;

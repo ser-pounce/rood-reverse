@@ -156,6 +156,40 @@ typedef struct {
     int unk70[16];
 } D_800619D8_t;
 
+typedef struct {
+    char clearCount;
+    char unk1;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF[0x95];
+    char gameOver;
+    char unkA5;
+    char unkA6;
+    char unkA7;
+    char unkA8;
+    char unkA9;
+    char unkAA;
+    char unkAB;
+    char unkAC[9];
+    char unkB5;
+    char unkB6[0x4F];
+    char unk105;
+    char unk106[0x16];
+    char puzzleMode;
+    char unk11D[0x323];
+} vs_main_flags_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];
@@ -171,7 +205,6 @@ extern u_int D_80055C80[];
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
 extern int D_8005E248;
-extern signed char D_8006169D;
 extern int vs_gametime_tickspeed;
 extern char vs_main_padBuffer[2][34];
 extern u_int vs_main_buttonsPressed;
@@ -198,11 +231,7 @@ extern char D_80060168[15][256];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];
-extern char vs_main_stateFlags[0x440]; // flags
-// 0xA4 = Game over active
-extern char D_80061599;
-extern char D_8006163F;
-extern signed char vs_main_puzzleMode;
+extern vs_main_flags_t vs_main_stateFlags;
 extern D_800619D8_t D_800619D8;
 
 int vs_main_gametimeUpdate(int vsync);

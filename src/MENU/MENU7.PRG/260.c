@@ -3046,35 +3046,35 @@ static int _loadFileMenu(int initFadeout)
     return 0;
 }
 
-static int func_801085B0(int arg0)
+static int _loadIntroSaveFile(int action)
 {
     static vs_main_CdQueueSlot* _opmcimgSlot;
     static savedata_t* _opMcImg;
 
     vs_main_CdFile file;
     void* new_var2;
-    vs_Gametime_t sp18;
+    vs_Gametime_t gametime;
     int lba;
     vs_Gametime_t* new_var;
 
-    switch (arg0) {
+    switch (action) {
     case 0:
-        new_var = &sp18;
-        if (_opmcimgSlot->state == 4) {
+        new_var = &gametime;
+        if (_opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_opmcimgSlot);
-            sp18.t = vs_main_gametime.t;
+            gametime.t = vs_main_gametime.t;
             _spmcimg = (char*)(_opMcImg - 1);
             _applyLoadedSaveFile(1);
-            vs_main_gametime.t = sp18.t;
+            vs_main_gametime.t = gametime.t;
             new_var2 = _opMcImg;
             vs_main_freeHeapR(new_var2);
             return 1;
         }
         return 0;
-    case 1:
+    case 1: // First combat in courtyard
         lba = VS_OPMCIMG1_BIN_LBA;
         break;
-    case 2:
+    case 2: // D'tok
         lba = VS_OPMCIMG2_BIN_LBA;
         break;
     default:
@@ -3125,8 +3125,8 @@ static int _initGameOver(int arg0)
 {
 
     static vs_main_CdQueueSlot* queueSlot;
-    static u_int* _gameOverBin;
-    static int _initGameOverState;
+    static u_int* gameOverBin;
+    static int state;
     static char _[8] __attribute__((unused));
 
     vs_main_CdFile cdFile;
@@ -3135,22 +3135,22 @@ static int _initGameOver(int arg0)
         cdFile.lba = VS_GAMEOVER_BIN_LBA;
         cdFile.size = VS_GAMEOVER_BIN_SIZE;
         queueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-        _gameOverBin = vs_main_allocHeapR(VS_GAMEOVER_BIN_SIZE);
-        vs_main_cdEnqueue(queueSlot, _gameOverBin);
-        _initGameOverState = 0;
+        gameOverBin = vs_main_allocHeapR(VS_GAMEOVER_BIN_SIZE);
+        vs_main_cdEnqueue(queueSlot, gameOverBin);
+        state = 0;
         return 0;
     }
-    switch (_initGameOverState) {
+    switch (state) {
     case 0:
         if (queueSlot->state == 4) {
             vs_main_freeCdQueueSlot(queueSlot);
-            vs_battle_drawImage(vs_getXY(832, 256), _gameOverBin, vs_getWH(24, 128));
+            vs_battle_drawImage(vs_getXY(832, 256), gameOverBin, vs_getWH(24, 128));
             vs_battle_drawImage(vs_getXY(832, 384), _menuItemTextClut, vs_getWH(48, 1));
-            _initGameOverState = 1;
+            state = 1;
         }
         return 0;
     case 1:
-        vs_main_freeHeapR(_gameOverBin);
+        vs_main_freeHeapR(gameOverBin);
         return 1;
     default:
         return 0;
@@ -3195,122 +3195,121 @@ static void _setMenuItemClut(
 static int _displayGameOverScreen(int init)
 {
     extern u_int* D_1F800000[];
+    static short clut[2][16];
+    static int color1;
+    static int color2;
+    static int color3;
+    static int blendFactor1;
+    static int blendFactor2;
+    static int selectedOption;
+    static char _[8];
 
-    static short D_8010AB20[32];
-    static int D_8010AB60;
-    static int D_8010AB64;
-    static int D_8010AB68;
-    static int D_8010AB6C;
-    static int D_8010AB70;
-    static int D_8010AB74;
-    static char _[8] __attribute__((unused));
-
-    u_int* temp_s4;
-    u_int* temp_t0;
-
-    temp_s4 = D_1F800000[2];
+    u_int* prim;
+    u_int* nextPrim = D_1F800000[2];
 
     if (init != 0) {
-        D_8010AB60 = 0;
-        D_8010AB64 = 0;
-        D_8010AB68 = 0;
-        D_8010AB6C = 0;
-        D_8010AB70 = 0;
-        D_8010AB74 = 0;
+        color1 = 0;
+        color2 = 0;
+        color3 = 0;
+        blendFactor1 = 0;
+        blendFactor2 = 0;
+        selectedOption = 0;
         return 0;
     }
-    if (D_8010AB60 < 0) {
-        temp_t0 = D_1F800000[0];
-        temp_t0[0] = (*temp_s4 & 0xFFFFFF) | 0x04000000;
-        temp_t0[1] = 0xE1000140;
-        temp_t0[3] = 0;
-        temp_t0[4] = 0xF00140;
-        temp_t0[2] = (((D_8010AB60 + 0x80) * 0x20202) | 0x62000000);
-        *temp_s4 = ((u_long)temp_t0 << 8) >> 8;
-        D_1F800000[0] = temp_t0 + 5;
-        D_8010AB60 += 8;
-        if (D_8010AB60 == 0) {
+    if (color1 < 0) {
+        prim = D_1F800000[0];
+        prim[0] = (*nextPrim & 0xFFFFFF) | 0x04000000;
+        prim[1] = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+        prim[3] = vs_getXY(0, 0);
+        prim[4] = vs_getWH(0x140, 0xF0);
+        prim[2] = vs_getRGB0Raw(primTileSemiTrans, (color1 + 128) * 0x020202);
+        *nextPrim = ((u_long)prim << 8) >> 8;
+        D_1F800000[0] = prim + 5;
+        color1 += 8;
+        if (color1 == 0) {
             SetDispMask(0);
-            return D_8010AB74 + 1;
+            return selectedOption + 1;
         }
         return 0;
     }
-    if (D_8010AB60 < 0x80) {
-        D_8010AB60 += 8;
+    if (color1 < 128) {
+        color1 += 8;
     } else {
-        if (vs_main_buttonsPressed & 0x820) {
+        if (vs_main_buttonsPressed & (PADstart | PADRright)) {
             func_800C02F0();
-            func_8004552C(1, 0, 0x3C);
-            D_8010AB60 = -0x80;
+            func_8004552C(1, 0, 60);
+            color1 = -128;
             return 0;
         }
-        if (vs_main_buttonsPressed & 0x5100) {
+        if (vs_main_buttonsPressed & (PADselect | PADLup | PADLdown)) {
             func_800C02F8();
-            D_8010AB74 = 1 - D_8010AB74;
+            selectedOption = 1 - selectedOption;
         }
-        if (D_8010AB74 == 0) {
-            if (D_8010AB6C < 0x10) {
-                D_8010AB64 = D_8010AB6C * 0x10;
-                D_8010AB6C += 4;
-                if (D_8010AB6C >= 0x11) {
-                    D_8010AB6C = 0x10;
+        if (selectedOption == 0) {
+            if (blendFactor1 < 16) {
+                color2 = blendFactor1 * 16;
+                blendFactor1 += 4;
+                if (blendFactor1 > 16) {
+                    blendFactor1 = 16;
                 }
             } else {
-                if (D_8010AB64 >= 0x90) {
-                    D_8010AB64 -= 0x10;
+                if (color2 >= 144) {
+                    color2 -= 16;
                 } else {
-                    D_8010AB64 = 0x80;
+                    color2 = 128;
                 }
-                if (D_8010AB68 < 0x10) {
-                    D_8010AB68 = 0;
+                if (color3 < 16) {
+                    color3 = 0;
                 } else {
-                    D_8010AB68 -= 0x10;
+                    color3 -= 16;
                 }
             }
-            if (D_8010AB70 != 0) {
-                D_8010AB70 -= 1;
+            if (blendFactor2 != 0) {
+                --blendFactor2;
             }
         } else {
-            if (D_8010AB70 < 0x10) {
-                D_8010AB68 = D_8010AB70 * 0x10;
-                D_8010AB70 += 4;
-                if (D_8010AB70 >= 0x11) {
-                    D_8010AB70 = 0x10;
+            if (blendFactor2 < 16) {
+                color3 = blendFactor2 * 16;
+                blendFactor2 += 4;
+                if (blendFactor2 > 16) {
+                    blendFactor2 = 16;
                 }
             } else {
-                if (D_8010AB68 >= 0x90) {
-                    D_8010AB68 -= 0x10;
+                if (color3 >= 144) {
+                    color3 -= 16;
                 } else {
-                    D_8010AB68 = 0x80;
+                    color3 = 128;
                 }
-                if (D_8010AB64 < 0x10) {
-                    D_8010AB64 = 0;
+                if (color2 < 16) {
+                    color2 = 0;
                 } else {
-                    D_8010AB64 -= 0x10;
+                    color2 -= 16;
                 }
             }
-            if (D_8010AB6C != 0) {
-                D_8010AB6C -= 1;
+            if (blendFactor1 != 0) {
+                --blendFactor1;
             }
         }
     }
 
-    _setMenuItemClut(D_8010AB20, D_8010AB6C, _menuItemTextClut[0], _menuItemTextClut[3]);
-    _setMenuItemClut(
-        D_8010AB20 + 0x10, D_8010AB70, _menuItemTextClut[0], _menuItemTextClut[3]);
-    vs_battle_drawImage(0x01800340, &D_8010AB20, 0x10020);
-    temp_t0 = func_800C0230(D_8010AB60, 0x800070, 0x200060, temp_s4);
-    temp_t0[1] = 0xE100001D;
-    temp_t0[4] = 0x60340000;
-    temp_t0 = func_800C0230(D_8010AB60, 0xA00070, 0x200060, temp_s4);
-    temp_t0[1] = 0xE100001D;
-    temp_t0[4] = 0x60352000;
-    temp_t0 = func_800C0230(D_8010AB64 | 0x100, 0x800070, 0x200060, temp_s4);
-    temp_t0[1] = 0xE100001D;
-    temp_t0[4] = 0x60364000;
-    temp_t0 = func_800C0230(D_8010AB68 | 0x100, 0xA00070, 0x200060, temp_s4);
-    temp_t0[1] = 0xE100001D;
-    temp_t0[4] = 0x60366000;
+    _setMenuItemClut(clut[0], blendFactor1, _menuItemTextClut[0], _menuItemTextClut[3]);
+    _setMenuItemClut(clut[1], blendFactor2, _menuItemTextClut[0], _menuItemTextClut[3]);
+    vs_battle_drawImage(vs_getXY(832, 384), &clut, vs_getWH(32, 1));
+
+    prim = vs_battle_setSprite(color1, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
+    prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
+    prim[4] = vs_getRGB0(primTile, 0, 0, 52);
+    prim = vs_battle_setSprite(color1, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
+    prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
+    prim[4] = vs_getRGB0(primTile, 0, 32, 53);
+    prim = vs_battle_setSprite(
+        color2 | 256, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
+    prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
+    prim[4] = vs_getRGB0(primTile, 0, 64, 54);
+    prim = vs_battle_setSprite(
+        color3 | 256, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
+    prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
+    prim[4] = vs_getRGB0(primTile, 0, 96, 54);
     return 0;
 }
 
@@ -3320,15 +3319,20 @@ int vs_saveMenu_execGameOver(char* state)
         init,
         loadAssets,
         displayGameOver,
+        initFileMenu,
+        displayFileMenu,
+        selectFile,
+        restartIntro,
+        returnToTitle
     };
 
     static u_short D_8010AB80[256];
     static vs_main_settings_t settingsBackup;
-    static int D_8010ADA0;
+    static int resetDelay;
     static int D_8010ADA4;
 
     RECT rect;
-    int temp_v0;
+    int option;
 
     switch (*state) {
     case init:
@@ -3347,49 +3351,49 @@ int vs_saveMenu_execGameOver(char* state)
         _displayGameOverScreen(1);
         // Fallthrough
     case displayGameOver:
-        temp_v0 = _displayGameOverScreen(0);
-        if (temp_v0 == 0) {
+        option = _displayGameOverScreen(0);
+        if (option == 0) {
             break;
         }
-        D_8010ADA0 = 0x10;
-        if (temp_v0 != 2) {
-            temp_v0 = vs_main_stateFlags.unkAB;
-            if (((temp_v0 - 1) < 2U) && (vs_main_stateFlags.clearCount == 0)) {
-                func_801085B0(temp_v0);
-                *state = 6;
+        resetDelay = 16;
+        if (option != 2) {
+            option = vs_main_stateFlags.introState;
+            if (((option - 1) < 2U) && (vs_main_stateFlags.clearCount == 0)) {
+                _loadIntroSaveFile(option);
+                *state = restartIntro;
             } else {
-                *state = 3;
+                *state = initFileMenu;
             }
         } else {
-            *state = 7;
+            *state = returnToTitle;
         }
         break;
-    case 3:
+    case initFileMenu:
         _initMemcard(1);
         _initFileMenu();
-        setRECT(&rect, 0x280, 0x1FF, 0x100, 1);
+        setRECT(&rect, 640, 511, 256, 1);
         StoreImage(&rect, (u_long*)D_8010AB80);
         DrawSync(0);
-        func_80048A64(D_8010AB80, 3U, 0U, 0x100U);
-        *state = 4;
+        func_80048A64(D_8010AB80, 3, 0, 256);
+        *state = displayFileMenu;
         break;
-    case 4:
+    case displayFileMenu:
         if (_initMemcard(0) != 0) {
             _loadFileMenu(2);
-            *state = 5;
+            *state = selectFile;
             _drawFileMenuBg();
             _drawFileMenu(vs_main_frameBuf);
         }
         break;
-    case 5:
+    case selectFile:
         SetDispMask(1);
-        temp_v0 = _loadFileMenu(0);
-        if (temp_v0 != 0) {
+        option = _loadFileMenu(0);
+        if (option != 0) {
             _shutdownMemcard();
             SetDispMask(0);
-            if (temp_v0 < 0) {
-                D_8010ADA0 = 1;
-                *state = 7;
+            if (option < 0) {
+                resetDelay = 1;
+                *state = returnToTitle;
                 break;
             }
             vs_main_freeMusic(1);
@@ -3400,8 +3404,8 @@ int vs_saveMenu_execGameOver(char* state)
             _drawFileMenu(vs_main_frameBuf);
         }
         break;
-    case 6:
-        if (func_801085B0(0) != 0) {
+    case restartIntro:
+        if (_loadIntroSaveFile(0) != 0) {
             vs_main_settings = settingsBackup;
             vs_main_stateFlags.unk1 = D_8010ADA4;
             vs_main_freeMusic(1);
@@ -3410,9 +3414,9 @@ int vs_saveMenu_execGameOver(char* state)
             vs_main_jumpToBattle();
         }
         break;
-    case 7:
-        if (D_8010ADA0 != 0) {
-            D_8010ADA0 -= 1;
+    case returnToTitle:
+        if (resetDelay != 0) {
+            --resetDelay;
         } else {
             vs_main_freeMusic(1);
             vs_main_resetGame();
@@ -3466,13 +3470,13 @@ static int func_8010903C(int arg0)
         func_800C8E48(0x1F - D_8010ADA8)->unk6 = 0;
         var_s0 = vs_main_buttonsPressed;
         if (D_8010ADAD == 0) {
-            if (var_s0 & 0x10) {
+            if (var_s0 & PADRup) {
                 var_s0 -= 16;
                 func_800C02E0();
             }
         }
-        if (var_s0 & 0x70) {
-            if ((D_8010ADA8 != 0) || (var_s0 & 0x50)) {
+        if (var_s0 & (PADRup | PADRright | PADRdown)) {
+            if ((D_8010ADA8 != 0) || (var_s0 & (PADRup | PADRdown))) {
                 func_800C02E8();
                 func_800FA8E0(0x28);
                 D_8010ADA8 = -1;
@@ -3484,7 +3488,7 @@ static int func_8010903C(int arg0)
             D_8010ADAC = 3;
         } else {
             D_8010AA2A = func_800CCD40(D_8010AA2A, D_8010ADA8 + 8);
-            if (vs_main_buttonRepeat & 0x5000) {
+            if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 func_800C02F8();
                 D_8010ADA8 = 1 - D_8010ADA8;
             }
@@ -3521,25 +3525,29 @@ void func_801092C4(
     containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
-int vs_saveMenu_exec(char* arg0)
+int vs_saveMenu_exec(char* state)
 {
+    enum state {
+        init,
+    };
+
     func_800C8E5C_t* temp_v0_3;
     int temp_s0;
     u_short* var_a0;
     char temp_a0;
     int var_v0;
 
-    switch (*arg0) {
-    case 0:
+    switch (*state) {
+    case init:
         vs_battle_playSfx10();
         D_80102578 = ((*(u_int*)&vs_main_settings) >> 4) & 1;
         D_8010245C = vs_main_allocHeapR(sizeof(*D_8010245C));
         vs_battle_rMemzero(D_8010245C, sizeof(*D_8010245C));
-        func_800FBD80(0x10);
+        func_800FBD80(16);
         func_800C8E04(1);
         func_8010903C(5);
         func_800FFC04(&D_8010A9B0[5]);
-        *arg0 = 1;
+        *state = 1;
         break;
     case 1:
         temp_s0 = func_8010903C(0);
@@ -3552,9 +3560,9 @@ int vs_saveMenu_exec(char* arg0)
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->unk18 = 0xB4;
                 temp_v0_3->unk6 = 1;
-                *arg0 = 2;
+                *state = 2;
             } else {
-                *arg0 = 16;
+                *state = 16;
             }
         }
         break;
@@ -3567,10 +3575,10 @@ int vs_saveMenu_exec(char* arg0)
             _initFileMenu();
             if ((*(u_int*)&vs_main_settings) & 0x10) {
                 vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
-                *arg0 = 7;
+                *state = 7;
             } else {
                 _findCurrentSave(1);
-                *arg0 = 3;
+                *state = 3;
             }
         }
         break;
@@ -3584,10 +3592,10 @@ int vs_saveMenu_exec(char* arg0)
                     var_a0 = _textTable + 0xF7;
                 }
                 func_800FFC04(var_a0);
-                *arg0 = 4;
+                *state = 4;
             } else {
                 _loadSaveData((temp_s0 & 7) | ((temp_s0 & 0x10) << 0xC));
-                *arg0 = 6;
+                *state = 6;
             }
         }
         break;
@@ -3595,18 +3603,18 @@ int vs_saveMenu_exec(char* arg0)
         if ((char)vs_main_buttonsPressed != 0) {
             func_800FFC04(_textTable + 0x234);
             func_8010903C(2);
-            *arg0 = 5;
+            *state = 5;
         }
         break;
     case 5:
         temp_s0 = func_8010903C(0);
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
-                *arg0 = 0xE;
+                *state = 14;
             } else {
                 (*(u_int*)&vs_main_settings) |= 0x10;
                 vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
-                *arg0 = 7;
+                *state = 7;
             }
         }
         break;
@@ -3614,12 +3622,12 @@ int vs_saveMenu_exec(char* arg0)
         temp_s0 = _loadSaveData(0);
         if (temp_s0 != 0) {
             if ((temp_s0 > 0) && (_applyLoadedSaveFile(0) == 0)) {
-                *arg0 = 7;
+                *state = 7;
                 break;
             }
             var_a0 = _textTable + 0xF7;
             func_800FFC04(var_a0);
-            *arg0 = 4;
+            *state = 4;
         }
         break;
     case 7:
@@ -3628,7 +3636,7 @@ int vs_saveMenu_exec(char* arg0)
         vs_battle_memcpy(
             &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
         _shutdownMemcard();
-        *arg0 = 8;
+        *state = 8;
         temp_a0 = D_800F51C0.unk0;
         D_800F51C0.unk0 = 0xE;
         D_800F51C0.unk1 = temp_a0;
@@ -3636,7 +3644,7 @@ int vs_saveMenu_exec(char* arg0)
     case 8:
         if (func_800FA9D0() != 0) {
             _initMemcard(1);
-            *arg0 = 9;
+            *state = 9;
         }
         break;
     case 9:
@@ -3647,12 +3655,12 @@ int vs_saveMenu_exec(char* arg0)
                 if (temp_s0 == 1) {
                     func_8010903C(1);
                     func_800FFC04(&D_8010A9B0[25]);
-                    *arg0 = 0xC;
+                    *state = 12;
                 } else {
-                    *arg0 = 0xA;
+                    *state = 10;
                 }
             } else {
-                *arg0 = 0xD;
+                *state = 13;
             }
         }
         break;
@@ -3660,7 +3668,7 @@ int vs_saveMenu_exec(char* arg0)
         func_801092C4((containerData_t*)(_spmcimg + 0x79E0), &D_8010245C->unkC430,
             D_8010245C->unk10030);
         _showSaveMenu(2);
-        *arg0 = 0xB;
+        *state = 11;
         break;
     case 11:
         temp_s0 = _showSaveMenu(0);
@@ -3669,9 +3677,9 @@ int vs_saveMenu_exec(char* arg0)
                 func_800C8E04(1);
                 func_8010903C(1);
                 func_800FFC04(&D_8010A9B0[25]);
-                *arg0 = 0xC;
+                *state = 12;
             } else {
-                *arg0 = 0xE;
+                *state = 14;
             }
         }
         _drawFileMenu(vs_main_frameBuf);
@@ -3680,10 +3688,10 @@ int vs_saveMenu_exec(char* arg0)
         temp_s0 = func_8010903C(0);
         if (temp_s0 != 0) {
             if (temp_s0 == 1) {
-                *arg0 = 0xA;
+                *state = 10;
                 break;
             }
-            *arg0 = 0xD;
+            *state = 13;
         }
         break;
     case 13: {
@@ -3700,7 +3708,7 @@ int vs_saveMenu_exec(char* arg0)
         D_800EB9B0 = 0;
         func_800FA8E0(0x28);
         func_80100414(-4, 0x80);
-        *arg0 = 0xF;
+        *state = 15;
         break;
     case 15:
         func_800FFA88(0);
@@ -3708,13 +3716,13 @@ int vs_saveMenu_exec(char* arg0)
         func_800FFB68(0);
         if (func_800FA9D0() != 0) {
             _shutdownMemcard();
-            *arg0 = 0x10;
+            *state = 16;
         }
         break;
     case 16:
         if ((func_800CD064(7) == 0) && (D_801022D8 == 0)) {
             vs_main_freeHeapR(D_8010245C);
-            *arg0 = 0;
+            *state = init;
             return 1;
         }
         break;

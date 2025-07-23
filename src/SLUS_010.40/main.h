@@ -180,7 +180,7 @@ typedef struct {
     char unkA8;
     char unkA9;
     char unkAA;
-    char unkAB;
+    char introState;
     char unkAC[9];
     char unkB5;
     char unkB6[0x4F];

@@ -55,6 +55,7 @@ _selectLoadMemoryCard = 0x80107E98;
 _loadFileMenu = 0x801081DC;
 _initGameOver = 0x801086DC;
 _setMenuItemClut = 0x801087F0;
+_displayGameOverScreen = 0x801088B4;
 _getContainerOffset = 0x8010928C;
 _memcardFilenameTemplate = 0x8010A2B4;
 _eventSpecs = 0x8010A2B8;

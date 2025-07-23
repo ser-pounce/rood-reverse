@@ -3447,7 +3447,7 @@ static int func_8010903C(int arg0)
     u_int var_s0;
 
     if (arg0 != 0) {
-        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9B0[16]);
+        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, (char*)&D_8010A9B0[16]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 0;
@@ -3457,7 +3457,7 @@ static int func_8010903C(int arg0)
     }
     switch (D_8010ADAC) {
     case 0:
-        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9B0[18]);
+        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&D_8010A9B0[18]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 1;
@@ -3556,7 +3556,8 @@ int vs_saveMenu_exec(char* state)
                 _initMemcard(1);
                 func_800FFB68(1);
                 func_800FFA88(2);
-                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9B0[20]);
+                temp_v0_3
+                    = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, (char*)&D_8010A9B0[20]);
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->unk18 = 0xB4;
                 temp_v0_3->unk6 = 1;

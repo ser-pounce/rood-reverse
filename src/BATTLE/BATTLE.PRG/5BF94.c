@@ -272,7 +272,40 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 
 func_800C8E5C_t* func_800C8E48(int arg0) { return D_800EB9C0 + arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E5C);
+func_800C8E5C_t* func_800C8E5C(
+    int arg0, int arg1, int arg2, int arg3, int arg4, char* arg5)
+{
+    func_800C8E5C_t* temp_s3;
+    func_800C8E5C_t* var_a0;
+    int i;
+    u_int c;
+
+    temp_s3 = &D_800EB9C0[arg0];
+    temp_s3->unk0 = 1;
+    temp_s3->unk1 = arg3;
+    temp_s3->unk2 = arg4;
+
+    vs_battle_rMemzero(&temp_s3->unk4, 0x3C);
+
+    var_a0 = temp_s3;
+    temp_s3->unk14 = arg1;
+    temp_s3->unk16 = arg2;
+
+    for (i = 0; i < 31;) {
+        c = *arg5++;
+        if (c == 0xFA) {
+            var_a0->unk1C[i++] = c;
+            c = *arg5++;
+        } else if (c == 0xE7) {
+            var_a0->unk1C[i] = -1;
+            break;
+        } else if (c >= 0xE5) {
+            continue;
+        }
+        var_a0->unk1C[i++] = c;
+    }
+    return temp_s3;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8F44);
 

@@ -118,7 +118,7 @@ void func_80104254()
 {
     func_800C8E5C_t* temp_v0;
 
-    temp_v0 = func_800C8E5C(0, 0x140, 0x12, 0x8C, 8, &D_800EB9DC[D_800EB9DC[0]]);
+    temp_v0 = func_800C8E5C(0, 0x140, 0x12, 0x8C, 8, (char*)&D_800EB9DC[D_800EB9DC[0]]);
     temp_v0->unk0 = 2;
     temp_v0->unk18 = 0xB4;
     temp_v0->unk6 = 1;

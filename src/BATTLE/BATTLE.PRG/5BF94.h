@@ -32,7 +32,7 @@ typedef struct {
 void func_800C6828(char const*, int, u_int*);
 void func_800C8E04(int);
 func_800C8E5C_t* func_800C8E48(int);
-func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, u_short*);
+func_800C8E5C_t* func_800C8E5C(int, int, int, int, int, char*);
 void func_800C9078(func_800C8E5C_t*);
 int func_800C930C(int);
 void func_800C97BC();

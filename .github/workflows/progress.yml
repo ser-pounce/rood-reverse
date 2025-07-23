@@ -1,5 +1,8 @@
 name: Copy progress report
-on: push
+on:
+  push:
+    paths:
+      - progress.json
 jobs:
   upload-progress:
     runs-on: ubuntu-latest

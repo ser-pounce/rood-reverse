@@ -48,7 +48,7 @@ int func_800CCC54(int);
 char func_800CCD40(char, int);
 u_int vs_battle_encode(int value);
 int func_800CD064(int);
-void func_800CCDA8(int, void*, int);
+void vs_battle_drawImage(int xy, void* buffer, int wh);
 int func_800CEEBC();
 void func_800CEF74();
 int func_800CF48C();

@@ -3144,8 +3144,8 @@ static int _initGameOver(int arg0)
     case 0:
         if (queueSlot->state == 4) {
             vs_main_freeCdQueueSlot(queueSlot);
-            func_800CCDA8(0x01000340, _gameOverBin, 0x800018);
-            func_800CCDA8(0x01800340, _menuItemTextClut, 0x10030);
+            vs_battle_drawImage(vs_getXY(832, 256), _gameOverBin, vs_getWH(24, 128));
+            vs_battle_drawImage(vs_getXY(832, 384), _menuItemTextClut, vs_getWH(48, 1));
             _initGameOverState = 1;
         }
         return 0;
@@ -3192,10 +3192,10 @@ static void _setMenuItemClut(
     }
 }
 
-extern u_int* D_1F800000[];
-
-static int func_801088B4(int arg0)
+static int _displayGameOverScreen(int init)
 {
+    extern u_int* D_1F800000[];
+
     static short D_8010AB20[32];
     static int D_8010AB60;
     static int D_8010AB64;
@@ -3210,7 +3210,7 @@ static int func_801088B4(int arg0)
 
     temp_s4 = D_1F800000[2];
 
-    if (arg0 != 0) {
+    if (init != 0) {
         D_8010AB60 = 0;
         D_8010AB64 = 0;
         D_8010AB68 = 0;
@@ -3298,7 +3298,7 @@ static int func_801088B4(int arg0)
     _setMenuItemClut(D_8010AB20, D_8010AB6C, _menuItemTextClut[0], _menuItemTextClut[3]);
     _setMenuItemClut(
         D_8010AB20 + 0x10, D_8010AB70, _menuItemTextClut[0], _menuItemTextClut[3]);
-    func_800CCDA8(0x01800340, &D_8010AB20, 0x10020);
+    vs_battle_drawImage(0x01800340, &D_8010AB20, 0x10020);
     temp_t0 = func_800C0230(D_8010AB60, 0x800070, 0x200060, temp_s4);
     temp_t0[1] = 0xE100001D;
     temp_t0[4] = 0x60340000;
@@ -3316,6 +3316,12 @@ static int func_801088B4(int arg0)
 
 int vs_saveMenu_execGameOver(char* state)
 {
+    enum state {
+        init,
+        loadAssets,
+        displayGameOver,
+    };
+
     static u_short D_8010AB80[256];
     static vs_main_settings_t settingsBackup;
     static int D_8010ADA0;
@@ -3325,23 +3331,23 @@ int vs_saveMenu_execGameOver(char* state)
     int temp_v0;
 
     switch (*state) {
-    case 0:
+    case init:
         func_8007E0A8(0x1F, 1, 6);
         func_8008A4DC(0);
         settingsBackup = vs_main_settings;
         D_8010ADA4 = vs_main_stateFlags.unk1;
         _initGameOver(1);
-        *state = 1;
+        *state = loadAssets;
         break;
-    case 1:
+    case loadAssets:
         if (_initGameOver(0) == 0) {
             break;
         }
-        *state = 2;
-        func_801088B4(1);
+        *state = displayGameOver;
+        _displayGameOverScreen(1);
         // Fallthrough
-    case 2:
-        temp_v0 = func_801088B4(0);
+    case displayGameOver:
+        temp_v0 = _displayGameOverScreen(0);
         if (temp_v0 == 0) {
             break;
         }
@@ -3718,6 +3724,7 @@ int vs_saveMenu_exec(char* arg0)
 
 static void func_80109D64()
 {
+    extern u_int* D_1F800000[];
     static char* _playTime = "00:00:00:00";
 
     char time[4];

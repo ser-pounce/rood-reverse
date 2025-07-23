@@ -381,9 +381,9 @@ void func_800CA9C0(void* arg0)
     vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
-    func_800CCDA8(0x340, arg0, 0xE00040);
-    func_800CCDA8(0x380, arg0 + 0x7000, 0xE00040);
-    func_800CCDA8(0x4203C0, arg0 + 0xE000, 0x9E0040);
+    vs_battle_drawImage(0x340, arg0, 0xE00040);
+    vs_battle_drawImage(0x380, arg0 + 0x7000, 0xE00040);
+    vs_battle_drawImage(0x4203C0, arg0 + 0xE000, 0x9E0040);
     DrawSync(0);
     ClearOTag(D_800F51B8, 0x22);
 }
@@ -570,7 +570,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCD00);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCD40);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCDA8);
+void vs_battle_drawImage(int xy, void* buffer, int wh)
+{
+    extern int D_800EC280;
+    extern RECT D_800F51D0[];
+    RECT* rect;
+
+    rect = D_800EC280 + D_800F51D0;
+    D_800EC280 = (D_800EC280 + 1) & 7;
+    *(int*)&rect->x = xy;
+    *(int*)&rect->w = wh;
+    LoadImage(rect, buffer);
+}
 
 void* func_800CCDF4(int arg0) { return D_800F4FE0 + arg0; }
 

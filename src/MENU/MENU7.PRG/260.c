@@ -1414,7 +1414,8 @@ static int _findCurrentSave(int init)
     port = realPort + 1;
 
     if ((state & 1) == 0) {
-        func_800FFC04(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
+        func_800FFC04(
+            (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]));
         _memoryCardMessage
             = (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
@@ -2473,7 +2474,7 @@ static int _showSaveMenu(int initState)
         element->innertextBlendFactor = 8;
         element->selected = 1;
         _memoryCardMessage = 0;
-        func_800FFC04(&sp10);
+        func_800FFC04((char*)&sp10);
         return 0;
     }
 
@@ -2536,7 +2537,7 @@ static int _showSaveMenu(int initState)
         break;
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
-            func_800FFC04(&sp10);
+            func_800FFC04((char*)&sp10);
             state = handleInput;
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
@@ -2595,7 +2596,7 @@ static int _showSaveMenu(int initState)
         break;
     case containerWarn:
         if ((char)vs_main_buttonsPressed != 0) {
-            func_800FFC04(&sp10);
+            func_800FFC04((char*)&sp10);
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
             _promptConfirm(1);
             state = eraseContainerData;
@@ -3313,7 +3314,7 @@ static int _displayGameOverScreen(int init)
     return 0;
 }
 
-int vs_saveMenu_execGameOver(char* state)
+int vs_menu7_gameOver(char* state)
 {
     enum state {
         init,
@@ -3427,13 +3428,16 @@ int vs_saveMenu_execGameOver(char* state)
     return 0;
 }
 
-static u_short D_8010A9B0[] = { 0x5, 0x10, 0x12, 0x14, 0x19, 0x2B0C, 0x2628, 0x8F2E,
-    0x2B37, 0x8F28, 0x3226, 0x3731, 0x2C24, 0x2831, 0xA535, 0xEBE7, 0x0E22, 0xE71C,
-    0x1817, 0xEBE7, 0x180C, 0x1D17, 0x120A, 0x0E17, 0xE71B, 0x2B1D, 0x8F28, 0x3226,
-    0x3731, 0x2C24, 0x2831, 0x8F35, 0x3537, 0x3124, 0x2436, 0x3726, 0x322C, 0x8F31,
-    0x2C3A, 0x2F2F, 0x258F, 0x8F28, 0x2426, 0x2631, 0x2F28, 0x282F, 0xE827, 0x292C,
-    0x2A8F, 0x3024, 0x8F28, 0x362C, 0x318F, 0x3732, 0x368F, 0x3924, 0x2728, 0x8FA0,
-    0x241C, 0x2839, 0xE7A5 };
+static char D_8010A9B0[] = { 0x5, 0, 0x10, 0, 0x12, 0, 0x14, 0, 0x19, 0, 0x0C, 0x2B, 0x28,
+    0x26, 0x2E, 0x8F, 0x37, 0x2B, 0x28, 0x8F, 0x26, 0x32, 0x31, 0x37, 0x24, 0x2C, 0x31,
+    0x28, 0x35, 0xA5, 0xE7, 0xEB, 0x22, 0x0E, 0x1C, 0xE7, 0x17, 0x18, 0xE7, 0xEB, 0x0C,
+    0x18, 0x17, 0x1D, 0x0A, 0x12, 0x17, 0x0E, 0x1B, 0xE7, 0x1D, 0x2B, 0x28, 0x8F, 0x26,
+    0x32, 0x31, 0x37, 0x24, 0x2C, 0x31, 0x28, 0x35, 0x8F, 0x37, 0x35, 0x24, 0x31, 0x36,
+    0x24, 0x26, 0x37, 0x2C, 0x32, 0x31, 0x8F, 0x3A, 0x2C, 0x2F, 0x2F, 0x8F, 0x25, 0x28,
+    0x8F, 0x26, 0x24, 0x31, 0x26, 0x28, 0x2F, 0x2F, 0x28, 0x27, 0xE8, 0x2C, 0x29, 0x8F,
+    0x2A, 0x24, 0x30, 0x28, 0x8F, 0x2C, 0x36, 0x8F, 0x31, 0x32, 0x37, 0x8F, 0x36, 0x24,
+    0x39, 0x28, 0x27, 0xA0, 0x8F, 0x1C, 0x24, 0x39, 0x28, 0xA5, 0xE7 };
+        // Check the container?\x00YES\x00NO\x00CONTAINER\x00The container transaction will be cancelled\nif game is not saved. Save?\x00
 static char D_8010AA2A = 0;
 
 static int func_8010903C(int arg0)
@@ -3447,7 +3451,7 @@ static int func_8010903C(int arg0)
     u_int var_s0;
 
     if (arg0 != 0) {
-        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, (char*)&D_8010A9B0[16]);
+        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9B0[32]); // YES
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 0;
@@ -3457,7 +3461,7 @@ static int func_8010903C(int arg0)
     }
     switch (D_8010ADAC) {
     case 0:
-        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&D_8010A9B0[18]);
+        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9B0[36]); // NO
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 1;
@@ -3525,7 +3529,7 @@ void func_801092C4(
     containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 
-int vs_saveMenu_exec(char* state)
+int vs_menu7_saveContainerMenu(char* state)
 {
     enum state {
         init,
@@ -3546,7 +3550,7 @@ int vs_saveMenu_exec(char* state)
         func_800FBD80(16);
         func_800C8E04(1);
         func_8010903C(5);
-        func_800FFC04(&D_8010A9B0[5]);
+        func_800FFC04(&D_8010A9B0[10]); // Check the container?
         *state = 1;
         break;
     case 1:
@@ -3556,8 +3560,7 @@ int vs_saveMenu_exec(char* state)
                 _initMemcard(1);
                 func_800FFB68(1);
                 func_800FFA88(2);
-                temp_v0_3
-                    = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, (char*)&D_8010A9B0[20]);
+                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9B0[40]); // CONTAINER
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->unk18 = 0xB4;
                 temp_v0_3->unk6 = 1;
@@ -3592,7 +3595,7 @@ int vs_saveMenu_exec(char* state)
                 } else {
                     var_a0 = _textTable + 0xF7;
                 }
-                func_800FFC04(var_a0);
+                func_800FFC04((char*)var_a0);
                 *state = 4;
             } else {
                 _loadSaveData((temp_s0 & 7) | ((temp_s0 & 0x10) << 0xC));
@@ -3602,7 +3605,7 @@ int vs_saveMenu_exec(char* state)
         break;
     case 4:
         if ((char)vs_main_buttonsPressed != 0) {
-            func_800FFC04(_textTable + 0x234);
+            func_800FFC04((char*)(_textTable + 0x234));
             func_8010903C(2);
             *state = 5;
         }
@@ -3627,7 +3630,7 @@ int vs_saveMenu_exec(char* state)
                 break;
             }
             var_a0 = _textTable + 0xF7;
-            func_800FFC04(var_a0);
+            func_800FFC04((char*)var_a0);
             *state = 4;
         }
         break;
@@ -3655,7 +3658,7 @@ int vs_saveMenu_exec(char* state)
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
                     func_8010903C(1);
-                    func_800FFC04(&D_8010A9B0[25]);
+                    func_800FFC04(&D_8010A9B0[50]); // The container transaction will be cancelled\nif game is not saved. Save?
                     *state = 12;
                 } else {
                     *state = 10;
@@ -3677,7 +3680,7 @@ int vs_saveMenu_exec(char* state)
             if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
                 func_800C8E04(1);
                 func_8010903C(1);
-                func_800FFC04(&D_8010A9B0[25]);
+                func_800FFC04(&D_8010A9B0[50]); // The container transaction will be cancelled\nif game is not saved. Save?
                 *state = 12;
             } else {
                 *state = 14;
@@ -3758,7 +3761,7 @@ static void func_80109D64()
     func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
-static int func_80109EB8(char* arg0)
+int vs_menu7_saveMenu(char* arg0)
 {
     u_short* sp10[2][2];
     int sp20[2];

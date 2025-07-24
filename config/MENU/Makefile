@@ -12,7 +12,7 @@ $(patsubst %, $(BUILD)/data/MENU/%.BIN, SPMCIMG): $(BUILD)/data/%: $(BUILD)/asse
 
 $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h &: assets/MENU/MCMAN.yaml
 	$(call builder,Converting $<)
-	@$(VPYTHON) -m tools.etc.mcman $< $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h
+	@$(VPYTHON) -m tools.etc.mcman $< $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/assets/MENU/MCMAN.BIN.h $(BUILD)/src/include/mcman.h
 	@$(DIFF) $(DIFFFLAGS) $(BUILD)/data/MENU/MCMAN.BIN data/MENU/MCMAN.BIN
 
 all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG) 

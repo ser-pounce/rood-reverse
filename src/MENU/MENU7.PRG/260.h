@@ -1,4 +1,4 @@
 #pragma once
 
-int vs_saveMenu_execGameOver(char* state);
-int vs_saveMenu_exec(char* state);
+int vs_menu7_gameOver(char* state);
+int vs_menu7_saveContainerMenu(char* state);

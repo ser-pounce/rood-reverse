@@ -3734,7 +3734,7 @@ int vs_menu7_saveContainerMenu(char* state)
     return 0;
 }
 
-static void func_80109D64()
+static void _drawPlayTime()
 {
     extern u_int* D_1F800000[];
     static char* _playTime = "00:00:00:00";
@@ -3770,7 +3770,7 @@ int vs_menu7_saveMenu(char* arg0)
     int new_var;
 
     if (*arg0 < 0xB) {
-        func_80109D64();
+        _drawPlayTime();
     }
 
     switch (*arg0) {

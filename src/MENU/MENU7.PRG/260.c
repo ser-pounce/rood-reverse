@@ -3238,13 +3238,13 @@ static int _displayGameOverScreen(int init)
         color1 += 8;
     } else {
         if (vs_main_buttonsPressed & (PADstart | PADRright)) {
-            func_800C02F0();
+            vs_battle_playMenuSelectSfx();
             func_8004552C(1, 0, 60);
             color1 = -128;
             return 0;
         }
         if (vs_main_buttonsPressed & (PADselect | PADLup | PADLdown)) {
-            func_800C02F8();
+            vs_battle_playMenuChangeSfx();
             selectedOption = 1 - selectedOption;
         }
         if (selectedOption == 0) {
@@ -3465,7 +3465,7 @@ static int _promptYesNo(int initParams)
         state = animWait;
         break;
     case animWait:
-        state += func_800FA9D0();
+        state += vs_mainmenu_readyForInput();
         break;
     case handleInput:
         vs_battle_getMenuItem(30 + selectedOption)->selected = 1;
@@ -3479,11 +3479,11 @@ static int _promptYesNo(int initParams)
         }
         if (buttons & (PADRup | PADRright | PADRdown)) {
             if ((selectedOption != 0) || (buttons & (PADRup | PADRdown))) {
-                func_800C02E8();
+                vs_battle_playMenuLeaveSfx();
                 func_800FA8E0(40);
                 selectedOption = -1;
             } else {
-                func_800C02F0();
+                vs_battle_playMenuSelectSfx();
                 func_800FA8E0(0);
                 selectedOption = 1;
             }
@@ -3491,13 +3491,13 @@ static int _promptYesNo(int initParams)
         } else {
             cursorAnimation = vs_battle_drawCursor(cursorAnimation, selectedOption + 8);
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
-                func_800C02F8();
+                vs_battle_playMenuChangeSfx();
                 selectedOption = 1 - selectedOption;
             }
         }
         break;
     case returnSelection:
-        if (func_800FA9D0() != 0) {
+        if (vs_mainmenu_readyForInput() != 0) {
             return selectedOption;
         }
         break;
@@ -3533,8 +3533,7 @@ int vs_menu7_saveContainerMenu(char* state)
         init,
     };
 
-    vs_battle_menuItem_t* temp_v0_3;
-    int temp_s0;
+    int option;
     u_short* message;
     char temp_a0;
     int var_v0;
@@ -3553,17 +3552,18 @@ int vs_menu7_saveContainerMenu(char* state)
         *state = 1;
         break;
     case 1:
-        temp_s0 = _promptYesNo(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 >= 0) {
+        option = _promptYesNo(0);
+        if (option != 0) {
+            if (option >= 0) {
+                vs_battle_menuItem_t* menuItem;
                 _initMemcard(1);
                 func_800FFB68(1);
                 func_800FFA88(2);
-                temp_v0_3 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
+                menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
-                temp_v0_3->unk0 = 2;
-                temp_v0_3->x = 180;
-                temp_v0_3->selected = 1;
+                menuItem->unk0 = 2;
+                menuItem->x = 180;
+                menuItem->selected = 1;
                 *state = 2;
             } else {
                 *state = 16;
@@ -3571,7 +3571,7 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 2:
-        if ((func_800FA9D0() != 0) && (_initMemcard(0) != 0)) {
+        if ((vs_mainmenu_readyForInput() != 0) && (_initMemcard(0) != 0)) {
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
@@ -3587,10 +3587,10 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 3:
-        temp_s0 = _findCurrentSave(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 < 0) {
-                if (temp_s0 == -2) {
+        option = _findCurrentSave(0);
+        if (option != 0) {
+            if (option < 0) {
+                if (option == -2) {
                     message = _textTable + VS_MCMAN_OFFSET_insertError;
                 } else {
                     message = _textTable + VS_MCMAN_OFFSET_emptyCard;
@@ -3598,7 +3598,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 vs_mainmenu_setMessage((char*)message);
                 *state = 4;
             } else {
-                _loadSaveData((temp_s0 & 7) | ((temp_s0 & 0x10) << 0xC));
+                _loadSaveData((option & 7) | ((option & 0x10) << 0xC));
                 *state = 6;
             }
         }
@@ -3611,9 +3611,9 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 5:
-        temp_s0 = _promptYesNo(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 < 0) {
+        option = _promptYesNo(0);
+        if (option != 0) {
+            if (option < 0) {
                 *state = 14;
             } else {
                 (*(u_int*)&vs_main_settings) |= 0x10;
@@ -3623,9 +3623,9 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 6:
-        temp_s0 = _loadSaveData(0);
-        if (temp_s0 != 0) {
-            if ((temp_s0 > 0) && (_applyLoadedSaveFile(0) == 0)) {
+        option = _loadSaveData(0);
+        if (option != 0) {
+            if ((option > 0) && (_applyLoadedSaveFile(0) == 0)) {
                 *state = 7;
                 break;
             }
@@ -3646,17 +3646,17 @@ int vs_menu7_saveContainerMenu(char* state)
         D_800F51C0.unk1 = temp_a0;
         break;
     case 8:
-        if (func_800FA9D0() != 0) {
+        if (vs_mainmenu_readyForInput() != 0) {
             _initMemcard(1);
             *state = 9;
         }
         break;
     case 9:
         if (_initMemcard(0) != 0) {
-            temp_s0 = D_800F51C0.unk1;
-            if (temp_s0 != 0) {
+            option = D_800F51C0.unk1;
+            if (option != 0) {
                 func_800C8E04(1);
-                if (temp_s0 == 1) {
+                if (option == 1) {
                     _promptYesNo(1);
                     vs_mainmenu_setMessage(
                         (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
@@ -3676,9 +3676,9 @@ int vs_menu7_saveContainerMenu(char* state)
         *state = 11;
         break;
     case 11:
-        temp_s0 = _showSaveMenu(0);
-        if (temp_s0 != 0) {
-            if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
+        option = _showSaveMenu(0);
+        if (option != 0) {
+            if ((_dataNotSaved == 0) && (option < 0)) {
                 func_800C8E04(1);
                 _promptYesNo(1);
                 vs_mainmenu_setMessage(
@@ -3691,9 +3691,9 @@ int vs_menu7_saveContainerMenu(char* state)
         _drawFileMenu(vs_main_frameBuf);
         break;
     case 12:
-        temp_s0 = _promptYesNo(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 == 1) {
+        option = _promptYesNo(0);
+        if (option != 0) {
+            if (option == 1) {
                 *state = 10;
                 break;
             }
@@ -3720,7 +3720,7 @@ int vs_menu7_saveContainerMenu(char* state)
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
-        if (func_800FA9D0() != 0) {
+        if (vs_mainmenu_readyForInput() != 0) {
             _shutdownMemcard();
             *state = 16;
         }
@@ -3781,7 +3781,7 @@ int vs_menu7_saveMenu(char* arg0)
         *arg0 = 4;
         break;
     case 4:
-        if ((func_800FA9D0() == 0) || (_initMemcard(0) == 0)) {
+        if ((vs_mainmenu_readyForInput() == 0) || (_initMemcard(0) == 0)) {
             break;
         }
         // Fallthrough
@@ -3839,7 +3839,7 @@ int vs_menu7_saveMenu(char* arg0)
         }
         break;
     case 7:
-        if (func_800FA9D0() != 0) {
+        if (vs_mainmenu_readyForInput() != 0) {
             _showSaveMenu(1);
             *arg0 = 8;
         }
@@ -3851,7 +3851,7 @@ int vs_menu7_saveMenu(char* arg0)
         _drawFileMenu(vs_main_frameBuf);
         break;
     case 9:
-        if (func_800FA9D0() != 0) {
+        if (vs_mainmenu_readyForInput() != 0) {
             _loadFileMenu(1);
             *arg0 = 0xA;
         }

@@ -42,11 +42,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playSfx1
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02E0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02E8);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuLeaveSfx);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02F0);
+INCLUDE_ASM(
+    "build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuSelectSfx);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02F8);
+INCLUDE_ASM(
+    "build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuChangeSfx);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
 

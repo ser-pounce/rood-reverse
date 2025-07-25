@@ -34,7 +34,6 @@ typedef struct {
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
-int func_800FA9D0();
 void func_800FB3C8(int);
 void func_800FBD28(int, int, int, int);
 void func_800FC208(int, int, int, int);
@@ -269,7 +268,7 @@ void func_800FA92C(int arg0, int arg1)
     }
 }
 
-int func_800FA9D0()
+int vs_mainmenu_readyForInput()
 {
     vs_battle_menuItem_t* menuItem;
     int i;

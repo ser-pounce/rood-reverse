@@ -6,6 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../build/src/MENU/MENU7.PRG/container.h"
 #include "gpu.h"
 #include "mcman.h"
 #include "vs_string.h"
@@ -3428,16 +3429,10 @@ int vs_menu7_gameOver(char* state)
     return 0;
 }
 
-static char D_8010A9B0[] = { 0x5, 0, 0x10, 0, 0x12, 0, 0x14, 0, 0x19, 0, 0x0C, 0x2B, 0x28,
-    0x26, 0x2E, 0x8F, 0x37, 0x2B, 0x28, 0x8F, 0x26, 0x32, 0x31, 0x37, 0x24, 0x2C, 0x31,
-    0x28, 0x35, 0xA5, 0xE7, 0xEB, 0x22, 0x0E, 0x1C, 0xE7, 0x17, 0x18, 0xE7, 0xEB, 0x0C,
-    0x18, 0x17, 0x1D, 0x0A, 0x12, 0x17, 0x0E, 0x1B, 0xE7, 0x1D, 0x2B, 0x28, 0x8F, 0x26,
-    0x32, 0x31, 0x37, 0x24, 0x2C, 0x31, 0x28, 0x35, 0x8F, 0x37, 0x35, 0x24, 0x31, 0x36,
-    0x24, 0x26, 0x37, 0x2C, 0x32, 0x31, 0x8F, 0x3A, 0x2C, 0x2F, 0x2F, 0x8F, 0x25, 0x28,
-    0x8F, 0x26, 0x24, 0x31, 0x26, 0x28, 0x2F, 0x2F, 0x28, 0x27, 0xE8, 0x2C, 0x29, 0x8F,
-    0x2A, 0x24, 0x30, 0x28, 0x8F, 0x2C, 0x36, 0x8F, 0x31, 0x32, 0x37, 0x8F, 0x36, 0x24,
-    0x39, 0x28, 0x27, 0xA0, 0x8F, 0x1C, 0x24, 0x39, 0x28, 0xA5, 0xE7 };
-        // Check the container?\x00YES\x00NO\x00CONTAINER\x00The container transaction will be cancelled\nif game is not saved. Save?\x00
+static u_short _containerStrings[] = {
+#include "../../assets/MENU/MENU7.PRG/container.dat"
+};
+
 static char D_8010AA2A = 0;
 
 static int func_8010903C(int arg0)
@@ -3451,7 +3446,8 @@ static int func_8010903C(int arg0)
     u_int var_s0;
 
     if (arg0 != 0) {
-        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A9B0[32]); // YES
+        temp_v0 = func_800C8E5C(0x1E, 0x140, 0x92, 0x7E, 0,
+            (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 0;
@@ -3461,7 +3457,8 @@ static int func_8010903C(int arg0)
     }
     switch (D_8010ADAC) {
     case 0:
-        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A9B0[36]); // NO
+        temp_v0 = func_800C8E5C(0x1F, 0x140, 0xA2, 0x7E, 0,
+            (char*)&_containerStrings[VS_container_OFFSET_noOption]);
         temp_v0->unk0 = 2;
         temp_v0->unk18 = 0xC2;
         D_8010ADAC = 1;
@@ -3550,7 +3547,7 @@ int vs_menu7_saveContainerMenu(char* state)
         func_800FBD80(16);
         func_800C8E04(1);
         func_8010903C(5);
-        func_800FFC04(&D_8010A9B0[10]); // Check the container?
+        func_800FFC04((char*)&_containerStrings[VS_container_OFFSET_checkContainer]);
         *state = 1;
         break;
     case 1:
@@ -3560,7 +3557,8 @@ int vs_menu7_saveContainerMenu(char* state)
                 _initMemcard(1);
                 func_800FFB68(1);
                 func_800FFA88(2);
-                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8, &D_8010A9B0[40]); // CONTAINER
+                temp_v0_3 = func_800C8E5C(0, 0x140, 0x12, 0x7E, 8,
+                    (char*)&_containerStrings[VS_container_OFFSET_container]);
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->unk18 = 0xB4;
                 temp_v0_3->unk6 = 1;
@@ -3658,7 +3656,8 @@ int vs_menu7_saveContainerMenu(char* state)
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
                     func_8010903C(1);
-                    func_800FFC04(&D_8010A9B0[50]); // The container transaction will be cancelled\nif game is not saved. Save?
+                    func_800FFC04(
+                        (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                     *state = 12;
                 } else {
                     *state = 10;
@@ -3680,7 +3679,8 @@ int vs_menu7_saveContainerMenu(char* state)
             if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
                 func_800C8E04(1);
                 func_8010903C(1);
-                func_800FFC04(&D_8010A9B0[50]); // The container transaction will be cancelled\nif game is not saved. Save?
+                func_800FFC04(
+                    (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                 *state = 12;
             } else {
                 *state = 14;

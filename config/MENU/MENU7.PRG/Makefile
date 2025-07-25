@@ -6,4 +6,8 @@ $(BUILD)/data/MENU/MENU7.PRG.elf: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 $(BUILD)/src/MENU/MENU7.PRG/260.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENU7.PRG/260.o: CC1VER := 2.8.0-psx
-$(BUILD)/src/MENU/MENU7.PRG/260.o: $(BUILD)/src/include/lbas.h
+$(BUILD)/src/MENU/MENU7.PRG/260.o: $(BUILD)/src/include/lbas.h $(BUILD)/assets/MENU/MENU7.PRG/container.dat $(BUILD)/src/MENU/MENU7.PRG/container.h
+
+$(BUILD)/assets/MENU/MENU7.PRG/container.dat $(BUILD)/src/MENU/MENU7.PRG/container.h &: assets/MENU/MENU7.PRG/container.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/assets/MENU/MENU7.PRG/container.dat $(BUILD)/src/MENU/MENU7.PRG/container.h

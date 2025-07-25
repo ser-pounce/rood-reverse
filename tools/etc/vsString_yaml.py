@@ -45,21 +45,13 @@ def write_binary(path, offsets, strings):
         out.write(bin_content)
     return bin_content
 
-def write_c_array(path, stem, bin_content):
-    array_name = f"{stem}_strings_bin"
+def write_data(path, offsets, strings):
+    bin_content = write_binary(path, offsets, strings)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as out:
-        out.write(f"// Auto-generated from {stem}.yaml\n")
-        out.write(f"unsigned char {array_name}[] = {{\n")
-        for i, b in enumerate(bin_content):
-            if i % 16 == 0:
-                out.write("    ")
-            out.write(f"0x{b:02X}, ")
-            if (i + 1) % 16 == 0:
-                out.write("\n")
-        if len(bin_content) % 16 != 0:
-            out.write("\n")
-        out.write("};\n")
+        for i in range(0, len(bin_content), 2):
+            val = (bin_content[i+1] << 8) | bin_content[i]
+            out.write(f"0x{val:04X}, ")
 
 def write_header(path, stem, enums):
     path.parent.mkdir(parents=True, exist_ok=True)

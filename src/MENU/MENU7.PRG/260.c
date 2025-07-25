@@ -1415,7 +1415,7 @@ static int _findCurrentSave(int init)
     port = realPort + 1;
 
     if ((state & 1) == 0) {
-        vs_mainmenu_setMenuHeaderText(
+        vs_mainmenu_setMessage(
             (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]));
         _memoryCardMessage
             = (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
@@ -2475,7 +2475,7 @@ static int _showSaveMenu(int initState)
         element->innertextBlendFactor = 8;
         element->selected = 1;
         _memoryCardMessage = 0;
-        vs_mainmenu_setMenuHeaderText((char*)&sp10);
+        vs_mainmenu_setMessage((char*)&sp10);
         return 0;
     }
 
@@ -2538,7 +2538,7 @@ static int _showSaveMenu(int initState)
         break;
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
-            vs_mainmenu_setMenuHeaderText((char*)&sp10);
+            vs_mainmenu_setMessage((char*)&sp10);
             state = handleInput;
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
         }
@@ -2597,7 +2597,7 @@ static int _showSaveMenu(int initState)
         break;
     case containerWarn:
         if ((char)vs_main_buttonsPressed != 0) {
-            vs_mainmenu_setMenuHeaderText((char*)&sp10);
+            vs_mainmenu_setMessage((char*)&sp10);
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
             _promptConfirm(1);
             state = eraseContainerData;
@@ -3547,7 +3547,7 @@ int vs_menu7_saveContainerMenu(char* state)
         func_800FBD80(16);
         func_800C8E04(1);
         func_8010903C(5);
-        vs_mainmenu_setMenuHeaderText(
+        vs_mainmenu_setMessage(
             (char*)&_containerStrings[VS_container_OFFSET_checkContainer]);
         *state = 1;
         break;
@@ -3594,7 +3594,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 } else {
                     var_a0 = _textTable + 0xF7;
                 }
-                vs_mainmenu_setMenuHeaderText((char*)var_a0);
+                vs_mainmenu_setMessage((char*)var_a0);
                 *state = 4;
             } else {
                 _loadSaveData((temp_s0 & 7) | ((temp_s0 & 0x10) << 0xC));
@@ -3604,7 +3604,7 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 4:
         if ((char)vs_main_buttonsPressed != 0) {
-            vs_mainmenu_setMenuHeaderText((char*)(_textTable + 0x234));
+            vs_mainmenu_setMessage((char*)(_textTable + 0x234));
             func_8010903C(2);
             *state = 5;
         }
@@ -3629,7 +3629,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 break;
             }
             var_a0 = _textTable + 0xF7;
-            vs_mainmenu_setMenuHeaderText((char*)var_a0);
+            vs_mainmenu_setMessage((char*)var_a0);
             *state = 4;
         }
         break;
@@ -3657,7 +3657,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
                     func_8010903C(1);
-                    vs_mainmenu_setMenuHeaderText(
+                    vs_mainmenu_setMessage(
                         (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                     *state = 12;
                 } else {
@@ -3680,7 +3680,7 @@ int vs_menu7_saveContainerMenu(char* state)
             if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
                 func_800C8E04(1);
                 func_8010903C(1);
-                vs_mainmenu_setMenuHeaderText(
+                vs_mainmenu_setMessage(
                     (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                 *state = 12;
             } else {

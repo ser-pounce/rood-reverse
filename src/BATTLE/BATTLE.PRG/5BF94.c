@@ -273,23 +273,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
 vs_battle_menuItem_t* vs_battle_setMenuItem(
-    int id, int arg1, int arg2, int arg3, int arg4, char* text)
+    int id, int animSpeed, int y, int arg3, int arg4, char* text)
 {
-    vs_battle_menuItem_t* temp_s3;
+    vs_battle_menuItem_t* menuItem;
     vs_battle_menuItem_t* var_a0;
     int i;
     u_int c;
 
-    temp_s3 = &vs_battle_menuItems[id];
-    temp_s3->unk0 = 1;
-    temp_s3->unk1 = arg3;
-    temp_s3->unk2 = arg4;
+    menuItem = &vs_battle_menuItems[id];
+    menuItem->unk0 = 1;
+    menuItem->unk1 = arg3;
+    menuItem->unk2 = arg4;
 
-    vs_battle_rMemzero(&temp_s3->unk4, 0x3C);
+    vs_battle_rMemzero(&menuItem->unk4, 0x3C);
 
-    var_a0 = temp_s3;
-    temp_s3->unk14 = arg1;
-    temp_s3->unk16 = arg2;
+    var_a0 = menuItem;
+    menuItem->animSpeed = animSpeed;
+    menuItem->y = y;
 
     for (i = 0; i < 31;) {
         c = *text++;
@@ -304,7 +304,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
         }
         var_a0->text[i++] = c;
     }
-    return temp_s3;
+    return menuItem;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8F44);

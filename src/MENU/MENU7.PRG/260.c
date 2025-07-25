@@ -3439,6 +3439,7 @@ static int func_8010903C(int arg0)
 {
     enum state {
         init,
+        animWait,
     };
 
     static int selectedOption;
@@ -3450,10 +3451,10 @@ static int func_8010903C(int arg0)
     u_int buttons;
 
     if (arg0 != 0) {
-        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0,
+        menuItem = vs_battle_setMenuItem(0x1E, 320, 146, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
         menuItem->unk0 = 2;
-        menuItem->unk18 = 0xC2;
+        menuItem->x = 194;
         state = init;
         selectedOption = (arg0 - 1) & 1;
         D_8010ADAD = arg0 >> 2;
@@ -3461,13 +3462,13 @@ static int func_8010903C(int arg0)
     }
     switch (state) {
     case init:
-        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0,
+        menuItem = vs_battle_setMenuItem(0x1F, 320, 0xA2, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_noOption]);
         menuItem->unk0 = 2;
-        menuItem->unk18 = 0xC2;
-        state = 1;
+        menuItem->x = 194;
+        state = animWait;
         break;
-    case 1:
+    case animWait:
         state += func_800FA9D0();
         break;
     case 2:
@@ -3565,7 +3566,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 temp_v0_3 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
                 temp_v0_3->unk0 = 2;
-                temp_v0_3->unk18 = 0xB4;
+                temp_v0_3->x = 180;
                 temp_v0_3->unk6 = 1;
                 *state = 2;
             } else {

@@ -14,9 +14,9 @@ typedef struct {
     char unkD;
     short unkE;
     int unk10;
-    short unk14;
-    short unk16;
-    short unk18;
+    short animSpeed;
+    short y;
+    short x;
     short unk1A;
     char text[36];
 } vs_battle_menuItem_t;
@@ -38,7 +38,8 @@ void func_800C6828(char const*, int, u_int*);
 void func_800C6BF0(int, void*, void*);
 void func_800C8E04(int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
-vs_battle_menuItem_t* vs_battle_setMenuItem(int id, int, int, int, int, char* text);
+vs_battle_menuItem_t* vs_battle_setMenuItem(
+    int id, int animSpeed, int y, int arg3, int arg4, char* text);
 void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC();

@@ -42,7 +42,7 @@ void func_801031FC()
     temp_v0 = vs_battle_setMenuItem(
         1, 0x140, 0x12, 0x8C, 8, (char*)&D_800EB9DC[D_800EB9DC[1]]);
     temp_v0->unk0 = 2;
-    temp_v0->unk18 = 0xB4;
+    temp_v0->x = 180;
     temp_v0->unk6 = 1;
     func_800FFA88(2);
     func_800FFBC8();

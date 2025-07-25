@@ -214,7 +214,7 @@ void func_800FA810(int arg0)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
     if (menuItem->unk0 != 0) {
         menuItem->unk0 = 5;
-        menuItem->unk18 = -menuItem->unk1;
+        menuItem->x = -menuItem->unk1;
     }
 }
 
@@ -236,7 +236,7 @@ void func_800FA8A0(int arg0)
     menuItem = vs_battle_getMenuItem(arg0);
     if (menuItem->unk0 != 0) {
         menuItem->unk0 = 2;
-        menuItem->unk18 = 0x140;
+        menuItem->x = 320;
     }
 }
 
@@ -262,7 +262,7 @@ void func_800FA92C(int arg0, int arg1)
 
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
     menuItem->unk0 = 4;
-    menuItem->unk18 = 0xB4;
+    menuItem->x = 180;
     menuItem->unk1A = (arg1 * 16) + 18;
     if (menuItem->unk2 == 0) {
         menuItem->unk2 = 1;

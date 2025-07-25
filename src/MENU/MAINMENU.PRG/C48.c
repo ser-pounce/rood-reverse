@@ -211,7 +211,7 @@ int func_800FA598(short* arg0, unsigned int arg1)
 
 void func_800FA810(int arg0)
 {
-    func_800C8E5C_t* temp_v0 = func_800C8E48(arg0 + 0x20);
+    vs_battle_menuItem_t* temp_v0 = func_800C8E48(arg0 + 0x20);
     if (temp_v0->unk0 != 0) {
         temp_v0->unk0 = 5;
         temp_v0->unk18 = -temp_v0->unk1;
@@ -231,7 +231,7 @@ void func_800FA854(int arg0)
 
 void func_800FA8A0(int arg0)
 {
-    func_800C8E5C_t* temp_v0;
+    vs_battle_menuItem_t* temp_v0;
 
     temp_v0 = func_800C8E48(arg0);
     if (temp_v0->unk0 != 0) {
@@ -253,7 +253,7 @@ void func_800FA8E0(int arg0)
 
 void func_800FA92C(int arg0, int arg1)
 {
-    func_800C8E5C_t* temp_v0;
+    vs_battle_menuItem_t* temp_v0;
     int var_s0;
 
     for (var_s0 = arg1 * 10; var_s0 < 30; ++var_s0) {
@@ -271,7 +271,7 @@ void func_800FA92C(int arg0, int arg1)
 
 int func_800FA9D0()
 {
-    func_800C8E5C_t* var_a0;
+    vs_battle_menuItem_t* var_a0;
     int i;
 
     var_a0 = func_800C8E48(0);

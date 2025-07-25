@@ -5,6 +5,7 @@
 #include "573B8.h"
 #include "6E644.h"
 #include "lbas.h"
+#include "vs_string.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/C48.h"
@@ -82,7 +83,6 @@ extern char D_800F4FDB;
 extern char D_800F4E90;
 extern int D_800F4ED4;
 extern D_800F4EE8_t D_800F4EE8;
-extern char D_800F4FE0[][0x30];
 extern u_long* D_800F51B8;
 extern char D_800F5310[];
 extern int D_800F531C;
@@ -270,17 +270,17 @@ int func_800C8C50(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 
-func_800C8E5C_t* func_800C8E48(int arg0) { return D_800EB9C0 + arg0; }
+vs_battle_menuItem_t* func_800C8E48(int arg0) { return D_800EB9C0 + arg0; }
 
-func_800C8E5C_t* func_800C8E5C(
-    int arg0, int arg1, int arg2, int arg3, int arg4, char* arg5)
+vs_battle_menuItem_t* vs_battle_setMenuItem(
+    int id, int arg1, int arg2, int arg3, int arg4, char* text)
 {
-    func_800C8E5C_t* temp_s3;
-    func_800C8E5C_t* var_a0;
+    vs_battle_menuItem_t* temp_s3;
+    vs_battle_menuItem_t* var_a0;
     int i;
     u_int c;
 
-    temp_s3 = &D_800EB9C0[arg0];
+    temp_s3 = &D_800EB9C0[id];
     temp_s3->unk0 = 1;
     temp_s3->unk1 = arg3;
     temp_s3->unk2 = arg4;
@@ -292,14 +292,14 @@ func_800C8E5C_t* func_800C8E5C(
     temp_s3->unk16 = arg2;
 
     for (i = 0; i < 31;) {
-        c = *arg5++;
-        if (c == 0xFA) {
+        c = *text++;
+        if (c == vs_char_spacing) {
             var_a0->unk1C[i++] = c;
-            c = *arg5++;
-        } else if (c == 0xE7) {
-            var_a0->unk1C[i] = -1;
+            c = *text++;
+        } else if (c == vs_char_terminator) {
+            var_a0->unk1C[i] = 0xFF;
             break;
-        } else if (c >= 0xE5) {
+        } else if (c >= vs_char_nonPrinting) {
             continue;
         }
         var_a0->unk1C[i++] = c;
@@ -317,7 +317,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
 
 void func_800C97BC()
 {
-    func_800C8E5C_t* var_s2;
+    vs_battle_menuItem_t* var_s2;
     int temp_s1;
     int temp_v0;
     int i;
@@ -410,7 +410,7 @@ void func_800CA9C0(void* arg0)
     vs_battle_rMemzero(&D_800F51C0, 8);
     D_800F51C0.unk0 = 0x3F;
     vs_battle_rMemzero(D_800F4E98, sizeof(D_800F4E98));
-    vs_battle_rMemzero(D_800F4FE0[0], sizeof(D_800F4FE0[0]));
+    vs_battle_rMemzero(&D_800F4FE0[0], sizeof(D_800F4FE0[0]));
     vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;

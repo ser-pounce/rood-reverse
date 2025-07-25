@@ -1,3 +1,4 @@
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;
+vs_mainmenu_setMenuHeaderText = 0x800FFC04;
 D_80102578 = 0x80102578;

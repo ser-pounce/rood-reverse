@@ -3433,36 +3433,32 @@ static u_short _containerStrings[] = {
 #include "../../assets/MENU/MENU7.PRG/container.dat"
 };
 
-static char D_8010AA2A = 0;
-
-static int func_8010903C(int arg0)
+static int func_8010903C(int initParams)
 {
-    enum state {
-        init,
-        animWait,
-    };
+    enum state { init, animWait, handleInput, returnSelection };
 
+    static char cursorAnimation = 0;
     static int selectedOption;
     static char state;
-    static char D_8010ADAD;
+    static char cancelWithMenuButton;
     static char _[34] __attribute__((unused));
 
     vs_battle_menuItem_t* menuItem;
     u_int buttons;
 
-    if (arg0 != 0) {
+    if (initParams != 0) {
         menuItem = vs_battle_setMenuItem(0x1E, 320, 146, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
         menuItem->unk0 = 2;
         menuItem->x = 194;
         state = init;
-        selectedOption = (arg0 - 1) & 1;
-        D_8010ADAD = arg0 >> 2;
+        selectedOption = (initParams - 1) & 1;
+        cancelWithMenuButton = initParams >> 2;
         return 0;
     }
     switch (state) {
     case init:
-        menuItem = vs_battle_setMenuItem(0x1F, 320, 0xA2, 0x7E, 0,
+        menuItem = vs_battle_setMenuItem(0x1F, 320, 162, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_noOption]);
         menuItem->unk0 = 2;
         menuItem->x = 194;
@@ -3471,13 +3467,13 @@ static int func_8010903C(int arg0)
     case animWait:
         state += func_800FA9D0();
         break;
-    case 2:
+    case handleInput:
         vs_battle_getMenuItem(30 + selectedOption)->unk6 = 1;
         vs_battle_getMenuItem(31 - selectedOption)->unk6 = 0;
         buttons = vs_main_buttonsPressed;
-        if (D_8010ADAD == 0) {
+        if (cancelWithMenuButton == 0) {
             if (buttons & PADRup) {
-                buttons -= 16;
+                buttons -= PADRup;
                 func_800C02E0();
             }
         }
@@ -3491,16 +3487,16 @@ static int func_8010903C(int arg0)
                 func_800FA8E0(0);
                 selectedOption = 1;
             }
-            state = 3;
+            state = returnSelection;
         } else {
-            D_8010AA2A = func_800CCD40(D_8010AA2A, selectedOption + 8);
+            cursorAnimation = vs_battle_drawCursor(cursorAnimation, selectedOption + 8);
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 func_800C02F8();
                 selectedOption = 1 - selectedOption;
             }
         }
         break;
-    case 3:
+    case returnSelection:
         if (func_800FA9D0() != 0) {
             return selectedOption;
         }

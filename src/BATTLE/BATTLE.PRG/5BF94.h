@@ -52,7 +52,7 @@ void func_800CB654(int);
 void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(char* dest, char const* src, int size);
 int func_800CCC54(int);
-char func_800CCD40(char, int);
+char vs_battle_drawCursor(char animStep, int position);
 u_int vs_battle_encode(int value);
 int func_800CD064(int);
 void vs_battle_drawImage(int xy, void* buffer, int wh);

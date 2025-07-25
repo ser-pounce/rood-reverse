@@ -601,7 +601,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCCB8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCD00);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCD40);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_drawCursor);
 
 void vs_battle_drawImage(int xy, void* buffer, int wh)
 {

@@ -270,7 +270,7 @@ int func_800C8C50(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 
-vs_battle_menuItem_t* func_800C8E48(int arg0) { return D_800EB9C0 + arg0; }
+vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
 vs_battle_menuItem_t* vs_battle_setMenuItem(
     int id, int arg1, int arg2, int arg3, int arg4, char* text)
@@ -280,7 +280,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     int i;
     u_int c;
 
-    temp_s3 = &D_800EB9C0[id];
+    temp_s3 = &vs_battle_menuItems[id];
     temp_s3->unk0 = 1;
     temp_s3->unk1 = arg3;
     temp_s3->unk2 = arg4;
@@ -294,15 +294,15 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     for (i = 0; i < 31;) {
         c = *text++;
         if (c == vs_char_spacing) {
-            var_a0->unk1C[i++] = c;
+            var_a0->text[i++] = c;
             c = *text++;
         } else if (c == vs_char_terminator) {
-            var_a0->unk1C[i] = 0xFF;
+            var_a0->text[i] = 0xFF;
             break;
         } else if (c >= vs_char_nonPrinting) {
             continue;
         }
-        var_a0->unk1C[i++] = c;
+        var_a0->text[i++] = c;
     }
     return temp_s3;
 }
@@ -323,7 +323,7 @@ void func_800C97BC()
     int i;
     int var_s0;
 
-    var_s2 = D_800EB9C0;
+    var_s2 = vs_battle_menuItems;
     var_s0 = D_800F51C0.unk0;
 
     if (var_s0 == 0x7F) {
@@ -397,7 +397,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9B4 = 0;
     D_800EB9B8 = 0;
     D_800EB9BC = 0;
-    D_800EB9C0 = 0;
+    vs_battle_menuItems = 0;
     D_800EB9CE = 0;
     D_800F4E90 = 0;
     D_800EB9AF = 0;
@@ -442,13 +442,13 @@ int func_800CACD0(int arg0, int arg1)
         if (arg1 == 0) {
             vs_battle_playSfx10();
         }
-        if (D_800EB9C0 == 0) {
+        if (vs_battle_menuItems == 0) {
             D_800EB9AD = -1;
             func_8007E180(6);
             temp_v0 = vs_main_allocHeapR(0xB24);
             var_a1 = D_80060022;
             D_800F4E8C = temp_v0 + 0xA00;
-            D_800EB9C0 = temp_v0;
+            vs_battle_menuItems = temp_v0;
             D_800F4E84 = temp_v0 + 0xA60;
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
@@ -485,10 +485,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB030);
 
 void func_800CB114()
 {
-    if (D_800EB9C0 != 0) {
+    if (vs_battle_menuItems != 0) {
         func_8007E1C0(6);
-        vs_main_freeHeapR(D_800EB9C0);
-        D_800EB9C0 = 0;
+        vs_main_freeHeapR(vs_battle_menuItems);
+        vs_battle_menuItems = 0;
     }
 }
 

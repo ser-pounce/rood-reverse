@@ -3437,67 +3437,71 @@ static char D_8010AA2A = 0;
 
 static int func_8010903C(int arg0)
 {
-    static int D_8010ADA8;
-    static char D_8010ADAC;
+    enum state {
+        init,
+    };
+
+    static int selectedOption;
+    static char state;
     static char D_8010ADAD;
     static char _[34] __attribute__((unused));
 
-    vs_battle_menuItem_t* temp_v0;
-    u_int var_s0;
+    vs_battle_menuItem_t* menuItem;
+    u_int buttons;
 
     if (arg0 != 0) {
-        temp_v0 = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0,
+        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
-        temp_v0->unk0 = 2;
-        temp_v0->unk18 = 0xC2;
-        D_8010ADAC = 0;
-        D_8010ADA8 = (arg0 - 1) & 1;
+        menuItem->unk0 = 2;
+        menuItem->unk18 = 0xC2;
+        state = init;
+        selectedOption = (arg0 - 1) & 1;
         D_8010ADAD = arg0 >> 2;
         return 0;
     }
-    switch (D_8010ADAC) {
-    case 0:
-        temp_v0 = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0,
+    switch (state) {
+    case init:
+        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_noOption]);
-        temp_v0->unk0 = 2;
-        temp_v0->unk18 = 0xC2;
-        D_8010ADAC = 1;
+        menuItem->unk0 = 2;
+        menuItem->unk18 = 0xC2;
+        state = 1;
         break;
     case 1:
-        D_8010ADAC += func_800FA9D0();
+        state += func_800FA9D0();
         break;
     case 2:
-        func_800C8E48(D_8010ADA8 + 0x1E)->unk6 = 1;
-        func_800C8E48(0x1F - D_8010ADA8)->unk6 = 0;
-        var_s0 = vs_main_buttonsPressed;
+        vs_battle_getMenuItem(30 + selectedOption)->unk6 = 1;
+        vs_battle_getMenuItem(31 - selectedOption)->unk6 = 0;
+        buttons = vs_main_buttonsPressed;
         if (D_8010ADAD == 0) {
-            if (var_s0 & PADRup) {
-                var_s0 -= 16;
+            if (buttons & PADRup) {
+                buttons -= 16;
                 func_800C02E0();
             }
         }
-        if (var_s0 & (PADRup | PADRright | PADRdown)) {
-            if ((D_8010ADA8 != 0) || (var_s0 & (PADRup | PADRdown))) {
+        if (buttons & (PADRup | PADRright | PADRdown)) {
+            if ((selectedOption != 0) || (buttons & (PADRup | PADRdown))) {
                 func_800C02E8();
-                func_800FA8E0(0x28);
-                D_8010ADA8 = -1;
+                func_800FA8E0(40);
+                selectedOption = -1;
             } else {
                 func_800C02F0();
                 func_800FA8E0(0);
-                D_8010ADA8 = 1;
+                selectedOption = 1;
             }
-            D_8010ADAC = 3;
+            state = 3;
         } else {
-            D_8010AA2A = func_800CCD40(D_8010AA2A, D_8010ADA8 + 8);
+            D_8010AA2A = func_800CCD40(D_8010AA2A, selectedOption + 8);
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 func_800C02F8();
-                D_8010ADA8 = 1 - D_8010ADA8;
+                selectedOption = 1 - selectedOption;
             }
         }
         break;
     case 3:
         if (func_800FA9D0() != 0) {
-            return D_8010ADA8;
+            return selectedOption;
         }
         break;
     }

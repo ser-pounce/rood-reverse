@@ -33,7 +33,7 @@ void func_80101F38()
     if (D_800F4E6A == 0) {
         func_800FFA94();
     }
-    if (D_800EB9C0 != 0) {
+    if (vs_battle_menuItems != 0) {
         func_80101970();
     }
     func_80100164();

@@ -211,10 +211,10 @@ int func_800FA598(short* arg0, unsigned int arg1)
 
 void func_800FA810(int arg0)
 {
-    vs_battle_menuItem_t* temp_v0 = func_800C8E48(arg0 + 0x20);
-    if (temp_v0->unk0 != 0) {
-        temp_v0->unk0 = 5;
-        temp_v0->unk18 = -temp_v0->unk1;
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
+    if (menuItem->unk0 != 0) {
+        menuItem->unk0 = 5;
+        menuItem->unk18 = -menuItem->unk1;
     }
 }
 
@@ -231,12 +231,12 @@ void func_800FA854(int arg0)
 
 void func_800FA8A0(int arg0)
 {
-    vs_battle_menuItem_t* temp_v0;
+    vs_battle_menuItem_t* menuItem;
 
-    temp_v0 = func_800C8E48(arg0);
-    if (temp_v0->unk0 != 0) {
-        temp_v0->unk0 = 2;
-        temp_v0->unk18 = 0x140;
+    menuItem = vs_battle_getMenuItem(arg0);
+    if (menuItem->unk0 != 0) {
+        menuItem->unk0 = 2;
+        menuItem->unk18 = 0x140;
     }
 }
 
@@ -253,34 +253,34 @@ void func_800FA8E0(int arg0)
 
 void func_800FA92C(int arg0, int arg1)
 {
-    vs_battle_menuItem_t* temp_v0;
-    int var_s0;
+    vs_battle_menuItem_t* menuItem;
+    int i;
 
-    for (var_s0 = arg1 * 10; var_s0 < 30; ++var_s0) {
-        func_800FA8A0(var_s0);
+    for (i = arg1 * 10; i < 30; ++i) {
+        func_800FA8A0(i);
     }
 
-    temp_v0 = func_800C8E48(arg0 + (arg1 * 10));
-    temp_v0->unk0 = 4;
-    temp_v0->unk18 = 0xB4;
-    temp_v0->unk1A = (arg1 * 16) + 18;
-    if (temp_v0->unk2 == 0) {
-        temp_v0->unk2 = 1;
+    menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
+    menuItem->unk0 = 4;
+    menuItem->unk18 = 0xB4;
+    menuItem->unk1A = (arg1 * 16) + 18;
+    if (menuItem->unk2 == 0) {
+        menuItem->unk2 = 1;
     }
 }
 
 int func_800FA9D0()
 {
-    vs_battle_menuItem_t* var_a0;
+    vs_battle_menuItem_t* menuItem;
     int i;
 
-    var_a0 = func_800C8E48(0);
+    menuItem = vs_battle_getMenuItem(0);
 
-    for (i = 0; i < 0x28; ++i) {
-        if (var_a0->unk0 > 1) {
+    for (i = 0; i < 40; ++i) {
+        if (menuItem->unk0 > 1) {
             return 0;
         }
-        ++var_a0;
+        ++menuItem;
     }
     return 1;
 }

@@ -7,7 +7,7 @@ typedef struct {
     char unk2;
     char unk3;
     short unk4;
-    signed char unk6;
+    signed char selected;
     signed char unk7;
     int unk8;
     char unkC;

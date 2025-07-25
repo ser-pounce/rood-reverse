@@ -3433,7 +3433,7 @@ static u_short _containerStrings[] = {
 #include "../../assets/MENU/MENU7.PRG/container.dat"
 };
 
-static int func_8010903C(int initParams)
+static int _promptYesNo(int initParams)
 {
     enum state { init, animWait, handleInput, returnSelection };
 
@@ -3468,8 +3468,8 @@ static int func_8010903C(int initParams)
         state += func_800FA9D0();
         break;
     case handleInput:
-        vs_battle_getMenuItem(30 + selectedOption)->unk6 = 1;
-        vs_battle_getMenuItem(31 - selectedOption)->unk6 = 0;
+        vs_battle_getMenuItem(30 + selectedOption)->selected = 1;
+        vs_battle_getMenuItem(31 - selectedOption)->selected = 0;
         buttons = vs_main_buttonsPressed;
         if (cancelWithMenuButton == 0) {
             if (buttons & PADRup) {
@@ -3547,13 +3547,13 @@ int vs_menu7_saveContainerMenu(char* state)
         vs_battle_rMemzero(D_8010245C, sizeof(*D_8010245C));
         func_800FBD80(16);
         func_800C8E04(1);
-        func_8010903C(5);
+        _promptYesNo(5);
         vs_mainmenu_setMessage(
             (char*)&_containerStrings[VS_container_OFFSET_checkContainer]);
         *state = 1;
         break;
     case 1:
-        temp_s0 = func_8010903C(0);
+        temp_s0 = _promptYesNo(0);
         if (temp_s0 != 0) {
             if (temp_s0 >= 0) {
                 _initMemcard(1);
@@ -3563,7 +3563,7 @@ int vs_menu7_saveContainerMenu(char* state)
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
                 temp_v0_3->unk0 = 2;
                 temp_v0_3->x = 180;
-                temp_v0_3->unk6 = 1;
+                temp_v0_3->selected = 1;
                 *state = 2;
             } else {
                 *state = 16;
@@ -3606,12 +3606,12 @@ int vs_menu7_saveContainerMenu(char* state)
     case 4:
         if ((char)vs_main_buttonsPressed != 0) {
             vs_mainmenu_setMessage((char*)(_textTable + VS_MCMAN_OFFSET_containerWarn));
-            func_8010903C(2);
+            _promptYesNo(2);
             *state = 5;
         }
         break;
     case 5:
-        temp_s0 = func_8010903C(0);
+        temp_s0 = _promptYesNo(0);
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
                 *state = 14;
@@ -3657,7 +3657,7 @@ int vs_menu7_saveContainerMenu(char* state)
             if (temp_s0 != 0) {
                 func_800C8E04(1);
                 if (temp_s0 == 1) {
-                    func_8010903C(1);
+                    _promptYesNo(1);
                     vs_mainmenu_setMessage(
                         (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                     *state = 12;
@@ -3680,7 +3680,7 @@ int vs_menu7_saveContainerMenu(char* state)
         if (temp_s0 != 0) {
             if ((_dataNotSaved == 0) && (temp_s0 < 0)) {
                 func_800C8E04(1);
-                func_8010903C(1);
+                _promptYesNo(1);
                 vs_mainmenu_setMessage(
                     (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
                 *state = 12;
@@ -3691,7 +3691,7 @@ int vs_menu7_saveContainerMenu(char* state)
         _drawFileMenu(vs_main_frameBuf);
         break;
     case 12:
-        temp_s0 = func_8010903C(0);
+        temp_s0 = _promptYesNo(0);
         if (temp_s0 != 0) {
             if (temp_s0 == 1) {
                 *state = 10;

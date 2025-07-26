@@ -30,7 +30,42 @@ static void _setArtCost(int art)
     vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102914);
+void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
+{
+    char pointsBuf[16];
+    int pos;
+    int category;
+    int points;
+    int i;
+    char* pointsStr;
+
+    category = weaponCategory;
+    category %= 10;
+
+    i = vs_main_weaponKills.unk0[category];
+    if (i != 4) {
+        points = vs_main_weaponKills.kills[category];
+        points = D_8004FDE4[category][i] - points;
+        if (points < 0) {
+            points = 0;
+        }
+        pos = (x + 206) | (((artsLearned * 16) + 50) << 16);
+        i = 0xC;
+        pointsBuf[14] = 'T';
+        pointsBuf[15] = 0;
+        pointsBuf[13] = 'P';
+        do {
+            points = vs_battle_toBCD(points);
+            pointsBuf[i] = (points & 0xF) + '0';
+            points = points >> 4;
+            --i;
+        } while (points != 0);
+        pointsStr = pointsBuf + i;
+        *pointsStr = '#';
+        func_800C6828("NEXT", pos, 0);
+        func_800C6828(pointsStr, pos + 0x60, 0);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102A4C);
 

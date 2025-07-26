@@ -277,7 +277,7 @@ typedef struct {
     D_8005FEA0_t unk1784;
     int unk1898;
     char unk189C[0x520];
-    char unk1DBC[0x24];
+    vs_main_weaponKills_t unk1DBC;
     containerData_t containerData;
     char unk59E0[0x220];
 } savedata_t;
@@ -603,8 +603,8 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(&D_8005FEA0, &spmcimg[1].unk1784, sizeof(D_8005FEA0));
     D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
-    spmcimg2 = D_80060040;
-    _rMemcpy(D_80060040, spmcimg[1].unk1DBC, sizeof(D_80060040));
+    spmcimg2 = &vs_main_weaponKills;
+    _rMemcpy(&vs_main_weaponKills, &spmcimg[1].unk1DBC, sizeof(vs_main_weaponKills));
     vs_main_gametime.t = spmcimg[1].unk180.stats.gameTime.t;
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
@@ -708,7 +708,7 @@ static void _packageGameSaveData(int targetFile)
         sizeof(savedata->containerData));
     savedata->unk1898 = D_80060064;
     _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
-    _rMemcpy(savedata->unk1DBC, D_80060040, sizeof(savedata->unk1DBC));
+    _rMemcpy(&savedata->unk1DBC, &vs_main_weaponKills, sizeof(savedata->unk1DBC));
 
     for (i = 0; i < 92; ++i) {
         var_a0 = 0;
@@ -4982,7 +4982,7 @@ static void _initGameData()
     vs_main_bzero(&D_8005FEA0, sizeof(D_8005FEA0));
     D_80060064 = 0;
     vs_main_bzero(D_80061078, sizeof(D_80061078));
-    vs_main_bzero(D_80060040, sizeof(D_80060040));
+    vs_main_bzero(&vs_main_weaponKills, sizeof(vs_main_weaponKills));
 
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 3; ++j) {

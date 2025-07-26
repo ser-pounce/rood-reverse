@@ -221,6 +221,7 @@ extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;
 extern char vs_main_vibrationEnabled;
 extern u_short D_80060022;
+extern char D_80060028;
 extern char D_80060040[0x24];
 extern int D_80060064;
 extern D_80060068_t D_80060068;

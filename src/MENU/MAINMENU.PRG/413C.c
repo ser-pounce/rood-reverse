@@ -1,11 +1,18 @@
 #include "common.h"
 #include "413C.h"
+#include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 extern char D_8010231A[];
 extern int D_801023D4;
 extern int D_801023D8;
+extern char D_801022E2;
+extern char D_801022E3;
+extern int D_801022E4;
+extern u_short D_801022E8[];
+extern int D_801022F8[];
+extern u_int* D_1F800000[];
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
 
@@ -61,9 +68,34 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF43C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF9E4);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFA88);
+void func_800FFA88(int arg0) { D_801022E3 = arg0; }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFA94);
+void func_800FFA94()
+{
+    int var_a1;
+    u_int* temp_v0;
+    int temp_s0;
+
+    temp_s0 = D_801022E2;
+    var_a1 = D_801022E4;
+    if (temp_s0 != D_801022E3) {
+        if (var_a1 == 0) {
+            D_801022E2 = D_801022E3;
+            return;
+        }
+        var_a1 -= 2;
+    } else if (var_a1 < 0xC) {
+        var_a1 += 2;
+    }
+    D_801022E4 = var_a1;
+    if (temp_s0 != 0) {
+        temp_v0 = vs_battle_setSprite(0x180,
+            (0x138 - (D_801022F8[temp_s0] & 0xFF)) | ((D_801022E4 - 4) << 16),
+            D_801022F8[temp_s0], D_1F800000[2]);
+        temp_v0[1] = 0xE100002C;
+        temp_v0[4] = D_801022E8[temp_s0] | 0x37F50000;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFB68);
 
@@ -71,7 +103,14 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFB90);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFBA8);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFBC8);
+void func_800FFBC8()
+{
+    if (D_80060028 != 0) {
+        func_800C8E04(2);
+        return;
+    }
+    func_800FFBA8();
+}
 
 void vs_mainmenu_setMessage(char* arg0)
 {

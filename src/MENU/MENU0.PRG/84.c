@@ -26,7 +26,7 @@ void func_80102884(int arg0)
     }
 
     temp_v0 = func_8008A5D0(0, arg0);
-    func_80100100(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
+    vs_mainmenu_setTextHeader(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
     var_s1 = 0xF;
     var_a0 = vs_main_skills[arg0].cost;
     D_80106918[15] = 0;
@@ -38,7 +38,7 @@ void func_80102884(int arg0)
     }
 
     do {
-        var_a0 = func_800CCC54(var_a0);
+        var_a0 = vs_battle_toBCD(var_a0);
         D_80106918[--var_s1] = (var_a0 & 0xF) + 0x30;
         var_a0 >>= 4;
         if (var_s2 != 0) {
@@ -47,7 +47,8 @@ void func_80102884(int arg0)
     } while (var_a0 != 0);
 
     D_80106918[--var_s1] = 0x23;
-    func_80100100(0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
+    vs_mainmenu_setTextHeader(
+        0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
 }
 
 void func_801029B8(int arg0, int arg1)
@@ -55,19 +56,19 @@ void func_801029B8(int arg0, int arg1)
     int temp_v0;
     int var_s0;
 
-    func_80100100(1, &D_80102800, 8, arg1);
+    vs_mainmenu_setTextHeader(1, &D_80102800, 8, arg1);
     temp_v0 = arg0;
     var_s0 = 0xF;
     D_80106928[15] = 0;
 
     do {
-        temp_v0 = func_800CCC54(temp_v0);
+        temp_v0 = vs_battle_toBCD(temp_v0);
         D_80106928[--var_s0] = (temp_v0 & 0xF) + 0x30;
         temp_v0 >>= 4;
     } while (temp_v0 != 0);
 
     D_80106928[--var_s0] = 0x23;
-    func_80100100(0, &D_80106928[var_s0], 0x48, arg1);
+    vs_mainmenu_setTextHeader(0, &D_80106928[var_s0], 0x48, arg1);
 }
 
 int func_80102A68(int arg0)

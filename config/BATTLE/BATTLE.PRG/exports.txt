@@ -14,6 +14,7 @@ vs_battle_getMenuItem = 0x800C8E48;
 vs_battle_setMenuItem = 0x800C8E5C;
 vs_battle_rMemzero = 0x800CCC1C;
 vs_battle_rMemcpy = 0x800CCC34;
+vs_battle_toBCD = 0x800CCC54;
 vs_battle_encode = 0x800CCC8C;
 vs_battle_drawCursor = 0x800CCD40;
 vs_battle_drawImage = 0x800CCDA8;

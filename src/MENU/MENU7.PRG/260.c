@@ -3754,7 +3754,7 @@ static void _drawPlayTime()
         time[0] = ((((time[0] << 14) + vs_battle_encode(15)) * 5u) >> 14) / 3;
     }
     for (i = 0; i < 4; ++i) {
-        temp_v0 = func_800CCC54(time[i]);
+        temp_v0 = vs_battle_toBCD(time[i]);
         // BUG: invalid write to .rodata
         _playTime[9 - i * 3] = (temp_v0 >> 4) + 0x30;
         _playTime[10 - i * 3] = (temp_v0 & 0xF) + 0x30;

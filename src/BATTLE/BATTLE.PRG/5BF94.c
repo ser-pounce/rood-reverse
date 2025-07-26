@@ -585,15 +585,15 @@ void vs_battle_rMemzero(void* arg0, int arg1)
     } while (arg0 != var_v0);
 }
 
-void vs_battle_rMemcpy(char* dest, char const* src, int size)
+void vs_battle_rMemcpy(void* dest, void* src, int size)
 {
     do {
         --size;
-        dest[size] = src[size];
+        ((char*)dest)[size] = ((char*)src)[size];
     } while (size != 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCC54);
+int vs_battle_toBCD(int arg0) { return (arg0 % 10) | ((arg0 / 10) * 16); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_encode);
 

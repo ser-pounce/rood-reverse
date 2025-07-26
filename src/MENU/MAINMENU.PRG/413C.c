@@ -98,7 +98,22 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFFBC);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100004);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100100);
+typedef struct {
+    char text[14];
+    char unk14;
+    char x;
+} textHeader_t;
+
+extern char D_801022D4;
+extern textHeader_t _textHeaders[];
+
+void vs_mainmenu_setTextHeader(int index, char const* text, int x, int arg3)
+{
+    D_801022D4 = 1;
+    vs_battle_rMemcpy(&_textHeaders[index], text, 14);
+    _textHeaders[index].unk14 = arg3;
+    _textHeaders[index].x = x;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100164);
 
@@ -115,9 +130,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100814);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008B0);
 
-int func_801008C8() {
-    return D_801023D4 != 0 ? -1 : D_801023D8;
-}
+int func_801008C8() { return D_801023D4 != 0 ? -1 : D_801023D8; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 

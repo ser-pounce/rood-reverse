@@ -38,9 +38,9 @@ Thanks also to the following amazing projects (and their dependencies):
 | MENUE.PRG | 0 | 8640 | 0.00% |
 | MENU2.PRG | 0 | 7724 | 0.00% |
 | INITBTL.PRG | 1060 | 4864 | 21.79% |
-| MENU1.PRG | 344 | 3144 | 10.94% |
+| MENU1.PRG | 656 | 3144 | 20.87% |
 | SCREFF2.PRG | 944 | 2324 | 40.62% |
-| **Total** | **132148** | **1064744** | **12.41%** |
+| **Total** | **132460** | **1064744** | **12.44%** |
 
 ## (Naive) Quickstart
 1. Fork the project

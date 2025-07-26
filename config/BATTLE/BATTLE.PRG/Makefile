@@ -13,3 +13,7 @@ $(BUILD)/src/BATTLE/BATTLE.PRG/30D14.o: CC1FLAGS += -msoft-float
 
 $(addprefix $(BUILD)/src/BATTLE/BATTLE.PRG/, 573B8.o 5BF94.o menuLbas.o gimLbas.o): \
 	$(BUILD)/src/include/lbas.h
+
+$(BUILD)/assets/BATTLE/BATTLE.PRG/menuStrings.dat $(BUILD)/src/BATTLE/BATTLE.PRG/menuStrings.h &: assets/BATTLE/BATTLE.PRG/menuStrings.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/assets/BATTLE/BATTLE.PRG/menuStrings.dat $(BUILD)/src/BATTLE/BATTLE.PRG/menuStrings.h

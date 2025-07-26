@@ -2,6 +2,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
 
 extern char _digitBuffer[];
 
@@ -39,8 +40,9 @@ void func_801031FC()
 {
     vs_battle_menuItem_t* temp_v0;
 
-    temp_v0 = vs_battle_setMenuItem(
-        1, 0x140, 0x12, 0x8C, 8, (char*)&vs_battle_menuStrings[vs_battle_menuStrings[1]]);
+    temp_v0 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8,
+        (char*)&vs_battle_menuStrings
+            [vs_battle_menuStrings[VS_menuStrings_INDEX_breakArts]]);
     temp_v0->state = 2;
     temp_v0->x = 180;
     temp_v0->selected = 1;

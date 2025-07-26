@@ -42,7 +42,7 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
     category = weaponCategory;
     category %= 10;
 
-    i = vs_main_weaponKills.unk0[category];
+    i = vs_main_weaponKills.artsLearned[category];
     if (i != 4) {
         points = vs_main_weaponKills.kills[category];
         points = D_8004FDE4[category][i] - points;

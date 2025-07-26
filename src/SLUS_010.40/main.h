@@ -191,7 +191,7 @@ typedef struct {
 } vs_main_flags_t;
 
 typedef struct {
-    char unk0[12];
+    char artsLearned[12];
     u_short kills[12];
 } vs_main_weaponKills_t;
 

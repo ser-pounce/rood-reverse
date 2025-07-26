@@ -1,0 +1,33 @@
+magic: MAGIC
+breakArts: BREAK ARTS
+battleAbilitis: BATTLE ABILITIES
+items: ITEMS
+status: STATUS
+map: MAP
+data: DATA
+options: OPTIONS
+score: SCORE
+quickManual: QUICK MANUAL
+debug: DEBUG
+commandDisabled: |-
+  \uE0F80This command cannot be used
+  |$0|
+_0:
+cubeDisabled: when manipulating cubes.
+hangingDisabled: when hanging from a ledge.
+notBattleDisabled: when not in battle mode.
+_1:
+mpDisabled: with current MP.
+hpDsabled: with current HP.
+silenceDisabled: when Silenced.
+paralyzedDisabled: when Paralyzed.
+palingDisabled: within the Paling.
+_2:
+spell: 'Spell: "|$0|"'
+specialAttack: 'Special Attack: "|$0|"'
+breakArt: 'Break Art: "|$0|"'
+_3:
+itemEffect: 'Item Effect: "|$0|"'
+_4:
+trap: 'Trap: "|$0|"'
+spellMastered: 'Mastered the spell "|$0|."'

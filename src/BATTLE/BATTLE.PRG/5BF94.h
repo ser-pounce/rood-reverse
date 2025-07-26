@@ -2,7 +2,7 @@
 #include "../SLUS_010.40/main.h"
 
 typedef struct {
-    char unk0;
+    char state;
     char unk1;
     char unk2;
     char unk3;
@@ -63,7 +63,7 @@ void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920();
 
-extern u_short D_800EB9DC[];
+extern u_short vs_battle_menuStrings[];
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char D_800EBBC8[];

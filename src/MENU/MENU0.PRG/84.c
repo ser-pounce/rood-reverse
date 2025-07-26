@@ -120,8 +120,8 @@ void func_80104254()
     vs_battle_menuItem_t* temp_v0;
 
     temp_v0 = vs_battle_setMenuItem(
-        0, 0x140, 0x12, 0x8C, 8, (char*)&D_800EB9DC[D_800EB9DC[0]]);
-    temp_v0->unk0 = 2;
+        0, 320, 18, 0x8C, 8, (char*)&vs_battle_menuStrings[vs_battle_menuStrings[0]]);
+    temp_v0->state = 2;
     temp_v0->x = 180;
     temp_v0->selected = 1;
     func_800FFA88(2);

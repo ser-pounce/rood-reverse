@@ -42,7 +42,7 @@ utf8_table = [
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
     '\n', '', '', '', '', '', '', '\uE0EF', #
     '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
-    '', '', '\uE0FA', '', '', '', '', '',
+    '\uE0F8', '', '\uE0FA', '', '', '', '', '\uE0FF',
 ]
 
 
@@ -54,6 +54,9 @@ def decode(s):
             i += 1
         elif s[i] == 0xFA: # Advance glyph position
             result += f"|>{s[i + 1]}|"
+            i += 2
+        elif s[i] == 0xFF: # Insert reference
+            result += f"|${s[i + 1]}|"
             i += 2
         else:
             if utf8_table[s[i]] == '':
@@ -72,6 +75,13 @@ def encode_raw(s):
             if end == -1:
                 raise ValueError("Unterminated control")
             result.extend([0xFA, int(s[i:end].strip())])
+            i += (end - i) + 1
+        elif s[i:i+2] == '|$':
+            i += 2
+            end = s.find('|', i)
+            if end == -1:
+                raise ValueError("Unterminated control")
+            result.extend([0xFF, int(s[i:end].strip())])
             i += (end - i) + 1
         elif s[i:i+3] == "Lv.":
             result.append(utf8_table.index("Lv."))

@@ -281,7 +281,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     u_int c;
 
     menuItem = &vs_battle_menuItems[id];
-    menuItem->unk0 = 1;
+    menuItem->state = 1;
     menuItem->unk1 = arg3;
     menuItem->unk2 = arg4;
 

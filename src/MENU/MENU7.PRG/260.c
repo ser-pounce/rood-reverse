@@ -3449,7 +3449,7 @@ static int _promptYesNo(int initParams)
     if (initParams != 0) {
         menuItem = vs_battle_setMenuItem(0x1E, 320, 146, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
-        menuItem->unk0 = 2;
+        menuItem->state = 2;
         menuItem->x = 194;
         state = init;
         selectedOption = (initParams - 1) & 1;
@@ -3460,7 +3460,7 @@ static int _promptYesNo(int initParams)
     case init:
         menuItem = vs_battle_setMenuItem(0x1F, 320, 162, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_noOption]);
-        menuItem->unk0 = 2;
+        menuItem->state = 2;
         menuItem->x = 194;
         state = animWait;
         break;
@@ -3561,7 +3561,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 func_800FFA88(2);
                 menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
-                menuItem->unk0 = 2;
+                menuItem->state = 2;
                 menuItem->x = 180;
                 menuItem->selected = 1;
                 *state = 2;

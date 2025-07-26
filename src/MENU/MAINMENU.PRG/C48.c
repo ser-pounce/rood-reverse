@@ -211,8 +211,8 @@ int func_800FA598(short* arg0, unsigned int arg1)
 void func_800FA810(int arg0)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
-    if (menuItem->unk0 != 0) {
-        menuItem->unk0 = 5;
+    if (menuItem->state != 0) {
+        menuItem->state = 5;
         menuItem->x = -menuItem->unk1;
     }
 }
@@ -233,8 +233,8 @@ void func_800FA8A0(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     menuItem = vs_battle_getMenuItem(arg0);
-    if (menuItem->unk0 != 0) {
-        menuItem->unk0 = 2;
+    if (menuItem->state != 0) {
+        menuItem->state = 2;
         menuItem->x = 320;
     }
 }
@@ -260,7 +260,7 @@ void func_800FA92C(int arg0, int arg1)
     }
 
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
-    menuItem->unk0 = 4;
+    menuItem->state = 4;
     menuItem->x = 180;
     menuItem->unk1A = (arg1 * 16) + 18;
     if (menuItem->unk2 == 0) {
@@ -276,7 +276,7 @@ int vs_mainmenu_readyForInput()
     menuItem = vs_battle_getMenuItem(0);
 
     for (i = 0; i < 40; ++i) {
-        if (menuItem->unk0 > 1) {
+        if (menuItem->state > 1) {
             return 0;
         }
         ++menuItem;

@@ -1,0 +1,2 @@
+_setArtCost = 0x80102830;
+_digitBuffer = 0x8010451C;

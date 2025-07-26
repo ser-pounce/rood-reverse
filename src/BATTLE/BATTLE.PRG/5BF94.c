@@ -585,11 +585,11 @@ void vs_battle_rMemzero(void* arg0, int arg1)
     } while (arg0 != var_v0);
 }
 
-void vs_battle_rMemcpy(void* dest, void* src, int size)
+void vs_battle_rMemcpy(void* dest, void const* src, int size)
 {
     do {
         --size;
-        ((char*)dest)[size] = ((char*)src)[size];
+        ((char*)dest)[size] = ((char const*)src)[size];
     } while (size != 0);
 }
 

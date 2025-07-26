@@ -51,6 +51,9 @@ typedef struct {
     short unkAE;
     int unkB0[421];
     int unk948;
+    int unk94C;
+    int unk950;
+    u_short unk954;
 } D_800F1964_t;
 
 typedef struct {
@@ -178,7 +181,7 @@ void func_80086754(int, D_800F19FC_t2*);
 void func_8008A6FC();
 int func_8008AB80(int);
 int func_8008ABB8(int);
-void func_8008574C(int, D_800F1964_t*, int);
+int func_8008574C(int, D_800F1964_t*, int);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
@@ -1988,7 +1991,38 @@ void func_8008A4DC(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A4FC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A5D0);
+int vs_battle_getSkillFlags(int arg0, int id)
+{
+    D_800F1964_t* temp_s1;
+    int ret;
+    vs_skill_t* skill = &vs_main_skills[id];
+
+    temp_s1 = D_800F1928[arg0]->unk3C;
+    ret = temp_s1->unk954 != 0;
+
+    if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
+        ret |= 2;
+    }
+
+    if (arg0 == 0) {
+        if (!(skill->flags & 0x8000)) {
+            ret |= 4;
+        }
+    }
+    if (id < 141) {
+        if (temp_s1->unk948 & 0x1000) {
+            ret |= 4;
+        }
+    } else if (id < 224) {
+        if (D_800F1928[arg0]->unk20 == 0) {
+            ret |= 4;
+        }
+        if (temp_s1->unk948 & 0x2000) {
+            ret |= 4;
+        }
+    }
+    return ret;
+}
 
 void func_8008A6FC()
 {

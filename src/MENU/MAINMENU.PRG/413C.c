@@ -107,7 +107,7 @@ typedef struct {
 extern char D_801022D4;
 extern textHeader_t _textHeaders[];
 
-void vs_mainmenu_setTextHeader(int index, char const* text, int x, int arg3)
+void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 {
     D_801022D4 = 1;
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);

@@ -25,8 +25,8 @@ void func_80102884(int arg0)
         arg0 = -arg0;
     }
 
-    temp_v0 = func_8008A5D0(0, arg0);
-    vs_mainmenu_setTextHeader(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
+    temp_v0 = vs_battle_getSkillFlags(0, arg0);
+    vs_mainmenu_setAbilityCost(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
     var_s1 = 0xF;
     var_a0 = vs_main_skills[arg0].cost;
     D_80106918[15] = 0;
@@ -47,7 +47,7 @@ void func_80102884(int arg0)
     } while (var_a0 != 0);
 
     D_80106918[--var_s1] = 0x23;
-    vs_mainmenu_setTextHeader(
+    vs_mainmenu_setAbilityCost(
         0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
 }
 
@@ -56,7 +56,7 @@ void func_801029B8(int arg0, int arg1)
     int temp_v0;
     int var_s0;
 
-    vs_mainmenu_setTextHeader(1, &D_80102800, 8, arg1);
+    vs_mainmenu_setAbilityCost(1, &D_80102800, 8, arg1);
     temp_v0 = arg0;
     var_s0 = 0xF;
     D_80106928[15] = 0;
@@ -68,7 +68,7 @@ void func_801029B8(int arg0, int arg1)
     } while (temp_v0 != 0);
 
     D_80106928[--var_s0] = 0x23;
-    vs_mainmenu_setTextHeader(0, &D_80106928[var_s0], 0x48, arg1);
+    vs_mainmenu_setAbilityCost(0, &D_80106928[var_s0], 0x48, arg1);
 }
 
 int func_80102A68(int arg0)

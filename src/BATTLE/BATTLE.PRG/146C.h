@@ -78,7 +78,7 @@ int func_8007E1C0(int arg0);
 void func_8008AB68();
 void func_8008A4DC(int arg0);
 char func_8008A4FC();
-int func_8008A5D0(int, int);
+int vs_battle_getSkillFlags(int, int);
 void func_8008B430(char*, int);
 void func_8008B6B4();
 int func_8008E5F0();

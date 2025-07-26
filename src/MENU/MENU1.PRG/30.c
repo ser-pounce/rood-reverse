@@ -3,30 +3,30 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-extern char D_8010451C[];
+extern char _digitBuffer[];
 
-void func_80102830(int arg0)
+static void _setArtCost(int art)
 {
-    int temp_v0;
+    int flags;
     int i;
-    int bcd;
+    int cost;
 
-    temp_v0 = func_8008A5D0(0, arg0);
-    vs_mainmenu_setTextHeader(1, "HP", 8, (temp_v0 >> 1) & 1);
-    bcd = vs_main_skills[arg0].cost;
-    D_8010451C[15] = 0;
+    flags = vs_battle_getSkillFlags(0, art);
+    vs_mainmenu_setAbilityCost(1, "HP", 8, (flags >> 1) & 1);
+    cost = vs_main_skills[art].cost;
+    _digitBuffer[15] = 0;
 
     i = 15;
     do {
         --i;
-        bcd = vs_battle_toBCD(bcd);
-        D_8010451C[i] = (bcd & 0xF) + 0x30;
-        bcd >>= 4;
-    } while (bcd != 0);
+        cost = vs_battle_toBCD(cost);
+        _digitBuffer[i] = (cost & 0xF) + 0x30;
+        cost >>= 4;
+    } while (cost != 0);
 
     --i;
-    D_8010451C[i] = 0x23;
-    vs_mainmenu_setTextHeader(0, &D_8010451C[i], 72, (temp_v0 >> 1) & 1);
+    _digitBuffer[i] = 0x23;
+    vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
 INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102914);

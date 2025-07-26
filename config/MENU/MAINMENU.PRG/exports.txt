@@ -2,5 +2,5 @@ vs_mainmenu_readyForInput = 0x800FA9D0;
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;
-vs_mainmenu_setTextHeader = 0x80100100;
+vs_mainmenu_setAbilityCost = 0x80100100;
 D_80102578 = 0x80102578;

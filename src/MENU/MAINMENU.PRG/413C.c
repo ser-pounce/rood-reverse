@@ -4,6 +4,8 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 extern char D_8010231A[];
+extern int D_801023D4;
+extern int D_801023D8;
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
 
@@ -106,13 +108,16 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100414);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
 
+// https://decomp.me/scratch/Oo0p8
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801005E0);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100814);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008B0);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008C8);
+int func_801008C8() {
+    return D_801023D4 != 0 ? -1 : D_801023D8;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 

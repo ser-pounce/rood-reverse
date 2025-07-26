@@ -3763,24 +3763,33 @@ static void _drawPlayTime()
     func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
-int vs_menu7_saveMenu(char* arg0)
+int vs_menu7_saveMenu(char* state)
 {
+    enum state {
+        init = 3,
+        loadWait,
+        initSaveMenu = 7,
+        showSaveMenu,
+        initFileMenu,
+        handleInput,
+    };
+
     u_short* sp10[2][2];
     int sp20[2];
     RECT rect;
     int temp_s0;
     int new_var;
 
-    if (*arg0 < 0xB) {
+    if (*state < 11) {
         _drawPlayTime();
     }
 
-    switch (*arg0) {
-    case 3:
+    switch (*state) {
+    case init:
         _initMemcard(1);
-        *arg0 = 4;
+        *state = loadWait;
         break;
-    case 4:
+    case loadWait:
         if ((vs_mainmenu_readyForInput() == 0) || (_initMemcard(0) == 0)) {
             break;
         }
@@ -3788,8 +3797,8 @@ int vs_menu7_saveMenu(char* arg0)
     case 5:
         new_var = 1;
         for (temp_s0 = 0; temp_s0 < 2; ++temp_s0) {
-            sp10[temp_s0][0] = &_textTable[*(u_short*)((u_int*)_textTable + temp_s0)];
-            sp10[temp_s0][new_var] = _textTable + 0x344;
+            sp10[temp_s0][0] = &_textTable[_textTable[temp_s0 * 2]];
+            sp10[temp_s0][new_var] = _textTable + VS_MCMAN_OFFSET_saveDisabled;
             sp20[temp_s0] = 0;
         }
         D_800F4E6B = func_8008A4FC();
@@ -3797,13 +3806,13 @@ int vs_menu7_saveMenu(char* arg0)
             sp20[0] |= 1;
         }
         temp_s0 = vs_main_settings.cursorMemory;
-        if (*arg0 != 4) {
+        if (*state != loadWait) {
             vs_main_settings.cursorMemory = 1;
         }
         func_801005E0(2, 0x143, (u_short**)sp10, sp20);
         vs_main_settings.cursorMemory = temp_s0;
         func_8008A4DC(0);
-        *arg0 = 6;
+        *state = 6;
         break;
     case 6:
         temp_s0 = func_801008C8() + 1;
@@ -3813,61 +3822,61 @@ int vs_menu7_saveMenu(char* arg0)
                 _initFileMenu();
                 switch (temp_s0) {
                 case 1:
-                    *arg0 = 7;
+                    *state = initSaveMenu;
                     break;
                 case 2:
-                    *arg0 = 9;
+                    *state = initFileMenu;
                     break;
                 }
             } else {
                 func_8008A4DC(1);
                 func_800FA8E0(0x28);
                 if (temp_s0 == -2) {
-                    *arg0 = 0xC;
+                    *state = 12;
                 } else {
-                    *arg0 = 0xB;
+                    *state = 11;
                 }
             }
         } else {
             if ((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0)
                 && (func_801008B0() == 0)) {
                 func_800C8E04(1);
-                D_800F514C = 0xB;
+                D_800F514C = 11;
             } else {
                 D_800F514C = 0;
             }
         }
         break;
-    case 7:
+    case initSaveMenu:
         if (vs_mainmenu_readyForInput() != 0) {
             _showSaveMenu(1);
-            *arg0 = 8;
+            *state = showSaveMenu;
         }
         break;
-    case 8:
+    case showSaveMenu:
         if (_showSaveMenu(0) != 0) {
-            *arg0 = 5;
+            *state = 5;
         }
         _drawFileMenu(vs_main_frameBuf);
         break;
-    case 9:
+    case initFileMenu:
         if (vs_mainmenu_readyForInput() != 0) {
             _loadFileMenu(1);
-            *arg0 = 0xA;
+            *state = handleInput;
         }
         break;
-    case 10:
+    case handleInput:
         temp_s0 = _loadFileMenu(0);
         if (temp_s0 != 0) {
             if (temp_s0 < 0) {
-                *arg0 = 5;
+                *state = 5;
                 break;
             }
-            setRECT(&rect, 0, 0, 0x280, 0xF0);
+            setRECT(&rect, 0, 0, 640, 240);
             DrawSync(0);
             ClearImage(&rect, 0, 0, 0);
             _shutdownMemcard();
-            *arg0 = 0;
+            *state = 0;
             DrawSync(0);
             vs_main_jumpToBattle();
             break;
@@ -3878,13 +3887,13 @@ int vs_menu7_saveMenu(char* arg0)
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
-        *arg0 = 0xD;
+        *state = 13;
         break;
     case 12:
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
-        *arg0 = 0xE;
+        *state = 14;
         break;
     case 13:
     case 14:
@@ -3892,10 +3901,10 @@ int vs_menu7_saveMenu(char* arg0)
             break;
         }
         _shutdownMemcard();
-        if (*arg0 == 0xE) {
+        if (*state == 14) {
             D_800F51C0.unk0 = 7;
         }
-        *arg0 = 0;
+        *state = 0;
         return 1;
     }
     return 0;

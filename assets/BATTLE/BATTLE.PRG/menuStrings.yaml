@@ -10,7 +10,7 @@ score: SCORE
 quickManual: QUICK MANUAL
 debug: DEBUG
 commandDisabled: |-
-  \uE0F80This command cannot be used
+  |!0|This command cannot be used
   |$0|
 _0:
 cubeDisabled: when manipulating cubes.

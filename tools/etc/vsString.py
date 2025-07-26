@@ -10,7 +10,7 @@ def vsString(length):
     vsString.__name__ = f"vsString_{length}"
     return vsString
 
-utf8_table = [
+table = [
     '0', '1', '2', '3', '4', '5', '6', '7', # 0x00
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
     'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', # 0x10
@@ -42,56 +42,51 @@ utf8_table = [
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
     '\n', '', '', '', '', '', '', '\uE0EF', #
     '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
-    '\uE0F8', '', '\uE0FA', '', '', '', '', '\uE0FF',
+    '|!', '', '|>', '', '', '', '', '|$',
 ]
 
+# Upon decoding, functions are denoted by enclosing within ||, 
+# as it's the only common symbol not represented in the default text table.
+
+# String functions, 1-byte argument
+# 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string
+# 0xFA -> |>n|: Advances the next glyph position by n pixels
+# 0xFF -> |$n|: Inserts another string with ID n
 
 def decode(s):
     result = ""
     i = 0
     while i < len(s):
-        if s[i] == 0xEB: # Alignment
-            i += 1
-        elif s[i] == 0xFA: # Advance glyph position
-            result += f"|>{s[i + 1]}|"
-            i += 2
-        elif s[i] == 0xFF: # Insert reference
-            result += f"|${s[i + 1]}|"
-            i += 2
-        else:
-            if utf8_table[s[i]] == '':
-                raise ValueError(f"Invalid byte {s[i]} in vsString")
-            result += utf8_table[s[i]]
-            i += 1
+        match s[i]:
+            case 0xEB:  # 2-byte alignment, ignored
+                i += 1
+            case 0xF8 | 0xFA | 0xFF:
+                result += f"{table[s[i]]}{s[i + 1]}|"
+                i += 2
+            case _:
+                if table[s[i]] == '':
+                    raise ValueError(f"Invalid byte {s[i]} in vsString")
+                result += table[s[i]]
+                i += 1
     return result
 
 def encode_raw(s):
     result = []
     i = 0
     while i < len(s):
-        if s[i:i+2] == '|>':
-            i += 2
-            end = s.find('|', i)
+        if s[i] == '|':
+            end = s.find('|', i + 3)
             if end == -1:
+                print(s)
                 raise ValueError("Unterminated control")
-            result.extend([0xFA, int(s[i:end].strip())])
-            i += (end - i) + 1
-        elif s[i:i+2] == '|$':
-            i += 2
-            end = s.find('|', i)
-            if end == -1:
-                raise ValueError("Unterminated control")
-            result.extend([0xFF, int(s[i:end].strip())])
-            i += (end - i) + 1
+            result.extend([table.index(s[i:i+2]), int(s[i+2:end].strip())])
+            i = end + 1
         elif s[i:i+3] == "Lv.":
-            result.append(utf8_table.index("Lv."))
+            result.append(table.index("Lv."))
             i += 3
         else:
-            try:
-                result.append(utf8_table.index(s[i]))
-                i += 1
-            except ValueError:
-                raise ValueError(s)
+            result.append(table.index(s[i]))
+            i += 1
     return bytes(result)
 
 def encode(s):

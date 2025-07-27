@@ -9,9 +9,6 @@ int func_80102A4C(int);
 int func_80102F68(int);
 
 extern u_short _strings[];
-extern int D_80104510;
-extern int D_80104514;
-extern int D_80104518;
 
 static void _setArtCost(int art)
 {
@@ -80,6 +77,9 @@ INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102A4C);
 
 int func_80102F68(int arg0)
 {
+    extern int D_80104510;
+    extern int D_80104514;
+    
     u_short* sp18[10][2];
     int sp68[10];
     int j;
@@ -161,6 +161,8 @@ int vs_menu1_exec(char* state)
 {
     enum state { init = 3 };
 
+    extern int D_80104518;
+    
     int temp_v0;
     int var_a0;
     char temp_a1;

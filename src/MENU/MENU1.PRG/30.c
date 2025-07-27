@@ -4,6 +4,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "../../../build/src/MENU/MENU1.PRG/strings.h"
 
 static void _setArtCost(int art)
 {
@@ -72,87 +73,91 @@ u_short _strings[] = {
 #include "../../assets/MENU/MENU1.PRG/strings.dat"
 };
 
-static int func_80102A4C(int arg0)
+static int func_80102A4C(int typeCursorMem)
 {
-    static int D_80104500 = 0;
+    enum state { init };
+
+    static int state = 0;
     static int D_80104504 = 0;
-    static int D_80104508 = 0;
-    static int D_8010450C = 0;
+    static int forceCursorMemory = 0;
+    static int weaponType = 0;
     static char D_8010452C;
     static u_char D_8010452D;
-    static char D_8010452E;
+    static char artsLearned;
     static char D_8010452F;
     static char _[12];
-    static u_short D_8010453C[4];
+    static u_short skills[4];
 
-    char* sp18[10];
+    char* menuStrings[10];
     int sp40[5];
-    int temp_s2;
+    int skillInfo;
     int i;
-    int var_s3;
+    int artCount;
     vs_battle_menuItem_t* temp_v0;
-    int mem;
+    int cursorMemory;
 
-    if (arg0 != 0) {
-        int new_var = arg0 >> 4;
-        arg0 &= 0xF;
+    if (typeCursorMem != 0) {
         D_8010452C = 0;
-        D_8010452D = 0xA;
-        D_80104508 = new_var;
-        D_8010450C = arg0;
+        D_8010452D = 10;
+        forceCursorMemory = typeCursorMem >> 4;
+        typeCursorMem &= 0xF;
+        weaponType = typeCursorMem;
         temp_v0 = vs_battle_setMenuItem(
-            0xA, 0x140, 0x22, 0x7E, 8, (char*)&_strings[_strings[(arg0 - 1) * 3]]);
+            10, 320, 34, 0x7E, 8, (char*)&_strings[_strings[(typeCursorMem - 1) * 3]]);
         temp_v0->state = 2;
-        temp_v0->x = 0xB4;
+        temp_v0->x = 180;
         temp_v0->selected = 1;
-        temp_v0->unk9 = arg0;
-        D_80104500 = 0;
+        temp_v0->weaponType = typeCursorMem;
+        state = init;
         return 0;
     }
-    switch (D_80104500) {
-    case 0:
-        if ((D_800F4E6A != 0) || (vs_mainmenu_readyForInput() != 0)) {
-            var_s3 = 0;
-            for (i = 0; i < 4; ++i) {
-                temp_s2 = 0xB8 + (D_8010450C - 1) * 4 + i;
-                if ((vs_main_skills[temp_s2].flags >> 0xF) & 1) {
-                    sp18[var_s3 * 2] = (char*)vs_main_skills[temp_s2].name;
-                    sp18[var_s3 * 2 + 1]
-                        = (char*)&_strings[_strings[32 + i + ((D_8010450C - 1) * 4)]];
-                    sp40[var_s3] = 0;
-                    if ((D_8010450C != D_800F19FC->unk25)
-                        || (vs_battle_getSkillFlags(0, temp_s2) != 0)) {
-                        sp40[var_s3] = 1;
-                    }
-                    D_8010453C[var_s3] = temp_s2;
-                    ++var_s3;
-                }
-            }
-
-            for (i = 0; i < 4; ++i) {
-                if (D_800F4EA0 & 0x15F) {
-                    sp40[i] |= 1;
-                }
-            }
-
-            if (D_800F4E6A == 0) {
-                sp18[var_s3 * 2] = (char*)&_strings[569];
-                sp18[var_s3 * 2 + 1] = (char*)&_strings[569 + 5];
-                sp40[var_s3] = 2;
-                D_8010453C[var_s3] = 0xFFFF;
-                ++var_s3;
-            }
-            mem = vs_main_settings.cursorMemory;
-            if (D_80104508 != 0) {
-                vs_main_settings.cursorMemory = 1;
-                D_80104508 = 0;
-            }
-            func_801005E0(var_s3, (D_8010450C + 0xB) | 0x200, sp18, sp40);
-            vs_main_settings.cursorMemory = mem;
-            D_80104500 = 1;
-            D_8010452E = var_s3;
-            D_8010452F = var_s3;
+    switch (state) {
+    case init:
+        if ((D_800F4E6A == 0) && (vs_mainmenu_readyForInput() == 0)) {
+            break;
         }
+        artCount = 0;
+        for (i = 0; i < 4; ++i) {
+            skillInfo = 0xB8 + (weaponType - 1) * 4 + i;
+            if ((vs_main_skills[skillInfo].flags >> 0xF) & 1) {
+                menuStrings[artCount * 2] = (char*)vs_main_skills[skillInfo].name;
+                menuStrings[artCount * 2 + 1]
+                    = (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
+                        + ((weaponType - 1) * 4)]];
+                sp40[artCount] = 0;
+                if ((weaponType != D_800F19FC->unk25)
+                    || (vs_battle_getSkillFlags(0, skillInfo) != 0)) {
+                    sp40[artCount] = 1;
+                }
+                skills[artCount] = skillInfo;
+                ++artCount;
+            }
+        }
+
+        for (i = 0; i < 4; ++i) {
+            if (D_800F4EA0 & 0x15F) {
+                sp40[i] |= 1;
+            }
+        }
+
+        if (D_800F4E6A == 0) {
+            menuStrings[artCount * 2] = (char*)&_strings[VS_strings_OFFSET_viewArts];
+            menuStrings[artCount * 2 + 1]
+                = (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
+            sp40[artCount] = 2;
+            skills[artCount] = 0xFFFF;
+            ++artCount;
+        }
+        cursorMemory = vs_main_settings.cursorMemory;
+        if (forceCursorMemory != 0) {
+            vs_main_settings.cursorMemory = 1;
+            forceCursorMemory = 0;
+        }
+        func_801005E0(artCount, (weaponType + 11) | 0x200, menuStrings, sp40);
+        vs_main_settings.cursorMemory = cursorMemory;
+        state = 1;
+        artsLearned = artCount;
+        D_8010452F = artCount;
         break;
     case 1:
         if (D_8010452F != 0) {
@@ -164,20 +169,20 @@ static int func_80102A4C(int arg0)
         if (D_80104504 != 0) {
             D_8010452C = 0;
             if (D_80104504 > 0) {
-                D_80104504 = D_8010453C[D_80104504 - 1];
+                D_80104504 = skills[D_80104504 - 1];
             } else if (D_800F4E6A != 0) {
                 D_80104504 = -2;
             }
             if (D_80104504 == 0xFFFF) {
                 func_800FA8E0(1);
             } else {
-                func_800FA8E0(0x28);
+                func_800FA8E0(40);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
-            D_80104500 = 2;
+            state = 2;
         } else {
-            i = D_8010453C[func_801008B0()];
+            i = skills[func_801008B0()];
             if (i != 0xFFFF) {
                 _setArtCost(i);
             }
@@ -195,57 +200,59 @@ static int func_80102A4C(int arg0)
             --D_8010452D;
         }
     } else {
-        D_8010452D = *(D_8010452D + D_800EBC7C);
+        D_8010452D = D_800EBC7C[D_8010452D];
     }
-    _drawPointsRemaining(D_800EBBC8[D_8010452D], D_8010450C, D_8010452E);
+    _drawPointsRemaining(D_800EBBC8[D_8010452D], weaponType, artsLearned);
     return 0;
 }
 
-static int func_80102F68(int arg0)
+static int func_80102F68(int init)
 {
-    static int D_80104510 = 0;
+    enum state { initialize };
+
+    static int state = 0;
     static int D_80104514 = 0;
 
-    char* sp18[10][2];
+    char* menuStrings[10][2];
     int sp68[10];
     int j;
     int i;
-    vs_battle_menuItem_t* temp_v0;
 
-    if (arg0 != 0) {
-        temp_v0
-            = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x7E, 8, (char*)(_strings + 569));
-        temp_v0->state = 2;
-        temp_v0->x = 0xB4;
-        temp_v0->selected = 1;
-        D_80104510 = 0;
+    if (init != 0) {
+        vs_battle_menuItem_t* menuItem
+            = vs_battle_setMenuItem(10, 320, 34, 0x7E, 8, (char*)(_strings + 569));
+        menuItem->state = 2;
+        menuItem->x = 180;
+        menuItem->selected = 1;
+        state = initialize;
         return 0;
     }
 
-    switch (D_80104510) {
-    case 0:
-        if (vs_mainmenu_readyForInput() != 0) {
-            for (i = 0; i < 10; ++i) {
-                int v = 1;
-                sp18[i][0] = (char*)&_strings[_strings[i * 3]];
-                sp18[i][v] = (char*)&_strings[_strings[(i * 3) + 1]];
-                sp68[i] = 0x04000000 * (i + 1);
-                for (j = 0; j < 4; ++j) {
-                    if ((vs_main_skills[((i * 4) + 0xB8) + j].flags >> 0xF) & 1) {
-                        break;
-                    }
-                }
-                if (j == 4) {
-                    int v = 1;
-                    sp18[i][v] = (char*)&_strings[_strings[(i * 3) + 2]];
-                    sp68[i] |= 1;
-                } else if (i == (D_800F19FC->unk25 - 1)) {
-                    sp68[i] |= 4;
+    switch (state) {
+    case initialize:
+        if (vs_mainmenu_readyForInput() == 0) {
+            break;
+        }
+        for (i = 0; i < 10; ++i) {
+            int v = 1;
+            menuStrings[i][0] = (char*)&_strings[_strings[i * 3]];
+            menuStrings[i][v] = (char*)&_strings[_strings[(i * 3) + 1]];
+            sp68[i] = 0x04000000 * (i + 1);
+            for (j = 0; j < 4; ++j) {
+                if ((vs_main_skills[((i * 4) + 0xB8) + j].flags >> 0xF) & 1) {
+                    break;
                 }
             }
-            func_801005E0(10, 0x216, (char**)sp18, sp68);
-            D_80104510 = 1;
+            if (j == 4) {
+                int v = 1;
+                menuStrings[i][v] = (char*)&_strings[_strings[(i * 3) + 2]];
+                sp68[i] |= 1;
+            } else if (i == (D_800F19FC->unk25 - 1)) {
+                sp68[i] |= 4;
+            }
         }
+        func_801005E0(10, 0x216, (char**)menuStrings, sp68);
+        state = 1;
         break;
     case 1:
         D_80104514 = func_801008C8() + 1;
@@ -257,7 +264,7 @@ static int func_80102F68(int arg0)
             } else {
                 func_800FA8E0(1);
             }
-            D_80104510 = 2;
+            state = 2;
         }
         break;
     case 2:
@@ -269,11 +276,11 @@ static int func_80102F68(int arg0)
     return 0;
 }
 
-static void func_801031FC()
+static void _setMenuTitle()
 {
     vs_battle_menuItem_t* temp_v0;
 
-    temp_v0 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8,
+    temp_v0 = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings
             [vs_battle_menuStrings[VS_menuStrings_INDEX_breakArts]]);
     temp_v0->state = 2;
@@ -307,7 +314,7 @@ int vs_menu1_exec(char* state)
         *state = 6;
         break;
     case 5:
-        func_801031FC();
+        _setMenuTitle();
         var_a0 = D_80104518 | 0x10;
         func_80102A4C(var_a0);
         *state = 6;

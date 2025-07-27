@@ -4,10 +4,10 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
 
-extern char _digitBuffer[];
-
 static void _setArtCost(int art)
 {
+    extern char _digitBuffer[16];
+
     int flags;
     int i;
     int cost;
@@ -26,7 +26,7 @@ static void _setArtCost(int art)
     } while (cost != 0);
 
     --i;
-    _digitBuffer[i] = 0x23;
+    _digitBuffer[i] = '#';
     vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
@@ -42,10 +42,10 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
     category = weaponCategory;
     category %= 10;
 
-    i = vs_main_weaponKills.artsLearned[category];
+    i = vs_main_artsStatus.artsLearned[category];
     if (i != 4) {
-        points = vs_main_weaponKills.kills[category];
-        points = D_8004FDE4[category][i] - points;
+        points = vs_main_artsStatus.kills[category];
+        points = vs_main_artsPointsRequirements[category][i] - points;
         if (points < 0) {
             points = 0;
         }

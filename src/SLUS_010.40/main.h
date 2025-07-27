@@ -193,7 +193,7 @@ typedef struct {
 typedef struct {
     char artsLearned[12];
     u_short kills[12];
-} vs_main_weaponKills_t;
+} vs_main_artsStatus_t;
 
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
@@ -205,7 +205,7 @@ extern int vs_main_titleScreenCount;
 extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
 extern char D_8004FCCC[];
-extern u_short D_8004FDE4[][4];
+extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short D_8005046A;
 extern u_int D_80055C80[];
 extern void* D_8005E0C0[];
@@ -228,7 +228,7 @@ extern char vs_main_soundMono;
 extern char vs_main_vibrationEnabled;
 extern u_short D_80060022;
 extern char D_80060028;
-extern vs_main_weaponKills_t vs_main_weaponKills;
+extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern int D_80060148[][8];

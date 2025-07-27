@@ -45,6 +45,9 @@ table = [
     '|!', '', '|>', '', '', '', '', '|$',
 ]
 
+# This isn't the only encoding used in the game, occasionally
+# ASCII can be found, where digits are seemingly prefixed with #
+
 # Upon decoding, functions are denoted by enclosing within ||, 
 # as it's the only common symbol not represented in the default text table.
 

@@ -73,7 +73,7 @@ u_short _strings[] = {
 #include "../../assets/MENU/MENU1.PRG/strings.dat"
 };
 
-static int func_80102A4C(int typeCursorMem)
+static int _drawArtsList(int typeCursorMem)
 {
     enum state { init };
 
@@ -103,7 +103,7 @@ static int func_80102A4C(int typeCursorMem)
         typeCursorMem &= 0xF;
         weaponType = typeCursorMem;
         temp_v0 = vs_battle_setMenuItem(
-            10, 320, 34, 0x7E, 8, (char*)&_strings[_strings[(typeCursorMem - 1) * 3]]);
+            10, 320, 34, 0x7E, 8, (char*)&_strings[_strings[(weaponType - 1) * 3]]);
         temp_v0->state = 2;
         temp_v0->x = 180;
         temp_v0->selected = 1;
@@ -206,7 +206,7 @@ static int func_80102A4C(int typeCursorMem)
     return 0;
 }
 
-static int func_80102F68(int init)
+static int _drawWeaponTypeList(int init)
 {
     enum state { initialize };
 
@@ -220,7 +220,7 @@ static int func_80102F68(int init)
 
     if (init != 0) {
         vs_battle_menuItem_t* menuItem
-            = vs_battle_setMenuItem(10, 320, 34, 0x7E, 8, (char*)(_strings + 569));
+            = vs_battle_setMenuItem(10, 320, 34, 0x7E, 8, (char*)(_strings + VS_strings_OFFSET_viewArts));
         menuItem->state = 2;
         menuItem->x = 180;
         menuItem->selected = 1;
@@ -310,24 +310,24 @@ int vs_menu1_exec(char* state)
         // Fallthrough
     case 4:
         var_a0 = D_80104518;
-        func_80102A4C(var_a0);
+        _drawArtsList(var_a0);
         *state = 6;
         break;
     case 5:
         _setMenuTitle();
         var_a0 = D_80104518 | 0x10;
-        func_80102A4C(var_a0);
+        _drawArtsList(var_a0);
         *state = 6;
         break;
     case 6:
-        temp_v0 = func_80102A4C(0);
+        temp_v0 = _drawArtsList(0);
         if (temp_v0 == 0) {
             break;
         }
         if (temp_v0 > 0) {
             if (temp_v0 == 0xFFFF) {
                 *state = 7;
-                func_80102F68(1);
+                _drawWeaponTypeList(1);
             } else {
                 D_800F4E9C = temp_v0;
                 D_800F51C2 = 5;
@@ -340,7 +340,7 @@ int vs_menu1_exec(char* state)
         }
         break;
     case 7:
-        temp_v0 = func_80102F68(0);
+        temp_v0 = _drawWeaponTypeList(0);
         if (temp_v0 == 0) {
             break;
         }

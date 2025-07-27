@@ -1,18 +1,13 @@
-#include "common.h"
+#include "30.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
 
-int func_80102A4C(int);
-int func_80102F68(int);
-
-extern u_short _strings[];
-
 static void _setArtCost(int art)
 {
-    extern char _digitBuffer[16];
+    static char _digitBuffer[16];
 
     int flags;
     int i;
@@ -36,7 +31,7 @@ static void _setArtCost(int art)
     vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
-void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
+static void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
 {
     char pointsBuf[16];
     int pos;
@@ -73,20 +68,23 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
     }
 }
 
-extern char D_800EBC7C[];
-extern char D_801022D4;
-extern int D_80104500;
-extern int D_80104504;
-extern int D_80104508;
-extern int D_8010450C;
-extern char D_8010452C;
-extern u_char D_8010452D;
-extern char D_8010452E;
-extern char D_8010452F;
-extern u_short D_8010453C[];
+u_short _strings[] = {
+#include "../../assets/MENU/MENU1.PRG/strings.dat"
+};
 
-int func_80102A4C(int arg0)
+static int func_80102A4C(int arg0)
 {
+    static int D_80104500 = 0;
+    static int D_80104504 = 0;
+    static int D_80104508 = 0;
+    static int D_8010450C = 0;
+    static char D_8010452C;
+    static u_char D_8010452D;
+    static char D_8010452E;
+    static char D_8010452F;
+    static char _[12];
+    static u_short D_8010453C[4];
+
     char* sp18[10];
     int sp40[5];
     int temp_s2;
@@ -203,10 +201,10 @@ int func_80102A4C(int arg0)
     return 0;
 }
 
-int func_80102F68(int arg0)
+static int func_80102F68(int arg0)
 {
-    extern int D_80104510;
-    extern int D_80104514;
+    static int D_80104510 = 0;
+    static int D_80104514 = 0;
 
     char* sp18[10][2];
     int sp68[10];
@@ -271,7 +269,7 @@ int func_80102F68(int arg0)
     return 0;
 }
 
-void func_801031FC()
+static void func_801031FC()
 {
     vs_battle_menuItem_t* temp_v0;
 
@@ -289,7 +287,7 @@ int vs_menu1_exec(char* state)
 {
     enum state { init = 3 };
 
-    extern int D_80104518;
+    static int D_80104518 = 0;
 
     int temp_v0;
     int var_a0;

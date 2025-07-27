@@ -8,6 +8,9 @@
 int func_80102A4C(int);
 int func_80102F68(int);
 
+extern u_short _strings[];
+extern int D_80104510;
+extern int D_80104514;
 extern int D_80104518;
 
 static void _setArtCost(int art)
@@ -75,7 +78,70 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
 
 INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102A4C);
 
-INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102F68);
+int func_80102F68(int arg0)
+{
+    u_short* sp18[10][2];
+    int sp68[10];
+    int j;
+    int i;
+    vs_battle_menuItem_t* temp_v0;
+
+    if (arg0 != 0) {
+        temp_v0
+            = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x7E, 8, (char*)(_strings + 569));
+        temp_v0->state = 2;
+        temp_v0->x = 0xB4;
+        temp_v0->selected = 1;
+        D_80104510 = 0;
+        return 0;
+    }
+
+    switch (D_80104510) {
+    case 0:
+        if (vs_mainmenu_readyForInput() != 0) {
+            for (i = 0; i < 10; ++i) {
+                int v = 1;
+                sp18[i][0] = &_strings[_strings[i * 3]];
+                sp18[i][v] = &_strings[_strings[(i * 3) + 1]];
+                sp68[i] = 0x04000000 * (i + 1);
+                for (j = 0; j < 4; ++j) {
+                    if ((vs_main_skills[((i * 4) + 0xB8) + j].flags >> 0xF) & 1) {
+                        break;
+                    }
+                }
+                if (j == 4) {
+                    int v = 1;
+                    sp18[i][v] = &_strings[_strings[(i * 3) + 2]];
+                    sp68[i] |= 1;
+                } else if (i == (D_800F19FC->unk25 - 1)) {
+                    sp68[i] |= 4;
+                }
+            }
+            func_801005E0(10, 0x216, sp18, sp68);
+            D_80104510 = 1;
+        }
+        break;
+    case 1:
+        D_80104514 = func_801008C8() + 1;
+        if (D_80104514 != 0) {
+            if (D_80104514 == -2) {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            } else {
+                func_800FA8E0(1);
+            }
+            D_80104510 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_readyForInput() != 0) {
+            return D_80104514;
+        }
+        break;
+    }
+    return 0;
+}
 
 void func_801031FC()
 {

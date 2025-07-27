@@ -3809,7 +3809,7 @@ int vs_menu7_saveMenu(char* state)
         if (*state != loadWait) {
             vs_main_settings.cursorMemory = 1;
         }
-        func_801005E0(2, 0x143, (u_short**)sp10, sp20);
+        func_801005E0(2, 0x143, sp10, sp20);
         vs_main_settings.cursorMemory = temp_s0;
         func_8008A4DC(0);
         *state = 6;

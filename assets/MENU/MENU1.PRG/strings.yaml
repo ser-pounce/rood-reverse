@@ -1,0 +1,132 @@
+dagger: DAGGER
+daggerDesc: Special attacks for daggers.
+noDaggerArts: |-
+  Ashley has yet to learn
+  any Break Arts for the dagger.
+sword: SWORD
+swordDesc: Special attacks for swords.
+noSwordArts: |-
+  Ashley has yet to learn
+  any Break Arts for the sword.
+greatsword: GREAT SWORD
+greatswordDesc: Special attacks for great swords.
+noGreatswordArts: |-
+  Ashley has yet to learn any
+  Break Arts for the great sword.
+axeMace: AXE & MACE
+axeMaceDesc: Special attacks for axes and maces.
+noAxeMaceArts: |-
+  Ashley has yet to learn any
+  Break Arts for axes & maces.
+greataxe: GREAT AXE
+greataxeDesc: Special attacks for great axes.
+noGreataxeArts: |-
+  Ashley has yet to learn any
+  Break Arts for the great axe.
+staff: STAFF
+staffDesc: Special attacks for staves.
+noStaffArts: |-
+  Ashley has yet to learn any
+  Break Arts for the staff.
+heavymace: HEAVY MACE
+heaveymaceDesc: Special attacks for heavy maces.
+noHeavymaceArts: |-
+  Ashley has yet to learn any
+  Break Arts for the heavy mace.
+polearm: POLEARM
+polearmDesc: Special attacks for polearms.
+noPolearmArts: |-
+  Ashley has yet to learn any
+  Break Arts for the polearm.
+crossbow: CROSSBOW
+crossbowDesc: Special attacks for crossbows.
+noCrossbowArts: |-
+  Ashley has yet to learn any
+  Break Arts for the crossbow.
+barehands: BARE HANDS
+barehandsDesc: Special techniques for bare-handed attacks.
+noBarehandsArts: |-
+  Ashley has yet to learn any
+  Break Arts for bare hands.
+viewArts: View Arts
+viewArtsDesc: Displays a list of all Break Arts.
+daggerArt1Desc: Bludgeons foe with focused power from the blade.
+daggerArt1Stats: 'Affinity: As weapon / Type: Blunt'
+daggerArt2Desc: Paralyzes foe with a damaging strike.
+daggerArt2Stats: 'Affinity: Dark / Type: Blunt'
+daggerArt3Desc: Repeatedly strikes the same location.
+daggerArt3Stats: 'Affinity: As weapon / Type: Piercing'
+daggerArt4Desc: Splits the blade to attack from all directions.
+daggerArt4Stats: 'Affinity: As weapon / Type: Piercing'
+swordArt1Desc: Launches a sonic wave to shred foe to pieces.
+swordArt1Stats: 'Affinity: As weapon / Type: Piercing'
+swordArt2Desc: Forms a poisonous cloud to choke the enemy.
+swordArt2Stats: 'Affinity: As weapon / Type: Edged'
+swordArt3Desc: Encases both blade and foe in an icy sheath.
+swordArt3Stats: 'Affinity: Water / Type: Edged'
+swordArt4Desc: Calls heavenly light down into the blade.
+swordArt4Stats: 'Affinity: Light / Type: Edged'
+greatswordArt1Desc: Focused energies cut the life from foe.
+greatswordArt1Stats: 'Affinity: As weapon / Type: Piercing'
+greatswordArt2Desc: Paralyzes foe with a damaging strike.
+greatswordArt2Stats: 'Affinity: Air / Type: Edged'
+greatswordArt3Desc: A quick snap of the blade deals double damage.
+greatswordArt3Stats: 'Affinity: As weapon / Type: Edged'
+greatswordArt4Desc: Rippling holy energy shreads foe.
+greatswordArt4Stats: 'Affinity: Light / Type: Edged'
+axemaceArt1Desc: Whips a stunning sheet of air at foe.
+axemaceArt1Stats: 'Affinity: As weapon / Type: Blunt'
+axemaceArt2Desc: Numbs foe with a damaging strike.
+axemaceArt2Stats: 'Affinity: Air / Type: Blunt'
+axemaceArt3Desc: A blinding rush damages and saps MP from foe.
+axemaceArt3Stats: 'Affinity: As weapon / Type: Edged'
+axemaceArt4Desc: Blasts foe with a burst of negative energy.
+axemaceArt4Stats: 'Affinity: Dark / Type: Blunt'
+greataxeArt1Desc: Smashes foe with a luminescent downward strike.
+greataxeArt1Stats: 'Affinity: As weapon / Type: Blunt'
+greataxeArt2Desc: Curses foe with a damaging strike.
+greataxeArt2Stats: 'Affinity: As weapon / Type: Blunt'
+greataxeArt3Desc: Powerful blow that damages both armor and foe.
+greataxeArt3Stats: 'Affinity: As weapon / Type: Blunt'
+greataxeArt4Desc: Unleashes a series of slashing blows.
+greataxeArt4Stats: 'Affinity: As weapon / Type: Edged'
+staffArt1Desc: Searing hot winds and wildfire engulf foe.
+staffArt1Stats: 'Affinity: Fire / Type: Blunt'
+staffArt2Desc: Focused blow that deals damage and reduces RISK.
+staffArt2Stats: 'Affinity: As weapon / Type: Piercing'
+staffArt3Desc: Solidifies aether to crush foe.
+staffArt3Stats: 'Affinity: Earth / Type: Blunt'
+staffArt4Desc: Crushes foe with a triad of shock waves.
+staffArt4Stats: 'Affinity: As weapon / Type: Blunt'
+heavymaceArt1Desc: Energy release meets out a bone-crushing blow.
+heavymaceArt1Stats: 'Affinity: As weapon / Type: Blunt'
+heavymaceArt2Desc: Numbs foe with a damaging strike.
+heavymaceArt2Stats: 'Affinity: Air / Type: Blunt'
+heavymaceArt3Desc: A spreading sheet of flame engulfs foe.
+heavymaceArt3Stats: 'Affinity: As weapon & Fire / Type: Blunt'
+heavymaceArt4Desc: Fuses powers of light and darkness in one.
+heavymaceArt4Stats: 'Affinity: Light & Dark / Type: Blunt'
+polearmArt1Desc: Lashes out with a focused thrust of energy.
+polearmArt1Stats: 'Affinity: As weapon / Type: Piercing'
+polearmArt2Desc: Inflicts damage and tarnishes arms and armor.
+polearmArt2Stats: 'Affinity: Air / Type: Piercing'
+polearmArt3Desc: Energy storm damages both armor and foe.
+polearmArt3Stats: 'Affinity: As weapon / Type: Piercing'
+polearmArt4Desc: Whips air moisture into a penetrating whirlwind.
+polearmArt4Stats: 'Affinity: Water / Type: Piercing'
+crossbowArt1Desc: Unleashes the fury of the Dark to damage foe.
+crossbowArt1Stats: 'Affinity: Fire & Dark / Type: Piercing'
+crossbowArt2Desc: The haft becomes a conduit for heaven's light.
+crossbowArt2Stats: 'Affinity: Air & Light / Type: Piercing'
+crossbowArt3Desc: Fires a bolt of pure demonic energy.
+crossbowArt3Stats: 'Affinity: Earth & Dark / Type: Piercing'
+crossbowArt4Desc: Channels the power of the dragons of light.
+crossbowArt4Stats: 'Affinity: Water & Light / Type: Piercing'
+barehandsArt1Desc: Focuses spirit into Ashley's fist.
+barehandsArt1Stats: 'Affinity: Physical / Type: Blunt'
+barehandsArt2Desc: Numbs foe with a damaging strike.
+barehandsArt2Stats: 'Affinity: Physical / Type: Blunt'
+barehandsArt3Desc: Strikes the Dark using the power of light.
+barehandsArt3Stats: 'Affinity: Light / Type: Blunt'
+barehandsArt4Desc: Turns the powers of Dark against itself.
+barehandsArt4Stats: 'Affinity: Dark / Type: Blunt'

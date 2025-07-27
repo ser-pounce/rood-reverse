@@ -1066,7 +1066,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C218);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C28C);
 
-void func_8007C31C() { func_80086754(0, D_800F19FC->unk38); }
+void func_8007C31C() { func_80086754(0, D_800F19FC->unk3C); }
 
 void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, 0, arg1); }
 

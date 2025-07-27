@@ -1,8 +1,12 @@
 #include "common.h"
+#include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
+
+int func_80102A4C(int);
+int func_80102F68(int);
 
 static void _setArtCost(int art)
 {
@@ -85,4 +89,97 @@ void func_801031FC()
     func_800FFBC8();
 }
 
-INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80103270);
+extern short D_800F4E9A;
+extern int D_800F4E9C;
+extern char D_800F51C2;
+extern int D_80104518;
+
+int func_80103270(char* state)
+{
+    int temp_v0;
+    int var_a0;
+    char temp_a1;
+
+    switch (*state) {
+    case 3:
+        if (vs_mainmenu_readyForInput() == 0) {
+            break;
+        }
+        func_800FFBC8();
+        D_80104518 = D_800F19FC->unk25;
+        // Fallthrough
+    case 4:
+        var_a0 = D_80104518;
+        func_80102A4C(var_a0);
+        *state = 6;
+        break;
+    case 5:
+        func_801031FC();
+        var_a0 = D_80104518 | 0x10;
+        func_80102A4C(var_a0);
+        *state = 6;
+        break;
+    case 6:
+        temp_v0 = func_80102A4C(0);
+        if (temp_v0 == 0) {
+            break;
+        }
+        if (temp_v0 > 0) {
+            if (temp_v0 == 0xFFFF) {
+                *state = 7;
+                func_80102F68(1);
+            } else {
+                D_800F4E9C = temp_v0;
+                D_800F51C2 = 5;
+                *state = 9;
+            }
+        } else if (temp_v0 != -2) {
+            *state = 8;
+        } else {
+            *state = 10;
+        }
+        break;
+    case 7:
+        temp_v0 = func_80102F68(0);
+        if (temp_v0 == 0) {
+            break;
+        }
+        if (temp_v0 == -2) {
+            *state = 10;
+        } else {
+            if (temp_v0 > 0) {
+                D_80104518 = temp_v0;
+            }
+            *state = 4;
+        }
+        break;
+    case 8:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_readyForInput() != 0) {
+            *state = 0;
+            return 1;
+        }
+        break;
+    case 9:
+        if (vs_mainmenu_readyForInput() != 0) {
+            D_800F4E9A = 6;
+            temp_a1 = D_800F51C0.unk0;
+            D_800F51C0.unk0 = 2;
+            D_800F51C0.unk1 = temp_a1;
+            *state = 0;
+            return 1;
+        }
+        break;
+    case 10:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_readyForInput() != 0) {
+            D_800F51C0.unk0 = 2;
+            *state = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}

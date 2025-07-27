@@ -57,8 +57,16 @@ typedef struct {
 } D_800F19FC_t2;
 
 typedef struct {
-    int unk0[15];
-    D_800F19FC_t2* unk38;
+    int unk0[9];
+    char unk24;
+    char unk25;
+    short unk26;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    D_800F19FC_t2* unk3C;
 } D_800F19FC_t;
 
 void func_80069FC4(int, int);

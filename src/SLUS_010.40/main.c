@@ -8435,7 +8435,7 @@ void func_80042CB0()
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;
     }
-    temp_t0 = D_800F19FC->unk38;
+    temp_t0 = D_800F19FC->unk3C;
     temp_t5 = &D_80060068;
     temp_t5->unk0.currentHP = temp_t0->unk0[12];
     temp_t5->unk0.maxHP = temp_t0->unk0[13];

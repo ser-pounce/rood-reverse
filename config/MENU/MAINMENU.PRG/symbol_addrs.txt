@@ -1,1 +1,2 @@
+_submenuEntrypoints = 0x80102038;
 _textHeaders = 0x80102558;

@@ -8,6 +8,8 @@
 int func_80102A4C(int);
 int func_80102F68(int);
 
+extern int D_80104518;
+
 static void _setArtCost(int art)
 {
     extern char _digitBuffer[16];
@@ -89,19 +91,16 @@ void func_801031FC()
     func_800FFBC8();
 }
 
-extern short D_800F4E9A;
-extern int D_800F4E9C;
-extern char D_800F51C2;
-extern int D_80104518;
-
-int func_80103270(char* state)
+int vs_menu1_exec(char* state)
 {
+    enum state { init = 3 };
+
     int temp_v0;
     int var_a0;
     char temp_a1;
 
     switch (*state) {
-    case 3:
+    case init:
         if (vs_mainmenu_readyForInput() == 0) {
             break;
         }

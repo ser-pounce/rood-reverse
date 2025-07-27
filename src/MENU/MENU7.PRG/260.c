@@ -3774,7 +3774,7 @@ int vs_menu7_saveMenu(char* state)
         handleInput,
     };
 
-    u_short* sp10[2][2];
+    char* sp10[2][2];
     int sp20[2];
     RECT rect;
     int temp_s0;
@@ -3797,8 +3797,8 @@ int vs_menu7_saveMenu(char* state)
     case 5:
         new_var = 1;
         for (temp_s0 = 0; temp_s0 < 2; ++temp_s0) {
-            sp10[temp_s0][0] = &_textTable[_textTable[temp_s0 * 2]];
-            sp10[temp_s0][new_var] = _textTable + VS_MCMAN_OFFSET_saveDisabled;
+            sp10[temp_s0][0] = (char*)&_textTable[_textTable[temp_s0 * 2]];
+            sp10[temp_s0][new_var] = (char*)&_textTable[VS_MCMAN_OFFSET_saveDisabled];
             sp20[temp_s0] = 0;
         }
         D_800F4E6B = func_8008A4FC();
@@ -3809,7 +3809,7 @@ int vs_menu7_saveMenu(char* state)
         if (*state != loadWait) {
             vs_main_settings.cursorMemory = 1;
         }
-        func_801005E0(2, 0x143, sp10, sp20);
+        func_801005E0(2, 0x143, (char**)sp10, sp20);
         vs_main_settings.cursorMemory = temp_s0;
         func_8008A4DC(0);
         *state = 6;

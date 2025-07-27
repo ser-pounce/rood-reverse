@@ -9,7 +9,10 @@ typedef struct {
     short unk4;
     signed char selected;
     signed char unk7;
-    int unk8;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
     char unkC;
     char unkD;
     short unkE;

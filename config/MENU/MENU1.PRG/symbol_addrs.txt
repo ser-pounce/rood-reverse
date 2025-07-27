@@ -1,4 +1,7 @@
 _setArtCost = 0x80102830;
 _drawPointsRemaining = 0x80102914;
-_digitBuffer = 0x8010451C;
 _strings = 0x80103478;
+_digitBuffer = 0x8010451C;
+D_8010452D = 0x8010452D;
+D_8010452E = 0x8010452E;
+D_8010452F = 0x8010452F;

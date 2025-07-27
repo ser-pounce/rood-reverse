@@ -73,14 +73,142 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU1.PRG/nonmatchings/30", func_80102A4C);
+extern char D_800EBC7C[];
+extern char D_801022D4;
+extern int D_80104500;
+extern int D_80104504;
+extern int D_80104508;
+extern int D_8010450C;
+extern char D_8010452C;
+extern u_char D_8010452D;
+extern char D_8010452E;
+extern char D_8010452F;
+extern u_short D_8010453C[];
+
+int func_80102A4C(int arg0)
+{
+    char* sp18[10];
+    int sp40[5];
+    int temp_s2;
+    int i;
+    int var_s3;
+    vs_battle_menuItem_t* temp_v0;
+    int mem;
+
+    if (arg0 != 0) {
+        int new_var = arg0 >> 4;
+        arg0 &= 0xF;
+        D_8010452C = 0;
+        D_8010452D = 0xA;
+        D_80104508 = new_var;
+        D_8010450C = arg0;
+        temp_v0 = vs_battle_setMenuItem(
+            0xA, 0x140, 0x22, 0x7E, 8, (char*)&_strings[_strings[(arg0 - 1) * 3]]);
+        temp_v0->state = 2;
+        temp_v0->x = 0xB4;
+        temp_v0->selected = 1;
+        temp_v0->unk9 = arg0;
+        D_80104500 = 0;
+        return 0;
+    }
+    switch (D_80104500) {
+    case 0:
+        if ((D_800F4E6A != 0) || (vs_mainmenu_readyForInput() != 0)) {
+            var_s3 = 0;
+            for (i = 0; i < 4; ++i) {
+                temp_s2 = 0xB8 + (D_8010450C - 1) * 4 + i;
+                if ((vs_main_skills[temp_s2].flags >> 0xF) & 1) {
+                    sp18[var_s3 * 2] = (char*)vs_main_skills[temp_s2].name;
+                    sp18[var_s3 * 2 + 1]
+                        = (char*)&_strings[_strings[32 + i + ((D_8010450C - 1) * 4)]];
+                    sp40[var_s3] = 0;
+                    if ((D_8010450C != D_800F19FC->unk25)
+                        || (vs_battle_getSkillFlags(0, temp_s2) != 0)) {
+                        sp40[var_s3] = 1;
+                    }
+                    D_8010453C[var_s3] = temp_s2;
+                    ++var_s3;
+                }
+            }
+
+            for (i = 0; i < 4; ++i) {
+                if (D_800F4EA0 & 0x15F) {
+                    sp40[i] |= 1;
+                }
+            }
+
+            if (D_800F4E6A == 0) {
+                sp18[var_s3 * 2] = (char*)&_strings[569];
+                sp18[var_s3 * 2 + 1] = (char*)&_strings[569 + 5];
+                sp40[var_s3] = 2;
+                D_8010453C[var_s3] = 0xFFFF;
+                ++var_s3;
+            }
+            mem = vs_main_settings.cursorMemory;
+            if (D_80104508 != 0) {
+                vs_main_settings.cursorMemory = 1;
+                D_80104508 = 0;
+            }
+            func_801005E0(var_s3, (D_8010450C + 0xB) | 0x200, sp18, sp40);
+            vs_main_settings.cursorMemory = mem;
+            D_80104500 = 1;
+            D_8010452E = var_s3;
+            D_8010452F = var_s3;
+        }
+        break;
+    case 1:
+        if (D_8010452F != 0) {
+            --D_8010452F;
+        }
+        D_8010452C = D_8010452F == 0;
+        D_80104504 = func_801008C8() + 1;
+        D_801022D4 = 0;
+        if (D_80104504 != 0) {
+            D_8010452C = 0;
+            if (D_80104504 > 0) {
+                D_80104504 = D_8010453C[D_80104504 - 1];
+            } else if (D_800F4E6A != 0) {
+                D_80104504 = -2;
+            }
+            if (D_80104504 == 0xFFFF) {
+                func_800FA8E0(1);
+            } else {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            }
+            D_80104500 = 2;
+        } else {
+            i = D_8010453C[func_801008B0()];
+            if (i != 0xFFFF) {
+                _setArtCost(i);
+            }
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_readyForInput() != 0) {
+            return D_80104504;
+        }
+        break;
+    }
+
+    if (D_8010452C != 0) {
+        if (D_8010452D != 0) {
+            --D_8010452D;
+        }
+    } else {
+        D_8010452D = *(D_8010452D + D_800EBC7C);
+    }
+    _drawPointsRemaining(D_800EBBC8[D_8010452D], D_8010450C, D_8010452E);
+    return 0;
+}
 
 int func_80102F68(int arg0)
 {
     extern int D_80104510;
     extern int D_80104514;
-    
-    u_short* sp18[10][2];
+
+    char* sp18[10][2];
     int sp68[10];
     int j;
     int i;
@@ -101,8 +229,8 @@ int func_80102F68(int arg0)
         if (vs_mainmenu_readyForInput() != 0) {
             for (i = 0; i < 10; ++i) {
                 int v = 1;
-                sp18[i][0] = &_strings[_strings[i * 3]];
-                sp18[i][v] = &_strings[_strings[(i * 3) + 1]];
+                sp18[i][0] = (char*)&_strings[_strings[i * 3]];
+                sp18[i][v] = (char*)&_strings[_strings[(i * 3) + 1]];
                 sp68[i] = 0x04000000 * (i + 1);
                 for (j = 0; j < 4; ++j) {
                     if ((vs_main_skills[((i * 4) + 0xB8) + j].flags >> 0xF) & 1) {
@@ -111,13 +239,13 @@ int func_80102F68(int arg0)
                 }
                 if (j == 4) {
                     int v = 1;
-                    sp18[i][v] = &_strings[_strings[(i * 3) + 2]];
+                    sp18[i][v] = (char*)&_strings[_strings[(i * 3) + 2]];
                     sp68[i] |= 1;
                 } else if (i == (D_800F19FC->unk25 - 1)) {
                     sp68[i] |= 4;
                 }
             }
-            func_801005E0(10, 0x216, sp18, sp68);
+            func_801005E0(10, 0x216, (char**)sp18, sp68);
             D_80104510 = 1;
         }
         break;
@@ -162,7 +290,7 @@ int vs_menu1_exec(char* state)
     enum state { init = 3 };
 
     extern int D_80104518;
-    
+
     int temp_v0;
     int var_a0;
     char temp_a1;

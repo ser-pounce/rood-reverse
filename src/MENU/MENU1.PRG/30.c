@@ -50,10 +50,10 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
             points = 0;
         }
         pos = (x + 206) | (((artsLearned * 16) + 50) << 16);
-        i = 0xC;
         pointsBuf[14] = 'T';
         pointsBuf[15] = 0;
         pointsBuf[13] = 'P';
+        i = 12;
         do {
             points = vs_battle_toBCD(points);
             pointsBuf[i] = (points & 0xF) + '0';
@@ -63,7 +63,7 @@ void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
         pointsStr = pointsBuf + i;
         *pointsStr = '#';
         func_800C6828("NEXT", pos, 0);
-        func_800C6828(pointsStr, pos + 0x60, 0);
+        func_800C6828(pointsStr, pos + 96, 0);
     }
 }
 

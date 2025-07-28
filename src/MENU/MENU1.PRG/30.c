@@ -80,7 +80,7 @@ static int _drawArtsList(int typeCursorMem)
     enum state { init };
 
     static int state = 0;
-    static int D_80104504 = 0;
+    static int selectedRow = 0;
     static int forceCursorMemory = 0;
     static int weaponType = 0;
     static char D_8010452C;
@@ -88,7 +88,7 @@ static int _drawArtsList(int typeCursorMem)
     static char artsLearned;
     static char D_8010452F;
     static char _[12];
-    static u_short skills[4];
+    static u_short skillIds[4];
 
     int i;
 
@@ -111,55 +111,56 @@ static int _drawArtsList(int typeCursorMem)
     switch (state) {
     case init: {
         char* menuStrings[10];
-        int sp40[5];
-        int artCount;
+        int rowTypes[5];
+        int rowCount;
         int cursorMemory;
 
-        if ((D_800F4E6A == 0) && (vs_mainmenu_readyForInput() == 0)) {
+        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_readyForInput() == 0)) {
             break;
         }
-        artCount = 0;
+        rowCount = 0;
         for (i = 0; i < 4; ++i) {
             int skillId = vs_main_skills_daggerArt1 + (weaponType - 1) * 4 + i;
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[artCount * 2] = (char*)vs_main_skills[skillId].name;
-                menuStrings[artCount * 2 + 1]
+                menuStrings[rowCount * 2] = (char*)vs_main_skills[skillId].name;
+                menuStrings[rowCount * 2 + 1]
                     = (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
                         + ((weaponType - 1) * 4)]];
-                sp40[artCount] = 0;
+                rowTypes[rowCount] = 0;
                 if ((weaponType != vs_battle_characterState->equippedWeaponType)
                     || (vs_battle_getSkillFlags(0, skillId) != 0)) {
-                    sp40[artCount] = 1;
+                    rowTypes[rowCount] = 1;
                 }
-                skills[artCount] = skillId;
-                ++artCount;
+                skillIds[rowCount] = skillId;
+                ++rowCount;
             }
         }
 
         for (i = 0; i < 4; ++i) {
             if (D_800F4EA0 & 0x15F) {
-                sp40[i] |= 1;
+                rowTypes[i] |= 1;
             }
         }
 
-        if (D_800F4E6A == 0) {
-            menuStrings[artCount * 2] = (char*)&_strings[VS_strings_OFFSET_viewArts];
-            menuStrings[artCount * 2 + 1]
+        if (vs_battle_shortcutInvoked == 0) {
+            menuStrings[rowCount * 2] = (char*)&_strings[VS_strings_OFFSET_viewArts];
+            menuStrings[rowCount * 2 + 1]
                 = (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
-            sp40[artCount] = 2;
-            skills[artCount] = 0xFFFF;
-            ++artCount;
+            rowTypes[rowCount] = 2;
+            skillIds[rowCount] = 0xFFFF;
+            ++rowCount;
         }
         cursorMemory = vs_main_settings.cursorMemory;
         if (forceCursorMemory != 0) {
             vs_main_settings.cursorMemory = 1;
             forceCursorMemory = 0;
         }
-        func_801005E0(artCount, (weaponType + 11) | 0x200, menuStrings, sp40);
+        vs_mainmenu_setMenuRows(
+            rowCount, (weaponType + 11) | 0x200, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = cursorMemory;
         state = 1;
-        artsLearned = artCount;
-        D_8010452F = artCount;
+        artsLearned = rowCount;
+        D_8010452F = rowCount;
         break;
     }
     case 1:
@@ -167,16 +168,16 @@ static int _drawArtsList(int typeCursorMem)
             --D_8010452F;
         }
         D_8010452C = D_8010452F == 0;
-        D_80104504 = func_801008C8() + 1;
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
         D_801022D4 = 0;
-        if (D_80104504 != 0) {
+        if (selectedRow != 0) {
             D_8010452C = 0;
-            if (D_80104504 > 0) {
-                D_80104504 = skills[D_80104504 - 1];
-            } else if (D_800F4E6A != 0) {
-                D_80104504 = -2;
+            if (selectedRow > 0) {
+                selectedRow = skillIds[selectedRow - 1];
+            } else if (vs_battle_shortcutInvoked != 0) {
+                selectedRow = -2;
             }
-            if (D_80104504 == 0xFFFF) {
+            if (selectedRow == 0xFFFF) {
                 func_800FA8E0(1);
             } else {
                 func_800FA8E0(40);
@@ -185,7 +186,7 @@ static int _drawArtsList(int typeCursorMem)
             }
             state = 2;
         } else {
-            i = skills[func_801008B0()];
+            i = skillIds[func_801008B0()];
             if (i != 0xFFFF) {
                 _setArtCost(i);
             }
@@ -193,7 +194,7 @@ static int _drawArtsList(int typeCursorMem)
         break;
     case 2:
         if (vs_mainmenu_readyForInput() != 0) {
-            return D_80104504;
+            return selectedRow;
         }
         break;
     }
@@ -222,8 +223,8 @@ static int _drawWeaponTypeList(int init)
     int i;
 
     if (init != 0) {
-        vs_battle_menuItem_t* menuItem
-            = vs_battle_setMenuItem(10, 320, 34, 0x7E, 8, (char*)(_strings + VS_strings_OFFSET_viewArts));
+        vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
+            10, 320, 34, 0x7E, 8, (char*)(_strings + VS_strings_OFFSET_viewArts));
         menuItem->state = 2;
         menuItem->x = 180;
         menuItem->selected = 1;
@@ -254,11 +255,11 @@ static int _drawWeaponTypeList(int init)
                 sp68[i] |= 4;
             }
         }
-        func_801005E0(10, 0x216, (char**)menuStrings, sp68);
+        vs_mainmenu_setMenuRows(10, 0x216, (char**)menuStrings, sp68);
         state = 1;
         break;
     case 1:
-        D_80104514 = func_801008C8() + 1;
+        D_80104514 = vs_mainmenu_getSelectedRow() + 1;
         if (D_80104514 != 0) {
             if (D_80104514 == -2) {
                 func_800FA8E0(0x28);
@@ -295,9 +296,9 @@ static void _setMenuTitle()
 
 int vs_menu1_exec(char* state)
 {
-    enum state { 
+    enum state {
         init = 3,
-        artsInit, 
+        artsInit,
     };
 
     static int weaponType = 0;

@@ -77,7 +77,7 @@ extern char D_800F4CB8;
 extern char D_800F4CB9;
 extern int D_800F4CBC;
 extern u_long D_800F4CD0;
-extern char D_800F4E6A;
+extern char vs_battle_shortcutInvoked;
 extern char D_800F4E70[16];
 extern char D_800F4FDB;
 extern char D_800F4E90;
@@ -226,7 +226,7 @@ int func_800C8C50(int arg0)
     if (D_800EB9AD != temp_s0) {
         D_800EB9AD = temp_s0;
         s1->unk3 = 1;
-        if (D_800F4E6A != 5) {
+        if (vs_battle_shortcutInvoked != 5) {
             var_v1 = _menuLbas[temp_s0];
         } else {
             var_v1 = VS_MAINMENU_PRG_LBA << 8 | VS_MAINMENU_PRG_SIZE >> 11;
@@ -254,7 +254,7 @@ int func_800C8C50(int arg0)
         vs_main_wait();
         s1->unk3 = 0;
         if (D_800F4FDB != 0) {
-            if (D_800F4E6A == 5) {
+            if (vs_battle_shortcutInvoked == 5) {
                 func_800FAEBC(1);
                 return 0;
             }
@@ -335,7 +335,7 @@ void func_800C97BC()
 
     if (temp_s1 != 0x3F) {
         if (func_800C8C50(0) != 0) {
-            if (D_800F4E6A == 5) {
+            if (vs_battle_shortcutInvoked == 5) {
                 func_800FAEBC(0);
                 return;
             }
@@ -433,7 +433,7 @@ int func_800CACD0(int arg0, int arg1)
     void* temp_v0;
 
     if (D_800F51C0.unk0 == 0x3F) {
-        D_800F4E6A = 0;
+        vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
         D_800F4EA0 = func_800CABE0(arg1);
         D_800F4E98[1] = 0;

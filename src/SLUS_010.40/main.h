@@ -28,9 +28,7 @@ typedef struct {
     void* vram;
 } vs_main_CdQueueSlot;
 
-enum skills_e {
-    vs_main_skills_daggerArt1 = 184
-};
+enum skills_e { vs_main_skills_daggerArt1 = 184 };
 
 typedef struct {
     char id;

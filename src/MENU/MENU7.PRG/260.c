@@ -3809,13 +3809,13 @@ int vs_menu7_saveMenu(char* state)
         if (*state != loadWait) {
             vs_main_settings.cursorMemory = 1;
         }
-        func_801005E0(2, 0x143, (char**)sp10, sp20);
+        vs_mainmenu_setMenuRows(2, 0x143, (char**)sp10, sp20);
         vs_main_settings.cursorMemory = temp_s0;
         func_8008A4DC(0);
         *state = 6;
         break;
     case 6:
-        temp_s0 = func_801008C8() + 1;
+        temp_s0 = vs_mainmenu_getSelectedRow() + 1;
         if (temp_s0 != 0) {
             if (temp_s0 > 0) {
                 func_800FA8E0(6);

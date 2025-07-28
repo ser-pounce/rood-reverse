@@ -4,14 +4,23 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-extern char D_8010231A[];
-extern int D_801023D4;
-extern int D_801023D8;
+typedef struct {
+    char text[14];
+    char unk14;
+    char x;
+} textHeader_t;
+
+extern char D_801022D4;
 extern char D_801022E2;
 extern char D_801022E3;
 extern int D_801022E4;
 extern u_short D_801022E8[];
 extern int D_801022F8[];
+extern char D_8010231A[];
+extern int D_801023D4;
+extern int _selectedRow;
+extern char D_801023DE;
+extern textHeader_t _textHeaders[];
 extern u_int* D_1F800000[];
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
@@ -99,9 +108,13 @@ void func_800FFA94()
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFB68);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFB90);
+void func_800FFB90(int arg0)
+{
+    vs_battle_menuItem_t* item = &vs_battle_menuItems[arg0];
+    item->state = 0;
+}
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFBA8);
+void func_800FFBA8() { func_800CD064(7); }
 
 void func_800FFBC8()
 {
@@ -137,15 +150,6 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFFBC);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100004);
 
-typedef struct {
-    char text[14];
-    char unk14;
-    char x;
-} textHeader_t;
-
-extern char D_801022D4;
-extern textHeader_t _textHeaders[];
-
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 {
     D_801022D4 = 1;
@@ -163,13 +167,13 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100414);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
 
 // https://decomp.me/scratch/Oo0p8
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801005E0);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", vs_mainmenu_setMenuRows);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100814);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008B0);
+int func_801008B0() { return _selectedRow + D_801023DE; }
 
-int func_801008C8() { return D_801023D4 != 0 ? -1 : D_801023D8; }
+int vs_mainmenu_getSelectedRow() { return D_801023D4 != 0 ? -1 : _selectedRow; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 

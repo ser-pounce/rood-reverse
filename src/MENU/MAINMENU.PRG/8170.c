@@ -30,7 +30,7 @@ void func_80101F38()
     if (var_s0 != 0) {
         func_80101118(var_s0);
     }
-    if (D_800F4E6A == 0) {
+    if (vs_battle_shortcutInvoked == 0) {
         func_800FFA94();
     }
     if (vs_battle_menuItems != 0) {

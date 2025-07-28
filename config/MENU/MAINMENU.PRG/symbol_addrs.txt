@@ -1,2 +1,3 @@
 _submenuEntrypoints = 0x80102038;
+_selectedRow = 0x801023D8;
 _textHeaders = 0x80102558;

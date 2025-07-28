@@ -10,9 +10,9 @@ void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
 void func_80100164();
 void func_80100414(int, int);
-void func_801005E0(int, int, char* strings[], int*);
+void vs_mainmenu_setMenuRows(int rowCount, int, char* strings[], int rowtypes[]);
 int func_801008B0();
-int func_801008C8();
+int vs_mainmenu_getSelectedRow();
 void func_80100A5C();
 void func_80101118(int);
 

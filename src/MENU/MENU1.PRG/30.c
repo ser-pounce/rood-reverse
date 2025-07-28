@@ -206,7 +206,8 @@ static int _drawArtsList(int typeCursorMem)
     } else {
         animationIndex = D_800EBC7C[animationIndex];
     }
-    _drawPointsRemaining(vs_battle_rowAnimationSteps[animationIndex], weaponType, artsLearned);
+    _drawPointsRemaining(
+        vs_battle_rowAnimationSteps[animationIndex], weaponType, artsLearned);
     return 0;
 }
 
@@ -215,12 +216,7 @@ static int _drawWeaponTypeList(int init)
     enum state { initialize };
 
     static int state = 0;
-    static int D_80104514 = 0;
-
-    char* menuStrings[10][2];
-    int sp68[10];
-    int j;
-    int i;
+    static int selectedRow = 0;
 
     if (init != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
@@ -233,36 +229,41 @@ static int _drawWeaponTypeList(int init)
     }
 
     switch (state) {
-    case initialize:
+    case initialize: {
+        char* menuStrings[20];
+        int rowType[10];
+        int i;
+        int j;
+
         if (vs_mainmenu_readyForInput() == 0) {
             break;
         }
         for (i = 0; i < 10; ++i) {
-            int v = 1;
-            menuStrings[i][0] = (char*)&_strings[_strings[i * 3]];
-            menuStrings[i][v] = (char*)&_strings[_strings[(i * 3) + 1]];
-            sp68[i] = 0x04000000 * (i + 1);
+            menuStrings[i * 2] = (char*)&_strings[_strings[i * 3]];
+            menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 1]];
+            rowType[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
-                if ((vs_main_skills[((i * 4) + 0xB8) + j].flags >> 0xF) & 1) {
+                if ((vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].flags >> 0xF)
+                    & 1) {
                     break;
                 }
             }
             if (j == 4) {
-                int v = 1;
-                menuStrings[i][v] = (char*)&_strings[_strings[(i * 3) + 2]];
-                sp68[i] |= 1;
+                menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 2]];
+                rowType[i] |= 1;
             } else if (i == (vs_battle_characterState->equippedWeaponType - 1)) {
-                sp68[i] |= 4;
+                rowType[i] |= 4;
             }
         }
-        vs_mainmenu_setMenuRows(10, 0x216, (char**)menuStrings, sp68);
+        vs_mainmenu_setMenuRows(10, 0x216, (char**)menuStrings, rowType);
         state = 1;
         break;
+    }
     case 1:
-        D_80104514 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80104514 != 0) {
-            if (D_80104514 == -2) {
-                func_800FA8E0(0x28);
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
+                func_800FA8E0(40);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
@@ -273,7 +274,7 @@ static int _drawWeaponTypeList(int init)
         break;
     case 2:
         if (vs_mainmenu_readyForInput() != 0) {
-            return D_80104514;
+            return selectedRow;
         }
         break;
     }
@@ -282,14 +283,12 @@ static int _drawWeaponTypeList(int init)
 
 static void _setMenuTitle()
 {
-    vs_battle_menuItem_t* temp_v0;
-
-    temp_v0 = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
+    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings
             [vs_battle_menuStrings[VS_menuStrings_INDEX_breakArts]]);
-    temp_v0->state = 2;
-    temp_v0->x = 180;
-    temp_v0->selected = 1;
+    menuItem->state = 2;
+    menuItem->x = 180;
+    menuItem->selected = 1;
     func_800FFA88(2);
     func_800FFBC8();
 }
@@ -299,12 +298,11 @@ int vs_menu1_exec(char* state)
     enum state {
         init = 3,
         artsInit,
+        drawArts = 6,
+        drawWeaponTypes,
     };
 
     static int weaponType = 0;
-
-    int temp_v0;
-    char temp_a1;
 
     switch (*state) {
     case init:
@@ -316,47 +314,49 @@ int vs_menu1_exec(char* state)
         // Fallthrough
     case artsInit:
         _drawArtsList(weaponType);
-        *state = 6;
+        *state = drawArts;
         break;
     case 5:
         _setMenuTitle();
         _drawArtsList(weaponType | opt_forceCursorMemory);
-        *state = 6;
+        *state = drawArts;
         break;
-    case 6:
-        temp_v0 = _drawArtsList(0);
-        if (temp_v0 == 0) {
+    case drawArts: {
+        int row = _drawArtsList(0);
+        if (row == 0) {
             break;
         }
-        if (temp_v0 > 0) {
-            if (temp_v0 == 0xFFFF) {
-                *state = 7;
+        if (row > 0) {
+            if (row == 0xFFFF) {
+                *state = drawWeaponTypes;
                 _drawWeaponTypeList(1);
             } else {
-                D_800F4E9C = temp_v0;
+                D_800F4E9C = row;
                 D_800F51C2 = 5;
                 *state = 9;
             }
-        } else if (temp_v0 != -2) {
+        } else if (row != -2) {
             *state = 8;
         } else {
             *state = 10;
         }
         break;
-    case 7:
-        temp_v0 = _drawWeaponTypeList(0);
-        if (temp_v0 == 0) {
+    }
+    case drawWeaponTypes: {
+        int row = _drawWeaponTypeList(0);
+        if (row == 0) {
             break;
         }
-        if (temp_v0 == -2) {
+        if (row == -2) {
             *state = 10;
         } else {
-            if (temp_v0 > 0) {
-                weaponType = temp_v0;
+            if (row > 0) {
+                weaponType = row;
             }
             *state = 4;
         }
         break;
+    }
     case 8:
         func_800FFBA8();
         func_800FFA88(0);
@@ -367,6 +367,7 @@ int vs_menu1_exec(char* state)
         break;
     case 9:
         if (vs_mainmenu_readyForInput() != 0) {
+            int temp_a1;
             D_800F4E9A = 6;
             temp_a1 = D_800F51C0.unk0;
             D_800F51C0.unk0 = 2;

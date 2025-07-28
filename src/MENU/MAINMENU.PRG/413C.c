@@ -109,7 +109,8 @@ void func_800FFA94()
     }
 }
 
-void func_800FFB68(int arg0) {
+void func_800FFB68(int arg0)
+{
     if (arg0 != 0) {
         D_801022DE = -4;
         D_801022E0 = 0x80;

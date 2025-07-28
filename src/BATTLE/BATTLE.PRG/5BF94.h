@@ -37,7 +37,7 @@ typedef struct {
     char unk4[0x2C];
 } D_800F4FE0_t;
 
-void func_800C6828(char const*, int, u_int*);
+void vs_battle_renderTextRaw(char const* text, int xy, u_int*);
 void func_800C6BF0(int, void*, void*);
 void func_800C8E04(int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);

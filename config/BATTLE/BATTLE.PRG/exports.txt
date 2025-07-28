@@ -21,3 +21,4 @@ vs_battle_drawCursor = 0x800CCD40;
 vs_battle_drawImage = 0x800CCDA8;
 vs_battle_menuItems = 0x800EB9C0;
 vs_battle_menuStrings = 0x800EB9DC;
+vs_battle_renderTextRaw = 0x800C6828;

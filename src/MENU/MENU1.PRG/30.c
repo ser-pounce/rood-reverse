@@ -64,8 +64,8 @@ static void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
         } while (points != 0);
         pointsStr = pointsBuf + i;
         *pointsStr = '#';
-        func_800C6828("NEXT", pos, 0);
-        func_800C6828(pointsStr, pos + 96, 0);
+        vs_battle_renderTextRaw("NEXT", pos, 0);
+        vs_battle_renderTextRaw(pointsStr, pos + 96, 0);
     }
 }
 

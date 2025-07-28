@@ -3742,25 +3742,25 @@ static void _drawPlayTime()
     static char* _playTime = "00:00:00:00";
 
     char time[4];
-    int temp_v0;
+    int digits;
     int i;
 
     *(int*)&time = vs_main_gametime.all;
     if (time[3] >= 100) {
         *(int*)&time = 0;
         time[3] = 0;
-        func_800C6828("1", 0xC800D8, D_1F800000[1] - 5);
+        vs_battle_renderTextRaw("1", 0xC800D8, D_1F800000[1] - 5);
     } else {
         time[0] = ((((time[0] << 14) + vs_battle_encode(15)) * 5u) >> 14) / 3;
     }
     for (i = 0; i < 4; ++i) {
-        temp_v0 = vs_battle_toBCD(time[i]);
+        digits = vs_battle_toBCD(time[i]);
         // BUG: invalid write to .rodata
-        _playTime[9 - i * 3] = (temp_v0 >> 4) + 0x30;
-        _playTime[10 - i * 3] = (temp_v0 & 0xF) + 0x30;
+        _playTime[9 - i * 3] = (digits >> 4) + 48;
+        _playTime[10 - i * 3] = (digits & 0xF) + 48;
     }
-    func_800C6828(_playTime, 0xC800E0, D_1F800000[1] - 5);
-    func_800C6828("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
+    vs_battle_renderTextRaw(_playTime, 0xC800E0, D_1F800000[1] - 5);
+    vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
 int vs_menu7_saveMenu(char* state)

@@ -69,7 +69,7 @@ void func_800CF920();
 extern u_short vs_battle_menuStrings[];
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
-extern char D_800EBBC8[];
+extern char vs_battle_rowAnimationSteps[];
 extern char D_800EBC7C[];
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E6B;

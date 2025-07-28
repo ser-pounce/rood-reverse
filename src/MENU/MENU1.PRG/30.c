@@ -32,7 +32,7 @@ static void _setArtCost(int art)
     vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
-static void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
+static void _drawPointsRemaining(int xOffset, int weaponCategory, int artsLearned)
 {
     char pointsBuf[16];
     int pos;
@@ -51,7 +51,7 @@ static void _drawPointsRemaining(int x, int weaponCategory, int artsLearned)
         if (points < 0) {
             points = 0;
         }
-        pos = (x + 206) | (((artsLearned * 16) + 50) << 16);
+        pos = (xOffset + 206) | (((artsLearned * 16) + 50) << 16);
         pointsBuf[14] = 'T';
         pointsBuf[15] = 0;
         pointsBuf[13] = 'P';
@@ -84,7 +84,7 @@ static int _drawArtsList(int typeCursorMem)
     static int forceCursorMemory = 0;
     static int weaponType = 0;
     static char D_8010452C;
-    static u_char D_8010452D;
+    static u_char animationIndex;
     static char artsLearned;
     static char D_8010452F;
     static char _[12];
@@ -95,7 +95,7 @@ static int _drawArtsList(int typeCursorMem)
     if (typeCursorMem != 0) {
         vs_battle_menuItem_t* menuItem;
         D_8010452C = 0;
-        D_8010452D = 10;
+        animationIndex = 10;
         forceCursorMemory = typeCursorMem >> 4;
         typeCursorMem &= 0xF;
         weaponType = typeCursorMem;
@@ -200,13 +200,13 @@ static int _drawArtsList(int typeCursorMem)
     }
 
     if (D_8010452C != 0) {
-        if (D_8010452D != 0) {
-            --D_8010452D;
+        if (animationIndex != 0) {
+            --animationIndex;
         }
     } else {
-        D_8010452D = D_800EBC7C[D_8010452D];
+        animationIndex = D_800EBC7C[animationIndex];
     }
-    _drawPointsRemaining(D_800EBBC8[D_8010452D], weaponType, artsLearned);
+    _drawPointsRemaining(vs_battle_rowAnimationSteps[animationIndex], weaponType, artsLearned);
     return 0;
 }
 

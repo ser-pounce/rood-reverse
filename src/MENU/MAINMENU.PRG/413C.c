@@ -11,6 +11,9 @@ typedef struct {
 } textHeader_t;
 
 extern char D_801022D4;
+extern char D_801022DC;
+extern short D_801022DE;
+extern short D_801022E0;
 extern char D_801022E2;
 extern char D_801022E3;
 extern int D_801022E4;
@@ -106,7 +109,13 @@ void func_800FFA94()
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFB68);
+void func_800FFB68(int arg0) {
+    if (arg0 != 0) {
+        D_801022DE = -4;
+        D_801022E0 = 0x80;
+    }
+    D_801022DC = arg0;
+}
 
 void func_800FFB90(int arg0)
 {

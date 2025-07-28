@@ -347,7 +347,7 @@ void func_800FBBD4(int arg0)
     }
     var_s0 = D_801024B9;
     if (D_801020F4 > 0) {
-        var_s1 = -D_800EBBC8[D_801020F8];
+        var_s1 = -vs_battle_rowAnimationSteps[D_801020F8];
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed & PADRleft) {

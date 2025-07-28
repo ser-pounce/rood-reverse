@@ -68,10 +68,10 @@ extern char D_80102545;
 
 void func_800FA448()
 {
-    D_800F19FC_t2* temp_s1;
+    vs_battle_equipment_t2* temp_s1;
     int i;
 
-    temp_s1 = D_800F19FC->unk3C;
+    temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->unk149 != 0) {
         func_8006B8C0(D_80060148[temp_s1->unk149], temp_s1->unk3C);

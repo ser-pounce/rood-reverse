@@ -177,7 +177,7 @@ int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
 void func_80081020(int, int);
 short func_80081148(int, int, int, int, int, int);
-void func_80086754(int, D_800F19FC_t2*);
+void func_80086754(int, vs_battle_equipment_t2*);
 void func_8008A6FC();
 int func_8008AB80(int);
 int func_8008ABB8(int);
@@ -1066,7 +1066,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C218);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C28C);
 
-void func_8007C31C() { func_80086754(0, D_800F19FC->unk3C); }
+void func_8007C31C() { func_80086754(0, vs_battle_characterState->unk3C); }
 
 void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, 0, arg1); }
 

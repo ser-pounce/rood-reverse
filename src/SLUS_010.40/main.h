@@ -28,6 +28,10 @@ typedef struct {
     void* vram;
 } vs_main_CdQueueSlot;
 
+enum skills_e {
+    vs_main_skills_daggerArt1 = 184
+};
+
 typedef struct {
     char id;
     char effect;
@@ -41,7 +45,7 @@ typedef struct {
     int shape : 3;
     int angle : 5;
     int aoe;
-    u_int flags;
+    u_int flags; // 0xF = artUnlocked
     int unk10;
     struct {
         int effect : 7;
@@ -81,10 +85,6 @@ typedef struct vs_main_HeapHeader {
     u_int blockSz;
     int unkC;
 } vs_main_HeapHeader;
-
-/*enum mainSettings {
-
-};*/
 
 typedef struct {
     char timingWeaponArmor;

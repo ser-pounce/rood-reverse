@@ -8408,7 +8408,7 @@ void func_80042CB0()
     int new_var;
     int var_t4;
     signed char skillsLearned;
-    D_800F19FC_t2* temp_t0;
+    vs_battle_equipment_t2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
     int v0_2;
@@ -8435,7 +8435,7 @@ void func_80042CB0()
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;
     }
-    temp_t0 = D_800F19FC->unk3C;
+    temp_t0 = vs_battle_characterState->unk3C;
     temp_t5 = &D_80060068;
     temp_t5->unk0.currentHP = temp_t0->unk0[12];
     temp_t5->unk0.maxHP = temp_t0->unk0[13];
@@ -8471,7 +8471,7 @@ void func_80042CB0()
         }
     }
 
-    temp_t5->unk0.unk7C = D_800F19FC->unk0[8];
+    temp_t5->unk0.unk7C = vs_battle_characterState->unk0[8];
     temp_t5->unk0.unk80 = D_800F19D0[5];
     temp_t5->unk0.unk84 = D_800F19D0[8];
 

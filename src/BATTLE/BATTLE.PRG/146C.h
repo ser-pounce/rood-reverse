@@ -29,7 +29,7 @@ typedef struct {
     u_char unkBB;
     int unkBC[7];
     int unkD8;
-} D_800F19FC_t3;
+} vs_battle_equipment_t3;
 
 typedef struct {
     u_short unk0[30];
@@ -49,25 +49,25 @@ typedef struct {
     char unk36E;
     u_char unk36F;
     int unk370[10];
-    D_800F19FC_t3 unk398[6];
+    vs_battle_equipment_t3 unk398[6];
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];
     u_short unk954;
-} D_800F19FC_t2;
+} vs_battle_equipment_t2;
 
 typedef struct {
     int unk0[9];
     char unk24;
-    char unk25;
+    char equippedWeaponType;
     short unk26;
     int unk28;
     int unk2C;
     int unk30;
     int unk34;
     int unk38;
-    D_800F19FC_t2* unk3C;
-} D_800F19FC_t;
+    vs_battle_equipment_t2* unk3C;
+} vs_battle_equipment_t;
 
 void func_80069FC4(int, int);
 void func_8006AEAC(int*, int);
@@ -99,7 +99,7 @@ void vs_battle_exec();
 
 extern u_short D_800F18E8;
 extern int D_800F19D0[];
-extern D_800F19FC_t* D_800F19FC;
+extern vs_battle_equipment_t* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;
 extern short* D_800F1BA8;

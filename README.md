@@ -17,30 +17,35 @@ Thanks also to the following amazing projects (and their dependencies):
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
 
 ## Status
-| Executable | Matched Code | Total Code | Percent Matched |
-|----------|--------------|------------|-----------------|
-| BATTLE.PRG | 13980 | 517400 | 2.70% |
-| SLUS_010.40 | 37712 | 158036 | 23.86% |
-| TITLE.PRG | 39380 | 40528 | 97.17% |
-| MENUC.PRG | 0 | 37304 | 0.00% |
-| MAINMENU.PRG | 6696 | 34204 | 19.58% |
-| MENU7.PRG | 29600 | 30804 | 96.09% |
-| MENUB.PRG | 0 | 30752 | 0.00% |
-| MENUD.PRG | 644 | 27384 | 2.35% |
-| MENU3.PRG | 0 | 27212 | 0.00% |
-| MENUF.PRG | 24 | 26144 | 0.09% |
-| ENDING.PRG | 996 | 23336 | 4.27% |
-| MENU9.PRG | 8 | 23268 | 0.03% |
-| MENU5.PRG | 0 | 22304 | 0.00% |
-| MENU4.PRG | 0 | 19240 | 0.00% |
-| MENU8.PRG | 0 | 11472 | 0.00% |
-| MENU0.PRG | 760 | 8660 | 8.78% |
-| MENUE.PRG | 0 | 8640 | 0.00% |
-| MENU2.PRG | 0 | 7724 | 0.00% |
-| INITBTL.PRG | 1060 | 4864 | 21.79% |
-| MENU1.PRG | 3144 | 3144 | 100.00% |
-| SCREFF2.PRG | 944 | 2324 | 40.62% |
-| **Total** | **134948** | **1064744** | **12.67%** |
+
+### Core libraries
+![SLUS_010.40 progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=SLUS_010.40)
+
+### Main game engine
+![BATTLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=BATTLE.PRG)
+![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=INITBTL.PRG)
+
+### Menus
+![MAINMENU.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MAINMENU.PRG)
+![MENU0.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU0.PRG)
+![MENU1.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU1.PRG&color=%2332a934)
+![MENU2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU2.PRG)
+![MENU3.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU3.PRG)
+![MENU4.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU4.PRG)
+![MENU5.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU5.PRG)
+![MENU7.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU7.PRG)
+![MENU8.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU8.PRG)
+![MENU9.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU9.PRG)
+![MENUB.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUB.PRG)
+![MENUC.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUC.PRG)
+![MENUD.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUD.PRG)
+![MENUE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUE.PRG)
+![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUF.PRG)
+
+### Title and Ending Sequence
+![TITLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=TITLE.PRG)
+![ENDING.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ENDING.PRG)
+![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=SCREFF2.PRG)
 
 ## (Naive) Quickstart
 1. Fork the project

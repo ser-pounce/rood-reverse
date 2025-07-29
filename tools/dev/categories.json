@@ -5,15 +5,15 @@
     },
     {
         "id": "TITLE.PRG",
-        "name": "Initial sequence and title menu"
+        "name": "Title sequence and menu"
     },
     {
         "id": "INITBTL.PRG",
-        "name": "Main game bootstrapper"
+        "name": "Main engine bootstrapper"
     },
     {
         "id": "BATTLE.PRG",
-        "name": "Main game module"
+        "name": "Main game engine"
     },
     {
         "id": "MAINMENU.PRG",

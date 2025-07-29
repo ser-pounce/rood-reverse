@@ -1,0 +1,86 @@
+[
+    {
+        "id": "SLUS_010.40",
+        "name": "Entry point and libraries"
+    },
+    {
+        "id": "TITLE.PRG",
+        "name": "Initial sequence and title menu"
+    },
+    {
+        "id": "INITBTL.PRG",
+        "name": "Main game bootstrapper"
+    },
+    {
+        "id": "BATTLE.PRG",
+        "name": "Main game module"
+    },
+    {
+        "id": "MAINMENU.PRG",
+        "name": "Top level menu and shared menu functionality"
+    },
+    {
+        "id": "MENU0.PRG",
+        "name": "Magic menu"
+    },
+    {
+        "id": "MENU1.PRG",
+        "name": "Break Arts menu"
+    },
+    {
+        "id": "MENU2.PRG",
+        "name": "Battle Abilities menu"
+    },
+    {
+        "id": "MENU3.PRG",
+        "name": "Items menu"
+    },
+    {
+        "id": "MENU4.PRG",
+        "name": "Status menu"
+    },
+    {
+        "id": "MENU5.PRG",
+        "name": "Map menu"
+    },
+    {
+        "id": "MENU7.PRG",
+        "name": "Data menu"
+    },
+    {
+        "id": "MENU8.PRG",
+        "name": "Options menu"
+    },
+    {
+        "id": "MENU9.PRG",
+        "name": "Score menu"
+    },
+    {
+        "id": "MENUB.PRG",
+        "name": "Enemy drop menu"
+    },
+    {
+        "id": "MENUC.PRG",
+        "name": "Setup menu"
+    },
+    {
+        "id": "MENUD.PRG",
+        "name": "Container menu"
+    },
+    {
+        "id": "MENUE.PRG",
+        "name": "Quick Manual menu"
+    },
+    {
+        "id": "MENUF.PRG",
+        "name": "Ending menu"
+    },
+    {
+        "id": "SCREFF2.PRG",
+        "name": "Ending sequence helper functions"
+    },
+    {
+        "id": "ENDING.PRG",
+        "name": "Ending and credits"
+    }
+]

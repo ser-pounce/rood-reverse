@@ -102,7 +102,7 @@ objdiff: CPPFLAGS += -DOBJDIFF
 objdiff: $(targets:%=%.elf)
 	mv build/ base/
 	$(MAKE)
-	$(VPYTHON) tools/dev/objdiff_config.py base/ build/
+	$(VPYTHON) tools/dev/objdiff_config.py base/ build/ tools/dev/categories.json
 	../.cargo/bin/objdiff-cli report generate > progress.json
 	$(VPYTHON) tools/dev/progress.py
 

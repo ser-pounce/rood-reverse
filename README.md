@@ -18,6 +18,8 @@ Thanks also to the following amazing projects (and their dependencies):
 
 ## Status
 
+![Overall progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&label=Overall+progress)
+
 ### Core libraries
 ![SLUS_010.40 progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=SLUS_010.40)
 

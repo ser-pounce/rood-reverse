@@ -211,7 +211,7 @@ int func_800C8C50(int arg0)
     int temp_s0;
     u_int var_v1;
     void* var_a1;
-    D_800F51C0_t* s1 = &D_800F51C0;
+    vs_battle_menuState_t* s1 = &vs_battle_menuState;
 
     temp_s0 = arg0 & 0x1F;
 
@@ -242,14 +242,14 @@ int func_800C8C50(int arg0)
         vs_main_cdEnqueue(s1->unk4, var_a1);
     }
     if (s1->unk3 == 0) {
-        if (D_800EB9D4 != 0) {
+        if (D_800EB9D4 != NULL) {
             vs_main_freeHeapR(D_800EB9D4);
-            D_800EB9D4 = 0;
+            D_800EB9D4 = NULL;
             func_800FA448();
         }
         return 1;
     }
-    if (s1->unk4->state == 4) {
+    if (s1->unk4->state == vs_main_CdQueueStateLoaded) {
         vs_main_freeCdQueueSlot(s1->unk4);
         vs_main_wait();
         s1->unk3 = 0;
@@ -324,11 +324,11 @@ void func_800C97BC()
     int var_s0;
 
     var_s2 = vs_battle_menuItems;
-    var_s0 = D_800F51C0.unk0;
+    var_s0 = vs_battle_menuState.currentState;
 
     if (var_s0 == 0x7F) {
         *D_800F4E98 = 2;
-        D_800F51C0.unk0 = 0x3F;
+        vs_battle_menuState.currentState = 0x3F;
     }
 
     temp_s1 = var_s0 & 0x3F;
@@ -349,7 +349,7 @@ void func_800C97BC()
                 if (temp_v0 > 0) {
                     var_s0 = temp_v0 | 0x40;
                 }
-                D_800F51C0.unk0 = var_s0;
+                vs_battle_menuState.currentState = var_s0;
             }
         }
         if ((var_s0 >= 0x1F) || (temp_s1 == 0)) {
@@ -407,8 +407,8 @@ void func_800CA9C0(void* arg0)
     D_800EB9D4 = 0;
     D_800EB9D8 = 0;
     func_800CA97C();
-    vs_battle_rMemzero(&D_800F51C0, 8);
-    D_800F51C0.unk0 = 0x3F;
+    vs_battle_rMemzero(&vs_battle_menuState, 8);
+    vs_battle_menuState.currentState = 0x3F;
     vs_battle_rMemzero(D_800F4E98, sizeof(D_800F4E98));
     vs_battle_rMemzero(&D_800F4FE0[0], sizeof(D_800F4FE0[0]));
     vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
@@ -432,12 +432,12 @@ int func_800CACD0(int arg0, int arg1)
     int var_a0;
     void* temp_v0;
 
-    if (D_800F51C0.unk0 == 0x3F) {
+    if (vs_battle_menuState.currentState == 0x3F) {
         vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
         D_800F4EA0 = func_800CABE0(arg1);
         D_800F4E98[1] = 0;
-        D_800F51C0.unk0 = arg0;
+        vs_battle_menuState.currentState = arg0;
         D_800F4E98[0] = 1;
         if (arg1 == 0) {
             vs_battle_playSfx10();

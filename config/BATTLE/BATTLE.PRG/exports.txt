@@ -25,3 +25,6 @@ vs_battle_menuStrings = 0x800EB9DC;
 vs_battle_rowAnimationSteps = 0x800EBBC8;
 vs_battle_characterState = 0x800F19FC;
 vs_battle_shortcutInvoked = 0x800F4E6A;
+vs_battle_executeAbility = 0x800F4E9C;
+vs_battle_menuState = 0x800F51C0;
+vs_battle_executeAbilityType = 0x800F51C2;

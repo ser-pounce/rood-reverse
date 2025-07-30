@@ -25,12 +25,12 @@ typedef struct {
 } vs_battle_menuItem_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
+    char currentState;
+    char returnState;
     char unk2;
     char unk3;
     vs_main_CdQueueSlot* unk4;
-} D_800F51C0_t;
+} vs_battle_menuState_t;
 
 typedef struct {
     int unk0;
@@ -81,4 +81,4 @@ extern char D_800F4F70;
 extern char D_800F4FDB;
 extern D_800F4FE0_t D_800F4FE0[];
 extern short D_800F514C;
-extern D_800F51C0_t D_800F51C0;
+extern vs_battle_menuState_t vs_battle_menuState;

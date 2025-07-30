@@ -117,5 +117,5 @@ extern char D_800F1CD6;
 extern int D_800F1CD8;
 extern int D_800F1CE0[8];
 extern short D_800F4E9A;
-extern int D_800F4E9C;
-extern char D_800F51C2;
+extern int vs_battle_executeAbility;
+extern char vs_battle_executeAbilityType;

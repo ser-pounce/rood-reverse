@@ -3535,7 +3535,6 @@ int vs_menu7_saveContainerMenu(char* state)
 
     int option;
     u_short* message;
-    char temp_a0;
     int var_v0;
 
     switch (*state) {
@@ -3641,9 +3640,8 @@ int vs_menu7_saveContainerMenu(char* state)
             &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
         _shutdownMemcard();
         *state = 8;
-        temp_a0 = D_800F51C0.unk0;
-        D_800F51C0.unk0 = 0xE;
-        D_800F51C0.unk1 = temp_a0;
+        vs_battle_menuState.returnState = vs_battle_menuState.currentState;
+        vs_battle_menuState.currentState = 14;
         break;
     case 8:
         if (vs_mainmenu_readyForInput() != 0) {
@@ -3653,7 +3651,7 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 9:
         if (_initMemcard(0) != 0) {
-            option = D_800F51C0.unk1;
+            option = vs_battle_menuState.returnState;
             if (option != 0) {
                 func_800C8E04(1);
                 if (option == 1) {
@@ -3902,7 +3900,7 @@ int vs_menu7_saveMenu(char* state)
         }
         _shutdownMemcard();
         if (*state == 14) {
-            D_800F51C0.unk0 = 7;
+            vs_battle_menuState.currentState = 7;
         }
         *state = 0;
         return 1;

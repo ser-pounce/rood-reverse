@@ -294,14 +294,14 @@ int func_800FAA20()
 int func_800FAA5C(int arg0)
 {
     if (arg0 & 0x40) {
-        D_800F51C0.unk0 = 0;
+        vs_battle_menuState.currentState = 0;
         func_800C930C(1);
         return 0;
     }
     if (D_800F4FDB == 0) {
         func_8007E0A8(0x1A, 3, 6);
     }
-    D_800F51C0.unk0 = 0x7F;
+    vs_battle_menuState.currentState = 0x7F;
     return 1;
 }
 

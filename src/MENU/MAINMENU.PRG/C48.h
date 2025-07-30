@@ -40,7 +40,7 @@ typedef struct {
 
 void func_800FA448();
 void func_800FA8E0(int);
-int vs_mainmenu_readyForInput();
+int vs_mainmenu_ready();
 void func_800FAAC8(int);
 void func_800FAEBC(int);
 void func_800FBBD4(int);

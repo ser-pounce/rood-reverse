@@ -3465,7 +3465,7 @@ static int _promptYesNo(int initParams)
         state = animWait;
         break;
     case animWait:
-        state += vs_mainmenu_readyForInput();
+        state += vs_mainmenu_ready();
         break;
     case handleInput:
         vs_battle_getMenuItem(30 + selectedOption)->selected = 1;
@@ -3497,7 +3497,7 @@ static int _promptYesNo(int initParams)
         }
         break;
     case returnSelection:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             return selectedOption;
         }
         break;
@@ -3570,7 +3570,7 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 2:
-        if ((vs_mainmenu_readyForInput() != 0) && (_initMemcard(0) != 0)) {
+        if ((vs_mainmenu_ready() != 0) && (_initMemcard(0) != 0)) {
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
@@ -3644,7 +3644,7 @@ int vs_menu7_saveContainerMenu(char* state)
         vs_battle_menuState.currentState = 14;
         break;
     case 8:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             _initMemcard(1);
             *state = 9;
         }
@@ -3718,7 +3718,7 @@ int vs_menu7_saveContainerMenu(char* state)
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             _shutdownMemcard();
             *state = 16;
         }
@@ -3788,7 +3788,7 @@ int vs_menu7_saveMenu(char* state)
         *state = loadWait;
         break;
     case loadWait:
-        if ((vs_mainmenu_readyForInput() == 0) || (_initMemcard(0) == 0)) {
+        if ((vs_mainmenu_ready() == 0) || (_initMemcard(0) == 0)) {
             break;
         }
         // Fallthrough
@@ -3846,7 +3846,7 @@ int vs_menu7_saveMenu(char* state)
         }
         break;
     case initSaveMenu:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             _showSaveMenu(1);
             *state = showSaveMenu;
         }
@@ -3858,7 +3858,7 @@ int vs_menu7_saveMenu(char* state)
         _drawFileMenu(vs_main_frameBuf);
         break;
     case initFileMenu:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             _loadFileMenu(1);
             *state = handleInput;
         }

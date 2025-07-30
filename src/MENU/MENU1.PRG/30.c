@@ -117,7 +117,7 @@ static int _drawArtsList(int typeCursorMem)
         int rowCount;
         int cursorMemory;
 
-        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_readyForInput() == 0)) {
+        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
         }
         rowCount = 0;
@@ -195,7 +195,7 @@ static int _drawArtsList(int typeCursorMem)
         }
         break;
     case 2:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             return selectedRow;
         }
         break;
@@ -237,7 +237,7 @@ static int _drawWeaponTypeList(int init)
         int i;
         int j;
 
-        if (vs_mainmenu_readyForInput() == 0) {
+        if (vs_mainmenu_ready() == 0) {
             break;
         }
         for (i = 0; i < 10; ++i) {
@@ -275,7 +275,7 @@ static int _drawWeaponTypeList(int init)
         }
         break;
     case returnRow:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             return selectedRow;
         }
         break;
@@ -313,7 +313,7 @@ int vs_menu1_exec(char* state)
 
     switch (*state) {
     case init:
-        if (vs_mainmenu_readyForInput() == 0) {
+        if (vs_mainmenu_ready() == 0) {
             break;
         }
         func_800FFBC8();
@@ -367,13 +367,13 @@ int vs_menu1_exec(char* state)
     case exitToMainMenu:
         func_800FFBA8();
         func_800FFA88(0);
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
         }
         break;
     case executeArt:
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             D_800F4E9A = 6;
             vs_battle_menuState.returnState = vs_battle_menuState.currentState;
             vs_battle_menuState.currentState = 2;
@@ -384,7 +384,7 @@ int vs_menu1_exec(char* state)
     case exit:
         func_800FFBA8();
         func_800FFA88(0);
-        if (vs_mainmenu_readyForInput() != 0) {
+        if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 2;
             *state = none;
             return 1;

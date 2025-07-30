@@ -268,7 +268,7 @@ void func_800FA92C(int arg0, int arg1)
     }
 }
 
-int vs_mainmenu_readyForInput()
+int vs_mainmenu_ready()
 {
     vs_battle_menuItem_t* menuItem;
     int i;

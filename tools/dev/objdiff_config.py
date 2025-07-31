@@ -18,7 +18,8 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
             "name": str(name),
             "target_path": str(target_path),
             "metadata": {
-                "progress_categories": [str(progress_category)]
+                "progress_categories": [str(progress_category)],
+                "complete": progress_category == "MENU1.PRG"
             }
         }
         if (

@@ -11,7 +11,7 @@ int func_800722F0();
 u_int func_80072384();
 int DMACallback(int, void (*)());
 
-// Commented out functions only match with GCC 2.8.0, but this breaks the others.
+// Commented out functions require delay slot manipulation, possibly with .set reorder
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
 /*void DecDCTReset(int mode) {
@@ -245,17 +245,14 @@ int func_800722F0(void) {
 
 u_int func_80072384() { return *D_80075C88; }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_8007239C);
-/*extern int* D_80075C5C;
-extern int volatile* D_80075C68;
-
-int func_8007239C(signed char const* arg0) {
-    printf("%s timeout:\n\0", arg0);
+int func_8007239C(char* arg0) {
+    printf("%s timeout:\n", arg0);
     *D_80075C88 = 0x80000000;
     *D_80075C5C = 0;
-    *D_80075C68 = 0;
-    *D_80075C68;
+    *D_80075C68[0] = 0;
+    *D_80075C68[0];
     *D_80075C88 = 0x60000000;
     return 0;
 }
-*/
+
+static const char _[4]= {0};

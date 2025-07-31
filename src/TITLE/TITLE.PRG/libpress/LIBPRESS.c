@@ -245,7 +245,8 @@ int func_800722F0(void) {
 
 u_int func_80072384() { return *D_80075C88; }
 
-int func_8007239C(char* arg0) {
+int func_8007239C(char* arg0)
+{
     printf("%s timeout:\n", arg0);
     *D_80075C88 = 0x80000000;
     *D_80075C5C = 0;
@@ -255,4 +256,4 @@ int func_8007239C(char* arg0) {
     return 0;
 }
 
-static const char _[4]= {0};
+static const char _[4] = { 0 };

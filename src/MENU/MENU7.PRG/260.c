@@ -3761,22 +3761,22 @@ static void _drawPlayTime()
     vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
-int vs_menu7_saveMenu(char* state)
+int vs_menu7_dataMenu(char* state)
 {
     enum state {
+        none = 0,
         init = 3,
         loadWait,
         initSaveMenu = 7,
         showSaveMenu,
-        initFileMenu,
-        handleInput,
+        initLoadMenu,
+        handleInput
     };
 
-    char* sp10[2][2];
-    int sp20[2];
+    char* menuStrings[4];
+    int rowTypes[2];
     RECT rect;
-    int temp_s0;
-    int new_var;
+    int row;
 
     if (*state < 11) {
         _drawPlayTime();
@@ -3787,56 +3787,61 @@ int vs_menu7_saveMenu(char* state)
         _initMemcard(1);
         *state = loadWait;
         break;
+
     case loadWait:
         if ((vs_mainmenu_ready() == 0) || (_initMemcard(0) == 0)) {
             break;
         }
-        // Fallthrough
+    // Fallthrough
     case 5:
-        new_var = 1;
-        for (temp_s0 = 0; temp_s0 < 2; ++temp_s0) {
-            sp10[temp_s0][0] = (char*)&_textTable[_textTable[temp_s0 * 2]];
-            sp10[temp_s0][new_var] = (char*)&_textTable[VS_MCMAN_OFFSET_saveDisabled];
-            sp20[temp_s0] = 0;
+        for (row = 0; row < 2; ++row) {
+            menuStrings[row * 2] = (char*)(&_textTable[_textTable[row * 2]]);
+            menuStrings[row * 2 + 1] = (char*)(&_textTable[VS_MCMAN_OFFSET_saveDisabled]);
+            rowTypes[row] = 0;
         }
+
         D_800F4E6B = func_8008A4FC();
-        if (!(D_800F4E6B & 0xFF) || (vs_main_stateFlags.unkA7 != 0)) {
-            sp20[0] |= 1;
+        if (!D_800F4E6B || (vs_main_stateFlags.unkA7 != 0)) {
+            rowTypes[0] |= 1;
         }
-        temp_s0 = vs_main_settings.cursorMemory;
-        if (*state != loadWait) {
+        row = vs_main_settings.cursorMemory;
+        if ((*state) != loadWait) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(2, 0x143, (char**)sp10, sp20);
-        vs_main_settings.cursorMemory = temp_s0;
+
+        vs_mainmenu_setMenuRows(2, 0x143, menuStrings, rowTypes);
+        vs_main_settings.cursorMemory = row;
         func_8008A4DC(0);
         *state = 6;
         break;
+
     case 6:
-        temp_s0 = vs_mainmenu_getSelectedRow() + 1;
-        if (temp_s0 != 0) {
-            if (temp_s0 > 0) {
+        row = vs_mainmenu_getSelectedRow() + 1;
+        if (row != 0) {
+            if (row > 0) {
                 func_800FA8E0(6);
                 _initFileMenu();
-                switch (temp_s0) {
+                switch (row) {
                 case 1:
                     *state = initSaveMenu;
                     break;
+
                 case 2:
-                    *state = initFileMenu;
+                    *state = initLoadMenu;
                     break;
                 }
+
             } else {
                 func_8008A4DC(1);
                 func_800FA8E0(0x28);
-                if (temp_s0 == -2) {
+                if (row == -2) {
                     *state = 12;
                 } else {
                     *state = 11;
                 }
             }
         } else {
-            if ((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0)
+            if (((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0))
                 && (func_801008B0() == 0)) {
                 func_800C8E04(1);
                 D_800F514C = 11;
@@ -3845,28 +3850,32 @@ int vs_menu7_saveMenu(char* state)
             }
         }
         break;
+
     case initSaveMenu:
         if (vs_mainmenu_ready() != 0) {
             _showSaveMenu(1);
             *state = showSaveMenu;
         }
         break;
+
     case showSaveMenu:
         if (_showSaveMenu(0) != 0) {
             *state = 5;
         }
         _drawFileMenu(vs_main_frameBuf);
         break;
-    case initFileMenu:
+
+    case initLoadMenu:
         if (vs_mainmenu_ready() != 0) {
             _loadFileMenu(1);
             *state = handleInput;
         }
         break;
+
     case handleInput:
-        temp_s0 = _loadFileMenu(0);
-        if (temp_s0 != 0) {
-            if (temp_s0 < 0) {
+        row = _loadFileMenu(0);
+        if (row != 0) {
+            if (row < 0) {
                 *state = 5;
                 break;
             }
@@ -3881,18 +3890,21 @@ int vs_menu7_saveMenu(char* state)
         }
         _drawFileMenu(vs_main_frameBuf);
         break;
+
     case 11:
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
         *state = 13;
         break;
+
     case 12:
         func_800FFA88(0);
         func_800FFBA8();
         func_800FFB68(0);
         *state = 14;
         break;
+
     case 13:
     case 14:
         if (D_801022D8 != 0) {
@@ -3902,8 +3914,9 @@ int vs_menu7_saveMenu(char* state)
         if (*state == 14) {
             vs_battle_menuState.currentState = 7;
         }
-        *state = 0;
+        *state = none;
         return 1;
     }
+
     return 0;
 }

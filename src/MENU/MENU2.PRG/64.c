@@ -1,9 +1,12 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 extern u_short D_80104690[];
+extern char D_801050D0[];
+extern char D_801050E0[];
 extern char D_8010505A[];
 extern char D_80105078[];
 extern char _stringBuffer[];
@@ -32,7 +35,39 @@ static void _setAbilityCost(int ability)
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102928);
 
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102B5C);
+static void func_80102B5C(int arg0, int arg1, int arg2) {
+    int i;
+
+    if (arg0 == 0x18) {
+        arg2 = D_801050D0[arg2];
+        if (vs_main_settings.unkC[arg1] == arg2) {
+            vs_battle_playMenuLeaveSfx();
+            vs_main_settings.unkC[arg1] = 0;
+            return;
+        }
+        vs_main_playSfxDefault(0x7E, 0x23);
+        for (i = 0; i < 3; ++i) {
+            if (vs_main_settings.unkC[i] == arg2) {
+                vs_main_settings.unkC[i] = 0;
+            }
+        }
+        vs_main_settings.unkC[arg1] = arg2;
+        return;
+    }
+    arg2 = D_801050E0[arg2];
+    if (vs_main_settings.unk10[arg1] == arg2) {
+        vs_battle_playMenuLeaveSfx();
+        vs_main_settings.unk10[arg1] = 0;
+        return;
+    }
+    vs_main_playSfxDefault(0x7E, 0x23);
+    for (i = 0; i < 3; ++i) {
+        if (vs_main_settings.unk10[i] == arg2) {
+            vs_main_settings.unk10[i] = 0;
+        }
+    }
+    vs_main_settings.unk10[arg1] = arg2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102CAC);
 
@@ -92,7 +127,3 @@ char* func_80103DD8(int arg0)
     }
     return (char*)&D_80104690[D_80104690[temp_v1]];
 }
-
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80103E20);
-
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80104578);

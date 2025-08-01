@@ -93,8 +93,8 @@ typedef struct {
     char simpleMap;
     char monoSound;
     char vibrationOn;
-    int unkC;
-    int unk10;
+    char unkC[4];
+    char unk10[4];
     u_int key;
     u_short saveCount;
     u_short unk1A;

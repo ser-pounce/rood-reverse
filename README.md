@@ -13,6 +13,8 @@ Thanks also to the following amazing projects (and their dependencies):
 - [Decomp permuter](https://github.com/simonlindholm/decomp-permuter)
 - [Old GCC](https://github.com/decompals/old-gcc)
 - [mkpsxiso](https://github.com/Lameguy64/mkpsxiso)
+- [objdiff](https://github.com/encounter/objdiff)
+- [decomp.dev](https://decomp.dev/)
 
 ## Status
 

@@ -52,21 +52,21 @@ static void func_80102B5C(int arg0, int arg1, int arg2) {
             }
         }
         vs_main_settings.unkC[arg1] = arg2;
-        return;
-    }
-    arg2 = D_801050E0[arg2];
-    if (vs_main_settings.unk10[arg1] == arg2) {
-        vs_battle_playMenuLeaveSfx();
-        vs_main_settings.unk10[arg1] = 0;
-        return;
-    }
-    vs_main_playSfxDefault(0x7E, 0x23);
-    for (i = 0; i < 3; ++i) {
-        if (vs_main_settings.unk10[i] == arg2) {
-            vs_main_settings.unk10[i] = 0;
+    } else {
+        arg2 = D_801050E0[arg2];
+        if (vs_main_settings.unk10[arg1] == arg2) {
+            vs_battle_playMenuLeaveSfx();
+            vs_main_settings.unk10[arg1] = 0;
+            return;
         }
+        vs_main_playSfxDefault(0x7E, 0x23);
+        for (i = 0; i < 3; ++i) {
+            if (vs_main_settings.unk10[i] == arg2) {
+                vs_main_settings.unk10[i] = 0;
+            }
+        }
+        vs_main_settings.unk10[arg1] = arg2;
     }
-    vs_main_settings.unk10[arg1] = arg2;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102CAC);

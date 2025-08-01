@@ -71,6 +71,7 @@ extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern char D_800EBC7C[];
+extern char D_800EBDBC[];
 extern char D_800EBDCC[];
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E6B;

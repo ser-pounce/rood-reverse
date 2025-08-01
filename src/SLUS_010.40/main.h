@@ -54,7 +54,7 @@ typedef struct {
         int type : 2;
         int affinity : 3;
     } hitParams[2];
-    signed char name[24];
+    char name[24];
 } vs_skill_t;
 
 typedef struct {

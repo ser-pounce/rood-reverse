@@ -100,14 +100,14 @@ permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
 
 objdiff: CPPFLAGS += -DOBJDIFF
 objdiff: $(targets:%=%.elf)
-	mv build/ base/
+	mv $(BUILD)/ base/
 	$(MAKE)
-	$(VPYTHON) tools/dev/objdiff_config.py base/ build/ tools/dev/categories.json
+	$(VPYTHON) tools/dev/objdiff_config.py base/ $(BUILD)/ tools/dev/categories.json
 	../.cargo/bin/objdiff-cli report generate > progress.json
 	$(VPYTHON) tools/dev/progress.py
 
 clean:
-	$(RM) $(RMFLAGS) $(BUILD)
+	$(RM) $(RMFLAGS) $(BUILD) base nonmatchings
 
 remake: MAKEFLAGS += --no-print-directory
 remake: clean

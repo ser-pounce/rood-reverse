@@ -7,7 +7,8 @@ INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/1620", func_80103E20);
 int func_80103C3C(int);
 int func_80103E20(int);
 
-int func_80104578(char* state) {
+int func_80104578(char* state)
+{
     switch (*state) {
     case 0:
         func_800FFBC8();

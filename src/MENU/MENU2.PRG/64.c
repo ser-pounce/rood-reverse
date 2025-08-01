@@ -1,10 +1,15 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
+#include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+void func_80102928(int, int, char**);
+int func_80102CAC();
+
 extern u_short D_80104690[];
+extern int D_80104ED0;
 extern char D_801050D0[];
 extern char D_801050E0[];
 extern char D_8010505A[];
@@ -35,7 +40,8 @@ static void _setAbilityCost(int ability)
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102928);
 
-static void func_80102B5C(int arg0, int arg1, int arg2) {
+static void func_80102B5C(int arg0, int arg1, int arg2)
+{
     int i;
 
     if (arg0 == 0x18) {
@@ -73,7 +79,46 @@ INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102CAC);
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_801034FC);
 
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80103670);
+static int func_80103670(int arg0)
+{
+    char* menuStrings[28];
+    int i;
+    int row;
+    int skill;
+
+    if (arg0 != 0) {
+        func_800FA92C(1, 1);
+        D_80104ED0 = 0;
+        return 0;
+    }
+
+    switch (D_80104ED0) {
+    case 0:
+        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
+            break;
+        }
+        row = 0;
+        for (i = 0; i < 14; ++i) {
+            skill = D_800EBDCC[i];
+            if ((vs_main_skills[skill].flags >> 0xF) & 1) {
+                menuStrings[row * 2] = vs_main_skills[skill].name;
+                menuStrings[row * 2 + 1] = (char*)&D_80104690[D_80104690[0x14 + i]];
+                D_801050E0[row] = skill;
+                ++row;
+            }
+        }
+        func_80102928(row, 0x19, menuStrings);
+        D_80104ED0 = 1;
+        break;
+    case 1:
+        if (func_80102CAC() != 0) {
+            func_800FA8E0(2);
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 static void _drawPointsRemaining(int arg0)
 {

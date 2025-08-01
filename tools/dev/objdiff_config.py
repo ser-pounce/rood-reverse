@@ -19,7 +19,13 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
             "target_path": str(target_path),
             "metadata": {
                 "progress_categories": [str(progress_category)],
-                "complete": progress_category == "MENU1.PRG"
+                "complete": str(name) in {    
+                    "SLUS_010.40/overlay",
+                    "MENU1.PRG/30",
+                    "TITLE.PRG/22C",
+                    "TITLE.PRG/libpress/VLC_C",
+                    "TITLE.PRG/libpress/BUILD"
+                }
             }
         }
         if (

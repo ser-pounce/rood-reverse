@@ -36,37 +36,38 @@ static void _drawPointsRemaining(int xOffset, int weaponCategory, int artsLearne
 {
     char pointsBuf[16];
     int pos;
-    int category;
     int points;
     int i;
     char* pointsStr;
 
-    category = weaponCategory;
+    int category = weaponCategory;
     category %= 10;
 
     i = vs_main_artsStatus.artsLearned[category];
-    if (i != 4) {
-        points = vs_main_artsStatus.kills[category];
-        points = vs_main_artsPointsRequirements[category][i] - points;
-        if (points < 0) {
-            points = 0;
-        }
-        pos = (xOffset + 206) | (((artsLearned * 16) + 50) << 16);
-        pointsBuf[14] = 'T';
-        pointsBuf[15] = 0;
-        pointsBuf[13] = 'P';
-        i = 12;
-        do {
-            points = vs_battle_toBCD(points);
-            pointsBuf[i] = (points & 0xF) + '0';
-            points = points >> 4;
-            --i;
-        } while (points != 0);
-        pointsStr = pointsBuf + i;
-        *pointsStr = '#';
-        vs_battle_renderTextRaw("NEXT", pos, NULL);
-        vs_battle_renderTextRaw(pointsStr, pos + 96, NULL);
+    if (i == 4) {
+        return;
     }
+
+    points = vs_main_artsStatus.kills.weaponCategories[category];
+    points = vs_main_artsPointsRequirements[category][i] - points;
+    if (points < 0) {
+        points = 0;
+    }
+    pos = (xOffset + 206) | (((artsLearned * 16) + 50) << 16);
+    pointsBuf[14] = 'T';
+    pointsBuf[15] = 0;
+    pointsBuf[13] = 'P';
+    i = 12;
+    do {
+        points = vs_battle_toBCD(points);
+        pointsBuf[i] = (points & 0xF) + '0';
+        points = points >> 4;
+        --i;
+    } while (points != 0);
+    pointsStr = pointsBuf + i;
+    *pointsStr = '#';
+    vs_battle_renderTextRaw("NEXT", pos, NULL);
+    vs_battle_renderTextRaw(pointsStr, pos + 96, NULL);
 }
 
 u_short _strings[] = {

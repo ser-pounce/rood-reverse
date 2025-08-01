@@ -190,7 +190,11 @@ typedef struct {
 
 typedef struct {
     char artsLearned[12];
-    u_short kills[12];
+    struct {
+        u_short weaponCategories[10];
+        u_short battleAbilitiesUnlocked;
+        u_short total;
+    } kills;
 } vs_main_artsStatus_t;
 
 extern soundData_t vs_main_soundData;
@@ -204,6 +208,7 @@ extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
 extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
+extern u_short vs_main_battleAbilitiesPointsRequirements[];
 extern u_short D_8005046A;
 extern u_int D_80055C80[];
 extern void* D_8005E0C0[];

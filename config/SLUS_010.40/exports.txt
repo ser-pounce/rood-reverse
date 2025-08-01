@@ -333,6 +333,7 @@ vs_main_skills = 0x8004B9DC;
 D_8004EDDC = 0x8004EDDC;
 vs_main_zndFiles = 0x8004F4CC;
 vs_main_artsPointsRequirements = 0x8004FDE4;
+vs_main_battleAbilitiesPointsRequirements = 0x8004FE5C;
 D_8005046A = 0x8005046A;
 vs_main_startState = 0x80050470;
 vs_main_buttonsReleased = 0x80055C78;

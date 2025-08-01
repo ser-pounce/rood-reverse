@@ -1,0 +1,3 @@
+_setAbilityCost = 0x80102864;
+_drawPointsRemaining = 0x801037E4;
+_stringBuffer = 0x801050B0;

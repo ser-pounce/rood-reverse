@@ -6,31 +6,28 @@
 extern u_short D_80104690[];
 extern char D_8010505A[];
 extern char D_80105078[];
-extern char D_801050B0[];
+extern char _stringBuffer[];
 
-void func_80102864(int ability)
+static void _setAbilityCost(int ability)
 {
-    int temp_v0;
     int i;
-    int temp_v0_2;
-    char* temp_a1;
     int cost;
 
     vs_mainmenu_setAbilityCost(1, "RISK", 8, 0);
     cost = vs_main_skills[ability].cost;
-    D_801050B0[15] = 0;
+    _stringBuffer[15] = 0;
 
     i = 15;
     do {
         --i;
         cost = vs_battle_toBCD(cost);
-        D_801050B0[i] = (cost & 0xF) + 0x30;
+        _stringBuffer[i] = (cost & 0xF) + 0x30;
         cost >>= 4;
     } while (cost != 0);
 
     --i;
-    D_801050B0[i] = '#';
-    vs_mainmenu_setAbilityCost(0, &D_801050B0[i], 0x48, 0);
+    _stringBuffer[i] = '#';
+    vs_mainmenu_setAbilityCost(0, &_stringBuffer[i], 0x48, 0);
 }
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102928);
@@ -43,7 +40,43 @@ INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_801034FC);
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80103670);
 
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_801037E4);
+static void _drawPointsRemaining(int arg0)
+{
+    char pointsBuf[16];
+    int pos;
+    char* pointsStr;
+
+    int points = vs_main_artsStatus.kills.total;
+    int i = vs_main_artsStatus.kills.battleAbilitiesUnlocked;
+
+    if (i == 22) {
+        return;
+    }
+
+    points = vs_main_battleAbilitiesPointsRequirements[i] - points;
+    if (points < 0) {
+        points = 0;
+    }
+
+    pos = (arg0 + 0xCE) | 0x420000;
+
+    pointsBuf[14] = 'T';
+    pointsBuf[15] = 0;
+    pointsBuf[13] = 'P';
+
+    i = 12;
+    do {
+        points = vs_battle_toBCD(points);
+        *(pointsBuf + i) = (points & 0xF) + 48;
+        points >>= 4;
+        i -= 1;
+    } while (points != 0);
+
+    pointsStr = pointsBuf + i;
+    *pointsStr = '#';
+    vs_battle_renderTextRaw("NEXT", pos, 0);
+    vs_battle_renderTextRaw(pointsStr, pos + 0x60, 0);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_801038D4);
 

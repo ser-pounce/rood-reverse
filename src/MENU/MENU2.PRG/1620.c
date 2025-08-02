@@ -1,11 +1,230 @@
 #include "common.h"
+#include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/1620", func_80103E20);
+#include <memory.h>
 
 int func_80103C3C(int);
 int func_80103E20(int);
+char* func_80103DD8(int arg0);
+
+extern char D_800F4F1C[6];
+extern void* D_800F5194;
+
+extern char D_80104FC0[];
+extern char D_80105004[];
+extern char D_80105014;
+extern char D_80105026;
+extern char D_80105060[];
+extern char D_8010506C[];
+extern u_char D_80105100[];
+extern u_char D_80105110[];
+extern u_char D_8010511B;
+extern u_char D_8010511C;
+extern char D_8010511D;
+extern char D_8010511E;
+extern char D_8010511F;
+
+int func_80103E20(int arg0)
+{
+    char* sp18[4];
+    int sp28[2];
+    char* sp30[22];
+    int sp88[11];
+    char* spB8[22];
+    int sp110[11];
+    int temp_v0_5;
+    int var_a0;
+    int var_s0_5;
+    int i;
+    int var_s0;
+    vs_battle_menuItem_t* temp_v0_4;
+    int skill;
+
+    if (arg0 != 0) {
+        i = vs_main_artsStatus.kills.battleAbilitiesUnlocked;
+        if (i != 22) {
+            if (vs_main_artsStatus.kills.total
+                >= vs_main_battleAbilitiesPointsRequirements[i]) {
+
+                ++vs_main_artsStatus.kills.battleAbilitiesUnlocked;
+                memset(D_800F4F1C, 0, 6);
+
+                D_8010511B = 0;
+                for (i = 0; i < 11; ++i) {
+                    int a0 = D_80105060[i];
+                    if (!((vs_main_skills[a0].flags >> 0xF) & 1)) {
+                        D_80105100[D_8010511B++] = a0;
+                    }
+                }
+
+                D_8010511C = 0;
+                for (i = 0; i < 11; ++i) {
+                    int a0 = D_8010506C[i];
+                    if (!((vs_main_skills[a0].flags >> 0xF) & 1)) {
+                        D_80105110[D_8010511C++] = a0;
+                    }
+                }
+                D_8010511F = 3;
+                D_8010511E = 120;
+                D_8010511D = 0;
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+    switch (D_8010511D) {
+    case 0:
+        var_s0 = D_8010511B != 0;
+        if (D_8010511C != 0) {
+            var_s0 += 2;
+        }
+        switch (var_s0) {
+        case 0:
+            vs_mainmenu_setMessage(&D_80105026);
+            D_8010511D = 6;
+            break;
+        case 1:
+            temp_v0_4 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8, D_80105004);
+            temp_v0_4->state = 2;
+            temp_v0_4->x = 0xB4;
+            temp_v0_4->selected = 1;
+            D_8010511D = 2;
+            break;
+        case 2:
+            temp_v0_4 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8, &D_80105014);
+            temp_v0_4->x = 0xB4;
+            temp_v0_4->state = var_s0;
+            temp_v0_4->selected = 1;
+            D_8010511D = 3;
+            break;
+        case 3:
+            i = vs_main_settings.cursorMemory;
+            sp18[0] = D_80105004;
+            sp18[1] = D_80105004 - 0x5E;
+            sp18[2] = D_80105004 + 0x10;
+            sp18[3] = sp18[1];
+            sp28[0] = 0;
+            sp28[1] = 0;
+            vs_main_settings.cursorMemory = 1;
+            vs_mainmenu_setMenuRows(2, 0x1A, sp18, sp28);
+            D_8010511D = 1;
+            vs_main_settings.cursorMemory = i;
+            break;
+        default:
+            return 0;
+        }
+        break;
+    case 1:
+        temp_v0_5 = vs_mainmenu_getSelectedRow();
+        i = temp_v0_5 + 1;
+        if (i != 0) {
+            if (i < 0) {
+                func_800FA8E0(0x28);
+                D_8010511D = 7;
+            } else {
+                func_800FA92C(temp_v0_5, 0);
+                D_8010511D += i;
+            }
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < D_8010511B; ++i) {
+                sp30[i * 2] = vs_main_skills[D_80105100[i]].name;
+                sp30[i * 2 + 1] = func_80103DD8(D_80105100[i]);
+                sp88[i] = 0;
+            }
+            var_a0 = 4;
+            if (D_8010511B == 1) {
+                var_a0 = 1;
+            } else if (D_8010511B < 5) {
+                var_a0 = D_8010511B - 1;
+            }
+            i = vs_main_settings.cursorMemory;
+            if (D_8010511F & 1) {
+                --D_8010511F;
+                vs_main_settings.cursorMemory = 1;
+            }
+            vs_mainmenu_setMenuRows(var_a0, 0x11B, sp30, sp88);
+            vs_main_settings.cursorMemory = i;
+            D_8010511D = 4;
+        }
+        break;
+    case 3:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < D_8010511C; ++i) {
+                spB8[i * 2] = vs_main_skills[D_80105110[i]].name;
+                spB8[i * 2 + 1] = func_80103DD8(D_80105110[i]);
+                sp110[i] = 0;
+            }
+            var_a0 = 4;
+            if (D_8010511C == 1) {
+                var_a0 = 1;
+            } else if (D_8010511C < 5) {
+                var_a0 = D_8010511C - 1;
+            }
+            i = vs_main_settings.cursorMemory;
+            if (D_8010511F & 2) {
+                D_8010511F -= 2;
+                vs_main_settings.cursorMemory = 1;
+            }
+            vs_mainmenu_setMenuRows(var_a0, 0x11C, spB8, sp110);
+            vs_main_settings.cursorMemory = i;
+            D_8010511D = 5;
+        }
+        break;
+    case 4:
+        var_s0_5 = vs_mainmenu_getSelectedRow();
+        skill = var_s0_5 + 1;
+        if (skill != 0) {
+            func_800FA8E0(0x28);
+            if (skill < 0) {
+                D_8010511D = 7;
+                break;
+            }
+            func_800C8E04(3);
+            skill = D_80105100[var_s0_5];
+            D_800F5194 = vs_main_skills[skill].name;
+            vs_mainmenu_setMessage(D_80104FC0);
+            vs_main_skills[skill].flags |= 0x8000;
+            D_8010511D = 6;
+        }
+        break;
+    case 5:
+        var_s0_5 = vs_mainmenu_getSelectedRow();
+        skill = var_s0_5 + 1;
+        if (skill != 0) {
+            func_800FA8E0(0x28);
+            if (skill < 0) {
+                D_8010511D = 7;
+                break;
+            }
+            func_800C8E04(3);
+            skill = D_80105110[var_s0_5];
+            D_800F5194 = vs_main_skills[skill].name;
+            vs_mainmenu_setMessage(D_80104FC0);
+            vs_main_skills[skill].flags |= 0x8000;
+            D_8010511D = 6;
+        }
+        break;
+    case 6:
+        if ((D_800F5130 >> 0x1E) & 1) {
+            if ((D_8010511E == 0) || ((char)vs_main_buttonsPressed != 0)) {
+                return 1;
+            }
+            --D_8010511E;
+        }
+        break;
+    case 7:
+        if (vs_mainmenu_ready() != 0) {
+            D_8010511D = 0;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_80104578(char* state)
 {

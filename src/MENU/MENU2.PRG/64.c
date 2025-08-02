@@ -6,10 +6,16 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-void func_80102928(int, int, char**);
+int func_80102928(int, int, u_short**);
 int func_80102CAC();
 
 extern u_short D_80104690[];
+extern u_short* D_80104EB4;
+extern int D_80104EB8;
+extern int D_80104EBC;
+extern char D_80104EC0;
+extern char D_80104EC1;
+extern char D_80104EC2;
 extern int D_80104EC8;
 extern int D_80104ED0;
 extern u_short D_80104ED8[];
@@ -42,7 +48,95 @@ static void _setAbilityCost(int ability)
     vs_mainmenu_setAbilityCost(0, &_stringBuffer[i], 0x48, 0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102928);
+int func_80102928(int arg0, int arg1, u_short** arg2)
+{
+    int temp_v1_2;
+    int j;
+    int i;
+    u_short* var_v1;
+
+    i = 0;
+    j = 0;
+    if (D_80104EB4 != 0) {
+        return 0;
+    }
+
+    D_80104EC0 = arg1;
+
+    if (D_80060021 != 0) {
+        i = D_800F4EE8[arg1 * 2];
+        j = D_800F4EE8[arg1 * 2 + 1];
+    }
+
+    temp_v1_2 = arg0 - 8;
+
+    if (temp_v1_2 < 0) {
+        i += j;
+        j = 0;
+        if (i >= arg0) {
+            i = 0;
+        }
+    } else {
+        if (temp_v1_2 < j) {
+            if ((i + j) >= arg0) {
+                i = 0;
+                j = 0;
+            } else {
+                i += j - temp_v1_2;
+                j = temp_v1_2;
+            }
+        }
+
+        if ((j > 0) && (i == 0)) {
+            i = 1;
+            --j;
+        }
+        if (j < temp_v1_2) {
+            if (i == 7) {
+                i = 6;
+                ++j;
+            }
+        }
+    }
+
+    D_80104EB8 = i;
+    D_80104EC2 = j;
+
+    if (arg1 == 0x18) {
+        _setAbilityCost(D_801050D0[i + j]);
+    } else {
+        _setAbilityCost(D_801050E0[i + j]);
+    }
+
+    D_80104EC1 = arg0;
+    D_80104EBC = 0;
+
+    D_80104EB4 = vs_main_allocHeapR(arg0 << 7);
+
+    for (i = 0; i < arg0; ++i) {
+        var_v1 = (arg2 + i * 2)[0];
+        if (var_v1 != 0) {
+            D_80104EB4[i * 64] = 0x10FA;
+            for (j = 0; j < 14; ++j) {
+                (i * 64 + j + D_80104EB4)[1] = var_v1[j];
+            }
+            D_80104EB4[i * 64 + 15] = 0xE7E7;
+        } else {
+            D_80104EB4[i * 64] = 0xE7E7;
+        }
+        var_v1 = (arg2 + i * 2)[1];
+        if (var_v1 != 0) {
+            D_80104EB4[i * 64 + 16] = 0xF8;
+            for (j = 0; j < 46; ++j) {
+                (i * 64 + j + D_80104EB4)[17] = var_v1[j];
+            }
+            D_80104EB4[i * 64 + 63] = 0xE7E7;
+        } else {
+            D_80104EB4[i * 64 + 16] = 0xE7E7;
+        }
+    }
+    return 1;
+}
 
 static void func_80102B5C(int arg0, int arg1, int arg2)
 {
@@ -83,7 +177,7 @@ INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_80102CAC);
 
 int func_801034FC(int arg0)
 {
-    char* menuStrings[28];
+    u_short* menuStrings[28];
     int i;
     int row;
     int skill;
@@ -103,8 +197,8 @@ int func_801034FC(int arg0)
         for (i = 0; i < 14; ++i) {
             skill = D_800EBDBC[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
-                menuStrings[row * 2] = vs_main_skills[skill].name;
-                menuStrings[row * 2 + 1] = (char*)&D_80104690[D_80104690[6 + i]];
+                menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
+                menuStrings[row * 2 + 1] = &D_80104690[D_80104690[6 + i]];
                 D_801050D0[row] = skill;
                 ++row;
             }
@@ -124,7 +218,7 @@ int func_801034FC(int arg0)
 
 static int func_80103670(int arg0)
 {
-    char* menuStrings[28];
+    u_short* menuStrings[28];
     int i;
     int row;
     int skill;
@@ -144,8 +238,8 @@ static int func_80103670(int arg0)
         for (i = 0; i < 14; ++i) {
             skill = D_800EBDCC[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
-                menuStrings[row * 2] = vs_main_skills[skill].name;
-                menuStrings[row * 2 + 1] = (char*)&D_80104690[D_80104690[0x14 + i]];
+                menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
+                menuStrings[row * 2 + 1] = &D_80104690[D_80104690[0x14 + i]];
                 D_801050E0[row] = skill;
                 ++row;
             }

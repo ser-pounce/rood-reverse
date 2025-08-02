@@ -80,6 +80,7 @@ extern char D_800F4E88;
 extern void* D_800F4E8C;
 extern short D_800F4E98[4];
 extern int D_800F4EA0;
+extern char D_800F4EE8[];
 extern char D_800F4F70;
 extern char D_800F4FDB;
 extern char D_800F4FDA;

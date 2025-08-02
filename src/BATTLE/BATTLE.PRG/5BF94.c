@@ -21,10 +21,6 @@ typedef struct {
 } D_800EB9B4_t;
 
 typedef struct {
-    char unk0[0xF2];
-} D_800F4EE8_t;
-
-typedef struct {
     short unk0;
     char unk2;
     char unk3;
@@ -82,7 +78,6 @@ extern char D_800F4E70[16];
 extern char D_800F4FDB;
 extern char D_800F4E90;
 extern int D_800F4ED4;
-extern D_800F4EE8_t D_800F4EE8;
 extern u_long* D_800F51B8;
 extern char D_800F5310[];
 extern int D_800F531C;

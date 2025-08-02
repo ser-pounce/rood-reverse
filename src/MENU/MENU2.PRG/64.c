@@ -10,6 +10,7 @@ int func_80102928(int, int, u_short**);
 int func_80102CAC();
 
 extern u_short D_80104690[];
+extern u_short D_801046D4[];
 extern u_short* D_80104EB4;
 extern int D_80104EB8;
 extern int D_80104EBC;
@@ -21,6 +22,8 @@ extern int D_80104ED0;
 extern u_short D_80104ED8[];
 extern char D_8010505A[];
 extern char D_80105078[];
+extern char D_801050C0;
+extern u_char D_801050C1;
 extern char D_801050D0[];
 extern char D_801050E0[];
 extern char D_801050F0;
@@ -64,8 +67,8 @@ int func_80102928(int arg0, int arg1, u_short** arg2)
     D_80104EC0 = arg1;
 
     if (D_80060021 != 0) {
-        i = D_800F4EE8[arg1 * 2];
-        j = D_800F4EE8[arg1 * 2 + 1];
+        i = D_800F4EE8.unk0[arg1 * 2];
+        j = D_800F4EE8.unk0[arg1 * 2 + 1];
     }
 
     temp_v1_2 = arg0 - 8;
@@ -295,7 +298,139 @@ static void _drawPointsRemaining(int arg0)
     vs_battle_renderTextRaw(pointsStr, pos + 0x60, 0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU2.PRG/nonmatchings/64", func_801038D4);
+int func_801038D4(char* arg0)
+{
+    char* sp18[4];
+    int sp28[2];
+    int temp_s0;
+    int temp_s0_3;
+
+    switch (*arg0) {
+    case 3:
+        D_801050C0 = 0;
+        D_801050C1 = 0xA;
+        if (vs_mainmenu_ready() == 0) {
+            break;
+        }
+
+        func_800FFBC8();
+
+        if (vs_battle_shortcutInvoked != 0) {
+            temp_s0 = vs_battle_shortcutInvoked - 7;
+            vs_battle_setMenuItem(vs_battle_shortcutInvoked + 3, 0x140, 0x22, 0x8C, 8,
+                (char*)&D_80104690[*((temp_s0 * 3) + D_80104690)])
+                ->selected
+                = 1;
+            if (temp_s0 == 0) {
+                *arg0 = 6;
+                func_801034FC(1);
+            } else {
+                *arg0 = 7;
+                func_80103670(1);
+            }
+            break;
+        }
+    // Fallthrough
+    case 4:
+        if (vs_mainmenu_ready() != 0) {
+            sp18[0] = (char*)D_801046D4;
+            sp18[1] = (char*)&D_801046D4[8];
+            sp28[0] = 0;
+            sp28[1] = 0;
+            if (func_800CAFB4(0) == 0) {
+                sp18[0] = (char*)((long)sp18[0] | 1);
+                sp18[1] = (char*)&D_801046D4[0x35];
+            }
+            sp18[2] = (char*)&D_801046D4[0x4D];
+            sp18[3] = (char*)&D_801046D4[0x56];
+            if (func_800CAFB4(1) == 0) {
+                sp28[1] |= 1;
+                sp18[3] = (char*)&D_801046D4[0x84];
+            }
+            temp_s0_3 = vs_main_settings.cursorMemory;
+            if (*arg0 != 3) {
+                vs_main_settings.cursorMemory = 1;
+            }
+            vs_mainmenu_setMenuRows(2, 0x117, (char**)sp18, sp28);
+            vs_main_settings.cursorMemory = temp_s0_3;
+            *arg0 = 5;
+        }
+        break;
+    case 5:
+        D_801050C0 = 1;
+        temp_s0_3 = vs_mainmenu_getSelectedRow() + 1;
+        if (temp_s0_3 != 0) {
+            D_801050C0 = 0;
+            if (temp_s0_3 == 1) {
+                *arg0 = 6;
+                func_801034FC(1);
+                break;
+            }
+            if (temp_s0_3 == 2) {
+                *arg0 = 7;
+                func_80103670(1);
+                break;
+            }
+            func_800FA8E0(0x28);
+            if (temp_s0_3 != -2) {
+                *arg0 = 8;
+            } else {
+                *arg0 = 9;
+            }
+        }
+        break;
+    case 6:
+        if (func_801034FC(0) != 0) {
+            if (vs_battle_shortcutInvoked != 0) {
+                func_800FA8E0(0x28);
+                *arg0 = 9;
+            } else {
+                *arg0 = 4;
+            }
+        }
+        break;
+    case 7:
+        if (func_80103670(0) != 0) {
+            if (vs_battle_shortcutInvoked != 0) {
+                func_800FA8E0(0x28);
+                *arg0 = 9;
+            } else {
+                *arg0 = 4;
+            }
+        }
+        break;
+    case 8:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_ready() != 0) {
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    case 9:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_ready() != 0) {
+            vs_battle_menuState.currentState = 3;
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    }
+
+    if (D_801050C0 != 0) {
+        _drawPointsRemaining(vs_battle_rowAnimationSteps[D_801050C1]);
+        if (D_801050C1 != 0) {
+            --D_801050C1;
+        }
+    } else {
+        if (D_801050C1 < 10) {
+            ++D_801050C1;
+            _drawPointsRemaining((D_801050C1 & 0xFF) << 5);
+        }
+    }
+    return 0;
+}
 
 int func_80103C3C(int arg0)
 {

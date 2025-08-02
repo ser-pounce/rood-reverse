@@ -47,6 +47,7 @@ void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC();
 int func_800CABE0(int);
+int func_800CAFB4(int);
 short* func_800CB66C();
 void func_800CB114();
 int func_800CB45C();
@@ -66,6 +67,10 @@ void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920();
 
+typedef struct {
+    char unk0[0xF2];
+} D_800F4EE8_t;
+
 extern u_short vs_battle_menuStrings[];
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
@@ -80,7 +85,7 @@ extern char D_800F4E88;
 extern void* D_800F4E8C;
 extern short D_800F4E98[4];
 extern int D_800F4EA0;
-extern char D_800F4EE8[];
+extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4F70;
 extern char D_800F4FDB;
 extern char D_800F4FDA;

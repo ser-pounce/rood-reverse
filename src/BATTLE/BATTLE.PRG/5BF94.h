@@ -84,5 +84,7 @@ extern char D_800F4F70;
 extern char D_800F4FDB;
 extern char D_800F4FDA;
 extern D_800F4FE0_t D_800F4FE0[];
+extern u_int D_800F5130;
 extern short D_800F514C;
+extern char* D_800F5168[];
 extern vs_battle_menuState_t vs_battle_menuState;

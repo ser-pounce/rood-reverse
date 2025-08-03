@@ -5,9 +5,6 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <memory.h>
 
-int func_80103C3C(int);
-char* func_80103DD8(int arg0);
-
 static u_short D_80104ED8[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };

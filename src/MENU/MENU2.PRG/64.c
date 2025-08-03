@@ -1,10 +1,6 @@
-#include "common.h"
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
-#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
-#include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 

@@ -474,7 +474,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAEAC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAF40);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAFB4);
+int vs_battle_abilitiesUnlocked(int defense)
+{
+    int i;
+    vs_skill_t* v0;
+
+    for (i = 0; i < 14; ++i) {
+        v0 = vs_main_skills;
+        if ((v0[defense == 0 ? vs_battle_chainAbilityOffsets[i]
+                             : vs_battle_defenseAbilityOffsets[i]]
+                    .flags
+                >> 0xF)
+            & 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB030);
 

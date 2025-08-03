@@ -213,7 +213,8 @@ int func_80102CAC()
     }
 
     vs_battle_getMenuItem(D_80104EB8 + 0x14);
-    vs_mainmenu_setMessage((char*)(D_80104EB4 + (((D_80104EB8 + D_80104EC2) << 6) + 0x10)));
+    vs_mainmenu_setMessage(
+        (char*)(D_80104EB4 + (((D_80104EB8 + D_80104EC2) << 6) + 0x10)));
 
     switch (D_80104EBC) {
     case 16:
@@ -415,7 +416,7 @@ int func_801034FC(int arg0)
         }
         row = 0;
         for (i = 0; i < 14; ++i) {
-            skill = D_800EBDBC[i];
+            skill = vs_battle_chainAbilityOffsets[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[row * 2 + 1] = &D_80104690[D_80104690[6 + i]];
@@ -456,7 +457,7 @@ static int func_80103670(int arg0)
         }
         row = 0;
         for (i = 0; i < 14; ++i) {
-            skill = D_800EBDCC[i];
+            skill = vs_battle_defenseAbilityOffsets[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[row * 2 + 1] = &D_80104690[D_80104690[0x14 + i]];
@@ -554,13 +555,13 @@ int func_801038D4(char* arg0)
             sp18[1] = (char*)&D_801046D4[8];
             sp28[0] = 0;
             sp28[1] = 0;
-            if (func_800CAFB4(0) == 0) {
+            if (vs_battle_abilitiesUnlocked(0) == 0) {
                 sp18[0] = (char*)((long)sp18[0] | 1);
                 sp18[1] = (char*)&D_801046D4[0x35];
             }
             sp18[2] = (char*)&D_801046D4[0x4D];
             sp18[3] = (char*)&D_801046D4[0x56];
-            if (func_800CAFB4(1) == 0) {
+            if (vs_battle_abilitiesUnlocked(1) == 0) {
                 sp28[1] |= 1;
                 sp18[3] = (char*)&D_801046D4[0x84];
             }

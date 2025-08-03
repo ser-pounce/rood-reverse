@@ -433,7 +433,6 @@ func_800CABE0 = 0x800CABE0; // type:func
 func_800CACD0 = 0x800CACD0; // type:func
 func_800CAEAC = 0x800CAEAC; // type:func
 func_800CAF40 = 0x800CAF40; // type:func
-func_800CAFB4 = 0x800CAFB4; // type:func
 func_800CB030 = 0x800CB030; // type:func
 func_800CB114 = 0x800CB114; // type:func
 func_800CB158 = 0x800CB158; // type:func

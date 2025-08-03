@@ -1,5 +1,13 @@
 _setAbilityCost = 0x80102864;
+_mapAbility = 0x80102B5C;
 _drawPointsRemaining = 0x801037E4;
 _battleAbilityStrings = 0x80104690;
+_highlightedAbility = 0x80104EB8;
+_selectedAbilityType = 0x80104EC0;
+_abilityCount = 0x80104EC1;
+_firstAbility = 0x80104EC2;
+_cursorAnimStep = 0x80104EC4;
 _stringBuffer = 0x801050B0;
 D_801050C1 = 0x801050C1;
+_unlockedChainAbilities = 0x801050D0;
+_unlockedDefenseAbilities = 0x801050E0;

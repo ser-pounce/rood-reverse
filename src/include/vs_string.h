@@ -8,5 +8,6 @@ enum vs_string_chars {
     vs_char_terminator = 0xE7,
     vs_char_newline = 0xE8,
     vs_char_control = 0xEC,
+    vs_char_chunkSize = 0xF8,
     vs_char_spacing = 0xFA
 };

@@ -17,7 +17,7 @@ extern u_short _battleAbilityStrings[];
 int func_80103C3C(int arg0)
 {
     static char D_801050F0;
-    static char _6[15] __attribute__((unused));
+    static char _[15] __attribute__((unused));
     
     int weaponTypeMod;
     int skillId;

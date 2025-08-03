@@ -45,7 +45,7 @@ static char _unlockedDefenseAbilities[16];
 
 enum abilityType { abilityTypeChain = 24 };
 
-static int func_80102928(int abilityCount, int type, u_short** arg2)
+static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
 {
     int temp_v1_2;
     u_short* param;
@@ -168,7 +168,7 @@ static void _mapAbility(int type, int key, int ability)
     }
 }
 
-static int func_80102CAC()
+static int _abilityMenu()
 {
     extern int D_1F800000[];
     static int _cursorAnimStep = 0;
@@ -391,9 +391,9 @@ static int func_80102CAC()
     return 0;
 }
 
-int func_801034FC(int arg0)
+static int _chainAbilityMenu(int arg0)
 {
-    static int D_80104EC8 = 0;
+    static int state = 0;
     static char _[4] __attribute__((unused)) = { 0 };
 
     u_short* menuStrings[28];
@@ -403,11 +403,11 @@ int func_801034FC(int arg0)
 
     if (arg0 != 0) {
         func_800FA92C(0, 1);
-        D_80104EC8 = 0;
+        state = 0;
         return 0;
     }
 
-    switch (D_80104EC8) {
+    switch (state) {
     case 0:
         if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
@@ -423,11 +423,11 @@ int func_801034FC(int arg0)
                 ++count;
             }
         }
-        func_80102928(count, abilityTypeChain, menuStrings);
-        D_80104EC8 = 1;
+        _initAbilityMenu(count, abilityTypeChain, menuStrings);
+        state = 1;
         break;
     case 1:
-        if (func_80102CAC() != 0) {
+        if (_abilityMenu() != 0) {
             func_800FA8E0(2);
             return 1;
         }
@@ -436,9 +436,9 @@ int func_801034FC(int arg0)
     return 0;
 }
 
-static int func_80103670(int arg0)
+static int _defenseAbilityMenu(int arg0)
 {
-    static int D_80104ED0 = 0;
+    static int state = 0;
     static char _[4] __attribute__((unused)) = { 0 };
 
     u_short* menuStrings[28];
@@ -448,11 +448,11 @@ static int func_80103670(int arg0)
 
     if (arg0 != 0) {
         func_800FA92C(1, 1);
-        D_80104ED0 = 0;
+        state = 0;
         return 0;
     }
 
-    switch (D_80104ED0) {
+    switch (state) {
     case 0:
         if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
@@ -468,11 +468,11 @@ static int func_80103670(int arg0)
                 ++row;
             }
         }
-        func_80102928(row, 0x19, menuStrings);
-        D_80104ED0 = 1;
+        _initAbilityMenu(row, 0x19, menuStrings);
+        state = 1;
         break;
     case 1:
-        if (func_80102CAC() != 0) {
+        if (_abilityMenu() != 0) {
             func_800FA8E0(2);
             return 1;
         }
@@ -499,7 +499,7 @@ static void _drawPointsRemaining(int arg0)
         points = 0;
     }
 
-    pos = (arg0 + 0xCE) | 0x420000;
+    pos = (arg0 + 206) | 0x420000;
 
     pointsBuf[14] = 'T';
     pointsBuf[15] = 0;
@@ -519,21 +519,32 @@ static void _drawPointsRemaining(int arg0)
     vs_battle_renderTextRaw(pointsStr, pos + 0x60, 0);
 }
 
-int func_801038D4(char* arg0)
+static int func_801038D4(char* state)
 {
-    static char D_801050C0;
-    static u_char D_801050C1;
+    enum state {
+        none,
+        init = 3,
+        selectTypeInit,
+        selectType,
+        chain,
+        defense,
+        exitToMainMenu,
+        exitToBattle
+    };
+
+    static char menuAnimating;
+    static u_char pointsAnimStep;
     static char _[14] __attribute__((unused));
 
-    char* sp18[4];
-    int sp28[2];
+    char* menuStrings[4];
+    int rowTypes[2];
     int temp_s0;
-    int temp_s0_3;
+    int val;
 
-    switch (*arg0) {
-    case 3:
-        D_801050C0 = 0;
-        D_801050C1 = 0xA;
+    switch (*state) {
+    case init:
+        menuAnimating = 0;
+        pointsAnimStep = 10;
         if (vs_mainmenu_ready() == 0) {
             break;
         }
@@ -541,123 +552,124 @@ int func_801038D4(char* arg0)
         func_800FFBC8();
 
         if (vs_battle_shortcutInvoked != 0) {
-            temp_s0 = vs_battle_shortcutInvoked - 7;
+            int type = vs_battle_shortcutInvoked - 7;
             vs_battle_setMenuItem(vs_battle_shortcutInvoked + 3, 0x140, 0x22, 0x8C, 8,
-                (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_s0 * 3]])
+                (char*)&_battleAbilityStrings[_battleAbilityStrings[type * 3]])
                 ->selected
                 = 1;
-            if (temp_s0 == 0) {
-                *arg0 = 6;
-                func_801034FC(1);
+            if (type == 0) {
+                *state = chain;
+                _chainAbilityMenu(1);
             } else {
-                *arg0 = 7;
-                func_80103670(1);
+                *state = defense;
+                _defenseAbilityMenu(1);
             }
             break;
         }
     // Fallthrough
-    case 4:
+    case selectTypeInit:
         if (vs_mainmenu_ready() != 0) {
-            sp18[0]
+            menuStrings[0]
                 = (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
-            sp18[1] = (char*)&_battleAbilityStrings
+            menuStrings[1] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_chainAbilitiesDesc];
-            sp28[0] = 0;
-            sp28[1] = 0;
+            rowTypes[0] = 0;
+            rowTypes[1] = 0;
             if (vs_battle_abilitiesUnlocked(0) == 0) {
-                sp18[0] = (char*)((long)sp18[0] | 1);
-                sp18[1] = (char*)&_battleAbilityStrings
+                // BUG: Should be rowTypes, but flow doesn't seem to be used anyway
+                menuStrings[0] = (char*)((long)menuStrings[0] | 1);
+                menuStrings[1] = (char*)&_battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noChainAbilities];
             }
-            sp18[2] = (char*)&_battleAbilityStrings
+            menuStrings[2] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_defenseAbilities];
-            sp18[3] = (char*)&_battleAbilityStrings
+            menuStrings[3] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_defenseAbilitiesDesc];
             if (vs_battle_abilitiesUnlocked(1) == 0) {
-                sp28[1] |= 1;
-                sp18[3] = (char*)&_battleAbilityStrings
+                rowTypes[1] |= 1;
+                menuStrings[3] = (char*)&_battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noDefenseAbilities];
             }
-            temp_s0_3 = vs_main_settings.cursorMemory;
-            if (*arg0 != 3) {
+            val = vs_main_settings.cursorMemory;
+            if (*state != 3) {
                 vs_main_settings.cursorMemory = 1;
             }
-            vs_mainmenu_setMenuRows(2, 0x117, (char**)sp18, sp28);
-            vs_main_settings.cursorMemory = temp_s0_3;
-            *arg0 = 5;
+            vs_mainmenu_setMenuRows(2, 0x117, (char**)menuStrings, rowTypes);
+            vs_main_settings.cursorMemory = val;
+            *state = selectType;
         }
         break;
-    case 5:
-        D_801050C0 = 1;
-        temp_s0_3 = vs_mainmenu_getSelectedRow() + 1;
-        if (temp_s0_3 != 0) {
-            D_801050C0 = 0;
-            if (temp_s0_3 == 1) {
-                *arg0 = 6;
-                func_801034FC(1);
+    case selectType:
+        menuAnimating = 1;
+        val = vs_mainmenu_getSelectedRow() + 1;
+        if (val != 0) {
+            menuAnimating = 0;
+            if (val == 1) {
+                *state = chain;
+                _chainAbilityMenu(1);
                 break;
             }
-            if (temp_s0_3 == 2) {
-                *arg0 = 7;
-                func_80103670(1);
+            if (val == 2) {
+                *state = defense;
+                _defenseAbilityMenu(1);
                 break;
             }
             func_800FA8E0(0x28);
-            if (temp_s0_3 != -2) {
-                *arg0 = 8;
+            if (val != -2) {
+                *state = exitToMainMenu;
             } else {
-                *arg0 = 9;
+                *state = exitToBattle;
             }
         }
         break;
-    case 6:
-        if (func_801034FC(0) != 0) {
+    case chain:
+        if (_chainAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
                 func_800FA8E0(0x28);
-                *arg0 = 9;
+                *state = exitToBattle;
             } else {
-                *arg0 = 4;
+                *state = selectTypeInit;
             }
         }
         break;
-    case 7:
-        if (func_80103670(0) != 0) {
+    case defense:
+        if (_defenseAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
                 func_800FA8E0(0x28);
-                *arg0 = 9;
+                *state = exitToBattle;
             } else {
-                *arg0 = 4;
+                *state = selectTypeInit;
             }
         }
         break;
-    case 8:
+    case exitToMainMenu:
         func_800FFBA8();
         func_800FFA88(0);
         if (vs_mainmenu_ready() != 0) {
-            *arg0 = 0;
+            *state = none;
             return 1;
         }
         break;
-    case 9:
+    case exitToBattle:
         func_800FFBA8();
         func_800FFA88(0);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 3;
-            *arg0 = 0;
+            *state = none;
             return 1;
         }
         break;
     }
 
-    if (D_801050C0 != 0) {
-        _drawPointsRemaining(vs_battle_rowAnimationSteps[D_801050C1]);
-        if (D_801050C1 != 0) {
-            --D_801050C1;
+    if (menuAnimating != 0) {
+        _drawPointsRemaining(vs_battle_rowAnimationSteps[pointsAnimStep]);
+        if (pointsAnimStep != 0) {
+            --pointsAnimStep;
         }
     } else {
-        if (D_801050C1 < 10) {
-            ++D_801050C1;
-            _drawPointsRemaining((D_801050C1 & 0xFF) << 5);
+        if (pointsAnimStep < 10) {
+            ++pointsAnimStep;
+            _drawPointsRemaining(pointsAnimStep << 5);
         }
     }
     return 0;

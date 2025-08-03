@@ -9,8 +9,8 @@ char* func_80103DD8(int arg0);
 
 extern u_short D_80104ED8[];
 
-extern char D_80105026;
-extern char D_80105060[];
+static char D_80105060[]
+    = { 0x18, 0x19, 0x22, 0x25, 0x23, 0x1E, 0x1A, 0x1B, 0x20, 0x1D, 0x1F };
 extern char D_8010506C[];
 extern u_char D_80105100[];
 extern u_char D_80105110[];
@@ -77,7 +77,8 @@ int func_80103E20(int arg0)
         }
         switch (var_s0) {
         case 0:
-            vs_mainmenu_setMessage(&D_80105026);
+            vs_mainmenu_setMessage(
+                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked]);
             D_8010511D = 6;
             break;
         case 1:
@@ -99,8 +100,7 @@ int func_80103E20(int arg0)
         case 3:
             i = vs_main_settings.cursorMemory;
             sp18[0] = (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_chainAbilities];
-            sp18[1]
-                = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_select]);
+            sp18[1] = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_select]);
             sp18[2]
                 = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             sp18[3] = sp18[1];

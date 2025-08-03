@@ -18,17 +18,17 @@ static u_short _battleAbilityStrings[] = {
 };
 static char _0 __attribute__((unused)) = 0;
 
-u_short* D_80104EB4 = NULL;
-int D_80104EB8 = 0;
-u_int D_80104EBC = 0;
-char D_80104EC0 = 0;
-char D_80104EC1 = 0;
-char D_80104EC2 = 0;
+static u_short* D_80104EB4 = NULL;
+static int D_80104EB8 = 0;
+static u_int D_80104EBC = 0;
+static char D_80104EC0 = 0;
+static char D_80104EC1 = 0;
+static char D_80104EC2 = 0;
 static char _1 __attribute__((unused)) = 0;
-int D_80104EC4 = 0;
-int D_80104EC8 = 0;
+static int D_80104EC4 = 0;
+static int D_80104EC8 = 0;
 static char _2[4] __attribute__((unused)) = { 0 };
-int D_80104ED0 = 0;
+static int D_80104ED0 = 0;
 static char _3[4] __attribute__((unused)) = { 0 };
 
 u_short D_80104ED8[] = {

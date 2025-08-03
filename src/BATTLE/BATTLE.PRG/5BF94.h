@@ -6,7 +6,8 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    short unk4;
+    char unk4;
+    char unk5;
     signed char selected;
     signed char unk7;
     char unk8;
@@ -56,7 +57,7 @@ void func_800CB654(int);
 void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(void* dest, void const* src, int size);
 int vs_battle_toBCD(int);
-char vs_battle_drawCursor(char animStep, int position);
+int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_encode(int value);
 int func_800CD064(int);
 void vs_battle_drawImage(int xy, void* buffer, int wh);

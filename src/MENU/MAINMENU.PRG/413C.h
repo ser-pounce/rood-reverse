@@ -6,6 +6,7 @@ void func_800FFB68(int);
 void func_800FFB90(int);
 void func_800FFBA8();
 void func_800FFBC8();
+void func_800FFC68(int, int, int, int);
 void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
 void func_80100164();

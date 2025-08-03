@@ -1,3 +1,4 @@
+#include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
@@ -9,7 +10,7 @@ static u_short _battleAbilityMenuStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };
 
-int func_80103C3C(int arg0)
+int _showBreakArtUnlocked(int arg0)
 {
     static char messageTimeout;
     static char _[15] __attribute__((unused));
@@ -61,22 +62,41 @@ static char D_80105060[]
 static char D_8010506C[]
     = { 0x2F, 0x30, 0x31, 0x32, 0x29, 0x2A, 0x33, 0x34, 0x2C, 0x2D, 0x35 };
 
-char* func_80103DD8(int arg0)
+static char* _getAbilityDescription(int ability)
 {
     extern u_short _battleAbilityStrings[];
-    static char D_80105078[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    static char abilityDescLookup[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x08, 0x09, 0x0A, 0x0B, 0x00, 0x0D, 0x0E, 0x0F, 0x10, 0x00, 0x11,
-        0x12, 0x00, 0x13, 0x00, 0x00, 0x00, 0x15, 0x16, 0x00, 0x18, 0x19, 0x00, 0x1B,
-        0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x00, 0x00 };
+        0x00, 0x00, 0x00, VS_battleAbilities_INDEX_chainAbilityEffect2,
+        VS_battleAbilities_INDEX_chainAbilityEffect3,
+        VS_battleAbilities_INDEX_chainAbilityEffect4,
+        VS_battleAbilities_INDEX_chainAbilityEffect5, 0x00,
+        VS_battleAbilities_INDEX_chainAbilityEffect7,
+        VS_battleAbilities_INDEX_chainAbilityEffect8,
+        VS_battleAbilities_INDEX_chainAbilityEffect9,
+        VS_battleAbilities_INDEX_chainAbilityEffect10, 0x00,
+        VS_battleAbilities_INDEX_chainAbilityEffect11,
+        VS_battleAbilities_INDEX_chainAbilityEffect12, 0x00,
+        VS_battleAbilities_INDEX_chainAbilityEffect13, 0x00, 0x00, 0x00,
+        VS_battleAbilities_INDEX_defenseAbilityEffect1,
+        VS_battleAbilities_INDEX_defenseAbilityEffect2, 0x00,
+        VS_battleAbilities_INDEX_defenseAbilityEffect4,
+        VS_battleAbilities_INDEX_defenseAbilityEffect5, 0x00,
+        VS_battleAbilities_INDEX_defenseAbilityEffect7,
+        VS_battleAbilities_INDEX_defenseAbilityEffect8,
+        VS_battleAbilities_INDEX_defenseAbilityEffect9,
+        VS_battleAbilities_INDEX_defenseAbilityEffect10,
+        VS_battleAbilities_INDEX_defenseAbilityEffect11,
+        VS_battleAbilities_INDEX_defenseAbilityEffect12,
+        VS_battleAbilities_INDEX_defenseAbilityEffect13 };
 
-    u_char temp_v1;
+    u_char index;
 
-    temp_v1 = D_80105078[arg0];
-    if (D_80105078[arg0] == 0) {
+    index = abilityDescLookup[ability];
+    if (abilityDescLookup[ability] == 0) {
         return (char*)&_battleAbilityMenuStrings[VS_battleAbilitiesMenu_OFFSET_unknown1];
     }
-    return (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_v1]];
+    return (char*)&_battleAbilityStrings[_battleAbilityStrings[index]];
 }
 
 int func_80103E20(int arg0)
@@ -203,7 +223,7 @@ int func_80103E20(int arg0)
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < D_8010511B; ++i) {
                 sp30[i * 2] = vs_main_skills[D_80105100[i]].name;
-                sp30[i * 2 + 1] = func_80103DD8(D_80105100[i]);
+                sp30[i * 2 + 1] = _getAbilityDescription(D_80105100[i]);
                 sp88[i] = 0;
             }
             var_a0 = 4;
@@ -226,7 +246,7 @@ int func_80103E20(int arg0)
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < D_8010511C; ++i) {
                 spB8[i * 2] = vs_main_skills[D_80105110[i]].name;
-                spB8[i * 2 + 1] = func_80103DD8(D_80105110[i]);
+                spB8[i * 2 + 1] = _getAbilityDescription(D_80105110[i]);
                 sp110[i] = 0;
             }
             var_a0 = 4;
@@ -306,12 +326,12 @@ int func_80104578(char* state)
         // Fallthrough
     case 1:
         *state = 3;
-        if ((D_800F4E88 != 0) && (func_80103C3C(1) == 0)) {
+        if ((D_800F4E88 != 0) && (_showBreakArtUnlocked(1) == 0)) {
             *state = 2;
         }
         break;
     case 2:
-        if (func_80103C3C(0) != 0) {
+        if (_showBreakArtUnlocked(0) != 0) {
             *state = 1;
         }
         break;

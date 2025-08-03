@@ -5,15 +5,13 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <memory.h>
 
-static u_short D_80104ED8[] = {
+static u_short _battleAbilityMenuStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };
 
-extern u_short _battleAbilityStrings[];
-
 int func_80103C3C(int arg0)
 {
-    static char D_801050F0;
+    static char messageTimeout;
     static char _[15] __attribute__((unused));
 
     int weaponTypeMod;
@@ -40,18 +38,20 @@ int func_80103C3C(int arg0)
 
         func_800C8E04(3);
         vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
-        skillId = 0xB8 + ((weaponType - 1) * 4) + skillId;
-        D_800F5168[10] = (char*)&D_80104ED8[D_80104ED8[weaponType]];
-        D_800F5168[11] = vs_main_skills[skillId].name;
-        vs_mainmenu_setMessage((char*)&D_80104ED8[0x12]);
+        skillId = 184 + ((weaponType - 1) * 4) + skillId;
+        vs_battle_stringContext[10]
+            = (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponType]];
+        vs_battle_stringContext[11] = vs_main_skills[skillId].name;
+        vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+                [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
         vs_main_skills[skillId].flags |= 0x8000;
-        D_801050F0 = 0x78;
+        messageTimeout = 120;
 
     } else if ((D_800F5130 >> 0x1E) & 1) {
-        if ((D_801050F0 == 0) || ((char)vs_main_buttonsPressed != 0)) {
+        if ((messageTimeout == 0) || (vs_main_buttonsPressed.pad[0].low != 0)) {
             return 1;
         }
-        --D_801050F0;
+        --messageTimeout;
     }
     return 0;
 }
@@ -63,6 +63,7 @@ static char D_8010506C[]
 
 char* func_80103DD8(int arg0)
 {
+    extern u_short _battleAbilityStrings[];
     static char D_80105078[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x08, 0x09, 0x0A, 0x0B, 0x00, 0x0D, 0x0E, 0x0F, 0x10, 0x00, 0x11,
@@ -73,7 +74,7 @@ char* func_80103DD8(int arg0)
 
     temp_v1 = D_80105078[arg0];
     if (D_80105078[arg0] == 0) {
-        return (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_unknown1];
+        return (char*)&_battleAbilityMenuStrings[VS_battleAbilitiesMenu_OFFSET_unknown1];
     }
     return (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_v1]];
 }
@@ -143,13 +144,14 @@ int func_80103E20(int arg0)
         }
         switch (var_s0) {
         case 0:
-            vs_mainmenu_setMessage(
-                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked]);
+            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked]);
             D_8010511D = 6;
             break;
         case 1:
             temp_v0_4 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8,
-                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_chainAbilities]);
+                (char*)&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_chainAbilities]);
             temp_v0_4->state = 2;
             temp_v0_4->x = 0xB4;
             temp_v0_4->selected = 1;
@@ -157,7 +159,8 @@ int func_80103E20(int arg0)
             break;
         case 2:
             temp_v0_4 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8,
-                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
+                (char*)&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             temp_v0_4->x = 0xB4;
             temp_v0_4->state = var_s0;
             temp_v0_4->selected = 1;
@@ -165,10 +168,12 @@ int func_80103E20(int arg0)
             break;
         case 3:
             i = vs_main_settings.cursorMemory;
-            sp18[0] = (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_chainAbilities];
-            sp18[1] = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_select]);
-            sp18[2]
-                = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
+            sp18[0] = (char*)&_battleAbilityMenuStrings
+                [VS_battleAbilitiesMenu_OFFSET_chainAbilities];
+            sp18[1] = (char*)(&_battleAbilityMenuStrings
+                                  [VS_battleAbilitiesMenu_OFFSET_select]);
+            sp18[2] = (char*)(&_battleAbilityMenuStrings
+                                  [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             sp18[3] = sp18[1];
             sp28[0] = 0;
             sp28[1] = 0;
@@ -252,8 +257,8 @@ int func_80103E20(int arg0)
             func_800C8E04(3);
             skill = D_80105100[var_s0_5];
             D_800F5194 = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage(
-                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
+            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
             D_8010511D = 6;
         }
@@ -270,15 +275,15 @@ int func_80103E20(int arg0)
             func_800C8E04(3);
             skill = D_80105110[var_s0_5];
             D_800F5194 = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage(
-                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
+            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
             D_8010511D = 6;
         }
         break;
     case 6:
         if ((D_800F5130 >> 0x1E) & 1) {
-            if ((D_8010511E == 0) || ((char)vs_main_buttonsPressed != 0)) {
+            if ((D_8010511E == 0) || (vs_main_buttonsPressed.pad[0].low != 0)) {
                 return 1;
             }
             --D_8010511E;

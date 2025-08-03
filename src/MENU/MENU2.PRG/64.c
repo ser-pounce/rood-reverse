@@ -35,7 +35,7 @@ u_short _battleAbilityStrings[] = {
 };
 static u_short* D_80104EB4 = NULL;
 static int _highlightedAbility = 0;
-static u_int D_80104EBC = 0;
+static u_int _abilityMenuState = 0;
 static char _selectedAbilityType = 0;
 static char _abilityCount = 0;
 static char _firstAbility = 0;
@@ -104,7 +104,7 @@ static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
     }
 
     _abilityCount = abilityCount;
-    D_80104EBC = 0;
+    _abilityMenuState = 0;
 
     D_80104EB4 = vs_main_allocHeapR(abilityCount << 7);
 
@@ -171,7 +171,7 @@ static void _mapAbility(int type, int key, int ability)
 static int _abilityMenu()
 {
     extern int D_1F800000[];
-    static int _cursorAnimStep = 0;
+    static int cursorAnimStep = 0;
 
     int temp_s3;
     int selectedAbility;
@@ -182,22 +182,23 @@ static int _abilityMenu()
 
     temp_s3 = D_1F800000[2] + 8;
 
-    if (D_80104EBC < 10) {
-        menuItem = vs_battle_setMenuItem(D_80104EBC + 20, 320, (D_80104EBC * 16) + 50,
-            0x7E, 0, (char*)(D_80104EB4 + ((_firstAbility + D_80104EBC) << 6)));
+    if (_abilityMenuState < 10) {
+        menuItem = vs_battle_setMenuItem(_abilityMenuState + 20, 320,
+            (_abilityMenuState * 16) + 50, 0x7E, 0,
+            (char*)(D_80104EB4 + ((_firstAbility + _abilityMenuState) << 6)));
         menuItem->state = 2;
         menuItem->x = 194;
-        if ((D_80104EBC == 0) && (_firstAbility != 0)) {
+        if ((_abilityMenuState == 0) && (_firstAbility != 0)) {
             menuItem->unk5 = 1;
         }
-        if (++D_80104EBC == _abilityCount) {
-            D_80104EBC = 16;
+        if (++_abilityMenuState == _abilityCount) {
+            _abilityMenuState = 16;
         }
-        if (D_80104EBC == 8) {
+        if (_abilityMenuState == 8) {
             if ((_firstAbility + 8u) < _abilityCount) {
                 menuItem->unk5 = 2;
             }
-            D_80104EBC = 16;
+            _abilityMenuState = 16;
         }
         return 0;
     }
@@ -206,10 +207,10 @@ static int _abilityMenu()
     vs_mainmenu_setMessage(
         (char*)(D_80104EB4 + (((_highlightedAbility + _firstAbility) << 6) + 16)));
 
-    switch (D_80104EBC) {
+    switch (_abilityMenuState) {
     case 16:
         if (vs_mainmenu_ready() != 0) {
-            D_80104EBC = 17;
+            _abilityMenuState = 17;
         }
         break;
     case 17:
@@ -270,17 +271,17 @@ static int _abilityMenu()
             }
         }
 
-        if (vs_main_buttonsPressed & PADRright) {
+        if (vs_main_buttonsPressed.all & PADRright) {
             _mapAbility(_selectedAbilityType, 0, selectedAbility);
-        } else if (vs_main_buttonsPressed & PADRup) {
+        } else if (vs_main_buttonsPressed.all & PADRup) {
             _mapAbility(_selectedAbilityType, 1, selectedAbility);
-        } else if (vs_main_buttonsPressed & PADRleft) {
+        } else if (vs_main_buttonsPressed.all & PADRleft) {
             _mapAbility(_selectedAbilityType, 2, selectedAbility);
         }
 
         vs_battle_getMenuItem(_highlightedAbility + 20)->selected = 0;
 
-        if (vs_main_buttonsPressed & PADRdown) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_battle_playMenuLeaveSfx();
             vs_main_freeHeapR(D_80104EB4);
             D_80104EB4 = NULL;
@@ -299,7 +300,7 @@ static int _abilityMenu()
             } else {
                 if (_firstAbility == 0) {
                     if (_highlightedAbility == 0) {
-                        if (vs_main_buttonsPressed & PADLup) {
+                        if (vs_main_buttonsPressed.all & PADLup) {
                             _highlightedAbility = 7;
                             _firstAbility = _abilityCount - 8;
                         }
@@ -325,7 +326,7 @@ static int _abilityMenu()
             } else {
                 if (_firstAbility == (_abilityCount - 8)) {
                     if (_highlightedAbility == 7) {
-                        if (vs_main_buttonsPressed & PADLdown) {
+                        if (vs_main_buttonsPressed.all & PADLdown) {
                             _highlightedAbility = 0;
                             _firstAbility = 0;
                         }
@@ -378,7 +379,7 @@ static int _abilityMenu()
         }
 
         vs_battle_getMenuItem(_highlightedAbility + 20)->selected = 1;
-        _cursorAnimStep = vs_battle_drawCursor(_cursorAnimStep, _highlightedAbility + 2);
+        cursorAnimStep = vs_battle_drawCursor(cursorAnimStep, _highlightedAbility + 2);
 
         if (_selectedAbilityType == abilityTypeChain) {
             _setAbilityCost(_unlockedChainAbilities[_highlightedAbility + _firstAbility]);

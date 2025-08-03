@@ -1854,7 +1854,7 @@ static void _drawFileMenu(int framebuf)
             (_cursorFileOpSaturation[_selectCursorColor] << 16)
                 | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
         _selectCursorColor = (_selectCursorColor + 1) & 0xF;
-        if (vs_main_buttonsPressed & PADRup) {
+        if (vs_main_buttonsPressed.all & PADRup) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
     } else {
@@ -1922,13 +1922,13 @@ static int _promptConfirm(int arg0)
     case handleInput:
         _fileMenuElements[cancelled + 3].selected = 1;
         _fileMenuElements[4 - cancelled].selected = 0;
-        if (vs_main_buttonsPressed & (PADRdown | PADRright)) {
+        if (vs_main_buttonsPressed.all & (PADRdown | PADRright)) {
             _selectCursorXy = 0;
             for (i = 3; i < 5; ++i) {
                 _fileMenuElements[i].state = 4;
                 _fileMenuElements[i].targetPosition = -126;
             }
-            if (vs_main_buttonsPressed & PADRright) {
+            if (vs_main_buttonsPressed.all & PADRright) {
                 if (cancelled == 0) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     return 1;
@@ -2112,7 +2112,7 @@ static int _showSaveFilesMenu(int initPort)
         /* fallthrough */
     case handleInput:
         _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
-        if (vs_main_buttonsPressed & PADRdown) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
             state = leave;
@@ -2122,7 +2122,7 @@ static int _showSaveFilesMenu(int initPort)
                 _fileMenuElements[i + 5].selected = 0;
             }
             val = slot + page;
-            if (vs_main_buttonsPressed & PADRright) {
+            if (vs_main_buttonsPressed.all & PADRright) {
                 if (_saveFileInfo[val].unk4.base.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuElements[val + 5].selected = 1;
@@ -2261,7 +2261,7 @@ static int _showSaveFilesMenu(int initPort)
         if (saveSuccessful == 1) {
             ++leaveTimer;
         }
-        if ((char)vs_main_buttonsPressed == 0) {
+        if (vs_main_buttonsPressed.pad[0].low == 0) {
             if (leaveTimer != 150) {
                 break;
             }
@@ -2291,7 +2291,7 @@ static int _showSaveFilesMenu(int initPort)
         }
         break;
     case leaveError:
-        if ((char)vs_main_buttonsPressed != 0) {
+        if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuElement(i);
@@ -2381,7 +2381,7 @@ static int _selectSaveMemoryCard(int initPort)
         }
         break;
     case animateLeave:
-        if ((char)vs_main_buttonsPressed == 0) {
+        if (vs_main_buttonsPressed.pad[0].low == 0) {
             break;
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
@@ -2546,7 +2546,7 @@ static int _showSaveMenu(int initState)
     case handleInput:
         _fileMenuElements[selectedFile].selected = 1;
         _fileMenuElements[3 - selectedFile].selected = 0;
-        if (vs_main_buttonsPressed & PADRdown) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             val = _dataNotSaved;
             _selectCursorXy = 0;
@@ -2565,7 +2565,7 @@ static int _showSaveMenu(int initState)
             } else {
                 state = returnNoSave;
             }
-        } else if (vs_main_buttonsPressed & PADRright) {
+        } else if (vs_main_buttonsPressed.all & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             _selectSaveMemoryCard(selectedFile);
             _selectCursorXy = 0;
@@ -2596,7 +2596,7 @@ static int _showSaveMenu(int initState)
         }
         break;
     case containerWarn:
-        if ((char)vs_main_buttonsPressed != 0) {
+        if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_mainmenu_setMessage((char*)&clear);
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
             _promptConfirm(1);
@@ -2685,7 +2685,7 @@ static int _showLoadFilesMenu(int initPort)
         _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
         // fallthrough
     case handleInput:
-        if (vs_main_buttonsPressed & PADRdown) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             for (i = 5; i < 10; ++i) {
                 _clearFileMenuElement(i);
@@ -2700,7 +2700,7 @@ static int _showLoadFilesMenu(int initPort)
 
         currentSlot = slot + page;
 
-        if (vs_main_buttonsPressed & PADRright) {
+        if (vs_main_buttonsPressed.all & PADRright) {
             if (_saveFileInfo[currentSlot].unk4.base.slotState >= slotStateInUse) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuElements[currentSlot + 5].selected = 1;
@@ -2785,7 +2785,7 @@ static int _showLoadFilesMenu(int initPort)
         if (fileLoaded == 1) {
             ++completeTimer;
         }
-        if (((char)vs_main_buttonsPressed != 0) || (completeTimer == 150)) {
+        if ((vs_main_buttonsPressed.pad[0].low != 0) || (completeTimer == 150)) {
             if (fileLoaded < 0) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             }
@@ -2870,7 +2870,7 @@ static long _selectLoadMemoryCard(int initPort)
         break;
 
     case leave:
-        if (((char)vs_main_buttonsPressed) == 0) {
+        if ((vs_main_buttonsPressed.pad[0].low) == 0) {
             break;
         }
         vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
@@ -2994,7 +2994,7 @@ static int _loadFileMenu(int initFadeout)
     case handleInput:
         _fileMenuElements[selectedFile].selected = 1;
         _fileMenuElements[3 - selectedFile].selected = 0;
-        if (vs_main_buttonsPressed & PADRdown) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
             for (i = 0; i < 3; ++i) {
@@ -3002,7 +3002,7 @@ static int _loadFileMenu(int initFadeout)
                 _fileMenuElements[i].targetPosition = 320;
             }
             state = exit;
-        } else if (vs_main_buttonsPressed & PADRright) {
+        } else if (vs_main_buttonsPressed.all & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             _selectLoadMemoryCard(selectedFile);
             _selectCursorXy = 0;
@@ -3237,13 +3237,13 @@ static int _displayGameOverScreen(int init)
     if (color1 < 128) {
         color1 += 8;
     } else {
-        if (vs_main_buttonsPressed & (PADstart | PADRright)) {
+        if (vs_main_buttonsPressed.all & (PADstart | PADRright)) {
             vs_battle_playMenuSelectSfx();
             func_8004552C(1, 0, 60);
             color1 = -128;
             return 0;
         }
-        if (vs_main_buttonsPressed & (PADselect | PADLup | PADLdown)) {
+        if (vs_main_buttonsPressed.all & (PADselect | PADLup | PADLdown)) {
             vs_battle_playMenuChangeSfx();
             selectedOption = 1 - selectedOption;
         }
@@ -3470,7 +3470,7 @@ static int _promptYesNo(int initParams)
     case handleInput:
         vs_battle_getMenuItem(30 + selectedOption)->selected = 1;
         vs_battle_getMenuItem(31 - selectedOption)->selected = 0;
-        buttons = vs_main_buttonsPressed;
+        buttons = vs_main_buttonsPressed.all;
         if (cancelWithMenuButton == 0) {
             if (buttons & PADRup) {
                 buttons -= PADRup;
@@ -3603,7 +3603,7 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 4:
-        if ((char)vs_main_buttonsPressed != 0) {
+        if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_mainmenu_setMessage((char*)(_textTable + VS_MCMAN_OFFSET_containerWarn));
             _promptYesNo(2);
             *state = 5;

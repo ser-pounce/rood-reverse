@@ -730,8 +730,9 @@ int func_8007629C(u_int* otag)
                 << 16;
             vs_main_padConnect(0, vs_main_padBuffer[0]);
             vs_main_padConnect(16, vs_main_padBuffer[1]);
-            vs_main_buttonsPressed = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
-            temp_a0 = vs_main_buttonsPressed >> 16;
+            vs_main_buttonsPressed.all
+                = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
+            temp_a0 = vs_main_buttonsPressed.all >> 16;
             vs_main_buttonsReleased
                 = vs_main_buttonsPreviousState & ~vs_main_buttonsState;
             vs_main_buttonsPreviousState = vs_main_buttonsState;

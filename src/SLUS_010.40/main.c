@@ -8876,7 +8876,7 @@ int vs_main_processPadState()
         break;
     }
 
-    vs_main_buttonsPressed = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
+    vs_main_buttonsPressed.all = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
     vs_main_buttonsReleased = vs_main_buttonsPreviousState & ~vs_main_buttonsState;
     vs_main_buttonsPreviousState = vs_main_buttonsState;
 
@@ -8889,7 +8889,7 @@ int vs_main_processPadState()
         }
     }
 
-    vs_main_buttonRepeat = vs_main_buttonsPressed;
+    vs_main_buttonRepeat = vs_main_buttonsPressed.all;
 
     for (i = 0; i < 32; ++i) {
         if ((_buttonHeldFrameCount[i] >= 20) && !((_buttonHeldFrameCount[i] - 20) & 3)) {
@@ -8900,7 +8900,7 @@ int vs_main_processPadState()
 #define VS_RESET (PADstart | PADselect | PADR1 | PADR2 | PADL1 | PADL2)
 
     if ((_resetEnabled != 0) && ((vs_main_buttonsPreviousState & VS_RESET) == VS_RESET)
-        && (vs_main_buttonsPressed & VS_RESET)) {
+        && (vs_main_buttonsPressed.all & VS_RESET)) {
         vs_main_settings.monoSound = 0;
         vs_main_settings.vibrationOn = 1;
         vs_main_resetGame();

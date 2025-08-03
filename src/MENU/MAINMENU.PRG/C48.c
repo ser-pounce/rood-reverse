@@ -350,7 +350,7 @@ void func_800FBBD4(int arg0)
         var_s1 = -vs_battle_rowAnimationSteps[D_801020F8];
         if (D_801020F8 != 0) {
             --D_801020F8;
-        } else if (vs_main_buttonsPressed & PADRleft) {
+        } else if (vs_main_buttonsPressed.all & PADRleft) {
             var_s0 = func_800FBB64(var_s0);
             if (var_s0 != D_801024B9) {
                 vs_main_playSfxDefault(0x7E, 14);

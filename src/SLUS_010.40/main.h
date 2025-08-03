@@ -216,7 +216,13 @@ extern int D_8005E0C8;
 extern int D_8005E248;
 extern int vs_gametime_tickspeed;
 extern char vs_main_padBuffer[2][34];
-extern u_int vs_main_buttonsPressed;
+extern union {
+    u_int all;
+    struct {
+        char low;
+        char hi;
+    } pad[2];
+} vs_main_buttonsPressed;
 extern int vs_main_buttonsPreviousState;
 extern int vs_main_buttonRepeat;
 extern int vs_main_buttonsReleased;

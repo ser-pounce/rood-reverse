@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
@@ -11,8 +12,10 @@ int func_80102CAC();
 
 extern int D_1F800000[];
 
-extern u_short D_80104690[];
-extern u_short D_801046D4[];
+static u_short _battleAbilityStrings[] = {
+#include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
+};
+static char _ __attribute__((unused)) = 0;
 extern u_short* D_80104EB4;
 extern int D_80104EB8;
 extern u_int D_80104EBC;
@@ -419,7 +422,8 @@ int func_801034FC(int arg0)
             skill = vs_battle_chainAbilityOffsets[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
-                menuStrings[row * 2 + 1] = &D_80104690[D_80104690[6 + i]];
+                menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
+                        [VS_battleAbilities_INDEX_chainAbilityEffect0 + i]];
                 D_801050D0[row] = skill;
                 ++row;
             }
@@ -460,7 +464,8 @@ static int func_80103670(int arg0)
             skill = vs_battle_defenseAbilityOffsets[i];
             if ((vs_main_skills[skill].flags >> 0xF) & 1) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
-                menuStrings[row * 2 + 1] = &D_80104690[D_80104690[0x14 + i]];
+                menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
+                        [VS_battleAbilities_INDEX_defenseAbilityEffect0 + i]];
                 D_801050E0[row] = skill;
                 ++row;
             }
@@ -536,7 +541,7 @@ int func_801038D4(char* arg0)
         if (vs_battle_shortcutInvoked != 0) {
             temp_s0 = vs_battle_shortcutInvoked - 7;
             vs_battle_setMenuItem(vs_battle_shortcutInvoked + 3, 0x140, 0x22, 0x8C, 8,
-                (char*)&D_80104690[*((temp_s0 * 3) + D_80104690)])
+                (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_s0 * 3]])
                 ->selected
                 = 1;
             if (temp_s0 == 0) {
@@ -551,19 +556,25 @@ int func_801038D4(char* arg0)
     // Fallthrough
     case 4:
         if (vs_mainmenu_ready() != 0) {
-            sp18[0] = (char*)D_801046D4;
-            sp18[1] = (char*)&D_801046D4[8];
+            sp18[0]
+                = (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
+            sp18[1] = (char*)&_battleAbilityStrings
+                [VS_battleAbilities_OFFSET_chainAbilitiesDesc];
             sp28[0] = 0;
             sp28[1] = 0;
             if (vs_battle_abilitiesUnlocked(0) == 0) {
                 sp18[0] = (char*)((long)sp18[0] | 1);
-                sp18[1] = (char*)&D_801046D4[0x35];
+                sp18[1] = (char*)&_battleAbilityStrings
+                    [VS_battleAbilities_OFFSET_noChainAbilities];
             }
-            sp18[2] = (char*)&D_801046D4[0x4D];
-            sp18[3] = (char*)&D_801046D4[0x56];
+            sp18[2] = (char*)&_battleAbilityStrings
+                [VS_battleAbilities_OFFSET_defenseAbilities];
+            sp18[3] = (char*)&_battleAbilityStrings
+                [VS_battleAbilities_OFFSET_defenseAbilitiesDesc];
             if (vs_battle_abilitiesUnlocked(1) == 0) {
                 sp28[1] |= 1;
-                sp18[3] = (char*)&D_801046D4[0x84];
+                sp18[3] = (char*)&_battleAbilityStrings
+                    [VS_battleAbilities_OFFSET_noDefenseAbilities];
             }
             temp_s0_3 = vs_main_settings.cursorMemory;
             if (*arg0 != 3) {
@@ -700,5 +711,5 @@ char* func_80103DD8(int arg0)
     if (D_80105078[arg0] == 0) {
         return D_8010505A;
     }
-    return (char*)&D_80104690[D_80104690[temp_v1]];
+    return (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_v1]];
 }

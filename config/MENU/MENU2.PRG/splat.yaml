@@ -23,11 +23,10 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 64]
-      - [0x2C, .rodata, 1620]
+      - [0x2C, .rodata, 15D8]
       - [0x64, c]
-      - [0x1620, c]
+      - [0x15D8, c]
       - [0x1E90, .data, 64]
-      - [0x2860, .data, 1620]
-      - [0x286C, data]
+      - [0x2860, .data, 15D8]
       - [0x28B0, bss, 64]
   - [0x2920]

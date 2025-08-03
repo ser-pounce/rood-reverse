@@ -13,7 +13,7 @@ int func_80102CAC();
 
 extern int D_1F800000[];
 
-static u_short _battleAbilityStrings[] = {
+u_short _battleAbilityStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
 static char _0 __attribute__((unused)) = 0;
@@ -712,15 +712,4 @@ int func_80103C3C(int arg0)
         --D_801050F0;
     }
     return 0;
-}
-
-char* func_80103DD8(int arg0)
-{
-    u_char temp_v1;
-
-    temp_v1 = D_80105078[arg0];
-    if (D_80105078[arg0] == 0) {
-        return D_8010505A;
-    }
-    return (char*)&_battleAbilityStrings[_battleAbilityStrings[temp_v1]];
 }

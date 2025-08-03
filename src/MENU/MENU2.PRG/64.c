@@ -36,15 +36,14 @@ u_short D_80104ED8[] = {
 };
 static char _4 __attribute__((unused)) = 0;
 
-extern char D_8010505A[];
-extern char D_80105078[];
-
-extern char _stringBuffer[];
-extern char D_801050C0;
-extern u_char D_801050C1;
-extern char D_801050D0[];
-extern char D_801050E0[];
-extern char D_801050F0;
+static char _stringBuffer[16];
+static char D_801050C0;
+static u_char D_801050C1;
+static char _5[14] __attribute__((unused));
+static char D_801050D0[16];
+static char D_801050E0[16];
+static char D_801050F0;
+static char _6[15] __attribute__((unused));
 
 static void _setAbilityCost(int ability)
 {

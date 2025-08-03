@@ -35,14 +35,12 @@ static void _setAbilityCost(int ability)
 u_short _battleAbilityStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
-static char _0 __attribute__((unused)) = 0;
 static u_short* D_80104EB4 = NULL;
 static int D_80104EB8 = 0;
 static u_int D_80104EBC = 0;
 static char D_80104EC0 = 0;
 static char D_80104EC1 = 0;
 static char D_80104EC2 = 0;
-static char _1 __attribute__((unused)) = 0;
 
 static char D_801050D0[16];
 static char D_801050E0[16];
@@ -395,7 +393,7 @@ int func_80102CAC()
 int func_801034FC(int arg0)
 {
     static int D_80104EC8 = 0;
-    static char _2[4] __attribute__((unused)) = { 0 };
+    static char _[4] __attribute__((unused)) = { 0 };
 
     u_short* menuStrings[28];
     int i;
@@ -440,7 +438,7 @@ int func_801034FC(int arg0)
 static int func_80103670(int arg0)
 {
     static int D_80104ED0 = 0;
-    static char _3[4] __attribute__((unused)) = { 0 };
+    static char _[4] __attribute__((unused)) = { 0 };
 
     u_short* menuStrings[28];
     int i;
@@ -524,7 +522,7 @@ int func_801038D4(char* arg0)
 {
     static char D_801050C0;
     static u_char D_801050C1;
-    static char _5[14] __attribute__((unused));
+    static char _[14] __attribute__((unused));
     
     char* sp18[4];
     int sp28[2];

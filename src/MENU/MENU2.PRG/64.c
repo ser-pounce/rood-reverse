@@ -7,7 +7,7 @@
 static void _setAbilityCost(int ability)
 {
     static char _stringBuffer[16];
-    
+
     int i;
     int cost;
 
@@ -170,7 +170,7 @@ int func_80102CAC()
 {
     extern int D_1F800000[];
     static int D_80104EC4 = 0;
-    
+
     int temp_s3;
     int temp_s6;
     int var_s1;
@@ -519,7 +519,7 @@ int func_801038D4(char* arg0)
     static char D_801050C0;
     static u_char D_801050C1;
     static char _[14] __attribute__((unused));
-    
+
     char* sp18[4];
     int sp28[2];
     int temp_s0;

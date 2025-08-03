@@ -13,40 +13,10 @@ int func_80102CAC();
 
 extern int D_1F800000[];
 
-u_short _battleAbilityStrings[] = {
-#include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
-};
-static char _0 __attribute__((unused)) = 0;
-
-static u_short* D_80104EB4 = NULL;
-static int D_80104EB8 = 0;
-static u_int D_80104EBC = 0;
-static char D_80104EC0 = 0;
-static char D_80104EC1 = 0;
-static char D_80104EC2 = 0;
-static char _1 __attribute__((unused)) = 0;
-static int D_80104EC4 = 0;
-static int D_80104EC8 = 0;
-static char _2[4] __attribute__((unused)) = { 0 };
-static int D_80104ED0 = 0;
-static char _3[4] __attribute__((unused)) = { 0 };
-
-u_short D_80104ED8[] = {
-#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
-};
-static char _4 __attribute__((unused)) = 0;
-
-static char _stringBuffer[16];
-static char D_801050C0;
-static u_char D_801050C1;
-static char _5[14] __attribute__((unused));
-static char D_801050D0[16];
-static char D_801050E0[16];
-static char D_801050F0;
-static char _6[15] __attribute__((unused));
-
 static void _setAbilityCost(int ability)
 {
+    static char _stringBuffer[16];
+    
     int i;
     int cost;
 
@@ -66,6 +36,23 @@ static void _setAbilityCost(int ability)
     _stringBuffer[i] = '#';
     vs_mainmenu_setAbilityCost(0, &_stringBuffer[i], 0x48, 0);
 }
+
+u_short _battleAbilityStrings[] = {
+#include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
+};
+static char _0 __attribute__((unused)) = 0;
+static u_short* D_80104EB4 = NULL;
+static int D_80104EB8 = 0;
+static u_int D_80104EBC = 0;
+static char D_80104EC0 = 0;
+static char D_80104EC1 = 0;
+static char D_80104EC2 = 0;
+static char _1 __attribute__((unused)) = 0;
+
+static char D_801050D0[16];
+static char D_801050E0[16];
+static char D_801050F0;
+static char _6[15] __attribute__((unused));
 
 int func_80102928(int arg0, int arg1, u_short** arg2)
 {
@@ -191,6 +178,8 @@ static void func_80102B5C(int arg0, int arg1, int arg2)
         vs_main_settings.unk10[arg1] = arg2;
     }
 }
+
+static int D_80104EC4 = 0;
 
 int func_80102CAC()
 {
@@ -409,6 +398,9 @@ int func_80102CAC()
     return 0;
 }
 
+static int D_80104EC8 = 0;
+static char _2[4] __attribute__((unused)) = { 0 };
+
 int func_801034FC(int arg0)
 {
     u_short* menuStrings[28];
@@ -450,6 +442,9 @@ int func_801034FC(int arg0)
     }
     return 0;
 }
+
+static int D_80104ED0 = 0;
+static char _3[4] __attribute__((unused)) = { 0 };
 
 static int func_80103670(int arg0)
 {
@@ -533,6 +528,10 @@ static void _drawPointsRemaining(int arg0)
 
 int func_801038D4(char* arg0)
 {
+    static char D_801050C0;
+    static u_char D_801050C1;
+    static char _5[14] __attribute__((unused));
+    
     char* sp18[4];
     int sp28[2];
     int temp_s0;
@@ -670,6 +669,11 @@ int func_801038D4(char* arg0)
     }
     return 0;
 }
+
+u_short D_80104ED8[] = {
+#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
+};
+static char _4 __attribute__((unused)) = 0;
 
 int func_80103C3C(int arg0)
 {

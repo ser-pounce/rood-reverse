@@ -22,6 +22,8 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                 "complete": str(name) in {    
                     "SLUS_010.40/overlay",
                     "MENU1.PRG/30",
+                    "MENU2.PRG/64",
+                    "MENU2.PRG/15D8",
                     "TITLE.PRG/22C",
                     "TITLE.PRG/libpress/VLC_C",
                     "TITLE.PRG/libpress/BUILD"

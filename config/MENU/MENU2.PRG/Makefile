@@ -7,4 +7,4 @@ $(BUILD)/data/MENU/MENU2.PRG.elf: LDFLAGS += \
 $(BUILD)/src/MENU/MENU2.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENU2.PRG/%.o: CC1VER := 2.8.0-psx
 $(BUILD)/src/MENU/MENU2.PRG/64.o: $(BUILD)/assets/MENU/MENU2.PRG/battleAbilities.vsString $(BUILD)/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString
-$(BUILD)/src/MENU/MENU2.PRG/15D8.o: $(BUILD)/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString
+$(BUILD)/src/MENU/MENU2.PRG/143C.o: $(BUILD)/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString

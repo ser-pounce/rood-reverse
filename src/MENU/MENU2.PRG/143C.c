@@ -1,13 +1,17 @@
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <memory.h>
 
 int func_80103C3C(int);
 char* func_80103DD8(int arg0);
 
-extern u_short D_80104ED8[];
+static u_short D_80104ED8[] = {
+#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
+};
+static char _4 __attribute__((unused)) = 0;
 
 static char D_80105060[]
     = { 0x18, 0x19, 0x22, 0x25, 0x23, 0x1E, 0x1A, 0x1B, 0x20, 0x1D, 0x1F };
@@ -19,6 +23,8 @@ char D_80105078[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     0x00, 0x00, 0x15, 0x16, 0x00, 0x18, 0x19, 0x00, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
     0x21, 0x00, 0x00 };
 
+static char D_801050F0;
+static char _6[15] __attribute__((unused));
 static u_char D_80105100[16];
 static u_char D_80105110[11];
 static u_char D_8010511B;
@@ -28,6 +34,48 @@ static char D_8010511E;
 static char D_8010511F;
 
 extern u_short _battleAbilityStrings[];
+
+int func_80103C3C(int arg0)
+{
+    int weaponTypeMod;
+    int skillId;
+    int weaponType;
+    char(*new_var)[12];
+
+    if (arg0 != 0) {
+
+        weaponType = vs_battle_characterState->equippedWeaponType;
+        weaponTypeMod = weaponType;
+        new_var = &vs_main_artsStatus.artsLearned;
+        weaponTypeMod %= 10;
+        skillId = (*new_var)[weaponTypeMod];
+
+        if (skillId == 4) {
+            return 1;
+        }
+
+        if (vs_main_artsStatus.kills.weaponCategories[weaponTypeMod]
+            < vs_main_artsPointsRequirements[weaponTypeMod][skillId]) {
+            return 1;
+        }
+
+        func_800C8E04(3);
+        vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
+        skillId = 0xB8 + ((weaponType - 1) * 4) + skillId;
+        D_800F5168[10] = (char*)&D_80104ED8[D_80104ED8[weaponType]];
+        D_800F5168[11] = vs_main_skills[skillId].name;
+        vs_mainmenu_setMessage((char*)&D_80104ED8[0x12]);
+        vs_main_skills[skillId].flags |= 0x8000;
+        D_801050F0 = 0x78;
+
+    } else if ((D_800F5130 >> 0x1E) & 1) {
+        if ((D_801050F0 == 0) || ((char)vs_main_buttonsPressed != 0)) {
+            return 1;
+        }
+        --D_801050F0;
+    }
+    return 0;
+}
 
 char* func_80103DD8(int arg0)
 {

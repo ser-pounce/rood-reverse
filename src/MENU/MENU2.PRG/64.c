@@ -8,11 +8,6 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-int func_80102928(int, int, u_short**);
-int func_80102CAC();
-
-extern int D_1F800000[];
-
 static void _setAbilityCost(int ability)
 {
     static char _stringBuffer[16];
@@ -51,8 +46,6 @@ static char _1 __attribute__((unused)) = 0;
 
 static char D_801050D0[16];
 static char D_801050E0[16];
-static char D_801050F0;
-static char _6[15] __attribute__((unused));
 
 int func_80102928(int arg0, int arg1, u_short** arg2)
 {
@@ -179,10 +172,11 @@ static void func_80102B5C(int arg0, int arg1, int arg2)
     }
 }
 
-static int D_80104EC4 = 0;
-
 int func_80102CAC()
 {
+    extern int D_1F800000[];
+    static int D_80104EC4 = 0;
+    
     int temp_s3;
     int temp_s6;
     int var_s1;
@@ -398,11 +392,11 @@ int func_80102CAC()
     return 0;
 }
 
-static int D_80104EC8 = 0;
-static char _2[4] __attribute__((unused)) = { 0 };
-
 int func_801034FC(int arg0)
 {
+    static int D_80104EC8 = 0;
+    static char _2[4] __attribute__((unused)) = { 0 };
+
     u_short* menuStrings[28];
     int i;
     int row;
@@ -443,11 +437,11 @@ int func_801034FC(int arg0)
     return 0;
 }
 
-static int D_80104ED0 = 0;
-static char _3[4] __attribute__((unused)) = { 0 };
-
 static int func_80103670(int arg0)
 {
+    static int D_80104ED0 = 0;
+    static char _3[4] __attribute__((unused)) = { 0 };
+
     u_short* menuStrings[28];
     int i;
     int row;
@@ -666,53 +660,6 @@ int func_801038D4(char* arg0)
             ++D_801050C1;
             _drawPointsRemaining((D_801050C1 & 0xFF) << 5);
         }
-    }
-    return 0;
-}
-
-u_short D_80104ED8[] = {
-#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
-};
-static char _4 __attribute__((unused)) = 0;
-
-int func_80103C3C(int arg0)
-{
-    int weaponTypeMod;
-    int skillId;
-    int weaponType;
-    char(*new_var)[12];
-
-    if (arg0 != 0) {
-
-        weaponType = vs_battle_characterState->equippedWeaponType;
-        weaponTypeMod = weaponType;
-        new_var = &vs_main_artsStatus.artsLearned;
-        weaponTypeMod %= 10;
-        skillId = (*new_var)[weaponTypeMod];
-
-        if (skillId == 4) {
-            return 1;
-        }
-
-        if (vs_main_artsStatus.kills.weaponCategories[weaponTypeMod]
-            < vs_main_artsPointsRequirements[weaponTypeMod][skillId]) {
-            return 1;
-        }
-
-        func_800C8E04(3);
-        vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
-        skillId = 0xB8 + ((weaponType - 1) * 4) + skillId;
-        D_800F5168[10] = (char*)&D_80104ED8[D_80104ED8[weaponType]];
-        D_800F5168[11] = vs_main_skills[skillId].name;
-        vs_mainmenu_setMessage((char*)&D_80104ED8[0x12]);
-        vs_main_skills[skillId].flags |= 0x8000;
-        D_801050F0 = 0x78;
-
-    } else if ((D_800F5130 >> 0x1E) & 1) {
-        if ((D_801050F0 == 0) || ((char)vs_main_buttonsPressed != 0)) {
-            return 1;
-        }
-        --D_801050F0;
     }
     return 0;
 }

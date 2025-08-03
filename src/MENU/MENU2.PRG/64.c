@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
+#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
@@ -15,25 +16,35 @@ extern int D_1F800000[];
 static u_short _battleAbilityStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
-static char _ __attribute__((unused)) = 0;
-extern u_short* D_80104EB4;
-extern int D_80104EB8;
-extern u_int D_80104EBC;
-extern char D_80104EC0;
-extern char D_80104EC1;
-extern char D_80104EC2;
-extern int D_80104EC4;
-extern int D_80104EC8;
-extern int D_80104ED0;
-extern u_short D_80104ED8[];
+static char _0 __attribute__((unused)) = 0;
+
+u_short* D_80104EB4 = NULL;
+int D_80104EB8 = 0;
+u_int D_80104EBC = 0;
+char D_80104EC0 = 0;
+char D_80104EC1 = 0;
+char D_80104EC2 = 0;
+static char _1 __attribute__((unused)) = 0;
+int D_80104EC4 = 0;
+int D_80104EC8 = 0;
+static char _2[4] __attribute__((unused)) = { 0 };
+int D_80104ED0 = 0;
+static char _3[4] __attribute__((unused)) = { 0 };
+
+u_short D_80104ED8[] = {
+#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
+};
+static char _4 __attribute__((unused)) = 0;
+
 extern char D_8010505A[];
 extern char D_80105078[];
+
+extern char _stringBuffer[];
 extern char D_801050C0;
 extern u_char D_801050C1;
 extern char D_801050D0[];
 extern char D_801050E0[];
 extern char D_801050F0;
-extern char _stringBuffer[];
 
 static void _setAbilityCost(int ability)
 {

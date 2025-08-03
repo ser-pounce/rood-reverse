@@ -1,3 +1,4 @@
+#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -6,9 +7,8 @@
 int func_80103C3C(int);
 char* func_80103DD8(int arg0);
 
-extern char D_80104FC0[];
-extern char D_80105004[];
-extern char D_80105014;
+extern u_short D_80104ED8[];
+
 extern char D_80105026;
 extern char D_80105060[];
 extern char D_8010506C[];
@@ -81,14 +81,16 @@ int func_80103E20(int arg0)
             D_8010511D = 6;
             break;
         case 1:
-            temp_v0_4 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8, D_80105004);
+            temp_v0_4 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8,
+                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_chainAbilities]);
             temp_v0_4->state = 2;
             temp_v0_4->x = 0xB4;
             temp_v0_4->selected = 1;
             D_8010511D = 2;
             break;
         case 2:
-            temp_v0_4 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8, &D_80105014);
+            temp_v0_4 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8,
+                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             temp_v0_4->x = 0xB4;
             temp_v0_4->state = var_s0;
             temp_v0_4->selected = 1;
@@ -96,9 +98,11 @@ int func_80103E20(int arg0)
             break;
         case 3:
             i = vs_main_settings.cursorMemory;
-            sp18[0] = D_80105004;
-            sp18[1] = D_80105004 - 0x5E;
-            sp18[2] = D_80105004 + 0x10;
+            sp18[0] = (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_chainAbilities];
+            sp18[1]
+                = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_select]);
+            sp18[2]
+                = (char*)(&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             sp18[3] = sp18[1];
             sp28[0] = 0;
             sp28[1] = 0;
@@ -182,7 +186,8 @@ int func_80103E20(int arg0)
             func_800C8E04(3);
             skill = D_80105100[var_s0_5];
             D_800F5194 = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage(D_80104FC0);
+            vs_mainmenu_setMessage(
+                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
             D_8010511D = 6;
         }
@@ -199,7 +204,8 @@ int func_80103E20(int arg0)
             func_800C8E04(3);
             skill = D_80105110[var_s0_5];
             D_800F5194 = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage(D_80104FC0);
+            vs_mainmenu_setMessage(
+                (char*)&D_80104ED8[VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
             D_8010511D = 6;
         }

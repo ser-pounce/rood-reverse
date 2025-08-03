@@ -42,7 +42,7 @@ table = [
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
     '\n', '', '', '', '', '', '', '\uE0EF', #
     '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
-    '|!', '', '|>', '\uE0FB', '', '', '', '|$',
+    '|!', '', '|>', '|F', '', '', '', '|$',
 ]
 
 # This isn't the only encoding used in the game, occasionally
@@ -63,7 +63,7 @@ def decode(s):
         match s[i]:
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
-            case 0xF8 | 0xFA | 0xFF:
+            case 0xF8 | 0xFA | 0xFB | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:

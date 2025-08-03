@@ -394,3 +394,5 @@ int vs_menu1_exec(char* state)
     }
     return 0;
 }
+
+static char _;

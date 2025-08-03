@@ -1,0 +1,78 @@
+chainAbilities: CHAIN ABILITIES
+chainAbilitiesDesc: |-
+  Use Chain Abilities to augment your attacks.
+  Assign Abilities to the ○, △, and □ buttons.
+noChainAbilities: |-
+  |F4|Ashley has yet to learn
+  any Chain Abilities.
+defenseAbilities: DEFENSE ABILITIES
+defenseAbilitiesDesc: |-
+  Use Defense Abilities to augment your defense.
+  Assign Abilities to the ○, △, and □ buttons.
+noDefenseAbilities: |-
+  |F4|Ashley has yet to learn
+  any Defense Abilities.
+chainAbilityEffects:
+- |-
+  Inflicts an amount of additional damage equal to
+  70% of damage dealt.
+- |-
+  Regenerates an amount of Ashley's HP equal to
+  30% of damage dealt.
+- |-
+  Reduces foe's MP by an amount equal to
+  30% of damage dealt.
+- |-
+  Regenerates an amount of Ashley's MP equal to
+  30% of damage dealt.
+- |-
+  Inflicts an amount of additional damage equal
+  to 10% of the damage Ashley has sustained.
+- |-
+  Reduces foe's MP by an amount equal to
+  20% of the MP Ashley has used.
+- |-
+  Inflicts an additional 40% of damage on foe
+  and repairs a small amount of weapon DP.
+- |-
+  Inflicts an additional 100% of damage on foe
+  and deals 30% of base damage to Ashley.
+- |-
+  Inflicts additional damage equal to 10% of
+  damage dealt and adds that amount to PP.
+- |-
+  Inflicts additional damage equal to the total
+  accumulated Phantom Points in Ashley's weapon.
+- Adds Paralysis to attack.
+- Adds Numbness to attack.
+- Adds Silent to attack.
+- Adds Poison to attack.
+defenseAbilityEffects:
+- |-
+  Successful use of this Ability prevents
+  Paralysis and Numbness.
+- |-
+  Adds 50% of the MP used in foe's magical attack
+  to Ashley's MP. Effective vs. magical attacks.
+- |-
+  Reflects 40% of damage. Does not reduce damage
+  received. Effective vs. magical attacks.
+- |-
+  Reflects 40% of damage. Does not reduce damage
+  received. Effective vs. non-magical attacks.
+- |-
+  Reduces damage received by 20%.
+  Effective vs. magical attacks.
+- |-
+  Reduces damage received by 20%.
+  Effective vs. non-magical attacks.
+- Reduces physical damage by 50%.
+- Reduces air-affinity damage by 50%.
+- Reduces fire-affinity damage by 50%.
+- Reduces earth-affinity damage by 50%.
+- Reduces water-affinity damage by 50%.
+- Reduces light-affinity damage by 50%.
+- Reduces dark-affinity damage by 50%.
+- |-
+  Uses the accumulated Phantom Points in Ashley's
+  shield to counter an equal amount of damage.

@@ -6,7 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../build/src/MENU/MENU7.PRG/container.h"
+#include "../../build/assets/MENU/MENU7.PRG/container.h"
 #include "gpu.h"
 #include "mcman.h"
 #include "vs_string.h"
@@ -3430,7 +3430,7 @@ int vs_menu7_gameOver(char* state)
 }
 
 static u_short _containerStrings[] = {
-#include "../../assets/MENU/MENU7.PRG/container.dat"
+#include "../../assets/MENU/MENU7.PRG/container.vsString"
 };
 
 static int _promptYesNo(int initParams)

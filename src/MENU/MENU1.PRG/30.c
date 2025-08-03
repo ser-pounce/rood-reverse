@@ -4,7 +4,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
-#include "../../../build/src/MENU/MENU1.PRG/strings.h"
+#include "../../assets/MENU/MENU1.PRG/strings.h"
 
 static void _setArtCost(int art)
 {
@@ -71,7 +71,7 @@ static void _drawPointsRemaining(int xOffset, int weaponCategory, int artsLearne
 }
 
 u_short _strings[] = {
-#include "../../assets/MENU/MENU1.PRG/strings.dat"
+#include "../../assets/MENU/MENU1.PRG/strings.vsString"
 };
 
 enum drawArtsListOpt { opt_forceCursorMemory = 0x10 };

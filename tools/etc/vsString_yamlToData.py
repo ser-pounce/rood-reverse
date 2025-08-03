@@ -14,7 +14,7 @@ def main():
 
     strings, offsets, enums = read_yaml(yaml_path)
     write_data(data_path, offsets, strings)
-    write_header(header_path, yaml_path.stem, enums)
+    write_header(header_path, header_path.stem, enums)
 
 
 if __name__ == "__main__":

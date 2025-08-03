@@ -169,6 +169,10 @@ $(BUILD)/%.o: %.c
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 
+$(BUILD)/%.vsString: %.vsString.yaml
+	$(call builder,Converting $<)
+	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
+
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^
 

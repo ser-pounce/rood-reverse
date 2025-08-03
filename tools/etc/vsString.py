@@ -54,6 +54,8 @@ table = [
 # String functions, 1-byte argument
 # 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
+# 0xFB -> |Fn|: Manipulate font table. n = 0-3 sets the color, n = 4 justifies the text,
+#               n = 5 or 6 set font table 1 and 0 respectively.
 # 0xFF -> |$n|: Inserts another string with ID n
 
 def decode(s):

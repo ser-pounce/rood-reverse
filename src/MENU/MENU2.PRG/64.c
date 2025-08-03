@@ -347,7 +347,7 @@ int func_80102CAC()
         if (temp_s6 != (D_80104EB8 + D_80104EC2)) {
             vs_battle_playMenuChangeSfx();
             if (D_80104EC2 != temp_s7) {
-                char sp18[(D_80104EC1 + 7) & 0x1F8];
+                char sp18[D_80104EC1];
 
                 for (var_s1 = 0; var_s1 < D_80104EC1; ++var_s1) {
                     sp18[var_s1] = 0;

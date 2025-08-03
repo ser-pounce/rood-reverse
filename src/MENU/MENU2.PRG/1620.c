@@ -1,15 +1,10 @@
-#include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <memory.h>
 
 int func_80103C3C(int);
-int func_80103E20(int);
 char* func_80103DD8(int arg0);
-
-extern char D_800F4F1C[6];
-extern void* D_800F5194;
 
 extern char D_80104FC0[];
 extern char D_80105004[];

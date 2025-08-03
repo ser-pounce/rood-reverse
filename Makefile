@@ -45,7 +45,7 @@ LDFLAGS_BIN    := --oformat=binary -e 0x0
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I src/include $(AS_DEPS) -EL -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
-MASFLAGS       := --aspsx-version=2.56 --macro-inc
+MASFLAGS       := --aspsx-version=2.77 --macro-inc
 SPLATFLAGS     := --disassemble-all
 PERMUTEFLAGS   := -j8
 DUMPSXISOFLAGS  = -x data -s config/$(disk).xml

@@ -95,5 +95,4 @@ extern D_800F4FE0_t D_800F4FE0[];
 extern u_int D_800F5130;
 extern short D_800F514C;
 extern char* vs_battle_stringContext[];
-extern void* D_800F5194;
 extern vs_battle_menuState_t vs_battle_menuState;

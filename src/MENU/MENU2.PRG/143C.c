@@ -57,9 +57,9 @@ int _showBreakArtUnlocked(int arg0)
     return 0;
 }
 
-static char D_80105060[]
+static char _unlockableChainAbilities[]
     = { 0x18, 0x19, 0x22, 0x25, 0x23, 0x1E, 0x1A, 0x1B, 0x20, 0x1D, 0x1F };
-static char D_8010506C[]
+static char _unlockableDefenseAbilities[]
     = { 0x2F, 0x30, 0x31, 0x32, 0x29, 0x2A, 0x33, 0x34, 0x2C, 0x2D, 0x35 };
 
 static char* _getAbilityDescription(int ability)
@@ -98,219 +98,239 @@ static char* _getAbilityDescription(int ability)
     return (char*)&_battleAbilityStrings[_battleAbilityStrings[index]];
 }
 
-int func_80103E20(int arg0)
+static int func_80103E20(int arg0)
 {
-    static u_char D_80105100[16];
-    static u_char D_80105110[11];
-    static u_char D_8010511B;
-    static u_char D_8010511C;
-    static char D_8010511D;
-    static char D_8010511E;
-    static char D_8010511F;
+    enum state {
+        init,
+        bothRemaining,
+        chainOnly,
+        defenseOnly,
+        unlockChainAbility,
+        unlockDefenseAbility,
+        showMessage,
+        reinit
+    };
+    static u_char remainingChainAbilities[16];
+    static u_char remainingDefenseAbilities[11];
+    static u_char remainingChainAbilityCount;
+    static u_char remainingDefenseAbilityCount;
+    static char state;
+    static char timeout;
+    static char menuNotEntered;
 
-    char* sp18[4];
-    int sp28[2];
-    char* sp30[22];
-    int sp88[11];
-    char* spB8[22];
-    int sp110[11];
-    int temp_v0_5;
-    int var_a0;
-    int var_s0_5;
+    char* menuStrings[4];
+    int rowTypes[2];
+    char* chainAbilityMenuStrings[22];
+    int chainAbilityRowTypes[11];
+    char* defenseAbilityMenuStrings[22];
+    int defenseAbilityRowTypes[11];
+    int rowCount;
+    int row;
     int i;
-    int var_s0;
-    vs_battle_menuItem_t* temp_v0_4;
+    int abilityState;
+    vs_battle_menuItem_t* menuItem;
     int skill;
 
     if (arg0 != 0) {
+
         i = vs_main_artsStatus.kills.battleAbilitiesUnlocked;
-        if (i != 22) {
-            if (vs_main_artsStatus.kills.total
-                >= vs_main_battleAbilitiesPointsRequirements[i]) {
 
-                ++vs_main_artsStatus.kills.battleAbilitiesUnlocked;
-                memset(D_800F4F1C, 0, 6);
+        if ((i == 22)
+            || (vs_main_artsStatus.kills.total
+                < vs_main_battleAbilitiesPointsRequirements[i])) {
+            return 1;
+        }
 
-                D_8010511B = 0;
-                for (i = 0; i < 11; ++i) {
-                    int a0 = D_80105060[i];
-                    if (!((vs_main_skills[a0].flags >> 0xF) & 1)) {
-                        D_80105100[D_8010511B++] = a0;
-                    }
-                }
+        ++vs_main_artsStatus.kills.battleAbilitiesUnlocked;
+        memset(D_800F4F1C, 0, sizeof(D_800F4F1C));
 
-                D_8010511C = 0;
-                for (i = 0; i < 11; ++i) {
-                    int a0 = D_8010506C[i];
-                    if (!((vs_main_skills[a0].flags >> 0xF) & 1)) {
-                        D_80105110[D_8010511C++] = a0;
-                    }
-                }
-                D_8010511F = 3;
-                D_8010511E = 120;
-                D_8010511D = 0;
-                return 0;
+        remainingChainAbilityCount = 0;
+        for (i = 0; i < 11; ++i) {
+            int ability = _unlockableChainAbilities[i];
+            if (!((vs_main_skills[ability].flags >> 0xF) & 1)) {
+                remainingChainAbilities[remainingChainAbilityCount++] = ability;
             }
         }
-        return 1;
+
+        remainingDefenseAbilityCount = 0;
+        for (i = 0; i < 11; ++i) {
+            int ability = _unlockableDefenseAbilities[i];
+            if (!((vs_main_skills[ability].flags >> 0xF) & 1)) {
+                remainingDefenseAbilities[remainingDefenseAbilityCount++] = ability;
+            }
+        }
+        menuNotEntered = 3;
+        timeout = 120;
+        state = init;
+        return 0;
     }
 
-    switch (D_8010511D) {
-    case 0:
-        var_s0 = D_8010511B != 0;
-        if (D_8010511C != 0) {
-            var_s0 += 2;
+    switch (state) {
+    case init:
+        abilityState = remainingChainAbilityCount != 0;
+        if (remainingDefenseAbilityCount != 0) {
+            abilityState += 2;
         }
-        switch (var_s0) {
-        case 0:
+        switch (abilityState) {
+            enum abilityState_e {
+                abilitiesNone,
+                abilitiesChainOnly,
+                abilitiesDefenseOnly,
+                abilitiesBoth
+            };
+        case abilitiesNone:
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked]);
-            D_8010511D = 6;
+            state = showMessage;
             break;
-        case 1:
-            temp_v0_4 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8,
+        case abilitiesChainOnly:
+            menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
                 (char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_chainAbilities]);
-            temp_v0_4->state = 2;
-            temp_v0_4->x = 0xB4;
-            temp_v0_4->selected = 1;
-            D_8010511D = 2;
+            menuItem->state = 2;
+            menuItem->x = 180;
+            menuItem->selected = 1;
+            state = chainOnly;
             break;
-        case 2:
-            temp_v0_4 = vs_battle_setMenuItem(1, 0x140, 0x12, 0x8C, 8,
+        case abilitiesDefenseOnly:
+            menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
                 (char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
-            temp_v0_4->x = 0xB4;
-            temp_v0_4->state = var_s0;
-            temp_v0_4->selected = 1;
-            D_8010511D = 3;
+            menuItem->state = 2;
+            menuItem->x = 180;
+            menuItem->selected = 1;
+            state = defenseOnly;
             break;
-        case 3:
+        case abilitiesBoth:
             i = vs_main_settings.cursorMemory;
-            sp18[0] = (char*)&_battleAbilityMenuStrings
+            menuStrings[0] = (char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_chainAbilities];
-            sp18[1] = (char*)(&_battleAbilityMenuStrings
-                                  [VS_battleAbilitiesMenu_OFFSET_select]);
-            sp18[2] = (char*)(&_battleAbilityMenuStrings
-                                  [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
-            sp18[3] = sp18[1];
-            sp28[0] = 0;
-            sp28[1] = 0;
+            menuStrings[1] = (char*)(&_battleAbilityMenuStrings
+                                         [VS_battleAbilitiesMenu_OFFSET_select]);
+            menuStrings[2]
+                = (char*)(&_battleAbilityMenuStrings
+                              [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
+            menuStrings[3] = menuStrings[1];
+            rowTypes[0] = 0;
+            rowTypes[1] = 0;
             vs_main_settings.cursorMemory = 1;
-            vs_mainmenu_setMenuRows(2, 0x1A, sp18, sp28);
-            D_8010511D = 1;
+            vs_mainmenu_setMenuRows(2, 0x1A, menuStrings, rowTypes);
+            state = bothRemaining;
             vs_main_settings.cursorMemory = i;
             break;
-        default:
-            return 0;
         }
         break;
-    case 1:
-        temp_v0_5 = vs_mainmenu_getSelectedRow();
-        i = temp_v0_5 + 1;
+    case bothRemaining:
+        i = vs_mainmenu_getSelectedRow() + 1;
         if (i != 0) {
             if (i < 0) {
                 func_800FA8E0(0x28);
-                D_8010511D = 7;
+                state = reinit;
             } else {
-                func_800FA92C(temp_v0_5, 0);
-                D_8010511D += i;
+                func_800FA92C(i - 1, 0);
+                state += i;
             }
         }
         break;
-    case 2:
+    case chainOnly:
         if (vs_mainmenu_ready() != 0) {
-            for (i = 0; i < D_8010511B; ++i) {
-                sp30[i * 2] = vs_main_skills[D_80105100[i]].name;
-                sp30[i * 2 + 1] = _getAbilityDescription(D_80105100[i]);
-                sp88[i] = 0;
+            for (i = 0; i < remainingChainAbilityCount; ++i) {
+                chainAbilityMenuStrings[i * 2]
+                    = vs_main_skills[remainingChainAbilities[i]].name;
+                chainAbilityMenuStrings[i * 2 + 1]
+                    = _getAbilityDescription(remainingChainAbilities[i]);
+                chainAbilityRowTypes[i] = 0;
             }
-            var_a0 = 4;
-            if (D_8010511B == 1) {
-                var_a0 = 1;
-            } else if (D_8010511B < 5) {
-                var_a0 = D_8010511B - 1;
+            rowCount = 4;
+            if (remainingChainAbilityCount == 1) {
+                rowCount = 1;
+            } else if (remainingChainAbilityCount < 5) {
+                rowCount = remainingChainAbilityCount - 1;
             }
             i = vs_main_settings.cursorMemory;
-            if (D_8010511F & 1) {
-                --D_8010511F;
+            if (menuNotEntered & 1) {
+                --menuNotEntered;
                 vs_main_settings.cursorMemory = 1;
             }
-            vs_mainmenu_setMenuRows(var_a0, 0x11B, sp30, sp88);
+            vs_mainmenu_setMenuRows(
+                rowCount, 0x11B, chainAbilityMenuStrings, chainAbilityRowTypes);
             vs_main_settings.cursorMemory = i;
-            D_8010511D = 4;
+            state = unlockChainAbility;
         }
         break;
-    case 3:
+    case defenseOnly:
         if (vs_mainmenu_ready() != 0) {
-            for (i = 0; i < D_8010511C; ++i) {
-                spB8[i * 2] = vs_main_skills[D_80105110[i]].name;
-                spB8[i * 2 + 1] = _getAbilityDescription(D_80105110[i]);
-                sp110[i] = 0;
+            for (i = 0; i < remainingDefenseAbilityCount; ++i) {
+                defenseAbilityMenuStrings[i * 2]
+                    = vs_main_skills[remainingDefenseAbilities[i]].name;
+                defenseAbilityMenuStrings[i * 2 + 1]
+                    = _getAbilityDescription(remainingDefenseAbilities[i]);
+                defenseAbilityRowTypes[i] = 0;
             }
-            var_a0 = 4;
-            if (D_8010511C == 1) {
-                var_a0 = 1;
-            } else if (D_8010511C < 5) {
-                var_a0 = D_8010511C - 1;
+            rowCount = 4;
+            if (remainingDefenseAbilityCount == 1) {
+                rowCount = 1;
+            } else if (remainingDefenseAbilityCount < 5) {
+                rowCount = remainingDefenseAbilityCount - 1;
             }
             i = vs_main_settings.cursorMemory;
-            if (D_8010511F & 2) {
-                D_8010511F -= 2;
+            if (menuNotEntered & 2) {
+                menuNotEntered -= 2;
                 vs_main_settings.cursorMemory = 1;
             }
-            vs_mainmenu_setMenuRows(var_a0, 0x11C, spB8, sp110);
+            vs_mainmenu_setMenuRows(
+                rowCount, 0x11C, defenseAbilityMenuStrings, defenseAbilityRowTypes);
             vs_main_settings.cursorMemory = i;
-            D_8010511D = 5;
+            state = unlockDefenseAbility;
         }
         break;
-    case 4:
-        var_s0_5 = vs_mainmenu_getSelectedRow();
-        skill = var_s0_5 + 1;
+    case unlockChainAbility:
+        row = vs_mainmenu_getSelectedRow();
+        skill = row + 1;
         if (skill != 0) {
             func_800FA8E0(0x28);
             if (skill < 0) {
-                D_8010511D = 7;
+                state = reinit;
                 break;
             }
             func_800C8E04(3);
-            skill = D_80105100[var_s0_5];
-            D_800F5194 = vs_main_skills[skill].name;
+            skill = remainingChainAbilities[row];
+            vs_battle_stringContext[11] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
-            D_8010511D = 6;
+            state = showMessage;
         }
         break;
-    case 5:
-        var_s0_5 = vs_mainmenu_getSelectedRow();
-        skill = var_s0_5 + 1;
+    case unlockDefenseAbility:
+        row = vs_mainmenu_getSelectedRow();
+        skill = row + 1;
         if (skill != 0) {
             func_800FA8E0(0x28);
             if (skill < 0) {
-                D_8010511D = 7;
+                state = reinit;
                 break;
             }
             func_800C8E04(3);
-            skill = D_80105110[var_s0_5];
-            D_800F5194 = vs_main_skills[skill].name;
+            skill = remainingDefenseAbilities[row];
+            vs_battle_stringContext[11] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
-            D_8010511D = 6;
+            state = showMessage;
         }
         break;
-    case 6:
+    case showMessage:
         if ((D_800F5130 >> 0x1E) & 1) {
-            if ((D_8010511E == 0) || (vs_main_buttonsPressed.pad[0].low != 0)) {
+            if ((timeout == 0) || (vs_main_buttonsPressed.pad[0].low != 0)) {
                 return 1;
             }
-            --D_8010511E;
+            --timeout;
         }
         break;
-    case 7:
+    case reinit:
         if (vs_mainmenu_ready() != 0) {
-            D_8010511D = 0;
+            state = init;
         }
         break;
     }

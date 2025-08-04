@@ -10,7 +10,7 @@ static u_short _battleAbilityMenuStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };
 
-int _showBreakArtUnlocked(int arg0)
+static int _breakArtUnlocked(int init)
 {
     static char messageTimeout;
     static char _[15] __attribute__((unused));
@@ -20,7 +20,7 @@ int _showBreakArtUnlocked(int arg0)
     int weaponType;
     char(*new_var)[12];
 
-    if (arg0 != 0) {
+    if (init != 0) {
 
         weaponType = vs_battle_characterState->equippedWeaponType;
         weaponTypeMod = weaponType;
@@ -98,7 +98,7 @@ static char* _getAbilityDescription(int ability)
     return (char*)&_battleAbilityStrings[_battleAbilityStrings[index]];
 }
 
-static int func_80103E20(int arg0)
+static int _battleAbilityUnlocked(int arg0)
 {
     enum state {
         init,
@@ -337,37 +337,46 @@ static int func_80103E20(int arg0)
     return 0;
 }
 
-int func_80104578(char* state)
+int vs_menu2_skillUnlock(char* state)
 {
+    enum state {
+        init,
+        breakArtInit,
+        breakArtUnlock,
+        abilityInit,
+        abilityUnlock,
+        reinit
+    };
+
     switch (*state) {
-    case 0:
+    case init:
         func_800FFBC8();
         // Fallthrough
-    case 1:
-        *state = 3;
-        if ((D_800F4E88 != 0) && (_showBreakArtUnlocked(1) == 0)) {
-            *state = 2;
+    case breakArtInit:
+        *state = abilityInit;
+        if ((D_800F4E88 != 0) && (_breakArtUnlocked(1) == 0)) {
+            *state = breakArtUnlock;
         }
         break;
-    case 2:
-        if (_showBreakArtUnlocked(0) != 0) {
-            *state = 1;
+    case breakArtUnlock:
+        if (_breakArtUnlocked(0) != 0) {
+            *state = breakArtInit;
         }
         break;
-    case 3:
-        *state = 5;
-        if ((D_800F4FDA != 0) && (func_80103E20(1) == 0)) {
-            *state = 4;
+    case abilityInit:
+        *state = reinit;
+        if ((D_800F4FDA != 0) && (_battleAbilityUnlocked(1) == 0)) {
+            *state = abilityUnlock;
         }
         break;
-    case 4:
-        if (func_80103E20(0) != 0) {
-            *state = 3;
+    case abilityUnlock:
+        if (_battleAbilityUnlocked(0) != 0) {
+            *state = abilityInit;
         }
         break;
-    case 5:
+    case reinit:
         if (func_800CD064(7) == 0) {
-            *state = 0;
+            *state = init;
             return 1;
         }
         break;

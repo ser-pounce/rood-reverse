@@ -75,11 +75,46 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010391C);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103A24);
+void func_80103A24(u_long* arg0, int arg1) {
+    RECT rect;
+    int var_s0;
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103AD8);
+    var_s0 = 0;
+    rect.w = 4;
+    rect.h = 16;
+    
+    for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
+        rect.x = ((var_s0 % 48) * 4) + 832;
+        rect.y = ((var_s0 / 48) * 16) + 256;
+        LoadImage2(&rect, arg0);
+        arg0 += 32;
+    }
+}
 
-int func_80103B6C() {
+static void func_80103AD8(u_long* arg0, int arg1) {
+    RECT rect;
+    int temp_v0;
+    int var_s0;
+    int var_v0;
+    
+    var_s0 = 0;
+    rect.w = 0x10;
+    rect.h = 1;
+    
+    for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
+        var_v0 = var_s0;
+        if (var_s0 < 0) {
+            var_v0 += 0xF;
+        }
+        temp_v0 = var_v0 >> 4;
+        rect.x = ((var_s0 - (temp_v0 * 16)) * 16) + 768;
+        rect.y = temp_v0 + 0x1F0;
+        LoadImage2(&rect, arg0);
+        arg0 += 8;
+    }
+}
+
+static int func_80103B6C() {
     int temp_v1;
     int var_a0;
 

@@ -1,0 +1,2 @@
+vs_menu2_exec = 0x801038D4;
+vs_menu2_skillUnlock = 0x80104578;

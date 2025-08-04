@@ -5,3 +5,4 @@
 #define VS_SFX_MENULEAVE 6
 #define VS_SFX_INVALID 7
 #define VS_SFX_FILEOPCOMPLETE 8
+#define VS_SFX_SET 35

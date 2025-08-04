@@ -3,6 +3,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../SLUS_010.40/sfx.h"
 #include "vs_string.h"
 #include <libetc.h>
 
@@ -33,7 +34,7 @@ static void _setAbilityCost(int ability)
 u_short _battleAbilityStrings[] = {
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
-static u_short* D_80104EB4 = NULL;
+static u_short* _abilityText = NULL;
 static int _highlightedAbility = 0;
 static u_int _abilityMenuState = 0;
 static char _selectedAbilityType = 0;
@@ -43,16 +44,16 @@ static char _firstAbility = 0;
 static char _unlockedChainAbilities[16];
 static char _unlockedDefenseAbilities[16];
 
-enum abilityType { abilityTypeChain = 24 };
+enum abilityType { abilityTypeChain = 24, abilityTypeDefense };
 
 static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
 {
-    int temp_v1_2;
+    int abilitiesOverflowCount;
     u_short* param;
     int i = 0;
     int j = 0;
 
-    if (D_80104EB4 != 0) {
+    if (_abilityText != 0) {
         return 0;
     }
 
@@ -63,22 +64,22 @@ static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
         j = D_800F4EE8.unk0[type * 2 + 1];
     }
 
-    temp_v1_2 = abilityCount - 8;
+    abilitiesOverflowCount = abilityCount - 8;
 
-    if (temp_v1_2 < 0) {
+    if (abilitiesOverflowCount < 0) {
         i += j;
         j = 0;
         if (i >= abilityCount) {
             i = 0;
         }
     } else {
-        if (temp_v1_2 < j) {
+        if (abilitiesOverflowCount < j) {
             if ((i + j) >= abilityCount) {
                 i = 0;
                 j = 0;
             } else {
-                i += j - temp_v1_2;
-                j = temp_v1_2;
+                i += j - abilitiesOverflowCount;
+                j = abilitiesOverflowCount;
             }
         }
 
@@ -86,7 +87,7 @@ static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
             i = 1;
             --j;
         }
-        if (j < temp_v1_2) {
+        if (j < abilitiesOverflowCount) {
             if (i == 7) {
                 i = 6;
                 ++j;
@@ -106,28 +107,28 @@ static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
     _abilityCount = abilityCount;
     _abilityMenuState = 0;
 
-    D_80104EB4 = vs_main_allocHeapR(abilityCount << 7);
+    _abilityText = vs_main_allocHeapR(abilityCount << 7);
 
     for (i = 0; i < abilityCount; ++i) {
         param = arg2[i * 2];
         if (param != 0) {
-            D_80104EB4[i * 64] = vs_char_spacing | 16 << 8;
+            _abilityText[i * 64] = vs_char_spacing | 16 << 8;
             for (j = 0; j < 14; ++j) {
-                (i * 64 + j + D_80104EB4)[1] = param[j];
+                (i * 64 + j + _abilityText)[1] = param[j];
             }
-            D_80104EB4[i * 64 + 15] = vs_char_terminator << 8 | vs_char_terminator;
+            _abilityText[i * 64 + 15] = vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            D_80104EB4[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
+            _abilityText[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
         }
         param = arg2[i * 2 + 1];
         if (param != 0) {
-            D_80104EB4[i * 64 + 16] = vs_char_chunkSize;
+            _abilityText[i * 64 + 16] = vs_char_chunkSize;
             for (j = 0; j < 46; ++j) {
-                D_80104EB4[i * 64 + j + 17] = param[j];
+                _abilityText[i * 64 + j + 17] = param[j];
             }
-            D_80104EB4[i * 64 + 63] = vs_char_terminator << 8 | vs_char_terminator;
+            _abilityText[i * 64 + 63] = vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            D_80104EB4[i * 64 + 16] = vs_char_terminator << 8 | vs_char_terminator;
+            _abilityText[i * 64 + 16] = vs_char_terminator << 8 | vs_char_terminator;
         }
     }
     return 1;
@@ -144,7 +145,7 @@ static void _mapAbility(int type, int key, int ability)
             vs_main_settings.mappedChainAbilities[key] = 0;
             return;
         }
-        vs_main_playSfxDefault(0x7E, 0x23);
+        vs_main_playSfxDefault(0x7E, VS_SFX_SET);
         for (i = 0; i < 3; ++i) {
             if (vs_main_settings.mappedChainAbilities[i] == ability) {
                 vs_main_settings.mappedChainAbilities[i] = 0;
@@ -158,7 +159,7 @@ static void _mapAbility(int type, int key, int ability)
             vs_main_settings.mappedDefenseAbilities[key] = 0;
             return;
         }
-        vs_main_playSfxDefault(0x7E, 0x23);
+        vs_main_playSfxDefault(0x7E, VS_SFX_SET);
         for (i = 0; i < 3; ++i) {
             if (vs_main_settings.mappedDefenseAbilities[i] == ability) {
                 vs_main_settings.mappedDefenseAbilities[i] = 0;
@@ -170,13 +171,15 @@ static void _mapAbility(int type, int key, int ability)
 
 static int _abilityMenu()
 {
+    enum state { init = 16, handleInput };
+
     extern int D_1F800000[];
     static int cursorAnimStep = 0;
 
     int temp_s3;
     int selectedAbility;
     int i;
-    int temp_s7;
+    int previousFirstAbility;
     int ability;
     vs_battle_menuItem_t* menuItem;
 
@@ -185,38 +188,38 @@ static int _abilityMenu()
     if (_abilityMenuState < 10) {
         menuItem = vs_battle_setMenuItem(_abilityMenuState + 20, 320,
             (_abilityMenuState * 16) + 50, 0x7E, 0,
-            (char*)(D_80104EB4 + ((_firstAbility + _abilityMenuState) << 6)));
+            (char*)(_abilityText + ((_firstAbility + _abilityMenuState) << 6)));
         menuItem->state = 2;
         menuItem->x = 194;
         if ((_abilityMenuState == 0) && (_firstAbility != 0)) {
             menuItem->unk5 = 1;
         }
         if (++_abilityMenuState == _abilityCount) {
-            _abilityMenuState = 16;
+            _abilityMenuState = init;
         }
         if (_abilityMenuState == 8) {
             if ((_firstAbility + 8u) < _abilityCount) {
                 menuItem->unk5 = 2;
             }
-            _abilityMenuState = 16;
+            _abilityMenuState = init;
         }
         return 0;
     }
 
     vs_battle_getMenuItem(_highlightedAbility + 20);
     vs_mainmenu_setMessage(
-        (char*)(D_80104EB4 + (((_highlightedAbility + _firstAbility) << 6) + 16)));
+        (char*)(_abilityText + (((_highlightedAbility + _firstAbility) << 6) + 16)));
 
     switch (_abilityMenuState) {
-    case 16:
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            _abilityMenuState = 17;
+            _abilityMenuState = handleInput;
         }
         break;
-    case 17:
+    case handleInput:
         D_801022D4 = 0;
         selectedAbility = _highlightedAbility + _firstAbility;
-        temp_s7 = _firstAbility;
+        previousFirstAbility = _firstAbility;
         if (_abilityCount < 9) {
             for (i = 0; i < _abilityCount; ++i) {
                 if (_selectedAbilityType == abilityTypeChain) {
@@ -283,8 +286,8 @@ static int _abilityMenu()
 
         if (vs_main_buttonsPressed.all & PADRdown) {
             vs_battle_playMenuLeaveSfx();
-            vs_main_freeHeapR(D_80104EB4);
-            D_80104EB4 = NULL;
+            vs_main_freeHeapR(_abilityText);
+            _abilityText = NULL;
             D_800F4EE8.unk0[_selectedAbilityType * 2] = _highlightedAbility;
             D_800F4EE8.unk0[_selectedAbilityType * 2 + 1] = _firstAbility;
             return 1;
@@ -342,11 +345,11 @@ static int _abilityMenu()
         }
         if (selectedAbility != (_highlightedAbility + _firstAbility)) {
             vs_battle_playMenuChangeSfx();
-            if (_firstAbility != temp_s7) {
-                char sp18[_abilityCount];
+            if (_firstAbility != previousFirstAbility) {
+                char abilityBuf[_abilityCount];
 
                 for (i = 0; i < _abilityCount; ++i) {
-                    sp18[i] = 0;
+                    abilityBuf[i] = 0;
                 }
 
                 ability = _abilityCount;
@@ -355,13 +358,14 @@ static int _abilityMenu()
                 }
 
                 for (i = 0; i < ability; ++i) {
-                    sp18[i + temp_s7] = vs_battle_getMenuItem(i + 20)->unk4;
+                    abilityBuf[i + previousFirstAbility]
+                        = vs_battle_getMenuItem(i + 20)->unk4;
                 }
 
                 for (i = 0;;) {
                     menuItem = vs_battle_setMenuItem(i + 20, 194, i * 16 + 50, 0x7E, 0,
-                        (char*)(D_80104EB4 + ((_firstAbility + i) << 6)));
-                    menuItem->unk4 = sp18[i + _firstAbility];
+                        (char*)(_abilityText + ((_firstAbility + i) << 6)));
+                    menuItem->unk4 = abilityBuf[i + _firstAbility];
                     if ((i == 0) && (_firstAbility != 0)) {
                         menuItem->unk5 = 1;
                     }
@@ -469,7 +473,7 @@ static int _defenseAbilityMenu(int arg0)
                 ++row;
             }
         }
-        _initAbilityMenu(row, 0x19, menuStrings);
+        _initAbilityMenu(row, abilityTypeDefense, menuStrings);
         state = 1;
         break;
     case 1:
@@ -520,7 +524,7 @@ static void _drawPointsRemaining(int arg0)
     vs_battle_renderTextRaw(pointsStr, pos + 0x60, 0);
 }
 
-static int func_801038D4(char* state)
+int vs_menu2_exec(char* state)
 {
     enum state {
         none,

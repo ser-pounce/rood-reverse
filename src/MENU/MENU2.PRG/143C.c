@@ -339,14 +339,7 @@ static int _battleAbilityUnlocked(int arg0)
 
 int vs_menu2_skillUnlock(char* state)
 {
-    enum state {
-        init,
-        breakArtInit,
-        breakArtUnlock,
-        abilityInit,
-        abilityUnlock,
-        reinit
-    };
+    enum state { init, breakArtInit, breakArtUnlock, abilityInit, abilityUnlock, reinit };
 
     switch (*state) {
     case init:

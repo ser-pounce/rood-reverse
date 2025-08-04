@@ -139,7 +139,7 @@ void vs_mainmenu_setMessage(char* arg0)
 {
     vs_battle_memcpy(&D_8010231A, arg0, 0x60);
     D_800F4FE0[7].unk0 = ((D_800F4FE0[7].unk0 & 0xC0FFFFFF) | 0x20000000);
-    func_800C6BF0(7, D_8010231A - 2, D_800F4FE0);
+    func_800C6BF0(7, D_8010231A - 2);
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFC68);

@@ -56,7 +56,8 @@ static void _menuReady() { vs_mainmenu_ready(); }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102EDC);
 
-int func_801030A4() {
+static int func_801030A4()
+{
     if (D_80060021 == 0) {
         vs_main_bzero(D_800F1BC8, sizeof(D_800F1BC8));
     }
@@ -75,14 +76,15 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010391C);
 
-void func_80103A24(u_long* arg0, int arg1) {
+static void func_80103A24(u_long* arg0, int arg1)
+{
     RECT rect;
     int var_s0;
 
     var_s0 = 0;
     rect.w = 4;
     rect.h = 16;
-    
+
     for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
         rect.x = ((var_s0 % 48) * 4) + 832;
         rect.y = ((var_s0 / 48) * 16) + 256;
@@ -91,16 +93,17 @@ void func_80103A24(u_long* arg0, int arg1) {
     }
 }
 
-static void func_80103AD8(u_long* arg0, int arg1) {
+static void func_80103AD8(u_long* arg0, int arg1)
+{
     RECT rect;
     int temp_v0;
     int var_s0;
     int var_v0;
-    
+
     var_s0 = 0;
     rect.w = 0x10;
     rect.h = 1;
-    
+
     for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
         var_v0 = var_s0;
         if (var_s0 < 0) {
@@ -114,7 +117,8 @@ static void func_80103AD8(u_long* arg0, int arg1) {
     }
 }
 
-static int func_80103B6C() {
+static int func_80103B6C()
+{
     int temp_v1;
     int var_a0;
 
@@ -130,7 +134,39 @@ static int func_80103B6C() {
     return var_a0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103BC8);
+static void func_80103BC8()
+{
+    char sp10[1024];
+    int var_s0;
+    int var_s2;
+    u_short* temp_s3;
+    char* var_a0;
+    int temp_a1;
+
+    sp10[0] = 0xF8;
+    sp10[1] = 0;
+    sp10[2] = 0xFB;
+    sp10[3] = 6;
+    sp10[4] = -0x18;
+
+    temp_s3 = (ushort*)(D_80105254 + 4);
+    var_s2 = D_80105244 + 10;
+    var_a0 = sp10 + 4;
+
+    if ((u_short)D_80105254[4] < var_s2) {
+        var_s2 = (u_short)D_80105254[4];
+    }
+
+    temp_a1 = D_80105244;
+
+    for (var_s0 = temp_a1; var_s0 < var_s2; ++var_s0) {
+        temp_a1 = temp_s3[var_s0 + 1];
+        var_a0 = _vsStringCpy(var_a0, (char*)(temp_s3 + temp_a1));
+    }
+
+    var_a0[-1] = 0xE7;
+    func_800C6BF0(0, &sp10);
+}
 
 static char* _vsStringCpy(char* arg0, char* arg1)
 {
@@ -162,7 +198,7 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104908);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
 
-short func_80104C30(short* arg0)
+static short func_80104C30(short* arg0)
 {
     short new_var;
 

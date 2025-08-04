@@ -39,7 +39,7 @@ typedef struct {
 } D_800F4FE0_t;
 
 void vs_battle_renderTextRaw(char const* text, int xy, u_int*);
-void func_800C6BF0(int, void*, void*);
+void func_800C6BF0(int, void*);
 void func_800C8E04(int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
 vs_battle_menuItem_t* vs_battle_setMenuItem(

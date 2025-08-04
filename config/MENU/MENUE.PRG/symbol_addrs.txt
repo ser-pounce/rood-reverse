@@ -1,0 +1,2 @@
+_menuReady = 0x80102EBC;
+_vsStringCpy = 0x80103C9C;

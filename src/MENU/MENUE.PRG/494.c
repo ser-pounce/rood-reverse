@@ -1,16 +1,52 @@
 #include "common.h"
+#include "../MAINMENU.PRG/C48.h"
+#include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102C94);
+extern char D_801022D6;
+
+static void func_80102C94(int arg0)
+{
+    if (arg0 != 0) {
+        func_800FFA88(2);
+        D_801022D6 = 0;
+        return;
+    }
+    func_800FFA88(0);
+    D_801022D6 = 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102CD8);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102DF0);
+int func_80102DF0()
+{
+    int row;
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102E48);
+    row = vs_mainmenu_getSelectedRow();
+    if (row < -1) {
+        func_800FA8E0(5);
+        return row;
+    }
+    if (row >= 0) {
+        func_800FA92C(D_800F4EE8.unk0[4], 1);
+    }
+    return row;
+}
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102E9C);
+static void func_80102E48(char* text)
+{
+    vs_battle_menuItem_t* menuItem;
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102EBC);
+    menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 9, text);
+    menuItem->state = 2;
+    menuItem->x = 180;
+    menuItem->selected = 1;
+    menuItem->unkA = 1;
+}
+
+static void func_80102E9C() { func_800FA8E0(8); }
+
+static void _menuReady() { vs_mainmenu_ready(); }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102EDC);
 
@@ -30,7 +66,21 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103B6C);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103BC8);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103C9C);
+static char* _vsStringCpy(char* arg0, char* arg1)
+{
+    char c;
+
+    for (c = *arg1; c != 0xE7; c = *arg1) {
+        if (c >= 0xEC) {
+            *arg0 = c;
+            ++arg1;
+            ++arg0;
+        }
+        *arg0++ = *arg1++;
+    }
+    *arg0 = 0xE8;
+    return arg0 + 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103CF0);
 

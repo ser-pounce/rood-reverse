@@ -1,9 +1,15 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/8170.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-extern char D_801022D6;
+extern int D_80105240;
+extern int D_80105244;
+extern int D_80105248;
+extern int* D_80105254;
+extern int D_80105258;
 
 static void func_80102C94(int arg0)
 {
@@ -18,7 +24,7 @@ static void func_80102C94(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102CD8);
 
-int func_80102DF0()
+static int func_80102DF0()
 {
     int row;
 
@@ -50,7 +56,18 @@ static void _menuReady() { vs_mainmenu_ready(); }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102EDC);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_801030A4);
+int func_801030A4() {
+    if (D_80060021 == 0) {
+        vs_main_bzero(D_800F1BC8, sizeof(D_800F1BC8));
+    }
+    func_8007DFF0(0x1D, 3, 5);
+    D_80105240 = 0;
+    D_80105244 = 0;
+    D_80105248 = 0;
+    D_80105254 = 0;
+    D_80105258 = 0;
+    return 1;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
 
@@ -62,7 +79,21 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103A24);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103AD8);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103B6C);
+int func_80103B6C() {
+    int temp_v1;
+    int var_a0;
+
+    var_a0 = D_80105254[4] & 0xFFFF;
+    temp_v1 = (D_80105254[4] & 0xFFFF) % 10;
+    if (temp_v1 > 0) {
+        var_a0 += 10 - temp_v1;
+    }
+    var_a0 -= 10;
+    if (var_a0 < 0) {
+        var_a0 = 0;
+    }
+    return var_a0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103BC8);
 
@@ -96,7 +127,27 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104908);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104C30);
+short func_80104C30(short* arg0)
+{
+    short new_var;
+
+    if (arg0[4] >= 0x10) {
+        return arg0[6];
+    }
+
+    new_var = (((u_short)arg0[1]) >> arg0[4]);
+    new_var = (new_var & 1);
+
+    if (++arg0[5] >= arg0[2]) {
+        arg0[5] = 0;
+        if (++arg0[4] >= 0x10) {
+            if (arg0[3] != 0) {
+                arg0[4] = 0;
+            }
+        }
+    }
+    return arg0[6] = new_var ^ 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104CC4);
 

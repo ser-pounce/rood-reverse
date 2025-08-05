@@ -14,6 +14,7 @@ extern int D_80105234;
 extern int D_80105240;
 extern int D_80105244;
 extern int D_80105248;
+extern int D_8010524C;
 extern int* D_80105254;
 extern int D_80105258;
 
@@ -28,7 +29,8 @@ static void func_80102C94(int arg0)
     D_801022D6 = 1;
 }
 
-void func_80102CD8(int rowCount, int arg1, char** strings) {
+void func_80102CD8(int rowCount, int arg1, char** strings)
+{
     int rowTypes[rowCount];
     int i;
     char cursor;
@@ -36,9 +38,9 @@ void func_80102CD8(int rowCount, int arg1, char** strings) {
     for (i = 0; i < rowCount; ++i) {
         rowTypes[i] = 0;
     }
-    
+
     rowTypes[rowCount - 1] |= 4;
-    
+
     if ((rowCount < 9) || (arg1 < 8)) {
         D_800F4EE8.unk0[4] = arg1;
         D_800F4EE8.unk0[5] = 0;
@@ -252,7 +254,42 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010435C);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104908);
+void func_80104908(int arg0)
+{
+    int var_a1;
+    POLY_FT4* temp_s1;
+    int v1;
+    u_long p;
+
+    if (arg0 != 0) {
+        if (D_8010524C < 9) {
+            var_a1 = (D_8010524C >> 1) + 0xB8;
+        } else {
+            var_a1 = -(D_8010524C >> 2) + 0xBE;
+        }
+    } else if (D_8010524C < 9) {
+        v1 = 0x28;
+        var_a1 = v1 - (D_8010524C >> 1);
+    } else {
+        var_a1 = (D_8010524C >> 2) + 0x22;
+    }
+    temp_s1 = *(void**)0x1F800000;
+    setlen(temp_s1, 9);
+    setcode(temp_s1, 0x2D);
+    setXY4(temp_s1, 0x98, var_a1, 0xA8, var_a1, 0x98, var_a1 + 0x10, 0xA8, var_a1 + 0x10);
+    setUV4(temp_s1, arg0 * 0x10, 0x30, arg0 * 0x10 + 0x10, 0x30, arg0 * 0x10, 0x40,
+        arg0 * 0x10 + 0x10, 0x40);
+    temp_s1->tpage = 0xC;
+
+    if (vs_main_buttonsPreviousState & 0x80) {
+        temp_s1->clut = 0x37F8;
+    } else {
+        temp_s1->clut = 0x37F9;
+    }
+    p = 0x1F800000;
+    AddPrim(((void**)p)[1] - 0x1C, temp_s1++);
+    *(void**)p = temp_s1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
 

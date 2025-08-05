@@ -107,7 +107,7 @@ extern void* D_800F1BAC;
 extern short D_800F1BB6;
 extern short D_800F1BBE;
 extern int D_800F1BC0;
-extern signed char D_800F1BC8[36];
+extern u_short D_800F1BC8[18];
 extern signed char D_800F1BF0[8];
 extern D_800F1BF8_t D_800F1BF8;
 extern void* D_800F1CBC;

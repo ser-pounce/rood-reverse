@@ -5,6 +5,12 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+static char* _vsStringCpy(char* arg0, char* arg1);
+void func_80102CD8(int, u_short, char**);
+
+extern u_short D_80104E54[];
+extern int D_80105230;
+extern int D_80105234;
 extern int D_80105240;
 extern int D_80105244;
 extern int D_80105248;
@@ -74,7 +80,37 @@ INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010391C);
+int func_8010391C(int arg0)
+{
+    char* sp10[28];
+    int var_t0;
+    int i;
+    u_short** temp_a0;
+    u_short** var_a2;
+
+    if (arg0 != 0) {
+        D_80105230 = 0;
+        D_80105234 = 0;
+    }
+
+    switch (D_80105230) {
+    case 0:
+        for (i = 0; i < 14; ++i) {
+            sp10[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
+            sp10[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
+        }
+        func_80102CD8(0xE, *D_800F1BC8, sp10);
+        ++D_80105230;
+        break;
+    case 1:
+        D_80105234 = func_80102DF0();
+        if (D_80105234 != -1) {
+            return D_80105234;
+        }
+        break;
+    }
+    return -1;
+}
 
 static void func_80103A24(u_long* arg0, int arg1)
 {

@@ -4,6 +4,8 @@
 #include "../MAINMENU.PRG/8170.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "gpu.h"
+#include <libetc.h>
 
 static char* _vsStringCpy(char* arg0, char* arg1);
 void func_80102CD8(int, int, char**);
@@ -254,41 +256,40 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010435C);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
 
-void func_80104908(int arg0)
+void func_80104908(int x)
 {
-    int var_a1;
-    POLY_FT4* temp_s1;
+    int y;
+    POLY_FT4* poly;
     int v1;
     u_long p;
 
-    if (arg0 != 0) {
+    if (x != 0) {
         if (D_8010524C < 9) {
-            var_a1 = (D_8010524C >> 1) + 0xB8;
+            y = (D_8010524C >> 1) + 184;
         } else {
-            var_a1 = -(D_8010524C >> 2) + 0xBE;
+            y = -(D_8010524C >> 2) + 190;
         }
     } else if (D_8010524C < 9) {
-        v1 = 0x28;
-        var_a1 = v1 - (D_8010524C >> 1);
+        v1 = 40;
+        y = v1 - (D_8010524C >> 1);
     } else {
-        var_a1 = (D_8010524C >> 2) + 0x22;
+        y = (D_8010524C >> 2) + 34;
     }
-    temp_s1 = *(void**)0x1F800000;
-    setlen(temp_s1, 9);
-    setcode(temp_s1, 0x2D);
-    setXY4(temp_s1, 0x98, var_a1, 0xA8, var_a1, 0x98, var_a1 + 0x10, 0xA8, var_a1 + 0x10);
-    setUV4(temp_s1, arg0 * 0x10, 0x30, arg0 * 0x10 + 0x10, 0x30, arg0 * 0x10, 0x40,
-        arg0 * 0x10 + 0x10, 0x40);
-    temp_s1->tpage = 0xC;
+    poly = *(void**)0x1F800000;
+    setPolyFT4(poly);
+    setShadeTex(poly, 1);
+    setXY4(poly, 152, y, 168, y, 152, y + 16, 168, y + 16);
+    setUV4(poly, x * 16, 48, x * 16 + 16, 48, x * 16, 64, x * 16 + 16, 64);
+    setTPage(poly, clut4Bit, semiTransparencyHalf, 768, 0);
 
-    if (vs_main_buttonsPreviousState & 0x80) {
-        temp_s1->clut = 0x37F8;
+    if (vs_main_buttonsPreviousState & PADRleft) {
+        setClut(poly, 896, 223);
     } else {
-        temp_s1->clut = 0x37F9;
+        setClut(poly, 912, 223);
     }
     p = 0x1F800000;
-    AddPrim(((void**)p)[1] - 0x1C, temp_s1++);
-    *(void**)p = temp_s1;
+    AddPrim(((void**)p)[1] - 0x1C, poly++);
+    *(void**)p = poly;
 }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);

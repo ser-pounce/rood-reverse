@@ -6,7 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 static char* _vsStringCpy(char* arg0, char* arg1);
-void func_80102CD8(int, u_short, char**);
+void func_80102CD8(int, int, char**);
 
 extern u_short D_80104E54[];
 extern int D_80105230;
@@ -28,7 +28,32 @@ static void func_80102C94(int arg0)
     D_801022D6 = 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102CD8);
+void func_80102CD8(int rowCount, int arg1, char** strings) {
+    int rowTypes[rowCount];
+    int i;
+    char cursor;
+
+    for (i = 0; i < rowCount; ++i) {
+        rowTypes[i] = 0;
+    }
+    
+    rowTypes[rowCount - 1] |= 4;
+    
+    if ((rowCount < 9) || (arg1 < 8)) {
+        D_800F4EE8.unk0[4] = arg1;
+        D_800F4EE8.unk0[5] = 0;
+    } else if (arg1 >= (rowCount - 8)) {
+        D_800F4EE8.unk0[4] = arg1 - (rowCount - 9);
+        D_800F4EE8.unk0[5] = rowCount - 9;
+    } else {
+        D_800F4EE8.unk0[4] = 4;
+        D_800F4EE8.unk0[5] = arg1 - 4;
+    }
+    cursor = vs_main_settings.cursorMemory;
+    vs_main_settings.cursorMemory = 1;
+    vs_mainmenu_setMenuRows(rowCount, 0x102, strings, rowTypes);
+    vs_main_settings.cursorMemory = cursor;
+}
 
 static int func_80102DF0()
 {
@@ -83,10 +108,7 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 int func_8010391C(int arg0)
 {
     char* sp10[28];
-    int var_t0;
     int i;
-    u_short** temp_a0;
-    u_short** var_a2;
 
     if (arg0 != 0) {
         D_80105230 = 0;

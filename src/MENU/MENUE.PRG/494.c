@@ -9,6 +9,8 @@
 
 static char* _vsStringCpy(char* arg0, char* arg1);
 void func_80102CD8(int, int, char**);
+void func_80103E6C(u_short*);
+void func_80104A44();
 
 extern u_short D_80104E54[];
 extern int D_80105230;
@@ -246,7 +248,47 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103CF0);
+void func_80103CF0(void)
+{
+    RECT rect;
+    DR_AREA* temp_s1;
+    int i;
+    int var_v0;
+    u_short* temp_s2;
+    u_long p = 0x1F800000;
+    u_long q;
+
+    temp_s1 = *(DR_AREA**)p;
+    SetDrawArea(temp_s1, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
+    AddPrim(((void**)p)[1], temp_s1++);
+    *(DR_AREA**)p = temp_s1;
+
+    func_80104A44();
+
+    var_v0 = *D_80105254;
+    if (var_v0 < 0) {
+        var_v0 += 3;
+    }
+    temp_s2 = (u_short*)D_80105254 + 8 + (var_v0 >> 2) * 2;
+
+    for (i = 0; i < temp_s2[0]; ++i) {
+        func_80103E6C(&temp_s2[temp_s2[i + 1]]);
+    }
+    if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 0x140) {
+        rect.x = 0x14D;
+    } else {
+        rect.x = 0xD;
+    }
+    rect.w = 0x12C;
+    rect.y = 0x37;
+    rect.h = 0x82;
+
+    q = 0x1F800000;
+    temp_s1 = *(void**)q;
+    SetDrawArea(temp_s1, &rect);
+    AddPrim(((void**)q)[1], temp_s1++);
+    *(void**)q = (DR_AREA*)(temp_s1);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
 
@@ -256,7 +298,7 @@ INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010435C);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
 
-void func_80104908(int x)
+static void func_80104908(int x)
 {
     int y;
     POLY_FT4* poly;

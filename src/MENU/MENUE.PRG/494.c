@@ -364,7 +364,7 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     int j;
     LINE_G2* line;
     POLY_F4* poly;
-    u_long p;
+    void** p;
 
     line = *(void**)0x1F800000;
     for (i = arg1, j = arg2; i < (arg1 + arg3) - 1; ++i, --j) {
@@ -372,7 +372,6 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
         setXY2(line, arg0, i, (arg0 + j) - 1, i);
         setRGB0(line, 0x40, 0x38, 0x20);
         setRGB1(line, 0x10, 0x10, 8);
-        p = 0x1F800000;
         AddPrim(*(void**)0x1F800004 + 0x1C, line++);
     }
     arg0 += 2;
@@ -382,9 +381,9 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
         (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
     setRGB0(poly, 0, 0, 0);
-    p = 0x1F800000;
-    AddPrim(((void**)p)[1] + 0x1C, poly);
-    ((void**)p)[0] = poly + 1;
+    p = (void** )0x1F800000;
+    AddPrim(p[1] + 0x1C, poly);
+    p[0] = poly + 1;
 }
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);

@@ -8,9 +8,9 @@
 #include <libetc.h>
 
 static char* _vsStringCpy(char* arg0, char* arg1);
-void func_80102CD8(int, int, char**);
-void func_80103E6C(u_short*);
-void func_80104A44();
+static void func_80102CD8(int, int, char**);
+static void func_80103E6C(u_short*);
+static void func_80104A44();
 
 extern u_short D_80104E54[];
 extern int D_80105230;
@@ -33,7 +33,7 @@ static void func_80102C94(int arg0)
     D_801022D6 = 1;
 }
 
-void func_80102CD8(int rowCount, int arg1, char** strings)
+static void func_80102CD8(int rowCount, int arg1, char** strings)
 {
     int rowTypes[rowCount];
     int i;
@@ -111,7 +111,7 @@ INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103110);
 
-int func_8010391C(int arg0)
+static int func_8010391C(int arg0)
 {
     char* sp10[28];
     int i;
@@ -248,7 +248,7 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
-void func_80103CF0(void)
+static void func_80103CF0()
 {
     RECT rect;
     DR_AREA* temp_s1;
@@ -358,7 +358,34 @@ static short func_80104C30(short* arg0)
     return arg0[6] = new_var ^ 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104CC4);
+static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
+{
+    int i;
+    int j;
+    LINE_G2* line;
+    POLY_F4* poly;
+    u_long p;
+
+    line = *(void**)0x1F800000;
+    for (i = arg1, j = arg2; i < (arg1 + arg3) - 1; ++i, --j) {
+        setLineG2(line);
+        setXY2(line, arg0, i, (arg0 + j) - 1, i);
+        setRGB0(line, 0x40, 0x38, 0x20);
+        setRGB1(line, 0x10, 0x10, 8);
+        p = 0x1F800000;
+        AddPrim(*(void**)0x1F800004 + 0x1C, line++);
+    }
+    arg0 += 2;
+    arg1 += 2;
+    poly = (POLY_F4*)line;
+    setPolyF4(poly);
+    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
+        (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
+    setRGB0(poly, 0, 0, 0);
+    p = 0x1F800000;
+    AddPrim(((void**)p)[1] + 0x1C, poly);
+    ((void**)p)[0] = poly + 1;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);
 

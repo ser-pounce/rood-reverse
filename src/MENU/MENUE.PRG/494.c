@@ -302,22 +302,25 @@ static void func_80104908(int x)
 {
     int y;
     POLY_FT4* poly;
-    int v1;
-    u_long p;
+    u_long** p;
+    int a1;
 
-    if (x != 0) {
+   if (x != 0) {
         if (D_8010524C < 9) {
             y = (D_8010524C >> 1) + 184;
         } else {
             y = -(D_8010524C >> 2) + 190;
         }
-    } else if (D_8010524C < 9) {
-        v1 = 40;
-        y = v1 - (D_8010524C >> 1);
     } else {
-        y = (D_8010524C >> 2) + 34;
+        if (D_8010524C < 9) {
+            int v0 = 40;
+            y = v0 - (D_8010524C >> 1);
+        } else {
+            y = (D_8010524C >> 2) + 34;
+        }
     }
-    poly = *(void**)0x1F800000;
+    
+    poly = (POLY_FT4*) *getScratchAddr(0);
     setPolyFT4(poly);
     setShadeTex(poly, 1);
     setXY4(poly, 152, y, 168, y, 152, y + 16, 168, y + 16);
@@ -329,9 +332,9 @@ static void func_80104908(int x)
     } else {
         setClut(poly, 912, 223);
     }
-    p = 0x1F800000;
-    AddPrim(((void**)p)[1] - 0x1C, poly++);
-    *(void**)p = poly;
+    p = (u_long**) getScratchAddr(0);
+    AddPrim(p[1] - 7, poly++);
+    p[0] = (void*) poly;
 }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);

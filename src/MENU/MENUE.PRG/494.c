@@ -9,10 +9,15 @@
 
 static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
+static int func_801030A4();
+static int func_80103110();
 static void func_80103E6C(u_short*);
 static void func_80104A44();
 
 extern u_short D_80104E54[];
+extern int D_80105228;
+extern char D_8010522C;
+extern char D_8010522D;
 extern int D_80105230;
 extern int D_80105234;
 extern int D_80105240;
@@ -91,7 +96,62 @@ static void func_80102E9C() { func_800FA8E0(8); }
 
 static void _menuReady() { vs_mainmenu_ready(); }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80102EDC);
+int func_80102EDC(char* state)
+{
+
+    switch (*state) {
+    case 3:
+        func_800FFB68(1);
+        D_8010522D = 8;
+        D_8010522C = 0;
+        *state = 4;
+        break;
+    case 4:
+        if (D_8010522C == 0) {
+            D_8010522C = func_801030A4();
+        }
+        if (D_8010522D != 0) {
+            D_8010522D -= 1;
+        } else if (D_8010522C != 0) {
+            func_8008A4DC(0);
+            func_800CB654(1);
+            D_800EB9B0 = 0x200000;
+            *state = 5;
+        }
+        break;
+    case 5:
+        *state += vs_mainmenu_ready();
+        break;
+    case 6:
+        D_80105228 = func_80103110();
+        if (D_80105228 == 0) {
+            break;
+        }
+        func_80100414(-4, 0x80);
+        func_800CB654(0);
+        D_800EB9B0 = 0;
+        func_8008A4DC(1);
+        func_800FFA88(0);
+        func_800FA8E0(0x28);
+        *state = 7;
+        break;
+    case 7:
+        func_800FFB68(0);
+        *state = 8;
+        break;
+    case 8:
+        if (D_801022D8 != 0) {
+            break;
+        }
+        if (D_80105228 == 2) {
+            vs_battle_menuState.currentState = 0xA;
+        }
+        D_801022D6 = 0;
+        *state = 0;
+        return 1;
+    }
+    return 0;
+}
 
 static int func_801030A4()
 {
@@ -247,8 +307,6 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     *arg0 = 0xE8;
     return arg0 + 1;
 }
-
-#define getScratchAddr(offset) ((u_long*)(0x1f800000 + (offset) * 4))
 
 static void func_80103CF0()
 {

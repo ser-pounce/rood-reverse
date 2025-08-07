@@ -248,20 +248,22 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
+#define getScratchAddr(offset)  ((u_long *)(0x1f800000+(offset)*4))
+
 static void func_80103CF0()
 {
     RECT rect;
-    DR_AREA* temp_s1;
+    DR_AREA* area;
     int i;
     int var_v0;
     u_short* temp_s2;
-    u_long p = 0x1F800000;
-    u_long q;
+    void** q;
+    void** p = (void**) getScratchAddr(0);
 
-    temp_s1 = *(DR_AREA**)p;
-    SetDrawArea(temp_s1, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
-    AddPrim(((void**)p)[1], temp_s1++);
-    *(DR_AREA**)p = temp_s1;
+    area = p[0];
+    SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
+    AddPrim(p[1], area++);
+    p[0] = area;
 
     func_80104A44();
 
@@ -283,11 +285,11 @@ static void func_80103CF0()
     rect.y = 0x37;
     rect.h = 0x82;
 
-    q = 0x1F800000;
-    temp_s1 = *(void**)q;
-    SetDrawArea(temp_s1, &rect);
-    AddPrim(((void**)q)[1], temp_s1++);
-    *(void**)q = (DR_AREA*)(temp_s1);
+    q = (void**) getScratchAddr(0);
+    area = q[0];
+    SetDrawArea(area, &rect);
+    AddPrim(q[1], area++);
+    q[0] = area;
 }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
@@ -319,7 +321,7 @@ static void func_80104908(int x)
             y = (D_8010524C >> 2) + 34;
         }
     }
-    
+
     poly = (POLY_FT4*) *getScratchAddr(0);
     setPolyFT4(poly);
     setShadeTex(poly, 1);

@@ -414,7 +414,6 @@ static void func_80104908(int x)
     int y;
     POLY_FT4* poly;
     u_long** p;
-    int a1;
 
     if (x != 0) {
         if (D_8010524C < 9) {

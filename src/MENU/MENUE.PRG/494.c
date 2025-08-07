@@ -315,6 +315,7 @@ static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
     p = (void**)getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly++);
 
+    // Given the unusual position this is likely a macro
     __asm__("li         $t8, 0x7;"
             "li         $t9, 0x60;"
             "sw         %1,  0(%0);"

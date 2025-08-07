@@ -371,7 +371,7 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     POLY_F4* poly;
     void** p;
 
-    line = *(void**)0x1F800000;
+    line = (LINE_G2*) *getScratchAddr(0);
     for (i = arg1, j = arg2; i < (arg1 + arg3) - 1; ++i, --j) {
         setLineG2(line);
         setXY2(line, arg0, i, (arg0 + j) - 1, i);
@@ -381,12 +381,13 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     }
     arg0 += 2;
     arg1 += 2;
-    poly = (POLY_F4*)line;
+    poly = (POLY_F4*) line;
     setPolyF4(poly);
     setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
         (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
     setRGB0(poly, 0, 0, 0);
-    p = (void** )0x1F800000;
+    
+    p = (void** ) getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly);
     p[0] = poly + 1;
 }

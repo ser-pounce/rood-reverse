@@ -248,7 +248,7 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
-#define getScratchAddr(offset)  ((u_long *)(0x1f800000+(offset)*4))
+#define getScratchAddr(offset) ((u_long*)(0x1f800000 + (offset) * 4))
 
 static void func_80103CF0()
 {
@@ -258,7 +258,7 @@ static void func_80103CF0()
     int var_v0;
     u_short* temp_s2;
     void** q;
-    void** p = (void**) getScratchAddr(0);
+    void** p = (void**)getScratchAddr(0);
 
     area = p[0];
     SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
@@ -285,7 +285,7 @@ static void func_80103CF0()
     rect.y = 0x37;
     rect.h = 0x82;
 
-    q = (void**) getScratchAddr(0);
+    q = (void**)getScratchAddr(0);
     area = q[0];
     SetDrawArea(area, &rect);
     AddPrim(q[1], area++);
@@ -294,7 +294,57 @@ static void func_80103CF0()
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104204);
+static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    static char const D_80102BD8[][4] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
+        { 0x40, 0x30, 0x66, 0 }, { 0x40, 0x38, 0x20, 0 } };
+    static char const D_80102BE8[][4] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
+        { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
+    POLY_G4* poly;
+    void** p;
+
+    poly = *(POLY_G4**)getScratchAddr(0);
+    setPolyG4(poly);
+    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
+        (arg0 + arg2) - 1, (arg1 + arg3) - 1);
+    setRGB0(poly, D_80102BD8[arg4][0], D_80102BD8[arg4][1], D_80102BD8[arg4][2]);
+    setRGB1(poly, D_80102BE8[arg4][0], D_80102BE8[arg4][1], D_80102BE8[arg4][2]);
+    setRGB2(poly, D_80102BD8[arg4][0], D_80102BD8[arg4][1], D_80102BD8[arg4][2]);
+    setRGB3(poly, D_80102BE8[arg4][0], D_80102BE8[arg4][1], D_80102BE8[arg4][2]);
+
+    p = (void**)getScratchAddr(0);
+    AddPrim(p[1] + 0x1C, poly++);
+
+    __asm__("li         $t8, 0x7;"
+            "li         $t9, 0x60;"
+            "sw         %1,  0(%0);"
+            "lui        $t3, 0x1F80;"
+            "sll        $t0, $t8, 2;"
+            "lw         $t4, 4($t3);"
+            "lw         $t7, 0($t3);"
+            "addu       $t0, $t4;"
+            "lw         $t1, 0($t0);"
+            "lui        $t4, 0xE100;"
+            "and        $t6, $t9, 0x1FF;"
+            "or         $t4, 0x200;"
+            "or         $t4, $t6;"
+            "sw         $t4, 4($t7);"
+            "sw         $zero, 8($t7);"
+            "li         $t5, 0xFFFFFF;"
+            "lui        $t4, 0x200;"
+            "lui        $t6, 0xFF00;"
+            "and        $t2, $t1, $t5;"
+            "or         $t4, $t2;"
+            "sw         $t4, 0($t7);"
+            "and        $t2, $t1, $t6;"
+            "and        $t4, $t7, $t5;"
+            "or         $t4, $t2;"
+            "sw         $t4, 0($t0);"
+            "addu       $t2, $t7, 0xC;"
+            "sw         $t2, 0($t3);"
+            : "+r"(p)
+            : "r"(poly));
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010435C);
 
@@ -307,7 +357,7 @@ static void func_80104908(int x)
     u_long** p;
     int a1;
 
-   if (x != 0) {
+    if (x != 0) {
         if (D_8010524C < 9) {
             y = (D_8010524C >> 1) + 184;
         } else {
@@ -322,7 +372,7 @@ static void func_80104908(int x)
         }
     }
 
-    poly = (POLY_FT4*) *getScratchAddr(0);
+    poly = (POLY_FT4*)*getScratchAddr(0);
     setPolyFT4(poly);
     setShadeTex(poly, 1);
     setXY4(poly, 152, y, 168, y, 152, y + 16, 168, y + 16);
@@ -334,9 +384,9 @@ static void func_80104908(int x)
     } else {
         setClut(poly, 912, 223);
     }
-    p = (u_long**) getScratchAddr(0);
+    p = (u_long**)getScratchAddr(0);
     AddPrim(p[1] - 7, poly++);
-    p[0] = (void*) poly;
+    p[0] = (void*)poly;
 }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
@@ -371,7 +421,7 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     POLY_F4* poly;
     void** p;
 
-    line = (LINE_G2*) *getScratchAddr(0);
+    line = (LINE_G2*)*getScratchAddr(0);
     for (i = arg1, j = arg2; i < (arg1 + arg3) - 1; ++i, --j) {
         setLineG2(line);
         setXY2(line, arg0, i, (arg0 + j) - 1, i);
@@ -381,13 +431,13 @@ static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
     }
     arg0 += 2;
     arg1 += 2;
-    poly = (POLY_F4*) line;
+    poly = (POLY_F4*)line;
     setPolyF4(poly);
     setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
         (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
     setRGB0(poly, 0, 0, 0);
-    
-    p = (void** ) getScratchAddr(0);
+
+    p = (void**)getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly);
     p[0] = poly + 1;
 }

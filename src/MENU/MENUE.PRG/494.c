@@ -7,13 +7,29 @@
 #include "gpu.h"
 #include <libetc.h>
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+} D_80102C54_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+} D_80102C48_t;
+
 static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
 static int func_801030A4();
 static int func_80103110();
 static void func_80103E6C(u_short*);
+static void func_80104908(int);
 static void func_80104A44();
 
+extern D_80102C48_t D_80102C48;
+extern D_80102C54_t D_80102C54[];
 extern u_short D_80104E54[];
 extern int D_80105228;
 extern char D_8010522C;
@@ -352,6 +368,37 @@ static void func_80103CF0()
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
 
+static inline void inline_fn(int arg0, int arg1)
+{
+    __asm__("li         $t3, 0x1F800000;"
+            "sll        $t0, %0, 2;"
+            "lw         $t4, 4($t3);"
+            "lw         $t7, ($t3);"
+            "addu       $t0, $t4;"
+            "lw         $t1, ($t0);"
+            "li         $t4, 0xE1000000;"
+            "and        $t6, %1, 0x1FF;"
+            "or         $t4, 0x200;"
+            "or         $t4, $t6;"
+            "sw         $t4, 4($t7);"
+            "sw         $zero, 8($t7);"
+            "li         $t5, 0xFFFFFF;"
+            "li         $t4, 0x2000000;"
+            "li         $t6, 0xFF000000;"
+            "and        $t2, $t1, $t5;"
+            "or         $t4, $t2;"
+            "sw         $t4, ($t7);"
+            "and        $t2, $t1, $t6;"
+            "and        $t4, $t7, $t5;"
+            "or         $t4, $t2;"
+            "sw         $t4, ($t0);"
+            "addu       $t2, $t7, 0xC;"
+            "sw         $t2, ($t3);"
+            :
+            : "r"(arg0), "r"(arg1)
+            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
+}
+
 static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
     static char const D_80102BD8[][4] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
@@ -372,40 +419,63 @@ static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
 
     p = (void**)getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly++);
-
-    // Given the unusual position this is likely a macro
-    __asm__("li         $t8, 0x7;"
-            "li         $t9, 0x60;"
-            "sw         %1,  0(%0);"
-            "lui        $t3, 0x1F80;"
-            "sll        $t0, $t8, 2;"
-            "lw         $t4, 4($t3);"
-            "lw         $t7, 0($t3);"
-            "addu       $t0, $t4;"
-            "lw         $t1, 0($t0);"
-            "lui        $t4, 0xE100;"
-            "and        $t6, $t9, 0x1FF;"
-            "or         $t4, 0x200;"
-            "or         $t4, $t6;"
-            "sw         $t4, 4($t7);"
-            "sw         $zero, 8($t7);"
-            "li         $t5, 0xFFFFFF;"
-            "lui        $t4, 0x200;"
-            "lui        $t6, 0xFF00;"
-            "and        $t2, $t1, $t5;"
-            "or         $t4, $t2;"
-            "sw         $t4, 0($t7);"
-            "and        $t2, $t1, $t6;"
-            "and        $t4, $t7, $t5;"
-            "or         $t4, $t2;"
-            "sw         $t4, 0($t0);"
-            "addu       $t2, $t7, 0xC;"
-            "sw         $t2, 0($t3);"
-            : "+r"(p)
-            : "r"(poly));
+    p[0] = poly;
+    inline_fn(7, 0x60);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_8010435C);
+void func_8010435C()
+{
+    int sp10[4];
+    int sp20[16];
+    D_80102C54_t* var_v0;
+    int j;
+    int i;
+    int* var_s7;
+    D_80102C54_t* var_v1;
+    POLY_FT4* var_s0;
+    TILE* tile;
+
+    *(D_80102C48_t*)sp10 = D_80102C48;
+
+    var_v1 = (D_80102C54_t*)sp20;
+    var_v0 = D_80102C54;
+
+    do {
+        *var_v1++ = *var_v0++;
+    } while (var_v0 != (D_80102C54 + 4));
+
+    func_80104908(0);
+    var_s0 = *(void**)0x1F800000;
+    var_s7 = sp20;
+
+    for (i = 0; i < 16; ++i) {
+        for (j = 0; j < 3; ++j) {
+            setPolyFT4(var_s0);
+            setXY4(var_s0, j << 7, i + 0x34, sp10[j] + (j << 7), i + 0x34, j << 7,
+                i + 0x35, sp10[j] + (j << 7), i + 0x35);
+            setUV4(
+                var_s0, 0, i + 0x34, sp10[j], i + 0x34, 0, i + 0x35, sp10[j], i + 0x35);
+            setClut(var_s0, 768, 227);
+            var_s0->tpage = (j + 0x20) | 0x80 | (640 >> 6) | (256 >> 4);
+            setSemiTrans(var_s0, 1);
+            setRGB0(var_s0, var_s7[i], var_s7[i], var_s7[i]);
+            AddPrim(*(int**)0x1F800004 - 7, var_s0++);
+        }
+    }
+
+    tile = (TILE*)var_s0;
+    for (i = 0; i < 16; ++i) {
+        setTile(&tile[i]);
+        setSemiTrans(&tile[i], 1);
+        setXY0(&tile[i], 0, i + 0x34);
+        setWH(&tile[i], 0x140, 1);
+        setRGB0(&tile[i], sp20[i], sp20[i], sp20[i]);
+        AddPrim(*(void**)0x1F800004 - 0x1C, &tile[i]);
+    }
+
+    *(void**)0x1F800000 = (char*)var_s0 + 0x100;
+    inline_fn(-7, 0x40);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
 

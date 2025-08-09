@@ -436,7 +436,6 @@ static void func_8010435C()
     D_80102C54_t* var_v0;
     int j;
     int i;
-    int* var_s7;
     D_80102C54_t* var_v1;
     POLY_FT4* poly;
     TILE* tile;
@@ -452,7 +451,6 @@ static void func_8010435C()
 
     _drawPaginationArrow(arrowTypeUp);
     poly = *(void**)getScratchAddr(0);
-    var_s7 = sp20;
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
@@ -463,7 +461,7 @@ static void func_8010435C()
             setClut(poly, 768, 227);
             poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
             setSemiTrans(poly, 1);
-            setRGB0(poly, var_s7[i], var_s7[i], var_s7[i]);
+            setRGB0(poly, sp20[i], sp20[i], sp20[i]);
             AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
         }
     }
@@ -482,7 +480,59 @@ static void func_8010435C()
     _insertTpage(-7, 64);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
+void func_80104620()
+{
+    int sp10[4];
+    int sp20[16];
+    D_80102C54_t* var_v0;
+    int j;
+    int i;
+    D_80102C54_t* var_v1;
+    POLY_FT4* poly;
+    TILE* tile;
+
+    *(D_80102C48_t*)sp10 = D_80102C48;
+
+    var_v1 = (D_80102C54_t*)sp20;
+    var_v0 = D_80102C54;
+
+    do {
+        *var_v1++ = *var_v0++;
+    } while (var_v0 != (D_80102C54 + 4));
+
+    _drawPaginationArrow(arrowTypeDown);
+
+    poly = *(void**)getScratchAddr(0);
+
+    for (i = 0; i < 16; ++i) {
+        for (j = 0; j < 3; ++j) {
+            setPolyFT4(poly);
+            setXY4(poly, j << 7, 0xBB - i, sp10[j] + (j << 7), 0xBB - i, j << 7, 0xBC - i,
+                sp10[j] + (j << 7), 0xBC - i);
+            setUV4(
+                poly, 0, -0x45 - i, sp10[j], -0x45 - i, 0, -0x44 - i, sp10[j], -0x44 - i);
+            setClut(poly, 768, 227);
+            poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
+            setSemiTrans(poly, 1);
+            setRGB0(poly, sp20[i], sp20[i], sp20[i]);
+            AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
+        }
+    }
+
+    tile = (TILE*)poly;
+
+    for (i = 0; i < 16; ++i) {
+        setTile(&tile[i]);
+        setSemiTrans(&tile[i], 1);
+        setXY0(&tile[i], 0, 0xBB - i);
+        setWH(&tile[i], 320, 1);
+        setRGB0(&tile[i], sp20[i], sp20[i], sp20[i]);
+        AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
+    }
+
+    *(void**)getScratchAddr(0) = (void*)poly + 0x100;
+    _insertTpage(-7, 64);
+}
 
 static void _drawPaginationArrow(enum arrowType_e arrowType)
 {

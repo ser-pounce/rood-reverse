@@ -10610,7 +10610,7 @@ static void func_80046D58(int arg0)
     }
 }
 
-static inline int inline_fn5(short arg0, short arg1, short arg2)
+static inline int _insertTpage5(short arg0, short arg1, short arg2)
 {
     return arg2 * 2 + (arg0 >> 5) * 3 + (arg1 >> 10);
 }
@@ -10662,19 +10662,25 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 break;
             case 6:
                 var_t3 = arg3
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 6;
                 var_t1 = t4
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 6;
                 var_a0 = t5
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 6;
                 break;
             case 7:
                 var_t3 = arg3
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 12;
                 var_t1 = t4
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 12;
                 var_a0 = t5
-                    + inline_fn5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                        / 12;
                 break;
             case 8:
             case 15:
@@ -10780,7 +10786,7 @@ void func_80047280(int arg0, int arg1, int arg2, short arg3, int arg4, int arg5)
     }
 }
 
-static inline int inline_fn(int arg0) { return arg0 << 0x10; }
+static inline int _insertTpage(int arg0) { return arg0 << 0x10; }
 
 void func_800472D0(int arg0, D_8005DC6C_t* arg1)
 {
@@ -10792,9 +10798,9 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
         int(*temp_t6)[6] = D_80055D58.unk7E9C;
         for (i = 0; i < 5; ++i) {
             int temp_a1, temp_t1, temp_t2;
-            temp_a1 = inline_fn(arg1[i].unk0);
-            temp_t1 = inline_fn(arg1[i].unk1);
-            temp_t2 = inline_fn(arg1[i].unk2);
+            temp_a1 = _insertTpage(arg1[i].unk0);
+            temp_t1 = _insertTpage(arg1[i].unk1);
+            temp_t2 = _insertTpage(arg1[i].unk2);
 
             if (arg0 != 0) {
                 temp_t6[i][3]
@@ -11020,7 +11026,7 @@ void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-static inline int inline_fn2(int arg0)
+static inline int _insertTpage2(int arg0)
 {
     if (arg0 < 0) {
         arg0 += 0xFFFF;
@@ -11044,9 +11050,9 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 
     temp_t0 = &D_80055D58.unk7F28[arg1];
     temp_a3 = D_80055D58.unk7F28[arg1].unk10;
-    temp_a1 = inline_fn(arg2->unk0);
-    temp_t1 = inline_fn(arg2->unk1);
-    temp_t2 = inline_fn(arg2->unk2);
+    temp_a1 = _insertTpage(arg2->unk0);
+    temp_t1 = _insertTpage(arg2->unk1);
+    temp_t2 = _insertTpage(arg2->unk2);
 
     if (arg0 != 0) {
         temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
@@ -11078,7 +11084,7 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     }
     sp10[1] = (v0 >> 0x10) - 0x40;
 
-    sp10[2] = inline_fn2(temp_a3[2]);
+    sp10[2] = _insertTpage2(temp_a3[2]);
     sp10[3] = 0;
 
     if (arg1 != 0) {

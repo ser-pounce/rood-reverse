@@ -1,2 +1,5 @@
 _menuReady = 0x80102EBC;
 _vsStringCpy = 0x80103C9C;
+_drawPaginationArrow = 0x80104908;
+_drawControlsBg = 0x80104CC4;
+_pageArrowAnimState = 0x8010524C;

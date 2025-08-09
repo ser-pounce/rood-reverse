@@ -227,7 +227,7 @@ void func_800F9E0C()
     }
 }
 
-static inline int inline_fn(int arg0, u_int arg1) { return arg0 + arg1; }
+static inline int _insertTpage(int arg0, u_int arg1) { return arg0 + arg1; }
 
 int func_800F9EB8(int arg0)
 {
@@ -284,7 +284,7 @@ int func_800F9EB8(int arg0)
     }
 
     for (i = 0; i < 2; ++i) {
-        temp_a0 = D_800F4588[inline_fn(i, 2)];
+        temp_a0 = D_800F4588[_insertTpage(i, 2)];
         if ((temp_a0 != 0) && (temp_a0->unk8 & 0x10)) {
             temp_s0 = temp_s1->unk6C[temp_a0->unkD];
             temp_s0[5] -= temp_s1->unk6F4;

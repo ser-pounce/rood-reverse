@@ -20,13 +20,19 @@ typedef struct {
     int unk8;
 } D_80102C48_t;
 
+enum arrowType_e {
+    arrowTypeUp,
+    arrowTypeDown,
+};
+
 static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
 static int func_801030A4();
 static int func_80103110();
 static void func_80103E6C(u_short*);
-static void func_80104908(int);
+static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void func_80104A44();
+static short func_80104C30(short* arg0);
 
 extern D_80102C48_t D_80102C48;
 extern D_80102C54_t D_80102C54[];
@@ -39,7 +45,7 @@ extern int D_80105234;
 extern int D_80105240;
 extern int D_80105244;
 extern int D_80105248;
-extern int D_8010524C;
+extern int _pageArrowAnimState;
 extern int* D_80105254;
 extern int D_80105258;
 
@@ -368,7 +374,7 @@ static void func_80103CF0()
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
 
-static inline void inline_fn(int arg0, int arg1)
+static inline void _insertTpage(int primIndex, int tpage)
 {
     __asm__("li         $t3, 0x1F800000;"
             "sll        $t0, %0, 2;"
@@ -377,8 +383,8 @@ static inline void inline_fn(int arg0, int arg1)
             "addu       $t0, $t4;"
             "lw         $t1, ($t0);"
             "li         $t4, 0xE1000000;"
-            "and        $t6, %1, 0x1FF;"
-            "or         $t4, 0x200;"
+            "and        $t6, %1, 0x1FF;" // texpage
+            "or         $t4, 0x200;" // dtd
             "or         $t4, $t6;"
             "sw         $t4, 4($t7);"
             "sw         $zero, 8($t7);"
@@ -395,7 +401,7 @@ static inline void inline_fn(int arg0, int arg1)
             "addu       $t2, $t7, 0xC;"
             "sw         $t2, ($t3);"
             :
-            : "r"(arg0), "r"(arg1)
+            : "r"(primIndex), "r"(tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
 }
 
@@ -420,10 +426,10 @@ static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
     p = (void**)getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly++);
     p[0] = poly;
-    inline_fn(7, 0x60);
+    _insertTpage(7, 96);
 }
 
-void func_8010435C()
+static void func_8010435C()
 {
     int sp10[4];
     int sp20[16];
@@ -432,7 +438,7 @@ void func_8010435C()
     int i;
     int* var_s7;
     D_80102C54_t* var_v1;
-    POLY_FT4* var_s0;
+    POLY_FT4* poly;
     TILE* tile;
 
     *(D_80102C48_t*)sp10 = D_80102C48;
@@ -444,59 +450,58 @@ void func_8010435C()
         *var_v1++ = *var_v0++;
     } while (var_v0 != (D_80102C54 + 4));
 
-    func_80104908(0);
-    var_s0 = *(void**)0x1F800000;
+    _drawPaginationArrow(arrowTypeUp);
+    poly = *(void**)getScratchAddr(0);
     var_s7 = sp20;
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
-            setPolyFT4(var_s0);
-            setXY4(var_s0, j << 7, i + 0x34, sp10[j] + (j << 7), i + 0x34, j << 7,
-                i + 0x35, sp10[j] + (j << 7), i + 0x35);
-            setUV4(
-                var_s0, 0, i + 0x34, sp10[j], i + 0x34, 0, i + 0x35, sp10[j], i + 0x35);
-            setClut(var_s0, 768, 227);
-            var_s0->tpage = (j + 0x20) | 0x80 | (640 >> 6) | (256 >> 4);
-            setSemiTrans(var_s0, 1);
-            setRGB0(var_s0, var_s7[i], var_s7[i], var_s7[i]);
-            AddPrim(*(int**)0x1F800004 - 7, var_s0++);
+            setPolyFT4(poly);
+            setXY4(poly, j << 7, i + 52, sp10[j] + (j << 7), i + 52, j << 7, i + 53,
+                sp10[j] + (j << 7), i + 53);
+            setUV4(poly, 0, i + 52, sp10[j], i + 52, 0, i + 53, sp10[j], i + 53);
+            setClut(poly, 768, 227);
+            poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
+            setSemiTrans(poly, 1);
+            setRGB0(poly, var_s7[i], var_s7[i], var_s7[i]);
+            AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
         }
     }
 
-    tile = (TILE*)var_s0;
+    tile = (TILE*)poly;
     for (i = 0; i < 16; ++i) {
         setTile(&tile[i]);
         setSemiTrans(&tile[i], 1);
-        setXY0(&tile[i], 0, i + 0x34);
-        setWH(&tile[i], 0x140, 1);
+        setXY0(&tile[i], 0, i + 52);
+        setWH(&tile[i], 320, 1);
         setRGB0(&tile[i], sp20[i], sp20[i], sp20[i]);
-        AddPrim(*(void**)0x1F800004 - 0x1C, &tile[i]);
+        AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
     }
 
-    *(void**)0x1F800000 = (char*)var_s0 + 0x100;
-    inline_fn(-7, 0x40);
+    *(void**)getScratchAddr(0) = (void*)poly + 0x100;
+    _insertTpage(-7, 64);
 }
 
 INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104620);
 
-static void func_80104908(int x)
+static void _drawPaginationArrow(enum arrowType_e arrowType)
 {
     int y;
     POLY_FT4* poly;
     u_long** p;
 
-    if (x != 0) {
-        if (D_8010524C < 9) {
-            y = (D_8010524C >> 1) + 184;
+    if (arrowType != arrowTypeUp) {
+        if (_pageArrowAnimState < 9) {
+            y = (_pageArrowAnimState >> 1) + 184;
         } else {
-            y = -(D_8010524C >> 2) + 190;
+            y = -(_pageArrowAnimState >> 2) + 190;
         }
     } else {
-        if (D_8010524C < 9) {
+        if (_pageArrowAnimState < 9) {
             int v0 = 40;
-            y = v0 - (D_8010524C >> 1);
+            y = v0 - (_pageArrowAnimState >> 1);
         } else {
-            y = (D_8010524C >> 2) + 34;
+            y = (_pageArrowAnimState >> 2) + 34;
         }
     }
 
@@ -504,7 +509,8 @@ static void func_80104908(int x)
     setPolyFT4(poly);
     setShadeTex(poly, 1);
     setXY4(poly, 152, y, 168, y, 152, y + 16, 168, y + 16);
-    setUV4(poly, x * 16, 48, x * 16 + 16, 48, x * 16, 64, x * 16 + 16, 64);
+    setUV4(poly, arrowType * 16, 48, arrowType * 16 + 16, 48, arrowType * 16, 64,
+        arrowType * 16 + 16, 64);
     setTPage(poly, clut4Bit, semiTransparencyHalf, 768, 0);
 
     if (vs_main_buttonsPreviousState & PADRleft) {
@@ -541,33 +547,32 @@ static short func_80104C30(short* arg0)
     return arg0[6] = new_var ^ 1;
 }
 
-static void func_80104CC4(int arg0, int arg1, int arg2, int arg3)
+static void _drawControlsBg(int x, int y, int w, int h)
 {
     int i;
     int j;
     LINE_G2* line;
     POLY_F4* poly;
-    void** p;
+    u_long** p;
 
     line = (LINE_G2*)*getScratchAddr(0);
-    for (i = arg1, j = arg2; i < (arg1 + arg3) - 1; ++i, --j) {
+    for (i = y, j = w; i < (y + h) - 1; ++i, --j) {
         setLineG2(line);
-        setXY2(line, arg0, i, (arg0 + j) - 1, i);
-        setRGB0(line, 0x40, 0x38, 0x20);
-        setRGB1(line, 0x10, 0x10, 8);
-        AddPrim(*(void**)0x1F800004 + 0x1C, line++);
+        setXY2(line, x, i, (x + j) - 1, i);
+        setRGB0(line, 64, 56, 32);
+        setRGB1(line, 16, 16, 8);
+        AddPrim(*(u_long**)getScratchAddr(1) + 7, line++);
     }
-    arg0 += 2;
-    arg1 += 2;
+    x += 2;
+    y += 2;
     poly = (POLY_F4*)line;
     setPolyF4(poly);
-    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
-        (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
+    setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - h, (y + h) - 1);
     setRGB0(poly, 0, 0, 0);
 
-    p = (void**)getScratchAddr(0);
-    AddPrim(p[1] + 0x1C, poly);
-    p[0] = poly + 1;
+    p = (u_long**)getScratchAddr(0);
+    AddPrim(p[1] + 7, poly);
+    p[0] = (u_long*)(poly + 1);
 }
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);

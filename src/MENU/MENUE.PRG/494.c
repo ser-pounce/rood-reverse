@@ -29,7 +29,7 @@ static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
 static int func_801030A4();
 static int func_80103110();
-static void func_80103E6C(u_short*);
+static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void func_80104A44();
 static short func_80104C30(short* arg0);
@@ -573,7 +573,62 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
     p[0] = (void*)poly;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80104A44);
+static void func_80104A44()
+{
+    short var_a1;
+    short i;
+    short* var_s0;
+    int var_v0;
+    int var_v1;
+    LINE_F2* line;
+    short s4;
+    char* c;
+
+    if (D_80105254[2] <= 0) {
+        return;
+    }
+
+    line = *(LINE_F2**)getScratchAddr(0);
+
+    var_v1 = D_80105254[0];
+    if (var_v1 < 0) {
+        var_v1 += 3;
+    }
+    var_v1 >>= 2;
+
+    var_v0 = D_80105254[1];
+    if (var_v0 < 0) {
+        var_v0 += 3;
+    }
+
+    var_v0 = var_v1 + (var_v0 >> 2);
+    var_s0 = (short*)&(D_80105254)[var_v0 + 4];
+
+    s4 = *var_s0++;
+
+    for (i = 0; i < s4; ++i) {
+        var_a1 = 0;
+        if (*var_s0 != 0) {
+            var_a1 = func_80104C30(var_s0);
+        }
+        var_s0 += 8;
+        setLineF2(line);
+        line->x0 = *var_s0++ + 13;
+        line->y0 = *var_s0++ + 55 - D_80105244 * 13;
+        line->x1 = *var_s0++ + 13;
+        line->y1 = *var_s0++ + 55 - D_80105244 * 13;
+        c = (char*)var_s0;
+        setRGB0(line, c[0], c[1], c[2]);
+        var_s0 += 2;
+        if ((line->y0 < 55) && ((line->y1 >= 55) == 0)) {
+            continue;
+        }
+        if (((line->y0 < 186) || (line->y1 < 186)) && ((var_a1 << 16) == 0)) {
+            AddPrim(*(void**)getScratchAddr(1), line++);
+        }
+    }
+    *(void**)getScratchAddr(0) = line;
+}
 
 static short func_80104C30(short* arg0)
 {

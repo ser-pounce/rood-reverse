@@ -97,6 +97,12 @@ void func_800995B0();
 int func_8009967C();
 void vs_battle_exec();
 
+typedef struct {
+    u_short index;
+    u_short unk2;
+    u_short unk4[16];
+} D_800F1BC8_t;
+
 extern u_short D_800F18E8;
 extern int D_800F19D0[];
 extern vs_battle_equipment_t* vs_battle_characterState;
@@ -107,7 +113,7 @@ extern void* D_800F1BAC;
 extern short D_800F1BB6;
 extern short D_800F1BBE;
 extern int D_800F1BC0;
-extern u_short D_800F1BC8[18];
+extern D_800F1BC8_t D_800F1BC8;
 extern signed char D_800F1BF0[8];
 extern D_800F1BF8_t D_800F1BF8;
 extern void* D_800F1CBC;

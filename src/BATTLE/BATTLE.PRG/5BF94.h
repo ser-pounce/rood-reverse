@@ -35,9 +35,10 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    char unk4[0x2C];
+    short unk4[22];
 } D_800F4FE0_t;
 
+void func_800C6540(char const*, int, int, u_int*);
 void vs_battle_renderTextRaw(char const* text, int xy, u_int*);
 void func_800C6BF0(int, void*);
 void func_800C8E04(int);
@@ -59,6 +60,8 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size);
 int vs_battle_toBCD(int);
 int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_encode(int value);
+D_800F4FE0_t* func_800CCDF4(int arg0);
+void func_800CCF08(int, int, int, int, int, int, int, int);
 int func_800CD064(int);
 void vs_battle_drawImage(int xy, void* buffer, int wh);
 int func_800CEEBC();

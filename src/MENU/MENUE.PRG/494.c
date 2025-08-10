@@ -6,6 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include <libetc.h>
+#include <stdio.h>
 
 typedef struct {
     int unk0;
@@ -33,6 +34,15 @@ static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void func_80104A44();
 static short func_80104C30(short* arg0);
+static int func_8010391C(int arg0);
+static void func_80103A24(u_long* arg0, int arg1);
+static void func_80103AD8(u_long* arg0, int arg1);
+static int func_80103B6C();
+static void func_80103BC8();
+static void func_80103CF0();
+static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4);
+static void func_8010435C();
+static void func_80104620();
 
 extern D_80102C48_t D_80102C48;
 extern D_80102C54_t D_80102C54[];
@@ -178,7 +188,7 @@ int func_80102EDC(char* state)
 static int func_801030A4()
 {
     if (D_80060021 == 0) {
-        vs_main_bzero(D_800F1BC8, sizeof(D_800F1BC8));
+        vs_main_bzero(&D_800F1BC8, sizeof(D_800F1BC8));
     }
     func_8007DFF0(0x1D, 3, 5);
     D_80105240 = 0;
@@ -209,7 +219,7 @@ static int func_8010391C(int arg0)
             sp10[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
             sp10[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
         }
-        func_80102CD8(0xE, *D_800F1BC8, sp10);
+        func_80102CD8(0xE, D_800F1BC8.index, sp10);
         ++D_80105230;
         break;
     case 1:
@@ -480,7 +490,7 @@ static void func_8010435C()
     _insertTpage(-7, 64);
 }
 
-void func_80104620()
+static void func_80104620()
 {
     int sp10[4];
     int sp20[16];

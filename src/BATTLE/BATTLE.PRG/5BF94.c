@@ -36,7 +36,6 @@ typedef struct {
     int unk3F4;
 } gim_t;
 
-void func_800C6540(char const*, int, int, u_int*);
 void func_800CA97C();
 void func_800CE67C();
 int func_800CF218();
@@ -627,7 +626,7 @@ void vs_battle_drawImage(int xy, void* buffer, int wh)
     LoadImage(rect, buffer);
 }
 
-void* func_800CCDF4(int arg0) { return D_800F4FE0 + arg0; }
+D_800F4FE0_t* func_800CCDF4(int arg0) { return D_800F4FE0 + arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCE10);
 

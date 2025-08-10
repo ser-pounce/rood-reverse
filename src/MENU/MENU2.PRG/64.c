@@ -173,17 +173,17 @@ static int _abilityMenu()
 {
     enum state { init = 16, handleInput };
 
-    extern int D_1F800000[];
+    extern u_long* D_1F800000[];
     static int cursorAnimStep = 0;
 
-    int temp_s3;
+    u_long* temp_s3;
     int selectedAbility;
     int i;
     int previousFirstAbility;
     int ability;
     vs_battle_menuItem_t* menuItem;
 
-    temp_s3 = D_1F800000[2] + 8;
+    temp_s3 = D_1F800000[2] + 2;
 
     if (_abilityMenuState < 10) {
         menuItem = vs_battle_setMenuItem(_abilityMenuState + 20, 320,

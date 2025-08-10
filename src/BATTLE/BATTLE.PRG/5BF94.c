@@ -128,7 +128,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C64D0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6540);
 
-void vs_battle_renderTextRaw(char const* text, int xy, u_int* arg2)
+void vs_battle_renderTextRaw(char const* text, int xy, void* arg2)
 {
     func_800C6540(text, xy, 0x808080, arg2);
 }

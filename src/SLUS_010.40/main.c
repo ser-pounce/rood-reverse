@@ -9436,7 +9436,7 @@ static void _initCdQueue()
     *(int*)&_cdQueueCount = 0;
 }
 
-vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile* file)
+vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
 {
     int i;
 

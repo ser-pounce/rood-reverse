@@ -38,8 +38,8 @@ typedef struct {
     short unk4[22];
 } D_800F4FE0_t;
 
-void func_800C6540(char const*, int, int, u_int*);
-void vs_battle_renderTextRaw(char const* text, int xy, u_int*);
+void func_800C6540(char const*, int, int, u_long*);
+void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
 void func_800C8E04(int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);

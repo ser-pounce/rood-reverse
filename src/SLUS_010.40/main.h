@@ -270,7 +270,7 @@ void vs_main_freeHeapR(void*);
 void vs_main_freeHeap(void*);
 void* vs_main_allocHeapR(u_int);
 void* vs_main_allocHeap(u_int);
-vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile*);
+vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const*);
 void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot*);
 void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram);
 void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram);

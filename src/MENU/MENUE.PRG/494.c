@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/sfx.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
@@ -16,13 +17,13 @@ typedef struct {
     int unk4;
     int unk8;
     int unkC;
-} D_80102C54_t;
+} _menuBgTransparencies_t;
 
 typedef struct {
     int unk0;
     int unk4;
     int unk8;
-} D_80102C48_t;
+} _menuBgChunkWidths_t;
 
 enum arrowType_e {
     arrowTypeUp,
@@ -35,17 +36,17 @@ static int func_801030A4();
 static int vs_menuE_exec();
 static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
-static void func_80104A44();
-static short func_80104C30(short* arg0);
+static void _drawContentLines();
+static short _getBlinkState(short* arg0);
 static int func_8010391C(int arg0);
 static void func_80103A24(u_long* arg0, int arg1);
 static void func_80103AD8(u_long* arg0, int arg1);
 static int func_80103B6C();
 static void func_80103BC8();
 static void func_80103CF0();
-static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4);
-static void func_8010435C();
-static void func_80104620();
+static void _setPageBg(int arg0, int arg1, int arg2, int arg3, int arg4);
+static void _fadeMenuUpper();
+static void _fadeMenuLower();
 static void _drawControlsBg(int x, int y, int w, int h);
 
 extern char const D_80102BF8[];
@@ -54,23 +55,23 @@ extern char const D_80102C10[];
 extern char D_80102C18[];
 extern char D_80102C20[];
 
-extern D_80102C48_t D_80102C48;
-extern D_80102C54_t D_80102C54[];
+extern _menuBgChunkWidths_t _menuBgChunkWidths;
+extern _menuBgTransparencies_t _menuBgTransparencies[];
 extern u_short D_80104E54[];
 extern int D_80105228;
 extern char D_8010522C;
 extern char D_8010522D;
 extern int D_80105230;
 extern int D_80105234;
-extern vs_main_CdQueueSlot* D_80105238;
-extern vs_main_CdQueueSlot* D_8010523C;
+extern vs_main_CdQueueSlot* _helpTextCdQueue;
+extern vs_main_CdQueueSlot* _helpAssetsCdQueue;
 extern int D_80105240;
-extern int D_80105244;
-extern int D_80105248;
+extern int _scrollPosition;
+extern int _contentEnd;
 extern int _pageArrowAnimState;
 extern int D_80105250;
-extern int* D_80105254;
-extern u_long* D_80105258;
+extern int* _helpText;
+extern u_long* _helpAssets;
 
 static void func_80102C94(int arg0)
 {
@@ -201,14 +202,15 @@ int func_80102EDC(char* state)
 static int func_801030A4()
 {
     if (D_80060021 == 0) {
-        vs_main_bzero(&D_800F1BC8, sizeof(D_800F1BC8));
+        vs_main_bzero(
+            &vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
     }
     func_8007DFF0(0x1D, 3, 5);
     D_80105240 = 0;
-    D_80105244 = 0;
-    D_80105248 = 0;
-    D_80105254 = 0;
-    D_80105258 = NULL;
+    _scrollPosition = 0;
+    _contentEnd = 0;
+    _helpText = 0;
+    _helpAssets = NULL;
     return 1;
 }
 
@@ -219,9 +221,9 @@ static vs_main_CdFile const _helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(
     mkHfoPair(HELP07), mkHfoPair(HELP08), mkHfoPair(HELP09), mkHfoPair(HELP10),
     mkHfoPair(HELP11), mkHfoPair(HELP12), mkHfoPair(HELP13), mkHfoPair(HELP14) };
 
-static P_CODE const _pageBgColorStop0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
+static P_CODE const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
     { 0x40, 0x30, 0x66, 0 }, { 0x40, 0x38, 0x20, 0 } };
-static P_CODE const _pageBgColorStop1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
+static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);
@@ -266,94 +268,100 @@ int vs_menuE_exec()
             }
         } else {
             D_80105240 = 3;
-            if (D_80105254 != NULL) {
-                vs_main_freeHeapR(D_80105254);
+            if (_helpText != NULL) {
+                vs_main_freeHeapR(_helpText);
             }
-            if (D_80105258 != NULL) {
-                vs_main_freeHeapR(D_80105258);
+            if (_helpAssets != NULL) {
+                vs_main_freeHeapR(_helpAssets);
             }
 
-            D_80105254 = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2 + 1].size);
-            D_80105258 = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2].size);
-            D_8010523C = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2]);
-            vs_main_cdEnqueue(D_8010523C, D_80105258);
-            D_80105238 = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2 + 1]);
-            vs_main_cdEnqueue(D_80105238, D_80105254);
+            _helpText = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2 + 1].size);
+            _helpAssets = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2].size);
+            _helpAssetsCdQueue
+                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2]);
+            vs_main_cdEnqueue(_helpAssetsCdQueue, _helpAssets);
+            _helpTextCdQueue
+                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2 + 1]);
+            vs_main_cdEnqueue(_helpTextCdQueue, _helpText);
         }
-        D_800F1BC8.index = D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
+        vs_battle_manualDisplayState.currentManual
+            = D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
         func_800FFBA8();
         break;
     case 3:
-        s1 = D_8010523C->state;
-        if (s1 != 4) {
+        s1 = _helpAssetsCdQueue->state;
+        if (s1 != vs_main_CdQueueStateLoaded) {
             break;
         }
-        vs_main_freeCdQueueSlot(D_8010523C);
-        func_80103A24(D_80105258 + 2, D_80105258[0]);
-        func_80103AD8(D_80105258 + ((D_80105258[0] << 5) + 2), D_80105258[1]);
-        if (D_80105258 != NULL) {
-            vs_main_freeHeapR(D_80105258);
+        vs_main_freeCdQueueSlot(_helpAssetsCdQueue);
+        func_80103A24(_helpAssets + 2, _helpAssets[0]);
+        func_80103AD8(_helpAssets + ((_helpAssets[0] << 5) + 2), _helpAssets[1]);
+        if (_helpAssets != NULL) {
+            vs_main_freeHeapR(_helpAssets);
         }
-        D_80105258 = NULL;
-        D_80105240 = s1;
+        _helpAssets = NULL;
+        D_80105240 = 4;
         break;
     case 4:
-        if (D_80105238->state != 4) {
+        if (_helpTextCdQueue->state != vs_main_CdQueueStateLoaded) {
             break;
         }
-        vs_main_freeCdQueueSlot(D_80105238);
+        vs_main_freeCdQueueSlot(_helpTextCdQueue);
         func_800CCF08(0, 0, 8, 0x34, 0x19, 0xA, 8, 0x34);
-        D_80105244 = D_800F1BC8.unk4[D_800F1BC8.index];
-        D_80105248 = func_80103B6C();
+        _scrollPosition
+            = vs_battle_manualDisplayState
+                  .scrollPositions[vs_battle_manualDisplayState.currentManual];
+        _contentEnd = func_80103B6C();
         D_80105240 = 5;
         D_80105250 = 0;
         break;
     case 5:
-        var_s1 = D_80105244 / 10;
-        temp_s2 = D_80105248 / 10;
-        if (vs_main_buttonsPressed.all & 0x60) {
+        var_s1 = _scrollPosition / 10;
+        temp_s2 = _contentEnd / 10;
+        if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             D_80105240 = 1;
         }
-        if (vs_main_buttonsPressed.all & 0x10) {
+        if (vs_main_buttonsPressed.all & PADRup) {
             D_80105240 = 7;
         }
-        if (vs_main_buttonsPressed.all & 0x800) {
+        if (vs_main_buttonsPressed.all & PADstart) {
             var_s1 = 0;
-            D_80105244 = 0;
-        } else if (vs_main_buttonsPreviousState & 0x80) {
-            if ((vs_main_buttonsPressed.all & 0x1000) && (var_s1 == 0) && (temp_s2 > 0)) {
+            _scrollPosition = 0;
+        } else if (vs_main_buttonsPreviousState & PADRleft) {
+            if ((vs_main_buttonsPressed.all & PADLup) && (var_s1 == 0) && (temp_s2 > 0)) {
                 var_s1 = temp_s2;
-                D_80105244 = temp_s2 * 0xA;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if ((vs_main_buttonsPressed.all & 0x4000) && (var_s1 == temp_s2)
+                _scrollPosition = temp_s2 * 10;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if ((vs_main_buttonsPressed.all & PADLdown) && (var_s1 == temp_s2)
                 && (temp_s2 > 0)) {
                 var_s1 = 0;
-                D_80105244 = 0;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if ((vs_main_buttonRepeat & 0x1000) && (var_s1 > 0)) {
+                _scrollPosition = 0;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if ((vs_main_buttonRepeat & PADLup) && (var_s1 > 0)) {
                 var_s1 -= 1;
-                D_80105244 = var_s1 * 0xA;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if ((vs_main_buttonRepeat & 0x4000) && (var_s1 < temp_s2)) {
+                _scrollPosition = var_s1 * 10;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if ((vs_main_buttonRepeat & PADLdown) && (var_s1 < temp_s2)) {
                 var_s1 += 1;
-                D_80105244 = var_s1 * 0xA;
-                vs_main_playSfxDefault(0x7E, 4);
+                _scrollPosition = var_s1 * 10;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
         } else {
-            if ((vs_main_buttonsPressed.all & 0x1000) && (D_80105244 == 0)
-                && (D_80105248 > 0)) {
-                D_80105244 = D_80105248;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if (vs_main_buttonsPressed.all & 0x4000 && (D_80105244 == D_80105248)
-                && (D_80105244 > 0)) {
-                D_80105244 = 0;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if ((vs_main_buttonRepeat & 0x1000) && (D_80105244 > 0)) {
-                D_80105244 -= 1;
-                vs_main_playSfxDefault(0x7E, 4);
-            } else if ((vs_main_buttonRepeat & 0x4000) && (D_80105244 < D_80105248)) {
-                D_80105244 += 1;
-                vs_main_playSfxDefault(0x7E, 4);
+            if ((vs_main_buttonsPressed.all & PADLup) && (_scrollPosition == 0)
+                && (_contentEnd > 0)) {
+                _scrollPosition = _contentEnd;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if (vs_main_buttonsPressed.all & PADLdown
+                && (_scrollPosition == _contentEnd) && (_scrollPosition > 0)) {
+                _scrollPosition = 0;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if ((vs_main_buttonRepeat & PADLup) && (_scrollPosition > 0)) {
+                --_scrollPosition;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+            } else if ((vs_main_buttonRepeat & PADLdown)
+                && (_scrollPosition < _contentEnd)) {
+                ++_scrollPosition;
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
         }
         s0 = (u_long**)getScratchAddr(0);
@@ -368,50 +376,52 @@ int vs_menuE_exec()
         func_800C6540(charBuf, 0xC40118, 0x808080, s0[1] + 7);
         sprintf(charBuf, D_80102C20, temp_s2 + 1);
         func_800C6540(charBuf, 0xC40130, 0x808080, s0[1] + 7);
-        D_800F1BC8.unk4[D_800F1BC8.index] = D_80105244;
+        vs_battle_manualDisplayState
+            .scrollPositions[vs_battle_manualDisplayState.currentManual]
+            = _scrollPosition;
         if (D_80105240 != 5) {
-            if (vs_main_buttonsPressed.all & 0x20) {
-                vs_main_playSfxDefault(0x7E, 5);
+            if (vs_main_buttonsPressed.all & PADRright) {
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             } else {
-                vs_main_playSfxDefault(0x7E, 6);
+                vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             }
             func_800CCDF4(0)->unk4[12] = 0;
-            if (D_80105254 != NULL) {
-                vs_main_freeHeapR(D_80105254);
+            if (_helpText != NULL) {
+                vs_main_freeHeapR(_helpText);
             }
-            D_80105254 = NULL;
+            _helpText = NULL;
             break;
         }
-        func_80104204(8, 52, 310, 136, 0);
+        _setPageBg(8, 52, 310, 136, 0);
         _pageArrowAnimState = (_pageArrowAnimState + 1) & 0xF;
-        if (D_80105244 > 0) {
-            func_8010435C();
+        if (_scrollPosition > 0) {
+            _fadeMenuUpper();
         }
-        if (D_80105244 < D_80105248) {
-            func_80104620();
+        if (_scrollPosition < _contentEnd) {
+            _fadeMenuLower();
         }
         if (D_80105250 < 8) {
-            D_80105250 += 1;
+            ++D_80105250;
         } else {
             func_80103CF0();
         }
         func_80103BC8();
         break;
     case 6:
-        if (D_80105254 != NULL) {
-            vs_main_freeHeapR(D_80105254);
+        if (_helpText != NULL) {
+            vs_main_freeHeapR(_helpText);
         }
-        if (D_80105258 != NULL) {
-            vs_main_freeHeapR(D_80105258);
+        if (_helpAssets != NULL) {
+            vs_main_freeHeapR(_helpAssets);
         }
         func_8007E0A8(0x1D, 3, 5);
         return 1;
     case 7:
-        if (D_80105254 != NULL) {
-            vs_main_freeHeapR(D_80105254);
+        if (_helpText != NULL) {
+            vs_main_freeHeapR(_helpText);
         }
-        if (D_80105258 != NULL) {
-            vs_main_freeHeapR(D_80105258);
+        if (_helpAssets != NULL) {
+            vs_main_freeHeapR(_helpAssets);
         }
         func_8007E0A8(0x1D, 3, 5);
         return 2;
@@ -435,7 +445,7 @@ static int func_8010391C(int arg0)
             sp10[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
             sp10[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
         }
-        func_80102CD8(0xE, D_800F1BC8.index, sp10);
+        func_80102CD8(0xE, vs_battle_manualDisplayState.currentManual, sp10);
         ++D_80105230;
         break;
     case 1:
@@ -494,8 +504,8 @@ static int func_80103B6C()
     int temp_v1;
     int var_a0;
 
-    var_a0 = D_80105254[4] & 0xFFFF;
-    temp_v1 = (D_80105254[4] & 0xFFFF) % 10;
+    var_a0 = _helpText[4] & 0xFFFF;
+    temp_v1 = (_helpText[4] & 0xFFFF) % 10;
     if (temp_v1 > 0) {
         var_a0 += 10 - temp_v1;
     }
@@ -521,15 +531,15 @@ static void func_80103BC8()
     sp10[3] = 6;
     sp10[4] = -0x18;
 
-    temp_s3 = (ushort*)(D_80105254 + 4);
-    var_s2 = D_80105244 + 10;
+    temp_s3 = (ushort*)(_helpText + 4);
+    var_s2 = _scrollPosition + 10;
     var_a0 = sp10 + 4;
 
-    if ((u_short)D_80105254[4] < var_s2) {
-        var_s2 = (u_short)D_80105254[4];
+    if ((u_short)_helpText[4] < var_s2) {
+        var_s2 = (u_short)_helpText[4];
     }
 
-    temp_a1 = D_80105244;
+    temp_a1 = _scrollPosition;
 
     for (var_s0 = temp_a1; var_s0 < var_s2; ++var_s0) {
         temp_a1 = temp_s3[var_s0 + 1];
@@ -571,25 +581,25 @@ static void func_80103CF0()
     AddPrim(p[1], area++);
     p[0] = area;
 
-    func_80104A44();
+    _drawContentLines();
 
-    var_v0 = *D_80105254;
+    var_v0 = *_helpText;
     if (var_v0 < 0) {
         var_v0 += 3;
     }
-    temp_s2 = (u_short*)D_80105254 + 8 + (var_v0 >> 2) * 2;
+    temp_s2 = (u_short*)_helpText + 8 + (var_v0 >> 2) * 2;
 
     for (i = 0; i < temp_s2[0]; ++i) {
         func_80103E6C(&temp_s2[temp_s2[i + 1]]);
     }
-    if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 0x140) {
-        rect.x = 0x14D;
+    if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 320) {
+        rect.x = 333;
     } else {
-        rect.x = 0xD;
+        rect.x = 13;
     }
-    rect.w = 0x12C;
-    rect.y = 0x37;
-    rect.h = 0x82;
+    rect.w = 300;
+    rect.y = 55;
+    rect.h = 130;
 
     q = (void**)getScratchAddr(0);
     area = q[0];
@@ -631,48 +641,44 @@ static inline void _insertTpage(int primIndex, int tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
 }
 
-static void func_80104204(int x, int y, int w, int h, int color)
+static void _setPageBg(int x, int y, int w, int h, int color)
 {
     POLY_G4* poly;
-    void** p;
+    u_long** p;
 
     poly = *(POLY_G4**)getScratchAddr(0);
     setPolyG4(poly);
     setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
-    setRGB0(poly, _pageBgColorStop0[color].r0, _pageBgColorStop0[color].g0,
-        _pageBgColorStop0[color].b0);
-    setRGB1(poly, _pageBgColorStop1[color].r0, _pageBgColorStop1[color].g0,
-        _pageBgColorStop1[color].b0);
-    setRGB2(poly, _pageBgColorStop0[color].r0, _pageBgColorStop0[color].g0,
-        _pageBgColorStop0[color].b0);
-    setRGB3(poly, _pageBgColorStop1[color].r0, _pageBgColorStop1[color].g0,
-        _pageBgColorStop1[color].b0);
+    setRGB0(poly, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
+    setRGB1(poly, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
+    setRGB2(poly, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
+    setRGB3(poly, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
 
-    p = (void**)getScratchAddr(0);
-    AddPrim(p[1] + 0x1C, poly++);
-    p[0] = poly;
+    p = (u_long**)getScratchAddr(0);
+    AddPrim(p[1] + 7, poly++);
+    p[0] = (u_long*)poly;
     _insertTpage(7, 96);
 }
 
-static void func_8010435C()
+static void _fadeMenuUpper()
 {
-    int sp10[4];
-    int sp20[16];
-    D_80102C54_t* var_v0;
-    int j;
+    int widths[4];
+    int transparency[16];
+    _menuBgTransparencies_t* var_v0;
+    _menuBgTransparencies_t* var_v1;
     int i;
-    D_80102C54_t* var_v1;
+    int j;
     POLY_FT4* poly;
     TILE* tile;
 
-    *(D_80102C48_t*)sp10 = D_80102C48;
+    *(_menuBgChunkWidths_t*)widths = _menuBgChunkWidths;
 
-    var_v1 = (D_80102C54_t*)sp20;
-    var_v0 = D_80102C54;
+    var_v1 = (_menuBgTransparencies_t*)transparency;
+    var_v0 = _menuBgTransparencies;
 
     do {
         *var_v1++ = *var_v0++;
-    } while (var_v0 != (D_80102C54 + 4));
+    } while (var_v0 != (_menuBgTransparencies + 4));
 
     _drawPaginationArrow(arrowTypeUp);
     poly = *(void**)getScratchAddr(0);
@@ -680,13 +686,13 @@ static void func_8010435C()
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
             setPolyFT4(poly);
-            setXY4(poly, j << 7, i + 52, sp10[j] + (j << 7), i + 52, j << 7, i + 53,
-                sp10[j] + (j << 7), i + 53);
-            setUV4(poly, 0, i + 52, sp10[j], i + 52, 0, i + 53, sp10[j], i + 53);
+            setXY4(poly, j << 7, i + 52, widths[j] + (j << 7), i + 52, j << 7, i + 53,
+                widths[j] + (j << 7), i + 53);
+            setUV4(poly, 0, i + 52, widths[j], i + 52, 0, i + 53, widths[j], i + 53);
             setClut(poly, 768, 227);
             poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
             setSemiTrans(poly, 1);
-            setRGB0(poly, sp20[i], sp20[i], sp20[i]);
+            setRGB0(poly, transparency[i], transparency[i], transparency[i]);
             AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
         }
     }
@@ -697,33 +703,33 @@ static void func_8010435C()
         setSemiTrans(&tile[i], 1);
         setXY0(&tile[i], 0, i + 52);
         setWH(&tile[i], 320, 1);
-        setRGB0(&tile[i], sp20[i], sp20[i], sp20[i]);
+        setRGB0(&tile[i], transparency[i], transparency[i], transparency[i]);
         AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
     }
 
-    *(void**)getScratchAddr(0) = (void*)poly + 0x100;
+    *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
     _insertTpage(-7, 64);
 }
 
-static void func_80104620()
+static void _fadeMenuLower()
 {
-    int sp10[4];
-    int sp20[16];
-    D_80102C54_t* var_v0;
-    int j;
+    int widths[4];
+    int transparency[16];
+    _menuBgTransparencies_t* var_v0;
+    _menuBgTransparencies_t* var_v1;
     int i;
-    D_80102C54_t* var_v1;
+    int j;
     POLY_FT4* poly;
     TILE* tile;
 
-    *(D_80102C48_t*)sp10 = D_80102C48;
+    *(_menuBgChunkWidths_t*)widths = _menuBgChunkWidths;
 
-    var_v1 = (D_80102C54_t*)sp20;
-    var_v0 = D_80102C54;
+    var_v1 = (_menuBgTransparencies_t*)transparency;
+    var_v0 = _menuBgTransparencies;
 
     do {
         *var_v1++ = *var_v0++;
-    } while (var_v0 != (D_80102C54 + 4));
+    } while (var_v0 != (_menuBgTransparencies + 4));
 
     _drawPaginationArrow(arrowTypeDown);
 
@@ -732,14 +738,13 @@ static void func_80104620()
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
             setPolyFT4(poly);
-            setXY4(poly, j << 7, 0xBB - i, sp10[j] + (j << 7), 0xBB - i, j << 7, 0xBC - i,
-                sp10[j] + (j << 7), 0xBC - i);
-            setUV4(
-                poly, 0, -0x45 - i, sp10[j], -0x45 - i, 0, -0x44 - i, sp10[j], -0x44 - i);
+            setXY4(poly, j << 7, 187 - i, widths[j] + (j << 7), 187 - i, j << 7, 188 - i,
+                widths[j] + (j << 7), 188 - i);
+            setUV4(poly, 0, -69 - i, widths[j], -69 - i, 0, -68 - i, widths[j], -68 - i);
             setClut(poly, 768, 227);
             poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
             setSemiTrans(poly, 1);
-            setRGB0(poly, sp20[i], sp20[i], sp20[i]);
+            setRGB0(poly, transparency[i], transparency[i], transparency[i]);
             AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
         }
     }
@@ -751,11 +756,11 @@ static void func_80104620()
         setSemiTrans(&tile[i], 1);
         setXY0(&tile[i], 0, 0xBB - i);
         setWH(&tile[i], 320, 1);
-        setRGB0(&tile[i], sp20[i], sp20[i], sp20[i]);
+        setRGB0(&tile[i], transparency[i], transparency[i], transparency[i]);
         AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
     }
 
-    *(void**)getScratchAddr(0) = (void*)poly + 0x100;
+    *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
     _insertTpage(-7, 64);
 }
 
@@ -798,7 +803,7 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
     p[0] = (void*)poly;
 }
 
-static void func_80104A44()
+static void _drawContentLines()
 {
     short var_a1;
     short i;
@@ -809,39 +814,39 @@ static void func_80104A44()
     short s4;
     char* c;
 
-    if (D_80105254[2] <= 0) {
+    if (_helpText[2] <= 0) {
         return;
     }
 
     line = *(LINE_F2**)getScratchAddr(0);
 
-    var_v1 = D_80105254[0];
+    var_v1 = _helpText[0];
     if (var_v1 < 0) {
         var_v1 += 3;
     }
     var_v1 >>= 2;
 
-    var_v0 = D_80105254[1];
+    var_v0 = _helpText[1];
     if (var_v0 < 0) {
         var_v0 += 3;
     }
 
     var_v0 = var_v1 + (var_v0 >> 2);
-    var_s0 = (short*)&(D_80105254)[var_v0 + 4];
+    var_s0 = (short*)&(_helpText)[var_v0 + 4];
 
     s4 = *var_s0++;
 
     for (i = 0; i < s4; ++i) {
         var_a1 = 0;
         if (*var_s0 != 0) {
-            var_a1 = func_80104C30(var_s0);
+            var_a1 = _getBlinkState(var_s0);
         }
         var_s0 += 8;
         setLineF2(line);
         line->x0 = *var_s0++ + 13;
-        line->y0 = *var_s0++ + 55 - D_80105244 * 13;
+        line->y0 = *var_s0++ + 55 - _scrollPosition * 13;
         line->x1 = *var_s0++ + 13;
-        line->y1 = *var_s0++ + 55 - D_80105244 * 13;
+        line->y1 = *var_s0++ + 55 - _scrollPosition * 13;
         c = (char*)var_s0;
         setRGB0(line, c[0], c[1], c[2]);
         var_s0 += 2;
@@ -855,11 +860,11 @@ static void func_80104A44()
     *(void**)getScratchAddr(0) = line;
 }
 
-static short func_80104C30(short* arg0)
+static short _getBlinkState(short* arg0)
 {
     short new_var;
 
-    if (arg0[4] >= 0x10) {
+    if (arg0[4] >= 16) {
         return arg0[6];
     }
 
@@ -868,7 +873,7 @@ static short func_80104C30(short* arg0)
 
     if (++arg0[5] >= arg0[2]) {
         arg0[5] = 0;
-        if (++arg0[4] >= 0x10) {
+        if (++arg0[4] >= 16) {
             if (arg0[3] != 0) {
                 arg0[4] = 0;
             }
@@ -905,6 +910,6 @@ static void _drawControlsBg(int x, int y, int w, int h)
     p[0] = (u_long*)(poly + 1);
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C48);
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", _menuBgChunkWidths);
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C54);
+INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", _menuBgTransparencies);

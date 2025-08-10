@@ -1,3 +1,6 @@
+_helpFileCdFiles = 0x80102AF8;
+_pageBgColorStop0 = 0x80102BD8;
+_pageBgColorStop1 = 0x80102BE8;
 _menuReady = 0x80102EBC;
 _vsStringCpy = 0x80103C9C;
 _drawPaginationArrow = 0x80104908;

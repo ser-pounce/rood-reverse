@@ -32,7 +32,7 @@ enum arrowType_e {
 static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
 static int func_801030A4();
-static int func_80103110();
+static int vs_menuE_exec();
 static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void func_80104A44();
@@ -168,7 +168,7 @@ int func_80102EDC(char* state)
         *state += vs_mainmenu_ready();
         break;
     case 6:
-        D_80105228 = func_80103110();
+        D_80105228 = vs_menuE_exec();
         if (D_80105228 == 0) {
             break;
         }
@@ -214,14 +214,14 @@ static int func_801030A4()
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
 
-static vs_main_CdFile const D_80102AF8[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
+static vs_main_CdFile const _helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
     mkHfoPair(HELP03), mkHfoPair(HELP04), mkHfoPair(HELP05), mkHfoPair(HELP06),
     mkHfoPair(HELP07), mkHfoPair(HELP08), mkHfoPair(HELP09), mkHfoPair(HELP10),
     mkHfoPair(HELP11), mkHfoPair(HELP12), mkHfoPair(HELP13), mkHfoPair(HELP14) };
 
-static char const D_80102BD8[][4] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
+static P_CODE const _pageBgColorStop0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
     { 0x40, 0x30, 0x66, 0 }, { 0x40, 0x38, 0x20, 0 } };
-static char const D_80102BE8[][4] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
+static P_CODE const _pageBgColorStop1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);
@@ -234,7 +234,7 @@ INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C18);
 
 INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C20);
 
-int func_80103110()
+int vs_menuE_exec()
 {
     char charBuf[60];
     int temp_s2;
@@ -273,11 +273,11 @@ int func_80103110()
                 vs_main_freeHeapR(D_80105258);
             }
 
-            D_80105254 = vs_main_allocHeapR(D_80102AF8[temp_v0 * 2 + 1].size);
-            D_80105258 = vs_main_allocHeapR(D_80102AF8[temp_v0 * 2].size);
-            D_8010523C = vs_main_allocateCdQueueSlot(&D_80102AF8[temp_v0 * 2]);
+            D_80105254 = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2 + 1].size);
+            D_80105258 = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2].size);
+            D_8010523C = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2]);
             vs_main_cdEnqueue(D_8010523C, D_80105258);
-            D_80105238 = vs_main_allocateCdQueueSlot(&D_80102AF8[temp_v0 * 2 + 1]);
+            D_80105238 = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2 + 1]);
             vs_main_cdEnqueue(D_80105238, D_80105254);
         }
         D_800F1BC8.index = D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
@@ -382,7 +382,7 @@ int func_80103110()
             D_80105254 = NULL;
             break;
         }
-        func_80104204(8, 0x34, 0x136, 0x88, 0);
+        func_80104204(8, 52, 310, 136, 0);
         _pageArrowAnimState = (_pageArrowAnimState + 1) & 0xF;
         if (D_80105244 > 0) {
             func_8010435C();
@@ -631,19 +631,22 @@ static inline void _insertTpage(int primIndex, int tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
 }
 
-static void func_80104204(int arg0, int arg1, int arg2, int arg3, int arg4)
+static void func_80104204(int x, int y, int w, int h, int color)
 {
     POLY_G4* poly;
     void** p;
 
     poly = *(POLY_G4**)getScratchAddr(0);
     setPolyG4(poly);
-    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
-        (arg0 + arg2) - 1, (arg1 + arg3) - 1);
-    setRGB0(poly, D_80102BD8[arg4][0], D_80102BD8[arg4][1], D_80102BD8[arg4][2]);
-    setRGB1(poly, D_80102BE8[arg4][0], D_80102BE8[arg4][1], D_80102BE8[arg4][2]);
-    setRGB2(poly, D_80102BD8[arg4][0], D_80102BD8[arg4][1], D_80102BD8[arg4][2]);
-    setRGB3(poly, D_80102BE8[arg4][0], D_80102BE8[arg4][1], D_80102BE8[arg4][2]);
+    setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
+    setRGB0(poly, _pageBgColorStop0[color].r0, _pageBgColorStop0[color].g0,
+        _pageBgColorStop0[color].b0);
+    setRGB1(poly, _pageBgColorStop1[color].r0, _pageBgColorStop1[color].g0,
+        _pageBgColorStop1[color].b0);
+    setRGB2(poly, _pageBgColorStop0[color].r0, _pageBgColorStop0[color].g0,
+        _pageBgColorStop0[color].b0);
+    setRGB3(poly, _pageBgColorStop1[color].r0, _pageBgColorStop1[color].g0,
+        _pageBgColorStop1[color].b0);
 
     p = (void**)getScratchAddr(0);
     AddPrim(p[1] + 0x1C, poly++);

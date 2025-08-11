@@ -71,7 +71,8 @@ makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif
-build_deps := $(DUMPSXISO) $(VPYTHON) $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx)
+compilers  := $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx)
+build_deps := $(DUMPSXISO) $(VPYTHON) $(compilers)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
@@ -119,28 +120,32 @@ clean-all:
 	@$(GIT) reset --hard
 	@$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
+$(shell $(FIND) config src -type f -regex ".*\.\(yaml\|txt\|h\|c\|s\|inc\)\$$"): ;
+$(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
+
 .SECONDEXPANSION:
 
 ifeq ($(PERMUTER),)
-$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
-						config/%/Makefile Makefile data/% | $$(@D)/
+$(addprefix $(BUILD)/config/%/, link.d link.ld splat.log undefined_funcs_auto.txt undefined_syms_auto.txt) &: \
+	config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
+	config/%/Makefile data/% Makefile | $$(@D)/
 	@$(ECHO) Splitting $*
 	@$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	@$(TOUCH) $@
 endif
 
-$(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
+$(targets): $(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
 	@$(ECHO) Linking $@
 	@$(LD) $(LDFLAGS_BIN) $< -o $@
 	$(fixup)
 	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
 ifeq ($(filter objdiff,$(MAKECMDGOALS)),)
-$(BUILD)/data/%.elf: | $$(@D)/
+$(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
 	@$(ECHO) Linking $@
 	@$(LD) $(LDFLAGS) -o $@
 else
-$(BUILD)/data/%.elf:
+$(targets:=.elf): $(BUILD)/data/%.elf: ;
 endif
 
 %.o: %.s | $$(@D)/
@@ -211,7 +216,7 @@ $(VPYTHON):
 	@$(PYTHON) -m venv $(VPYDIR)
 	@$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser pandas
 
-tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
+$(compilers): tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 	@$(ECHO) Building GCC $*
 	@$(DOCKER) build -f $< --target export \
 		--output tools/old-gcc/build-gcc-$* tools/old-gcc/ $(if $(DEBUG),,2> /dev/null)
@@ -232,6 +237,7 @@ define pad
 endef
 
 # De-crud
+.INCLUDE_DIRS :=
 .SUFFIXES:
 Makefile $(makefiles) $(deps):: ;
 %: %,v

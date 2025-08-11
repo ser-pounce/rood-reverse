@@ -119,58 +119,60 @@ clean-all:
 	@$(GIT) reset --hard
 	@$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
+.SECONDEXPANSION:
+
 ifeq ($(PERMUTER),)
 $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
-						config/%/Makefile Makefile data/%
-	@$(call builder, Splitting $*)
+						config/%/Makefile Makefile data/% | $$(@D)/
+	@$(ECHO) Splitting $*
 	@$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	@$(TOUCH) $@
 endif
 
-$(BUILD)/data/%: $(BUILD)/data/%.elf	
-	$(call builder,Linking $@)
+$(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
+	@$(ECHO) Linking $@
 	@$(LD) $(LDFLAGS_BIN) $< -o $@
 	$(fixup)
 	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
 ifeq ($(filter objdiff,$(MAKECMDGOALS)),)
-$(BUILD)/data/%.elf:
-	$(call builder,Linking $@)
+$(BUILD)/data/%.elf: | $$(@D)/
+	@$(ECHO) Linking $@
 	@$(LD) $(LDFLAGS) -o $@
 else
 $(BUILD)/data/%.elf:
 endif
 
-%.o: %.s
-	$(call builder,Assembling $<)
+%.o: %.s | $$(@D)/
+	@$(ECHO) Assembling $<
 	@$(AS) $(ASFLAGS) -no-pad-sections -o $@ $<
 
-$(BUILD)/%.o: %.s
-	$(call builder,Assembling $<)
+$(BUILD)/%.o: %.s | $$(@D)/
+	@$(ECHO) Assembling $<
 	@$(AS) $(ASFLAGS) -o $@ $<
 
-$(BUILD)/%.o: %.c
-	$(call builder,Compiling $<)
+$(BUILD)/%.o: %.c | $$(@D)/
+	@$(ECHO) Compiling $<
 	@$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
 	@$(CAT) $@.d >> $(BUILD)/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
 %.segment.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
 %.segment.o: filename = $(word 1,$(subst ., ,$(@F)))
-%.segment.o: %.segment.bin
-	$(call builder,Converting $<)
+%.segment.o: %.segment.bin | $$(@D)/
+	@$(ECHO) Converting $<
 	@$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-%.segment.bin: %.segment.png
-	$(call builder,Converting $<)
+%.segment.bin: %.segment.png | $$(@D)/
+	@$(ECHO) Converting $<
 	@$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
 
 %rgba16Header.segment.o: OBJCOPYFLAGS += \
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 
-$(BUILD)/%.vsString: %.vsString.yaml
-	$(call builder,Converting $<)
+$(BUILD)/%.vsString: %.vsString.yaml | $$(@D)/
+	@$(ECHO) Converting $<
 	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
@@ -183,13 +185,13 @@ $(sourcedata) &: | disks/$(disk).bin $(build_deps)
 	@$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
-$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata)
-	$(call builder,Generating $@)
+$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(@D)/
+	@$(ECHO) Generating $@
 	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
 	@$(MV) $(disk)_LBA.txt $(BUILD)/config/
 
-$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt
-	$(call builder,Generating $@)
+$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(@D)/
+	@$(ECHO) Generating $@
 	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
 disks/$(disk).bin:
@@ -221,11 +223,9 @@ tools/.sysdeps:
 		$(sysdeps); false)
 	@$(TOUCH) $@
 
-
-define builder
-@$(ECHO) $1
-@$(MKDIR) $(MKDIRFLAGS) $(@D)
-endef
+.PRECIOUS: %/
+%/:
+	@$(MKDIR) $(MKDIRFLAGS) $(@D)
 
 define pad
 @$(TRUNCATE) -s $1 $@

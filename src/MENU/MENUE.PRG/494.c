@@ -66,8 +66,8 @@ extern char const D_80102C10[];
 extern char D_80102C18[];
 extern char D_80102C20[];
 
-extern _menuBgChunkWidths_t _menuBgChunkWidths;
-extern _menuBgTransparencies_t _menuBgTransparencies[];
+extern _menuBgChunkWidths_t const _menuBgChunkWidths;
+extern _menuBgTransparencies_t const _menuBgTransparencies[];
 extern u_short D_80104E54[];
 extern int D_80105228;
 extern char D_8010522C;
@@ -225,7 +225,35 @@ static int func_801030A4()
     return 1;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102818);
+// Unused data, seems to be a miscopying, perhaps through a header. 
+// The same data is defined and used in BATTLE.PRG
+static u_int const _[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
+    0xFFEA0007, 0x0001FFEF, 0x00010007, 0xFFE3FFF6, 0xFFE30014, 0x0001FFF6, 0x00010014,
+    0xFFE3FFED, 0xFFE30009, 0x0001FFED, 0x00010009, 0xFFF0FFF7, 0xFFF0000B, 0xFFFDFFF7,
+    0xFFFD000B, 0xFFF0FFF6, 0xFFF0000A, 0xFFFDFFF6, 0xFFFD000A, 0x10581040, 0x27582740,
+    0x103F1057, 0x273F2757, 0x11971179, 0x2F972F79, 0x11781196, 0x2F782F96, 0x11B411A0,
+    0x1EB41EA0, 0x119F11B3, 0x1E9F1EB3, 0xFFF0FFFE, 0xFFF0FFF2, 0xFFEB0000, 0xFFEBFFF9,
+    0xFFF50003, 0xFFF50003, 0x00400000, 0x000C0024, 0x00400000, 0x000C0018, 0x00400018,
+    0x000C0014, 0x0040002C, 0x000C0018, 0x004000E0, 0x000C0010, 0x004C00D4, 0x000C0020,
+    0x00400096, 0x000C001A, 0x00400044, 0x000C0028, 0x0040006C, 0x000C001E, 0x0040008A,
+    0x000C0032, 0x004000BC, 0x000C0024, 0x004C0000, 0x000C0034, 0x004C0034, 0x000C001E,
+    0x00580090, 0x000C003A, 0x004C0078, 0x000C003C, 0x004C00B4, 0x000C001E, 0x00580088,
+    0x000C0008, 0x00580068, 0x000C0020, 0x0058004C, 0x000C0028, 0x00580000, 0x000C0010,
+    0x00580014, 0x000C0014, 0x00580028, 0x000C001E, 0x00580048, 0x000C0020, 0x004C0066,
+    0x000C0010, 0x006400DC, 0x000C0012, 0x00340098, 0x000C001A, 0x002800B6, 0x000C001E,
+    0x002800D6, 0x000C0018, 0x00340098, 0x000C001C, 0x003400B4, 0x000C0028, 0x003400DC,
+    0x000C001E, 0x0040006C, 0x000C001E, 0x001C00D8, 0x000C001C, 0x00001F01, 0x001B1D02,
+    0x001B1E02, 0x001A1C02, 0x001B2002, 0x00050102, 0x01040102, 0x00050202, 0x01040202,
+    0x00050302, 0x01040302, 0x02000701, 0x02000801, 0x02000901, 0x02000A01, 0x02000B01,
+    0x02000C01, 0x03000D01, 0x03000E01, 0x00050F02, 0x01040F02, 0x02131002, 0x02141002,
+    0x02151002, 0x02161002, 0x02131102, 0x02141102, 0x02151102, 0x02161102, 0x00000000,
+    0x00000000, 0x00000000, 0x00D0D0D0, 0x00FFC040, 0x0030D0FF, 0x0060E0A0, 0x00A00048,
+    0x00080020, 0x00A8004C, 0x0008001C, 0x00B0004E, 0x0008001A, 0x00B8004E, 0x0008001A,
+    0x00C00052, 0x00080016, 0x00C80052, 0x00080016, 0x00D00052, 0x00080016, 0x00A00068,
+    0x0008001C, 0x00A80068, 0x0008001A, 0x00B00068, 0x0008001E, 0x00B80068, 0x00080024,
+    0x00C00068, 0x00080020, 0x00C80068, 0x00080012, 0x00A00090, 0x0008001E, 0x00A80090,
+    0x0008000E, 0x00B00090, 0x00080012, 0x00B80090, 0x0008001A, 0x00C00090, 0x0008001A,
+    0x00C80090, 0x00080016, 0x00D00090, 0x00080024 };
 
 static vs_main_CdFile const _helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
     mkHfoPair(HELP03), mkHfoPair(HELP04), mkHfoPair(HELP05), mkHfoPair(HELP06),
@@ -236,16 +264,6 @@ static P_CODE const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C,
     { 0x40, 0x30, 0x66, 0 }, { 0x40, 0x38, 0x20, 0 } };
 static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102BF8);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C08);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C10);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C18);
-
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", D_80102C20);
 
 int vs_menuE_exec()
 {
@@ -377,15 +395,15 @@ int vs_menuE_exec()
         }
         s0 = (u_long**)getScratchAddr(0);
         func_800FFC68(1, 8, 0x10, s0[1] + 6);
-        func_800C6540(D_80102BF8, 0x12001C, 0x808080, s0[1] + 6);
+        func_800C6540("TURN    PAGE", 0x12001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x12, 0x60, 0xC);
         func_800FFC68(2, 8, 0x22, s0[1] + 6);
-        func_800C6540(D_80102C08, 0x24001C, 0x808080, s0[1] + 6);
+        func_800C6540("MENU", 0x24001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x24, 0x40, 0xC);
-        func_800C6540(D_80102C10, 0xC400D8, 0x808080, s0[1] + 7);
-        sprintf(charBuf, D_80102C18, var_s1 + 1);
+        func_800C6540("PAGE", 0xC400D8, 0x808080, s0[1] + 7);
+        sprintf(charBuf, "#%d/", var_s1 + 1);
         func_800C6540(charBuf, 0xC40118, 0x808080, s0[1] + 7);
-        sprintf(charBuf, D_80102C20, temp_s2 + 1);
+        sprintf(charBuf, "#%d", temp_s2 + 1);
         func_800C6540(charBuf, 0xC40130, 0x808080, s0[1] + 7);
         vs_battle_manualDisplayState
             .scrollPositions[vs_battle_manualDisplayState.currentManual]
@@ -650,7 +668,7 @@ static inline void _insertTpage(int primIndex, short tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
 }
 
-static inline int min(int arg0, int arg1)
+static inline int _min(int arg0, int arg1)
 {
     if (arg0 >= arg1) {
         return arg1;
@@ -658,7 +676,7 @@ static inline int min(int arg0, int arg1)
     return arg0;
 }
 
-static inline int add_int(int arg0, int arg1) { return (arg0 + arg1); }
+static inline int _add_int(int arg0, int arg1) { return (arg0 + arg1); }
 
 static void func_80103E6C(short* arg0)
 {
@@ -698,13 +716,13 @@ static void func_80103E6C(short* arg0)
         }
 
         for (i = 0; i < height; i += 16) {
-            spriteH = min(height - i, 16);
+            spriteH = _min(height - i, 16);
 
             for (j = 0; j < width; ++arg0, j += tileStride) {
-                spriteW = min(width - j, tileStride);
+                spriteW = _min(width - j, tileStride);
                 spriteX = 0x0D;
                 spriteX = posX + (j + spriteX);
-                spriteY = add_int(posY, i + 0x37);
+                spriteY = _add_int(posY, i + 0x37);
                 spriteY -= _scrollPosition * 0xD;
 
                 if ((spriteY >= 0x27) && (spriteY < 0xB9)) {
@@ -764,7 +782,7 @@ static void _fadeMenuUpper()
 {
     int widths[4];
     int transparency[16];
-    _menuBgTransparencies_t* var_v0;
+    _menuBgTransparencies_t const* var_v0;
     _menuBgTransparencies_t* var_v1;
     int i;
     int j;
@@ -815,7 +833,7 @@ static void _fadeMenuLower()
 {
     int widths[4];
     int transparency[16];
-    _menuBgTransparencies_t* var_v0;
+    _menuBgTransparencies_t const* var_v0;
     _menuBgTransparencies_t* var_v1;
     int i;
     int j;
@@ -1010,6 +1028,13 @@ static void _drawControlsBg(int x, int y, int w, int h)
     p[0] = (u_long*)(poly + 1);
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", _menuBgChunkWidths);
+_menuBgChunkWidths_t const _menuBgChunkWidths = {
+    128, 128, 64
+};
 
-INCLUDE_RODATA("build/src/MENU/MENUE.PRG/nonmatchings/494", _menuBgTransparencies);
+_menuBgTransparencies_t const _menuBgTransparencies[] = {
+    { 128, 115, 121, 88 },
+    { 76, 64, 53, 42 },
+    { 33, 24, 17, 11 },
+    { 6, 3, 1, 0 }
+};

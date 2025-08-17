@@ -30,6 +30,17 @@ enum arrowType_e {
     arrowTypeDown,
 };
 
+typedef struct {
+    short enabled;
+    u_short stateBits;
+    short stateDuration;
+    short repeat;
+    short currentStateBit;
+    short frameCounter;
+    short state;
+    short _;
+} BlinkState_t;
+
 static char* _vsStringCpy(char* arg0, char* arg1);
 static void func_80102CD8(int, int, char**);
 static int func_801030A4();
@@ -37,7 +48,7 @@ static int vs_menuE_exec();
 static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void _drawContentLines();
-static short _getBlinkState(short* arg0);
+static short _getBlinkState(BlinkState_t* arg0);
 static int func_8010391C(int arg0);
 static void func_80103A24(u_long* arg0, int arg1);
 static void func_80103AD8(u_long* arg0, int arg1);
@@ -608,9 +619,7 @@ static void func_80103CF0()
     q[0] = area;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUE.PRG/nonmatchings/494", func_80103E6C);
-
-static inline void _insertTpage(int primIndex, int tpage)
+static inline void _insertTpage(int primIndex, short tpage)
 {
     __asm__("li         $t3, 0x1F800000;"
             "sll        $t0, %0, 2;"
@@ -619,8 +628,8 @@ static inline void _insertTpage(int primIndex, int tpage)
             "addu       $t0, $t4;"
             "lw         $t1, ($t0);"
             "li         $t4, 0xE1000000;"
-            "and        $t6, %1, 0x1FF;" // texpage
-            "or         $t4, 0x200;" // dtd
+            "and        $t6, %1, 0x1FF;"
+            "or         $t4, 0x200;"
             "or         $t4, $t6;"
             "sw         $t4, 4($t7);"
             "sw         $zero, 8($t7);"
@@ -639,6 +648,97 @@ static inline void _insertTpage(int primIndex, int tpage)
             :
             : "r"(primIndex), "r"(tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
+}
+
+static inline int min(int arg0, int arg1)
+{
+    if (arg0 >= arg1) {
+        return arg1;
+    }
+    return arg0;
+}
+
+static inline int add_int(int arg0, int arg1) { return (arg0 + arg1); }
+
+static void func_80103E6C(short* arg0)
+{
+    short posX;
+    short posY;
+    short width;
+    short height;
+    short tileMode;
+    short clutPacked;
+    int spriteW;
+    int spriteH;
+    int tileStride;
+    int spriteX;
+    int spriteY;
+    int j;
+    int i;
+    SPRT* sprite;
+    u_long** scratch;
+    short tPage;
+
+    if ((*arg0 == 0) || ((_getBlinkState((BlinkState_t*)arg0) << 0x10) == 0)) {
+        arg0 += 8;
+        posX = *arg0++;
+        posY = *arg0++;
+        width = *arg0++;
+        height = *arg0++;
+        ++arg0;
+        tileMode = *arg0++;
+        clutPacked = *arg0++;
+
+        clutPacked = ((((clutPacked % 16) << 4) + 0x300) >> 4)
+            | (((clutPacked / 16) + 0x1F0) << 6);
+
+        tileStride = 8;
+        if (tileMode == 16) {
+            tileStride = 16;
+        }
+
+        for (i = 0; i < height; i += 16) {
+            spriteH = min(height - i, 16);
+
+            for (j = 0; j < width; ++arg0, j += tileStride) {
+                spriteW = min(width - j, tileStride);
+                spriteX = 0x0D;
+                spriteX = posX + (j + spriteX);
+                spriteY = add_int(posY, i + 0x37);
+                spriteY -= _scrollPosition * 0xD;
+
+                if ((spriteY >= 0x27) && (spriteY < 0xB9)) {
+                    int spriteV0;
+                    int spriteU0;
+                    sprite = *((void**)0x1F800000);
+                    setSprt(sprite);
+                    setShadeTex(sprite, 1);
+                    sprite->clut = clutPacked;
+                    setXY0(sprite, spriteX, spriteY);
+
+                    spriteU0 = (*arg0 / 16);
+                    tPage = spriteU0;
+                    tPage = tPage % 3 + 0x1D;
+
+                    if (tileMode == 0x10) {
+                        sprite->u0 = ((*arg0 - (spriteU0 << 4)) << 0x10) >> 0xC;
+                    } else {
+                        tPage |= 0x80;
+                        sprite->u0 = ((*arg0 - (spriteU0 << 4)) << 0x10) >> 0xD;
+                    }
+
+                    spriteV0 = (*arg0 / 48);
+                    sprite->v0 = (spriteV0 << 4);
+                    setWH(sprite, spriteW, spriteH);
+
+                    scratch = (void*)getScratchAddr(0);
+                    AddPrim(scratch[1], sprite++);
+                    scratch[0] = (void*)sprite;
+                    _insertTpage(0, tPage);
+                }
+            }
+        }
+    }
 }
 
 static void _setPageBg(int x, int y, int w, int h, int color)
@@ -839,7 +939,7 @@ static void _drawContentLines()
     for (i = 0; i < s4; ++i) {
         var_a1 = 0;
         if (*var_s0 != 0) {
-            var_a1 = _getBlinkState(var_s0);
+            var_a1 = _getBlinkState((BlinkState_t*)var_s0);
         }
         var_s0 += 8;
         setLineF2(line);
@@ -860,26 +960,26 @@ static void _drawContentLines()
     *(void**)getScratchAddr(0) = line;
 }
 
-static short _getBlinkState(short* arg0)
+static short _getBlinkState(BlinkState_t* state)
 {
-    short new_var;
+    short nextState;
 
-    if (arg0[4] >= 16) {
-        return arg0[6];
+    if (state->currentStateBit >= 16) {
+        return state->state;
     }
 
-    new_var = (((u_short)arg0[1]) >> arg0[4]);
-    new_var = (new_var & 1);
+    nextState = state->stateBits >> state->currentStateBit;
+    nextState = nextState & 1;
 
-    if (++arg0[5] >= arg0[2]) {
-        arg0[5] = 0;
-        if (++arg0[4] >= 16) {
-            if (arg0[3] != 0) {
-                arg0[4] = 0;
+    if ((++state->frameCounter) >= state->stateDuration) {
+        state->frameCounter = 0;
+        if ((++state->currentStateBit) >= 16) {
+            if (state->repeat != 0) {
+                state->currentStateBit = 0;
             }
         }
     }
-    return arg0[6] = new_var ^ 1;
+    return state->state = nextState ^ 1;
 }
 
 static void _drawControlsBg(int x, int y, int w, int h)

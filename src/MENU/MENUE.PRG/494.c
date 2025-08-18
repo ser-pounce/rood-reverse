@@ -42,26 +42,22 @@ typedef struct {
 } BlinkState_t;
 
 static char* _vsStringCpy(char* arg0, char* arg1);
-static void func_80102CD8(int, int, char**);
-static int func_801030A4();
-static int vs_menuE_exec();
+static int _initState();
+static int _showMenu();
 static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void _drawContentLines();
 static short _getBlinkState(BlinkState_t* arg0);
-static int func_8010391C(int arg0);
-static void func_80103A24(u_long* arg0, int arg1);
-static void func_80103AD8(u_long* arg0, int arg1);
-static int func_80103B6C();
+static int _topMenu(int arg0);
+static void _copySprites(u_long const* arg0, int arg1);
+static void _copyCluts(u_long* arg0, int arg1);
+static int _calculateContentEnd();
 static void func_80103BC8();
 static void func_80103CF0();
 static void _setPageBg(int arg0, int arg1, int arg2, int arg3, int arg4);
 static void _fadeMenuUpper();
 static void _fadeMenuLower();
 static void _drawControlsBg(int x, int y, int w, int h);
-
-extern _menuBgChunkWidths_t const _menuBgChunkWidths;
-extern _menuBgTransparencies_t const _menuBgTransparencies[];
 
 static void func_80102C94(int arg0)
 {
@@ -74,7 +70,7 @@ static void func_80102C94(int arg0)
     D_801022D6 = 1;
 }
 
-static void func_80102CD8(int rowCount, int arg1, char** strings)
+static void _setMenuRows(int rowCount, int highlightedRow, char** strings)
 {
     int rowTypes[rowCount];
     int i;
@@ -86,15 +82,15 @@ static void func_80102CD8(int rowCount, int arg1, char** strings)
 
     rowTypes[rowCount - 1] |= 4;
 
-    if ((rowCount < 9) || (arg1 < 8)) {
-        D_800F4EE8.unk0[4] = arg1;
+    if ((rowCount < 9) || (highlightedRow < 8)) {
+        D_800F4EE8.unk0[4] = highlightedRow;
         D_800F4EE8.unk0[5] = 0;
-    } else if (arg1 >= (rowCount - 8)) {
-        D_800F4EE8.unk0[4] = arg1 - (rowCount - 9);
+    } else if (highlightedRow >= (rowCount - 8)) {
+        D_800F4EE8.unk0[4] = highlightedRow - (rowCount - 9);
         D_800F4EE8.unk0[5] = rowCount - 9;
     } else {
         D_800F4EE8.unk0[4] = 4;
-        D_800F4EE8.unk0[5] = arg1 - 4;
+        D_800F4EE8.unk0[5] = highlightedRow - 4;
     }
     cursor = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
@@ -102,7 +98,7 @@ static void func_80102CD8(int rowCount, int arg1, char** strings)
     vs_main_settings.cursorMemory = cursor;
 }
 
-static int func_80102DF0()
+static int _getSelectedRow()
 {
     int row;
 
@@ -139,10 +135,10 @@ static u_short D_80104E54[] = {
 // Junk?
 static u_short _0 = 0x0380;
 
-int func_80102EDC(char* state)
+int vs_menuE_exec(char* state)
 {
-    static int D_80105228 = 0;
-    static char D_8010522C = 0;
+    static int menuResult = 0;
+    static char init = 0;
     static char D_8010522D = 0;
     static short _2 = 0x54;
 
@@ -150,16 +146,16 @@ int func_80102EDC(char* state)
     case 3:
         func_800FFB68(1);
         D_8010522D = 8;
-        D_8010522C = 0;
+        init = 0;
         *state = 4;
         break;
     case 4:
-        if (D_8010522C == 0) {
-            D_8010522C = func_801030A4();
+        if (init == 0) {
+            init = _initState();
         }
         if (D_8010522D != 0) {
             D_8010522D -= 1;
-        } else if (D_8010522C != 0) {
+        } else if (init != 0) {
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
@@ -170,8 +166,8 @@ int func_80102EDC(char* state)
         *state += vs_mainmenu_ready();
         break;
     case 6:
-        D_80105228 = vs_menuE_exec();
-        if (D_80105228 == 0) {
+        menuResult = _showMenu();
+        if (menuResult == 0) {
             break;
         }
         func_80100414(-4, 0x80);
@@ -190,7 +186,7 @@ int func_80102EDC(char* state)
         if (D_801022D8 != 0) {
             break;
         }
-        if (D_80105228 == 2) {
+        if (menuResult == 2) {
             vs_battle_menuState.currentState = 0xA;
         }
         D_801022D6 = 0;
@@ -201,11 +197,12 @@ int func_80102EDC(char* state)
 }
 
 // Likely file split but...meh
-static int D_80105230;
-static int D_80105234;
+
+static int _topMenu_state;
+static int _selectedRow;
 static vs_main_CdQueueSlot* _helpTextCdQueue;
 static vs_main_CdQueueSlot* _helpAssetsCdQueue;
-static int D_80105240;
+static int _showMenuState;
 static int _scrollPosition;
 static int _contentEnd;
 static int _pageArrowAnimState;
@@ -213,14 +210,14 @@ static int D_80105250;
 static int* _helpText;
 static u_long* _helpAssets;
 
-static int func_801030A4()
+static int _initState()
 {
     if (D_80060021 == 0) {
         vs_main_bzero(
             &vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
     }
     func_8007DFF0(0x1D, 3, 5);
-    D_80105240 = 0;
+    _showMenuState = 0;
     _scrollPosition = 0;
     _contentEnd = 0;
     _helpText = 0;
@@ -230,7 +227,7 @@ static int func_801030A4()
 
 // Unused data, seems to be a miscopying, perhaps through a header.
 // The same data is defined and used in BATTLE.PRG
-static u_int const _1[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
+static u_int const _[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
     0xFFEA0007, 0x0001FFEF, 0x00010007, 0xFFE3FFF6, 0xFFE30014, 0x0001FFF6, 0x00010014,
     0xFFE3FFED, 0xFFE30009, 0x0001FFED, 0x00010009, 0xFFF0FFF7, 0xFFF0000B, 0xFFFDFFF7,
     0xFFFD000B, 0xFFF0FFF6, 0xFFF0000A, 0xFFFDFFF6, 0xFFFD000A, 0x10581040, 0x27582740,
@@ -268,7 +265,7 @@ static P_CODE const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C,
 static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
 
-int vs_menuE_exec()
+static int _showMenu()
 {
     char charBuf[60];
     int temp_s2;
@@ -277,29 +274,29 @@ int vs_menuE_exec()
     u_long** s0;
     int s1;
 
-    switch (D_80105240) {
+    switch (_showMenuState) {
     case 0:
         func_80100414(0x7FE, 0x80);
-        ++D_80105240;
+        ++_showMenuState;
         break;
     case 1:
         func_800FFBC8();
-        func_8010391C(1);
-        ++D_80105240;
+        _topMenu(1);
+        ++_showMenuState;
         break;
     case 2:
-        temp_v0 = func_8010391C(0);
+        temp_v0 = _topMenu(0);
         if (temp_v0 == -1) {
             break;
         }
         if (temp_v0 < 0) {
             if (temp_v0 == -3) {
-                D_80105240 = 7;
+                _showMenuState = 7;
             } else {
-                D_80105240 = 6;
+                _showMenuState = 6;
             }
         } else {
-            D_80105240 = 3;
+            _showMenuState = 3;
             if (_helpText != NULL) {
                 vs_main_freeHeapR(_helpText);
             }
@@ -326,13 +323,13 @@ int vs_menuE_exec()
             break;
         }
         vs_main_freeCdQueueSlot(_helpAssetsCdQueue);
-        func_80103A24(_helpAssets + 2, _helpAssets[0]);
-        func_80103AD8(_helpAssets + ((_helpAssets[0] << 5) + 2), _helpAssets[1]);
+        _copySprites(_helpAssets + 2, _helpAssets[0]);
+        _copyCluts(_helpAssets + ((_helpAssets[0] << 5) + 2), _helpAssets[1]);
         if (_helpAssets != NULL) {
             vs_main_freeHeapR(_helpAssets);
         }
         _helpAssets = NULL;
-        D_80105240 = 4;
+        _showMenuState = 4;
         break;
     case 4:
         if (_helpTextCdQueue->state != vs_main_CdQueueStateLoaded) {
@@ -343,18 +340,18 @@ int vs_menuE_exec()
         _scrollPosition
             = vs_battle_manualDisplayState
                   .scrollPositions[vs_battle_manualDisplayState.currentManual];
-        _contentEnd = func_80103B6C();
-        D_80105240 = 5;
+        _contentEnd = _calculateContentEnd();
+        _showMenuState = 5;
         D_80105250 = 0;
         break;
     case 5:
         var_s1 = _scrollPosition / 10;
         temp_s2 = _contentEnd / 10;
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
-            D_80105240 = 1;
+            _showMenuState = 1;
         }
         if (vs_main_buttonsPressed.all & PADRup) {
-            D_80105240 = 7;
+            _showMenuState = 7;
         }
         if (vs_main_buttonsPressed.all & PADstart) {
             var_s1 = 0;
@@ -411,7 +408,7 @@ int vs_menuE_exec()
         vs_battle_manualDisplayState
             .scrollPositions[vs_battle_manualDisplayState.currentManual]
             = _scrollPosition;
-        if (D_80105240 != 5) {
+        if (_showMenuState != 5) {
             if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             } else {
@@ -461,77 +458,71 @@ int vs_menuE_exec()
     return 0;
 }
 
-static int func_8010391C(int arg0)
+static int _topMenu(int init)
 {
-    char* sp10[28];
+    enum state { initRows, selectRow };
+
+    char* strings[28];
     int i;
 
-    if (arg0 != 0) {
-        D_80105230 = 0;
-        D_80105234 = 0;
+    if (init != 0) {
+        _topMenu_state = 0;
+        _selectedRow = 0;
     }
 
-    switch (D_80105230) {
-    case 0:
+    switch (_topMenu_state) {
+    case initRows:
         for (i = 0; i < 14; ++i) {
-            sp10[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
-            sp10[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
+            strings[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
+            strings[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
         }
-        func_80102CD8(0xE, vs_battle_manualDisplayState.currentManual, sp10);
-        ++D_80105230;
+        _setMenuRows(14, vs_battle_manualDisplayState.currentManual, strings);
+        ++_topMenu_state;
         break;
-    case 1:
-        D_80105234 = func_80102DF0();
-        if (D_80105234 != -1) {
-            return D_80105234;
+    case selectRow:
+        _selectedRow = _getSelectedRow();
+        if (_selectedRow != -1) {
+            return _selectedRow;
         }
         break;
     }
     return -1;
 }
 
-static void func_80103A24(u_long* arg0, int arg1)
+static void _copySprites(u_long const* buffer, int count)
 {
     RECT rect;
-    int var_s0;
+    int i;
 
-    var_s0 = 0;
+    i = 0;
     rect.w = 4;
     rect.h = 16;
 
-    for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
-        rect.x = ((var_s0 % 48) * 4) + 832;
-        rect.y = ((var_s0 / 48) * 16) + 256;
-        LoadImage2(&rect, arg0);
-        arg0 += 32;
+    for (i = 0; i < count; ++i) {
+        rect.x = (i % 48) * 4 + 832;
+        rect.y = (i / 48) * 16 + 256;
+        LoadImage2(&rect, (u_long*)buffer);
+        buffer += 4 * 16 / 2;
     }
 }
 
-static void func_80103AD8(u_long* arg0, int arg1)
+static void _copyCluts(u_long* buffer, int count)
 {
     RECT rect;
-    int temp_v0;
-    int var_s0;
-    int var_v0;
+    int i;
 
-    var_s0 = 0;
-    rect.w = 0x10;
+    rect.w = 16;
     rect.h = 1;
 
-    for (var_s0 = 0; var_s0 < arg1; ++var_s0) {
-        var_v0 = var_s0;
-        if (var_s0 < 0) {
-            var_v0 += 0xF;
-        }
-        temp_v0 = var_v0 >> 4;
-        rect.x = ((var_s0 - (temp_v0 * 16)) * 16) + 768;
-        rect.y = temp_v0 + 0x1F0;
-        LoadImage2(&rect, arg0);
-        arg0 += 8;
+    for (i = 0; i < count; ++i) {
+        rect.x = (i % 16) * 16 + 768;
+        rect.y = i / 16 + 496;
+        LoadImage2(&rect, buffer);
+        buffer += 8;
     }
 }
 
-static int func_80103B6C()
+static int _calculateContentEnd()
 {
     int temp_v1;
     int var_a0;
@@ -780,6 +771,11 @@ static void _setPageBg(int x, int y, int w, int h, int color)
     p[0] = (u_long*)poly;
     _insertTpage(7, 96);
 }
+
+static _menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
+
+static _menuBgTransparencies_t const _menuBgTransparencies[]
+    = { { 128, 115, 121, 88 }, { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };
 
 static void _fadeMenuUpper()
 {
@@ -1030,8 +1026,3 @@ static void _drawControlsBg(int x, int y, int w, int h)
     AddPrim(p[1] + 7, poly);
     p[0] = (u_long*)(poly + 1);
 }
-
-_menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
-
-_menuBgTransparencies_t const _menuBgTransparencies[]
-    = { { 128, 115, 121, 88 }, { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };

@@ -17,5 +17,4 @@ int vs_mainmenu_getSelectedRow();
 void func_80100A5C();
 void func_80101118(int);
 
-extern char D_80060021;
 extern char D_801022D4;

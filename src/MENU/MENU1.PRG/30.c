@@ -3,7 +3,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../../build/src/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "../../assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "../../assets/MENU/MENU1.PRG/strings.h"
 
 static void _setArtCost(int art)

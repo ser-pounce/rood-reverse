@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from tools.etc.vsString_yaml import read_yaml, write_data, write_header
+from tools.etc.vsString_yaml import *
 
 
 def main():
@@ -14,6 +14,7 @@ def main():
 
     strings, offsets, enums = read_yaml(yaml_path)
     write_data(data_path, offsets, strings)
+    write_binary(data_path.with_suffix(data_path.suffix + '.bin'), offsets, strings)
     write_header(header_path, header_path.stem, enums)
 
 

@@ -184,6 +184,10 @@ $(BUILD)/%.vsString: $(BUILD)/%.vsString.yaml %.yaml | $$(@D)/
 	@$(ECHO) Converting $<
 	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
 
+%.vsString.o: %.vsString
+	@$(ECHO) Assembling $@
+	@$(OBJCOPY) $(OBJCOPYFLAGS) $<.bin $@
+
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	@$(IMPORT) $(IMPORTFLAGS) $^
 

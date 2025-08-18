@@ -48,5 +48,8 @@ segments:
       - [0x82DC8, .data, menuLbas]
       - [0x82E08, .data, gimLbas]
       - [0x82F08, data]
+      - [0x831DC, vsStringTable, menuStrings]
+      - [0x833B6, data]
+      - [0x833B8, data]
       - [0x89058, bss]
   - [0x8D124]

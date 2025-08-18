@@ -24,6 +24,6 @@ segments:
     subsegments:
       - [0x0, .rodata, 260]
       - [0x260, c]
-      - [0x7AB4, .data, 260]
+      - { start: 0x81B0, type: vsStringTable, name: container, linker_entry: false }
       - [0x8240, .bss, 260]
   - [0x88AE]

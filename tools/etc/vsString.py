@@ -1,4 +1,5 @@
 import ctypes
+import yaml
 
 
 class vsStringBase():
@@ -102,3 +103,43 @@ def encode(s):
     if len(result) % 2 == 1:
         result.append(0xEB)
     return bytes(result)
+
+
+class LiteralString(str): 
+    pass
+
+def literal_representer(dumper, data):
+    return dumper.represent_scalar("tag:yaml.org,2002:str", str(data), style="|")
+
+yaml.add_representer(LiteralString, literal_representer)
+
+
+def write_table(data, keys, out_path):
+    count = int.from_bytes(
+        data[0:2], "little"
+    )
+
+    offsets = [
+        int.from_bytes(
+            data[2*i : 2*i + 2],
+            "little"
+        )
+        for i in range(count)
+    ]
+
+    with open(keys, "r", encoding="utf-8") as f:
+        keys = yaml.safe_load(f)
+
+    keys = list(keys.keys())
+
+    strings = [
+        LiteralString(s) if "\n" in (s := decode(
+            data[off*2 : ]
+        )) else s
+        for off in offsets
+    ]
+
+    result = dict(zip(keys, strings))
+
+    with open(out_path, "w", encoding="utf-8") as f:
+        yaml.dump(result, f, allow_unicode=True, sort_keys=False, width=1000)

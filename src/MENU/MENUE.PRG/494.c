@@ -220,7 +220,7 @@ static int _initState()
     _showMenuState = 0;
     _scrollPosition = 0;
     _contentEnd = 0;
-    _helpText = 0;
+    _helpText = NULL;
     _helpAssets = NULL;
     return 1;
 }
@@ -269,10 +269,10 @@ static int _showMenu()
 {
     char charBuf[60];
     int temp_s2;
-    int temp_v0;
+    int selectedRow;
     int var_s1;
     u_long** s0;
-    int s1;
+    int cdState;
 
     switch (_showMenuState) {
     case 0:
@@ -285,12 +285,12 @@ static int _showMenu()
         ++_showMenuState;
         break;
     case 2:
-        temp_v0 = _topMenu(0);
-        if (temp_v0 == -1) {
+        selectedRow = _topMenu(0);
+        if (selectedRow == -1) {
             break;
         }
-        if (temp_v0 < 0) {
-            if (temp_v0 == -3) {
+        if (selectedRow < 0) {
+            if (selectedRow == -3) {
                 _showMenuState = 7;
             } else {
                 _showMenuState = 6;
@@ -304,13 +304,13 @@ static int _showMenu()
                 vs_main_freeHeapR(_helpAssets);
             }
 
-            _helpText = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2 + 1].size);
-            _helpAssets = vs_main_allocHeapR(_helpFileCdFiles[temp_v0 * 2].size);
+            _helpText = vs_main_allocHeapR(_helpFileCdFiles[selectedRow * 2 + 1].size);
+            _helpAssets = vs_main_allocHeapR(_helpFileCdFiles[selectedRow * 2].size);
             _helpAssetsCdQueue
-                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2]);
+                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2]);
             vs_main_cdEnqueue(_helpAssetsCdQueue, _helpAssets);
             _helpTextCdQueue
-                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[temp_v0 * 2 + 1]);
+                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2 + 1]);
             vs_main_cdEnqueue(_helpTextCdQueue, _helpText);
         }
         vs_battle_manualDisplayState.currentManual
@@ -318,8 +318,8 @@ static int _showMenu()
         func_800FFBA8();
         break;
     case 3:
-        s1 = _helpAssetsCdQueue->state;
-        if (s1 != vs_main_CdQueueStateLoaded) {
+        cdState = _helpAssetsCdQueue->state;
+        if (cdState != vs_main_CdQueueStateLoaded) {
             break;
         }
         vs_main_freeCdQueueSlot(_helpAssetsCdQueue);
@@ -597,7 +597,7 @@ static void func_80103CF0()
     int var_v0;
     u_short* temp_s2;
     void** q;
-    void** p = (void**)getScratchAddr(0);
+    void** p = (void**) getScratchAddr(0);
 
     area = p[0];
     SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
@@ -624,7 +624,7 @@ static void func_80103CF0()
     rect.y = 55;
     rect.h = 130;
 
-    q = (void**)getScratchAddr(0);
+    q = (void**) getScratchAddr(0);
     area = q[0];
     SetDrawArea(area, &rect);
     AddPrim(q[1], area++);
@@ -633,30 +633,34 @@ static void func_80103CF0()
 
 static inline void _insertTpage(int primIndex, short tpage)
 {
-    __asm__("li         $t3, 0x1F800000;"
+    __asm__("scratch = $t3;"
+            "tpageOp = $t4;"
+            "addrMask = $t5;"
+            "tpage = $t6;"
+            "li         scratch, 0x1F800000;"
             "sll        $t0, %0, 2;"
-            "lw         $t4, 4($t3);"
-            "lw         $t7, ($t3);"
+            "lw         $t4, 4(scratch);"
+            "lw         $t7, (scratch);"
             "addu       $t0, $t4;"
             "lw         $t1, ($t0);"
-            "li         $t4, 0xE1000000;"
-            "and        $t6, %1, 0x1FF;"
-            "or         $t4, 0x200;"
-            "or         $t4, $t6;"
-            "sw         $t4, 4($t7);"
+            "li         tpageOp, 0xE1000000;"
+            "and        tpage, %1, 0x1FF;"
+            "or         tpageOp, 0x200;"
+            "or         tpageOp, tpage;"
+            "sw         tpageOp, 4($t7);"
             "sw         $zero, 8($t7);"
-            "li         $t5, 0xFFFFFF;"
+            "li         addrMask, 0xFFFFFF;"
             "li         $t4, 0x2000000;"
             "li         $t6, 0xFF000000;"
-            "and        $t2, $t1, $t5;"
+            "and        $t2, $t1, addrMask;"
             "or         $t4, $t2;"
             "sw         $t4, ($t7);"
             "and        $t2, $t1, $t6;"
-            "and        $t4, $t7, $t5;"
+            "and        $t4, $t7, addrMask;"
             "or         $t4, $t2;"
             "sw         $t4, ($t0);"
             "addu       $t2, $t7, 0xC;"
-            "sw         $t2, ($t3);"
+            "sw         $t2, (scratch);"
             :
             : "r"(primIndex), "r"(tpage)
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
@@ -915,7 +919,7 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
     } else {
         setClut(poly, 912, 223);
     }
-    p = (u_long**)getScratchAddr(0);
+    p = (u_long**) getScratchAddr(0);
     AddPrim(p[1] - 7, poly++);
     p[0] = (void*)poly;
 }
@@ -935,7 +939,7 @@ static void _drawContentLines()
         return;
     }
 
-    line = *(LINE_F2**)getScratchAddr(0);
+    line = *(LINE_F2**) getScratchAddr(0);
 
     var_v1 = _helpText[0];
     if (var_v1 < 0) {

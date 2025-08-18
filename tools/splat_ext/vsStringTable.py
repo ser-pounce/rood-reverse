@@ -17,7 +17,7 @@ yaml.add_representer(LiteralString, literal_representer)
 class PSXSegVsStringTable(Segment):
 
     def out_path(self) -> Path:
-        return options.opts.asset_path / self.dir / f"{self.name}.vsString.segment.yaml"
+        return options.opts.asset_path / self.dir / f"{self.name}.vsString.yaml"
     
     def make_path(self) -> Path:
         path = self.out_path()

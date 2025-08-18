@@ -17,6 +17,7 @@ ECHO     := echo
 WHICH    := which
 MKDIR    := mkdir
 MV       := mv
+CP       := cp
 FIND     := find
 TRUNCATE := truncate
 
@@ -175,10 +176,6 @@ $(BUILD)/%.o: %.c | $$(@D)/
 %.rgba16Header.img.o: OBJCOPYFLAGS += \
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
-
-$(BUILD)/%.vsString: %.vsString.yaml | $$(@D)/
-	@$(ECHO) Converting $<
-	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
 
 $(BUILD)/%.vsString: $(BUILD)/%.vsString.yaml %.yaml | $$(@D)/
 	@$(ECHO) Converting $<

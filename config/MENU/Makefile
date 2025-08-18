@@ -10,9 +10,10 @@ $(patsubst %, $(BUILD)/data/MENU/%.BIN, SPMCIMG): $(BUILD)/data/%: $(BUILD)/asse
 	@$(VPYTHON) -m tools.splat_ext.rgb8 $< $@
 	@$(DIFF) $(DIFFFLAGS) $@ $(@:build/%=%)
 
-$(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h &: assets/MENU/MCMAN.yaml | $$(@D)/
+$(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/assets/MENU/MCMAN.vsString $(BUILD)/src/include/mcman.h &: assets/MENU/MCMAN.yaml | $$(@D)/
 	@$(ECHO) Converting $<
-	@$(VPYTHON) -m tools.etc.vsString_yamlToBin $< $(BUILD)/data/MENU/MCMAN.BIN $(BUILD)/src/include/mcman.h
+	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/assets/MENU/MCMAN.vsString $(BUILD)/src/include/mcman.h
+	@cp $(BUILD)/assets/MENU/MCMAN.vsString.bin $@
 	@$(DIFF) $(DIFFFLAGS) $(BUILD)/data/MENU/MCMAN.BIN data/MENU/MCMAN.BIN
 
 all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG) 

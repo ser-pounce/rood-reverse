@@ -1416,9 +1416,9 @@ static int _findCurrentSave(int init)
 
     if ((state & 1) == 0) {
         vs_mainmenu_setMessage(
-            (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]));
+            (char*)(_textTable + _textTable[VS_mcman_INDEX_accessing0 - 1 + port]));
         _memoryCardMessage
-            = (char*)(_textTable + _textTable[VS_MCMAN_INDEX_accessing0 - 1 + port]);
+            = (char*)(_textTable + _textTable[VS_mcman_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
         ++state;
     } else {
@@ -1476,13 +1476,13 @@ static enum maskedHandler_e maskedHandler(int portMask)
         case memcardEventIoEnd:
             return memcardMaskedHandlerComplete;
         case memcardEventTimeout:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_noData);
             break;
         default:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_removed);
             break;
         }
         return memcardMaskedHandlerError;
@@ -1680,20 +1680,20 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.base.slotState;
             if (slotState == slotStateUnavailable) {
-                _printString((char*)(_textTable + VS_MCMAN_OFFSET_inUse), element->x + 6,
+                _printString((char*)(_textTable + VS_mcman_OFFSET_inUse), element->x + 6,
                     element->y + 10, 3);
             } else if (slotState == slotStateAvailable) {
                 if (_isSaving == 0) {
-                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_empty),
+                    _printString((char*)(_textTable + VS_mcman_OFFSET_empty),
                         element->x + 6, element->y + 10, 3);
                 } else {
-                    _printString((char*)(_textTable + VS_MCMAN_OFFSET_new),
+                    _printString((char*)(_textTable + VS_mcman_OFFSET_new),
                         element->x + 6, element->y + 10, 0);
                 }
             } else {
                 y += 4 << 16;
                 _printString((char*)&_textTable[_textTable[element->saveLocation
-                                 + VS_MCMAN_INDEX_saveLocations]],
+                                 + VS_mcman_INDEX_saveLocations]],
                     element->x + 6, element->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
                 _drawSaveInfoUI(y | 189, vs_uiids_colon);
@@ -1911,7 +1911,7 @@ static int _promptConfirm(int arg0)
     case initNo:
         temp_v0 = _initFileMenuElement(state + 3,
             vs_getXY(-126 & 0xFFFF, state * 16 + 18), vs_getWH(126, 12),
-            (char*)&_textTable[_textTable[state + VS_MCMAN_INDEX_yesIndent]]);
+            (char*)&_textTable[_textTable[state + VS_mcman_INDEX_yesIndent]]);
         temp_v0->state = 4;
         temp_v0->targetPosition = 0;
         ++state;
@@ -1957,7 +1957,7 @@ static int _promptOverwrite(int arg0)
 
     if (arg0 != 0) {
         initialized = 1;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_overwritePrompt);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_overwritePrompt);
         _promptConfirm(1);
         state = 0;
         return 0;
@@ -1991,7 +1991,7 @@ static int _promptFormat(int initPort)
 
     if (initPort != 0) {
         port = initPort;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatPrompt);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_formatPrompt);
         _promptConfirm(1);
         state = promptConfirm;
         return 0;
@@ -2004,7 +2004,7 @@ static int _promptFormat(int initPort)
         if (val != 0) {
             if (val < 0) {
                 _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_OFFSET_formatCancelled);
+                    = (char*)(_textTable + VS_mcman_OFFSET_formatCancelled);
                 return -1;
             }
 
@@ -2023,13 +2023,13 @@ static int _promptFormat(int initPort)
         if (val != 0) {
             if (val == memcardEventUnformatted) {
                 state = format;
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatting);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_formatting);
             } else {
                 if (val == memcardEventTimeout) {
                     _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+                        = (char*)(_textTable + VS_mcman_OFFSET_insertError);
                 } else {
-                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_removed);
+                    _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2037,7 +2037,7 @@ static int _promptFormat(int initPort)
         return 0;
     case format:
         if (_card_format((port - 1) * 16) == 0) {
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_formatFailed);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_formatFailed);
             return -1;
         }
         return 1;
@@ -2111,7 +2111,7 @@ static int _showSaveFilesMenu(int initPort)
         state = handleInput;
         /* fallthrough */
     case handleInput:
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_selectFile);
         if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             _selectCursorXy = 0;
@@ -2162,7 +2162,7 @@ static int _showSaveFilesMenu(int initPort)
     case slotSelected:
         val = maskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
-            if (_memoryCardMessage == (char*)(_textTable + VS_MCMAN_OFFSET_noData)) {
+            if (_memoryCardMessage == (char*)(_textTable + VS_mcman_OFFSET_noData)) {
                 _promptFormat(port);
                 state = format;
             } else if (val > memcardMaskedHandlerError) {
@@ -2171,7 +2171,7 @@ static int _showSaveFilesMenu(int initPort)
                     if (_createSaveFile(port, val + 1) != 0) {
                         state = leaveWithTimer;
                         _memoryCardMessage
-                            = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                            = (char*)(_textTable + VS_mcman_OFFSET_saveFailed);
                     } else {
                         state = save;
                     }
@@ -2208,7 +2208,7 @@ static int _showSaveFilesMenu(int initPort)
         break;
     case save:
         val = slot + page;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saving);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_saving);
         _rMemcpy(&settingsBackup, &vs_main_settings, sizeof(settingsBackup));
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
@@ -2239,7 +2239,7 @@ static int _showSaveFilesMenu(int initPort)
                     sizeof(savedata_t));
                 _fileProgressCounter = 0;
                 _rMemcpy(&vs_main_settings, &settingsBackup, sizeof(vs_main_settings));
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_saveFailed);
             } else {
                 _dataNotSaved = 0;
                 _fileProgressCounter = -16;
@@ -2252,7 +2252,7 @@ static int _showSaveFilesMenu(int initPort)
                     = _saveFileInfo[saveId].unk4.stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                 saveSuccessful = 1;
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saved);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_saved);
             }
             state = leaveWithTimer;
         }
@@ -2284,7 +2284,7 @@ static int _showSaveFilesMenu(int initPort)
                 state = leaveError;
             } else if (_createSaveFile(port, page + slot + 1) != 0) {
                 state = leaveWithTimer;
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_saveFailed);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_saveFailed);
             } else {
                 state = save;
             }
@@ -2323,7 +2323,7 @@ static int _selectSaveMemoryCard(int initPort)
 
     if (initPort != 0) {
         port = initPort;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_checking);
         state = init;
         return 0;
     }
@@ -2364,7 +2364,7 @@ static int _selectSaveMemoryCard(int initPort)
             break;
         case memcardEventTimeout:
             state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_insertError);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
             memset(_saveFileInfo, 0, sizeof(*_saveFileInfo) * 5);
@@ -2399,7 +2399,7 @@ static int _selectSaveMemoryCard(int initPort)
     case initSaveMenu:
         if (_initSaveFileInfo(port) != 0) {
             state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_loadfailed);
             break;
         }
         for (i = 0; i < 5; ++i) {
@@ -2409,7 +2409,7 @@ static int _selectSaveMemoryCard(int initPort)
         }
         if (i == 5) {
             state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_cardFull);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_cardFull);
             break;
         }
         _showSaveFilesMenu(port);
@@ -2469,7 +2469,7 @@ static int _showSaveMenu(int initState)
         _isSaving = 1;
         state = (initState - 1) * 3;
         element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
-            (char*)(_textTable + VS_MCMAN_OFFSET_save));
+            (char*)(_textTable + VS_mcman_OFFSET_save));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
         element->innertextBlendFactor = 8;
@@ -2501,8 +2501,8 @@ static int _showSaveMenu(int initState)
         }
         if (currentSave < findSavePending) {
             _memoryCardMessage = (char*)(_textTable
-                + (currentSave == findSaveTimeout ? VS_MCMAN_OFFSET_insertError
-                                                  : VS_MCMAN_OFFSET_emptyCard));
+                + (currentSave == findSaveTimeout ? VS_mcman_OFFSET_insertError
+                                                  : VS_mcman_OFFSET_emptyCard));
             state = containerWarn;
         } else {
             _loadSaveData((currentSave & 7) | ((currentSave & 16) << 12));
@@ -2514,7 +2514,7 @@ static int _showSaveMenu(int initState)
         if (val != 0) {
             if ((val <= 0) || (_applyLoadedSaveFile(0) != 0)) {
                 state = containerWarn;
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_emptyCard);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_emptyCard);
             } else {
                 state = initSlot1;
             }
@@ -2523,7 +2523,7 @@ static int _showSaveMenu(int initState)
     case initSlot1:
         if (_fileMenuElementsActive() != 0) {
             element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
-                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+                (char*)(_textTable + VS_mcman_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
             state = initSlot2;
@@ -2531,7 +2531,7 @@ static int _showSaveMenu(int initState)
         break;
     case initSlot2:
         element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
-            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+            (char*)(_textTable + VS_mcman_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
         state = waitForSlotAnimation;
@@ -2540,7 +2540,7 @@ static int _showSaveMenu(int initState)
         if (_fileMenuElementsActive() != 0) {
             vs_mainmenu_setMessage((char*)&clear);
             state = handleInput;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_selectSlot);
         }
         break;
     case handleInput:
@@ -2559,7 +2559,7 @@ static int _showSaveMenu(int initState)
             }
             if (_dataNotSaved != 0) {
                 _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarnDataLoss);
+                    = (char*)(_textTable + VS_mcman_OFFSET_containerWarnDataLoss);
                 _promptConfirm(1);
                 state = discardChanges;
             } else {
@@ -2598,7 +2598,7 @@ static int _showSaveMenu(int initState)
     case containerWarn:
         if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_mainmenu_setMessage((char*)&clear);
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_containerWarn);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_containerWarn);
             _promptConfirm(1);
             state = eraseContainerData;
         }
@@ -2682,7 +2682,7 @@ static int _showLoadFilesMenu(int initPort)
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectFile);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_selectFile);
         // fallthrough
     case handleInput:
         if (vs_main_buttonsPressed.all & PADRdown) {
@@ -2742,7 +2742,7 @@ static int _showLoadFilesMenu(int initPort)
                 int new_var;
                 _loadSaveData(((slot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
                 state = applyLoad;
-                _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loading);
+                _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_loading);
             } else {
                 state = loaded;
             }
@@ -2756,7 +2756,7 @@ static int _showLoadFilesMenu(int initPort)
             do {
                 leaveTimer = 0;
                 if (currentSlot < 0) {
-                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+                    _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2765,11 +2765,11 @@ static int _showLoadFilesMenu(int initPort)
                     vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                     leaveTimer = 16;
                     fileLoaded = 1;
-                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loaded);
+                    _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_loaded);
                     break;
                 case 1:
                     _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_OFFSET_fileCorruptDescription);
+                        = (char*)(_textTable + VS_mcman_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -2829,7 +2829,7 @@ static long _selectLoadMemoryCard(int initPort)
 
     if (initPort != 0) {
         port = initPort;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_checking);
+        _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_checking);
         state = init;
         return 0;
     }
@@ -2889,7 +2889,7 @@ static long _selectLoadMemoryCard(int initPort)
 
     case pollSuccess:
         if (_initSaveFileInfo(port) != 0) {
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_loadfailed);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_loadfailed);
             state = leave;
             break;
         }
@@ -2900,7 +2900,7 @@ static long _selectLoadMemoryCard(int initPort)
         }
 
         if (i == 5) {
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_noData);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_noData);
             state = leave;
         } else {
             _showLoadFilesMenu(port);
@@ -2962,7 +2962,7 @@ static int _loadFileMenu(int initFadeout)
     switch (state) {
     case init:
         element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
-            (char*)(_textTable + VS_MCMAN_OFFSET_load));
+            (char*)(_textTable + VS_mcman_OFFSET_load));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
         element->selected = 1;
@@ -2972,7 +2972,7 @@ static int _loadFileMenu(int initFadeout)
     case displaySlot1:
         if (_fileMenuElementsActive() != 0) {
             element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
-                (char*)(_textTable + VS_MCMAN_OFFSET_slot1));
+                (char*)(_textTable + VS_mcman_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
             state = displaySlot2;
@@ -2980,7 +2980,7 @@ static int _loadFileMenu(int initFadeout)
         break;
     case displaySlot2:
         element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
-            (char*)(_textTable + VS_MCMAN_OFFSET_slot2));
+            (char*)(_textTable + VS_mcman_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
         state = waitForSlotAnimation;
@@ -2988,7 +2988,7 @@ static int _loadFileMenu(int initFadeout)
     case waitForSlotAnimation:
         if (_fileMenuElementsActive() != 0) {
             state = handleInput;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_OFFSET_selectSlot);
+            _memoryCardMessage = (char*)(_textTable + VS_mcman_OFFSET_selectSlot);
         }
         break;
     case handleInput:
@@ -3590,9 +3590,9 @@ int vs_menu7_saveContainerMenu(char* state)
         if (option != 0) {
             if (option < 0) {
                 if (option == -2) {
-                    message = _textTable + VS_MCMAN_OFFSET_insertError;
+                    message = _textTable + VS_mcman_OFFSET_insertError;
                 } else {
-                    message = _textTable + VS_MCMAN_OFFSET_emptyCard;
+                    message = _textTable + VS_mcman_OFFSET_emptyCard;
                 }
                 vs_mainmenu_setMessage((char*)message);
                 *state = 4;
@@ -3604,7 +3604,7 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 4:
         if (vs_main_buttonsPressed.pad[0].low != 0) {
-            vs_mainmenu_setMessage((char*)(_textTable + VS_MCMAN_OFFSET_containerWarn));
+            vs_mainmenu_setMessage((char*)(_textTable + VS_mcman_OFFSET_containerWarn));
             _promptYesNo(2);
             *state = 5;
         }
@@ -3628,7 +3628,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 *state = 7;
                 break;
             }
-            message = _textTable + VS_MCMAN_OFFSET_emptyCard;
+            message = _textTable + VS_mcman_OFFSET_emptyCard;
             vs_mainmenu_setMessage((char*)message);
             *state = 4;
         }
@@ -3796,7 +3796,7 @@ int vs_menu7_dataMenu(char* state)
     case 5:
         for (row = 0; row < 2; ++row) {
             menuStrings[row * 2] = (char*)(&_textTable[_textTable[row * 2]]);
-            menuStrings[row * 2 + 1] = (char*)(&_textTable[VS_MCMAN_OFFSET_saveDisabled]);
+            menuStrings[row * 2 + 1] = (char*)(&_textTable[VS_mcman_OFFSET_saveDisabled]);
             rowTypes[row] = 0;
         }
 

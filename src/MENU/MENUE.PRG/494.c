@@ -63,18 +63,6 @@ static void _drawControlsBg(int x, int y, int w, int h);
 extern _menuBgChunkWidths_t const _menuBgChunkWidths;
 extern _menuBgTransparencies_t const _menuBgTransparencies[];
 
-extern int D_80105230;
-extern int D_80105234;
-extern vs_main_CdQueueSlot* _helpTextCdQueue;
-extern vs_main_CdQueueSlot* _helpAssetsCdQueue;
-extern int D_80105240;
-extern int _scrollPosition;
-extern int _contentEnd;
-extern int _pageArrowAnimState;
-extern int D_80105250;
-extern int* _helpText;
-extern u_long* _helpAssets;
-
 static void func_80102C94(int arg0)
 {
     if (arg0 != 0) {
@@ -211,6 +199,19 @@ int func_80102EDC(char* state)
     }
     return 0;
 }
+
+// Likely file split but...meh
+static int D_80105230;
+static int D_80105234;
+static vs_main_CdQueueSlot* _helpTextCdQueue;
+static vs_main_CdQueueSlot* _helpAssetsCdQueue;
+static int D_80105240;
+static int _scrollPosition;
+static int _contentEnd;
+static int _pageArrowAnimState;
+static int D_80105250;
+static int* _helpText;
+static u_long* _helpAssets;
 
 static int func_801030A4()
 {

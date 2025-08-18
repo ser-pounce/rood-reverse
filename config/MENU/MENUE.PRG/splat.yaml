@@ -26,5 +26,5 @@ segments:
       - [0x494, c, 494]
       - {start: 0x2654, type: vsStringTable, name: menuText, linker_entry: false}
 #     - [0x2A28, .data, 494]      
-      - [0x2A30, bss, 494]
+      - [0x2A30, .bss, 494]
   - [0x2A5C]

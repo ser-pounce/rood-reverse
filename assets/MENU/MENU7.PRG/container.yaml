@@ -1,7 +1,5 @@
-checkContainer: Check the container?
-yesOption: "YES"
-noOption: "NO"
-container: CONTAINER
-cancelWarning: |-
-    The container transaction will be cancelled
-    if game is not saved. Save?
+checkContainer:
+yesOption:
+noOption:
+container:
+cancelWarning:

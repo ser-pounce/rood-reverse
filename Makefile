@@ -162,17 +162,17 @@ $(BUILD)/%.o: %.c | $$(@D)/
 	@$(CAT) $@.d >> $(BUILD)/$*.d
 	@$(RM) $(RMFLAGS) $@.d
 
-%.segment.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
-%.segment.o: filename = $(word 1,$(subst ., ,$(@F)))
-%.segment.o: %.segment.bin | $$(@D)/
+%.img.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
+%.img.o: filename = $(word 1,$(subst ., ,$(@F)))
+%.img.o: %.img.bin | $$(@D)/
 	@$(ECHO) Converting $<
 	@$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-%.segment.bin: %.segment.png | $$(@D)/
+%.img.bin: %.img.png | $$(@D)/
 	@$(ECHO) Converting $<
 	@$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
 
-%rgba16Header.segment.o: OBJCOPYFLAGS += \
+%.rgba16Header.img.o: OBJCOPYFLAGS += \
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 

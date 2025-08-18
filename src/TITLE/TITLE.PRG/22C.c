@@ -3508,11 +3508,11 @@ static short publisherClut[] = { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(2, 2, 
     vs_getRGB5551(31, 31, 31, 1) };
 
 static char publisher[] = {
-#include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.segment.bin.dat"
+#include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.img.bin.dat"
 };
 
 static char developer[] = {
-#include "../../assets/TITLE/TITLE.PRG/developer.rgb4.segment.bin.dat"
+#include "../../assets/TITLE/TITLE.PRG/developer.rgb4.img.bin.dat"
 };
 
 static short developerClut[][16] = {

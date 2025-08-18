@@ -26,7 +26,8 @@ segments:
       - [0x2C, .rodata, 143C]
       - [0x64, c]
       - [0x143C, c]
-      - [0x1E90, .data, 64]
+      - { start: 0x1E90, type: vsStringTable, name: battleAbilities, linker_entry: false }
+      - [0x26B4, .data, 64]
       - [0x26D8, .data, 143C]
       - [0x28B0, .bss, 64]
       - [0x28F0, .bss, 143C]

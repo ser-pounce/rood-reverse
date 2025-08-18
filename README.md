@@ -41,7 +41,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![MENUB.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUB.PRG)
 ![MENUC.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUC.PRG)
 ![MENUD.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUD.PRG)
-![MENUE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUE.PRG)
+![MENUE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUE.PRG&color=%2332a934)
 ![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENUF.PRG)
 
 ### Title and Ending Sequence

@@ -63,6 +63,8 @@ def decode(s):
     i = 0
     while i < len(s):
         match s[i]:
+            case 0xE7:
+                return result
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
             case 0xF8 | 0xFA | 0xFB | 0xFF:

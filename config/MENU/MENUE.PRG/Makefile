@@ -4,4 +4,8 @@ $(BUILD)/data/MENU/MENUE.PRG.elf: LDSCRIPT += \
 	config/SLUS_010.40/exports.txt
 $(BUILD)/src/MENU/MENUE.PRG/494.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENUE.PRG/494.o: CC1VER := 2.8.0-psx
-$(BUILD)/src/MENU/MENUE.PRG/494.o: $(BUILD)/src/include/lbas.h 
+$(BUILD)/src/MENU/MENUE.PRG/494.o: $(BUILD)/assets/MENU/MENUE.PRG/menuText.vsString $(BUILD)/src/include/lbas.h 
+
+$(BUILD)/assets/MENU/MENUE.PRG/menuText.vsString: $(BUILD)/assets/MENU/MENUE.PRG/menuText.vsString.segment.yaml
+	@$(ECHO) Converting $<
+	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/assets/MENU/MENUE.PRG/menuText.h

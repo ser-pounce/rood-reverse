@@ -60,18 +60,9 @@ static void _fadeMenuUpper();
 static void _fadeMenuLower();
 static void _drawControlsBg(int x, int y, int w, int h);
 
-extern char const D_80102BF8[];
-extern char const D_80102C08[];
-extern char const D_80102C10[];
-extern char D_80102C18[];
-extern char D_80102C20[];
-
 extern _menuBgChunkWidths_t const _menuBgChunkWidths;
 extern _menuBgTransparencies_t const _menuBgTransparencies[];
-extern u_short D_80104E54[];
-extern int D_80105228;
-extern char D_8010522C;
-extern char D_8010522D;
+
 extern int D_80105230;
 extern int D_80105234;
 extern vs_main_CdQueueSlot* _helpTextCdQueue;
@@ -153,8 +144,19 @@ static void func_80102E9C() { func_800FA8E0(8); }
 
 static void _menuReady() { vs_mainmenu_ready(); }
 
+static u_short D_80104E54[] = {
+#include "../../assets/MENU/MENUE.PRG/menuText.vsString"
+};
+
+// Junk?
+static u_short _0 = 0x0380;
+
 int func_80102EDC(char* state)
 {
+    static int D_80105228 = 0;
+    static char D_8010522C = 0;
+    static char D_8010522D = 0;
+    static short _2 = 0x54;
 
     switch (*state) {
     case 3:
@@ -225,9 +227,9 @@ static int func_801030A4()
     return 1;
 }
 
-// Unused data, seems to be a miscopying, perhaps through a header. 
+// Unused data, seems to be a miscopying, perhaps through a header.
 // The same data is defined and used in BATTLE.PRG
-static u_int const _[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
+static u_int const _1[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
     0xFFEA0007, 0x0001FFEF, 0x00010007, 0xFFE3FFF6, 0xFFE30014, 0x0001FFF6, 0x00010014,
     0xFFE3FFED, 0xFFE30009, 0x0001FFED, 0x00010009, 0xFFF0FFF7, 0xFFF0000B, 0xFFFDFFF7,
     0xFFFD000B, 0xFFF0FFF6, 0xFFF0000A, 0xFFFDFFF6, 0xFFFD000A, 0x10581040, 0x27582740,
@@ -1028,13 +1030,7 @@ static void _drawControlsBg(int x, int y, int w, int h)
     p[0] = (u_long*)(poly + 1);
 }
 
-_menuBgChunkWidths_t const _menuBgChunkWidths = {
-    128, 128, 64
-};
+_menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
 
-_menuBgTransparencies_t const _menuBgTransparencies[] = {
-    { 128, 115, 121, 88 },
-    { 76, 64, 53, 42 },
-    { 33, 24, 17, 11 },
-    { 6, 3, 1, 0 }
-};
+_menuBgTransparencies_t const _menuBgTransparencies[]
+    = { { 128, 115, 121, 88 }, { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };

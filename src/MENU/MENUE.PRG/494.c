@@ -9,6 +9,7 @@
 #include "gpu.h"
 #include "lbaMacros.h"
 #include "lbas.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <stdio.h>
 
@@ -42,7 +43,7 @@ typedef struct {
 } BlinkState_t;
 
 static char* _vsStringCpy(char* arg0, char* arg1);
-static int _initState();
+static int _initMenuState();
 static int _showMenu();
 static void func_80103E6C(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
@@ -51,8 +52,8 @@ static short _getBlinkState(BlinkState_t* arg0);
 static int _topMenu(int arg0);
 static void _copySprites(u_long const* arg0, int arg1);
 static void _copyCluts(u_long* arg0, int arg1);
-static int _calculateContentEnd();
-static void func_80103BC8();
+static int _getRoundedLineCount();
+static void _copyNextPageText();
 static void func_80103CF0();
 static void _setPageBg(int arg0, int arg1, int arg2, int arg3, int arg4);
 static void _fadeMenuUpper();
@@ -128,7 +129,7 @@ static void func_80102E9C() { func_800FA8E0(8); }
 
 static void _menuReady() { vs_mainmenu_ready(); }
 
-static u_short D_80104E54[] = {
+static u_short _menuText[] = {
 #include "../../assets/MENU/MENUE.PRG/menuText.vsString"
 };
 
@@ -137,35 +138,37 @@ static u_short _0 = 0x0380;
 
 int vs_menuE_exec(char* state)
 {
+    enum state { none, init = 3, initMenu, waitReady, showMenu, shutDown, exit };
+
     static int menuResult = 0;
-    static char init = 0;
+    static char isInit = 0;
     static char D_8010522D = 0;
     static short _2 = 0x54;
 
     switch (*state) {
-    case 3:
+    case init:
         func_800FFB68(1);
         D_8010522D = 8;
-        init = 0;
-        *state = 4;
+        isInit = 0;
+        *state = initMenu;
         break;
-    case 4:
-        if (init == 0) {
-            init = _initState();
+    case initMenu:
+        if (isInit == 0) {
+            isInit = _initMenuState();
         }
         if (D_8010522D != 0) {
             D_8010522D -= 1;
-        } else if (init != 0) {
+        } else if (isInit != 0) {
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
-            *state = 5;
+            *state = waitReady;
         }
         break;
-    case 5:
+    case waitReady:
         *state += vs_mainmenu_ready();
         break;
-    case 6:
+    case showMenu:
         menuResult = _showMenu();
         if (menuResult == 0) {
             break;
@@ -176,21 +179,21 @@ int vs_menuE_exec(char* state)
         func_8008A4DC(1);
         func_800FFA88(0);
         func_800FA8E0(0x28);
-        *state = 7;
+        *state = shutDown;
         break;
-    case 7:
+    case shutDown:
         func_800FFB68(0);
-        *state = 8;
+        *state = exit;
         break;
-    case 8:
+    case exit:
         if (D_801022D8 != 0) {
             break;
         }
         if (menuResult == 2) {
-            vs_battle_menuState.currentState = 0xA;
+            vs_battle_menuState.currentState = 10;
         }
         D_801022D6 = 0;
-        *state = 0;
+        *state = none;
         return 1;
     }
     return 0;
@@ -204,13 +207,13 @@ static vs_main_CdQueueSlot* _helpTextCdQueue;
 static vs_main_CdQueueSlot* _helpAssetsCdQueue;
 static int _showMenuState;
 static int _scrollPosition;
-static int _contentEnd;
+static int _lineCount;
 static int _pageArrowAnimState;
-static int D_80105250;
+static int _helpPageLoadCounter;
 static int* _helpText;
 static u_long* _helpAssets;
 
-static int _initState()
+static int _initMenuState()
 {
     if (D_80060021 == 0) {
         vs_main_bzero(
@@ -219,13 +222,13 @@ static int _initState()
     func_8007DFF0(0x1D, 3, 5);
     _showMenuState = 0;
     _scrollPosition = 0;
-    _contentEnd = 0;
+    _lineCount = 0;
     _helpText = NULL;
     _helpAssets = NULL;
     return 1;
 }
 
-// Unused data, seems to be a miscopying, perhaps through a header.
+// Unused vertex data, seems to be a miscopying, perhaps through a header.
 // The same data is defined and used in BATTLE.PRG
 static u_int const _[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
     0xFFEA0007, 0x0001FFEF, 0x00010007, 0xFFE3FFF6, 0xFFE30014, 0x0001FFF6, 0x00010014,
@@ -267,36 +270,47 @@ static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0
 
 static int _showMenu()
 {
+    enum state {
+        init,
+        initMenu,
+        getSelection,
+        loadSubMenu,
+        initSubMenu,
+        showSubMenu,
+        exitToMenu,
+        exitToBattle,
+    };
+
     char charBuf[60];
-    int temp_s2;
+    int lastPage;
     int selectedRow;
-    int var_s1;
+    int currentPage;
     u_long** s0;
     int cdState;
 
     switch (_showMenuState) {
-    case 0:
+    case init:
         func_80100414(0x7FE, 0x80);
         ++_showMenuState;
         break;
-    case 1:
+    case initMenu:
         func_800FFBC8();
         _topMenu(1);
         ++_showMenuState;
         break;
-    case 2:
+    case getSelection:
         selectedRow = _topMenu(0);
         if (selectedRow == -1) {
             break;
         }
         if (selectedRow < 0) {
             if (selectedRow == -3) {
-                _showMenuState = 7;
+                _showMenuState = exitToBattle;
             } else {
-                _showMenuState = 6;
+                _showMenuState = exitToMenu;
             }
         } else {
-            _showMenuState = 3;
+            _showMenuState = loadSubMenu;
             if (_helpText != NULL) {
                 vs_main_freeHeapR(_helpText);
             }
@@ -317,7 +331,7 @@ static int _showMenu()
             = D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
         func_800FFBA8();
         break;
-    case 3:
+    case loadSubMenu:
         cdState = _helpAssetsCdQueue->state;
         if (cdState != vs_main_CdQueueStateLoaded) {
             break;
@@ -329,9 +343,9 @@ static int _showMenu()
             vs_main_freeHeapR(_helpAssets);
         }
         _helpAssets = NULL;
-        _showMenuState = 4;
+        _showMenuState = initSubMenu;
         break;
-    case 4:
+    case initSubMenu:
         if (_helpTextCdQueue->state != vs_main_CdQueueStateLoaded) {
             break;
         }
@@ -340,55 +354,56 @@ static int _showMenu()
         _scrollPosition
             = vs_battle_manualDisplayState
                   .scrollPositions[vs_battle_manualDisplayState.currentManual];
-        _contentEnd = _calculateContentEnd();
-        _showMenuState = 5;
-        D_80105250 = 0;
+        _lineCount = _getRoundedLineCount();
+        _showMenuState = showSubMenu;
+        _helpPageLoadCounter = 0;
         break;
-    case 5:
-        var_s1 = _scrollPosition / 10;
-        temp_s2 = _contentEnd / 10;
+    case showSubMenu:
+        currentPage = _scrollPosition / 10;
+        lastPage = _lineCount / 10;
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
-            _showMenuState = 1;
+            _showMenuState = initMenu;
         }
         if (vs_main_buttonsPressed.all & PADRup) {
             _showMenuState = 7;
         }
         if (vs_main_buttonsPressed.all & PADstart) {
-            var_s1 = 0;
+            currentPage = 0;
             _scrollPosition = 0;
         } else if (vs_main_buttonsPreviousState & PADRleft) {
-            if ((vs_main_buttonsPressed.all & PADLup) && (var_s1 == 0) && (temp_s2 > 0)) {
-                var_s1 = temp_s2;
-                _scrollPosition = temp_s2 * 10;
+            if ((vs_main_buttonsPressed.all & PADLup) && (currentPage == 0)
+                && (lastPage > 0)) {
+                currentPage = lastPage;
+                _scrollPosition = lastPage * 10;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            } else if ((vs_main_buttonsPressed.all & PADLdown) && (var_s1 == temp_s2)
-                && (temp_s2 > 0)) {
-                var_s1 = 0;
+            } else if ((vs_main_buttonsPressed.all & PADLdown)
+                && (currentPage == lastPage) && (lastPage > 0)) {
+                currentPage = 0;
                 _scrollPosition = 0;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            } else if ((vs_main_buttonRepeat & PADLup) && (var_s1 > 0)) {
-                var_s1 -= 1;
-                _scrollPosition = var_s1 * 10;
+            } else if ((vs_main_buttonRepeat & PADLup) && (currentPage > 0)) {
+                --currentPage;
+                _scrollPosition = currentPage * 10;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            } else if ((vs_main_buttonRepeat & PADLdown) && (var_s1 < temp_s2)) {
-                var_s1 += 1;
-                _scrollPosition = var_s1 * 10;
+            } else if ((vs_main_buttonRepeat & PADLdown) && (currentPage < lastPage)) {
+                ++currentPage;
+                _scrollPosition = currentPage * 10;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
         } else {
             if ((vs_main_buttonsPressed.all & PADLup) && (_scrollPosition == 0)
-                && (_contentEnd > 0)) {
-                _scrollPosition = _contentEnd;
+                && (_lineCount > 0)) {
+                _scrollPosition = _lineCount;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if (vs_main_buttonsPressed.all & PADLdown
-                && (_scrollPosition == _contentEnd) && (_scrollPosition > 0)) {
+                && (_scrollPosition == _lineCount) && (_scrollPosition > 0)) {
                 _scrollPosition = 0;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLup) && (_scrollPosition > 0)) {
                 --_scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLdown)
-                && (_scrollPosition < _contentEnd)) {
+                && (_scrollPosition < _lineCount)) {
                 ++_scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
@@ -401,14 +416,14 @@ static int _showMenu()
         func_800C6540("MENU", 0x24001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x24, 0x40, 0xC);
         func_800C6540("PAGE", 0xC400D8, 0x808080, s0[1] + 7);
-        sprintf(charBuf, "#%d/", var_s1 + 1);
+        sprintf(charBuf, "#%d/", currentPage + 1);
         func_800C6540(charBuf, 0xC40118, 0x808080, s0[1] + 7);
-        sprintf(charBuf, "#%d", temp_s2 + 1);
+        sprintf(charBuf, "#%d", lastPage + 1);
         func_800C6540(charBuf, 0xC40130, 0x808080, s0[1] + 7);
         vs_battle_manualDisplayState
             .scrollPositions[vs_battle_manualDisplayState.currentManual]
             = _scrollPosition;
-        if (_showMenuState != 5) {
+        if (_showMenuState != showSubMenu) {
             if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
             } else {
@@ -426,17 +441,17 @@ static int _showMenu()
         if (_scrollPosition > 0) {
             _fadeMenuUpper();
         }
-        if (_scrollPosition < _contentEnd) {
+        if (_scrollPosition < _lineCount) {
             _fadeMenuLower();
         }
-        if (D_80105250 < 8) {
-            ++D_80105250;
+        if (_helpPageLoadCounter < 8) {
+            ++_helpPageLoadCounter;
         } else {
             func_80103CF0();
         }
-        func_80103BC8();
+        _copyNextPageText();
         break;
-    case 6:
+    case exitToMenu:
         if (_helpText != NULL) {
             vs_main_freeHeapR(_helpText);
         }
@@ -445,7 +460,7 @@ static int _showMenu()
         }
         func_8007E0A8(0x1D, 3, 5);
         return 1;
-    case 7:
+    case exitToBattle:
         if (_helpText != NULL) {
             vs_main_freeHeapR(_helpText);
         }
@@ -466,15 +481,15 @@ static int _topMenu(int init)
     int i;
 
     if (init != 0) {
-        _topMenu_state = 0;
+        _topMenu_state = initRows;
         _selectedRow = 0;
     }
 
     switch (_topMenu_state) {
     case initRows:
         for (i = 0; i < 14; ++i) {
-            strings[i * 2] = (char*)&D_80104E54[D_80104E54[i]];
-            strings[i * 2 + 1] = (char*)&D_80104E54[D_80104E54[14 + i]];
+            strings[i * 2] = (char*)&_menuText[_menuText[i]];
+            strings[i * 2 + 1] = (char*)&_menuText[_menuText[14 + i]];
         }
         _setMenuRows(14, vs_battle_manualDisplayState.currentManual, strings);
         ++_topMenu_state;
@@ -522,55 +537,51 @@ static void _copyCluts(u_long* buffer, int count)
     }
 }
 
-static int _calculateContentEnd()
+static int _getRoundedLineCount()
 {
-    int temp_v1;
-    int var_a0;
+    int remainder;
+    int lineCount;
 
-    var_a0 = _helpText[4] & 0xFFFF;
-    temp_v1 = (_helpText[4] & 0xFFFF) % 10;
-    if (temp_v1 > 0) {
-        var_a0 += 10 - temp_v1;
+    lineCount = _helpText[4] & 0xFFFF;
+    remainder = (_helpText[4] & 0xFFFF) % 10;
+    if (remainder > 0) {
+        lineCount += 10 - remainder;
     }
-    var_a0 -= 10;
-    if (var_a0 < 0) {
-        var_a0 = 0;
+    lineCount -= 10;
+    if (lineCount < 0) {
+        lineCount = 0;
     }
-    return var_a0;
+    return lineCount;
 }
 
-static void func_80103BC8()
+static void _copyNextPageText()
 {
-    char sp10[1024];
-    int var_s0;
-    int var_s2;
-    u_short* temp_s3;
-    char* var_a0;
-    int temp_a1;
+    char buffer[1024];
+    int i;
+    int nextPage;
+    u_short* offsets;
+    char* pBuffer;
 
-    sp10[0] = 0xF8;
-    sp10[1] = 0;
-    sp10[2] = 0xFB;
-    sp10[3] = 6;
-    sp10[4] = -0x18;
+    buffer[0] = vs_char_chunkSize;
+    buffer[1] = vs_char_noChunking;
+    buffer[2] = vs_char_fontTable;
+    buffer[3] = vs_char_fontTable0;
+    buffer[4] = vs_char_newline;
 
-    temp_s3 = (ushort*)(_helpText + 4);
-    var_s2 = _scrollPosition + 10;
-    var_a0 = sp10 + 4;
+    offsets = (ushort*)(_helpText + 4);
+    nextPage = _scrollPosition + 10;
+    pBuffer = buffer + 4;
 
-    if ((u_short)_helpText[4] < var_s2) {
-        var_s2 = (u_short)_helpText[4];
+    if ((u_short)_helpText[4] < nextPage) {
+        nextPage = (u_short)_helpText[4];
     }
 
-    temp_a1 = _scrollPosition;
-
-    for (var_s0 = temp_a1; var_s0 < var_s2; ++var_s0) {
-        temp_a1 = temp_s3[var_s0 + 1];
-        var_a0 = _vsStringCpy(var_a0, (char*)(temp_s3 + temp_a1));
+    for (i = _scrollPosition; i < nextPage; ++i) {
+        pBuffer = _vsStringCpy(pBuffer, (char*)(offsets + offsets[i + 1]));
     }
 
-    var_a0[-1] = 0xE7;
-    func_800C6BF0(0, &sp10);
+    pBuffer[-1] = vs_char_terminator;
+    func_800C6BF0(0, &buffer);
 }
 
 static char* _vsStringCpy(char* arg0, char* arg1)

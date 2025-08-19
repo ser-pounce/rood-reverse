@@ -1,173 +1,139 @@
-save: SAVE
-saveDescription: Save game data.
-load: LOAD
-loadDescription: Load saved game data.
-slot1: MEMORY CARD slot 1
-slot2: MEMORY CARD slot 2
-selectSlot: Select a MEMORY CARD slot.
-checking: |-
-  Checking MEMORY CARD...
-  Do not insert or remove MEMORY CARDs.
-insertError: MEMORY CARD is not inserted correctly.▼
-emptyCard: No save data found.▼
-saveFailed: |-
-  Saving failed.
-  Please save again to prevent data loss.▼
-loadfailed: |-
-  Loading failed.
-  MEMORY CARD may be inserted incorrectly.▼
-selectFile: |-
-  Select file.
-  Do not insert or remove MEMORY CARDs.
-fileCorruptDescription: |-
-  Data is not saved properly.
-  You may not continue gameplay with this data.▼
-saving: |-
-  Saving...
-  Do not insert or remove MEMORY CARDs.
-loading: |-
-  Loading...
-  Do not insert or remove MEMORY CARDs.
-saved: Game saved.
-loaded: Game loaded.
-inUse: "                In Use"
-empty: "                Empty"
-new: "             New save data"
-removed: |-
-  MEMORY CARD was removed.
-  Please try again.▼
-accessing0: |-
-  Accessing MEMORY CARDs...
-  Do not insert or remove MEMORY CARDs.
-accessing1: |-
-  Accessing MEMORY CARDs...
-  Do not insert or remove MEMORY CARDs.
-containerWarn: |-
-  If you save now, all container contents
-  will be lost. Continue?
-formatPrompt: |-
-  MEMORY CARD is not formatted.
-  Do you wish to format it?
-yesOption: "YES"
-noOption: "NO"
-formatting: |-
-  Formatting MEMORY CARD...
-  Do not insert or remove MEMORY CARD.
-formatted: Formatted MEMORY CARD.
-formatFailed: MEMORY CARD format failed.▼
-formatCancelled: MEMORY CARD format cancelled.▼
-oldData: |-
-  Old save data.
-  Continued gameplay may cause errors.
-overwritePrompt: Overwrite the file?
-noData: No VAGRANT STORY data found.▼
-cardFull: |-
-  Not enough free blocks.
-  3 blocks required to save.▼
-yesIndent: "|>16|YES"
-noIndent: "|>16|NO"
-containerWarnDataLoss: |-
-  Data is not saved correctly. Container contents
-  may be lost. Continue?
-savePrompt: |-
-  Game is not saved.
-  Save now?
-saveDisabled: Cannot save during battle.
-saveLocations: 
-- Corrupted file
-- Breakroom
-- Wine Guild Hall
-- Blackmarket
-- Hall of Revenge
-- Withered Spring
-- Work of Art/WS
-- Advent Ground
-- Rue Vermillion
-- Magic Hammer/WS
-- The Crossing
-- The Dark Tunnel
-- Rue Bouquet
-- The Sunless Way
-- Faerie Circle
-- Forest River
-- The Wood Gate
-- Valdiman Gate
-- Warrior's Rest
-- Keane's/WS
-- Sinner's Corner
-- Crumbling Mrkt.
-- Treaty Room
-- Bandits' Hollow
-- The Ore Road
-- Auction Block
-- Way Down
-- Rue Lejour
-- Kesch Bridge
-- Metal Works/WS
-- Junction Pt./WS
-- The Dark Coast
-- Plateia Lumitar
-- Punishment
-- The Atrium
-- Godhands/WS
-- "\uE0F6\uE0EF_\uE0F6\uE0EF36\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF37\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF38\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF39\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF40\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF41\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF42\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF43\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF44\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF45\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF46\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF47\uE0F6\uE0EF\uE0F6\uE0EF"
-- Game Clear Data
-- "\uE0F6\uE0EF_\uE0F6\uE0EF49\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF50\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF51\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF52\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF53\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF54\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF55\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF56\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF57\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF58\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF59\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF60\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF61\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF62\uE0F6\uE0EF\uE0F6\uE0EF"
-- "\uE0F6\uE0EF_\uE0F6\uE0EF63\uE0F6\uE0EF\uE0F6\uE0EF"
+save:
+saveDescription:
+load:
+loadDescription:
+slot1:
+slot2:
+selectSlot:
+checking:
+insertError:
+emptyCard:
+saveFailed:
+loadfailed:
+selectFile:
+fileCorruptDescription:
+saving:
+loading:
+saved:
+loaded:
+inUse:
+empty:
+new:
+removed:
+accessing0:
+accessing1:
+containerWarn:
+formatPrompt:
+yesOption:
+noOption:
+formatting:
+formatted:
+formatFailed:
+formatCancelled:
+oldData:
+overwritePrompt:
+noData:
+cardFull:
+yesIndent:
+noIndent:
+containerWarnDataLoss:
+savePrompt:
+saveDisabled:
+saveLocations:
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
 containerLocations:
-- Wine Guild Hall
-- Hall of Revenge
-- Advent Ground
-- Forest River
-- The Dark Coast
-- Sin and Punish.
-- Work of Art/WS
-- Magic Hammer/WS
-- Keane's/WS
-- Metal Works/WS
-- Junction Pt./WS
-- Godhands/WS
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF12/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF13/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF14/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF15/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF16/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF17/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF18/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF19/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF20/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF21/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF22/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF23/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF24/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF25/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF26/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF27/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF28/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF29/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF30/\uE0F6\uE0EF"
-- "\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF\uE0F6\uE0EF31/\uE0F6\uE0EF"
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-

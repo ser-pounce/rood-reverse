@@ -41,8 +41,8 @@ table = [
     '', '', '', '', '', '', '', '',         # 0xD0
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
-    '\n', '', '', '', '', '', '', '\uE0EF', #
-    '', '', '', '', '', '', '\uE0F6', '',         # 0xF0
+    '\n', '', '', '', '', '', '', '239', #
+    '', '', '', '', '', '', '|x', '',         # 0xF0
     '|!', '', '|>', '|F', '', '', '', '|$',
 ]
 
@@ -53,6 +53,7 @@ table = [
 # as it's the only common symbol not represented in the default text table.
 
 # String functions, 1-byte argument
+# 0xF6 -> |xn|: No known function currently, possibly debug
 # 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
 # 0xFB -> |Fn|: Manipulate font table. n = 0-3 sets the color, n = 4 justifies the text,
@@ -68,7 +69,7 @@ def decode(s):
                 return result
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
-            case 0xF8 | 0xFA | 0xFB | 0xFF:
+            case 0xF6 | 0xF8 | 0xFA | 0xFB | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:
@@ -113,33 +114,49 @@ def literal_representer(dumper, data):
 
 yaml.add_representer(LiteralString, literal_representer)
 
+def assign_strings(template, strings, idx=0):
+    if isinstance(template, dict):
+        result = {}
+        for k, v in template.items():
+            result[k], idx = assign_strings(v, strings, idx)
+        return result, idx
 
-def write_table(data, keys, out_path):
-    count = int.from_bytes(
-        data[0:2], "little"
-    )
+    elif isinstance(template, list):
+        result = []
+        for v in template:
+            new_v, idx = assign_strings(v, strings, idx)
+            result.append(new_v)
+        return result, idx
+
+    else:
+        if idx >= len(strings):
+            raise ValueError("Not enough strings for keys template")
+        return strings[idx], idx + 1
+
+def write_table(data, keys_file, out_path):
+    count = int.from_bytes(data[0:2], "little")
 
     offsets = [
-        int.from_bytes(
-            data[2*i : 2*i + 2],
-            "little"
-        )
+        int.from_bytes(data[2*i:2*i + 2], "little")
         for i in range(count)
     ]
 
-    with open(keys, "r", encoding="utf-8") as f:
-        keys = yaml.safe_load(f)
+    with open(keys_file, "r", encoding="utf-8") as f:
+        keys_yaml = yaml.safe_load(f)
 
-    keys = list(keys.keys())
+    strings = []
+    for off in offsets:
+        s = decode(data[off*2:])
+        if "\n" in s:
+            s = LiteralString(s)
+        strings.append(s)
 
-    strings = [
-        LiteralString(s) if "\n" in (s := decode(
-            data[off*2 : ]
-        )) else s
-        for off in offsets
-    ]
+    result, used = assign_strings(keys_yaml, strings)
 
-    result = dict(zip(keys, strings))
+    if used != len(strings):
+        raise ValueError(
+            f"Not all strings were consumed (used {used}, have {len(strings)})"
+        )
 
     with open(out_path, "w", encoding="utf-8") as f:
         yaml.dump(result, f, allow_unicode=True, sort_keys=False, width=1000)

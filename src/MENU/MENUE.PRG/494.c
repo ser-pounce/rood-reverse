@@ -597,7 +597,7 @@ static void func_80103CF0()
     int var_v0;
     u_short* temp_s2;
     void** q;
-    void** p = (void**) getScratchAddr(0);
+    void** p = (void**)getScratchAddr(0);
 
     area = p[0];
     SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
@@ -624,7 +624,7 @@ static void func_80103CF0()
     rect.y = 55;
     rect.h = 130;
 
-    q = (void**) getScratchAddr(0);
+    q = (void**)getScratchAddr(0);
     area = q[0];
     SetDrawArea(area, &rect);
     AddPrim(q[1], area++);
@@ -919,7 +919,7 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
     } else {
         setClut(poly, 912, 223);
     }
-    p = (u_long**) getScratchAddr(0);
+    p = (u_long**)getScratchAddr(0);
     AddPrim(p[1] - 7, poly++);
     p[0] = (void*)poly;
 }
@@ -939,7 +939,7 @@ static void _drawContentLines()
         return;
     }
 
-    line = *(LINE_F2**) getScratchAddr(0);
+    line = *(LINE_F2**)getScratchAddr(0);
 
     var_v1 = _helpText[0];
     if (var_v1 < 0) {

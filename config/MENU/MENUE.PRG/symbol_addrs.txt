@@ -14,6 +14,7 @@ _copyCluts = 0x80103AD8;
 _getRoundedLineCount = 0x80103B6C;
 _copyNextPageText = 0x80103BC8;
 _vsStringCpy = 0x80103C9C;
+_drawSprite = 0x80103E6C;
 _setPageBg = 0x80104204;
 _fadeMenuUpper = 0x8010435C;
 _fadeMenuLower = 0x80104620;

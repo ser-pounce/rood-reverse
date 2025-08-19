@@ -45,7 +45,7 @@ typedef struct {
 static char* _vsStringCpy(char* arg0, char* arg1);
 static int _initMenuState();
 static int _showMenu();
-static void func_80103E6C(short*);
+static void _drawSprite(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void _drawContentLines();
 static short _getBlinkState(BlinkState_t* arg0);
@@ -605,8 +605,8 @@ static void func_80103CF0()
     RECT rect;
     DR_AREA* area;
     int i;
-    int var_v0;
-    u_short* temp_s2;
+    int spriteOffset;
+    u_short* spriteData;
     void** q;
     void** p = (void**)getScratchAddr(0);
 
@@ -617,14 +617,14 @@ static void func_80103CF0()
 
     _drawContentLines();
 
-    var_v0 = *_helpText;
-    if (var_v0 < 0) {
-        var_v0 += 3;
+    spriteOffset = _helpText[0];
+    if (spriteOffset < 0) {
+        spriteOffset += 3;
     }
-    temp_s2 = (u_short*)_helpText + 8 + (var_v0 >> 2) * 2;
+    spriteData = (u_short*)_helpText + 8 + (spriteOffset >> 2) * 2;
 
-    for (i = 0; i < temp_s2[0]; ++i) {
-        func_80103E6C(&temp_s2[temp_s2[i + 1]]);
+    for (i = 0; i < spriteData[0]; ++i) {
+        _drawSprite(&spriteData[spriteData[i + 1]]);
     }
     if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 320) {
         rect.x = 333;
@@ -687,7 +687,7 @@ static inline int _min(int arg0, int arg1)
 
 static inline int _add_int(int arg0, int arg1) { return (arg0 + arg1); }
 
-static void func_80103E6C(short* arg0)
+static void _drawSprite(short* data)
 {
     short posX;
     short posY;
@@ -706,15 +706,15 @@ static void func_80103E6C(short* arg0)
     u_long** scratch;
     short tPage;
 
-    if ((*arg0 == 0) || ((_getBlinkState((BlinkState_t*)arg0) << 0x10) == 0)) {
-        arg0 += 8;
-        posX = *arg0++;
-        posY = *arg0++;
-        width = *arg0++;
-        height = *arg0++;
-        ++arg0;
-        tileMode = *arg0++;
-        clutPacked = *arg0++;
+    if ((*data == 0) || ((_getBlinkState((BlinkState_t*)data) << 0x10) == 0)) {
+        data += 8;
+        posX = *data++;
+        posY = *data++;
+        width = *data++;
+        height = *data++;
+        ++data;
+        tileMode = *data++;
+        clutPacked = *data++;
 
         clutPacked = ((((clutPacked % 16) << 4) + 0x300) >> 4)
             | (((clutPacked / 16) + 0x1F0) << 6);
@@ -727,42 +727,45 @@ static void func_80103E6C(short* arg0)
         for (i = 0; i < height; i += 16) {
             spriteH = _min(height - i, 16);
 
-            for (j = 0; j < width; ++arg0, j += tileStride) {
+            for (j = 0; j < width; ++data, j += tileStride) {
+                int spriteU0;
+                int spriteV0;
+
                 spriteW = _min(width - j, tileStride);
                 spriteX = 0x0D;
                 spriteX = posX + (j + spriteX);
                 spriteY = _add_int(posY, i + 0x37);
                 spriteY -= _scrollPosition * 0xD;
 
-                if ((spriteY >= 0x27) && (spriteY < 0xB9)) {
-                    int spriteV0;
-                    int spriteU0;
-                    sprite = *((void**)0x1F800000);
-                    setSprt(sprite);
-                    setShadeTex(sprite, 1);
-                    sprite->clut = clutPacked;
-                    setXY0(sprite, spriteX, spriteY);
-
-                    spriteU0 = (*arg0 / 16);
-                    tPage = spriteU0;
-                    tPage = tPage % 3 + 0x1D;
-
-                    if (tileMode == 0x10) {
-                        sprite->u0 = ((*arg0 - (spriteU0 << 4)) << 0x10) >> 0xC;
-                    } else {
-                        tPage |= 0x80;
-                        sprite->u0 = ((*arg0 - (spriteU0 << 4)) << 0x10) >> 0xD;
-                    }
-
-                    spriteV0 = (*arg0 / 48);
-                    sprite->v0 = (spriteV0 << 4);
-                    setWH(sprite, spriteW, spriteH);
-
-                    scratch = (void*)getScratchAddr(0);
-                    AddPrim(scratch[1], sprite++);
-                    scratch[0] = (void*)sprite;
-                    _insertTpage(0, tPage);
+                if ((spriteY < 0x27) || (0xB9 <= spriteY)) {
+                    continue;
                 }
+
+                sprite = *((void**)0x1F800000);
+                setSprt(sprite);
+                setShadeTex(sprite, 1);
+                sprite->clut = clutPacked;
+                setXY0(sprite, spriteX, spriteY);
+
+                spriteU0 = (*data / 16);
+                tPage = spriteU0;
+                tPage = tPage % 3 + 0x1D;
+
+                if (tileMode == 0x10) {
+                    sprite->u0 = ((*data - (spriteU0 << 4)) << 0x10) >> 0xC;
+                } else {
+                    tPage |= 0x80;
+                    sprite->u0 = ((*data - (spriteU0 << 4)) << 0x10) >> 0xD;
+                }
+
+                spriteV0 = (*data / 48);
+                sprite->v0 = (spriteV0 << 4);
+                setWH(sprite, spriteW, spriteH);
+
+                scratch = (void*)getScratchAddr(0);
+                AddPrim(scratch[1], sprite++);
+                scratch[0] = (void*)sprite;
+                _insertTpage(0, tPage);
             }
         }
     }
@@ -937,13 +940,13 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
 
 static void _drawContentLines()
 {
-    short var_a1;
+    short blinkState;
     short i;
-    short* var_s0;
-    int var_v0;
-    int var_v1;
+    short* linesData;
+    int linesOffset;
+    int spriteOffset;
     LINE_F2* line;
-    short s4;
+    short linesCount;
     char* c;
 
     if (_helpText[2] <= 0) {
@@ -952,40 +955,40 @@ static void _drawContentLines()
 
     line = *(LINE_F2**)getScratchAddr(0);
 
-    var_v1 = _helpText[0];
-    if (var_v1 < 0) {
-        var_v1 += 3;
+    spriteOffset = _helpText[0];
+    if (spriteOffset < 0) {
+        spriteOffset += 3;
     }
-    var_v1 >>= 2;
+    spriteOffset >>= 2;
 
-    var_v0 = _helpText[1];
-    if (var_v0 < 0) {
-        var_v0 += 3;
+    linesOffset = _helpText[1];
+    if (linesOffset < 0) {
+        linesOffset += 3;
     }
 
-    var_v0 = var_v1 + (var_v0 >> 2);
-    var_s0 = (short*)&(_helpText)[var_v0 + 4];
+    linesOffset = spriteOffset + (linesOffset >> 2);
+    linesData = (short*)&(_helpText)[linesOffset + 4];
 
-    s4 = *var_s0++;
+    linesCount = *linesData++;
 
-    for (i = 0; i < s4; ++i) {
-        var_a1 = 0;
-        if (*var_s0 != 0) {
-            var_a1 = _getBlinkState((BlinkState_t*)var_s0);
+    for (i = 0; i < linesCount; ++i) {
+        blinkState = 0;
+        if (*linesData != 0) {
+            blinkState = _getBlinkState((BlinkState_t*)linesData);
         }
-        var_s0 += 8;
+        linesData += 8;
         setLineF2(line);
-        line->x0 = *var_s0++ + 13;
-        line->y0 = *var_s0++ + 55 - _scrollPosition * 13;
-        line->x1 = *var_s0++ + 13;
-        line->y1 = *var_s0++ + 55 - _scrollPosition * 13;
-        c = (char*)var_s0;
+        line->x0 = *linesData++ + 13;
+        line->y0 = *linesData++ + 55 - _scrollPosition * 13;
+        line->x1 = *linesData++ + 13;
+        line->y1 = *linesData++ + 55 - _scrollPosition * 13;
+        c = (char*)linesData;
         setRGB0(line, c[0], c[1], c[2]);
-        var_s0 += 2;
+        linesData += 2;
         if ((line->y0 < 55) && ((line->y1 >= 55) == 0)) {
             continue;
         }
-        if (((line->y0 < 186) || (line->y1 < 186)) && ((var_a1 << 16) == 0)) {
+        if (((line->y0 < 186) || (line->y1 < 186)) && ((blinkState << 16) == 0)) {
             AddPrim(*(void**)getScratchAddr(1), line++);
         }
     }

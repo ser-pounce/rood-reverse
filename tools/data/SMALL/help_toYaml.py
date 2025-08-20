@@ -1,0 +1,160 @@
+import struct
+import sys
+import yaml
+from typing import Dict, List, Tuple, Any
+from tools.etc.vsString import decode
+
+
+class BinaryParser:
+    
+    def __init__(self, data: bytes):
+        self.data = data
+    
+    def unpack_at(self, fmt: str, offset: int) -> Tuple:
+        return struct.unpack_from(fmt, self.data, offset)
+    
+    def parse_header_and_offsets(self, offset: int) -> List[int]:
+        count = self.unpack_at("<H", offset)[0]
+        return [
+            self.unpack_at("<H", offset + (i + 1) * 2)[0] * 2
+            for i in range(count)
+        ]
+
+
+def parse_blink_state(parser: BinaryParser, offset: int) -> Dict[str, Any]:
+    fields = parser.unpack_at("<hHhhhhh", offset)
+    return {
+        "enabled": fields[0],
+        "stateBits": format(fields[1], "016b"),
+        "stateDuration": fields[2],
+        "repeat": fields[3],
+        "currentStateBit": fields[4],
+        "frameCounter": fields[5],
+        "state": fields[6],
+    }
+
+
+def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
+    blink = parse_blink_state(parser, offset)
+    offset += 16
+
+    x, y, w, h, count, tile_mode, clut_packed = parser.unpack_at("<hhhhhhh", offset)
+    offset += 14
+
+    tiles = list(parser.unpack_at("<" + "h" * count, offset))
+
+    return {
+        "blink": blink,
+        "x": x,
+        "y": y,
+        "w": w,
+        "h": h,
+        "count": count,
+        "tileMode": tile_mode,
+        "clutPacked": clut_packed,
+        "tiles": tiles,
+    }
+
+
+def parse_line(parser: BinaryParser, offset: int) -> Tuple[Dict[str, Any], int]:
+    blink = parse_blink_state(parser, offset)
+    offset += 16
+
+    x0, y0, x1, y1 = parser.unpack_at("<hhhh", offset)
+    offset += 8
+
+    r, g, b = parser.unpack_at("<BBB", offset)
+    offset += 4
+
+    return {
+        "blink": blink,
+        "x0": x0,
+        "y0": y0,
+        "x1": x1,
+        "y1": y1,
+        "color": {"r": r, "g": g, "b": b},
+    }, offset
+
+
+def parse_strings_block(block_data: bytes) -> List[str]:
+    parser = BinaryParser(block_data)
+    offsets = parser.parse_header_and_offsets(0)
+    
+    strings = []
+    for offset in offsets:
+        result = decode(block_data[offset:])
+        strings.append(result)
+    
+    return strings
+
+
+def parse_sprites_block(block_data: bytes) -> List[Dict[str, Any]]:
+    parser = BinaryParser(block_data)
+    offsets = parser.parse_header_and_offsets(0)
+    
+    sprites = []
+    for offset in offsets:
+        sprite = parse_sprite(parser, offset)
+        sprites.append(sprite)
+    
+    return sprites
+
+
+def parse_lines_block(block_data: bytes) -> List[Dict[str, Any]]:
+    parser = BinaryParser(block_data)
+    num_lines = parser.unpack_at("<H", 0)[0]
+    
+    lines = []
+    offset = 2
+    for _ in range(num_lines):
+        line, offset = parse_line(parser, offset)
+        lines.append(line)
+    
+    return lines
+
+
+def read_file_blocks(filename: str) -> List[bytes]:
+    with open(filename, "rb") as f:
+        data = f.read()
+
+    block_sizes = struct.unpack_from("<IIII", data, 0)
+    
+    blocks = []
+    offset = 16
+    for size in block_sizes:
+        blocks.append(data[offset:offset + size])
+        offset += size
+    
+    return blocks
+
+
+def parse_file(filename: str) -> None:
+    try:
+        blocks = read_file_blocks(filename)
+        
+        if len(blocks) < 3:
+            raise ValueError("File must contain at least 3 blocks")
+        
+        strings = parse_strings_block(blocks[0])
+        sprites = parse_sprites_block(blocks[1])
+        lines = parse_lines_block(blocks[2])
+        
+        output = {
+            "strings": strings,
+            "sprites": sprites,
+            "lines": lines,
+        }
+        
+        print(yaml.dump(output, sort_keys=False, allow_unicode=True))
+        
+    except (IOError, struct.error, ValueError) as e:
+        print(f"Error parsing file {filename}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <filename>", file=sys.stderr)
+        sys.exit(1)
+    
+    parse_file(sys.argv[1])

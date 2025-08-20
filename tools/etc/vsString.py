@@ -98,11 +98,11 @@ def encode_raw(s):
             i += 1
     return bytes(result)
 
-def encode(s):
+def encode(s, padding=0xEB):
     result = list(encode_raw(s))
     result.append(0xE7)
     if len(result) % 2 == 1:
-        result.append(0xEB)
+        result.append(padding)
     return bytes(result)
 
 

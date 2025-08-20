@@ -1,7 +1,7 @@
 .vscode
 build
 base
-data
+data/*
 objdiff.json
 config/*.xml
 disks/*

@@ -751,11 +751,11 @@ static void _drawSprite(short* data)
                 tPage = spriteU0;
                 tPage = tPage % 3 + 0x1D;
 
-                if (tileMode == 0x10) {
-                    sprite->u0 = ((*data - (spriteU0 << 4)) << 0x10) >> 0xC;
+                if (tileMode == 16) {
+                    sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 12;
                 } else {
                     tPage |= 0x80;
-                    sprite->u0 = ((*data - (spriteU0 << 4)) << 0x10) >> 0xD;
+                    sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 13;
                 }
 
                 spriteV0 = (*data / 48);

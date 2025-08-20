@@ -145,16 +145,17 @@ def parse_file(filename: str) -> None:
             "lines": lines,
         }
         
-        print(yaml.dump(output, sort_keys=False, allow_unicode=True))
+        return output
         
     except (IOError, struct.error, ValueError) as e:
-        print(f"Error parsing file {filename}: {e}", file=sys.stderr)
         sys.exit(1)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <filename>", file=sys.stderr)
+    if len(sys.argv) != 3:
+        print("Usage: <filename> <output.yaml>", file=sys.stderr)
         sys.exit(1)
     
-    parse_file(sys.argv[1])
+    with open(sys.argv[2], "w") as f:
+        output = parse_file(sys.argv[1])
+        yaml.dump(output, f, sort_keys=False, allow_unicode=True)

@@ -145,17 +145,13 @@ def yaml_to_binary(yaml_filename: str, binary_filename: str) -> None:
             for block in blocks:
                 f.write(block)
         
-        print(f"Successfully converted {yaml_filename} to {binary_filename}")
-        print(f"Block sizes: {block_sizes}")
-        
     except (IOError, yaml.YAMLError, ValueError, struct.error) as e:
-        print(f"Error converting file: {e}", file=sys.stderr)
         sys.exit(1)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python script.py <input.yaml> <output.bin>", file=sys.stderr)
+        print("Usage: <input.yaml> <output.bin>", file=sys.stderr)
         sys.exit(1)
     
     yaml_to_binary(sys.argv[1], sys.argv[2])

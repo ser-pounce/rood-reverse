@@ -68,7 +68,7 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 sourcedata := $(binaries:%=data/%)
 targets    := $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
-makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile
+makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif

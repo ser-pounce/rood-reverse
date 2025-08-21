@@ -34,3 +34,4 @@ _pageArrowAnimState = 0x8010524C;
 _helpPageLoadCounter = 0x80105250;
 _helpText = 0x80105254;
 _helpAssets = 0x80105258;
+_drawContent = 0x80103CF0;

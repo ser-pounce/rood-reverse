@@ -53,13 +53,14 @@ static void _copySprites(u_long const* arg0, int arg1);
 static void _copyCluts(u_long* arg0, int arg1);
 static int _getRoundedLineCount();
 static void _copyNextPageText();
-static void func_80103CF0();
+static void _drawContent();
 static void _setPageBg(int arg0, int arg1, int arg2, int arg3, int arg4);
 static void _fadeMenuUpper();
 static void _fadeMenuLower();
 static void _drawControlsBg(int x, int y, int w, int h);
 
-static void func_80102C94(int arg0)
+static void func_80102C94(int arg0) __attribute__ ((unused));
+void func_80102C94(int arg0)
 {
     if (arg0 != 0) {
         func_800FFA88(2);
@@ -113,7 +114,8 @@ static int _getSelectedRow()
     return row;
 }
 
-static void func_80102E48(char* text)
+static void func_80102E48(char* text) __attribute__ ((unused));
+void func_80102E48(char* text)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -124,7 +126,8 @@ static void func_80102E48(char* text)
     menuItem->unkA = 1;
 }
 
-static void func_80102E9C() { func_800FA8E0(8); }
+static void func_80102E9C() __attribute__ ((unused));
+void func_80102E9C() { func_800FA8E0(8); }
 
 static void _menuReady() { vs_mainmenu_ready(); }
 
@@ -446,7 +449,7 @@ static int _showMenu()
         if (_helpPageLoadCounter < 8) {
             ++_helpPageLoadCounter;
         } else {
-            func_80103CF0();
+            _drawContent();
         }
         _copyNextPageText();
         break;
@@ -599,7 +602,7 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
-static void func_80103CF0()
+static void _drawContent()
 {
     RECT rect;
     DR_AREA* area;

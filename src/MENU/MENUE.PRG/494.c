@@ -33,14 +33,13 @@ enum arrowType_e {
 
 typedef struct {
     short enabled;
-    u_short stateBits;
-    short stateDuration;
+    u_short frameMask;
+    short frameDuration;
     short repeat;
-    short currentStateBit;
-    short frameCounter;
-    short state;
-    short _;
-} BlinkState_t;
+    short currentFrame;
+    short timer;
+    short isActive;
+} AnimationState_t;
 
 static char* _vsStringCpy(char* arg0, char* arg1);
 static int _initMenuState();
@@ -48,7 +47,7 @@ static int _showMenu();
 static void _drawSprite(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
 static void _drawContentLines();
-static short _getBlinkState(BlinkState_t* arg0);
+static short _getAnimationState(AnimationState_t* arg0);
 static int _topMenu(int arg0);
 static void _copySprites(u_long const* arg0, int arg1);
 static void _copyCluts(u_long* arg0, int arg1);
@@ -706,7 +705,7 @@ static void _drawSprite(short* data)
     u_long** scratch;
     short tPage;
 
-    if ((*data == 0) || ((_getBlinkState((BlinkState_t*)data) << 0x10) == 0)) {
+    if ((*data == 0) || ((_getAnimationState((AnimationState_t*)data) << 0x10) == 0)) {
         data += 8;
         posX = *data++;
         posY = *data++;
@@ -940,7 +939,7 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
 
 static void _drawContentLines()
 {
-    short blinkState;
+    short animationState;
     short i;
     short* linesData;
     int linesOffset;
@@ -972,9 +971,9 @@ static void _drawContentLines()
     linesCount = *linesData++;
 
     for (i = 0; i < linesCount; ++i) {
-        blinkState = 0;
+        animationState = 0;
         if (*linesData != 0) {
-            blinkState = _getBlinkState((BlinkState_t*)linesData);
+            animationState = _getAnimationState((AnimationState_t*)linesData);
         }
         linesData += 8;
         setLineF2(line);
@@ -988,33 +987,33 @@ static void _drawContentLines()
         if ((line->y0 < 55) && ((line->y1 >= 55) == 0)) {
             continue;
         }
-        if (((line->y0 < 186) || (line->y1 < 186)) && ((blinkState << 16) == 0)) {
+        if (((line->y0 < 186) || (line->y1 < 186)) && ((animationState << 16) == 0)) {
             AddPrim(*(void**)getScratchAddr(1), line++);
         }
     }
     *(void**)getScratchAddr(0) = line;
 }
 
-static short _getBlinkState(BlinkState_t* state)
+static short _getAnimationState(AnimationState_t* state)
 {
     short nextState;
 
-    if (state->currentStateBit >= 16) {
-        return state->state;
+    if (state->currentFrame >= 16) {
+        return state->isActive;
     }
 
-    nextState = state->stateBits >> state->currentStateBit;
+    nextState = state->frameMask >> state->currentFrame;
     nextState = nextState & 1;
 
-    if ((++state->frameCounter) >= state->stateDuration) {
-        state->frameCounter = 0;
-        if ((++state->currentStateBit) >= 16) {
+    if ((++state->timer) >= state->frameDuration) {
+        state->timer = 0;
+        if ((++state->currentFrame) >= 16) {
             if (state->repeat != 0) {
-                state->currentStateBit = 0;
+                state->currentFrame = 0;
             }
         }
     }
-    return state->state = nextState ^ 1;
+    return state->isActive = nextState ^ 1;
 }
 
 static void _drawControlsBg(int x, int y, int w, int h)

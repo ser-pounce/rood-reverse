@@ -5,31 +5,35 @@ from typing import Dict, List, Any
 from tools.etc.vsString import encode
 
 
-def pack_blink_state(blink_data: Dict[str, Any]) -> bytes:
-    state_bits = int(blink_data["stateBits"], 2)
+def pack_animation(animation_data: Dict[str, Any]) -> bytes:
+    state_bits = int(animation_data["frameMask"], 2)
     return struct.pack("<hHhhhhhxx",
-                       blink_data["enabled"],
+                       animation_data["enabled"],
                        state_bits,
-                       blink_data["stateDuration"],
-                       blink_data["repeat"],
-                       blink_data["currentStateBit"],
-                       blink_data["frameCounter"],
-                       blink_data["state"])
+                       animation_data["frameDuration"],
+                       animation_data["repeat"],
+                       animation_data["currentFrame"],
+                       animation_data["timer"],
+                       animation_data["isActive"])
 
 
 def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
     data = bytearray()
     
-    data.extend(pack_blink_state(sprite_data["blink"]))
+    data.extend(pack_animation(sprite_data["animation"]))
+    
+    clut_packed = (sprite_data["clutY"] << 6) | (sprite_data["clutX"] & 0x3F)
+    
+    count = len(sprite_data["tiles"])
     
     data.extend(struct.pack("<hhhhhhh",
                            sprite_data["x"],
                            sprite_data["y"],
                            sprite_data["w"],
                            sprite_data["h"],
-                           sprite_data["count"],
+                           count,
                            sprite_data["tileMode"],
-                           sprite_data["clutPacked"]))
+                           clut_packed))
     
     tiles = sprite_data["tiles"]
     data.extend(struct.pack("<" + "h" * len(tiles), *tiles))
@@ -40,7 +44,7 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
 def pack_line(line_data: Dict[str, Any]) -> bytes:
     data = bytearray()
     
-    data.extend(pack_blink_state(line_data["blink"]))
+    data.extend(pack_animation(line_data["animation"]))
     
     data.extend(struct.pack("<hhhh",
                            line_data["x0"],

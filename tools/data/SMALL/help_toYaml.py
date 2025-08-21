@@ -21,21 +21,21 @@ class BinaryParser:
         ]
 
 
-def parse_blink_state(parser: BinaryParser, offset: int) -> Dict[str, Any]:
+def parse_animation(parser: BinaryParser, offset: int) -> Dict[str, Any]:
     fields = parser.unpack_at("<hHhhhhh", offset)
     return {
         "enabled": fields[0],
-        "stateBits": format(fields[1], "016b"),
-        "stateDuration": fields[2],
+        "frameMask": format(fields[1], "016b"),
+        "frameDuration": fields[2],
         "repeat": fields[3],
-        "currentStateBit": fields[4],
-        "frameCounter": fields[5],
-        "state": fields[6],
+        "currentFrame": fields[4],
+        "timer": fields[5],
+        "isActive": fields[6],
     }
 
 
 def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
-    blink = parse_blink_state(parser, offset)
+    animation = parse_animation(parser, offset)
     offset += 16
 
     x, y, w, h, count, tile_mode, clut_packed = parser.unpack_at("<hhhhhhh", offset)
@@ -43,21 +43,24 @@ def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
 
     tiles = list(parser.unpack_at("<" + "h" * count, offset))
 
+    clut_x = clut_packed & 0x3F
+    clut_y = clut_packed >> 6
+
     return {
-        "blink": blink,
+        "animation": animation,
         "x": x,
         "y": y,
         "w": w,
         "h": h,
-        "count": count,
         "tileMode": tile_mode,
-        "clutPacked": clut_packed,
+        "clutX": clut_x,
+        "clutY": clut_y,
         "tiles": tiles,
     }
 
 
 def parse_line(parser: BinaryParser, offset: int) -> Tuple[Dict[str, Any], int]:
-    blink = parse_blink_state(parser, offset)
+    animation = parse_animation(parser, offset)
     offset += 16
 
     x0, y0, x1, y1 = parser.unpack_at("<hhhh", offset)
@@ -67,7 +70,7 @@ def parse_line(parser: BinaryParser, offset: int) -> Tuple[Dict[str, Any], int]:
     offset += 4
 
     return {
-        "blink": blink,
+        "animation": animation,
         "x0": x0,
         "y0": y0,
         "x1": x1,

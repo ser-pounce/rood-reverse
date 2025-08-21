@@ -21,8 +21,12 @@ class BinaryParser:
         ]
 
 
-def parse_animation(parser: BinaryParser, offset: int) -> Dict[str, Any]:
+def parse_animation(parser: BinaryParser, offset: int) -> Dict[str, Any] | None:
     fields = parser.unpack_at("<hHhhhhh", offset)
+    
+    if all(field == 0 for field in fields):
+        return None
+    
     return {
         "enabled": fields[0],
         "frameMask": format(fields[1], "016b"),
@@ -41,13 +45,12 @@ def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
     x, y, w, h, count, tile_mode, clut_packed = parser.unpack_at("<hhhhhhh", offset)
     offset += 14
 
-    tiles = list(parser.unpack_at("<" + "h" * count, offset))
+    texUV = list(parser.unpack_at("<" + "h" * count, offset))
 
     clut_x = clut_packed & 0x3F
     clut_y = clut_packed >> 6
 
-    return {
-        "animation": animation,
+    result = {
         "x": x,
         "y": y,
         "w": w,
@@ -55,11 +58,16 @@ def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
         "tileMode": tile_mode,
         "clutX": clut_x,
         "clutY": clut_y,
-        "tiles": tiles,
+        "texUV": texUV,
     }
+    
+    if animation is not None:
+        result["animation"] = animation
+    
+    return result
 
 
-def parse_line(parser: BinaryParser, offset: int) -> Tuple[Dict[str, Any], int]:
+def parse_line(parser: BinaryParser, offset: int) -> Dict[str, Any]:
     animation = parse_animation(parser, offset)
     offset += 16
 
@@ -67,16 +75,19 @@ def parse_line(parser: BinaryParser, offset: int) -> Tuple[Dict[str, Any], int]:
     offset += 8
 
     r, g, b = parser.unpack_at("<BBB", offset)
-    offset += 4
 
-    return {
-        "animation": animation,
+    result = {
         "x0": x0,
         "y0": y0,
         "x1": x1,
         "y1": y1,
         "color": {"r": r, "g": g, "b": b},
-    }, offset
+    }
+    
+    if animation is not None:
+        result["animation"] = animation
+    
+    return result
 
 
 def parse_strings_block(block_data: bytes) -> List[str]:
@@ -110,8 +121,9 @@ def parse_lines_block(block_data: bytes) -> List[Dict[str, Any]]:
     lines = []
     offset = 2
     for _ in range(num_lines):
-        line, offset = parse_line(parser, offset)
+        line = parse_line(parser, offset)
         lines.append(line)
+        offset += 28
     
     return lines
 
@@ -131,7 +143,7 @@ def read_file_blocks(filename: str) -> List[bytes]:
     return blocks
 
 
-def parse_file(filename: str) -> None:
+def parse_file(filename: str) -> Dict[str, Any]:
     try:
         blocks = read_file_blocks(filename)
         
@@ -159,6 +171,6 @@ if __name__ == "__main__":
         print("Usage: <filename> <output.yaml>", file=sys.stderr)
         sys.exit(1)
     
+    output = parse_file(sys.argv[1])
     with open(sys.argv[2], "w") as f:
-        output = parse_file(sys.argv[1])
-        yaml.dump(output, f, sort_keys=False, allow_unicode=True)
+        yaml.dump(output, f, default_flow_style=False, sort_keys=False, allow_unicode=True)

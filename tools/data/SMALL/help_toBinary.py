@@ -5,6 +5,18 @@ from typing import Dict, List, Any
 from tools.etc.vsString import encode
 
 
+def get_default_animation() -> Dict[str, Any]:
+    return {
+        "enabled": 0,
+        "frameMask": "0000000000000000",
+        "frameDuration": 0,
+        "repeat": 0,
+        "currentFrame": 0,
+        "timer": 0,
+        "isActive": 0
+    }
+
+
 def pack_animation(animation_data: Dict[str, Any]) -> bytes:
     state_bits = int(animation_data["frameMask"], 2)
     return struct.pack("<hHhhhhhxx",
@@ -20,11 +32,12 @@ def pack_animation(animation_data: Dict[str, Any]) -> bytes:
 def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
     data = bytearray()
     
-    data.extend(pack_animation(sprite_data["animation"]))
+    animation = sprite_data.get("animation", get_default_animation())
+    data.extend(pack_animation(animation))
     
     clut_packed = (sprite_data["clutY"] << 6) | (sprite_data["clutX"] & 0x3F)
     
-    count = len(sprite_data["tiles"])
+    count = len(sprite_data["texUV"])
     
     data.extend(struct.pack("<hhhhhhh",
                            sprite_data["x"],
@@ -35,8 +48,8 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
                            sprite_data["tileMode"],
                            clut_packed))
     
-    tiles = sprite_data["tiles"]
-    data.extend(struct.pack("<" + "h" * len(tiles), *tiles))
+    texUV = sprite_data["texUV"]
+    data.extend(struct.pack("<" + "h" * len(texUV), *texUV))
     
     return bytes(data)
 
@@ -44,7 +57,8 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
 def pack_line(line_data: Dict[str, Any]) -> bytes:
     data = bytearray()
     
-    data.extend(pack_animation(line_data["animation"]))
+    animation = line_data.get("animation", get_default_animation())
+    data.extend(pack_animation(animation))
     
     data.extend(struct.pack("<hhhh",
                            line_data["x0"],

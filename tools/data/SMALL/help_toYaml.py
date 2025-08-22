@@ -42,23 +42,23 @@ def parse_sprite(parser: BinaryParser, offset: int) -> Dict[str, Any]:
     animation = parse_animation(parser, offset)
     offset += 16
 
-    x, y, w, h, count, tile_mode, clut_packed = parser.unpack_at("<hhhhhhh", offset)
+    x, y, w, h, count, colors, clut_packed = parser.unpack_at("<hhhhhhh", offset)
     offset += 14
 
-    texUV = list(parser.unpack_at("<" + "h" * count, offset))
+    sprites = list(parser.unpack_at("<" + "h" * count, offset))
 
-    clut_x = clut_packed & 0x3F
-    clut_y = clut_packed >> 6
+    clut_x = clut_packed % 16
+    clut_y = clut_packed // 16
 
     result = {
         "x": x,
         "y": y,
         "w": w,
         "h": h,
-        "tileMode": tile_mode,
+        "colors": colors,
         "clutX": clut_x,
         "clutY": clut_y,
-        "texUV": texUV,
+        "sprites": sprites,
     }
     
     if animation is not None:

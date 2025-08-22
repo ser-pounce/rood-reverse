@@ -35,9 +35,9 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
     animation = sprite_data.get("animation", get_default_animation())
     data.extend(pack_animation(animation))
     
-    clut_packed = (sprite_data["clutY"] << 6) | (sprite_data["clutX"] & 0x3F)
+    clut_packed = (sprite_data["clutY"] * 16) | (sprite_data["clutX"])
     
-    count = len(sprite_data["texUV"])
+    count = len(sprite_data["sprites"])
     
     data.extend(struct.pack("<hhhhhhh",
                            sprite_data["x"],
@@ -45,10 +45,10 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
                            sprite_data["w"],
                            sprite_data["h"],
                            count,
-                           sprite_data["tileMode"],
+                           sprite_data["colors"],
                            clut_packed))
     
-    texUV = sprite_data["texUV"]
+    texUV = sprite_data["sprites"]
     data.extend(struct.pack("<" + "h" * len(texUV), *texUV))
     
     return bytes(data)

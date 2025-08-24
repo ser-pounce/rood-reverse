@@ -185,7 +185,9 @@ typedef struct {
     char unk105;
     char unk106[0x16];
     char puzzleMode;
-    char unk11D[0x323];
+    char unk11D[0x39];
+    char unk156[48];
+    char unk186[0x2BA];
 } vs_main_flags_t;
 
 typedef struct {

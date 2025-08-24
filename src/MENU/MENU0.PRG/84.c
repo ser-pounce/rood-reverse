@@ -107,9 +107,9 @@ INCLUDE_RODATA("build/src/MENU/MENU0.PRG/nonmatchings/84", D_80102800);
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80102B08);
 
-extern char D_8004B9F8[]; // skillname
-extern char D_800EBD84[];
 extern u_short D_80104A58[];
+extern char D_8004B9F8[];
+extern char D_800EBD84[];
 extern int D_801068F4;
 extern int D_801068F8;
 extern int D_801068FC;
@@ -196,8 +196,8 @@ int _drawMagicList(int arg0)
     return 0;
 }
 
-extern char D_80106958[];
 extern char D_800EBD8C[];
+extern char D_80106958[];
 extern int D_80106900;
 extern int D_80106904;
 extern int D_80106908;

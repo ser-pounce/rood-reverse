@@ -164,10 +164,8 @@ def parse_line(parser: BinaryParser, offset: int) -> Dict[str, Any]:
     r, g, b = parser.unpack_at("<BBB", offset)
 
     result = {
-        "x0": x0,
-        "y0": y0,
-        "x1": x1,
-        "y1": y1,
+        "start": {"x": x0, "y": y0},
+        "end": {"x": x1, "y": y1},
         "color": {"r": r, "g": g, "b": b},
     }
     
@@ -412,8 +410,7 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         simplified_sprites = []
         for idx, sprite in enumerate(hf0_data["sprites"]):
             simplified_sprite = {
-                "x": sprite["x"],
-                "y": sprite["y"],
+                "position": {"x": sprite["x"], "y": sprite["y"]},
                 "file": sprite_files[idx]
             }
             if "animation" in sprite:
@@ -427,7 +424,7 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         yaml_path = output_dir / "help_data.yaml"
         logger.debug(f"Writing YAML data to: {yaml_path}")
         with open(yaml_path, "w", encoding="utf-8") as f:
-            yaml.dump(hf0_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+            yaml.dump(hf0_data, f, Dumper=CustomDumper, default_flow_style=False, sort_keys=False, allow_unicode=True)
         
         # Print summary
         logger.info(f"Processed {len(sprite_configs)} sprites ({len(seen_signatures)} unique)")
@@ -436,6 +433,17 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
     except Exception as e:
         logger.error(f"Error processing help files: {e}")
         raise
+
+# Create a custom dumper that defaults to block style
+class CustomDumper(yaml.Dumper):
+    def represent_mapping(self, tag, mapping, flow_style=None):
+        # Use flow style for coordinate pairs (x,y) and colors (r,g,b)
+        if isinstance(mapping, dict) and (
+            set(mapping.keys()) == {'x', 'y'} or
+            set(mapping.keys()) == {'r', 'g', 'b'}
+        ):
+            flow_style = True
+        return super().represent_mapping(tag, mapping, flow_style)
 
 def main() -> None:
     """Command-line entry point."""

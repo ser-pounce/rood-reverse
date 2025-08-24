@@ -203,11 +203,10 @@ def pack_line(line_data: Dict[str, Any]) -> bytes:
     animation = line_data.get("animation", get_default_animation())
     data.extend(pack_animation(animation))
     
-    data.extend(struct.pack("<hhhh",
-                           line_data["x0"],
-                           line_data["y0"],
-                           line_data["x1"],
-                           line_data["y1"]))
+    # Extract coordinates from start/end mappings
+    start = line_data["start"]
+    end = line_data["end"]
+    data.extend(struct.pack("<hhhh", start["x"], start["y"], end["x"], end["y"]))
     
     color = line_data["color"]
     data.extend(struct.pack("<BBBx",
@@ -373,9 +372,11 @@ class HelpBuilder:
         expanded_sprites = []
         for sprite in self.yaml_data["sprites"]:
             png_data = self.processed_sprites[sprite["file"]]
+            # Extract coordinates from position mapping
+            pos = sprite["position"]
             expanded_sprite = {
-                "x": sprite["x"],
-                "y": sprite["y"],
+                "x": pos["x"],
+                "y": pos["y"],
                 "w": png_data["w"],
                 "h": png_data["h"],
                 "sprites": png_data["sprites"],

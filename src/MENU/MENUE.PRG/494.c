@@ -231,7 +231,7 @@ static int _initMenuState()
 
 // Unused vertex data, seems to be a miscopying, perhaps through a header.
 // The same data is defined and used in BATTLE.PRG
-static u_int const _[] = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
+static u_int const _1[] __attribute__ ((unused)) = { 0xFFEAFFFA, 0xFFEA0012, 0x0001FFFA, 0x00010012, 0xFFEAFFEF,
     0xFFEA0007, 0x0001FFEF, 0x00010007, 0xFFE3FFF6, 0xFFE30014, 0x0001FFF6, 0x00010014,
     0xFFE3FFED, 0xFFE30009, 0x0001FFED, 0x00010009, 0xFFF0FFF7, 0xFFF0000B, 0xFFFDFFF7,
     0xFFFD000B, 0xFFF0FFF6, 0xFFF0000A, 0xFFFDFFF6, 0xFFFD000A, 0x10581040, 0x27582740,

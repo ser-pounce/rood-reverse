@@ -117,7 +117,6 @@ def parse_animation(parser: BinaryParser, offset: int) -> Dict[str, Any] | None:
         return None
     
     return {
-        "enabled": fields[0],
         "frameMask": format(fields[1], "016b"),
         "frameDuration": fields[2],
         "repeat": fields[3],
@@ -387,24 +386,26 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         # Create sprites directory
         # Using output_dir directly for sprites
         
-        # Track unique sprites to avoid duplicates
-        seen_signatures = set()
-        sprite_files = {}  # Maps original index to PNG filename
+        # Track unique sprites and their mapping
+        seen_signatures = {}  # Maps signature to sequential index
+        sprite_files = {}    # Maps original index to PNG filename
+        next_sprite_num = 0  # Counter for sequential sprite numbering
         
         # Extract unique sprites
         logger.debug("Extracting unique sprites...")
         for idx, sprite_config in enumerate(sprite_configs):
             if sprite_config.signature not in seen_signatures:
-                seen_signatures.add(sprite_config.signature)
-                output_path = output_dir / f"sprite_{idx}.png"
+                # New unique sprite
+                sprite_num = next_sprite_num
+                next_sprite_num += 1
+                output_path = output_dir / f"sprite_{sprite_num:03d}.png"
                 renderer.render_sprite(sprite_config, output_path)
                 sprite_files[idx] = output_path.name
+                seen_signatures[sprite_config.signature] = sprite_num
             else:
-                # For duplicates, reference the first occurrence
-                for prev_idx, prev_config in enumerate(sprite_configs[:idx]):
-                    if prev_config.signature == sprite_config.signature:
-                        sprite_files[idx] = sprite_files[prev_idx]
-                        break
+                # Reuse existing sprite
+                sprite_num = seen_signatures[sprite_config.signature]
+                sprite_files[idx] = f"sprite_{sprite_num:03d}.png"
         
         # Create simplified sprite entries with just position, animation and PNG reference
         simplified_sprites = []

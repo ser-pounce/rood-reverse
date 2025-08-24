@@ -160,8 +160,17 @@ def get_default_animation() -> Dict[str, Any]:
 def pack_animation(animation_data: Dict[str, Any]) -> bytes:
     """Pack animation data into binary format."""
     state_bits = int(animation_data["frameMask"], 2)
+    # For default animation data (all zeros), enabled should be 0
+    # For real animation data, enabled should be 1
+    is_default = (state_bits == 0 and 
+                 animation_data["frameDuration"] == 0 and
+                 animation_data["repeat"] == 0 and
+                 animation_data["currentFrame"] == 0 and
+                 animation_data["timer"] == 0 and
+                 animation_data["isActive"] == 0)
+    
     return struct.pack("<hHhhhhhxx",
-                       animation_data["enabled"],
+                       0 if is_default else 1,  # enabled
                        state_bits,
                        animation_data["frameDuration"],
                        animation_data["repeat"],

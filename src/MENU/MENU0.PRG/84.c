@@ -283,7 +283,92 @@ int func_801037A8(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80103AEC);
+extern char D_800EBDA0[];
+extern int D_8010690C;
+extern int D_80106910;
+extern int D_80106914;
+extern char D_80106970[];
+
+int func_80103AEC(int arg0)
+{
+    char* menuStrings[16];
+    int rowTypes[8];
+    int i;
+    int rowCount;
+    int skillId;
+
+    if (arg0 != 0) {
+        D_80106914 = (arg0 ^ 2) < 1U;
+        func_800FA92C(3, 1);
+        D_8010690C = 0;
+        return 0;
+    }
+
+    switch (D_8010690C) {
+    case 0:
+        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
+            break;
+        }
+        rowCount = 0;
+        for (i = 0; i < 8; ++i) {
+            skillId = D_800EBDA0[i];
+            if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
+                menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+                menuStrings[rowCount * 2 + 1] = (char*)&D_80104A58[D_80104A58[54 + i]];
+                rowTypes[rowCount] = 0;
+                if (vs_battle_getSkillFlags(0, skillId) != 0) {
+                    rowTypes[rowCount] |= 1;
+                }
+                D_80106970[rowCount] = skillId;
+                ++rowCount;
+            }
+        }
+
+        if (D_800F4EA0 & 0xB7) {
+            for (i = 0; i < 8; ++i) {
+                rowTypes[i] |= 1;
+            }
+        }
+
+        i = vs_main_settings.cursorMemory;
+        if (D_80106914 != 0) {
+            vs_main_settings.cursorMemory = 1;
+        }
+        vs_mainmenu_setMenuRows(rowCount, 0x20A, menuStrings, rowTypes);
+        vs_main_settings.cursorMemory = i;
+        D_8010690C = 1;
+        break;
+    case 1:
+        D_80106910 = vs_mainmenu_getSelectedRow() + 1;
+        if (D_80106910 != 0) {
+            D_801022D4 = 0;
+            if ((vs_battle_shortcutInvoked != 0) && (D_80106910 == -1)) {
+                D_80106910 = -2;
+            }
+            if (D_80106910 == -1) {
+                func_800FA8E0(0);
+            } else {
+                if (D_80106910 > 0) {
+                    D_80106910 = D_80106970[D_80106910 - 1];
+                }
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            }
+            D_8010690C = 2;
+        } else {
+            char* new_var = D_80106970;
+            func_80102884(*(new_var + func_801008B0()));
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_80106910;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU0.PRG/nonmatchings/84", func_80103E30);
 

@@ -387,8 +387,7 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         renderer = SpriteRenderer(framebuffer_data)
         
         # Create sprites directory
-        sprites_dir = output_dir / "sprites"
-        sprites_dir.mkdir(parents=True, exist_ok=True)
+        # Using output_dir directly for sprites
         
         # Track unique sprites to avoid duplicates
         seen_signatures = set()
@@ -399,7 +398,7 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         for idx, sprite_config in enumerate(sprite_configs):
             if sprite_config.signature not in seen_signatures:
                 seen_signatures.add(sprite_config.signature)
-                output_path = sprites_dir / f"sprite_{idx}.png"
+                output_path = output_dir / f"sprite_{idx}.png"
                 renderer.render_sprite(sprite_config, output_path)
                 sprite_files[idx] = output_path.name
             else:
@@ -409,9 +408,20 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
                         sprite_files[idx] = sprite_files[prev_idx]
                         break
         
-        # Add sprite filenames to the YAML data
+        # Create simplified sprite entries with just position, animation and PNG reference
+        simplified_sprites = []
         for idx, sprite in enumerate(hf0_data["sprites"]):
-            sprite["pngFile"] = sprite_files[idx]
+            simplified_sprite = {
+                "x": sprite["x"],
+                "y": sprite["y"],
+                "file": sprite_files[idx]
+            }
+            if "animation" in sprite:
+                simplified_sprite["animation"] = sprite["animation"]
+            simplified_sprites.append(simplified_sprite)
+        
+        # Replace full sprite data with simplified version
+        hf0_data["sprites"] = simplified_sprites
         
         # Write combined YAML output
         yaml_path = output_dir / "help_data.yaml"

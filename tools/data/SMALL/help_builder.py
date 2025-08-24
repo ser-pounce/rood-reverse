@@ -2,22 +2,21 @@
 """
 Help File Builder
 
-Converts YAML+PNG files back to HF0+HF1 format. This is the reverse of help_dumper.py.
-Features:
-1. Reads combined YAML with text, layout and sprite metadata
-2. Processes referenced PNG files to rebuild sprite data
-3. Generates HF0 file containing text, layout and sprite metadata
-4. Generates HF1 file containing the sprite image data
+Creates HF0 and HF1 files from:
+1. YAML containing text content, sprite positions and animations
+2. PNG files containing the actual sprite images
+
+This is the reverse of help_dumper.py.
 """
 
 import os
 import struct
 import sys
-import logging
 import yaml
+import logging
 import png
 from pathlib import Path
-from typing import Dict, List, Tuple, Set, Any
+from typing import Dict, List, Tuple, Any
 from tools.etc.vsString import encode
 
 logger = logging.getLogger(__name__)
@@ -27,10 +26,8 @@ def init_logging(debug: bool = False) -> None:
     level = logging.DEBUG if debug else logging.WARNING
     logging.basicConfig(
         level=level,
-        format='%(message)s',  # Keep it clean for build output
+        format='%(message)s'  # Keep it clean for build output
     )
-
-# --- Color/Image Processing Classes ---
 
 class Color:
     """Utility class for color format conversions."""
@@ -65,8 +62,6 @@ class ImageData:
     @property
     def height(self) -> int:
         return len(self.indices)
-
-# --- Sprite Processing Classes ---
 
 class BlockExtractor:
     """Extracts and manages 8x16 pixel blocks from image data."""
@@ -148,7 +143,7 @@ class PaletteManager:
         
         return palette_index
 
-# --- HF0 Building Functions ---
+# YAML to Binary conversion
 
 def get_default_animation() -> Dict[str, Any]:
     """Return default animation data structure."""
@@ -192,7 +187,7 @@ def pack_sprite(sprite_data: Dict[str, Any]) -> bytes:
                            sprite_data["w"],
                            sprite_data["h"],
                            count,
-                           sprite_data["colors"],
+                           256,  # colors - always 256 for indexed PNGs
                            clut_packed))
     
     # Pack sprite references
@@ -294,7 +289,7 @@ class HelpBuilder:
     def __init__(self, yaml_path: Path, output_dir: Path):
         self.yaml_path = yaml_path
         self.output_dir = output_dir
-        self.sprites_dir = yaml_path.parent / "sprites"
+        self.sprites_dir = yaml_path.parent
         # Extract HELP## from parent directory name (handles test_HELP01, HELP01, etc.)
         self.help_name = next((part for part in yaml_path.parent.name.split('_') if part.startswith("HELP")), "")
         if not self.help_name:
@@ -302,6 +297,7 @@ class HelpBuilder:
         self.palette_manager = PaletteManager()
         self.block_extractor = BlockExtractor()
         self.sprite_blocks = []
+        self.processed_sprites = {}  # Maps PNG file to processed data
     
     def build(self) -> None:
         """Build HF0 and HF1 files from YAML and PNG files."""
@@ -326,31 +322,33 @@ class HelpBuilder:
         processed_pngs = set()
         
         for sprite in self.yaml_data["sprites"]:
-            png_file = sprite.get("pngFile")
-            if not png_file or png_file in processed_pngs:
+            png_file = sprite.get("file")
+            if not png_file:
                 continue
             
-            png_path = self.sprites_dir / png_file
-            logger.debug(f"\nProcessing {png_file}")
-            
-            # Load and process PNG
-            image_data = self._load_png(png_path)
-            
-            # Extract blocks
-            block_indices = self.block_extractor.extract_blocks(image_data)
-            self.sprite_blocks.append(block_indices)
-            
-            # Add palette
-            palette_index = self.palette_manager.add_palette(image_data.palette)
-            
-            # Update sprite data with new indices
-            for s in self.yaml_data["sprites"]:
-                if s.get("pngFile") == png_file:
-                    s["sprites"] = block_indices
-                    s["clutY"] = palette_index
-                    # clutX remains unchanged as it's used for palette offset
-            
-            processed_pngs.add(png_file)
+            if png_file not in processed_pngs:
+                png_path = self.sprites_dir / png_file
+                logger.debug(f"\nProcessing {png_file}")
+                
+                # Load and process PNG
+                image_data = self._load_png(png_path)
+                
+                # Extract blocks
+                block_indices = self.block_extractor.extract_blocks(image_data)
+                
+                # Add palette
+                clut_y = self.palette_manager.add_palette(image_data.palette)
+                
+                # Store processed data
+                self.processed_sprites[png_file] = {
+                    "w": image_data.width,
+                    "h": image_data.height,
+                    "sprites": block_indices,
+                    "clutX": 0,  # We maintain palette offset of 0 for simplicity
+                    "clutY": clut_y
+                }
+                
+                processed_pngs.add(png_file)
     
     def _load_png(self, file_path: Path) -> ImageData:
         """Load and parse PNG file."""
@@ -371,12 +369,29 @@ class HelpBuilder:
         """Write HF0 file with text, layout and sprite metadata."""
         logger.debug("\n=== WRITING HF0 FILE ===")
         
+        # Create expanded sprite data for HF0
+        expanded_sprites = []
+        for sprite in self.yaml_data["sprites"]:
+            png_data = self.processed_sprites[sprite["file"]]
+            expanded_sprite = {
+                "x": sprite["x"],
+                "y": sprite["y"],
+                "w": png_data["w"],
+                "h": png_data["h"],
+                "sprites": png_data["sprites"],
+                "clutX": png_data["clutX"],
+                "clutY": png_data["clutY"]
+            }
+            if "animation" in sprite:
+                expanded_sprite["animation"] = sprite["animation"]
+            expanded_sprites.append(expanded_sprite)
+        
         output_path = self.output_dir / f"{self.help_name}.HF0"
         
         try:
             # Build blocks
             strings_block = build_strings_block(self.yaml_data["strings"])
-            sprites_block = build_sprites_block(self.yaml_data["sprites"])
+            sprites_block = build_sprites_block(expanded_sprites)
             lines_block = build_lines_block(self.yaml_data["lines"])
             empty_block = b''
             

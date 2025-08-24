@@ -1,4 +1,4 @@
-.PRECIOUS: $(BUILD)/assets/%.HF0.yaml
+.PRECIOUS: $(BUILD)/assets/%/help_data.yaml
 
 $(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(@D)/
 	@echo Converting $<

@@ -135,8 +135,7 @@ static u_short _menuText[] = {
 #include "../../assets/MENU/MENUE.PRG/menuText.vsString"
 };
 
-// Junk?
-static u_short _0 = 0x0380;
+static u_short _0 __attribute__ ((unused)) = 0x0380;
 
 int vs_menuE_exec(char* state)
 {
@@ -145,7 +144,7 @@ int vs_menuE_exec(char* state)
     static int menuResult = 0;
     static char isInit = 0;
     static char D_8010522D = 0;
-    static short _2 = 0x54;
+    static short _2 __attribute__ ((unused)) = 0x54;
 
     switch (*state) {
     case init:

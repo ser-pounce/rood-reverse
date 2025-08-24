@@ -122,7 +122,6 @@ int _drawMagicList(int arg0)
     int i;
     int rowCount;
     int skillId;
-    char cursorMemory;
 
     if (arg0 != 0) {
         D_801068FC = (arg0 ^ 2) < 1U;

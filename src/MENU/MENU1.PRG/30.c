@@ -70,7 +70,7 @@ static void _drawPointsRemaining(int xOffset, int weaponCategory, int artsLearne
     vs_battle_renderTextRaw(pointsStr, pos + 96, NULL);
 }
 
-u_short _strings[] = {
+static u_short _strings[] = {
 #include "../../assets/MENU/MENU1.PRG/strings.vsString"
 };
 

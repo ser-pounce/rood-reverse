@@ -2,7 +2,7 @@
 
 $(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(@D)/
 	@echo Converting $<
-	$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
+	@$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
 	@$(DIFF) $(DIFFFLAGS) $(BUILD)/data/$*.HF0 data/$*.HF0
 	@$(DIFF) $(DIFFFLAGS) $(BUILD)/data/$*.HF1 data/$*.HF1
 

@@ -339,7 +339,7 @@ int vs_menu1_exec(char* state)
                 *state = drawWeaponTypes;
                 _drawWeaponTypeList(1);
             } else {
-                vs_battle_executeAbility = row;
+                D_800F4E98.executeAbility = row;
                 vs_battle_executeAbilityType = 5;
                 *state = executeArt;
             }

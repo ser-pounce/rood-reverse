@@ -321,7 +321,7 @@ void func_800C97BC()
     var_s0 = vs_battle_menuState.currentState;
 
     if (var_s0 == 0x7F) {
-        *D_800F4E98 = 2;
+        D_800F4E98.unk0 = 2;
         vs_battle_menuState.currentState = 0x3F;
     }
 
@@ -403,7 +403,7 @@ void func_800CA9C0(void* arg0)
     func_800CA97C();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
     vs_battle_menuState.currentState = 0x3F;
-    vs_battle_rMemzero(D_800F4E98, sizeof(D_800F4E98));
+    vs_battle_rMemzero(&D_800F4E98, sizeof(D_800F4E98));
     vs_battle_rMemzero(&D_800F4FE0[0], sizeof(D_800F4FE0[0]));
     vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
@@ -430,9 +430,9 @@ int func_800CACD0(int arg0, int arg1)
         vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
         D_800F4EA0 = func_800CABE0(arg1);
-        D_800F4E98[1] = 0;
+        D_800F4E98.unk2 = 0;
         vs_battle_menuState.currentState = arg0;
-        D_800F4E98[0] = 1;
+        D_800F4E98.unk0 = 1;
         if (arg1 == 0) {
             vs_battle_playSfx10();
         }
@@ -534,7 +534,7 @@ void func_800CB654(int arg0) { D_800EB9AF = arg0; }
 
 void func_800CB660(int arg0) { D_800EB9CC = arg0; }
 
-short* func_800CB66C() { return D_800F4E98; }
+short* func_800CB66C() { return &D_800F4E98.unk0; }
 
 void _loadScreff2(int arg0)
 {

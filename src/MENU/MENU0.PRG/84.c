@@ -6,7 +6,7 @@
 #include "../../SLUS_010.40/main.h"
 
 extern signed char D_80102800;
-extern u_short D_801067DC[][2];
+extern int D_801067DC[];
 extern char D_8010689C[];
 extern signed char D_80106918[];
 extern signed char D_80106928[];
@@ -83,7 +83,7 @@ int func_80102A68(int arg0)
 
     do {
         for (i = 0; i < 48; ++i) {
-            if (D_801067DC[i][0] == temp_a1) {
+            if ((u_short) D_801067DC[i] == temp_a1) {
                 break;
             }
         }

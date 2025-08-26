@@ -32,4 +32,4 @@ with open(bin_path, "rb") as f:
         f.seek(start_pos)
         string_data = f.read(file_size - start_pos)  # Read to end of file
         decoded = decode(string_data)
-        print(f"[0x{offset:04x}] {decoded}")
+        print(f"[{i:3d}] [0x{offset:04x}] {decoded}")

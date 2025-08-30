@@ -748,15 +748,15 @@ int func_801042C8(char* arg0)
                     _drawMagicList(1);
                     break;
                 case 2:
-                    *arg0 = 0xB;
+                    *arg0 = 11;
                     func_801037A8(1);
                     break;
                 case 3:
-                    *arg0 = 0xD;
+                    *arg0 = 13;
                     func_80103AEC(1);
                     break;
                 case 4:
-                    *arg0 = 0xE;
+                    *arg0 = 14;
                     func_80103E30(1);
                     break;
                 }
@@ -865,10 +865,10 @@ int func_801042C8(char* arg0)
             if (i > 0) {
                 D_800F4E98.unk2 = 0xA;
                 D_800F4E98.executeAbility = i - 1;
-                *arg0 = 0x11;
+                *arg0 = 17;
             } else {
                 if (i == -2) {
-                    *arg0 = 0x11;
+                    *arg0 = 17;
                 } else {
                     *arg0 = 4;
                 }
@@ -885,7 +885,7 @@ int func_801042C8(char* arg0)
         break;
     case 16:
         if (vs_mainmenu_ready() != 0) {
-            D_800F4E9A = 7;
+            D_800F4E98.unk2 = 7;
             vs_battle_menuState.returnState = vs_battle_menuState.currentState;
             vs_battle_menuState.currentState = 1;
             *arg0 = 0;

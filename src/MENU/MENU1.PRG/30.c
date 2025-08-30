@@ -375,7 +375,7 @@ int vs_menu1_exec(char* state)
         break;
     case executeArt:
         if (vs_mainmenu_ready() != 0) {
-            D_800F4E9A = 6;
+            D_800F4E98.unk2 = 6;
             vs_battle_menuState.returnState = vs_battle_menuState.currentState;
             vs_battle_menuState.currentState = 2;
             *state = none;

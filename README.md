@@ -29,7 +29,7 @@ Thanks also to the following amazing projects (and their dependencies):
 
 ### Menus
 ![MAINMENU.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MAINMENU.PRG)
-![MENU0.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU0.PRG)
+![MENU0.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU0.PRG&color=%2332a934)
 ![MENU1.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU1.PRG&color=%2332a934)
 ![MENU2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU2.PRG&color=%2332a934)
 ![MENU3.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=MENU3.PRG)

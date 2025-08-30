@@ -1,2 +1,3 @@
 _drawMagicList = 0x80103464;
 D_80105D94 = 0x80105D94;
+D_801067DC = 0x801067DC; // type:s32

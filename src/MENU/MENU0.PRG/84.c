@@ -6,18 +6,36 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
-int func_80102B08(u_int);
-int func_80103E30(int);
+static u_short D_80104A58[] = {
+#include "../../build/assets/MENU/MENU0.PRG/base.vsString"
+};
+static u_short D_80105D94[] = {
+#include "../../build/assets/MENU/MENU0.PRG/teleportation.vsString"
+};
 
-extern signed char D_80102800;
-extern u_short D_80104A58[];
+static int D_801067DC[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
+    0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
+    0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
+    0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
+    0x010300A2, 0x150C00A3, 0x030200D0, 0x060600D1, 0x1007008B, 0x010400AB, 0x05020055,
+    0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+    0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+    0x00000000 };
+
+static char D_8010689C[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00 };
+
+static char D_801068CC[] = {
+    0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82
+};
+
 extern char D_8004B9F8[];
-extern int D_801067DC[];
-extern char D_8010689C[];
 extern signed char D_80106918[];
 extern signed char D_80106928[];
 
-void func_80102884(int arg0)
+static void func_80102884(int arg0)
 {
     int temp_v0;
     int var_s1;
@@ -32,7 +50,7 @@ void func_80102884(int arg0)
     }
 
     temp_v0 = vs_battle_getSkillFlags(0, arg0);
-    vs_mainmenu_setAbilityCost(1, &D_80102800, 8, (temp_v0 >> 1) & 1);
+    vs_mainmenu_setAbilityCost(1, "MP", 8, (temp_v0 >> 1) & 1);
     var_s1 = 0xF;
     var_a0 = vs_main_skills[arg0].cost;
     D_80106918[15] = 0;
@@ -57,12 +75,12 @@ void func_80102884(int arg0)
         0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
 }
 
-void func_801029B8(int arg0, int arg1)
+static void func_801029B8(int arg0, int arg1)
 {
     int temp_v0;
     int var_s0;
 
-    vs_mainmenu_setAbilityCost(1, &D_80102800, 8, arg1);
+    vs_mainmenu_setAbilityCost(1, "MP", 8, arg1);
     temp_v0 = arg0;
     var_s0 = 0xF;
     D_80106928[15] = 0;
@@ -77,7 +95,7 @@ void func_801029B8(int arg0, int arg1)
     vs_mainmenu_setAbilityCost(0, &D_80106928[var_s0], 0x48, arg1);
 }
 
-int func_80102A68(int arg0)
+static int func_80102A68(int arg0)
 {
     int temp_a1;
     int temp_v1;
@@ -109,14 +127,8 @@ int func_80102A68(int arg0)
     return var_a1;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENU0.PRG/nonmatchings/84", D_80102800);
-
-void* func_800C0224(char, int, int, u_int*);
-void func_800FA8A0(int arg0);
 extern char D_800EBD70[];
 extern char D_800EC270[];
-extern char D_801068CC[];
-extern char* D_801068D4[];
 extern u_int D_801068E8;
 extern int D_801068EC;
 extern int D_801068F0;
@@ -124,7 +136,11 @@ extern char D_80106938[];
 extern u_char D_8010694A;
 extern u_long* D_1F800000[];
 
-int func_80102B08(u_int arg0)
+static char* D_801068D4[] = {
+    "LV1", "LV2", "LV3", "LV4", "--"
+};
+
+static int func_80102B08(u_int arg0)
 {
     char* menuStrings[36];
     int rowTypes[18];
@@ -370,7 +386,7 @@ extern int D_801068F8;
 extern int D_801068FC;
 extern char D_80106950[];
 
-int _drawMagicList(int arg0)
+static int _drawMagicList(int arg0)
 {
     char* menuStrings[12];
     int rowTypes[6];
@@ -457,7 +473,7 @@ extern int D_80106900;
 extern int D_80106904;
 extern int D_80106908;
 
-int func_801037A8(int arg0)
+static int func_801037A8(int arg0)
 {
     char* menuStrings[36];
     int rowTypes[18];
@@ -544,7 +560,7 @@ extern int D_80106910;
 extern int D_80106914;
 extern char D_80106970[];
 
-int func_80103AEC(int arg0)
+static int func_80103AEC(int arg0)
 {
     char* menuStrings[16];
     int rowTypes[8];
@@ -625,14 +641,13 @@ int func_80103AEC(int arg0)
     return 0;
 }
 
-extern u_short D_80105D94[];
 extern u_char D_80106978[];
 extern u_short D_801069A8[];
 extern int D_80106A08;
 extern int D_80106A0C;
 extern char D_80106A10;
 
-int func_80103E30(int arg0)
+static int func_80103E30(int arg0)
 {
     char* menuStrings[96];
     int rowTypes[48];
@@ -640,7 +655,7 @@ int func_80103E30(int arg0)
     int i;
     int rowCount;
     int temp_s2_2;
-    
+
     if (arg0 != 0) {
         func_800FA92C(4, 1);
         D_80106A10 = 0;
@@ -741,7 +756,7 @@ int func_80103E30(int arg0)
     return 0;
 }
 
-void func_80104254()
+static void func_80104254()
 {
     vs_battle_menuItem_t* temp_v0;
 
@@ -763,7 +778,7 @@ extern char D_80105E5A[];
 extern char D_80105E68[];
 extern char D_80105EB4[];
 
-int func_801042C8(char* arg0)
+int vs_menu0_exec(char* arg0)
 {
     char* menuStrings[10];
     int rowTypes[5];

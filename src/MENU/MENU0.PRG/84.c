@@ -124,9 +124,6 @@ static int func_80102A68(int arg0)
 
 extern char D_800EBD70[];
 extern char D_800EC270[];
-extern u_int D_801068E8;
-extern int D_801068EC;
-extern int D_801068F0;
 extern char D_80106938[];
 extern u_char D_8010694A;
 extern u_long* D_1F800000[];
@@ -140,6 +137,10 @@ static int func_80102B08(u_int arg0)
     static char* D_801068D4[] = {
         "LV1", "LV2", "LV3", "LV4", "--"
     };
+    
+    static u_int D_801068E8;
+    static int D_801068EC;
+    static int D_801068F0;
 
     char* menuStrings[36];
     int rowTypes[18];
@@ -379,13 +380,14 @@ static int func_80102B08(u_int arg0)
 }
 
 extern char D_800EBD84[];
-extern int D_801068F4;
-extern int D_801068F8;
-extern int D_801068FC;
 extern char D_80106950[];
 
 static int _drawMagicList(int arg0)
 {
+    static int D_801068F4;
+    static int D_801068F8;
+    static int D_801068FC;
+
     char* menuStrings[12];
     int rowTypes[6];
     int i;
@@ -467,12 +469,13 @@ static int _drawMagicList(int arg0)
 
 extern char D_800EBD8C[];
 extern char D_80106958[];
-extern int D_80106900;
-extern int D_80106904;
-extern int D_80106908;
 
 static int func_801037A8(int arg0)
 {
+    static int D_80106900;
+    static int D_80106904;
+    static int D_80106908;
+
     char* menuStrings[36];
     int rowTypes[18];
     int i;
@@ -553,13 +556,14 @@ static int func_801037A8(int arg0)
 }
 
 extern char D_800EBDA0[];
-extern int D_8010690C;
-extern int D_80106910;
-extern int D_80106914;
 extern char D_80106970[];
 
 static int func_80103AEC(int arg0)
-{
+{    
+    static int D_8010690C;
+    static int D_80106910;
+    static int D_80106914;
+
     char* menuStrings[16];
     int rowTypes[8];
     int i;

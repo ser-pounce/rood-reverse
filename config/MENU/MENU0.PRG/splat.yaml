@@ -20,12 +20,11 @@ segments:
   - start: 0x0
     type: code
     vram: 0x80102800
-    align: 4
+    align: 1
     subsegments:
       - [0x0, .rodata, 84]
       - [0x84, c]
       - { start: 0x2258, type: vsStringTable, name: base, linker_entry: false }
       - { start: 0x3594, type: vsStringTable, name: teleportation, linker_entry: false }
       - [0x40E8, .bss, 84]
-      - [0x4118, bss]
   - [0x4211]

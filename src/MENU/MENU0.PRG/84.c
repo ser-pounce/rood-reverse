@@ -1,4 +1,6 @@
 #include "common.h"
+#include "../../build/assets/MENU/MENU0.PRG/base.h"
+#include "../../build/assets/MENU/MENU0.PRG/teleportation.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -6,9 +8,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
-extern char D_8004B9F8[];
-extern signed char D_80106918[];
-extern signed char D_80106928[];
+static signed char D_80106918[16];
 
 static void func_80102884(int arg0)
 {
@@ -50,6 +50,8 @@ static void func_80102884(int arg0)
         0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
 }
 
+static char D_80106928[16];
+
 static void func_801029B8(int arg0, int arg1)
 {
     int temp_v0;
@@ -88,10 +90,10 @@ static int D_801067DC[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x07
 
 static int func_80102A68(int arg0)
 {
-    static char D_8010689C[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00 };
+    static char D_8010689C[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00 };
     int temp_a1;
     int temp_v1;
     int i;
@@ -122,22 +124,18 @@ static int func_80102A68(int arg0)
     return var_a1;
 }
 
-extern char D_800EBD70[];
-extern char D_800EC270[];
-extern char D_80106938[];
-extern u_char D_8010694A;
-extern u_long* D_1F800000[];
+static char D_80106938[18];
+static u_char D_8010694A;
+static char _0[5];
 
 static int func_80102B08(u_int arg0)
 {
-    static char D_801068CC[] = {
-        0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82
-    };
+    extern u_long* D_1F800000[];
 
-    static char* D_801068D4[] = {
-        "LV1", "LV2", "LV3", "LV4", "--"
-    };
-    
+    static char D_801068CC[] = { 0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82 };
+
+    static char* D_801068D4[] = { "LV1", "LV2", "LV3", "LV4", "--" };
+
     static u_int D_801068E8;
     static int D_801068EC;
     static int D_801068F0;
@@ -379,8 +377,8 @@ static int func_80102B08(u_int arg0)
     return 0;
 }
 
-extern char D_800EBD84[];
-extern char D_80106950[];
+static char D_80106950[6];
+static char _1[2];
 
 static int _drawMagicList(int arg0)
 {
@@ -467,8 +465,8 @@ static int _drawMagicList(int arg0)
     return 0;
 }
 
-extern char D_800EBD8C[];
-extern char D_80106958[];
+static char D_80106958[18];
+static char _3[6];
 
 static int func_801037A8(int arg0)
 {
@@ -555,11 +553,10 @@ static int func_801037A8(int arg0)
     return 0;
 }
 
-extern char D_800EBDA0[];
-extern char D_80106970[];
+static char D_80106970[8];
 
 static int func_80103AEC(int arg0)
-{    
+{
     static int D_8010690C;
     static int D_80106910;
     static int D_80106914;
@@ -643,11 +640,11 @@ static int func_80103AEC(int arg0)
     return 0;
 }
 
-extern u_char D_80106978[];
-extern u_short D_801069A8[];
-extern int D_80106A08;
-extern int D_80106A0C;
-extern char D_80106A10;
+static u_char D_80106978[48];
+static u_short D_801069A8[48];
+static int D_80106A08;
+static int D_80106A0C;
+static char D_80106A10;
 
 static int func_80103E30(int arg0)
 {
@@ -771,15 +768,6 @@ static void func_80104254()
     func_800FFBC8();
 }
 
-extern char D_8006164D;
-extern char D_80104AF8;
-extern char D_80104B64;
-extern char D_80104BEC;
-extern char D_80104C8E;
-extern char D_80105E5A[];
-extern char D_80105E68[];
-extern char D_80105EB4[];
-
 int vs_menu0_exec(char* arg0)
 {
     char* menuStrings[10];
@@ -839,17 +827,17 @@ int vs_menu0_exec(char* arg0)
                 }
             }
 
-            menuStrings[i * 2] = D_80105E5A; // TELEPORTATION
+            menuStrings[i * 2]
+                = (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportation);
 
             menuStrings[i * 2 + 1]
                 = (func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)
-                ? D_80105E5A + 0x5A
-                : // The spirit paling prevents teleportation.
-                D_80105E5A + 0xE; // Teleport to any Circle of Magic.
+                ? (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDisabled)
+                : (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDesc);
 
             if ((func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)) {
                 menuStrings[i * 2 + 1]
-                    = D_80105E5A + 0x5A; // The spirit paling prevents teleportation.
+                    = (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDisabled);
             }
 
             rowTypes[i++] = ((j == 0x30) || (vs_main_stateFlags.unkB5 == 2)
@@ -904,7 +892,10 @@ int vs_menu0_exec(char* arg0)
         break;
     case 6:
         func_80104254();
-        vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x7E, 8, &D_80104AF8)->selected = 1;
+        vs_battle_setMenuItem(
+            0xA, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_warlock))
+            ->selected
+            = 1;
         func_80102B08(2);
         *arg0 = 7;
         break;
@@ -926,7 +917,10 @@ int vs_menu0_exec(char* arg0)
         break;
     case 8:
         func_80104254();
-        vs_battle_setMenuItem(0xB, 0x140, 0x22, 0x7E, 8, &D_80104B64)->selected = 1;
+        vs_battle_setMenuItem(
+            0xB, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_shaman))
+            ->selected
+            = 1;
         _drawMagicList(2);
         *arg0 = 9;
         break;
@@ -948,7 +942,10 @@ int vs_menu0_exec(char* arg0)
         break;
     case 10:
         func_80104254();
-        vs_battle_setMenuItem(0xC, 0x140, 0x22, 0x7E, 8, &D_80104BEC)->selected = 1;
+        vs_battle_setMenuItem(
+            0xC, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_sorcerer))
+            ->selected
+            = 1;
         func_801037A8(2);
         *arg0 = 0xB;
         break;
@@ -970,7 +967,10 @@ int vs_menu0_exec(char* arg0)
         break;
     case 12:
         func_80104254();
-        vs_battle_setMenuItem(0xD, 0x140, 0x22, 0x7E, 8, &D_80104C8E)->selected = 1;
+        vs_battle_setMenuItem(
+            0xD, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_enchanter))
+            ->selected
+            = 1;
         func_80103AEC(2);
         *arg0 = 0xD;
         break;

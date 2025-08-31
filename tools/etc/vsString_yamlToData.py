@@ -12,10 +12,10 @@ def main():
     data_path = Path(sys.argv[2])
     header_path = Path(sys.argv[3])
 
-    strings, offsets, enums = read_yaml(yaml_path)
+    strings, offsets, enums, indices = read_yaml(yaml_path)
     write_data(data_path, offsets, strings)
     write_binary(data_path.with_suffix(data_path.suffix + '.bin'), offsets, strings)
-    write_header(header_path, header_path.stem, enums)
+    write_header(header_path, header_path.stem, enums, indices)
 
 
 if __name__ == "__main__":

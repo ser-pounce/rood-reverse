@@ -125,40 +125,44 @@ static char D_80106938[18];
 static u_char D_8010694A;
 static char _0[5];
 
-static int func_80102B08(u_int arg0)
+static int func_80102B08(u_int initCursorMemory)
 {
+    enum state {
+        init
+    };
+
     extern u_long* D_1F800000[];
 
     static char D_801068CC[] = { 0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82 };
     static char* D_801068D4[] = { "LV1", "LV2", "LV3", "LV4", "--" };
 
-    static u_int D_801068E8;
+    static u_int state;
     static int D_801068EC;
-    static int D_801068F0;
+    static int forceCursorMemory;
 
     char* menuStrings[36];
     int rowTypes[18];
     int rowCount;
     int i;
 
-    if (arg0 != 0) {
-        D_801068F0 = (arg0 ^ 2) < 1;
+    if (initCursorMemory) {
+        forceCursorMemory = (initCursorMemory ^ 2) < 1;
         func_800FA92C(0, 1);
-        D_801068E8 = 0;
+        state = init;
         return 0;
     }
 
-    switch (D_801068E8) {
-    case 0: {
-        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
+    switch (state) {
+    case init: {
+        if (!vs_battle_shortcutInvoked && !vs_mainmenu_ready()) {
             break;
         }
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
             int skillId = D_800EBD70[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = (char*)&_baseStrings[_baseStrings[i + 0x3E]];
-                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i + 0xC]];
+                menuStrings[rowCount * 2] = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpells]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -174,12 +178,12 @@ static int func_80102B08(u_int arg0)
             }
         }
         i = vs_main_settings.cursorMemory;
-        if (D_801068F0 != 0) {
+        if (forceCursorMemory != 0) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(rowCount, 0x207, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        D_801068E8 = 1;
+        state = 1;
         break;
     }
     case 1:
@@ -191,7 +195,7 @@ static int func_80102B08(u_int arg0)
             }
             if (D_801068EC == -1) {
                 func_800FA8E0(0);
-                D_801068E8 = 2;
+                state = 2;
                 break;
             }
             if (D_801068EC > 0) {
@@ -201,17 +205,17 @@ static int func_80102B08(u_int arg0)
                         && ((vs_main_skills[D_801068EC + 1].flags >> 0xF) & 1)) {
                         func_800FA92C(D_800F4EE8.unk0[0xE], 2);
                         D_801022D4 = 1;
-                        D_801068E8 = 3;
+                        state = 3;
                     }
                 }
-                if (D_801068E8 == 3) {
+                if (state == 3) {
                     break;
                 }
             }
             func_800FA8E0(0x28);
             func_800FFBA8();
             func_800FFA88(0);
-            D_801068E8 = 2;
+            state = 2;
         } else {
             i = D_80106938[func_801008B0()];
             for (rowCount = 0; rowCount < 7; ++rowCount) {
@@ -246,7 +250,7 @@ static int func_80102B08(u_int arg0)
             D_800F4EE8.unk0[0xC] = i - 1;
         }
         D_8010694A = 0;
-        D_801068E8 = 4;
+        state = 4;
         break;
     }
     case 4: {
@@ -265,7 +269,7 @@ static int func_80102B08(u_int arg0)
             func_800FFBA8();
             func_800FFA88(0);
             D_801068EC = -2;
-            D_801068E8 = 2;
+            state = 2;
             break;
         }
         if (vs_main_buttonsPressed.all & 0x40) {
@@ -273,7 +277,7 @@ static int func_80102B08(u_int arg0)
             for (i = 0x14; i < 0x1E; ++i) {
                 func_800FA8A0(i);
             }
-            D_801068E8 = 0;
+            state = 0;
             break;
         } else if (vs_main_buttonsPressed.all & 0x20) {
             if (vs_battle_getSkillFlags(0, D_801068EC + i) == 0) {
@@ -282,7 +286,7 @@ static int func_80102B08(u_int arg0)
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
-                D_801068E8 = 2;
+                state = 2;
                 D_801068EC += i;
                 break;
             } else {

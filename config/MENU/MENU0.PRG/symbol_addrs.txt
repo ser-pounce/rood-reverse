@@ -8,3 +8,4 @@ _teleportationStrings = 0x80105D94;
 _savePointData = 0x801067DC;
 _getTeleportCost = 0x80102A68;
 savePointCosts = 0x8010689C;
+forceCursorMemory = 0x801068F0;

@@ -8,7 +8,9 @@ def read_yaml(path):
     strings = []
     offsets = []
     enums = {}
+    indices = {}  # Track the index in the offsets table for each key
     offset = 0
+    current_index = 0
 
     def add_string(s):
         encoded = encode(s)
@@ -17,22 +19,24 @@ def read_yaml(path):
         return len(encoded) // 2
 
     def process_value(value):
-        nonlocal offset
+        nonlocal offset, current_index
         if isinstance(value, list):
             for item in value:
                 process_value(item)
         else:
             offset += add_string(value)
+            current_index += 1
 
     for key, value in data.items():
         enums[key] = offset
+        indices[key] = current_index  # Store the index position for this key
         process_value(value)
 
     count = len(strings)
     offsets = [o + count for o in offsets]
     enums = {k: v + count for k, v in enums.items()}
 
-    return strings, offsets, enums
+    return strings, offsets, enums, indices
 
 def write_binary(path, offsets, strings):
     bin_content = bytearray()
@@ -53,7 +57,7 @@ def write_data(path, offsets, strings):
             val = (bin_content[i+1] << 8) | bin_content[i]
             out.write(f"0x{val:04X}, ")
 
-def write_header(path, stem, enums):
+def write_header(path, stem, enums, indices):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as h:
         h.write(f"#pragma once\n\nenum {stem}_offsets_e {{\n")
@@ -61,6 +65,6 @@ def write_header(path, stem, enums):
             h.write(f"    VS_{stem}_OFFSET_{k} = {v},\n")
         h.write("};\n\n")
         h.write(f"enum {stem}_indices_e {{\n")
-        for i, (k, v) in enumerate(enums.items()):
-            h.write(f"    VS_{stem}_INDEX_{k} = {i},\n")
+        for k, idx in indices.items():
+            h.write(f"    VS_{stem}_INDEX_{k} = {idx},\n")
         h.write("};\n")

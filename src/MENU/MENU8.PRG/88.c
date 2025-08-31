@@ -4,7 +4,9 @@
 
 void func_80104650(int, int, int, int);
 
+extern u_long* D_1F800000[];
 extern char D_80105DB2;
+extern char D_80105F40[];
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102888);
 
@@ -28,13 +30,40 @@ INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801037B4);
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103D88);
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103F1C);
+int func_80103F1C(char* arg0)
+{
+    int var_a1;
+    int i;
+
+    for (var_a1 = 0, i = 0; i < 20; ++var_a1, ++i) {
+        if (D_80105F40[i] == 0xE7) {
+            break;
+        }
+        arg0[var_a1] = D_80105F40[i];
+    }
+
+    arg0[var_a1--] = 0xE7;
+
+    while (arg0[var_a1] == 0x8F) {
+        arg0[var_a1--] = 0xE7;
+        if (var_a1 < 0) {
+            return 1;
+        }
+    }
+
+    var_a1 += 2;
+
+    while (var_a1 < 0x18) {
+        arg0[var_a1++] = 0;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103FD8);
 
-extern u_long* D_1F800000[];
-
-void func_80104650(int arg0, int arg1, int arg2, int arg3) {
+void func_80104650(int arg0, int arg1, int arg2, int arg3)
+{
     u_long* temp_t0;
     u_long* temp_t4;
 
@@ -50,11 +79,12 @@ void func_80104650(int arg0, int arg1, int arg2, int arg3) {
     temp_t0[7] = (arg0 | ((arg1 + arg3) << 0x10));
     temp_t0[8] = 0xC0A080;
     temp_t0[9] = ((arg0 + arg2) | ((arg1 + arg3) << 0x10));
-    *temp_t4 = ((u_long) temp_t0 << 8) >> 8;
+    *temp_t4 = ((u_long)temp_t0 << 8) >> 8;
     D_1F800000[0] = temp_t0 + 10;
 }
 
-void func_801046F0(int arg0, int arg1, int arg2) {
+void func_801046F0(int arg0, int arg1, int arg2)
+{
     int temp_s1;
     int temp_s2;
 
@@ -66,13 +96,14 @@ void func_801046F0(int arg0, int arg1, int arg2) {
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_8010475C);
 
-void func_8010493C(int arg0) {
+void func_8010493C(int arg0)
+{
     int i;
 
     if (arg0 < 4) {
         D_80105DB2 = arg0 + 1;
     }
-    
+
     for (i = 4; i < 9; ++i) {
         vs_battle_getMenuItem(i + 29)->selected = i == arg0;
     }

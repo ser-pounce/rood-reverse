@@ -660,11 +660,7 @@ static char _state;
 
 static int _teleportMenu(int init)
 {
-    enum state {
-        initTeleport,
-        handleInput,
-        returnIfReady
-    };
+    enum state { initTeleport, handleInput, returnIfReady };
 
     char* menuStrings[96];
     int rowTypes[48];
@@ -691,17 +687,21 @@ static int _teleportMenu(int init)
                 continue;
             }
             menuStrings[2 * rowCount]
-                = (char*)(&_teleportationStrings[_teleportationStrings[i * 2 + VS_teleportation_INDEX_locations]]);
+                = (char*)(&_teleportationStrings[_teleportationStrings[i * 2
+                    + VS_teleportation_INDEX_locations]]);
             menuStrings[(rowCount * 2) + 1]
-                = (char*)(&_teleportationStrings[_teleportationStrings[i * 2 + VS_teleportation_INDEX_locations + 1]]);
+                = (char*)(&_teleportationStrings[_teleportationStrings[i * 2
+                    + VS_teleportation_INDEX_locations + 1]]);
             _teleportCosts[rowCount] = _getTeleportCost(i);
-            rowTypes[rowCount] = (savePointState == 2) | (_currentMp < _teleportCosts[rowCount]);
+            rowTypes[rowCount]
+                = (savePointState == 2) | (_currentMp < _teleportCosts[rowCount]);
             if (_teleportCosts[rowCount] == 15) {
                 rowTypes[rowCount] |= 4;
                 nearestSavePoint = rowCount;
             }
             if (savePointState == 2) {
-                menuStrings[(rowCount * 2) + 1] = (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDisabled);
+                menuStrings[(rowCount * 2) + 1] = (char*)(_teleportationStrings
+                    + VS_teleportation_OFFSET_teleportationDisabled);
             }
             _availableSavePoints[rowCount] = i;
             ++rowCount;
@@ -778,8 +778,8 @@ static void _drawMagicMenuHeader()
 {
     vs_battle_menuItem_t* menuItem;
 
-    menuItem = vs_battle_setMenuItem(
-        0, 320, 18, 0x8C, 8, (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);
+    menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
+        (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);
     menuItem->state = 2;
     menuItem->x = 180;
     menuItem->selected = 1;
@@ -821,12 +821,7 @@ int vs_menu0_exec(char* state)
         func_800FFBC8();
         i = vs_battle_shortcutInvoked;
         if (i != 0) {
-            enum shortcutMagicMenu {
-                warlock = 1,
-                shaman,
-                sorcerer,
-                enchanter
-            };
+            enum shortcutMagicMenu { warlock = 1, shaman, sorcerer, enchanter };
             vs_battle_setMenuItem(i + 9, 0x140, 0x22, 0x8C, 8,
                 (char*)&_baseStrings[_baseStrings[(i * 3) - 3]])
                 ->selected
@@ -854,12 +849,15 @@ int vs_menu0_exec(char* state)
         // Fallthrough
     case initSubmenu:
         for (i = 0; i < 4; ++i) {
-            menuStrings[i * 2] = (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlock]];
-            menuStrings[i * 2 + 1] = (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlockDesc]];
+            menuStrings[i * 2]
+                = (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlock]];
+            menuStrings[i * 2 + 1]
+                = (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlockDesc]];
             rowTypes[i] = 0;
             if (func_800CAEAC(i) == 0) {
                 rowTypes[i] |= 1;
-                menuStrings[i * 2 + 1] = (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlockLocked]];
+                menuStrings[i * 2 + 1] = (char*)&_baseStrings[_baseStrings[i * 3
+                    + VS_base_INDEX_warlockLocked]];
             }
         }
 
@@ -904,13 +902,7 @@ int vs_menu0_exec(char* state)
             break;
         }
         if (i > 0) {
-            enum magicSubMenu {
-                warlock,
-                shaman,
-                sorcerer,
-                enchanter,
-                teleport
-            };
+            enum magicSubMenu { warlock, shaman, sorcerer, enchanter, teleport };
             switch (selectedRow) {
             case warlock:
                 *state = handleWarlockSelection;
@@ -971,7 +963,10 @@ int vs_menu0_exec(char* state)
         break;
     case initShamanMenu:
         _drawMagicMenuHeader();
-        vs_battle_setMenuItem(11, 320, 34, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_shaman))->selected = 1;
+        vs_battle_setMenuItem(
+            11, 320, 34, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_shaman))
+            ->selected
+            = 1;
         _shamanMagicMenu(2);
         *state = handleShamanSelection;
         break;

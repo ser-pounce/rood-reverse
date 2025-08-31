@@ -32,7 +32,9 @@ typedef struct {
 } vs_battle_equipment_t3;
 
 typedef struct {
-    short unk0[30];
+    short unk0[14];
+    short currentMp;
+    short unk1E[15];
     u_short unk3C[134];
     char unk148;
     u_char unk149;

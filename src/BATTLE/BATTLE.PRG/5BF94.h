@@ -1,6 +1,27 @@
 #pragma once
 #include "../SLUS_010.40/main.h"
 
+enum vs_battle_warlockSpellIds_e {
+    vs_battle_spell_solidShock = 0x61,
+    vs_battle_spell_lightningBolt,
+    vs_battle_spell_fireball,
+    vs_battle_spell_vulcanLance,
+    vs_battle_spell_aquaBlast,
+    vs_battle_spell_spiritSurge,
+    vs_battle_spell_darkChant,
+    vs_battle_spell_exorcism,
+    vs_battle_spell_banish,
+    vs_battle_spell_explosion,
+    vs_battle_spell_thunderburst = 0x6E,
+    vs_battle_spell_flameSphere = 0x72,
+    vs_battle_spell_gaeaStrike = 0x76,
+    vs_battle_spell_avalanche = 0x7A,
+    vs_battle_spell_radialSurge = 0x7E,
+    vs_battle_spell_meteor = 0x82,
+    vs_battle_spell_drainHeart = 0x5E,
+    vs_battle_spell_drainMind = 0x5F
+};
+
 typedef struct {
     char state;
     char unk1;
@@ -87,8 +108,8 @@ extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern char D_800EBC7C[];
-extern char D_800EBD70[];
-extern char D_800EBD84[];
+extern char vs_battle_warlockSpellIds[];
+extern char vs_battle_shamanSpellIds[];
 extern char D_800EBD8C[];
 extern char D_800EBDA0[];
 extern char D_800EC270[];

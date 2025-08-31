@@ -10,7 +10,7 @@ typedef struct {
     char x;
 } textHeader_t;
 
-extern char D_801022D4;
+extern char vs_mainMenu_isLevelledSpell;
 extern char D_801022DC;
 extern short D_801022DE;
 extern short D_801022E0;
@@ -162,7 +162,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100004);
 
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 {
-    D_801022D4 = 1;
+    vs_mainMenu_isLevelledSpell = 1;
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);
     _textHeaders[index].unk14 = arg3;
     _textHeaders[index].x = x;

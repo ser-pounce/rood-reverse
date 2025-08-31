@@ -7,6 +7,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
+#include <libetc.h>
 
 static signed char _MPCostTextBuffer[16];
 
@@ -26,7 +27,7 @@ static void _setMPCost(int id)
     vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
     cost = vs_main_skills[id].cost;
     _MPCostTextBuffer[15] = NULL;
-    
+
     i = 15;
 
     if (var_s2 != 0) {
@@ -78,14 +79,14 @@ static u_short _teleportationStrings[] = {
 #include "../../build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
 
-static int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
-    0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
-    0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
-    0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
-    0x010300A2, 0x150C00A3, 0x030200D0, 0x060600D1, 0x1007008B, 0x010400AB, 0x05020055,
-    0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+static int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C,
+    0x070C0028, 0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111,
+    0x0C030098, 0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C,
+    0x000400CF, 0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147,
+    0x0904014F, 0x010300A2, 0x150C00A3, 0x030200D0, 0x060600D1, 0x1007008B, 0x010400AB,
+    0x05020055, 0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-    0x00000000 };
+    0x00000000, 0x00000000 };
 
 static int _getTeleportCost(int targetSavePointId)
 {
@@ -112,41 +113,41 @@ static int _getTeleportCost(int targetSavePointId)
     cost = 15;
 
     for (j = i; j < targetSavePointId; ++j) {
-        static char savePointCosts[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0 };
+        static char savePointCosts[]
+            = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0 };
         cost += savePointCosts[j];
     }
     return cost;
 }
 
-static char D_80106938[18];
+static char _availableWarlockSpells[18];
 static u_char D_8010694A;
 static char _0[5];
 
-static int func_80102B08(u_int initCursorMemory)
+static int _warlockMagicMenu(u_int initCursorMemory)
 {
-    enum state {
-        init
-    };
+    enum state { 
+        init,
+        handleInput,
+        returnIfReady,
+        levelledSpell
+     };
 
     extern u_long* D_1F800000[];
 
-    static char D_801068CC[] = { 0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82 };
-    static char* D_801068D4[] = { "LV1", "LV2", "LV3", "LV4", "--" };
+    static char levelledSpells[] = { vs_battle_spell_explosion, vs_battle_spell_thunderburst, vs_battle_spell_flameSphere, vs_battle_spell_gaeaStrike, vs_battle_spell_avalanche, vs_battle_spell_radialSurge, vs_battle_spell_meteor };
+    static char* spellLevels[] = { "LV1", "LV2", "LV3", "LV4", "--" };
 
     static u_int state;
-    static int D_801068EC;
-    static int forceCursorMemory;
+    static int selectedRow;
+    static int shortcutInvoked;
 
-    char* menuStrings[36];
-    int rowTypes[18];
     int rowCount;
     int i;
 
     if (initCursorMemory) {
-        forceCursorMemory = (initCursorMemory ^ 2) < 1;
+        shortcutInvoked = (initCursorMemory ^ 2) < 1;
         func_800FA92C(0, 1);
         state = init;
         return 0;
@@ -154,20 +155,25 @@ static int func_80102B08(u_int initCursorMemory)
 
     switch (state) {
     case init: {
+        char* menuStrings[36];
+        int rowTypes[18];
+
         if (!vs_battle_shortcutInvoked && !vs_mainmenu_ready()) {
             break;
         }
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
-            int skillId = D_800EBD70[i];
+            int skillId = vs_battle_warlockSpellIds[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpells]];
-                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpellDescs]];
+                menuStrings[rowCount * 2]
+                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpells]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i
+                    + VS_base_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
                 }
-                D_80106938[rowCount] = skillId;
+                _availableWarlockSpells[rowCount] = skillId;
                 ++rowCount;
             }
         }
@@ -178,48 +184,48 @@ static int func_80102B08(u_int initCursorMemory)
             }
         }
         i = vs_main_settings.cursorMemory;
-        if (forceCursorMemory != 0) {
+        if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(rowCount, 0x207, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        state = 1;
+        state = handleInput;
         break;
     }
-    case 1:
-        D_801068EC = vs_mainmenu_getSelectedRow() + 1;
-        if (D_801068EC != 0) {
-            D_801022D4 = 0;
-            if ((vs_battle_shortcutInvoked != 0) && (D_801068EC == -1)) {
-                D_801068EC = -2;
+    case handleInput:
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            vs_mainMenu_isLevelledSpell = 0;
+            if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
+                selectedRow = -2;
             }
-            if (D_801068EC == -1) {
+            if (selectedRow == -1) {
                 func_800FA8E0(0);
-                state = 2;
+                state = returnIfReady;
                 break;
             }
-            if (D_801068EC > 0) {
-                D_801068EC = D_80106938[D_801068EC - 1];
+            if (selectedRow > 0) {
+                selectedRow = _availableWarlockSpells[selectedRow - 1];
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
-                    if ((D_801068EC == D_801068CC[rowCount])
-                        && ((vs_main_skills[D_801068EC + 1].flags >> 0xF) & 1)) {
+                    if ((selectedRow == levelledSpells[rowCount])
+                        && ((vs_main_skills[selectedRow + 1].flags >> 0xF) & 1)) {
                         func_800FA92C(D_800F4EE8.unk0[0xE], 2);
-                        D_801022D4 = 1;
-                        state = 3;
+                        vs_mainMenu_isLevelledSpell = 1;
+                        state = levelledSpell;
                     }
                 }
-                if (state == 3) {
+                if (state == levelledSpell) {
                     break;
                 }
             }
             func_800FA8E0(0x28);
             func_800FFBA8();
             func_800FFA88(0);
-            state = 2;
+            state = returnIfReady;
         } else {
-            i = D_80106938[func_801008B0()];
+            i = _availableWarlockSpells[func_801008B0()];
             for (rowCount = 0; rowCount < 7; ++rowCount) {
-                if (i == D_801068CC[rowCount]) {
+                if (i == levelledSpells[rowCount]) {
                     if ((vs_main_skills[i + 1].flags >> 0xF) & 1) {
                         i = -i;
                     }
@@ -229,19 +235,19 @@ static int func_80102B08(u_int initCursorMemory)
             _setMPCost(i);
         }
         break;
-    case 2:
+    case returnIfReady:
         if (vs_mainmenu_ready() != 0) {
-            return D_801068EC;
+            return selectedRow;
         }
         break;
-    case 3: {
+    case levelledSpell:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
         i = 2;
-        if ((vs_main_skills[D_801068EC + 2].flags >> 0xF) & 1) {
+        if ((vs_main_skills[selectedRow + 2].flags >> 0xF) & 1) {
             i = 3;
-            if ((vs_main_skills[D_801068EC + 3].flags >> 0xF) & 1) {
+            if ((vs_main_skills[selectedRow + 3].flags >> 0xF) & 1) {
                 i = 4;
             }
         }
@@ -252,53 +258,52 @@ static int func_80102B08(u_int initCursorMemory)
         D_8010694A = 0;
         state = 4;
         break;
-    }
     case 4: {
         u_int* temp_s6;
-        int var_s0_2;
+        int level;
         int var_s7_2;
         int* var_t3;
 
         i = D_800F4EE8.unk0[0xC];
         rowCount = D_800F4EE8.unk0[0xD];
 
-        if (vs_main_buttonsPressed.all & 0x10) {
+        if (vs_main_buttonsPressed.all & PADRup) {
             vs_battle_playMenuLeaveSfx();
-            D_801022D4 = 0;
+            vs_mainMenu_isLevelledSpell = 0;
             func_800FA8E0(0x28);
             func_800FFBA8();
             func_800FFA88(0);
-            D_801068EC = -2;
-            state = 2;
+            selectedRow = -2;
+            state = returnIfReady;
             break;
         }
-        if (vs_main_buttonsPressed.all & 0x40) {
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_battle_playMenuLeaveSfx();
-            for (i = 0x14; i < 0x1E; ++i) {
+            for (i = 20; i < 30; ++i) {
                 func_800FA8A0(i);
             }
-            state = 0;
+            state = init;
             break;
-        } else if (vs_main_buttonsPressed.all & 0x20) {
-            if (vs_battle_getSkillFlags(0, D_801068EC + i) == 0) {
+        } else if (vs_main_buttonsPressed.all & PADRright) {
+            if (vs_battle_getSkillFlags(0, selectedRow + i) == 0) {
                 vs_battle_playMenuSelectSfx();
-                D_801022D4 = 0;
+                vs_mainMenu_isLevelledSpell = 0;
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
-                state = 2;
-                D_801068EC += i;
+                state = returnIfReady;
+                selectedRow += i;
                 break;
             } else {
                 func_800C02E0();
             }
         }
-        if (vs_main_buttonRepeat & 0x2000) {
+        if (vs_main_buttonRepeat & PADLright) {
             if (i < (rowCount - 1)) {
                 ++i;
             }
         }
-        if (vs_main_buttonRepeat & 0x8000) {
+        if (vs_main_buttonRepeat & PADLleft) {
             if (i > 0) {
                 --i;
             }
@@ -308,41 +313,41 @@ static int func_80102B08(u_int initCursorMemory)
             D_800F4EE8.unk0[0xC] = i;
         }
 
-        _setMPCost(D_801068EC + i);
+        _setMPCost(selectedRow + i);
+
         temp_s6 = (u_int*)D_1F800000[1] - 1;
-        for (var_s0_2 = 0; var_s0_2 < 4; ++var_s0_2) {
+
+        for (level = 0; level < 4; ++level) {
             var_s7_2 = 0;
-            if (i >= var_s0_2) {
+            if (i >= level) {
                 int v;
                 vs_battle_renderTextRaw(
-                    D_801068D4[var_s0_2], (0x63 + var_s0_2 * 0x20) | 0x670000, 0);
+                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
                 var_t3 = func_800C0224(D_800EC270[D_8010694A],
-                    (0x60 + var_s0_2 * 0x20) | 0x640000, 0x100020, temp_s6);
+                    (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[4] = 0x37FD70C0;
 
                 v = D_8010694A;
-                if (var_s0_2 == i) {
+                if (level == i) {
                     ++D_8010694A;
                     D_8010694A &= 0xF;
                 } else {
                     D_8010694A = v & 0xF;
                 }
+            } else if (level < rowCount) {
+                    vs_battle_renderTextRaw(
+                        spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
+                    var_t3 = func_800C0224(
+                        0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                    var_t3[4] = 0x37FE70C0;
             } else {
-                if (var_s0_2 < rowCount) {
-                    vs_battle_renderTextRaw(
-                        D_801068D4[var_s0_2], (0x63 + var_s0_2 * 0x20) | 0x670000, 0);
-                    var_t3 = func_800C0224(
-                        0x40, (0x60 + var_s0_2 * 0x20) | 0x640000, 0x100020, temp_s6);
-                    var_t3[4] = 0x37FE70C0;
-                } else {
-                    var_s7_2 = 1;
-                    vs_battle_renderTextRaw(
-                        D_801068D4[4], (0x66 + var_s0_2 * 0x20) | 0x670000, 0);
-                    var_t3 = func_800C0224(
-                        0, (0x60 + var_s0_2 * 0x20) | 0x640000, 0x100020, temp_s6);
-                    var_t3[1] = 0x64602000;
-                    var_t3[4] = 0x37FE70C0;
-                }
+                var_s7_2 = 1;
+                vs_battle_renderTextRaw(
+                    spellLevels[4], (0x66 + level * 0x20) | 0x670000, 0);
+                var_t3 = func_800C0224(
+                    0, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                var_t3[1] = 0x64602000;
+                var_t3[4] = 0x37FE70C0;
             }
             var_t3[-3] = (u_short)var_t3[-3] | 0x37F50000;
             var_t3[-5] = var_t3[-5] | 0x02000000;
@@ -356,7 +361,7 @@ static int func_80102B08(u_int initCursorMemory)
                 var_t3[-15] = var_t3[-15] | 0x02000000;
             }
         }
-        var_t3 = func_800C0224(0x80U, 0x640050, 0x100010, temp_s6);
+        var_t3 = func_800C0224(0x80, 0x640050, 0x100010, temp_s6);
         var_t3[4] = 0x37FD3050;
         var_t3 += 6;
         var_t3[0] = (*temp_s6 & 0xFFFFFF) | 0x09000000;
@@ -380,11 +385,11 @@ static int func_80102B08(u_int initCursorMemory)
 static char D_80106950[6];
 static char _1[2];
 
-static int _drawMagicList(int arg0)
+static int _shamanMagicMenu(u_int initCursorMemory)
 {
-    static int D_801068F4;
-    static int D_801068F8;
-    static int D_801068FC;
+    static int state;
+    static int selectedRow;
+    static int shortcutInvoked;
 
     char* menuStrings[12];
     int rowTypes[6];
@@ -392,24 +397,25 @@ static int _drawMagicList(int arg0)
     int rowCount;
     int skillId;
 
-    if (arg0 != 0) {
-        D_801068FC = (arg0 ^ 2) < 1U;
+    if (initCursorMemory != 0) {
+        shortcutInvoked = (initCursorMemory ^ 2) < 1;
         func_800FA92C(1, 1);
-        D_801068F4 = 0;
+        state = 0;
         return 0;
     }
 
-    switch (D_801068F4) {
+    switch (state) {
     case 0:
         if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
         }
         rowCount = 0;
         for (i = 0; i < 6; ++i) {
-            skillId = D_800EBD84[i];
+            skillId = vs_battle_shamanSpellIds[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[30 + i]];
+                menuStrings[rowCount * 2 + 1]
+                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_shamanSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -426,31 +432,31 @@ static int _drawMagicList(int arg0)
         }
 
         i = vs_main_settings.cursorMemory;
-        if (D_801068FC != 0) {
+        if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(rowCount, 0x208, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        D_801068F4 = 1;
+        state = 1;
         break;
     case 1:
-        D_801068F8 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_801068F8 != 0) {
-            D_801022D4 = 0;
-            if ((vs_battle_shortcutInvoked != 0) && (D_801068F8 == -1)) {
-                D_801068F8 = -2;
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            vs_mainMenu_isLevelledSpell = 0;
+            if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
+                selectedRow = -2;
             }
-            if (D_801068F8 == -1) {
+            if (selectedRow == -1) {
                 func_800FA8E0(0);
             } else {
-                if (D_801068F8 > 0) {
-                    D_801068F8 = D_80106950[D_801068F8 - 1];
+                if (selectedRow > 0) {
+                    selectedRow = D_80106950[selectedRow - 1];
                 }
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
-            D_801068F4 = 2;
+            state = 2;
         } else {
             char* new_var = D_80106950;
             _setMPCost(*(new_var + func_801008B0()));
@@ -458,7 +464,7 @@ static int _drawMagicList(int arg0)
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_801068F8;
+            return selectedRow;
         }
         break;
     }
@@ -468,7 +474,7 @@ static int _drawMagicList(int arg0)
 static char D_80106958[18];
 static char _3[6];
 
-static int func_801037A8(int arg0)
+static int _sorcererMagicMenu(int arg0)
 {
     static int D_80106900;
     static int D_80106904;
@@ -497,7 +503,8 @@ static int func_801037A8(int arg0)
             skillId = D_800EBD8C[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[36 + i]];
+                menuStrings[rowCount * 2 + 1]
+                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_sorcererSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -524,7 +531,7 @@ static int func_801037A8(int arg0)
     case 1:
         D_80106904 = vs_mainmenu_getSelectedRow() + 1;
         if (D_80106904 != 0) {
-            D_801022D4 = 0;
+            vs_mainMenu_isLevelledSpell = 0;
             if ((vs_battle_shortcutInvoked != 0) && (D_80106904 == -1)) {
                 D_80106904 = -2;
             }
@@ -555,7 +562,7 @@ static int func_801037A8(int arg0)
 
 static char D_80106970[8];
 
-static int func_80103AEC(int arg0)
+static int _enchanterMagicMenu(int arg0)
 {
     static int D_8010690C;
     static int D_80106910;
@@ -584,7 +591,8 @@ static int func_80103AEC(int arg0)
             skillId = D_800EBDA0[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[54 + i]];
+                menuStrings[rowCount * 2 + 1]
+                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_enchanterSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -611,7 +619,7 @@ static int func_80103AEC(int arg0)
     case 1:
         D_80106910 = vs_mainmenu_getSelectedRow() + 1;
         if (D_80106910 != 0) {
-            D_801022D4 = 0;
+            vs_mainMenu_isLevelledSpell = 0;
             if ((vs_battle_shortcutInvoked != 0) && (D_80106910 == -1)) {
                 D_80106910 = -2;
             }
@@ -672,7 +680,8 @@ static int func_80103E30(int arg0)
             if (temp_s2_2 == 0) {
                 continue;
             }
-            menuStrings[2 * rowCount] = (char*)(&_teleportationStrings[_teleportationStrings[(i * 2) + 3]]);
+            menuStrings[2 * rowCount]
+                = (char*)(&_teleportationStrings[_teleportationStrings[(i * 2) + 3]]);
             menuStrings[(rowCount * 2) + 1]
                 = (char*)(&_teleportationStrings[_teleportationStrings[(i * 2) + 4]]);
             D_801069A8[rowCount] = _getTeleportCost(i);
@@ -713,7 +722,7 @@ static int func_80103E30(int arg0)
     case 1:
         D_80106A08 = vs_mainmenu_getSelectedRow() + 1;
         if (D_80106A08 != 0) {
-            D_801022D4 = 0;
+            vs_mainMenu_isLevelledSpell = 0;
             if (D_80106A08 == (-1)) {
                 func_800FA8E0(0);
             } else {
@@ -784,26 +793,26 @@ int vs_menu0_exec(char* arg0)
         func_800FFBC8();
         i = vs_battle_shortcutInvoked;
         if (i != 0) {
-            vs_battle_setMenuItem(
-                i + 9, 0x140, 0x22, 0x8C, 8, (char*)&_baseStrings[_baseStrings[(i * 3) - 3]])
+            vs_battle_setMenuItem(i + 9, 0x140, 0x22, 0x8C, 8,
+                (char*)&_baseStrings[_baseStrings[(i * 3) - 3]])
                 ->selected
                 = 1;
             switch (i) {
             case 1:
                 *arg0 = 7;
-                func_80102B08(1);
+                _warlockMagicMenu(1);
                 break;
             case 2:
                 *arg0 = 9;
-                _drawMagicList(1);
+                _shamanMagicMenu(1);
                 break;
             case 3:
                 *arg0 = 0xB;
-                func_801037A8(1);
+                _sorcererMagicMenu(1);
                 break;
             case 4:
                 *arg0 = 0xD;
-                func_80103AEC(1);
+                _enchanterMagicMenu(1);
                 break;
             }
             break;
@@ -832,12 +841,14 @@ int vs_menu0_exec(char* arg0)
 
             menuStrings[i * 2 + 1]
                 = (func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)
-                ? (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDisabled)
-                : (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDesc);
+                ? (char*)(_teleportationStrings
+                      + VS_teleportation_OFFSET_teleportationDisabled)
+                : (char*)(_teleportationStrings
+                      + VS_teleportation_OFFSET_teleportationDesc);
 
             if ((func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)) {
-                menuStrings[i * 2 + 1]
-                    = (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDisabled);
+                menuStrings[i * 2 + 1] = (char*)(_teleportationStrings
+                    + VS_teleportation_OFFSET_teleportationDisabled);
             }
 
             rowTypes[i++] = ((j == 0x30) || (vs_main_stateFlags.unkB5 == 2)
@@ -860,19 +871,19 @@ int vs_menu0_exec(char* arg0)
                 switch (selectedRow) {
                 case 0:
                     *arg0 = 7;
-                    func_80102B08(1);
+                    _warlockMagicMenu(1);
                     break;
                 case 1:
                     *arg0 = 9;
-                    _drawMagicList(1);
+                    _shamanMagicMenu(1);
                     break;
                 case 2:
                     *arg0 = 11;
-                    func_801037A8(1);
+                    _sorcererMagicMenu(1);
                     break;
                 case 3:
                     *arg0 = 13;
-                    func_80103AEC(1);
+                    _enchanterMagicMenu(1);
                     break;
                 case 4:
                     *arg0 = 14;
@@ -896,11 +907,11 @@ int vs_menu0_exec(char* arg0)
             0xA, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_warlock))
             ->selected
             = 1;
-        func_80102B08(2);
+        _warlockMagicMenu(2);
         *arg0 = 7;
         break;
     case 7:
-        i = func_80102B08(0);
+        i = _warlockMagicMenu(0);
         if (i != 0) {
             if (i > 0) {
                 D_800F4E98.executeAbility = i;
@@ -921,11 +932,11 @@ int vs_menu0_exec(char* arg0)
             0xB, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_shaman))
             ->selected
             = 1;
-        _drawMagicList(2);
+        _shamanMagicMenu(2);
         *arg0 = 9;
         break;
     case 9:
-        i = _drawMagicList(0);
+        i = _shamanMagicMenu(0);
         if (i != 0) {
             if (i > 0) {
                 D_800F4E98.executeAbility = i;
@@ -946,11 +957,11 @@ int vs_menu0_exec(char* arg0)
             0xC, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_sorcerer))
             ->selected
             = 1;
-        func_801037A8(2);
+        _sorcererMagicMenu(2);
         *arg0 = 0xB;
         break;
     case 11:
-        i = func_801037A8(0);
+        i = _sorcererMagicMenu(0);
         if (i != 0) {
             if (i > 0) {
                 D_800F4E98.executeAbility = i;
@@ -971,11 +982,11 @@ int vs_menu0_exec(char* arg0)
             0xD, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_enchanter))
             ->selected
             = 1;
-        func_80103AEC(2);
+        _enchanterMagicMenu(2);
         *arg0 = 0xD;
         break;
     case 13:
-        i = func_80103AEC(0);
+        i = _enchanterMagicMenu(0);
         if (i != 0) {
             if (i > 0) {
                 D_800F4E98.executeAbility = i;

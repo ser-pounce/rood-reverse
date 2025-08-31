@@ -217,7 +217,7 @@ static int _abilityMenu()
         }
         break;
     case handleInput:
-        D_801022D4 = 0;
+        vs_mainMenu_isLevelledSpell = 0;
         selectedAbility = _highlightedAbility + _firstAbility;
         previousFirstAbility = _firstAbility;
         if (_abilityCount < 9) {

@@ -172,7 +172,7 @@ static int _drawArtsList(int typeCursorMem)
         }
         D_8010452C = D_8010452F == 0;
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
-        D_801022D4 = 0;
+        vs_mainMenu_isLevelledSpell = 0;
         if (selectedRow != 0) {
             D_8010452C = 0;
             if (selectedRow > 0) {

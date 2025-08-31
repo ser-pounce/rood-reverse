@@ -1140,7 +1140,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C694);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C81C);
 
-int vs_battle_getClosestSavePoint() { return func_8007C81C(D_800F1880.unk0, D_800F1880.unk34); }
+int vs_battle_getClosestSavePoint()
+{
+    return func_8007C81C(D_800F1880.unk0, D_800F1880.unk34);
+}
 
 void func_8007C8A4(int arg0)
 {

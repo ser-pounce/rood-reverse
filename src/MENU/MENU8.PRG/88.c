@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 void func_80104650(int, int, int, int);
@@ -11,8 +12,10 @@ extern int D_80105D98;
 extern int D_80105D9C;
 extern int D_80105DA0;
 extern int D_80105DA4;
+extern char D_80105DB0;
 extern char D_80105DB2;
 extern char D_80105F40[];
+extern char D_80105F53;
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102888);
 
@@ -121,7 +124,50 @@ INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801035FC);
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801037B4);
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103D88);
+int func_80103D88(int arg0) {
+    int temp_s1;
+    int i;
+
+    D_80105DB0 = 1;
+    temp_s1 = arg0;
+    
+    if (vs_main_buttonRepeat & 0x10) {
+        vs_battle_playMenuChangeSfx(vs_main_buttonRepeat);
+        for (i = 19; arg0 < i; --i) {
+            D_80105F40[i] = D_80105F40[i - 1];
+        }
+        D_80105F40[arg0] = 0x8F;
+    } else if (vs_main_buttonRepeat & 0x80) {
+        vs_battle_playMenuChangeSfx(vs_main_buttonRepeat);
+        for (i = arg0; i < 19; ++i) {
+            D_80105F40[i] = D_80105F40[i + 1];
+        }
+        D_80105F53 = 0x8F;
+    } else if ((vs_main_buttonsState & 0xC) != 0xC) {
+        if (vs_main_buttonRepeat & 4) {
+            if (arg0 == 0) {
+                if (vs_main_buttonsPressed.all & 4) {
+                    arg0 = 19;
+                }
+            } else {
+                --arg0;
+            }
+        }
+        if (vs_main_buttonRepeat & 8) {
+            if (arg0 == 0x13) {
+                if (vs_main_buttonsPressed.all & 8) {
+                    arg0 = 0;
+                }
+            } else {
+                ++arg0;
+            }
+        }
+    }
+    if (arg0 != temp_s1) {
+        vs_battle_playMenuChangeSfx();
+    }
+    return arg0;
+}
 
 int func_80103F1C(char* arg0)
 {

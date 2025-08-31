@@ -8,16 +8,14 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
-static signed char _magicCostTextBuffer[16];
+static signed char _MPCostTextBuffer[16];
 
-static void _setMagicCost(int id)
+static void _setMPCost(int id)
 {
     int flags;
     int i;
-    int var_s2;
     int cost;
-
-    var_s2 = 0;
+    int var_s2 = 0;
 
     if (id < 0) {
         var_s2 = 1;
@@ -27,33 +25,33 @@ static void _setMagicCost(int id)
     flags = vs_battle_getSkillFlags(0, id);
     vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
     cost = vs_main_skills[id].cost;
-    _magicCostTextBuffer[15] = NULL;
+    _MPCostTextBuffer[15] = NULL;
     
     i = 15;
 
     if (var_s2 != 0) {
         i = 13;
-        _magicCostTextBuffer[14] = '-';
-        _magicCostTextBuffer[13] = '[';
+        _MPCostTextBuffer[14] = '-';
+        _MPCostTextBuffer[13] = '[';
     }
 
     do {
         cost = vs_battle_toBCD(cost);
-        _magicCostTextBuffer[--i] = (cost & 0xF) + '0';
+        _MPCostTextBuffer[--i] = (cost & 0xF) + '0';
         cost >>= 4;
         if (var_s2 != 0) {
-            _magicCostTextBuffer[--i] = '[';
+            _MPCostTextBuffer[--i] = '[';
         }
     } while (cost != 0);
 
-    _magicCostTextBuffer[--i] = '#';
+    _MPCostTextBuffer[--i] = '#';
     vs_mainmenu_setAbilityCost(
-        0, &_magicCostTextBuffer[i], var_s2 * 4 + 72, (flags >> 1) & 1);
+        0, &_MPCostTextBuffer[i], var_s2 * 4 + 72, (flags >> 1) & 1);
 }
 
-static char _magicCostDirectTextBuffer[16];
+static char _MPCostDirectTextBuffer[16];
 
-static void _setMagicCostDirect(int costDecimal, int arg1)
+static void _setMPCostDirect(int costDecimal, int arg1)
 {
     int cost;
     int i;
@@ -61,16 +59,16 @@ static void _setMagicCostDirect(int costDecimal, int arg1)
     vs_mainmenu_setAbilityCost(1, "MP", 8, arg1);
     cost = costDecimal;
     i = 15;
-    _magicCostDirectTextBuffer[15] = 0;
+    _MPCostDirectTextBuffer[15] = 0;
 
     do {
         cost = vs_battle_toBCD(cost);
-        _magicCostDirectTextBuffer[--i] = (cost & 0xF) + '0';
+        _MPCostDirectTextBuffer[--i] = (cost & 0xF) + '0';
         cost >>= 4;
     } while (cost != 0);
 
-    _magicCostDirectTextBuffer[--i] = 0x23;
-    vs_mainmenu_setAbilityCost(0, &_magicCostDirectTextBuffer[i], 72, arg1);
+    _MPCostDirectTextBuffer[--i] = '#';
+    vs_mainmenu_setAbilityCost(0, &_MPCostDirectTextBuffer[i], 72, arg1);
 }
 
 static u_short _baseStrings[] = {
@@ -80,7 +78,7 @@ static u_short _teleportationStrings[] = {
 #include "../../build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
 
-static int _teleportLocationData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
+static int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
     0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
     0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
     0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
@@ -91,22 +89,15 @@ static int _teleportLocationData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0
 
 static int _getTeleportCost(int targetSavePointId)
 {
-    static char savePointCosts[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-        0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00 };
-
-    int closestSavePoint;
-    int closestSavePointId;
     int i;
-    int cost;
     int j;
-
-    closestSavePoint = vs_battle_getClosestSavePoint();
+    int cost;
+    int closestSavePointId;
+    int closestSavePoint = vs_battle_getClosestSavePoint();
 
     do {
         for (i = 0; i < 48; ++i) {
-            if ((_teleportLocationData[i] & 0xFFFF) == closestSavePoint) {
+            if ((_savePointData[i] & 0xFFFF) == closestSavePoint) {
                 break;
             }
         }
@@ -121,6 +112,10 @@ static int _getTeleportCost(int targetSavePointId)
     cost = 15;
 
     for (j = i; j < targetSavePointId; ++j) {
+        static char savePointCosts[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0 };
         cost += savePointCosts[j];
     }
     return cost;
@@ -135,7 +130,6 @@ static int func_80102B08(u_int arg0)
     extern u_long* D_1F800000[];
 
     static char D_801068CC[] = { 0x6A, 0x6E, 0x72, 0x76, 0x7A, 0x7E, 0x82 };
-
     static char* D_801068D4[] = { "LV1", "LV2", "LV3", "LV4", "--" };
 
     static u_int D_801068E8;
@@ -228,7 +222,7 @@ static int func_80102B08(u_int arg0)
                     break;
                 }
             }
-            _setMagicCost(i);
+            _setMPCost(i);
         }
         break;
     case 2:
@@ -310,7 +304,7 @@ static int func_80102B08(u_int arg0)
             D_800F4EE8.unk0[0xC] = i;
         }
 
-        _setMagicCost(D_801068EC + i);
+        _setMPCost(D_801068EC + i);
         temp_s6 = (u_int*)D_1F800000[1] - 1;
         for (var_s0_2 = 0; var_s0_2 < 4; ++var_s0_2) {
             var_s7_2 = 0;
@@ -455,7 +449,7 @@ static int _drawMagicList(int arg0)
             D_801068F4 = 2;
         } else {
             char* new_var = D_80106950;
-            _setMagicCost(*(new_var + func_801008B0()));
+            _setMPCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -543,7 +537,7 @@ static int func_801037A8(int arg0)
             D_80106900 = 2;
         } else {
             char* new_var = D_80106958;
-            _setMagicCost(*(new_var + func_801008B0()));
+            _setMPCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -630,7 +624,7 @@ static int func_80103AEC(int arg0)
             D_8010690C = 2;
         } else {
             char* new_var = D_80106970;
-            _setMagicCost(*(new_var + func_801008B0()));
+            _setMPCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -726,7 +720,7 @@ static int func_80103E30(int arg0)
             D_80106A10 = 2;
         } else {
             i = D_801069A8[func_801008B0()];
-            _setMagicCostDirect(i, D_80106A0C < i);
+            _setMPCostDirect(i, D_80106A0C < i);
         }
         break;
 
@@ -737,7 +731,7 @@ static int func_80103E30(int arg0)
                 int v0;
                 int a0;
                 int a2 = D_80106978[D_80106A08 - 1];
-                i = _teleportLocationData[a2] + 1;
+                i = _savePointData[a2] + 1;
                 v1 = i & 0x1FF;
                 arg0 = ~0x3E00;
                 v0 = (rowCount & ~0x1FF) | v1;

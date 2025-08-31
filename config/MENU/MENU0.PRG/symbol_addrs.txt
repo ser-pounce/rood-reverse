@@ -1,10 +1,10 @@
 _drawMagicList = 0x80103464;
-_magicCostTextBuffer = 0x80106918;
-_setMagicCost = 0x80102884;
-_setMagicCostDirect = 0x801029B8;
-_magicCostDirectTextBuffer = 0x80106928;
+_MPCostTextBuffer = 0x80106918;
+_setMPCost = 0x80102884;
+_setMPCostDirect = 0x801029B8;
+_MPCostDirectTextBuffer = 0x80106928;
 _baseStrings = 0x80104A58;
 _teleportationStrings = 0x80105D94;
-_teleportLocationData = 0x801067DC;
+_savePointData = 0x801067DC;
 _getTeleportCost = 0x80102A68;
 savePointCosts = 0x8010689C;

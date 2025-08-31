@@ -382,11 +382,17 @@ static int _warlockMagicMenu(u_int initCursorMemory)
     return 0;
 }
 
-static char D_80106950[6];
+static char _availableShamanSpells[6];
 static char _1[2];
 
 static int _shamanMagicMenu(u_int initCursorMemory)
 {
+    enum state {
+        init,
+        handleInput,
+        returnIfReady
+    };
+
     static int state;
     static int selectedRow;
     static int shortcutInvoked;
@@ -400,29 +406,31 @@ static int _shamanMagicMenu(u_int initCursorMemory)
     if (initCursorMemory != 0) {
         shortcutInvoked = (initCursorMemory ^ 2) < 1;
         func_800FA92C(1, 1);
-        state = 0;
+        state = init;
         return 0;
     }
 
     switch (state) {
-    case 0:
+    case init:
         if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
         }
+
         rowCount = 0;
         for (i = 0; i < 6; ++i) {
             skillId = vs_battle_shamanSpellIds[i];
-            if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1]
-                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_shamanSpellDescs]];
-                rowTypes[rowCount] = 0;
-                if (vs_battle_getSkillFlags(0, skillId) != 0) {
-                    rowTypes[rowCount] |= 1;
-                }
-                D_80106950[rowCount] = skillId;
-                ++rowCount;
+            if (!((vs_main_skills[skillId].flags >> 0xF) & 1)) {
+                continue;
             }
+            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2 + 1]
+                = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_shamanSpellDescs]];
+            rowTypes[rowCount] = 0;
+            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+                rowTypes[rowCount] |= 1;
+            }
+            _availableShamanSpells[rowCount] = skillId;
+            ++rowCount;
         }
 
         if (D_800F4EA0 & 0xB7) {
@@ -437,9 +445,9 @@ static int _shamanMagicMenu(u_int initCursorMemory)
         }
         vs_mainmenu_setMenuRows(rowCount, 0x208, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        state = 1;
+        state = handleInput;
         break;
-    case 1:
+    case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
             vs_mainMenu_isLevelledSpell = 0;
@@ -450,19 +458,18 @@ static int _shamanMagicMenu(u_int initCursorMemory)
                 func_800FA8E0(0);
             } else {
                 if (selectedRow > 0) {
-                    selectedRow = D_80106950[selectedRow - 1];
+                    selectedRow = _availableShamanSpells[selectedRow - 1];
                 }
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
-            state = 2;
+            state = returnIfReady;
         } else {
-            char* new_var = D_80106950;
-            _setMPCost(*(new_var + func_801008B0()));
+            _setMPCost(_availableShamanSpells[func_801008B0()]);
         }
         break;
-    case 2:
+    case returnIfReady:
         if (vs_mainmenu_ready() != 0) {
             return selectedRow;
         }

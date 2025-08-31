@@ -15,3 +15,4 @@ _availableWarlockSpells = 0x80106938;
 levelledSpells = 0x801068CC;
 _sorcererMagicMenu = 0x801037A8;
 _enchanterMagicMenu = 0x80103AEC;
+_availableShamanSpells = 0x80106950;

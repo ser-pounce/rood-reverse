@@ -4,7 +4,7 @@ A decompilation project for Vagrant Story for PlayStation 1, with a goal of enab
 
 This project does not contain any of the original files from the game disk, you must own a copy of the game.
 
-Heavily inspired by the incredible work of the [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) team.
+Heavily inspired by and indebted to the incredible work of the [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) team and the [PS1/PS2 decompilation](https://discord.gg/hKx3FJJgrV) Discord server.
 
 Thanks also to the following amazing projects (and their dependencies):
 - [splat](https://github.com/ethteck/splat)

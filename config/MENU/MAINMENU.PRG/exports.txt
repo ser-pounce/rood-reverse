@@ -5,5 +5,5 @@ vs_mainmenu_setMessage = 0x800FFC04;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainmenu_setMenuRows = 0x801005E0;
 vs_mainmenu_getSelectedRow = 0x801008C8;
-D_80102578 = 0x80102578;
 vs_mainMenu_isLevelledSpell = 0x801022D4;
+D_80102578 = 0x80102578;

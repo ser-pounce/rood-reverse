@@ -127,16 +127,14 @@ static char _0[5];
 
 static int _warlockMagicMenu(u_int initCursorMemory)
 {
-    enum state { 
-        init,
-        handleInput,
-        returnIfReady,
-        levelledSpell
-     };
+    enum state { init, handleInput, returnIfReady, levelledSpell };
 
     extern u_long* D_1F800000[];
 
-    static char levelledSpells[] = { vs_battle_spell_explosion, vs_battle_spell_thunderburst, vs_battle_spell_flameSphere, vs_battle_spell_gaeaStrike, vs_battle_spell_avalanche, vs_battle_spell_radialSurge, vs_battle_spell_meteor };
+    static char levelledSpells[] = { vs_battle_spell_explosion,
+        vs_battle_spell_thunderburst, vs_battle_spell_flameSphere,
+        vs_battle_spell_gaeaStrike, vs_battle_spell_avalanche,
+        vs_battle_spell_radialSurge, vs_battle_spell_meteor };
     static char* spellLevels[] = { "LV1", "LV2", "LV3", "LV4", "--" };
 
     static u_int state;
@@ -335,11 +333,11 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                     D_8010694A = v & 0xF;
                 }
             } else if (level < rowCount) {
-                    vs_battle_renderTextRaw(
-                        spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                    var_t3 = func_800C0224(
-                        0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
-                    var_t3[4] = 0x37FE70C0;
+                vs_battle_renderTextRaw(
+                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
+                var_t3 = func_800C0224(
+                    0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                var_t3[4] = 0x37FE70C0;
             } else {
                 var_s7_2 = 1;
                 vs_battle_renderTextRaw(
@@ -387,11 +385,7 @@ static char _1[2];
 
 static int _shamanMagicMenu(u_int initCursorMemory)
 {
-    enum state {
-        init,
-        handleInput,
-        returnIfReady
-    };
+    enum state { init, handleInput, returnIfReady };
 
     static int state;
     static int selectedRow;
@@ -478,14 +472,15 @@ static int _shamanMagicMenu(u_int initCursorMemory)
     return 0;
 }
 
-static char D_80106958[18];
+static char _availableSorcereSpells[18];
 static char _3[6];
 
-static int _sorcererMagicMenu(int arg0)
+static int _sorcererMagicMenu(u_int initCursorMemory)
 {
-    static int D_80106900;
-    static int D_80106904;
-    static int D_80106908;
+    enum state { init, handleInput, returnIfready };
+    static int state;
+    static int selectedRow;
+    static int shortcutInvoked;
 
     char* menuStrings[36];
     int rowTypes[18];
@@ -493,32 +488,33 @@ static int _sorcererMagicMenu(int arg0)
     int rowCount;
     int skillId;
 
-    if (arg0 != 0) {
-        D_80106908 = (arg0 ^ 2) < 1U;
+    if (initCursorMemory != 0) {
+        shortcutInvoked = (initCursorMemory ^ 2) < 1;
         func_800FA92C(2, 1);
-        D_80106900 = 0;
+        state = init;
         return 0;
     }
 
-    switch (D_80106900) {
-    case 0:
-        if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
+    switch (state) {
+    case init:
+        if (!vs_battle_shortcutInvoked && !vs_mainmenu_ready()) {
             break;
         }
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
-            skillId = D_800EBD8C[i];
-            if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1]
-                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_sorcererSpellDescs]];
-                rowTypes[rowCount] = 0;
-                if (vs_battle_getSkillFlags(0, skillId) != 0) {
-                    rowTypes[rowCount] |= 1;
-                }
-                D_80106958[rowCount] = skillId;
-                ++rowCount;
+            skillId = vs_battle_sorcererSpellIds[i];
+            if (!((vs_main_skills[skillId].flags >> 0xF) & 1)) {
+                continue;
             }
+            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i
+                + VS_base_INDEX_sorcererSpellDescs]];
+            rowTypes[rowCount] = 0;
+            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+                rowTypes[rowCount] |= 1;
+            }
+            _availableSorcereSpells[rowCount] = skillId;
+            ++rowCount;
         }
 
         if (D_800F4EA0 & 0xB7) {
@@ -528,52 +524,52 @@ static int _sorcererMagicMenu(int arg0)
         }
 
         i = vs_main_settings.cursorMemory;
-        if (D_80106908 != 0) {
+        if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(rowCount, 0x209, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        D_80106900 = 1;
+        state = handleInput;
         break;
-    case 1:
-        D_80106904 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80106904 != 0) {
+    case handleInput:
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
             vs_mainMenu_isLevelledSpell = 0;
-            if ((vs_battle_shortcutInvoked != 0) && (D_80106904 == -1)) {
-                D_80106904 = -2;
+            if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
+                selectedRow = -2;
             }
-            if (D_80106904 == -1) {
+            if (selectedRow == -1) {
                 func_800FA8E0(0);
             } else {
-                if (D_80106904 > 0) {
-                    D_80106904 = D_80106958[D_80106904 - 1];
+                if (selectedRow > 0) {
+                    selectedRow = _availableSorcereSpells[selectedRow - 1];
                 }
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
-            D_80106900 = 2;
+            state = returnIfready;
         } else {
-            char* new_var = D_80106958;
-            _setMPCost(*(new_var + func_801008B0()));
+            _setMPCost(_availableSorcereSpells[func_801008B0()]);
         }
         break;
-    case 2:
+    case returnIfready:
         if (vs_mainmenu_ready() != 0) {
-            return D_80106904;
+            return selectedRow;
         }
         break;
     }
     return 0;
 }
 
-static char D_80106970[8];
+static char _availableEnchanterSpells[8];
 
-static int _enchanterMagicMenu(int arg0)
+static int _enchanterMagicMenu(u_int initCursorMemory)
 {
-    static int D_8010690C;
-    static int D_80106910;
-    static int D_80106914;
+    enum state { init, handleInput, returnIfready };
+    static int state;
+    static int selectedRow;
+    static int shortcutInvoked;
 
     char* menuStrings[16];
     int rowTypes[8];
@@ -581,32 +577,33 @@ static int _enchanterMagicMenu(int arg0)
     int rowCount;
     int skillId;
 
-    if (arg0 != 0) {
-        D_80106914 = (arg0 ^ 2) < 1U;
+    if (initCursorMemory != 0) {
+        shortcutInvoked = (initCursorMemory ^ 2) < 1;
         func_800FA92C(3, 1);
-        D_8010690C = 0;
+        state = init;
         return 0;
     }
 
-    switch (D_8010690C) {
-    case 0:
+    switch (state) {
+    case init:
         if ((vs_battle_shortcutInvoked == 0) && (vs_mainmenu_ready() == 0)) {
             break;
         }
         rowCount = 0;
         for (i = 0; i < 8; ++i) {
-            skillId = D_800EBDA0[i];
-            if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1]
-                    = (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_enchanterSpellDescs]];
-                rowTypes[rowCount] = 0;
-                if (vs_battle_getSkillFlags(0, skillId) != 0) {
-                    rowTypes[rowCount] |= 1;
-                }
-                D_80106970[rowCount] = skillId;
-                ++rowCount;
+            skillId = vs_battle_enchanterSpellIds[i];
+            if (!((vs_main_skills[skillId].flags >> 0xF) & 1)) {
+                continue;
             }
+            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i
+                + VS_base_INDEX_enchanterSpellDescs]];
+            rowTypes[rowCount] = 0;
+            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+                rowTypes[rowCount] |= 1;
+            }
+            _availableEnchanterSpells[rowCount] = skillId;
+            ++rowCount;
         }
 
         if (D_800F4EA0 & 0xB7) {
@@ -616,39 +613,38 @@ static int _enchanterMagicMenu(int arg0)
         }
 
         i = vs_main_settings.cursorMemory;
-        if (D_80106914 != 0) {
+        if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(rowCount, 0x20A, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        D_8010690C = 1;
+        state = handleInput;
         break;
-    case 1:
-        D_80106910 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80106910 != 0) {
+    case handleInput:
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
             vs_mainMenu_isLevelledSpell = 0;
-            if ((vs_battle_shortcutInvoked != 0) && (D_80106910 == -1)) {
-                D_80106910 = -2;
+            if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
+                selectedRow = -2;
             }
-            if (D_80106910 == -1) {
+            if (selectedRow == -1) {
                 func_800FA8E0(0);
             } else {
-                if (D_80106910 > 0) {
-                    D_80106910 = D_80106970[D_80106910 - 1];
+                if (selectedRow > 0) {
+                    selectedRow = _availableEnchanterSpells[selectedRow - 1];
                 }
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
-            D_8010690C = 2;
+            state = returnIfready;
         } else {
-            char* new_var = D_80106970;
-            _setMPCost(*(new_var + func_801008B0()));
+            _setMPCost(_availableEnchanterSpells[func_801008B0()]);
         }
         break;
-    case 2:
+    case returnIfready:
         if (vs_mainmenu_ready() != 0) {
-            return D_80106910;
+            return selectedRow;
         }
         break;
     }

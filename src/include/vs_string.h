@@ -3,6 +3,7 @@
 enum vs_string_chars {
     vs_char_noChunking = 0,
     vs_char_fontTable0 = 6,
+    vs_char_j = 0x2D,
     vs_char_space = 0x8F,
     vs_char_arrow = 0xBC,
     vs_char_nonPrinting = 0xE5,

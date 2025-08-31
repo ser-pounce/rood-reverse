@@ -8,78 +8,79 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../SLUS_010.40/main.h"
 
-static signed char D_80106918[16];
+static signed char _magicCostTextBuffer[16];
 
-static void func_80102884(int arg0)
+static void _setMagicCost(int id)
 {
-    int temp_v0;
-    int var_s1;
+    int flags;
+    int i;
     int var_s2;
-    int var_a0;
+    int cost;
 
     var_s2 = 0;
 
-    if (arg0 < 0) {
+    if (id < 0) {
         var_s2 = 1;
-        arg0 = -arg0;
+        id = -id;
     }
 
-    temp_v0 = vs_battle_getSkillFlags(0, arg0);
-    vs_mainmenu_setAbilityCost(1, "MP", 8, (temp_v0 >> 1) & 1);
-    var_s1 = 0xF;
-    var_a0 = vs_main_skills[arg0].cost;
-    D_80106918[15] = 0;
+    flags = vs_battle_getSkillFlags(0, id);
+    vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
+    cost = vs_main_skills[id].cost;
+    _magicCostTextBuffer[15] = NULL;
+    
+    i = 15;
 
     if (var_s2 != 0) {
-        var_s1 = 0xD;
-        D_80106918[14] = 0x2D;
-        D_80106918[13] = 0x5B;
+        i = 13;
+        _magicCostTextBuffer[14] = '-';
+        _magicCostTextBuffer[13] = '[';
     }
 
     do {
-        var_a0 = vs_battle_toBCD(var_a0);
-        D_80106918[--var_s1] = (var_a0 & 0xF) + 0x30;
-        var_a0 >>= 4;
+        cost = vs_battle_toBCD(cost);
+        _magicCostTextBuffer[--i] = (cost & 0xF) + '0';
+        cost >>= 4;
         if (var_s2 != 0) {
-            D_80106918[--var_s1] = 0x5B;
+            _magicCostTextBuffer[--i] = '[';
         }
-    } while (var_a0 != 0);
+    } while (cost != 0);
 
-    D_80106918[--var_s1] = 0x23;
+    _magicCostTextBuffer[--i] = '#';
     vs_mainmenu_setAbilityCost(
-        0, &D_80106918[var_s1], (var_s2 * 4) | 0x48, (temp_v0 >> 1) & 1);
+        0, &_magicCostTextBuffer[i], var_s2 * 4 + 72, (flags >> 1) & 1);
 }
 
-static char D_80106928[16];
+static char _magicCostDirectTextBuffer[16];
 
-static void func_801029B8(int arg0, int arg1)
+static void _setMagicCostDirect(int costDecimal, int arg1)
 {
-    int temp_v0;
-    int var_s0;
+    int cost;
+    int i;
 
     vs_mainmenu_setAbilityCost(1, "MP", 8, arg1);
-    temp_v0 = arg0;
-    var_s0 = 0xF;
-    D_80106928[15] = 0;
+    cost = costDecimal;
+    i = 15;
+    _magicCostDirectTextBuffer[15] = 0;
 
     do {
-        temp_v0 = vs_battle_toBCD(temp_v0);
-        D_80106928[--var_s0] = (temp_v0 & 0xF) + 0x30;
-        temp_v0 >>= 4;
-    } while (temp_v0 != 0);
+        cost = vs_battle_toBCD(cost);
+        _magicCostDirectTextBuffer[--i] = (cost & 0xF) + '0';
+        cost >>= 4;
+    } while (cost != 0);
 
-    D_80106928[--var_s0] = 0x23;
-    vs_mainmenu_setAbilityCost(0, &D_80106928[var_s0], 0x48, arg1);
+    _magicCostDirectTextBuffer[--i] = 0x23;
+    vs_mainmenu_setAbilityCost(0, &_magicCostDirectTextBuffer[i], 72, arg1);
 }
 
-static u_short D_80104A58[] = {
+static u_short _baseStrings[] = {
 #include "../../build/assets/MENU/MENU0.PRG/base.vsString"
 };
-static u_short D_80105D94[] = {
+static u_short _teleportationStrings[] = {
 #include "../../build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
 
-static int D_801067DC[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
+static int _teleportLocationData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
     0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
     0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
     0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
@@ -88,40 +89,41 @@ static int D_801067DC[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x07
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000 };
 
-static int func_80102A68(int arg0)
+static int _getTeleportCost(int targetSavePointId)
 {
-    static char D_8010689C[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    static char savePointCosts[] = { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
         0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
         0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
         0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00 };
-    int temp_a1;
-    int temp_v1;
+
+    int closestSavePoint;
+    int closestSavePointId;
     int i;
-    int var_a1;
+    int cost;
     int j;
 
-    temp_a1 = func_8007C874();
+    closestSavePoint = vs_battle_getClosestSavePoint();
 
     do {
         for (i = 0; i < 48; ++i) {
-            if ((u_short)D_801067DC[i] == temp_a1) {
+            if ((_teleportLocationData[i] & 0xFFFF) == closestSavePoint) {
                 break;
             }
         }
     } while (0);
 
-    temp_v1 = i;
-    if (arg0 < i) {
-        i = arg0;
-        arg0 = temp_v1;
+    closestSavePointId = i;
+    if (targetSavePointId < i) {
+        i = targetSavePointId;
+        targetSavePointId = closestSavePointId;
     }
 
-    var_a1 = 15;
+    cost = 15;
 
-    for (j = i; j < arg0; ++j) {
-        var_a1 += D_8010689C[j];
+    for (j = i; j < targetSavePointId; ++j) {
+        cost += savePointCosts[j];
     }
-    return var_a1;
+    return cost;
 }
 
 static char D_80106938[18];
@@ -161,8 +163,8 @@ static int func_80102B08(u_int arg0)
         for (i = 0; i < 18; ++i) {
             int skillId = D_800EBD70[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
-                menuStrings[rowCount * 2] = (char*)&D_80104A58[D_80104A58[i + 0x3E]];
-                menuStrings[rowCount * 2 + 1] = (char*)&D_80104A58[D_80104A58[i + 0xC]];
+                menuStrings[rowCount * 2] = (char*)&_baseStrings[_baseStrings[i + 0x3E]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[i + 0xC]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -226,7 +228,7 @@ static int func_80102B08(u_int arg0)
                     break;
                 }
             }
-            func_80102884(i);
+            _setMagicCost(i);
         }
         break;
     case 2:
@@ -308,7 +310,7 @@ static int func_80102B08(u_int arg0)
             D_800F4EE8.unk0[0xC] = i;
         }
 
-        func_80102884(D_801068EC + i);
+        _setMagicCost(D_801068EC + i);
         temp_s6 = (u_int*)D_1F800000[1] - 1;
         for (var_s0_2 = 0; var_s0_2 < 4; ++var_s0_2) {
             var_s7_2 = 0;
@@ -409,7 +411,7 @@ static int _drawMagicList(int arg0)
             skillId = D_800EBD84[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&D_80104A58[D_80104A58[30 + i]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[30 + i]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -453,7 +455,7 @@ static int _drawMagicList(int arg0)
             D_801068F4 = 2;
         } else {
             char* new_var = D_80106950;
-            func_80102884(*(new_var + func_801008B0()));
+            _setMagicCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -497,7 +499,7 @@ static int func_801037A8(int arg0)
             skillId = D_800EBD8C[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&D_80104A58[D_80104A58[36 + i]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[36 + i]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -541,7 +543,7 @@ static int func_801037A8(int arg0)
             D_80106900 = 2;
         } else {
             char* new_var = D_80106958;
-            func_80102884(*(new_var + func_801008B0()));
+            _setMagicCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -584,7 +586,7 @@ static int func_80103AEC(int arg0)
             skillId = D_800EBDA0[i];
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1] = (char*)&D_80104A58[D_80104A58[54 + i]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_baseStrings[_baseStrings[54 + i]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -628,7 +630,7 @@ static int func_80103AEC(int arg0)
             D_8010690C = 2;
         } else {
             char* new_var = D_80106970;
-            func_80102884(*(new_var + func_801008B0()));
+            _setMagicCost(*(new_var + func_801008B0()));
         }
         break;
     case 2:
@@ -672,17 +674,17 @@ static int func_80103E30(int arg0)
             if (temp_s2_2 == 0) {
                 continue;
             }
-            menuStrings[2 * rowCount] = (char*)(&D_80105D94[D_80105D94[(i * 2) + 3]]);
+            menuStrings[2 * rowCount] = (char*)(&_teleportationStrings[_teleportationStrings[(i * 2) + 3]]);
             menuStrings[(rowCount * 2) + 1]
-                = (char*)(&D_80105D94[D_80105D94[(i * 2) + 4]]);
-            D_801069A8[rowCount] = func_80102A68(i);
+                = (char*)(&_teleportationStrings[_teleportationStrings[(i * 2) + 4]]);
+            D_801069A8[rowCount] = _getTeleportCost(i);
             rowTypes[rowCount] = (temp_s2_2 == 2) | (D_80106A0C < D_801069A8[rowCount]);
             if (D_801069A8[rowCount] == 0xF) {
                 rowTypes[rowCount] |= 4;
                 sp250 = rowCount;
             }
             if (temp_s2_2 == 2) {
-                menuStrings[(rowCount * 2) + 1] = (char*)(D_80105D94 + 144);
+                menuStrings[(rowCount * 2) + 1] = (char*)(_teleportationStrings + 144);
             }
             D_80106978[rowCount] = i;
             ++rowCount;
@@ -724,7 +726,7 @@ static int func_80103E30(int arg0)
             D_80106A10 = 2;
         } else {
             i = D_801069A8[func_801008B0()];
-            func_801029B8(i, D_80106A0C < i);
+            _setMagicCostDirect(i, D_80106A0C < i);
         }
         break;
 
@@ -735,7 +737,7 @@ static int func_80103E30(int arg0)
                 int v0;
                 int a0;
                 int a2 = D_80106978[D_80106A08 - 1];
-                i = D_801067DC[a2] + 1;
+                i = _teleportLocationData[a2] + 1;
                 v1 = i & 0x1FF;
                 arg0 = ~0x3E00;
                 v0 = (rowCount & ~0x1FF) | v1;
@@ -785,7 +787,7 @@ int vs_menu0_exec(char* arg0)
         i = vs_battle_shortcutInvoked;
         if (i != 0) {
             vs_battle_setMenuItem(
-                i + 9, 0x140, 0x22, 0x8C, 8, (char*)&D_80104A58[D_80104A58[(i * 3) - 3]])
+                i + 9, 0x140, 0x22, 0x8C, 8, (char*)&_baseStrings[_baseStrings[(i * 3) - 3]])
                 ->selected
                 = 1;
             switch (i) {
@@ -811,12 +813,12 @@ int vs_menu0_exec(char* arg0)
         // Fallthrough
     case 4:
         for (i = 0; i < 4; ++i) {
-            menuStrings[i * 2] = (char*)&D_80104A58[D_80104A58[i * 3]];
-            menuStrings[i * 2 + 1] = (char*)&D_80104A58[D_80104A58[i * 3 + 1]];
+            menuStrings[i * 2] = (char*)&_baseStrings[_baseStrings[i * 3]];
+            menuStrings[i * 2 + 1] = (char*)&_baseStrings[_baseStrings[i * 3 + 1]];
             rowTypes[i] = 0;
             if (func_800CAEAC(i) == 0) {
                 rowTypes[i] |= 1;
-                menuStrings[i * 2 + 1] = (char*)&D_80104A58[D_80104A58[i * 3 + 2]];
+                menuStrings[i * 2 + 1] = (char*)&_baseStrings[_baseStrings[i * 3 + 2]];
             }
         }
 
@@ -828,16 +830,16 @@ int vs_menu0_exec(char* arg0)
             }
 
             menuStrings[i * 2]
-                = (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportation);
+                = (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportation);
 
             menuStrings[i * 2 + 1]
                 = (func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)
-                ? (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDisabled)
-                : (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDesc);
+                ? (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDisabled)
+                : (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDesc);
 
             if ((func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)) {
                 menuStrings[i * 2 + 1]
-                    = (char*)(D_80105D94 + VS_teleportation_OFFSET_teleportationDisabled);
+                    = (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportationDisabled);
             }
 
             rowTypes[i++] = ((j == 0x30) || (vs_main_stateFlags.unkB5 == 2)
@@ -893,7 +895,7 @@ int vs_menu0_exec(char* arg0)
     case 6:
         func_80104254();
         vs_battle_setMenuItem(
-            0xA, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_warlock))
+            0xA, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_warlock))
             ->selected
             = 1;
         func_80102B08(2);
@@ -918,7 +920,7 @@ int vs_menu0_exec(char* arg0)
     case 8:
         func_80104254();
         vs_battle_setMenuItem(
-            0xB, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_shaman))
+            0xB, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_shaman))
             ->selected
             = 1;
         _drawMagicList(2);
@@ -943,7 +945,7 @@ int vs_menu0_exec(char* arg0)
     case 10:
         func_80104254();
         vs_battle_setMenuItem(
-            0xC, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_sorcerer))
+            0xC, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_sorcerer))
             ->selected
             = 1;
         func_801037A8(2);
@@ -968,7 +970,7 @@ int vs_menu0_exec(char* arg0)
     case 12:
         func_80104254();
         vs_battle_setMenuItem(
-            0xD, 0x140, 0x22, 0x7E, 8, (char*)(D_80104A58 + VS_base_OFFSET_enchanter))
+            0xD, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_enchanter))
             ->selected
             = 1;
         func_80103AEC(2);

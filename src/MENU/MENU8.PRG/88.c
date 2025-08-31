@@ -7,6 +7,8 @@ void func_80104650(int, int, int, int);
 
 extern u_long* D_1F800000[];
 extern u_short D_80105558[];
+extern int D_80105D98;
+extern int D_80105D9C;
 extern int D_80105DA0;
 extern int D_80105DA4;
 extern char D_80105DB2;
@@ -24,7 +26,50 @@ INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102F68);
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103110);
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801032B8);
+int func_801032B8(int arg0) {
+    char* menuStrings[4];
+    int rowTypes[2];
+    int i;
+
+    if (arg0 != 0) {
+        D_80105D98 = 0;
+        return 0;
+    }
+    switch (D_80105D98) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 2; ++i) {
+                menuStrings[i * 2] = (char*)&D_80105558[D_80105558[i * 2 + 0x2E]];
+                menuStrings[i * 2 + 1] = (char*)&D_80105558[D_80105558[i * 2 + 0x2F]];
+                rowTypes[i] = 0;
+            }
+            i = ((*(u_int*)&vs_main_settings) >> 3) & 1;
+            rowTypes[i] |= 4;
+            vs_mainmenu_setMenuRows(2, 0x24C, menuStrings, rowTypes);
+            D_80105D98 = 1;
+        }
+        break;
+    case 1:
+        D_80105D9C = vs_mainmenu_getSelectedRow() + 1;
+        if (D_80105D9C != 0) {
+            if (D_80105D9C == -2) {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            } else {
+                func_800FA8E0(7);
+            }
+            D_80105D98 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_80105D9C;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_8010345C(int arg0)
 {

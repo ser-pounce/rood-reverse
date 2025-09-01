@@ -21,15 +21,6 @@ extern char D_80105D64[];
 extern int D_80105D68;
 extern int D_80105D6C;
 
-/*
-                    do {
-                    if ((u8) vs_main_settings.simpleMap == *(var_a1_2 + &D_80105D64)) {
-                        *var_a0 |= 4;
-                    }
-                    var_a1_2 += 1;
-                    var_a0 += 4;
-                } while (var_a1_2 < 3);
-*/
 int func_80102888(int arg0)
 {
     char* menuStrings[6];

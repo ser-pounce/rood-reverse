@@ -660,7 +660,7 @@ int func_801037B4(char* arg0)
         }
         *arg0 = 4;
         break;
-    case 12: /* switch 1 */
+    case 12:
         i = func_801032B8(0);
         if (i == 0) {
             break;
@@ -676,7 +676,7 @@ int func_801037B4(char* arg0)
         }
         *arg0 = 4;
         break;
-    case 13: /* switch 1 */
+    case 13:
         i = func_8010345C(0);
         if (i == 0) {
             break;

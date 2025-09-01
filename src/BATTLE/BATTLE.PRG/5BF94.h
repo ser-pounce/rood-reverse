@@ -103,6 +103,12 @@ typedef struct {
     int executeAbility;
 } D_800F4E98_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2[0x58];
+} D_800F4E8C_t;
+
 extern u_short vs_battle_menuStrings[];
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
@@ -119,7 +125,7 @@ extern char vs_battle_shortcutInvoked;
 extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern char D_800F4E88;
-extern void* D_800F4E8C;
+extern D_800F4E8C_t* D_800F4E8C;
 extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;

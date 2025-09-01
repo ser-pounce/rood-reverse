@@ -581,7 +581,6 @@ extern char D_80105EF5;
 int func_8010475C(int arg0)
 {
     int i;
-    vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
         D_80105F01 = 0;
@@ -652,4 +651,84 @@ void func_8010493C(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801049A0);
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80105314);
+void func_80103FD8(int);
+int func_801049A0(int);
+extern char D_80060170[];
+extern char D_80105E20[];
+extern char D_80105F2E;
+extern char D_80105F30;
+extern u_char D_80105F31;
+extern char* D_80105F34;
+
+int func_80105314(char* arg0) {
+    int i;
+    int temp_a0;
+    int temp_s0;
+    char* var_v1;
+    char* var_v0;
+    int v1;
+
+    temp_s0 = *arg0;
+    switch (temp_s0) {
+    case 0:
+        D_80105F2E = D_800F4E8C->unk1;
+        D_80105F34 = D_80105E20;
+        func_800FFBA8();
+        v1 = 0x8F;
+        i = 19;
+        var_v0 = &D_80105F40[i];
+        for (; i >= 0; --i) {
+            *var_v0-- = v1;
+        }
+        if (D_800F4E8C->unk0 == 1) {
+            var_v1 = (D_80105F2E << 5) + D_80060170;
+            for (i = 0; i < 20; ++i) {
+                temp_a0 = *var_v1++;
+                if (temp_a0 == 0xE7) {
+                    break;
+                } else if (temp_a0 == 0x8F) {
+                    continue;
+                } else if (temp_a0 == 0xFA) {
+                    var_v1 += 1;
+                } else {
+                    D_80105F40[i] = temp_a0;
+                }
+
+            }
+        }
+        D_80105F30 = 0;
+        D_80105F31 = 10;
+        *arg0 = 1;
+        break;
+    case 1:
+        func_801049A0(1);
+        D_80105F30 = temp_s0;
+        *arg0 = 2;
+        break;
+    case 2:
+        if (func_801049A0(0) != 0) {
+            func_800FA8A0(0xA);
+            func_800FA810(0);
+            func_800FFBC8();
+            *arg0 = 3;
+        }
+        break;
+    case 3:
+        if (D_80105F31 == 0xA) {
+            *arg0 = 0;
+            vs_battle_menuState.currentState = 0xD;
+        }
+        break;
+    }
+    if (D_80105F30 != 0) {
+        if (D_80105F31 != 0) {
+            --D_80105F31;
+        }
+        func_80103FD8(vs_battle_rowAnimationSteps[D_80105F31]);
+    } else if (D_80105F31 < 10) {
+        ++D_80105F31;
+        func_80103FD8(D_80105F31 << 5);
+    }
+    return 0;
+}
+

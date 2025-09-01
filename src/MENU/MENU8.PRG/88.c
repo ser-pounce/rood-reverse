@@ -30,7 +30,8 @@ extern int D_80105D6C;
                     var_a0 += 4;
                 } while (var_a1_2 < 3);
 */
-int func_80102888(int arg0) {
+int func_80102888(int arg0)
+{
     char* menuStrings[6];
     int rowTypes[3];
     int i;
@@ -81,7 +82,8 @@ int func_80102888(int arg0) {
 extern int D_80105D70;
 extern int D_80105D74;
 
-int func_80102A5C(int arg0) {
+int func_80102A5C(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -129,7 +131,8 @@ int func_80102A5C(int arg0) {
 extern int D_80105D78;
 extern int D_80105D7C;
 
-int func_80102C0C(int arg0) {
+int func_80102C0C(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -177,7 +180,8 @@ int func_80102C0C(int arg0) {
 extern int D_80105D80;
 extern int D_80105D84;
 
-int func_80102DBC(int arg0) {
+int func_80102DBC(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -225,7 +229,8 @@ int func_80102DBC(int arg0) {
 extern int D_80105D88;
 extern int D_80105D8C;
 
-int func_80102F68(int arg0) {
+int func_80102F68(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -273,7 +278,8 @@ int func_80102F68(int arg0) {
 extern int D_80105D90;
 extern int D_80105D94;
 
-int func_80103110(int arg0) {
+int func_80103110(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -318,7 +324,8 @@ int func_80103110(int arg0) {
     return 0;
 }
 
-int func_801032B8(int arg0) {
+int func_801032B8(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -412,7 +419,8 @@ int func_8010345C(int arg0)
 extern int D_80105DA8;
 extern int D_80105DAC;
 
-int func_801035FC(int arg0) {
+int func_801035FC(int arg0)
+{
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -464,13 +472,14 @@ int func_801035FC(int arg0) {
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801037B4);
 
-int func_80103D88(int arg0) {
+int func_80103D88(int arg0)
+{
     int temp_s1;
     int i;
 
     D_80105DB0 = 1;
     temp_s1 = arg0;
-    
+
     if (vs_main_buttonRepeat & 0x10) {
         vs_battle_playMenuChangeSfx(vs_main_buttonRepeat);
         for (i = 19; arg0 < i; --i) {
@@ -573,7 +582,69 @@ void func_801046F0(int arg0, int arg1, int arg2)
     func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
 }
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_8010475C);
+extern u_short D_80105DB4[];
+extern char D_80105F00;
+extern char D_80105F01;
+extern char D_80105EF5;
+
+int func_8010475C(int arg0)
+{
+    int i;
+    vs_battle_menuItem_t* menuItem;
+
+    if (arg0 != 0) {
+        D_80105F01 = 0;
+        D_80105F00 = 0;
+    }
+
+    switch (D_80105F00) {
+    case 0:
+    case 1:
+    case 2: {
+        vs_battle_menuItem_t* menuItem
+            = vs_battle_setMenuItem(D_80105F00 + 0x14, 0x140, (D_80105F00 * 0x10) + 0x80,
+                0x7E, 0, (char*)&D_80105DB4[D_80105DB4[D_80105F00 + 6]]);
+        menuItem->state = 2;
+        menuItem->x = 0xC2;
+        ++D_80105F00;
+        break;
+    }
+    case 3:
+        D_80105F00 += vs_mainmenu_ready();
+        break;
+    case 4:
+        for (i = 0; i < 3; ++i) {
+            vs_battle_getMenuItem(i + 0x14)->selected = (D_80105F01 ^ i) == 0;
+        }
+
+        if (vs_main_buttonsPressed.all & 0x60) {
+            for (i = 0; i < 3; ++i) {
+                func_800FA8A0(i + 0x14);
+            }
+            if (vs_main_buttonsPressed.all & 0x40) {
+                D_80105F01 = 1;
+            }
+            return D_80105F01 + 1;
+        }
+        i = D_80105F01;
+        if (vs_main_buttonRepeat & 0x1000) {
+            i += 2;
+        }
+        if (vs_main_buttonRepeat & 0x4000) {
+            ++i;
+        }
+        if (i >= 3) {
+            i -= 3;
+        }
+        if (i != D_80105F01) {
+            vs_battle_playMenuChangeSfx();
+            D_80105F01 = i;
+        }
+        D_80105EF5 = vs_battle_drawCursor(D_80105EF5, i + 7);
+        break;
+    }
+    return 0;
+}
 
 void func_8010493C(int arg0)
 {

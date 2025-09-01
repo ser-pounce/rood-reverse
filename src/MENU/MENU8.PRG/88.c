@@ -461,7 +461,270 @@ int func_801035FC(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801037B4);
+extern char D_80060029;
+extern char D_800616B4;
+extern char D_800616B5;
+extern char D_800F4F72;
+extern short D_80105D26[];
+
+int func_801037B4(char* arg0)
+{
+    char* menuStrings[18];
+    int rowTypes[9];
+    int temp_s0_2;
+    int temp_v0;
+    int i;
+    int var_v1;
+    u_int temp_v1_2;
+
+    switch (*arg0) {
+    case 3:
+        if (vs_mainmenu_ready() == 0) {
+            break;
+        }
+        func_800FFBC8();
+        // Fallthrough
+    case 4:
+        for (i = 0; i < 9; ++i) {
+            menuStrings[i * 2] = (char*)&D_80105558[D_80105558[i * 2]];
+            menuStrings[i * 2 + 1] = (char*)&D_80105558[D_80105558[i * 2 + 1]];
+            rowTypes[i] = 0;
+        }
+
+        if (D_800616B5 != 0) {
+            menuStrings[13] = (char*)&D_80105D26;
+            rowTypes[6] = 1;
+        }
+        i = vs_main_settings.cursorMemory;
+        if (*arg0 != 3) {
+            vs_main_settings.cursorMemory = 1;
+        }
+        vs_mainmenu_setMenuRows(9, 0x145, menuStrings, rowTypes);
+        vs_main_settings.cursorMemory = i;
+        *arg0 = 5;
+        break;
+    case 5:
+        temp_v0 = vs_mainmenu_getSelectedRow();
+        i = temp_v0 + 1;
+        if (i != 0) {
+            if (i > 0) {
+                func_800FA92C(D_800F4F72, 1);
+                switch (temp_v0) {
+                case 0:
+                    *arg0 = 6;
+                    func_80102888(1);
+                    return 0;
+                case 1:
+                    *arg0 = 7;
+                    func_80102A5C(1);
+                    return 0;
+                case 2:
+                    *arg0 = 8;
+                    func_80102C0C(1);
+                    return 0;
+                case 3:
+                    *arg0 = 9;
+                    func_80102DBC(1);
+                    return 0;
+                case 4:
+                    *arg0 = 0xA;
+                    func_80102F68(1);
+                    return 0;
+                case 5:
+                    *arg0 = 0xB;
+                    func_80103110(1);
+                    return 0;
+                case 6:
+                    *arg0 = 0xC;
+                    func_801032B8(1);
+                    return 0;
+                case 7:
+                    *arg0 = 0xD;
+                    func_8010345C(1);
+                    return 0;
+                case 8:
+                    *arg0 = 0xE;
+                    func_801035FC(1);
+                    return 0;
+                }
+            } else if (i == -2) {
+                func_800FA8E0(0x28);
+                *arg0 = 0x10;
+            } else {
+                func_800FA8E0(0x28);
+                *arg0 = 0xF;
+            }
+        } else {
+            if (D_800616B5 != 0) {
+                if (func_801008B0() == 6) {
+                    func_800C8E04(1);
+                    D_800F514C = 0xB;
+                } else if (D_80060028 != 0) {
+                    func_800C8E04(2);
+                    D_800F514C = 0xB;
+                } else {
+                    D_800F514C = 0;
+                }
+            }
+            break;
+        }
+        break;
+    case 6:
+        i = func_80102888(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            D_80060029 = D_80105D64[i - 1];
+        }
+        *arg0 = 4;
+        break;
+    case 7:
+        i = func_80102A5C(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            var_v1 = *(int*)&vs_main_settings & ~0x20;
+            var_v1 |= ((2 - i) & 1) << 5;
+            *(int*)&vs_main_settings = var_v1;
+        }
+        *arg0 = 4;
+        break;
+    case 8:
+        i = func_80102C0C(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            var_v1 = *(int*)&vs_main_settings & ~0x40;
+            var_v1 |= (((2 - i) & 1) << 6);
+            *(int*)&vs_main_settings = var_v1;
+        }
+        *arg0 = 4;
+        break;
+    case 9:
+        i = func_80102DBC(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            var_v1 = *(int*)&vs_main_settings & ~0x80;
+            var_v1 |= (((2 - i) & 1) << 7);
+            *(int*)&vs_main_settings = var_v1;
+        }
+        *arg0 = 4;
+        break;
+    case 10:
+        i = func_80102F68(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            D_80060021 = 2 - i;
+        }
+        *arg0 = 4;
+        break;
+    case 11:
+        i = func_80103110(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            D_80060028 = 2 - i;
+            func_800FFBC8();
+        }
+        *arg0 = 4;
+        break;
+    case 12: /* switch 1 */
+        i = func_801032B8(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            temp_v1_2 = (*(int*)&vs_main_settings & ~8) | (((i - 1) & 1) * 8);
+            *(int*)&vs_main_settings = temp_v1_2;
+            D_800616B4 = ~(temp_v1_2 >> 3) & 1;
+        }
+        *arg0 = 4;
+        break;
+    case 13: /* switch 1 */
+        i = func_8010345C(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            vs_main_settings.monoSound = i - 1;
+            vs_main_setMonoSound(vs_main_settings.monoSound);
+        }
+        *arg0 = 4;
+        break;
+    case 14:
+        i = func_801035FC(0);
+        if (i == 0) {
+            break;
+        }
+        if (i == -2) {
+            *arg0 = 0x10;
+            break;
+        }
+        if (i > 0) {
+            vs_main_vibrationEnabled = 2 - i;
+        }
+        *arg0 = 4;
+        break;
+    case 15:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_ready() != 0) {
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    case 16:
+        func_800FFBA8();
+        func_800FFA88(0);
+        if (vs_mainmenu_ready() != 0) {
+            vs_battle_menuState.currentState = 8;
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_80103D88(int arg0)
 {
@@ -660,7 +923,8 @@ extern char D_80105F30;
 extern u_char D_80105F31;
 extern char* D_80105F34;
 
-int func_80105314(char* arg0) {
+int func_80105314(char* arg0)
+{
     int i;
     int temp_a0;
     int temp_s0;
@@ -693,7 +957,6 @@ int func_80105314(char* arg0) {
                 } else {
                     D_80105F40[i] = temp_a0;
                 }
-
             }
         }
         D_80105F30 = 0;
@@ -731,4 +994,3 @@ int func_80105314(char* arg0) {
     }
     return 0;
 }
-

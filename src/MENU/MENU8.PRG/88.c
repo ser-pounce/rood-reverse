@@ -350,7 +350,58 @@ int func_8010345C(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801035FC);
+extern int D_80105DA8;
+extern int D_80105DAC;
+
+int func_801035FC(int arg0) {
+    char* menuStrings[4];
+    int rowTypes[2];
+    int i;
+    int state;
+
+    if (arg0 != 0) {
+        D_80105DA8 = 0;
+        return 0;
+    }
+    state = D_80105DA8;
+    switch (state) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 2; ++i) {
+                menuStrings[i * 2] = (char*)&D_80105558[D_80105558[i * 2 + 0x36]];
+                menuStrings[i * 2 + 1] = (char*)&D_80105558[D_80105558[i * 2 + 0x37]];
+                rowTypes[i] = 0;
+            }
+            i = 1 - vs_main_vibrationEnabled;
+            rowTypes[i] |= 4;
+            vs_mainmenu_setMenuRows(2, 0x24E, menuStrings, rowTypes);
+            D_80105DA8 = 1;
+        }
+        break;
+    case 1:
+        D_80105DAC = vs_mainmenu_getSelectedRow() + 1;
+        if (D_80105DAC != 0) {
+            if (D_80105DAC == -2) {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            } else {
+                if (D_80105DAC == state) {
+                    func_800438C8(0);
+                }
+                func_800FA8E0(7);
+            }
+            D_80105DA8 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_80105DAC;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801037B4);
 

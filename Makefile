@@ -127,7 +127,7 @@ $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 .SECONDEXPANSION:
 
 ifeq ($(PERMUTER),)
-$(addprefix $(BUILD)/config/%/, link.d link.ld splat.log undefined_funcs_auto.txt undefined_syms_auto.txt) &: \
+$(BUILD)/config/%/link.d: \
 	config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
 	config/%/Makefile data/% Makefile | $$(@D)/
 	@$(ECHO) Splitting $*

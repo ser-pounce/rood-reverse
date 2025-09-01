@@ -25,9 +25,101 @@ INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102C0C);
 
 INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102DBC);
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80102F68);
+extern int D_80105D88;
+extern int D_80105D8C;
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103110);
+int func_80102F68(int arg0) {
+    char* menuStrings[4];
+    int rowTypes[2];
+    int i;
+
+    if (arg0 != 0) {
+        D_80105D88 = 0;
+        return 0;
+    }
+    switch (D_80105D88) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 2; ++i) {
+                menuStrings[i * 2] = (char*)&D_80105558[D_80105558[i * 2 + 0x26]];
+                menuStrings[i * 2 + 1] = (char*)&D_80105558[D_80105558[i * 2 + 0x27]];
+                rowTypes[i] = 0;
+            }
+            i = 1 - D_80060021;
+            rowTypes[i] |= 4;
+            vs_mainmenu_setMenuRows(2, 0x24A, menuStrings, rowTypes);
+            D_80105D88 = 1;
+        }
+        break;
+    case 1:
+        D_80105D8C = vs_mainmenu_getSelectedRow() + 1;
+        if (D_80105D8C != 0) {
+            if (D_80105D8C == -2) {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            } else {
+                func_800FA8E0(7);
+            }
+            D_80105D88 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_80105D8C;
+        }
+        break;
+    }
+    return 0;
+}
+
+extern int D_80105D90;
+extern int D_80105D94;
+
+int func_80103110(int arg0) {
+    char* menuStrings[4];
+    int rowTypes[2];
+    int i;
+
+    if (arg0 != 0) {
+        D_80105D90 = 0;
+        return 0;
+    }
+    switch (D_80105D90) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 2; ++i) {
+                menuStrings[i * 2] = (char*)&D_80105558[D_80105558[i * 2 + 0x2A]];
+                menuStrings[i * 2 + 1] = (char*)&D_80105558[D_80105558[i * 2 + 0x2B]];
+                rowTypes[i] = 0;
+            }
+            i = 1 - D_80060028;
+            rowTypes[i] |= 4;
+            vs_mainmenu_setMenuRows(2, 0x24B, menuStrings, rowTypes);
+            D_80105D90 = 1;
+        }
+        break;
+    case 1:
+        D_80105D94 = vs_mainmenu_getSelectedRow() + 1;
+        if (D_80105D94 != 0) {
+            if (D_80105D94 == -2) {
+                func_800FA8E0(0x28);
+                func_800FFBA8();
+                func_800FFA88(0);
+            } else {
+                func_800FA8E0(7);
+            }
+            D_80105D90 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_80105D94;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_801032B8(int arg0) {
     char* menuStrings[4];

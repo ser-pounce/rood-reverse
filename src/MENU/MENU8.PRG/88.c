@@ -13,7 +13,7 @@ extern int D_80105D9C;
 extern int D_80105DA0;
 extern int D_80105DA4;
 extern char D_80105DB0;
-extern char D_80105DB2;
+extern u_char D_80105DB2;
 extern char D_80105F40[];
 extern char D_80105F53;
 
@@ -471,7 +471,6 @@ int func_801037B4(char* arg0)
 {
     char* menuStrings[18];
     int rowTypes[9];
-    int temp_s0_2;
     int temp_v0;
     int i;
     int var_v1;

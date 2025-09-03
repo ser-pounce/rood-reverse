@@ -62,6 +62,7 @@ typedef struct {
 void func_800C6540(char const*, int, int, u_long*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
+void func_800C7210(char arg0);
 void func_800C8E04(int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
 vs_battle_menuItem_t* vs_battle_setMenuItem(

@@ -20,6 +20,8 @@ extern char D_80105F53;
 extern char D_80105D64[];
 extern int D_80105D68;
 extern int D_80105D6C;
+extern u_short D_80105DB4[];
+extern char D_80105E20[];
 
 int func_80102888(int arg0)
 {
@@ -801,7 +803,147 @@ int func_80103F1C(char* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_80103FD8);
+u_long* func_800C0214(int, int);
+void func_800C70F8(int, int, int, u_long*);
+void func_800C7210(char arg0);
+int func_800C8FAC(int, int, int);
+extern char D_80105DB1;
+extern int D_80105EA8[];
+extern char D_80105EE8;
+extern char D_80105EEC[];
+extern char D_80105EF4;
+
+void func_80103FD8(int arg0)
+{
+    u_int* sp18;
+    int temp_s4;
+    int temp_t1;
+    int j;
+    int i;
+    char* temp_s1;
+    u_long* var_s1;
+    int temp_s0_2;
+    int temp_s3;
+
+    sp18 = (u_int*)D_1F800000[1] - 1;
+    func_800FFC68(3, (-arg0 + 0x10), 0x32, 0);
+    func_800FFC68(1, (-arg0 + 0x10), 0x42, 0);
+    func_800FFC68(0, (-arg0 + 0x10), 0x52, 0);
+    var_s1 = func_800C0214(0x100010, ((-arg0 + 0x10) & 0xFFFF) | 0x220000);
+    var_s1[4] = 0x37FB70B0;
+    var_s1 += 6;
+    D_80105EEC[D_80105DB2] = 8;
+    D_80105DB2 = 0;
+
+    for (i = 1; i < 5; ++i) {
+        temp_s0_2 = D_80105EEC[i];
+        if (D_80105EEC[i] != 0) {
+            --D_80105EEC[i];
+        }
+        temp_s4 = func_800C8FAC(8 - temp_s0_2, 0, 0x80) | 0x50000000;
+        temp_t1 = func_800C8FAC(temp_s0_2, 0, 0x80);
+
+        for (j = 0; j < 12; ++j) {
+            int v1;
+            var_s1[0] = (*sp18 & 0xFFFFFF) | 0x06000000;
+            var_s1[1] = 0xE1000200;
+            var_s1[2] = temp_s4;
+            var_s1[3] = ((-arg0) & 0xFFFF) | (j + 20 + i * 16) << 0x10;
+            var_s1[4] = temp_t1;
+            v1 = j - 0x60;
+            var_s1[5] = ((-arg0 - v1) & 0xFFFF) | (j + 20 + i * 16) << 0x10;
+            var_s1[6] = 0xE1000000;
+            *sp18 = ((u_long)var_s1 << 8) >> 8;
+            var_s1 += 7;
+        }
+    }
+
+    D_1F800000[0] = var_s1;
+    func_800C7210(4);
+    for (i = 0; i < 4; ++i) {
+        temp_s1 = (char*)&D_80105DB4[D_80105DB4[0xC - i]];
+        temp_s4 = 0x28;
+        while ((j = *temp_s1++) != 0xE7) {
+            func_800C70F8(j, temp_s4 - arg0, 0x54 - (i * 0x10), D_1F800000[1] - 5);
+            temp_s4 += 6;
+        }
+    }
+
+    vs_battle_setMenuItem(0x1D, arg0 + 0x9C, 0x30, 0xA4, 0, &D_80105EE8)->selected = 1;
+    for (j = 0; j < 20; ++j) {
+        temp_s0_2 = D_80105F40[j];
+        if (temp_s0_2 != 0x8F) {
+            int new_var3 = (j * 6 + 0xA2);
+            func_800C70F8(temp_s0_2, arg0 + new_var3, 0x30, D_1F800000[2] - 2);
+        }
+    }
+    if (arg0 == 0) {
+        u_long* a1;
+        temp_s3 = 0x404040;
+        temp_s4 = 0x37F9;
+        if ((D_80105DB0 != 0) || (D_80105DB1 != 0xB)) {
+            temp_s3 = 0x808080;
+            ++D_80105DB1;
+            --temp_s4;
+            if (D_80105DB1 >= 0xC) {
+                D_80105DB1 = 0;
+            }
+        }
+        D_80105DB0 = 0;
+        j = (D_80105DB1 >> 2);
+        func_800C6540("1", 0x330098, temp_s3, 0);
+        func_800C6540("L", 0x330092, temp_s3, 0);
+        func_800C0214(0x100010, (136 - j) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3000;
+        func_800C6540("1", 0x330124, temp_s3, 0);
+        func_800C6540("R", 0x33011E, temp_s3, 0);
+        func_800C0214(0x100010, (j + 0x128) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3010;
+        a1 = D_1F800000[2];
+        var_s1 = D_1F800000[0];
+        var_s1[0] = ((u_long)a1[0] & 0xFFFFFF) | 0x09000000;
+        var_s1[1] = 0xE1000200;
+        var_s1[2] = 0x38000000;
+        var_s1[3] = 0x1E00D0;
+        var_s1[4] = 0;
+        var_s1[5] = 0x2000E8;
+        var_s1[6] = 0xC0A080;
+        var_s1[7] = 0x2E00E8;
+        var_s1[8] = 0;
+        var_s1[9] = 0x1E0100;
+        D_1F800000[2][0] = ((u_long)var_s1 << 8) >> 8;
+        D_1F800000[0] = var_s1 + 10;
+
+        if (++D_80105EF4 >= 0xC) {
+            D_80105EF4 = 0;
+        }
+    }
+
+    temp_s1 = D_80105E20;
+    for (i = 0; i < 9; ++i) {
+        for (j = 0; j < 0xE; ++j) {
+            int temp_s8 = (arg0 + 0x82);
+            func_800C70F8(temp_s1[i * 0xF + j], temp_s8 + j * 0xC, (i * 0x10) + 0x4E,
+                D_1F800000[2] - 2);
+        }
+    }
+
+    for (j = 0; j < 16; j += 4) {
+        var_s1 = D_1F800000[0];
+        var_s1[0] = (*sp18 & 0xFFFFFF) | 0x09000000;
+        var_s1[1] = 0xE1000200;
+        var_s1[2] = 0x386B4100;
+        var_s1[3] = arg0 + D_80105EA8[j];
+        var_s1[4] = 0x330500;
+        var_s1[5] = arg0 + D_80105EA8[j + 1];
+        var_s1[6] = 0x330500;
+        var_s1[7] = arg0 + D_80105EA8[j + 2];
+        var_s1[8] = 0x330500;
+        var_s1[9] = arg0 + D_80105EA8[j + 3];
+        *sp18 = ((u_long)var_s1 << 8) >> 8;
+        D_1F800000[0] = (u_long*)(var_s1 + 10);
+    }
+}
+
+static int const _ = 0;
 
 void func_80104650(int arg0, int arg1, int arg2, int arg3)
 {
@@ -835,7 +977,6 @@ void func_801046F0(int arg0, int arg1, int arg2)
     func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
 }
 
-extern u_short D_80105DB4[];
 extern char D_80105F00;
 extern char D_80105F01;
 extern char D_80105EF5;
@@ -916,7 +1057,6 @@ INCLUDE_ASM("build/src/MENU/MENU8.PRG/nonmatchings/88", func_801049A0);
 void func_80103FD8(int);
 int func_801049A0(int);
 extern char D_80060170[];
-extern char D_80105E20[];
 extern char D_80105F2E;
 extern char D_80105F30;
 extern u_char D_80105F31;

@@ -23,7 +23,9 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 88]
+      - [0x6C, .rodata, 21A0]
       - [0x88, c]
+      - [0x21A0, c]
       - [0x2D58, data, 88]
       - [0x3700, bss, 88]
   - [0x3754]

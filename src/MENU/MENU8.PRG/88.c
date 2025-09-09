@@ -966,7 +966,7 @@ void func_80104650(int arg0, int arg1, int arg2, int arg3)
     D_1F800000[0] = temp_t0 + 10;
 }
 
-void func_801046F0(int arg0, int arg1, int arg2)
+int func_801046F0(int arg0, int arg1, int arg2)
 {
     int temp_s1;
     int temp_s2;
@@ -974,7 +974,7 @@ void func_801046F0(int arg0, int arg1, int arg2)
     temp_s1 = arg1 * 12;
     temp_s2 = arg2 * 16;
     func_80104650(temp_s1 + 0x80, temp_s2 + 0x4C, 0xA, 0x12);
-    func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
+    return func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
 }
 
 extern char D_80105F00;

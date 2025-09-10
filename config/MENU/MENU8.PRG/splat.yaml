@@ -26,6 +26,7 @@ segments:
       - [0x6C, .rodata, 21A0]
       - [0x88, c]
       - [0x21A0, c]
-      - [0x2D58, data, 88]
+      - { start: 0x2D58, type: vsStringTable, name: menu, linker_entry: false }
+      - [0x3568, data]
       - [0x3700, bss, 88]
   - [0x3754]

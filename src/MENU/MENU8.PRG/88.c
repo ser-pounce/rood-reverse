@@ -7,7 +7,13 @@
 void func_80104650(int, int, int, int);
 
 extern u_long* D_1F800000[];
-extern u_short D_80105558[];
+
+static u_short D_80105558[] = {
+#include "../../build/assets/MENU/MENU8.PRG/menu.vsString"
+};
+
+static char D_80105D64[] = { 3, 1, 0, 0 };
+
 extern int D_80105D98;
 extern int D_80105D9C;
 extern int D_80105DA0;
@@ -17,7 +23,6 @@ extern u_char D_80105DB2;
 extern char D_80105F40[];
 extern char D_80105F53;
 
-extern char D_80105D64[];
 extern int D_80105D68;
 extern int D_80105D6C;
 extern u_short D_80105DB4[];

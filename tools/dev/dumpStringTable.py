@@ -3,12 +3,13 @@ import struct
 from tools.etc.vsString import decode
 
 
-if len(sys.argv) != 3:
-    print("Usage: python dumpStringTable.py <binary_file> <table_offset>")
+if len(sys.argv) < 3 or len(sys.argv) > 4:
+    print("Usage: python dumpStringTable.py <binary_file> <table_offset> [debug]")
     sys.exit(1)
 
 bin_path = sys.argv[1]
 table_offset = int(sys.argv[2], 0)
+debug_mode = len(sys.argv) == 4 and sys.argv[3] == "debug"
 
 with open(bin_path, "rb") as f:
     # Read string count (2-byte little endian)
@@ -32,4 +33,8 @@ with open(bin_path, "rb") as f:
         f.seek(start_pos)
         string_data = f.read(file_size - start_pos)  # Read to end of file
         decoded = decode(string_data)
-        print(f"[{i:3d}] [0x{offset:04x}] {decoded}")
+        
+        if debug_mode:
+            print(f"[{i:3d}] [0x{offset:04x}] {decoded}")
+        else:
+            print(f"line{i}: {decoded}")

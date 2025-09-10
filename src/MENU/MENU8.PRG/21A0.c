@@ -28,7 +28,7 @@ extern char D_80105F28;
 extern char D_80105F29;
 extern char D_80105F2A;
 extern char D_80105F2B;
-extern char D_80105F2C;
+extern u_char D_80105F2C;
 extern char D_80105F2D;
 
 int func_801049A0(int arg0)
@@ -230,10 +230,10 @@ int func_801049A0(int arg0)
     case 4:
         if (D_80105F31 == 0xA) {
             if (func_80103F1C(D_80105F10) != 0) {
-                unsigned char* base = D_80060168;
-                unsigned char idx_byte = base[D_80105F2E * 32 + 1];
+                char* base = (char*) D_80060168;
+                char idx_byte = base[D_80105F2E * 32 + 1];
                 int idx = idx_byte - 1;
-                unsigned char table_val = base[idx * 44 + 0x280];
+                char table_val = base[idx * 44 + 0x280];
                 vs_battle_rMemcpy(D_80105F10, D_8010229C + (table_val * 0x18), 0x18);
             }
             func_800C8E04(1);
@@ -266,9 +266,9 @@ int func_801049A0(int arg0)
             }
             vs_battle_playMenuLeaveSfx();
             if (temp_s0[8] == 0xE7) {
-                unsigned char idx_byte = temp_s0[1];
+                char idx_byte = temp_s0[1];
                 int idx = idx_byte - 1;
-                unsigned char table_val = temp_s2[idx * 44 + 0x280];
+                char table_val = temp_s2[idx * 44 + 0x280];
                 vs_battle_rMemcpy(temp_s0 + 8, D_8010229C + (table_val * 0x18), 0x18);
             }
             return 1;

@@ -230,7 +230,7 @@ int func_801049A0(int arg0)
     case 4:
         if (D_80105F31 == 0xA) {
             if (func_80103F1C(D_80105F10) != 0) {
-                char* base = (char*) D_80060168;
+                char* base = (char*)D_80060168;
                 char idx_byte = base[D_80105F2E * 32 + 1];
                 int idx = idx_byte - 1;
                 char table_val = base[idx * 44 + 0x280];

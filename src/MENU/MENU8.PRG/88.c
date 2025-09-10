@@ -12,20 +12,35 @@ static u_short D_80105558[] = {
 #include "../../build/assets/MENU/MENU8.PRG/menu.vsString"
 };
 
-static char D_80105D64[] = { 3, 1, 0, 0 };
+static char D_80105D64[] = { 3, 1, 0 };
+static int D_80105D68 = 0;
+static int D_80105D6C = 0;
+static int D_80105D70 = 0;
+static int D_80105D74 = 0;
+static int D_80105D78 = 0;
+static int D_80105D7C = 0;
+static int D_80105D80 = 0;
+static int D_80105D84 = 0;
+static int D_80105D88 = 0;
+static int D_80105D8C = 0;
+static int D_80105D90 = 0;
+static int D_80105D94 = 0;
+static int D_80105D98 = 0;
+static int D_80105D9C = 0;
+static int D_80105DA0 = 0;
+static int D_80105DA4 = 0;
+static int D_80105DA8 = 0;
+static int D_80105DAC = 0;
+static char D_80105DB0 = 0;
+static char D_80105DB1 = 0;
+static u_char D_80105DB2 = 0;
+static u_short D_80105DB4[] = {
+#include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
+};
 
-extern int D_80105D98;
-extern int D_80105D9C;
-extern int D_80105DA0;
-extern int D_80105DA4;
-extern char D_80105DB0;
-extern u_char D_80105DB2;
 extern char D_80105F40[];
 extern char D_80105F53;
 
-extern int D_80105D68;
-extern int D_80105D6C;
-extern u_short D_80105DB4[];
 extern char D_80105E20[];
 
 int func_80102888(int arg0)
@@ -77,9 +92,6 @@ int func_80102888(int arg0)
     return 0;
 }
 
-extern int D_80105D70;
-extern int D_80105D74;
-
 int func_80102A5C(int arg0)
 {
     char* menuStrings[4];
@@ -125,9 +137,6 @@ int func_80102A5C(int arg0)
     }
     return 0;
 }
-
-extern int D_80105D78;
-extern int D_80105D7C;
 
 int func_80102C0C(int arg0)
 {
@@ -175,9 +184,6 @@ int func_80102C0C(int arg0)
     return 0;
 }
 
-extern int D_80105D80;
-extern int D_80105D84;
-
 int func_80102DBC(int arg0)
 {
     char* menuStrings[4];
@@ -224,9 +230,6 @@ int func_80102DBC(int arg0)
     return 0;
 }
 
-extern int D_80105D88;
-extern int D_80105D8C;
-
 int func_80102F68(int arg0)
 {
     char* menuStrings[4];
@@ -272,9 +275,6 @@ int func_80102F68(int arg0)
     }
     return 0;
 }
-
-extern int D_80105D90;
-extern int D_80105D94;
 
 int func_80103110(int arg0)
 {
@@ -413,9 +413,6 @@ int func_8010345C(int arg0)
     }
     return 0;
 }
-
-extern int D_80105DA8;
-extern int D_80105DAC;
 
 int func_801035FC(int arg0)
 {
@@ -812,7 +809,6 @@ u_long* func_800C0214(int, int);
 void func_800C70F8(int, int, int, u_long*);
 void func_800C7210(char arg0);
 int func_800C8FAC(int, int, int);
-extern char D_80105DB1;
 extern int D_80105EA8[];
 extern char D_80105EE8;
 extern char D_80105EEC[];

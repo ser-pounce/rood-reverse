@@ -37,6 +37,16 @@ static u_char D_80105DB2 = 0;
 static u_short D_80105DB4[] = {
 #include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
 };
+static int D_80105EA8[] = {
+    0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140, 0x004800D8, 0x00480140, 0x00B40122, 0x00E00140
+};
+
+static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
+static char D_80105EEC[8] = {0};
+static char D_80105EF4 = 0;
+static char D_80105EF5 = 0;
+static char _1 = 0;
+static int _2[2] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
 
 extern char D_80105F40[];
 extern char D_80105F53;
@@ -809,10 +819,6 @@ u_long* func_800C0214(int, int);
 void func_800C70F8(int, int, int, u_long*);
 void func_800C7210(char arg0);
 int func_800C8FAC(int, int, int);
-extern int D_80105EA8[];
-extern char D_80105EE8;
-extern char D_80105EEC[];
-extern char D_80105EF4;
 
 void func_80103FD8(int arg0)
 {
@@ -870,7 +876,7 @@ void func_80103FD8(int arg0)
         }
     }
 
-    vs_battle_setMenuItem(0x1D, arg0 + 0x9C, 0x30, 0xA4, 0, &D_80105EE8)->selected = 1;
+    vs_battle_setMenuItem(0x1D, arg0 + 0x9C, 0x30, 0xA4, 0, D_80105EE8)->selected = 1;
     for (j = 0; j < 20; ++j) {
         temp_s0_2 = D_80105F40[j];
         if (temp_s0_2 != 0x8F) {
@@ -978,7 +984,6 @@ int func_801046F0(int arg0, int arg1, int arg2)
 
 extern char D_80105F00;
 extern char D_80105F01;
-extern char D_80105EF5;
 
 int func_8010475C(int arg0)
 {

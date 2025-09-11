@@ -807,7 +807,7 @@ int func_80103F1C(char* arg0)
 
 static char D_80105DB1 = 0;
 static u_char D_80105DB2 = 0;
-static u_short D_80105DB4[] = {
+u_short D_80105DB4[] = {
 #include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
 };
 static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8,
@@ -989,11 +989,10 @@ int func_801046F0(int arg0, int arg1, int arg2)
     return func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
 }
 
-static char D_80105F00 = 0;
-static char D_80105F01 = 0;
-
 int func_8010475C(int arg0)
 {
+    static char D_80105F00 = 0;
+    static char D_80105F01 = 0;
     int i;
 
     if (arg0 != 0) {

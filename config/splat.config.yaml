@@ -17,3 +17,4 @@ options:
   data_string_encoding: *enc
   rodata_string_guesser_level: &strLvl 2
   data_string_guesser_level: *strLvl
+  generate_asm_macros_files: false

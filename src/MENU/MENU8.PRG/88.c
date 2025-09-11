@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../../build/assets/MENU/MENU8.PRG/rename.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
@@ -10,7 +11,12 @@ static u_short D_80105558[] = {
 
 static char D_80105D64[] = { 3, 1, 0 };
 
-extern char D_80105E20[];
+extern char D_80060029;
+extern char D_800616B4;
+extern char D_800616B5;
+extern char D_800F4F72;
+extern short D_80105D26[];
+
 extern char D_80105F40[];
 extern char D_80105F53;
 
@@ -462,12 +468,6 @@ int func_801035FC(int arg0)
     }
     return 0;
 }
-
-extern char D_80060029;
-extern char D_800616B4;
-extern char D_800616B5;
-extern char D_800F4F72;
-extern short D_80105D26[];
 
 int func_801037B4(char* arg0)
 {
@@ -931,9 +931,9 @@ void func_80103FD8(int arg0)
         }
     }
 
-    temp_s1 = D_80105E20;
+    temp_s1 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
     for (i = 0; i < 9; ++i) {
-        for (j = 0; j < 0xE; ++j) {
+        for (j = 0; j < 14; ++j) {
             int temp_s8 = (arg0 + 0x82);
             func_800C70F8(temp_s1[i * 0xF + j], temp_s8 + j * 0xC, (i * 0x10) + 0x4E,
                 D_1F800000[2] - 2);
@@ -989,8 +989,8 @@ int func_801046F0(int arg0, int arg1, int arg2)
     return func_800FFCDC(arg0, (temp_s1 + 0x70) | ((temp_s2 + 0x42) << 0x10));
 }
 
-extern char D_80105F00;
-extern char D_80105F01;
+static char D_80105F00 = 0;
+static char D_80105F01 = 0;
 
 int func_8010475C(int arg0)
 {

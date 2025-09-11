@@ -20,6 +20,7 @@ void func_80104650(int, int, int, int);
 
 void func_8006B338(void*);
 void func_800C685C(D_800F4E8C_t*, char*);
+
 extern char* D_800F5190;
 extern char* D_8010229C;
 extern short D_80105DDA[];

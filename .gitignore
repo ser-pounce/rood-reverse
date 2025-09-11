@@ -9,7 +9,3 @@ nonmatchings
 tools/.sysdeps
 tools/python
 **/__pycache__
-include/gte_macros.inc
-include/include_asm.h
-include/labels.inc
-include/macro.inc

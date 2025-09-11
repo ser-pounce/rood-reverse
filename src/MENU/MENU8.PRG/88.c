@@ -4,57 +4,21 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-void func_80104650(int, int, int, int);
-
-extern u_long* D_1F800000[];
-
 static u_short D_80105558[] = {
 #include "../../build/assets/MENU/MENU8.PRG/menu.vsString"
 };
 
 static char D_80105D64[] = { 3, 1, 0 };
-static int D_80105D68 = 0;
-static int D_80105D6C = 0;
-static int D_80105D70 = 0;
-static int D_80105D74 = 0;
-static int D_80105D78 = 0;
-static int D_80105D7C = 0;
-static int D_80105D80 = 0;
-static int D_80105D84 = 0;
-static int D_80105D88 = 0;
-static int D_80105D8C = 0;
-static int D_80105D90 = 0;
-static int D_80105D94 = 0;
-static int D_80105D98 = 0;
-static int D_80105D9C = 0;
-static int D_80105DA0 = 0;
-static int D_80105DA4 = 0;
-static int D_80105DA8 = 0;
-static int D_80105DAC = 0;
-static char D_80105DB0 = 0;
-static char D_80105DB1 = 0;
-static u_char D_80105DB2 = 0;
-static u_short D_80105DB4[] = {
-#include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
-};
-static int D_80105EA8[] = {
-    0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140, 0x004800D8, 0x00480140, 0x00B40122, 0x00E00140
-};
 
-static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
-static char D_80105EEC[8] = {0};
-static char D_80105EF4 = 0;
-static char D_80105EF5 = 0;
-static char _1 = 0;
-static int _2[2] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
-
+extern char D_80105E20[];
 extern char D_80105F40[];
 extern char D_80105F53;
 
-extern char D_80105E20[];
-
 int func_80102888(int arg0)
 {
+    static int D_80105D68 = 0;
+    static int D_80105D6C = 0;
+
     char* menuStrings[6];
     int rowTypes[3];
     int i;
@@ -101,6 +65,9 @@ int func_80102888(int arg0)
     }
     return 0;
 }
+
+static int D_80105D70 = 0;
+static int D_80105D74 = 0;
 
 int func_80102A5C(int arg0)
 {
@@ -150,6 +117,9 @@ int func_80102A5C(int arg0)
 
 int func_80102C0C(int arg0)
 {
+    static int D_80105D78 = 0;
+    static int D_80105D7C = 0;
+ 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -196,6 +166,9 @@ int func_80102C0C(int arg0)
 
 int func_80102DBC(int arg0)
 {
+    static int D_80105D80 = 0;
+    static int D_80105D84 = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -242,6 +215,9 @@ int func_80102DBC(int arg0)
 
 int func_80102F68(int arg0)
 {
+    static int D_80105D88 = 0;
+    static int D_80105D8C = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -288,6 +264,9 @@ int func_80102F68(int arg0)
 
 int func_80103110(int arg0)
 {
+    static int D_80105D90 = 0;
+    static int D_80105D94 = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -334,6 +313,9 @@ int func_80103110(int arg0)
 
 int func_801032B8(int arg0)
 {
+    static int D_80105D98 = 0;
+    static int D_80105D9C = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -380,6 +362,9 @@ int func_801032B8(int arg0)
 
 int func_8010345C(int arg0)
 {
+    static int D_80105DA0 = 0;
+    static int D_80105DA4 = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -426,6 +411,9 @@ int func_8010345C(int arg0)
 
 int func_801035FC(int arg0)
 {
+    static int D_80105DA8 = 0;
+    static int D_80105DAC = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -739,6 +727,8 @@ int func_801037B4(char* arg0)
     return 0;
 }
 
+static char D_80105DB0 = 0;
+
 int func_80103D88(int arg0)
 {
     int temp_s1;
@@ -815,13 +805,31 @@ int func_80103F1C(char* arg0)
     return 0;
 }
 
+static char D_80105DB1 = 0;
+static u_char D_80105DB2 = 0;
+static u_short D_80105DB4[] = {
+#include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
+};
+static int D_80105EA8[] = {
+    0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140, 0x004800D8, 0x00480140, 0x00B40122, 0x00E00140
+};
+
+static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
+static char D_80105EEC[8] = {0};
+static char D_80105EF4 = 0;
+static char D_80105EF5 = 0;
+static int _1[2] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+
+
 u_long* func_800C0214(int, int);
 void func_800C70F8(int, int, int, u_long*);
 void func_800C7210(char arg0);
 int func_800C8FAC(int, int, int);
 
+extern u_long* D_1F800000[];
+
 void func_80103FD8(int arg0)
-{
+{    
     u_int* sp18;
     int temp_s4;
     int temp_t1;

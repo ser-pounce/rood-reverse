@@ -29,3 +29,4 @@ glabel _remove_ChgclrPAD
     lw      $ra, ra
     .nop
     j       $ra
+endlabel _remove_ChgclrPAD

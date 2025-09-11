@@ -87,3 +87,4 @@ glabel CompMatrix
     sw      $t2, 0x1C($a2)
     addu    $v0, $a2, $0
     j $ra
+endlabel CompMatrix

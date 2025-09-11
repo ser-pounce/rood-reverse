@@ -12,7 +12,7 @@
     lw     $sp, 0x0($t0)
     j      \target
     .nop
-.endm;
+.endm
 
 .macro cop2op pseudo, op, sf = 1, mx = 0, v = 0, cv = 0, lm = 0
     cop2 \pseudo << 20 | \sf << 19 | \mx << 17 | \v << 15 | \cv << 13 | \lm << 10 | \op

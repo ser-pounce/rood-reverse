@@ -902,7 +902,8 @@ __asm__("glabel func_8007AC94;"
         ".set reorder;"
         "sw $a0,0x1F80005C;"
         "jr $ra;"
-        ".set pop;");
+        ".set pop;"
+        "endlabel func_8007AC94");
 
 int func_8007ACA0() { return *getScratchAddr(0x17) & 0xFFF; }
 

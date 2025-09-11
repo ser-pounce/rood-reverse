@@ -9,7 +9,15 @@ void vs_overlay_getSp(int* sp)
             "sw   $sp, 0x0($t0);" ::"r"(sp));
 }
 
-__asm__("jumpFunc vs_overlay_jumpToTitle, vs_main_execTitle;"
+__asm__(".macro jumpFunc name, target;"
+        "glabel \\name;"
+        "addu   $t0, $a0, $0;"
+        "lw     $sp, 0x0($t0);"
+        "j      \\target;"
+        ".nop;"
+        "endlabel \\name;"
+        ".endm;"
+        "jumpFunc vs_overlay_jumpToTitle, vs_main_execTitle;"
         "jumpFunc vs_overlay_jumpToBattle, vs_battle_exec;");
 
 void vs_overlay_wait() { __asm__(".nop 4096;"); }

@@ -18,6 +18,7 @@
             "li  $t2, " #table ";"                                                       \
             "jr  $t2;"                                                                   \
             "li  $t1, " #id ";"                                                          \
+            "endlabel " #name ";"                                                        \
             ".set pop;");
 
 #define SYSCALL(id)                                                                      \

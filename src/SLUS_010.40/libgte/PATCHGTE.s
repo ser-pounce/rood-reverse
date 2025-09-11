@@ -62,3 +62,4 @@ glabel _patch_gte
     mfc0       $v1, $14
     sw         $ra, 0x7C($k0)
 5:
+endlabel _patch_gte

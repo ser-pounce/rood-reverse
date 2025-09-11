@@ -27,7 +27,7 @@ glabel DecDCTvlcSize2
     li        $at, 0xFFFFFF
     j         $ra
     sw        $at, 0($t0)
-
+endlabel DecDCTvlcSize2
 
 glabel DecDCTvlc2
     bs = $a0
@@ -262,3 +262,4 @@ glabel DecDCTvlc2
     sw         $t9, 0x20($t0)
     j          $ra
     add        $v0, $zero, 0x1
+endlabel DecDCTvlc2

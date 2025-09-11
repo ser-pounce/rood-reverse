@@ -36,3 +36,4 @@ glabel InitGeom
     ctc2       $zero, $25
     .nop
     j          $ra
+endlabel InitGeom

@@ -81,7 +81,8 @@ __asm__("glabel StopRCnt;"
         "and    $v1, $v0;"
         "li     $v0, 0x1;"
         "j      $ra;"
-        "sw     $v1, 0x4($a1)");
+        "sw     $v1, 0x4($a1);"
+        "endlabel StopRCnt");
 
 long ResetRCnt(u_long spec)
 {

@@ -1,13 +1,11 @@
 #include "88.h"
-#include "../../build/assets/MENU/MENU8.PRG/rename.h"
+// #include "../../build/assets/MENU/MENU8.PRG/rename.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-static char _0[12] = {0};
-
-char D_80105F10[24] = {0};
+extern char D_80105F10[24];
 extern char D_80105F28;
 extern char D_80105F29;
 extern char D_80105F2A;
@@ -33,7 +31,6 @@ void func_80104650(int, int, int, int);
 
 void func_8006B338(void*);
 void func_800C685C(D_800F4E8C_t*, char*);
-
 
 int func_801049A0(int arg0)
 {
@@ -233,6 +230,7 @@ int func_801049A0(int arg0)
         break;
     case 4:
         if (D_80105F31 == 0xA) {
+            extern short D_80105DDA[];
             if (func_80103F1C(D_80105F10) != 0) {
                 char* base = (char*)D_80060168;
                 char idx_byte = base[D_80105F2E * 32 + 1];
@@ -242,7 +240,7 @@ int func_801049A0(int arg0)
             }
             func_800C8E04(1);
             D_800F5190 = D_80105F10;
-            func_800C685C(D_800F4E8C, (char*)(D_80105DB4 + VS_rename_OFFSET_confirmPrompt));
+            func_800C685C(D_800F4E8C, (char*)D_80105DDA);
             vs_mainmenu_setMessage(&D_800F4E8C->unk0);
             func_8010475C(1);
             D_80105F28 = 5;
@@ -302,6 +300,7 @@ extern char D_80060170[];
 
 int func_80105314(char* arg0)
 {
+    extern short D_80105E20[];
     int i;
     int temp_a0;
     int temp_s0;
@@ -313,7 +312,7 @@ int func_80105314(char* arg0)
     switch (temp_s0) {
     case 0:
         D_80105F2E = D_800F4E8C->unk1;
-        D_80105F34 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
+        D_80105F34 = (char*)D_80105E20;
         func_800FFBA8();
         v1 = 0x8F;
         i = 19;

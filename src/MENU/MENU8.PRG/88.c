@@ -1,15 +1,13 @@
 #include "common.h"
-#include "../../build/assets/MENU/MENU8.PRG/rename.h"
+// #include "../../build/assets/MENU/MENU8.PRG/rename.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-static u_short D_80105558[] = {
-#include "../../build/assets/MENU/MENU8.PRG/menu.vsString"
-};
+extern u_short D_80105558[];
 
-static char D_80105D64[] = { 3, 1, 0 };
+extern char D_80105D64[];
 
 extern char D_80060029;
 extern char D_800616B4;
@@ -22,8 +20,8 @@ extern char D_80105F53;
 
 int func_80102888(int arg0)
 {
-    static int D_80105D68 = 0;
-    static int D_80105D6C = 0;
+    extern int D_80105D68;
+    extern int D_80105D6C;
 
     char* menuStrings[6];
     int rowTypes[3];
@@ -72,8 +70,8 @@ int func_80102888(int arg0)
     return 0;
 }
 
-static int D_80105D70 = 0;
-static int D_80105D74 = 0;
+extern int D_80105D70;
+extern int D_80105D74;
 
 int func_80102A5C(int arg0)
 {
@@ -123,8 +121,8 @@ int func_80102A5C(int arg0)
 
 int func_80102C0C(int arg0)
 {
-    static int D_80105D78 = 0;
-    static int D_80105D7C = 0;
+    extern int D_80105D78;
+    extern int D_80105D7C;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -172,8 +170,8 @@ int func_80102C0C(int arg0)
 
 int func_80102DBC(int arg0)
 {
-    static int D_80105D80 = 0;
-    static int D_80105D84 = 0;
+    extern int D_80105D80;
+    extern int D_80105D84;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -221,8 +219,8 @@ int func_80102DBC(int arg0)
 
 int func_80102F68(int arg0)
 {
-    static int D_80105D88 = 0;
-    static int D_80105D8C = 0;
+    extern int D_80105D88;
+    extern int D_80105D8C;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -270,8 +268,8 @@ int func_80102F68(int arg0)
 
 int func_80103110(int arg0)
 {
-    static int D_80105D90 = 0;
-    static int D_80105D94 = 0;
+    extern int D_80105D90;
+    extern int D_80105D94;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -319,8 +317,8 @@ int func_80103110(int arg0)
 
 int func_801032B8(int arg0)
 {
-    static int D_80105D98 = 0;
-    static int D_80105D9C = 0;
+    extern int D_80105D98;
+    extern int D_80105D9C;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -368,8 +366,8 @@ int func_801032B8(int arg0)
 
 int func_8010345C(int arg0)
 {
-    static int D_80105DA0 = 0;
-    static int D_80105DA4 = 0;
+    extern int D_80105DA0;
+    extern int D_80105DA4;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -417,8 +415,8 @@ int func_8010345C(int arg0)
 
 int func_801035FC(int arg0)
 {
-    static int D_80105DA8 = 0;
-    static int D_80105DAC = 0;
+    extern int D_80105DA8;
+    extern int D_80105DAC;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -727,7 +725,7 @@ int func_801037B4(char* arg0)
     return 0;
 }
 
-static char D_80105DB0 = 0;
+extern char D_80105DB0;
 
 int func_80103D88(int arg0)
 {
@@ -805,20 +803,15 @@ int func_80103F1C(char* arg0)
     return 0;
 }
 
-static char D_80105DB1 = 0;
-static u_char D_80105DB2 = 0;
-u_short D_80105DB4[] = {
-#include "../../build/assets/MENU/MENU8.PRG/rename.vsString"
-};
-static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8,
-    0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140,
-    0x004800D8, 0x00480140, 0x00B40122, 0x00E00140 };
+extern char D_80105DB1;
+extern u_char D_80105DB2;
+extern u_short D_80105DB4[];
+extern int D_80105EA8[];
 
-static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
-static char D_80105EEC[8] = { 0 };
-static char D_80105EF4 = 0;
-static char D_80105EF5 = 0;
-static int _1[2] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+extern char D_80105EE8[];
+extern char D_80105EEC[8];
+extern char D_80105EF4;
+extern char D_80105EF5;
 
 u_long* func_800C0214(int, int);
 void func_800C70F8(int, int, int, u_long*);
@@ -829,6 +822,8 @@ extern u_long* D_1F800000[];
 
 void func_80103FD8(int arg0)
 {
+    extern short D_80105E20[];
+
     u_int* sp18;
     int temp_s4;
     int temp_t1;
@@ -931,7 +926,7 @@ void func_80103FD8(int arg0)
         }
     }
 
-    temp_s1 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
+    temp_s1 = (char*)D_80105E20;
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 14; ++j) {
             int temp_s8 = (arg0 + 0x82);
@@ -991,8 +986,8 @@ int func_801046F0(int arg0, int arg1, int arg2)
 
 int func_8010475C(int arg0)
 {
-    static char D_80105F00 = 0;
-    static char D_80105F01 = 0;
+    extern char D_80105F00;
+    extern char D_80105F01;
     int i;
 
     if (arg0 != 0) {

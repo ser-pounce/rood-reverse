@@ -5,21 +5,14 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-extern char D_80105F00;
-extern char D_80105F01;
-extern char D_80105F10[24];
-extern char D_80105F28;
-extern char D_80105F29;
-extern char D_80105F2A;
-extern char D_80105F2B;
-extern u_char D_80105F2C;
-extern char D_80105F2D;
-extern char D_80105F2E;
-extern char D_80105F30;
-extern u_char D_80105F31;
-extern char* D_80105F34;
-extern char D_80105F40[];
-extern char D_80105F53;
+static char D_80105F2E;
+static char _1;
+static char D_80105F30;
+static u_char D_80105F31;
+static char _2[2];
+static char* D_80105F34;
+static char _3[8];
+static char D_80105F40[20];
 
 void func_8006B338(void*);
 void func_800C685C(D_800F4E8C_t*, char*);
@@ -45,7 +38,7 @@ static int func_80103D88(int arg0)
         for (i = arg0; i < 19; ++i) {
             D_80105F40[i] = D_80105F40[i + 1];
         }
-        D_80105F53 = 0x8F;
+        D_80105F40[19] = 0x8F;
     } else if ((vs_main_buttonsState & 0xC) != 0xC) {
         if (vs_main_buttonRepeat & 4) {
             if (arg0 == 0) {
@@ -288,7 +281,11 @@ static int func_801046F0(int arg0, int arg1, int arg2)
 static int func_8010475C(int arg0)
 {
     static char D_80105EF5 = 0;
-    static int _[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+    static int _0[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+
+    static char D_80105F00;
+    static char D_80105F01;
+    static char _1[14];
 
     int i;
 
@@ -361,6 +358,14 @@ static void func_8010493C(int arg0)
 
 static int func_801049A0(int arg0)
 {
+    static char D_80105F10[24];
+    static char D_80105F28;
+    static char D_80105F29;
+    static char D_80105F2A;
+    static char D_80105F2B;
+    static u_char D_80105F2C;
+    static char D_80105F2D;
+
     int temp_a1;
     int temp_v0_10;
     int var_a1;
@@ -402,7 +407,7 @@ static int func_801049A0(int arg0)
                 for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
                     D_80105F40[var_s1] = D_80105F40[var_s1 + 1];
                 }
-                D_80105F53 = 0x8F;
+                D_80105F40[19] = 0x8F;
             }
         }
         var_s1 = D_80105F2B;
@@ -431,14 +436,14 @@ static int func_801049A0(int arg0)
                     for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
                         D_80105F40[var_a1] = D_80105F40[var_a1 + 1];
                     }
-                    D_80105F53 = 0x8F;
+                    D_80105F40[19] = 0x8F;
                 }
                 break;
             case 2:
                 for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
                     D_80105F40[var_a1] = D_80105F40[var_a1 + 1];
                 }
-                D_80105F53 = 0x8F;
+                D_80105F40[19] = 0x8F;
                 break;
             case 3:
                 for (var_a1 = 0x13; D_80105F2C < var_a1; --var_a1) {
@@ -499,7 +504,7 @@ static int func_801049A0(int arg0)
                 for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
                     D_80105F40[var_s1] = D_80105F40[var_s1 + 1];
                 }
-                D_80105F53 = 0x8F;
+                D_80105F40[19] = 0x8F;
             }
         }
 

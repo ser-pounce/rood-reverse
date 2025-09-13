@@ -28,5 +28,5 @@ segments:
       - [0x21A0, c]
       - { start: 0x2D58, type: vsStringTable, name: menu, linker_entry: false }
       - { start: 0x35B4, type: vsStringTable, name: rename, linker_entry: false }
-      - [0x3700, bss, 21A0]
+      - [0x3700, .bss, 21A0]
   - [0x3754]

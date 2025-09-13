@@ -467,7 +467,7 @@ static int func_801035FC(int arg0)
     return 0;
 }
 
-static int func_801037B4(char* arg0)
+int func_801037B4(char* arg0)
 {
     char* menuStrings[18];
     int rowTypes[9];

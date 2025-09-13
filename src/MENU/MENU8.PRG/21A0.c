@@ -1,9 +1,12 @@
-// #include "../../build/assets/MENU/MENU8.PRG/rename.h"
+#include "../../build/assets/MENU/MENU8.PRG/rename.h"
+#include "../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+extern char D_80105F00;
+extern char D_80105F01;
 extern char D_80105F10[24];
 extern char D_80105F28;
 extern char D_80105F29;
@@ -17,9 +20,6 @@ extern u_char D_80105F31;
 extern char* D_80105F34;
 extern char D_80105F40[];
 extern char D_80105F53;
-
-extern char* D_8010229C;
-extern char* D_800F5190;
 
 void func_8006B338(void*);
 void func_800C685C(D_800F4E8C_t*, char*);
@@ -117,15 +117,13 @@ extern u_long* D_1F800000[];
 
 static void func_80103FD8(int arg0)
 {
-    static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8,
-        0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140,
-        0x004800D8, 0x00480140, 0x00B40122, 0x00E00140 };
+    static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070,
+        0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122,
+        0x00E000D8, 0x00E00140, 0x004800D8, 0x00480140, 0x00B40122, 0x00E00140 };
 
     static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
     static char D_80105EEC[8] = { 0 };
     static char D_80105EF4 = 0;
-
-    extern short D_80105E20[];
 
     u_int* sp18;
     int temp_s4;
@@ -229,7 +227,7 @@ static void func_80103FD8(int arg0)
         }
     }
 
-    temp_s1 = (char*)D_80105E20;
+    temp_s1 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 14; ++j) {
             int temp_s8 = (arg0 + 0x82);
@@ -291,9 +289,7 @@ static int func_8010475C(int arg0)
 {
     static char D_80105EF5 = 0;
     static int _[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
-    
-    extern char D_80105F00;
-    extern char D_80105F01;
+
     int i;
 
     if (arg0 != 0) {
@@ -561,17 +557,17 @@ static int func_801049A0(int arg0)
         break;
     case 4:
         if (D_80105F31 == 0xA) {
-            extern short D_80105DDA[];
             if (func_80103F1C(D_80105F10) != 0) {
                 char* base = (char*)D_80060168;
                 char idx_byte = base[D_80105F2E * 32 + 1];
                 int idx = idx_byte - 1;
                 char table_val = base[idx * 44 + 0x280];
-                vs_battle_rMemcpy(D_80105F10, D_8010229C + (table_val * 0x18), 0x18);
+                vs_battle_rMemcpy(D_80105F10, D_8010229C + table_val, 0x18);
             }
             func_800C8E04(1);
-            D_800F5190 = D_80105F10;
-            func_800C685C(D_800F4E8C, (char*)D_80105DDA);
+            D_800F5190 = &D_80105F10;
+            func_800C685C(
+                D_800F4E8C, (char*)(D_80105DB4 + VS_rename_OFFSET_confirmPrompt));
             vs_mainmenu_setMessage(&D_800F4E8C->unk0);
             func_8010475C(1);
             D_80105F28 = 5;
@@ -602,7 +598,7 @@ static int func_801049A0(int arg0)
                 char idx_byte = temp_s0[1];
                 int idx = idx_byte - 1;
                 char table_val = temp_s2[idx * 44 + 0x280];
-                vs_battle_rMemcpy(temp_s0 + 8, D_8010229C + (table_val * 0x18), 0x18);
+                vs_battle_rMemcpy(temp_s0 + 8, D_8010229C + table_val, 0x18);
             }
             return 1;
         }
@@ -627,11 +623,9 @@ static int func_801049A0(int arg0)
 
 void func_80103FD8(int);
 int func_801049A0(int);
-extern char D_80060170[];
 
 int func_80105314(char* arg0)
 {
-    extern short D_80105E20[];
     int i;
     int temp_a0;
     int temp_s0;
@@ -643,7 +637,7 @@ int func_80105314(char* arg0)
     switch (temp_s0) {
     case 0:
         D_80105F2E = D_800F4E8C->unk1;
-        D_80105F34 = (char*)D_80105E20;
+        D_80105F34 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
         func_800FFBA8();
         v1 = 0x8F;
         i = 19;
@@ -652,7 +646,7 @@ int func_80105314(char* arg0)
             *var_v0-- = v1;
         }
         if (D_800F4E8C->unk0 == 1) {
-            var_v1 = (D_80105F2E << 5) + D_80060170;
+            var_v1 = (D_80105F2E << 5) + &D_80060168[0][8];
             for (i = 0; i < 20; ++i) {
                 temp_a0 = *var_v1++;
                 if (temp_a0 == 0xE7) {

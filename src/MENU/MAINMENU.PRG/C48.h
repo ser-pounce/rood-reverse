@@ -19,16 +19,7 @@ typedef struct {
 } D_8010245C_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-} D_8010229C_t;
-
-typedef struct {
-    D_8010229C_t* unk0;
+    char* unk0;
     void* unk4;
 } func_800FD0E0_t;
 
@@ -53,5 +44,6 @@ void func_800FC268(int);
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_8010044C(u_int*);
 
+extern char (*D_8010229C)[24];
 extern D_8010245C_t* D_8010245C;
 extern char D_80102578;

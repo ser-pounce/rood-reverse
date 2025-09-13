@@ -52,7 +52,6 @@ extern short D_80102134;
 extern short D_80102136;
 extern short D_80102138;
 extern short D_8010213A;
-extern D_8010229C_t* D_8010229C;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
@@ -452,7 +451,7 @@ void func_800FD084(int arg0, int arg1, int arg2, int arg3)
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
-    arg1->unk0 = &D_8010229C[arg0->unk0];
+    arg1->unk0 = D_8010229C[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = 0x58000000;
 }
@@ -460,7 +459,7 @@ void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
-    arg1->unk0 = &D_8010229C[arg0->unk0];
+    arg1->unk0 = D_8010229C[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = arg0->unk2 << 9;
 }

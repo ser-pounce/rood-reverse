@@ -23,7 +23,8 @@ extern char* D_800F5190;
 
 void func_8006B338(void*);
 void func_800C685C(D_800F4E8C_t*, char*);
-extern char D_80105DB0;
+
+static char D_80105DB0 = 0;
 
 static int func_80103D88(int arg0)
 {
@@ -101,15 +102,21 @@ static int func_80103F1C(char* arg0)
     return 0;
 }
 
-extern char D_80105DB1;
-extern u_char D_80105DB2;
-extern u_short D_80105DB4[];
-extern int D_80105EA8[];
+static char D_80105DB1 = 0;
+static u_char D_80105DB2 = 0;
+static u_short D_80105DB4[] = {
+#include "../../assets/MENU/MENU8.PRG/rename.vsString"
+};
+static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070, 0x004800D8,
+    0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122, 0x00E000D8, 0x00E00140,
+    0x004800D8, 0x00480140, 0x00B40122, 0x00E00140 };
 
-extern char D_80105EE8[];
-extern char D_80105EEC[8];
-extern char D_80105EF4;
-extern char D_80105EF5;
+static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
+
+static char D_80105EEC[8] = { 0 };
+static char D_80105EF4 = 0;
+static char D_80105EF5 = 0;
+static int _[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
 
 u_long* func_800C0214(int, int);
 void func_800C70F8(int, int, int, u_long*);

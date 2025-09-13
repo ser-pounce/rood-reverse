@@ -5,9 +5,11 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-extern u_short D_80105558[];
+static u_short D_80105558[] = {
+#include "../../assets/MENU/MENU8.PRG/menu.vsString"
+};
 
-extern char D_80105D64[];
+static char D_80105D64[] = { 3, 1, 0, 0 };
 
 extern char D_80060029;
 extern char D_800616B4;
@@ -20,8 +22,8 @@ extern char D_80105F53;
 
 static int func_80102888(int arg0)
 {
-    extern int D_80105D68;
-    extern int D_80105D6C;
+    static int D_80105D68 = 0;
+    static int D_80105D6C = 0;
 
     char* menuStrings[6];
     int rowTypes[3];
@@ -70,11 +72,11 @@ static int func_80102888(int arg0)
     return 0;
 }
 
-extern int D_80105D70;
-extern int D_80105D74;
-
 static int func_80102A5C(int arg0)
 {
+    static int D_80105D70 = 0;
+    static int D_80105D74 = 0;
+
     char* menuStrings[4];
     int rowTypes[2];
     int i;
@@ -121,8 +123,8 @@ static int func_80102A5C(int arg0)
 
 static int func_80102C0C(int arg0)
 {
-    extern int D_80105D78;
-    extern int D_80105D7C;
+    static int D_80105D78 = 0;
+    static int D_80105D7C = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -170,8 +172,8 @@ static int func_80102C0C(int arg0)
 
 static int func_80102DBC(int arg0)
 {
-    extern int D_80105D80;
-    extern int D_80105D84;
+    static int D_80105D80 = 0;
+    static int D_80105D84 = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -219,8 +221,8 @@ static int func_80102DBC(int arg0)
 
 static int func_80102F68(int arg0)
 {
-    extern int D_80105D88;
-    extern int D_80105D8C;
+    static int D_80105D88 = 0;
+    static int D_80105D8C = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -268,8 +270,8 @@ static int func_80102F68(int arg0)
 
 static int func_80103110(int arg0)
 {
-    extern int D_80105D90;
-    extern int D_80105D94;
+    static int D_80105D90 = 0;
+    static int D_80105D94 = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -317,8 +319,8 @@ static int func_80103110(int arg0)
 
 static int func_801032B8(int arg0)
 {
-    extern int D_80105D98;
-    extern int D_80105D9C;
+    static int D_80105D98 = 0;
+    static int D_80105D9C = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -366,8 +368,8 @@ static int func_801032B8(int arg0)
 
 static int func_8010345C(int arg0)
 {
-    extern int D_80105DA0;
-    extern int D_80105DA4;
+    static int D_80105DA0 = 0;
+    static int D_80105DA4 = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
@@ -415,8 +417,8 @@ static int func_8010345C(int arg0)
 
 static int func_801035FC(int arg0)
 {
-    extern int D_80105DA8;
-    extern int D_80105DAC;
+    static int D_80105DA8 = 0;
+    static int D_80105DAC = 0;
 
     char* menuStrings[4];
     int rowTypes[2];

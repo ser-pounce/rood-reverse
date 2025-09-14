@@ -100,7 +100,6 @@ decompme: $(call src_from_target,$(TARGET)) $(TARGET)
 permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
 	@$(PERMUTE) $(PERMUTEFLAGS) $<
 
-objdiff: CPPFLAGS += -DOBJDIFF
 objdiff: $(targets:%=%.elf)
 	mv $(BUILD)/ base/
 	$(MAKE)

@@ -4,3 +4,7 @@ D_80105F01 = 0x80105F01; // type:u8
 D_80105F29 = 0x80105F29;
 D_80105F2A = 0x80105F2A;
 D_80105F2B = 0x80105F2B;
+_menuStrings = 0x80105558;
+_simpleMapValues = 0x80105D64;
+_simpleMapOption = 0x80102888;
+ 

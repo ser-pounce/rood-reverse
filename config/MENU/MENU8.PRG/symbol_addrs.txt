@@ -1,5 +1,9 @@
  
-_simpleMapOption = 0x80102888;
+_simpleMapOptionMenu = 0x80102888;
+_abilityTimingOptionMenu = 0x80102A5C;
+_weaponStatusOptionMenu = 0x80102C0C;
+_armorStatusOptionMenu = 0x80102DBC;
+_cursorMemoryOptionMenu = 0x80102F68;
 _menuStrings = 0x80105558;
 _simpleMapValues = 0x80105D64;
 D_80105EF5 = 0x80105EF5; // type:u8

@@ -216,7 +216,7 @@ static u_long* _helpAssets;
 
 static int _initMenuState()
 {
-    if (D_80060021 == 0) {
+    if (vs_main_settings.cursorMemory == 0) {
         vs_main_bzero(
             &vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
     }

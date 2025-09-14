@@ -59,7 +59,7 @@ static int _initAbilityMenu(int abilityCount, int type, u_short** arg2)
 
     _selectedAbilityType = type;
 
-    if (D_80060021 != 0) {
+    if (vs_main_settings.cursorMemory != 0) {
         i = D_800F4EE8.unk0[type * 2];
         j = D_800F4EE8.unk0[type * 2 + 1];
     }

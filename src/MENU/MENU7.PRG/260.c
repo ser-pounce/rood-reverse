@@ -2462,7 +2462,7 @@ static int _showSaveMenu(int initState)
     if (initState != 0) {
         selectedFile = 1;
         _containerDataEmpty = 0;
-        if (D_80060021 != 0) {
+        if (vs_main_settings.cursorMemory != 0) {
             selectedFile = D_800F4F70 + 1;
         }
         _dataNotSaved = 0;
@@ -2952,7 +2952,7 @@ static int _loadFileMenu(int initFadeout)
         fadeout = initFadeout - 1;
         selectedFile = 1;
 
-        if (D_80060021 != 0) {
+        if (vs_main_settings.cursorMemory != 0) {
             selectedFile = D_800F4F70 + 1;
         }
         _isSaving = 0;

@@ -2,6 +2,7 @@
 #include "../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
@@ -13,9 +14,6 @@ static char _2[2];
 static char* D_80105F34;
 static char _3[8];
 static char D_80105F40[20];
-
-void func_8006B338(void*);
-void func_800C685C(D_800F4E8C_t*, char*);
 
 static char D_80105DB0 = 0;
 
@@ -100,11 +98,6 @@ static u_char D_80105DB2 = 0;
 static u_short D_80105DB4[] = {
 #include "../../assets/MENU/MENU8.PRG/rename.vsString"
 };
-
-u_long* func_800C0214(int, int);
-void func_800C70F8(int, int, int, u_long*);
-void func_800C7210(char arg0);
-int func_800C8FAC(int, int, int);
 
 extern u_long* D_1F800000[];
 
@@ -625,9 +618,6 @@ static int func_801049A0(int arg0)
     }
     return 0;
 }
-
-void func_80103FD8(int);
-int func_801049A0(int);
 
 int func_80105314(char* arg0)
 {

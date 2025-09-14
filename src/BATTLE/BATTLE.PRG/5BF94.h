@@ -59,11 +59,30 @@ typedef struct {
     short unk4[22];
 } D_800F4FE0_t;
 
+typedef struct {
+    char unk0[0xF2];
+} D_800F4EE8_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+    int executeAbility;
+} D_800F4E98_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2[0x58];
+} D_800F4E8C_t;
+
 void func_800C6540(char const*, int, int, u_long*);
+void func_800C685C(D_800F4E8C_t*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
+void func_800C70F8(int, int, int, u_long*);
 void func_800C7210(char arg0);
 void func_800C8E04(int);
+int func_800C8FAC(int, int, int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
 vs_battle_menuItem_t* vs_battle_setMenuItem(
     int id, int animSpeed, int y, int arg3, int arg4, char* text);
@@ -93,22 +112,6 @@ int func_800CF48C();
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920();
-
-typedef struct {
-    char unk0[0xF2];
-} D_800F4EE8_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    int executeAbility;
-} D_800F4E98_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2[0x58];
-} D_800F4E8C_t;
 
 extern u_short vs_battle_menuStrings[];
 extern int D_800EB9B0;

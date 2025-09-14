@@ -128,7 +128,7 @@ void func_800FFBA8() { func_800CD064(7); }
 
 void func_800FFBC8()
 {
-    if (D_80060028 != 0) {
+    if (vs_main_settings.information != 0) {
         func_800C8E04(2);
         return;
     }

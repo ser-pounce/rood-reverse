@@ -263,49 +263,49 @@ static int _cursorMemoryOptionMenu(int arg0)
     return 0;
 }
 
-static int func_80103110(int arg0)
+static int _informationOptionMenu(int arg0)
 {
-    static int D_80105D90 = 0;
-    static int D_80105D94 = 0;
+    static int state = 0;
+    static int selectedRow = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
 
     if (arg0 != 0) {
-        D_80105D90 = 0;
+        state = 0;
         return 0;
     }
-    switch (D_80105D90) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x2A]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x2B]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = 1 - D_80060028;
+            i = 1 - vs_main_settings.information;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24B, menuStrings, rowTypes);
-            D_80105D90 = 1;
+            state = 1;
         }
         break;
     case 1:
-        D_80105D94 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80105D94 != 0) {
-            if (D_80105D94 == -2) {
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
                 func_800FA8E0(7);
             }
-            D_80105D90 = 2;
+            state = 2;
         }
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_80105D94;
+            return selectedRow;
         }
         break;
     }
@@ -529,7 +529,7 @@ int func_801037B4(char* arg0)
                     return 0;
                 case 5:
                     *arg0 = 0xB;
-                    func_80103110(1);
+                    _informationOptionMenu(1);
                     return 0;
                 case 6:
                     *arg0 = 0xC;
@@ -556,7 +556,7 @@ int func_801037B4(char* arg0)
                 if (func_801008B0() == 6) {
                     func_800C8E04(1);
                     D_800F514C = 0xB;
-                } else if (D_80060028 != 0) {
+                } else if (vs_main_settings.information != 0) {
                     func_800C8E04(2);
                     D_800F514C = 0xB;
                 } else {
@@ -643,7 +643,7 @@ int func_801037B4(char* arg0)
         *arg0 = 4;
         break;
     case 11:
-        i = func_80103110(0);
+        i = _informationOptionMenu(0);
         if (i == 0) {
             break;
         }
@@ -652,7 +652,7 @@ int func_801037B4(char* arg0)
             break;
         }
         if (i > 0) {
-            D_80060028 = 2 - i;
+            vs_main_settings.information = 2 - i;
             func_800FFBC8();
         }
         *arg0 = 4;

@@ -9,9 +9,8 @@ static u_short _menuStrings[] = {
 #include "../../assets/MENU/MENU8.PRG/menu.vsString"
 };
 
-static char _simpleMapValues[] = { 3, 1, 0, 0 };
+static char _simpleMapValues[] = { 3, 1, 0 };
 
-extern char D_80105F40[];
 
 static int _simpleMapOptionMenu(int arg0)
 {

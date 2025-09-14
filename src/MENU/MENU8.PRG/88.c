@@ -9,7 +9,6 @@ static u_short _menuStrings[] = {
 
 static char _simpleMapValues[] = { 3, 1, 0 };
 
-
 static int _simpleMapOptionMenu(int init)
 {
     static int state = 0;

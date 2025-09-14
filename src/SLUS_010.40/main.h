@@ -185,7 +185,7 @@ typedef struct {
     char unk105;
     char unk106[0x16];
     char puzzleMode;
-    char unk11D;
+    char puzzleModeDisabled;
     char unk11E[0x38];
     char savePointStates[48];
     char unk186[0x2BA];

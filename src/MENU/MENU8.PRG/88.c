@@ -480,95 +480,113 @@ static int _vibrationOptionMenu(int arg0)
     return 0;
 }
 
-int func_801037B4(char* arg0)
+int func_801037B4(char* state)
 {
+    enum state {
+        none,
+        waitReady = 3,
+        init,
+        handleInput,
+        simpleMap,
+        abilityTiming,
+        weaponStatus,
+        armorStatus,
+        cursorMemory,
+        information,
+        puzzleMode,
+        sound,
+        vibration,
+        exitToMenu,
+        exitToBattle
+    };
+
     char* menuStrings[18];
     int rowTypes[9];
-    int temp_v0;
+    int selectedRow;
     int i;
     int var_v1;
     u_int temp_v1_2;
 
-    switch (*arg0) {
-    case 3:
+    switch (*state) {
+    case waitReady:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
         func_800FFBC8();
         // Fallthrough
-    case 4:
+    case init:
         for (i = 0; i < 9; ++i) {
             menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2]];
             menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + 1]];
             rowTypes[i] = 0;
         }
 
-        if (vs_main_stateFlags.unk11D != 0) {
+        if (vs_main_stateFlags.puzzleModeDisabled != 0) {
             menuStrings[13]
                 = (char*)&_menuStrings[VS_menu_OFFSET_puzzleModeSettingDisabled];
             rowTypes[6] = 1;
         }
         i = vs_main_settings.cursorMemory;
-        if (*arg0 != 3) {
+        if (*state != waitReady) {
             vs_main_settings.cursorMemory = 1;
         }
         vs_mainmenu_setMenuRows(9, 0x145, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
-        *arg0 = 5;
+        *state = 5;
         break;
-    case 5:
-        temp_v0 = vs_mainmenu_getSelectedRow();
-        i = temp_v0 + 1;
+    case handleInput:
+        selectedRow = vs_mainmenu_getSelectedRow();
+        i = selectedRow + 1;
         if (i != 0) {
             if (i > 0) {
                 func_800FA92C(D_800F4EE8.unk0[0x8A], 1);
-                switch (temp_v0) {
+                switch (selectedRow) {
                 case 0:
-                    *arg0 = 6;
+                    *state = simpleMap;
                     _simpleMapOptionMenu(1);
                     return 0;
                 case 1:
-                    *arg0 = 7;
+                    *state = abilityTiming;
                     _abilityTimingOptionMenu(1);
                     return 0;
                 case 2:
-                    *arg0 = 8;
+                    *state = weaponStatus;
                     _weaponStatusOptionMenu(1);
                     return 0;
                 case 3:
-                    *arg0 = 9;
+                    *state = armorStatus;
                     _armorStatusOptionMenu(1);
                     return 0;
                 case 4:
-                    *arg0 = 0xA;
+                    *state = cursorMemory;
                     _cursorMemoryOptionMenu(1);
                     return 0;
                 case 5:
-                    *arg0 = 0xB;
+                    *state = information;
                     _informationOptionMenu(1);
                     return 0;
                 case 6:
-                    *arg0 = 0xC;
+                    *state = puzzleMode;
                     _puzzleModeOptionMenu(1);
                     return 0;
                 case 7:
-                    *arg0 = 0xD;
+                    *state = sound;
                     _soundOptionMenu(1);
                     return 0;
                 case 8:
-                    *arg0 = 0xE;
+                    *state = vibration;
                     _vibrationOptionMenu(1);
                     return 0;
                 }
             } else if (i == -2) {
                 func_800FA8E0(0x28);
-                *arg0 = 0x10;
+                *state = exitToBattle;
             } else {
                 func_800FA8E0(0x28);
-                *arg0 = 0xF;
+                *state = exitToMenu;
             }
         } else {
-            if (vs_main_stateFlags.unk11D != 0) {
+            if (vs_main_stateFlags.puzzleModeDisabled != 0) {
                 if (func_801008B0() == 6) {
                     func_800C8E04(1);
                     D_800F514C = 0xB;
@@ -582,27 +600,27 @@ int func_801037B4(char* arg0)
             break;
         }
         break;
-    case 6:
+    case simpleMap:
         i = _simpleMapOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
             vs_main_settings.simpleMap = _simpleMapValues[i - 1];
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 7:
+    case abilityTiming:
         i = _abilityTimingOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
@@ -610,15 +628,15 @@ int func_801037B4(char* arg0)
             var_v1 |= ((2 - i) & 1) << 5;
             *(int*)&vs_main_settings = var_v1;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 8:
+    case weaponStatus:
         i = _weaponStatusOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
@@ -626,15 +644,15 @@ int func_801037B4(char* arg0)
             var_v1 |= (((2 - i) & 1) << 6);
             *(int*)&vs_main_settings = var_v1;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 9:
+    case armorStatus:
         i = _armorStatusOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
@@ -642,44 +660,44 @@ int func_801037B4(char* arg0)
             var_v1 |= (((2 - i) & 1) << 7);
             *(int*)&vs_main_settings = var_v1;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 10:
+    case cursorMemory:
         i = _cursorMemoryOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
             vs_main_settings.cursorMemory = 2 - i;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 11:
+    case information:
         i = _informationOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
             vs_main_settings.information = 2 - i;
             func_800FFBC8();
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 12:
+    case puzzleMode:
         i = _puzzleModeOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
@@ -687,51 +705,51 @@ int func_801037B4(char* arg0)
             *(int*)&vs_main_settings = temp_v1_2;
             vs_main_stateFlags.puzzleMode = ~(temp_v1_2 >> 3) & 1;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 13:
+    case sound:
         i = _soundOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
             vs_main_settings.monoSound = i - 1;
             vs_main_setMonoSound(vs_main_settings.monoSound);
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 14:
+    case vibration:
         i = _vibrationOptionMenu(0);
         if (i == 0) {
             break;
         }
         if (i == -2) {
-            *arg0 = 0x10;
+            *state = exitToBattle;
             break;
         }
         if (i > 0) {
             vs_main_vibrationEnabled = 2 - i;
         }
-        *arg0 = 4;
+        *state = init;
         break;
-    case 15:
+    case exitToMenu:
         func_800FFBA8();
         func_800FFA88(0);
         if (vs_mainmenu_ready() != 0) {
-            *arg0 = 0;
+            *state = none;
             return 1;
         }
         break;
-    case 16:
+    case exitToBattle:
         func_800FFBA8();
         func_800FFA88(0);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 8;
-            *arg0 = 0;
+            *state = none;
             return 1;
         }
         break;

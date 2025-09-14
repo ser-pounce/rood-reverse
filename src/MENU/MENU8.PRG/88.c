@@ -12,7 +12,7 @@ static u_short _menuStrings[] = {
 static char _simpleMapValues[] = { 3, 1, 0 };
 
 
-static int _simpleMapOptionMenu(int arg0)
+static int _simpleMapOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -21,7 +21,7 @@ static int _simpleMapOptionMenu(int arg0)
     int rowTypes[3];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -66,7 +66,7 @@ static int _simpleMapOptionMenu(int arg0)
     return 0;
 }
 
-static int _abilityTimingOptionMenu(int arg0)
+static int _abilityTimingOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -75,7 +75,7 @@ static int _abilityTimingOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -117,7 +117,7 @@ static int _abilityTimingOptionMenu(int arg0)
     return 0;
 }
 
-static int _weaponStatusOptionMenu(int arg0)
+static int _weaponStatusOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -126,7 +126,7 @@ static int _weaponStatusOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -168,7 +168,7 @@ static int _weaponStatusOptionMenu(int arg0)
     return 0;
 }
 
-static int _armorStatusOptionMenu(int arg0)
+static int _armorStatusOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -177,7 +177,7 @@ static int _armorStatusOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -219,7 +219,7 @@ static int _armorStatusOptionMenu(int arg0)
     return 0;
 }
 
-static int _cursorMemoryOptionMenu(int arg0)
+static int _cursorMemoryOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -228,7 +228,7 @@ static int _cursorMemoryOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -270,7 +270,7 @@ static int _cursorMemoryOptionMenu(int arg0)
     return 0;
 }
 
-static int _informationOptionMenu(int arg0)
+static int _informationOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -279,7 +279,7 @@ static int _informationOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -321,7 +321,7 @@ static int _informationOptionMenu(int arg0)
     return 0;
 }
 
-static int _puzzleModeOptionMenu(int arg0)
+static int _puzzleModeOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -330,7 +330,7 @@ static int _puzzleModeOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -372,7 +372,7 @@ static int _puzzleModeOptionMenu(int arg0)
     return 0;
 }
 
-static int _soundOptionMenu(int arg0)
+static int _soundOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -381,7 +381,7 @@ static int _soundOptionMenu(int arg0)
     int rowTypes[2];
     int i;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }
@@ -423,7 +423,7 @@ static int _soundOptionMenu(int arg0)
     return 0;
 }
 
-static int _vibrationOptionMenu(int arg0)
+static int _vibrationOptionMenu(int init)
 {
     static int state = 0;
     static int selectedRow = 0;
@@ -433,7 +433,7 @@ static int _vibrationOptionMenu(int arg0)
     int i;
     int currentState;
 
-    if (arg0 != 0) {
+    if (init != 0) {
         state = 0;
         return 0;
     }

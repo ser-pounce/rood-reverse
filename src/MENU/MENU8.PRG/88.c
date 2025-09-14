@@ -84,8 +84,10 @@ static int _abilityTimingOptionMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_abilityTimingOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_abilityTimingOnDesc]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_abilityTimingOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_abilityTimingOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - ((*(u_int*)&vs_main_settings >> 5) & 1);
@@ -133,8 +135,10 @@ static int _weaponStatusOptionMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_weaponStatusOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_weaponStatusOnDesc]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_weaponStatusOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_weaponStatusOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - ((*(u_int*)&vs_main_settings >> 6) & 1);
@@ -182,8 +186,10 @@ static int _armorStatusOptionMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_armorStatusOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_armorStatusOnDesc]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_armorStatusOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_armorStatusOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - (vs_main_settings.timingWeaponArmor >> 7);
@@ -231,8 +237,10 @@ static int _cursorMemoryOptionMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_cursorMemoryOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_cursorMemoryOnDesc]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_cursorMemoryOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_cursorMemoryOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_settings.cursorMemory;
@@ -280,8 +288,10 @@ static int _informationOptionMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOnDesc]];
+                menuStrings[i * 2]
+                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_infoOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_settings.information;
@@ -312,152 +322,158 @@ static int _informationOptionMenu(int arg0)
     return 0;
 }
 
-static int func_801032B8(int arg0)
+static int _puzzleModeOptionMenu(int arg0)
 {
-    static int D_80105D98 = 0;
-    static int D_80105D9C = 0;
+    static int state = 0;
+    static int selectedRow = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
 
     if (arg0 != 0) {
-        D_80105D98 = 0;
+        state = 0;
         return 0;
     }
-    switch (D_80105D98) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x2E]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x2F]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_puzzleModeOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_puzzleModeOnDesc]];
                 rowTypes[i] = 0;
             }
             i = ((*(u_int*)&vs_main_settings) >> 3) & 1;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24C, menuStrings, rowTypes);
-            D_80105D98 = 1;
+            state = 1;
         }
         break;
     case 1:
-        D_80105D9C = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80105D9C != 0) {
-            if (D_80105D9C == -2) {
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
                 func_800FA8E0(7);
             }
-            D_80105D98 = 2;
+            state = 2;
         }
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_80105D9C;
+            return selectedRow;
         }
         break;
     }
     return 0;
 }
 
-static int func_8010345C(int arg0)
+static int _soundOptionMenu(int arg0)
 {
-    static int D_80105DA0 = 0;
-    static int D_80105DA4 = 0;
+    static int state = 0;
+    static int selectedRow = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
 
     if (arg0 != 0) {
-        D_80105DA0 = 0;
+        state = 0;
         return 0;
     }
-    switch (D_80105DA0) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x32]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x33]];
+                menuStrings[i * 2]
+                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_stereo]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_stereoDesc]];
                 rowTypes[i] = 0;
             }
             i = vs_main_soundMono;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24D, menuStrings, rowTypes);
-            D_80105DA0 = 1;
+            state = 1;
         }
         break;
     case 1:
-        D_80105DA4 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80105DA4 != 0) {
-            if (D_80105DA4 == -2) {
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
                 func_800FA8E0(7);
             }
-            D_80105DA0 = 2;
+            state = 2;
         }
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_80105DA4;
+            return selectedRow;
         }
         break;
     }
     return 0;
 }
 
-static int func_801035FC(int arg0)
+static int _vibrationOptionMenu(int arg0)
 {
-    static int D_80105DA8 = 0;
-    static int D_80105DAC = 0;
+    static int state = 0;
+    static int selectedRow = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
-    int state;
+    int currentState;
 
     if (arg0 != 0) {
-        D_80105DA8 = 0;
+        state = 0;
         return 0;
     }
-    state = D_80105DA8;
-    switch (state) {
+    currentState = state;
+    switch (currentState) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x36]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + 0x37]];
+                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_vibrationOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
+                    + VS_menu_INDEX_vibrationOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_vibrationEnabled;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24E, menuStrings, rowTypes);
-            D_80105DA8 = 1;
+            state = 1;
         }
         break;
     case 1:
-        D_80105DAC = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80105DAC != 0) {
-            if (D_80105DAC == -2) {
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
-                if (D_80105DAC == state) {
+                if (selectedRow == currentState) {
                     func_800438C8(0);
                 }
                 func_800FA8E0(7);
             }
-            D_80105DA8 = 2;
+            state = 2;
         }
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_80105DAC;
+            return selectedRow;
         }
         break;
     }
@@ -533,15 +549,15 @@ int func_801037B4(char* arg0)
                     return 0;
                 case 6:
                     *arg0 = 0xC;
-                    func_801032B8(1);
+                    _puzzleModeOptionMenu(1);
                     return 0;
                 case 7:
                     *arg0 = 0xD;
-                    func_8010345C(1);
+                    _soundOptionMenu(1);
                     return 0;
                 case 8:
                     *arg0 = 0xE;
-                    func_801035FC(1);
+                    _vibrationOptionMenu(1);
                     return 0;
                 }
             } else if (i == -2) {
@@ -658,7 +674,7 @@ int func_801037B4(char* arg0)
         *arg0 = 4;
         break;
     case 12:
-        i = func_801032B8(0);
+        i = _puzzleModeOptionMenu(0);
         if (i == 0) {
             break;
         }
@@ -674,7 +690,7 @@ int func_801037B4(char* arg0)
         *arg0 = 4;
         break;
     case 13:
-        i = func_8010345C(0);
+        i = _soundOptionMenu(0);
         if (i == 0) {
             break;
         }
@@ -689,7 +705,7 @@ int func_801037B4(char* arg0)
         *arg0 = 4;
         break;
     case 14:
-        i = func_801035FC(0);
+        i = _vibrationOptionMenu(0);
         if (i == 0) {
             break;
         }

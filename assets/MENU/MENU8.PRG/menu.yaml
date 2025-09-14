@@ -24,10 +24,10 @@ simple:
 simpleDesc:
 mapOff:
 mapOffDesc:
-abilitiyTimingOn:
-abilitiyTimingOnDesc:
-abilitiyTimingOff:
-abilitiyTimingOffDesc:
+abilityTimingOn:
+abilityTimingOnDesc:
+abilityTimingOff:
+abilityTimingOffDesc:
 weaponStatusOn:
 weaponStatusOnDesc:
 weaponStatusOff:

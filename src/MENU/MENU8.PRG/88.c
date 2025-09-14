@@ -30,8 +30,10 @@ static int _simpleMapOption(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frame]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frameDesc]];
+                menuStrings[i * 2]
+                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frame]];
+                menuStrings[i * 2 + 1]
+                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frameDesc]];
                 rowTypes[i] = 0;
             }
             for (i = 0; i < 3; ++i) {
@@ -67,18 +69,18 @@ static int _simpleMapOption(int arg0)
 
 static int func_80102A5C(int arg0)
 {
-    static int D_80105D70 = 0;
-    static int D_80105D74 = 0;
+    static int state = 0;
+    static int selectedRow = 0;
 
     char* menuStrings[4];
     int rowTypes[2];
     int i;
 
     if (arg0 != 0) {
-        D_80105D70 = 0;
+        state = 0;
         return 0;
     }
-    switch (D_80105D70) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
@@ -89,25 +91,25 @@ static int func_80102A5C(int arg0)
             i = 1 - ((*(u_int*)&vs_main_settings >> 5) & 1);
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x247, menuStrings, rowTypes);
-            D_80105D70 = 1;
+            state = 1;
         }
         break;
     case 1:
-        D_80105D74 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_80105D74 != 0) {
-            if (D_80105D74 == -2) {
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
                 func_800FA8E0(0x28);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
                 func_800FA8E0(7);
             }
-            D_80105D70 = 2;
+            state = 2;
         }
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            return D_80105D74;
+            return selectedRow;
         }
         break;
     }
@@ -486,7 +488,8 @@ int func_801037B4(char* arg0)
         }
 
         if (vs_main_stateFlags.unk11D != 0) {
-            menuStrings[13] = (char*)&_menuStrings[VS_menu_OFFSET_puzzleModeSettingDisabled];
+            menuStrings[13]
+                = (char*)&_menuStrings[VS_menu_OFFSET_puzzleModeSettingDisabled];
             rowTypes[6] = 1;
         }
         i = vs_main_settings.cursorMemory;

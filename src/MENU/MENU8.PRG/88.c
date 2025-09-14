@@ -480,7 +480,7 @@ static int _vibrationOptionMenu(int arg0)
     return 0;
 }
 
-int func_801037B4(char* state)
+int vs_menu8_exec(char* state)
 {
     enum state {
         none,

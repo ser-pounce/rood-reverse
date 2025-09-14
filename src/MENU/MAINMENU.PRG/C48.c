@@ -41,7 +41,6 @@ void func_800FC85C(int*, int*, int, int);
 void func_800FCAA4(int, u_short**, int*, void*);
 void func_800FCC0C(int, int*, int*, void*);
 void func_800FCCE8(void*, int, int, int);
-void func_800FCECC(int*, int, int, int);
 
 extern short D_80102014[];
 extern short D_8010202C[];
@@ -440,7 +439,7 @@ void func_800FCE40(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
 
-void func_800FD084(int arg0, int arg1, int arg2, int arg3)
+void func_800FD084(int arg0, int* arg1, int* arg2, int arg3)
 {
     int sp10[48];
 

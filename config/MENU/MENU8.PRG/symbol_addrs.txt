@@ -23,5 +23,5 @@ D_80105F29 = 0x80105F29;
 _charTableColumn = 0x80105F2A;
 _charTableRow = 0x80105F2B;
 _animStep = 0x80105F31;
-_stringBuf = 0x80105F40;
 _charTable = 0x80105F34;
+_stringBuf = 0x80105F40;

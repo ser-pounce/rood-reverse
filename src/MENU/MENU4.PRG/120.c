@@ -1,4 +1,7 @@
 #include "common.h"
+#include "../MAINMENU.PRG/C48.h"
+
+extern int D_800F4E8C;
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
@@ -26,7 +29,13 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010317C);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801032C4);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801033A4);
+int func_801033A4(int* arg0)
+{
+    int sp10[3];
+
+    func_800FCECC(arg0, sp10, &sp10[2], D_800F4E8C);
+    return sp10[1];
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801033D4);
 

@@ -18,3 +18,4 @@ D_80105F2A = 0x80105F2A;
 D_80105F2B = 0x80105F2B;
 _stringBuf = 0x80105F40;
 _renameMenuStrings = 0x80105DB4;
+_insertDeleteHandler = 0x80103D88;

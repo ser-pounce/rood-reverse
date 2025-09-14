@@ -19,7 +19,7 @@ static char _stringBuf[20];
 
 static char D_80105DB0 = 0;
 
-static int func_80103D88(int bufPos)
+static int _insertDeleteHandler(int bufPos)
 {
     int previousPos;
     int i;
@@ -358,7 +358,7 @@ static int func_801049A0(int arg0)
     static char D_80105F29;
     static char D_80105F2A;
     static char D_80105F2B;
-    static u_char D_80105F2C;
+    static u_char currentPos;
     static char D_80105F2D;
 
     int temp_a1;
@@ -371,7 +371,7 @@ static int func_801049A0(int arg0)
     if (arg0 != 0) {
         D_80105F2A = 0;
         D_80105F2B = 0;
-        D_80105F2C = 0;
+        currentPos = 0;
         D_80105F2D = 0;
         D_80105F29 = 8;
         D_80105F28 = 0;
@@ -387,26 +387,26 @@ static int func_801049A0(int arg0)
         }
         break;
     case 1:
-        D_80105F2C = func_80103D88(D_80105F2C);
-        if (vs_main_buttonsPressed.all & 0x800) {
+        currentPos = _insertDeleteHandler(currentPos);
+        if (vs_main_buttonsPressed.all & PADstart) {
             vs_battle_playMenuSelectSfx();
             func_8010493C(0xFF);
             D_80105F28 = 3;
             break;
         }
 
-        if (vs_main_buttonRepeat & 0x40) {
+        if (vs_main_buttonRepeat & PADRdown) {
             vs_battle_playMenuChangeSfx();
-            if (D_80105F2C != 0) {
-                --D_80105F2C;
-                for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
+            if (currentPos != 0) {
+                --currentPos;
+                for (var_s1 = currentPos; var_s1 < 19; ++var_s1) {
                     _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
                 _stringBuf[19] = 0x8F;
             }
         }
         var_s1 = D_80105F2B;
-        if (vs_main_buttonsPressed.all & 0x2000) {
+        if (vs_main_buttonsPressed.all & PADLright) {
             vs_battle_playMenuChangeSfx();
             func_8010493C(0xFF);
             if (var_s1 == 3) {
@@ -418,7 +418,7 @@ static int func_801049A0(int arg0)
             D_80105F28 = 2;
             break;
         }
-        if (vs_main_buttonsPressed.all & 0x20) {
+        if (vs_main_buttonsPressed.all & PADRright) {
             switch (var_s1) {
             case 0:
                 vs_battle_playMenuSelectSfx();
@@ -426,25 +426,25 @@ static int func_801049A0(int arg0)
                 D_80105F28 = 3;
                 break;
             case 1:
-                if (D_80105F2C != 0) {
-                    --D_80105F2C;
-                    for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
+                if (currentPos != 0) {
+                    --currentPos;
+                    for (var_a1 = currentPos; var_a1 < 0x13; ++var_a1) {
                         _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                     }
                     _stringBuf[19] = 0x8F;
                 }
                 break;
             case 2:
-                for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
+                for (var_a1 = currentPos; var_a1 < 0x13; ++var_a1) {
                     _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                 }
                 _stringBuf[19] = 0x8F;
                 break;
             case 3:
-                for (var_a1 = 0x13; D_80105F2C < var_a1; --var_a1) {
+                for (var_a1 = 0x13; currentPos < var_a1; --var_a1) {
                     _stringBuf[var_a1] = _stringBuf[var_a1 - 1];
                 }
-                _stringBuf[D_80105F2C] = 0x8F;
+                _stringBuf[currentPos] = 0x8F;
                 break;
             }
             if (D_80105F28 != 1) {
@@ -478,7 +478,7 @@ static int func_801049A0(int arg0)
         D_80105F29 = func_800FFCDC((int)D_80105F29, ((var_s1 * 0x10) + 0x1C) << 0x10);
         break;
     case 2:
-        D_80105F2C = func_80103D88(D_80105F2C);
+        currentPos = _insertDeleteHandler(currentPos);
         if (vs_main_buttonsPressed.all & 0x800) {
             vs_battle_playMenuSelectSfx();
             D_80105F28 = 3;
@@ -487,16 +487,16 @@ static int func_801049A0(int arg0)
         if (vs_main_buttonsPressed.all & 0x20) {
             vs_battle_playMenuChangeSfx();
             var_s1 = D_80105F34[D_80105F2A + (D_80105F2B * 0xF)];
-            _stringBuf[D_80105F2C] = var_s1;
-            if (D_80105F2C < 0x13) {
-                ++D_80105F2C;
+            _stringBuf[currentPos] = var_s1;
+            if (currentPos < 0x13) {
+                ++currentPos;
             }
         }
         if (vs_main_buttonRepeat & 0x40) {
             vs_battle_playMenuChangeSfx();
-            if (D_80105F2C != 0) {
-                --D_80105F2C;
-                for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
+            if (currentPos != 0) {
+                --currentPos;
+                for (var_s1 = currentPos; var_s1 < 0x13; ++var_s1) {
                     _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
                 _stringBuf[19] = 0x8F;
@@ -616,7 +616,7 @@ static int func_801049A0(int arg0)
         D_80105F29 = func_801046F0(D_80105F29, D_80105F2A, D_80105F2B);
     }
     if ((u_int)(D_80105F28 - 1) < 2U) {
-        func_80104650((D_80105F2C * 6) + 0xA1, 0x30, 8, 0xC);
+        func_80104650((currentPos * 6) + 0xA1, 0x30, 8, 0xC);
     }
     return 0;
 }

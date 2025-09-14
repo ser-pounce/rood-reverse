@@ -5,6 +5,8 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "vs_string.h"
+#include <libetc.h>
 
 static char D_80105F2E;
 static char _1;
@@ -13,81 +15,81 @@ static u_char D_80105F31;
 static char _2[2];
 static char* D_80105F34;
 static char _3[8];
-static char D_80105F40[20];
+static char _stringBuf[20];
 
 static char D_80105DB0 = 0;
 
-static int func_80103D88(int arg0)
+static int func_80103D88(int bufPos)
 {
-    int temp_s1;
+    int previousPos;
     int i;
 
     D_80105DB0 = 1;
-    temp_s1 = arg0;
+    previousPos = bufPos;
 
-    if (vs_main_buttonRepeat & 0x10) {
-        vs_battle_playMenuChangeSfx(vs_main_buttonRepeat);
-        for (i = 19; arg0 < i; --i) {
-            D_80105F40[i] = D_80105F40[i - 1];
+    if (vs_main_buttonRepeat & PADRup) {
+        vs_battle_playMenuChangeSfx();
+        for (i = 19; bufPos < i; --i) {
+            _stringBuf[i] = _stringBuf[i - 1];
         }
-        D_80105F40[arg0] = 0x8F;
-    } else if (vs_main_buttonRepeat & 0x80) {
-        vs_battle_playMenuChangeSfx(vs_main_buttonRepeat);
-        for (i = arg0; i < 19; ++i) {
-            D_80105F40[i] = D_80105F40[i + 1];
+        _stringBuf[bufPos] = vs_char_space;
+    } else if (vs_main_buttonRepeat & PADRleft) {
+        vs_battle_playMenuChangeSfx();
+        for (i = bufPos; i < 19; ++i) {
+            _stringBuf[i] = _stringBuf[i + 1];
         }
-        D_80105F40[19] = 0x8F;
-    } else if ((vs_main_buttonsState & 0xC) != 0xC) {
-        if (vs_main_buttonRepeat & 4) {
-            if (arg0 == 0) {
-                if (vs_main_buttonsPressed.all & 4) {
-                    arg0 = 19;
+        _stringBuf[19] = vs_char_space;
+    } else if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
+        if (vs_main_buttonRepeat & PADL1) {
+            if (bufPos == 0) {
+                if (vs_main_buttonsPressed.all & PADL1) {
+                    bufPos = 19;
                 }
             } else {
-                --arg0;
+                --bufPos;
             }
         }
-        if (vs_main_buttonRepeat & 8) {
-            if (arg0 == 0x13) {
-                if (vs_main_buttonsPressed.all & 8) {
-                    arg0 = 0;
+        if (vs_main_buttonRepeat & PADR1) {
+            if (bufPos == 19) {
+                if (vs_main_buttonsPressed.all & PADR1) {
+                    bufPos = 0;
                 }
             } else {
-                ++arg0;
+                ++bufPos;
             }
         }
     }
-    if (arg0 != temp_s1) {
+    if (bufPos != previousPos) {
         vs_battle_playMenuChangeSfx();
     }
-    return arg0;
+    return bufPos;
 }
 
-static int func_80103F1C(char* arg0)
+static int func_80103F1C(char* stringBuf)
 {
-    int var_a1;
+    int pos;
     int i;
 
-    for (var_a1 = 0, i = 0; i < 20; ++var_a1, ++i) {
-        if (D_80105F40[i] == 0xE7) {
+    for (pos = 0, i = 0; i < 20; ++pos, ++i) {
+        if (_stringBuf[i] == vs_char_terminator) {
             break;
         }
-        arg0[var_a1] = D_80105F40[i];
+        stringBuf[pos] = _stringBuf[i];
     }
 
-    arg0[var_a1--] = 0xE7;
+    stringBuf[pos--] = vs_char_terminator;
 
-    while (arg0[var_a1] == 0x8F) {
-        arg0[var_a1--] = 0xE7;
-        if (var_a1 < 0) {
+    while (stringBuf[pos] == vs_char_space) {
+        stringBuf[pos--] = vs_char_terminator;
+        if (pos < 0) {
             return 1;
         }
     }
 
-    var_a1 += 2;
+    pos += 2;
 
-    while (var_a1 < 0x18) {
-        arg0[var_a1++] = 0;
+    while (pos < 24) {
+        stringBuf[pos++] = vs_char_zero;
     }
 
     return 0;
@@ -95,7 +97,7 @@ static int func_80103F1C(char* arg0)
 
 static char D_80105DB1 = 0;
 static u_char D_80105DB2 = 0;
-static u_short D_80105DB4[] = {
+static u_short _renameMenuStrings[] = {
 #include "../../assets/MENU/MENU8.PRG/rename.vsString"
 };
 
@@ -107,7 +109,7 @@ static void func_80103FD8(int arg0)
         0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122,
         0x00E000D8, 0x00E00140, 0x004800D8, 0x00480140, 0x00B40122, 0x00E00140 };
 
-    static char D_80105EE8[] = { 0xE7, 0xE7, 0xE7, 0xE7 };
+    static char D_80105EE8[] = { vs_char_terminator, vs_char_terminator, vs_char_terminator, vs_char_terminator };
     static char D_80105EEC[8] = { 0 };
     static char D_80105EF4 = 0;
 
@@ -116,7 +118,7 @@ static void func_80103FD8(int arg0)
     int temp_t1;
     int j;
     int i;
-    char* temp_s1;
+    char* commandString;
     u_long* var_s1;
     int temp_s0_2;
     int temp_s3;
@@ -157,9 +159,9 @@ static void func_80103FD8(int arg0)
     D_1F800000[0] = var_s1;
     func_800C7210(4);
     for (i = 0; i < 4; ++i) {
-        temp_s1 = (char*)&D_80105DB4[D_80105DB4[0xC - i]];
+        commandString = (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
         temp_s4 = 0x28;
-        while ((j = *temp_s1++) != 0xE7) {
+        while ((j = *commandString++) != vs_char_terminator) {
             func_800C70F8(j, temp_s4 - arg0, 0x54 - (i * 0x10), D_1F800000[1] - 5);
             temp_s4 += 6;
         }
@@ -167,8 +169,8 @@ static void func_80103FD8(int arg0)
 
     vs_battle_setMenuItem(0x1D, arg0 + 0x9C, 0x30, 0xA4, 0, D_80105EE8)->selected = 1;
     for (j = 0; j < 20; ++j) {
-        temp_s0_2 = D_80105F40[j];
-        if (temp_s0_2 != 0x8F) {
+        temp_s0_2 = _stringBuf[j];
+        if (temp_s0_2 != vs_char_space) {
             int new_var3 = (j * 6 + 0xA2);
             func_800C70F8(temp_s0_2, arg0 + new_var3, 0x30, D_1F800000[2] - 2);
         }
@@ -213,11 +215,11 @@ static void func_80103FD8(int arg0)
         }
     }
 
-    temp_s1 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
+    commandString = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 14; ++j) {
             int temp_s8 = (arg0 + 0x82);
-            func_800C70F8(temp_s1[i * 0xF + j], temp_s8 + j * 0xC, (i * 0x10) + 0x4E,
+            func_800C70F8(commandString[i * 15 + j], temp_s8 + j * 0xC, (i * 0x10) + 0x4E,
                 D_1F800000[2] - 2);
         }
     }
@@ -293,7 +295,7 @@ static int func_8010475C(int arg0)
     case 2: {
         vs_battle_menuItem_t* menuItem
             = vs_battle_setMenuItem(D_80105F00 + 0x14, 0x140, (D_80105F00 * 0x10) + 0x80,
-                0x7E, 0, (char*)&D_80105DB4[D_80105DB4[D_80105F00 + 6]]);
+                0x7E, 0, (char*)&_renameMenuStrings[_renameMenuStrings[D_80105F00 + 6]]);
         menuItem->state = 2;
         menuItem->x = 0xC2;
         ++D_80105F00;
@@ -398,9 +400,9 @@ static int func_801049A0(int arg0)
             if (D_80105F2C != 0) {
                 --D_80105F2C;
                 for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
-                    D_80105F40[var_s1] = D_80105F40[var_s1 + 1];
+                    _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
-                D_80105F40[19] = 0x8F;
+                _stringBuf[19] = 0x8F;
             }
         }
         var_s1 = D_80105F2B;
@@ -427,22 +429,22 @@ static int func_801049A0(int arg0)
                 if (D_80105F2C != 0) {
                     --D_80105F2C;
                     for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
-                        D_80105F40[var_a1] = D_80105F40[var_a1 + 1];
+                        _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                     }
-                    D_80105F40[19] = 0x8F;
+                    _stringBuf[19] = 0x8F;
                 }
                 break;
             case 2:
                 for (var_a1 = D_80105F2C; var_a1 < 0x13; ++var_a1) {
-                    D_80105F40[var_a1] = D_80105F40[var_a1 + 1];
+                    _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                 }
-                D_80105F40[19] = 0x8F;
+                _stringBuf[19] = 0x8F;
                 break;
             case 3:
                 for (var_a1 = 0x13; D_80105F2C < var_a1; --var_a1) {
-                    D_80105F40[var_a1] = D_80105F40[var_a1 - 1];
+                    _stringBuf[var_a1] = _stringBuf[var_a1 - 1];
                 }
-                D_80105F40[D_80105F2C] = 0x8F;
+                _stringBuf[D_80105F2C] = 0x8F;
                 break;
             }
             if (D_80105F28 != 1) {
@@ -485,7 +487,7 @@ static int func_801049A0(int arg0)
         if (vs_main_buttonsPressed.all & 0x20) {
             vs_battle_playMenuChangeSfx();
             var_s1 = D_80105F34[D_80105F2A + (D_80105F2B * 0xF)];
-            D_80105F40[D_80105F2C] = var_s1;
+            _stringBuf[D_80105F2C] = var_s1;
             if (D_80105F2C < 0x13) {
                 ++D_80105F2C;
             }
@@ -495,9 +497,9 @@ static int func_801049A0(int arg0)
             if (D_80105F2C != 0) {
                 --D_80105F2C;
                 for (var_s1 = D_80105F2C; var_s1 < 0x13; ++var_s1) {
-                    D_80105F40[var_s1] = D_80105F40[var_s1 + 1];
+                    _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
-                D_80105F40[19] = 0x8F;
+                _stringBuf[19] = 0x8F;
             }
         }
 
@@ -565,7 +567,7 @@ static int func_801049A0(int arg0)
             func_800C8E04(1);
             D_800F5190 = &D_80105F10;
             func_800C685C(
-                D_800F4E8C, (char*)(D_80105DB4 + VS_rename_OFFSET_confirmPrompt));
+                D_800F4E8C, (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
             vs_mainmenu_setMessage(&D_800F4E8C->unk0);
             func_8010475C(1);
             D_80105F28 = 5;
@@ -619,62 +621,61 @@ static int func_801049A0(int arg0)
     return 0;
 }
 
-int func_80105314(char* arg0)
+int vs_menu8_execRename(char* state)
 {
     int i;
-    int temp_a0;
-    int temp_s0;
+    int currentState;
     char* var_v1;
     char* var_v0;
     int v1;
 
-    temp_s0 = *arg0;
-    switch (temp_s0) {
+    currentState = *state;
+    switch (*state) {
     case 0:
         D_80105F2E = D_800F4E8C->unk1;
-        D_80105F34 = (char*)(D_80105DB4 + VS_rename_OFFSET_charTable);
+        D_80105F34 = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
         func_800FFBA8();
         v1 = 0x8F;
         i = 19;
-        var_v0 = &D_80105F40[i];
+        var_v0 = &_stringBuf[i];
         for (; i >= 0; --i) {
             *var_v0-- = v1;
         }
         if (D_800F4E8C->unk0 == 1) {
             var_v1 = (D_80105F2E << 5) + &D_80060168[0][8];
             for (i = 0; i < 20; ++i) {
-                temp_a0 = *var_v1++;
-                if (temp_a0 == 0xE7) {
+                int c = *var_v1++;
+                if (c == 0xE7) {
                     break;
-                } else if (temp_a0 == 0x8F) {
+                } else if (c == 0x8F) {
                     continue;
-                } else if (temp_a0 == 0xFA) {
+                } else if (c == 0xFA) {
                     var_v1 += 1;
                 } else {
-                    D_80105F40[i] = temp_a0;
+                    _stringBuf[i] = c;
                 }
             }
         }
         D_80105F30 = 0;
         D_80105F31 = 10;
-        *arg0 = 1;
+        *state = 1;
         break;
     case 1:
         func_801049A0(1);
-        D_80105F30 = temp_s0;
-        *arg0 = 2;
+        D_80105F30 = currentState;
+        *state = 2;
         break;
     case 2:
         if (func_801049A0(0) != 0) {
             func_800FA8A0(0xA);
             func_800FA810(0);
             func_800FFBC8();
-            *arg0 = 3;
+            *state = 3;
         }
         break;
     case 3:
         if (D_80105F31 == 0xA) {
-            *arg0 = 0;
+            *state = 0;
             vs_battle_menuState.currentState = 0xD;
         }
         break;

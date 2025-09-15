@@ -34,53 +34,6 @@ typedef struct {
     int unk4;
     int unk8;
     int unkC;
-    int unk10;
-    int unk14;
-    short unk18;
-    short unk1A;
-    short unk1C;
-    short unk1E;
-    int unk20;
-    int unk24;
-    int unk34[3];
-    short unk40;
-    char unk42;
-    char unk43;
-    int unk38[158];
-    short unkAC;
-    short unkAE;
-    int unkB0[421];
-    int unk948;
-    int unk94C;
-    int unk950;
-    u_short unk954;
-} D_800F1964_t;
-
-typedef struct {
-    int unk0[2];
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    u_short unk18;
-    u_short unk1A;
-    u_short unk1C;
-    short unk1E;
-    int unk20;
-    short unk24;
-    signed char unk26;
-    signed char unk27;
-    int unk28[5];
-    D_800F1964_t* unk3C;
-    int unk40;
-    int unk44;
-} D_800F1928_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
 } D_800F1A68_t;
 
 typedef struct {
@@ -204,7 +157,6 @@ extern int D_800F18F0;
 extern char D_800F18F8;
 extern int* D_800F1900;
 extern int D_800F190C;
-extern D_800F1928_t* D_800F1928[];
 extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
@@ -1620,7 +1572,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008379C);
 
 short func_8008381C(int arg0 __attribute__((unused)), u_char* arg1)
 {
-    return D_800F1928[*arg1]->unk3C->unkAC;
+    return D_800F1928[*arg1]->unk3C->unk2B0;
 }
 
 short func_8008384C(u_int* arg0, int arg1 __attribute__((unused)),

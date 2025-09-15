@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 
 extern int D_800F4E8C;
 

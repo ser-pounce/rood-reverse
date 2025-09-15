@@ -124,7 +124,7 @@ void func_800FFB90(int arg0)
     item->state = 0;
 }
 
-void func_800FFBA8() { func_800CD064(7); }
+void func_800FFBA8(void) { func_800CD064(7); }
 
 void func_800FFBC8()
 {
@@ -181,9 +181,9 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", vs_mainmenu_setMenu
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100814);
 
-int func_801008B0() { return _selectedRow + D_801023DE; }
+int func_801008B0(void) { return _selectedRow + D_801023DE; }
 
-int vs_mainmenu_getSelectedRow() { return D_801023D4 != 0 ? -1 : _selectedRow; }
+int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != 0 ? -1 : _selectedRow; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 

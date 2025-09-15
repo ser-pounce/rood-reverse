@@ -20,4 +20,4 @@ __asm__(".macro jumpFunc name, target;"
         "jumpFunc vs_overlay_jumpToTitle, vs_main_execTitle;"
         "jumpFunc vs_overlay_jumpToBattle, vs_battle_exec;");
 
-void vs_overlay_wait() { __asm__(".nop 4096;"); }
+void vs_overlay_wait(void) { __asm__(".nop 4096;"); }

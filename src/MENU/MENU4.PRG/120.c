@@ -75,7 +75,8 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104AEC);
 void func_80104B38(int arg0);
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104B38);
 
-void func_80104C0C(int arg0, int arg1) {
+void func_80104C0C(int arg0, int arg1)
+{
     func_80104B38(arg0);
     func_800FBBD4(arg1);
     func_800FBEA4(1);

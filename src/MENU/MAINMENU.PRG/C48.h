@@ -29,11 +29,11 @@ typedef struct {
     char unk3;
 } func_800FD17C_t;
 
-void func_800FA448();
+void func_800FA448(void);
 void func_800FA8A0(int arg0);
 void func_800FA810(int arg0);
 void func_800FA8E0(int);
-int vs_mainmenu_ready();
+int vs_mainmenu_ready(void);
 void func_800FA92C(int arg0, int arg1);
 void func_800FAAC8(int);
 void func_800FAEBC(int);

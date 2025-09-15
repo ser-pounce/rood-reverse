@@ -17,18 +17,18 @@ typedef struct {
     short unkA;
 } D_800DBB88_t;
 
-void func_8006B9B4();
-void func_8006A0D8();
+void func_8006B9B4(void);
+void func_8006A0D8(void);
 void _drawInteger(DRAWENV*);
-void func_8006A888();
+void func_8006A888(void);
 void func_8006A9C0(int*);
-void func_8006AA6C();
+void func_8006AA6C(void);
 void func_8006AB44(void (*)());
-void func_8006B760();
-void func_8006B884();
-void func_8006B910();
-void func_8006B9DC();
-void func_8006BD78();
+void func_8006B760(void);
+void func_8006B884(void);
+void func_8006B910(void);
+void func_8006B9DC(void);
+void func_8006BD78(void);
 
 extern int D_8006E3FC;
 extern int D_8007005C;
@@ -207,7 +207,7 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B760);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
 
-void func_8006B910() { func_8006B760(); }
+void func_8006B910(void) { func_8006B760(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 
@@ -216,7 +216,7 @@ void func_8006B9B4()
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
 
-void func_8006B9DC() { vs_main_checkStreamXaEnd(); }
+void func_8006B9DC(void) { vs_main_checkStreamXaEnd(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9FC);
 

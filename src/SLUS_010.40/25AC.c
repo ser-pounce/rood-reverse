@@ -15,12 +15,12 @@ typedef struct {
 static int func_80013468(int*);
 static int func_80013588(void*, int);
 static void func_800135D8(void*, int, int, int);
-static void func_8001369C();
-static void _soundInit();
+static void func_8001369C(void);
+static void _soundInit(void);
 static void func_80013AE8(u_int);
 static u_int func_80018C30(int);
-static long func_80019A58();
-static void _shutdown();
+static long func_80019A58(void);
+static void _shutdown(void);
 static void _writeSpu(char* data, u_int len);
 
 extern int _soundEvent;
@@ -179,9 +179,9 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012B08);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012B3C);
 
-void func_80012B78() { func_80018C30(240); }
+void func_80012B78(void) { func_80018C30(240); }
 
-void func_80012B98() { func_80018C30(241); }
+void func_80012B98(void) { func_80018C30(241); }
 
 void func_80012BB8(void* arg0, int arg1)
 {
@@ -189,7 +189,7 @@ void func_80012BB8(void* arg0, int arg1)
         ;
 }
 
-int vs_sound_spuTransferring() { return _isSpuTransfer; }
+int vs_sound_spuTransferring(void) { return _isSpuTransfer; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C14);
 
@@ -588,7 +588,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B84);
 
-void func_80018BD8() { }
+void func_80018BD8(void) { }
 
 void _setReverbMode(int mode)
 {
@@ -676,7 +676,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B6F8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B70C);
 
-static void func_8001B72C() { }
+static void func_8001B72C(void) { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B734);
 
@@ -752,11 +752,11 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C30C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C36C);
 
-void func_8001C378() { }
+void func_8001C378(void) { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C380);
 
-void func_8001C39C() { }
+void func_8001C39C(void) { }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C3A4);
 

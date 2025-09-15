@@ -14,20 +14,20 @@ typedef struct {
 } func_8007C8F8_t;
 
 void func_800918E8(int);
-void func_800938AC();
+void func_800938AC(void);
 void func_80095B70(int);
-void func_80098160();
+void func_80098160(void);
 void func_80098B38(int, int);
-void func_800995B0();
+void func_800995B0(void);
 int func_800995E8(func_8007C8F8_t*);
 void func_8009CC20(int, int);
-void func_8009CE9C();
-void func_8009CFA0();
+void func_8009CE9C(void);
+void func_8009CFA0(void);
 void func_8009CFB0(int);
-void func_8009D208();
+void func_8009D208(void);
 void func_8009D468(int, int);
-void func_8009D854();
-void func_8009E5C4();
+void func_8009D854(void);
+void func_8009E5C4(int);
 void func_8009E634(void*, int);
 void func_8009F314(int, int, int);
 void func_8009F940(int, int, int*, char*);

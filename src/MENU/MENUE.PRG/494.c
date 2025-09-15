@@ -42,21 +42,21 @@ typedef struct {
 } AnimationState_t;
 
 static char* _vsStringCpy(char* arg0, char* arg1);
-static int _initMenuState();
-static int _showMenu();
+static int _initMenuState(void);
+static int _showMenu(void);
 static void _drawSprite(short*);
 static void _drawPaginationArrow(enum arrowType_e arrowType);
-static void _drawContentLines();
+static void _drawContentLines(void);
 static short _getAnimationState(AnimationState_t* arg0);
 static int _topMenu(int arg0);
 static void _copySprites(u_long const* arg0, int arg1);
 static void _copyCluts(u_long* arg0, int arg1);
-static int _getRoundedLineCount();
-static void _copyNextPageText();
-static void _drawContent();
+static int _getRoundedLineCount(void);
+static void _copyNextPageText(void);
+static void _drawContent(void);
 static void _setPageBg(int arg0, int arg1, int arg2, int arg3, int arg4);
-static void _fadeMenuUpper();
-static void _fadeMenuLower();
+static void _fadeMenuUpper(void);
+static void _fadeMenuLower(void);
 static void _drawControlsBg(int x, int y, int w, int h);
 
 static void func_80102C94(int arg0) __attribute__((unused));
@@ -127,9 +127,9 @@ void func_80102E48(char* text)
 }
 
 static void func_80102E9C() __attribute__((unused));
-void func_80102E9C() { func_800FA8E0(8); }
+void func_80102E9C(void) { func_800FA8E0(8); }
 
-static void _menuReady() { vs_mainmenu_ready(); }
+static void _menuReady(void) { vs_mainmenu_ready(); }
 
 static u_short _menuText[] = {
 #include "../../assets/MENU/MENUE.PRG/menuText.vsString"

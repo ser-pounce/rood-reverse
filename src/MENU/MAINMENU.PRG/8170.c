@@ -4,7 +4,7 @@
 #include "413C.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
-void func_80101970();
+void func_80101970(void);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/8170", func_80101970);
 
 void func_80101F38()

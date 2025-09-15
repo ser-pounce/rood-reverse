@@ -20,11 +20,11 @@ static void _playNewGameSfx()
     vs_main_playSfxDefault(0x7E, 3);
 }
 
-static void _playMenuChangeSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
+static void _playMenuChangeSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
 
-static void _playMenuSelectSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
+static void _playMenuSelectSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
 
-static void _playMenuLeaveSfx() { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
+static void _playMenuLeaveSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
@@ -4555,10 +4555,10 @@ static void _menuSoundSettings()
     _menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
-static void _initGameData();
+static void _initGameData(void);
 static void _setTitleExitFlags(int arg0);
 
-static int _nop() { return 0; }
+static int _nop(void) { return 0; }
 
 static void _initEnvironment()
 {

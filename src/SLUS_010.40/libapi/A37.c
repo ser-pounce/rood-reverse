@@ -1,3 +1,3 @@
 #include "common.h"
 
-void ExitCriticalSection() { SYSCALL(2) }
+void ExitCriticalSection(void) { SYSCALL(2) }

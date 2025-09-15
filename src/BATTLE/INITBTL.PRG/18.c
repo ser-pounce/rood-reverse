@@ -77,9 +77,9 @@ void _loadSystemDat()
     vs_main_freeHeapR(buf);
 }
 
-void func_800F9AB0() { }
+void func_800F9AB0(void) { }
 
-void func_800F9AB8() { func_800995B0(); }
+void func_800F9AB8(void) { func_800995B0(); }
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AD8);
 

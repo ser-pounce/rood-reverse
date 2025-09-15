@@ -37,13 +37,6 @@ typedef struct {
 } padAct_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-} D_8005DC6C_t;
-
-typedef struct {
     char unk0[6];
     short unk6[5];
     int unk10[6];
@@ -128,16 +121,16 @@ typedef struct {
     int rStickY;
 } vs_main_stickPos;
 
-void __main();
-static void _unlockPadModeSwitch();
+void __main(void);
+static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, char[34]);
 static void _padSetActData(int arg0, int arg1, int arg2);
-static void _initCdQueue();
-static void _diskReset();
-static void _processCdQueue();
-static int vs_main_processSoundQueue();
-static void _loadMenuSound();
-static void _asmNop();
+static void _initCdQueue(void);
+static void _diskReset(void);
+static void _processCdQueue(void);
+static int vs_main_processSoundQueue(void);
+static void _loadMenuSound(void);
+static void _asmNop(void);
 static void nop10(int, int);
 
 typedef struct {
@@ -8250,17 +8243,17 @@ int vs_main_gametimeUpdate(int vsync)
     return vs;
 }
 
-static void _gpuSyncVoidCallback() { }
+static void _gpuSyncVoidCallback(void) { }
 
-static void _vSyncVoidCallback() { }
+static void _vSyncVoidCallback(void) { }
 
-static void _nop0() { }
+static void _nop0(void) { }
 
-static void _nop1() { }
+static void _nop1(void) { }
 
-static void _nop2() { }
+static void _nop2(void) { }
 
-static void _nop3() { }
+static void _nop3(void) { }
 
 static void _initRand()
 {
@@ -8392,11 +8385,11 @@ void vs_main_exec()
     vs_main_execTitle();
 }
 
-void vs_main_wait() { vs_overlay_wait(); }
+void vs_main_wait(void) { vs_overlay_wait(); }
 
 void vs_main_enableReset(int enable) { _resetEnabled = enable; }
 
-void func_80042CA0() { D_80060068.unk0.unk0 = 1; }
+void func_80042CA0(void) { D_80060068.unk0.unk0 = 1; }
 
 void func_80042CB0()
 {
@@ -9158,7 +9151,7 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
     }
 }
 
-static int _diskGetState() { return vs_main_disk.state; }
+static int _diskGetState(void) { return vs_main_disk.state; }
 
 static void _diskClearError()
 {
@@ -9484,7 +9477,7 @@ void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
     ++_cdQueueCount.queued;
 }
 
-static void _nop4() { }
+static void _nop4(void) { }
 
 static void _processCdQueue()
 {
@@ -9515,11 +9508,11 @@ static void _processCdQueue()
     func_800443CC();
 }
 
-static int func_80044D94() { return func_80011F90(); }
+static int func_80044D94(void) { return func_80011F90(); }
 
-static void func_80044DB4() { func_80012004(); }
+static void func_80044DB4(void) { func_80012004(); }
 
-static void func_80044DD4() { func_80012468(); }
+static void func_80044DD4(void) { func_80012468(); }
 
 static int func_80044DF4(int id)
 {
@@ -9612,7 +9605,7 @@ static int func_80045000(int id, int arg1, int arg2)
     return 0;
 }
 
-static int vs_main_getCurrentMusicId() { return vs_main_soundData.currentMusicId; }
+static int vs_main_getCurrentMusicId(void) { return vs_main_soundData.currentMusicId; }
 
 int func_800450E4()
 {
@@ -9753,7 +9746,7 @@ int vs_main_freeMusic(int slotId)
     return 1;
 }
 
-static int nop5() { return 0; }
+static int nop5(void) { return 0; }
 
 static int func_800454B8(int arg0)
 {
@@ -9794,9 +9787,9 @@ static int func_800455AC(int id, int arg1, int arg2)
     return 0;
 }
 
-static int nop6() { return 0; }
+static int nop6(void) { return 0; }
 
-static int nop7() { return 0; }
+static int nop7(void) { return 0; }
 
 void vs_main_stopMusic()
 {
@@ -10065,7 +10058,7 @@ static void func_80045D64(int arg0, int arg1)
     }
 }
 
-static void func_80045DC0() { func_80012B98(); }
+static void func_80045DC0(void) { func_80012B98(); }
 
 int vs_main_loadSfxSlot(int id, u_int slot)
 {
@@ -10332,7 +10325,7 @@ static void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
     }
 }
 
-static void func_800464DC() { func_80013328(); }
+static void func_800464DC(void) { func_80013328(); }
 
 static int func_800464FC(int arg0, int arg1, int arg2)
 {
@@ -10472,7 +10465,7 @@ void vs_main_loadAndWaitSoundSlot(int id)
 
 void vs_main_setMonoSound(int set) { vs_sound_setMonoSound(set); }
 
-static void func_800468DC() { func_80012918(0x7FFF); }
+static void func_800468DC(void) { func_80012918(0x7FFF); }
 
 static void _loadMenuSound()
 {
@@ -11708,13 +11701,13 @@ void func_80048FF8()
     }
 }
 
-static void _asmNop() { __asm__(".nop;"); }
+static void _asmNop(void) { __asm__(".nop;"); }
 
 void vs_main_nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
 static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
-static void nop11() { }
+static void nop11(void) { }
 
 void vs_main_memcpy(void* dest, void* src, u_int sz)
 {
@@ -11759,4 +11752,4 @@ void vs_main_bzero(void* dest, int sz)
         "r"(sz));
 }
 
-static void nop12() { }
+static void nop12(void) { }

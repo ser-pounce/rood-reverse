@@ -6,9 +6,9 @@
 void func_80072050(int);
 void func_80072140(u_long* arg0, u_int arg1);
 void func_800721D0(u_long* buf, int size);
-int func_8007225C();
-int func_800722F0();
-u_int func_80072384();
+int func_8007225C(void);
+int func_800722F0(void);
+u_int func_80072384(void);
 int DMACallback(int, void (*)());
 
 // Commented out functions require delay slot manipulation, possibly with .set reorder
@@ -243,7 +243,7 @@ int func_800722F0(void) {
 }
 */
 
-u_int func_80072384() { return *D_80075C88; }
+u_int func_80072384(void) { return *D_80075C88; }
 
 int func_8007239C(char* arg0)
 {

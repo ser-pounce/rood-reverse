@@ -90,7 +90,7 @@ void func_800FA448()
     }
 }
 
-void func_800FA568() { }
+void func_800FA568(void) { }
 
 void func_800FA570()
 {

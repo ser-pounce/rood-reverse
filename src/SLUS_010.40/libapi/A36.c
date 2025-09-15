@@ -1,3 +1,3 @@
 #include "common.h"
 
-void EnterCriticalSection() { SYSCALL(1) }
+void EnterCriticalSection(void) { SYSCALL(1) }

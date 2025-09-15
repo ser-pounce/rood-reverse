@@ -72,7 +72,7 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103070);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
 
-static void func_801031A0();
+static void func_801031A0(void);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
 static void func_80103270()
@@ -119,7 +119,7 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103F64);
 
-static void func_80103FD4();
+static void func_80103FD4(void);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103FD4);
 
 static void func_80104034(int arg0 __attribute__((unused)), int arg1)

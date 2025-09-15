@@ -1,8 +1,7 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
-
-extern int D_800F4E8C;
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
@@ -32,13 +31,22 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801032C4);
 
 int func_801033A4(int* arg0)
 {
-    int sp10[3];
+    int sp10[2];
+    int sp18;
 
-    func_800FCECC(arg0, sp10, &sp10[2], D_800F4E8C);
+    func_800FCECC(arg0, sp10, &sp18, D_800F4E8C);
     return sp10[1];
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801033D4);
+int func_801033D4(u_short* arg0) {
+    int sp10[2];
+    int sp18[10];
+    int sp30[2];
+
+    func_8006BADC(sp18, arg0);
+    func_800FD084(sp18, sp10, sp30, D_800F4E8C);
+    return sp10[1];
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010341C);
 
@@ -70,7 +78,16 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010455C);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801045B8);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104AEC);
+void func_80104AEC(int id) {
+    vs_battle_menuItem_t* menuItem;
+
+    func_800FA8A0(4);
+    menuItem = vs_battle_getMenuItem(id + 10);
+    menuItem->state = 2;
+    menuItem->x = 155;
+    menuItem->selected = 1;
+    menuItem->unk3A = 0;
+}
 
 void func_80104B38(int arg0);
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104B38);

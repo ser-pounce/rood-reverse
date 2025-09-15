@@ -439,7 +439,7 @@ void func_800FCE40(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
 
-void func_800FD084(int arg0, int* arg1, int* arg2, int arg3)
+void func_800FD084(int* arg0, int* arg1, int* arg2, D_800F4E8C_t* arg3)
 {
     int sp10[48];
 

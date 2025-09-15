@@ -125,7 +125,7 @@ typedef struct {
 void func_80069FC4(int, int);
 void func_8006AEAC(int*, int);
 void func_8006B02C(void*, int);
-void func_8006B110(int*, int);
+void func_8006B110(int*, int*);
 void func_8006B338(void*);
 void func_8006B8C0(void*, u_short*);
 void func_8006B9E0(void*, u_short*);

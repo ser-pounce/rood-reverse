@@ -43,7 +43,8 @@ typedef struct {
     short y;
     short x;
     short unk1A;
-    char text[36];
+    char text[32];
+    int unk3A;
 } vs_battle_menuItem_t;
 
 typedef struct {

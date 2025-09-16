@@ -77,7 +77,7 @@ typedef struct {
 } D_800F4E8C_t;
 
 void func_800C6540(char const*, int, int, u_long*);
-void func_800C685C(D_800F4E8C_t*, char*);
+D_800F4E8C_t* func_800C685C(D_800F4E8C_t*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
 void func_800C70F8(int, int, int, u_long*);

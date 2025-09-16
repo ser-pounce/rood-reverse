@@ -8,9 +8,10 @@ int func_80104514(int);
 
 extern u_long* D_1F800000[];
 
-extern short D_801024C0[];
-extern char D_80102545;
 extern int D_801080A8;
+extern char D_801080B8;
+extern char D_801080BA;
+extern char D_801080BB;
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
@@ -74,7 +75,21 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010341C);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801034BC);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103608);
+void func_80103608(int arg0) {
+    if (arg0 == 0) {
+        D_801080B8 = 1;
+        D_801080BA = 4;
+    }
+    else if (D_801080BB == 0) {
+        func_800CB654(1);
+        D_801080B8 = 4;
+        D_801080BA = 4;
+    } else {
+        D_801080B8 = 2;
+        D_801080BA = 4;
+    }
+    D_801080BB = arg0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103688);
 

@@ -58,10 +58,8 @@ extern char D_80102480[];
 extern char D_801024A1;
 extern short D_801024A8[];
 extern char D_801024B9;
-extern short D_801024C0[];
 extern u_short* D_80102540;
 extern char D_80102544;
-extern char D_80102545;
 
 void func_800FA448()
 {

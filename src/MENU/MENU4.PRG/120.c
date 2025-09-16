@@ -41,7 +41,20 @@ void func_80102E3C(signed char* arg0)
     func_800FC268(8);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102EC0);
+void func_80102EC0(signed char* arg0)
+{
+    int i;
+
+    D_80102545 = 64;
+
+    for (i = 0; i < 16; ++i) {
+        D_801024C0[i] = (arg0 + (i & 7))[32];
+        D_801024C0[i + 16] = (arg0 + (i & 7))[40];
+    }
+    func_800FBD28(arg0[5], arg0[6], arg0[7], 1);
+    func_800FBB8C(3);
+    func_800FC268(8);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102F64);
 
@@ -79,12 +92,12 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010341C);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801034BC);
 
-void func_80103608(int arg0) {
+void func_80103608(int arg0)
+{
     if (arg0 == 0) {
         D_801080B8 = 1;
         D_801080BA = 4;
-    }
-    else if (D_801080BB == 0) {
+    } else if (D_801080BB == 0) {
         func_800CB654(1);
         D_801080B8 = 4;
         D_801080BA = 4;

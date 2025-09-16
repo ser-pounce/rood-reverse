@@ -8,6 +8,10 @@ int func_80104514(int);
 
 extern u_long* D_1F800000[];
 
+static u_short _statusStrings[] = {
+#include "../../assets/MENU/MENU4.PRG/status.vsString"
+};
+
 extern int D_801080A8;
 extern char D_801080B8;
 extern char D_801080BA;

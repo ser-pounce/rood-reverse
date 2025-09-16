@@ -1,7 +1,10 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+
+extern u_long* D_1F800000[];
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
@@ -60,7 +63,21 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103744);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010399C);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103A6C);
+void func_80103A6C(int arg0, int arg1, int arg2) {
+    
+    if (arg2 == 0) {
+        arg1 = 0;
+        arg2 = 1;
+    }
+    
+    if ((arg0 >> 8) == 0) {
+        arg1 = arg2;
+    }
+    
+    arg1 <<= 6;
+
+    func_800C99DC(arg0 & 0xFF, ((arg1 + arg2) - 1) / arg2, D_1F800000[1] - 3);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103AC8);
 
@@ -103,7 +120,16 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104C40);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104DFC);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104F2C);
+void func_80104F2C(int arg0) {
+    vs_battle_playMenuLeaveSfx();
+    func_800FA8E0(0x28);
+    func_800FA810(0);
+    func_800FBBD4(-1);
+    func_800FBEA4(2);
+    if (arg0 != 0) {
+        func_800FC268(4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104F80);
 

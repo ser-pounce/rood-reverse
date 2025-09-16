@@ -100,15 +100,13 @@ decompme: $(call src_from_target,$(TARGET)) $(TARGET)
 permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
 	@$(PERMUTE) $(PERMUTEFLAGS) $<
 
-objdiff: $(targets:%=%.elf)
-	mv $(BUILD)/ base/
-	$(MAKE)
-	$(VPYTHON) tools/dev/objdiff_config.py base/ $(BUILD)/ tools/dev/categories.json
+objdiff: all
+	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
 	../.cargo/bin/objdiff-cli report generate > progress.json
 	$(VPYTHON) tools/dev/progress.py
 
 clean:
-	$(RM) $(RMFLAGS) $(BUILD) base nonmatchings
+	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
 
 remake: MAKEFLAGS += --no-print-directory
 remake: clean
@@ -140,13 +138,9 @@ $(targets): $(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
 	$(fixup)
 	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
-ifeq ($(filter objdiff,$(MAKECMDGOALS)),)
 $(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
 	@$(ECHO) Linking $@
 	@$(LD) $(LDFLAGS) -o $@
-else
-$(targets:=.elf): $(BUILD)/data/%.elf: ;
-endif
 
 %.o: %.s | $$(@D)/
 	@$(ECHO) Assembling $<

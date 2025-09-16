@@ -91,7 +91,10 @@ typedef struct {
     int unk38[158];
     short unk2B0;
     short unk2B2;
-    int unk2B4[58];
+    int unk2B4[33];
+    u_short unk338;
+    short unk33A;
+    int unk33C[24];
     short unk39C;
     char unk39E;
     char unk39F;

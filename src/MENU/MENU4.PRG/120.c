@@ -184,7 +184,8 @@ int func_80103688(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103744);
 
-void func_8010399C(int arg0, int arg1, u_int* arg2) {
+void func_8010399C(int arg0, int arg1, u_int* arg2)
+{
     int i;
 
     if (arg1 != 0) {
@@ -197,7 +198,7 @@ void func_8010399C(int arg0, int arg1, u_int* arg2) {
     }
 
     arg0 += 0xFFFF0000;
-    
+
     for (i = 0; i < 3; ++i) {
         vs_battle_setSprite(0x80, arg0, 0xA0007, arg2)[4] = 0x37F400EA;
         arg0 -= 6;
@@ -271,8 +272,30 @@ void func_80104AEC(int id)
     menuItem->unk3A = 0;
 }
 
-void func_80104B38(int arg0);
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104B38);
+void func_80104B38(int arg0)
+{
+    char var_a1;
+    vs_battle_menuItem_t* menuItem;
+
+    menuItem = vs_battle_setMenuItem(0x20, -0xA4, 0x12, 0xA4, 8,
+        (char*)&_statusStrings[_statusStrings[arg0 < 2 ? arg0 + 9 : 11]]);
+
+    menuItem->state = 5;
+    menuItem->x = 0x10;
+    menuItem->selected = 1;
+
+    var_a1 = 0x1C;
+
+    if (arg0 == 0) {
+        var_a1 = 0x18;
+    } else if (arg0 == 1) {
+        var_a1 = 0x1B;
+    }
+    menuItem->weaponType = var_a1;
+    menuItem = vs_battle_getMenuItem(arg0 + 10);
+    menuItem->state = 3;
+    menuItem->x = 0x12;
+}
 
 void func_80104C0C(int arg0, int arg1)
 {
@@ -301,7 +324,8 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104F80);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105970);
 
-void func_80105E94(void) {
+void func_80105E94(void)
+{
     int var_a2;
     u_long* temp_a1;
     u_long* temp_t1;
@@ -316,7 +340,7 @@ void func_80105E94(void) {
         temp_a1[4] = 0;
         temp_a1[5] = 0x808080;
         temp_a1[6] = 0x60;
-        
+
         var_a2 = 0x01000060;
         if (vs_main_frameBuf == 0) {
             var_a2 = 0x01050000 | 0x60;
@@ -328,7 +352,7 @@ void func_80105E94(void) {
         temp_a1[11] = 0x808080;
         temp_a1[12] = 0xF00060;
         temp_a1[13] = 0xF060;
-        temp_t1[-1] = (((u_long) temp_a1 << 8) >> 8);
+        temp_t1[-1] = (((u_long)temp_a1 << 8) >> 8);
         D_1F800000[0] = temp_a1 + 14;
     }
 }

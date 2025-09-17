@@ -16,6 +16,19 @@ typedef struct {
     short unk36;
 } func_80102CAC_t;
 
+typedef struct {
+    signed char unk0[8];
+    u_short unk8;
+    u_short unkA;
+    int unkC;
+    short unk10;
+    char unk12;
+    char unk13;
+    short unk14;
+    short unk16;
+    char unk18;
+} func_80102D64_t;
+
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
@@ -43,7 +56,7 @@ void func_80102CAC(func_80102CAC_t* arg0)
 
     if (arg0->unk0[0] != 0) {
         for (i = 0; i < 16; ++i) {
-            temp_v0 = arg0->unk0 + (i & 7);
+            temp_v0 = (arg0->unk0 + (i & 7));
             D_801024C0[i] = temp_v0[32];
             D_801024C0[i + 16] = temp_v0[40];
             D_801024C0[i + 32] = temp_v0[28];
@@ -53,7 +66,28 @@ void func_80102CAC(func_80102CAC_t* arg0)
     func_800FBB8C(7);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102D64);
+void func_80102D64(u_short* arg0)
+{
+    short* temp_a0;
+    short* var_a2;
+    int i;
+    int var_a3;
+    char temp_v0;
+    func_80102D64_t* temp_s0;
+    char* temp_v1;
+
+    temp_s0 = (func_80102D64_t*)(arg0 + 12);
+    D_80102545 = 2;
+    for (i = 0; i < 16; ++i) {
+        D_801024C0[i] = (temp_s0->unk0 + (i & 7))[32];
+        D_801024C0[i + 16] = (temp_s0->unk0 + (i & 7))[40];
+    }
+    func_800FC208(temp_s0->unk8, temp_s0->unkA, arg0[0x88], arg0[0x89]);
+    func_800FBD28(temp_s0->unk0[5], temp_s0->unk0[6], temp_s0->unk0[7], 1);
+    func_800FBD0C(temp_s0->unk18, temp_s0->unk12, 0, 1);
+    func_800FBB8C(3);
+    func_800FC268(0xB);
+}
 
 void func_80102E3C(signed char* arg0)
 {
@@ -136,13 +170,15 @@ void func_80103608(int arg0)
     D_801080BB = arg0;
 }
 
-int func_80103688(int arg0, int arg1) {
+int func_80103688(int arg0, int arg1)
+{
     int temp_a0;
 
-    while(1) {
+    while (1) {
         arg0 = (arg0 + arg1) % 15;
         temp_a0 = func_800A0BE0(arg0);
-        if ((D_800F1928[arg0] != 0) && (D_800F1928[arg0]->unk1C < 5) && (temp_a0 & 0x01000001) == 1) {
+        if ((D_800F1928[arg0] != 0) && (D_800F1928[arg0]->unk1C < 5)
+            && (temp_a0 & 0x01000001) == 1) {
             break;
         }
     }

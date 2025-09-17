@@ -183,7 +183,25 @@ int func_80103688(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103744);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010399C);
+void func_8010399C(int arg0, int arg1, u_int* arg2) {
+    int i;
+
+    if (arg1 != 0) {
+        for (i = 0; i < 3; ++i) {
+            vs_battle_setSprite(0x80, arg0, 0x90006, arg2)[4] = 0x37F400E4;
+            arg0 -= 5;
+        }
+        func_800C9950(2, arg0, 0, arg2);
+        arg0 -= 7;
+    }
+
+    arg0 += 0xFFFF0000;
+    
+    for (i = 0; i < 3; ++i) {
+        vs_battle_setSprite(0x80, arg0, 0xA0007, arg2)[4] = 0x37F400EA;
+        arg0 -= 6;
+    }
+}
 
 void func_80103A6C(int arg0, int arg1, int arg2)
 {

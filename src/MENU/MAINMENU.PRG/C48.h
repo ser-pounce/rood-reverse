@@ -47,6 +47,7 @@ void func_800FC268(int);
 void func_800FCECC(int*, int*, int*, D_800F4E8C_t*);
 void func_800FD084(int* arg0, int* arg1, int* arg2, D_800F4E8C_t* arg3);
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
+void func_800FD220();
 void func_8010044C(u_int*);
 
 extern char (*D_8010229C)[24];

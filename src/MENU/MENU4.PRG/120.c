@@ -6,6 +6,15 @@
 
 int func_80104514(int);
 
+typedef struct {
+    u_short unk0[8];
+    int unk10[8];
+    short unk30;
+    short unk32;
+    short unk34;
+    short unk36;
+} func_80102CAC_t;
+
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
@@ -23,7 +32,25 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102A64);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102B70);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102CAC);
+void func_80102CAC(func_80102CAC_t* arg0)
+{
+    int i;
+    u_short* temp_v0;
+
+    D_80102545 = 32;
+    func_800FD220();
+
+    if (arg0->unk0[0] != 0) {
+        for (i = 0; i < 16; ++i) {
+            temp_v0 = arg0->unk0 + (i & 7);
+            D_801024C0[i] = temp_v0[32];
+            D_801024C0[i + 16] = temp_v0[40];
+            D_801024C0[i + 32] = temp_v0[28];
+        }
+        func_800FBD28(arg0->unk30, arg0->unk32, arg0->unk34, 2);
+    }
+    func_800FBB8C(7);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102D64);
 
@@ -133,7 +160,25 @@ void func_80103A6C(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103AC8);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103E58);
+void func_80103E58(int arg0, int arg1, int arg2)
+{
+    u_int temp_v0;
+    u_long* temp_a0;
+    u_long* temp_t1;
+
+    temp_t1 = D_1F800000[2];
+    temp_a0 = D_1F800000[0];
+    temp_v0 = D_800EBC54[arg0] >> arg2;
+    temp_a0[0] = (*temp_t1 & 0xFFFFFF) | 0x06000000;
+    temp_a0[1] = temp_v0 | 0x60000000;
+    temp_a0[2] = arg1;
+    temp_a0[3] = 0x70007;
+    temp_a0[4] = (temp_v0 * 2) | 0x60000000;
+    temp_a0[5] = arg1 + 0x10001;
+    temp_a0[6] = 0x50005;
+    *temp_t1 = ((u_long)temp_a0 << 8) >> 8;
+    D_1F800000[0] = temp_a0 + 7;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103EF8);
 

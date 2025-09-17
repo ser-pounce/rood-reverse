@@ -122,6 +122,7 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102F64);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103080);
 
+void func_80103118(char*, int*, int*);
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103118);
 
 INCLUDE_RODATA("build/src/MENU/MENU4.PRG/nonmatchings/120", D_80102800);

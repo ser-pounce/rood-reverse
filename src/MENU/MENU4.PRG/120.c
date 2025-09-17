@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
@@ -135,7 +136,18 @@ void func_80103608(int arg0)
     D_801080BB = arg0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103688);
+int func_80103688(int arg0, int arg1) {
+    int temp_a0;
+
+    while(1) {
+        arg0 = (arg0 + arg1) % 15;
+        temp_a0 = func_800A0BE0(arg0);
+        if ((D_800F1928[arg0] != 0) && (D_800F1928[arg0]->unk1C < 5) && (temp_a0 & 0x01000001) == 1) {
+            break;
+        }
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103744);
 

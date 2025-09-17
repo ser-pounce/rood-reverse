@@ -36,6 +36,7 @@ static u_short _statusStrings[] = {
 };
 
 extern int D_801080A8;
+extern int D_801080B0;
 extern char D_801080B8;
 extern char D_801080BA;
 extern char D_801080BB;
@@ -300,7 +301,37 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104F80);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105970);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105E94);
+void func_80105E94(void) {
+    int var_a2;
+    u_long* temp_a1;
+    u_long* temp_t1;
+
+    temp_a1 = D_1F800000[0];
+    temp_t1 = D_1F800000[1];
+    if (D_801080B0 != 0) {
+        temp_a1[0] = ((temp_t1[-1] & 0xFFFFFF) | 0x0D000000);
+        temp_a1[1] = 0xE1000000;
+        temp_a1[2] = 0x3C000000;
+        temp_a1[3] = 0;
+        temp_a1[4] = 0;
+        temp_a1[5] = 0x808080;
+        temp_a1[6] = 0x60;
+        
+        var_a2 = 0x01000060;
+        if (vs_main_frameBuf == 0) {
+            var_a2 = 0x01050000 | 0x60;
+        }
+        temp_a1[7] = var_a2;
+        temp_a1[8] = 0;
+        temp_a1[9] = 0xF00000;
+        temp_a1[10] = 0xF000;
+        temp_a1[11] = 0x808080;
+        temp_a1[12] = 0xF00060;
+        temp_a1[13] = 0xF060;
+        temp_t1[-1] = (((u_long) temp_a1 << 8) >> 8);
+        D_1F800000[0] = temp_a1 + 14;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105F60);
 

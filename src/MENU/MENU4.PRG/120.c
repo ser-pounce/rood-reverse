@@ -68,13 +68,8 @@ void func_80102CAC(func_80102CAC_t* arg0)
 
 void func_80102D64(u_short* arg0)
 {
-    short* temp_a0;
-    short* var_a2;
     int i;
-    int var_a3;
-    char temp_v0;
     func_80102D64_t* temp_s0;
-    char* temp_v1;
 
     temp_s0 = (func_80102D64_t*)(arg0 + 12);
     D_80102545 = 2;

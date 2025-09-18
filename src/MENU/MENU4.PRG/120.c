@@ -147,7 +147,55 @@ int func_801033D4(u_short* arg0)
     return sp10[1];
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010341C);
+extern char D_801024B9;
+
+int func_8010341C(int arg0, int arg1) {
+    int ret;
+    int v0;
+    int v1;
+
+    ret = 0;
+    switch (arg0) {
+    case 0:
+        ret = (arg1 >> 5) & 1;
+        break;
+    case 1:
+        ret = (arg1 >> 6) & 1;
+        break;
+    case 5:
+    case 6:
+    case 7:
+        ret = D_801024B9 != 2;
+        break;
+    case 8:
+        ret = D_801024B9 == 1;
+        break;
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+        v1 = arg0 - 9;
+        v0 = arg1 & 0xF;
+        ret = (v0 < v1) ^ 1;
+        break;
+    case 16:
+    case 17:
+        ret = (arg1 >> 4) & 1;
+        break;
+    case 2:
+    case 3:
+    case 4:
+    case 18:
+    case 19:
+    case 20:
+        ret = 1;
+        break;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801034BC);
 

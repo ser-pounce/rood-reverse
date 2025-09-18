@@ -43,22 +43,23 @@ table = [
     '', '', '', '', '', '', '▼', '\0',      # 0xE0
     '\n', '', '', '', '', '', '', '239', #
     '', '', '', '', '', '', '|x', '',         # 0xF0
-    '|!', '', '|>', '|F', '', '', '', '|$',
+    '|!', '', '|>', '|F', '', '', '|#', '|$',
 ]
 
 # This isn't the only encoding used in the game, occasionally
-# ASCII can be found, where digits are seemingly prefixed with #
+# ASCII can be found, where digits are seemingly prefixed with '#'
 
-# Upon decoding, functions are denoted by enclosing within ||, 
+# Inline functions are denoted by enclosing the op and operand(s) with ||, 
 # as it's the only common symbol not represented in the default text table.
 
-# String functions, 1-byte argument
+# String functions, 1-byte operand
 # 0xF6 -> |xn|: No known function currently, possibly debug
-# 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string
+# 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string before returning
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
 # 0xFB -> |Fn|: Manipulate font table. n = 0-3 sets the color, n = 4 justifies the text,
 #               n = 5 or 6 set font table 1 and 0 respectively.
-# 0xFF -> |$n|: Inserts a previously stored string with ID n
+# 0xFE -> |#n|: Inserts a contextual integer with ID n
+# 0xFF -> |$n|: Inserts a contextual string with ID n
 
 def decode(s):
     result = ""
@@ -69,7 +70,7 @@ def decode(s):
                 return result
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
-            case 0xF6 | 0xF8 | 0xFA | 0xFB | 0xFF:
+            case 0xF6 | 0xF8 | 0xFA | 0xFB | 0xFE | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:

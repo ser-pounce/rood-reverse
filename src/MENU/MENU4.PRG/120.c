@@ -149,7 +149,8 @@ int func_801033D4(u_short* arg0)
 
 extern char D_801024B9;
 
-int func_8010341C(int arg0, int arg1) {
+int func_8010341C(int arg0, int arg1)
+{
     int ret;
     int v0;
     int v1;
@@ -292,7 +293,42 @@ void func_80103E58(int arg0, int arg1, int arg2)
     D_1F800000[0] = temp_a0 + 7;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103EF8);
+void func_80103EF8(int arg0, int arg1, int arg2, int arg3)
+{
+    int temp_t2;
+    int temp_v0;
+    u_long* temp_a2;
+    u_long* temp_t0;
+    int t4;
+
+    arg3 = (0x687018 << arg3) | ((0x21 - arg3) << 0x19);
+    temp_t2 = (arg0 * 0x10) + 0x2A;
+    arg0 = ((arg1 >> 0x10) - temp_t2);
+
+    temp_a2 = D_1F800000[0];
+    temp_t0 = D_1F800000[1];
+
+    t4 = (short)arg1;
+
+    if (arg0 < 0) {
+        arg0 = -arg0;
+    }
+    arg0 = (arg0 * 3) >> 1;
+
+    temp_a2[0] = (temp_t0[-1] & 0xFFFFFF) | 0x08000000;
+    temp_a2[1] = 0xE1000000;
+    temp_a2[2] = arg3;
+    temp_a2[3] = arg1;
+    temp_v0 = ((t4 + ((arg0 * 2) / 3)) & 0xFFFF) | (temp_t2 << 0x10);
+    temp_a2[4] = temp_v0;
+    temp_a2[5] = (temp_t0[-1] & 0xFFFFFF) | 0x03000000;
+    temp_a2[6] = arg3;
+    temp_a2[7] = temp_v0;
+    temp_a2[8] = (temp_t2 << 0x10) | 0xD8;
+    temp_t0[-1] = (((u_long)temp_a2 << 8) >> 8);
+    temp_a2 += 9;
+    D_1F800000[0] = temp_a2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103FEC);
 

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
@@ -198,7 +199,49 @@ int func_8010341C(int arg0, int arg1)
     return ret;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801034BC);
+extern char D_8010214C[];
+
+int func_801034BC(int arg0, int arg1)
+{
+    int var_s1;
+    int var_s2;
+
+    var_s1 = 0;
+    var_s2 = arg0;
+    if (vs_main_buttonRepeat & 0x1000) {
+        var_s1 = 1;
+    } else if (vs_main_buttonRepeat & 0x4000) {
+        var_s1 = 2;
+    } else if (vs_main_buttonRepeat & 0x8000) {
+        var_s1 = 3;
+    } else if (vs_main_buttonRepeat & 0x2000) {
+        var_s1 = 4;
+    }
+    if (var_s1 != 0) {
+        arg0 = D_8010214C[var_s1 - 1 + var_s2 * 4];
+    }
+
+    while (1) {
+        if (func_8010341C(arg0, arg1) != 0) {
+            break;
+        }
+        if (var_s2 == arg0) {
+            if ((u_int)(arg0 - 2) < 0xE) {
+                do {
+                    --arg0;
+                } while (func_8010341C(arg0, arg1) == 0);
+                return arg0;
+            }
+            do {
+                ++arg0;
+            } while (func_8010341C(arg0, arg1) == 0);
+            return arg0;
+        }
+        var_s2 = arg0;
+        arg0 = D_8010214C[var_s1 - 1 + var_s2 * 4];
+    }
+    return arg0;
+}
 
 void func_80103608(int arg0)
 {

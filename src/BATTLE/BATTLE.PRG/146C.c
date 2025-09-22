@@ -1208,7 +1208,7 @@ u_int func_8007CF18(int arg0)
     return 1;
 }
 
-D_800F1928_t* func_8007CF64(int arg0) { return D_800F1928[arg0]; }
+vs_battle_equipment_t* func_8007CF64(int arg0) { return D_800F1928[arg0]; }
 
 u_int func_8007CF80(int arg0)
 {

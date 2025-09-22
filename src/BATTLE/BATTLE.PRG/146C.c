@@ -1551,13 +1551,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083430);
 short func_800834A4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
-    return D_800F1928[*arg2]->unk3C->unk1A - D_800F1928[*arg2]->unk3C->unk18;
+    return D_800F1928[*arg2]->unk3C->maxHP - D_800F1928[*arg2]->unk3C->currentHP;
 }
 
 short func_800834E4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
-    return D_800F1928[*arg2]->unk3C->unk1E - D_800F1928[*arg2]->unk3C->currentMp;
+    return D_800F1928[*arg2]->unk3C->maxMP - D_800F1928[*arg2]->unk3C->currentMp;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);

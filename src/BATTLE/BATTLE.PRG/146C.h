@@ -44,10 +44,10 @@ typedef struct {
     short unk12;
     short unk14;
     short unk16;
-    short unk18;
-    short unk1A;
+    short currentHP;
+    short maxHP;
     short currentMp;
-    short unk1E;
+    short maxMP;
     short unk20;
     short unk22;
     short unk24;

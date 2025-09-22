@@ -56,6 +56,7 @@ void func_8010044C(u_int*);
 extern char (*D_8010229C)[24];
 extern D_8010245C_t* D_8010245C;
 extern short D_801024C0[];
+extern u_short* D_80102540;
 extern char D_80102544;
 extern char D_80102545;
 extern char D_80102578;

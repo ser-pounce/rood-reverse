@@ -156,8 +156,11 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102F64);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103080);
 
-void func_80103118(char*, int*, int*);
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103118);
+void func_80103118(u_short* arg0, D_800F4E8C_t** arg1)
+{
+    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[*arg0 - 0x8C], 0x60);
+    arg1[1] = D_800F4E8C;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU4.PRG/nonmatchings/120", D_80102800);
 
@@ -554,7 +557,6 @@ int vs_menu4_Exec(char* state)
     int var_s5;
     int var_s6;
     D_801081B8_t* var_a0;
-    int temp_s0;
     int selectedRow;
     int new_var2;
 

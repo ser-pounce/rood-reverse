@@ -1391,7 +1391,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F434);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F4B0);
 
-int func_8007F518(u_char* arg0) { return D_800F1928[*arg0]->unk3C->unk43 & 7; }
+int func_8007F518(u_char* arg0) { return D_800F1928[*arg0]->unk3C->unk37 & 7; }
 
 int func_8007F548(void) { return 0; }
 
@@ -1557,7 +1557,7 @@ short func_800834A4(
 short func_800834E4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
-    return D_800F1928[*arg2]->unk3C->unk1E - D_800F1928[*arg2]->unk3C->unk1C;
+    return D_800F1928[*arg2]->unk3C->unk1E - D_800F1928[*arg2]->unk3C->currentMp;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);

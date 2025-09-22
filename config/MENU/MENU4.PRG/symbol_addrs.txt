@@ -1,1 +1,2 @@
 _statusStrings = 0x80107448;
+animWait = 0x8010812C;

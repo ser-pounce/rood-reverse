@@ -46,7 +46,7 @@ typedef struct {
     short unk16;
     short currentHP;
     short maxHP;
-    short currentMp;
+    short currentMP;
     short maxMP;
     short unk20;
     short unk22;

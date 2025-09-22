@@ -1557,7 +1557,7 @@ short func_800834A4(
 short func_800834E4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
-    return D_800F1928[*arg2]->unk3C->maxMP - D_800F1928[*arg2]->unk3C->currentMp;
+    return D_800F1928[*arg2]->unk3C->maxMP - D_800F1928[*arg2]->unk3C->currentMP;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);

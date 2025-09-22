@@ -7,6 +7,8 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/58578.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../assets/MENU/MENU4.PRG/status.h"
+#include <libetc.h>
 
 int func_80103744(int);
 void func_80103AC8();
@@ -527,8 +529,17 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801063F8);
 
-int func_801064D4(char* arg0)
+int vs_menu4_Exec(char* state)
 {
+    enum state {
+        none,
+        init = 3,
+        waitQuitToMenu = 11,
+        quitToMenu,
+        waitQuitToBattle,
+        quitToBattle
+    };
+
     int temp_v0_2;
     int var_s2;
     int var_s5;
@@ -542,45 +553,46 @@ int func_801064D4(char* arg0)
     var_s5 = 0;
     var_s6 = 0;
 
-    switch (*arg0) {
-    case 3:
+    switch (*state) {
+    case init:
         D_80108130 = 0;
-        D_801081EC = 0xA;
+        D_801081EC = 10;
         if (D_8010229C == 0) {
             func_800FE5CC(1);
         }
-        if (vs_mainmenu_ready() != 0) {
-            D_800EB9AE = 1;
-            func_8008A4DC(0);
-            func_80100414(0x7FE, 0x80);
-            D_801080AC = 0;
-            D_801080B0 = 0;
-            D_801080A8 = 0;
-            D_801080A4 = 0;
-            D_801080B8 = 0;
-            D_801080B9 = 0;
-            D_801080BB = 0;
-            func_80103744(1);
-            D_80108130 = 1;
-            D_8010812C = 1;
-            D_80108188 = D_8005E248;
-            func_8007CCF0(0x200);
-            new_var2 = 13;
-            var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);
-            D_80108198 = *(D_80108198_t*)&D_1F800000[5];
-            D_801081B8 = *var_a0;
-            D_1F800000[25] = (u_long*)0x1000;
-            D_1F800000[21] = 0;
-            D_1F800000[22] = 0;
-            D_1F800000[23] = 0;
-            D_8010809C = 0xB00;
-            D_801080A0 = 0;
-            func_800FFBC8();
-            D_801081ED = 0;
-            D_80102544 = 0;
-            func_80106308();
-            *arg0 = 5;
+        if (vs_mainmenu_ready() == 0) {
+            break;
         }
+        D_800EB9AE = 1;
+        func_8008A4DC(0);
+        func_80100414(0x7FE, 0x80);
+        D_801080AC = 0;
+        D_801080B0 = 0;
+        D_801080A8 = 0;
+        D_801080A4 = 0;
+        D_801080B8 = 0;
+        D_801080B9 = 0;
+        D_801080BB = 0;
+        func_80103744(1);
+        D_80108130 = 1;
+        D_8010812C = 1;
+        D_80108188 = D_8005E248;
+        func_8007CCF0(0x200);
+        new_var2 = 13;
+        var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);
+        D_80108198 = *(D_80108198_t*)&D_1F800000[5];
+        D_801081B8 = *var_a0;
+        D_1F800000[25] = (u_long*)0x1000;
+        D_1F800000[21] = 0;
+        D_1F800000[22] = 0;
+        D_1F800000[23] = 0;
+        D_8010809C = 0xB00;
+        D_801080A0 = 0;
+        func_800FFBC8();
+        D_801081ED = 0;
+        D_80102544 = 0;
+        func_80106308();
+        *state = 5;
         break;
     case 4:
         if (D_8010812C != 0) {
@@ -589,7 +601,7 @@ int func_801064D4(char* arg0)
             func_800FBEA4(1);
         } else {
             func_80106308();
-            *arg0 = 5;
+            *state = 5;
         }
         break;
     case 5:
@@ -603,7 +615,7 @@ int func_801064D4(char* arg0)
                 func_801045B8(-1);
                 func_800FBEA4(1);
                 temp_s1 = D_801081ED;
-                if (temp_s1 < 6) {
+                if (temp_s1 < VS_status_INDEX_statDesc) {
                     var_s2 = func_80104514(D_801080A8 - 1) - 1;
                     if (var_s2 < temp_s1) {
                         D_801081ED = var_s2;
@@ -611,27 +623,27 @@ int func_801064D4(char* arg0)
                     func_80106308();
                 } else {
                     vs_mainmenu_setMessage(
-                        (char*)&_statusStrings[_statusStrings[temp_s1 - 6]]);
+                        (char*)&_statusStrings[_statusStrings[temp_s1 - VS_status_INDEX_statDesc]]);
                 }
             }
         } else if (func_800FE5CC(0) != 0) {
             if (func_801045B8(-3) == 2) {
-                if (vs_main_buttonsPressed.all & 0x10) {
+                if (vs_main_buttonsPressed.all & PADRup) {
                     vs_battle_playMenuLeaveSfx();
-                    *arg0 = 0xD;
+                    *state = waitQuitToBattle;
                     break;
-                } else if (vs_main_buttonsPressed.all & 0x40) {
+                } else if (vs_main_buttonsPressed.all & PADRdown) {
                     vs_battle_playMenuLeaveSfx();
-                    *arg0 = 0xB;
+                    *state = waitQuitToMenu;
                     break;
-                } else if ((vs_main_buttonsPressed.all & 0x20)
+                } else if ((vs_main_buttonsPressed.all & PADRright)
                     && (temp_s0 = D_801081ED,
                         (((int)temp_s0 < func_80104514(D_801080A8 - 1)) != 0))) {
                     vs_battle_playMenuSelectSfx();
                     func_800FBEA4(2);
                     func_801045B8(-2);
                     D_8010812C = 8;
-                    *arg0 = 7;
+                    *state = 7;
                     break;
                 }
                 var_s6 = 0;
@@ -639,14 +651,14 @@ int func_801064D4(char* arg0)
                     temp_s0_2 = D_801081ED;
                     var_s6 = (int)temp_s0_2 < func_80104514(D_801080A8 - 1);
                 }
-                if (vs_main_buttonsPressed.all & 0x80) {
+                if (vs_main_buttonsPressed.all & PADRleft) {
                     if (var_s6 != 0) {
                         vs_battle_playMenuSelectSfx();
                         func_801063F8();
                         func_800FBBD4(6);
                         D_801081EE = 0;
-                        D_8010812C = 0xA;
-                        *arg0 = 9;
+                        D_8010812C = 10;
+                        *state = 9;
                         break;
                     }
                     func_800C02E0();
@@ -656,17 +668,17 @@ int func_801064D4(char* arg0)
                     var_s2 = func_800C4708(vs_main_stickPosBuf.rStickY);
                     if (temp_s1 == 0) {
                         if (var_s2 == 0) {
-                            if (vs_main_buttonsState & 0x1000) {
-                                var_s2 = -0x40;
+                            if (vs_main_buttonsState & PADLup) {
+                                var_s2 = -64;
                             }
-                            if (vs_main_buttonsState & 0x4000) {
-                                var_s2 = 0x40;
+                            if (vs_main_buttonsState & PADLdown) {
+                                var_s2 = 64;
                             }
-                            if (vs_main_buttonsState & 0x8000) {
-                                temp_s1 = -0x40;
+                            if (vs_main_buttonsState & PADLleft) {
+                                temp_s1 = -64;
                             }
-                            if (vs_main_buttonsState & 0x2000) {
-                                temp_s1 = 0x40;
+                            if (vs_main_buttonsState & PADLright) {
+                                temp_s1 = 64;
                             }
                         }
                     }
@@ -676,30 +688,30 @@ int func_801064D4(char* arg0)
                     if (D_801080A0 < 0) {
                         D_801080A0 = 0;
                     }
-                    if (D_801080A0 >= 0x381) {
-                        D_801080A0 = 0x380;
+                    if (D_801080A0 > 896) {
+                        D_801080A0 = 896;
                     }
                 } else {
                     temp_s1 = D_801081ED;
                     var_s2 = D_801080FC[temp_s1];
-                    if (vs_main_buttonRepeat & 0x1000) {
+                    if (vs_main_buttonRepeat & PADLup) {
                         temp_s1 = var_s2;
-                    } else if (vs_main_buttonRepeat & 0x4000) {
+                    } else if (vs_main_buttonRepeat & PADLdown) {
                         temp_s1 = var_s2 >> 8;
-                    } else if (vs_main_buttonRepeat & 0x8000) {
-                        temp_s1 = var_s2 >> 0x10;
+                    } else if (vs_main_buttonRepeat & PADLleft) {
+                        temp_s1 = var_s2 >> 16;
                     } else {
                         temp_s1 = D_801081ED;
-                        if (vs_main_buttonRepeat & 0x2000) {
-                            temp_s1 = var_s2 >> 0x18;
+                        if (vs_main_buttonRepeat & PADLright) {
+                            temp_s1 = var_s2 >> 24;
                         }
                     }
                     temp_s1 &= 0xFF;
                     func_801045B8(7);
-                    if (temp_s1 == 0xD) {
+                    if (temp_s1 == 13) {
                         if (func_80104134(D_800F1928[D_801080A8 - 1]->unk3C, 1) == 0) {
                             vs_battle_playMenuChangeSfx();
-                            *arg0 = 6;
+                            *state = 6;
                             break;
                         }
                         temp_s1 = D_801081ED;
@@ -710,9 +722,9 @@ int func_801064D4(char* arg0)
                             func_801045B8(temp_s1 + 1);
                         } else {
                             temp_s1 = 6;
-                            if (!(vs_main_buttonRepeat & 0x4000)) {
+                            if (!(vs_main_buttonRepeat & PADLdown)) {
                                 temp_s1 = var_s2 - 1;
-                                if (!(vs_main_buttonRepeat & 0x1000)) {
+                                if (!(vs_main_buttonRepeat & PADLup)) {
                                     D_801081ED = temp_s1;
                                 }
                             }
@@ -722,7 +734,7 @@ int func_801064D4(char* arg0)
                     D_80108134 = func_800FFCDC(D_80108134, *((temp_s1) + D_801080C8));
                     if (temp_s1 != D_801081ED) {
                         vs_battle_playMenuChangeSfx();
-                        if (temp_s1 != 0xD) {
+                        if (temp_s1 != 13) {
                             D_801081ED = temp_s1;
                         }
                     }
@@ -730,17 +742,17 @@ int func_801064D4(char* arg0)
                         func_80106308();
                     } else {
                         vs_mainmenu_setMessage(
-                            (char*)&_statusStrings[_statusStrings[temp_s1 - 6]]);
+                            (char*)&_statusStrings[_statusStrings[temp_s1 - VS_status_INDEX_statDesc]]);
                     }
                 }
             }
             temp_s1 = D_801080A8 - 1;
-            if (vs_main_buttonsPressed.all & 8) {
+            if (vs_main_buttonsPressed.all & PADR1) {
                 temp_s1 = func_80103688(temp_s1, 1);
-                var_s2 = 0x11;
+                var_s2 = 17;
             }
-            if (vs_main_buttonsPressed.all & 4) {
-                temp_s1 = func_80103688(temp_s1, 0xE);
+            if (vs_main_buttonsPressed.all & PADL1) {
+                temp_s1 = func_80103688(temp_s1, 14);
                 var_s2 = 1;
             }
             if (temp_s1 != (D_801080A8 - 1)) {
@@ -773,15 +785,15 @@ int func_801064D4(char* arg0)
                 if (temp_s1 != 0) {
                     switch (temp_s1) {
                     case 1:
-                        *arg0 = 5;
+                        *state = 5;
                         break;
                     case 2:
                         vs_battle_playMenuLeaveSfx();
-                        *arg0 = 0xD;
+                        *state = 13;
                         break;
                     case 3:
                         vs_battle_playMenuLeaveSfx();
-                        *arg0 = 0xB;
+                        *state = 11;
                         break;
                     }
                 }
@@ -789,7 +801,7 @@ int func_801064D4(char* arg0)
             temp_s1 = D_801080A8 - 1;
             if (vs_main_buttonsPressed.all & 8) {
                 temp_s1 = func_80103688(temp_s1, 1);
-                var_s2 = 0x11;
+                var_s2 = 17;
             }
             if (vs_main_buttonsPressed.all & 4) {
                 temp_s1 = func_80103688(temp_s1, 0xE);
@@ -803,7 +815,7 @@ int func_801064D4(char* arg0)
                 func_80103744(temp_s1 + var_s2);
                 D_8010812C = 1;
                 if (func_800C9E08(D_800F1928[temp_s1]->unk3C) == 0) {
-                    *arg0 = 5;
+                    *state = 5;
                 }
             }
         }
@@ -811,7 +823,7 @@ int func_801064D4(char* arg0)
     case 7:
         if (D_8010812C == 0) {
             func_80105970(D_801081ED + 1);
-            *arg0 = 8;
+            *state = 8;
         } else {
             --D_8010812C;
         }
@@ -821,24 +833,24 @@ int func_801064D4(char* arg0)
         if (temp_s1 != 0) {
             if (temp_s1 != -2) {
                 D_8010812C = 8;
-                *arg0 = 4;
+                *state = 4;
             } else {
-                *arg0 = 0xD;
+                *state = 13;
             }
         }
         break;
     case 9:
         if (D_8010812C != 0) {
-            D_801080B4 = 0x80 - vs_battle_rowAnimationSteps[--D_8010812C];
+            D_801080B4 = 128 - vs_battle_rowAnimationSteps[--D_8010812C];
         } else if (vs_main_buttonsPressed.all & 0x50) {
             vs_battle_playMenuLeaveSfx();
             func_800FBBD4(-1);
             if (vs_main_buttonsPressed.all & 0x10) {
-                *arg0 = 0xD;
+                *state = 0xD;
                 break;
             }
             D_8010812C = 0xA;
-            *arg0 = 0xA;
+            *state = 0xA;
         } else {
             if ((vs_main_buttonsState & 0xC) != 0xC) {
                 temp_s1 = D_801081ED;
@@ -890,11 +902,11 @@ int func_801064D4(char* arg0)
             D_801080B4 = (int)vs_battle_rowAnimationSteps[--D_8010812C];
         } else {
             func_801045B8(D_801081ED + 1);
-            *arg0 = 5;
+            *state = 5;
         }
         break;
-    case 11:
-    case 13:
+    case waitQuitToMenu:
+    case waitQuitToBattle:
         func_800FBEA4(2);
         func_801045B8(-2);
         func_801045B8(0);
@@ -913,22 +925,22 @@ int func_801064D4(char* arg0)
         D_800EB9AE = 0;
         D_8010812C = 8;
         D_80108130 = 0;
-        ++*arg0;
+        ++*state;
         break;
-    case 12:
+    case quitToMenu:
         func_801045B8(0);
         func_80103AC8();
         func_800FFB68(0);
         func_800FFBA8();
         if (D_8010812C <= 0) {
             if (func_800FE694() != 0) {
-                *arg0 = 0;
+                *state = 0;
                 return 1;
             }
         }
         --D_8010812C;
         break;
-    case 14:
+    case quitToBattle:
         func_801045B8(0);
         func_80103AC8();
         func_800FFB68(0);
@@ -936,7 +948,7 @@ int func_801064D4(char* arg0)
         if (D_8010812C <= 0) {
             if (func_800FE694() != 0) {
                 vs_battle_menuState.currentState = 5;
-                *arg0 = 0;
+                *state = 0;
                 return 1;
             }
         }

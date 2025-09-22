@@ -134,7 +134,7 @@ void func_80086754(int, vs_battle_equipment_t2*);
 void func_8008A6FC(void);
 int func_8008AB80(int);
 int func_8008ABB8(int);
-int func_8008574C(int, D_800F1964_t*, int);
+int func_8008574C(int, vs_battle_equipment_t2*, int);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
@@ -1950,7 +1950,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A4FC);
 
 int vs_battle_getSkillFlags(int arg0, int id)
 {
-    D_800F1964_t* temp_s1;
+    vs_battle_equipment_t2* temp_s1;
     int ret;
     vs_skill_t* skill = &vs_main_skills[id];
 

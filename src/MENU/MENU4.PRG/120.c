@@ -12,7 +12,7 @@
 
 int func_80103744(int);
 void func_80103AC8();
-int func_80104134(D_800F1964_t*, int);
+int func_80104134(vs_battle_equipment_t2*, int);
 int func_80104514(int);
 int func_801045B8(int);
 int func_80105970(int);

@@ -32,18 +32,51 @@ typedef struct {
 } vs_battle_equipment_t3;
 
 typedef struct {
-    short unk0[14];
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
     short currentMp;
-    short unk1E[15];
-    u_short unk3C[134];
+    short unk1E;
+    short unk20;
+    short unk22;
+    short unk24;
+    short unk26;
+    short unk28;
+    short unk2A;
+    short unk2C;
+    short unk2E;
+    short unk30;
+    short unk32;
+    short unk34;
+    char unk36;
+    char unk37;
+    int unk38;
+    u_short unk3C[128];
+    char unk13C;
+    u_char unk13D;
+    short unk13E;
+    int unk140;
+    int unk144;
     char unk148;
     u_char unk149;
     short unk14A;
     int unk14C[0x22];
     u_short unk1D4[0x6D];
     u_char unk2AE;
-    char unk2AF;
-    int unk2B0[34];
+    short unk2B0;
+    short unk2B2;
+    int unk2B4[33];
     u_short unk338;
     short unk33A;
     int unk33C[12];
@@ -55,7 +88,7 @@ typedef struct {
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];
-    u_short unk954;
+    int unk954;
 } vs_battle_equipment_t2;
 
 typedef struct {
@@ -72,46 +105,6 @@ typedef struct {
 } vs_battle_equipment_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    short unk18;
-    short unk1A;
-    short currentMp;
-    short unk1E;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    short unk34;
-    char unk36;
-    char unk37;
-    int unk38[65];
-    char unk13C;
-    u_char unk13D;
-    short unk13E;
-    int unk140[92];
-    short unk2B0;
-    short unk2B2;
-    int unk2B4[33];
-    u_short unk338;
-    short unk33A;
-    int unk33C[24];
-    short unk39C;
-    char unk39E;
-    char unk39F;
-    int unk3A0[362];
-    int unk948;
-    int unk94C;
-    int unk950;
-    int unk954;
-} D_800F1964_t;
-
-typedef struct {
     int unk0[2];
     int unk8;
     int unkC;
@@ -126,7 +119,7 @@ typedef struct {
     signed char unk26;
     signed char unk27;
     int unk28[5];
-    D_800F1964_t* unk3C;
+    vs_battle_equipment_t2* unk3C;
     int unk40;
     int unk44;
 } D_800F1928_t;

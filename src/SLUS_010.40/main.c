@@ -8422,17 +8422,17 @@ void func_80042CB0()
     }
     temp_t0 = vs_battle_characterState->unk3C;
     temp_t5 = &D_80060068;
-    temp_t5->unk0.currentHP = temp_t0->unk0[12];
-    temp_t5->unk0.maxHP = temp_t0->unk0[13];
-    temp_t5->unk0.currentMP = temp_t0->unk0[14];
-    temp_t5->unk0.maxMP = temp_t0->unk0[15];
-    temp_t5->unk0.unkC = temp_t0->unk0[17];
-    temp_t5->unk0.unkE = temp_t0->unk0[18];
-    temp_t5->unk0.unk10 = temp_t0->unk0[19];
-    temp_t5->unk0.unk12 = temp_t0->unk0[20];
-    temp_t5->unk0.unk14 = temp_t0->unk0[21];
-    temp_t5->unk0.unk16 = temp_t0->unk0[22];
-    temp_t5->unk0.unk18 = temp_t0->unk0[16];
+    temp_t5->unk0.currentHP = temp_t0->unk18;
+    temp_t5->unk0.maxHP = temp_t0->unk1A;
+    temp_t5->unk0.currentMP = temp_t0->currentMp;
+    temp_t5->unk0.maxMP = temp_t0->unk1E;
+    temp_t5->unk0.unkC = temp_t0->unk22;
+    temp_t5->unk0.unkE = temp_t0->unk24;
+    temp_t5->unk0.unk10 = temp_t0->unk26;
+    temp_t5->unk0.unk12 = temp_t0->unk28;
+    temp_t5->unk0.unk14 = temp_t0->unk2A;
+    temp_t5->unk0.unk16 = temp_t0->unk2C;
+    temp_t5->unk0.unk18 = temp_t0->unk20;
     temp_t5->unk0.unk1A = temp_t0->unk954;
     temp_t5->unk0.unk1C = temp_t0->unk948;
 

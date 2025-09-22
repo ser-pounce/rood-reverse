@@ -114,13 +114,6 @@ typedef struct {
     int framesSinceLastRead;
 } vs_main_disk_t;
 
-typedef struct {
-    int lStickX;
-    int lStickY;
-    int rStickX;
-    int rStickY;
-} vs_main_stickPos;
-
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, char[34]);
@@ -8016,7 +8009,6 @@ extern int D_8005FE84;
 extern char vs_main_vibrationEnabled;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
-extern vs_main_stickPos vs_main_stickPosBuf;
 
 static void _loadBattlePrg()
 {

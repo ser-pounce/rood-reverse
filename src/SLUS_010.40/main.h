@@ -207,6 +207,13 @@ typedef struct {
     char unk3;
 } D_8005DC6C_t;
 
+typedef struct {
+    int lStickX;
+    int lStickY;
+    int rStickX;
+    int rStickY;
+} vs_main_stickPos;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];
@@ -258,6 +265,7 @@ extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];
 extern vs_main_flags_t vs_main_stateFlags;
 extern D_800619D8_t D_800619D8;
+extern vs_main_stickPos vs_main_stickPosBuf;
 
 int vs_main_gametimeUpdate(int vsync);
 void vs_main_jumpToBattle(void);

@@ -1,5 +1,6 @@
 #pragma once
 #include "../SLUS_010.40/main.h"
+#include "146C.h"
 
 enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_solidShock = 0x61,
@@ -92,6 +93,7 @@ int func_800C930C(int);
 void func_800C97BC(void);
 void func_800C9950(int, int, int, u_int*);
 void func_800C99DC(int, int, u_long*);
+int func_800C9E08(D_800F1964_t*);
 int func_800CABE0(int);
 int func_800CAEAC(int);
 int vs_battle_abilitiesUnlocked(int);
@@ -117,6 +119,7 @@ void func_800CF830(int, int);
 void func_800CF920(void);
 
 extern u_short vs_battle_menuStrings[];
+extern char D_800EB9AE;
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];

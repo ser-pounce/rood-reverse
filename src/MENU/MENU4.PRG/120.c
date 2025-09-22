@@ -1,12 +1,22 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../MAINMENU.PRG/278.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
+#include "../../BATTLE/BATTLE.PRG/58578.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+int func_80103744(int);
+void func_80103AC8();
+int func_80104134(D_800F1964_t*, int);
 int func_80104514(int);
+int func_801045B8(int);
+int func_80105970(int);
+void func_80106150(void);
+void func_80106308();
+void func_801063F8();
 
 typedef struct {
     u_short unk0[8];
@@ -30,17 +40,42 @@ typedef struct {
     char unk18;
 } func_80102D64_t;
 
+typedef struct {
+    int unk0[8];
+} D_80108198_t;
+extern D_80108198_t D_80108198;
+
+typedef struct {
+    int unk0[13];
+} D_801081B8_t;
+
+extern int D_8010809C;
+extern int D_801080A0;
+extern int D_801080A4;
+extern int D_801080A8;
+extern int D_801080AC;
+extern int D_801080B0;
+extern int D_801080B4;
+extern char D_801080B8;
+extern char D_801080B9;
+extern char D_801080BA;
+extern char D_801080BB;
+extern int D_801080C8[];
+extern int D_801080FC[];
+extern int D_8010812C;
+extern int D_80108130;
+extern int D_80108134;
+extern int D_80108188;
+extern D_801081B8_t D_801081B8;
+extern u_char D_801081EC;
+extern u_char D_801081ED;
+extern char D_801081EE;
+
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
-
-extern int D_801080A8;
-extern int D_801080B0;
-extern char D_801080B8;
-extern char D_801080BA;
-extern char D_801080BB;
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
@@ -492,4 +527,439 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801063F8);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801064D4);
+int func_801064D4(char* arg0)
+{
+    int temp_v0_2;
+    int var_s2;
+    int var_s5;
+    int var_s6;
+    D_801081B8_t* var_a0;
+    int temp_s0;
+    int temp_s0_2;
+    int temp_s1;
+    int new_var2;
+
+    var_s5 = 0;
+    var_s6 = 0;
+
+    switch (*arg0) {
+    case 3:
+        D_80108130 = 0;
+        D_801081EC = 0xA;
+        if (D_8010229C == 0) {
+            func_800FE5CC(1);
+        }
+        if (vs_mainmenu_ready() != 0) {
+            D_800EB9AE = 1;
+            func_8008A4DC(0);
+            func_80100414(0x7FE, 0x80);
+            D_801080AC = 0;
+            D_801080B0 = 0;
+            D_801080A8 = 0;
+            D_801080A4 = 0;
+            D_801080B8 = 0;
+            D_801080B9 = 0;
+            D_801080BB = 0;
+            func_80103744(1);
+            D_80108130 = 1;
+            D_8010812C = 1;
+            D_80108188 = D_8005E248;
+            func_8007CCF0(0x200);
+            new_var2 = 13;
+            var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);
+            D_80108198 = *(D_80108198_t*)&D_1F800000[5];
+            D_801081B8 = *var_a0;
+            D_1F800000[25] = (u_long*)0x1000;
+            D_1F800000[21] = 0;
+            D_1F800000[22] = 0;
+            D_1F800000[23] = 0;
+            D_8010809C = 0xB00;
+            D_801080A0 = 0;
+            func_800FFBC8();
+            D_801081ED = 0;
+            D_80102544 = 0;
+            func_80106308();
+            *arg0 = 5;
+        }
+        break;
+    case 4:
+        if (D_8010812C != 0) {
+            D_8010812C -= 1;
+            func_801045B8(-1);
+            func_800FBEA4(1);
+        } else {
+            func_80106308();
+            *arg0 = 5;
+        }
+        break;
+    case 5:
+        var_s5 = 0;
+        if ((D_801080A8 == 1) || (D_800F1928[D_801080A8 - 1]->unk3C->unk954 & 0x20000)) {
+            var_s5 = 1;
+        }
+        if (D_8010812C != 0) {
+            if (func_80103744(0) != 0) {
+                D_8010812C = 0;
+                func_801045B8(-1);
+                func_800FBEA4(1);
+                temp_s1 = D_801081ED;
+                if (temp_s1 < 6) {
+                    var_s2 = func_80104514(D_801080A8 - 1) - 1;
+                    if (var_s2 < temp_s1) {
+                        D_801081ED = var_s2;
+                    }
+                    func_80106308();
+                } else {
+                    vs_mainmenu_setMessage(
+                        (char*)&_statusStrings[_statusStrings[temp_s1 - 6]]);
+                }
+            }
+        } else if (func_800FE5CC(0) != 0) {
+            if (func_801045B8(-3) == 2) {
+                if (vs_main_buttonsPressed.all & 0x10) {
+                    vs_battle_playMenuLeaveSfx();
+                    *arg0 = 0xD;
+                    break;
+                } else if (vs_main_buttonsPressed.all & 0x40) {
+                    vs_battle_playMenuLeaveSfx();
+                    *arg0 = 0xB;
+                    break;
+                } else if ((vs_main_buttonsPressed.all & 0x20)
+                    && (temp_s0 = D_801081ED,
+                        (((int)temp_s0 < func_80104514(D_801080A8 - 1)) != 0))) {
+                    vs_battle_playMenuSelectSfx();
+                    func_800FBEA4(2);
+                    func_801045B8(-2);
+                    D_8010812C = 8;
+                    *arg0 = 7;
+                    break;
+                }
+                var_s6 = 0;
+                if (var_s5 != 0) {
+                    temp_s0_2 = D_801081ED;
+                    var_s6 = (int)temp_s0_2 < func_80104514(D_801080A8 - 1);
+                }
+                if (vs_main_buttonsPressed.all & 0x80) {
+                    if (var_s6 != 0) {
+                        vs_battle_playMenuSelectSfx();
+                        func_801063F8();
+                        func_800FBBD4(6);
+                        D_801081EE = 0;
+                        D_8010812C = 0xA;
+                        *arg0 = 9;
+                        break;
+                    }
+                    func_800C02E0();
+                }
+                if (vs_main_buttonsState & 1) {
+                    temp_s1 = func_800C4708(vs_main_stickPosBuf.rStickX);
+                    var_s2 = func_800C4708(vs_main_stickPosBuf.rStickY);
+                    if (temp_s1 == 0) {
+                        if (var_s2 == 0) {
+                            if (vs_main_buttonsState & 0x1000) {
+                                var_s2 = -0x40;
+                            }
+                            if (vs_main_buttonsState & 0x4000) {
+                                var_s2 = 0x40;
+                            }
+                            if (vs_main_buttonsState & 0x8000) {
+                                temp_s1 = -0x40;
+                            }
+                            if (vs_main_buttonsState & 0x2000) {
+                                temp_s1 = 0x40;
+                            }
+                        }
+                    }
+
+                    D_8010809C += temp_s1;
+                    D_801080A0 = D_801080A0 - var_s2;
+                    if (D_801080A0 < 0) {
+                        D_801080A0 = 0;
+                    }
+                    if (D_801080A0 >= 0x381) {
+                        D_801080A0 = 0x380;
+                    }
+                } else {
+                    temp_s1 = D_801081ED;
+                    var_s2 = D_801080FC[temp_s1];
+                    if (vs_main_buttonRepeat & 0x1000) {
+                        temp_s1 = var_s2;
+                    } else if (vs_main_buttonRepeat & 0x4000) {
+                        temp_s1 = var_s2 >> 8;
+                    } else if (vs_main_buttonRepeat & 0x8000) {
+                        temp_s1 = var_s2 >> 0x10;
+                    } else {
+                        temp_s1 = D_801081ED;
+                        if (vs_main_buttonRepeat & 0x2000) {
+                            temp_s1 = var_s2 >> 0x18;
+                        }
+                    }
+                    temp_s1 &= 0xFF;
+                    func_801045B8(7);
+                    if (temp_s1 == 0xD) {
+                        if (func_80104134(D_800F1928[D_801080A8 - 1]->unk3C, 1) == 0) {
+                            vs_battle_playMenuChangeSfx();
+                            *arg0 = 6;
+                            break;
+                        }
+                        temp_s1 = D_801081ED;
+                    }
+                    if (temp_s1 < 6) {
+                        var_s2 = func_80104514(D_801080A8 - 1);
+                        if (temp_s1 < var_s2) {
+                            func_801045B8(temp_s1 + 1);
+                        } else {
+                            temp_s1 = 6;
+                            if (!(vs_main_buttonRepeat & 0x4000)) {
+                                temp_s1 = var_s2 - 1;
+                                if (!(vs_main_buttonRepeat & 0x1000)) {
+                                    D_801081ED = temp_s1;
+                                }
+                            }
+                        }
+                    }
+                    D_801022D5 = (temp_s1 < func_80104514(D_801080A8 - 1)) ^ 1;
+                    D_80108134 = func_800FFCDC(D_80108134, *((temp_s1) + D_801080C8));
+                    if (temp_s1 != D_801081ED) {
+                        vs_battle_playMenuChangeSfx();
+                        if (temp_s1 != 0xD) {
+                            D_801081ED = temp_s1;
+                        }
+                    }
+                    if (temp_s1 < 6) {
+                        func_80106308();
+                    } else {
+                        vs_mainmenu_setMessage(
+                            (char*)&_statusStrings[_statusStrings[temp_s1 - 6]]);
+                    }
+                }
+            }
+            temp_s1 = D_801080A8 - 1;
+            if (vs_main_buttonsPressed.all & 8) {
+                temp_s1 = func_80103688(temp_s1, 1);
+                var_s2 = 0x11;
+            }
+            if (vs_main_buttonsPressed.all & 4) {
+                temp_s1 = func_80103688(temp_s1, 0xE);
+                var_s2 = 1;
+            }
+            if (temp_s1 != (D_801080A8 - 1)) {
+                D_801080A4 = D_801080A8;
+                func_801045B8(-2);
+                func_800FBEA4(2);
+                func_80103608(temp_s1);
+                func_80103744(temp_s1 + var_s2);
+                D_8010812C = 1;
+            }
+        }
+        D_801022D5 = (D_801081ED < func_80104514(D_801080A8 - 1)) ^ 1;
+        break;
+    case 6:
+        var_s5 = 0;
+        if ((D_801080A8 == 1) || (D_800F1928[D_801080A8 - 1]->unk3C->unk954 & 0x20000)) {
+            var_s5 = 1;
+        }
+        if (D_8010812C != 0) {
+            if (func_80103744(0) != 0) {
+                func_80104134(D_800F1928[D_801080A8 - 1]->unk3C, 0);
+                D_8010812C = 0;
+                func_801045B8(-1);
+                func_800FBEA4(1);
+            }
+        } else {
+            temp_v0_2 = func_801045B8(-3);
+            if (temp_v0_2 == 2) {
+                temp_s1 = func_80104134(0, 1);
+                if (temp_s1 != 0) {
+                    switch (temp_s1) {
+                    case 1:
+                        *arg0 = 5;
+                        break;
+                    case 2:
+                        vs_battle_playMenuLeaveSfx();
+                        *arg0 = 0xD;
+                        break;
+                    case 3:
+                        vs_battle_playMenuLeaveSfx();
+                        *arg0 = 0xB;
+                        break;
+                    }
+                }
+            }
+            temp_s1 = D_801080A8 - 1;
+            if (vs_main_buttonsPressed.all & 8) {
+                temp_s1 = func_80103688(temp_s1, 1);
+                var_s2 = 0x11;
+            }
+            if (vs_main_buttonsPressed.all & 4) {
+                temp_s1 = func_80103688(temp_s1, 0xE);
+                var_s2 = 1;
+            }
+            if (temp_s1 != (D_801080A8 - 1)) {
+                D_801080A4 = D_801080A8;
+                func_801045B8(-2);
+                func_800FBEA4(2);
+                func_80103608(temp_s1);
+                func_80103744(temp_s1 + var_s2);
+                D_8010812C = 1;
+                if (func_800C9E08(D_800F1928[temp_s1]->unk3C) == 0) {
+                    *arg0 = 5;
+                }
+            }
+        }
+        break;
+    case 7:
+        if (D_8010812C == 0) {
+            func_80105970(D_801081ED + 1);
+            *arg0 = 8;
+        } else {
+            --D_8010812C;
+        }
+        break;
+    case 8:
+        temp_s1 = func_80105970(0);
+        if (temp_s1 != 0) {
+            if (temp_s1 != -2) {
+                D_8010812C = 8;
+                *arg0 = 4;
+            } else {
+                *arg0 = 0xD;
+            }
+        }
+        break;
+    case 9:
+        if (D_8010812C != 0) {
+            D_801080B4 = 0x80 - vs_battle_rowAnimationSteps[--D_8010812C];
+        } else if (vs_main_buttonsPressed.all & 0x50) {
+            vs_battle_playMenuLeaveSfx();
+            func_800FBBD4(-1);
+            if (vs_main_buttonsPressed.all & 0x10) {
+                *arg0 = 0xD;
+                break;
+            }
+            D_8010812C = 0xA;
+            *arg0 = 0xA;
+        } else {
+            if ((vs_main_buttonsState & 0xC) != 0xC) {
+                temp_s1 = D_801081ED;
+                var_s2 = func_80104514(D_801080A8 - 1);
+                if (vs_main_buttonRepeat & 4) {
+                    char new_var = 1;
+                    temp_s1 = (temp_s1 - new_var) + var_s2;
+                }
+                if (vs_main_buttonRepeat & 8) {
+                    ++temp_s1;
+                }
+                if (temp_s1 >= var_s2) {
+                    temp_s1 -= var_s2;
+                }
+                if (temp_s1 != D_801081ED) {
+                    vs_battle_playMenuChangeSfx();
+                    D_801081ED = temp_s1;
+                    func_801063F8();
+                }
+            }
+            temp_s1 = D_801081EE;
+            var_s2 = 0xB - ((char)D_801024B9 * 4);
+            if (temp_s1 >= var_s2) {
+                temp_s1 = var_s2 - 1;
+            }
+            if (vs_main_buttonRepeat & 0x1000) {
+                char new_var = 1;
+                temp_s1 = (temp_s1 - new_var) + var_s2;
+            }
+            if (vs_main_buttonRepeat & 0x4000) {
+                ++temp_s1;
+            }
+            if (temp_s1 >= var_s2) {
+                temp_s1 -= var_s2;
+            }
+            if (temp_s1 != D_801081EE) {
+                vs_battle_playMenuChangeSfx();
+                D_801081EE = temp_s1;
+            }
+
+            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[temp_s1
+                + (var_s2 != 3 ? 0x32 : 0x39)]]);
+            D_80108134 = func_800FFCDC(D_80108134, ((temp_s1 * 0x10) + 0x32) << 0x10);
+        }
+        break;
+    case 10:
+        var_s5 = 1;
+        if (D_8010812C != 0) {
+            D_801080B4 = (int)vs_battle_rowAnimationSteps[--D_8010812C];
+        } else {
+            func_801045B8(D_801081ED + 1);
+            *arg0 = 5;
+        }
+        break;
+    case 11:
+    case 13:
+        func_800FBEA4(2);
+        func_801045B8(-2);
+        func_801045B8(0);
+        func_80103608(0);
+        func_80103AC8();
+        func_8007CCF0(D_80108188);
+        new_var2 = 13;
+        var_a0 = (D_801081B8_t*)&D_1F800000[new_var2];
+        *(D_80108198_t*)&D_1F800000[5] = D_80108198;
+        *var_a0 = D_801081B8;
+        func_8008A4DC(1);
+        func_800FFA88(0);
+        func_800FA8E0(0x28);
+        func_800F9E0C();
+        func_80100414(-2, 0x80);
+        D_800EB9AE = 0;
+        D_8010812C = 8;
+        D_80108130 = 0;
+        ++*arg0;
+        break;
+    case 12:
+        func_801045B8(0);
+        func_80103AC8();
+        func_800FFB68(0);
+        func_800FFBA8();
+        if (D_8010812C <= 0) {
+            if (func_800FE694() != 0) {
+                *arg0 = 0;
+                return 1;
+            }
+        }
+        --D_8010812C;
+        break;
+    case 14:
+        func_801045B8(0);
+        func_80103AC8();
+        func_800FFB68(0);
+        func_800FFBA8();
+        if (D_8010812C <= 0) {
+            if (func_800FE694() != 0) {
+                vs_battle_menuState.currentState = 5;
+                *arg0 = 0;
+                return 1;
+            }
+        }
+        --D_8010812C;
+        break;
+    }
+
+    if (D_80108130 != 0) {
+        func_80106150();
+    }
+    if (var_s5 != 0) {
+        if (D_801081EC != 0) {
+            D_801081EC -= 1;
+        }
+    } else {
+        D_801081EC = D_800EBC7C[D_801081EC];
+    }
+    if (D_801081EC < 0xA) {
+        temp_s1 = vs_battle_rowAnimationSteps[D_801081EC];
+        func_80100344(0x10 - temp_s1, 0x26, 0x58, 0xA);
+        func_800FFC68(1, 8 - temp_s1, 0x24, 0);
+        func_800C6540(
+            "STATUS", ((0x1C - temp_s1) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
+    }
+    return 0;
+}

@@ -54,7 +54,6 @@ extern int (*D_800EC3F4[])(void*);
 extern int _menuLbas[];
 extern char D_800EB9AC;
 extern signed char D_800EB9AD;
-extern char D_800EB9AE;
 extern char D_800EB9AF;
 extern D_800EB9B4_t* D_800EB9B4;
 extern int D_800EB9B8;

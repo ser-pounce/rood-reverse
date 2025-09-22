@@ -672,7 +672,7 @@ static int _teleportMenu(int init)
     if (init != 0) {
         func_800FA92C(4, 1);
         _state = initTeleport;
-        _currentMp = vs_battle_characterState->unk3C->currentMp;
+        _currentMp = vs_battle_characterState->unk3C->currentMP;
         return 0;
     }
     switch (_state) {

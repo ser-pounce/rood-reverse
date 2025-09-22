@@ -414,7 +414,17 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103FEC);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104134);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104514);
+int func_80104514(int arg0)
+{
+    int i;
+
+    for (i = 0; i < 6; ++i) {
+        if (D_800F1928[arg0]->unk3C->unk398[i].unk6 == 0) {
+            break;
+        }
+    }
+    return i;
+}
 
 int func_8010455C(void)
 {

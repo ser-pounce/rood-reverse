@@ -20,7 +20,8 @@ typedef struct {
     u_short unk0;
     u_short unk2;
     u_short unk4;
-    u_short unk6;
+    char unk6;
+    char unk7;
     u_short unk8[4];
     u_short unk10[8];
     u_short unk20[76];

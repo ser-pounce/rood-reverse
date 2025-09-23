@@ -154,7 +154,23 @@ void func_80102EC0(signed char* arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102F64);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103080);
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    char unk4;
+} func_80103080_t;
+
+extern u_short* D_800F51A4;
+
+void func_80103080(func_80103080_t* arg0, D_800F4E8C_t** arg1)
+{
+    u_short* new_var2 = &arg0->unk0;
+    D_800F51A4 = &D_80102540[D_80102540[arg0->unk4 + 0x280]];
+    func_800C685C(
+        func_800C685C(D_800F4E8C, (char*)(&D_80102540[D_80102540[(*new_var2) - 6]])),
+        (char*)(D_80102540 + 0x3405));
+    arg1[1] = D_800F4E8C;
+}
 
 void func_80103118(u_short* arg0, D_800F4E8C_t** arg1)
 {
@@ -540,7 +556,20 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106150);
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801063F8);
+void func_801063F8(void)
+{
+    int i;
+    vs_battle_equipment_t3* temp_a0
+        = &D_800F1928[D_801080A8 - 1]->unk3C->unk398[D_801081ED];
+
+    for (i = 0; i < 16; ++i) {
+        D_801024C0[i + 16] = temp_a0->unk10[i & 7];
+    }
+    for (i = 0; i < 4; ++i) {
+        D_801024C0[i + 32] = temp_a0->unk8[i];
+    }
+    func_801045B8(D_801081ED + 0x81);
+}
 
 int vs_menu4_Exec(char* state)
 {

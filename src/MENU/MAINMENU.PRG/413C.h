@@ -22,4 +22,5 @@ void func_80100A5C(void);
 void func_80101118(int);
 
 extern char vs_mainMenu_isLevelledSpell;
+extern char D_8010214C[];
 extern char D_801022D5;

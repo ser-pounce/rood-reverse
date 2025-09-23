@@ -51,6 +51,16 @@ typedef struct {
     int unk0[13];
 } D_801081B8_t;
 
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    char unk4;
+} func_80103080_t;
+
+extern u_short* D_800F51A4;
+
+extern char D_801024B9;
+
 extern int D_8010809C;
 extern int D_801080A0;
 extern int D_801080A4;
@@ -81,7 +91,30 @@ static u_short _statusStrings[] = {
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102A64);
+void func_80102A64(u_short* arg0)
+{
+    int i;
+    int var_a1;
+    char temp_v0;
+
+    D_80102545 = 8;
+    func_800FD220();
+    if (arg0[12] != 0) {
+        vs_battle_memcpy(D_801024C0, arg0 + 0x7A, 0x40);
+        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0xA2, 0x20);
+        ;
+        D_801024C0[63] = arg0 == vs_battle_characterState->unk3C->unk1D4;
+        for (i = 0; i < 4; ++i) {
+            D_801024C0[i + 0x20] = ((char*)arg0 + i)[0xF0];
+        }
+        func_800FC208(arg0[112], arg0[113], arg0[110], arg0[111]);
+        func_800FBD28((short)arg0[114], (short)arg0[116], (short)arg0[118], 1);
+        D_801024A8[4] = arg0[115];
+        D_801024A8[5] = arg0[117];
+        D_801024A8[6] = arg0[119];
+    }
+    func_800FBB8C(7);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102B70);
 
@@ -152,15 +185,19 @@ void func_80102EC0(signed char* arg0)
     func_800FC268(8);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102F64);
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    char unk4;
-} func_80103080_t;
-
-extern u_short* D_800F51A4;
+void func_80102F64(char* arg0, D_800F4E8C_t** arg1)
+{
+    char* c;
+    vs_battle_stringContext[0x13] = D_8010229C[arg0[0x13] + 253];
+    vs_battle_stringContext[0x12] = (char*)&D_80102540[D_80102540[arg0[4] + 0x18E]];
+    vs_battle_stringContext[0x11] = (char*)&D_80102540[D_80102540[arg0[16] + 0x198]];
+    c = arg0[4] + D_80102140;
+    vs_battle_stringContext[0x10] = (char*)&D_80102540[D_80102540[(c[-1] + 0x19C)]];
+    func_800C685C(
+        func_800C685C(D_800F4E8C, (char*)&D_80102540[D_80102540[*(u_short*)arg0 - 1]]),
+        (char*)(D_80102540 + 0x33FB));
+    arg1[1] = (D_800F4E8C_t*)D_800F4E8C;
+}
 
 void func_80103080(func_80103080_t* arg0, D_800F4E8C_t** arg1)
 {
@@ -203,8 +240,6 @@ int func_801033D4(u_short* arg0)
     func_800FD084(sp18, sp10, sp30, D_800F4E8C);
     return sp10[1];
 }
-
-extern char D_801024B9;
 
 int func_8010341C(int arg0, int arg1)
 {
@@ -254,8 +289,6 @@ int func_8010341C(int arg0, int arg1)
     }
     return ret;
 }
-
-extern char D_8010214C[];
 
 int func_801034BC(int arg0, int arg1)
 {
@@ -596,7 +629,7 @@ int vs_menu4_Exec(char* state)
     case init:
         D_80108130 = 0;
         D_801081EC = 10;
-        if (D_8010229C == 0) {
+        if (D_8010229C == NULL) {
             func_800FE5CC(1);
         }
         if (vs_mainmenu_ready() == 0) {

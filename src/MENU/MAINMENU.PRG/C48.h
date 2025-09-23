@@ -53,8 +53,11 @@ void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 void func_800FD220();
 void func_8010044C(u_int*);
 
+extern char D_80102140[];
 extern char (*D_8010229C)[24];
 extern D_8010245C_t* D_8010245C;
+extern short D_801024A8[];
+extern char D_801024B9;
 extern short D_801024C0[];
 extern u_short* D_80102540;
 extern char D_80102544;

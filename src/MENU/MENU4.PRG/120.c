@@ -89,7 +89,32 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
+void func_80102920(u_short* arg0)
+{
+    int i;
+
+    D_80102545 = 1;
+    func_800FD220();
+    func_800FBD0C(0, 0, 0, 1);
+    if (arg0[0xC] != 0) {
+        vs_battle_memcpy(D_801024C0, arg0 + 0x94, 0x40);
+        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0xBC, 0x20);
+        D_801024C0[0x3F] = arg0 == vs_battle_characterState->unk3C->unk3C;
+        for (i = 0; i < 4; ++i) {
+            D_801024C0[i + 0x20] = ((signed char*)arg0 + i)[0x64];
+        }
+        do {
+            D_80102508 = (char)arg0[0x87];
+        } while (0);
+        func_800FC208((int)arg0[0x8A], (int)arg0[0x8B], (int)arg0[0x88], (int)arg0[0x89]);
+        func_800FBD28((short)arg0[0x8C], (short)arg0[0x8E], (short)arg0[0x90], 1);
+        D_801024A8[4] = (u_short)arg0[0x8D];
+        D_801024A8[5] = (u_short)arg0[0x8F];
+        D_801024A8[6] = (u_short)arg0[0x91];
+        func_800FBD0C((char)arg0[0x92], (char)arg0[0x85], 0, 1);
+    }
+    func_800FBB8C(7);
+}
 
 void func_80102A64(u_short* arg0)
 {
@@ -114,7 +139,8 @@ void func_80102A64(u_short* arg0)
     func_800FBB8C(7);
 }
 
-void func_80102B70(u_short* arg0) {
+void func_80102B70(u_short* arg0)
+{
     int i;
 
     D_80102545 = 0x10;
@@ -126,12 +152,12 @@ void func_80102B70(u_short* arg0) {
         for (i = 0; i < 5; ++i) {
             D_801024C0[0x3F] |= arg0 == vs_battle_characterState->unk3C->unk398[i].unk20;
         }
-        
+
         for (i = 0; i < 4; ++i) {
             D_801024C0[i + 0x20] = arg0[i + 0x20];
         }
         func_800FC208(arg0[0x18], arg0[0x19], 0, 0);
-        func_800FBD28((short) arg0[0x1A], (short) arg0[0x1C], (short) arg0[0x1E], 1);
+        func_800FBD28((short)arg0[0x1A], (short)arg0[0x1C], (short)arg0[0x1E], 1);
         D_801024A8[4] = arg0[0x1B];
         D_801024A8[5] = arg0[0x1D];
         D_801024A8[6] = arg0[0x1F];

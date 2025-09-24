@@ -59,6 +59,7 @@ extern D_8010245C_t* D_8010245C;
 extern short D_801024A8[];
 extern char D_801024B9;
 extern short D_801024C0[];
+extern short D_80102508;
 extern u_short* D_80102540;
 extern char D_80102544;
 extern char D_80102545;

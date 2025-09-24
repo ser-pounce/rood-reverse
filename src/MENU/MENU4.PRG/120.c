@@ -94,8 +94,6 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102920);
 void func_80102A64(u_short* arg0)
 {
     int i;
-    int var_a1;
-    char temp_v0;
 
     D_80102545 = 8;
     func_800FD220();
@@ -116,7 +114,30 @@ void func_80102A64(u_short* arg0)
     func_800FBB8C(7);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80102B70);
+void func_80102B70(u_short* arg0) {
+    int i;
+
+    D_80102545 = 0x10;
+    func_800FD220();
+    if (arg0[0] != 0) {
+        vs_battle_memcpy(D_801024C0, arg0 + 0x24, 0x40);
+        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0x4E, 0x20);
+        D_801024C0[0x3F] = 0;
+        for (i = 0; i < 5; ++i) {
+            D_801024C0[0x3F] |= arg0 == vs_battle_characterState->unk3C->unk398[i].unk20;
+        }
+        
+        for (i = 0; i < 4; ++i) {
+            D_801024C0[i + 0x20] = arg0[i + 0x20];
+        }
+        func_800FC208(arg0[0x18], arg0[0x19], 0, 0);
+        func_800FBD28((short) arg0[0x1A], (short) arg0[0x1C], (short) arg0[0x1E], 1);
+        D_801024A8[4] = arg0[0x1B];
+        D_801024A8[5] = arg0[0x1D];
+        D_801024A8[6] = arg0[0x1F];
+    }
+    func_800FBB8C(7);
+}
 
 void func_80102CAC(func_80102CAC_t* arg0)
 {

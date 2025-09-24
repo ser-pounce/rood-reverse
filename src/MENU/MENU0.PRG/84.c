@@ -258,7 +258,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
         state = 4;
         break;
     case 4: {
-        u_int* temp_s6;
+        u_long* temp_s6;
         int level;
         int var_s7_2;
         int* var_t3;
@@ -314,7 +314,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
 
         _setMPCost(selectedRow + i);
 
-        temp_s6 = (u_int*)D_1F800000[1] - 1;
+        temp_s6 = D_1F800000[1] - 1;
 
         for (level = 0; level < 4; ++level) {
             var_s7_2 = 0;

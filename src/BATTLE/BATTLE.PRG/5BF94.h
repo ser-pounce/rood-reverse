@@ -123,6 +123,7 @@ extern char D_800EB9AE;
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
+extern u_short D_800EBC14[];
 extern u_int D_800EBC54[];
 extern char D_800EBC7C[];
 extern char vs_battle_warlockSpellIds[];

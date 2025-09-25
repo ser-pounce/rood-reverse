@@ -134,6 +134,7 @@ extern char D_800EC270[];
 extern char vs_battle_chainAbilityOffsets[];
 extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;
+extern u_short* D_800F453C;
 extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern char D_800F4E88;

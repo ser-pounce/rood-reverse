@@ -8,6 +8,7 @@
 #include "../../BATTLE/BATTLE.PRG/58578.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/MENU4.PRG/status.h"
+#include "../../SLUS_010.40/31724.h"
 #include <libetc.h>
 
 int func_80103744(int);
@@ -16,6 +17,7 @@ int func_80104134(vs_battle_equipment_t2*, int);
 int func_80104514(int);
 int func_801045B8(int);
 int func_80105970(int);
+void func_80105F60();
 void func_80106150(void);
 void func_80106308();
 void func_801063F8();
@@ -72,6 +74,7 @@ extern char D_801080B8;
 extern char D_801080B9;
 extern char D_801080BA;
 extern char D_801080BB;
+extern char D_801080BC;
 extern int D_801080C8[];
 extern int D_801080FC[];
 extern int animWait;
@@ -665,45 +668,23 @@ void func_80105E94(void)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105F60);
 
-void func_8007ACB0();
-void func_80105F60();
-int vs_math_cosine(int);
-int vs_math_sine(int);
-extern u_short* D_800F453C;
-extern char D_801080BC;
-
-extern u_long* D_1F800000[];
-
-void func_80106150(void)
-{
-    int temp_lo;
-    int temp_lo_2;
-    int temp_lo_3;
-    int temp_lo_4;
+void func_80106150(void) {
     int temp_lo_5;
-    int temp_s0_2;
-    int temp_s0_3;
     int temp_s1;
     int temp_s0;
     int temp_s2;
     int* p;
 
-    temp_s1 = 0x80 - D_801080B4;
+    temp_s1 = (0x80 - D_801080B4);
     temp_s2 = D_800F453C[0x32B];
     temp_s0 = D_800F453C[0x31F];
-    temp_lo = ((int)(-vs_math_sine(D_8010809C) * temp_s1) >> 8) * temp_s2;
-    p = (int*)D_1F800000 + 13;
-    p[4] = temp_lo;
+    p = (int*) D_1F800000 + 13;
+    p[4] = ((-vs_math_sine(D_8010809C) * temp_s1) >> 8) * temp_s2;
     p[5] = -(temp_s0 << 0xB);
-    temp_lo_2 = ((int)(vs_math_cosine(D_8010809C) * temp_s1) >> 8) * temp_s2;
-    p[6] = temp_lo_2;
-    temp_s0_2 = vs_math_cosine(D_8010809C);
-    temp_lo_3 = ((temp_s0_2 * vs_math_cosine(D_801080A0)) >> 0xA) * temp_s2;
-    ((int*)D_1F800000)[13] = p[4] + temp_lo_3;
-    temp_lo_4 = vs_math_sine(D_801080A0) * temp_s2;
-    p[1] = p[5] - temp_lo_4 * 4;
-    temp_s0_3 = vs_math_sine(D_8010809C);
-    temp_lo_5 = (temp_s0_3 * vs_math_cosine(D_801080A0) >> 0xA) * temp_s2;
+    p[6] = ((vs_math_cosine(D_8010809C) * temp_s1) >> 8) * temp_s2;
+    ((int *) D_1F800000)[13] = p[4] + ((vs_math_cosine(D_8010809C) * vs_math_cosine(D_801080A0)) >> 0xA) * temp_s2;
+    p[1] = p[5] - vs_math_sine(D_801080A0) * temp_s2 * 4;
+    temp_lo_5 = (vs_math_sine(D_8010809C) * vs_math_cosine(D_801080A0) >> 0xA) * temp_s2;
     p[8] = 0;
     p[9] = 0;
     p[10] = 0;
@@ -711,7 +692,7 @@ void func_80106150(void)
     p[2] = p[6] + temp_lo_5;
     func_8007ACB0();
     if (D_801080BC != 0) {
-        D_801080BC -= 1;
+        --D_801080BC;
     } else {
         func_800F9EB8(p - 8);
     }

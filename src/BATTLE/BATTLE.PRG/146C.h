@@ -128,6 +128,7 @@ void func_8006BAA8(void*, u_short*);
 void func_8006BADC(void*, u_short*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);
+void func_8007ACB0();
 void func_8007CCF0(int);
 int func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);

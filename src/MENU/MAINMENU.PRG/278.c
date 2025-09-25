@@ -229,7 +229,7 @@ void func_800F9E0C()
 
 static inline int _insertTpage(int arg0, u_int arg1) { return arg0 + arg1; }
 
-int func_800F9EB8(int arg0)
+int func_800F9EB8(void* arg0)
 {
     int _[2] __attribute__((unused));
     int i;

@@ -518,7 +518,6 @@ void func_80103FEC(int* arg0, int arg1)
     int temp_v1;
     int i;
     int var_s3;
-    int* temp_a0_2;
 
     temp_s6 = func_800C9E08((vs_battle_equipment_t2*)arg0);
     var_s3 = 0;
@@ -666,7 +665,61 @@ void func_80105E94(void)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105F60);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106150);
+void func_8007ACB0();
+void func_80105F60();
+int vs_math_cosine(int);
+int vs_math_sine(int);
+extern u_short* D_800F453C;
+extern char D_801080BC;
+
+extern u_long* D_1F800000[];
+
+void func_80106150(void)
+{
+    int temp_lo;
+    int temp_lo_2;
+    int temp_lo_3;
+    int temp_lo_4;
+    int temp_lo_5;
+    int temp_s0_2;
+    int temp_s0_3;
+    int temp_s1;
+    int temp_s0;
+    int temp_s2;
+    int* p;
+
+    temp_s1 = 0x80 - D_801080B4;
+    temp_s2 = D_800F453C[0x32B];
+    temp_s0 = D_800F453C[0x31F];
+    temp_lo = ((int)(-vs_math_sine(D_8010809C) * temp_s1) >> 8) * temp_s2;
+    p = (int*)D_1F800000 + 13;
+    p[4] = temp_lo;
+    p[5] = -(temp_s0 << 0xB);
+    temp_lo_2 = ((int)(vs_math_cosine(D_8010809C) * temp_s1) >> 8) * temp_s2;
+    p[6] = temp_lo_2;
+    temp_s0_2 = vs_math_cosine(D_8010809C);
+    temp_lo_3 = ((temp_s0_2 * vs_math_cosine(D_801080A0)) >> 0xA) * temp_s2;
+    ((int*)D_1F800000)[13] = p[4] + temp_lo_3;
+    temp_lo_4 = vs_math_sine(D_801080A0) * temp_s2;
+    p[1] = p[5] - temp_lo_4 * 4;
+    temp_s0_3 = vs_math_sine(D_8010809C);
+    temp_lo_5 = (temp_s0_3 * vs_math_cosine(D_801080A0) >> 0xA) * temp_s2;
+    p[8] = 0;
+    p[9] = 0;
+    p[10] = 0;
+    p[12] = 0x1000;
+    p[2] = p[6] + temp_lo_5;
+    func_8007ACB0();
+    if (D_801080BC != 0) {
+        D_801080BC -= 1;
+    } else {
+        func_800F9EB8(p - 8);
+    }
+    func_80105F60();
+    func_80105E94();
+    func_801045B8(0);
+    func_80103AC8();
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
 

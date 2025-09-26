@@ -84,14 +84,18 @@ src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 .PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
 
 all: $(targets)
-	echo Verifying target files:
-	for t in $(^:$(BUILD)/%=%); do \
-	  if $(DIFF) $(DIFFFLAGS) $$t $(BUILD)/$$t >/dev/null 2>&1; then \
-	    printf '\033[0;32m✔ [%s]\033[0m\n' "$(BUILD)/$$t"; \
-	  else \
-	    printf '\033[0;31m✘ [%s]\033[0m\n' "$(BUILD)/$$t"; \
-	  fi; \
+	echo "Verifying target files"
+	fail=0
+	for t in $(^:$(BUILD)/%=%); do
+	    if ! $(DIFF) $(DIFFFLAGS) "$$t" "$(BUILD)/$$t" >/dev/null 2>&1; then
+	        printf '\033[0;31m✘ [%s]\033[0m\n' "$(BUILD)/$$t"
+	        fail=1
+	    fi
 	done
+	if [ $$fail -eq 0 ]; then
+	    printf '\033[0;32m✔ All files match\033[0m\n'
+	fi
+	exit $$fail
 
 format: sortsyms lintsrc
 
@@ -135,7 +139,7 @@ $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 ifeq ($(PERMUTER),)
 $(BUILD)/config/%/link.d: \
 	config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
-	config/%/Makefile data/% Makefile | $$(@D)/
+	config/%/Makefile data/%  | $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	$(TOUCH) $@

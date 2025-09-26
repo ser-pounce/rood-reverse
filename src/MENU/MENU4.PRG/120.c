@@ -75,6 +75,7 @@ extern char D_801080B9;
 extern char D_801080BA;
 extern char D_801080BB;
 extern char D_801080BC;
+extern u_int D_801080C0;
 extern int D_801080C8[];
 extern int D_801080FC[];
 extern int animWait;
@@ -413,7 +414,80 @@ int func_80103688(int arg0, int arg1)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103744);
+int func_80103744(int arg0)
+{
+    int temp_a1;
+
+    if (arg0 != 0) {
+        if (D_801080A8 == 0) {
+            D_801080C0 = 1;
+        } else {
+            vs_battle_playSfx10();
+            D_801080C0 = 0;
+        }
+        if (arg0 & 0x10) {
+            D_801080C0 += 3;
+        }
+        temp_a1 = arg0 & 0xF;
+        D_801080A8 = temp_a1;
+        vs_battle_setMenuItem(
+            4, 0xB4, 0x12, 0x8C, 8, (char*)D_800F1928[temp_a1 - 1]->unk3C)
+            ->selected
+            = 1;
+        return 0;
+    }
+    switch (D_801080C0) {
+    case 0:
+        if (D_801080B4 < 0xA0) {
+            D_801080AC = 1;
+            D_801080B4 += 0x20;
+        } else {
+            D_801080AC = 0;
+            func_800F9E0C();
+        case 1:
+            D_801080B0 = 1;
+            func_800F9A24(D_801080A8 - 1);
+            D_801080BC = 1;
+            D_801080B4 = -0xA0;
+            D_801080C0 = 2;
+        }
+        break;
+    case 2:
+        if (D_801080B4 < 0) {
+            D_801080B4 += 0x20;
+            break;
+        }
+        D_801080B0 = 0;
+        D_801080C0 = 6;
+        return 1;
+    case 3:
+        if (D_801080B4 >= -0x9F) {
+            D_801080B0 = 1;
+            D_801080B4 -= 0x20;
+            break;
+        }
+        func_800F9E0C();
+    case 4:
+        D_801080B0 = 0;
+        func_800F9A24(D_801080A8 - 1);
+        D_801080BC = 1;
+        D_801080B4 = 0xA0;
+        D_801080C0 = 5;
+        break;
+    case 5:
+        if (D_801080B4 > 0) {
+            D_801080AC = 1;
+            D_801080B4 -= 0x20;
+            break;
+        }
+        D_801080AC = 0;
+        D_801080C0 = 6;
+        return 1;
+    case 6:
+        return 1;
+    }
+    return 0;
+}
 
 void func_8010399C(int arg0, int arg1, u_int* arg2)
 {

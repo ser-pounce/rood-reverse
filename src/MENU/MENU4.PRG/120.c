@@ -666,9 +666,70 @@ void func_80105E94(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80105F60);
+extern u_long* D_1F800000[];
 
-void func_80106150(void) {
+void func_80105F60(void)
+{
+    int var_s1;
+
+    u_long* temp_t8 = D_1F800000[0];
+    void* temp_a0 = D_1F800000[1];
+    u_int* var_t9 = temp_a0 + 0x1FF4;
+
+    if (D_801080AC != 0) {
+        var_t9 = temp_a0 - 4;
+    }
+    temp_t8[0] = (*var_t9 & 0xFFFFFF) | 0x0D000000;
+    temp_t8[1] = 0x3E101010;
+    temp_t8[2] = 0x40;
+    temp_t8[3] = 0x38F00040;
+    temp_t8[4] = 0x909090;
+    temp_t8[5] = 0xA0;
+    temp_t8[6] = 0xBA00A0;
+    temp_t8[7] = 0x101010;
+    temp_t8[8] = 0xF00040;
+    temp_t8[9] = 0xF040;
+    temp_t8[10] = 0x909090;
+    temp_t8[11] = 0xF000A0;
+    temp_t8[12] = 0xF0A0;
+    temp_t8[13] = 0xE1000200;
+    *var_t9 = ((u_long)temp_t8 << 8) >> 8;
+    temp_t8 += 14;
+    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | 0x08000000);
+    temp_t8[6] = 0x60000000;
+    temp_t8[7] = 0x100;
+    temp_t8[1] = 0xE10000BB;
+    temp_t8[2] = 0x64808080;
+    temp_t8[3] = 0xA0;
+    temp_t8[4] = 0x38F00020;
+    temp_t8[5] = 0xF00060;
+    temp_t8[8] = 0xF00040;
+    *var_t9 = ((u_long)temp_t8 << 8) >> 8;
+    temp_t8 += 9;
+    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | 0x0D000000);
+    temp_t8[1] = 0xE1000000;
+    temp_t8[2] = 0x3C808080;
+    temp_t8[3] = 0x40;
+    temp_t8[4] = 0x40;
+    temp_t8[5] = 0;
+    temp_t8[6] = 0xA0;
+    var_s1 = 0x010000A0;
+    if (vs_main_frameBuf == 0) {
+        var_s1 = 0x01050000 | 0xA0;
+    }
+    temp_t8[8] = 0x808080;
+    temp_t8[7] = var_s1;
+    temp_t8[9] = 0xF00040;
+    temp_t8[10] = 0xF040;
+    temp_t8[11] = 0;
+    temp_t8[12] = 0xF000A0;
+    temp_t8[13] = 0xF0A0;
+    *var_t9 = ((u_long)temp_t8 << 8) >> 8;
+    D_1F800000[0] = temp_t8 + 14;
+}
+
+void func_80106150(void)
+{
     int temp_lo_5;
     int temp_s1;
     int temp_s0;
@@ -678,11 +739,12 @@ void func_80106150(void) {
     temp_s1 = (0x80 - D_801080B4);
     temp_s2 = D_800F453C[0x32B];
     temp_s0 = D_800F453C[0x31F];
-    p = (int*) D_1F800000 + 13;
+    p = (int*)D_1F800000 + 13;
     p[4] = ((-vs_math_sine(D_8010809C) * temp_s1) >> 8) * temp_s2;
     p[5] = -(temp_s0 << 0xB);
     p[6] = ((vs_math_cosine(D_8010809C) * temp_s1) >> 8) * temp_s2;
-    ((int *) D_1F800000)[13] = p[4] + ((vs_math_cosine(D_8010809C) * vs_math_cosine(D_801080A0)) >> 0xA) * temp_s2;
+    ((int*)D_1F800000)[13] = p[4]
+        + ((vs_math_cosine(D_8010809C) * vs_math_cosine(D_801080A0)) >> 0xA) * temp_s2;
     p[1] = p[5] - vs_math_sine(D_801080A0) * temp_s2 * 4;
     temp_lo_5 = (vs_math_sine(D_8010809C) * vs_math_cosine(D_801080A0) >> 0xA) * temp_s2;
     p[8] = 0;

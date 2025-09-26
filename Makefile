@@ -66,7 +66,7 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 sourcedata := $(binaries:%=data/%)
-targets    := $(binaries:%=$(BUILD)/data/%)
+targets    = $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
 makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
@@ -78,27 +78,38 @@ sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
 src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 
+.ONESHELL:
+.SILENT:
+.SECONDEXPANSION:
 .PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
 
 all: $(targets)
+	echo Verifying target files:
+	for t in $(^:$(BUILD)/%=%); do \
+	  if $(DIFF) $(DIFFFLAGS) $$t $(BUILD)/$$t >/dev/null 2>&1; then \
+	    printf '\033[0;32m✔ [%s]\033[0m\n' "$(BUILD)/$$t"; \
+	  else \
+	    printf '\033[0;31m✘ [%s]\033[0m\n' "$(BUILD)/$$t"; \
+	  fi; \
+	done
 
 format: sortsyms lintsrc
 
 sortsyms:
-	@$(ECHO) Sorting symbols
-	@for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
+	$(ECHO) Sorting symbols
+	for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
 
 lintsrc:
-	@$(ECHO) Linting source
-	@$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
+	$(ECHO) Linting source
+	$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
 
 decompme: IMPORTFLAGS += --decompme --preserve-macros "setRECT|vs_.*"
 decompme: $(call src_from_target,$(TARGET)) $(TARGET)
-	@$(IMPORT) $(IMPORTFLAGS) $^
+	$(IMPORT) $(IMPORTFLAGS) $^
 
 permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
-	@$(PERMUTE) $(PERMUTEFLAGS) $<
+	$(PERMUTE) $(PERMUTEFLAGS) $<
 
 objdiff: all
 	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
@@ -110,125 +121,122 @@ clean:
 
 remake: MAKEFLAGS += --no-print-directory
 remake: clean
-	@$(MAKE)
+	$(MAKE)
 
 clean-all:
-	@$(GIT) clean -xfd -e disks/$(disk).bin
-	@$(GIT) submodule foreach --recursive $(GIT) clean -xfd
-	@$(GIT) reset --hard
-	@$(GIT) submodule foreach --recursive $(GIT) reset --hard
+	$(GIT) clean -xfd -e disks/$(disk).bin
+	$(GIT) submodule foreach --recursive $(GIT) clean -xfd
+	$(GIT) reset --hard
+	$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
 $(shell $(FIND) config src -type f -regex ".*\.\(yaml\|txt\|h\|c\|s\|inc\)\$$"): ;
 $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
-
-.SECONDEXPANSION:
 
 ifeq ($(PERMUTER),)
 $(BUILD)/config/%/link.d: \
 	config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
 	config/%/Makefile data/% Makefile | $$(@D)/
-	@$(ECHO) Splitting $*
-	@$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
-	@$(TOUCH) $@
+	$(ECHO) Splitting $*
+	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
+	$(TOUCH) $@
 endif
 
 $(targets): $(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
-	@$(ECHO) Linking $@
-	@$(LD) $(LDFLAGS_BIN) $< -o $@
+	$(ECHO) Linking $@
+	$(LD) $(LDFLAGS_BIN) $< -o $@
 	$(fixup)
-	@$(DIFF) $(DIFFFLAGS) $@ data/$*
 
 $(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
-	@$(ECHO) Linking $@
-	@$(LD) $(LDFLAGS) -o $@
+	$(ECHO) Linking $@
+	$(LD) $(LDFLAGS) -o $@
 
 %.o: %.s | $$(@D)/
-	@$(ECHO) Assembling $<
-	@$(AS) $(ASFLAGS) -no-pad-sections -o $@ $<
+	$(ECHO) Assembling $<
+	$(AS) $(ASFLAGS) -no-pad-sections -o $@ $<
 
 $(BUILD)/%.o: %.s | $$(@D)/
-	@$(ECHO) Assembling $<
-	@$(AS) $(ASFLAGS) -o $@ $<
+	$(ECHO) Assembling $<
+	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BUILD)/%.o: %.c | $$(@D)/
-	@$(ECHO) Compiling $<
-	@$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
-	@$(CAT) $@.d >> $(BUILD)/$*.d
-	@$(RM) $(RMFLAGS) $@.d
+	$(ECHO) Compiling $<
+	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
+	$(CAT) $@.d >> $(BUILD)/$*.d
+	$(RM) $(RMFLAGS) $@.d
 
 %.img.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
 %.img.o: filename = $(word 1,$(subst ., ,$(@F)))
 %.img.o: %.img.bin | $$(@D)/
-	@$(ECHO) Converting $<
-	@$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
+	$(ECHO) Converting $<
+	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
 %.img.bin: %.img.png | $$(@D)/
-	@$(ECHO) Converting $<
-	@$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
 
 %.rgba16Header.img.o: OBJCOPYFLAGS += \
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 
 $(BUILD)/%.vsString: $(BUILD)/%.vsString.yaml %.yaml | $$(@D)/
-	@$(ECHO) Converting $<
-	@$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
 
 %.vsString.o: %.vsString
-	@$(ECHO) Assembling $@
-	@$(OBJCOPY) $(OBJCOPYFLAGS) $<.bin $@
+	$(ECHO) Assembling $@
+	$(OBJCOPY) $(OBJCOPYFLAGS) $<.bin $@
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
-	@$(IMPORT) $(IMPORTFLAGS) $^
+	$(IMPORT) $(IMPORTFLAGS) $^
 
 ifeq ($(PERMUTER),)
 .PRECIOUS: data/%
 $(sourcedata) &: | disks/$(disk).bin $(build_deps)
-	@$(ECHO) Dumping files from disk
-	@$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
+	$(ECHO) Dumping files from disk
+	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
 $(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(@D)/
-	@$(ECHO) Generating $@
-	@$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
-	@$(MV) $(disk)_LBA.txt $(BUILD)/config/
+	$(ECHO) Generating $@
+	$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
+	$(MV) $(disk)_LBA.txt $(BUILD)/config/
 
 $(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(@D)/
-	@$(ECHO) Generating $@
-	@$(VPYTHON) tools/etc/make_lba_import.py $< $@
+	$(ECHO) Generating $@
+	$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
 disks/$(disk).bin:
-	@$(ECHO) $@ not found
-	@false
+	$(ECHO) $@ not found
+	false
 
 $(build_deps): | tools/.sysdeps
 
 $(DUMPSXISO):
-	@$(ECHO) Building mkpsxiso
-	@$(CMAKE) -S tools/mkpsxiso -B tools/mkpsxiso/build --preset release --log-level=ERROR \
+	$(ECHO) Building mkpsxiso
+	$(CMAKE) -S tools/mkpsxiso -B tools/mkpsxiso/build --preset release --log-level=ERROR \
 		$(if $(DEBUG),,> /dev/null)
-	@$(CMAKE) --build tools/mkpsxiso/build -j --config Release $(if $(DEBUG),,> /dev/null)
+	$(CMAKE) --build tools/mkpsxiso/build -j --config Release $(if $(DEBUG),,> /dev/null)
 
 $(VPYTHON):
-	@$(ECHO) Installing virtual python environment to $(VPYDIR)
-	@$(PYTHON) -m venv $(VPYDIR)
-	@$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser pandas
+	$(ECHO) Installing virtual python environment to $(VPYDIR)
+	$(PYTHON) -m venv $(VPYDIR)
+	$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser pandas
 
 $(compilers): tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
-	@$(ECHO) Building GCC $*
-	@$(DOCKER) build -f $< --target export \
+	$(ECHO) Building GCC $*
+	$(DOCKER) build -f $< --target export \
 		--output tools/old-gcc/build-gcc-$* tools/old-gcc/ $(if $(DEBUG),,2> /dev/null)
-	@$(TOUCH) $@
+	$(TOUCH) $@
 
 tools/.sysdeps:
-	@$(GIT) submodule update --init --recursive
-	@$(WHICH) $(WHICHFLAGS) $(sysdeps) || ($(ECHO) One or more applications are missing: \\n \
+	$(GIT) submodule update --init --recursive
+	$(WHICH) $(WHICHFLAGS) $(sysdeps) || ($(ECHO) One or more applications are missing: \\n \
 		$(sysdeps); false)
-	@$(TOUCH) $@
+	$(TOUCH) $@
 
 .PRECIOUS: %/
 %/:
-	@$(MKDIR) $(MKDIRFLAGS) $(@D)
+	$(MKDIR) $(MKDIRFLAGS) $(@D)
 
 define pad
 @$(TRUNCATE) -s $1 $@

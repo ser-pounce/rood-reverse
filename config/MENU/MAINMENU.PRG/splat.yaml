@@ -26,7 +26,7 @@ segments:
       - [0x00, .rodata, C48]
       - [0x12C, .rodata, 413C]
       - [0x210, .rodata, 8170]
-      - [0x278, c]
+      - [0x224, c]
       - [0xC48, c]
       - [0x413C, c]
       - [0x8170, c]

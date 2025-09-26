@@ -90,6 +90,9 @@ extern D_800F4538_t* D_800F4538[];
 extern D_800F4538_t* D_800F4588[];
 extern char D_800F49DC;
 
+void func_800F9A24(int);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/278", func_800F9A24);
+
 void func_800F9A78(int arg0)
 {
     func_8007C8F8_t sp10;

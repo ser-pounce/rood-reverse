@@ -41,5 +41,3 @@ void func_80101F38()
     func_800FBEA4(0);
     func_800FC268(0);
 }
-
-INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/8170", D_800F9A24);

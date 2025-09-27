@@ -19,7 +19,8 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short unk2;
-    u_short unk4;
+    char unk4;
+    char unk5;
     char unk6;
     char unk7;
     u_short unk8[4];
@@ -28,15 +29,20 @@ typedef struct {
     short unkB8;
     u_char unkBA;
     u_char unkBB;
-    int unkBC[7];
+    int unkBC;
+    int unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+    int unkD0;
+    int unkD4;
     int unkD8;
 } vs_battle_equipment_t3;
 
 typedef struct {
     short unk0;
     short unk2;
-    short unk4;
-    short unk6;
+    int unk4;
     short unk8;
     short unkA;
     short unkC;

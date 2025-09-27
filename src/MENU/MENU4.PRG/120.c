@@ -489,7 +489,7 @@ int func_80103744(int arg0)
     return 0;
 }
 
-void func_8010399C(int arg0, int arg1, u_int* arg2)
+void func_8010399C(int arg0, int arg1, u_long* arg2)
 {
     int i;
 

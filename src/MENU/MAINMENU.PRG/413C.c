@@ -24,7 +24,7 @@ extern int D_801023D4;
 extern int _selectedRow;
 extern char D_801023DE;
 extern textHeader_t _textHeaders[];
-extern u_int* D_1F800000[];
+extern u_long* D_1F800000[];
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
 
@@ -85,7 +85,7 @@ void func_800FFA88(int arg0) { D_801022E3 = arg0; }
 void func_800FFA94()
 {
     int var_a1;
-    u_int* temp_v0;
+    u_long* temp_v0;
     int temp_s0;
 
     temp_s0 = D_801022E2;

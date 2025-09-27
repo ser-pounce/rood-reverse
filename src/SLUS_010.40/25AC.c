@@ -13,13 +13,13 @@ typedef struct {
 } D_80036770_t;
 
 static int func_80013468(int*);
-static int func_80013588(void*, int);
-static void func_800135D8(void*, int, int, int);
-static void func_8001369C(void);
+int func_80013588(void*, int);
+void func_800135D8(void*, int, int, int);
+void func_8001369C(void);
 static void _soundInit(void);
 static void func_80013AE8(u_int);
-static u_int func_80018C30(int);
-static long func_80019A58(void);
+u_int func_80018C30(int);
+long func_80019A58(void);
 static void _shutdown(void);
 static void _writeSpu(char* data, u_int len);
 

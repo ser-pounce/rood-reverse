@@ -3196,7 +3196,7 @@ static void _setMenuItemClut(
 
 static int _displayGameOverScreen(int init)
 {
-    extern u_int* D_1F800000[];
+    extern u_long* D_1F800000[];
     static short clut[2][16];
     static int color1;
     static int color2;
@@ -3206,8 +3206,8 @@ static int _displayGameOverScreen(int init)
     static int selectedOption;
     static char _[8];
 
-    u_int* prim;
-    u_int* nextPrim = D_1F800000[2];
+    u_long* prim;
+    u_long* nextPrim = D_1F800000[2];
 
     if (init != 0) {
         color1 = 0;
@@ -3523,7 +3523,7 @@ static void* _getContainerOffset(int section, void* arg1)
     return ((containerData_t*)arg1)->containerData + offset;
 }
 
-static void func_801092C4(
+void func_801092C4(
     containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
 INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
 

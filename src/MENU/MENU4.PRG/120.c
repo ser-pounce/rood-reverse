@@ -76,11 +76,16 @@ extern char D_801080BA;
 extern char D_801080BB;
 extern char D_801080BC;
 extern u_int D_801080C0;
+extern char D_801080C4;
 extern int D_801080C8[];
 extern int D_801080FC[];
 extern int animWait;
 extern int D_80108130;
 extern int D_80108134;
+extern char D_80108138[];
+extern u_char D_80108158;
+extern u_char D_80108159;
+extern vs_battle_equipment_t2* D_8010815C;
 extern int D_80108188;
 extern D_801081B8_t D_801081B8;
 extern u_char D_801081EC;
@@ -705,7 +710,123 @@ void func_80103FEC(int* arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104134);
+int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
+{
+    int i;
+    int var_s1;
+
+    if (arg0 != 0) {
+        var_s1 = func_800C9E08(arg0);
+        if (var_s1 == 0) {
+            return 1;
+        }
+        D_8010815C = arg0;
+        D_80108159 = 0;
+        for (i = 0; i < 32; ++i) {
+            if ((var_s1 >> i) & 1) {
+                D_80108138[D_80108159++] = i;
+            }
+        }
+        if (arg1 == 0) {
+            if (D_80108158 >= D_80108159) {
+                D_80108158 = D_80108159 - 1;
+            }
+        } else if (D_801081ED == 0xB) {
+            D_80108158 = 0;
+        } else {
+            if (D_80108159 < 8U) {
+                D_80108158 = D_80108159 - 1;
+            } else {
+                D_80108158 = 7;
+            }
+        }
+    } else {
+        arg1 = 1;
+        if (vs_main_buttonsPressed.all & 0x10) {
+            return 2;
+        }
+
+        if (vs_main_buttonsPressed.all & 0x40) {
+            return 3;
+        }
+        if (vs_main_buttonsState & 0x80) {
+            var_s1 = func_800C4708(vs_main_stickPosBuf.rStickX);
+            i = func_800C4708(vs_main_stickPosBuf.rStickY);
+            if (var_s1 == 0) {
+                if (i == 0) {
+                    if (vs_main_buttonsState & 0x1000) {
+                        i = -0x40;
+                    }
+                    if (vs_main_buttonsState & 0x4000) {
+                        i = 0x40;
+                    }
+                    if (vs_main_buttonsState & 0x8000) {
+                        var_s1 = -0x40;
+                    }
+                    if (vs_main_buttonsState & 0x2000) {
+                        var_s1 = 0x40;
+                    }
+                }
+            }
+            D_8010809C += var_s1;
+            D_801080A0 = D_801080A0 - i;
+            if (D_801080A0 < 0) {
+                D_801080A0 = 0;
+            }
+
+            if (D_801080A0 >= 0x381) {
+                D_801080A0 = 0x380;
+            }
+            return 0;
+        }
+        i = D_80108158;
+        if (vs_main_buttonRepeat & 0x1000) {
+            if (i < 8) {
+                vs_battle_playMenuChangeSfx();
+                D_801081ED = 0xB;
+                return 1;
+            }
+            i -= 8;
+        }
+        if (vs_main_buttonRepeat & 0x4000) {
+            if ((D_80108159 >= 8) && (i < 8)) {
+                i += 8;
+                if (i >= D_80108159) {
+                    i = D_80108159 - 1;
+                }
+            }
+        }
+        if (vs_main_buttonRepeat & 0x8000) {
+            if (i & 7) {
+                --i;
+            }
+        }
+        if (vs_main_buttonRepeat & 0x2000) {
+            if (((i & 7) == 7) || (i == D_80108159 - 1)) {
+                vs_battle_playMenuChangeSfx();
+                D_801081ED = 6;
+                return 1;
+            }
+            if (++i >= D_80108159) {
+                i = D_80108159 - 1;
+            }
+        }
+
+        if (i != D_80108158) {
+            vs_battle_playMenuChangeSfx();
+            D_80108158 = i;
+        }
+    }
+    vs_mainmenu_setMessage(
+        (char*)&_statusStrings[_statusStrings[D_80108138[D_80108158] + 0x12]]);
+    if (arg1 != 0) {
+        D_801080C4 = func_800FFCDC(D_801080C4,
+            (((D_80108158 & 7) * 0x10) + 2)
+                | ((((D_80108158 >> 3) * 0x10) + 0x88) << 0x10));
+        D_801022D5 = 1;
+    }
+    return 0;
+}
 
 int func_80104514(int arg0)
 {

@@ -41,8 +41,7 @@ typedef struct {
     short unkA;
     short unkC;
     short unkE;
-    short unk10;
-    short unk12;
+    int unk10;
     short unk14;
     short unk16;
     short currentHP;

@@ -675,7 +675,7 @@ void func_80103EF8(int arg0, int arg1, int arg2, int arg3)
     D_1F800000[0] = temp_a2;
 }
 
-void func_80103FEC(int* arg0, int arg1)
+void func_80103FEC(vs_battle_equipment_t2* arg0, int arg1)
 {
     int temp_a0;
     int temp_s1;
@@ -685,7 +685,7 @@ void func_80103FEC(int* arg0, int arg1)
     int i;
     int var_s3;
 
-    temp_s6 = func_800C9E08((vs_battle_equipment_t2*)arg0);
+    temp_s6 = func_800C9E08(arg0);
     var_s3 = 0;
     for (i = 0; i < 32; ++i) {
         temp_a0 = var_s3 & 7;
@@ -697,14 +697,15 @@ void func_80103FEC(int* arg0, int arg1)
             temp_s2 = (temp_a0) - (arg1 - new_var);
             temp_s1 = ((temp_v1 * new_var) + 0x90) << new_var;
             if (i >= new_var) {
-                func_800C0224(0x80, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008,
-                    D_1F800000[1] - 2)[4]
+                func_800C0224(
+                    0x80, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008, D_1F800000[1] - 2)
+                    ->unk10
                     = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
             }
             arg0 = func_800C0224(
                 0x80, (temp_s2 & 0xFFFF) | temp_s1, 0x100010, D_1F800000[1] - 2);
 
-            arg0[4]
+            arg0->unk10
                 = (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
         }
     }

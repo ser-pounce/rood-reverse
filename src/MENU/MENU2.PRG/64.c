@@ -225,24 +225,24 @@ static int _abilityMenu()
                 if (_selectedAbilityType == abilityTypeChain) {
                     ability = _unlockedChainAbilities[i];
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        func_800FFC68(2, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(2, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        func_800FFC68(0, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(0, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        func_800FFC68(1, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(1, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                 } else {
                     ability = _unlockedDefenseAbilities[i];
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        func_800FFC68(2, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(2, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        func_800FFC68(0, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(0, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        func_800FFC68(1, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(1, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                 }
             }
@@ -251,24 +251,24 @@ static int _abilityMenu()
                 if (_selectedAbilityType == abilityTypeChain) {
                     ability = _unlockedChainAbilities[i + _firstAbility];
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        func_800FFC68(2, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(2, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        func_800FFC68(0, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(0, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        func_800FFC68(1, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(1, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                 } else {
                     ability = _unlockedDefenseAbilities[i + _firstAbility];
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        func_800FFC68(2, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(2, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        func_800FFC68(0, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(0, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        func_800FFC68(1, 0xC7, i * 0x10 + 0x30, temp_s3);
+                        vs_mainmenu_drawButton(1, 0xC7, i * 0x10 + 0x30, temp_s3);
                     }
                 }
             }

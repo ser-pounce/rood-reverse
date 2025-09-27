@@ -126,9 +126,9 @@ static void func_80103FD8(int arg0)
     int temp_s3;
 
     sp18 = (u_int*)D_1F800000[1] - 1;
-    func_800FFC68(3, (-arg0 + 16), 50, 0);
-    func_800FFC68(1, (-arg0 + 16), 66, 0);
-    func_800FFC68(0, (-arg0 + 16), 82, 0);
+    vs_mainmenu_drawButton(3, (-arg0 + 16), 50, 0);
+    vs_mainmenu_drawButton(1, (-arg0 + 16), 66, 0);
+    vs_mainmenu_drawButton(0, (-arg0 + 16), 82, 0);
     var_s1 = func_800C0214(0x100010, ((-arg0 + 16) & 0xFFFF) | 0x220000);
     var_s1[4] = 0x37FB70B0;
     var_s1 += 6;

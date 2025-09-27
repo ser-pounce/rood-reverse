@@ -410,10 +410,10 @@ static int _showMenu()
             }
         }
         s0 = (u_long**)getScratchAddr(0);
-        func_800FFC68(1, 8, 0x10, s0[1] + 6);
+        vs_mainmenu_drawButton(1, 8, 16, s0[1] + 6);
         func_800C6540("TURN    PAGE", 0x12001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x12, 0x60, 0xC);
-        func_800FFC68(2, 8, 0x22, s0[1] + 6);
+        vs_mainmenu_drawButton(2, 8, 34, s0[1] + 6);
         func_800C6540("MENU", 0x24001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x24, 0x40, 0xC);
         func_800C6540("PAGE", 0xC400D8, 0x808080, s0[1] + 7);

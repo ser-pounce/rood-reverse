@@ -2,6 +2,7 @@ vs_mainmenu_ready = 0x800FA9D0;
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;
+vs_mainmenu_drawButton = 0x800FFC68;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainmenu_setMenuRows = 0x801005E0;
 vs_mainmenu_getSelectedRow = 0x801008C8;

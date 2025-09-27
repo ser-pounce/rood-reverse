@@ -8,7 +8,7 @@ void func_800FFB68(int);
 void func_800FFB90(int);
 void func_800FFBA8(void);
 void func_800FFBC8(void);
-void func_800FFC68(int, int, int, u_long*);
+void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(int, int);
 void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);

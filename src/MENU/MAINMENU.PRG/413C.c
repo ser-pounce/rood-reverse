@@ -142,7 +142,14 @@ void vs_mainmenu_setMessage(char* arg0)
     func_800C6BF0(7, D_8010231A - 2);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFC68);
+void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
+{
+    if (data == NULL) {
+        data = D_1F800000[2];
+    }
+    func_800C0224(0x80, (x & 0xFFFF) | (y << 0x10), 0x100010, data)[4]
+        = ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFCDC);
 

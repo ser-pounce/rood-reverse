@@ -1377,7 +1377,7 @@ int vs_menu4_Exec(char* state)
     if (D_801081EC < 10) {
         selectedRow = vs_battle_rowAnimationSteps[D_801081EC];
         func_80100344(16 - selectedRow, 38, 88, 10);
-        func_800FFC68(1, 8 - selectedRow, 36, 0);
+        vs_mainmenu_drawButton(1, 8 - selectedRow, 36, 0);
         func_800C6540(
             "STATUS", ((0x1C - selectedRow) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
     }

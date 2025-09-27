@@ -49,7 +49,7 @@ typedef struct {
     short maxHP;
     short currentMP;
     short maxMP;
-    short unk20;
+    u_short unk20;
     short unk22;
     short unk24;
     short unk26;
@@ -89,7 +89,7 @@ typedef struct {
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];
-    int unk954;
+    u_int unk954;
 } vs_battle_equipment_t2;
 
 typedef struct {

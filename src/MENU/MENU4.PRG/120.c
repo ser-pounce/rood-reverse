@@ -510,7 +510,7 @@ void func_8010399C(int arg0, int arg1, u_long* arg2)
     }
 }
 
-void func_80103A6C(int arg0, int arg1, int arg2)
+void func_80103A6C(int arg0, int arg1, int arg2, int arg3)
 {
 
     if (arg2 == 0) {
@@ -524,10 +524,94 @@ void func_80103A6C(int arg0, int arg1, int arg2)
 
     arg1 <<= 6;
 
-    func_800C99DC(arg0 & 0xFF, ((arg1 + arg2) - 1) / arg2, D_1F800000[1] - 3);
+    func_800C99DC(arg0 & 0xFF, ((arg1 + arg2) - 1) / arg2, D_1F800000[1] - 3, arg3);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80103AC8);
+void func_80103AC8(void)
+{
+    int temp_s2;
+    int i;
+    int* temp_v0_2;
+    u_long* temp_s4;
+    vs_battle_equipment_t2* var_s3;
+
+    var_s3 = D_800F1928[D_801080A8 - 1]->unk3C;
+    temp_s4 = D_1F800000[1] - 3;
+    switch (D_801080B8) {
+    case 0:
+        break;
+    case 1:
+        if (D_801080B9 == 0) {
+            if (D_801080BA == 0) {
+                func_800CB654(0);
+                D_801080B8 = 0;
+            } else {
+                --D_801080BA;
+            }
+        } else {
+            --D_801080B9;
+            var_s3 = D_800F1928[D_801080A4 - 1]->unk3C;
+        }
+        break;
+    case 2:
+        if (D_801080B9 != 0) {
+            --D_801080B9;
+            var_s3 = D_800F1928[D_801080A4 - 1]->unk3C;
+        } else if (D_801080BA == 0) {
+            D_801080B8 = 3;
+        } else {
+            --D_801080BA;
+        }
+        break;
+    case 3:
+        if (D_801080B9 < 4) {
+            D_801080B9 = (char)D_801080B9 + 1;
+        } else {
+            D_801080B8 = 0;
+        }
+        break;
+    case 4:
+        if (D_800EB9B0 == 0x200000) {
+            if (D_801080BA == 0) {
+                D_801080B8 = 3;
+            } else {
+                --D_801080BA;
+            }
+        }
+        break;
+    }
+    if (D_801080B9 != 0) {
+        temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
+        if (var_s3->unk954 & 0x20000) {
+            i = func_800C9950(0, temp_s2 | 0x42, var_s3->maxHP, temp_s4);
+            func_800C9950(2, i, 0, temp_s4);
+            func_800C9950(1, i + 0xFFFEFFF9, var_s3->currentHP, temp_s4);
+            i = func_800C9950(0, temp_s2 | 0x88, var_s3->maxMP, temp_s4);
+            func_800C9950(2, i, 0, temp_s4);
+            func_800C9950(1, i + 0xFFFEFFF9, var_s3->currentMP, temp_s4);
+            temp_s2 += 0xF0000;
+            func_800C9950(1, temp_s2 | 0x40, var_s3->unk20, temp_s4);
+            temp_s2 += 0x10000;
+        } else {
+            func_8010399C(temp_s2 | 0x42, 1, temp_s4);
+            func_8010399C(temp_s2 | 0x88, 1, temp_s4);
+            temp_s2 += 0x100000;
+            func_8010399C(temp_s2 | 0x40, 0, temp_s4);
+        }
+
+        for (i = 0; i < 3; ++i) {
+            temp_v0_2 = func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
+                *(i + D_800EBBFC) | 0x90000, temp_s4);
+            temp_v0_2[4] = D_800EBC00[i] | 0x37F60000;
+        }
+        temp_s2 += 0xFFF80000;
+        i = (var_s3->unk954 >> 9) & 0x100;
+        func_80103A6C(i, var_s3->currentHP, var_s3->maxHP, temp_s2 | 0xA);
+        func_80103A6C(i | 1, var_s3->currentMP, var_s3->maxMP, temp_s2 | 0x50);
+        temp_s2 += 0x40000;
+        func_80103A6C(i | 2, var_s3->unk20, 0x64, temp_s2 | 0xA);
+    }
+}
 
 void func_80103E58(int arg0, int arg1, int arg2)
 {

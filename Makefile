@@ -84,6 +84,7 @@ src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 .PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
 
 all: $(targets)
+ifeq ($(NOCHECK),)
 	echo "Verifying target files"
 	fail=0
 	for t in $(^:$(BUILD)/%=%); do
@@ -96,6 +97,7 @@ all: $(targets)
 	    printf '\033[0;32m✔ All files match\033[0m\n'
 	fi
 	exit $$fail
+endif
 
 format: sortsyms lintsrc
 

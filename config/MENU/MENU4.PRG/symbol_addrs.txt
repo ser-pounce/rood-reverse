@@ -1,5 +1,5 @@
 _statusStrings = 0x80107448;
-_hitLocationState = 0x80108084;
+_hitLocationStates = 0x80108084;
 D_801080C5 = 0x801080C5;
 D_801080C6 = 0x801080C6;
 animWait = 0x8010812C;

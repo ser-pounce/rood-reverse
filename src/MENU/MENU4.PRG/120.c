@@ -64,7 +64,7 @@ extern u_short* D_800F51A4;
 extern char D_800F4F6A;
 extern char D_801024B9;
 
-extern char* _hitLocationState[];
+extern char* _hitLocationStates[];
 extern int D_8010809C;
 extern int D_801080A0;
 extern int D_801080A4;
@@ -905,7 +905,7 @@ int func_801045B8(int arg0)
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
                     | (0x24 + i * 0x10) * 0x10000,
                 0);
-            vs_battle_renderTextRaw(_hitLocationState[hitLocationState],
+            vs_battle_renderTextRaw(_hitLocationStates[hitLocationState],
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xE0)
                     | (0x22 + i * 0x10) * 0x10000,
                 0);
@@ -940,7 +940,7 @@ int func_801045B8(int arg0)
             hitLocationState = vs_battle_getHitLocationState(hitLocation);
             func_80103E58(hitLocationState, (0x24 + i * 0x10) * 0x10000 | 0xD8,
                 temp_s6 - (i == sp20));
-            func_800C6540(_hitLocationState[hitLocationState],
+            func_800C6540(_hitLocationStates[hitLocationState],
                 (0x22 + i * 0x10) * 0x10000 | 0xE0,
                 i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
             func_800A13EC(1, hitLocation->unk5, sp10, 0);
@@ -961,7 +961,7 @@ int func_801045B8(int arg0)
                 hitLocationState = vs_battle_getHitLocationState(hitLocation);
                 func_80103E58(hitLocationState,
                     ((D_80108168[i] << 5) + 0xD8) | (0x24 + i * 0x10) * 0x10000, 0);
-                vs_battle_renderTextRaw(_hitLocationState[hitLocationState],
+                vs_battle_renderTextRaw(_hitLocationStates[hitLocationState],
                     ((D_80108168[i] << 5) + 0xE0) | (0x22 + i * 0x10) * 0x10000, 0);
             } else {
                 D_801080C5 = 0;

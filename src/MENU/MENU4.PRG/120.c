@@ -64,7 +64,7 @@ extern u_short* D_800F51A4;
 extern char D_800F4F6A;
 extern char D_801024B9;
 
-extern char* D_80108084[];
+extern char* _hitLocationState[];
 extern int D_8010809C;
 extern int D_801080A0;
 extern int D_801080A4;
@@ -164,7 +164,8 @@ void func_80102B70(u_short* arg0)
         vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0x4E, 0x20);
         D_801024C0[0x3F] = 0;
         for (i = 0; i < 5; ++i) {
-            D_801024C0[0x3F] |= arg0 == vs_battle_characterState->unk3C->hitLocations[i].unk20;
+            D_801024C0[0x3F]
+                |= arg0 == vs_battle_characterState->unk3C->hitLocations[i].unk20;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -838,7 +839,7 @@ int func_80104514(int arg0)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        if (D_800F1928[arg0]->unk3C->hitLocations[i].unk6 == 0) {
+        if (D_800F1928[arg0]->unk3C->hitLocations[i].nameIndex == 0) {
             break;
         }
     }
@@ -855,12 +856,12 @@ int func_801045B8(int arg0)
 {
     int sp10[2];
     vs_battle_equipment_t2* sp18;
-    vs_battle_equipment_hitLocations* s3;
+    vs_battle_equipment_hitLocations* hitLocation;
     int sp1C;
     int sp20;
     int sp24;
     int temp_s6;
-    int var_s1;
+    int hitLocationState;
     int i;
     int temp_s4;
 
@@ -893,34 +894,34 @@ int func_801045B8(int arg0)
     case 1:
         func_80103FEC((int*)sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
         for (i = 0; i < sp1C; ++i) {
-            s3 = &sp18->hitLocations[i];
+            hitLocation = &sp18->hitLocations[i];
             temp_s4 = D_80108168[i];
-            vs_battle_renderTextRaw(D_800EA620[s3->unk6],
+            vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
                     | (0x22 + i * 0x10) * 0x10000,
                 0);
-            var_s1 = func_800C9E5C(s3);
-            func_80103E58(var_s1,
+            hitLocationState = vs_battle_getHitLocationState(hitLocation);
+            func_80103E58(hitLocationState,
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
                     | (0x24 + i * 0x10) * 0x10000,
                 0);
-            vs_battle_renderTextRaw(D_80108084[var_s1],
+            vs_battle_renderTextRaw(_hitLocationState[hitLocationState],
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xE0)
                     | (0x22 + i * 0x10) * 0x10000,
                 0);
             if (temp_s4 < 8) {
-                func_800A13EC(1, s3->unk5, sp10, 0);
+                func_800A13EC(1, hitLocation->unk5, sp10, 0);
                 func_80103EF8(i, sp10[0], 8 - temp_s4, 0);
             }
-            var_s1 = 0;
+            hitLocationState = 0;
             if (temp_s4 != 0) {
                 D_80108168[i] = temp_s4 - 1;
             } else {
-                var_s1 = 1;
+                hitLocationState = 1;
             }
         }
 
-        if (var_s1 != 0) {
+        if (hitLocationState != 0) {
             D_801080C5 = 2;
         }
         break;
@@ -929,18 +930,20 @@ int func_801045B8(int arg0)
 
         temp_s4 = D_800F4F6A;
         for (i = 0; i < sp1C; ++i) {
-            s3 = &sp18->hitLocations[i];
+            hitLocation = &sp18->hitLocations[i];
             temp_s6 = temp_s4 >> 7;
             sp20 = temp_s4 - 0x80;
             sp24 = temp_s6 - 1;
-            func_800C6540(D_800EA620[s3->unk6], (0x22 + i * 0x10) * 0x10000 | 0xD8,
+            func_800C6540(vs_battle_hitlocations[hitLocation->nameIndex],
+                (0x22 + i * 0x10) * 0x10000 | 0xD8,
                 i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
-            var_s1 = func_800C9E5C(s3);
-            func_80103E58(
-                var_s1, (0x24 + i * 0x10) * 0x10000 | 0xD8, temp_s6 - (i == sp20));
-            func_800C6540(D_80108084[var_s1], (0x22 + i * 0x10) * 0x10000 | 0xE0,
+            hitLocationState = vs_battle_getHitLocationState(hitLocation);
+            func_80103E58(hitLocationState, (0x24 + i * 0x10) * 0x10000 | 0xD8,
+                temp_s6 - (i == sp20));
+            func_800C6540(_hitLocationState[hitLocationState],
+                (0x22 + i * 0x10) * 0x10000 | 0xE0,
                 i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
-            func_800A13EC(1, s3->unk5, sp10, 0);
+            func_800A13EC(1, hitLocation->unk5, sp10, 0);
             if (!(temp_s4 & 0x80) && ((D_801080B0 | D_801080AC) == 0)) {
                 func_80103EF8(i, sp10[0], 8, i == temp_s4);
             }
@@ -951,14 +954,14 @@ int func_801045B8(int arg0)
 
         for (i = 0; i < sp1C; ++i) {
             if (D_80108168[i] < 8) {
-                s3 = &sp18->hitLocations[i];
+                hitLocation = &sp18->hitLocations[i];
                 ++D_80108168[i];
-                vs_battle_renderTextRaw(D_800EA620[s3->unk6],
+                vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                     ((D_80108168[i] << 5) + 0xD8) | (0x22 + i * 0x10) * 0x10000, 0);
-                var_s1 = func_800C9E5C(s3);
-                func_80103E58(var_s1,
+                hitLocationState = vs_battle_getHitLocationState(hitLocation);
+                func_80103E58(hitLocationState,
                     ((D_80108168[i] << 5) + 0xD8) | (0x24 + i * 0x10) * 0x10000, 0);
-                vs_battle_renderTextRaw(D_80108084[var_s1],
+                vs_battle_renderTextRaw(_hitLocationState[hitLocationState],
                     ((D_80108168[i] << 5) + 0xE0) | (0x22 + i * 0x10) * 0x10000, 0);
             } else {
                 D_801080C5 = 0;

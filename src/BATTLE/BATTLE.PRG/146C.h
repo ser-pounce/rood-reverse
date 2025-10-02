@@ -21,7 +21,7 @@ typedef struct {
     u_short unk2;
     char unk4;
     char unk5;
-    u_char unk6;
+    u_char nameIndex;
     char unk7;
     u_short unk8[4];
     u_short unk10[8];

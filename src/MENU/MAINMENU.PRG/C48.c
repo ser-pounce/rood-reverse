@@ -72,7 +72,8 @@ void func_800FA448()
 
     for (i = 0; i < 6; ++i) {
         if (temp_s1->hitLocations[i].unkBA != 0) {
-            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].unkBA], temp_s1->hitLocations[i].unk20);
+            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].unkBA],
+                temp_s1->hitLocations[i].unk20);
         }
     }
 

@@ -94,7 +94,7 @@ void func_800C97BC(void);
 int func_800C9950(int, int, int, u_long*);
 void func_800C99DC(int, int, u_long*, int);
 int func_800C9E08(vs_battle_equipment_t2*);
-int func_800C9E5C(void*);
+int vs_battle_getHitLocationState(void*);
 int func_800CABE0(int);
 int func_800CAEAC(int);
 int vs_battle_abilitiesUnlocked(int);
@@ -120,7 +120,7 @@ void func_800CF830(int, int);
 void func_800CF920(void);
 
 extern u_short vs_battle_menuStrings[];
-extern char* D_800EA620[];
+extern char* vs_battle_hitlocations[];
 extern char D_800EB9AE;
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;

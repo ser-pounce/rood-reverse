@@ -863,7 +863,7 @@ int func_801045B8(int arg0)
     int temp_s6;
     int hitLocationState;
     int i;
-    int temp_s4;
+    int step;
 
     sp18 = D_800F1928[D_801080C6]->unk3C;
     sp1C = func_80104514(D_801080C6);
@@ -878,7 +878,6 @@ int func_801045B8(int arg0)
         if (arg0 == -2) {
             D_801080C5 = 3;
         } else {
-            int v1;
             D_801080C6 = D_801080A8 - 1;
             func_800FBD80(D_801080C6);
             for (i = 0; i < 6; ++i) {
@@ -895,27 +894,27 @@ int func_801045B8(int arg0)
         func_80103FEC((int*)sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
         for (i = 0; i < sp1C; ++i) {
             hitLocation = &sp18->hitLocations[i];
-            temp_s4 = D_80108168[i];
+            step = D_80108168[i];
             vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
-                (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
+                (vs_battle_rowAnimationSteps[step] + 0xD8)
                     | (0x22 + i * 0x10) * 0x10000,
                 0);
             hitLocationState = vs_battle_getHitLocationState(hitLocation);
             func_80103E58(hitLocationState,
-                (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
+                (vs_battle_rowAnimationSteps[step] + 0xD8)
                     | (0x24 + i * 0x10) * 0x10000,
                 0);
             vs_battle_renderTextRaw(_hitLocationStates[hitLocationState],
-                (vs_battle_rowAnimationSteps[temp_s4] + 0xE0)
+                (vs_battle_rowAnimationSteps[step] + 0xE0)
                     | (0x22 + i * 0x10) * 0x10000,
                 0);
-            if (temp_s4 < 8) {
+            if (step < 8) {
                 func_800A13EC(1, hitLocation->unk5, sp10, 0);
-                func_80103EF8(i, sp10[0], 8 - temp_s4, 0);
+                func_80103EF8(i, sp10[0], 8 - step, 0);
             }
             hitLocationState = 0;
-            if (temp_s4 != 0) {
-                D_80108168[i] = temp_s4 - 1;
+            if (step != 0) {
+                D_80108168[i] = step - 1;
             } else {
                 hitLocationState = 1;
             }
@@ -928,11 +927,11 @@ int func_801045B8(int arg0)
     case 2:
         func_80103FEC((int*)sp18, 0);
 
-        temp_s4 = D_800F4F6A;
+        step = D_800F4F6A;
         for (i = 0; i < sp1C; ++i) {
             hitLocation = &sp18->hitLocations[i];
-            temp_s6 = temp_s4 >> 7;
-            sp20 = temp_s4 - 0x80;
+            temp_s6 = step >> 7;
+            sp20 = step - 0x80;
             sp24 = temp_s6 - 1;
             func_800C6540(vs_battle_hitlocations[hitLocation->nameIndex],
                 (0x22 + i * 0x10) * 0x10000 | 0xD8,
@@ -944,8 +943,8 @@ int func_801045B8(int arg0)
                 (0x22 + i * 0x10) * 0x10000 | 0xE0,
                 i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
             func_800A13EC(1, hitLocation->unk5, sp10, 0);
-            if (!(temp_s4 & 0x80) && ((D_801080B0 | D_801080AC) == 0)) {
-                func_80103EF8(i, sp10[0], 8, i == temp_s4);
+            if (!(step & 0x80) && ((D_801080B0 | D_801080AC) == 0)) {
+                func_80103EF8(i, sp10[0], 8, i == step);
             }
         }
         break;

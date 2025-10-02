@@ -8444,15 +8444,15 @@ void func_80042CB0()
     var_t3 = 0;
 
     for (i = 0; i < 6; ++i) {
-        temp_t5->unk0.unk28[i].unk0 = temp_t0->unk398[i].unk0;
-        temp_t5->unk0.unk28[i].unk2 = temp_t0->unk398[i].unk2;
+        temp_t5->unk0.unk28[i].unk0 = temp_t0->hitLocations[i].unk0;
+        temp_t5->unk0.unk28[i].unk2 = temp_t0->hitLocations[i].unk2;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk0.unk28[i].unk4[j] = temp_t0->unk398[i].unk8[j];
+            temp_t5->unk0.unk28[i].unk4[j] = temp_t0->hitLocations[i].unk8[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk0.unk28[i].unkC[j] = temp_t0->unk398[i].unk10[j];
+            temp_t5->unk0.unk28[i].unkC[j] = temp_t0->hitLocations[i].unk10[j];
         }
     }
 

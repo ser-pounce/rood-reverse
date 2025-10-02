@@ -164,7 +164,7 @@ void func_80102B70(u_short* arg0)
         vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0x4E, 0x20);
         D_801024C0[0x3F] = 0;
         for (i = 0; i < 5; ++i) {
-            D_801024C0[0x3F] |= arg0 == vs_battle_characterState->unk3C->unk398[i].unk20;
+            D_801024C0[0x3F] |= arg0 == vs_battle_characterState->unk3C->hitLocations[i].unk20;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -838,7 +838,7 @@ int func_80104514(int arg0)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        if (D_800F1928[arg0]->unk3C->unk398[i].unk6 == 0) {
+        if (D_800F1928[arg0]->unk3C->hitLocations[i].unk6 == 0) {
             break;
         }
     }
@@ -855,7 +855,7 @@ int func_801045B8(int arg0)
 {
     int sp10[2];
     vs_battle_equipment_t2* sp18;
-    vs_battle_equipment_t3* s3;
+    vs_battle_equipment_hitLocations* s3;
     int sp1C;
     int sp20;
     int sp24;
@@ -880,7 +880,7 @@ int func_801045B8(int arg0)
             int v1;
             D_801080C6 = D_801080A8 - 1;
             func_800FBD80(D_801080C6);
-            for (i = 0; i < 6; i++) {
+            for (i = 0; i < 6; ++i) {
                 D_80108168[i] = 12 + i;
             }
             D_801080C5 = 1;
@@ -893,7 +893,7 @@ int func_801045B8(int arg0)
     case 1:
         func_80103FEC((int*)sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
         for (i = 0; i < sp1C; ++i) {
-            s3 = &sp18->unk398[i];
+            s3 = &sp18->hitLocations[i];
             temp_s4 = D_80108168[i];
             vs_battle_renderTextRaw(D_800EA620[s3->unk6],
                 (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
@@ -929,7 +929,7 @@ int func_801045B8(int arg0)
 
         temp_s4 = D_800F4F6A;
         for (i = 0; i < sp1C; ++i) {
-            s3 = &sp18->unk398[i];
+            s3 = &sp18->hitLocations[i];
             temp_s6 = temp_s4 >> 7;
             sp20 = temp_s4 - 0x80;
             sp24 = temp_s6 - 1;
@@ -951,7 +951,7 @@ int func_801045B8(int arg0)
 
         for (i = 0; i < sp1C; ++i) {
             if (D_80108168[i] < 8) {
-                s3 = &sp18->unk398[i];
+                s3 = &sp18->hitLocations[i];
                 ++D_80108168[i];
                 vs_battle_renderTextRaw(D_800EA620[s3->unk6],
                     ((D_80108168[i] << 5) + 0xD8) | (0x22 + i * 0x10) * 0x10000, 0);
@@ -1169,8 +1169,8 @@ INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
 void func_801063F8(void)
 {
     int i;
-    vs_battle_equipment_t3* temp_a0
-        = &D_800F1928[D_801080A8 - 1]->unk3C->unk398[D_801081ED];
+    vs_battle_equipment_hitLocations* temp_a0
+        = &D_800F1928[D_801080A8 - 1]->unk3C->hitLocations[D_801081ED];
 
     for (i = 0; i < 16; ++i) {
         D_801024C0[i + 16] = temp_a0->unk10[i & 7];

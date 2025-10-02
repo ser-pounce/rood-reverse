@@ -31,7 +31,7 @@ typedef struct {
     u_char unkBB;
     int unkBC[7];
     int unkD8;
-} vs_battle_equipment_t3;
+} vs_battle_equipment_hitLocations;
 
 typedef struct {
     short unk0;
@@ -86,7 +86,7 @@ typedef struct {
     char unk36E;
     u_char unk36F;
     int unk370[10];
-    vs_battle_equipment_t3 unk398[6];
+    vs_battle_equipment_hitLocations hitLocations[6];
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];

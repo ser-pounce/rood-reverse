@@ -61,8 +61,10 @@ typedef struct {
 
 extern u_short* D_800F51A4;
 
+extern char D_800F4F6A;
 extern char D_801024B9;
 
+extern char* D_80108084[];
 extern int D_8010809C;
 extern int D_801080A0;
 extern int D_801080A4;
@@ -77,6 +79,8 @@ extern char D_801080BB;
 extern char D_801080BC;
 extern u_int D_801080C0;
 extern char D_801080C4;
+extern char D_801080C5;
+extern u_char D_801080C6;
 extern int D_801080C8[];
 extern int D_801080FC[];
 extern int animWait;
@@ -86,6 +90,7 @@ extern char D_80108138[];
 extern u_char D_80108158;
 extern u_char D_80108159;
 extern vs_battle_equipment_t2* D_8010815C;
+extern int D_80108168[];
 extern int D_80108188;
 extern D_801081B8_t D_801081B8;
 extern u_char D_801081EC;
@@ -846,7 +851,123 @@ int func_8010455C(void)
         + (D_800F1928[D_801080A8 - 1]->unk3C->unk338 != 0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801045B8);
+int func_801045B8(int arg0)
+{
+    int sp10[2];
+    vs_battle_equipment_t2* sp18;
+    vs_battle_equipment_t3* s3;
+    int sp1C;
+    int sp20;
+    int sp24;
+    int temp_s6;
+    int var_s1;
+    int i;
+    int temp_s4;
+
+    sp18 = D_800F1928[D_801080C6]->unk3C;
+    sp1C = func_80104514(D_801080C6);
+    if (arg0 != 0) {
+        if (arg0 > 0) {
+            D_800F4F6A = arg0 - 1;
+            return 0;
+        }
+        if (arg0 == -3) {
+            return D_801080C5;
+        }
+        if (arg0 == -2) {
+            D_801080C5 = 3;
+        } else {
+            int v1;
+            D_801080C6 = D_801080A8 - 1;
+            func_800FBD80(D_801080C6);
+            for (i = 0; i < 6; i++) {
+                D_80108168[i] = 12 + i;
+            }
+            D_801080C5 = 1;
+        }
+        return 0;
+    }
+    switch (D_801080C5) {
+    case 0:
+        break;
+    case 1:
+        func_80103FEC((int*)sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
+        for (i = 0; i < sp1C; ++i) {
+            s3 = &sp18->unk398[i];
+            temp_s4 = D_80108168[i];
+            vs_battle_renderTextRaw(D_800EA620[s3->unk6],
+                (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
+                    | (0x22 + i * 0x10) * 0x10000,
+                0);
+            var_s1 = func_800C9E5C(s3);
+            func_80103E58(var_s1,
+                (vs_battle_rowAnimationSteps[temp_s4] + 0xD8)
+                    | (0x24 + i * 0x10) * 0x10000,
+                0);
+            vs_battle_renderTextRaw(D_80108084[var_s1],
+                (vs_battle_rowAnimationSteps[temp_s4] + 0xE0)
+                    | (0x22 + i * 0x10) * 0x10000,
+                0);
+            if (temp_s4 < 8) {
+                func_800A13EC(1, s3->unk5, sp10, 0);
+                func_80103EF8(i, sp10[0], 8 - temp_s4, 0);
+            }
+            var_s1 = 0;
+            if (temp_s4 != 0) {
+                D_80108168[i] = temp_s4 - 1;
+            } else {
+                var_s1 = 1;
+            }
+        }
+
+        if (var_s1 != 0) {
+            D_801080C5 = 2;
+        }
+        break;
+    case 2:
+        func_80103FEC((int*)sp18, 0);
+
+        temp_s4 = D_800F4F6A;
+        for (i = 0; i < sp1C; ++i) {
+            s3 = &sp18->unk398[i];
+            temp_s6 = temp_s4 >> 7;
+            sp20 = temp_s4 - 0x80;
+            sp24 = temp_s6 - 1;
+            func_800C6540(D_800EA620[s3->unk6], (0x22 + i * 0x10) * 0x10000 | 0xD8,
+                i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
+            var_s1 = func_800C9E5C(s3);
+            func_80103E58(
+                var_s1, (0x24 + i * 0x10) * 0x10000 | 0xD8, temp_s6 - (i == sp20));
+            func_800C6540(D_80108084[var_s1], (0x22 + i * 0x10) * 0x10000 | 0xE0,
+                i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
+            func_800A13EC(1, s3->unk5, sp10, 0);
+            if (!(temp_s4 & 0x80) && ((D_801080B0 | D_801080AC) == 0)) {
+                func_80103EF8(i, sp10[0], 8, i == temp_s4);
+            }
+        }
+        break;
+    case 3:
+        func_80103FEC((int*)sp18, D_80108168[0] << 5);
+
+        for (i = 0; i < sp1C; ++i) {
+            if (D_80108168[i] < 8) {
+                s3 = &sp18->unk398[i];
+                ++D_80108168[i];
+                vs_battle_renderTextRaw(D_800EA620[s3->unk6],
+                    ((D_80108168[i] << 5) + 0xD8) | (0x22 + i * 0x10) * 0x10000, 0);
+                var_s1 = func_800C9E5C(s3);
+                func_80103E58(var_s1,
+                    ((D_80108168[i] << 5) + 0xD8) | (0x24 + i * 0x10) * 0x10000, 0);
+                vs_battle_renderTextRaw(D_80108084[var_s1],
+                    ((D_80108168[i] << 5) + 0xE0) | (0x22 + i * 0x10) * 0x10000, 0);
+            } else {
+                D_801080C5 = 0;
+            }
+        }
+        break;
+    }
+    return 0;
+}
 
 void func_80104AEC(int id)
 {

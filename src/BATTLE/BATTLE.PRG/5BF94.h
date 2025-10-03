@@ -74,7 +74,7 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2[0x58];
+    char unk2[0x5E];
 } D_800F4E8C_t;
 
 void func_800C6540(char const*, int, int, u_long*);
@@ -148,6 +148,7 @@ extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4F1C[6];
+extern char D_800F4F6C;
 extern char D_800F4F70;
 extern char D_800F4FDB;
 extern char D_800F4FDA;

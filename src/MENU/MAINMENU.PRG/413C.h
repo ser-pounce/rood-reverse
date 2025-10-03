@@ -16,6 +16,7 @@ void func_80100164(void);
 void func_80100344(int, int, int, int);
 void func_80100414(int, int);
 void vs_mainmenu_setMenuRows(int rowCount, int, char* strings[], int rowtypes[]);
+void func_80100814();
 int func_801008B0(void);
 int vs_mainmenu_getSelectedRow(void);
 void func_80100A5C(void);

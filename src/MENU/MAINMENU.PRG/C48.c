@@ -35,7 +35,6 @@ typedef struct {
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
-void func_800FC85C(int*, int*, int, int);
 void func_800FCAA4(int, u_short**, int*, void*);
 void func_800FCC0C(int, int*, int*, void*);
 
@@ -398,9 +397,9 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC85C);
 
-void func_800FCA08(int arg0, int* arg1, int arg2, int arg3)
+void func_800FCA08(char* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
-    int sp10[102];
+    u_short sp10[204];
 
     if (D_80102470 == D_80060168) {
         func_8006AEAC(sp10, arg0);
@@ -417,7 +416,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCCE8);
 
-void func_800FCE40(int arg0, int* arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FCE40(int arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
     int sp10[90];
 
@@ -431,7 +430,7 @@ void func_800FCE40(int arg0, int* arg1, int* arg2, D_800F4E8C_t* arg3)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
 
-void func_800FD084(int* arg0, int* arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
     int sp10[48];
 

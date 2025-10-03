@@ -119,7 +119,7 @@ typedef struct {
 } vs_battle_equipment_t;
 
 void func_80069FC4(int, int);
-void func_8006AEAC(int*, int);
+void func_8006AEAC(u_short*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int*);
 void func_8006B338(void*);

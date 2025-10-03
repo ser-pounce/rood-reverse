@@ -101,7 +101,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(void);
 void func_8006A228(int, int);
-void func_8006B7BC(void);
+void func_8006B7BC(void*);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -290,18 +290,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
 
-void func_8006BAA8(void* arg0 __attribute__((unused)), u_short* arg1)
+void func_8006BAA8(void* arg0, u_short* arg1)
 {
     if (arg1[0] != 0) {
         arg1[4] = arg1[24];
-        func_8006B7BC();
+        func_8006B7BC(arg0);
     }
 }
 
-void func_8006BADC(void* arg0 __attribute__((unused)), func_80102CAC_t* arg1)
+void func_8006BADC(void* arg0, func_80102CAC_t* arg1)
 {
     if (arg1->unk0[0] != 0) {
-        func_8006B7BC();
+        func_8006B7BC(arg0);
     }
 }
 

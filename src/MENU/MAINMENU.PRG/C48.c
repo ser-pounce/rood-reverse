@@ -76,8 +76,8 @@ void func_800FA448()
         }
     }
 
-    if (temp_s1->unk36F != 0) {
-        func_8006BADC(D_80060780[temp_s1->unk36F], &temp_s1->unk338);
+    if (temp_s1->unk338.unk37 != 0) {
+        func_8006BADC(D_80060780[temp_s1->unk338.unk37], &temp_s1->unk338);
     }
 }
 

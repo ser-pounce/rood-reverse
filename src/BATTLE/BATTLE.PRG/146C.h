@@ -34,6 +34,16 @@ typedef struct {
 } vs_battle_equipment_hitLocations;
 
 typedef struct {
+    u_short unk0[8];
+    int unk10[8];
+    short unk30;
+    short unk32;
+    short unk34;
+    char unk36;
+    char unk37;
+} func_80102CAC_t;
+
+typedef struct {
     short unk0;
     short unk2;
     short unk4;
@@ -64,7 +74,10 @@ typedef struct {
     char unk36;
     char unk37;
     int unk38;
-    u_short unk3C[128];
+    u_short unk3C[46];
+    char unk98;
+    char unk99;
+    short unk9A[81];
     char unk13C;
     u_char unk13D;
     short unk13E;
@@ -74,17 +87,15 @@ typedef struct {
     u_char unk149;
     short unk14A;
     int unk14C[0x22];
-    u_short unk1D4[0x6D];
+    u_short unk1D4[22];
+    char unk200;
+    char unk201;
+    u_short unk202[86];
     u_char unk2AE;
     short unk2B0;
     short unk2B2;
     int unk2B4[33];
-    u_short unk338;
-    short unk33A;
-    int unk33C[12];
-    short unk36C;
-    char unk36E;
-    u_char unk36F;
+    func_80102CAC_t unk338;
     int unk370[10];
     vs_battle_equipment_hitLocations hitLocations[6];
     u_short unk8C0[68];
@@ -126,7 +137,7 @@ void func_8006B338(void*);
 void func_8006B8C0(void*, u_short*);
 void func_8006B9E0(void*, u_short*);
 void func_8006BAA8(void*, u_short*);
-void func_8006BADC(void*, u_short*);
+void func_8006BADC(void*, func_80102CAC_t*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);
 void func_8007ACB0();

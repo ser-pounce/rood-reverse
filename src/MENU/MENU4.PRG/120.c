@@ -23,15 +23,6 @@ void func_80106308();
 void func_801063F8();
 
 typedef struct {
-    u_short unk0[8];
-    int unk10[8];
-    short unk30;
-    short unk32;
-    short unk34;
-    short unk36;
-} func_80102CAC_t;
-
-typedef struct {
     signed char unk0[8];
     u_short unk8;
     u_short unkA;
@@ -851,7 +842,7 @@ int func_80104514(int arg0)
 int func_8010455C(void)
 {
     return func_80104514(D_801080A8 - 1) + 2
-        + (D_800F1928[D_801080A8 - 1]->unk3C->unk338 != 0);
+        + (D_800F1928[D_801080A8 - 1]->unk3C->unk338.unk0[0] != 0);
 }
 
 int func_801045B8(int arg0)

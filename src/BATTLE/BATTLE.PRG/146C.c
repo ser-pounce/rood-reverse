@@ -298,9 +298,9 @@ void func_8006BAA8(void* arg0 __attribute__((unused)), u_short* arg1)
     }
 }
 
-void func_8006BADC(void* arg0 __attribute__((unused)), u_short* arg1)
+void func_8006BADC(void* arg0 __attribute__((unused)), func_80102CAC_t* arg1)
 {
-    if (*arg1 != 0) {
+    if (arg1->unk0[0] != 0) {
         func_8006B7BC();
     }
 }

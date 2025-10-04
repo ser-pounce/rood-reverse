@@ -40,7 +40,7 @@ typedef struct {
     short unk32;
     short unk34;
     char unk36;
-    char unk37;
+    u_char unk37;
 } func_80102CAC_t;
 
 typedef struct {

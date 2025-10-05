@@ -11,21 +11,6 @@
 #include "../../SLUS_010.40/31724.h"
 #include <libetc.h>
 
-char* func_8010317C(int, u_short*);
-char* func_801032C4(int, u_short*);
-int func_80103744(int);
-void func_80103AC8();
-int func_80104134(vs_battle_equipment_t2*, int);
-int func_80104514(int);
-int func_801045B8(int);
-void func_80104C40(int, u_short*, int);
-void func_80104DFC(int, u_short*, int);
-int func_80105970(int);
-void func_80105F60();
-void func_80106150(void);
-void func_80106308();
-void func_801063F8();
-
 typedef struct {
     signed char unk0[8];
     u_short unk8;
@@ -53,6 +38,39 @@ typedef struct {
     u_short unk2;
     char unk4;
 } func_80103080_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    int unk4;
+    char unk8;
+    char unk9;
+    u_short unkA;
+    int unkC[9];
+} func_80104DFC_t2;
+
+typedef struct {
+    int unk0[11];
+    char unk2C;
+    char unk2D;
+    short unk2E;
+    int unk30[6];
+    func_80104DFC_t2 unk48[2];
+} func_80104DFC_t;
+
+char* func_8010317C(int, u_short*);
+char* func_801032C4(int, u_short*);
+int func_80103744(int);
+void func_80103AC8();
+int func_80104134(vs_battle_equipment_t2*, int);
+int func_80104514(int);
+int func_801045B8(int);
+void func_80104C40(int, u_short*, int);
+int func_80105970(int);
+void func_80105F60();
+void func_80106150(void);
+void func_80106308();
+void func_801063F8();
 
 extern u_short* D_800F51A4;
 
@@ -1016,7 +1034,43 @@ void func_80104C0C(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104C40);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104DFC);
+void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
+{
+    func_800FD0E0_t sp18;
+    func_800FD17C_t sp20;
+    int sp40;
+    int var_s0;
+    vs_battle_menuItem_t* temp_v0;
+    int dummy[6] __attribute__((unused));
+
+    var_s0 = arg0 - 1;
+
+    if (var_s0 < arg1->unk2D) {
+        sp18.unk4 = 0;
+        sp18.unk0 = (char*)&D_80102540[0x340B];
+        sp40 = 0x58000000;
+        if (arg1->unk48[var_s0].unk0 != 0) {
+            func_8006B728(&sp20, &arg1->unk48[var_s0].unk0);
+            func_800FD0E0(&sp20, &sp18, &sp40, D_800F4E8C);
+        }
+        var_s0 = 0x97;
+    } else {
+        var_s0 = 0;
+    }
+
+    func_800FFB90(arg0 + 0x14);
+    if (var_s0 != 0) {
+        temp_v0 = vs_battle_setMenuItem(
+            arg0 + 0x14, 0x140 - var_s0, (arg0 * 0x10) + 0x12, var_s0, 0, sp18.unk0);
+        temp_v0->unk7 = sp18.unk4 == 0;
+        if (arg2 & 1) {
+            temp_v0->animSpeed = 0x140;
+            temp_v0->state = 2;
+            temp_v0->x = 0x140 - var_s0;
+        }
+        temp_v0->weaponType = 0x16;
+    }
+}
 
 void func_80104F2C(int arg0)
 {
@@ -1112,7 +1166,7 @@ int func_80104F80(int arg0)
                 if (D_80108181 == 0) {
                     func_80104C40(D_80108182, temp_s1->unk3C, 1);
                 } else if (D_80108181 == s0) {
-                    func_80104DFC(D_80108182, temp_s1->unk1D4, 1);
+                    func_80104DFC(D_80108182, (func_80104DFC_t*)temp_s1->unk1D4, 1);
                 }
             }
             break;
@@ -1187,7 +1241,7 @@ int func_80104F80(int arg0)
                     func_800FC268(0xB);
                     func_80102A64(temp_s1->unk1D4);
                     for (i = 1; i < 4; ++i) {
-                        func_80104DFC(i, temp_s1->unk1D4, 0);
+                        func_80104DFC(i, (func_80104DFC_t*)temp_s1->unk1D4, 0);
                     }
                     func_800FCCE8(temp_s1->unk1D4, sp18, &sp48, D_800F4E8C);
                     break;

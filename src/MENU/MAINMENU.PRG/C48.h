@@ -24,12 +24,6 @@ typedef struct {
     void* unk4;
 } func_800FD0E0_t;
 
-typedef struct {
-    u_short unk0;
-    char unk2;
-    char unk3;
-} func_800FD17C_t;
-
 void func_800FA448(void);
 void func_800FA8A0(int arg0);
 void func_800FA810(int arg0);

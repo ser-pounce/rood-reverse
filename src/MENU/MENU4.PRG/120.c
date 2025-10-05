@@ -170,7 +170,6 @@ extern u_short* D_800F51A4;
 extern char D_800F4F6A;
 extern char D_801024B9;
 
-extern char* _hitLocationStates[];
 extern int D_8010809C;
 extern int D_801080A0;
 extern int D_801080A4;
@@ -399,7 +398,10 @@ void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((
     arg1[1] = D_800F4E8C;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENU4.PRG/nonmatchings/120", D_80102800);
+static char* _hitLocationStates[] = {
+    "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT"
+};
+static int _ = 0;
 
 char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
 {

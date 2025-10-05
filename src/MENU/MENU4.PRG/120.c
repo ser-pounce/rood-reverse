@@ -58,14 +58,107 @@ typedef struct {
     func_80104DFC_t2 unk48[2];
 } func_80104DFC_t;
 
-char* func_8010317C(int, u_short*);
+typedef struct {
+    short classStats[2][8];
+    short affinityStats[2][8];
+} vs_battle_classAffinityStats_t;
+
+typedef struct {
+    u_short unk0[0x10];
+} vs_battle_unkStats_t;
+
+typedef struct {
+    char unk0[0x30];
+} vs_battle_equipment_t3_unk;
+
+typedef struct {
+    u_short unk0[6];
+    u_short unkC;
+    u_short unkE;
+    int unk10;
+    int unk14;
+    u_short unk18;
+    u_short unk1A;
+    int unk1C[16];
+    char unk5C;
+    char unk5D;
+    short unk5E;
+    int unk60;
+    signed char unk64[4];
+    int unk68[4];
+    vs_battle_equipment_t3_unk unk78[3];
+    u_short unk108;
+    char unk10A;
+    char unk10B;
+    char unk10C;
+    u_char unk10D;
+    u_char unk10E;
+    u_char unk10F;
+    u_short unk110;
+    u_short unk112;
+    u_short unk114;
+    u_short unk116;
+    short unk118;
+    u_short unk11A;
+    short unk11C;
+    u_short unk11E;
+    short unk120;
+    u_short unk122;
+    char unk124;
+    char unk125;
+    short unk126;
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk168[4];
+    vs_battle_unkStats_t unk178;
+} vs_battle_equipment_t3;
+
+typedef struct {
+    int unk0[6];
+    u_short unk18;
+    u_short unk1A;
+    int unk1C[0x30];
+    u_short unkDC;
+    u_short unkDE;
+    u_short unkE0;
+    u_short unkE2;
+    short unkE4;
+    u_short unkE6;
+    short unkE8;
+    u_short unkEA;
+    short unkEC;
+    u_short unkEE;
+    char unkF0[4];
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk134[4];
+    vs_battle_unkStats_t unk144;
+} vs_battle_equipment_t4;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    int unk4[11];
+    u_short unk30;
+    u_short unk32;
+    short unk34;
+    u_short unk36;
+    short unk38;
+    u_short unk3A;
+    short unk3C;
+    u_short unk3E;
+    u_short unk40[4];
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk88[5];
+    vs_battle_unkStats_t unk9C;
+} vs_battle_equipment_t5;
+
+char* func_8010317C(int, vs_battle_equipment_t3*);
 char* func_801032C4(int, u_short*);
 int func_80103744(int);
 void func_80103AC8();
 int func_80104134(vs_battle_equipment_t2*, int);
 int func_80104514(int);
 int func_801045B8(int);
-void func_80104C40(int, u_short*, int);
+void func_80104C40(int, vs_battle_equipment_t3*, int);
 int func_80105970(int);
 void func_80105F60();
 void func_80106150(void);
@@ -123,65 +216,72 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-void func_80102920(u_short* arg0)
+void func_80102920(vs_battle_equipment_t3* arg0)
 {
     int i;
 
     D_80102545 = 1;
     func_800FD220();
     func_800FBD0C(0, 0, 0, 1);
-    if (arg0[0xC] != 0) {
-        vs_battle_memcpy(D_801024C0, arg0 + 0x94, 0x40);
-        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0xBC, 0x20);
+
+    if (arg0->unk18 != 0) {
+        vs_battle_memcpy(
+            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
+        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk178, sizeof arg0->unk178);
         D_801024C0[0x3F] = arg0 == vs_battle_characterState->unk3C->unk3C;
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = ((signed char*)arg0 + i)[0x64];
+            D_801024C0[i + 0x20] = arg0->unk64[i];
         }
+
         do {
-            D_80102508 = (char)arg0[0x87];
+            D_80102508 = arg0->unk10E;
         } while (0);
-        func_800FC208((int)arg0[0x8A], (int)arg0[0x8B], (int)arg0[0x88], (int)arg0[0x89]);
-        func_800FBD28((short)arg0[0x8C], (short)arg0[0x8E], (short)arg0[0x90], 1);
-        D_801024A8[4] = (u_short)arg0[0x8D];
-        D_801024A8[5] = (u_short)arg0[0x8F];
-        D_801024A8[6] = (u_short)arg0[0x91];
-        func_800FBD0C((char)arg0[0x92], (char)arg0[0x85], 0, 1);
+        func_800FC208(arg0->unk114, arg0->unk116, arg0->unk110, arg0->unk112);
+        func_800FBD28(arg0->unk118, arg0->unk11C, arg0->unk120, 1);
+        D_801024A8[4] = arg0->unk11A;
+        D_801024A8[5] = arg0->unk11E;
+        D_801024A8[6] = arg0->unk122;
+        func_800FBD0C(arg0->unk124, arg0->unk10A, 0, 1);
     }
     func_800FBB8C(7);
 }
 
-void func_80102A64(u_short* arg0)
+void func_80102A64(vs_battle_equipment_t4* arg0)
 {
     int i;
 
     D_80102545 = 8;
     func_800FD220();
-    if (arg0[12] != 0) {
-        vs_battle_memcpy(D_801024C0, arg0 + 0x7A, 0x40);
-        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0xA2, 0x20);
-        ;
+
+    if (arg0->unk18 != 0) {
+        vs_battle_memcpy(
+            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
+        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk144, sizeof arg0->unk144);
         D_801024C0[63] = arg0 == vs_battle_characterState->unk3C->unk1D4;
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = ((char*)arg0 + i)[0xF0];
+            D_801024C0[i + 0x20] = arg0->unkF0[i];
         }
-        func_800FC208(arg0[112], arg0[113], arg0[110], arg0[111]);
-        func_800FBD28((short)arg0[114], (short)arg0[116], (short)arg0[118], 1);
-        D_801024A8[4] = arg0[115];
-        D_801024A8[5] = arg0[117];
-        D_801024A8[6] = arg0[119];
+
+        func_800FC208(arg0->unkE0, arg0->unkE2, arg0->unkDC, arg0->unkDE);
+        func_800FBD28((short)arg0->unkE4, (short)arg0->unkE8, (short)arg0->unkEC, 1);
+        D_801024A8[4] = arg0->unkE6;
+        D_801024A8[5] = arg0->unkEA;
+        D_801024A8[6] = arg0->unkEE;
     }
     func_800FBB8C(7);
 }
 
-void func_80102B70(u_short* arg0)
+void func_80102B70(vs_battle_equipment_t5* arg0)
 {
     int i;
 
     D_80102545 = 0x10;
     func_800FD220();
-    if (arg0[0] != 0) {
-        vs_battle_memcpy(D_801024C0, arg0 + 0x24, 0x40);
-        vs_battle_memcpy(D_801024C0 + 0x30, arg0 + 0x4E, 0x20);
+
+    if (arg0->unk0 != 0) {
+        vs_battle_memcpy(
+            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
+        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk9C, sizeof arg0->unk9C);
         D_801024C0[0x3F] = 0;
         for (i = 0; i < 5; ++i) {
             D_801024C0[0x3F]
@@ -189,13 +289,14 @@ void func_80102B70(u_short* arg0)
         }
 
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = arg0[i + 0x20];
+            D_801024C0[i + 0x20] = arg0->unk40[i];
         }
-        func_800FC208(arg0[0x18], arg0[0x19], 0, 0);
-        func_800FBD28((short)arg0[0x1A], (short)arg0[0x1C], (short)arg0[0x1E], 1);
-        D_801024A8[4] = arg0[0x1B];
-        D_801024A8[5] = arg0[0x1D];
-        D_801024A8[6] = arg0[0x1F];
+
+        func_800FC208(arg0->unk30, arg0->unk32, 0, 0);
+        func_800FBD28(arg0->unk34, arg0->unk38, arg0->unk3C, 1);
+        D_801024A8[4] = arg0->unk36;
+        D_801024A8[5] = arg0->unk3A;
+        D_801024A8[6] = arg0->unk3E;
     }
     func_800FBB8C(7);
 }
@@ -1711,7 +1812,7 @@ int vs_menu4_Exec(char* state)
     int var_s5;
     int var_s6;
     D_801081B8_t* var_a0;
-    int selectedRow;
+    int userInput;
     int new_var2;
 
     var_s5 = 0;
@@ -1778,17 +1879,16 @@ int vs_menu4_Exec(char* state)
                 animWait = 0;
                 func_801045B8(-1);
                 func_800FBEA4(1);
-                selectedRow = D_801081ED;
-                if (selectedRow < VS_status_INDEX_statDesc) {
+                userInput = D_801081ED;
+                if (userInput < VS_status_INDEX_statDesc) {
                     var_s2 = func_80104514(D_801080A8 - 1) - 1;
-                    if (var_s2 < selectedRow) {
+                    if (var_s2 < userInput) {
                         D_801081ED = var_s2;
                     }
                     func_80106308();
                 } else {
-                    vs_mainmenu_setMessage(
-                        (char*)&_statusStrings[_statusStrings[selectedRow
-                            - VS_status_INDEX_statDesc]]);
+                    vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[userInput
+                        - VS_status_INDEX_statDesc]]);
                 }
             }
         } else if (func_800FE5CC(0) != 0) {
@@ -1828,9 +1928,9 @@ int vs_menu4_Exec(char* state)
                     func_800C02E0();
                 }
                 if (vs_main_buttonsState & PADL2) {
-                    selectedRow = func_800C4708(vs_main_stickPosBuf.rStickX);
+                    userInput = func_800C4708(vs_main_stickPosBuf.rStickX);
                     var_s2 = func_800C4708(vs_main_stickPosBuf.rStickY);
-                    if (selectedRow == 0) {
+                    if (userInput == 0) {
                         if (var_s2 == 0) {
                             if (vs_main_buttonsState & PADLup) {
                                 var_s2 = -64;
@@ -1839,15 +1939,15 @@ int vs_menu4_Exec(char* state)
                                 var_s2 = 64;
                             }
                             if (vs_main_buttonsState & PADLleft) {
-                                selectedRow = -64;
+                                userInput = -64;
                             }
                             if (vs_main_buttonsState & PADLright) {
-                                selectedRow = 64;
+                                userInput = 64;
                             }
                         }
                     }
 
-                    D_8010809C += selectedRow;
+                    D_8010809C += userInput;
                     D_801080A0 -= var_s2;
                     if (D_801080A0 < 0) {
                         D_801080A0 = 0;
@@ -1856,76 +1956,76 @@ int vs_menu4_Exec(char* state)
                         D_801080A0 = 896;
                     }
                 } else {
-                    selectedRow = D_801081ED;
-                    var_s2 = D_801080FC[selectedRow];
+                    userInput = D_801081ED;
+                    var_s2 = D_801080FC[userInput];
                     if (vs_main_buttonRepeat & PADLup) {
-                        selectedRow = var_s2;
+                        userInput = var_s2;
                     } else if (vs_main_buttonRepeat & PADLdown) {
-                        selectedRow = var_s2 >> 8;
+                        userInput = var_s2 >> 8;
                     } else if (vs_main_buttonRepeat & PADLleft) {
-                        selectedRow = var_s2 >> 16;
+                        userInput = var_s2 >> 16;
                     } else {
-                        selectedRow = D_801081ED;
+                        userInput = D_801081ED;
                         if (vs_main_buttonRepeat & PADLright) {
-                            selectedRow = var_s2 >> 24;
+                            userInput = var_s2 >> 24;
                         }
                     }
-                    selectedRow &= 0xFF;
+                    userInput &= 0xFF;
                     func_801045B8(7);
-                    if (selectedRow == 13) {
+                    if (userInput == 13) {
                         if (func_80104134(D_800F1928[D_801080A8 - 1]->unk3C, 1) == 0) {
                             vs_battle_playMenuChangeSfx();
                             *state = 6;
                             break;
                         }
-                        selectedRow = D_801081ED;
+                        userInput = D_801081ED;
                     }
-                    if (selectedRow < 6) {
+                    if (userInput < 6) {
                         var_s2 = func_80104514(D_801080A8 - 1);
-                        if (selectedRow < var_s2) {
-                            func_801045B8(selectedRow + 1);
+                        if (userInput < var_s2) {
+                            func_801045B8(userInput + 1);
                         } else {
-                            selectedRow = 6;
+                            userInput = 6;
                             if (!(vs_main_buttonRepeat & PADLdown)) {
-                                selectedRow = var_s2 - 1;
+                                userInput = var_s2 - 1;
                                 if (!(vs_main_buttonRepeat & PADLup)) {
-                                    D_801081ED = selectedRow;
+                                    D_801081ED = userInput;
                                 }
                             }
                         }
                     }
-                    D_801022D5 = (selectedRow < func_80104514(D_801080A8 - 1)) ^ 1;
-                    D_80108134 = func_800FFCDC(D_80108134, D_801080C8[selectedRow]);
-                    if (selectedRow != D_801081ED) {
+                    D_801022D5 = (userInput < func_80104514(D_801080A8 - 1)) ^ 1;
+                    D_80108134 = func_800FFCDC(D_80108134, D_801080C8[userInput]);
+                    if (userInput != D_801081ED) {
                         vs_battle_playMenuChangeSfx();
-                        if (selectedRow != 13) {
-                            D_801081ED = selectedRow;
+                        if (userInput != 13) {
+                            D_801081ED = userInput;
                         }
                     }
-                    if (selectedRow < 6) {
+                    if (userInput < 6) {
                         func_80106308();
                     } else {
                         vs_mainmenu_setMessage(
-                            (char*)&_statusStrings[_statusStrings[selectedRow
+                            (char*)&_statusStrings[_statusStrings[userInput
                                 - VS_status_INDEX_statDesc]]);
                     }
                 }
             }
-            selectedRow = D_801080A8 - 1;
+            userInput = D_801080A8 - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
-                selectedRow = func_80103688(selectedRow, 1);
+                userInput = func_80103688(userInput, 1);
                 var_s2 = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
-                selectedRow = func_80103688(selectedRow, 14);
+                userInput = func_80103688(userInput, 14);
                 var_s2 = 1;
             }
-            if (selectedRow != (D_801080A8 - 1)) {
+            if (userInput != (D_801080A8 - 1)) {
                 D_801080A4 = D_801080A8;
                 func_801045B8(-2);
                 func_800FBEA4(2);
-                func_80103608(selectedRow);
-                func_80103744(selectedRow + var_s2);
+                func_80103608(userInput);
+                func_80103744(userInput + var_s2);
                 animWait = 1;
             }
         }
@@ -1945,9 +2045,9 @@ int vs_menu4_Exec(char* state)
             }
         } else {
             if (func_801045B8(-3) == 2) {
-                selectedRow = func_80104134(0, 1);
-                if (selectedRow != 0) {
-                    switch (selectedRow) {
+                userInput = func_80104134(0, 1);
+                if (userInput != 0) {
+                    switch (userInput) {
                     case 1:
                         *state = 5;
                         break;
@@ -1962,23 +2062,23 @@ int vs_menu4_Exec(char* state)
                     }
                 }
             }
-            selectedRow = D_801080A8 - 1;
+            userInput = D_801080A8 - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
-                selectedRow = func_80103688(selectedRow, 1);
+                userInput = func_80103688(userInput, 1);
                 var_s2 = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
-                selectedRow = func_80103688(selectedRow, 14);
+                userInput = func_80103688(userInput, 14);
                 var_s2 = 1;
             }
-            if (selectedRow != (D_801080A8 - 1)) {
+            if (userInput != (D_801080A8 - 1)) {
                 D_801080A4 = D_801080A8;
                 func_801045B8(-2);
                 func_800FBEA4(2);
-                func_80103608(selectedRow);
-                func_80103744(selectedRow + var_s2);
+                func_80103608(userInput);
+                func_80103744(userInput + var_s2);
                 animWait = 1;
-                if (func_800C9E08(D_800F1928[selectedRow]->unk3C) == 0) {
+                if (func_800C9E08(D_800F1928[userInput]->unk3C) == 0) {
                     *state = 5;
                 }
             }
@@ -1993,9 +2093,9 @@ int vs_menu4_Exec(char* state)
         }
         break;
     case 8:
-        selectedRow = func_80105970(0);
-        if (selectedRow != 0) {
-            if (selectedRow != -2) {
+        userInput = func_80105970(0);
+        if (userInput != 0) {
+            if (userInput != -2) {
                 animWait = 8;
                 *state = 4;
             } else {
@@ -2017,48 +2117,48 @@ int vs_menu4_Exec(char* state)
             *state = 10;
         } else {
             if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
-                selectedRow = D_801081ED;
+                userInput = D_801081ED;
                 var_s2 = func_80104514(D_801080A8 - 1);
                 if (vs_main_buttonRepeat & PADL1) {
                     char new_var = 1;
-                    selectedRow = (selectedRow - new_var) + var_s2;
+                    userInput = (userInput - new_var) + var_s2;
                 }
                 if (vs_main_buttonRepeat & PADR1) {
-                    ++selectedRow;
+                    ++userInput;
                 }
-                if (selectedRow >= var_s2) {
-                    selectedRow -= var_s2;
+                if (userInput >= var_s2) {
+                    userInput -= var_s2;
                 }
-                if (selectedRow != D_801081ED) {
+                if (userInput != D_801081ED) {
                     vs_battle_playMenuChangeSfx();
-                    D_801081ED = selectedRow;
+                    D_801081ED = userInput;
                     func_801063F8();
                 }
             }
-            selectedRow = D_801081EE;
+            userInput = D_801081EE;
             var_s2 = 11 - D_801024B9 * 4;
-            if (selectedRow >= var_s2) {
-                selectedRow = var_s2 - 1;
+            if (userInput >= var_s2) {
+                userInput = var_s2 - 1;
             }
             if (vs_main_buttonRepeat & PADLup) {
                 char new_var = 1;
-                selectedRow = (selectedRow - new_var) + var_s2;
+                userInput = (userInput - new_var) + var_s2;
             }
             if (vs_main_buttonRepeat & PADLdown) {
-                ++selectedRow;
+                ++userInput;
             }
-            if (selectedRow >= var_s2) {
-                selectedRow -= var_s2;
+            if (userInput >= var_s2) {
+                userInput -= var_s2;
             }
-            if (selectedRow != D_801081EE) {
+            if (userInput != D_801081EE) {
                 vs_battle_playMenuChangeSfx();
-                D_801081EE = selectedRow;
+                D_801081EE = userInput;
             }
 
-            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[selectedRow
+            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[userInput
                 + (var_s2 != 3 ? VS_status_INDEX_physicalDefense
                                : VS_status_INDEX_bluntDefense)]]);
-            D_80108134 = func_800FFCDC(D_80108134, ((selectedRow * 16) + 50) << 16);
+            D_80108134 = func_800FFCDC(D_80108134, ((userInput * 16) + 50) << 16);
         }
         break;
     case 10:
@@ -2132,11 +2232,11 @@ int vs_menu4_Exec(char* state)
         D_801081EC = D_800EBC7C[D_801081EC];
     }
     if (D_801081EC < 10) {
-        selectedRow = vs_battle_rowAnimationSteps[D_801081EC];
-        func_80100344(16 - selectedRow, 38, 88, 10);
-        vs_mainmenu_drawButton(1, 8 - selectedRow, 36, 0);
+        userInput = vs_battle_rowAnimationSteps[D_801081EC];
+        func_80100344(16 - userInput, 38, 88, 10);
+        vs_mainmenu_drawButton(1, 8 - userInput, 36, 0);
         func_800C6540(
-            "STATUS", ((0x1C - selectedRow) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
+            "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
     }
     return 0;
 }

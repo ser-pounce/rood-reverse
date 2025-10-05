@@ -121,6 +121,7 @@ void func_800CF920(void);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_hitlocations[];
+extern u_short D_800EA868[];
 extern char D_800EB9AE;
 extern int D_800EB9B0;
 extern vs_battle_menuItem_t* vs_battle_menuItems;

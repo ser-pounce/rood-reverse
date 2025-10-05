@@ -1613,7 +1613,19 @@ void func_80106150(void)
     func_80103AC8();
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80106308);
+void func_80106308(void)
+{
+    vs_battle_equipment_hitLocations* temp_a0;
+
+    temp_a0 = &D_800F1928[D_801080A8 - 1]->unk3C->hitLocations[D_801081ED];
+    vs_battle_stringContext[10] = (char*)&D_800EA868[D_800EA868[temp_a0->nameIndex]];
+    vs_battle_stringContext[11]
+        = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationState(temp_a0)
+            + 0xD]];
+    func_800C685C(D_800F4E8C, (char*)&_statusStrings[0xFD]);
+    vs_mainmenu_setMessage(&D_800F4E8C->unk0);
+    func_801045B8(D_801081ED + 1);
+}
 
 void func_801063F8(void)
 {

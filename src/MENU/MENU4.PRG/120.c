@@ -170,25 +170,6 @@ extern u_short* D_800F51A4;
 extern char D_800F4F6A;
 extern char D_801024B9;
 
-extern int D_8010809C;
-extern int D_801080A0;
-extern int D_801080A4;
-extern int D_801080A8;
-extern int D_801080AC;
-extern int D_801080B0;
-extern int D_801080B4;
-extern char D_801080B8;
-extern char D_801080B9;
-extern char D_801080BA;
-extern char D_801080BB;
-extern char D_801080BC;
-extern u_int D_801080C0;
-extern char D_801080C4;
-extern char D_801080C5;
-extern u_char D_801080C6;
-extern char D_801080C7;
-extern int D_801080C8[];
-extern int D_801080FC[];
 extern int animWait;
 extern int D_80108130;
 extern int D_80108134;
@@ -398,10 +379,8 @@ void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((
     arg1[1] = D_800F4E8C;
 }
 
-static char* _hitLocationStates[] = {
-    "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT"
-};
-static int _ = 0;
+static char* _hitLocationStates[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT" };
+static int _0 = 0;
 
 char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
 {
@@ -576,6 +555,18 @@ int func_801034BC(int arg0, int arg1)
     return arg0;
 }
 
+static int D_8010809C = 0;
+static int D_801080A0 = 0;
+static int D_801080A4 = 0;
+static int D_801080A8 = 0;
+static int D_801080AC = 0;
+static int D_801080B0 = 0;
+static int D_801080B4 = 0;
+static char D_801080B8 = 0;
+static char D_801080B9 = 0;
+static char D_801080BA = 0;
+static char D_801080BB = 0;
+
 void func_80103608(int arg0)
 {
     if (arg0 == 0) {
@@ -606,6 +597,9 @@ int func_80103688(int arg0, int arg1)
     }
     return arg0;
 }
+
+extern char D_801080BC;
+extern u_int D_801080C0;
 
 int func_80103744(int arg0)
 {
@@ -898,6 +892,8 @@ void func_80103FEC(int* arg0, int arg1)
     }
 }
 
+extern char D_801080C4;
+
 int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
 {
     int i;
@@ -1033,6 +1029,9 @@ int func_8010455C(void)
     return func_80104514(D_801080A8 - 1) + 2
         + (D_800F1928[D_801080A8 - 1]->unk3C->unk338.unk0[0] != 0);
 }
+
+extern char D_801080C5;
+extern u_char D_801080C6;
 
 int func_801045B8(int arg0)
 {
@@ -1297,6 +1296,8 @@ void func_80104F2C(int arg0)
         func_800FC268(4);
     }
 }
+
+extern char D_801080C7;
 
 int func_80104F80(int arg0)
 {
@@ -1783,8 +1784,6 @@ void func_80105E94(void)
     }
 }
 
-extern u_long* D_1F800000[];
-
 void func_80105F60(void)
 {
     int var_s1;
@@ -1909,6 +1908,9 @@ void func_801063F8(void)
     }
     func_801045B8(D_801081ED + 0x81);
 }
+
+extern int D_801080C8[];
+extern int D_801080FC[];
 
 int vs_menu4_Exec(char* state)
 {

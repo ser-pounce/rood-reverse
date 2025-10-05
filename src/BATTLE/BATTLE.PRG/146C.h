@@ -137,11 +137,19 @@ typedef struct {
     char unk3;
 } func_800FD17C_t;
 
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    char unk4;
+} func_80103080_t;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(u_short*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int*);
 void func_8006B338(void*);
+void func_8006B57C(int*, u_short*);
+void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
 void func_8006B8C0(void*, u_short*);
 void func_8006B9E0(void*, u_short*);

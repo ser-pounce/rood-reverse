@@ -36,12 +36,6 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short unk2;
-    char unk4;
-} func_80103080_t;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
     int unk4;
     char unk8;
     char unk9;
@@ -1198,7 +1192,59 @@ void func_80104C0C(int arg0, int arg1)
     func_800FBEA4(1);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_80104C40);
+void func_80104C40(int arg0, vs_battle_equipment_t3* arg1, int arg2)
+{
+    func_800FD0E0_t sp18;
+    int sp20[12];
+    int sp50[4];
+    func_800FD17C_t sp60;
+    int dummy[6];
+    int sp80;
+    int var_s1;
+    vs_battle_menuItem_t* temp_v0;
+    int v1;
+
+    var_s1 = 0x9E;
+
+    v1 = arg1->unk5D;
+
+    if (arg0 == 1) {
+        func_8006B57C(sp20, &arg1->unk18);
+        func_800FCAA4(sp20, &sp18, &sp80, D_800F4E8C);
+    } else if (arg0 == 2) {
+        func_8006B6AC(sp50, &arg1->unk48);
+        func_800FCC0C(sp50, &sp18, &sp80, D_800F4E8C);
+    } else {
+        var_s1 = arg0 - 3;
+        if (var_s1 < v1) {
+            sp18.unk4 = 0;
+            sp18.unk0 = D_80102540 + 0x340B;
+            sp80 = 0x58000000;
+            if (arg1->unk78[var_s1].unk0[0] != 0) {
+                func_8006B728(&sp60, &arg1->unk78[var_s1]);
+                func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, D_800F4E8C);
+            }
+            var_s1 = 0x97;
+        } else {
+            var_s1 = 0;
+        }
+    }
+
+    func_800FFB90(arg0 + 0x14);
+
+    if (var_s1 != 0) {
+        temp_v0 = vs_battle_setMenuItem(
+            arg0 + 0x14, 0x140 - var_s1, (arg0 * 0x10) + 0x12, var_s1, 0, sp18.unk0);
+        temp_v0->unk7 = sp18.unk4 == 0;
+        if (arg2 & 1) {
+            temp_v0->animSpeed = 0x140;
+            temp_v0->state = 2;
+            temp_v0->x = 0x140 - var_s1;
+        }
+        temp_v0->weaponType = (char)((u_int)sp80 >> 0x1A);
+        temp_v0->unkC = ((sp80 & 0xFFFF0000) >> 16) & 7;
+    }
+}
 
 void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
 {

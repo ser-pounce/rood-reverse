@@ -41,6 +41,8 @@ void func_800FBEA4(int);
 void func_800FC208(int, int, int, int);
 void func_800FC268(int);
 void func_800FC85C(u_short*, char**, int*, D_800F4E8C_t*);
+void func_800FCAA4(int*, u_short**, int*, D_800F4E8C_t*);
+void func_800FCC0C(int*, u_short**, int*, D_800F4E8C_t*);
 void func_800FCCE8(void*, char**, int*, D_800F4E8C_t*);
 void func_800FCECC(void*, char**, int*, D_800F4E8C_t*);
 void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3);

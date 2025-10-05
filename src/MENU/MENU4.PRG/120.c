@@ -120,7 +120,9 @@ typedef struct {
     int unk0[6];
     u_short unk18;
     u_short unk1A;
-    int unk1C[0x30];
+    int unk1C[11];
+    vs_battle_equipment_t3_unk unk48[3];
+    int unkD8;
     u_short unkDC;
     u_short unkDE;
     u_short unkE0;
@@ -156,7 +158,7 @@ typedef struct {
 } vs_battle_equipment_t5;
 
 char* func_8010317C(int, vs_battle_equipment_t3*);
-char* func_801032C4(int, u_short*);
+char* func_801032C4(int, vs_battle_equipment_t4*);
 int func_80103744(int);
 void func_80103AC8();
 int func_80104134(vs_battle_equipment_t2*, int);
@@ -443,7 +445,29 @@ char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
     return sp10[1];
 }
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801032C4);
+char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
+{
+    char* sp10[2];
+    int sp18;
+    u_short* temp_s0;
+
+    sp10[1] = D_80102540 + 0x340E;
+    if (arg0 == 0) {
+        func_800FCCE8(arg1, sp10, &sp18, D_800F4E8C);
+    } else if (arg0 < 0) {
+
+    } else if (arg0 < 4) {
+        if (arg1->unk48[arg0 - 1].unk0[0] != 0) {
+            func_80103118(arg1->unk48[arg0 - 1].unk0, (D_800F4E8C_t**)&sp10, &sp18);
+            func_80102EC0(arg1->unk48[arg0 - 1].unk0);
+        } else {
+            func_800FC268(8);
+            func_800FD220();
+        }
+    }
+    vs_battle_getMenuItem(arg0 + 0x14)->selected = 1;
+    return sp10[1];
+}
 
 char* func_801033A4(void* arg0)
 {

@@ -68,7 +68,7 @@ typedef struct {
 } vs_battle_unkStats_t;
 
 typedef struct {
-    char unk0[0x30];
+    u_short unk0[0x18];
 } vs_battle_equipment_t3_unk;
 
 typedef struct {
@@ -79,7 +79,11 @@ typedef struct {
     int unk14;
     u_short unk18;
     u_short unk1A;
-    int unk1C[16];
+    int unk1C[11];
+    func_80103080_t unk48;
+    int unk50;
+    int unk54;
+    int unk58;
     char unk5C;
     char unk5D;
     short unk5E;
@@ -368,7 +372,7 @@ void func_80102EC0(signed char* arg0)
     func_800FC268(8);
 }
 
-void func_80102F64(char* arg0, D_800F4E8C_t** arg1)
+void func_80102F64(char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     char* c;
     vs_battle_stringContext[0x13] = D_8010229C[arg0[0x13] + 253];
@@ -382,7 +386,8 @@ void func_80102F64(char* arg0, D_800F4E8C_t** arg1)
     arg1[1] = (D_800F4E8C_t*)D_800F4E8C;
 }
 
-void func_80103080(func_80103080_t* arg0, D_800F4E8C_t** arg1)
+void func_80103080(
+    func_80103080_t* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     u_short* new_var2 = &arg0->unk0;
     D_800F51A4 = &D_80102540[D_80102540[arg0->unk4 + 0x280]];
@@ -392,7 +397,7 @@ void func_80103080(func_80103080_t* arg0, D_800F4E8C_t** arg1)
     arg1[1] = D_800F4E8C;
 }
 
-void func_80103118(u_short* arg0, D_800F4E8C_t** arg1)
+void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[*arg0 - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
@@ -400,7 +405,43 @@ void func_80103118(u_short* arg0, D_800F4E8C_t** arg1)
 
 INCLUDE_RODATA("build/src/MENU/MENU4.PRG/nonmatchings/120", D_80102800);
 
-INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_8010317C);
+char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
+{
+    char* sp10[2];
+    int sp18;
+    func_80103080_t* temp_s0;
+    u_short* temp_s0_2;
+
+    sp10[1] = D_80102540 + 0x340E;
+    switch (arg0) {
+    case 0:
+        func_800FC85C(arg1->unk0, sp10, &sp18, D_800F4E8C);
+        sp10[0] = (char*)arg1;
+        break;
+    case 1:
+        func_80102F64((char*)&arg1->unk18, (D_800F4E8C_t**)sp10, &sp18);
+        func_80102D64(arg1->unk0);
+        break;
+    case 2:
+        temp_s0 = &arg1->unk48;
+        func_80103080(temp_s0, (D_800F4E8C_t**)sp10, &sp18);
+        func_80102E3C((char*)temp_s0);
+        break;
+    case 3:
+    case 4:
+    case 5:
+        if (arg1->unk78[arg0 - 3].unk0[0] != 0) {
+            func_80103118(arg1->unk78[arg0 - 3].unk0, (D_800F4E8C_t**)sp10, &sp18);
+            func_80102EC0(arg1->unk78[arg0 - 3].unk0);
+        } else {
+            func_800FC268(8);
+            func_800FD220();
+        }
+        break;
+    }
+    vs_battle_getMenuItem(arg0 + 0x14)->selected = 1;
+    return sp10[1];
+}
 
 INCLUDE_ASM("build/src/MENU/MENU4.PRG/nonmatchings/120", func_801032C4);
 

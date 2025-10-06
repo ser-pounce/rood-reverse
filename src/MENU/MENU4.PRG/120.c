@@ -379,8 +379,8 @@ void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((
     arg1[1] = D_800F4E8C;
 }
 
-static char* _hitLocationStates[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT" };
-static int _0 = 0;
+static char* _hitLocationStates[]
+    = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
 char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
 {
@@ -598,8 +598,8 @@ int func_80103688(int arg0, int arg1)
     return arg0;
 }
 
-extern char D_801080BC;
-extern u_int D_801080C0;
+static char D_801080BC = 0;
+static u_int D_801080C0 = 0;
 
 int func_80103744(int arg0)
 {
@@ -892,7 +892,7 @@ void func_80103FEC(int* arg0, int arg1)
     }
 }
 
-extern char D_801080C4;
+static char D_801080C4 = 0;
 
 int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
 {
@@ -1030,8 +1030,8 @@ int func_8010455C(void)
         + (D_800F1928[D_801080A8 - 1]->unk3C->unk338.unk0[0] != 0);
 }
 
-extern char D_801080C5;
-extern u_char D_801080C6;
+static char D_801080C5 = 0;
+static u_char D_801080C6 = 0;
 
 int func_801045B8(int arg0)
 {
@@ -1297,7 +1297,7 @@ void func_80104F2C(int arg0)
     }
 }
 
-extern char D_801080C7;
+static char D_801080C7 = 0;
 
 int func_80104F80(int arg0)
 {
@@ -1909,8 +1909,12 @@ void func_801063F8(void)
     func_801045B8(D_801081ED + 0x81);
 }
 
-extern int D_801080C8[];
-extern int D_801080FC[];
+static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,
+    0x006400A0, 0x00920098, 0x009C0098, 0x00A60098, 0x0004FFFC, 0x00040042, 0x000CFFFC,
+    0x000C0042 };
+
+static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301, 0x030A0402, 0x040A0503,
+    0x050A0604, 0x060D0705, 0x070D0806, 0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
 
 int vs_menu4_Exec(char* state)
 {

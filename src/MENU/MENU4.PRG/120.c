@@ -150,25 +150,6 @@ typedef struct {
     vs_battle_unkStats_t unk9C;
 } vs_battle_equipment_t5;
 
-char* func_8010317C(int, vs_battle_equipment_t3*);
-char* func_801032C4(int, vs_battle_equipment_t4*);
-int func_80103744(int);
-void func_80103AC8();
-int func_80104134(vs_battle_equipment_t2*, int);
-int func_80104514(int);
-int func_801045B8(int);
-void func_80104C40(int, vs_battle_equipment_t3*, int);
-int func_80105970(int);
-void func_80105F60();
-void func_80106150(void);
-void func_80106308();
-void func_801063F8();
-
-extern u_short* D_800F51A4;
-
-extern char D_800F4F6A;
-extern char D_801024B9;
-
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {

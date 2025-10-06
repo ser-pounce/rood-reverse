@@ -156,7 +156,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-static void func_80102920(vs_battle_equipment_t3* arg0)
+static void _drawWeaponInfo(vs_battle_equipment_t3* arg0)
 {
     int i;
 
@@ -186,7 +186,7 @@ static void func_80102920(vs_battle_equipment_t3* arg0)
     func_800FBB8C(7);
 }
 
-static void func_80102A64(vs_battle_equipment_t4* arg0)
+static void _drawShieldInfo(vs_battle_equipment_t4* arg0)
 {
     int i;
 
@@ -211,7 +211,7 @@ static void func_80102A64(vs_battle_equipment_t4* arg0)
     func_800FBB8C(7);
 }
 
-static void func_80102B70(vs_battle_equipment_t5* arg0)
+static void _drawArmorInfo(vs_battle_equipment_t5* arg0)
 {
     int i;
 
@@ -241,7 +241,7 @@ static void func_80102B70(vs_battle_equipment_t5* arg0)
     func_800FBB8C(7);
 }
 
-static void func_80102CAC(func_80102CAC_t* arg0)
+static void _drawAccessoryInfo(func_80102CAC_t* arg0)
 {
     int i;
     u_short* temp_v0;
@@ -1327,19 +1327,19 @@ static int func_80104F80(int arg0)
             switch (D_80108181) {
             case 0:
                 func_800FC268(3);
-                func_80102920(temp_s1->unk3C);
+                _drawWeaponInfo(temp_s1->unk3C);
                 break;
             case 1:
                 func_800FC268(3);
-                func_80102A64(temp_s1->unk1D4);
+                _drawShieldInfo(temp_s1->unk1D4);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
                     func_800FC268(1);
-                    func_80102B70(temp_s1->hitLocations[D_80108181 - 2].unk20);
+                    _drawArmorInfo(temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
                     func_800FC268(0);
-                    func_80102CAC(&temp_s1->unk338);
+                    _drawAccessoryInfo(&temp_s1->unk338);
                 }
                 break;
             }
@@ -1427,7 +1427,7 @@ static int func_80104F80(int arg0)
                 switch (var_s2) {
                 case 0:
                     func_800FC268(0xB);
-                    func_80102920(temp_s1->unk3C);
+                    _drawWeaponInfo(temp_s1->unk3C);
 
                     for (i = 1; i < 6; ++i) {
                         func_80104C40(i, temp_s1->unk3C, 0);
@@ -1437,7 +1437,7 @@ static int func_80104F80(int arg0)
                     break;
                 case 1:
                     func_800FC268(0xB);
-                    func_80102A64(temp_s1->unk1D4);
+                    _drawShieldInfo(temp_s1->unk1D4);
                     for (i = 1; i < 4; ++i) {
                         func_80104DFC(i, (func_80104DFC_t*)temp_s1->unk1D4, 0);
                     }
@@ -1446,12 +1446,12 @@ static int func_80104F80(int arg0)
                 default:
                     if ((var_s2 - 2) < temp_s4) {
                         func_800FC268(9);
-                        func_80102B70(temp_s1->hitLocations[var_s2 - 2].unk20);
+                        _drawArmorInfo(temp_s1->hitLocations[var_s2 - 2].unk20);
                         func_800FCECC((int*)temp_s1->hitLocations[var_s2 - 2].unk20, sp18,
                             &sp48, D_800F4E8C);
                     } else {
                         func_800FC268(8);
-                        func_80102CAC((func_80102CAC_t*)&temp_s1->unk338);
+                        _drawAccessoryInfo((func_80102CAC_t*)&temp_s1->unk338);
                         func_8006BADC(sp20, &temp_s1->unk338);
                         func_800FD084(sp20, sp18, &sp48, D_800F4E8C);
                     }
@@ -1495,12 +1495,12 @@ static int func_80104F80(int arg0)
         switch (D_80108181) {
         case 0:
             func_800FC268(0xB);
-            func_80102920(temp_s1->unk3C);
+            _drawWeaponInfo(temp_s1->unk3C);
             var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk99 + 0x72);
             break;
         case 1:
             func_800FC268(0xB);
-            func_80102A64(temp_s1->unk1D4);
+            _drawShieldInfo(temp_s1->unk1D4);
             var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk201 + 0x60);
             break;
         default:

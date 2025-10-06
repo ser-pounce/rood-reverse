@@ -25,6 +25,7 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                     "MENU1.PRG/30",
                     "MENU2.PRG/64",
                     "MENU2.PRG/143C",
+                    "MENU4.PRG/120",
                     "MENU8.PRG/88",
                     "MENU8.PRG/21A0",
                     "MENUE.PRG/494",

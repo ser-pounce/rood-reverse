@@ -156,7 +156,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-void func_80102920(vs_battle_equipment_t3* arg0)
+static void func_80102920(vs_battle_equipment_t3* arg0)
 {
     int i;
 
@@ -186,7 +186,7 @@ void func_80102920(vs_battle_equipment_t3* arg0)
     func_800FBB8C(7);
 }
 
-void func_80102A64(vs_battle_equipment_t4* arg0)
+static void func_80102A64(vs_battle_equipment_t4* arg0)
 {
     int i;
 
@@ -211,7 +211,7 @@ void func_80102A64(vs_battle_equipment_t4* arg0)
     func_800FBB8C(7);
 }
 
-void func_80102B70(vs_battle_equipment_t5* arg0)
+static void func_80102B70(vs_battle_equipment_t5* arg0)
 {
     int i;
 
@@ -241,7 +241,7 @@ void func_80102B70(vs_battle_equipment_t5* arg0)
     func_800FBB8C(7);
 }
 
-void func_80102CAC(func_80102CAC_t* arg0)
+static void func_80102CAC(func_80102CAC_t* arg0)
 {
     int i;
     u_short* temp_v0;
@@ -261,7 +261,7 @@ void func_80102CAC(func_80102CAC_t* arg0)
     func_800FBB8C(7);
 }
 
-void func_80102D64(u_short* arg0)
+static void func_80102D64(u_short* arg0)
 {
     int i;
     func_80102D64_t* temp_s0;
@@ -279,7 +279,7 @@ void func_80102D64(u_short* arg0)
     func_800FC268(0xB);
 }
 
-void func_80102E3C(signed char* arg0)
+static void func_80102E3C(signed char* arg0)
 {
     int i;
 
@@ -293,7 +293,7 @@ void func_80102E3C(signed char* arg0)
     func_800FC268(8);
 }
 
-void func_80102EC0(signed char* arg0)
+static void func_80102EC0(signed char* arg0)
 {
     int i;
 
@@ -308,7 +308,7 @@ void func_80102EC0(signed char* arg0)
     func_800FC268(8);
 }
 
-void func_80102F64(char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void func_80102F64(char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     char* c;
     vs_battle_stringContext[0x13] = D_8010229C[arg0[0x13] + 253];
@@ -322,7 +322,7 @@ void func_80102F64(char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unu
     arg1[1] = (D_800F4E8C_t*)D_800F4E8C;
 }
 
-void func_80103080(
+static void func_80103080(
     func_80103080_t* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     u_short* new_var2 = &arg0->unk0;
@@ -333,7 +333,7 @@ void func_80103080(
     arg1[1] = D_800F4E8C;
 }
 
-void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[*arg0 - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
@@ -342,7 +342,7 @@ void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((
 static char* _hitLocationStates[]
     = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
-char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
+static char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
 {
     char* sp10[2];
     int sp18;
@@ -380,7 +380,7 @@ char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
     return sp10[1];
 }
 
-char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
+static char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
 {
     char* sp10[2];
     int sp18;
@@ -404,7 +404,7 @@ char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
     return sp10[1];
 }
 
-char* func_801033A4(void* arg0)
+static char* func_801033A4(void* arg0)
 {
     char* sp10[2];
     int sp18;
@@ -413,7 +413,7 @@ char* func_801033A4(void* arg0)
     return sp10[1];
 }
 
-char* func_801033D4(func_80102CAC_t* arg0)
+static char* func_801033D4(func_80102CAC_t* arg0)
 {
     char* sp10[2];
     int sp18[10];
@@ -424,7 +424,7 @@ char* func_801033D4(func_80102CAC_t* arg0)
     return sp10[1];
 }
 
-int func_8010341C(int arg0, int arg1)
+static int func_8010341C(int arg0, int arg1)
 {
     int ret;
     int v0;
@@ -473,7 +473,7 @@ int func_8010341C(int arg0, int arg1)
     return ret;
 }
 
-int func_801034BC(int arg0, int arg1)
+static int func_801034BC(int arg0, int arg1)
 {
     int var_s1;
     int var_s2;
@@ -527,7 +527,7 @@ static char D_801080B9 = 0;
 static char D_801080BA = 0;
 static char D_801080BB = 0;
 
-void func_80103608(int arg0)
+static void func_80103608(int arg0)
 {
     if (arg0 == 0) {
         D_801080B8 = 1;
@@ -543,7 +543,7 @@ void func_80103608(int arg0)
     D_801080BB = arg0;
 }
 
-int func_80103688(int arg0, int arg1)
+static int func_80103688(int arg0, int arg1)
 {
     int temp_a0;
 
@@ -561,7 +561,7 @@ int func_80103688(int arg0, int arg1)
 static char D_801080BC = 0;
 static u_int D_801080C0 = 0;
 
-int func_80103744(int arg0)
+static int func_80103744(int arg0)
 {
     int temp_a1;
 
@@ -636,7 +636,7 @@ int func_80103744(int arg0)
     return 0;
 }
 
-void func_8010399C(int arg0, int arg1, u_long* arg2)
+static void func_8010399C(int arg0, int arg1, u_long* arg2)
 {
     int i;
 
@@ -657,7 +657,7 @@ void func_8010399C(int arg0, int arg1, u_long* arg2)
     }
 }
 
-void func_80103A6C(int arg0, int arg1, int arg2, int arg3)
+static void func_80103A6C(int arg0, int arg1, int arg2, int arg3)
 {
 
     if (arg2 == 0) {
@@ -674,7 +674,7 @@ void func_80103A6C(int arg0, int arg1, int arg2, int arg3)
     func_800C99DC(arg0 & 0xFF, ((arg1 + arg2) - 1) / arg2, D_1F800000[1] - 3, arg3);
 }
 
-void func_80103AC8(void)
+static void func_80103AC8(void)
 {
     int temp_s2;
     int i;
@@ -760,7 +760,7 @@ void func_80103AC8(void)
     }
 }
 
-void func_80103E58(int arg0, int arg1, int arg2)
+static void func_80103E58(int arg0, int arg1, int arg2)
 {
     u_int temp_v0;
     u_long* temp_a0;
@@ -780,7 +780,7 @@ void func_80103E58(int arg0, int arg1, int arg2)
     D_1F800000[0] = temp_a0 + 7;
 }
 
-void func_80103EF8(int arg0, int arg1, int arg2, int arg3)
+static void func_80103EF8(int arg0, int arg1, int arg2, int arg3)
 {
     int temp_t2;
     int temp_v0;
@@ -817,7 +817,7 @@ void func_80103EF8(int arg0, int arg1, int arg2, int arg3)
     D_1F800000[0] = temp_a2;
 }
 
-void func_80103FEC(int* arg0, int arg1)
+static void func_80103FEC(int* arg0, int arg1)
 {
     int temp_a0;
     int temp_s1;
@@ -875,7 +875,7 @@ static u_char D_801081ED;
 static char D_801081EE;
 static char _4[24];
 
-int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
+static int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
 {
     static char D_801080C4 = 0;
 
@@ -995,7 +995,7 @@ int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
     return 0;
 }
 
-int func_80104514(int arg0)
+static int func_80104514(int arg0)
 {
     int i;
 
@@ -1007,7 +1007,7 @@ int func_80104514(int arg0)
     return i;
 }
 
-int func_8010455C(void)
+static int func_8010455C(void)
 {
     return func_80104514(D_801080A8 - 1) + 2
         + (D_800F1928[D_801080A8 - 1]->unk3C->unk338.unk0[0] != 0);
@@ -1016,7 +1016,7 @@ int func_8010455C(void)
 static char D_801080C5 = 0;
 static u_char D_801080C6 = 0;
 
-int func_801045B8(int arg0)
+static int func_801045B8(int arg0)
 {
     int sp10[2];
     vs_battle_equipment_t2* sp18;
@@ -1132,7 +1132,7 @@ int func_801045B8(int arg0)
     return 0;
 }
 
-void func_80104AEC(int id)
+static void func_80104AEC(int id)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -1144,7 +1144,7 @@ void func_80104AEC(int id)
     menuItem->unk3A = 0;
 }
 
-void func_80104B38(int arg0)
+static void func_80104B38(int arg0)
 {
     char var_a1;
     vs_battle_menuItem_t* menuItem;
@@ -1169,14 +1169,14 @@ void func_80104B38(int arg0)
     menuItem->x = 0x12;
 }
 
-void func_80104C0C(int arg0, int arg1)
+static void func_80104C0C(int arg0, int arg1)
 {
     func_80104B38(arg0);
     func_800FBBD4(arg1);
     func_800FBEA4(1);
 }
 
-void func_80104C40(int arg0, vs_battle_equipment_t3* arg1, int arg2)
+static void func_80104C40(int arg0, vs_battle_equipment_t3* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     int sp20[12];
@@ -1230,7 +1230,7 @@ void func_80104C40(int arg0, vs_battle_equipment_t3* arg1, int arg2)
     }
 }
 
-void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
+static void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     func_800FD17C_t sp20;
@@ -1268,7 +1268,7 @@ void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
     }
 }
 
-void func_80104F2C(int arg0)
+static void func_80104F2C(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     func_800FA8E0(0x28);
@@ -1282,7 +1282,7 @@ void func_80104F2C(int arg0)
 
 static char D_801080C7 = 0;
 
-int func_80104F80(int arg0)
+static int func_80104F80(int arg0)
 {
     char* sp18[2];
     int sp20[9];
@@ -1581,7 +1581,7 @@ int func_80104F80(int arg0)
     return 0;
 }
 
-int func_80105970(int arg0)
+static int func_80105970(int arg0)
 {
     u_short* sp10[18];
     int sp58[9];
@@ -1734,7 +1734,7 @@ int func_80105970(int arg0)
     return 0;
 }
 
-void func_80105E94(void)
+static void func_80105E94(void)
 {
     int var_a2;
     u_long* temp_a1;
@@ -1767,7 +1767,7 @@ void func_80105E94(void)
     }
 }
 
-void func_80105F60(void)
+static void func_80105F60(void)
 {
     int var_s1;
 
@@ -1827,7 +1827,7 @@ void func_80105F60(void)
     D_1F800000[0] = temp_t8 + 14;
 }
 
-void func_80106150(void)
+static void func_80106150(void)
 {
     int temp_lo_5;
     int temp_s1;
@@ -1863,7 +1863,7 @@ void func_80106150(void)
     func_80103AC8();
 }
 
-void func_80106308(void)
+static void func_80106308(void)
 {
     vs_battle_equipment_hitLocations* temp_a0;
 
@@ -1877,7 +1877,7 @@ void func_80106308(void)
     func_801045B8(D_801081ED + 1);
 }
 
-void func_801063F8(void)
+static void func_801063F8(void)
 {
     int i;
     vs_battle_equipment_hitLocations* temp_a0

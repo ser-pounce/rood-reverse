@@ -62,7 +62,7 @@ typedef struct {
 
 typedef struct {
     u_short unk0[0x18];
-} vs_battle_equipment_t3_unk;
+} vs_battle_weaponInfo_unk;
 
 typedef struct {
     u_short unk0[6];
@@ -83,9 +83,9 @@ typedef struct {
     int unk60;
     signed char unk64[4];
     int unk68[4];
-    vs_battle_equipment_t3_unk unk78[3];
+    vs_battle_weaponInfo_unk unk78[3];
     u_short unk108;
-    char unk10A;
+    char risk;
     char unk10B;
     char unk10C;
     u_char unk10D;
@@ -96,25 +96,25 @@ typedef struct {
     u_short unk114;
     u_short unk116;
     short unk118;
-    u_short unk11A;
+    u_short attackStr;
     short unk11C;
-    u_short unk11E;
+    u_short attackInt;
     short unk120;
-    u_short unk122;
-    char unk124;
+    u_short agility;
+    char range;
     char unk125;
     short unk126;
     vs_battle_classAffinityStats_t classAffinityStats;
     int unk168[4];
     vs_battle_unkStats_t unk178;
-} vs_battle_equipment_t3;
+} vs_battle_weaponInfo;
 
 typedef struct {
     int unk0[6];
     u_short unk18;
     u_short unk1A;
     int unk1C[11];
-    vs_battle_equipment_t3_unk unk48[3];
+    vs_battle_weaponInfo_unk unk48[3];
     int unkD8;
     u_short unkDC;
     u_short unkDE;
@@ -156,7 +156,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-static void _drawWeaponInfo(vs_battle_equipment_t3* arg0)
+void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
 {
     int i;
 
@@ -164,24 +164,24 @@ static void _drawWeaponInfo(vs_battle_equipment_t3* arg0)
     func_800FD220();
     func_800FBD0C(0, 0, 0, 1);
 
-    if (arg0->unk18 != 0) {
+    if (weapon->unk18 != 0) {
         vs_battle_memcpy(
-            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
-        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk178, sizeof arg0->unk178);
-        D_801024C0[0x3F] = arg0 == vs_battle_characterState->unk3C->unk3C;
+            D_801024C0, &weapon->classAffinityStats, sizeof weapon->classAffinityStats);
+        vs_battle_memcpy(D_801024C0 + 0x30, &weapon->unk178, sizeof weapon->unk178);
+        D_801024C0[0x3F] = weapon == vs_battle_characterState->unk3C->unk3C;
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = arg0->unk64[i];
+            D_801024C0[i + 0x20] = weapon->unk64[i];
         }
 
         do {
-            D_80102508 = arg0->unk10E;
+            D_80102508 = weapon->unk10E;
         } while (0);
-        func_800FC208(arg0->unk114, arg0->unk116, arg0->unk110, arg0->unk112);
-        func_800FBD28(arg0->unk118, arg0->unk11C, arg0->unk120, 1);
-        D_801024A8[4] = arg0->unk11A;
-        D_801024A8[5] = arg0->unk11E;
-        D_801024A8[6] = arg0->unk122;
-        func_800FBD0C(arg0->unk124, arg0->unk10A, 0, 1);
+        func_800FC208(weapon->unk114, weapon->unk116, weapon->unk110, weapon->unk112);
+        func_800FBD28(weapon->unk118, weapon->unk11C, weapon->unk120, 1);
+        D_801024A8[4] = weapon->attackStr;
+        D_801024A8[5] = weapon->attackInt;
+        D_801024A8[6] = weapon->agility;
+        func_800FBD0C(weapon->range, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
@@ -342,7 +342,7 @@ static void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attrib
 static char* _hitLocationStates[]
     = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
-static char* func_8010317C(int arg0, vs_battle_equipment_t3* arg1)
+static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
 {
     char* sp10[2];
     int sp18;
@@ -1176,7 +1176,7 @@ static void func_80104C0C(int arg0, int arg1)
     func_800FBEA4(1);
 }
 
-static void func_80104C40(int arg0, vs_battle_equipment_t3* arg1, int arg2)
+static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     int sp20[12];

@@ -26,5 +26,5 @@ segments:
       - [0x120, c]
       - { start: 0x4C48, type: vsStringTable, name: status, linker_entry: false }
       - [0x5884, .data, 120]
-      - [0x592C, bss, 120]
+      - [0x592C, .bss, 120]
   - [0x5A08]

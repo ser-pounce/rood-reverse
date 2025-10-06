@@ -27,7 +27,6 @@ typedef struct {
 typedef struct {
     int unk0[8];
 } D_80108198_t;
-extern D_80108198_t D_80108198;
 
 typedef struct {
     int unk0[13];
@@ -169,26 +168,6 @@ extern u_short* D_800F51A4;
 
 extern char D_800F4F6A;
 extern char D_801024B9;
-
-extern int animWait;
-extern int D_80108130;
-extern int D_80108134;
-extern char D_80108138[];
-extern u_char D_80108158;
-extern u_char D_80108159;
-extern vs_battle_equipment_t2* D_8010815C;
-extern int D_80108168[];
-extern char D_80108180;
-extern char D_80108181;
-extern char D_80108182;
-extern char D_80108183;
-extern char D_80108184;
-extern u_char D_80108185;
-extern int D_80108188;
-extern D_801081B8_t D_801081B8;
-extern u_char D_801081EC;
-extern u_char D_801081ED;
-extern char D_801081EE;
 
 extern u_long* D_1F800000[];
 
@@ -892,10 +871,33 @@ void func_80103FEC(int* arg0, int arg1)
     }
 }
 
-static char D_801080C4 = 0;
+static char D_80108138[32];
+static u_char D_80108158;
+static u_char D_80108159;
+static char _0[2];
+static vs_battle_equipment_t2* D_8010815C;
+static char _1[8];
+static int D_80108168[6];
+static char D_80108180;
+static char D_80108181;
+static char D_80108182;
+static char D_80108183;
+static char D_80108184;
+static u_char D_80108185;
+static char _2[2];
+static int D_80108188;
+static char _3[12];
+static D_80108198_t D_80108198;
+static D_801081B8_t D_801081B8;
+static u_char D_801081EC;
+static u_char D_801081ED;
+static char D_801081EE;
+static char _4[24];
 
 int func_80104134(vs_battle_equipment_t2* arg0, int arg1)
 {
+    static char D_801080C4 = 0;
+
     int i;
     int var_s1;
 
@@ -1918,6 +1920,10 @@ static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301, 0x030A0402, 0x04
 
 int vs_menu4_Exec(char* state)
 {
+    static int animWait;
+    static int D_80108130;
+    static int D_80108134;
+
     enum state {
         none,
         init = 3,

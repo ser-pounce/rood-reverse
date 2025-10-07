@@ -59,18 +59,18 @@ void func_800FA448()
 
     temp_s1 = vs_battle_characterState->unk3C;
 
-    if (temp_s1->unk149 != 0) {
-        func_8006B8C0(D_80060148[temp_s1->unk149], temp_s1->unk3C);
+    if (temp_s1->unk3C.unk10D != 0) {
+        func_8006B8C0(D_80060148[temp_s1->unk3C.unk10D], &temp_s1->unk3C);
     }
 
-    if (temp_s1->unk2AE != 0) {
-        func_8006B9E0(D_80060238[temp_s1->unk2AE], temp_s1->unk1D4);
+    if (temp_s1->unk1D4.unkDA != 0) {
+        func_8006B9E0(D_80060238[temp_s1->unk1D4.unkDA], &temp_s1->unk1D4);
     }
 
     for (i = 0; i < 6; ++i) {
-        if (temp_s1->hitLocations[i].unkBA != 0) {
-            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].unkBA],
-                temp_s1->hitLocations[i].unk20);
+        if (temp_s1->hitLocations[i].unk20.unk9A != 0) {
+            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].unk20.unk9A],
+                &temp_s1->hitLocations[i].unk20);
         }
     }
 

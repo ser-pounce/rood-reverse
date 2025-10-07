@@ -51,105 +51,6 @@ typedef struct {
     func_80104DFC_t2 unk48[2];
 } func_80104DFC_t;
 
-typedef struct {
-    short classStats[2][8];
-    short affinityStats[2][8];
-} vs_battle_classAffinityStats_t;
-
-typedef struct {
-    u_short unk0[0x10];
-} vs_battle_unkStats_t;
-
-typedef struct {
-    u_short unk0[0x18];
-} vs_battle_weaponInfo_unk;
-
-typedef struct {
-    u_short unk0[6];
-    u_short unkC;
-    u_short unkE;
-    int unk10;
-    int unk14;
-    u_short unk18;
-    u_short unk1A;
-    int unk1C[11];
-    func_80103080_t unk48;
-    int unk50;
-    int unk54;
-    int unk58;
-    char unk5C;
-    char unk5D;
-    short unk5E;
-    int unk60;
-    signed char unk64[4];
-    int unk68[4];
-    vs_battle_weaponInfo_unk unk78[3];
-    u_short unk108;
-    char risk;
-    char unk10B;
-    char unk10C;
-    u_char unk10D;
-    u_char unk10E;
-    u_char unk10F;
-    u_short unk110;
-    u_short unk112;
-    u_short unk114;
-    u_short unk116;
-    short unk118;
-    u_short attackStr;
-    short unk11C;
-    u_short attackInt;
-    short unk120;
-    u_short agility;
-    char range;
-    char unk125;
-    short unk126;
-    vs_battle_classAffinityStats_t classAffinityStats;
-    int unk168[4];
-    vs_battle_unkStats_t unk178;
-} vs_battle_weaponInfo;
-
-typedef struct {
-    int unk0[6];
-    u_short unk18;
-    u_short unk1A;
-    int unk1C[11];
-    vs_battle_weaponInfo_unk unk48[3];
-    int unkD8;
-    u_short unkDC;
-    u_short unkDE;
-    u_short unkE0;
-    u_short unkE2;
-    short unkE4;
-    u_short unkE6;
-    short unkE8;
-    u_short unkEA;
-    short unkEC;
-    u_short unkEE;
-    char unkF0[4];
-    vs_battle_classAffinityStats_t classAffinityStats;
-    int unk134[4];
-    vs_battle_unkStats_t unk144;
-} vs_battle_equipment_t4;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    int unk4[11];
-    u_short unk30;
-    u_short unk32;
-    short unk34;
-    u_short unk36;
-    short unk38;
-    u_short unk3A;
-    short unk3C;
-    u_short unk3E;
-    u_short unk40[4];
-    vs_battle_classAffinityStats_t classAffinityStats;
-    int unk88[5];
-    vs_battle_unkStats_t unk9C;
-} vs_battle_equipment_t5;
-
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
@@ -168,7 +69,7 @@ void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
         vs_battle_memcpy(
             D_801024C0, &weapon->classAffinityStats, sizeof weapon->classAffinityStats);
         vs_battle_memcpy(D_801024C0 + 0x30, &weapon->unk178, sizeof weapon->unk178);
-        D_801024C0[0x3F] = weapon == vs_battle_characterState->unk3C->unk3C;
+        D_801024C0[0x3F] = weapon == &vs_battle_characterState->unk3C->unk3C;
         for (i = 0; i < 4; ++i) {
             D_801024C0[i + 0x20] = weapon->unk64[i];
         }
@@ -197,7 +98,7 @@ static void _drawShieldInfo(vs_battle_equipment_t4* arg0)
         vs_battle_memcpy(
             D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
         vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk144, sizeof arg0->unk144);
-        D_801024C0[63] = arg0 == vs_battle_characterState->unk3C->unk1D4;
+        D_801024C0[63] = arg0 == &vs_battle_characterState->unk3C->unk1D4;
         for (i = 0; i < 4; ++i) {
             D_801024C0[i + 0x20] = arg0->unkF0[i];
         }
@@ -225,7 +126,7 @@ static void _drawArmorInfo(vs_battle_equipment_t5* arg0)
         D_801024C0[0x3F] = 0;
         for (i = 0; i < 5; ++i) {
             D_801024C0[0x3F]
-                |= arg0 == vs_battle_characterState->unk3C->hitLocations[i].unk20;
+                |= arg0 == &vs_battle_characterState->unk3C->hitLocations[i].unk20;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -308,7 +209,8 @@ static void func_80102EC0(signed char* arg0)
     func_800FC268(8);
 }
 
-static void func_80102F64(char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void func_80102F64(
+    char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     char* c;
     vs_battle_stringContext[0x13] = D_8010229C[arg0[0x13] + 253];
@@ -333,7 +235,8 @@ static void func_80103080(
     arg1[1] = D_800F4E8C;
 }
 
-static void func_80103118(u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void func_80103118(
+    u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[*arg0 - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
@@ -1327,16 +1230,16 @@ static int func_80104F80(int arg0)
             switch (D_80108181) {
             case 0:
                 func_800FC268(3);
-                _drawWeaponInfo(temp_s1->unk3C);
+                _drawWeaponInfo(&temp_s1->unk3C);
                 break;
             case 1:
                 func_800FC268(3);
-                _drawShieldInfo(temp_s1->unk1D4);
+                _drawShieldInfo(&temp_s1->unk1D4);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
                     func_800FC268(1);
-                    _drawArmorInfo(temp_s1->hitLocations[D_80108181 - 2].unk20);
+                    _drawArmorInfo(&temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
                     func_800FC268(0);
                     _drawAccessoryInfo(&temp_s1->unk338);
@@ -1362,9 +1265,9 @@ static int func_80104F80(int arg0)
                 }
 
                 if (D_80108181 == 0) {
-                    func_80104C40(D_80108182, temp_s1->unk3C, 1);
+                    func_80104C40(D_80108182, &temp_s1->unk3C, 1);
                 } else if (D_80108181 == s0) {
-                    func_80104DFC(D_80108182, (func_80104DFC_t*)temp_s1->unk1D4, 1);
+                    func_80104DFC(D_80108182, (func_80104DFC_t*)&temp_s1->unk1D4, 1);
                 }
             }
             break;
@@ -1397,18 +1300,18 @@ static int func_80104F80(int arg0)
 
                 switch (var_s2) {
                 case 0:
-                    if (temp_s1->unk3C[0xC] != 0) {
+                    if (temp_s1->unk3C.unk18 != 0) {
                         var_a0 = 0;
                     }
                     break;
                 case 1:
-                    if (temp_s1->unk1D4[0xC] != 0) {
+                    if (temp_s1->unk1D4.unk18 != 0) {
                         var_a0 = 0;
                     }
                     break;
                 default:
                     if ((var_s2 - 2) >= temp_s4
-                        || (temp_s1->hitLocations[var_s2 - 2].unk20[0] != 0)) {
+                        || (temp_s1->hitLocations[var_s2 - 2].unk20.unk0 != 0)) {
                         var_a0 = 0;
                     }
                 }
@@ -1427,28 +1330,28 @@ static int func_80104F80(int arg0)
                 switch (var_s2) {
                 case 0:
                     func_800FC268(0xB);
-                    _drawWeaponInfo(temp_s1->unk3C);
+                    _drawWeaponInfo(&temp_s1->unk3C);
 
                     for (i = 1; i < 6; ++i) {
-                        func_80104C40(i, temp_s1->unk3C, 0);
+                        func_80104C40(i, &temp_s1->unk3C, 0);
                     }
-                    func_800FC85C(temp_s1->unk3C, sp18, &sp48, D_800F4E8C);
-                    sp18[0] = (char*)temp_s1->unk3C;
+                    func_800FC85C(&temp_s1->unk3C, sp18, &sp48, D_800F4E8C);
+                    sp18[0] = (char*)&temp_s1->unk3C;
                     break;
                 case 1:
                     func_800FC268(0xB);
-                    _drawShieldInfo(temp_s1->unk1D4);
+                    _drawShieldInfo(&temp_s1->unk1D4);
                     for (i = 1; i < 4; ++i) {
-                        func_80104DFC(i, (func_80104DFC_t*)temp_s1->unk1D4, 0);
+                        func_80104DFC(i, (func_80104DFC_t*)&temp_s1->unk1D4, 0);
                     }
-                    func_800FCCE8(temp_s1->unk1D4, sp18, &sp48, D_800F4E8C);
+                    func_800FCCE8(&temp_s1->unk1D4, sp18, &sp48, D_800F4E8C);
                     break;
                 default:
                     if ((var_s2 - 2) < temp_s4) {
                         func_800FC268(9);
-                        _drawArmorInfo(temp_s1->hitLocations[var_s2 - 2].unk20);
-                        func_800FCECC((int*)temp_s1->hitLocations[var_s2 - 2].unk20, sp18,
-                            &sp48, D_800F4E8C);
+                        _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].unk20);
+                        func_800FCECC((int*)&temp_s1->hitLocations[var_s2 - 2].unk20,
+                            sp18, &sp48, D_800F4E8C);
                     } else {
                         func_800FC268(8);
                         _drawAccessoryInfo((func_80102CAC_t*)&temp_s1->unk338);
@@ -1495,13 +1398,13 @@ static int func_80104F80(int arg0)
         switch (D_80108181) {
         case 0:
             func_800FC268(0xB);
-            _drawWeaponInfo(temp_s1->unk3C);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk99 + 0x72);
+            _drawWeaponInfo(&temp_s1->unk3C);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk3C.unk5D + 0x72);
             break;
         case 1:
             func_800FC268(0xB);
-            _drawShieldInfo(temp_s1->unk1D4);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk201 + 0x60);
+            _drawShieldInfo(&temp_s1->unk1D4);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk1D4.unk2D + 0x60);
             break;
         default:
             var_a0_5 = 8;
@@ -1534,14 +1437,14 @@ static int func_80104F80(int arg0)
         } else if (var_v0_4 < 0x10) {
             switch (D_80108181) {
             case 0:
-                var_s3 = func_8010317C(var_v0_4 - 9, temp_s1->unk3C);
+                var_s3 = func_8010317C(var_v0_4 - 9, &temp_s1->unk3C);
                 break;
             case 1:
-                var_s3 = func_801032C4(var_v0_4 - 9, temp_s1->unk1D4);
+                var_s3 = func_801032C4(var_v0_4 - 9, &temp_s1->unk1D4);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
-                    var_s3 = func_801033A4(temp_s1->hitLocations[D_80108181 - 2].unk20);
+                    var_s3 = func_801033A4(&temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
                     var_s3 = func_801033D4(&temp_s1->unk338);
                 }
@@ -1616,12 +1519,12 @@ static int func_80105970(int arg0)
             sp10[i * 2 + 1] = _statusStrings + 233;
             sp58[i] = 1;
         }
-        if (temp_s6->unk3C[0xC] != 0) {
-            func_800FC85C(temp_s6->unk3C, (char**)sp10, sp58, sp80);
-            sp10[0] = temp_s6->unk3C;
+        if (temp_s6->unk3C.unk18 != 0) {
+            func_800FC85C(&temp_s6->unk3C, (char**)sp10, sp58, sp80);
+            sp10[0] = &temp_s6->unk3C;
         }
-        if (temp_s6->unk1D4[0xC] != 0) {
-            func_800FCCE8(temp_s6->unk1D4, (char**)&sp10[2], sp58 + 1, sp80 + 1);
+        if (temp_s6->unk1D4.unk18 != 0) {
+            func_800FCCE8(&temp_s6->unk1D4, (char**)&sp10[2], sp58 + 1, sp80 + 1);
         }
 
         temp_s5 = (((temp_s6->unk954 >> 0x11) ^ 1) & 1 & (D_801080A8 != 1));
@@ -1634,9 +1537,9 @@ static int func_80105970(int arg0)
             int* p = sp3E0;
             sp410 = temp_s5 | 0xF400;
             if ((i - 2) < sp40C) {
-                if (var_fp->unk20[0] != 0) {
+                if (var_fp->unk20.unk0 != 0) {
                     func_800FCECC(
-                        (int*)var_fp->unk20, (char**)&sp10[i * 2], &sp58[i], sp80 + i);
+                        (int*)&var_fp->unk20, (char**)&sp10[i * 2], &sp58[i], sp80 + i);
                 }
                 sp58[i] |= (((char)var_fp->nameIndex + 0x67) << 9) + temp_s5;
             } else {

@@ -17,23 +17,6 @@ typedef struct {
 } D_800F1BF8_t;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    char unk4;
-    char unk5;
-    u_char nameIndex;
-    char unk7;
-    u_short unk8[4];
-    u_short unk10[8];
-    u_short unk20[76];
-    short unkB8;
-    u_char unkBA;
-    u_char unkBB;
-    int unkBC[7];
-    int unkD8;
-} vs_battle_equipment_hitLocations;
-
-typedef struct {
     u_short unk0[8];
     int unk10[8];
     short unk30;
@@ -42,6 +25,135 @@ typedef struct {
     char unk36;
     u_char unk37;
 } func_80102CAC_t;
+
+typedef struct {
+    short classStats[2][8];
+    short affinityStats[2][8];
+} vs_battle_classAffinityStats_t;
+
+typedef struct {
+    u_short unk0[0x10];
+} vs_battle_unkStats_t;
+
+typedef struct {
+    u_short unk0[0x18];
+} vs_battle_weaponInfo_unk;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+} func_80103080_t;
+
+typedef struct {
+    u_short unk0[6];
+    u_short unkC;
+    u_short unkE;
+    int unk10;
+    int unk14;
+    u_short unk18;
+    u_short unk1A;
+    int unk1C[11];
+    func_80103080_t unk48;
+    int unk50;
+    int unk54;
+    int unk58;
+    char unk5C;
+    char unk5D;
+    short unk5E;
+    int unk60;
+    signed char unk64[4];
+    int unk68[4];
+    vs_battle_weaponInfo_unk unk78[3];
+    u_short unk108;
+    char risk;
+    char unk10B;
+    char unk10C;
+    u_char unk10D;
+    u_char unk10E;
+    u_char unk10F;
+    u_short unk110;
+    u_short unk112;
+    u_short unk114;
+    u_short unk116;
+    short unk118;
+    u_short attackStr;
+    short unk11C;
+    u_short attackInt;
+    short unk120;
+    u_short agility;
+    char range;
+    char unk125;
+    short unk126;
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk168[4];
+    vs_battle_unkStats_t unk178;
+} vs_battle_weaponInfo;
+
+typedef struct {
+    int unk0[6];
+    u_short unk18;
+    u_short unk1A;
+    int unk1C[4];
+    char unk2C;
+    char unk2D;
+    u_short unk2E;
+    int unk30[6];
+    vs_battle_weaponInfo_unk unk48[3];
+    u_short unkD8;
+    u_char unkDA;
+    char unkDB;
+    u_short unkDC;
+    u_short unkDE;
+    u_short unkE0;
+    u_short unkE2;
+    short unkE4;
+    u_short unkE6;
+    short unkE8;
+    u_short unkEA;
+    short unkEC;
+    u_short unkEE;
+    char unkF0[4];
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk134[4];
+    vs_battle_unkStats_t unk144;
+} vs_battle_equipment_t4;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    int unk4[11];
+    u_short unk30;
+    u_short unk32;
+    short unk34;
+    u_short unk36;
+    short unk38;
+    u_short unk3A;
+    short unk3C;
+    u_short unk3E;
+    u_short unk40[4];
+    vs_battle_classAffinityStats_t classAffinityStats;
+    int unk88[4];
+    u_short unk98;
+    u_char unk9A;
+    u_char unk9B;
+    vs_battle_unkStats_t unk9C;
+} vs_battle_equipment_t5;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    char unk4;
+    char unk5;
+    u_char nameIndex;
+    char unk7;
+    u_short unk8[4];
+    u_short unk10[8];
+    vs_battle_equipment_t5 unk20;
+} vs_battle_equipment_hitLocations;
 
 typedef struct {
     short unk0;
@@ -74,29 +186,8 @@ typedef struct {
     char unk36;
     char unk37;
     int unk38;
-    u_short unk3C[46];
-    char unk98;
-    char unk99;
-    short unk9A[81];
-    char unk13C;
-    u_char unk13D;
-    short unk13E;
-    int unk140;
-    int unk144;
-    char unk148;
-    u_char unk149;
-    short unk14A;
-    int unk14C[6];
-    int unk168[16];
-    int unk1A4[12];
-    u_short unk1D4[22];
-    char unk200;
-    char unk201;
-    u_short unk202[86];
-    u_char unk2AE;
-    short unk2B0;
-    short unk2B2;
-    int unk2B4[33];
+    vs_battle_weaponInfo unk3C;
+    vs_battle_equipment_t4 unk1D4;
     func_80102CAC_t unk338;
     int unk370[10];
     vs_battle_equipment_hitLocations hitLocations[6];
@@ -137,12 +228,6 @@ typedef struct {
     char unk3;
 } func_800FD17C_t;
 
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    char unk4;
-} func_80103080_t;
-
 void func_80069FC4(int, int);
 void func_8006AEAC(u_short*, char*);
 void func_8006B02C(void*, int);
@@ -151,8 +236,8 @@ void func_8006B338(void*);
 void func_8006B57C(int*, u_short*);
 void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
-void func_8006B8C0(void*, u_short*);
-void func_8006B9E0(void*, u_short*);
+void func_8006B8C0(void*, vs_battle_weaponInfo*);
+void func_8006B9E0(void*, vs_battle_equipment_t4*);
 void func_8006BAA8(void*, u_short*);
 void func_8006BADC(void*, func_80102CAC_t*);
 void func_8006CE50(void);

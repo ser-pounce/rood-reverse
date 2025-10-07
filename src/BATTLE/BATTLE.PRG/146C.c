@@ -1572,7 +1572,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008379C);
 
 short func_8008381C(int arg0 __attribute__((unused)), u_char* arg1)
 {
-    return D_800F1928[*arg1]->unk3C->unk2B0;
+    return D_800F1928[*arg1]->unk3C->unk1D4.unkDC;
 }
 
 short func_8008384C(u_int* arg0, int arg1 __attribute__((unused)),

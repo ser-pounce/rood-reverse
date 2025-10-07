@@ -12,19 +12,6 @@
 #include <libetc.h>
 
 typedef struct {
-    signed char unk0[8];
-    u_short unk8;
-    u_short unkA;
-    int unkC;
-    short unk10;
-    char unk12;
-    char unk13;
-    short unk14;
-    short unk16;
-    char unk18;
-} func_80102D64_t;
-
-typedef struct {
     int unk0[8];
 } D_80108198_t;
 
@@ -65,7 +52,7 @@ void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
     func_800FD220();
     func_800FBD0C(0, 0, 0, 1);
 
-    if (weapon->unk18 != 0) {
+    if (weapon->unk18.unk0 != 0) {
         vs_battle_memcpy(
             D_801024C0, &weapon->classAffinityStats, sizeof weapon->classAffinityStats);
         vs_battle_memcpy(D_801024C0 + 0x30, &weapon->unk178, sizeof weapon->unk178);
@@ -162,19 +149,19 @@ static void _drawAccessoryInfo(func_80102CAC_t* arg0)
     func_800FBB8C(7);
 }
 
-static void func_80102D64(u_short* arg0)
+static void func_80102D64(vs_battle_weaponInfo* arg0)
 {
     int i;
-    func_80102D64_t* temp_s0;
+    func_80102D64_t* temp_s0 = &arg0->unk18;
 
-    temp_s0 = (func_80102D64_t*)(arg0 + 12);
     D_80102545 = 2;
+
     for (i = 0; i < 16; ++i) {
-        D_801024C0[i] = (temp_s0->unk0 + (i & 7))[32];
-        D_801024C0[i + 16] = (temp_s0->unk0 + (i & 7))[40];
+        D_801024C0[i] = temp_s0->unk20[i & 7];
+        D_801024C0[i + 16] = temp_s0->unk28[i & 7];
     }
-    func_800FC208(temp_s0->unk8, temp_s0->unkA, arg0[0x88], arg0[0x89]);
-    func_800FBD28(temp_s0->unk0[5], temp_s0->unk0[6], temp_s0->unk0[7], 1);
+    func_800FC208(temp_s0->unk8, temp_s0->unkA, arg0->unk110, arg0->unk112);
+    func_800FBD28(temp_s0->unk5, temp_s0->unk6, temp_s0->unk7, 1);
     func_800FBD0C(temp_s0->unk18, temp_s0->unk12, 0, 1);
     func_800FBB8C(3);
     func_800FC268(0xB);
@@ -194,17 +181,17 @@ static void func_80102E3C(signed char* arg0)
     func_800FC268(8);
 }
 
-static void func_80102EC0(signed char* arg0)
+static void func_80102EC0(func_80102D64_t* arg0)
 {
     int i;
 
     D_80102545 = 64;
 
     for (i = 0; i < 16; ++i) {
-        D_801024C0[i] = (arg0 + (i & 7))[32];
-        D_801024C0[i + 16] = (arg0 + (i & 7))[40];
+        D_801024C0[i] = arg0->unk20[i & 7];
+        D_801024C0[i + 16] = arg0->unk28[i & 7];
     }
-    func_800FBD28(arg0[5], arg0[6], arg0[7], 1);
+    func_800FBD28(arg0->unk5, arg0->unk6, arg0->unk7, 1);
     func_800FBB8C(3);
     func_800FC268(8);
 }
@@ -236,9 +223,9 @@ static void func_80103080(
 }
 
 static void func_80103118(
-    u_short* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+    func_80102D64_t* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[*arg0 - 0x8C], 0x60);
+    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[arg0->unk0 - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
 }
 
@@ -260,7 +247,7 @@ static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
         break;
     case 1:
         func_80102F64((char*)&arg1->unk18, (D_800F4E8C_t**)sp10, &sp18);
-        func_80102D64(arg1->unk0);
+        func_80102D64(arg1);
         break;
     case 2:
         temp_s0 = &arg1->unk48;
@@ -270,9 +257,9 @@ static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
     case 3:
     case 4:
     case 5:
-        if (arg1->unk78[arg0 - 3].unk0[0] != 0) {
-            func_80103118(arg1->unk78[arg0 - 3].unk0, (D_800F4E8C_t**)sp10, &sp18);
-            func_80102EC0(arg1->unk78[arg0 - 3].unk0);
+        if (arg1->unk78[arg0 - 3].unk0 != 0) {
+            func_80103118(&arg1->unk78[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
+            func_80102EC0(&arg1->unk78[arg0 - 3]);
         } else {
             func_800FC268(8);
             func_800FD220();
@@ -295,9 +282,9 @@ static char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
     } else if (arg0 < 0) {
 
     } else if (arg0 < 4) {
-        if (arg1->unk48[arg0 - 1].unk0[0] != 0) {
-            func_80103118(arg1->unk48[arg0 - 1].unk0, (D_800F4E8C_t**)&sp10, &sp18);
-            func_80102EC0(arg1->unk48[arg0 - 1].unk0);
+        if (arg1->unk48[arg0 - 1].unk0 != 0) {
+            func_80103118(&arg1->unk48[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
+            func_80102EC0(&arg1->unk48[arg0 - 1]);
         } else {
             func_800FC268(8);
             func_800FD220();
@@ -1107,7 +1094,7 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
             sp18.unk4 = 0;
             sp18.unk0 = D_80102540 + 0x340B;
             sp80 = 0x58000000;
-            if (arg1->unk78[var_s1].unk0[0] != 0) {
+            if (arg1->unk78[var_s1].unk0 != 0) {
                 func_8006B728(&sp60, &arg1->unk78[var_s1]);
                 func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, D_800F4E8C);
             }
@@ -1300,7 +1287,7 @@ static int func_80104F80(int arg0)
 
                 switch (var_s2) {
                 case 0:
-                    if (temp_s1->unk3C.unk18 != 0) {
+                    if (temp_s1->unk3C.unk18.unk0 != 0) {
                         var_a0 = 0;
                     }
                     break;
@@ -1519,7 +1506,7 @@ static int func_80105970(int arg0)
             sp10[i * 2 + 1] = _statusStrings + 233;
             sp58[i] = 1;
         }
-        if (temp_s6->unk3C.unk18 != 0) {
+        if (temp_s6->unk3C.unk18.unk0 != 0) {
             func_800FC85C(&temp_s6->unk3C, (char**)sp10, sp58, sp80);
             sp10[0] = &temp_s6->unk3C;
         }

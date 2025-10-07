@@ -49,14 +49,38 @@ typedef struct {
 } func_80103080_t;
 
 typedef struct {
-    int unk0[3];
+    u_short unk0;
+    signed char unk2;
+    signed char unk3;
+    signed char unk4;
+    signed char unk5;
+    signed char unk6;
+    signed char unk7;
+    u_short unk8;
+    u_short unkA;
+    int unkC;
+    short unk10;
+    char unk12;
+    char unk13;
+    short unk14;
+    short unk16;
+    char unk18;
+    char unk19;
+    u_short unk1A;
+    int unk1C;
+    signed char unk20[8];
+    signed char unk28[8];
+} func_80102D64_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
     u_short unkC;
     u_short unkE;
     int unk10;
     int unk14;
-    u_short unk18;
-    u_short unk1A;
-    int unk1C[11];
+    func_80102D64_t unk18;
     func_80103080_t unk48;
     int unk50;
     int unk54;
@@ -67,7 +91,7 @@ typedef struct {
     int unk60;
     signed char unk64[4];
     int unk68[4];
-    vs_battle_weaponInfo_unk unk78[3];
+    func_80102D64_t unk78[3];
     u_short unk108;
     char risk;
     char unk10B;
@@ -102,7 +126,7 @@ typedef struct {
     char unk2D;
     u_short unk2E;
     int unk30[6];
-    vs_battle_weaponInfo_unk unk48[3];
+    func_80102D64_t unk48[3];
     u_short unkD8;
     u_char unkDA;
     char unkDB;
@@ -233,7 +257,7 @@ void func_8006AEAC(u_short*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int*);
 void func_8006B338(void*);
-void func_8006B57C(int*, u_short*);
+void func_8006B57C(int*, func_80102D64_t*);
 void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);

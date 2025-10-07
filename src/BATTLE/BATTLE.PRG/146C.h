@@ -49,7 +49,7 @@ typedef struct {
 } func_80103080_t;
 
 typedef struct {
-    u_short unk0[6];
+    int unk0[3];
     u_short unkC;
     u_short unkE;
     int unk10;

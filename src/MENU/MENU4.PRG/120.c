@@ -213,11 +213,11 @@ static void func_80102F64(
     char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     char* c;
-    vs_battle_stringContext[0x13] = D_8010229C[arg0[0x13] + 253];
-    vs_battle_stringContext[0x12] = (char*)&D_80102540[D_80102540[arg0[4] + 0x18E]];
-    vs_battle_stringContext[0x11] = (char*)&D_80102540[D_80102540[arg0[16] + 0x198]];
+    vs_battle_stringContext[19] = D_8010229C[arg0[0x13] + 253];
+    vs_battle_stringContext[18] = (char*)&D_80102540[D_80102540[arg0[4] + 0x18E]];
+    vs_battle_stringContext[17] = (char*)&D_80102540[D_80102540[arg0[16] + 0x198]];
     c = arg0[4] + D_80102140;
-    vs_battle_stringContext[0x10] = (char*)&D_80102540[D_80102540[(c[-1] + 0x19C)]];
+    vs_battle_stringContext[16] = (char*)&D_80102540[D_80102540[(c[-1] + 0x19C)]];
     func_800C685C(
         func_800C685C(D_800F4E8C, (char*)&D_80102540[D_80102540[*(u_short*)arg0 - 1]]),
         (char*)(D_80102540 + 0x33FB));
@@ -252,10 +252,10 @@ static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
     func_80103080_t* temp_s0;
     u_short* temp_s0_2;
 
-    sp10[1] = D_80102540 + 0x340E;
+    sp10[1] = (char*)&D_80102540[0x340E];
     switch (arg0) {
     case 0:
-        func_800FC85C(arg1->unk0, sp10, &sp18, D_800F4E8C);
+        func_800FC85C(arg1, sp10, &sp18, D_800F4E8C);
         sp10[0] = (char*)arg1;
         break;
     case 1:

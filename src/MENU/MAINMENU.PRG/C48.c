@@ -365,14 +365,14 @@ void func_800FBD0C(int arg0, int arg1, int arg2, int arg3)
     D_80102480[3] = arg3;
 }
 
-void func_800FBD28(int arg0, int arg1, int arg2, int arg3)
+void func_800FBD28(int strength, int intelligence, int agility, int arg3)
 {
-    D_801024A8[0] = arg0;
-    D_801024A8[1] = arg1;
-    D_801024A8[2] = arg2;
-    D_801024A8[3] = arg3;
+    D_801024A8[0].strength = strength;
+    D_801024A8[0].intelligence = intelligence;
+    D_801024A8[0].agility = agility;
+    D_801024A8[0].unk6 = arg3;
     func_800FBD0C(0, 0, 0, 0);
-    vs_battle_memcpy(D_801024A8 + 4, D_801024A8, 8);
+    vs_battle_memcpy(&D_801024A8[1], &D_801024A8[0], sizeof D_801024A8[0]);
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBD80);

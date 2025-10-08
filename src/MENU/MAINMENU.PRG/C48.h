@@ -24,6 +24,13 @@ typedef struct {
     void* unk4;
 } func_800FD0E0_t;
 
+typedef struct {
+    short strength;
+    short intelligence;
+    short agility;
+    short unk6;
+} D_801024A8_t;
+
 void func_800FA448(void);
 void func_800FA8A0(int arg0);
 void func_800FA810(int arg0);
@@ -53,7 +60,7 @@ void func_8010044C(u_int*);
 extern char D_80102140[];
 extern char (*D_8010229C)[24];
 extern D_8010245C_t* D_8010245C;
-extern short D_801024A8[];
+extern D_801024A8_t D_801024A8[2];
 extern char D_801024B9;
 extern short D_801024C0[];
 extern short D_80102508;

@@ -24,7 +24,10 @@ typedef struct {
     short unk34;
     char unk36;
     u_char unk37;
-} func_80102CAC_t;
+    u_short unk38[4];
+    u_short unk40[8];
+    u_short unk50[8];
+} vs_battle_accessoryInfo;
 
 typedef struct {
     short classStats[2][8];
@@ -135,16 +138,16 @@ typedef struct {
     u_short unkE0;
     u_short unkE2;
     short unkE4;
-    u_short unkE6;
+    u_short defenseStr;
     short unkE8;
-    u_short unkEA;
+    u_short defenseInt;
     short unkEC;
-    u_short unkEE;
+    u_short agility;
     char unkF0[4];
     vs_battle_classAffinityStats_t classAffinityStats;
     int unk134[4];
     vs_battle_unkStats_t unk144;
-} vs_battle_equipment_t4;
+} vs_battle_shieldInfo;
 
 typedef struct {
     u_short unk0;
@@ -153,11 +156,11 @@ typedef struct {
     u_short unk30;
     u_short unk32;
     short unk34;
-    u_short unk36;
+    u_short defenseStr;
     short unk38;
-    u_short unk3A;
+    u_short defenseInt;
     short unk3C;
-    u_short unk3E;
+    u_short agility;
     u_short unk40[4];
     vs_battle_classAffinityStats_t classAffinityStats;
     int unk88[4];
@@ -165,7 +168,7 @@ typedef struct {
     u_char unk9A;
     u_char unk9B;
     vs_battle_unkStats_t unk9C;
-} vs_battle_equipment_t5;
+} vs_battle_armorInfo;
 
 typedef struct {
     u_short unk0;
@@ -176,7 +179,7 @@ typedef struct {
     char unk7;
     u_short unk8[4];
     u_short unk10[8];
-    vs_battle_equipment_t5 unk20;
+    vs_battle_armorInfo unk20;
 } vs_battle_equipment_hitLocations;
 
 typedef struct {
@@ -211,9 +214,8 @@ typedef struct {
     char unk37;
     int unk38;
     vs_battle_weaponInfo unk3C;
-    vs_battle_equipment_t4 unk1D4;
-    func_80102CAC_t unk338;
-    int unk370[10];
+    vs_battle_shieldInfo unk1D4;
+    vs_battle_accessoryInfo unk338;
     vs_battle_equipment_hitLocations hitLocations[6];
     u_short unk8C0[68];
     int unk948;
@@ -261,9 +263,9 @@ void func_8006B57C(int*, func_80102D64_t*);
 void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
-void func_8006B9E0(void*, vs_battle_equipment_t4*);
+void func_8006B9E0(void*, vs_battle_shieldInfo*);
 void func_8006BAA8(void*, u_short*);
-void func_8006BADC(void*, func_80102CAC_t*);
+void func_8006BADC(void*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);
 void func_8007ACB0();

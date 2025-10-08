@@ -66,15 +66,15 @@ void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
         } while (0);
         func_800FC208(weapon->unk114, weapon->unk116, weapon->unk110, weapon->unk112);
         func_800FBD28(weapon->unk118, weapon->unk11C, weapon->unk120, 1);
-        D_801024A8[4] = weapon->attackStr;
-        D_801024A8[5] = weapon->attackInt;
-        D_801024A8[6] = weapon->agility;
+        D_801024A8[1].strength = weapon->attackStr;
+        D_801024A8[1].intelligence = weapon->attackInt;
+        D_801024A8[1].agility = weapon->agility;
         func_800FBD0C(weapon->range, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
 
-static void _drawShieldInfo(vs_battle_equipment_t4* arg0)
+static void _drawShieldInfo(vs_battle_shieldInfo* arg0)
 {
     int i;
 
@@ -91,15 +91,15 @@ static void _drawShieldInfo(vs_battle_equipment_t4* arg0)
         }
 
         func_800FC208(arg0->unkE0, arg0->unkE2, arg0->unkDC, arg0->unkDE);
-        func_800FBD28((short)arg0->unkE4, (short)arg0->unkE8, (short)arg0->unkEC, 1);
-        D_801024A8[4] = arg0->unkE6;
-        D_801024A8[5] = arg0->unkEA;
-        D_801024A8[6] = arg0->unkEE;
+        func_800FBD28(arg0->unkE4, arg0->unkE8, arg0->unkEC, 1);
+        D_801024A8[1].strength = arg0->defenseStr;
+        D_801024A8[1].intelligence = arg0->defenseInt;
+        D_801024A8[1].agility = arg0->agility;
     }
     func_800FBB8C(7);
 }
 
-static void _drawArmorInfo(vs_battle_equipment_t5* arg0)
+static void _drawArmorInfo(vs_battle_armorInfo* arg0)
 {
     int i;
 
@@ -122,27 +122,25 @@ static void _drawArmorInfo(vs_battle_equipment_t5* arg0)
 
         func_800FC208(arg0->unk30, arg0->unk32, 0, 0);
         func_800FBD28(arg0->unk34, arg0->unk38, arg0->unk3C, 1);
-        D_801024A8[4] = arg0->unk36;
-        D_801024A8[5] = arg0->unk3A;
-        D_801024A8[6] = arg0->unk3E;
+        D_801024A8[1].strength = arg0->defenseStr;
+        D_801024A8[1].intelligence = arg0->defenseInt;
+        D_801024A8[1].agility = arg0->agility;
     }
     func_800FBB8C(7);
 }
 
-static void _drawAccessoryInfo(func_80102CAC_t* arg0)
+static void _drawAccessoryInfo(vs_battle_accessoryInfo* arg0)
 {
     int i;
-    u_short* temp_v0;
 
     D_80102545 = 32;
     func_800FD220();
 
     if (arg0->unk0[0] != 0) {
         for (i = 0; i < 16; ++i) {
-            temp_v0 = (arg0->unk0 + (i & 7));
-            D_801024C0[i] = temp_v0[32];
-            D_801024C0[i + 16] = temp_v0[40];
-            D_801024C0[i + 32] = temp_v0[28];
+            D_801024C0[i] = arg0->unk40[i & 7];
+            D_801024C0[i + 16] = arg0->unk50[i & 7];
+            D_801024C0[i + 32] = arg0->unk38[i & 7]; // BUG? Copies past end
         }
         func_800FBD28(arg0->unk30, arg0->unk32, arg0->unk34, 2);
     }
@@ -270,7 +268,7 @@ static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
     return sp10[1];
 }
 
-static char* func_801032C4(int arg0, vs_battle_equipment_t4* arg1)
+static char* func_801032C4(int arg0, vs_battle_shieldInfo* arg1)
 {
     char* sp10[2];
     int sp18;
@@ -303,7 +301,7 @@ static char* func_801033A4(void* arg0)
     return sp10[1];
 }
 
-static char* func_801033D4(func_80102CAC_t* arg0)
+static char* func_801033D4(vs_battle_accessoryInfo* arg0)
 {
     char* sp10[2];
     int sp18[10];
@@ -1341,7 +1339,7 @@ static int func_80104F80(int arg0)
                             sp18, &sp48, D_800F4E8C);
                     } else {
                         func_800FC268(8);
-                        _drawAccessoryInfo((func_80102CAC_t*)&temp_s1->unk338);
+                        _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->unk338);
                         func_8006BADC(sp20, &temp_s1->unk338);
                         func_800FD084(sp20, sp18, &sp48, D_800F4E8C);
                     }

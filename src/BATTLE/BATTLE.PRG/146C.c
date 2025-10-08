@@ -298,7 +298,7 @@ void func_8006BAA8(void* arg0, u_short* arg1)
     }
 }
 
-void func_8006BADC(void* arg0, func_80102CAC_t* arg1)
+void func_8006BADC(void* arg0, vs_battle_accessoryInfo* arg1)
 {
     if (arg1->unk0[0] != 0) {
         func_8006B7BC(arg0);

@@ -17,30 +17,18 @@ typedef struct {
 } D_800F1BF8_t;
 
 typedef struct {
-    u_short unk0[8];
-    int unk10[8];
-    short unk30;
-    short unk32;
-    short unk34;
-    char unk36;
-    u_char unk37;
-    u_short unk38[4];
-    u_short unk40[8];
-    u_short unk50[8];
-} vs_battle_accessoryInfo;
+    short class[2][8];
+    short affinity[2][8];
+} vs_battle_classAffinityCurrent;
 
 typedef struct {
-    short classStats[2][8];
-    short affinityStats[2][8];
-} vs_battle_classAffinityStats_t;
-
-typedef struct {
-    u_short unk0[0x10];
-} vs_battle_unkStats_t;
+    u_short class[8];
+    u_short affinity[8];
+} vs_battle_classAffinityBaseline;
 
 typedef struct {
     u_short unk0[0x18];
-} vs_battle_weaponInfo_unk;
+} vs_battle_equippedWeapon_unk;
 
 typedef struct {
     u_short unk0;
@@ -52,28 +40,32 @@ typedef struct {
 } func_80103080_t;
 
 typedef struct {
-    u_short unk0;
+    u_short id;
     signed char unk2;
-    signed char unk3;
-    signed char unk4;
-    signed char unk5;
-    signed char unk6;
-    signed char unk7;
-    u_short unk8;
-    u_short unkA;
-    int unkC;
-    short unk10;
-    char unk12;
-    char unk13;
-    short unk14;
-    short unk16;
-    char unk18;
+    signed char wepId;
+    signed char category;
+    signed char strength;
+    signed char intelligence;
+    signed char agility;
+    u_short currentDp;
+    u_short maxDp;
+    u_short currentPp;
+    u_short maxPp;
+    char damageType;
+    char costType;
+    char cost;
+    char material;
+    char unk14;
+    char gemSlots;
+    char gemEffects;
+    char index;
+    char range;
     char unk19;
     u_short unk1A;
-    int unk1C;
-    signed char unk20[8];
-    signed char unk28[8];
-} func_80102D64_t;
+    signed char types[4];
+    signed char classes[8];
+    signed char affinities[8];
+} vs_battle_equipment;
 
 typedef struct {
     int unk0;
@@ -83,18 +75,9 @@ typedef struct {
     u_short unkE;
     int unk10;
     int unk14;
-    func_80102D64_t unk18;
-    func_80103080_t unk48;
-    int unk50;
-    int unk54;
-    int unk58;
-    char unk5C;
-    char unk5D;
-    short unk5E;
-    int unk60;
-    signed char unk64[4];
-    int unk68[4];
-    func_80102D64_t unk78[3];
+    vs_battle_equipment blade;
+    vs_battle_equipment grip;
+    vs_battle_equipment gems[3];
     u_short unk108;
     char risk;
     char unk10B;
@@ -102,72 +85,64 @@ typedef struct {
     u_char unk10D;
     u_char unk10E;
     u_char unk10F;
-    u_short unk110;
-    u_short unk112;
-    u_short unk114;
-    u_short unk116;
-    short unk118;
-    u_short attackStr;
-    short unk11C;
-    u_short attackInt;
-    short unk120;
-    u_short agility;
+    u_short currentPp;
+    u_short maxPp;
+    u_short currentDp;
+    u_short maxDp;
+    short currentStr;
+    u_short baseStr;
+    short currentInt;
+    u_short baseInt;
+    short currentAgility;
+    u_short baseAgility;
     char range;
     char unk125;
     short unk126;
-    vs_battle_classAffinityStats_t classAffinityStats;
+    vs_battle_classAffinityCurrent classAffinityCurrent;
     int unk168[4];
-    vs_battle_unkStats_t unk178;
-} vs_battle_weaponInfo;
+    vs_battle_classAffinityBaseline classAffinityBaseline;
+} vs_battle_equippedWeapon;
 
 typedef struct {
     int unk0[6];
-    u_short unk18;
-    u_short unk1A;
-    int unk1C[4];
-    char unk2C;
-    char unk2D;
-    u_short unk2E;
-    int unk30[6];
-    func_80102D64_t unk48[3];
+    vs_battle_equipment unk18;
+    vs_battle_equipment gems[3];
     u_short unkD8;
     u_char unkDA;
     char unkDB;
-    u_short unkDC;
-    u_short unkDE;
-    u_short unkE0;
-    u_short unkE2;
-    short unkE4;
-    u_short defenseStr;
-    short unkE8;
-    u_short defenseInt;
-    short unkEC;
-    u_short agility;
-    char unkF0[4];
-    vs_battle_classAffinityStats_t classAffinityStats;
+    u_short currentDp;
+    u_short maxDp;
+    u_short currentPp;
+    u_short maxPp;
+    short currentStr;
+    u_short baseStr;
+    short currentInt;
+    u_short baseInt;
+    short currentAgility;
+    u_short baseAgility;
+    char types[4];
+    vs_battle_classAffinityCurrent classAffinityCurrent;
     int unk134[4];
-    vs_battle_unkStats_t unk144;
+    vs_battle_classAffinityBaseline classAffinityBaseline;
 } vs_battle_shieldInfo;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    int unk4[11];
-    u_short unk30;
-    u_short unk32;
-    short unk34;
-    u_short defenseStr;
-    short unk38;
-    u_short defenseInt;
-    short unk3C;
-    u_short agility;
-    u_short unk40[4];
-    vs_battle_classAffinityStats_t classAffinityStats;
+    vs_battle_equipment unk0;
+    u_short currentDp;
+    u_short maxDp;
+    short currentStr;
+    u_short baseStr;
+    short currentInt;
+    u_short baseInt;
+    short currentAgility;
+    u_short baseAgility;
+    u_short types[4];
+    vs_battle_classAffinityCurrent classAffinityCurrent;
     int unk88[4];
     u_short unk98;
     u_char unk9A;
     u_char unk9B;
-    vs_battle_unkStats_t unk9C;
+    vs_battle_classAffinityBaseline classAffinityBaseline;
 } vs_battle_armorInfo;
 
 typedef struct {
@@ -181,6 +156,18 @@ typedef struct {
     u_short unk10[8];
     vs_battle_armorInfo unk20;
 } vs_battle_equipment_hitLocations;
+
+typedef struct {
+    vs_battle_equipment unk0;
+    short currentStr;
+    short currentInt;
+    short currentAgility;
+    char unk36;
+    u_char unk37;
+    u_short types[4];
+    u_short classes[8];
+    u_short affinities[8];
+} vs_battle_accessoryInfo;
 
 typedef struct {
     short unk0;
@@ -213,9 +200,9 @@ typedef struct {
     char unk36;
     char unk37;
     int unk38;
-    vs_battle_weaponInfo unk3C;
-    vs_battle_shieldInfo unk1D4;
-    vs_battle_accessoryInfo unk338;
+    vs_battle_equippedWeapon weapon;
+    vs_battle_shieldInfo shield;
+    vs_battle_accessoryInfo accessory;
     vs_battle_equipment_hitLocations hitLocations[6];
     u_short unk8C0[68];
     int unk948;
@@ -259,10 +246,10 @@ void func_8006AEAC(u_short*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(int*, int*);
 void func_8006B338(void*);
-void func_8006B57C(int*, func_80102D64_t*);
+void func_8006B57C(int*, vs_battle_equipment*);
 void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
-void func_8006B8C0(void*, vs_battle_weaponInfo*);
+void func_8006B8C0(void*, vs_battle_equippedWeapon*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
 void func_8006BAA8(void*, u_short*);
 void func_8006BADC(void*, vs_battle_accessoryInfo*);

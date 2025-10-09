@@ -44,7 +44,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
+static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
 {
     int i;
 
@@ -52,144 +52,152 @@ void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
     func_800FD220();
     func_800FBD0C(0, 0, 0, 1);
 
-    if (weapon->unk18.unk0 != 0) {
-        vs_battle_memcpy(
-            D_801024C0, &weapon->classAffinityStats, sizeof weapon->classAffinityStats);
-        vs_battle_memcpy(D_801024C0 + 0x30, &weapon->unk178, sizeof weapon->unk178);
-        D_801024C0[0x3F] = weapon == &vs_battle_characterState->unk3C->unk3C;
+    if (weapon->blade.id != 0) {
+        vs_battle_memcpy(D_801024C0, &weapon->classAffinityCurrent,
+            sizeof weapon->classAffinityCurrent);
+        vs_battle_memcpy(D_801024C0 + 0x30, &weapon->classAffinityBaseline,
+            sizeof weapon->classAffinityBaseline);
+        D_801024C0[0x3F] = weapon == &vs_battle_characterState->unk3C->weapon;
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = weapon->unk64[i];
+            D_801024C0[i + 0x20] = weapon->grip.types[i];
         }
 
         do {
             D_80102508 = weapon->unk10E;
         } while (0);
-        func_800FC208(weapon->unk114, weapon->unk116, weapon->unk110, weapon->unk112);
-        func_800FBD28(weapon->unk118, weapon->unk11C, weapon->unk120, 1);
-        D_801024A8[1].strength = weapon->attackStr;
-        D_801024A8[1].intelligence = weapon->attackInt;
-        D_801024A8[1].agility = weapon->agility;
+
+        vs_mainMenu_setDpPp(
+            weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);
+        func_800FBD28(weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
+
+        D_801024A8[1].strength = weapon->baseStr;
+        D_801024A8[1].intelligence = weapon->baseInt;
+        D_801024A8[1].agility = weapon->baseAgility;
         func_800FBD0C(weapon->range, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
 
-static void _drawShieldInfo(vs_battle_shieldInfo* arg0)
+static void _drawShieldInfo(vs_battle_shieldInfo* shield)
 {
     int i;
 
     D_80102545 = 8;
     func_800FD220();
 
-    if (arg0->unk18 != 0) {
-        vs_battle_memcpy(
-            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
-        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk144, sizeof arg0->unk144);
-        D_801024C0[63] = arg0 == &vs_battle_characterState->unk3C->unk1D4;
+    if (shield->unk18.id != 0) {
+        vs_battle_memcpy(D_801024C0, &shield->classAffinityCurrent,
+            sizeof shield->classAffinityCurrent);
+        vs_battle_memcpy(D_801024C0 + 0x30, &shield->classAffinityBaseline,
+            sizeof shield->classAffinityBaseline);
+        D_801024C0[63] = shield == &vs_battle_characterState->unk3C->shield;
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = arg0->unkF0[i];
+            D_801024C0[i + 0x20] = shield->types[i];
         }
 
-        func_800FC208(arg0->unkE0, arg0->unkE2, arg0->unkDC, arg0->unkDE);
-        func_800FBD28(arg0->unkE4, arg0->unkE8, arg0->unkEC, 1);
-        D_801024A8[1].strength = arg0->defenseStr;
-        D_801024A8[1].intelligence = arg0->defenseInt;
-        D_801024A8[1].agility = arg0->agility;
+        vs_mainMenu_setDpPp(
+            shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
+        func_800FBD28(shield->currentStr, shield->currentInt, shield->currentAgility, 1);
+        D_801024A8[1].strength = shield->baseStr;
+        D_801024A8[1].intelligence = shield->baseInt;
+        D_801024A8[1].agility = shield->baseAgility;
     }
     func_800FBB8C(7);
 }
 
-static void _drawArmorInfo(vs_battle_armorInfo* arg0)
+static void _drawArmorInfo(vs_battle_armorInfo* armor)
 {
     int i;
 
-    D_80102545 = 0x10;
+    D_80102545 = 16;
     func_800FD220();
 
-    if (arg0->unk0 != 0) {
+    if (armor->unk0.id != 0) {
         vs_battle_memcpy(
-            D_801024C0, &arg0->classAffinityStats, sizeof arg0->classAffinityStats);
-        vs_battle_memcpy(D_801024C0 + 0x30, &arg0->unk9C, sizeof arg0->unk9C);
+            D_801024C0, &armor->classAffinityCurrent, sizeof armor->classAffinityCurrent);
+        vs_battle_memcpy(D_801024C0 + 0x30, &armor->classAffinityBaseline,
+            sizeof armor->classAffinityBaseline);
         D_801024C0[0x3F] = 0;
         for (i = 0; i < 5; ++i) {
             D_801024C0[0x3F]
-                |= arg0 == &vs_battle_characterState->unk3C->hitLocations[i].unk20;
+                |= armor == &vs_battle_characterState->unk3C->hitLocations[i].unk20;
         }
 
         for (i = 0; i < 4; ++i) {
-            D_801024C0[i + 0x20] = arg0->unk40[i];
+            D_801024C0[i + 0x20] = armor->types[i];
         }
 
-        func_800FC208(arg0->unk30, arg0->unk32, 0, 0);
-        func_800FBD28(arg0->unk34, arg0->unk38, arg0->unk3C, 1);
-        D_801024A8[1].strength = arg0->defenseStr;
-        D_801024A8[1].intelligence = arg0->defenseInt;
-        D_801024A8[1].agility = arg0->agility;
+        vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
+        func_800FBD28(armor->currentStr, armor->currentInt, armor->currentAgility, 1);
+        D_801024A8[1].strength = armor->baseStr;
+        D_801024A8[1].intelligence = armor->baseInt;
+        D_801024A8[1].agility = armor->baseAgility;
     }
     func_800FBB8C(7);
 }
 
-static void _drawAccessoryInfo(vs_battle_accessoryInfo* arg0)
+static void _drawAccessoryInfo(vs_battle_accessoryInfo* accessory)
 {
     int i;
 
     D_80102545 = 32;
     func_800FD220();
 
-    if (arg0->unk0[0] != 0) {
+    if (accessory->unk0.id != 0) {
         for (i = 0; i < 16; ++i) {
-            D_801024C0[i] = arg0->unk40[i & 7];
-            D_801024C0[i + 16] = arg0->unk50[i & 7];
-            D_801024C0[i + 32] = arg0->unk38[i & 7]; // BUG? Copies past end
+            D_801024C0[i] = accessory->classes[i & 7];
+            D_801024C0[i + 16] = accessory->affinities[i & 7];
+            D_801024C0[i + 32] = accessory->types[i & 7]; // BUG? Copies past end
         }
-        func_800FBD28(arg0->unk30, arg0->unk32, arg0->unk34, 2);
+        func_800FBD28(
+            accessory->currentStr, accessory->currentInt, accessory->currentAgility, 2);
     }
     func_800FBB8C(7);
 }
 
-static void func_80102D64(vs_battle_weaponInfo* arg0)
+static void _drawBladeInfo(vs_battle_equippedWeapon* weapon)
 {
     int i;
-    func_80102D64_t* temp_s0 = &arg0->unk18;
+    vs_battle_equipment* blade = &weapon->blade;
 
     D_80102545 = 2;
 
     for (i = 0; i < 16; ++i) {
-        D_801024C0[i] = temp_s0->unk20[i & 7];
-        D_801024C0[i + 16] = temp_s0->unk28[i & 7];
+        D_801024C0[i] = blade->classes[i & 7];
+        D_801024C0[i + 16] = blade->affinities[i & 7];
     }
-    func_800FC208(temp_s0->unk8, temp_s0->unkA, arg0->unk110, arg0->unk112);
-    func_800FBD28(temp_s0->unk5, temp_s0->unk6, temp_s0->unk7, 1);
-    func_800FBD0C(temp_s0->unk18, temp_s0->unk12, 0, 1);
+    vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, weapon->currentPp, weapon->maxPp);
+    func_800FBD28(blade->strength, blade->intelligence, blade->agility, 1);
+    func_800FBD0C(blade->range, blade->cost, 0, 1);
     func_800FBB8C(3);
     func_800FC268(0xB);
 }
 
-static void func_80102E3C(signed char* arg0)
+static void _drawGripInfo(vs_battle_equipment* grip)
 {
     int i;
 
     D_80102545 = 4;
 
     for (i = 0; i < 4; ++i) {
-        D_801024C0[i + 0x20] = (arg0 + i)[0x1C];
+        D_801024C0[i + 0x20] = grip->types[i];
     }
-    func_800FBD28(arg0[5], arg0[6], arg0[7], 1);
+    func_800FBD28(grip->strength, grip->intelligence, grip->agility, 1);
     func_800FBB8C(4);
     func_800FC268(8);
 }
 
-static void func_80102EC0(func_80102D64_t* arg0)
+static void _drawGemInfo(vs_battle_equipment* gem)
 {
     int i;
 
     D_80102545 = 64;
 
     for (i = 0; i < 16; ++i) {
-        D_801024C0[i] = arg0->unk20[i & 7];
-        D_801024C0[i + 16] = arg0->unk28[i & 7];
+        D_801024C0[i] = gem->classes[i & 7];
+        D_801024C0[i + 16] = gem->affinities[i & 7];
     }
-    func_800FBD28(arg0->unk5, arg0->unk6, arg0->unk7, 1);
+    func_800FBD28(gem->strength, gem->intelligence, gem->agility, 1);
     func_800FBB8C(3);
     func_800FC268(8);
 }
@@ -221,43 +229,43 @@ static void func_80103080(
 }
 
 static void func_80103118(
-    func_80102D64_t* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_equipment* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[arg0->unk0 - 0x8C], 0x60);
+    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[arg0->id - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
 }
 
 static char* _hitLocationStates[]
     = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
-static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
+static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
 {
     char* sp10[2];
     int sp18;
-    func_80103080_t* temp_s0;
+    vs_battle_equipment* temp_s0;
     u_short* temp_s0_2;
 
     sp10[1] = (char*)&D_80102540[0x340E];
     switch (arg0) {
     case 0:
-        func_800FC85C(arg1, sp10, &sp18, D_800F4E8C);
-        sp10[0] = (char*)arg1;
+        func_800FC85C(weapon, sp10, &sp18, D_800F4E8C);
+        sp10[0] = (char*)weapon;
         break;
     case 1:
-        func_80102F64((char*)&arg1->unk18, (D_800F4E8C_t**)sp10, &sp18);
-        func_80102D64(arg1);
+        func_80102F64((char*)&weapon->blade, (D_800F4E8C_t**)sp10, &sp18);
+        _drawBladeInfo(weapon);
         break;
     case 2:
-        temp_s0 = &arg1->unk48;
+        temp_s0 = &weapon->grip;
         func_80103080(temp_s0, (D_800F4E8C_t**)sp10, &sp18);
-        func_80102E3C((char*)temp_s0);
+        _drawGripInfo(temp_s0);
         break;
     case 3:
     case 4:
     case 5:
-        if (arg1->unk78[arg0 - 3].unk0 != 0) {
-            func_80103118(&arg1->unk78[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
-            func_80102EC0(&arg1->unk78[arg0 - 3]);
+        if (weapon->gems[arg0 - 3].id != 0) {
+            func_80103118(&weapon->gems[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
+            _drawGemInfo(&weapon->gems[arg0 - 3]);
         } else {
             func_800FC268(8);
             func_800FD220();
@@ -268,7 +276,7 @@ static char* func_8010317C(int arg0, vs_battle_weaponInfo* arg1)
     return sp10[1];
 }
 
-static char* func_801032C4(int arg0, vs_battle_shieldInfo* arg1)
+static char* func_801032C4(int arg0, vs_battle_shieldInfo* shield)
 {
     char* sp10[2];
     int sp18;
@@ -276,13 +284,13 @@ static char* func_801032C4(int arg0, vs_battle_shieldInfo* arg1)
 
     sp10[1] = D_80102540 + 0x340E;
     if (arg0 == 0) {
-        func_800FCCE8(arg1, sp10, &sp18, D_800F4E8C);
+        func_800FCCE8(shield, sp10, &sp18, D_800F4E8C);
     } else if (arg0 < 0) {
 
     } else if (arg0 < 4) {
-        if (arg1->unk48[arg0 - 1].unk0 != 0) {
-            func_80103118(&arg1->unk48[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
-            func_80102EC0(&arg1->unk48[arg0 - 1]);
+        if (shield->gems[arg0 - 1].id != 0) {
+            func_80103118(&shield->gems[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
+            _drawGemInfo(&shield->gems[arg0 - 1]);
         } else {
             func_800FC268(8);
             func_800FD220();
@@ -898,7 +906,7 @@ static int func_80104514(int arg0)
 static int func_8010455C(void)
 {
     return func_80104514(D_801080A8 - 1) + 2
-        + (D_800F1928[D_801080A8 - 1]->unk3C->unk338.unk0[0] != 0);
+        + (D_800F1928[D_801080A8 - 1]->unk3C->accessory.unk0.id != 0);
 }
 
 static char D_801080C5 = 0;
@@ -1064,7 +1072,7 @@ static void func_80104C0C(int arg0, int arg1)
     func_800FBEA4(1);
 }
 
-static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
+static void func_80104C40(int arg0, vs_battle_equippedWeapon* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     int sp20[12];
@@ -1078,13 +1086,13 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
 
     var_s1 = 0x9E;
 
-    v1 = arg1->unk5D;
+    v1 = arg1->grip.gemSlots;
 
     if (arg0 == 1) {
-        func_8006B57C(sp20, &arg1->unk18);
+        func_8006B57C(sp20, &arg1->blade);
         func_800FCAA4(sp20, &sp18, &sp80, D_800F4E8C);
     } else if (arg0 == 2) {
-        func_8006B6AC(sp50, &arg1->unk48);
+        func_8006B6AC(sp50, &arg1->grip);
         func_800FCC0C(sp50, &sp18, &sp80, D_800F4E8C);
     } else {
         var_s1 = arg0 - 3;
@@ -1092,8 +1100,8 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
             sp18.unk4 = 0;
             sp18.unk0 = D_80102540 + 0x340B;
             sp80 = 0x58000000;
-            if (arg1->unk78[var_s1].unk0 != 0) {
-                func_8006B728(&sp60, &arg1->unk78[var_s1]);
+            if (arg1->gems[var_s1].id != 0) {
+                func_8006B728(&sp60, &arg1->gems[var_s1]);
                 func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, D_800F4E8C);
             }
             var_s1 = 0x97;
@@ -1215,11 +1223,11 @@ static int func_80104F80(int arg0)
             switch (D_80108181) {
             case 0:
                 func_800FC268(3);
-                _drawWeaponInfo(&temp_s1->unk3C);
+                _drawWeaponInfo(&temp_s1->weapon);
                 break;
             case 1:
                 func_800FC268(3);
-                _drawShieldInfo(&temp_s1->unk1D4);
+                _drawShieldInfo(&temp_s1->shield);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
@@ -1227,7 +1235,7 @@ static int func_80104F80(int arg0)
                     _drawArmorInfo(&temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
                     func_800FC268(0);
-                    _drawAccessoryInfo(&temp_s1->unk338);
+                    _drawAccessoryInfo(&temp_s1->accessory);
                 }
                 break;
             }
@@ -1250,9 +1258,9 @@ static int func_80104F80(int arg0)
                 }
 
                 if (D_80108181 == 0) {
-                    func_80104C40(D_80108182, &temp_s1->unk3C, 1);
+                    func_80104C40(D_80108182, &temp_s1->weapon, 1);
                 } else if (D_80108181 == s0) {
-                    func_80104DFC(D_80108182, (func_80104DFC_t*)&temp_s1->unk1D4, 1);
+                    func_80104DFC(D_80108182, (func_80104DFC_t*)&temp_s1->shield, 1);
                 }
             }
             break;
@@ -1285,18 +1293,18 @@ static int func_80104F80(int arg0)
 
                 switch (var_s2) {
                 case 0:
-                    if (temp_s1->unk3C.unk18.unk0 != 0) {
+                    if (temp_s1->weapon.blade.id != 0) {
                         var_a0 = 0;
                     }
                     break;
                 case 1:
-                    if (temp_s1->unk1D4.unk18 != 0) {
+                    if (temp_s1->shield.unk18.id != 0) {
                         var_a0 = 0;
                     }
                     break;
                 default:
                     if ((var_s2 - 2) >= temp_s4
-                        || (temp_s1->hitLocations[var_s2 - 2].unk20.unk0 != 0)) {
+                        || (temp_s1->hitLocations[var_s2 - 2].unk20.unk0.id != 0)) {
                         var_a0 = 0;
                     }
                 }
@@ -1315,21 +1323,21 @@ static int func_80104F80(int arg0)
                 switch (var_s2) {
                 case 0:
                     func_800FC268(0xB);
-                    _drawWeaponInfo(&temp_s1->unk3C);
+                    _drawWeaponInfo(&temp_s1->weapon);
 
                     for (i = 1; i < 6; ++i) {
-                        func_80104C40(i, &temp_s1->unk3C, 0);
+                        func_80104C40(i, &temp_s1->weapon, 0);
                     }
-                    func_800FC85C(&temp_s1->unk3C, sp18, &sp48, D_800F4E8C);
-                    sp18[0] = (char*)&temp_s1->unk3C;
+                    func_800FC85C(&temp_s1->weapon, sp18, &sp48, D_800F4E8C);
+                    sp18[0] = (char*)&temp_s1->weapon;
                     break;
                 case 1:
                     func_800FC268(0xB);
-                    _drawShieldInfo(&temp_s1->unk1D4);
+                    _drawShieldInfo(&temp_s1->shield);
                     for (i = 1; i < 4; ++i) {
-                        func_80104DFC(i, (func_80104DFC_t*)&temp_s1->unk1D4, 0);
+                        func_80104DFC(i, (func_80104DFC_t*)&temp_s1->shield, 0);
                     }
-                    func_800FCCE8(&temp_s1->unk1D4, sp18, &sp48, D_800F4E8C);
+                    func_800FCCE8(&temp_s1->shield, sp18, &sp48, D_800F4E8C);
                     break;
                 default:
                     if ((var_s2 - 2) < temp_s4) {
@@ -1339,8 +1347,8 @@ static int func_80104F80(int arg0)
                             sp18, &sp48, D_800F4E8C);
                     } else {
                         func_800FC268(8);
-                        _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->unk338);
-                        func_8006BADC(sp20, &temp_s1->unk338);
+                        _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->accessory);
+                        func_8006BADC(sp20, &temp_s1->accessory);
                         func_800FD084(sp20, sp18, &sp48, D_800F4E8C);
                     }
                     break;
@@ -1383,13 +1391,13 @@ static int func_80104F80(int arg0)
         switch (D_80108181) {
         case 0:
             func_800FC268(0xB);
-            _drawWeaponInfo(&temp_s1->unk3C);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk3C.unk5D + 0x72);
+            _drawWeaponInfo(&temp_s1->weapon);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->weapon.grip.gemSlots + 0x72);
             break;
         case 1:
             func_800FC268(0xB);
-            _drawShieldInfo(&temp_s1->unk1D4);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->unk1D4.unk2D + 0x60);
+            _drawShieldInfo(&temp_s1->shield);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->shield.unk18.gemSlots + 0x60);
             break;
         default:
             var_a0_5 = 8;
@@ -1422,16 +1430,16 @@ static int func_80104F80(int arg0)
         } else if (var_v0_4 < 0x10) {
             switch (D_80108181) {
             case 0:
-                var_s3 = func_8010317C(var_v0_4 - 9, &temp_s1->unk3C);
+                var_s3 = func_8010317C(var_v0_4 - 9, &temp_s1->weapon);
                 break;
             case 1:
-                var_s3 = func_801032C4(var_v0_4 - 9, &temp_s1->unk1D4);
+                var_s3 = func_801032C4(var_v0_4 - 9, &temp_s1->shield);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
                     var_s3 = func_801033A4(&temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
-                    var_s3 = func_801033D4(&temp_s1->unk338);
+                    var_s3 = func_801033D4(&temp_s1->accessory);
                 }
                 break;
             }
@@ -1504,12 +1512,12 @@ static int func_80105970(int arg0)
             sp10[i * 2 + 1] = _statusStrings + 233;
             sp58[i] = 1;
         }
-        if (temp_s6->unk3C.unk18.unk0 != 0) {
-            func_800FC85C(&temp_s6->unk3C, (char**)sp10, sp58, sp80);
-            sp10[0] = &temp_s6->unk3C;
+        if (temp_s6->weapon.blade.id != 0) {
+            func_800FC85C(&temp_s6->weapon, (char**)sp10, sp58, sp80);
+            sp10[0] = &temp_s6->weapon;
         }
-        if (temp_s6->unk1D4.unk18 != 0) {
-            func_800FCCE8(&temp_s6->unk1D4, (char**)&sp10[2], sp58 + 1, sp80 + 1);
+        if (temp_s6->shield.unk18.id != 0) {
+            func_800FCCE8(&temp_s6->shield, (char**)&sp10[2], sp58 + 1, sp80 + 1);
         }
 
         temp_s5 = (((temp_s6->unk954 >> 0x11) ^ 1) & 1 & (D_801080A8 != 1));
@@ -1522,13 +1530,13 @@ static int func_80105970(int arg0)
             int* p = sp3E0;
             sp410 = temp_s5 | 0xF400;
             if ((i - 2) < sp40C) {
-                if (var_fp->unk20.unk0 != 0) {
+                if (var_fp->unk20.unk0.id != 0) {
                     func_800FCECC(
                         (int*)&var_fp->unk20, (char**)&sp10[i * 2], &sp58[i], sp80 + i);
                 }
                 sp58[i] |= (((char)var_fp->nameIndex + 0x67) << 9) + temp_s5;
             } else {
-                func_8006BADC(p, &temp_s6->unk338);
+                func_8006BADC(p, &temp_s6->accessory);
                 func_800FD084(p, (char**)&sp10[i * 2], &sp58[i], sp80 + i);
                 sp58[i] |= sp410;
             }

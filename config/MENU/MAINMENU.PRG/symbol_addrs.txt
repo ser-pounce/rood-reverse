@@ -1,3 +1,7 @@
 _submenuEntrypoints = 0x80102038;
+_currentDp = 0x80102134;
+_maxDp = 0x80102136;
+_currentPp = 0x80102138;
+_maxPp = 0x8010213A;
 _selectedRow = 0x801023D8;
 _textHeaders = 0x80102558;

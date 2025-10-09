@@ -298,9 +298,9 @@ void func_8006BAA8(void* arg0, u_short* arg1)
     }
 }
 
-void func_8006BADC(void* arg0, vs_battle_accessoryInfo* arg1)
+void func_8006BADC(void* arg0, vs_battle_accessoryInfo* accessory)
 {
-    if (arg1->unk0[0] != 0) {
+    if (accessory->unk0.id != 0) {
         func_8006B7BC(arg0);
     }
 }
@@ -1570,9 +1570,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083708);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008379C);
 
-short func_8008381C(int arg0 __attribute__((unused)), u_char* arg1)
+short vs_battle_getEquippedShieldDp(int arg0 __attribute__((unused)), u_char* arg1)
 {
-    return D_800F1928[*arg1]->unk3C->unk1D4.unkDC;
+    return D_800F1928[*arg1]->unk3C->shield.currentDp;
 }
 
 short func_8008384C(u_int* arg0, int arg1 __attribute__((unused)),

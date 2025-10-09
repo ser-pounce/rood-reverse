@@ -6,6 +6,8 @@ This project does not contain any of the original files from the game disk, you 
 
 Heavily inspired by and indebted to the incredible work of the [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) team and the [PS1/PS2 decompilation](https://discord.gg/hKx3FJJgrV) Discord server.
 
+Grateful to the authors of Data Crystal’s [Vagrant Story](https://datacrystal.tcrf.net/wiki/Vagrant_Story) page for their excellent work and insights.
+
 Thanks also to the following amazing projects (and their dependencies):
 - [splat](https://github.com/ethteck/splat)
 - [maspsx](https://github.com/mkst/maspsx)

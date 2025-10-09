@@ -1,4 +1,5 @@
 vs_mainmenu_ready = 0x800FA9D0;
+vs_mainMenu_setDpPp = 0x800FC208;
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;

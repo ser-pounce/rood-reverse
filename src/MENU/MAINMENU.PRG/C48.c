@@ -41,10 +41,10 @@ extern short D_8010202C[];
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;
-extern short D_80102134;
-extern short D_80102136;
-extern short D_80102138;
-extern short D_8010213A;
+extern short _currentDp;
+extern short _maxDp;
+extern short _currentPp;
+extern short _maxPp;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
@@ -59,12 +59,12 @@ void func_800FA448()
 
     temp_s1 = vs_battle_characterState->unk3C;
 
-    if (temp_s1->unk3C.unk10D != 0) {
-        func_8006B8C0(D_80060148[temp_s1->unk3C.unk10D], &temp_s1->unk3C);
+    if (temp_s1->weapon.unk10D != 0) {
+        func_8006B8C0(D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
     }
 
-    if (temp_s1->unk1D4.unkDA != 0) {
-        func_8006B9E0(D_80060238[temp_s1->unk1D4.unkDA], &temp_s1->unk1D4);
+    if (temp_s1->shield.unkDA != 0) {
+        func_8006B9E0(D_80060238[temp_s1->shield.unkDA], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {
@@ -74,8 +74,8 @@ void func_800FA448()
         }
     }
 
-    if (temp_s1->unk338.unk37 != 0) {
-        func_8006BADC(D_80060780[temp_s1->unk338.unk37], &temp_s1->unk338);
+    if (temp_s1->accessory.unk37 != 0) {
+        func_8006BADC(D_80060780[temp_s1->accessory.unk37], &temp_s1->accessory);
     }
 }
 
@@ -379,12 +379,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBD80);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBEA4);
 
-void func_800FC208(int arg0, int arg1, int arg2, int arg3)
+void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
-    D_80102138 = arg2;
-    D_8010213A = arg3;
-    D_80102134 = (arg0 + 0x63) / 100;
-    D_80102136 = (arg1 + 0x63) / 100;
+    _currentPp = currentPp;
+    _maxPp = maxPp;
+    _currentDp = (currentDp + 99) / 100;
+    _maxDp = (maxDp + 99) / 100;
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC268);
@@ -455,7 +455,7 @@ void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 void func_800FD220()
 {
     vs_battle_rMemzero(D_801024C0, 0x80);
-    func_800FC208(0, 0, 0, 0);
+    vs_mainMenu_setDpPp(0, 0, 0, 0);
     func_800FBD28(0, 0, 0, 1);
 }
 

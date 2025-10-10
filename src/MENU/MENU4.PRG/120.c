@@ -229,10 +229,10 @@ static void _initGripInfo(
     arg1[1] = D_800F4E8C;
 }
 
-static void func_80103118(
-    vs_battle_equipment* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void _initGemInfo(
+    vs_battle_equipment* gem, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[arg0->id - 0x8C], 0x60);
+    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[gem->id - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
 }
 
@@ -263,7 +263,7 @@ static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
     case 4:
     case 5:
         if (weapon->gems[arg0 - 3].id != 0) {
-            func_80103118(&weapon->gems[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
+            _initGemInfo(&weapon->gems[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
             _drawGemInfo(&weapon->gems[arg0 - 3]);
         } else {
             func_800FC268(8);
@@ -288,7 +288,7 @@ static char* func_801032C4(int arg0, vs_battle_shieldInfo* shield)
 
     } else if (arg0 < 4) {
         if (shield->gems[arg0 - 1].id != 0) {
-            func_80103118(&shield->gems[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
+            _initGemInfo(&shield->gems[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
             _drawGemInfo(&shield->gems[arg0 - 1]);
         } else {
             func_800FC268(8);
@@ -1389,12 +1389,12 @@ static int func_80104F80(int arg0)
 
         switch (D_80108181) {
         case 0:
-            func_800FC268(0xB);
+            func_800FC268(11);
             _drawWeaponInfo(&temp_s1->weapon);
             var_v0_4 = func_801034BC(temp_s0_4, temp_s1->weapon.grip.gemSlots + 0x72);
             break;
         case 1:
-            func_800FC268(0xB);
+            func_800FC268(11);
             _drawShieldInfo(&temp_s1->shield);
             var_v0_4 = func_801034BC(temp_s0_4, temp_s1->shield.unk18.gemSlots + 0x60);
             break;

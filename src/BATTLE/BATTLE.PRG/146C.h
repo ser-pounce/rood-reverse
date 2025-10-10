@@ -43,7 +43,7 @@ typedef struct {
     u_short id;
     signed char unk2;
     signed char wepId;
-    signed char category;
+    char category;
     signed char strength;
     signed char intelligence;
     signed char agility;

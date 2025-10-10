@@ -202,28 +202,29 @@ static void _drawGemInfo(vs_battle_equipment* gem)
     func_800FC268(8);
 }
 
-static void func_80102F64(
-    char* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void _initBladeInfo(
+    vs_battle_equipment* blade, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    char* c;
-    vs_battle_stringContext[19] = D_8010229C[arg0[0x13] + 253];
-    vs_battle_stringContext[18] = (char*)&D_80102540[D_80102540[arg0[4] + 0x18E]];
-    vs_battle_stringContext[17] = (char*)&D_80102540[D_80102540[arg0[16] + 0x198]];
-    c = arg0[4] + D_80102140;
-    vs_battle_stringContext[16] = (char*)&D_80102540[D_80102540[(c[-1] + 0x19C)]];
-    func_800C685C(
-        func_800C685C(D_800F4E8C, (char*)&D_80102540[D_80102540[*(u_short*)arg0 - 1]]),
+    vs_battle_stringContext[19] = D_8010229C[blade->material + 253];
+    vs_battle_stringContext[18]
+        = (char*)(&D_80102540[D_80102540[blade->category + 0x18E]]);
+    vs_battle_stringContext[17]
+        = (char*)(&D_80102540[D_80102540[blade->damageType + 0x198]]);
+    vs_battle_stringContext[16]
+        = (char*)(&D_80102540[D_80102540[D_80102140[blade->category - 1] + 0x19C]]);
+    func_800C685C(func_800C685C(D_800F4E8C,
+                      (char*)(&D_80102540[D_80102540[(*((u_short*)blade)) - 1]])),
         (char*)(D_80102540 + 0x33FB));
-    arg1[1] = (D_800F4E8C_t*)D_800F4E8C;
+    arg1[1] = D_800F4E8C;
 }
 
-static void func_80103080(
-    func_80103080_t* arg0, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+static void _initGripInfo(
+    vs_battle_equipment* grip, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    u_short* new_var2 = &arg0->unk0;
-    D_800F51A4 = &D_80102540[D_80102540[arg0->unk4 + 0x280]];
+    u_short* new_var2 = &grip->id;
+    D_800F51A4 = &D_80102540[D_80102540[grip->category + 0x280]];
     func_800C685C(
-        func_800C685C(D_800F4E8C, (char*)(&D_80102540[D_80102540[(*new_var2) - 6]])),
+        func_800C685C(D_800F4E8C, (char*)(&D_80102540[D_80102540[*new_var2 - 6]])),
         (char*)(D_80102540 + 0x3405));
     arg1[1] = D_800F4E8C;
 }
@@ -242,7 +243,6 @@ static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
 {
     char* sp10[2];
     int sp18;
-    vs_battle_equipment* temp_s0;
     u_short* temp_s0_2;
 
     sp10[1] = (char*)&D_80102540[0x340E];
@@ -252,13 +252,12 @@ static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
         sp10[0] = (char*)weapon;
         break;
     case 1:
-        func_80102F64((char*)&weapon->blade, (D_800F4E8C_t**)sp10, &sp18);
+        _initBladeInfo(&weapon->blade, (D_800F4E8C_t**)sp10, &sp18);
         _drawBladeInfo(weapon);
         break;
     case 2:
-        temp_s0 = &weapon->grip;
-        func_80103080(temp_s0, (D_800F4E8C_t**)sp10, &sp18);
-        _drawGripInfo(temp_s0);
+        _initGripInfo(&weapon->grip, (D_800F4E8C_t**)sp10, &sp18);
+        _drawGripInfo(&weapon->grip);
         break;
     case 3:
     case 4:

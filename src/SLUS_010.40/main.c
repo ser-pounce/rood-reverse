@@ -8393,7 +8393,7 @@ void func_80042CB0(void)
     int new_var;
     int var_t4;
     signed char skillsLearned;
-    vs_battle_equipment_t2* temp_t0;
+    vs_battle_actor2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
     int v0_2;

@@ -178,8 +178,7 @@ typedef struct {
     short unkA;
     short unkC;
     short unkE;
-    short unk10;
-    short unk12;
+    int unk10;
     short unk14;
     short unk16;
     short currentHP;
@@ -208,7 +207,7 @@ typedef struct {
     int unk948;
     char unk94C[8];
     u_int unk954;
-} vs_battle_equipment_t2;
+} vs_battle_actor2;
 
 typedef struct {
     int unk0[2];
@@ -230,10 +229,10 @@ typedef struct {
     int unk30;
     int unk34;
     int unk38;
-    vs_battle_equipment_t2* unk3C;
+    vs_battle_actor2* unk3C;
     int unk40;
     int unk44;
-} vs_battle_equipment_t;
+} vs_battle_actor;
 
 typedef struct {
     u_short unk0;
@@ -282,9 +281,9 @@ typedef struct {
 } vs_battle_manualDisplayState_t;
 
 extern u_short D_800F18E8;
-extern vs_battle_equipment_t* D_800F1928[];
+extern vs_battle_actor* vs_battle_actors[];
 extern int D_800F19D0[];
-extern vs_battle_equipment_t* vs_battle_characterState;
+extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;
 extern short* D_800F1BA8;

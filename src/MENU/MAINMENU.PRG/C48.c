@@ -54,7 +54,7 @@ extern char D_801024A1;
 
 void func_800FA448(void)
 {
-    vs_battle_equipment_t2* temp_s1;
+    vs_battle_actor2* temp_s1;
     int i;
 
     temp_s1 = vs_battle_characterState->unk3C;

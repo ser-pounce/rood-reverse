@@ -36,6 +36,7 @@ vs_battle_sorcererSpellIds = 0x800EBD8C;
 vs_battle_enchanterSpellIds = 0x800EBDA0;
 vs_battle_chainAbilityOffsets = 0x800EBDBC;
 vs_battle_defenseAbilityOffsets = 0x800EBDCC;
+vs_battle_actors = 0x800F1928;
 vs_battle_characterState = 0x800F19FC;
 vs_battle_manualDisplayState = 0x800F1BC8;
 vs_battle_shortcutInvoked = 0x800F4E6A;

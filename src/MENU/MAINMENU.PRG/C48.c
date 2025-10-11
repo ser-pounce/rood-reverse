@@ -393,7 +393,33 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC85C);
+void func_800FC85C(
+    vs_battle_equippedWeapon* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+{
+    int temp_v0;
+    int temp_v1;
+    vs_battle_equipment* temp_s1;
+
+    temp_s1 = &arg0->blade;
+    temp_v0 = func_800FA598((short*)arg0, 0);
+    vs_battle_stringContext[10]
+        = (char*)&D_80102540[D_80102540[(temp_v0 & 0xFF) + 0x174]];
+    temp_v1 = ((temp_v0 >> 8) & 0xFF);
+    vs_battle_stringContext[11] = (char*)(D_80102540
+        + (temp_v1 != 0 ? (D_80102540[temp_v1 + (temp_v0 >> 0xF) + 0x22D])
+                        : (D_80102540[temp_s1->category + 0x17E])));
+    vs_battle_stringContext[19] = (char*)&D_8010229C[temp_s1->material + 253];
+    vs_battle_stringContext[18]
+        = (char*)&D_80102540[D_80102540[temp_s1->category + 0x18E]];
+    vs_battle_stringContext[17]
+        = (char*)&D_80102540[D_80102540[temp_s1->damageType + 0x198]];
+    vs_battle_stringContext[16]
+        = (char*)&D_80102540[D_80102540[D_80102140[temp_s1->category - 1] + 0x19C]];
+    func_800C685C(
+        func_800C685C(arg3, (char*)(D_80102540 + 0x33F5)), (char*)(D_80102540 + 0x33FB));
+    arg1[1] = (char*)arg3;
+    *arg2 = (temp_s1->category << 0x1A) + (temp_s1->material << 0x10);
+}
 
 void func_800FCA08(char* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {

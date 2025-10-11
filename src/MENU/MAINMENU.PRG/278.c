@@ -160,7 +160,7 @@ void func_800F9A78(int arg0)
     temp_s3->unk5B5 = temp_s2->unk5B5;
 }
 
-void func_800F9CB0()
+void func_800F9CB0(void)
 {
     char sp10[3];
     int sp18;
@@ -204,7 +204,7 @@ void func_800F9CB0()
     temp_s0->unk648 &= 0xFFFEFFFF;
 }
 
-void func_800F9E0C()
+void func_800F9E0C(void)
 {
     void* sp10[2];
     void* temp_s1;
@@ -350,7 +350,7 @@ static int func_800FA238(int arg0, int arg1, int arg2)
     return 0;
 }
 
-void func_800FA2CC()
+void func_800FA2CC(void)
 {
     u_short* sp10;
     int i;

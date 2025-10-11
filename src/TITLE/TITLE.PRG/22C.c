@@ -13,7 +13,7 @@
 #include <strings.h>
 #include <sys/file.h>
 
-static void _playNewGameSfx()
+static void _playNewGameSfx(void)
 {
     vs_main_playSfxDefault(0x7E, 1);
     vs_main_playSfxDefault(0x7E, 2);
@@ -185,7 +185,7 @@ static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
 static saveFileInfo_t* _saveFileInfo;
 
-static u_int _getNewestSaveFile()
+static u_int _getNewestSaveFile(void)
 {
     u_int i;
     u_int maxCounter = 0;
@@ -202,7 +202,7 @@ static u_int _getNewestSaveFile()
     return fileIndex;
 }
 
-static int _findCurrentSaveOnActiveMemcard()
+static int _findCurrentSaveOnActiveMemcard(void)
 {
     int i;
     for (i = 0; i < 5; ++i) {
@@ -1009,7 +1009,7 @@ static int _initMemcard(int init)
     return 0;
 }
 
-static void _shutdownMemcard()
+static void _shutdownMemcard(void)
 {
     int i;
 
@@ -1313,7 +1313,7 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 static u_char _selectCursorColor;
 static char _fileMenuScreenFade;
 
-static void _initFileMenu()
+static void _initFileMenu(void)
 {
     _memoryCardMessage = NULL;
     _selectCursorColor = 0;
@@ -1367,7 +1367,7 @@ static void _clearFileMenuElement(int id)
     memset(&_fileMenuElements[id], 0, sizeof(fileMenuElements_t));
 }
 
-static int _fileMenuElementsActive()
+static int _fileMenuElementsActive(void)
 {
     int i;
 
@@ -1898,7 +1898,7 @@ static void _drawFileMenu(int framebuf)
     }
 }
 
-static void _drawFileMenuBg()
+static void _drawFileMenuBg(void)
 {
     _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
@@ -3013,7 +3013,7 @@ static int _showSaveMenu(int initState)
                 state = initSlot1;
                 break;
             }
-            _initFileMenu(val);
+            _initFileMenu();
             return 1;
         }
         break;
@@ -3060,7 +3060,7 @@ static int _showSaveMenu(int initState)
 static char _frameBuf;
 static char _3 __attribute__((unused));
 
-static void _initSaveScreen()
+static void _initSaveScreen(void)
 {
     DISPENV disp;
     DRAWENV draw;
@@ -3079,7 +3079,7 @@ static void _initSaveScreen()
     SetDispMask(1);
 }
 
-static void _saveScreenSwapBuf()
+static void _saveScreenSwapBuf(void)
 {
     DISPENV disp;
     DRAWENV draw;
@@ -3115,7 +3115,7 @@ extern u_long _debugFont[];
 extern uiTable_t _uiTable;
 extern menuBg_t _saveMenuBg;
 
-static int _gameLoadScreen()
+static int _gameLoadScreen(void)
 {
     enum state {
         init = 0,
@@ -3175,7 +3175,7 @@ static int _gameLoadScreen()
     }
 }
 
-static int _saveFileExists()
+static int _saveFileExists(void)
 {
     struct DIRENTRY dir;
     char filename[22];
@@ -3285,7 +3285,7 @@ static int _saveScreenConfirmation(int init)
     return 0;
 }
 
-static void _saveScreenExitScreen()
+static void _saveScreenExitScreen(void)
 {
     _drawSprt(vs_getXY(256, 0), 0, vs_getWH(64, 224),
         getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320 + 256, 0));
@@ -3299,7 +3299,7 @@ static void _saveScreenExitScreen()
     DrawPrim(&_primBuf);
 }
 
-static void _gameSaveScreen()
+static void _gameSaveScreen(void)
 {
     enum state { init = 0, loading = 1, loaded = 2, confirmation = 3, exit = 4 };
 
@@ -3437,7 +3437,7 @@ static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int 
     arg0->frameBufs[1].y = y1;
 }
 
-static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)())
+static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)(void))
 {
     DecDCTReset(0);
     DecDCToutCallback(dctoutCb);
@@ -3446,7 +3446,7 @@ static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)())
     _playMovie(loc);
 }
 
-static void _decDCToutCallback()
+static void _decDCToutCallback(void)
 {
     RECT rect;
     short rightEdge;
@@ -3669,7 +3669,7 @@ static void _displayPublisherAndDeveloper()
     SetDispMask(0);
 }
 
-static void _initIntroMovie()
+static void _initIntroMovie(void)
 {
     _dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
     DsIntToPos(VS_TITLE_STR_LBA, &_introMovieLoc);
@@ -3690,7 +3690,7 @@ static void _initIntroMovie()
     _introMovieDisplayedAt = VSync(-1);
 }
 
-static void _stopIntroMovie()
+static void _stopIntroMovie(void)
 {
     SpuSetCommonMasterVolume(0, 0);
     _introMoviePlaying = 0;
@@ -3706,14 +3706,14 @@ static void _stopIntroMovie()
     SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
-static void _stopMovieIfComplete()
+static void _stopMovieIfComplete(void)
 {
     if ((_introMoviePlaying != 0) && ((VSync(-1) - _introMovieDisplayedAt) >= 4401)) {
         _stopIntroMovie();
     }
 }
 
-static int _playIntroMovie()
+static int _playIntroMovie(void)
 {
     DslLOC loc;
     DISPENV disp;
@@ -3810,7 +3810,7 @@ static void _setMenuItemFadeIn(int menuItem, char pos)
     _menuItemStates[menuItem].textBlendFactor = 0;
 }
 
-static void _copyTitleBgData()
+static void _copyTitleBgData(void)
 {
     static u_short _menuItemOutlineClut[][16]
         = { { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1),
@@ -3877,7 +3877,7 @@ static void _copyTitleBgData()
     vs_main_freeHeap(data);
 }
 
-static void _initTitleScreen()
+static void _initTitleScreen(void)
 {
     DISPENV dispenv;
     DRAWENV drawenv;
@@ -4053,7 +4053,7 @@ static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int c
     DrawSync(0);
 }
 
-static void _setTitleMenuState()
+static void _setTitleMenuState(void)
 {
     int i;
     int saturation;
@@ -4129,7 +4129,7 @@ static void _setTitleMenuState()
     }
 }
 
-static void _drawTitleMenuItems()
+static void _drawTitleMenuItems(void)
 {
     typedef struct {
         u_long tag;
@@ -4280,7 +4280,7 @@ static void _drawTitleMenuItems()
     }
 }
 
-static void _drawTitleMenu()
+static void _drawTitleMenu(void)
 {
     typedef struct {
         u_long tag;
@@ -4324,7 +4324,7 @@ static void _drawTitleMenu()
     }
 }
 
-static void _drawAndSyncTitleMenu()
+static void _drawAndSyncTitleMenu(void)
 {
     _drawTitleMenu();
     VSync(0);
@@ -4343,7 +4343,7 @@ enum menuItems {
     menuItemSoundStereo = 7
 };
 
-static void _menuVibrationSettings()
+static void _menuVibrationSettings(void)
 {
     int i;
     int vibrationSetting;
@@ -4450,7 +4450,7 @@ static void _menuVibrationSettings()
     _menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
 
-static void _menuSoundSettings()
+static void _menuSoundSettings(void)
 {
     int i;
     int soundSetting;
@@ -4560,7 +4560,7 @@ static void _setTitleExitFlags(int arg0);
 
 static int _nop(void) { return 0; }
 
-static void _initEnvironment()
+static void _initEnvironment(void)
 {
     int monoSound;
     int vibrationOn;
@@ -4587,7 +4587,7 @@ static void _initEnvironment()
     vs_main_stateFlags.puzzleMode = 1;
 }
 
-int vs_title_exec()
+int vs_title_exec(void)
 {
     static struct {
         u_long tag;
@@ -4794,7 +4794,7 @@ static int _renderScreen(u_long* ot)
     return vsync;
 }
 
-static void _initGameData()
+static void _initGameData(void)
 {
     static int D_80074C24[15][64]
         = { { 0x01010101, 0x00000000, 0x2731240F, 0x322A3124, 0x000000E7, 0x00000000,

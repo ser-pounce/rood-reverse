@@ -284,7 +284,7 @@ static int _drawWeaponTypeList(int init)
     return 0;
 }
 
-static void _setMenuTitle()
+static void _setMenuTitle(void)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings

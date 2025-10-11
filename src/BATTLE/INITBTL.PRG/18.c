@@ -21,7 +21,7 @@ void func_800CA9C0(void*);
 
 extern signed char D_800FAF7C[0x400];
 
-void func_800F9818()
+void func_800F9818(void)
 {
     int i;
     int var_v0;
@@ -39,7 +39,7 @@ void func_800F9818()
     }
 }
 
-void _loadSystemDat()
+void _loadSystemDat(void)
 {
     RECT rect;
     RECT* p_hdr;
@@ -90,7 +90,7 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
 
-void func_800FA6B8()
+void func_800FA6B8(void)
 {
     vs_main_bzero(D_800F1CE0, 0x20);
     vs_main_bzero(&D_800F1BF8, sizeof(D_800F1BF8));
@@ -114,7 +114,7 @@ void func_800FA6B8()
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
 
-void func_800FAAAC()
+void func_800FAAAC(void)
 {
     D_800F4C08 = 0;
     D_800F4BE2 = 0;

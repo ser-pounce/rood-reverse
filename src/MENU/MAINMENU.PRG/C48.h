@@ -47,14 +47,14 @@ void func_800FBD80(int);
 void func_800FBEA4(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
 void func_800FC268(int);
-void func_800FC85C(vs_battle_equippedWeapon*, char**, int*, D_800F4E8C_t*);
+void func_800FC85C(vs_battle_weaponInfo*, char**, int*, D_800F4E8C_t*);
 void func_800FCAA4(int*, u_short**, int*, D_800F4E8C_t*);
 void func_800FCC0C(int*, u_short**, int*, D_800F4E8C_t*);
 void func_800FCCE8(void*, char**, int*, D_800F4E8C_t*);
-void func_800FCECC(void*, char**, int*, D_800F4E8C_t*);
+void func_800FCECC(vs_battle_armorInfo*, char**, int*, D_800F4E8C_t*);
 void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3);
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
-void func_800FD220();
+void func_800FD220(void);
 void func_8010044C(u_int*);
 
 extern char D_80102140[];

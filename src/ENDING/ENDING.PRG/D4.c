@@ -23,7 +23,7 @@ void _drawInteger(DRAWENV*);
 void func_8006A888(void);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
-void func_8006AB44(void (*)());
+void func_8006AB44(void (*)(void));
 void func_8006B760(void);
 void func_8006B884(void);
 void func_8006B910(void);
@@ -87,7 +87,7 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A438);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A4D8);
 
-void func_8006A5C0()
+void func_8006A5C0(void)
 {
     vs_main_CdFile file;
     short i;
@@ -211,7 +211,7 @@ void func_8006B910(void) { func_8006B760(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 
-void func_8006B9B4()
+void func_8006B9B4(void)
 {
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }

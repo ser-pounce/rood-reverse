@@ -10,6 +10,7 @@
 #include "../../assets/MENU/MENU4.PRG/status.h"
 #include "../../SLUS_010.40/31724.h"
 #include <libetc.h>
+#include "gpu.h"
 
 typedef struct {
     int unk0[8];
@@ -44,7 +45,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
+static void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
 {
     int i;
 
@@ -155,7 +156,7 @@ static void _drawAccessoryInfo(vs_battle_accessoryInfo* accessory)
     func_800FBB8C(7);
 }
 
-static void _drawBladeInfo(vs_battle_equippedWeapon* weapon)
+static void _drawBladeInfo(vs_battle_weaponInfo* weapon)
 {
     int i;
     vs_battle_equipment* blade = &weapon->blade;
@@ -239,14 +240,14 @@ static void _initGemInfo(
 static char* _hitLocationStates[]
     = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
-static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
+static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
 {
     char* sp10[2];
     int sp18;
     u_short* temp_s0_2;
 
     sp10[1] = (char*)&D_80102540[0x340E];
-    switch (arg0) {
+    switch (row) {
     case 0:
         func_800FC85C(weapon, sp10, &sp18, D_800F4E8C);
         sp10[0] = (char*)weapon;
@@ -262,44 +263,44 @@ static char* func_8010317C(int arg0, vs_battle_equippedWeapon* weapon)
     case 3:
     case 4:
     case 5:
-        if (weapon->gems[arg0 - 3].id != 0) {
-            _initGemInfo(&weapon->gems[arg0 - 3], (D_800F4E8C_t**)sp10, &sp18);
-            _drawGemInfo(&weapon->gems[arg0 - 3]);
+        if (weapon->gems[row - 3].id != 0) {
+            _initGemInfo(&weapon->gems[row - 3], (D_800F4E8C_t**)sp10, &sp18);
+            _drawGemInfo(&weapon->gems[row - 3]);
         } else {
             func_800FC268(8);
             func_800FD220();
         }
         break;
     }
-    vs_battle_getMenuItem(arg0 + 0x14)->selected = 1;
+    vs_battle_getMenuItem(row + 0x14)->selected = 1;
     return sp10[1];
 }
 
-static char* func_801032C4(int arg0, vs_battle_shieldInfo* shield)
+static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
 {
     char* sp10[2];
     int sp18;
     u_short* temp_s0;
 
     sp10[1] = D_80102540 + 0x340E;
-    if (arg0 == 0) {
+    if (row == 0) {
         func_800FCCE8(shield, sp10, &sp18, D_800F4E8C);
-    } else if (arg0 < 0) {
+    } else if (row < 0) {
 
-    } else if (arg0 < 4) {
-        if (shield->gems[arg0 - 1].id != 0) {
-            _initGemInfo(&shield->gems[arg0 - 1], (D_800F4E8C_t**)&sp10, &sp18);
-            _drawGemInfo(&shield->gems[arg0 - 1]);
+    } else if (row < 4) {
+        if (shield->gems[row - 1].id != 0) {
+            _initGemInfo(&shield->gems[row - 1], (D_800F4E8C_t**)&sp10, &sp18);
+            _drawGemInfo(&shield->gems[row - 1]);
         } else {
             func_800FC268(8);
             func_800FD220();
         }
     }
-    vs_battle_getMenuItem(arg0 + 0x14)->selected = 1;
+    vs_battle_getMenuItem(row + 20)->selected = 1;
     return sp10[1];
 }
 
-static char* func_801033A4(void* arg0)
+static char* _drawArmorInfoRow(vs_battle_armorInfo* arg0)
 {
     char* sp10[2];
     int sp18;
@@ -308,7 +309,7 @@ static char* func_801033A4(void* arg0)
     return sp10[1];
 }
 
-static char* func_801033D4(vs_battle_accessoryInfo* arg0)
+static char* _drawAccessoryInfoRow(vs_battle_accessoryInfo* arg0)
 {
     char* sp10[2];
     int sp18[10];
@@ -370,22 +371,22 @@ static int func_8010341C(int arg0, int arg1)
 
 static int func_801034BC(int arg0, int arg1)
 {
-    int var_s1;
+    int direction;
     int var_s2;
 
-    var_s1 = 0;
+    direction = 0;
     var_s2 = arg0;
-    if (vs_main_buttonRepeat & 0x1000) {
-        var_s1 = 1;
-    } else if (vs_main_buttonRepeat & 0x4000) {
-        var_s1 = 2;
-    } else if (vs_main_buttonRepeat & 0x8000) {
-        var_s1 = 3;
-    } else if (vs_main_buttonRepeat & 0x2000) {
-        var_s1 = 4;
+    if (vs_main_buttonRepeat & PADLup) {
+        direction = 1;
+    } else if (vs_main_buttonRepeat & PADLdown) {
+        direction = 2;
+    } else if (vs_main_buttonRepeat & PADLleft) {
+        direction = 3;
+    } else if (vs_main_buttonRepeat & PADLright) {
+        direction = 4;
     }
-    if (var_s1 != 0) {
-        arg0 = D_8010214C[var_s1 - 1 + var_s2 * 4];
+    if (direction != 0) {
+        arg0 = D_8010214C[direction - 1 + var_s2 * 4];
     }
 
     while (1) {
@@ -393,7 +394,7 @@ static int func_801034BC(int arg0, int arg1)
             break;
         }
         if (var_s2 == arg0) {
-            if ((u_int)(arg0 - 2) < 0xE) {
+            if ((u_int)(arg0 - 2) < 14) {
                 do {
                     --arg0;
                 } while (func_8010341C(arg0, arg1) == 0);
@@ -405,7 +406,7 @@ static int func_801034BC(int arg0, int arg1)
             return arg0;
         }
         var_s2 = arg0;
-        arg0 = D_8010214C[var_s1 - 1 + var_s2 * 4];
+        arg0 = D_8010214C[direction - 1 + var_s2 * 4];
     }
     return arg0;
 }
@@ -458,8 +459,6 @@ static u_int D_801080C0 = 0;
 
 static int func_80103744(int arg0)
 {
-    int temp_a1;
-
     if (arg0 != 0) {
         if (D_801080A8 == 0) {
             D_801080C0 = 1;
@@ -470,19 +469,18 @@ static int func_80103744(int arg0)
         if (arg0 & 0x10) {
             D_801080C0 += 3;
         }
-        temp_a1 = arg0 & 0xF;
-        D_801080A8 = temp_a1;
+        D_801080A8 = arg0 & 0xF;
         vs_battle_setMenuItem(
-            4, 0xB4, 0x12, 0x8C, 8, (char*)D_800F1928[temp_a1 - 1]->unk3C)
+            4, 0xB4, 0x12, 0x8C, 8, (char*)D_800F1928[D_801080A8 - 1]->unk3C)
             ->selected
             = 1;
         return 0;
     }
     switch (D_801080C0) {
     case 0:
-        if (D_801080B4 < 0xA0) {
+        if (D_801080B4 < 160) {
             D_801080AC = 1;
-            D_801080B4 += 0x20;
+            D_801080B4 += 32;
         } else {
             D_801080AC = 0;
             func_800F9E0C();
@@ -490,22 +488,22 @@ static int func_80103744(int arg0)
             D_801080B0 = 1;
             func_800F9A24(D_801080A8 - 1);
             D_801080BC = 1;
-            D_801080B4 = -0xA0;
+            D_801080B4 = -160;
             D_801080C0 = 2;
         }
         break;
     case 2:
         if (D_801080B4 < 0) {
-            D_801080B4 += 0x20;
+            D_801080B4 += 32;
             break;
         }
         D_801080B0 = 0;
         D_801080C0 = 6;
         return 1;
     case 3:
-        if (D_801080B4 >= -0x9F) {
+        if (D_801080B4 >= -159) {
             D_801080B0 = 1;
-            D_801080B4 -= 0x20;
+            D_801080B4 -= 32;
             break;
         }
         func_800F9E0C();
@@ -513,13 +511,13 @@ static int func_80103744(int arg0)
         D_801080B0 = 0;
         func_800F9A24(D_801080A8 - 1);
         D_801080BC = 1;
-        D_801080B4 = 0xA0;
+        D_801080B4 = 160;
         D_801080C0 = 5;
         break;
     case 5:
         if (D_801080B4 > 0) {
             D_801080AC = 1;
-            D_801080B4 -= 0x20;
+            D_801080B4 -= 32;
             break;
         }
         D_801080AC = 0;
@@ -531,24 +529,24 @@ static int func_80103744(int arg0)
     return 0;
 }
 
-static void func_8010399C(int arg0, int arg1, u_long* arg2)
+static void func_8010399C(int rgb, int arg1, u_long* nextPrim)
 {
     int i;
 
     if (arg1 != 0) {
         for (i = 0; i < 3; ++i) {
-            vs_battle_setSprite(0x80, arg0, 0x90006, arg2)[4] = 0x37F400E4;
-            arg0 -= 5;
+            vs_battle_setSprite(128, rgb, vs_getWH(6, 9), nextPrim)[4] = 0x37F400E4;
+            rgb -= 5;
         }
-        func_800C9950(2, arg0, 0, arg2);
-        arg0 -= 7;
+        func_800C9950(2, rgb, 0, nextPrim);
+        rgb -= 7;
     }
 
-    arg0 += 0xFFFF0000;
+    rgb += 0xFFFF0000;
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSprite(0x80, arg0, 0xA0007, arg2)[4] = 0x37F400EA;
-        arg0 -= 6;
+        vs_battle_setSprite(128, rgb, vs_getWH(7, 10), nextPrim)[4] = 0x37F400EA;
+        rgb -= 6;
     }
 }
 
@@ -607,7 +605,7 @@ static void func_80103AC8(void)
         break;
     case 3:
         if (D_801080B9 < 4) {
-            D_801080B9 = (char)D_801080B9 + 1;
+            ++D_801080B9;
         } else {
             D_801080B8 = 0;
         }
@@ -1071,7 +1069,7 @@ static void func_80104C0C(int arg0, int arg1)
     func_800FBEA4(1);
 }
 
-static void func_80104C40(int arg0, vs_battle_equippedWeapon* arg1, int arg2)
+static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     int sp20[12];
@@ -1429,16 +1427,17 @@ static int func_80104F80(int arg0)
         } else if (var_v0_4 < 0x10) {
             switch (D_80108181) {
             case 0:
-                var_s3 = func_8010317C(var_v0_4 - 9, &temp_s1->weapon);
+                var_s3 = _drawWeaponInfoRow(var_v0_4 - 9, &temp_s1->weapon);
                 break;
             case 1:
-                var_s3 = func_801032C4(var_v0_4 - 9, &temp_s1->shield);
+                var_s3 = _drawShieldInfoRow(var_v0_4 - 9, &temp_s1->shield);
                 break;
             default:
                 if ((D_80108181 - 2) < temp_s4) {
-                    var_s3 = func_801033A4(&temp_s1->hitLocations[D_80108181 - 2].unk20);
+                    var_s3
+                        = _drawArmorInfoRow(&temp_s1->hitLocations[D_80108181 - 2].unk20);
                 } else {
-                    var_s3 = func_801033D4(&temp_s1->accessory);
+                    var_s3 = _drawAccessoryInfoRow(&temp_s1->accessory);
                 }
                 break;
             }

@@ -169,7 +169,7 @@ static void _mapAbility(int type, int key, int ability)
     }
 }
 
-static int _abilityMenu()
+static int _abilityMenu(void)
 {
     enum state { init = 16, handleInput };
 

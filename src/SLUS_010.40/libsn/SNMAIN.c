@@ -21,7 +21,7 @@ __asm__(".pushsection .sbss;"
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
 
-void __main()
+void __main(void)
 {
     __asm__(";"
             "lw         $t0, __initialised;"

@@ -9,7 +9,7 @@ void func_800721D0(u_long* buf, int size);
 int func_8007225C(void);
 int func_800722F0(void);
 u_int func_80072384(void);
-int DMACallback(int, void (*)());
+int DMACallback(int, void (*)(void));
 
 // Commented out functions require delay slot manipulation, possibly with .set reorder
 
@@ -126,9 +126,9 @@ int DecDCToutSync(int mode)
     return func_800722F0();
 }
 
-int DecDCTinCallback(void (*func)()) { return DMACallback(0, func); }
+int DecDCTinCallback(void (*func)(void)) { return DMACallback(0, func); }
 
-int DecDCToutCallback(void (*func)()) { return DMACallback(1, func); }
+int DecDCToutCallback(void (*func)(void)) { return DMACallback(1, func); }
 
 static u_int volatile* D_80075C54 = (u_int volatile*)0x1F801080;
 static u_int volatile* D_80075C58 = (u_int volatile*)0x1F801084;

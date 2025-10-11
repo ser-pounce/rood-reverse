@@ -28,7 +28,7 @@ typedef struct {
 
 typedef struct {
     u_short unk0[0x18];
-} vs_battle_equippedWeapon_unk;
+} vs_battle_weaponInfo_unk;
 
 typedef struct {
     u_short unk0;
@@ -101,7 +101,7 @@ typedef struct {
     vs_battle_classAffinityCurrent classAffinityCurrent;
     int unk168[4];
     vs_battle_classAffinityBaseline classAffinityBaseline;
-} vs_battle_equippedWeapon;
+} vs_battle_weaponInfo;
 
 typedef struct {
     int unk0[6];
@@ -200,7 +200,7 @@ typedef struct {
     char unk36;
     char unk37;
     int unk38;
-    vs_battle_equippedWeapon weapon;
+    vs_battle_weaponInfo weapon;
     vs_battle_shieldInfo shield;
     vs_battle_accessoryInfo accessory;
     vs_battle_equipment_hitLocations hitLocations[6];
@@ -249,13 +249,13 @@ void func_8006B338(void*);
 void func_8006B57C(int*, vs_battle_equipment*);
 void func_8006B6AC(int*, func_80103080_t*);
 void func_8006B728(func_800FD17C_t*, void*);
-void func_8006B8C0(void*, vs_battle_equippedWeapon*);
+void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
 void func_8006BAA8(void*, u_short*);
 void func_8006BADC(void*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);
-void func_8007ACB0();
+void func_8007ACB0(void);
 void func_8007CCF0(int);
 int func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);

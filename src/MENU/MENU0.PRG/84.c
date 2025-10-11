@@ -774,7 +774,7 @@ static int _teleportMenu(int init)
     return 0;
 }
 
-static void _drawMagicMenuHeader()
+static void _drawMagicMenuHeader(void)
 {
     vs_battle_menuItem_t* menuItem;
 

@@ -37,13 +37,13 @@ extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
 extern int D_80039AFC;
 
-int vs_sound_init()
+int vs_sound_init(void)
 {
     _soundInit();
     return 0;
 }
 
-int vs_sound_shutdown()
+int vs_sound_shutdown(void)
 {
     _shutdown();
     return 0;
@@ -81,7 +81,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80011FDC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012004);
 
-int func_80012024()
+int func_80012024(void)
 {
     D_800358FE = 0;
     return 0;
@@ -224,7 +224,7 @@ static int func_80012D9C(int* arg0, int* arg1, int* arg2, int arg3)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012E50);
 
-int func_80012EBC()
+int func_80012EBC(void)
 {
     D_80039AF8[1] &= ~0x10000;
     D_80036770.unk4 = 0;
@@ -279,13 +279,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013418);
 
 static int func_80013468(int* arg0) { return *arg0 + 0xB0BEB4BF; }
 
-static void _spuWriteComplete()
+static void _spuWriteComplete(void)
 {
     SpuSetTransferCallback(NULL);
     _isSpuTransfer = 0;
 }
 
-void spuSetTransferCallback()
+void spuSetTransferCallback(void)
 {
     _isSpuTransfer = 1;
     SpuSetTransferCallback(_spuWriteComplete);
@@ -304,7 +304,7 @@ static void _readSpu(char* data, u_int len)
     SpuRead(data, len);
 }
 
-static void _waitTransferAvailable()
+static void _waitTransferAvailable(void)
 {
     if (_isSpuTransfer == 1) {
         do {
@@ -319,7 +319,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
-static void _soundInit()
+static void _soundInit(void)
 {
     int event;
 
@@ -344,7 +344,7 @@ static void _soundInit()
         ;
 }
 
-static void _shutdown()
+static void _shutdown(void)
 {
     if (_isSpuTransfer == 1) {
         _writeSpu(_soundFlush, 64);

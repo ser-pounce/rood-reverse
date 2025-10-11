@@ -4,7 +4,7 @@ typedef struct {
     int unk0;
     int unk4;
     int unk8;
-    void (*unkC)();
+    void (*unkC)(void);
 } D_800320D4_t;
 
 extern D_800320D4_t* D_800320D4;

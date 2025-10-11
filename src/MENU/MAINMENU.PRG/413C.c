@@ -82,7 +82,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF9E4);
 
 void func_800FFA88(int arg0) { D_801022E3 = arg0; }
 
-void func_800FFA94()
+void func_800FFA94(void)
 {
     int var_a1;
     u_long* temp_v0;
@@ -126,7 +126,7 @@ void func_800FFB90(int arg0)
 
 void func_800FFBA8(void) { func_800CD064(7); }
 
-void func_800FFBC8()
+void func_800FFBC8(void)
 {
     if (vs_main_settings.information != 0) {
         func_800C8E04(2);

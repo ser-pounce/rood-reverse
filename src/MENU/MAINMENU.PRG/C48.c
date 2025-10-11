@@ -52,7 +52,7 @@ extern char (*D_80102470)[256];
 extern char D_80102480[];
 extern char D_801024A1;
 
-void func_800FA448()
+void func_800FA448(void)
 {
     vs_battle_equipment_t2* temp_s1;
     int i;
@@ -81,7 +81,7 @@ void func_800FA448()
 
 void func_800FA568(void) { }
 
-void func_800FA570()
+void func_800FA570(void)
 {
     func_8009967C();
     func_800995B0();
@@ -255,7 +255,7 @@ void func_800FA92C(int arg0, int arg1)
     }
 }
 
-int vs_mainmenu_ready()
+int vs_mainmenu_ready(void)
 {
     vs_battle_menuItem_t* menuItem;
     int i;
@@ -271,7 +271,7 @@ int vs_mainmenu_ready()
     return 1;
 }
 
-int func_800FAA20()
+int func_800FAA20(void)
 {
     int temp_s0 = ++D_80102034;
     func_800FA8E0(0x28);
@@ -393,8 +393,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
-void func_800FC85C(
-    vs_battle_equippedWeapon* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
     int temp_v0;
     int temp_v1;
@@ -478,7 +477,7 @@ void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
     *arg2 = arg0->unk2 << 9;
 }
 
-void func_800FD220()
+void func_800FD220(void)
 {
     vs_battle_rMemzero(D_801024C0, 0x80);
     vs_mainMenu_setDpPp(0, 0, 0, 0);

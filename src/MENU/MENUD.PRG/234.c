@@ -75,7 +75,7 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
 void func_801031A0(void);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
-static void func_80103270()
+static void func_80103270(void)
 {
     short* s0 = &D_80109A82;
     func_801031A0();

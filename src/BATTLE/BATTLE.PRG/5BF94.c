@@ -308,7 +308,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9078);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
 
-void func_800C97BC()
+void func_800C97BC(void)
 {
     vs_battle_menuItem_t* var_s2;
     int temp_s1;
@@ -493,7 +493,7 @@ int vs_battle_abilitiesUnlocked(int defense)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB030);
 
-void func_800CB114()
+void func_800CB114(void)
 {
     if (vs_battle_menuItems != 0) {
         func_8007E1C0(6);
@@ -510,7 +510,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB1C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB208);
 
-void func_800CB23C()
+void func_800CB23C(void)
 {
     func_800CACD0(0xF, 2);
     D_800F4FDB = 1;
@@ -648,7 +648,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
 
 void func_800CE644(int i __attribute__((unused))) { }
 
-void func_800CE64C()
+void func_800CE64C(void)
 {
     func_800CE67C();
     func_800D7814();
@@ -928,7 +928,7 @@ int func_800D48E4(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4910);
 
-int func_800D4984()
+int func_800D4984(void)
 {
     func_800D0D08();
     return 1;
@@ -936,7 +936,7 @@ int func_800D4984()
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D49A4);
 
-int func_800D4A94()
+int func_800D4A94(void)
 {
     func_800CFEF0();
     return 1;
@@ -954,7 +954,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4BD0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
 
-int func_800D4D44()
+int func_800D4D44(void)
 {
     func_800D78F0();
     return 1;
@@ -962,7 +962,7 @@ int func_800D4D44()
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4D64);
 
-int func_800D4D98()
+int func_800D4D98(void)
 {
     D_800F522C = 0;
     return 1;

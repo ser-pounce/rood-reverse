@@ -99,7 +99,7 @@ static void _setMenuRows(int rowCount, int highlightedRow, char** strings)
     vs_main_settings.cursorMemory = cursor;
 }
 
-static int _getSelectedRow()
+static int _getSelectedRow(void)
 {
     int row;
 
@@ -126,7 +126,7 @@ void func_80102E48(char* text)
     menuItem->unkA = 1;
 }
 
-static void func_80102E9C() __attribute__((unused));
+static void func_80102E9C(void) __attribute__((unused));
 void func_80102E9C(void) { func_800FA8E0(8); }
 
 static void _menuReady(void) { vs_mainmenu_ready(); }
@@ -214,7 +214,7 @@ static int _helpPageLoadCounter;
 static int* _helpText;
 static u_long* _helpAssets;
 
-static int _initMenuState()
+static int _initMenuState(void)
 {
     if (vs_main_settings.cursorMemory == 0) {
         vs_main_bzero(
@@ -269,7 +269,7 @@ static P_CODE const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C,
 static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
 
-static int _showMenu()
+static int _showMenu(void)
 {
     enum state {
         init,
@@ -538,7 +538,7 @@ static void _copyCluts(u_long* buffer, int count)
     }
 }
 
-static int _getRoundedLineCount()
+static int _getRoundedLineCount(void)
 {
     int remainder;
     int lineCount;
@@ -555,7 +555,7 @@ static int _getRoundedLineCount()
     return lineCount;
 }
 
-static void _copyNextPageText()
+static void _copyNextPageText(void)
 {
     char buffer[1024];
     int i;
@@ -601,7 +601,7 @@ static char* _vsStringCpy(char* arg0, char* arg1)
     return arg0 + 1;
 }
 
-static void _drawContent()
+static void _drawContent(void)
 {
     RECT rect;
     DR_AREA* area;
@@ -796,7 +796,7 @@ static _menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
 static _menuBgTransparencies_t const _menuBgTransparencies[]
     = { { 128, 115, 121, 88 }, { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };
 
-static void _fadeMenuUpper()
+static void _fadeMenuUpper(void)
 {
     int widths[4];
     int transparency[16];
@@ -847,7 +847,7 @@ static void _fadeMenuUpper()
     _insertTpage(-7, 64);
 }
 
-static void _fadeMenuLower()
+static void _fadeMenuLower(void)
 {
     int widths[4];
     int transparency[16];
@@ -939,7 +939,7 @@ static void _drawPaginationArrow(enum arrowType_e arrowType)
     p[0] = (void*)poly;
 }
 
-static void _drawContentLines()
+static void _drawContentLines(void)
 {
     short animationState;
     short i;

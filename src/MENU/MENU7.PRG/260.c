@@ -241,7 +241,7 @@ static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
 static saveFileInfo_t* _saveFileInfo;
 
-static u_int _getNewestSaveFile()
+static u_int _getNewestSaveFile(void)
 {
     u_int i;
     u_int maxCounter = 0;
@@ -258,7 +258,7 @@ static u_int _getNewestSaveFile()
     return fileIndex;
 }
 
-static int _findCurrentSaveOnActiveMemcard()
+static int _findCurrentSaveOnActiveMemcard(void)
 {
     int i;
     for (i = 0; i < 5; ++i) {
@@ -1027,7 +1027,7 @@ static int _initMemcard(int init)
     return 0;
 }
 
-static void _shutdownMemcard()
+static void _shutdownMemcard(void)
 {
     int i;
 
@@ -1289,7 +1289,7 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 static u_char _selectCursorColor;
 static char _fileMenuScreenFade;
 
-static void _initFileMenu()
+static void _initFileMenu(void)
 {
     _memoryCardMessage = 0;
     _selectCursorColor = 0;
@@ -1343,7 +1343,7 @@ static void _clearFileMenuElement(int id)
     memset(&_fileMenuElements[id], 0, sizeof(_fileMenuElements[id]));
 }
 
-static int _fileMenuElementsActive()
+static int _fileMenuElementsActive(void)
 {
     int i;
 
@@ -1876,7 +1876,7 @@ static void _drawFileMenu(int framebuf)
     }
 }
 
-static void _drawFileMenuBg()
+static void _drawFileMenuBg(void)
 {
     _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
@@ -2586,7 +2586,7 @@ static int _showSaveMenu(int initState)
                 state = initSlot1;
                 break;
             }
-            _initFileMenu(val);
+            _initFileMenu();
             return 1;
         }
         break;
@@ -3734,9 +3734,9 @@ int vs_menu7_saveContainerMenu(char* state)
     return 0;
 }
 
-static void _drawPlayTime()
+static void _drawPlayTime(void)
 {
-    extern u_int* D_1F800000[];
+    extern u_long* D_1F800000[];
     static char* _playTime = "00:00:00:00";
 
     char time[4];

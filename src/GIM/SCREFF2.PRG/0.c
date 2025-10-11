@@ -74,7 +74,7 @@ int* func_800F9EBC(int arg0, int arg1, int* arg2, int* arg3)
     return arg2;
 }
 
-void func_800F9FB8()
+void func_800F9FB8(void)
 {
     int* var_s2;
     int i;

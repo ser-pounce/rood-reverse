@@ -45,7 +45,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C4650);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C4708);
+int vs_battle_mapStickDeadZone(int arg0)
+{
+    if (arg0 < 64) {
+        return arg0 - 64;
+    }
+    if (arg0 >= 192) {
+        return arg0 - 192;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C4734);
 

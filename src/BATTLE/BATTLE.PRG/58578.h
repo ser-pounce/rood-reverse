@@ -1,3 +1,3 @@
 #pragma once
 
-int func_800C4708(int);
+int vs_battle_mapStickDeadZone(int);

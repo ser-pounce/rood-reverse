@@ -364,7 +364,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9B38);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9CB4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9E08);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_getStatusFlags);
 
 INCLUDE_ASM(
     "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_getHitLocationState);

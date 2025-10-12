@@ -92,7 +92,7 @@ void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);
 int func_800C9950(int, int, int, u_long*);
-void func_800C99DC(int, int, u_long*, int);
+void vs_battle_drawStatBar(int, int, u_long*, int);
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getHitLocationState(void*);
 int func_800CABE0(int);

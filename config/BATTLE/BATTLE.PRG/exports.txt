@@ -17,6 +17,7 @@ vs_battle_mapStickDeadZone = 0x800C4708;
 vs_battle_renderTextRaw = 0x800C6828;
 vs_battle_getMenuItem = 0x800C8E48;
 vs_battle_setMenuItem = 0x800C8E5C;
+vs_battle_drawStatBar = 0x800C99DC;
 vs_battle_getStatusFlags = 0x800C9E08;
 vs_battle_getHitLocationState = 0x800C9E5C;
 vs_battle_abilitiesUnlocked = 0x800CAFB4;

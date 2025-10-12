@@ -10,6 +10,7 @@
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/C48.h"
 #include <memory.h>
+#include "gpu.h"
 
 typedef struct {
     signed char unk0;
@@ -51,6 +52,8 @@ int func_800D5198(void);
 void func_800D6AEC(int, u_short);
 extern int (*D_800EC3F4[])(void*);
 
+extern u_long* D_1F800000[];
+
 extern int _menuLbas[];
 extern char D_800EB9AC;
 extern signed char D_800EB9AD;
@@ -64,6 +67,7 @@ extern char D_800EB9CE;
 extern int D_800EB9D0;
 extern int D_800EB9D8;
 extern u_int* D_800EB9D4;
+extern int D_800EBC04[];
 extern char D_800EBC78;
 extern char D_800EBD68[];
 extern char D_800F522C;
@@ -358,7 +362,39 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C98C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9950);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C99DC);
+void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
+{
+    int rgb0;
+    u_int rgb1;
+    u_long* primBuf;
+
+    rgb1 = D_800EBC04[colorIndex];
+    primBuf = D_1F800000[0];
+
+    rgb0 = (((w * 0xFF) + ((rgb1 & 0xFF) * (0x40 - w))) >> 6)
+        | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
+        | ((((w * 0x9E) + ((rgb1 >> 16) * (0x40 - w))) >> 6) << 16);
+
+    primBuf[0] = (*nextPrim & 0xFFFFFF) | (w == 0 ? 0x03000000 : 0x0D000000);
+    primBuf[1] = vs_getRGB0(primTile, 0x00, 0x28, 0x40);
+    primBuf[2] = xy;
+    primBuf[3] = 0x50042;
+    primBuf[4] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    primBuf[5] = rgb0 | (primPolyG4 << 24);
+    xy += vs_getXY(1, 1);
+    primBuf[6] = xy;
+    primBuf[7] = rgb1;
+    primBuf[8] = xy + w;
+    xy += vs_getXY(0, 3);
+    primBuf[9] = rgb0;
+    primBuf[10] = xy;
+    primBuf[11] = rgb1;
+    rgb1 = w;
+    primBuf[12] = xy + rgb1;
+    primBuf[13] = vs_getTpage(0, 0, 0, 0, 0);
+    *nextPrim = ((u_long)primBuf << 8) >> 8;
+    D_1F800000[0] = primBuf + 14;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9B38);
 

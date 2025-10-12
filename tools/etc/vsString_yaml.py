@@ -1,7 +1,7 @@
 import yaml
 from tools.etc.vsString import encode
 
-def read_yaml(path):
+def read_yaml(path, padding=0xEB):
     with open(path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
@@ -12,25 +12,25 @@ def read_yaml(path):
     offset = 0
     current_index = 0
 
-    def add_string(s):
-        encoded = encode(s)
+    def add_string(s, padding):
+        encoded = encode(s, padding)
         strings.append(encoded)
         offsets.append(offset)
         return len(encoded) // 2
 
-    def process_value(value):
+    def process_value(value, padding):
         nonlocal offset, current_index
         if isinstance(value, list):
             for item in value:
-                process_value(item)
+                process_value(item, padding)
         else:
-            offset += add_string(value)
+            offset += add_string(value, padding)
             current_index += 1
 
     for key, value in data.items():
         enums[key] = offset
         indices[key] = current_index  # Store the index position for this key
-        process_value(value)
+        process_value(value, padding)
 
     count = len(strings)
     offsets = [o + count for o in offsets]
@@ -38,10 +38,13 @@ def read_yaml(path):
 
     return strings, offsets, enums, indices
 
-def write_binary(path, offsets, strings):
-    bin_content = bytearray()
+def write_binary_header(offsets):
+    header = bytearray()
     for offset in offsets:
-        bin_content += offset.to_bytes(2, "little")
+        header += offset.to_bytes(2, "little")
+    return header
+
+def write_binary_data(path, bin_content, strings):
     for s in strings:
         bin_content += s
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -50,7 +53,8 @@ def write_binary(path, offsets, strings):
     return bin_content
 
 def write_data(path, offsets, strings):
-    bin_content = write_binary(path, offsets, strings)
+    header = write_binary_header(offsets)
+    bin_content = write_binary_data(path, header, strings)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as out:
         for i in range(0, len(bin_content), 2):

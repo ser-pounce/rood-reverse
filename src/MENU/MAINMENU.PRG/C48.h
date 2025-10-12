@@ -58,13 +58,13 @@ void func_800FD220(void);
 void func_8010044C(u_int*);
 
 extern char D_80102140[];
-extern char (*D_8010229C)[24];
+extern char (*vs_mainMenu_itemNames)[24];
 extern D_8010245C_t* D_8010245C;
 extern D_801024A8_t D_801024A8[2];
 extern char D_801024B9;
 extern short D_801024C0[];
 extern short D_80102508;
-extern u_short* D_80102540;
+extern u_short* vs_mainMenu_itemHelp;
 extern char D_80102544;
 extern char D_80102545;
 extern char D_80102578;

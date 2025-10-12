@@ -1,5 +1,6 @@
 vs_mainmenu_ready = 0x800FA9D0;
 vs_mainMenu_setDpPp = 0x800FC208;
+vs_mainMenu_loadItemNames = 0x800FE5CC;
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;
@@ -7,6 +8,8 @@ vs_mainmenu_drawButton = 0x800FFC68;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainmenu_setMenuRows = 0x801005E0;
 vs_mainmenu_getSelectedRow = 0x801008C8;
+vs_mainMenu_itemNames = 0x8010229C;
 vs_mainMenu_isLevelledSpell = 0x801022D4;
 D_801022D5 = 0x801022D5;
+vs_mainMenu_itemHelp = 0x80102540;
 D_80102578 = 0x80102578;

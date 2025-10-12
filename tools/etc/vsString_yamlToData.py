@@ -14,7 +14,8 @@ def main():
 
     strings, offsets, enums, indices = read_yaml(yaml_path)
     write_data(data_path, offsets, strings)
-    write_binary(data_path.with_suffix(data_path.suffix + '.bin'), offsets, strings)
+    header = write_binary_header(offsets)
+    write_binary_data(data_path.with_suffix(data_path.suffix + '.bin'), header, strings)
     write_header(header_path, header_path.stem, enums, indices)
 
 

@@ -207,16 +207,19 @@ static void _drawGemInfo(vs_battle_equipment* gem)
 static void _initBladeInfo(
     vs_battle_equipment* blade, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_stringContext[19] = D_8010229C[blade->material + 253];
+    vs_battle_stringContext[19] = vs_mainMenu_itemNames[blade->material + 253];
     vs_battle_stringContext[18]
-        = (char*)(&D_80102540[D_80102540[blade->category + 0x18E]]);
+        = (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category + 0x18E]]);
     vs_battle_stringContext[17]
-        = (char*)(&D_80102540[D_80102540[blade->damageType + 0x198]]);
+        = (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType + 0x198]]);
     vs_battle_stringContext[16]
-        = (char*)(&D_80102540[D_80102540[D_80102140[blade->category - 1] + 0x19C]]);
-    func_800C685C(func_800C685C(D_800F4E8C,
-                      (char*)(&D_80102540[D_80102540[(*((u_short*)blade)) - 1]])),
-        (char*)(D_80102540 + 0x33FB));
+        = (char*)(&vs_mainMenu_itemHelp
+                      [vs_mainMenu_itemHelp[D_80102140[blade->category - 1] + 0x19C]]);
+    func_800C685C(
+        func_800C685C(D_800F4E8C,
+            (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(*((u_short*)blade))
+                - 1]])),
+        (char*)(vs_mainMenu_itemHelp + 0x33FB));
     arg1[1] = D_800F4E8C;
 }
 
@@ -224,17 +227,19 @@ static void _initGripInfo(
     vs_battle_equipment* grip, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
     u_short* new_var2 = &grip->id;
-    D_800F51A4 = &D_80102540[D_80102540[grip->category + 0x280]];
+    D_800F51A4 = &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category + 0x280]];
     func_800C685C(
-        func_800C685C(D_800F4E8C, (char*)(&D_80102540[D_80102540[*new_var2 - 6]])),
-        (char*)(D_80102540 + 0x3405));
+        func_800C685C(D_800F4E8C,
+            (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*new_var2 - 6]])),
+        (char*)(vs_mainMenu_itemHelp + 0x3405));
     arg1[1] = D_800F4E8C;
 }
 
 static void _initGemInfo(
     vs_battle_equipment* gem, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(D_800F4E8C, D_80102540 + D_80102540[gem->id - 0x8C], 0x60);
+    vs_battle_memcpy(
+        D_800F4E8C, vs_mainMenu_itemHelp + vs_mainMenu_itemHelp[gem->id - 0x8C], 0x60);
     arg1[1] = D_800F4E8C;
 }
 
@@ -247,7 +252,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
     int sp18;
     u_short* temp_s0_2;
 
-    sp10[1] = (char*)&D_80102540[0x340E];
+    sp10[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
     switch (row) {
     case 0:
         func_800FC85C(weapon, sp10, &sp18, D_800F4E8C);
@@ -283,7 +288,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
     int sp18;
     u_short* temp_s0;
 
-    sp10[1] = D_80102540 + 0x340E;
+    sp10[1] = vs_mainMenu_itemHelp + 0x340E;
     if (row == 0) {
         func_800FCCE8(shield, sp10, &sp18, D_800F4E8C);
     } else if (row < 0) {
@@ -1099,7 +1104,7 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
         var_s1 = arg0 - 3;
         if (var_s1 < v1) {
             sp18.unk4 = 0;
-            sp18.unk0 = D_80102540 + 0x340B;
+            sp18.unk0 = vs_mainMenu_itemHelp + 0x340B;
             sp80 = 0x58000000;
             if (arg1->gems[var_s1].id != 0) {
                 func_8006B728(&sp60, &arg1->gems[var_s1]);
@@ -1140,7 +1145,7 @@ static void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
 
     if (var_s0 < arg1->unk2D) {
         sp18.unk4 = 0;
-        sp18.unk0 = (char*)&D_80102540[0x340B];
+        sp18.unk0 = (char*)&vs_mainMenu_itemHelp[0x340B];
         sp40 = 0x58000000;
         if (arg1->unk48[var_s0].unk0 != 0) {
             func_8006B728(&sp20, &arg1->unk48[var_s0].unk0);
@@ -1415,17 +1420,20 @@ static int func_80104F80(int arg0)
             D_80108183 = var_v0_4;
         }
         if (var_v0_4 < 2) {
-            var_s3 = (char*)&D_80102540[D_80102540[0x19F - var_v0_4]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[0x19F - var_v0_4]];
         } else if (var_v0_4 < 9) {
             switch (D_801024B9) {
             case 0:
-                var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x19E]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                    + 0x19E]];
                 break;
             case 1:
-                var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x1A4]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                    + 0x1A4]];
                 break;
             case 2:
-                var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x1AB]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                    + 0x1AB]];
                 break;
             }
         } else if (var_v0_4 < 0x10) {
@@ -1446,12 +1454,14 @@ static int func_80104F80(int arg0)
                 break;
             }
         } else {
-            var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x1A0]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4 + 0x1A0]];
             if (var_v0_4 >= 0x12) {
                 if (D_80108181 == 0) {
-                    var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x280]];
+                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                        + 0x280]];
                 } else if ((D_80108181 - 2) < temp_s4) {
-                    var_s3 = (char*)&D_80102540[D_80102540[var_v0_4 + 0x283]];
+                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                        + 0x283]];
                 }
             }
         }
@@ -1827,8 +1837,8 @@ int vs_menu4_Exec(char* state)
     case init:
         D_80108130 = 0;
         D_801081EC = 10;
-        if (D_8010229C == NULL) {
-            func_800FE5CC(1);
+        if (vs_mainMenu_itemNames == NULL) {
+            vs_mainMenu_loadItemNames(1);
         }
         if (vs_mainmenu_ready() == 0) {
             break;
@@ -1897,7 +1907,7 @@ int vs_menu4_Exec(char* state)
                         - VS_status_INDEX_statDesc]]);
                 }
             }
-        } else if (func_800FE5CC(0) != 0) {
+        } else if (vs_mainMenu_loadItemNames(0) != 0) {
             if (func_801045B8(-3) == 2) {
                 if (vs_main_buttonsPressed.all & PADRup) {
                     vs_battle_playMenuLeaveSfx();

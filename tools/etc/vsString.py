@@ -134,13 +134,7 @@ def assign_strings(template, strings, idx=0):
             raise ValueError("Not enough strings for keys template")
         return strings[idx], idx + 1
 
-def write_table(data, keys_file, out_path):
-    count = int.from_bytes(data[0:2], "little")
-
-    offsets = [
-        int.from_bytes(data[2*i:2*i + 2], "little")
-        for i in range(count)
-    ]
+def write_table(data, offsets, keys_file, out_path):
 
     with open(keys_file, "r", encoding="utf-8") as f:
         keys_yaml = yaml.safe_load(f)

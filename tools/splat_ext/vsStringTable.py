@@ -27,6 +27,7 @@ class PSXSegVsStringTable(Segment):
     def split(self, rom_bytes: bytes) -> None:
 
         data = rom_bytes[self.rom_start:self.rom_end]
+
         keys_path = (
             options.opts.asset_path
             / self.dir
@@ -34,4 +35,11 @@ class PSXSegVsStringTable(Segment):
         ).relative_to(options.opts.build_path)
         out_path = self.make_path()
 
-        write_table(data, keys_path, out_path)
+        count = int.from_bytes(data[0:2], "little")
+
+        offsets = [
+            int.from_bytes(data[2*i:2*i + 2], "little")
+            for i in range(count)
+        ]
+
+        write_table(data, offsets, keys_path, out_path)

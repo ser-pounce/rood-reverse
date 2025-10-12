@@ -1,6 +1,6 @@
 #pragma once
 
-int func_800FE5CC(int);
+int vs_mainMenu_loadItemNames(int);
 int func_800FE694(void);
 void func_800FFA88(int);
 void func_800FFA94(void);

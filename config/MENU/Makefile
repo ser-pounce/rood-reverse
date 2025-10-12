@@ -17,4 +17,12 @@ $(BUILD)/data/MENU/MCMAN.BIN: $(BUILD)/assets/MENU/MCMAN.vsString | $$(@D)/
 	$(ECHO) Converting $<
 	cp $(BUILD)/assets/MENU/MCMAN.vsString.bin $@
 
-all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG) 
+$(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringNoHeader.yaml: data/MENU/ITEMNAME.BIN assets/MENU/ITEMNAME.BIN.yaml | $$(@D)/
+	$(ECHO) Extracting $<
+	$(VPYTHON) -m tools.etc.vsString_dumpFixedTable $< assets/MENU/ITEMNAME.BIN.yaml $@ 24
+
+$(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringNoHeader.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.etc.vsString_yamlToDataNoHeader $< $@ 24
+
+all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG ITEMNAME)

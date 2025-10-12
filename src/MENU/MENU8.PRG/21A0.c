@@ -566,7 +566,7 @@ static int func_801049A0(int arg0)
                 char idx_byte = base[D_80105F2E * 32 + 1];
                 int idx = idx_byte - 1;
                 char table_val = base[idx * 44 + 0x280];
-                vs_battle_rMemcpy(D_80105F10, D_8010229C + table_val, 0x18);
+                vs_battle_rMemcpy(D_80105F10, vs_mainMenu_itemNames + table_val, 0x18);
             }
             func_800C8E04(1);
             D_800F5190 = &D_80105F10;
@@ -602,7 +602,7 @@ static int func_801049A0(int arg0)
                 char idx_byte = temp_s0[1];
                 int idx = idx_byte - 1;
                 char table_val = temp_s2[idx * 44 + 0x280];
-                vs_battle_rMemcpy(temp_s0 + 8, D_8010229C + table_val, 0x18);
+                vs_battle_rMemcpy(temp_s0 + 8, vs_mainMenu_itemNames + table_val, 0x18);
             }
             return 1;
         }

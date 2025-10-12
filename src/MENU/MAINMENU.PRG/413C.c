@@ -3,6 +3,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "lbas.h"
 
 typedef struct {
     char text[14];
@@ -23,6 +24,11 @@ extern char D_8010231A[];
 extern int D_801023D4;
 extern int _selectedRow;
 extern char D_801023DE;
+extern char* vs_mainMenu_itemNames;
+extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
+extern char _itemNamesLoading;
+extern void* D_801024A4;
+extern void* vs_mainMenu_itemHelp;
 extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];
 
@@ -50,7 +56,32 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE3A0);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE3E0);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE5CC);
+int vs_mainMenu_loadItemNames(int arg0)
+{
+    vs_main_CdFile cdFile;
+
+    if (arg0 != 0) {
+        vs_mainMenu_itemNames = vs_main_allocHeapR(0xB000);
+        vs_mainMenu_itemHelp = vs_mainMenu_itemNames + VS_ITEMNAME_BIN_SIZE;
+        D_801024A4 = vs_mainMenu_itemHelp + 0x7000;
+        cdFile.lba
+            = VS_ITEMNAME_BIN_LBA; // The following three files must be contiguous on disk
+        cdFile.size = VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE;
+        _itemNamesCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(_itemNamesCdQueueSlot, vs_mainMenu_itemNames);
+        _itemNamesLoading = 1;
+        return 0;
+    }
+    if (_itemNamesLoading == 0) {
+        return 1;
+    }
+    if (_itemNamesCdQueueSlot->state == 4) {
+        vs_main_freeCdQueueSlot(_itemNamesCdQueueSlot);
+        _itemNamesLoading = 0;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE694);
 

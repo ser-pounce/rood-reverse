@@ -402,20 +402,20 @@ void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, D_800F4E8
     temp_s1 = &arg0->blade;
     temp_v0 = func_800FA598((short*)arg0, 0);
     vs_battle_stringContext[10]
-        = (char*)&D_80102540[D_80102540[(temp_v0 & 0xFF) + 0x174]];
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(temp_v0 & 0xFF) + 0x174]];
     temp_v1 = ((temp_v0 >> 8) & 0xFF);
-    vs_battle_stringContext[11] = (char*)(D_80102540
-        + (temp_v1 != 0 ? (D_80102540[temp_v1 + (temp_v0 >> 0xF) + 0x22D])
-                        : (D_80102540[temp_s1->category + 0x17E])));
-    vs_battle_stringContext[19] = (char*)&D_8010229C[temp_s1->material + 253];
+    vs_battle_stringContext[11] = (char*)(vs_mainMenu_itemHelp
+        + (temp_v1 != 0 ? (vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D])
+                        : (vs_mainMenu_itemHelp[temp_s1->category + 0x17E])));
+    vs_battle_stringContext[19] = (char*)&vs_mainMenu_itemNames[temp_s1->material + 253];
     vs_battle_stringContext[18]
-        = (char*)&D_80102540[D_80102540[temp_s1->category + 0x18E]];
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp_s1->category + 0x18E]];
     vs_battle_stringContext[17]
-        = (char*)&D_80102540[D_80102540[temp_s1->damageType + 0x198]];
-    vs_battle_stringContext[16]
-        = (char*)&D_80102540[D_80102540[D_80102140[temp_s1->category - 1] + 0x19C]];
-    func_800C685C(
-        func_800C685C(arg3, (char*)(D_80102540 + 0x33F5)), (char*)(D_80102540 + 0x33FB));
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp_s1->damageType + 0x198]];
+    vs_battle_stringContext[16] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[D_80102140[temp_s1->category - 1] + 0x19C]];
+    func_800C685C(func_800C685C(arg3, (char*)(vs_mainMenu_itemHelp + 0x33F5)),
+        (char*)(vs_mainMenu_itemHelp + 0x33FB));
     arg1[1] = (char*)arg3;
     *arg2 = (temp_s1->category << 0x1A) + (temp_s1->material << 0x10);
 }
@@ -463,16 +463,18 @@ void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
-    vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
-    arg1->unk0 = D_8010229C[arg0->unk0];
+    vs_battle_memcpy(
+        arg3, vs_mainMenu_itemHelp + (arg0->unk0 + vs_mainMenu_itemHelp)[-0x8C], 0x60);
+    arg1->unk0 = vs_mainMenu_itemNames[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = 0x58000000;
 }
 
 void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
-    vs_battle_memcpy(arg3, D_80102540 + (arg0->unk0 + D_80102540)[-0x8C], 0x60);
-    arg1->unk0 = D_8010229C[arg0->unk0];
+    vs_battle_memcpy(
+        arg3, vs_mainMenu_itemHelp + (arg0->unk0 + vs_mainMenu_itemHelp)[-0x8C], 0x60);
+    arg1->unk0 = vs_mainMenu_itemNames[arg0->unk0];
     arg1->unk4 = arg3;
     *arg2 = arg0->unk2 << 9;
 }

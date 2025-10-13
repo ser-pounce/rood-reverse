@@ -16,7 +16,7 @@ def main():
     write_data(data_path, offsets, strings)
     header = write_binary_header(offsets)
     write_binary_data(data_path.with_suffix(data_path.suffix + '.bin'), header, strings)
-    write_header(header_path, header_path.stem, enums, indices)
+    write_header(header_path, header_path.stem.replace('.', '_'), enums, indices)
 
 
 if __name__ == "__main__":

@@ -184,13 +184,22 @@ $(BUILD)/%.o: %.c | $$(@D)/
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 
-$(BUILD)/%.vsString: $(BUILD)/%.vsString.yaml %.yaml | $$(@D)/
-	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $@ $(BUILD)/$*.h
+.PRECIOUS: $(BUILD)/assets/%.vsString.yaml
+$(BUILD)/assets/%.vsString.yaml: data/% assets/%.yaml | $$(@D)/
+	$(ECHO) Extracting $<
+	$(VPYTHON) -m tools.etc.vsString_dumpTable $< assets/$*.yaml $@
 
-%.vsString.o: %.vsString
+$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/$*.vsString $(BUILD)/$*.h
+
+$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
+	$(ECHO) Converting $<
+	cp $< $@
+
+%.vsString.o: %.vsString.bin
 	$(ECHO) Assembling $@
-	$(OBJCOPY) $(OBJCOPYFLAGS) $<.bin $@
+	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	$(IMPORT) $(IMPORTFLAGS) $^

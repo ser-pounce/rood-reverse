@@ -1680,8 +1680,8 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.base.slotState;
             if (slotState == slotStateUnavailable) {
-                _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_inUse), element->x + 6,
-                    element->y + 10, 3);
+                _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_inUse),
+                    element->x + 6, element->y + 10, 3);
             } else if (slotState == slotStateAvailable) {
                 if (_isSaving == 0) {
                     _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_empty),
@@ -2029,7 +2029,8 @@ static int _promptFormat(int initPort)
                     _memoryCardMessage
                         = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
                 } else {
-                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2756,7 +2757,8 @@ static int _showLoadFilesMenu(int initPort)
             do {
                 leaveTimer = 0;
                 if (currentSlot < 0) {
-                    _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
+                    _memoryCardMessage
+                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2768,8 +2770,8 @@ static int _showLoadFilesMenu(int initPort)
                     _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loaded);
                     break;
                 case 1:
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
+                    _memoryCardMessage = (char*)(_textTable
+                        + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -3604,7 +3606,8 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 4:
         if (vs_main_buttonsPressed.pad[0].low != 0) {
-            vs_mainmenu_setMessage((char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarn));
+            vs_mainmenu_setMessage(
+                (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarn));
             _promptYesNo(2);
             *state = 5;
         }
@@ -3796,7 +3799,8 @@ int vs_menu7_dataMenu(char* state)
     case 5:
         for (row = 0; row < 2; ++row) {
             menuStrings[row * 2] = (char*)(&_textTable[_textTable[row * 2]]);
-            menuStrings[row * 2 + 1] = (char*)(&_textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
+            menuStrings[row * 2 + 1]
+                = (char*)(&_textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
             rowTypes[row] = 0;
         }
 

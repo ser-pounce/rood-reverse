@@ -27,7 +27,7 @@ extern char D_801023DE;
 extern char* vs_mainMenu_itemNames;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
-extern void* D_801024A4;
+extern void* vs_mainMenu_menu12Text;
 extern void* vs_mainMenu_itemHelp;
 extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];
@@ -61,11 +61,12 @@ int vs_mainMenu_loadItemNames(int arg0)
     vs_main_CdFile cdFile;
 
     if (arg0 != 0) {
-        vs_mainMenu_itemNames = vs_main_allocHeapR(0xB000);
+        vs_mainMenu_itemNames = vs_main_allocHeapR(
+            VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE);
         vs_mainMenu_itemHelp = vs_mainMenu_itemNames + VS_ITEMNAME_BIN_SIZE;
-        D_801024A4 = vs_mainMenu_itemHelp + 0x7000;
-        cdFile.lba
-            = VS_ITEMNAME_BIN_LBA; // The following three files must be contiguous on disk
+        vs_mainMenu_menu12Text = vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_SIZE;
+        // These three files must be contiguous on disk
+        cdFile.lba = VS_ITEMNAME_BIN_LBA;
         cdFile.size = VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE;
         _itemNamesCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
         vs_main_cdEnqueue(_itemNamesCdQueueSlot, vs_mainMenu_itemNames);

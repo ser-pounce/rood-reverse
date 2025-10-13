@@ -422,14 +422,14 @@ void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, D_800F4E8
 
 void func_800FCA08(char* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
-    u_short sp10[204];
+    vs_battle_weaponInfo sp10;
 
     if (D_80102470 == D_80060168) {
-        func_8006AEAC(sp10, arg0);
+        func_8006AEAC(&sp10, arg0);
     } else {
-        func_80102A34(sp10, arg0, D_80109A8C);
+        func_80102A34(&sp10, arg0, D_80109A8C);
     }
-    func_800FC85C(sp10, arg1, arg2, arg3);
+    func_800FC85C(&sp10, arg1, arg2, arg3);
     *arg1 = arg0 + 8;
 }
 
@@ -455,10 +455,10 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
 
 void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 {
-    int sp10[48];
+    vs_battle_armorInfo sp10;
 
-    func_8006B110(sp10, arg0);
-    func_800FCECC(sp10, arg1, arg2, arg3);
+    func_8006B110(&sp10, arg0);
+    func_800FCECC(&sp10, arg1, arg2, arg3);
 }
 
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)

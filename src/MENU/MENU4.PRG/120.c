@@ -288,7 +288,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
     int sp18;
     u_short* temp_s0;
 
-    sp10[1] = vs_mainMenu_itemHelp + 0x340E;
+    sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     if (row == 0) {
         func_800FCCE8(shield, sp10, &sp18, D_800F4E8C);
     } else if (row < 0) {
@@ -578,7 +578,7 @@ static void func_80103AC8(void)
 {
     int temp_s2;
     int i;
-    int* temp_v0_2;
+    vs_battle_actor2* temp_v0_2;
     u_long* temp_s4;
     vs_battle_actor2* var_s3;
 
@@ -649,7 +649,7 @@ static void func_80103AC8(void)
         for (i = 0; i < 3; ++i) {
             temp_v0_2 = func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
                 *(i + D_800EBBFC) | 0x90000, temp_s4);
-            temp_v0_2[4] = D_800EBC00[i] | 0x37F60000;
+            temp_v0_2->unk10 = D_800EBC00[i] | 0x37F60000;
         }
         temp_s2 += 0xFFF80000;
         i = (var_s3->unk954 >> 9) & 0x100;
@@ -956,7 +956,7 @@ static int func_801045B8(int arg0)
     case 0:
         break;
     case 1:
-        func_80103FEC((int*)sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
+        func_80103FEC(sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
         for (i = 0; i < hitLocationCount; ++i) {
             hitLocation = &sp18->hitLocations[i];
             step = D_80108168[i];
@@ -987,7 +987,7 @@ static int func_801045B8(int arg0)
         }
         break;
     case 2:
-        func_80103FEC((int*)sp18, 0);
+        func_80103FEC(sp18, 0);
 
         step = D_800F4F6A;
         for (i = 0; i < hitLocationCount; ++i) {
@@ -1011,7 +1011,7 @@ static int func_801045B8(int arg0)
         }
         break;
     case 3:
-        func_80103FEC((int*)sp18, D_80108168[0] << 5);
+        func_80103FEC(sp18, D_80108168[0] << 5);
 
         for (i = 0; i < hitLocationCount; ++i) {
             if (D_80108168[i] < 8) {
@@ -1104,7 +1104,7 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
         var_s1 = arg0 - 3;
         if (var_s1 < v1) {
             sp18.unk4 = 0;
-            sp18.unk0 = vs_mainMenu_itemHelp + 0x340B;
+            sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
             sp80 = 0x58000000;
             if (arg1->gems[var_s1].id != 0) {
                 func_8006B728(&sp60, &arg1->gems[var_s1]);
@@ -1349,8 +1349,8 @@ static int func_80104F80(int arg0)
                     if ((var_s2 - 2) < temp_s4) {
                         func_800FC268(9);
                         _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].unk20);
-                        func_800FCECC((int*)&temp_s1->hitLocations[var_s2 - 2].unk20,
-                            sp18, &sp48, D_800F4E8C);
+                        func_800FCECC(&temp_s1->hitLocations[var_s2 - 2].unk20, sp18,
+                            &sp48, D_800F4E8C);
                     } else {
                         func_800FC268(8);
                         _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->accessory);
@@ -1491,7 +1491,7 @@ static int func_80104F80(int arg0)
 
 static int func_80105970(int arg0)
 {
-    u_short* rowText[18];
+    char* rowText[18];
     int rowType[9];
     D_800F4E8C_t sp80[9];
     int sp3E0[9];
@@ -1520,13 +1520,13 @@ static int func_80105970(int arg0)
     switch (D_80108184) {
     case 0:
         for (i = 0; i < 9; ++i) {
-            rowText[i * 2] = _statusStrings + VS_status_OFFSET_none;
-            rowText[i * 2 + 1] = _statusStrings + VS_status_OFFSET_nothingEquipped;
+            rowText[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
+            rowText[i * 2 + 1] = (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
             rowType[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
             func_800FC85C(&temp_s6->weapon, (char**)rowText, rowType, sp80);
-            rowText[0] = &temp_s6->weapon;
+            rowText[0] = (char*)&temp_s6->weapon.unk0;
         }
         if (temp_s6->shield.unk18.id != 0) {
             func_800FCCE8(&temp_s6->shield, (char**)&rowText[2], rowType + 1, sp80 + 1);
@@ -1543,8 +1543,8 @@ static int func_80105970(int arg0)
             sp410 = temp_s5 | 0xF400;
             if ((i - 2) < sp40C) {
                 if (var_fp->unk20.unk0.id != 0) {
-                    func_800FCECC((int*)&var_fp->unk20, (char**)&rowText[i * 2],
-                        &rowType[i], sp80 + i);
+                    func_800FCECC(
+                        &var_fp->unk20, (char**)&rowText[i * 2], &rowType[i], sp80 + i);
                 }
                 rowType[i] |= (((char)var_fp->nameIndex + 0x67) << 9) + temp_s5;
             } else {

@@ -252,25 +252,25 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
     int sp18;
     u_short* temp_s0_2;
 
-    sp10[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
+    sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     switch (row) {
     case 0:
         func_800FC85C(weapon, sp10, &sp18, D_800F4E8C);
         sp10[0] = (char*)weapon;
         break;
     case 1:
-        _initBladeInfo(&weapon->blade, (char**)sp10, &sp18);
+        _initBladeInfo(&weapon->blade, sp10, &sp18);
         _drawBladeInfo(weapon);
         break;
     case 2:
-        _initGripInfo(&weapon->grip, (char**)sp10, &sp18);
+        _initGripInfo(&weapon->grip, sp10, &sp18);
         _drawGripInfo(&weapon->grip);
         break;
     case 3:
     case 4:
     case 5:
         if (weapon->gems[row - 3].id != 0) {
-            _initGemInfo(&weapon->gems[row - 3], (char**)sp10, &sp18);
+            _initGemInfo(&weapon->gems[row - 3], sp10, &sp18);
             _drawGemInfo(&weapon->gems[row - 3]);
         } else {
             func_800FC268(8);
@@ -1145,7 +1145,7 @@ static void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
 
     if (var_s0 < arg1->unk2D) {
         sp18.unk4 = 0;
-        sp18.unk0 = (char*)&vs_mainMenu_itemHelp[0x340B];
+        sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
         sp40 = 0x58000000;
         if (arg1->unk48[var_s0].unk0 != 0) {
             func_8006B728(&sp20, &arg1->unk48[var_s0].unk0);
@@ -1420,20 +1420,20 @@ static int func_80104F80(int arg0)
             D_80108183 = var_v0_4;
         }
         if (var_v0_4 < 2) {
-            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[0x19F - var_v0_4]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_INDEX_phantomPointsDesc - var_v0_4]];
         } else if (var_v0_4 < 9) {
             switch (D_801024B9) {
             case 0:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
-                    + 0x19E]];
+                    + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
                 break;
             case 1:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
-                    + 0x1A4]];
+                    + VS_ITEMHELP_BIN_INDEX_evilClassDesc - 1]];
                 break;
             case 2:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
-                    + 0x1AB]];
+                    + VS_ITEMHELP_BIN_INDEX_darkAffinityDesc - 1]];
                 break;
             }
         } else if (var_v0_4 < 0x10) {
@@ -1454,11 +1454,11 @@ static int func_80104F80(int arg0)
                 break;
             }
         } else {
-            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4 + 0x1A0]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4 + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (var_v0_4 >= 0x12) {
                 if (D_80108181 == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
-                        + 0x280]];
+                        + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
                 } else if ((D_80108181 - 2) < temp_s4) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
                         + 0x283]];

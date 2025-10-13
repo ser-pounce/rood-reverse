@@ -71,14 +71,8 @@ typedef struct {
     int executeAbility;
 } D_800F4E98_t;
 
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2[0x5E];
-} D_800F4E8C_t;
-
 void func_800C6540(char const*, int, int, u_long*);
-D_800F4E8C_t* func_800C685C(D_800F4E8C_t*, char*);
+char* func_800C685C(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
 void func_800C70F8(int, int, int, u_long*);
@@ -144,7 +138,7 @@ extern u_short* D_800F453C;
 extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern char D_800F4E88;
-extern D_800F4E8C_t* D_800F4E8C;
+extern char* D_800F4E8C;
 extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;

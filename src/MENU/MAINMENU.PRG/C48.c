@@ -393,7 +393,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
-void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, char* arg3)
 {
     int temp_v0;
     int temp_v1;
@@ -420,7 +420,7 @@ void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, D_800F4E8
     *arg2 = (temp_s1->category << 0x1A) + (temp_s1->material << 0x10);
 }
 
-void func_800FCA08(char* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_weaponInfo sp10;
 
@@ -439,7 +439,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCCE8);
 
-void func_800FCE40(int arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FCE40(int arg0, char** arg1, int* arg2, char* arg3)
 {
     int sp10[90];
 
@@ -453,7 +453,7 @@ void func_800FCE40(int arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
 
-void func_800FD084(int* arg0, char** arg1, int* arg2, D_800F4E8C_t* arg3)
+void func_800FD084(int* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_armorInfo sp10;
 

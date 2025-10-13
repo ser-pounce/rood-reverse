@@ -206,7 +206,7 @@ static void _drawGemInfo(vs_battle_equipment* gem)
 }
 
 static void _initBladeInfo(
-    vs_battle_equipment* blade, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_equipment* blade, char** arg1, int* arg2 __attribute__((unused)))
 {
     vs_battle_stringContext[19] = vs_mainMenu_itemNames[blade->material + 253];
     vs_battle_stringContext[18]
@@ -224,7 +224,7 @@ static void _initBladeInfo(
 }
 
 static void _initGripInfo(
-    vs_battle_equipment* grip, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_equipment* grip, char** arg1, int* arg2 __attribute__((unused)))
 {
     u_short* gripId = &grip->id;
     D_800F51A4 = &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category
@@ -236,10 +236,10 @@ static void _initGripInfo(
 }
 
 static void _initGemInfo(
-    vs_battle_equipment* gem, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_equipment* gem, char** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(D_800F4E8C,
-        &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 0x8C]], sizeof *D_800F4E8C);
+    vs_battle_memcpy(
+        D_800F4E8C, &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 0x8C]], 0x60);
     arg1[1] = D_800F4E8C;
 }
 
@@ -259,18 +259,18 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
         sp10[0] = (char*)weapon;
         break;
     case 1:
-        _initBladeInfo(&weapon->blade, (D_800F4E8C_t**)sp10, &sp18);
+        _initBladeInfo(&weapon->blade, (char**)sp10, &sp18);
         _drawBladeInfo(weapon);
         break;
     case 2:
-        _initGripInfo(&weapon->grip, (D_800F4E8C_t**)sp10, &sp18);
+        _initGripInfo(&weapon->grip, (char**)sp10, &sp18);
         _drawGripInfo(&weapon->grip);
         break;
     case 3:
     case 4:
     case 5:
         if (weapon->gems[row - 3].id != 0) {
-            _initGemInfo(&weapon->gems[row - 3], (D_800F4E8C_t**)sp10, &sp18);
+            _initGemInfo(&weapon->gems[row - 3], (char**)sp10, &sp18);
             _drawGemInfo(&weapon->gems[row - 3]);
         } else {
             func_800FC268(8);
@@ -295,7 +295,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
 
     } else if (row < 4) {
         if (shield->gems[row - 1].id != 0) {
-            _initGemInfo(&shield->gems[row - 1], (D_800F4E8C_t**)&sp10, &sp18);
+            _initGemInfo(&shield->gems[row - 1], (char**)&sp10, &sp18);
             _drawGemInfo(&shield->gems[row - 1]);
         } else {
             func_800FC268(8);
@@ -1493,7 +1493,7 @@ static int func_80105970(int arg0)
 {
     char* rowText[18];
     int rowType[9];
-    D_800F4E8C_t sp80[9];
+    char sp80[9][96];
     int sp3E0[9];
     int sp408;
     int sp40C;
@@ -1525,11 +1525,11 @@ static int func_80105970(int arg0)
             rowType[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
-            func_800FC85C(&temp_s6->weapon, (char**)rowText, rowType, sp80);
+            func_800FC85C(&temp_s6->weapon, rowText, rowType, sp80[0]);
             rowText[0] = (char*)&temp_s6->weapon.unk0;
         }
         if (temp_s6->shield.unk18.id != 0) {
-            func_800FCCE8(&temp_s6->shield, (char**)&rowText[2], rowType + 1, sp80 + 1);
+            func_800FCCE8(&temp_s6->shield, &rowText[2], rowType + 1, sp80[1]);
         }
 
         temp_s5 = (((temp_s6->unk954 >> 0x11) ^ 1) & 1 & (_selectedActor != 1));
@@ -1543,13 +1543,12 @@ static int func_80105970(int arg0)
             sp410 = temp_s5 | 0xF400;
             if ((i - 2) < sp40C) {
                 if (var_fp->unk20.unk0.id != 0) {
-                    func_800FCECC(
-                        &var_fp->unk20, (char**)&rowText[i * 2], &rowType[i], sp80 + i);
+                    func_800FCECC(&var_fp->unk20, &rowText[i * 2], &rowType[i], sp80[i]);
                 }
                 rowType[i] |= (((char)var_fp->nameIndex + 0x67) << 9) + temp_s5;
             } else {
                 func_8006BADC(p, &temp_s6->accessory);
-                func_800FD084(p, (char**)&rowText[i * 2], &rowType[i], sp80 + i);
+                func_800FD084(p, &rowText[i * 2], &rowType[i], sp80[i]);
                 rowType[i] |= sp410;
             }
         }
@@ -1781,7 +1780,7 @@ static void func_80106308(void)
         = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationState(temp_a0)
             + VS_status_INDEX_critical]];
     func_800C685C(D_800F4E8C, (char*)&_statusStrings[VS_status_OFFSET_values]);
-    vs_mainmenu_setMessage(&D_800F4E8C->unk0);
+    vs_mainmenu_setMessage(D_800F4E8C);
     func_801045B8(_selectedRegion + 1);
 }
 

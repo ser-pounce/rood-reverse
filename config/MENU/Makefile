@@ -17,4 +17,4 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.etc.vsString_yamlToDataFixed $< $@ 24
 
-all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG ITEMNAME MENU12)
+all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG ITEMNAME ITEMHELP MENU12)

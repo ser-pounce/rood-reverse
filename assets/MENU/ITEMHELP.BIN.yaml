@@ -1,891 +1,679 @@
-line0: A good dagger for the novice.
-line1: A good knife for both combat and daily use.
-line2: A good, sturdy knife you can depend on.
-line3: A finely honed throwing knife.
-line4: A dagger with a curved blade.
-line5: A dagger with a beautifully etched blade.
-line6: An exotic dagger with a wavy blade.
-line7: A small, hatchet-shaped dagger.
-line8: A knife with a heavy, curved blade.
-line9: A battle knife with a flat, thin blade.
-line10: A stabbing dagger with a thin, sharp blade.
-line11: An exotic dagger with three blades in one hilt.
-line12: A sword with a wide blade.
-line13: A sword with a wide, curved blade.
-line14: A thin sword preferred by the Crimson Blades.
-line15: A wide-bladed sword for close-quarters combat.
-line16: An exotic sword with a long, sharp blade.
-line17: A sword with a single-edged, curved blade.
-line18: A short sword made for slashing.
-line19: An exotic sword with a twisted S-shaped blade.
-line20: A heavy sword that widens at its tip.
-line21: A sword with a single-edged, curved blade.
-line22: A sword forged by craftsmen of the Orient.
-line23: A very long, heavy sword.
-line24: A broad-bladed sword used by the Kingsguard.
-line25: A heavy sword used by the norsemen.
-line26: A well-known slashing sword of the Orient.
-line27: A blunt-tipped sword used for executions.
-line28: A 2-handed sword with quillions facing its tip.
-line29: A rare, long, single-edged sword.
-line30: A long, doubled-bladed great sword.
-line31: A great sword crafted in the Orient.
-line32: A heavy sword engraved with sacred spells.
-line33: A ceremonial sword shaped after the Iocus Rood.
-line34: A lightweight axe used to cut wood.
-line35: An axe with a blade strong enough to cut Hagane.
-line36: A throwing axe used by a clan of barbarians.
-line37: A battle axe with a thick, rounded blade.
-line38: A heavy throwing axe, used like a scythe.
-line39: An exotic axe with a crescent blade.
-line40: A wide-bladed axe with a piercing tip.
-line41: A wide-bladed axe with a small secondary blade.
-line42: A club preferred by goblins.
-line43: A mace with many spikes nailed to its head.
-line44: A mace with a heavy metal ball at its tip.
-line45: A lightweight mace with spikes.
-line46: A mace with a spiked iron ball at its head.
-line47: A hammer designed for battle.
-line48: A battle hammer with a sharp pick at its tip.
-line49: An immensely heavy hammer.
-line50: An axe with a long, narrow blade.
-line51: A sizable battle axe with a heavy blade.
-line52: An axe with a sword-length blade.
-line53: A heavy axe with a detachable blade.
-line54: An axe with blades on both sides of the haft.
-line55: A polearm that can slash and pierce.
-line56: A staff used by ancient Kildean sorcerers.
-line57: A staff with the holy rood at its tip.
-line58: A ceremonial staff encrusted with gems.
-line59: Rod with a talisman for contacting deities.
-line60: A ceremonial staff used by Iocus priests of old.
-line61: A staff used by ancient Kildean sages.
-line62: A hefty mace with a large iron head at its tip.
-line63: A mace with an armor-piercing blade.
-line64: A long haft with a hefty ball at the end.
-line65: A heavy hammer made to crush armor.
-line66: A battle pick for crushing armored knights.
-line67: A giant mace with a triangular iron head.
-line68: A battle club used by ogres.
-line69: A mace to beat back the Dark.
-line70: A basic spear with a leaf-shaped edge.
-line71: A long haft with a butcher knife on the end.
-line72: A spear with a piercing tip & detachable blade.
-line73: A polearm with two sharp, stabbing spikes.
-line74: A forked polearm with three tines.
-line75: A long haft topped with a sharp spike.
-line76: A spear with a wide blade and flukes.
-line77: A ceremonial spear effective in actual combat.
-line78: A polearm with a sharply spiked blade.
-line79: A pike with a crescent-shaped axe blade.
-line80: Similar to a voulge but with a bigger blade.
-line81: A polearm with a long sword-like blade.
-line82: A crossbow with improved drawing mechanism.
-line83: A lightweight, automatic crossbow.
-line84: A crossbow firing rocks and iron pellets.
-line85: Crossbow delivering heavy firepower.
-line86: An improved version of the Target Bow.
-line87: An automatic crossbow for improved speed.
-line88: A crossbow firing small cannonballs.
-line89: A powerful bow designed to pierce heavy armor.
-line90: A wooden grip wrapped with leather.
-line91: A grip with a metal guard for the finger.
-line92: A grip with a cross-shaped guard.
-line93: A hooded grip to protect the hands.
-line94: A grip with a small blade to counterattack.
-line95: A grip covered with ringlets for protection.
-line96: A grip with rings for each finger.
-line97: A lightweight haft used by assassins.
-line98: A grip engraved with ancient Kildean script.
-line99: A lightweight grip made of wood.
-line100: A wooden handle coated in resin for better grip.
-line101: A wooden haft with metal covering.
-line102: A grip made of the lightweight Sarissa wood.
-line103: A ceremonial haft with finely-carved details.
-line104: A powerful haft made of Hagane.
-line105: An iron haft made for ceremonial use.
-line106: A metal grip that is as light as a wooden one.
-line107: A grip made especially for sorcerers.
-line108: The most powerful haft made of damascus.
-line109: A lightweight haft made of wood.
-line110: A powerful haft made of Hagane.
-line111: A haft with small blades to widen the wound.
-line112: Cross-shaped haft to improve puncture damage.
-line113: A lightweight haft made of metal.
-line114: A haft engraved with a spiral pattern.
-line115: A wooden bolt with an iron arrowhead.
-line116: A bolt made of strengthened Hagane.
-line117: A heavy bolt notable for its thick shaft.
-line118: A bolt with a sharply hooked arrowhead.
-line119: A stone projectile with poor penetration.
-line120: A Hagane projectile, effective vs. light armor.
-line121: Feldspar imbued with the dark powers of Talos.
-Increases the power of direct attacks.
-line122: Malachite with a Titan's soul bound inside.
-Increases the power of direct attacks.
-line123: Topaz imbued with the power of the Sylphs.
-Slightly increases air affinity.
-line124: Amber imbued with the power of Djinn.
-Increases air affinity.
-line125: Ruby imbued with the power of the Salamanders.
-Slightly increases fire affinity.
-line126: Carnelian imbued with the power of Ifrit.
-Increases fire affinity.
-line127: Emerald imbued with the power of the Gnomes.
-Slightly increases earth affinity.
-line128: Moonstone imbued with the power of Dao.
-Increases earth affinity.
-line129: Jasper imbued with the power of the Undines.
-Slightly increases water affinity.
-line130: Aquamarine imbued with the power of Marid.
-Increases water affinity.
-line131: Pearl imbued with the power of the angels.
-Slightly increases light affinity.
-line132: Diamond with a seraph's soul bound inside.
-Increases light affinity.
-line133: Jet stone sealed with Morlock's magical power.
-Slightly increases dark affinity.
-line134: Blackpearl with Berial's soul bound inside.
-Increases dark affinity.
-line135: Star sapphire with the power of Haeralis the
-Brave. Slightly increases power against humans.
-line136: Actinolite containing a fragment of Orlandu's
-skeleton. Increases power against humans.
-line137: Black coral holding the hair of Orion the Beast.
-Slightly increases power against beasts.
-line138: Amethyst containing Ogmius the Guardian's soul.
-Increases power against beasts.
-line139: Lazurite containing St.Iocus's prayer.
-Slightly increases power against undead.
-line140: Chiastrite containing the ashes of Balvus.
-Increases power against undead.
-line141: Jade containing the Nordic holy spirits.
-Slightly increases power against phantoms.
-line142: Armandine holding Beowulf the Great's hair.
-Increases power against phantoms.
-line143: Serpentine containing a dragon's power.
-Slightly increases power against dragons.
-line144: Fire agate with the soul of Sigguld the Dragoon.
-Increases power against dragons.
-line145: Blood opal containing the blood of devils.
-Slightly increases power against evil enemies.
-line146: Garnet containing Altema the Fallen's spirit.
-Increases power against evil enemies.
-line147: An artificial malachite made by the ancient
-Kildeans, named after a legendary knight.
-line148: An artificial serpentine made by the ancient
-Kildeans, named after a legendary knight.
-line149: An artificial cat's eye made by the ancient
-Kildeans, named after a legendary knight.
-line150: An artificial amethyst made by the ancient
-Kildeans, named after a legendary knight.
-line151: An artificial moonstone made by the ancient
-Kildeans, named after a legendary knight.
-line152: An artificial topaz made by the ancient
-Kildeans, named after a legendary knight.
-line153: An artificial emerald made by the ancient
-Kildeans, named after a legendary knight.
-line154: An artificial ruby made by the ancient
-Kildeans, named after a legendary knight.
-line155: An artificial diamond made by the ancient
-Kildeans, named after a legendary king.
-line156: Increases the success rate of non-magical
-attacks by 20%. Must be equipped on a weapon.
-line157: Increases the success rate of magic by 20%.
-It must be equipped on a weapon.
-line158: Increases the chance to evade non-magical
-attacks by 20%. Must be equipped on a shield.
-line159: Increases the chance to evade magical attacks
-by 20%. It must be equipped on a shield.
-line160: Increases the chance to evade "STR-down" by 20%.
-It must be equipped on a shield.
-line161: Increases the chance to evade "INT-down" by 20%.
-It must be equipped on a shield.
-line162: Increases the chance to evade "AGL-down" by 20%.
-It must be equipped on a shield.
-line163: 
-line164: Increases the chance to evade "Silent" by 20%.
-It must be equipped on a shield.
-line165: Increases the chance to evade "Paralysis" by 20%.
-It must be equipped on a shield.
-line166: Increases the chance to evade "Poison" by 20%.
-It must be equipped on a shield.
-line167: Increases the chance to evade "Numbness" by 20%.
-It must be equipped on a shield.
-line168: 
-line169: 
-line170: 
-line171: 
-line172: 
-line173: 
-line174: 
-line175: 
-line176: 
-line177: 
-line178: 
-line179: 
-line180: 
-line181: 
-line182: 
-line183: Roots of an herb that restores strength.
-Restores 50 HP.
-line184: Bulbs of an herb that restores strength.
-Restores 100 HP.
-line185: Extract of an herb that restores strength.
-Restores 150 HP.
-line186: Potion made from an herb that restores strength.
-Restores all HP.
-line187: Roots of an herb that restores mental acuity.
-Recharges MP by 25 points.
-line188: Bulbs of an herb that restores mental acuity.
-Recharges MP by 50 points.
-line189: Extract of an herb that restores mental acuity.
-Recharges MP by 100 points.
-line190: Herbal potion that restores mental acuity.
-Recharges all MP.
-line191: Roots of an herb that restores concentration.
-Lowers RISK by 25 points.
-line192: Bulbs of an herb that restores concentration.
-Lowers RISK by 50 points.
-line193: Extract of an herb that restores concentration.
-Lowers RISK by 75 points.
-line194: Potion made from an herb that restores
-concentration. Clears all RISK.
-line195: Nostrum used by the acolytes in Leá Monde.
-Restores 100 HP and MP.
-line196: The nostrum that a high priest received from
-the heavens. Restores all HP and MP.
-line197: An experimental potion made by Valnain's
-alchemists. Restores 25 HP; lowers RISK by 25.
-line198: Reagent made by sorcerers in ancient times.
-Restores 50 HP; lowers RISK by 50 points.
-line199: Extract of Yggdrasil known to heal status
-abnormalities. Cures "Paralysis."
-line200: Made by the faerie king as a remedy for use in
-battle against serpents. Cures "Poison."
-line201: Pellets made from flower petals and dried
-yak livers. Cures "Numbness."
-line202: A talisman bearing the icon of St.Iocus.
-Cures "Curse."
-line203: Potion made with odd bits of herbs.
-Cures "Paralysis," "Poison," and "Numbness."
-line204: Potion of dried snowfly wings.
-Cancels magical effects cast on target.
-line205: Powder that faeries use to accelerate
-movement and improve jumps temporarily.
-line206: Elixir used by the first king of Valendia.
-Adds a few points of STR.
-line207: Elixir given to St.Iocus by the Seven Wisemen
-of Ologo. Adds a few points of INT.
-line208: Elixir used by the dragoons.
-Adds a few points of AGL.
-line209: Elixir given to soldiers by Leá Monde's
-monks in ancient times. Adds a few points of HP.
-line210: Elixir the mages of Leá Monde once used.
-Adds a few points of MP.
-line211: A Leá Monde red wine with a delicate, yet
-robust flavor.
-line212: The most elegant red wine, with a gentle flavor
-and bouquet.
-line213: A Leá Monde white wine known for its
-honey-like fragrance.
-line214: A Leá Monde quality sweet wine allowed
-to age to perfection.
-line215: A sparkling wine made from a blend of three
-grapes.
-line216: Temporarily enables Ashley to see
-traps set in the room.
-line217: 
-line218: You don't want to read the description
-for this item--believe me.
-line219: You don't want to read the description
-for this item--believe me.
-line220: You don't want to read the description
-for this item--believe me.
-line221: You don't want to read the description
-for this item--believe me.
-line222: You don't want to read the description
-for this item--believe me.
-line223: You don't want to read the description
-for this item--believe me.
-line224: You don't want to read the description
-for this item--believe me.
-line225: You don't want to read the description
-for this item--believe me.
-line226: You don't want to read the description
-for this item--believe me.
-line227: You don't want to read the description
-for this item--believe me.
-line228: You don't want to read the description
-for this item--believe me.
-line229: You don't want to read the description
-for this item--believe me.
-line230: You don't want to read the description
-for this item--believe me.
-line231: You don't want to read the description
-for this item--believe me.
-line232: You don't want to read the description
-for this item--believe me.
-line233: You don't want to read the description
-for this item--believe me.
-line234: You don't want to read the description
-for this item--believe me.
-line235: You don't want to read the description
-for this item--believe me.
-line236: You don't want to read the description
-for this item--believe me.
-line237: You don't want to read the description
-for this item--believe me.
-line238: You don't want to read the description
-for this item--believe me.
-line239: You don't want to read the description
-for this item--believe me.
-line240: You don't want to read the description
-for this item--believe me.
-line241: You don't want to read the description
-for this item--believe me.
-line242: You don't want to read the description
-for this item--believe me.
-line243: You don't want to read the description
-for this item--believe me.
-line244: You don't want to read the description
-for this item--believe me.
-line245: You don't want to read the description
-for this item--believe me.
-line246: Grimoire containing the spell "Solid Shock."
-Strikes enemies with an explosive shockwave.
-line247: Grimoire containing the spell "Lightning Bolt."
-Shoots out arrows of lightning.
-line248: Grimoire containing the spell "Fireball."
-Pummels enemies with balls of fire.
-line249: Grimoire containing the spell "Vulcan Lance."
-Showers enemies with volcanic debris.
-line250: Grimoire containing the spell "Aqua Blast."
-Engulfs enemies with freezing water blast.
-line251: Grimoire containing the spell "Spirit Surge."
-Summons a spirit of light to attack enemies.
-line252: Grimoire containing the spell "Dark Chant."
-Afflicts enemies with crippling pain.
-line253: Grimoire containing the spell "Exorcism."
-Exorcise undead foes.
-line254: Grimoire containing the spell "Banish."
-Forbidden spell of instant death.
-line255: Grimoire containing the spell "Explosion."
-A highly focused, devastating blast.
-line256: 
-line257: 
-line258: 
-line259: Grimoire containing the spell "Thunderburst."
-Calls down a great bolt from the heavens.
-line260: 
-line261: 
-line262: 
-line263: Grimoire containing the spell "Flame Sphere."
-Wreaths target in flames.
-line264: 
-line265: 
-line266: 
-line267: Grimoire containing the spell "Gaea Strike."
-Creates crushing gravity warp around target.
-line268: 
-line269: 
-line270: 
-line271: Grimoire containing the spell "Avalanche."
-Super-freezes air around target.
-line272: 
-line273: 
-line274: 
-line275: Grimoire containing the spell "Radial Surge."
-Pierces enemies with focused rays of light.
-line276: 
-line277: 
-line278: 
-line279: Grimoire containing the spell "Meteor."
-Rains meteors down on the target.
-line280: 
-line281: 
-line282: 
-line283: Grimoire containing the spell "Drain Heart."
-Steals HP from enemies.
-line284: Grimoire containing the spell "Drain Mind."
-Steals MP from enemies.
-line285: Grimoire containing the spell "Heal."
-Restores target's HP.
-line286: Grimoire containing the spell "Restoration."
-Cures "Paralysis."
-line287: Grimoire containing the spell "Antidote."
-Cures "Poison."
-line288: Grimoire containing the spell "Blessing."
-Cures "Curse."
-line289: Grimoire containing the spell "Clearance."
-Cures "Paralysis," "Poison," and "Numbness."
-line290: Grimoire containing the spell "Surging Balm."
-Recharges HP over a short period of time.
-line291: Grimoire containing the spell "Herakles."
-Temporarily increases target's strength.
-line292: Grimoire containing the spell "Degenerate."
-Temporarily decreases target's strength.
-line293: Grimoire containing the spell "Enlighten."
-Temporarily increases target's intelligence.
-line294: Grimoire containing the spell "Psychodrain."
-Temporarily decreases target's intelligence.
-line295: Grimoire containing the spell "Invigorate."
-Temporarily increases target's agility.
-line296: Grimoire containing the spell "Leadbones."
-Temporarily decreases target's agility.
-line297: Grimoire containing the spell "Prostasia."
-Temporarily raises target's equipment.
-line298: Grimoire containing the spell "Tarnish."
-Temporarily weakens target's equipment.
-line299: Grimoire containing the spell "Silence."
-Temporarily prevents target from casting spells.
-line300: Grimoire containing the spell "Magic Ward."
-Nullifies the next spell cast on target.
-line301: Grimoire containing the spell "Stun Cloud."
-Casts "Paralysis" on target.
-line302: Grimoire containing the spell "Poison Mist."
-Casts "Poison" on target.
-line303: Grimoire containing the spell "Curse."
-Casts "Curse" on target.
-line304: Grimoire containing the spell "Fixate."
-Stops the room's Cloudstones from moving.
-line305: Grimoire containing the spell "Dispel."
-Nullifies any spell currently affecting target.
-line306: Grimoire containing the spell "Unlock."
-Opens treasure chests locked with magic.
-line307: Grimoire containing the spell "Eureka."
-Reveals all traps in the room.
-line308: Grimoire containing the spell "Analysis."
-Analyzes enemies' parameters and stats.
-line309: Grimoire containing the spell "Luft Fusion."
-Temporarily raises weapon's air affinity.
-line310: Grimoire containing the spell "Spark Fusion."
-Temporarily raises weapon's fire affinity.
-line311: Grimoire containing the spell "Soil Fusion."
-Temporarily raises weapon's earth affinity.
-line312: Grimoire containing the spell "Frost Fusion."
-Temporarily raises weapon's water affinity.
-line313: Grimoire containing the spell "Aero Guard."
-Temporarily raises armor's air affinity.
-line314: Grimoire containing the spell "Pyro Guard."
-Temporarily raises armor's fire affinity.
-line315: Grimoire containing the spell "Terra Guard."
-Temporarily raises armor's earth affinity.
-line316: Grimoire containing the spell "Aqua Guard."
-Temporarily raises armor's water affinity.
-line317: 
-line318: Opens doors locked with the Bronze Key.
-line319: Opens doors locked with the Iron Key.
-line320: Opens doors locked with the Silver Key.
-line321: Opens doors locked with the Gold Key.
-line322: Opens doors locked with the Platinum Key.
-line323: Opens doors locked with the Steel Key.
-line324: Opens doors locked with the Crimson Key.
-line325: Opens locked treasure chests.
-line326: Unseals a door in the Wine Cellar.
-line327: Unseals a door in the Catacombs.
-line328: Unseals a door in the Iron Maiden B1.
-line329: Unseals a door in the City Walls North.
-line330: Unseals a door in the Abandoned Mines B1.
-line331: Unseals a door in the Abandoned Mines B1.
-line332: Unseals a door in the Limestone Quarry.
-line333: Unseals a door in the Limestone Quarry.
-line334: Unseals a door in the Limestone Quarry.
-line335: Unseals a door in the Great Cathedral L3.
-line336: Unseals a door in the Great Cathedral L1.
-line337: Unseals a door in the Great Cathedral L2.
-line338: Unseals a door in the Great Cathedral L2.
-line339: Unseals a door in the Keep.
-line340: Unseals a door in the Keep.
-line341: Unseals a door in the Keep.
-line342: Unseals a door in the Keep.
-line343: Unseals a door in the Keep.
-line344: Unseals a door in the Keep.
-line345: Unseals a door in the Keep.
-line346: Unseals a door in the Keep.
-line347: Unseals a door in the Wine Cellar.
-line348: Unseals a door in Town Center East.
-line349: Unseals a door in Town Center South.
-line350: 
-line351: 
-line352: 
-line353: 
-line354: 
-line355: 
-line356: 
-line357: 
-line358: 
-line359: 
-line360: 
-line361: 
-line362: 
-line363: 
-line364: 
-line365: 
-line366: 
-line367: 
-line368: 
-line369: 
-line370: 
-line371: 
-line372: 
-line373: Warrior's 
-line374: Knightly 
-line375: Prestigious 
-line376: Brave 
-line377: Warlord's 
-line378: Champion's 
-line379: Glorious 
-line380: Legendary 
-line381: Supreme 
-line382: Divine 
-line383: Weapon
-line384: Weapon
-line385: Weapon
-line386: Weapon
-line387: Weapon
-line388: Weapon
-line389: Weapon
-line390: Weapon
-line391: Weapon
-line392: Armor
-line393: Armor
-line394: Armor
-line395: Armor
-line396: Armor
-line397: Armor
-line398: Armor
-line399: Dagger
-line400: Sword
-line401: Great Sword
-line402: Axe & Mace
-line403: Great Axe
-line404: Staff
-line405: Heavy Mace
-line406: Polearm
-line407: Crossbow
-line408: Bare Hands
-line409: Blunt
-line410: Edged
-line411: Piercing
-line412: One-
-line413: Two-
-line414: Damage Points. The meter decreases as the
-item is damaged.
-line415: Phantom Points. The meter increases as the
-item absorbs the Dark.
-line416: The item's level of strength against
-human/demihuman enemies.
-line417: The item's level of strength against
-beast enemies.
-line418: The item's level of strength against
-undead enemies.
-line419: The item's level of strength against
-phantom enemies.
-line420: The item's level of strength against
-dragon enemies.
-line421: The item's level of strength against
-evil enemies.
-line422: Physical attack and defense value.
-line423: Air affinity attack and defense value.
-line424: Fire affinity attack and defense value.
-line425: Earth affinity attack and defense value.
-line426: Water affinity attack and defense value.
-line427: Light affinity attack and defense value.
-line428: Dark affinity attack and defense value.
-line429: Blunt attack and defense value.
-line430: Edged attack and defense value.
-line431: Piercing attack and defense.
-line432: Weapon's range of attack.
-line433: RISK points added with each use of the weapon.
-line434: Strength level.
-Affects attack and defense power.
-line435: Intelligence level.
-Affects magic attacks and defense.
-line436: Agility level.
-Affects chance to hit and evade.
-line437: 
-line438: |>16|SORT
-line439: Sorts items by category.
-line440: |>16|MATERIAL
-line441: Sorts items by material: Wood/Leather/Bronze/
-Iron/Hagane/Silver/Damascus
-line442: |>16|RANGE
-line443: Sorts items by range of effect.
-line444: |>16|BLADE TYPE
-line445: Sorts in Blunt/Edged/Piercing order.
-line446: |>16|DP
-line447: Sorts by current DP in descending order.
-line448: |>16|MAX DP
-line449: Sorts by max DP in descending order.
-line450: |>16|PP
-line451: Sorts by current PP in descending order.
-line452: |>16|MAX PP
-line453: Sorts by max PP in descending order.
-line454: |>16|STR
-line455: Sorts by STR in descending order.
-line456: |>16|INT
-line457: Sorts by INT in descending order.
-line458: |>16|AGL
-line459: Sorts by AGL in descending order.
-line460: |>16|HUMAN
-line461: Sorts by effectiveness against human foes.
-line462: |>16|BEAST
-line463: Sorts by effectiveness against beasts.
-line464: |>16|UNDEAD
-line465: Sorts by effectiveness against undead foes.
-line466: |>16|PHANTOM
-line467: Sorts by effectiveness against phantoms.
-line468: |>16|DRAGON
-line469: Sorts by effectiveness against dragons.
-line470: |>16|EVIL
-line471: Sorts by effectiveness against evil foes.
-line472: |>16|PHYSICAL
-line473: Sorts by effectiveness of physical attacks.
-line474: |>16|AIR
-line475: Sorts by level of air affinity.
-line476: |>16|FIRE
-line477: Sorts by level of fire affinity.
-line478: |>16|EARTH
-line479: Sorts by level of earth affinity.
-line480: |>16|WATER
-line481: Sorts by level of water affinity.
-line482: |>16|LIGHT
-line483: Sorts by level of light affinity.
-line484: |>16|DARK
-line485: Sorts by level of dark affinity.
-line486: |>16|BLUNT
-line487: Sorts by effectiveness of blunt attacks.
-line488: |>16|EDGED
-line489: Sorts by effectiveness of edged attacks.
-line490: |>16|PIERCING
-line491: Sorts by effectiveness of piercing attacks.
-line492: |>16|HUMAN
-line493: Sorts by effectiveness against human foes.
-line494: |>16|BEAST
-line495: Sorts by effectiveness against beasts.
-line496: |>16|UNDEAD
-line497: Sorts by effectiveness against undead foes.
-line498: |>16|PHANTOM
-line499: Sorts by effectiveness against phantoms.
-line500: |>16|DRAGON
-line501: Sorts by effectiveness against dragons.
-line502: |>16|EVIL
-line503: Sorts by effectiveness against evil foes.
-line504: |>16|PHYSICAL
-line505: Sorts by defense level of physical attacks.
-line506: |>16|AIR
-line507: Sorts by defense level of air affinity.
-line508: |>16|FIRE
-line509: Sorts by defense level of fire affinity.
-line510: |>16|EARTH
-line511: Sorts by defense level of earth affinity.
-line512: |>16|WATER
-line513: Sorts by defense level of water affinity.
-line514: |>16|LIGHT
-line515: Sorts by defense level of light affinity.
-line516: |>16|DARK
-line517: Sorts by defense level of dark affinity.
-line518: |>16|BLUNT
-line519: Sorts by effectiveness of blunt attacks.
-line520: |>16|EDGED
-line521: Sorts by effectiveness of edged attacks.
-line522: |>16|PIERCING
-line523: Sorts by effectiveness of piercing attacks.
-line524: |>16|HUMAN
-line525: Sorts by effectiveness against human foes.
-line526: |>16|BEAST
-line527: Sorts by effectiveness against beasts.
-line528: |>16|UNDEAD
-line529: Sorts by effectiveness against undead foes.
-line530: |>16|PHANTOM
-line531: Sorts by effectiveness against phantoms.
-line532: |>16|DRAGON
-line533: Sorts by effectiveness against dragons.
-line534: |>16|EVIL
-line535: Sorts by effectiveness against evil foes.
-line536: |>16|PHYSICAL
-line537: Sorts by effectiveness against physical attacks.
-line538: |>16|AIR
-line539: Sorts by level of air affinity.
-line540: |>16|FIRE
-line541: Sorts by level of fire affinity.
-line542: |>16|EARTH
-line543: Sorts by level of earth affinity.
-line544: |>16|WATER
-line545: Sorts by level of water affinity.
-line546: |>16|LIGHT
-line547: Sorts by level of light affinity.
-line548: |>16|DARK
-line549: Sorts by level of dark affinity.
-line550: |>16|QUANTITY
-line551: Sorts by item quantity.
-line552: |>16|YES
-line553: |>16|NO
-line554: Discard this item?
-line555: How many of the item do you wish to discard?
-line556: Discard the entire stock of this item?
-line557: Repair this item?
-line558: Weapon
-line559: Weapon
-line560: Weapon
-line561: Weapon
-line562: Weapon
-line563: Weapon
-line564: Weapon
-line565: Weapon
-line566: Weapon
-line567: Weapon
-line568: Weapon
-line569: Weapon
-line570: Weapon
-line571: Weapon
-line572: Weapon
-line573: Weapon
-line574: Weapon
-line575: Weapon
-line576: Weapon
-line577: Weapon
-line578: Weapon
-line579: Weapon
-line580: Weapon
-line581: Weapon
-line582: Weapon
-line583: Weapon
-line584: Armor
-line585: Armor
-line586: Armor
-line587: Armor
-line588: Armor
-line589: Armor
-line590: Armor
-line591: Armor
-line592: Armor
-line593: Armor
-line594: Armor
-line595: Armor
-line596: Armor
-line597: Armor
-line598: Armor
-line599: Armor
-line600: Armor
-line601: Armor
-line602: Armor
-line603: Armor
-line604: Armor
-line605: Armor
-line606: Armor
-line607: Armor
-line608: Armor
-line609: Armor
-line610: Necklace with the rood of the Iocus
-priesthood. Once owned by Tia.
-line611: Silver earrings engraved with ancient
-Kildean lettering.
-line612: Necklace with a lion's head motif.
-line613: Claws of iron worn by Rinomy, the ancient
-Kildean tactician.
-line614: Ring imbued with the essence
-of a sylph air spirit.
-line615: Nose-ring that is said to have been owned by
-Marduk, the storm deity.
-line616: Ring imbued with the essence
-of a salamander fire spirit.
-line617: Tongue stud favored by the fire god Tamulis.
-line618: Bracelet imbued with an earth spirit.
-line619: White gold ring adorned with the wings of
-the earth deity, Palolo.
-line620: Arm bracelet imbued with the essence
-of an undine water spirit.
-line621: Delicate ring used by the sea spirit, Talia,
-to pacify the Kraken.
-line622: Balm used by the great knight Agrias
-as told in the Zodiac Brave Story.
-line623: Silver ring with rose and snake motif, symbol
-of the love and fertility goddess, Kadesh.
-line624: Choker imbued with evil, made by the alchemist
-Agrippa. Said to now imprison Agrippa's soul.
-line625: Earring favored by the famed beauty Diadra,
-who was fated to bring sadness and ruin.
-line626: Ring worn by the Titans of legend, large
-enough to be used as a bracelet by mortals.
-line627: Armlet of might worn by the legendary queen
-of the Titans, Lau Fei.
-line628: Brooch a poor craftsman made for his wife.
-Lauded for its quality after his death.
-line629: Earring made in ancient times to talk with
-the Pegasi drawing the chariot "Pushpaka."
-line630: Earring possessed by a demon-wight, worn by the
-great necromancer Edgar.
-line631: Decorative leather choker with a
-pendant in the shape of a cross.
-line632: Armlet imbued with the vain ambition of those
-whose names the storytellers do not sing.
-line633: Anklet worn by Müllenkamp, a dancer, and the
-head priestess of ancient Kiltia.
-line634: Talisman made from dragon skull.
-A aids slightly in battles against dragons.
-line635: Necklace bearing a crystal, Faufnir's Tear,
-wept from the dragon's eye when it died.
-line636: Necklace forged to torment Agales, the duke of
-the underworld, by the great sage Solomon.
-line637: Ring bearing one of the 47 scattered shards of
-the great devil Balam, guardian of knowledge.
-line638: Coif worn by the water nymph Nimje in the
-tales of the old land.
-line639: Nails worn by the evil sorceress Morrighan
-in the tales of the old land.
-line640: Ring worn by the sage Marlene, said to prove
-her half-devil, half-human blood.
-line641: Grip for Daggers/Swords/Great Swords.
-line642: Grip for Axes/Maces/Staves.
-line643: Grip for Polearms.
-line644: Bolt for Crossbows.
-line645: Shield
-line646: Helm
-line647: Breast Armor
-line648: Leggings
-line649: Glove
-line650: You have no items in this category.
-line651: Class: |$0||$1|
-line652: 
-|$9| |$8|(|$7|/|$6|Handed)
-line653: 
-|$5|
-line654: 
-|$9| |$8|
-line655: NONE
-line656: No gem attached.
-line657: Ends setup.
-line658: Weapon attack strength.
-Increases physical weapon damage.
-line659: Magic attack strength.
-Increases magic potency.
-line660: Speed attribute based on weight.
-Increases chance to hit and evade attacks.
-line661: Defense strength.
-Increases resistance to physical attacks.
-line662: Magic defense strength.
-Increases resistance to magical attacks.
-line663: Speed attribute based on weight.
-Increases chance to hit and evade attacks.
-line664: You cannot discard equipped items.
-line665: You cannot individually discard items
-that are part of a set.
-line666: You cannot discard this item.
-line667: |>16|USE
-line668: Use an item.
-line669: |>16|SEARCH
-line670: Finds the weapon or shield to which this
-item is attached.
-line671: |>16|DISCARD
-line672: Discard an item.
-You can discard multiples of misc. items.
-line673: |>16|DISCARD ALL
-line674: Discard all of the selected items.
-line675: |>16|SORT
-line676: Arranges items by various criteria.
-Sorting criteria vary by category of item.
-line677: This item is not part of a set,
-and thus cannot be searched.
-line678: You cannot use this item.
+line0:
+line1:
+line2:
+line3:
+line4:
+line5:
+line6:
+line7:
+line8:
+line9:
+line10:
+line11:
+line12:
+line13:
+line14:
+line15:
+line16:
+line17:
+line18:
+line19:
+line20:
+line21:
+line22:
+line23:
+line24:
+line25:
+line26:
+line27:
+line28:
+line29:
+line30:
+line31:
+line32:
+line33:
+line34:
+line35:
+line36:
+line37:
+line38:
+line39:
+line40:
+line41:
+line42:
+line43:
+line44:
+line45:
+line46:
+line47:
+line48:
+line49:
+line50:
+line51:
+line52:
+line53:
+line54:
+line55:
+line56:
+line57:
+line58:
+line59:
+line60:
+line61:
+line62:
+line63:
+line64:
+line65:
+line66:
+line67:
+line68:
+line69:
+line70:
+line71:
+line72:
+line73:
+line74:
+line75:
+line76:
+line77:
+line78:
+line79:
+line80:
+line81:
+line82:
+line83:
+line84:
+line85:
+line86:
+line87:
+line88:
+line89:
+line90:
+line91:
+line92:
+line93:
+line94:
+line95:
+line96:
+line97:
+line98:
+line99:
+line100:
+line101:
+line102:
+line103:
+line104:
+line105:
+line106:
+line107:
+line108:
+line109:
+line110:
+line111:
+line112:
+line113:
+line114:
+line115:
+line116:
+line117:
+line118:
+line119:
+line120:
+line121:
+line122:
+line123:
+line124:
+line125:
+line126:
+line127:
+line128:
+line129:
+line130:
+line131:
+line132:
+line133:
+line134:
+line135:
+line136:
+line137:
+line138:
+line139:
+line140:
+line141:
+line142:
+line143:
+line144:
+line145:
+line146:
+line147:
+line148:
+line149:
+line150:
+line151:
+line152:
+line153:
+line154:
+line155:
+line156:
+line157:
+line158:
+line159:
+line160:
+line161:
+line162:
+line163:
+line164:
+line165:
+line166:
+line167:
+line168:
+line169:
+line170:
+line171:
+line172:
+line173:
+line174:
+line175:
+line176:
+line177:
+line178:
+line179:
+line180:
+line181:
+line182:
+line183:
+line184:
+line185:
+line186:
+line187:
+line188:
+line189:
+line190:
+line191:
+line192:
+line193:
+line194:
+line195:
+line196:
+line197:
+line198:
+line199:
+line200:
+line201:
+line202:
+line203:
+line204:
+line205:
+line206:
+line207:
+line208:
+line209:
+line210:
+line211:
+line212:
+line213:
+line214:
+line215:
+line216:
+line217:
+line218:
+line219:
+line220:
+line221:
+line222:
+line223:
+line224:
+line225:
+line226:
+line227:
+line228:
+line229:
+line230:
+line231:
+line232:
+line233:
+line234:
+line235:
+line236:
+line237:
+line238:
+line239:
+line240:
+line241:
+line242:
+line243:
+line244:
+line245:
+line246:
+line247:
+line248:
+line249:
+line250:
+line251:
+line252:
+line253:
+line254:
+line255:
+line256:
+line257:
+line258:
+line259:
+line260:
+line261:
+line262:
+line263:
+line264:
+line265:
+line266:
+line267:
+line268:
+line269:
+line270:
+line271:
+line272:
+line273:
+line274:
+line275:
+line276:
+line277:
+line278:
+line279:
+line280:
+line281:
+line282:
+line283:
+line284:
+line285:
+line286:
+line287:
+line288:
+line289:
+line290:
+line291:
+line292:
+line293:
+line294:
+line295:
+line296:
+line297:
+line298:
+line299:
+line300:
+line301:
+line302:
+line303:
+line304:
+line305:
+line306:
+line307:
+line308:
+line309:
+line310:
+line311:
+line312:
+line313:
+line314:
+line315:
+line316:
+line317:
+line318:
+line319:
+line320:
+line321:
+line322:
+line323:
+line324:
+line325:
+line326:
+line327:
+line328:
+line329:
+line330:
+line331:
+line332:
+line333:
+line334:
+line335:
+line336:
+line337:
+line338:
+line339:
+line340:
+line341:
+line342:
+line343:
+line344:
+line345:
+line346:
+line347:
+line348:
+line349:
+line350:
+line351:
+line352:
+line353:
+line354:
+line355:
+line356:
+line357:
+line358:
+line359:
+line360:
+line361:
+line362:
+line363:
+line364:
+line365:
+line366:
+line367:
+line368:
+line369:
+line370:
+line371:
+line372:
+line373:
+line374:
+line375:
+line376:
+line377:
+line378:
+line379:
+line380:
+line381:
+line382:
+line383:
+line384:
+line385:
+line386:
+line387:
+line388:
+line389:
+line390:
+line391:
+line392:
+line393:
+line394:
+line395:
+line396:
+line397:
+line398:
+line399:
+line400:
+line401:
+line402:
+line403:
+line404:
+line405:
+line406:
+line407:
+line408:
+line409:
+line410:
+line411:
+line412:
+line413:
+line414:
+line415:
+line416:
+line417:
+line418:
+line419:
+line420:
+line421:
+line422:
+line423:
+line424:
+line425:
+line426:
+line427:
+line428:
+line429:
+line430:
+line431:
+line432:
+line433:
+line434:
+line435:
+line436:
+line437:
+line438:
+line439:
+line440:
+line441:
+line442:
+line443:
+line444:
+line445:
+line446:
+line447:
+line448:
+line449:
+line450:
+line451:
+line452:
+line453:
+line454:
+line455:
+line456:
+line457:
+line458:
+line459:
+line460:
+line461:
+line462:
+line463:
+line464:
+line465:
+line466:
+line467:
+line468:
+line469:
+line470:
+line471:
+line472:
+line473:
+line474:
+line475:
+line476:
+line477:
+line478:
+line479:
+line480:
+line481:
+line482:
+line483:
+line484:
+line485:
+line486:
+line487:
+line488:
+line489:
+line490:
+line491:
+line492:
+line493:
+line494:
+line495:
+line496:
+line497:
+line498:
+line499:
+line500:
+line501:
+line502:
+line503:
+line504:
+line505:
+line506:
+line507:
+line508:
+line509:
+line510:
+line511:
+line512:
+line513:
+line514:
+line515:
+line516:
+line517:
+line518:
+line519:
+line520:
+line521:
+line522:
+line523:
+line524:
+line525:
+line526:
+line527:
+line528:
+line529:
+line530:
+line531:
+line532:
+line533:
+line534:
+line535:
+line536:
+line537:
+line538:
+line539:
+line540:
+line541:
+line542:
+line543:
+line544:
+line545:
+line546:
+line547:
+line548:
+line549:
+line550:
+line551:
+line552:
+line553:
+line554:
+line555:
+line556:
+line557:
+line558:
+line559:
+line560:
+line561:
+line562:
+line563:
+line564:
+line565:
+line566:
+line567:
+line568:
+line569:
+line570:
+line571:
+line572:
+line573:
+line574:
+line575:
+line576:
+line577:
+line578:
+line579:
+line580:
+line581:
+line582:
+line583:
+line584:
+line585:
+line586:
+line587:
+line588:
+line589:
+line590:
+line591:
+line592:
+line593:
+line594:
+line595:
+line596:
+line597:
+line598:
+line599:
+line600:
+line601:
+line602:
+line603:
+line604:
+line605:
+line606:
+line607:
+line608:
+line609:
+line610:
+line611:
+line612:
+line613:
+line614:
+line615:
+line616:
+line617:
+line618:
+line619:
+line620:
+line621:
+line622:
+line623:
+line624:
+line625:
+line626:
+line627:
+line628:
+line629:
+line630:
+line631:
+line632:
+line633:
+line634:
+line635:
+line636:
+line637:
+line638:
+line639:
+line640:
+line641:
+line642:
+line643:
+line644:
+line645:
+line646:
+line647:
+line648:
+line649:
+line650:
+line651:
+line652:
+line653:
+line654:
+line655:
+line656:
+line657:
+line658:
+line659:
+line660:
+line661:
+line662:
+line663:
+line664:
+line665:
+line666:
+line667:
+line668:
+line669:
+line670:
+line671:
+line672:
+line673:
+line674:
+line675:
+line676:
+line677:
+line678:

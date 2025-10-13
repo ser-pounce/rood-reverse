@@ -12,6 +12,7 @@
 #include <libetc.h>
 #include "gpu.h"
 #include "../../assets/MENU/MENU4.PRG/status.h"
+#include "../../assets/MENU/ITEMHELP.BIN.h"
 
 typedef struct {
     int unk0[8];
@@ -209,37 +210,36 @@ static void _initBladeInfo(
 {
     vs_battle_stringContext[19] = vs_mainMenu_itemNames[blade->material + 253];
     vs_battle_stringContext[18]
-        = (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category + 0x18E]]);
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
+            + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
     vs_battle_stringContext[17]
-        = (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType + 0x198]]);
-    vs_battle_stringContext[16]
-        = (char*)(&vs_mainMenu_itemHelp
-                      [vs_mainMenu_itemHelp[D_80102140[blade->category - 1] + 0x19C]]);
-    func_800C685C(
-        func_800C685C(D_800F4E8C,
-            (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(*((u_short*)blade))
-                - 1]])),
-        (char*)(vs_mainMenu_itemHelp + 0x33FB));
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType
+            + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
+    vs_battle_stringContext[16] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [D_80102140[blade->category - 1] + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+    func_800C685C(func_800C685C(D_800F4E8C,
+                      (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->id - 1]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
     arg1[1] = D_800F4E8C;
 }
 
 static void _initGripInfo(
     vs_battle_equipment* grip, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    u_short* new_var2 = &grip->id;
-    D_800F51A4 = &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category + 0x280]];
-    func_800C685C(
-        func_800C685C(D_800F4E8C,
-            (char*)(&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*new_var2 - 6]])),
-        (char*)(vs_mainMenu_itemHelp + 0x3405));
+    u_short* gripId = &grip->id;
+    D_800F51A4 = &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category
+        + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
+    func_800C685C(func_800C685C(D_800F4E8C,
+                      (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*gripId - 6]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_gripTemplate]);
     arg1[1] = D_800F4E8C;
 }
 
 static void _initGemInfo(
     vs_battle_equipment* gem, D_800F4E8C_t** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_memcpy(
-        D_800F4E8C, vs_mainMenu_itemHelp + vs_mainMenu_itemHelp[gem->id - 0x8C], 0x60);
+    vs_battle_memcpy(D_800F4E8C,
+        &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 0x8C]], sizeof *D_800F4E8C);
     arg1[1] = D_800F4E8C;
 }
 

@@ -1,21 +1,3 @@
-
-#!/usr/bin/env python3
-"""
-Dump fixed-length strings from a binary file using the project's decode() function.
-
-This script is a minimal sibling of dumpStringTable.py. It reads the file from
-offset 0 and splits it into records of `length` bytes, decodes each record
-using tools.etc.vsString.decode, and prints them. An optional third argument
-`debug` enables a debug-style output similar to the original script.
-
-Usage:
-  dumpFixedLenStrings.py <binary_file> <length> [debug]
-
-Examples:
-  ./dumpFixedLenStrings.py data.bin 32
-  ./dumpFixedLenStrings.py data.bin 24 debug
-"""
-
 import sys
 from pathlib import Path
 from tools.etc.vsString import decode
@@ -51,7 +33,6 @@ def main():
             if not chunk:
                 break
 
-            # Use the project's decode function directly (same behavior as dumpStringTable.py)
             decoded = decode(chunk)
 
             if debug_mode:

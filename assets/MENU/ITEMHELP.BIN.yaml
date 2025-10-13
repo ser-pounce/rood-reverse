@@ -397,7 +397,7 @@ line395:
 line396:
 line397:
 line398:
-line399:
+dagger:
 line400:
 line401:
 line402:
@@ -407,10 +407,10 @@ line405:
 line406:
 line407:
 line408:
-line409:
+blunt:
 line410:
 line411:
-line412:
+oneHanded:
 line413:
 line414:
 line415:
@@ -639,10 +639,10 @@ line637:
 line638:
 line639:
 line640:
-line641:
-line642:
-line643:
-line644:
+shortGrip:
+longGrip:
+polearmGrip:
+crossbowGrip:
 line645:
 line646:
 line647:
@@ -650,8 +650,8 @@ line648:
 line649:
 line650:
 line651:
-line652:
-line653:
+weaponDescTemplate:
+gripTemplate:
 line654:
 line655:
 line656:

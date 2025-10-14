@@ -68,13 +68,7 @@ typedef struct {
 } vs_battle_equipment;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    u_short unkC;
-    u_short unkE;
-    int unk10;
-    int unk14;
+    char name[24];
     vs_battle_equipment blade;
     vs_battle_equipment grip;
     vs_battle_equipment gems[3];
@@ -105,7 +99,7 @@ typedef struct {
 
 typedef struct {
     int unk0[6];
-    vs_battle_equipment unk18;
+    vs_battle_equipment shield;
     vs_battle_equipment gems[3];
     u_short unkD8;
     u_char unkDA;
@@ -127,7 +121,7 @@ typedef struct {
 } vs_battle_shieldInfo;
 
 typedef struct {
-    vs_battle_equipment unk0;
+    vs_battle_equipment armor;
     u_short currentDp;
     u_short maxDp;
     short currentStr;
@@ -154,11 +148,11 @@ typedef struct {
     char unk7;
     u_short unk8[4];
     u_short unk10[8];
-    vs_battle_armorInfo unk20;
+    vs_battle_armorInfo armor;
 } vs_battle_equipment_hitLocations;
 
 typedef struct {
-    vs_battle_equipment unk0;
+    vs_battle_equipment accessory;
     short currentStr;
     short currentInt;
     short currentAgility;
@@ -249,7 +243,7 @@ void func_8006B6AC(int*, vs_battle_equipment*);
 void func_8006B728(func_800FD17C_t*, void*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
-void func_8006BAA8(void*, u_short*);
+void func_8006BAA8(void*, vs_battle_armorInfo*);
 void func_8006BADC(void*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);

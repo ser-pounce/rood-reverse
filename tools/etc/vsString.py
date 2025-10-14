@@ -47,7 +47,8 @@ table = [
 ]
 
 # This isn't the only encoding used in the game, occasionally
-# ASCII can be found, where digits are seemingly prefixed with '#'
+# ASCII can be found, where a '#' character forces the string to
+# anchor its end to the draw position rather than the start.
 
 # Inline functions are denoted by enclosing the op and operand(s) with ||, 
 # as it's the only common symbol not represented in the default text table.

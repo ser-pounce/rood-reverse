@@ -290,17 +290,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
 
-void func_8006BAA8(void* arg0, u_short* arg1)
+void func_8006BAA8(void* arg0, vs_battle_armorInfo* arg1)
 {
-    if (arg1[0] != 0) {
-        arg1[4] = arg1[24];
+    if (arg1->armor.id != 0) {
+        arg1->armor.currentDp = arg1->currentDp;
         func_8006B7BC(arg0);
     }
 }
 
 void func_8006BADC(void* arg0, vs_battle_accessoryInfo* accessory)
 {
-    if (accessory->unk0.id != 0) {
+    if (accessory->accessory.id != 0) {
         func_8006B7BC(arg0);
     }
 }

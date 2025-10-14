@@ -29,7 +29,7 @@ typedef struct {
     short intelligence;
     short agility;
     short unk6;
-} D_801024A8_t;
+} vs_mainMenu_strIntAgi_t;
 
 void func_800FA448(void);
 void func_800FA8A0(int arg0);
@@ -57,14 +57,14 @@ void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 void vs_mainMenu_resetStats(void);
 void func_8010044C(u_int*);
 
-extern char D_80102140[];
+extern char vs_mainMenu_weaponHands[];
 extern char (*vs_mainMenu_itemNames)[24];
 extern D_8010245C_t* D_8010245C;
-extern D_801024A8_t D_801024A8[2];
+extern vs_mainMenu_strIntAgi_t vs_mainMenu_strIntAgi[2];
 extern char D_801024B9;
-extern short D_801024C0[0x40];
+extern short vs_mainMenu_equipmentStats[0x40];
 extern short D_80102508;
 extern u_short* vs_mainMenu_itemHelp;
 extern char D_80102544;
-extern char D_80102545;
+extern char vs_mainMenu_equipmentSubtype;
 extern char D_80102578;

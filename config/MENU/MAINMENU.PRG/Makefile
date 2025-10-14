@@ -6,6 +6,7 @@ $(BUILD)/data/MENU/MAINMENU.PRG.elf: LDSCRIPT += \
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.0-psx
 $(BUILD)/src/MENU/MAINMENU.PRG/413C.o: $(BUILD)/src/include/lbas.h
+$(BUILD)/src/MENU/MAINMENU.PRG/C48.o: $(BUILD)/assets/MENU/ITEMHELP.BIN.h
 $(BUILD)/src/MENU/MAINMENU.PRG/278.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/MENU/MAINMENU.PRG/278.o: CC1FLAGS += -msoft-float 
 $(BUILD)/data/MENU/MAINMENU.PRG: fixup = $(call pad,+1)

@@ -11,6 +11,7 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
+#include "../../assets/MENU/ITEMHELP.BIN.h"
 
 typedef struct {
     int unk0;
@@ -68,9 +69,9 @@ void func_800FA448(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        if (temp_s1->hitLocations[i].unk20.unk9A != 0) {
-            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].unk20.unk9A],
-                &temp_s1->hitLocations[i].unk20);
+        if (temp_s1->hitLocations[i].armor.unk9A != 0) {
+            func_8006BAA8(D_80060780[temp_s1->hitLocations[i].armor.unk9A],
+                &temp_s1->hitLocations[i].armor);
         }
     }
 
@@ -367,12 +368,13 @@ void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3)
 
 void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int arg3)
 {
-    D_801024A8[0].strength = strength;
-    D_801024A8[0].intelligence = intelligence;
-    D_801024A8[0].agility = agility;
-    D_801024A8[0].unk6 = arg3;
+    vs_mainMenu_strIntAgi[0].strength = strength;
+    vs_mainMenu_strIntAgi[0].intelligence = intelligence;
+    vs_mainMenu_strIntAgi[0].agility = agility;
+    vs_mainMenu_strIntAgi[0].unk6 = arg3;
     vs_mainMenu_setRangeRisk(0, 0, 0, 0);
-    vs_battle_memcpy(&D_801024A8[1], &D_801024A8[0], sizeof D_801024A8[0]);
+    vs_battle_memcpy(&vs_mainMenu_strIntAgi[1], &vs_mainMenu_strIntAgi[0],
+        sizeof vs_mainMenu_strIntAgi[0]);
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBD80);
@@ -395,29 +397,34 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, char* arg3)
 {
-    int temp_v0;
     int temp_v1;
-    vs_battle_equipment* temp_s1;
 
-    temp_s1 = &arg0->blade;
-    temp_v0 = func_800FA598((short*)arg0, 0);
+    vs_battle_equipment* blade = &arg0->blade;
+    int temp_v0 = func_800FA598((short*)arg0, 0);
+
     vs_battle_stringContext[10]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(temp_v0 & 0xFF) + 0x174]];
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(temp_v0 & 0xFF)
+            + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
     temp_v1 = ((temp_v0 >> 8) & 0xFF);
-    vs_battle_stringContext[11] = (char*)(vs_mainMenu_itemHelp
-        + (temp_v1 != 0 ? (vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D])
-                        : (vs_mainMenu_itemHelp[temp_s1->category + 0x17E])));
-    vs_battle_stringContext[19] = (char*)&vs_mainMenu_itemNames[temp_s1->material + 253];
+    vs_battle_stringContext[11] = (char*)&vs_mainMenu_itemHelp[temp_v1 != 0
+            ? vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D]
+            : vs_mainMenu_itemHelp[blade->category
+                  + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon - 1]];
+    vs_battle_stringContext[19] = (char*)&vs_mainMenu_itemNames[blade->material + 253];
     vs_battle_stringContext[18]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp_s1->category + 0x18E]];
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
+            + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
     vs_battle_stringContext[17]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp_s1->damageType + 0x198]];
+        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType
+            + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
     vs_battle_stringContext[16] = (char*)&vs_mainMenu_itemHelp
-        [vs_mainMenu_itemHelp[D_80102140[temp_s1->category - 1] + 0x19C]];
-    func_800C685C(func_800C685C(arg3, (char*)(vs_mainMenu_itemHelp + 0x33F5)),
-        (char*)(vs_mainMenu_itemHelp + 0x33FB));
+        [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
+            + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+    func_800C685C(func_800C685C(arg3,
+                      (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
     arg1[1] = (char*)arg3;
-    *arg2 = (temp_s1->category << 0x1A) + (temp_s1->material << 0x10);
+    *arg2 = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
 void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
@@ -481,7 +488,7 @@ void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 
 void vs_mainMenu_resetStats(void)
 {
-    vs_battle_rMemzero(D_801024C0, sizeof D_801024C0);
+    vs_battle_rMemzero(vs_mainMenu_equipmentStats, sizeof vs_mainMenu_equipmentStats);
     vs_mainMenu_setDpPp(0, 0, 0, 0);
     vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
 }
@@ -496,10 +503,10 @@ void func_800FD504(int arg0)
     D_80102460_t* temp_a2 = &D_80102460[arg0 - 1];
 
     for (i = 0; i < 4; ++i) {
-        D_801024C0[i + 0x20] = temp_a2->unk8[i];
+        vs_mainMenu_equipmentStats[i + 0x20] = temp_a2->unk8[i];
     }
     vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
-    D_80102545 = 4;
+    vs_mainMenu_equipmentSubtype = 4;
     D_801024A1 = arg0;
     func_800FBB8C(4);
 }
@@ -514,12 +521,12 @@ void func_800FD878(int arg0)
     D_80102458_t* temp_a2 = &D_80102458[arg0 - 1];
 
     for (i = 0; i < 16; ++i) {
-        D_801024C0[i] = temp_a2->unk8[i & 7];
-        D_801024C0[i + 0x10] = temp_a2->unk10[i & 7];
+        vs_mainMenu_equipmentStats[i] = temp_a2->unk8[i & 7];
+        vs_mainMenu_equipmentStats[i + 0x10] = temp_a2->unk10[i & 7];
     }
 
     vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
-    D_80102545 = 0x40;
+    vs_mainMenu_equipmentSubtype = 0x40;
     D_801024A1 = arg0;
     func_800FBB8C(3);
 }

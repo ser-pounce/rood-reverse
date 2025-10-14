@@ -357,7 +357,7 @@ void func_800FBBD4(int arg0)
     D_801024B9 = var_s0;
 }
 
-void func_800FBD0C(int arg0, int arg1, int arg2, int arg3)
+void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3)
 {
     D_80102480[0] = arg0;
     D_80102480[1] = arg1;
@@ -365,13 +365,13 @@ void func_800FBD0C(int arg0, int arg1, int arg2, int arg3)
     D_80102480[3] = arg3;
 }
 
-void func_800FBD28(int strength, int intelligence, int agility, int arg3)
+void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int arg3)
 {
     D_801024A8[0].strength = strength;
     D_801024A8[0].intelligence = intelligence;
     D_801024A8[0].agility = agility;
     D_801024A8[0].unk6 = arg3;
-    func_800FBD0C(0, 0, 0, 0);
+    vs_mainMenu_setRangeRisk(0, 0, 0, 0);
     vs_battle_memcpy(&D_801024A8[1], &D_801024A8[0], sizeof D_801024A8[0]);
 }
 
@@ -479,11 +479,11 @@ void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
     *arg2 = arg0->unk2 << 9;
 }
 
-void func_800FD220(void)
+void vs_mainMenu_resetStats(void)
 {
-    vs_battle_rMemzero(D_801024C0, 0x80);
+    vs_battle_rMemzero(D_801024C0, sizeof D_801024C0);
     vs_mainMenu_setDpPp(0, 0, 0, 0);
-    func_800FBD28(0, 0, 0, 1);
+    vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD270);
@@ -498,7 +498,7 @@ void func_800FD504(int arg0)
     for (i = 0; i < 4; ++i) {
         D_801024C0[i + 0x20] = temp_a2->unk8[i];
     }
-    func_800FBD28(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
     D_80102545 = 4;
     D_801024A1 = arg0;
     func_800FBB8C(4);
@@ -518,7 +518,7 @@ void func_800FD878(int arg0)
         D_801024C0[i + 0x10] = temp_a2->unk10[i & 7];
     }
 
-    func_800FBD28(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
     D_80102545 = 0x40;
     D_801024A1 = arg0;
     func_800FBB8C(3);

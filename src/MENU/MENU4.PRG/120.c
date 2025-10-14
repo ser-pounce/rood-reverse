@@ -52,8 +52,8 @@ static void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
     int i;
 
     D_80102545 = 1;
-    func_800FD220();
-    func_800FBD0C(0, 0, 0, 1);
+    vs_mainMenu_resetStats();
+    vs_mainMenu_setRangeRisk(0, 0, 0, 1);
 
     if (weapon->blade.id != 0) {
         vs_battle_memcpy(D_801024C0, &weapon->classAffinityCurrent,
@@ -71,12 +71,13 @@ static void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
 
         vs_mainMenu_setDpPp(
             weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);
-        func_800FBD28(weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
+        vs_mainMenu_setStrIntAgi(
+            weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
 
         D_801024A8[1].strength = weapon->baseStr;
         D_801024A8[1].intelligence = weapon->baseInt;
         D_801024A8[1].agility = weapon->baseAgility;
-        func_800FBD0C(weapon->range, weapon->risk, 0, 1);
+        vs_mainMenu_setRangeRisk(weapon->range, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
@@ -86,7 +87,7 @@ static void _drawShieldInfo(vs_battle_shieldInfo* shield)
     int i;
 
     D_80102545 = 8;
-    func_800FD220();
+    vs_mainMenu_resetStats();
 
     if (shield->unk18.id != 0) {
         vs_battle_memcpy(D_801024C0, &shield->classAffinityCurrent,
@@ -100,7 +101,8 @@ static void _drawShieldInfo(vs_battle_shieldInfo* shield)
 
         vs_mainMenu_setDpPp(
             shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
-        func_800FBD28(shield->currentStr, shield->currentInt, shield->currentAgility, 1);
+        vs_mainMenu_setStrIntAgi(
+            shield->currentStr, shield->currentInt, shield->currentAgility, 1);
         D_801024A8[1].strength = shield->baseStr;
         D_801024A8[1].intelligence = shield->baseInt;
         D_801024A8[1].agility = shield->baseAgility;
@@ -113,7 +115,7 @@ static void _drawArmorInfo(vs_battle_armorInfo* armor)
     int i;
 
     D_80102545 = 16;
-    func_800FD220();
+    vs_mainMenu_resetStats();
 
     if (armor->unk0.id != 0) {
         vs_battle_memcpy(
@@ -131,7 +133,8 @@ static void _drawArmorInfo(vs_battle_armorInfo* armor)
         }
 
         vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
-        func_800FBD28(armor->currentStr, armor->currentInt, armor->currentAgility, 1);
+        vs_mainMenu_setStrIntAgi(
+            armor->currentStr, armor->currentInt, armor->currentAgility, 1);
         D_801024A8[1].strength = armor->baseStr;
         D_801024A8[1].intelligence = armor->baseInt;
         D_801024A8[1].agility = armor->baseAgility;
@@ -144,7 +147,7 @@ static void _drawAccessoryInfo(vs_battle_accessoryInfo* accessory)
     int i;
 
     D_80102545 = 32;
-    func_800FD220();
+    vs_mainMenu_resetStats();
 
     if (accessory->unk0.id != 0) {
         for (i = 0; i < 16; ++i) {
@@ -152,7 +155,7 @@ static void _drawAccessoryInfo(vs_battle_accessoryInfo* accessory)
             D_801024C0[i + 16] = accessory->affinities[i & 7];
             D_801024C0[i + 32] = accessory->types[i & 7]; // BUG? Copies past end
         }
-        func_800FBD28(
+        vs_mainMenu_setStrIntAgi(
             accessory->currentStr, accessory->currentInt, accessory->currentAgility, 2);
     }
     func_800FBB8C(7);
@@ -170,8 +173,8 @@ static void _drawBladeInfo(vs_battle_weaponInfo* weapon)
         D_801024C0[i + 16] = blade->affinities[i & 7];
     }
     vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, weapon->currentPp, weapon->maxPp);
-    func_800FBD28(blade->strength, blade->intelligence, blade->agility, 1);
-    func_800FBD0C(blade->range, blade->cost, 0, 1);
+    vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
+    vs_mainMenu_setRangeRisk(blade->range, blade->cost, 0, 1);
     func_800FBB8C(3);
     func_800FC268(0xB);
 }
@@ -185,7 +188,7 @@ static void _drawGripInfo(vs_battle_equipment* grip)
     for (i = 0; i < 4; ++i) {
         D_801024C0[i + 0x20] = grip->types[i];
     }
-    func_800FBD28(grip->strength, grip->intelligence, grip->agility, 1);
+    vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     func_800FBB8C(4);
     func_800FC268(8);
 }
@@ -200,7 +203,7 @@ static void _drawGemInfo(vs_battle_equipment* gem)
         D_801024C0[i] = gem->classes[i & 7];
         D_801024C0[i + 16] = gem->affinities[i & 7];
     }
-    func_800FBD28(gem->strength, gem->intelligence, gem->agility, 1);
+    vs_mainMenu_setStrIntAgi(gem->strength, gem->intelligence, gem->agility, 1);
     func_800FBB8C(3);
     func_800FC268(8);
 }
@@ -274,7 +277,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
             _drawGemInfo(&weapon->gems[row - 3]);
         } else {
             func_800FC268(8);
-            func_800FD220();
+            vs_mainMenu_resetStats();
         }
         break;
     }
@@ -299,7 +302,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
             _drawGemInfo(&shield->gems[row - 1]);
         } else {
             func_800FC268(8);
-            func_800FD220();
+            vs_mainMenu_resetStats();
         }
     }
     vs_battle_getMenuItem(row + 20)->selected = 1;
@@ -1420,7 +1423,8 @@ static int func_80104F80(int arg0)
             D_80108183 = var_v0_4;
         }
         if (var_v0_4 < 2) {
-            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_INDEX_phantomPointsDesc - var_v0_4]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [VS_ITEMHELP_BIN_INDEX_phantomPointsDesc - var_v0_4]];
         } else if (var_v0_4 < 9) {
             switch (D_801024B9) {
             case 0:
@@ -1454,7 +1458,8 @@ static int func_80104F80(int arg0)
                 break;
             }
         } else {
-            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4 + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
+                + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (var_v0_4 >= 0x12) {
                 if (D_80108181 == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4

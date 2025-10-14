@@ -1,5 +1,8 @@
 vs_mainmenu_ready = 0x800FA9D0;
+vs_mainMenu_setRangeRisk = 0x800FBD0C;
+vs_mainMenu_setStrIntAgi = 0x800FBD28;
 vs_mainMenu_setDpPp = 0x800FC208;
+vs_mainMenu_resetStats = 0x800FD220;
 vs_mainMenu_loadItemNames = 0x800FE5CC;
 func_800FFA88 = 0x800FFA88; 
 func_800FFBC8 = 0x800FFBC8;

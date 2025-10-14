@@ -569,10 +569,10 @@ static int func_801049A0(int arg0)
                 vs_battle_rMemcpy(D_80105F10, vs_mainMenu_itemNames + table_val, 0x18);
             }
             func_800C8E04(1);
-            D_800F5190 = &D_80105F10;
-            func_800C685C(
-                D_800F4E8C, (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
-            vs_mainmenu_setMessage(D_800F4E8C);
+            vs_battle_stringContext[10] = D_80105F10;
+            func_800C685C(vs_battle_stringBuf,
+                (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
+            vs_mainmenu_setMessage(vs_battle_stringBuf);
             _confirmScreen(1);
             D_80105F28 = 5;
         }
@@ -636,7 +636,7 @@ int vs_menu8_execRename(char* state)
     currentState = *state;
     switch (*state) {
     case 0:
-        D_80105F2E = D_800F4E8C[1];
+        D_80105F2E = vs_battle_stringBuf[1];
         _charTable = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
         func_800FFBA8();
         v1 = vs_char_space;
@@ -645,7 +645,7 @@ int vs_menu8_execRename(char* state)
         for (; i >= 0; --i) {
             *var_v0-- = v1;
         }
-        if (D_800F4E8C[0] == 1) {
+        if (vs_battle_stringBuf[0] == 1) {
             var_v1 = (D_80105F2E << 5) + &D_80060168[0][8];
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;

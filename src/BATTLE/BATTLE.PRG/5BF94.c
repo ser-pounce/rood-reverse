@@ -477,7 +477,7 @@ int func_800CACD0(int arg0, int arg1)
             func_8007E180(6);
             temp_v0 = vs_main_allocHeapR(0xB24);
             var_a1 = D_80060022;
-            D_800F4E8C = temp_v0 + 0xA00;
+            vs_battle_stringBuf = temp_v0 + 0xA00;
             vs_battle_menuItems = temp_v0;
             D_800F4E84 = temp_v0 + 0xA60;
             for (i = 0; i < 3; ++i) {

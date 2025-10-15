@@ -139,6 +139,7 @@ extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern char D_800F4E88;
 extern char* vs_battle_stringBuf;
+extern char D_800F4E90;
 extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;

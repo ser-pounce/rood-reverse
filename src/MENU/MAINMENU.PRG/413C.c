@@ -211,7 +211,15 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100164);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100344);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100414);
+void func_80100414(int arg0, int arg1) {
+    if (arg0 > 0) {
+        D_800F4E90 |= 2;
+    } else {
+        D_800F4E90 &= 1;
+    }
+    D_801022DE = arg0;
+    D_801022E0 = arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
 

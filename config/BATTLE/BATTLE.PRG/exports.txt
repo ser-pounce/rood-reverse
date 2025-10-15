@@ -45,6 +45,7 @@ vs_battle_stringBuf = 0x800F4E8C;
 D_800F4E98 = 0x800F4E98;
 vs_battle_executeAbility = 0x800F4E9C;
 D_800F4EE8 = 0x800F4EE8;
+vs_battle_selectedEquipment = 0x800F4F6C;
 vs_battle_stringContext = 0x800F5168;
 vs_battle_menuState = 0x800F51C0;
 vs_battle_executeAbilityType = 0x800F51C2;

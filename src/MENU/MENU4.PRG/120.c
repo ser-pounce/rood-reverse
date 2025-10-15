@@ -260,7 +260,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     switch (row) {
     case 0:
-        func_800FC85C(weapon, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setWeaponStrings(weapon, sp10, &sp18, vs_battle_stringBuf);
         sp10[0] = weapon->name;
         break;
     case 1:
@@ -769,7 +769,7 @@ static char D_80108180;
 static char D_80108181;
 static char D_80108182;
 static char D_80108183;
-static char D_80108184;
+static char _equipmentScreenState;
 static u_char D_80108185;
 static char _2[2];
 static int D_80108188;
@@ -1339,7 +1339,8 @@ static int func_80104F80(int arg0)
                     for (i = 1; i < 6; ++i) {
                         func_80104C40(i, &temp_s1->weapon, 0);
                     }
-                    func_800FC85C(&temp_s1->weapon, sp18, &sp48, vs_battle_stringBuf);
+                    vs_mainMenu_setWeaponStrings(
+                        &temp_s1->weapon, sp18, &sp48, vs_battle_stringBuf);
                     sp18[0] = (char*)&temp_s1->weapon;
                     break;
                 case 1:
@@ -1496,8 +1497,10 @@ static int func_80104F80(int arg0)
     return 0;
 }
 
-static int func_80105970(int arg0)
+static int _equipmentScreen(int element)
 {
+    enum state { init };
+
     char* rowText[18];
     int rowType[9];
     char sp80[9][96];
@@ -1508,31 +1511,30 @@ static int func_80105970(int arg0)
     int temp_s5;
     int i;
     int temp_s1_2;
-    vs_battle_equipment_hitLocations* var_fp;
-    vs_battle_actor2* temp_s6;
     vs_battle_menuItem_t* temp_v0_2;
     int new_var;
 
-    temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
-    var_fp = temp_s6->hitLocations;
+    vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
+    vs_battle_equipment_hitLocations* hitLocations = temp_s6->hitLocations;
+
     sp40C = _getHitLocationCount(_selectedActor - 1);
     sp408 = func_8010455C();
 
-    if (arg0 != 0) {
-        D_800F4F6C = arg0 + 1;
-        D_80108184 = 0;
+    if (element != 0) {
+        vs_battle_selectedEquipment = element + 1;
+        _equipmentScreenState = init;
         return 0;
     }
 
-    switch (D_80108184) {
-    case 0:
+    switch (_equipmentScreenState) {
+    case init:
         for (i = 0; i < 9; ++i) {
             rowText[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
             rowText[i * 2 + 1] = (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
             rowType[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
-            func_800FC85C(&temp_s6->weapon, rowText, rowType, sp80[0]);
+            vs_mainMenu_setWeaponStrings(&temp_s6->weapon, rowText, rowType, sp80[0]);
             rowText[0] = temp_s6->weapon.name;
         }
         if (temp_s6->shield.shield.id != 0) {
@@ -1545,14 +1547,15 @@ static int func_80105970(int arg0)
         rowType[0] |= temp_s5 | new_var;
         rowType[1] |= temp_s5 | temp_s1_2;
 
-        for (i = 2; i < sp408; ++i, ++var_fp) {
+        for (i = 2; i < sp408; ++i, ++hitLocations) {
             int* p = sp3E0;
             sp410 = temp_s5 | 0xF400;
             if ((i - 2) < sp40C) {
-                if (var_fp->armor.armor.id != 0) {
-                    func_800FCECC(&var_fp->armor, &rowText[i * 2], &rowType[i], sp80[i]);
+                if (hitLocations->armor.armor.id != 0) {
+                    func_800FCECC(
+                        &hitLocations->armor, &rowText[i * 2], &rowType[i], sp80[i]);
                 }
-                rowType[i] |= (((char)var_fp->nameIndex + 0x67) << 9) + temp_s5;
+                rowType[i] |= (((char)hitLocations->nameIndex + 0x67) << 9) + temp_s5;
             } else {
                 func_8006BADC(p, &temp_s6->accessory);
                 func_800FD084(p, &rowText[i * 2], &rowType[i], sp80[i]);
@@ -1568,14 +1571,14 @@ static int func_80105970(int arg0)
         } else {
             D_80108185 = 0;
         }
-        D_80108184 = 1;
+        _equipmentScreenState = 1;
         break;
     case 1:
         if (D_80108185 != 0) {
             --D_80108185;
             D_801080B4 = vs_battle_rowAnimationSteps[D_80108185];
         } else {
-            D_80108184 = 2;
+            _equipmentScreenState = 2;
         }
         break;
     case 2:
@@ -1584,7 +1587,7 @@ static int func_80105970(int arg0)
             func_800FBD80(_selectedActor + 15);
             func_800FA8E0(4);
             if (i < 0) {
-                temp_s5 = D_800F4F6C - 2;
+                temp_s5 = vs_battle_selectedEquipment - 2;
                 if (temp_s5 < 0) {
                     temp_s5 = 0;
                 }
@@ -1595,7 +1598,7 @@ static int func_80105970(int arg0)
                 return i;
             }
             func_80104F80(i);
-            D_80108184 = 5;
+            _equipmentScreenState = 5;
             break;
         }
         if ((vs_main_buttonsState & 0xC) != 0xC) {
@@ -1614,13 +1617,13 @@ static int func_80105970(int arg0)
                 func_80103744(i + temp_s5);
                 func_80100814();
                 func_800FA8E0(4);
-                D_80108184 = 3;
+                _equipmentScreenState = 3;
             }
         }
         break;
     case 3:
         if (func_80103744(0) != 0) {
-            D_80108184 = 4;
+            _equipmentScreenState = 4;
         }
         break;
     case 4:
@@ -1631,7 +1634,7 @@ static int func_80105970(int arg0)
                 temp_v0_2->x = 0xB4;
                 temp_v0_2->selected = 1;
             }
-            D_80108184 = 0;
+            _equipmentScreenState = 0;
         }
         break;
     case 5:
@@ -1640,8 +1643,8 @@ static int func_80105970(int arg0)
             if (i < 0) {
                 return -2;
             }
-            D_800F4F6C = i - 1;
-            D_80108184 = 4;
+            vs_battle_selectedEquipment = i - 1;
+            _equipmentScreenState = 4;
         }
         break;
     }
@@ -1820,6 +1823,7 @@ int vs_menu4_Exec(char* state)
         none,
         init = 3,
         waitForMenu,
+        viewEquipment = 7,
         waitQuitToMenu = 11,
         quitToMenu,
         waitQuitToBattle,
@@ -1931,7 +1935,7 @@ int vs_menu4_Exec(char* state)
                     func_800FBEA4(2);
                     func_801045B8(-2);
                     animWait = 8;
-                    *state = 7;
+                    *state = viewEquipment;
                     break;
                 }
                 var_s6 = 0;
@@ -2113,16 +2117,16 @@ int vs_menu4_Exec(char* state)
             }
         }
         break;
-    case 7:
+    case viewEquipment:
         if (animWait == 0) {
-            func_80105970(_selectedElement + 1);
+            _equipmentScreen(_selectedElement + 1);
             *state = 8;
         } else {
             --animWait;
         }
         break;
     case 8:
-        userInput = func_80105970(0);
+        userInput = _equipmentScreen(0);
         if (userInput != 0) {
             if (userInput != -2) {
                 animWait = 8;

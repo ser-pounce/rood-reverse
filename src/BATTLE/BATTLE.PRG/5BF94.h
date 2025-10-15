@@ -145,7 +145,7 @@ extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4F1C[6];
 extern char D_800F4F6A;
-extern char D_800F4F6C;
+extern char vs_battle_selectedEquipment;
 extern char D_800F4F70;
 extern char D_800F4FDB;
 extern char D_800F4FDA;

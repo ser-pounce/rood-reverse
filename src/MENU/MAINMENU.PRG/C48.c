@@ -395,7 +395,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
-void func_800FC85C(vs_battle_weaponInfo* arg0, char** arg1, int* arg2, char* arg3)
+void vs_mainMenu_setWeaponStrings(
+    vs_battle_weaponInfo* arg0, char** arg1, int* arg2, char* arg3)
 {
     int temp_v1;
 
@@ -436,7 +437,7 @@ void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
     } else {
         func_80102A34(&sp10, arg0, D_80109A8C);
     }
-    func_800FC85C(&sp10, arg1, arg2, arg3);
+    vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
     *arg1 = arg0 + 8;
 }
 

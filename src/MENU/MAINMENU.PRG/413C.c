@@ -211,7 +211,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100164);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100344);
 
-void func_80100414(int arg0, int arg1) {
+void func_80100414(int arg0, int arg1)
+{
     if (arg0 > 0) {
         D_800F4E90 |= 2;
     } else {

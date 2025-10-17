@@ -1507,7 +1507,7 @@ static int _equipmentScreen(int element)
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
-    int sp3E0[9];
+    func_8006B7BC_t sp3E0;
     int sp408;
     int hitLocationCount;
     int rowType;
@@ -1555,7 +1555,7 @@ static int _equipmentScreen(int element)
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < sp408; ++i, ++hitLocations) {
-            int* p = sp3E0;
+            func_8006B7BC_t* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
                 if (hitLocations->armor.armor.id != 0) {

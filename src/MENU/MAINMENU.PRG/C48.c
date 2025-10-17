@@ -396,12 +396,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 void vs_mainMenu_setWeaponStrings(
-    vs_battle_weaponInfo* arg0, char** arg1, int* arg2, char* arg3)
+    vs_battle_weaponInfo* weapon, char** rowStrings, int* rowTypes, char* description)
 {
     int temp_v1;
 
-    vs_battle_equipment* blade = &arg0->blade;
-    int temp_v0 = func_800FA598((short*)arg0, 0);
+    vs_battle_equipment* blade = &weapon->blade;
+    int temp_v0 = func_800FA598((short*)weapon, 0);
 
     vs_battle_stringContext[10]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(temp_v0 & 0xFF)
@@ -421,11 +421,11 @@ void vs_mainMenu_setWeaponStrings(
     vs_battle_stringContext[16] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
             + VS_ITEMHELP_BIN_INDEX_oneHanded]];
-    func_800C685C(func_800C685C(arg3,
+    func_800C685C(func_800C685C(description,
                       (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
-    arg1[1] = (char*)arg3;
-    *arg2 = (blade->category << 0x1A) + (blade->material << 0x10);
+    rowStrings[1] = description;
+    rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
 void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
@@ -445,7 +445,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCAA4);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCCE8);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldStrings);
 
 void func_800FCE40(int arg0, char** arg1, int* arg2, char* arg3)
 {
@@ -456,17 +456,17 @@ void func_800FCE40(int arg0, char** arg1, int* arg2, char* arg3)
     } else {
         func_80102BB0(sp10, arg0, D_80109A8C);
     }
-    func_800FCCE8(sp10, arg1, arg2, arg3);
+    vs_mainMenu_setShieldStrings(sp10, arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCECC);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);
 
-void func_800FD084(int* arg0, char** arg1, int* arg2, char* arg3)
+void vs_mainMenu_setAccessoryStrings(int* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_armorInfo sp10;
 
     func_8006B110(&sp10, arg0);
-    func_800FCECC(&sp10, arg1, arg2, arg3);
+    vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
 }
 
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)

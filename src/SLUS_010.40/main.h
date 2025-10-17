@@ -214,6 +214,25 @@ typedef struct {
     int rStickY;
 } vs_main_stickPos;
 
+typedef struct {
+    char id;
+    char unk1;
+    char wepId;
+    char category;
+    u_short maxDp;
+    u_short maxPp;
+    u_short currentDp;
+    u_short currentPp;
+    char gemSlots;
+    char strength;
+    char intelligence;
+    char agility;
+    char types[4];
+    char classes[8];
+    char affinities[8];
+    u_short material;
+} func_8006B7BC_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];

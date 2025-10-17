@@ -1,4 +1,5 @@
 #pragma once
+#include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/D_80061068_t.h"
 
 typedef struct {
@@ -236,15 +237,15 @@ typedef struct {
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
-void func_8006B110(vs_battle_armorInfo*, int*);
+void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
 void func_8006B338(void*);
 void func_8006B57C(int*, vs_battle_equipment*);
 void func_8006B6AC(int*, vs_battle_equipment*);
 void func_8006B728(func_800FD17C_t*, void*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
-void func_8006BAA8(void*, vs_battle_armorInfo*);
-void func_8006BADC(void*, vs_battle_accessoryInfo*);
+void func_8006BAA8(func_8006B7BC_t*, vs_battle_armorInfo*);
+void func_8006BADC(func_8006B7BC_t*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getClosestSavePoint(void);
 void func_8007ACB0(void);

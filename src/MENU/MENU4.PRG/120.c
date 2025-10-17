@@ -294,7 +294,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
 
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     if (row == 0) {
-        func_800FCCE8(shield, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setShieldStrings(shield, sp10, &sp18, vs_battle_stringBuf);
     } else if (row < 0) {
 
     } else if (row < 4) {
@@ -315,18 +315,18 @@ static char* _drawArmorInfoRow(vs_battle_armorInfo* arg0)
     char* sp10[2];
     int sp18;
 
-    func_800FCECC(arg0, sp10, &sp18, vs_battle_stringBuf);
+    vs_mainMenu_setArmorStrings(arg0, sp10, &sp18, vs_battle_stringBuf);
     return sp10[1];
 }
 
 static char* _drawAccessoryInfoRow(vs_battle_accessoryInfo* arg0)
 {
     char* sp10[2];
-    int sp18[10];
+    func_8006B7BC_t sp18;
     int sp30[2];
 
-    func_8006BADC(sp18, arg0);
-    func_800FD084(sp18, sp10, sp30, vs_battle_stringBuf);
+    func_8006BADC(&sp18, arg0);
+    vs_mainMenu_setAccessoryStrings(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
 
@@ -1192,7 +1192,7 @@ static char D_801080C7 = 0;
 static int func_80104F80(int arg0)
 {
     char* sp18[2];
-    int sp20[9];
+    func_8006B7BC_t sp20;
     u_int sp48;
     int temp_s4;
     int var_a0;
@@ -1349,19 +1349,22 @@ static int func_80104F80(int arg0)
                     for (i = 1; i < 4; ++i) {
                         func_80104DFC(i, (func_80104DFC_t*)&temp_s1->shield, 0);
                     }
-                    func_800FCCE8(&temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
+                    vs_mainMenu_setShieldStrings(
+                        &temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
                     break;
                 default:
                     if ((var_s2 - 2) < temp_s4) {
                         func_800FC268(9);
                         _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].armor);
-                        func_800FCECC(&temp_s1->hitLocations[var_s2 - 2].armor, sp18,
-                            &sp48, vs_battle_stringBuf);
+                        vs_mainMenu_setArmorStrings(
+                            &temp_s1->hitLocations[var_s2 - 2].armor, sp18, &sp48,
+                            vs_battle_stringBuf);
                     } else {
                         func_800FC268(8);
                         _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->accessory);
-                        func_8006BADC(sp20, &temp_s1->accessory);
-                        func_800FD084(sp20, sp18, &sp48, vs_battle_stringBuf);
+                        func_8006BADC(&sp20, &temp_s1->accessory);
+                        vs_mainMenu_setAccessoryStrings(
+                            &sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
                     break;
                 }
@@ -1501,13 +1504,13 @@ static int _equipmentScreen(int element)
 {
     enum state { init };
 
-    char* rowText[18];
-    int rowType[9];
-    char sp80[9][96];
+    char* rowStrings[18];
+    int rowTypes[9];
+    char equipmentDescriptions[9][96];
     int sp3E0[9];
     int sp408;
-    int sp40C;
-    int sp410;
+    int hitLocationCount;
+    int rowType;
     int temp_s5;
     int i;
     int temp_s1_2;
@@ -1517,7 +1520,7 @@ static int _equipmentScreen(int element)
     vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
     vs_battle_equipment_hitLocations* hitLocations = temp_s6->hitLocations;
 
-    sp40C = _getHitLocationCount(_selectedActor - 1);
+    hitLocationCount = _getHitLocationCount(_selectedActor - 1);
     sp408 = func_8010455C();
 
     if (element != 0) {
@@ -1529,42 +1532,47 @@ static int _equipmentScreen(int element)
     switch (_equipmentScreenState) {
     case init:
         for (i = 0; i < 9; ++i) {
-            rowText[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
-            rowText[i * 2 + 1] = (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
-            rowType[i] = 1;
+            rowStrings[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
+            rowStrings[i * 2 + 1]
+                = (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
+            rowTypes[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
-            vs_mainMenu_setWeaponStrings(&temp_s6->weapon, rowText, rowType, sp80[0]);
-            rowText[0] = temp_s6->weapon.name;
+            vs_mainMenu_setWeaponStrings(
+                &temp_s6->weapon, rowStrings, rowTypes, equipmentDescriptions[0]);
+            rowStrings[0] = temp_s6->weapon.name;
         }
         if (temp_s6->shield.shield.id != 0) {
-            func_800FCCE8(&temp_s6->shield, &rowText[2], rowType + 1, sp80[1]);
+            vs_mainMenu_setShieldStrings(
+                &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
-        temp_s5 = (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
+        temp_s5
+            = (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
-        rowType[0] |= temp_s5 | new_var;
-        rowType[1] |= temp_s5 | temp_s1_2;
+        rowTypes[0] |= temp_s5 | new_var;
+        rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < sp408; ++i, ++hitLocations) {
             int* p = sp3E0;
-            sp410 = temp_s5 | 0xF400;
-            if ((i - 2) < sp40C) {
+            rowType = temp_s5 | 0xF400;
+            if ((i - 2) < hitLocationCount) {
                 if (hitLocations->armor.armor.id != 0) {
-                    func_800FCECC(
-                        &hitLocations->armor, &rowText[i * 2], &rowType[i], sp80[i]);
+                    vs_mainMenu_setArmorStrings(&hitLocations->armor, &rowStrings[i * 2],
+                        &rowTypes[i], equipmentDescriptions[i]);
                 }
-                rowType[i] |= (((char)hitLocations->nameIndex + 0x67) << 9) + temp_s5;
+                rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
             } else {
                 func_8006BADC(p, &temp_s6->accessory);
-                func_800FD084(p, &rowText[i * 2], &rowType[i], sp80[i]);
-                rowType[i] |= sp410;
+                vs_mainMenu_setAccessoryStrings(
+                    p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
+                rowTypes[i] |= rowType;
             }
         }
         temp_s1_2 = vs_main_settings.cursorMemory;
         vs_main_settings.cursorMemory = 1;
-        vs_mainmenu_setMenuRows(sp408, 0x19142, (char**)rowText, rowType);
+        vs_mainmenu_setMenuRows(sp408, 0x19142, (char**)rowStrings, rowTypes);
         vs_main_settings.cursorMemory = temp_s1_2;
         if (D_801080B4 != 0) {
             D_80108185 = 0xA;
@@ -1591,8 +1599,8 @@ static int _equipmentScreen(int element)
                 if (temp_s5 < 0) {
                     temp_s5 = 0;
                 }
-                if (temp_s5 >= sp40C) {
-                    temp_s5 = sp40C - 1;
+                if (temp_s5 >= hitLocationCount) {
+                    temp_s5 = hitLocationCount - 1;
                 }
                 _selectedElement = temp_s5;
                 return i;

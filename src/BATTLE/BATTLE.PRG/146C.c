@@ -101,7 +101,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(void);
 void func_8006A228(int, int);
-void func_8006B7BC(void*);
+void func_8006B7BC(func_8006B7BC_t*, vs_battle_equipment* equipment);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -284,24 +284,56 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B6AC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B728);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B7BC);
+void func_8006B7BC(func_8006B7BC_t* arg0, vs_battle_equipment* equipment)
+{
+    int i;
+    func_8006B7BC_t* a3;
+
+    arg0->id = equipment->id;
+    arg0->unk1 = equipment->unk2;
+    arg0->wepId = equipment->wepId;
+    arg0->category = equipment->category;
+    arg0->currentDp = equipment->currentDp;
+    arg0->maxDp = equipment->maxDp;
+    arg0->currentPp = equipment->currentPp;
+    arg0->maxPp = equipment->maxPp;
+    arg0->gemSlots = equipment->gemSlots;
+    arg0->strength = equipment->strength;
+    arg0->intelligence = equipment->intelligence;
+    arg0->agility = equipment->agility;
+
+    a3 = arg0;
+
+    for (i = 0; i < 4; ++i) {
+        a3->types[i] = equipment->types[i];
+    }
+
+    for (i = 0; i < 6; ++i) {
+        a3->classes[i] = equipment->classes[i];
+    }
+
+    for (i = 0; i < 7; ++i) {
+        a3->affinities[i] = equipment->affinities[i];
+    }
+    arg0->material = equipment->material;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
 
-void func_8006BAA8(void* arg0, vs_battle_armorInfo* arg1)
+void func_8006BAA8(func_8006B7BC_t* arg0, vs_battle_armorInfo* arg1)
 {
     if (arg1->armor.id != 0) {
         arg1->armor.currentDp = arg1->currentDp;
-        func_8006B7BC(arg0);
+        func_8006B7BC(arg0, &arg1->armor);
     }
 }
 
-void func_8006BADC(void* arg0, vs_battle_accessoryInfo* accessory)
+void func_8006BADC(func_8006B7BC_t* arg0, vs_battle_accessoryInfo* accessory)
 {
     if (accessory->accessory.id != 0) {
-        func_8006B7BC(arg0);
+        func_8006B7BC(arg0, &accessory->accessory);
     }
 }
 

@@ -21,25 +21,6 @@ typedef struct {
     int unk0[13];
 } D_801081B8_t;
 
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    int unk4;
-    char unk8;
-    char unk9;
-    u_short unkA;
-    int unkC[9];
-} func_80104DFC_t2;
-
-typedef struct {
-    int unk0[11];
-    char unk2C;
-    char unk2D;
-    short unk2E;
-    int unk30[6];
-    func_80104DFC_t2 unk48[2];
-} func_80104DFC_t;
-
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
@@ -177,7 +158,7 @@ static void _drawBladeInfo(vs_battle_weaponInfo* weapon)
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
     vs_mainMenu_setRangeRisk(blade->range, blade->cost, 0, 1);
     func_800FBB8C(3);
-    func_800FC268(11);
+    vs_mainMenu_drawDpPpbars(11);
 }
 
 static void _drawGripInfo(vs_battle_equipment* grip)
@@ -191,7 +172,7 @@ static void _drawGripInfo(vs_battle_equipment* grip)
     }
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     func_800FBB8C(4);
-    func_800FC268(8);
+    vs_mainMenu_drawDpPpbars(8);
 }
 
 static void _drawGemInfo(vs_battle_equipment* gem)
@@ -206,7 +187,7 @@ static void _drawGemInfo(vs_battle_equipment* gem)
     }
     vs_mainMenu_setStrIntAgi(gem->strength, gem->intelligence, gem->agility, 1);
     func_800FBB8C(3);
-    func_800FC268(8);
+    vs_mainMenu_drawDpPpbars(8);
 }
 
 static void _initBladeInfo(
@@ -278,7 +259,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
             _initGemInfo(&weapon->gems[row - 3], sp10, &sp18);
             _drawGemInfo(&weapon->gems[row - 3]);
         } else {
-            func_800FC268(8);
+            vs_mainMenu_drawDpPpbars(8);
             vs_mainMenu_resetStats();
         }
         break;
@@ -302,7 +283,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_shieldInfo* shield)
             _initGemInfo(&shield->gems[row - 1], (char**)&sp10, &sp18);
             _drawGemInfo(&shield->gems[row - 1]);
         } else {
-            func_800FC268(8);
+            vs_mainMenu_drawDpPpbars(8);
             vs_mainMenu_resetStats();
         }
     }
@@ -765,9 +746,9 @@ static char _0[2];
 static vs_battle_actor2* _statusModifersCurrentTarget;
 static char _1[8];
 static int D_80108168[6];
-static char D_80108180;
-static char D_80108181;
-static char D_80108182;
+static char _equipmentDetailState;
+static char _selectedEquipmentRow;
+static char _equipmentDetailAnimStep;
 static char D_80108183;
 static char _equipmentScreenState;
 static u_char _timer;
@@ -1038,12 +1019,12 @@ static int func_801045B8(int arg0)
     return 0;
 }
 
-static void func_80104AEC(int id)
+static void _setActiveRow(int row)
 {
     vs_battle_menuItem_t* menuItem;
 
     func_800FA8A0(4);
-    menuItem = vs_battle_getMenuItem(id + 10);
+    menuItem = vs_battle_getMenuItem(row + 10);
     menuItem->state = 2;
     menuItem->x = 155;
     menuItem->selected = 1;
@@ -1137,23 +1118,23 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
     }
 }
 
-static void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
+static void func_80104DFC(int arg0, vs_battle_shieldInfo* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     func_800FD17C_t sp20;
     int sp40;
     int var_s0;
     vs_battle_menuItem_t* temp_v0;
-    int dummy[6] __attribute__((unused));
+    int dummy[6];
 
     var_s0 = arg0 - 1;
 
-    if (var_s0 < arg1->unk2D) {
+    if (var_s0 < arg1->shield.gemSlots) {
         sp18.unk4 = 0;
-        sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
+        sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
-        if (arg1->unk48[var_s0].unk0 != 0) {
-            func_8006B728(&sp20, &arg1->unk48[var_s0].unk0);
+        if (arg1->gems[var_s0].id != 0) {
+            func_8006B728(&sp20, &arg1->gems[var_s0].id);
             func_800FD0E0(&sp20, &sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 0x97;
@@ -1162,14 +1143,15 @@ static void func_80104DFC(int arg0, func_80104DFC_t* arg1, int arg2)
     }
 
     func_800FFB90(arg0 + 0x14);
+
     if (var_s0 != 0) {
         temp_v0 = vs_battle_setMenuItem(
-            arg0 + 0x14, 0x140 - var_s0, (arg0 * 0x10) + 0x12, var_s0, 0, sp18.unk0);
+            arg0 + 20, 320 - var_s0, (arg0 * 16) + 18, var_s0, 0, sp18.unk0);
         temp_v0->unk7 = sp18.unk4 == 0;
         if (arg2 & 1) {
-            temp_v0->animSpeed = 0x140;
+            temp_v0->animSpeed = 320;
             temp_v0->state = 2;
-            temp_v0->x = 0x140 - var_s0;
+            temp_v0->x = 320 - var_s0;
         }
         temp_v0->weaponType = 0x16;
     }
@@ -1183,19 +1165,21 @@ static void func_80104F2C(int arg0)
     func_800FBBD4(-1);
     func_800FBEA4(2);
     if (arg0 != 0) {
-        func_800FC268(4);
+        vs_mainMenu_drawDpPpbars(4);
     }
 }
 
 static char D_801080C7 = 0;
 
-static int func_80104F80(int arg0)
+static int _equipmentDetailScreen(int row)
 {
+    enum state { init };
+
     char* sp18[2];
     func_8006B7BC_t sp20;
     u_int sp48;
-    int temp_s4;
-    int var_a0;
+    int hitLocations;
+    int equipmentCount;
     int var_a0_5;
     int var_s0_2;
     int i;
@@ -1205,87 +1189,89 @@ static int func_80104F80(int arg0)
     int temp_s0_4;
     vs_battle_actor2* temp_s1;
     vs_battle_menuItem_t* menuItem;
-    unsigned char s0;
+    unsigned char state;
 
     temp_s1 = vs_battle_actors[_selectedActor - 1]->unk3C;
 
-    if (arg0 != 0) {
-        D_80108181 = arg0 - 1;
+    if (row != 0) {
+        _selectedEquipmentRow = row - 1;
         D_801080B8 = 0;
         func_800CB654(1);
-        func_80104AEC(D_80108181);
+        _setActiveRow(_selectedEquipmentRow);
         func_800FFA88(0);
         D_80108183 = 9;
-        D_80108182 = 0;
-        D_80108180 = 0;
+        _equipmentDetailAnimStep = 0;
+        _equipmentDetailState = init;
         return 0;
     }
 
-    temp_s4 = _getHitLocationCount(_selectedActor - 1);
+    hitLocations = _getHitLocationCount(_selectedActor - 1);
 
-    s0 = D_80108180;
-    switch (s0) {
-    case 0:
+    state = _equipmentDetailState;
+    switch (state) {
+    case init:
         if (D_801080B9 != 0) {
             --D_801080B9;
         }
-        if (vs_mainmenu_ready() != 0) {
-            func_80104C0C(D_80108181, 7);
-            switch (D_80108181) {
-            case 0:
-                func_800FC268(3);
-                _drawWeaponInfo(&temp_s1->weapon);
-                break;
-            case 1:
-                func_800FC268(3);
-                _drawShieldInfo(&temp_s1->shield);
-                break;
-            default:
-                if ((D_80108181 - 2) < temp_s4) {
-                    func_800FC268(1);
-                    _drawArmorInfo(&temp_s1->hitLocations[D_80108181 - 2].armor);
-                } else {
-                    func_800FC268(0);
-                    _drawAccessoryInfo(&temp_s1->accessory);
-                }
-                break;
-            }
-            D_80108180 = 1;
+        if (vs_mainmenu_ready() == 0) {
+            break;
         }
+        func_80104C0C(_selectedEquipmentRow, 7);
+        switch (_selectedEquipmentRow) {
+        case 0:
+            vs_mainMenu_drawDpPpbars(3);
+            _drawWeaponInfo(&temp_s1->weapon);
+            break;
+        case 1:
+            vs_mainMenu_drawDpPpbars(3);
+            _drawShieldInfo(&temp_s1->shield);
+            break;
+        default:
+            if ((_selectedEquipmentRow - 2) < hitLocations) {
+                vs_mainMenu_drawDpPpbars(1);
+                _drawArmorInfo(&temp_s1->hitLocations[_selectedEquipmentRow - 2].armor);
+            } else {
+                vs_mainMenu_drawDpPpbars(0);
+                _drawAccessoryInfo(&temp_s1->accessory);
+            }
+            break;
+        }
+        _equipmentDetailState = 1;
         break;
     case 1:
-        if (D_80108182 < 0xA) {
-            ++D_80108182;
-            _animationStep = 0x80 - vs_battle_rowAnimationSteps[0xA - D_80108182];
-            if (D_80108182 < 6) {
+        if (_equipmentDetailAnimStep < 10) {
+            ++_equipmentDetailAnimStep;
+            _animationStep
+                = 128 - vs_battle_rowAnimationSteps[10 - _equipmentDetailAnimStep];
+            if (_equipmentDetailAnimStep < 6) {
                 if (D_801080B9 != 0) {
                     --D_801080B9;
                 }
                 D_801080B8 = 0;
                 func_800CB654(1);
 
-                if (D_80108181 != 0 && D_80108181 != s0) {
+                if (_selectedEquipmentRow != 0 && _selectedEquipmentRow != state) {
                     return 0;
                 }
 
-                if (D_80108181 == 0) {
-                    func_80104C40(D_80108182, &temp_s1->weapon, 1);
-                } else if (D_80108181 == s0) {
-                    func_80104DFC(D_80108182, (func_80104DFC_t*)&temp_s1->shield, 1);
+                if (_selectedEquipmentRow == 0) {
+                    func_80104C40(_equipmentDetailAnimStep, &temp_s1->weapon, 1);
+                } else if (_selectedEquipmentRow == 1) {
+                    func_80104DFC(_equipmentDetailAnimStep, &temp_s1->shield, 1);
                 }
             }
             break;
         }
-        D_80108180 = 2;
+        _equipmentDetailState = 2;
         break;
     case 2:
-        if ((vs_main_buttonsState & 0xC) != 0xC) {
+        if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
             int a1;
             var_s0_2 = 0;
-            var_a0 = _getEquipmentCount();
-            var_s2 = D_80108181;
+            equipmentCount = _getEquipmentCount();
+            var_s2 = _selectedEquipmentRow;
             if (vs_main_buttonRepeat & 4) {
-                var_s0_2 = var_a0 - 1;
+                var_s0_2 = equipmentCount - 1;
             }
             if (vs_main_buttonRepeat & 8) {
                 var_s0_2 = 1;
@@ -1294,8 +1280,8 @@ static int func_80104F80(int arg0)
             a1 = var_s2;
 
             while (1) {
-                if ((var_s2 += var_s0_2) >= var_a0) {
-                    var_s2 -= var_a0;
+                if ((var_s2 += var_s0_2) >= equipmentCount) {
+                    var_s2 -= equipmentCount;
                 }
 
                 if (var_s2 == a1) {
@@ -1305,35 +1291,35 @@ static int func_80104F80(int arg0)
                 switch (var_s2) {
                 case 0:
                     if (temp_s1->weapon.blade.id != 0) {
-                        var_a0 = 0;
+                        equipmentCount = 0;
                     }
                     break;
                 case 1:
                     if (temp_s1->shield.shield.id != 0) {
-                        var_a0 = 0;
+                        equipmentCount = 0;
                     }
                     break;
                 default:
-                    if ((var_s2 - 2) >= temp_s4
+                    if ((var_s2 - 2) >= hitLocations
                         || (temp_s1->hitLocations[var_s2 - 2].armor.armor.id != 0)) {
-                        var_a0 = 0;
+                        equipmentCount = 0;
                     }
                 }
 
-                if (var_a0 == 0) {
+                if (equipmentCount == 0) {
                     break;
                 }
             }
 
-            if (var_s2 != D_80108181) {
+            if (var_s2 != _selectedEquipmentRow) {
                 vs_battle_playMenuChangeSfx();
                 for (i = 10; i < 26; ++i) {
                     func_800FFB90(i);
                 }
-                D_80108181 = var_s2;
+                _selectedEquipmentRow = var_s2;
                 switch (var_s2) {
                 case 0:
-                    func_800FC268(0xB);
+                    vs_mainMenu_drawDpPpbars(0xB);
                     _drawWeaponInfo(&temp_s1->weapon);
 
                     for (i = 1; i < 6; ++i) {
@@ -1344,23 +1330,23 @@ static int func_80104F80(int arg0)
                     sp18[0] = (char*)&temp_s1->weapon;
                     break;
                 case 1:
-                    func_800FC268(0xB);
+                    vs_mainMenu_drawDpPpbars(0xB);
                     _drawShieldInfo(&temp_s1->shield);
                     for (i = 1; i < 4; ++i) {
-                        func_80104DFC(i, (func_80104DFC_t*)&temp_s1->shield, 0);
+                        func_80104DFC(i, &temp_s1->shield, 0);
                     }
                     vs_mainMenu_setShieldStrings(
                         &temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
                     break;
                 default:
-                    if ((var_s2 - 2) < temp_s4) {
-                        func_800FC268(9);
+                    if ((var_s2 - 2) < hitLocations) {
+                        vs_mainMenu_drawDpPpbars(9);
                         _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].armor);
                         vs_mainMenu_setArmorStrings(
                             &temp_s1->hitLocations[var_s2 - 2].armor, sp18, &sp48,
                             vs_battle_stringBuf);
                     } else {
-                        func_800FC268(8);
+                        vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->accessory);
                         func_8006BADC(&sp20, &temp_s1->accessory);
                         vs_mainMenu_setAccessoryStrings(
@@ -1403,24 +1389,25 @@ static int func_80104F80(int arg0)
 
         temp_s0_4 = D_80108183;
 
-        switch (D_80108181) {
+        switch (_selectedEquipmentRow) {
         case 0:
-            func_800FC268(11);
+            vs_mainMenu_drawDpPpbars(11);
             _drawWeaponInfo(&temp_s1->weapon);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->weapon.grip.gemSlots + 0x72);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->weapon.grip.gemSlots + 114);
             break;
         case 1:
-            func_800FC268(11);
+            vs_mainMenu_drawDpPpbars(11);
             _drawShieldInfo(&temp_s1->shield);
-            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->shield.shield.gemSlots + 0x60);
+            var_v0_4 = func_801034BC(temp_s0_4, temp_s1->shield.shield.gemSlots + 96);
             break;
         default:
             var_a0_5 = 8;
-            if ((D_80108181 - 2) < temp_s4) {
+            if ((_selectedEquipmentRow - 2) < hitLocations) {
                 var_a0_5 = 9;
             }
-            func_800FC268(var_a0_5);
-            var_v0_4 = func_801034BC(temp_s0_4, ((D_80108181 - 2) < temp_s4) << 6);
+            vs_mainMenu_drawDpPpbars(var_a0_5);
+            var_v0_4 = func_801034BC(
+                temp_s0_4, ((_selectedEquipmentRow - 2) < hitLocations) << 6);
             break;
         }
 
@@ -1447,7 +1434,7 @@ static int func_80104F80(int arg0)
                 break;
             }
         } else if (var_v0_4 < 0x10) {
-            switch (D_80108181) {
+            switch (_selectedEquipmentRow) {
             case 0:
                 var_s3 = _drawWeaponInfoRow(var_v0_4 - 9, &temp_s1->weapon);
                 break;
@@ -1455,9 +1442,9 @@ static int func_80104F80(int arg0)
                 var_s3 = _drawShieldInfoRow(var_v0_4 - 9, &temp_s1->shield);
                 break;
             default:
-                if ((D_80108181 - 2) < temp_s4) {
-                    var_s3
-                        = _drawArmorInfoRow(&temp_s1->hitLocations[D_80108181 - 2].armor);
+                if ((_selectedEquipmentRow - 2) < hitLocations) {
+                    var_s3 = _drawArmorInfoRow(
+                        &temp_s1->hitLocations[_selectedEquipmentRow - 2].armor);
                 } else {
                     var_s3 = _drawAccessoryInfoRow(&temp_s1->accessory);
                 }
@@ -1467,10 +1454,10 @@ static int func_80104F80(int arg0)
             var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
                 + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (var_v0_4 >= 0x12) {
-                if (D_80108181 == 0) {
+                if (_selectedEquipmentRow == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
                         + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
-                } else if ((D_80108181 - 2) < temp_s4) {
+                } else if ((_selectedEquipmentRow - 2) < hitLocations) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[var_v0_4
                         + 0x283]];
                 }
@@ -1478,7 +1465,7 @@ static int func_80104F80(int arg0)
         }
         vs_mainmenu_setMessage(var_s3);
         i = D_801021A0[var_v0_4];
-        if ((D_80108181 == 1) && ((D_80108183 - 0xA) < 2U)) {
+        if ((_selectedEquipmentRow == 1) && ((D_80108183 - 0xA) < 2U)) {
             i += 7;
         }
         D_801022D5 = D_80108183 != 9;
@@ -1491,7 +1478,7 @@ static int func_80104F80(int arg0)
             func_80103608(_selectedActor - 1);
             func_80104F2C(1);
             func_800FFA88(2);
-            return D_80108181 + 1;
+            return _selectedEquipmentRow + 1;
         }
         D_801023E3 = 1;
         func_801013F8(1);
@@ -1502,11 +1489,7 @@ static int func_80104F80(int arg0)
 
 static int _equipmentScreen(int element)
 {
-    enum state { 
-        init,
-        animWait,
-        handleInput
-    };
+    enum state { init, animWait, handleInput };
 
     char* rowStrings[18];
     int rowTypes[9];
@@ -1609,7 +1592,7 @@ static int _equipmentScreen(int element)
                 _selectedElement = temp_s5;
                 return i;
             }
-            func_80104F80(i);
+            _equipmentDetailScreen(i);
             _equipmentScreenState = 5;
             break;
         }
@@ -1650,7 +1633,7 @@ static int _equipmentScreen(int element)
         }
         break;
     case 5:
-        i = func_80104F80(0);
+        i = _equipmentDetailScreen(0);
         if (i != 0) {
             if (i < 0) {
                 return -2;
@@ -1819,7 +1802,7 @@ static void func_801063F8(void)
     for (i = 0; i < 4; ++i) {
         vs_mainMenu_equipmentStats[i + 32] = temp_a0->unk8[i];
     }
-    func_801045B8(_selectedElement + 0x81);
+    func_801045B8(_selectedElement + 129);
 }
 
 static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,

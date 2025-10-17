@@ -46,7 +46,7 @@ void vs_mainMenu_setStrIntAgi(int, int, int, int);
 void func_800FBD80(int);
 void func_800FBEA4(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
-void func_800FC268(int);
+void vs_mainMenu_drawDpPpbars(int);
 void vs_mainMenu_setWeaponStrings(vs_battle_weaponInfo*, char**, int*, char*);
 void func_800FCAA4(int*, func_800FD0E0_t*, int*, char*);
 void func_800FCC0C(int*, func_800FD0E0_t*, int*, char*);

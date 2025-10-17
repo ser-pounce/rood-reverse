@@ -2,6 +2,7 @@ vs_mainmenu_ready = 0x800FA9D0;
 vs_mainMenu_setRangeRisk = 0x800FBD0C;
 vs_mainMenu_setStrIntAgi = 0x800FBD28;
 vs_mainMenu_setDpPp = 0x800FC208;
+vs_mainMenu_drawDpPpbars = 0x800FC268;
 vs_mainMenu_setWeaponStrings = 0x800FC85C;
 vs_mainMenu_setShieldStrings = 0x800FCCE8;
 vs_mainMenu_setArmorStrings = 0x800FCECC;

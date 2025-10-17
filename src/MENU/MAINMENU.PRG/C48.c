@@ -389,7 +389,7 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
     _maxDp = (maxDp + 99) / 100;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC268);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_drawDpPpbars);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 

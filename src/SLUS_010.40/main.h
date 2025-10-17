@@ -138,7 +138,7 @@ typedef struct {
         short unk14;
         short unk16;
         short unk18;
-        short unk1A;
+        short flags;
         int unk1C;
         char unk20[8];
         D_80060068_t2 unk28[6];

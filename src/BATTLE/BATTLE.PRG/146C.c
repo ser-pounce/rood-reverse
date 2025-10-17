@@ -1957,7 +1957,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     vs_skill_t* skill = &vs_main_skills[id];
 
     temp_s1 = vs_battle_actors[arg0]->unk3C;
-    ret = (u_short)temp_s1->unk954 != 0;
+    ret = (u_short)temp_s1->flags != 0;
 
     if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
         ret |= 2;

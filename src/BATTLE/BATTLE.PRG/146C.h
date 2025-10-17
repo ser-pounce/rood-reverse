@@ -199,7 +199,7 @@ typedef struct {
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];
-    u_int unk954;
+    u_int flags;
 } vs_battle_actor2;
 
 typedef struct {

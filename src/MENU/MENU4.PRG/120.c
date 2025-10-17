@@ -633,7 +633,7 @@ static void func_80103AC8(void)
     }
     if (D_801080B9 != 0) {
         temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
-        if (var_s3->unk954 & 0x20000) {
+        if (var_s3->flags & 0x20000) {
             i = func_800C9950(0, temp_s2 | 0x42, var_s3->maxHP, temp_s4);
             func_800C9950(2, i, 0, temp_s4);
             func_800C9950(1, i + 0xFFFEFFF9, var_s3->currentHP, temp_s4);
@@ -656,7 +656,7 @@ static void func_80103AC8(void)
             temp_v0_2->unk10 = D_800EBC00[i] | 0x37F60000;
         }
         temp_s2 += 0xFFF80000;
-        i = (var_s3->unk954 >> 9) & 0x100;
+        i = (var_s3->flags >> 9) & 0x100;
         _drawStatBar(i, var_s3->currentHP, var_s3->maxHP, temp_s2 | 10);
         _drawStatBar(i | 1, var_s3->currentMP, var_s3->maxMP, temp_s2 | 80);
         temp_s2 += 0x40000;
@@ -1541,7 +1541,7 @@ static int _equipmentScreen(int element)
             func_800FCCE8(&temp_s6->shield, &rowText[2], rowType + 1, sp80[1]);
         }
 
-        temp_s5 = (((temp_s6->unk954 >> 0x11) ^ 1) & 1 & (_selectedActor != 1));
+        temp_s5 = (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
         rowType[0] |= temp_s5 | new_var;
@@ -1898,7 +1898,7 @@ int vs_menu4_Exec(char* state)
     case 5:
         var_s5 = 0;
         if ((_selectedActor == 1)
-            || (vs_battle_actors[_selectedActor - 1]->unk3C->unk954 & 0x20000)) {
+            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags & 0x20000)) {
             var_s5 = 1;
         }
         if (animWait != 0) {
@@ -2066,7 +2066,7 @@ int vs_menu4_Exec(char* state)
     case 6:
         var_s5 = 0;
         if ((_selectedActor == 1)
-            || (vs_battle_actors[_selectedActor - 1]->unk3C->unk954 & 0x20000)) {
+            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags & 0x20000)) {
             var_s5 = 1;
         }
         if (animWait != 0) {

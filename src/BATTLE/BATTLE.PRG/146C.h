@@ -165,13 +165,7 @@ typedef struct {
 } vs_battle_accessoryInfo;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    int unk4;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
+    char name[16];
     int unk10;
     short unk14;
     short unk16;

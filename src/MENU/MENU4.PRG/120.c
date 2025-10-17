@@ -427,7 +427,7 @@ static int D_801080A4 = 0;
 static int _selectedActor = 0;
 static int D_801080AC = 0;
 static int D_801080B0 = 0;
-static int D_801080B4 = 0;
+static int _animationStep = 0;
 static char D_801080B8 = 0;
 static char D_801080B9 = 0;
 static char D_801080BA = 0;
@@ -456,7 +456,7 @@ static int func_80103688(int actor, int arg1)
     while (1) {
         actor = (actor + arg1) % 15;
         temp_a0 = func_800A0BE0(actor);
-        if ((vs_battle_actors[actor] != 0) && (vs_battle_actors[actor]->unk1C < 5)
+        if ((vs_battle_actors[actor] != NULL) && (vs_battle_actors[actor]->unk1C < 5)
             && (temp_a0 & 0x01000001) == 1) {
             break;
         }
@@ -488,9 +488,9 @@ static int func_80103744(int arg0)
     }
     switch (D_801080C0) {
     case 0:
-        if (D_801080B4 < 160) {
+        if (_animationStep < 160) {
             D_801080AC = 1;
-            D_801080B4 += 32;
+            _animationStep += 32;
         } else {
             D_801080AC = 0;
             func_800F9E0C();
@@ -498,22 +498,22 @@ static int func_80103744(int arg0)
             D_801080B0 = 1;
             func_800F9A24(_selectedActor - 1);
             D_801080BC = 1;
-            D_801080B4 = -160;
+            _animationStep = -160;
             D_801080C0 = 2;
         }
         break;
     case 2:
-        if (D_801080B4 < 0) {
-            D_801080B4 += 32;
+        if (_animationStep < 0) {
+            _animationStep += 32;
             break;
         }
         D_801080B0 = 0;
         D_801080C0 = 6;
         return 1;
     case 3:
-        if (D_801080B4 >= -159) {
+        if (_animationStep >= -159) {
             D_801080B0 = 1;
-            D_801080B4 -= 32;
+            _animationStep -= 32;
             break;
         }
         func_800F9E0C();
@@ -521,13 +521,13 @@ static int func_80103744(int arg0)
         D_801080B0 = 0;
         func_800F9A24(_selectedActor - 1);
         D_801080BC = 1;
-        D_801080B4 = 160;
+        _animationStep = 160;
         D_801080C0 = 5;
         break;
     case 5:
-        if (D_801080B4 > 0) {
+        if (_animationStep > 0) {
             D_801080AC = 1;
-            D_801080B4 -= 32;
+            _animationStep -= 32;
             break;
         }
         D_801080AC = 0;
@@ -770,7 +770,7 @@ static char D_80108181;
 static char D_80108182;
 static char D_80108183;
 static char _equipmentScreenState;
-static u_char D_80108185;
+static u_char _timer;
 static char _2[2];
 static int D_80108188;
 static char _3[12];
@@ -913,7 +913,7 @@ static int _getHitLocationCount(int actor)
     return i;
 }
 
-static int func_8010455C(void)
+static int _getEquipmentCount(void)
 {
     return _getHitLocationCount(_selectedActor - 1) + 2
         + (vs_battle_actors[_selectedActor - 1]->unk3C->accessory.accessory.id != 0);
@@ -1256,7 +1256,7 @@ static int func_80104F80(int arg0)
     case 1:
         if (D_80108182 < 0xA) {
             ++D_80108182;
-            D_801080B4 = 0x80 - vs_battle_rowAnimationSteps[0xA - D_80108182];
+            _animationStep = 0x80 - vs_battle_rowAnimationSteps[0xA - D_80108182];
             if (D_80108182 < 6) {
                 if (D_801080B9 != 0) {
                     --D_801080B9;
@@ -1282,7 +1282,7 @@ static int func_80104F80(int arg0)
         if ((vs_main_buttonsState & 0xC) != 0xC) {
             int a1;
             var_s0_2 = 0;
-            var_a0 = func_8010455C();
+            var_a0 = _getEquipmentCount();
             var_s2 = D_80108181;
             if (vs_main_buttonRepeat & 4) {
                 var_s0_2 = var_a0 - 1;
@@ -1502,13 +1502,17 @@ static int func_80104F80(int arg0)
 
 static int _equipmentScreen(int element)
 {
-    enum state { init };
+    enum state { 
+        init,
+        animWait,
+        handleInput
+    };
 
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
     func_8006B7BC_t sp3E0;
-    int sp408;
+    int rowCount;
     int hitLocationCount;
     int rowType;
     int temp_s5;
@@ -1521,7 +1525,7 @@ static int _equipmentScreen(int element)
     vs_battle_equipment_hitLocations* hitLocations = temp_s6->hitLocations;
 
     hitLocationCount = _getHitLocationCount(_selectedActor - 1);
-    sp408 = func_8010455C();
+    rowCount = _getEquipmentCount();
 
     if (element != 0) {
         vs_battle_selectedEquipment = element + 1;
@@ -1554,7 +1558,7 @@ static int _equipmentScreen(int element)
         rowTypes[0] |= temp_s5 | new_var;
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
-        for (i = 2; i < sp408; ++i, ++hitLocations) {
+        for (i = 2; i < rowCount; ++i, ++hitLocations) {
             func_8006B7BC_t* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
@@ -1572,24 +1576,24 @@ static int _equipmentScreen(int element)
         }
         temp_s1_2 = vs_main_settings.cursorMemory;
         vs_main_settings.cursorMemory = 1;
-        vs_mainmenu_setMenuRows(sp408, 0x19142, (char**)rowStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, 0x19142, (char**)rowStrings, rowTypes);
         vs_main_settings.cursorMemory = temp_s1_2;
-        if (D_801080B4 != 0) {
-            D_80108185 = 0xA;
+        if (_animationStep != 0) {
+            _timer = 10;
         } else {
-            D_80108185 = 0;
+            _timer = 0;
         }
-        _equipmentScreenState = 1;
+        _equipmentScreenState = animWait;
         break;
-    case 1:
-        if (D_80108185 != 0) {
-            --D_80108185;
-            D_801080B4 = vs_battle_rowAnimationSteps[D_80108185];
+    case animWait:
+        if (_timer != 0) {
+            --_timer;
+            _animationStep = vs_battle_rowAnimationSteps[_timer];
         } else {
-            _equipmentScreenState = 2;
+            _equipmentScreenState = handleInput;
         }
         break;
-    case 2:
+    case handleInput:
         i = vs_mainmenu_getSelectedRow() + 1;
         if (i != 0) {
             func_800FBD80(_selectedActor + 15);
@@ -1609,15 +1613,15 @@ static int _equipmentScreen(int element)
             _equipmentScreenState = 5;
             break;
         }
-        if ((vs_main_buttonsState & 0xC) != 0xC) {
+        if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
             i = _selectedActor - 1;
-            if (vs_main_buttonsPressed.all & 4) {
-                i = func_80103688(i, 0xE);
+            if (vs_main_buttonsPressed.all & PADL1) {
+                i = func_80103688(i, 14);
                 temp_s5 = 1;
             }
-            if (vs_main_buttonsPressed.all & 8) {
+            if (vs_main_buttonsPressed.all & PADR1) {
                 i = func_80103688(i, 1);
-                temp_s5 = 0x11;
+                temp_s5 = 17;
             }
             if (i != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
@@ -1760,7 +1764,7 @@ static void func_80106150(void)
     int temp_s2;
     int* p;
 
-    temp_s1 = (0x80 - D_801080B4);
+    temp_s1 = (0x80 - _animationStep);
     temp_s2 = D_800F453C[0x32B];
     temp_s0 = D_800F453C[0x31F];
     p = (int*)D_1F800000 + 13;
@@ -2146,7 +2150,7 @@ int vs_menu4_Exec(char* state)
         break;
     case 9:
         if (animWait != 0) {
-            D_801080B4 = 128 - vs_battle_rowAnimationSteps[--animWait];
+            _animationStep = 128 - vs_battle_rowAnimationSteps[--animWait];
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_battle_playMenuLeaveSfx();
             func_800FBBD4(-1);
@@ -2205,7 +2209,7 @@ int vs_menu4_Exec(char* state)
     case 10:
         var_s5 = 1;
         if (animWait != 0) {
-            D_801080B4 = vs_battle_rowAnimationSteps[--animWait];
+            _animationStep = vs_battle_rowAnimationSteps[--animWait];
         } else {
             func_801045B8(_selectedElement + 1);
             *state = 5;

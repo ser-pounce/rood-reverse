@@ -232,6 +232,7 @@ typedef struct {
     char unk7;
     signed char unk8[8];
     signed char unk10[8];
+    signed char unk18[8];
 } func_800FD17C_t;
 
 void func_80069FC4(int, int);

@@ -1070,7 +1070,6 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
     int sp20[12];
     int sp50[4];
     func_800FD17C_t sp60;
-    int dummy[2];
     int sp80;
     int var_s1;
     vs_battle_menuItem_t* temp_v0;
@@ -1125,7 +1124,6 @@ static void func_80104DFC(int arg0, vs_battle_shieldInfo* arg1, int arg2)
     int sp40;
     int var_s0;
     vs_battle_menuItem_t* meuItem;
-    int dummy[2];
 
     var_s0 = arg0 - 1;
 

@@ -473,8 +473,8 @@ void vs_mainMenu_setAccessoryStrings(
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
-        arg3, vs_mainMenu_itemHelp + (arg0->unk0 + vs_mainMenu_itemHelp)[-140], 96);
-    arg1->unk0 = vs_mainMenu_itemNames[arg0->unk0];
+        arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
+    arg1->unk0 = vs_mainMenu_itemNames[arg0->id];
     arg1->unk4 = arg3;
     *arg2 = 0x58000000;
 }
@@ -482,8 +482,8 @@ void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
 void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
-        arg3, vs_mainMenu_itemHelp + (arg0->unk0 + vs_mainMenu_itemHelp)[-140], 96);
-    arg1->unk0 = vs_mainMenu_itemNames[arg0->unk0];
+        arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
+    arg1->unk0 = vs_mainMenu_itemNames[arg0->id];
     arg1->unk4 = arg3;
     *arg2 = arg0->unk2 << 9;
 }

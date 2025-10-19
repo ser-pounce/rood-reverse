@@ -228,15 +228,15 @@ typedef struct {
 } vs_battle_actor;
 
 typedef struct {
-    u_short unk0;
+    u_short id;
     char unk2;
     char unk3;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
-    signed char unk8[8];
-    signed char unk10[8];
+    char gemEffects;
+    char strength;
+    char intelligence;
+    char agility;
+    signed char classes[8];
+    signed char affinities[8];
     signed char unk18[8];
 } func_800FD17C_t;
 

@@ -319,19 +319,19 @@ void func_8006B728(func_800FD17C_t* arg0, vs_battle_equipment* arg1)
 {
     int i;
 
-    arg0->unk0 = arg1->id;
+    arg0->id = arg1->id;
     arg0->unk2 = arg1->unk2;
-    arg0->unk4 = arg1->gemEffects;
-    arg0->unk5 = arg1->strength;
-    arg0->unk6 = arg1->intelligence;
-    arg0->unk7 = arg1->agility;
+    arg0->gemEffects = arg1->gemEffects;
+    arg0->strength = arg1->strength;
+    arg0->intelligence = arg1->intelligence;
+    arg0->agility = arg1->agility;
 
     for (i = 0; i < 6; ++i) {
-        arg0->unk8[i] = arg1->classes[i];
+        arg0->classes[i] = arg1->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        arg0->unk10[i] = arg1->affinities[i];
+        arg0->affinities[i] = arg1->affinities[i];
     }
 }
 

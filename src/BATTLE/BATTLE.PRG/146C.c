@@ -282,7 +282,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B57C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B6AC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B728);
+void func_8006B728(func_800FD17C_t* arg0, vs_battle_equipment* arg1)
+{
+    int i;
+
+    arg0->unk0 = arg1->id;
+    arg0->unk2 = arg1->unk2;
+    arg0->unk4 = arg1->gemEffects;
+    arg0->unk5 = arg1->strength;
+    arg0->unk6 = arg1->intelligence;
+    arg0->unk7 = arg1->agility;
+
+    for (i = 0; i < 6; ++i) {
+        arg0->unk8[i] = arg1->classes[i];
+    }
+
+    for (i = 0; i < 7; ++i) {
+        arg0->unk10[i] = arg1->affinities[i];
+    }
+}
 
 void func_8006B7BC(func_8006B7BC_t* arg0, vs_battle_equipment* equipment)
 {

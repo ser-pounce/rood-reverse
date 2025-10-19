@@ -1070,7 +1070,7 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
     int sp20[12];
     int sp50[4];
     func_800FD17C_t sp60;
-    int dummy[6];
+    int dummy[2];
     int sp80;
     int var_s1;
     vs_battle_menuItem_t* temp_v0;
@@ -1124,8 +1124,8 @@ static void func_80104DFC(int arg0, vs_battle_shieldInfo* arg1, int arg2)
     func_800FD17C_t sp20;
     int sp40;
     int var_s0;
-    vs_battle_menuItem_t* temp_v0;
-    int dummy[6];
+    vs_battle_menuItem_t* meuItem;
+    int dummy[2];
 
     var_s0 = arg0 - 1;
 
@@ -1134,26 +1134,26 @@ static void func_80104DFC(int arg0, vs_battle_shieldInfo* arg1, int arg2)
         sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
         if (arg1->gems[var_s0].id != 0) {
-            func_8006B728(&sp20, &arg1->gems[var_s0].id);
+            func_8006B728(&sp20, &arg1->gems[var_s0]);
             func_800FD0E0(&sp20, &sp18, &sp40, vs_battle_stringBuf);
         }
-        var_s0 = 0x97;
+        var_s0 = 151;
     } else {
         var_s0 = 0;
     }
 
-    func_800FFB90(arg0 + 0x14);
+    func_800FFB90(arg0 + 20);
 
     if (var_s0 != 0) {
-        temp_v0 = vs_battle_setMenuItem(
+        meuItem = vs_battle_setMenuItem(
             arg0 + 20, 320 - var_s0, (arg0 * 16) + 18, var_s0, 0, sp18.unk0);
-        temp_v0->unk7 = sp18.unk4 == 0;
+        meuItem->unk7 = sp18.unk4 == 0;
         if (arg2 & 1) {
-            temp_v0->animSpeed = 320;
-            temp_v0->state = 2;
-            temp_v0->x = 320 - var_s0;
+            meuItem->animSpeed = 320;
+            meuItem->state = 2;
+            meuItem->x = 320 - var_s0;
         }
-        temp_v0->weaponType = 0x16;
+        meuItem->weaponType = 0x16;
     }
 }
 

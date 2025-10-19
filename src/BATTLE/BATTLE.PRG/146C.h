@@ -226,6 +226,12 @@ typedef struct {
     u_short unk0;
     char unk2;
     char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+    signed char unk8[8];
+    signed char unk10[8];
 } func_800FD17C_t;
 
 void func_80069FC4(int, int);
@@ -235,7 +241,7 @@ void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
 void func_8006B338(void*);
 void func_8006B57C(int*, vs_battle_equipment*);
 void func_8006B6AC(int*, vs_battle_equipment*);
-void func_8006B728(func_800FD17C_t*, void*);
+void func_8006B728(func_800FD17C_t*, vs_battle_equipment*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
 void func_8006BAA8(func_8006B7BC_t*, vs_battle_armorInfo*);

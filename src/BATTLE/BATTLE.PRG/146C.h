@@ -41,6 +41,13 @@ typedef struct {
 } func_80103080_t;
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+} vs_battle_range_t;
+
+typedef struct {
     u_short id;
     signed char unk2;
     signed char wepId;
@@ -60,9 +67,7 @@ typedef struct {
     char gemSlots;
     char gemEffects;
     char index;
-    char range;
-    char unk19;
-    u_short unk1A;
+    vs_battle_range_t range;
     signed char types[4];
     signed char classes[8];
     signed char affinities[8];
@@ -235,12 +240,33 @@ typedef struct {
     signed char unk18[8];
 } func_800FD17C_t;
 
+typedef struct {
+    char id;
+    char unk1;
+    char wepId;
+    char category;
+    short maxDp;
+    short maxPp;
+    short currentDp;
+    short currentPp;
+    char strength;
+    char intelligence;
+    char agility;
+    char cost;
+    short costType;
+    short unk12;
+    vs_battle_range_t range;
+    signed char classes[8];
+    signed char affinities[8];
+    short material;
+} func_8006B57C_t;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
 void func_8006B338(void*);
-void func_8006B57C(int*, vs_battle_equipment*);
+void func_8006B57C(func_8006B57C_t*, vs_battle_equipment*);
 void func_8006B6AC(int*, vs_battle_equipment*);
 void func_8006B728(func_800FD17C_t*, vs_battle_equipment*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);

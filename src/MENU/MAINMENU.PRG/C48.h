@@ -49,7 +49,7 @@ void vs_mainMenu_setDpPp(int, int, int, int);
 void vs_mainMenu_drawDpPpbars(int);
 void vs_mainMenu_setWeaponStrings(vs_battle_weaponInfo*, char**, int*, char*);
 void func_800FCAA4(func_8006B57C_t*, func_800FD0E0_t*, int*, char*);
-void func_800FCC0C(int*, func_800FD0E0_t*, int*, char*);
+void func_800FCC0C(func_8006B6AC_t*, func_800FD0E0_t*, int*, char*);
 void vs_mainMenu_setShieldStrings(void*, char**, int*, char*);
 void vs_mainMenu_setArmorStrings(vs_battle_armorInfo*, char**, int*, char*);
 void vs_mainMenu_setAccessoryStrings(

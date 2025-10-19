@@ -313,7 +313,22 @@ void func_8006B57C(func_8006B57C_t* arg0, vs_battle_equipment* arg1)
     arg0->material = arg1->material;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B6AC);
+void func_8006B6AC(func_8006B6AC_t* arg0, vs_battle_equipment* arg1)
+{
+    int i;
+
+    arg0->id = arg1->id;
+    arg0->unk2 = arg1->unk2;
+    arg0->category = arg1->category;
+    arg0->gemSlots = arg1->gemSlots;
+    arg0->strength = arg1->strength;
+    arg0->intelligence = arg1->intelligence;
+    arg0->agility = arg1->agility;
+
+    for (i = 0; i < 4; ++i) {
+        arg0->types[i] = arg1->types[i];
+    }
+}
 
 void func_8006B728(func_800FD17C_t* arg0, vs_battle_equipment* arg1)
 {

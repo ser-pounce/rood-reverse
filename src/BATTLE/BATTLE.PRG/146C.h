@@ -261,13 +261,24 @@ typedef struct {
     short material;
 } func_8006B57C_t;
 
+typedef struct {
+    short id;
+    char unk2;
+    char category;
+    char gemSlots;
+    char strength;
+    char intelligence;
+    char agility;
+    char types[4];
+} func_8006B6AC_t;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
 void func_8006B338(void*);
 void func_8006B57C(func_8006B57C_t*, vs_battle_equipment*);
-void func_8006B6AC(int*, vs_battle_equipment*);
+void func_8006B6AC(func_8006B6AC_t*, vs_battle_equipment*);
 void func_8006B728(func_800FD17C_t*, vs_battle_equipment*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);

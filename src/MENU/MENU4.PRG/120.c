@@ -1068,7 +1068,7 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
 {
     func_800FD0E0_t sp18;
     func_8006B57C_t sp20;
-    int sp50[4];
+    func_8006B6AC_t sp50;
     func_800FD17C_t sp60;
     int sp80;
     int var_s1;
@@ -1083,8 +1083,8 @@ static void func_80104C40(int arg0, vs_battle_weaponInfo* arg1, int arg2)
         func_8006B57C(&sp20, &arg1->blade);
         func_800FCAA4(&sp20, &sp18, &sp80, vs_battle_stringBuf);
     } else if (arg0 == 2) {
-        func_8006B6AC(sp50, &arg1->grip);
-        func_800FCC0C(sp50, &sp18, &sp80, vs_battle_stringBuf);
+        func_8006B6AC(&sp50, &arg1->grip);
+        func_800FCC0C(&sp50, &sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = arg0 - 3;
         if (var_s1 < v1) {

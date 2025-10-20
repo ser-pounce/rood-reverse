@@ -42,6 +42,7 @@ static void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
             sizeof weapon->classAffinityBaseline);
         vs_mainMenu_equipmentStats[63]
             = weapon == &vs_battle_characterState->unk3C->weapon;
+
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = weapon->grip.types[i];
         }
@@ -77,6 +78,7 @@ static void _drawShieldInfo(vs_battle_shieldInfo* shield)
             sizeof shield->classAffinityBaseline);
         vs_mainMenu_equipmentStats[63]
             = shield == &vs_battle_characterState->unk3C->shield;
+
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = shield->types[i];
         }
@@ -105,6 +107,7 @@ static void _drawArmorInfo(vs_battle_armorInfo* armor)
         vs_battle_memcpy(vs_mainMenu_equipmentStats + 48, &armor->classAffinityBaseline,
             sizeof armor->classAffinityBaseline);
         vs_mainMenu_equipmentStats[63] = 0;
+
         for (i = 0; i < 5; ++i) {
             vs_mainMenu_equipmentStats[63]
                 |= armor == &vs_battle_characterState->unk3C->hitLocations[i].armor;
@@ -170,6 +173,7 @@ static void _drawGripInfo(vs_battle_equipment* grip)
     for (i = 0; i < 4; ++i) {
         vs_mainMenu_equipmentStats[i + 32] = grip->types[i];
     }
+
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     func_800FBB8C(4);
     vs_mainMenu_drawDpPpbars(8);
@@ -185,6 +189,7 @@ static void _drawGemInfo(vs_battle_equipment* gem)
         vs_mainMenu_equipmentStats[i] = gem->classes[i & 7];
         vs_mainMenu_equipmentStats[i + 16] = gem->affinities[i & 7];
     }
+
     vs_mainMenu_setStrIntAgi(gem->strength, gem->intelligence, gem->agility, 1);
     func_800FBB8C(3);
     vs_mainMenu_drawDpPpbars(8);
@@ -193,19 +198,24 @@ static void _drawGemInfo(vs_battle_equipment* gem)
 static void _initBladeInfo(
     vs_battle_equipment* blade, char** arg1, int* arg2 __attribute__((unused)))
 {
-    vs_battle_stringContext[19] = vs_mainMenu_itemNames[blade->material + 253];
-    vs_battle_stringContext[18]
+    char* str;
+
+    vs_battle_stringContext.unk28[9] = vs_mainMenu_itemNames[blade->material + 253];
+    vs_battle_stringContext.unk28[8]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
             + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
-    vs_battle_stringContext[17]
+    vs_battle_stringContext.unk28[7]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType
             + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
-    vs_battle_stringContext[16] = (char*)&vs_mainMenu_itemHelp
+    vs_battle_stringContext.unk28[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
             + VS_ITEMHELP_BIN_INDEX_oneHanded]];
-    func_800C685C(func_800C685C(vs_battle_stringBuf,
-                      (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->id - 1]]),
-        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
+
+    str = func_800C685C(vs_battle_stringBuf,
+        (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->id - 1]]);
+    func_800C685C(
+        str, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
+
     arg1[1] = vs_battle_stringBuf;
 }
 
@@ -213,7 +223,7 @@ static void _initGripInfo(
     vs_battle_equipment* grip, char** arg1, int* arg2 __attribute__((unused)))
 {
     u_short* gripId = &grip->id;
-    vs_battle_stringContext[15]
+    vs_battle_stringContext.unk28[5]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category
             + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
     func_800C685C(func_800C685C(vs_battle_stringBuf,
@@ -360,13 +370,11 @@ static int func_8010341C(int arg0, int arg1)
     return ret;
 }
 
-static int func_801034BC(int arg0, int arg1)
+static int func_801034BC(u_int arg0, int arg1)
 {
-    int direction;
-    int var_s2;
+    int direction = 0;
+    int var_s2 = arg0;
 
-    direction = 0;
-    var_s2 = arg0;
     if (vs_main_buttonRepeat & PADLup) {
         direction = 1;
     } else if (vs_main_buttonRepeat & PADLdown) {
@@ -385,7 +393,7 @@ static int func_801034BC(int arg0, int arg1)
             break;
         }
         if (var_s2 == arg0) {
-            if ((u_int)(arg0 - 2) < 14) {
+            if ((arg0 - 2) < 14) {
                 do {
                     --arg0;
                 } while (func_8010341C(arg0, arg1) == 0);
@@ -462,11 +470,12 @@ static int func_80103744(int arg0)
         }
         _selectedActor = arg0 & 0xF;
         vs_battle_setMenuItem(
-            4, 180, 18, 0x8C, 8, (char*)vs_battle_actors[_selectedActor - 1]->unk3C)
+            4, 180, 18, 0x8C, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
             ->selected
             = 1;
         return 0;
     }
+
     switch (D_801080C0) {
     case 0:
         if (_animationStep < 160) {
@@ -543,7 +552,6 @@ static void func_8010399C(int rgb, int arg1, u_long* nextPrim)
 
 static void _drawStatBar(int index, int current, int max, int xy)
 {
-
     if (max == 0) {
         current = 0;
         max = 1;
@@ -561,14 +569,9 @@ static void _drawStatBar(int index, int current, int max, int xy)
 
 static void func_80103AC8(void)
 {
-    int temp_s2;
-    int i;
-    vs_battle_actor2* temp_v0_2;
-    u_long* temp_s4;
-    vs_battle_actor2* var_s3;
+    vs_battle_actor2* var_s3 = vs_battle_actors[_selectedActor - 1]->unk3C;
+    u_long* temp_s4 = D_1F800000[1] - 3;
 
-    var_s3 = vs_battle_actors[_selectedActor - 1]->unk3C;
-    temp_s4 = D_1F800000[1] - 3;
     switch (D_801080B8) {
     case 0:
         break;
@@ -613,7 +616,8 @@ static void func_80103AC8(void)
         break;
     }
     if (D_801080B9 != 0) {
-        temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
+        int i;
+        int temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
         if (var_s3->flags & 0x20000) {
             i = func_800C9950(0, temp_s2 | 0x42, var_s3->maxHP, temp_s4);
             func_800C9950(2, i, 0, temp_s4);
@@ -632,9 +636,10 @@ static void func_80103AC8(void)
         }
 
         for (i = 0; i < 3; ++i) {
-            temp_v0_2 = func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
-                D_800EBBFC[i] | 0x90000, temp_s4);
-            temp_v0_2->unk10 = D_800EBC00[i] | 0x37F60000;
+            func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
+                D_800EBBFC[i] | 0x90000, temp_s4)
+                ->unk10
+                = D_800EBC00[i] | 0x37F60000;
         }
         temp_s2 += 0xFFF80000;
         i = (var_s3->flags >> 9) & 0x100;
@@ -1775,8 +1780,8 @@ static void func_80106308(void)
 
     temp_a0
         = &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
-    vs_battle_stringContext[10] = (char*)&D_800EA868[D_800EA868[temp_a0->nameIndex]];
-    vs_battle_stringContext[11]
+    vs_battle_stringContext.unk28[0] = (char*)&D_800EA868[D_800EA868[temp_a0->nameIndex]];
+    vs_battle_stringContext.unk28[1]
         = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationState(temp_a0)
             + VS_status_INDEX_critical]];
     func_800C685C(vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);

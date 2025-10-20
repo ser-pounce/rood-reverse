@@ -71,6 +71,12 @@ typedef struct {
     int executeAbility;
 } D_800F4E98_t;
 
+typedef struct {
+    int unk0[10];
+    char* unk28[10];
+} vs_battle_stringContext_t;
+
+
 void func_800C6540(char const*, int, int, u_long*);
 char* func_800C685C(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
@@ -152,5 +158,5 @@ extern char D_800F4FDA;
 extern D_800F4FE0_t D_800F4FE0[];
 extern u_int D_800F5130;
 extern short D_800F514C;
-extern char* vs_battle_stringContext[];
+extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;

@@ -6,11 +6,11 @@
 #include "6E644.h"
 #include "lbas.h"
 #include "vs_string.h"
+#include "gpu.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../MENU/MAINMENU.PRG/C48.h"
 #include <memory.h>
-#include "gpu.h"
 
 typedef struct {
     signed char unk0;
@@ -138,7 +138,94 @@ void vs_battle_renderTextRaw(char const* text, int xy, void* arg2)
 
 void func_800C6850(char* arg0) { *arg0 = 0xE7; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C685C);
+char* vs_battle_printf(char* dest, char* src)
+{
+    int divisor;
+    int integer;
+    int c;
+
+    c = *src++;
+
+    while (c != vs_char_terminator) {
+        if (c >= vs_char_control) {
+            switch (c) {
+            case vs_char_printHex:
+                c = *src++;
+                integer = vs_battle_stringContext.unk0[c % 10];
+                if (integer < 0) {
+                    integer = -integer;
+                    *dest++ = vs_char_hyphen;
+                }
+                if (c < 10) {
+                    if (integer == 0) {
+                        *dest++ = vs_char_zero;
+                    } else {
+                        for (divisor = 0x10000000; (integer / divisor) == 0;
+                             divisor >>= 4)
+                            ;
+                        while (divisor != 0) {
+                            *dest++ = (integer / divisor) & 0xF;
+                            divisor >>= 4;
+                        }
+                    }
+                } else {
+                    c = (c / 10) - 1;
+                    divisor = 1;
+                    while (c != 0) {
+                        --c;
+                        divisor *= 16;
+                    }
+                    while (divisor != 0) {
+                        *dest++ = (integer / divisor) & 0xF;
+                        divisor >>= 4;
+                    }
+                }
+                break;
+            case vs_char_printDecimal:
+                c = *src++;
+                integer = vs_battle_stringContext.unk0[c % 10];
+                if (integer < 0) {
+                    integer = -integer;
+                    *dest++ = vs_char_hyphen;
+                }
+                if (c < 10) {
+                    if (integer == 0) {
+                        *dest++ = 0;
+                    } else {
+                        for (divisor = 1000000000; (integer / divisor) == 0;
+                             divisor /= 10)
+                            ;
+                        while (divisor != 0) {
+                            *dest++ = (integer / divisor) % 10;
+                            divisor /= 10;
+                        }
+                    }
+                } else {
+                    c = (c / 10) - 1;
+                    for (divisor = 1; c != 0; --c) {
+                        divisor *= 10;
+                    }
+                    while (divisor != 0) {
+                        *dest++ = (integer / divisor) % 10;
+                        divisor /= 10;
+                    }
+                }
+                break;
+            case 0xFF:
+                dest = vs_battle_printf(dest, vs_battle_stringContext.unk28[(u_char)*src++]);
+                break;
+            default:
+                *dest++ = c;
+                *dest++ = *src++;
+            }
+        } else {
+            *dest++ = c;
+        }
+        c = *src++;
+    }
+    *dest = c;
+    return dest;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6BF0);
 

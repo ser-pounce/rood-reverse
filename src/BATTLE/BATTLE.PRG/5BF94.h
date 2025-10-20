@@ -76,9 +76,8 @@ typedef struct {
     char* unk28[10];
 } vs_battle_stringContext_t;
 
-
 void func_800C6540(char const*, int, int, u_long*);
-char* func_800C685C(char*, char*);
+char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
 void func_800C70F8(int, int, int, u_long*);

@@ -15,6 +15,7 @@ vs_battle_playMenuSelectSfx = 0x800C02F0;
 vs_battle_playMenuChangeSfx = 0x800C02F8;
 vs_battle_mapStickDeadZone = 0x800C4708;
 vs_battle_renderTextRaw = 0x800C6828;
+vs_battle_printf = 0x800C685C;
 vs_battle_getMenuItem = 0x800C8E48;
 vs_battle_setMenuItem = 0x800C8E5C;
 vs_battle_drawStatBar = 0x800C99DC;

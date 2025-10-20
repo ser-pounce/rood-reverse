@@ -211,9 +211,9 @@ static void _initBladeInfo(
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
             + VS_ITEMHELP_BIN_INDEX_oneHanded]];
 
-    str = func_800C685C(vs_battle_stringBuf,
+    str = vs_battle_printf(vs_battle_stringBuf,
         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->id - 1]]);
-    func_800C685C(
+    vs_battle_printf(
         str, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
 
     arg1[1] = vs_battle_stringBuf;
@@ -226,8 +226,8 @@ static void _initGripInfo(
     vs_battle_stringContext.unk28[5]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category
             + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
-    func_800C685C(func_800C685C(vs_battle_stringBuf,
-                      (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*gripId - 6]]),
+    vs_battle_printf(vs_battle_printf(vs_battle_stringBuf,
+                         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*gripId - 6]]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_gripTemplate]);
     arg1[1] = vs_battle_stringBuf;
 }
@@ -1784,7 +1784,8 @@ static void func_80106308(void)
     vs_battle_stringContext.unk28[1]
         = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationState(temp_a0)
             + VS_status_INDEX_critical]];
-    func_800C685C(vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
+    vs_battle_printf(
+        vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
     vs_mainmenu_setMessage(vs_battle_stringBuf);
     func_801045B8(_selectedElement + 1);
 }

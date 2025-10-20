@@ -59,7 +59,8 @@ table = [
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
 # 0xFB -> |Fn|: Manipulate font table. n = 0-3 sets the color, n = 4 justifies the text,
 #               n = 5 or 6 set font table 1 and 0 respectively.
-# 0xFE -> |#n|: Inserts a contextual integer with ID n
+# 0xFD -> |#n|: Inserts a contextual hex integer with ID n
+# 0xFE -> |#n|: Inserts a contextual decimal integer with ID n
 # 0xFF -> |$n|: Inserts a contextual string with ID n
 
 def decode(s):

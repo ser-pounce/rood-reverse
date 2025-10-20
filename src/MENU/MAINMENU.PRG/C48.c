@@ -411,7 +411,8 @@ void vs_mainMenu_setWeaponStrings(
             ? vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D]
             : vs_mainMenu_itemHelp[blade->category
                   + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon - 1]];
-    vs_battle_stringContext.unk28[9] = (char*)&vs_mainMenu_itemNames[blade->material + 253];
+    vs_battle_stringContext.unk28[9]
+        = (char*)&vs_mainMenu_itemNames[blade->material + 253];
     vs_battle_stringContext.unk28[8]
         = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
             + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
@@ -421,8 +422,9 @@ void vs_mainMenu_setWeaponStrings(
     vs_battle_stringContext.unk28[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
             + VS_ITEMHELP_BIN_INDEX_oneHanded]];
-    func_800C685C(func_800C685C(description,
-                      (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+    vs_battle_printf(
+        vs_battle_printf(description,
+            (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
     rowStrings[1] = description;
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);

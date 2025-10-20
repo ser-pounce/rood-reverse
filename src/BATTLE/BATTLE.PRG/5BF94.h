@@ -72,8 +72,8 @@ typedef struct {
 } D_800F4E98_t;
 
 typedef struct {
-    int unk0[10];
-    char* unk28[10];
+    int integers[10];
+    char* strings[10];
 } vs_battle_stringContext_t;
 
 void func_800C6540(char const*, int, int, u_long*);

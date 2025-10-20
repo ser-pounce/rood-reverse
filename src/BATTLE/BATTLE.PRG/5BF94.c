@@ -151,7 +151,7 @@ char* vs_battle_printf(char* dest, char* src)
             switch (c) {
             case vs_char_printHex:
                 c = *src++;
-                integer = vs_battle_stringContext.unk0[c % 10];
+                integer = vs_battle_stringContext.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = vs_char_hyphen;
@@ -183,7 +183,7 @@ char* vs_battle_printf(char* dest, char* src)
                 break;
             case vs_char_printDecimal:
                 c = *src++;
-                integer = vs_battle_stringContext.unk0[c % 10];
+                integer = vs_battle_stringContext.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = vs_char_hyphen;
@@ -212,7 +212,8 @@ char* vs_battle_printf(char* dest, char* src)
                 }
                 break;
             case 0xFF:
-                dest = vs_battle_printf(dest, vs_battle_stringContext.unk28[(u_char)*src++]);
+                dest = vs_battle_printf(
+                    dest, vs_battle_stringContext.strings[(u_char)*src++]);
                 break;
             default:
                 *dest++ = c;

@@ -569,7 +569,7 @@ static int func_801049A0(int arg0)
                 vs_battle_rMemcpy(D_80105F10, vs_mainMenu_itemNames + table_val, 0x18);
             }
             func_800C8E04(1);
-            vs_battle_stringContext.unk28[0] = D_80105F10;
+            vs_battle_stringContext.strings[0] = D_80105F10;
             vs_battle_printf(vs_battle_stringBuf,
                 (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
             vs_mainmenu_setMessage(vs_battle_stringBuf);

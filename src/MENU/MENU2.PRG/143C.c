@@ -40,9 +40,9 @@ static int _breakArtUnlocked(int init)
         func_800C8E04(3);
         vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
         skillId = 184 + ((weaponType - 1) * 4) + skillId;
-        vs_battle_stringContext.unk28[0]
+        vs_battle_stringContext.strings[0]
             = (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponType]];
-        vs_battle_stringContext.unk28[1] = vs_main_skills[skillId].name;
+        vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
         vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
         vs_main_skills[skillId].flags |= 0x8000;
@@ -295,7 +295,7 @@ static int _battleAbilityUnlocked(int arg0)
             }
             func_800C8E04(3);
             skill = remainingChainAbilities[row];
-            vs_battle_stringContext.unk28[1] = vs_main_skills[skill].name;
+            vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;
@@ -313,7 +313,7 @@ static int _battleAbilityUnlocked(int arg0)
             }
             func_800C8E04(3);
             skill = remainingDefenseAbilities[row];
-            vs_battle_stringContext.unk28[1] = vs_main_skills[skill].name;
+            vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].flags |= 0x8000;

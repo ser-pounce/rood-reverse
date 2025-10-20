@@ -24,7 +24,7 @@ void func_80101118(int);
 void func_801013F8(int);
 
 extern char vs_mainMenu_isLevelledSpell;
-extern char D_8010214C[];
+extern char vs_mainMenu_equipmentDetailNavigationMap[][4];
 extern int D_801021A0[];
 extern int D_801021C4;
 extern char D_801022D5;

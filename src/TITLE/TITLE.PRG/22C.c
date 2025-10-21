@@ -594,7 +594,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
 
     _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof(vs_main_stateFlags));
     _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
-    _rMemcpy(D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
+    _rMemcpy(&D_8005FFD8, spmcimg[1].unk660, sizeof(D_8005FFD8));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
     _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
@@ -697,7 +697,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.maxMP = D_80060068.unk0.maxMP;
     _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof(savedata->unk200));
     _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
-    _rMemcpy(savedata->unk660, D_8005FFD8, sizeof(savedata->unk660));
+    _rMemcpy(savedata->unk660, &D_8005FFD8, sizeof(savedata->unk660));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
     _rMemcpy(savedata->unk7C8, D_80060168, sizeof(savedata->unk7C8));
@@ -4980,7 +4980,7 @@ static void _initGameData(void)
     } while (--i >= 0);
 
     vs_main_memcpy(vs_main_skillsLearned, _skillsLearned, sizeof(_skillsLearned));
-    vs_main_bzero(D_8005FFD8, sizeof(D_8005FFD8));
+    vs_main_bzero(&D_8005FFD8, sizeof(D_8005FFD8));
     vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
     vs_main_bzero(&D_8005FEA0, sizeof(D_8005FEA0));
     D_80060064 = 0;

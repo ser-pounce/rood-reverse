@@ -186,7 +186,8 @@ typedef struct {
     char unk106[0x16];
     char puzzleMode;
     char puzzleModeDisabled;
-    char unk11E[0x38];
+    char unk11E[0x18];
+    char unk135[32];
     char savePointStates[48];
     char unk186[0x2BA];
 } vs_main_flags_t;
@@ -234,6 +235,27 @@ typedef struct {
     u_short unk26;
 } func_8006B7BC_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+    int unk44;
+} D_8005FFD8_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];
@@ -268,7 +290,7 @@ extern int vs_main_saveGameClearData;
 
 extern D_8005FEA0_t D_8005FEA0;
 extern char vs_main_skillsLearned[32];
-extern char D_8005FFD8[0x48];
+extern D_8005FFD8_t D_8005FFD8;
 extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;
 extern char vs_main_vibrationEnabled;

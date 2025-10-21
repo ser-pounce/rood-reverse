@@ -178,7 +178,7 @@ typedef struct {
     short maxHP;
     short currentMP;
     short maxMP;
-    u_short unk20;
+    u_short risk;
     short unk22;
     short unk24;
     short unk26;

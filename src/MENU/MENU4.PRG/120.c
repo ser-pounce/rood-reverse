@@ -461,10 +461,11 @@ static int _getNextValidActor(int currentActor, int targetActor)
 }
 
 static char D_801080BC = 0;
-static u_int D_801080C0 = 0;
 
 static int func_80103744(int arg0)
 {
+    static u_int D_801080C0 = 0;
+    
     if (arg0 != 0) {
         if (_selectedActor == 0) {
             D_801080C0 = 1;
@@ -538,25 +539,26 @@ static int func_80103744(int arg0)
     return 0;
 }
 
-static void func_8010399C(int rgb, int arg1, u_long* nextPrim)
+static void _renderUnknownValue(int x, int withMax, u_long* nextPrim)
 {
     int i;
 
-    if (arg1 != 0) {
+    if (withMax != 0) {
         for (i = 0; i < 3; ++i) {
-            vs_battle_setSprite(128, rgb, vs_getWH(6, 9), nextPrim)[4]
+            vs_battle_setSprite(128, x, vs_getWH(6, 9), nextPrim)[4]
                 = vs_getUV0Clut(228, 0, 832, 223);
-            rgb -= 5;
+            x -= 5;
         }
-        func_800C9950(2, rgb, 0, nextPrim);
-        rgb -= 7;
+        vs_battle_renderValue(2, x, 0, nextPrim);
+        x -= 7;
     }
 
-    rgb += 0xFFFF0000;
+    x += 0xFFFF0000;
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSprite(128, rgb, vs_getWH(7, 10), nextPrim)[4] = 0x37F400EA;
-        rgb -= 6;
+        vs_battle_setSprite(128, x, vs_getWH(7, 10), nextPrim)[4]
+            = vs_getUV0Clut(234, 0, 832, 223);
+        x -= 6;
     }
 }
 
@@ -629,20 +631,20 @@ static void func_80103AC8(void)
         int i;
         int temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
         if (actor->flags & 0x20000) {
-            i = func_800C9950(0, temp_s2 | 0x42, actor->maxHP, temp_s4);
-            func_800C9950(2, i, 0, temp_s4);
-            func_800C9950(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
-            i = func_800C9950(0, temp_s2 | 0x88, actor->maxMP, temp_s4);
-            func_800C9950(2, i, 0, temp_s4);
-            func_800C9950(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
+            i = vs_battle_renderValue(0, temp_s2 | 66, actor->maxHP, temp_s4);
+            vs_battle_renderValue(2, i, 0, temp_s4);
+            vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
+            i = vs_battle_renderValue(0, temp_s2 | 136, actor->maxMP, temp_s4);
+            vs_battle_renderValue(2, i, 0, temp_s4);
+            vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
             temp_s2 += 0xF0000;
-            func_800C9950(1, temp_s2 | 0x40, actor->unk20, temp_s4);
+            vs_battle_renderValue(1, temp_s2 | 64, actor->risk, temp_s4);
             temp_s2 += 0x10000;
         } else {
-            func_8010399C(temp_s2 | 0x42, 1, temp_s4);
-            func_8010399C(temp_s2 | 0x88, 1, temp_s4);
+            _renderUnknownValue(temp_s2 | 66, 1, temp_s4);
+            _renderUnknownValue(temp_s2 | 136, 1, temp_s4);
             temp_s2 += 0x100000;
-            func_8010399C(temp_s2 | 0x40, 0, temp_s4);
+            _renderUnknownValue(temp_s2 | 64, 0, temp_s4);
         }
 
         for (i = 0; i < 3; ++i) {
@@ -656,7 +658,7 @@ static void func_80103AC8(void)
         _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
         _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
         temp_s2 += 0x40000;
-        _drawStatBar(i | 2, actor->unk20, 0x64, temp_s2 | 10);
+        _drawStatBar(i | 2, actor->risk, 100, temp_s2 | 10);
     }
 }
 

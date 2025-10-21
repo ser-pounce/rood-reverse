@@ -8432,7 +8432,7 @@ void func_80042CB0(void)
     temp_t5->unk0.unk12 = temp_t0->unk28;
     temp_t5->unk0.unk14 = temp_t0->unk2A;
     temp_t5->unk0.unk16 = temp_t0->unk2C;
-    temp_t5->unk0.unk18 = temp_t0->unk20;
+    temp_t5->unk0.risk = temp_t0->risk;
     temp_t5->unk0.flags = temp_t0->flags;
     temp_t5->unk0.unk1C = temp_t0->unk948;
 

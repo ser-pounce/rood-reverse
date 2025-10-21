@@ -1687,10 +1687,10 @@ short func_8008388C(int arg0, int arg1, int arg2, int arg3, int arg4)
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
-short func_800838BC(
+short _getRisk(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
-    return vs_battle_actors[*arg2]->unk3C->unk20;
+    return vs_battle_actors[*arg2]->unk3C->risk;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800838EC);

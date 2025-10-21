@@ -90,7 +90,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
 void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);
-int func_800C9950(int, int, int, u_long*);
+int vs_battle_renderValue(int, int, int, u_long*);
 void vs_battle_drawStatBar(int, int, u_long*, int);
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getHitLocationStatus(void*);

@@ -449,7 +449,7 @@ void func_800C97BC(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C98C0);
 
-int func_800C9950(int arg0, int arg1, int value, u_long* arg3)
+int vs_battle_renderValue(int arg0, int arg1, int value, u_long* arg3)
 {
     int new_var;
 

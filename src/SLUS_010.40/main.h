@@ -137,7 +137,7 @@ typedef struct {
         short unk12;
         short unk14;
         short unk16;
-        short unk18;
+        short risk;
         short flags;
         int unk1C;
         char unk20[8];

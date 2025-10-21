@@ -421,7 +421,7 @@ static int _yPos = 0;
 static int D_801080A4 = 0;
 static int _selectedActor = 0;
 static int D_801080AC = 0;
-static int D_801080B0 = 0;
+static int _fadeScreen = 0;
 static int _animationStep = 0;
 static char D_801080B8 = 0;
 static char D_801080B9 = 0;
@@ -444,19 +444,19 @@ static void func_80103608(int arg0)
     D_801080BB = arg0;
 }
 
-static int func_80103688(int actor, int arg1)
+static int _getNextValidActor(int currentActor, int targetActor)
 {
     int temp_a0;
 
     while (1) {
-        actor = (actor + arg1) % 15;
-        temp_a0 = func_800A0BE0(actor);
-        if ((vs_battle_actors[actor] != NULL) && (vs_battle_actors[actor]->unk1C < 5)
+        currentActor = (currentActor + targetActor) % 15;
+        temp_a0 = func_800A0BE0(currentActor);
+        if ((vs_battle_actors[currentActor] != NULL) && (vs_battle_actors[currentActor]->unk1C < 5)
             && (temp_a0 & 0x01000001) == 1) {
             break;
         }
     }
-    return actor;
+    return currentActor;
 }
 
 static char D_801080BC = 0;
@@ -487,34 +487,36 @@ static int func_80103744(int arg0)
         if (_animationStep < 160) {
             D_801080AC = 1;
             _animationStep += 32;
+            break;
         } else {
             D_801080AC = 0;
             func_800F9E0C();
-        case 1:
-            D_801080B0 = 1;
-            func_800F9A24(_selectedActor - 1);
-            D_801080BC = 1;
-            _animationStep = -160;
-            D_801080C0 = 2;
         }
+        // Fallthrough
+    case 1:
+        _fadeScreen = 1;
+        func_800F9A24(_selectedActor - 1);
+        D_801080BC = 1;
+        _animationStep = -160;
+        D_801080C0 = 2;
         break;
     case 2:
         if (_animationStep < 0) {
             _animationStep += 32;
             break;
         }
-        D_801080B0 = 0;
+        _fadeScreen = 0;
         D_801080C0 = 6;
         return 1;
     case 3:
         if (_animationStep >= -159) {
-            D_801080B0 = 1;
+            _fadeScreen = 1;
             _animationStep -= 32;
             break;
         }
         func_800F9E0C();
     case 4:
-        D_801080B0 = 0;
+        _fadeScreen = 0;
         func_800F9A24(_selectedActor - 1);
         D_801080BC = 1;
         _animationStep = 160;
@@ -1002,7 +1004,7 @@ static int func_801045B8(int arg0)
                 (0x22 + i * 0x10) * 0x10000 | 0xE0,
                 i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
             func_800A13EC(1, hitLocation->unk5, sp10, 0);
-            if (!(step & 0x80) && ((D_801080B0 | D_801080AC) == 0)) {
+            if (!(step & 0x80) && ((_fadeScreen | D_801080AC) == 0)) {
                 _drawHitLocationLeaderLine(i, sp10[0], 8, i == step);
             }
         }
@@ -1495,7 +1497,7 @@ static int _equipmentDetailScreen(int row)
 
 static int _equipmentScreen(int element)
 {
-    enum state { init, animWait, handleInput };
+    enum state { init, animWait, handleInput, waitChangeActor, waitActorInit, equipDetailScreen };
 
     char* rowStrings[18];
     int rowTypes[9];
@@ -1507,7 +1509,7 @@ static int _equipmentScreen(int element)
     int temp_s5;
     int i;
     int temp_s1_2;
-    vs_battle_menuItem_t* temp_v0_2;
+    vs_battle_menuItem_t* menuItem;
     int new_var;
 
     vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
@@ -1599,17 +1601,17 @@ static int _equipmentScreen(int element)
                 return i;
             }
             _equipmentDetailScreen(i);
-            _equipmentScreenState = 5;
+            _equipmentScreenState = equipDetailScreen;
             break;
         }
         if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
             i = _selectedActor - 1;
             if (vs_main_buttonsPressed.all & PADL1) {
-                i = func_80103688(i, 14);
+                i = _getNextValidActor(i, 14);
                 temp_s5 = 1;
             }
             if (vs_main_buttonsPressed.all & PADR1) {
-                i = func_80103688(i, 1);
+                i = _getNextValidActor(i, 1);
                 temp_s5 = 17;
             }
             if (i != (_selectedActor - 1)) {
@@ -1618,68 +1620,69 @@ static int _equipmentScreen(int element)
                 func_80103744(i + temp_s5);
                 func_80100814();
                 func_800FA8E0(4);
-                _equipmentScreenState = 3;
+                _equipmentScreenState = waitChangeActor;
             }
         }
         break;
-    case 3:
+    case waitChangeActor:
         if (func_80103744(0) != 0) {
-            _equipmentScreenState = 4;
+            _equipmentScreenState = waitActorInit;
         }
         break;
-    case 4:
+    case waitActorInit:
         if (vs_mainmenu_ready() != 0) {
-            temp_v0_2 = vs_battle_getMenuItem(4);
-            if (temp_v0_2->animSpeed >= 0xB5) {
-                temp_v0_2->state = 2;
-                temp_v0_2->x = 0xB4;
-                temp_v0_2->selected = 1;
+            menuItem = vs_battle_getMenuItem(4);
+            if (menuItem->animSpeed >= 181) {
+                menuItem->state = 2;
+                menuItem->x = 180;
+                menuItem->selected = 1;
             }
-            _equipmentScreenState = 0;
+            _equipmentScreenState = init;
         }
         break;
-    case 5:
+    case equipDetailScreen:
         i = _equipmentDetailScreen(0);
         if (i != 0) {
             if (i < 0) {
                 return -2;
             }
             vs_battle_selectedEquipment = i - 1;
-            _equipmentScreenState = 4;
+            _equipmentScreenState = waitActorInit;
         }
         break;
     }
     return 0;
 }
 
-static void func_80105E94(void)
+static void _fadeScreenLeft(void)
 {
-    int var_a2;
+    int uv1Tpage;
     u_long* temp_a1;
     u_long* temp_t1;
 
     temp_a1 = D_1F800000[0];
     temp_t1 = D_1F800000[1];
-    if (D_801080B0 != 0) {
-        temp_a1[0] = ((temp_t1[-1] & 0xFFFFFF) | 0x0D000000);
-        temp_a1[1] = 0xE1000000;
-        temp_a1[2] = 0x3C000000;
-        temp_a1[3] = 0;
-        temp_a1[4] = 0;
-        temp_a1[5] = 0x808080;
-        temp_a1[6] = 0x60;
+    if (_fadeScreen != 0) {
+        temp_a1[0] = ((temp_t1[-1] & 0xFFFFFF) | (13 << 24));
+        temp_a1[1] = vs_getTpageRaw(0);
+        temp_a1[2] = vs_getRGB0(primPolyGT4, 0, 0 ,0);
+        temp_a1[3] = vs_getXY(0, 0);
+        temp_a1[4] = vs_getUV0Clut(0, 0, 0, 0);
+        temp_a1[5] = vs_getRGB888(128, 128, 128);
+        temp_a1[6] = vs_getXY(96, 0);
 
-        var_a2 = 0x01000060;
+        uv1Tpage = vs_getUV1Tpage(96, 0, 0, 0, direct16Bit, semiTransparencyHalf);
         if (vs_main_frameBuf == 0) {
-            var_a2 = 0x01050000 | 0x60;
+            uv1Tpage = vs_getUV1Tpage(96, 0, 320, 0, direct16Bit, semiTransparencyHalf);
         }
-        temp_a1[7] = var_a2;
-        temp_a1[8] = 0;
-        temp_a1[9] = 0xF00000;
-        temp_a1[10] = 0xF000;
-        temp_a1[11] = 0x808080;
-        temp_a1[12] = 0xF00060;
-        temp_a1[13] = 0xF060;
+
+        temp_a1[7] = uv1Tpage;
+        temp_a1[8] = vs_getRGB888(0, 0, 0);
+        temp_a1[9] = vs_getXY(0, 240);
+        temp_a1[10] = vs_getUV(0, 240);
+        temp_a1[11] = vs_getRGB888(128, 128, 128);
+        temp_a1[12] = vs_getXY(96, 240);
+        temp_a1[13] = vs_getUV(96, 240);
         temp_t1[-1] = (((u_long)temp_a1 << 8) >> 8);
         D_1F800000[0] = temp_a1 + 14;
     }
@@ -1776,7 +1779,7 @@ static void func_80106150(void)
         func_800F9EB8(p - 8);
     }
     func_80105F60();
-    func_80105E94();
+    _fadeScreenLeft();
     func_801045B8(0);
     func_80103AC8();
 }
@@ -1861,7 +1864,7 @@ int vs_menu4_Exec(char* state)
         func_8008A4DC(0);
         func_80100414(0x7FE, 0x80);
         D_801080AC = 0;
-        D_801080B0 = 0;
+        _fadeScreen = 0;
         _selectedActor = 0;
         D_801080A4 = 0;
         D_801080B8 = 0;
@@ -2048,11 +2051,11 @@ int vs_menu4_Exec(char* state)
             }
             userInput = _selectedActor - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
-                userInput = func_80103688(userInput, 1);
+                userInput = _getNextValidActor(userInput, 1);
                 hitLocations = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
-                userInput = func_80103688(userInput, 14);
+                userInput = _getNextValidActor(userInput, 14);
                 hitLocations = 1;
             }
             if (userInput != (_selectedActor - 1)) {
@@ -2100,11 +2103,11 @@ int vs_menu4_Exec(char* state)
             }
             userInput = _selectedActor - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
-                userInput = func_80103688(userInput, 1);
+                userInput = _getNextValidActor(userInput, 1);
                 hitLocations = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
-                userInput = func_80103688(userInput, 14);
+                userInput = _getNextValidActor(userInput, 14);
                 hitLocations = 1;
             }
             if (userInput != (_selectedActor - 1)) {

@@ -104,7 +104,7 @@ void func_800FA6B8(void)
     D_800F1BA4 = 0;
     D_800F1BB6 = 0;
     D_800F1CD8 = 0;
-    D_800F1BC0 = 0;
+    D_800F1BC0 = NULL;
     D_800F1CD6 = 1;
     D_800F1CD4 = 8;
     func_8008E88C();

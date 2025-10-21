@@ -2,17 +2,45 @@
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../SLUS_010.40/32154.h"
 #include "lbas.h"
 #include "gpu.h"
 
+void func_80105B18(void*, int);
+void func_801060E0(void*, int);
+int func_80106570(void*);
+
 extern u_long* D_1F800000[];
 
+extern vs_main_CdFile D_80102B00[];
 extern int D_801083F8;
+extern u_short D_801083FC[];
 extern vs_main_CdQueueSlot* D_80108D24;
 extern u_short* D_80108D28;
 extern int D_80108D2C;
+extern int D_80108D60;
+extern int D_80108D64;
+extern int D_80108D68;
+extern int D_80108D6C;
+extern int D_80108D70;
+extern int D_80108D74;
+extern int D_80108D7C;
+extern int D_80108D80;
+extern int D_80108D88;
+extern int D_80108D8C;
+extern int D_80108D90;
+extern int D_80108D94;
+extern int D_80108D98;
+extern short D_80108D9C;
+extern short D_80108D9E;
+extern short D_80108DA4[];
+extern short D_80108DAC[];
+extern vs_main_CdQueueSlot* D_80108DBC;
+extern int D_80108E44;
 
 void func_80102CD8(int arg0)
 {
@@ -140,7 +168,59 @@ int func_80102FCC(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/4D8", func_801030F4);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/4D8", func_80103418);
+int func_80103418(void)
+{
+    int a1;
+
+    vs_main_stateFlags.unk135[0] = 1;
+    if (D_800F1BC0 == 0) {
+        if (D_8005FFD8.unk4 & 0x800000) {
+            D_8005FFD8.unk4 |= 0x400000;
+        }
+        D_80108D8C = 0;
+        D_80108D94 = 0;
+        vs_main_bzero(&D_80108DA4, 8);
+        vs_main_bzero(&D_80108DAC, 8);
+        D_80108DA4[0] = 0x238;
+        D_80108D64 = 0;
+        D_80108DA4[2] = D_80108DA4[1] = 0x800 - *(u_short*)0x1F800058;
+        D_80108D80 = func_8008D400();
+        if (D_80108D80 >= 0x20) {
+            D_80108D80 = 0;
+        }
+        a1 = vs_main_stateFlags.unk135[D_80108D80];
+        D_80108D90 = D_80108D80;
+        D_80108D60 = 0;
+        D_80108D68 = 0x80;
+        D_80108D6C = 0;
+        D_80108D70 = -0x180;
+        D_80108D74 = 0;
+        D_80108E44 = 1;
+        D_80108D7C = 0x300;
+        D_80108D9C = 5;
+        D_80108D9E = 0;
+        D_80108D88 = a1;
+        D_800F1BC0 = vs_main_allocHeapR(D_80102B00[D_80108D80].size);
+        D_80108DBC = vs_main_allocateCdQueueSlot(&D_80102B00[D_80108D80]);
+        vs_main_cdEnqueue(D_80108DBC, D_800F1BC0);
+        return 0;
+    }
+
+    if (D_80108DBC->state != 4) {
+        return 0;
+    }
+
+    vs_main_freeCdQueueSlot(D_80108DBC);
+    D_80108D98 = func_80098F4C(D_800F1BC0);
+    func_8008B4D8(D_800F1BC0);
+    func_801060E0(D_800F1BC0, 4);
+    D_80108D64 = func_80106570(D_800F1BC0);
+    func_80105B18(D_800F1BC0, D_80108D64);
+    func_80041954(0x300, D_8005E248);
+    SetFarColor(0, 0, 0);
+    func_80102F30((char*)&D_801083FC[D_801083FC[D_80108D80]], 1);
+    return 1;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU5.PRG/nonmatchings/4D8", D_80102820);
 

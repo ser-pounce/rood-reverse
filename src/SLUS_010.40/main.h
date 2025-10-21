@@ -183,11 +183,11 @@ typedef struct {
     char unkB5;
     char unkB6[0x4F];
     char unk105;
-    char unk106[0x16];
+    char unk106[22];
     char puzzleMode;
     char puzzleModeDisabled;
-    char unk11E[0x18];
-    char unk135[32];
+    char unk11E[23];
+    char unk135[33];
     char savePointStates[48];
     char unk186[0x2BA];
 } vs_main_flags_t;

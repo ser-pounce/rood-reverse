@@ -107,7 +107,7 @@ static int _drawArtsList(int typeCursorMem)
         menuItem->state = 2;
         menuItem->x = 180;
         menuItem->selected = 1;
-        menuItem->weaponType = typeCursorMem;
+        menuItem->flags = typeCursorMem;
         state = init;
         return 0;
     }

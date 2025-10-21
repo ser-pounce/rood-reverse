@@ -428,7 +428,7 @@ static char D_801080B9 = 0;
 static char D_801080BA = 0;
 static char D_801080BB = 0;
 
-static void func_80103608(int arg0)
+static void _initEquipmentScreen(int arg0)
 {
     if (arg0 == 0) {
         D_801080B8 = 1;
@@ -465,7 +465,7 @@ static char D_801080BC = 0;
 static int func_80103744(int arg0)
 {
     static u_int D_801080C0 = 0;
-    
+
     if (arg0 != 0) {
         if (_selectedActor == 0) {
             D_801080C0 = 1;
@@ -581,6 +581,8 @@ static void _drawStatBar(int index, int current, int max, int xy)
 
 static void func_80103AC8(void)
 {
+    int i;
+    int temp_s2;
     vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
     u_long* temp_s4 = D_1F800000[1] - 3;
 
@@ -627,39 +629,40 @@ static void func_80103AC8(void)
         }
         break;
     }
-    if (D_801080B9 != 0) {
-        int i;
-        int temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
-        if (actor->flags & 0x20000) {
-            i = vs_battle_renderValue(0, temp_s2 | 66, actor->maxHP, temp_s4);
-            vs_battle_renderValue(2, i, 0, temp_s4);
-            vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
-            i = vs_battle_renderValue(0, temp_s2 | 136, actor->maxMP, temp_s4);
-            vs_battle_renderValue(2, i, 0, temp_s4);
-            vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
-            temp_s2 += 0xF0000;
-            vs_battle_renderValue(1, temp_s2 | 64, actor->risk, temp_s4);
-            temp_s2 += 0x10000;
-        } else {
-            _renderUnknownValue(temp_s2 | 66, 1, temp_s4);
-            _renderUnknownValue(temp_s2 | 136, 1, temp_s4);
-            temp_s2 += 0x100000;
-            _renderUnknownValue(temp_s2 | 64, 0, temp_s4);
-        }
-
-        for (i = 0; i < 3; ++i) {
-            func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
-                D_800EBBFC[i] | 0x90000, temp_s4)
-                ->unk10
-                = D_800EBC00[i] | 0x37F60000;
-        }
-        temp_s2 += 0xFFF80000;
-        i = (actor->flags >> 9) & 0x100;
-        _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
-        _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
-        temp_s2 += 0x40000;
-        _drawStatBar(i | 2, actor->risk, 100, temp_s2 | 10);
+    if (D_801080B9 == 0) {
+        return;
     }
+
+    temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
+    if (actor->flags & 0x20000) {
+        i = vs_battle_renderValue(0, temp_s2 | 66, actor->maxHP, temp_s4);
+        vs_battle_renderValue(2, i, 0, temp_s4);
+        vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
+        i = vs_battle_renderValue(0, temp_s2 | 136, actor->maxMP, temp_s4);
+        vs_battle_renderValue(2, i, 0, temp_s4);
+        vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
+        temp_s2 += 0xF0000;
+        vs_battle_renderValue(1, temp_s2 | 64, actor->risk, temp_s4);
+        temp_s2 += 0x10000;
+    } else {
+        _renderUnknownValue(temp_s2 | 66, 1, temp_s4);
+        _renderUnknownValue(temp_s2 | 136, 1, temp_s4);
+        temp_s2 += 0x100000;
+        _renderUnknownValue(temp_s2 | 64, 0, temp_s4);
+    }
+
+    for (i = 0; i < 3; ++i) {
+        func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
+            D_800EBBFC[i] | 0x90000, temp_s4)
+            ->unk10
+            = D_800EBC00[i] | 0x37F60000;
+    }
+    temp_s2 += 0xFFF80000;
+    i = (actor->flags >> 9) & 0x100;
+    _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
+    _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
+    temp_s2 += 0x40000;
+    _drawStatBar(i | 2, actor->risk, 100, temp_s2 | 10);
 }
 
 static void _drawStatusIndicator(int colorIndex, int xy, int arg2)
@@ -1049,35 +1052,36 @@ static void _setActiveRow(int row)
     menuItem->unk3A = 0;
 }
 
-static void func_80104B38(int arg0)
+static void _animateEquipmentDetailTransition(int selectedRow)
 {
-    char weaponType;
+    char flags;
     vs_battle_menuItem_t* menuItem;
 
     menuItem = vs_battle_setMenuItem(32, -164, 18, 164, 8,
-        (char*)&_statusStrings[_statusStrings[arg0 < 2 ? arg0 + VS_status_INDEX_weapon
-                                                       : VS_status_INDEX_armor]]);
+        (char*)&_statusStrings[_statusStrings[selectedRow < 2
+                ? selectedRow + VS_status_INDEX_weapon
+                : VS_status_INDEX_armor]]);
 
     menuItem->state = 5;
     menuItem->x = 16;
     menuItem->selected = 1;
 
-    weaponType = 28;
+    flags = 28;
 
-    if (arg0 == 0) {
-        weaponType = 24;
-    } else if (arg0 == 1) {
-        weaponType = 27;
+    if (selectedRow == 0) {
+        flags = 24;
+    } else if (selectedRow == 1) {
+        flags = 27;
     }
-    menuItem->weaponType = weaponType;
-    menuItem = vs_battle_getMenuItem(arg0 + 10);
+    menuItem->flags = flags;
+    menuItem = vs_battle_getMenuItem(selectedRow + 10);
     menuItem->state = 3;
-    menuItem->x = 0x12;
+    menuItem->x = 18;
 }
 
-static void func_80104C0C(int arg0, int arg1)
+static void func_80104C0C(int selectedRow, int arg1)
 {
-    func_80104B38(arg0);
+    _animateEquipmentDetailTransition(selectedRow);
     func_800FBBD4(arg1);
     func_800FBEA4(1);
 }
@@ -1126,7 +1130,7 @@ static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
             menuItem->state = 2;
             menuItem->x = 320 - var_s1;
         }
-        menuItem->weaponType = sp80 >> 26;
+        menuItem->flags = sp80 >> 26;
         menuItem->unkC = ((sp80 & 0xFFFF0000) >> 16) & 7;
     }
 }
@@ -1165,7 +1169,7 @@ static void _setShieldRow(int row, vs_battle_shieldInfo* shield, int arg2)
             meuItem->state = 2;
             meuItem->x = 320 - var_s0;
         }
-        meuItem->weaponType = 0x16;
+        meuItem->flags = 0x16;
     }
 }
 
@@ -1369,7 +1373,7 @@ static int _equipmentDetailScreen(int row)
 
                 menuItem = vs_battle_setMenuItem(var_s2 + 10, 155, 18, 165, 0, sp18[0]);
                 menuItem->selected = 1;
-                menuItem->weaponType = (sp48 >> 0x1A);
+                menuItem->flags = (sp48 >> 0x1A);
                 menuItem->unkC = ((sp48 & 0xFFFF0000) >> 16) & 7;
 
                 vs_mainmenu_setMessage(sp18[1]);
@@ -1385,7 +1389,7 @@ static int _equipmentDetailScreen(int row)
                 } else if (var_s2 == 1) {
                     i = 0x1B;
                 }
-                menuItem->weaponType = i;
+                menuItem->flags = i;
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
                 _cursorAnimState
@@ -1493,7 +1497,7 @@ static int _equipmentDetailScreen(int row)
             return -1;
         }
         if (vs_main_buttonsPressed.all & PADRdown) {
-            func_80103608(_selectedActor - 1);
+            _initEquipmentScreen(_selectedActor - 1);
             _exitEquipmentDetail(1);
             func_800FFA88(2);
             return _selectedEquipmentRow + 1;
@@ -1633,7 +1637,7 @@ static int _equipmentScreen(int element)
             }
             if (i != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
-                func_80103608(i);
+                _initEquipmentScreen(i);
                 func_80103744(i + temp_s5);
                 func_80100814();
                 func_800FA8E0(4);
@@ -1999,12 +2003,13 @@ int vs_menu4_Exec(char* state)
                         _yPos = 896;
                     }
                 } else {
-                    static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,
-                        0x006400A0, 0x00920098, 0x009C0098, 0x00A60098, 0x0004FFFC, 0x00040042, 0x000CFFFC,
-                        0x000C0042 };
+                    static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0,
+                        0x004400A0, 0x005400A0, 0x006400A0, 0x00920098, 0x009C0098,
+                        0x00A60098, 0x0004FFFC, 0x00040042, 0x000CFFFC, 0x000C0042 };
 
-                    static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301, 0x030A0402, 0x040A0503,
-                        0x050A0604, 0x060D0705, 0x070D0806, 0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
+                    static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301,
+                        0x030A0402, 0x040A0503, 0x050A0604, 0x060D0705, 0x070D0806,
+                        0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
 
                     userInput = _selectedElement;
                     hitLocations = D_801080FC[userInput];
@@ -2077,7 +2082,7 @@ int vs_menu4_Exec(char* state)
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
-                func_80103608(userInput);
+                _initEquipmentScreen(userInput);
                 func_80103744(userInput + hitLocations);
                 animWait = 1;
             }
@@ -2129,7 +2134,7 @@ int vs_menu4_Exec(char* state)
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
-                func_80103608(userInput);
+                _initEquipmentScreen(userInput);
                 func_80103744(userInput + hitLocations);
                 animWait = 1;
                 if (vs_battle_getStatusFlags(vs_battle_actors[userInput]->unk3C) == 0) {
@@ -2229,7 +2234,7 @@ int vs_menu4_Exec(char* state)
         func_800FBEA4(2);
         _drawHitLocationStatuses(-2);
         _drawHitLocationStatuses(0);
-        func_80103608(0);
+        _initEquipmentScreen(0);
         func_80103AC8();
         func_8007CCF0(D_80108188);
         new_var2 = 13;

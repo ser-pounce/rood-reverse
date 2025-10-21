@@ -33,7 +33,7 @@ typedef struct {
     signed char selected;
     signed char unk7;
     char unk8;
-    char weaponType;
+    char flags;
     char unkA;
     char unkB;
     char unkC;

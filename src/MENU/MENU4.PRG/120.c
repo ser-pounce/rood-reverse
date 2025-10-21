@@ -544,7 +544,8 @@ static void func_8010399C(int rgb, int arg1, u_long* nextPrim)
 
     if (arg1 != 0) {
         for (i = 0; i < 3; ++i) {
-            vs_battle_setSprite(128, rgb, vs_getWH(6, 9), nextPrim)[4] = 0x37F400E4;
+            vs_battle_setSprite(128, rgb, vs_getWH(6, 9), nextPrim)[4]
+                = vs_getUV0Clut(228, 0, 832, 223);
             rgb -= 5;
         }
         func_800C9950(2, rgb, 0, nextPrim);
@@ -578,7 +579,7 @@ static void _drawStatBar(int index, int current, int max, int xy)
 
 static void func_80103AC8(void)
 {
-    vs_battle_actor2* var_s3 = vs_battle_actors[_selectedActor - 1]->unk3C;
+    vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
     u_long* temp_s4 = D_1F800000[1] - 3;
 
     switch (D_801080B8) {
@@ -594,13 +595,13 @@ static void func_80103AC8(void)
             }
         } else {
             --D_801080B9;
-            var_s3 = vs_battle_actors[D_801080A4 - 1]->unk3C;
+            actor = vs_battle_actors[D_801080A4 - 1]->unk3C;
         }
         break;
     case 2:
         if (D_801080B9 != 0) {
             --D_801080B9;
-            var_s3 = vs_battle_actors[D_801080A4 - 1]->unk3C;
+            actor = vs_battle_actors[D_801080A4 - 1]->unk3C;
         } else if (D_801080BA == 0) {
             D_801080B8 = 3;
         } else {
@@ -627,15 +628,15 @@ static void func_80103AC8(void)
     if (D_801080B9 != 0) {
         int i;
         int temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
-        if (var_s3->flags & 0x20000) {
-            i = func_800C9950(0, temp_s2 | 0x42, var_s3->maxHP, temp_s4);
+        if (actor->flags & 0x20000) {
+            i = func_800C9950(0, temp_s2 | 0x42, actor->maxHP, temp_s4);
             func_800C9950(2, i, 0, temp_s4);
-            func_800C9950(1, i + 0xFFFEFFF9, var_s3->currentHP, temp_s4);
-            i = func_800C9950(0, temp_s2 | 0x88, var_s3->maxMP, temp_s4);
+            func_800C9950(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
+            i = func_800C9950(0, temp_s2 | 0x88, actor->maxMP, temp_s4);
             func_800C9950(2, i, 0, temp_s4);
-            func_800C9950(1, i + 0xFFFEFFF9, var_s3->currentMP, temp_s4);
+            func_800C9950(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
             temp_s2 += 0xF0000;
-            func_800C9950(1, temp_s2 | 0x40, var_s3->unk20, temp_s4);
+            func_800C9950(1, temp_s2 | 0x40, actor->unk20, temp_s4);
             temp_s2 += 0x10000;
         } else {
             func_8010399C(temp_s2 | 0x42, 1, temp_s4);
@@ -651,11 +652,11 @@ static void func_80103AC8(void)
                 = D_800EBC00[i] | 0x37F60000;
         }
         temp_s2 += 0xFFF80000;
-        i = (var_s3->flags >> 9) & 0x100;
-        _drawStatBar(i, var_s3->currentHP, var_s3->maxHP, temp_s2 | 10);
-        _drawStatBar(i | 1, var_s3->currentMP, var_s3->maxMP, temp_s2 | 80);
+        i = (actor->flags >> 9) & 0x100;
+        _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
+        _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
         temp_s2 += 0x40000;
-        _drawStatBar(i | 2, var_s3->unk20, 0x64, temp_s2 | 10);
+        _drawStatBar(i | 2, actor->unk20, 0x64, temp_s2 | 10);
     }
 }
 
@@ -1166,10 +1167,10 @@ static void _setShieldRow(int row, vs_battle_shieldInfo* shield, int arg2)
     }
 }
 
-static void func_80104F2C(int arg0)
+static void _exitEquipmentDetail(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
-    func_800FA8E0(0x28);
+    func_800FA8E0(40);
     func_800FA810(0);
     func_800FBBD4(-1);
     func_800FBEA4(2);
@@ -1178,11 +1179,11 @@ static void func_80104F2C(int arg0)
     }
 }
 
-static char D_801080C7 = 0;
-
 static int _equipmentDetailScreen(int row)
 {
     enum state { init };
+
+    static char _cursorAnimState = 0;
 
     char* sp18[2];
     func_8006B7BC_t sp20;
@@ -1385,7 +1386,8 @@ static int _equipmentDetailScreen(int row)
                 menuItem->weaponType = i;
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
-                D_801080C7 = func_800FFCDC((int)D_801080C7, D_801021C4);
+                _cursorAnimState
+                    = func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY);
                 D_801023E3 = 1;
                 func_801013F8(1);
                 return 0;
@@ -1483,14 +1485,14 @@ static int _equipmentDetailScreen(int row)
             i += 7;
         }
         D_801022D5 = _equipmentDetailSelectedElement != 9;
-        D_801080C7 = func_800FFCDC(D_801080C7, i);
+        _cursorAnimState = func_800FFCDC(_cursorAnimState, i);
         if (vs_main_buttonsPressed.all & PADRup) {
-            func_80104F2C(1);
+            _exitEquipmentDetail(1);
             return -1;
         }
         if (vs_main_buttonsPressed.all & PADRdown) {
             func_80103608(_selectedActor - 1);
-            func_80104F2C(1);
+            _exitEquipmentDetail(1);
             func_800FFA88(2);
             return _selectedEquipmentRow + 1;
         }

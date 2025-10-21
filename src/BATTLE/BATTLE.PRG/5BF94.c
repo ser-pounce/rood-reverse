@@ -37,6 +37,7 @@ typedef struct {
     int unk3F4;
 } gim_t;
 
+void func_800C98C0(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CE67C(void);
 int func_800CF218(void);
@@ -448,7 +449,24 @@ void func_800C97BC(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C98C0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9950);
+int func_800C9950(int arg0, int arg1, int value, u_long* arg3)
+{
+    int new_var;
+
+    if (0 == arg3) {
+        arg3 = D_1F800000[1] - 4;
+    }
+
+    do {
+        value = vs_battle_toBCD(value);
+        func_800C98C0(arg0, arg1, value & 0xF, arg3);
+        new_var = arg1 - 5;
+        arg1 = new_var - arg0;
+        value >>= 4;
+    } while (value != 0);
+
+    return arg1;
+}
 
 void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
 {

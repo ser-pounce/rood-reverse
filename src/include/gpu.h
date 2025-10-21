@@ -11,9 +11,9 @@ enum vs_semiTransparencyRate {
     semiTransparencyQuarterFront = 3
 };
 
-enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
-
 enum vs_dithering { ditheringOff = 0, ditheringOn = 1 };
+
+enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
 
 enum vs_primType {
     primShadeTex = 1,
@@ -21,6 +21,7 @@ enum vs_primType {
     primPolyG4 = 0x38,
     primPolyG4SemiTrans = primPolyG4 | primSemiTrans,
     primPolyGT4 = 0x3C,
+    primPolyGT4SemiTrans = primPolyGT4 | primSemiTrans,
     primLineF2 = 0x40,
     primLineF2SemiTrans = primLineF2 | primSemiTrans,
     primTile = 0x60,
@@ -86,5 +87,6 @@ typedef struct {
     (((r) & 0x1F) | (((g) & 0x1F) << 5) | (((b) & 0x1F) << 10) | (((a) & 0x1) << 15))
 #define vs_getRGB888(r, g, b) (((r) & 0xFF) | (((g) & 0xFF) << 8) | (((b) & 0xFF) << 16))
 #define vs_getUV0Clut(u, v, x, y) (((u) | ((v) << 8)) | (getClut((x), (y)) << 16))
-#define vs_getUV1Tpage(u, v, x, y, tp, abr) (((u) | ((v) << 8)) | (getTPage((tp), (abr), (x), (y)) << 16))
+#define vs_getUV1Tpage(u, v, x, y, tp, abr)                                              \
+    (((u) | ((v) << 8)) | (getTPage((tp), (abr), (x), (y)) << 16))
 #define vs_getUV(u, v) ((u) | ((v) << 8))

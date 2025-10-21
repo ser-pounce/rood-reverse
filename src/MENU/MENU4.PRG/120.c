@@ -244,7 +244,7 @@ static void _initGemInfo(
     arg1[1] = vs_battle_stringBuf;
 }
 
-static char* _hitLocationStates[]
+static char* _hitLocationStatuses[]
     = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
 static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
@@ -420,7 +420,7 @@ static int _xPos = 0;
 static int _yPos = 0;
 static int D_801080A4 = 0;
 static int _selectedActor = 0;
-static int D_801080AC = 0;
+static int _drawBackgroundFirst = 0;
 static int _fadeScreen = 0;
 static int _animationStep = 0;
 static char D_801080B8 = 0;
@@ -451,7 +451,8 @@ static int _getNextValidActor(int currentActor, int targetActor)
     while (1) {
         currentActor = (currentActor + targetActor) % 15;
         temp_a0 = func_800A0BE0(currentActor);
-        if ((vs_battle_actors[currentActor] != NULL) && (vs_battle_actors[currentActor]->unk1C < 5)
+        if ((vs_battle_actors[currentActor] != NULL)
+            && (vs_battle_actors[currentActor]->unk1C < 5)
             && (temp_a0 & 0x01000001) == 1) {
             break;
         }
@@ -485,11 +486,11 @@ static int func_80103744(int arg0)
     switch (D_801080C0) {
     case 0:
         if (_animationStep < 160) {
-            D_801080AC = 1;
+            _drawBackgroundFirst = 1;
             _animationStep += 32;
             break;
         } else {
-            D_801080AC = 0;
+            _drawBackgroundFirst = 0;
             func_800F9E0C();
         }
         // Fallthrough
@@ -524,11 +525,11 @@ static int func_80103744(int arg0)
         break;
     case 5:
         if (_animationStep > 0) {
-            D_801080AC = 1;
+            _drawBackgroundFirst = 1;
             _animationStep -= 32;
             break;
         }
-        D_801080AC = 0;
+        _drawBackgroundFirst = 0;
         D_801080C0 = 6;
         return 1;
     case 6:
@@ -758,7 +759,7 @@ static u_char _statusModifierCount;
 static char _0[2];
 static vs_battle_actor2* _statusModifersCurrentTarget;
 static char _1[8];
-static int D_80108168[6];
+static int _hitLocationAnimSteps[6];
 static char _equipmentDetailState;
 static char _selectedEquipmentRow;
 static char _equipmentDetailAnimStep;
@@ -913,118 +914,119 @@ static int _getEquipmentCount(void)
         + (vs_battle_actors[_selectedActor - 1]->unk3C->accessory.accessory.id != 0);
 }
 
-static char D_801080C5 = 0;
-static u_char D_801080C6 = 0;
-
-static int func_801045B8(int arg0)
+static int _drawHitLocationStatuses(int arg0)
 {
+    static char state = 0;
+    static u_char tempSelectedActor = 0;
+
     int sp10[2];
-    vs_battle_actor2* sp18;
+    vs_battle_actor2* actor;
     vs_battle_equipment_hitLocations* hitLocation;
     int hitLocationCount;
     int sp20;
     int sp24;
     int temp_s6;
-    int hitLocationState;
+    int hitLocationStatus;
     int i;
     int step;
 
-    sp18 = vs_battle_actors[D_801080C6]->unk3C;
-    hitLocationCount = _getHitLocationCount(D_801080C6);
+    actor = vs_battle_actors[tempSelectedActor]->unk3C;
+    hitLocationCount = _getHitLocationCount(tempSelectedActor);
     if (arg0 != 0) {
         if (arg0 > 0) {
             D_800F4F6A = arg0 - 1;
             return 0;
         }
         if (arg0 == -3) {
-            return D_801080C5;
+            return state;
         }
         if (arg0 == -2) {
-            D_801080C5 = 3;
+            state = 3;
         } else {
-            D_801080C6 = _selectedActor - 1;
-            func_800FBD80(D_801080C6);
+            tempSelectedActor = _selectedActor - 1;
+            func_800FBD80(tempSelectedActor);
             for (i = 0; i < 6; ++i) {
-                D_80108168[i] = 12 + i;
+                _hitLocationAnimSteps[i] = 12 + i;
             }
-            D_801080C5 = 1;
+            state = 1;
         }
         return 0;
     }
-    switch (D_801080C5) {
+    switch (state) {
     case 0:
         break;
     case 1:
-        func_80103FEC(sp18, vs_battle_rowAnimationSteps[D_80108168[0]]);
+        func_80103FEC(actor, vs_battle_rowAnimationSteps[_hitLocationAnimSteps[0]]);
         for (i = 0; i < hitLocationCount; ++i) {
-            hitLocation = &sp18->hitLocations[i];
-            step = D_80108168[i];
+            hitLocation = &actor->hitLocations[i];
+            step = _hitLocationAnimSteps[i];
             vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
-                (vs_battle_rowAnimationSteps[step] + 0xD8) | (0x22 + i * 0x10) * 0x10000,
-                0);
-            hitLocationState = vs_battle_getHitLocationState(hitLocation);
-            _drawStatusIndicator(hitLocationState,
-                (vs_battle_rowAnimationSteps[step] + 0xD8) | (0x24 + i * 0x10) * 0x10000,
-                0);
-            vs_battle_renderTextRaw(_hitLocationStates[hitLocationState],
-                (vs_battle_rowAnimationSteps[step] + 0xE0) | (0x22 + i * 0x10) * 0x10000,
-                0);
+                (vs_battle_rowAnimationSteps[step] + 216) | ((34 + i * 16) << 16), NULL);
+            hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+            _drawStatusIndicator(hitLocationStatus,
+                (vs_battle_rowAnimationSteps[step] + 216) | ((36 + i * 16) << 16), NULL);
+            vs_battle_renderTextRaw(_hitLocationStatuses[hitLocationStatus],
+                (vs_battle_rowAnimationSteps[step] + 224) | ((34 + i * 16) << 16), NULL);
             if (step < 8) {
                 func_800A13EC(1, hitLocation->unk5, sp10, 0);
                 _drawHitLocationLeaderLine(i, sp10[0], 8 - step, 0);
             }
-            hitLocationState = 0;
+            hitLocationStatus = 0;
             if (step != 0) {
-                D_80108168[i] = step - 1;
+                _hitLocationAnimSteps[i] = step - 1;
             } else {
-                hitLocationState = 1;
+                hitLocationStatus = 1;
             }
         }
 
-        if (hitLocationState != 0) {
-            D_801080C5 = 2;
+        if (hitLocationStatus != 0) {
+            state = 2;
         }
         break;
     case 2:
-        func_80103FEC(sp18, 0);
+        func_80103FEC(actor, 0);
 
         step = D_800F4F6A;
         for (i = 0; i < hitLocationCount; ++i) {
-            hitLocation = &sp18->hitLocations[i];
+            hitLocation = &actor->hitLocations[i];
             temp_s6 = step >> 7;
-            sp20 = step - 0x80;
+            sp20 = step - 128;
             sp24 = temp_s6 - 1;
             func_800C6540(vs_battle_hitlocations[hitLocation->nameIndex],
-                (0x22 + i * 0x10) * 0x10000 | 0xD8,
-                i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
-            hitLocationState = vs_battle_getHitLocationState(hitLocation);
-            _drawStatusIndicator(hitLocationState, (0x24 + i * 0x10) * 0x10000 | 0xD8,
+                216 | ((34 + i * 16) << 16),
+                i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
+                          : vs_getRGB888(128, 128, 128) >> temp_s6,
+                0);
+            hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+            _drawStatusIndicator(hitLocationStatus, (0x24 + i * 0x10) * 0x10000 | 0xD8,
                 temp_s6 - (i == sp20));
-            func_800C6540(_hitLocationStates[hitLocationState],
-                (0x22 + i * 0x10) * 0x10000 | 0xE0,
-                i == sp20 ? 0x808080 >> sp24 : 0x808080 >> temp_s6, 0);
+            func_800C6540(_hitLocationStatuses[hitLocationStatus],
+                224 | ((34 + i * 16) << 16),
+                i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
+                          : vs_getRGB888(128, 128, 128) >> temp_s6,
+                0);
             func_800A13EC(1, hitLocation->unk5, sp10, 0);
-            if (!(step & 0x80) && ((_fadeScreen | D_801080AC) == 0)) {
+            if (!(step & 0x80) && ((_fadeScreen | _drawBackgroundFirst) == 0)) {
                 _drawHitLocationLeaderLine(i, sp10[0], 8, i == step);
             }
         }
         break;
     case 3:
-        func_80103FEC(sp18, D_80108168[0] << 5);
+        func_80103FEC(actor, _hitLocationAnimSteps[0] << 5);
 
         for (i = 0; i < hitLocationCount; ++i) {
-            if (D_80108168[i] < 8) {
-                hitLocation = &sp18->hitLocations[i];
-                ++D_80108168[i];
+            if (_hitLocationAnimSteps[i] < 8) {
+                hitLocation = &actor->hitLocations[i];
+                ++_hitLocationAnimSteps[i];
                 vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
-                    ((D_80108168[i] << 5) + 0xD8) | (0x22 + i * 0x10) * 0x10000, 0);
-                hitLocationState = vs_battle_getHitLocationState(hitLocation);
-                _drawStatusIndicator(hitLocationState,
-                    ((D_80108168[i] << 5) + 0xD8) | (0x24 + i * 0x10) * 0x10000, 0);
-                vs_battle_renderTextRaw(_hitLocationStates[hitLocationState],
-                    ((D_80108168[i] << 5) + 0xE0) | (0x22 + i * 0x10) * 0x10000, 0);
+                    ((_hitLocationAnimSteps[i] << 5) + 216) | ((34 + i * 16) << 16), 0);
+                hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+                _drawStatusIndicator(hitLocationStatus,
+                    ((_hitLocationAnimSteps[i] << 5) + 216) | ((36 + i * 16) << 16), 0);
+                vs_battle_renderTextRaw(_hitLocationStatuses[hitLocationStatus],
+                    ((_hitLocationAnimSteps[i] << 5) + 224) | ((34 + i * 16) << 16), 0);
             } else {
-                D_801080C5 = 0;
+                state = 0;
             }
         }
         break;
@@ -1400,12 +1402,14 @@ static int _equipmentDetailScreen(int row)
         case 0:
             vs_mainMenu_drawDpPpbars(11);
             _drawWeaponInfo(&temp_s1->weapon);
-            newSelection = _updateEquipmentDetailSelection(previousSelection, temp_s1->weapon.grip.gemSlots + 114);
+            newSelection = _updateEquipmentDetailSelection(
+                previousSelection, temp_s1->weapon.grip.gemSlots + 114);
             break;
         case 1:
             vs_mainMenu_drawDpPpbars(11);
             _drawShieldInfo(&temp_s1->shield);
-            newSelection = _updateEquipmentDetailSelection(previousSelection, temp_s1->shield.shield.gemSlots + 96);
+            newSelection = _updateEquipmentDetailSelection(
+                previousSelection, temp_s1->shield.shield.gemSlots + 96);
             break;
         default:
             var_a0_5 = 8;
@@ -1462,11 +1466,13 @@ static int _equipmentDetailScreen(int row)
                 + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (newSelection >= 18) {
                 if (_selectedEquipmentRow == 0) {
-                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                        + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
+                    var_s3
+                        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
+                            + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
                 } else if ((_selectedEquipmentRow - 2) < hitLocations) {
-                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                        + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
+                    var_s3
+                        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
+                            + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
                 }
             }
         }
@@ -1497,7 +1503,14 @@ static int _equipmentDetailScreen(int row)
 
 static int _equipmentScreen(int element)
 {
-    enum state { init, animWait, handleInput, waitChangeActor, waitActorInit, equipDetailScreen };
+    enum state {
+        init,
+        animWait,
+        handleInput,
+        waitChangeActor,
+        waitActorInit,
+        equipDetailScreen
+    };
 
     char* rowStrings[18];
     int rowTypes[9];
@@ -1663,9 +1676,9 @@ static void _fadeScreenLeft(void)
     temp_a1 = D_1F800000[0];
     temp_t1 = D_1F800000[1];
     if (_fadeScreen != 0) {
-        temp_a1[0] = ((temp_t1[-1] & 0xFFFFFF) | (13 << 24));
-        temp_a1[1] = vs_getTpageRaw(0);
-        temp_a1[2] = vs_getRGB0(primPolyGT4, 0, 0 ,0);
+        temp_a1[0] = (temp_t1[-1] & 0xFFFFFF) | (13 << 24);
+        temp_a1[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
+        temp_a1[2] = vs_getRGB0(primPolyGT4, 0, 0, 0);
         temp_a1[3] = vs_getXY(0, 0);
         temp_a1[4] = vs_getUV0Clut(0, 0, 0, 0);
         temp_a1[5] = vs_getRGB888(128, 128, 128);
@@ -1688,85 +1701,85 @@ static void _fadeScreenLeft(void)
     }
 }
 
-static void func_80105F60(void)
+static void _drawMenuBackground(void)
 {
-    int var_s1;
+    int uv1Tpage;
 
     u_long* temp_t8 = D_1F800000[0];
     void* temp_a0 = D_1F800000[1];
     u_int* var_t9 = temp_a0 + 0x1FF4;
 
-    if (D_801080AC != 0) {
+    if (_drawBackgroundFirst != 0) {
         var_t9 = temp_a0 - 4;
     }
-    temp_t8[0] = (*var_t9 & 0xFFFFFF) | 0x0D000000;
-    temp_t8[1] = 0x3E101010;
-    temp_t8[2] = 0x40;
-    temp_t8[3] = 0x38F00040;
-    temp_t8[4] = 0x909090;
-    temp_t8[5] = 0xA0;
-    temp_t8[6] = 0xBA00A0;
-    temp_t8[7] = 0x101010;
-    temp_t8[8] = 0xF00040;
-    temp_t8[9] = 0xF040;
-    temp_t8[10] = 0x909090;
-    temp_t8[11] = 0xF000A0;
-    temp_t8[12] = 0xF0A0;
-    temp_t8[13] = 0xE1000200;
+    temp_t8[0] = (*var_t9 & 0xFFFFFF) | (13 << 24);
+    temp_t8[1] = vs_getRGB0(primPolyGT4SemiTrans, 16, 16, 16);
+    temp_t8[2] = vs_getXY(64, 0);
+    temp_t8[3] = vs_getUV0Clut(64, 0, 768, 227);
+    temp_t8[4] = vs_getRGB888(144, 144, 144);
+    temp_t8[5] = vs_getXY(160, 0);
+    temp_t8[6] = vs_getUV1Tpage(160, 0, 640, 256, clut8Bit, semiTransparencyFull);
+    temp_t8[7] = vs_getRGB888(16, 16, 16);
+    temp_t8[8] = vs_getXY(64, 240);
+    temp_t8[9] = vs_getUV(64, 240);
+    temp_t8[10] = vs_getRGB888(144, 144, 144);
+    temp_t8[11] = vs_getXY(160, 240);
+    temp_t8[12] = vs_getUV(160, 240);
+    temp_t8[13] = vs_getTpage(0, 0, 0, 0, ditheringOn);
     *var_t9 = ((u_long)temp_t8 << 8) >> 8;
     temp_t8 += 14;
-    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | 0x08000000);
-    temp_t8[6] = 0x60000000;
-    temp_t8[7] = 0x100;
-    temp_t8[1] = 0xE10000BB;
-    temp_t8[2] = 0x64808080;
-    temp_t8[3] = 0xA0;
-    temp_t8[4] = 0x38F00020;
-    temp_t8[5] = 0xF00060;
-    temp_t8[8] = 0xF00040;
+    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | (8 << 24));
+    temp_t8[1] = vs_getTpage(704, 256, 1, 1, 0);
+    temp_t8[2] = vs_getRGB0(primSprt, 128, 128, 128);
+    temp_t8[3] = vs_getXY(160, 0);
+    temp_t8[4] = vs_getUV0Clut(32, 0, 768, 227);
+    temp_t8[5] = vs_getWH(96, 240);
+    temp_t8[6] = vs_getRGB0(primTile, 0, 0, 0);
+    temp_t8[7] = vs_getXY(256, 0);
+    temp_t8[8] = vs_getWH(64, 240);
     *var_t9 = ((u_long)temp_t8 << 8) >> 8;
     temp_t8 += 9;
-    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | 0x0D000000);
-    temp_t8[1] = 0xE1000000;
-    temp_t8[2] = 0x3C808080;
-    temp_t8[3] = 0x40;
-    temp_t8[4] = 0x40;
-    temp_t8[5] = 0;
-    temp_t8[6] = 0xA0;
-    var_s1 = 0x010000A0;
+    temp_t8[0] = (int)((*var_t9 & 0xFFFFFF) | (13 << 24));
+    temp_t8[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
+    temp_t8[2] = vs_getRGB0(primPolyGT4, 128, 128, 128);
+    temp_t8[3] = vs_getXY(64, 0);
+    temp_t8[4] = vs_getUV0Clut(64, 0, 0, 0);
+    temp_t8[5] = vs_getRGB888(0, 0, 0);
+    temp_t8[6] = vs_getXY(160, 0);
+    uv1Tpage = vs_getUV1Tpage(160, 0, 0, 0, direct16Bit, semiTransparencyHalf);
     if (vs_main_frameBuf == 0) {
-        var_s1 = 0x01050000 | 0xA0;
+        uv1Tpage = vs_getUV1Tpage(160, 0, 320, 0, direct16Bit, semiTransparencyHalf);
     }
-    temp_t8[8] = 0x808080;
-    temp_t8[7] = var_s1;
-    temp_t8[9] = 0xF00040;
-    temp_t8[10] = 0xF040;
-    temp_t8[11] = 0;
-    temp_t8[12] = 0xF000A0;
-    temp_t8[13] = 0xF0A0;
+    temp_t8[7] = uv1Tpage;
+    temp_t8[8] = vs_getRGB888(128, 128, 128);
+    temp_t8[9] = vs_getXY(64, 240);
+    temp_t8[10] = vs_getUV(64, 240);
+    temp_t8[11] = vs_getRGB888(0, 0, 0);
+    temp_t8[12] = vs_getXY(160, 240);
+    temp_t8[13] = vs_getUV(160, 240);
     *var_t9 = ((u_long)temp_t8 << 8) >> 8;
     D_1F800000[0] = temp_t8 + 14;
 }
 
-static void func_80106150(void)
+static void _drawScreen(void)
 {
     int temp_lo_5;
-    int temp_s1;
-    int temp_s0;
-    int temp_s2;
+    int xOffset;
+    int x;
+    int z;
     int* p;
 
-    temp_s1 = (0x80 - _animationStep);
-    temp_s2 = D_800F453C[0x32B];
-    temp_s0 = D_800F453C[0x31F];
+    xOffset = (128 - _animationStep);
+    z = D_800F453C[0x32B];
+    x = D_800F453C[0x31F];
     p = (int*)D_1F800000 + 13;
-    p[4] = ((-vs_math_sine(_xPos) * temp_s1) >> 8) * temp_s2;
-    p[5] = -(temp_s0 << 0xB);
-    p[6] = ((vs_math_cosine(_xPos) * temp_s1) >> 8) * temp_s2;
+    p[4] = ((-vs_math_sine(_xPos) * xOffset) >> 8) * z;
+    p[5] = -(x << 0xB);
+    p[6] = ((vs_math_cosine(_xPos) * xOffset) >> 8) * z;
     ((int*)D_1F800000)[13]
-        = p[4] + ((vs_math_cosine(_xPos) * vs_math_cosine(_yPos)) >> 0xA) * temp_s2;
-    p[1] = p[5] - vs_math_sine(_yPos) * temp_s2 * 4;
-    temp_lo_5 = (vs_math_sine(_xPos) * vs_math_cosine(_yPos) >> 0xA) * temp_s2;
+        = p[4] + ((vs_math_cosine(_xPos) * vs_math_cosine(_yPos)) >> 0xA) * z;
+    p[1] = p[5] - vs_math_sine(_yPos) * z * 4;
+    temp_lo_5 = (vs_math_sine(_xPos) * vs_math_cosine(_yPos) >> 0xA) * z;
     p[8] = 0;
     p[9] = 0;
     p[10] = 0;
@@ -1778,42 +1791,40 @@ static void func_80106150(void)
     } else {
         func_800F9EB8(p - 8);
     }
-    func_80105F60();
+    _drawMenuBackground();
     _fadeScreenLeft();
-    func_801045B8(0);
+    _drawHitLocationStatuses(0);
     func_80103AC8();
 }
 
-static void func_80106308(void)
+static void _printSelectedLocationCondition(void)
 {
-    vs_battle_equipment_hitLocations* temp_a0;
-
-    temp_a0
+    vs_battle_equipment_hitLocations* location
         = &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
     vs_battle_stringContext.strings[0]
-        = (char*)&D_800EA868[D_800EA868[temp_a0->nameIndex]];
+        = (char*)&D_800EA868[D_800EA868[location->nameIndex]];
     vs_battle_stringContext.strings[1]
-        = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationState(temp_a0)
+        = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationStatus(location)
             + VS_status_INDEX_critical]];
     vs_battle_printf(
         vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
     vs_mainmenu_setMessage(vs_battle_stringBuf);
-    func_801045B8(_selectedElement + 1);
+    _drawHitLocationStatuses(_selectedElement + 1);
 }
 
-static void func_801063F8(void)
+static void _printSelectedLocationStats(void)
 {
     int i;
-    vs_battle_equipment_hitLocations* temp_a0
+    vs_battle_equipment_hitLocations* location
         = &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
 
     for (i = 0; i < 16; ++i) {
-        vs_mainMenu_equipmentStats[i + 16] = temp_a0->unk10[i & 7];
+        vs_mainMenu_equipmentStats[i + 16] = location->affinities[i & 7];
     }
     for (i = 0; i < 4; ++i) {
-        vs_mainMenu_equipmentStats[i + 32] = temp_a0->unk8[i];
+        vs_mainMenu_equipmentStats[i + 32] = location->types[i];
     }
-    func_801045B8(_selectedElement + 129);
+    _drawHitLocationStatuses(_selectedElement + 129);
 }
 
 static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,
@@ -1837,7 +1848,7 @@ int vs_menu4_Exec(char* state)
     };
 
     static int animWait;
-    static int D_80108130;
+    static int _screenEnabled;
     static int D_80108134;
 
     int hitLocations;
@@ -1852,7 +1863,7 @@ int vs_menu4_Exec(char* state)
 
     switch (*state) {
     case init:
-        D_80108130 = 0;
+        _screenEnabled = 0;
         D_801081EC = 10;
         if (vs_mainMenu_itemNames == NULL) {
             vs_mainMenu_loadItemNames(1);
@@ -1863,7 +1874,7 @@ int vs_menu4_Exec(char* state)
         D_800EB9AE = 1;
         func_8008A4DC(0);
         func_80100414(0x7FE, 0x80);
-        D_801080AC = 0;
+        _drawBackgroundFirst = 0;
         _fadeScreen = 0;
         _selectedActor = 0;
         D_801080A4 = 0;
@@ -1871,7 +1882,7 @@ int vs_menu4_Exec(char* state)
         D_801080B9 = 0;
         D_801080BB = 0;
         func_80103744(1);
-        D_80108130 = 1;
+        _screenEnabled = 1;
         animWait = 1;
         D_80108188 = D_8005E248;
         func_8007CCF0(0x200);
@@ -1888,16 +1899,16 @@ int vs_menu4_Exec(char* state)
         func_800FFBC8();
         _selectedElement = 0;
         D_80102544 = 0;
-        func_80106308();
+        _printSelectedLocationCondition();
         *state = 5;
         break;
     case waitForMenu:
         if (animWait != 0) {
             --animWait;
-            func_801045B8(-1);
+            _drawHitLocationStatuses(-1);
             func_800FBEA4(1);
         } else {
-            func_80106308();
+            _printSelectedLocationCondition();
             *state = 5;
         }
         break;
@@ -1910,7 +1921,7 @@ int vs_menu4_Exec(char* state)
         if (animWait != 0) {
             if (func_80103744(0) != 0) {
                 animWait = 0;
-                func_801045B8(-1);
+                _drawHitLocationStatuses(-1);
                 func_800FBEA4(1);
                 userInput = _selectedElement;
                 if (userInput < VS_status_INDEX_statDesc) {
@@ -1918,14 +1929,14 @@ int vs_menu4_Exec(char* state)
                     if (hitLocations < userInput) {
                         _selectedElement = hitLocations;
                     }
-                    func_80106308();
+                    _printSelectedLocationCondition();
                 } else {
                     vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[userInput
                         - VS_status_INDEX_statDesc]]);
                 }
             }
         } else if (vs_mainMenu_loadItemNames(0) != 0) {
-            if (func_801045B8(-3) == 2) {
+            if (_drawHitLocationStatuses(-3) == 2) {
                 if (vs_main_buttonsPressed.all & PADRup) {
                     vs_battle_playMenuLeaveSfx();
                     *state = waitQuitToBattle;
@@ -1939,7 +1950,7 @@ int vs_menu4_Exec(char* state)
                         != 0)) {
                     vs_battle_playMenuSelectSfx();
                     func_800FBEA4(2);
-                    func_801045B8(-2);
+                    _drawHitLocationStatuses(-2);
                     animWait = 8;
                     *state = viewEquipment;
                     break;
@@ -1952,7 +1963,7 @@ int vs_menu4_Exec(char* state)
                 if (vs_main_buttonsPressed.all & PADRleft) {
                     if (var_s6 != 0) {
                         vs_battle_playMenuSelectSfx();
-                        func_801063F8();
+                        _printSelectedLocationStats();
                         func_800FBBD4(6);
                         D_801081EE = 0;
                         animWait = 10;
@@ -2006,7 +2017,7 @@ int vs_menu4_Exec(char* state)
                         }
                     }
                     userInput &= 0xFF;
-                    func_801045B8(7);
+                    _drawHitLocationStatuses(7);
                     if (userInput == 13) {
                         if (_navigateStatusModifiers(
                                 vs_battle_actors[_selectedActor - 1]->unk3C, 1)
@@ -2020,7 +2031,7 @@ int vs_menu4_Exec(char* state)
                     if (userInput < 6) {
                         hitLocations = _getHitLocationCount(_selectedActor - 1);
                         if (userInput < hitLocations) {
-                            func_801045B8(userInput + 1);
+                            _drawHitLocationStatuses(userInput + 1);
                         } else {
                             userInput = 6;
                             if (!(vs_main_buttonRepeat & PADLdown)) {
@@ -2041,7 +2052,7 @@ int vs_menu4_Exec(char* state)
                         }
                     }
                     if (userInput < 6) {
-                        func_80106308();
+                        _printSelectedLocationCondition();
                     } else {
                         vs_mainmenu_setMessage(
                             (char*)&_statusStrings[_statusStrings[userInput
@@ -2060,7 +2071,7 @@ int vs_menu4_Exec(char* state)
             }
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
-                func_801045B8(-2);
+                _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
                 func_80103608(userInput);
                 func_80103744(userInput + hitLocations);
@@ -2079,11 +2090,11 @@ int vs_menu4_Exec(char* state)
             if (func_80103744(0) != 0) {
                 _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->unk3C, 0);
                 animWait = 0;
-                func_801045B8(-1);
+                _drawHitLocationStatuses(-1);
                 func_800FBEA4(1);
             }
         } else {
-            if (func_801045B8(-3) == 2) {
+            if (_drawHitLocationStatuses(-3) == 2) {
                 userInput = _navigateStatusModifiers(0, 1);
                 if (userInput != 0) {
                     switch (userInput) {
@@ -2112,7 +2123,7 @@ int vs_menu4_Exec(char* state)
             }
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
-                func_801045B8(-2);
+                _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
                 func_80103608(userInput);
                 func_80103744(userInput + hitLocations);
@@ -2171,7 +2182,7 @@ int vs_menu4_Exec(char* state)
                 if (userInput != _selectedElement) {
                     vs_battle_playMenuChangeSfx();
                     _selectedElement = userInput;
-                    func_801063F8();
+                    _printSelectedLocationStats();
                 }
             }
             userInput = D_801081EE;
@@ -2205,15 +2216,15 @@ int vs_menu4_Exec(char* state)
         if (animWait != 0) {
             _animationStep = vs_battle_rowAnimationSteps[--animWait];
         } else {
-            func_801045B8(_selectedElement + 1);
+            _drawHitLocationStatuses(_selectedElement + 1);
             *state = 5;
         }
         break;
     case waitQuitToMenu:
     case waitQuitToBattle:
         func_800FBEA4(2);
-        func_801045B8(-2);
-        func_801045B8(0);
+        _drawHitLocationStatuses(-2);
+        _drawHitLocationStatuses(0);
         func_80103608(0);
         func_80103AC8();
         func_8007CCF0(D_80108188);
@@ -2228,11 +2239,11 @@ int vs_menu4_Exec(char* state)
         func_80100414(-2, 128);
         D_800EB9AE = 0;
         animWait = 8;
-        D_80108130 = 0;
+        _screenEnabled = 0;
         ++*state;
         break;
     case quitToMenu:
-        func_801045B8(0);
+        _drawHitLocationStatuses(0);
         func_80103AC8();
         func_800FFB68(0);
         func_800FFBA8();
@@ -2245,7 +2256,7 @@ int vs_menu4_Exec(char* state)
         --animWait;
         break;
     case quitToBattle:
-        func_801045B8(0);
+        _drawHitLocationStatuses(0);
         func_80103AC8();
         func_800FFB68(0);
         func_800FFBA8();
@@ -2260,8 +2271,8 @@ int vs_menu4_Exec(char* state)
         break;
     }
 
-    if (D_80108130 != 0) {
-        func_80106150();
+    if (_screenEnabled != 0) {
+        _drawScreen();
     }
     if (var_s5 != 0) {
         if (D_801081EC != 0) {

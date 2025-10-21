@@ -8448,11 +8448,11 @@ void func_80042CB0(void)
         temp_t5->unk0.unk28[i].unk2 = temp_t0->hitLocations[i].unk2;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk0.unk28[i].unk4[j] = temp_t0->hitLocations[i].unk8[j];
+            temp_t5->unk0.unk28[i].unk4[j] = temp_t0->hitLocations[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk0.unk28[i].unkC[j] = temp_t0->hitLocations[i].unk10[j];
+            temp_t5->unk0.unk28[i].unkC[j] = temp_t0->hitLocations[i].affinities[j];
         }
     }
 

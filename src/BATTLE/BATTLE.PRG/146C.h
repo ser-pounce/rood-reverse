@@ -152,8 +152,8 @@ typedef struct {
     char unk5;
     u_char nameIndex;
     char unk7;
-    u_short unk8[4];
-    u_short unk10[8];
+    u_short types[4];
+    u_short affinities[8];
     vs_battle_armorInfo armor;
 } vs_battle_equipment_hitLocations;
 

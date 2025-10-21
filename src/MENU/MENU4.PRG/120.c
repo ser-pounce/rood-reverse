@@ -1831,13 +1831,6 @@ static void _printSelectedLocationStats(void)
     _drawHitLocationStatuses(_selectedElement + 129);
 }
 
-static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,
-    0x006400A0, 0x00920098, 0x009C0098, 0x00A60098, 0x0004FFFC, 0x00040042, 0x000CFFFC,
-    0x000C0042 };
-
-static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301, 0x030A0402, 0x040A0503,
-    0x050A0604, 0x060D0705, 0x070D0806, 0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
-
 int vs_menu4_Exec(char* state)
 {
     enum state {
@@ -2006,6 +1999,13 @@ int vs_menu4_Exec(char* state)
                         _yPos = 896;
                     }
                 } else {
+                    static int D_801080C8[] = { 0x001400A0, 0x002400A0, 0x003400A0, 0x004400A0, 0x005400A0,
+                        0x006400A0, 0x00920098, 0x009C0098, 0x00A60098, 0x0004FFFC, 0x00040042, 0x000CFFFC,
+                        0x000C0042 };
+
+                    static int D_801080FC[] = { 0x000A010A, 0x010A0200, 0x020A0301, 0x030A0402, 0x040A0503,
+                        0x050A0604, 0x060D0705, 0x070D0806, 0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
+
                     userInput = _selectedElement;
                     hitLocations = D_801080FC[userInput];
                     if (vs_main_buttonRepeat & PADLup) {

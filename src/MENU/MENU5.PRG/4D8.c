@@ -10,6 +10,8 @@
 #include "lbas.h"
 #include "gpu.h"
 
+int func_80103418(void);
+int func_80103684();
 void func_80105B18(void*, int);
 void func_801060E0(void*, int);
 int func_80106570(void*);
@@ -22,6 +24,11 @@ extern u_short D_801083FC[];
 extern vs_main_CdQueueSlot* D_80108D24;
 extern u_short* D_80108D28;
 extern int D_80108D2C;
+extern int D_80108D30;
+extern int D_80108D34;
+extern int D_80108D38;
+extern u_long* D_80108D3C;
+extern RECT D_80108D44[];
 extern int D_80108D60;
 extern int D_80108D64;
 extern int D_80108D68;
@@ -166,7 +173,105 @@ int func_80102FCC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/4D8", func_801030F4);
+int func_801030F4(char* state)
+{
+    int temp_v0_2;
+    u_long* temp_a1;
+    char temp_v0;
+
+    temp_v0 = *state;
+    switch (temp_v0) {
+    case 3:
+        D_801083F8 = -1;
+        temp_a1 = vs_main_allocHeapR(0xB600);
+        D_80108D3C = temp_a1;
+        D_80108D44[0].x = 0x300;
+        D_80108D44[0].y = 0xE3;
+        D_80108D44[0].w = 0x100;
+        D_80108D44[0].h = 1;
+        (&D_80108D44[1])->x = 0x2A0;
+        (&D_80108D44[1])->y = 0x100;
+        (&D_80108D44[1])->w = 0x60;
+        (&D_80108D44[1])->h = 0xF0;
+        StoreImage(D_80108D44, temp_a1);
+        StoreImage(&D_80108D44[1], D_80108D3C + 0x80);
+        func_80102FCC(1);
+        *state = 4;
+        break;
+    case 4:
+        if (func_80102FCC(0) == 0) {
+            break;
+        }
+        *state = 5;
+        func_800FFB68(1);
+        D_80108D30 = 8;
+        D_80108D34 = 0;
+        // Fallthrough
+    case 5:
+        if (D_80108D34 == 0) {
+            D_80108D34 = func_80103418();
+        }
+        if (D_80108D30 != 0) {
+            --D_80108D30;
+            break;
+        } else if (D_80108D34 != 0) {
+            func_8008A4DC(0);
+            func_800CB654(1);
+            D_800EB9B0 = 0x200000;
+            *state = 6;
+        } else {
+            break;
+        }
+        // Fallthrough
+    case 6:
+        *state += vs_mainmenu_ready();
+        break;
+    case 7:
+        temp_v0_2 = func_80103684();
+        D_80108D38 = temp_v0_2;
+        if (temp_v0_2 != 0) {
+            func_80100414(-4, 0x80);
+            func_800CB654(0);
+            D_800EB9B0 = 0;
+            func_8008A4DC(1);
+            func_800FFA88(0);
+            func_800FA8E0(0x28);
+            D_80108D30 = 0xA;
+            *state = 8;
+        }
+        break;
+    case 8:
+        func_800FFB68(0);
+        *state = 9;
+        break;
+    case 9:
+        if (D_801022D8 == 0) {
+            D_80108D44[0].x = 0x280;
+            D_80108D44[0].y = 0x100;
+            D_80108D44[0].w = 0x20;
+            D_80108D44[0].h = 0xF0;
+            (&D_80108D44[1])->x = 0x300;
+            (&D_80108D44[1])->y = 0x100;
+            (&D_80108D44[1])->w = 0x20;
+            (&D_80108D44[1])->h = 0xF0;
+            ClearImage(D_80108D44, 0, 0, 0);
+            ClearImage(&D_80108D44[1], 0, 0, 0);
+            func_80048A64((u_short*)D_80108D3C, 3U, 0U, 0x100U);
+            vs_battle_drawImage(0x010002A0, D_80108D3C + 0x80, 0xF00060);
+            *state = 0xA;
+        }
+        break;
+    case 10:
+        if (D_80108D38 == 2) {
+            vs_battle_menuState.currentState = 6;
+        }
+        vs_main_freeHeapR(D_80108D3C);
+        D_801022D6 = 0;
+        *state = 0;
+        return 1;
+    }
+    return 0;
+}
 
 int func_80103418(void)
 {

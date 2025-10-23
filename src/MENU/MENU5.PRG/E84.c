@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
 typedef struct {
@@ -18,6 +19,10 @@ typedef struct {
     short unkE;
 } func_80107A9C_t;
 
+void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
+
+extern u_short D_801088B0[];
+extern int D_80108E48;
 extern short D_80108E74[][4];
 extern int D_80108EB4;
 
@@ -104,7 +109,31 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801074AC);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107630);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801079B8);
+void func_801079B8(int arg0, int arg1, int arg2)
+{
+    int var_a0;
+    int var_s1;
+    vs_battle_menuItem_t* temp_v0;
+
+    var_a0 = 0xBA - arg0;
+    if (var_a0 < 0) {
+        var_a0 += 3;
+    }
+    var_s1 = var_a0 >> 2;
+    if (var_s1 >= 0) {
+        var_s1 = 0xBA - var_s1;
+    } else {
+        var_s1 = 0xBA;
+    }
+    func_80107A9C(arg0, arg1, var_s1, D_80108E48 + 8);
+    func_80107A9C(var_s1, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
+    temp_v0 = vs_battle_setMenuItem(
+        0, 0xC2, D_80108E48, 0x80, 0, (char*)&D_801088B0[D_801088B0[arg2]]);
+    temp_v0->unk2 = 0x10;
+    D_80108E48 -= 0x10;
+    func_800C9078(temp_v0);
+    vs_battle_getMenuItem(0)->state = 0;
+}
 
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3)
 {

@@ -1,6 +1,22 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include <libetc.h>
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+} func_80107A9C_t;
 
 extern short D_80108E74[][4];
 extern int D_80108EB4;
@@ -40,10 +56,11 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801060E0);
 
-void func_80106178(short* arg0, short arg1) {
+void func_80106178(short* arg0, short arg1)
+{
     int temp_s0 = vs_math_sine(-arg1);
     int temp_v0 = vs_math_cosine(-arg1);
-    
+
     arg0[0] = temp_v0;
     arg0[1] = 0;
     arg0[2] = -temp_s0;
@@ -59,7 +76,7 @@ void func_801061EC(short* arg0, short arg1)
 {
     int temp_s0 = vs_math_sine(arg1);
     int temp_v0 = vs_math_cosine(arg1);
-    
+
     arg0[0] = 0x1000;
     arg0[1] = 0;
     arg0[2] = 0;
@@ -89,7 +106,23 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107630);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801079B8);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107A9C);
+void func_80107A9C(int arg0, int arg1, int arg2, int arg3)
+{
+    u_long** p = (u_long**)getScratchAddr(0);
+    func_80107A9C_t* temp_s0 = *(func_80107A9C_t**)p;
+
+    temp_s0->unk3 = 3;
+    temp_s0->unk7 = 0x40;
+    temp_s0->unk8 = arg0;
+    temp_s0->unkA = arg1;
+    temp_s0->unkC = arg2;
+    temp_s0->unkE = arg3;
+    temp_s0->unk4 = 0x80;
+    temp_s0->unk5 = 0x80;
+    temp_s0->unk6 = 0x80;
+    AddPrim(p[1] + 8, temp_s0++);
+    p[0] = (u_long*)temp_s0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107B10);
 

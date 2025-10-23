@@ -189,7 +189,8 @@ typedef struct {
     char unk11E[23];
     char unk135[33];
     char savePointStates[48];
-    char unk186[0x2BA];
+    char unk186[0x1B9];
+    char unk33F[0x101];
 } vs_main_flags_t;
 
 typedef struct {

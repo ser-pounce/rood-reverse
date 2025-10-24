@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
@@ -20,8 +21,11 @@ typedef struct {
 } func_80107A9C_t;
 
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
+void func_8010815C(int, int, int);
 
 extern u_short D_801088B0[];
+extern int D_80108D8C;
+extern short D_80108D9C;
 extern int D_80108E48;
 extern short D_80108E74[][4];
 extern int D_80108EB4;
@@ -168,9 +172,24 @@ void func_80108274(int arg0, int arg1, int arg2, int arg3)
     ++D_80108EB4;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801082A8);
+void func_801082A8(void)
+{
+    int i;
 
-int func_8008E7BC(int, int, u_int);
+    if ((D_80108D9C != 5) && (D_80108D8C == 0)) {
+        for (i = 0; i < D_80108EB4; ++i) {
+            if (D_80108E74[i][2] == 0) {
+                func_801079B8(D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
+            }
+        }
+
+        for (i = 0; i < D_80108EB4; ++i) {
+            if (D_80108E74[i][2] != 0) {
+                func_8010815C(D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
+            }
+        }
+    }
+}
 
 int func_8010839C(int arg0, int arg1, int arg2)
 {

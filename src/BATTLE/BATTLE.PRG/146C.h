@@ -301,6 +301,7 @@ void func_8008B4D8(void*);
 void func_8008B6B4(void);
 int func_8008D400();
 int func_8008E5F0(void);
+int func_8008E7BC(int, int, u_int);
 void func_8008E88C(void);
 int* func_8008EB24(void);
 void func_8008EB30(int*);

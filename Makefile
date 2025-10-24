@@ -1,5 +1,5 @@
 # Configure these to your needs
-ARCH     := mips-linux-gnu-
+ARCH     := mipsel-linux-gnu-
 CPP      := $(ARCH)cpp
 LD       := $(ARCH)ld
 AS       := $(ARCH)as
@@ -40,11 +40,11 @@ BCONFIG = $(BUILD)/config/$*
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS) \
                   -D "__attribute__(x)="
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
-LDFLAGS         = -nostdlib --build-id=none -EL -x \
+LDFLAGS         = -nostdlib --build-id=none -x \
               	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
 LDFLAGS_BIN    := --oformat=binary -e 0x0
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
-ASFLAGS         = -I include $(AS_DEPS) -EL -G0
+ASFLAGS         = -I include $(AS_DEPS) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
 MASFLAGS       := --aspsx-version=2.77 --macro-inc
 SPLATFLAGS     := --disassemble-all

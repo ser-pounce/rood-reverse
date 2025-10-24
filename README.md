@@ -70,7 +70,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
     - g++
     - python3
     - pip
-    - gcc-mips-linux-gnu
+    - gcc-mipsel-linux-gnu
     - docker-buildx
     - clang-format
 - Dump your original disk to `disks/SLUS-01040.bin`

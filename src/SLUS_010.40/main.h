@@ -253,8 +253,7 @@ typedef struct {
     int unk34;
     int unk38;
     int unk3C;
-    int unk40;
-    int unk44;
+    int unk40[2];
 } D_8005FFD8_t;
 
 extern soundData_t vs_main_soundData;

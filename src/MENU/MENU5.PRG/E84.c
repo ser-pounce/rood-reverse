@@ -23,6 +23,7 @@ typedef struct {
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
 
+extern u_short D_80108630[];
 extern u_short D_801088B0[];
 extern int D_80108D8C;
 extern short D_80108D9C;
@@ -161,7 +162,37 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107B10);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010800C);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010815C);
+void func_8010815C(int arg0, int arg1, int arg2)
+{
+    int temp_s0;
+    int var_a0;
+    vs_battle_menuItem_t* temp_v0;
+    int new_var;
+
+    var_a0 = 0xAA - arg0;
+    if (var_a0 < 0) {
+        var_a0 += 3;
+    }
+    temp_s0 = var_a0 >> 2;
+    if (temp_s0 < 0) {
+        temp_s0 = 0xAA;
+    } else {
+        temp_s0 = 0xAA - temp_s0;
+    }
+
+    func_80107A9C(arg0, arg1, temp_s0, D_80108E48 + 8);
+    func_80107A9C(temp_s0, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
+    new_var = D_8005FFD8.unk40[arg2 >> 5] & (1 << (arg2 & 0x1F));
+    if (!new_var) {
+        arg2 = 0x20;
+    }
+    temp_v0 = vs_battle_setMenuItem(
+        0, 0xB2, D_80108E48, 0x90, 0, (char*)&D_80108630[D_80108630[arg2]]);
+    temp_v0->unk2 = 8;
+    D_80108E48 -= 16;
+    func_800C9078(temp_v0);
+    vs_battle_getMenuItem(0)->state = 0;
+}
 
 void func_80108274(int arg0, int arg1, int arg2, int arg3)
 {

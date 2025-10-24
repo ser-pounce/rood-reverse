@@ -28,6 +28,7 @@ extern u_short D_801088B0[];
 extern int D_80108D8C;
 extern short D_80108D9C;
 extern int D_80108E48;
+extern int D_80108E54[4][2];
 extern short D_80108E74[][4];
 extern int D_80108EB4;
 
@@ -160,7 +161,41 @@ void func_80107A9C(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107B10);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010800C);
+void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    int temp_s1;
+    int temp_v0;
+    int i;
+    int var_v0;
+    int var_v1;
+
+    temp_s1 = vs_math_sine(arg4);
+    temp_v0 = vs_math_cosine(arg4);
+
+    D_80108E54[0][0] = (-arg2 * temp_v0) + (arg3 * temp_s1);
+    D_80108E54[0][1] = (-arg3 * temp_v0) - (arg2 * temp_s1);
+    D_80108E54[1][0] = (arg2 * temp_v0) + (arg3 * temp_s1);
+    D_80108E54[1][1] = (-arg3 * temp_v0) + (arg2 * temp_s1);
+    D_80108E54[2][0] = -D_80108E54[1][0];
+    D_80108E54[2][1] = -D_80108E54[1][1];
+    D_80108E54[3][0] = -D_80108E54[0][0];
+    D_80108E54[3][1] = -D_80108E54[0][1];
+
+    for (i = 0; i < 4; ++i) {
+        var_v0 = D_80108E54[i][0];
+        if (var_v0 < 0) {
+            var_v0 += 0x1FFF;
+        }
+        var_v1 = D_80108E54[i][1];
+        D_80108E54[i][0] = var_v0 >> 0xD;
+        if (var_v1 < 0) {
+            var_v1 += 0x1FFF;
+        }
+        D_80108E54[i][1] = var_v1 >> 0xD;
+        D_80108E54[i][0] = D_80108E54[i][0] + arg0;
+        D_80108E54[i][1] = D_80108E54[i][1] + arg1;
+    }
+}
 
 void func_8010815C(int arg0, int arg1, int arg2)
 {

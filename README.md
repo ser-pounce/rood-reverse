@@ -77,7 +77,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 - Run `make -j` to finish installation and perform an initial build
 
 ## Build targets
-- `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild depending on what has changed. 
+- `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
 - `make decompme TARGET=path/to/nonmatchings/source.asm` uploads the target function to a new decomp.me scratch.
 - `make permute TARGET=path/to/nonmatchings/source.asm` invokes the permuter for the target assembly file. 
 - `make remake -j` will delete and re-split the targets; this can be necessary if the dependency management has failed to identify everything that needs rebuilding (in which case a bug report is appreciated!), or if the configuration has changed enough to be no longer valid (e.g. orphaned .d files). It's good practice to run this before submitting a pull request to make sure everything still works.

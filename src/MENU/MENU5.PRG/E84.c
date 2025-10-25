@@ -22,6 +22,8 @@ typedef struct {
 
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
+void func_80106178(MATRIX* arg0, short arg1);
+void func_801061EC(MATRIX* arg0, short arg1);
 
 extern u_short D_80108630[];
 extern u_short D_801088B0[];
@@ -36,7 +38,64 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80103684);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801042B0);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80104384);
+void func_80041C68(MATRIX*, MATRIX*);
+extern int D_80108D7C;
+extern short D_80108DA4[];
+extern short D_80108DAC[];
+
+void func_80041C68(MATRIX*, MATRIX*);
+extern int D_80108D7C;
+extern short D_80108DA4[];
+extern short D_80108DAC[];
+
+void func_80104384(void)
+{
+    SVECTOR sp10;
+    MATRIX sp18;
+    MATRIX sp38;
+    int temp_s0;
+    int temp_v1;
+    int var_v0;
+    short* new_var;
+
+    temp_s0 = vs_math_sine(D_80108DA4[1]);
+    temp_v1 = vs_math_cosine(D_80108DA4[0]);
+    new_var = D_80108DAC;
+    temp_s0 *= D_80108D7C;
+    if (temp_s0 < 0) {
+        temp_s0 += 0xFFF;
+    }
+    var_v0 = (temp_s0 >> 0xC) * temp_v1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_80108DAC[0] = var_v0 >> 0xC;
+    temp_s0 = vs_math_cosine(D_80108DA4[1]);
+    temp_v1 = vs_math_cosine(D_80108DA4[0]);
+    temp_s0 *= -D_80108D7C;
+    if (temp_s0 < 0) {
+        temp_s0 += 0xFFF;
+    }
+    var_v0 = (temp_s0 >> 0xC) * temp_v1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_80108DAC[2] = var_v0 >> 0xC;
+    var_v0 = vs_math_sine(D_80108DA4[0]) * -D_80108D7C;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_80108DAC[1] = var_v0 >> 0xC;
+    func_80106178(&sp18, D_80108DA4[1]);
+    func_801061EC(&sp38, D_80108DA4[0]);
+    func_80041C68(&sp38, &sp18);
+    sp10.vx = -new_var[0];
+    sp10.vy = -new_var[1];
+    sp10.vz = -new_var[2];
+    ApplyMatrix(&sp18, &sp10, (VECTOR*)sp38.t);
+    SetRotMatrix(&sp18);
+    SetTransMatrix(&sp38);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010451C);
 
@@ -67,36 +126,36 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801060E0);
 
-void func_80106178(short* arg0, short arg1)
+void func_80106178(MATRIX* arg0, short arg1)
 {
     int temp_s0 = vs_math_sine(-arg1);
     int temp_v0 = vs_math_cosine(-arg1);
 
-    arg0[0] = temp_v0;
-    arg0[1] = 0;
-    arg0[2] = -temp_s0;
-    arg0[3] = 0;
-    arg0[4] = 0x1000;
-    arg0[5] = 0;
-    arg0[6] = temp_s0;
-    arg0[7] = 0;
-    arg0[8] = temp_v0;
+    arg0->m[0][0] = temp_v0;
+    arg0->m[0][1] = 0;
+    arg0->m[0][2] = -temp_s0;
+    arg0->m[1][0] = 0;
+    arg0->m[1][1] = 0x1000;
+    arg0->m[1][2] = 0;
+    arg0->m[2][0] = temp_s0;
+    arg0->m[2][1] = 0;
+    arg0->m[2][2] = temp_v0;
 }
 
-void func_801061EC(short* arg0, short arg1)
+void func_801061EC(MATRIX* arg0, short arg1)
 {
     int temp_s0 = vs_math_sine(arg1);
     int temp_v0 = vs_math_cosine(arg1);
 
-    arg0[0] = 0x1000;
-    arg0[1] = 0;
-    arg0[2] = 0;
-    arg0[3] = 0;
-    arg0[4] = temp_v0;
-    arg0[5] = -temp_s0;
-    arg0[6] = 0;
-    arg0[7] = temp_s0;
-    arg0[8] = temp_v0;
+    arg0->m[0][0] = 0x1000;
+    arg0->m[0][1] = 0;
+    arg0->m[0][2] = 0;
+    arg0->m[1][0] = 0;
+    arg0->m[1][1] = temp_v0;
+    arg0->m[1][2] = -temp_s0;
+    arg0->m[2][0] = 0;
+    arg0->m[2][1] = temp_s0;
+    arg0->m[2][2] = temp_v0;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010625C);

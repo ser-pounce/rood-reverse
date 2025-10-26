@@ -126,9 +126,9 @@ static int _drawArtsList(int typeCursorMem)
             int skillId = vs_main_skills_daggerArt1 + (weaponType - 1) * 4 + i;
             if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
                 menuStrings[rowCount * 2] = (char*)vs_main_skills[skillId].name;
-                menuStrings[rowCount * 2 + 1]
-                    = (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
-                        + ((weaponType - 1) * 4)]];
+                menuStrings[rowCount * 2 + 1] =
+                    (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
+                                              + ((weaponType - 1) * 4)]];
                 rowTypes[rowCount] = 0;
                 if ((weaponType != vs_battle_characterState->equippedWeaponType)
                     || (vs_battle_getSkillFlags(0, skillId) != 0)) {
@@ -147,8 +147,8 @@ static int _drawArtsList(int typeCursorMem)
 
         if (vs_battle_shortcutInvoked == 0) {
             menuStrings[rowCount * 2] = (char*)&_strings[VS_strings_OFFSET_viewArts];
-            menuStrings[rowCount * 2 + 1]
-                = (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
+            menuStrings[rowCount * 2 + 1] =
+                (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
             rowTypes[rowCount] = 2;
             skillIds[rowCount] = 0xFFFF;
             ++rowCount;

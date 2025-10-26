@@ -253,8 +253,8 @@ int func_800F9EB8(void* arg0)
         return -1;
     }
     func_800AECA0(arg0);
-    temp_s1->unk5B2
-        = ((int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F)) >> 1);
+    temp_s1->unk5B2 =
+        ((int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F)) >> 1);
     if (temp_s1->unk8 & 4) {
         func_800AB4F0(temp_s1);
         func_800AF6E8(temp_s1);

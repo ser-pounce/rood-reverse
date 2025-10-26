@@ -136,8 +136,8 @@ typedef struct {
 extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
-char D_8004A504[]
-    = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6, 255, 0, 0, 0 };
+char D_8004A504[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6, 255, 0,
+    0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
 int vs_main_titleScreenCount = 0;
 int D_8004A52C = 0;
@@ -7963,8 +7963,8 @@ char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     { 10, 10, 254, 0, 10, 10, 20, 5, 5, 5, 5, 246, 10, 0, 20, 251, 251, 251, 251, 20, 236,
         0, 64, 31, 8, 0, 3, 0, 255, 255 } };
 
-int D_8004EECC[]
-    = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0, 32 };
+int D_8004EECC[] = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0,
+    32 };
 
 extern int randArr[97];
 extern vs_main_HeapHeader* _cdReadBuffer;
@@ -8291,7 +8291,7 @@ int vs_main_getRandSmoothed(int arg0)
                + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
                + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
                + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0))
-        / 12;
+         / 12;
 }
 
 static void _sysInit(void)
@@ -8794,9 +8794,9 @@ void func_800438C8(int arg0)
         new_var4 = 6;
         new_var2 = 7;
         func_800433B4(&D_8004A504[(&D_8004A504[arg0 * new_var3])[new_var3]
-                          + ((&D_8004A504[arg0 * new_var3])[new_var] << 8)
-                          + ((&D_8004A504[arg0 * new_var3])[new_var4] << 16)
-                          + ((&D_8004A504[arg0 * new_var3])[new_var2] << 24)],
+                                  + ((&D_8004A504[arg0 * new_var3])[new_var] << 8)
+                                  + ((&D_8004A504[arg0 * new_var3])[new_var4] << 16)
+                                  + ((&D_8004A504[arg0 * new_var3])[new_var2] << 24)],
             0xFF, 0x80);
     }
 }
@@ -9204,8 +9204,8 @@ static void func_800443CC(void)
             vs_main_disk.pcm.chan = 0;
             DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
             DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
-            vs_main_disk.commandId = DsPacket(
-                DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
+            vs_main_disk.commandId =
+                DsPacket(DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
             DsReadyCallback(_diskPcmReadReady);
             vs_main_disk.state = diskStreamXa;
         }
@@ -9256,8 +9256,8 @@ static void func_800443CC(void)
                 vs_main_disk.pcm.file = 1;
                 vs_main_disk.pcm.chan = 0;
                 DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
-                vs_main_disk.commandId
-                    = DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
+                vs_main_disk.commandId =
+                    DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
                 vs_main_disk.state = diskStreamXa;
             } else {
@@ -9632,8 +9632,8 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                     vs_main_nop9(0x98, 0);
                 }
 
-                vs_main_soundData.musicQueueSlot[slot]
-                    = vs_main_allocateCdQueueSlot(&cdFile);
+                vs_main_soundData.musicQueueSlot[slot] =
+                    vs_main_allocateCdQueueSlot(&cdFile);
 
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
@@ -10647,25 +10647,25 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 break;
             case 6:
                 var_t3 = arg3
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 6;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 6;
                 var_t1 = t4
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 6;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 6;
                 var_a0 = t5
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 6;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 6;
                 break;
             case 7:
                 var_t3 = arg3
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 12;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 12;
                 var_t1 = t4
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 12;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 12;
                 var_a0 = t5
-                    + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
-                        / 12;
+                       + _insertTpage5(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F)
+                             / 12;
                 break;
             case 8:
             case 15:
@@ -10735,8 +10735,8 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 t2[i].b = var_a0;
                 t2[i].r = var_t3;
                 t2[i].g = var_t1;
-                loadImageSource[arg2][i]
-                    = var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i].a << 0xF);
+                loadImageSource[arg2][i] =
+                    var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i].a << 0xF);
             }
         } else {
             t2[i].bindex = 0x1F;
@@ -10788,12 +10788,12 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
             temp_t2 = _insertTpage(arg1[i].unk2);
 
             if (arg0 != 0) {
-                temp_t6[i][3]
-                    = ((int)(temp_a1 - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][4]
-                    = ((int)(temp_t1 - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][5]
-                    = ((int)(temp_t2 - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][3] =
+                    ((int)(temp_a1 - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][4] =
+                    ((int)(temp_t1 - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][5] =
+                    ((int)(temp_t2 - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
             } else {
                 temp_t6[i][0] = temp_a1;
                 temp_t6[i][1] = temp_t1;

@@ -688,8 +688,8 @@ static void _packageGameSaveData(int targetFile)
         if (_saveFileInfo[i].unk4.base.slotState >= slotStateInUse) {
             if (vs_main_settings.saveFileGeneration
                 < _saveFileInfo[i].unk4.base.generation) {
-                vs_main_settings.saveFileGeneration
-                    = _saveFileInfo[i].unk4.base.generation;
+                vs_main_settings.saveFileGeneration =
+                    _saveFileInfo[i].unk4.base.generation;
             }
         }
     }
@@ -786,9 +786,9 @@ static int _loadSaveData(int portFileno)
         char* filename;
         int new_var = 320;
 
-        _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
-                                     * ((_loadSaveDataErrorOffset * 20)
-                                         - (_fileProgressPosition - new_var)))
+        _fileProgressPosition +=
+            ((_fileProgressCounter - _filePreviousProgressCounter)
+                * ((_loadSaveDataErrorOffset * 20) - (_fileProgressPosition - new_var)))
             / _fileProgressTarget;
         _loadSaveDataErrorOffset = errors;
         _fileProgressTarget = 192 - (isTempSave << 7);
@@ -883,7 +883,7 @@ static int _saveFile(int portFile)
     case tempFileCreated:
         temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
                         * (320 - _fileProgressPosition))
-            / _fileProgressTarget;
+                  / _fileProgressTarget;
         _filePreviousProgressCounter = _fileProgressCounter;
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
@@ -1013,8 +1013,8 @@ static int _initMemcard(int init)
             if (i & 4) {
                 event = HwCARD;
             }
-            _memcardEventDescriptors[i]
-                = OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, 0);
+            _memcardEventDescriptors[i] =
+                OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, 0);
         }
 
         ExitCriticalSection();
@@ -1056,8 +1056,8 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
     _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
-    _primBuf.prim.sprt.r0g0b0code
-        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
+    _primBuf.prim.sprt.r0g0b0code =
+        vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
     _primBuf.prim.sprt.x0y0 = xy;
     _primBuf.prim.sprt.u0v0clut = uvClut;
     _primBuf.prim.sprt.wh = wh;
@@ -1066,8 +1066,8 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 
 static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
     200, 224, 248, 255, 255, 255, 255 };
-static signed char _cursorFileOpSaturation[]
-    = { 0, -56, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8 };
+static signed char _cursorFileOpSaturation[] = { 0, -56, -112, -104, -96, -88, -80, -72,
+    -64, -56, -48, -40, -32, -24, -16, -8 };
 
 enum vs_fileMenuUiIds_e {
     vs_uiids_colon = 0,
@@ -1084,12 +1084,12 @@ enum vs_fileMenuUiIds_e {
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
-    static int _saveInfoUVClut[]
-        = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
-              vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
-              vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
-              vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
-              vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+    static int _saveInfoUVClut[] = { vs_getUV0Clut(248, 8, 832, 223),
+        vs_getUV0Clut(242, 0, 832, 223), vs_getUV0Clut(224, 120, 848, 223),
+        vs_getUV0Clut(128, 56, 848, 223), vs_getUV0Clut(224, 112, 848, 223),
+        vs_getUV0Clut(104, 56, 848, 223), vs_getUV0Clut(170, 76, 864, 223),
+        vs_getUV0Clut(144, 0, 864, 223), vs_getUV0Clut(160, 0, 864, 223),
+        vs_getUV0Clut(32, 9, 832, 223) };
     static int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
         vs_getXY(22, 8), vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10),
         vs_getXY(16, 9), vs_getXY(18, 9), vs_getXY(5, 7) };
@@ -1149,18 +1149,18 @@ void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 
     red = (rgb0 & 0xFF);
     currentValueFactor = 64 - currentValueDigits;
-    rgb1 = ((((currentValueDigits * 255) + (red * currentValueFactor)) >> 6)
-               | ((((currentValueDigits * 240)
-                       + (((rgb0 >> 8) & 0xFF) * currentValueFactor))
-                      >> 6)
-                   << 8))
+    rgb1 =
+        ((((currentValueDigits * 255) + (red * currentValueFactor)) >> 6)
+            | ((((currentValueDigits * 240) + (((rgb0 >> 8) & 0xFF) * currentValueFactor))
+                   >> 6)
+                << 8))
         | ((((2 * (currentValueDigits * 79)) + ((rgb0 >> 16) * currentValueFactor)) >> 6)
             << 16);
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-    _primBuf.prim.tilePoly.tile.tpage
-        = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    _primBuf.prim.tilePoly.tile.tpage =
+        vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
     _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
     wh = vs_getWH(66, 5);
     x1y1 = (currentValueDigits + vs_getXY(0, 9));
@@ -1174,8 +1174,8 @@ void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
     _primBuf.prim.tilePoly.polyG4.x2y2 = xy + vs_getXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x3y3 = vs_getXY(0, 12);
-    _primBuf.prim.tilePoly.polyG4.x3y3
-        = xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
+    _primBuf.prim.tilePoly.polyG4.x3y3 =
+        xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
     DrawPrim(&_primBuf);
 
     currentValueDigits = _countDigits(currentValue);
@@ -1226,13 +1226,13 @@ static void _fileProcessingAnim(int x, int y)
     for (i = 0; i < 2; ++i) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
-        _primBuf.prim.polyG4_tpage.r0g0b0code
-            = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
+        _primBuf.prim.polyG4_tpage.r0g0b0code =
+            vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
         _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
         _primBuf.prim.polyG4_tpage.x1y1 = x | y;
         _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
-        _primBuf.prim.polyG4_tpage.tpage
-            = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.tpage =
+            vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
         _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
         _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
         _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
@@ -1260,8 +1260,8 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-    _primBuf.prim.tile_tpage.tpage
-        = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.tpage =
+        vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
     _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
     _primBuf.prim.tile_tpage.x0y0 = y | 64;
     _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
@@ -1377,13 +1377,13 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     if (c != vs_char_space) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-        _primBuf.prim.sprt.tpage
-            = vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.tpage =
+            vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
         _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
         _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
         _primBuf.prim.sprt.wh = vs_getWH(12, 12);
-        _primBuf.prim.sprt.u0v0clut
-            = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
+        _primBuf.prim.sprt.u0v0clut =
+            vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
         DrawPrim(&_primBuf);
     }
     return x + glyphWidths[c];
@@ -1417,8 +1417,8 @@ static int _findCurrentSave(int init)
     if ((state & 1) == 0) {
         vs_mainmenu_setMessage(
             (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]));
-        _memoryCardMessage
-            = (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
+        _memoryCardMessage =
+            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
         ++state;
     } else {
@@ -1540,8 +1540,8 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     for (i = 0; i < 3; ++i) {
         component = ((colour1 >> 16) & 0xFF) * (8 - factor);
         colour1 <<= 8;
-        colourOut
-            = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
+        colourOut =
+            (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
         colour2 <<= 8;
     }
     return colourOut;
@@ -1549,8 +1549,8 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
-    static int colors1[]
-        = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
+    static int colors1[] = { vs_getRGB888(0x40, 0x30, 0x66),
+        vs_getRGB888(0x40, 0x38, 0x20) };
     static int colors2[] = {
         vs_getRGB888(0x08, 0x08, 0x20),
         vs_getRGB888(0x10, 0x10, 0x08),
@@ -1562,8 +1562,8 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     if (innerFactor < 9) {
         color1 = _interpolateRGB(
             vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
-        color2 = _interpolateRGB(
-            vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
+        color2 =
+            _interpolateRGB(vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
         color1 = colors1[((innerFactor >> 3) - 2)];
         color2 = colors2[((innerFactor >> 3) - 2)];
@@ -1606,22 +1606,22 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-        _primBuf.prim.tilePoly.tile.tpage
-            = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        _primBuf.prim.tilePoly.tile.tpage =
+            vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0
-            = ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
+        _primBuf.prim.tilePoly.tile.x0y0 =
+            ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
         _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
         _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
         _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
-        _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)element->x | ((element->y + element->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x2y2 =
+            (u_short)element->x | ((element->y + element->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
-        _primBuf.prim.tilePoly.polyG4.x3y3
-            = ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3 =
+            ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
         DrawPrim(&_primBuf);
 
         x = element->x + 6;
@@ -1668,7 +1668,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             } else {
                 int v0;
                 uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
-                    | vs_getUV0Clut(0, 0, 768, 227);
+                       | vs_getUV0Clut(0, 0, 768, 227);
                 xy = (element->x - 64) | y;
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
@@ -1692,8 +1692,9 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 }
             } else {
                 y += 4 << 16;
-                _printString((char*)&_textTable[_textTable[element->saveLocation
-                                 + VS_MCMAN_BIN_INDEX_saveLocations]],
+                _printString(
+                    (char*)&_textTable[_textTable[element->saveLocation
+                                                  + VS_MCMAN_BIN_INDEX_saveLocations]],
                     element->x + 6, element->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
                 _drawSaveInfoUI(y | 189, vs_uiids_colon);
@@ -1740,7 +1741,8 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _fileProcessingAnim(_fileProgressPosition
+                    _fileProcessingAnim(
+                        _fileProgressPosition
                             + (((_fileProgressCounter - _filePreviousProgressCounter)
                                    * ((_loadSaveDataErrorOffset * 0x14)
                                        - (_fileProgressPosition - new_var3)))
@@ -1866,12 +1868,12 @@ static void _drawFileMenu(int framebuf)
     if (_fileMenuScreenFade != 0) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-        _primBuf.prim.tile_tpage.tpage
-            = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+        _primBuf.prim.tile_tpage.tpage =
+            vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
         _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
         _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
-        _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(
-            primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
+        _primBuf.prim.tile_tpage.r0g0b0code =
+            vs_getRGB0Raw(primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
         DrawPrim(&_primBuf);
     }
 }
@@ -2003,8 +2005,8 @@ static int _promptFormat(int initPort)
 
         if (val != 0) {
             if (val < 0) {
-                _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatCancelled);
+                _memoryCardMessage =
+                    (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatCancelled);
                 return -1;
             }
 
@@ -2026,11 +2028,11 @@ static int _promptFormat(int initPort)
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatting);
             } else {
                 if (val == memcardEventTimeout) {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
                 } else {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2105,8 +2107,8 @@ static int _showSaveFilesMenu(int initPort)
             element = _initFileMenuElement(
                 i + 5, vs_getXY(64, i * 40 + 72), vs_getWH(256, 32), 0);
             element->slotId = i;
-            element->slotUnavailable
-                = _saveFileInfo[i].unk4.base.slotState == slotStateUnavailable;
+            element->slotUnavailable =
+                _saveFileInfo[i].unk4.base.slotState == slotStateUnavailable;
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
@@ -2171,8 +2173,8 @@ static int _showSaveFilesMenu(int initPort)
                 if (_saveFileInfo[val].unk4.base.slotState == slotStateAvailable) {
                     if (_createSaveFile(port, val + 1) != 0) {
                         state = leaveWithTimer;
-                        _memoryCardMessage
-                            = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saveFailed);
+                        _memoryCardMessage =
+                            (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saveFailed);
                     } else {
                         state = save;
                     }
@@ -2230,8 +2232,8 @@ static int _showSaveFilesMenu(int initPort)
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
                     char v = _backupMainSetting & 1;
-                    *(int*)&vs_main_settings
-                        = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
+                    *(int*)&vs_main_settings =
+                        (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.base.slotState = slotStateTemporary;
@@ -2249,8 +2251,8 @@ static int _showSaveFilesMenu(int initPort)
                 _decode(_saveFileInfo[saveId].key,
                     &_saveFileInfo[saveId].unk4.base.slotState,
                     sizeof(saveFileInfo_t) - sizeof(int));
-                _fileMenuElements[saveId + 5].saveLocation
-                    = _saveFileInfo[saveId].unk4.stats.saveLocation;
+                _fileMenuElements[saveId + 5].saveLocation =
+                    _saveFileInfo[saveId].unk4.stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                 saveSuccessful = 1;
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saved);
@@ -2502,8 +2504,9 @@ static int _showSaveMenu(int initState)
         }
         if (currentSave < findSavePending) {
             _memoryCardMessage = (char*)(_textTable
-                + (currentSave == findSaveTimeout ? VS_MCMAN_BIN_OFFSET_insertError
-                                                  : VS_MCMAN_BIN_OFFSET_emptyCard));
+                                         + (currentSave == findSaveTimeout
+                                                 ? VS_MCMAN_BIN_OFFSET_insertError
+                                                 : VS_MCMAN_BIN_OFFSET_emptyCard));
             state = containerWarn;
         } else {
             _loadSaveData((currentSave & 7) | ((currentSave & 16) << 12));
@@ -2559,8 +2562,8 @@ static int _showSaveMenu(int initState)
                 } while (val < 3);
             }
             if (_dataNotSaved != 0) {
-                _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarnDataLoss);
+                _memoryCardMessage =
+                    (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarnDataLoss);
                 _promptConfirm(1);
                 state = discardChanges;
             } else {
@@ -2678,8 +2681,8 @@ static int _showLoadFilesMenu(int initPort)
             element = _initFileMenuElement(
                 i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
             element->slotId = i;
-            element->slotUnavailable
-                = _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
+            element->slotUnavailable =
+                _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
@@ -2757,8 +2760,8 @@ static int _showLoadFilesMenu(int initPort)
             do {
                 leaveTimer = 0;
                 if (currentSlot < 0) {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2770,8 +2773,8 @@ static int _showLoadFilesMenu(int initPort)
                     _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loaded);
                     break;
                 case 1:
-                    _memoryCardMessage = (char*)(_textTable
-                        + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -3192,7 +3195,7 @@ static void _setMenuItemClut(
         clut[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                        | ((b0 * 16 + bdiff) & 0x7C000))
                       >> 4)
-            | 0x8000;
+                | 0x8000;
     }
 }
 
@@ -3306,12 +3309,12 @@ static int _displayGameOverScreen(int init)
     prim = vs_battle_setSprite(color1, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 32, 53);
-    prim = vs_battle_setSprite(
-        color2 | 256, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
+    prim =
+        vs_battle_setSprite(color2 | 256, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 64, 54);
-    prim = vs_battle_setSprite(
-        color3 | 256, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
+    prim =
+        vs_battle_setSprite(color3 | 256, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 96, 54);
     return 0;
@@ -3799,8 +3802,8 @@ int vs_menu7_dataMenu(char* state)
     case 5:
         for (row = 0; row < 2; ++row) {
             menuStrings[row * 2] = (char*)(&_textTable[_textTable[row * 2]]);
-            menuStrings[row * 2 + 1]
-                = (char*)(&_textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
+            menuStrings[row * 2 + 1] =
+                (char*)(&_textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
             rowTypes[row] = 0;
         }
 

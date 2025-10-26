@@ -161,8 +161,8 @@ static void func_80103FD8(int arg0)
     D_1F800000[0] = var_s1;
     func_800C7210(4);
     for (i = 0; i < 4; ++i) {
-        commandString
-            = (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
+        commandString =
+            (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
         temp_s4 = 40;
         while ((j = *commandString++) != vs_char_terminator) {
             func_800C70F8(j, temp_s4 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
@@ -296,10 +296,10 @@ static int _confirmScreen(int init)
     case 0:
     case 1:
     case 2: {
-        vs_battle_menuItem_t* menuItem
-            = vs_battle_setMenuItem(state + 20, 320, (state * 16) + 128, 0x7E, 0,
-                (char*)&_renameMenuStrings[_renameMenuStrings[state
-                    + VS_rename_INDEX_optionYes]]);
+        vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(state + 20, 320,
+            (state * 16) + 128, 0x7E, 0,
+            (char*)&_renameMenuStrings[_renameMenuStrings[state
+                                                          + VS_rename_INDEX_optionYes]]);
         menuItem->state = 2;
         menuItem->x = 194;
         ++state;

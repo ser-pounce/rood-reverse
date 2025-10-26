@@ -40,8 +40,8 @@ static void _drawWeaponInfo(vs_battle_weaponInfo* weapon)
             sizeof weapon->classAffinityCurrent);
         vs_battle_memcpy(vs_mainMenu_equipmentStats + 48, &weapon->classAffinityBaseline,
             sizeof weapon->classAffinityBaseline);
-        vs_mainMenu_equipmentStats[63]
-            = weapon == &vs_battle_characterState->unk3C->weapon;
+        vs_mainMenu_equipmentStats[63] =
+            weapon == &vs_battle_characterState->unk3C->weapon;
 
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = weapon->grip.types[i];
@@ -76,8 +76,8 @@ static void _drawShieldInfo(vs_battle_shieldInfo* shield)
             sizeof shield->classAffinityCurrent);
         vs_battle_memcpy(vs_mainMenu_equipmentStats + 48, &shield->classAffinityBaseline,
             sizeof shield->classAffinityBaseline);
-        vs_mainMenu_equipmentStats[63]
-            = shield == &vs_battle_characterState->unk3C->shield;
+        vs_mainMenu_equipmentStats[63] =
+            shield == &vs_battle_characterState->unk3C->shield;
 
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = shield->types[i];
@@ -109,8 +109,8 @@ static void _drawArmorInfo(vs_battle_armorInfo* armor)
         vs_mainMenu_equipmentStats[63] = 0;
 
         for (i = 0; i < 5; ++i) {
-            vs_mainMenu_equipmentStats[63]
-                |= armor == &vs_battle_characterState->unk3C->hitLocations[i].armor;
+            vs_mainMenu_equipmentStats[63] |=
+                armor == &vs_battle_characterState->unk3C->hitLocations[i].armor;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -137,8 +137,8 @@ static void _drawAccessoryInfo(vs_battle_accessoryInfo* accessory)
         for (i = 0; i < 16; ++i) {
             vs_mainMenu_equipmentStats[i] = accessory->classes[i & 7];
             vs_mainMenu_equipmentStats[i + 16] = accessory->affinities[i & 7];
-            vs_mainMenu_equipmentStats[i + 32]
-                = accessory->types[i & 7]; // BUG? Copies past end
+            vs_mainMenu_equipmentStats[i + 32] =
+                accessory->types[i & 7]; // BUG? Copies past end
         }
         vs_mainMenu_setStrIntAgi(
             accessory->currentStr, accessory->currentInt, accessory->currentAgility, 2);
@@ -201,15 +201,13 @@ static void _initBladeInfo(
     char* str;
 
     vs_battle_stringContext.strings[9] = vs_mainMenu_itemNames[blade->material + 253];
-    vs_battle_stringContext.strings[8]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
-            + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
-    vs_battle_stringContext.strings[7]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType
-            + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->category + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
+    vs_battle_stringContext.strings[7] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->damageType + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
     vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
-            + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+                              + VS_ITEMHELP_BIN_INDEX_oneHanded]];
 
     str = vs_battle_printf(vs_battle_stringBuf,
         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->id - 1]]);
@@ -225,9 +223,8 @@ static void _initGripInfo(
     char* str;
 
     u_short* gripId = &grip->id;
-    vs_battle_stringContext.strings[5]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[grip->category
-            + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
+    vs_battle_stringContext.strings[5] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[grip->category + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
     str = vs_battle_printf(vs_battle_stringBuf,
         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*gripId - 6]]);
     vs_battle_printf(
@@ -244,8 +241,8 @@ static void _initGemInfo(
     arg1[1] = vs_battle_stringBuf;
 }
 
-static char* _hitLocationStatuses[]
-    = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
+static char* _hitLocationStatuses[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT",
+    NULL };
 
 static char* _drawWeaponInfoRow(int row, vs_battle_weaponInfo* weapon)
 {
@@ -389,8 +386,8 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int arg1)
         direction = 4;
     }
     if (direction != 0) {
-        newSelection
-            = vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
+        newSelection =
+            vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
     }
 
     while (1) {
@@ -410,8 +407,8 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int arg1)
             return newSelection;
         }
         previousSelection = newSelection;
-        newSelection
-            = vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
+        newSelection =
+            vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
     }
     return newSelection;
 }
@@ -479,8 +476,7 @@ static int func_80103744(int arg0)
         _selectedActor = arg0 & 0xF;
         vs_battle_setMenuItem(
             4, 180, 18, 0x8C, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
-            ->selected
-            = 1;
+            ->selected = 1;
         return 0;
     }
 
@@ -545,8 +541,8 @@ static void _renderUnknownValue(int x, int withMax, u_long* nextPrim)
 
     if (withMax != 0) {
         for (i = 0; i < 3; ++i) {
-            vs_battle_setSprite(128, x, vs_getWH(6, 9), nextPrim)[4]
-                = vs_getUV0Clut(228, 0, 832, 223);
+            vs_battle_setSprite(128, x, vs_getWH(6, 9), nextPrim)[4] =
+                vs_getUV0Clut(228, 0, 832, 223);
             x -= 5;
         }
         vs_battle_renderValue(2, x, 0, nextPrim);
@@ -556,8 +552,8 @@ static void _renderUnknownValue(int x, int withMax, u_long* nextPrim)
     x += 0xFFFF0000;
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSprite(128, x, vs_getWH(7, 10), nextPrim)[4]
-            = vs_getUV0Clut(234, 0, 832, 223);
+        vs_battle_setSprite(128, x, vs_getWH(7, 10), nextPrim)[4] =
+            vs_getUV0Clut(234, 0, 832, 223);
         x -= 6;
     }
 }
@@ -654,8 +650,7 @@ static void func_80103AC8(void)
     for (i = 0; i < 3; ++i) {
         func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
             D_800EBBFC[i] | 0x90000, temp_s4)
-            ->unk10
-            = D_800EBC00[i] | 0x37F60000;
+            ->unk10 = D_800EBC00[i] | 0x37F60000;
     }
     temp_s2 += 0xFFF80000;
     i = (actor->flags >> 9) & 0x100;
@@ -747,14 +742,13 @@ static void func_80103FEC(vs_battle_actor2* arg0, int arg1)
             if (i >= new_var) {
                 func_800C0224(
                     128, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008, D_1F800000[1] - 2)
-                    ->unk10
-                    = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
+                    ->unk10 = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
             }
             arg0 = func_800C0224(
                 0x80, (temp_s2 & 0xFFFF) | temp_s1, 0x100010, D_1F800000[1] - 2);
 
-            arg0->unk10
-                = (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
+            arg0->unk10 =
+                (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
         }
     }
 }
@@ -894,9 +888,9 @@ static int _navigateStatusModifiers(vs_battle_actor2* target, int arg1)
     vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings
             [_activeStatusModifiers[_selectedStatusModifier] + VS_status_INDEX_strDown]]);
     if (arg1 != 0) {
-        D_801080C4 = func_800FFCDC(D_801080C4,
-            (((_selectedStatusModifier & 7) * 16) + 2)
-                | ((((_selectedStatusModifier >> 3) * 16) + 136) << 0x10));
+        D_801080C4 = func_800FFCDC(
+            D_801080C4, (((_selectedStatusModifier & 7) * 16) + 2)
+                            | ((((_selectedStatusModifier >> 3) * 16) + 136) << 0x10));
         D_801022D5 = 1;
     }
     return 0;
@@ -917,7 +911,7 @@ static int _getHitLocationCount(int actor)
 static int _getEquipmentCount(void)
 {
     return _getHitLocationCount(_selectedActor - 1) + 2
-        + (vs_battle_actors[_selectedActor - 1]->unk3C->accessory.accessory.id != 0);
+         + (vs_battle_actors[_selectedActor - 1]->unk3C->accessory.accessory.id != 0);
 }
 
 static int _drawHitLocationStatuses(int arg0)
@@ -1059,8 +1053,8 @@ static void _animateEquipmentDetailTransition(int selectedRow)
 
     menuItem = vs_battle_setMenuItem(32, -164, 18, 164, 8,
         (char*)&_statusStrings[_statusStrings[selectedRow < 2
-                ? selectedRow + VS_status_INDEX_weapon
-                : VS_status_INDEX_armor]]);
+                                                  ? selectedRow + VS_status_INDEX_weapon
+                                                  : VS_status_INDEX_armor]]);
 
     menuItem->state = 5;
     menuItem->x = 16;
@@ -1257,8 +1251,8 @@ static int _equipmentDetailScreen(int row)
     case 1:
         if (_equipmentDetailAnimStep < 10) {
             ++_equipmentDetailAnimStep;
-            _animationStep
-                = 128 - vs_battle_rowAnimationSteps[10 - _equipmentDetailAnimStep];
+            _animationStep =
+                128 - vs_battle_rowAnimationSteps[10 - _equipmentDetailAnimStep];
             if (_equipmentDetailAnimStep < 6) {
                 if (D_801080B9 != 0) {
                     --D_801080B9;
@@ -1379,9 +1373,9 @@ static int _equipmentDetailScreen(int row)
                 vs_mainmenu_setMessage(sp18[1]);
 
                 menuItem = vs_battle_setMenuItem(0x20, 0x10, 0x12, 0xA4, 8,
-                    (char*)&_statusStrings[_statusStrings[var_s2 < 2
-                            ? (var_s2 + VS_status_INDEX_weapon)
-                            : VS_status_INDEX_armor]]);
+                    (char*)&_statusStrings
+                        [_statusStrings[var_s2 < 2 ? (var_s2 + VS_status_INDEX_weapon)
+                                                   : VS_status_INDEX_armor]]);
                 menuItem->selected = 1;
                 i = 0x1C;
                 if (var_s2 == 0) {
@@ -1392,8 +1386,8 @@ static int _equipmentDetailScreen(int row)
                 menuItem->flags = i;
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
-                _cursorAnimState
-                    = func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY);
+                _cursorAnimState =
+                    func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY);
                 D_801023E3 = 1;
                 func_801013F8(1);
                 return 0;
@@ -1440,16 +1434,16 @@ static int _equipmentDetailScreen(int row)
         } else if (newSelection < 9) {
             switch (D_801024B9) {
             case 0:
-                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                    + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [newSelection + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
                 break;
             case 1:
-                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                    + VS_ITEMHELP_BIN_INDEX_evilClassDesc - 1]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [newSelection + VS_ITEMHELP_BIN_INDEX_evilClassDesc - 1]];
                 break;
             case 2:
-                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                    + VS_ITEMHELP_BIN_INDEX_darkAffinityDesc - 1]];
+                var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [newSelection + VS_ITEMHELP_BIN_INDEX_darkAffinityDesc - 1]];
                 break;
             }
         } else if (newSelection < 0x10) {
@@ -1470,17 +1464,15 @@ static int _equipmentDetailScreen(int row)
                 break;
             }
         } else {
-            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
+            var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [newSelection + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (newSelection >= 18) {
                 if (_selectedEquipmentRow == 0) {
-                    var_s3
-                        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                            + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
+                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                            [newSelection + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
                 } else if ((_selectedEquipmentRow - 2) < hitLocations) {
-                    var_s3
-                        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[newSelection
-                            + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
+                    var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                            [newSelection + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
                 }
             }
         }
@@ -1549,8 +1541,8 @@ static int _equipmentScreen(int element)
     case init:
         for (i = 0; i < 9; ++i) {
             rowStrings[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
-            rowStrings[i * 2 + 1]
-                = (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
+            rowStrings[i * 2 + 1] =
+                (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
             rowTypes[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
@@ -1563,8 +1555,8 @@ static int _equipmentScreen(int element)
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
-        temp_s5
-            = (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
+        temp_s5 =
+            (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
         rowTypes[0] |= temp_s5 | new_var;
@@ -1784,8 +1776,8 @@ static void _drawScreen(void)
     p[4] = ((-vs_math_sine(_xPos) * xOffset) >> 8) * z;
     p[5] = -(x << 0xB);
     p[6] = ((vs_math_cosine(_xPos) * xOffset) >> 8) * z;
-    ((int*)D_1F800000)[13]
-        = p[4] + ((vs_math_cosine(_xPos) * vs_math_cosine(_yPos)) >> 0xA) * z;
+    ((int*)D_1F800000)[13] =
+        p[4] + ((vs_math_cosine(_xPos) * vs_math_cosine(_yPos)) >> 0xA) * z;
     p[1] = p[5] - vs_math_sine(_yPos) * z * 4;
     temp_lo_5 = (vs_math_sine(_xPos) * vs_math_cosine(_yPos) >> 0xA) * z;
     p[8] = 0;
@@ -1807,13 +1799,13 @@ static void _drawScreen(void)
 
 static void _printSelectedLocationCondition(void)
 {
-    vs_battle_equipment_hitLocations* location
-        = &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
-    vs_battle_stringContext.strings[0]
-        = (char*)&D_800EA868[D_800EA868[location->nameIndex]];
-    vs_battle_stringContext.strings[1]
-        = (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationStatus(location)
-            + VS_status_INDEX_critical]];
+    vs_battle_equipment_hitLocations* location =
+        &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
+    vs_battle_stringContext.strings[0] =
+        (char*)&D_800EA868[D_800EA868[location->nameIndex]];
+    vs_battle_stringContext.strings[1] =
+        (char*)&_statusStrings[_statusStrings[vs_battle_getHitLocationStatus(location)
+                                              + VS_status_INDEX_critical]];
     vs_battle_printf(
         vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
     vs_mainmenu_setMessage(vs_battle_stringBuf);
@@ -1823,8 +1815,8 @@ static void _printSelectedLocationCondition(void)
 static void _printSelectedLocationStats(void)
 {
     int i;
-    vs_battle_equipment_hitLocations* location
-        = &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
+    vs_battle_equipment_hitLocations* location =
+        &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
 
     for (i = 0; i < 16; ++i) {
         vs_mainMenu_equipmentStats[i + 16] = location->affinities[i & 7];
@@ -1932,8 +1924,8 @@ int vs_menu4_Exec(char* state)
                     }
                     _printSelectedLocationCondition();
                 } else {
-                    vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[userInput
-                        - VS_status_INDEX_statDesc]]);
+                    vs_mainmenu_setMessage((char*)&_statusStrings
+                            [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
                 }
             }
         } else if (vs_mainMenu_loadItemNames(0) != 0) {
@@ -1947,8 +1939,9 @@ int vs_menu4_Exec(char* state)
                     *state = waitQuitToMenu;
                     break;
                 } else if ((vs_main_buttonsPressed.all & PADRright)
-                    && ((_selectedElement < _getHitLocationCount(_selectedActor - 1))
-                        != 0)) {
+                           && ((_selectedElement
+                                   < _getHitLocationCount(_selectedActor - 1))
+                               != 0)) {
                     vs_battle_playMenuSelectSfx();
                     func_800FBEA4(2);
                     _drawHitLocationStatuses(-2);
@@ -1975,8 +1968,8 @@ int vs_menu4_Exec(char* state)
                 }
                 if (vs_main_buttonsState & PADL2) {
                     userInput = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickX);
-                    hitLocations
-                        = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickY);
+                    hitLocations =
+                        vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickY);
                     if (userInput == 0) {
                         if (hitLocations == 0) {
                             if (vs_main_buttonsState & PADLup) {
@@ -2051,8 +2044,8 @@ int vs_menu4_Exec(char* state)
                             }
                         }
                     }
-                    D_801022D5
-                        = (userInput < _getHitLocationCount(_selectedActor - 1)) ^ 1;
+                    D_801022D5 =
+                        (userInput < _getHitLocationCount(_selectedActor - 1)) ^ 1;
                     D_80108134 = func_800FFCDC(D_80108134, D_801080C8[userInput]);
                     if (userInput != _selectedElement) {
                         vs_battle_playMenuChangeSfx();
@@ -2063,9 +2056,8 @@ int vs_menu4_Exec(char* state)
                     if (userInput < 6) {
                         _printSelectedLocationCondition();
                     } else {
-                        vs_mainmenu_setMessage(
-                            (char*)&_statusStrings[_statusStrings[userInput
-                                - VS_status_INDEX_statDesc]]);
+                        vs_mainmenu_setMessage((char*)&_statusStrings
+                                [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
                     }
                 }
             }
@@ -2214,9 +2206,10 @@ int vs_menu4_Exec(char* state)
                 D_801081EE = userInput;
             }
 
-            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings[userInput
-                + (hitLocations != 3 ? VS_status_INDEX_physicalDefense
-                                     : VS_status_INDEX_bluntDefense)]]);
+            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings
+                    [userInput
+                        + (hitLocations != 3 ? VS_status_INDEX_physicalDefense
+                                             : VS_status_INDEX_bluntDefense)]]);
             D_80108134 = func_800FFCDC(D_80108134, ((userInput * 16) + 50) << 16);
         }
         break;

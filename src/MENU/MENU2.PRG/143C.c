@@ -40,8 +40,8 @@ static int _breakArtUnlocked(int init)
         func_800C8E04(3);
         vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
         skillId = 184 + ((weaponType - 1) * 4) + skillId;
-        vs_battle_stringContext.strings[0]
-            = (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponType]];
+        vs_battle_stringContext.strings[0] =
+            (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponType]];
         vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
         vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
@@ -57,10 +57,10 @@ static int _breakArtUnlocked(int init)
     return 0;
 }
 
-static char _unlockableChainAbilities[]
-    = { 0x18, 0x19, 0x22, 0x25, 0x23, 0x1E, 0x1A, 0x1B, 0x20, 0x1D, 0x1F };
-static char _unlockableDefenseAbilities[]
-    = { 0x2F, 0x30, 0x31, 0x32, 0x29, 0x2A, 0x33, 0x34, 0x2C, 0x2D, 0x35 };
+static char _unlockableChainAbilities[] = { 0x18, 0x19, 0x22, 0x25, 0x23, 0x1E, 0x1A,
+    0x1B, 0x20, 0x1D, 0x1F };
+static char _unlockableDefenseAbilities[] = { 0x2F, 0x30, 0x31, 0x32, 0x29, 0x2A, 0x33,
+    0x34, 0x2C, 0x2D, 0x35 };
 
 static char* _getAbilityDescription(int ability)
 {
@@ -205,11 +205,11 @@ static int _battleAbilityUnlocked(int arg0)
             i = vs_main_settings.cursorMemory;
             menuStrings[0] = (char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_chainAbilities];
-            menuStrings[1] = (char*)(&_battleAbilityMenuStrings
-                                         [VS_battleAbilitiesMenu_OFFSET_select]);
-            menuStrings[2]
-                = (char*)(&_battleAbilityMenuStrings
-                              [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
+            menuStrings[1] =
+                (char*)(&_battleAbilityMenuStrings[VS_battleAbilitiesMenu_OFFSET_select]);
+            menuStrings[2] =
+                (char*)(&_battleAbilityMenuStrings
+                            [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             menuStrings[3] = menuStrings[1];
             rowTypes[0] = 0;
             rowTypes[1] = 0;
@@ -235,10 +235,10 @@ static int _battleAbilityUnlocked(int arg0)
     case chainOnly:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < remainingChainAbilityCount; ++i) {
-                chainAbilityMenuStrings[i * 2]
-                    = vs_main_skills[remainingChainAbilities[i]].name;
-                chainAbilityMenuStrings[i * 2 + 1]
-                    = _getAbilityDescription(remainingChainAbilities[i]);
+                chainAbilityMenuStrings[i * 2] =
+                    vs_main_skills[remainingChainAbilities[i]].name;
+                chainAbilityMenuStrings[i * 2 + 1] =
+                    _getAbilityDescription(remainingChainAbilities[i]);
                 chainAbilityRowTypes[i] = 0;
             }
             rowCount = 4;
@@ -261,10 +261,10 @@ static int _battleAbilityUnlocked(int arg0)
     case defenseOnly:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < remainingDefenseAbilityCount; ++i) {
-                defenseAbilityMenuStrings[i * 2]
-                    = vs_main_skills[remainingDefenseAbilities[i]].name;
-                defenseAbilityMenuStrings[i * 2 + 1]
-                    = _getAbilityDescription(remainingDefenseAbilities[i]);
+                defenseAbilityMenuStrings[i * 2] =
+                    vs_main_skills[remainingDefenseAbilities[i]].name;
+                defenseAbilityMenuStrings[i * 2 + 1] =
+                    _getAbilityDescription(remainingDefenseAbilities[i]);
                 defenseAbilityRowTypes[i] = 0;
             }
             rowCount = 4;

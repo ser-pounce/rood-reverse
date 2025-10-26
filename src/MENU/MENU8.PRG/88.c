@@ -26,10 +26,10 @@ static int _simpleMapOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
-                menuStrings[i * 2]
-                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frame]];
-                menuStrings[i * 2 + 1]
-                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frameDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frame]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_frameDesc]];
                 rowTypes[i] = 0;
             }
             for (i = 0; i < 3; ++i) {
@@ -80,10 +80,11 @@ static int _abilityTimingOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_abilityTimingOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_abilityTimingOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_abilityTimingOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings
+                    [_menuStrings[i * 2 + VS_menu_INDEX_abilityTimingOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - ((*(u_int*)&vs_main_settings >> 5) & 1);
@@ -131,10 +132,11 @@ static int _weaponStatusOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_weaponStatusOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_weaponStatusOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_weaponStatusOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings
+                    [_menuStrings[i * 2 + VS_menu_INDEX_weaponStatusOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - ((*(u_int*)&vs_main_settings >> 6) & 1);
@@ -182,10 +184,12 @@ static int _armorStatusOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_armorStatusOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_armorStatusOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_armorStatusOn]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_armorStatusOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - (vs_main_settings.timingWeaponArmor >> 7);
@@ -233,10 +237,11 @@ static int _cursorMemoryOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_cursorMemoryOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_cursorMemoryOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_cursorMemoryOn]];
+                menuStrings[i * 2 + 1] = (char*)&_menuStrings
+                    [_menuStrings[i * 2 + VS_menu_INDEX_cursorMemoryOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_settings.cursorMemory;
@@ -284,10 +289,10 @@ static int _informationOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2]
-                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_infoOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOn]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_infoOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_settings.information;
@@ -335,10 +340,12 @@ static int _puzzleModeOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_puzzleModeOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_puzzleModeOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_puzzleModeOn]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_puzzleModeOnDesc]];
                 rowTypes[i] = 0;
             }
             i = ((*(u_int*)&vs_main_settings) >> 3) & 1;
@@ -386,10 +393,10 @@ static int _soundOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2]
-                    = (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_stereo]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_stereoDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_stereo]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_stereoDesc]];
                 rowTypes[i] = 0;
             }
             i = vs_main_soundMono;
@@ -439,10 +446,11 @@ static int _vibrationOptionMenu(int init)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                menuStrings[i * 2] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_vibrationOn]];
-                menuStrings[i * 2 + 1] = (char*)&_menuStrings[_menuStrings[i * 2
-                    + VS_menu_INDEX_vibrationOnDesc]];
+                menuStrings[i * 2] =
+                    (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_vibrationOn]];
+                menuStrings[i * 2 + 1] =
+                    (char*)&_menuStrings[_menuStrings[i * 2
+                                                      + VS_menu_INDEX_vibrationOnDesc]];
                 rowTypes[i] = 0;
             }
             i = 1 - vs_main_vibrationEnabled;
@@ -518,8 +526,8 @@ int vs_menu8_exec(char* state)
         }
 
         if (vs_main_stateFlags.puzzleModeDisabled != 0) {
-            menuStrings[13]
-                = (char*)&_menuStrings[VS_menu_OFFSET_puzzleModeSettingDisabled];
+            menuStrings[13] =
+                (char*)&_menuStrings[VS_menu_OFFSET_puzzleModeSettingDisabled];
             rowTypes[6] = 1;
         }
         i = vs_main_settings.cursorMemory;

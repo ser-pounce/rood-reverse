@@ -777,14 +777,14 @@ int func_8007629C(u_int* otag)
             vs_main_gametimeUpdate(2);
             vs_main_buttonsState = (u_short)vs_main_updatePadState(0, *vs_main_padBuffer);
             vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1])
-                << 16;
+                                 << 16;
             vs_main_padConnect(0, vs_main_padBuffer[0]);
             vs_main_padConnect(16, vs_main_padBuffer[1]);
-            vs_main_buttonsPressed.all
-                = ~vs_main_buttonsPreviousState & vs_main_buttonsState;
+            vs_main_buttonsPressed.all =
+                ~vs_main_buttonsPreviousState & vs_main_buttonsState;
             temp_a0 = vs_main_buttonsPressed.all >> 16;
-            vs_main_buttonsReleased
-                = vs_main_buttonsPreviousState & ~vs_main_buttonsState;
+            vs_main_buttonsReleased =
+                vs_main_buttonsPreviousState & ~vs_main_buttonsState;
             vs_main_buttonsPreviousState = vs_main_buttonsState;
             if (temp_a0 & 0x800) {
                 D_8004A52C ^= 1;
@@ -1650,14 +1650,14 @@ short func_800834A4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
     return vs_battle_actors[*arg2]->unk3C->maxHP
-        - vs_battle_actors[*arg2]->unk3C->currentHP;
+         - vs_battle_actors[*arg2]->unk3C->currentHP;
 }
 
 short func_800834E4(
     int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), u_char* arg2)
 {
     return vs_battle_actors[*arg2]->unk3C->maxMP
-        - vs_battle_actors[*arg2]->unk3C->currentMP;
+         - vs_battle_actors[*arg2]->unk3C->currentMP;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);

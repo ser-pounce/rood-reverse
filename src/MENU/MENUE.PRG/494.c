@@ -321,15 +321,15 @@ static int _showMenu(void)
 
             _helpText = vs_main_allocHeapR(_helpFileCdFiles[selectedRow * 2 + 1].size);
             _helpAssets = vs_main_allocHeapR(_helpFileCdFiles[selectedRow * 2].size);
-            _helpAssetsCdQueue
-                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2]);
+            _helpAssetsCdQueue =
+                vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2]);
             vs_main_cdEnqueue(_helpAssetsCdQueue, _helpAssets);
-            _helpTextCdQueue
-                = vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2 + 1]);
+            _helpTextCdQueue =
+                vs_main_allocateCdQueueSlot(&_helpFileCdFiles[selectedRow * 2 + 1]);
             vs_main_cdEnqueue(_helpTextCdQueue, _helpText);
         }
-        vs_battle_manualDisplayState.currentManual
-            = D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
+        vs_battle_manualDisplayState.currentManual =
+            D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
         func_800FFBA8();
         break;
     case loadSubMenu:
@@ -352,9 +352,9 @@ static int _showMenu(void)
         }
         vs_main_freeCdQueueSlot(_helpTextCdQueue);
         func_800CCF08(0, 0, 8, 0x34, 0x19, 0xA, 8, 0x34);
-        _scrollPosition
-            = vs_battle_manualDisplayState
-                  .scrollPositions[vs_battle_manualDisplayState.currentManual];
+        _scrollPosition =
+            vs_battle_manualDisplayState
+                .scrollPositions[vs_battle_manualDisplayState.currentManual];
         _lineCount = _getRoundedLineCount();
         _showMenuState = showSubMenu;
         _helpPageLoadCounter = 0;
@@ -378,7 +378,7 @@ static int _showMenu(void)
                 _scrollPosition = lastPage * 10;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonsPressed.all & PADLdown)
-                && (currentPage == lastPage) && (lastPage > 0)) {
+                       && (currentPage == lastPage) && (lastPage > 0)) {
                 currentPage = 0;
                 _scrollPosition = 0;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
@@ -397,14 +397,14 @@ static int _showMenu(void)
                 _scrollPosition = _lineCount;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if (vs_main_buttonsPressed.all & PADLdown
-                && (_scrollPosition == _lineCount) && (_scrollPosition > 0)) {
+                       && (_scrollPosition == _lineCount) && (_scrollPosition > 0)) {
                 _scrollPosition = 0;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLup) && (_scrollPosition > 0)) {
                 --_scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLdown)
-                && (_scrollPosition < _lineCount)) {
+                       && (_scrollPosition < _lineCount)) {
                 ++_scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
@@ -422,8 +422,8 @@ static int _showMenu(void)
         sprintf(charBuf, "#%d", lastPage + 1);
         func_800C6540(charBuf, 0xC40130, 0x808080, s0[1] + 7);
         vs_battle_manualDisplayState
-            .scrollPositions[vs_battle_manualDisplayState.currentManual]
-            = _scrollPosition;
+            .scrollPositions[vs_battle_manualDisplayState.currentManual] =
+            _scrollPosition;
         if (_showMenuState != showSubMenu) {
             if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
@@ -718,7 +718,7 @@ static void _drawSprite(short* data)
         clutPacked = *data++;
 
         clutPacked = ((((clutPacked % 16) << 4) + 0x300) >> 4)
-            | (((clutPacked / 16) + 0x1F0) << 6);
+                   | (((clutPacked / 16) + 0x1F0) << 6);
 
         tileStride = 8;
         if (tileMode == 16) {
@@ -793,8 +793,8 @@ static void _setPageBg(int x, int y, int w, int h, int color)
 
 static _menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
 
-static _menuBgTransparencies_t const _menuBgTransparencies[]
-    = { { 128, 115, 121, 88 }, { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };
+static _menuBgTransparencies_t const _menuBgTransparencies[] = { { 128, 115, 121, 88 },
+    { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };
 
 static void _fadeMenuUpper(void)
 {

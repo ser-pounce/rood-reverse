@@ -478,8 +478,8 @@ void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
     primBuf = D_1F800000[0];
 
     rgb0 = (((w * 0xFF) + ((rgb1 & 0xFF) * (0x40 - w))) >> 6)
-        | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
-        | ((((w * 0x9E) + ((rgb1 >> 16) * (0x40 - w))) >> 6) << 16);
+         | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
+         | ((((w * 0x9E) + ((rgb1 >> 16) * (0x40 - w))) >> 6) << 16);
 
     primBuf[0] = (*nextPrim & 0xFFFFFF) | (w == 0 ? 0x03000000 : 0x0D000000);
     primBuf[1] = vs_getRGB0(primTile, 0x00, 0x28, 0x40);

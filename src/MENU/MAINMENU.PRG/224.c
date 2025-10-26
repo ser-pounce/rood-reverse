@@ -29,10 +29,10 @@ int func_800FA238(int arg0, int arg1, int arg2)
     D_800F45E0_t** var_t0;
     int i;
     int new_var;
-    
+
     var_t0 = D_800F45E0;
     new_var = arg2 + 0x80;
-    
+
     for (i = 0; i < 16; ++i) {
         temp_v1 = var_t0[i];
         if (((((((var_t0[i] != 0) && ((var_t0[i]->unk8 & 1) == 0))

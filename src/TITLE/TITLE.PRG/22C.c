@@ -670,8 +670,8 @@ static void _packageGameSaveData(int targetFile)
         if (_saveFileInfo[i].unk4.base.slotState >= slotStateInUse) {
             if (vs_main_settings.saveFileGeneration
                 < _saveFileInfo[i].unk4.base.generation) {
-                vs_main_settings.saveFileGeneration
-                    = _saveFileInfo[i].unk4.base.generation;
+                vs_main_settings.saveFileGeneration =
+                    _saveFileInfo[i].unk4.base.generation;
             }
         }
     }
@@ -769,9 +769,9 @@ static int _loadSaveData(int portFileno)
         char* filename;
         int new_var = 320;
 
-        _fileProgressPosition += ((_fileProgressCounter - _filePreviousProgressCounter)
-                                     * ((_loadSaveDataErrorOffset * 20)
-                                         - (_fileProgressPosition - new_var)))
+        _fileProgressPosition +=
+            ((_fileProgressCounter - _filePreviousProgressCounter)
+                * ((_loadSaveDataErrorOffset * 20) - (_fileProgressPosition - new_var)))
             / _fileProgressTarget;
         _loadSaveDataErrorOffset = errors;
         _fileProgressTarget = 192 - (isTempSave << 7);
@@ -866,7 +866,7 @@ static int _saveFile(int portFile)
     case tempFileCreated:
         temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
                         * (320 - _fileProgressPosition))
-            / _fileProgressTarget;
+                  / _fileProgressTarget;
         _filePreviousProgressCounter = _fileProgressCounter;
         _fileProgressTarget = 384;
         _fileProgressPosition += temp_v1_2;
@@ -995,8 +995,8 @@ static int _initMemcard(int init)
             if (i & 4) {
                 event = HwCARD;
             }
-            _memcardEventDescriptors[i]
-                = OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, NULL);
+            _memcardEventDescriptors[i] =
+                OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, NULL);
         }
 
         ExitCriticalSection();
@@ -1079,8 +1079,8 @@ static void _drawSprt(int xy, int uvClut, int wh, int tpage)
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
     _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
-    _primBuf.prim.sprt.r0g0b0code
-        = vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
+    _primBuf.prim.sprt.r0g0b0code =
+        vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
     _primBuf.prim.sprt.x0y0 = xy;
     _primBuf.prim.sprt.u0v0clut = uvClut;
     _primBuf.prim.sprt.wh = wh;
@@ -1102,17 +1102,17 @@ enum vs_fileMenuUiIds_e {
 
 static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
     200, 224, 248, 255, 255, 255, 255 };
-static signed char _cursorFileOpSaturation[]
-    = { 0, -56, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8 };
+static signed char _cursorFileOpSaturation[] = { 0, -56, -112, -104, -96, -88, -80, -72,
+    -64, -56, -48, -40, -32, -24, -16, -8 };
 
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
-    static int _saveInfoUVClut[]
-        = { vs_getUV0Clut(248, 8, 832, 223), vs_getUV0Clut(242, 0, 832, 223),
-              vs_getUV0Clut(224, 120, 848, 223), vs_getUV0Clut(128, 56, 848, 223),
-              vs_getUV0Clut(224, 112, 848, 223), vs_getUV0Clut(104, 56, 848, 223),
-              vs_getUV0Clut(170, 76, 864, 223), vs_getUV0Clut(144, 0, 864, 223),
-              vs_getUV0Clut(160, 0, 864, 223), vs_getUV0Clut(32, 9, 832, 223) };
+    static int _saveInfoUVClut[] = { vs_getUV0Clut(248, 8, 832, 223),
+        vs_getUV0Clut(242, 0, 832, 223), vs_getUV0Clut(224, 120, 848, 223),
+        vs_getUV0Clut(128, 56, 848, 223), vs_getUV0Clut(224, 112, 848, 223),
+        vs_getUV0Clut(104, 56, 848, 223), vs_getUV0Clut(170, 76, 864, 223),
+        vs_getUV0Clut(144, 0, 864, 223), vs_getUV0Clut(160, 0, 864, 223),
+        vs_getUV0Clut(32, 9, 832, 223) };
     static int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
         vs_getXY(22, 8), vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10),
         vs_getXY(16, 9), vs_getXY(18, 9), vs_getXY(5, 7) };
@@ -1173,18 +1173,18 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
 
     red = (rgb0 & 0xFF);
     currentValueFactor = 64 - currentValueDigits;
-    rgb1 = ((((currentValueDigits * 255) + (red * currentValueFactor)) >> 6)
-               | ((((currentValueDigits * 240)
-                       + (((rgb0 >> 8) & 0xFF) * currentValueFactor))
-                      >> 6)
-                   << 8))
+    rgb1 =
+        ((((currentValueDigits * 255) + (red * currentValueFactor)) >> 6)
+            | ((((currentValueDigits * 240) + (((rgb0 >> 8) & 0xFF) * currentValueFactor))
+                   >> 6)
+                << 8))
         | ((((2 * (currentValueDigits * 79)) + ((rgb0 >> 16) * currentValueFactor)) >> 6)
             << 16);
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-    _primBuf.prim.tilePoly.tile.tpage
-        = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+    _primBuf.prim.tilePoly.tile.tpage =
+        vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
     _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
     wh = vs_getWH(66, 5);
     x1y1 = (currentValueDigits + vs_getXY(0, 9));
@@ -1198,8 +1198,8 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
     _primBuf.prim.tilePoly.polyG4.x2y2 = xy + vs_getXY(0, 12);
     _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
     _primBuf.prim.tilePoly.polyG4.x3y3 = vs_getXY(0, 12);
-    _primBuf.prim.tilePoly.polyG4.x3y3
-        = xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
+    _primBuf.prim.tilePoly.polyG4.x3y3 =
+        xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
     DrawPrim(&_primBuf);
 
     currentValueDigits = _countDigits(currentValue);
@@ -1250,13 +1250,13 @@ static void _fileProcessingAnim(int x, int y)
     for (i = 0; i < 2; ++i) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
-        _primBuf.prim.polyG4_tpage.r0g0b0code
-            = vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
+        _primBuf.prim.polyG4_tpage.r0g0b0code =
+            vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
         _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
         _primBuf.prim.polyG4_tpage.x1y1 = x | y;
         _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
-        _primBuf.prim.polyG4_tpage.tpage
-            = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.tpage =
+            vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
         _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
         _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
         _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
@@ -1284,8 +1284,8 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 
     DrawSync(0);
     _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-    _primBuf.prim.tile_tpage.tpage
-        = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.tpage =
+        vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
     _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
     _primBuf.prim.tile_tpage.x0y0 = y | 64;
     _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
@@ -1401,13 +1401,13 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     if (c != vs_char_space) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-        _primBuf.prim.sprt.tpage
-            = vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.tpage =
+            vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
         _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
         _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
         _primBuf.prim.sprt.wh = vs_getWH(12, 12);
-        _primBuf.prim.sprt.u0v0clut
-            = vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
+        _primBuf.prim.sprt.u0v0clut =
+            vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
         DrawPrim(&_primBuf);
     }
     return x + glyphWidths[c];
@@ -1439,8 +1439,8 @@ static int _findCurrentSave(int init)
     port = realPort + 1;
 
     if ((state & 1) == 0) {
-        _memoryCardMessage
-            = (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
+        _memoryCardMessage =
+            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
         _memcardEventHandler(realPort + 1);
         ++state;
     } else {
@@ -1562,8 +1562,8 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     for (i = 0; i < 3; ++i) {
         component = ((colour1 >> 16) & 0xFF) * (8 - factor);
         colour1 <<= 8;
-        colourOut
-            = (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
+        colourOut =
+            (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
         colour2 <<= 8;
     }
     return colourOut;
@@ -1571,8 +1571,8 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
-    static int colors1[]
-        = { vs_getRGB888(0x40, 0x30, 0x66), vs_getRGB888(0x40, 0x38, 0x20) };
+    static int colors1[] = { vs_getRGB888(0x40, 0x30, 0x66),
+        vs_getRGB888(0x40, 0x38, 0x20) };
     static int colors2[] = {
         vs_getRGB888(0x08, 0x08, 0x20),
         vs_getRGB888(0x10, 0x10, 0x08),
@@ -1584,8 +1584,8 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     if (innerFactor < 9) {
         color1 = _interpolateRGB(
             vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
-        color2 = _interpolateRGB(
-            vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
+        color2 =
+            _interpolateRGB(vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
         color1 = colors1[((innerFactor >> 3) - 2)];
         color2 = colors2[((innerFactor >> 3) - 2)];
@@ -1628,22 +1628,22 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
 
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-        _primBuf.prim.tilePoly.tile.tpage
-            = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        _primBuf.prim.tilePoly.tile.tpage =
+            vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
         _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0
-            = ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
+        _primBuf.prim.tilePoly.tile.x0y0 =
+            ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
         _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
         _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
         _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
         _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
         _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
         _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
-        _primBuf.prim.tilePoly.polyG4.x2y2
-            = (u_short)element->x | ((element->y + element->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x2y2 =
+            (u_short)element->x | ((element->y + element->h) << 0x10);
         _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
-        _primBuf.prim.tilePoly.polyG4.x3y3
-            = ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
+        _primBuf.prim.tilePoly.polyG4.x3y3 =
+            ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
         DrawPrim(&_primBuf);
 
         x = element->x + 6;
@@ -1690,7 +1690,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             } else {
                 int v0;
                 uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
-                    | vs_getUV0Clut(0, 0, 768, 227);
+                       | vs_getUV0Clut(0, 0, 768, 227);
                 xy = (element->x - 64) | y;
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
@@ -1714,8 +1714,9 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 }
             } else {
                 y += 4 << 16;
-                _printString((char*)&_textTable[_textTable[element->saveLocation
-                                 + VS_MCMAN_BIN_INDEX_saveLocations]],
+                _printString(
+                    (char*)&_textTable[_textTable[element->saveLocation
+                                                  + VS_MCMAN_BIN_INDEX_saveLocations]],
                     element->x + 6, element->y + 4, 0);
                 _drawSaveInfoUI(y | 172, vs_uiids_map);
                 _drawSaveInfoUI(y | 189, vs_uiids_colon);
@@ -1762,7 +1763,8 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                     _fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _fileProcessingAnim(_fileProgressPosition
+                    _fileProcessingAnim(
+                        _fileProgressPosition
                             + (((_fileProgressCounter - _filePreviousProgressCounter)
                                    * ((_loadSaveDataErrorOffset * 0x14)
                                        - (_fileProgressPosition - new_var3)))
@@ -1888,12 +1890,12 @@ static void _drawFileMenu(int framebuf)
     if (_fileMenuScreenFade != 0) {
         DrawSync(0);
         _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-        _primBuf.prim.tile_tpage.tpage
-            = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+        _primBuf.prim.tile_tpage.tpage =
+            vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
         _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
         _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
-        _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(
-            primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
+        _primBuf.prim.tile_tpage.r0g0b0code =
+            vs_getRGB0Raw(primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
         DrawPrim(&_primBuf);
     }
 }
@@ -1952,8 +1954,8 @@ static int _showLoadFilesMenu(int initPort)
             element = _initFileMenuElement(
                 i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
             element->slotId = i;
-            element->slotUnavailable
-                = _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
+            element->slotUnavailable =
+                _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
@@ -2032,8 +2034,8 @@ static int _showLoadFilesMenu(int initPort)
             do {
                 leaveTimer = 0;
                 if (currentSlot < 0) {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
                     break;
                 }
                 switch (_applyLoadedSaveFile(1)) {
@@ -2045,8 +2047,8 @@ static int _showLoadFilesMenu(int initPort)
                     _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loaded);
                     break;
                 case 1:
-                    _memoryCardMessage = (char*)(_textTable
-                        + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_fileCorruptDescription);
                     break;
                 }
             } while (0);
@@ -2437,8 +2439,8 @@ static int _promptFormat(int initPort)
 
         if (val != 0) {
             if (val < 0) {
-                _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatCancelled);
+                _memoryCardMessage =
+                    (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatCancelled);
                 return -1;
             }
 
@@ -2460,11 +2462,11 @@ static int _promptFormat(int initPort)
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_formatting);
             } else {
                 if (val == memcardEventTimeout) {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
                 } else {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
                 }
                 return -1;
             }
@@ -2539,8 +2541,8 @@ static int _showSaveFilesMenu(int initPort)
             element = _initFileMenuElement(
                 i + 5, vs_getXY(64, i * 40 + 72), vs_getWH(256, 32), 0);
             element->slotId = i;
-            element->slotUnavailable
-                = _saveFileInfo[i].unk4.base.slotState == slotStateUnavailable;
+            element->slotUnavailable =
+                _saveFileInfo[i].unk4.base.slotState == slotStateUnavailable;
             element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
         }
         state = handleInput;
@@ -2605,8 +2607,8 @@ static int _showSaveFilesMenu(int initPort)
                 if (_saveFileInfo[val].unk4.base.slotState == slotStateAvailable) {
                     if (_createSaveFile(port, val + 1) != 0) {
                         state = leaveWithTimer;
-                        _memoryCardMessage
-                            = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saveFailed);
+                        _memoryCardMessage =
+                            (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saveFailed);
                     } else {
                         state = save;
                     }
@@ -2634,8 +2636,8 @@ static int _showSaveFilesMenu(int initPort)
         val = _memcardMaskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
             if (val > memcardMaskedHandlerError) {
-                _dataNotSaved
-                    |= (_findCurrentSaveOnActiveMemcard() == (fileSlot + page + 1));
+                _dataNotSaved |=
+                    (_findCurrentSaveOnActiveMemcard() == (fileSlot + page + 1));
                 state = save;
             } else {
                 state = leaveWithTimer;
@@ -2665,8 +2667,8 @@ static int _showSaveFilesMenu(int initPort)
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
                     char v = _backupMainSetting & 1;
-                    *(int*)&vs_main_settings
-                        = (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
+                    *(int*)&vs_main_settings =
+                        (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
                 memset(&_saveFileInfo[saveId], 0, sizeof(saveFileInfo_t));
                 _saveFileInfo[saveId].unk4.base.slotState = slotStateTemporary;
@@ -2684,8 +2686,8 @@ static int _showSaveFilesMenu(int initPort)
                 _decode(_saveFileInfo[saveId].key,
                     &_saveFileInfo[saveId].unk4.base.slotState,
                     sizeof(saveFileInfo_t) - sizeof(int));
-                _fileMenuElements[saveId + 5].saveLocation
-                    = _saveFileInfo[saveId].unk4.stats.saveLocation;
+                _fileMenuElements[saveId + 5].saveLocation =
+                    _saveFileInfo[saveId].unk4.stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                 saveSuccessful = 1;
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saved);
@@ -2932,8 +2934,9 @@ static int _showSaveMenu(int initState)
         }
         if (currentSave < findSavePending) {
             _memoryCardMessage = (char*)(_textTable
-                + (currentSave == findSaveTimeout ? VS_MCMAN_BIN_OFFSET_insertError
-                                                  : VS_MCMAN_BIN_OFFSET_emptyCard));
+                                         + (currentSave == findSaveTimeout
+                                                 ? VS_MCMAN_BIN_OFFSET_insertError
+                                                 : VS_MCMAN_BIN_OFFSET_emptyCard));
             state = containerWarn;
         } else {
             _loadSaveData((currentSave & 7) | ((currentSave & 16) << 12));
@@ -2988,8 +2991,8 @@ static int _showSaveMenu(int initState)
                 } while (val < 3);
             }
             if (_dataNotSaved != 0) {
-                _memoryCardMessage
-                    = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarnDataLoss);
+                _memoryCardMessage =
+                    (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarnDataLoss);
                 _promptConfirm(1);
                 state = discardChanges;
             } else {
@@ -3350,8 +3353,8 @@ static void _gameSaveScreen(void)
             val = _showSaveMenu(0);
             if (val != 0) {
                 if (val < 0) {
-                    _memoryCardMessage
-                        = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_savePrompt);
+                    _memoryCardMessage =
+                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_savePrompt);
                     _saveScreenConfirmation(1);
                     state = confirmation;
                 } else {
@@ -3469,7 +3472,7 @@ static void _decDCToutCallback(void)
     _movieData.renderTarget.x = rightEdge;
 
     if (rightEdge < (_movieData.frameBufs[_movieData.frameBufIndex].x
-            + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
+                     + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
         dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
         DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
             ((int)(dataSize + (dataSize >> 31))) >> 1);
@@ -3815,24 +3818,25 @@ static void _setMenuItemFadeIn(int menuItem, char pos)
 
 static void _copyTitleBgData(void)
 {
-    static u_short _menuItemOutlineClut[][16]
-        = { { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1),
-                vs_getRGB5551(0, 0, 4, 1), vs_getRGB5551(0, 0, 5, 1),
-                vs_getRGB5551(0, 0, 8, 1), vs_getRGB5551(0, 0, 10, 1),
-                vs_getRGB5551(0, 0, 12, 1), vs_getRGB5551(0, 0, 14, 1),
-                vs_getRGB5551(0, 0, 15, 1), vs_getRGB5551(0, 0, 18, 1),
-                vs_getRGB5551(0, 0, 20, 1), vs_getRGB5551(0, 0, 22, 1),
-                vs_getRGB5551(0, 0, 24, 1), vs_getRGB5551(0, 0, 26, 1),
-                vs_getRGB5551(1, 1, 29, 1), vs_getRGB5551(2, 3, 31, 1) },
+    static u_short _menuItemOutlineClut[][16] = {
+        { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1), vs_getRGB5551(0, 0, 4, 1),
+            vs_getRGB5551(0, 0, 5, 1), vs_getRGB5551(0, 0, 8, 1),
+            vs_getRGB5551(0, 0, 10, 1), vs_getRGB5551(0, 0, 12, 1),
+            vs_getRGB5551(0, 0, 14, 1), vs_getRGB5551(0, 0, 15, 1),
+            vs_getRGB5551(0, 0, 18, 1), vs_getRGB5551(0, 0, 20, 1),
+            vs_getRGB5551(0, 0, 22, 1), vs_getRGB5551(0, 0, 24, 1),
+            vs_getRGB5551(0, 0, 26, 1), vs_getRGB5551(1, 1, 29, 1),
+            vs_getRGB5551(2, 3, 31, 1) },
 
-              { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 3, 1),
-                  vs_getRGB5551(0, 0, 3, 1), vs_getRGB5551(4, 2, 0, 1),
-                  vs_getRGB5551(3, 0, 7, 1), vs_getRGB5551(7, 3, 3, 1),
-                  vs_getRGB5551(12, 7, 4, 1), vs_getRGB5551(19, 12, 1, 1),
-                  vs_getRGB5551(24, 17, 1, 1), vs_getRGB5551(28, 20, 1, 1),
-                  vs_getRGB5551(30, 20, 1, 1), vs_getRGB5551(31, 22, 0, 1),
-                  vs_getRGB5551(31, 22, 2, 1), vs_getRGB5551(26, 20, 10, 1),
-                  vs_getRGB5551(31, 25, 4, 1), vs_getRGB5551(28, 23, 10, 1) } };
+        { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 3, 1), vs_getRGB5551(0, 0, 3, 1),
+            vs_getRGB5551(4, 2, 0, 1), vs_getRGB5551(3, 0, 7, 1),
+            vs_getRGB5551(7, 3, 3, 1), vs_getRGB5551(12, 7, 4, 1),
+            vs_getRGB5551(19, 12, 1, 1), vs_getRGB5551(24, 17, 1, 1),
+            vs_getRGB5551(28, 20, 1, 1), vs_getRGB5551(30, 20, 1, 1),
+            vs_getRGB5551(31, 22, 0, 1), vs_getRGB5551(31, 22, 2, 1),
+            vs_getRGB5551(26, 20, 10, 1), vs_getRGB5551(31, 25, 4, 1),
+            vs_getRGB5551(28, 23, 10, 1) }
+    };
 
     RECT rect;
     int j;
@@ -3959,9 +3963,9 @@ static void _fadeInMenu(u_short* bgData, int textBlendFactor)
         gdiff = (g0 - g1) * textBlendFactor;
         bdiff = (b0 - b1) * textBlendFactor;
         dst[i] = ((u_int)((((r1 << 5) + rdiff) & 0x3E0) | (((g1 << 5) + gdiff) & 0x7C00)
-                      | (((b1 << 5) + bdiff) & 0xF8000))
+                          | (((b1 << 5) + bdiff) & 0xF8000))
                      >> 5)
-            | 0x8000;
+               | 0x8000;
     }
     setRECT(&rect, 192, 448, 160, 64);
     LoadImage(&rect, (u_long*)dst);
@@ -4006,8 +4010,8 @@ static void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
         gdiff = (g1 - g0) * textBlendFactor;
         bdiff = (b1 - b0) * textBlendFactor;
         dst[i] = ((u_int)((((r0 << 5) + rdiff) & 0x3E0) | (((g0 << 5) + gdiff) & 0x7C00)
-                      | (((b0 << 5) + bdiff) & 0xF8000))
-            >> 5);
+                          | (((b0 << 5) + bdiff) & 0xF8000))
+                  >> 5);
     }
     VSync(2);
     vs_main_processPadState();
@@ -4049,7 +4053,7 @@ static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int c
         clut[i] = ((((r0 * 16 + rdiff) & 0x1F0) | ((g0 * 16 + gdiff) & 0x3E00)
                        | ((b0 * 16 + bdiff) & 0x7C000))
                       >> 4)
-            | 0x8000;
+                | 0x8000;
     }
     setRECT(&rect, 480, menuItem + 384, 16, 1);
     LoadImage(&rect, (u_long*)&clut);
@@ -4125,7 +4129,7 @@ static void _setTitleMenuState(void)
                     _menuItemStates[i].outlinePos -= 2;
                 }
             } else if ((_menuItemStates[i].textBlendFactor == 16)
-                && (_menuItemStates[i].outlineSaturation > 128)) {
+                       && (_menuItemStates[i].outlineSaturation > 128)) {
                 _menuItemStates[i].outlineSaturation -= 16;
             }
         }
@@ -4139,40 +4143,40 @@ static void _drawTitleMenuItems(void)
         VS_SPRT sprt;
     } menuItemPrim_t;
 
-    static int textUvs[]
-        = { vs_getUV0Clut(128, 224, 480, 384), vs_getUV0Clut(0, 224, 480, 385),
-              vs_getUV0Clut(128, 224, 480, 386), vs_getUV0Clut(0, 224, 480, 387),
-              vs_getUV0Clut(0, 224, 480, 388), vs_getUV0Clut(0, 224, 480, 389),
-              vs_getUV0Clut(128, 224, 480, 390), vs_getUV0Clut(128, 224, 480, 391),
-              vs_getUV0Clut(128, 224, 480, 392), vs_getUV0Clut(0, 224, 480, 393) };
-    static int textTpages[]
-        = { vs_getTpage(512, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(832, 256, clut4Bit, semiTransparencyFull, ditheringOff) };
-    static int outlineUvs[]
-        = { vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(0, 192, 480, 394),
-              vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(128, 0, 480, 394),
-              vs_getUV0Clut(144, 192, 480, 394), vs_getUV0Clut(160, 192, 480, 394),
-              vs_getUV0Clut(160, 192, 480, 394), vs_getUV0Clut(128, 64, 480, 394),
-              vs_getUV0Clut(128, 0, 480, 394), vs_getUV0Clut(128, 64, 480, 394) };
-    static int outlineTpages[]
-        = { vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff),
-              vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff) };
+    static int textUvs[] = { vs_getUV0Clut(128, 224, 480, 384),
+        vs_getUV0Clut(0, 224, 480, 385), vs_getUV0Clut(128, 224, 480, 386),
+        vs_getUV0Clut(0, 224, 480, 387), vs_getUV0Clut(0, 224, 480, 388),
+        vs_getUV0Clut(0, 224, 480, 389), vs_getUV0Clut(128, 224, 480, 390),
+        vs_getUV0Clut(128, 224, 480, 391), vs_getUV0Clut(128, 224, 480, 392),
+        vs_getUV0Clut(0, 224, 480, 393) };
+    static int textTpages[] = { vs_getTpage(512, 256, clut4Bit, semiTransparencyFull,
+                                    ditheringOff),
+        vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(640, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(832, 256, clut4Bit, semiTransparencyFull, ditheringOff) };
+    static int outlineUvs[] = { vs_getUV0Clut(0, 192, 480, 394),
+        vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(0, 192, 480, 394),
+        vs_getUV0Clut(128, 0, 480, 394), vs_getUV0Clut(144, 192, 480, 394),
+        vs_getUV0Clut(160, 192, 480, 394), vs_getUV0Clut(160, 192, 480, 394),
+        vs_getUV0Clut(128, 64, 480, 394), vs_getUV0Clut(128, 0, 480, 394),
+        vs_getUV0Clut(128, 64, 480, 394) };
+    static int outlineTpages[] = { vs_getTpage(0, 256, clut4Bit, semiTransparencyFull,
+                                       ditheringOff),
+        vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(128, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff),
+        vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff) };
     static int outlineWhs[] = { vs_getWH(144, 64), vs_getWH(160, 64), vs_getWH(160, 64),
         vs_getWH(128, 64), vs_getWH(112, 64), vs_getWH(96, 64), vs_getWH(96, 64),
         vs_getWH(128, 64), vs_getWH(128, 64), vs_getWH(128, 64) };
@@ -4204,11 +4208,11 @@ static void _drawTitleMenuItems(void)
         prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
             _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
         if (_menuItemStates[i].state == menuItemStateSubmenu) {
-            prim->sprt.x0y0
-                = (outlineXys[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
+            prim->sprt.x0y0 =
+                (outlineXys[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
         } else {
-            prim->sprt.x0y0
-                = outlineXys[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
+            prim->sprt.x0y0 =
+                outlineXys[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
         }
         prim->sprt.u0v0clut = outlineUvs[i];
         prim->sprt.wh = outlineWhs[i];
@@ -4299,8 +4303,8 @@ static void _drawTitleMenu(void)
     _setTitleMenuState();
     for (i = 0; i < 2; ++i) {
         sprt = sprtBuf;
-        sprt->sprt.tpage
-            = vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->sprt.tpage =
+            vs_getTpage(192, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
         sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
         sprt->sprt.x0y0 = vs_getXY(176, 256);
@@ -4308,8 +4312,8 @@ static void _drawTitleMenu(void)
         sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
         ++sprt;
-        sprt->sprt.tpage
-            = vs_getTpage(320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
+        sprt->sprt.tpage =
+            vs_getTpage(320, 256, direct16Bit, semiTransparencyHalf, ditheringOff);
         sprt->tag = vs_getTag(sprt->sprt, primAddrEnd);
         sprt->sprt.r0g0b0code = vs_getRGB0(primSprt, 128, 128, 128);
         sprt->sprt.x0y0 = vs_getXY(176, 320);
@@ -4377,8 +4381,8 @@ static void _menuVibrationSettings(void)
 
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
-        _menuItemStates[vibrationSetting].outlineSaturation
-            = i < 4 ? i * 64 : _menuItemStates[vibrationSetting].outlineSaturation - 16;
+        _menuItemStates[vibrationSetting].outlineSaturation =
+            i < 4 ? i * 64 : _menuItemStates[vibrationSetting].outlineSaturation - 16;
         _drawAndSyncTitleMenu();
     }
     while (1) {
@@ -4401,9 +4405,9 @@ static void _menuVibrationSettings(void)
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
                     _setMenuItemClut(11 - vibrationSetting, i * 2, 1, 0);
-                    _menuItemStates[vibrationSetting].outlineSaturation = i < 4
-                        ? i * 64
-                        : _menuItemStates[vibrationSetting].outlineSaturation - 16;
+                    _menuItemStates[vibrationSetting].outlineSaturation =
+                        i < 4 ? i * 64
+                              : _menuItemStates[vibrationSetting].outlineSaturation - 16;
                     _menuItemStates[11 - vibrationSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
@@ -4483,8 +4487,8 @@ static void _menuSoundSettings(void)
     }
     for (i = 0; i < 8; ++i) {
         _setMenuItemClut(soundSetting, i * 2, 0, 1);
-        _menuItemStates[soundSetting].outlineSaturation
-            = i < 4 ? i << 6 : _menuItemStates[soundSetting].outlineSaturation - 16;
+        _menuItemStates[soundSetting].outlineSaturation =
+            i < 4 ? i << 6 : _menuItemStates[soundSetting].outlineSaturation - 16;
         _drawAndSyncTitleMenu();
     }
     while (1) {
@@ -4506,9 +4510,9 @@ static void _menuSoundSettings(void)
                 for (i = 1; i < 8; ++i) {
                     _setMenuItemClut(soundSetting, i * 2, 0, 1);
                     _setMenuItemClut(11 - soundSetting, i * 2, 1, 0);
-                    _menuItemStates[soundSetting].outlineSaturation = i < 4
-                        ? i << 6
-                        : _menuItemStates[soundSetting].outlineSaturation - 16;
+                    _menuItemStates[soundSetting].outlineSaturation =
+                        i < 4 ? i << 6
+                              : _menuItemStates[soundSetting].outlineSaturation - 16;
                     _menuItemStates[11 - soundSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
@@ -4737,8 +4741,8 @@ int vs_title_exec(void)
             VSync(0);
             vs_main_processPadState();
             fileBuf.tag = vs_getTag(fileBuf.tile, primAddrEnd);
-            fileBuf.tile.tpage = vs_getTpage(
-                320, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
+            fileBuf.tile.tpage =
+                vs_getTpage(320, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
             fileBuf.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
             fileBuf.tile.x0y0 = vs_getXY(0, 0);
             fileBuf.tile.wh = vs_getWH(640, 480);
@@ -4799,172 +4803,173 @@ static int _renderScreen(u_long* ot)
 
 static void _initGameData(void)
 {
-    static int D_80074C24[15][64]
-        = { { 0x01010101, 0x00000000, 0x2731240F, 0x322A3124, 0x000000E7, 0x00000000,
-                0x00000000, 0x00000000, 0x00000002, 0x00000000, 0x2B373231, 0xFA2A312C,
-                0x0000E706, 0x00000000, 0x00000000, 0x00000000, 0x00000003, 0x00000000,
-                0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000, 0x00000000, 0x00000000,
-                0x00000004, 0x00000000, 0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000,
-                0x00000000, 0x00000000, 0x00000005, 0x00000000, 0x2B373231, 0xFA2A312C,
-                0x0000E706, 0x00000000, 0x00000000, 0x00000000, 0x00000006, 0x00000000,
-                0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000, 0x00000000, 0x00000000,
-                0x00000007, 0x00000000, 0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000,
-                0x00000000, 0x00000000, 0x00000008, 0x00000000, 0x2B373231, 0xFA2A312C,
-                0x0000E706, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x01000000, 0x00000000,
-                  0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x02000000, 0x00000000,
-                  0x00000003, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x03000000, 0x00000000,
-                  0x00000004, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x04000000, 0x00000000,
-                  0x00000005, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x05000000, 0x00000000,
-                  0x00000006, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x06000000, 0x00000000, 0x00000007, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x07000000, 0x00000000, 0x00000008, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x08000000, 0x00000000, 0x02100E0E, 0x00883138, 0x00003138, 0x01FD0109,
-                  0x0000000A, 0x01030203, 0xFFFEFFFF, 0x0508FBFF, 0xFD050508, 0x000202FD,
-                  0x01010003, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x02000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x03000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x04000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x05000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x06000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x07000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x08000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x09000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x0A000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x0B000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0C000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0D000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x0E000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0F000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x10000000, 0x01010060, 0xFF000100,
-                  0x01040000, 0x00010001, 0x00000000, 0x00000000, 0x00000000, 0x00020000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00030000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00040000, 0x00000000, 0x00000000, 0x00000000, 0x00050000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00060000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00070000, 0x00000000, 0x00000000, 0x00000000, 0x00080000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000, 0x00000000,
-                  0x00000000, 0x000A0000, 0x00000000, 0x00000000, 0x00000000, 0x000B0000,
-                  0x00000000, 0x00000000, 0x00000000, 0x000C0000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x000D0000, 0x00000000, 0x00000000,
-                  0x00000000, 0x000E0000, 0x00000000, 0x00000000, 0x00000000, 0x000F0000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00100000, 0x050041BF, 0x00000D16,
-                  0x00000D16, 0x000D0100, 0x00000100, 0x00000000, 0xFB020000, 0xFF050502,
-                  0x00FBFBFF, 0x01010002, 0x050041BF, 0x00000D16, 0x00000D16, 0x000D0100,
-                  0x00000100, 0x00000000, 0xFB020000, 0xFF050502, 0x00FBFBFF, 0x02020002,
-                  0x0200118F, 0x00000ED8, 0x00000ED8, 0x00080100, 0x00000000, 0x00000000,
-                  0xFB020000, 0xFF050502, 0x00FBFBFF, 0x03030002, 0x0300219F, 0x0000157C,
-                  0x0000157C, 0x000A0500, 0x00010100, 0x00000000, 0xFB020000, 0xFF050502,
-                  0x00FBFBFF, 0x04040002, 0x040031AF, 0x00000FD2, 0x00000FD2, 0x000C0100,
-                  0x00000000, 0x00000000, 0xFB020000, 0xFF050502 },
-              { 0x00FBFBFF, 0x05050002, 0x070061DF, 0x00000000, 0x00000000, 0x00010000,
-                  0x00000000, 0xFB050000, 0x000005FB, 0x00000005, 0x00FB0500, 0x06070000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x07000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x08000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x09000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x0A000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x0B000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x0C000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0D000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x0E000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x0F000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x10000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00010000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00020000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00030000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00040000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00050000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00060000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00070000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00080000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000A0000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x000B0000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00000000, 0x000C0000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000D0000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000E0000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x000F0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00100000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00110000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00120000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00130000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00140000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x00000000, 0x00150000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00160000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00170000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00180000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00190000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x001A0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x001B0000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x001C0000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x001D0000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00000000, 0x001E0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x001F0000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00200000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00210000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00220000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00230000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00240000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00250000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00260000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-              { 0x00270000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00280000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00290000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x002A0000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x002B0000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x002C0000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x002D0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x002E0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x002F0000, 0x00000000, 0x00000000, 0x00000000,
-                  0x00000000, 0x00000000, 0x00000000, 0x00300000 },
-              { 0x010A0143, 0x020A014B, 0x03050153, 0x04050154, 0x05050155, 0x06000000,
-                  0x07000000, 0x08000000, 0x09000000, 0x0A000000, 0x0B000000, 0x0C000000,
-                  0x0D000000, 0x0E000000, 0x0F000000, 0x10000000, 0x11000000, 0x12000000,
-                  0x13000000, 0x14000000, 0x15000000, 0x16000000, 0x17000000, 0x18000000,
-                  0x19000000, 0x1A000000, 0x1B000000, 0x1C000000, 0x1D000000, 0x1E000000,
-                  0x1F000000, 0x20000000, 0x21000000, 0x22000000, 0x23000000, 0x24000000,
-                  0x25000000, 0x26000000, 0x27000000, 0x28000000, 0x29000000, 0x2A000000,
-                  0x2B000000, 0x2C000000, 0x2D000000, 0x2E000000, 0x2F000000, 0x30000000,
-                  0x31000000, 0x32000000, 0x33000000, 0x34000000, 0x35000000, 0x36000000,
-                  0x37000000, 0x38000000, 0x39000000, 0x3A000000, 0x3B000000, 0x3C000000,
-                  0x3D000000, 0x3E000000, 0x3F000000, 0x40000000 } };
+    static int D_80074C24[15][64] = {
+        { 0x01010101, 0x00000000, 0x2731240F, 0x322A3124, 0x000000E7, 0x00000000,
+            0x00000000, 0x00000000, 0x00000002, 0x00000000, 0x2B373231, 0xFA2A312C,
+            0x0000E706, 0x00000000, 0x00000000, 0x00000000, 0x00000003, 0x00000000,
+            0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000, 0x00000000, 0x00000000,
+            0x00000004, 0x00000000, 0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000,
+            0x00000000, 0x00000000, 0x00000005, 0x00000000, 0x2B373231, 0xFA2A312C,
+            0x0000E706, 0x00000000, 0x00000000, 0x00000000, 0x00000006, 0x00000000,
+            0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000, 0x00000000, 0x00000000,
+            0x00000007, 0x00000000, 0x2B373231, 0xFA2A312C, 0x0000E706, 0x00000000,
+            0x00000000, 0x00000000, 0x00000008, 0x00000000, 0x2B373231, 0xFA2A312C,
+            0x0000E706, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x01000000, 0x00000000,
+            0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x02000000, 0x00000000,
+            0x00000003, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x03000000, 0x00000000,
+            0x00000004, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x04000000, 0x00000000,
+            0x00000005, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x05000000, 0x00000000,
+            0x00000006, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x06000000, 0x00000000, 0x00000007, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x07000000, 0x00000000, 0x00000008, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x08000000, 0x00000000, 0x02100E0E, 0x00883138, 0x00003138, 0x01FD0109,
+            0x0000000A, 0x01030203, 0xFFFEFFFF, 0x0508FBFF, 0xFD050508, 0x000202FD,
+            0x01010003, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x02000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x03000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x04000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x05000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x06000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x07000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x08000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x09000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x0A000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x0B000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0C000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0D000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x0E000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0F000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x10000000, 0x01010060, 0xFF000100,
+            0x01040000, 0x00010001, 0x00000000, 0x00000000, 0x00000000, 0x00020000,
+            0x00000000, 0x00000000, 0x00000000, 0x00030000, 0x00000000, 0x00000000,
+            0x00000000, 0x00040000, 0x00000000, 0x00000000, 0x00000000, 0x00050000,
+            0x00000000, 0x00000000, 0x00000000, 0x00060000, 0x00000000, 0x00000000,
+            0x00000000, 0x00070000, 0x00000000, 0x00000000, 0x00000000, 0x00080000,
+            0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000, 0x00000000,
+            0x00000000, 0x000A0000, 0x00000000, 0x00000000, 0x00000000, 0x000B0000,
+            0x00000000, 0x00000000, 0x00000000, 0x000C0000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x000D0000, 0x00000000, 0x00000000,
+            0x00000000, 0x000E0000, 0x00000000, 0x00000000, 0x00000000, 0x000F0000,
+            0x00000000, 0x00000000, 0x00000000, 0x00100000, 0x050041BF, 0x00000D16,
+            0x00000D16, 0x000D0100, 0x00000100, 0x00000000, 0xFB020000, 0xFF050502,
+            0x00FBFBFF, 0x01010002, 0x050041BF, 0x00000D16, 0x00000D16, 0x000D0100,
+            0x00000100, 0x00000000, 0xFB020000, 0xFF050502, 0x00FBFBFF, 0x02020002,
+            0x0200118F, 0x00000ED8, 0x00000ED8, 0x00080100, 0x00000000, 0x00000000,
+            0xFB020000, 0xFF050502, 0x00FBFBFF, 0x03030002, 0x0300219F, 0x0000157C,
+            0x0000157C, 0x000A0500, 0x00010100, 0x00000000, 0xFB020000, 0xFF050502,
+            0x00FBFBFF, 0x04040002, 0x040031AF, 0x00000FD2, 0x00000FD2, 0x000C0100,
+            0x00000000, 0x00000000, 0xFB020000, 0xFF050502 },
+        { 0x00FBFBFF, 0x05050002, 0x070061DF, 0x00000000, 0x00000000, 0x00010000,
+            0x00000000, 0xFB050000, 0x000005FB, 0x00000005, 0x00FB0500, 0x06070000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x07000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x08000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x09000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x0A000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x0B000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x0C000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0D000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x0E000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x0F000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x10000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00010000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00020000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00030000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00040000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00050000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00060000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00070000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00080000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00090000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000A0000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x000B0000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00000000, 0x000C0000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000D0000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000E0000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x000F0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00100000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00110000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00120000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00130000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00140000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x00000000, 0x00150000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00160000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00170000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00180000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00190000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x001A0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x001B0000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x001C0000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x001D0000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00000000, 0x001E0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x001F0000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00200000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00210000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00220000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00230000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00240000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00250000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00260000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+        { 0x00270000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00280000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00290000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x002A0000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x002B0000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x002C0000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x002D0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x002E0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x002F0000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00300000 },
+        { 0x010A0143, 0x020A014B, 0x03050153, 0x04050154, 0x05050155, 0x06000000,
+            0x07000000, 0x08000000, 0x09000000, 0x0A000000, 0x0B000000, 0x0C000000,
+            0x0D000000, 0x0E000000, 0x0F000000, 0x10000000, 0x11000000, 0x12000000,
+            0x13000000, 0x14000000, 0x15000000, 0x16000000, 0x17000000, 0x18000000,
+            0x19000000, 0x1A000000, 0x1B000000, 0x1C000000, 0x1D000000, 0x1E000000,
+            0x1F000000, 0x20000000, 0x21000000, 0x22000000, 0x23000000, 0x24000000,
+            0x25000000, 0x26000000, 0x27000000, 0x28000000, 0x29000000, 0x2A000000,
+            0x2B000000, 0x2C000000, 0x2D000000, 0x2E000000, 0x2F000000, 0x30000000,
+            0x31000000, 0x32000000, 0x33000000, 0x34000000, 0x35000000, 0x36000000,
+            0x37000000, 0x38000000, 0x39000000, 0x3A000000, 0x3B000000, 0x3C000000,
+            0x3D000000, 0x3E000000, 0x3F000000, 0x40000000 }
+    };
     static int _skillsLearned[8] = { 0x0074FE7F, 0x00000000, 0x00000000, 0x00000000,
         0xFFFDFD03, 0x007EFEFD, 0x00000000, 0xFFFFFFFF };
 

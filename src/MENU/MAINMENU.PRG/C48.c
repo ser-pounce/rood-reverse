@@ -403,25 +403,23 @@ void vs_mainMenu_setWeaponStrings(
     vs_battle_equipment* blade = &weapon->blade;
     int temp_v0 = func_800FA598((short*)weapon, 0);
 
-    vs_battle_stringContext.strings[0]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[(temp_v0 & 0xFF)
-            + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
+    vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [(temp_v0 & 0xFF) + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
     temp_v1 = ((temp_v0 >> 8) & 0xFF);
-    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp[temp_v1 != 0
-            ? vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D]
-            : vs_mainMenu_itemHelp[blade->category
-                  + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon - 1]];
-    vs_battle_stringContext.strings[9]
-        = (char*)&vs_mainMenu_itemNames[blade->material + 253];
-    vs_battle_stringContext.strings[8]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->category
-            + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
-    vs_battle_stringContext.strings[7]
-        = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType
-            + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
+    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
+        [temp_v1 != 0
+                ? vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D]
+                : vs_mainMenu_itemHelp[blade->category
+                                       + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon - 1]];
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[blade->material + 253];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->category + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
+    vs_battle_stringContext.strings[7] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->damageType + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
     vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
-            + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+                              + VS_ITEMHELP_BIN_INDEX_oneHanded]];
     vs_battle_printf(
         vs_battle_printf(description,
             (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),

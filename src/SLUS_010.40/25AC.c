@@ -251,8 +251,8 @@ int func_800131DC(void* arg0, int arg1, int arg2)
 int vs_sound_setCdVol(u_int arg0)
 {
     if (D_80039AFC & 2) {
-        _cdlAtv.val0 = _cdlAtv.val2 = _cdlAtv.val1 = _cdlAtv.val3
-            = (arg0 * 0xB570) >> 0x11;
+        _cdlAtv.val0 = _cdlAtv.val2 = _cdlAtv.val1 = _cdlAtv.val3 =
+            (arg0 * 0xB570) >> 0x11;
     } else {
         _cdlAtv.val2 = arg0;
         _cdlAtv.val0 = arg0;

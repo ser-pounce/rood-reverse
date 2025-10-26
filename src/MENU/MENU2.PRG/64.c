@@ -358,8 +358,8 @@ static int _abilityMenu(void)
                 }
 
                 for (i = 0; i < ability; ++i) {
-                    abilityBuf[i + previousFirstAbility]
-                        = vs_battle_getMenuItem(i + 20)->unk4;
+                    abilityBuf[i + previousFirstAbility] =
+                        vs_battle_getMenuItem(i + 20)->unk4;
                 }
 
                 for (i = 0;;) {
@@ -560,8 +560,7 @@ int vs_menu2_exec(char* state)
             int type = vs_battle_shortcutInvoked - 7;
             vs_battle_setMenuItem(vs_battle_shortcutInvoked + 3, 0x140, 0x22, 0x8C, 8,
                 (char*)&_battleAbilityStrings[_battleAbilityStrings[type * 3]])
-                ->selected
-                = 1;
+                ->selected = 1;
             if (type == 0) {
                 *state = chain;
                 _chainAbilityMenu(1);
@@ -574,8 +573,8 @@ int vs_menu2_exec(char* state)
     // Fallthrough
     case selectTypeInit:
         if (vs_mainmenu_ready() != 0) {
-            menuStrings[0]
-                = (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
+            menuStrings[0] =
+                (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
             menuStrings[1] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_chainAbilitiesDesc];
             rowTypes[0] = 0;
@@ -586,8 +585,8 @@ int vs_menu2_exec(char* state)
                 menuStrings[1] = (char*)&_battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noChainAbilities];
             }
-            menuStrings[2] = (char*)&_battleAbilityStrings
-                [VS_battleAbilities_OFFSET_defenseAbilities];
+            menuStrings[2] =
+                (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_defenseAbilities];
             menuStrings[3] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_defenseAbilitiesDesc];
             if (vs_battle_abilitiesUnlocked(1) == 0) {

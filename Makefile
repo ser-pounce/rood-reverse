@@ -50,7 +50,7 @@ MASFLAGS       := --aspsx-version=2.77 --macro-inc
 SPLATFLAGS     := --disassemble-all
 PERMUTEFLAGS   := -j8
 DUMPSXISOFLAGS  = -x data -s config/$(disk).xml
-FORMATFLAGS    := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: Never }" -i
+FORMATFLAGS    := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: Never, AlignOperands: AlignAfterOperator, BreakBeforeBinaryOperators: NonAssignment  }" -i
 RMFLAGS        := -Rf
 DIFFFLAGS      := -s
 WHICHFLAGS     := -s

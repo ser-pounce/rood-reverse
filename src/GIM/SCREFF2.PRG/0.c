@@ -53,7 +53,7 @@ int func_800F9DF8(int arg0, int arg1)
     var_s1 += 0x40;
     return ((((((vs_math_cosine(arg0 << 6) * arg1 * 0xB) >> 0xF) * var_s1) >> 6) + 0xA0)
                & 0xFFFF)
-        | ((((((vs_math_sine(arg0 << 6) * arg1) >> 0xC) * var_s1) >> 6) + 0x70) << 0x10);
+         | ((((((vs_math_sine(arg0 << 6) * arg1) >> 0xC) * var_s1) >> 6) + 0x70) << 0x10);
 }
 
 int* func_800F9EBC(int arg0, int arg1, int* arg2, int* arg3)

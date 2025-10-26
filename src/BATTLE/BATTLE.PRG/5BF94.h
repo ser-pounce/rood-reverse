@@ -76,6 +76,13 @@ typedef struct {
     char* strings[10];
 } vs_battle_stringContext_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    u_short unkC[0x326];
+} D_800F453C_t;
+
 void func_800C6540(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
@@ -139,7 +146,7 @@ extern char D_800EC270[];
 extern char vs_battle_chainAbilityOffsets[];
 extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;
-extern u_short* D_800F453C;
+extern D_800F453C_t* D_800F453C;
 extern char D_800F4E6B;
 extern void* D_800F4E84;
 extern char D_800F4E88;

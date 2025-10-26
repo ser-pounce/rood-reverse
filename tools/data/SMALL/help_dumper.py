@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""
-Help File Dumper
-
-Combines functionality of help_toYaml.py and sprite_extractor.py to:
-1. Parse HF0 files containing text, layout and sprite metadata
-2. Parse HF1 files containing the actual sprite data
-3. Extract sprites to PNG files
-4. Output a combined YAML representation
-"""
 
 import struct
 import sys
@@ -22,41 +13,31 @@ from tools.etc.vsString import decode
 logger = logging.getLogger(__name__)
 
 def init_logging(debug: bool = False) -> None:
-    """Initialize logging with appropriate level and format."""
     level = logging.DEBUG if debug else logging.WARNING
     logging.basicConfig(
         level=level,
-        format='%(message)s',  # Keep it clean for build output
+        format='%(message)s',
     )
 
 class Color:
-    """Utility class for color format conversions."""
-    
     @staticmethod
     def bgr1555_to_rgba8888(color16: int) -> Tuple[int, int, int, int]:
-        """Convert BGR1555 format to RGBA8888, handling PlayStation transparency."""
-        # Extract color components
         b = (color16 >> 10) & 0x1F
         g = (color16 >> 5) & 0x1F
         r = (color16 >> 0) & 0x1F
         
-        # Convert 5-bit to 8-bit color values
         r8 = r << 3
         g8 = g << 3
         b8 = b << 3
         
-        # Handle transparency according to PlayStation rules
-        # When pixel value is 0x0000 (STP=0, R=0, G=0, B=0), it's transparent
         if color16 == 0x0000:
-            alpha = 0  # Fully transparent
+            alpha = 0
         else:
-            alpha = 255  # Opaque
+            alpha = 255
         
         return (r8, g8, b8, alpha)
 
 class BinaryParser:
-    """Parser for binary data with struct unpacking helpers."""
-    
     def __init__(self, data: bytes):
         self.data = data
     
@@ -71,11 +52,9 @@ class BinaryParser:
         ]
 
 class FramebufferData:
-    """Container for parsed framebuffer data."""
-    
     def __init__(self, blocks: List[List[int]], cluts: List[List[Tuple[int, int, int, int]]]):
         self.blocks = blocks
-        self.cluts = cluts  # RGBA palettes with transparency
+        self.cluts = cluts
     
     @property
     def num_blocks(self) -> int:
@@ -86,8 +65,6 @@ class FramebufferData:
         return len(self.cluts)
 
 class SpriteConfig:
-    """Configuration for a single sprite."""
-    
     def __init__(self, sprite_data: Dict[str, Any]):
         self.width = sprite_data["w"]
         self.height = sprite_data["h"]
@@ -99,7 +76,6 @@ class SpriteConfig:
     
     @property
     def signature(self) -> Tuple:
-        """Create a unique signature for deduplication."""
         return (
             tuple(self.block_ids),
             self.width,
@@ -107,8 +83,6 @@ class SpriteConfig:
             self.clut_x,
             self.clut_y,
         )
-
-# HF0 File Parsing Functions
 
 def parse_animation(parser: BinaryParser, offset: int) -> Dict[str, Any] | None:
     fields = parser.unpack_at("<hHhhhhh", offset)
@@ -245,11 +219,7 @@ def parse_hf0_file(filename: str) -> Dict[str, Any]:
         logger.error(f"Error parsing HF0 file: {e}")
         raise
 
-# HF1 File Parsing and Sprite Extraction
-
 class FramebufferParser:
-    """Parser for binary framebuffer data."""
-    
     BLOCK_SIZE = 128  # bytes
     BLOCK_DIMENSIONS = (8, 16)  # width, height in pixels
     CLUT_SIZE = 512  # bytes (256 entries * 2 bytes each)
@@ -257,7 +227,6 @@ class FramebufferParser:
     
     @classmethod
     def parse(cls, data: bytes) -> FramebufferData:
-        """Parse blocks and CLUTs from binary data."""
         if len(data) < 8:
             raise ValueError("Invalid data: too short for header")
         
@@ -271,7 +240,6 @@ class FramebufferParser:
     
     @classmethod
     def _extract_blocks(cls, data: bytes, num_blocks: int) -> List[List[int]]:
-        """Extract sprite blocks from binary data."""
         blocks = []
         for i in range(num_blocks):
             start = 8 + i * cls.BLOCK_SIZE
@@ -283,7 +251,6 @@ class FramebufferParser:
     
     @classmethod
     def _extract_cluts(cls, data: bytes, num_blocks: int, num_clut_chunks: int) -> List[List[Tuple[int, int, int, int]]]:
-        """Extract and convert CLUTs from binary data to RGBA palettes."""
         num_cluts = num_clut_chunks // 16
         cluts = []
         
@@ -296,30 +263,24 @@ class FramebufferParser:
             clut_bytes = data[start:end]
             clut16 = list(struct.unpack_from(f"<{cls.CLUT_ENTRIES}H", clut_bytes, 0))
             
-            # Convert BGR1555 to RGBA8888 palette with transparency
             palette = [Color.bgr1555_to_rgba8888(color16) for color16 in clut16]
             cluts.append(palette)
         
         return cluts
 
 class SpriteRenderer:
-    """Renders sprites to PNG images."""
-    
     def __init__(self, framebuffer_data: FramebufferData):
         self.framebuffer_data = framebuffer_data
     
     def render_sprite(self, sprite_config: SpriteConfig, output_path: Path) -> None:
-        """Render a single sprite to an indexed PNG file."""
         pixel_data = self._generate_pixel_data(sprite_config)
         palette = self.framebuffer_data.cluts[sprite_config.clut_y]
         
-        # Convert to row format for pypng
         rows = [
             pixel_data[y * sprite_config.width:(y + 1) * sprite_config.width]
             for y in range(sprite_config.height)
         ]
         
-        # Write indexed PNG with transparency support
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "wb") as f:
             png.Writer(
@@ -331,25 +292,20 @@ class SpriteRenderer:
         logger.debug(f"Rendered sprite: {output_path}")
     
     def _generate_pixel_data(self, sprite_config: SpriteConfig) -> List[int]:
-        """Generate pixel index data for the sprite."""
         block_w, block_h = FramebufferParser.BLOCK_DIMENSIONS
         blocks_per_row = (sprite_config.width + block_w - 1) // block_w
         
-        # Initialize pixel data
         pixel_data = [0] * (sprite_config.width * sprite_config.height)
         
-        # Process each block
         for block_idx, block_id in enumerate(sprite_config.block_ids):
             if block_id >= len(self.framebuffer_data.blocks):
                 raise ValueError(f"Block ID {block_id} out of range")
             
             block = self.framebuffer_data.blocks[block_id]
             
-            # Calculate block position in sprite
             grid_x = (block_idx % blocks_per_row) * block_w
             grid_y = (block_idx // blocks_per_row) * block_h
             
-            # Copy block pixels to sprite
             for y in range(block_h):
                 for x in range(block_w):
                     dst_x, dst_y = grid_x + x, grid_y + y
@@ -367,35 +323,25 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
     init_logging(debug)
     
     try:
-        # Parse HF0 file first to get sprite metadata
         logger.debug(f"Parsing HF0 file: {hf0_path}")
         hf0_data = parse_hf0_file(str(hf0_path))
         
-        # Parse HF1 file to get sprite data
         logger.debug(f"Parsing HF1 file: {hf1_path}")
         with open(hf1_path, "rb") as f:
             hf1_data = f.read()
         framebuffer_data = FramebufferParser.parse(hf1_data)
         
-        # Convert sprite metadata to configs
         sprite_configs = [SpriteConfig(sprite_data) for sprite_data in hf0_data["sprites"]]
         
-        # Set up renderer
         renderer = SpriteRenderer(framebuffer_data)
         
-        # Create sprites directory
-        # Using output_dir directly for sprites
+        seen_signatures = {}
+        sprite_files = {}
+        next_sprite_num = 0 
         
-        # Track unique sprites and their mapping
-        seen_signatures = {}  # Maps signature to sequential index
-        sprite_files = {}    # Maps original index to PNG filename
-        next_sprite_num = 0  # Counter for sequential sprite numbering
-        
-        # Extract unique sprites
         logger.debug("Extracting unique sprites...")
         for idx, sprite_config in enumerate(sprite_configs):
             if sprite_config.signature not in seen_signatures:
-                # New unique sprite
                 sprite_num = next_sprite_num
                 next_sprite_num += 1
                 output_path = output_dir / f"sprite_{sprite_num:03d}.png"
@@ -403,11 +349,9 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
                 sprite_files[idx] = output_path.name
                 seen_signatures[sprite_config.signature] = sprite_num
             else:
-                # Reuse existing sprite
                 sprite_num = seen_signatures[sprite_config.signature]
                 sprite_files[idx] = f"sprite_{sprite_num:03d}.png"
         
-        # Create simplified sprite entries with just position, animation and PNG reference
         simplified_sprites = []
         for idx, sprite in enumerate(hf0_data["sprites"]):
             simplified_sprite = {
@@ -418,16 +362,13 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
                 simplified_sprite["animation"] = sprite["animation"]
             simplified_sprites.append(simplified_sprite)
         
-        # Replace full sprite data with simplified version
         hf0_data["sprites"] = simplified_sprites
         
-        # Write combined YAML output
         yaml_path = output_dir / "help_data.yaml"
         logger.debug(f"Writing YAML data to: {yaml_path}")
         with open(yaml_path, "w", encoding="utf-8") as f:
             yaml.dump(hf0_data, f, Dumper=CustomDumper, default_flow_style=False, sort_keys=False, allow_unicode=True)
         
-        # Print summary
         logger.info(f"Processed {len(sprite_configs)} sprites ({len(seen_signatures)} unique)")
         logger.info(f"Output written to: {output_dir}")
         
@@ -435,10 +376,8 @@ def process_help_files(hf0_path: Path, hf1_path: Path, output_dir: Path, debug: 
         logger.error(f"Error processing help files: {e}")
         raise
 
-# Create a custom dumper that defaults to block style
 class CustomDumper(yaml.Dumper):
     def represent_mapping(self, tag, mapping, flow_style=None):
-        # Use flow style for coordinate pairs (x,y) and colors (r,g,b)
         if isinstance(mapping, dict) and (
             set(mapping.keys()) == {'x', 'y'} or
             set(mapping.keys()) == {'r', 'g', 'b'}
@@ -447,7 +386,6 @@ class CustomDumper(yaml.Dumper):
         return super().represent_mapping(tag, mapping, flow_style)
 
 def main() -> None:
-    """Command-line entry point."""
     import argparse
     
     parser = argparse.ArgumentParser(description="Process HF0/HF1 files and extract sprites")

@@ -3,6 +3,8 @@
 #include "../BATTLE/BATTLE.PRG/2842C.h"
 #include "../BATTLE/BATTLE.PRG/30D14.h"
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
+#include "../BATTLE/BATTLE.PRG/40564.h"
+#include "../BATTLE/BATTLE.PRG/44F14.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
 void func_800F9A24(int arg0)

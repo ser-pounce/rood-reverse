@@ -2259,7 +2259,7 @@ char func_8008D3D0(void) { return D_800F1C84->unk30; }
 
 char func_8008D3E8(void) { return D_800F1C84->unk31; }
 
-short func_8008D400(void) { return D_800F1C84->unk34[0xE]; }
+int func_8008D400(void) { return D_800F1C84->unk34[0xE]; }
 
 int func_8008D418(void)
 {

@@ -6,6 +6,8 @@ typedef struct {
     char unk8[0x78F8];
 } func_8009C378_t;
 
+extern void* D_800F4538[];
+extern void* D_800F4588[];
 extern char D_800F49DC;
 
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);

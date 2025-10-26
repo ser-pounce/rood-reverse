@@ -1,6 +1,12 @@
 #include "common.h"
 #include "168.h"
 
+extern void* _sydData;
+extern int _sydLbas[];
+extern int _sydSizes[];
+extern vs_main_CdQueueSlot* _sydCdQueueSlot;
+extern char _sydFileLoading;
+
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102968);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801029D0);
@@ -65,7 +71,31 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80106ECC);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801072FC);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107704);
+int vs_menuC_loadSyd(int id)
+{
+    vs_main_CdFile cdFile;
+
+    if (id != 0) {
+        --id;
+        _sydData = vs_main_allocHeapR(_sydSizes[id]);
+        cdFile.lba = _sydLbas[id];
+        cdFile.size = _sydSizes[id];
+        _sydCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(_sydCdQueueSlot, _sydData);
+        _sydFileLoading = 1;
+        return 0;
+    }
+    if (_sydFileLoading == 0) {
+        return 1;
+    }
+
+    if (_sydCdQueueSlot->state == 4) {
+        vs_main_freeCdQueueSlot(_sydCdQueueSlot);
+        _sydFileLoading = 0;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801077DC);
 

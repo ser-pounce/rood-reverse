@@ -124,7 +124,33 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105D3C);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801060E0);
+void func_801060E0(void** arg0, int arg1)
+{
+    short* var_a2;
+    int temp_a0;
+    int temp_t2;
+    int j;
+    int i;
+    int* temp_v0;
+    void** var_t3;
+
+    var_t3 = arg0 + 1;
+    temp_a0 = (int)*arg0;
+
+    for (i = 0; i < temp_a0; ++i) {
+        temp_v0 = var_t3[1];
+        temp_t2 = *temp_v0;
+        var_a2 = (short*)temp_v0;
+        var_a2 = var_a2 + 2;
+        for (j = 0; j < temp_t2; ++j) {
+            var_a2[0] *= arg1;
+            var_a2[1] = var_a2[1] * arg1;
+            var_a2[2] = var_a2[2] * arg1;
+            var_a2 += 4;
+        }
+        var_t3 += 3;
+    }
+}
 
 void func_80106178(MATRIX* arg0, short arg1)
 {

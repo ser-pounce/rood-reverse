@@ -46,7 +46,23 @@ typedef struct {
     char unk31;
     char unk32;
     char unk33;
-    short unk34[17];
+    short unk34;
+    short unk36;
+    short unk38;
+    short unk3A;
+    short unk3C;
+    short unk3E;
+    short unk40;
+    short unk42;
+    short unk44;
+    short unk46;
+    short unk48;
+    short unk4A;
+    short unk4C;
+    short unk4E;
+    short sceneId;
+    short unk52;
+    short unk54;
     short unk56;
 } D_800F1C84_t;
 
@@ -2259,12 +2275,9 @@ char func_8008D3D0(void) { return D_800F1C84->unk30; }
 
 char func_8008D3E8(void) { return D_800F1C84->unk31; }
 
-int func_8008D400(void) { return D_800F1C84->unk34[0xE]; }
+int vs_battle_getCurrentSceneId(void) { return D_800F1C84->sceneId; }
 
-int func_8008D418(void)
-{
-    return (D_800F1C84->unk34[0xF] << 0x10) | D_800F1C84->unk34[0x10];
-}
+int func_8008D418(void) { return (D_800F1C84->unk52 << 0x10) | D_800F1C84->unk54; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D438);
 

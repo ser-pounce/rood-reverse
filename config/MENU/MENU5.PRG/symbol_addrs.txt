@@ -1,0 +1,4 @@
+_sceneArmFiles = 0x80102B00;
+_currentScene = 0x80108D80;
+_roomNamesTable = 0x80108D98;
+_sceneCdQueueSlot = 0x80108DBC;

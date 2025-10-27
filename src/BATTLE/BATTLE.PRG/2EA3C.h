@@ -1,3 +1,3 @@
 #pragma once
 
-int func_80098F4C(void*);
+int vs_battle_initSceneAndGetRoomNames(void*);

@@ -33,7 +33,7 @@ segments:
       - [0x1354, rodata, 6E644]
       - [0x146C, c]
       - [0x2842C, c]
-      - [0x2EA3C, c]
+      - [0x2EA3C, asm]
       - [0x30D14, c]
       - [0x38C1C, asm]
       - [0x3A1A0, c]

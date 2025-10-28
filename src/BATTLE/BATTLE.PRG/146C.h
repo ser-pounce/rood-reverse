@@ -272,6 +272,23 @@ typedef struct {
     char types[4];
 } func_8006B6AC_t;
 
+typedef struct {
+    int unk0;
+    void* dataAddress;
+    short zoneId;
+    short mapId;
+} vs_battle_room;
+
+typedef struct {
+    int vertexCount;
+    SVECTOR vertices[0];
+} vs_battle_roomVertices;
+
+typedef struct {
+    int roomCount;
+    vs_battle_room rooms[0];
+} vs_battle_scene;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
@@ -297,7 +314,7 @@ void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 int vs_battle_getSkillFlags(int, int);
 void func_8008B430(char*, int);
-void func_8008B4D8(void*);
+void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int vs_battle_getCurrentSceneId(void);
 int func_8008E5F0(void);
@@ -329,6 +346,7 @@ extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern signed char D_800F1BF0[8];
 extern D_800F1BF8_t D_800F1BF8;
+extern vs_battle_scene* vs_battle_currentScene;
 extern void* D_800F1CBC;
 extern signed char D_800F1CC8[12];
 extern short D_800F1CD4;

@@ -13,8 +13,8 @@
 int func_80103418(void);
 int func_80103684();
 void func_80105B18(void*, int);
-void func_801060E0(void*, int);
-int func_80106570(void*);
+void _scaleRoomVertices(void*, int);
+int _getCurrentRoomIndex(void*);
 
 extern u_long* D_1F800000[];
 
@@ -30,7 +30,7 @@ extern int D_80108D38;
 extern u_long* D_80108D3C;
 extern RECT D_80108D44[];
 extern int D_80108D60;
-extern int D_80108D64;
+extern int _currentRoomIndex;
 extern int D_80108D68;
 extern int D_80108D6C;
 extern int D_80108D70;
@@ -287,7 +287,7 @@ int func_80103418(void)
         vs_main_bzero(D_80108DA4, sizeof D_80108DA4);
         vs_main_bzero(D_80108DAC, sizeof D_80108DAC);
         D_80108DA4[0] = 0x238;
-        D_80108D64 = 0;
+        _currentRoomIndex = 0;
         D_80108DA4[2] = D_80108DA4[1] = 0x800 - *(u_short*)0x1F800058;
         _currentScene = vs_battle_getCurrentSceneId();
         if (_currentScene >= 32) {
@@ -317,10 +317,10 @@ int func_80103418(void)
 
     vs_main_freeCdQueueSlot(_sceneCdQueueSlot);
     _roomNamesTable = vs_battle_initSceneAndGetRoomNames(vs_battle_sceneBuffer);
-    func_8008B4D8(vs_battle_sceneBuffer);
-    func_801060E0(vs_battle_sceneBuffer, 4);
-    D_80108D64 = func_80106570(vs_battle_sceneBuffer);
-    func_80105B18(vs_battle_sceneBuffer, D_80108D64);
+    vs_battle_setRoomsUnk0(vs_battle_sceneBuffer);
+    _scaleRoomVertices(vs_battle_sceneBuffer, 4);
+    _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
+    func_80105B18(vs_battle_sceneBuffer, _currentRoomIndex);
     func_80041954(0x300, D_8005E248);
     SetFarColor(0, 0, 0);
     func_80102F30((char*)&D_801083FC[D_801083FC[_currentScene]], 1);

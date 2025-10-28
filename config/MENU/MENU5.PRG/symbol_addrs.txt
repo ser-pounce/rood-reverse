@@ -1,4 +1,8 @@
 _sceneArmFiles = 0x80102B00;
+_scaleRoomVertices = 0x801060E0;
+_getCurrentRoomIndex = 0x80106570;
+_isCurrentScene = 0x80108D78;
 _currentScene = 0x80108D80;
 _roomNamesTable = 0x80108D98;
 _sceneCdQueueSlot = 0x80108DBC;
+_currentRoomIndex = 0x80108D64;

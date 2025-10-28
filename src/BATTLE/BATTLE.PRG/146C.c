@@ -112,13 +112,6 @@ typedef struct {
     void* unk5C;
 } D_800F1880_t;
 
-typedef struct {
-    int unk0;
-    void* dataAddress;
-    short zoneId;
-    short mapId;
-} vs_battle_room;
-
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -2190,21 +2183,18 @@ void func_8008B4BC(int arg0) { D_800F1BA4 = arg0; }
 
 int func_8008B4C8(char arg0) { return D_800F1CD6 = arg0; }
 
-void func_8008B4D8(void* arg0)
+void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
 {
-    int temp_s3;
-    int temp_v0;
     int i;
-    vs_battle_room* var_s1;
+    vs_battle_room* room = scene->rooms;
+    int roomCount = scene->roomCount;
 
-    var_s1 = arg0 + 4;
-    temp_s3 = *(int*)arg0;
-    for (i = 0; i < temp_s3; ++i, ++var_s1) {
-        temp_v0 = _getLocationId(var_s1->zoneId, var_s1->mapId - 1);
-        if (temp_v0 > 0) {
-            var_s1->unk0 = D_8005FFD8.unk0[temp_v0 >> 5] & (1 << (temp_v0 & 0x1F));
+    for (i = 0; i < roomCount; ++i, ++room) {
+        int locationId = _getLocationId(room->zoneId, room->mapId - 1);
+        if (locationId > 0) {
+            room->unk0 = D_8005FFD8.unk0[locationId >> 5] & (1 << (locationId & 0x1F));
         } else {
-            var_s1->unk0 = 0;
+            room->unk0 = 0;
         }
     }
 }

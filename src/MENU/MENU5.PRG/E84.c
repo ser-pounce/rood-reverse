@@ -27,6 +27,7 @@ void func_801061EC(MATRIX* arg0, short arg1);
 
 extern u_short D_80108630[];
 extern u_short D_801088B0[];
+extern int _isCurrentScene;
 extern int D_80108D8C;
 extern short D_80108D9C;
 extern int D_80108E48;
@@ -124,31 +125,31 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105D3C);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
 
-void func_801060E0(void** arg0, int arg1)
+void _scaleRoomVertices(vs_battle_scene* scene, int factor)
 {
-    short* var_a2;
-    int temp_a0;
-    int temp_t2;
+    SVECTOR* vector;
+    int roomCount;
+    int vertextCount;
     int j;
     int i;
-    int* temp_v0;
-    void** var_t3;
+    vs_battle_roomVertices* roomVertices;
+    vs_battle_room* room;
 
-    var_t3 = arg0 + 1;
-    temp_a0 = (int)*arg0;
+    room = scene->rooms;
+    roomCount = scene->roomCount;
 
-    for (i = 0; i < temp_a0; ++i) {
-        temp_v0 = var_t3[1];
-        temp_t2 = *temp_v0;
-        var_a2 = (short*)temp_v0;
-        var_a2 = var_a2 + 2;
-        for (j = 0; j < temp_t2; ++j) {
-            var_a2[0] *= arg1;
-            var_a2[1] = var_a2[1] * arg1;
-            var_a2[2] = var_a2[2] * arg1;
-            var_a2 += 4;
+    for (i = 0; i < roomCount; ++i) {
+        roomVertices = room->dataAddress;
+        vertextCount = roomVertices->vertexCount;
+        vector = (SVECTOR*)roomVertices;
+        vector = (SVECTOR*)((int*)vector + 1);
+        for (j = 0; j < vertextCount; ++j) {
+            vector->vx *= factor;
+            vector->vy *= factor;
+            vector->vz *= factor;
+            ++vector;
         }
-        var_t3 += 3;
+        ++room;
     }
 }
 
@@ -186,7 +187,33 @@ void func_801061EC(MATRIX* arg0, short arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010625C);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106570);
+int _getCurrentRoomIndex(vs_battle_scene* scene)
+{
+    int i;
+
+    int roomCount = scene->roomCount;
+    vs_battle_room* room = vs_battle_currentScene->rooms;
+    int zoneId = room->zoneId;
+    int mapId = room->mapId;
+    room = scene->rooms;
+
+    for (i = 0; i < roomCount; ++i, ++room) {
+        if ((room->zoneId == zoneId) && (room->mapId == mapId)) {
+            return _isCurrentScene = i;
+        }
+    }
+
+    room = scene->rooms;
+    _isCurrentScene = -1;
+    mapId = 0;
+
+    for (i = 0; i < roomCount; ++i, ++room) {
+        if (room->unk0 != 0) {
+            return i;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106618);
 

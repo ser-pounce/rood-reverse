@@ -21,7 +21,13 @@ typedef struct {
     short unkE;
 } func_80107A9C_t;
 
+void func_80041C68(MATRIX*, MATRIX*);
+void func_80104384(void);
+void func_801046B0(vs_battle_scene* arg0);
 void func_80104780(int, void*, int, int);
+void func_8010625C();
+void func_801066E0();
+void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
 void func_801082A8(void);
@@ -33,8 +39,14 @@ extern u_short D_801088B0[];
 extern int _isCurrentScene;
 extern int _geomOffsetX;
 extern int _geomOffsetY;
+extern u_short D_80108CC4[];
+extern int _currentScene;
+extern int D_80108D7C;
+extern int D_80108D88;
 extern int D_80108D8C;
 extern short D_80108D9C;
+extern short D_80108DA4[];
+extern short D_80108DAC[];
 extern SVECTOR _centerPoint;
 extern int D_80108E48;
 extern int D_80108E54[4][2];
@@ -43,17 +55,33 @@ extern int D_80108EB4;
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80103684);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801042B0);
+void func_801042B0(void)
+{
+    DR_STP* temp_s0;
+    void** s1 = (void**)0x1F800000;
+    vs_main_flags_t* p;
+    int c;
 
-void func_80041C68(MATRIX*, MATRIX*);
-extern int D_80108D7C;
-extern short D_80108DA4[];
-extern short D_80108DAC[];
-
-void func_80041C68(MATRIX*, MATRIX*);
-extern int D_80108D7C;
-extern short D_80108DA4[];
-extern short D_80108DAC[];
+    func_80106C84();
+    temp_s0 = (DR_STP*)(s1[0]);
+    SetDrawStp(temp_s0, 1);
+    AddPrim((DR_STP*)(s1[1] + 0x1FFC), temp_s0++);
+    p = &vs_main_stateFlags;
+    c = _currentScene;
+    do {
+    } while (0);
+    *(DR_STP**)s1 = temp_s0;
+    if (p->unk135[c] != 0) {
+        func_801066E0();
+        func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]);
+        return;
+    }
+    func_80104384();
+    func_8010625C();
+    if (D_80108D88 == 0) {
+        func_801046B0(vs_battle_sceneBuffer);
+    }
+}
 
 void func_80104384(void)
 {

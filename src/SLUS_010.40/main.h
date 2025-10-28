@@ -259,7 +259,7 @@ extern u_short D_8005046A;
 extern u_int D_80055C80[];
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
-extern int D_8005E248;
+extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;
 extern char vs_main_padBuffer[2][34];
 extern union {

@@ -1300,7 +1300,7 @@ void func_8007CCCC(int arg0)
 
 void func_8007CCF0(int arg0)
 {
-    D_8005E248 = arg0;
+    vs_main_projectionDistance = arg0;
     SetGeomScreen(arg0);
 }
 

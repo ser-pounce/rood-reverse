@@ -8093,7 +8093,7 @@ static void _displayLoadingScreen(void)
 {
     RECT rect;
 
-    _initScreen(0x140, 0xF0, D_8005E248, 0, 0, 0);
+    _initScreen(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
     setRECT(&rect, 0, 0, 1024, 512);
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);

@@ -20,7 +20,7 @@ extern u_long* D_1F800000[];
 
 extern vs_main_CdFile _sceneArmFiles[];
 extern int D_801083F8;
-extern u_short D_801083FC[];
+extern u_short _mapNames[];
 extern vs_main_CdQueueSlot* D_80108D24;
 extern u_short* D_80108D28;
 extern int D_80108D2C;
@@ -126,11 +126,11 @@ int func_80102ED8(void)
     return temp_v0;
 }
 
-void func_80102F30(char* text, char arg1)
+void _setMenuItemMapName(char* mapName, char arg1)
 {
     vs_battle_menuItem_t* menuItem;
 
-    menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, text);
+    menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
     menuItem->state = 2;
     menuItem->x = 0xB4;
     menuItem->selected = 1;
@@ -321,9 +321,9 @@ int func_80103418(void)
     _scaleRoomVertices(vs_battle_sceneBuffer, 4);
     _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
     _recenterMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
-    func_80041954(0x300, D_8005E248);
+    vs_gte_setDepthCueDefault(0x300, vs_main_projectionDistance);
     SetFarColor(0, 0, 0);
-    func_80102F30((char*)&D_801083FC[D_801083FC[_currentScene]], 1);
+    _setMenuItemMapName((char*)&_mapNames[_mapNames[_currentScene]], 1);
     return 1;
 }
 

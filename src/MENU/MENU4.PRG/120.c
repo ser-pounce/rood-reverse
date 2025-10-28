@@ -1877,7 +1877,7 @@ int vs_menu4_Exec(char* state)
         func_80103744(1);
         _screenEnabled = 1;
         animWait = 1;
-        D_80108188 = D_8005E248;
+        D_80108188 = vs_main_projectionDistance;
         func_8007CCF0(0x200);
         new_var2 = 13;
         var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);

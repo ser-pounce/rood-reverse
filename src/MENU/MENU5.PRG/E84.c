@@ -156,13 +156,10 @@ int func_8010451C(int arg0)
         for (i = 1, var_a0 = 0; i < 32; ++i) {
             new_var = D_8005FFD8.unk40[i >> 5] & (1 << (i & 0x1F));
             if (new_var) {
-                int v = _currentScene == i;
-                u_short* new_var3;
                 D_80108DC4[var_a0] = i;
-                new_var3 = _mapNames;
-                sp10[var_a0 * 2] = (char*)&new_var3[_mapNames[i]];
+                sp10[var_a0 * 2] = (char*)&_mapNames[_mapNames[i]];
                 sp10[var_a0 * 2 + 1] = 0;
-                if (v) {
+                if (_currentScene == i) {
                     var_a1 = var_a0;
                 }
                 ++var_a0;

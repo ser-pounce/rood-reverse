@@ -1,8 +1,10 @@
 _sceneArmFiles = 0x80102B00;
+_recenterMapToRoom = 0x80105B18;
 _scaleRoomVertices = 0x801060E0;
 _getCurrentRoomIndex = 0x80106570;
+_currentRoomIndex = 0x80108D64;
 _isCurrentScene = 0x80108D78;
 _currentScene = 0x80108D80;
 _roomNamesTable = 0x80108D98;
+_centerPoint= 0x80108DB4;
 _sceneCdQueueSlot = 0x80108DBC;
-_currentRoomIndex = 0x80108D64;

@@ -30,6 +30,7 @@ extern u_short D_801088B0[];
 extern int _isCurrentScene;
 extern int D_80108D8C;
 extern short D_80108D9C;
+extern SVECTOR _centerPoint;
 extern int D_80108E48;
 extern int D_80108E54[4][2];
 extern short D_80108E74[][4];
@@ -119,7 +120,72 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801046B0);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80104780);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105B18);
+void _recenterMapToRoom(vs_battle_scene* scene, int roomId)
+{
+    SVECTOR maxCorner;
+    SVECTOR minCorner;
+    int roomCount;
+    int vertexCount;
+    int i;
+    int j;
+    vs_battle_roomVertices* roomVertices;
+    SVECTOR* vector;
+    u_int zSum;
+    vs_battle_room* room = scene->rooms;
+
+    maxCorner.vx = 0x7FFF;
+    maxCorner.vy = 0x7FFF;
+    maxCorner.vz = 0x7FFF;
+    minCorner.vx = -0x8000;
+    minCorner.vy = -0x8000;
+    minCorner.vz = -0x8000;
+
+    roomVertices = room[roomId].dataAddress;
+    roomCount = scene->roomCount;
+    vertexCount = roomVertices->vertexCount;
+    vector = roomVertices->vertices;
+
+    for (i = 0; i < vertexCount; ++i, ++vector) {
+        if (maxCorner.vx > vector->vx) {
+            maxCorner.vx = vector->vx;
+        }
+        if (maxCorner.vy > vector->vy) {
+            maxCorner.vy = vector->vy;
+        }
+        if (maxCorner.vz > vector->vz) {
+            maxCorner.vz = vector->vz;
+        }
+        if (minCorner.vx < vector->vx) {
+            minCorner.vx = vector->vx;
+        }
+        if (minCorner.vy < vector->vy) {
+            minCorner.vy = vector->vy;
+        }
+        if (minCorner.vz < vector->vz) {
+            minCorner.vz = vector->vz;
+        }
+    }
+
+    _centerPoint.vx = ((maxCorner.vx + minCorner.vx) / 2);
+    zSum = maxCorner.vz + minCorner.vz;
+    _centerPoint.vz = (int)(zSum + ((u_int)zSum >> 0x1F)) >> 1;
+    _centerPoint.vy = minCorner.vy;
+
+    for (j = 0; j < roomCount; ++j, ++room) {
+        roomVertices = room->dataAddress;
+        vertexCount = roomVertices->vertexCount;
+        vector = (SVECTOR*)roomVertices;
+        vector = (SVECTOR*)((short*)vector + 2);
+        for (i = 0; i < vertexCount; ++i, ++vector) {
+            vector->vx -= _centerPoint.vx;
+            vector->vy -= _centerPoint.vy;
+            vector->vz -= _centerPoint.vz;
+        }
+    }
+    _centerPoint.vx = 0;
+    _centerPoint.vz = 0;
+    _centerPoint.vy = 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105D3C);
 

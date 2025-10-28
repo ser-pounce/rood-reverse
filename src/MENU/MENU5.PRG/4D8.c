@@ -12,7 +12,7 @@
 
 int func_80103418(void);
 int func_80103684();
-void func_80105B18(void*, int);
+void _recenterMapToRoom(void*, int);
 void _scaleRoomVertices(void*, int);
 int _getCurrentRoomIndex(void*);
 
@@ -320,7 +320,7 @@ int func_80103418(void)
     vs_battle_setRoomsUnk0(vs_battle_sceneBuffer);
     _scaleRoomVertices(vs_battle_sceneBuffer, 4);
     _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
-    func_80105B18(vs_battle_sceneBuffer, _currentRoomIndex);
+    _recenterMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
     func_80041954(0x300, D_8005E248);
     SetFarColor(0, 0, 0);
     func_80102F30((char*)&D_801083FC[D_801083FC[_currentScene]], 1);

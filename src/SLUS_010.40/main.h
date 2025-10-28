@@ -304,6 +304,7 @@ int vs_main_getRandSmoothed(int);
 int vs_main_execTitle(void);
 void vs_main_exec(void);
 void vs_main_enableReset(int);
+void func_80041C68(MATRIX*, MATRIX*);
 void func_80042CA0(void);
 void func_80042CB0(void);
 void vs_main_padDisconnectAll(void);

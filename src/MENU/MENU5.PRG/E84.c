@@ -21,20 +21,17 @@ typedef struct {
     short unkE;
 } func_80107A9C_t;
 
-void func_80041C68(MATRIX*, MATRIX*);
-void func_80102D90(int, int, char**);
-int func_80102ED8();
 void func_80104384(void);
 void func_801046B0(vs_battle_scene* arg0);
 void func_80104780(int, void*, int, int);
+void func_80106178(MATRIX* arg0, short arg1);
+void func_801061EC(MATRIX* arg0, short arg1);
 void func_8010625C();
 void func_801066E0();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
 void func_801082A8(void);
-void func_80106178(MATRIX* arg0, short arg1);
-void func_801061EC(MATRIX* arg0, short arg1);
 
 extern u_short D_80108630[];
 extern u_short D_801088B0[];

@@ -57,23 +57,23 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80103684);
 
 void func_801042B0(void)
 {
-    DR_STP* temp_s0;
-    void** s1 = (void**)0x1F800000;
-    vs_main_flags_t* p;
-    int c;
+    DR_STP* stp;
+    void** pScratch = (void**)0x1F800000;
+    vs_main_flags_t* flags;
+    int scene;
 
     func_80106C84();
-    temp_s0 = (DR_STP*)(s1[0]);
-    SetDrawStp(temp_s0, 1);
-    AddPrim((DR_STP*)(s1[1] + 0x1FFC), temp_s0++);
-    p = &vs_main_stateFlags;
-    c = _currentScene;
+    stp = (DR_STP*)(pScratch[0]);
+    SetDrawStp(stp, 1);
+    AddPrim((DR_STP*)(pScratch[1] + 0x1FFC), stp++);
+    flags = &vs_main_stateFlags;
+    scene = _currentScene;
     do {
     } while (0);
-    *(DR_STP**)s1 = temp_s0;
-    if (p->unk135[c] != 0) {
+    *(DR_STP**)pScratch = stp;
+    if (flags->unk135[scene] != 0) {
         func_801066E0();
-        func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]);
+        func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]); // Paling warning
         return;
     }
     func_80104384();

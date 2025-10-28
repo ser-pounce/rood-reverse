@@ -1,8 +1,8 @@
 #include "common.h"
+#include "4D8.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -41,7 +41,7 @@ extern int D_80108D88;
 extern int D_80108D8C;
 extern int D_80108D90;
 extern int D_80108D94;
-extern int _roomNamesTable;
+extern vs_battle_roomName* _roomNamesTable;
 extern short D_80108D9C;
 extern short D_80108D9E;
 extern short D_80108DA4[4];

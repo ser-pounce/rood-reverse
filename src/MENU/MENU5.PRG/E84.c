@@ -1,7 +1,7 @@
 #include "common.h"
+#include "4D8.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
@@ -281,7 +281,23 @@ int _getCurrentRoomIndex(vs_battle_scene* scene)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106618);
+void _updateRoomIndex(int searchForward)
+{
+    int currentIndex = _currentRoomIndex;
+    vs_battle_room* room = ((vs_battle_scene*)vs_battle_sceneBuffer)->rooms;
+
+    do {
+        if (searchForward > 0) {
+            _currentRoomIndex = _roomNamesTable[_currentRoomIndex].next;
+        } else {
+            _currentRoomIndex = _roomNamesTable[_currentRoomIndex].prev;
+        }
+    } while (room[_currentRoomIndex].unk0 == 0);
+
+    if (currentIndex != _currentRoomIndex) {
+        vs_main_playSfxDefault(0x7E, 0xB);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801066E0);
 

@@ -1,3 +1,4 @@
 #pragma once
+#include "146C.h"
 
-int vs_battle_initSceneAndGetRoomNames(void*);
+vs_battle_roomName* vs_battle_initSceneAndGetRoomNames(void*);

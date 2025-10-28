@@ -285,9 +285,21 @@ typedef struct {
 } vs_battle_roomVertices;
 
 typedef struct {
+    char name[32];
+    short prev;
+    short next;
+} vs_battle_roomName;
+
+typedef struct {
     int roomCount;
     vs_battle_room rooms[0];
 } vs_battle_scene;
+
+typedef struct {
+    u_short currentManual;
+    u_short unk2;
+    u_short scrollPositions[16];
+} vs_battle_manualDisplayState_t;
 
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
@@ -325,12 +337,6 @@ void func_8008EB30(int*);
 void func_800995B0(void);
 int func_8009967C(void);
 void vs_battle_exec(void);
-
-typedef struct {
-    u_short currentManual;
-    u_short unk2;
-    u_short scrollPositions[16];
-} vs_battle_manualDisplayState_t;
 
 extern u_short D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];

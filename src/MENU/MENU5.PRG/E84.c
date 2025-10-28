@@ -21,14 +21,18 @@ typedef struct {
     short unkE;
 } func_80107A9C_t;
 
+void func_80104780(int, void*, int, int);
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
+void func_801082A8(void);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
 
 extern u_short D_80108630[];
 extern u_short D_801088B0[];
 extern int _isCurrentScene;
+extern int D_80108D70;
+extern int D_80108D74;
 extern int D_80108D8C;
 extern short D_80108D9C;
 extern SVECTOR _centerPoint;
@@ -117,7 +121,32 @@ void func_8010467C(int* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801046B0);
+void func_801046B0(vs_battle_scene* arg0)
+{
+    vs_battle_geomOffset prevOffset;
+    vs_battle_geomOffset tmpOffset;
+    int roomCount;
+    int i;
+    vs_battle_room* room;
+    int* new_var;
+
+    tmpOffset.x = D_80108D70 + 0x90;
+    tmpOffset.y = D_80108D74 + 0x88;
+    vs_battle_getGeomOffset(&prevOffset);
+    vs_battle_setGeomOffset(&tmpOffset);
+    D_80108EB4 = 0;
+    new_var = &arg0->roomCount;
+    roomCount = *new_var;
+    room = (vs_battle_room*)arg0;
+    room = (vs_battle_room*)((int*)room + 1);
+    for (i = 0; i < roomCount; ++i, ++room) {
+        if (room->unk0 != 0) {
+            func_80104780(i, room->dataAddress, room->zoneId, room->mapId);
+        }
+    }
+    func_801082A8();
+    vs_battle_setGeomOffset(&prevOffset);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80104780);
 

@@ -1,5 +1,5 @@
 vs_battle_exec = 0x800798A4;
-vs_battle_getClosestSavePoint = 0x8007C874;
+vs_battle_getCurrentLocationId = 0x8007C874;
 vs_battle_getEquippedShieldDp = 0x8008381C;
 vs_battle_getSkillFlags = 0x8008A5D0;
 func_8008B430 = 0x8008B430;

@@ -86,7 +86,7 @@ typedef struct {
 } D_800F1C60_t;
 
 typedef struct {
-    int unk0;
+    int zoneId;
     vs_main_CdFile* unk4;
     int unk8;
     int unkC;
@@ -99,7 +99,7 @@ typedef struct {
     int unk28;
     int unk2C;
     int unk30;
-    int unk34;
+    int mapId;
     int unk38;
     int unk3C;
     int unk40;
@@ -111,6 +111,13 @@ typedef struct {
     vs_main_CdQueueSlot* unk58;
     void* unk5C;
 } D_800F1880_t;
+
+typedef struct {
+    int unk0;
+    void* dataAddress;
+    short zoneId;
+    short mapId;
+} vs_battle_room;
 
 void func_8006C350(void);
 void func_8006C39C(void);
@@ -140,7 +147,7 @@ void func_8007BF6C(int);
 void func_8007BFF8(int);
 void func_8007C4E0(void);
 void func_8007C5C0(void);
-int func_8007C81C(int, int);
+int _getLocationId(int, int);
 void func_8007D360(void);
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
@@ -1205,11 +1212,22 @@ void func_8007C654(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C694);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C81C);
-
-int vs_battle_getClosestSavePoint(void)
+int _getLocationId(int zoneId, int mapId)
 {
-    return func_8007C81C(D_800F1880.unk0, D_800F1880.unk34);
+    int i;
+
+    for (i = 0; i < 512; ++i) {
+        if (zoneId == vs_main_locationZoneMapIds[i * 2]
+            && mapId == vs_main_locationZoneMapIds[i * 2 + 1]) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+int vs_battle_getCurrentLocationId(void)
+{
+    return _getLocationId(D_800F1880.zoneId, D_800F1880.mapId);
 }
 
 void func_8007C8A4(int arg0)
@@ -2172,7 +2190,24 @@ void func_8008B4BC(int arg0) { D_800F1BA4 = arg0; }
 
 int func_8008B4C8(char arg0) { return D_800F1CD6 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B4D8);
+void func_8008B4D8(void* arg0)
+{
+    int temp_s3;
+    int temp_v0;
+    int i;
+    vs_battle_room* var_s1;
+
+    var_s1 = arg0 + 4;
+    temp_s3 = *(int*)arg0;
+    for (i = 0; i < temp_s3; ++i, ++var_s1) {
+        temp_v0 = _getLocationId(var_s1->zoneId, var_s1->mapId - 1);
+        if (temp_v0 > 0) {
+            var_s1->unk0 = D_8005FFD8.unk0[temp_v0 >> 5] & (1 << (temp_v0 & 0x1F));
+        } else {
+            var_s1->unk0 = 0;
+        }
+    }
+}
 
 void func_8008B588(void) { }
 

@@ -332,6 +332,7 @@ vs_main_titleScreenCount = 0x8004A528;
 D_8004A52C = 0x8004A52C;
 vs_main_skills = 0x8004B9DC;
 D_8004EDDC = 0x8004EDDC;
+vs_main_locationZoneMapIds = 0x8004F0CC;
 vs_main_zndFiles = 0x8004F4CC;
 vs_main_artsPointsRequirements = 0x8004FDE4;
 vs_main_battleAbilitiesPointsRequirements = 0x8004FE5C;

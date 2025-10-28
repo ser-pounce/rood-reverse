@@ -279,8 +279,8 @@ int func_80103418(void)
 
     vs_main_stateFlags.unk135[0] = 1;
     if (vs_battle_sceneBuffer == NULL) {
-        if (D_8005FFD8.unk4 & 0x800000) {
-            D_8005FFD8.unk4 |= 0x400000;
+        if (D_8005FFD8.unk0[1] & 0x800000) {
+            D_8005FFD8.unk0[1] |= 0x400000;
         }
         D_80108D8C = 0;
         D_80108D94 = 0;

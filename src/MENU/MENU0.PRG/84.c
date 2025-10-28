@@ -95,11 +95,11 @@ static int _getTeleportCost(int targetSavePointId)
     int j;
     int cost;
     int closestSavePointId;
-    int closestSavePoint = vs_battle_getClosestSavePoint();
+    int locationId = vs_battle_getCurrentLocationId();
 
     do {
         for (i = 0; i < 48; ++i) {
-            if ((_savePointData[i] & 0xFFFF) == closestSavePoint) {
+            if ((_savePointData[i] & 0xFFFF) == locationId) {
                 break;
             }
         }

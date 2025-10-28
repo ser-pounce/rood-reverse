@@ -238,22 +238,7 @@ typedef struct {
 } func_8006B7BC_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3C;
+    int unk0[16];
     int unk40[2];
 } D_8005FFD8_t;
 
@@ -266,6 +251,7 @@ extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_titleScreenCount;
 extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
+extern char vs_main_locationZoneMapIds[];
 extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];

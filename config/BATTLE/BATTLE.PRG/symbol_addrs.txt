@@ -1,4 +1,5 @@
 _add_min = 0x8006D9C4;
+_getLocationId = 0x8007C81C;
 func_8008010C = 0x8008010C; // type:func
 func_800801A0 = 0x800801A0; // type:func
 _getRisk = 0x800838BC;

@@ -285,7 +285,7 @@ void func_8006B9E0(void*, vs_battle_shieldInfo*);
 void func_8006BAA8(func_8006B7BC_t*, vs_battle_armorInfo*);
 void func_8006BADC(func_8006B7BC_t*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
-int vs_battle_getClosestSavePoint(void);
+int vs_battle_getCurrentLocationId(void);
 void func_8007ACB0(void);
 void func_8007CCF0(int);
 int func_8007DFF0(int, int, int);

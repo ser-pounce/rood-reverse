@@ -18,6 +18,8 @@ enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
 enum vs_primType {
     primShadeTex = 1,
     primSemiTrans = 2,
+    primPolyFT4 = 0x2C,
+    primPolyFT4ShadeTex = primPolyFT4 | primShadeTex,
     primPolyG4 = 0x38,
     primPolyG4SemiTrans = primPolyG4 | primSemiTrans,
     primPolyGT4 = 0x3C,

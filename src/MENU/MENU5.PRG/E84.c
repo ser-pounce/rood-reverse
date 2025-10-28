@@ -4,6 +4,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "gpu.h"
 #include <libetc.h>
 
 typedef struct {
@@ -39,6 +40,7 @@ extern int _isCurrentScene;
 extern int _geomOffsetX;
 extern int _geomOffsetY;
 extern u_short D_80108CC4[];
+extern RECT _icons[];
 extern int _currentScene;
 extern int D_80108D54;
 extern int D_80108D58;
@@ -410,7 +412,25 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106AF4);
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106C84);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801074AC);
+void _drawIcon(int id, int x, int y)
+{
+    RECT* icon;
+    void** scratch = (void**)0x1F800000;
+    POLY_FT4* poly = scratch[0];
+
+    setlen(poly, 9);
+    setcode(poly, primPolyFT4ShadeTex);
+    icon = &_icons[id];
+    setXY4(poly, x - icon->w / 2, y, icon->w + (x - icon->w / 2), y,
+        x - icon->w / 2, y + 8, icon->w + (x - icon->w / 2), y + 8);
+    setUV4(poly, icon->x, icon->y, icon->x + icon->w, icon->y, icon->x,
+        icon->y + 8, icon->x + icon->w, icon->y + 8);
+    poly->tpage = getTPage(0, 0, 768, 0);
+    poly->clut = getClut(848, 223);
+
+    AddPrim(scratch[1] + 0x1C, poly++);
+    scratch[0] = poly;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107630);
 

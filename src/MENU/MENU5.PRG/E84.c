@@ -22,6 +22,8 @@ typedef struct {
 } func_80107A9C_t;
 
 void func_80041C68(MATRIX*, MATRIX*);
+void func_80102D90(int, int, char*);
+int func_80102ED8();
 void func_80104384(void);
 void func_801046B0(vs_battle_scene* arg0);
 void func_80104780(int, void*, int, int);
@@ -41,12 +43,16 @@ extern int _geomOffsetX;
 extern int _geomOffsetY;
 extern u_short D_80108CC4[];
 extern int _currentScene;
+extern int D_80108D54;
+extern int D_80108D58;
 extern int D_80108D7C;
 extern int D_80108D88;
 extern int D_80108D8C;
+extern int D_80108D90;
 extern short D_80108D9C;
 extern short D_80108DA4[];
 extern short D_80108DAC[];
+extern int D_80108DC4[32];
 extern SVECTOR _centerPoint;
 extern int D_80108E48;
 extern int D_80108E54[4][2];
@@ -132,7 +138,54 @@ void func_80104384(void)
     SetTransMatrix(&sp38);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010451C);
+int func_8010451C(int arg0)
+{
+    char* sp10[64];
+    int var_a0;
+    int var_a1;
+    int i;
+    int new_var;
+
+    if (arg0 != 0) {
+        D_80108D54 = 0;
+        D_80108D58 = 0;
+    }
+    switch (D_80108D54) {
+    case 0:
+        var_a1 = 0;
+        for (i = 1, var_a0 = 0; i < 32; ++i) {
+            new_var = D_8005FFD8.unk40[i >> 5] & (1 << (i & 0x1F));
+            if (new_var) {
+                int v = _currentScene == i;
+                u_short* new_var3;
+                D_80108DC4[var_a0] = i;
+                new_var3 = _mapNames;
+                sp10[var_a0 * 2] = (char*)&new_var3[_mapNames[i]];
+                sp10[var_a0 * 2 + 1] = 0;
+                if (v) {
+                    var_a1 = var_a0;
+                }
+                ++var_a0;
+            }
+        }
+        if (var_a0 == 0) {
+            return -2;
+        }
+        if (D_80108D90 == 0) {
+            var_a1 = 0x80;
+        }
+        func_80102D90(var_a0, var_a1, (char*)sp10);
+        ++D_80108D54;
+        break;
+    case 1:
+        D_80108D58 = func_80102ED8();
+        if (D_80108D58 == -1) {
+            break;
+        }
+        return D_80108D58;
+    }
+    return -1;
+}
 
 void func_8010467C(int* arg0)
 {

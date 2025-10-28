@@ -3,3 +3,4 @@
 
 extern int _currentRoomIndex;
 extern vs_battle_roomName* _roomNamesTable;
+extern u_short _mapNames[];

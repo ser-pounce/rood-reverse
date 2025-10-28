@@ -22,7 +22,7 @@ typedef struct {
 } func_80107A9C_t;
 
 void func_80041C68(MATRIX*, MATRIX*);
-void func_80102D90(int, int, char*);
+void func_80102D90(int, int, char**);
 int func_80102ED8();
 void func_80104384(void);
 void func_801046B0(vs_battle_scene* arg0);
@@ -171,7 +171,7 @@ int func_8010451C(int arg0)
         if (D_80108D90 == 0) {
             var_a1 = 0x80;
         }
-        func_80102D90(var_a0, var_a1, (char*)sp10);
+        func_80102D90(var_a0, var_a1, sp10);
         ++D_80108D54;
         break;
     case 1:

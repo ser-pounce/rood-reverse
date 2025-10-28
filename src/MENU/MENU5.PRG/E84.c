@@ -2,6 +2,7 @@
 #include "4D8.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 

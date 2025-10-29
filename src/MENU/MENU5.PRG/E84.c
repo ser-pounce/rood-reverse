@@ -418,8 +418,8 @@ void _drawIcon(int id, int x, int y)
     void** scratch = (void**)0x1F800000;
     POLY_FT4* poly = scratch[0];
 
-    setlen(poly, 9);
-    setcode(poly, primPolyFT4ShadeTex);
+    setPolyFT4(poly);
+    setShadeTex(poly,  1);
     icon = &_icons[id];
     setXY4(poly, x - icon->w / 2, y, icon->w + (x - icon->w / 2), y,
         x - icon->w / 2, y + 8, icon->w + (x - icon->w / 2), y + 8);

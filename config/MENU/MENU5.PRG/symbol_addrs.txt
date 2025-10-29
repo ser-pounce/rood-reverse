@@ -5,6 +5,7 @@ _setCenterpoint = 0x80105D3C;
 _scaleRoomVertices = 0x801060E0;
 _getCurrentRoomIndex = 0x80106570;
 _updateRoomIndex = 0x80106618;
+_drawControlsUIBackground = 0x80106AF4;
 _drawIcon = 0x801074AC;
 _mapNames = 0x801083FC;
 _icons = 0x80108CE4;

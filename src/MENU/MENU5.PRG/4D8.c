@@ -9,6 +9,7 @@
 #include "../../SLUS_010.40/32154.h"
 #include "lbas.h"
 #include "gpu.h"
+#include <libetc.h>
 
 int func_80103418(void);
 int func_80103684();
@@ -288,7 +289,7 @@ int func_80103418(void)
         vs_main_bzero(D_80108DAC, sizeof D_80108DAC);
         D_80108DA4[0] = 0x238;
         _currentRoomIndex = 0;
-        D_80108DA4[2] = D_80108DA4[1] = 0x800 - *(u_short*)0x1F800058;
+        D_80108DA4[2] = D_80108DA4[1] = 0x800 - *(u_short*)getScratchAddr(22);
         _currentScene = vs_battle_getCurrentSceneId();
         if (_currentScene >= 32) {
             _currentScene = 0;

@@ -63,7 +63,7 @@ INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80103684);
 void func_801042B0(void)
 {
     DR_STP* stp;
-    void** pScratch = (void**)0x1F800000;
+    void** pScratch = (void**)getScratchAddr(0);
     vs_main_flags_t* flags;
     int scene;
 
@@ -301,7 +301,6 @@ void _setCenterpoint(vs_battle_scene* scene, int roomId)
     int roomCount;
     int vertexCount;
     int i;
-    int j;
     vs_battle_roomVertices* roomVertices;
     SVECTOR* vector;
     u_int zSum;
@@ -458,14 +457,38 @@ void _updateRoomIndex(int searchForward)
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801066E0);
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106AF4);
+void _drawControlsUIBackground(int x, int y, int w, int h)
+{
+    int i;
+    int lineW;
+    POLY_F4* poly;
+    void** pScratch;
+    LINE_G2* line = *(void**)getScratchAddr(0);
+
+    for (i = y, lineW = w; i < (y + h - 1); ++i, --lineW) {
+        setLineG2(line);
+        setXY2(line, x, i, x + lineW - 1, i);
+        setRGB0(line, 0x40, 0x38, 0x20);
+        setRGB1(line, 0x10, 0x10, 8);
+        AddPrim(*(int**)getScratchAddr(1) + 7, line++);
+    }
+    x += 2;
+    y += 2;
+    poly = (POLY_F4*)line;
+    setPolyF4(poly);
+    setXY4(poly, x, y, x + w - 1, y, x, y + h - 1, x + w - h, y + h - 1);
+    setRGB0(poly, 0, 0, 0);
+    pScratch = (void**)getScratchAddr(0);
+    AddPrim(pScratch[1] + 0x1C, poly++);
+    pScratch[0] = (void*)poly;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106C84);
 
 void _drawIcon(int id, int x, int y)
 {
     RECT* icon;
-    void** scratch = (void**)0x1F800000;
+    void** scratch = (void**)getScratchAddr(0);
     POLY_FT4* poly = scratch[0];
 
     setPolyFT4(poly);

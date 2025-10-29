@@ -13,7 +13,7 @@
 
 int func_80103418(void);
 int func_80103684();
-void _recenterMapToRoom(void*, int);
+void _snapMapToRoom(void*, int);
 void _scaleRoomVertices(void*, int);
 int _getCurrentRoomIndex(void*);
 
@@ -321,7 +321,7 @@ int func_80103418(void)
     vs_battle_setRoomsUnk0(vs_battle_sceneBuffer);
     _scaleRoomVertices(vs_battle_sceneBuffer, 4);
     _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
-    _recenterMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
+    _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
     vs_gte_setDepthCueDefault(0x300, vs_main_projectionDistance);
     SetFarColor(0, 0, 0);
     _setMenuItemMapName((char*)&_mapNames[_mapNames[_currentScene]], 1);

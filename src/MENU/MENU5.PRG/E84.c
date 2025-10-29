@@ -6,6 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include <libetc.h>
+#include <abs.h>
 
 typedef struct {
     char unk0;
@@ -227,7 +228,7 @@ void func_801046B0(vs_battle_scene* arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80104780);
 
-void _recenterMapToRoom(vs_battle_scene* scene, int roomId)
+void _snapMapToRoom(vs_battle_scene* scene, int roomId)
 {
     SVECTOR maxCorner;
     SVECTOR minCorner;
@@ -345,7 +346,104 @@ void _setCenterpoint(vs_battle_scene* scene, int roomId)
     _centerPoint.vy = minCorner.vy;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
+void _smoothMapToCenterpoint(vs_battle_scene* scene)
+{
+    SVECTOR svector;
+    int coord;
+    int roomCount;
+    int vertexCount;
+    int j;
+    int i;
+    vs_battle_roomVertices* dataAddress;
+    SVECTOR* vector;
+    vs_battle_room* room;
+
+    if (_centerPoint.vx == 0 && _centerPoint.vy == 0 && _centerPoint.vz == 0) {
+        return;
+    }
+
+    coord = ABS(_centerPoint.vx);
+
+    if (coord < 8) {
+        svector.vx = _centerPoint.vx;
+    } else {
+        if (coord >= 0x81) {
+            int var_v0 = _centerPoint.vx;
+            if (_centerPoint.vx < 0) {
+                var_v0 = _centerPoint.vx + 7;
+            }
+            svector.vx = var_v0 >> 3;
+        } else if (_centerPoint.vx <= 0) {
+            if (_centerPoint.vx < 0) {
+                svector.vx = -8;
+            }
+        } else {
+            svector.vx = 8;
+        }
+    }
+
+    coord = ABS(_centerPoint.vy);
+    
+    if (coord < 8) {
+        svector.vy = _centerPoint.vy;
+    } else {
+        if (coord >= 0x81) {
+            int var_v0 = _centerPoint.vy;
+            if (_centerPoint.vy < 0) {
+                var_v0 = _centerPoint.vy + 7;
+            }
+            svector.vy = var_v0 >> 3;
+        } else if (_centerPoint.vy <= 0) {
+            if (_centerPoint.vy < 0) {
+                svector.vy = -8;
+            }
+        } else {
+            svector.vy = 8;
+        }
+    }
+
+    coord = ABS(_centerPoint.vz);
+    
+    if (coord < 8) {
+        svector.vz = _centerPoint.vz;
+    } else {
+        if (coord >= 0x81) {
+            int var_v0 = _centerPoint.vz;
+            do {
+                if (_centerPoint.vz < 0) {
+                    var_v0 = _centerPoint.vz + 7;
+                }
+                svector.vz = var_v0 >> 3;
+            } while (0);
+        } else if (_centerPoint.vz <= 0) {
+            if (_centerPoint.vz < 0) {
+                svector.vz = -8;
+            }
+        } else {
+            svector.vz = 8;
+        }
+    }
+
+    room = scene->rooms;
+    roomCount = scene->roomCount;
+
+    for (i = 0; i < roomCount; ++i) {
+        dataAddress = room->dataAddress;
+        vertexCount = dataAddress->vertexCount;
+        vector = (SVECTOR*)dataAddress;
+        vector = dataAddress->vertices;
+        for (j = 0; j < vertexCount; ++j) {
+            vector->vx -= svector.vx;
+            vector->vy -= svector.vy;
+            vector->vz -= svector.vz;
+            ++vector;
+        }
+        ++room;
+    }
+    _centerPoint.vx -= svector.vx;
+    _centerPoint.vy -= svector.vy;
+    _centerPoint.vz -= svector.vz;
+}
 
 void _scaleRoomVertices(vs_battle_scene* scene, int factor)
 {

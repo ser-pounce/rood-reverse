@@ -294,7 +294,57 @@ void _recenterMapToRoom(vs_battle_scene* scene, int roomId)
     _centerPoint.vy = 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105D3C);
+void _setCenterpoint(vs_battle_scene* scene, int roomId)
+{
+    SVECTOR maxCorner;
+    SVECTOR minCorner;
+    int roomCount;
+    int vertexCount;
+    int i;
+    int j;
+    vs_battle_roomVertices* roomVertices;
+    SVECTOR* vector;
+    u_int zSum;
+    vs_battle_room* room = scene->rooms;
+
+    maxCorner.vx = 0x7FFF;
+    maxCorner.vy = 0x7FFF;
+    maxCorner.vz = 0x7FFF;
+    minCorner.vx = -0x8000;
+    minCorner.vy = -0x8000;
+    minCorner.vz = -0x8000;
+
+    roomVertices = room[roomId].dataAddress;
+    roomCount = scene->roomCount;
+    vertexCount = roomVertices->vertexCount;
+    vector = roomVertices->vertices;
+
+    for (i = 0; i < vertexCount; ++i, ++vector) {
+        if (maxCorner.vx > vector->vx) {
+            maxCorner.vx = vector->vx;
+        }
+        if (maxCorner.vy > vector->vy) {
+            maxCorner.vy = vector->vy;
+        }
+        if (maxCorner.vz > vector->vz) {
+            maxCorner.vz = vector->vz;
+        }
+        if (minCorner.vx < vector->vx) {
+            minCorner.vx = vector->vx;
+        }
+        if (minCorner.vy < vector->vy) {
+            minCorner.vy = vector->vy;
+        }
+        if (minCorner.vz < vector->vz) {
+            minCorner.vz = vector->vz;
+        }
+    }
+
+    _centerPoint.vx = ((maxCorner.vx + minCorner.vx) / 2);
+    zSum = maxCorner.vz + minCorner.vz;
+    _centerPoint.vz = (int)(zSum + ((u_int)zSum >> 0x1F)) >> 1;
+    _centerPoint.vy = minCorner.vy;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80105EC0);
 
@@ -419,12 +469,12 @@ void _drawIcon(int id, int x, int y)
     POLY_FT4* poly = scratch[0];
 
     setPolyFT4(poly);
-    setShadeTex(poly,  1);
+    setShadeTex(poly, 1);
     icon = &_icons[id];
-    setXY4(poly, x - icon->w / 2, y, icon->w + (x - icon->w / 2), y,
-        x - icon->w / 2, y + 8, icon->w + (x - icon->w / 2), y + 8);
-    setUV4(poly, icon->x, icon->y, icon->x + icon->w, icon->y, icon->x,
-        icon->y + 8, icon->x + icon->w, icon->y + 8);
+    setXY4(poly, x - icon->w / 2, y, icon->w + (x - icon->w / 2), y, x - icon->w / 2,
+        y + 8, icon->w + (x - icon->w / 2), y + 8);
+    setUV4(poly, icon->x, icon->y, icon->x + icon->w, icon->y, icon->x, icon->y + 8,
+        icon->x + icon->w, icon->y + 8);
     poly->tpage = getTPage(0, 0, 768, 0);
     poly->clut = getClut(848, 223);
 

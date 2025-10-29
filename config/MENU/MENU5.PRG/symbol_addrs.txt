@@ -4,6 +4,7 @@ _snapMapToRoom = 0x80105B18;
 _setCenterpoint = 0x80105D3C;
 _smoothMapToCenterpoint = 0x80105EC0;
 _scaleRoomVertices = 0x801060E0;
+_darkenBackground = 0x8010625C;
 _getCurrentRoomIndex = 0x80106570;
 _updateRoomIndex = 0x80106618;
 _drawControlsUIBackground = 0x80106AF4;

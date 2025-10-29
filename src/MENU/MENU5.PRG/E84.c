@@ -28,7 +28,7 @@ void func_801046B0(vs_battle_scene* arg0);
 void func_80104780(int, void*, int, int);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
-void func_8010625C();
+void _darkenBackground();
 void func_801066E0();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
@@ -83,7 +83,7 @@ void func_801042B0(void)
         return;
     }
     func_80104384();
-    func_8010625C();
+    _darkenBackground();
     if (D_80108D88 == 0) {
         func_801046B0(vs_battle_sceneBuffer);
     }
@@ -383,7 +383,7 @@ void _smoothMapToCenterpoint(vs_battle_scene* scene)
     }
 
     coord = ABS(_centerPoint.vy);
-    
+
     if (coord < 8) {
         svector.vy = _centerPoint.vy;
     } else {
@@ -403,7 +403,7 @@ void _smoothMapToCenterpoint(vs_battle_scene* scene)
     }
 
     coord = ABS(_centerPoint.vz);
-    
+
     if (coord < 8) {
         svector.vz = _centerPoint.vz;
     } else {
@@ -505,7 +505,80 @@ void func_801061EC(MATRIX* arg0, short arg1)
     arg0->m[2][2] = temp_v0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_8010625C);
+#define _insertTpage(after, arg1)                                                        \
+    __asm__("li         $t3, 0x1F800000;"                                                \
+            "sll        $t0, %0, 2;"                                                     \
+            "lw         $t4, 4($t3);"                                                    \
+            "lw         $t7, 0($t3);"                                                    \
+            "addu       $t0, $t4;"                                                       \
+            "lw         $t1, 0($t0);"                                                    \
+            "li         $t4, 0xE1000000;"                                                \
+            "and        $t6, %1, 0x1FF;"                                                 \
+            "or         $t4, 0x200;"                                                     \
+            "or         $t4, $t6;"                                                       \
+            "sw         $t4, 4($t7);"                                                    \
+            "sw         $zero, 8($t7);"                                                  \
+            "li         $t5, 0xFFFFFF;"                                                  \
+            "li         $t4, 0x2000000;"                                                 \
+            "li         $t6, 0xFF000000;"                                                \
+            "and        $t2, $t1, $t5;"                                                  \
+            "or         $t4, $t2;"                                                       \
+            "sw         $t4, 0($t7);"                                                    \
+            "and        $t2, $t1, $t6;"                                                  \
+            "and        $t4, $t7, $t5;"                                                  \
+            "or         $t4, $t2;"                                                       \
+            "sw         $t4, 0($t0);"                                                    \
+            "addu       $t2, $t7, 0xC;"                                                  \
+            "sw         $t2, 0($t3);"                                                    \
+            :                                                                            \
+            : "r"(after), "r"(arg1)                                                      \
+            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9")
+
+void _darkenBackground(void)
+{
+    SPRT* sprt;
+    u_long* pScratch1;
+    u_long* pScratch2;
+
+    _insertTpage(0x7FE, getTPage(0, 3, 0, 0));
+
+    pScratch1 = getScratchAddr(0);
+    sprt = (SPRT*)pScratch1[0];
+    setSprt(sprt);
+    setSemiTrans(sprt, 1);
+    setShadeTex(sprt, 1);
+    setXY0(sprt, 0, 0);
+    setWH(sprt, 192, 240);
+    setUV0(sprt, 0, 0);
+    setClut(sprt, 0, 0);
+    AddPrim((void*)(pScratch1[1] + 0x7FE * 4), sprt++);
+    *getScratchAddr(0) = (u_long)sprt;
+
+    if (vs_main_frameBuf != 0) {
+        _insertTpage(0x7FE, getTPage(2, 0, 320, 0));
+    } else {
+        _insertTpage(0x7FE, getTPage(2, 0, 0, 0));
+    }
+
+    sprt = (SPRT*)*getScratchAddr(0);
+    setSprt(sprt);
+    setSemiTrans(sprt, 1);
+    setShadeTex(sprt, 1);
+    setXY0(sprt, 192, 0);
+    setWH(sprt, 128, 240);
+    setUV0(sprt, 0, 0);
+    setClut(sprt, 0, 0);
+
+    pScratch2 = getScratchAddr(0);
+    AddPrim((void*)(pScratch2[1] + 0x7FE * 4), sprt++);
+    pScratch2[0] = (u_long)sprt;
+
+    if (vs_main_frameBuf != 0) {
+        _insertTpage(0x7FE, getTPage(2, 0, 512, 0));
+    } else {
+        _insertTpage(0x7FE, getTPage(2, 0, 192, 0));
+    }
+}
 
 int _getCurrentRoomIndex(vs_battle_scene* scene)
 {

@@ -35,4 +35,5 @@
 
 #if defined(PERMUTER)
 #define __attribute__(x)
+#define __asm__(...)
 #endif // PERMUTER

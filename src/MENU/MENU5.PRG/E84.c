@@ -33,6 +33,7 @@ void func_801066E0();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
+void func_80108274(int arg0, int arg1, int arg2, int arg3);
 void func_801082A8(void);
 
 extern u_short D_80108630[];
@@ -43,6 +44,8 @@ extern int _geomOffsetY;
 extern u_short D_80108CC4[];
 extern RECT _icons[];
 extern int _currentScene;
+extern RECT D_80108D04[];
+extern RECT D_80108D14[];
 extern int D_80108D54;
 extern int D_80108D58;
 extern int D_80108D7C;
@@ -676,7 +679,51 @@ void _drawIcon(int id, int x, int y)
     scratch[0] = poly;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107630);
+void func_80107630(int x, int y, int arg2)
+{
+    POLY_FT4* poly;
+    RECT* rect0;
+    RECT* rect1;
+    int s6;
+    int temp;
+    void** new_var = (void**)getScratchAddr(0);
+
+    poly = new_var[0];
+    s6 = (arg2 - 1);
+    arg2 = vs_main_stateFlags.unk33F[arg2] & 1;
+    rect0 = &D_80108D04[arg2];
+
+    setPolyFT4(poly);
+    setShadeTex(poly, 1);
+    setXY4(poly, x - (rect0->w / 2), y, rect0->w + (x - rect0->w / 2), y,
+        x - (rect0->w / 2), rect0->h + y, rect0->w + (x - rect0->w / 2), rect0->h + y);
+    setUV4(poly, rect0->x, rect0->y, rect0->x + rect0->w, rect0->y, rect0->x,
+        rect0->y + rect0->h, rect0->x + rect0->w, rect0->y + rect0->h);
+
+    temp = s6 & 0x7F;
+
+    poly->tpage = getTPage(0, 0, 768, 0);
+    poly->clut = getClut(976, 223);
+
+    AddPrim(new_var[1] + 0x1C, poly++);
+
+    y += rect0->h;
+    rect1 = &D_80108D14[arg2];
+
+    setPolyFT4(poly);
+    setShadeTex(poly, 1);
+    setXY4(poly, x - (rect1->w / 2), y, rect1->w + (x - rect1->w / 2), y,
+        x - (rect1->w / 2), rect1->h + y, rect1->w + (x - rect1->w / 2), rect1->h + y);
+    setUV4(poly, rect1->x, rect1->y, rect1->x + rect1->w, rect1->y, rect1->x,
+        rect1->y + rect1->h, rect1->x + rect1->w, rect1->y + rect1->h);
+
+    poly->tpage = getTPage(0, 0, 768, 0);
+    poly->clut = getClut(864, 223);
+
+    AddPrim(new_var[1] + 0x1C, poly++);
+    new_var[0] = poly;
+    func_80108274(x, y, 0, temp);
+}
 
 void func_801079B8(int arg0, int arg1, int arg2)
 {

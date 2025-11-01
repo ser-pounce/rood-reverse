@@ -29,7 +29,7 @@ void func_80104780(int, void*, int, int);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
 void _darkenBackground();
-void func_801066E0();
+void _applyPalingScreenEffect();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_8010815C(int, int, int);
@@ -48,6 +48,7 @@ extern RECT D_80108D04[];
 extern RECT D_80108D14[];
 extern int D_80108D54;
 extern int D_80108D58;
+extern int D_80108D6C;
 extern int D_80108D7C;
 extern int D_80108D88;
 extern int D_80108D8C;
@@ -81,7 +82,7 @@ void func_801042B0(void)
     } while (0);
     *(DR_STP**)pScratch = stp;
     if (flags->mapPaling[scene] != 0) {
-        func_801066E0();
+        _applyPalingScreenEffect();
         func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]); // Paling warning
         return;
     }
@@ -509,17 +510,19 @@ void func_801061EC(MATRIX* arg0, short arg1)
 }
 
 #define _insertTpage(after, arg1)                                                        \
-    __asm__("li         $t3, 0x1F800000;"                                                \
+    __asm__("scratch = $t3;"                                                             \
+            "tpageOp = $t4;"                                                             \
+            "li         scratch, 0x1F800000;"                                            \
             "sll        $t0, %0, 2;"                                                     \
-            "lw         $t4, 4($t3);"                                                    \
-            "lw         $t7, 0($t3);"                                                    \
+            "lw         $t4, 4(scratch);"                                                \
+            "lw         $t7, 0(scratch);"                                                \
             "addu       $t0, $t4;"                                                       \
             "lw         $t1, 0($t0);"                                                    \
-            "li         $t4, 0xE1000000;"                                                \
+            "li         tpageOp, 0xE1000000;"                                            \
             "and        $t6, %1, 0x1FF;"                                                 \
-            "or         $t4, 0x200;"                                                     \
-            "or         $t4, $t6;"                                                       \
-            "sw         $t4, 4($t7);"                                                    \
+            "or         tpageOp, 0x200;"                                                 \
+            "or         tpageOp, $t6;"                                                   \
+            "sw         tpageOp, 4($t7);"                                                \
             "sw         $zero, 8($t7);"                                                  \
             "li         $t5, 0xFFFFFF;"                                                  \
             "li         $t4, 0x2000000;"                                                 \
@@ -532,7 +535,7 @@ void func_801061EC(MATRIX* arg0, short arg1)
             "or         $t4, $t2;"                                                       \
             "sw         $t4, 0($t0);"                                                    \
             "addu       $t2, $t7, 0xC;"                                                  \
-            "sw         $t2, 0($t3);"                                                    \
+            "sw         $t2, 0(scratch);"                                                \
             :                                                                            \
             : "r"(after), "r"(arg1)                                                      \
             : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9")
@@ -629,7 +632,87 @@ void _updateRoomIndex(int searchForward)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_801066E0);
+void _applyPalingScreenEffect(void)
+{
+    int y;
+
+    _insertTpage(0x7FE, getTPage(0, 3, 0, 0));
+
+    for (y = 0; y < 239; ++y) {
+        int x;
+        void** new_var;
+        int v;
+        SPRT* sprt = *(void**)getScratchAddr(0);
+
+        setSprt(sprt);
+        setSemiTrans(sprt, 1);
+        setRGB0(sprt, 128, 128, 128);
+
+        v = D_80108D6C;
+        new_var = (void**)getScratchAddr(0);
+
+        if (y & 1) {
+            x = vs_math_sine((D_80108D6C + y) << 6);
+            if (x < 0) {
+                x += 127;
+            }
+            x = x >> 7;
+        } else {
+            x = vs_math_sine((D_80108D6C + y) << 6);
+            if (x < 0) {
+                x += 127;
+            }
+            x = -(x >> 7);
+        }
+        setXY0(sprt, x, y);
+        setWH(sprt, 192, 1);
+        setUV0(sprt, 0, y);
+        setClut(sprt, 0, 0);
+
+        AddPrim(new_var[1] + 0x20, sprt++);
+        new_var[0] = (void*)sprt;
+
+        if (vs_main_frameBuf != 0) {
+            _insertTpage(8, getTPage(2, 0, 320, 0));
+        } else {
+            _insertTpage(8, getTPage(2, 0, 0, 0));
+        }
+
+        sprt = *(void**)getScratchAddr(0);
+        setSprt(sprt);
+        setSemiTrans(sprt, 1);
+        setRGB0(sprt, 128, 128, 128);
+
+        if (y & 1) {
+            x = vs_math_sine((D_80108D6C + y) << 6);
+            if (x < 0) {
+                x += 127;
+            }
+            x = (x >> 7) + 192;
+        } else {
+            int offset;
+            x = vs_math_sine((D_80108D6C + y) << 6);
+            offset = x >> 7;
+            if (x < 0) {
+                offset = (x + 127) >> 7;
+            }
+            x = 192 - offset;
+        }
+
+        setXY0(sprt, x, y);
+        setWH(sprt, 128, 1);
+        setUV0(sprt, 0, y);
+
+        AddPrim(new_var[1] + 0x20, sprt++);
+        new_var[0] = (void*)sprt;
+
+        if (vs_main_frameBuf != 0) {
+            _insertTpage(8, getTPage(2, 0, 512, 0));
+        } else {
+            _insertTpage(8, getTPage(2, 0, 192, 0));
+        }
+    }
+}
 
 void _drawControlsUIBackground(int x, int y, int w, int h)
 {

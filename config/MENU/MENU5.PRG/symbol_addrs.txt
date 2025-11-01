@@ -19,3 +19,4 @@ _currentScene = 0x80108D80;
 _roomNamesTable = 0x80108D98;
 _centerPoint= 0x80108DB4;
 _sceneCdQueueSlot = 0x80108DBC;
+_applyPalingScreenEffect = 0x801066E0;

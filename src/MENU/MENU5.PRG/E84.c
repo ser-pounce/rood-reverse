@@ -32,6 +32,7 @@ void _darkenBackground();
 void _applyPalingScreenEffect();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
+void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4);
 void func_8010815C(int, int, int);
 void func_80108274(int arg0, int arg1, int arg2, int arg3);
 void func_801082A8(void);
@@ -849,7 +850,92 @@ void func_80107A9C(int arg0, int arg1, int arg2, int arg3)
     p[0] = (u_long*)temp_s0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80107B10);
+void func_80107B10(int arg0, int arg1, int arg2)
+{
+    int i;
+    POLY_FT4* poly;
+    int sp18[] = { 0x30, 0x40, 0x48, 0x38 };
+    void** new_var2;
+    void** new_var3;
+    int new_var;
+    int new_var4;
+
+    poly = *(void**)0x1F800000;
+
+    for (i = 0; i < 8; ++i) {
+        func_8010800C(arg0, arg1, 0x2B, 3, arg2 + (i << 8));
+        setPolyFT4(poly);
+        setSemiTrans(poly, 1);
+        setShadeTex(poly, 1);
+
+        new_var4 = 0x2D;
+        if (!(i & 3)) {
+            new_var = 0x80;
+            setUV4(poly, 2, new_var, new_var4, new_var, 2, 0x83, new_var4, 0x83);
+        } else {
+            new_var = 0x84;
+            setUV4(poly, 2, new_var, new_var4, new_var, 2, 0x87, new_var4, 0x87);
+        }
+        setXY4(poly, D_80108E54[0][0], D_80108E54[0][1], D_80108E54[1][0],
+            D_80108E54[1][1], D_80108E54[2][0], D_80108E54[2][1], D_80108E54[3][0],
+            D_80108E54[3][1]);
+        setTPage(poly, 0, 1, 448, 256);
+        setClut(poly, 960, 222);
+        new_var3 = (void**)0x1F800000;
+        AddPrim(new_var3[1] + 0x1C, poly++);
+    }
+
+    func_8010800C(arg0, arg1, 0x27, 0x27, arg2 + 0x200);
+
+    for (i = 0; i < 4; ++i) {
+        setPolyFT4(poly);
+        setShadeTex(poly, 1);
+        setXY4(poly, D_80108E54[i][0] - 3, D_80108E54[i][1] - 3, D_80108E54[i][0] + 4,
+            D_80108E54[i][1] - 3, D_80108E54[i][0] - 3, D_80108E54[i][1] + 4,
+            D_80108E54[i][0] + 4, D_80108E54[i][1] + 4);
+        setUV4(poly, sp18[i], 0x80, sp18[i] + 7, 0x80, sp18[i], 0x87, sp18[i] + 7, 0x87);
+        setTPage(poly, 0, 0, 448, 256);
+        if (i == 0) {
+            setClut(poly, 960, 221);
+        } else {
+            setClut(poly, 1008, 220);
+        }
+
+        new_var3 = (void**)0x1F800000;
+        AddPrim(new_var3[1] + 0x18, poly++);
+
+        setPolyFT4(poly);
+        setSemiTrans(poly, 1);
+        setShadeTex(poly, 1);
+        setXY4(poly, D_80108E54[i][0] - 6, D_80108E54[i][1] - 6, D_80108E54[i][0] + 7,
+            D_80108E54[i][1] - 6, D_80108E54[i][0] - 6, D_80108E54[i][1] + 7,
+            D_80108E54[i][0] + 7, D_80108E54[i][1] + 7);
+        setUV4(poly, 1, 0x89, 0xE, 0x89, 1, 0x96, 0xE, 0x96);
+        setTPage(poly, 0, 1, 448, 256);
+        if (i == 0) {
+            setClut(poly, 976, 222);
+        } else {
+            setClut(poly, 960, 222);
+        }
+        new_var3 = (void**)0x1F800000;
+        AddPrim(new_var3[1] + 0x18, poly++);
+    }
+    func_8010800C(arg0, arg1, 0xF, 0xF, (arg2 - D_80108DA4[2]) + 0x200);
+    func_8010800C(D_80108E54[0][0], D_80108E54[0][1], 0xF, 0x11, arg2 - D_80108DA4[2]);
+    setPolyFT4(poly);
+    setSemiTrans(poly, 1);
+    setShadeTex(poly, 1);
+    setXY4(poly, D_80108E54[0][0], D_80108E54[0][1], D_80108E54[1][0], D_80108E54[1][1],
+        D_80108E54[2][0], D_80108E54[2][1], D_80108E54[3][0], D_80108E54[3][1]);
+    setUV4(poly, 0x14, 0x88, 0x23, 0x88, 0x14, 0x99, 0x23, 0x99);
+    setTPage(poly, 0, 0, 448, 256);
+    setClut(poly, 992, 222);
+
+    new_var2 = (void**)0x1F800000;
+    new_var3 = (void**)0x1F800000;
+    AddPrim(new_var3[1] + 0x18, poly++);
+    new_var2[0] = (void*)poly;
+}
 
 void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
 {

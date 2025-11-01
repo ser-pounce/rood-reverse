@@ -278,7 +278,7 @@ int func_80103418(void)
 {
     int a1;
 
-    vs_main_stateFlags.unk135[0] = 1;
+    vs_main_stateFlags.mapPaling[0] = 1;
     if (vs_battle_sceneBuffer == NULL) {
         if (D_8005FFD8.unk0[1] & 0x800000) {
             D_8005FFD8.unk0[1] |= 0x400000;
@@ -294,7 +294,7 @@ int func_80103418(void)
         if (_currentScene >= 32) {
             _currentScene = 0;
         }
-        a1 = vs_main_stateFlags.unk135[_currentScene];
+        a1 = vs_main_stateFlags.mapPaling[_currentScene];
         D_80108D90 = _currentScene;
         D_80108D60 = 0;
         D_80108D68 = 0x80;

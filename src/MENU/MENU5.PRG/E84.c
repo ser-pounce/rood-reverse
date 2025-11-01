@@ -80,7 +80,7 @@ void func_801042B0(void)
     do {
     } while (0);
     *(DR_STP**)pScratch = stp;
-    if (flags->unk135[scene] != 0) {
+    if (flags->mapPaling[scene] != 0) {
         func_801066E0();
         func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]); // Paling warning
         return;
@@ -672,8 +672,8 @@ void _drawIcon(int id, int x, int y)
         y + 8, icon->w + (x - icon->w / 2), y + 8);
     setUV4(poly, icon->x, icon->y, icon->x + icon->w, icon->y, icon->x, icon->y + 8,
         icon->x + icon->w, icon->y + 8);
-    poly->tpage = getTPage(0, 0, 768, 0);
-    poly->clut = getClut(848, 223);
+    setTPage(poly, 0, 0, 768, 0);
+    setClut(poly, 848, 223);
 
     AddPrim(scratch[1] + 0x1C, poly++);
     scratch[0] = poly;
@@ -699,12 +699,10 @@ void func_80107630(int x, int y, int arg2)
         x - (rect0->w / 2), rect0->h + y, rect0->w + (x - rect0->w / 2), rect0->h + y);
     setUV4(poly, rect0->x, rect0->y, rect0->x + rect0->w, rect0->y, rect0->x,
         rect0->y + rect0->h, rect0->x + rect0->w, rect0->y + rect0->h);
+    setTPage(poly, 0, 0, 768, 0);
+    setClut(poly, 976, 223);
 
     temp = s6 & 0x7F;
-
-    poly->tpage = getTPage(0, 0, 768, 0);
-    poly->clut = getClut(976, 223);
-
     AddPrim(new_var[1] + 0x1C, poly++);
 
     y += rect0->h;
@@ -716,9 +714,8 @@ void func_80107630(int x, int y, int arg2)
         x - (rect1->w / 2), rect1->h + y, rect1->w + (x - rect1->w / 2), rect1->h + y);
     setUV4(poly, rect1->x, rect1->y, rect1->x + rect1->w, rect1->y, rect1->x,
         rect1->y + rect1->h, rect1->x + rect1->w, rect1->y + rect1->h);
-
-    poly->tpage = getTPage(0, 0, 768, 0);
-    poly->clut = getClut(864, 223);
+    setTPage(poly, 0, 0, 768, 0);
+    setClut(poly, 864, 223);
 
     AddPrim(new_var[1] + 0x1C, poly++);
     new_var[0] = poly;

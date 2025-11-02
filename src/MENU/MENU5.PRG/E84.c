@@ -749,7 +749,6 @@ void _drawControlsUIBackground(int x, int y, int w, int h)
 void func_80106C84(void)
 {
     D_800F4FE0_t* temp_a0;
-    int s2;
 
     temp_a0 = func_800CCDF4(0);
 
@@ -775,7 +774,7 @@ void func_80106C84(void)
     }
 
     if (D_80108D8C == 0) {
-        if ((char)vs_main_stateFlags.mapPaling[_currentScene] == 0) {
+        if (vs_main_stateFlags.mapPaling[_currentScene] == 0) {
             int index = D_80108D5C;
             void** s1 = (void**)0x1F800000;
             vs_mainmenu_drawButton(4, index + 8, 0xF, s1[1] + 0x18);
@@ -874,7 +873,7 @@ void func_80106C84(void)
             _drawControlsUIBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
             _drawControlsUIBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
             _insertTpage(7, 0x103);
-            func_80107B10(0x3E, 0xB8, (int)D_80108DA6);
+            func_80107B10(0x3E, 0xB8, D_80108DA6);
             return;
         }
         func_800C6540("JAMMING", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000, 0x808080,

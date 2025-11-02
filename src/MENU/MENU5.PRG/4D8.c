@@ -19,7 +19,6 @@ int _getCurrentRoomIndex(void*);
 
 extern u_long* D_1F800000[];
 
-extern vs_main_CdFile _sceneArmFiles[];
 extern int D_801083F8;
 extern u_short _mapNames[];
 extern vs_main_CdQueueSlot* D_80108D24;
@@ -47,7 +46,6 @@ extern short D_80108D9C;
 extern short D_80108D9E;
 extern short D_80108DA4[4];
 extern short D_80108DAC[4];
-extern vs_main_CdQueueSlot* _sceneCdQueueSlot;
 extern int D_80108E44;
 
 void func_80102CD8(int arg0)

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "4D8.h"
+#include "../MAINMENU.PRG/413C.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
@@ -32,6 +33,7 @@ void _darkenBackground();
 void _applyPalingScreenEffect();
 void func_80106C84();
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
+void func_80107B10(int arg0, int arg1, int arg2);
 void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4);
 void func_8010815C(int, int, int);
 void func_80108274(int arg0, int arg1, int arg2, int arg3);
@@ -49,13 +51,16 @@ extern RECT D_80108D04[];
 extern RECT D_80108D14[];
 extern int D_80108D54;
 extern int D_80108D58;
+extern int D_80108D5C;
 extern int D_80108D6C;
 extern int D_80108D7C;
 extern int D_80108D88;
 extern int D_80108D8C;
 extern int D_80108D90;
 extern short D_80108D9C;
+extern short D_80108D9E;
 extern short D_80108DA4[];
+extern short D_80108DA6;
 extern short D_80108DAC[];
 extern int D_80108DC4[32];
 extern SVECTOR _centerPoint;
@@ -539,7 +544,7 @@ void func_801061EC(MATRIX* arg0, short arg1)
             "sw         $t2, 0(scratch);"                                                \
             :                                                                            \
             : "r"(after), "r"(arg1)                                                      \
-            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9")
+            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7")
 
 void _darkenBackground(void)
 {
@@ -741,7 +746,141 @@ void _drawControlsUIBackground(int x, int y, int w, int h)
     pScratch[0] = (void*)poly;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80106C84);
+void func_80106C84(void)
+{
+    D_800F4FE0_t* temp_a0;
+    int s2;
+
+    temp_a0 = func_800CCDF4(0);
+
+    if (D_80108D9E == 0) {
+        D_80108D5C = -0x80;
+        ++D_80108D9E;
+    } else if (D_80108D9E == 1) {
+        if (D_80108D5C < 0) {
+            D_80108D5C += 0x10;
+            if (temp_a0 != NULL) {
+                temp_a0->unk4[9] = temp_a0->unk4[9] - 8;
+                temp_a0->unk4[7] = temp_a0->unk4[7] - 8;
+            }
+        }
+    } else if (D_80108D9E == 2) {
+        if (D_80108D5C >= -0x7F) {
+            D_80108D5C -= 0x10;
+            if (temp_a0 != NULL) {
+                temp_a0->unk4[9] = temp_a0->unk4[9] + 8;
+                temp_a0->unk4[7] = temp_a0->unk4[7] + 8;
+            }
+        }
+    }
+
+    if (D_80108D8C == 0) {
+        if ((char)vs_main_stateFlags.mapPaling[_currentScene] == 0) {
+            int index = D_80108D5C;
+            void** s1 = (void**)0x1F800000;
+            vs_mainmenu_drawButton(4, index + 8, 0xF, s1[1] + 0x18);
+            vs_mainmenu_drawButton(5, D_80108D5C + 0x40, 0xF, s1[1] + 0x18);
+            vs_mainmenu_drawButton(6, D_80108D5C + 8, 0x21, s1[1] + 0x18);
+            vs_mainmenu_drawButton(7, D_80108D5C + 8, 0x34, s1[1] + 0x18);
+            vs_mainmenu_drawButton(2, D_80108D5C + 8, 0x46, s1[1] + 0x18);
+            switch (D_80108D9C) {
+            case 0: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x808080, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x808080, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
+                    s0[1] + 0x18);
+                break;
+            }
+            case 1: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x808080, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x202020, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
+                    s0[1] + 0x18);
+                break;
+            }
+            case 2: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x202020, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
+                    s0[1] + 0x18);
+                break;
+            }
+            case 3: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x808080, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
+                    s0[1] + 0x18);
+                break;
+            }
+            case 4: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x202020, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
+                    s0[1] + 0x18);
+                break;
+            }
+            case 5: {
+                int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
+                void** s0 = (void**)0x1F800000;
+                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
+                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
+                    0x202020, s0[1] + 0x18);
+                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
+                    s0[1] + 0x18);
+                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x202020,
+                    s0[1] + 0x18);
+                break;
+            }
+            }
+            _drawControlsUIBackground(D_80108D5C + 0x10, 0x12, 0x72, 0xC);
+            _drawControlsUIBackground(D_80108D5C + 0x10, 0x24, 0x60, 0xC);
+            _drawControlsUIBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
+            _drawControlsUIBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
+            _insertTpage(7, 0x103);
+            func_80107B10(0x3E, 0xB8, (int)D_80108DA6);
+            return;
+        }
+        func_800C6540("JAMMING", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000, 0x808080,
+            *(void**)0x1F800004 + 0x18);
+    }
+}
 
 void _drawIcon(int id, int x, int y)
 {

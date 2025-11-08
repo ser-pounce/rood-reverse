@@ -24,7 +24,15 @@ typedef struct {
     short unkE;
 } func_80107A9C_t;
 
+int _getCurrentRoomIndex(vs_battle_scene* scene);
+void _snapMapToRoom(vs_battle_scene* scene, int roomId);
+void _updateRoomIndex(int searchForward);
+void _setCenterpoint(vs_battle_scene* scene, int roomId);
+void _scaleRoomVertices(vs_battle_scene* scene, int factor);
+void _smoothMapToCenterpoint(vs_battle_scene* scene);
+void func_801042B0(void);
 void func_80104384(void);
+int func_8010451C(int arg0);
 void func_801046B0(vs_battle_scene* arg0);
 void func_80104780(int, void*, int, int);
 void func_80106178(MATRIX* arg0, short arg1);
@@ -52,24 +60,315 @@ extern RECT D_80108D14[];
 extern int D_80108D54;
 extern int D_80108D58;
 extern int D_80108D5C;
+extern u_int D_80108D60;
+extern int D_80108D68;
 extern int D_80108D6C;
 extern int D_80108D7C;
+extern int D_80108D84;
 extern int D_80108D88;
 extern int D_80108D8C;
 extern int D_80108D90;
+extern int D_80108D94;
 extern short D_80108D9C;
 extern short D_80108D9E;
 extern short D_80108DA4[];
 extern short D_80108DA6;
 extern short D_80108DAC[];
+extern void* D_80108DC0;
 extern int D_80108DC4[32];
 extern SVECTOR _centerPoint;
+extern int D_80108E44;
 extern int D_80108E48;
 extern int D_80108E54[4][2];
 extern short D_80108E74[][4];
 extern int D_80108EB4;
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80103684);
+int func_80103684(void)
+{
+    int var_s2;
+    int temp_s3;
+    int new_var2;
+
+    SetFarColor(0, 0, 0);
+    D_80108E48 = 0xBC;
+    temp_s3 = _currentRoomIndex;
+    if (vs_main_buttonsPressed.all & 0x100) {
+        D_80108D8C ^= 1;
+    }
+    if (vs_main_stateFlags.mapPaling[_currentScene] != 0) {
+        func_80100414(0x7FE, 0x80);
+    } else {
+        func_80100414(0x7FE, (D_80108D68 + 0x80) / 2);
+    }
+    if (D_80108D60 != 1) {
+        D_80108D9C = 5;
+    }
+
+    switch (D_80108D60) {
+    case 0:
+        if (D_80108D68 >= 0x21) {
+            D_80108D68 -= 0x10;
+            _geomOffsetX += 0x40;
+        } else {
+            func_800CCF08(0, 0, 0x3C, 0xE0, 0x10, 1, 0x3C, 0xE0);
+            func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+            ++D_80108D60;
+        }
+        func_801042B0();
+        break;
+    case 1:
+        var_s2 = 0;
+        if (D_80108D8C != D_80108D94) {
+            D_80108D94 = D_80108D8C;
+            func_80102CD8(D_80108D8C == 0);
+        }
+        if (vs_main_buttonsPressed.all & PADRright) {
+            var_s2 = 5;
+            vs_main_playSfxDefault(0x7E, 5);
+            D_80108D60 = 2;
+            if (D_80108D94 != 0) {
+                D_80108D94 = 0;
+                func_80102CD8(1);
+            }
+            func_8010451C(1);
+        } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            if (vs_main_buttonsPressed.all & PADRup) {
+                D_80108E44 = 2;
+            }
+            D_80108D60 = 3;
+            func_800CD064(0);
+        } else if (vs_main_stateFlags.mapPaling[_currentScene] != 0) {
+            var_s2 = 5;
+        } else {
+            int lStickX;
+            int lStickY;
+            if ((lStickX = vs_main_stickPosBuf.lStickX - 0x80, ABS(lStickX)) >= 0x41
+                || (lStickY = vs_main_stickPosBuf.lStickY - 0x80, ABS(lStickY) >= 0x41)) {
+                var_s2 = 3;
+                if ((vs_main_stickPosBuf.lStickX - 0x80) < -0x40) {
+                    D_80108DA4[1] -= 0x40;
+                } else if ((vs_main_stickPosBuf.lStickX - 0x80) >= 0x41) {
+                    D_80108DA4[1] += 0x40;
+                }
+                if ((vs_main_stickPosBuf.lStickY - 0x80) < -0x40) {
+                    D_80108DA4[0] += 0x40;
+                } else if ((vs_main_stickPosBuf.lStickY - 0x80) >= 0x41) {
+                    D_80108DA4[0] -= 0x40;
+                }
+                if (D_80108DA4[0] >= 0) {
+                    if (D_80108DA4[0] > 0x400) {
+                        D_80108DA4[0] = 0x400;
+                    }
+                } else {
+                    D_80108DA4[0] = 0;
+                }
+            } else {
+                if (vs_main_buttonsPreviousState & PADL2) {
+                    int rstickX;
+                    int rstickY;
+                    var_s2 = 3;
+                    if ((rstickX = vs_main_stickPosBuf.rStickX - 0x80,
+                            ABS(rstickX) >= 0x41)
+                        || (rstickY = vs_main_stickPosBuf.rStickY - 0x80,
+                            ABS(rstickY) >= 0x41)) {
+                        if ((vs_main_stickPosBuf.rStickX - 0x80) < -0x40) {
+                            D_80108DA4[1] -= 0x40;
+                        } else if ((vs_main_stickPosBuf.rStickX - 0x80) >= 0x41) {
+                            D_80108DA4[1] += 0x40;
+                        }
+                        if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
+                            D_80108DA4[0] += 0x40;
+                        } else if ((vs_main_stickPosBuf.rStickY - 0x80) >= 0x41) {
+                            D_80108DA4[0] -= 0x40;
+                        }
+                        if (D_80108DA4[0] < 0) {
+                            D_80108DA4[0] = 0;
+                            // dummy assignment to break deduplication optimization around
+                            // line 81
+                        } else if ((lStickX = D_80108DA4[0]) > 0x400) {
+                            D_80108DA4[0] = 0x400;
+                        }
+                    } else {
+                        if (vs_main_buttonsPreviousState & PADLleft) {
+                            D_80108DA4[1] -= 0x40;
+                        } else if (vs_main_buttonsPreviousState & PADLright) {
+                            D_80108DA4[1] += 0x40;
+                        }
+                        if ((vs_main_buttonsPreviousState & PADLdown)
+                            && (D_80108DA4[0] > 0)) {
+                            D_80108DA4[0] -= 0x40;
+                        } else if ((vs_main_buttonsPreviousState & PADLup)
+                                   && (D_80108DA4[0] < 0x400)) {
+                            D_80108DA4[0] += 0x40;
+                        }
+                    }
+                } else if (vs_main_buttonsPreviousState & PADR2) {
+                    int rstickX;
+                    int rstickY;
+                    var_s2 = 2;
+                    if ((rstickX = vs_main_stickPosBuf.rStickX - 0x80,
+                            ABS(rstickX) >= 0x41)
+                        || (rstickY = vs_main_stickPosBuf.rStickY - 0x80,
+                            ABS(rstickY) >= 0x41)) {
+                        if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
+                            D_80108D7C -= 0x10;
+                        } else if ((vs_main_stickPosBuf.rStickY - 0x80) >= 0x41) {
+                            D_80108D7C += 0x10;
+                        }
+                        if (D_80108D7C < 0x200) {
+                            D_80108D7C = 0x200;
+                        } else if (D_80108D7C >= 0x401) {
+                            D_80108D7C = 0x400;
+                        }
+                    } else {
+                        if (vs_main_buttonsPreviousState & PADLup
+                            && (D_80108D7C >= 0x201)) {
+                            D_80108D7C -= 0x10;
+                        } else if ((vs_main_buttonsPreviousState & PADLdown)
+                                   && (D_80108D7C < 0x400)) {
+                            D_80108D7C += 0x10;
+                        }
+                    }
+                } else if (vs_main_buttonsPreviousState & PADstart) {
+                    _geomOffsetX = 0;
+                    _geomOffsetY = 0;
+                    D_80108D7C = 0x300;
+                    D_80108DA4[0] = 0x238;
+                    D_80108DA4[1] = 0x800 - *(u_short*)getScratchAddr(22);
+                    _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
+                    _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
+                } else {
+                    int rstickX;
+                    int rstickY;
+                    if ((rstickX = vs_main_stickPosBuf.rStickX - 0x80,
+                            ABS(rstickX) >= 0x41)
+                        || (rstickY = vs_main_stickPosBuf.rStickY - 0x80,
+                            ABS(rstickY) >= 0x41)) {
+                        if (rstickX < -0x40) {
+                            _geomOffsetX -= 4;
+                        } else if (rstickX >= 0x41) {
+                            _geomOffsetX += 4;
+                        }
+                        if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
+                            _geomOffsetY -= 4;
+                        } else if ((vs_main_stickPosBuf.rStickY - 0x80) >= 0x41) {
+                            _geomOffsetY += 4;
+                        }
+                        if (_geomOffsetY < -0x50) {
+                            _geomOffsetY = -0x50;
+                        } else if (_geomOffsetY > 0x50) {
+                            _geomOffsetY = 0x50;
+                        }
+                        if (_geomOffsetX < -0x60) {
+                            _geomOffsetX = -0x60;
+                        } else if (_geomOffsetX > 0x60) {
+                            _geomOffsetX = 0x60;
+                        }
+                    } else {
+                        if ((vs_main_buttonsPreviousState & PADLup)
+                            && (_geomOffsetY >= -0x4F)) {
+                            _geomOffsetY -= 4;
+                        } else if ((vs_main_buttonsPreviousState & PADLdown)
+                                   && (_geomOffsetY < 0x50)) {
+                            _geomOffsetY += 4;
+                        }
+                        if ((vs_main_buttonsPreviousState & PADLleft)
+                            && (_geomOffsetX >= -0x5F)) {
+                            _geomOffsetX -= 4;
+                        } else if ((vs_main_buttonsPreviousState & PADLright)
+                                   && (_geomOffsetX < 0x60)) {
+                            _geomOffsetX += 4;
+                        }
+                    }
+                    if ((vs_main_buttonsPreviousState & (PADL1 | PADR1))
+                        != (PADL1 | PADR1)) {
+                        if (vs_main_buttonRepeat & 8) {
+                            _updateRoomIndex(1);
+                            _setCenterpoint(vs_battle_sceneBuffer, _currentRoomIndex);
+                        } else if (vs_main_buttonRepeat & 4) {
+                            _updateRoomIndex(-1);
+                            _setCenterpoint(vs_battle_sceneBuffer, _currentRoomIndex);
+                        }
+                    }
+                    if (temp_s3 != _currentRoomIndex) {
+                        func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+                    }
+                }
+            }
+        }
+        D_80108D9C = var_s2;
+        func_801042B0();
+        break;
+    case 2:
+        func_801042B0();
+        D_80108D84 = new_var2 = func_8010451C(0);
+        if (new_var2 == -1) {
+            break;
+        } else if (new_var2 == -3) {
+            D_80108D60 = 3;
+            D_80108E44 = 2;
+            func_800CD064(0);
+        } else if (new_var2 == -2) {
+            D_80108D60 = 1;
+            _setMenuItemMapName(
+                (char*)&_mapNames[_mapNames[_currentScene]], _currentScene == D_80108D90);
+        } else {
+            D_80108D88 = vs_main_stateFlags.mapPaling[_currentScene];
+            _currentScene = D_80108DC4[new_var2];
+            D_80108D60 = 4;
+            D_80108DC0 = vs_main_allocHeapR(_sceneArmFiles[_currentScene].size);
+            _sceneCdQueueSlot =
+                vs_main_allocateCdQueueSlot(&_sceneArmFiles[_currentScene]);
+            vs_main_cdEnqueue(_sceneCdQueueSlot, D_80108DC0);
+        }
+        break;
+    case 3:
+        D_80108D9E = 2;
+        if (D_80108D68 >= 0x80) {
+            vs_main_freeHeapR(vs_battle_sceneBuffer);
+            vs_battle_sceneBuffer = NULL;
+            return D_80108E44;
+        }
+        D_80108D68 += 0x10;
+        _geomOffsetX += 0x40;
+        func_801042B0();
+        break;
+    case 4:
+        _geomOffsetX += 0x40;
+        if ((_sceneCdQueueSlot->state == 4) && (_geomOffsetX >= 0x180)) {
+            D_80108D88 = 0;
+            vs_main_freeCdQueueSlot(_sceneCdQueueSlot);
+            vs_main_freeHeapR(vs_battle_sceneBuffer);
+            vs_battle_sceneBuffer =
+                vs_main_allocHeapR(_sceneArmFiles[_currentScene].size);
+            vs_main_memcpy(
+                vs_battle_sceneBuffer, D_80108DC0, _sceneArmFiles[_currentScene].size);
+            vs_main_freeHeapR(D_80108DC0);
+            _roomNamesTable = vs_battle_initSceneAndGetRoomNames(vs_battle_sceneBuffer);
+            vs_battle_setRoomsUnk0(vs_battle_sceneBuffer);
+            _scaleRoomVertices(vs_battle_sceneBuffer, 4);
+            _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
+            _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
+            func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+            _geomOffsetX = -0x180;
+            _geomOffsetY = 0;
+            D_80108D60 = 5;
+        }
+        func_801042B0();
+        break;
+    case 5:
+        _geomOffsetX = _geomOffsetX + 0x40;
+        if (_geomOffsetX >= 0) {
+            D_80108D60 = 1;
+        }
+        func_801042B0();
+        break;
+    }
+    ++D_80108D6C;
+    _smoothMapToCenterpoint(vs_battle_sceneBuffer);
+    return 0;
+}
 
 void func_801042B0(void)
 {

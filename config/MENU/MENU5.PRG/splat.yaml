@@ -15,7 +15,6 @@ options:
     - config/BATTLE/BATTLE.PRG/exports.txt
   undefined_funcs_auto_path: build/config/MENU/MENU5.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU5.PRG/undefined_syms_auto.txt
-  subalign: 4
 
 segments:
   - start: 0x0
@@ -24,15 +23,12 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 4D8]
-      - [0x460, .rodata, E84]
-      - [0x4D8, c]
-      - [0xE84, c]
+      - [0x4D8, c, 4D8]
       - [0x5BF8, .data, 4D8]
       - { start: 0x5BFC, type: vsStringTable, name: mapNames, linker_entry: false }
       - { start: 0x5E30, type: vsStringTable, name: connectingMaps, linker_entry: false }
       - { start: 0x60B0, type: vsStringTable, name: doors, linker_entry: false }
       - { start: 0x64C4, type: vsStringTable, name: paling, linker_entry: false }
-      - [0x64E4, .data, E84]
-      - [0x6524, bss, 4D8]
-      - [0x6554, bss, E84]
+      - [0x6524, .bss, 4D8]
+      - [0x6530, bss, 4D8]
   - [0x66B8]

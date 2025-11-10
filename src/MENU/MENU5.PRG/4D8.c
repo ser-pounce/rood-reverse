@@ -1,5 +1,6 @@
 #include "common.h"
 #include "4D8.h"
+#include "../../assets/MENU/MENU5.PRG/mapNames.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
@@ -19,8 +20,11 @@ int _getCurrentRoomIndex(void*);
 
 extern u_long* D_1F800000[];
 
-extern int D_801083F8;
-extern u_short _mapNames[];
+static int D_801083F8 = -1;
+u_short _mapNames[] = {
+#include "../../assets/MENU/MENU5.PRG/mapNames.vsString"
+};
+
 extern vs_main_CdQueueSlot* D_80108D24;
 extern u_short* D_80108D28;
 extern int D_80108D2C;

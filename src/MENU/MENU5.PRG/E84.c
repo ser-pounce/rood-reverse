@@ -1,5 +1,8 @@
 #include "common.h"
 #include "4D8.h"
+#include "../../assets/MENU/MENU5.PRG/connectingMaps.h"
+#include "../../assets/MENU/MENU5.PRG/doors.h"
+#include "../../assets/MENU/MENU5.PRG/paling.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
@@ -51,16 +54,34 @@ void func_801082A8(void);
 int func_8010839C(int arg0, int arg1, int arg2);
 void _drawIcon(int id, int x, int y);
 
-extern u_short D_80108630[];
-extern u_short D_801088B0[];
+static u_short D_80108630[] = {
+#include "../../assets/MENU/MENU5.PRG/connectingMaps.vsString"
+};
+static u_short D_801088B0[] = {
+#include "../../assets/MENU/MENU5.PRG/doors.vsString"
+};
+static u_short D_80108CC4[] = {
+#include "../../assets/MENU/MENU5.PRG/paling.vsString"
+};
+static RECT _icons[] = {
+    { 104, 144, 18, 8 },
+    { 144, 216, 44, 7 },
+    { 128, 56, 22, 8 },
+    { 218, 144, 36, 8 }
+};
+static RECT D_80108D04[] = {
+    { 160, 144, 16, 16 },
+    { 176, 144, 16, 16 }
+};
+static RECT D_80108D14[] = {
+    { 192, 144, 26, 8 },
+    { 216, 160, 39, 8 }
+};
+
 extern int _isCurrentScene;
 extern int _geomOffsetX;
 extern int _geomOffsetY;
-extern u_short D_80108CC4[];
-extern RECT _icons[];
 extern int _currentScene;
-extern RECT D_80108D04[];
-extern RECT D_80108D14[];
 extern int D_80108D54;
 extern int D_80108D58;
 extern int D_80108D5C;

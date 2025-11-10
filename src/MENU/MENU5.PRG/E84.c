@@ -35,7 +35,7 @@ void func_801042B0(void);
 void func_80104384(void);
 int func_8010451C(int arg0);
 void func_801046B0(vs_battle_scene* arg0);
-int func_80104780(int arg0, void* arg1, int arg2, int arg3);
+int _drawRoom(int arg0, void* arg1, int arg2, int arg3);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
 void _darkenBackground();
@@ -51,7 +51,6 @@ void func_801082A8(void);
 int func_8010839C(int arg0, int arg1, int arg2);
 void _drawIcon(int id, int x, int y);
 
-extern int D_80102C00[];
 extern u_short D_80108630[];
 extern u_short D_801088B0[];
 extern int _isCurrentScene;
@@ -533,14 +532,14 @@ void func_801046B0(vs_battle_scene* arg0)
     room = (vs_battle_room*)((int*)room + 1);
     for (i = 0; i < roomCount; ++i, ++room) {
         if (room->unk0 != 0) {
-            func_80104780(i, room->dataAddress, room->zoneId, room->mapId);
+            _drawRoom(i, room->dataAddress, room->zoneId, room->mapId);
         }
     }
     func_801082A8();
     vs_battle_setGeomOffset(&prevOffset);
 }
 
-int func_80104780(int roomIndex, void* roomData, int arg2, int arg3)
+int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
 {
     P_CODE pcodeIn;
     P_CODE pcodeOut0;
@@ -555,18 +554,18 @@ int func_80104780(int roomIndex, void* roomData, int arg2, int arg3)
     POLY_G4* polyG4;
     LINE_G2* lineG2;
     TILE* tile;
-    int* new_var;
+    int const* new_var;
 
     short(*var_s1)[4] = (void*)getScratchAddr(64);
     int elementCount = *(int*)roomData;
     roomData += 4;
 
     for (i = 0; i < elementCount; ++i) {
-        int v0 = RotTransPers(roomData, (long*)var_s1[i], &sp38, &sp3C);
+        u_int v0 = RotTransPers(roomData, (long*)var_s1[i], &sp38, &sp3C);
         var_s1[i][2] = v0;
         v0 -= 0x40;
         var_s1[i][3] = sp38;
-        if (v0 >= 0x7BFU) {
+        if (v0 >= 0x7BF) {
             return 0;
         }
         roomData += 8;

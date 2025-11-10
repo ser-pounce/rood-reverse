@@ -3,6 +3,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../SLUS_010.40/32154.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
@@ -34,19 +35,23 @@ void func_801042B0(void);
 void func_80104384(void);
 int func_8010451C(int arg0);
 void func_801046B0(vs_battle_scene* arg0);
-void func_80104780(int, void*, int, int);
+int func_80104780(int arg0, void* arg1, int arg2, int arg3);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
 void _darkenBackground();
 void _applyPalingScreenEffect();
 void func_80106C84();
+void func_80107630(int x, int y, int arg2);
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_80107B10(int arg0, int arg1, int arg2);
 void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4);
 void func_8010815C(int, int, int);
 void func_80108274(int arg0, int arg1, int arg2, int arg3);
 void func_801082A8(void);
+int func_8010839C(int arg0, int arg1, int arg2);
+void _drawIcon(int id, int x, int y);
 
+extern int D_80102C00[];
 extern u_short D_80108630[];
 extern u_short D_801088B0[];
 extern int _isCurrentScene;
@@ -535,7 +540,327 @@ void func_801046B0(vs_battle_scene* arg0)
     vs_battle_setGeomOffset(&prevOffset);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU5.PRG/nonmatchings/E84", func_80104780);
+int func_80104780(int roomIndex, void* roomData, int arg2, int arg3)
+{
+    P_CODE pcodeIn;
+    P_CODE pcodeOut0;
+    P_CODE pcodeOut1;
+    int sp28[4];
+    long sp38;
+    long sp3C;
+    u_char* var_s3;
+    int i;
+    int j;
+    POLY_G3* polyG3;
+    POLY_G4* polyG4;
+    LINE_G2* lineG2;
+    TILE* tile;
+    int* new_var;
+
+    short(*var_s1)[4] = (void*)getScratchAddr(64);
+    int elementCount = *(int*)roomData;
+    roomData += 4;
+
+    for (i = 0; i < elementCount; ++i) {
+        int v0 = RotTransPers(roomData, (long*)var_s1[i], &sp38, &sp3C);
+        var_s1[i][2] = v0;
+        v0 -= 0x40;
+        var_s1[i][3] = sp38;
+        if (v0 >= 0x7BFU) {
+            return 0;
+        }
+        roomData += 8;
+    }
+    if (roomIndex == _currentRoomIndex) {
+        pcodeIn.r0 = 0;
+        pcodeIn.g0 = 0x80;
+        pcodeIn.b0 = 0x40;
+    } else {
+        pcodeIn.r0 = 0;
+        pcodeIn.g0 = 0x40;
+        pcodeIn.b0 = 0x80;
+    }
+    var_s3 = roomData;
+    var_s3 += 4;
+    elementCount = *(int*)roomData;
+    polyG3 = *(void**)getScratchAddr(0);
+
+    for (i = 0; i < elementCount; ++i) {
+        sp38 = var_s1[var_s3[0]][2];
+        if (sp38 < var_s1[var_s3[1]][2]) {
+            sp38 = var_s1[var_s3[1]][2];
+        }
+        if (sp38 < var_s1[var_s3[2]][2]) {
+            sp38 = var_s1[var_s3[2]][2];
+        }
+        setPolyG3(polyG3);
+        polyG3->x0 = var_s1[var_s3[0]][0];
+        polyG3->x1 = var_s1[var_s3[1]][0];
+        polyG3->x2 = var_s1[var_s3[2]][0];
+        polyG3->y0 = var_s1[var_s3[0]][1];
+        polyG3->y1 = var_s1[var_s3[1]][1];
+        polyG3->y2 = var_s1[var_s3[2]][1];
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
+        setRGB0(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut0);
+        setRGB1(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[2]][3], &pcodeOut0);
+        setRGB2(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG3++);
+        var_s3 += 4;
+    }
+
+    elementCount = *(int*)var_s3;
+    var_s3 += 4;
+    polyG4 = (POLY_G4*)polyG3;
+
+    for (i = 0; i < elementCount; ++i) {
+        sp38 = var_s1[var_s3[0]][2];
+        if (sp38 < var_s1[var_s3[1]][2]) {
+            sp38 = var_s1[var_s3[1]][2];
+        }
+        if (sp38 < var_s1[var_s3[2]][2]) {
+            sp38 = var_s1[var_s3[2]][2];
+        }
+        if (sp38 < var_s1[var_s3[3]][2]) {
+            sp38 = var_s1[var_s3[3]][2];
+        }
+        setPolyG4(polyG4);
+        polyG4->x0 = var_s1[var_s3[0]][0];
+        polyG4->x1 = var_s1[var_s3[1]][0];
+        polyG4->x2 = var_s1[var_s3[3]][0];
+        polyG4->x3 = var_s1[var_s3[2]][0];
+        polyG4->y0 = var_s1[var_s3[0]][1];
+        polyG4->y1 = var_s1[var_s3[1]][1];
+        polyG4->y2 = var_s1[var_s3[3]][1];
+        polyG4->y3 = var_s1[var_s3[2]][1];
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
+        setRGB0(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut0);
+        setRGB1(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[3]][3], &pcodeOut0);
+        setRGB2(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[2]][3], &pcodeOut0);
+        setRGB3(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG4++);
+        var_s3 += 4;
+    }
+
+    new_var = (int*)var_s3;
+    elementCount = *new_var;
+    var_s3 += 4;
+    lineG2 = (LINE_G2*)polyG4;
+
+    for (i = 0; i < elementCount; ++i) {
+        long scratch = 0;
+        sp38 = var_s1[var_s3[0]][2] - 1;
+        if (sp38 < var_s1[var_s3[1]][2]) {
+            sp38 = var_s1[var_s3[1]][2] - 1;
+        }
+        pcodeIn.g0 = 0x80;
+        pcodeIn.r0 = 0;
+        pcodeIn.b0 = 0xFF;
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+
+        setLineG2(lineG2);
+        setSemiTrans(lineG2, 1);
+        lineG2->x0 = var_s1[var_s3[0]][0] - 1;
+        lineG2->x1 = var_s1[var_s3[1]][0] - 1;
+        lineG2->y0 = var_s1[var_s3[0]][1];
+        lineG2->y1 = var_s1[var_s3[1]][1];
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
+
+        setLineG2(lineG2);
+        setSemiTrans(lineG2, 1);
+        lineG2->x0 = var_s1[var_s3[0]][0];
+        lineG2->x1 = var_s1[var_s3[1]][0];
+        lineG2->y0 = var_s1[var_s3[0]][1] - 1;
+        lineG2->y1 = var_s1[var_s3[1]][1] - 1;
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
+
+        setLineG2(lineG2);
+        setSemiTrans(lineG2, 1);
+        lineG2->x0 = var_s1[var_s3[0]][0] + 1;
+        lineG2->x1 = var_s1[var_s3[1]][0] + 1;
+        lineG2->y0 = var_s1[var_s3[0]][1];
+        lineG2->y1 = var_s1[var_s3[1]][1];
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
+
+        setLineG2(lineG2);
+        setSemiTrans(lineG2, 1);
+        lineG2->x0 = var_s1[var_s3[0]][0];
+        lineG2->x1 = var_s1[var_s3[1]][0];
+        lineG2->y0 = var_s1[var_s3[0]][1] + 1;
+        lineG2->y1 = var_s1[var_s3[1]][1] + 1;
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
+
+        if (roomIndex == _currentRoomIndex) {
+            pcodeIn.g0 = 0xFF;
+            pcodeIn.r0 = 0;
+            pcodeIn.b0 = 0x80;
+            vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
+            vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+        }
+
+        setLineG2(lineG2);
+        lineG2->x0 = var_s1[var_s3[0]][0];
+        lineG2->x1 = var_s1[var_s3[1]][0];
+        lineG2->y0 = var_s1[var_s3[0]][1];
+        lineG2->y1 = var_s1[var_s3[1]][1];
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
+
+        var_s3 += 4;
+    }
+    elementCount = *(int*)var_s3;
+    var_s3 += 4;
+
+    for (i = 0; i < elementCount; ++i, var_s3 += 4) {
+        sp38 = var_s1[var_s3[0]][2] - 1;
+        if (sp38 < var_s1[var_s3[1]][2]) {
+            sp38 = var_s1[var_s3[1]][2] - 1;
+        }
+        if (roomIndex == _currentRoomIndex) {
+            pcodeIn.g0 = 0xFF;
+        } else {
+            pcodeIn.g0 = 0x40;
+        }
+        pcodeIn.r0 = 0;
+        pcodeIn.b0 = 0x80;
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
+        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+        setLineG2(lineG2);
+        do {
+            setSemiTrans(lineG2, 1);
+        } while (0);
+        lineG2->x0 = var_s1[var_s3[0]][0];
+        lineG2->x1 = var_s1[var_s3[1]][0];
+        lineG2->y0 = var_s1[var_s3[0]][1];
+        lineG2->y1 = var_s1[var_s3[1]][1];
+        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        AddPrim(((int**)getScratchAddr(0))[1] + sp38, lineG2++);
+    }
+
+    tile = (TILE*)lineG2;
+    elementCount = *(int*)var_s3;
+    var_s3 += 4;
+
+    for (i = 0; i < elementCount; ++i, var_s3 += 4) {
+        sp3C = 0;
+        *(void**)getScratchAddr(0) = tile;
+        if ((var_s3[3] != 0) && (func_8010839C(var_s3[3], arg2, arg3) != 0)
+            && (roomIndex == _currentRoomIndex)) {
+            func_80107630(var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE, var_s3[3]);
+            tile = *(void**)getScratchAddr(0);
+            sp3C = 1;
+        }
+        if (sp3C == 0) {
+            if (var_s3[2] & 4) {
+                if (roomIndex == _currentRoomIndex) {
+                    _drawIcon(0, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
+                    func_80108274(
+                        var_s1[var_s3[0]][0], var_s1[var_s3[0]][1], 1, var_s3[1]);
+                    if ((roomIndex == _isCurrentScene) && (i == D_800F1BBE)) {
+                        if (D_80108D6C & 0x10) {
+                            pcodeIn.r0 = 0xFF;
+                            pcodeIn.g0 = 0;
+                            pcodeIn.b0 = 0x80;
+                            sp3C = 1;
+                        }
+                    } else {
+                        pcodeIn.r0 = 0;
+                        pcodeIn.g0 = 0xC0;
+                        pcodeIn.b0 = 0xC0;
+                        sp3C = 1;
+                    }
+                }
+            }
+            if ((roomIndex == _currentRoomIndex) && (var_s3[2] == 0)) {
+                if ((roomIndex == _isCurrentScene) && (i == D_800F1BBE)) {
+                    if (D_80108D6C & 0x10) {
+                        pcodeIn.r0 = 0xFF;
+                        pcodeIn.g0 = 0;
+                        pcodeIn.b0 = 0x80;
+                        sp3C = 1;
+                    }
+                } else {
+                    pcodeIn.r0 = 0xC0;
+                    pcodeIn.g0 = 0xC0;
+                    pcodeIn.b0 = 0xC0;
+                    sp3C = 1;
+                }
+            }
+            j = 0;
+            if ((var_s3[2] & 0xB) && (roomIndex == _isCurrentScene)) {
+                sp28[j++] = 0;
+            }
+            if ((var_s3[2] & 2) && (roomIndex == _currentRoomIndex)) {
+                sp28[j++] = 1;
+            }
+            if ((var_s3[2] & 8) && (roomIndex == _currentRoomIndex)) {
+                sp28[j++] = 2;
+                sp28[j++] = 1;
+                sp28[j++] = 3;
+            }
+            if ((var_s3[2] & 0x10) && (roomIndex == _currentRoomIndex)) {
+                sp28[j++] = 3;
+            }
+            if (j > 0) {
+                pcodeIn.r0 = 0xA0;
+                pcodeIn.g0 = 0xA0;
+                pcodeIn.b0 = 0;
+                sp3C = 1;
+                switch (sp28[(D_80108D6C >> 5) % j]) {
+                case 0:
+                    func_80102D1C(0,
+                        ((var_s1[var_s3[0]][0] - 8) & 0xFFFF)
+                            | ((var_s1[var_s3[0]][1] << 16) + 0xFFF80000),
+                        *((D_80108D6C & 0xF) + (new_var = D_80102C00)),
+                        ((void**)getScratchAddr(0))[1] + 0x20);
+                    break;
+                case 1:
+                    _drawIcon(2, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
+                    break;
+                case 2:
+                    _drawIcon(1, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
+                    break;
+                case 3:
+                    _drawIcon(3, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
+                    break;
+                }
+            }
+            tile = *(void**)getScratchAddr(0);
+            if (sp3C != 0) {
+                int** s2;
+                sp38 = var_s1[var_s3[0]][2] - 1;
+                setTile(tile);
+                setXY0(tile, var_s1[var_s3[0]][0] - 1, var_s1[var_s3[0]][1]);
+                setWH(tile, 3, 1);
+                setRGB0(tile, pcodeIn.r0, pcodeIn.g0, pcodeIn.b0);
+                AddPrim(((int**)getScratchAddr(0))[1] + sp38, tile++);
+                setTile(tile);
+                setXY0(tile, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 1);
+                setWH(tile, 1, 3);
+                setRGB0(tile, pcodeIn.r0, pcodeIn.g0, pcodeIn.b0);
+                s2 = ((int**)getScratchAddr(0));
+                AddPrim(s2[1] + sp38, tile++);
+            }
+        }
+    }
+    *(void**)getScratchAddr(0) = tile;
+    return 1;
+}
 
 void _snapMapToRoom(vs_battle_scene* scene, int roomId)
 {

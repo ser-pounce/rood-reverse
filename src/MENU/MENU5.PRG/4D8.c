@@ -17,6 +17,8 @@
 #include <libetc.h>
 #include <abs.h>
 
+extern u_long* D_1F800000[];
+
 typedef struct {
     char unk0;
     char unk1;
@@ -58,9 +60,6 @@ void func_80108274(int arg0, int arg1, int arg2, int arg3);
 void func_801082A8(void);
 int func_8010839C(int arg0, int arg1, int arg2);
 void _drawIcon(int id, int x, int y);
-
-extern u_long* D_1F800000[];
-
 
 void func_80102CD8(int arg0)
 {
@@ -191,14 +190,14 @@ int func_80102FCC(int arg0)
     }
 }
 
-
 int func_801030F4(char* state)
 {
-    extern int D_80108D30;
-    extern int D_80108D34;
-    extern int D_80108D38;
-    extern u_long* D_80108D3C;
-    extern RECT D_80108D44[];
+    static int D_80108D30;
+    static int D_80108D34;
+    static int D_80108D38;
+    static u_long* D_80108D3C;
+    static int _;
+    static RECT D_80108D44[2];
 
     int temp_v0_2;
     u_long* temp_a1;
@@ -378,69 +377,38 @@ static u_short D_801088B0[] = {
 static u_short D_80108CC4[] = {
 #include "../../assets/MENU/MENU5.PRG/paling.vsString"
 };
-static RECT _icons[] = {
-    { 104, 144, 18, 8 },
-    { 144, 216, 44, 7 },
-    { 128, 56, 22, 8 },
-    { 218, 144, 36, 8 }
-};
-static RECT D_80108D04[] = {
-    { 160, 144, 16, 16 },
-    { 176, 144, 16, 16 }
-};
-static RECT D_80108D14[] = {
-    { 192, 144, 26, 8 },
-    { 216, 160, 39, 8 }
-};
+static RECT _icons[] = { { 104, 144, 18, 8 }, { 144, 216, 44, 7 }, { 128, 56, 22, 8 },
+    { 218, 144, 36, 8 } };
+static RECT D_80108D04[] = { { 160, 144, 16, 16 }, { 176, 144, 16, 16 } };
+static RECT D_80108D14[] = { { 192, 144, 26, 8 }, { 216, 160, 39, 8 } };
 
-extern int _isCurrentScene;
-extern int _geomOffsetX;
-extern int _geomOffsetY;
-extern int _currentScene;
-extern int D_80108D54;
-extern int D_80108D58;
-extern int D_80108D5C;
-extern int D_80108D68;
-extern int D_80108D6C;
-extern int D_80108D7C;
-extern int D_80108D84;
-extern int D_80108D88;
-extern int D_80108D8C;
-extern int D_80108D90;
-extern int D_80108D94;
-extern short D_80108D9C;
-extern short D_80108D9E;
-extern short D_80108DA4[];
-extern short D_80108DA6;
-extern short D_80108DAC[];
-extern void* D_80108DC0;
-extern int D_80108DC4[32];
-extern SVECTOR _centerPoint;
-extern int D_80108E44;
-extern int D_80108E48;
-extern int D_80108E54[4][2];
-extern short D_80108E74[][4];
-extern int D_80108EB4;
-extern int _currentRoomIndex;
-extern int D_80108D60;
-extern int D_80108D68;
-extern int D_80108D6C;
-extern int _geomOffsetX;
-extern int _geomOffsetY;
-extern int D_80108D7C;
-extern int _currentScene;
-extern int D_80108D88;
-extern int D_80108D8C;
-extern int D_80108D90;
-extern int D_80108D94;
-extern vs_battle_roomName* _roomNamesTable;
-extern short D_80108D9C;
-extern short D_80108D9E;
-extern int D_80108E44;
-extern short D_80108DA4[4];
-extern short D_80108DAC[4];
-extern vs_main_CdFile const _sceneArmFiles[];
-extern vs_main_CdQueueSlot* _sceneCdQueueSlot;
+static int D_80108D60;
+static int _currentRoomIndex;
+static int D_80108D68;
+static int D_80108D6C;
+static int _geomOffsetX;
+static int _geomOffsetY;
+static int _isCurrentScene;
+static int D_80108D7C;
+static int _currentScene;
+static int D_80108D84;
+static int D_80108D88;
+static int D_80108D8C;
+static int D_80108D90;
+static int D_80108D94;
+static vs_battle_roomName* _roomNamesTable;
+static short D_80108D9C;
+static short D_80108D9E;
+static short _1[2];
+static short D_80108DA4[4];
+static short D_80108DAC[4];
+static SVECTOR _centerPoint;
+static vs_main_CdQueueSlot* _sceneCdQueueSlot;
+static void* D_80108DC0;
+static int D_80108DC4[32];
+static int D_80108E44;
+static int D_80108E48;
+static int _2[2];
 
 int func_80103418(void)
 {
@@ -862,6 +830,9 @@ void func_80104384(void)
 
 int func_8010451C(int arg0)
 {
+    static int D_80108D54;
+    static int D_80108D58;
+
     char* sp10[64];
     int var_a0;
     int var_a1;
@@ -920,6 +891,10 @@ void func_8010467C(int* arg0)
         var_a1 += 3;
     }
 }
+
+static int D_80108E54[4][2];
+static short D_80108E74[8][4];
+static int D_80108EB4;
 
 void func_801046B0(vs_battle_scene* arg0)
 {
@@ -1780,6 +1755,8 @@ void _drawControlsUIBackground(int x, int y, int w, int h)
 
 void func_80106C84(void)
 {
+    static int D_80108D5C;
+
     D_800F4FE0_t* temp_a0;
 
     temp_a0 = func_800CCDF4(0);
@@ -1905,7 +1882,7 @@ void func_80106C84(void)
             _drawControlsUIBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
             _drawControlsUIBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
             _insertTpage(7, 0x103);
-            func_80107B10(0x3E, 0xB8, D_80108DA6);
+            func_80107B10(0x3E, 0xB8, D_80108DA4[1]);
             return;
         }
         func_800C6540("JAMMING", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000, 0x808080,

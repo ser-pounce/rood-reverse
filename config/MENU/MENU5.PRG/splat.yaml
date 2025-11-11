@@ -30,5 +30,4 @@ segments:
       - { start: 0x60B0, type: vsStringTable, name: doors, linker_entry: false }
       - { start: 0x64C4, type: vsStringTable, name: paling, linker_entry: false }
       - [0x6524, .bss, 4D8]
-      - [0x6530, bss, 4D8]
   - [0x66B8]

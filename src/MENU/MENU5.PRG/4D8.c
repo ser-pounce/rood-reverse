@@ -74,77 +74,71 @@ void func_80102CD8(int arg0)
 
 void func_80102D1C(int arg0, int arg1, int arg2, u_long* arg3)
 {
-    u_long* var_a3;
-
-    var_a3 = arg3;
-    if (var_a3 == 0) {
-        var_a3 = D_1F800000[2];
+    if (arg3 == 0) {
+        arg3 = D_1F800000[2];
     }
-    func_800C0224(0x80, arg1, 0x100010, var_a3)->unk10 = ((arg0 + 4) * 0x10) | 0x37FD8000;
+    func_800C0224(0x80, arg1, 0x100010, arg3)->unk10 = ((arg0 + 4) * 0x10) | 0x37FD8000;
     D_1F800000[0][-4] = (int)(arg2 | 0x64000000);
 }
 
 static int D_801083F8 = -1;
 
-void func_80102D90(int arg0, int arg1, char** arg2)
+void func_80102D90(int rowCount, int arg1, char** strings)
 {
-    int sp10[arg0];
-    int var_v1;
-    int temp_a1;
-    int temp_s1;
+    int rowTypes[rowCount];
+    int i;
+    int cursorMemory;
 
     if (D_801083F8 == -1) {
         D_801083F8 = arg1;
     }
 
-    for (var_v1 = 0; var_v1 < arg0; ++var_v1) {
-        sp10[var_v1] = 0;
+    for (i = 0; i < rowCount; ++i) {
+        rowTypes[i] = 0;
     }
 
     if (!(arg1 & 0x80)) {
-        if (D_801083F8 < arg0) {
-            sp10[D_801083F8] |= 4;
+        if (D_801083F8 < rowCount) {
+            rowTypes[D_801083F8] |= 4;
         }
     }
 
-    temp_a1 = arg1 & 0x7F;
+    arg1 &= 0x7F;
 
-    if ((arg0 < 9) || (temp_a1 < 8)) {
-        D_800F4EE8.unk0[0] = temp_a1;
+    if ((rowCount < 9) || (arg1 < 8)) {
+        D_800F4EE8.unk0[0] = arg1;
         D_800F4EE8.unk0[1] = 0;
-    } else if (temp_a1 >= (arg0 - 8)) {
-        D_800F4EE8.unk0[0] = temp_a1 - (arg0 - 9);
-        D_800F4EE8.unk0[1] = arg0 - 9;
+    } else if (arg1 >= (rowCount - 8)) {
+        D_800F4EE8.unk0[0] = arg1 - (rowCount - 9);
+        D_800F4EE8.unk0[1] = rowCount - 9;
     } else {
         D_800F4EE8.unk0[0] = 4;
-        D_800F4EE8.unk0[1] = temp_a1 - 4;
+        D_800F4EE8.unk0[1] = arg1 - 4;
     }
-    temp_s1 = vs_main_settings.cursorMemory;
+
+    cursorMemory = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
-    vs_mainmenu_setMenuRows(arg0, 0x100, arg2, sp10);
-    vs_main_settings.cursorMemory = temp_s1;
+    vs_mainmenu_setMenuRows(rowCount, 0x100, strings, rowTypes);
+    vs_main_settings.cursorMemory = cursorMemory;
 }
 
 int func_80102ED8(void)
 {
-    int temp_v0;
+    int row = vs_mainmenu_getSelectedRow();
 
-    temp_v0 = vs_mainmenu_getSelectedRow();
-    if (temp_v0 < -1) {
+    if (row < -1) {
         func_800FA8E0(5);
-        return temp_v0;
-    }
-    if (temp_v0 >= 0) {
+    } else if (row >= 0) {
         func_800FA92C(D_800F4EE8.unk0[0], 1);
     }
-    return temp_v0;
+
+    return row;
 }
 
 void _setMenuItemMapName(char* mapName, char arg1)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
 
-    menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
     menuItem->state = 2;
     menuItem->x = 0xB4;
     menuItem->selected = 1;
@@ -153,37 +147,36 @@ void _setMenuItemMapName(char* mapName, char arg1)
 
 void func_80102F8C(void) { func_800FA8E0(5); }
 
-void func_80102FAC(void) { vs_mainmenu_ready(); }
+void _menuReady(void) { vs_mainmenu_ready(); }
 
-int func_80102FCC(int arg0)
+int _loadMapBackground(int arg0)
 {
-    static vs_main_CdQueueSlot* D_80108D24;
-    static u_short* D_80108D28;
-    static int D_80108D2C;
-    vs_main_CdFile cdFile;
+    static vs_main_CdQueueSlot* slot;
+    static u_short* buf;
+    static int state;
 
     if (arg0 != 0) {
+        vs_main_CdFile cdFile;
         cdFile.lba = VS_MAPBG_BIN_LBA;
         cdFile.size = VS_MAPBG_BIN_SIZE;
-        D_80108D24 = vs_main_allocateCdQueueSlot(&cdFile);
-        D_80108D28 = vs_main_allocHeapR(VS_MAPBG_BIN_SIZE);
-        vs_main_cdEnqueue(D_80108D24, D_80108D28);
-        D_80108D2C = 0;
+        slot = vs_main_allocateCdQueueSlot(&cdFile);
+        buf = vs_main_allocHeapR(VS_MAPBG_BIN_SIZE);
+        vs_main_cdEnqueue(slot, buf);
+        state = 0;
         return 0;
     }
-    switch (D_80108D2C) {
+    switch (state) {
     case 0:
-        if (D_80108D24->state == 4) {
-            vs_main_freeCdQueueSlot(D_80108D24);
-            func_80048A64(D_80108D28, 3, 0, 0x100);
-            vs_battle_drawImage(
-                vs_getXY(640, 256), D_80108D28 + 0x100, vs_getWH(160, 240));
+        if (slot->state == 4) {
+            vs_main_freeCdQueueSlot(slot);
+            func_80048A64(buf, 3, 0, 0x100);
+            vs_battle_drawImage(vs_getXY(640, 256), buf + 0x100, vs_getWH(160, 240));
             func_80100414(-4, 0x80);
-            D_80108D2C = 1;
+            state = 1;
         }
         return 0;
     case 1:
-        vs_main_freeHeapR(D_80108D28);
+        vs_main_freeHeapR(buf);
         return 1;
     default:
         return 0;
@@ -196,19 +189,13 @@ int func_801030F4(char* state)
     static int D_80108D34;
     static int D_80108D38;
     static u_long* D_80108D3C;
-    static int _;
+    static int _ __attribute__((unused));
     static RECT D_80108D44[2];
 
-    int temp_v0_2;
-    u_long* temp_a1;
-    char temp_v0;
-
-    temp_v0 = *state;
-    switch (temp_v0) {
+    switch (*state) {
     case 3:
         D_801083F8 = -1;
-        temp_a1 = vs_main_allocHeapR(0xB600);
-        D_80108D3C = temp_a1;
+        D_80108D3C = vs_main_allocHeapR(0xB600);
         D_80108D44[0].x = 0x300;
         D_80108D44[0].y = 0xE3;
         D_80108D44[0].w = 0x100;
@@ -217,13 +204,13 @@ int func_801030F4(char* state)
         (&D_80108D44[1])->y = 0x100;
         (&D_80108D44[1])->w = 0x60;
         (&D_80108D44[1])->h = 0xF0;
-        StoreImage(D_80108D44, temp_a1);
+        StoreImage(&D_80108D44[0], D_80108D3C);
         StoreImage(&D_80108D44[1], D_80108D3C + 0x80);
-        func_80102FCC(1);
+        _loadMapBackground(1);
         *state = 4;
         break;
     case 4:
-        if (func_80102FCC(0) == 0) {
+        if (_loadMapBackground(0) == 0) {
             break;
         }
         *state = 5;
@@ -251,16 +238,15 @@ int func_801030F4(char* state)
         *state += vs_mainmenu_ready();
         break;
     case 7:
-        temp_v0_2 = func_80103684();
-        D_80108D38 = temp_v0_2;
-        if (temp_v0_2 != 0) {
+        D_80108D38 = func_80103684();
+        if (D_80108D38 != 0) {
             func_80100414(-4, 0x80);
             func_800CB654(0);
             D_800EB9B0 = 0;
             func_8008A4DC(1);
             func_800FFA88(0);
             func_800FA8E0(0x28);
-            D_80108D30 = 0xA;
+            D_80108D30 = 10;
             *state = 8;
         }
         break;
@@ -280,9 +266,9 @@ int func_801030F4(char* state)
             (&D_80108D44[1])->h = 0xF0;
             ClearImage(D_80108D44, 0, 0, 0);
             ClearImage(&D_80108D44[1], 0, 0, 0);
-            func_80048A64((u_short*)D_80108D3C, 3U, 0U, 0x100U);
+            func_80048A64((u_short*)D_80108D3C, 3, 0, 0x100);
             vs_battle_drawImage(0x010002A0, D_80108D3C + 0x80, 0xF00060);
-            *state = 0xA;
+            *state = 10;
         }
         break;
     case 10:
@@ -368,13 +354,13 @@ int const D_80102C00[] = { 0x00404040, 0x00505050, 0x00606060, 0x00707070, 0x008
 u_short _mapNames[] = {
 #include "../../assets/MENU/MENU5.PRG/mapNames.vsString"
 };
-static u_short D_80108630[] = {
+static u_short _connectingMaps[] = {
 #include "../../assets/MENU/MENU5.PRG/connectingMaps.vsString"
 };
-static u_short D_801088B0[] = {
+static u_short _doors[] = {
 #include "../../assets/MENU/MENU5.PRG/doors.vsString"
 };
-static u_short D_80108CC4[] = {
+static u_short _paling[] = {
 #include "../../assets/MENU/MENU5.PRG/paling.vsString"
 };
 static RECT _icons[] = { { 104, 144, 18, 8 }, { 144, 216, 44, 7 }, { 128, 56, 22, 8 },
@@ -399,7 +385,7 @@ static int D_80108D94;
 static vs_battle_roomName* _roomNamesTable;
 static short D_80108D9C;
 static short D_80108D9E;
-static short _1[2];
+static short _1[2] __attribute__((unused));
 static short D_80108DA4[4];
 static short D_80108DAC[4];
 static SVECTOR _centerPoint;
@@ -408,7 +394,7 @@ static void* D_80108DC0;
 static int D_80108DC4[32];
 static int D_80108E44;
 static int D_80108E48;
-static int _2[2];
+static int _2[2] __attribute__((unused));
 
 int func_80103418(void)
 {
@@ -769,7 +755,7 @@ void func_801042B0(void)
     *(DR_STP**)pScratch = stp;
     if (flags->mapPaling[scene] != 0) {
         _applyPalingScreenEffect();
-        func_800C6BF0(0, &D_80108CC4[D_80108CC4[0]]); // Paling warning
+        func_800C6BF0(0, &_paling[_paling[0]]); // Paling warning
         return;
     }
     func_80104384();
@@ -1757,9 +1743,7 @@ void func_80106C84(void)
 {
     static int D_80108D5C;
 
-    D_800F4FE0_t* temp_a0;
-
-    temp_a0 = func_800CCDF4(0);
+    D_800F4FE0_t* temp_a0 = func_800CCDF4(0);
 
     if (D_80108D9E == 0) {
         D_80108D5C = -0x80;
@@ -1912,15 +1896,13 @@ void _drawIcon(int id, int x, int y)
 
 void func_80107630(int x, int y, int arg2)
 {
-    POLY_FT4* poly;
     RECT* rect0;
     RECT* rect1;
-    int s6;
     int temp;
     void** new_var = (void**)getScratchAddr(0);
+    POLY_FT4* poly = new_var[0];
 
-    poly = new_var[0];
-    s6 = (arg2 - 1);
+    int s6 = (arg2 - 1);
     arg2 = vs_main_stateFlags.unk33F[arg2] & 1;
     rect0 = &D_80108D04[arg2];
 
@@ -1955,11 +1937,10 @@ void func_80107630(int x, int y, int arg2)
 
 void func_801079B8(int arg0, int arg1, int arg2)
 {
-    int var_a0;
     int var_s1;
     vs_battle_menuItem_t* temp_v0;
+    int var_a0 = 0xBA - arg0;
 
-    var_a0 = 0xBA - arg0;
     if (var_a0 < 0) {
         var_a0 += 3;
     }
@@ -1971,8 +1952,8 @@ void func_801079B8(int arg0, int arg1, int arg2)
     }
     func_80107A9C(arg0, arg1, var_s1, D_80108E48 + 8);
     func_80107A9C(var_s1, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
-    temp_v0 = vs_battle_setMenuItem(
-        0, 0xC2, D_80108E48, 0x80, 0, (char*)&D_801088B0[D_801088B0[arg2]]);
+    temp_v0 =
+        vs_battle_setMenuItem(0, 0xC2, D_80108E48, 0x80, 0, (char*)&_doors[_doors[arg2]]);
     temp_v0->unk2 = 0x10;
     D_80108E48 -= 0x10;
     func_800C9078(temp_v0);
@@ -2000,14 +1981,13 @@ void func_80107A9C(int arg0, int arg1, int arg2, int arg3)
 void func_80107B10(int arg0, int arg1, int arg2)
 {
     int i;
-    POLY_FT4* poly;
     int sp18[] = { 0x30, 0x40, 0x48, 0x38 };
     void** new_var2;
     void** new_var3;
     int new_var;
     int new_var4;
 
-    poly = *(void**)0x1F800000;
+    POLY_FT4* poly = *(void**)0x1F800000;
 
     for (i = 0; i < 8; ++i) {
         func_8010800C(arg0, arg1, 0x2B, 3, arg2 + (i << 8));
@@ -2067,6 +2047,7 @@ void func_80107B10(int arg0, int arg1, int arg2)
         new_var3 = (void**)0x1F800000;
         AddPrim(new_var3[1] + 0x18, poly++);
     }
+
     func_8010800C(arg0, arg1, 0xF, 0xF, (arg2 - D_80108DA4[2]) + 0x200);
     func_8010800C(D_80108E54[0][0], D_80108E54[0][1], 0xF, 0x11, arg2 - D_80108DA4[2]);
     setPolyFT4(poly);
@@ -2086,14 +2067,11 @@ void func_80107B10(int arg0, int arg1, int arg2)
 
 void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    int temp_s1;
-    int temp_v0;
     int i;
     int var_v0;
     int var_v1;
-
-    temp_s1 = vs_math_sine(arg4);
-    temp_v0 = vs_math_cosine(arg4);
+    int temp_s1 = vs_math_sine(arg4);
+    int temp_v0 = vs_math_cosine(arg4);
 
     D_80108E54[0][0] = (-arg2 * temp_v0) + (arg3 * temp_s1);
     D_80108E54[0][1] = (-arg3 * temp_v0) - (arg2 * temp_s1);
@@ -2120,14 +2098,13 @@ void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-void func_8010815C(int arg0, int arg1, int arg2)
+void func_8010815C(int arg0, int arg1, int mapId)
 {
     int temp_s0;
-    int var_a0;
     vs_battle_menuItem_t* temp_v0;
     int new_var;
+    int var_a0 = 0xAA - arg0;
 
-    var_a0 = 0xAA - arg0;
     if (var_a0 < 0) {
         var_a0 += 3;
     }
@@ -2140,12 +2117,12 @@ void func_8010815C(int arg0, int arg1, int arg2)
 
     func_80107A9C(arg0, arg1, temp_s0, D_80108E48 + 8);
     func_80107A9C(temp_s0, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
-    new_var = D_8005FFD8.unk40[arg2 >> 5] & (1 << (arg2 & 0x1F));
+    new_var = D_8005FFD8.unk40[mapId >> 5] & (1 << (mapId & 0x1F));
     if (!new_var) {
-        arg2 = 0x20;
+        mapId = 0x20;
     }
     temp_v0 = vs_battle_setMenuItem(
-        0, 0xB2, D_80108E48, 0x90, 0, (char*)&D_80108630[D_80108630[arg2]]);
+        0, 0xB2, D_80108E48, 0x90, 0, (char*)&_connectingMaps[_connectingMaps[mapId]]);
     temp_v0->unk2 = 8;
     D_80108E48 -= 16;
     func_800C9078(temp_v0);

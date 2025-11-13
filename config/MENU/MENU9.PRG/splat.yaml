@@ -11,6 +11,7 @@ options:
     - config/MENU/MENU9.PRG/symbol_addrs.txt
     - config/MENU/MENU9.PRG/exports.txt
     - config/SLUS_010.40/exports.txt
+    - config/MENU/MAINMENU/exports.txt
   undefined_funcs_auto_path: build/config/MENU/MENU9.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU9.PRG/undefined_syms_auto.txt
 
@@ -21,7 +22,9 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 238]
+      - [0x210, .rodata, 4E00]
       - [0x238, c]
+      - [0x4E00, c]
       - [0x5D1C, data, 238]
       - [0x7A14, bss, 238]
   - [0x7CB8]

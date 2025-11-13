@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../MAINMENU.PRG/C48.h"
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A38);
 
@@ -10,9 +11,9 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102F0C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102F64);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FB8);
+void func_80102FB8(void) { func_800FA8E0(8); }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FD8);
+void _menuReady(void) { vs_mainmenu_ready(); }
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FF8);
 
@@ -97,25 +98,3 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107090);
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_801029AC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107120);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107600);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801076A4);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107A98);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107C34);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107FBC);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80108098);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801080C8);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010812C);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801084E4);
-
-void func_80108514(void) { }

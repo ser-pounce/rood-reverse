@@ -30,20 +30,54 @@ table = [
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '', '„', '‼',        # 0x80
     '≠', '≦', '≧', '÷', '·', '—', '⋯', ' ',
-    '!', '"', '#', '$', '%', '&', '\'', '(',# 0x90
+    '!', '"', '#', '$', '%', '&', '\'', '(', # 0x90
     ')', '=', '@', '[', ']', ';', ':', ',',
-    '.', '/', '\\', '<', '>', '?', '_', '-',# 0xA0
+    '.', '/', '\\', '<', '>', '?', '_', '-', # 0xA0
     '+', '*', '`', '{', '}', '♪', '△', '□',
     '○', '×', '←', '→', '↑', '↓', 'Lv.', '★', # 0xB0
-    '◼', '~', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',         # 0xC0
-    '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',         # 0xD0
-    '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '▼', '\0',      # 0xE0
-    '\n', '', '', '', '', '', '', '239', #
-    '', '', '', '', '', '', '|d', '',         # 0xF0
+    # Dummy hiragana to allow dumping invalid chars 
+    '◼', '~', 'あ', 'い', 'う', 'え', 'お', 'か',
+    'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', # 0xC0
+    'そ', 'た', 'ち', 'つ', 'て', 'と', 'な', 'に',
+    'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'へ', 'ほ', # 0xD0
+    'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ',
+    'ら', 'り', 'る', 'れ', 'ろ', 'わ', '▼', '\0', # 0xE0
+    '\n', '', '', '', '', '|a', '|b', '|c',
+    '|d', '|e', '|g', '|h', '|i', '|j', '|k', '|l', # 0xF0
     '|!', '', '|>', '|f', '', '|x', '|#', '|$',
+]
+
+jp_table_0 = [
+    '', '', 'り', '', '', '', '', '', # 0x60
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', # 0x70
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', # 0x80
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', # 0x90
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', # 0xA0
+    '', '', '', '', '', '', '', '',
+    '', '', 'パ', 'ピ', 'プ', 'ペ', 'ポ', '', # 0xB0
+    '', '', '', '', 'ラ', 'リ', 'ル', 'レ',
+    'ロ', '', '', '', '', '', '', '', # 0xC0
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', # 0xD0
+    '', '', '', '', 'タ', 'チ', 'ツ', 'テ',
+    'ト', '', '', '', '', '', '', '', # 0xE0
+    '', '', '', '', '', '', '', '',
+]
+
+jp_table_c = [
+    '', '', '', '', '', '', '', '外', # 0x20
+    '', '', '', '', '', '', '', '',
+    '', '', '', '通', '', '', '', '', # 0x90
+    '', '', '', '', '', '', '', '',
+]
+
+jp_table_e = [
+    '', '', '', '', '', '', '', '', # 0x40
+    '', '', '', '', '', '', '', '壁',
 ]
 
 # This isn't the only encoding used in the game, occasionally
@@ -54,10 +88,10 @@ table = [
 # as it's the only common symbol not represented in the default text table.
 
 # String functions, 1-byte operand
-# 0xF6 -> |dn|: No known function currently, possibly debug
+# 0xF6 -> |a-ln|: Font table for Japanese, not implemented currently
 # 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string before returning
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
-# 0xFB -> |fn|: Manipulate font table. n = 0-3 sets the color, n = 4 justifies the text,
+# 0xFB -> |fn|: Manipulate font. n = 0-3 sets the color, n = 4 justifies the text,
 #               n = 5 or 6 set font table 1 and 0 respectively.
 # 0xFD -> |xn|: Inserts a contextual hex integer with ID n
 # 0xFE -> |#n|: Inserts a contextual decimal integer with ID n
@@ -72,7 +106,7 @@ def decode(s):
                 return result
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
-            case 0xF6 | 0xF8 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
+            case 0xED | 0xEE | 0xEF | 0xF0 | 0xF1 | 0xF2 | 0xF3 | 0xF4 | 0xF5 | 0xF6 | 0xF7 | 0xF8 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:
@@ -104,7 +138,7 @@ def encode_raw(s):
 def encode(s, padding=0xEB):
     result = list(encode_raw(s))
     result.append(0xE7)
-    if len(result) % 2 == 1:
+    if padding != None and len(result) % 2 == 1:
         result.append(padding)
     return bytes(result)
 

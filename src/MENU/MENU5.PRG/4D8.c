@@ -354,19 +354,6 @@ int const D_80102C00[] = { 0x00404040, 0x00505050, 0x00606060, 0x00707070, 0x008
 u_short _mapNames[] = {
 #include "../../assets/MENU/MENU5.PRG/mapNames.vsString"
 };
-static u_short _connectingMaps[] = {
-#include "../../assets/MENU/MENU5.PRG/connectingMaps.vsString"
-};
-static u_short _doors[] = {
-#include "../../assets/MENU/MENU5.PRG/doors.vsString"
-};
-static u_short _paling[] = {
-#include "../../assets/MENU/MENU5.PRG/paling.vsString"
-};
-static RECT _icons[] = { { 104, 144, 18, 8 }, { 144, 216, 44, 7 }, { 128, 56, 22, 8 },
-    { 218, 144, 36, 8 } };
-static RECT D_80108D04[] = { { 160, 144, 16, 16 }, { 176, 144, 16, 16 } };
-static RECT D_80108D14[] = { { 192, 144, 26, 8 }, { 216, 160, 39, 8 } };
 
 static int D_80108D60;
 static int _currentRoomIndex;
@@ -737,8 +724,19 @@ int func_80103684(void)
     return 0;
 }
 
+static u_short _connectingMaps[] = {
+#include "../../assets/MENU/MENU5.PRG/connectingMaps.vsString"
+};
+static u_short _doors[] = {
+#include "../../assets/MENU/MENU5.PRG/doors.vsString"
+};
+
 void func_801042B0(void)
 {
+    static u_short _paling[] = {
+    #include "../../assets/MENU/MENU5.PRG/paling.vsString"
+    };
+
     DR_STP* stp;
     void** pScratch = (void**)getScratchAddr(0);
     vs_main_flags_t* flags;
@@ -755,7 +753,7 @@ void func_801042B0(void)
     *(DR_STP**)pScratch = stp;
     if (flags->mapPaling[scene] != 0) {
         _applyPalingScreenEffect();
-        func_800C6BF0(0, &_paling[_paling[0]]); // Paling warning
+        func_800C6BF0(0, &_paling[_paling[0]]);
         return;
     }
     func_80104384();
@@ -1874,6 +1872,11 @@ void func_80106C84(void)
     }
 }
 
+static RECT _icons[] = { { 104, 144, 18, 8 }, { 144, 216, 44, 7 }, { 128, 56, 22, 8 },
+    { 218, 144, 36, 8 } };
+static RECT D_80108D04[] = { { 160, 144, 16, 16 }, { 176, 144, 16, 16 } };
+static RECT D_80108D14[] = { { 192, 144, 26, 8 }, { 216, 160, 39, 8 } };
+
 void _drawIcon(int id, int x, int y)
 {
     RECT* icon;
@@ -1935,7 +1938,7 @@ void func_80107630(int x, int y, int arg2)
     func_80108274(x, y, 0, temp);
 }
 
-void func_801079B8(int arg0, int arg1, int arg2)
+void func_801079B8(int arg0, int arg1, int door)
 {
     int var_s1;
     vs_battle_menuItem_t* temp_v0;
@@ -1953,9 +1956,9 @@ void func_801079B8(int arg0, int arg1, int arg2)
     func_80107A9C(arg0, arg1, var_s1, D_80108E48 + 8);
     func_80107A9C(var_s1, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
     temp_v0 =
-        vs_battle_setMenuItem(0, 0xC2, D_80108E48, 0x80, 0, (char*)&_doors[_doors[arg2]]);
+        vs_battle_setMenuItem(0, 0xC2, D_80108E48, 0x80, 0, (char*)&_doors[_doors[door]]);
     temp_v0->unk2 = 0x10;
-    D_80108E48 -= 0x10;
+    D_80108E48 -= 16;
     func_800C9078(temp_v0);
     vs_battle_getMenuItem(0)->state = 0;
 }

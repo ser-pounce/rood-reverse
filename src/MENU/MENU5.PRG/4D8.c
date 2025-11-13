@@ -51,7 +51,7 @@ void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
 void _darkenBackground();
 void _applyPalingScreenEffect();
-void func_80106C84();
+void _drawUIControls();
 void func_80107630(int x, int y, int arg2);
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_80107B10(int arg0, int arg1, int arg2);
@@ -734,7 +734,7 @@ static u_short _doors[] = {
 void func_801042B0(void)
 {
     static u_short _paling[] = {
-    #include "../../assets/MENU/MENU5.PRG/paling.vsString"
+#include "../../assets/MENU/MENU5.PRG/paling.vsString"
     };
 
     DR_STP* stp;
@@ -742,7 +742,7 @@ void func_801042B0(void)
     vs_main_flags_t* flags;
     int scene;
 
-    func_80106C84();
+    _drawUIControls();
     stp = (DR_STP*)(pScratch[0]);
     SetDrawStp(stp, 1);
     AddPrim((DR_STP*)(pScratch[1] + 0x1FFC), stp++);
@@ -1711,7 +1711,7 @@ void _applyPalingScreenEffect(void)
     }
 }
 
-void _drawControlsUIBackground(int x, int y, int w, int h)
+void _drawUIControlsBackground(int x, int y, int w, int h)
 {
     int i;
     int lineW;
@@ -1737,7 +1737,7 @@ void _drawControlsUIBackground(int x, int y, int w, int h)
     pScratch[0] = (void*)poly;
 }
 
-void func_80106C84(void)
+void _drawUIControls(void)
 {
     static int D_80108D5C;
 
@@ -1859,10 +1859,10 @@ void func_80106C84(void)
                 break;
             }
             }
-            _drawControlsUIBackground(D_80108D5C + 0x10, 0x12, 0x72, 0xC);
-            _drawControlsUIBackground(D_80108D5C + 0x10, 0x24, 0x60, 0xC);
-            _drawControlsUIBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
-            _drawControlsUIBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
+            _drawUIControlsBackground(D_80108D5C + 0x10, 0x12, 0x72, 0xC);
+            _drawUIControlsBackground(D_80108D5C + 0x10, 0x24, 0x60, 0xC);
+            _drawUIControlsBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
+            _drawUIControlsBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
             _insertTpage(7, 0x103);
             func_80107B10(0x3E, 0xB8, D_80108DA4[1]);
             return;
@@ -1938,7 +1938,7 @@ void func_80107630(int x, int y, int arg2)
     func_80108274(x, y, 0, temp);
 }
 
-void func_801079B8(int arg0, int arg1, int door)
+void _draw_door(int arg0, int arg1, int door)
 {
     int var_s1;
     vs_battle_menuItem_t* temp_v0;
@@ -2101,7 +2101,7 @@ void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-void func_8010815C(int arg0, int arg1, int mapId)
+void _draw_connecting_maps(int arg0, int arg1, int mapId)
 {
     int temp_s0;
     vs_battle_menuItem_t* temp_v0;
@@ -2148,13 +2148,14 @@ void func_801082A8(void)
     if ((D_80108D9C != 5) && (D_80108D8C == 0)) {
         for (i = 0; i < D_80108EB4; ++i) {
             if (D_80108E74[i][2] == 0) {
-                func_801079B8(D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
+                _draw_door(D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
             }
         }
 
         for (i = 0; i < D_80108EB4; ++i) {
             if (D_80108E74[i][2] != 0) {
-                func_8010815C(D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
+                _draw_connecting_maps(
+                    D_80108E74[i][0], D_80108E74[i][1], D_80108E74[i][3]);
             }
         }
     }

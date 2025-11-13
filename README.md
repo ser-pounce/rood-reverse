@@ -51,6 +51,35 @@ Thanks also to the following amazing projects (and their dependencies):
 ![ENDING.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ENDING.PRG)
 ![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=SCREFF2.PRG)
 
+### Editable content
+The following files can be freely edited*, either as source code or by editing the dumped .yaml or .obj formats
+```
+data/MENU/
+    MENU0.PRG
+    MENU1.PRG
+    MENU2.PRG
+    MENU4.PRG
+    MENU5.PRG
+    MENU8.PRG
+    MENUE.PRG
+    MCMAN.BIN 
+    SPMCIMG.BIN 
+    MAPBG.BIN 
+    ITEMNAME.BIN 
+    ITEMHELP.BIN 
+    MENU12.BIN
+
+data/SMALL/
+    DUMMY.ARM
+    SCEN001.ARM - SCEN030.ARM
+    HELP01.HF0 - HELP14.HF0
+    HELP01.HF1 - HELP14.HF1
+
+data/TITLE/
+    TITLE.PRG
+```
+(*n.b. until all of the loading code has been decompiled, if a file's sector size changes on disk then bad things will ensue)
+
 ## (Naive) Quickstart
 1. Fork the project
 2. Install system dependencies and copy disk image (see "Setup" below)

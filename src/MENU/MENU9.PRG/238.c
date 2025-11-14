@@ -1,5 +1,7 @@
 #include "common.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
 
@@ -11,7 +13,15 @@ extern int D_8010A460;
 extern short D_8010A464;
 extern void* D_8010A4AC;
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A38);
+void func_80102A38(int arg0) {
+    if (arg0 != 0) {
+        func_800FFA88(2);
+        D_801022D6 = 0;
+    } else {
+        func_800FFA88(0);
+        D_801022D6 = 1;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A7C);
 

@@ -96,7 +96,31 @@ void func_80102A38(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A7C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102E10);
+void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
+{
+    int sp10[arg0];
+    int i;
+    char temp_s1;
+
+    for (i = 0; i < arg0; ++i) {
+        sp10[i] = 0;
+    }
+
+    if ((arg0 < 9) || (arg1 < 8)) {
+        D_800F4EE8.unk0[2] = arg1;
+        D_800F4EE8.unk0[3] = 0;
+    } else if (arg1 >= (arg0 - 8)) {
+        D_800F4EE8.unk0[2] = arg1 - (arg0 - 9);
+        D_800F4EE8.unk0[3] = arg0 - 9;
+    } else {
+        D_800F4EE8.unk0[2] = 4;
+        D_800F4EE8.unk0[3] = arg1 - 4;
+    }
+    temp_s1 = vs_main_settings.cursorMemory;
+    vs_main_settings.cursorMemory = 1;
+    vs_mainmenu_setMenuRows(arg0, 0x101, arg2, sp10);
+    vs_main_settings.cursorMemory = temp_s1;
+}
 
 int func_80102F0C(void)
 {
@@ -352,21 +376,21 @@ void _toVsStringPercent(char* buf, int value)
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106DE0);
 
-void func_80106F9C(void) 
+void func_80106F9C(void)
 {
     int i;
     D_8010A230_t* var_t0;
-    
+
     for (i = 0, var_t0 = D_8010A230; i < 8; ++i, ++var_t0) {
         var_t0->unk4 = 0xC2;
         if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) == 0x800000) {
             var_t0->unk3 = 1;
-            var_t0->unk8 = (char*) &_miscInfo[_miscInfo[4]];
-            var_t0->unkC = (char*) &_miscInfo[_miscInfo[5]];
+            var_t0->unk8 = (char*)&_miscInfo[_miscInfo[4]];
+            var_t0->unkC = (char*)&_miscInfo[_miscInfo[5]];
         } else {
             var_t0->unk3 = 0;
-            var_t0->unk8 = (char *) &_timeAttacks[_timeAttacks[i]];
-            var_t0->unkC = (char*) &_timeAttackDescriptions[_timeAttackDescriptions[i]];
+            var_t0->unk8 = (char*)&_timeAttacks[_timeAttacks[i]];
+            var_t0->unkC = (char*)&_timeAttackDescriptions[_timeAttackDescriptions[i]];
         }
         var_t0->unk0 = 0;
         var_t0->unk2 = i + 1;

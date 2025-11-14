@@ -4,6 +4,7 @@
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
+#include <libetc.h>
 
 void func_801084E4();
 
@@ -11,6 +12,8 @@ extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A460;
 extern short D_8010A464;
+extern char D_8010A480[16];
+extern char D_8010A490[16];
 extern void* D_8010A4AC;
 
 void func_80102A38(int arg0) {
@@ -41,7 +44,11 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801031BC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010337C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104AF8);
+void func_80104AF8(void) {
+    vs_main_memcpy((void* )getScratchAddr(13), D_8010A480, sizeof D_8010A480);
+    vs_main_memcpy((void* )getScratchAddr(21), D_8010A490, sizeof D_8010A490);
+}
+
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104B40);
 

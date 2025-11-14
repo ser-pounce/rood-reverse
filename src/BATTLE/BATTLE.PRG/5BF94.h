@@ -80,7 +80,12 @@ typedef struct {
     int unk0;
     int unk4;
     int unk8;
-    u_short unkC[0x326];
+    u_short unkC[0x2D6];
+    char unk5B8;
+    char unk5B9;
+    char unk5BA;
+    char unk5BB;
+    char unk5BC[0x145];
 } D_800F453C_t;
 
 void func_800C6540(char const*, int, int, u_long*);

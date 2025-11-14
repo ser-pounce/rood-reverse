@@ -3,7 +3,10 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
+#include "../../BATTLE/BATTLE.PRG/30D14.h"
+#include "../../BATTLE/BATTLE.PRG/40564.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
@@ -81,7 +84,22 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104E90);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F04);
+void func_80104F04(short* arg0, short arg1) {
+    int temp_s0;
+    int temp_v0;
+
+    temp_s0 = vs_math_sine(arg1);
+    temp_v0 = vs_math_cosine(arg1);
+    arg0[0] = 0x1000;
+    arg0[1] = 0;
+    arg0[2] = 0;
+    arg0[3] = 0;
+    arg0[4] = temp_v0;
+    arg0[5] = -temp_s0;
+    arg0[6] = 0;
+    arg0[7] = temp_s0;
+    arg0[8] = temp_v0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 
@@ -194,6 +212,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107FBC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80108098);
 
+// https://decomp.me/scratch/da4gv
+// Needs 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801080C8);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010812C);

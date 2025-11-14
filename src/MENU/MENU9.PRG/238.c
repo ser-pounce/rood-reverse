@@ -4,6 +4,7 @@
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 
 void func_801084E4();
@@ -16,7 +17,8 @@ extern char D_8010A480[16];
 extern char D_8010A490[16];
 extern void* D_8010A4AC;
 
-void func_80102A38(int arg0) {
+void func_80102A38(int arg0)
+{
     if (arg0 != 0) {
         func_800FFA88(2);
         D_801022D6 = 0;
@@ -32,7 +34,15 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102E10);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102F0C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102F64);
+void func_80102F64(char* arg0) {
+    vs_battle_menuItem_t* temp_v0;
+
+    temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 9, arg0);
+    temp_v0->state = 2;
+    temp_v0->x = 0xB4;
+    temp_v0->selected = 1;
+    temp_v0->unkA = 1;
+}
 
 void func_80102FB8(void) { func_800FA8E0(8); }
 
@@ -44,11 +54,11 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801031BC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010337C);
 
-void func_80104AF8(void) {
-    vs_main_memcpy((void* )getScratchAddr(13), D_8010A480, sizeof D_8010A480);
-    vs_main_memcpy((void* )getScratchAddr(21), D_8010A490, sizeof D_8010A490);
+void func_80104AF8(void)
+{
+    vs_main_memcpy((void*)getScratchAddr(13), D_8010A480, sizeof D_8010A480);
+    vs_main_memcpy((void*)getScratchAddr(21), D_8010A490, sizeof D_8010A490);
 }
-
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104B40);
 
@@ -104,7 +114,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106528);
 
-void _vsStringCpy(u_char* arg0, u_char* arg1) {
+void _vsStringCpy(u_char* arg0, u_char* arg1)
+{
     while (*arg1 != 0xE7) {
         *arg0++ = *arg1++;
     }
@@ -131,11 +142,12 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_801029AC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107120);
 
-void func_80107600(void) {
+void func_80107600(void)
+{
     int i;
     int var_a2;
     int a1;
-    
+
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
         if (D_8005FEA0.unk0[0] & (a1 << i)) {
             ++var_a2;
@@ -149,7 +161,6 @@ void func_80107600(void) {
         }
     }
 }
-
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801076A4);
 
@@ -167,10 +178,10 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010812C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
 
-void func_801084E4(void) {
+void func_801084E4(void)
+{
     vs_main_freeHeapR(D_8010A4AC);
     D_8010A4AC = NULL;
 }
-
 
 void func_80108514(void) { }

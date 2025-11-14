@@ -9,6 +9,7 @@
 
 void func_801084E4();
 
+extern char D_800F4EEA;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A460;
@@ -32,9 +33,21 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A7C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102E10);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102F0C);
+int func_80102F0C(void)
+{
+    int row;
 
-void func_80102F64(char* arg0) {
+    row = vs_mainmenu_getSelectedRow();
+    if (row < -1) {
+        func_800FA8E0(5);
+    } else if (row >= 0) {
+        func_800FA92C(D_800F4EEA, 1);
+    }
+    return row;
+}
+
+void func_80102F64(char* arg0)
+{
     vs_battle_menuItem_t* temp_v0;
 
     temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 9, arg0);

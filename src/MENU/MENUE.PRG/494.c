@@ -41,7 +41,7 @@ typedef struct {
     short isActive;
 } AnimationState_t;
 
-static char* _vsStringCpy(char* arg0, char* arg1);
+static char* _vsStrcpy(char* arg0, char* arg1);
 static int _initMenuState(void);
 static int _showMenu(void);
 static void _drawSprite(short*);
@@ -578,14 +578,14 @@ static void _copyNextPageText(void)
     }
 
     for (i = _scrollPosition; i < nextPage; ++i) {
-        pBuffer = _vsStringCpy(pBuffer, (char*)(offsets + offsets[i + 1]));
+        pBuffer = _vsStrcpy(pBuffer, (char*)(offsets + offsets[i + 1]));
     }
 
     pBuffer[-1] = vs_char_terminator;
     func_800C6BF0(0, &buffer);
 }
 
-static char* _vsStringCpy(char* arg0, char* arg1)
+static char* _vsStrcpy(char* arg0, char* arg1)
 {
     char c;
 

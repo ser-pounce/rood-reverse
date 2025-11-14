@@ -127,7 +127,7 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106528);
 
-void _vsStringCpy(u_char* arg0, u_char* arg1)
+void _vsStrcpy(u_char* arg0, u_char* arg1)
 {
     while (*arg1 != 0xE7) {
         *arg0++ = *arg1++;
@@ -135,7 +135,16 @@ void _vsStringCpy(u_char* arg0, u_char* arg1)
     *arg0 = *arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106724);
+void _vsStrcat(char* arg0, char* arg1)
+{
+    while (*arg0 != 0xE7) {
+        ++arg0;
+    }
+    while (*arg1 != 0xE7) {
+        *arg0++ = *arg1++;
+    }
+    *arg0 = *arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106780);
 

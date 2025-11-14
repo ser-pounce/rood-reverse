@@ -1,2 +1,3 @@
 _menuReady = 0x80102FD8;
-_vsStringCpy = 0x801066F0;
+_vsStrcpy = 0x801066F0;
+_vsStrcat = 0x80106724;

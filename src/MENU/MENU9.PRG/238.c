@@ -33,8 +33,12 @@ typedef struct {
 } D_8010A230_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
     int unk8;
     char unkC;
     char unkD;
@@ -290,7 +294,61 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102930);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105BCC);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105D8C);
+void func_80105D8C(void)
+{
+    int j;
+    int var_v0;
+    int i;
+    char var_a0_2;
+    D_8010A470_t* var_a3;
+    int new_var;
+    int* new_var2;
+
+    for (i = 0, var_a3 = D_8010A470; i < 0x4E; ++i, ++var_a3) {
+        var_a3->unkC = 0;
+        for (j = var_a3->unk4; j < (var_a3->unk4 + var_a3->unk6); ++j) {
+            var_v0 = j;
+            if (j < 0) {
+                var_v0 += 0x1F;
+            }
+            var_v0 >>= 5;
+            new_var =
+                D_8005FEA0.unk9C[var_v0] & (1 << (j - ((*(new_var2 = &var_v0)) << 5)));
+            if (new_var) {
+                var_a3->unkC = 1;
+                break;
+            }
+        }
+    }
+
+    for (i = 0, var_a3 = D_8010A470, var_a0_2 = -1; i < 0x4E; ++i, ++var_a3) {
+        if (var_a3->unkC != 0) {
+            var_a3->unkD = var_a0_2;
+            var_a0_2 = i;
+        }
+    }
+
+    for (i = 0, var_a3 = D_8010A470; i < 0x4E; ++i, ++var_a3) {
+        if (var_a3->unkC != 0) {
+            var_a3->unkD = var_a0_2;
+            break;
+        }
+    }
+
+    for (i = 0x4D, var_a3 = &D_8010A470[77], var_a0_2 = -1; i >= 0; --i, --var_a3) {
+        if (var_a3->unkC != 0) {
+            var_a3->unkE = var_a0_2;
+            var_a0_2 = i;
+        }
+    }
+
+    for (i = 0x4D, var_a3 = &D_8010A470[77]; i >= 0; --i, --var_a3) {
+        if (var_a3->unkC != 0) {
+            var_a3->unkE = var_a0_2;
+            break;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105F00);
 

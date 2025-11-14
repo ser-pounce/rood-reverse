@@ -114,7 +114,8 @@ typedef union {
 typedef struct {
     int unk0[10];
     int unk28[8][3];
-    int unk88[35];
+    int unk88[5];
+    int unk9C[30];
 } D_8005FEA0_t;
 
 typedef struct {

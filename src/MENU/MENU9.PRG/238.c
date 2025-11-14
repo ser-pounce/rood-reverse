@@ -9,10 +9,13 @@
 #include "../../BATTLE/BATTLE.PRG/40564.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
+#include <stdio.h>
+#include <strings.h>
 
 void func_801084E4();
 
 extern char D_800F4EEA;
+extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A460;
@@ -84,7 +87,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104E90);
 
-void func_80104F04(short* arg0, short arg1) {
+void func_80104F04(short* arg0, short arg1)
+{
     int temp_s0;
     int temp_v0;
 
@@ -168,7 +172,21 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106780);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106CEC);
+void _toVsStringInt(char* buf, int value)
+{
+    int len;
+    int i;
+    buf++;
+    buf--;
+    sprintf(buf, D_801029AC, value);
+    len = strlen(buf);
+
+    for (i = 0; i < len; ++i) {
+        buf[i] = buf[i] - 0x30;
+    }
+    buf += len;
+    *buf = -0x19;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106D5C);
 

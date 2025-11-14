@@ -49,10 +49,12 @@ typedef struct {
     int unk28;
 } D_8010A470_t;
 
+void func_80102E10(int, int, char**, int);
 void func_8010812C(int);
 int func_8010823C(void);
 void func_801084E4();
 
+extern char D_800F1BF7;
 extern char D_800F4EEA;
 
 extern u_short _menuStrings[];
@@ -69,6 +71,8 @@ extern D_8010989C_t D_8010989C;
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
+extern int D_8010A224;
+extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
 extern short D_8010A450;
 extern int D_8010A460;
@@ -143,7 +147,34 @@ void func_80104B40(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104BD0);
+int func_80104BD0(int arg0)
+{
+    char* sp10[8];
+    int i;
+
+    if (arg0 != 0) {
+        D_8010A224 = 0;
+        D_8010A228 = 0;
+    }
+
+    switch (D_8010A224) {
+    case 0:
+        for (i = 0; i < 4; ++i) {
+            sp10[i * 2] = (char*)&_menuStrings[_menuStrings[i]];
+            sp10[i * 2 + 1] = NULL;
+        }
+        func_80102E10(4, D_800F1BF7, sp10, i);
+        ++D_8010A224;
+        break;
+    case 1:
+        D_8010A228 = func_80102F0C();
+        if (D_8010A228 == -1) {
+            break;
+        }
+        return D_8010A228;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
 

@@ -297,7 +297,21 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106DE0);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106F9C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107090);
+void func_80107090(void)
+{
+    int i;
+    D_8010A230_t* p = D_8010A230;
+
+    for (i = 0; i < 8; ++i, ++p) {
+        if (p->unk2 == 0) {
+            vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
+            temp_v0->state = 2;
+            temp_v0->x = 0x140;
+        } else {
+            p->unk2 = -1;
+        }
+    }
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_801029AC);
 

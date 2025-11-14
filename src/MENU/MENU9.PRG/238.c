@@ -12,9 +12,17 @@
 #include <stdio.h>
 #include <strings.h>
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+} D_8010989C_t;
+
 void func_801084E4();
 
 extern char D_800F4EEA;
+extern D_8010989C_t D_8010989C;
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
@@ -85,7 +93,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104BD0);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
 
-void func_80104E90(short* arg0, short arg1) {
+void func_80104E90(short* arg0, short arg1)
+{
     int sine = vs_math_sine(-arg1);
     int cosine = vs_math_cosine(-arg1);
     arg0[0] = cosine;
@@ -194,13 +203,30 @@ void _toVsStringInt(char* buf, int value)
     len = strlen(buf);
 
     for (i = 0; i < len; ++i) {
-        buf[i] = buf[i] - 0x30;
+        buf[i] -= 0x30;
     }
     buf += len;
     *buf = -0x19;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106D5C);
+void _toVsStringPercent(char* buf, int value)
+{
+
+    int len;
+    int i;
+
+    buf++;
+    buf--;
+
+    sprintf(buf, D_801029AC, value);
+
+    len = strlen(buf);
+    for (i = 0; i < len; ++i) {
+        buf[i] -= 0x30;
+    }
+    buf += len;
+    *((D_8010989C_t*)buf) = D_8010989C;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106DE0);
 

@@ -85,7 +85,19 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104BD0);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104E90);
+void func_80104E90(short* arg0, short arg1) {
+    int sine = vs_math_sine(-arg1);
+    int cosine = vs_math_cosine(-arg1);
+    arg0[0] = cosine;
+    arg0[2] = -sine;
+    arg0[1] = 0;
+    arg0[3] = 0;
+    arg0[4] = 0x1000;
+    arg0[5] = 0;
+    arg0[6] = sine;
+    arg0[7] = 0;
+    arg0[8] = cosine;
+}
 
 void func_80104F04(short* arg0, short arg1)
 {

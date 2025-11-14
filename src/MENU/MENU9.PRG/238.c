@@ -9,6 +9,7 @@ extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A460;
 extern short D_8010A464;
+extern void* D_8010A4AC;
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A38);
 
@@ -86,7 +87,12 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106528);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801066F0);
+void _vsStringCpy(u_char* arg0, u_char* arg1) {
+    while (*arg1 != 0xE7) {
+        *arg0++ = *arg1++;
+    }
+    *arg0 = *arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106724);
 
@@ -144,6 +150,10 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010812C);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801084E4);
+void func_801084E4(void) {
+    vs_main_freeHeapR(D_8010A4AC);
+    D_8010A4AC = NULL;
+}
+
 
 void func_80108514(void) { }

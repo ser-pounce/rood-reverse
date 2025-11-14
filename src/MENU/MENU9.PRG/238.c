@@ -71,6 +71,10 @@ extern D_8010989C_t D_8010989C;
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
+extern int D_80109904[];
+extern int D_80109D04[];
+extern char D_8010A104[];
+extern char D_8010A204[];
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
@@ -81,7 +85,12 @@ extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
 extern char D_8010A490[16];
+extern int D_8010A4A0;
+extern vs_main_CdQueueSlot* D_8010A4A4;
+extern void* D_8010A4A8;
 extern void* D_8010A4AC;
+extern int D_8010A4B0;
+extern int D_8010A4B4;
 
 void func_80102A38(int arg0)
 {
@@ -456,7 +465,33 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80108098);
 // Needs 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801080C8);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010812C);
+void func_8010812C(int id)
+{
+    vs_main_CdFile cdFile;
+    int i;
+
+    cdFile.lba = D_80109904[id];
+    D_8010A4A0 = id;
+    cdFile.size = D_80109D04[id];
+    D_8010A4A4 = vs_main_allocateCdQueueSlot(&cdFile);
+    D_8010A4A8 = vs_main_allocHeapR(cdFile.size);
+    vs_main_cdEnqueueUrgent(D_8010A4A4, D_8010A4A8);
+    D_8010A4B4 = D_8010A104[id];
+    D_8010A4B0 = 0;
+
+    for (i = 0; i < 6; ++i) {
+        if (id == D_8010A204[i]) {
+            D_8010A4B0 = i;
+            break;
+        }
+    }
+
+    if (D_8010A4B0 != 0) {
+        D_8010A4AC = vs_main_allocHeap(0x3200);
+    } else {
+        D_8010A4AC = vs_main_allocHeap(0x24D0);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010823C);
 

@@ -30,6 +30,23 @@ typedef struct {
     char* unkC;
 } D_8010A230_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+} D_8010A470_t;
+
 void func_801084E4();
 
 extern char D_800F4EEA;
@@ -49,8 +66,11 @@ extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern D_8010A230_t D_8010A230[];
+extern short D_8010A450;
 extern int D_8010A460;
 extern short D_8010A464;
+extern D_8010A470_t* D_8010A470;
+extern u_short* D_8010A474;
 extern char D_8010A480[16];
 extern char D_8010A490[16];
 extern void* D_8010A4AC;
@@ -110,7 +130,14 @@ void func_80104AF8(void)
     vs_main_memcpy((void*)getScratchAddr(21), D_8010A490, sizeof D_8010A490);
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104B40);
+void func_80104B40(void)
+{
+    if (D_8010A470[D_8010A450].unkC != 0) {
+        vs_mainmenu_setMessage((char*)&D_8010A474[D_8010A474[D_8010A450]]);
+    } else {
+        vs_mainmenu_setMessage((char*)&_miscInfo[_miscInfo[2]]);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104BD0);
 

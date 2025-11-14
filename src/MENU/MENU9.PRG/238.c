@@ -19,13 +19,36 @@ typedef struct {
     char unk3;
 } D_8010989C_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    char* unk8;
+    char* unkC;
+} D_8010A230_t;
+
 void func_801084E4();
 
 extern char D_800F4EEA;
+
+extern u_short _menuStrings[];
+extern u_short _rankStrings[];
+extern u_short _titleStrings[];
+extern u_short _titleDescriptionsStrings[];
+extern u_short _statHeaders[];
+extern u_short _statDescriptions[];
+extern u_short _timeAttacks[];
+extern u_short _timeAttackDescriptions[];
+extern u_short _miscInfo[];
+
 extern D_8010989C_t D_8010989C;
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
+extern D_8010A230_t D_8010A230[];
 extern int D_8010A460;
 extern short D_8010A464;
 extern char D_8010A480[16];
@@ -189,7 +212,22 @@ void _vsStrcat(char* arg0, char* arg1)
     *arg0 = *arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106780);
+void func_80106780(void)
+{
+    int i;
+    D_8010A230_t* p;
+
+    for (i = 0, p = D_8010A230; i < 23; ++i, ++p) {
+        p->unk4 = 16;
+        p->unk8 = (void*)&_statHeaders[_statHeaders[i]];
+        p->unkC = (void*)&_statDescriptions[_statDescriptions[i]];
+        p->unk2 = 0;
+        p->unk6 = i + 1;
+        p->unk0 = 0;
+        p->unk3 = 0;
+        p->unk1 = 1;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
 
@@ -266,6 +304,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107C34);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107FBC);
 
+// https://decomp.me/scratch/xyltD
+// Needs 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80108098);
 
 // https://decomp.me/scratch/da4gv

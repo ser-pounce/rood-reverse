@@ -338,6 +338,7 @@ void func_800995B0(void);
 int func_8009967C(void);
 void vs_battle_exec(void);
 
+extern char D_800E8F28;
 extern u_short D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
 extern int D_800F19D0[];

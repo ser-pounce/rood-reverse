@@ -1,9 +1,11 @@
 #include "common.h"
+#include "../MAINMENU.PRG/278.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/40564.h"
@@ -47,6 +49,8 @@ typedef struct {
     int unk28;
 } D_8010A470_t;
 
+void func_8010812C(int);
+int func_8010823C(void);
 void func_801084E4();
 
 extern char D_800F4EEA;
@@ -54,7 +58,7 @@ extern char D_800F4EEA;
 extern u_short _menuStrings[];
 extern u_short _rankStrings[];
 extern u_short _titleStrings[];
-extern u_short _titleDescriptionsStrings[];
+extern u_short _titleDescriptions[];
 extern u_short _statHeaders[];
 extern u_short _statDescriptions[];
 extern u_short _timeAttacks[];
@@ -190,7 +194,29 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", jtbl_80102898);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010552C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801056B8);
+void func_801056B8(void)
+{
+    int i;
+    D_8010A230_t* var_a2;
+    int new_var;
+
+    for (i = 0, var_a2 = D_8010A230; i < 32; ++i, ++var_a2) {
+        var_a2->unk4 = 0x3C;
+        var_a2->unk6 = i + 1;
+        var_a2->unk0 = 0;
+        var_a2->unk2 = 0;
+        var_a2->unk3 = 0;
+        if (D_8005FEA0.unk0[0] & ((new_var = 1) << i)) {
+            var_a2->unk1 = 1;
+            var_a2->unk8 = (char*)&_titleStrings[_titleStrings[i]];
+            var_a2->unkC = (char*)&_titleDescriptions[_titleDescriptions[i]];
+        } else {
+            var_a2->unk1 = 0;
+            var_a2->unk8 = (char*)&_miscInfo[_miscInfo[0]];
+            var_a2->unkC = (char*)&_miscInfo[_miscInfo[1]];
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010579C);
 
@@ -343,6 +369,8 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107A98);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107C34);
 
+// https://decomp.me/scratch/cebYm
+// Needs 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107FBC);
 
 // https://decomp.me/scratch/xyltD

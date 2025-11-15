@@ -334,7 +334,7 @@ int func_8008E7BC(int, int, u_int);
 void func_8008E88C(void);
 int* func_8008EB24(void);
 void func_8008EB30(int*);
-void func_800995B0(void);
+int func_800995B0(void);
 int func_8009967C(void);
 void vs_battle_exec(void);
 

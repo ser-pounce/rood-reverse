@@ -554,7 +554,30 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102968);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106528);
+void func_80106528(void)
+{
+    void** scratch = (void**)0x1F800000;
+    POLY_G4* poly = scratch[0];
+
+    setPolyG4(poly);
+    setXY4(poly, 0, 0, 0x40, 0, 0, 0xF0, 0x40, 0xF0);
+    setRGB0(poly, 0x80, 0x80, 0x80);
+    setRGB1(poly, 0, 0, 0);
+    setRGB2(poly, 0x80, 0x80, 0x80);
+    setRGB3(poly, 0, 0, 0);
+    setSemiTrans(poly, 1);
+    AddPrim(scratch[1] + 0x20, poly++);
+    setPolyG4(poly);
+    setXY4(poly, 0x100, 0, 0x140, 0, 0x100, 0xF0, 0x140, 0xF0);
+    setRGB0(poly, 0, 0, 0);
+    setRGB1(poly, 0x80, 0x80, 0x80);
+    setRGB2(poly, 0, 0, 0);
+    setRGB3(poly, 0x80, 0x80, 0x80);
+    setSemiTrans(poly, 1);
+    AddPrim(scratch[1] + 0x20, poly++);
+    scratch[0] = poly;
+    _insertTPage(8, getTPage(0, 2, 0, 0));
+}
 
 void _vsStrcpy(u_char* arg0, u_char* arg1)
 {

@@ -16,6 +16,7 @@
 #include <strings.h>
 #include <libgpu.h>
 #include "insertTPage.h"
+#include "vs_string.h"
 
 typedef struct {
     char unk0;
@@ -78,6 +79,7 @@ extern u_short _timeAttackDescriptions[];
 extern u_short _miscInfo[];
 
 extern D_8010989C_t D_8010989C;
+extern char D_80102930;
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
@@ -93,6 +95,7 @@ extern short D_8010A450;
 extern int D_8010A45C;
 extern long int D_8010A460;
 extern short D_8010A464;
+extern u_short D_8010A466;
 extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
@@ -498,7 +501,60 @@ void _toVsStringPercent(char* buf, int value)
     *((D_8010989C_t*)buf) = D_8010989C;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106DE0);
+void func_80106DE0(char* buf, int rank, int totalSeconds)
+{
+    int len;
+    int i;
+    int minutes;
+    int seconds;
+    char* str;
+
+    if (D_8010A466 == 0) {
+        _vsStrcpy((u_char*)buf, (u_char*)&_miscInfo[_miscInfo[0]]);
+        return;
+    }
+
+    minutes = totalSeconds / 60;
+
+    if (minutes >= 100) {
+        minutes = 99;
+        seconds = 59;
+    } else {
+        seconds = totalSeconds % 60;
+    }
+
+    *buf = vs_char_R;
+    str = buf + 1;
+    sprintf(str, D_801029AC, rank + 1);
+    len = strlen(str);
+
+    for (i = 0; i < len; ++i) {
+        str[i] -= 0x30;
+    }
+
+    str = &str[len];
+    *str++ = (u_char)vs_char_spacing;
+    *str++ = 12;
+
+    sprintf(str, &D_80102930, minutes);
+    len = strlen(str);
+
+    for (i = 0; i < len; ++i) {
+        str[i] -= 0x30;
+    }
+
+    str = &str[len];
+    *str++ = (u_char)vs_char_colon;
+    sprintf(str, &D_80102930, seconds);
+    len = strlen(str);
+
+    for (i = 0; i < len; ++i) {
+        str[i] -= 0x30;
+    }
+
+    str += len;
+    *str = (u_char)vs_char_terminator;
+}
 
 void func_80106F9C(void)
 {

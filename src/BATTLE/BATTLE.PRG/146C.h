@@ -338,6 +338,7 @@ void func_800995B0(void);
 int func_8009967C(void);
 void vs_battle_exec(void);
 
+extern int D_800E8508[];
 extern char D_800E8F28;
 extern u_short D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
@@ -352,6 +353,8 @@ extern short D_800F1BBE;
 extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern signed char D_800F1BF0[8];
+extern char D_800F1BF7;
+extern char D_800F4EEA;
 extern D_800F1BF8_t D_800F1BF8;
 extern vs_battle_scene* vs_battle_currentScene;
 extern void* D_800F1CBC;

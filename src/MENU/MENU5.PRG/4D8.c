@@ -36,7 +36,7 @@ typedef struct {
 } func_80107A9C_t;
 
 int func_80103418(void);
-int func_80103684();
+int func_80103684(void);
 void _snapMapToRoom(vs_battle_scene* scene, int roomId);
 void _scaleRoomVertices(vs_battle_scene* scene, int factor);
 int _getCurrentRoomIndex(vs_battle_scene* scene);
@@ -50,9 +50,9 @@ void func_801046B0(vs_battle_scene* arg0);
 int _drawRoom(int arg0, void* arg1, int arg2, int arg3);
 void func_80106178(MATRIX* arg0, short arg1);
 void func_801061EC(MATRIX* arg0, short arg1);
-void _darkenBackground();
-void _applyPalingScreenEffect();
-void _drawUIControls();
+void _darkenBackground(void);
+void _applyPalingScreenEffect(void);
+void _drawUIControls(void);
 void func_80107630(int x, int y, int arg2);
 void func_80107A9C(int arg0, int arg1, int arg2, int arg3);
 void func_80107B10(int arg0, int arg1, int arg2);

@@ -61,12 +61,12 @@ void func_80102E10(int, int, char**, int);
 void func_80104CBC(int*);
 void func_801051AC(int, int, int, int, int);
 void func_80106528(void);
+void func_80107600(void);
+void func_801076A4(void);
+void func_80107C34(void);
 void func_8010812C(int);
 int func_8010823C(void);
-void func_801084E4();
-
-extern char D_800F1BF7;
-extern char D_800F4EEA;
+void func_801084E4(void);
 
 extern u_short _menuStrings[];
 extern u_short _rankStrings[];
@@ -90,12 +90,15 @@ extern char D_8010A204[];
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
+extern int D_8010A43C;
 extern int D_8010A438;
 extern short D_8010A450;
 extern int D_8010A45C;
 extern long int D_8010A460;
 extern short D_8010A464;
 extern u_short D_8010A466;
+extern u_short D_8010A468;
+extern u_short D_8010A46A;
 extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
@@ -176,7 +179,58 @@ void _menuReady(void) { vs_mainmenu_ready(); }
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FF8);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801031BC);
+int func_801031BC(void)
+{
+    int i;
+    int j;
+    int new_var;
+
+    if (D_8005FFD8.unk0[1] & 0x800000) {
+        D_8005FFD8.unk0[1] |= 0x400000;
+    }
+
+    D_8010A43C = 0;
+    D_8010A45C = 0;
+
+    if (vs_main_settings.cursorMemory == 0) {
+        vs_main_bzero(D_800F1BF0, 8);
+    }
+
+    D_8010A46A = 0;
+
+    for (i = 0; i < 16; ++i) {
+        for (j = 0; j < 32; ++j) {
+            if (D_8005FFD8.unk0[i] & D_800E8508[i] & ((new_var = 1) << j)) {
+                ++D_8010A46A;
+            }
+        }
+    }
+
+    D_8010A468 = 0;
+
+    for (i = 0; i < 64; ++i) {
+        if (vs_main_stateFlags.unk33F[i + 0x81] != 0) {
+            ++D_8010A468;
+        }
+    }
+
+    D_8010A466 = vs_main_stateFlags.clearCount;
+
+    if (D_8010A46A > D_8005FEA0.unk88[3]) {
+        D_8005FEA0.unk88[3] = D_8010A46A;
+    }
+    if (D_8010A468 > D_8005FEA0.unk88[4]) {
+        D_8005FEA0.unk88[4] = D_8010A468;
+    }
+
+    vs_main_memcpy(D_8010A480, (void*)0x1F800034, 0x10);
+    vs_main_memcpy(D_8010A490, (void*)0x1F800054, 0x10);
+    func_801076A4();
+    func_80107C34();
+    func_80107600();
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010337C);
 

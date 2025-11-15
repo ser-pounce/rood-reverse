@@ -11,7 +11,8 @@ int func_800722F0(void);
 u_int func_80072384(void);
 int DMACallback(int, void (*)(void));
 
-// Commented out functions require delay slot manipulation, possibly with .set reorder
+// Commented out functions have delay slot manipulation, probably due to custom linkage
+// used in later PSY-Q versions
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
 /*void DecDCTReset(int mode) {

@@ -254,7 +254,28 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801051AC);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010539C);
+void func_8010539C(short arg0)
+{
+    POLY_F4* polyF4;
+    void** scratch = (void**)getScratchAddr(0);
+    POLY_G4* polyG4 = scratch[0];
+
+    setPolyG4(polyG4);
+    setXY4(polyG4, 0, arg0, 0x140, arg0, 0, arg0 + 8, 0x140, arg0 + 8);
+    setRGB0(polyG4, 0, 0, 0);
+    setRGB1(polyG4, 0, 0, 0);
+    setRGB2(polyG4, 0x80, 0x80, 0x80);
+    setRGB3(polyG4, 0x80, 0x80, 0x80);
+    setSemiTrans(polyG4, 1);
+    AddPrim(scratch[1] + 0x1C, polyG4++);
+    polyF4 = (POLY_F4*)polyG4;
+    setPolyF4(polyF4);
+    setXY4(polyF4, 0, arg0 + 8, 0x140, arg0 + 8, 0, 0xF0, 0x140, 0xF0);
+    setRGB0(polyF4, 0, 0, 0);
+    AddPrim(scratch[1] + 0x1C, polyF4++);
+    scratch[0] = polyF4;
+    _insertTPage(7, getTPage(0, 2, 0, 0));
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102820);
 

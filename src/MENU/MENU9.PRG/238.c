@@ -58,7 +58,9 @@ typedef struct {
 } D_8010A470_t;
 
 void func_80102E10(int, int, char**, int);
-void func_80104CBC(int*);
+void func_80104CBC(MATRIX*);
+void func_80104E90(MATRIX* arg0, short arg1);
+void func_80104F04(MATRIX* arg0, short arg1);
 void func_801051AC(int, int, int, int, int);
 void func_80106528(void);
 void func_80107600(void);
@@ -90,8 +92,11 @@ extern char D_8010A204[];
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
+extern short D_8010A430[];
 extern int D_8010A43C;
 extern int D_8010A438;
+extern int D_8010A444;
+extern short D_8010A44E;
 extern short D_8010A450;
 extern int D_8010A45C;
 extern long int D_8010A460;
@@ -278,39 +283,100 @@ int func_80104BD0(int arg0)
     return -1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104CBC);
+void func_80104CBC(MATRIX* arg0)
+{
+    SVECTOR sp10;
+    SVECTOR sp18;
+    MATRIX sp20;
+    int trig0;
+    int trig1;
+    int trig2;
+    int var_v0;
+    int* scratch;
 
-void func_80104E90(short* arg0, short arg1)
+    trig0 = vs_math_sine(D_8010A430[1]);
+    trig1 = vs_math_cosine(D_8010A430[0]);
+    trig0 *= D_8010A444;
+    if (trig0 < 0) {
+        trig0 += 0xFFF;
+    }
+
+    var_v0 = (trig0 >> 0xC) * trig1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+
+    sp18.vx = var_v0 >> 0xC;
+    trig0 = vs_math_cosine(D_8010A430[1]);
+    trig1 = vs_math_cosine(D_8010A430[0]);
+    trig0 *= -D_8010A444;
+    if (trig0 < 0) {
+        trig0 += 0xFFF;
+    }
+
+    var_v0 = (trig0 >> 0xC) * trig1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+
+    sp18.vz = var_v0 >> 0xC;
+    trig2 = vs_math_sine(D_8010A430[0]) * -D_8010A444;
+    if (trig2 < 0) {
+        trig2 += 0xFFF;
+    }
+
+    sp18.vy = (trig2 >> 0xC) - (D_8010A44E / 2);
+
+    scratch = (int*)getScratchAddr(0);
+    scratch[13] = sp18.vx << 0xC;
+    scratch[14] = (sp18.vy << 0x10) >> 4;
+    scratch[15] = sp18.vz << 0xC;
+    scratch[21] = D_8010A430[0];
+    scratch[22] = D_8010A430[1];
+    scratch[23] = D_8010A430[2];
+
+    func_80104E90(arg0, D_8010A430[1]);
+    func_80104F04(&sp20, D_8010A430[0]);
+    func_80041C68(&sp20, arg0);
+
+    sp10.vx = -sp18.vx;
+    sp10.vy = -sp18.vy;
+    sp10.vz = -sp18.vz;
+
+    ApplyMatrix(arg0, &sp10, (VECTOR*)&arg0->t);
+}
+
+void func_80104E90(MATRIX* arg0, short arg1)
 {
     int sine = vs_math_sine(-arg1);
     int cosine = vs_math_cosine(-arg1);
-    arg0[0] = cosine;
-    arg0[2] = -sine;
-    arg0[1] = 0;
-    arg0[3] = 0;
-    arg0[4] = 0x1000;
-    arg0[5] = 0;
-    arg0[6] = sine;
-    arg0[7] = 0;
-    arg0[8] = cosine;
+    arg0->m[0][0] = cosine;
+    arg0->m[0][1] = 0;
+    arg0->m[0][2] = -sine;
+    arg0->m[1][0] = 0;
+    arg0->m[1][1] = 0x1000;
+    arg0->m[1][2] = 0;
+    arg0->m[2][0] = sine;
+    arg0->m[2][1] = 0;
+    arg0->m[2][2] = cosine;
 }
 
-void func_80104F04(short* arg0, short arg1)
+void func_80104F04(MATRIX* arg0, short arg1)
 {
     int temp_s0;
     int temp_v0;
 
     temp_s0 = vs_math_sine(arg1);
     temp_v0 = vs_math_cosine(arg1);
-    arg0[0] = 0x1000;
-    arg0[1] = 0;
-    arg0[2] = 0;
-    arg0[3] = 0;
-    arg0[4] = temp_v0;
-    arg0[5] = -temp_s0;
-    arg0[6] = 0;
-    arg0[7] = temp_s0;
-    arg0[8] = temp_v0;
+    arg0->m[0][0] = 0x1000;
+    arg0->m[0][1] = 0;
+    arg0->m[0][2] = 0;
+    arg0->m[1][0] = 0;
+    arg0->m[1][1] = temp_v0;
+    arg0->m[1][2] = -temp_s0;
+    arg0->m[2][0] = 0;
+    arg0->m[2][1] = temp_s0;
+    arg0->m[2][2] = temp_v0;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
@@ -351,7 +417,7 @@ void func_8010552C(int arg0)
     vs_battle_geomOffset sp18;
     vs_battle_geomOffset sp20;
     char sp28[128];
-    int spA8[8];
+    MATRIX spA8;
     void** scratch;
 
     if (arg0 < 8) {
@@ -361,8 +427,8 @@ void func_8010552C(int arg0)
     sp20.x = 0x80 - ((8 - arg0) << 5);
     sp20.y = 0xF0;
     vs_battle_setGeomOffset(&sp20);
-    func_80104CBC(spA8);
-    func_800F9EB8(spA8);
+    func_80104CBC(&spA8);
+    func_800F9EB8(&spA8);
     vs_battle_setGeomOffset(&sp18);
     sprintf(sp28, "#%ld", D_8010A460);
     scratch = (void**)getScratchAddr(0);

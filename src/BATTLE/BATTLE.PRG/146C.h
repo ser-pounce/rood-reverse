@@ -352,7 +352,7 @@ extern short D_800F1BB6;
 extern short D_800F1BBE;
 extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
-extern signed char D_800F1BF0[8];
+extern u_char D_800F1BF0[8];
 extern char D_800F1BF7;
 extern char D_800F4EEA;
 extern D_800F1BF8_t D_800F1BF8;

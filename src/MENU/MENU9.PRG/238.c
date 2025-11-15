@@ -57,6 +57,7 @@ typedef struct {
     int unk28;
 } D_8010A470_t;
 
+void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
 int func_801031BC(void);
 int func_8010337C(void);
@@ -64,6 +65,7 @@ void func_80104CBC(MATRIX*);
 void func_80104E90(MATRIX* arg0, short arg1);
 void func_80104F04(MATRIX* arg0, short arg1);
 void func_801051AC(int, int, int, int, int);
+void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
 void func_80106528(void);
 void func_80107600(void);
 void func_801076A4(void);
@@ -85,6 +87,7 @@ extern u_short _miscInfo[];
 extern D_8010989C_t D_8010989C;
 extern char D_80102930[];
 extern char D_801029AC[]; // %d
+extern char D_80109898;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_80109904[];
@@ -436,8 +439,10 @@ void func_80104F04(MATRIX* arg0, short arg1)
     arg0->m[2][2] = temp_v0;
 }
 
+// https://decomp.me/scratch/snDLY
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 
+// https://decomp.me/scratch/UKjko
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801051AC);
 
 void func_8010539C(int arg0)
@@ -523,7 +528,65 @@ void func_801056B8(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010579C);
+void func_8010579C(int arg0)
+{
+    int i;
+    vs_battle_menuItem_t* temp_s0;
+
+    D_8010A230_t* var_s2 = D_8010A230;
+    int temp_s1 = D_800F1BF0[0] + D_800F1BF0[1];
+
+    for (i = 0; i < 32; ++i, ++var_s2) {
+        if (i == temp_s1) {
+            if (var_s2->unk0 == 0) {
+                vs_mainmenu_setMessage(var_s2->unkC);
+            }
+            var_s2->unk0 = 1;
+            if (var_s2->unk1 != 0) {
+                var_s2->unk2 = 8;
+            }
+        } else {
+            var_s2->unk0 = 0;
+            if (var_s2->unk2 != 0) {
+                --var_s2->unk2;
+            }
+        }
+    }
+
+    var_s2 = &D_8010A230[(u_char)D_800F1BF0[0]];
+
+    for (i = 0; i < 8; ++i, ++var_s2) {
+        int var_s3 = (arg0 * 0x17) - 0x10;
+        if ((0x38 + i * 0x10) < var_s3) {
+            var_s3 = (0x38 + i * 0x10);
+        }
+        if (var_s2->unk0 != 0) {
+            if (arg0 == 8) {
+                D_80109898 = func_800FFCDC((int)D_80109898,
+                    ((var_s2->unk4 - 0xC) & 0xFFFF) | ((var_s3 - 8) << 0x10));
+            }
+        }
+        temp_s0 =
+            vs_battle_setMenuItem(0, (int)var_s2->unk4, var_s3, 0xC8, 0, var_s2->unk8);
+        if (var_s2->unk1 == 0) {
+            temp_s0->unkA = 3;
+        }
+        temp_s0->unk4 = var_s2->unk2;
+        if ((i == 0) && (D_800F1BF0[0] != 0)) {
+            temp_s0->unk5 = 1;
+        }
+        if ((i == 7) && (D_800F1BF0[0] != 0x18)) {
+            temp_s0->unk5 = 2;
+        }
+        func_80105A0C(var_s2->unk4 - 0xE, var_s3, var_s2->unk6, temp_s0->unk5 & 1);
+        if ((temp_s0->unk5 != 0) && (arg0 == 8)) {
+            func_80102A7C(temp_s0);
+        } else {
+            func_800C9078(temp_s0);
+        }
+    }
+    vs_battle_getMenuItem(0)->state = 0;
+}
 
 void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
 {

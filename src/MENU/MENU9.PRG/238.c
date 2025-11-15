@@ -107,8 +107,6 @@ extern u_short _timeAttackDescriptions[];
 extern u_short _miscInfo[];
 
 extern D_8010989C_t D_8010989C;
-extern char D_80102930[];
-extern char D_801029AC[]; // %d
 extern char D_80109898;
 extern char D_80109899;
 extern short D_801098A4[];
@@ -620,7 +618,7 @@ void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
     int i;
     POLY_FT4* poly;
 
-    sprintf(digits, D_80102930, arg2);
+    sprintf(digits, "%02d", arg2);
     arg0 += 0x13;
     poly = *(void**)0x1F800000;
 
@@ -660,8 +658,6 @@ void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
     }
     *(void**)0x1F800000 = poly;
 }
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102930);
 
 void func_80105BCC(int arg0, int arg1, int arg2, int arg3)
 {
@@ -836,7 +832,6 @@ void func_801061F8(int arg0, int arg1)
     int temp_s6;
     void** scratch;
 
-    arg0 = arg0;
     if (arg0 < 8) {
         func_80106528();
     }
@@ -950,7 +945,7 @@ void _toVsStringInt(char* buf, int value)
     int i;
     buf++;
     buf--;
-    sprintf(buf, D_801029AC, value);
+    sprintf(buf, "%d", value);
     len = strlen(buf);
 
     for (i = 0; i < len; ++i) {
@@ -969,7 +964,7 @@ void _toVsStringPercent(char* buf, int value)
     buf++;
     buf--;
 
-    sprintf(buf, D_801029AC, value);
+    sprintf(buf, "%d", value);
 
     len = strlen(buf);
     for (i = 0; i < len; ++i) {
@@ -1003,7 +998,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
 
     *buf = vs_char_R;
     str = buf + 1;
-    sprintf(str, D_801029AC, rank + 1);
+    sprintf(str, "%d", rank + 1);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
@@ -1014,7 +1009,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
     *str++ = (u_char)vs_char_spacing;
     *str++ = 12;
 
-    sprintf(str, D_80102930, minutes);
+    sprintf(str, "%02d", minutes);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
@@ -1023,7 +1018,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
 
     str = &str[len];
     *str++ = (u_char)vs_char_colon;
-    sprintf(str, D_80102930, seconds);
+    sprintf(str, "%02d", seconds);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
@@ -1071,8 +1066,6 @@ void func_80107090(void)
         }
     }
 }
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_801029AC);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107120);
 

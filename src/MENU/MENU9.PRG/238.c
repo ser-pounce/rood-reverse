@@ -39,8 +39,7 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
+    short unk2;
     short unk4;
     short unk6;
     short unk8;
@@ -49,7 +48,8 @@ typedef struct {
     char unkD;
     char unkE;
     char unkF;
-    int unk10;
+    short unk10;
+    short unk12;
     int unk14;
     int unk18;
     int unk1C;
@@ -85,6 +85,7 @@ int func_8010337C(void);
 void func_80104CBC(MATRIX*);
 void func_80104E90(MATRIX* arg0, short arg1);
 void func_80104F04(MATRIX* arg0, short arg1);
+void func_80104F74(int, int, int, int, int);
 void func_801051AC(int, int, int, int, int);
 void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
 void func_80106528(void);
@@ -129,6 +130,8 @@ extern int D_8010A438;
 extern int D_8010A444;
 extern short D_8010A44E;
 extern short D_8010A450;
+extern int D_8010A454;
+extern int D_8010A458;
 extern int D_8010A45C;
 extern long int D_8010A460;
 extern short D_8010A464;
@@ -820,19 +823,63 @@ void func_80105F00(int arg0)
     vs_battle_getMenuItem(0)->state = 0;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102940);
+void func_801061F8(int arg0, int arg1)
+{
+    char const* sp18[] = { "HUMAN", "BEAST", "UNDEAD", "PHANTOM", "DRAGON", "EVIL" };
+    MATRIX sp30;
+    vs_battle_geomOffset sp50;
+    vs_battle_geomOffset sp58;
+    char sp60[12];
+    int temp_s0;
+    int temp_s2;
+    int temp_s4;
+    int temp_s6;
+    void** scratch;
 
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102948);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102950);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102958);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102960);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102968);
-
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801061F8);
+    arg0 = arg0;
+    if (arg0 < 8) {
+        func_80106528();
+    }
+    if (arg1 != 3) {
+        vs_battle_getGeomOffset(&sp50);
+        if (arg1 == 2) {
+            sp58.x = ((8 - arg0) << 5) + 0xA0;
+        } else {
+            sp58.x = 0xA0 - ((8 - arg0) << 5);
+        }
+        sp58.y = 0x68;
+        vs_battle_setGeomOffset(&sp58);
+        func_80104CBC(&sp30);
+        func_800F9EB8(&sp30);
+        vs_battle_setGeomOffset(&sp50);
+    }
+    if (arg1 > 0) {
+        arg0 = 8;
+    }
+    if (D_8010A45C == 0) {
+        temp_s2 = (8 - arg0) * 0x10;
+        func_800C9078(vs_battle_setMenuItem(
+            0, temp_s2 + 0xB8, 0xA6, 0x100, 0, (char*)&D_8010A470[D_8010A450].unk12));
+        vs_battle_getMenuItem(0)->state = 0;
+        temp_s4 = arg0 * 0x10;
+        scratch = (void**)getScratchAddr(0);
+        vs_mainmenu_drawButton(6, temp_s4 - 0x78, 0xF, scratch[1] + 0x18);
+        temp_s0 = (temp_s4 - 0x64) & 0xFFFF;
+        func_800C6540("ROTATION", temp_s0 | 0x120000, D_8010A458, scratch[1] + 0x18);
+        temp_s6 = temp_s4 - 0x70;
+        func_80104F74(temp_s6, 0x12, 0x60, 0xC, 3);
+        vs_mainmenu_drawButton(7, temp_s4 - 0x78, 0x22, scratch[1] + 0x18);
+        func_800C6540("ZOOM", temp_s0 | 0x240000, D_8010A454, scratch[1] + 0x18);
+        func_80104F74(temp_s6, 0x24, 0x4E, 0xC, 3);
+        sprintf(sp60, "NO.   %03d/%03d", D_8010A450 + 1, 0x4E);
+        func_800C6540(
+            sp60, ((temp_s4 - 0x78) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
+        func_801051AC(temp_s4 - 0x80, 0xA0, 0x64, 0xC, 2);
+        func_800C6540(sp18[D_8010A470[D_8010A450].unk2],
+            ((temp_s2 + 0xBC) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
+        func_801051AC(temp_s2 + 0xB4, 0x9B, 0x8C, 0x1A, 1);
+    }
+}
 
 void func_80106528(void)
 {

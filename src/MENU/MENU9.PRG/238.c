@@ -79,7 +79,7 @@ extern u_short _timeAttackDescriptions[];
 extern u_short _miscInfo[];
 
 extern D_8010989C_t D_8010989C;
-extern char D_80102930;
+extern char D_80102930[];
 extern char D_801029AC[]; // %d
 extern short D_801098A4[];
 extern u_int D_801098C4[];
@@ -348,7 +348,52 @@ void func_801056B8(void)
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010579C);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105A0C);
+void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
+{
+    char digits[2];
+    int i;
+    POLY_FT4* poly;
+
+    sprintf(digits, D_80102930, arg2);
+    arg0 += 0x13;
+    poly = *(void**)0x1F800000;
+
+    for (i = 1; i >= 0; --i, arg0 -= 5) {
+        setPolyFT4(poly);
+        poly->x0 = arg0;
+        poly->y0 = arg1 - 4;
+        poly->x1 = arg0 + 6;
+        poly->y1 = arg1 - 4;
+        poly->x2 = arg0;
+        poly->y2 = arg1 + 6;
+        poly->x3 = arg0 + 6;
+        poly->y3 = arg1 + 6;
+        setcode(poly, (getcode(poly) | 0x02) & 0xFE);
+        poly->u0 = (digits[i] - 0x30) * 6;
+        poly->v0 = 0;
+        poly->u1 = ((digits[i] - 0x30) * 6) + 6;
+        poly->v1 = 0;
+        poly->u2 = (digits[i] - 0x30) * 6;
+        poly->v2 = 0xA;
+        poly->u3 = ((digits[i] - 0x30) * 6) + 6;
+        poly->v3 = 0xA;
+        if (arg3 != 0) {
+            poly->tpage = 0x2C;
+            poly->r0 = 0x20;
+            poly->g0 = 0x20;
+            poly->b0 = 0x20;
+            poly->clut = 0x37F7;
+        } else {
+            poly->tpage = 0xC;
+            poly->r0 = 0x80;
+            poly->g0 = 0x80;
+            poly->b0 = 0x80;
+            poly->clut = 0x37F4;
+        }
+        AddPrim(*(void**)0x1F800008, poly++);
+    }
+    *(void**)0x1F800000 = poly;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102930);
 
@@ -536,7 +581,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
     *str++ = (u_char)vs_char_spacing;
     *str++ = 12;
 
-    sprintf(str, &D_80102930, minutes);
+    sprintf(str, D_80102930, minutes);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
@@ -545,7 +590,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
 
     str = &str[len];
     *str++ = (u_char)vs_char_colon;
-    sprintf(str, &D_80102930, seconds);
+    sprintf(str, D_80102930, seconds);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {

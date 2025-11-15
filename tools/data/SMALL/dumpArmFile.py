@@ -164,14 +164,14 @@ def export_to_obj(filename, out_name, rooms, main_data, room_names):
 # Main parser
 # ---------------------------------------------------------------------------
 
-def read_arm_binary(filename):
+def read_arm_binary(filename: str):
     """Read ARM file into BytesIO object."""
     with open(filename, "rb") as f:
         return io.BytesIO(f.read())
 
-def parse_arm(filename, out_name):
+def parse_arm(in_name: str, out_name: str):
     """Parse a full ARM file and export OBJ."""
-    f = read_arm_binary(filename)
+    f = read_arm_binary(in_name)
     
     # Read number of rooms
     num_rooms, = read_struct('<I', f)
@@ -202,7 +202,7 @@ def parse_arm(filename, out_name):
             room_names.append((None, 0, 0))
     
     # Export OBJ
-    export_to_obj(filename, out_name, room_graphics, main_data, room_names)
+    export_to_obj(in_name, out_name, room_graphics, main_data, room_names)
 
 # ---------------------------------------------------------------------------
 # Entry point

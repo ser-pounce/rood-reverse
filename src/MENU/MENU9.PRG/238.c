@@ -58,6 +58,8 @@ typedef struct {
 } D_8010A470_t;
 
 void func_80102E10(int, int, char**, int);
+int func_801031BC(void);
+int func_8010337C(void);
 void func_80104CBC(MATRIX*);
 void func_80104E90(MATRIX* arg0, short arg1);
 void func_80104F04(MATRIX* arg0, short arg1);
@@ -89,6 +91,9 @@ extern int D_80109904[];
 extern int D_80109D04[];
 extern char D_8010A104[];
 extern char D_8010A204[];
+extern int D_8010A214;
+extern int D_8010A218;
+extern int D_8010A21C;
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
@@ -182,7 +187,59 @@ void func_80102FB8(void) { func_800FA8E0(8); }
 
 void _menuReady(void) { vs_mainmenu_ready(); }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102FF8);
+int func_80102FF8(char* state)
+{
+    switch (*state) {
+    case 3:
+        func_800FFB68(1);
+        D_8010A214 = 8;
+        D_8010A218 = 0;
+        *state = 4;
+        break;
+    case 4:
+        if (D_8010A218 == 0) {
+            D_8010A218 = func_801031BC();
+        }
+        if (D_8010A214 != 0) {
+            D_8010A214 -= 1;
+        } else if (D_8010A218 != 0) {
+            func_8008A4DC(0);
+            func_800CB654(1);
+            D_800EB9B0 = 0x200000;
+            *state = 5;
+        case 5:
+            *state += vs_mainmenu_ready();
+        }
+        break;
+    case 6:
+        D_8010A21C = func_8010337C();
+        if (D_8010A21C != 0) {
+            func_80100414(-4, 0x80);
+            func_800CB654(0);
+            D_800EB9B0 = 0;
+            func_8008A4DC(1);
+            func_800FFA88(0);
+            func_800FA8E0(0x28);
+            *state = 7;
+        }
+        break;
+    case 7:
+        func_800FFB68(0);
+        *state = 8;
+        break;
+    case 8:
+        if (D_801022D8 == 0) {
+            if (D_8010A21C == 2) {
+                vs_battle_menuState.currentState = 9;
+            }
+            D_801022D6 = 0;
+            *state = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_801031BC(void)
 {

@@ -16,6 +16,7 @@
 #include "lbas.h"
 #include <libetc.h>
 #include <abs.h>
+#include "insertTPage.h"
 
 extern u_long* D_1F800000[];
 
@@ -1506,44 +1507,13 @@ void func_801061EC(MATRIX* arg0, short arg1)
     arg0->m[2][2] = temp_v0;
 }
 
-#define _insertTpage(after, arg1)                                                        \
-    __asm__("scratch = $t3;"                                                             \
-            "tpageOp = $t4;"                                                             \
-            "li         scratch, 0x1F800000;"                                            \
-            "sll        $t0, %0, 2;"                                                     \
-            "lw         $t4, 4(scratch);"                                                \
-            "lw         $t7, 0(scratch);"                                                \
-            "addu       $t0, $t4;"                                                       \
-            "lw         $t1, 0($t0);"                                                    \
-            "li         tpageOp, 0xE1000000;"                                            \
-            "and        $t6, %1, 0x1FF;"                                                 \
-            "or         tpageOp, 0x200;"                                                 \
-            "or         tpageOp, $t6;"                                                   \
-            "sw         tpageOp, 4($t7);"                                                \
-            "sw         $zero, 8($t7);"                                                  \
-            "li         $t5, 0xFFFFFF;"                                                  \
-            "li         $t4, 0x2000000;"                                                 \
-            "li         $t6, 0xFF000000;"                                                \
-            "and        $t2, $t1, $t5;"                                                  \
-            "or         $t4, $t2;"                                                       \
-            "sw         $t4, 0($t7);"                                                    \
-            "and        $t2, $t1, $t6;"                                                  \
-            "and        $t4, $t7, $t5;"                                                  \
-            "or         $t4, $t2;"                                                       \
-            "sw         $t4, 0($t0);"                                                    \
-            "addu       $t2, $t7, 0xC;"                                                  \
-            "sw         $t2, 0(scratch);"                                                \
-            :                                                                            \
-            : "r"(after), "r"(arg1)                                                      \
-            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7")
-
 void _darkenBackground(void)
 {
     SPRT* sprt;
     u_long* pScratch1;
     u_long* pScratch2;
 
-    _insertTpage(0x7FE, getTPage(0, 3, 0, 0));
+    _insertTPage(0x7FE, getTPage(0, 3, 0, 0));
 
     pScratch1 = getScratchAddr(0);
     sprt = (SPRT*)pScratch1[0];
@@ -1558,9 +1528,9 @@ void _darkenBackground(void)
     *getScratchAddr(0) = (u_long)sprt;
 
     if (vs_main_frameBuf != 0) {
-        _insertTpage(0x7FE, getTPage(2, 0, 320, 0));
+        _insertTPage(0x7FE, getTPage(2, 0, 320, 0));
     } else {
-        _insertTpage(0x7FE, getTPage(2, 0, 0, 0));
+        _insertTPage(0x7FE, getTPage(2, 0, 0, 0));
     }
 
     sprt = (SPRT*)*getScratchAddr(0);
@@ -1577,9 +1547,9 @@ void _darkenBackground(void)
     pScratch2[0] = (u_long)sprt;
 
     if (vs_main_frameBuf != 0) {
-        _insertTpage(0x7FE, getTPage(2, 0, 512, 0));
+        _insertTPage(0x7FE, getTPage(2, 0, 512, 0));
     } else {
-        _insertTpage(0x7FE, getTPage(2, 0, 192, 0));
+        _insertTPage(0x7FE, getTPage(2, 0, 192, 0));
     }
 }
 
@@ -1633,7 +1603,7 @@ void _applyPalingScreenEffect(void)
 {
     int y;
 
-    _insertTpage(0x7FE, getTPage(0, 3, 0, 0));
+    _insertTPage(0x7FE, getTPage(0, 3, 0, 0));
 
     for (y = 0; y < 239; ++y) {
         int x;
@@ -1670,9 +1640,9 @@ void _applyPalingScreenEffect(void)
         new_var[0] = (void*)sprt;
 
         if (vs_main_frameBuf != 0) {
-            _insertTpage(8, getTPage(2, 0, 320, 0));
+            _insertTPage(8, getTPage(2, 0, 320, 0));
         } else {
-            _insertTpage(8, getTPage(2, 0, 0, 0));
+            _insertTPage(8, getTPage(2, 0, 0, 0));
         }
 
         sprt = *(void**)getScratchAddr(0);
@@ -1704,9 +1674,9 @@ void _applyPalingScreenEffect(void)
         new_var[0] = (void*)sprt;
 
         if (vs_main_frameBuf != 0) {
-            _insertTpage(8, getTPage(2, 0, 512, 0));
+            _insertTPage(8, getTPage(2, 0, 512, 0));
         } else {
-            _insertTpage(8, getTPage(2, 0, 192, 0));
+            _insertTPage(8, getTPage(2, 0, 192, 0));
         }
     }
 }
@@ -1863,7 +1833,7 @@ void _drawUIControls(void)
             _drawUIControlsBackground(D_80108D5C + 0x10, 0x24, 0x60, 0xC);
             _drawUIControlsBackground(D_80108D5C + 0x10, 0x36, 0x4E, 0xC);
             _drawUIControlsBackground(D_80108D5C + 0x10, 0x48, 0x3C, 0xC);
-            _insertTpage(7, 0x103);
+            _insertTPage(7, getTPage(2, 0, 192, 0));
             func_80107B10(0x3E, 0xB8, D_80108DA4[1]);
             return;
         }

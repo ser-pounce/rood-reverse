@@ -13,6 +13,8 @@
 #include <libetc.h>
 #include <stdio.h>
 #include <strings.h>
+#include <libgpu.h>
+#include "insertTPage.h"
 
 typedef struct {
     char unk0;

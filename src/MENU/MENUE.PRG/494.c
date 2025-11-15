@@ -10,8 +10,10 @@
 #include "lbaMacros.h"
 #include "lbas.h"
 #include "vs_string.h"
+#include "insertTPage.h"
 #include <libetc.h>
 #include <stdio.h>
+#include <libgpu.h>
 
 typedef struct {
     int unk0;
@@ -643,41 +645,6 @@ static void _drawContent(void)
     q[0] = area;
 }
 
-static inline void _insertTpage(int primIndex, short tpage)
-{
-    __asm__("scratch = $t3;"
-            "tpageOp = $t4;"
-            "addrMask = $t5;"
-            "tpage = $t6;"
-            "li         scratch, 0x1F800000;"
-            "sll        $t0, %0, 2;"
-            "lw         $t4, 4(scratch);"
-            "lw         $t7, (scratch);"
-            "addu       $t0, $t4;"
-            "lw         $t1, ($t0);"
-            "li         tpageOp, 0xE1000000;"
-            "and        tpage, %1, 0x1FF;"
-            "or         tpageOp, 0x200;"
-            "or         tpageOp, tpage;"
-            "sw         tpageOp, 4($t7);"
-            "sw         $zero, 8($t7);"
-            "li         addrMask, 0xFFFFFF;"
-            "li         $t4, 0x2000000;"
-            "li         $t6, 0xFF000000;"
-            "and        $t2, $t1, addrMask;"
-            "or         $t4, $t2;"
-            "sw         $t4, ($t7);"
-            "and        $t2, $t1, $t6;"
-            "and        $t4, $t7, addrMask;"
-            "or         $t4, $t2;"
-            "sw         $t4, ($t0);"
-            "addu       $t2, $t7, 0xC;"
-            "sw         $t2, (scratch);"
-            :
-            : "r"(primIndex), "r"(tpage)
-            : "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7");
-}
-
 static inline int _min(int arg0, int arg1)
 {
     if (arg0 >= arg1) {
@@ -766,7 +733,7 @@ static void _drawSprite(short* data)
                 scratch = (void*)getScratchAddr(0);
                 AddPrim(scratch[1], sprite++);
                 scratch[0] = (void*)sprite;
-                _insertTpage(0, tPage);
+                _insertTPage(0, tPage);
             }
         }
     }
@@ -788,7 +755,7 @@ static void _setPageBg(int x, int y, int w, int h, int color)
     p = (u_long**)getScratchAddr(0);
     AddPrim(p[1] + 7, poly++);
     p[0] = (u_long*)poly;
-    _insertTpage(7, 96);
+    _insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
 static _menuBgChunkWidths_t const _menuBgChunkWidths = { 128, 128, 64 };
@@ -844,7 +811,7 @@ static void _fadeMenuUpper(void)
     }
 
     *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
-    _insertTpage(-7, 64);
+    _insertTPage(-7, getTPage(0, 2, 0, 0));
 }
 
 static void _fadeMenuLower(void)
@@ -897,7 +864,7 @@ static void _fadeMenuLower(void)
     }
 
     *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
-    _insertTpage(-7, 64);
+    _insertTPage(-7, getTPage(0, 2, 0, 0));
 }
 
 static void _drawPaginationArrow(enum arrowType_e arrowType)

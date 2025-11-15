@@ -7,6 +7,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
+#include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/40564.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -56,6 +57,9 @@ typedef struct {
 } D_8010A470_t;
 
 void func_80102E10(int, int, char**, int);
+void func_80104CBC(int*);
+void func_801051AC(int, int, int, int, int);
+void func_80106528(void);
 void func_8010812C(int);
 int func_8010823C(void);
 void func_801084E4();
@@ -85,7 +89,7 @@ extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
 extern short D_8010A450;
-extern int D_8010A460;
+extern long int D_8010A460;
 extern short D_8010A464;
 extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
@@ -254,7 +258,7 @@ INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801051AC);
 
-void func_8010539C(short arg0)
+void func_8010539C(int arg0)
 {
     POLY_F4* polyF4;
     void** scratch = (void**)getScratchAddr(0);
@@ -283,7 +287,35 @@ INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102830);
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", jtbl_80102898);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010552C);
+void func_8010552C(int arg0)
+{
+    vs_battle_geomOffset sp18;
+    vs_battle_geomOffset sp20;
+    char sp28[128];
+    int spA8[8];
+    void** scratch;
+
+    if (arg0 < 8) {
+        func_80106528();
+    }
+    vs_battle_getGeomOffset(&sp18);
+    sp20.x = 0x80 - ((8 - arg0) << 5);
+    sp20.y = 0xF0;
+    vs_battle_setGeomOffset(&sp20);
+    func_80104CBC(spA8);
+    func_800F9EB8(spA8);
+    vs_battle_setGeomOffset(&sp18);
+    sprintf(sp28, "#%ld", D_8010A460);
+    scratch = (void**)getScratchAddr(0);
+    func_800C6540("SCORE", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x100000, 0x808080,
+        scratch[1] + 0x1C);
+    func_800C6540(sp28, ((arg0 * 0x10) & 0xFFFF) | 0x100000, 0x808080, scratch[1] + 0x1C);
+    func_801051AC((arg0 * 0x10) - 0x80, 0x10, 0x88, 0xC, 2);
+    func_800C6540("RISK   BREAKER   RANK", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0xB80000,
+        0x808080, scratch[1] + 0x1C);
+    func_801051AC((arg0 * 0x10) - 0x80, 0xB8, 0x88, 0xC, 1);
+    func_8010539C(0xEC - (arg0 * 6));
+}
 
 void func_801056B8(void)
 {

@@ -88,7 +88,9 @@ extern char D_8010A204[];
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
+extern int D_8010A438;
 extern short D_8010A450;
+extern int D_8010A45C;
 extern long int D_8010A460;
 extern short D_8010A464;
 extern D_8010A470_t* D_8010A470;
@@ -562,7 +564,50 @@ void func_80107600(void)
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801076A4);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107A98);
+void func_80107A98(int arg0)
+{
+    int x;
+    int clut;
+    POLY_FT4* poly;
+    void** scratch;
+    int new_var;
+
+    if (D_8010A45C == 0) {
+        clut = getClut(896, 223);
+        if (arg0 >= 2) {
+            arg0 -= 2;
+            clut = getClut(912, 223);
+        }
+        if (arg0 != 0) {
+            func_800C6540("#R1", 0x62011E, 0x808080, NULL);
+            if (D_8010A438 < 9) {
+                x = (D_8010A438 >> 1) + 0x120;
+            } else {
+                x = -(D_8010A438 >> 2) + 0x126;
+            }
+        } else {
+            func_800C6540("L1", 0x620022, 0x808080, NULL);
+            if (D_8010A438 < 9) {
+                new_var = 0x20;
+                x = new_var - (D_8010A438 >> 1);
+            } else {
+                x = (D_8010A438 >> 2) + 0x1A;
+            }
+        }
+        x -= 8;
+        scratch = (void**)getScratchAddr(0);
+        poly = scratch[0];
+        setPolyFT4(poly);
+        setXY4(poly, x, 0x60, x + 0x10, 0x60, x, 0x70, x + 0x10, 0x70);
+        setUV4(poly, arg0 * 0x10, 0x30, (arg0 * 0x10) + 0x10, 0x30, arg0 * 0x10, 0x40,
+            (arg0 * 0x10) + 0x10, 0x40);
+        setTPage(poly, 0, 0, 768, 0);
+        poly->clut = clut;
+        setShadeTex(poly, 1);
+        AddPrim(scratch[1], poly++);
+        scratch[0] = poly;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107C34);
 

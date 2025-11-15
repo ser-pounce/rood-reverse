@@ -12,3 +12,4 @@ _statDescriptions = 0x80109200;
 _timeAttacks = 0x80109598;
 _timeAttackDescriptions = 0x8010960C;
 _miscInfo = 0x801097DC;
+D_80109899 = 0x80109899;

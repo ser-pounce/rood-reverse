@@ -43,7 +43,8 @@ typedef struct {
     char unk3;
     short unk4;
     short unk6;
-    int unk8;
+    short unk8;
+    short unkA;
     char unkC;
     char unkD;
     char unkE;
@@ -108,6 +109,7 @@ extern D_8010989C_t D_8010989C;
 extern char D_80102930[];
 extern char D_801029AC[]; // %d
 extern char D_80109898;
+extern char D_80109899;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_80109904[];
@@ -745,7 +747,78 @@ void func_80105D8C(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105F00);
+void func_80105F00(int arg0)
+{
+    int sp18;
+    D_8010A470_t* var_s4;
+    int temp_s3;
+    int var_s1;
+    int i;
+    vs_battle_menuItem_t* var_s0_2;
+    int s6;
+
+    temp_s3 = D_800F1BF0[2] + D_800F1BF0[3];
+    var_s4 = D_8010A470;
+    for (i = 0; i < 0x4E; ++i) {
+        if (i == temp_s3) {
+            if (var_s4->unk8 == 0) {
+                if (var_s4->unkC != 0) {
+                    vs_mainmenu_setMessage((char*)&D_8010A474[D_8010A474[i]]);
+                } else {
+                    vs_mainmenu_setMessage((char*)&_miscInfo[_miscInfo[2]]);
+                }
+            }
+            var_s4->unk8 = 1;
+            if (var_s4->unkC != 0) {
+                var_s4->unkA = 8;
+            }
+        } else {
+            var_s4->unk8 = 0;
+            if (var_s4->unkA > 0) {
+                var_s4->unkA = var_s4->unkA - 1;
+            }
+        }
+        ++var_s4;
+    }
+
+    i = 0;
+    sp18 = arg0 * 0x17;
+    var_s4 = &D_8010A470[D_800F1BF0[2]];
+
+    for (; i < 8; ++i, ++var_s4) {
+        u_char* new_var = D_800F1BF0;
+        var_s1 = sp18 - 0x10;
+        if ((0x38 + i * 0x10) < var_s1) {
+            var_s1 = 0x38 + i * 0x10;
+        }
+        s6 = 0x3C;
+        if ((var_s4->unk8 != 0) && (arg0 == 8)) {
+            D_80109899 = func_800FFCDC(D_80109899, ((var_s1 - 8) << 0x10) | 0x30);
+        }
+        if (var_s4->unkC != 0) {
+            var_s0_2 =
+                vs_battle_setMenuItem(0, s6, var_s1, 0xC8, 0, (char*)&var_s4->unk10);
+        } else {
+            var_s0_2 = vs_battle_setMenuItem(
+                0, s6, var_s1, 0xC8, 0, (char*)&_miscInfo[_miscInfo[3]]);
+            var_s0_2->unkA = 3;
+        }
+        var_s0_2->unk4 = var_s4->unkA;
+        if ((i == 0) && (new_var[2] != 0)) {
+            var_s0_2->unk5 = 1;
+        }
+        if ((i == 7) && (new_var[2] != 0x46)) {
+            var_s0_2->unk5 = 2;
+        }
+        func_80105BCC(s6 - 0xE, var_s1, new_var[2] + i + 1, var_s0_2->unk5 & 1);
+        if ((var_s0_2->unk5 != 0) && (arg0 == 8)) {
+            func_80102A7C(var_s0_2);
+        } else {
+            func_800C9078(var_s0_2);
+        }
+    }
+    vs_battle_getMenuItem(0)->state = 0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102940);
 

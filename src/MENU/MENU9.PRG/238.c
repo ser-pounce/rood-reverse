@@ -451,7 +451,36 @@ void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102930);
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80105BCC);
+void func_80105BCC(int arg0, int arg1, int arg2, int arg3)
+{
+    char sp10[2];
+    int i;
+    POLY_FT4* poly;
+
+    sprintf(sp10, "%03d", arg2);
+    arg0 += 0x18;
+    poly = *(void**)getScratchAddr(0);
+
+    for (i = 2; i >= 0; --i, arg0 -= 5) {
+        setPolyFT4(poly);
+        setXY4(
+            poly, arg0, arg1 - 4, arg0 + 6, arg1 - 4, arg0, arg1 + 6, arg0 + 6, arg1 + 6);
+        setcode(poly, (getcode(poly) | 0x02) & 0xFE);
+        setUV4(poly, (sp10[i] - 0x30) * 6, 0, ((sp10[i] - 0x30) * 6) + 6, 0,
+            (sp10[i] - 0x30) * 6, 0xA, ((sp10[i] - 0x30) * 6) + 6, 0xA);
+        if (arg3 != 0) {
+            setTPage(poly, 0, 1, 768, 0);
+            setRGB0(poly, 0x20, 0x20, 0x20);
+            setClut(poly, 880, 223);
+        } else {
+            setTPage(poly, 0, 0, 768, 0);
+            setRGB0(poly, 0x80, 0x80, 0x80);
+            setClut(poly, 832, 223);
+        }
+        AddPrim(*(void**)getScratchAddr(2), poly++);
+    }
+    *(void**)getScratchAddr(0) = poly;
+}
 
 void func_80105D8C(void)
 {

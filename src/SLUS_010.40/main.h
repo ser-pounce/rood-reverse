@@ -112,7 +112,9 @@ typedef union {
 } vs_Gametime_t;
 
 typedef struct {
-    int unk0[10];
+    int unk0;
+    u_short unk4[6];
+    int unk10[6];
     int unk28[8][3];
     u_int unk88[5];
     int unk9C[30];

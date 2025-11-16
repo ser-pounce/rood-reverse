@@ -614,7 +614,7 @@ void func_801056B8(void)
         var_a2->unk0 = 0;
         var_a2->unk2 = 0;
         var_a2->unk3 = 0;
-        if (D_8005FEA0.unk0[0] & ((new_var = 1) << i)) {
+        if (D_8005FEA0.unk0 & ((new_var = 1) << i)) {
             var_a2->unk1 = 1;
             var_a2->unk8 = (char*)&_titleStrings[_titleStrings[i]];
             var_a2->unkC = (char*)&_titleDescriptions[_titleDescriptions[i]];
@@ -1150,7 +1150,7 @@ void func_80107600(void)
     int a1;
 
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (D_8005FEA0.unk0[0] & (a1 << i)) {
+        if (D_8005FEA0.unk0 & (a1 << i)) {
             ++var_a2;
         }
     }

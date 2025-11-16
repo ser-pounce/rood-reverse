@@ -10,6 +10,7 @@
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/40564.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 #include <stdio.h>
@@ -96,6 +97,9 @@ void func_8010812C(int);
 int func_8010823C(void);
 void func_801084E4(void);
 
+extern const P_CODE D_80102820[];
+extern const P_CODE D_80102830[];
+
 extern u_short _menuStrings[];
 extern u_short _rankStrings[];
 extern u_short _titleStrings[];
@@ -158,6 +162,7 @@ void func_80102A38(int arg0)
     }
 }
 
+// https://decomp.me/scratch/eqIq9
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A7C);
 
 void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
@@ -466,8 +471,48 @@ void func_80104F04(MATRIX* arg0, short arg1)
 // https://decomp.me/scratch/snDLY
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
 
-// https://decomp.me/scratch/UKjko
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801051AC);
+void func_801051AC(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    char b1;
+    char g0;
+    char r1;
+    char g1;
+    char r0;
+    char b0;
+    POLY_G4* polyG4;
+    POLY_F4* polyF4;
+    void** scratch = (void**)0x1F800000;
+
+    int a3 = (arg0 + arg2) - 1;
+    int a2 = (arg1 + arg3) - 1;
+
+    polyG4 = scratch[0];
+    setPolyG4(polyG4);
+    r0 = D_80102820[arg4].r0;
+    g0 = D_80102820[arg4].g0;
+    b0 = D_80102820[arg4].b0;
+    r1 = D_80102830[arg4].r0;
+    g1 = D_80102830[arg4].g0;
+    b1 = D_80102830[arg4].b0;
+
+    setXY4(polyG4, arg0, arg1, a3, arg1, arg0, a2, a3, a2);
+    setRGB0(polyG4, r0, g0, b0);
+    setRGB1(polyG4, r1, g1, b1);
+    setRGB2(polyG4, r0, g0, b0);
+    setRGB3(polyG4, r1, g1, b1);
+    AddPrim(scratch[1] + 0x1C, polyG4++);
+
+    arg0 += 2;
+    arg1 += 2;
+    polyF4 = (POLY_F4*)polyG4;
+    setPolyF4(polyF4);
+    setXY4(polyF4, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
+        (arg0 + arg2) - 1, (arg1 + arg3) - 1);
+    setRGB0(polyF4, 0, 0, 0);
+    AddPrim(scratch[1] + 0x1C, polyF4++);
+    scratch[0] = polyF4;
+    _insertTPage(7, getTPage(0, 3, 0, 0));
+}
 
 void func_8010539C(int arg0)
 {

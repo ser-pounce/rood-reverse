@@ -1,4 +1,5 @@
 #include "common.h"
+#include "592C.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"

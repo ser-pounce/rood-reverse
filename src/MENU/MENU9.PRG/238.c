@@ -75,7 +75,6 @@ void func_801076A4(void);
 void func_80107C34(void);
 void func_8010812C(int);
 int func_8010823C(void);
-void func_801084E4(void);
 
 extern const P_CODE D_80102820[];
 extern const P_CODE D_80102830[];

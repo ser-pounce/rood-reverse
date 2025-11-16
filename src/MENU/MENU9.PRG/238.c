@@ -1131,7 +1131,111 @@ void func_80107600(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801076A4);
+void func_801076A4(void)
+{
+    int i;
+
+    if (D_8010A466 != 0) {
+        D_8005FEA0.unk0 |= 1;
+    }
+    if (D_8005FEA0.unk98 >= 0x34U) {
+        D_8005FEA0.unk0 |= 4;
+    }
+    if (D_8005FEA0.unk94 >= 0x169U) {
+        D_8005FEA0.unk0 |= 8;
+    }
+    if (vs_main_stateFlags.unkCC != 0) {
+        D_8005FEA0.unk0 |= 0x10;
+    }
+    if (vs_main_stateFlags.unkCD != 0) {
+        D_8005FEA0.unk0 |= 0x20;
+    }
+    if (vs_main_stateFlags.unkCE != 0) {
+        D_8005FEA0.unk0 |= 0x40;
+    }
+    if (vs_main_stateFlags.unkCF != 0) {
+        D_8005FEA0.unk0 |= 0x80;
+    }
+    if (vs_main_stateFlags.unkD0 != 0) {
+        D_8005FEA0.unk0 |= 0x100;
+    }
+    if (vs_main_stateFlags.unkD1 != 0) {
+        D_8005FEA0.unk0 |= 0x200;
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) == 0x800000) {
+            break;
+        }
+    }
+
+    if (i == 8) {
+        D_8005FEA0.unk0 |= 0x400;
+    }
+
+    if (D_8005FEA0.unk88 >= 0x1E) {
+        D_8005FEA0.unk0 |= 0x800;
+    }
+
+    if (vs_main_stateFlags.unk383 != 0) {
+        D_8005FEA0.unk0 |= 0x1000;
+    }
+
+    if (vs_main_stateFlags.unk387 != 0) {
+        D_8005FEA0.unk0 |= 0x2000;
+    }
+
+    for (i = 0xB8; i < 0xE0; ++i) {
+        if (!((vs_main_skills[i].flags >> 0xF) & 1)) {
+            break;
+        }
+    }
+
+    if (i == 0xE0) {
+        D_8005FEA0.unk0 |= 0x4000;
+    }
+
+    for (i = 0x16; i < 0x36; ++i) {
+        if (((i != 0x21) && (i != 0x24) && (i != 0x26) && (i != 0x27)
+                && !((vs_main_skills[i].flags >> 0xF) & 1))) {
+            break;
+        }
+    }
+
+    if (i == 0x36) {
+        D_8005FEA0.unk0 |= 0x8000;
+    }
+
+    for (i = 0; i < 6; ++i) {
+        if (D_8005FEA0.unk4[i] < 0x1388) {
+            break;
+        }
+    }
+
+    if (i == 6) {
+        D_8005FEA0.unk0 |= 0x100000;
+    }
+
+    for (i = 0; i < 10; ++i) {
+        if (D_8005FEA0.unk14[i] < 0x1388) {
+            break;
+        }
+    }
+
+    if (i == 0xA) {
+        D_8005FEA0.unk0 |= 0x200000;
+    }
+
+    for (i = 0; i < 9; ++i) {
+        if (D_8005FEA0.unk14[i + 1] >= 0x1F4) {
+            D_8005FEA0.unk0 |= 1 << (i + 0x16);
+        }
+    }
+
+    if (D_8005FEA0.unk14[0] >= 0x1F4) {
+        D_8005FEA0.unk0 |= 0x80000000;
+    }
+}
 
 void func_80107A98(int arg0)
 {

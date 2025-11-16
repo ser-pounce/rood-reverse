@@ -190,7 +190,14 @@ typedef struct {
     char introState;
     char unkAC[9];
     char unkB5;
-    char unkB6[0x4F];
+    char unkB6[22];
+    char unkCC;
+    char unkCD;
+    char unkCE;
+    char unkCF;
+    char unkD0;
+    char unkD1;
+    char unkD2[51];
     char unk105;
     char unk106[22];
     char puzzleMode;
@@ -200,7 +207,13 @@ typedef struct {
     char unk341;
     char savePointStates[48];
     char unk186[0x1B9];
-    char unk33F[0x101];
+    char unk33F[68];
+    char unk383;
+    char unk384;
+    char unk385;
+    char unk386;
+    char unk387;
+    char unk388[184];
 } vs_main_flags_t;
 
 typedef struct {

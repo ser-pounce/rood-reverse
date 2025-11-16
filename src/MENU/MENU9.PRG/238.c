@@ -59,26 +59,6 @@ typedef struct {
     int unk28;
 } D_8010A470_t;
 
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    short unk6;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-} D_8010A4A8_t;
-
 void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
 int func_801031BC(void);
@@ -115,11 +95,6 @@ extern char D_80109898;
 extern char D_80109899;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
-extern int D_80109904[];
-extern int D_80109D04[];
-extern char D_8010A104[];
-extern char D_8010A204[];
-extern char D_8010A20C[];
 extern int D_8010A214;
 extern int D_8010A218;
 extern int D_8010A21C;
@@ -144,12 +119,6 @@ extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
 extern char D_8010A490[16];
-extern int D_8010A4A0;
-extern vs_main_CdQueueSlot* D_8010A4A4;
-extern D_8010A4A8_t* D_8010A4A8;
-extern void* D_8010A4AC;
-extern int D_8010A4B0;
-extern int D_8010A4B4;
 
 void func_80102A38(int arg0)
 {
@@ -1217,7 +1186,7 @@ void func_80107C34(void)
     int i;
 
     D_8010A460 = 0;
-    
+
     for (i = 0; i < 6; ++i) {
         D_8010A460 += D_8005FEA0.unk4[i] * sp0[i];
     }
@@ -1232,7 +1201,7 @@ void func_80107C34(void)
         }
     }
 
-    if (D_8005FEA0.unk88 < 6U) {
+    if (D_8005FEA0.unk88 < 6) {
         D_8010A460 += D_8005FEA0.unk88 * 0xA;
     } else if (D_8005FEA0.unk88 < 0xB) {
         D_8010A460 += D_8005FEA0.unk88 * 0x14;
@@ -1264,138 +1233,7 @@ void func_80107C34(void)
 
     D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1A];
     D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1B];
-    if (D_8010A460 > 0x3B9AC9FFU) {
+    if (D_8010A460 > 0x3B9AC9FF) {
         D_8010A460 = 0x3B9AC9FF;
     }
 }
-
-// https://decomp.me/scratch/cebYm
-// Needs 2.7.2-cdk
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107FBC);
-
-// https://decomp.me/scratch/xyltD
-// Needs 2.7.2-cdk
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80108098);
-
-// https://decomp.me/scratch/da4gv
-// Needs 2.7.2-cdk
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_801080C8);
-
-void func_8010812C(int id)
-{
-    vs_main_CdFile cdFile;
-    int i;
-
-    cdFile.lba = D_80109904[id];
-    D_8010A4A0 = id;
-    cdFile.size = D_80109D04[id];
-    D_8010A4A4 = vs_main_allocateCdQueueSlot(&cdFile);
-    D_8010A4A8 = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueueUrgent(D_8010A4A4, D_8010A4A8);
-    D_8010A4B4 = D_8010A104[id];
-    D_8010A4B0 = 0;
-
-    for (i = 0; i < 6; ++i) {
-        if (id == D_8010A204[i]) {
-            D_8010A4B0 = i;
-            break;
-        }
-    }
-
-    if (D_8010A4B0 != 0) {
-        D_8010A4AC = vs_main_allocHeap(0x3200);
-    } else {
-        D_8010A4AC = vs_main_allocHeap(0x24D0);
-    }
-}
-
-int func_8010823C(void)
-{
-    func_8007C8F8_t sp10;
-    int temp_s0;
-
-    if (D_8010A4A4 != NULL) {
-        temp_s0 = D_8010A4A4->state;
-        if (temp_s0 != 4) {
-            return 1;
-        }
-        vs_main_freeCdQueueSlot(D_8010A4A4);
-        D_8010A4A4 = NULL;
-        sp10.unk0 = 2;
-        sp10.unk1 = 1;
-        sp10.unk8 = D_8010A4A8->unk8 + (long)D_8010A4A8;
-        sp10.unk2 = D_8010A4A8->unk0;
-        sp10.unk4 = D_8010A4AC;
-        sp10.unk10 = 0xFF;
-        sp10.unk13 = D_8010A4B4 & 1;
-        sp10.unk12 = D_8010A4A8->unk6;
-        func_800995E8(&sp10);
-        if (D_8010A4B0 != 0) {
-            sp10.unk0 = 1;
-            sp10.unk1 = 0x10;
-            sp10.unk2 = D_8010A20C[D_8010A4B0];
-            sp10.unk4 = D_8010A4AC + 0x1900;
-            sp10.unk10 = 1;
-            sp10.unk11 = 0xFC;
-            sp10.unk13 = 0;
-            func_800995E8(&sp10);
-        } else {
-            if (D_8010A4A8->unk1 != 0) {
-                sp10.unk0 = temp_s0;
-                sp10.unk1 = 2;
-                sp10.unk8 = D_8010A4A8->unk10 + (long)D_8010A4A8;
-                sp10.unk2 = D_8010A4A8->unk1;
-                sp10.unk4 = D_8010A4AC + 0x1900;
-                sp10.unk10 = 1;
-                sp10.unk11 = 0xF0;
-                sp10.unk12 = D_8010A4A8->unk3;
-                func_800995E8(&sp10);
-            }
-            if (D_8010A4A8->unk4 != 0) {
-                sp10.unk0 = temp_s0;
-                sp10.unk1 = 3;
-                sp10.unk8 = D_8010A4A8->unk18 + (long)D_8010A4A8;
-                sp10.unk2 = D_8010A4A8->unk4;
-                sp10.unk4 = D_8010A4AC + 0x1EE8;
-                sp10.unk10 = 1;
-                sp10.unk11 = 0xF1;
-                sp10.unk12 = D_8010A4A8->unk5;
-                func_800995E8(&sp10);
-            }
-        }
-        if (D_8010A4A8->unk2C != 0) {
-            sp10.unk0 = 8;
-            sp10.unk1 = 1;
-            sp10.unk8 = D_8010A4A8->unk28 + (long)D_8010A4A8;
-            sp10.unk10 = 0;
-            sp10.unk2 = D_8010A4A8->unk2;
-            func_800995E8(&sp10);
-        }
-        if (D_8010A4A8->unk24 != 0) {
-            sp10.unk0 = 8;
-            sp10.unk1 = 1;
-            sp10.unk8 = D_8010A4A8->unk20 + (long)D_8010A4A8;
-            sp10.unk10 = 0;
-            sp10.unk2 = 0;
-            func_800995E8(&sp10);
-        }
-        return 1;
-    }
-    if (D_8010A4A8 == NULL) {
-        return 0;
-    }
-    func_8009967C();
-    if (func_800995B0() == 0) {
-        vs_main_freeHeapR(D_8010A4A8);
-        D_8010A4A8 = NULL;
-    }
-    return 1;
-}
-
-void func_801084E4(void)
-{
-    vs_main_freeHeapR(D_8010A4AC);
-    D_8010A4AC = NULL;
-}
-
-void func_80108514(void) { }

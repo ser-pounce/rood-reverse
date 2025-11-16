@@ -135,7 +135,7 @@ extern short D_8010A450;
 extern int D_8010A454;
 extern int D_8010A458;
 extern int D_8010A45C;
-extern long int D_8010A460;
+extern u_long D_8010A460;
 extern short D_8010A464;
 extern u_short D_8010A466;
 extern u_short D_8010A468;
@@ -310,11 +310,11 @@ int func_801031BC(void)
 
     D_8010A466 = vs_main_stateFlags.clearCount;
 
-    if (D_8010A46A > D_8005FEA0.unk88[3]) {
-        D_8005FEA0.unk88[3] = D_8010A46A;
+    if (D_8010A46A > D_8005FEA0.unk94) {
+        D_8005FEA0.unk94 = D_8010A46A;
     }
-    if (D_8010A468 > D_8005FEA0.unk88[4]) {
-        D_8005FEA0.unk88[4] = D_8010A468;
+    if (D_8010A468 > D_8005FEA0.unk98) {
+        D_8005FEA0.unk98 = D_8010A468;
     }
 
     vs_main_memcpy(D_8010A480, (void*)0x1F800034, 0x10);
@@ -1210,7 +1210,64 @@ void func_80107A98(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107C34);
+void func_80107C34(void)
+{
+    short sp0[6] = { 20, 20, 40, 80, 100, 60 };
+    short sp10[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
+    int i;
+
+    D_8010A460 = 0;
+    
+    for (i = 0; i < 6; ++i) {
+        D_8010A460 += D_8005FEA0.unk4[i] * sp0[i];
+    }
+
+    for (i = 0; i < 10; ++i) {
+        D_8010A460 += D_8005FEA0.unk14[i] * sp10[i];
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) != 0x800000) {
+            D_8010A460 += 0x4E20;
+        }
+    }
+
+    if (D_8005FEA0.unk88 < 6U) {
+        D_8010A460 += D_8005FEA0.unk88 * 0xA;
+    } else if (D_8005FEA0.unk88 < 0xB) {
+        D_8010A460 += D_8005FEA0.unk88 * 0x14;
+    } else if (D_8005FEA0.unk88 < 0x10) {
+        D_8010A460 += D_8005FEA0.unk88 * 0x28;
+    } else if (D_8005FEA0.unk88 < 0x15) {
+        D_8010A460 += D_8005FEA0.unk88 * 0x50;
+    } else if (D_8005FEA0.unk88 < 0x1A) {
+        D_8010A460 += D_8005FEA0.unk88 * 0xA0;
+    } else if (D_8005FEA0.unk88 < 0x1F) {
+        D_8010A460 += D_8005FEA0.unk88 * 0x140;
+    } else if (D_8005FEA0.unk88 < 0x33) {
+        D_8010A460 += D_8005FEA0.unk88 * 0x280;
+    } else {
+        D_8010A460 += D_8005FEA0.unk88 * 0x500;
+    }
+
+    D_8010A460 = D_8010A460 + (D_8010A466 * 0x186A0);
+
+    if ((D_8010A466 != 0) && (D_8005FF30 < 0x258)) {
+        if (D_8005FF30 >= 0x21C) {
+            D_8010A460 = D_8010A460 + (D_8010A460 >> 2);
+        } else if (D_8005FF30 >= 0x12C) {
+            D_8010A460 = D_8010A460 + (D_8010A460 >> 1);
+        } else {
+            D_8010A460 = D_8010A460 * 2;
+        }
+    }
+
+    D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1A];
+    D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1B];
+    if (D_8010A460 > 0x3B9AC9FFU) {
+        D_8010A460 = 0x3B9AC9FF;
+    }
+}
 
 // https://decomp.me/scratch/cebYm
 // Needs 2.7.2-cdk

@@ -114,9 +114,15 @@ typedef union {
 typedef struct {
     int unk0;
     u_short unk4[6];
-    int unk10[6];
+    int unk10;
+    u_short unk14[10];
     int unk28[8][3];
-    u_int unk88[5];
+    u_short unk88;
+    u_short unk8A;
+    u_int unk8C;
+    u_int unk90;
+    u_int unk94;
+    u_int unk98;
     int unk9C[30];
 } D_8005FEA0_t;
 
@@ -280,6 +286,7 @@ extern int vs_main_saveGameClearData;
 
 extern D_8005FEA0_t D_8005FEA0;
 extern char vs_main_skillsLearned[32];
+extern u_int D_8005FF30;
 extern D_8005FFD8_t D_8005FFD8;
 extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;

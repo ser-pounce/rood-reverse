@@ -468,8 +468,37 @@ void func_80104F04(MATRIX* arg0, short arg1)
     arg0->m[2][2] = temp_v0;
 }
 
-// https://decomp.me/scratch/snDLY
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80104F74);
+void func_80104F74(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    int i;
+    int var_s7;
+    LINE_G2* line;
+    POLY_F4* poly;
+
+    void** scratch = (void**)getScratchAddr(0);
+
+    line = scratch[0];
+
+    for (i = arg1, var_s7 = arg2; i < ((arg1 + arg3) - 1); ++i, --var_s7) {
+
+        setLineG2(line);
+        setXY2(line, arg0, i, (arg0 + var_s7) - 1, i);
+        setRGB0(line, D_80102820[arg4].r0, D_80102820[arg4].g0, D_80102820[arg4].b0);
+        setRGB1(line, D_80102830[arg4].r0, D_80102830[arg4].g0, D_80102830[arg4].b0);
+        AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
+    }
+    arg0 += 2;
+    arg1 += 2;
+    poly = (POLY_F4*)line;
+    setPolyF4(poly);
+    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
+        (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
+    setRGB0(poly, 0, 0, 0);
+    scratch = (void**)getScratchAddr(0);
+    AddPrim(scratch[1] + 0x1C, poly++);
+    scratch[0] = (void*)poly;
+    _insertTPage(7, 0x60);
+}
 
 void func_801051AC(int arg0, int arg1, int arg2, int arg3, int arg4)
 {

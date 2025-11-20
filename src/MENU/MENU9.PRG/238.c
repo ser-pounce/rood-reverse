@@ -59,6 +59,7 @@ typedef struct {
     int unk28;
 } D_8010A470_t;
 
+int func_80101268(int, int, vs_battle_menuItem_t*, u_long*);
 void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
 int func_801031BC(void);
@@ -97,6 +98,8 @@ void func_801080C8(void);
 void func_8010812C(int);
 int func_8010823C(void);
 
+extern void* D_1F800000[];
+
 extern u_short _menuStrings[];
 extern u_short _rankStrings[];
 extern u_short _titleStrings[];
@@ -107,6 +110,8 @@ extern u_short _timeAttacks[];
 extern u_short _timeAttackDescriptions[];
 extern u_short _miscInfo[];
 
+extern char D_8010851C;
+extern char D_8010851D;
 extern D_8010989C_t D_8010989C;
 extern char D_80109898;
 extern char D_80109899;
@@ -154,8 +159,122 @@ void func_80102A38(int arg0)
     }
 }
 
-// https://decomp.me/scratch/eqIq9
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80102A7C);
+void func_80102A7C(vs_battle_menuItem_t* arg0)
+{
+    int sp10;
+    int sp14;
+    int sp18;
+    int sp1C;
+    int temp_fp;
+    char temp_v1_2;
+    int var_a0;
+    int var_s0;
+    int i;
+    u_long* var_s2;
+    u_char* temp_s1;
+    u_int temp_a0;
+    u_int var_s4;
+    u_long* temp_s7;
+    int temp_v1;
+    int s5;
+
+    temp_s1 = arg0->text;
+
+    sp14 = 0;
+    if (vs_main_frameBuf == 0) {
+        sp14 = 0x140;
+    }
+
+    var_s4 = *(int*)&arg0->animSpeed;
+    temp_s7 = D_1F800000[2] + 8;
+
+    sp10 = arg0->unk1;
+    sp18 = arg0->unk4;
+    temp_fp = arg0->unk5 - 1;
+    sp1C = arg0->unk2;
+
+    if (vs_main_frameBuf != D_8010851C) {
+        ++D_8010851D;
+        D_8010851C = vs_main_frameBuf;
+        if (D_8010851D >= 0xC) {
+            D_8010851D = 0;
+        }
+    }
+
+    temp_v1 = arg0->state;
+
+    if ((temp_v1 == 1) && (arg0->animSpeed < 0x80U)) {
+        var_s0 = D_8010851D >> 2;
+        if (temp_fp == 0) {
+            var_s0 = var_s0 - 5;
+        } else {
+            var_s0 = temp_v1 - var_s0;
+        }
+        func_800C0224(0x80, (arg0->animSpeed - 0xE) | ((arg0->y + var_s0) << 0x10),
+            0x100010, temp_s7 - 1)
+            ->unk10 = (temp_fp * 0x10) | 0x37F93000;
+    }
+
+    i = arg0->animSpeed + 6;
+    while ((var_s0 = *temp_s1++) != 0xFF) {
+        if (var_s0 == 0xFA) {
+            i += *temp_s1++;
+        } else {
+            i = func_80101268(var_s0 | (temp_fp << 0x1F), i, arg0, temp_s7);
+        }
+    }
+    if (sp10 == 0) {
+        return;
+    }
+
+    var_s2 = D_1F800000[0];
+    for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
+        if (temp_fp == 0) {
+            var_s0 = s5 + 0x20;
+        } else {
+            var_s0 = s5;
+            var_s0 = 0x78 - s5;
+        }
+        var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
+        var_s2[1] = 0xE1000220;
+        var_s2[2] = func_800C8FAC(8 - sp18, sp1C, var_s0) | 0x52000000;
+        var_s2[3] = var_s4;
+        var_s2[4] = func_800C8FAC(sp18, sp1C, var_s0);
+        var_s2[5] = ((var_s4 + sp10 - 1) & 0xFFFF) | ((var_s4 >> 0x10) << 0x10);
+        var_s2[6] = 0xE1000020;
+        *temp_s7 = ((u_long)var_s2 << 8) >> 8;
+        var_s2 += 7;
+        var_s4 += 0x10000;
+    }
+
+    D_1F800000[0] = var_s2;
+    if (temp_fp == 0) {
+        func_800CCCB8(temp_s7, 0x60000000,
+            ((var_s4 + 2) & 0xFFFF) | ((var_s4 >> 0x10) << 0x10), sp10 | 0x20000);
+    }
+
+    if (sp18 != 0) {
+        arg0->unk4 = sp18 - 1;
+    }
+
+    var_s4 = var_s4 + 0xFFF40000;
+    sp10 |= 0x10000;
+    var_s0 = ((arg0->animSpeed < 0x80) ^ 1) << 7;
+
+    for (i = 0; i < 12; ++i) {
+        if (temp_fp == 0) {
+            var_a0 = 0x78 - i * 8;
+        } else {
+            var_a0 = i * 8 + 0x20;
+        }
+        var_s2 = vs_battle_setSprite(var_a0, var_s4, sp10, temp_s7);
+        temp_v1_2 = var_s4 - var_s0;
+        temp_a0 = var_s4 >> 0x10;
+        var_s4 += 0x10000;
+        var_s2[1] = ((u_int)(sp14 + var_s0) >> 6) | 0xE1000120;
+        var_s2[4] = temp_v1_2 | (temp_a0 << 8);
+    }
+}
 
 void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
 {

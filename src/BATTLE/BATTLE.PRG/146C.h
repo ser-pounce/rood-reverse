@@ -298,7 +298,10 @@ typedef struct {
 typedef struct {
     u_short currentManual;
     u_short unk2;
-    u_short scrollPositions[16];
+    u_short scrollPositions[14];
+    u_short unk20;
+    char unk22;
+    char unk23;
 } vs_battle_manualDisplayState_t;
 
 void func_80069FC4(int, int);

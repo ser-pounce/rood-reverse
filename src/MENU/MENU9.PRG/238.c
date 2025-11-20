@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <strings.h>
 #include <libgpu.h>
+#include <abs.h>
 #include "insertTPage.h"
 #include "vs_string.h"
 
@@ -38,8 +39,7 @@ typedef struct {
 } D_8010A230_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
+    short unk0;
     short unk2;
     short unk4;
     short unk6;
@@ -63,16 +63,37 @@ void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
 int func_801031BC(void);
 int func_8010337C(void);
+void func_80104AF8(void);
+void func_80104B40(void);
+int func_80104BD0(int arg0);
 void func_80104CBC(MATRIX*);
 void func_80104E90(MATRIX* arg0, short arg1);
 void func_80104F04(MATRIX* arg0, short arg1);
 void func_80104F74(int, int, int, int, int);
 void func_801051AC(int, int, int, int, int);
+void func_8010552C(int arg0);
+void func_801056B8(void);
+void func_8010579C(int arg0);
 void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
+void func_80105D8C(void);
+void func_80105F00(int arg0);
+void func_801061F8(int arg0, int arg1);
 void func_80106528(void);
+void func_80106780(void);
+void func_80106808(int);
+void _toVsStringInt(char* buf, int value);
+void func_80106DE0(char* buf, int rank, int totalSeconds);
+void func_80106F9C(void);
+void _toVsStringPercent(char* buf, int value);
+void func_80107090(void);
+void func_80107120(int);
 void func_80107600(void);
 void func_801076A4(void);
+void func_80107A98(int arg0);
 void func_80107C34(void);
+int func_80107FBC(short);
+void func_80108098(void);
+void func_801080C8(void);
 void func_8010812C(int);
 int func_8010823C(void);
 
@@ -97,23 +118,29 @@ extern u_int D_801098C4[];
 extern int D_8010A214;
 extern int D_8010A218;
 extern int D_8010A21C;
+extern int D_8010A220;
 extern int D_8010A224;
 extern int D_8010A228;
 extern D_8010A230_t D_8010A230[];
 extern short D_8010A430[];
 extern int D_8010A43C;
 extern int D_8010A438;
+extern int D_8010A440;
 extern int D_8010A444;
+extern int D_8010A448;
+extern u_short D_8010A44C;
 extern short D_8010A44E;
 extern short D_8010A450;
+extern short D_8010A452;
 extern int D_8010A454;
 extern int D_8010A458;
 extern int D_8010A45C;
 extern u_long D_8010A460;
-extern short D_8010A464;
+extern u_short D_8010A464;
 extern u_short D_8010A466;
 extern u_short D_8010A468;
 extern u_short D_8010A46A;
+extern vs_main_CdQueueSlot* D_8010A46C;
 extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
@@ -294,7 +321,630 @@ int func_801031BC(void)
     return 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_8010337C);
+static const vs_main_CdFile D_80102818 = { 0x14FF0, 0x3800 }; // data/SMALL/MON.BIN
+
+INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102820);
+
+INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102830);
+
+int func_8010337C(void)
+{
+    int _[8] __attribute__((unused));
+    D_800F4FE0_t* temp_v0;
+    D_8010A230_t* var_s0;
+    int lStickX;
+    int lStickY;
+    int a0;
+
+    switch (D_8010A43C) {
+    case 0:
+        func_80100414(0x7FF, 0x80);
+        ++D_8010A43C;
+        break;
+    case 1:
+        func_800F9A24(0);
+        func_801080C8();
+        D_8010A444 = 0x150;
+        D_8010A44E = 0x6B;
+        D_8010A44C = D_800F453C->unk656;
+        D_8010A430[0] = 0xF40;
+        D_8010A430[1] = 0xE47;
+        D_8010A430[2] = 0;
+        func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
+        func_800C6BF0(0, &_rankStrings[_rankStrings[D_8010A464]]);
+        func_80104BD0(1);
+        D_8010A220 = 0;
+        ++D_8010A43C;
+        break;
+    case 2:
+        func_8010552C(D_8010A220);
+        if (D_8010A220 < 8) {
+            temp_v0 = func_800CCDF4(0);
+            temp_v0->unk4[9] -= 6;
+            temp_v0->unk4[7] -= 6;
+            ++D_8010A220;
+        }
+        a0 = func_80104BD0(0);
+        if (a0 == -1) {
+            return 0;
+        }
+        if (a0 == -3) {
+            D_8010A440 = 2;
+        } else if (a0 == -2) {
+            D_8010A440 = 1;
+        } else if (a0 == 3) {
+            D_8010A470 = vs_main_allocHeapR(D_80102818.size);
+            D_8010A46C = vs_main_allocateCdQueueSlot(&D_80102818);
+            vs_main_cdEnqueue(D_8010A46C, D_8010A470);
+            D_8010A440 = 0;
+        } else {
+            D_8010A440 = 0;
+        }
+        D_800F1BF7 = D_800F4EE8.unk0[2] + D_800F4EE8.unk0[3];
+        func_800CD064(0);
+        ++D_8010A43C;
+        break;
+    case 3:
+        func_8010552C(D_8010A220);
+        if (D_8010A220 > 0) {
+            temp_v0 = func_800CCDF4(0);
+            if (temp_v0 != NULL) {
+                temp_v0->unk4[9] += 6;
+                temp_v0->unk4[7] += 6;
+            }
+            --D_8010A220;
+            break;
+        }
+        func_800F9E0C();
+        if (D_8010A440 == 0) {
+            D_8010A43C = (D_800F1BF7 * 3) + 4;
+            break;
+        }
+        func_80104AF8();
+        return D_8010A440;
+    case 4:
+        func_800FFBC8();
+        func_801056B8();
+        D_8010A220 = 0;
+        ++D_8010A43C;
+        break;
+    case 5:
+        if ((D_800F1BF0[1] == 0) && (D_800F1BF0[0] == 0)
+            && (vs_main_buttonsPressed.all & PADLup)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[0] = 0x18;
+            D_800F1BF0[1] = 7;
+        } else if ((D_800F1BF0[1] == 7) && (D_800F1BF0[0] == 0x18)
+                   && (vs_main_buttonsPressed.all & PADLdown)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[0] = 0;
+            D_800F1BF0[1] = 0;
+        } else {
+            if (vs_main_buttonRepeat & PADLup) {
+                if (D_800F1BF0[1] >= 2) {
+                    vs_main_playSfxDefault(0x7E, 4);
+                    --D_800F1BF0[1];
+                } else {
+                    if (D_800F1BF0[0] != 0) {
+                        --D_800F1BF0[0];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    } else if (D_800F1BF0[1] != 0) {
+                        --D_800F1BF0[1];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    }
+                }
+            } else if (vs_main_buttonRepeat & PADLdown) {
+                if (D_800F1BF0[1] >= 6U) {
+                    if (D_800F1BF0[0] < 0x18U) {
+                        ++D_800F1BF0[0];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    } else {
+                        if (D_800F1BF0[1] < 7) {
+                            ++D_800F1BF0[1];
+                            vs_main_playSfxDefault(0x7E, 4);
+                        }
+                    }
+                } else {
+                    ++D_800F1BF0[1];
+                    vs_main_playSfxDefault(0x7E, 4);
+                }
+            }
+        }
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            func_800FFBA8();
+            ++D_8010A43C;
+            if (vs_main_buttonsPressed.all & PADRup) {
+                D_8010A440 = 1;
+            } else {
+                D_8010A440 = 0;
+            }
+        }
+        func_8010579C(D_8010A220);
+        if (D_8010A220 < 8) {
+            ++D_8010A220;
+        }
+        break;
+    case 6:
+        func_8010579C(D_8010A220);
+        if (D_8010A220 <= 0) {
+            if (D_8010A440 == 0) {
+                D_8010A43C = 1;
+                break;
+            }
+            func_80104AF8();
+            return 2;
+        }
+        --D_8010A220;
+        break;
+    case 7:
+        func_800FFBC8();
+        func_80106780();
+        D_8010A220 = 0;
+        ++D_8010A43C;
+        break;
+    case 8:
+        if ((D_800F1BF0[5] == 0) && (D_800F1BF0[4] == 0)
+            && (vs_main_buttonsPressed.all & PADLup)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[4] = 0xF;
+            D_800F1BF0[5] = 7;
+        } else if ((D_800F1BF0[5] == 7) && (D_800F1BF0[4] == 0xF)
+                   && (vs_main_buttonsPressed.all & PADLdown)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[4] = 0;
+            D_800F1BF0[5] = 0;
+        } else {
+            if (vs_main_buttonRepeat & PADLup) {
+                if (D_800F1BF0[5] >= 2) {
+                    vs_main_playSfxDefault(0x7E, 4);
+                    --D_800F1BF0[5];
+                } else {
+                    if (D_800F1BF0[4] != 0) {
+                        --D_800F1BF0[4];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    } else if (D_800F1BF0[5] != 0) {
+                        --D_800F1BF0[5];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    }
+                }
+            } else if (vs_main_buttonRepeat & PADLdown) {
+                if (D_800F1BF0[5] >= 6) {
+                    if (D_800F1BF0[4] < 0xF) {
+                        ++D_800F1BF0[4];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    } else {
+                        if (D_800F1BF0[5] < 7) {
+                            ++D_800F1BF0[5];
+                            vs_main_playSfxDefault(0x7E, 4);
+                        }
+                    }
+                } else {
+                    ++D_800F1BF0[5];
+                    vs_main_playSfxDefault(0x7E, 4);
+                }
+            }
+        }
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            func_800FFBA8();
+            ++D_8010A43C;
+            if (vs_main_buttonsPressed.all & PADRup) {
+                D_8010A440 = 1;
+            } else {
+                D_8010A440 = 0;
+            }
+        }
+        func_80106808(D_8010A220);
+        if (D_8010A220 < 8) {
+            ++D_8010A220;
+        }
+        break;
+    case 9:
+        func_80106808(D_8010A220);
+        if (D_8010A220 <= 0) {
+            if (D_8010A440 == 0) {
+                D_8010A43C = 1;
+                break;
+            }
+            func_80104AF8();
+            return 2;
+        }
+        --D_8010A220;
+        break;
+    case 10:
+        func_800FFBC8();
+        func_80106F9C();
+        ++D_8010A43C;
+        break;
+    case 11:
+        if (vs_main_buttonRepeat & PADLup) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[6] = (D_800F1BF0[6] - 1) & 7;
+        } else {
+            if (vs_main_buttonRepeat & PADLdown) {
+                vs_main_playSfxDefault(0x7E, 4);
+                D_800F1BF0[6] = (D_800F1BF0[6] + 1) & 7;
+            }
+        }
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            func_800FFBA8();
+            func_80107090();
+            ++D_8010A43C;
+            if (vs_main_buttonsPressed.all & PADRup) {
+                D_8010A440 = 1;
+            } else {
+                D_8010A440 = 0;
+            }
+        }
+        func_80107120(D_8010A220);
+        if (D_8010A220 < 8) {
+            ++D_8010A220;
+        }
+        break;
+    case 12:
+        func_80107120(D_8010A220);
+        if (D_8010A220 > 0) {
+            --D_8010A220;
+            break;
+        }
+        for (D_8010A220 = 0, var_s0 = D_8010A230; D_8010A220 < 8;
+             ++D_8010A220, ++var_s0) {
+            if (var_s0->unk2 == 0) {
+                func_800FFB90(D_8010A220);
+            }
+        }
+
+        D_8010A220 = 0;
+        if (D_8010A440 == 0) {
+            D_8010A43C = 1;
+            break;
+        }
+        func_80104AF8();
+        return 2;
+    case 13:
+        if (D_8010A46C->state == 4) {
+            vs_main_freeCdQueueSlot(D_8010A46C);
+            D_8010A474 = (u_short*)(D_8010A470 + 150);
+            func_800FFBC8();
+            func_80105D8C();
+            D_8010A220 = 0;
+            ++D_8010A43C;
+        }
+        break;
+    case 14:
+        if ((D_800F1BF0[3] == 0) && (D_800F1BF0[2] == 0)
+            && (vs_main_buttonsPressed.all & PADLup)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[2] = 0x46;
+            D_800F1BF0[3] = 7;
+        } else if ((D_800F1BF0[3] == 7) && (D_800F1BF0[2] == 0x46)
+                   && (vs_main_buttonsPressed.all & PADLdown)) {
+            vs_main_playSfxDefault(0x7E, 4);
+            D_800F1BF0[2] = 0;
+            D_800F1BF0[3] = 0;
+        } else if (vs_main_buttonRepeat & PADLup) {
+            if (D_800F1BF0[3] > 1) {
+                vs_main_playSfxDefault(0x7E, 4);
+                --D_800F1BF0[3];
+            } else if (D_800F1BF0[2] != 0) {
+                --D_800F1BF0[2];
+                vs_main_playSfxDefault(0x7E, 4);
+            } else if (D_800F1BF0[3] != 0) {
+                --D_800F1BF0[3];
+                vs_main_playSfxDefault(0x7E, 4);
+            }
+        } else if (vs_main_buttonRepeat & PADLdown) {
+            if (D_800F1BF0[3] >= 6) {
+                if (D_800F1BF0[2] < 0x46) {
+                    ++D_800F1BF0[2];
+                    vs_main_playSfxDefault(0x7E, 4);
+                } else {
+                    if (D_800F1BF0[3] < 7) {
+                        ++D_800F1BF0[3];
+                        vs_main_playSfxDefault(0x7E, 4);
+                    }
+                }
+            } else {
+                ++D_800F1BF0[3];
+                vs_main_playSfxDefault(0x7E, 4);
+            }
+        }
+        if (vs_main_buttonsPressed.all & PADRright) {
+            if (D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unkC != 0) {
+                vs_main_playSfxDefault(0x7E, 5);
+                func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0);
+                ++D_8010A43C;
+                D_8010A440 = 2;
+            } else {
+                vs_main_playSfxDefault(0x7E, 7);
+            }
+        } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            func_800FFBA8();
+            ++D_8010A43C;
+            if (vs_main_buttonsPressed.all & PADRup) {
+                D_8010A440 = 1;
+            } else {
+                D_8010A440 = 0;
+            }
+        }
+        func_80105F00(D_8010A220);
+        if (D_8010A220 < 8) {
+            ++D_8010A220;
+        }
+        break;
+    case 15:
+        func_80105F00(D_8010A220);
+        if (D_8010A220 <= 0) {
+            if (D_8010A440 == 2) {
+                D_8010A43C = 0x13;
+                break;
+            }
+            if (D_8010A440 != 1) {
+                vs_main_freeHeapR(D_8010A470);
+                D_8010A43C = 1;
+                break;
+            }
+            vs_main_freeHeapR(D_8010A470);
+            func_80104AF8();
+            return 2;
+        }
+        --D_8010A220;
+        break;
+    case 19:
+        if (func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
+            int temp_v1_4 = D_800F453C->unk656;
+            D_8010A44C = temp_v1_4;
+            D_8010A44E = D_800F453C->unk63E;
+            D_8010A444 = (temp_v1_4 << 0x10) >> 0xE;
+            if (D_8010A444 < 0x280) {
+                D_8010A444 = 0x280;
+            } else if (D_8010A444 > 0x1800) {
+                D_8010A444 = 0x1800;
+            }
+            D_8010A430[1] = 0x100;
+            D_8010A448 = 0;
+            D_8010A430[0] = 0;
+            D_8010A430[2] = 0;
+            D_8010A450 = D_800F1BF0[2] + D_800F1BF0[3];
+            func_80104B40();
+            func_80102A38(D_8010A45C == 0);
+            ++D_8010A43C;
+            break;
+        }
+        break;
+    case 20:
+        if (D_8010A470[D_8010A450].unkD != D_8010A450) {
+            D_8010A438 = (D_8010A438 + 1) & 0xF;
+            func_80107A98(0);
+            func_80107A98(1);
+        }
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            vs_main_playSfxDefault(0x7E, 6);
+            if (D_8010A45C != 0) {
+                func_80102A38(1);
+            }
+            D_8010A43C += 1;
+            if (vs_main_buttonsPressed.all & PADRup) {
+                func_800FFBA8();
+                D_8010A440 = 1;
+            } else {
+                D_8010A440 = 0;
+            }
+        }
+
+        D_8010A458 = 0x808080;
+        D_8010A454 = 0x808080;
+
+        if ((lStickX = vs_main_stickPosBuf.lStickX - 0x80, ABS(lStickX) > 0x40)
+            || (lStickY = vs_main_stickPosBuf.lStickY - 0x80, ABS(lStickY) > 0x40)) {
+            D_8010A454 = 0x202020;
+            if (lStickX < -0x40) {
+                D_8010A430[1] -= 0x40;
+            } else if (lStickX > 0x40) {
+                D_8010A430[1] += 0x40;
+            }
+
+            if ((vs_main_stickPosBuf.lStickY - 0x80) < -0x40) {
+                D_8010A430[0] += 0x40;
+            } else if ((vs_main_stickPosBuf.lStickY - 0x80) > 0x40) {
+                D_8010A430[0] -= 0x40;
+            }
+            if (D_8010A430[0] < 0) {
+                D_8010A430[0] = 0;
+            }
+            if (D_8010A430[0] > 0x400) {
+                D_8010A430[0] = 0x400;
+            }
+        } else {
+            if (vs_main_buttonsPreviousState & PADL2) {
+                int rStickX;
+                int rStickY;
+                D_8010A454 = 0x202020;
+
+                if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
+                    || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
+                        ABS(rStickY) > 0x40)) {
+                    if (rStickX < -0x40) {
+                        D_8010A430[1] -= 0x40;
+                    } else if (rStickX > 0x40) {
+                        D_8010A430[1] += 0x40;
+                    }
+                    if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
+                        D_8010A430[0] += 0x40;
+                    } else if ((vs_main_stickPosBuf.rStickY - 0x80) > 0x40) {
+                        D_8010A430[0] -= 0x40;
+                    }
+                    if (D_8010A430[0] < 0) {
+                        D_8010A430[0] = 0;
+                    }
+                    if (D_8010A430[0] > 0x400) {
+                        D_8010A430[0] = 0x400;
+                    }
+                } else {
+                    if (vs_main_buttonsPreviousState & PADLup) {
+                        D_8010A430[0] += 0x40;
+                    } else if (vs_main_buttonsPreviousState & PADLdown) {
+                        D_8010A430[0] -= 0x40;
+                    }
+                    if (vs_main_buttonsPreviousState & PADLright) {
+                        D_8010A430[1] = D_8010A430[1] + 0x40;
+                    } else if (vs_main_buttonsPreviousState & PADLleft) {
+                        D_8010A430[1] = D_8010A430[1] - 0x40;
+                    }
+                    if (D_8010A430[0] < 0) {
+                        D_8010A430[0] = 0;
+                    }
+                    if (D_8010A430[0] > 0x400) {
+                        D_8010A430[0] = 0x400;
+                    }
+                }
+
+            } else if (vs_main_buttonsPreviousState & PADR2) {
+                int rStickX;
+                int rStickY;
+                D_8010A458 = 0x202020;
+                if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
+                    || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
+                        ABS(rStickY) > 0x40)) {
+                    if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
+                        D_8010A444 -= 4;
+                    } else if ((vs_main_stickPosBuf.rStickY - 0x80) > 0x40) {
+                        D_8010A444 += 4;
+                    }
+                } else {
+                    if (vs_main_buttonsPreviousState & PADLup) {
+                        D_8010A444 -= 0x40;
+                    } else if (vs_main_buttonsPreviousState & PADLdown) {
+                        D_8010A444 += 0x40;
+                    }
+                }
+                if (D_8010A444 >= 0x280) {
+                    if (D_8010A444 > 0x1800) {
+                        D_8010A444 = 0x1800;
+                    }
+                } else {
+                    D_8010A444 = 0x280;
+                }
+            }
+        }
+        if (vs_main_buttonsPressed.all & PADselect) {
+            func_80102A38(D_8010A45C);
+            D_8010A45C ^= 1;
+        }
+        if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
+            if (vs_main_buttonsPressed.all & (PADL1 | PADR1)) {
+                D_8010A452 = 0;
+            }
+            if (vs_main_buttonRepeat & 8) {
+                if (D_8010A452 == 0) {
+                    if (D_8010A470[D_8010A450].unkE != D_8010A450) {
+                        vs_main_playSfxDefault(0x7E, 0xB);
+                        D_8010A450 = D_8010A470[D_8010A450].unkE;
+                        D_8010A448 = 8;
+                        func_80104B40();
+                    }
+                }
+                D_8010A452 = (D_8010A452 + 1) & 3;
+            }
+            if (vs_main_buttonRepeat & PADL1) {
+                if (D_8010A452 == 0) {
+                    if (D_8010A470[D_8010A450].unkD != D_8010A450) {
+                        vs_main_playSfxDefault(0x7E, 0xB);
+                        D_8010A450 = D_8010A470[D_8010A450].unkD;
+                        D_8010A448 = 4;
+                        func_80104B40();
+                    }
+                }
+                D_8010A452 = (D_8010A452 + 1) & 3;
+            }
+        }
+        func_801061F8(D_8010A220, 0);
+        if (D_8010A220 < 8) {
+            temp_v0 = func_800CCDF4(0);
+            temp_v0->unk4[8] -= 0x10;
+            temp_v0->unk4[6] -= 0x10;
+            ++D_8010A220;
+        }
+        if (vs_main_buttonsReleased & D_8010A448) {
+            if (D_8010A448 == 8) {
+                D_8010A448 = 1;
+            } else {
+                D_8010A448 = 2;
+            }
+            D_8010A458 = 0x202020;
+            D_8010A454 = 0x202020;
+            D_8010A43C = 0x19;
+        }
+        break;
+    case 21:
+        D_8010A458 = 0x202020;
+        D_8010A454 = 0x202020;
+        func_801061F8(D_8010A220, 0);
+        if (D_8010A220 > 0) {
+            temp_v0 = func_800CCDF4(0);
+            if (temp_v0 != NULL) {
+                temp_v0->unk4[8] += 0x10;
+                temp_v0->unk4[6] += 0x10;
+            }
+            --D_8010A220;
+            break;
+        }
+        func_80108098();
+        if (D_8010A440 != 0) {
+            vs_main_freeHeapR(D_8010A470);
+            func_80104AF8();
+            return 2;
+        }
+        D_8010A450 = D_800F1BF0[2] + D_800F1BF0[3];
+        vs_mainmenu_setMessage((char*)&D_8010A474[D_8010A474[D_8010A450]]);
+        D_8010A43C = 0xE;
+        break;
+    case 25:
+        func_80107A98(2);
+        func_80107A98(3);
+        func_801061F8(D_8010A220, D_8010A448);
+        if (D_8010A220 > 0) {
+            --D_8010A220;
+            break;
+        }
+        func_80108098();
+        func_80107FBC(D_8010A470[D_8010A450].unk0);
+        ++D_8010A43C;
+        break;
+    case 26:
+        func_80107A98(2);
+        func_80107A98(3);
+        func_801061F8(D_8010A220, 3);
+        if (func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
+            int temp_v1_10 = D_800F453C->unk656;
+            D_8010A44C = temp_v1_10;
+            D_8010A44E = D_800F453C->unk63E;
+            D_8010A444 = (temp_v1_10 << 0x10) >> 0xE;
+            if (D_8010A444 < 0x280) {
+                D_8010A444 = 0x280;
+            } else if (D_8010A444 >= 0x1801) {
+                D_8010A444 = 0x1800;
+            }
+            ++D_8010A43C;
+        }
+        break;
+    case 27:
+        func_80107A98(2);
+        func_80107A98(3);
+        func_801061F8(D_8010A220, 3 - D_8010A448);
+        if (D_8010A220 < 8) {
+            D_8010A220 += 1;
+        } else {
+            D_8010A448 = 0;
+            D_8010A43C = 0x14;
+        }
+        break;
+    }
+    return 0;
+}
 
 void func_80104AF8(void)
 {
@@ -533,12 +1183,6 @@ void func_8010539C(int arg0)
     scratch[0] = polyF4;
     _insertTPage(7, getTPage(0, 2, 0, 0));
 }
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102820);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", D_80102830);
-
-INCLUDE_RODATA("build/src/MENU/MENU9.PRG/nonmatchings/238", jtbl_80102898);
 
 void func_8010552C(int arg0)
 {
@@ -979,6 +1623,7 @@ void func_80106780(void)
     }
 }
 
+// https://decomp.me/scratch/J4g91
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
 
 void _toVsStringInt(char* buf, int value)

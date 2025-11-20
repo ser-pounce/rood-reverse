@@ -85,7 +85,13 @@ typedef struct {
     char unk5B9;
     char unk5BA;
     char unk5BB;
-    char unk5BC[0x145];
+    char unk5BC[130];
+    u_short unk63E;
+    int unk640[5];
+    u_short unk654;
+    u_short unk656;
+    int unk658[42];
+    int unk704;
 } D_800F453C_t;
 
 void func_800C6540(char const*, int, int, u_long*);

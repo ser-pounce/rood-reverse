@@ -248,6 +248,7 @@ tools/.sysdeps:
 	$(WHICH) $(WHICHFLAGS) $(sysdeps) || ($(ECHO) One or more applications are missing: \\n \
 		$(sysdeps); false)
 	$(TOUCH) $@
+	$(ECHO) Welcome to Rood Reverse!\\nPrerequisites checked.\\nSetting up remaining tools, this could take a while.\\n\\n
 
 .PRECIOUS: %/
 %/:

@@ -18,9 +18,12 @@ def get_name_and_category(base_path: Path, category_mappings: dict):
     for i, part in enumerate(parts):
         if part.endswith(".PRG") or part == "SLUS_010.40":
             name = Path(*parts[i:]).with_suffix("")
+            old_category = part
             # Map the old category to the new prefixed category
-            progress_category = category_mappings.get(part, part)
-            return name, progress_category
+            new_category = category_mappings.get(part, part)
+            # Get the supercategory (prefix before the dot)
+            supercategory = new_category.split(".")[0] if "." in new_category else new_category
+            return name, [supercategory, new_category]
     raise ValueError(f"No valid category in path: {base_path}")
 
 def main(basepath: Path, targetpath: Path, categories_path: Path):
@@ -28,13 +31,13 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
     
     units = []
     for base_path in (basepath / "src").rglob("*.o"):
-        name, progress_category = get_name_and_category(base_path, category_mappings)
+        name, progress_categories = get_name_and_category(base_path, category_mappings)
         target_path = targetpath / base_path.relative_to(basepath)
         unit = {
             "name": str(name),
             "target_path": str(target_path),
             "metadata": {
-                "progress_categories": [str(progress_category)],
+                "progress_categories": progress_categories,
                 "complete": str(name) in {    
                     "SLUS_010.40/overlay",
                     "MENU0.PRG/84",

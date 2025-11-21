@@ -1,4 +1,10 @@
 #include "common.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
+
+void func_80105C34(int, int, int, int);
+void func_80107A8C(void);
+
+extern char D_8010951A;
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102BB8);
 
@@ -62,7 +68,18 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105790);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010581C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801059B8);
+void func_801059B8(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        func_80105C34(arg0, arg1, 0x45, arg2);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801059FC);
 
@@ -92,7 +109,16 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107A8C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107D4C);
+void func_80107D4C(void)
+{
+    if (vs_main_stateFlags.unkF[0x94] != 0) {
+        vs_main_stateFlags.unkF[0x93] = 0x3B;
+        vs_main_stateFlags.unkF[0x92] = 0x3B;
+        vs_main_stateFlags.unkF[0x94] = 0;
+        vs_main_stateFlags.unkF[0x91] = 0x63;
+    }
+    func_80107A8C();
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107D98);
 
@@ -110,7 +136,15 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801085D4);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108688);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010873C);
+void func_8010873C(int arg0, int arg1, int arg2)
+{
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        func_80105C34(arg0 - (D_8010951A >> 1), arg1, 0x68, arg2);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108784);
 
@@ -130,11 +164,11 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108E48);
 
 void func_80108EA0(void) { }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108EA8);
+int func_80108EA8(void) { return vs_battle_characterState->unk3C->unk24; }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108EC8);
+int func_80108EC8(void) { return vs_battle_characterState->unk3C->unk28; }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108EE8);
+int func_80108EE8(void) { return vs_battle_characterState->unk3C->unk2C; }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108F08);
 

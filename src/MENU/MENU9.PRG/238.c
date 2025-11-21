@@ -1880,6 +1880,7 @@ void func_80107090(void)
     }
 }
 
+// https://decomp.me/scratch/oR7eY
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107120);
 
 void func_80107600(void)

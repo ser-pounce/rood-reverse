@@ -180,11 +180,11 @@ typedef struct {
     short maxMP;
     u_short risk;
     short unk22;
-    short unk24;
+    u_short unk24;
     short unk26;
-    short unk28;
+    u_short unk28;
     short unk2A;
-    short unk2C;
+    u_short unk2C;
     short unk2E;
     short unk30;
     short unk32;

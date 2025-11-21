@@ -1,86 +1,131 @@
 [
     {
-        "id": "SLUS_010.40",
+        "id": "lib",
         "name": "Entry point and libraries"
     },
     {
-        "id": "TITLE.PRG",
+        "id": "title",
         "name": "Title sequence and menu"
     },
     {
-        "id": "INITBTL.PRG",
+        "id": "menus",
+        "name": "Menus"
+    },
+    {
+        "id": "battle",
+        "name": "Main game engine & bootstrapper"
+    },
+    {
+        "id": "ending",
+        "name": "Ending and credits"
+    },
+    {
+        "id": "lib.SLUS_010.40",
+        "name": "Entry point and libraries"
+    },
+    {
+        "id": "title.TITLE.PRG",
+        "name": "Title sequence and menu"
+    },
+    {
+        "id": "battle.INITBTL.PRG",
         "name": "Main engine bootstrapper"
     },
     {
-        "id": "BATTLE.PRG",
+        "id": "battle.BATTLE.PRG",
         "name": "Main game engine"
     },
     {
-        "id": "MAINMENU.PRG",
+        "id": "menus.MAINMENU.PRG",
         "name": "Top level menu and shared menu functionality"
     },
     {
-        "id": "MENU0.PRG",
+        "id": "menus.MENU0.PRG",
         "name": "Magic menu"
     },
     {
-        "id": "MENU1.PRG",
+        "id": "menus.MENU1.PRG",
         "name": "Break Arts menu"
     },
     {
-        "id": "MENU2.PRG",
+        "id": "menus.MENU2.PRG",
         "name": "Battle Abilities menu"
     },
     {
-        "id": "MENU3.PRG",
+        "id": "menus.MENU3.PRG",
         "name": "Items menu"
     },
     {
-        "id": "MENU4.PRG",
+        "id": "menus.MENU4.PRG",
         "name": "Status menu"
     },
     {
-        "id": "MENU5.PRG",
+        "id": "menus.MENU5.PRG",
         "name": "Map menu"
     },
     {
-        "id": "MENU7.PRG",
+        "id": "menus.MENU7.PRG",
         "name": "Data menu"
     },
     {
-        "id": "MENU8.PRG",
+        "id": "menus.MENU8.PRG",
         "name": "Options menu"
     },
     {
-        "id": "MENU9.PRG",
+        "id": "menus.MENU9.PRG",
         "name": "Score menu"
     },
     {
-        "id": "MENUB.PRG",
+        "id": "menus.MENUB.PRG",
         "name": "Enemy drop menu"
     },
     {
-        "id": "MENUC.PRG",
+        "id": "menus.MENUC.PRG",
         "name": "Setup menu"
     },
     {
-        "id": "MENUD.PRG",
+        "id": "menus.MENUD.PRG",
         "name": "Container menu"
     },
     {
-        "id": "MENUE.PRG",
+        "id": "menus.MENUE.PRG",
         "name": "Quick Manual menu"
     },
     {
-        "id": "MENUF.PRG",
+        "id": "menus.MENUF.PRG",
         "name": "Ending menu"
     },
     {
-        "id": "SCREFF2.PRG",
+        "id": "ending.SCREFF2.PRG",
         "name": "Ending sequence helper functions"
     },
     {
-        "id": "ENDING.PRG",
+        "id": "ending.ENDING.PRG",
         "name": "Ending and credits"
+    },
+    {
+        "category_mappings": {
+            "SLUS_010.40": "lib.SLUS_010.40",
+            "TITLE.PRG": "title.TITLE.PRG",
+            "INITBTL.PRG": "battle.INITBTL.PRG",
+            "BATTLE.PRG": "battle.BATTLE.PRG",
+            "MAINMENU.PRG": "menus.MAINMENU.PRG",
+            "MENU0.PRG": "menus.MENU0.PRG",
+            "MENU1.PRG": "menus.MENU1.PRG",
+            "MENU2.PRG": "menus.MENU2.PRG",
+            "MENU3.PRG": "menus.MENU3.PRG",
+            "MENU4.PRG": "menus.MENU4.PRG",
+            "MENU5.PRG": "menus.MENU5.PRG",
+            "MENU7.PRG": "menus.MENU7.PRG",
+            "MENU8.PRG": "menus.MENU8.PRG",
+            "MENU9.PRG": "menus.MENU9.PRG",
+            "MENUB.PRG": "menus.MENUB.PRG",
+            "MENUC.PRG": "menus.MENUC.PRG",
+            "MENUD.PRG": "menus.MENUD.PRG",
+            "MENUE.PRG": "menus.MENUE.PRG",
+            "MENUF.PRG": "menus.MENUF.PRG",
+            "SCREFF2.PRG": "ending.SCREFF2.PRG",
+            "ENDING.PRG": "ending.ENDING.PRG"
+        }
     }
 ]

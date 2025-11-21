@@ -21,19 +21,25 @@ sorted_categories = sorted(
     reverse=True
 )
 
-# Calculate column widths
-max_category_width = max(len(category) for category, _ in sorted_categories) if sorted_categories else 10
+# Calculate column widths - strip supercategory prefix for display
+display_names = []
+for category, _ in sorted_categories:
+    # Remove supercategory prefix (everything before and including the dot)
+    display_name = category.split(".", 1)[1] if "." in category else category
+    display_names.append(display_name)
+
+max_category_width = max(len(name) for name in display_names) if display_names else 10
 max_category_width = max(max_category_width, len("Executable"), len("Total"))
 
 total_matched = 0
 total_code = 0
 rows = []
 
-for category, stats in sorted_categories:
+for i, (category, stats) in enumerate(sorted_categories):
     matched = stats["matched_code"]
     total = stats["total_code"]
     percent = (matched / total * 100) if total else 0
-    rows.append((category, matched, total, percent))
+    rows.append((display_names[i], matched, total, percent))
     total_matched += matched
     total_code += total
 

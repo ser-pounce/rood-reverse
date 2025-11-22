@@ -71,6 +71,8 @@ extern short D_801097EC[];
 extern u_int D_8010980C[];
 extern vs_main_CdQueueSlot* D_8010985C;
 extern void* D_80109860;
+extern vs_main_CdQueueSlot* D_80109870;
+extern void* D_80109874;
 extern int D_80109878;
 extern int D_8010987C;
 extern u_int D_80109884;
@@ -82,6 +84,7 @@ extern int D_8010989C;
 extern int D_801098A0;
 extern int D_801098A4;
 extern int D_801098A8;
+extern char D_801098AC[0x140];
 extern short D_801099F4;
 
 int func_80102BB8(char* arg0)
@@ -740,7 +743,53 @@ int func_80107D4C(void)
     return func_80107A8C();
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107D98);
+int func_80107D98(void)
+{
+    func_80103530_t sp10;
+    int i;
+
+    if (D_800F1CD8 == 0) {
+        func_8007DFF0(0x1D, 1, 5);
+        D_80109874 = vs_main_allocHeapR(D_80102AE0[4].size);
+        D_80109870 = vs_main_allocateCdQueueSlot(&D_80102AE0[4]);
+        vs_main_cdEnqueue(D_80109870, D_80109874);
+        ++D_800F1CD8;
+    } else if (D_800F1CD8 == 1) {
+        if (D_80109870->state == 4) {
+            for (i = 0; i <= 0; ++i) {
+                func_8008D820(D_80109874 + i * 0x8220, &sp10);
+                if (sp10.unk10 != NULL) {
+                    sp10.unkC->x = 0x340 + i * 0x40;
+                    sp10.unkC->y = 0x100;
+                    sp10.unkC->h = 0xFF;
+                    LoadImage(sp10.unkC, sp10.unk10);
+                }
+                if ((i == 0) && (sp10.unk8 != NULL)) {
+                    sp10.unk4->x = 0x300;
+                    sp10.unk4->y = 0x1FF;
+                    sp10.unk4->w = 0xA0;
+                    sp10.unk4->h = 1;
+                    *sp10.unk8 = 0;
+                    LoadImage(sp10.unk4, sp10.unk8);
+                    vs_main_memcpy(D_801098AC, sp10.unk8, 0x140U);
+                }
+            }
+            vs_main_freeCdQueueSlot(D_80109870);
+            ++D_800F1CD8;
+        }
+    } else {
+        vs_main_freeHeapR(D_80109874);
+        D_80109894 = 0;
+        D_80109898 = 0;
+        D_8010989C = 0;
+        D_801098A0 = 0;
+        D_8010988C = 0;
+        D_80109878 = 0;
+        D_800F1CD8 = 0;
+        return 1;
+    }
+    return 0;
+}
 
 int func_80107FC0(void)
 {

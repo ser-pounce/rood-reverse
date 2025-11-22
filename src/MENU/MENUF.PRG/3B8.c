@@ -477,7 +477,39 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
         arg2 + 0x4B, arg3, var_s3);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105C34);
+void func_80105C34(int arg0, int arg1, int arg2, int arg3)
+{
+    D_801091D8_t* temp_a2;
+    POLY_FT4* poly;
+    void** scratch;
+
+    if (arg3 <= 0) {
+        return;
+    }
+
+    poly = *(void**)getScratchAddr(0);
+    temp_a2 = &D_801091D8[arg2];
+    setPolyFT4(poly);
+    setXY4(poly, arg0, arg1, temp_a2->unk2 + arg0, arg1, arg0, temp_a2->unk3 + arg1,
+        temp_a2->unk2 + arg0, temp_a2->unk3 + arg1);
+    setUV4(poly, temp_a2->unk0, temp_a2->unk1, temp_a2->unk0 + temp_a2->unk2,
+        temp_a2->unk1, temp_a2->unk0, temp_a2->unk1 + temp_a2->unk3,
+        temp_a2->unk0 + temp_a2->unk2, temp_a2->unk1 + temp_a2->unk3);
+    setSemiTrans(poly, 1);
+
+    if (arg3 < 8) {
+        setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
+        poly->tpage = temp_a2->unk4 | 0x20;
+        poly->clut = temp_a2->unk6 + 1;
+    } else {
+        setRGB0(poly, 0x80, 0x80, 0x80);
+        poly->tpage = temp_a2->unk4;
+        poly->clut = temp_a2->unk6;
+    }
+    scratch = (void**)getScratchAddr(0);
+    AddPrim(scratch[1] - 0x1C, poly++);
+    scratch[0] = poly;
+}
 
 void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
@@ -485,30 +517,32 @@ void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
     POLY_FT4* poly;
     void** scratch;
 
-    if (arg3 > 0) {
-        poly = *(void**)getScratchAddr(0);
-        temp_a2 = &D_801091D8[arg2];
-        setPolyFT4(poly);
-        setXY4(poly, arg0, arg1, temp_a2->unk2 + arg0, arg1, arg0, temp_a2->unk3 + arg1,
-            temp_a2->unk2 + arg0, temp_a2->unk3 + arg1);
-        setUV4(poly, temp_a2->unk0, temp_a2->unk1, temp_a2->unk0 + temp_a2->unk2,
-            temp_a2->unk1, temp_a2->unk0, temp_a2->unk1 + temp_a2->unk3,
-            temp_a2->unk0 + temp_a2->unk2, temp_a2->unk1 + temp_a2->unk3);
-        setSemiTrans(poly, 1);
-
-        if (arg3 < 8) {
-            setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
-            poly->tpage = temp_a2->unk4 | 0x20;
-            poly->clut = arg4 + 1;
-        } else {
-            setRGB0(poly, 0x80, 0x80, 0x80);
-            poly->tpage = temp_a2->unk4;
-            poly->clut = arg4;
-        }
-        scratch = (void**)getScratchAddr(0);
-        AddPrim(scratch[1] - 0x1C, poly++);
-        scratch[0] = poly;
+    if (arg3 <= 0) {
+        return;
     }
+    
+    poly = *(void**)getScratchAddr(0);
+    temp_a2 = &D_801091D8[arg2];
+    setPolyFT4(poly);
+    setXY4(poly, arg0, arg1, temp_a2->unk2 + arg0, arg1, arg0, temp_a2->unk3 + arg1,
+        temp_a2->unk2 + arg0, temp_a2->unk3 + arg1);
+    setUV4(poly, temp_a2->unk0, temp_a2->unk1, temp_a2->unk0 + temp_a2->unk2,
+        temp_a2->unk1, temp_a2->unk0, temp_a2->unk1 + temp_a2->unk3,
+        temp_a2->unk0 + temp_a2->unk2, temp_a2->unk1 + temp_a2->unk3);
+    setSemiTrans(poly, 1);
+
+    if (arg3 < 8) {
+        setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
+        poly->tpage = temp_a2->unk4 | 0x20;
+        poly->clut = arg4 + 1;
+    } else {
+        setRGB0(poly, 0x80, 0x80, 0x80);
+        poly->tpage = temp_a2->unk4;
+        poly->clut = arg4;
+    }
+    scratch = (void**)getScratchAddr(0);
+    AddPrim(scratch[1] - 0x1C, poly++);
+    scratch[0] = poly;
 }
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B5C);
@@ -754,6 +788,7 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
+// https://decomp.me/scratch/FRfFv
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010887C);
 
 void func_80108A0C(void)

@@ -1,6 +1,9 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include <stdio.h>
+#include <libetc.h>
 
 int func_80102D10(void);
 int func_80102C54(void);
@@ -23,17 +26,22 @@ int func_80107D98(void);
 int func_80107FC0(void);
 int func_801080E4(void);
 int func_801083AC(void);
+void func_801084F4(int arg0, int arg1);
+void func_80108564(int arg0, int arg1);
 void func_801085D4(int arg0, int arg1, int arg2);
 void func_8010873C(int arg0, int arg1, int arg2);
+void func_80108E40(void);
 void func_80108784(int arg0, int arg1, int arg2);
 void func_80108E48(void);
 void func_80108EA0(void);
+extern char D_80102B64; // "%03d"
 
 extern char D_801091D8[][8];
 extern char D_8010923A;
 extern char D_8010951A;
 extern char D_8010972C[];
 extern char D_80109738[];
+extern char D_80109754[];
 extern char D_80109764[];
 extern char D_80109774[];
 extern short D_8010977C[];
@@ -44,6 +52,7 @@ extern short D_801097EC[];
 extern u_int D_8010980C[];
 extern int D_8010987C;
 extern u_int D_80109884;
+extern int D_80109888;
 extern int D_8010989C;
 extern int D_801098A0;
 extern int D_801098A4;
@@ -230,7 +239,35 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104C40);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104DBC);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105020);
+void func_80105020(int arg0, int arg1, int arg2)
+{
+    char sp10[4];
+    int i;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_80109754[3] = arg2;
+        sprintf(sp10, &D_80102B64, D_80109888);
+        arg0 -= (D_801091D8[21][2] + D_801091D8[26][2] + D_801091D8[19][2] + 0x26) >> 1;
+        i = 2;
+        func_8010664C(arg0, arg1, 0x15, D_80109754);
+        arg0 += D_801091D8[21][2];
+        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109754);
+        arg0 = arg0 + i + D_801091D8[26][2];
+
+        for (i = 0; i < 3; ++i) {
+            func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109754);
+            arg0 += 0xC;
+        }
+
+        func_8010664C(arg0, arg1 + 8, 0x13, D_80109754);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010516C);
 
@@ -399,7 +436,42 @@ INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B5C);
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B64);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105F6C);
+void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    char sp18[16];
+    int i;
+    int s2;
+
+    if (arg3 == 0x800000) {
+        sprintf(sp18, "------");
+    } else {
+        sprintf(
+            sp18, "%02d%02d%02d", (arg3 >> 0x10) & 0xFF, (arg3 >> 8) & 0xFF, arg3 & 0xFF);
+    }
+
+    s2 = 0x7FF2;
+    if (arg4 != 0) {
+        s2 = 0x7FF8;
+    }
+
+    for (i = 0; i < 6; ++i) {
+        if (sp18[i] == 0x2D) {
+            func_80105DD8(arg0, arg1, 0x53, arg2, s2);
+            arg0 += 0xC;
+        } else {
+            func_80105DD8(arg0, arg1 - 3, sp18[i] - 0x30, arg2, s2);
+            arg0 += 0xC;
+        }
+
+        if (i == 1) {
+            func_80105DD8(arg0, arg1 - 2, 0x49, arg2, s2);
+            arg0 += 6;
+        } else if (i == 3) {
+            func_80105DD8(arg0, arg1 - 2, 0x4A, arg2, s2);
+            arg0 += 6;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801060A8);
 
@@ -464,7 +536,46 @@ int func_80107FC0(void)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801080E4);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801083AC);
+void func_80104A50(int);
+extern int D_8010988C;
+
+int func_801083AC(void)
+{
+    int var_v0;
+
+    var_v0 = vs_math_sine(D_8010988C);
+    if (var_v0 < 0) {
+        var_v0 += 0x1FF;
+    }
+    func_80104A50((var_v0 >> 9) + 8);
+    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    if (D_801098A0 != 0) {
+        return 0;
+    }
+    if (D_8010989C == 0) {
+        vs_main_playSfxDefault(0x7E, 0x7A);
+    }
+    if (D_8010989C == 0xF) {
+        vs_main_playSfxDefault(0x7E, 0x7A);
+    }
+    func_801084F4(0x40, D_8010989C);
+    func_80108564(0x64, D_8010989C - 0xF);
+    func_801064D4(0xD6, 0xBB, D_8010989C - 0xF, D_8010989C);
+    if (D_8010989C < 0x7FFF) {
+        ++D_8010989C;
+    }
+    if (vs_main_buttonsPressed.all & PADRright) {
+        if (D_8010989C >= 0x3F) {
+            func_80045D64(0x7E, 0);
+            func_8007E0A8(0x1D, 1, 5);
+            func_80108E40();
+            return 1;
+        }
+        D_8010989C = 0x3F;
+        func_80045D64(0x7E, 0);
+    }
+    return 0;
+}
 
 void func_801084F4(int arg0, int arg1)
 {

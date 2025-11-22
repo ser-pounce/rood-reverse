@@ -34,6 +34,8 @@ void func_80108E40(void);
 void func_80108784(int arg0, int arg1, int arg2);
 void func_80108E48(void);
 void func_80108EA0(void);
+
+extern char D_80102B5C[]; // "%09d"
 extern char D_80102B64; // "%03d"
 
 extern char D_801091D8[][8];
@@ -41,6 +43,7 @@ extern char D_8010923A;
 extern char D_8010951A;
 extern char D_8010972C[];
 extern char D_80109738[];
+extern char D_80109744[];
 extern char D_80109754[];
 extern char D_80109764[];
 extern char D_80109774[];
@@ -235,7 +238,41 @@ void func_80104B8C(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104C40);
+void func_80104C40(int arg0, int arg1, int arg2)
+{
+    char sp10[16];
+    int i;
+    int new_var;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_80109744[3] = arg2;
+        sprintf(sp10, D_80102B5C, D_80109884);
+        new_var = D_801091D8[18][2] + D_801091D8[26][2];
+        arg0 -= (((D_801091D8[10][2] * 2) + (new_var + D_801091D8[20][2])) + 0x74) >> 1;
+        func_8010664C(arg0, arg1, 0x12, D_80109744);
+        arg0 += D_801091D8[18][2];
+        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109744);
+        i = 2;
+        arg0 = (arg0 + i) + D_801091D8[26][2];
+
+        for (i = 0; i < 9; ++i) {
+            func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109744);
+            arg0 += 0xC;
+            if ((i == 2) || (i == 5)) {
+                func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
+                arg0 += D_801091D8[10][2] + 3;
+            }
+        }
+
+        func_8010664C(arg0, arg1 + 8, 0x14, D_80109744);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104DBC);
 

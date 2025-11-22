@@ -2,19 +2,44 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 
+int func_80102D10(void);
 int func_80102C54(void);
+int func_8010310C(void);
+int func_80103530(void);
 int func_801037A0(void);
+int func_8010384C(void);
+int func_80103D88(void);
+int func_8010412C(void);
 void func_80105C34(int, int, int, int);
+void func_80105DD8(int, int, int, int, int);
 void func_80105F6C(int, int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
-void func_80107A8C(void);
+void func_80107140(int, int, int, short*, int);
+int func_80107A8C(void);
+int func_80107D4C(void);
+int func_80107D98(void);
+int func_80107FC0(void);
+int func_801080E4(void);
+int func_801083AC(void);
+void func_80108E48(void);
+void func_80108EA0(void);
 
 extern char D_801091D8[][8];
 extern char D_8010923A;
 extern char D_8010951A;
+extern char D_8010972C[];
+extern char D_80109738[];
 extern char D_80109764[];
+extern char D_80109774[];
+extern short D_8010977C[];
+extern char D_801097CC[];
+extern char D_801097D8[];
 extern char D_801097E4[];
+extern short D_801097EC[];
+extern u_int D_8010980C[];
+extern int D_8010987C;
+extern u_int D_80109884;
 extern int D_801098A8;
 extern short D_801099F4;
 
@@ -41,7 +66,37 @@ INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102800);
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102AE0);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102C54);
+int func_80102C54(void)
+{
+    int ret;
+
+    switch (vs_main_stateFlags.unkB6) {
+    case 0:
+        ret = func_80102D10();
+        break;
+    case 1:
+        ret = func_80103530();
+        break;
+    case 2:
+        ret = func_8010310C();
+        break;
+    case 3:
+        func_80108E48();
+        func_80108EA0();
+        ret = 1;
+        break;
+    case 4:
+        ret = func_80107A8C();
+        break;
+    case 5:
+        ret = func_80107D4C();
+        break;
+    case 6:
+        ret = func_80107D98();
+        break;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102D10);
 
@@ -58,7 +113,36 @@ void func_80103748(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801037A0);
+int func_801037A0(void)
+{
+    int ret;
+
+    switch (vs_main_stateFlags.unkB6) {
+    case 0:
+        ret = func_8010384C();
+        break;
+    case 1:
+        ret = func_8010412C();
+        break;
+    case 2:
+        ret = func_80103D88();
+        break;
+    case 3:
+        ret = 1;
+        break;
+    case 4:
+        ret = func_80107FC0();
+        break;
+    case 5:
+        ret = func_801080E4();
+        break;
+    case 6:
+        ret = func_801083AC();
+        break;
+    }
+    // BUG: potential garbage
+    return ret;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010384C);
 
@@ -66,12 +150,43 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80103D88);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010412C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010459C);
+void func_8010459C(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_8010972C[3] = arg2;
+        D_8010972C[7] = arg2;
+        arg0 -= (D_801091D8[100][2] + D_801091D8[101][2]) >> 1;
+        func_80106A80(arg0, arg1, 0x64, D_8010972C);
+        func_80106A80(arg0 + D_801091D8[100][2], arg1, 0x65, D_8010972C + 4);
+    }
+}
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104650);
+void func_80104650(int arg0, int arg1, int arg2)
+{
+    int new_var;
+
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+
+    if (arg2 > 0) {
+        arg0 -= (D_801091D8[84][2] + 0x18) >> 1;
+        func_80105C34(arg0, arg1, 0x54, arg2);
+        new_var = arg0 + 0xC;
+        func_80105DD8(new_var + D_801091D8[84][2], arg1 - 1, vs_main_stateFlags.unkC4 + 1,
+            arg2, 0x7FF4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801046F8);
 
+// https://decomp.me/scratch/zHBmW
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801047D4);
 
 void func_8010489C(int arg0, int arg1, int arg2)
@@ -85,7 +200,22 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104914);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104A50);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104B8C);
+void func_80104B8C(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_80109738[3] = arg2;
+        D_80109738[7] = arg2;
+        arg0 -= (D_801091D8[22][2] + D_801091D8[23][2]) >> 1;
+        func_80106A80(arg0, arg1, 0x16, D_80109738);
+        func_80106A80(arg0 + D_801091D8[22][2], arg1, 0x17, D_80109738 + 4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104C40);
 
@@ -105,13 +235,27 @@ void func_801053B0(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109764[3] = arg2;
-        func_8010664C(arg0 - ((char)D_8010923A >> 1), arg1, 0xC, D_80109764);
+        func_8010664C(arg0 - (D_8010923A >> 1), arg1, 0xC, D_80109764);
     }
 }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010540C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010559C);
+void func_8010559C(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_80109774[3] = arg2;
+        arg0 -= (D_801091D8[70][2] + D_801091D8[71][2]) >> 1;
+        func_80106A80(arg0, arg1, 0x46, D_80109774);
+        func_80106A80(arg0 + D_801091D8[70][2], arg1, 0x47, D_80109774);
+    }
+}
 
 void func_8010564C(int arg0, int arg1, int arg2)
 {
@@ -140,7 +284,35 @@ void func_8010564C(int arg0, int arg1, int arg2)
     func_80105C34(arg0, arg1, var_a2 + 0x4E, arg2);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801056E8);
+void func_801056E8(int arg0, int arg1, int arg2)
+{
+    int arg3;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 <= 0) {
+        return;
+    }
+
+    arg3 = arg0 + (arg2 * 8);
+
+    if (D_801098A8 < 0x1E00) {
+        arg2 = 0;
+    } else if (D_801098A8 <= 0xFFFF) {
+        arg2 = 1;
+    } else if (D_801098A8 <= 0x11DFF) {
+        arg2 = 2;
+    } else if (D_801098A8 <= 0x1FFFF) {
+        arg2 = 3;
+    } else {
+        arg2 = 4;
+    }
+    func_80107140(arg0, arg1, arg2 + 0x4E, D_8010977C, arg3);
+}
 
 // https://decomp.me/scratch/MzjzI
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105790);
@@ -188,15 +360,15 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107A8C);
 
-void func_80107D4C(void)
+int func_80107D4C(void)
 {
-    if (vs_main_stateFlags.unkF[0x94] != 0) {
-        vs_main_stateFlags.unkF[0x93] = 0x3B;
-        vs_main_stateFlags.unkF[0x92] = 0x3B;
-        vs_main_stateFlags.unkF[0x94] = 0;
-        vs_main_stateFlags.unkF[0x91] = 0x63;
+    if (vs_main_stateFlags.unkA3 != 0) {
+        vs_main_stateFlags.unkA2 = 0x3B;
+        vs_main_stateFlags.unkA1 = 0x3B;
+        vs_main_stateFlags.unkA3 = 0;
+        vs_main_stateFlags.unkA0 = 0x63;
     }
-    func_80107A8C();
+    return func_80107A8C();
 }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107D98);
@@ -235,9 +407,39 @@ void func_80108564(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801085D4);
+void func_801085D4(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_801097CC[3] = arg2;
+        D_801097CC[7] = arg2;
+        arg0 -= (D_801091D8[102][2] + D_801091D8[103][2]) >> 1;
+        func_80106A80(arg0, arg1, 0x66, D_801097CC);
+        func_80106A80(arg0 + D_801091D8[102][2], arg1, 0x67, D_801097CC + 4);
+    }
+}
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108688);
+void func_80108688(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_801097D8[3] = arg2;
+        D_801097D8[7] = arg2;
+        arg0 -= (D_801091D8[105][2] + D_801091D8[106][2]) >> 1;
+        func_80106A80(arg0, arg1, 0x69, D_801097D8);
+        func_80106A80(arg0 + D_801091D8[105][2], arg1, 0x6A, D_801097D8 + 4);
+    }
+}
 
 void func_8010873C(int arg0, int arg1, int arg2)
 {
@@ -277,7 +479,27 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010887C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108A0C);
+void func_80108A0C(void)
+{
+    int var_a2;
+    int i;
+    int a1;
+
+    for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
+        if (D_8005FEA0.unk0 & (a1 << i)) {
+            ++var_a2;
+        }
+    }
+
+    for (i = 0; i < 16; ++i) {
+        if (var_a2 >= D_801097EC[i]) {
+            if (D_80109884 >= D_8010980C[i]) {
+                D_8010987C = i;
+                return;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108AB0);
 

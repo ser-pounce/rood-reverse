@@ -1,0 +1,2 @@
+_raiseMaxHP = 0x801090B8;
+_raiseMaxMP = 0x80109148;

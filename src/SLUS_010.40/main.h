@@ -123,7 +123,11 @@ typedef struct {
     u_int unk90;
     u_int unk94;
     u_int unk98;
-    int unk9C[30];
+    int unk9C[27];
+    u_int unk108;
+    int unk10C;
+    short unk110;
+    u_short unk112;
 } D_8005FEA0_t;
 
 typedef struct {
@@ -279,6 +283,7 @@ extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
 extern u_short D_8005046A;
 extern u_int D_80055C80[];
+extern u_int D_8005E040;
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
 extern int vs_main_projectionDistance;

@@ -58,6 +58,7 @@ extern u_char D_801095D0[];
 extern char D_8010972C[];
 extern char D_80109738[];
 extern char D_80109744[];
+extern short D_8010974C;
 extern char D_80109754[];
 extern short D_8010975C[];
 extern char D_80109764[];
@@ -86,6 +87,7 @@ extern int D_801098A0;
 extern int D_801098A4;
 extern int D_801098A8;
 extern char D_801098AC[0x140];
+extern int D_801099EC;
 extern int D_801099F0;
 extern short D_801099F4;
 
@@ -348,7 +350,65 @@ void func_80104C40(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104DBC);
+void func_80104DBC(int arg0, int arg1, int arg2)
+{
+    char sp18[16];
+    int temp_s2;
+    int i;
+    int v;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+    if (arg2 <= 0) {
+        return;
+    }
+
+    temp_s2 = arg0 + (arg2 * 8);
+
+    if (D_80109884 != 0) {
+        if (arg2 >= 0x20) {
+            if (D_80109898 == 0) {
+                D_801099EC = 1;
+                vs_main_playSfxDefault(0x7E, 0x72);
+            }
+            if (D_80109898 == D_80109884) {
+                if (D_801099EC != 0) {
+                    D_801099EC = 0;
+                    func_80045D64(0x7E, 0x72);
+                    vs_main_playSfxDefault(0x7E, 0x73);
+                }
+            }
+        }
+    }
+    if (arg2 >= 0x20) {
+        D_80109898 = (D_80109884 >> 5) * (arg2 - 0x20);
+    }
+    if (arg2 == 0x40) {
+        D_80109898 = D_80109884;
+    }
+
+    sprintf(sp18, D_80102B5C, D_80109898);
+    v = D_801091D8[18].unk2 + D_801091D8[26].unk2 + D_801091D8[20].unk2;
+    arg0 -= (((D_801091D8[10].unk2 * 2) + v) + 0x74) >> 1;
+    func_80107140(arg0, arg1, 0x12, &D_8010974C, temp_s2);
+    arg0 += D_801091D8[18].unk2;
+    func_80107140(arg0, arg1 + 7, 0x1A, &D_8010974C, temp_s2);
+    i = 2;
+    arg0 = arg0 + i + D_801091D8[26].unk2;
+    for (i = 0; i < 9; ++i) {
+        func_80107140(arg0, arg1 + 3, sp18[i] - 0x30, &D_8010974C, temp_s2);
+        arg0 += 0xC;
+        if ((i == 2) || (i == 5)) {
+            func_80107140(arg0, arg1 + 0xE, 0xA, &D_8010974C, temp_s2);
+            arg0 += 3 + D_801091D8[10].unk2;
+        }
+    }
+    func_80107140(arg0, arg1 + 8, 0x14, &D_8010974C, temp_s2);
+}
 
 void func_80105020(int arg0, int arg1, int arg2)
 {

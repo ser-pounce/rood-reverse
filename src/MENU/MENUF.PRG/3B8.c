@@ -51,11 +51,14 @@ extern char D_80102B64; // "%03d"
 extern D_801091D8_t D_801091D8[];
 extern char D_8010923A;
 extern char D_8010951A;
+extern u_char D_801095D0[];
 extern char D_8010972C[];
 extern char D_80109738[];
 extern char D_80109744[];
 extern char D_80109754[];
 extern char D_80109764[];
+extern char D_8010976C;
+extern char D_8010976F;
 extern char D_80109774[];
 extern short D_8010977C[];
 extern char D_801097CC[];
@@ -334,7 +337,35 @@ void func_801053B0(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010540C);
+void func_8010540C(int arg0, int arg1, int arg2)
+{
+    int var_a0;
+    int i;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+
+    var_a0 = 0;
+    if (arg2 > 0) {
+        D_8010976F = arg2;
+        for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
+            var_a0 += D_801091D8[D_801095D0[i + 1 + (D_8010987C * 4)]].unk2;
+        }
+
+        var_a0 /= 2;
+        arg0 -= var_a0;
+        for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
+            int new_var2 = 1;
+            func_80106A80(
+                arg0, arg1, D_801095D0[i + (D_8010987C * 4 + new_var2)], &D_8010976C);
+            arg0 += D_801091D8[D_801095D0[i + (D_8010987C * 4 + new_var2)]].unk2;
+        }
+    }
+}
 
 void func_8010559C(int arg0, int arg1, int arg2)
 {
@@ -520,7 +551,7 @@ void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
     if (arg3 <= 0) {
         return;
     }
-    
+
     poly = *(void**)getScratchAddr(0);
     temp_a2 = &D_801091D8[arg2];
     setPolyFT4(poly);

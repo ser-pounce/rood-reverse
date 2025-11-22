@@ -176,6 +176,7 @@ $(BUILD)/%.o: %.c | $$(@D)/
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
+.PRECIOUS: %.img.bin
 %.img.bin: %.img.png | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@

@@ -2,6 +2,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -46,7 +47,7 @@ void func_80108E48(void);
 void func_80108EA0(void);
 
 extern char D_80102B5C[]; // "%09d"
-extern char D_80102B64; // "%03d"
+extern char D_80102B64[]; // "%03d"
 
 extern D_801091D8_t D_801091D8[];
 extern char D_8010923A;
@@ -303,7 +304,7 @@ void func_80105020(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109754[3] = arg2;
-        sprintf(sp10, &D_80102B64, D_80109888);
+        sprintf(sp10, D_80102B64, D_80109888);
         arg0 -=
             (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
         i = 2;
@@ -619,7 +620,50 @@ void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801060A8);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801064D4);
+void func_801064D4(int arg0, int arg1, int arg2, int arg3)
+{
+    POLY_FT4* poly;
+    void** p;
+    int v1;
+
+    if (arg2 < 0) {
+        return;
+    }
+
+    v1 = arg0 + 0x120;
+
+    if (arg2 > 0x30) {
+        arg2 = 0x30;
+    }
+
+    arg0 = (v1 - (arg2 * 6));
+
+    func_800C6540("PRESS", ((arg0 + 0x12) & 0xFFFF) | (arg1 << 0x10), 0x8080FF, NULL);
+    func_800C6540(
+        "BUTTON", ((arg0 + 0x12) & 0xFFFF) | ((arg1 + 0xA) << 0x10), 0x8080FF, NULL);
+
+    arg1 += 0x16;
+
+    if ((arg3 & 0xF) < 9) {
+        v1 = arg1 - 0x10;
+        arg1 = v1 + ((arg3 & 0xF) >> 1);
+    } else {
+        v1 = arg1 - 0xA;
+        arg1 = v1 - ((arg3 & 0xF) >> 2);
+    }
+
+    poly = *(void**)0x1F800000;
+    setPolyFT4(poly);
+    setShadeTex(poly, 1);
+    setXY4(poly, arg0, arg1 - 2, arg0 + 0x10, arg1 - 2, arg0, arg1 + 0xE, arg0 + 0x10,
+        arg1 + 0xE);
+    setUV4(poly, 0x20, 0x80, 0x30, 0x80, 0x20, 0x90, 0x30, 0x90);
+    setTPage(poly, 0, 0, 768, 0);
+    setClut(poly, 944, 223);
+    p = (void**)0x1F800000;
+    AddPrim(p[1] - 0x1C, poly++);
+    p[0] = poly;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010664C);
 

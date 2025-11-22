@@ -23,6 +23,7 @@ int func_80103530(void);
 int func_801037A0(void);
 int func_8010384C(void);
 int func_80103D88(void);
+void func_80104A50(int);
 int func_8010412C(void);
 void func_80105C34(int, int, int, int);
 void func_80105DD8(int, int, int, int, int);
@@ -46,6 +47,7 @@ void func_80108784(int arg0, int arg1, int arg2);
 void func_80108E48(void);
 void func_80108EA0(void);
 
+extern vs_main_CdFile D_80102AE0[];
 extern char D_80102B5C[]; // "%09d"
 extern char D_80102B64[]; // "%03d"
 
@@ -67,9 +69,15 @@ extern char D_801097D8[];
 extern char D_801097E4[];
 extern short D_801097EC[];
 extern u_int D_8010980C[];
+extern vs_main_CdQueueSlot* D_8010985C;
+extern void* D_80109860;
+extern int D_80109878;
 extern int D_8010987C;
 extern u_int D_80109884;
 extern int D_80109888;
+extern int D_8010988C;
+extern int D_80109894;
+extern int D_80109898;
 extern int D_8010989C;
 extern int D_801098A0;
 extern int D_801098A4;
@@ -135,7 +143,53 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102D10);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010310C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80103530);
+int func_80103530(void)
+{
+    if (D_800F1CD8 == 0) {
+        func_8007DFF0(0x1D, 2, 5);
+        D_80109860 = vs_main_allocHeapR(D_80102AE0[2].size);
+        D_8010985C = vs_main_allocateCdQueueSlot(&D_80102AE0[2]);
+        vs_main_cdEnqueue(D_8010985C, D_80109860);
+        ++D_800F1CD8;
+    } else if (D_800F1CD8 == 1) {
+        if (D_8010985C->state == 4) {
+            int i;
+            func_80103530_t sp10;
+            for (i = 0; i < 2; ++i) {
+                func_8008D820(D_80109860 + i * 0x8220, &sp10);
+                if (sp10.unk10 != NULL) {
+                    sp10.unkC->x = 0x340 + i * 0x40;
+                    sp10.unkC->y = 0x100;
+                    sp10.unkC->h = 0xFF;
+                    LoadImage(sp10.unkC, sp10.unk10);
+                }
+                if (i == 0) {
+                    if (sp10.unk8 != NULL) {
+                        sp10.unk4->x = 0x300;
+                        sp10.unk4->y = 0x1FF;
+                        sp10.unk4->w = 0xA0;
+                        sp10.unk4->h = 1;
+                        sp10.unk8[0] = 0;
+                        LoadImage(sp10.unk4, sp10.unk8);
+                    }
+                }
+            }
+            vs_main_freeCdQueueSlot(D_8010985C);
+            ++D_800F1CD8;
+        }
+    } else {
+        vs_main_freeHeapR(D_80109860);
+        D_80109894 = 0;
+        D_80109898 = 0;
+        D_8010989C = 0;
+        D_801098A0 = 0;
+        D_8010988C = 0;
+        D_80109878 = 0;
+        D_800F1CD8 = 0;
+        return 1;
+    }
+    return 0;
+}
 
 void func_80103748(void)
 {
@@ -723,9 +777,6 @@ int func_80107FC0(void)
 }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801080E4);
-
-void func_80104A50(int);
-extern int D_8010988C;
 
 int func_801083AC(void)
 {

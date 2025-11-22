@@ -304,6 +304,14 @@ typedef struct {
     char unk23;
 } vs_battle_manualDisplayState_t;
 
+typedef struct {
+    int unk0;
+    RECT* unk4;
+    u_long* unk8;
+    RECT* unkC;
+    u_long* unk10;
+} func_80103530_t;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
@@ -332,6 +340,7 @@ void func_8008B430(char*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int vs_battle_getCurrentSceneId(void);
+void func_8008D820(void*, func_80103530_t*);
 int func_8008E5F0(void);
 int func_8008E7BC(int, int, u_int);
 void func_8008E88C(void);

@@ -59,6 +59,7 @@ extern char D_8010972C[];
 extern char D_80109738[];
 extern char D_80109744[];
 extern char D_80109754[];
+extern short D_8010975C[];
 extern char D_80109764[];
 extern char D_8010976C;
 extern char D_8010976F;
@@ -76,7 +77,7 @@ extern void* D_80109874;
 extern int D_80109878;
 extern int D_8010987C;
 extern u_int D_80109884;
-extern int D_80109888;
+extern u_int D_80109888;
 extern int D_8010988C;
 extern int D_80109894;
 extern int D_80109898;
@@ -85,6 +86,7 @@ extern int D_801098A0;
 extern int D_801098A4;
 extern int D_801098A8;
 extern char D_801098AC[0x140];
+extern int D_801099F0;
 extern short D_801099F4;
 
 int func_80102BB8(char* arg0)
@@ -379,7 +381,61 @@ void func_80105020(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010516C);
+void func_8010516C(int arg0, int arg1, int arg2)
+{
+    char sp18[8];
+    int temp_s4;
+    int i;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 <= 0) {
+        return;
+    }
+
+    temp_s4 = arg0 + (arg2 * 8);
+
+    if (D_80109888 != 0) {
+        if (arg2 >= 0x20) {
+            if (D_80109894 == 0) {
+                D_801099F0 = 1;
+                vs_main_playSfxDefault(0x7E, 0x72);
+            }
+            if (D_80109894 == D_80109888) {
+                if (D_801099F0 != 0) {
+                    D_801099F0 = 0;
+                    func_80045D64(0x7E, 0x72);
+                    vs_main_playSfxDefault(0x7E, 0x73);
+                }
+            }
+        }
+    }
+    if (arg2 >= 0x20) {
+        if (D_80109888 >= 0x20) {
+            D_80109894 = (D_80109888 * (arg2 - 0x20)) >> 5;
+        } else if (D_80109894 < D_80109888) {
+            ++D_80109894;
+        }
+    }
+
+    sprintf(sp18, D_80102B64, D_80109894);
+    arg0 -= (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
+    func_80107140(arg0, arg1, 0x15, D_8010975C, temp_s4);
+    arg0 += D_801091D8[21].unk2;
+    i = 2;
+    func_80107140(arg0, arg1 + 7, 0x1A, D_8010975C, temp_s4);
+    arg0 = arg0 + i + D_801091D8[26].unk2;
+
+    for (i = 0; i < 3; ++i) {
+        func_80107140(arg0, arg1 + 3, sp18[i] - 0x30, D_8010975C, temp_s4);
+        arg0 += 0xC;
+    }
+    func_80107140(arg0, arg1 + 8, 0x13, D_8010975C, temp_s4);
+}
 
 void func_801053B0(int arg0, int arg1, int arg2)
 {

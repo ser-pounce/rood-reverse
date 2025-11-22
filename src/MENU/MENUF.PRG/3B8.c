@@ -4,6 +4,16 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include <stdio.h>
 #include <libetc.h>
+#include <libgpu.h>
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    u_short unk4;
+    u_short unk6;
+} D_801091D8_t;
 
 int func_80102D10(void);
 int func_80102C54(void);
@@ -38,7 +48,7 @@ void func_80108EA0(void);
 extern char D_80102B5C[]; // "%09d"
 extern char D_80102B64; // "%03d"
 
-extern char D_801091D8[][8];
+extern D_801091D8_t D_801091D8[];
 extern char D_8010923A;
 extern char D_8010951A;
 extern char D_8010972C[];
@@ -180,9 +190,9 @@ void func_8010459C(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_8010972C[3] = arg2;
         D_8010972C[7] = arg2;
-        arg0 -= (D_801091D8[100][2] + D_801091D8[101][2]) >> 1;
+        arg0 -= (D_801091D8[100].unk2 + D_801091D8[101].unk2) >> 1;
         func_80106A80(arg0, arg1, 0x64, D_8010972C);
-        func_80106A80(arg0 + D_801091D8[100][2], arg1, 0x65, D_8010972C + 4);
+        func_80106A80(arg0 + D_801091D8[100].unk2, arg1, 0x65, D_8010972C + 4);
     }
 }
 
@@ -195,11 +205,11 @@ void func_80104650(int arg0, int arg1, int arg2)
     }
 
     if (arg2 > 0) {
-        arg0 -= (D_801091D8[84][2] + 0x18) >> 1;
+        arg0 -= (D_801091D8[84].unk2 + 0x18) >> 1;
         func_80105C34(arg0, arg1, 0x54, arg2);
         new_var = arg0 + 0xC;
-        func_80105DD8(new_var + D_801091D8[84][2], arg1 - 1, vs_main_stateFlags.unkC4 + 1,
-            arg2, 0x7FF4);
+        func_80105DD8(new_var + D_801091D8[84].unk2, arg1 - 1,
+            vs_main_stateFlags.unkC4 + 1, arg2, 0x7FF4);
     }
 }
 
@@ -212,8 +222,8 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801047D4);
 void func_8010489C(int arg0, int arg1, int arg2)
 {
     int temp_a2 = (arg2 / 15) + 0x60;
-    func_80105C34(arg0 - (D_801091D8[temp_a2][2] >> 1),
-        arg1 - (D_801091D8[temp_a2][3] >> 1), temp_a2, arg2 % 15);
+    func_80105C34(arg0 - (D_801091D8[temp_a2].unk2 >> 1),
+        arg1 - (D_801091D8[temp_a2].unk3 >> 1), temp_a2, arg2 % 15);
 }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104914);
@@ -232,9 +242,9 @@ void func_80104B8C(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_80109738[3] = arg2;
         D_80109738[7] = arg2;
-        arg0 -= (D_801091D8[22][2] + D_801091D8[23][2]) >> 1;
+        arg0 -= (D_801091D8[22].unk2 + D_801091D8[23].unk2) >> 1;
         func_80106A80(arg0, arg1, 0x16, D_80109738);
-        func_80106A80(arg0 + D_801091D8[22][2], arg1, 0x17, D_80109738 + 4);
+        func_80106A80(arg0 + D_801091D8[22].unk2, arg1, 0x17, D_80109738 + 4);
     }
 }
 
@@ -253,20 +263,21 @@ void func_80104C40(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_80109744[3] = arg2;
         sprintf(sp10, D_80102B5C, D_80109884);
-        new_var = D_801091D8[18][2] + D_801091D8[26][2];
-        arg0 -= (((D_801091D8[10][2] * 2) + (new_var + D_801091D8[20][2])) + 0x74) >> 1;
+        new_var = D_801091D8[18].unk2 + D_801091D8[26].unk2;
+        arg0 -=
+            (((D_801091D8[10].unk2 * 2) + (new_var + D_801091D8[20].unk2)) + 0x74) >> 1;
         func_8010664C(arg0, arg1, 0x12, D_80109744);
-        arg0 += D_801091D8[18][2];
+        arg0 += D_801091D8[18].unk2;
         func_8010664C(arg0, arg1 + 7, 0x1A, D_80109744);
         i = 2;
-        arg0 = (arg0 + i) + D_801091D8[26][2];
+        arg0 = (arg0 + i) + D_801091D8[26].unk2;
 
         for (i = 0; i < 9; ++i) {
             func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109744);
             arg0 += 0xC;
             if ((i == 2) || (i == 5)) {
                 func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
-                arg0 += D_801091D8[10][2] + 3;
+                arg0 += D_801091D8[10].unk2 + 3;
             }
         }
 
@@ -290,12 +301,13 @@ void func_80105020(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_80109754[3] = arg2;
         sprintf(sp10, &D_80102B64, D_80109888);
-        arg0 -= (D_801091D8[21][2] + D_801091D8[26][2] + D_801091D8[19][2] + 0x26) >> 1;
+        arg0 -=
+            (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
         i = 2;
         func_8010664C(arg0, arg1, 0x15, D_80109754);
-        arg0 += D_801091D8[21][2];
+        arg0 += D_801091D8[21].unk2;
         func_8010664C(arg0, arg1 + 7, 0x1A, D_80109754);
-        arg0 = arg0 + i + D_801091D8[26][2];
+        arg0 = arg0 + i + D_801091D8[26].unk2;
 
         for (i = 0; i < 3; ++i) {
             func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109754);
@@ -334,9 +346,9 @@ void func_8010559C(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109774[3] = arg2;
-        arg0 -= (D_801091D8[70][2] + D_801091D8[71][2]) >> 1;
+        arg0 -= (D_801091D8[70].unk2 + D_801091D8[71].unk2) >> 1;
         func_80106A80(arg0, arg1, 0x46, D_80109774);
-        func_80106A80(arg0 + D_801091D8[70][2], arg1, 0x47, D_80109774);
+        func_80106A80(arg0 + D_801091D8[70].unk2, arg1, 0x47, D_80109774);
     }
 }
 
@@ -437,7 +449,7 @@ void func_801059FC(int arg0, int arg1, int arg2)
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
             D_8005FEA0.unk28[0][vs_main_stateFlags.unkC4 * 3 + i] & 0xFFFFFF, temp_v0);
-        func_80105DD8((arg0 - D_801091D8[75 + i][2]) - 0x58, arg1 + i * 0x14, i + 0x4B,
+        func_80105DD8((arg0 - D_801091D8[75 + i].unk2) - 0x58, arg1 + i * 0x14, i + 0x4B,
             arg2, var_s3);
     }
 }
@@ -461,13 +473,43 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
         D_8005FEA0.unk28[vs_main_stateFlags.unkC4][arg2] & 0xFFFFFF, temp_t1);
-    func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B][2]) - 0x58, arg1 + (arg2 * 0x14),
+    func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].unk2) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
 }
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105C34);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105DD8);
+void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    D_801091D8_t* temp_a2;
+    POLY_FT4* poly;
+    void** scratch;
+
+    if (arg3 > 0) {
+        poly = *(void**)getScratchAddr(0);
+        temp_a2 = &D_801091D8[arg2];
+        setPolyFT4(poly);
+        setXY4(poly, arg0, arg1, temp_a2->unk2 + arg0, arg1, arg0, temp_a2->unk3 + arg1,
+            temp_a2->unk2 + arg0, temp_a2->unk3 + arg1);
+        setUV4(poly, temp_a2->unk0, temp_a2->unk1, temp_a2->unk0 + temp_a2->unk2,
+            temp_a2->unk1, temp_a2->unk0, temp_a2->unk1 + temp_a2->unk3,
+            temp_a2->unk0 + temp_a2->unk2, temp_a2->unk1 + temp_a2->unk3);
+        setSemiTrans(poly, 1);
+
+        if (arg3 < 8) {
+            setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
+            poly->tpage = temp_a2->unk4 | 0x20;
+            poly->clut = arg4 + 1;
+        } else {
+            setRGB0(poly, 0x80, 0x80, 0x80);
+            poly->tpage = temp_a2->unk4;
+            poly->clut = arg4;
+        }
+        scratch = (void**)getScratchAddr(0);
+        AddPrim(scratch[1] - 0x1C, poly++);
+        scratch[0] = poly;
+    }
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B5C);
 
@@ -653,9 +695,9 @@ void func_801085D4(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_801097CC[3] = arg2;
         D_801097CC[7] = arg2;
-        arg0 -= (D_801091D8[102][2] + D_801091D8[103][2]) >> 1;
+        arg0 -= (D_801091D8[102].unk2 + D_801091D8[103].unk2) >> 1;
         func_80106A80(arg0, arg1, 0x66, D_801097CC);
-        func_80106A80(arg0 + D_801091D8[102][2], arg1, 0x67, D_801097CC + 4);
+        func_80106A80(arg0 + D_801091D8[102].unk2, arg1, 0x67, D_801097CC + 4);
     }
 }
 
@@ -670,9 +712,9 @@ void func_80108688(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_801097D8[3] = arg2;
         D_801097D8[7] = arg2;
-        arg0 -= (D_801091D8[105][2] + D_801091D8[106][2]) >> 1;
+        arg0 -= (D_801091D8[105].unk2 + D_801091D8[106].unk2) >> 1;
         func_80106A80(arg0, arg1, 0x69, D_801097D8);
-        func_80106A80(arg0 + D_801091D8[105][2], arg1, 0x6A, D_801097D8 + 4);
+        func_80106A80(arg0 + D_801091D8[105].unk2, arg1, 0x6A, D_801097D8 + 4);
     }
 }
 
@@ -708,7 +750,7 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
     if (arg2 > 0) {
         D_801097E4[3] = arg2;
         func_80106A80(
-            arg0 - (D_801091D8[arg3 + 0x6B][2] >> 1), arg1, arg3 + 0x6B, D_801097E4);
+            arg0 - (D_801091D8[arg3 + 0x6B].unk2 >> 1), arg1, arg3 + 0x6B, D_801097E4);
     }
 }
 

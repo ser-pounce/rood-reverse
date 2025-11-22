@@ -179,11 +179,11 @@ typedef struct {
     short currentMP;
     short maxMP;
     u_short risk;
-    short unk22;
+    u_short unk22;
     u_short unk24;
-    short unk26;
+    u_short unk26;
     u_short unk28;
-    short unk2A;
+    u_short unk2A;
     u_short unk2C;
     short unk2E;
     short unk30;

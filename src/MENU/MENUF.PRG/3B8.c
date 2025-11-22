@@ -2,7 +2,10 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 
+int func_80102C54(void);
+int func_801037A0(void);
 void func_80105C34(int, int, int, int);
+void func_80105F6C(int, int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
 void func_80107A8C(void);
@@ -12,8 +15,27 @@ extern char D_8010923A;
 extern char D_8010951A;
 extern char D_80109764[];
 extern char D_801097E4[];
+extern int D_801098A8;
+extern short D_801099F4;
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102BB8);
+int func_80102BB8(char* arg0)
+{
+    switch (*arg0) {
+    case 0:
+        *arg0 = 1;
+        // Fallthrough
+    case 1:
+        *arg0 += (func_80102C54() != 0);
+        break;
+    case 2:
+        if (func_801037A0() != 0) {
+            *arg0 = 0;
+            return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102800);
 
@@ -91,10 +113,36 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010540C);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010559C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010564C);
+void func_8010564C(int arg0, int arg1, int arg2)
+{
+    int var_a2;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 <= 0) {
+        return;
+    }
+    if (D_801098A8 < 0x1E00) {
+        var_a2 = 0;
+    } else if (D_801098A8 <= 0xFFFF) {
+        var_a2 = 1;
+    } else if (D_801098A8 <= 0x11DFF) {
+        var_a2 = 2;
+    } else if (D_801098A8 <= 0x1FFFF) {
+        var_a2 = 3;
+    } else {
+        var_a2 = 4;
+    }
+    func_80105C34(arg0, arg1, var_a2 + 0x4E, arg2);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801056E8);
 
+// https://decomp.me/scratch/MzjzI
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105790);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010581C);
@@ -201,7 +249,16 @@ void func_8010873C(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108784);
+void func_80108784(int arg0, int arg1, int arg2)
+{
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        int new_var = (D_801099F4 % 60) << 0x10;
+        func_80105F6C(arg0, arg1, arg2, ((D_801099F4 / 60) << 0x10) | (new_var >> 8), 0);
+    }
+}
 
 void func_8010880C(int arg0, int arg1, int arg2, int arg3)
 {
@@ -246,11 +303,41 @@ int func_80108EC8(void) { return vs_battle_characterState->unk3C->unk28; }
 
 int func_80108EE8(void) { return vs_battle_characterState->unk3C->unk2C; }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108F08);
+void func_80108F08(int amount)
+{
+    vs_battle_characterState->unk3C->unk24 += amount;
+    if (vs_battle_characterState->unk3C->unk24 > 999) {
+        vs_battle_characterState->unk3C->unk24 = 999;
+    }
+    vs_battle_characterState->unk3C->unk22 += amount;
+    if (vs_battle_characterState->unk3C->unk22 > 999) {
+        vs_battle_characterState->unk3C->unk22 = 999;
+    }
+}
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108F98);
+void func_80108F98(int amount)
+{
+    vs_battle_characterState->unk3C->unk28 += amount;
+    if (vs_battle_characterState->unk3C->unk28 > 999) {
+        vs_battle_characterState->unk3C->unk28 = 999;
+    }
+    vs_battle_characterState->unk3C->unk26 += amount;
+    if (vs_battle_characterState->unk3C->unk26 > 999) {
+        vs_battle_characterState->unk3C->unk26 = 999;
+    }
+}
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80109028);
+void func_80109028(int amount)
+{
+    vs_battle_characterState->unk3C->unk2C += amount;
+    if (vs_battle_characterState->unk3C->unk2C > 999) {
+        vs_battle_characterState->unk3C->unk2C = 999;
+    }
+    vs_battle_characterState->unk3C->unk2A += amount;
+    if (vs_battle_characterState->unk3C->unk2A > 999) {
+        vs_battle_characterState->unk3C->unk2A = 999;
+    }
+}
 
 void _raiseMaxHP(int amount)
 {

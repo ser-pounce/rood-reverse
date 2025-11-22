@@ -314,6 +314,7 @@ vs_main_playSfx = 0x80045754;
 vs_main_playSfxDefault = 0x80045988;
 vs_main_computeSfxPan = 0x800459AC;
 vs_main_panSfx = 0x80045AA8;
+func_80045D64 = 0x80045D64;
 vs_main_loadSfxSlot = 0x80045DE0;
 vs_main_freeSfxQueueSlot = 0x80045F64;
 vs_main_setCurrentSfx = 0x80046084;

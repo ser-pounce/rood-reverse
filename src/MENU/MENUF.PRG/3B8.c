@@ -13,6 +13,7 @@ int func_8010412C(void);
 void func_80105C34(int, int, int, int);
 void func_80105DD8(int, int, int, int, int);
 void func_80105F6C(int, int, int, int, int);
+void func_801064D4(int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
 void func_80107140(int, int, int, short*, int);
@@ -22,6 +23,9 @@ int func_80107D98(void);
 int func_80107FC0(void);
 int func_801080E4(void);
 int func_801083AC(void);
+void func_801085D4(int arg0, int arg1, int arg2);
+void func_8010873C(int arg0, int arg1, int arg2);
+void func_80108784(int arg0, int arg1, int arg2);
 void func_80108E48(void);
 void func_80108EA0(void);
 
@@ -40,6 +44,9 @@ extern short D_801097EC[];
 extern u_int D_8010980C[];
 extern int D_8010987C;
 extern u_int D_80109884;
+extern int D_8010989C;
+extern int D_801098A0;
+extern int D_801098A4;
 extern int D_801098A8;
 extern short D_801099F4;
 
@@ -184,6 +191,7 @@ void func_80104650(int arg0, int arg1, int arg2)
     }
 }
 
+// https://decomp.me/scratch/whDQr
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801046F8);
 
 // https://decomp.me/scratch/zHBmW
@@ -198,6 +206,7 @@ void func_8010489C(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104914);
 
+// https://decomp.me/scratch/ZDcyC
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104A50);
 
 void func_80104B8C(int arg0, int arg1, int arg2)
@@ -332,9 +341,55 @@ void func_801059B8(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801059FC);
+void func_801059FC(int arg0, int arg1, int arg2)
+{
+    int temp_v0;
+    int i;
+    int var_s3;
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105B30);
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+
+    for (i = 0; i < 3; ++i) {
+        var_s3 = 0x7FF2;
+        temp_v0 = D_801098A4 == i;
+        if (temp_v0 != 0) {
+            var_s3 = 0x7FF8;
+        }
+        func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
+            D_8005FEA0.unk28[0][vs_main_stateFlags.unkC4 * 3 + i] & 0xFFFFFF, temp_v0);
+        func_80105DD8((arg0 - D_801091D8[75 + i][2]) - 0x58, arg1 + i * 0x14, i + 0x4B,
+            arg2, var_s3);
+    }
+}
+
+void func_80105B30(int arg0, int arg1, int arg2, int arg3)
+{
+    int temp_t1;
+    int var_s3;
+
+    if (arg3 < 0) {
+        arg3 = 0;
+    }
+    if (arg3 >= 0x41) {
+        arg3 = 0x40;
+    }
+    temp_t1 = D_801098A4 == arg2;
+    var_s3 = 0x7FF2;
+    if (temp_t1 != 0) {
+        var_s3 = 0x7FF8;
+    }
+
+    func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
+        D_8005FEA0.unk28[vs_main_stateFlags.unkC4][arg2] & 0xFFFFFF, temp_t1);
+    func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B][2]) - 0x58, arg1 + (arg2 * 0x14),
+        arg2 + 0x4B, arg3, var_s3);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105C34);
 
@@ -373,7 +428,39 @@ int func_80107D4C(void)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107D98);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107FC0);
+int func_80107FC0(void)
+{
+    if (D_801098A0 != 0) {
+        return 0;
+    }
+    if (D_8010989C == 0) {
+        vs_main_playSfxDefault(0x7E, 0x7D);
+    }
+    if (D_8010989C == 0x1E) {
+        vs_main_playSfxDefault(0x7E, 0x7D);
+    }
+
+    func_801085D4(0xA0, 0x40, D_8010989C);
+    func_8010873C(0x80, 0x74, D_8010989C - 0xF);
+    func_80108784(0xC0, 0x90, D_8010989C - 0x1E);
+    func_801064D4(0xD6, 0xBB, D_8010989C - 0x1E, D_8010989C);
+
+    if (D_8010989C < 0x7FFF) {
+        ++D_8010989C;
+    }
+
+    if (vs_main_buttonsPressed.all & 0x20) {
+        if (D_8010989C >= 0x4E) {
+            func_80045D64(0x7E, 0);
+            func_8007E0A8(0x1D, 2, 5);
+            return 1;
+        }
+        func_80045D64(0x7E, 0);
+        D_8010989C = 0x4E;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801080E4);
 

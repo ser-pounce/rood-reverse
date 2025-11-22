@@ -212,7 +212,7 @@ typedef struct {
     char unkC1;
     char unkC2;
     char unkC3;
-    char unkC4;
+    u_char unkC4;
     char unkC5;
     char unkC6;
     char unkC7;
@@ -395,6 +395,7 @@ int vs_main_streamXa(int sector, int byteCount);
 int vs_main_checkStreamXaEnd(void);
 int func_8004552C(int id, int arg1, int arg2);
 int func_800450E4(void);
+void func_80045D64(int arg0, int arg1);
 void vs_main_wait(void);
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
 void vs_main_resetGame(void);

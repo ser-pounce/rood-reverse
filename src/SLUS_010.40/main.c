@@ -10035,7 +10035,7 @@ static void func_80045CEC(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-static void func_80045D64(int arg0, int arg1)
+void func_80045D64(int arg0, int arg1)
 {
     if (arg1 != 0) {
         arg0 = func_80045B28(arg0, arg1);

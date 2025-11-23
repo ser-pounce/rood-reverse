@@ -9575,7 +9575,7 @@ static int func_80044F60(int id, int arg1, u_int arg2)
     return 0;
 }
 
-static int func_80045000(int id, int arg1, int arg2)
+int func_80045000(int id, int arg1, int arg2)
 {
     u_int temp_v0;
 
@@ -9684,7 +9684,7 @@ static int vs_main_clearMusicLoadSlot(u_int slot)
     return 0;
 }
 
-static int vs_main_clearMusicLoadQueue(void)
+int vs_main_clearMusicLoadQueue(void)
 {
     int i;
     int ret;

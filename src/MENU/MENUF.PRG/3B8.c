@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <libetc.h>
 #include <libgpu.h>
+#include <rand.h>
 
 typedef struct {
     char unk0;
@@ -20,6 +21,7 @@ int func_80102D10(void);
 int func_80102C54(void);
 int func_8010310C(void);
 int func_80103530(void);
+void func_80103748(void);
 int func_801037A0(void);
 int func_8010384C(void);
 int func_80103D88(void);
@@ -52,11 +54,16 @@ void func_80108564(int arg0, int arg1);
 void func_801085D4(int arg0, int arg1, int arg2);
 void func_80108688(int arg0, int arg1, int arg2);
 void func_8010873C(int arg0, int arg1, int arg2);
-void func_80108E38(void);
-void func_80108E40(void);
 void func_80108784(int arg0, int arg1, int arg2);
 void func_8010880C(int arg0, int arg1, int arg2, int arg3);
 void func_8010887C(int arg0, int arg1, int arg2);
+void func_80108AB0(void);
+void func_80108E38(void);
+void func_80108E40(void);
+void func_80108A0C(void);
+int func_80108EA8(void);
+int func_80108EC8(void);
+int func_80108EE8(void);
 void func_80108E48(void);
 void func_80108EA0(void);
 
@@ -85,6 +92,8 @@ extern char D_801097D8[];
 extern char D_801097E4[];
 extern short D_801097EC[];
 extern u_int D_8010980C[];
+extern vs_main_CdQueueSlot* D_8010984C;
+extern void* D_80109850;
 extern vs_main_CdQueueSlot* D_8010985C;
 extern void* D_80109860;
 extern vs_main_CdQueueSlot* D_80109868;
@@ -97,6 +106,7 @@ extern int D_80109880;
 extern u_int D_80109884;
 extern u_int D_80109888;
 extern int D_8010988C;
+extern int D_80109890;
 extern int D_80109894;
 extern int D_80109898;
 extern int D_8010989C;
@@ -164,7 +174,112 @@ int func_80102C54(void)
     return ret;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80102D10);
+int func_80102D10(void)
+{
+    func_80103530_t sp10;
+    int temp_s0;
+    int temp_s1;
+    int temp_v1;
+    int var_a0;
+    int i;
+    int var_a3;
+    u_int var_v1;
+
+    if (D_800F1CD8 == 0) {
+        func_8007DFF0(0x1D, 3, 5);
+        D_80109850 = vs_main_allocHeapR(D_80102AE0[0].size);
+        D_8010984C = vs_main_allocateCdQueueSlot(&D_80102AE0[0]);
+        vs_main_cdEnqueue(D_8010984C, D_80109850);
+        ++D_800F1CD8;
+    } else if (D_800F1CD8 == 1) {
+        if (D_8010984C->state == 4) {
+            for (i = 0; i < 3; ++i) {
+                func_8008D820(D_80109850 + i * 0x8220, &sp10);
+                if (sp10.unk10 != NULL) {
+                    sp10.unkC->x = 0x340 + i * 0x40;
+                    sp10.unkC->y = 0x100;
+                    sp10.unkC->h = 0xFF;
+                    LoadImage(sp10.unkC, sp10.unk10);
+                }
+                if (i == 0) {
+                    if (sp10.unk8 != NULL) {
+                        sp10.unk4->x = 0x300;
+                        sp10.unk4->y = 0x1FF;
+                        sp10.unk4->w = 0x80;
+                        sp10.unk4->h = 1;
+                        *sp10.unk8 = 0;
+                        LoadImage(sp10.unk4, sp10.unk8);
+                    }
+                }
+            }
+            vs_main_freeCdQueueSlot(D_8010984C);
+            func_80103748();
+            ++D_800F1CD8;
+        }
+    } else if (vs_main_clearMusicLoadQueue() == 0) {
+        func_80045000(2, 0x7F, 0);
+        vs_main_freeHeapR(D_80109850);
+        D_80109894 = 0;
+        D_80109898 = 0;
+        D_8010989C = 0;
+        D_801098A0 = 0;
+        D_8010988C = 0;
+        D_80109878 = (rand() & 0xF0) | 8;
+        temp_s0 = func_80108EA8();
+        temp_s1 = func_80108EC8();
+        temp_v1 = func_80108EE8();
+        if ((temp_s1 >= temp_s0) && (temp_v1 >= temp_s0)) {
+            D_80109890 = 0;
+        } else if (temp_s0 >= temp_s1) {
+            if (temp_v1 >= temp_s1) {
+                D_80109890 = 1;
+            } else {
+                D_80109890 = 2;
+            }
+        } else {
+            D_80109890 = 2;
+        }
+
+        D_800F1CD8 = 0;
+        func_80108E48();
+        D_80109880 = vs_main_stateFlags.clearCount;
+
+        if (D_8005FFD8.unk0[1] & 0x800000) {
+            D_8005FFD8.unk0[1] |= 0x400000;
+        }
+
+        var_a3 = 0;
+
+        for (i = 0; i < 16; ++i) {
+            for (var_a0 = 0; var_a0 < 32; ++var_a0) {
+                int v = 1;
+                if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << var_a0)) {
+                    ++var_a3;
+                }
+            }
+        }
+
+        var_v1 = 0;
+
+        for (i = 0; i < 64; ++i) {
+            if (vs_main_stateFlags.unk3C0[i] != 0) {
+                ++var_v1;
+            }
+        }
+
+        if (D_8005FEA0.unk94 < var_a3) {
+            D_8005FEA0.unk94 = var_a3;
+        }
+        if (D_8005FEA0.unk98 < var_v1) {
+            D_8005FEA0.unk98 = var_v1;
+        }
+        D_80109888 = (var_a3 * 0x64) / 361;
+        func_80108AB0();
+        func_80108A0C();
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010310C);
 
@@ -995,6 +1110,7 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80106A80);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107140);
 
+// https://decomp.me/scratch/ktwNS
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
 
 int func_80107A8C(void)

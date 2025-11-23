@@ -242,7 +242,9 @@ typedef struct {
     char unk385;
     char unk386;
     char unk387;
-    char unk388[184];
+    char unk388[56];
+    char unk3C0[64];
+    char unk400[64];
 } vs_main_flags_t;
 
 typedef struct {
@@ -375,9 +377,11 @@ void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot*);
 void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram);
 void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram);
 int vs_main_loadMusicSlot(int id, int targetSlot);
+int vs_main_clearMusicLoadQueue(void);
 void vs_main_playSfxDefault(int, int);
 void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
+int func_80045000(int id, int arg1, int arg2);
 void func_800461CC(int, u_int[], u_int, int, int);
 void vs_main_setMonoSound(int);
 void func_80046C80(int, int, u_short*, int);

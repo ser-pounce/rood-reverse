@@ -23,8 +23,17 @@ int func_80103530(void);
 int func_801037A0(void);
 int func_8010384C(void);
 int func_80103D88(void);
+void func_80104914(int);
 void func_80104A50(int);
 int func_8010412C(void);
+void func_8010559C(int arg0, int arg1, int arg2);
+void func_8010564C(int arg0, int arg1, int arg2);
+void func_801056E8(int arg0, int arg1, int arg2);
+void func_80105790(int, int, int);
+void func_8010581C(int, int, int);
+void func_801059B8(int arg0, int arg1, int arg2);
+void func_801059FC(int arg0, int arg1, int arg2);
+void func_80105B30(int arg0, int arg1, int arg2, int arg3);
 void func_80105C34(int, int, int, int);
 void func_80105DD8(int, int, int, int, int);
 void func_80105F6C(int, int, int, int, int);
@@ -249,7 +258,89 @@ int func_801037A0(void)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010384C);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80103D88);
+int func_80103D88(void)
+{
+    int var_v0;
+
+    var_v0 = vs_math_sine(D_8010988C);
+    if (var_v0 < 0) {
+        var_v0 = -var_v0;
+    }
+    if (var_v0 <= -1) {
+        var_v0 += 0xFF;
+    }
+    func_80104914(var_v0 >> 8);
+    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    if (D_801098A0 == 0) {
+        if (D_8010989C == 0x30) {
+            vs_main_playSfxDefault(0x7E, 0x72);
+        }
+        if (D_8010989C == 0x60) {
+            func_80045D64(0x7E, 0x72);
+            vs_main_playSfxDefault(0x7E, 0x73);
+        }
+        func_8010559C(0xA0, 0x34, D_8010989C);
+        func_8010581C(0x10, 0xA4, D_8010989C - 0x20);
+        func_801056E8(0x10, 0x90, D_8010989C - 0x60);
+        if (D_801098A4 == 0) {
+            func_801059B8(0x46, 0xB8, D_8010989C - 0x80);
+        }
+        if ((D_8010989C == 0x80) && (D_801098A4 == 0)) {
+            vs_main_playSfxDefault(0x7E, 0x76);
+        }
+        if (D_8010989C == 0xA0) {
+            vs_main_playSfxDefault(0x7E, 0x73);
+        }
+        if (D_8010989C == 0xA8) {
+            vs_main_playSfxDefault(0x7E, 0x73);
+        }
+        if (D_8010989C == 0xB0) {
+            vs_main_playSfxDefault(0x7E, 0x73);
+        }
+        func_80105B30(0x130, 0x90, 0, D_8010989C - 0xA0);
+        func_80105B30(0x130, 0x90, 1, D_8010989C - 0xA8);
+        func_80105B30(0x130, 0x90, 2, D_8010989C - 0xB0);
+        ++D_8010989C;
+        if ((vs_main_buttonsPressed.all & 0x20) || (D_8010989C >= 0xC0)) {
+            func_80045D64(0x7E, 0);
+            D_8010989C = 0;
+            ++D_801098A0;
+        }
+    } else if (D_801098A0 == 1) {
+        func_8010559C(0xA0, 0x34, 0x40);
+        func_80105790(0x10, 0xA4, 0x40);
+        func_8010564C(0x10, 0x90, 0x40);
+        if (D_801098A4 == 0) {
+            func_801059B8(0x46, 0xB8, 0x40);
+        }
+        func_801059FC(0x130, 0x90, 0x40);
+        ++D_8010989C;
+        if ((vs_main_buttonsPressed.all & 0x20) || (D_8010989C >= 0x1C2)) {
+            if (vs_main_buttonsPressed.all & 0x20) {
+                vs_main_playSfxDefault(0x7E, 5);
+            }
+            ++D_801098A0;
+            D_8010989C = 7;
+        }
+    } else if (D_801098A0 == 2) {
+        func_8010559C(0xA0, 0x34, D_8010989C);
+        func_80105790(0x10, 0xA4, D_8010989C);
+        func_8010564C(0x10, 0x90, D_8010989C);
+        if (D_801098A4 == 0) {
+            func_801059B8(0x46, 0xB8, D_8010989C);
+        }
+        func_801059FC(0x130, 0x90, D_8010989C);
+        if (D_8010989C > 0) {
+            --D_8010989C;
+        } else {
+            ++D_801098A0;
+        }
+    } else {
+        func_8007E0A8(0x1D, 1, 5);
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010412C);
 

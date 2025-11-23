@@ -42,6 +42,7 @@ void func_801084F4(int arg0, int arg1);
 void func_80108564(int arg0, int arg1);
 void func_801085D4(int arg0, int arg1, int arg2);
 void func_8010873C(int arg0, int arg1, int arg2);
+void func_80108E38(void);
 void func_80108E40(void);
 void func_80108784(int arg0, int arg1, int arg2);
 void func_80108E48(void);
@@ -73,6 +74,8 @@ extern short D_801097EC[];
 extern u_int D_8010980C[];
 extern vs_main_CdQueueSlot* D_8010985C;
 extern void* D_80109860;
+extern vs_main_CdQueueSlot* D_80109868;
+extern void* D_8010986C;
 extern vs_main_CdQueueSlot* D_80109870;
 extern void* D_80109874;
 extern int D_80109878;
@@ -90,6 +93,7 @@ extern char D_801098AC[0x140];
 extern int D_801099EC;
 extern int D_801099F0;
 extern short D_801099F4;
+extern short D_801099F6;
 
 int func_80102BB8(char* arg0)
 {
@@ -846,7 +850,74 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107140);
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107A8C);
+int func_80107A8C(void)
+{
+    vs_battle_room* temp_a1;
+    short* var_a0;
+
+    if (D_800F1CD8 == 0) {
+        func_8007DFF0(0x1D, 2, 5);
+        D_8010986C = vs_main_allocHeapR(D_80102AE0[3].size);
+        D_80109868 = vs_main_allocateCdQueueSlot(&D_80102AE0[3]);
+        vs_main_cdEnqueue(D_80109868, D_8010986C);
+        ++D_800F1CD8;
+        if (0) {
+        wat:
+            D_801099F4 = var_a0[2];
+            D_801099F6 = var_a0[3];
+            goto wat2;
+        }
+    } else if (D_800F1CD8 == 1) {
+        if (D_80109868->state == 4) {
+            int i;
+            func_80103530_t sp10;
+            for (i = 0; i < 2; ++i) {
+                func_8008D820(D_8010986C + i * 0x8220, &sp10);
+                if (sp10.unk10 != NULL) {
+                    sp10.unkC->x = 0x340 + i * 0x40;
+                    sp10.unkC->y = 0x100;
+                    sp10.unkC->h = 0xFF;
+                    LoadImage(sp10.unkC, sp10.unk10);
+                }
+                if (i == 0) {
+                    if (sp10.unk8 != NULL) {
+                        sp10.unk4->x = 0x300;
+                        sp10.unk4->y = 0x1FF;
+                        sp10.unk4->w = 0xA0;
+                        sp10.unk4->h = 1;
+                        sp10.unk8[0] = 0;
+                        LoadImage(sp10.unk4, sp10.unk8);
+                        vs_main_memcpy(D_801098AC, sp10.unk8, 0x140);
+                    }
+                }
+            }
+            D_801099F4 = 0x258;
+            D_801099F6 = 1;
+            temp_a1 = vs_battle_currentScene->rooms;
+            var_a0 = D_8010986C + 0x10440;
+            for (i = 0; i < 0x40; ++i, var_a0 += 4) {
+                if ((var_a0[0] == temp_a1->zoneId) && (var_a0[1] == temp_a1->mapId)) {
+                    goto wat;
+                }
+            }
+        wat2:
+            vs_main_freeCdQueueSlot(D_80109868);
+            ++D_800F1CD8;
+        }
+    } else {
+        vs_main_freeHeapR(D_8010986C);
+        D_80109894 = 0;
+        D_80109898 = 0;
+        D_8010989C = 0;
+        D_801098A0 = 0;
+        D_8010988C = 0;
+        D_80109878 = 0;
+        D_800F1CD8 = 0;
+        func_80108E38();
+        return 1;
+    }
+    return 0;
+}
 
 int func_80107D4C(void)
 {

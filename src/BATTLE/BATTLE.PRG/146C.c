@@ -85,33 +85,6 @@ typedef struct {
     short unk2;
 } D_800F1C60_t;
 
-typedef struct {
-    int zoneId;
-    vs_main_CdFile* unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    vs_main_CdQueueSlot* unk20;
-    void* unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int mapId;
-    int unk38;
-    int unk3C;
-    int unk40;
-    int unk44;
-    int unk48;
-    int unk4C;
-    int unk50;
-    int unk54;
-    vs_main_CdQueueSlot* unk58;
-    void* unk5C;
-} D_800F1880_t;
-
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -166,7 +139,6 @@ extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
 extern int D_800F186C;
-extern D_800F1880_t D_800F1880;
 extern int D_800F18A8;
 extern int D_800F18B0;
 extern int D_800F18F0;

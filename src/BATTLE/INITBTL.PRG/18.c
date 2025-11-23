@@ -20,6 +20,8 @@ typedef struct {
 } System_dat_h;
 
 void func_800CA9C0(void*);
+void func_800FA6B8(void);
+void func_800FAAAC(void);
 
 extern signed char D_800FAF7C[0x400];
 
@@ -120,15 +122,15 @@ void func_800F9AD8(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->hitLocations[i].unk0 = s1->unk28[i].unk0;
-        temp_s0->hitLocations[i].unk2 = s1->unk28[i].unk2;
+        temp_s0->hitLocations[i].unk0 = s1->hitLocations[i].unk0;
+        temp_s0->hitLocations[i].unk2 = s1->hitLocations[i].unk2;
 
         for (j = 0; j < 4; ++j) {
-            temp_s0->hitLocations[i].types[j] = s1->unk28[i].unk4[j];
+            temp_s0->hitLocations[i].types[j] = s1->hitLocations[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_s0->hitLocations[i].affinities[j] = s1->unk28[i].unkC[j];
+            temp_s0->hitLocations[i].affinities[j] = s1->hitLocations[i].affinities[j];
         }
     }
 
@@ -149,6 +151,7 @@ INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);
 // https://decomp.me/scratch/b3iic
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
 
+// https://decomp.me/scratch/zPzit
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
 
 void func_800FA6B8(void)

@@ -133,8 +133,8 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short unk2;
-    u_short unk4[4];
-    u_short unkC[8];
+    u_short types[4];
+    u_short affinities[8];
 } D_80060068_t2;
 
 typedef struct {
@@ -153,7 +153,7 @@ typedef struct {
     u_short flags;
     int unk1C;
     char unk20[8];
-    D_80060068_t2 unk28[6];
+    D_80060068_t2 hitLocations[6];
     int unk7C;
     int unk80;
     int unk84;
@@ -311,7 +311,7 @@ extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
 extern u_short D_8005046A;
-extern u_int D_80055C80[];
+extern void* D_80055C80[];
 extern u_int D_8005E040;
 extern void* D_8005E0C0[];
 extern int D_8005E0C8;
@@ -383,6 +383,7 @@ int vs_main_clearMusicLoadQueue(void);
 void vs_main_playSfxDefault(int, int);
 void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
+void vs_main_resetSound(void);
 int func_80045000(int id, int arg1, int arg2);
 void func_800461CC(int, u_int[], u_int, int, int);
 void vs_main_setMonoSound(int);
@@ -395,6 +396,7 @@ void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
 void func_80048F8C(void);
+void func_80048FF8(void);
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);
 void vs_main_resetPadAct(void);
 int vs_main_streamXa(int sector, int byteCount);

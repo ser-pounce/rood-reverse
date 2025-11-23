@@ -84,6 +84,7 @@ extern vs_main_CdQueueSlot* D_80109870;
 extern void* D_80109874;
 extern int D_80109878;
 extern int D_8010987C;
+extern int D_80109880;
 extern u_int D_80109884;
 extern u_int D_80109888;
 extern int D_8010988C;
@@ -1244,7 +1245,64 @@ void func_80108A0C(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80108AB0);
+void func_80108AB0(void)
+{
+    short sp0[6] = { 20, 20, 40, 80, 100, 60 };
+    short sp10[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
+    int i;
+
+    D_80109884 = 0;
+
+    for (i = 0; i < 6; ++i) {
+        D_80109884 += D_8005FEA0.unk4[i] * sp0[i];
+    }
+
+    for (i = 0; i < 10; ++i) {
+        D_80109884 += D_8005FEA0.unk14[i] * sp10[i];
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) != 0x800000) {
+            D_80109884 += 0x4E20;
+        }
+    }
+
+    if (D_8005FEA0.unk88 < 6) {
+        D_80109884 += D_8005FEA0.unk88 * 0xA;
+    } else if (D_8005FEA0.unk88 < 0xB) {
+        D_80109884 += D_8005FEA0.unk88 * 0x14;
+    } else if (D_8005FEA0.unk88 < 0x10) {
+        D_80109884 += D_8005FEA0.unk88 * 0x28;
+    } else if (D_8005FEA0.unk88 < 0x15) {
+        D_80109884 += D_8005FEA0.unk88 * 0x50;
+    } else if (D_8005FEA0.unk88 < 0x1A) {
+        D_80109884 += D_8005FEA0.unk88 * 0xA0;
+    } else if (D_8005FEA0.unk88 < 0x1F) {
+        D_80109884 += D_8005FEA0.unk88 * 0x140;
+    } else if (D_8005FEA0.unk88 < 0x33) {
+        D_80109884 += D_8005FEA0.unk88 * 0x280;
+    } else {
+        D_80109884 += D_8005FEA0.unk88 * 0x500;
+    }
+
+    D_80109884 = D_80109884 + (D_80109880 * 0x186A0);
+
+    if ((D_80109880 != 0) && (D_8005FF30 < 0x258)) {
+        if (D_8005FF30 >= 0x21C) {
+            D_80109884 = D_80109884 + (D_80109884 >> 2);
+        } else if (D_8005FF30 >= 0x12C) {
+            D_80109884 = D_80109884 + (D_80109884 >> 1);
+        } else {
+            D_80109884 = D_80109884 * 2;
+        }
+    }
+
+    D_80109884 = D_80109884 + D_8005FEA0.unk9C[0x1A];
+    D_80109884 = D_80109884 + D_8005FEA0.unk108;
+    if (D_80109884 > 0x3B9AC9FF) {
+        D_80109884 = 0x3B9AC9FF;
+    }
+}
 
 void func_80108E38(void) { }
 

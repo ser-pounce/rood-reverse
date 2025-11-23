@@ -138,27 +138,29 @@ typedef struct {
 } D_80060068_t2;
 
 typedef struct {
-    struct {
-        int unk0;
-        short currentHP;
-        short maxHP;
-        short currentMP;
-        short maxMP;
-        short unkC;
-        short unkE;
-        short unk10;
-        short unk12;
-        short unk14;
-        short unk16;
-        short risk;
-        short flags;
-        int unk1C;
-        char unk20[8];
-        D_80060068_t2 unk28[6];
-        int unk7C;
-        int unk80;
-        int unk84;
-    } unk0;
+    int unk0;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+    short risk;
+    u_short flags;
+    int unk1C;
+    char unk20[8];
+    D_80060068_t2 unk28[6];
+    int unk7C;
+    int unk80;
+    int unk84;
+} D_80060068_t3;
+
+typedef struct {
+    D_80060068_t3 unk0;
     int unkDC[9];
 } D_80060068_t;
 

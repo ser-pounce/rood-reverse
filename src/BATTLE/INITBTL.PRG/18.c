@@ -2,8 +2,10 @@
 #include "lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
+#include "../BATTLE.PRG/30D14.h"
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
+#include "../BATTLE.PRG/5BF94.h"
 #include <memory.h>
 
 typedef struct {
@@ -47,33 +49,41 @@ void _loadSystemDat(void)
 
     buf = (System_dat_h*)vs_main_allocHeapR(VS_SYSTEM_DAT_SIZE);
     vs_main_diskLoadFile(VS_SYSTEM_DAT_LBA, VS_SYSTEM_DAT_SIZE, buf);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk0);
+
+    p_hdr = (void*)buf + buf->unk0;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk4);
+
+    p_hdr = (void*)buf + buf->unk4;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk8);
+
+    p_hdr = (void*)buf + buf->unk8;
     func_80048A64((u_short*)p_hdr + 2, 0xF, 0, p_hdr->x);
+
     p_hdr = (RECT*)((signed char*)buf + buf->unkC);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk10);
+
+    p_hdr = (void*)buf + buf->unk10;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk14);
+
+    p_hdr = (void*)buf + buf->unk14;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
     LoadImage(&rect, (u_long*)p_hdr + 2);
     DrawSync(0);
-    p_hdr = (RECT*)((signed char*)buf + buf->unk18);
+
+    p_hdr = (void*)buf + buf->unk18;
     setRECT(&rect, 0x300, 0xF0, p_hdr->x, p_hdr->y);
     LoadImage(&rect, (u_long*)p_hdr + 1);
     DrawSync(0);
-    func_800CA9C0((signed char*)buf + buf->unk1C);
+
+    func_800CA9C0((void*)buf + buf->unk1C);
     vs_main_freeHeapR(buf);
 }
 
@@ -81,7 +91,58 @@ void func_800F9AB0(void) { }
 
 void func_800F9AB8(void) { func_800995B0(); }
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9AD8);
+void func_800CB660(int);
+
+void func_800F9AD8(void)
+{
+    int j;
+    int i;
+    vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
+    D_80060068_t3* s1 = &D_80060068.unk0;
+
+    temp_s0->currentHP = s1->currentHP;
+    temp_s0->maxHP = s1->maxHP;
+    temp_s0->currentMP = s1->currentMP;
+    temp_s0->maxMP = s1->maxMP;
+    temp_s0->unk22 = s1->unkC;
+    temp_s0->unk24 = s1->unkE;
+    temp_s0->unk26 = s1->unk10;
+    temp_s0->unk28 = s1->unk12;
+    temp_s0->unk2A = s1->unk14;
+    temp_s0->unk2C = s1->unk16;
+    temp_s0->risk = s1->risk;
+    *(short*)&temp_s0->flags = s1->flags;
+
+    func_80086FA8(s1->unk1C, temp_s0);
+
+    for (i = 0; i < 8; ++i) {
+        temp_s0->unk94C[i] = s1->unk20[i];
+    }
+
+    for (i = 0; i < 6; ++i) {
+        temp_s0->hitLocations[i].unk0 = s1->unk28[i].unk0;
+        temp_s0->hitLocations[i].unk2 = s1->unk28[i].unk2;
+
+        for (j = 0; j < 4; ++j) {
+            temp_s0->hitLocations[i].types[j] = s1->unk28[i].unk4[j];
+        }
+
+        for (j = 0; j < 8; ++j) {
+            temp_s0->hitLocations[i].affinities[j] = s1->unk28[i].unkC[j];
+        }
+    }
+
+    vs_battle_characterState->unk20 = s1->unk7C;
+
+    if (s1->unk7C & 1) {
+        func_8009D934(0, 1, 2, i);
+        func_800CB660(1);
+    }
+
+    D_80060068.unk0.unk0 = 0;
+    D_800F19D0[5] = s1->unk80;
+    D_800F19D0[8] = s1->unk84;
+}
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);
 

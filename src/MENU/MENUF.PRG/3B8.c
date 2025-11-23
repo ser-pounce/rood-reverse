@@ -7,6 +7,7 @@
 #include <libetc.h>
 #include <libgpu.h>
 #include <rand.h>
+#include <string.h>
 
 typedef struct {
     char unk0;

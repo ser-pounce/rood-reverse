@@ -332,6 +332,7 @@ int func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);
 int func_8007E180(int arg0);
 int func_8007E1C0(int arg0);
+void func_80086FA8(int, vs_battle_actor2*);
 void func_8008AB68(void);
 void func_8008A4DC(int arg0);
 int func_8008A4FC(void);

@@ -41,10 +41,13 @@ int func_801083AC(void);
 void func_801084F4(int arg0, int arg1);
 void func_80108564(int arg0, int arg1);
 void func_801085D4(int arg0, int arg1, int arg2);
+void func_80108688(int arg0, int arg1, int arg2);
 void func_8010873C(int arg0, int arg1, int arg2);
 void func_80108E38(void);
 void func_80108E40(void);
 void func_80108784(int arg0, int arg1, int arg2);
+void func_8010880C(int arg0, int arg1, int arg2, int arg3);
+void func_8010887C(int arg0, int arg1, int arg2);
 void func_80108E48(void);
 void func_80108EA0(void);
 
@@ -67,6 +70,7 @@ extern char D_8010976C;
 extern char D_8010976F;
 extern char D_80109774[];
 extern short D_8010977C[];
+extern int D_8010978C[];
 extern char D_801097CC[];
 extern char D_801097D8[];
 extern char D_801097E4[];
@@ -1012,7 +1016,72 @@ int func_80107FC0(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801080E4);
+int func_801080E4(void)
+{
+    int temp_s0;
+    int var_v0;
+
+    var_v0 = vs_math_sine(D_8010988C);
+    if (var_v0 < 0) {
+        var_v0 += 0x1FF;
+    }
+    func_80104A50((var_v0 >> 9) + 8);
+    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    if (D_801098A0 == 0) {
+        temp_s0 = ((vs_main_stateFlags.unkA2 * 0x1770) + (vs_main_stateFlags.unkA1 * 0x64)
+                   + vs_main_stateFlags.unkA0);
+        temp_s0 -= (D_801099F4 * 0x64);
+        if (temp_s0 <= 0) {
+            temp_s0 = 0xF - D_801099F6;
+        } else {
+            --temp_s0;
+            temp_s0 = temp_s0 / 200;
+            var_v0 = 1;
+            temp_s0 = 0xF - (D_801099F6 + (temp_s0 + var_v0));
+            if (temp_s0 >= 0x10) {
+                temp_s0 = 0xF;
+            }
+            if (temp_s0 < 0) {
+                temp_s0 = 0;
+            }
+        }
+        if (D_8010989C == 0x10) {
+            vs_main_playSfxDefault(0x7E, 0x72);
+        }
+        if (D_8010989C == 0x40) {
+            func_80045D64(0x7E, 0x72);
+            vs_main_playSfxDefault(0x7E, 0x73);
+        }
+        if (D_8010989C == 0x43) {
+            vs_main_playSfxDefault(0x7E, 0x7D);
+        }
+        if (D_8010989C == 0x4B) {
+            vs_main_playSfxDefault(0x7E, 0x7D);
+        }
+        if (D_8010989C == 0x5A) {
+            vs_main_playSfxDefault(0x7E, 0x7D);
+        }
+        func_8010887C(0x58, 0x40, D_8010989C);
+        func_80108688(0xA0, 0x64, D_8010989C - 0x4B);
+        func_8010880C(0xA0, 0x7C, D_8010989C - 0x5A, temp_s0);
+        func_801064D4(0xD6, 0xBB, D_8010989C - 0x5A, D_8010989C);
+        if (D_8010989C < 0x7FFF) {
+            ++D_8010989C;
+        }
+        if (vs_main_buttonsPressed.all & 0x20) {
+            if (D_8010989C >= 0x8A) {
+                func_80045D64(0x7E, 0);
+                func_8007E0A8(0x1D, 2, 5);
+                D_8005FEA0.unk108 += D_8010978C[temp_s0];
+                func_80108E40();
+                return 1;
+            }
+            func_80045D64(0x7E, 0);
+            D_8010989C = 0x8A;
+        }
+    }
+    return 0;
+}
 
 int func_801083AC(void)
 {

@@ -938,7 +938,58 @@ void func_801064D4(int arg0, int arg1, int arg2, int arg3)
     p[0] = poly;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010664C);
+static inline int _adjust(int v)
+{
+    if (v < 0) {
+        v += 7;
+    }
+    return v;
+}
+
+void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
+{
+    POLY_GT4* poly;
+    void** p;
+
+    if (arg3[3] != 0) {
+        poly = *(void**)0x1F800000;
+        setPolyGT4(poly);
+        setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0,
+            D_801091D8[arg2].unk3 + arg1, D_801091D8[arg2].unk2 + arg0,
+            D_801091D8[arg2].unk3 + arg1);
+        setUV4(poly, D_801091D8[arg2].unk0, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0, D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2,
+            D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3);
+        if (arg3[3] < 8) {
+            setRGB0(poly, _adjust(arg3[0] * arg3[3]) >> 3,
+                _adjust(arg3[1] * arg3[3]) >> 3, _adjust(arg3[2] * arg3[3]) >> 3);
+            setRGB1(poly, _adjust(arg3[4] * arg3[3]) >> 3,
+                _adjust(arg3[5] * arg3[3]) >> 3, _adjust(arg3[6] * arg3[3]) >> 3);
+            setRGB2(poly, _adjust(arg3[0] * arg3[3]) >> 3,
+                _adjust(arg3[1] * arg3[3]) >> 3, _adjust(arg3[2] * arg3[3]) >> 3);
+            setRGB3(poly, _adjust(arg3[4] * arg3[3]) >> 3,
+                _adjust(arg3[5] * arg3[3]) >> 3, _adjust(arg3[6] * arg3[3]) >> 3);
+        } else {
+            setRGB0(poly, arg3[0], arg3[1], arg3[2]);
+            setRGB1(poly, arg3[4], arg3[5], arg3[6]);
+            setRGB2(poly, arg3[0], arg3[1], arg3[2]);
+            setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+        }
+        setSemiTrans(poly, 1);
+        if (arg3[3] < 8) {
+            poly->clut = D_801091D8[arg2].unk6 + 1;
+            poly->tpage = D_801091D8[arg2].unk4 | 0x20;
+        } else {
+            poly->clut = D_801091D8[arg2].unk6;
+            poly->tpage = D_801091D8[arg2].unk4;
+        }
+        p = (void**)0x1F800000;
+        AddPrim(p[1] - 0x1C, poly++);
+        p[0] = poly;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80106A80);
 

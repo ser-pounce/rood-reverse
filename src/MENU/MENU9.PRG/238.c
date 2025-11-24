@@ -1520,8 +1520,8 @@ void func_80105D8C(void)
                 var_v0 += 0x1F;
             }
             var_v0 >>= 5;
-            new_var =
-                vs_main_scoredata.unk9C[var_v0] & (1 << (j - ((*(new_var2 = &var_v0)) << 5)));
+            new_var = vs_main_scoredata.unk9C[var_v0]
+                    & (1 << (j - ((*(new_var2 = &var_v0)) << 5)));
             if (new_var) {
                 var_a3->unkC = 1;
                 break;

@@ -529,7 +529,8 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].unk2, arg1 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0] & 0xFFFFFF, 0);
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0] & 0xFFFFFF,
+            0);
     }
 }
 
@@ -1107,7 +1108,7 @@ static inline int _adjust(int v)
     if (v < 0) {
         v += 7;
     }
-    return v;
+    return v >> 3;
 }
 
 void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
@@ -1127,14 +1128,14 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
             D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2,
             D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3);
         if (arg3[3] < 8) {
-            setRGB0(poly, _adjust(arg3[0] * arg3[3]) >> 3,
-                _adjust(arg3[1] * arg3[3]) >> 3, _adjust(arg3[2] * arg3[3]) >> 3);
-            setRGB1(poly, _adjust(arg3[4] * arg3[3]) >> 3,
-                _adjust(arg3[5] * arg3[3]) >> 3, _adjust(arg3[6] * arg3[3]) >> 3);
-            setRGB2(poly, _adjust(arg3[0] * arg3[3]) >> 3,
-                _adjust(arg3[1] * arg3[3]) >> 3, _adjust(arg3[2] * arg3[3]) >> 3);
-            setRGB3(poly, _adjust(arg3[4] * arg3[3]) >> 3,
-                _adjust(arg3[5] * arg3[3]) >> 3, _adjust(arg3[6] * arg3[3]) >> 3);
+            setRGB0(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
+                _adjust(arg3[2] * arg3[3]));
+            setRGB1(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
+                _adjust(arg3[6] * arg3[3]));
+            setRGB2(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
+                _adjust(arg3[2] * arg3[3]));
+            setRGB3(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
+                _adjust(arg3[6] * arg3[3]));
         } else {
             setRGB0(poly, arg3[0], arg3[1], arg3[2]);
             setRGB1(poly, arg3[4], arg3[5], arg3[6]);
@@ -1155,7 +1156,79 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80106A80);
+static inline int _adjust2(int v0, int v1)
+{
+    int ret = (v0 * v1) + ((4 - v1) * 0xC0);
+    if (ret < 0) {
+        ret += 3;
+    }
+    return ret >> 2;
+}
+
+void func_80106A80(int arg0, int arg1, int arg2, char* arg3)
+{
+    POLY_GT4* poly;
+    void** p;
+
+    if (arg3[3] != 0) {
+        poly = *(void**)0x1F800000;
+        setPolyGT4(poly);
+        setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0,
+            D_801091D8[arg2].unk3 + arg1, D_801091D8[arg2].unk2 + arg0,
+            D_801091D8[arg2].unk3 + arg1);
+        setUV4(poly, D_801091D8[arg2].unk0, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0, D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2,
+            D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3);
+        if (arg3[3] < 8) {
+            setRGB0(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
+                _adjust(arg3[2] * arg3[3]));
+            setRGB1(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
+                _adjust(arg3[6] * arg3[3]));
+            setRGB2(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
+                _adjust(arg3[2] * arg3[3]));
+            setRGB3(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
+                _adjust(arg3[6] * arg3[3]));
+        } else if (arg3[3] == 8) {
+            setRGB0(poly, 0xC0, 0xC0, 0xC0);
+            setRGB1(poly, 0xC0, 0xC0, 0xC0);
+            setRGB2(poly, 0xC0, 0xC0, 0xC0);
+            setRGB3(poly, 0xC0, 0xC0, 0xC0);
+        } else if (arg3[3] == 9) {
+            setRGB0(poly, 0xE0, 0xE0, 0xE0);
+            setRGB1(poly, 0xE0, 0xE0, 0xE0);
+            setRGB2(poly, 0xE0, 0xE0, 0xE0);
+            setRGB3(poly, 0xE0, 0xE0, 0xE0);
+        } else if (arg3[3] < 14) {
+            int temp_a0 = arg3[3] - 0xA;
+            setRGB0(poly, _adjust2(arg3[0], temp_a0), _adjust2(arg3[1], temp_a0),
+                _adjust2(arg3[2], temp_a0));
+            setRGB1(poly, _adjust2(arg3[4], temp_a0), _adjust2(arg3[5], temp_a0),
+                _adjust2(arg3[6], temp_a0));
+            setRGB2(poly, _adjust2(arg3[0], temp_a0), _adjust2(arg3[1], temp_a0),
+                _adjust2(arg3[2], temp_a0));
+            setRGB3(poly, _adjust2(arg3[4], temp_a0), _adjust2(arg3[5], temp_a0),
+                _adjust2(arg3[6], temp_a0));
+        } else {
+            setRGB0(poly, arg3[0], arg3[1], arg3[2]);
+            setRGB1(poly, arg3[4], arg3[5], arg3[6]);
+            setRGB2(poly, arg3[0], arg3[1], arg3[2]);
+            setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+        }
+        setSemiTrans(poly, 1);
+        if (arg3[3] < 10) {
+            poly->clut = D_801091D8[arg2].unk6 + 1;
+            poly->tpage = D_801091D8[arg2].unk4 | 0x20;
+        } else {
+            poly->clut = D_801091D8[arg2].unk6;
+            poly->tpage = D_801091D8[arg2].unk4;
+        }
+        p = (void**)0x1F800000;
+        AddPrim(p[1] - 0x1C, poly++);
+        p[0] = poly;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107140);
 

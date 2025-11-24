@@ -98,7 +98,7 @@ typedef struct {
     char unk7C8[15][256];
     char unk16C8[0xB0];
     D_80061068_t unk1778;
-    D_8005FEA0_t unk1784;
+    vs_main_scoredata_t unk1784;
     int unk1898;
     char unk189C[0x520];
     vs_main_artsStatus_t artsStatus;
@@ -618,7 +618,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
     _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
-    _rMemcpy(&D_8005FEA0, &spmcimg[1].unk1784, sizeof(D_8005FEA0));
+    _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
     D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = &vs_main_artsStatus;
@@ -720,7 +720,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata->unk7C8, D_80060168, sizeof(savedata->unk7C8));
     _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
-    _rMemcpy(&savedata->unk1784, &D_8005FEA0, sizeof(savedata->unk1784));
+    _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof(savedata->containerData));
     savedata->unk1898 = D_80060064;

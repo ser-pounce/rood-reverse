@@ -2424,8 +2424,8 @@ int func_8008EFCC(int arg0)
         D_800F1DBE = *temp_s0;
         if (func_8007DFF0(D_800F1DC8, D_800F1DBE, 5) != 0) {
             new_var = 0x800;
-            temp_s2 = (temp_s0 + 0x20);
-            temp_s3 = temp_s0 + 0x42;
+            temp_s2 = (vs_main_CdFile*)(temp_s0 + 0x20);
+            temp_s3 = (vs_main_CdFile*)(temp_s0 + 0x42);
             var_a0 = temp_s2->size;
             var_s0 = temp_s3->size;
             if ((var_a0 & 0x7FF) != 0) {

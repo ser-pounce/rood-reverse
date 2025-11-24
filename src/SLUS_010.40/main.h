@@ -113,22 +113,27 @@ typedef union {
 
 typedef struct {
     int unk0;
-    u_short unk4[6];
+    u_short enemyKills[6];
     int unk10;
-    u_short unk14[10];
-    int unk28[8][3];
-    u_short unk88;
+    u_short weaponAttacks[10];
+    int bossTimeTrialScores[8][3];
+    u_short maxChain;
     u_short unk8A;
     u_int unk8C;
-    u_int unk90;
+    u_int completionTimeMinutes;
     u_int unk94;
     u_int unk98;
-    int unk9C[27];
-    u_int unk108;
-    int unk10C;
-    short unk110;
-    u_short unk112;
-} D_8005FEA0_t;
+    int unk9C[26];
+    u_int streakScore;
+    u_int enemyKillStreak;
+    char unk10C;
+    char unk10D;
+    char unk10E;
+    char weaponKillStreak;
+    char unk110;
+    char defenseChainStreak;
+    u_short bossHealCount;
+} vs_main_scoredata_t;
 
 typedef struct {
     u_short unk0;
@@ -331,9 +336,8 @@ extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveGameClearData;
 
-extern D_8005FEA0_t D_8005FEA0;
+extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_skillsLearned[32];
-extern u_int D_8005FF30;
 extern D_8005FFD8_t D_8005FFD8;
 extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;

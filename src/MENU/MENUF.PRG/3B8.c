@@ -19,10 +19,10 @@ typedef struct {
     u_short unk6;
 } D_801091D8_t;
 
-int func_80102D10(void);
+int _loadRankDis(void);
 int func_80102C54(void);
 int func_8010310C(void);
-int func_80103530(void);
+int _loadAttackDis(void);
 void func_80103748(void);
 int func_801037A0(void);
 int func_8010384C(void);
@@ -45,9 +45,9 @@ void func_801064D4(int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
 void func_80107140(int, int, int, short*, int);
-int func_80107A8C(void);
+int _loadIqDis(void);
 int func_80107D4C(void);
-int func_80107D98(void);
+int _loadEscDis(void);
 int func_80107FC0(void);
 int func_801080E4(void);
 int func_801083AC(void);
@@ -59,7 +59,7 @@ void func_8010873C(int arg0, int arg1, int arg2);
 void func_80108784(int arg0, int arg1, int arg2);
 void func_8010880C(int arg0, int arg1, int arg2, int arg3);
 void func_8010887C(int arg0, int arg1, int arg2);
-void func_80108AB0(void);
+void _calculateScore(void);
 void func_80108E38(void);
 void func_80108E40(void);
 void func_80108A0C(void);
@@ -96,16 +96,16 @@ extern short D_801097EC[];
 extern u_int D_8010980C[];
 extern vs_main_CdQueueSlot* _rankDataCdSlot;
 extern void* _rankData;
-extern vs_main_CdQueueSlot* D_8010985C;
-extern void* D_80109860;
-extern vs_main_CdQueueSlot* D_80109868;
-extern void* D_8010986C;
-extern vs_main_CdQueueSlot* D_80109870;
-extern void* D_80109874;
+extern vs_main_CdQueueSlot* _attackDisCdSlot;
+extern void* _attackDisData;
+extern vs_main_CdQueueSlot* _iqDisCdSlot;
+extern void* _iqDisData;
+extern vs_main_CdQueueSlot* _escDisCdSLot;
+extern void* _escDisData;
 extern int D_80109878;
 extern int D_8010987C;
-extern int D_80109880;
-extern u_int D_80109884;
+extern int _clearCount;
+extern u_int _score;
 extern u_int D_80109888;
 extern int D_8010988C;
 extern int D_80109890;
@@ -154,10 +154,10 @@ int func_80102C54(void)
 
     switch (vs_main_stateFlags.unkB6) {
     case 0:
-        ret = func_80102D10();
+        ret = _loadRankDis();
         break;
     case 1:
-        ret = func_80103530();
+        ret = _loadAttackDis();
         break;
     case 2:
         ret = func_8010310C();
@@ -168,19 +168,19 @@ int func_80102C54(void)
         ret = 1;
         break;
     case 4:
-        ret = func_80107A8C();
+        ret = _loadIqDis();
         break;
     case 5:
         ret = func_80107D4C();
         break;
     case 6:
-        ret = func_80107D98();
+        ret = _loadEscDis();
         break;
     }
     return ret;
 }
 
-int func_80102D10(void)
+int _loadRankDis(void)
 {
     func_80103530_t sp10;
     int temp_s0;
@@ -248,7 +248,7 @@ int func_80102D10(void)
 
         D_800F1CD8 = 0;
         func_80108E48();
-        D_80109880 = vs_main_stateFlags.clearCount;
+        _clearCount = vs_main_stateFlags.clearCount;
 
         if (D_8005FFD8.unk0[1] & 0x800000) {
             D_8005FFD8.unk0[1] |= 0x400000;
@@ -273,14 +273,14 @@ int func_80102D10(void)
             }
         }
 
-        if (D_8005FEA0.unk94 < var_a3) {
-            D_8005FEA0.unk94 = var_a3;
+        if (vs_main_scoredata.unk94 < var_a3) {
+            vs_main_scoredata.unk94 = var_a3;
         }
-        if (D_8005FEA0.unk98 < var_v1) {
-            D_8005FEA0.unk98 = var_v1;
+        if (vs_main_scoredata.unk98 < var_v1) {
+            vs_main_scoredata.unk98 = var_v1;
         }
         D_80109888 = (var_a3 * 0x64) / 361;
-        func_80108AB0();
+        _calculateScore();
         func_80108A0C();
         return 1;
     }
@@ -289,20 +289,20 @@ int func_80102D10(void)
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010310C);
 
-int func_80103530(void)
+int _loadAttackDis(void)
 {
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 2, 5);
-        D_80109860 = vs_main_allocHeapR(_disFiles[attackDis].size);
-        D_8010985C = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
-        vs_main_cdEnqueue(D_8010985C, D_80109860);
+        _attackDisData = vs_main_allocHeapR(_disFiles[attackDis].size);
+        _attackDisCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
+        vs_main_cdEnqueue(_attackDisCdSlot, _attackDisData);
         ++D_800F1CD8;
     } else if (D_800F1CD8 == 1) {
-        if (D_8010985C->state == 4) {
+        if (_attackDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             func_80103530_t sp10;
             for (i = 0; i < 2; ++i) {
-                func_8008D820(D_80109860 + i * 0x8220, &sp10);
+                func_8008D820(_attackDisData + i * 0x8220, &sp10);
                 if (sp10.unk10 != NULL) {
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
@@ -320,11 +320,11 @@ int func_80103530(void)
                     }
                 }
             }
-            vs_main_freeCdQueueSlot(D_8010985C);
+            vs_main_freeCdQueueSlot(_attackDisCdSlot);
             ++D_800F1CD8;
         }
     } else {
-        vs_main_freeHeapR(D_80109860);
+        vs_main_freeHeapR(_attackDisData);
         D_80109894 = 0;
         D_80109898 = 0;
         D_8010989C = 0;
@@ -436,8 +436,8 @@ int func_80103D88(void)
         }
         func_801059FC(0x130, 0x90, 0x40);
         ++D_8010989C;
-        if ((vs_main_buttonsPressed.all & 0x20) || (D_8010989C >= 0x1C2)) {
-            if (vs_main_buttonsPressed.all & 0x20) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (D_8010989C >= 0x1C2)) {
+            if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, 5);
             }
             ++D_801098A0;
@@ -529,7 +529,7 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].unk2, arg1 + 2, arg2,
-            D_8005FEA0.unk28[vs_main_stateFlags.unkC4][0] & 0xFFFFFF, 0);
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0] & 0xFFFFFF, 0);
     }
 }
 
@@ -564,7 +564,7 @@ void func_80104B8C(int arg0, int arg1, int arg2)
 
 void func_80104C40(int arg0, int arg1, int arg2)
 {
-    char sp10[16];
+    char buf[16];
     int i;
     int new_var;
 
@@ -576,7 +576,7 @@ void func_80104C40(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109744[3] = arg2;
-        sprintf(sp10, D_80102B5C, D_80109884);
+        sprintf(buf, D_80102B5C, _score);
         new_var = D_801091D8[18].unk2 + D_801091D8[26].unk2;
         arg0 -=
             (((D_801091D8[10].unk2 * 2) + (new_var + D_801091D8[20].unk2)) + 0x74) >> 1;
@@ -587,7 +587,7 @@ void func_80104C40(int arg0, int arg1, int arg2)
         arg0 = (arg0 + i) + D_801091D8[26].unk2;
 
         for (i = 0; i < 9; ++i) {
-            func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109744);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109744);
             arg0 += 0xC;
             if ((i == 2) || (i == 5)) {
                 func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
@@ -601,7 +601,7 @@ void func_80104C40(int arg0, int arg1, int arg2)
 
 void func_80104DBC(int arg0, int arg1, int arg2)
 {
-    char sp18[16];
+    char buf[16];
     int temp_s2;
     int i;
     int v;
@@ -618,13 +618,13 @@ void func_80104DBC(int arg0, int arg1, int arg2)
 
     temp_s2 = arg0 + (arg2 * 8);
 
-    if (D_80109884 != 0) {
+    if (_score != 0) {
         if (arg2 >= 0x20) {
             if (D_80109898 == 0) {
                 D_801099EC = 1;
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
-            if (D_80109898 == D_80109884) {
+            if (D_80109898 == _score) {
                 if (D_801099EC != 0) {
                     D_801099EC = 0;
                     func_80045D64(0x7E, 0x72);
@@ -634,13 +634,13 @@ void func_80104DBC(int arg0, int arg1, int arg2)
         }
     }
     if (arg2 >= 0x20) {
-        D_80109898 = (D_80109884 >> 5) * (arg2 - 0x20);
+        D_80109898 = (_score >> 5) * (arg2 - 0x20);
     }
     if (arg2 == 0x40) {
-        D_80109898 = D_80109884;
+        D_80109898 = _score;
     }
 
-    sprintf(sp18, D_80102B5C, D_80109898);
+    sprintf(buf, D_80102B5C, D_80109898);
     v = D_801091D8[18].unk2 + D_801091D8[26].unk2 + D_801091D8[20].unk2;
     arg0 -= (((D_801091D8[10].unk2 * 2) + v) + 0x74) >> 1;
     func_80107140(arg0, arg1, 0x12, &D_8010974C, temp_s2);
@@ -649,7 +649,7 @@ void func_80104DBC(int arg0, int arg1, int arg2)
     i = 2;
     arg0 = arg0 + i + D_801091D8[26].unk2;
     for (i = 0; i < 9; ++i) {
-        func_80107140(arg0, arg1 + 3, sp18[i] - 0x30, &D_8010974C, temp_s2);
+        func_80107140(arg0, arg1 + 3, buf[i] - '0', &D_8010974C, temp_s2);
         arg0 += 0xC;
         if ((i == 2) || (i == 5)) {
             func_80107140(arg0, arg1 + 0xE, 0xA, &D_8010974C, temp_s2);
@@ -661,7 +661,7 @@ void func_80104DBC(int arg0, int arg1, int arg2)
 
 void func_80105020(int arg0, int arg1, int arg2)
 {
-    char sp10[4];
+    char buf[4];
     int i;
 
     if (arg2 < 0) {
@@ -672,7 +672,7 @@ void func_80105020(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109754[3] = arg2;
-        sprintf(sp10, D_80102B64, D_80109888);
+        sprintf(buf, D_80102B64, D_80109888);
         arg0 -=
             (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
         i = 2;
@@ -682,7 +682,7 @@ void func_80105020(int arg0, int arg1, int arg2)
         arg0 = arg0 + i + D_801091D8[26].unk2;
 
         for (i = 0; i < 3; ++i) {
-            func_8010664C(arg0, arg1 + 3, sp10[i] - 0x30, D_80109754);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109754);
             arg0 += 0xC;
         }
 
@@ -692,7 +692,7 @@ void func_80105020(int arg0, int arg1, int arg2)
 
 void func_8010516C(int arg0, int arg1, int arg2)
 {
-    char sp18[8];
+    char buf[8];
     int temp_s4;
     int i;
 
@@ -731,7 +731,7 @@ void func_8010516C(int arg0, int arg1, int arg2)
         }
     }
 
-    sprintf(sp18, D_80102B64, D_80109894);
+    sprintf(buf, D_80102B64, D_80109894);
     arg0 -= (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
     func_80107140(arg0, arg1, 0x15, D_8010975C, temp_s4);
     arg0 += D_801091D8[21].unk2;
@@ -740,7 +740,7 @@ void func_8010516C(int arg0, int arg1, int arg2)
     arg0 = arg0 + i + D_801091D8[26].unk2;
 
     for (i = 0; i < 3; ++i) {
-        func_80107140(arg0, arg1 + 3, sp18[i] - 0x30, D_8010975C, temp_s4);
+        func_80107140(arg0, arg1 + 3, buf[i] - '0', D_8010975C, temp_s4);
         arg0 += 0xC;
     }
     func_80107140(arg0, arg1 + 8, 0x13, D_8010975C, temp_s4);
@@ -914,7 +914,9 @@ void func_801059FC(int arg0, int arg1, int arg2)
             var_s3 = 0x7FF8;
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
-            D_8005FEA0.unk28[0][vs_main_stateFlags.unkC4 * 3 + i] & 0xFFFFFF, temp_v0);
+            vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.unkC4 * 3 + i]
+                & 0xFFFFFF,
+            temp_v0);
         func_80105DD8((arg0 - D_801091D8[75 + i].unk2) - 0x58, arg1 + i * 0x14, i + 0x4B,
             arg2, var_s3);
     }
@@ -938,7 +940,8 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
     }
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        D_8005FEA0.unk28[vs_main_stateFlags.unkC4][arg2] & 0xFFFFFF, temp_t1);
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2] & 0xFFFFFF,
+        temp_t1);
     func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].unk2) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
 }
@@ -1017,15 +1020,15 @@ INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B64);
 
 void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    char sp18[16];
+    char buf[16];
     int i;
     int s2;
 
     if (arg3 == 0x800000) {
-        sprintf(sp18, "------");
+        sprintf(buf, "------");
     } else {
         sprintf(
-            sp18, "%02d%02d%02d", (arg3 >> 0x10) & 0xFF, (arg3 >> 8) & 0xFF, arg3 & 0xFF);
+            buf, "%02d%02d%02d", (arg3 >> 0x10) & 0xFF, (arg3 >> 8) & 0xFF, arg3 & 0xFF);
     }
 
     s2 = 0x7FF2;
@@ -1034,11 +1037,11 @@ void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 
     for (i = 0; i < 6; ++i) {
-        if (sp18[i] == 0x2D) {
+        if (buf[i] == 0x2D) {
             func_80105DD8(arg0, arg1, 0x53, arg2, s2);
             arg0 += 0xC;
         } else {
-            func_80105DD8(arg0, arg1 - 3, sp18[i] - 0x30, arg2, s2);
+            func_80105DD8(arg0, arg1 - 3, buf[i] - 0x30, arg2, s2);
             arg0 += 0xC;
         }
 
@@ -1159,16 +1162,16 @@ INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107140);
 // https://decomp.me/scratch/ktwNS
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
 
-int func_80107A8C(void)
+int _loadIqDis(void)
 {
-    vs_battle_room* temp_a1;
+    vs_battle_room* room;
     short* var_a0;
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 2, 5);
-        D_8010986C = vs_main_allocHeapR(_disFiles[iqDis].size);
-        D_80109868 = vs_main_allocateCdQueueSlot(&_disFiles[iqDis]);
-        vs_main_cdEnqueue(D_80109868, D_8010986C);
+        _iqDisData = vs_main_allocHeapR(_disFiles[iqDis].size);
+        _iqDisCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[iqDis]);
+        vs_main_cdEnqueue(_iqDisCdSlot, _iqDisData);
         ++D_800F1CD8;
         if (0) {
         wat:
@@ -1177,11 +1180,11 @@ int func_80107A8C(void)
             goto wat2;
         }
     } else if (D_800F1CD8 == 1) {
-        if (D_80109868->state == 4) {
+        if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             func_80103530_t sp10;
             for (i = 0; i < 2; ++i) {
-                func_8008D820(D_8010986C + i * 0x8220, &sp10);
+                func_8008D820(_iqDisData + i * 0x8220, &sp10);
                 if (sp10.unk10 != NULL) {
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
@@ -1202,19 +1205,19 @@ int func_80107A8C(void)
             }
             D_801099F4 = 0x258;
             D_801099F6 = 1;
-            temp_a1 = vs_battle_currentScene->rooms;
-            var_a0 = D_8010986C + 0x10440;
+            room = vs_battle_currentScene->rooms;
+            var_a0 = _iqDisData + 0x10440;
             for (i = 0; i < 0x40; ++i, var_a0 += 4) {
-                if ((var_a0[0] == temp_a1->zoneId) && (var_a0[1] == temp_a1->mapId)) {
+                if ((var_a0[0] == room->zoneId) && (var_a0[1] == room->mapId)) {
                     goto wat;
                 }
             }
         wat2:
-            vs_main_freeCdQueueSlot(D_80109868);
+            vs_main_freeCdQueueSlot(_iqDisCdSlot);
             ++D_800F1CD8;
         }
     } else {
-        vs_main_freeHeapR(D_8010986C);
+        vs_main_freeHeapR(_iqDisData);
         D_80109894 = 0;
         D_80109898 = 0;
         D_8010989C = 0;
@@ -1236,24 +1239,24 @@ int func_80107D4C(void)
         vs_main_stateFlags.unkA3 = 0;
         vs_main_stateFlags.unkA0 = 0x63;
     }
-    return func_80107A8C();
+    return _loadIqDis();
 }
 
-int func_80107D98(void)
+int _loadEscDis(void)
 {
     func_80103530_t sp10;
     int i;
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 1, 5);
-        D_80109874 = vs_main_allocHeapR(_disFiles[escDis].size);
-        D_80109870 = vs_main_allocateCdQueueSlot(&_disFiles[escDis]);
-        vs_main_cdEnqueue(D_80109870, D_80109874);
+        _escDisData = vs_main_allocHeapR(_disFiles[escDis].size);
+        _escDisCdSLot = vs_main_allocateCdQueueSlot(&_disFiles[escDis]);
+        vs_main_cdEnqueue(_escDisCdSLot, _escDisData);
         ++D_800F1CD8;
     } else if (D_800F1CD8 == 1) {
-        if (D_80109870->state == 4) {
+        if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
-                func_8008D820(D_80109874 + i * 0x8220, &sp10);
+                func_8008D820(_escDisData + i * 0x8220, &sp10);
                 if (sp10.unk10 != NULL) {
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
@@ -1270,11 +1273,11 @@ int func_80107D98(void)
                     vs_main_memcpy(D_801098AC, sp10.unk8, 0x140U);
                 }
             }
-            vs_main_freeCdQueueSlot(D_80109870);
+            vs_main_freeCdQueueSlot(_escDisCdSLot);
             ++D_800F1CD8;
         }
     } else {
-        vs_main_freeHeapR(D_80109874);
+        vs_main_freeHeapR(_escDisData);
         D_80109894 = 0;
         D_80109898 = 0;
         D_8010989C = 0;
@@ -1308,7 +1311,7 @@ int func_80107FC0(void)
         ++D_8010989C;
     }
 
-    if (vs_main_buttonsPressed.all & 0x20) {
+    if (vs_main_buttonsPressed.all & PADRright) {
         if (D_8010989C >= 0x4E) {
             func_80045D64(0x7E, 0);
             func_8007E0A8(0x1D, 2, 5);
@@ -1373,11 +1376,11 @@ int func_801080E4(void)
         if (D_8010989C < 0x7FFF) {
             ++D_8010989C;
         }
-        if (vs_main_buttonsPressed.all & 0x20) {
+        if (vs_main_buttonsPressed.all & PADRright) {
             if (D_8010989C >= 0x8A) {
                 func_80045D64(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
-                D_8005FEA0.unk108 += D_8010978C[temp_s0];
+                vs_main_scoredata.enemyKillStreak += D_8010978C[temp_s0];
                 func_80108E40();
                 return 1;
             }
@@ -1534,14 +1537,14 @@ void func_80108A0C(void)
     int a1;
 
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (D_8005FEA0.unk0 & (a1 << i)) {
+        if (vs_main_scoredata.unk0 & (a1 << i)) {
             ++var_a2;
         }
     }
 
     for (i = 0; i < 16; ++i) {
         if (var_a2 >= D_801097EC[i]) {
-            if (D_80109884 >= D_8010980C[i]) {
+            if (_score >= D_8010980C[i]) {
                 D_8010987C = i;
                 return;
             }
@@ -1549,62 +1552,62 @@ void func_80108A0C(void)
     }
 }
 
-void func_80108AB0(void)
+void _calculateScore(void)
 {
-    short sp0[6] = { 20, 20, 40, 80, 100, 60 };
-    short sp10[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
+    short classPoints[6] = { 20, 20, 40, 80, 100, 60 };
+    short weaponClassPoints[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
     int i;
 
-    D_80109884 = 0;
+    _score = 0;
 
     for (i = 0; i < 6; ++i) {
-        D_80109884 += D_8005FEA0.unk4[i] * sp0[i];
+        _score += vs_main_scoredata.enemyKills[i] * classPoints[i];
     }
 
     for (i = 0; i < 10; ++i) {
-        D_80109884 += D_8005FEA0.unk14[i] * sp10[i];
+        _score += vs_main_scoredata.weaponAttacks[i] * weaponClassPoints[i];
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) != 0x800000) {
-            D_80109884 += 0x4E20;
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) != 0x800000) {
+            _score += 20000;
         }
     }
 
-    if (D_8005FEA0.unk88 < 6) {
-        D_80109884 += D_8005FEA0.unk88 * 0xA;
-    } else if (D_8005FEA0.unk88 < 0xB) {
-        D_80109884 += D_8005FEA0.unk88 * 0x14;
-    } else if (D_8005FEA0.unk88 < 0x10) {
-        D_80109884 += D_8005FEA0.unk88 * 0x28;
-    } else if (D_8005FEA0.unk88 < 0x15) {
-        D_80109884 += D_8005FEA0.unk88 * 0x50;
-    } else if (D_8005FEA0.unk88 < 0x1A) {
-        D_80109884 += D_8005FEA0.unk88 * 0xA0;
-    } else if (D_8005FEA0.unk88 < 0x1F) {
-        D_80109884 += D_8005FEA0.unk88 * 0x140;
-    } else if (D_8005FEA0.unk88 < 0x33) {
-        D_80109884 += D_8005FEA0.unk88 * 0x280;
+    if (vs_main_scoredata.maxChain < 6) {
+        _score += vs_main_scoredata.maxChain * 10;
+    } else if (vs_main_scoredata.maxChain < 11) {
+        _score += vs_main_scoredata.maxChain * 20;
+    } else if (vs_main_scoredata.maxChain < 16) {
+        _score += vs_main_scoredata.maxChain * 40;
+    } else if (vs_main_scoredata.maxChain < 21) {
+        _score += vs_main_scoredata.maxChain * 80;
+    } else if (vs_main_scoredata.maxChain < 26) {
+        _score += vs_main_scoredata.maxChain * 160;
+    } else if (vs_main_scoredata.maxChain < 31) {
+        _score += vs_main_scoredata.maxChain * 320;
+    } else if (vs_main_scoredata.maxChain < 51) {
+        _score += vs_main_scoredata.maxChain * 640;
     } else {
-        D_80109884 += D_8005FEA0.unk88 * 0x500;
+        _score += vs_main_scoredata.maxChain * 1280;
     }
 
-    D_80109884 = D_80109884 + (D_80109880 * 0x186A0);
+    _score += _clearCount * 100000;
 
-    if ((D_80109880 != 0) && (D_8005FF30 < 0x258)) {
-        if (D_8005FF30 >= 0x21C) {
-            D_80109884 = D_80109884 + (D_80109884 >> 2);
-        } else if (D_8005FF30 >= 0x12C) {
-            D_80109884 = D_80109884 + (D_80109884 >> 1);
+    if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+        if (vs_main_scoredata.completionTimeMinutes >= 540) {
+            _score = _score + (_score >> 2);
+        } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
+            _score = _score + (_score >> 1);
         } else {
-            D_80109884 = D_80109884 * 2;
+            _score = _score * 2;
         }
     }
 
-    D_80109884 = D_80109884 + D_8005FEA0.unk9C[0x1A];
-    D_80109884 = D_80109884 + D_8005FEA0.unk108;
-    if (D_80109884 > 0x3B9AC9FF) {
-        D_80109884 = 0x3B9AC9FF;
+    _score = _score + vs_main_scoredata.streakScore;
+    _score = _score + vs_main_scoredata.enemyKillStreak;
+    if (_score > 999999999) {
+        _score = 999999999;
     }
 }
 
@@ -1614,12 +1617,12 @@ void func_80108E40(void) { }
 
 void func_80108E48(void)
 {
-    int new_var = D_8005FEA0.unk108 + 0x186A0;
-    D_8005FEA0.unk108 = new_var - (D_8005FEA0.unk112 * 0x64);
-    if (D_8005FEA0.unk108 > 0x3B9AC9FF) {
-        D_8005FEA0.unk108 = 0x3B9AC9FF;
+    int new_var = vs_main_scoredata.enemyKillStreak + 100000;
+    vs_main_scoredata.enemyKillStreak = new_var - (vs_main_scoredata.bossHealCount * 100);
+    if (vs_main_scoredata.enemyKillStreak > 999999999) {
+        vs_main_scoredata.enemyKillStreak = 999999999;
     }
-    D_8005FEA0.unk112 = 0;
+    vs_main_scoredata.bossHealCount = 0;
 }
 
 void func_80108EA0(void) { }

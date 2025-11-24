@@ -89,7 +89,7 @@ void _toVsStringPercent(char* buf, int value);
 void func_80107090(void);
 void func_80107120(int);
 void func_80107600(void);
-void func_801076A4(void);
+void _calculateScore(void);
 void func_80107A98(int arg0);
 void func_80107C34(void);
 int func_80107FBC(short);
@@ -137,9 +137,9 @@ extern short D_8010A452;
 extern int D_8010A454;
 extern int D_8010A458;
 extern int D_8010A45C;
-extern u_long D_8010A460;
+extern u_long _score;
 extern u_short D_8010A464;
-extern u_short D_8010A466;
+extern u_short _clearCount;
 extern u_short D_8010A468;
 extern u_short D_8010A46A;
 extern vs_main_CdQueueSlot* D_8010A46C;
@@ -419,18 +419,18 @@ int func_801031BC(void)
         }
     }
 
-    D_8010A466 = vs_main_stateFlags.clearCount;
+    _clearCount = vs_main_stateFlags.clearCount;
 
-    if (D_8010A46A > D_8005FEA0.unk94) {
-        D_8005FEA0.unk94 = D_8010A46A;
+    if (D_8010A46A > vs_main_scoredata.unk94) {
+        vs_main_scoredata.unk94 = D_8010A46A;
     }
-    if (D_8010A468 > D_8005FEA0.unk98) {
-        D_8005FEA0.unk98 = D_8010A468;
+    if (D_8010A468 > vs_main_scoredata.unk98) {
+        vs_main_scoredata.unk98 = D_8010A468;
     }
 
     vs_main_memcpy(D_8010A480, (void*)0x1F800034, 0x10);
     vs_main_memcpy(D_8010A490, (void*)0x1F800054, 0x10);
-    func_801076A4();
+    _calculateScore();
     func_80107C34();
     func_80107600();
 
@@ -1328,7 +1328,7 @@ void func_8010552C(int arg0)
     func_80104CBC(&spA8);
     func_800F9EB8(&spA8);
     vs_battle_setGeomOffset(&sp18);
-    sprintf(sp28, "#%ld", D_8010A460);
+    sprintf(sp28, "#%ld", _score);
     scratch = (void**)getScratchAddr(0);
     func_800C6540("SCORE", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x100000, 0x808080,
         scratch[1] + 0x1C);
@@ -1352,7 +1352,7 @@ void func_801056B8(void)
         var_a2->unk0 = 0;
         var_a2->unk2 = 0;
         var_a2->unk3 = 0;
-        if (D_8005FEA0.unk0 & ((new_var = 1) << i)) {
+        if (vs_main_scoredata.unk0 & ((new_var = 1) << i)) {
             var_a2->unk1 = 1;
             var_a2->unk8 = (char*)&_titleStrings[_titleStrings[i]];
             var_a2->unkC = (char*)&_titleDescriptions[_titleDescriptions[i]];
@@ -1521,7 +1521,7 @@ void func_80105D8C(void)
             }
             var_v0 >>= 5;
             new_var =
-                D_8005FEA0.unk9C[var_v0] & (1 << (j - ((*(new_var2 = &var_v0)) << 5)));
+                vs_main_scoredata.unk9C[var_v0] & (1 << (j - ((*(new_var2 = &var_v0)) << 5)));
             if (new_var) {
                 var_a3->unkC = 1;
                 break;
@@ -1795,7 +1795,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
     int seconds;
     char* str;
 
-    if (D_8010A466 == 0) {
+    if (_clearCount == 0) {
         _vsStrcpy((u_char*)buf, (u_char*)&_miscInfo[_miscInfo[0]]);
         return;
     }
@@ -1849,7 +1849,7 @@ void func_80106F9C(void)
 
     for (i = 0, var_t0 = D_8010A230; i < 8; ++i, ++var_t0) {
         var_t0->unk4 = 0xC2;
-        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) == 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) == 0x800000) {
             var_t0->unk3 = 1;
             var_t0->unk8 = (char*)&_miscInfo[_miscInfo[4]];
             var_t0->unkC = (char*)&_miscInfo[_miscInfo[5]];
@@ -1890,71 +1890,71 @@ void func_80107600(void)
     int a1;
 
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (D_8005FEA0.unk0 & (a1 << i)) {
+        if (vs_main_scoredata.unk0 & (a1 << i)) {
             ++var_a2;
         }
     }
 
     for (i = 0; i < 16; ++i) {
-        if ((var_a2 >= D_801098A4[i]) && (D_8010A460 >= D_801098C4[i])) {
+        if ((var_a2 >= D_801098A4[i]) && (_score >= D_801098C4[i])) {
             D_8010A464 = i;
             return;
         }
     }
 }
 
-void func_801076A4(void)
+void _calculateScore(void)
 {
     int i;
 
-    if (D_8010A466 != 0) {
-        D_8005FEA0.unk0 |= 1;
+    if (_clearCount != 0) {
+        vs_main_scoredata.unk0 |= 1;
     }
-    if (D_8005FEA0.unk98 >= 0x34U) {
-        D_8005FEA0.unk0 |= 4;
+    if (vs_main_scoredata.unk98 >= 0x34U) {
+        vs_main_scoredata.unk0 |= 4;
     }
-    if (D_8005FEA0.unk94 >= 0x169U) {
-        D_8005FEA0.unk0 |= 8;
+    if (vs_main_scoredata.unk94 >= 0x169U) {
+        vs_main_scoredata.unk0 |= 8;
     }
     if (vs_main_stateFlags.unkCC != 0) {
-        D_8005FEA0.unk0 |= 0x10;
+        vs_main_scoredata.unk0 |= 0x10;
     }
     if (vs_main_stateFlags.unkCD != 0) {
-        D_8005FEA0.unk0 |= 0x20;
+        vs_main_scoredata.unk0 |= 0x20;
     }
     if (vs_main_stateFlags.unkCE != 0) {
-        D_8005FEA0.unk0 |= 0x40;
+        vs_main_scoredata.unk0 |= 0x40;
     }
     if (vs_main_stateFlags.unkCF != 0) {
-        D_8005FEA0.unk0 |= 0x80;
+        vs_main_scoredata.unk0 |= 0x80;
     }
     if (vs_main_stateFlags.unkD0 != 0) {
-        D_8005FEA0.unk0 |= 0x100;
+        vs_main_scoredata.unk0 |= 0x100;
     }
     if (vs_main_stateFlags.unkD1 != 0) {
-        D_8005FEA0.unk0 |= 0x200;
+        vs_main_scoredata.unk0 |= 0x200;
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) == 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) == 0x800000) {
             break;
         }
     }
 
     if (i == 8) {
-        D_8005FEA0.unk0 |= 0x400;
+        vs_main_scoredata.unk0 |= 0x400;
     }
 
-    if (D_8005FEA0.unk88 >= 0x1E) {
-        D_8005FEA0.unk0 |= 0x800;
+    if (vs_main_scoredata.maxChain >= 30) {
+        vs_main_scoredata.unk0 |= 0x800;
     }
 
     if (vs_main_stateFlags.unk383 != 0) {
-        D_8005FEA0.unk0 |= 0x1000;
+        vs_main_scoredata.unk0 |= 0x1000;
     }
 
     if (vs_main_stateFlags.unk387 != 0) {
-        D_8005FEA0.unk0 |= 0x2000;
+        vs_main_scoredata.unk0 |= 0x2000;
     }
 
     for (i = 0xB8; i < 0xE0; ++i) {
@@ -1964,7 +1964,7 @@ void func_801076A4(void)
     }
 
     if (i == 0xE0) {
-        D_8005FEA0.unk0 |= 0x4000;
+        vs_main_scoredata.unk0 |= 0x4000;
     }
 
     for (i = 0x16; i < 0x36; ++i) {
@@ -1975,37 +1975,37 @@ void func_801076A4(void)
     }
 
     if (i == 0x36) {
-        D_8005FEA0.unk0 |= 0x8000;
+        vs_main_scoredata.unk0 |= 0x8000;
     }
 
     for (i = 0; i < 6; ++i) {
-        if (D_8005FEA0.unk4[i] < 0x1388) {
+        if (vs_main_scoredata.enemyKills[i] < 5000) {
             break;
         }
     }
 
     if (i == 6) {
-        D_8005FEA0.unk0 |= 0x100000;
+        vs_main_scoredata.unk0 |= 0x100000;
     }
 
     for (i = 0; i < 10; ++i) {
-        if (D_8005FEA0.unk14[i] < 0x1388) {
+        if (vs_main_scoredata.weaponAttacks[i] < 5000) {
             break;
         }
     }
 
     if (i == 0xA) {
-        D_8005FEA0.unk0 |= 0x200000;
+        vs_main_scoredata.unk0 |= 0x200000;
     }
 
     for (i = 0; i < 9; ++i) {
-        if (D_8005FEA0.unk14[i + 1] >= 0x1F4) {
-            D_8005FEA0.unk0 |= 1 << (i + 0x16);
+        if (vs_main_scoredata.weaponAttacks[i + 1] >= 500) {
+            vs_main_scoredata.unk0 |= 1 << (i + 0x16);
         }
     }
 
-    if (D_8005FEA0.unk14[0] >= 0x1F4) {
-        D_8005FEA0.unk0 |= 0x80000000;
+    if (vs_main_scoredata.weaponAttacks[0] >= 500) {
+        vs_main_scoredata.unk0 |= 0x80000000;
     }
 }
 
@@ -2056,59 +2056,59 @@ void func_80107A98(int arg0)
 
 void func_80107C34(void)
 {
-    short sp0[6] = { 20, 20, 40, 80, 100, 60 };
-    short sp10[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
+    short classPoints[6] = { 20, 20, 40, 80, 100, 60 };
+    short weaponClassPoints[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
     int i;
 
-    D_8010A460 = 0;
+    _score = 0;
 
     for (i = 0; i < 6; ++i) {
-        D_8010A460 += D_8005FEA0.unk4[i] * sp0[i];
+        _score += vs_main_scoredata.enemyKills[i] * classPoints[i];
     }
 
     for (i = 0; i < 10; ++i) {
-        D_8010A460 += D_8005FEA0.unk14[i] * sp10[i];
+        _score += vs_main_scoredata.weaponAttacks[i] * weaponClassPoints[i];
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((D_8005FEA0.unk28[i][0] & 0xFFFFFF) != 0x800000) {
-            D_8010A460 += 0x4E20;
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) != 0x800000) {
+            _score += 0x4E20;
         }
     }
 
-    if (D_8005FEA0.unk88 < 6) {
-        D_8010A460 += D_8005FEA0.unk88 * 0xA;
-    } else if (D_8005FEA0.unk88 < 0xB) {
-        D_8010A460 += D_8005FEA0.unk88 * 0x14;
-    } else if (D_8005FEA0.unk88 < 0x10) {
-        D_8010A460 += D_8005FEA0.unk88 * 0x28;
-    } else if (D_8005FEA0.unk88 < 0x15) {
-        D_8010A460 += D_8005FEA0.unk88 * 0x50;
-    } else if (D_8005FEA0.unk88 < 0x1A) {
-        D_8010A460 += D_8005FEA0.unk88 * 0xA0;
-    } else if (D_8005FEA0.unk88 < 0x1F) {
-        D_8010A460 += D_8005FEA0.unk88 * 0x140;
-    } else if (D_8005FEA0.unk88 < 0x33) {
-        D_8010A460 += D_8005FEA0.unk88 * 0x280;
+    if (vs_main_scoredata.maxChain < 6) {
+        _score += vs_main_scoredata.maxChain * 10;
+    } else if (vs_main_scoredata.maxChain < 11) {
+        _score += vs_main_scoredata.maxChain * 20;
+    } else if (vs_main_scoredata.maxChain < 16) {
+        _score += vs_main_scoredata.maxChain * 40;
+    } else if (vs_main_scoredata.maxChain < 21) {
+        _score += vs_main_scoredata.maxChain * 80;
+    } else if (vs_main_scoredata.maxChain < 26) {
+        _score += vs_main_scoredata.maxChain * 160;
+    } else if (vs_main_scoredata.maxChain < 31) {
+        _score += vs_main_scoredata.maxChain * 320;
+    } else if (vs_main_scoredata.maxChain < 51) {
+        _score += vs_main_scoredata.maxChain * 640;
     } else {
-        D_8010A460 += D_8005FEA0.unk88 * 0x500;
+        _score += vs_main_scoredata.maxChain * 1280;
     }
 
-    D_8010A460 = D_8010A460 + (D_8010A466 * 0x186A0);
+    _score = _score + (_clearCount * 100000);
 
-    if ((D_8010A466 != 0) && (D_8005FF30 < 0x258)) {
-        if (D_8005FF30 >= 0x21C) {
-            D_8010A460 = D_8010A460 + (D_8010A460 >> 2);
-        } else if (D_8005FF30 >= 0x12C) {
-            D_8010A460 = D_8010A460 + (D_8010A460 >> 1);
+    if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+        if (vs_main_scoredata.completionTimeMinutes >= 540) {
+            _score = _score + (_score >> 2);
+        } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
+            _score = _score + (_score >> 1);
         } else {
-            D_8010A460 = D_8010A460 * 2;
+            _score = _score * 2;
         }
     }
 
-    D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1A];
-    D_8010A460 = D_8010A460 + D_8005FEA0.unk9C[0x1B];
-    if (D_8010A460 > 0x3B9AC9FF) {
-        D_8010A460 = 0x3B9AC9FF;
+    _score = _score + vs_main_scoredata.streakScore;
+    _score = _score + vs_main_scoredata.enemyKillStreak;
+    if (_score > 999999999) {
+        _score = 999999999;
     }
 }

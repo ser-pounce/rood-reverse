@@ -74,6 +74,7 @@ extern char D_80102B64[]; // "%03d"
 
 extern D_801091D8_t D_801091D8[];
 extern char D_8010923A;
+extern char D_8010941A;
 extern char D_8010951A;
 extern u_char D_801095D0[];
 extern char D_8010972C[];
@@ -494,8 +495,23 @@ void func_80104650(int arg0, int arg1, int arg2)
     }
 }
 
-// https://decomp.me/scratch/whDQr
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801046F8);
+void func_801046F8(int arg0, int arg1, int arg2)
+{
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        if (vs_main_stateFlags.unkC4 != 6) {
+            func_80105C34(arg0 - (D_801091D8[vs_main_stateFlags.unkC4 + 0x55].unk2 >> 1),
+                arg1, vs_main_stateFlags.unkC4 + 0x55, arg2);
+        } else {
+            arg0 -= (D_801091D8[91].unk2 + D_801091D8[93].unk2) >> 1;
+            func_80105C34(arg0, arg1, 0x5B, arg2);
+            arg0 += D_801091D8[91].unk2;
+            func_80105C34(arg0, arg1, 0x5D, arg2);
+        }
+    }
+}
 
 // https://decomp.me/scratch/zHBmW
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801047D4);
@@ -830,8 +846,20 @@ void func_801056E8(int arg0, int arg1, int arg2)
     func_80107140(arg0, arg1, arg2 + 0x4E, D_8010977C, arg3);
 }
 
-// https://decomp.me/scratch/MzjzI
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80105790);
+void func_80105790(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        func_80105C34(arg0, arg1, 0x48, arg2);
+        arg0 += D_8010941A;
+        func_80105F6C(arg0, arg1 + 2, arg2, D_801098A8, 0);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010581C);
 

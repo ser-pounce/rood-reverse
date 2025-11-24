@@ -358,7 +358,7 @@ void func_8006CE50(void);
 int vs_battle_getCurrentLocationId(void);
 void func_8007ACB0(void);
 void func_8007CCF0(int);
-int func_8007DFF0(int, int, int);
+int func_8007DFF0(char, int, int);
 void func_8007E0A8(int, int, int);
 int func_8007E180(int arg0);
 int func_8007E1C0(int arg0);

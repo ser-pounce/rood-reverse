@@ -176,6 +176,7 @@ extern int D_800F1C64;
 extern int D_800F1C70;
 extern int D_800F1C74;
 extern D_800F1C84_t* D_800F1C84;
+extern u_short* D_800F1C98;
 extern int* D_800F1CA4;
 extern u_int D_800F1CA8;
 extern int D_800F1CB8;
@@ -190,10 +191,12 @@ extern vs_main_CdQueueSlot* D_800F1DAC;
 extern vs_main_CdQueueSlot* D_800F1DB0;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
+extern short D_800F1DBE;
 extern short D_800F1DC4;
 extern char D_800F1DC8;
 extern signed char D_800F1DC9;
 extern char D_800F1DCA;
+extern int* D_800F1DCC;
 extern int* D_800F1DD0;
 extern u_short* D_800F1DD4;
 
@@ -2406,8 +2409,47 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EB30);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 
-// https://decomp.me/scratch/sDudx
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EFCC);
+int func_8008EFCC(int arg0)
+{
+    u_short* temp_s0;
+    int new_var;
+    vs_main_CdFile* temp_s2;
+    vs_main_CdFile* temp_s3;
+    int var_a0;
+    int var_s0;
+
+    temp_s0 = D_800F1C98;
+    D_800F1DC8 = arg0;
+    if (temp_s0 != 0) {
+        D_800F1DBE = *temp_s0;
+        if (func_8007DFF0(D_800F1DC8, D_800F1DBE, 5) != 0) {
+            new_var = 0x800;
+            temp_s2 = (temp_s0 + 0x20);
+            temp_s3 = temp_s0 + 0x42;
+            var_a0 = temp_s2->size;
+            var_s0 = temp_s3->size;
+            if ((var_a0 & 0x7FF) != 0) {
+                var_a0 = (var_a0 + new_var) - (var_a0 & 0x7FF);
+            }
+            if ((var_s0 & 0x7FF) != 0) {
+                var_s0 = (var_s0 + new_var) - (var_s0 & 0x7FF);
+            }
+            D_800F1DD0 = vs_main_allocHeapR(var_a0);
+            D_800F1DCC = vs_main_allocHeapR(var_s0);
+            if ((D_800F1DD0 == 0) || (D_800F1DCC == 0)) {
+                return 0;
+            }
+            D_800F1DAC = vs_main_allocateCdQueueSlot(temp_s2);
+            D_800F1DB0 = vs_main_allocateCdQueueSlot(temp_s3);
+            vs_main_cdEnqueue(D_800F1DAC, D_800F1DD0);
+            vs_main_cdEnqueue(D_800F1DB0, D_800F1DCC);
+            return 1;
+        }
+    }
+    D_800F1DAC = 0;
+    D_800F1DB0 = 0;
+    return 0;
+}
 
 int func_8008F0FC(void)
 {

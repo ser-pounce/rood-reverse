@@ -140,7 +140,7 @@ int func_80102BB8(char* arg0)
     return 0;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102800);
+#include "../unused_vertices.h"
 
 INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102AE0);
 

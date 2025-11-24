@@ -186,11 +186,15 @@ extern short D_800F1D6A;
 extern short D_800F1D6C;
 extern int D_800F1D78[20];
 extern signed char D_800F1D6E;
+extern vs_main_CdQueueSlot* D_800F1DAC;
+extern vs_main_CdQueueSlot* D_800F1DB0;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
 extern short D_800F1DC4;
+extern char D_800F1DC8;
 extern signed char D_800F1DC9;
 extern char D_800F1DCA;
+extern int* D_800F1DD0;
 extern u_short* D_800F1DD4;
 
 extern int D_1F800000[];
@@ -2405,7 +2409,35 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 // https://decomp.me/scratch/sDudx
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EFCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F0FC);
+int func_8008F0FC(void)
+{
+    if ((D_800F1DAC != NULL) && (D_800F1DAC->state == 4)) {
+        func_80103530_t sp10;
+
+        *D_800F1DD0 = 0x10;
+        func_8008D820(D_800F1DD0, &sp10);
+        if (sp10.unk10 != NULL) {
+            sp10.unkC->x = (sp10.unkC->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
+            sp10.unkC->y = (char)sp10.unkC->y + ((D_800F1DC8 & 0x10) * 0x10);
+            LoadImage(sp10.unkC, sp10.unk10);
+        }
+        if (sp10.unk8 != NULL) {
+            func_80048A64((void*)sp10.unk8, 0xE, 0, 0x100);
+        }
+        vs_main_freeCdQueueSlot(D_800F1DAC);
+        D_800F1DAC = NULL;
+        return 0;
+    }
+
+    if ((D_800F1DB0 != NULL) && (D_800F1DB0->state == 4)) {
+        vs_main_freeHeapR(D_800F1DD0);
+        D_800F1DD0 = NULL;
+        vs_main_freeCdQueueSlot(D_800F1DB0);
+        D_800F1DB0 = NULL;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F234);
 

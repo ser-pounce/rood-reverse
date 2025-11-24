@@ -1,2 +1,5 @@
+_disFiles = 0x80102AE0;
 _raiseMaxHP = 0x801090B8;
 _raiseMaxMP = 0x80109148;
+_rankDataCdSlot = 0x8010984C;
+_rankData = 0x80109850;

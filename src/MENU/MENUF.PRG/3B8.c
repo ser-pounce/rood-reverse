@@ -3,6 +3,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "lbas.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -68,7 +69,6 @@ int func_80108EE8(void);
 void func_80108E48(void);
 void func_80108EA0(void);
 
-extern vs_main_CdFile D_80102AE0[];
 extern char D_80102B5C[]; // "%09d"
 extern char D_80102B64[]; // "%03d"
 
@@ -94,8 +94,8 @@ extern char D_801097D8[];
 extern char D_801097E4[];
 extern short D_801097EC[];
 extern u_int D_8010980C[];
-extern vs_main_CdQueueSlot* D_8010984C;
-extern void* D_80109850;
+extern vs_main_CdQueueSlot* _rankDataCdSlot;
+extern void* _rankData;
 extern vs_main_CdQueueSlot* D_8010985C;
 extern void* D_80109860;
 extern vs_main_CdQueueSlot* D_80109868;
@@ -142,7 +142,11 @@ int func_80102BB8(char* arg0)
 
 #include "../unused_vertices.h"
 
-INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102AE0);
+enum _disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
+
+static vs_main_CdFile const _disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
+    { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
+    { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
 int func_80102C54(void)
 {
@@ -189,14 +193,14 @@ int func_80102D10(void)
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 3, 5);
-        D_80109850 = vs_main_allocHeapR(D_80102AE0[0].size);
-        D_8010984C = vs_main_allocateCdQueueSlot(&D_80102AE0[0]);
-        vs_main_cdEnqueue(D_8010984C, D_80109850);
+        _rankData = vs_main_allocHeapR(_disFiles[rankDis].size);
+        _rankDataCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[rankDis]);
+        vs_main_cdEnqueue(_rankDataCdSlot, _rankData);
         ++D_800F1CD8;
     } else if (D_800F1CD8 == 1) {
-        if (D_8010984C->state == 4) {
+        if (_rankDataCdSlot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i < 3; ++i) {
-                func_8008D820(D_80109850 + i * 0x8220, &sp10);
+                func_8008D820(_rankData + i * 0x8220, &sp10);
                 if (sp10.unk10 != NULL) {
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
@@ -214,13 +218,13 @@ int func_80102D10(void)
                     }
                 }
             }
-            vs_main_freeCdQueueSlot(D_8010984C);
+            vs_main_freeCdQueueSlot(_rankDataCdSlot);
             func_80103748();
             ++D_800F1CD8;
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
         func_80045000(2, 0x7F, 0);
-        vs_main_freeHeapR(D_80109850);
+        vs_main_freeHeapR(_rankData);
         D_80109894 = 0;
         D_80109898 = 0;
         D_8010989C = 0;
@@ -289,8 +293,8 @@ int func_80103530(void)
 {
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 2, 5);
-        D_80109860 = vs_main_allocHeapR(D_80102AE0[2].size);
-        D_8010985C = vs_main_allocateCdQueueSlot(&D_80102AE0[2]);
+        D_80109860 = vs_main_allocHeapR(_disFiles[attackDis].size);
+        D_8010985C = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
         vs_main_cdEnqueue(D_8010985C, D_80109860);
         ++D_800F1CD8;
     } else if (D_800F1CD8 == 1) {
@@ -1162,8 +1166,8 @@ int func_80107A8C(void)
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 2, 5);
-        D_8010986C = vs_main_allocHeapR(D_80102AE0[3].size);
-        D_80109868 = vs_main_allocateCdQueueSlot(&D_80102AE0[3]);
+        D_8010986C = vs_main_allocHeapR(_disFiles[iqDis].size);
+        D_80109868 = vs_main_allocateCdQueueSlot(&_disFiles[iqDis]);
         vs_main_cdEnqueue(D_80109868, D_8010986C);
         ++D_800F1CD8;
         if (0) {
@@ -1242,8 +1246,8 @@ int func_80107D98(void)
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 1, 5);
-        D_80109874 = vs_main_allocHeapR(D_80102AE0[4].size);
-        D_80109870 = vs_main_allocateCdQueueSlot(&D_80102AE0[4]);
+        D_80109874 = vs_main_allocHeapR(_disFiles[escDis].size);
+        D_80109870 = vs_main_allocateCdQueueSlot(&_disFiles[escDis]);
         vs_main_cdEnqueue(D_80109870, D_80109874);
         ++D_800F1CD8;
     } else if (D_800F1CD8 == 1) {

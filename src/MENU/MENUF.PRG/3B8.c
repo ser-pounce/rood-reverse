@@ -513,8 +513,21 @@ void func_801046F8(int arg0, int arg1, int arg2)
     }
 }
 
-// https://decomp.me/scratch/zHBmW
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801047D4);
+void func_801047D4(int arg0, int arg1, int arg2)
+{
+    int new_var;
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        arg0 -= (D_801091D8[95].unk2 + 0x60) >> 1;
+        func_80105C34(arg0, arg1, 0x5F, arg2);
+        arg0++;
+        new_var = arg0 + 0xB;
+        func_80105F6C(new_var + D_801091D8[95].unk2, arg1 + 2, arg2,
+            D_8005FEA0.unk28[vs_main_stateFlags.unkC4][0] & 0xFFFFFF, 0);
+    }
+}
 
 void func_8010489C(int arg0, int arg1, int arg2)
 {

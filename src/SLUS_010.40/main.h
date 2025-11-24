@@ -389,6 +389,8 @@ void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
 void vs_main_resetSound(void);
 int func_80045000(int id, int arg1, int arg2);
+void func_80045BFC(int arg0, int arg1, int arg2, int arg3);
+void func_80045C74(int arg0, int arg1, int arg2, int arg3);
 void func_800461CC(int, u_int[], u_int, int, int);
 void vs_main_setMonoSound(int);
 void func_80046C80(int, int, u_short*, int);

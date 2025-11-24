@@ -1,6 +1,22 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010296C);
+typedef struct {
+    u_short unk0;
+    char unk2;
+} func_8010406C_t;
+
+extern char D_80109711;
+extern char D_80109712;
+extern char D_80109713;
+extern int D_8010975C;
+extern int D_80109760;
+
+void func_8010296C(char arg0)
+{
+    D_80109711 = arg0;
+    D_80109712 = arg0;
+    D_80109713 = arg0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102988);
 
@@ -42,7 +58,13 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103E24);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103F00);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010406C);
+int func_8010406C(int arg0, func_8010406C_t* arg1)
+{
+    if (arg0 == 0) {
+        return -arg1->unk0;
+    }
+    return arg1->unk2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010408C);
 
@@ -68,7 +90,7 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801053EC);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106390);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106574);
+int func_80106574(void) { return D_8010975C != 0 ? -1 : D_80109760; }
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010659C);
 

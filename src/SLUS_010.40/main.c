@@ -9983,7 +9983,7 @@ static int func_80045B28(int arg0, int arg1)
     return temp_v1;
 }
 
-static void func_80045BFC(int arg0, int arg1, int arg2, int arg3)
+void func_80045BFC(int arg0, int arg1, int arg2, int arg3)
 {
     int temp_v0;
 
@@ -10002,7 +10002,7 @@ static void func_80045BFC(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-static void func_80045C74(int arg0, int arg1, int arg2, int arg3)
+void func_80045C74(int arg0, int arg1, int arg2, int arg3)
 {
     int temp_v0;
 

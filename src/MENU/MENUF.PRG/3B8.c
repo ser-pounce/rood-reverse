@@ -19,6 +19,11 @@ typedef struct {
     u_short unk6;
 } D_801091D8_t;
 
+typedef struct {
+    u_short unk0;
+    short unk2;
+} D_80109610_t;
+
 int _loadRankDis(void);
 int func_80102C54(void);
 int func_8010310C(void);
@@ -30,6 +35,13 @@ int func_80103D88(void);
 void func_80104914(int);
 void func_80104A50(int);
 int func_8010412C(void);
+void func_80104B8C(int arg0, int arg1, int arg2);
+void func_80104C40(int arg0, int arg1, int arg2, int arg3);
+void func_80104DBC(int arg0, int arg1, int arg2, int arg3);
+void func_80105020(int arg0, int arg1, int arg2, int arg3);
+void func_8010516C(int arg0, int arg1, int arg2, int arg3);
+void func_801053B0(int arg0, int arg1, int arg2);
+void func_8010540C(int arg0, int arg1, int arg2);
 void func_8010559C(int arg0, int arg1, int arg2);
 void func_8010564C(int arg0, int arg1, int arg2);
 void func_801056E8(int arg0, int arg1, int arg2);
@@ -41,6 +53,7 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3);
 void func_80105C34(int, int, int, int);
 void func_80105DD8(int, int, int, int, int);
 void func_80105F6C(int, int, int, int, int);
+void func_801060A8(int, int, int, int);
 void func_801064D4(int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
@@ -68,6 +81,11 @@ int func_80108EC8(void);
 int func_80108EE8(void);
 void func_80108E48(void);
 void func_80108EA0(void);
+void func_80108F08(int amount);
+void func_80108F98(int amount);
+void func_80109028(int amount);
+void _raiseMaxHP(int amount);
+void _raiseMaxMP(int amount);
 
 extern char D_80102B5C[]; // "%09d"
 extern char D_80102B64[]; // "%03d"
@@ -77,6 +95,7 @@ extern char D_8010923A;
 extern char D_8010941A;
 extern char D_8010951A;
 extern u_char D_801095D0[];
+extern D_80109610_t D_80109610[][16];
 extern char D_8010972C[];
 extern char D_80109738[];
 extern char D_80109744[];
@@ -94,6 +113,7 @@ extern char D_801097D8[];
 extern char D_801097E4[];
 extern short D_801097EC[];
 extern u_int D_8010980C[];
+extern int D_80109864;
 extern vs_main_CdQueueSlot* _rankDataCdSlot;
 extern void* _rankData;
 extern vs_main_CdQueueSlot* _attackDisCdSlot;
@@ -102,12 +122,12 @@ extern vs_main_CdQueueSlot* _iqDisCdSlot;
 extern void* _iqDisData;
 extern vs_main_CdQueueSlot* _escDisCdSLot;
 extern void* _escDisData;
-extern int D_80109878;
+extern u_int D_80109878;
 extern int D_8010987C;
 extern int _clearCount;
 extern u_int _score;
 extern u_int D_80109888;
-extern int D_8010988C;
+extern u_int D_8010988C;
 extern int D_80109890;
 extern int D_80109894;
 extern int D_80109898;
@@ -377,7 +397,118 @@ int func_801037A0(void)
     return ret;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010384C);
+int func_8010384C(void)
+{
+    int temp_a0;
+    int temp_a2_2;
+    int temp_v1;
+
+    if (D_801098A0 != 3) {
+        if (D_8010989C == 0xD0) {
+            vs_main_playSfxDefault(0x7E, 0x77);
+            vs_main_playSfxDefault(0x7E, 0x78);
+        }
+        func_80104B8C(0xA0, 0x28, D_8010989C);
+        func_80104DBC(0xA0, 0x50, D_8010989C - 0x20, D_801098A0);
+        func_8010516C(0xA0, 0x66, D_8010989C - 0x70, D_801098A0);
+        func_801053B0(0xA0, 0x8A, D_8010989C - 0xC0);
+        func_8010540C(0xA0, 0x9A, D_8010989C - 0xD0);
+        func_801060A8(0x82, 0xBE, D_8010989C - 0x110, D_801098A0);
+    }
+
+    if (D_801098A0 == 0) {
+        D_80109878 = (D_80109878 + (D_8010988C >> 3)) & 0xFF;
+        if ((D_8010989C - 0x110) > 0) {
+            if (D_8010988C == 8) {
+                vs_main_playSfxDefault(0x7E, 0x74);
+                vs_main_playSfxDefault(0x7E, 0x75);
+            }
+            if (D_8010988C < 0x30) {
+                if (D_8010989C >= 0x121) {
+                    ++D_8010988C;
+                    func_801064D4(0xD6, 0xBB, D_8010988C, D_8010989C);
+                }
+            } else {
+                if ((vs_main_buttonsPressed.all & 0x20) || D_8010989C >= 0x819) {
+                    if (vs_main_buttonsPressed.all & 0x20) {
+                        vs_main_playSfxDefault(0x7E, 0x76);
+                    }
+                    D_801098A0 = 1;
+                    D_80109864 = 0;
+                    func_80045BFC(0x7E, 0x74, 0x40, 0x30);
+                    func_80045BFC(0x7E, 0x75, 0x40, 0x30);
+                    func_80045C74(0x7E, 0x74, -0x10, 0x30);
+                    func_80045C74(0x7E, 0x75, -0x10, 0x30);
+                }
+                func_801064D4(0xD6, 0xBB, 0x30, D_8010989C);
+            }
+        } else if (vs_main_buttonsPressed.all & 0x20) {
+            func_80045D64(0x7E, 0);
+            D_8010989C = 0x110;
+            D_801099EC = 0;
+            D_801099F0 = 0;
+            D_80109894 = (int)D_80109888;
+            D_80109898 = (int)_score;
+        }
+    } else if (D_801098A0 == 1) {
+        temp_a2_2 = 0x30 - D_80109864;
+        if (temp_a2_2 > 0) {
+            func_801064D4(0xD6, 0xBB, temp_a2_2, D_8010989C);
+        }
+        temp_v1 = D_80109878 + (D_8010988C >> 3);
+        D_80109878 = temp_v1 & 0xFF;
+        if (D_8010988C >= 9) {
+            --D_8010988C;
+        }
+        temp_v1 = temp_v1 & 0xF;
+        if ((temp_v1 == 8) && (D_8010988C == temp_v1)) {
+            func_80045D64(0x7E, 0x74);
+            func_80045D64(0x7E, 0x75);
+            vs_main_playSfxDefault(0x7E, 0x77);
+            vs_main_playSfxDefault(0x7E, 0x78);
+            D_801098A0 = 2;
+            D_80109864 = 0;
+        }
+    } else if (D_801098A0 == 2) {
+        if ((vs_main_buttonsPressed.all & 0x20) || (D_80109864 >= 451)) {
+            D_801098A0 = 3;
+            D_80109864 = 0;
+        }
+    } else {
+        func_80104B8C(0xA0, 0x28, 8 - D_80109864);
+        func_80104C40(0xA0, 0x50, 8 - D_80109864, 3);
+        func_80105020(0xA0, 0x66, 8 - D_80109864, 3);
+        func_801053B0(0xA0, 0x8A, 8 - D_80109864);
+        func_8010540C(0xA0, 0x9A, 8 - D_80109864);
+        func_801060A8(0x82, 0xBE, 8 - D_80109864, 3);
+        if (D_80109864 >= 8) {
+            temp_a0 = D_80109610[D_80109890][(char)D_80109878 >> 4].unk2;
+            switch ((short)(D_80109610[D_80109890][(char)D_80109878 >> 4].unk0 - 0xD)) {
+            case 0:
+                func_80108F08(temp_a0);
+                break;
+            case 1:
+                func_80109028(temp_a0);
+                break;
+            case 2:
+                func_80108F98(temp_a0);
+                break;
+            case 3:
+                _raiseMaxHP(temp_a0);
+                break;
+            case 4:
+                _raiseMaxMP(temp_a0);
+                break;
+            }
+            func_8007E0A8(0x1D, 3, 5);
+            func_80108EA0();
+            return 1;
+        }
+    }
+    ++D_80109864;
+    ++D_8010989C;
+    return 0;
+}
 
 int func_80103D88(void)
 {
@@ -563,7 +694,7 @@ void func_80104B8C(int arg0, int arg1, int arg2)
     }
 }
 
-void func_80104C40(int arg0, int arg1, int arg2)
+void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     char buf[16];
     int i;
@@ -600,7 +731,7 @@ void func_80104C40(int arg0, int arg1, int arg2)
     }
 }
 
-void func_80104DBC(int arg0, int arg1, int arg2)
+void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     char buf[16];
     int temp_s2;
@@ -660,7 +791,7 @@ void func_80104DBC(int arg0, int arg1, int arg2)
     func_80107140(arg0, arg1 + 8, 0x14, &D_8010974C, temp_s2);
 }
 
-void func_80105020(int arg0, int arg1, int arg2)
+void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     char buf[4];
     int i;
@@ -691,7 +822,7 @@ void func_80105020(int arg0, int arg1, int arg2)
     }
 }
 
-void func_8010516C(int arg0, int arg1, int arg2)
+void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     char buf[8];
     int temp_s4;

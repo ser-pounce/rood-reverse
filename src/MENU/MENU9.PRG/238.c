@@ -1849,7 +1849,7 @@ void func_80106F9C(void)
 
     for (i = 0, var_t0 = D_8010A230; i < 8; ++i, ++var_t0) {
         var_t0->unk4 = 0xC2;
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) == 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) == 0x800000) {
             var_t0->unk3 = 1;
             var_t0->unk8 = (char*)&_miscInfo[_miscInfo[4]];
             var_t0->unkC = (char*)&_miscInfo[_miscInfo[5]];
@@ -1936,7 +1936,7 @@ void _calculateScore(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) == 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) == 0x800000) {
             break;
         }
     }
@@ -2071,7 +2071,7 @@ void func_80107C34(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) != 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) != 0x800000) {
             _score += 0x4E20;
         }
     }

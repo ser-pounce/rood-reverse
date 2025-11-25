@@ -112,11 +112,20 @@ typedef union {
 } vs_Gametime_t;
 
 typedef struct {
+    u_int unk0 : 24;
+    u_int unk24 : 7;
+    u_int unk31 : 1;
+} vs_trialScore_t;
+
+typedef struct {
     int unk0;
     u_short enemyKills[6];
     int unk10;
     u_short weaponAttacks[10];
-    int bossTimeTrialScores[8][3];
+    union {
+        u_int value;
+        vs_trialScore_t time;
+    } bossTimeTrialScores[8][3];
     u_short maxChain;
     u_short unk8A;
     u_int unk8C;

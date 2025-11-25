@@ -4994,10 +4994,10 @@ static void _initGameData(void)
 
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 3; ++j) {
-            vs_main_scoredata.bossTimeTrialScores[i][j] &= 0xFF000000;
-            vs_main_scoredata.bossTimeTrialScores[i][j] |= 0x800000;
-            vs_main_scoredata.bossTimeTrialScores[i][j] &= 0x80FFFFFF;
-            vs_main_scoredata.bossTimeTrialScores[i][j] &= 0x7FFFFFFF;
+            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0xFF000000;
+            vs_main_scoredata.bossTimeTrialScores[i][j].value |= 0x800000;
+            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0x80FFFFFF;
+            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0x7FFFFFFF;
         }
     }
 

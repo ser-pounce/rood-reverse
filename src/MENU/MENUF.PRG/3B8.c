@@ -113,6 +113,8 @@ extern char D_801097D8[];
 extern char D_801097E4[];
 extern short D_801097EC[];
 extern u_int D_8010980C[];
+extern vs_main_CdQueueSlot* D_80109854;
+extern void* D_80109858;
 extern int D_80109864;
 extern vs_main_CdQueueSlot* _rankDataCdSlot;
 extern void* _rankData;
@@ -135,7 +137,7 @@ extern int D_8010989C;
 extern int D_801098A0;
 extern int D_801098A4;
 extern int D_801098A8;
-extern char D_801098AC[0x140];
+extern u_short D_801098AC[0x70];
 extern int D_801099EC;
 extern int D_801099F0;
 extern short D_801099F4;
@@ -307,7 +309,92 @@ int _loadRankDis(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010310C);
+int func_8010310C(void)
+{
+    func_80103530_t sp10;
+    int temp_s0;
+    int temp_v0_2;
+    int var_a3;
+    int i;
+
+    temp_s0 = D_800F1CD8;
+    if (temp_s0 == 0) {
+        func_8007DFF0(0x1D, 1, 5);
+        D_80109858 = vs_main_allocHeapR(_disFiles[1].size);
+        D_80109854 = vs_main_allocateCdQueueSlot(&_disFiles[1]);
+        vs_main_cdEnqueue(D_80109854, D_80109858);
+        ++D_800F1CD8;
+    } else if (temp_s0 == 1) {
+        if (D_80109854->state == 4) {
+            func_8008D820(D_80109858, &sp10);
+            if (sp10.unk10 != NULL) {
+                sp10.unkC->x = 0x340;
+                sp10.unkC->y = 0x100;
+                sp10.unkC->h = 0xFF;
+                LoadImage(sp10.unkC, sp10.unk10);
+            }
+            if (sp10.unk8 != NULL) {
+                sp10.unk4->x = 0x300;
+                sp10.unk4->y = 0x1FF;
+                sp10.unk4->w = 0xA0;
+                sp10.unk4->h = temp_s0;
+                *sp10.unk8 = 0;
+                LoadImage(sp10.unk4, sp10.unk8);
+                vs_main_memcpy(D_801098AC, sp10.unk8, 0x140U);
+            }
+            vs_main_freeCdQueueSlot(D_80109854);
+            func_80103748();
+            ++D_800F1CD8;
+        }
+    } else if (vs_main_clearMusicLoadQueue() == 0) {
+        func_80045000(2, 0x7F, 0);
+        D_801098A8 = (vs_main_stateFlags.unkC5 << 0x10) | (vs_main_stateFlags.unkC6 << 8)
+                   | vs_main_stateFlags.unkC7;
+        if (D_801098A8 == 0) {
+            D_801098A8 = 0x3B3B63;
+        }
+
+        for (i = 0; i < 3; ++i) {
+            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
+                        .time.unk0)
+                < D_801098A8) {
+                continue;
+            }
+            for (var_a3 = 2; i < var_a3; --var_a3) {
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+                    .time.unk0 =
+                    vs_main_scoredata
+                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                        .time.unk0;
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+                    .time.unk24 =
+                    vs_main_scoredata
+                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                        .time.unk24;
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+                    .time.unk31 =
+                    vs_main_scoredata
+                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                        .time.unk31;
+            }
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time.unk0 =
+                D_801098A8;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
+                .time.unk24 = vs_main_stateFlags.clearCount;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
+                .time.unk31 = vs_main_stateFlags.unk1;
+            break;
+        }
+        D_801098A4 = i;
+        D_8010989C = 0;
+        D_801098A0 = 0;
+        D_8010988C = 0;
+        D_800F1CD8 = 0;
+        vs_main_freeHeapR(D_80109858);
+        return 1;
+    }
+    return 0;
+}
 
 int _loadAttackDis(void)
 {
@@ -660,7 +747,7 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].unk2, arg1 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0] & 0xFFFFFF,
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0].time.unk0,
             0);
     }
 }
@@ -672,6 +759,7 @@ void func_8010489C(int arg0, int arg1, int arg2)
         arg1 - (D_801091D8[temp_a2].unk3 >> 1), temp_a2, arg2 % 15);
 }
 
+// https://decomp.me/scratch/UJOBa
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104914);
 
 // https://decomp.me/scratch/ZDcyC
@@ -1010,6 +1098,7 @@ void func_80105790(int arg0, int arg1, int arg2)
     }
 }
 
+// https://decomp.me/scratch/2GyJv
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010581C);
 
 void func_801059B8(int arg0, int arg1, int arg2)
@@ -1047,7 +1136,7 @@ void func_801059FC(int arg0, int arg1, int arg2)
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
             vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.unkC4 * 3 + i]
-                & 0xFFFFFF,
+                .time.unk0,
             temp_v0);
         func_80105DD8((arg0 - D_801091D8[75 + i].unk2) - 0x58, arg1 + i * 0x14, i + 0x4B,
             arg2, var_s3);
@@ -1072,7 +1161,7 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
     }
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2] & 0xFFFFFF,
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2].time.unk0,
         temp_t1);
     func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].unk2) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
@@ -1773,7 +1862,7 @@ void _calculateScore(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0] & 0xFFFFFF) != 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) != 0x800000) {
             _score += 20000;
         }
     }

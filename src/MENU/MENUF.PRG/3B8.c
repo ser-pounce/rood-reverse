@@ -57,7 +57,7 @@ void func_801060A8(int, int, int, int);
 void func_801064D4(int, int, int, int);
 void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
-void func_80107140(int, int, int, short*, int);
+void func_80107140(int, int, int, char*, int);
 int _loadIqDis(void);
 int func_80107D4C(void);
 int _loadEscDis(void);
@@ -99,14 +99,14 @@ extern D_80109610_t D_80109610[][16];
 extern char D_8010972C[];
 extern char D_80109738[];
 extern char D_80109744[];
-extern short D_8010974C;
+extern char D_8010974C[];
 extern char D_80109754[];
-extern short D_8010975C[];
+extern char D_8010975C[];
 extern char D_80109764[];
 extern char D_8010976C;
 extern char D_8010976F;
 extern char D_80109774[];
-extern short D_8010977C[];
+extern char D_8010977C[];
 extern int D_8010978C[];
 extern char D_801097CC[];
 extern char D_801097D8[];
@@ -313,7 +313,6 @@ int func_8010310C(void)
 {
     func_80103530_t sp10;
     int temp_s0;
-    int temp_v0_2;
     int var_a3;
     int i;
 
@@ -863,20 +862,20 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     sprintf(buf, D_80102B5C, D_80109898);
     v = D_801091D8[18].unk2 + D_801091D8[26].unk2 + D_801091D8[20].unk2;
     arg0 -= (((D_801091D8[10].unk2 * 2) + v) + 0x74) >> 1;
-    func_80107140(arg0, arg1, 0x12, &D_8010974C, temp_s2);
+    func_80107140(arg0, arg1, 0x12, D_8010974C, temp_s2);
     arg0 += D_801091D8[18].unk2;
-    func_80107140(arg0, arg1 + 7, 0x1A, &D_8010974C, temp_s2);
+    func_80107140(arg0, arg1 + 7, 0x1A, D_8010974C, temp_s2);
     i = 2;
     arg0 = arg0 + i + D_801091D8[26].unk2;
     for (i = 0; i < 9; ++i) {
-        func_80107140(arg0, arg1 + 3, buf[i] - '0', &D_8010974C, temp_s2);
+        func_80107140(arg0, arg1 + 3, buf[i] - '0', D_8010974C, temp_s2);
         arg0 += 0xC;
         if ((i == 2) || (i == 5)) {
-            func_80107140(arg0, arg1 + 0xE, 0xA, &D_8010974C, temp_s2);
+            func_80107140(arg0, arg1 + 0xE, 0xA, D_8010974C, temp_s2);
             arg0 += 3 + D_801091D8[10].unk2;
         }
     }
-    func_80107140(arg0, arg1 + 8, 0x14, &D_8010974C, temp_s2);
+    func_80107140(arg0, arg1 + 8, 0x14, D_8010974C, temp_s2);
 }
 
 void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
@@ -1450,7 +1449,102 @@ void func_80106A80(int arg0, int arg1, int arg2, char* arg3)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107140);
+static inline int _adjust3(int v0)
+{
+    if (v0 < 0) {
+        v0 += 0x3F;
+    }
+    return v0 >> 6;
+}
+
+void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
+{
+    int temp_a1;
+    int var_a0;
+    int i;
+    char var_s6;
+    POLY_GT4* poly;
+    void** scratch;
+
+    if ((arg0 + D_801091D8[arg2].unk2) < (arg4 - 0x40)) {
+        scratch = (void**)0x1F800000;
+        poly = scratch[0];
+        setPolyGT4(poly);
+        setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0,
+            D_801091D8[arg2].unk3 + arg1, D_801091D8[arg2].unk2 + arg0,
+            D_801091D8[arg2].unk3 + arg1);
+        setUV4(poly, D_801091D8[arg2].unk0, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, D_801091D8[arg2].unk1,
+            D_801091D8[arg2].unk0, D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2,
+            D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3);
+        setRGB0(poly, arg3[0], arg3[1], arg3[2]);
+        setRGB1(poly, arg3[4], arg3[5], arg3[6]);
+        setRGB2(poly, arg3[0], arg3[1], arg3[2]);
+        setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+        setSemiTrans(poly, 1);
+        poly->clut = D_801091D8[arg2].unk6;
+        poly->tpage = D_801091D8[arg2].unk4;
+        scratch = (void**)0x1F800000;
+        AddPrim(scratch[1] - 0x1C, poly++);
+        scratch[0] = poly;
+        return;
+    }
+
+    if (arg0 < arg4) {
+        scratch = (void**)0x1F800000;
+        poly = scratch[0];
+        var_s6 = D_801091D8[arg2].unk0;
+        for (i = 0; i < D_801091D8[arg2].unk2; i += 12, arg0 += 0xC, var_s6 += 0xC) {
+            var_a0 = 0xC;
+            if ((i + 0xC) >= D_801091D8[arg2].unk2) {
+                var_a0 = D_801091D8[arg2].unk2 - i;
+            }
+            setPolyGT4(poly);
+            temp_a1 = arg0 + var_a0;
+            setXY4(poly, arg0, arg1, temp_a1, arg1, arg0, D_801091D8[arg2].unk3 + arg1,
+                temp_a1, D_801091D8[arg2].unk3 + arg1);
+            setUV4(poly, var_s6, D_801091D8[arg2].unk1, var_s6 + var_a0,
+                D_801091D8[arg2].unk1, var_s6,
+                D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3, var_s6 + var_a0,
+                D_801091D8[arg2].unk1 + D_801091D8[arg2].unk3);
+
+            var_a0 = arg4 - arg0;
+            if (var_a0 > 0x40) {
+                var_a0 = 0x40;
+            }
+            if (var_a0 < 0) {
+                var_a0 = 0;
+            }
+
+            setRGB0(poly, _adjust3(arg3[0] * var_a0), _adjust3(arg3[1] * var_a0),
+                _adjust3(arg3[2] * var_a0));
+            setRGB2(poly, _adjust3(arg3[0] * var_a0), _adjust3(arg3[1] * var_a0),
+                _adjust3(arg3[2] * var_a0));
+
+            var_a0 = arg4 - temp_a1;
+            if (var_a0 > 0x40) {
+                var_a0 = 0x40;
+            }
+            if (var_a0 < 0) {
+                var_a0 = 0;
+            }
+
+            setRGB1(poly, _adjust3(arg3[4] * var_a0), _adjust3(arg3[5] * var_a0),
+                _adjust3(arg3[6] * var_a0));
+            setRGB3(poly, _adjust3(arg3[4] * var_a0), _adjust3(arg3[5] * var_a0),
+                _adjust3(arg3[6] * var_a0));
+
+            setSemiTrans(poly, 1);
+            poly->clut = (D_801091D8[arg2].unk6 + 1);
+            poly->tpage = (D_801091D8[arg2].unk4 | 0x20);
+            scratch = (void**)0x1F800000;
+            AddPrim(scratch[1] - 0x1C, poly++);
+        }
+        scratch = (void**)0x1F800000;
+        scratch[0] = poly;
+    }
+}
 
 // https://decomp.me/scratch/ktwNS
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);

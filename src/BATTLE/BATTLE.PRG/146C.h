@@ -342,6 +342,17 @@ typedef struct {
     int unk68;
 } D_800F1880_t;
 
+typedef struct {
+    short unk0[2];
+} D_800F1A78_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+} D_800F1A68_t;
+
 void func_80069FC4(int, int);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
@@ -357,7 +368,16 @@ void func_8006BADC(func_8006B7BC_t*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getCurrentLocationId(void);
 void func_8007ACB0(void);
+int func_8007C36C(int arg0);
 void func_8007CCF0(int);
+void func_8007DD50(int);
+void func_8007DDAC(int arg0);
+void func_8007DDB8(int* arg0);
+void func_8007DDD4(D_800F1A78_t* arg0);
+void func_8007DDF8(D_800F1A68_t* arg0);
+void func_8007DE2C(int arg0);
+void func_8007DE44(u_int arg0);
+void func_8007DE5C(int arg0);
 int func_8007DFF0(char, int, int);
 void func_8007E0A8(int, int, int);
 int func_8007E180(int arg0);

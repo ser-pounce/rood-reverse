@@ -30,17 +30,6 @@ typedef struct {
 } func_8008418C_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-} D_800F1A68_t;
-
-typedef struct {
-    short unk0[2];
-} D_800F1A78_t;
-
-typedef struct {
     int unk0[12];
     char unk30;
     char unk31;

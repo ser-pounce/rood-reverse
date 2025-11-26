@@ -167,7 +167,21 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A958);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A9C0);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AA6C);
+void func_8006AA6C(void)
+{
+    D_800DBB88_t* var_v1;
+    short temp_v0;
+    short i;
+
+    var_v1 = &D_800DBB88;
+    i = 0;
+    do {
+        var_v1->unk8 = 0;
+        temp_v0 = i + 1;
+        i = temp_v0;
+        var_v1 += 4;
+    } while (temp_v0 < 0x20);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
 

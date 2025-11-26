@@ -20,7 +20,7 @@ typedef struct {
 } D_801091D8_t;
 
 typedef struct {
-    u_short unk0;
+    short unk0;
     short unk2;
 } D_80109610_t;
 
@@ -64,6 +64,7 @@ void func_8010664C(int, int, int, char*);
 void func_80106A80(int, int, int, char*);
 void func_80107140(int, int, int, char*, int);
 int _loadIqDis(void);
+void func_80107698(int arg0, int arg1, int arg2);
 int func_80107D4C(void);
 int _loadEscDis(void);
 int func_80107FC0(void);
@@ -1386,6 +1387,7 @@ void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
+// https://decomp.me/scratch/5NYkC
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801060A8);
 
 void func_801064D4(int arg0, int arg1, int arg2, int arg3)
@@ -1657,8 +1659,79 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
     }
 }
 
-// https://decomp.me/scratch/ktwNS
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80107698);
+void func_80107698(int arg0, int arg1, int arg2)
+{
+    int i;
+    int var_s2;
+    void** p = (void**)0x1F800000;
+    POLY_FT4* poly = p[0];
+    int unk1 = D_801091D8[arg2].unk1;
+
+    for (i = 0; i < D_801091D8[arg2].unk3; ++i, ++arg1, ++unk1) {
+        setPolyFT4(poly);
+        setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0, arg1 + 1,
+            D_801091D8[arg2].unk2 + arg0, arg1 + 1);
+        setUV4(poly, D_801091D8[arg2].unk0, unk1,
+            D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1, D_801091D8[arg2].unk0,
+            unk1 + 1, D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1 + 1);
+
+        if (arg1 < 0xBE) {
+            var_s2 = 0x80 - ((0xBD - arg1) * 0x10);
+            if (var_s2 < 0) {
+                var_s2 = 0;
+            }
+            setRGB0(poly, var_s2, var_s2, var_s2);
+            setSemiTrans(poly, 1);
+            setClut(poly, 816, 511);
+            poly->tpage = D_801091D8[arg2].unk4 | 0x20;
+            AddPrim(p[1] - 0x1C, poly++);
+
+            setPolyFT4(poly);
+            setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0, arg1 + 1,
+                D_801091D8[arg2].unk2 + arg0, arg1 + 1);
+            setUV4(poly, D_801091D8[arg2].unk0, unk1,
+                D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1,
+                D_801091D8[arg2].unk0, unk1 + 1,
+                D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1 + 1);
+
+            setRGB0(poly, var_s2, var_s2, var_s2);
+            setSemiTrans(poly, 1);
+            setClut(poly, 816, 511);
+            poly->tpage = D_801091D8[arg2].unk4 | 0x40;
+            AddPrim(p[1] - 0x1C, poly++);
+        } else if (arg1 >= 0xCE) {
+            var_s2 = 0x80 - ((arg1 - 0xCE) * 0x10);
+            if (var_s2 < 0) {
+                var_s2 = 0;
+            }
+            setRGB0(poly, var_s2, var_s2, var_s2);
+            setSemiTrans(poly, 1);
+            setClut(poly, 816, 511);
+            poly->tpage = (D_801091D8[arg2].unk4 | 0x20);
+            AddPrim(p[1] - 0x1C, poly++);
+
+            setPolyFT4(poly);
+            setXY4(poly, arg0, arg1, D_801091D8[arg2].unk2 + arg0, arg1, arg0, arg1 + 1,
+                D_801091D8[arg2].unk2 + arg0, arg1 + 1);
+            setUV4(poly, D_801091D8[arg2].unk0, unk1,
+                D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1,
+                D_801091D8[arg2].unk0, unk1 + 1,
+                D_801091D8[arg2].unk0 + D_801091D8[arg2].unk2, unk1 + 1);
+            setRGB0(poly, var_s2, var_s2, var_s2);
+            setSemiTrans(poly, 1);
+            setClut(poly, 816, 511);
+            poly->tpage = D_801091D8[arg2].unk4 | 0x40;
+            AddPrim(p[1] - 0x1C, poly++);
+        } else {
+            setRGB0(poly, 0x80, 0x80, 0x80);
+            setSemiTrans(poly, 1);
+            setClut(poly, 800, 511);
+            poly->tpage = D_801091D8[arg2].unk4;
+            AddPrim(p[1] - 0x1C, poly++);
+        }
+    }
+    p[0] = poly;
+}
 
 int _loadIqDis(void)
 {

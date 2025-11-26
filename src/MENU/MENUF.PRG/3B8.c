@@ -93,9 +93,6 @@ void func_80109028(int amount);
 void _raiseMaxHP(int amount);
 void _raiseMaxMP(int amount);
 
-extern char D_80102B5C[]; // "%09d"
-extern char D_80102B64[]; // "%03d"
-
 extern D_801091D8_t D_801091D8[];
 extern char D_8010923A;
 extern char D_8010941A;
@@ -907,7 +904,7 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
     if (arg2 > 0) {
         D_80109744[3] = arg2;
-        sprintf(buf, D_80102B5C, _score);
+        sprintf(buf, "%09d", _score);
         new_var = D_801091D8[18].unk2 + D_801091D8[26].unk2;
         arg0 -=
             (((D_801091D8[10].unk2 * 2) + (new_var + D_801091D8[20].unk2)) + 0x74) >> 1;
@@ -971,7 +968,7 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         D_80109898 = _score;
     }
 
-    sprintf(buf, D_80102B5C, D_80109898);
+    sprintf(buf, "%09d", D_80109898);
     v = D_801091D8[18].unk2 + D_801091D8[26].unk2 + D_801091D8[20].unk2;
     arg0 -= (((D_801091D8[10].unk2 * 2) + v) + 0x74) >> 1;
     func_80107140(arg0, arg1, 0x12, D_8010974C, temp_s2);
@@ -1003,7 +1000,7 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
     if (arg2 > 0) {
         D_80109754[3] = arg2;
-        sprintf(buf, D_80102B64, D_80109888);
+        sprintf(buf, "%03d", D_80109888);
         arg0 -=
             (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
         i = 2;
@@ -1062,7 +1059,7 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         }
     }
 
-    sprintf(buf, D_80102B64, D_80109894);
+    sprintf(buf, "%03d", D_80109894);
     arg0 -= (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
     func_80107140(arg0, arg1, 0x15, D_8010975C, temp_s4);
     arg0 += D_801091D8[21].unk2;
@@ -1345,10 +1342,6 @@ void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
     AddPrim(scratch[1] - 0x1C, poly++);
     scratch[0] = poly;
 }
-
-INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B5C);
-
-INCLUDE_RODATA("build/src/MENU/MENUF.PRG/nonmatchings/3B8", D_80102B64);
 
 void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
 {

@@ -225,6 +225,7 @@ typedef struct {
     vs_battle_actor2* unk3C;
     int unk40;
     int unk44;
+    void* unk48[2];
 } vs_battle_actor;
 
 typedef struct {

@@ -138,7 +138,7 @@ extern u_int D_80109878;
 extern int D_8010987C;
 extern int _clearCount;
 extern u_int _score;
-extern u_int D_80109888;
+extern u_int _mapCompletion;
 extern u_int D_8010988C;
 extern int D_80109890;
 extern int D_80109894;
@@ -220,7 +220,7 @@ int _loadRankDis(void)
     int temp_v1;
     int var_a0;
     int i;
-    int var_a3;
+    int mapCompletion;
     u_int var_v1;
 
     if (D_800F1CD8 == 0) {
@@ -286,13 +286,13 @@ int _loadRankDis(void)
             D_8005FFD8.unk0[1] |= 0x400000;
         }
 
-        var_a3 = 0;
+        mapCompletion = 0;
 
         for (i = 0; i < 16; ++i) {
             for (var_a0 = 0; var_a0 < 32; ++var_a0) {
                 int v = 1;
                 if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << var_a0)) {
-                    ++var_a3;
+                    ++mapCompletion;
                 }
             }
         }
@@ -305,13 +305,13 @@ int _loadRankDis(void)
             }
         }
 
-        if (vs_main_scoredata.unk94 < var_a3) {
-            vs_main_scoredata.unk94 = var_a3;
+        if (vs_main_scoredata.mapCompletion < mapCompletion) {
+            vs_main_scoredata.mapCompletion = mapCompletion;
         }
         if (vs_main_scoredata.unk98 < var_v1) {
             vs_main_scoredata.unk98 = var_v1;
         }
-        D_80109888 = (var_a3 * 0x64) / 361;
+        _mapCompletion = (mapCompletion * 100) / 361;
         _calculateScore();
         func_80108A0C();
         return 1;
@@ -525,8 +525,8 @@ int func_8010384C(void)
                     func_801064D4(0xD6, 0xBB, D_8010988C, D_8010989C);
                 }
             } else {
-                if ((vs_main_buttonsPressed.all & 0x20) || D_8010989C >= 0x819) {
-                    if (vs_main_buttonsPressed.all & 0x20) {
+                if ((vs_main_buttonsPressed.all & PADRright) || D_8010989C >= 0x819) {
+                    if (vs_main_buttonsPressed.all & PADRright) {
                         vs_main_playSfxDefault(0x7E, 0x76);
                     }
                     D_801098A0 = 1;
@@ -538,13 +538,13 @@ int func_8010384C(void)
                 }
                 func_801064D4(0xD6, 0xBB, 0x30, D_8010989C);
             }
-        } else if (vs_main_buttonsPressed.all & 0x20) {
+        } else if (vs_main_buttonsPressed.all & PADRright) {
             func_80045D64(0x7E, 0);
             D_8010989C = 0x110;
             D_801099EC = 0;
             D_801099F0 = 0;
-            D_80109894 = (int)D_80109888;
-            D_80109898 = (int)_score;
+            D_80109894 = _mapCompletion;
+            D_80109898 = _score;
         }
     } else if (D_801098A0 == 1) {
         temp_a2_2 = 0x30 - D_80109864;
@@ -566,7 +566,7 @@ int func_8010384C(void)
             D_80109864 = 0;
         }
     } else if (D_801098A0 == 2) {
-        if ((vs_main_buttonsPressed.all & 0x20) || (D_80109864 >= 451)) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (D_80109864 >= 451)) {
             D_801098A0 = 3;
             D_80109864 = 0;
         }
@@ -1000,7 +1000,7 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
     if (arg2 > 0) {
         D_80109754[3] = arg2;
-        sprintf(buf, "%03d", D_80109888);
+        sprintf(buf, "%03d", _mapCompletion);
         arg0 -=
             (D_801091D8[21].unk2 + D_801091D8[26].unk2 + D_801091D8[19].unk2 + 0x26) >> 1;
         i = 2;
@@ -1036,13 +1036,13 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     temp_s4 = arg0 + (arg2 * 8);
 
-    if (D_80109888 != 0) {
+    if (_mapCompletion != 0) {
         if (arg2 >= 0x20) {
             if (D_80109894 == 0) {
                 D_801099F0 = 1;
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
-            if (D_80109894 == D_80109888) {
+            if (D_80109894 == _mapCompletion) {
                 if (D_801099F0 != 0) {
                     D_801099F0 = 0;
                     func_80045D64(0x7E, 0x72);
@@ -1052,9 +1052,9 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         }
     }
     if (arg2 >= 0x20) {
-        if (D_80109888 >= 0x20) {
-            D_80109894 = (D_80109888 * (arg2 - 0x20)) >> 5;
-        } else if (D_80109894 < D_80109888) {
+        if (_mapCompletion >= 0x20) {
+            D_80109894 = (_mapCompletion * (arg2 - 0x20)) >> 5;
+        } else if (D_80109894 < _mapCompletion) {
             ++D_80109894;
         }
     }
@@ -2101,7 +2101,7 @@ void func_80108A0C(void)
     int a1;
 
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (vs_main_scoredata.unk0 & (a1 << i)) {
+        if (vs_main_scoredata.flags & (a1 << i)) {
             ++var_a2;
         }
     }

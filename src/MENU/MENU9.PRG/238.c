@@ -89,9 +89,9 @@ void _toVsStringPercent(char* buf, int value);
 void func_80107090(void);
 void func_80107120(int);
 void func_80107600(void);
-void _calculateScore(void);
+void _setScoreFlags(void);
 void func_80107A98(int arg0);
-void func_80107C34(void);
+void _calculateScore(void);
 int func_80107FBC(short);
 void func_80108098(void);
 void func_801080C8(void);
@@ -141,7 +141,7 @@ extern u_long _score;
 extern u_short D_8010A464;
 extern u_short _clearCount;
 extern u_short D_8010A468;
-extern u_short D_8010A46A;
+extern u_short _mapCompletion;
 extern vs_main_CdQueueSlot* D_8010A46C;
 extern D_8010A470_t* D_8010A470;
 extern u_short* D_8010A474;
@@ -388,7 +388,6 @@ int func_801031BC(void)
 {
     int i;
     int j;
-    int new_var;
 
     if (D_8005FFD8.unk0[1] & 0x800000) {
         D_8005FFD8.unk0[1] |= 0x400000;
@@ -401,12 +400,13 @@ int func_801031BC(void)
         vs_main_bzero(D_800F1BF0, 8);
     }
 
-    D_8010A46A = 0;
+    _mapCompletion = 0;
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 32; ++j) {
-            if (D_8005FFD8.unk0[i] & D_800E8508[i] & ((new_var = 1) << j)) {
-                ++D_8010A46A;
+            int v = 1;
+            if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << j)) {
+                ++_mapCompletion;
             }
         }
     }
@@ -421,8 +421,8 @@ int func_801031BC(void)
 
     _clearCount = vs_main_stateFlags.clearCount;
 
-    if (D_8010A46A > vs_main_scoredata.unk94) {
-        vs_main_scoredata.unk94 = D_8010A46A;
+    if (_mapCompletion > vs_main_scoredata.mapCompletion) {
+        vs_main_scoredata.mapCompletion = _mapCompletion;
     }
     if (D_8010A468 > vs_main_scoredata.unk98) {
         vs_main_scoredata.unk98 = D_8010A468;
@@ -430,8 +430,8 @@ int func_801031BC(void)
 
     vs_main_memcpy(D_8010A480, (void*)0x1F800034, 0x10);
     vs_main_memcpy(D_8010A490, (void*)0x1F800054, 0x10);
+    _setScoreFlags();
     _calculateScore();
-    func_80107C34();
     func_80107600();
 
     return 1;
@@ -1352,7 +1352,7 @@ void func_801056B8(void)
         var_a2->unk0 = 0;
         var_a2->unk2 = 0;
         var_a2->unk3 = 0;
-        if (vs_main_scoredata.unk0 & ((new_var = 1) << i)) {
+        if (vs_main_scoredata.flags & ((new_var = 1) << i)) {
             var_a2->unk1 = 1;
             var_a2->unk8 = (char*)&_titleStrings[_titleStrings[i]];
             var_a2->unkC = (char*)&_titleDescriptions[_titleDescriptions[i]];
@@ -1890,7 +1890,7 @@ void func_80107600(void)
     int a1;
 
     for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (vs_main_scoredata.unk0 & (a1 << i)) {
+        if (vs_main_scoredata.flags & (a1 << i)) {
             ++var_a2;
         }
     }
@@ -1903,36 +1903,36 @@ void func_80107600(void)
     }
 }
 
-void _calculateScore(void)
+void _setScoreFlags(void)
 {
     int i;
 
     if (_clearCount != 0) {
-        vs_main_scoredata.unk0 |= 1;
+        vs_main_scoredata.flags |= 1;
     }
-    if (vs_main_scoredata.unk98 >= 0x34U) {
-        vs_main_scoredata.unk0 |= 4;
+    if (vs_main_scoredata.unk98 >= 0x34) {
+        vs_main_scoredata.flags |= 4;
     }
-    if (vs_main_scoredata.unk94 >= 0x169U) {
-        vs_main_scoredata.unk0 |= 8;
+    if (vs_main_scoredata.mapCompletion >= 0x169) {
+        vs_main_scoredata.flags |= 8;
     }
     if (vs_main_stateFlags.unkCC != 0) {
-        vs_main_scoredata.unk0 |= 0x10;
+        vs_main_scoredata.flags |= 0x10;
     }
     if (vs_main_stateFlags.unkCD != 0) {
-        vs_main_scoredata.unk0 |= 0x20;
+        vs_main_scoredata.flags |= 0x20;
     }
     if (vs_main_stateFlags.unkCE != 0) {
-        vs_main_scoredata.unk0 |= 0x40;
+        vs_main_scoredata.flags |= 0x40;
     }
     if (vs_main_stateFlags.unkCF != 0) {
-        vs_main_scoredata.unk0 |= 0x80;
+        vs_main_scoredata.flags |= 0x80;
     }
     if (vs_main_stateFlags.unkD0 != 0) {
-        vs_main_scoredata.unk0 |= 0x100;
+        vs_main_scoredata.flags |= 0x100;
     }
     if (vs_main_stateFlags.unkD1 != 0) {
-        vs_main_scoredata.unk0 |= 0x200;
+        vs_main_scoredata.flags |= 0x200;
     }
 
     for (i = 0; i < 8; ++i) {
@@ -1942,19 +1942,19 @@ void _calculateScore(void)
     }
 
     if (i == 8) {
-        vs_main_scoredata.unk0 |= 0x400;
+        vs_main_scoredata.flags |= 0x400;
     }
 
     if (vs_main_scoredata.maxChain >= 30) {
-        vs_main_scoredata.unk0 |= 0x800;
+        vs_main_scoredata.flags |= 0x800;
     }
 
     if (vs_main_stateFlags.unk383 != 0) {
-        vs_main_scoredata.unk0 |= 0x1000;
+        vs_main_scoredata.flags |= 0x1000;
     }
 
     if (vs_main_stateFlags.unk387 != 0) {
-        vs_main_scoredata.unk0 |= 0x2000;
+        vs_main_scoredata.flags |= 0x2000;
     }
 
     for (i = 0xB8; i < 0xE0; ++i) {
@@ -1964,7 +1964,7 @@ void _calculateScore(void)
     }
 
     if (i == 0xE0) {
-        vs_main_scoredata.unk0 |= 0x4000;
+        vs_main_scoredata.flags |= 0x4000;
     }
 
     for (i = 0x16; i < 0x36; ++i) {
@@ -1975,7 +1975,7 @@ void _calculateScore(void)
     }
 
     if (i == 0x36) {
-        vs_main_scoredata.unk0 |= 0x8000;
+        vs_main_scoredata.flags |= 0x8000;
     }
 
     for (i = 0; i < 6; ++i) {
@@ -1985,7 +1985,7 @@ void _calculateScore(void)
     }
 
     if (i == 6) {
-        vs_main_scoredata.unk0 |= 0x100000;
+        vs_main_scoredata.flags |= 0x100000;
     }
 
     for (i = 0; i < 10; ++i) {
@@ -1995,17 +1995,17 @@ void _calculateScore(void)
     }
 
     if (i == 0xA) {
-        vs_main_scoredata.unk0 |= 0x200000;
+        vs_main_scoredata.flags |= 0x200000;
     }
 
     for (i = 0; i < 9; ++i) {
         if (vs_main_scoredata.weaponAttacks[i + 1] >= 500) {
-            vs_main_scoredata.unk0 |= 1 << (i + 0x16);
+            vs_main_scoredata.flags |= 1 << (i + 0x16);
         }
     }
 
     if (vs_main_scoredata.weaponAttacks[0] >= 500) {
-        vs_main_scoredata.unk0 |= 0x80000000;
+        vs_main_scoredata.flags |= 0x80000000;
     }
 }
 
@@ -2054,7 +2054,7 @@ void func_80107A98(int arg0)
     }
 }
 
-void func_80107C34(void)
+void _calculateScore(void)
 {
     short classPoints[6] = { 20, 20, 40, 80, 100, 60 };
     short weaponClassPoints[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };

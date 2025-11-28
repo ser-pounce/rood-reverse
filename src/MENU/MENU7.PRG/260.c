@@ -708,7 +708,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.saveCount = vs_main_settings.saveCount;
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = D_800F4E6B;
-    s5->stats.mapCompletion = func_8008E5F0();
+    s5->stats.mapCompletion = vs_battle_getMapCompletion();
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;

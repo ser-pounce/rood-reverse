@@ -118,7 +118,7 @@ typedef struct {
 } vs_trialScore_t;
 
 typedef struct {
-    int unk0;
+    int flags;
     u_short enemyKills[6];
     int unk10;
     u_short weaponAttacks[10];
@@ -130,7 +130,7 @@ typedef struct {
     u_short unk8A;
     u_int unk8C;
     u_int completionTimeMinutes;
-    u_int unk94;
+    u_int mapCompletion;
     u_int unk98;
     int unk9C[26];
     u_int streakScore;

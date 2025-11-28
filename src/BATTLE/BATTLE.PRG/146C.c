@@ -2350,7 +2350,26 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068BEC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E4DC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E5F0);
+int vs_battle_getMapCompletion(void)
+{
+    int i;
+    int j;
+    int value;
+
+    if (D_8005FFD8.unk0[1] & 0x800000) {
+        D_8005FFD8.unk0[1] |= 0x400000;
+    }
+    value = 0;
+    for (i = 0; i < 16; ++i) {
+        for (j = 0; j < 32; ++j) {
+            int v = 1;
+            if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << j)) {
+                ++value;
+            }
+        }
+    }
+    return (value * 100) / 361;
+}
 
 void func_8008E6A8(void* arg0)
 {

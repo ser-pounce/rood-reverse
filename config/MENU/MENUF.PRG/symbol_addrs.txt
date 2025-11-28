@@ -16,3 +16,4 @@ _escDisCdSLot = 0x80109870;
 _escDisData = 0x80109874;
 _clearCount= 0x80109880;
 _score = 0x80109884;
+_mapCompletion = 0x80109888;

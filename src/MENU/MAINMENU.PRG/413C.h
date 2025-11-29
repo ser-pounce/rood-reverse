@@ -1,6 +1,8 @@
 #pragma once
 
 int vs_mainMenu_loadItemNames(int);
+void func_800FDD78(void);
+void func_800FDEBC(void);
 int func_800FE694(void);
 int func_800FEA6C(int, int);
 void func_800FFA88(int);
@@ -33,3 +35,4 @@ extern char D_801022D5;
 extern char D_801023E3;
 extern int* D_80102468;
 extern char D_801024A1;
+extern char D_801024B8;

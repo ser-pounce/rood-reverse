@@ -70,7 +70,9 @@ typedef struct {
 void func_80102BE4(int);
 
 extern int D_80109568;
+extern int (*D_80109570[])(int);
 extern void (*D_8010962C[])(int);
+extern u_char D_80109667;
 extern u_char D_801096A3;
 extern char D_80109711;
 extern char D_80109712;
@@ -198,7 +200,39 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801036BC);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801038E4);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103AD0);
+int func_80103AD0(int arg0)
+{
+    int var_s0 = 0;
+    int new_var;
+    if (arg0 != 0) {
+        var_s0 = arg0 >> 4;
+        D_80109667 = arg0 & 0xF;
+        D_80109717 = 1;
+        D_80109718 = 0;
+        func_800FDD78();
+        vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
+        func_800FFA88(0);
+    }
+    var_s0 = D_80109570[D_80109667](var_s0);
+    new_var = var_s0 != 0;
+    if (new_var) {
+        if (D_80109718 == 0) {
+            D_80109712 = 1;
+            D_80109717 = 0;
+            D_80109713 = 1;
+            D_80109568 = 0;
+            func_800FFA88(2);
+            return var_s0;
+        }
+        return -2;
+    }
+    if (vs_mainmenu_ready() != 0) {
+        D_801022D5 = D_801024B8 != 9;
+        func_801013F8(1);
+        func_800FDEBC();
+    }
+    return var_s0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENU3.PRG/nonmatchings/16C", D_80102800);
 

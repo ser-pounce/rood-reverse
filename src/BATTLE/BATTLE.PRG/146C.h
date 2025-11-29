@@ -355,6 +355,10 @@ typedef struct {
 } D_800F1A68_t;
 
 void func_80069FC4(int, int);
+void func_8006AB44(int, void*);
+void func_8006AC74(int, void*);
+void func_8006ACFC(int, void*);
+void func_8006AE0C(int, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);

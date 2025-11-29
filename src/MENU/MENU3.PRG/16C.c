@@ -166,7 +166,23 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010408C);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801041CC);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801042C4);
+void func_801042C4(int arg0, int arg1, int arg2)
+{
+    switch (arg1) {
+    case 1:
+        func_8006AB44(arg0, D_80060168.unk280[arg2]);
+        return;
+    case 2:
+        func_8006AC74(arg0, D_80060168.unk540[arg2]);
+        return;
+    case 4:
+        func_8006ACFC(arg0, D_80060168.unk640[arg2]);
+        return;
+    case 5:
+        func_8006AE0C(arg0, D_80060168.unk8C0[arg2]);
+        return;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010439C);
 
@@ -183,10 +199,10 @@ int func_80104EC0(int arg0, int arg1)
         var_v1 = D_80060168.unk280[arg1][42];
     }
     if (arg0 == 2) {
-        var_v1 = D_80060168.unk54C[arg1][0];
+        var_v1 = D_80060168.unk540[arg1][6];
     }
     if (arg0 == 5) {
-        var_v1 = D_80060168.unk8D8[arg1][0];
+        var_v1 = D_80060168.unk8C0[arg1][12];
         if (var_v1 & 0x80) {
             var_v1 = 0;
         }
@@ -200,7 +216,7 @@ int func_80104F50(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 5) {
-        var_v1 = D_80060168.unk8D8[arg1][0];
+        var_v1 = D_80060168.unk8C0[arg1][12];
         if (!(var_v1 & 0x80)) {
             var_v1 = 0;
         }

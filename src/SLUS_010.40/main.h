@@ -320,14 +320,16 @@ typedef struct {
     char unk2D8[40];
     char unk300[256];
     char unk400[256];
-    char unk500[76];
-    u_short unk54C[2][8]; // 1st dimension unknown
-    char unk56C[148];
-    char unk600[256];
+    char unk500[64];
+    u_short unk540[2][8]; // 1st dimension unknown
+    char unk56C[160];
+    char unk600[64];
+    char unk640[4][40]; // 1st dimension unknown
+    char unk6E0[32];
     char unk700[256];
-    char unk800[216];
-    u_short unk8D8[2][14]; // 1st dimension unknown
-    char unk910[240];
+    char unk800[192];
+    u_short unk8C0[2][14]; // 1st dimension unknown
+    char unk8F8[264];
     char unkA00[256];
     char unkB00[256];
     char unkC00[256];

@@ -31,8 +31,6 @@ void func_8010296C(char arg0)
     D_80109713 = arg0;
 }
 
-int func_800FEA6C(int, int);
-
 int func_80102988(int arg0, int arg1)
 {
     int temp_a1;
@@ -212,7 +210,24 @@ int func_80104F50(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F94);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80105314);
+void func_80105314(int arg0)
+{
+    int i;
+    vs_battle_menuItem_t* temp_v0;
+
+    while (D_801023D0 < 16) {
+        func_80100A5C();
+    }
+
+    for (i = 20; i < 40; ++i) {
+        temp_v0 = vs_battle_getMenuItem(i);
+        if (temp_v0->state == 2) {
+            temp_v0->state = 1;
+            temp_v0->animSpeed = temp_v0->x;
+        }
+        temp_v0->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801053EC);
 

@@ -86,7 +86,8 @@ void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
 
-int func_80102D30(int arg0, int arg1) {
+int func_80102D30(int arg0, int arg1)
+{
     D_800F4EE8.unk0[(arg0 + 0x1E) * 2] = 0;
     D_800F4EE8.unk0[(arg0 + 0x1E) * 2 + 1] = arg1;
     return *(D_801022A8[arg0] + arg1);
@@ -150,7 +151,25 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104530);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104788);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104EC0);
+int func_80104EC0(int arg0, int arg1)
+{
+    int var_v1;
+
+    var_v1 = 0;
+    if (arg0 == 1) {
+        var_v1 = D_80060168.unk280[arg1][42];
+    }
+    if (arg0 == 2) {
+        var_v1 = D_80060168.unk54C[arg1][0];
+    }
+    if (arg0 == 5) {
+        var_v1 = D_80060168.unk8D8[arg1][0];
+        if (var_v1 & 0x80) {
+            var_v1 = 0;
+        }
+    }
+    return var_v1;
+}
 
 int func_80104F50(int arg0, int arg1)
 {

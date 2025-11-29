@@ -311,6 +311,27 @@ typedef struct {
     int unk40[2];
 } D_8005FFD8_t;
 
+typedef struct {
+    char unk0[2][32];
+    int unk40[48];
+    char unk100[256];
+    char unk200[128];
+    char unk280[2][44];
+    char unk2D8[40];
+    char unk300[256];
+    char unk400[256];
+    char unk500[256];
+    char unk600[256];
+    char unk700[256];
+    char unk800[256];
+    char unk900[256];
+    char unkA00[256];
+    char unkB00[256];
+    char unkC00[256];
+    char unkD00[256];
+    char unkE00[256];
+} D_80060168_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];
@@ -358,7 +379,7 @@ extern D_80060068_t D_80060068;
 extern int D_80060148[][8];
 extern int D_80060238[][12];
 extern func_8006B7BC_t D_80060780[];
-extern char D_80060168[15][256];
+extern D_80060168_t D_80060168;
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];

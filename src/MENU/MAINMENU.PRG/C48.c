@@ -49,7 +49,7 @@ extern short _maxPp;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
 extern char* D_8010246C;
-extern char (*D_80102470)[256];
+extern D_80060168_t* D_80102470;
 extern char D_80102480[];
 extern char D_801024A1;
 
@@ -432,7 +432,7 @@ void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_weaponInfo sp10;
 
-    if (D_80102470 == D_80060168) {
+    if (D_80102470 == &D_80060168) {
         func_8006AEAC(&sp10, arg0);
     } else {
         func_80102A34(&sp10, arg0, D_80109A8C);
@@ -451,7 +451,7 @@ void func_800FCE40(int arg0, char** arg1, int* arg2, char* arg3)
 {
     int sp10[90];
 
-    if (D_8010246C == D_80060168[1]) {
+    if (D_8010246C == D_80060168.unk100) {
         func_8006B02C(sp10, arg0);
     } else {
         func_80102BB0(sp10, arg0, D_80109A8C);

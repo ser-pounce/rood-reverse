@@ -9,7 +9,7 @@
 #include "gpu.h"
 #include <libetc.h>
 
-static char D_80105F2E;
+static u_char D_80105F2E;
 static char _1;
 static char D_80105F30;
 static u_char _animStep;
@@ -364,14 +364,10 @@ static int func_801049A0(int arg0)
     static char _charTableRow;
     static u_char currentPos;
     static char D_80105F2D;
-
-    int temp_a1;
     int temp_v0_10;
     int var_a1;
     int var_s1;
     char* temp_s0;
-    char* temp_s2;
-
     if (arg0 != 0) {
         _charTableColumn = 0;
         _charTableRow = 0;
@@ -381,7 +377,6 @@ static int func_801049A0(int arg0)
         D_80105F28 = 0;
         return 0;
     }
-
     switch (D_80105F28) {
     case 0:
         if (D_80105F29 != 0) {
@@ -390,27 +385,28 @@ static int func_801049A0(int arg0)
             D_80105F28 = 2;
         }
         break;
+
     case 1:
         currentPos = _insertDeleteHandler(currentPos);
-        if (vs_main_buttonsPressed.all & PADstart) {
+        if (vs_main_buttonsPressed.all & (1 << 11)) {
             vs_battle_playMenuSelectSfx();
             func_8010493C(255);
             D_80105F28 = 3;
             break;
         }
-
-        if (vs_main_buttonRepeat & PADRdown) {
+        if (vs_main_buttonRepeat & (1 << 6)) {
             vs_battle_playMenuChangeSfx();
             if (currentPos != 0) {
                 --currentPos;
                 for (var_s1 = currentPos; var_s1 < 19; ++var_s1) {
                     _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
+
                 _stringBuf[19] = 0x8F;
             }
         }
         var_s1 = _charTableRow;
-        if (vs_main_buttonsPressed.all & PADLright) {
+        if (vs_main_buttonsPressed.all & (1 << 13)) {
             vs_battle_playMenuChangeSfx();
             func_8010493C(255);
             if (var_s1 == 3) {
@@ -422,52 +418,59 @@ static int func_801049A0(int arg0)
             D_80105F28 = 2;
             break;
         }
-        if (vs_main_buttonsPressed.all & PADRright) {
+        if (vs_main_buttonsPressed.all & (1 << 5)) {
             switch (var_s1) {
             case 0:
                 vs_battle_playMenuSelectSfx();
                 func_8010493C(255);
                 D_80105F28 = 3;
                 break;
+
             case 1:
                 if (currentPos != 0) {
                     --currentPos;
                     for (var_a1 = currentPos; var_a1 < 19; ++var_a1) {
                         _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                     }
+
                     _stringBuf[19] = vs_char_space;
                 }
                 break;
+
             case 2:
                 for (var_a1 = currentPos; var_a1 < 0x13; ++var_a1) {
                     _stringBuf[var_a1] = _stringBuf[var_a1 + 1];
                 }
+
                 _stringBuf[19] = vs_char_space;
                 break;
+
             case 3:
                 for (var_a1 = 0x13; currentPos < var_a1; --var_a1) {
                     _stringBuf[var_a1] = _stringBuf[var_a1 - 1];
                 }
+
                 _stringBuf[currentPos] = vs_char_space;
                 break;
             }
+
             if (D_80105F28 != 1) {
                 break;
             }
             vs_battle_playMenuChangeSfx();
         }
-        if (vs_main_buttonRepeat & PADLup) {
+        if (vs_main_buttonRepeat & (1 << 12)) {
             if (var_s1 == 0) {
-                if (vs_main_buttonsPressed.all & PADLup) {
+                if (vs_main_buttonsPressed.all & (1 << 12)) {
                     var_s1 = 3;
                 }
             } else {
                 --var_s1;
             }
         }
-        if (vs_main_buttonRepeat & PADLdown) {
+        if (vs_main_buttonRepeat & (1 << 14)) {
             if (var_s1 == 3) {
-                if (vs_main_buttonsPressed.all & PADLdown) {
+                if (vs_main_buttonsPressed.all & (1 << 14)) {
                     var_s1 = 0;
                 }
             } else {
@@ -481,14 +484,15 @@ static int func_801049A0(int arg0)
         func_8010493C(var_s1);
         D_80105F29 = func_800FFCDC(D_80105F29, ((var_s1 * 16) + 28) << 16);
         break;
+
     case 2:
         currentPos = _insertDeleteHandler(currentPos);
-        if (vs_main_buttonsPressed.all & PADstart) {
+        if (vs_main_buttonsPressed.all & (1 << 11)) {
             vs_battle_playMenuSelectSfx();
             D_80105F28 = 3;
             break;
         }
-        if (vs_main_buttonsPressed.all & PADRright) {
+        if (vs_main_buttonsPressed.all & (1 << 5)) {
             vs_battle_playMenuChangeSfx();
             var_s1 = _charTable[_charTableColumn + (_charTableRow * 15)];
             _stringBuf[currentPos] = var_s1;
@@ -496,38 +500,37 @@ static int func_801049A0(int arg0)
                 ++currentPos;
             }
         }
-        if (vs_main_buttonRepeat & PADRdown) {
+        if (vs_main_buttonRepeat & (1 << 6)) {
             vs_battle_playMenuChangeSfx();
             if (currentPos != 0) {
                 --currentPos;
                 for (var_s1 = currentPos; var_s1 < 19; ++var_s1) {
                     _stringBuf[var_s1] = _stringBuf[var_s1 + 1];
                 }
+
                 _stringBuf[19] = vs_char_space;
             }
         }
-
         var_a1 = _charTableColumn + (_charTableRow * 14);
-
-        if (vs_main_buttonRepeat & PADLup) {
+        if (vs_main_buttonRepeat & (1 << 12)) {
             if (_charTableRow != 0) {
                 --_charTableRow;
-            } else if (vs_main_buttonsPressed.all & PADLup) {
+            } else if (vs_main_buttonsPressed.all & (1 << 12)) {
                 _charTableRow = 8;
             }
         }
-        if (vs_main_buttonRepeat & PADLdown) {
+        if (vs_main_buttonRepeat & (1 << 14)) {
             if (_charTableRow == 8) {
-                if (vs_main_buttonsPressed.all & PADLdown) {
+                if (vs_main_buttonsPressed.all & (1 << 14)) {
                     _charTableRow = D_80105F28 != 2;
                 }
             } else {
                 ++_charTableRow;
             }
         }
-        if (vs_main_buttonRepeat & PADLleft) {
+        if (vs_main_buttonRepeat & (1 << 15)) {
             if (_charTableColumn == 0) {
-                if (vs_main_buttonsPressed.all & PADLleft) {
+                if (vs_main_buttonsPressed.all & (1 << 15)) {
                     vs_battle_playMenuChangeSfx();
                     if (_charTableRow == 0) {
                         _charTableRow = 2;
@@ -541,9 +544,9 @@ static int func_801049A0(int arg0)
                 --_charTableColumn;
             }
         }
-        if (vs_main_buttonRepeat & PADLright) {
+        if (vs_main_buttonRepeat & (1 << 13)) {
             if (_charTableColumn == 13) {
-                if (vs_main_buttonsPressed.all & PADLright) {
+                if (vs_main_buttonsPressed.all & (1 << 13)) {
                     _charTableColumn = 0;
                 }
             } else {
@@ -554,19 +557,20 @@ static int func_801049A0(int arg0)
             vs_battle_playMenuChangeSfx();
         }
         break;
+
     case 3:
         func_8010493C(0);
         D_80105F30 = 0;
         D_80105F28 = 4;
         break;
+
     case 4:
         if (_animStep == 0xA) {
             if (_copyNormalizedString(D_80105F10) != 0) {
-                char* base = (char*)D_80060168;
-                char idx_byte = base[D_80105F2E * 32 + 1];
-                int idx = idx_byte - 1;
-                char table_val = base[idx * 44 + 0x280];
-                vs_battle_rMemcpy(D_80105F10, vs_mainMenu_itemNames + table_val, 0x18);
+                vs_battle_rMemcpy(D_80105F10,
+                    vs_mainMenu_itemNames
+                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E][1] - 1][0],
+                    0x18);
             }
             func_800C8E04(1);
             vs_battle_stringContext.strings[0] = D_80105F10;
@@ -577,6 +581,7 @@ static int func_801049A0(int arg0)
             D_80105F28 = 5;
         }
         break;
+
     case 5:
         temp_v0_10 = _confirmScreen(0);
         if (temp_v0_10 != 0) {
@@ -587,8 +592,7 @@ static int func_801049A0(int arg0)
                 D_80105F28 = 6;
                 break;
             }
-            temp_s2 = (char*)D_80060168;
-            temp_s0 = temp_s2 + (D_80105F2E * 32);
+            temp_s0 = D_80060168.unk0[D_80105F2E];
             if (temp_v0_10 == 1) {
                 vs_main_playSfxDefault(0x7E, 0xD);
                 vs_battle_rMemcpy(temp_s0 + 8, D_80105F10, sizeof(D_80105F10));
@@ -599,14 +603,13 @@ static int func_801049A0(int arg0)
             }
             vs_battle_playMenuLeaveSfx();
             if (temp_s0[8] == 0xE7) {
-                char idx_byte = temp_s0[1];
-                int idx = idx_byte - 1;
-                char table_val = temp_s2[idx * 44 + 0x280];
-                vs_battle_rMemcpy(temp_s0 + 8, vs_mainMenu_itemNames + table_val, 0x18);
+                vs_battle_rMemcpy(temp_s0 + 8,
+                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0[1] - 1][0], 0x18);
             }
             return 1;
         }
         break;
+
     case 6:
         if (_animStep == 0) {
             _charTableColumn = 0;
@@ -616,10 +619,11 @@ static int func_801049A0(int arg0)
         }
         break;
     }
+
     if (D_80105F28 == 2) {
         D_80105F29 = _highlightCharSelection(D_80105F29, _charTableColumn, _charTableRow);
     }
-    if ((u_int)(D_80105F28 - 1) < 2U) {
+    if (((u_int)(D_80105F28 - 1)) < 2U) {
         _highlightSelection((currentPos * 6) + 0xA1, 0x30, 8, 0xC);
     }
     return 0;
@@ -646,7 +650,7 @@ int vs_menu8_execRename(char* state)
             *var_v0-- = v1;
         }
         if (vs_battle_stringBuf[0] == 1) {
-            var_v1 = (D_80105F2E << 5) + &D_80060168[0][8];
+            var_v1 = &D_80060168.unk0[D_80105F2E][8];
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;
                 if (c == vs_char_terminator) {

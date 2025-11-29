@@ -31,7 +31,32 @@ void func_8010296C(char arg0)
     D_80109713 = arg0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102988);
+int func_800FEA6C(int, int);
+
+int func_80102988(int arg0, int arg1)
+{
+    int temp_a1;
+    int temp_s1;
+
+    if ((vs_main_buttonsState & 0xC) != 0xC) {
+        temp_s1 = arg1;
+        temp_a1 = 1;
+        arg0 = func_800FEA6C(arg0, 0);
+        if (vs_main_buttonRepeat & 4) {
+            arg1 = arg1 - temp_a1 + arg0;
+        }
+        if (vs_main_buttonRepeat & 8) {
+            ++arg1;
+        }
+        if (arg1 >= arg0) {
+            arg1 -= arg0;
+        }
+        if ((vs_main_buttonsPressed.all & 0xC) && (arg1 == temp_s1)) {
+            func_800C02E0();
+        }
+    }
+    return arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102A3C);
 

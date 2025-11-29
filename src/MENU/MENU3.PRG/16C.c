@@ -253,7 +253,27 @@ int func_80106574(void) { return D_8010975C != 0 ? -1 : D_80109760; }
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010659C);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106BB4);
+void func_80106BB4(int arg0)
+{
+    short sp10[48];
+    int i;
+
+    vs_mainMenu_resetStats();
+    if (arg0 != 0) {
+        func_8006B194(&sp10[0], (char*)(D_80102468 + ((arg0 * 10) - 10)));
+
+        for (i = 0; i < 16; ++i) {
+            short* temp_v0 = &sp10[i & 7];
+            vs_mainMenu_equipmentStats[i] = temp_v0[32];
+            vs_mainMenu_equipmentStats[i + 16] = temp_v0[40];
+            vs_mainMenu_equipmentStats[i + 32] = temp_v0[28];
+        }
+        vs_mainMenu_setStrIntAgi(sp10[24], sp10[25], sp10[26], 2);
+    }
+    vs_mainMenu_equipmentSubtype = 0x20;
+    D_801024A1 = arg0;
+    func_800FBB8C(7);
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106C94);
 

@@ -362,6 +362,7 @@ void func_8006AE0C(void*, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, int);
 void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
+void func_8006B194(void* arg0, char* arg1);
 void func_8006B338(void*);
 void func_8006B57C(func_8006B57C_t*, vs_battle_equipment*);
 void func_8006B6AC(func_8006B6AC_t*, vs_battle_equipment*);

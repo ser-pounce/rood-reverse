@@ -74,6 +74,15 @@ typedef struct {
     short unk2;
 } D_800F1C60_t;
 
+typedef struct {
+    int unk0;
+    char unk4[0x854];
+    char unk858[4][0x84C];
+    char unk2988[0x280];
+    short unk2C08;
+    u_short unk2C0A;
+} D_800F19CC_t;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -91,6 +100,7 @@ void func_80070F28(int);
 void func_8007138C(void);
 void func_80073718(void);
 void func_800780A8(func_8007820C_t*);
+int func_80078828(int);
 void func_8007A850(int);
 void func_8007A9DC(void*, void*, int);
 void func_8007B29C(int, int, int, int, int, int);
@@ -138,6 +148,7 @@ extern int D_800F190C;
 extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
+extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D4;
 extern int D_800F1A04;
 extern int D_800F1A08;
@@ -193,7 +204,26 @@ extern u_short* D_800F1DD4;
 extern int D_1F800000[];
 extern int D_1F800034[];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80069C6C);
+// invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle Abilities or Items)
+// invoked just before the skill takes effect
+void func_80069C6C(int arg0)
+{
+    int new_var;
+    if (arg0 == 0) {
+        new_var = D_800F19CC->unk0;
+        if (*D_800F19CC->unk858[D_800F19CC->unk0 & 3] == 0) {
+            return;
+        }
+        // TODO: Remove dead code
+        switch (D_800F19CC->unk858[D_800F19CC->unk0 & 3][0] != 0) {
+        case 0:
+            return;
+        }
+        if ((D_800F19CC->unk2C0A == 0) && (func_80078828(0) != 0)) {
+            D_800F19CC->unk2C0A = D_800F19CC->unk2C08 + (vs_gametime_tickspeed * 2);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80069D14);
 

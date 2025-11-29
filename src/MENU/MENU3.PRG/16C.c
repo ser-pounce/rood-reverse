@@ -148,7 +148,19 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104788);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104EC0);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F50);
+int func_80104F50(int arg0, int arg1)
+{
+    u_short var_v1;
+
+    var_v1 = 0;
+    if (arg0 == 5) {
+        var_v1 = D_80060168.unk8D8[arg1][0];
+        if (!(var_v1 & 0x80)) {
+            var_v1 = 0;
+        }
+    }
+    return var_v1 & 0x7F;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F94);
 

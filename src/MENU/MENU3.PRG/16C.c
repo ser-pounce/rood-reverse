@@ -11,6 +11,30 @@ typedef struct {
     char unk2;
 } func_8010406C_t;
 
+typedef struct {
+    int unk0[10];
+    char unk28;
+    char unk29;
+    char unk2A;
+    char unk2B;
+    int unk2C[39];
+    char unkC8;
+    char unkC9[19];
+    u_short unkDC;
+    u_short unkDE;
+    u_short unkE0;
+    u_short unkE2;
+    short unkE4;
+    short unkE6;
+    short unkE8;
+    short unkEA;
+    short unkEC;
+    short unkEE;
+    int unkF0;
+    short unkF4[16];
+    short unk114[16];
+} func_80103E24_t;
+
 void func_80102BE4(int);
 
 extern int D_80109568;
@@ -150,7 +174,35 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103BE4);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103CC8);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103E24);
+int func_80103E24(int arg0, func_80103E24_t* arg1)
+{
+    switch (arg0) {
+    case 1:
+        return -arg1->unk2B;
+    case 4:
+        return arg1->unkE0;
+    case 5:
+        return arg1->unkE2;
+    case 6:
+        return arg1->unkDC;
+    case 7:
+        return arg1->unkDE;
+    case 8:
+        return arg1->unkE4;
+    case 9:
+        return arg1->unkE8;
+    case 10:
+        return arg1->unkEC;
+    default:
+        if (arg0 < 0x21) {
+            return arg1->unkF4[arg0 - 0x1B];
+        }
+        if (arg0 >= 0x28) {
+            return *(arg0 + &arg1->unkC9[0]);
+        }
+        return arg1->unk114[arg0 - 0x21];
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103F00);
 

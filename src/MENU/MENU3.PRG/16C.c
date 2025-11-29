@@ -166,7 +166,7 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010408C);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801041CC);
 
-void func_801042C4(int arg0, int arg1, int arg2)
+void func_801042C4(void* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:

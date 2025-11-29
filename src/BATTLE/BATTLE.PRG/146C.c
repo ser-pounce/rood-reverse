@@ -79,6 +79,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(void);
 void func_8006A228(int, int);
+void func_8006A8EC(int, void*);
 void func_8006B7BC(func_8006B7BC_t*, vs_battle_equipment* equipment);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
@@ -244,7 +245,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B02C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B110);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B194);
+void func_8006B194(int arg0, char* arg1)
+{
+    char* temp_v0 = vs_main_allocHeapR(0x34);
+    vs_main_bzero(temp_v0, 0x34);
+    if (arg1 != NULL) {
+        temp_v0[0x31] = arg1[0x27];
+        func_8006ACFC(temp_v0, arg1);
+    }
+    func_8006A8EC(arg0, temp_v0);
+    vs_main_freeHeapR(temp_v0);
+}
 
 void func_8006B20C(void) { }
 

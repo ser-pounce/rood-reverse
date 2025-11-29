@@ -86,7 +86,11 @@ void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102D30);
+int func_80102D30(int arg0, int arg1) {
+    D_800F4EE8.unk0[(arg0 + 0x1E) * 2] = 0;
+    D_800F4EE8.unk0[(arg0 + 0x1E) * 2 + 1] = arg1;
+    return *(D_801022A8[arg0] + arg1);
+}
 
 void func_80102D7C(int arg0)
 {

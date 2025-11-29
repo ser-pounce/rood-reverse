@@ -102,9 +102,11 @@ The project is mostly self-configuring but requires a minimal amount of setup.
     - g++
     - python3
     - pip
+    - python3.10-venv
     - gcc-mipsel-linux-gnu
     - docker-buildx
     - clang-format
+- Set docker permissions with `sudo usermod -aG docker $USER`
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

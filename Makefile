@@ -14,7 +14,7 @@ DIFF     := diff
 CAT      := cat
 TOUCH    := touch
 ECHO     := echo
-WHICH    := which
+COMMAND  := command
 MKDIR    := mkdir
 MV       := mv
 CP       := cp
@@ -53,7 +53,7 @@ DUMPSXISOFLAGS  = -x data -s config/$(disk).xml
 FORMATFLAGS    := --style="{BasedOnStyle: WebKit, ColumnLimit: 90, SortIncludes: Never, AlignOperands: AlignAfterOperator, BreakBeforeBinaryOperators: NonAssignment  }" -i
 RMFLAGS        := -Rf
 DIFFFLAGS      := -s
-WHICHFLAGS     := -s
+COMMANDFLAGS   := -v
 MKDIRFLAGS     := -p
 
 ifeq ($(PERMUTER),)
@@ -246,7 +246,7 @@ $(compilers): tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 
 tools/.sysdeps:
 	$(GIT) submodule update --init --recursive
-	$(WHICH) $(WHICHFLAGS) $(sysdeps) || ($(ECHO) One or more applications are missing: \\n \
+	$(COMMAND) $(COMMANDFLAGS) $(sysdeps) >/dev/null 2>&1 || ($(ECHO) One or more applications are missing: \\n \
 		$(sysdeps); false)
 	$(TOUCH) $@
 	$(ECHO) Welcome to Rood Reverse!\\nPrerequisites checked.\\nSetting up remaining tools, this could take a while.\\n\\n

@@ -13,12 +13,23 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
+    char unk4;
+    signed char unk5;
+    signed char unk6;
+    signed char unk7;
+    u_short unk8;
+    u_short unkA;
+    u_short unkC;
+    u_short unkE;
+    char unk10;
+    char unk11;
+    char unk12;
+    char unk13;
     int unk14;
-    int unk18;
+    char unk18;
+    char unk19;
+    char unk1A;
+    char unk1B;
     char unk1C;
     char unk1D;
     char unk1E;
@@ -268,7 +279,44 @@ int func_8010406C(int arg0, func_8010406C_t* arg1)
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010408C);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801041CC);
+int func_801041CC(int arg0, func_80103E24_t* arg1)
+{
+    switch (arg0) {
+    case 0:
+        return -arg1->unk4;
+    case 1:
+        return -arg1->unk13;
+    case 2:
+        return arg1->unk18;
+    case 3:
+        return -arg1->unk10;
+    case 4:
+        return arg1->unk8;
+    case 5:
+        return arg1->unkA;
+    case 6:
+        return arg1->unkC;
+    case 7:
+        return arg1->unkE;
+    case 8:
+        return arg1->unk5;
+    case 9:
+        return arg1->unk6;
+    case 10:
+        return arg1->unk7;
+    default:
+        if (arg0 >= 0x1B) {
+            arg0 -= 0x10;
+        }
+        if (arg0 < 0x11) {
+            return *((signed char*)arg1 + 21 + arg0);
+        }
+        if (arg0 >= 0x18) {
+            return *((signed char*)arg1 + 5 + arg0);
+        }
+        return *((signed char*)arg1 + 23 + arg0);
+    }
+}
 
 void func_801042C4(void* arg0, int arg1, int arg2)
 {

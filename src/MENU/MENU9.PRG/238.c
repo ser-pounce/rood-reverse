@@ -1713,9 +1713,9 @@ void func_80106528(void)
     _insertTPage(8, getTPage(0, 2, 0, 0));
 }
 
-void _vsStrcpy(u_char* arg0, u_char* arg1)
+void _vsStrcpyWithNewline(u_char* arg0, u_char* arg1)
 {
-    while (*arg1 != 0xE7) {
+    while (*arg1 != vs_char_terminator) {
         *arg0++ = *arg1++;
     }
     *arg0 = *arg1;
@@ -1723,10 +1723,10 @@ void _vsStrcpy(u_char* arg0, u_char* arg1)
 
 void _vsStrcat(char* arg0, char* arg1)
 {
-    while (*arg0 != 0xE7) {
+    while (*arg0 != vs_char_terminator) {
         ++arg0;
     }
-    while (*arg1 != 0xE7) {
+    while (*arg1 != vs_char_terminator) {
         *arg0++ = *arg1++;
     }
     *arg0 = *arg1;
@@ -1796,7 +1796,7 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
     char* str;
 
     if (_clearCount == 0) {
-        _vsStrcpy((u_char*)buf, (u_char*)&_miscInfo[_miscInfo[0]]);
+        _vsStrcpyWithNewline((u_char*)buf, (u_char*)&_miscInfo[_miscInfo[0]]);
         return;
     }
 

@@ -197,7 +197,7 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80108970);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801090C4);
 
-// https://decomp.me/scratch/yNRzA
+// https://decomp.me/scratch/g9L6W
 // 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80109320);
 

@@ -563,15 +563,15 @@ static char* _vsStrcpy(char* arg0, char* arg1)
 {
     char c;
 
-    for (c = *arg1; c != 0xE7; c = *arg1) {
-        if (c >= 0xEC) {
+    for (c = *arg1; c != vs_char_terminator; c = *arg1) {
+        if (c >= vs_char_control) {
             *arg0 = c;
             ++arg1;
             ++arg0;
         }
         *arg0++ = *arg1++;
     }
-    *arg0 = 0xE8;
+    *arg0 = vs_char_newline;
     return arg0 + 1;
 }
 

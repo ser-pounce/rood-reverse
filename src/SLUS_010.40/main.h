@@ -179,8 +179,8 @@ typedef struct {
 } D_80060068_t;
 
 typedef struct {
-    int unk0[28];
-    int unk70[16];
+    char unk0[112];
+    char unk70[64];
 } D_800619D8_t;
 
 typedef struct {

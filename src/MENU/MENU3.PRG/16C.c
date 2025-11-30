@@ -348,7 +348,50 @@ int func_8010406C(int arg0, func_8010406C_t* arg1)
     return arg1->unk2;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010408C);
+void func_8010408C(int arg0)
+{
+    char sp10[0x40];
+    int temp_v0;
+    int i;
+    int var_s3;
+    int var_s4;
+    int temp_s0;
+    char(*new_var2)[256] = &D_80060168.unkE00;
+    char* new_var = D_800619D8.unk70;
+
+    vs_battle_rMemzero(sp10, 0x40);
+    var_s4 = 0;
+
+    while (1) {
+        var_s3 = 0x80000000;
+
+        for (i = 0; i < 0x40; ++i) {
+            temp_s0 = new_var[i];
+            if (temp_s0 != 0) {
+                temp_v0 = func_8010406C(arg0, (void*)(*new_var2 + ((temp_s0 * 4) - 4)));
+                if (var_s3 < temp_v0) {
+                    var_s3 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s3 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 0x40; ++i) {
+            temp_s0 = new_var[i];
+            if (temp_s0 != 0) {
+                if (func_8010406C(arg0, (void*)(*new_var2 + ((temp_s0 * 4) - 4)))
+                    == var_s3) {
+                    sp10[var_s4++] = temp_s0;
+                    new_var[i] = 0;
+                }
+            }
+        }
+    }
+    vs_battle_memcpy(new_var, sp10, 0x40);
+}
 
 int func_801041CC(int arg0, func_80103E24_t* arg1)
 {

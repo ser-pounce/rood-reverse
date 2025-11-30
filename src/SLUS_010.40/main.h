@@ -1,6 +1,7 @@
 #pragma once
 #include "25AC.h"
 #include "D_80061068_t.h"
+#include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <sys/types.h>
 #include <libgte.h>
 #include <libgpu.h>
@@ -317,7 +318,8 @@ typedef struct {
     int unk40[48];
     char unk100[2][48]; // 1st dimension unknown
     char unk160[160];
-    char unk200[128];
+    char unk200[84];
+    func_8006B57C_t unk254[1];
     char unk280[2][44]; // 1st dimension unknown
     char unk2D8[40];
     char unk300[256];

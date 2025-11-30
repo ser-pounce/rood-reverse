@@ -55,6 +55,7 @@ void vs_mainMenu_setArmorStrings(vs_battle_armorInfo*, char**, int*, char*);
 void vs_mainMenu_setAccessoryStrings(
     func_8006B7BC_t* arg0, char** arg1, int* arg2, char* arg3);
 void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
+void func_800FD404(int);
 void vs_mainMenu_resetStats(void);
 void func_8010044C(u_int*);
 

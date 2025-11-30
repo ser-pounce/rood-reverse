@@ -540,7 +540,55 @@ void func_801042C4(void* arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010439C);
+void func_8010439C(int arg0, int arg1)
+{
+    char sp10[48];
+    int temp_v0;
+    int i;
+    int var_s3;
+    int var_s5;
+    char* temp_s6;
+    int temp_s0;
+    int temp_s4;
+
+    var_s5 = 0;
+    temp_s4 = D_801022A0[arg0];
+    {
+        char spVLA[temp_s4];
+        temp_s6 = D_801022A8[arg0];
+        vs_battle_rMemzero(spVLA, temp_s4);
+
+        while (1) {
+            var_s3 = 0x80000000;
+            for (i = 0; i < temp_s4; ++i) {
+                temp_s0 = temp_s6[i];
+                if (temp_s0 != 0) {
+                    func_801042C4(&sp10, arg0, temp_s0 - 1);
+                    temp_v0 = func_801041CC(arg1, (func_80103E24_t*)sp10);
+                    if (var_s3 < temp_v0) {
+                        var_s3 = temp_v0;
+                    }
+                }
+            }
+
+            if (var_s3 == 0x80000000) {
+                break;
+            }
+
+            for (i = 0; i < temp_s4; ++i) {
+                temp_s0 = temp_s6[i];
+                if (temp_s0 != 0) {
+                    func_801042C4(&sp10, arg0, temp_s0 - 1);
+                    if (func_801041CC(arg1, (func_80103E24_t*)&sp10) == var_s3) {
+                        spVLA[var_s5++] = temp_s0;
+                        temp_s6[i] = 0;
+                    }
+                }
+            }
+        }
+        vs_battle_memcpy(temp_s6, spVLA, temp_s4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104530);
 

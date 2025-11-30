@@ -129,7 +129,7 @@ static void func_80103FD8(int arg0)
     vs_mainmenu_drawButton(3, (-arg0 + 16), 50, 0);
     vs_mainmenu_drawButton(1, (-arg0 + 16), 66, 0);
     vs_mainmenu_drawButton(0, (-arg0 + 16), 82, 0);
-    var_s1 = (void*) func_800C0214(0x100010, ((-arg0 + 16) & 0xFFFF) | 0x220000);
+    var_s1 = (void*)func_800C0214(0x100010, ((-arg0 + 16) & 0xFFFF) | 0x220000);
     var_s1[4] = 0x37FB70B0;
     var_s1 += 6;
     D_80105EEC[D_80105DB2] = 8;
@@ -197,7 +197,8 @@ static void func_80103FD8(int arg0)
         func_800C0214(0x100010, (136 - j) | 0x300000)->unk10 = (temp_s4 << 0x10) | 0x3000;
         func_800C6540("1", 0x330124, temp_s3, 0);
         func_800C6540("R", 0x33011E, temp_s3, 0);
-        func_800C0214(0x100010, (j + 0x128) | 0x300000)->unk10 = (temp_s4 << 0x10) | 0x3010;
+        func_800C0214(0x100010, (j + 0x128) | 0x300000)->unk10 =
+            (temp_s4 << 0x10) | 0x3010;
         a1 = D_1F800000[2];
         var_s1 = D_1F800000[0];
         var_s1[0] = ((u_long)a1[0] & 0xFFFFFF) | 0x09000000;

@@ -69,6 +69,8 @@ typedef struct {
 
 void func_80102BE4(int);
 
+extern void* D_1F800000[];
+
 extern int D_80109568;
 extern int (*D_80109570[])(int);
 extern void (*D_8010962C[])(int);
@@ -114,7 +116,42 @@ int func_80102988(int arg0, int arg1)
     return arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102A3C);
+void func_80102A3C(int arg0, int arg1)
+{
+    int temp_s0;
+    int temp_s4;
+    int i;
+    vs_battle_actor2* var_v1;
+    vs_battle_menuItem_t* temp_v0;
+    int new_var;
+
+    temp_s4 = (D_800F4EE8.unk0[58] - 1) & 7;
+    if (arg0 == 4) {
+        func_801013F8(0);
+    }
+
+    new_var = (arg0 * 8);
+    arg0 = new_var - 0x10;
+    for (i = 0; i < 8; ++i) {
+        temp_s0 = (((i + 1) & 7) * 0x10) + 0x20;
+
+        if (i == temp_s4 && arg1 == 1) {
+            temp_v0 = vs_battle_getMenuItem(0x1F);
+            if (temp_s0 >= (temp_v0->animSpeed - 0xC)) {
+                temp_v0->flags = i + 0x18;
+                continue;
+            } else {
+                var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
+            }
+        } else {
+            var_v1 =
+                func_800C0224(0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1]);
+        }
+
+        var_v1->unk10 =
+            (0x78 + i * 16) | 0x8000 | ((i == temp_s4) ? 0x37FD0000 : 0x37FE0000);
+    }
+}
 
 void func_80102B78(int arg0)
 {

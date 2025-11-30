@@ -204,8 +204,8 @@ extern u_short* D_800F1DD4;
 extern int D_1F800000[];
 extern int D_1F800034[];
 
-// invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle Abilities or Items)
-// invoked just before the skill takes effect
+// invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle
+// Abilities or Items) invoked just before the skill takes effect
 void func_80069C6C(int arg0)
 {
     int new_var;

@@ -78,6 +78,10 @@ extern char D_80109651;
 extern char D_80109652;
 extern char D_80109653;
 extern char D_80109654;
+extern char D_80109663;
+extern char D_80109664;
+extern char D_80109665;
+extern char D_80109666;
 extern u_char D_80109667;
 extern u_char D_801096A3;
 extern char D_80109711;
@@ -291,7 +295,59 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103460);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801036BC);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801038E4);
+int func_801038E4(int arg0)
+{
+    func_800FD0E0_t sp10;
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109665 = arg0 >> 8;
+        D_80109666 = arg0 - 1;
+        func_80102B78(D_80109665);
+        D_80109664 = 0xA;
+        D_80109663 = 0;
+        return 0;
+    }
+    switch (D_80109663) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102C44(D_80109665, 3);
+            func_800FD878(D_800619D8.unk0[D_80109666 + 64]);
+            D_80109663 = 1;
+        }
+        break;
+    case 1:
+        if (D_80109664 != 0) {
+            D_80109664 -= 1;
+        } else {
+            D_80109663 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102D7C(0);
+            D_80109663 = 3;
+            D_80109718 = vs_main_buttonsPressed.all & 0x10;
+            break;
+        }
+        temp_v0_2 = func_80102988(5, D_80109666);
+        if (temp_v0_2 != D_80109666) {
+            D_80109666 = temp_v0_2;
+            temp_v0_3 = func_80102D30(5, temp_v0_2);
+            func_800FD0E0(
+                (void*)D_80060168.unk8A4[temp_v0_3], &sp10, &sp18, vs_battle_stringBuf);
+            func_800FD878(temp_v0_3);
+            func_80102C94(D_80109665, (void*)&sp10, sp18, temp_v0_2);
+            return 0;
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_80103AD0(int arg0)
 {

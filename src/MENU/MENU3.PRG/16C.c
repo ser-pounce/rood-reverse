@@ -12,6 +12,21 @@ typedef struct {
 } func_8010406C_t;
 
 typedef struct {
+    u_short* unk0;
+    u_short* unk4;
+} func_80106390_t;
+
+// Incomplete def, size correct
+typedef struct {
+    u_short pad0[13];
+    u_short unk1A;
+    int unk1C;
+    u_short unk20;
+    char pad22[92];
+    u_short unk7E;
+} D_8010975C_t;
+
+typedef struct {
     int unk0;
     char unk4;
     signed char unk5;
@@ -95,6 +110,10 @@ extern char D_80109717;
 extern int D_80109718;
 extern void* D_8010975C;
 extern int D_80109760;
+extern char D_80109764;
+extern char D_80109765;
+extern char D_80109766;
+extern char D_80109767;
 
 void func_8010296C(char arg0)
 {
@@ -822,8 +841,55 @@ void func_80105314(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801053EC);
 
-// https://decomp.me/scratch/EEt9t
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106390);
+void func_80106390(int arg0, func_80106390_t* arg1, int* arg2)
+{
+    int i;
+    int j;
+    vs_battle_menuItem_t* temp_v0;
+    u_short* v;
+
+    D_80109765 = arg0;
+    D_80109766 = 0;
+    D_80109760 = 0;
+    D_80109764 = 1;
+    if (D_8010975C && D_8010975C) { }
+
+    D_8010975C = vs_main_allocHeapR(arg0 << 7);
+
+    for (i = 0; i < arg0; ++i) {
+        ((D_8010975C_t*)D_8010975C)[i].unk1C = arg2[i];
+
+        v = arg1[i].unk0;
+        if (v != NULL) {
+            for (j = 0; j < 13; j++) {
+                ((u_short*)D_8010975C)[i * 64 + j] = v[j];
+            }
+
+            ((D_8010975C_t*)D_8010975C)[i].unk1A = 0xE7E7;
+        } else {
+            ((u_short*)(i * 128 + D_8010975C))[0] = 0xE7E7;
+        }
+
+        v = arg1[i].unk4;
+        if (v != NULL) {
+            ((D_8010975C_t*)D_8010975C)[i].unk20 = 0xF8;
+            for (j = 0; j < 46; ++j) {
+                ((u_short*)(D_8010975C))[i * 64 + j + 17] = v[j];
+            }
+            ((D_8010975C_t*)D_8010975C)[i].unk7E = 0xE7E7;
+        } else {
+            ((D_8010975C_t*)D_8010975C)[i].unk20 = 0xE7E7;
+        }
+    }
+
+    j = *arg2;
+    temp_v0 = vs_battle_setMenuItem(0x14, 0x9B, 0x12, 0xA5, 0, (char*)D_8010975C);
+    temp_v0->unk7 = j & 1;
+    temp_v0->flags = j >> 0x1A;
+    temp_v0->unkC = (j >> 0x10) & 7;
+    temp_v0->selected = 1;
+    D_80109767 = (j >> 0x13) & 0x7F;
+}
 
 int func_80106574(void) { return D_8010975C != NULL ? -1 : D_80109760; }
 

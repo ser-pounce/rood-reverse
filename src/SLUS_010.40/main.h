@@ -179,7 +179,8 @@ typedef struct {
 } D_80060068_t;
 
 typedef struct {
-    char unk0[112];
+    char unk0[40];
+    char unk28[72];
     char unk70[64];
 } D_800619D8_t;
 
@@ -314,7 +315,8 @@ typedef struct {
 typedef struct {
     char unk0[2][32]; // 1st dimension unknown
     int unk40[48];
-    char unk100[256];
+    char unk100[2][48]; // 1st dimension unknown
+    char unk160[160];
     char unk200[128];
     char unk280[2][44]; // 1st dimension unknown
     char unk2D8[40];

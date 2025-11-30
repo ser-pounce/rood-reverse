@@ -447,11 +447,11 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldStrings);
 
-void func_800FCE40(int arg0, char** arg1, int* arg2, char* arg3)
+void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 {
     int sp10[90];
 
-    if (D_8010246C == D_80060168.unk100) {
+    if (D_8010246C == D_80060168.unk100[0]) {
         func_8006B02C(sp10, arg0);
     } else {
         func_80102BB0(sp10, arg0, D_80109A8C);

@@ -8,8 +8,11 @@ typedef struct {
 
 extern void* D_800F4538[];
 extern void* D_800F4588[];
+extern char* D_800F4590[];
+extern int D_800F4594;
 extern char D_800F49DC;
 
+void func_8009AA84(int);
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
 void func_8009D934(int, int, int);
 void func_800A0204(int, int, int, int);

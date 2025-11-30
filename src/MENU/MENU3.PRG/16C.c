@@ -273,36 +273,36 @@ int func_80103AD0(int arg0)
 
 INCLUDE_RODATA("build/src/MENU/MENU3.PRG/nonmatchings/16C", D_80102800);
 
-int func_80103BE4(int arg0, func_80103E24_t* arg1)
+int func_80103BE4(int arg0, vs_battle_weaponInfo* weapon)
 {
     switch (arg0) {
     case 0:
-        return -arg1->unk1C;
+        return -weapon->blade.category;
     case 1:
-        return -arg1->unk2B;
+        return -weapon->blade.material;
     case 2:
-        return arg1->unk124;
+        return weapon->range;
     case 3:
-        return -arg1->unk10E;
+        return -weapon->unk10E;
     case 4:
-        return (u_short)arg1->unk114[0];
+        return weapon->currentDp;
     case 5:
-        return (u_short)arg1->unk114[1];
+        return weapon->maxDp;
     case 6:
-        return arg1->unk110;
+        return weapon->currentPp;
     case 7:
-        return arg1->unk112;
+        return weapon->maxPp;
     case 8:
-        return arg1->unk114[2];
+        return weapon->currentStr;
     case 9:
-        return arg1->unk114[4];
+        return weapon->currentInt;
     case 10:
-        return arg1->unk114[6];
+        return weapon->currentAgility;
     default:
         if (arg0 >= 0x11) {
-            return arg1->unk148[arg0 - 0x11];
+            return weapon->classAffinityCurrent.affinity[0][arg0 - 0x11];
         }
-        return arg1->unk128[arg0 - 0xB];
+        return weapon->classAffinityCurrent.class[0][arg0 - 0xB];
     }
 }
 
@@ -328,7 +328,7 @@ void func_80103CC8(int arg0)
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
                 func_8006AEAC(&sp10, new_var2[temp_s0 - 1]);
-                temp_v0 = func_80103BE4(arg0, (func_80103E24_t*)&sp10);
+                temp_v0 = func_80103BE4(arg0, &sp10);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
                 }
@@ -343,7 +343,7 @@ void func_80103CC8(int arg0)
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
                 func_8006AEAC(&sp10, new_var2[temp_s0 - 1]);
-                if (func_80103BE4(arg0, (func_80103E24_t*)&sp10) == var_s3) {
+                if (func_80103BE4(arg0, &sp10) == var_s3) {
                     sp1A8[var_s4++] = temp_s0;
                     new_var[i] = 0;
                 }

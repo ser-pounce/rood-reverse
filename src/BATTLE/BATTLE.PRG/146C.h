@@ -23,7 +23,7 @@ typedef struct {
 } vs_battle_classAffinityCurrent;
 
 typedef struct {
-    u_short class[8];
+    short class[8];
     u_short affinity[8];
 } vs_battle_classAffinityBaseline;
 

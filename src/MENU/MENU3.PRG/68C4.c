@@ -6,9 +6,17 @@
 // 2.7.2-cdk
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/68C4", func_801090C4);
 
-// https://decomp.me/scratch/g9L6W
-// 2.7.2-cdk
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/68C4", func_80109320);
+int func_80109320(int a0)
+{
+    int v0;
+    if (a0 < 3) {
+        return 0;
+    }
+    if (a0 == 8) {
+        return 1;
+    }
+    return a0 & 1;
+}
 
 void func_80109344(int arg0, int arg1)
 {

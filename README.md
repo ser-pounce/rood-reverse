@@ -96,25 +96,29 @@ data/TITLE/
 
 ## Setup
 The project is mostly self-configuring but requires a minimal amount of setup.
-- Make sure the following system packages are installed:
-    - make
-    - cmake
-    - g++
-    - python3
-    - pip
-    - python3.10-venv
-    - gcc-mipsel-linux-gnu
-    - docker-buildx
-    - clang-format
-- Set docker permissions with `sudo usermod -aG docker $USER`
+- Make sure the following packages are installed, older versions may also work but this is not tested:
+
+| Package                 | Minimum Version |
+|-------------------------|----------------|
+| clang-format            | 18.1.3         |
+| cmake                   | 3.28.3         |
+| docker-buildx           | 28.2.2         |
+| g++                     | 13.3.0         |
+| gcc                     | 13.3.0         |
+| gcc-mipsel-linux-gnu    | 12.4.0         |
+| make                    | 4.3            |
+| python3                 | 3.12.3         |
+| python3-pip             | 24.0           |
+| python3-venv            | 3.12.3         |
+- If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 
 ## Build targets
 - `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
-- `make decompme TARGET=path/to/nonmatchings/source.asm` uploads the target function to a new decomp.me scratch.
-- `make permute TARGET=path/to/nonmatchings/source.asm` invokes the permuter for the target assembly file. 
+- `make decompme TARGET=path/to/nonmatchings/source.s` uploads the target function to a new decomp.me scratch.
+- `make permute TARGET=path/to/nonmatchings/source.s` invokes the permuter for the target assembly file. 
 - `make remake -j` will delete and re-split the targets; this can be necessary if the dependency management has failed to identify everything that needs rebuilding (in which case a bug report is appreciated!), or if the configuration has changed enough to be no longer valid (e.g. orphaned .d files). It's good practice to run this before submitting a pull request to make sure everything still works.
 - `make format` formats the source files and symbol addresses for consistency. Please run this before submitting a PR.
-- `make clean` simply deletes the `build` directory
+- `make clean` simply deletes the `build` and `nonmatchings` directories
 - `make clean-all` will completely reset the project, including dropping any source changes and data files (but not the disk image). Use with caution.

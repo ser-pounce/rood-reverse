@@ -78,6 +78,10 @@ extern char D_80109651;
 extern char D_80109652;
 extern char D_80109653;
 extern char D_80109654;
+extern char D_8010965F;
+extern char D_80109660;
+extern char D_80109661;
+extern char D_80109662;
 extern char D_80109663;
 extern char D_80109664;
 extern char D_80109665;
@@ -293,7 +297,62 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103220);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103460);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_801036BC);
+int func_801036BC(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109661 = arg0 >> 8;
+        D_80109662 = arg0 - 1;
+        func_80102B78(D_80109661);
+        D_80109660 = 0xA;
+        D_8010965F = 0;
+        return 0;
+    }
+
+    switch (D_8010965F) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102C44(D_80109661, 7);
+            func_800FD700(D_800619D8.unk0[D_80109662 + 48]);
+            if (D_80060168.unk640[D_800619D8.unk0[D_80109662 + 48] - 1][3] != 7) {
+                vs_mainMenu_drawDpPpbars(1);
+            }
+            D_8010965F = 1;
+        }
+        break;
+    case 1:
+        if (D_80109660 != 0) {
+            --D_80109660;
+        } else {
+            D_8010965F = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102D7C(1);
+            D_8010965F = 3;
+            break;
+        }
+        temp_v0_2 = func_80102988(4, D_80109662);
+        if (temp_v0_2 != D_80109662) {
+            D_80109662 = temp_v0_2;
+            temp_v0_3 = func_80102D30(4, temp_v0_2);
+            vs_mainMenu_setAccessoryStrings(
+                &D_80060780[temp_v0_3], sp10, &sp18, vs_battle_stringBuf);
+            func_800FD700(temp_v0_3);
+            func_80102C94(D_80109661, sp10, sp18, temp_v0_2);
+            return 0;
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_801038E4(int arg0)
 {

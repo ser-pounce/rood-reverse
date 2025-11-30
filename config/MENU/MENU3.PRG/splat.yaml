@@ -24,6 +24,7 @@ segments:
     subsegments:
       - [0x0, .rodata, 16C]
       - [0x16C, c]
+      - [0x68C4, c]
       - [0x6BB8, data, 16C]
       - [0x6E44, bss, 16C]
   - [0x6F68]

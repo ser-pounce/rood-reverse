@@ -1241,7 +1241,7 @@ void func_80104F74(int arg0, int arg1, int arg2, int arg3, int arg4)
     scratch = (void**)getScratchAddr(0);
     AddPrim(scratch[1] + 0x1C, poly++);
     scratch[0] = (void*)poly;
-    _insertTPage(7, 0x60);
+    _insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
 void func_801051AC(int arg0, int arg1, int arg2, int arg3, int arg4)

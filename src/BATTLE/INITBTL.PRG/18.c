@@ -137,7 +137,7 @@ void func_800F9AD8(void)
     vs_battle_characterState->unk20 = s1->unk7C;
 
     if (s1->unk7C & 1) {
-        func_8009D934(0, 1, 2, i);
+        func_8009D934(0, 1, 2);
         func_800CB660(1);
     }
 

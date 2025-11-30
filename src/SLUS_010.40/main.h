@@ -324,7 +324,8 @@ typedef struct {
     char unk2D8[40];
     char unk300[256];
     char unk400[256];
-    char unk500[64];
+    char unk500[48];
+    u_short unk530[1][8];
     u_short unk540[2][8]; // 1st dimension unknown
     char unk56C[160];
     char unk600[64];

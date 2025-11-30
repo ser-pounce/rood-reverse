@@ -11,7 +11,7 @@ extern void* D_800F4588[];
 extern char D_800F49DC;
 
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
-void func_8009D934(int, int, int, int);
+void func_8009D934(int, int, int);
 void func_800A0204(int, int, int, int);
 void func_800A0768(int, char*);
 void func_800A087C(int, int);

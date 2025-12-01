@@ -340,7 +340,7 @@ typedef struct {
     char unkB00[256];
     char unkC00[256];
     char unkD00[256];
-    char unkE00[256];
+    u_short unkE00[128];
 } D_80060168_t;
 
 extern soundData_t vs_main_soundData;

@@ -829,7 +829,7 @@ int func_80104530(int arg0)
             func_800FF0EC(i, D_80109669 + 0x2D, sp10, spD0);
             D_80109668 = 1;
         }
-        return 0;
+        break;
     case 1:
         func_800FF43C();
         i = func_800FF360();
@@ -855,10 +855,11 @@ int func_80104530(int arg0)
             }
             return i + 1;
         }
-        return 0;
+        break;
     default:
-        return 0;
+        break;
     }
+    return 0;
 }
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104788);

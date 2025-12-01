@@ -103,6 +103,11 @@ extern char D_801095EC[]; // size 8?
 extern u_char* D_801095F4[]; // unknown size
 extern void (*D_8010962C[])(int);
 extern char D_80109649;
+extern char D_8010964C;
+extern char D_8010964D;
+extern char D_8010964E;
+extern u_char D_8010964F;
+extern char D_80109650;
 extern char D_80109651;
 extern char D_80109652;
 extern char D_80109653;
@@ -276,7 +281,69 @@ void func_80102D7C(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80102DEC);
+int func_80102DEC(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+    int i;
+
+    if (arg0 != 0) {
+        D_8010964E = arg0 >> 8;
+        D_8010964F = arg0 - 1;
+        func_80102B78(D_8010964E);
+        D_80109650 = 0;
+        D_8010964D = 0;
+        D_8010964C = 0;
+        return 0;
+    }
+
+    switch (D_8010964C) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102C44(D_8010964E, 7);
+            func_800FD270(D_800619D8.unk0[D_8010964F]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010964C = 1;
+        }
+        break;
+    case 1:
+        if (D_8010964D < 0xA) {
+            if (++D_8010964D < 6) {
+                func_800FC510(D_8010964D, D_800619D8.unk0[D_8010964F], 1);
+                return 0;
+            }
+            break;
+        }
+        D_8010964C = 2;
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102D7C(1);
+            D_8010964C = 3;
+            break;
+        }
+        temp_v0_2 = func_80102988(0, D_8010964F);
+        if (temp_v0_2 != D_8010964F) {
+            D_8010964F = temp_v0_2;
+            temp_v0_3 = func_80102D30(0, temp_v0_2);
+            func_800FCA08((char*)D_80060148[temp_v0_3], sp10, &sp18, vs_battle_stringBuf);
+            do {
+                func_800FD270(temp_v0_3);
+                func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
+                for (i = 1; i < 6; ++i) {
+                    func_800FC510(i, D_800619D8.unk0[temp_v0_2], 0);
+                }
+            } while (0);
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+        return 0;
+    }
+    return 0;
+}
 
 int func_80103034(int arg0)
 {

@@ -158,12 +158,12 @@ typedef struct {
     short maxHP;
     short currentMP;
     short maxMP;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
+    short strength;
+    short totalStrength;
+    short intelligence;
+    short totalIntelligence;
+    short agility;
+    short totalAgility;
     short risk;
     u_short flags;
     int unk1C;

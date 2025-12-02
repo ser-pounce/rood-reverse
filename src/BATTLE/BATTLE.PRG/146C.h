@@ -212,7 +212,8 @@ typedef struct {
     signed char unk26;
     signed char unk27;
     int unk28;
-    int unk2C;
+    short x;
+    short y;
     int unk30;
     int unk34;
     int unk38;

@@ -39,6 +39,7 @@ vs_battle_hitlocations = 0x800EA620;
 vs_battle_menuItems = 0x800EB9C0;
 vs_battle_menuStrings = 0x800EB9DC;
 vs_battle_rowAnimationSteps = 0x800EBBC8;
+vs_battle_animationIndices = 0x800EBC7C;
 vs_battle_warlockSpellIds = 0x800EBD70;
 vs_battle_shamanSpellIds = 0x800EBD84;
 vs_battle_sorcererSpellIds = 0x800EBD8C;

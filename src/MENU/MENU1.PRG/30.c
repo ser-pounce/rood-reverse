@@ -23,7 +23,7 @@ static void _setArtCost(int art)
     do {
         --i;
         cost = vs_battle_toBCD(cost);
-        _digitBuffer[i] = (cost & 0xF) + 0x30;
+        _digitBuffer[i] = (cost & 0xF) + '0';
         cost >>= 4;
     } while (cost != 0);
 
@@ -65,7 +65,7 @@ static void _drawPointsRemaining(int xOffset, int weaponCategory, int artsLearne
         --i;
     } while (points != 0);
     pointsStr = pointsBuf + i;
-    *pointsStr = '#';
+    pointsStr[0] = '#';
     vs_battle_renderTextRaw("NEXT", pos, NULL);
     vs_battle_renderTextRaw(pointsStr, pos + 96, NULL);
 }
@@ -86,10 +86,10 @@ static int _drawArtsList(int typeCursorMem)
     static int selectedRow = 0;
     static int forceCursorMemory = 0;
     static int weaponType = 0;
-    static char D_8010452C;
+    static char isLastRow;
     static u_char animationIndex;
     static char artsLearned;
-    static char D_8010452F;
+    static char remainingRows;
     static char _[12];
     static u_short skillIds[4];
 
@@ -97,7 +97,7 @@ static int _drawArtsList(int typeCursorMem)
 
     if (typeCursorMem != 0) {
         vs_battle_menuItem_t* menuItem;
-        D_8010452C = 0;
+        isLastRow = 0;
         animationIndex = 10;
         forceCursorMemory = typeCursorMem >> 4;
         typeCursorMem &= 0xF;
@@ -163,18 +163,18 @@ static int _drawArtsList(int typeCursorMem)
         vs_main_settings.cursorMemory = cursorMemory;
         state = 1;
         artsLearned = rowCount;
-        D_8010452F = rowCount;
+        remainingRows = rowCount;
         break;
     }
     case 1:
-        if (D_8010452F != 0) {
-            --D_8010452F;
+        if (remainingRows != 0) {
+            --remainingRows;
         }
-        D_8010452C = D_8010452F == 0;
+        isLastRow = remainingRows == 0;
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         vs_mainMenu_isLevelledSpell = 0;
         if (selectedRow != 0) {
-            D_8010452C = 0;
+            isLastRow = 0;
             if (selectedRow > 0) {
                 selectedRow = skillIds[selectedRow - 1];
             } else if (vs_battle_shortcutInvoked != 0) {
@@ -202,12 +202,12 @@ static int _drawArtsList(int typeCursorMem)
         break;
     }
 
-    if (D_8010452C != 0) {
+    if (isLastRow != 0) {
         if (animationIndex != 0) {
             --animationIndex;
         }
     } else {
-        animationIndex = D_800EBC7C[animationIndex];
+        animationIndex = vs_battle_animationIndices[animationIndex];
     }
     _drawPointsRemaining(
         vs_battle_rowAnimationSteps[animationIndex], weaponType, artsLearned);
@@ -218,7 +218,7 @@ static int _drawWeaponTypeList(int init)
 {
     enum state { init_e, handle_input, returnRow };
 
-    static int state = 0;
+    static int state = init_e;
     static int selectedRow = 0;
 
     if (init != 0) {
@@ -395,4 +395,4 @@ int vs_menu1_exec(char* state)
     return 0;
 }
 
-static char _;
+static char _ __attribute__((unused));

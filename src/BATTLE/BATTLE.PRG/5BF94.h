@@ -58,8 +58,16 @@ typedef struct {
 } vs_battle_menuState_t;
 
 typedef struct {
-    int unk0;
-    short unk4[22];
+    union {
+        int unk0_0;
+        char unk0_1[4];
+    } unk0;
+    short unk4[15];
+    char unk22;
+    char unk23;
+    int unk24;
+    int unk28;
+    int unk2C;
 } D_800F4FE0_t;
 
 typedef struct {
@@ -159,7 +167,7 @@ extern char D_800EBBFC[];
 extern char D_800EBC00[];
 extern u_short D_800EBC14[];
 extern u_int D_800EBC54[];
-extern char D_800EBC7C[];
+extern char vs_battle_animationIndices[];
 extern char vs_battle_warlockSpellIds[];
 extern char vs_battle_shamanSpellIds[];
 extern char vs_battle_sorcererSpellIds[];

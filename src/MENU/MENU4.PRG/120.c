@@ -771,7 +771,7 @@ static int D_80108188;
 static char _3[12];
 static D_80108198_t D_80108198;
 static D_801081B8_t D_801081B8;
-static u_char D_801081EC;
+static u_char _animationIndex;
 static u_char _selectedElement;
 static char D_801081EE;
 static char _4[24];
@@ -1857,7 +1857,7 @@ int vs_menu4_Exec(char* state)
     switch (*state) {
     case init:
         _screenEnabled = 0;
-        D_801081EC = 10;
+        _animationIndex = 10;
         if (vs_mainMenu_itemNames == NULL) {
             vs_mainMenu_loadItemNames(1);
         }
@@ -2277,14 +2277,14 @@ int vs_menu4_Exec(char* state)
         _drawScreen();
     }
     if (var_s5 != 0) {
-        if (D_801081EC != 0) {
-            --D_801081EC;
+        if (_animationIndex != 0) {
+            --_animationIndex;
         }
     } else {
-        D_801081EC = D_800EBC7C[D_801081EC];
+        _animationIndex = vs_battle_animationIndices[_animationIndex];
     }
-    if (D_801081EC < 10) {
-        userInput = vs_battle_rowAnimationSteps[D_801081EC];
+    if (_animationIndex < 10) {
+        userInput = vs_battle_rowAnimationSteps[_animationIndex];
         func_80100344(16 - userInput, 38, 88, 10);
         vs_mainmenu_drawButton(1, 8 - userInput, 36, 0);
         func_800C6540(

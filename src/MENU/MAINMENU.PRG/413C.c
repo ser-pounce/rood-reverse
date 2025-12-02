@@ -175,7 +175,7 @@ void func_800FFBC8(void)
 void vs_mainmenu_setMessage(char* arg0)
 {
     vs_battle_memcpy(&D_8010231A, arg0, 0x60);
-    D_800F4FE0[7].unk0 = ((D_800F4FE0[7].unk0 & 0xC0FFFFFF) | 0x20000000);
+    D_800F4FE0[7].unk0.unk0_0 = ((D_800F4FE0[7].unk0.unk0_0 & 0xC0FFFFFF) | 0x20000000);
     func_800C6BF0(7, D_8010231A - 2);
 }
 

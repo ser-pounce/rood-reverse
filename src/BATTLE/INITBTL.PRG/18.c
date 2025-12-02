@@ -106,12 +106,12 @@ void func_800F9AD8(void)
     temp_s0->maxHP = s1->maxHP;
     temp_s0->currentMP = s1->currentMP;
     temp_s0->maxMP = s1->maxMP;
-    temp_s0->unk22 = s1->unkC;
-    temp_s0->unk24 = s1->unkE;
-    temp_s0->unk26 = s1->unk10;
-    temp_s0->unk28 = s1->unk12;
-    temp_s0->unk2A = s1->unk14;
-    temp_s0->unk2C = s1->unk16;
+    temp_s0->strength = s1->unkC;
+    temp_s0->totalStrength = s1->unkE;
+    temp_s0->intelligence = s1->unk10;
+    temp_s0->totalIntelligence = s1->unk12;
+    temp_s0->agility = s1->unk14;
+    temp_s0->totalAgility = s1->unk16;
     temp_s0->risk = s1->risk;
     *(short*)&temp_s0->flags = s1->flags;
 

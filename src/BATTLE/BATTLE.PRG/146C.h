@@ -172,12 +172,12 @@ typedef struct {
     short currentMP;
     short maxMP;
     u_short risk;
-    u_short unk22;
-    u_short unk24;
-    u_short unk26;
-    u_short unk28;
-    u_short unk2A;
-    u_short unk2C;
+    u_short strength;
+    u_short totalStrength;
+    u_short intelligence;
+    u_short totalIntelligence;
+    u_short agility;
+    u_short totalAgility;
     short unk2E;
     short unk30;
     short unk32;
@@ -196,7 +196,8 @@ typedef struct {
 } vs_battle_actor2;
 
 typedef struct {
-    int unk0[2];
+    int unk0;
+    int unk4;
     int unk8;
     int unkC;
     int unk10;

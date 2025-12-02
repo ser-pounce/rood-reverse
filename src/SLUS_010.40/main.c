@@ -8426,12 +8426,12 @@ void func_80042CB0(void)
     temp_t5->unk0.maxHP = temp_t0->maxHP;
     temp_t5->unk0.currentMP = temp_t0->currentMP;
     temp_t5->unk0.maxMP = temp_t0->maxMP;
-    temp_t5->unk0.unkC = temp_t0->unk22;
-    temp_t5->unk0.unkE = temp_t0->unk24;
-    temp_t5->unk0.unk10 = temp_t0->unk26;
-    temp_t5->unk0.unk12 = temp_t0->unk28;
-    temp_t5->unk0.unk14 = temp_t0->unk2A;
-    temp_t5->unk0.unk16 = temp_t0->unk2C;
+    temp_t5->unk0.unkC = temp_t0->strength;
+    temp_t5->unk0.unkE = temp_t0->totalStrength;
+    temp_t5->unk0.unk10 = temp_t0->intelligence;
+    temp_t5->unk0.unk12 = temp_t0->totalIntelligence;
+    temp_t5->unk0.unk14 = temp_t0->agility;
+    temp_t5->unk0.unk16 = temp_t0->totalAgility;
     temp_t5->unk0.risk = temp_t0->risk;
     temp_t5->unk0.flags = temp_t0->flags;
     temp_t5->unk0.unk1C = temp_t0->unk948;
@@ -8457,7 +8457,7 @@ void func_80042CB0(void)
         }
     }
 
-    temp_t5->unk0.unk7C = vs_battle_characterState->unk0[8];
+    temp_t5->unk0.unk7C = vs_battle_characterState->unk20;
     temp_t5->unk0.unk80 = D_800F19D0[5];
     temp_t5->unk0.unk84 = D_800F19D0[8];
 

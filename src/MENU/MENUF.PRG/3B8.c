@@ -82,14 +82,14 @@ void _calculateScore(void);
 void func_80108E38(void);
 void func_80108E40(void);
 void func_80108A0C(void);
-int func_80108EA8(void);
-int func_80108EC8(void);
-int func_80108EE8(void);
+int _getTotalStrength(void);
+int _getTotalIntelligence(void);
+int _getTotalAgility(void);
 void func_80108E48(void);
-void func_80108EA0(void);
-void func_80108F08(int amount);
-void func_80108F98(int amount);
-void func_80109028(int amount);
+void _nop(void);
+void _raiseMaxStrength(int amount);
+void _raiseMaxIntelligence(int amount);
+void _raiseMaxAgility(int amount);
 void _raiseMaxHP(int amount);
 void _raiseMaxMP(int amount);
 
@@ -196,7 +196,7 @@ int func_80102C54(void)
         break;
     case 3:
         func_80108E48();
-        func_80108EA0();
+        _nop();
         ret = 1;
         break;
     case 4:
@@ -263,9 +263,9 @@ int _loadRankDis(void)
         D_801098A0 = 0;
         D_8010988C = 0;
         D_80109878 = (rand() & 0xF0) | 8;
-        temp_s0 = func_80108EA8();
-        temp_s1 = func_80108EC8();
-        temp_v1 = func_80108EE8();
+        temp_s0 = _getTotalStrength();
+        temp_s1 = _getTotalIntelligence();
+        temp_v1 = _getTotalAgility();
         if ((temp_s1 >= temp_s0) && (temp_v1 >= temp_s0)) {
             D_80109890 = 0;
         } else if (temp_s0 >= temp_s1) {
@@ -581,13 +581,13 @@ int func_8010384C(void)
             temp_a0 = D_80109610[D_80109890][(char)D_80109878 >> 4].unk2;
             switch ((short)(D_80109610[D_80109890][(char)D_80109878 >> 4].unk0 - 0xD)) {
             case 0:
-                func_80108F08(temp_a0);
+                _raiseMaxStrength(temp_a0);
                 break;
             case 1:
-                func_80109028(temp_a0);
+                _raiseMaxAgility(temp_a0);
                 break;
             case 2:
-                func_80108F98(temp_a0);
+                _raiseMaxIntelligence(temp_a0);
                 break;
             case 3:
                 _raiseMaxHP(temp_a0);
@@ -597,7 +597,7 @@ int func_8010384C(void)
                 break;
             }
             func_8007E0A8(0x1D, 3, 5);
-            func_80108EA0();
+            _nop();
             return 1;
         }
     }
@@ -2189,47 +2189,50 @@ void func_80108E48(void)
     vs_main_scoredata.bossHealCount = 0;
 }
 
-void func_80108EA0(void) { }
+void _nop(void) { }
 
-int func_80108EA8(void) { return vs_battle_characterState->unk3C->unk24; }
+int _getTotalStrength(void) { return vs_battle_characterState->unk3C->totalStrength; }
 
-int func_80108EC8(void) { return vs_battle_characterState->unk3C->unk28; }
-
-int func_80108EE8(void) { return vs_battle_characterState->unk3C->unk2C; }
-
-void func_80108F08(int amount)
+int _getTotalIntelligence(void)
 {
-    vs_battle_characterState->unk3C->unk24 += amount;
-    if (vs_battle_characterState->unk3C->unk24 > 999) {
-        vs_battle_characterState->unk3C->unk24 = 999;
+    return vs_battle_characterState->unk3C->totalIntelligence;
+}
+
+int _getTotalAgility(void) { return vs_battle_characterState->unk3C->totalAgility; }
+
+void _raiseMaxStrength(int amount)
+{
+    vs_battle_characterState->unk3C->totalStrength += amount;
+    if (vs_battle_characterState->unk3C->totalStrength > 999) {
+        vs_battle_characterState->unk3C->totalStrength = 999;
     }
-    vs_battle_characterState->unk3C->unk22 += amount;
-    if (vs_battle_characterState->unk3C->unk22 > 999) {
-        vs_battle_characterState->unk3C->unk22 = 999;
+    vs_battle_characterState->unk3C->strength += amount;
+    if (vs_battle_characterState->unk3C->strength > 999) {
+        vs_battle_characterState->unk3C->strength = 999;
     }
 }
 
-void func_80108F98(int amount)
+void _raiseMaxIntelligence(int amount)
 {
-    vs_battle_characterState->unk3C->unk28 += amount;
-    if (vs_battle_characterState->unk3C->unk28 > 999) {
-        vs_battle_characterState->unk3C->unk28 = 999;
+    vs_battle_characterState->unk3C->totalIntelligence += amount;
+    if (vs_battle_characterState->unk3C->totalIntelligence > 999) {
+        vs_battle_characterState->unk3C->totalIntelligence = 999;
     }
-    vs_battle_characterState->unk3C->unk26 += amount;
-    if (vs_battle_characterState->unk3C->unk26 > 999) {
-        vs_battle_characterState->unk3C->unk26 = 999;
+    vs_battle_characterState->unk3C->intelligence += amount;
+    if (vs_battle_characterState->unk3C->intelligence > 999) {
+        vs_battle_characterState->unk3C->intelligence = 999;
     }
 }
 
-void func_80109028(int amount)
+void _raiseMaxAgility(int amount)
 {
-    vs_battle_characterState->unk3C->unk2C += amount;
-    if (vs_battle_characterState->unk3C->unk2C > 999) {
-        vs_battle_characterState->unk3C->unk2C = 999;
+    vs_battle_characterState->unk3C->totalAgility += amount;
+    if (vs_battle_characterState->unk3C->totalAgility > 999) {
+        vs_battle_characterState->unk3C->totalAgility = 999;
     }
-    vs_battle_characterState->unk3C->unk2A += amount;
-    if (vs_battle_characterState->unk3C->unk2A > 999) {
-        vs_battle_characterState->unk3C->unk2A = 999;
+    vs_battle_characterState->unk3C->agility += amount;
+    if (vs_battle_characterState->unk3C->agility > 999) {
+        vs_battle_characterState->unk3C->agility = 999;
     }
 }
 

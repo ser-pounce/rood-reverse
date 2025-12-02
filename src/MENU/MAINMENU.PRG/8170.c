@@ -12,7 +12,7 @@ void func_80101F38(void)
     int var_s0;
 
     var_s0 = D_801022D8;
-    if (D_801023D4 != 0) {
+    if (D_801023D4 != NULL) {
         func_80100A5C();
     }
     if (D_801022DC != 0) {

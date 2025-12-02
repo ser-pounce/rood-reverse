@@ -21,7 +21,9 @@ extern int D_801022E4;
 extern u_short D_801022E8[];
 extern int D_801022F8[];
 extern char D_8010231A[];
-extern int D_801023D4;
+extern void* D_801023D4;
+extern char D_801023DC;
+extern char D_801023DD;
 extern int _selectedRow;
 extern char D_801023DE;
 extern char* vs_mainMenu_itemNames;
@@ -230,11 +232,18 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
 // https://decomp.me/scratch/Oo0p8
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", vs_mainmenu_setMenuRows);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100814);
+int func_80100814(void)
+{
+    vs_main_freeHeapR(D_801023D4);
+    D_801023D4 = NULL;
+    D_800F4EE8.unk0[D_801023DC * 2] = _selectedRow;
+    D_800F4EE8.unk0[D_801023DC * 2 + 1] = D_801023DE;
+    return (_selectedRow + D_801023DE) | ((_selectedRow + (D_801023DD * 10)) << 8);
+}
 
 int func_801008B0(void) { return _selectedRow + D_801023DE; }
 
-int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != 0 ? -1 : _selectedRow; }
+int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != NULL ? -1 : _selectedRow; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 

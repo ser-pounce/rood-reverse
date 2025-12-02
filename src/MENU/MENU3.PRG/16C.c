@@ -4,11 +4,13 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/44F14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include <memory.h>
 
 typedef struct {
     u_short unk0;
@@ -965,6 +967,7 @@ int func_80104F50(int arg0, int arg1)
     return var_v1 & 0x7F;
 }
 
+// https://decomp.me/scratch/oTNTS
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F94);
 
 void func_80105314(int arg0)

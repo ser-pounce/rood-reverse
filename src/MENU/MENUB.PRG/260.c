@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../../SLUS_010.40/main.h"
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102A60);
 
@@ -98,7 +99,7 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108264);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010837C);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801086DC);
+int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801086F4);
 

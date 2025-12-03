@@ -276,6 +276,7 @@ vs_gte_setDepthCueDefault = 0x80041954;
 vs_gte_vectorSquare = 0x80041980;
 vs_gte_crossProduct = 0x800419A8;
 vs_gte_cueDepth = 0x80041A00;
+vs_gte_rsqrt = 0x80041B94;
 vs_main_resetGame = 0x80042364;
 vs_main_jumpToBattle = 0x80042420;
 vs_main_showEndingAndReturnToTitle = 0x800424E4;

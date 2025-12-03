@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../SLUS_010.40/main.h"
+#include "../SLUS_010.40/32154.h"
 #include "lbas.h"
 
 typedef struct {
@@ -67,7 +68,12 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068EBC);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006934C);
+int _inverseDistanceFromScreencenter(int arg0, int arg1)
+{
+    arg0 -= 0xA0;
+    arg1 -= 0x70;
+    return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069388);
 

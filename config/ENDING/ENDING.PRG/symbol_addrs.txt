@@ -1,2 +1,3 @@
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;
+_inverseDistanceFromScreencenter = 0x8006934C;

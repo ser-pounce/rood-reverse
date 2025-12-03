@@ -260,7 +260,6 @@ define pad
 endef
 
 # De-crud
-.INCLUDE_DIRS :=
 .SUFFIXES:
 Makefile $(makefiles) $(deps):: ;
 %: %,v

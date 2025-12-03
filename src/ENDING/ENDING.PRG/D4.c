@@ -30,6 +30,7 @@ void func_8006B884(void);
 void func_8006B910(void);
 void func_8006B9DC(void);
 void func_8006BD78(void);
+void func_8006CF24(int, int, int, char*);
 
 extern int D_8006E3FC;
 extern int D_8007005C;
@@ -47,6 +48,8 @@ extern int D_800DB26C;
 extern signed char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
+extern char D_800DB876;
+extern char D_800DBAA8[];
 extern D_800DBB88_t D_800DBB88;
 extern signed char D_800DC188;
 extern signed char D_800DC189;
@@ -258,7 +261,19 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C9A8);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CAF4);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CD38);
+void func_8006CD38(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 0x40) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        D_800DBAA8[3] = arg2;
+        func_8006CF24(arg0 - (D_800DB876 >> 1), arg1, 0xC, D_800DBAA8);
+    }
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CD94);
 

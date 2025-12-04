@@ -63,6 +63,7 @@ extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
 
+// https://decomp.me/scratch/xHta5
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);
@@ -172,7 +173,17 @@ void _drawInteger(DRAWENV* drawenv)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A888);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A958);
+DR_TPAGE* func_8006A958(int arg0, int arg1)
+{
+    void** temp_s0;
+    DR_TPAGE* tpage;
+
+    temp_s0 = (void**)0x1F800000;
+    tpage = temp_s0[0];
+    SetDrawTPage(tpage, 0, 1, arg0 & 0xFFFF);
+    AddPrim(temp_s0[1] + (arg1 * 4), tpage++);
+    return tpage;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A9C0);
 

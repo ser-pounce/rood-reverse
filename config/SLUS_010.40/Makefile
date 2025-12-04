@@ -1,7 +1,3 @@
-$(BUILD)/data/SLUS_010.40.elf: LDSCRIPT += \
-	config/TITLE/TITLE.PRG/exports.txt \
-	config/BATTLE/BATTLE.PRG/exports.txt
-
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000
@@ -18,3 +14,9 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 ): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ overlay 25AC main): CC1VER := 2.8.0-psx
+
+$(BUILD)/config/SLUS_010.40/link.d: \
+	config/TITLE/TITLE.PRG/symbol_addrs.txt \
+	config/BATTLE/INITBTL.PRG/symbol_addrs.txt \
+	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
+	config/ENDING/ENDING.PRG/symbol_addrs.txt

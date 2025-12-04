@@ -1272,7 +1272,7 @@ int func_80108970(char* arg0)
         func_800FFA88(0);
         if (D_801022D8 == 0) {
             if (func_800FE694() != 0) {
-                D_800F4E9A = 8;
+                D_800F4E98.unk2 = 8;
                 temp_a1_2 = (char)vs_battle_menuState.currentState;
                 vs_battle_menuState.currentState = 4;
                 vs_battle_menuState.returnState = (char)temp_a1_2;
@@ -1298,7 +1298,7 @@ int func_80108970(char* arg0)
         var_s0 = (0xA - D_80109714) << 5;
     }
     if ((D_80109714 != 0) && (D_80109717 == 0)) {
-        temp_s1 = (D_800F4F22 - 1) & 7;
+        temp_s1 = (D_800F4EE8.unk3A[0] - 1) & 7;
         temp_v0_3 = vs_battle_setMenuItem(
             0x1F, var_s0 + 0xB4, 0x22, 0x8C, 8, (char*)&D_801093B8[D_801093B8[temp_s1]]);
         temp_v0_3->selected = 1;

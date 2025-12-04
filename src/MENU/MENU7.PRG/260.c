@@ -2466,7 +2466,7 @@ static int _showSaveMenu(int initState)
         selectedFile = 1;
         _containerDataEmpty = 0;
         if (vs_main_settings.cursorMemory != 0) {
-            selectedFile = D_800F4F70 + 1;
+            selectedFile = D_800F4EE8.unk85[3] + 1;
         }
         _dataNotSaved = 0;
         _isSaving = 1;
@@ -2578,7 +2578,7 @@ static int _showSaveMenu(int initState)
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 selectedFile = 3 - selectedFile;
-                D_800F4F70 = selectedFile - 1;
+                D_800F4EE8.unk85[3] = selectedFile - 1;
             }
             _selectCursorXy = vs_getXY(180, (selectedFile + 1) * 16 + 10);
         }
@@ -2958,7 +2958,7 @@ static int _loadFileMenu(int initFadeout)
         selectedFile = 1;
 
         if (vs_main_settings.cursorMemory != 0) {
-            selectedFile = D_800F4F70 + 1;
+            selectedFile = D_800F4EE8.unk85[3] + 1;
         }
         _isSaving = 0;
         state = init;
@@ -3016,7 +3016,7 @@ static int _loadFileMenu(int initFadeout)
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 selectedFile = 3 - selectedFile;
-                D_800F4F70 = selectedFile - 1;
+                D_800F4EE8.unk85[3] = selectedFile - 1;
             }
             _selectCursorXy = ((((selectedFile + 1) * 16) + 10) << 16) | 180;
         }

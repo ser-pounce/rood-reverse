@@ -1,5 +1,3 @@
-
-
 _testMemcardEvents = 0x80102A60;
 _resetMemcardEvents = 0x80102ADC;
 _drawImage = 0x80102B3C;
@@ -11,7 +9,7 @@ _getNewestSaveFile = 0x80102CB4;
 _findCurrentSaveOnActiveMemcard = 0x80102D14;
 _memcardFileNumberFromFilename = 0x80102DAC;
 _verifySaveChecksums = 0x80102E28;
-_decode = 0x80102EBC;
+_decode = 0x80102EBC; // allow_duplicated:True
 _readSaveFileInfo = 0x80102EF4;
 _memcardSaveIdExists = 0x8010300C;
 _deleteRedundantTempFiles = 0x8010309C;
@@ -33,7 +31,7 @@ _fileProcessingAnim = 0x80104B00;
 _fileProcessingCompleteAnim = 0x80104C20;
 _initFileMenu = 0x80104D58;
 _initFileMenuElement = 0x80104DB8;
-_clearFileMenuElement = 0x80104EC0;
+_clearFileMenuElement = 0x80104EC0; // allow_duplicated:True
 _fileMenuElementsActive = 0x80104F04;
 _printCharacter = 0x80104F40;
 _findCurrentSave = 0x80105080;
@@ -56,7 +54,10 @@ _loadFileMenu = 0x801081DC;
 _initGameOver = 0x801086DC;
 _setMenuItemClut = 0x801087F0;
 _displayGameOverScreen = 0x801088B4;
+vs_menu7_gameOver = 0x80108CE8;
 _getContainerOffset = 0x8010928C;
+vs_menu7_saveContainerMenu = 0x80109778;
+vs_menu7_dataMenu = 0x80109EB8;
 _memcardFilenameTemplate = 0x8010A2B4;
 _eventSpecs = 0x8010A2B8;
 _menuElementStops = 0x8010A2C0;

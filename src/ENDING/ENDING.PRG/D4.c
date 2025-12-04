@@ -2,6 +2,7 @@
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/32154.h"
 #include "lbas.h"
+#include <libapi.h>
 
 typedef struct {
     int unk0;

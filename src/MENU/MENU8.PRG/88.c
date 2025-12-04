@@ -543,7 +543,7 @@ int vs_menu8_exec(char* state)
         i = selectedRow + 1;
         if (i != 0) {
             if (i > 0) {
-                func_800FA92C(D_800F4EE8.unk0[0x8A], 1);
+                func_800FA92C(D_800F4EE8.unk3A[0x50], 1);
                 switch (selectedRow) {
                 case 0:
                     *state = simpleMap;

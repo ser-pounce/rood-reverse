@@ -1,8 +1,9 @@
 _setArtCost = 0x80102830;
 _drawPointsRemaining = 0x80102914;
 _drawArtsList = 0x80102A4C;
-_drawWeaponTypeList = 0x80102F68;
+_drawWeaponTypeList = 0x80102F68; // allow_duplicated:True
 _setMenuTitle = 0x801031FC;
+vs_menu1_exec = 0x80103270;
 _strings = 0x80103478;
 _digitBuffer = 0x8010451C;
 D_8010452D = 0x8010452D;

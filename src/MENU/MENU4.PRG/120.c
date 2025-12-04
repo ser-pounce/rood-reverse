@@ -934,7 +934,7 @@ static int _drawHitLocationStatuses(int arg0)
     hitLocationCount = _getHitLocationCount(tempSelectedActor);
     if (arg0 != 0) {
         if (arg0 > 0) {
-            D_800F4F6A = arg0 - 1;
+            D_800F4EE8.unk3A[0x48] = arg0 - 1;
             return 0;
         }
         if (arg0 == -3) {
@@ -986,7 +986,7 @@ static int _drawHitLocationStatuses(int arg0)
     case 2:
         func_80103FEC(actor, 0);
 
-        step = D_800F4F6A;
+        step = D_800F4EE8.unk3A[0x48];
         for (i = 0; i < hitLocationCount; ++i) {
             hitLocation = &actor->hitLocations[i];
             temp_s6 = step >> 7;
@@ -1532,7 +1532,7 @@ static int _equipmentScreen(int element)
     rowCount = _getEquipmentCount();
 
     if (element != 0) {
-        vs_battle_selectedEquipment = element + 1;
+        D_800F4EE8.selectedEquipment = element + 1;
         _equipmentScreenState = init;
         return 0;
     }
@@ -1603,7 +1603,7 @@ static int _equipmentScreen(int element)
             func_800FBD80(_selectedActor + 15);
             func_800FA8E0(4);
             if (i < 0) {
-                temp_s5 = vs_battle_selectedEquipment - 2;
+                temp_s5 = D_800F4EE8.selectedEquipment - 2;
                 if (temp_s5 < 0) {
                     temp_s5 = 0;
                 }
@@ -1659,7 +1659,7 @@ static int _equipmentScreen(int element)
             if (i < 0) {
                 return -2;
             }
-            vs_battle_selectedEquipment = i - 1;
+            D_800F4EE8.selectedEquipment = i - 1;
             _equipmentScreenState = waitActorInit;
         }
         break;

@@ -1,18 +1,19 @@
- 
-_simpleMapOptionMenu = 0x80102888;
+ _simpleMapOptionMenu = 0x80102888;
 _abilityTimingOptionMenu = 0x80102A5C;
 _weaponStatusOptionMenu = 0x80102C0C;
 _armorStatusOptionMenu = 0x80102DBC;
-_cursorMemoryOptionMenu = 0x80102F68;
-_informationOptionMenu = 0x80103110;
+_cursorMemoryOptionMenu = 0x80102F68; // allow_duplicated:True
+_informationOptionMenu = 0x80103110; // allow_duplicated:True
 _puzzleModeOptionMenu = 0x801032B8;
 _soundOptionMenu = 0x8010345C;
 _vibrationOptionMenu = 0x801035FC;
+vs_menu8_exec = 0x801037B4;
 _insertDeleteHandler = 0x80103D88;
 _copyNormalizedString = 0x80103F1C;
 _highlightSelection = 0x80104650;
 _highlightCharSelection = 0x801046F0;
 _confirmScreen = 0x8010475C;
+vs_menu8_execRename = 0x80105314;
 _menuStrings = 0x80105558;
 _simpleMapValues = 0x80105D64;
 _renameMenuStrings = 0x80105DB4;

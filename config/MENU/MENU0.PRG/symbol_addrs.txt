@@ -7,6 +7,7 @@ _sorcererMagicMenu = 0x801037A8;
 _enchanterMagicMenu = 0x80103AEC;
 _teleportMenu = 0x80103E30;
 _drawMagicMenuHeader = 0x80104254;
+vs_menu0_exec = 0x801042C8;
 _baseStrings = 0x80104A58;
 _teleportationStrings = 0x80105D94;
 _savePointData = 0x801067DC;

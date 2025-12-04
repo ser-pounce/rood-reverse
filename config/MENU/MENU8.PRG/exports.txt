@@ -1,2 +1,0 @@
-vs_menu8_exec = 0x801037B4;
-vs_menu8_execRename = 0x80105314;

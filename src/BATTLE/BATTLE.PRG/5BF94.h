@@ -71,7 +71,12 @@ typedef struct {
 } D_800F4FE0_t;
 
 typedef struct {
-    char unk0[0xF2];
+    char unk0[0x34];
+    char unk34[6];
+    char unk3A[6];
+    char unk40[0x44];
+    char selectedEquipment;
+    char unk85[0x6D];
 } D_800F4EE8_t;
 
 typedef struct {
@@ -183,16 +188,10 @@ extern char D_800F4E88;
 extern char* vs_battle_stringBuf;
 extern char D_800F4E90;
 extern D_800F4E98_t D_800F4E98;
-extern short D_800F4E9A;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
-extern char D_800F4F1C[6];
-extern char D_800F4F22;
-extern char D_800F4F6A;
-extern char vs_battle_selectedEquipment;
-extern char D_800F4F70;
-extern char D_800F4FDB;
 extern char D_800F4FDA;
+extern char D_800F4FDB;
 extern D_800F4FE0_t D_800F4FE0[];
 extern u_int D_800F5130;
 extern short D_800F514C;

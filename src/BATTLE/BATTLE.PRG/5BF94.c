@@ -78,7 +78,6 @@ extern int D_800F4CBC;
 extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E70[16];
-extern char D_800F4FDB;
 extern char D_800F4E90;
 extern int D_800F4ED4;
 extern u_long* D_800F51B8;

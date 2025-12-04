@@ -67,7 +67,7 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 sourcedata := $(binaries:%=data/%)
 targets    = $(binaries:%=$(BUILD)/data/%)
-symfiles   := $(binaries:%=config/%/symbol_addrs.txt) $(binaries:%=config/%/exports.txt)
+symfiles   := $(binaries:%=config/%/symbol_addrs.txt)
 makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
@@ -139,9 +139,7 @@ $(shell $(FIND) config src -type f -regex ".*\.\(yaml\|txt\|h\|c\|s\|inc\)\$$"):
 $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 
 ifeq ($(PERMUTER),)
-$(BUILD)/config/%/link.d: \
-	config/%/splat.yaml config/%/symbol_addrs.txt config/%/exports.txt \
-	config/%/Makefile data/%  | $$(@D)/
+$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	$(TOUCH) $@

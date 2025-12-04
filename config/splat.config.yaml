@@ -17,3 +17,5 @@ options:
   data_string_encoding: *enc
   rodata_string_guesser_level: &strLvl 2
   data_string_guesser_level: *strLvl
+  global_vram_start: 0x80010000
+  global_vram_end: 0x80200000

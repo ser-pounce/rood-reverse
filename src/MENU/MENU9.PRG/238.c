@@ -310,7 +310,7 @@ int func_80102F0C(void)
     if (row < -1) {
         func_800FA8E0(5);
     } else if (row >= 0) {
-        func_800FA92C(D_800F4EEA, 1);
+        func_800FA92C(D_800F4EE8.unk0[2], 1);
     }
     return row;
 }

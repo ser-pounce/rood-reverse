@@ -407,5 +407,4 @@ extern char D_800F1CD6;
 extern int D_800F1CD8;
 extern int D_800F1CE0[8];
 extern char vs_battle_executeAbilityType;
-extern char D_800F4EEA;
 extern char D_800F51C1;

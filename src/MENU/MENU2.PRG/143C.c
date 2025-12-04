@@ -142,7 +142,7 @@ static int _battleAbilityUnlocked(int arg0)
         }
 
         ++vs_main_artsStatus.kills.battleAbilitiesUnlocked;
-        memset(D_800F4F1C, 0, sizeof(D_800F4F1C));
+        memset(D_800F4EE8.unk34, 0, sizeof(D_800F4EE8.unk34));
 
         remainingChainAbilityCount = 0;
         for (i = 0; i < 11; ++i) {

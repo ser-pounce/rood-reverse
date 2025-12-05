@@ -11,8 +11,10 @@
 #include "../../SLUS_010.40/main.h"
 
 typedef struct {
-    int unk0;
-    int unk4;
+    u_short unk0;
+    u_short unk2;
+    u_short unk4;
+    u_short unk6;
 } func_8007820C_t;
 
 typedef struct {
@@ -163,6 +165,7 @@ extern int D_800F18F0;
 extern char D_800F18F8;
 extern int* D_800F1900;
 extern int D_800F190C;
+extern u_short D_800F1910[];
 extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
@@ -752,7 +755,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074050);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074120);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007418C);
+void func_8007418C(void) {
+    func_8007820C_t sp10;
+
+    sp10.unk0 = D_800F1910[4];
+    sp10.unk2 = D_800F1910[5];
+    sp10.unk4 = D_800F1910[6];
+    func_8006DEFC(&sp10, 0, 0x28);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800741D4);
 
@@ -1684,6 +1694,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082234);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800822A0);
 
+// https://decomp.me/scratch/1tgiA
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008231C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082360);

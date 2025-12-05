@@ -181,7 +181,8 @@ typedef struct {
     short unk2E;
     short unk30;
     short unk32;
-    short unk34;
+    u_char unk34;
+    u_char unk35;
     char unk36;
     char unk37;
     int unk38;

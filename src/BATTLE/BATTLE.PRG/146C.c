@@ -139,7 +139,7 @@ int _getLocationId(int, int);
 void func_8007D360(void);
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
-void func_80081020(int, int);
+int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
 short func_80081148(int, int, int, int, int, int);
 int func_8008574C(int, vs_battle_actor2*, int);
@@ -157,6 +157,7 @@ void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
 
+extern u_char D_800E8200[];
 extern int D_800E8498;
 extern int D_800F185C;
 extern int D_800F1860;
@@ -1799,8 +1800,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083C68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083CB8);
 
-void func_80083D08(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083D08(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x12, arg2);
 }
@@ -1817,50 +1818,50 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083E8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083EDC);
 
-void func_80083F2C(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083F2C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x15, arg2);
 }
 
-void func_80083F50(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083F50(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x16, arg2);
 }
 
-void func_80083F74(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083F74(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x17, arg2);
 }
 
-void func_80083F98(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083F98(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x18, arg2);
 }
 
-void func_80083FBC(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083FBC(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x19, arg2);
 }
 
-void func_80083FE0(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80083FE0(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x1A, arg2);
 }
 
-void func_80084004(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80084004(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x1B, arg2);
 }
 
-void func_80084028(
-    int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), int arg2)
+void func_80084028(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     func_80081020(0x1C, arg2);
 }
@@ -2011,7 +2012,86 @@ void func_80084FF8(void) { }
 
 void func_80085000(void) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085008);
+void func_80085008(func_80085718_t* arg0)
+{
+    int i;
+    int var_v1;
+    short var_a1;
+    u_short var_a2;
+    vs_battle_actor2* temp_s3;
+
+    temp_s3 = vs_battle_actors[arg0->unk0]->unk3C;
+    switch (arg0->unk1C & 3) {
+    case 2:
+        var_a2 = temp_s3->hitLocations[temp_s3->unk34].unk0 + arg0->unk20[temp_s3->unk34];
+        var_a1 = temp_s3->hitLocations[temp_s3->unk35].unk0 + arg0->unk20[temp_s3->unk35];
+        break;
+    case 3:
+    case 1:
+        var_a2 = temp_s3->hitLocations[temp_s3->unk34].unk0 - arg0->unk20[temp_s3->unk34];
+        var_a1 = temp_s3->hitLocations[temp_s3->unk35].unk0 - arg0->unk20[temp_s3->unk35];
+        break;
+    default:
+        var_a2 = temp_s3->hitLocations[temp_s3->unk34].unk0;
+        var_a1 = temp_s3->hitLocations[temp_s3->unk35].unk0;
+        break;
+    }
+    if (!(temp_s3->unk948 & 0x10)) {
+        if ((temp_s3->unk34 | temp_s3->unk35) != 0) {
+            var_v1 = 0;
+            if (temp_s3->unk34 != 0) {
+                var_v1 = (var_a2 << 0x10) > 0x10000;
+            }
+            if ((temp_s3->unk35 != 0) && (var_a1 >= 2)) {
+                var_v1 = 1;
+            }
+            if (var_v1 == 0) {
+                func_80081020(4, arg0);
+            }
+        }
+    } else {
+        if ((temp_s3->unk34 | temp_s3->unk35) != 0) {
+            var_v1 = 0;
+            if (temp_s3->unk34 != 0) {
+                var_v1 = (var_a2 << 0x10) > 0x10000;
+            }
+            if ((temp_s3->unk35 != 0) && (var_a1 >= 2)) {
+                var_v1 = 1;
+            }
+            if (var_v1 != 0) {
+                func_800810CC(4, arg0);
+            }
+        }
+    }
+    if (arg0->unk0 == 0) {
+        for (i = 0; i < 4; ++i) {
+            switch (arg0->unk1C & 3) {
+            case 2:
+                var_a2 = temp_s3->hitLocations[i].unk0 + arg0->unk20[i];
+                break;
+            case 3:
+            case 1:
+                var_a2 = temp_s3->hitLocations[i].unk0 - arg0->unk20[i];
+                break;
+            default:
+                var_a2 = temp_s3->hitLocations[i].unk0;
+                break;
+            }
+            if (!(temp_s3->unk948 & D_8004EECC[D_800E8200[i]][0])) {
+                var_v1 = var_a2 << 0x10;
+                var_v1 = 0x10000 < var_v1;
+                if (!var_v1) {
+                    func_80081020(D_800E8200[i], arg0);
+                }
+            } else {
+                var_v1 = (var_a2 << 0x10) > 0x10000;
+                if (var_v1) {
+                    func_800810CC(D_800E8200[i], arg0);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085390);
 

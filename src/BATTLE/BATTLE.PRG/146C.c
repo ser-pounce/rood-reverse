@@ -111,7 +111,8 @@ void func_8006C40C(void);
 void func_80069DEC(void);
 void func_8006A228(int, int);
 void func_8006A8EC(void*, void*);
-void func_8006B7BC(func_8006B7BC_t*, vs_battle_equipment* equipment);
+void vs_battle_seEquipmentForDrop(
+    vs_battle_seEquipmentForDrop_t*, vs_battle_equipment* equipment);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -330,128 +331,132 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B4B8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B524);
 
-void func_8006B57C(func_8006B57C_t* arg0, vs_battle_equipment* arg1)
+void vs_battle_setBladeForDrop(
+    func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade)
 {
     int i;
     func_8006B57C_t* a3;
     int v1;
 
-    arg0->id = arg1->id;
-    arg0->unk1 = arg1->unk2;
-    arg0->wepId = arg1->wepId;
-    arg0->category = arg1->category;
-    arg0->currentDp = arg1->currentDp;
-    arg0->maxDp = arg1->maxDp;
-    arg0->currentPp = arg1->currentPp;
-    arg0->maxPp = arg1->maxPp;
-    arg0->strength = arg1->strength;
-    arg0->intelligence = arg1->intelligence;
-    arg0->agility = arg1->agility;
-    arg0->cost = arg1->cost;
-    a3 = arg0;
-    v1 = arg1->damageType & 3;
-    arg0->costType = (arg0->costType & 0xFFFC) | v1;
-    arg0->costType = (arg0->costType & 0xFFE3) | ((arg1->costType & 7) * 4);
-    arg0->unk12 = arg1->unk14;
-    arg0->range = arg1->range;
+    dropBlade->id = targetBlade->id;
+    dropBlade->unk1 = targetBlade->unk2;
+    dropBlade->wepId = targetBlade->wepId;
+    dropBlade->category = targetBlade->category;
+    dropBlade->currentDp = targetBlade->currentDp;
+    dropBlade->maxDp = targetBlade->maxDp;
+    dropBlade->currentPp = targetBlade->currentPp;
+    dropBlade->maxPp = targetBlade->maxPp;
+    dropBlade->strength = targetBlade->strength;
+    dropBlade->intelligence = targetBlade->intelligence;
+    dropBlade->agility = targetBlade->agility;
+    dropBlade->cost = targetBlade->cost;
+    v1 = (targetBlade->damageType & 3);
+    dropBlade->costType = (dropBlade->costType & 0xFFFC) | v1;
+    dropBlade->costType =
+        (dropBlade->costType & 0xFFE3) | ((targetBlade->costType & 7) * 4);
+    dropBlade->unk12 = targetBlade->unk14;
+    dropBlade->range = targetBlade->range;
 
+    a3 = dropBlade;
     for (i = 0; i < 6; ++i) {
-        a3->classes[i] = arg1->classes[i];
+        a3->classes[i] = targetBlade->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        a3->affinities[i] = arg1->affinities[i];
+        a3->affinities[i] = targetBlade->affinities[i];
     }
-    arg0->material = arg1->material;
+    dropBlade->material = targetBlade->material;
 }
 
-void func_8006B6AC(func_8006B6AC_t* arg0, vs_battle_equipment* arg1)
+void vs_battle_setGripForDrop(
+    vs_battle_setGripForDrop_t* dropGrip, vs_battle_equipment* targetGrip)
 {
     int i;
 
-    arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk2;
-    arg0->category = arg1->category;
-    arg0->gemSlots = arg1->gemSlots;
-    arg0->strength = arg1->strength;
-    arg0->intelligence = arg1->intelligence;
-    arg0->agility = arg1->agility;
+    dropGrip->id = targetGrip->id;
+    dropGrip->unk2 = targetGrip->unk2;
+    dropGrip->category = targetGrip->category;
+    dropGrip->gemSlots = targetGrip->gemSlots;
+    dropGrip->strength = targetGrip->strength;
+    dropGrip->intelligence = targetGrip->intelligence;
+    dropGrip->agility = targetGrip->agility;
 
     for (i = 0; i < 4; ++i) {
-        arg0->types[i] = arg1->types[i];
+        dropGrip->types[i] = targetGrip->types[i];
     }
 }
 
-void func_8006B728(func_800FD17C_t* arg0, vs_battle_equipment* arg1)
+void vs_battle_setGemForDrop(func_800FD17C_t* dropGem, vs_battle_equipment* targetGem)
 {
     int i;
 
-    arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk2;
-    arg0->gemEffects = arg1->gemEffects;
-    arg0->strength = arg1->strength;
-    arg0->intelligence = arg1->intelligence;
-    arg0->agility = arg1->agility;
+    dropGem->id = targetGem->id;
+    dropGem->unk2 = targetGem->unk2;
+    dropGem->gemEffects = targetGem->gemEffects;
+    dropGem->strength = targetGem->strength;
+    dropGem->intelligence = targetGem->intelligence;
+    dropGem->agility = targetGem->agility;
 
     for (i = 0; i < 6; ++i) {
-        arg0->classes[i] = arg1->classes[i];
+        dropGem->classes[i] = targetGem->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        arg0->affinities[i] = arg1->affinities[i];
+        dropGem->affinities[i] = targetGem->affinities[i];
     }
 }
 
-void func_8006B7BC(func_8006B7BC_t* arg0, vs_battle_equipment* equipment)
+void vs_battle_seEquipmentForDrop(
+    vs_battle_seEquipmentForDrop_t* dropArmor, vs_battle_equipment* targetArmor)
 {
     int i;
-    func_8006B7BC_t* a3;
+    vs_battle_seEquipmentForDrop_t* a3;
 
-    arg0->id = equipment->id;
-    arg0->unk1 = equipment->unk2;
-    arg0->wepId = equipment->wepId;
-    arg0->category = equipment->category;
-    arg0->currentDp = equipment->currentDp;
-    arg0->maxDp = equipment->maxDp;
-    arg0->currentPp = equipment->currentPp;
-    arg0->maxPp = equipment->maxPp;
-    arg0->gemSlots = equipment->gemSlots;
-    arg0->strength = equipment->strength;
-    arg0->intelligence = equipment->intelligence;
-    arg0->agility = equipment->agility;
+    dropArmor->id = targetArmor->id;
+    dropArmor->unk1 = targetArmor->unk2;
+    dropArmor->wepId = targetArmor->wepId;
+    dropArmor->category = targetArmor->category;
+    dropArmor->currentDp = targetArmor->currentDp;
+    dropArmor->maxDp = targetArmor->maxDp;
+    dropArmor->currentPp = targetArmor->currentPp;
+    dropArmor->maxPp = targetArmor->maxPp;
+    dropArmor->gemSlots = targetArmor->gemSlots;
+    dropArmor->strength = targetArmor->strength;
+    dropArmor->intelligence = targetArmor->intelligence;
+    dropArmor->agility = targetArmor->agility;
 
-    a3 = arg0;
+    a3 = dropArmor;
 
     for (i = 0; i < 4; ++i) {
-        a3->types[i] = equipment->types[i];
+        a3->types[i] = targetArmor->types[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        a3->classes[i] = equipment->classes[i];
+        a3->classes[i] = targetArmor->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        a3->affinities[i] = equipment->affinities[i];
+        a3->affinities[i] = targetArmor->affinities[i];
     }
-    arg0->material = equipment->material;
+    dropArmor->material = targetArmor->material;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
 
-void func_8006BAA8(func_8006B7BC_t* arg0, vs_battle_armorInfo* arg1)
+void vs_battle_setArmorForDrop(vs_battle_seEquipmentForDrop_t* arg0, vs_battle_armorInfo* arg1)
 {
     if (arg1->armor.id != 0) {
         arg1->armor.currentDp = arg1->currentDp;
-        func_8006B7BC(arg0, &arg1->armor);
+        vs_battle_seEquipmentForDrop(arg0, &arg1->armor);
     }
 }
 
-void func_8006BADC(func_8006B7BC_t* arg0, vs_battle_accessoryInfo* accessory)
+void vs_battle_setAccesoryForDrop(vs_battle_seEquipmentForDrop_t* arg0, vs_battle_accessoryInfo* accessory)
 {
     if (accessory->accessory.id != 0) {
-        func_8006B7BC(arg0, &accessory->accessory);
+        vs_battle_seEquipmentForDrop(arg0, &accessory->accessory);
     }
 }
 

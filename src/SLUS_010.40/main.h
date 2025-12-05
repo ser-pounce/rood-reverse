@@ -306,7 +306,7 @@ typedef struct {
     char affinities[8];
     u_short material;
     u_short unk26;
-} func_8006B7BC_t;
+} vs_battle_seEquipmentForDrop_t;
 
 typedef struct {
     int roomFlags[16];
@@ -390,7 +390,7 @@ extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern int D_80060148[][8];
 extern int D_80060238[][12];
-extern func_8006B7BC_t D_80060780[];
+extern vs_battle_seEquipmentForDrop_t D_80060780[];
 extern D_80060168_t D_80060168;
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;

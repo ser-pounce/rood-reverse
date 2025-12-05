@@ -70,13 +70,13 @@ void func_800FA448(void)
 
     for (i = 0; i < 6; ++i) {
         if (temp_s1->hitLocations[i].armor.unk9A != 0) {
-            func_8006BAA8(&D_80060780[temp_s1->hitLocations[i].armor.unk9A],
+            vs_battle_setArmorForDrop(&D_80060780[temp_s1->hitLocations[i].armor.unk9A],
                 &temp_s1->hitLocations[i].armor);
         }
     }
 
     if (temp_s1->accessory.unk37 != 0) {
-        func_8006BADC(&D_80060780[temp_s1->accessory.unk37], &temp_s1->accessory);
+        vs_battle_setAccesoryForDrop(&D_80060780[temp_s1->accessory.unk37], &temp_s1->accessory);
     }
 }
 
@@ -462,7 +462,7 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);
 
 void vs_mainMenu_setAccessoryStrings(
-    func_8006B7BC_t* arg0, char** arg1, int* arg2, char* arg3)
+    vs_battle_seEquipmentForDrop_t* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_armorInfo sp10;
 

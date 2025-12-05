@@ -1,3 +1,7 @@
+vs_battle_setBladeForDrop = 0x8006B57C;
+vs_battle_setGripForDrop = 0x8006B6AC;
+vs_battle_setGemForDrop = 0x8006B728;
+vs_battle_seEquipmentForDrop = 0x8006B7BC;
 _add_min = 0x8006D9C4;
 vs_battle_exec = 0x800798A4;
 _getLocationId = 0x8007C81C;
@@ -865,3 +869,5 @@ D_800F4FDB = 0x800F4FDB;
 vs_battle_stringContext = 0x800F5168; // size:0x38
 vs_battle_menuState = 0x800F51C0;
 vs_battle_executeAbilityType = 0x800F51C2;
+vs_battle_setArmorForDrop = 0x8006BAA8;
+vs_battle_setAccesoryForDrop = 0x8006BADC;

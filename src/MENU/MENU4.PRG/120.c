@@ -314,10 +314,10 @@ static char* _drawArmorInfoRow(vs_battle_armorInfo* arg0)
 static char* _drawAccessoryInfoRow(vs_battle_accessoryInfo* arg0)
 {
     char* sp10[2];
-    func_8006B7BC_t sp18;
+    vs_battle_seEquipmentForDrop_t sp18;
     int sp30[2];
 
-    func_8006BADC(&sp18, arg0);
+    vs_battle_setAccesoryForDrop(&sp18, arg0);
     vs_mainMenu_setAccessoryStrings(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
@@ -1084,7 +1084,7 @@ static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
 {
     func_800FD0E0_t sp18;
     func_8006B57C_t sp20;
-    func_8006B6AC_t sp50;
+    vs_battle_setGripForDrop_t sp50;
     func_800FD17C_t sp60;
     u_int sp80;
 
@@ -1092,10 +1092,10 @@ static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
     int gemSlots = weapon->grip.gemSlots;
 
     if (row == 1) {
-        func_8006B57C(&sp20, &weapon->blade);
+        vs_battle_setBladeForDrop(&sp20, &weapon->blade);
         func_800FCAA4(&sp20, &sp18, &sp80, vs_battle_stringBuf);
     } else if (row == 2) {
-        func_8006B6AC(&sp50, &weapon->grip);
+        vs_battle_setGripForDrop(&sp50, &weapon->grip);
         func_800FCC0C(&sp50, &sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = row - 3;
@@ -1104,7 +1104,7 @@ static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
             sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
             sp80 = 0x58000000;
             if (weapon->gems[var_s1].id != 0) {
-                func_8006B728(&sp60, &weapon->gems[var_s1]);
+                vs_battle_setGemForDrop(&sp60, &weapon->gems[var_s1]);
                 func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, vs_battle_stringBuf);
             }
             var_s1 = 151;
@@ -1144,7 +1144,7 @@ static void _setShieldRow(int row, vs_battle_shieldInfo* shield, int arg2)
         sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
         if (shield->gems[var_s0].id != 0) {
-            func_8006B728(&sp20, &shield->gems[var_s0]);
+            vs_battle_setGemForDrop(&sp20, &shield->gems[var_s0]);
             func_800FD0E0(&sp20, &sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 151;
@@ -1186,7 +1186,7 @@ static int _equipmentDetailScreen(int row)
     static char _cursorAnimState = 0;
 
     char* sp18[2];
-    func_8006B7BC_t sp20;
+    vs_battle_seEquipmentForDrop_t sp20;
     u_int sp48;
     int hitLocations;
     int equipmentCount;
@@ -1358,7 +1358,7 @@ static int _equipmentDetailScreen(int row)
                     } else {
                         vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo((vs_battle_accessoryInfo*)&temp_s1->accessory);
-                        func_8006BADC(&sp20, &temp_s1->accessory);
+                        vs_battle_setAccesoryForDrop(&sp20, &temp_s1->accessory);
                         vs_mainMenu_setAccessoryStrings(
                             &sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
@@ -1515,7 +1515,7 @@ static int _equipmentScreen(int element)
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
-    func_8006B7BC_t sp3E0;
+    vs_battle_seEquipmentForDrop_t sp3E0;
     int rowCount;
     int hitLocationCount;
     int rowType;
@@ -1563,7 +1563,7 @@ static int _equipmentScreen(int element)
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < rowCount; ++i, ++hitLocations) {
-            func_8006B7BC_t* p = &sp3E0;
+            vs_battle_seEquipmentForDrop_t* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
                 if (hitLocations->armor.armor.id != 0) {
@@ -1572,7 +1572,7 @@ static int _equipmentScreen(int element)
                 }
                 rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
             } else {
-                func_8006BADC(p, &temp_s6->accessory);
+                vs_battle_setAccesoryForDrop(p, &temp_s6->accessory);
                 vs_mainMenu_setAccessoryStrings(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
                 rowTypes[i] |= rowType;

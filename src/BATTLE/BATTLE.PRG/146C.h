@@ -250,7 +250,7 @@ typedef struct {
     char intelligence;
     char agility;
     char types[4];
-} func_8006B6AC_t;
+} vs_battle_setGripForDrop_t;
 
 typedef struct {
     int visited;
@@ -340,16 +340,16 @@ void func_8006ACFC(void*, void*);
 void func_8006AE0C(void*, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, void*);
-void func_8006B110(vs_battle_armorInfo*, func_8006B7BC_t*);
+void func_8006B110(vs_battle_armorInfo*, vs_battle_seEquipmentForDrop_t*);
 void func_8006B194(void* arg0, char* arg1);
 void func_8006B338(void*);
-void func_8006B57C(func_8006B57C_t*, vs_battle_equipment*);
-void func_8006B6AC(func_8006B6AC_t*, vs_battle_equipment*);
-void func_8006B728(func_800FD17C_t*, vs_battle_equipment*);
+void vs_battle_setBladeForDrop(func_8006B57C_t*, vs_battle_equipment*);
+void vs_battle_setGripForDrop(vs_battle_setGripForDrop_t*, vs_battle_equipment*);
+void vs_battle_setGemForDrop(func_800FD17C_t*, vs_battle_equipment*);
 void func_8006B8C0(void*, vs_battle_weaponInfo*);
 void func_8006B9E0(void*, vs_battle_shieldInfo*);
-void func_8006BAA8(func_8006B7BC_t*, vs_battle_armorInfo*);
-void func_8006BADC(func_8006B7BC_t*, vs_battle_accessoryInfo*);
+void vs_battle_setArmorForDrop(vs_battle_seEquipmentForDrop_t*, vs_battle_armorInfo*);
+void vs_battle_setAccesoryForDrop(vs_battle_seEquipmentForDrop_t*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getCurrentLocationId(void);
 void func_8007ACB0(void);

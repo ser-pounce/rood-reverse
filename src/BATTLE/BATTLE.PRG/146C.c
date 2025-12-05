@@ -83,6 +83,24 @@ typedef struct {
     u_short unk2C0A;
 } D_800F19CC_t;
 
+typedef struct {
+    char unk0;
+    signed char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    short unk20;
+    short unk22[13];
+    short unk3C;
+} func_800842AC_t;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -1845,7 +1863,12 @@ void func_80084228(int arg0 __attribute__((unused)), int* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084248);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800842AC);
+void func_800842AC(int arg0, int arg1, func_800842AC_t* arg2)
+{
+    arg2->unk3C = arg2->unk4 * 2;
+    arg2->unk22[arg2->unk1 * 2] = arg2->unk4 * 2;
+    arg2->unk1C = (arg2->unk1C & 0xFF3FFFFF) | 0x400000;
+}
 
 void func_800842F0(int arg0 __attribute__((unused)), int* arg1)
 {

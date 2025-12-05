@@ -353,6 +353,7 @@ extern int vs_main_titleScreenCount;
 extern int D_8004A52C;
 extern vs_main_CdFile vs_main_zndFiles[256];
 extern char vs_main_locationZoneMapIds[];
+extern int D_8004EECC[][4];
 extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];

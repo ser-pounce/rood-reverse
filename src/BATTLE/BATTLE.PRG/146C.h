@@ -192,7 +192,11 @@ typedef struct {
     u_short unk8C0[68];
     int unk948;
     char unk94C[8];
-    u_int flags;
+    union {
+        u_int u32;
+        u_short u16[2];
+        u_char u8[4];
+    } flags;
 } vs_battle_actor2;
 
 typedef struct {

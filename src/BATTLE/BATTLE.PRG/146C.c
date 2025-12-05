@@ -58,7 +58,7 @@ typedef struct {
 } D_800F1C84_t;
 
 typedef struct {
-    signed char unk0;
+    u_char unk0;
     signed char unk1;
     signed char unk2;
     signed char unk3;
@@ -69,6 +69,7 @@ typedef struct {
     int unk14;
     int unk18;
     int unk1C;
+    int unk20[9];
 } func_80085718_t;
 
 typedef struct {
@@ -138,20 +139,22 @@ void func_8007D360(void);
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
 void func_80081020(int, int);
+int func_800810CC(int, func_80085718_t*);
 short func_80081148(int, int, int, int, int, int);
+int func_8008574C(int, vs_battle_actor2*, int);
+void func_80085008(func_80085718_t*);
 void func_80086754(int, vs_battle_actor2*);
+void func_80088554(void);
+int func_8008B4C8(char arg0);
+void func_8008C40C(void);
+void func_80089CE4(void);
+void func_80089D04(void);
 void func_8008A6FC(void);
 int func_8008AB80(int);
 int func_8008ABB8(int);
-int func_8008574C(int, vs_battle_actor2*, int);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
-void func_80089D04(void);
-void func_80088554(void);
-void func_80089CE4(void);
-int func_8008B4C8(char arg0);
-void func_8008C40C(void);
 
 extern int D_800E8498;
 extern int D_800F185C;
@@ -1673,7 +1676,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080F78);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80081020);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800810CC);
+int func_800810CC(int arg0, func_80085718_t* arg1)
+{
+    int ret = 0;
+    int* new_var = D_8004EECC[arg0];
+    if (vs_battle_actors[arg1->unk0]->unk3C->flags.u8[3] != 0x80) {
+        ret = new_var[0] & vs_battle_actors[arg1->unk0]->unk3C->unk948;
+        arg1->unk18 |= ret;
+    }
+    return ret;
+}
 
 void func_80081130(void) { }
 
@@ -1977,7 +1989,7 @@ void func_800856F8(void* arg0) { vs_main_bzero(arg0, 0x84C); }
 
 void func_80085718(func_80085718_t* arg0)
 {
-    vs_main_bzero(arg0, 0x44);
+    vs_main_bzero(arg0, sizeof *arg0);
     arg0->unk3 = 6;
     arg0->unk1C = 0;
 }
@@ -2127,7 +2139,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     vs_skill_t* skill = &vs_main_skills[id];
 
     temp_s1 = vs_battle_actors[arg0]->unk3C;
-    ret = (u_short)temp_s1->flags != 0;
+    ret = temp_s1->flags.u16[0] != 0;
 
     if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
         ret |= 2;

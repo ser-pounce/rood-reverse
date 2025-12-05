@@ -7963,8 +7963,9 @@ char D_8004EDDC[][30] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     { 10, 10, 254, 0, 10, 10, 20, 5, 5, 5, 5, 246, 10, 0, 20, 251, 251, 251, 251, 20, 236,
         0, 64, 31, 8, 0, 3, 0, 255, 255 } };
 
-int D_8004EECC[] = { 1, 0, 4096, 0, 2, 0, 0, 0, 4, 0, 0, 0, 8, 0, 0, 0, 16, 0, 2048, 0,
-    32 };
+int D_8004EECC[][4] = { { 1, 0, 4096, 0 }, { 2, 0, 0, 0 }, { 4, 0, 0, 0 }, { 8, 0, 0, 0 },
+    { 16, 0, 2048, 0 } };
+int D_8004EF1C = 32;
 
 extern int randArr[97];
 extern vs_main_HeapHeader* _cdReadBuffer;
@@ -8433,7 +8434,7 @@ void func_80042CB0(void)
     temp_t5->unk0.agility = temp_t0->agility;
     temp_t5->unk0.totalAgility = temp_t0->totalAgility;
     temp_t5->unk0.risk = temp_t0->risk;
-    temp_t5->unk0.flags = temp_t0->flags;
+    temp_t5->unk0.flags = temp_t0->flags.u32;
     temp_t5->unk0.unk1C = temp_t0->unk948;
 
     for (i = 0; i < 8; ++i) {

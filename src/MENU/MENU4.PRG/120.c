@@ -630,7 +630,7 @@ static void func_80103AC8(void)
     }
 
     temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
-    if (actor->flags & 0x20000) {
+    if (actor->flags.u32 & 0x20000) {
         i = vs_battle_renderValue(0, temp_s2 | 66, actor->maxHP, temp_s4);
         vs_battle_renderValue(2, i, 0, temp_s4);
         vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
@@ -653,7 +653,7 @@ static void func_80103AC8(void)
             ->unk10 = D_800EBC00[i] | 0x37F60000;
     }
     temp_s2 += 0xFFF80000;
-    i = (actor->flags >> 9) & 0x100;
+    i = (actor->flags.u32 >> 9) & 0x100;
     _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
     _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
     temp_s2 += 0x40000;
@@ -1555,8 +1555,8 @@ static int _equipmentScreen(int element)
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
-        temp_s5 =
-            (((temp_s6->flags >> 0x11) ^ 1) & 1 & (_selectedActor != 1)); // Disable row
+        temp_s5 = (((temp_s6->flags.u32 >> 0x11) ^ 1) & 1
+                   & (_selectedActor != 1)); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
         rowTypes[0] |= temp_s5 | new_var;
@@ -1908,7 +1908,7 @@ int vs_menu4_Exec(char* state)
     case 5:
         var_s5 = 0;
         if ((_selectedActor == 1)
-            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags & 0x20000)) {
+            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags.u32 & 0x20000)) {
             var_s5 = 1;
         }
         if (animWait != 0) {
@@ -2084,7 +2084,7 @@ int vs_menu4_Exec(char* state)
     case 6:
         var_s5 = 0;
         if ((_selectedActor == 1)
-            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags & 0x20000)) {
+            || (vs_battle_actors[_selectedActor - 1]->unk3C->flags.u32 & 0x20000)) {
             var_s5 = 1;
         }
         if (animWait != 0) {

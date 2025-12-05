@@ -282,8 +282,8 @@ int _loadRankDis(void)
         func_80108E48();
         _clearCount = vs_main_stateFlags.clearCount;
 
-        if (D_8005FFD8.unk0[1] & 0x800000) {
-            D_8005FFD8.unk0[1] |= 0x400000;
+        if (vs_main_mapStatus.roomFlags[1] & 0x800000) {
+            vs_main_mapStatus.roomFlags[1] |= 0x400000;
         }
 
         mapCompletion = 0;
@@ -291,7 +291,8 @@ int _loadRankDis(void)
         for (i = 0; i < 16; ++i) {
             for (var_a0 = 0; var_a0 < 32; ++var_a0) {
                 int v = 1;
-                if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << var_a0)) {
+                if (vs_main_mapStatus.roomFlags[i] & vs_battle_mapCompletionFlags[i]
+                    & (v << var_a0)) {
                     ++mapCompletion;
                 }
             }

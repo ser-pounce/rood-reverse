@@ -309,9 +309,9 @@ typedef struct {
 } func_8006B7BC_t;
 
 typedef struct {
-    int unk0[16];
-    int unk40[2];
-} D_8005FFD8_t;
+    int roomFlags[16];
+    int areaFlags[2];
+} vs_main_mapStatus_t;
 
 typedef struct {
     char unk0[2][32]; // 1st dimension unknown
@@ -380,7 +380,7 @@ extern int vs_main_saveGameClearData;
 
 extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_skillsLearned[32];
-extern D_8005FFD8_t D_8005FFD8;
+extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;
 extern char vs_main_vibrationEnabled;

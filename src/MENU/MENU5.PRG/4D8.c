@@ -362,8 +362,8 @@ int func_80103418(void)
 
     vs_main_stateFlags.mapPaling[0] = 1;
     if (vs_battle_sceneBuffer == NULL) {
-        if (D_8005FFD8.unk0[1] & 0x800000) {
-            D_8005FFD8.unk0[1] |= 0x400000;
+        if (vs_main_mapStatus.roomFlags[1] & 0x800000) {
+            vs_main_mapStatus.roomFlags[1] |= 0x400000;
         }
         D_80108D8C = 0;
         D_80108D94 = 0;
@@ -794,7 +794,7 @@ int func_8010451C(int arg0)
     int var_a0;
     int var_a1;
     int i;
-    int new_var;
+    int areaVisited;
 
     if (arg0 != 0) {
         D_80108D54 = 0;
@@ -804,8 +804,8 @@ int func_8010451C(int arg0)
     case 0:
         var_a1 = 0;
         for (i = 1, var_a0 = 0; i < 32; ++i) {
-            new_var = D_8005FFD8.unk40[i >> 5] & (1 << (i & 0x1F));
-            if (new_var) {
+            areaVisited = vs_main_mapStatus.areaFlags[i >> 5] & (1 << (i & 0x1F));
+            if (areaVisited) {
                 D_80108DC4[var_a0] = i;
                 sp10[var_a0 * 2] = (char*)&_mapNames[_mapNames[i]];
                 sp10[var_a0 * 2 + 1] = 0;
@@ -872,7 +872,7 @@ void func_801046B0(vs_battle_scene* arg0)
     room = (vs_battle_room*)arg0;
     room = (vs_battle_room*)((int*)room + 1);
     for (i = 0; i < roomCount; ++i, ++room) {
-        if (room->unk0 != 0) {
+        if (room->visited != 0) {
             _drawRoom(i, room->dataAddress, room->zoneId, room->mapId);
         }
     }
@@ -1546,7 +1546,7 @@ int _getCurrentRoomIndex(vs_battle_scene* scene)
     mapId = 0;
 
     for (i = 0; i < roomCount; ++i, ++room) {
-        if (room->unk0 != 0) {
+        if (room->visited != 0) {
             return i;
         }
     }
@@ -1564,7 +1564,7 @@ void _updateRoomIndex(int searchForward)
         } else {
             _currentRoomIndex = _roomNamesTable[_currentRoomIndex].prev;
         }
-    } while (room[_currentRoomIndex].unk0 == 0);
+    } while (room[_currentRoomIndex].visited == 0);
 
     if (currentIndex != _currentRoomIndex) {
         vs_main_playSfxDefault(0x7E, 0xB);
@@ -2047,7 +2047,7 @@ void _draw_connecting_maps(int arg0, int arg1, int mapId)
 {
     int temp_s0;
     vs_battle_menuItem_t* temp_v0;
-    int new_var;
+    int areaVisited;
     int var_a0 = 0xAA - arg0;
 
     if (var_a0 < 0) {
@@ -2062,9 +2062,9 @@ void _draw_connecting_maps(int arg0, int arg1, int mapId)
 
     func_80107A9C(arg0, arg1, temp_s0, D_80108E48 + 8);
     func_80107A9C(temp_s0, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
-    new_var = D_8005FFD8.unk40[mapId >> 5] & (1 << (mapId & 0x1F));
-    if (!new_var) {
-        mapId = 0x20;
+    areaVisited = vs_main_mapStatus.areaFlags[mapId >> 5] & (1 << (mapId & 0x1F));
+    if (!areaVisited) {
+        mapId = VS_connectingMaps_INDEX_notVisited;
     }
     temp_v0 = vs_battle_setMenuItem(
         0, 0xB2, D_80108E48, 0x90, 0, (char*)&_connectingMaps[_connectingMaps[mapId]]);

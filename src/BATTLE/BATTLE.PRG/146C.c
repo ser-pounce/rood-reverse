@@ -2359,9 +2359,10 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     for (i = 0; i < roomCount; ++i, ++room) {
         int locationId = _getLocationId(room->zoneId, room->mapId - 1);
         if (locationId > 0) {
-            room->unk0 = D_8005FFD8.unk0[locationId >> 5] & (1 << (locationId & 0x1F));
+            room->visited =
+                vs_main_mapStatus.roomFlags[locationId >> 5] & (1 << (locationId & 0x1F));
         } else {
-            room->unk0 = 0;
+            room->visited = 0;
         }
     }
 }
@@ -2568,14 +2569,15 @@ int vs_battle_getMapCompletion(void)
     int j;
     int value;
 
-    if (D_8005FFD8.unk0[1] & 0x800000) {
-        D_8005FFD8.unk0[1] |= 0x400000;
+    if (vs_main_mapStatus.roomFlags[1] & 0x800000) {
+        vs_main_mapStatus.roomFlags[1] |= 0x400000;
     }
     value = 0;
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 32; ++j) {
             int v = 1;
-            if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << j)) {
+            if (vs_main_mapStatus.roomFlags[i] & vs_battle_mapCompletionFlags[i]
+                & (v << j)) {
                 ++value;
             }
         }

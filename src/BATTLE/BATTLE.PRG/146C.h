@@ -253,7 +253,7 @@ typedef struct {
 } func_8006B6AC_t;
 
 typedef struct {
-    int unk0;
+    int visited;
     void* dataAddress;
     short zoneId;
     short mapId;
@@ -386,7 +386,7 @@ int func_800995B0(void);
 int func_8009967C(void);
 void vs_battle_exec(void);
 
-extern int D_800E8508[];
+extern int vs_battle_mapCompletionFlags[];
 extern char D_800E8F28;
 extern D_800F1880_t D_800F1880;
 extern u_short D_800F18E8;

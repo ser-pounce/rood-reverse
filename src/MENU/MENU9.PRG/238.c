@@ -389,8 +389,8 @@ int func_801031BC(void)
     int i;
     int j;
 
-    if (D_8005FFD8.unk0[1] & 0x800000) {
-        D_8005FFD8.unk0[1] |= 0x400000;
+    if (vs_main_mapStatus.roomFlags[1] & 0x800000) {
+        vs_main_mapStatus.roomFlags[1] |= 0x400000;
     }
 
     D_8010A43C = 0;
@@ -405,7 +405,8 @@ int func_801031BC(void)
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 32; ++j) {
             int v = 1;
-            if (D_8005FFD8.unk0[i] & D_800E8508[i] & (v << j)) {
+            if (vs_main_mapStatus.roomFlags[i] & vs_battle_mapCompletionFlags[i]
+                & (v << j)) {
                 ++_mapCompletion;
             }
         }

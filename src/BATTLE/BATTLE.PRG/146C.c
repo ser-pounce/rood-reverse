@@ -62,7 +62,8 @@ typedef struct {
     signed char unk1;
     signed char unk2;
     signed char unk3;
-    int unk4;
+    short unk4;
+    short unk6;
     int unk8;
     int unkC;
     int unk10;
@@ -1864,28 +1865,32 @@ void func_80084028(
     func_80081020(0x1C, arg2);
 }
 
-int func_8008404C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), func_80085718_t* arg2) 
+int func_8008404C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     if (func_800810CC(0xD, arg2) != 0) {
         arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
     }
 }
 
-int func_8008409C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), func_80085718_t* arg2) 
+int func_8008409C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     if (func_800810CC(0xE, arg2) != 0) {
         arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
     }
 }
 
-int func_800840EC(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), func_80085718_t* arg2) 
+int func_800840EC(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     if (func_800810CC(0x10, arg2) != 0) {
         arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
     }
 }
 
-int func_8008413C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), func_80085718_t* arg2) 
+int func_8008413C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
+    func_80085718_t* arg2)
 {
     if (func_800810CC(0xF, arg2) != 0) {
         arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
@@ -1906,7 +1911,12 @@ void func_80084228(int arg0 __attribute__((unused)), int* arg1)
     arg1[7] = ((arg1[7] & 0xF3FFFFFF) | 0x08000000);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084248);
+void func_80084248(int arg0, int arg1, func_80085718_t* arg2)
+{
+    func_800810CC(0x1E, arg2);
+    arg2->unk4 = vs_battle_actors[arg2->unk0]->unk3C->currentHP;
+    arg2->unk1C = (arg2->unk1C & ~3) | 1;
+}
 
 void func_800842AC(int arg0, int arg1, func_800842AC_t* arg2)
 {

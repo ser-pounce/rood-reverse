@@ -1885,7 +1885,12 @@ int func_800840EC(int arg0 __attribute__((unused)), int arg1 __attribute__((unus
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008413C);
+int func_8008413C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)), func_80085718_t* arg2) 
+{
+    if (func_800810CC(0xF, arg2) != 0) {
+        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+    }
+}
 
 void func_8008418C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)),
     func_8008418C_t* arg2)

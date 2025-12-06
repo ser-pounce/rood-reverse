@@ -140,8 +140,7 @@ typedef struct {
     char unk10D;
     char unk10E;
     char weaponKillStreak;
-    char unk110;
-    char defenseChainStreak;
+    u_short chainStreak;
     u_short bossHealCount;
 } vs_main_scoredata_t;
 

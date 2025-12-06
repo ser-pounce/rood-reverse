@@ -163,8 +163,8 @@ void func_8006A228(int, int);
 void func_8006A8EC(void*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
-void func_8006C004(vs_battle_actor*, vs_battle_actor**);
-void func_8006C164(int);     
+void func_8006C004(vs_battle_actor*);
+void func_8006C164(int);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -663,16 +663,47 @@ void func_8006BE64(vs_battle_actor* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C004);
+void func_8006C004(vs_battle_actor* arg0)
+{
+    u_int temp_t1;
+    u_short temp_v1;
+    vs_battle_actor2* new_var2;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C164);                           
+    temp_t1 = arg0->unk1A;
+    if (arg0->unk3C != NULL) {
+        if (arg0->unk1C == 4) {
+            new_var2 = arg0->unk3C;
+            if (vs_main_scoredata.enemyKills[new_var2->unk37 & 7] <= 0xFFFE) {
+                ++vs_main_scoredata.enemyKills[new_var2->unk37 & 7];
+            }
+            if (vs_main_scoredata.unk10C != (arg0->unk3C->unk37 & 7)) {
+                vs_main_scoredata.unk10C = arg0->unk3C->unk37 & 7;
+                vs_main_scoredata.unk10D = 0;
+            } else if (vs_main_scoredata.unk10D < 0x64) {
+                vs_main_scoredata.unk10D = vs_main_scoredata.unk10D + 1;
+            }
+            vs_main_scoredata.streakScore +=
+                new_var2->maxHP + ((new_var2->maxHP * vs_main_scoredata.unk10D) / 2)
+                + ((new_var2->maxHP * vs_main_scoredata.weaponKillStreak) / 2)
+                + ((new_var2->maxHP * vs_main_scoredata.chainStreak) / 2);
+            if (vs_main_scoredata.streakScore > 999999999) {
+                vs_main_scoredata.streakScore = 999999999;
+            }
+        }
+    }
+    if (temp_t1 < 0x100) {
+        vs_main_scoredata.unk9C[temp_t1 >> 5] |= 1 << (temp_t1 & 0x1F);
+    }
+}
 
-void func_8006C1CC(int arg0, int arg1, int arg2) 
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C164);
+
+void func_8006C1CC(int arg0, int arg1, int arg2)
 {
     vs_battle_actor* temp_s0 = vs_battle_actors[arg1];
     if ((temp_s0->unk27 != 0x80) && (temp_s0->unk28 == 0)) {
         if ((arg2 != 0) && (arg0 == 0)) {
-            func_8006C004(temp_s0, &vs_battle_actors[arg1]);
+            func_8006C004(temp_s0);
             func_8006C164(0);
         }
         func_8006BE64(temp_s0);

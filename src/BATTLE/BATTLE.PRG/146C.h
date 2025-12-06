@@ -216,7 +216,7 @@ typedef struct {
     int unk20;
     char unk24;
     char equippedWeaponType;
-    signed char unk26;
+    char unk26;
     char unk27;
     char unk28;
     char unk29;

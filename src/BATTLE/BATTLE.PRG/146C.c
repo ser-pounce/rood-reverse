@@ -145,8 +145,6 @@ typedef struct {
 } _setArmorForDropRand_t;
 
 typedef struct {
-    void** unk0;
-    int unk4;
     _setWeaponForDropRand_t weapon;
     int unkB4[17];
     _setShieldForDropRand_t shield;
@@ -154,10 +152,16 @@ typedef struct {
     int unk1A4[11];
     _setAccessoryForDropRand_t accessory;
     int unk1FC[11];
+} func_8006BE64_t2;
+
+typedef struct {
+    void** unk0;
+    int unk4;
+    func_8006BE64_t2 unk8;
 } func_8006BE64_t;
 
-int func_8006BDA0(_setWeaponForDropRand_t*, vs_battle_actor2*);
-int func_8006BDF0(_setWeaponForDropRand_t*, void*);
+int func_8006BDA0(func_8006BE64_t2*, vs_battle_actor2*);
+int func_8006BDF0(func_8006BE64_t2*, void*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -632,18 +636,18 @@ void func_8006BE64(vs_battle_actor* arg0)
     temp_v0 = vs_main_allocHeapR(sizeof(func_8006BE64_t));
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof(func_8006BE64_t));
-        temp_v0->unk4 |= _setWeaponForDropRand(&temp_v0->weapon, &temp_s2->weapon);
-        temp_v0->unk4 |= _setShieldForDropRand(&temp_v0->shield, &temp_s2->shield);
+        temp_v0->unk4 |= _setWeaponForDropRand(&temp_v0->unk8.weapon, &temp_s2->weapon);
+        temp_v0->unk4 |= _setShieldForDropRand(&temp_v0->unk8.shield, &temp_s2->shield);
         temp_v0->unk4 |=
-            _setAccessoryForDropRand(&temp_v0->accessory, &temp_s2->accessory);
+            _setAccessoryForDropRand(&temp_v0->unk8.accessory, &temp_s2->accessory);
         for (i = 0; i < 6; ++i) {
             if (temp_s2->hitLocations[i].armor.armor.id != 0) {
                 temp_v0->unk4 |= _setArmorForDropRand(
-                    &temp_v0->armor, &temp_s2->hitLocations[i].armor);
+                    &temp_v0->unk8.armor, &temp_s2->hitLocations[i].armor);
             }
         }
-        temp_v0->unk4 |= func_8006BDA0(&temp_v0->weapon, temp_s2 + 1);
-        temp_v0->unk4 |= func_8006BDF0(&temp_v0->weapon, &(temp_s2 + 1)->name[8]);
+        temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, temp_s2 + 1);
+        temp_v0->unk4 |= func_8006BDF0(&temp_v0->unk8, &(temp_s2 + 1)->name[8]);
         if (temp_v0->unk4 != 0) {
             var_v1 = D_800F1900;
             var_a0 = 1;
@@ -703,8 +707,10 @@ void func_8006C164(int arg0)
 {
     vs_battle_actor2* new_var = vs_battle_characterState->unk3C;
     if (D_800F19CC->unk8 < 0x28) {
-        if (vs_main_scoredata.weaponKillStreakBladeCategory != new_var->weapon.blade.category) {
-            vs_main_scoredata.weaponKillStreakBladeCategory = new_var->weapon.blade.category;
+        if (vs_main_scoredata.weaponKillStreakBladeCategory
+            != new_var->weapon.blade.category) {
+            vs_main_scoredata.weaponKillStreakBladeCategory =
+                new_var->weapon.blade.category;
             vs_main_scoredata.weaponKillStreak = 0;
             return;
         }
@@ -1197,7 +1203,26 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80079050);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800790BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800792E4);
+int func_800792E4(int arg0, int arg1, int arg2)
+{
+    int ret = 0;
+    if (vs_battle_actors[arg1] != NULL) {
+        if (vs_battle_actors[arg1]->unk3C->currentHP == 0) {
+            func_8006C1CC(arg0, arg1, arg2);
+            if (arg1 == 0) {
+                func_8009722C();
+                func_800BEC58(0x40, 0, 0, 0);
+                func_80073898();
+                ret = 1;
+            } else if (vs_battle_actors[arg1]->unk26 == 0) {
+                func_8006A228(arg1, 1);
+            }
+        } else {
+            func_8009E5C4(arg1);
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
 

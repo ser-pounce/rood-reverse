@@ -125,6 +125,23 @@ typedef struct {
     char unk10C;
 } func_8006BB0C_t2;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_setEquipmentForDrop_t shield;
+    func_800FD17C_t gems[3];
+} func_8006BBEC_t;
+
+typedef struct {
+    char unk0[0x18];
+    vs_battle_equipment shield;
+    vs_battle_equipment gems[3];
+    char unkD8;
+    char unkD9;
+} func_8006BBEC_t2;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -517,7 +534,7 @@ void vs_battle_setAccesoryForDrop(
     }
 }
 
-int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1) 
+int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1)
 {
     int i;
 
@@ -536,7 +553,25 @@ int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BBEC);
+int func_8006BBEC(func_8006BBEC_t* arg0, func_8006BBEC_t2* arg1)
+{
+    int var_s1;
+    int var_s2;
+    int i;
+    void* var_s0;
+
+    if (vs_main_getRand(0xFF) < arg1->unkD9) {
+        vs_battle_setEquipmentForDrop(&arg0->shield, &arg1->shield);
+        for (i = 0; i < 3; ++i) {
+            if (arg1->gems[i].id != 0) {
+                vs_battle_setGemForDrop(&arg0->gems[i], &arg1->gems[i]);
+            }
+        }
+        arg0->unk0 = 3;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BCB0);
 

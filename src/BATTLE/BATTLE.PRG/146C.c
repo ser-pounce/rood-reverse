@@ -142,6 +142,21 @@ typedef struct {
     char unkD9;
 } func_8006BBEC_t2;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_setEquipmentForDrop_t armor;
+} func_8006BCB0_t;
+
+typedef struct {
+    vs_battle_equipment armor;
+    int unk30;
+    short unk34;
+    char unk36;
+} func_8006BCB0_t2;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -555,10 +570,7 @@ int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1)
 
 int func_8006BBEC(func_8006BBEC_t* arg0, func_8006BBEC_t2* arg1)
 {
-    int var_s1;
-    int var_s2;
     int i;
-    void* var_s0;
 
     if (vs_main_getRand(0xFF) < arg1->unkD9) {
         vs_battle_setEquipmentForDrop(&arg0->shield, &arg1->shield);
@@ -573,7 +585,15 @@ int func_8006BBEC(func_8006BBEC_t* arg0, func_8006BBEC_t2* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BCB0);
+int func_8006BCB0(func_8006BCB0_t* arg0, func_8006BCB0_t2* arg1)
+{
+    if (vs_main_getRand(0xFF) < arg1->unk36) {
+        vs_battle_setEquipmentForDrop(&arg0->armor, &arg1->armor);
+        arg0->unk0 = 3;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BD14);
 

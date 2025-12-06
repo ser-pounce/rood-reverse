@@ -80,7 +80,10 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    char unk4[0x854];
+    int unk4;
+    u_short unk8;
+    u_short unkA;
+    int unkC[531];
     char unk858[4][0x84C];
     char unk2988[0x280];
     short unk2C08;
@@ -696,7 +699,20 @@ void func_8006C004(vs_battle_actor* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C164);
+void func_8006C164(int arg0)
+{
+    vs_battle_actor2* new_var = vs_battle_characterState->unk3C;
+    if (D_800F19CC->unk8 < 0x28) {
+        if (vs_main_scoredata.weaponKillStreakBladeCategory != new_var->weapon.blade.category) {
+            vs_main_scoredata.weaponKillStreakBladeCategory = new_var->weapon.blade.category;
+            vs_main_scoredata.weaponKillStreak = 0;
+            return;
+        }
+        if (vs_main_scoredata.weaponKillStreak < 0x64) {
+            ++vs_main_scoredata.weaponKillStreak;
+        }
+    }
+}
 
 void func_8006C1CC(int arg0, int arg1, int arg2)
 {

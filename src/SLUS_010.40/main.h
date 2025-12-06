@@ -138,7 +138,7 @@ typedef struct {
     u_int enemyKillStreak;
     char unk10C;
     char unk10D;
-    char unk10E;
+    char weaponKillStreakBladeCategory;
     char weaponKillStreak;
     u_short chainStreak;
     u_short bossHealCount;

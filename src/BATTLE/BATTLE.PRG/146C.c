@@ -111,8 +111,8 @@ void func_8006C40C(void);
 void func_80069DEC(void);
 void func_8006A228(int, int);
 void func_8006A8EC(void*, void*);
-void vs_battle_seEquipmentForDrop(
-    vs_battle_seEquipmentForDrop_t*, vs_battle_equipment* equipment);
+void vs_battle_setEquipmentForDrop(
+    vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -406,11 +406,11 @@ void vs_battle_setGemForDrop(func_800FD17C_t* dropGem, vs_battle_equipment* targ
     }
 }
 
-void vs_battle_seEquipmentForDrop(
-    vs_battle_seEquipmentForDrop_t* dropArmor, vs_battle_equipment* targetArmor)
+void vs_battle_setEquipmentForDrop(
+    vs_battle_setEquipmentForDrop_t* dropArmor, vs_battle_equipment* targetArmor)
 {
     int i;
-    vs_battle_seEquipmentForDrop_t* a3;
+    vs_battle_setEquipmentForDrop_t* a3;
 
     dropArmor->id = targetArmor->id;
     dropArmor->unk1 = targetArmor->unk2;
@@ -441,22 +441,43 @@ void vs_battle_seEquipmentForDrop(
     dropArmor->material = targetArmor->material;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B8C0);
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
-
-void vs_battle_setArmorForDrop(vs_battle_seEquipmentForDrop_t* arg0, vs_battle_armorInfo* arg1)
+void func_8006B8C0(u_char* arg0, vs_battle_weaponInfo* arg1)
 {
-    if (arg1->armor.id != 0) {
-        arg1->armor.currentDp = arg1->currentDp;
-        vs_battle_seEquipmentForDrop(arg0, &arg1->armor);
+    int i;
+
+    if (arg1->blade.id != 0) {
+        arg1->blade.currentDp = arg1->currentDp;
+        arg1->blade.currentPp = arg1->currentPp;
+        vs_battle_setBladeForDrop(&D_80060168.unk254[arg0[1]], &arg1->blade);
+        vs_battle_setGripForDrop(&D_80060168.unk530[arg0[2]], &arg1->grip);
+        for (i = 0; i < 3; ++i) {
+            if (arg1->gems[i].id != 0) {
+                vs_battle_setGemForDrop(
+                    &D_80060168.unk8A4[arg0[(unsigned int)(i + 4)]], &arg1->gems[i]);
+            }
+        }
+        for (i = 0; i < 24; ++i) {
+            arg0[(unsigned int)(i + 8)] = arg1->name[i];
+        }
     }
 }
 
-void vs_battle_setAccesoryForDrop(vs_battle_seEquipmentForDrop_t* arg0, vs_battle_accessoryInfo* accessory)
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
+
+void vs_battle_setArmorForDrop(
+    vs_battle_setEquipmentForDrop_t* arg0, vs_battle_armorInfo* arg1)
+{
+    if (arg1->armor.id != 0) {
+        arg1->armor.currentDp = arg1->currentDp;
+        vs_battle_setEquipmentForDrop(arg0, &arg1->armor);
+    }
+}
+
+void vs_battle_setAccesoryForDrop(
+    vs_battle_setEquipmentForDrop_t* arg0, vs_battle_accessoryInfo* accessory)
 {
     if (accessory->accessory.id != 0) {
-        vs_battle_seEquipmentForDrop(arg0, &accessory->accessory);
+        vs_battle_setEquipmentForDrop(arg0, &accessory->accessory);
     }
 }
 

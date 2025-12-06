@@ -306,7 +306,7 @@ typedef struct {
     char affinities[8];
     u_short material;
     u_short unk26;
-} vs_battle_seEquipmentForDrop_t;
+} vs_battle_setEquipmentForDrop_t;
 
 typedef struct {
     int roomFlags[16];
@@ -325,7 +325,7 @@ typedef struct {
     char unk300[256];
     char unk400[256];
     char unk500[48];
-    u_short unk530[1][8];
+    vs_battle_setGripForDrop_t unk530[1];
     u_short unk540[2][8]; // 1st dimension unknown
     char unk56C[160];
     char unk600[64];
@@ -333,7 +333,7 @@ typedef struct {
     char unk6E0[32];
     char unk700[256];
     char unk800[164];
-    char unk8A4[1][28];
+    func_800FD17C_t unk8A4[1];
     u_short unk8C0[2][14]; // 1st dimension unknown
     char unk8F8[264];
     char unkA00[256];
@@ -388,10 +388,10 @@ extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern int D_80060148[][8];
-extern int D_80060238[][12];
-extern vs_battle_seEquipmentForDrop_t D_80060780[];
+extern char D_80060148[][32];
 extern D_80060168_t D_80060168;
+extern int D_80060238[][12];
+extern vs_battle_setEquipmentForDrop_t D_80060780[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern char D_80061078[0x520];

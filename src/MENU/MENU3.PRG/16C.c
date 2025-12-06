@@ -505,7 +505,7 @@ int func_801038E4(int arg0)
             D_80109666 = temp_v0_2;
             temp_v0_3 = func_80102D30(5, temp_v0_2);
             func_800FD0E0(
-                (void*)D_80060168.unk8A4[temp_v0_3], &sp10, &sp18, vs_battle_stringBuf);
+                &D_80060168.unk8A4[temp_v0_3], &sp10, &sp18, vs_battle_stringBuf);
             func_800FD878(temp_v0_3);
             func_80102C94(D_80109665, (void*)&sp10, sp18, temp_v0_2);
             return 0;

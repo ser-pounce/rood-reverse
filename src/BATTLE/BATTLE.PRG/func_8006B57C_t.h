@@ -28,3 +28,28 @@ typedef struct {
     short material;
     short unk2A;
 } func_8006B57C_t;
+
+typedef struct {
+    short id;
+    char unk2;
+    char category;
+    char gemSlots;
+    char strength;
+    char intelligence;
+    char agility;
+    char types[4];
+    char unkC[4];
+} vs_battle_setGripForDrop_t;
+
+typedef struct {
+    u_short id;
+    char unk2;
+    char unk3;
+    char gemEffects;
+    char strength;
+    char intelligence;
+    char agility;
+    signed char classes[8];
+    signed char affinities[8];
+    signed char unk18[4];
+} func_800FD17C_t;

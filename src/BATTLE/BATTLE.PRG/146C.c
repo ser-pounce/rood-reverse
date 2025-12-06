@@ -117,15 +117,6 @@ typedef struct {
 } _setWeaponForDropRand_t;
 
 typedef struct {
-    char unk0[0x18];
-    vs_battle_equipment blade;
-    vs_battle_equipment grip;
-    vs_battle_equipment gems[3];
-    int unk108;
-    char unk10C;
-} _setWeaponForDropRand_t2;
-
-typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -133,29 +124,6 @@ typedef struct {
     vs_battle_setEquipmentForDrop_t shield;
     func_800FD17C_t gems[3];
 } _setShieldForDropRand_t;
-
-typedef struct {
-    char unk0[0x18];
-    vs_battle_equipment shield;
-    vs_battle_equipment gems[3];
-    char unkD8;
-    char unkD9;
-} _setShieldForDropRand_t2;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_setEquipmentForDrop_t armor;
-} _setArmorForDropRand_t;
-
-typedef struct {
-    vs_battle_equipment armor;
-    int unk30;
-    short unk34;
-    char unk36;
-} _setArmorForDropRand_t2;
 
 typedef struct {
     char unk0;
@@ -166,11 +134,27 @@ typedef struct {
 } _setAccessoryForDropRand_t;
 
 typedef struct {
-    vs_battle_equipment accessory;
-    int unk30[26];
-    char unk98;
-} _setAccessoryForDropRand_t2;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_setEquipmentForDrop_t armor;
+} _setArmorForDropRand_t;
 
+typedef struct {
+    void** unk0;
+    int unk4;
+    _setWeaponForDropRand_t weapon;
+    int unkB4[17];
+    _setShieldForDropRand_t shield;
+    _setArmorForDropRand_t armor;
+    int unk1A4[11];
+    _setAccessoryForDropRand_t accessory;
+    int unk1FC[11];
+} func_8006BE64_t;
+
+int func_8006BDA0(_setWeaponForDropRand_t*, vs_battle_actor2*);
+int func_8006BDF0(_setWeaponForDropRand_t*, void*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -235,7 +219,7 @@ extern int D_800F18A8;
 extern int D_800F18B0;
 extern int D_800F18F0;
 extern char D_800F18F8;
-extern int* D_800F1900;
+extern void** D_800F1900;
 extern int D_800F190C;
 extern u_short D_800F1910[];
 extern int D_800F1968;
@@ -563,7 +547,7 @@ void vs_battle_setAccesoryForDrop(
     }
 }
 
-int _setWeaponForDropRand(_setWeaponForDropRand_t* arg0, _setWeaponForDropRand_t2* arg1)
+int _setWeaponForDropRand(_setWeaponForDropRand_t* arg0, vs_battle_weaponInfo* arg1)
 {
     int i;
 
@@ -582,7 +566,7 @@ int _setWeaponForDropRand(_setWeaponForDropRand_t* arg0, _setWeaponForDropRand_t
     return 0;
 }
 
-int _setShieldForDropRand(_setShieldForDropRand_t* arg0, _setShieldForDropRand_t2* arg1)
+int _setShieldForDropRand(_setShieldForDropRand_t* arg0, vs_battle_shieldInfo* arg1)
 {
     int i;
 
@@ -599,25 +583,25 @@ int _setShieldForDropRand(_setShieldForDropRand_t* arg0, _setShieldForDropRand_t
     return 0;
 }
 
-int _setArmorForDropRand(_setArmorForDropRand_t* arg0, _setArmorForDropRand_t2* arg1)
+int _setAccessoryForDropRand(
+    _setAccessoryForDropRand_t* arg0, vs_battle_accessoryInfo* arg1)
 {
     if (vs_main_getRand(0xFF) < arg1->unk36) {
-        vs_battle_setEquipmentForDrop(&arg0->armor, &arg1->armor);
+        vs_battle_setEquipmentForDrop(&arg0->accessory, &arg1->accessory);
         arg0->unk0 = 3;
         return 1;
     }
     return 0;
 }
 
-int _setAccessoryForDropRand(
-    _setAccessoryForDropRand_t* arg0, _setAccessoryForDropRand_t2* arg1)
+int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_armorInfo* arg1)
 {
     int i;
 
     if (vs_main_getRand(0xFF) < arg1->unk98) {
         for (i = 0; i < 2; ++i) {
-            if (arg0[i].accessory.id == 0) {
-                vs_battle_setEquipmentForDrop(&arg0[i].accessory, &arg1->accessory);
+            if (arg0[i].armor.id == 0) {
+                vs_battle_setEquipmentForDrop(&arg0[i].armor, &arg1->armor);
                 arg0[i].unk0 = 3;
                 return 1;
             }
@@ -630,7 +614,52 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BDA0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BDF0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BE64);
+void func_8006BE64(vs_battle_actor* arg0)
+{
+    int var_a0;
+    int i;
+    void** temp_a0;
+    func_8006BE64_t* temp_v0;
+    void** var_v1;
+    vs_battle_actor2* temp_s2;
+
+    temp_s2 = arg0->unk3C;
+    temp_v0 = vs_main_allocHeapR(sizeof(func_8006BE64_t));
+    if (temp_v0 != NULL) {
+        vs_main_bzero(temp_v0, sizeof(func_8006BE64_t));
+        temp_v0->unk4 |= _setWeaponForDropRand(&temp_v0->weapon, &temp_s2->weapon);
+        temp_v0->unk4 |= _setShieldForDropRand(&temp_v0->shield, &temp_s2->shield);
+        temp_v0->unk4 |=
+            _setAccessoryForDropRand(&temp_v0->accessory, &temp_s2->accessory);
+        for (i = 0; i < 6; ++i) {
+            if (temp_s2->hitLocations[i].armor.armor.id != 0) {
+                temp_v0->unk4 |= _setArmorForDropRand(
+                    &temp_v0->armor, &temp_s2->hitLocations[i].armor);
+            }
+        }
+        temp_v0->unk4 |= func_8006BDA0(&temp_v0->weapon, temp_s2 + 1);
+        temp_v0->unk4 |= func_8006BDF0(&temp_v0->weapon, &(temp_s2 + 1)->name[8]);
+        if (temp_v0->unk4 != 0) {
+            var_v1 = D_800F1900;
+            var_a0 = 1;
+            while (var_v1 != NULL) {
+                if (var_v1[1] == (void*)arg0->unk4) {
+                    var_a0 = 0;
+                }
+                var_v1 = (void**)var_v1[0];
+            }
+            if (var_a0 != 0) {
+                int new_var = arg0->unk4;
+                temp_a0 = D_800F1900;
+                D_800F1900 = (void**)temp_v0;
+                temp_v0->unk4 = new_var;
+                temp_v0->unk0 = temp_a0;
+                return;
+            }
+        }
+        vs_main_freeHeapR(temp_v0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C004);
 
@@ -2440,23 +2469,21 @@ int vs_battle_getSkillFlags(int arg0, int id)
 
 void func_8008A6FC(void)
 {
-    int* temp_s0;
-    int* var_a0;
+    void** var_a0 = D_800F1900;
 
-    var_a0 = D_800F1900;
     while (var_a0 != 0) {
-        temp_s0 = (int*)*var_a0;
+        void* temp_s0 = *var_a0;
         vs_main_freeHeapR(var_a0);
         var_a0 = temp_s0;
     }
-    D_800F1900 = 0;
+    D_800F1900 = NULL;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
-void func_8008AB68(void) { vs_main_stateFlags.unk105 = (char)D_800F1BBE + 1; }
+void func_8008AB68(void) { vs_main_stateFlags.unk105 = D_800F1BBE + 1; }
 
 int func_8008AB80(int arg0)
 {

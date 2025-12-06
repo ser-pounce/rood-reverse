@@ -100,7 +100,8 @@ typedef struct {
     int unk0[6];
     vs_battle_equipment shield;
     vs_battle_equipment gems[3];
-    u_short unkD8;
+    char unkD8;
+    char unkD9;
     u_char unkDA;
     char unkDB;
     u_short currentDp;
@@ -132,7 +133,8 @@ typedef struct {
     u_short types[4];
     vs_battle_classAffinityCurrent classAffinityCurrent;
     int unk88[4];
-    u_short unk98;
+    char unk98;
+    char unk99;
     u_char unk9A;
     u_char unk9B;
     vs_battle_classAffinityBaseline classAffinityBaseline;

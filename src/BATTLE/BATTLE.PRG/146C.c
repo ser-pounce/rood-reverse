@@ -105,6 +105,26 @@ typedef struct {
     short unk3C;
 } func_800842AC_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    func_8006B57C_t blade;
+    vs_battle_setGripForDrop_t grip;
+    func_800FD17C_t gems[3];
+    char unk94[0x18];
+} func_8006BB0C_t;
+
+typedef struct {
+    char unk0[0x18];
+    vs_battle_equipment blade;
+    vs_battle_equipment grip;
+    vs_battle_equipment gems[3];
+    int unk108;
+    char unk10C;
+} func_8006BB0C_t2;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -497,30 +517,20 @@ void vs_battle_setAccesoryForDrop(
     }
 }
 
-int func_8006BB0C(char* arg0, char* arg1)
+int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1) 
 {
-    int var_s1;
-    int var_s2;
     int i;
-    u_short* var_s0;
 
-    if (vs_main_getRand(0xFF) < arg1[0x10C]) {
-        vs_battle_setBladeForDrop(arg0 + 4, arg1 + 0x18);
-        vs_battle_setGripForDrop(arg0 + 0x30, arg1 + 0x48);
-        i = 0;
-        var_s2 = 0x78;
-        var_s1 = 0x40;
-        var_s0 = arg1;
+    if (vs_main_getRand(0xFF) < arg1->unk10C) {
+        vs_battle_setBladeForDrop(&arg0->blade, &arg1->blade);
+        vs_battle_setGripForDrop(&arg0->grip, &arg1->grip);
         for (i = 0; i < 3; ++i) {
-            if (var_s0[0x3C] != 0) {
-                vs_battle_setGemForDrop(arg0 + var_s1, arg1 + var_s2);
+            if (arg1->gems[i].id != 0) {
+                vs_battle_setGemForDrop(&arg0->gems[i], &arg1->gems[i]);
             }
-            var_s2 += 0x30;
-            var_s1 += 0x1C;
-            var_s0 += 0x18;
         }
-        vs_main_memcpy(arg0 + 0x94, arg1, 0x18);
-        *arg0 = 3;
+        vs_main_memcpy(arg0->unk94, arg1, sizeof arg0->unk94);
+        arg0->unk0 = 3;
         return 1;
     }
     return 0;

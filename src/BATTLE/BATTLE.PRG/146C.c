@@ -497,7 +497,34 @@ void vs_battle_setAccesoryForDrop(
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BB0C);
+int func_8006BB0C(char* arg0, char* arg1)
+{
+    int var_s1;
+    int var_s2;
+    int i;
+    u_short* var_s0;
+
+    if (vs_main_getRand(0xFF) < arg1[0x10C]) {
+        vs_battle_setBladeForDrop(arg0 + 4, arg1 + 0x18);
+        vs_battle_setGripForDrop(arg0 + 0x30, arg1 + 0x48);
+        i = 0;
+        var_s2 = 0x78;
+        var_s1 = 0x40;
+        var_s0 = arg1;
+        for (i = 0; i < 3; ++i) {
+            if (var_s0[0x3C] != 0) {
+                vs_battle_setGemForDrop(arg0 + var_s1, arg1 + var_s2);
+            }
+            var_s2 += 0x30;
+            var_s1 += 0x1C;
+            var_s0 += 0x18;
+        }
+        vs_main_memcpy(arg0 + 0x94, arg1, 0x18);
+        *arg0 = 3;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BBEC);
 

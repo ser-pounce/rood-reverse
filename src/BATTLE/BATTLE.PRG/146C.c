@@ -1987,8 +1987,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082234);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800822A0);
 
-// https://decomp.me/scratch/1tgiA
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008231C);
+short func_8008231C(int arg0, u_char* arg1) 
+{
+    return vs_battle_actors[*arg1]->unk3C->weapon.currentPp + ((u_short)D_800F19CC->unk0 + 0xFFFF);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082360);
 

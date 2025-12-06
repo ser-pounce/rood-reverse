@@ -265,7 +265,7 @@ typedef struct {
 } vs_main_flags_t;
 
 typedef struct {
-    char artsLearned[12];
+    u_char artsLearned[12];
     struct {
         u_short weaponCategories[10];
         u_short battleAbilitiesUnlocked;

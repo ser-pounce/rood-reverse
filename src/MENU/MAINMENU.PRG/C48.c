@@ -61,7 +61,7 @@ void func_800FA448(void)
     temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->weapon.unk10D != 0) {
-        func_8006B8C0(D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
+        vs_battle_setWeaponForDrop(D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
     }
 
     if (temp_s1->shield.unkDA != 0) {

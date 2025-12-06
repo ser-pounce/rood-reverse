@@ -441,7 +441,7 @@ void vs_battle_setEquipmentForDrop(
     dropArmor->material = targetArmor->material;
 }
 
-void func_8006B8C0(u_char* arg0, vs_battle_weaponInfo* arg1)
+void vs_battle_setWeaponForDrop(u_char* arg0, vs_battle_weaponInfo* arg1)
 {
     int i;
 
@@ -462,7 +462,23 @@ void func_8006B8C0(u_char* arg0, vs_battle_weaponInfo* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B9E0);
+void func_8006B9E0(u_char* arg0, vs_battle_shieldInfo* arg1)
+{
+    int i;
+
+    if (arg1->shield.id != 0) {
+        arg1->shield.currentDp = arg1->currentPp;
+        arg1->shield.currentPp = arg1->currentDp;
+        vs_battle_setEquipmentForDrop(
+            (vs_battle_setEquipmentForDrop_t*)(arg0 + 4), &arg1->shield);
+        for (i = 0; i < 3; ++i) {
+            if (arg1->gems[i].id != 0) {
+                vs_battle_setGemForDrop(
+                    &D_80060168.unk8A4[arg0[(unsigned int)(i + 0x2C)]], &arg1->gems[i]);
+            }
+        }
+    }
+}
 
 void vs_battle_setArmorForDrop(
     vs_battle_setEquipmentForDrop_t* arg0, vs_battle_armorInfo* arg1)

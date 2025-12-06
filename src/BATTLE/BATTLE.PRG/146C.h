@@ -322,8 +322,8 @@ void func_8006B338(void*);
 void vs_battle_setBladeForDrop(func_8006B57C_t*, vs_battle_equipment*);
 void vs_battle_setGripForDrop(vs_battle_setGripForDrop_t*, vs_battle_equipment*);
 void vs_battle_setGemForDrop(func_800FD17C_t*, vs_battle_equipment*);
-void func_8006B8C0(u_char* arg0, vs_battle_weaponInfo* arg1);
-void func_8006B9E0(void*, vs_battle_shieldInfo*);
+void vs_battle_setWeaponForDrop(u_char* arg0, vs_battle_weaponInfo* arg1);
+void func_8006B9E0(u_char*, vs_battle_shieldInfo*);
 void vs_battle_setArmorForDrop(vs_battle_setEquipmentForDrop_t*, vs_battle_armorInfo*);
 void vs_battle_setAccesoryForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_accessoryInfo*);

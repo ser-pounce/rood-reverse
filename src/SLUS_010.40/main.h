@@ -390,7 +390,7 @@ extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern char D_80060148[][32];
 extern D_80060168_t D_80060168;
-extern int D_80060238[][12];
+extern char D_80060238[][48];
 extern vs_battle_setEquipmentForDrop_t D_80060780[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;

@@ -2,6 +2,7 @@ vs_battle_setBladeForDrop = 0x8006B57C;
 vs_battle_setGripForDrop = 0x8006B6AC;
 vs_battle_setGemForDrop = 0x8006B728;
 vs_battle_setEquipmentForDrop = 0x8006B7BC;
+vs_battle_setWeaponForDrop = 0x8006B8C0;
 vs_battle_setArmorForDrop = 0x8006BAA8;
 vs_battle_setAccesoryForDrop = 0x8006BADC;
 _add_min = 0x8006D9C4;

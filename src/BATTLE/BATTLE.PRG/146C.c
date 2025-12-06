@@ -114,7 +114,7 @@ typedef struct {
     vs_battle_setGripForDrop_t grip;
     func_800FD17C_t gems[3];
     char unk94[0x18];
-} func_8006BB0C_t;
+} _setWeaponForDropRand_t;
 
 typedef struct {
     char unk0[0x18];
@@ -123,7 +123,7 @@ typedef struct {
     vs_battle_equipment gems[3];
     int unk108;
     char unk10C;
-} func_8006BB0C_t2;
+} _setWeaponForDropRand_t2;
 
 typedef struct {
     char unk0;
@@ -132,7 +132,7 @@ typedef struct {
     char unk3;
     vs_battle_setEquipmentForDrop_t shield;
     func_800FD17C_t gems[3];
-} func_8006BBEC_t;
+} _setShieldForDropRand_t;
 
 typedef struct {
     char unk0[0x18];
@@ -140,7 +140,7 @@ typedef struct {
     vs_battle_equipment gems[3];
     char unkD8;
     char unkD9;
-} func_8006BBEC_t2;
+} _setShieldForDropRand_t2;
 
 typedef struct {
     char unk0;
@@ -148,14 +148,14 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_setEquipmentForDrop_t armor;
-} func_8006BCB0_t;
+} _setArmorForDropRand_t;
 
 typedef struct {
     vs_battle_equipment armor;
     int unk30;
     short unk34;
     char unk36;
-} func_8006BCB0_t2;
+} _setArmorForDropRand_t2;
 
 typedef struct {
     char unk0;
@@ -163,13 +163,13 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_setEquipmentForDrop_t accessory;
-} func_8006BD14_t;
+} _setAccessoryForDropRand_t;
 
 typedef struct {
     vs_battle_equipment accessory;
     int unk30[26];
     char unk98;
-} func_8006BD14_t2;
+} _setAccessoryForDropRand_t2;
 
 void func_8006C350(void);
 void func_8006C39C(void);
@@ -563,7 +563,7 @@ void vs_battle_setAccesoryForDrop(
     }
 }
 
-int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1)
+int _setWeaponForDropRand(_setWeaponForDropRand_t* arg0, _setWeaponForDropRand_t2* arg1)
 {
     int i;
 
@@ -582,7 +582,7 @@ int func_8006BB0C(func_8006BB0C_t* arg0, func_8006BB0C_t2* arg1)
     return 0;
 }
 
-int func_8006BBEC(func_8006BBEC_t* arg0, func_8006BBEC_t2* arg1)
+int _setShieldForDropRand(_setShieldForDropRand_t* arg0, _setShieldForDropRand_t2* arg1)
 {
     int i;
 
@@ -599,7 +599,7 @@ int func_8006BBEC(func_8006BBEC_t* arg0, func_8006BBEC_t2* arg1)
     return 0;
 }
 
-int func_8006BCB0(func_8006BCB0_t* arg0, func_8006BCB0_t2* arg1)
+int _setArmorForDropRand(_setArmorForDropRand_t* arg0, _setArmorForDropRand_t2* arg1)
 {
     if (vs_main_getRand(0xFF) < arg1->unk36) {
         vs_battle_setEquipmentForDrop(&arg0->armor, &arg1->armor);
@@ -609,7 +609,8 @@ int func_8006BCB0(func_8006BCB0_t* arg0, func_8006BCB0_t2* arg1)
     return 0;
 }
 
-int func_8006BD14(func_8006BD14_t* arg0, func_8006BD14_t2* arg1)
+int _setAccessoryForDropRand(
+    _setAccessoryForDropRand_t* arg0, _setAccessoryForDropRand_t2* arg1)
 {
     int i;
 

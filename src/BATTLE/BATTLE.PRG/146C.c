@@ -163,6 +163,8 @@ void func_8006A228(int, int);
 void func_8006A8EC(void*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
+void func_8006C004(vs_battle_actor*, vs_battle_actor**);
+void func_8006C164(int);     
 void func_8006DEFC(func_8007820C_t*, int, int);
 void func_8006F53C(void);
 void func_8006F5CC(void);
@@ -663,9 +665,20 @@ void func_8006BE64(vs_battle_actor* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C004);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C164);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C164);                           
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C1CC);
+void func_8006C1CC(int arg0, int arg1, int arg2) 
+{
+    vs_battle_actor* temp_s0 = vs_battle_actors[arg1];
+    if ((temp_s0->unk27 != 0x80) && (temp_s0->unk28 == 0)) {
+        if ((arg2 != 0) && (arg0 == 0)) {
+            func_8006C004(temp_s0, &vs_battle_actors[arg1]);
+            func_8006C164(0);
+        }
+        func_8006BE64(temp_s0);
+        temp_s0->unk28 = 1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C250);
 

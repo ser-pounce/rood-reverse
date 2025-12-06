@@ -157,6 +157,20 @@ typedef struct {
     char unk36;
 } func_8006BCB0_t2;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_setEquipmentForDrop_t accessory;
+} func_8006BD14_t;
+
+typedef struct {
+    vs_battle_equipment accessory;
+    int unk30[26];
+    char unk98;
+} func_8006BD14_t2;
+
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -595,7 +609,21 @@ int func_8006BCB0(func_8006BCB0_t* arg0, func_8006BCB0_t2* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BD14);
+int func_8006BD14(func_8006BD14_t* arg0, func_8006BD14_t2* arg1)
+{
+    int i;
+
+    if (vs_main_getRand(0xFF) < arg1->unk98) {
+        for (i = 0; i < 2; ++i) {
+            if (arg0[i].accessory.id == 0) {
+                vs_battle_setEquipmentForDrop(&arg0[i].accessory, &arg1->accessory);
+                arg0[i].unk0 = 3;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BDA0);
 

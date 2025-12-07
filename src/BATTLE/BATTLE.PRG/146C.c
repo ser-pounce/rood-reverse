@@ -68,7 +68,8 @@ typedef struct {
     short unkA;
     short unkC;
     short unkE;
-    int unk10;
+    short unk10;
+    short unk12;
     int unk14;
     int unk18;
     int unk1C;
@@ -2589,10 +2590,15 @@ int func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
 }
 
 int func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
-    func_80085390_t2* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800849F0);
+    func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+{
+    int temp_v0 = vs_main_getRand(4) + 1;
+    int new_var2 = arg2->unk1C;
+    new_var2 &= ~0x3000;
+    arg2->unk10 += temp_v0;
+    arg2->unk1C = new_var2 | 0x2000;
+}
 
 int func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),

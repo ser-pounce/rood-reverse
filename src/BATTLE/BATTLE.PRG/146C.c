@@ -95,7 +95,10 @@ typedef struct {
     u_short unk8;
     char unkA;
     char unkB;
-    int unkC[531];
+    int unkC[19];
+    short unk58;
+    short unk5A;
+    int unk5C[511];
     char unk858[4][0x84C];
     char unk2988[0x280];
     short unk2C08;
@@ -172,14 +175,18 @@ typedef struct {
     func_8006BE64_t2 unk8;
 } func_8006BE64_t;
 
+typedef union {
+    u_short u16[2];
+    u_int s32;
+} func_80085390_t3;
+
 typedef struct {
     int unk0;
     int unk4;
     int unk8;
     int unkC;
     int unk10;
-    u_short unk14;
-    u_short unk16[19];
+    func_80085390_t3 unk14[10];
 } func_80085390_t;
 
 typedef struct {
@@ -238,7 +245,7 @@ void func_800802C4(func_80085390_t*, vs_battle_actor2*, vs_battle_actor2*, short
 int func_800803A4(func_80085390_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
-short func_80081148(int, int, int, int, int, int);
+short func_80081148(func_80085390_t*, func_80085390_t2*, func_80085718_t*, int, int, int);
 int func_800838EC(func_80085390_t*, func_80085390_t2*, func_80085718_t*, int, int);
 int func_8008574C(int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
@@ -2010,20 +2017,48 @@ int func_800810CC(int arg0, func_80085718_t* arg1)
     return ret;
 }
 
-void func_80081130(void) { }
+void func_80081130(func_80085390_t* arg0 __attribute((unused)),
+    func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)))
+{
+}
 
-short func_80081138(void) { return D_800F1A08; }
+short func_80081138(func_80085390_t* arg0 __attribute((unused)),
+    func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)))
+{
+    return D_800F1A08;
+}
 
+short func_80081148(func_80085390_t* arg0 __attribute((unused)),
+    func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)), int arg5);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80081148);
 
-short func_800819D0(int arg0, int arg1, int arg2, int arg3, int arg4)
+short func_800819D0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+    int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 0);
 }
 
+short func_800819FC(func_80085390_t* arg0 __attribute((unused)),
+    func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800819FC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082144);
+short func_80082144(func_80085390_t* arg0, func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)))
+{
+    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A)
+          * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+    int new_var = 0xFFFF;
+    return (v / 10) + (D_800F19CC->unk0 + new_var);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800821B0);
 
@@ -2087,7 +2122,8 @@ short func_8008384C(u_int* arg0, int arg1 __attribute__((unused)),
     return (D_800F1A08 * ((arg0[5] >> 0x16) & 0x1F)) / 10;
 }
 
-short func_8008388C(int arg0, int arg1, int arg2, int arg3, int arg4)
+short func_8008388C(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+    int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 1);
 }
@@ -2107,7 +2143,8 @@ int func_800838EC(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
         && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] == 0x80)) {
         var_v0 = 999;
     } else {
-        var_v0 = D_800E830C[arg0->unk16[arg3 * 2] & 0x3F](arg0, arg1, arg2, arg3, arg4);
+        var_v0 =
+            D_800E830C[arg0->unk14[arg3].u16[1] & 0x3F](arg0, arg1, arg2, arg3, arg4);
     }
     D_800F1A08 = var_v0;
     return var_v0;

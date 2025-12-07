@@ -2601,10 +2601,15 @@ int func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
 }
 
 int func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
-    func_80085390_t2* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084A3C);
+    func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+{
+    int temp_v0 = vs_main_getRand(4) + 1;
+    int new_var2 = arg2->unk1C;
+    new_var2 &= 0xFFFF3FFF;
+    arg2->unk12 = arg2->unk12 + temp_v0;
+    arg2->unk1C = new_var2 | 0x8000;
+}
 
 int func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),

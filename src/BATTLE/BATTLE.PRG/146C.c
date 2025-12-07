@@ -2060,7 +2060,16 @@ short func_80082144(func_80085390_t* arg0, func_80085390_t2* arg1 __attribute((u
     return (v / 10) + (D_800F19CC->unk0 + new_var);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800821B0);
+short func_800821B0(func_80085390_t* arg0, func_80085390_t2* arg1 __attribute((unused)),
+    func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
+    int arg4 __attribute((unused)))
+{
+    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0]->unk3C;
+    int v =
+        (temp_v0->maxHP - temp_v0->currentHP) * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+    int f = 0xFFFF;
+    return (v / 10) + (D_800F19CC->unk0 + f);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082234);
 

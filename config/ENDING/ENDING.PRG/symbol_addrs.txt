@@ -1,3 +1,4 @@
 _inverseDistanceFromScreencenter = 0x8006934C;
+_insertTpage = 0x8006A958;
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;

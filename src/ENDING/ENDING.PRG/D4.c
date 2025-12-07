@@ -24,6 +24,7 @@ void func_8006B9B4(void);
 void func_8006A0D8(void);
 void _drawInteger(DRAWENV*);
 void func_8006A888(void);
+void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
 void func_8006AB44(void (*)(void));
@@ -110,7 +111,7 @@ void func_8006A0D8(void)
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
-    sprt = (SPRT*)func_8006A958(0x2C, 0x7FF);
+    sprt = (SPRT*)_insertTpage(0x2C, 0x7FF);
     SetSprt(sprt);
     setUV0(sprt, 0, 0xA);
     setXY0(sprt, 0x100, 0xA);
@@ -120,7 +121,7 @@ void func_8006A0D8(void)
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
-    poly = (POLY_G4*)func_8006A958(0x2D, 0x7FF);
+    poly = (POLY_G4*)_insertTpage(0x2D, 0x7FF);
     SetPolyG4(poly);
     poly->x0 = poly->x2 = 0;
     poly->x1 = poly->x3 = 0x140;
@@ -161,7 +162,7 @@ void func_8006A0D8(void)
     AddPrim(data[1] + 8, tile++);
     data[0] = tile;
 
-    data[0] = func_8006A958(0xC0, 2);
+    data[0] = _insertTpage(0xC0, 2);
 }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A3BC);
@@ -246,7 +247,7 @@ void _drawInteger(DRAWENV* drawenv)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A888);
 
-DR_TPAGE* func_8006A958(int arg0, int arg1)
+void* _insertTpage(int arg0, int arg1)
 {
     void** temp_s0;
     DR_TPAGE* tpage;

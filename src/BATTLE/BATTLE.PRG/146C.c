@@ -178,7 +178,8 @@ typedef struct {
     int unk8;
     int unkC;
     int unk10;
-    int unk14[10];
+    u_short unk14;
+    u_short unk16[19];
 } func_80085390_t;
 
 typedef struct {
@@ -258,6 +259,8 @@ void func_8008D5A0(int);
 
 extern u_char D_800E8200[];
 extern void (*D_800E8378[])(
+    func_80085390_t*, func_80085390_t2*, func_80085718_t*, int, int);
+extern short (*D_800E830C[])(
     func_80085390_t*, func_80085390_t2*, func_80085718_t*, int, int);
 extern int D_800E8498;
 extern int D_800F185C;
@@ -715,7 +718,6 @@ void func_8006BE64(vs_battle_actor* arg0)
 void func_8006C004(vs_battle_actor* arg0)
 {
     u_int temp_t1;
-    u_short temp_v1;
     vs_battle_actor2* new_var2;
 
     temp_t1 = arg0->unk1A;
@@ -2096,7 +2098,20 @@ short _getRisk(
     return vs_battle_actors[*arg2]->unk3C->risk;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800838EC);
+int func_800838EC(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+    int arg3, int arg4)
+{
+    short var_v0;
+
+    if ((arg2->unk3C == 0)
+        && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] == 0x80)) {
+        var_v0 = 999;
+    } else {
+        var_v0 = D_800E830C[arg0->unk16[arg3 * 2] & 0x3F](arg0, arg1, arg2, arg3, arg4);
+    }
+    D_800F1A08 = var_v0;
+    return var_v0;
+}
 
 void func_80083990(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
@@ -2677,7 +2692,7 @@ void func_80084B70(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_
     }
 }
 
-int func_80084CAC(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084CAC(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));

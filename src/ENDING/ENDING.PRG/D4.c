@@ -2,6 +2,7 @@
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/32154.h"
 #include "lbas.h"
+#include "gpu.h"
 #include <libapi.h>
 
 typedef struct {
@@ -90,7 +91,70 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069BC0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069F9C);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A0D8);
+void func_8006A0D8(void) {
+    TILE* tile;
+    POLY_G4* poly;
+    SPRT* sprt;
+    void** data;
+
+    data = (void** )0x1F800000;
+    sprt = data[0];
+    SetSprt(sprt);
+    setXY0(sprt, 0, 0xA);
+    setUV0(sprt, 0, 0xA);
+    setWH(sprt, 0x100, 0xCC);
+    setClut(sprt, 780, 255);
+    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    AddPrim(data[1] + 0x1FFC, sprt++);
+    data[0] = sprt;
+    sprt = (SPRT*)func_8006A958(0x2C, 0x7FF);
+    SetSprt(sprt);
+    setUV0(sprt, 0, 0xA);
+    setXY0(sprt, 0x100, 0xA);
+    setWH(sprt, 0x40, 0xCC);
+    setClut(sprt, 780, 255);
+    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    AddPrim(data[1] + 0x1FFC, sprt++);
+    data[0] = sprt;
+    poly = (POLY_G4*)func_8006A958(0x2D, 0x7FF);
+    SetPolyG4(poly);
+    poly->x0 = poly->x2 = 0;
+    poly->x1 = poly->x3 = 0x140;
+    poly->y0 = poly->y1 = 0xA;
+    poly->y2 = poly->y3 = 0x1E;
+    poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 0xFF;
+    poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 0;
+    poly->code |= 2;
+    AddPrim(data[1] + 8, poly++);
+    SetPolyG4(poly);
+    poly->x0 = poly->x2 = 0;
+    poly->x1 = poly->x3 = 0x140;
+    poly->y0 = poly->y1 = 0xC2;
+    poly->y2 = poly->y3 = 0xD6;
+    poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 0;
+    poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 0xFF;
+    poly->code |= 2;
+    AddPrim(data[1] + 8, poly++);
+    tile = (TILE*)poly;
+    SetTile(tile);
+    tile->r0 = tile->g0 = tile->b0 = 0;
+    setWH(tile, 0x140, 0xA);
+    tile->x0 = 0;
+    tile->y0 = 0;
+    AddPrim(data[1] + 8, tile++);
+    SetTile(tile);
+    tile->r0 = tile->g0 = tile->b0 = 0;
+    setWH(tile, 0x140, 0xA);
+    setXY0(tile, 0, 0);
+    AddPrim(data[1] + 8, tile++);
+    SetTile(tile);
+    tile->r0 = tile->g0 = tile->b0 = 0;
+    setWH(tile, 0x140, 0xA);
+    setXY0(tile, 0, 0xD6);
+    AddPrim(data[1] + 8, tile++);
+    data[0] = tile;
+    data[0] = func_8006A958(0xC0, 2);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A3BC);
 

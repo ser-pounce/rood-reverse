@@ -2098,16 +2098,14 @@ short _getRisk(
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800838EC);
 
-// Many of these don't return anything, but this is how the interface
-// was defined
-
-int func_80083990(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083990(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
+// TODO: Change return type, these only match with int and undefined return
 int func_80083998(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
@@ -2207,12 +2205,12 @@ int func_80083CB8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083D08(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083D08(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x12, arg2);
+    func_80081020(0x12, arg2);
 }
 
 int func_80083D2C(func_80085390_t* arg0 __attribute__((unused)),
@@ -2224,7 +2222,7 @@ int func_80083D2C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083D7C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083D7C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4)
 {
@@ -2270,60 +2268,60 @@ int func_80083EDC(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083F2C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F2C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x15, arg2);
+    func_80081020(0x15, arg2);
 }
 
-int func_80083F50(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F50(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x16, arg2);
+    func_80081020(0x16, arg2);
 }
 
-int func_80083F74(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F74(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x17, arg2);
+    func_80081020(0x17, arg2);
 }
 
-int func_80083F98(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F98(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x18, arg2);
+    func_80081020(0x18, arg2);
 }
 
-int func_80083FBC(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083FBC(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x19, arg2);
+    func_80081020(0x19, arg2);
 }
 
-int func_80083FE0(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083FE0(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x1A, arg2);
+    func_80081020(0x1A, arg2);
 }
 
-int func_80084004(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084004(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x1B, arg2);
+    func_80081020(0x1B, arg2);
 }
 
-int func_80084028(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084028(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return func_80081020(0x1C, arg2);
+    func_80081020(0x1C, arg2);
 }
 
 int func_8008404C(func_80085390_t* arg0 __attribute__((unused)),
@@ -2362,14 +2360,14 @@ int func_8008413C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_8008418C(func_80085390_t* arg0 __attribute__((unused)),
+void func_8008418C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     arg2->unk18 |= (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x1FFE1FE0);
 }
 
-int func_800841C8(func_80085390_t* arg0 __attribute__((unused)),
+void func_800841C8(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2380,14 +2378,14 @@ int func_800841C8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084228(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
+void func_80084228(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
     func_80085718_t* arg2, int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-int func_80084248(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084248(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2396,7 +2394,7 @@ int func_80084248(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = (arg2->unk1C & ~3) | 1;
 }
 
-int func_800842AC(func_80085390_t* arg0 __attribute__((unused)),
+void func_800842AC(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2405,14 +2403,14 @@ int func_800842AC(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = (arg2->unk1C & 0xFF3FFFFF) | 0x400000;
 }
 
-int func_800842F0(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
+void func_800842F0(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-int func_80084310(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084310(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
@@ -2422,7 +2420,7 @@ int func_80084310(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084340(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084340(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
@@ -2432,14 +2430,14 @@ int func_80084340(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084370(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
+void func_80084370(func_80085390_t* arg0 __attribute__((unused)), func_80085390_t2* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-int func_80084390(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084390(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) == 1) {
@@ -2451,7 +2449,7 @@ int func_80084390(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_80084440(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084440(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) != 1) {
@@ -2463,7 +2461,7 @@ int func_80084440(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_800844F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_800844F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 0) {
@@ -2475,7 +2473,7 @@ int func_800844F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_80084570(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084570(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 1) {
@@ -2487,7 +2485,7 @@ int func_80084570(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_800845F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_800845F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 2) {
@@ -2499,7 +2497,7 @@ int func_800845F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_80084670(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084670(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 3) {
@@ -2511,7 +2509,7 @@ int func_80084670(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_800846F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_800846F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 4) {
@@ -2523,7 +2521,7 @@ int func_800846F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_80084770(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084770(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 5) {
@@ -2535,7 +2533,7 @@ int func_80084770(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_800847F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_800847F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 6) {
@@ -2547,7 +2545,7 @@ int func_800847F0(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_80084870(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
+void func_80084870(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
     int arg3, int arg4)
 {
     int temp_v1 = D_800F19CC->unkC[7] & 3;
@@ -2560,7 +2558,7 @@ int func_80084870(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
+void func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2571,7 +2569,7 @@ int func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x80;
 }
 
-int func_80084958(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084958(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2582,7 +2580,7 @@ int func_80084958(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x200;
 }
 
-int func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
+void func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2593,7 +2591,7 @@ int func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x800;
 }
 
-int func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
+void func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2604,7 +2602,7 @@ int func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x2000;
 }
 
-int func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2615,7 +2613,7 @@ int func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x8000;
 }
 
-int func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2626,7 +2624,7 @@ int func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x40;
 }
 
-int func_80084AD8(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084AD8(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2637,7 +2635,7 @@ int func_80084AD8(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x100;
 }
 
-int func_80084B24(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084B24(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {

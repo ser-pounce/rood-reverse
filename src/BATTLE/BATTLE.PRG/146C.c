@@ -66,7 +66,8 @@ typedef struct {
     short unk6;
     short unk8;
     short unkA;
-    int unkC;
+    short unkC;
+    short unkE;
     int unk10;
     int unk14;
     int unk18;
@@ -2554,8 +2555,9 @@ int func_80084870(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
     }
 }
 
-int func_8008490C(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+int func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
+    func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
     int new_var2 = arg2->unk1C;
@@ -2565,10 +2567,15 @@ int func_8008490C(func_80085390_t* arg0, func_80085390_t2* arg1, func_80085718_t
 }
 
 int func_80084958(func_80085390_t* arg0 __attribute__((unused)),
-    func_80085390_t2* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084958);
+    func_80085390_t2* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+{
+    int temp_v0 = vs_main_getRand(4) + 1;
+    int new_var2 = arg2->unk1C;
+    new_var2 &= ~0x300;
+    arg2->unkC += temp_v0;
+    arg2->unk1C = new_var2 | 0x200;
+}
 
 int func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
     func_80085390_t2* arg1 __attribute__((unused)),

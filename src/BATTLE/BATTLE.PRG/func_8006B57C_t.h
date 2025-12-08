@@ -20,7 +20,9 @@ typedef struct {
     char intelligence;
     char agility;
     char cost;
-    short costType;
+    short unk10_0 : 2;
+    short unk10_2 : 3;
+    short unk10_7 : 11;
     short unk12;
     vs_battle_range_t range;
     signed char classes[8];

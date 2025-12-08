@@ -72,16 +72,31 @@ typedef struct {
     short unk12;
     int unk14;
     int unk18;
-    int unk1C;
     union {
         struct {
-            short unk0;
-            short unk2[13];
-        } s16;
+            u_int unk1C_0 : 2;
+            u_char unk1C_2 : 4;
+            u_char unk1C_6 : 2;
+            u_char unk1D_0 : 2;
+            u_char unk1D_2 : 2;
+            u_char unk1D_4 : 2;
+            u_char unk1D_6 : 2;
+            u_char unk1E_0 : 2;
+            u_char unk1E_2 : 4;
+            u_char unk1E_6 : 2;
+            u_char unk1F_0 : 2;
+            u_char unk1F_2 : 2;
+            u_char unk1F_4 : 4;
+        } fields;
+        int value;
+    } unk1C;
+    union {
+        short s16[7][2];
         int s32[7];
     } unk20;
-    short unk38;
-    int unk3C;
+    short unk3C;
+    short unk3E;
+    int unk40;
 } func_80085718_t;
 
 typedef struct {
@@ -215,7 +230,7 @@ void func_8007D360(void);
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
-int func_800801E0(vs_skill_t*, func_80085718_t*, short, int);
+int func_800801E0(vs_skill_t*, func_80085718_t*, short);
 void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 int func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 int func_80081020(int, func_80085718_t*);
@@ -320,9 +335,7 @@ extern int D_1F800034[];
 // Abilities or Items) invoked just before the skill takes effect
 void func_80069C6C(int arg0)
 {
-    int new_var;
     if (arg0 == 0) {
-        new_var = D_800F19CC->unk0;
         if (*D_800F19CC->unk858[D_800F19CC->unk0 & 3] == 0) {
             return;
         }
@@ -348,7 +361,7 @@ void func_80069D78(void)
 void func_80069DBC(void)
 {
     D_80060064 = 0;
-    vs_main_bzero(D_80061078, 0x520);
+    vs_main_bzero(D_80061078, sizeof D_80061078);
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80069DEC);
@@ -434,14 +447,13 @@ void vs_battle_setBladeForDrop(
     dropBlade->intelligence = targetBlade->intelligence;
     dropBlade->agility = targetBlade->agility;
     dropBlade->cost = targetBlade->cost;
-    v1 = (targetBlade->damageType & 3);
-    dropBlade->costType = (dropBlade->costType & 0xFFFC) | v1;
-    dropBlade->costType =
-        (dropBlade->costType & 0xFFE3) | ((targetBlade->costType & 7) * 4);
+    dropBlade->unk10_0 = targetBlade->damageType & 3;
+    dropBlade->unk10_2 = targetBlade->costType & 7;
     dropBlade->unk12 = targetBlade->unk14;
     dropBlade->range = targetBlade->range;
 
     a3 = dropBlade;
+
     for (i = 0; i < 6; ++i) {
         a3->classes[i] = targetBlade->classes[i];
     }
@@ -2129,7 +2141,7 @@ int func_800838EC(
 {
     short var_v0;
 
-    if ((arg2->unk3C == 0)
+    if ((arg2->unk40 == 0)
         && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] == 0x80)) {
         var_v0 = 999;
     } else {
@@ -2152,7 +2164,7 @@ int func_80083998(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(5, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2161,7 +2173,7 @@ int func_800839E8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(7, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2170,7 +2182,7 @@ int func_80083A38(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(9, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2179,7 +2191,7 @@ int func_80083A88(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(19, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2188,7 +2200,7 @@ int func_80083AD8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(4, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2197,7 +2209,7 @@ int func_80083B28(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(6, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2206,7 +2218,7 @@ int func_80083B78(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(8, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2215,7 +2227,7 @@ int func_80083BC8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(10, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2224,7 +2236,7 @@ int func_80083C18(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(20, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2233,7 +2245,7 @@ int func_80083C68(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(11, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2242,7 +2254,7 @@ int func_80083CB8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(12, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2259,7 +2271,7 @@ int func_80083D2C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(17, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2278,7 +2290,7 @@ int func_80083DEC(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(13, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2287,7 +2299,7 @@ int func_80083E3C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(14, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2296,7 +2308,7 @@ int func_80083E8C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(15, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2305,7 +2317,7 @@ int func_80083EDC(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(16, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x10000;
+        arg2->unk1C.fields.unk1E_0 = 1;
     }
 }
 
@@ -2370,7 +2382,7 @@ int func_8008404C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xD, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2379,7 +2391,7 @@ int func_8008409C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xE, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2388,7 +2400,7 @@ int func_800840EC(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0x10, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2397,7 +2409,7 @@ int func_8008413C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xF, arg2) != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2415,7 +2427,7 @@ void func_800841C8(vs_skill_t* arg0 __attribute__((unused)),
     int temp_v1 = vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0xE000;
     arg2->unk18 = arg2->unk18 | temp_v1;
     if (temp_v1 != 0) {
-        arg2->unk1C = (arg2->unk1C & 0xFFFCFFFF) | 0x20000;
+        arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
@@ -2423,7 +2435,7 @@ void func_80084228(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* ar
     func_80085718_t* arg2, int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
+    arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 void func_80084248(vs_skill_t* arg0 __attribute__((unused)),
@@ -2432,23 +2444,23 @@ void func_80084248(vs_skill_t* arg0 __attribute__((unused)),
 {
     func_800810CC(0x1E, arg2);
     arg2->unk4 = vs_battle_actors[arg2->unk0]->unk3C->currentHP;
-    arg2->unk1C = (arg2->unk1C & ~3) | 1;
+    arg2->unk1C.fields.unk1C_0 = 1;
 }
 
 void func_800842AC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    arg2->unk38 = arg2->unk4 * 2;
-    arg2->unk20.s16.unk2[arg2->unk1 * 2] = arg2->unk4 * 2;
-    arg2->unk1C = (arg2->unk1C & 0xFF3FFFFF) | 0x400000;
+    arg2->unk3C = arg2->unk4 * 2;
+    arg2->unk20.s16[arg2->unk1][1] = arg2->unk4 * 2;
+    arg2->unk1C.fields.unk1E_6 = 1;
 }
 
 void func_800842F0(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
+    arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 void func_80084310(vs_skill_t* arg0 __attribute__((unused)),
@@ -2475,7 +2487,7 @@ void func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* ar
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
+    arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 void func_80084390(
@@ -2483,10 +2495,9 @@ void func_80084390(
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) == 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2495,10 +2506,9 @@ void func_80084440(
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) != 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2507,10 +2517,9 @@ void func_800844F0(
 {
     if (D_800F19CC->unkA == 0) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2519,10 +2528,9 @@ void func_80084570(
 {
     if (D_800F19CC->unkA == 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2531,10 +2539,9 @@ void func_800845F0(
 {
     if (D_800F19CC->unkA == 2) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2543,10 +2550,9 @@ void func_80084670(
 {
     if (D_800F19CC->unkA == 3) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2555,10 +2561,9 @@ void func_800846F0(
 {
     if (D_800F19CC->unkA == 4) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2567,10 +2572,9 @@ void func_80084770(
 {
     if (D_800F19CC->unkA == 5) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2579,10 +2583,9 @@ void func_800847F0(
 {
     if (D_800F19CC->unkA == 6) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2592,10 +2595,9 @@ void func_80084870(
     int temp_v1 = D_800F19CC->unkC[7] & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
-        int temp_a3 = (arg2->unk1C & ~3) | 2;
-        arg2->unk1C = temp_a3;
         arg2->unk4 += temp_a2;
-        func_800801E0(arg0, arg2, temp_a2, temp_a3);
+        arg2->unk1C.fields.unk1C_0 = 2;
+        func_800801E0(arg0, arg2, temp_a2);
     }
 }
 
@@ -2604,10 +2606,8 @@ void func_8008490C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0xC0;
     arg2->unkA += temp_v0;
-    arg2->unk1C = new_var2 | 0x80;
+    arg2->unk1C.fields.unk1C_6 = 2;
 }
 
 void func_80084958(vs_skill_t* arg0 __attribute__((unused)),
@@ -2615,10 +2615,8 @@ void func_80084958(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0x300;
     arg2->unkC += temp_v0;
-    arg2->unk1C = new_var2 | 0x200;
+    arg2->unk1C.fields.unk1D_0 = 2;
 }
 
 void func_800849A4(vs_skill_t* arg0 __attribute__((unused)),
@@ -2626,10 +2624,8 @@ void func_800849A4(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0xC00;
     arg2->unkE += temp_v0;
-    arg2->unk1C = new_var2 | 0x800;
+    arg2->unk1C.fields.unk1D_2 = 2;
 }
 
 void func_800849F0(vs_skill_t* arg0 __attribute__((unused)),
@@ -2637,10 +2633,8 @@ void func_800849F0(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0x3000;
     arg2->unk10 += temp_v0;
-    arg2->unk1C = new_var2 | 0x2000;
+    arg2->unk1C.fields.unk1D_4 = 2;
 }
 
 void func_80084A3C(vs_skill_t* arg0 __attribute__((unused)),
@@ -2648,10 +2642,8 @@ void func_80084A3C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= 0xFFFF3FFF;
     arg2->unk12 += temp_v0;
-    arg2->unk1C = new_var2 | 0x8000;
+    arg2->unk1C.fields.unk1D_6 = 2;
 }
 
 void func_80084A8C(vs_skill_t* arg0 __attribute__((unused)),
@@ -2659,10 +2651,8 @@ void func_80084A8C(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0xC0;
     arg2->unkA += temp_v0;
-    arg2->unk1C = new_var2 | 0x40;
+    arg2->unk1C.fields.unk1C_6 = 1;
 }
 
 void func_80084AD8(vs_skill_t* arg0 __attribute__((unused)),
@@ -2670,10 +2660,8 @@ void func_80084AD8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0x300;
     arg2->unkC += temp_v0;
-    arg2->unk1C = new_var2 | 0x100;
+    arg2->unk1C.fields.unk1D_0 = 1;
 }
 
 void func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
@@ -2681,10 +2669,8 @@ void func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
-    int new_var2 = arg2->unk1C;
-    new_var2 &= ~0xC00;
     arg2->unkE += temp_v0;
-    arg2->unk1C = new_var2 | 0x400;
+    arg2->unk1C.fields.unk1D_2 = 1;
 }
 
 void func_80084B70(
@@ -2701,12 +2687,12 @@ void func_80084B70(
     arg2->unk4 += temp_v0;
 
     if (D_800F1A0C != 0) {
-        arg2->unk1C = arg2->unk1C | 3;
+        arg2->unk1C.fields.unk1C_0 = 3;
     } else {
-        arg2->unk1C = (arg2->unk1C & ~3) | 1;
+        arg2->unk1C.fields.unk1C_0 = 1;
     }
 
-    if (arg2->unk3C == 0) {
+    if (arg2->unk40 == 0) {
         func_80080000(arg0, arg2, temp_v0);
         if (temp_s2->flags.u8[3] != 0x80) {
             arg2->unk18 |= temp_s2->unk948 & 0x8000;
@@ -2796,7 +2782,7 @@ void func_80085008(func_80085718_t* arg0)
     vs_battle_actor2* temp_s3;
 
     temp_s3 = vs_battle_actors[arg0->unk0]->unk3C;
-    switch (arg0->unk1C & 3) {
+    switch (arg0->unk1C.fields.unk1C_0) {
     case 2:
         var_a2 =
             temp_s3->hitLocations[temp_s3->unk34].unk0 + arg0->unk20.s32[temp_s3->unk34];
@@ -2844,7 +2830,7 @@ void func_80085008(func_80085718_t* arg0)
     }
     if (arg0->unk0 == 0) {
         for (i = 0; i < 4; ++i) {
-            switch (arg0->unk1C & 3) {
+            switch (arg0->unk1C.fields.unk1C_0) {
             case 2:
                 var_a2 = temp_s3->hitLocations[i].unk0 + arg0->unk20.s32[i];
                 break;
@@ -2882,7 +2868,7 @@ void func_80085718(func_80085718_t* arg0)
 {
     vs_main_bzero(arg0, sizeof *arg0);
     arg0->unk3 = 6;
-    arg0->unk1C = 0;
+    arg0->unk1C.value = 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008574C);

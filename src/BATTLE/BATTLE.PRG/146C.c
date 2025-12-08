@@ -2027,8 +2027,7 @@ short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)))
 {
-    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A)
-          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
+    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].unk0_16;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
@@ -2036,24 +2035,22 @@ short func_800821B0(vs_skill_t* arg0, func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
     vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0]->unk3C;
-    int v = (temp_v0->maxHP - temp_v0->currentHP)
-          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
+    int v = (temp_v0->maxHP - temp_v0->currentHP) * arg0->hitParams[arg3].unk0_16;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
 short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
-    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A)
-          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
+    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].unk0_16;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
 short func_800822A0(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
-    int v = vs_battle_actors[arg2->unk0]->unk3C->currentHP
-          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
+    int v =
+        vs_battle_actors[arg2->unk0]->unk3C->currentHP * arg0->hitParams[arg3].unk0_16;
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
@@ -2136,8 +2133,7 @@ int func_800838EC(
         && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] == 0x80)) {
         var_v0 = 999;
     } else {
-        var_v0 =
-            D_800E830C[arg0->hitParams[arg3].u16[1] & 0x3F](arg0, arg1, arg2, arg3, arg4);
+        var_v0 = D_800E830C[arg0->hitParams[arg3].unk0_10](arg0, arg1, arg2, arg3, arg4);
     }
     D_800F1A08 = var_v0;
     return var_v0;

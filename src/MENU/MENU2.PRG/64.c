@@ -15,7 +15,7 @@ static void _setAbilityCost(int ability)
     int cost;
 
     vs_mainmenu_setAbilityCost(1, "RISK", 8, 0);
-    cost = vs_main_skills[ability].unk0.bytes.cost;
+    cost = vs_main_skills[ability].unk3_0;
     _stringBuffer[15] = 0;
 
     i = 15;

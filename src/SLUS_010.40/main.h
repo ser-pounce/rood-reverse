@@ -37,15 +37,10 @@ typedef union {
 } vs_hitParams_t;
 
 typedef struct {
-    union {
-        struct {
-            char id;
-            char effect;
-            char unk2;
-            char cost;
-        } bytes;
-        int value;
-    } unk0;
+    uint unk0 : 17;
+    int unk2_1 : 3;
+    int unk2_4 : 4;
+    char unk3_0;
     char rangeX;
     char rangeY;
     char rangeZ;
@@ -54,7 +49,13 @@ typedef struct {
     int aoe;
     u_int flags; // 0xF = artUnlocked
     int unk10;
-    vs_hitParams_t hitParams[2];
+    struct {
+        u_int unk0 : 7;
+        int unk0_7 : 9;
+        u_int unk0_10 : 6;
+        u_int unk0_16 : 5;
+        int unk0_1B : 5;
+    } hitParams[2];
     char name[24];
 } vs_skill_t;
 

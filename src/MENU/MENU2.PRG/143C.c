@@ -18,7 +18,7 @@ static int _breakArtUnlocked(int init)
     int weaponTypeMod;
     int skillId;
     int weaponType;
-    char(*new_var)[12];
+    u_char(*new_var)[12];
 
     if (init != 0) {
 

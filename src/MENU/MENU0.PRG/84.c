@@ -26,7 +26,7 @@ static void _setMPCost(int id)
 
     flags = vs_battle_getSkillFlags(0, id);
     vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
-    cost = vs_main_skills[id].cost;
+    cost = vs_main_skills[id].unk0.bytes.cost;
     _MPCostTextBuffer[15] = NULL;
 
     i = 15;

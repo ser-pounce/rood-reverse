@@ -175,20 +175,6 @@ typedef struct {
     func_8006BE64_t2 unk8;
 } func_8006BE64_t;
 
-typedef union {
-    u_short u16[2];
-    u_int s32;
-} func_80085390_t3;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    func_80085390_t3 unk14[10];
-} func_80085390_t;
-
 int func_8006BDA0(func_8006BE64_t2*, vs_battle_actor2*);
 int func_8006BDF0(func_8006BE64_t2*, void*);
 void func_8006C350(void);
@@ -228,18 +214,18 @@ int _getLocationId(int, int);
 void func_8007D360(void);
 int func_8007F4B0(int arg0, char* arg1);
 int func_8007F518(u_char*);
-void func_80080000(func_80085390_t*, func_80085718_t*, short);
-int func_800801E0(func_80085390_t*, func_80085718_t*, short, int);
-void func_800802C4(func_80085390_t*, vs_battle_actor2*, vs_battle_actor2*, short);
-int func_800803A4(func_80085390_t*, vs_battle_actor2*, vs_battle_actor2*, short);
+void func_80080000(vs_skill_t*, func_80085718_t*, short);
+int func_800801E0(vs_skill_t*, func_80085718_t*, short, int);
+void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
+int func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
-short func_80081148(func_80085390_t*, func_80085718_t*, func_80085718_t*, int, int, int);
-int func_800838EC(func_80085390_t*, func_80085718_t*, func_80085718_t*, int, int);
+short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
+int func_800838EC(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 int func_8008574C(int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
-void func_80085390(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4);
+void func_80085390(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
 void func_80086754(int, vs_battle_actor2*);
 void func_80088554(void);
 int func_8008B4C8(char arg0);
@@ -254,10 +240,8 @@ void func_8008C49C(int, int);
 void func_8008D5A0(int);
 
 extern u_char D_800E8200[];
-extern void (*D_800E8378[])(
-    func_80085390_t*, func_80085718_t*, func_80085718_t*, int, int);
-extern short (*D_800E830C[])(
-    func_80085390_t*, func_80085718_t*, func_80085718_t*, int, int);
+extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
+extern short (*D_800E830C[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern int D_800E8498;
 extern int D_800F185C;
 extern int D_800F1860;
@@ -2006,14 +1990,14 @@ int func_800810CC(int arg0, func_80085718_t* arg1)
     return ret;
 }
 
-void func_80081130(func_80085390_t* arg0 __attribute((unused)),
+void func_80081130(vs_skill_t* arg0 __attribute((unused)),
     func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)))
 {
 }
 
-short func_80081138(func_80085390_t* arg0 __attribute((unused)),
+short func_80081138(vs_skill_t* arg0 __attribute((unused)),
     func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)))
@@ -2021,59 +2005,59 @@ short func_80081138(func_80085390_t* arg0 __attribute((unused)),
     return D_800F1A08;
 }
 
-short func_80081148(func_80085390_t* arg0 __attribute((unused)),
+short func_80081148(vs_skill_t* arg0 __attribute((unused)),
     func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)), int arg5);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80081148);
 
-short func_800819D0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+short func_800819D0(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 0);
 }
 
-short func_800819FC(func_80085390_t* arg0 __attribute((unused)),
+short func_800819FC(vs_skill_t* arg0 __attribute((unused)),
     func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800819FC);
 
-short func_80082144(func_80085390_t* arg0, func_80085718_t* arg1 __attribute((unused)),
+short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)))
 {
     int v = (D_800F19CC->unk58 + D_800F19CC->unk5A)
-          * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_800821B0(func_80085390_t* arg0, func_80085718_t* arg1,
+short func_800821B0(vs_skill_t* arg0, func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
     vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0]->unk3C;
-    int v =
-        (temp_v0->maxHP - temp_v0->currentHP) * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+    int v = (temp_v0->maxHP - temp_v0->currentHP)
+          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_80082234(func_80085390_t* arg0, func_80085718_t* arg1 __attribute((unused)),
+short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
     int v = (D_800F19CC->unk58 + D_800F19CC->unk5A)
-          * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_800822A0(func_80085390_t* arg0, func_80085718_t* arg1 __attribute((unused)),
+short func_800822A0(vs_skill_t* arg0, func_80085718_t* arg1 __attribute((unused)),
     func_80085718_t* arg2 __attribute((unused)), int arg3, int arg4 __attribute((unused)))
 {
     int v = vs_battle_actors[arg2->unk0]->unk3C->currentHP
-          * ((arg0->unk14[arg3].s32 >> 0x16) & 0x1F);
+          * ((arg0->hitParams[arg3].s32 >> 0x16) & 0x1F);
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
-short func_8008231C(func_80085390_t* arg0 __attribute((unused)), func_80085718_t* arg1,
+short func_8008231C(vs_skill_t* arg0 __attribute((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute((unused)), int arg3 __attribute((unused)),
     int arg4 __attribute((unused)))
 {
@@ -2131,8 +2115,8 @@ short func_8008384C(u_int* arg0, int arg1 __attribute__((unused)),
     return (D_800F1A08 * ((arg0[5] >> 0x16) & 0x1F)) / 10;
 }
 
-short func_8008388C(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+short func_8008388C(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 1);
 }
@@ -2143,8 +2127,8 @@ short _getRisk(
     return vs_battle_actors[*arg2]->unk3C->risk;
 }
 
-int func_800838EC(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+int func_800838EC(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     short var_v0;
 
@@ -2153,13 +2137,13 @@ int func_800838EC(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t*
         var_v0 = 999;
     } else {
         var_v0 =
-            D_800E830C[arg0->unk14[arg3].u16[1] & 0x3F](arg0, arg1, arg2, arg3, arg4);
+            D_800E830C[arg0->hitParams[arg3].u16[1] & 0x3F](arg0, arg1, arg2, arg3, arg4);
     }
     D_800F1A08 = var_v0;
     return var_v0;
 }
 
-void func_80083990(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083990(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
@@ -2167,7 +2151,7 @@ void func_80083990(func_80085390_t* arg0 __attribute__((unused)),
 }
 
 // TODO: Change return type, these only match with int and undefined return
-int func_80083998(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083998(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2176,7 +2160,7 @@ int func_80083998(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_800839E8(func_80085390_t* arg0 __attribute__((unused)),
+int func_800839E8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2185,7 +2169,7 @@ int func_800839E8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083A38(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083A38(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2194,7 +2178,7 @@ int func_80083A38(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083A88(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083A88(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2203,7 +2187,7 @@ int func_80083A88(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083AD8(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083AD8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2212,7 +2196,7 @@ int func_80083AD8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083B28(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083B28(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2221,7 +2205,7 @@ int func_80083B28(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083B78(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083B78(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2230,7 +2214,7 @@ int func_80083B78(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083BC8(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083BC8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2239,7 +2223,7 @@ int func_80083BC8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083C18(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083C18(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2248,7 +2232,7 @@ int func_80083C18(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083C68(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083C68(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2257,7 +2241,7 @@ int func_80083C68(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083CB8(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083CB8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2266,7 +2250,7 @@ int func_80083CB8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80083D08(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083D08(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
@@ -2274,7 +2258,7 @@ void func_80083D08(func_80085390_t* arg0 __attribute__((unused)),
     func_80081020(0x12, arg2);
 }
 
-int func_80083D2C(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083D2C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2283,7 +2267,7 @@ int func_80083D2C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80083D7C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083D7C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4)
 {
@@ -2293,7 +2277,7 @@ void func_80083D7C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083DEC(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083DEC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2302,7 +2286,7 @@ int func_80083DEC(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083E3C(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083E3C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2311,7 +2295,7 @@ int func_80083E3C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083E8C(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083E8C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2320,7 +2304,7 @@ int func_80083E8C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083EDC(func_80085390_t* arg0 __attribute__((unused)),
+int func_80083EDC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2329,63 +2313,63 @@ int func_80083EDC(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80083F2C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F2C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x15, arg2);
 }
 
-void func_80083F50(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F50(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x16, arg2);
 }
 
-void func_80083F74(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F74(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x17, arg2);
 }
 
-void func_80083F98(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083F98(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x18, arg2);
 }
 
-void func_80083FBC(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083FBC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x19, arg2);
 }
 
-void func_80083FE0(func_80085390_t* arg0 __attribute__((unused)),
+void func_80083FE0(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1A, arg2);
 }
 
-void func_80084004(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084004(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1B, arg2);
 }
 
-void func_80084028(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084028(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1C, arg2);
 }
 
-int func_8008404C(func_80085390_t* arg0 __attribute__((unused)),
+int func_8008404C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2394,7 +2378,7 @@ int func_8008404C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_8008409C(func_80085390_t* arg0 __attribute__((unused)),
+int func_8008409C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2403,7 +2387,7 @@ int func_8008409C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_800840EC(func_80085390_t* arg0 __attribute__((unused)),
+int func_800840EC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2412,7 +2396,7 @@ int func_800840EC(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_8008413C(func_80085390_t* arg0 __attribute__((unused)),
+int func_8008413C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2421,14 +2405,14 @@ int func_8008413C(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_8008418C(func_80085390_t* arg0 __attribute__((unused)),
+void func_8008418C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     arg2->unk18 |= (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x1FFE1FE0);
 }
 
-void func_800841C8(func_80085390_t* arg0 __attribute__((unused)),
+void func_800841C8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2439,14 +2423,14 @@ void func_800841C8(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80084228(func_80085390_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
+void func_80084228(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2, int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-void func_80084248(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084248(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2455,7 +2439,7 @@ void func_80084248(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = (arg2->unk1C & ~3) | 1;
 }
 
-void func_800842AC(func_80085390_t* arg0 __attribute__((unused)),
+void func_800842AC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2464,14 +2448,14 @@ void func_800842AC(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = (arg2->unk1C & 0xFF3FFFFF) | 0x400000;
 }
 
-void func_800842F0(func_80085390_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
+void func_800842F0(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-void func_80084310(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084310(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
@@ -2481,7 +2465,7 @@ void func_80084310(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80084340(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084340(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
@@ -2491,15 +2475,15 @@ void func_80084340(func_80085390_t* arg0 __attribute__((unused)),
     }
 }
 
-void func_80084370(func_80085390_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
+void func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C = ((arg1->unk1C & 0xF3FFFFFF) | 0x08000000);
 }
 
-void func_80084390(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084390(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) == 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2510,8 +2494,8 @@ void func_80084390(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084440(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084440(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) != 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2522,8 +2506,8 @@ void func_80084440(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_800844F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_800844F0(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 0) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2534,8 +2518,8 @@ void func_800844F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084570(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084570(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2546,8 +2530,8 @@ void func_80084570(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_800845F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_800845F0(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 2) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2558,8 +2542,8 @@ void func_800845F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084670(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084670(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 3) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2570,8 +2554,8 @@ void func_80084670(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_800846F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_800846F0(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 4) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2582,8 +2566,8 @@ void func_800846F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084770(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084770(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 5) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2594,8 +2578,8 @@ void func_80084770(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_800847F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_800847F0(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 6) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
@@ -2606,8 +2590,8 @@ void func_800847F0(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084870(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084870(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     int temp_v1 = D_800F19CC->unkC[7] & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
@@ -2619,7 +2603,7 @@ void func_80084870(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
+void func_8008490C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2630,7 +2614,7 @@ void func_8008490C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x80;
 }
 
-void func_80084958(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084958(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2641,7 +2625,7 @@ void func_80084958(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x200;
 }
 
-void func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
+void func_800849A4(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2652,7 +2636,7 @@ void func_800849A4(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x800;
 }
 
-void func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
+void func_800849F0(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2663,7 +2647,7 @@ void func_800849F0(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x2000;
 }
 
-void func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084A3C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2674,7 +2658,7 @@ void func_80084A3C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x8000;
 }
 
-void func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084A8C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2685,7 +2669,7 @@ void func_80084A8C(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x40;
 }
 
-void func_80084AD8(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084AD8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2696,7 +2680,7 @@ void func_80084AD8(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x100;
 }
 
-void func_80084B24(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -2707,8 +2691,8 @@ void func_80084B24(func_80085390_t* arg0 __attribute__((unused)),
     arg2->unk1C = new_var2 | 0x400;
 }
 
-void func_80084B70(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4)
+void func_80084B70(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     int temp_v0;
     vs_battle_actor2* temp_s2;
@@ -2738,69 +2722,69 @@ void func_80084B70(func_80085390_t* arg0, func_80085718_t* arg1, func_80085718_t
     }
 }
 
-void func_80084CAC(func_80085390_t* arg0 __attribute__((unused)),
+void func_80084CAC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084CAC);
 
-int func_80084D44(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084D44(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084D44);
 
-int func_80084DA8(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084DA8);
 
-int func_80084E28(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084E28(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084E28);
 
-int func_80084EA0(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084EA0(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084EA0);
 
-int func_80084EEC(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084EEC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084EEC);
 
-int func_80084F40(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084F40(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084F40);
 
-int func_80084F94(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084F94(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084F94);
 
-int func_80084FF0(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084FF0(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
-int func_80084FF8(func_80085390_t* arg0 __attribute__((unused)),
+int func_80084FF8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
-int func_80085000(func_80085390_t* arg0 __attribute__((unused)),
+int func_80085000(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
@@ -2893,7 +2877,7 @@ void func_80085008(func_80085718_t* arg0)
 }
 
 // https://decomp.me/scratch/URqn9
-void func_80085390(func_80085390_t*, func_80085718_t*, func_80085718_t*, int, int);
+void func_80085390(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085390);
 
 void func_800856F8(void* arg0) { vs_main_bzero(arg0, 0x84C); }

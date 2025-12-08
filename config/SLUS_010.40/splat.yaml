@@ -242,7 +242,7 @@ segments:
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgba16Header, _nowLoading]
       - [0x3AD04, .data, main]
-      - [0x3F720, data]
+      - [0x3C1DC, data]
       - [0x3FCCC, .data, zndFiles]
       - [0x404CC, data]
       - [0x40788, bss, main]

@@ -31,13 +31,21 @@ typedef struct {
 
 enum skills_e { vs_main_skills_daggerArt1 = 184 };
 
+typedef union {
+    u_short u16[2];
+    u_int s32;
+} vs_hitParams_t;
+
 typedef struct {
-    char id;
-    char effect;
-    int unk2_0 : 1;
-    int type : 3;
-    int target : 4;
-    char cost;
+    union {
+        struct {
+            char id;
+            char effect;
+            char unk2;
+            char cost;
+        } bytes;
+        int value;
+    } unk0;
     char rangeX;
     char rangeY;
     char rangeZ;
@@ -46,15 +54,7 @@ typedef struct {
     int aoe;
     u_int flags; // 0xF = artUnlocked
     int unk10;
-    struct {
-        int effect : 7;
-        int hitrateFlags : 6;
-        int hitrateAdj : 3;
-        int damage : 6;
-        int mult : 5;
-        int type : 2;
-        int affinity : 3;
-    } hitParams[2];
+    vs_hitParams_t hitParams[2];
     char name[24];
 } vs_skill_t;
 

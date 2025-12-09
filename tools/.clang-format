@@ -1,0 +1,7 @@
+---
+BasedOnStyle:  WebKit
+ColumnLimit: 90
+SortIncludes: Never
+AlignOperands: AlignAfterOperator
+BreakBeforeBinaryOperators: NonAssignment
+...

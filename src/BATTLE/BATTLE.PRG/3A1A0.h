@@ -21,3 +21,6 @@ typedef struct {
 } D_800F45E0_t;
 
 extern D_800F45E0_t* D_800F45E0[];
+
+void func_800A36E0(int, char, int*);
+short func_800E6694(int);

@@ -343,6 +343,14 @@ typedef struct {
     u_short unkE00[128];
 } D_80060168_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    u_short unk2;
+    u_int unk4;
+    char unk8[8][0x28];
+} D_80061078_t;
+
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];
@@ -394,7 +402,7 @@ extern char D_80060238[][48];
 extern vs_battle_setEquipmentForDrop_t D_80060780[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
-extern char D_80061078[0x520];
+extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern D_800619D8_t D_800619D8;
 extern vs_main_stickPos vs_main_stickPosBuf;

@@ -205,7 +205,10 @@ typedef struct {
 typedef struct {
     int unk0;
     int unk4;
-    int unk8;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
     int unkC;
     int unk10;
     int unk14;
@@ -217,7 +220,7 @@ typedef struct {
     char unk24;
     char equippedWeaponType;
     char unk26;
-    char unk27;
+    u_char unk27;
     char unk28;
     char unk29;
     char unk2A;

@@ -38,7 +38,7 @@ typedef union {
 
 typedef struct {
     u_int unk0 : 17;
-    u_int unk2_1 : 3;
+    u_short unk2_1 : 3;
     int unk2_4 : 4;
     char unk3_0;
     char rangeX;

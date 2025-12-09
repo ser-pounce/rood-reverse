@@ -433,7 +433,6 @@ void vs_battle_setBladeForDrop(
 {
     int i;
     func_8006B57C_t* a3;
-    int v1;
 
     dropBlade->id = targetBlade->id;
     dropBlade->unk1 = targetBlade->unk2;
@@ -1319,11 +1318,7 @@ void func_8007AC6C(int* arg0)
     D_1F800000[19] = arg0[2];
 }
 
-void func_8007AC94(int arg0) 
-{
-    
-    D_1F800000[23] = arg0;
-}
+void func_8007AC94(int arg0) { D_1F800000[23] = arg0; }
 
 int func_8007ACA0(void) { return *getScratchAddr(0x17) & 0xFFF; }
 
@@ -2490,7 +2485,7 @@ void func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* ar
 void func_80084390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1) {
+    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1u) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -2501,7 +2496,7 @@ void func_80084390(
 void func_80084440(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 != 1) {
+    if (vs_main_skills[D_800F19CC->unk8].unk2_1 != 1u) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -2855,9 +2850,49 @@ void func_80085008(func_80085718_t* arg0)
     }
 }
 
-// https://decomp.me/scratch/URqn9
-void func_80085390(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085390);
+void func_80085390(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+{
+    u_int temp_a1_2;
+    int temp_s0;
+
+    if ((arg2->unk40 == 0)
+        && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] == 0x80)) {
+        arg2->unk4 += 999;
+        arg2->unk1C.fields.unk1C_0 = 1;
+    } else if (arg0->unk2_1 == 1) {
+        if ((arg2->unk40 == 0)
+            && (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x80040000)) {
+            D_800F1A08 = 0;
+        } else {
+            D_800E8378[arg0->hitParams[arg4].unk0](arg0, arg1, arg2, arg4, arg3);
+        }
+        if (arg2->unk40 == 0) {
+            if (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] != 0x80) {
+                arg2->unk18 |= vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x61000;
+            }
+        }
+    } else {
+        D_800E8378[arg0->hitParams[arg4].unk0](arg0, arg1, arg2, arg4, arg3);
+    }
+    if ((arg3 != 0) && (arg1->unk40 == 0) && (arg1->unk0 == 0) && (arg2->unk40 == 0)
+        && (vs_battle_actors[arg2->unk0]->unk3C->flags.u8[3] != 0x80)
+        && (arg0->unk2_1 == 2 || arg0->unk2_1 == 3 || arg0->unk2_1 == 6)
+        && (vs_battle_actors[arg2->unk0]->unk3C->currentHP <= arg2->unk4)
+        && (arg2->unk0 != 0) && (vs_battle_actors[arg2->unk0]->unk29 == 0)) {
+        vs_battle_actors[arg2->unk0]->unk29 = 1;
+        temp_a1_2 = vs_battle_characterState->equippedWeaponType;
+        temp_a1_2 %= 10;
+        temp_s0 = temp_a1_2 & 0xFF;
+        if ((func_800BEBF4(0x82, temp_a1_2) >= 0xA)
+            && (vs_main_artsStatus.artsLearned[temp_a1_2 & 0xFF] < 4)
+            && (vs_main_artsStatus.kills.weaponCategories[temp_a1_2 & 0xFF]
+                < vs_main_artsPointsRequirements[temp_s0][vs_main_artsStatus
+                                                              .artsLearned[temp_s0]])) {
+            ++vs_main_artsStatus.kills.weaponCategories[temp_s0];
+        }
+    }
+}
 
 void func_800856F8(void* arg0) { vs_main_bzero(arg0, 0x84C); }
 

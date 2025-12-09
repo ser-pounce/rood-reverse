@@ -722,7 +722,7 @@ void func_8006C004(vs_battle_actor* arg0)
             if (vs_main_scoredata.unk10C != (arg0->unk3C->unk37 & 7)) {
                 vs_main_scoredata.unk10C = arg0->unk3C->unk37 & 7;
                 vs_main_scoredata.unk10D = 0;
-            } else if (vs_main_scoredata.unk10D < 0x64) {
+            } else if (vs_main_scoredata.unk10D < 100) {
                 vs_main_scoredata.unk10D = vs_main_scoredata.unk10D + 1;
             }
             vs_main_scoredata.streakScore +=
@@ -1319,14 +1319,11 @@ void func_8007AC6C(int* arg0)
     D_1F800000[19] = arg0[2];
 }
 
-__asm__("glabel func_8007AC94;"
-        ".set push;"
-        ".set at=$v0;"
-        ".set reorder;"
-        "sw $a0,0x1F80005C;"
-        "jr $ra;"
-        ".set pop;"
-        "endlabel func_8007AC94");
+void func_8007AC94(int arg0) 
+{
+    
+    D_1F800000[23] = arg0;
+}
 
 int func_8007ACA0(void) { return *getScratchAddr(0x17) & 0xFFF; }
 
@@ -2493,7 +2490,7 @@ void func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* ar
 void func_80084390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) == 1) {
+    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -2504,7 +2501,7 @@ void func_80084390(
 void func_80084440(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (((*(u_int*)&vs_main_skills[D_800F19CC->unk8] >> 0x11) & 7) != 1) {
+    if (vs_main_skills[D_800F19CC->unk8].unk2_1 != 1) {
         int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;

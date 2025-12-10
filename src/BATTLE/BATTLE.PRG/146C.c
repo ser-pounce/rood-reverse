@@ -488,7 +488,7 @@ int func_8006A11C(vs_battle_actor* arg0)
     
     if ((arg0->unk1C & 7) && (arg0->unk4 != 0)) {
         
-        for (i = 0; i < 0x10; ++i) {
+        for (i = 0; i < 16; ++i) {
             if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk0 == arg0)) {
                 return 0;
             }
@@ -505,7 +505,21 @@ int func_8006A11C(vs_battle_actor* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A1C4);
+int func_8006A1C4(vs_battle_actor* arg0) 
+{
+    int i;
+
+    if (arg0->unk4 != 0) {
+        for (i = 0; i < 16; ++i) {
+            if (vs_battle_actors[i] != NULL && vs_battle_actors[i]->unk0 == arg0) {
+                vs_battle_actors[i]->unk0 = arg0->unk0;
+                arg0->unk0 = NULL;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A228);
 

@@ -85,7 +85,8 @@ typedef struct {
             u_char unk1D_4 : 2;
             u_char unk1D_6 : 2;
             u_char unk1E_0 : 2;
-            u_char unk1E_2 : 4;
+            u_char unk1E_2 : 2;
+            u_char unk1E_4 : 2;
             u_char unk1E_6 : 2;
             u_char unk1F_0 : 2;
             u_char unk1F_2 : 2;
@@ -2892,11 +2893,17 @@ void func_80084CAC(vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg
     arg2->unk1C.fields.unk1C_2 = 1;
 }
 
-int func_80084D44(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084D44);
+int func_80084D44(vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4) 
+{
+    vs_battle_actor2* temp_a1;
+    u_short new_var;
+
+    if (vs_battle_actors[arg2->unk0]->unk3C->weapon.blade.id != 0) {
+        new_var = vs_battle_actors[arg2->unk0]->unk3C->weapon.currentPp;
+        arg2->unk20.s16[6][1] += new_var;
+        arg2->unk1C.fields.unk1E_4 = 1;
+    }
+}
 
 int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),

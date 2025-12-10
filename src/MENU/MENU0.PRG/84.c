@@ -323,7 +323,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                 int v;
                 vs_battle_renderTextRaw(
                     spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*) func_800C0224(D_800EC270[D_8010694A],
+                var_t3 = (int*)func_800C0224(D_800EC270[D_8010694A],
                     (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[4] = 0x37FD70C0;
 
@@ -337,15 +337,15 @@ static int _warlockMagicMenu(u_int initCursorMemory)
             } else if (level < rowCount) {
                 vs_battle_renderTextRaw(
                     spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*) func_800C0224(
+                var_t3 = (int*)func_800C0224(
                     0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[4] = 0x37FE70C0;
             } else {
                 var_s7_2 = 1;
                 vs_battle_renderTextRaw(
                     spellLevels[4], (0x66 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*) 
-                    func_800C0224(0, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                var_t3 = (int*)func_800C0224(
+                    0, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[1] = 0x64602000;
                 var_t3[4] = 0x37FE70C0;
             }
@@ -361,7 +361,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                 var_t3[-15] = var_t3[-15] | 0x02000000;
             }
         }
-        var_t3 = (int*) func_800C0224(0x80, 0x640050, 0x100010, temp_s6);
+        var_t3 = (int*)func_800C0224(0x80, 0x640050, 0x100010, temp_s6);
         var_t3[4] = 0x37FD3050;
         var_t3 += 6;
         var_t3[0] = (*temp_s6 & 0xFFFFFF) | 0x09000000;

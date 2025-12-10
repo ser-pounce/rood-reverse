@@ -213,7 +213,7 @@ void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(int, int);
-void func_8006A228(int, int);
+int func_8006A228(u_int, int);
 void func_8006A8EC(void*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
@@ -482,18 +482,18 @@ void func_80069FC4(int arg0, int arg1)
     }
 }
 
-int func_8006A11C(vs_battle_actor* arg0) 
+int func_8006A11C(vs_battle_actor* arg0)
 {
     int i;
-    
+
     if ((arg0->unk1C & 7) && (arg0->unk4 != 0)) {
-        
+
         for (i = 0; i < 16; ++i) {
             if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk0 == arg0)) {
                 return 0;
             }
         }
-        
+
         if (arg0->unk4 != 0) {
             arg0->unk0 = vs_battle_actors[0]->unk0;
             vs_battle_actors[0]->unk0 = arg0;
@@ -505,7 +505,7 @@ int func_8006A11C(vs_battle_actor* arg0)
     return 0;
 }
 
-int func_8006A1C4(vs_battle_actor* arg0) 
+int func_8006A1C4(vs_battle_actor* arg0)
 {
     int i;
 
@@ -521,7 +521,38 @@ int func_8006A1C4(vs_battle_actor* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A228);
+int func_8006A228(u_int arg0, int arg1)
+{
+    int i;
+    vs_battle_actor* temp_s0;
+
+    if (arg0 < 16) {
+        temp_s0 = vs_battle_actors[arg0];
+        if (temp_s0 != NULL) {
+            func_80069FC4(arg0, arg1);
+            if (temp_s0->unk1C == 0x10) {
+                func_8009F530(arg0);
+                func_80099D6C(arg0);
+            } else {
+                func_8009CFB0(arg0);
+                if (temp_s0->unk40 == 2) {
+                    func_8009CFB0(arg0 + 4);
+                }
+            }
+            func_800E7454(temp_s0);
+            for (i = 0; i < 16; ++i) {
+                if (vs_battle_actors[i]->unk0 == temp_s0) {
+                    vs_battle_actors[i]->unk0 = temp_s0->unk0;
+                    break;
+                }
+            }
+            vs_main_freeHeap(temp_s0);
+            vs_battle_actors[arg0] = NULL;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A334);
 

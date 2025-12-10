@@ -8404,7 +8404,7 @@ void func_80042CB0(void)
     int v1_2;
 
     D_80061068 = D_800F1AB0;
-    func_800A1108(0, sp10);
+    func_800A1108(0, (int*)sp10);
 
     v0 = (sp10[0] & 0x1F) << 8;
     v1 = (sp10[2] & 0x1F) << 0xA;

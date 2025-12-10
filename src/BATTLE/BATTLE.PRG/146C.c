@@ -482,7 +482,28 @@ void func_80069FC4(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A11C);
+int func_8006A11C(vs_battle_actor* arg0) 
+{
+    int i;
+    
+    if ((arg0->unk1C & 7) && (arg0->unk4 != 0)) {
+        
+        for (i = 0; i < 0x10; ++i) {
+            if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk0 == arg0)) {
+                return 0;
+            }
+        }
+        
+        if (arg0->unk4 != 0) {
+            arg0->unk0 = vs_battle_actors[0]->unk0;
+            vs_battle_actors[0]->unk0 = arg0;
+        } else {
+            arg0->unk0 = NULL;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A1C4);
 

@@ -202,8 +202,8 @@ typedef struct {
     } flags;
 } vs_battle_actor2;
 
-typedef struct {
-    int unk0;
+typedef struct vs_battle_actor {
+    struct vs_battle_actor* unk0;
     int unk4;
     char unk8;
     char unk9;

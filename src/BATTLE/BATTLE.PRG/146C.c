@@ -4,6 +4,7 @@
 #include <libgpu.h>
 #include "146C.h"
 #include "2842C.h"
+#include "30D14.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -76,7 +77,8 @@ typedef struct {
     union {
         struct {
             u_int unk1C_0 : 2;
-            u_char unk1C_2 : 4;
+            u_char unk1C_2 : 2;
+            u_char unk1C_4 : 2;
             u_char unk1C_6 : 2;
             u_char unk1D_0 : 2;
             u_char unk1D_2 : 2;
@@ -253,7 +255,7 @@ int func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
 short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
-int func_800838EC(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
+short func_800838EC(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 int func_8008574C(int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
 void func_80085390(
@@ -2307,7 +2309,7 @@ short _getRisk(
     return vs_battle_actors[*arg2]->unk3C->risk;
 }
 
-int func_800838EC(
+short func_800838EC(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     short var_v0;
@@ -2665,7 +2667,7 @@ void func_80084390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1u) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2676,7 +2678,7 @@ void func_80084440(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (vs_main_skills[D_800F19CC->unk8].unk2_1 != 1u) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2687,7 +2689,7 @@ void func_800844F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 0) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2698,7 +2700,7 @@ void func_80084570(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 1) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2709,7 +2711,7 @@ void func_800845F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 2) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2720,7 +2722,7 @@ void func_80084670(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 3) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2731,7 +2733,7 @@ void func_800846F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 4) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2742,7 +2744,7 @@ void func_80084770(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 5) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2753,7 +2755,7 @@ void func_800847F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unkA == 6) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2765,7 +2767,7 @@ void func_80084870(
 {
     int temp_v1 = D_800F19CC->unkC[7] & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
-        int temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+        short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
         func_800801E0(arg0, arg2, temp_a2);
@@ -2847,7 +2849,7 @@ void func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
 void func_80084B70(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    int temp_v0;
+    short temp_v0;
     vs_battle_actor2* temp_s2;
     vs_battle_actor2* temp_s4;
 
@@ -2875,11 +2877,20 @@ void func_80084B70(
     }
 }
 
-void func_80084CAC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80084CAC);
+void func_80084CAC(vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4) 
+{
+    short var_a0;
+    vs_battle_actor2* temp_s0;
+
+    temp_s0 = vs_battle_actors[arg2->unk0]->unk3C;
+    var_a0 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
+    if (temp_s0->currentMP < var_a0) {
+        var_a0 = temp_s0->currentMP;
+        D_800F1A08 = temp_s0->currentMP;
+    }
+    arg2->unk6 += var_a0;
+    arg2->unk1C.fields.unk1C_2 = 1;
+}
 
 int func_80084D44(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),

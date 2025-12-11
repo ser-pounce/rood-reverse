@@ -21,7 +21,7 @@ segments:
     align: 4
     subsegments:
       - [0x0, .rodata, 146C]
-      - [0x6C4, .rodata, 2842C]
+      - [0x6B4, .rodata, 2842C]
       - [0xB9C, .rodata, 30D14]
       - [0xC30, .rodata, 3A1A0]
       - [0xC7C, .rodata, 40564]

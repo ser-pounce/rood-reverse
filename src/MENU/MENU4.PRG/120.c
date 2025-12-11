@@ -475,7 +475,7 @@ static int func_80103744(int arg0)
         }
         _selectedActor = arg0 & 0xF;
         vs_battle_setMenuItem(
-            4, 180, 18, 0x8C, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
+            4, 180, 18, 0x8C, 8, (char*)vs_battle_actors[_selectedActor - 1]->unk3C->name)
             ->selected = 1;
         return 0;
     }

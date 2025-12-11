@@ -92,7 +92,7 @@ typedef struct {
     char unk125;
     short unk126;
     vs_battle_classAffinityCurrent classAffinityCurrent;
-    int unk168[4];
+    short unk168[8];
     vs_battle_classAffinityBaseline classAffinityBaseline;
 } vs_battle_weaponInfo;
 
@@ -116,7 +116,7 @@ typedef struct {
     u_short baseAgility;
     char types[4];
     vs_battle_classAffinityCurrent classAffinityCurrent;
-    int unk134[4];
+    short unk134[8];
     vs_battle_classAffinityBaseline classAffinityBaseline;
 } vs_battle_shieldInfo;
 
@@ -132,7 +132,7 @@ typedef struct {
     u_short baseAgility;
     u_short types[4];
     vs_battle_classAffinityCurrent classAffinityCurrent;
-    int unk88[4];
+    short unk88[8];
     char unk98;
     char unk99;
     u_char unk9A;
@@ -165,7 +165,7 @@ typedef struct {
 } vs_battle_accessoryInfo;
 
 typedef struct {
-    char name[16];
+    short name[8];
     int unk10;
     short unk14;
     short unk16;

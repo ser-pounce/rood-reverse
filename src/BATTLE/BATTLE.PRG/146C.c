@@ -185,7 +185,17 @@ typedef struct {
     _setArmorForDropRand_t armor;
     int unk1A4[11];
     _setAccessoryForDropRand_t accessory;
-    int unk1FC[11];
+    int unk1FC;
+    int unk200;
+    int unk204;
+    int unk208;
+    int unk20C;
+    int unk210;
+    int unk214;
+    int unk218;
+    int unk21C;
+    int unk220;
+    int unk224;
 } func_8006BE64_t2;
 
 typedef struct {
@@ -862,7 +872,7 @@ void func_8006BE64(vs_battle_actor* arg0)
             }
         }
         temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, temp_s2 + 1);
-        temp_v0->unk4 |= func_8006BDF0(&temp_v0->unk8, &(temp_s2 + 1)->name[8]);
+        temp_v0->unk4 |= func_8006BDF0(&temp_v0->unk8, &(temp_s2 + 1)->name[4]);
         if (temp_v0->unk4 != 0) {
             var_v1 = D_800F1900;
             var_a0 = 1;
@@ -2888,8 +2898,9 @@ int func_80084CAC(
     arg2->unk1C.fields.unk1C_2 = 1;
 }
 
-int func_80084D44(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+int func_80084D44(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     u_short new_var;
 
@@ -2900,8 +2911,9 @@ int func_80084D44(
     }
 }
 
-int func_80084DA8(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     vs_battle_actor2* temp_a1 = vs_battle_actors[arg2->unk0]->unk3C;
     if (((D_800F19CC->unkC[7] & 3) == 1) || ((D_800F19CC->unkC[7] & 3) == 3)) {
@@ -3137,9 +3149,36 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086754);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086EA4);
+void func_80086EA4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
+{
+    if (arg0->weapon.blade.id != 0) {
+        arg0->weapon.classAffinityCurrent.affinity[0][arg1] += arg3;
+        arg0->weapon.classAffinityCurrent.affinity[0][arg2] -= arg3;
+        arg0->weapon.unk168[arg1] = arg3;
+        arg0->weapon.unk168[arg2] = -arg3;
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086EF4);
+void func_80086EF4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
+{
+    int i;
+
+    if (arg0->shield.shield.id != 0) {
+        arg0->shield.classAffinityCurrent.affinity[0][arg1] += arg3;
+        arg0->shield.classAffinityCurrent.affinity[0][arg2] -= arg3;
+        arg0->shield.unk134[arg1] = arg3;
+        arg0->shield.unk134[arg2] = -arg3;
+    }
+
+    for (i = 0; i < 6; ++i) {
+        if (arg0->hitLocations[i].armor.armor.id != 0) {
+            arg0->hitLocations[i].armor.classAffinityCurrent.affinity[0][arg1] += arg3;
+            arg0->hitLocations[i].armor.classAffinityCurrent.affinity[0][arg2] -= arg3;
+            arg0->hitLocations[i].armor.unk88[arg1] = arg3;
+            arg0->hitLocations[i].armor.unk88[arg2] = -arg3;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086FA8);
 
@@ -3738,5 +3777,3 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090A1C);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090B28);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068C1C);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068EB4);

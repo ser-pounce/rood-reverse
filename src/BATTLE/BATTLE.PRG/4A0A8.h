@@ -5,7 +5,7 @@ int func_800BEB10(void);
 char func_800BEBF4(int, int);
 void func_800BEC14(int, int);
 void func_800BEC30(void);
-void func_800BEC58(int, int, int, int);
+short func_800BEC58(int, int, int*, int);
 
 extern short D_800F4BE2;
 extern signed char D_800F4C08;

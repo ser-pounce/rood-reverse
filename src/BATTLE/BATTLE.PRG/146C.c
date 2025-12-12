@@ -247,6 +247,7 @@ void func_80070F28(int);
 void func_8007138C(void);
 void func_800732AC(void);
 void func_80073718(void);
+void func_80074798(int*, int*);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
@@ -1386,7 +1387,15 @@ void func_80074744(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074798);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074860);
+int func_80074860(int arg0)
+{
+    int sp10[4];
+    int sp20[2];
+
+    func_800A1108(arg0, sp10);
+    func_80074798(sp10, sp20);
+    return func_800BEC58(4, 0, sp20, 1) == 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800748B8);
 
@@ -1547,7 +1556,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
             func_8006C1CC(arg0, arg1, arg2);
             if (arg1 == 0) {
                 func_8009722C();
-                func_800BEC58(0x40, 0, 0, 0);
+                func_800BEC58(0x40, 0, NULL, 0);
                 func_80073898();
                 ret = 1;
             } else if (vs_battle_actors[arg1]->unk26 == 0) {

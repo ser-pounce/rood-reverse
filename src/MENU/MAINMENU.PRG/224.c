@@ -5,6 +5,7 @@
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../BATTLE/BATTLE.PRG/40564.h"
 #include "../BATTLE/BATTLE.PRG/44F14.h"
+#include "../BATTLE/BATTLE.PRG/4A0A8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
 typedef struct {
@@ -231,7 +232,84 @@ void func_800F9E0C(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/224", func_800F9EB8);
+int func_800F9EB8(void* arg0)
+{
+    int _[2];
+    int i;
+    D_800F4538_t* temp_a0;
+    int* temp_s0;
+    D_800F4538_t* temp_s1;
+    int new_var2;
+    int new_var3;
+    temp_s1 = D_800F4538[1];
+    
+    if (temp_s1 == NULL) {
+        return -1;
+    }
+    
+    if (temp_s1->unk0 == 0) {
+        return -1;
+    }
+    
+    if (temp_s1->unk8 & 1) {
+        return -1;
+    }
+    
+    func_800AECA0(arg0);
+    temp_s1->unk5B2 =
+        ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
+    
+    if (temp_s1->unk8 & 4) {
+        func_800AB4F0(temp_s1);
+        func_800AF6E8(temp_s1);
+    } else {
+        func_800AEAE8(temp_s1);
+    }
+    
+    func_800B28A8(temp_s1, arg0, 0);
+    
+    if (temp_s1->unk17FD > 1) {
+        func_800AB4F0(D_800F4538[16]);
+    }
+    
+    if (temp_s1->unk17FD != 0) {
+        int* p = (int*)0x1F800000;
+        new_var2 = (temp_s1->unk6F7 * 4) + 0xC0;
+        p[1] += new_var2;
+        temp_s1->unk1C += temp_s1->unk6F4;
+        temp_s1->unk1E += temp_s1->unk6F5;
+        temp_s1->unk20 += temp_s1->unk6F6;
+        func_800B002C(temp_s1, temp_s1->unk17FD);
+        func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
+        p = (int*)0x1F800000;
+        new_var3 = (temp_s1->unk6F7 * 4) + 0xC0;
+        p[1] -= new_var3;
+        temp_s1->unk1C -= temp_s1->unk6F4;
+        temp_s1->unk1E -= temp_s1->unk6F5;
+        temp_s1->unk20 -= temp_s1->unk6F6;
+    }
+
+    if (temp_s1->unk8 & 0x1000) {
+        return -2;
+    }
+
+    for (i = 0; i < 2; ++i) {
+        int v = i + 2;
+        temp_a0 = D_800F4588[v];
+        if ((temp_a0 != 0) && (temp_a0->unk8 & 0x10)) {
+            temp_s0 = temp_s1->unk6C[temp_a0->unkD];
+            temp_s0[5] -= temp_s1->unk6F4;
+            temp_s0[6] -= temp_s1->unk6F5;
+            temp_s0[7] -= temp_s1->unk6F6;
+            func_800B217C(temp_a0, temp_s0);
+            temp_s0[5] += temp_s1->unk6F4;
+            temp_s0[6] += temp_s1->unk6F5;
+            temp_s0[7] += temp_s1->unk6F6;
+        }
+    }
+
+    return 0;
+}
 
 int func_800FA188(int arg0, int arg1, int* arg2)
 {

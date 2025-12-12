@@ -346,7 +346,7 @@ extern u_int D_800F1CA8;
 extern int D_800F1CB8;
 extern char D_800F1CD6;
 extern short D_800F1CDC;
-extern signed char D_800F1D28[0x40];
+extern int D_800F1D28[16];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
 extern int D_800F1D78[20];
@@ -3561,7 +3561,22 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BEBC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BF48);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C070);
+void func_8008C070(int arg0, int arg1) 
+{
+    int i;
+    int* var_v1;
+    
+    ++D_800F1D6A;
+
+    for (i = 0, var_v1 = D_800F1D28; i < 8; ++i) {
+        if (var_v1[0] == 0) {
+            var_v1[0] = arg0;
+            var_v1[1] = arg1;
+            return;
+        }
+        var_v1 += 2;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C0C0);
 

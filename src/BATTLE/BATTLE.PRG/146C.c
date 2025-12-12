@@ -2182,7 +2182,19 @@ void func_8007DF48(void) {
     D_800F18F8 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007DF98);
+void func_8007DF98(void) {
+    int i;
+    
+    for (i = 0; i < 32; ++i) {
+        if (D_800F19A8[i] == 0xFE) {
+            D_800F19A8[i] = 0;
+        }
+        if (D_800F19A8[i] == 0xFD) {
+            D_800F19A8[i] = -2;
+        }
+    }
+}
+
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007DFF0);
 

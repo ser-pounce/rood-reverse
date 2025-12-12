@@ -1713,7 +1713,12 @@ void func_8007BF2C(void) { func_8008AB80(0); }
 
 void func_8007BF4C(void) { func_8008ABB8(0); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BF6C);
+void func_8007BF6C(int arg0) 
+{
+    if (vs_battle_actors[arg0] != NULL) {
+        func_800A087C(arg0, func_800A0BE0(arg0) | 1);
+    }
+}
 
 void func_8007BFC0(void)
 {

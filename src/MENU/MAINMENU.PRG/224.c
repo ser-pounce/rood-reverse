@@ -1,4 +1,4 @@
-#include "common.h"
+#include <stddef.h>
 #include "278.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
 #include "../BATTLE/BATTLE.PRG/30D14.h"
@@ -363,7 +363,49 @@ int func_800FA238(int arg0, int arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/224", func_800FA2CC);
+void func_800FA2CC(void)
+{
+    u_short* sp10;
+    int i;
+    int i_2;
+    char* temp_s0;
+    D_800F4538_t* temp_s1;
+
+    temp_s1 = D_800F4538[0];
+
+    for (i = 0; i < 2; ++i) {
+        D_800F4538_t* var_a0 = D_800F4588[i];
+        if (var_a0 != 0) {
+            if (temp_s1->unk8 & 0x800000) {
+                var_a0->unk11 = 0x40;
+                var_a0->unk8 |= 0x10;
+            } else {
+                var_a0->unk11 = 0;
+            }
+        }
+    }
+
+    func_8009E634(temp_s1, i);
+
+    i_2 = 1;
+    if (temp_s1->unk8 & 0x800000) {
+        i_2 = 0x65;
+    }
+
+    temp_s1->unk5B8 = i_2;
+    temp_s1->unk5AC = temp_s1->unk5AC & 0xFFEFFFFF;
+    temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
+    temp_s1->unk6E3 = D_800F49DC;
+    temp_s0 = temp_s1->unkC54;
+    temp_s1->unk5BC = *sp10;
+    func_800AD008(temp_s1, temp_s0);
+    func_800AFA28(temp_s1, temp_s0, 1);
+    vs_main_memcpy(temp_s1->unk704, temp_s0, 0x550U);
+    temp_s1->unk1194 = 0;
+    temp_s1->unk6E0 = 0;
+    temp_s1->unk5CD = 0;
+    temp_s1->unk5CC = 0;
+}
 
 void func_800FA3FC(int arg0)
 {

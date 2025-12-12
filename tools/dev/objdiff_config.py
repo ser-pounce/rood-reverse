@@ -40,6 +40,7 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                 "progress_categories": progress_categories,
                 "complete": str(name) in {    
                     "SLUS_010.40/overlay",
+                    "MAINMENU.PRG/224",
                     "MENU0.PRG/84",
                     "MENU1.PRG/30",
                     "MENU2.PRG/64",

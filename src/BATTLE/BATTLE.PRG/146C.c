@@ -317,6 +317,7 @@ extern u_short D_800F1910[];
 extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
+extern char D_800F19A8[];
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D4;
 extern int D_800F19EC;
@@ -2167,7 +2168,19 @@ int func_8007DF30(void) { return D_800F1A40; }
 
 void func_8007DF40(void) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007DF48);
+void func_8007DF48(void) {
+    int i;
+
+    for (i = 0; i < 0x20; ++i) {
+        D_800F19A8[i] = 0;
+    }
+
+    for (i = 0; i < 0x19; ++i) {
+        D_800F19A8[i] = 0xFF;
+    }
+    
+    D_800F18F8 = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007DF98);
 

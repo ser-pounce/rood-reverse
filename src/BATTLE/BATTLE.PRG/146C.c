@@ -627,7 +627,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B2D4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B338);
 
-void func_8006B460(void* arg0) 
+void func_8006B460(void* arg0)
 {
     func_8006B02C(&vs_battle_characterState->unk3C->shield, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);
@@ -637,7 +637,8 @@ void func_8006B460(void* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B4B8);
 
-void func_8006B524(char* arg0) {
+void func_8006B524(char* arg0)
+{
     func_8006B194(&vs_battle_characterState->unk3C->accessory, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);
     func_8006B214();
@@ -1652,7 +1653,8 @@ void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { func_800472D0(arg0, arg1); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B410);
 
-void func_8007B470(void) {
+void func_8007B470(void)
+{
     func_80048FEC(1);
     func_8007B1B8(8, 4, 0, 0, 0);
     func_8006C250();
@@ -1795,7 +1797,12 @@ void func_8007BFC0(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BFF8);
+void func_8007BFF8(int arg0)
+{
+    if (vs_battle_actors[arg0] != NULL) {
+        func_800A087C(arg0, func_800A0BE0(arg0) & ~1);
+    }
+}
 
 void func_8007C050(void)
 {
@@ -2168,7 +2175,8 @@ int func_8007DF30(void) { return D_800F1A40; }
 
 void func_8007DF40(void) { }
 
-void func_8007DF48(void) {
+void func_8007DF48(void)
+{
     int i;
 
     for (i = 0; i < 0x20; ++i) {
@@ -2178,13 +2186,14 @@ void func_8007DF48(void) {
     for (i = 0; i < 0x19; ++i) {
         D_800F19A8[i] = 0xFF;
     }
-    
+
     D_800F18F8 = 0;
 }
 
-void func_8007DF98(void) {
+void func_8007DF98(void)
+{
     int i;
-    
+
     for (i = 0; i < 32; ++i) {
         if (D_800F19A8[i] == 0xFE) {
             D_800F19A8[i] = 0;
@@ -2194,7 +2203,6 @@ void func_8007DF98(void) {
         }
     }
 }
-
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007DFF0);
 

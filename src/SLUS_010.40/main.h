@@ -445,7 +445,9 @@ void func_80045BFC(int arg0, int arg1, int arg2, int arg3);
 void func_80045C74(int arg0, int arg1, int arg2, int arg3);
 void func_800461CC(int, u_int[], u_int, int, int);
 void vs_main_setMonoSound(int);
-void func_80046C80(int, int, u_short*, int);
+// BUG: Function seems to be called with 3 and 4 parameters
+// but always reads 4th
+void func_80046C80();
 void func_800472D0(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);
 void func_800478E0(int, int, int, int, int);

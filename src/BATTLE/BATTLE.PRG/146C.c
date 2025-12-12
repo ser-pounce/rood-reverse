@@ -307,6 +307,7 @@ void func_8008D5A0(int);
 void func_8008D658(void*, void*);
 void func_8008E480(int arg0);
 void func_80093B68(void);
+void func_80098194(int);
 
 extern u_char D_800E8200[];
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -386,6 +387,7 @@ extern u_short* D_800F1DD4;
 
 extern int D_1F800000[];
 extern int D_1F800034[];
+extern int D_1F800064[];
 
 // invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle
 // Abilities or Items) invoked just before the skill takes effect
@@ -1663,7 +1665,7 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
     func_800478E0(arg0, arg1, arg2, arg3, arg4);
 }
 
-void func_8007B378(int arg0, u_short* arg1, int arg2) 
+void func_8007B378(int arg0, u_short* arg1, int arg2)
 {
     func_80046C80(arg0, 0, arg1);
     func_80046C80(arg0, 1, arg1 + 0x100);
@@ -2028,7 +2030,23 @@ void func_8007CCF0(int arg0)
     SetGeomScreen(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CD14);
+void func_8007CD14(int arg0, int arg1)
+{
+    D_1F800000[25] = arg0;
+
+    if (arg1 == 0) {
+        if (arg0 < 0) {
+            arg0 += 7;
+        }
+        arg0 >>= 3;
+        if (arg0 >= 0x801) {
+            arg0 = 0x800;
+        } else if (arg0 < 0) {
+            arg0 = 0;
+        }
+        func_80098194(arg0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CD70);
 
@@ -2043,7 +2061,7 @@ void func_8007CE74(int arg0)
 
 void func_8007CEA0(int arg0) { func_8009E5C4(arg0); }
 
-void func_8007CEC0(void) 
+void func_8007CEC0(void)
 {
     int i;
     for (i = 0; i < 16; ++i) {

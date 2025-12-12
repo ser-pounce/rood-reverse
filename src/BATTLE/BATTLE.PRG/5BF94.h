@@ -123,6 +123,23 @@ typedef struct {
     int unk704;
 } D_800F453C_t;
 
+typedef struct {
+    short unk0;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    int unk8;
+    int unkC;
+    short unk10;
+    short unk12;
+    char unk14;
+    char unk15;
+    char unk16;
+    char unk17;
+    int unk18[52];
+} func_800CF3F8_t;
+
 void func_800C6540(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
@@ -162,6 +179,7 @@ int func_800CD064(int);
 void vs_battle_drawImage(int xy, void* buffer, int wh);
 int func_800CEEBC(void);
 void func_800CEF74(int);
+void func_800CF3F8(func_800CF3F8_t*, int);
 int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);

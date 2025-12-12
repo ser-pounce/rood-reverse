@@ -1131,7 +1131,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F630);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F760);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F848);
+void func_8006F848(void)
+{
+    func_800CF3F8_t sp10;
+
+    sp10.unk0 = 0x14;
+    sp10.unk2 = 1;
+    sp10.unk4 = 5;
+    sp10.unk10 = 4;
+    sp10.unk3 = 0;
+    sp10.unk14 = 0;
+    sp10.unk16 = 0xFD;
+    func_800CF3F8(&sp10, 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F89C);
 
@@ -1971,7 +1983,7 @@ void func_8007CFF8(int arg0, short* arg1)
     func_800E527C(arg0, arg1[0], arg1[2]);
 }
 
-int func_8007D03C(int arg0) 
+int func_8007D03C(int arg0)
 {
     int temp_v0 = func_800E5154();
     if (temp_v0 == 0) {

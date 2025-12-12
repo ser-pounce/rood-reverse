@@ -235,6 +235,7 @@ void vs_battle_setEquipmentForDrop(
 void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
 void func_8006DEFC(func_8007820C_t*, int, int);
+int func_8006F204(void);
 void func_8006F53C(void);
 void func_8006F5CC(void);
 void func_8006F89C(void);
@@ -242,6 +243,7 @@ void func_8006FA20(void);
 void func_80070278(void);
 void func_80070F28(int);
 void func_8007138C(void);
+void func_800732AC(void);  
 void func_80073718(void);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
@@ -1342,7 +1344,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074580);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800745EC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074744);
+void func_80074744(void) 
+{
+    if (vs_main_projectionDistance >= 273) {
+        func_800A087C(0, func_800A0BE0(0) | 2);
+    }
+    if (func_8006F204() != 0) {
+        func_800732AC();
+    }
+}
+
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074798);
 

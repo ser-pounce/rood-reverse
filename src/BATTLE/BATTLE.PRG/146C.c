@@ -5,6 +5,7 @@
 #include "146C.h"
 #include "2842C.h"
 #include "30D14.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -1140,7 +1141,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FB48);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FBCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FCBC);
+void func_8006FCBC(void)
+{
+    char* temp_s0;
+
+    D_800F18F0 = 0xA;
+    temp_s0 = (char*)&D_800F19CC->unk5C[0x1FE];
+    func_8006C4A4(temp_s0[4], func_800A152C(temp_s0[4], 0xF0, 0));
+}
 
 void func_8006FD0C(void) { D_800F18F0 = 9; }
 
@@ -3561,11 +3569,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BEBC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BF48);
 
-void func_8008C070(int arg0, int arg1) 
+void func_8008C070(int arg0, int arg1)
 {
     int i;
     int* var_v1;
-    
+
     ++D_800F1D6A;
 
     for (i = 0, var_v1 = D_800F1D28; i < 8; ++i) {

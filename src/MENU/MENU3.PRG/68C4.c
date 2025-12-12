@@ -52,14 +52,14 @@ int func_801090C4(int arg0, int arg1, int arg2)
         func_800F9E0C();
         func_800F9A78(0);
         func_800F9CB0();
-        temp_s1->unk8 &= 0xFF7FFFFF;
+        temp_s1->unk8_23 = 0;
         func_800A0204(1, 1, 0, 0);
         func_800AFA28(temp_s1, temp_s0_2, 1);
         vs_main_memcpy(temp_s1 + 1, temp_s0_2, 0x550);
 
         for (i = 0; i < 2; ++i) {
             if (D_800F4590[i] != NULL) {
-                D_800F4590[i][17] = 0;
+                D_800F4590[i]->unk11 = 0;
             }
         }
 

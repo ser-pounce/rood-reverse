@@ -232,6 +232,8 @@ int func_8006A228(u_int, int);
 void func_8006A8EC(void*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
+void func_8006B214(void);
+void func_8006B2D4(void);
 void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
 void func_8006DEFC(func_8007820C_t*, int, int);
@@ -614,7 +616,7 @@ void func_8006B194(void* arg0, char* arg1)
     vs_main_freeHeapR(temp_v0);
 }
 
-void func_8006B20C(void) { }
+void func_8006B20C(vs_battle_actor2* arg0 __attribute__((unused))) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B214);
 
@@ -624,11 +626,22 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B2D4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B338);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B460);
+void func_8006B460(void* arg0) 
+{
+    func_8006B02C(&vs_battle_characterState->unk3C->shield, arg0);
+    func_8006B20C(vs_battle_characterState->unk3C);
+    func_8006B214();
+    func_8006B2D4();
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B4B8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B524);
+void func_8006B524(char* arg0) {
+    func_8006B194(&vs_battle_characterState->unk3C->accessory, arg0);
+    func_8006B20C(vs_battle_characterState->unk3C);
+    func_8006B214();
+    func_8006B2D4();
+}
 
 void vs_battle_setBladeForDrop(
     func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade)

@@ -249,6 +249,7 @@ void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
 void func_8007A9DC(void*, void*, int);
+void func_8007B1B8(int, int, int, int, int);
 void func_8007B29C(int, int, int, int, int, int);
 void func_8007B410(void);
 void func_8007B63C(void);
@@ -288,9 +289,11 @@ void func_80089D04(void);
 void func_8008A6FC(void);
 int func_8008AB80(int);
 int func_8008ABB8(int);
+void func_8008B4BC(int arg0);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
+void func_8008E480(int arg0);
 void func_80093B68(void);
 
 extern u_char D_800E8200[];
@@ -1635,7 +1638,14 @@ void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { func_800472D0(arg0, arg1); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B410);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B470);
+void func_8007B470(void) {
+    func_80048FEC(1);
+    func_8007B1B8(8, 4, 0, 0, 0);
+    func_8006C250();
+    func_8008B4BC(0);
+    func_8008E480(0);
+    D_800F1968 = 0;
+}
 
 void func_8007B4C4(void)
 {

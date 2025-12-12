@@ -351,6 +351,7 @@ typedef struct {
     char unk8[8][0x28];
 } D_80061078_t;
 
+void func_80048FEC(short arg0);
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern char D_8004EDDC[8][30];

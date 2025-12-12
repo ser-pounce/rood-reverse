@@ -11666,7 +11666,7 @@ void func_80048F8C(void)
     }
 }
 
-static void func_80048FEC(short arg0) { D_80055D58.unk0[0].unk2 = arg0; }
+void func_80048FEC(short arg0) { D_80055D58.unk0[0].unk2 = arg0; }
 
 void func_80048FF8(void)
 {

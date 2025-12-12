@@ -365,6 +365,7 @@ extern int D_8004EECC[][4];
 extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
+extern char D_80050468[];
 extern u_short D_8005046A;
 extern void* D_80055C80[];
 extern u_int D_8005E040;

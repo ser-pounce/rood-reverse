@@ -166,6 +166,8 @@ short* func_800CB66C(void);
 void func_800CB114(void);
 int func_800CB45C(void);
 void func_800CB50C(void);
+void func_800CB550(void);
+void func_800CB560(void);
 void func_800CB654(int);
 void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(void* dest, void const* src, int size);

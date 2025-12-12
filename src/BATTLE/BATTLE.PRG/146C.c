@@ -1010,7 +1010,7 @@ void func_8006C250(void)
     }
 }
 
-void func_8006C2A0(void) 
+void func_8006C2A0(void)
 {
     int i;
 
@@ -1165,7 +1165,41 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EF5C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F204);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F450);
+typedef struct {
+    short unk0;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    int unkC;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    int unk1C[51];
+} func_8006F450_t;
+
+void func_8006F450(func_8006F450_t* arg0)
+{
+    func_8006F450_t sp10;
+
+    sp10.unk0 = 0x24;
+    sp10.unk2 = 1;
+    sp10.unk4 = 4;
+    sp10.unk3 = 0;
+    sp10.unk8 = 0;
+    sp10.unk10 = 5;
+    sp10.unk14 = arg0->unk0;
+    sp10.unk18 = arg0->unk4;
+    sp10.unk16 = 0;
+    func_800CF3F8((func_800CF3F8_t*)&sp10, 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F4B0);
 
@@ -1529,7 +1563,7 @@ void func_80077EC4(void)
     temp_s0[21] = 0;
 }
 
-void func_80077F14(int arg0, int arg1, int arg2) 
+void func_80077F14(int arg0, int arg1, int arg2)
 {
     int var_v0;
 
@@ -1623,7 +1657,7 @@ void func_8007980C(void)
     }
 }
 
-void func_8007983C(void) 
+void func_8007983C(void)
 {
     func_800C97BC();
     if ((*func_800CB66C() != 1) && (func_800CB45C() == 0)) {
@@ -1766,7 +1800,7 @@ void func_8007B908(void)
     }
 }
 
-void func_8007B938(void) 
+void func_8007B938(void)
 {
     func_800C97BC();
     if ((*func_800CB66C() != 1) && (func_800CB45C() == 0)) {
@@ -3879,23 +3913,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D658);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D710);
 
-void func_8008D820(u_int* arg0, func_80103530_t* arg1) 
+void func_8008D820(u_int* arg0, func_80103530_t* arg1)
 {
     ++arg0;
     arg1->unk0 = arg0[0];
     ++arg0;
-    
+
     if (arg1->unk0 & 8) {
-        arg1->unk4 = (RECT*) (arg0 + 1);
-        arg1->unk8 = (u_long*) arg0 + 3;
+        arg1->unk4 = (RECT*)(arg0 + 1);
+        arg1->unk8 = (u_long*)arg0 + 3;
         arg0 += arg0[0] >> 2;
     } else {
         arg1->unk4 = NULL;
         arg1->unk8 = NULL;
     }
-    
-    arg1->unkC = (RECT*) (arg0 + 1);
-    arg1->unk10 = (u_long*) arg0 + 3;
+
+    arg1->unkC = (RECT*)(arg0 + 1);
+    arg1->unk10 = (u_long*)arg0 + 3;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D880);

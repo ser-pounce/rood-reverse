@@ -1971,7 +1971,15 @@ void func_8007CFF8(int arg0, short* arg1)
     func_800E527C(arg0, arg1[0], arg1[2]);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D03C);
+int func_8007D03C(int arg0) 
+{
+    int temp_v0 = func_800E5154();
+    if (temp_v0 == 0) {
+        func_800A0A1C(arg0, func_800A0A74(arg0) & ~2);
+        return 1;
+    }
+    return temp_v0 == 2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D08C);
 

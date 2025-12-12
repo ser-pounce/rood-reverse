@@ -2043,7 +2043,15 @@ void func_8007CE74(int arg0)
 
 void func_8007CEA0(int arg0) { func_8009E5C4(arg0); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CEC0);
+void func_8007CEC0(void) 
+{
+    int i;
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_actors[i] != NULL) {
+            func_8007CEA0(i);
+        }
+    }
+}
 
 u_int func_8007CF18(int arg0)
 {

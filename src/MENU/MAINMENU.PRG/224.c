@@ -242,36 +242,36 @@ int func_800F9EB8(void* arg0)
     int new_var2;
     int new_var3;
     temp_s1 = D_800F4538[1];
-    
+
     if (temp_s1 == NULL) {
         return -1;
     }
-    
+
     if (temp_s1->unk0 == 0) {
         return -1;
     }
-    
+
     if (temp_s1->unk8 & 1) {
         return -1;
     }
-    
+
     func_800AECA0(arg0);
     temp_s1->unk5B2 =
         ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
-    
+
     if (temp_s1->unk8 & 4) {
         func_800AB4F0(temp_s1);
         func_800AF6E8(temp_s1);
     } else {
         func_800AEAE8(temp_s1);
     }
-    
+
     func_800B28A8(temp_s1, arg0, 0);
-    
+
     if (temp_s1->unk17FD > 1) {
         func_800AB4F0(D_800F4538[16]);
     }
-    
+
     if (temp_s1->unk17FD != 0) {
         int* p = (int*)0x1F800000;
         new_var2 = (temp_s1->unk6F7 * 4) + 0xC0;

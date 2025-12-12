@@ -257,6 +257,7 @@ void func_8007BFF8(int);
 void func_8007C0AC(int, int);
 void func_8007C4E0(void);
 void func_8007C5C0(void);
+void func_8007CD70(int*, int*, int, int);
 int _getLocationId(int, int);
 void func_8007D08C(int, int);
 void func_8007D360(void);
@@ -1222,7 +1223,13 @@ void func_80073554(void)
     func_8006C40C();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007357C);
+void func_8007357C(void)
+{
+    D_800F196C = 5;
+    D_800F18F0 = 1;
+    func_800CB660((vs_battle_characterState->unk20 & 1) | 2);
+    func_8006C39C();
+}
 
 void func_800735CC(short* arg0)
 {
@@ -1416,7 +1423,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077DF0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077EC4);
+void func_80077EC4(void)
+{
+    int* temp_s0;
+
+    func_8007CD70(D_1F800034, D_1F800034 + 4, -1, -1);
+    temp_s0 = D_1F800034 - 13;
+    temp_s0[25] = 0x1000;
+    temp_s0[23] = 0;
+    temp_s0[22] = 0;
+    temp_s0[21] = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077F14);
 
@@ -1962,7 +1979,8 @@ int func_8007D15C(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D1A8);
 
-void func_8007D260(int arg0) {
+void func_8007D260(int arg0)
+{
     vs_battle_actor* temp_a1 = vs_battle_actors[arg0];
     if ((temp_a1 != NULL) && (temp_a1->unk8 != 0x20)) {
         temp_a1->unk8 = 0;

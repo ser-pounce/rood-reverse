@@ -161,6 +161,7 @@ int vs_battle_getHitLocationStatus(void*);
 int func_800CABE0(int);
 int func_800CAEAC(int);
 int vs_battle_abilitiesUnlocked(int);
+void func_800CB23C(void);
 void func_800CB660(int arg0);
 short* func_800CB66C(void);
 void func_800CB114(void);

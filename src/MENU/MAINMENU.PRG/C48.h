@@ -54,7 +54,7 @@ void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3);
 void func_800FCAA4(func_8006B57C_t*, func_800FD0E0_t*, int*, char*);
 void func_800FCC0C(vs_battle_setGripForDrop_t*, func_800FD0E0_t*, int*, char*);
 void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3);
-void vs_mainMenu_setShieldStrings(void*, char**, int*, char*);
+void vs_mainMenu_setShieldStrings(vs_battle_shieldInfo*, char**, int*, char*);
 void vs_mainMenu_setArmorStrings(vs_battle_armorInfo*, char**, int*, char*);
 void vs_mainMenu_setAccessoryStrings(
     vs_battle_setEquipmentForDrop_t* arg0, char** arg1, int* arg2, char* arg3);

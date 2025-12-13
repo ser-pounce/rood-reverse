@@ -86,7 +86,7 @@ typedef struct {
     short unk126;
     short unk128[16];
     short unk148[16];
-} func_80103E24_t;
+} _getShieldStat_t;
 
 void func_80102BE4(int);
 int func_801053EC(int);
@@ -633,39 +633,39 @@ void func_80103CC8(int arg0)
     vs_battle_memcpy(new_var, sp1A8, 8);
 }
 
-int func_80103E24(int arg0, func_80103E24_t* arg1)
+int _getShieldStat(int arg0, vs_battle_shieldInfo* shield)
 {
     switch (arg0) {
     case 1:
-        return -arg1->unk2B;
+        return -shield->shield.material;
     case 4:
-        return arg1->unkE0;
+        return shield->currentPp;
     case 5:
-        return arg1->unkE2;
+        return shield->maxPp;
     case 6:
-        return arg1->unkDC;
+        return shield->currentDp;
     case 7:
-        return arg1->unkDE;
+        return shield->maxDp;
     case 8:
-        return arg1->unkE4;
+        return shield->currentStr;
     case 9:
-        return arg1->unkE8;
+        return shield->currentInt;
     case 10:
-        return arg1->unkEC;
+        return shield->currentAgility;
     default:
-        if (arg0 < 0x21) {
-            return arg1->unkF4[arg0 - 0x1B];
+        if (arg0 < 33) {
+            return shield->classAffinityCurrent.class[0][arg0 - 27];
         }
-        if (arg0 >= 0x28) {
-            return *(arg0 + &arg1->unkC9[0]);
+        if (arg0 >= 40) {
+            return shield->types[arg0 - 39];
         }
-        return arg1->unk114[arg0 - 0x21];
+        return shield->classAffinityCurrent.affinity[0][arg0 - 33];
     }
 }
 
 void func_80103F00(int arg0)
 {
-    func_80103E24_t sp10;
+    vs_battle_shieldInfo shield;
     char sp1A8[8];
     int temp_v0;
     int i;
@@ -675,7 +675,7 @@ void func_80103F00(int arg0)
     char(*new_var2)[48] = D_80060168.unk100;
     char* new_var = D_800619D8.unk28;
 
-    vs_battle_rMemzero(sp1A8, 8);
+    vs_battle_rMemzero(sp1A8, sizeof sp1A8);
     var_s4 = 0;
 
     while (1) {
@@ -684,8 +684,8 @@ void func_80103F00(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006B02C(&sp10, new_var2[temp_s0 - 1]);
-                temp_v0 = func_80103E24(arg0, &sp10);
+                func_8006B02C(&shield, new_var2[temp_s0 - 1]);
+                temp_v0 = _getShieldStat(arg0, &shield);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
                 }
@@ -699,8 +699,8 @@ void func_80103F00(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006B02C(&sp10, new_var2[temp_s0 - 1]);
-                if (func_80103E24(arg0, &sp10) == var_s3) {
+                func_8006B02C(&shield, new_var2[temp_s0 - 1]);
+                if (_getShieldStat(arg0, &shield) == var_s3) {
                     sp1A8[var_s4++] = temp_s0;
                     new_var[i] = 0;
                 }
@@ -763,7 +763,7 @@ void func_8010408C(int arg0)
     vs_battle_memcpy(new_var, sp10, 0x40);
 }
 
-int func_801041CC(int arg0, func_80103E24_t* arg1)
+int func_801041CC(int arg0, _getShieldStat_t* arg1)
 {
     switch (arg0) {
     case 0:
@@ -844,7 +844,7 @@ void func_8010439C(int arg0, int arg1)
                 temp_s0 = temp_s6[i];
                 if (temp_s0 != 0) {
                     func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    temp_v0 = func_801041CC(arg1, (func_80103E24_t*)sp10);
+                    temp_v0 = func_801041CC(arg1, (_getShieldStat_t*)sp10);
                     if (var_s3 < temp_v0) {
                         var_s3 = temp_v0;
                     }
@@ -859,7 +859,7 @@ void func_8010439C(int arg0, int arg1)
                 temp_s0 = temp_s6[i];
                 if (temp_s0 != 0) {
                     func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    if (func_801041CC(arg1, (func_80103E24_t*)&sp10) == var_s3) {
+                    if (func_801041CC(arg1, (_getShieldStat_t*)&sp10) == var_s3) {
                         spVLA[var_s5++] = temp_s0;
                         temp_s6[i] = 0;
                     }

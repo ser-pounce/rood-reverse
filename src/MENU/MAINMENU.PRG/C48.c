@@ -450,14 +450,14 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShiel
 
 void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 {
-    int sp10[90];
+    vs_battle_shieldInfo shield;
 
     if (D_8010246C == D_80060168.unk100[0]) {
-        func_8006B02C(sp10, arg0);
+        func_8006B02C(&shield, arg0);
     } else {
-        func_80102BB0(sp10, arg0, D_80109A8C);
+        func_80102BB0(&shield, arg0, D_80109A8C);
     }
-    vs_mainMenu_setShieldStrings(sp10, arg1, arg2, arg3);
+    vs_mainMenu_setShieldStrings(&shield, arg1, arg2, arg3);
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);

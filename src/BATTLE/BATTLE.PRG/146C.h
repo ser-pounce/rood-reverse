@@ -108,9 +108,9 @@ typedef struct {
 
 typedef struct {
     int unk0[6];
-    vs_battle_equipment shield;
-    vs_battle_equipment gems[3];
-    char unkD8;
+    vs_battle_equipment shield; // 0x18
+    vs_battle_equipment gems[3]; // 0x48
+    char unkD8; // 0xD8
     char unkD9;
     u_char unkDA;
     char unkDB;
@@ -125,9 +125,9 @@ typedef struct {
     short currentAgility;
     u_short baseAgility;
     char types[4];
-    vs_battle_classAffinityCurrent classAffinityCurrent;
+    vs_battle_classAffinityCurrent classAffinityCurrent; // 0xF4
     short unk134[8];
-    vs_battle_classAffinityBaseline classAffinityBaseline;
+    vs_battle_classAffinityBaseline classAffinityBaseline; // 0x144
 } vs_battle_shieldInfo;
 
 typedef struct {
@@ -334,7 +334,7 @@ void func_8006AC74(void*, void*);
 void func_8006ACFC(void*, vs_battle_setEquipmentForDrop_t*);
 void func_8006AE0C(void*, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
-void func_8006B02C(void*, void*);
+void func_8006B02C(vs_battle_shieldInfo*, void*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);
 void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1);
 void func_8006B338(void*);

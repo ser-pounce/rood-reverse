@@ -158,6 +158,7 @@ int vs_battle_renderValue(int, int, int, u_long*);
 void vs_battle_drawStatBar(int, int, u_long*, int);
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getHitLocationStatus(void*);
+void func_800CAB40(void);
 int func_800CABE0(int);
 int func_800CAEAC(int);
 int vs_battle_abilitiesUnlocked(int);

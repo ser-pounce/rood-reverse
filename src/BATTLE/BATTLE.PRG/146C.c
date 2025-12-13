@@ -288,7 +288,7 @@ int _getLocationId(int, int);
 void func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
-int func_8007F4B0(int arg0, char* arg1);
+int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
 int func_800801E0(vs_skill_t*, func_80085718_t*, short);
@@ -312,6 +312,7 @@ void func_8008A6FC(void);
 int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B4BC(int arg0);
+void _nop(int arg0);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
 void func_8008D5A0(int);
@@ -1288,7 +1289,15 @@ void func_800704B0(void)
     func_800CF920();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800704D8);
+void func_800704D8(void)
+{
+    D_800F196C = 5;
+    D_800F19CC->unk8 = 0;
+    D_800F18F0 = 1;
+    func_800CB660((vs_battle_characterState->unk20 & 1) | 2);
+    func_800CAB40();
+    func_8006C39C();
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007053C);
 
@@ -2507,13 +2516,41 @@ int func_8007F8C8(int arg0, char* arg1) { return func_8007F4B0(0xF, arg1) == 0; 
 
 int func_8007F8E8(int arg0, char* arg1) { return func_8007F4B0(0x10, arg1) == 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F908);
+int func_8007F908(int arg0 __attribute__((unused)), u_char* arg1)
+{
+    if ((func_8007F4B0(0x15, arg1) == 0)
+        && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F96C);
+int func_8007F96C(int arg0 __attribute__((unused)), u_char* arg1)
+{
+    if ((func_8007F4B0(0x16, arg1) == 0)
+        && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F9D0);
+int func_8007F9D0(int arg0 __attribute__((unused)), u_char* arg1)
+{
+    if ((func_8007F4B0(0x17, arg1) == 0)
+        && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FA34);
+int func_8007FA34(int arg0 __attribute__((unused)), u_char* arg1)
+{
+    if ((func_8007F4B0(0x18, arg1) == 0)
+        && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FA98);
 
@@ -3653,7 +3690,18 @@ static void _loadZnd(int id)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088EF0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089098);
+void func_80089098(void)
+{
+    func_800BEBEC();
+    _nop(0);
+    if (D_800F1880.unkC != 0) {
+        vs_main_freeHeap(D_800F1880.unkC);
+    }
+    if (D_800F1880.unk10 != 0) {
+        vs_main_freeHeap(D_800F1880.unk10);
+    }
+    vs_main_freeHeap(D_800F1880.unk4);
+}
 
 int func_80089104(void) { return D_800F18A8; }
 
@@ -3835,7 +3883,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void func_8008B588(void) { }
+void _nop(int arg0 __attribute__((unused))) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B590);
 

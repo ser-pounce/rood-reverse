@@ -280,8 +280,8 @@ typedef struct {
     int zoneId;
     vs_main_CdFile* unk4;
     int unk8;
-    int unkC;
-    int unk10;
+    void* unkC;
+    void* unk10;
     int unk14;
     int unk18;
     int unk1C;

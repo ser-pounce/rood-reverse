@@ -22,6 +22,7 @@ _loadZnd = 0x80088E08;
 vs_battle_getSkillFlags = 0x8008A5D0;
 func_8008B430 = 0x8008B430;
 vs_battle_setRoomsUnk0 = 0x8008B4D8;
+_nop = 0x8008B588;
 vs_battle_getCurrentSceneId = 0x8008D400;
 vs_battle_getMapCompletion = 0x8008E5F0;
 func_8008EB24 = 0x8008EB24;

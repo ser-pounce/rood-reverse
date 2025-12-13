@@ -2476,7 +2476,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ECA8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007EEFC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F138);
+int _getSpellHitRate(int arg0 __attribute__((unused)), u_char* arg1) 
+{
+    int temp_v0 = (vs_battle_actors[*arg1]->unk3C->risk + 150) * 100;
+    int var_v1 = temp_v0 >> 8;
+    if (temp_v0 < 0) {
+        var_v1 = (temp_v0 + 255) >> 8;
+    }
+    if (var_v1 == 255) {
+        var_v1 = 254;
+    }
+    return var_v1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F1A4);
 

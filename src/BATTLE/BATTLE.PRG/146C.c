@@ -317,9 +317,11 @@ void func_8008B4BC(int arg0);
 void _nop(int arg0);
 void func_8008B960(char, char, char);
 void func_8008C49C(int, int);
+D_800F1910_t2* func_8008D438(int, int, int);
 void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D658(void*, void*);
+int func_8008D880(int);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 void func_8008E480(int arg0);
 void func_80093B68(void);
@@ -348,6 +350,7 @@ extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
 extern char D_800F19A8[];
+extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D4;
 extern int D_800F19EC;
@@ -1096,7 +1099,18 @@ void func_8006C350(void)
     D_800F1968 = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C39C);
+void func_8006C39C(void)
+{
+    func_8007B10C(0xD, 4, -4, -4, 0);
+    func_80048FEC(0);
+    func_8006C2A0();
+    func_8008B4BC(1);
+    func_8008D594(1);
+    func_8008B4C8(0);
+    func_8008E480(1);
+    func_80095B70(1);
+    D_800F1968 = 1;
+}
 
 void func_8006C40C(void)
 {
@@ -1134,7 +1148,28 @@ void func_8006CD60(u_int* arg0, int arg1, int arg2)
 
 void func_8006CDB8(void) { func_8009D854(); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CDD8);
+void func_8006CDD8(short* arg0)
+{
+    D_800F1910_t2* temp_v0;
+    int var_a0;
+    int var_a1;
+
+    var_a0 = arg0[0];
+    if (var_a0 < 0) {
+        var_a0 += 0x7F;
+    }
+    var_a0 >>= 7;
+    var_a1 = arg0[2];
+    if (var_a1 < 0) {
+        var_a1 += 0x7F;
+    }
+    var_a1 >>= 7;
+    temp_v0 = func_8008D438(var_a0, var_a1, 0);
+    if (temp_v0 != NULL) {
+        func_8008DEAC(temp_v0, 1);
+        func_800E68EC(temp_v0->unk0, temp_v0->unk2);
+    }
+}
 
 void func_8006CE50(void) { func_8008D5A0(0xB4); }
 
@@ -1502,7 +1537,21 @@ int func_8007424C(void)
 
 int func_80074294(void) { return D_800F1868 & 3; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800742A4);
+void func_8009E070(int, short*, int);
+
+void func_800742A4(void)
+{
+    short sp10[4];
+    int v;
+
+    D_800F18F0 = 4;
+    vs_gametime_tickspeed = 2;
+    v = 7;
+    sp10[0] = (D_800F1910.unk0->unk0 << v) + 0x40;
+    sp10[2] = (D_800F1910.unk0->unk2 << v) + 0x40;
+    func_8009E070(0, sp10, 4);
+    func_800CB50C();
+}
 
 void func_80074314(void)
 {
@@ -1536,7 +1585,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800743E0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800744B8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074580);
+void func_80074580(void)
+{
+    if (vs_main_projectionDistance < 0x110) {
+        func_800A087C(0, func_800A0BE0(0) & ~2);
+    }
+    if (func_8006F204() != 0) {
+        D_800F18F0 = 1;
+        D_800F186C = 1;
+        D_800F19C8 = 1;
+        func_8008C40C();
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800745EC);
 
@@ -1900,11 +1960,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B508);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B63C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B764);
+void func_8007B764(void)
+{
+    if ((func_800BEBF4(0xAB) & 0xFF) >= 3) {
+        if (D_800F1900 != NULL) {
+            func_800CB158(D_800F1900);
+            D_800F18F0 = 4;
+            func_8007B410();
+            return;
+        }
+        func_8007B508();
+        return;
+    }
+    func_8007B4C4();
+}
 
 void func_8007B7DC(int arg0, int arg1)
 {
-    if (func_800BEBF4(0xAB, arg1) >= 3) {
+    if (func_800BEBF4(0xAB) >= 3) {
         func_800CB23C();
         D_800F18F0 = 3;
         func_8007B410();
@@ -1965,7 +2038,19 @@ void func_8007BBB8(int arg0, int arg1) { func_80069DEC(arg0, arg1); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BBD8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BCCC);
+void func_8007BCCC(void)
+{
+    D_80050468[0] = 0;
+    D_80050468[7] = 0;
+    D_80050468[6] = 0;
+    D_80050468[5] = 0;
+    D_80050468[4] = 0;
+    func_800BEC14(0xA0, 0);
+    func_800BEC14(0xA1, D_80050468[5]);
+    func_800BEC14(0xA2, D_80050468[6]);
+    func_800BEC14(0xA3, D_80050468[7]);
+    func_800CB560();
+}
 
 void func_8007BD3C(int arg0)
 {
@@ -2061,7 +2146,22 @@ void func_8007C1D8(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C218);
+int func_8007C218(int arg0)
+{
+    int var_v1;
+    vs_battle_actor2* temp_a0 = vs_battle_actors[arg0]->unk3C;
+
+    if (temp_a0 != NULL) {
+        if (temp_a0->currentHP > 0) {
+            var_v1 = (temp_a0->currentHP * 0x64) / temp_a0->maxHP;
+            if (var_v1 == 0) {
+                var_v1 = 1;
+            }
+            return var_v1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C28C);
 
@@ -3647,7 +3747,7 @@ void func_80085390(
         temp_a1_2 = vs_battle_characterState->equippedWeaponType;
         temp_a1_2 %= 10;
         temp_s0 = temp_a1_2 & 0xFF;
-        if ((func_800BEBF4(0x82, temp_a1_2) >= 0xA)
+        if ((func_800BEBF4(0x82) >= 0xA)
             && (vs_main_artsStatus.artsLearned[temp_a1_2 & 0xFF] < 4)
             && (vs_main_artsStatus.kills.weaponCategories[temp_a1_2 & 0xFF]
                 < vs_main_artsPointsRequirements[temp_s0][vs_main_artsStatus
@@ -4012,7 +4112,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B764);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B808);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B8F8);
+void func_8008B8F8(char (*arg0)[12])
+{
+    if (arg0 != NULL) {
+        int v;
+        vs_main_memcpy(D_800F1CC8, arg0, sizeof D_800F1CC8);
+        v = func_8008D880((*arg0)[8]);
+        D_800F1BBE = v;
+    } else {
+        vs_main_bzero(D_800F1CC8, sizeof D_800F1CC8);
+        D_800F1BBE = -1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B960);
 
@@ -4226,7 +4337,19 @@ int func_8008E3B8(int* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E400);
+D_800F1910_t2* func_8008E400(int* arg0)
+{
+    if ((vs_main_stateFlags.unkF[0x11] != 0) || (vs_main_stateFlags.unkF[0x31] != 0)) {
+        *arg0 = 0;
+        return NULL;
+    }
+    if (D_800F1BF8.unk84 != NULL) {
+        *arg0 = D_800F1BF8.unk4[8] / 12;
+        return D_800F1BF8.unk84;
+    }
+    *arg0 = 0;
+    return NULL;
+}
 
 int func_8008E470(void) { return D_800F1CA8 < 1; }
 
@@ -4385,7 +4508,18 @@ int func_8008F0FC(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F234);
+int func_8008F234(void)
+{
+    D_800F1DC9 = 0;
+    if (D_800F1DCC != NULL) {
+        D_800F1DC9 = 0;
+        func_8007E0A8(D_800F1DC8, D_800F1DBE, 5);
+        vs_main_freeHeapR(D_800F1DCC);
+        D_800F1DCC = NULL;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F29C);
 

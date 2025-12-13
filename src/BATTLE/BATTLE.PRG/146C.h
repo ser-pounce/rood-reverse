@@ -3,14 +3,24 @@
 #include "../../SLUS_010.40/D_80061068_t.h"
 
 typedef struct {
+    short unk0;
+    short unk2;
+    int unk4;
+    short unk8;
+    char unkA;
+    char unkB;
+} D_800F1910_t2;
+
+typedef struct {
     char unk0;
     char unk1;
     short unk2;
-    int unk4[9];
+    u_int unk4[9];
     u_int unk28;
     u_int unk2C[8];
     u_int unk4C;
-    int unk50[14];
+    int unk50[13];
+    D_800F1910_t2* unk84;
     int unk88;
     int unk8C[8];
     int unkAC;

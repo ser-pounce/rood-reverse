@@ -305,7 +305,8 @@ typedef struct {
     char classes[8];
     char affinities[8];
     u_short material;
-    u_short unk26;
+    u_char unk26;
+    u_char unk27;
 } vs_battle_setEquipmentForDrop_t;
 
 typedef struct {
@@ -329,7 +330,7 @@ typedef struct {
     u_short unk540[2][8]; // 1st dimension unknown
     char unk56C[160];
     char unk600[64];
-    char unk640[4][40]; // 1st dimension unknown
+    vs_battle_setEquipmentForDrop_t unk640[4]; // 1st dimension unknown
     char unk6E0[32];
     char unk700[256];
     char unk800[164];

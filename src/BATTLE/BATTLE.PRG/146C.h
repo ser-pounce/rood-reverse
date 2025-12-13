@@ -202,7 +202,8 @@ typedef struct {
     vs_battle_shieldInfo shield;
     vs_battle_accessoryInfo accessory;
     vs_battle_equipment_hitLocations hitLocations[6];
-    u_short unk8C0[68];
+    u_short unk8C0[66];
+    int unk944;
     int unk948;
     char unk94C[8];
     union {
@@ -330,12 +331,12 @@ typedef struct {
 void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
 void func_8006AC74(void*, void*);
-void func_8006ACFC(void*, void*);
+void func_8006ACFC(void*, vs_battle_setEquipmentForDrop_t*);
 void func_8006AE0C(void*, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(void*, void*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);
-void func_8006B194(void* arg0, char* arg1);
+void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1);
 void func_8006B338(void*);
 void vs_battle_setBladeForDrop(
     func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade);

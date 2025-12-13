@@ -427,7 +427,7 @@ int func_801036BC(int arg0)
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109661, 7);
             func_800FD700(D_800619D8.unk0[D_80109662 + 48]);
-            if (D_80060168.unk640[D_800619D8.unk0[D_80109662 + 48] - 1][3] != 7) {
+            if (D_80060168.unk640[D_800619D8.unk0[D_80109662 + 48] - 1].category != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
             D_8010965F = 1;
@@ -812,7 +812,7 @@ void func_801042C4(void* arg0, int arg1, int arg2)
         func_8006AC74(arg0, D_80060168.unk540[arg2]);
         return;
     case 4:
-        func_8006ACFC(arg0, D_80060168.unk640[arg2]);
+        func_8006ACFC(arg0, &D_80060168.unk640[arg2]);
         return;
     case 5:
         func_8006AE0C(arg0, D_80060168.unk8C0[arg2]);
@@ -1047,20 +1047,22 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010659C);
 
 void func_80106BB4(int arg0)
 {
-    short sp10[48];
+    vs_battle_accessoryInfo accessory;
     int i;
 
     vs_mainMenu_resetStats();
+
     if (arg0 != 0) {
-        func_8006B194(&sp10[0], (char*)(D_80102468 + ((arg0 * 10) - 10)));
+        func_8006B194(&accessory,
+            (vs_battle_setEquipmentForDrop_t*)(D_80102468 + ((arg0 * 10) - 10)));
 
         for (i = 0; i < 16; ++i) {
-            short* temp_v0 = &sp10[i & 7];
-            vs_mainMenu_equipmentStats[i] = temp_v0[32];
-            vs_mainMenu_equipmentStats[i + 16] = temp_v0[40];
-            vs_mainMenu_equipmentStats[i + 32] = temp_v0[28];
+            vs_mainMenu_equipmentStats[i] = accessory.classes[i & 7];
+            vs_mainMenu_equipmentStats[i + 16] = accessory.affinities[i & 7];
+            vs_mainMenu_equipmentStats[i + 32] = accessory.types[i & 7];
         }
-        vs_mainMenu_setStrIntAgi(sp10[24], sp10[25], sp10[26], 2);
+        vs_mainMenu_setStrIntAgi(
+            accessory.currentStr, accessory.currentInt, accessory.currentAgility, 2);
     }
     vs_mainMenu_equipmentSubtype = 0x20;
     D_801024A1 = arg0;

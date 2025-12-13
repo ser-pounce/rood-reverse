@@ -246,7 +246,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(int, int);
 int func_8006A228(u_int, int);
-void func_8006A8EC(void*, void*);
+void func_8006A8EC(vs_battle_accessoryInfo*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
 void func_8006B214(void);
@@ -636,12 +636,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B02C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B110);
 
-void func_8006B194(void* arg0, char* arg1)
+void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
     char* temp_v0 = vs_main_allocHeapR(0x34);
     vs_main_bzero(temp_v0, 0x34);
     if (arg1 != NULL) {
-        temp_v0[0x31] = arg1[0x27];
+        temp_v0[0x31] = arg1->unk27;
         func_8006ACFC(temp_v0, arg1);
     }
     func_8006A8EC(arg0, temp_v0);
@@ -689,9 +689,15 @@ void func_8006B460(void* arg0)
     func_8006B2D4();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B4B8);
+void func_8006B4B8(int arg0, vs_battle_setEquipmentForDrop_t* arg1)
+{
+    func_8006B110(&vs_battle_characterState->unk3C->hitLocations[arg0].armor, arg1);
+    func_8006B20C(vs_battle_characterState->unk3C);
+    func_8006B214();
+    func_8006B2D4();
+}
 
-void func_8006B524(char* arg0)
+void func_8006B524(vs_battle_setEquipmentForDrop_t* arg0)
 {
     func_8006B194(&vs_battle_characterState->unk3C->accessory, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);
@@ -2478,7 +2484,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F230);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F434);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F4B0);
+int func_8007F4B0(int arg0, u_char* arg1)
+{
+    int* temp_a0 = D_8004EECC[arg0];
+    vs_battle_actor2* temp_a1 = vs_battle_actors[*arg1]->unk3C;
+
+    if ((!(temp_a0[0] & temp_a1->unk944)) && (!(temp_a0[3] & temp_a1->unk948))) {
+        return 0;
+    }
+    return 1;
+}
 
 int func_8007F518(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->unk37 & 7; }
 

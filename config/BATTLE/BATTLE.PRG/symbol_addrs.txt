@@ -17,6 +17,7 @@ func_8008010C = 0x8008010C; // type:func
 func_800801A0 = 0x800801A0; // type:func
 vs_battle_getEquippedShieldDp = 0x8008381C;
 _getRisk = 0x800838BC;
+_allocHeap = 0x80088CE4;
 _loadZnd = 0x80088E08;
 vs_battle_getSkillFlags = 0x8008A5D0;
 func_8008B430 = 0x8008B430;

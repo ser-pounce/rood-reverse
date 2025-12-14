@@ -392,7 +392,7 @@ extern int D_800F19D0[];
 extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;
-extern short* D_800F1BA8;
+extern u_short* D_800F1BA8;
 extern void* D_800F1BAC;
 extern short D_800F1BB6;
 extern short D_800F1BBE;

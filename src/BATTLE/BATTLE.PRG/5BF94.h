@@ -140,6 +140,7 @@ typedef struct {
     int unk18[52];
 } func_800CF3F8_t;
 
+int func_800C4794(char*);
 void func_800C6540(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);

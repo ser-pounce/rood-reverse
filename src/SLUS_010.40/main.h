@@ -54,7 +54,8 @@ typedef struct {
         int unk0_7 : 9;
         u_int unk0_10 : 6;
         u_int unk0_16 : 5;
-        int unk0_1B : 5;
+        int type : 2;
+        int affinity : 3;
     } hitParams[2];
     char name[24];
 } vs_skill_t;

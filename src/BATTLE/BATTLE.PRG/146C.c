@@ -257,6 +257,15 @@ typedef struct {
     char unk2;
 } func_8006BDF0_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+} D_800F1BB0_t;
+
 int func_8006BDA0(func_8006BE64_t2*, vs_battle_actor2*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006C350(void);
@@ -394,6 +403,7 @@ extern void* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
 extern u_short D_800F1BA4;
+extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
 extern short D_800F1BBE;
 extern D_800F1BF8_t D_800F1BF8;
@@ -2045,7 +2055,21 @@ void func_8007B834(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B884);
+void func_8007B884(void)
+{
+    func_800C97BC();
+    if (*func_800CB66C() != 1) {
+        if (D_800F1864 != 0) {
+            func_8007B470();
+        }
+        func_800CB114();
+        if (D_800F1860 != 0) {
+            func_8007B4C4();
+        } else {
+            func_8007B508();
+        }
+    }
+}
 
 void func_8007B908(void)
 {
@@ -4146,7 +4170,18 @@ void func_8008B320(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B390);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B430);
+void func_8008B430(char* arg0, int arg1)
+{
+    if ((arg0[0] == 0) && (arg0[1] == 0) && (arg0[2] == 0) && (arg1 == 0)) {
+        D_800F1BB6 = 0;
+        return;
+    }
+    D_800F1BB0.unk6 = 1;
+    D_800F1BB0.unk4 = arg1;
+    D_800F1BB0.unk0 = arg0[0];
+    D_800F1BB0.unk1 = arg0[1];
+    D_800F1BB0.unk2 = arg0[2];
+}
 
 void func_8008B4B0(void) { D_800F1BB6 = 0; }
 

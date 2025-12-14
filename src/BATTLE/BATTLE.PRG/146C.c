@@ -382,7 +382,7 @@ void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
 void func_80098194(int);
 void func_80099960(u_short*);
-int func_8009E480(void); 
+int func_8009E480(void);
 
 extern u_char D_800E8200[];
 extern int (*D_800E8254[])(vs_skill_t*, char*);
@@ -1338,9 +1338,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E640);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);  
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);
 
-int func_8006EBF8(void) {
+int func_8006EBF8(void)
+{
     int v;
     func_8006EBF8_t sp10;
     func_8006EBF8_t2 sp20;
@@ -1349,7 +1350,7 @@ int func_8006EBF8(void) {
         func_800A4D8C();
     }
     func_800A1108(0, &sp10);
-    
+
     sp20.unk0 = sp10.unk4 << 0xC;
     sp20.unk4 = (sp10.unk6 << 0xC) + 0xFFFA6000;
     sp20.unk8 = sp10.unk8 << 0xC;
@@ -1707,7 +1708,7 @@ int func_80074374(void)
     short sp18[6];
     int temp_s0;
 
-    func_800A1108(0, (int*)sp18);
+    func_800A1108(0, (func_8006EBF8_t*)sp18);
     sp10.unk0 = sp18[2];
     sp10.unk4 = sp18[4];
     sp10.unk2 = sp18[3] - 0x5A;
@@ -1755,7 +1756,7 @@ int func_80074860(int arg0)
     int sp10[4];
     int sp20[2];
 
-    func_800A1108(arg0, sp10);
+    func_800A1108(arg0, (func_8006EBF8_t*)sp10);
     func_80074798(sp10, sp20);
     return func_800BEC58(4, 0, sp20, 1) == 1;
 }
@@ -2402,7 +2403,7 @@ void func_8007C580(void)
     char sp10[16];
 
     func_8007C4E0();
-    func_800A1108(0, (int*)sp10);
+    func_800A1108(0, (func_8006EBF8_t*)sp10);
     func_8008B960(sp10[0], sp10[2], sp10[1]);
 }
 
@@ -2413,7 +2414,7 @@ void func_8007C654(void)
     char sp10[16];
 
     func_8007C5C0();
-    func_800A1108(0, (int*)sp10);
+    func_800A1108(0, (func_8006EBF8_t*)sp10);
     func_8008B960(sp10[0], sp10[2], sp10[1]);
 }
 
@@ -4396,14 +4397,15 @@ int func_8008ABB8(int arg0)
     return 0;
 }
 
-int func_8008ABF0(int arg0) {
+int func_8008ABF0(int arg0)
+{
     if (D_800F1BF8.unk0 == 1) {
         if (D_800F1BF8.unk2 == arg0) {
             func_8008F234();
             func_80091378();
             func_80092A18();
             if (D_800F1BF8.unk50[5] != 0) {
-                vs_main_freeHeap((void* ) D_800F1BF8.unk50[5]);
+                vs_main_freeHeap((void*)D_800F1BF8.unk50[5]);
             }
             vs_main_bzero(&D_800F1BF8, 0xC4);
             return 1;

@@ -4,6 +4,7 @@
 #include "../TITLE/TITLE.PRG/22C.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/30D14.h"
+#include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../ENDING/ENDING.PRG/D4.h"
 #include "lbas.h"
 #include <libapi.h>
@@ -8404,7 +8405,7 @@ void func_80042CB0(void)
     int v1_2;
 
     D_80061068 = D_800F1AB0;
-    func_800A1108(0, (int*)sp10);
+    func_800A1108(0, (func_8006EBF8_t*)sp10);
 
     v0 = (sp10[0] & 0x1F) << 8;
     v1 = (sp10[2] & 0x1F) << 0xA;

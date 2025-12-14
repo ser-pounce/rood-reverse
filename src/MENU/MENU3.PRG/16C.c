@@ -802,14 +802,14 @@ int func_801041CC(int arg0, _getShieldStat_t* arg1)
     }
 }
 
-void func_801042C4(void* arg0, int arg1, int arg2)
+void func_801042C4(func_8006AC74_t* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
         func_8006AB44(arg0, D_80060168.unk280[arg2]);
         return;
     case 2:
-        func_8006AC74(arg0, D_80060168.unk540[arg2]);
+        func_8006AC74(arg0, (func_8006AC74_t*)D_80060168.unk540[arg2]);
         return;
     case 4:
         func_8006ACFC(arg0, &D_80060168.unk640[arg2]);
@@ -822,7 +822,7 @@ void func_801042C4(void* arg0, int arg1, int arg2)
 
 void func_8010439C(int arg0, int arg1)
 {
-    char sp10[48];
+    func_8006AC74_t sp10;
     int temp_v0;
     int i;
     int var_s3;
@@ -844,7 +844,7 @@ void func_8010439C(int arg0, int arg1)
                 temp_s0 = temp_s6[i];
                 if (temp_s0 != 0) {
                     func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    temp_v0 = func_801041CC(arg1, (_getShieldStat_t*)sp10);
+                    temp_v0 = func_801041CC(arg1, (_getShieldStat_t*)&sp10);
                     if (var_s3 < temp_v0) {
                         var_s3 = temp_v0;
                     }

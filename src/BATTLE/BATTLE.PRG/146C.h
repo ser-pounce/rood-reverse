@@ -328,9 +328,35 @@ typedef struct {
     int unkC;
 } D_800F1A68_t;
 
+typedef struct {
+    short unk0;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+    char unk8[4];
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+    int unk10;
+    char unk14;
+    char unk15;
+    char unk16;
+    char unk17;
+    int unk18;
+    char unk1C[4];
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+} func_8006AC74_t;
+
 void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
-void func_8006AC74(void*, void*);
+void func_8006AC74(func_8006AC74_t*, func_8006AC74_t*);
 void func_8006ACFC(void*, vs_battle_setEquipmentForDrop_t*);
 void func_8006AE0C(void*, void*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);

@@ -119,7 +119,15 @@ typedef struct {
     char unkC;
     char unkD;
     short unkE;
-    int unk10[18];
+    short unk10;
+    short unk12;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C[11];
     short unk58;
     short unk5A;
     int unk5C[510];
@@ -276,6 +284,7 @@ void func_8006C40C(void);
 void func_80069DEC(int, int);
 int func_8006A228(u_int, int);
 void func_8006A8EC(vs_battle_accessoryInfo*, void*);
+void func_8006A9F0(vs_battle_armorInfo*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
 void func_8006B214(void);
@@ -365,6 +374,7 @@ void func_80099960(u_short*);
 int func_8009E480(void);
 
 extern u_char D_800E8200[];
+extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern short (*D_800E830C[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern int D_800E8498;
@@ -696,7 +706,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AEAC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B02C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B110);
+void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
+{
+    char* temp_v0 = vs_main_allocHeapR(0x34);
+    vs_main_bzero(temp_v0, 0x34);
+    if (arg1 != NULL) {
+        temp_v0[0x33] = arg1->unk27;
+        func_8006ACFC(temp_v0, arg1);
+        temp_v0[0x30] = arg1->material;
+    }
+    func_8006A9F0(arg0, temp_v0);
+    vs_main_freeHeapR(temp_v0);
+}
 
 void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
@@ -1780,7 +1801,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076D50);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076F24);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077078);
+void func_80077078(void** arg0, int arg1, int arg2, int* arg3, int arg4)
+{
+    func_8007C8F8_t sp10;
+
+    sp10.unk0 = 1;
+    sp10.unk1 = arg1;
+    sp10.unk2 = arg2;
+    sp10.unkC = *arg3;
+    sp10.unk4 = arg0[17];
+    if (arg4 & 0x80) {
+        sp10.unk10 = (arg4 & 0xF00) >> 8;
+        sp10.unk11 = (arg4 & 0xF000) >> 0xC;
+    } else {
+        sp10.unk10 = 0xFF;
+    }
+    sp10.unk13 = 0;
+    sp10.unk12 = 2;
+    func_800995E8(&sp10);
+}
 
 void func_800770FC(int arg0 __attribute__((unused)), int arg1)
 {
@@ -2780,65 +2819,140 @@ int func_8007F4B0(int arg0, u_char* arg1)
 
 int func_8007F518(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->unk37 & 7; }
 
-int func_8007F548(void) { return 0; }
+int func_8007F548(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 0;
+}
 
-int func_8007F550(void) { return 1; }
+int func_8007F550(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 1;
+}
 
-int func_8007F558(void) { return 1; }
+int func_8007F558(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 1;
+}
 
-int func_8007F560(void) { return 1; }
+int func_8007F560(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 1;
+}
 
-int func_8007F568(int arg0 __attribute__((unused)), char* arg1)
+int func_8007F568(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
     return func_8007F518(arg1) == 2;
 }
 
-int func_8007F58C(int arg0 __attribute__((unused)), char* arg1)
+int func_8007F58C(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
     return func_8007F518(arg1) != 2;
 }
 
-int func_8007F5B0(void) { return 0; }
+int func_8007F5B0(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 0;
+}
 
-int func_8007F5B8(void) { return 0; }
+int func_8007F5B8(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 0;
+}
 
-int func_8007F5C0(void) { return 0; }
+int func_8007F5C0(
+    vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+{
+    return 0;
+}
 
-int func_8007F5C8(int arg0, char* arg1) { return func_8007F4B0(5, arg1) == 0; }
+int func_8007F5C8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(5, arg1) == 0;
+}
 
-int func_8007F5E8(int arg0, char* arg1) { return func_8007F4B0(7, arg1) == 0; }
+int func_8007F5E8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(7, arg1) == 0;
+}
 
-int func_8007F608(int arg0, char* arg1) { return func_8007F4B0(9, arg1) == 0; }
+int func_8007F608(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(9, arg1) == 0;
+}
 
+int func_8007F628(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F628);
 
-int func_8007F6D8(int arg0, char* arg1) { return func_8007F4B0(4, arg1) == 0; }
+int func_8007F6D8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(4, arg1) == 0;
+}
 
-int func_8007F6F8(int arg0, char* arg1) { return func_8007F4B0(6, arg1) == 0; }
+int func_8007F6F8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(6, arg1) == 0;
+}
 
-int func_8007F718(int arg0, char* arg1) { return func_8007F4B0(8, arg1) == 0; }
+int func_8007F718(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(8, arg1) == 0;
+}
 
-int func_8007F738(int arg0, char* arg1) { return func_8007F4B0(0xA, arg1) == 0; }
+int func_8007F738(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xA, arg1) == 0;
+}
 
+int func_8007F758(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F758);
 
-int func_8007F808(int arg0, char* arg1) { return func_8007F4B0(0xB, arg1) == 0; }
+int func_8007F808(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xB, arg1) == 0;
+}
 
-int func_8007F828(int arg0, char* arg1) { return func_8007F4B0(0xC, arg1) == 0; }
+int func_8007F828(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xC, arg1) == 0;
+}
 
-int func_8007F848(int arg0, char* arg1) { return func_8007F4B0(0x12, arg1) == 0; }
+int func_8007F848(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0x12, arg1) == 0;
+}
 
-int func_8007F868(int arg0, char* arg1) { return func_8007F4B0(0x11, arg1) == 0; }
+int func_8007F868(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0x11, arg1) == 0;
+}
 
-int func_8007F888(int arg0, char* arg1) { return func_8007F4B0(0xD, arg1) == 0; }
+int func_8007F888(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xD, arg1) == 0;
+}
 
-int func_8007F8A8(int arg0, char* arg1) { return func_8007F4B0(0xE, arg1) == 0; }
+int func_8007F8A8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xE, arg1) == 0;
+}
 
-int func_8007F8C8(int arg0, char* arg1) { return func_8007F4B0(0xF, arg1) == 0; }
+int func_8007F8C8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0xF, arg1) == 0;
+}
 
-int func_8007F8E8(int arg0, char* arg1) { return func_8007F4B0(0x10, arg1) == 0; }
+int func_8007F8E8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0x10, arg1) == 0;
+}
 
-int func_8007F908(int arg0 __attribute__((unused)), u_char* arg1)
+int func_8007F908(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     if ((func_8007F4B0(0x15, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -2847,7 +2961,7 @@ int func_8007F908(int arg0 __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int func_8007F96C(int arg0 __attribute__((unused)), u_char* arg1)
+int func_8007F96C(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     if ((func_8007F4B0(0x16, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -2856,7 +2970,7 @@ int func_8007F96C(int arg0 __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int func_8007F9D0(int arg0 __attribute__((unused)), u_char* arg1)
+int func_8007F9D0(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     if ((func_8007F4B0(0x17, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -2874,17 +2988,24 @@ int func_8007FA34(int arg0 __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
+int func_8007FA98(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FA98);
 
+int func_8007FB34(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FB34);
 
+int func_8007FBD0(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FBD0);
 
+int func_8007FC6C(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FC6C);
 
-int func_8007FD08(int arg0, char* arg1) { return func_8007F4B0(0x1D, arg1) == 0; }
+int func_8007FD08(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+{
+    return func_8007F4B0(0x1D, arg1) == 0;
+}
 
-int func_8007FD28(int arg0 __attribute__((unused)), char* arg1)
+int func_8007FD28(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
     if ((func_8007F4B0(0x1E, arg1) == 0) && ((func_8007F518(arg1) == 2))) {
         return 1;
@@ -2892,7 +3013,7 @@ int func_8007FD28(int arg0 __attribute__((unused)), char* arg1)
     return 0;
 }
 
-int func_8007FD74(int arg0 __attribute__((unused)), char* arg1)
+int func_8007FD74(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
     if ((func_8007F4B0(0x1E, arg1) == 0) && (func_8007F518(arg1)) != 2) {
         return 1;
@@ -2900,13 +3021,21 @@ int func_8007FD74(int arg0 __attribute__((unused)), char* arg1)
     return 0;
 }
 
-void func_8007FDC0(void) { }
+void func_8007FDC0(vs_skill_t* arg0 __attribute__((unused)), char* arg1) { }
 
-void func_8007FDC8(void) { }
+void func_8007FDC8(vs_skill_t* arg0 __attribute__((unused)), char* arg1) { }
 
-void func_8007FDD0(void) { }
+void func_8007FDD0(vs_skill_t* arg0 __attribute__((unused)), char* arg1) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FDD8);
+int func_8007FDD8(vs_skill_t* arg0, char* arg1, int arg2)
+{
+    if (arg2 != 0) {
+        if ((arg0->hitParams[arg2].unk0_7 == 1) && (arg1[3] == 4)) {
+            return 0;
+        }
+    }
+    return D_800E8254[arg0->hitParams[arg2].unk0_7](arg0, arg1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FE5C);
 
@@ -3038,16 +3167,40 @@ short func_8008231C(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* a
          + ((u_short)D_800F19CC->unk0 - 1);
 }
 
+short func_80082360(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082360);
 
+short func_8008241C(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008241C);
 
+short func_800824D8(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800824D8);
 
+short func_8008255C(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008255C);
 
+short func_800829B8(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800829B8);
 
+short func_80082FF4(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082FF4);
 
 short func_80083430(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
@@ -3086,15 +3239,41 @@ short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
          - vs_battle_actors[arg2->unk0]->unk3C->currentMP;
 }
 
+short func_80083524(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);
 
+short func_80083590(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083590);
 
+short func_8008364C(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008364C);
 
+short func_80083708(vs_skill_t* arg0 __attribute__((unused)),
+    func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083708);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008379C);
+short func_8008379C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
+    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+    int arg4 __attribute__((unused)))
+{
+    short var_a2 = 0;
+    if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
+        var_a2 = ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].unk0_16)
+               / 10;
+    }
+    return var_a2;
+}
 
 short vs_battle_getEquippedShieldDp(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1, func_80085718_t* arg2 __attribute__((unused)),
@@ -3579,7 +3758,7 @@ int func_800847F0(
 int func_80084870(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    int temp_v1 = D_800F19CC->unk10[6] & 3;
+    int temp_v1 = D_800F19CC->unk28 & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
@@ -3719,7 +3898,7 @@ int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     vs_battle_actor2* temp_a1 = vs_battle_actors[arg2->unk0]->unk3C;
-    if (((D_800F19CC->unk10[6] & 3) == 1) || ((D_800F19CC->unk10[6] & 3) == 3)) {
+    if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
         if (temp_a1->shield.shield.id != 0) {
             short var_v0 = temp_a1->shield.currentDp;
             arg2->unk3E += var_v0;

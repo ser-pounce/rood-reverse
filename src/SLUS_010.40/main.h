@@ -51,7 +51,8 @@ typedef struct {
     int unk10;
     struct {
         u_int unk0 : 7;
-        int unk0_7 : 9;
+        u_int unk0_7 : 6;
+        int unk0_E : 3;
         u_int unk0_10 : 6;
         u_int unk0_16 : 5;
         int type : 2;

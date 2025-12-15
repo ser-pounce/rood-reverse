@@ -1,5 +1,5 @@
 #pragma once
-#include "../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/main.h"
 #include "146C.h"
 
 enum vs_battle_warlockSpellIds_e {

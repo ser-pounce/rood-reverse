@@ -1,5 +1,5 @@
-#include "../../build/assets/MENU/MENU8.PRG/rename.h"
-#include "../SLUS_010.40/main.h"
+#include "../../../build/assets/MENU/MENU8.PRG/rename.h"
+#include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -10,12 +10,12 @@
 #include <libetc.h>
 
 static u_char D_80105F2E;
-static char _1;
+static char _1 __attribute__((unused));
 static char D_80105F30;
 static u_char _animStep;
-static char _2[2];
+static char _2[2] __attribute__((unused));
 static char* _charTable;
-static char _3[8];
+static char _3[8] __attribute__((unused));
 static char _stringBuf[20];
 
 static char D_80105DB0 = 0;
@@ -99,7 +99,7 @@ static int _copyNormalizedString(char* stringBuf)
 static char D_80105DB1 = 0;
 static u_char D_80105DB2 = 0;
 static u_short _renameMenuStrings[] = {
-#include "../../assets/MENU/MENU8.PRG/rename.vsString"
+#include "../../../build/assets/MENU/MENU8.PRG/rename.vsString"
 };
 
 extern u_long* D_1F800000[];
@@ -280,11 +280,11 @@ static int _highlightCharSelection(int arg0, int column, int row)
 static int _confirmScreen(int init)
 {
     static char cursorState = 0;
-    static int _0[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+    static int _0[] __attribute__((unused)) = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
 
     static char state;
     static char selectedRow;
-    static char _1[14];
+    static char _1[14] __attribute__((unused));
 
     int i;
 
@@ -364,7 +364,7 @@ static int func_801049A0(int arg0)
     static char _charTableColumn;
     static char _charTableRow;
     static u_char currentPos;
-    static char D_80105F2D;
+    static char D_80105F2D __attribute__((unused));
     int temp_v0_10;
     int var_a1;
     int var_s1;

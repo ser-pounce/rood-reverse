@@ -1,10 +1,10 @@
-#include "../../assets/MENU/MENU8.PRG/menu.h"
+#include "../../../build/assets/MENU/MENU8.PRG/menu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 static u_short _menuStrings[] = {
-#include "../../assets/MENU/MENU8.PRG/menu.vsString"
+#include "../../../build/assets/MENU/MENU8.PRG/menu.vsString"
 };
 
 static char _simpleMapValues[] = { 3, 1, 0 };
@@ -543,7 +543,7 @@ int vs_menu8_exec(char* state)
         i = selectedRow + 1;
         if (i != 0) {
             if (i > 0) {
-                func_800FA92C(D_800F4EE8.unk3A[0x50], 1);
+                func_800FA92C(D_800F4EE8.unk85[5], 1);
                 switch (selectedRow) {
                 case 0:
                     *state = simpleMap;

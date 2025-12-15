@@ -54,7 +54,7 @@ typedef struct {
         u_int unk0_7 : 6;
         int unk0_E : 3;
         u_int unk0_10 : 6;
-        u_int unk0_16 : 5;
+        u_int damage : 5;
         int type : 2;
         int affinity : 3;
     } hitParams[2];

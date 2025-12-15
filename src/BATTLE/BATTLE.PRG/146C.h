@@ -23,7 +23,7 @@ typedef struct {
     D_800F1910_t2* unk84;
     int unk88;
     int unk8C[8];
-    int unkAC;
+    short* unkAC;
     int unkB0[5];
 } D_800F1BF8_t;
 

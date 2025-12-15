@@ -8389,7 +8389,7 @@ void func_80042CA0(void) { D_80060068.unk0.unk0 = 1; }
 
 void func_80042CB0(void)
 {
-    char sp10[16];
+    func_8006EBF8_t sp10;
     int j;
     int i;
     int var_s1;
@@ -8405,18 +8405,14 @@ void func_80042CB0(void)
     int v1_2;
 
     D_80061068 = D_800F1AB0;
-    func_800A1108(0, (func_8006EBF8_t*)sp10);
+    func_800A1108(0, &sp10);
 
-    v0 = (sp10[0] & 0x1F) << 8;
-    v1 = (sp10[2] & 0x1F) << 0xA;
-    D_80061068.unk4 = (D_80061068.unk4 & 0xE0FF) | v0;
-    D_80061068.unk6 = (D_80061068.unk6 & 0x83FF) | v1;
-    v1_2 = sp10[1] << 0xD;
-    v0_2 = (sp10[3] >> 6) << 0xD;
-    D_80061068.unk2 = ((D_80061068.unk2 & 0x1FFF) | v1_2);
-    new_var = D_800F18E8 & 0x3FF;
-    D_80061068.unk4 = ((D_80061068.unk4 & 0x9FFF) | v0_2);
-    D_80061068.unk6 = ((D_80061068.unk6 & 0xFC00) | new_var);
+    D_80061068.unk4_8 = sp10.unk0.fields.unk0;
+    D_80061068.unk6_10 = sp10.unk0.fields.unk2;
+    D_80061068.unk2_13 = sp10.unk0.fields.unk1;
+    D_80061068.unk4_13 = sp10.unk0.fields.unk3 >> 6;
+    D_80061068.unk6_0 = D_800F18E8.unk0_0;
+
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (skillsLearned = 0, i = 0; i < 8; ++i) {
             u_int new_var2 = vs_main_skills[var_s1 * 8 + i].flags;

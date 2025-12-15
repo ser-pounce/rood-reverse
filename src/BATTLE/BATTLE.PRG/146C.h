@@ -354,6 +354,11 @@ typedef struct {
     int unk2C;
 } func_8006AC74_t;
 
+typedef struct {
+    u_short unk0_0 : 10;
+    u_short unk0_10 : 6;
+} D_800F18E8_t;
+
 void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
 void func_8006AC74(func_8006AC74_t*, func_8006AC74_t*);
@@ -412,7 +417,7 @@ void vs_battle_exec(void);
 extern int vs_battle_mapCompletionFlags[];
 extern char D_800E8F28;
 extern D_800F1880_t D_800F1880;
-extern u_short D_800F18E8;
+extern D_800F18E8_t D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
 extern int D_800F19D0[];
 extern vs_battle_actor* vs_battle_characterState;

@@ -5009,10 +5009,10 @@ static void _initGameData(void)
     vs_main_memcpy(&D_80060168, D_80074C24, sizeof(D_80060168));
 
     vs_gametime_tickspeed = 2;
-    D_80061068.unk4 = (D_80061068.unk4 & 0xE0FF) | 0x400;
-    D_80061068.unk6 = (D_80061068.unk6 & 0x83FF) | 0x800;
-    D_80061068.unk2 = D_80061068.unk2 & 0x1FFF;
-    D_80061068.unk4 = (D_80061068.unk4 & 0x9FFF) | 0x4000;
+    D_80061068.unk4_8 = 4;
+    D_80061068.unk6_10 = 2;
+    D_80061068.unk2_13 = 0;
+    D_80061068.unk4_13 = 2;
 }
 
 static void _setTitleExitFlags(int cause)

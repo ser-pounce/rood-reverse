@@ -88,6 +88,7 @@ nop1 = 0x8007124C;
 _initEnvironment = 0x80071254;
 vs_title_exec = 0x80071334;
 _renderScreen = 0x80071A68;
+_initGameData = 0x80071B14;
 _setTitleExitFlags = 0x80071CE0;
 DecDCTReset = 0x80071D9C;
 DecDCTGetEnv = 0x80071DD0;

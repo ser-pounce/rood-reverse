@@ -604,7 +604,7 @@ void func_80069FC4(int arg0, int arg1)
             temp_v0->unk2 = func_800E6694(arg0);
             func_800A1108(arg0, &sp10);
             func_800A36E0(arg0, temp_s1->unk30, &sp10);
-            temp_v0->unk24 = sp10.unk0;
+            temp_v0->unk24 = sp10.unk0.value;
         }
     }
 }

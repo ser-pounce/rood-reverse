@@ -59,7 +59,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A51A0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A525C);
+typedef unsigned char  u8;
+typedef unsigned short u16;
+typedef unsigned long  u32;
+typedef signed char  s8;
+typedef signed short s16;
+typedef signed long  s32;
+
+
+typedef struct {
+    u8  unk0, unk1, unk2, unk3;
+    u8  unk4, unk5, unk6, unk7;
+    u8  unk8, unk9, unkA, unkB;
+    u8  unkC, unkD, unkE, unkF;
+    u32  unk10[1550];
+    u8  unk1848, unk1849, unk184A, unk184B;
+    u16 unk184C, unk184E;
+    u32 unk1850;
+} struct_800A525C;
+
+void func_800A525C(struct_800A525C *arg0) {
+    arg0->unk1848 = 1;
+    if (arg0->unkF == 0) {
+        arg0->unk1848 = 0;
+    }
+    arg0->unk184C = 0;
+    arg0->unk1850 = 0;
+    arg0->unk184E = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A5280);
 

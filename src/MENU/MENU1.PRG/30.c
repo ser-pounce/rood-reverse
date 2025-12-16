@@ -16,7 +16,7 @@ static void _setArtCost(int art)
 
     flags = vs_battle_getSkillFlags(0, art);
     vs_mainmenu_setAbilityCost(1, "HP", 8, (flags >> 1) & 1);
-    cost = vs_main_skills[art].unk3_0;
+    cost = vs_main_skills[art].unk3;
     _digitBuffer[15] = 0;
 
     i = 15;

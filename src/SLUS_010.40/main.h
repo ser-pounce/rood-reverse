@@ -37,10 +37,12 @@ typedef union {
 } vs_hitParams_t;
 
 typedef struct {
-    u_int unk0 : 17;
-    u_short unk2_1 : 3;
-    int unk2_4 : 4;
-    char unk3_0;
+    char unk0;
+    char unk1;
+    char unk2_0 : 1;
+    char unk2_1 : 3;
+    char unk2_4 : 4;
+    char unk3;
     char rangeX;
     char rangeY;
     char rangeZ;

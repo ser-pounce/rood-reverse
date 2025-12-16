@@ -815,7 +815,7 @@ void func_801042C4(func_8006AC74_t* arg0, int arg1, int arg2)
         func_8006ACFC(arg0, &D_80060168.unk640[arg2]);
         return;
     case 5:
-        func_8006AE0C(arg0, D_80060168.unk8C0[arg2]);
+        func_8006AE0C(arg0, (void*)D_80060168.unk8C0[arg2]);
         return;
     }
 }

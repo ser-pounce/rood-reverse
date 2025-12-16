@@ -341,16 +341,18 @@ typedef struct {
     char unkD;
     char unkE;
     char unkF;
-    int unk10;
+    char unk10[4];
     char unk14;
     char unk15;
     char unk16;
     char unk17;
-    int unk18;
+    short unk18;
+    char unk1A;
+    char unk1B;
     char unk1C[4];
-    int unk20;
+    char unk20[4];
     int unk24;
-    int unk28;
+    char unk28[4];
     int unk2C;
 } func_8006AC74_t;
 
@@ -363,7 +365,7 @@ void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
 void func_8006AC74(func_8006AC74_t*, func_8006AC74_t*);
 void func_8006ACFC(void*, vs_battle_setEquipmentForDrop_t*);
-void func_8006AE0C(void*, void*);
+void func_8006AE0C(func_8006AC74_t*, func_8006AC74_t*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(vs_battle_shieldInfo*, void*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);
@@ -379,7 +381,7 @@ void vs_battle_setArmorForDrop(vs_battle_setEquipmentForDrop_t*, vs_battle_armor
 void vs_battle_setAccesoryForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
-int vs_battle_getCurrentLocationId(void);
+int vs_battle_getCurrentRoomId(void);
 void func_8007ACB0(void);
 int func_8007C36C(int arg0);
 void func_8007CCF0(int);

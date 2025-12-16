@@ -153,6 +153,7 @@ typedef struct {
 } func_800CF0E8_t;
 
 int func_800C4794(char*);
+int func_800C58F8(void*);
 void func_800C6540(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);

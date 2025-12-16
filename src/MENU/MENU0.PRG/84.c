@@ -95,7 +95,7 @@ static int _getTeleportCost(int targetSavePointId)
     int j;
     int cost;
     int closestSavePointId;
-    int locationId = vs_battle_getCurrentLocationId();
+    int locationId = vs_battle_getCurrentRoomId();
 
     do {
         for (i = 0; i < 48; ++i) {

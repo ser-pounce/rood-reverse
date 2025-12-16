@@ -108,6 +108,7 @@ typedef struct {
 typedef struct {
     short unk0;
     short unk2;
+    short unk4;
 } D_800F1C60_t;
 
 typedef struct {
@@ -1411,29 +1412,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EF5C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F204);
 
-typedef struct {
-    short unk0;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    int unkC;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    int unk1C[51];
-} func_8006F450_t;
-
-void func_8006F450(func_8006F450_t* arg0)
+void func_8006F450(func_800CF0E8_t* arg0)
 {
-    func_8006F450_t sp10;
+    func_800CF0E8_t sp10;
 
     sp10.unk0 = 0x24;
     sp10.unk2 = 1;
@@ -1441,15 +1422,15 @@ void func_8006F450(func_8006F450_t* arg0)
     sp10.unk3 = 0;
     sp10.unk8 = 0;
     sp10.unk10 = 5;
-    sp10.unk14 = arg0->unk0;
+    sp10.unk14.u16 = arg0->unk0;
     sp10.unk18 = arg0->unk4;
-    sp10.unk16 = 0;
-    func_800CF3F8((func_800CF3F8_t*)&sp10, 0);
+    sp10.unk16.u16 = 0;
+    func_800CF3F8(&sp10, 0);
 }
 
-void func_8006F4B0(func_8006F450_t* arg0)
+void func_8006F4B0(func_800CF0E8_t* arg0)
 {
-    func_8006F450_t sp10;
+    func_800CF0E8_t sp10;
 
     sp10.unk0 = 0x21;
     sp10.unk2 = 1;
@@ -1457,11 +1438,11 @@ void func_8006F4B0(func_8006F450_t* arg0)
     sp10.unk3 = 0;
     sp10.unk8 = 0;
     sp10.unk10 = 5;
-    sp10.unk14 = ((char)arg0->unk0 << 7) + 0x40;
+    sp10.unk14.u16 = ((char)arg0->unk0 << 7) + 0x40;
     sp10.unk18 = (arg0->unk2 << 7) + 0x40;
-    sp10.unk16 = arg0->unk6;
+    sp10.unk16.u16 = arg0->unk6;
     if (!(D_800F1868 & 2)) {
-        func_800CF3F8((func_800CF3F8_t*)&sp10, 0);
+        func_800CF3F8(&sp10, 0);
     }
 }
 
@@ -1487,15 +1468,15 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F760);
 
 void func_8006F848(void)
 {
-    func_800CF3F8_t sp10;
+    func_800CF0E8_t sp10;
 
     sp10.unk0 = 0x14;
     sp10.unk2 = 1;
     sp10.unk4 = 5;
     sp10.unk10 = 4;
     sp10.unk3 = 0;
-    sp10.unk14 = 0;
-    sp10.unk16 = 0xFD;
+    sp10.unk14.u8[0] = 0;
+    sp10.unk16.u8[0] = 0xFD;
     func_800CF3F8(&sp10, 0);
 }
 
@@ -1584,7 +1565,30 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800730BC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800732AC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800733F8);
+void func_800733F8(int arg0)
+{
+    func_800CF0E8_t sp10;
+
+    sp10.unk0 = arg0;
+    D_800F196C = 4;
+    sp10.unk2 = 1;
+    sp10.unk3 = 0;
+    sp10.unk4 = 4;
+    sp10.unk8 = 0;
+    sp10.unk9 = 0;
+    sp10.unkA = 0;
+    sp10.unk10 = 4;
+    sp10.unk14.u8[0] = 0;
+    sp10.unk14.u8[1] = 0;
+    sp10.unk16.u8[0] = 0;
+    sp10.unkE4 = 0;
+    sp10.unkE2 = 0;
+    sp10.unkE0 = 0;
+    func_800CF0E8(&sp10, 0, 0);
+    vs_gametime_tickspeed = 4;
+    func_800CB654(1);
+    func_8008B4C8(0);
+}
 
 void func_80073484(void)
 {
@@ -4362,7 +4366,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089888);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089A00);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089C5C);
+void func_80089C5C(void* arg0, u_int arg1)
+{
+    if (arg1 != 0) {
+        D_800F1880.unk64 = vs_main_allocHeap(arg1);
+        vs_main_memcpy(D_800F1880.unk64, arg0, arg1);
+        D_800F1880.unk60 = arg1 / 40;
+        return;
+    }
+    D_800F1880.unk64 = NULL;
+    D_800F1880.unk60 = NULL;
+}
 
 void func_80089CE4(void) { SetDispMask(1); }
 
@@ -4807,7 +4821,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D948);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DA24);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DC7C);
+short func_8008DC7C(int arg0, int arg1)
+{
+    D_800F1C60_t* temp_s0;
+    int var_a2;
+
+    temp_s0 = D_800F1C60;
+    var_a2 = 0x8000;
+    if ((temp_s0 != NULL) && ((u_int)(arg0 >> 7) < temp_s0->unk0)
+        && ((u_int)(arg1 >> 7) < temp_s0->unk2)) {
+        var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
+        var_a2 = (((temp_s0->unk4 - ((var_a2 & 0x7F) * 2)) * 8) & 0x7FFF)
+               | ((var_a2 & 0x80) << 8);
+    }
+    return var_a2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DD0C);
 

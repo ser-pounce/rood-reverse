@@ -129,16 +129,28 @@ typedef struct {
     char unk3;
     short unk4;
     short unk6;
-    int unk8;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
     int unkC;
     short unk10;
     short unk12;
-    char unk14;
-    char unk15;
-    char unk16;
-    char unk17;
-    int unk18[52];
-} func_800CF3F8_t;
+    union {
+        char u8[2];
+        u_short u16;
+    } unk14;
+    union {
+        char u8[2];
+        u_short u16;
+    } unk16;
+    short unk18;
+    short unk1A;
+    int unk1C[49];
+    short unkE0;
+    short unkE2;
+    short unkE4;
+} func_800CF0E8_t;
 
 int func_800C4794(char*);
 void func_800C6540(char const*, int, int, u_long*);
@@ -185,7 +197,8 @@ int func_800CD064(int);
 void vs_battle_drawImage(int xy, void* buffer, int wh);
 int func_800CEEBC(void);
 void func_800CEF74(int);
-void func_800CF3F8(func_800CF3F8_t*, int);
+void func_800CF0E8(func_800CF0E8_t*, int, int);
+void func_800CF3F8(func_800CF0E8_t*, int);
 int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);

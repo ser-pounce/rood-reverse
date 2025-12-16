@@ -312,7 +312,7 @@ typedef struct {
     int unk54;
     vs_main_CdQueueSlot* unk58;
     void* unk5C;
-    void* unk60;
+    int unk60;
     void* unk64;
     int unk68;
 } D_800F1880_t;

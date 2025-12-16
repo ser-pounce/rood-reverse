@@ -29,6 +29,7 @@ extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
 extern char D_800F49DC;
 
+char func_80099514(int, int, int);
 void func_80099D6C(int);
 void func_8009AA84(int);
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);

@@ -59,26 +59,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A51A0);
 
-typedef unsigned char  u8;
-typedef unsigned short u16;
-typedef unsigned long  u32;
-typedef signed char  s8;
-typedef signed short s16;
-typedef signed long  s32;
-
-
 typedef struct {
-    u8  unk0, unk1, unk2, unk3;
-    u8  unk4, unk5, unk6, unk7;
-    u8  unk8, unk9, unkA, unkB;
-    u8  unkC, unkD, unkE, unkF;
-    u32  unk10[1550];
-    u8  unk1848, unk1849, unk184A, unk184B;
-    u16 unk184C, unk184E;
-    u32 unk1850;
-} struct_800A525C;
+    u_char unk0[0x0F];
+    u_char unkF;
+    u_int unk10[1550];
+    u_char unk1848;
+    u_char unk1849;
+    u_char unk184A;
+    u_char unk184B;
+    u_short unk184C;
+    u_short unk184E;
+    u_int unk1850;
+} func_800A525C_t;
 
-void func_800A525C(struct_800A525C *arg0) {
+void func_800A525C(func_800A525C_t* arg0)
+{
     arg0->unk1848 = 1;
     if (arg0->unkF == 0) {
         arg0->unk1848 = 0;

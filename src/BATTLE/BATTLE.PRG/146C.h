@@ -178,7 +178,7 @@ typedef struct {
     char unk7;
     u_short types[4];
     u_short affinities[8];
-    vs_battle_armorInfo armor;
+    vs_battle_armorInfo armor; // 0x18
 } vs_battle_equipment_hitLocations;
 
 typedef struct {
@@ -228,10 +228,10 @@ typedef struct {
     char unk36;
     char unk37;
     int unk38;
-    vs_battle_weaponInfo weapon;
-    vs_battle_shieldInfo shield;
-    vs_battle_accessoryInfo accessory;
-    vs_battle_equipment_hitLocations hitLocations[6];
+    vs_battle_weaponInfo weapon; // 0x3C
+    vs_battle_shieldInfo shield; // 1C4
+    vs_battle_accessoryInfo accessory; // 328
+    vs_battle_equipment_hitLocations hitLocations[6]; // 388
     u_short unk8C0[66];
     int unk944;
     int unk948;

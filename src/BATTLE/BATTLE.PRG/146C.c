@@ -435,9 +435,9 @@ void func_80091378(void);
 void func_80092A18(void);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
-void func_8009723C(int, int);
+void func_8009723C(void*, int);
 void func_80098194(int);
-void func_800983F8(int);
+void func_800983F8(void*);
 void func_80098D6C(int, int, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
 int func_8009E480(void);
@@ -3130,7 +3130,23 @@ int func_8007E1C0(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E200);
+void func_8007E200(vs_battle_actor2* arg0, int arg1)
+{
+    int i;
+
+    for (i = 0; i < 6; ++i) {
+        u_short v = arg0->hitLocations[arg1].armor.armor.classes[i];
+        arg0->hitLocations[arg1].armor.classAffinityCurrent.class[1][i] = v;
+        arg0->hitLocations[arg1].armor.classAffinityCurrent.class[0][i] = v;
+    }
+
+    for (i = 0; i < 7; ++i) {
+        u_short v = arg0->hitLocations[arg1].armor.armor.affinities[i];
+        arg0->hitLocations[arg1].armor.classAffinityCurrent.affinity[1][i] = v;
+        arg0->hitLocations[arg1].armor.classAffinityCurrent.affinity[0][i] =
+            v + arg0->hitLocations[arg1].armor.unk88[i];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E2AC);
 
@@ -4924,7 +4940,7 @@ int func_8008ABF0(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
 
-void func_8008B1FC(int arg0)
+void func_8008B1FC(void* arg0)
 {
     SetRotMatrix((MATRIX*)0x1F800014);
     SetTransMatrix((MATRIX*)0x1F800014);

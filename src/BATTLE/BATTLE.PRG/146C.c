@@ -2059,7 +2059,29 @@ void func_800770FC(int arg0 __attribute__((unused)), int arg1)
     func_800995E8(&sp10);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077130);
+void func_80077130(vs_battle_actor* arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    func_8007C8F8_t sp10;
+
+    if (arg2 != 0xFF) {
+        int temp_s0 = (arg1 * 2) + arg3;
+        func_8009AA84(temp_s0);
+        if (arg2 != 0) {
+            sp10.unk0 = 3;
+            sp10.unk1 = temp_s0;
+            sp10.unk2 = arg2;
+            sp10.unk4 = arg0->unk48[arg3];
+            sp10.unk10 = arg1;
+            if (arg3 == 0) {
+                sp10.unk11 = 0xF0;
+            } else {
+                sp10.unk11 = 0xF1;
+            }
+            sp10.unk12 = arg4;
+            func_800995E8(&sp10);
+        }
+    }
+}
 
 void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
 {
@@ -2291,7 +2313,8 @@ void func_8007B0FC(void) { }
 
 void func_8007B104(void) { }
 
-void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4) {
+void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4)
+{
     func_80047280(arg0, arg1, 0, arg2, arg3, arg4);
     func_80047280(arg0, arg1, 1, arg2, arg3, arg4);
     func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
@@ -3313,8 +3336,36 @@ int func_8007F608(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
     return func_8007F4B0(9, arg1) == 0;
 }
 
-int func_8007F628(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F628);
+int func_8007F628(vs_skill_t* arg0, u_char* arg1)
+{
+    int i;
+    int var_a1;
+    vs_battle_actor2* temp_a2;
+
+    if (func_8007F4B0(0x13, arg1) != 0) {
+        return 0;
+    }
+    var_a1 = 0;
+    temp_a2 = vs_battle_actors[*arg1]->unk3C;
+
+    for (i = 0; i < 6; ++i) {
+        if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+            var_a1 = 1;
+        }
+    }
+
+    if (temp_a2->shield.shield.id != 0) {
+        var_a1 = 1;
+    }
+    if (temp_a2->weapon.blade.id != 0) {
+        var_a1 = 1;
+    }
+    if (var_a1 != 0) {
+        i = 1;
+        return 1;
+    }
+    return 0;
+}
 
 int func_8007F6D8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
@@ -3336,8 +3387,36 @@ int func_8007F738(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
     return func_8007F4B0(0xA, arg1) == 0;
 }
 
-int func_8007F758(vs_skill_t* arg0 __attribute__((unused)), char* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F758);
+int func_8007F758(vs_skill_t* arg0, u_char* arg1)
+{
+    int i;
+    int var_a1;
+    vs_battle_actor2* temp_a2;
+
+    if (func_8007F4B0(0x14, arg1) != 0) {
+        return 0;
+    }
+    var_a1 = 0;
+    temp_a2 = vs_battle_actors[*arg1]->unk3C;
+
+    for (i = 0; i < 6; ++i) {
+        if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+            var_a1 = 1;
+        }
+    }
+
+    if (temp_a2->shield.shield.id != 0) {
+        var_a1 = 1;
+    }
+    if (temp_a2->weapon.blade.id != 0) {
+        var_a1 = 1;
+    }
+    if (var_a1 != 0) {
+        i = 1;
+        return 1;
+    }
+    return 0;
+}
 
 int func_8007F808(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {

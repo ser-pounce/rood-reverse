@@ -129,11 +129,16 @@ typedef struct {
     char unk3;
     short unk4;
     short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    int unkC;
+    union {
+        char u8[2];
+        short s16;
+    } unk8;
+    union {
+        char u8[2];
+        short s16;
+    } unkA;
+    short unkC;
+    short unkE;
     short unk10;
     short unk12;
     union {
@@ -146,7 +151,8 @@ typedef struct {
     } unk16;
     short unk18;
     short unk1A;
-    int unk1C[49];
+    int unk1C[45];
+    char unkD0[16];
     short unkE0;
     short unkE2;
     short unkE4;

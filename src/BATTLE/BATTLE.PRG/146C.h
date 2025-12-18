@@ -337,7 +337,10 @@ typedef struct {
 } D_800F1880_t;
 
 typedef struct {
-    short unk0[2];
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
 } D_800F1A78_t;
 
 typedef struct {

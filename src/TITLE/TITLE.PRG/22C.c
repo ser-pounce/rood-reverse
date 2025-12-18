@@ -5021,21 +5021,21 @@ static void _setTitleExitFlags(int cause)
     case 0: // New Game
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 0;
-        D_80061068.unk0 = 1;
+        D_80061068.zndId = 1;
         D_80061068.unk1 = 0;
         return;
     case 3: // Timeout cutscene1
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
-        D_80061068.unk0 = 0x14;
+        D_80061068.zndId = 20;
         D_80061068.unk1 = 0;
         return;
     case 4: // Timeout cutscene2
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
-        D_80061068.unk0 = 2;
+        D_80061068.zndId = 2;
         D_80061068.unk1 = 1;
         return;
     case 1: // Continue

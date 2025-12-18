@@ -2,8 +2,8 @@
 #include <stddef.h>
 
 typedef struct D_80061068_t {
-    signed char unk0;
-    signed char unk1;
+    char zndId;
+    char unk1;
     u_short unk2_0 : 13;
     u_short unk2_13 : 3;
     u_short unk4_0 : 8;

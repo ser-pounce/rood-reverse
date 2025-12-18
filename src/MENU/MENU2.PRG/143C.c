@@ -45,7 +45,7 @@ static int _breakArtUnlocked(int init)
         vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
         vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
-        vs_main_skills[skillId].flags |= 0x8000;
+        vs_main_skills[skillId].flags_15 = 1;
         messageTimeout = 120;
 
     } else if ((D_800F5130 >> 0x1E) & 1) {
@@ -147,7 +147,7 @@ static int _battleAbilityUnlocked(int arg0)
         remainingChainAbilityCount = 0;
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableChainAbilities[i];
-            if (!((vs_main_skills[ability].flags >> 0xF) & 1)) {
+            if (!vs_main_skills[ability].flags_15) {
                 remainingChainAbilities[remainingChainAbilityCount++] = ability;
             }
         }
@@ -155,7 +155,7 @@ static int _battleAbilityUnlocked(int arg0)
         remainingDefenseAbilityCount = 0;
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableDefenseAbilities[i];
-            if (!((vs_main_skills[ability].flags >> 0xF) & 1)) {
+            if (!vs_main_skills[ability].flags_15) {
                 remainingDefenseAbilities[remainingDefenseAbilityCount++] = ability;
             }
         }
@@ -298,7 +298,7 @@ static int _battleAbilityUnlocked(int arg0)
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
-            vs_main_skills[skill].flags |= 0x8000;
+            vs_main_skills[skill].flags_15 = 1;
             state = showMessage;
         }
         break;
@@ -316,7 +316,7 @@ static int _battleAbilityUnlocked(int arg0)
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
-            vs_main_skills[skill].flags |= 0x8000;
+            vs_main_skills[skill].flags_15 = 1;
             state = showMessage;
         }
         break;

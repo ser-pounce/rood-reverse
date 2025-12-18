@@ -588,7 +588,7 @@ int func_800CACD0(int arg0, int arg1)
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
                      ++var_a0) {
-                    if ((vs_main_skills[var_a0].flags >> 0xF) & 1) {
+                    if (vs_main_skills[var_a0].flags_15) {
                         var_a1 |= 1 << i;
                         break;
                     }
@@ -621,11 +621,9 @@ int vs_battle_abilitiesUnlocked(int defense)
 
     for (i = 0; i < 14; ++i) {
         v0 = vs_main_skills;
-        if ((v0[defense == 0 ? vs_battle_chainAbilityOffsets[i]
-                             : vs_battle_defenseAbilityOffsets[i]]
-                    .flags
-                >> 0xF)
-            & 1) {
+        if (v0[defense == 0 ? vs_battle_chainAbilityOffsets[i]
+                            : vs_battle_defenseAbilityOffsets[i]]
+                .flags_15) {
             return 1;
         }
     }

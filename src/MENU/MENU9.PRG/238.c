@@ -1959,7 +1959,7 @@ void _setScoreFlags(void)
     }
 
     for (i = 0xB8; i < 0xE0; ++i) {
-        if (!((vs_main_skills[i].flags >> 0xF) & 1)) {
+        if (!vs_main_skills[i].flags_15) {
             break;
         }
     }
@@ -1970,7 +1970,7 @@ void _setScoreFlags(void)
 
     for (i = 0x16; i < 0x36; ++i) {
         if (((i != 0x21) && (i != 0x24) && (i != 0x26) && (i != 0x27)
-                && !((vs_main_skills[i].flags >> 0xF) & 1))) {
+                && !vs_main_skills[i].flags_15)) {
             break;
         }
     }

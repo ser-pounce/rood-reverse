@@ -420,7 +420,7 @@ static int _chainAbilityMenu(int arg0)
         count = 0;
         for (i = 0; i < 14; ++i) {
             skill = vs_battle_chainAbilityOffsets[i];
-            if ((vs_main_skills[skill].flags >> 0xF) & 1) {
+            if (vs_main_skills[skill].flags_15) {
                 menuStrings[count * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[count * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_chainAbilityEffect0 + i]];
@@ -465,7 +465,7 @@ static int _defenseAbilityMenu(int arg0)
         row = 0;
         for (i = 0; i < 14; ++i) {
             skill = vs_battle_defenseAbilityOffsets[i];
-            if ((vs_main_skills[skill].flags >> 0xF) & 1) {
+            if (vs_main_skills[skill].flags_15) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_defenseAbilityEffect0 + i]];

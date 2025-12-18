@@ -49,7 +49,9 @@ typedef struct {
     int shape : 3;
     int angle : 5;
     int aoe;
-    u_int flags; // 0xF = artUnlocked
+    u_int flags_0 : 15;
+    u_int flags_15 : 1;
+    u_int flags_16 : 16;
     int unk10;
     struct {
         u_int unk0 : 7;

@@ -8415,8 +8415,8 @@ void func_80042CB0(void)
 
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (skillsLearned = 0, i = 0; i < 8; ++i) {
-            u_int new_var2 = vs_main_skills[var_s1 * 8 + i].flags;
-            skillsLearned = (*(int*)&skillsLearned * 2) | ((new_var2 >> 0xF) & 1);
+            skillsLearned =
+                (*(int*)&skillsLearned * 2) | vs_main_skills[var_s1 * 8 + i].flags_15;
         }
         vs_main_skillsLearned[var_s1] = skillsLearned;
     }

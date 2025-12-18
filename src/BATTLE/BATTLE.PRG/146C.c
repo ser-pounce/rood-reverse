@@ -1614,7 +1614,8 @@ void func_800704D8(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007053C);
 
-void func_8007087C(D_800F19CC_t* arg0) {
+void func_8007087C(D_800F19CC_t* arg0)
+{
     func_8006EBF8_t sp10;
 
     func_800A1108(arg0->unk4, &sp10);
@@ -2965,7 +2966,7 @@ void func_8007D260(int arg0)
 u_int func_8007D2B4(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
-        return (vs_main_skills[arg0].flags >> 0xF) & 1;
+        return vs_main_skills[arg0].flags_15;
     }
     return 0;
 }
@@ -2973,7 +2974,7 @@ u_int func_8007D2B4(u_int arg0)
 void func_8007D2FC(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
-        vs_main_skills[arg0].flags |= 0x8000;
+        vs_main_skills[arg0].flags_15 = 1;
     }
 }
 
@@ -3728,12 +3729,12 @@ short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
          - vs_battle_actors[arg2->unk0]->unk3C->currentMP;
 }
 
-short func_80083524(vs_skill_t* arg0,
-    func_80085718_t* arg1 __attribute__((unused)),
+short func_80083524(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
     func_80085718_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    return (((D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage) / 10) + (D_800F19CC->unk0 - 1);
+    return (((D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage) / 10)
+         + (D_800F19CC->unk0 - 1);
 }
 
 short func_80083590(vs_skill_t* arg0 __attribute__((unused)),
@@ -4618,6 +4619,7 @@ void func_80085978(int arg0, int arg1)
     func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0);
 }
 
+void func_800859B4(int arg0, vs_battle_actor2* arg1, int arg2);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800859B4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085A34);
@@ -4836,7 +4838,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     }
 
     if (arg0 == 0) {
-        if (!(skill->flags & 0x8000)) {
+        if (!((skill->flags_15 << 15) & 0x8000)) {
             ret |= 4;
         }
     }

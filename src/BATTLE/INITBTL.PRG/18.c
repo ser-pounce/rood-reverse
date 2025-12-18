@@ -36,9 +36,9 @@ void func_800F9818(void)
             var_v0 = i + 7;
         }
         if (vs_main_skillsLearned[var_v0 >> 3] & (0x80 >> (i - ((var_v0 >> 3) * 8)))) {
-            vs_main_skills[i].flags |= 0x8000;
+            vs_main_skills[i].flags_15 = 1;
         } else {
-            vs_main_skills[i].flags &= 0xFFFF7FFF;
+            vs_main_skills[i].flags_15 = 0;
         }
     }
 }

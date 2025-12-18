@@ -124,7 +124,7 @@ static int _drawArtsList(int typeCursorMem)
         rowCount = 0;
         for (i = 0; i < 4; ++i) {
             int skillId = vs_main_skills_daggerArt1 + (weaponType - 1) * 4 + i;
-            if ((vs_main_skills[skillId].flags >> 0xF) & 1) {
+            if (vs_main_skills[skillId].flags_15) {
                 menuStrings[rowCount * 2] = (char*)vs_main_skills[skillId].name;
                 menuStrings[rowCount * 2 + 1] =
                     (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
@@ -246,8 +246,7 @@ static int _drawWeaponTypeList(int init)
             menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 1]];
             rowType[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
-                if ((vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].flags >> 0xF)
-                    & 1) {
+                if (vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].flags_15) {
                     break;
                 }
             }

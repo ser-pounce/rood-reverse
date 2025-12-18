@@ -397,7 +397,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B4BC(int arg0);
 void _nop(int arg0);
-u_int* func_8008B764(char, char, char);
+u_int* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(char, char, char);
 int func_8008BC04(int, int, int);
@@ -1897,7 +1897,7 @@ void func_80074B14(int arg0, char* arg1)
         var_a1 = arg1[2];
         var_a2 = arg1[1];
     }
-    if ((*func_8008B764(var_a0, var_a1, (char)var_a2) >> 0x12) & 1) {
+    if ((*func_8008B764(var_a0, var_a1, var_a2) >> 0x12) & 1) {
         func_8008C2C0(arg1[0], arg1[2], arg1[1], D_800F19F0 == 0x900);
         return;
     }
@@ -2609,7 +2609,7 @@ int func_8007C4E0(D_80061068_t* arg0, int arg1, int arg2)
     D_800F1A48 = 1;
     D_800F1A98 = arg1;
     D_800F1AA8 = arg2;
-    D_800F1AB0.zndId = D_800F1880.zoneId;
+    D_800F1AB0.zndId = D_800F1880.zndId;
     func_80089D24(arg0->unk1);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
@@ -2666,7 +2666,7 @@ int _getLocationId(int zoneId, int mapId)
 
 int vs_battle_getCurrentRoomId(void)
 {
-    return _getLocationId(D_800F1880.zoneId, D_800F1880.mapId);
+    return _getLocationId(D_800F1880.zndId, D_800F1880.mapId);
 }
 
 void func_8007C8A4(int arg0)
@@ -4767,8 +4767,8 @@ int func_8008ABF0(int arg0)
             func_8008F234();
             func_80091378();
             func_80092A18();
-            if (D_800F1BF8.unk50[5] != 0) {
-                vs_main_freeHeap((void*)D_800F1BF8.unk50[5]);
+            if (D_800F1BF8.unk64 != 0) {
+                vs_main_freeHeap((void*)D_800F1BF8.unk64);
             }
             vs_main_bzero(&D_800F1BF8, 0xC4);
             return 1;
@@ -4904,6 +4904,7 @@ int func_8008B744(void)
     return 0;
 }
 
+// https://decomp.me/scratch/UpOGZ
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B764);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B808);

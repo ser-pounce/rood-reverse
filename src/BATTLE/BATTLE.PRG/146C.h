@@ -19,10 +19,29 @@ typedef struct {
     u_int unk28;
     u_int unk2C[8];
     u_int unk4C;
-    int unk50[13];
+    int unk50;
+    int unk54;
+    int unk58;
+    int unk5C;
+    int unk60;
+    int unk64;
+    short* unk68;
+    char* unk6C;
+    int unk70;
+    int unk74;
+    int unk78;
+    int unk7C;
+    int unk80;
     D_800F1910_t2* unk84;
     int unk88;
-    int unk8C[8];
+    int unk8C;
+    int unk90;
+    int unk94;
+    int unk98;
+    int unk9C;
+    int unkA0;
+    int unkA4;
+    int (*unkA8)[46];
     short* unkAC;
     int unkB0[5];
 } D_800F1BF8_t;
@@ -288,7 +307,7 @@ typedef struct {
 } func_80103530_t;
 
 typedef struct {
-    int zoneId;
+    int zndId;
     vs_main_CdFile* unk4;
     int unk8;
     void* unkC;

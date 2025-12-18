@@ -217,8 +217,7 @@ typedef struct {
     int unk208;
     int unk20C;
     int unk210;
-    int unk214;
-    int unk218;
+    func_8006BE64_t3 unk214[2];
     u_short unk21C;
     char unk21E;
     char unk21F;
@@ -270,11 +269,6 @@ typedef struct {
 } D_800F1910_t;
 
 typedef struct {
-    u_short unk0;
-    char unk2;
-} func_8006BDF0_t;
-
-typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -322,7 +316,7 @@ typedef struct {
     int unk8[44];
 } D_800F1CA0_t;
 
-int func_8006BDA0(func_8006BE64_t2*, vs_battle_actor2*);
+int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(func_8006EBF8_t2*);
 void func_8006C350(void);
@@ -1106,7 +1100,24 @@ int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_armorInfo* arg1
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006BDA0);
+int func_8006BDA0(func_8006BE64_t2* arg0, func_8006BE64_t3* arg1)
+{
+    int ret;
+    int i;
+
+    ret = 0;
+
+    for (i = 0; i < 2; ++i) {
+        arg0->unk214[i].unk0 = arg1[i].unk0;
+        if (arg0->unk214[i].unk0) {
+            ret = 1;
+            arg0->unk214[i].unk3 = arg1[i].unk2;
+            arg0->unk214[i].unk2 = 3;
+        }
+    }
+
+    return ret;
+}
 
 int func_8006BDF0(func_8006BE64_t2* arg0, func_8006BDF0_t* arg1)
 {
@@ -1144,9 +1155,8 @@ void func_8006BE64(vs_battle_actor* arg0)
                     &temp_v0->unk8.armor, &temp_s2->hitLocations[i].armor);
             }
         }
-        temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, temp_s2 + 1);
-        temp_v0->unk4 |=
-            func_8006BDF0(&temp_v0->unk8, (func_8006BDF0_t*)&(temp_s2 + 1)->name[4]);
+        temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, &temp_s2->unk950);
+        temp_v0->unk4 |= func_8006BDF0(&temp_v0->unk8, &temp_s2->unk958);
         if (temp_v0->unk4 != 0) {
             var_v1 = D_800F1900;
             var_a0 = 1;

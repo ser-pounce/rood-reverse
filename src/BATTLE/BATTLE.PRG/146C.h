@@ -194,6 +194,17 @@ typedef struct {
 } vs_battle_accessoryInfo;
 
 typedef struct {
+    u_short unk0;
+    char unk2;
+    char unk3;
+} func_8006BE64_t3;
+
+typedef struct {
+    u_short unk0;
+    char unk2;
+} func_8006BDF0_t;
+
+typedef struct {
     short name[8];
     int unk10;
     short unk14;
@@ -230,6 +241,9 @@ typedef struct {
         u_short u16[2];
         u_char u8[4];
     } flags;
+    func_8006BE64_t3 unk950;
+    int unk954;
+    func_8006BDF0_t unk958;
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {

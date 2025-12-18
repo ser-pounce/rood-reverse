@@ -237,13 +237,17 @@ typedef struct {
     int unk948;
     char unk94C[8];
     union {
+        struct {
+            u_short unk0;
+            char unk2_0 : 2;
+            char unk2_2 : 6;
+            char unk3;
+        } fields;
         u_int u32;
-        u_short u16[2];
-        u_char u8[4];
     } flags;
-    func_8006BE64_t3 unk950;
-    int unk954;
-    func_8006BDF0_t unk958;
+    func_8006BE64_t3 unk958;
+    int unk95C;
+    func_8006BDF0_t unk960;
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {

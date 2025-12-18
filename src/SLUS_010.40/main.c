@@ -11252,7 +11252,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     }
 }
 
-static void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
     if (D_80055D58.unk0[0].unk2 != 0) {
         func_80047B30(arg0, arg1, arg2, arg3, arg4, arg5);

@@ -378,9 +378,9 @@ int func_80078828(int);
 void func_8007A850(int);
 void func_8007A9DC(void*, void*, int*);
 void func_8007AACC(int* arg0);
-void func_8007B10C(int, int, int, int, int);
+void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, int, int, int);
-void func_8007B29C(int arg0, int arg1, int arg2, int arg3, short arg4, short arg5);
+void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
 void func_8007B410(void);
 void func_8007B63C(void);
 void func_8007B470(void);
@@ -2291,14 +2291,15 @@ void func_8007B0FC(void) { }
 
 void func_8007B104(void) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B10C);
+void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4) {
+    func_80047280(arg0, arg1, 0, arg2, arg3, arg4);
+    func_80047280(arg0, arg1, 1, arg2, arg3, arg4);
+    func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B1B8);
 
-void func_80047280(int, int, int, short, int, int);
-void func_80047FC0(int, int, int, short, int, int);
-
-void func_8007B29C(int arg0, int arg1, int arg2, int arg3, short arg4, short arg5)
+void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
 {
     if (arg2 < 9) {
         func_80047280(arg0, arg1, arg2 + 4, arg3, arg4, arg5);

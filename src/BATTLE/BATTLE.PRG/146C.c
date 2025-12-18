@@ -113,7 +113,10 @@ typedef struct {
 
 typedef struct {
     u_int unk0;
-    int unk4;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
     u_short unk8;
     char unkA;
     char unkB;
@@ -131,7 +134,13 @@ typedef struct {
     int unk2C[11];
     short unk58;
     short unk5A;
-    int unk5C[510];
+    int unk5C[506];
+    short unk844; // These three are probably a vector
+    short unk846;
+    short unk848;
+    short unk84A;
+    int unk84C;
+    int unk850;
     char unk854[4][0x84C];
     int unk2984;
     int unk2988;
@@ -1605,7 +1614,14 @@ void func_800704D8(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007053C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007087C);
+void func_8007087C(D_800F19CC_t* arg0) {
+    func_8006EBF8_t sp10;
+
+    func_800A1108(arg0->unk4, &sp10);
+    arg0->unk844 = (sp10.unk4 + vs_math_sine(sp10.unkA + 0x800));
+    arg0->unk848 = (sp10.unk8 + vs_math_cosine(sp10.unkA + 0x800));
+    arg0->unk846 = sp10.unk6;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800708EC);
 

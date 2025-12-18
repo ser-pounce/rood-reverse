@@ -3728,11 +3728,13 @@ short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
          - vs_battle_actors[arg2->unk0]->unk3C->currentMP;
 }
 
-short func_80083524(vs_skill_t* arg0 __attribute__((unused)),
+short func_80083524(vs_skill_t* arg0,
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80083524);
+    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+    int arg4 __attribute__((unused)))
+{
+    return (((D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage) / 10) + (D_800F19CC->unk0 - 1);
+}
 
 short func_80083590(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),

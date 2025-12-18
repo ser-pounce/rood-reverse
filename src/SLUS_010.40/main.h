@@ -49,7 +49,8 @@ typedef struct {
     int shape : 3;
     int angle : 5;
     int aoe;
-    u_int flags_0 : 15;
+    char flags_0;
+    u_int flags_7 : 7;
     u_int flags_15 : 1;
     u_int flags_16 : 16;
     int unk10;

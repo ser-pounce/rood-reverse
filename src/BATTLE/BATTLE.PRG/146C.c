@@ -4619,8 +4619,20 @@ void func_80085978(int arg0, int arg1)
     func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0);
 }
 
-void func_800859B4(int arg0, vs_battle_actor2* arg1, int arg2);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800859B4);
+void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
+{
+    vs_skill_t* new_var = &vs_main_skills[arg0];
+
+    if ((arg2 != 0) && ((arg0 - 0x16) >= 0x20)) {
+        if (new_var->flags_0 == 0xFF) {
+            arg1->flags.u16[0] +=
+                (arg1->weapon.unk10B + ((arg1->flags.u32 >> 0x12) & 0x3F)) << 8;
+        } else {
+            int new_var2 = new_var->flags_0 + ((arg1->flags.u32 >> 0x12) & 0x3F);
+            arg1->flags.u16[0] += new_var2 << 8;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085A34);
 

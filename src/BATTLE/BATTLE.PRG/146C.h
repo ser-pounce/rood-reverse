@@ -309,6 +309,20 @@ typedef struct {
 } vs_battle_room;
 
 typedef struct {
+    char id;
+    char exit;
+    char flags;
+    char lock;
+} vs_battle_door;
+
+typedef struct {
+    char p0;
+    char p1;
+    char p2;
+    char p3;
+} vs_battle_prim;
+
+typedef struct {
     int vertexCount;
     SVECTOR vertices[0];
 } vs_battle_roomVertices;
@@ -485,7 +499,7 @@ extern u_short D_800F1BA4;
 extern u_short* D_800F1BA8;
 extern void* D_800F1BAC;
 extern short D_800F1BB6;
-extern short D_800F1BBE;
+extern short vs_battle_exitZoneId;
 extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern u_char D_800F1BF0[8];

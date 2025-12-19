@@ -373,7 +373,7 @@ void func_800732AC(void);
 void func_80073718(void);
 void func_80073D30(func_8008D5FC_t*, int*, int);
 void func_80073E30(func_8008D5FC_t*, int);
-void func_80074798(func_8006EBF8_t*, char*);
+int func_80074798(func_8006EBF8_t*, char*);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
@@ -444,7 +444,7 @@ void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D5FC(func_8008D5FC_t* arg0);
 void func_8008D658(func_8008D5FC_t*, func_8008D5FC_t*);
-int func_8008D880(int);
+int _getExitZoneIDForDoor(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(func_8008D5FC_t* arg0, int arg1);
 void func_8008E480(int arg0);
@@ -516,7 +516,7 @@ extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
 extern int D_800F1BB8;
-extern short D_800F1BBE;
+extern short vs_battle_exitZoneId;
 extern D_800F1BF8_t D_800F1BF8;
 extern u_int D_800F1C40;
 extern int* D_800F1C5C;
@@ -1889,7 +1889,6 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800743E0);
 int func_800744B8(void)
 {
     D_800F4E98_t* temp_v0;
-    int var_v0;
 
     if (D_800F1910.unk0->unkC != 0) {
         if (func_800CB45C() != 0) {
@@ -1938,7 +1937,33 @@ void func_80074744(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074798);
+int func_80074798(func_8006EBF8_t* arg0, char* arg1)
+{
+    int var_v1 = (arg0->unkA + 0x200) & 0xFFF;
+    if (var_v1 < 0) {
+        var_v1 += 0x3FF;
+    }
+    arg1[0] = arg0->unk0.fields.unk0;
+    arg1[2] = arg0->unk0.fields.unk2;
+    arg1[1] = arg0->unk0.fields.unk1;
+
+    var_v1 = var_v1 >> 0xA;
+    switch (var_v1) {
+    case 0:
+        --arg1[2];
+        break;
+    case 1:
+        --arg1[0];
+        break;
+    case 2:
+        ++arg1[2];
+        break;
+    default:
+        ++arg1[0];
+        break;
+    }
+    return var_v1;
+}
 
 int func_80074860(int arg0)
 {
@@ -5065,7 +5090,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
-void func_8008AB68(void) { vs_main_stateFlags.unk105 = D_800F1BBE + 1; }
+void func_8008AB68(void) { vs_main_stateFlags.unk105 = vs_battle_exitZoneId + 1; }
 
 int func_8008AB80(int arg0)
 {
@@ -5248,13 +5273,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B808);
 void func_8008B8F8(char (*arg0)[12])
 {
     if (arg0 != NULL) {
-        int v;
+        int zoneId;
         vs_main_memcpy(D_800F1CC8, arg0, sizeof D_800F1CC8);
-        v = func_8008D880((*arg0)[8]);
-        D_800F1BBE = v;
+        zoneId = _getExitZoneIDForDoor((*arg0)[8]);
+        vs_battle_exitZoneId = zoneId;
     } else {
         vs_main_bzero(D_800F1CC8, sizeof D_800F1CC8);
-        D_800F1BBE = -1;
+        vs_battle_exitZoneId = -1;
     }
 }
 
@@ -5463,7 +5488,25 @@ void func_8008D820(u_int* arg0, func_80103530_t* arg1)
     arg1->unk10 = (u_long*)arg0 + 3;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D880);
+int _getExitZoneIDForDoor(int door)
+{
+    int* temp_v1;
+
+    if (vs_battle_currentScene != NULL) {
+        temp_v1 =
+            (int*)vs_battle_currentScene + (vs_battle_currentScene->roomCount * 3 + 1);
+        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        if ((door < *temp_v1++) && (door >= 0)) {
+            temp_v1 += door;
+            return ((char*)temp_v1)[1];
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D948);
 

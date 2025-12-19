@@ -1898,7 +1898,34 @@ int func_80074374(void)
     return temp_s0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800743E0);
+void func_800743E0(int arg0, int arg1)
+{
+    int temp_v1 = D_800F1910.unk0->unkC;
+    D_800F18F0 = 3;
+    if (temp_v1 != 0) {
+        switch (temp_v1) {
+        case 1:
+            arg1 = 2;
+            break;
+        case 2:
+            arg1 = 1;
+            break;
+        case 3:
+            arg1 = 3;
+            break;
+        }
+        func_800CB2B8(arg1, D_800F1910.unk0->unkE, 1);
+        func_8006C2FC();
+    } else {
+        short temp_v1_2 = D_800F1910.unk0->unk10;
+        if (temp_v1_2 < 0x40) {
+            func_800CB18C(D_800F1910.unk0 + 1);
+        } else {
+            func_800CB1C0(temp_v1_2 - 0x40);
+        }
+        func_8006C39C();
+    }
+}
 
 int func_800744B8(void)
 {

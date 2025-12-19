@@ -375,6 +375,8 @@ void func_80073D30(func_8008D5FC_t*, int*, int);
 void func_80073E30(func_8008D5FC_t*, int);
 int func_80074798(func_8006EBF8_t*, char*);
 void func_80077130(vs_battle_actor*, int, int, int, int);
+void** func_80077240(int, int, int, int, int, int, int*, int);
+void func_800773BC(void**, int, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
@@ -439,14 +441,14 @@ void func_8008BF48(func_8008D5FC_t*);
 void func_8008C070(int arg0, func_8008D5FC_t* arg1);
 void func_8008C2C0(char, char, char, int);
 int func_8008C49C(int, int);
-func_8008D5FC_t* func_8008D438(int, int, int);
+D_800F1910_t2* func_8008D438(int, int, int);
 void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D5FC(func_8008D5FC_t* arg0);
 void func_8008D658(func_8008D5FC_t*, func_8008D5FC_t*);
 int _getExitZoneIDForDoor(int);
 short func_8008DC7C(int arg0, int arg1);
-void func_8008DEAC(func_8008D5FC_t* arg0, int arg1);
+void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 void func_8008E480(int arg0);
 void func_8008E6DC(int);
 void func_8008E938();
@@ -1373,7 +1375,7 @@ void func_8006CDB8(void) { func_8009D854(); }
 
 void func_8006CDD8(short* arg0)
 {
-    func_8008D5FC_t* temp_v0;
+    D_800F1910_t2* temp_v0;
     int var_a0;
     int var_a1;
 
@@ -2154,7 +2156,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077240);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800773BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800774FC);
+void** func_800774FC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int* arg6, int arg7) {
+    void** temp_v0;
+
+    temp_v0 = func_80077240(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    if (temp_v0 != 0) {
+        while (func_800995B0() != 0) {
+            func_8009967C();
+            vs_main_gametimeUpdate(0);
+        }
+        func_800773BC(temp_v0, arg0, arg1, arg2, arg4, arg7);
+        return temp_v0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
 
@@ -5021,7 +5036,19 @@ void _allocHeap(void* arg0, int size)
     vs_main_memcpy(D_800F1884, arg0, size);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088D40);
+void func_80088D40(int* arg0) {
+    int temp_a0 = *arg0;
+    D_800F1880.unk8 = temp_a0;
+    if (temp_a0 != 0) {
+        D_800F1880.unk10 = vs_main_allocHeap(temp_a0 * 8);
+        vs_main_memcpy(D_800F1880.unk10, arg0 + 1, D_800F1880.unk8 * 8);
+        D_800F1880.unkC = vs_main_allocHeap(D_800F1880.unk8 * 0x464);
+        vs_main_memcpy(D_800F1880.unkC , arg0 + ((D_800F1880.unk8 * 2) + 1), D_800F1880.unk8 * 0x464);
+        return;
+    }
+    D_800F1880.unk10 = NULL;
+    D_800F1880.unkC = NULL;
+}
 
 static void _loadZnd(int id)
 {
@@ -5644,7 +5671,7 @@ short func_8008DD0C(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DDA8);
 
-void func_8008DEAC(func_8008D5FC_t* arg0, int arg1)
+void func_8008DEAC(D_800F1910_t2* arg0, int arg1)
 {
     if (arg0 == NULL) {
         D_800F1910_t2* var_a2 = D_800F1BF8.unk84;

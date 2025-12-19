@@ -5,8 +5,8 @@
 typedef struct {
     short unk0;
     short unk2;
-    u_short unk4;
-    u_short unk6;
+    short unk4;
+    short unk6;
     short unk8;
     char unkA;
     char unkB;

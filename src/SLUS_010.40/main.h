@@ -208,7 +208,11 @@ typedef struct {
     char unkC;
     char unkD;
     char unkE;
-    char unkF[0x91];
+    char unkF[17];
+    char unk20;
+    char unk21[0x1F];
+    char unk40;
+    char unk41[0x5F];
     char unkA0;
     char unkA1;
     char unkA2;

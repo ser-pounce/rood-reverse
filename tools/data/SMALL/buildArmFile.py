@@ -156,7 +156,7 @@ def parse_block(block, vertex_offset_global):
                 continue
             
             # Check for point metadata
-            if 'exit_zone=' in ln:
+            if 'point_id=' in ln:
                 points_meta.append({
                     "meta": parse_point_metadata(ln),
                     "vertex_index_global": None
@@ -216,7 +216,7 @@ def parse_block(block, vertex_offset_global):
         meta = pm.get("meta", {})
         points.append({
             "vertex_id": clamp_byte(local_idx),
-            "exit_zone": clamp_byte(meta.get("exit_zone", 0)),
+            "point_id": clamp_byte(meta.get("point_id", 0)),
             "flags": clamp_byte(meta.get("flags", 0)),
             "lock": clamp_byte(meta.get("lock", 0))
         })
@@ -273,7 +273,7 @@ def build_graphics_block(room):
     # Points
     buffer = pack_collection(
         buffer, room["points"], POINT_FORMAT,
-        lambda p: (p["vertex_id"], p["exit_zone"], p["flags"], p["lock"])
+        lambda p: (p["vertex_id"], p["point_id"], p["flags"], p["lock"])
     )
     
     return bytes(buffer)

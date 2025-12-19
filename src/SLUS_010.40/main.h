@@ -252,7 +252,7 @@ typedef struct {
     char unkD0;
     char unkD1;
     char unkD2[51];
-    char unk105;
+    char doorEntered;
     char unk106[22];
     char puzzleMode;
     char puzzleModeDisabled;

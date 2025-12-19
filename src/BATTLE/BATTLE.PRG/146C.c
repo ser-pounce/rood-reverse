@@ -5090,7 +5090,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
-void func_8008AB68(void) { vs_main_stateFlags.unk105 = vs_battle_exitZoneId + 1; }
+void vs_battle_setDoorEntered(void) { vs_main_stateFlags.doorEntered = vs_battle_exitZoneId + 1; }
 
 int func_8008AB80(int arg0)
 {

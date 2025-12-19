@@ -63,10 +63,10 @@ def parse_room_graphics(f):
     num_points, = read_struct('<I', f)
     points = []
     for _ in range(num_points):
-        vertex_id, exit_zone, flags, lock = read_struct(POINT_FORMAT, f)
+        vertex_id, point_id, flags, lock = read_struct(POINT_FORMAT, f)
         points.append({
             "vertex_id": vertex_id,
-            "exit_zone": exit_zone,
+            "point_id": point_id,
             "flags": flags,
             "lock": lock
         })
@@ -118,7 +118,7 @@ def write_obj_points(out, points, offset):
     out.write("# Points\n")
     for p in points:
         v_index = p["vertex_id"] + offset
-        parts = [f"exit_zone={p['exit_zone']}"]
+        parts = [f"point_id={p['point_id']}"]
         if p["flags"] != 0:
             parts.append(f"flags={p['flags']}")
         if p["lock"] != 0:

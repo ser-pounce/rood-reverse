@@ -2227,7 +2227,7 @@ static int _showSaveFilesMenu(int initPort)
         val = _saveFile(0);
         ++_fileProgressCounter;
         if (val != 0) {
-            vs_main_stateFlags.unk105 = 0;
+            vs_main_stateFlags.doorEntered = 0;
             saveId = slot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {

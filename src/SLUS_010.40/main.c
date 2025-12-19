@@ -8464,7 +8464,7 @@ void func_80042CB0(void)
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);
     }
-    func_8008AB68();
+    vs_battle_setDoorEntered();
 }
 
 void vs_main_padDisconnectAll(void)

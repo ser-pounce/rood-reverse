@@ -432,7 +432,7 @@ void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D5FC(func_8008D5FC_t* arg0);
 void func_8008D658(func_8008D5FC_t*, func_8008D5FC_t*);
-int _getExitZoneIDForDoor(int);
+int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 void func_8008E480(int arg0);
@@ -3317,7 +3317,7 @@ int func_8007E1C0(int arg0)
     return 0;
 }
 
-void func_8007E200(vs_battle_actor2* arg0, int arg1)
+void _calculateArmorClassAffinity(vs_battle_actor2* arg0, int arg1)
 {
     int i;
 
@@ -3335,7 +3335,27 @@ void func_8007E200(vs_battle_actor2* arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E2AC);
+void _calculateShieldClassAffinity(vs_battle_actor2* arg0)
+{
+    short temp_v0_2;
+    int i;
+
+    for (i = 0; i < 6; ++i) {
+        temp_v0_2 = arg0->shield.shield.classes[i] + arg0->shield.gems[0].classes[i]
+                  + arg0->shield.gems[1].classes[i] + arg0->shield.gems[2].classes[i];
+        arg0->shield.classAffinityCurrent.class[1][i] = temp_v0_2;
+        arg0->shield.classAffinityCurrent.class[0][i] = temp_v0_2;
+    }
+
+    for (i = 0; i < 7; ++i) {
+        temp_v0_2 = arg0->shield.shield.affinities[i] + arg0->shield.gems[0].affinities[i]
+                  + arg0->shield.gems[1].affinities[i]
+                  + arg0->shield.gems[2].affinities[i];
+        arg0->shield.classAffinityCurrent.affinity[1][i] = temp_v0_2;
+        arg0->shield.classAffinityCurrent.affinity[0][i] =
+            temp_v0_2 + arg0->shield.unk134[i];
+    }
+}
 
 void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
 {
@@ -5445,10 +5465,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B808);
 void func_8008B8F8(char (*arg0)[12])
 {
     if (arg0 != NULL) {
-        int zoneId;
+        int doorId;
         vs_main_memcpy(D_800F1CC8, arg0, sizeof D_800F1CC8);
-        zoneId = _getExitZoneIDForDoor((*arg0)[8]);
-        vs_battle_doorEntered = zoneId;
+        doorId = _getDoorId((*arg0)[8]);
+        vs_battle_doorEntered = doorId;
     } else {
         vs_main_bzero(D_800F1CC8, sizeof D_800F1CC8);
         vs_battle_doorEntered = -1;
@@ -5679,7 +5699,7 @@ void func_8008D820(u_int* arg0, func_80103530_t* arg1)
     arg1->unk10 = (u_long*)arg0 + 3;
 }
 
-int _getExitZoneIDForDoor(int door)
+int _getDoorId(int door)
 {
     int* temp_v1;
 
@@ -5699,7 +5719,31 @@ int _getExitZoneIDForDoor(int door)
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D948);
+void _setDoorEntered(int arg0)
+{
+    int temp_a3;
+    int i;
+
+    vs_battle_doorEntered = arg0;
+
+    if (vs_battle_currentScene != NULL) {
+        int* temp_v1 = (int*)vs_battle_currentScene;
+        temp_v1 += vs_battle_currentScene->roomCount * 3 + 1;
+        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_v1 = temp_v1 + ((*temp_v1) + 1);
+        temp_a3 = *temp_v1++;
+
+        for (i = 0; i < temp_a3; ++i) {
+            if (i == arg0) {
+                ((char*)temp_v1)[2] |= 0x10;
+            }
+            ++temp_v1;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DA24);
 

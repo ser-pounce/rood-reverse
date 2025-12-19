@@ -184,7 +184,7 @@ int func_800CAEAC(int);
 int vs_battle_abilitiesUnlocked(int);
 void func_800CB23C(void);
 void func_800CB660(int arg0);
-short* func_800CB66C(void);
+D_800F4E98_t* func_800CB66C(void);
 void func_800CB114(void);
 void func_800CB158(void**);
 int func_800CB45C(void);

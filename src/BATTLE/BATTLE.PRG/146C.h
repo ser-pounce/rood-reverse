@@ -5,7 +5,8 @@
 typedef struct {
     short unk0;
     short unk2;
-    int unk4;
+    u_short unk4;
+    u_short unk6;
     short unk8;
     char unkA;
     char unkB;
@@ -15,9 +16,25 @@ typedef struct {
     char unk0;
     char unk1;
     short unk2;
-    u_int unk4[9];
+    u_int unk4;
+    u_int unk8;
+    u_int unkC;
+    u_short unk10;
+    u_short unk12;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    u_int unk24;
     u_int unk28;
-    u_int unk2C[8];
+    u_int unk2C;
+    u_int unk30;
+    u_int unk34;
+    u_int unk38;
+    u_int unk3C;
+    u_int unk40;
+    u_int unk44;
+    u_int unk48;
     u_int unk4C;
     int unk50;
     int unk54;

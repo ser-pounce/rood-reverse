@@ -673,7 +673,7 @@ void func_800CB654(int arg0) { D_800EB9AF = arg0; }
 
 void func_800CB660(int arg0) { D_800EB9CC = arg0; }
 
-short* func_800CB66C(void) { return &D_800F4E98.unk0; }
+D_800F4E98_t* func_800CB66C(void) { return &D_800F4E98; }
 
 void _loadScreff2(int arg0)
 {

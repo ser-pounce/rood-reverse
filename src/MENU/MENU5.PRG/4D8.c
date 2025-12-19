@@ -1111,7 +1111,7 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                     _drawIcon(0, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
                     func_80108274(
                         var_s1[var_s3[0]][0], var_s1[var_s3[0]][1], 1, var_s3[1]);
-                    if ((roomIndex == _isCurrentScene) && (i == vs_battle_exitZoneId)) {
+                    if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
                         if (D_80108D6C & 0x10) {
                             pcodeIn.r0 = 0xFF;
                             pcodeIn.g0 = 0;
@@ -1127,7 +1127,7 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                 }
             }
             if ((roomIndex == _currentRoomIndex) && (var_s3[2] == 0)) {
-                if ((roomIndex == _isCurrentScene) && (i == vs_battle_exitZoneId)) {
+                if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
                     if (D_80108D6C & 0x10) {
                         pcodeIn.r0 = 0xFF;
                         pcodeIn.g0 = 0;

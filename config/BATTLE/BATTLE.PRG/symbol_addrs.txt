@@ -14,6 +14,7 @@ _setRoomSeen = 0x8006F53C;
 vs_battle_exec = 0x800798A4;
 _getLocationId = 0x8007C81C;
 vs_battle_getCurrentRoomId = 0x8007C874;
+_calculateWeaponClassAffinity = 0x8007E380;
 _getSpellHitRate = 0x8007F138;
 func_80080000 = 0x80080000; // type:func size:0x1E0
 vs_battle_getEquippedShieldDp = 0x8008381C;

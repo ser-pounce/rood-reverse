@@ -388,7 +388,7 @@ int _getLocationId(int, int);
 int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
-void func_8007E380(vs_battle_actor2*);
+void _calculateWeaponClassAffinity(vs_battle_actor2*);
 int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
@@ -3337,7 +3337,27 @@ void func_8007E200(vs_battle_actor2* arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E2AC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E380);
+void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
+{
+    short temp_v0_2;
+    int i;
+
+    for (i = 0; i < 6; ++i) {
+        temp_v0_2 = arg0->weapon.blade.classes[i] + arg0->weapon.gems[0].classes[i]
+                  + arg0->weapon.gems[1].classes[i] + arg0->weapon.gems[2].classes[i];
+        arg0->weapon.classAffinityCurrent.class[1][i] = temp_v0_2;
+        arg0->weapon.classAffinityCurrent.class[0][i] = temp_v0_2;
+    }
+
+    for (i = 0; i < 7; ++i) {
+        temp_v0_2 = arg0->weapon.blade.affinities[i] + arg0->weapon.gems[0].affinities[i]
+                  + arg0->weapon.gems[1].affinities[i]
+                  + arg0->weapon.gems[2].affinities[i];
+        arg0->weapon.classAffinityCurrent.affinity[1][i] = temp_v0_2;
+        arg0->weapon.classAffinityCurrent.affinity[0][i] =
+            temp_v0_2 + arg0->weapon.unk168[i];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E454);
 
@@ -3844,7 +3864,7 @@ void func_80080F78(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3)
                 func_80080534(arg0, temp_s1, arg3 - 1, 0xF0, arg1->flags.fields.unk3);
             }
         }
-        func_8007E380(arg1);
+        _calculateWeaponClassAffinity(arg1);
     }
 }
 

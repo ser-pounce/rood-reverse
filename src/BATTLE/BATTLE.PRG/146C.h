@@ -114,9 +114,9 @@ typedef struct {
 
 typedef struct {
     char name[24];
-    vs_battle_equipment blade;
-    vs_battle_equipment grip;
-    vs_battle_equipment gems[3];
+    vs_battle_equipment blade; // 0x18
+    vs_battle_equipment grip; // 0x48
+    vs_battle_equipment gems[3]; // 0x78
     u_short unk108;
     char risk;
     char unk10B;

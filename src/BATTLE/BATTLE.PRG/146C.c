@@ -2996,7 +2996,28 @@ int func_8007D15C(int arg0)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D1A8);
+void func_8007D1A8(int arg0, int arg1)
+{
+    int temp_s0;
+    vs_battle_actor* temp_a0 = vs_battle_actors[arg0];
+    if (temp_a0 != NULL) {
+        if (arg1 != 0) {
+            temp_s0 = func_8006A1C4(temp_a0);
+            func_800A09D8(arg0, arg1);
+            if (temp_s0 != 0) {
+                func_800E7608(arg0);
+                func_800DEC88(NULL);
+            }
+        } else {
+            temp_s0 = func_8006A11C(temp_a0);
+            func_800A09D8(arg0, 0);
+            if (temp_s0 != 0) {
+                func_800E5998();
+                func_800DEC88(NULL);
+            }
+        }
+    }
+}
 
 void func_8007D260(int arg0)
 {

@@ -117,7 +117,8 @@ typedef struct {
     vs_battle_equipment blade; // 0x18
     vs_battle_equipment grip; // 0x48
     vs_battle_equipment gems[3]; // 0x78
-    u_short unk108;
+    char unk108;
+    char unk10A;
     char risk;
     char unk10B;
     char unk10C;
@@ -187,8 +188,8 @@ typedef struct {
 } vs_battle_armorInfo;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
+    short unk0;
+    short unk2;
     char unk4;
     char unk5;
     u_char nameIndex;
@@ -504,7 +505,7 @@ void func_8007DE2C(int arg0);
 void func_8007DE44(u_int arg0);
 void func_8007DE5C(int arg0);
 int func_8007DFF0(u_int, u_int, int);
-void func_8007E0A8(int, int, int);
+void func_8007E0A8(int, u_int, int);
 int func_8007E180(int arg0);
 int func_8007E1C0(int arg0);
 void func_80086FA8(int, vs_battle_actor2*);

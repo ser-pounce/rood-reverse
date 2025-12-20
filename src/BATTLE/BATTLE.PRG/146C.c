@@ -5524,8 +5524,24 @@ int func_8008B744(void)
     return 0;
 }
 
-// https://decomp.me/scratch/UpOGZ
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B764);
+u_int* func_8008B764(u_int arg0, u_int arg1, int arg2)
+{
+    short temp_a1;
+
+    if (D_800F1BF8.unk6C != NULL) {
+        if (arg2 >= 2) {
+            if (D_800F1BF8.unkA8 != NULL) {
+                return &D_800F1BF8.unkA8[arg2 - 2][45];
+            }
+            return NULL;
+        }
+        temp_a1 = D_800F1BF8.unk68[0];
+        if ((arg0 < (u_int)temp_a1) && (arg1 < (u_int)D_800F1BF8.unk68[1])) {
+            return D_800F1BF8.unk6C + (((arg1 * temp_a1) + arg0) * 4);
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B808);
 

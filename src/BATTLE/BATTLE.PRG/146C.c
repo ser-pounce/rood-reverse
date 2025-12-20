@@ -375,6 +375,15 @@ typedef struct {
     int unk40;
 } func_80085A34_t;
 
+typedef struct {
+    func_8006ACFC_t unk0;
+    func_8006ACFC_t unk30[3];
+    char unkC0;
+    char unkC1;
+    short unkC2;
+} func_8006B02C_t;
+
+void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(func_8006EBF8_t2*);
@@ -392,6 +401,7 @@ void func_8006B2D4(void);
 void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
 void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
+int func_8006DB98(func_8007820C_t* arg0, int*, int*, int, int);
 int func_8006DEFC(func_8007820C_t*, int, int);
 int func_8006F204(void);
 void _setRoomSeen(void);
@@ -536,6 +546,7 @@ extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D4;
 extern int D_800F19EC;
 extern int D_800F19F0;
+extern int D_800F19F8;
 extern int D_800F1A04;
 extern u_int D_800F1A08;
 extern int D_800F1A0C;
@@ -823,7 +834,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A9F0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AB44);
 
-void func_8006AC74(func_8006ACFC_t* arg0, func_8006AC74_t* arg1)
+void func_8006AC74(func_8006ACFC_t* arg0, func_8006AC74_t2* arg1)
 {
     int i;
 
@@ -877,7 +888,7 @@ void func_8006ACFC(func_8006ACFC_t* arg0, vs_battle_setEquipmentForDrop_t* arg1)
     arg0->material = arg1->material;
 }
 
-void func_8006AE0C(func_8006ACFC_t* arg0, func_8006AC74_t* arg1)
+void func_8006AE0C(func_8006ACFC_t* arg0, func_8006AC74_t2* arg1)
 {
     int i;
 
@@ -900,7 +911,27 @@ void func_8006AE0C(func_8006ACFC_t* arg0, func_8006AC74_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AEAC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B02C);
+void func_8006B02C(vs_battle_shieldInfo* arg0, func_8006B02C_t2* arg1)
+{
+    func_8006B02C_t* temp_v0;
+    int i;
+
+    temp_v0 = vs_main_allocHeapR(0xC4);
+    vs_main_bzero(temp_v0, 0xC4);
+
+    if (arg1 != NULL) {
+        temp_v0->unkC2 = arg1->unk0;
+        func_8006ACFC(&temp_v0->unk0, &arg1->unk4);
+        temp_v0->unkC0 = arg1->unk4.material;
+        for (i = 0; i < 3; ++i) {
+            if (arg1->unk2C[i] != 0) {
+                func_8006AE0C(&temp_v0->unk30[i], &D_80060A0C[arg1->unk2C[i] & 0x7F]);
+            }
+        }
+    }
+    func_8006A65C(arg0, temp_v0);
+    vs_main_freeHeapR(temp_v0);
+}
 
 void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
@@ -960,7 +991,7 @@ void func_8006B2D4(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B338);
 
-void func_8006B460(void* arg0)
+void func_8006B460(func_8006B02C_t2* arg0)
 {
     func_8006B02C(&vs_battle_characterState->unk3C->shield, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);
@@ -1531,7 +1562,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D9FC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006DB98);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006DEFC);
+int func_8006DEFC(func_8007820C_t* arg0, int arg1, int arg2)
+{
+    int sp18[4];
+    int sp28[3];
+
+    if (func_8006DB98(arg0, sp28, sp18, arg1, arg2) != 0) {
+        D_1F800000[17] = func_8006D97C(D_1F800000[17], sp28[0], sp18[0]);
+        D_1F800000[19] = func_8006D97C(D_1F800000[19], sp28[2], sp18[2]);
+        D_1F800000[18] = func_8006D97C(D_1F800000[18], sp28[1], sp18[1]);
+    } else {
+        D_1F800000[17] = _add_min(D_1F800000[17], sp28[0], sp18[0]);
+        D_1F800000[19] = _add_min(D_1F800000[19], sp28[2], sp18[2]);
+        D_1F800000[18] = _add_min(D_1F800000[18], sp28[1], sp18[1]);
+    }
+    if (D_1F800000[18] > 0) {
+        D_1F800000[18] = 0;
+    }
+    return D_800F19F8;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006DFE0);
 
@@ -4153,7 +4202,9 @@ void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     }
 }
 
-void func_800802C4(vs_skill_t* arg0, vs_battle_actor2* arg1, vs_battle_actor2* arg2, int arg3) {
+void func_800802C4(
+    vs_skill_t* arg0, vs_battle_actor2* arg1, vs_battle_actor2* arg2, int arg3)
+{
     int i;
 
     if (arg0->unk2_1 != 1) {
@@ -4170,8 +4221,7 @@ void func_800802C4(vs_skill_t* arg0, vs_battle_actor2* arg1, vs_battle_actor2* a
             arg2->shield.currentPp = 0;
         }
     }
-    
-    
+
     for (i = 0; i < 6; ++i) {
         if (D_800F1A10[i] != 0) {
             if (arg2->hitLocations[i].armor.currentDp >= D_800F1A10[i]) {

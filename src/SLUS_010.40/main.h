@@ -363,6 +363,29 @@ typedef struct {
     char unk8[8][0x28];
 } D_80061078_t;
 
+typedef struct {
+    short id;
+    char unk2;
+    char unk3;
+    char unk4;
+    char strength;
+    char intelligence;
+    char agility;
+    char classes[4];
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+    char affinities[4];
+    char unk14;
+    char unk15;
+    char unk16;
+    char unk17;
+    short unk18;
+    char unk1A;
+    char unk1B;
+} func_8006AC74_t2;
+
 void func_80048FEC(short arg0);
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
@@ -414,6 +437,7 @@ extern char D_80060148[][32];
 extern D_80060168_t D_80060168;
 extern char D_80060238[][48];
 extern vs_battle_setEquipmentForDrop_t D_80060780[];
+extern func_8006AC74_t2 D_80060A0C[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];

@@ -672,7 +672,7 @@ void func_80103F00(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    char(*new_var2)[48] = D_80060168.unk100;
+    func_8006B02C_t2* new_var2 = (func_8006B02C_t2*)D_80060168.unk100;
     char* new_var = D_800619D8.unk28;
 
     vs_battle_rMemzero(sp1A8, sizeof sp1A8);
@@ -684,7 +684,7 @@ void func_80103F00(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006B02C(&shield, new_var2[temp_s0 - 1]);
+                func_8006B02C(&shield, &new_var2[temp_s0 - 1]);
                 temp_v0 = _getShieldStat(arg0, &shield);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
@@ -699,7 +699,7 @@ void func_80103F00(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006B02C(&shield, new_var2[temp_s0 - 1]);
+                func_8006B02C(&shield, &new_var2[temp_s0 - 1]);
                 if (_getShieldStat(arg0, &shield) == var_s3) {
                     sp1A8[var_s4++] = temp_s0;
                     new_var[i] = 0;
@@ -809,13 +809,13 @@ void func_801042C4(func_8006ACFC_t* arg0, int arg1, int arg2)
         func_8006AB44(arg0, D_80060168.unk280[arg2]);
         return;
     case 2:
-        func_8006AC74(arg0, (func_8006AC74_t*)D_80060168.unk540[arg2]);
+        func_8006AC74(arg0, (func_8006AC74_t2*)D_80060168.unk540[arg2]);
         return;
     case 4:
         func_8006ACFC(arg0, &D_80060168.unk640[arg2]);
         return;
     case 5:
-        func_8006AE0C(arg0, (void*)D_80060168.unk8C0[arg2]);
+        func_8006AE0C(arg0, (func_8006AC74_t2*)D_80060168.unk8C0[arg2]);
         return;
     }
 }

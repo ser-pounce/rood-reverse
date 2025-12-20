@@ -359,6 +359,22 @@ typedef struct {
     func_80077DF0_t2 unk10;
 } func_80077DF0_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20[8];
+    int unk40;
+} func_80085A34_t;
+
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(func_8006EBF8_t2*);
@@ -5175,7 +5191,38 @@ void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085A34);
+void func_80085A34(func_80085A34_t* arg0)
+{
+    int i;
+    u_int var_a1;
+
+    if (arg0->unk40 == 0) {
+        if (arg0->unk2 == 0xFF) {
+            arg0->unk2 = 0;
+        }
+        if (arg0->unk3 == 6) {
+            var_a1 = arg0->unk1C;
+            if (var_a1 != 0) {
+                for (i = 0; i < 9; var_a1 >>= 2, ++i) {
+                    switch (var_a1 & 3) {
+                    case 2:
+                        arg0->unk3 = 5;
+                        return;
+                    case 1:
+                        arg0->unk3 = 0;
+                        return;
+                    case 3:
+                        arg0->unk3 = 1;
+                        return;
+                    }
+                }
+            } else if ((arg0->unk14 | arg0->unk18) == 0) {
+                arg0->unk3 = 4;
+                arg0->unk2 = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085B10);
 

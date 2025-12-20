@@ -763,46 +763,46 @@ void func_8010408C(int arg0)
     vs_battle_memcpy(new_var, sp10, 0x40);
 }
 
-int func_801041CC(int arg0, _getShieldStat_t* arg1)
+int func_801041CC(int arg0, func_8006ACFC_t* arg1)
 {
     switch (arg0) {
     case 0:
-        return -arg1->unk4;
+        return -arg1->category;
     case 1:
-        return -arg1->unk13;
+        return -arg1->material;
     case 2:
         return arg1->unk18;
     case 3:
         return -arg1->unk10;
     case 4:
-        return arg1->unk8;
+        return arg1->currentDp;
     case 5:
-        return arg1->unkA;
+        return arg1->maxDp;
     case 6:
-        return arg1->unkC;
+        return arg1->currentPp;
     case 7:
-        return arg1->unkE;
+        return arg1->maxPp;
     case 8:
-        return arg1->unk5;
+        return arg1->strength;
     case 9:
-        return arg1->unk6;
+        return arg1->intelligence;
     case 10:
-        return arg1->unk7;
+        return arg1->agility;
     default:
         if (arg0 >= 0x1B) {
             arg0 -= 0x10;
         }
         if (arg0 < 0x11) {
-            return *((signed char*)arg1 + 21 + arg0);
+            return *(((signed char*)&arg1->gemSlots) + arg0);
         }
         if (arg0 >= 0x18) {
-            return *((signed char*)arg1 + 5 + arg0);
+            return *(((signed char*)&arg1->strength) + arg0);
         }
-        return *((signed char*)arg1 + 23 + arg0);
+        return *(((signed char*)&arg1->unk17) + arg0);
     }
 }
 
-void func_801042C4(func_8006AC74_t* arg0, int arg1, int arg2)
+void func_801042C4(func_8006ACFC_t* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
@@ -822,7 +822,7 @@ void func_801042C4(func_8006AC74_t* arg0, int arg1, int arg2)
 
 void func_8010439C(int arg0, int arg1)
 {
-    func_8006AC74_t sp10;
+    func_8006ACFC_t sp10;
     int temp_v0;
     int i;
     int var_s3;
@@ -844,7 +844,7 @@ void func_8010439C(int arg0, int arg1)
                 temp_s0 = temp_s6[i];
                 if (temp_s0 != 0) {
                     func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    temp_v0 = func_801041CC(arg1, (_getShieldStat_t*)&sp10);
+                    temp_v0 = func_801041CC(arg1, &sp10);
                     if (var_s3 < temp_v0) {
                         var_s3 = temp_v0;
                     }
@@ -859,7 +859,7 @@ void func_8010439C(int arg0, int arg1)
                 temp_s0 = temp_s6[i];
                 if (temp_s0 != 0) {
                     func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    if (func_801041CC(arg1, (_getShieldStat_t*)&sp10) == var_s3) {
+                    if (func_801041CC(arg1, &sp10) == var_s3) {
                         spVLA[var_s5++] = temp_s0;
                         temp_s6[i] = 0;
                     }

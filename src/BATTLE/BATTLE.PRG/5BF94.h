@@ -158,6 +158,15 @@ typedef struct {
     short unkE4;
 } func_800CF0E8_t;
 
+typedef struct {
+    D_800F1910_t2 unk0;
+    short unkC;
+    short unkE;
+    u_short unk10;
+    char unk12;
+    char unk13;
+} func_8008D5FC_t;
+
 int func_800C4794(char*);
 int func_800C58F8(void*);
 void func_800C6540(char const*, int, int, u_long*);

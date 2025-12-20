@@ -882,9 +882,9 @@ void func_801046B0(vs_battle_scene* arg0)
 
 int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
 {
-    P_CODE pcodeIn;
-    P_CODE pcodeOut0;
-    P_CODE pcodeOut1;
+    CVECTOR colorIn;
+    CVECTOR colorOut0;
+    CVECTOR colorOut1;
     int sp28[4];
     long sp38;
     long sp3C;
@@ -912,13 +912,13 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         roomData += 8;
     }
     if (roomIndex == _currentRoomIndex) {
-        pcodeIn.r0 = 0;
-        pcodeIn.g0 = 0x80;
-        pcodeIn.b0 = 0x40;
+        colorIn.r = 0;
+        colorIn.g = 0x80;
+        colorIn.b = 0x40;
     } else {
-        pcodeIn.r0 = 0;
-        pcodeIn.g0 = 0x40;
-        pcodeIn.b0 = 0x80;
+        colorIn.r = 0;
+        colorIn.g = 0x40;
+        colorIn.b = 0x80;
     }
     var_s3 = roomData;
     var_s3 += 4;
@@ -940,12 +940,12 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         polyG3->y0 = var_s1[var_s3[0]][1];
         polyG3->y1 = var_s1[var_s3[1]][1];
         polyG3->y2 = var_s1[var_s3[2]][1];
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
-        setRGB0(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut0);
-        setRGB1(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[2]][3], &pcodeOut0);
-        setRGB2(polyG3, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
+        setRGB0(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
+        DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut0);
+        setRGB1(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
+        DpqColor(&colorIn, var_s1[var_s3[2]][3], &colorOut0);
+        setRGB2(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG3++);
         var_s3 += 4;
     }
@@ -974,14 +974,14 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         polyG4->y1 = var_s1[var_s3[1]][1];
         polyG4->y2 = var_s1[var_s3[3]][1];
         polyG4->y3 = var_s1[var_s3[2]][1];
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
-        setRGB0(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut0);
-        setRGB1(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[3]][3], &pcodeOut0);
-        setRGB2(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[2]][3], &pcodeOut0);
-        setRGB3(polyG4, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
+        DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
+        setRGB0(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+        DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut0);
+        setRGB1(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+        DpqColor(&colorIn, var_s1[var_s3[3]][3], &colorOut0);
+        setRGB2(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+        DpqColor(&colorIn, var_s1[var_s3[2]][3], &colorOut0);
+        setRGB3(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG4++);
         var_s3 += 4;
     }
@@ -997,11 +997,11 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         if (sp38 < var_s1[var_s3[1]][2]) {
             sp38 = var_s1[var_s3[1]][2] - 1;
         }
-        pcodeIn.g0 = 0x80;
-        pcodeIn.r0 = 0;
-        pcodeIn.b0 = 0xFF;
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+        colorIn.g = 0x80;
+        colorIn.r = 0;
+        colorIn.b = 0xFF;
+        DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
+        DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut1);
 
         setLineG2(lineG2);
         setSemiTrans(lineG2, 1);
@@ -1009,8 +1009,8 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0] - 1;
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
@@ -1019,8 +1019,8 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1] - 1;
         lineG2->y1 = var_s1[var_s3[1]][1] - 1;
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
@@ -1029,8 +1029,8 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0] + 1;
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
@@ -1039,16 +1039,16 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1] + 1;
         lineG2->y1 = var_s1[var_s3[1]][1] + 1;
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         if (roomIndex == _currentRoomIndex) {
-            pcodeIn.g0 = 0xFF;
-            pcodeIn.r0 = 0;
-            pcodeIn.b0 = 0x80;
-            vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
-            vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+            colorIn.g = 0xFF;
+            colorIn.r = 0;
+            colorIn.b = 0x80;
+            DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
+            DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut1);
         }
 
         setLineG2(lineG2);
@@ -1056,8 +1056,8 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         var_s3 += 4;
@@ -1071,14 +1071,14 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
             sp38 = var_s1[var_s3[1]][2] - 1;
         }
         if (roomIndex == _currentRoomIndex) {
-            pcodeIn.g0 = 0xFF;
+            colorIn.g = 0xFF;
         } else {
-            pcodeIn.g0 = 0x40;
+            colorIn.g = 0x40;
         }
-        pcodeIn.r0 = 0;
-        pcodeIn.b0 = 0x80;
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[0]][3], &pcodeOut0);
-        vs_gte_cueDepth(&pcodeIn, var_s1[var_s3[1]][3], &pcodeOut1);
+        colorIn.r = 0;
+        colorIn.b = 0x80;
+        DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
+        DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut1);
         setLineG2(lineG2);
         do {
             setSemiTrans(lineG2, 1);
@@ -1087,8 +1087,8 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
-        setRGB0(lineG2, pcodeOut0.r0, pcodeOut0.g0, pcodeOut0.b0);
-        setRGB1(lineG2, pcodeOut1.r0, pcodeOut1.g0, pcodeOut1.b0);
+        setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
+        setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, lineG2++);
     }
 
@@ -1113,15 +1113,15 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                         var_s1[var_s3[0]][0], var_s1[var_s3[0]][1], 1, var_s3[1]);
                     if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
                         if (D_80108D6C & 0x10) {
-                            pcodeIn.r0 = 0xFF;
-                            pcodeIn.g0 = 0;
-                            pcodeIn.b0 = 0x80;
+                            colorIn.r = 0xFF;
+                            colorIn.g = 0;
+                            colorIn.b = 0x80;
                             sp3C = 1;
                         }
                     } else {
-                        pcodeIn.r0 = 0;
-                        pcodeIn.g0 = 0xC0;
-                        pcodeIn.b0 = 0xC0;
+                        colorIn.r = 0;
+                        colorIn.g = 0xC0;
+                        colorIn.b = 0xC0;
                         sp3C = 1;
                     }
                 }
@@ -1129,15 +1129,15 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
             if ((roomIndex == _currentRoomIndex) && (var_s3[2] == 0)) {
                 if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
                     if (D_80108D6C & 0x10) {
-                        pcodeIn.r0 = 0xFF;
-                        pcodeIn.g0 = 0;
-                        pcodeIn.b0 = 0x80;
+                        colorIn.r = 0xFF;
+                        colorIn.g = 0;
+                        colorIn.b = 0x80;
                         sp3C = 1;
                     }
                 } else {
-                    pcodeIn.r0 = 0xC0;
-                    pcodeIn.g0 = 0xC0;
-                    pcodeIn.b0 = 0xC0;
+                    colorIn.r = 0xC0;
+                    colorIn.g = 0xC0;
+                    colorIn.b = 0xC0;
                     sp3C = 1;
                 }
             }
@@ -1157,9 +1157,9 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                 sp28[j++] = 3;
             }
             if (j > 0) {
-                pcodeIn.r0 = 0xA0;
-                pcodeIn.g0 = 0xA0;
-                pcodeIn.b0 = 0;
+                colorIn.r = 0xA0;
+                colorIn.g = 0xA0;
+                colorIn.b = 0;
                 sp3C = 1;
                 switch (sp28[(D_80108D6C >> 5) % j]) {
                 case 0:
@@ -1187,12 +1187,12 @@ int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                 setTile(tile);
                 setXY0(tile, var_s1[var_s3[0]][0] - 1, var_s1[var_s3[0]][1]);
                 setWH(tile, 3, 1);
-                setRGB0(tile, pcodeIn.r0, pcodeIn.g0, pcodeIn.b0);
+                setRGB0(tile, colorIn.r, colorIn.g, colorIn.b);
                 AddPrim(((int**)getScratchAddr(0))[1] + sp38, tile++);
                 setTile(tile);
                 setXY0(tile, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 1);
                 setWH(tile, 1, 3);
-                setRGB0(tile, pcodeIn.r0, pcodeIn.g0, pcodeIn.b0);
+                setRGB0(tile, colorIn.r, colorIn.g, colorIn.b);
                 s2 = ((int**)getScratchAddr(0));
                 AddPrim(s2[1] + sp38, tile++);
             }

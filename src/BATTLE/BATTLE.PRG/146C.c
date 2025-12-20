@@ -14,6 +14,7 @@
 #include "6E644.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../SLUS_010.40/32154.h"
 
 typedef struct {
     u_short unk0;
@@ -423,7 +424,7 @@ void func_800773BC(void**, int, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
-void func_8007A9DC(void*, void*, int*);
+void func_8007A9DC(VECTOR*, int*, int*);
 void func_8007AACC(int* arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, int, int, int);
@@ -2576,9 +2577,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007A850);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007A9DC);
+void func_8007A9DC(VECTOR* arg0, int* arg1, int* arg2)
+{
+    int temp_s0;
 
-void func_8007AACC(int* arg0) { func_8007A9DC(D_1F800034, &D_1F800034[4], arg0); }
+    arg0->vx = vs_math_sine(arg2[0]);
+    arg0->vz = vs_math_cosine(arg2[0]);
+    temp_s0 = vs_math_sine(arg2[1]);
+    arg0->vy = (temp_s0 << 0xC) / vs_math_cosine(arg2[1]);
+    VectorNormal(arg0, arg0);
+    arg0->vx = (arg0->vx * arg2[2]) + arg1[0];
+    arg0->vz = (arg0->vz * arg2[2]) + arg1[2];
+    arg0->vy = (arg0->vy * arg2[2]) + arg1[1];
+}
+
+void func_8007AACC(int* arg0)
+{
+    func_8007A9DC((VECTOR*)D_1F800034, &D_1F800034[4], arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007AAF8);
 

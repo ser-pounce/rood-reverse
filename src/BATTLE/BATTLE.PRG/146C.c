@@ -342,6 +342,23 @@ typedef struct {
     int unk0_19 : 12;
 } func_8008B764_t;
 
+typedef struct {
+    int unk0[4];
+} func_80077DF0_t2;
+
+typedef struct {
+    int unk0[17];
+    func_80077DF0_t2 unk44;
+} func_80077DF0_t3;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    func_80077DF0_t2 unk10;
+} func_80077DF0_t;
+
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(func_8006EBF8_t2*);
@@ -2287,7 +2304,30 @@ void** func_800774FC(
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077DF0);
+void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
+
+int func_80077DF0(void)
+{
+    func_80077DF0_t sp10;
+    func_8006EBF8_t sp30;
+
+    func_800A1108(0, &sp30);
+    sp10.unk0 = sp30.unk4 << 0xC;
+    sp10.unk4 = (sp30.unk6 << 0xC) + 0xFFFA6000;
+    sp10.unk8 = sp30.unk8 << 0xC;
+    if (sp10.unk4 > 0) {
+        sp10.unk4 = 0;
+    }
+    func_8006D9FC(&sp10, &sp10);
+    sp10.unk10 = ((func_80077DF0_t3*)D_1F800000)->unk44;
+
+    if ((sp10.unk0 == (sp10.unk10.unk0[0] & ~0xFFF))
+        && (sp10.unk8 == (sp10.unk10.unk0[2] & ~0xFFF))
+        && (sp10.unk4 == (sp10.unk10.unk0[1] & ~0xFFF))) {
+        return 1;
+    }
+    return 0;
+}
 
 void func_80077EC4(void)
 {

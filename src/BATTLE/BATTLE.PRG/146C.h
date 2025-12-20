@@ -8,7 +8,7 @@ typedef struct {
     short unk4;
     short unk6;
     short unk8;
-    signed char unkA;
+    char unkA;
     signed char unkB;
 } D_800F1910_t2;
 

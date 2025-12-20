@@ -23,13 +23,15 @@ typedef struct {
 extern D_800F45E0_t* D_800F45E0[];
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+} func_8006EBF8_t_fields;
+
+typedef struct {
     union {
-        struct {
-            char unk0;
-            char unk1;
-            char unk2;
-            char unk3;
-        } fields;
+        func_8006EBF8_t_fields fields;
         int value;
     } unk0;
     short unk4;

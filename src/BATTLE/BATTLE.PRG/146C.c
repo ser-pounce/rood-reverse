@@ -333,6 +333,15 @@ typedef struct {
     char unk24[4];
 } D_800E8594_t;
 
+typedef struct {
+    int unk0_0 : 10;
+    int unk0_10 : 3;
+    int unk0_13 : 3;
+    int unk0_16 : 2;
+    int unk0_18 : 2;
+    int unk0_19 : 12;
+} func_8008B764_t;
+
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(func_8006EBF8_t2*);
@@ -423,7 +432,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B4BC(int arg0);
 void _nop(int arg0);
-u_int* func_8008B764(u_int arg0, u_int arg1, int arg2);
+func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(char, char, char);
 int func_8008BC04(int, int, int);
@@ -2120,7 +2129,7 @@ void func_80074B14(int arg0, char* arg1)
         var_a1 = arg1[2];
         var_a2 = arg1[1];
     }
-    if ((*func_8008B764(var_a0, var_a1, var_a2) >> 0x12) & 1) {
+    if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
         func_8008C2C0(arg1[0], arg1[2], arg1[1], D_800F19F0 == 0x900);
         return;
     }
@@ -5319,7 +5328,42 @@ void func_8008A4DC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A4FC);
+int func_8008A4FC(void)
+{
+    func_8006EBF8_t sp10;
+    D_800F1910_t2* temp_v0;
+    u_int temp_a2;
+    u_int temp_v0_2;
+    u_int var_a2;
+    char var_a0;
+    char var_a1;
+    func_8006EBF8_t_fields* s0;
+
+    func_800A1108(0, &sp10);
+    temp_v0_2 = func_800A0BE0(0);
+    temp_a2 = temp_v0_2 & 0x70000;
+    s0 = &sp10.unk0.fields;
+    if (temp_a2 != 0) {
+        var_a0 = 0;
+        var_a1 = 0;
+        var_a2 = temp_a2 >> 0x10;
+    } else {
+        var_a0 = s0->unk0;
+        var_a1 = s0->unk2;
+        var_a2 = s0->unk1;
+    }
+    if (func_8008B764(var_a0, var_a1, var_a2)->unk0_16 & 1) {
+        if (!(temp_v0_2 & 0x504000)) {
+            temp_v0 = func_8008D438(s0->unk0, s0->unk2, s0->unk1);
+            if (temp_v0 != NULL) {
+                if (temp_v0->unk6 == 0x10) {
+                    return temp_v0->unkA;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 int vs_battle_getSkillFlags(int arg0, int id)
 {
@@ -5548,20 +5592,20 @@ int func_8008B744(void)
     return 0;
 }
 
-u_int* func_8008B764(u_int arg0, u_int arg1, int arg2)
+func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2)
 {
     short temp_a1;
 
     if (D_800F1BF8.unk6C != NULL) {
         if (arg2 >= 2) {
             if (D_800F1BF8.unkA8 != NULL) {
-                return &D_800F1BF8.unkA8[arg2 - 2][45];
+                return (func_8008B764_t*)&D_800F1BF8.unkA8[arg2 - 2][45];
             }
             return NULL;
         }
         temp_a1 = D_800F1BF8.unk68[0];
         if ((arg0 < (u_int)temp_a1) && (arg1 < (u_int)D_800F1BF8.unk68[1])) {
-            return (u_int*)(D_800F1BF8.unk6C + (((arg1 * temp_a1) + arg0) * 4));
+            return (func_8008B764_t*)(D_800F1BF8.unk6C + (((arg1 * temp_a1) + arg0) * 4));
         }
     }
     return NULL;
@@ -5767,7 +5811,7 @@ void func_8008D5FC(func_8008D5FC_t* arg0)
 
 void func_8008D658(func_8008D5FC_t* arg0, func_8008D5FC_t* arg1)
 {
-    u_int* temp_v0;
+    func_8008B764_t* temp_v0;
 
     if (arg0->unk0.unk8 == 0) {
         vs_main_playSfxDefault(0x7E, 0x3B);
@@ -5781,7 +5825,7 @@ void func_8008D658(func_8008D5FC_t* arg0, func_8008D5FC_t* arg1)
     arg0->unk0.unk8 = arg0->unk0.unk8 == 0;
     temp_v0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (temp_v0 != NULL) {
-        *temp_v0 = (*temp_v0 & ~0x1C00) | (((arg0->unk0.unk8 * 5) & 7) << 0xA);
+        temp_v0->unk0_10 = arg0->unk0.unk8 * 5;
     }
 }
 

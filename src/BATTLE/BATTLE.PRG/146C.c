@@ -441,7 +441,7 @@ int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
 void func_800801E0(vs_skill_t*, func_80085718_t*, short);
-void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
+void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 int func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
 void func_80080534(vs_skill_t*, vs_battle_equipment*, int, int, int);
 void func_80080A9C(vs_skill_t* arg0, vs_battle_equipment*, int, int, int);
@@ -4153,7 +4153,35 @@ void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800802C4);
+void func_800802C4(vs_skill_t* arg0, vs_battle_actor2* arg1, vs_battle_actor2* arg2, int arg3) {
+    int i;
+
+    if (arg0->unk2_1 != 1) {
+        if (arg1->weapon.currentDp >= arg3) {
+            arg1->weapon.currentDp -= arg3;
+        } else {
+            arg1->weapon.currentDp = 0;
+        }
+    }
+    if (vs_battle_actors[arg2->flags.fields.unk3]->unk20 & 1) {
+        if (arg2->shield.currentPp >= arg3) {
+            arg2->shield.currentPp -= arg3;
+        } else {
+            arg2->shield.currentPp = 0;
+        }
+    }
+    
+    
+    for (i = 0; i < 6; ++i) {
+        if (D_800F1A10[i] != 0) {
+            if (arg2->hitLocations[i].armor.currentDp >= D_800F1A10[i]) {
+                arg2->hitLocations[i].armor.currentDp -= D_800F1A10[i];
+            } else {
+                arg2->hitLocations[i].armor.currentDp = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800803A4);
 

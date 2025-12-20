@@ -505,7 +505,7 @@ void func_8007DE2C(int arg0);
 void func_8007DE44(u_int arg0);
 void func_8007DE5C(int arg0);
 int func_8007DFF0(u_int, u_int, int);
-void func_8007E0A8(int, u_int, int);
+int func_8007E0A8(u_int, u_int, int);
 int func_8007E180(int arg0);
 int func_8007E1C0(int arg0);
 void func_80086FA8(int, vs_battle_actor2*);

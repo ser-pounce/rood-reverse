@@ -377,8 +377,8 @@ typedef struct {
 } func_80085A34_t;
 
 typedef struct {
-    func_8006ACFC_t unk0;
-    func_8006ACFC_t unk30[3];
+    vs_battle_equipment unk0;
+    vs_battle_equipment unk30[3];
     char unkC0;
     char unkC1;
     short unkC2;
@@ -480,7 +480,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(int, int);
 int func_8006A228(u_int, int);
-void func_8006A8EC(vs_battle_accessoryInfo*, void*);
+void func_8006A8EC(vs_battle_accessoryInfo*, func_8006ACFC_t2*);
 void func_8006A9F0(vs_battle_armorInfo*, void*);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
@@ -924,13 +924,37 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A334);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A65C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A8EC);
+void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006ACFC_t2* arg1)
+{
+    int i;
+    char temp_v0;
+
+    vs_main_memcpy(arg0, arg1, 0x30U);
+    arg0->currentStr = arg1->unk0.strength;
+    arg0->currentInt = arg1->unk0.intelligence;
+    arg0->currentAgility = arg1->unk0.agility;
+
+    arg0->unk36 = arg1->unk30;
+    arg0->unk37 = arg1->unk31;
+
+    for (i = 0; i < 4; ++i) {
+        arg0->types[i] = arg1->unk0.types[i];
+    }
+
+    for (i = 0; i < 6; ++i) {
+        arg0->classes[i] = arg1->unk0.classes[i];
+    }
+
+    for (i = 0; i < 7; ++i) {
+        arg0->affinities[i] = arg1->unk0.affinities[i];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A9F0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AB44);
 
-void func_8006AC74(func_8006ACFC_t* arg0, func_8006AC74_t2* arg1)
+void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 {
     int i;
 
@@ -941,14 +965,14 @@ void func_8006AC74(func_8006ACFC_t* arg0, func_8006AC74_t2* arg1)
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
     arg0->agility = arg1->agility;
-    arg0->unk17 = arg1->unkE;
+    arg0->index = arg1->unkE;
 
     for (i = 0; i < 4; ++i) {
         arg0->types[i] = arg1->classes[i];
     }
 }
 
-void func_8006ACFC(func_8006ACFC_t* arg0, vs_battle_setEquipmentForDrop_t* arg1)
+void func_8006ACFC(vs_battle_equipment* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
     int i;
     vs_battle_setEquipmentForDrop_t* a3;
@@ -965,7 +989,7 @@ void func_8006ACFC(func_8006ACFC_t* arg0, vs_battle_setEquipmentForDrop_t* arg1)
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
     arg0->agility = arg1->agility;
-    arg0->unk17 = arg1->unk27;
+    arg0->index = arg1->unk27;
 
     a3 = arg1;
 
@@ -984,17 +1008,17 @@ void func_8006ACFC(func_8006ACFC_t* arg0, vs_battle_setEquipmentForDrop_t* arg1)
     arg0->material = arg1->material;
 }
 
-void func_8006AE0C(func_8006ACFC_t* arg0, func_8006AC74_t2* arg1)
+void func_8006AE0C(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 {
     int i;
 
     arg0->id = arg1->id;
     arg0->unk2 = arg1->unk2;
-    arg0->unk16 = arg1->unk4;
+    arg0->gemEffects = arg1->unk4;
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
     arg0->agility = arg1->agility;
-    arg0->unk17 = arg1->unk1A;
+    arg0->index = arg1->unk1A;
 
     for (i = 0; i < 6; ++i) {
         arg0->classes[i] = arg1->classes[i];

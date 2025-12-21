@@ -98,7 +98,7 @@ typedef struct {
     u_short maxDp;
     u_short currentPp;
     u_short maxPp;
-    char damageType;
+    char damageType; // 0x10
     char costType;
     char cost;
     char material;
@@ -430,38 +430,7 @@ typedef struct {
 } D_800F18E8_t;
 
 typedef struct {
-    short id;
-    char unk2;
-    char wepId;
-    char category;
-    signed char strength;
-    signed char intelligence;
-    signed char agility;
-    u_short currentDp;
-    u_short maxDp;
-    u_short currentPp;
-    u_short maxPp;
-    char unk10;
-    char unk11;
-    char unk12;
-    char material;
-    char unk14;
-    char gemSlots;
-    char unk16;
-    char unk17;
-    char unk18;
-    char unk19;
-    char unk1A;
-    char unk1B;
-    char types[4];
-    char classes[4];
-    int unk24;
-    char affinities[4];
-    int unk2C;
-} func_8006ACFC_t;
-
-typedef struct {
-    func_8006ACFC_t unk0;
+    vs_battle_equipment unk0;
     char unk30;
     char unk31;
     char unk32;
@@ -478,9 +447,9 @@ typedef struct {
 
 void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
-void func_8006AC74(func_8006ACFC_t*, func_8006AC74_t2*);
-void func_8006ACFC(func_8006ACFC_t*, vs_battle_setEquipmentForDrop_t*);
-void func_8006AE0C(func_8006ACFC_t*, func_8006AC74_t2*);
+void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
+void func_8006ACFC(vs_battle_equipment*, vs_battle_setEquipmentForDrop_t*);
+void func_8006AE0C(vs_battle_equipment*, func_8006AC74_t2*);
 void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(vs_battle_shieldInfo*, func_8006B02C_t2*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);

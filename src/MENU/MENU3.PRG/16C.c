@@ -763,7 +763,7 @@ void func_8010408C(int arg0)
     vs_battle_memcpy(new_var, sp10, 0x40);
 }
 
-int func_801041CC(int arg0, func_8006ACFC_t* arg1)
+int func_801041CC(int arg0, vs_battle_equipment* arg1)
 {
     switch (arg0) {
     case 0:
@@ -771,9 +771,9 @@ int func_801041CC(int arg0, func_8006ACFC_t* arg1)
     case 1:
         return -arg1->material;
     case 2:
-        return arg1->unk18;
+        return arg1->range.unk0;
     case 3:
-        return -arg1->unk10;
+        return -arg1->damageType;
     case 4:
         return arg1->currentDp;
     case 5:
@@ -798,11 +798,11 @@ int func_801041CC(int arg0, func_8006ACFC_t* arg1)
         if (arg0 >= 0x18) {
             return *(((signed char*)&arg1->strength) + arg0);
         }
-        return *(((signed char*)&arg1->unk17) + arg0);
+        return *(((signed char*)&arg1->index) + arg0);
     }
 }
 
-void func_801042C4(func_8006ACFC_t* arg0, int arg1, int arg2)
+void func_801042C4(vs_battle_equipment* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
@@ -822,7 +822,7 @@ void func_801042C4(func_8006ACFC_t* arg0, int arg1, int arg2)
 
 void func_8010439C(int arg0, int arg1)
 {
-    func_8006ACFC_t sp10;
+    vs_battle_equipment sp10;
     int temp_v0;
     int i;
     int var_s3;

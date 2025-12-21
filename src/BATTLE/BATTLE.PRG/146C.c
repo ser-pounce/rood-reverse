@@ -6426,9 +6426,27 @@ void func_8008E6A8(void* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E6DC);
-
 static inline char get_D_800E84AC(int arg0, int arg1) { return D_800E84AC[arg0][arg1]; }
+
+void func_8008E6DC(int arg0)
+{
+    int mapId;
+    int zoneId;
+    int i;
+    vs_battle_room* room;
+
+    room = vs_battle_currentScene->rooms;
+    zoneId = room->zoneId;
+    mapId = room->mapId;
+
+    for (i = D_800E849C[arg0]; i < D_800E849C[arg0 + 1]; ++i) {
+        if (((get_D_800E84AC(i, 0) == zoneId) && (get_D_800E84AC(i, 1) == mapId))
+            || ((get_D_800E84AC(i, 2) == zoneId) && (get_D_800E84AC(i, 3) == mapId))) {
+            vs_main_stateFlags.unk186[i] = 1;
+            return;
+        }
+    }
+}
 
 int func_8008E7BC(int arg0, int arg1, u_int arg2)
 {

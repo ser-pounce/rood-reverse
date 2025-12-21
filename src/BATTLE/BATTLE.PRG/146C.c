@@ -1751,24 +1751,28 @@ void func_8006F5FC(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F630);
 
-int func_8006F760(void) {
+int func_8006F760(void)
+{
     int temp_a2;
     int var_a0;
     int var_t0;
-    int var_v0;
     u_int temp_v1;
 
     var_t0 = 0;
     temp_a2 = (vs_battle_characterState->equippedWeaponType % 10) & 0xFF;
     temp_v1 = vs_main_artsStatus.artsLearned[temp_a2];
     var_a0 = 0;
-    
+
     if (temp_v1 < 4) {
-        var_a0 = (vs_main_artsStatus.kills.weaponCategories[temp_a2] < vs_main_artsPointsRequirements[temp_a2][temp_v1]) ^ 1;
+        var_a0 = (vs_main_artsStatus.kills.weaponCategories[temp_a2]
+                     < vs_main_artsPointsRequirements[temp_a2][temp_v1])
+               ^ 1;
     }
     if (var_a0 == 0) {
         if (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 0x16) {
-            if (vs_main_artsStatus.kills.total >= vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
+            if (vs_main_artsStatus.kills.total
+                >= vs_main_battleAbilitiesPointsRequirements
+                    [vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
                 var_t0 = 1;
             }
         }
@@ -2293,7 +2297,29 @@ short* func_80074950(int arg0)
     return NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074A20);
+int func_80074A20(int arg0)
+{
+    int ret;
+
+    func_800E6700();
+    ret = 0;
+
+    if (vs_battle_actors[arg0] != NULL) {
+        vs_battle_actors[arg0]->unk8 = 0;
+        if (vs_battle_actors[arg0]->unk3C->currentHP == 0) {
+            func_80095B7C(arg0, 0);
+            vs_battle_actors[arg0]->unk8 = 0x20;
+            if (vs_battle_actors[arg0]->unk26 == 0) {
+                func_8009F314(arg0, &D_800F19CC->unk2998[0x10], 1);
+                func_800A09D8(arg0, 1);
+                if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
+                    ret = 1;
+                }
+            }
+        }
+    }
+    return ret;
+}
 
 void func_80074B14(int arg0, char* arg1)
 {
@@ -2675,7 +2701,8 @@ void func_8007AACC(int* arg0)
     func_8007A9DC((VECTOR*)D_1F800034, &D_1F800034[4], arg0);
 }
 
-void func_8007AAF8(int* arg0) {
+void func_8007AAF8(int* arg0)
+{
     D_1F800000[17] = -rsin(arg0[0]);
     D_1F800000[19] = -rcos(arg0[0]);
     D_1F800000[18] = (-rsin(arg0[1]) * 0x1000) / rcos(arg0[1]);
@@ -3089,7 +3116,7 @@ void func_8007C28C(int arg0)
 
 void func_8007C31C(void) { func_80086754(0, vs_battle_characterState->unk3C); }
 
-void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, 0, arg1); }
+void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, NULL, arg1); }
 
 int func_8007C36C(int arg0)
 {

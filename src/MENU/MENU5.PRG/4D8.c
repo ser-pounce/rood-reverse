@@ -404,7 +404,7 @@ int func_80103418(void)
     _scaleRoomVertices(vs_battle_sceneBuffer, 4);
     _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
     _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
-    vs_gte_setDepthCueDefault(0x300, vs_main_projectionDistance);
+    SetFogNear(0x300, vs_main_projectionDistance);
     SetFarColor(0, 0, 0);
     _setMenuItemMapName((char*)&_mapNames[_mapNames[_currentScene]], 1);
     return 1;
@@ -746,8 +746,8 @@ void func_80104384(void)
     int var_v0;
     short* new_var;
 
-    temp_s0 = vs_math_sine(D_80108DA4[1]);
-    temp_v1 = vs_math_cosine(D_80108DA4[0]);
+    temp_s0 = rsin(D_80108DA4[1]);
+    temp_v1 = rcos(D_80108DA4[0]);
     new_var = D_80108DAC;
     temp_s0 *= D_80108D7C;
     if (temp_s0 < 0) {
@@ -758,8 +758,8 @@ void func_80104384(void)
         var_v0 += 0xFFF;
     }
     D_80108DAC[0] = var_v0 >> 0xC;
-    temp_s0 = vs_math_cosine(D_80108DA4[1]);
-    temp_v1 = vs_math_cosine(D_80108DA4[0]);
+    temp_s0 = rcos(D_80108DA4[1]);
+    temp_v1 = rcos(D_80108DA4[0]);
     temp_s0 *= -D_80108D7C;
     if (temp_s0 < 0) {
         temp_s0 += 0xFFF;
@@ -769,7 +769,7 @@ void func_80104384(void)
         var_v0 += 0xFFF;
     }
     D_80108DAC[2] = var_v0 >> 0xC;
-    var_v0 = vs_math_sine(D_80108DA4[0]) * -D_80108D7C;
+    var_v0 = rsin(D_80108DA4[0]) * -D_80108D7C;
     if (var_v0 < 0) {
         var_v0 += 0xFFF;
     }
@@ -1449,8 +1449,8 @@ void _scaleRoomVertices(vs_battle_scene* scene, int factor)
 
 void func_80106178(MATRIX* arg0, short arg1)
 {
-    int temp_s0 = vs_math_sine(-arg1);
-    int temp_v0 = vs_math_cosine(-arg1);
+    int temp_s0 = rsin(-arg1);
+    int temp_v0 = rcos(-arg1);
 
     arg0->m[0][0] = temp_v0;
     arg0->m[0][1] = 0;
@@ -1465,8 +1465,8 @@ void func_80106178(MATRIX* arg0, short arg1)
 
 void func_801061EC(MATRIX* arg0, short arg1)
 {
-    int temp_s0 = vs_math_sine(arg1);
-    int temp_v0 = vs_math_cosine(arg1);
+    int temp_s0 = rsin(arg1);
+    int temp_v0 = rcos(arg1);
 
     arg0->m[0][0] = 0x1000;
     arg0->m[0][1] = 0;
@@ -1591,13 +1591,13 @@ void _applyPalingScreenEffect(void)
         new_var = (void**)getScratchAddr(0);
 
         if (y & 1) {
-            x = vs_math_sine((D_80108D6C + y) << 6);
+            x = rsin((D_80108D6C + y) << 6);
             if (x < 0) {
                 x += 127;
             }
             x = x >> 7;
         } else {
-            x = vs_math_sine((D_80108D6C + y) << 6);
+            x = rsin((D_80108D6C + y) << 6);
             if (x < 0) {
                 x += 127;
             }
@@ -1623,14 +1623,14 @@ void _applyPalingScreenEffect(void)
         setRGB0(sprt, 128, 128, 128);
 
         if (y & 1) {
-            x = vs_math_sine((D_80108D6C + y) << 6);
+            x = rsin((D_80108D6C + y) << 6);
             if (x < 0) {
                 x += 127;
             }
             x = (x >> 7) + 192;
         } else {
             int offset;
-            x = vs_math_sine((D_80108D6C + y) << 6);
+            x = rsin((D_80108D6C + y) << 6);
             offset = x >> 7;
             if (x < 0) {
                 offset = (x + 127) >> 7;
@@ -2015,8 +2015,8 @@ void func_8010800C(int arg0, int arg1, int arg2, int arg3, int arg4)
     int i;
     int var_v0;
     int var_v1;
-    int temp_s1 = vs_math_sine(arg4);
-    int temp_v0 = vs_math_cosine(arg4);
+    int temp_s1 = rsin(arg4);
+    int temp_v0 = rcos(arg4);
 
     D_80108E54[0][0] = (-arg2 * temp_v0) + (arg3 * temp_s1);
     D_80108E54[0][1] = (-arg3 * temp_v0) - (arg2 * temp_s1);

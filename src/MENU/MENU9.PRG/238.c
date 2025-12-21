@@ -1128,8 +1128,8 @@ void func_80104CBC(MATRIX* arg0)
     int var_v0;
     int* scratch;
 
-    trig0 = vs_math_sine(D_8010A430[1]);
-    trig1 = vs_math_cosine(D_8010A430[0]);
+    trig0 = rsin(D_8010A430[1]);
+    trig1 = rcos(D_8010A430[0]);
     trig0 *= D_8010A444;
     if (trig0 < 0) {
         trig0 += 0xFFF;
@@ -1141,8 +1141,8 @@ void func_80104CBC(MATRIX* arg0)
     }
 
     sp18.vx = var_v0 >> 0xC;
-    trig0 = vs_math_cosine(D_8010A430[1]);
-    trig1 = vs_math_cosine(D_8010A430[0]);
+    trig0 = rcos(D_8010A430[1]);
+    trig1 = rcos(D_8010A430[0]);
     trig0 *= -D_8010A444;
     if (trig0 < 0) {
         trig0 += 0xFFF;
@@ -1154,7 +1154,7 @@ void func_80104CBC(MATRIX* arg0)
     }
 
     sp18.vz = var_v0 >> 0xC;
-    trig2 = vs_math_sine(D_8010A430[0]) * -D_8010A444;
+    trig2 = rsin(D_8010A430[0]) * -D_8010A444;
     if (trig2 < 0) {
         trig2 += 0xFFF;
     }
@@ -1182,8 +1182,8 @@ void func_80104CBC(MATRIX* arg0)
 
 void func_80104E90(MATRIX* arg0, short arg1)
 {
-    int sine = vs_math_sine(-arg1);
-    int cosine = vs_math_cosine(-arg1);
+    int sine = rsin(-arg1);
+    int cosine = rcos(-arg1);
     arg0->m[0][0] = cosine;
     arg0->m[0][1] = 0;
     arg0->m[0][2] = -sine;
@@ -1200,8 +1200,8 @@ void func_80104F04(MATRIX* arg0, short arg1)
     int temp_s0;
     int temp_v0;
 
-    temp_s0 = vs_math_sine(arg1);
-    temp_v0 = vs_math_cosine(arg1);
+    temp_s0 = rsin(arg1);
+    temp_v0 = rcos(arg1);
     arg0->m[0][0] = 0x1000;
     arg0->m[0][1] = 0;
     arg0->m[0][2] = 0;

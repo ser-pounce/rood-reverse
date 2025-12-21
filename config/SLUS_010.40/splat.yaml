@@ -215,7 +215,7 @@ segments:
     subsegments:
       - [0x30A10, .rodata, 31724]
       - [0x31418, rodata, 32154]
-      - [0x31724, c] # Custom gte funcs ?
+      - [0x31724, c]
       - [0x31D08, c, libgte/MTX_005] # |
       - [0x31D34, c, libgte/REG13]   # |
       - [0x31D40, c, libgte/REG12]   # |
@@ -231,7 +231,7 @@ segments:
       - [0x32040, c, libgte/CMB_02]  # |
       - [0x320BC, c, libgte/MTX_07]  # |
       - [0x320DC, c, libgte/CMB_00]  # |
-      - [0x32154, asm] # Custom gte funcs ?
+      - [0x32154, asm]
   - start: 0x32568
     type: code
     vram: 0x80041D68

@@ -611,7 +611,7 @@ int func_80103D88(void)
 {
     int var_v0;
 
-    var_v0 = vs_math_sine(D_8010988C);
+    var_v0 = rsin(D_8010988C);
     if (var_v0 < 0) {
         var_v0 = -var_v0;
     }
@@ -1894,7 +1894,7 @@ int func_801080E4(void)
     int temp_s0;
     int var_v0;
 
-    var_v0 = vs_math_sine(D_8010988C);
+    var_v0 = rsin(D_8010988C);
     if (var_v0 < 0) {
         var_v0 += 0x1FF;
     }
@@ -1960,7 +1960,7 @@ int func_801083AC(void)
 {
     int var_v0;
 
-    var_v0 = vs_math_sine(D_8010988C);
+    var_v0 = rsin(D_8010988C);
     if (var_v0 < 0) {
         var_v0 += 0x1FF;
     }

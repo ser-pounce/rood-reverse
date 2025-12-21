@@ -104,9 +104,9 @@ u_short const _trig_table[] = { 0x0000, 0x1000, 0x0006, 0x1000, 0x000D, 0x1000, 
     0x0B78, 0x0B2D, 0x0B74, 0x0B31, 0x0B6F, 0x0B36, 0x0B6B, 0x0B3A, 0x0B66, 0x0B3E,
     0x0B62, 0x0B43, 0x0B5E, 0x0B47, 0x0B59, 0x0B4C, 0x0B55, 0x0B50, 0x0B50 };
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_cosine);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", rcos);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_sine);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", rsin);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80040F8C);
 
@@ -134,6 +134,6 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041258);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041278);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", vs_math_atan2);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", ratan2);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_8004140C);

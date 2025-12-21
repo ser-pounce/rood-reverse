@@ -1771,8 +1771,8 @@ void func_8007087C(D_800F19CC_t* arg0)
     func_8006EBF8_t sp10;
 
     func_800A1108((char)arg0->unk4, &sp10);
-    arg0->unk844 = (sp10.unk0.unk4 + vs_math_sine(sp10.unk0.unkA + 0x800));
-    arg0->unk848 = (sp10.unk0.unk8 + vs_math_cosine(sp10.unk0.unkA + 0x800));
+    arg0->unk844 = (sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800));
+    arg0->unk848 = (sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800));
     arg0->unk846 = sp10.unk0.unk6;
 }
 
@@ -2581,10 +2581,10 @@ void func_8007A9DC(VECTOR* arg0, int* arg1, int* arg2)
 {
     int temp_s0;
 
-    arg0->vx = vs_math_sine(arg2[0]);
-    arg0->vz = vs_math_cosine(arg2[0]);
-    temp_s0 = vs_math_sine(arg2[1]);
-    arg0->vy = (temp_s0 << 0xC) / vs_math_cosine(arg2[1]);
+    arg0->vx = rsin(arg2[0]);
+    arg0->vz = rcos(arg2[0]);
+    temp_s0 = rsin(arg2[1]);
+    arg0->vy = (temp_s0 << 0xC) / rcos(arg2[1]);
     VectorNormal(arg0, arg0);
     arg0->vx = (arg0->vx * arg2[2]) + arg1[0];
     arg0->vz = (arg0->vz * arg2[2]) + arg1[2];

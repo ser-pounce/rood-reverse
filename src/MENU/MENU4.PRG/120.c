@@ -1773,13 +1773,12 @@ static void _drawScreen(void)
     z = D_800F453C->unkC[0x325];
     x = D_800F453C->unkC[0x319];
     p = (int*)D_1F800000 + 13;
-    p[4] = ((-vs_math_sine(_xPos) * xOffset) >> 8) * z;
+    p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;
     p[5] = -(x << 0xB);
-    p[6] = ((vs_math_cosine(_xPos) * xOffset) >> 8) * z;
-    ((int*)D_1F800000)[13] =
-        p[4] + ((vs_math_cosine(_xPos) * vs_math_cosine(_yPos)) >> 0xA) * z;
-    p[1] = p[5] - vs_math_sine(_yPos) * z * 4;
-    temp_lo_5 = (vs_math_sine(_xPos) * vs_math_cosine(_yPos) >> 0xA) * z;
+    p[6] = ((rcos(_xPos) * xOffset) >> 8) * z;
+    ((int*)D_1F800000)[13] = p[4] + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
+    p[1] = p[5] - rsin(_yPos) * z * 4;
+    temp_lo_5 = (rsin(_xPos) * rcos(_yPos) >> 0xA) * z;
     p[8] = 0;
     p[9] = 0;
     p[10] = 0;

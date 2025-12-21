@@ -223,6 +223,14 @@ typedef struct {
 } func_8006BDF0_t;
 
 typedef struct {
+    char unk0[0x5E8];
+} vs_battle_actor4;
+
+typedef struct {
+    char unk0[0x1900];
+} vs_battle_actor3;
+
+typedef struct {
     short name[8];
     int unk10;
     short unk14;
@@ -298,9 +306,16 @@ typedef struct vs_battle_actor {
     int unk38;
     vs_battle_actor2* unk3C;
     int unk40;
-    int unk44;
-    void* unk48[2];
+    vs_battle_actor3* unk44;
+    vs_battle_actor4* unk48[2];
 } vs_battle_actor;
+
+typedef struct {
+    vs_battle_actor unk0;
+    vs_battle_actor2 unk50;
+    vs_battle_actor3 unk9B4;
+    vs_battle_actor4 unk22B4[2];
+} vs_battle_actor_dat;
 
 typedef struct {
     int visited;

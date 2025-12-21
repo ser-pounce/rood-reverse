@@ -505,6 +505,7 @@ void func_80073718(void);
 void func_80073D30(func_8008D5FC_t*, func_8006EBF8_t*, int);
 void func_80073E30(func_8008D5FC_t*, int);
 int func_80074798(func_8006EBF8_t*, char*);
+void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 void** func_80077240(int, int, int, int, int, int, int*, int);
 void func_800773BC(void**, int, int, int, int, int);
@@ -2510,7 +2511,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076D50);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076F24);
 
-void func_80077078(void** arg0, int arg1, int arg2, int* arg3, int arg4)
+int func_80077078(vs_battle_actor* arg0, int arg1, int arg2, int* arg3, int arg4)
 {
     func_8007C8F8_t sp10;
 
@@ -2518,7 +2519,7 @@ void func_80077078(void** arg0, int arg1, int arg2, int* arg3, int arg4)
     sp10.unk1 = arg1;
     sp10.unk2 = arg2;
     sp10.unkC = *arg3;
-    sp10.unk4 = arg0[17];
+    sp10.unk4 = arg0->unk44;
     if (arg4 & 0x80) {
         sp10.unk10 = (arg4 & 0xF00) >> 8;
         sp10.unk11 = (arg4 & 0xF000) >> 0xC;
@@ -2527,7 +2528,7 @@ void func_80077078(void** arg0, int arg1, int arg2, int* arg3, int arg4)
     }
     sp10.unk13 = 0;
     sp10.unk12 = 2;
-    func_800995E8(&sp10);
+    return func_800995E8(&sp10);
 }
 
 void func_800770FC(int arg0 __attribute__((unused)), int arg1)
@@ -3425,7 +3426,31 @@ int func_8007C8F8(short arg0)
     return func_800995E8(&sp10) + 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C928);
+int func_8007C928(u_int arg0, int arg1, int* arg2)
+{
+    int _[6];
+    vs_battle_actor_dat* temp_v0;
+    vs_battle_actor** temp_s1;
+    int s0;
+
+    if (arg0 < 16) {
+        if (vs_battle_actors[arg0] == NULL) {
+            temp_s1 = &vs_battle_actors[arg0];
+            temp_v0 = vs_main_allocHeap(0x2E84);
+            *temp_s1 = &temp_v0->unk0;
+            temp_v0->unk0.unk3C = &temp_v0->unk50;
+            temp_v0->unk0.unk40 = 1;
+            temp_v0->unk0.unk44 = &temp_v0->unk9B4;
+            temp_v0->unk0.unk48[0] = &temp_v0->unk22B4[0];
+            temp_v0->unk0.unk48[1] = &temp_v0->unk22B4[1];
+            func_80076D50(arg0, arg1, 0, 0, 6);
+            s0 = func_80077078(&temp_v0->unk0, arg0, arg1, arg2, 0);
+            func_800E6178(*temp_s1, -1);
+            return s0 + 1;
+        }
+    }
+    return 0;
+}
 
 void func_8007CA20(int arg0, int arg1, int arg2)
 {

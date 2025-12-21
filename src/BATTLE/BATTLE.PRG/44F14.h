@@ -1,6 +1,6 @@
 #pragma once
 
-void func_800AE4FC(int);
+void func_800AE4FC(void*);
 void func_800AEAE8(void*);
 void func_800AECA0(void*);
 void func_800AF6E8(void*);

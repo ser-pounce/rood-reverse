@@ -386,6 +386,16 @@ typedef struct {
     char unk1B;
 } func_8006AC74_t2;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    u_short unk2;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+} D_80050468_t;
+
 void func_80048FEC(short arg0);
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
@@ -401,8 +411,7 @@ extern int D_8004EECC[][4];
 extern char D_8004FCCC[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
-extern char D_80050468[];
-extern u_short D_8005046A;
+extern D_80050468_t D_80050468;
 extern void* D_80055C80[];
 extern u_int D_8005E040;
 extern void* D_8005E0C0[];

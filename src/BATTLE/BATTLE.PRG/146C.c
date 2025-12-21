@@ -689,6 +689,7 @@ extern int D_800F1D78[20];
 extern short D_800F1D68;
 extern signed char D_800F1D6E;
 extern char D_800F1D70[];
+extern short D_800F1D98[];
 extern vs_main_CdQueueSlot* D_800F1DAC;
 extern vs_main_CdQueueSlot* D_800F1DB0;
 extern short D_800F1DB8;
@@ -3041,32 +3042,84 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BA98);
 
 void func_8007BBB8(int arg0, int arg1) { func_80069DEC(arg0, arg1); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BBD8);
+void func_8007BBD8(int arg0, int arg1, int arg2)
+{
+    int temp_a0;
+    int temp_v1;
+    int var_v0;
+    int new_var;
+    int new_var2;
+
+    D_80050468.unk0 = arg0;
+    D_80050468.unk2 = arg1;
+    D_80050468.unk7 = 0U;
+    D_80050468.unk6 = 0U;
+    D_80050468.unk5 = 0U;
+    D_80050468.unk4 = 0U;
+
+    if (arg0 != 1) {
+        new_var2 = arg2 < 0;
+        var_v0 = arg2;
+        if (new_var2) {
+            var_v0 = 0xFF;
+            var_v0 = arg2 + var_v0;
+        }
+        new_var = 8;
+        temp_v1 = var_v0 >> new_var;
+        D_80050468.unk4 = (arg2 - (temp_v1 << new_var));
+
+        var_v0 = temp_v1;
+        if (temp_v1 < 0) {
+            var_v0 = temp_v1 + 0xFF;
+        }
+        temp_a0 = var_v0 >> new_var;
+        D_80050468.unk5 = (temp_v1 - (temp_a0 << new_var));
+
+        var_v0 = temp_a0;
+        if (temp_a0 < 0) {
+            var_v0 = temp_a0 + 0xFF;
+        }
+        temp_v1 = var_v0 >> new_var;
+        D_80050468.unk6 = (temp_a0 - (temp_v1 << new_var));
+
+        var_v0 = temp_v1;
+        if (temp_v1 < 0) {
+            var_v0 = temp_v1 + 0xFF;
+        }
+        D_80050468.unk7 = temp_v1 - ((var_v0 >> new_var) << (temp_a0 = new_var));
+    }
+
+    func_800BEC14(0xA0, D_80050468.unk4);
+    func_800BEC14(0xA1, D_80050468.unk5);
+    func_800BEC14(0xA2, D_80050468.unk6);
+    func_800BEC14(0xA3, D_80050468.unk7);
+    func_800CB550();
+}
 
 void func_8007BCCC(void)
 {
-    D_80050468[0] = 0;
-    D_80050468[7] = 0;
-    D_80050468[6] = 0;
-    D_80050468[5] = 0;
-    D_80050468[4] = 0;
+    D_80050468.unk0 = 0;
+    D_80050468.unk7 = 0;
+    D_80050468.unk6 = 0;
+    D_80050468.unk5 = 0;
+    D_80050468.unk4 = 0;
     func_800BEC14(0xA0, 0);
-    func_800BEC14(0xA1, D_80050468[5]);
-    func_800BEC14(0xA2, D_80050468[6]);
-    func_800BEC14(0xA3, D_80050468[7]);
+    func_800BEC14(0xA1, D_80050468.unk5);
+    func_800BEC14(0xA2, D_80050468.unk6);
+    func_800BEC14(0xA3, D_80050468.unk7);
     func_800CB560();
 }
 
 void func_8007BD3C(int arg0)
 {
     if (arg0 != 0) {
-        int temp_v1 = D_80050468[0];
-        D_80050468[0] = 0;
-        D_80050468[1] = temp_v1;
+        int temp_v1 = D_80050468.unk0;
+        D_80050468.unk0 = 0;
+        D_80050468.unk1 = temp_v1;
         func_800CB560();
         return;
     }
-    D_80050468[0] = D_80050468[1];
+    D_80050468.unk0 = D_80050468.unk1;
     func_800CB550();
 }
 
@@ -5736,7 +5789,7 @@ void func_80088CA0(void) { D_800E8498 = 0; }
 
 void func_80088CAC(void)
 {
-    if (D_8005046A == 2) {
+    if (D_80050468.unk2 == 2) {
         func_8007BCCC();
     }
     func_80069DBC();
@@ -6906,6 +6959,40 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090A1C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090B28);
+void func_80090B28(void)
+{
+    int temp_v1;
+    int var_s0;
+    int var_v0;
+
+    var_s0 = rsin(D_800F1D98[5]);
+    temp_v1 = rcos(D_800F1D98[4]);
+    var_s0 *= D_800F1D98[6];
+    if (var_s0 < 0) {
+        var_s0 += 0xFFF;
+    }
+    var_v0 = (var_s0 >> 0xC) * temp_v1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_800F1D98[0] = (var_v0 >> 0xC);
+    var_s0 = rcos(D_800F1D98[5]);
+    temp_v1 = rcos(D_800F1D98[4]);
+    var_s0 = -var_s0;
+    var_s0 *= D_800F1D98[6];
+    if (var_s0 < 0) {
+        var_s0 += 0xFFF;
+    }
+    var_v0 = (var_s0 >> 0xC) * temp_v1;
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_800F1D98[2] = (var_v0 >> 0xC);
+    var_v0 = rsin(D_800F1D98[4]) * D_800F1D98[6];
+    if (var_v0 < 0) {
+        var_v0 += 0xFFF;
+    }
+    D_800F1D98[1] = (var_v0 >> 0xC);
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068C1C);

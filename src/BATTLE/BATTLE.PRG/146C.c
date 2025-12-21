@@ -2652,7 +2652,15 @@ void func_8007AACC(int* arg0)
     func_8007A9DC((VECTOR*)D_1F800034, &D_1F800034[4], arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007AAF8);
+void func_8007AAF8(int* arg0) {
+    D_1F800000[17] = -rsin(arg0[0]);
+    D_1F800000[19] = -rcos(arg0[0]);
+    D_1F800000[18] = (-rsin(arg0[1]) * 0x1000) / rcos(arg0[1]);
+    VectorNormal((VECTOR*)(D_1F800000 + 0x11), (VECTOR*)(D_1F800000 + 0x11));
+    D_1F800000[17] = (D_1F800000[17] * arg0[2]) + D_1F800000[13];
+    D_1F800000[19] = (D_1F800000[19] * arg0[2]) + D_1F800000[15];
+    D_1F800000[18] = (D_1F800000[18] * arg0[2]) + D_1F800000[14];
+}
 
 void func_8007ABEC(int* arg0)
 {

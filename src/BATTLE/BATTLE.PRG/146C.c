@@ -384,6 +384,40 @@ typedef struct {
     short unkC2;
 } func_8006B02C_t;
 
+typedef struct {
+    char unk0;
+    signed char unk1;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+} func_8006C4C4_t2;
+
+typedef struct {
+    short unk0;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    int unkC;
+    short unk10;
+    short unk12;
+    func_8006C4C4_t2 unk14;
+    int unk18[50];
+} func_8006C4C4_t;
+
+typedef struct {
+    func_8006C4C4_t2 unk0;
+    int unk4[14];
+    int unk40;
+} func_8006C4C4_t3;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -427,7 +461,7 @@ void func_8007A850(int);
 void func_8007A9DC(VECTOR*, int*, int*);
 void func_8007AACC(int* arg0);
 void func_8007B10C(int, int, int, short, short);
-void func_8007B1B8(int, int, int, int, int);
+void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
 void func_8007B410(void);
 void func_8007B63C(void);
@@ -1464,7 +1498,29 @@ void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
 
 void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C4C4);
+void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
+{
+    func_8006C4C4_t sp10;
+    char* temp_s0 = D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+
+    sp10.unk0 = arg0;
+    sp10.unk2 = 1;
+    sp10.unk3 = 0;
+    sp10.unk4 = 4;
+    sp10.unk8 = temp_s0[4];
+    sp10.unkA = 0;
+    if (arg1->unk40 == 0) {
+        sp10.unk10 = 4;
+        sp10.unk14.unk0 = arg1->unk0.unk0;
+        sp10.unk14.unk1 = arg2;
+        sp10.unk14.unk2 = func_800A152C(arg1->unk0.unk0, arg1->unk0.unk1, 2);
+    } else {
+        sp10.unk10 = 5;
+        sp10.unk14 = arg1->unk0;
+    }
+    sp10.unk12 = temp_s0[2];
+    func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C5AC);
 
@@ -2645,7 +2701,14 @@ void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4)
     func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B1B8);
+void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
+{
+    func_80047280(arg0, arg1, 0, arg2, arg3, arg4);
+    func_80047280(arg0, arg1, 1, arg2, arg3, arg4);
+    func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
+    func_80047FC0(arg0, arg1, 0, arg2, arg3, arg4);
+    func_80047280(arg0, arg1, 0xD, arg2, arg3, arg4);
+}
 
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
 {

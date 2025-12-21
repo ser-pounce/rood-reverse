@@ -1751,7 +1751,30 @@ void func_8006F5FC(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F630);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F760);
+int func_8006F760(void) {
+    int temp_a2;
+    int var_a0;
+    int var_t0;
+    int var_v0;
+    u_int temp_v1;
+
+    var_t0 = 0;
+    temp_a2 = (vs_battle_characterState->equippedWeaponType % 10) & 0xFF;
+    temp_v1 = vs_main_artsStatus.artsLearned[temp_a2];
+    var_a0 = 0;
+    
+    if (temp_v1 < 4) {
+        var_a0 = (vs_main_artsStatus.kills.weaponCategories[temp_a2] < vs_main_artsPointsRequirements[temp_a2][temp_v1]) ^ 1;
+    }
+    if (var_a0 == 0) {
+        if (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 0x16) {
+            if (vs_main_artsStatus.kills.total >= vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
+                var_t0 = 1;
+            }
+        }
+    }
+    return (var_a0 << 0x10) | var_t0;
+}
 
 void func_8006F848(void)
 {

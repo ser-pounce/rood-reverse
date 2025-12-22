@@ -3,15 +3,15 @@
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
-u_int func_800A29A0(void*);                             /* extern */
-u_int func_800A9C54(u_char, void*, int);                        /* extern */
+u_int func_800A29A0(void*); /* extern */
+u_int func_800A9C54(u_char, void*, int); /* extern */
 extern void* D_800F4538[];
 
 typedef struct {
     u_char unk0[8];
-    u_int  unk8_0 : 24;
-    u_int  unk8_24 : 4;
-    u_int  unk8_28 : 4;
+    u_int unk8_0 : 24;
+    u_int unk8_24 : 4;
+    u_int unk8_28 : 4;
     u_char unkC[0x03];
     u_char unkF;
     u_char unk10[0x5DC];
@@ -21,7 +21,8 @@ typedef struct {
     u_char unk17FD;
 } func_800A2C48_t;
 
-void func_800A2C48(func_800A2C48_t* arg0) {
+void func_800A2C48(func_800A2C48_t* arg0)
+{
     func_800A9C54(arg0->unkF, &arg0->unk5EC, 0);
     arg0->unk6E0 = 0;
     arg0->unk8_24 = 4u;
@@ -55,7 +56,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A38E0);
 
 short func_8008DD0C(int arg0, int arg1);
 
-int func_800A3BC4(int arg0, int arg1) {
+int func_800A3BC4(int arg0, int arg1)
+{
     short temp_v0 = func_8008DD0C(arg0, arg1);
     if (temp_v0 == 0) {
         return 0;
@@ -65,7 +67,7 @@ int func_800A3BC4(int arg0, int arg1) {
 
 typedef struct {
     u_char unk00[0x1E];
-    short  unk1E;
+    short unk1E;
     u_char unk20[0x3C];
     u_char unk5C;
     u_char unk5D;
@@ -75,7 +77,8 @@ typedef struct {
 
 void func_800A3C34(u_char, u_char, short, u_int);
 
-void func_800A3C00(struct_800A3C00 *arg0, u_int arg1) {
+void func_800A3C00(struct_800A3C00* arg0, u_int arg1)
+{
     func_800A3C34(arg0->unk5C, arg0->unk5E, arg0->unk1E, arg1);
 }
 

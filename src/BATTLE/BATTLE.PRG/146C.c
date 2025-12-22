@@ -114,33 +114,106 @@ typedef struct {
 } D_800F1C60_t;
 
 typedef struct {
-    u_int unk0;
-    int unk4;
-    u_short unk8;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
-    short unkE;
-    short unk10;
-    short unk12;
+    u_short unk0;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    short unk6;
+    short unk8;
+    short unkA;
+    int unkC;
+    int unk10;
     int unk14;
     int unk18;
     int unk1C;
     int unk20;
     int unk24;
     int unk28;
-    int unk2C[11];
-    short unk58;
-    short unk5A;
-    int unk5C[506];
-    short unk844; // These three are probably a vector
-    short unk846;
-    short unk848;
-    short unk84A;
-    int unk84C;
-    int unk850;
-    char unk854[4][0x84C];
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+    int unk44;
+    short unk48;
+    short unk4A;
+    char unk4C;
+    char unk4D;
+    char unk4E;
+    char unk4F;
+    short unk50;
+    short unk52;
+    int unk54;
+    int unk58;
+    int unk5C;
+    int unk60;
+    int unk64;
+    int unk68;
+    int unk6C;
+    int unk70;
+    int unk74;
+    int unk78;
+    int unk7C;
+    int unk80;
+    int unk84;
+    int unk88;
+    int unk8C;
+    int unk90[491];
+    short unk83C; // These three are probably a vector
+    short unk83E;
+    short unk840;
+    short unk842;
+    int unk844;
+    int unk848;
+} func_8008631C_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+} D_800F19CC_t3;
+
+typedef struct {
+    int unk0;
+    int unk4;
+} D_800F19CC_t4;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    D_800F19CC_t3 unk4;
+    int unk44;
+    int unk48;
+    int unk4C;
+    int unk50[0x1FD];
+    D_800F19CC_t4 unk844;
+} D_800F19CC_t2;
+
+typedef struct {
+    u_int unk0;
+    int unk4;
+    func_8008631C_t unk8;
+    D_800F19CC_t2 unk854[4];
     int unk2984;
     int unk2988;
     char unk298C;
@@ -149,7 +222,18 @@ typedef struct {
     char unk298F;
     int unk2990;
     int unk2994;
-    char unk2998[0x270];
+    char unk2998;
+    char unk2999;
+    char unk299A;
+    char unk299B;
+    int unk299C;
+    int unk29A0;
+    int unk29A4;
+    short unk29A8;
+    short unk29AA;
+    short unk29AC;
+    short unk29AE;
+    int unk29B0[150];
     short unk2C08;
     u_short unk2C0A;
     short unk2C0C;
@@ -277,24 +361,6 @@ typedef struct {
     u_char unk0;
     signed char unk1;
 } func_8007F1A4_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    char unk4;
-    char unk5;
-    short unk6;
-    int unk8[15];
-    int unk44;
-    short unk48;
-    short unk4A;
-    char unk4C;
-    char unk4D;
-    short unk4E;
-    int unk50[15];
-    int unk8C;
-    int unk90[495];
-} func_8008631C_t;
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -431,46 +497,6 @@ typedef struct {
     char unk13;
 } func_8008C1C8_t;
 
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3C;
-    int unk40;
-} D_800F19CC_t3;
-
-typedef struct {
-    int unk0;
-    int unk4;
-} D_800F19CC_t4;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    D_800F19CC_t3 unk4;
-    int unk44;
-    int unk48;
-    int unk4C;
-    int unk50[0x1FD];
-    D_800F19CC_t4 unk844;
-} D_800F19CC_t2;
-
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -552,7 +578,7 @@ int func_8008574C(int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
 void func_80085390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
-void func_80085B10(int, int, func_8008631C_t*, int);
+void func_80085B10(int, D_800F19CC_t2*, func_8008631C_t*, int);
 void func_80086754(int, vs_battle_actor2*);
 void func_800875C8(D_800F19CC_t3*);
 void func_80088554(void);
@@ -718,12 +744,12 @@ extern int D_1F800064[];
 void func_80069C6C(int arg0)
 {
     if (arg0 == 0) {
-        int new_var = 4;
-        if (D_800F19CC->unk854[D_800F19CC->unk0 & 3][new_var] == 0) {
+        D_800F19CC_t3* new_var2 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3].unk4;
+        if (new_var2->unk0 == 0) {
             return;
         }
         // TODO: Remove dead code
-        switch (D_800F19CC->unk854[D_800F19CC->unk0 & 3][new_var] != 0) {
+        switch (new_var2->unk0 != 0) {
         case 0:
             return;
         }
@@ -927,9 +953,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A65C);
 void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006ACFC_t2* arg1)
 {
     int i;
-    char temp_v0;
 
-    vs_main_memcpy(arg0, arg1, 0x30U);
+    vs_main_memcpy(arg0, arg1, sizeof arg0->accessory);
     arg0->currentStr = arg1->unk0.strength;
     arg0->currentInt = arg1->unk0.intelligence;
     arg0->currentAgility = arg1->unk0.agility;
@@ -1476,7 +1501,7 @@ void func_8006C004(vs_battle_actor* arg0)
 void func_8006C164(int arg0)
 {
     vs_battle_actor2* new_var = vs_battle_characterState->unk3C;
-    if (D_800F19CC->unk8 < 0x28) {
+    if (D_800F19CC->unk8.unk0 < 0x28) {
         if (vs_main_scoredata.weaponKillStreakBladeCategory
             != new_var->weapon.blade.category) {
             vs_main_scoredata.weaponKillStreakBladeCategory =
@@ -1586,13 +1611,13 @@ void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
 void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
 {
     func_8006C4C4_t sp10;
-    char* temp_s0 = D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    D_800F19CC_t2* temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
 
     sp10.unk0 = arg0;
     sp10.unk2 = 1;
     sp10.unk3 = 0;
     sp10.unk4 = 4;
-    sp10.unk8 = temp_s0[4];
+    sp10.unk8 = temp_s0->unk4.unk0;
     sp10.unkA = 0;
     if (arg1->unk40 == 0) {
         sp10.unk10 = 4;
@@ -1603,7 +1628,7 @@ void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
         sp10.unk10 = 5;
         sp10.unk14 = arg1->unk0;
     }
-    sp10.unk12 = temp_s0[2];
+    sp10.unk12 = temp_s0->unk2;
     func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
 }
 
@@ -1617,7 +1642,7 @@ void func_8006CA20(int arg0)
     D_800F19CC_t2* temp_s0;
 
     if (arg0 < 0x10) {
-        temp_s0 = (D_800F19CC_t2*)D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+        temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
         if ((temp_s0->unk4.unk0 == arg0) && (temp_s0->unk44 == 0)) {
             temp_v1 = temp_s0->unk4.unk3;
             switch (temp_v1) {
@@ -1931,7 +1956,7 @@ void func_8006FBCC(int arg0)
     int i;
 
     for (i = 0; i < 16; ++i) {
-        if ((i != D_800F19CC->unkC) && !(func_800A0BE0(i) & 0x01000000)
+        if ((i != D_800F19CC->unk8.unk4) && !(func_800A0BE0(i) & 0x01000000)
             && (func_800A0BE0(i) & 1)) {
             func_8009E5C4(i);
         }
@@ -1948,11 +1973,11 @@ void func_8006FBCC(int arg0)
 
 void func_8006FCBC(void)
 {
-    char* temp_s0;
+    D_800F19CC_t2* temp_s0;
 
     D_800F18F0 = 0xA;
-    temp_s0 = (char*)&D_800F19CC->unk5C[0x1FE];
-    func_8006C4A4(temp_s0[4], func_800A152C(temp_s0[4], 0xF0, 0));
+    temp_s0 = &D_800F19CC->unk854[0];
+    func_8006C4A4(temp_s0->unk4.unk0, func_800A152C(temp_s0->unk4.unk0, 0xF0, 0));
 }
 
 void func_8006FD0C(void) { D_800F18F0 = 9; }
@@ -1970,7 +1995,7 @@ void func_800704B0(void)
 void func_800704D8(void)
 {
     D_800F196C = 5;
-    D_800F19CC->unk8 = 0;
+    D_800F19CC->unk8.unk0 = 0;
     D_800F18F0 = 1;
     func_800CB660((vs_battle_characterState->unk20 & 1) | 2);
     func_800CAB40();
@@ -1984,9 +2009,9 @@ void func_8007087C(D_800F19CC_t* arg0)
     func_8006EBF8_t sp10;
 
     func_800A1108((char)arg0->unk4, &sp10);
-    arg0->unk844 = (sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800));
-    arg0->unk848 = (sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800));
-    arg0->unk846 = sp10.unk0.unk6;
+    arg0->unk8.unk83C = (sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800));
+    arg0->unk8.unk840 = (sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800));
+    arg0->unk8.unk83E = sp10.unk0.unk6;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800708EC);
@@ -2127,7 +2152,30 @@ void func_80073ACC(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073AFC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073D30);
+void func_80073D30(func_8008D5FC_t* arg0, func_8006EBF8_t* arg1, int arg2)
+{
+    func_800CF0E8_t sp10;
+
+    D_800F19CC->unk8.unk44 = 3;
+    D_800F19CC->unk8.unk4A = 1;
+    D_800F19CC->unk8.unk8C = 0;
+    D_800F19CC->unk8.unk4C = arg2;
+    D_800F19CC->unk8.unk4D = vs_battle_actors[arg2]->unk3C->unk36;
+    D_800F19CC->unk4 = 1;
+    D_800F19CC->unk0 = 0;
+    D_800F19CC->unk29A8 = arg1->unk0.unk4;
+    D_800F19CC->unk29AA = arg1->unk0.unk6;
+    D_800F19CC->unk29AC = arg1->unk0.unk8;
+    func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
+    sp10.unk0 = arg0->unk0.unk6 + 6;
+    sp10.unk4 = 5;
+    sp10.unk10 = 4;
+    sp10.unk2 = 1;
+    sp10.unk3 = 0;
+    sp10.unk14.u8[0] = arg2;
+    sp10.unk16.u8[0] = 0xFD;
+    func_800CF3F8(&sp10, 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073E30);
 
@@ -2148,7 +2196,7 @@ void func_80073F7C(func_8008D5FC_t* arg0, func_8006EBF8_t3* arg1, int arg2)
         func_800CB2B8(0xB, arg0->unk0.unk6 + 6, 1);
     }
     D_800F19CC->unk4 = 0;
-    D_800F19CC->unk8 = 0;
+    D_800F19CC->unk8.unk0 = 0;
 }
 
 void func_80074050(func_8008D5FC_t* arg0, int arg1)
@@ -2174,7 +2222,7 @@ void func_80074050(func_8008D5FC_t* arg0, int arg1)
     sp10[2] = (var_v0 << 7) + 0x40;
     func_8009E070(0, sp10, 1);
     D_800F19CC->unk4 = 0;
-    D_800F19CC->unk8 = 0;
+    D_800F19CC->unk8.unk0 = 0;
 }
 
 int func_80074120(void)
@@ -2440,7 +2488,7 @@ int func_80074A20(int arg0)
             func_80095B7C(arg0, 0);
             vs_battle_actors[arg0]->unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
-                func_8009F314(arg0, &D_800F19CC->unk2998[0x10], 1);
+                func_8009F314(arg0, &D_800F19CC->unk29A8, 1);
                 func_800A09D8(arg0, 1);
                 if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
                     ret = 1;
@@ -2692,7 +2740,7 @@ void func_8007820C(int arg0)
 void func_80078248(void)
 {
     if (D_800F19CC->unk2984 != 0) {
-        if (D_800F19CC->unkC != 0) {
+        if (D_800F19CC->unk8.unk4 != 0) {
             if (++D_800F19CC->unk298E >= 0x1F) {
                 func_80070F28(1);
             }
@@ -2708,12 +2756,12 @@ void func_80078248(void)
 void func_800782E4(void)
 {
     if (D_800F19CC->unk2984 != 0) {
-        if (D_800F19CC->unkC != 0) {
+        if (D_800F19CC->unk8.unk4 != 0) {
             u_int v = ++D_800F19CC->unk298E;
             if (v < 0x1F) {
                 return;
             }
-        } else if (func_800C4794(D_800F19CC->unk2998) == 0) {
+        } else if (func_800C4794(&D_800F19CC->unk2998) == 0) {
             return;
         }
     }
@@ -2726,8 +2774,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800784AC);
 
 void func_80078748(void)
 {
-    char* temp_s0 = D_800F19CC->unk854[D_800F19CC->unk0 & 3];
-    if ((func_800CB45C() == 0) && ((func_800A0BE0(temp_s0[4]) & 0x08000100) == 0x08000100)
+    D_800F19CC_t2* temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    if ((func_800CB45C() == 0)
+        && ((func_800A0BE0(temp_s0->unk4.unk0) & 0x08000100) == 0x08000100)
         && (func_800995B0() == 0) && (func_800CEEBC() != 0)) {
         func_800704B0();
     }
@@ -2749,7 +2798,7 @@ void func_80079030(void) { func_8007138C(); }
 
 void func_80079050(void)
 {
-    if (func_800DEC88(D_800F19CC->unk854[D_800F19CC->unk0 & 3]) == 0) {
+    if (func_800DEC88(&D_800F19CC->unk854[D_800F19CC->unk0 & 3]) == 0) {
         func_80069D14();
         func_8006FCBC();
     }
@@ -4675,7 +4724,8 @@ short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage;
+    int v =
+        (D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52) * arg0->hitParams[arg3].damage;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
@@ -4692,7 +4742,8 @@ short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    int v = (D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage;
+    int v =
+        (D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52) * arg0->hitParams[arg3].damage;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
@@ -4717,11 +4768,11 @@ short func_80082360(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
-    if (((vs_main_skills[D_800F19CC->unk8].unk2_1)) == 1) {
-        if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
-            var_a2 =
-                ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].damage)
-                / 10;
+    if (((vs_main_skills[D_800F19CC->unk8.unk0].unk2_1)) == 1) {
+        if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
+            var_a2 = ((D_800F19CC->unk8.unk8 + D_800F19CC->unk8.unkA)
+                         * arg0->hitParams[arg3].damage)
+                   / 10;
         }
     }
     return var_a2;
@@ -4732,11 +4783,11 @@ short func_8008241C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
-    if (((vs_main_skills[D_800F19CC->unk8].unk2_1)) != 1) {
-        if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
-            var_a2 =
-                ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].damage)
-                / 10;
+    if (((vs_main_skills[D_800F19CC->unk8.unk0].unk2_1)) != 1) {
+        if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
+            var_a2 = ((D_800F19CC->unk8.unk8 + D_800F19CC->unk8.unkA)
+                         * arg0->hitParams[arg3].damage)
+                   / 10;
         }
     }
     return var_a2;
@@ -4808,7 +4859,9 @@ short func_80083524(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    return (((D_800F19CC->unk58 + D_800F19CC->unk5A) * arg0->hitParams[arg3].damage) / 10)
+    return (((D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52)
+                * arg0->hitParams[arg3].damage)
+               / 10)
          + (D_800F19CC->unk0 - 1);
 }
 
@@ -4817,12 +4870,12 @@ short func_80083590(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1) {
-        if (((D_800F19CC->unk28 & 3) == vs_main_skills[D_800F19CC->unk8].unk2_1)
-            || ((D_800F19CC->unk28 & 3) == 3)) {
-            var_a2 =
-                ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].damage)
-                / 10;
+    if (vs_main_skills[D_800F19CC->unk8.unk0].unk2_1 == 1) {
+        if (((D_800F19CC->unk8.unk20 & 3) == vs_main_skills[D_800F19CC->unk8.unk0].unk2_1)
+            || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
+            var_a2 = ((D_800F19CC->unk8.unk8 + D_800F19CC->unk8.unkA)
+                         * arg0->hitParams[arg3].damage)
+                   / 10;
         }
     }
     return var_a2;
@@ -4833,11 +4886,11 @@ short func_8008364C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
-    if (((vs_main_skills[D_800F19CC->unk8].unk2_1)) != 1) {
-        if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
-            var_a2 =
-                ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].damage)
-                / 10;
+    if (((vs_main_skills[D_800F19CC->unk8.unk0].unk2_1)) != 1) {
+        if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
+            var_a2 = ((D_800F19CC->unk8.unk8 + D_800F19CC->unk8.unkA)
+                         * arg0->hitParams[arg3].damage)
+                   / 10;
         }
     }
     return var_a2;
@@ -4848,9 +4901,10 @@ short func_80083708(
 {
     short var_v0;
 
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1) {
+    if (vs_main_skills[D_800F19CC->unk8.unk0].unk2_1 == 1) {
         var_v0 =
-            (vs_main_skills[D_800F19CC->unk8].unk3 * arg0->hitParams[arg3].damage) / 10;
+            (vs_main_skills[D_800F19CC->unk8.unk0].unk3 * arg0->hitParams[arg3].damage)
+            / 10;
     } else {
         var_v0 = 0;
     }
@@ -4862,9 +4916,10 @@ short func_8008379C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
-    if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
-        var_a2 =
-            ((D_800F19CC->unk10 + D_800F19CC->unk12) * arg0->hitParams[arg3].damage) / 10;
+    if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
+        var_a2 = ((D_800F19CC->unk8.unk8 + D_800F19CC->unk8.unkA)
+                     * arg0->hitParams[arg3].damage)
+               / 10;
     }
     return var_a2;
 }
@@ -5253,7 +5308,7 @@ int func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg
 int func_80084390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 == 1u) {
+    if (vs_main_skills[D_800F19CC->unk8.unk0].unk2_1 == 1u) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5264,7 +5319,7 @@ int func_80084390(
 int func_80084440(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (vs_main_skills[D_800F19CC->unk8].unk2_1 != 1u) {
+    if (vs_main_skills[D_800F19CC->unk8.unk0].unk2_1 != 1u) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5275,7 +5330,7 @@ int func_80084440(
 int func_800844F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 0) {
+    if (D_800F19CC->unk8.unk2 == 0) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5286,7 +5341,7 @@ int func_800844F0(
 int func_80084570(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 1) {
+    if (D_800F19CC->unk8.unk2 == 1) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5297,7 +5352,7 @@ int func_80084570(
 int func_800845F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 2) {
+    if (D_800F19CC->unk8.unk2 == 2) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5308,7 +5363,7 @@ int func_800845F0(
 int func_80084670(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 3) {
+    if (D_800F19CC->unk8.unk2 == 3) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5319,7 +5374,7 @@ int func_80084670(
 int func_800846F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 4) {
+    if (D_800F19CC->unk8.unk2 == 4) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5330,7 +5385,7 @@ int func_800846F0(
 int func_80084770(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 5) {
+    if (D_800F19CC->unk8.unk2 == 5) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5341,7 +5396,7 @@ int func_80084770(
 int func_800847F0(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    if (D_800F19CC->unkA == 6) {
+    if (D_800F19CC->unk8.unk2 == 6) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
         arg2->unk1C.fields.unk1C_0 = 2;
@@ -5352,7 +5407,7 @@ int func_800847F0(
 int func_80084870(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
 {
-    int temp_v1 = D_800F19CC->unk28 & 3;
+    int temp_v1 = D_800F19CC->unk8.unk20 & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
         short temp_a2 = func_800838EC(arg0, arg1, arg2, arg3, arg4);
         arg2->unk4 += temp_a2;
@@ -5492,7 +5547,7 @@ int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     vs_battle_actor2* temp_a1 = vs_battle_actors[arg2->unk0]->unk3C;
-    if (((D_800F19CC->unk28 & 3) == 1) || ((D_800F19CC->unk28 & 3) == 3)) {
+    if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
         if (temp_a1->shield.shield.id != 0) {
             short var_v0 = temp_a1->shield.currentDp;
             arg2->unk3E += var_v0;
@@ -5763,7 +5818,7 @@ void func_80085A34(func_80085A34_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085B10);
 
-int func_8008631C(int arg0, int arg1, int arg2, int arg3, int arg4)
+int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
 {
     func_8008631C_t sp10;
 

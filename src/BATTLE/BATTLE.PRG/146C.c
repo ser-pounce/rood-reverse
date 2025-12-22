@@ -467,6 +467,13 @@ typedef struct {
     func_8008C1C8_t* unk4;
 } D_800F1D28_t;
 
+typedef struct {
+    short unk0;
+    short unk1;
+    short unk2;
+    short unk3;
+} func_8008D2C0_t;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -605,6 +612,7 @@ void func_8009E070(int, short*, int);
 int func_8009E480(void);
 void func_8009EA14(int, D_800F19CC_t4*);
 
+extern const short D_80068BEC[];
 extern u_char D_800E8200[];
 extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -686,7 +694,7 @@ extern short D_800F1D6C;
 extern int D_800F1D78[20];
 extern short D_800F1D68;
 extern signed char D_800F1D6E;
-extern char D_800F1D70[];
+extern u_char D_800F1D70[];
 extern short D_800F1D98[];
 extern vs_main_CdQueueSlot* D_800F1DAC;
 extern vs_main_CdQueueSlot* D_800F1DB0;
@@ -6450,7 +6458,40 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C8A8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D2C0);
+int func_8008D2C0(func_8008D2C0_t arg0[])
+{
+    D_800F1CA0_t* var_t0;
+    int i;
+    int var_t1;
+    int temp_t3;
+
+    func_8008D2C0_t* a0 = arg0;
+
+    do {
+        if (D_800F1BF8.unkA8 != NULL) {
+            var_t0 = D_800F1BF8.unkA8;
+            temp_t3 = D_800F1BF8.unk48 / 184;
+            var_t1 = 0;
+
+            for (i = 0; i < temp_t3; ++i, ++var_t0) {
+                if (!((var_t0->unk0_9))) {
+                    do {
+                        int v;
+                        a0->unk0 = var_t0->unkA8 / 4096;
+                        v = var_t0->unkAC / 4096;
+                        a0->unk1 = (D_80068BEC[D_800F1D70[i]] - v);
+                        a0->unk2 = (var_t0->unkB0 / 4096);
+                        a0->unk3 = i;
+                    } while (0);
+                    ++a0;
+                    ++var_t1;
+                }
+            }
+            return var_t1;
+        }
+    } while (0);
+    return 0;
+}
 
 char func_8008D3D0(void) { return D_800F1C84->unk30; }
 
@@ -6743,10 +6784,10 @@ void func_8008E224(int arg0, int arg1)
 
     if (temp_s0 != NULL) {
         temp_s0 = &D_800F1CA0[arg0];
-        temp_s0->unk0_14 = arg1 - 1;
+        temp_s0->unk0_9 = arg1 - 1;
         temp_v0 = func_8009195C(temp_s0->unk0_0);
         if (temp_v0 != NULL) {
-            if (!temp_s0->unk0_14) {
+            if (!temp_s0->unk0_9) {
                 *temp_v0 &= ~0x100;
             } else {
                 *temp_v0 |= 0x100;

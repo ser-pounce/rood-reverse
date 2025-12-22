@@ -3493,7 +3493,7 @@ int func_8007C8F8(short arg0)
 
 int func_8007C928(u_int arg0, int arg1, int* arg2)
 {
-    int _[6] __attribute((unused));
+    int _[6] __attribute__((unused));
     vs_battle_actor_dat* temp_v0;
     vs_battle_actor** temp_s1;
     int s0;
@@ -7085,7 +7085,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FDC4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090A1C);
+void func_80090A1C(D_800F1DD4_t* arg0)
+{
+    D_800F1C84_t* temp_s0;
+
+    temp_s0 = D_800F1C84;
+    if (temp_s0 != NULL) {
+        arg0->unk0 = temp_s0->unk48 + (rand() % temp_s0->unk4C);
+        arg0->unk4 = temp_s0->unk4A + (rand() % temp_s0->unk4E);
+    } else {
+        arg0->unk0 = rand() % 4096;
+        arg0->unk4 = rand() % 4096;
+    }
+    arg0->unk2 = (rand() % 512) - 2560;
+    arg0->unkE = 2;
+    arg0->unkC = 0;
+    arg0->unkD = 0;
+    arg0->unkF = rand() & 0x7F;
+}
 
 void func_80090B28(void)
 {

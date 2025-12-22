@@ -61,7 +61,21 @@ int func_800A3BC4(void) {
     return ((int)temp_v0 << 0x11) >> 0x11;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3C00);
+typedef struct {
+    u_char unk00[0x1E];
+    short  unk1E;
+    u_char unk20[0x3C];
+    u_char unk5C;
+    u_char unk5D;
+    u_char unk5E;
+    u_char unk5F;
+} struct_800A3C00;
+
+void func_800A3C34(u_char, u_char, short, u_int);
+
+void func_800A3C00(struct_800A3C00 *arg0, u_int arg1) {
+    func_800A3C34(arg0->unk5C, arg0->unk5E, arg0->unk1E, arg1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3C34);
 

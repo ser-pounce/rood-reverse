@@ -3,8 +3,8 @@
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
-u_int func_800A29A0(void*); /* extern */
-u_int func_800A9C54(u_char, void*, int); /* extern */
+u_int func_800A29A0(void*);
+u_int func_800A9C54(u_char, void*, int);
 extern void* D_800F4538[];
 
 typedef struct {

@@ -8,8 +8,10 @@ u_int func_800A9C54(u_char, void*, int);                        /* extern */
 extern void* D_800F4538[];
 
 typedef struct {
-    u_char unk0[0x07];
-    u_int  unk8;
+    u_char unk0[8];
+    u_int  unk8_0 : 24;
+    u_int  unk8_24 : 4;
+    u_int  unk8_28 : 4;
     u_char unkC[0x03];
     u_char unkF;
     u_char unk10[0x5DC];
@@ -22,7 +24,7 @@ typedef struct {
 void func_800A2C48(func_800A2C48_t* arg0) {
     func_800A9C54(arg0->unkF, &arg0->unk5EC, 0);
     arg0->unk6E0 = 0;
-    arg0->unk8 = (arg0->unk8 & 0xF0FFFFFF) | 0x04000000;
+    arg0->unk8_24 = 4u;
     func_800A29A0(arg0);
     if (arg0->unk17FD >= 2U) {
         func_800A2C48(D_800F4538[arg0->unk17FD]);
@@ -51,14 +53,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3760);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A38E0);
 
-short func_8008DD0C(void);
+short func_8008DD0C(int arg0, int arg1);
 
-int func_800A3BC4(void) {
-    short temp_v0 = func_8008DD0C();
+int func_800A3BC4(int arg0, int arg1) {
+    short temp_v0 = func_8008DD0C(arg0, arg1);
     if (temp_v0 == 0) {
         return 0;
     }
-    return ((int)temp_v0 << 0x11) >> 0x11;
+    return (temp_v0 << 0x11) >> 0x11;
 }
 
 typedef struct {

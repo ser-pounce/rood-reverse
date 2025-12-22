@@ -363,19 +363,6 @@ typedef struct {
 } func_8007F1A4_t;
 
 typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_1 : 1;
-    u_int unk0_14 : 1;
-    u_int unk0_15 : 13;
-    u_int unk0_23 : 9;
-    u_int unk4_0 : 1;
-    u_int unk4_1 : 7;
-    u_int unk4_8 : 8;
-    u_int unk4_16 : 16;
-    int unk8[44];
-} D_800F1CA0_t;
-
-typedef struct {
     short unk0;
     short unk2;
     short unk4;
@@ -399,15 +386,6 @@ typedef struct {
     int unk20;
     char unk24[4];
 } D_800E8594_t;
-
-typedef struct {
-    int unk0_0 : 10;
-    int unk0_10 : 3;
-    int unk0_13 : 3;
-    int unk0_16 : 2;
-    int unk0_18 : 2;
-    int unk0_19 : 12;
-} func_8008B764_t;
 
 typedef struct {
     int unk0[4];
@@ -6292,13 +6270,13 @@ func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2)
     if (D_800F1BF8.unk6C != NULL) {
         if (arg2 >= 2) {
             if (D_800F1BF8.unkA8 != NULL) {
-                return (func_8008B764_t*)&D_800F1BF8.unkA8[arg2 - 2][45];
+                return &D_800F1BF8.unkA8[arg2 - 2].unkB4;
             }
             return NULL;
         }
         temp_a1 = D_800F1BF8.unk68[0];
         if ((arg0 < (u_int)temp_a1) && (arg1 < (u_int)D_800F1BF8.unk68[1])) {
-            return (func_8008B764_t*)(D_800F1BF8.unk6C + (((arg1 * temp_a1) + arg0) * 4));
+            return &D_800F1BF8.unk6C[arg1 * temp_a1 + arg0];
         }
     }
     return NULL;

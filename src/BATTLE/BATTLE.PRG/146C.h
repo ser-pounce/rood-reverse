@@ -16,6 +16,29 @@ typedef struct {
 } D_800F1910_t2;
 
 typedef struct {
+    int unk0_0 : 10;
+    int unk0_10 : 3;
+    int unk0_13 : 3;
+    int unk0_16 : 2;
+    int unk0_18 : 2;
+    int unk0_19 : 12;
+} func_8008B764_t;
+
+typedef struct {
+    u_int unk0_0 : 8;
+    u_int unk0_1 : 1;
+    u_int unk0_14 : 1;
+    u_int unk0_15 : 13;
+    u_int unk0_23 : 9;
+    u_int unk4_0 : 1;
+    u_int unk4_1 : 7;
+    u_int unk4_8 : 8;
+    u_int unk4_16 : 16;
+    int unk8[43];
+    func_8008B764_t unkB4;
+} D_800F1CA0_t;
+
+typedef struct {
     char unk0;
     char unk1;
     short unk2;
@@ -46,7 +69,7 @@ typedef struct {
     int unk60;
     int unk64;
     short* unk68;
-    char* unk6C;
+    func_8008B764_t* unk6C;
     int unk70;
     int unk74;
     int unk78;
@@ -61,7 +84,7 @@ typedef struct {
     int unk9C;
     int unkA0;
     int unkA4;
-    int (*unkA8)[46];
+    D_800F1CA0_t* unkA8;
     short* unkAC;
     int unkB0[5];
 } D_800F1BF8_t;

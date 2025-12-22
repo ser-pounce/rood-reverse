@@ -521,7 +521,7 @@ void func_800773BC(void**, int, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
-void func_8007A9DC(VECTOR*, int*, D_800F19D0_t*);
+void func_8007A9DC(VECTOR*, func_8007CD70_t*, D_800F19D0_t*);
 void func_8007AACC(D_800F19D0_t* arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
@@ -538,7 +538,7 @@ void func_8007BFF8(int);
 void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
-void func_8007CD70(int* arg0, func_8007CD70_t* arg1, int arg2, int arg3);
+void func_8007CD70(VECTOR* arg0, func_8007CD70_t* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 int func_8007D08C(int, int);
 void func_8007D360(void);
@@ -2689,7 +2689,7 @@ void func_80077EC4(void)
 {
     int* temp_s0;
 
-    func_8007CD70(D_1F800034, (func_8007CD70_t*)(D_1F800034 + 4), -1, -1);
+    func_8007CD70((VECTOR*)D_1F800034, (func_8007CD70_t*)(D_1F800034 + 4), -1, -1);
     temp_s0 = D_1F800034 - 13;
     temp_s0[25] = 0x1000;
     temp_s0[23] = 0;
@@ -2847,7 +2847,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007A850);
 
-void func_8007A9DC(VECTOR* arg0, int* arg1, D_800F19D0_t* arg2)
+void func_8007A9DC(VECTOR* arg0, func_8007CD70_t* arg1, D_800F19D0_t* arg2)
 {
     int temp_s0;
 
@@ -2856,14 +2856,14 @@ void func_8007A9DC(VECTOR* arg0, int* arg1, D_800F19D0_t* arg2)
     temp_s0 = rsin(arg2->unk4);
     arg0->vy = (temp_s0 << 0xC) / rcos(arg2->unk4);
     VectorNormal(arg0, arg0);
-    arg0->vx = (arg0->vx * arg2->unk8) + arg1[0];
-    arg0->vz = (arg0->vz * arg2->unk8) + arg1[2];
-    arg0->vy = (arg0->vy * arg2->unk8) + arg1[1];
+    arg0->vx = (arg0->vx * arg2->unk8) + arg1->unk0;
+    arg0->vz = (arg0->vz * arg2->unk8) + arg1->unk8;
+    arg0->vy = (arg0->vy * arg2->unk8) + arg1->unk4;
 }
 
 void func_8007AACC(D_800F19D0_t* arg0)
 {
-    func_8007A9DC((VECTOR*)D_1F800034, &D_1F800034[4], arg0);
+    func_8007A9DC((VECTOR*)D_1F800034, (func_8007CD70_t*)&D_1F800034[4], arg0);
 }
 
 void func_8007AAF8(int* arg0)
@@ -3622,7 +3622,37 @@ void func_8007CD14(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007CD70);
+void func_8007CD70(VECTOR* arg0, func_8007CD70_t* arg1, int arg2, int arg3)
+{
+    func_8006EBF8_t sp10;
+    int temp_v0;
+    int var_v0;
+
+    if (arg2 != -1) {
+        var_v0 = arg2;
+        temp_v0 = D_800F19D0.unk0;
+        if (arg2 < 0) {
+            var_v0 = arg2 + 7;
+        }
+        D_800F19D0.unk14 = (arg2 - ((var_v0 >> 3) * 8)) << 9;
+        D_800F19D0.unk0 = (arg2 - ((var_v0 >> 3) * 8)) << 9;
+    }
+    if (arg3 == 1) {
+        D_800F19D0.unk20 = 0x600;
+        D_800F19D0.unk8 = 0x600;
+        D_800F19D0.unk1C = 0;
+    } else if (arg3 == 2) {
+        D_800F19D0.unk20 = 0x900;
+        D_800F19D0.unk8 = 0x900;
+        D_800F19D0.unk1C = arg3;
+    }
+    func_800A1108(0, &sp10);
+    arg1->unk0 = sp10.unk0.unk4 << 0xC;
+    arg1->unk4 = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
+    arg1->unk8 = sp10.unk0.unk8 << 0xC;
+    func_8006D9FC((func_80077DF0_t*)arg1, (func_80077DF0_t*)arg1);
+    func_8007A9DC(arg0, arg1, &D_800F19D0);
+}
 
 void func_8007CE74(int arg0)
 {

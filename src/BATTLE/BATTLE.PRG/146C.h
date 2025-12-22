@@ -16,13 +16,13 @@ typedef struct {
 } D_800F1910_t2;
 
 typedef struct {
-    int unk0_0 : 9;
-    int unk0_9 : 1;
-    int unk0_10 : 3;
-    int unk0_13 : 3;
-    int unk0_16 : 2;
-    int unk0_18 : 2;
-    int unk0_19 : 12;
+    u_int unk0_0 : 9;
+    u_int unk0_9 : 1;
+    u_int unk0_10 : 3;
+    u_int unk0_13 : 3;
+    u_int unk0_16 : 2;
+    u_int unk0_18 : 2;
+    u_int unk0_19 : 12;
 } func_8008B764_t;
 
 typedef struct {
@@ -41,6 +41,20 @@ typedef struct {
     int unkB0;
     func_8008B764_t unkB4;
 } D_800F1CA0_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    int unk14[136];
+} func_8008D710_t;
 
 typedef struct {
     char unk0;
@@ -89,7 +103,7 @@ typedef struct {
     int unkA0;
     int unkA4;
     D_800F1CA0_t* unkA8;
-    short* unkAC;
+    func_8008D710_t* unkAC;
     int unkB0[5];
 } D_800F1BF8_t;
 
@@ -475,6 +489,18 @@ typedef struct {
     char unk2C[4];
 } func_8006B02C_t2;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+} D_800F19D0_t;
+
 void func_80069FC4(int, int);
 void func_8006AB44(void*, void*);
 void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
@@ -535,7 +561,7 @@ extern char D_800E8F28;
 extern D_800F1880_t D_800F1880;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
-extern int D_800F19D0[];
+extern D_800F19D0_t D_800F19D0;
 extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;

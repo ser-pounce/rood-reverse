@@ -142,8 +142,8 @@ void func_800F9AD8(void)
     }
 
     D_80060068.unk0.unk0 = 0;
-    D_800F19D0[5] = s1->unk80;
-    D_800F19D0[8] = s1->unk84;
+    D_800F19D0.unk14 = s1->unk80;
+    D_800F19D0.unk20 = s1->unk84;
 }
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);

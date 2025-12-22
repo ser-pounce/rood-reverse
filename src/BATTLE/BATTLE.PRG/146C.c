@@ -474,6 +474,12 @@ typedef struct {
     short unk3;
 } func_8008D2C0_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+} func_8007CD70_t;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -515,8 +521,8 @@ void func_800773BC(void**, int, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
-void func_8007A9DC(VECTOR*, int*, int*);
-void func_8007AACC(int* arg0);
+void func_8007A9DC(VECTOR*, int*, D_800F19D0_t*);
+void func_8007AACC(D_800F19D0_t* arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
@@ -532,7 +538,7 @@ void func_8007BFF8(int);
 void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
-void func_8007CD70(int*, int*, int, int);
+void func_8007CD70(int* arg0, func_8007CD70_t* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 int func_8007D08C(int, int);
 void func_8007D360(void);
@@ -581,7 +587,7 @@ int func_8008C1C8(func_8008C1C8_t* arg0);
 void func_8008C2C0(char, char, char, int);
 int func_8008C49C(int, int);
 D_800F1910_t2* func_8008D438(int, int, int);
-short* func_8008D508(int arg0, int arg1, int arg2);
+func_8008D710_t* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D5FC(func_8008C1C8_t* arg0);
@@ -600,6 +606,7 @@ int* func_8009195C(int);
 void func_8009291C(int);
 void func_80092A18(void);
 int func_80093764(int);
+void func_80093824(int);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
 void func_80095B7C(int, int);
@@ -1778,7 +1785,7 @@ int func_8006EBF8(void)
     sp20.unk4 = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     sp20.unk8 = sp10.unk0.unk8 << 0xC;
     func_8006DFE0(&sp20);
-    func_8007AACC(D_800F19D0);
+    func_8007AACC(&D_800F19D0);
     return v;
 }
 
@@ -2429,11 +2436,11 @@ int func_800748B8(int arg0)
     return temp_s1;
 }
 
-short* func_80074950(int arg0)
+func_8008D710_t* func_80074950(int arg0)
 {
     func_8006EBF8_t sp10;
     char sp20[4];
-    short* temp_v0;
+    func_8008D710_t* temp_v0;
     int temp_s2;
     char* s1 = sp20;
 
@@ -2441,8 +2448,8 @@ short* func_80074950(int arg0)
     temp_s2 = func_80074798(&sp10, sp20);
     temp_v0 = func_8008D508(s1[0], s1[2], s1[1]);
 
-    if ((temp_v0 != NULL) && (temp_v0[9] == temp_s2)) {
-        if (!func_800BEBF4((temp_v0[8] + 0x3C0))) {
+    if ((temp_v0 != NULL) && (temp_v0->unk12 == temp_s2)) {
+        if (!func_800BEBF4((temp_v0->unk10 + 0x3C0))) {
             int v = ((func_8008DC7C((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
                         >> 0x11)
                   + 0x60;
@@ -2682,7 +2689,7 @@ void func_80077EC4(void)
 {
     int* temp_s0;
 
-    func_8007CD70(D_1F800034, D_1F800034 + 4, -1, -1);
+    func_8007CD70(D_1F800034, (func_8007CD70_t*)(D_1F800034 + 4), -1, -1);
     temp_s0 = D_1F800034 - 13;
     temp_s0[25] = 0x1000;
     temp_s0[23] = 0;
@@ -2840,21 +2847,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007A850);
 
-void func_8007A9DC(VECTOR* arg0, int* arg1, int* arg2)
+void func_8007A9DC(VECTOR* arg0, int* arg1, D_800F19D0_t* arg2)
 {
     int temp_s0;
 
-    arg0->vx = rsin(arg2[0]);
-    arg0->vz = rcos(arg2[0]);
-    temp_s0 = rsin(arg2[1]);
-    arg0->vy = (temp_s0 << 0xC) / rcos(arg2[1]);
+    arg0->vx = rsin(arg2->unk0);
+    arg0->vz = rcos(arg2->unk0);
+    temp_s0 = rsin(arg2->unk4);
+    arg0->vy = (temp_s0 << 0xC) / rcos(arg2->unk4);
     VectorNormal(arg0, arg0);
-    arg0->vx = (arg0->vx * arg2[2]) + arg1[0];
-    arg0->vz = (arg0->vz * arg2[2]) + arg1[2];
-    arg0->vy = (arg0->vy * arg2[2]) + arg1[1];
+    arg0->vx = (arg0->vx * arg2->unk8) + arg1[0];
+    arg0->vz = (arg0->vz * arg2->unk8) + arg1[2];
+    arg0->vy = (arg0->vy * arg2->unk8) + arg1[1];
 }
 
-void func_8007AACC(int* arg0)
+void func_8007AACC(D_800F19D0_t* arg0)
 {
     func_8007A9DC((VECTOR*)D_1F800034, &D_1F800034[4], arg0);
 }
@@ -6522,19 +6529,19 @@ D_800F1910_t2* func_8008D438(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-short* func_8008D508(int arg0, int arg1, int arg2)
+func_8008D710_t* func_8008D508(int arg0, int arg1, int arg2)
 {
     int temp_t1;
-    short* var_a3;
+    func_8008D710_t* var_a3;
     int i;
 
     var_a3 = D_800F1BF8.unkAC;
     do {
         if (var_a3 != NULL) {
             temp_t1 = D_800F1BF8.unk4C / 564;
-            for (i = 0; i < temp_t1; ++i, var_a3 += 0x11A) {
-                if ((var_a3[0] == arg0) && (var_a3[1] == arg1)) {
-                    if (var_a3[2] == arg2) {
+            for (i = 0; i < temp_t1; ++i, ++var_a3) {
+                if ((var_a3->unk0 == arg0) && (var_a3->unk2 == arg1)) {
+                    if (var_a3->unk4 == arg2) {
                         return var_a3;
                     }
                 }
@@ -6594,7 +6601,36 @@ void func_8008D658(func_8008C1C8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008D710);
+void func_8008D710(void)
+{
+    func_8008B764_t* temp_s0;
+    func_8008D710_t* var_s3;
+    int temp_s4;
+    int i;
+
+    if (D_800F1BF8.unkAC != NULL) {
+
+        var_s3 = D_800F1BF8.unkAC;
+        temp_s4 = D_800F1BF8.unk4C / 564;
+
+        for (i = 0; i < temp_s4; ++i, ++var_s3) {
+            temp_s0 = func_8008B764(
+                (u_int)var_s3->unk0, (u_int)var_s3->unk2, (int)var_s3->unk4);
+            if (func_800BEBF4((short)(var_s3->unk10 + 0x3C0))) {
+                var_s3->unk8 = 1;
+                func_80093824(var_s3->unk6);
+                if (temp_s0 != NULL) {
+                    temp_s0->unk0_10 = 5;
+                }
+            } else {
+                var_s3->unk8 = 0;
+                if (temp_s0 != NULL) {
+                    temp_s0->unk0_10 = 0;
+                }
+            }
+        }
+    }
+}
 
 void func_8008D820(u_int* arg0, func_80103530_t* arg1)
 {
@@ -6821,7 +6857,7 @@ u_int func_8008E320(int arg0)
     return -1;
 }
 
-short* func_8008E370(int* arg0)
+func_8008D710_t* func_8008E370(int* arg0)
 {
     if (D_800F1BF8.unkAC != 0) {
         *arg0 = D_800F1BF8.unk4C / 564;

@@ -162,10 +162,10 @@ typedef struct {
     D_800F1910_t2 unk0;
     short unkC;
     short unkE;
-    u_short unk10;
+    short unk10;
     char unk12;
     char unk13;
-} func_8008D5FC_t;
+} func_8008C1C8_t;
 
 int func_800C4794(char*);
 int func_800C58F8(void*);
@@ -196,7 +196,7 @@ void func_800CB660(int arg0);
 D_800F4E98_t* func_800CB66C(void);
 void func_800CB114(void);
 void func_800CB158(void**);
-void func_800CB18C(func_8008D5FC_t*);
+void func_800CB18C(func_8008C1C8_t*);
 void func_800CB1C0(int);
 void func_800CB2B8(int, int, int);
 int func_800CB45C(void);

@@ -3,7 +3,31 @@
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2C48);
+u_int func_800A29A0(void*);                             /* extern */
+u_int func_800A9C54(u_char, void*, int);                        /* extern */
+extern void* D_800F4538[];
+
+typedef struct {
+    u_char unk0[0x07];
+    u_int  unk8;
+    u_char unkC[0x03];
+    u_char unkF;
+    u_char unk10[0x5DC];
+    u_char unk5EC[0xF4];
+    u_char unk6E0;
+    u_char unk6E4[0x111C];
+    u_char unk17FD;
+} func_800A2C48_t;
+
+void func_800A2C48(func_800A2C48_t* arg0) {
+    func_800A9C54(arg0->unkF, &arg0->unk5EC, 0);
+    arg0->unk6E0 = 0;
+    arg0->unk8 = (arg0->unk8 & 0xF0FFFFFF) | 0x04000000;
+    func_800A29A0(arg0);
+    if (arg0->unk17FD >= 2U) {
+        func_800A2C48(D_800F4538[arg0->unk17FD]);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2CD4);
 

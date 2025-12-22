@@ -592,6 +592,7 @@ int func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
 void func_8008BF48(func_8008C1C8_t*);
 void func_8008C070(int arg0, func_8008C1C8_t* arg1);
+int func_8008C1C8(func_8008C1C8_t* arg0);
 void func_8008C2C0(char, char, char, int);
 int func_8008C49C(int, int);
 D_800F1910_t2* func_8008D438(int, int, int);
@@ -6682,7 +6683,34 @@ short func_8008DD0C(int arg0, int arg1)
     return var_a2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DDA8);
+int func_8008DDA8(int arg0, int arg1)
+{
+    int sp10 = 0x80008000;
+    short* new_var = (short*)&sp10;
+
+    D_800F1C60_t* temp_s2 = D_800F1C60;
+
+    if ((temp_s2 != NULL) && ((u_int)(arg0 >> 7) < temp_s2->unk0)) {
+        if ((u_int)(arg1 >> 7) < temp_s2->unk2) {
+            int temp_v1;
+            int temp_a3 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
+            temp_a3 = (((temp_s2->unk4 - ((temp_a3 & 0x7F) * 2)) * 8) & 0x7FFF)
+                    | ((temp_a3 & 0x80) << 8);
+            new_var[0] = temp_a3;
+            temp_a3 = func_80099514(arg0 >> 5, arg1 >> 5, 1);
+            temp_v1 = temp_s2->unk4 - (temp_a3 & 0x7F) * 2;
+            temp_v1 *= 8;
+            if (temp_v1 > 0) {
+                temp_a3 = 0xF810;
+            } else {
+                temp_v1 &= 0x7FFF;
+                temp_a3 = temp_v1 | ((temp_a3 & 0x80) << 8);
+            }
+            new_var[1] = temp_a3;
+        }
+    }
+    return sp10;
+}
 
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1)
 {

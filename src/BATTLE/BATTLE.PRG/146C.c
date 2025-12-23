@@ -3087,10 +3087,14 @@ void func_8007B4C4(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B508);
 
-void func_8007B63C(void) {
+void func_8007B63C(void)
+{
     u_int temp_v0_2;
 
-    if ((D_800F19CC->unk8.unk0 != 0) && !((vs_main_skills[D_800F19CC->unk8.unk0].flags_15)) && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0) && (D_800F19CC->unk8.unk4 == 0)) {
+    if ((D_800F19CC->unk8.unk0 != 0)
+        && !((vs_main_skills[D_800F19CC->unk8.unk0].flags_15))
+        && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0)
+        && (D_800F19CC->unk8.unk4 == 0)) {
         D_800F18F0 = 6;
         func_8007B410();
         func_800CB2B8(0xC, D_800F19CC->unk8.unk0, 1);
@@ -6402,7 +6406,24 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
 
 void _nop(int arg0 __attribute__((unused))) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B590);
+void func_8008B590(MATRIX* arg0, int arg1)
+{
+    int temp_s0 = rsin(arg1);
+    int temp_v0 = rcos(arg1);
+    int a2 = -temp_s0;
+
+    arg0->m[0][0] = temp_v0;
+    arg0->m[0][1] = 0;
+    arg0->m[0][2] = temp_s0;
+
+    arg0->m[1][0] = ((a2 * -3138) / ONE);
+    arg0->m[1][1] = 2633;
+    arg0->m[1][2] = (-(temp_v0 * 3138) / ONE);
+
+    arg0->m[2][0] = ((a2 * 2633) / ONE);
+    arg0->m[2][1] = 3138;
+    arg0->m[2][2] = ((temp_v0 * 2633) / ONE);
+}
 
 void func_8008B6B4(void)
 {
@@ -6492,7 +6513,7 @@ int func_8008BEBC(func_8008C1C8_t* arg0)
     return 0;
 }
 
-int func_8008BF48(func_8008C1C8_t* arg0) 
+int func_8008BF48(func_8008C1C8_t* arg0)
 {
     func_8008C1C8_t* temp_s0;
 

@@ -179,9 +179,11 @@ typedef struct {
     u_short baseInt;
     short currentAgility;
     u_short baseAgility;
-    char range;
-    char unk125;
-    short unk126;
+    u_int range : 8;
+    u_int unk125 : 8;
+    u_int unk126 : 8;
+    u_int unk127_0 : 3;
+    u_int unk127_3 : 5;
     vs_battle_classAffinityCurrent classAffinityCurrent;
     short unk168[8];
     vs_battle_classAffinityBaseline classAffinityBaseline;
@@ -293,11 +295,16 @@ typedef struct {
     short unk2E;
     short unk30;
     short unk32;
-    u_char unk34;
-    u_char unk35;
-    char unk36;
-    char unk37;
-    int unk38;
+    u_int unk34 : 8;
+    u_int unk35 : 8;
+    u_int unk36 : 8;
+    u_int unk37_0 : 3;
+    u_int unk37_3 : 5;
+    u_int unk38 : 8;
+    u_int unk39 : 8;
+    u_int unk3A : 8;
+    u_int unk3B_0 : 3;
+    u_int unk3B_3 : 5;
     vs_battle_weaponInfo weapon; // 0x3C
     vs_battle_shieldInfo shield; // 1C4
     vs_battle_accessoryInfo accessory; // 328
@@ -510,7 +517,7 @@ void func_8006AEAC(vs_battle_weaponInfo*, char*);
 void func_8006B02C(vs_battle_shieldInfo*, func_8006B02C_t2*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);
 void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1);
-void func_8006B338(void*);
+void func_8006B338(char*);
 void vs_battle_setBladeForDrop(
     func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade);
 void vs_battle_setGripForDrop(vs_battle_setGripForDrop_t*, vs_battle_equipment*);

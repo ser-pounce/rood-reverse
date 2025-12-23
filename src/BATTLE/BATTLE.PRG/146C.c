@@ -1222,7 +1222,27 @@ void func_8006B2D4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006B338);
+void func_8006B338(char* arg0)
+{
+    vs_battle_actor2* temp_a0;
+
+    func_8006AEAC(&vs_battle_characterState->unk3C->weapon, arg0);
+    func_8006B20C(vs_battle_characterState->unk3C);
+    if (arg0 == NULL) {
+        vs_battle_characterState->equippedWeaponType = 0xA;
+    } else {
+        vs_battle_characterState->equippedWeaponType =
+            D_80060168.unk280[arg0[1] - 1].category;
+    }
+    temp_a0 = vs_battle_characterState->unk3C;
+    temp_a0->unk38 = temp_a0->weapon.range + temp_a0->unk37_3;
+    temp_a0->unk39 = temp_a0->weapon.unk125 + temp_a0->unk37_3;
+    temp_a0->unk3A = temp_a0->weapon.unk126 + temp_a0->unk37_3;
+    temp_a0->unk3B_3 = temp_a0->weapon.unk127_3;
+    temp_a0->unk3B_0 = 1;
+    func_8006B214();
+    func_8006B270();
+}
 
 void func_8006B460(func_8006B02C_t2* arg0)
 {
@@ -1563,11 +1583,11 @@ void func_8006C004(vs_battle_actor* arg0)
     if (arg0->unk3C != NULL) {
         if (arg0->unk1C == 4) {
             new_var2 = arg0->unk3C;
-            if (vs_main_scoredata.enemyKills[new_var2->unk37 & 7] <= 0xFFFE) {
-                ++vs_main_scoredata.enemyKills[new_var2->unk37 & 7];
+            if (vs_main_scoredata.enemyKills[new_var2->unk37_0] <= 0xFFFE) {
+                ++vs_main_scoredata.enemyKills[new_var2->unk37_0];
             }
-            if (vs_main_scoredata.unk10C != (arg0->unk3C->unk37 & 7)) {
-                vs_main_scoredata.unk10C = arg0->unk3C->unk37 & 7;
+            if (vs_main_scoredata.unk10C != (arg0->unk3C->unk37_0)) {
+                vs_main_scoredata.unk10C = arg0->unk3C->unk37_0;
                 vs_main_scoredata.unk10D = 0;
             } else if (vs_main_scoredata.unk10D < 100) {
                 vs_main_scoredata.unk10D = vs_main_scoredata.unk10D + 1;
@@ -2008,7 +2028,7 @@ void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630
     arg0->unk14 = vs_main_skills[arg1->unk0].unk2_4;
     arg0->unk15 = arg1->unk3;
     arg0->unk16 = arg1->unk2;
-    arg0->unk17 = vs_battle_actors[arg2->unk0_0]->unk3C->unk37 & 7;
+    arg0->unk17 = vs_battle_actors[arg2->unk0_0]->unk3C->unk37_0;
 }
 
 int func_8006F760(void)
@@ -4498,7 +4518,7 @@ int func_8007F4B0(int arg0, u_char* arg1)
     return 1;
 }
 
-int func_8007F518(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->unk37 & 7; }
+int func_8007F518(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->unk37_0; }
 
 int func_8007F548(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))

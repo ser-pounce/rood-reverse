@@ -3205,7 +3205,34 @@ void func_8007B4C4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B508);
+void func_8007B508(void)
+{
+    if (!(func_800BEBF4(0xB6)) || ((func_800BEBF4(0xB6)) == 2)
+        || ((func_800BEBF4(0xB6)) == 3)) {
+        if (func_8006F760() != 0) {
+            D_800F18F0 = 5;
+            if (D_800F1864 != 0) {
+                func_8009E070(0, NULL, 6);
+                func_8006F848();
+            }
+            func_8008D594(1);
+            return;
+        }
+    }
+    if ((D_800F19CC->unk8.unk0 != 0)
+        && !((vs_main_skills[D_800F19CC->unk8.unk0].flags_15))
+        && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0)
+        && (D_800F19CC->unk8.unk4 == 0)) {
+        D_800F18F0 = 5;
+        if (D_800F1864 != 0) {
+            func_8009E070(0, NULL, 6);
+            func_8006F848();
+        }
+        func_8008D594(1);
+        return;
+    }
+    func_8007B4C4();
+}
 
 void func_8007B63C(void)
 {

@@ -570,7 +570,7 @@ static int func_801049A0(int arg0)
             if (_copyNormalizedString(D_80105F10) != 0) {
                 vs_battle_rMemcpy(D_80105F10,
                     vs_mainMenu_itemNames
-                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E][1] - 1][0],
+                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E][1] - 1].id,
                     0x18);
             }
             func_800C8E04(1);
@@ -605,7 +605,7 @@ static int func_801049A0(int arg0)
             vs_battle_playMenuLeaveSfx();
             if (temp_s0[8] == 0xE7) {
                 vs_battle_rMemcpy(temp_s0 + 8,
-                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0[1] - 1][0], 0x18);
+                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0[1] - 1].id, 0x18);
             }
             return 1;
         }

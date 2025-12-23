@@ -806,7 +806,7 @@ void func_801042C4(vs_battle_equipment* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
-        func_8006AB44(arg0, D_80060168.unk280[arg2]);
+        func_8006AB44(arg0, &D_80060168.unk280[arg2]);
         return;
     case 2:
         func_8006AC74(arg0, (func_8006AC74_t2*)D_80060168.unk540[arg2]);
@@ -939,7 +939,7 @@ int func_80104EC0(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 1) {
-        var_v1 = D_80060168.unk280[arg1][42];
+        var_v1 = D_80060168.unk280[arg1].unk2A;
     }
     if (arg0 == 2) {
         var_v1 = D_80060168.unk540[arg1][6];

@@ -963,7 +963,39 @@ void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006ACFC_t2* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A9F0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AB44);
+void func_8006AB44(vs_battle_equipment* arg0, func_8006AB44_t* arg1)
+{
+    int i;
+    func_8006AB44_t* a3;
+
+    arg0->id = arg1->id;
+    arg0->unk2 = arg1->unk1;
+    arg0->wepId = arg1->wepId;
+    arg0->category = arg1->category;
+    arg0->currentDp = arg1->currentDp;
+    arg0->maxDp = arg1->maxDp;
+    arg0->currentPp = arg1->currentPp;
+    arg0->maxPp = arg1->maxPp;
+    arg0->strength = arg1->strength;
+    arg0->intelligence = arg1->intelligence;
+    arg0->agility = arg1->agility;
+    arg0->cost = arg1->cost;
+    arg0->damageType = arg1->damageType;
+    arg0->costType = arg1->costType;
+    arg0->unk14 = arg1->unk12;
+    arg0->range = arg1->range;
+    arg0->index = arg1->index;
+
+    a3 = arg1;
+    for (i = 0; i < 6; ++i) {
+        arg0->classes[i] = a3->classes[i];
+    }
+
+    for (i = 0; i < 7; ++i) {
+        arg0->affinities[i] = a3->affinities[i];
+    }
+    arg0->material = arg1->material;
+}
 
 void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 {

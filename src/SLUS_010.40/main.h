@@ -326,13 +326,40 @@ typedef struct {
 } vs_main_mapStatus_t;
 
 typedef struct {
+    char id;
+    char unk1;
+    char wepId;
+    char category;
+    u_short maxDp;
+    u_short maxPp;
+    u_short currentDp;
+    u_short currentPp;
+    char strength;
+    char intelligence;
+    char agility;
+    char cost;
+    char damageType : 2;
+    char costType : 3;
+    char unk10_5 : 3;
+    char unk11;
+    u_short unk12;
+    vs_battle_range_t range;
+    char classes[8];
+    char affinities[8];
+    char material;
+    char unk29;
+    char unk2A;
+    char index;
+} func_8006AB44_t;
+
+typedef struct {
     char unk0[2][32]; // 1st dimension unknown
     int unk40[48];
     char unk100[2][48]; // 1st dimension unknown
     char unk160[160];
     char unk200[84];
     func_8006B57C_t unk254[1];
-    char unk280[2][44]; // 1st dimension unknown
+    func_8006AB44_t unk280[2]; // 1st dimension unknown
     char unk2D8[40];
     char unk300[256];
     char unk400[256];

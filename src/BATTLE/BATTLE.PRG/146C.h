@@ -502,7 +502,7 @@ typedef struct {
 } D_800F19D0_t;
 
 void func_80069FC4(int, int);
-void func_8006AB44(void*, void*);
+void func_8006AB44(vs_battle_equipment*, func_8006AB44_t*);
 void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
 void func_8006ACFC(vs_battle_equipment*, vs_battle_setEquipmentForDrop_t*);
 void func_8006AE0C(vs_battle_equipment*, func_8006AC74_t2*);

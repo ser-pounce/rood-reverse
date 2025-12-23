@@ -3596,7 +3596,34 @@ void func_8007C050(void)
 
 int func_8007C088(int arg0) { return vs_battle_actors[arg0]->unk20 & 1; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C0AC);
+void func_8007C0AC(int arg0, int arg1)
+{
+    if (arg1 == 2) {
+        vs_battle_actors[arg0]->unk20 ^= 1;
+
+        if (vs_battle_actors[arg0]->unk20 & 1) {
+            func_8009D934(arg0, 1, 0);
+        } else {
+            func_8009D934(arg0, 0, 0);
+        }
+    } else if (arg0 != 0) {
+        if ((vs_battle_actors[arg0]->unk1C == 4)
+            || (vs_battle_actors[arg0]->unk1C == 8)) {
+            if (arg1 != 0) {
+                vs_battle_actors[arg0]->unk1C = 4;
+            } else {
+                vs_battle_actors[arg0]->unk1C = 8;
+            }
+        }
+    } else {
+        (*vs_battle_actors)->unk20 &= ~1;
+        (*vs_battle_actors)->unk20 |= arg1;
+        func_8009D934(0, arg1, 1);
+    }
+    if (arg0 == 0) {
+        func_800CB660(vs_battle_characterState->unk20 & 1);
+    }
+}
 
 void func_8007C1D8(int arg0, int arg1)
 {

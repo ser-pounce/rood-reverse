@@ -203,9 +203,31 @@ typedef struct {
     char unk3;
     D_800F19CC_t3 unk4;
     int unk44;
-    int unk48;
-    int unk4C;
-    int unk50[0x1FD];
+    u_short unk48;
+    u_short unk4A;
+    union {
+        struct {
+            char unk0;
+            signed char unk1;
+        } indices;
+        SVECTOR vec;
+    } unk4C;
+    int unk54;
+    int unk58;
+    int unk5C;
+    int unk60;
+    int unk64;
+    int unk68;
+    int unk6C;
+    int unk70;
+    int unk74;
+    int unk78;
+    int unk7C;
+    int unk80;
+    int unk84;
+    int unk88;
+    int unk8C;
+    int unk90[0x1ED];
     D_800F19CC_t4 unk844;
 } D_800F19CC_t2;
 
@@ -2792,7 +2814,7 @@ void func_80077EC4(void)
     temp_s0[21] = 0;
 }
 
-void func_80077F14(int arg0, int arg1, int arg2)
+void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
 {
     int var_v0;
 
@@ -2804,7 +2826,34 @@ void func_80077F14(int arg0, int arg1, int arg2)
     func_800A1AF8(arg0, var_v0, arg2, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077F70);
+void func_80077F70(void)
+{
+    SVECTOR sp10;
+    SVECTOR sp18;
+    D_800F19CC_t2* temp_s0;
+    int temp_v0;
+    int temp_v0_2;
+    int temp_v0_3;
+    int temp_v1;
+
+    temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
+    func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
+    if (temp_s0->unk4A != 0) {
+        if (temp_s0->unk8C == 0) {
+            func_80077F14(
+                temp_s0->unk4C.indices.unk0, temp_s0->unk4C.indices.unk1, &sp18);
+        } else {
+            sp18 = temp_s0->unk4C.vec;
+        }
+    } else {
+        func_800A1AF8(temp_s0->unk4.unk0, 0, &sp18, 0);
+    }
+    temp_v0 = sp18.vx - sp10.vx;
+    temp_v0_2 = sp18.vz - sp10.vz;
+    temp_v0_3 = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
+    temp_v1 = sp18.vy - sp10.vy;
+    vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800780A8);
 

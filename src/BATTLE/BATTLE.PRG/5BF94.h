@@ -195,7 +195,7 @@ void func_800CB23C(void);
 void func_800CB660(int arg0);
 D_800F4E98_t* func_800CB66C(void);
 void func_800CB114(void);
-void func_800CB158(void**);
+void func_800CB158(void*);
 void func_800CB18C(func_8008C1C8_t*);
 void func_800CB1C0(int);
 void func_800CB2B8(int, int, int);

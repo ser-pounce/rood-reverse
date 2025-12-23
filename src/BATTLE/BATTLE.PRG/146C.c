@@ -342,12 +342,6 @@ typedef struct {
 } func_8006BE64_t2;
 
 typedef struct {
-    void** unk0;
-    int unk4;
-    func_8006BE64_t2 unk8;
-} func_8006BE64_t;
-
-typedef struct {
     char unk0;
     char unk1;
     short unk2;
@@ -512,6 +506,12 @@ typedef struct {
     u_int unk4;
 } D_800F18EC_t;
 
+typedef struct D_800F1900_t {
+    struct D_800F1900_t* unk0;
+    int unk4;
+    func_8006BE64_t2 unk8;
+} D_800F1900_t;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -654,6 +654,7 @@ int func_8009E480(void);
 void func_8009EA14(int, D_800F19CC_t4*);
 
 extern const short D_80068BEC[];
+extern int D_80068C1C[];
 extern u_char D_800E8200[];
 extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -674,7 +675,7 @@ extern int D_800F18B0;
 extern u_int D_800F18F0;
 extern char D_800F18F8;
 extern int D_800F18FC;
-extern void** D_800F1900;
+extern D_800F1900_t* D_800F1900;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern int D_800F1968;
@@ -1475,15 +1476,15 @@ void func_8006BE64(vs_battle_actor* arg0)
 {
     int var_a0;
     int i;
-    void** temp_a0;
-    func_8006BE64_t* temp_v0;
-    void** var_v1;
+    D_800F1900_t* temp_a0;
+    D_800F1900_t* temp_v0;
+    D_800F1900_t* var_v1;
     vs_battle_actor2* temp_s2;
 
     temp_s2 = arg0->unk3C;
-    temp_v0 = vs_main_allocHeapR(sizeof(func_8006BE64_t));
+    temp_v0 = vs_main_allocHeapR(sizeof(D_800F1900_t));
     if (temp_v0 != NULL) {
-        vs_main_bzero(temp_v0, sizeof(func_8006BE64_t));
+        vs_main_bzero(temp_v0, sizeof(D_800F1900_t));
         temp_v0->unk4 |= _setWeaponForDropRand(&temp_v0->unk8.weapon, &temp_s2->weapon);
         temp_v0->unk4 |= _setShieldForDropRand(&temp_v0->unk8.shield, &temp_s2->shield);
         temp_v0->unk4 |=
@@ -1500,15 +1501,15 @@ void func_8006BE64(vs_battle_actor* arg0)
             var_v1 = D_800F1900;
             var_a0 = 1;
             while (var_v1 != NULL) {
-                if (var_v1[1] == (void*)arg0->unk4) {
+                if (var_v1->unk4 == arg0->unk4) {
                     var_a0 = 0;
                 }
-                var_v1 = (void**)var_v1[0];
+                var_v1 = var_v1->unk0;
             }
             if (var_a0 != 0) {
                 int new_var = arg0->unk4;
                 temp_a0 = D_800F1900;
-                D_800F1900 = (void**)temp_v0;
+                D_800F1900 = temp_v0;
                 temp_v0->unk4 = new_var;
                 temp_v0->unk0 = temp_a0;
                 return;
@@ -3260,7 +3261,44 @@ int func_8007B9FC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007BA98);
+void func_8007BA98(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800F1900_t* temp_a0;
+    D_800F1900_t* temp_v0;
+
+    temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    if (temp_v0 != NULL) {
+        vs_main_bzero(temp_v0, sizeof *temp_v0);
+        temp_v0->unk8.unk214[0].unk0 = arg0;
+        if (arg0 & 0xFFFF) {
+            temp_v0->unk8.unk214[0].unk3 = arg1;
+            temp_v0->unk8.unk214[0].unk2 = 3;
+            temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
+        }
+        temp_v0->unk8.unk214[1].unk0 = arg2;
+        if (arg2 & 0xFFFF) {
+            temp_v0->unk8.unk214[1].unk3 = arg3;
+            temp_v0->unk8.unk214[1].unk2 = 3;
+            temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
+        }
+        if (temp_v0->unk4 != 0) {
+            temp_a0 = D_800F1900;
+            temp_v0->unk4 = 0xFF;
+            D_800F1900 = temp_v0;
+            temp_v0->unk0 = temp_a0;
+        } else {
+            vs_main_freeHeapR(temp_v0);
+        }
+    }
+    if (D_800F1900 != NULL) {
+        D_800F1860 = 1;
+        func_800CB158(D_800F1900);
+        D_800F18F0 = 4;
+        func_8007B410();
+        return;
+    }
+    func_8007B4C4();
+}
 
 void func_8007BBB8(int arg0, int arg1) { func_80069DEC(arg0, arg1); }
 
@@ -6292,10 +6330,10 @@ int vs_battle_getSkillFlags(int arg0, int id)
 
 void func_8008A6FC(void)
 {
-    void** var_a0 = D_800F1900;
+    D_800F1900_t* var_a0 = D_800F1900;
 
     while (var_a0 != 0) {
-        void* temp_s0 = *var_a0;
+        D_800F1900_t* temp_s0 = var_a0->unk0;
         vs_main_freeHeapR(var_a0);
         var_a0 = temp_s0;
     }
@@ -7279,8 +7317,43 @@ void func_8008EB04(int* arg0, int* arg1)
 
 int* func_8008EB24(void) { return D_800F1D78; }
 
-// https://decomp.me/scratch/ck2kr
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EB30);
+void func_8008EB30(int* arg0)
+{
+    int i;
+    int* var_a0;
+
+    vs_main_memcpy(D_800F1D78, arg0, 20);
+
+    var_a0 = D_80068C1C;
+
+    var_a0 += 2;
+    var_a0[0] = (*arg0++ & 0xFFFFFF) | 0x30000000;
+    ++var_a0;
+
+    for (i = 0; i < 8; ++i) {
+        var_a0 += 2;
+        var_a0[0] = (*arg0 & 0xFFFFFF) | 0x30000000;
+        ++var_a0;
+    }
+
+    ++arg0;
+
+    for (i = 0; i < 16; ++i) {
+        var_a0 += 2;
+        var_a0[0] = (*arg0 & 0xFFFFFF) | 0x30000000;
+        ++var_a0;
+    }
+
+    ++arg0;
+
+    for (i = 0; i < 8; ++i) {
+        var_a0 += 2;
+        var_a0[0] = (*arg0 & 0xFFFFFF) | 0x30000000;
+        ++var_a0;
+    }
+
+    var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 

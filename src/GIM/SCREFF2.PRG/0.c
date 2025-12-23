@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../../SLUS_010.40/31724.h"
+#include <libgte.h>
 
 typedef struct {
     char unk0;

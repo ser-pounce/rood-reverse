@@ -233,7 +233,11 @@ typedef struct {
     short unk29AA;
     short unk29AC;
     short unk29AE;
-    int unk29B0[150];
+    int unk29B0[149];
+    char unk2C04;
+    char unk2C05;
+    char unk2C06;
+    char unk2C07;
     short unk2C08;
     u_short unk2C0A;
     short unk2C0C;
@@ -1951,7 +1955,27 @@ void func_8006F848(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F89C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FA20);
+void func_800CB208(u_int, int);
+
+void func_8006FA20(void)
+{
+    u_int temp_v0_2;
+
+    if ((D_800F19CC->unk8.unk0 != 0)
+        && !((vs_main_skills[D_800F19CC->unk8.unk0].flags_15))
+        && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0)
+        && (D_800F19CC->unk8.unk4 == 0)) {
+        D_800F18F0 = 0xE;
+        func_8006C39C();
+        func_800CB2B8(0xC, (int)D_800F19CC->unk8.unk0, 1);
+        vs_main_skills[D_800F19CC->unk8.unk0].flags_15 = 1;
+        return;
+    }
+    temp_v0_2 = func_8006F760();
+    D_800F18F0 = 0xE;
+    func_8006C39C();
+    func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+}
 
 void func_8006FB48(void)
 {

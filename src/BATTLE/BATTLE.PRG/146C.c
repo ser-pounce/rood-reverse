@@ -117,7 +117,7 @@ typedef struct {
     u_short unk0;
     char unk2;
     char unk3;
-    char unk4;
+    u_char unk4;
     char unk5;
     short unk6;
     short unk8;
@@ -5935,7 +5935,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088554);
 
 void func_80088B6C(void) { func_80088554(); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088B8C);
+void func_80088B8C(void)
+{
+    if ((D_800F196C == 2) && (D_800F18F0 < 4) && (D_800F18F0 != 0)) {
+        if ((D_800E8498 == 0)
+            && (((vs_battle_actors[D_800F19CC->unk8.unk4]->unk3C->unk948 & 8) != 0))
+            && (D_800F19CC->unk8.unk44 == 0)) {
+            if (D_800F19CC->unk8.unk4 == 0) {
+                if (vs_battle_characterState->unk3C->risk < 100) {
+                    ++vs_battle_characterState->unk3C->risk;
+                }
+            }
+        }
+        D_800E8498 = (D_800E8498 + vs_gametime_tickspeed) % 30;
+    }
+}
 
 void func_80088CA0(void) { D_800E8498 = 0; }
 

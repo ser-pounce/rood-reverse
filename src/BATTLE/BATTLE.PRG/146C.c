@@ -593,7 +593,7 @@ void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(char, char, char);
 int func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
-void func_8008BF48(func_8008C1C8_t*);
+int func_8008BF48(func_8008C1C8_t*);
 void func_8008C070(int arg0, func_8008C1C8_t* arg1);
 int func_8008C1C8(func_8008C1C8_t* arg0);
 void func_8008C2C0(char, char, char, int);
@@ -3087,7 +3087,21 @@ void func_8007B4C4(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B508);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007B63C);
+void func_8007B63C(void) {
+    u_int temp_v0_2;
+
+    if ((D_800F19CC->unk8.unk0 != 0) && !((vs_main_skills[D_800F19CC->unk8.unk0].flags_15)) && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0) && (D_800F19CC->unk8.unk4 == 0)) {
+        D_800F18F0 = 6;
+        func_8007B410();
+        func_800CB2B8(0xC, D_800F19CC->unk8.unk0, 1);
+        vs_main_skills[D_800F19CC->unk8.unk0].flags_15 = 1;
+        return;
+    }
+    temp_v0_2 = func_8006F760();
+    D_800F18F0 = 6;
+    func_8007B410();
+    func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+}
 
 void func_8007B764(void)
 {
@@ -6478,7 +6492,34 @@ int func_8008BEBC(func_8008C1C8_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BF48);
+int func_8008BF48(func_8008C1C8_t* arg0) 
+{
+    func_8008C1C8_t* temp_s0;
+
+    if (arg0->unkE == 0) {
+        vs_main_playSfxDefault(0x7E, 0x1D);
+        vs_main_playSfxDefault(0x7E, 0x1E);
+    } else {
+        vs_main_playSfxDefault(0x7E, 0x16);
+        vs_main_playSfxDefault(0x7E, 0x17);
+    }
+    func_8009291C(arg0->unk0.unk8.u8[1]);
+    if (arg0->unkE != 0) {
+        func_8008BD74(arg0);
+    }
+    if (arg0->unk10 != -1) {
+        temp_s0 = D_800F1C80;
+        if (temp_s0[arg0->unk10].unk0.unkA != 0) {
+            func_8009291C(temp_s0[arg0->unk10].unk0.unk8.u8[1]);
+            if (temp_s0[arg0->unk10].unkE != 0) {
+                func_8008BD74(&temp_s0[arg0->unk10]);
+            }
+            temp_s0[arg0->unk10].unk12 = 1;
+        }
+    }
+    func_8008C070(1, arg0);
+    return 1;
+}
 
 void func_8008C070(int arg0, func_8008C1C8_t* arg1)
 {

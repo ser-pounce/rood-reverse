@@ -4874,7 +4874,63 @@ int func_8007FDD8(vs_skill_t* arg0, char* arg1, int arg2)
     return D_800E8254[arg0->hitParams[arg2].unk0_7](arg0, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007FE5C);
+short func_8007FE5C(
+    vs_skill_t* arg0, short arg1, vs_battle_actor2* arg2, vs_battle_actor2* arg3)
+{
+    int var_a0;
+    int var_t0;
+    int i;
+
+    var_t0 = 100;
+
+    if (arg0->unk2_1 == 1) {
+        var_a0 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (arg2->weapon.gems[i].gemEffects == 4) {
+                var_a0 = 1;
+            }
+        }
+
+        if (var_a0 != 0) {
+            var_t0 += 5;
+        }
+
+        var_a0 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (arg3->shield.gems[i].gemEffects == 8) {
+                var_a0 = 1;
+            }
+        }
+
+    } else {
+
+        var_a0 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (arg2->weapon.gems[i].gemEffects == 3) {
+                var_a0 = 1;
+            }
+        }
+
+        if (var_a0 != 0) {
+            var_t0 += 5;
+        }
+
+        var_a0 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (arg3->shield.gems[i].gemEffects == 7) {
+                var_a0 = 1;
+            }
+        }
+    }
+    if (var_a0 != 0) {
+        var_t0 -= 5;
+    }
+    return (arg1 * var_t0) / 100;
+}
 
 short func_8007FF8C(int arg0, short arg1, char* arg2)
 {

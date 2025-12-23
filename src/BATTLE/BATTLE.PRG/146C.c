@@ -389,7 +389,8 @@ typedef struct {
     short unk2;
     short unk4;
     short unk6;
-    int unk8;
+    short unk8;
+    short unkA;
     char unkC;
     char unkD;
     char unkE;
@@ -778,6 +779,7 @@ extern D_800F1D28_t D_800F1D28[8];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
 extern int D_800F1D78[20];
+extern char D_800F1DC7;
 extern short D_800F1D68;
 extern signed char D_800F1D6E;
 extern u_char D_800F1D70[];
@@ -7723,7 +7725,26 @@ void func_8008F29C(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F30C);
+void func_8008F30C(int arg0, int arg1)
+{
+    D_800F1DD4_t* var_s1;
+    int i;
+
+    var_s1 = D_800F1DD4;
+    D_800F1DC7 = 0;
+    D_800F1DCA = arg1;
+    D_800F1DC2 = arg0;
+    D_800F1DC0 = arg0;
+
+    for (i = 0; i < arg0; ++i, ++var_s1) {
+        var_s1->unkF = rand() & 0x7F;
+        var_s1->unk0 = rand() % 320;
+        var_s1->unk2 = rand() % 240;
+        var_s1->unk4 = rand() % 256;
+        var_s1->unk8 = -1;
+        var_s1->unkA = -1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F440);
 

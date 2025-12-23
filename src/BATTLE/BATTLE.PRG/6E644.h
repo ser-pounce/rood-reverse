@@ -10,5 +10,6 @@ void func_800E5998(void);
 void func_800E6178(vs_battle_actor*, int);
 void func_800E6700();
 void func_800E68EC(int, int);
+void func_800E6F1C(void);
 void func_800E7454(vs_battle_actor*);
 void func_800E7608(int);

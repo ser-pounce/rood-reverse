@@ -566,6 +566,7 @@ void func_8006B214(void);
 void func_8006B2D4(void);
 void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
+void func_8006D0A4(u_int*);
 void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
 int func_8006DB98(func_8007820C_t* arg0, int*, int*, int, int);
 int func_8006DEFC(func_8007820C_t*, int, int);
@@ -637,6 +638,7 @@ void func_80085B10(int, D_800F19CC_t2*, func_8008631C_t*, int);
 void func_80086754(int, vs_battle_actor2*);
 void func_800875C8(D_800F19CC_t3*);
 void func_80088554(void);
+int func_8008ABF0(int arg0);
 int func_8008B4C8(char arg0);
 void func_8008C40C(void);
 static void _loadZnd(int id);
@@ -687,6 +689,7 @@ void func_80098194(int);
 void func_800983F8(void*);
 void func_80098D6C(int, int, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
+void func_8009D6F4(void);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
 void func_8009EA14(int, D_800F19CC_t4*);
@@ -711,12 +714,14 @@ extern int D_800F186C;
 extern void* D_800F1884;
 extern int D_800F18A8;
 extern int D_800F18B0;
+extern void* D_800F18E4;
 extern u_int D_800F18F0;
 extern char D_800F18F8;
 extern int D_800F18FC;
 extern D_800F1900_t* D_800F1900;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
+extern vs_battle_actor* D_800F192C;
 extern int D_800F1968;
 extern int D_800F196C;
 extern int D_800F19A0;
@@ -6478,8 +6483,38 @@ void func_8008A364(void)
     }
 }
 
-// https://decomp.me/scratch/w2WqI
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A3A0);
+void func_8008A3A0(void)
+{
+    int i;
+    u_int* temp_a0;
+
+    for (i = 0; i < 2; ++i) {
+        D_1F800000[1] = (int)D_80055C80[vs_main_frameBuf] + 0x10;
+        ClearOTagR((void*)D_1F800000[1], 0x800);
+        func_8007DF40();
+        func_8006D0A4((void*)D_1F800000[1]);
+        func_8007629C((void*)D_1F800000[1] + 0x1FFC);
+    }
+
+    DrawSync(0);
+    vs_main_gametimeUpdate(0);
+    func_800BEB34();
+    _setRoomSeen();
+    func_8008ABF0(0);
+    if (D_800F18E4 != NULL) {
+        vs_main_freeHeap(D_800F18E4);
+    }
+    if (D_800F192C != NULL) {
+        func_800E7454(D_800F192C);
+    }
+    func_8008A364();
+    func_800E6F1C();
+    func_80095B7C(0, 0);
+    func_8009D6F4();
+    func_8008A6FC();
+    vs_main_freeHeap(D_8005E0C0[1]);
+    vs_main_freeHeap(D_8005E0C0[0]);
+}
 
 void func_8008A4DC(int arg0)
 {

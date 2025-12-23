@@ -512,6 +512,41 @@ typedef struct D_800F1900_t {
     func_8006BE64_t2 unk8;
 } D_800F1900_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    short unk8;
+    char unkA;
+    char unkB;
+    short unkC;
+    short unkE;
+    int unk10;
+    char unk14;
+    char unk15;
+    char unk16;
+    char unk17;
+} func_8006F630_t1;
+
+typedef struct {
+    u_short unk0;
+    char unk2;
+    char unk3;
+} func_8006F630_t2;
+
+typedef struct {
+    u_char unk0_0 : 4;
+    char unk0_4 : 4;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+} func_8006F630_t3;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -1939,7 +1974,42 @@ void func_8006F5FC(void)
     func_8009E5C4(0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F630);
+void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630_t3* arg2)
+{
+    int temp_v1;
+    u_short var_v0;
+
+    temp_v1 = vs_main_skills[arg1->unk0].hitParams[0].unk0;
+
+    switch (temp_v1) {
+    case 0x3A:
+    case 0x3E:
+        var_v0 = arg2->unk4;
+        arg0->unkB = temp_v1;
+        arg0->unkC = var_v0;
+        break;
+    case 0x3B:
+        var_v0 = arg2->unk6;
+        arg0->unkB = temp_v1;
+        arg0->unkC = var_v0;
+        break;
+    case 0x3F:
+        var_v0 = arg2->unk6;
+        arg0->unkB = temp_v1;
+        arg0->unkC = var_v0;
+        break;
+    default:
+        arg0->unkB = temp_v1;
+        break;
+    }
+
+    arg0->unkE = arg2->unk2;
+    arg0->unk10 = arg2->unk14 & 0x1FFFFFE0;
+    arg0->unk14 = vs_main_skills[arg1->unk0].unk2_4;
+    arg0->unk15 = arg1->unk3;
+    arg0->unk16 = arg1->unk2;
+    arg0->unk17 = vs_battle_actors[arg2->unk0_0]->unk3C->unk37 & 7;
+}
 
 int func_8006F760(void)
 {

@@ -41,7 +41,7 @@ typedef struct {
     char unk1;
     char unk2_0 : 1;
     char unk2_1 : 3;
-    char unk2_4 : 4;
+    u_char unk2_4 : 4;
     char unk3;
     char rangeX;
     char rangeY;

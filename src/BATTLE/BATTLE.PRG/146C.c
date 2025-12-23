@@ -10,6 +10,8 @@
 #include "3A1A0.h"
 #include "44F14.h"
 #include "4A0A8.h"
+#include "573B8.h"
+#include "58578.h"
 #include "5BF94.h"
 #include "6E644.h"
 #include "../../SLUS_010.40/main.h"
@@ -576,6 +578,7 @@ void func_80070278(void);
 void func_8007053C(void);
 void func_80070F28(int);
 void func_8007138C(void);
+void func_80072BA8(int);
 void func_80072EC4(int, u_short);
 void func_800732AC(void);
 void func_80073718(void);
@@ -690,6 +693,7 @@ void func_8009EA14(int, D_800F19CC_t4*);
 
 extern const short D_80068BEC[];
 extern int D_80068C1C[];
+extern char D_800E8184[];
 extern u_char D_800E8200[];
 extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -2989,7 +2993,35 @@ void func_800782E4(void)
     func_8007053C();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80078364);
+void func_80078364(void)
+{
+    if (D_800F19CC->unk2984 != 0) {
+        if (D_800F19CC->unk8.unk4 != 0) {
+            if (++D_800F19CC->unk298E >= 0x1F) {
+                D_800F19CC->unk298C = 0;
+                func_80070F28(2);
+            }
+        } else if (func_800C58F8(&D_800F19CC->unk298D) != 0) {
+            D_800F19CC->unk298C = D_800F19CC->unk298D;
+            if (D_800F19CC->unk298C == 0xFF) {
+                if (D_800E8184[vs_main_skills[D_800F19CC->unk8.unk0].unk2_4] != 0) {
+                    func_80072BA8(D_800F19CC->unk8.unk0);
+                    return;
+                }
+                func_800C16DC();
+                func_800C06E0();
+                func_800C0738();
+                func_800C05B4();
+                func_800704D8();
+                return;
+            }
+            func_80070F28(2);
+        }
+    } else {
+        D_800F19CC->unk298C = 0;
+        func_80070F28(2);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800784AC);
 

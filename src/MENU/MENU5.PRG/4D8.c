@@ -78,7 +78,7 @@ void func_80102D1C(int arg0, int arg1, int arg2, u_long* arg3)
     if (arg3 == 0) {
         arg3 = D_1F800000[2];
     }
-    func_800C0224(0x80, arg1, 0x100010, arg3)->unk10 = ((arg0 + 4) * 0x10) | 0x37FD8000;
+    func_800C0224(0x80, arg1, 0x100010, arg3)[4] = ((arg0 + 4) * 0x10) | 0x37FD8000;
     D_1F800000[0][-4] = (int)(arg2 | 0x64000000);
 }
 

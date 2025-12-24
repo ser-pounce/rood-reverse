@@ -475,7 +475,7 @@ static int func_80103744(int arg0)
         }
         _selectedActor = arg0 & 0xF;
         vs_battle_setMenuItem(
-            4, 180, 18, 0x8C, 8, (char*)vs_battle_actors[_selectedActor - 1]->unk3C->name)
+            4, 180, 18, 0x8C, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
             ->selected = 1;
         return 0;
     }
@@ -649,8 +649,7 @@ static void func_80103AC8(void)
 
     for (i = 0; i < 3; ++i) {
         func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
-            D_800EBBFC[i] | 0x90000, temp_s4)
-            ->unk10 = D_800EBC00[i] | 0x37F60000;
+            D_800EBBFC[i] | 0x90000, temp_s4)[4] = D_800EBC00[i] | 0x37F60000;
     }
     temp_s2 += 0xFFF80000;
     i = (actor->flags.u32 >> 9) & 0x100;
@@ -740,14 +739,14 @@ static void func_80103FEC(vs_battle_actor2* arg0, int arg1)
             temp_s2 = temp_a0 - (arg1 - new_var);
             temp_s1 = ((temp_v1 * new_var) + 144) << new_var;
             if (i >= new_var) {
-                func_800C0224(
-                    128, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008, D_1F800000[1] - 2)
-                    ->unk10 = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
+                func_800C0224(128, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008,
+                    D_1F800000[1] - 2)[4] = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
             }
-            arg0 = func_800C0224(
+            // Nasty match hack
+            arg0 = (vs_battle_actor2*)func_800C0224(
                 0x80, (temp_s2 & 0xFFFF) | temp_s1, 0x100010, D_1F800000[1] - 2);
 
-            arg0->unk10 =
+            ((u_long*)arg0)[4] =
                 (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
         }
     }

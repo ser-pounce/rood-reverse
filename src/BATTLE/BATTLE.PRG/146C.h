@@ -277,10 +277,7 @@ typedef struct {
 } vs_battle_actor3;
 
 typedef struct {
-    short name[8];
-    int unk10;
-    short unk14;
-    short unk16;
+    char name[24];
     short currentHP;
     short maxHP;
     short currentMP;
@@ -316,7 +313,8 @@ typedef struct {
     union {
         struct {
             u_short unk0;
-            char unk2_0 : 2;
+            char unk2_0 : 1;
+            char unk2_1 : 1;
             char unk2_2 : 6;
             u_char unk3;
         } fields;

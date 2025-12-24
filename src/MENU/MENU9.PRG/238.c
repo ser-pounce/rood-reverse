@@ -211,8 +211,7 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
             var_s0 = temp_v1 - var_s0;
         }
         func_800C0224(0x80, (arg0->animSpeed - 0xE) | ((arg0->y + var_s0) << 0x10),
-            0x100010, temp_s7 - 1)
-            ->unk10 = (temp_fp * 0x10) | 0x37F93000;
+            0x100010, temp_s7 - 1)[4] = (temp_fp * 0x10) | 0x37F93000;
     }
 
     i = arg0->animSpeed + 6;

@@ -179,7 +179,7 @@ void func_80102A3C(int arg0, int arg1)
     int temp_s0;
     int temp_s4;
     int i;
-    vs_battle_actor2* var_v1;
+    u_long* var_v1;
     vs_battle_menuItem_t* temp_v0;
     int new_var;
 
@@ -206,8 +206,7 @@ void func_80102A3C(int arg0, int arg1)
                 func_800C0224(0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1]);
         }
 
-        var_v1->unk10 =
-            (0x78 + i * 16) | 0x8000 | ((i == temp_s4) ? 0x37FD0000 : 0x37FE0000);
+        var_v1[4] = (0x78 + i * 16) | 0x8000 | ((i == temp_s4) ? 0x37FD0000 : 0x37FE0000);
     }
 }
 

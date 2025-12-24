@@ -184,7 +184,7 @@ void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
     if (data == NULL) {
         data = D_1F800000[2];
     }
-    func_800C0224(0x80, (x & 0xFFFF) | (y << 0x10), 0x100010, data)->unk10 =
+    func_800C0224(0x80, (x & 0xFFFF) | (y << 0x10), 0x100010, data)[4] =
         ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
 }
 

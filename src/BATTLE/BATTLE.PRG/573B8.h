@@ -1,11 +1,10 @@
 #pragma once
-#include "146C.h"
 
 void vs_battle_copyAligned(short* dst, const short* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);
 u_long* vs_battle_setSprite(int, int x, int wh, u_long* nextPrim);
-vs_battle_actor2* func_800C0214(int, int);
-vs_battle_actor2* func_800C0224(int, int, int, u_long*);
+u_long* func_800C0214(int, int);
+u_long* func_800C0224(int, int, int, u_long*);
 void func_800C02E0(void);
 void func_800C05B4(void);
 void func_800C06E0(void);

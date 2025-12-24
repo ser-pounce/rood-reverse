@@ -2778,7 +2778,43 @@ int func_8007629C(u_int* otag)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007647C);
+void func_8007647C(int arg0, int arg1)
+{
+    int temp_a1;
+    int i;
+    vs_battle_actor* temp_s1;
+    vs_battle_actor2* temp_s0;
+
+    temp_s1 = vs_battle_actors[arg0];
+    temp_s0 = temp_s1->unk3C;
+    vs_main_bzero(temp_s0, 0x964);
+    temp_s0->maxHP = 1;
+    temp_s0->currentHP = 1;
+
+    for (i = 0; i < 24; ++i) {
+        temp_s1->unk3C->name[i] =
+            D_8004FDD0[i]; // Cube // Ashley Riot? But also reads 4 bytes over...
+    }
+
+    temp_a1 = arg1 & 0xFF;
+    switch (temp_a1) {
+    case 1:
+        temp_s0->flags.fields.unk2_0 = 1;
+        func_80095B7C(arg0, 8);
+        break;
+    case 2:
+        /* fallthrough */
+    case 4:
+        temp_s0->flags.fields.unk2_0 = 0;
+        break;
+    default:
+        temp_s0->flags.fields.unk2_0 = 1;
+    }
+    temp_s1->unk27 = 0x80;
+    temp_s1->unk29 = 0;
+    temp_s1->unk28 = 0;
+    temp_s0->flags.fields.unk3 = 0x80;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800765B0);
 

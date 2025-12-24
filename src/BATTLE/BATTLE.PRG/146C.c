@@ -19,13 +19,6 @@
 #include "../../SLUS_010.40/32154.h"
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_short unk4;
-    u_short unk6;
-} func_8007820C_t;
-
-typedef struct {
     u_char unk0;
     char unk1;
     short unk2;
@@ -241,7 +234,7 @@ typedef struct {
     int unk88;
     int unk8C;
     int unk90[0x1ED];
-    D_800F19CC_t4 unk844;
+    SVECTOR unk844;
 } D_800F19CC_t2;
 
 typedef struct {
@@ -611,8 +604,8 @@ void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
 void func_8006D0A4(u_int*);
 void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
-int func_8006DB98(func_8007820C_t* arg0, int*, int*, int, int);
-int func_8006DEFC(func_8007820C_t*, int, int);
+int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
+int func_8006DEFC(SVECTOR*, int, int);
 int func_8006F204(void);
 void _setRoomSeen(void);
 void func_8006F5CC(void);
@@ -633,7 +626,7 @@ void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor* func_80077240(int, int, int, int, int, int, int*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
-void func_800780A8(func_8007820C_t*);
+void func_800780A8(SVECTOR*);
 int func_80078828(int);
 void func_8007A850(int);
 void func_8007A9DC(VECTOR*, func_8007CD70_t*, D_800F19D0_t*);
@@ -741,7 +734,7 @@ void func_8009D6F4(void);
 void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
-void func_8009EA14(int, D_800F19CC_t4*);
+void func_8009EA14(int, SVECTOR*);
 
 extern const short D_80068BEC[];
 extern int D_80068C1C[];
@@ -1958,7 +1951,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D9FC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006DB98);
 
-int func_8006DEFC(func_8007820C_t* arg0, int arg1, int arg2)
+int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
 {
     int sp18[4];
     int sp28[3];
@@ -2572,11 +2565,11 @@ void func_80074050(func_8008C1C8_t* arg0, int arg1)
 
 int func_80074120(void)
 {
-    func_8007820C_t sp10;
+    SVECTOR sp10;
 
-    sp10.unk0 = (u_short)D_800F1910.unk4.unk0.unk4;
-    sp10.unk2 = (u_short)D_800F1910.unk4.unk0.unk6;
-    sp10.unk4 = (u_short)D_800F1910.unk4.unk0.unk8;
+    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4;
+    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
+    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
 
     if ((func_8006DEFC(&sp10, 0, 0x28) == 0)
         && (((func_800A0BE0(0) & 0x08000000) != 0))) {
@@ -2587,11 +2580,11 @@ int func_80074120(void)
 
 void func_8007418C(void)
 {
-    func_8007820C_t sp10;
+    SVECTOR sp10;
 
-    sp10.unk0 = (u_short)D_800F1910.unk4.unk0.unk4;
-    sp10.unk2 = (u_short)D_800F1910.unk4.unk0.unk6;
-    sp10.unk4 = (u_short)D_800F1910.unk4.unk0.unk8;
+    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4;
+    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
+    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
     func_8006DEFC(&sp10, 0, 0x28);
 }
 
@@ -2642,14 +2635,14 @@ void func_80074314(void)
 
 int func_80074374(void)
 {
-    func_8007820C_t sp10;
+    SVECTOR sp10;
     short sp18[6];
     int temp_s0;
 
     func_800A1108(0, (func_8006EBF8_t*)sp18);
-    sp10.unk0 = sp18[2];
-    sp10.unk4 = sp18[4];
-    sp10.unk2 = sp18[3] - 0x5A;
+    sp10.vx = sp18[2];
+    sp10.vz = sp18[4];
+    sp10.vy = sp18[3] - 0x5A;
     temp_s0 = func_8006DEFC(&sp10, 1, 0x28);
 
     if (func_8009E480() != 0) {
@@ -3157,11 +3150,32 @@ void func_80077F70(void)
     vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800780A8);
+void func_800780A8(SVECTOR* arg0)
+{
+    SVECTOR sp10;
+    SVECTOR sp18;
+    D_800F19CC_t2* temp_s0;
+
+    temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
+    func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
+    if (temp_s0->unk4A != 0) {
+        if (temp_s0->unk8C == 0) {
+            func_80077F14(
+                temp_s0->unk4C.indices.unk0, temp_s0->unk4C.indices.unk1, &sp18);
+        } else {
+            sp18 = temp_s0->unk4C.vec;
+        }
+    } else {
+        sp18 = temp_s0->unk844;
+    }
+    arg0->vx = sp10.vx + (sp18.vx - sp10.vx) / 2;
+    arg0->vz = sp10.vz + (sp18.vz - sp10.vz) / 2;
+    arg0->vy = sp10.vy + (sp18.vy - sp10.vy) / 2;
+}
 
 void func_8007820C(int arg0)
 {
-    func_8007820C_t sp10;
+    SVECTOR sp10;
 
     func_800780A8(&sp10);
     if (arg0 != 0) {

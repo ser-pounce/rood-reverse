@@ -618,6 +618,7 @@ int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
+int func_8007E454(short);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
 int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
@@ -2382,7 +2383,43 @@ void func_80073D30(func_8008C1C8_t* arg0, func_8006EBF8_t* arg1, int arg2)
     func_800CF3F8(&sp10, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073E30);
+void func_80073E30(func_8008C1C8_t* arg0, int arg1)
+{
+    short sp10[4];
+    int var_s1;
+    int shift = 7;
+
+    sp10[0] = (arg0->unk0.unk0 << shift) + 0x40;
+    sp10[2] = (arg0->unk0.unk2 << shift) + 0x40;
+    var_s1 = 0;
+
+    switch (arg0->unkC) {
+    case 0:
+        var_s1 = 1;
+        break;
+    case 1:
+    case 3:
+        if (!func_800BEBF4(arg0->unkE + 0x1B6)) {
+            if (func_8007E454(arg0->unkE) == 0) {
+                break;
+            }
+            func_800BEC14(arg0->unkE + 0x1B6, 1);
+            if (arg0->unkE >= 0x1D2) {
+                func_800CCB9C(arg0->unkE);
+            }
+        }
+        arg0->unkC = 0;
+        func_800CB2B8(4, arg0->unkE, 1);
+        var_s1 = 1;
+        break;
+    }
+    if (var_s1 != 0) {
+        func_8009E070(0, sp10, 2);
+        func_8008D5FC(arg0);
+        return;
+    }
+    func_8009E070(0, sp10, 3);
+}
 
 void func_80073F7C(func_8008C1C8_t* arg0, func_8006EBF8_t3* arg1, int arg2)
 {

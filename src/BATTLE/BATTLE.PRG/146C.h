@@ -217,7 +217,7 @@ typedef struct {
 
 typedef struct {
     vs_battle_equipment armor;
-    u_short currentDp;
+    u_short currentDp; // 0x30
     u_short maxDp;
     short currentStr;
     u_short baseStr;
@@ -479,14 +479,6 @@ typedef struct {
     u_short unk0_0 : 10;
     u_short unk0_10 : 6;
 } D_800F18E8_t;
-
-typedef struct {
-    vs_battle_equipment unk0;
-    char unk30;
-    char unk31;
-    char unk32;
-    char unk33;
-} func_8006ACFC_t2;
 
 typedef struct {
     char unk0;

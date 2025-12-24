@@ -561,6 +561,14 @@ typedef struct {
     int unk14;
 } func_8006F630_t3;
 
+typedef struct {
+    vs_battle_equipment equip;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
+} func_8006A9F0_t;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -570,8 +578,8 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 void func_80069DEC(int, int);
 int func_8006A228(u_int, int);
-void func_8006A8EC(vs_battle_accessoryInfo*, func_8006ACFC_t2*);
-void func_8006A9F0(vs_battle_armorInfo*, void*);
+void func_8006A8EC(vs_battle_accessoryInfo*, func_8006A9F0_t*);
+void func_8006A9F0(vs_battle_armorInfo* arg0, func_8006A9F0_t* arg1);
 void vs_battle_setEquipmentForDrop(
     vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
 void func_8006B214(void);
@@ -1034,32 +1042,65 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A334);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A65C);
 
-void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006ACFC_t2* arg1)
+void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006A9F0_t* arg1)
 {
     int i;
 
     vs_main_memcpy(arg0, arg1, sizeof arg0->accessory);
-    arg0->currentStr = arg1->unk0.strength;
-    arg0->currentInt = arg1->unk0.intelligence;
-    arg0->currentAgility = arg1->unk0.agility;
+    arg0->currentStr = arg1->equip.strength;
+    arg0->currentInt = arg1->equip.intelligence;
+    arg0->currentAgility = arg1->equip.agility;
 
     arg0->unk36 = arg1->unk30;
     arg0->unk37 = arg1->unk31;
 
     for (i = 0; i < 4; ++i) {
-        arg0->types[i] = arg1->unk0.types[i];
+        arg0->types[i] = arg1->equip.types[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        arg0->classes[i] = arg1->unk0.classes[i];
+        arg0->classes[i] = arg1->equip.classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        arg0->affinities[i] = arg1->unk0.affinities[i];
+        arg0->affinities[i] = arg1->equip.affinities[i];
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A9F0);
+void func_8006A9F0(vs_battle_armorInfo* arg0, func_8006A9F0_t* arg1)
+{
+    int i;
+
+    vs_main_memcpy(&arg0->armor, &arg1->equip, sizeof arg0->armor);
+    arg0->armor.material = arg1->unk30;
+    arg0->currentDp = arg1->equip.currentDp;
+    arg0->maxDp = arg1->equip.maxDp;
+    arg0->currentStr = arg0->baseStr = arg1->equip.strength;
+    arg0->currentInt = arg0->baseInt = arg1->equip.intelligence;
+    arg0->currentAgility = arg0->baseAgility = arg1->equip.agility;
+    arg0->unk9A = arg1->unk33;
+
+    for (i = 0; i < 4; ++i) {
+        arg0->types[i] = arg1->equip.types[i];
+    }
+
+    for (i = 0; i < 6; ++i) {
+        signed char v = arg1->equip.classes[i];
+        arg0->classAffinityCurrent.class[1][i] = v;
+        arg0->classAffinityCurrent.class[0][i] = v;
+        arg0->classAffinityBaseline.class[i] = v;
+    }
+
+    for (i = 0; i < 7; ++i) {
+        signed char v = arg1->equip.affinities[i];
+        arg0->unk88[i] = 0;
+        arg0->classAffinityCurrent.affinity[1][i] = v;
+        arg0->classAffinityCurrent.affinity[0][i] = v;
+        arg0->classAffinityBaseline.affinity[i] = v;
+    }
+    arg0->unk98 = arg1->unk31;
+    arg0->unk99 = arg1->unk32;
+}
 
 void func_8006AB44(vs_battle_equipment* arg0, func_8006AB44_t* arg1)
 {
@@ -1196,11 +1237,11 @@ void func_8006B02C(vs_battle_shieldInfo* arg0, func_8006B02C_t2* arg1)
 
 void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
-    func_8006ACFC_t2* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
     if (arg1 != NULL) {
         temp_v0->unk33 = arg1->unk27;
-        func_8006ACFC(&temp_v0->unk0, arg1);
+        func_8006ACFC(&temp_v0->equip, arg1);
         temp_v0->unk30 = arg1->material;
     }
     func_8006A9F0(arg0, temp_v0);
@@ -1209,11 +1250,11 @@ void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* a
 
 void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
 {
-    func_8006ACFC_t2* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
     if (arg1 != NULL) {
         temp_v0->unk31 = arg1->unk27;
-        func_8006ACFC(&temp_v0->unk0, arg1);
+        func_8006ACFC(&temp_v0->equip, arg1);
     }
     func_8006A8EC(arg0, temp_v0);
     vs_main_freeHeapR(temp_v0);
@@ -7179,10 +7220,10 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
                 if (!((var_t0->unk0_9))) {
                     do {
                         int v;
-                        a0->unk0 = var_t0->unkA8 / 4096;
-                        v = var_t0->unkAC / 4096;
+                        a0->unk0 = var_t0->unkA8 / ONE;
+                        v = var_t0->unkAC / ONE;
                         a0->unk1 = (D_80068BEC[D_800F1D70[i]] - v);
-                        a0->unk2 = (var_t0->unkB0 / 4096);
+                        a0->unk2 = (var_t0->unkB0 / ONE);
                         a0->unk3 = i;
                     } while (0);
                     ++a0;

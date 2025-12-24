@@ -3458,7 +3458,33 @@ int func_8007ACA0(void) { return *getScratchAddr(0x17) & 0xFFF; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007AFA8);
+void _lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
+{
+    static const VECTOR D_800689F8 = { 0, -ONE, 0 };
+    VECTOR sp10;
+    VECTOR sp20;
+    VECTOR sp30;
+    VECTOR sp40 = D_800689F8;
+    int _[2] __attribute__((unused));
+
+    sp10.vx = to->vx - from->vx;
+    sp10.vy = to->vy - from->vy;
+    sp10.vz = to->vz - from->vz;
+    VectorNormal(&sp10, &sp30);
+    OuterProduct0(&sp30, &sp40, &sp20);
+    VectorNormal(&sp20, &sp20);
+    OuterProduct0(&sp20, &sp30, &sp40);
+    VectorNormal(&sp40, &sp40);
+    mat->m[0][0] = sp20.vx;
+    mat->m[1][0] = sp20.vy;
+    mat->m[2][0] = sp20.vz;
+    mat->m[0][1] = sp40.vx;
+    mat->m[1][1] = sp40.vy;
+    mat->m[2][1] = sp40.vz;
+    mat->m[0][2] = sp30.vx;
+    mat->m[1][2] = sp30.vy;
+    mat->m[2][2] = sp30.vz;
+}
 
 void func_8007B0FC(void) { }
 

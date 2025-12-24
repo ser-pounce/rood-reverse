@@ -12,6 +12,7 @@ _setArmorForDropRand = 0x8006BD14;
 _add_min = 0x8006D9C4;
 _setRoomSeen = 0x8006F53C;
 vs_battle_exec = 0x800798A4;
+_lookAt = 0x8007AFA8;
 _getLocationId = 0x8007C81C;
 vs_battle_getCurrentRoomId = 0x8007C874;
 _calculateArmorClassAffinity = 0x8007E200;

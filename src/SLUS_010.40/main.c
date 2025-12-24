@@ -11496,7 +11496,7 @@ void func_800483FC(void)
 
 static void func_80048A3C(int arg0) { D_80055D58.unk0[arg0].unk6[0] = 0; }
 
-void func_80048A64(u_short* img, u_int y, u_int x, u_int w)
+void func_80048A64(u_short const* img, u_int y, u_int x, u_int w)
 {
     RECT rect;
     u_short px;

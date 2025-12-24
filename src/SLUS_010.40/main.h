@@ -529,7 +529,7 @@ void func_80047FC0(int, int, int, int, int, int);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
-void func_80048A64(u_short* img, u_int y, u_int x, u_int w);
+void func_80048A64(u_short const* img, u_int y, u_int x, u_int w);
 void func_80048F8C(void);
 void func_80048FF8(void);
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);

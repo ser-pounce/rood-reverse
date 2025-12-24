@@ -40,7 +40,18 @@ typedef struct {
 } func_8008418C_t;
 
 typedef struct {
-    int unk0[12];
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
     char unk30;
     char unk31;
     char unk32;
@@ -672,6 +683,7 @@ int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 void func_8008E480(int arg0);
+void func_8008E4DC(int);
 void func_8008E6DC(int);
 void func_8008E938();
 int func_8008F234(void);
@@ -686,6 +698,8 @@ void func_80093824(int);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
 void func_80095B7C(int, int);
+void func_800936F8(int);
+void func_80093914(char);
 void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);
@@ -783,6 +797,7 @@ extern int D_800F1D78[20];
 extern char D_800F1DC7;
 extern short D_800F1D68;
 extern signed char D_800F1D6E;
+extern char D_800F1D6F;
 extern u_char D_800F1D70[];
 extern short D_800F1D98[];
 extern vs_main_CdQueueSlot* D_800F1DAC;
@@ -6561,7 +6576,6 @@ void func_8008A364(void)
 void func_8008A3A0(void)
 {
     int i;
-    u_int* temp_a0;
 
     for (i = 0; i < 2; ++i) {
         D_1F800000[1] = (int)D_80055C80[vs_main_frameBuf] + 0x10;
@@ -7183,8 +7197,6 @@ func_8008D710_t* func_8008D508(int arg0, int arg1, int arg2)
 
 void func_8008D594(int arg0) { D_800F1D6E = arg0; }
 
-void func_8008E4DC(int);
-
 void func_8008D5A0(int arg0)
 {
 
@@ -7535,7 +7547,56 @@ char func_8008E4C4(void) { return D_800F1C84->unk32; }
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068BEC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E4DC);
+void func_8008E4DC(int arg0)
+{
+    static u_short const D_80068BFC[0x10] = {
+        0x10,
+        1,
+        0x865,
+        0xC66,
+        0x869,
+        0xCA9,
+        0x88D,
+        0x10AD,
+        0xCB1,
+        0x14D1,
+        0xCD5,
+        0x14F5,
+        0xCF9,
+        0x113A,
+        0x199B,
+        0x21FC,
+    };
+
+    D_800F1CA0_t* var_s0;
+    int temp_a0;
+    int temp_s2;
+    int i;
+
+    if (D_800F1D6F != arg0) {
+        if (arg0 != 0) {
+            func_80048A64(D_80068BFC, 2, 0x30, 0x10);
+        } else {
+            func_80048A64(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
+        }
+
+        var_s0 = D_800F1BF8.unkA8;
+        temp_s2 = D_800F1BF8.unk48 / 184;
+
+        for (i = 0; i < temp_s2; ++i) {
+            if (var_s0->unk0_12) {
+                func_80093914(var_s0->unk0_0);
+            }
+            ++var_s0;
+        }
+        if (D_800F1C84 != NULL) {
+            if (D_800F1C84->unk2C >= 0) {
+                func_800936F8(D_800F1C84->unk2C);
+            }
+        }
+        D_800F1D6F = !D_800F1D6F;
+    }
+}
 
 int vs_battle_getMapCompletion(void)
 {

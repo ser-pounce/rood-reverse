@@ -29,7 +29,9 @@ typedef struct {
     u_int unk0_0 : 8;
     u_int unk0_8 : 1;
     u_int unk0_9 : 1;
-    u_int unk0_10 : 13;
+    u_int unk0_10 : 2;
+    u_int unk0_12 : 2;
+    u_int unk0_14 : 9;
     u_int unk0_23 : 9;
     u_int unk4_0 : 1;
     u_int unk4_1 : 7;

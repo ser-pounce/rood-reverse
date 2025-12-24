@@ -41,5 +41,6 @@ void func_800A0768(int, char*);
 void func_800A087C(int, int);
 void func_800A09D8(int, int);
 int func_800A0A74(int);
+void func_800A0AFC(int, int, int);
 u_int func_800A0BE0(int actor);
 void func_800A13EC(int, char, int*, int);

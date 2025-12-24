@@ -600,8 +600,8 @@ void func_80073E30(func_8008C1C8_t*, int);
 int func_80074798(func_8006EBF8_t*, char*);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
-void** func_80077240(int, int, int, int, int, int, int*, int);
-void func_800773BC(void**, int, int, int, int, int);
+vs_battle_actor* func_80077240(int, int, int, int, int, int, int*, int);
+void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(func_8007820C_t*);
 int func_80078828(int);
 void func_8007A850(int);
@@ -706,6 +706,7 @@ void func_800983F8(void*);
 void func_80098D6C(int, int, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
 void func_8009D6F4(void);
+void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
 void func_8009EA14(int, D_800F19CC_t4*);
@@ -2946,15 +2947,39 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077240);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800773BC);
+void func_800773BC(
+    vs_battle_actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+{
+    func_800A0204(arg1, 0, 0, 0);
+    func_800A087C(arg1, 0x1847);
+    vs_battle_actors[arg1] = arg0;
+    func_80076D50(arg1, arg2, arg3, arg4, arg5);
+    func_800A0AFC(arg1, 0x9000, 0x12000);
+    func_8009DF3C(arg1, 0);
+    if (arg0->unk1C & 7) {
+        if (arg1 != 0) {
+            arg0->unk0 = vs_battle_actors[0]->unk0;
+            vs_battle_actors[0]->unk0 = arg0;
+        } else {
+            arg0->unk0 = NULL;
+        }
+    }
+    if (arg0->unk20 & 1) {
+        func_800A087C(arg1, 0x1846);
+    } else {
+        func_800A087C(arg1, 0x46);
+    }
+    arg0->unk38 = 0;
+    func_800E6178(arg0, -1);
+}
 
-void** func_800774FC(
+vs_battle_actor* func_800774FC(
     int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int* arg6, int arg7)
 {
-    void** temp_v0;
+    vs_battle_actor* temp_v0;
 
     temp_v0 = func_80077240(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-    if (temp_v0 != 0) {
+    if (temp_v0 != NULL) {
         while (func_800995B0() != 0) {
             func_8009967C();
             vs_main_gametimeUpdate(0);
@@ -3966,7 +3991,7 @@ int func_8007C928(u_int arg0, int arg1, int* arg2)
     if (arg0 < 16) {
         if (vs_battle_actors[arg0] == NULL) {
             temp_s1 = &vs_battle_actors[arg0];
-            temp_v0 = vs_main_allocHeap(0x2E84);
+            temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
             *temp_s1 = &temp_v0->unk0;
             temp_v0->unk0.unk3C = &temp_v0->unk50;
             temp_v0->unk0.unk40 = 1;

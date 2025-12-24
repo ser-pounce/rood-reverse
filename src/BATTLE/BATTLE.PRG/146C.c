@@ -569,6 +569,29 @@ typedef struct {
     char unk33;
 } func_8006A9F0_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+} D_800F1904_t;
+
+typedef struct {
+    D_800F1904_t unk0;
+    D_800F19D0_t unk34;
+    int unk60;
+    int unk64;
+} D_800F1904_t2;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -631,6 +654,7 @@ void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
 void func_8007C694(int, int, int, int, int);
+void func_8007CCCC(int arg0);
 void func_8007CD70(VECTOR* arg0, func_8007CD70_t* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 int func_8007D08C(int, int);
@@ -744,6 +768,7 @@ extern u_int D_800F18F0;
 extern char D_800F18F8;
 extern int D_800F18FC;
 extern D_800F1900_t* D_800F1900;
+extern D_800F1904_t2* D_800F1904;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern vs_battle_actor* D_800F192C;
@@ -2272,7 +2297,28 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072EC4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800730BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800732AC);
+void func_800732AC(void)
+{
+
+    D_800F1904_t* p = (void*)D_1F800000;
+    p[1] = D_800F1904->unk0;
+
+    D_800F19D0 = D_800F1904->unk34;
+
+    D_800F19D0.unk14 = D_800F19D0.unk0;
+    func_8007CCCC(D_800F1904->unk60);
+    func_8007CCF0(D_800F1904->unk64);
+    if (D_800F1904 != NULL) {
+        vs_main_freeHeapR(D_800F1904);
+        D_800F1904 = NULL;
+    }
+    func_800CB654(0);
+    func_8008B4C8(1);
+    func_8008D594(0);
+    func_80095B70(0);
+    func_800A0870(0);
+    func_8006F5CC();
+}
 
 void func_800733F8(int arg0)
 {

@@ -38,6 +38,7 @@ void func_8009DC38(int);
 void func_8009F530(int);
 void func_800A0204(int, int, int, int);
 void func_800A0768(int, char*);
+void func_800A0870(int);
 void func_800A087C(int, int);
 void func_800A09D8(int, int);
 int func_800A0A74(int);

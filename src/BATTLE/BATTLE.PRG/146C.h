@@ -498,6 +498,8 @@ typedef struct {
     int unk18;
     int unk1C;
     int unk20;
+    int unk24;
+    int unk28;
 } D_800F19D0_t;
 
 void func_80069FC4(int, int);

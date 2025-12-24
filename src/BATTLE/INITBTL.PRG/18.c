@@ -142,7 +142,7 @@ void func_800F9AD8(void)
     }
 
     D_80060068.unk0.unk0 = 0;
-    D_800F19D0.unk14 = s1->unk80;
+    D_800F19D0.unk10.vy = s1->unk80;
     D_800F19D0.unk20 = s1->unk84;
 }
 

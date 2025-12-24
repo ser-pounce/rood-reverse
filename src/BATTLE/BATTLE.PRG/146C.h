@@ -491,18 +491,12 @@ typedef struct {
 } func_8006B02C_t2;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
+    VECTOR unk0;
+    VECTOR unk10;
     int unk20;
     int unk24;
     int unk28;
-} D_800F19D0_t;
+} D_800F1904_t3;
 
 void func_80069FC4(int, int);
 void func_8006AB44(vs_battle_equipment*, func_8006AB44_t*);
@@ -564,7 +558,7 @@ extern char D_800E8F28;
 extern D_800F1880_t D_800F1880;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
-extern D_800F19D0_t D_800F19D0;
+extern D_800F1904_t3 D_800F19D0;
 extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;

@@ -8458,7 +8458,7 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.unk7C = vs_battle_characterState->unk20;
-    temp_t5->unk0.unk80 = D_800F19D0.unk14;
+    temp_t5->unk0.unk80 = D_800F19D0.unk10.vy;
     temp_t5->unk0.unk84 = D_800F19D0.unk20;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {

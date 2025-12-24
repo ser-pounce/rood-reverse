@@ -6960,7 +6960,33 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BAC8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BC04);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BD74);
+void func_8008BD74(func_8008C1C8_t* arg0)
+{
+    func_8008B764_t* var_a0;
+
+    var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
+    if (var_a0 != NULL) {
+        var_a0->unk0_10 ^= 5;
+    }
+    var_a0 = NULL;
+    switch (arg0->unk0.unk6 - 4) {
+    case 0:
+        var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2 - 1, arg0->unk0.unk4);
+        break;
+    case 1:
+        var_a0 = func_8008B764(arg0->unk0.unk0 + 1, arg0->unk0.unk2, arg0->unk0.unk4);
+        break;
+    case 2:
+        var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2 + 1, arg0->unk0.unk4);
+        break;
+    case 3:
+        var_a0 = func_8008B764(arg0->unk0.unk0 - 1, arg0->unk0.unk2, arg0->unk0.unk4);
+        break;
+    }
+    if ((arg0->unk0.unk6 >= 4) && (var_a0 != NULL)) {
+        var_a0->unk0_10 ^= 5;
+    }
+}
 
 int func_8008BEBC(func_8008C1C8_t* arg0)
 {

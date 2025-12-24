@@ -585,6 +585,11 @@ typedef struct {
     int unk64;
 } D_800F1904_t2;
 
+typedef struct {
+    u_short unk0;
+    char unk2;
+} D_800FAB18_t;
+
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -621,6 +626,7 @@ void func_800732AC(void);
 void func_80073718(void);
 void func_80073D30(func_8008C1C8_t*, func_8006EBF8_t*, int);
 void func_80073E30(func_8008C1C8_t*, int);
+void func_80076784(int, vs_battle_actor2*, void*, int);
 int func_80074798(func_8006EBF8_t*, char*);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
@@ -2955,7 +2961,60 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076784);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076D50);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076F24);
+void func_80076F24(int arg0, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int arg5)
+{
+    int temp_v1;
+    vs_battle_actor* temp_s0;
+    vs_battle_actor2* temp_s4;
+
+    temp_s0 = vs_battle_actors[arg0];
+    temp_s0->unk4 = arg0;
+    temp_s4 = temp_s0->unk3C;
+    temp_s0->unk18 = arg1->unk2;
+    temp_s0->unk1A = arg1->unk0;
+    temp_s0->unk2A = arg2;
+    temp_s0->unk2B = arg3;
+    temp_s0->unk20 = 0;
+
+    switch (arg0) {
+    case 0:
+        temp_s0->unk1C = 1;
+        break;
+    case 1:
+        temp_v1 = 2;
+        temp_s0->unk1C = temp_v1;
+        break;
+    default:
+        switch (arg4 & 3) {
+        case 1:
+            temp_s0->unk1C = 4;
+            temp_s0->unk20 |= 1;
+            func_8009D934(arg0, 1, 0);
+            break;
+        case 2:
+        case 3:
+            temp_s0->unk1C = 8;
+            break;
+        case 0:
+            temp_s0->unk1C = 2;
+            break;
+        }
+    }
+
+    if (arg4 & 0x80) {
+        temp_s0->unk26 = 1;
+    } else {
+        temp_s0->unk26 = 0;
+    }
+
+    temp_s0->unk24 = arg4 & 0x1C;
+    temp_s0->unk8 = 0;
+    temp_s0->unk2F = 0;
+    temp_s0->unk2E = 0;
+    temp_s0->unk2D = 0;
+    temp_s0->unk2C = 0;
+    func_80076784(arg0, temp_s4, arg1, arg5);
+}
 
 int func_80077078(vs_battle_actor* arg0, int arg1, int arg2, int* arg3, int arg4)
 {
@@ -7721,7 +7780,6 @@ void func_8008E4DC(int arg0)
     };
 
     D_800F1CA0_t* var_s0;
-    int temp_a0;
     int temp_s2;
     int i;
 

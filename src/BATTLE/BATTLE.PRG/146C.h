@@ -350,8 +350,10 @@ typedef struct vs_battle_actor {
     char unk29;
     char unk2A;
     char unk2B;
-    short x;
-    short y;
+    char unk2C;
+    char unk2D;
+    char unk2E;
+    char unk2F;
     int unk30;
     int unk34;
     int unk38;

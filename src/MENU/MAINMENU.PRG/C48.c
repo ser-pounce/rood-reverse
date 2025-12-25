@@ -48,7 +48,7 @@ extern short _currentPp;
 extern short _maxPp;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
-extern char* D_8010246C;
+extern vs_battle_droppedShield* D_8010246C;
 extern D_80060168_t* D_80102470;
 extern char D_80102480[];
 extern char D_801024A1;
@@ -452,7 +452,7 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_shieldInfo shield;
 
-    if (D_8010246C == D_80060168.unk100[0]) {
+    if (D_8010246C == &D_80060168.unk100[0]) {
         func_8006B02C(&shield, arg0);
     } else {
         func_80102BB0(&shield, arg0, D_80109A8C);

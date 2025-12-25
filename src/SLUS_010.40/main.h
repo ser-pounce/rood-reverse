@@ -300,27 +300,6 @@ typedef struct {
 } vs_main_stickPos;
 
 typedef struct {
-    char id;
-    char subId;
-    char wepId;
-    char category;
-    u_short maxDp;
-    u_short maxPp;
-    u_short currentDp;
-    u_short currentPp;
-    char gemSlots;
-    char strength;
-    char intelligence;
-    char agility;
-    char types[4];
-    char classes[8];
-    char affinities[8];
-    u_short material;
-    u_char unk26;
-    u_char unk27;
-} vs_battle_droppedArmor;
-
-typedef struct {
     int roomFlags[16];
     int areaFlags[2];
 } vs_main_mapStatus_t;
@@ -355,7 +334,7 @@ typedef struct {
 typedef struct {
     vs_battle_droppedWeapon unk0[2]; // 1st dimension unknown
     int unk40[48];
-    char unk100[2][48]; // 1st dimension unknown
+    vs_battle_droppedShield unk100[2]; // 1st dimension unknown
     char unk160[160];
     char unk200[84];
     vs_battle_droppedBlade unk254[1];
@@ -394,7 +373,7 @@ typedef struct {
     short id;
     char subId;
     char unk3;
-    char unk4;
+    char gemSlots;
     char strength;
     char intelligence;
     char agility;
@@ -409,7 +388,7 @@ typedef struct {
     char unk16;
     char unk17;
     short unk18;
-    char unk1A;
+    char index;
     char unk1B;
 } func_8006AC74_t2;
 

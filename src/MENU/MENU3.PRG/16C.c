@@ -671,7 +671,7 @@ void func_80103F00(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    func_8006B02C_t2* new_var2 = (func_8006B02C_t2*)D_80060168.unk100;
+    vs_battle_droppedShield* new_var2 = (vs_battle_droppedShield*)D_80060168.unk100;
     char* new_var = D_800619D8.unk28;
 
     vs_battle_rMemzero(sp1A8, sizeof sp1A8);

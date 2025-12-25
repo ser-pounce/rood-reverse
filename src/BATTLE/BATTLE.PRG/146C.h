@@ -483,14 +483,6 @@ typedef struct {
 } D_800F18E8_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    vs_battle_droppedArmor unk4;
-    char unk2C[4];
-} func_8006B02C_t2;
-
-typedef struct {
     VECTOR unk0;
     VECTOR unk10;
     int unk20;
@@ -504,7 +496,7 @@ void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
 void func_8006ACFC(vs_battle_equipment*, vs_battle_droppedArmor*);
 void func_8006AE0C(vs_battle_equipment*, func_8006AC74_t2*);
 void func_8006AEAC(vs_battle_weaponInfo*, vs_battle_droppedWeapon*);
-void func_8006B02C(vs_battle_shieldInfo*, func_8006B02C_t2*);
+void func_8006B02C(vs_battle_shieldInfo*, vs_battle_droppedShield*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_droppedArmor*);
 void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_droppedArmor* arg1);
 void func_8006B338(vs_battle_droppedWeapon*);

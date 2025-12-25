@@ -1160,7 +1160,7 @@ void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
     arg0->id = arg1->id;
     arg0->subId = arg1->subId;
     arg0->category = arg1->unk3;
-    arg0->gemSlots = arg1->unk4;
+    arg0->gemSlots = arg1->gemSlots;
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
     arg0->agility = arg1->agility;
@@ -1213,11 +1213,11 @@ void func_8006AE0C(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 
     arg0->id = arg1->id;
     arg0->subId = arg1->subId;
-    arg0->gemEffects = arg1->unk4;
+    arg0->gemEffects = arg1->gemSlots;
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
     arg0->agility = arg1->agility;
-    arg0->index = arg1->unk1A;
+    arg0->index = arg1->index;
 
     for (i = 0; i < 6; ++i) {
         arg0->classes[i] = arg1->classes[i];
@@ -1230,21 +1230,21 @@ void func_8006AE0C(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006AEAC);
 
-void func_8006B02C(vs_battle_shieldInfo* arg0, func_8006B02C_t2* arg1)
+void func_8006B02C(vs_battle_shieldInfo* arg0, vs_battle_droppedShield* arg1)
 {
     func_8006B02C_t* temp_v0;
     int i;
 
-    temp_v0 = vs_main_allocHeapR(0xC4);
-    vs_main_bzero(temp_v0, 0xC4);
+    temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    vs_main_bzero(temp_v0, sizeof *temp_v0);
 
     if (arg1 != NULL) {
         temp_v0->unkC2 = arg1->unk0;
         func_8006ACFC(&temp_v0->unk0, &arg1->unk4);
         temp_v0->unkC0 = arg1->unk4.material;
         for (i = 0; i < 3; ++i) {
-            if (arg1->unk2C[i] != 0) {
-                func_8006AE0C(&temp_v0->unk30[i], &D_80060A0C[arg1->unk2C[i] & 0x7F]);
+            if (arg1->gems[i] != 0) {
+                func_8006AE0C(&temp_v0->unk30[i], &D_80060A0C[arg1->gems[i] & 0x7F]);
             }
         }
     }
@@ -1330,7 +1330,7 @@ void func_8006B338(vs_battle_droppedWeapon* arg0)
     func_8006B270();
 }
 
-void func_8006B460(func_8006B02C_t2* arg0)
+void func_8006B460(vs_battle_droppedShield* arg0)
 {
     func_8006B02C(&vs_battle_characterState->unk3C->shield, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);

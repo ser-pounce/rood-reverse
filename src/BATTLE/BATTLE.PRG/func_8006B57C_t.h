@@ -64,3 +64,32 @@ typedef struct {
     u_char gems[4];
     char name[24];
 } vs_battle_droppedWeapon;
+
+typedef struct {
+    char id;
+    char subId;
+    char wepId;
+    char category;
+    u_short maxDp;
+    u_short maxPp;
+    u_short currentDp;
+    u_short currentPp;
+    char gemSlots;
+    char strength;
+    char intelligence;
+    char agility;
+    char types[4];
+    char classes[8];
+    char affinities[8];
+    u_short material;
+    u_char unk26;
+    u_char unk27;
+} vs_battle_droppedArmor;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    short unk2;
+    vs_battle_droppedArmor unk4;
+    char gems[4];
+} vs_battle_droppedShield;

@@ -9,13 +9,18 @@ if __name__ == '__main__':
         print('#pragma once', file=fout)
 
         data = read_csv(
-            sys.argv[1], 
-            skiprows=7, 
-            sep='\\s+', 
+            sys.argv[1],
+            skiprows=7,
+            sep=r"\s*\|\s*",
+            engine='python',
+            names=['Type', 'Name', 'Length', 'LBA', 'Timecode', 'Bytes', 'Source'],
             usecols=['Type', 'Name', 'LBA', 'Length'],
             converters={
-                'Name': lambda n: n.removesuffix(';1').replace('.', '_'),
-            }
+                'Name': lambda n: n.strip().removesuffix(';1').replace('.', '_'),
+                'LBA': lambda l: l.strip(),
+                'Length': lambda l: l.strip(),
+            },
+            skip_blank_lines=True,
         ).query('Type == "File" or Type == "XA"')
 
         data['define'] = '#define'

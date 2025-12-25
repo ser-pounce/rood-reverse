@@ -1,6 +1,7 @@
 #pragma once
 
-#define squashLba(file) ((file##_LBA) << 8 | (file##_SIZE >> 11))
+#define squashLba(file) squashLbaVal((file##_LBA), (file##_SIZE))
+#define squashLbaVal(lba, size) ((lba) << 8 | ((size) >> 11))
 #define mkCdFile(file)                                                                   \
     {                                                                                    \
         VS_##file##_LBA, VS_##file##_SIZE                                                \

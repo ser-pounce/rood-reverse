@@ -61,7 +61,7 @@ void func_800FA448(void)
     temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->weapon.unk10D != 0) {
-        vs_battle_setWeaponForDrop(D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
+        vs_battle_setWeaponForDrop(&D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
     }
 
     if (temp_s1->shield.unkDA != 0) {
@@ -429,7 +429,7 @@ void vs_mainMenu_setWeaponStrings(
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
-void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
+void func_800FCA08(vs_battle_droppedWeapon* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_weaponInfo sp10;
 
@@ -439,7 +439,7 @@ void func_800FCA08(char* arg0, char** arg1, int* arg2, char* arg3)
         func_80102A34(&sp10, arg0, D_80109A8C);
     }
     vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
-    *arg1 = arg0 + 8;
+    *arg1 = arg0->name;
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCAA4);
@@ -463,7 +463,7 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);
 
 void vs_mainMenu_setAccessoryStrings(
-    vs_battle_setEquipmentForDrop_t* arg0, char** arg1, int* arg2, char* arg3)
+    vs_battle_droppedArmor* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_armorInfo sp10;
 
@@ -471,7 +471,8 @@ void vs_mainMenu_setAccessoryStrings(
     vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
 }
 
-void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+void func_800FD0E0(
+    vs_battle_droppedGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
@@ -480,7 +481,8 @@ void func_800FD0E0(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void
     *arg2 = 0x58000000;
 }
 
-void func_800FD17C(func_800FD17C_t* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+void func_800FD17C(
+    vs_battle_droppedGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);

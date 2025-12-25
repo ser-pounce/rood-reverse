@@ -5,7 +5,7 @@ int func_800BEB10(void);
 void func_800BEB34(void);
 void func_800BEBEC(void);
 char func_800BEBF4(short);
-void func_800BEC14(short, int);
+void func_800BEC14(short, char);
 void func_800BEC30(void);
 short func_800BEC58(int, int, char*, int);
 

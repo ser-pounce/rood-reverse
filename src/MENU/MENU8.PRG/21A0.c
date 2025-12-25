@@ -357,7 +357,7 @@ static void func_8010493C(int arg0)
 
 static int func_801049A0(int arg0)
 {
-    static char D_80105F10[24];
+    static char _nameBuffer[24];
     static char D_80105F28;
     static char D_80105F29;
     static char _charTableColumn;
@@ -367,7 +367,7 @@ static int func_801049A0(int arg0)
     int temp_v0_10;
     int var_a1;
     int var_s1;
-    char* temp_s0;
+    vs_battle_droppedWeapon* temp_s0;
     if (arg0 != 0) {
         _charTableColumn = 0;
         _charTableRow = 0;
@@ -566,14 +566,14 @@ static int func_801049A0(int arg0)
 
     case 4:
         if (_animStep == 0xA) {
-            if (_copyNormalizedString(D_80105F10) != 0) {
-                vs_battle_rMemcpy(D_80105F10,
+            if (_copyNormalizedString(_nameBuffer) != 0) {
+                vs_battle_rMemcpy(_nameBuffer,
                     vs_mainMenu_itemNames
-                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E][1] - 1].id,
+                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E].blade - 1].id,
                     0x18);
             }
             func_800C8E04(1);
-            vs_battle_stringContext.strings[0] = D_80105F10;
+            vs_battle_stringContext.strings[0] = _nameBuffer;
             vs_battle_printf(vs_battle_stringBuf,
                 (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
             vs_mainmenu_setMessage(vs_battle_stringBuf);
@@ -592,19 +592,20 @@ static int func_801049A0(int arg0)
                 D_80105F28 = 6;
                 break;
             }
-            temp_s0 = D_80060168.unk0[D_80105F2E];
+            temp_s0 = &D_80060168.unk0[D_80105F2E];
             if (temp_v0_10 == 1) {
                 vs_main_playSfxDefault(0x7E, 0xD);
-                vs_battle_rMemcpy(temp_s0 + 8, D_80105F10, sizeof(D_80105F10));
-                if (temp_s0[3] != 0) {
+                vs_battle_rMemcpy(temp_s0->name, _nameBuffer, sizeof(_nameBuffer));
+                if (temp_s0->unk3 != 0) {
                     func_8006B338(temp_s0);
                 }
                 return 1;
             }
             vs_battle_playMenuLeaveSfx();
-            if (temp_s0[8] == 0xE7) {
-                vs_battle_rMemcpy(temp_s0 + 8,
-                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0[1] - 1].id, 0x18);
+            if (temp_s0->name[0] == 0xE7) {
+                vs_battle_rMemcpy(temp_s0->name,
+                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0->blade - 1].id,
+                    0x18);
             }
             return 1;
         }
@@ -650,7 +651,7 @@ int vs_menu8_execRename(char* state)
             *var_v0-- = v1;
         }
         if (vs_battle_stringBuf[0] == 1) {
-            var_v1 = &D_80060168.unk0[D_80105F2E][8];
+            var_v1 = D_80060168.unk0[D_80105F2E].name;
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;
                 if (c == vs_char_terminator) {

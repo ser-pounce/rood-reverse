@@ -301,7 +301,7 @@ typedef struct {
 
 typedef struct {
     char id;
-    char unk1;
+    char subId;
     char wepId;
     char category;
     u_short maxDp;
@@ -318,7 +318,7 @@ typedef struct {
     u_short material;
     u_char unk26;
     u_char unk27;
-} vs_battle_setEquipmentForDrop_t;
+} vs_battle_droppedArmor;
 
 typedef struct {
     int roomFlags[16];
@@ -327,7 +327,7 @@ typedef struct {
 
 typedef struct {
     char id;
-    char unk1;
+    char subId;
     char wepId;
     char category;
     u_short maxDp;
@@ -353,26 +353,26 @@ typedef struct {
 } func_8006AB44_t;
 
 typedef struct {
-    char unk0[2][32]; // 1st dimension unknown
+    vs_battle_droppedWeapon unk0[2]; // 1st dimension unknown
     int unk40[48];
     char unk100[2][48]; // 1st dimension unknown
     char unk160[160];
     char unk200[84];
-    func_8006B57C_t unk254[1];
+    vs_battle_droppedBlade unk254[1];
     func_8006AB44_t unk280[2]; // 1st dimension unknown
     char unk2D8[40];
     char unk300[256];
     char unk400[256];
     char unk500[48];
-    vs_battle_setGripForDrop_t unk530[1];
+    vs_battle_droppedGrip unk530[1];
     u_short unk540[2][8]; // 1st dimension unknown
     char unk56C[160];
     char unk600[64];
-    vs_battle_setEquipmentForDrop_t unk640[4]; // 1st dimension unknown
+    vs_battle_droppedArmor unk640[4]; // 1st dimension unknown
     char unk6E0[32];
     char unk700[256];
     char unk800[164];
-    func_800FD17C_t unk8A4[1];
+    vs_battle_droppedGem unk8A4[1];
     u_short unk8C0[2][14]; // 1st dimension unknown
     char unk8F8[264];
     char unkA00[256];
@@ -392,7 +392,7 @@ typedef struct {
 
 typedef struct {
     short id;
-    char unk2;
+    char subId;
     char unk3;
     char unk4;
     char strength;
@@ -470,10 +470,10 @@ extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern char D_80060148[][32];
+extern vs_battle_droppedWeapon D_80060148[];
 extern D_80060168_t D_80060168;
 extern char D_80060238[][48];
-extern vs_battle_setEquipmentForDrop_t D_80060780[];
+extern vs_battle_droppedArmor D_80060780[];
 extern func_8006AC74_t2 D_80060A0C[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;

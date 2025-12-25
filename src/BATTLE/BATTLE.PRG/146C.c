@@ -295,9 +295,9 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    func_8006B57C_t blade;
-    vs_battle_setGripForDrop_t grip;
-    func_800FD17C_t gems[3];
+    vs_battle_droppedBlade blade;
+    vs_battle_droppedGrip grip;
+    vs_battle_droppedGem gems[3];
     char unk94[0x18];
 } _setWeaponForDropRand_t;
 
@@ -306,8 +306,8 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_setEquipmentForDrop_t shield;
-    func_800FD17C_t gems[3];
+    vs_battle_droppedArmor shield;
+    vs_battle_droppedGem gems[3];
 } _setShieldForDropRand_t;
 
 typedef struct {
@@ -315,7 +315,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_setEquipmentForDrop_t accessory;
+    vs_battle_droppedArmor accessory;
 } _setAccessoryForDropRand_t;
 
 typedef struct {
@@ -323,7 +323,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_setEquipmentForDrop_t armor;
+    vs_battle_droppedArmor armor;
 } _setArmorForDropRand_t;
 
 typedef struct {
@@ -591,7 +591,7 @@ int func_8006A228(u_int, int);
 void func_8006A8EC(vs_battle_accessoryInfo*, func_8006A9F0_t*);
 void func_8006A9F0(vs_battle_armorInfo* arg0, func_8006A9F0_t* arg1);
 void vs_battle_setEquipmentForDrop(
-    vs_battle_setEquipmentForDrop_t*, vs_battle_equipment* equipment);
+    vs_battle_droppedArmor*, vs_battle_equipment* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
 void func_8006C004(vs_battle_actor*);
@@ -732,6 +732,7 @@ void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
 void func_8009EA14(int, SVECTOR*);
+void func_8009FC60(int, int, int, int);
 
 extern const short D_80068BEC[];
 extern int D_80068C1C[];
@@ -745,6 +746,7 @@ extern short D_800E849C[];
 extern char D_800E84AC[][4];
 extern D_800E8594_t D_800E8594;
 extern char D_800E85A0[];
+extern int D_800F1858;
 extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
@@ -1123,7 +1125,7 @@ void func_8006AB44(vs_battle_equipment* arg0, func_8006AB44_t* arg1)
     func_8006AB44_t* a3;
 
     arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk1;
+    arg0->subId = arg1->subId;
     arg0->wepId = arg1->wepId;
     arg0->category = arg1->category;
     arg0->currentDp = arg1->currentDp;
@@ -1156,7 +1158,7 @@ void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
     int i;
 
     arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk2;
+    arg0->subId = arg1->subId;
     arg0->category = arg1->unk3;
     arg0->gemSlots = arg1->unk4;
     arg0->strength = arg1->strength;
@@ -1169,13 +1171,13 @@ void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
     }
 }
 
-void func_8006ACFC(vs_battle_equipment* arg0, vs_battle_setEquipmentForDrop_t* arg1)
+void func_8006ACFC(vs_battle_equipment* arg0, vs_battle_droppedArmor* arg1)
 {
     int i;
-    vs_battle_setEquipmentForDrop_t* a3;
+    vs_battle_droppedArmor* a3;
 
     arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk1;
+    arg0->subId = arg1->subId;
     arg0->wepId = arg1->wepId;
     arg0->category = arg1->category;
     arg0->currentDp = arg1->currentDp;
@@ -1210,7 +1212,7 @@ void func_8006AE0C(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
     int i;
 
     arg0->id = arg1->id;
-    arg0->unk2 = arg1->unk2;
+    arg0->subId = arg1->subId;
     arg0->gemEffects = arg1->unk4;
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
@@ -1250,7 +1252,7 @@ void func_8006B02C(vs_battle_shieldInfo* arg0, func_8006B02C_t2* arg1)
     vs_main_freeHeapR(temp_v0);
 }
 
-void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
+void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_droppedArmor* arg1)
 {
     func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
@@ -1263,7 +1265,7 @@ void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_setEquipmentForDrop_t* a
     vs_main_freeHeapR(temp_v0);
 }
 
-void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1)
+void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_droppedArmor* arg1)
 {
     func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
@@ -1306,7 +1308,7 @@ void func_8006B2D4(void)
     }
 }
 
-void func_8006B338(char* arg0)
+void func_8006B338(vs_battle_droppedWeapon* arg0)
 {
     vs_battle_actor2* temp_a0;
 
@@ -1316,7 +1318,7 @@ void func_8006B338(char* arg0)
         vs_battle_characterState->equippedWeaponType = 0xA;
     } else {
         vs_battle_characterState->equippedWeaponType =
-            D_80060168.unk280[arg0[1] - 1].category;
+            D_80060168.unk280[arg0->blade - 1].category;
     }
     temp_a0 = vs_battle_characterState->unk3C;
     temp_a0->unk38 = temp_a0->weapon.range + temp_a0->unk37_3;
@@ -1336,7 +1338,7 @@ void func_8006B460(func_8006B02C_t2* arg0)
     func_8006B2D4();
 }
 
-void func_8006B4B8(int arg0, vs_battle_setEquipmentForDrop_t* arg1)
+void func_8006B4B8(int arg0, vs_battle_droppedArmor* arg1)
 {
     func_8006B110(&vs_battle_characterState->unk3C->hitLocations[arg0].armor, arg1);
     func_8006B20C(vs_battle_characterState->unk3C);
@@ -1344,7 +1346,7 @@ void func_8006B4B8(int arg0, vs_battle_setEquipmentForDrop_t* arg1)
     func_8006B2D4();
 }
 
-void func_8006B524(vs_battle_setEquipmentForDrop_t* arg0)
+void func_8006B524(vs_battle_droppedArmor* arg0)
 {
     func_8006B194(&vs_battle_characterState->unk3C->accessory, arg0);
     func_8006B20C(vs_battle_characterState->unk3C);
@@ -1353,13 +1355,13 @@ void func_8006B524(vs_battle_setEquipmentForDrop_t* arg0)
 }
 
 void vs_battle_setBladeForDrop(
-    func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade)
+    vs_battle_droppedBlade* dropBlade, vs_battle_equipment* targetBlade)
 {
     int i;
-    func_8006B57C_t* a3;
+    vs_battle_droppedBlade* a3;
 
     dropBlade->id = targetBlade->id;
-    dropBlade->unk1 = targetBlade->unk2;
+    dropBlade->subId = targetBlade->subId;
     dropBlade->wepId = targetBlade->wepId;
     dropBlade->category = targetBlade->category;
     dropBlade->currentDp = targetBlade->currentDp;
@@ -1370,8 +1372,8 @@ void vs_battle_setBladeForDrop(
     dropBlade->intelligence = targetBlade->intelligence;
     dropBlade->agility = targetBlade->agility;
     dropBlade->cost = targetBlade->cost;
-    dropBlade->unk10_0 = targetBlade->damageType & 3;
-    dropBlade->unk10_2 = targetBlade->costType & 7;
+    dropBlade->damageType = targetBlade->damageType & 3;
+    dropBlade->costType = targetBlade->costType & 7;
     dropBlade->unk12 = targetBlade->unk14;
     dropBlade->range = targetBlade->range;
 
@@ -1388,12 +1390,12 @@ void vs_battle_setBladeForDrop(
 }
 
 void vs_battle_setGripForDrop(
-    vs_battle_setGripForDrop_t* dropGrip, vs_battle_equipment* targetGrip)
+    vs_battle_droppedGrip* dropGrip, vs_battle_equipment* targetGrip)
 {
     int i;
 
     dropGrip->id = targetGrip->id;
-    dropGrip->unk2 = targetGrip->unk2;
+    dropGrip->subId = targetGrip->subId;
     dropGrip->category = targetGrip->category;
     dropGrip->gemSlots = targetGrip->gemSlots;
     dropGrip->strength = targetGrip->strength;
@@ -1405,12 +1407,13 @@ void vs_battle_setGripForDrop(
     }
 }
 
-void vs_battle_setGemForDrop(func_800FD17C_t* dropGem, vs_battle_equipment* targetGem)
+void vs_battle_setGemForDrop(
+    vs_battle_droppedGem* dropGem, vs_battle_equipment* targetGem)
 {
     int i;
 
     dropGem->id = targetGem->id;
-    dropGem->unk2 = targetGem->unk2;
+    dropGem->unk2 = targetGem->subId;
     dropGem->gemEffects = targetGem->gemEffects;
     dropGem->strength = targetGem->strength;
     dropGem->intelligence = targetGem->intelligence;
@@ -1426,13 +1429,13 @@ void vs_battle_setGemForDrop(func_800FD17C_t* dropGem, vs_battle_equipment* targ
 }
 
 void vs_battle_setEquipmentForDrop(
-    vs_battle_setEquipmentForDrop_t* dropArmor, vs_battle_equipment* targetArmor)
+    vs_battle_droppedArmor* dropArmor, vs_battle_equipment* targetArmor)
 {
     int i;
-    vs_battle_setEquipmentForDrop_t* a3;
+    vs_battle_droppedArmor* a3;
 
     dropArmor->id = targetArmor->id;
-    dropArmor->unk1 = targetArmor->unk2;
+    dropArmor->subId = targetArmor->subId;
     dropArmor->wepId = targetArmor->wepId;
     dropArmor->category = targetArmor->category;
     dropArmor->currentDp = targetArmor->currentDp;
@@ -1460,23 +1463,24 @@ void vs_battle_setEquipmentForDrop(
     dropArmor->material = targetArmor->material;
 }
 
-void vs_battle_setWeaponForDrop(u_char* arg0, vs_battle_weaponInfo* arg1)
+void vs_battle_setWeaponForDrop(
+    vs_battle_droppedWeapon* drop, vs_battle_weaponInfo* weapon)
 {
     int i;
-
-    if (arg1->blade.id != 0) {
-        arg1->blade.currentDp = arg1->currentDp;
-        arg1->blade.currentPp = arg1->currentPp;
-        vs_battle_setBladeForDrop(&D_80060168.unk254[arg0[1]], &arg1->blade);
-        vs_battle_setGripForDrop(&D_80060168.unk530[arg0[2]], &arg1->grip);
+    if (weapon->blade.id != 0) {
+        weapon->blade.currentDp = weapon->currentDp;
+        weapon->blade.currentPp = weapon->currentPp;
+        vs_battle_setBladeForDrop(&D_80060168.unk254[drop->blade], &weapon->blade);
+        vs_battle_setGripForDrop(&D_80060168.unk530[drop->grip], &weapon->grip);
         for (i = 0; i < 3; ++i) {
-            if (arg1->gems[i].id != 0) {
+            if (weapon->gems[i].id != 0) {
                 vs_battle_setGemForDrop(
-                    &D_80060168.unk8A4[arg0[(unsigned int)(i + 4)]], &arg1->gems[i]);
+                    &D_80060168.unk8A4[drop->gems[i]], &weapon->gems[i]);
             }
         }
+
         for (i = 0; i < 24; ++i) {
-            arg0[(unsigned int)(i + 8)] = arg1->name[i];
+            drop->name[i] = weapon->name[i];
         }
     }
 }
@@ -1488,8 +1492,7 @@ void func_8006B9E0(u_char* arg0, vs_battle_shieldInfo* arg1)
     if (arg1->shield.id != 0) {
         arg1->shield.currentDp = arg1->currentPp;
         arg1->shield.currentPp = arg1->currentDp;
-        vs_battle_setEquipmentForDrop(
-            (vs_battle_setEquipmentForDrop_t*)(arg0 + 4), &arg1->shield);
+        vs_battle_setEquipmentForDrop((vs_battle_droppedArmor*)(arg0 + 4), &arg1->shield);
         for (i = 0; i < 3; ++i) {
             if (arg1->gems[i].id != 0) {
                 vs_battle_setGemForDrop(
@@ -1499,8 +1502,7 @@ void func_8006B9E0(u_char* arg0, vs_battle_shieldInfo* arg1)
     }
 }
 
-void vs_battle_setArmorForDrop(
-    vs_battle_setEquipmentForDrop_t* arg0, vs_battle_armorInfo* arg1)
+void vs_battle_setArmorForDrop(vs_battle_droppedArmor* arg0, vs_battle_armorInfo* arg1)
 {
     if (arg1->armor.id != 0) {
         arg1->armor.currentDp = arg1->currentDp;
@@ -1509,7 +1511,7 @@ void vs_battle_setArmorForDrop(
 }
 
 void vs_battle_setAccesoryForDrop(
-    vs_battle_setEquipmentForDrop_t* arg0, vs_battle_accessoryInfo* accessory)
+    vs_battle_droppedArmor* arg0, vs_battle_accessoryInfo* accessory)
 {
     if (accessory->accessory.id != 0) {
         vs_battle_setEquipmentForDrop(arg0, &accessory->accessory);
@@ -2416,7 +2418,45 @@ void func_800735F8(D_800F18EC_t* arg0)
     func_800735CC(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073718);
+void func_80073718(void)
+{
+    int i;
+
+    D_800F196C = 3;
+    D_800F18F0 = 2;
+    func_800BEC14(0xAC, vs_battle_characterState->unk20 & 1);
+    func_800BEC14(0xAF, (D_800F19D0.unk10.vy / 512) & 7);
+    if (D_800F19D0.unk20 == 0x600) {
+        func_800BEC14(0xB0, 0);
+    } else {
+        func_800BEC14(0xB0, 1);
+    }
+
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_actors[i] != NULL) {
+            func_8009FC60(i, -2, 0, -1);
+            switch (vs_battle_actors[i]->unk8) {
+            case 0x10:
+                break;
+            case 0x20:
+                break;
+            case 0x40:
+                vs_battle_actors[i]->unk8 = 0x10;
+                break;
+            default:
+                if (vs_battle_actors[i]->unk8 == 0x80) {
+                    func_800E6700(i);
+                }
+                vs_battle_actors[i]->unk8 = 0;
+                break;
+            }
+        }
+    }
+
+    func_80095B70(1);
+    D_800F1858 = 0;
+    func_8008D594(1);
+}
 
 void func_80073870(void)
 {
@@ -2845,7 +2885,7 @@ int func_80074A20(int arg0)
 {
     int ret;
 
-    func_800E6700();
+    func_800E6700(arg0);
     ret = 0;
 
     if (vs_battle_actors[arg0] != NULL) {

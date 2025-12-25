@@ -134,7 +134,7 @@ typedef struct {
 
 typedef struct {
     u_short id;
-    signed char unk2;
+    signed char subId;
     signed char wepId;
     char category;
     signed char strength;
@@ -486,7 +486,7 @@ typedef struct {
     char unk0;
     char unk1;
     short unk2;
-    vs_battle_setEquipmentForDrop_t unk4;
+    vs_battle_droppedArmor unk4;
     char unk2C[4];
 } func_8006B02C_t2;
 
@@ -501,22 +501,22 @@ typedef struct {
 void func_80069FC4(int, int);
 void func_8006AB44(vs_battle_equipment*, func_8006AB44_t*);
 void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
-void func_8006ACFC(vs_battle_equipment*, vs_battle_setEquipmentForDrop_t*);
+void func_8006ACFC(vs_battle_equipment*, vs_battle_droppedArmor*);
 void func_8006AE0C(vs_battle_equipment*, func_8006AC74_t2*);
-void func_8006AEAC(vs_battle_weaponInfo*, char*);
+void func_8006AEAC(vs_battle_weaponInfo*, vs_battle_droppedWeapon*);
 void func_8006B02C(vs_battle_shieldInfo*, func_8006B02C_t2*);
-void func_8006B110(vs_battle_armorInfo*, vs_battle_setEquipmentForDrop_t*);
-void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_setEquipmentForDrop_t* arg1);
-void func_8006B338(char*);
+void func_8006B110(vs_battle_armorInfo*, vs_battle_droppedArmor*);
+void func_8006B194(vs_battle_accessoryInfo* arg0, vs_battle_droppedArmor* arg1);
+void func_8006B338(vs_battle_droppedWeapon*);
 void vs_battle_setBladeForDrop(
-    func_8006B57C_t* dropBlade, vs_battle_equipment* targetBlade);
-void vs_battle_setGripForDrop(vs_battle_setGripForDrop_t*, vs_battle_equipment*);
-void vs_battle_setGemForDrop(func_800FD17C_t*, vs_battle_equipment*);
-void vs_battle_setWeaponForDrop(u_char* arg0, vs_battle_weaponInfo* arg1);
+    vs_battle_droppedBlade* dropBlade, vs_battle_equipment* targetBlade);
+void vs_battle_setGripForDrop(vs_battle_droppedGrip*, vs_battle_equipment*);
+void vs_battle_setGemForDrop(vs_battle_droppedGem*, vs_battle_equipment*);
+void vs_battle_setWeaponForDrop(
+    vs_battle_droppedWeapon* arg0, vs_battle_weaponInfo* arg1);
 void func_8006B9E0(u_char*, vs_battle_shieldInfo*);
-void vs_battle_setArmorForDrop(vs_battle_setEquipmentForDrop_t*, vs_battle_armorInfo*);
-void vs_battle_setAccesoryForDrop(
-    vs_battle_setEquipmentForDrop_t*, vs_battle_accessoryInfo*);
+void vs_battle_setArmorForDrop(vs_battle_droppedArmor*, vs_battle_armorInfo*);
+void vs_battle_setAccesoryForDrop(vs_battle_droppedArmor*, vs_battle_accessoryInfo*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
 void func_8007ACB0(void);

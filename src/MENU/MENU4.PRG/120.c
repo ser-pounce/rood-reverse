@@ -314,7 +314,7 @@ static char* _drawArmorInfoRow(vs_battle_armorInfo* arg0)
 static char* _drawAccessoryInfoRow(vs_battle_accessoryInfo* arg0)
 {
     char* sp10[2];
-    vs_battle_setEquipmentForDrop_t sp18;
+    vs_battle_droppedArmor sp18;
     int sp30[2];
 
     vs_battle_setAccesoryForDrop(&sp18, arg0);
@@ -1082,9 +1082,9 @@ static void func_80104C0C(int selectedRow, int arg1)
 static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
 {
     func_800FD0E0_t sp18;
-    func_8006B57C_t sp20;
-    vs_battle_setGripForDrop_t sp50;
-    func_800FD17C_t sp60;
+    vs_battle_droppedBlade sp20;
+    vs_battle_droppedGrip sp50;
+    vs_battle_droppedGem sp60;
     u_int sp80;
 
     int var_s1 = 158;
@@ -1131,7 +1131,7 @@ static void _setWeaponRow(int row, vs_battle_weaponInfo* weapon, int arg2)
 static void _setShieldRow(int row, vs_battle_shieldInfo* shield, int arg2)
 {
     func_800FD0E0_t sp18;
-    func_800FD17C_t sp20;
+    vs_battle_droppedGem sp20;
     int sp40;
     int var_s0;
     vs_battle_menuItem_t* meuItem;
@@ -1185,7 +1185,7 @@ static int _equipmentDetailScreen(int row)
     static char _cursorAnimState = 0;
 
     char* sp18[2];
-    vs_battle_setEquipmentForDrop_t sp20;
+    vs_battle_droppedArmor sp20;
     u_int sp48;
     int hitLocations;
     int equipmentCount;
@@ -1514,7 +1514,7 @@ static int _equipmentScreen(int element)
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
-    vs_battle_setEquipmentForDrop_t sp3E0;
+    vs_battle_droppedArmor sp3E0;
     int rowCount;
     int hitLocationCount;
     int rowType;
@@ -1562,7 +1562,7 @@ static int _equipmentScreen(int element)
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < rowCount; ++i, ++hitLocations) {
-            vs_battle_setEquipmentForDrop_t* p = &sp3E0;
+            vs_battle_droppedArmor* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
                 if (hitLocations->armor.armor.id != 0) {

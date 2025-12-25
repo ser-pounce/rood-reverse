@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
     char id;
-    char unk1;
+    char subId;
     char wepId;
     char category;
     short maxDp;
@@ -20,8 +20,8 @@ typedef struct {
     char intelligence;
     char agility;
     char cost;
-    short unk10_0 : 2;
-    short unk10_2 : 3;
+    short damageType : 2;
+    short costType : 3;
     short unk10_7 : 11;
     short unk12;
     vs_battle_range_t range;
@@ -29,11 +29,11 @@ typedef struct {
     signed char affinities[8];
     short material;
     short unk2A;
-} func_8006B57C_t;
+} vs_battle_droppedBlade;
 
 typedef struct {
     short id;
-    char unk2;
+    char subId;
     char category;
     char gemSlots;
     char strength;
@@ -41,7 +41,7 @@ typedef struct {
     char agility;
     char types[4];
     char unkC[4];
-} vs_battle_setGripForDrop_t;
+} vs_battle_droppedGrip;
 
 typedef struct {
     u_short id;
@@ -54,4 +54,13 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     signed char unk18[4];
-} func_800FD17C_t;
+} vs_battle_droppedGem;
+
+typedef struct {
+    char unk0;
+    u_char blade;
+    u_char grip;
+    char unk3;
+    u_char gems[4];
+    char name[24];
+} vs_battle_droppedWeapon;

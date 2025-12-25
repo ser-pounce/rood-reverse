@@ -329,7 +329,7 @@ int func_80102DEC(int arg0)
         if (temp_v0_2 != D_8010964F) {
             D_8010964F = temp_v0_2;
             temp_v0_3 = func_80102D30(0, temp_v0_2);
-            func_800FCA08((char*)D_80060148[temp_v0_3], sp10, &sp18, vs_battle_stringBuf);
+            func_800FCA08(&D_80060148[temp_v0_3], sp10, &sp18, vs_battle_stringBuf);
             do {
                 func_800FD270(temp_v0_3);
                 func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
@@ -594,7 +594,7 @@ void func_80103CC8(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    char(*new_var2)[32] = D_80060168.unk0;
+    vs_battle_droppedWeapon* new_var2 = D_80060168.unk0;
     char* new_var = D_800619D8.unk0;
 
     vs_battle_rMemzero(sp1A8, 8);
@@ -606,7 +606,7 @@ void func_80103CC8(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006AEAC(&sp10, new_var2[temp_s0 - 1]);
+                func_8006AEAC(&sp10, &new_var2[temp_s0 - 1]);
                 temp_v0 = func_80103BE4(arg0, &sp10);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
@@ -621,7 +621,7 @@ void func_80103CC8(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                func_8006AEAC(&sp10, new_var2[temp_s0 - 1]);
+                func_8006AEAC(&sp10, &new_var2[temp_s0 - 1]);
                 if (func_80103BE4(arg0, &sp10) == var_s3) {
                     sp1A8[var_s4++] = temp_s0;
                     new_var[i] = 0;
@@ -1052,8 +1052,8 @@ void func_80106BB4(int arg0)
     vs_mainMenu_resetStats();
 
     if (arg0 != 0) {
-        func_8006B194(&accessory,
-            (vs_battle_setEquipmentForDrop_t*)(D_80102468 + ((arg0 * 10) - 10)));
+        func_8006B194(
+            &accessory, (vs_battle_droppedArmor*)(D_80102468 + ((arg0 * 10) - 10)));
 
         for (i = 0; i < 16; ++i) {
             vs_mainMenu_equipmentStats[i] = accessory.classes[i & 7];

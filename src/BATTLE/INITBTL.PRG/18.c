@@ -158,7 +158,7 @@ void func_800FA6B8(void)
 {
     vs_main_bzero(D_800F1CE0, 0x20);
     vs_main_bzero(&D_800F1BF8, sizeof(D_800F1BF8));
-    vs_main_bzero(D_800F1CC8, 0xC);
+    vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
     vs_main_bzero(D_800F1BF0, 8);
     vs_main_bzero(&vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
     D_800F1BA8 = vs_main_allocHeap(0x800);

@@ -683,7 +683,7 @@ void func_8008B4BC(int arg0);
 void _nop(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
-void func_8008B960(char, char, char);
+void func_8008B960(int, int, int);
 func_8008BC04_t* func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
 int func_8008BF48(func_8008C1C8_t*);
@@ -2159,7 +2159,45 @@ void func_8006F848(void)
     func_800CF3F8(&sp10, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F89C);
+void func_8006F89C(void)
+{
+    switch (D_800F18FC) {
+    case 0:
+        func_8006F5FC();
+        break;
+    case 2:
+        if (func_8006F760() != 0) {
+            D_800F18F0 = 0xD;
+            func_8009E070(0, NULL, 6);
+            func_8006F848();
+            func_8008D594(1);
+        } else if ((D_800F19CC->unk8.unk0 != 0)
+                   && !(vs_main_skills[D_800F19CC->unk8.unk0].flags_15)
+                   && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0)
+                   && (D_800F19CC->unk8.unk4 == 0)) {
+            D_800F18F0 = 0xD;
+            func_8009E070(0, NULL, 6);
+            func_8006F848();
+            func_8008D594(1);
+        } else {
+            func_8006F5FC();
+        }
+        break;
+    default:
+        if ((D_800F19CC->unk8.unk0 != 0)
+            && !(vs_main_skills[D_800F19CC->unk8.unk0].flags_15)
+            && (D_800F19CC->unk8.unk44 == 0) && (D_800F19CC->unk2C07 == 0)
+            && (D_800F19CC->unk8.unk4 == 0)) {
+            D_800F18F0 = 0xD;
+            func_8009E070(0, NULL, 6);
+            func_8006F848();
+            func_8008D594(1);
+        } else {
+            func_8006F5FC();
+        }
+        break;
+    }
+}
 
 void func_800CB208(u_int, int);
 
@@ -7241,16 +7279,59 @@ void func_8008B8F8(char (*arg0)[12])
 {
     if (arg0 != NULL) {
         int doorId;
-        vs_main_memcpy(D_800F1CC8, arg0, sizeof D_800F1CC8);
+        vs_main_memcpy(&D_800F1CC8, arg0, sizeof D_800F1CC8);
         doorId = _getDoorId((*arg0)[8]);
         vs_battle_doorEntered = doorId;
     } else {
-        vs_main_bzero(D_800F1CC8, sizeof D_800F1CC8);
+        vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
         vs_battle_doorEntered = -1;
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B960);
+void func_8008B960(int arg0, int arg1, int arg2)
+{
+    int temp_t4;
+    int temp_v1_2;
+    int j;
+    func_8008B960_t* var_s0;
+    int i;
+
+    if (D_800F1BF8.unk70 != 0) {
+        temp_t4 = D_800F1BF8.unk10 / 12;
+        var_s0 = D_800F1BF8.unk70;
+        for (i = 0; i < temp_t4; ++i, ++var_s0) {
+            if ((arg2 >= 2) && ((&var_s0->unk2)->unk0_10 == arg2)) {
+                break;
+            }
+            if ((&var_s0->unk2)->unk0_10 == arg2) {
+                for (j = 0; j < 9; ++j) {
+                    int new_var = 1;
+                    if (((&var_s0->unk2)->unk0_0
+                            == ((arg0 - new_var) + (j - ((j / 3) * 3))))
+                        && ((&var_s0->unk2)->unk0_5 == ((arg1 - new_var) + (j / 3)))) {
+                        break;
+                    }
+                }
+                if (j != 9) {
+                    break;
+                }
+            }
+        }
+        if (i == temp_t4) {
+            var_s0 = NULL;
+        }
+    } else {
+        var_s0 = NULL;
+    }
+    if (var_s0 != NULL) {
+        vs_main_memcpy(&D_800F1CC8, var_s0, sizeof D_800F1CC8);
+        temp_t4 = _getDoorId(var_s0->unk8);
+        vs_battle_doorEntered = temp_t4;
+    } else {
+        vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
+        vs_battle_doorEntered = -1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BAC8);
 

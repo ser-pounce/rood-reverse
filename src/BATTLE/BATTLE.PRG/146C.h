@@ -71,14 +71,31 @@ typedef struct {
 } func_8008BC04_t;
 
 typedef struct {
+    u_short unk0_0 : 5;
+    u_short unk0_5 : 5;
+    u_short unk0_10 : 3;
+    u_short unk0_13 : 3;
+} func_8008B960_t2;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    func_8008B960_t2 unk2;
+    int unk4;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+} func_8008B960_t;
+
+typedef struct {
     char unk0;
     char unk1;
     short unk2;
     u_int unk4;
     u_int unk8;
     u_int unkC;
-    u_short unk10;
-    u_short unk12;
+    u_int unk10;
     int unk14;
     int unk18;
     int unk1C;
@@ -102,7 +119,7 @@ typedef struct {
     int unk64;
     short* unk68;
     func_8008B764_t* unk6C;
-    int unk70;
+    func_8008B960_t* unk70;
     int unk74;
     int unk78;
     int unk7C;
@@ -577,7 +594,7 @@ extern char D_800F1BF7;
 extern D_800F1BF8_t D_800F1BF8;
 extern vs_battle_scene* vs_battle_currentScene;
 extern void* D_800F1CBC;
-extern signed char D_800F1CC8[12];
+extern func_8008B960_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern int D_800F1CD8;

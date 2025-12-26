@@ -628,7 +628,7 @@ int func_80074798(func_8006EBF8_t*, char*);
 void func_80074B14(int arg0, char* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
-vs_battle_actor* func_80077240(int, int, int, int, int, int, int*, int);
+vs_battle_actor_dat* func_80077240(int, int, int, int, int, int, int*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -745,6 +745,7 @@ void func_8009FC60(int, int, int, int);
 extern const short D_80068BEC[];
 extern int D_80068C1C[];
 extern char D_800E8184[];
+extern char D_800E81E4[];
 extern u_char D_800E8200[];
 extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -3228,7 +3229,7 @@ int func_80077078(vs_battle_actor* arg0, int arg1, int arg2, int* arg3, int arg4
     return func_800995E8(&sp10);
 }
 
-void func_800770FC(int arg0 __attribute__((unused)), int arg1)
+void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
 {
     func_8007C8F8_t sp10;
 
@@ -3276,7 +3277,46 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80077240);
+vs_battle_actor_dat* func_80077240(
+    int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int* arg6, int arg7)
+{
+    int i;
+    vs_battle_actor_dat* temp_v0;
+    int _[6] __attribute__((unused));
+
+    if (vs_battle_actors[arg0] != NULL) {
+        return NULL;
+    }
+    if (arg0 < 0xA) {
+        temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
+        vs_main_bzero(temp_v0, 0x9B4);
+        i = 0xA;
+        temp_v0->unk0.unk3C = &temp_v0->unk50;
+        temp_v0->unk0.unk40 = 1;
+        temp_v0->unk0.unk44 = &temp_v0->unk9B4;
+        temp_v0->unk0.unk48[0] = &temp_v0->unk22B4[0];
+        temp_v0->unk0.unk48[1] = &temp_v0->unk22B4[1];
+
+        if (arg2 != 0) {
+            for (i = 1; i < 11; ++i) {
+                if (D_800E81E4[i] >= arg2) {
+                    break;
+                }
+            }
+        }
+        temp_v0->unk0.equippedWeaponType = i;
+        func_80077078(&temp_v0->unk0, arg0, arg1, arg6, arg7);
+        if (arg1 != 0x7F) {
+            func_800770FC(&temp_v0->unk0, arg0);
+            func_80077130(&temp_v0->unk0, arg0, arg2, 0, arg3);
+            func_80077130(&temp_v0->unk0, arg0, arg4, 1, arg5);
+            func_800771E0(
+                (char*)&temp_v0->unk0, arg0, temp_v0->unk0.equippedWeaponType, arg7);
+        }
+        return temp_v0;
+    }
+    return NULL;
+}
 
 void func_800773BC(
     vs_battle_actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
@@ -3309,7 +3349,8 @@ vs_battle_actor* func_800774FC(
 {
     vs_battle_actor* temp_v0;
 
-    temp_v0 = func_80077240(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    temp_v0 =
+        (vs_battle_actor*)func_80077240(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     if (temp_v0 != NULL) {
         while (func_800995B0() != 0) {
             func_8009967C();

@@ -702,6 +702,7 @@ void func_8008C070(int arg0, func_8008C1C8_t* arg1);
 int func_8008C1C8(func_8008C1C8_t* arg0);
 void func_8008C2C0(char, char, char, int);
 int func_8008C49C(int, int);
+void func_8008C6B4(int, int);
 D_800F1910_t2* func_8008D438(int, int, int);
 func_8008D710_t* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
@@ -820,6 +821,7 @@ extern D_800F1CA0_t* D_800F1CA0;
 extern int* D_800F1CA4;
 extern u_int D_800F1CA8;
 extern int D_800F1CB8;
+extern u_short D_800F1CCA;
 extern int D_800F1CC0;
 extern char D_800F1CD6;
 extern short D_800F1CDC;
@@ -7333,7 +7335,6 @@ void func_8008B8F8(char (*arg0)[12])
 void func_8008B960(int arg0, int arg1, int arg2)
 {
     int temp_t4;
-    int temp_v1_2;
     int j;
     func_8008B960_t* var_s0;
     int i;
@@ -7607,7 +7608,7 @@ int func_8008C49C(int arg0, int arg1)
     if (D_800F1CA0 != NULL) {
         D_800F1CA0[arg0].unk4_1 = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
-            *(arg0 + D_800F1D70) = 0;
+            D_800F1D70[arg0] = 0;
         }
         return 1;
     }
@@ -7616,7 +7617,44 @@ int func_8008C49C(int arg0, int arg1)
 
 void func_8008C518(int arg0) { func_8008C49C(arg0, -1); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C538);
+void func_8008C538(void)
+{
+    D_800F1CA0_t* var_s2;
+    int temp_s3;
+    int i;
+    int* temp_v0;
+    u_int temp_a0;
+
+    D_800F1D6E = 0;
+    D_800F1D68 = 0;
+    D_800F1D6F = 0;
+
+    for (i = 0; i < 4; ++i) {
+        D_800F1D70[i] = 7;
+    }
+
+    if (D_800F1BF8.unkA8 != NULL) {
+        temp_s3 = D_800F1BF8.unk48 / 184;
+        var_s2 = D_800F1BF8.unkA8;
+        for (i = 0; i < temp_s3; ++i, ++var_s2) {
+            temp_v0 = func_8009195C(var_s2->unk0_0);
+            if (temp_v0 != NULL) {
+                if (var_s2->unk0_9) {
+                    temp_v0[0] |= 0x100;
+                }
+
+                temp_v0[1] = var_s2->unkA8 / ONE;
+                temp_v0[2] = -(var_s2->unkAC / ONE);
+                temp_v0[3] = var_s2->unkB0 / ONE;
+            }
+        }
+    }
+
+    temp_a0 = D_800F1CCA >> 0xD;
+    if (temp_a0 >= 2) {
+        func_8008C6B4(temp_a0 - 2, -1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C6B4);
 

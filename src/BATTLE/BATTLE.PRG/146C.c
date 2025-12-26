@@ -550,7 +550,7 @@ typedef struct {
 
 typedef struct {
     vs_battle_equipment equip;
-    char unk30;
+    char material;
     char unk31;
     char unk32;
     char unk33;
@@ -688,7 +688,7 @@ void _nop(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(char, char, char);
-int func_8008BC04(int, int, int);
+func_8008BC04_t* func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
 int func_8008BF48(func_8008C1C8_t*);
 void func_8008C070(int arg0, func_8008C1C8_t* arg1);
@@ -1063,12 +1063,12 @@ void func_8006A8EC(vs_battle_accessoryInfo* arg0, func_8006A9F0_t* arg1)
 {
     int i;
 
-    vs_main_memcpy(arg0, arg1, sizeof arg0->accessory);
+    vs_main_memcpy(arg0, &arg1->equip, sizeof arg0->accessory);
     arg0->currentStr = arg1->equip.strength;
     arg0->currentInt = arg1->equip.intelligence;
     arg0->currentAgility = arg1->equip.agility;
 
-    arg0->unk36 = arg1->unk30;
+    arg0->unk36 = arg1->material;
     arg0->unk37 = arg1->unk31;
 
     for (i = 0; i < 4; ++i) {
@@ -1089,7 +1089,7 @@ void func_8006A9F0(vs_battle_armorInfo* arg0, func_8006A9F0_t* arg1)
     int i;
 
     vs_main_memcpy(&arg0->armor, &arg1->equip, sizeof arg0->armor);
-    arg0->armor.material = arg1->unk30;
+    arg0->armor.material = arg1->material;
     arg0->currentDp = arg1->equip.currentDp;
     arg0->maxDp = arg1->equip.maxDp;
     arg0->currentStr = arg0->baseStr = arg1->equip.strength;
@@ -1159,7 +1159,7 @@ void func_8006AC74(vs_battle_equipment* arg0, func_8006AC74_t2* arg1)
 
     arg0->id = arg1->id;
     arg0->subId = arg1->subId;
-    arg0->category = arg1->unk3;
+    arg0->category = arg1->category;
     arg0->gemSlots = arg1->gemSlots;
     arg0->strength = arg1->strength;
     arg0->intelligence = arg1->intelligence;
@@ -1259,7 +1259,7 @@ void func_8006B110(vs_battle_armorInfo* arg0, vs_battle_droppedArmor* arg1)
     if (arg1 != NULL) {
         temp_v0->unk33 = arg1->unk27;
         func_8006ACFC(&temp_v0->equip, arg1);
-        temp_v0->unk30 = arg1->material;
+        temp_v0->material = arg1->material;
     }
     func_8006A9F0(arg0, temp_v0);
     vs_main_freeHeapR(temp_v0);
@@ -2837,11 +2837,11 @@ int func_80074860(int arg0)
     return func_800BEC58(4, 0, sp20, 1) == 1;
 }
 
-int func_800748B8(int arg0)
+func_8008BC04_t* func_800748B8(int arg0)
 {
     func_8006EBF8_t sp10;
     char sp20[4];
-    int temp_s1;
+    func_8008BC04_t* temp_s1;
     char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
@@ -2851,7 +2851,7 @@ int func_800748B8(int arg0)
              - sp10.unk0.unk6)
             + 0x3F)
         >= 0x7FU) {
-        temp_s1 = 0;
+        temp_s1 = NULL;
     }
     return temp_s1;
 }
@@ -7206,7 +7206,52 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008B960);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BAC8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BC04);
+func_8008BC04_t* func_8008BC04(int arg0, int arg1, int arg2)
+{
+    int temp_t2;
+    func_8008BC04_t* var_t0;
+    int var_t1;
+
+    if (D_800F1BF8.unk88 != 0) {
+        temp_t2 = D_800F1BF8.unk28 / 20;
+        var_t0 = D_800F1BF8.unk88;
+        if (var_t0->unkA != 0) {
+            for (var_t1 = 0; var_t1 < temp_t2; ++var_t1, ++var_t0) {
+                if ((var_t0->unk0 == arg0) && (var_t0->unk2 == arg1)
+                    && (var_t0->unk4 == arg2)) {
+                    return var_t0;
+                }
+                switch (var_t0->unk6 - 4) {
+                case 0:
+                    if ((var_t0->unk0 == arg0) && ((var_t0->unk2 - 1) == arg1)
+                        && (var_t0->unk4 == arg2)) {
+                        return var_t0;
+                    }
+                    break;
+                case 1:
+                    if (((var_t0->unk0 + 1) == arg0) && (var_t0->unk2 == arg1)
+                        && (var_t0->unk4 == arg2)) {
+                        return var_t0;
+                    }
+                    break;
+                case 2:
+                    if ((var_t0->unk0 == arg0) && ((var_t0->unk2 + 1) == arg1)
+                        && (var_t0->unk4 == arg2)) {
+                        return var_t0;
+                    }
+                    break;
+                case 3:
+                    if (((var_t0->unk0 - 1) == arg0) && (var_t0->unk2 == arg1)
+                        && (var_t0->unk4 == arg2)) {
+                        return var_t0;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return NULL;
+}
 
 void func_8008BD74(func_8008C1C8_t* arg0)
 {
@@ -7808,7 +7853,7 @@ func_8008D710_t* func_8008E370(int* arg0)
     return NULL;
 }
 
-int func_8008E3B8(int* arg0)
+func_8008BC04_t* func_8008E3B8(int* arg0)
 {
     if (D_800F1BF8.unk88 != 0) {
         *arg0 = D_800F1BF8.unk28 / 20;

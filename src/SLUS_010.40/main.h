@@ -372,7 +372,7 @@ typedef struct {
 typedef struct {
     short id;
     char subId;
-    char unk3;
+    char category;
     char gemSlots;
     char strength;
     char intelligence;

@@ -33,11 +33,7 @@ typedef struct {
 } func_8008418C_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
+    int unk0[5];
     int unk14;
     int unk18;
     int unk1C;
@@ -59,10 +55,10 @@ typedef struct {
     short unk42;
     short unk44;
     short unk46;
-    short unk48;
-    short unk4A;
-    short unk4C;
-    short unk4E;
+    union {
+        short s16[2];
+        int s32;
+    } unk48[2];
     short sceneId;
     short unk52;
     short unk54;
@@ -707,7 +703,7 @@ void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
 void func_8008E6DC(int);
-void func_8008E938();
+void func_8008E938(void);
 int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
@@ -828,6 +824,8 @@ extern u_char D_800F1D70[];
 extern short D_800F1D98[];
 extern vs_main_CdQueueSlot* D_800F1DAC;
 extern vs_main_CdQueueSlot* D_800F1DB0;
+extern short D_800F1DB4;
+extern short D_800F1DB6;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
 extern short D_800F1DBC;
@@ -835,6 +833,7 @@ extern short D_800F1DBE;
 extern short D_800F1DC0;
 extern short D_800F1DC2;
 extern short D_800F1DC4;
+extern char D_800F1DC6;
 extern char D_800F1DC8;
 extern signed char D_800F1DC9;
 extern char D_800F1DCA;
@@ -2933,13 +2932,62 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074BAC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800751B8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800753F8);
+void func_800753F8(vs_battle_actor* arg0, SVECTOR* arg1)
+{
+    if (arg0->unkC < 0) {
+        if (arg0->unkC >= -0x7FFF) {
+            arg1->vx = arg0->unkC / ONE;
+            arg0->unkC = 0;
+        } else {
+            arg1->vx = -8;
+            arg0->unkC += 0x8000;
+        }
+    } else if (arg0->unkC <= 0x7FFF) {
+        arg1->vx = arg0->unkC / ONE;
+        arg0->unkC = 0;
+    } else {
+        arg1->vx = 8;
+        arg0->unkC -= 0x8000;
+    }
+
+    if (arg0->unk10 < 0) {
+        if (arg0->unk10 >= -0x7FFF) {
+            arg1->vz = arg0->unk10 / ONE;
+            arg0->unk10 = 0;
+        } else {
+            arg1->vz = -8;
+            arg0->unk10 += 0x8000;
+        }
+    } else if (arg0->unk10 <= 0x7FFF) {
+        arg1->vz = arg0->unk10 / ONE;
+        arg0->unk10 = 0;
+    } else {
+        arg1->vz = 8;
+        arg0->unk10 -= 0x8000;
+    }
+
+    if (arg0->unk14 < 0) {
+        if (arg0->unk14 >= -0x7FFF) {
+            arg1->vy = arg0->unk14 / ONE;
+            arg0->unk14 = 0;
+        } else {
+            arg1->vy = -8;
+            arg0->unk14 += 0x8000;
+        }
+    } else if (arg0->unk14 <= 0x7FFF) {
+        arg1->vy = arg0->unk14 / ONE;
+        arg0->unk14 = 0;
+    } else {
+        arg1->vy = 8;
+        arg0->unk14 -= 0x8000;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80075554);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800760CC);
 
-int func_8007629C(u_int* otag)
+int func_8007629C(u_long* otag)
 {
     int ret;
     u_int temp_a0;
@@ -2974,7 +3022,7 @@ int func_8007629C(u_int* otag)
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
     func_80048F8C();
-    DrawOTag((u_long*)otag);
+    DrawOTag(otag);
     FntFlush(-1);
     return ret;
 }
@@ -7210,13 +7258,13 @@ func_8008BC04_t* func_8008BC04(int arg0, int arg1, int arg2)
 {
     int temp_t2;
     func_8008BC04_t* var_t0;
-    int var_t1;
+    int i;
 
     if (D_800F1BF8.unk88 != 0) {
         temp_t2 = D_800F1BF8.unk28 / 20;
         var_t0 = D_800F1BF8.unk88;
         if (var_t0->unkA != 0) {
-            for (var_t1 = 0; var_t1 < temp_t2; ++var_t1, ++var_t0) {
+            for (i = 0; i < temp_t2; ++i, ++var_t0) {
                 if ((var_t0->unk0 == arg0) && (var_t0->unk2 == arg1)
                     && (var_t0->unk4 == arg2)) {
                     return var_t0;
@@ -8026,7 +8074,48 @@ void func_8008E8F8(void)
     D_800F1DD4 = vs_main_allocHeap(0x800);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008E938);
+void func_8008E938(void)
+{
+    D_800F1C84_t* temp_s0;
+    int i;
+
+    D_800F1DB4 = 0;
+    D_800F1DB6 = 0;
+    D_800F1DB8 = 0x1000;
+    D_800F1DBA = 0x1000;
+
+    if (D_800F1C84 != NULL) {
+
+        temp_s0 = D_800F1C84;
+
+        for (i = 1; i < 5; ++i) {
+            if (temp_s0->unk0[0] != temp_s0->unk0[i]) {
+                break;
+            }
+        }
+        if ((i == 5) && (temp_s0->unk0[0] & 0xFFFFFF)) {
+            D_800F1DC6 = 1;
+        } else {
+            D_800F1DC6 = 0;
+            func_8008EB30(temp_s0->unk0);
+        }
+        if ((temp_s0->unk48[0].s32 == 0) && (temp_s0->unk48[1].s32 == 0)) {
+            if (D_800F1C60 != NULL) {
+                temp_s0->unk48[1].s16[0] = D_800F1C60->unk0 * 4;
+                temp_s0->unk48[1].s16[1] = D_800F1C60->unk2 * 4;
+            } else {
+                temp_s0->unk48[1].s16[0] = 0x20;
+                temp_s0->unk48[1].s16[1] = 0x20;
+            }
+        }
+        temp_s0->unk48[0].s16[0] *= 128;
+        temp_s0->unk48[0].s16[1] *= 128;
+        temp_s0->unk48[1].s16[0] *= 128;
+        temp_s0->unk48[1].s16[1] *= 128;
+        temp_s0->unk48[1].s16[0] -= temp_s0->unk48[0].s16[0];
+        temp_s0->unk48[1].s16[1] -= temp_s0->unk48[0].s16[1];
+    }
+}
 
 int func_80090C2C(int);
 
@@ -8243,8 +8332,8 @@ void func_8008FA14(D_800F1DD4_t* arg0)
 {
     D_800F1C84_t* temp_s0 = D_800F1C84;
 
-    arg0->unk0 = temp_s0->unk48 + (rand() % temp_s0->unk4C);
-    arg0->unk4 = temp_s0->unk4A + (rand() % temp_s0->unk4E);
+    arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+    arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
     arg0->unk2 = (rand() % 512) + 0x200;
     arg0->unkC = 0;
     arg0->unkF = (rand() & 0xF) + 8;
@@ -8262,8 +8351,8 @@ void func_80090A1C(D_800F1DD4_t* arg0)
 
     temp_s0 = D_800F1C84;
     if (temp_s0 != NULL) {
-        arg0->unk0 = temp_s0->unk48 + (rand() % temp_s0->unk4C);
-        arg0->unk4 = temp_s0->unk4A + (rand() % temp_s0->unk4E);
+        arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+        arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
     } else {
         arg0->unk0 = rand() % 4096;
         arg0->unk4 = rand() % 4096;

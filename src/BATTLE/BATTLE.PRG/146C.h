@@ -520,10 +520,10 @@ typedef struct {
 } D_800F1904_t3;
 
 void func_80069FC4(int, int);
-void func_8006AB44(vs_battle_equipment*, func_8006AB44_t*);
-void func_8006AC74(vs_battle_equipment*, func_8006AC74_t2*);
+void func_8006AB44(vs_battle_equipment*, vs_battle_droppedBlade*);
+void func_8006AC74(vs_battle_equipment*, vs_battle_droppedGrip*);
 void func_8006ACFC(vs_battle_equipment*, vs_battle_droppedArmor*);
-void func_8006AE0C(vs_battle_equipment*, func_8006AC74_t2*);
+void func_8006AE0C(vs_battle_equipment*, vs_battle_droppedGem*);
 void func_8006AEAC(vs_battle_weaponInfo*, vs_battle_droppedWeapon*);
 void func_8006B02C(vs_battle_shieldInfo*, vs_battle_droppedShield*);
 void func_8006B110(vs_battle_armorInfo*, vs_battle_droppedArmor*);

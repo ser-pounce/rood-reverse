@@ -12,27 +12,29 @@ typedef struct {
     char subId;
     char wepId;
     char category;
-    short maxDp;
-    short maxPp;
-    short currentDp;
-    short currentPp;
+    u_short maxDp;
+    u_short maxPp;
+    u_short currentDp;
+    u_short currentPp;
     char strength;
     char intelligence;
     char agility;
     char cost;
-    short damageType : 2;
-    short costType : 3;
-    short unk10_7 : 11;
-    short unk12;
+    char damageType : 2;
+    char costType : 3;
+    char unk10_5 : 3;
+    char unk11;
+    u_short unk12;
     vs_battle_range_t range;
     signed char classes[8];
     signed char affinities[8];
     short material;
-    short unk2A;
+    char unk2A;
+    char index;
 } vs_battle_droppedBlade;
 
 typedef struct {
-    short id;
+    u_short id;
     char subId;
     char category;
     char gemSlots;
@@ -40,7 +42,8 @@ typedef struct {
     char intelligence;
     char agility;
     char types[4];
-    char unkC[4];
+    u_short unkC;
+    u_short unkE;
 } vs_battle_droppedGrip;
 
 typedef struct {
@@ -53,7 +56,9 @@ typedef struct {
     char agility;
     signed char classes[8];
     signed char affinities[8];
-    signed char unk18[4];
+    u_short unk18;
+    char unk1A;
+    char unk1B;
 } vs_battle_droppedGem;
 
 typedef struct {

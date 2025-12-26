@@ -808,13 +808,13 @@ void func_801042C4(vs_battle_equipment* arg0, int arg1, int arg2)
         func_8006AB44(arg0, &D_80060168.unk280[arg2]);
         return;
     case 2:
-        func_8006AC74(arg0, (func_8006AC74_t2*)D_80060168.unk540[arg2]);
+        func_8006AC74(arg0, (func_8006AC74_t2*)&D_80060168.unk540[arg2]);
         return;
     case 4:
         func_8006ACFC(arg0, &D_80060168.unk640[arg2]);
         return;
     case 5:
-        func_8006AE0C(arg0, (func_8006AC74_t2*)D_80060168.unk8C0[arg2]);
+        func_8006AE0C(arg0, (func_8006AC74_t2*)&D_80060168.unk8C0[arg2]);
         return;
     }
 }
@@ -941,10 +941,10 @@ int func_80104EC0(int arg0, int arg1)
         var_v1 = D_80060168.unk280[arg1].unk2A;
     }
     if (arg0 == 2) {
-        var_v1 = D_80060168.unk540[arg1][6];
+        var_v1 = D_80060168.unk540[arg1].unkC;
     }
     if (arg0 == 5) {
-        var_v1 = D_80060168.unk8C0[arg1][12];
+        var_v1 = D_80060168.unk8C0[arg1].unk18;
         if (var_v1 & 0x80) {
             var_v1 = 0;
         }
@@ -958,7 +958,7 @@ int func_80104F50(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 5) {
-        var_v1 = D_80060168.unk8C0[arg1][12];
+        var_v1 = D_80060168.unk8C0[arg1].unk18;
         if (!(var_v1 & 0x80)) {
             var_v1 = 0;
         }

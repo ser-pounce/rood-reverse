@@ -632,7 +632,7 @@ vs_battle_actor_dat* func_80077240(int, int, int, int, int, int, int*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
-void func_8007A850(D_800F1904_t3*);
+int func_8007A850(D_800F1904_t3*);
 void func_8007A9DC(VECTOR*, VECTOR*, VECTOR*);
 void func_8007AACC(VECTOR* arg0);
 void func_8007B10C(int, int, int, short, short);
@@ -3666,7 +3666,40 @@ void func_8007983C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007A850);
+int func_8007A850(D_800F1904_t3* arg0)
+{
+    VECTOR sp10;
+    VECTOR sp20;
+    int temp_s0;
+    int temp_v0_2;
+    int temp_v1;
+
+    sp10.vx = (D_1F800000[13] - D_1F800000[17]) / ONE;
+    sp10.vz = (D_1F800000[15] - D_1F800000[19]) / ONE;
+    sp10.vy = (D_1F800000[14] - D_1F800000[18]) / ONE;
+
+    VectorNormal(&sp10, &sp20);
+    temp_s0 = ratan2(sp20.vx, sp20.vz);
+    temp_v1 = temp_s0 + 0x1000;
+    temp_s0 = temp_v1 / ONE;
+    temp_s0 = temp_v1 - (temp_s0 * ONE);
+    D_1F800000[22] = temp_s0;
+    temp_v0_2 = ratan2(
+        sp20.vy, SquareRoot12((sp20.vx * sp20.vx) / ONE + (sp20.vz * sp20.vz) / ONE));
+    D_1F800000[21] = temp_v0_2;
+    if (arg0 != NULL) {
+        arg0->unk0.vx = temp_s0;
+        arg0->unk0.vy = temp_v0_2;
+        if (sp10.vx != 0) {
+            arg0->unk0.vz = (sp10.vx * ONE) / sp20.vx;
+        } else if (sp10.vz != 0) {
+            arg0->unk0.vz = (sp10.vz * ONE) / sp20.vz;
+        } else {
+            arg0->unk0.vz = 0x400;
+        }
+    }
+    return temp_s0;
+}
 
 void func_8007A9DC(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {

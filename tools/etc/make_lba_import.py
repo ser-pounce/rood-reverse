@@ -11,16 +11,11 @@ if __name__ == '__main__':
         data = read_csv(
             sys.argv[1],
             skiprows=7,
-            sep=r"\s*\|\s*",
-            engine='python',
-            names=['Type', 'Name', 'Length', 'LBA', 'Timecode', 'Bytes', 'Source'],
+            sep=r'\s+',
             usecols=['Type', 'Name', 'LBA', 'Length'],
             converters={
-                'Name': lambda n: n.strip().removesuffix(';1').replace('.', '_'),
-                'LBA': lambda l: l.strip(),
-                'Length': lambda l: l.strip(),
+                'Name': lambda n: n.removesuffix(';1').replace('.', '_') if n is not None else '',
             },
-            skip_blank_lines=True,
         ).query('Type == "File" or Type == "XA"')
 
         data['define'] = '#define'

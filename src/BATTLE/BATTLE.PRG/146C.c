@@ -620,6 +620,12 @@ typedef struct {
     char unkF4[24];
 } vs_battle_droppedWeapon2;
 
+typedef struct {
+    int unk0;
+    short unk4;
+    u_short unk6;
+} func_8006CE70_t;
+
 void func_8006A334(vs_battle_weaponInfo*, vs_battle_equipment*);
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
@@ -695,6 +701,7 @@ void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
 int func_8007E454(int);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
+int func_8007F434(void);
 int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
@@ -747,6 +754,8 @@ void func_8008D658(func_8008C1C8_t*);
 int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
+func_8008D710_t* func_8008E370(int* arg0);
+func_8008BC04_t* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
 void func_8008E6DC(int);
@@ -760,6 +769,7 @@ void func_8009291C(int);
 void func_80092A18(void);
 int func_80093764(int);
 void func_80093824(int);
+void func_80093B04(void*);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
 void func_80095B7C(int, int);
@@ -1974,7 +1984,45 @@ void func_8006CDD8(short* arg0)
 
 void func_8006CE50(void) { func_8008D5A0(0xB4); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CE70);
+void func_8006CE70(func_8006CE70_t* arg0)
+{
+    int sp10;
+    func_8008BC04_t* temp_v0;
+    func_8008D710_t* temp_v0_2;
+    short temp_v1_4;
+    int temp_v1;
+    int temp_v1_3;
+    int new_var2 = 4;
+    int new_var3 = 2;
+
+    switch (arg0->unk6 & 0x1F0) {
+    case 0x10:
+        temp_v0 = func_8008E3B8(&sp10);
+        if ((temp_v0[arg0->unk6 & 0xF].unk8 < new_var2)
+            && (temp_v0[arg0->unk6 & 0xF].unk8 >= new_var3) && (func_8007F434() != 0)) {
+            temp_v0[arg0->unk6 & 0xF].unk8 = 0;
+            vs_main_playSfxDefault(0x7E, 0x3F);
+            vs_main_playSfxDefault(0x7E, 0x40);
+        } else {
+            func_80093B04(arg0);
+        }
+        break;
+    case 0x20:
+    case 0x100:
+        temp_v0_2 = func_8008E370(&sp10);
+        if ((temp_v0_2[arg0->unk6 & 0xF].unkC < new_var2)
+            && (temp_v0_2[arg0->unk6 & 0xF].unkC >= 2)
+            && !func_800BEBF4(temp_v0_2[arg0->unk6 & 0xF].unk10 + 0x3C0)
+            && (func_8007F434() != 0)) {
+            temp_v0_2[arg0->unk6 & 0xF].unkC = 0;
+            vs_main_playSfxDefault(0x7E, 0x3F);
+            vs_main_playSfxDefault(0x7E, 0x40);
+        } else {
+            func_80093B04(arg0);
+        }
+        break;
+    }
+}
 
 void func_8006D028(int arg0)
 {

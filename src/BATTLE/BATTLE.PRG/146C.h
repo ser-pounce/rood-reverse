@@ -63,7 +63,8 @@ typedef struct {
     short unk2;
     short unk4;
     short unk6;
-    short unk8;
+    char unk8;
+    char unk9;
     char unkA;
     char unkB;
     int unkC;

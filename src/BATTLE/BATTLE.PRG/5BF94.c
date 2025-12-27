@@ -49,8 +49,8 @@ void func_800D17A8(int, int, int, int);
 void func_800D268C(void);
 void func_800D46DC(int, int);
 u_char func_800D5170(void*);
-int func_800D5198(void);
-void func_800D6AEC(int, u_short);
+int func_800D5198(void*);
+void func_800D6AEC(void*, u_short);
 extern int (*D_800EC3F4[])(void*);
 
 extern u_long* D_1F800000[];
@@ -1135,9 +1135,9 @@ int func_800D4DA8(void) { return 1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
 
-int func_800D4E5C(int arg0)
+int func_800D4E5C(void* arg0)
 {
-    func_800D6AEC(arg0, func_800D5198());
+    func_800D6AEC(arg0, func_800D5198(arg0));
     return 1;
 }
 

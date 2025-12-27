@@ -498,15 +498,6 @@ typedef struct {
 } D_800F1A68_t;
 
 typedef struct {
-    func_8006AC74_t2 unk0;
-    char unk1C[4];
-    char unk20[4];
-    int unk24;
-    char unk28[4];
-    int unk2C;
-} func_8006AC74_t;
-
-typedef struct {
     u_short unk0_0 : 10;
     u_short unk0_10 : 6;
 } D_800F18E8_t;

@@ -343,18 +343,6 @@ typedef struct {
 } D_80061078_t;
 
 typedef struct {
-    vs_battle_droppedGrip unk0;
-    char affinities[4];
-    char unk14;
-    char unk15;
-    char unk16;
-    char unk17;
-    short unk18;
-    char index;
-    char unk1B;
-} func_8006AC74_t2;
-
-typedef struct {
     char unk0;
     char unk1;
     u_short unk2;
@@ -415,7 +403,7 @@ extern vs_battle_droppedWeapon D_80060148[];
 extern D_80060168_t D_80060168;
 extern char D_80060238[][48];
 extern vs_battle_droppedArmor D_80060780[];
-extern func_8006AC74_t2 D_80060A0C[];
+extern vs_battle_droppedGrip D_80060A0C[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];

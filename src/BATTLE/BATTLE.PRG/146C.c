@@ -735,6 +735,7 @@ void func_80098194(int);
 void func_800983F8(void*);
 void func_80098D6C(int, int, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
+void func_8009D458(void);
 void func_8009D6F4(void);
 void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
@@ -7042,7 +7043,55 @@ int func_80089104(void) { return D_800F18A8; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089114);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089888);
+void func_80089888(void)
+{
+    SVECTOR sp10;
+    func_8006EBF8_t sp18;
+    func_80089888_t sp28;
+    int temp_v0;
+    int temp_v0_2;
+
+    func_8009D458();
+    sp28.unk0_0 = D_800F1AB0.unk4_8;
+    sp28.unk0_16 = D_800F1AB0.unk6_10;
+    sp28.unk0_8 = D_800F1AB0.unk2_13;
+    sp28.unk0_24 = D_800F1AB0.unk4_13 * 64;
+    func_800A30A0(0, &sp28, -0x800, 2);
+
+    if (D_800F1AB0.unk4_15) {
+        switch (D_800F1AB0.unk4_13) {
+        case 0:
+            sp10.vx = 0x40;
+            sp10.vz = 0;
+            sp10.vy = 0;
+            break;
+        case 1:
+            sp10.vx = 0;
+            sp10.vz = 0x40;
+            sp10.vy = 0;
+            break;
+        case 2:
+            sp10.vx = 0x40;
+            sp10.vz = 0;
+            sp10.vy = 0;
+            break;
+        case 3:
+            sp10.vx = 0;
+            sp10.vz = 0x40;
+            sp10.vy = 0;
+            break;
+        default:
+            sp10.vy = 0;
+            break;
+        }
+        func_800A9D24(0, &sp10, 0);
+    }
+    func_800A1108(0, &sp18);
+    func_8009E5C4(0);
+    func_800A4828(0, &D_1F800000[5]);
+    func_800A0A1C(0, 0);
+    func_800E6158();
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089A00);
 

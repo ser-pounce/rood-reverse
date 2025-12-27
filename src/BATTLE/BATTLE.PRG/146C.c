@@ -693,7 +693,7 @@ int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
-int func_8007E454(short);
+int func_8007E454(int);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
 int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
@@ -4526,7 +4526,6 @@ int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
     func_8006EBF8_t sp10;
     int temp_v1_2;
     int var_a0;
-    int var_v0;
     int temp_s1;
     int temp_s2;
 
@@ -5185,7 +5184,73 @@ void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E454);
+extern u_int D_800E8214[];
+
+int func_8007E454(int arg0)
+{
+    int var_a2;
+    int i;
+
+    if (arg0 != 0) {
+        for (i = 0; i < 8; ++i) {
+            if (arg0 < D_800E8214[i]) {
+                break;
+            }
+        }
+
+        var_a2 = 0;
+
+        if (i < 8) {
+            switch (i) {
+            case 0:
+                for (i = 0; i < 16; ++i) {
+                    if (D_80060168.unk280[i].id == arg0) {
+                        var_a2 = 1;
+                        break;
+                    }
+                }
+                break;
+            case 1:
+                for (i = 0; i < 16; ++i) {
+                    if (D_80060168.unk540[i].id == arg0) {
+                        var_a2 = 1;
+                        break;
+                    }
+                }
+                break;
+            case 2:
+                for (i = 0; i < 16; ++i) {
+                    if (D_80060168.unk640[i].id == arg0) {
+                        var_a2 = 1;
+                        break;
+                    }
+                }
+                break;
+            case 4:
+                for (i = 0; i < 48; ++i) {
+                    if (D_80060168.unk8C0[i].id == arg0) {
+                        var_a2 = 1;
+                        break;
+                    }
+                }
+                break;
+            case 5:
+            case 6:
+            case 7:
+                for (i = 0; i < 64; ++i) {
+                    if ((D_80060168.unkE00[i].unk0 == arg0)
+                        && (D_80060168.unkE00[i].unk2 != 0)) {
+                        var_a2 = D_80060168.unkE00[i].unk2;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        return var_a2;
+    }
+    return 1;
+}
 
 short func_8007E5E0(vs_skill_t* arg0, vs_battle_actor2* arg1)
 {
@@ -7164,7 +7229,7 @@ void _allocHeap(void* arg0, int size)
     vs_main_memcpy(D_800F1884, arg0, size);
 }
 
-void func_80088D40(int* arg0)
+void func_80088D40(int* arg0, int arg1 __attribute__((unused)))
 {
     int temp_a0 = *arg0;
     D_800F1880.unk8 = temp_a0;
@@ -7204,6 +7269,7 @@ static void _loadZnd(int id)
     }
 }
 
+// https://decomp.me/scratch/Wau7O
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088EF0);
 
 void func_80089098(void)

@@ -7987,7 +7987,6 @@ extern struct {
     short processing;
     short queued;
 } _cdQueueCount;
-extern int vs_main_startState;
 extern int _sfxData[VS_EFFECT00_DAT_SIZE];
 extern int sp2;
 extern int _resetEnabled;
@@ -9699,7 +9698,7 @@ int vs_main_clearMusicLoadQueue(void)
     return ret;
 }
 
-static int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
+int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
 {
     int ret;
 

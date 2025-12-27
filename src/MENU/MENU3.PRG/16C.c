@@ -725,7 +725,7 @@ void func_8010408C(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    u_short(*new_var2)[128] = &D_80060168.unkE00;
+    D_80060168_t2* new_var2 = D_80060168.unkE00;
     char* new_var = D_800619D8.unk70;
 
     vs_battle_rMemzero(sp10, 0x40);
@@ -737,7 +737,7 @@ void func_8010408C(int arg0)
         for (i = 0; i < 0x40; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                temp_v0 = func_8010406C(arg0, (void*)(*new_var2 + ((temp_s0 * 2) - 2)));
+                temp_v0 = func_8010406C(arg0, (void*)&new_var2[temp_s0 - 1]);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
                 }
@@ -751,8 +751,7 @@ void func_8010408C(int arg0)
         for (i = 0; i < 0x40; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                if (func_8010406C(arg0, (void*)(*new_var2 + ((temp_s0 * 2) - 2)))
-                    == var_s3) {
+                if (func_8010406C(arg0, (void*)&new_var2[temp_s0 - 1]) == var_s3) {
                     sp10[var_s4++] = temp_s0;
                     new_var[i] = 0;
                 }

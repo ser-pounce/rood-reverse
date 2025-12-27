@@ -305,33 +305,28 @@ typedef struct {
 } vs_main_mapStatus_t;
 
 typedef struct {
+    u_short unk0;
+    char unk2;
+    char unk3;
+} D_80060168_t2;
+
+typedef struct {
     vs_battle_droppedWeapon unk0[2]; // 1st dimension unknown
     int unk40[48];
     vs_battle_droppedShield unk100[2]; // 1st dimension unknown
-    char unk160[160];
-    char unk200[84];
+    char unk160[244];
     vs_battle_droppedBlade unk254[1];
     vs_battle_droppedBlade unk280[2]; // 1st dimension unknown
-    char unk2D8[40];
-    char unk300[256];
-    char unk400[256];
-    char unk500[48];
+    char unk2D8[600];
     vs_battle_droppedGrip unk530[1];
     vs_battle_droppedGrip unk540[2]; // 1st dimension unknown
-    char unk56C[160];
-    char unk600[64];
+    char unk56C[224];
     vs_battle_droppedArmor unk640[4]; // 1st dimension unknown
-    char unk6E0[32];
-    char unk700[256];
-    char unk800[164];
+    char unk6E0[452];
     vs_battle_droppedGem unk8A4[1];
     vs_battle_droppedGem unk8C0[2]; // 1st dimension unknown
-    char unk8F8[264];
-    char unkA00[256];
-    char unkB00[256];
-    char unkC00[256];
-    char unkD00[256];
-    u_short unkE00[128];
+    char unk8F8[1288];
+    D_80060168_t2 unkE00[64];
 } D_80060168_t;
 
 typedef struct {
@@ -395,6 +390,7 @@ extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern char vs_main_soundMono;
 extern char vs_main_vibrationEnabled;
+extern int vs_main_startState;
 extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
@@ -438,6 +434,8 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram);
 void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram);
 int vs_main_loadMusicSlot(int id, int targetSlot);
 int vs_main_clearMusicLoadQueue(void);
+int vs_main_loadAndWaitMusicSlot(int id, int targetSlot);
+void vs_main_loadAndWaitSoundSlot(int id);
 void vs_main_playSfxDefault(int, int);
 void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);

@@ -500,7 +500,15 @@ typedef struct {
 typedef struct {
     short unk0;
     short unk2;
-    u_int unk4;
+    union {
+        struct {
+            u_int unk0_0 : 9;
+            u_int unk0_9 : 5;
+            u_int unk0_14 : 5;
+            u_int unk0_19 : 13;
+        } fields;
+        int value;
+    } unk4;
 } D_800F18EC_t;
 
 typedef struct D_800F1900_t {
@@ -650,7 +658,7 @@ void func_8007BFF8(int);
 void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
-void func_8007C694(int, int, int, int, int);
+int func_8007C694(int, int, int, int, int);
 void func_8007CCCC(int arg0);
 void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
@@ -2512,7 +2520,6 @@ void func_800735CC(D_800F18EC_t* arg0)
 void func_800735F8(D_800F18EC_t* arg0)
 {
     func_8006EBF8_t sp18;
-    int temp_v1_2;
 
     func_8008B4C8(1);
     func_800CB660(vs_battle_characterState->unk20 & 1);
@@ -2523,17 +2530,16 @@ void func_800735F8(D_800F18EC_t* arg0)
     case 6:
     case 7:
     case 8:
-        func_80072EC4(0, arg0->unk4);
+        func_80072EC4(0, arg0->unk4.value);
         return;
     case 10:
         func_800A1108(0, &sp18);
         func_8006F4B0(&sp18.unk0);
         func_800BEC14(0xB7, 1);
-        func_8007C694(arg0->unk4 & 0x1FF, (arg0->unk4 >> 9) & 0x1F,
-            (arg0->unk4 >> 0xE) & 0x1F, 0, 8);
-        temp_v1_2 = arg0->unk4 >> 0x13;
-        if (vs_battle_characterState->unk3C->currentMP >= temp_v1_2) {
-            vs_battle_characterState->unk3C->currentMP -= temp_v1_2;
+        func_8007C694(arg0->unk4.fields.unk0_0, arg0->unk4.fields.unk0_9,
+            arg0->unk4.fields.unk0_14, 0, 8);
+        if (vs_battle_characterState->unk3C->currentMP >= arg0->unk4.fields.unk0_19) {
+            vs_battle_characterState->unk3C->currentMP -= arg0->unk4.fields.unk0_19;
         }
         func_8009E070(0, NULL, 7);
         break;
@@ -4436,7 +4442,52 @@ void func_8007C654(D_80061068_t* arg0, int arg1, int arg2)
         sp10.unk0.unk0.fields.unk1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007C694);
+int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    func_8006EBF8_t sp10;
+    int temp_v1_2;
+    int var_a0;
+    int var_v0;
+    int temp_s1;
+    int temp_s2;
+
+    temp_s1 = vs_main_locationZoneMapIds[arg0 * 2];
+    temp_s2 = vs_main_locationZoneMapIds[arg0 * 2 + 1];
+
+    D_800F1AB0.unk4_8 = arg1;
+    D_800F1AB0.unk6_10 = arg2;
+    D_800F1AB0.unk2_13 = 0;
+
+    func_800A1108(0, &sp10);
+
+    temp_v1_2 = sp10.unk0.unkA + 0x200;
+    var_a0 = temp_v1_2 - ((temp_v1_2 / ONE) * ONE);
+    if (var_a0 < 0) {
+        var_a0 += 0x3FF;
+    }
+
+    D_800F1A48 = 1;
+    D_800F1A98 = arg3;
+    D_800F1AA8 = arg4;
+    D_800F1AB0.unk4_13 = (var_a0 >> 10) & 0x3;
+    D_800F1AB0.unk6_15 = 0;
+
+    if (temp_s1 != D_800F1AB0.zndId) {
+        D_800F1A48 = 2;
+        _loadZnd(temp_s1);
+    } else if (temp_s2 != D_800F1AB0.unk1) {
+        D_800F1A48 = 1;
+        func_80089D24(temp_s2);
+    }
+
+    D_800F1AB0.zndId = temp_s1;
+    D_800F1AB0.unk1 = temp_s2;
+    func_8006C250();
+    func_800A0A1C(0, 1);
+    func_8008B8F8(NULL);
+
+    return 1;
+}
 
 int _getLocationId(int zoneId, int mapId)
 {

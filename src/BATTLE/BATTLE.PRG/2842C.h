@@ -1,12 +1,15 @@
 #pragma once
-
+#include "146C.h"
 typedef struct {
     char unk0;
     char unk1;
     short unk2;
     void* unk4;
     int unk8;
-    int unkC;
+    union {
+        char u8[4];
+        int s32;
+    } unkC;
     char unk10;
     char unk11;
     char unk12;

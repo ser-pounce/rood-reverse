@@ -642,7 +642,7 @@ void func_8006D0A4(u_int*);
 void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
 int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
 int func_8006DEFC(SVECTOR*, int, int);
-void func_8006E158();
+void func_8006E158(void);
 void func_8006EF5C(D_800F1904_t2*);
 int func_8006F204(void);
 void _setRoomSeen(void);
@@ -3410,7 +3410,74 @@ void func_8007647C(int arg0, int arg1)
     temp_s0->flags.fields.unk3 = 0x80;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800765B0);
+typedef struct {
+    vs_battle_actor unk0;
+    vs_battle_actor2 unk50;
+    vs_battle_actor3 unk9B4;
+} vs_battle_actor_dat2;
+
+typedef union {
+    char u8[4];
+    int s32;
+} func_800765B0_t;
+
+vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int arg3)
+{
+    func_8007C8F8_t sp10;
+    int i;
+    int var_v1_2;
+    vs_battle_actor_dat2* temp_v0;
+
+    if (arg0 == 0xFF) {
+        for (i = 2; i < 16; ++i) {
+            if (vs_battle_actors[i] == NULL) {
+                arg0 = i;
+                break;
+            }
+        }
+        if (i >= 0x10) {
+            vs_main_nop10(0x86, 0);
+            return NULL;
+        }
+    }
+
+    if (vs_battle_actors[arg0] == NULL) {
+        temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
+        vs_main_bzero(temp_v0, 0x9B4);
+        temp_v0->unk0.unk3C = &temp_v0->unk50;
+        temp_v0->unk0.unk44 = &temp_v0->unk9B4;
+        temp_v0->unk0.unk18 = 0xFE;
+        temp_v0->unk0.unk1C = 0x10;
+        temp_v0->unk0.unk40 = 0;
+        temp_v0->unk0.unk4 = arg0;
+        temp_v0->unk0.unk0 = NULL;
+        temp_v0->unk0.unk26 = 0;
+        sp10.unk0 = 6;
+        sp10.unk1 = (char)arg0;
+        sp10.unkC.s32 = arg2->s32;
+        sp10.unkC.u8[1] &= 1;
+        var_v1_2 = arg1;
+        sp10.unk4 = temp_v0->unk0.unk44;
+        sp10.unk10 = arg1;
+        if (arg1 < 0) {
+            var_v1_2 = arg1 + 0xFF;
+        }
+        sp10.unk11 = var_v1_2 >> 8;
+        sp10.unk12 = arg3;
+        sp10.unk13 = arg2->u8[1] >> 4;
+        func_800995E8(&sp10);
+        while (func_800995B0() != 0) {
+            func_8009967C();
+            vs_main_gametimeUpdate(0);
+        }
+        vs_battle_actors[arg0] = &temp_v0->unk0;
+        func_8007647C(arg0, arg1);
+        func_800E6178(&temp_v0->unk0, -1);
+        func_800A087C(arg0, 0x1846);
+        return &temp_v0->unk0;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076784);
 
@@ -3478,7 +3545,7 @@ int func_80077078(vs_battle_actor* arg0, int arg1, int arg2, int* arg3, int arg4
     sp10.unk0 = 1;
     sp10.unk1 = arg1;
     sp10.unk2 = arg2;
-    sp10.unkC = *arg3;
+    sp10.unkC.s32 = *arg3;
     sp10.unk4 = arg0->unk44;
     if (arg4 & 0x80) {
         sp10.unk10 = (arg4 & 0xF00) >> 8;

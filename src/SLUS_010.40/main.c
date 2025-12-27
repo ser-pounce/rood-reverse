@@ -125,7 +125,6 @@ static void _processCdQueue(void);
 static int vs_main_processSoundQueue(void);
 static void _loadMenuSound(void);
 static void _asmNop(void);
-static void nop10(int, int);
 
 typedef struct {
     char wLo;
@@ -9618,7 +9617,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
             if (vs_main_soundData.musicIds[slot] != id) {
                 do {
                     if (vs_main_soundData.musicData[slot] != 0) {
-                        nop10(142, 0);
+                        vs_main_nop10(142, 0);
                         vs_main_freeMusic(targetSlot);
                     }
                 } while (0);
@@ -9876,7 +9875,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
         }
         break;
     default:
-        nop10(0x95, 0);
+        vs_main_nop10(0x95, 0);
         break;
     }
 }
@@ -9975,7 +9974,7 @@ static int func_80045B28(int arg0, int arg1)
         temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
         break;
     default:
-        nop10(0x95, 0);
+        vs_main_nop10(0x95, 0);
         temp_v1 = 0;
         break;
     }
@@ -10216,7 +10215,7 @@ void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
             }
         } else if (arg0 == 0x7E) {
         } else {
-            nop10(0x95, 0);
+            vs_main_nop10(0x95, 0);
         }
         func_800456EC(temp_s1, var_s0, arg3, arg4);
     }
@@ -11694,7 +11693,7 @@ static void _asmNop(void) { __asm__(".nop;"); }
 
 void vs_main_nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
-static void nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
+void vs_main_nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
 
 static void nop11(void) { }
 

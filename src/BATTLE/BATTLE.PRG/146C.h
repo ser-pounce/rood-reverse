@@ -305,7 +305,7 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    char unk0[0x1900];
+    char unk0[0x178];
 } vs_battle_actor3;
 
 typedef struct {
@@ -397,6 +397,7 @@ typedef struct {
     vs_battle_actor unk0;
     vs_battle_actor2 unk50;
     vs_battle_actor3 unk9B4;
+    char unkB2C[0x1788];
     vs_battle_actor4 unk22B4[2];
 } vs_battle_actor_dat;
 

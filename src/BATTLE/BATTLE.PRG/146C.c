@@ -665,7 +665,7 @@ int func_8007F518(u_char*);
 void func_80080000(vs_skill_t*, func_80085718_t*, short);
 void func_800801E0(vs_skill_t*, func_80085718_t*, short);
 void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
-int func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, short);
+void func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_80080534(vs_skill_t*, vs_battle_equipment*, int, int, int);
 void func_80080A9C(vs_skill_t* arg0, vs_battle_equipment*, int, int, int);
 int func_80081020(int, func_80085718_t*);
@@ -5687,7 +5687,57 @@ void func_800802C4(
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800803A4);
+void func_800803A4(
+    vs_skill_t* arg0, vs_battle_actor2* arg1, vs_battle_actor2* arg2, int arg3)
+{
+    int var_t0;
+    int var_t1;
+    int i;
+
+    var_t1 = 100;
+
+    if (arg0->unk2_1 != 1) {
+        var_t0 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (arg1->weapon.gems[i].gemEffects == 9) {
+                var_t0 = 1;
+            }
+        }
+
+        if (var_t0 != 0) {
+            var_t1 += 5;
+        }
+
+        var_t1 = (((arg3 / 10) * var_t1) / 100);
+        if (arg1->weapon.currentPp + var_t1 < arg1->weapon.maxPp) {
+            arg1->weapon.currentPp = arg1->weapon.currentPp + var_t1;
+        } else {
+            arg1->weapon.currentPp = arg1->weapon.maxPp;
+        }
+    }
+
+    var_t1 = 100;
+
+    if (vs_battle_actors[arg2->flags.fields.unk3]->unk20 & 1) {
+        var_t0 = 0;
+        for (i = 0; i < 3; ++i) {
+            if (arg2->shield.gems[i].gemEffects == 9) {
+                var_t0 = 1;
+            }
+        }
+        if (var_t0 != 0) {
+            var_t1 -= 5;
+        }
+
+        var_t1 = (((arg3 / 10) * var_t1) / 100);
+        if (arg2->shield.currentDp + var_t1 < arg2->shield.maxDp != 0) {
+            arg2->shield.currentDp = arg2->shield.currentDp + var_t1;
+        } else {
+            arg2->shield.currentDp = arg2->shield.maxDp;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
 
@@ -7048,8 +7098,6 @@ void func_80089888(void)
     SVECTOR sp10;
     func_8006EBF8_t sp18;
     func_80089888_t sp28;
-    int temp_v0;
-    int temp_v0_2;
 
     func_8009D458();
     sp28.unk0_0 = D_800F1AB0.unk4_8;

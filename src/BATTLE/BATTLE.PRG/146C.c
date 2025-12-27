@@ -676,6 +676,7 @@ int func_80078828(int);
 int func_8007A850(D_800F1904_t3*);
 void func_8007A9DC(VECTOR*, VECTOR*, VECTOR*);
 void func_8007AACC(VECTOR* arg0);
+void func_8007AC94(int arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
@@ -686,6 +687,7 @@ void func_8007B508(void);
 void func_8007B764(void);
 void func_8007B7DC(int, int);
 void func_8007BCCC(void);
+int func_8007BD8C(int arg0);
 void func_8007BF6C(int);
 void func_8007BFF8(int);
 void func_8007C0AC(int, int);
@@ -693,6 +695,7 @@ int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
 int func_8007C694(int, int, int, int, int);
 void func_8007CCCC(int arg0);
+void func_8007CD14(int arg0, int arg1);
 void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 int func_8007D08C(int, int);
@@ -769,6 +772,7 @@ void func_8009291C(int);
 void func_80092A18(void);
 int func_80093764(int);
 void func_80093824(int);
+void func_80093A14(void);
 void func_80093B04(void*);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
@@ -782,10 +786,12 @@ void func_80098D6C(int, int, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
 void func_8009D458(void);
 void func_8009D6F4(void);
+void func_8009D7E8(int, int);
 void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
 void func_8009EA14(int, SVECTOR*);
+void func_8009F990(int, char*);
 void func_8009FC60(int, int, int, int);
 
 extern const short D_80068BEC[];
@@ -809,6 +815,7 @@ extern int D_800F1868;
 extern int D_800F186C;
 extern void* D_800F1884;
 extern int D_800F18A8;
+extern int D_800F18AC;
 extern int D_800F18B0;
 extern void* D_800F18E4;
 extern u_int D_800F18F0;
@@ -1989,9 +1996,6 @@ void func_8006CE70(func_8006CE70_t* arg0)
     int sp10;
     func_8008BC04_t* temp_v0;
     func_8008D710_t* temp_v0_2;
-    short temp_v1_4;
-    int temp_v1;
-    int temp_v1_3;
     int new_var2 = 4;
     int new_var3 = 2;
 
@@ -2733,7 +2737,51 @@ void func_80073898(void)
     func_80073870();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800738E4);
+void func_800738E4(void)
+{
+    char sp10[4];
+    int i;
+
+    func_8008D594(0);
+    func_80095B70(0);
+    D_800F186C = 0;
+
+    for (i = 0; i < 16; ++i) {
+        if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk8 == 0x10)) {
+            vs_battle_actors[i]->unk8 = 0x40;
+        }
+    }
+
+    func_800DEC88(NULL);
+    func_800DC638();
+    if ((func_800BEC58(0xA, 0, NULL, 0) == 1)
+        || ((D_80050468.unk0 != 0) && (func_800BEC58(0x10, 0, NULL, 0) == 1))) {
+        func_80073870();
+        return;
+    }
+
+    sp10[0] = 0;
+    func_8009F990(-1, sp10);
+
+    for (i = 0; i < 16; ++i) {
+        func_8009D7E8(i, 0);
+        func_800A07FC(i, 0);
+    }
+
+    func_80093A14();
+    func_8007CD14(0x1000, 1);
+    func_8007AC94(0);
+    func_8007BD8C(0);
+    if (vs_main_soundData.unk4 == 0xFFFF) {
+        if (D_800F18AC != 0) {
+            func_80045000(D_800F18AC, 0x7F, 0);
+        }
+    } else if ((D_800F18AC != 0)
+               && (vs_main_soundData.unk4 == vs_main_soundData.unk14[D_800F18AC - 1])) {
+        func_8004552C(D_800F18AC, 0x7F, 0x3C);
+    }
+    func_8006F5CC();
+}
 
 void func_80073AA4(void)
 {

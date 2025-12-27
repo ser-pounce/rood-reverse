@@ -470,8 +470,10 @@ typedef struct {
     int mapId;
     int unk38;
     int unk3C;
-    int unk40;
-    int unk44;
+    short unk40;
+    short unk42;
+    short unk44;
+    short unk46;
     int unk48;
     int unk4C;
     int unk50;

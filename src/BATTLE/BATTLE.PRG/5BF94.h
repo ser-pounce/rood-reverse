@@ -167,7 +167,7 @@ typedef struct {
     char unk13;
 } func_8008C1C8_t;
 
-int func_800C4794(char*);
+int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 void func_800C6540(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);

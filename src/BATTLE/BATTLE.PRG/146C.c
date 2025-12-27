@@ -234,23 +234,17 @@ typedef struct {
 } D_800F19CC_t2;
 
 typedef struct {
-    int unk0;
-    int unk4;
-} D_800F19CC_t5;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    short unk6;
-    int unk8;
-    int unkC;
+    SVECTOR unk0;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    char unkC;
+    char unkD;
+    short unkE;
     int unk10;
     int unk14;
-} D_800F19CC_t6;
+} D_800F19CC_t5;
 
 typedef struct {
     u_int unk0;
@@ -260,16 +254,12 @@ typedef struct {
     int unk2984;
     int unk2988;
     char unk298C;
-    char unk298D;
+    u_char unk298D;
     char unk298E;
     char unk298F;
     int unk2990;
     int unk2994;
-    char unk2998;
-    char unk2999;
-    char unk299A;
-    char unk299B;
-    int unk299C;
+    SVECTOR unk2998;
     int unk29A0;
     int unk29A4;
     short unk29A8;
@@ -280,10 +270,14 @@ typedef struct {
     int unk29B4;
     int unk29B8;
     int unk29BC;
-    D_800F19CC_t5 unk29C0;
-    D_800F19CC_t6 unk29C8[23];
-    int unk2BF0[4];
-    short unk2C00;
+    D_800F19CC_t5 unk29C0[23];
+    int unk2BE8;
+    int unk2BEC;
+    int unk2BF0;
+    int unk2BF4;
+    int unk2BF8;
+    int unk2BFC;
+    u_short unk2C00;
     short unk2C02;
     char unk2C04;
     char unk2C05;
@@ -648,6 +642,7 @@ void func_8006D0A4(u_int*);
 void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
 int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
 int func_8006DEFC(SVECTOR*, int, int);
+void func_8006E158();
 void func_8006EF5C(D_800F1904_t2*);
 int func_8006F204(void);
 void _setRoomSeen(void);
@@ -735,6 +730,7 @@ void func_80089D24(int arg0);
 void func_8008A6FC(void);
 int func_8008AB80(int);
 int func_8008ABB8(int);
+void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void _nop(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
@@ -2201,7 +2197,48 @@ void func_8006DFE0(func_8006EBF8_t2* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E640);
+void func_8006E640(int arg0)
+{
+    func_8006EBF8_t sp10;
+    SVECTOR sp20;
+    int _[2] __attribute__((unused));
+
+    func_800A1108(arg0, &sp10);
+    sp20.vx = sp10.unk0.unk4;
+    sp20.vz = sp10.unk0.unk8;
+    sp20.vy = sp10.unk0.unk6 - 0x5A;
+    func_80074B14(arg0, &sp10.unk0.unk0.fields.unk0);
+    switch (D_800F18F0) {
+    case 1:
+    case 3:
+        func_8006E158();
+        if ((D_800F19CC->unk298D != 0xFF) && (D_800F19CC->unk2C00 != 0)) {
+            sp20.vx = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vx;
+            sp20.vy = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vy;
+            sp20.vz = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vz;
+        }
+        func_8006DEFC(&sp20, 0, 0x28);
+        break;
+    case 2:
+        func_8006E158();
+        sp20.vx = D_800F19CC->unk2998.vx;
+        sp20.vy = D_800F19CC->unk2998.vy;
+        sp20.vz = D_800F19CC->unk2998.vz;
+        if (func_800C4734() == 1) {
+            func_8006DEFC(&sp20, 0, 8);
+            return;
+        }
+        func_8006DEFC(&sp20, 0, 0x28);
+        break;
+    case 11:
+        func_8006E158();
+        func_8006DEFC(&sp20, 1, 0x28);
+        break;
+    case 4:
+        func_8006E158();
+        break;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);
 
@@ -7603,6 +7640,7 @@ void func_8008A6FC(void)
     D_800F1900 = NULL;
 }
 
+// https://decomp.me/scratch/tkgPf
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
@@ -8347,7 +8385,7 @@ void func_8008D820(u_int* arg0, func_80103530_t* arg1)
     }
 
     arg1->unkC = (RECT*)(arg0 + 1);
-    arg1->unk10 = (u_long*)arg0 + 3;
+    arg1->unk10 = (u_short*)arg0 + 6;
 }
 
 int _getDoorId(int door)
@@ -8909,7 +8947,7 @@ int func_8008F0FC(void)
         if (sp10.unk10 != NULL) {
             sp10.unkC->x = (sp10.unkC->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
             sp10.unkC->y = (char)sp10.unkC->y + ((D_800F1DC8 & 0x10) * 0x10);
-            LoadImage(sp10.unkC, sp10.unk10);
+            LoadImage(sp10.unkC, (u_long*)sp10.unk10);
         }
         if (sp10.unk8 != NULL) {
             func_80048A64((void*)sp10.unk8, 0xE, 0, 0x100);

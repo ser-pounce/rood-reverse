@@ -237,7 +237,7 @@ int _loadRankDis(void)
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
                     sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, sp10.unk10);
+                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
                 }
                 if (i == 0) {
                     if (sp10.unk8 != NULL) {
@@ -341,7 +341,7 @@ int func_8010310C(void)
                 sp10.unkC->x = 0x340;
                 sp10.unkC->y = 0x100;
                 sp10.unkC->h = 0xFF;
-                LoadImage(sp10.unkC, sp10.unk10);
+                LoadImage(sp10.unkC, (u_long*)sp10.unk10);
             }
             if (sp10.unk8 != NULL) {
                 sp10.unk4->x = 0x300;
@@ -424,7 +424,7 @@ int _loadAttackDis(void)
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
                     sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, sp10.unk10);
+                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
                 }
                 if (i == 0) {
                     if (sp10.unk8 != NULL) {
@@ -1754,7 +1754,7 @@ int _loadIqDis(void)
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
                     sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, sp10.unk10);
+                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
                 }
                 if (i == 0) {
                     if (sp10.unk8 != NULL) {
@@ -1826,7 +1826,7 @@ int _loadEscDis(void)
                     sp10.unkC->x = 0x340 + i * 0x40;
                     sp10.unkC->y = 0x100;
                     sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, sp10.unk10);
+                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
                 }
                 if ((i == 0) && (sp10.unk8 != NULL)) {
                     sp10.unk4->x = 0x300;

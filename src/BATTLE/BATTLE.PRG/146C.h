@@ -451,7 +451,7 @@ typedef struct {
     RECT* unk4;
     u_long* unk8;
     RECT* unkC;
-    u_long* unk10;
+    u_short* unk10;
 } func_80103530_t;
 
 typedef struct {

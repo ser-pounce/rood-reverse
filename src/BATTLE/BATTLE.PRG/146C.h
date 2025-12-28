@@ -322,8 +322,10 @@ typedef struct {
     u_short agility;
     u_short totalAgility;
     short unk2E;
-    short unk30;
-    short unk32;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
     u_int unk34 : 8;
     u_int unk35 : 8;
     u_int unk36 : 8;
@@ -370,7 +372,8 @@ typedef struct vs_battle_actor {
     u_short unk18;
     u_short unk1A;
     u_short unk1C;
-    short unk1E;
+    char unk1E;
+    char unk1F;
     int unk20;
     char unk24;
     char equippedWeaponType;

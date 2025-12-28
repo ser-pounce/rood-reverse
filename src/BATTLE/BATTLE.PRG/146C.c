@@ -3508,7 +3508,82 @@ vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int ar
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076784);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076D50);
+void func_80076D50(u_int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    vs_battle_actor* temp_s1;
+    vs_battle_actor2* temp_s0;
+
+    temp_s1 = vs_battle_actors[arg0];
+    temp_s0 = temp_s1->unk3C;
+    temp_s1->unk4 = arg0;
+    temp_s1->unk18 = arg1;
+    temp_s1->unk1A = 0;
+    temp_s1->unk2A = arg2;
+    temp_s1->unk2B = arg3;
+    temp_s1->unk20 = 0;
+
+    switch (arg0) {
+    case 0:
+        temp_s1->unk1C = 1;
+        break;
+    case 1:
+        temp_s1->unk1C = 2;
+        break;
+    default:
+        switch (arg4 & 3) {
+        case 1:
+            temp_s1->unk1C = 4;
+            temp_s1->unk20 |= 1;
+            func_8009D934(arg0, 1, 0);
+            break;
+        case 0:
+            temp_s1->unk1C = 2;
+            break;
+        case 2:
+        case 3:
+            temp_s1->unk1C = 8;
+            break;
+        }
+    }
+
+    temp_s1->unk24 = arg4 & 0x1C;
+    temp_s1->unk2F = 0;
+    temp_s1->unk2E = 0;
+    temp_s1->unk2D = 0;
+    temp_s1->unk2C = 0;
+    temp_s1->unk1E = 0;
+    temp_s1->unk8 = 0;
+    temp_s0->maxHP = 100;
+    temp_s0->currentHP = 100;
+    temp_s0->maxMP = 100;
+    temp_s0->currentMP = 100;
+    temp_s0->risk = 0;
+    temp_s0->flags.fields.unk0 = 0;
+
+    if (arg1 == 41) {
+        temp_s0->unk30 = 16;
+        temp_s0->unk32 = 32;
+    } else if (arg1 == 48) {
+        temp_s0->unk30 = 2;
+        temp_s0->unk32 = 8;
+    } else {
+        temp_s0->unk30 = 2;
+        temp_s0->unk32 = 4;
+    }
+
+    temp_s0->unk31 = 9;
+    temp_s0->unk33 = 18;
+    temp_s0->weapon.unk10B = 20;
+    temp_s0->weapon.range = 5;
+    temp_s0->weapon.unk125 = 4;
+    temp_s0->weapon.unk126 = 5;
+    temp_s0->flags.fields.unk2_0 = 0;
+    temp_s0->weapon.unk127_3 = 0;
+    temp_s1->unk27 = 128;
+    temp_s1->unk29 = 0;
+    temp_s1->unk28 = 0;
+    temp_s0->flags.fields.unk3 = 128;
+}
 
 void func_80076F24(int arg0, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int arg5)
 {

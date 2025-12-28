@@ -590,6 +590,27 @@ typedef struct {
     int unk98;
     int unk9C;
     int unkA0;
+    int unkA4;
+    int unkA8;
+    int unkAC;
+    int unkB0;
+    int unkB4;
+    int unkB8;
+    int unkBC;
+    int unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+    int unkD0;
+    int unkD4;
+    int unkD8;
+    int unkDC;
+    int unkE0;
+    int unkE4;
+    int unkE8;
+    int unkEC;
+    int unkF0;
+    int unkF4;
 } D_800F1904_t2;
 
 typedef struct {
@@ -637,7 +658,7 @@ void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
 int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
 int func_8006DEFC(SVECTOR*, int, int);
 void func_8006E158(void);
-void func_8006EF5C(D_800F1904_t2*);
+void func_8006EF5C(VECTOR*);
 int func_8006F204(void);
 void _setRoomSeen(void);
 void func_8006F5CC(void);
@@ -823,11 +844,6 @@ extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
-extern int D_800F19D4;
-extern int D_800F19D8;
-extern int D_800F19EC;
-extern int D_800F19F0;
-extern int D_800F19F8;
 extern int D_800F1A04;
 extern u_int D_800F1A08;
 extern int D_800F1A0C;
@@ -2125,9 +2141,9 @@ void func_8006D9FC(func_80077DF0_t* arg0, func_80077DF0_t* arg1)
     int temp_v1_2;
     int v;
 
-    temp_a3 = (D_800F19D8 << 0xC) / 2304;
-    temp_a1 = (D_800F1880.unk40 << 0x13) + temp_a3 * 0x168;
-    temp_v1_2 = (D_800F1880.unk44 << 0x13) - temp_a3 * 0x168;
+    temp_a3 = (D_800F19D0.unk0.vz * ONE) / 2304;
+    temp_a1 = (D_800F1880.unk40 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (D_800F1880.unk44 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->unk0 = (temp_a1 + temp_v1_2) >> 1;
@@ -2141,8 +2157,8 @@ void func_8006D9FC(func_80077DF0_t* arg0, func_80077DF0_t* arg1)
         }
     }
 
-    temp_a1 = (D_800F1880.unk42 << 0x13) + temp_a3 * 0x168;
-    temp_v1_2 = (D_800F1880.unk46 << 0x13) - temp_a3 * 0x168;
+    temp_a1 = (D_800F1880.unk42 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (D_800F1880.unk46 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->unk8 = (temp_a1 + temp_v1_2) >> 1;
@@ -2191,7 +2207,7 @@ int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
     if (D_1F800000[18] > 0) {
         D_1F800000[18] = 0;
     }
-    return D_800F19F8;
+    return D_800F19D0.unk28;
 }
 
 void func_8006DFE0(func_8006EBF8_t2* arg0)
@@ -2307,12 +2323,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EC7C);
 
 void func_8006EF10(void)
 {
-    if (D_800F19EC >= 0) {
-        if (D_800F19EC < 2) {
+    if (D_800F19D0.unk10.pad >= 0) {
+        if (D_800F19D0.unk10.pad < 2) {
             D_800F19CC->unk2C0C = 0x600;
             return;
         }
-        if (D_800F19EC < 4) {
+        if (D_800F19D0.unk10.pad < 4) {
             D_800F19CC->unk2C0C = 0x900;
         }
     }
@@ -2684,7 +2700,51 @@ void func_80072EC4(int arg0, u_short arg1)
     func_80048FEC(0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800730BC);
+void func_800730BC(void)
+{
+    VECTOR sp10;
+    func_8006EBF8_t sp20;
+    int i;
+    void* p;
+
+    if (D_800F1904 == NULL) {
+        D_800F1904 = vs_main_allocHeapR(sizeof *D_800F1904);
+    }
+    if (D_800F196C != 7) {
+
+        p = D_1F800000;
+        D_800F1904->unk0 = *(D_800F1904_t*)(p + 0x34);
+
+        D_800F1904->unk34 = D_800F19D0;
+        D_800F1904->unk60 = D_8005E0C8;
+        D_800F1904->unk64 = vs_main_projectionDistance;
+        D_800F1904->unk68 = D_1F800000[25];
+    }
+    D_800F1904->unk98 = 4;
+    D_800F1904->unk9C = 0xE0;
+    D_800F1904->unkA0 = 0x2000;
+    func_800A1108(0, &sp20);
+
+    setVector(&D_800F1904->unk6C.unk0, sp20.unk0.unkA, 0, D_800F19D0.unk0.vz);
+    setVector(
+        &sp10, sp20.unk0.unk4 * ONE, (sp20.unk0.unk6 - 0xB4) * ONE, sp20.unk0.unk8 * ONE);
+
+    func_8006EF5C(&sp10);
+
+    D_800F196C = 7;
+    D_800F18F0 = 0;
+
+    func_800CB654(1);
+
+    for (i = 0; i < 16; ++i) {
+        func_8009E5C4(i);
+    }
+
+    func_8008B4C8(0);
+    func_8008D594(1);
+    func_80095B70(1);
+    func_800A0870(1);
+}
 
 void func_800732AC(void)
 {
@@ -3224,7 +3284,7 @@ void func_800745EC(void)
         D_800F1904->unkA0 = D_800F1904->unk68;
         func_8007A9DC(&D_800F1904->unk0.unk0.unk0, &D_800F1904->unk0.unk0.unk10,
             &D_800F1904->unk6C.unk0);
-        func_8006EF5C(D_800F1904);
+        func_8006EF5C(&D_800F1904->unk0.unk0.unk0);
     }
 }
 
@@ -3362,7 +3422,7 @@ void func_80074B14(int arg0, char* arg1)
         var_a2 = arg1[1];
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
-        func_8008C2C0(arg1[0], arg1[2], arg1[1], D_800F19F0 == 0x900);
+        func_8008C2C0(arg1[0], arg1[2], arg1[1], D_800F19D0.unk20 == 0x900);
         return;
     }
     func_8008C40C();
@@ -5173,10 +5233,10 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
 void func_8007CE74(int arg0)
 {
     if ((arg0 == -0x300) || (arg0 == -0x80)) {
-        D_800F19D4 = arg0;
+        D_800F19D0.unk0.vy = arg0;
         return;
     }
-    D_800F19D4 = -0x180;
+    D_800F19D0.unk0.vy = -0x180;
 }
 
 void func_8007CEA0(int arg0) { func_8009E5C4(arg0); }

@@ -871,6 +871,7 @@ vs_battle_enchanterSpellIds = 0x800EBDA0;
 vs_battle_chainAbilityOffsets = 0x800EBDBC;
 vs_battle_defenseAbilityOffsets = 0x800EBDCC;
 vs_battle_actors = 0x800F1928;
+D_800F19D0 = 0x800F19D0;
 vs_battle_characterState = 0x800F19FC;
 vs_battle_doorEntered = 0x800F1BBE;
 vs_battle_sceneBuffer = 0x800F1BC0;

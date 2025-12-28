@@ -367,7 +367,10 @@ typedef struct vs_battle_actor {
     char unkA;
     char unkB;
     int unkC;
-    int unk10;
+    union {
+        char u8[4];
+        int s32;
+    } unk10;
     int unk14;
     u_short unk18;
     u_short unk1A;

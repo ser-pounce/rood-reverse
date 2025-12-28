@@ -6,6 +6,7 @@ u_long* vs_battle_setSprite(int, int x, int wh, u_long* nextPrim);
 u_long* func_800C0214(int, int);
 u_long* func_800C0224(int, int, int, u_long*);
 void func_800C02E0(void);
+void func_800C031C(void);
 void func_800C05B4(void);
 void func_800C06E0(void);
 void func_800C0738(void);

@@ -714,6 +714,7 @@ void func_80085B10(int, D_800F19CC_t2*, func_8008631C_t*, int);
 void func_80086754(int, vs_battle_actor2*);
 void func_800875C8(D_800F19CC_t3*);
 void func_80088554(void);
+void func_80088CA0(void);
 int func_8008ABF0(int arg0);
 int func_8008B4C8(char arg0);
 void func_8008C40C(void);
@@ -2628,7 +2629,60 @@ void func_80072B9C(void) { D_800F18F0 = 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072BA8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072EC4);
+void func_80072EC4(int arg0, u_short arg1)
+{
+    int i;
+    u_int temp_v0;
+    vs_battle_actor* temp_a0;
+
+    D_800F196C = 2;
+    vs_main_bzero(&D_800F19CC->unk8, 0x84C);
+    D_800F19CC->unk8.unk44 = 0;
+    D_800F19CC->unk8.unk4 = arg0;
+    D_800F19CC->unk8.unk0 = arg1;
+    func_8006EF10();
+    func_80088CA0();
+    if (arg0 != 0) {
+        D_800F19CC->unk2984 = 0;
+    } else {
+        D_800F19CC->unk2984 = 1;
+    }
+    D_800F19CC->unk298C = D_800F19CC->unk298D = -1;
+    temp_a0 = vs_battle_actors[arg0];
+    D_800F19CC->unk29C0[0].unk9 = temp_a0->unk10.u8[0];
+    D_800F19CC->unk29C0[0].unkA = temp_a0->unk10.u8[2];
+    D_800F19CC->unk8.unk4A = 0;
+    D_800F19CC->unk298E = 0;
+    D_800F19CC->unk4 = 0;
+    func_8009E5C4(D_800F19CC->unk8.unk4);
+
+    if (D_800F19CC->unk2984 != 0) {
+        func_800C031C();
+        func_8007B10C(0xD, 4, -4, -4, 0);
+    }
+
+    func_8006C250();
+
+    for (i = 0; i < 16; ++i) {
+        if (i != D_800F19CC->unk8.unk4) {
+            temp_v0 = func_800A0BE0(i);
+            if (temp_v0 & 4) {
+                func_800A087C(i, temp_v0 & ~4);
+            }
+        }
+    }
+
+    if (arg0 == 0) {
+        func_8008B4C8(0);
+    }
+    func_8008B4BC(1);
+    func_8008D594(1);
+    if (D_800F19CC->unk2984 != 0) {
+        func_80095B70(1);
+    }
+    func_80072BA8(D_800F19CC->unk8.unk0);
+    func_80048FEC(0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800730BC);
 
@@ -3336,20 +3390,20 @@ void func_800753F8(vs_battle_actor* arg0, SVECTOR* arg1)
         arg0->unkC -= 0x8000;
     }
 
-    if (arg0->unk10 < 0) {
-        if (arg0->unk10 >= -0x7FFF) {
-            arg1->vz = arg0->unk10 / ONE;
-            arg0->unk10 = 0;
+    if (arg0->unk10.s32 < 0) {
+        if (arg0->unk10.s32 >= -0x7FFF) {
+            arg1->vz = arg0->unk10.s32 / ONE;
+            arg0->unk10.s32 = 0;
         } else {
             arg1->vz = -8;
-            arg0->unk10 += 0x8000;
+            arg0->unk10.s32 += 0x8000;
         }
-    } else if (arg0->unk10 <= 0x7FFF) {
-        arg1->vz = arg0->unk10 / ONE;
-        arg0->unk10 = 0;
+    } else if (arg0->unk10.s32 <= 0x7FFF) {
+        arg1->vz = arg0->unk10.s32 / ONE;
+        arg0->unk10.s32 = 0;
     } else {
         arg1->vz = 8;
-        arg0->unk10 -= 0x8000;
+        arg0->unk10.s32 -= 0x8000;
     }
 
     if (arg0->unk14 < 0) {

@@ -116,6 +116,15 @@ typedef struct {
 } D_800F1C60_t;
 
 typedef struct {
+    u_char unk0;
+    signed char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+} func_8008631C_t2;
+
+typedef struct {
     u_short unk0;
     char unk2;
     char unk3;
@@ -141,12 +150,10 @@ typedef struct {
     int unk44;
     short unk48;
     short unk4A;
-    char unk4C;
-    char unk4D;
-    char unk4E;
-    char unk4F;
-    short unk50;
-    short unk52;
+    union {
+        func_8008631C_t2 unk;
+        SVECTOR vec;
+    } unk4C;
     int unk54;
     int unk58;
     int unk5C;
@@ -167,8 +174,7 @@ typedef struct {
     short unk83E;
     short unk840;
     short unk842;
-    int unk844;
-    int unk848;
+    SVECTOR unk844;
 } func_8008631C_t;
 
 typedef struct {
@@ -263,7 +269,7 @@ typedef struct {
     D_800F19CC_t2 unk854[4];
     int unk2984;
     int unk2988;
-    char unk298C;
+    u_char unk298C;
     u_char unk298D;
     char unk298E;
     char unk298F;
@@ -2627,7 +2633,35 @@ void func_8007087C(D_800F19CC_t* arg0)
     arg0->unk8.unk83E = sp10.unk0.unk6;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800708EC);
+void func_800708EC(void)
+{
+    char temp_v1;
+
+    D_800F19CC->unk8.unk4A = 1;
+    temp_v1 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9;
+    if (temp_v1 < 16) {
+        D_800F19CC->unk8.unk8C = 0;
+        D_800F19CC->unk8.unk4C.unk.unk0 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9;
+        D_800F19CC->unk8.unk4C.unk.unk1 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unkA;
+        if (D_800F19CC->unk8.unk4C.unk.unk1 == -1) {
+            D_800F19CC->unk8.unk4C.unk.unk1 =
+                vs_battle_actors[D_800F19CC->unk8.unk4C.unk.unk0]->unk3C->unk36;
+        }
+    } else {
+        D_800F19CC->unk8.unk8C = temp_v1 & 0x10 ? 4 : 1;
+        D_800F19CC->unk8.unk4C.vec = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk0;
+        D_800F19CC->unk8.unk4C.vec.pad = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9;
+    }
+    if (D_800F19CC->unk8.unk44 == 0) {
+        if (D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9 == D_800F19CC->unk8.unk4) {
+            func_8007087C((D_800F19CC_t*)&D_800F19CC->unk8);
+            return;
+        }
+        D_800F19CC->unk8.unk844 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk0;
+        return;
+    }
+    D_800F19CC->unk8.unk844 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070B04);
 
@@ -3001,8 +3035,8 @@ void func_80073D30(func_8008C1C8_t* arg0, func_8006EBF8_t* arg1, int arg2)
     D_800F19CC->unk8.unk44 = 3;
     D_800F19CC->unk8.unk4A = 1;
     D_800F19CC->unk8.unk8C = 0;
-    D_800F19CC->unk8.unk4C = arg2;
-    D_800F19CC->unk8.unk4D = vs_battle_actors[arg2]->unk3C->unk36;
+    D_800F19CC->unk8.unk4C.unk.unk0 = arg2;
+    D_800F19CC->unk8.unk4C.unk.unk1 = vs_battle_actors[arg2]->unk3C->unk36;
     D_800F19CC->unk4 = 1;
     D_800F19CC->unk0 = 0;
     D_800F19CC->unk29A8 = arg1->unk0.unk4;
@@ -6537,8 +6571,8 @@ short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    int v =
-        (D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52) * arg0->hitParams[arg3].damage;
+    int v = (D_800F19CC->unk8.unk4C.unk.unk4 + D_800F19CC->unk8.unk4C.unk.unk6)
+          * arg0->hitParams[arg3].damage;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
@@ -6555,8 +6589,8 @@ short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    int v =
-        (D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52) * arg0->hitParams[arg3].damage;
+    int v = (D_800F19CC->unk8.unk4C.unk.unk4 + D_800F19CC->unk8.unk4C.unk.unk6)
+          * arg0->hitParams[arg3].damage;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
@@ -6672,7 +6706,7 @@ short func_80083524(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     func_80085718_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    return (((D_800F19CC->unk8.unk50 + D_800F19CC->unk8.unk52)
+    return (((D_800F19CC->unk8.unk4C.unk.unk4 + D_800F19CC->unk8.unk4C.unk.unk6)
                 * arg0->hitParams[arg3].damage)
                / 10)
          + (D_800F19CC->unk0 - 1);
@@ -7635,13 +7669,13 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
 {
     func_8008631C_t sp10;
 
-    sp10.unk4C = arg2;
+    sp10.unk4C.unk.unk0 = arg2;
     sp10.unk0 = arg0;
     sp10.unk44 = 0;
     sp10.unk4 = arg1;
     sp10.unk4A = 1;
     sp10.unk8C = 0;
-    sp10.unk4D = arg3;
+    sp10.unk4C.unk.unk1 = arg3;
     func_80085B10(arg0, arg4, &sp10, 0);
     return func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }

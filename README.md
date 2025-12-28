@@ -96,7 +96,7 @@ data/TITLE/
 
 ## Setup
 The project is mostly self-configuring but requires a minimal amount of setup.
-- Make sure the following packages are installed, older versions may also work but this is not tested:
+- Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 24.04 on WSL; depending on your distro you may need additional packages.
 
 | Package                 | Minimum Version |
 |-------------------------|----------------|
@@ -110,7 +110,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 | python3                 | 3.12.3         |
 | python3-pip             | 24.0           |
 | python3-venv            | 3.12.3         |
-- If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`
+- If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`, then log out and back in again
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

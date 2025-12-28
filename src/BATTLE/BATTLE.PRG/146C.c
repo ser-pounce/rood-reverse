@@ -874,7 +874,7 @@ extern short D_800F1CDC;
 extern D_800F1D28_t D_800F1D28[8];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
-extern int D_800F1D78[20];
+extern int D_800F1D78[5];
 extern char D_800F1DC7;
 extern short D_800F1D68;
 extern signed char D_800F1D6E;
@@ -9124,7 +9124,7 @@ void func_8008EB30(int* arg0)
     int i;
     int* var_a0;
 
-    vs_main_memcpy(D_800F1D78, arg0, 20);
+    vs_main_memcpy(D_800F1D78, arg0, sizeof D_800F1D78);
 
     var_a0 = D_80068C1C;
 

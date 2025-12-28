@@ -3330,7 +3330,34 @@ void func_800753F8(vs_battle_actor* arg0, SVECTOR* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80075554);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800760CC);
+void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+{
+    u_int temp_s3;
+
+    temp_s3 = arg1 - 16;
+    SetGeomOffset(arg0 / 2, ((int)(temp_s3 + (temp_s3 >> 0x1F)) >> 1) + 0x10);
+    SetGeomScreen(arg2);
+    SetDefDrawEnv(vs_main_drawEnv, 0, 0, arg0, temp_s3);
+    SetDefDispEnv(vs_main_dispEnv, arg0, 0, arg0, temp_s3);
+    SetDefDrawEnv(&vs_main_drawEnv[1], arg0, 0, arg0, temp_s3);
+    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s3);
+    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
+    setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
+    D_8005DFD4 = 0;
+    D_8005DFD8 = 0;
+    D_8005DFD6 = arg0;
+    D_8005DFDA = temp_s3;
+    vs_main_drawEnv[1].dtd = 1;
+    vs_main_drawEnv[0].dtd = 1;
+    vs_main_drawEnv[1].dfe = 0;
+    vs_main_drawEnv[0].dfe = 0;
+    vs_main_drawEnv[1].isbg = 0;
+    vs_main_drawEnv[0].isbg = 0;
+    setRGB0(&vs_main_drawEnv[0], arg3, arg4, arg5);
+    setRGB0(&vs_main_drawEnv[1], arg3, arg4, arg5);
+    PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
+}
 
 int func_8007629C(u_long* otag)
 {

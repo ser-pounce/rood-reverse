@@ -200,36 +200,46 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
+    signed char unk1;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+} func_8006C4C4_t2;
+
+typedef struct {
+    union {
+        func_8006C4C4_t2 unk;
+        SVECTOR vec;
+    } unk0;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+} func_8006C4C4_t3;
+
+typedef struct {
+    u_short unk0;
     char unk2;
     char unk3;
     D_800F19CC_t3 unk4;
     int unk44;
     u_short unk48;
     u_short unk4A;
-    union {
-        struct {
-            char unk0;
-            signed char unk1;
-        } indices;
-        SVECTOR vec;
-    } unk4C;
-    int unk54;
-    int unk58;
-    int unk5C;
-    int unk60;
-    int unk64;
-    int unk68;
-    int unk6C;
-    int unk70;
-    int unk74;
-    int unk78;
-    int unk7C;
-    int unk80;
-    int unk84;
-    int unk88;
-    int unk8C;
-    int unk90[0x1ED];
+    func_8006C4C4_t3 unk4C[30];
     SVECTOR unk844;
 } D_800F19CC_t2;
 
@@ -473,17 +483,6 @@ typedef struct {
 } func_8006B02C_t;
 
 typedef struct {
-    char unk0;
-    signed char unk1;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
-} func_8006C4C4_t2;
-
-typedef struct {
     short unk0;
     char unk2;
     char unk3;
@@ -499,12 +498,6 @@ typedef struct {
     func_8006C4C4_t2 unk14;
     int unk18[50];
 } func_8006C4C4_t;
-
-typedef struct {
-    func_8006C4C4_t2 unk0;
-    int unk4[14];
-    int unk40;
-} func_8006C4C4_t3;
 
 typedef struct {
     int unk0;
@@ -628,6 +621,7 @@ void func_8006DFE0(func_8006EBF8_t2*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
+void func_8006C5AC(int);
 void func_80069DEC(int, int);
 int func_8006A228(u_int, int);
 void func_8006A8EC(vs_battle_accessoryInfo*, func_8006A9F0_t*);
@@ -1909,12 +1903,12 @@ void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
     sp10.unkA = 0;
     if (arg1->unk40 == 0) {
         sp10.unk10 = 4;
-        sp10.unk14.unk0 = arg1->unk0.unk0;
+        sp10.unk14.unk0 = arg1->unk0.unk.unk0;
         sp10.unk14.unk1 = arg2;
-        sp10.unk14.unk2 = func_800A152C(arg1->unk0.unk0, arg1->unk0.unk1, 2);
+        sp10.unk14.unk2 = func_800A152C(arg1->unk0.unk.unk0, arg1->unk0.unk.unk1, 2);
     } else {
         sp10.unk10 = 5;
-        sp10.unk14 = arg1->unk0;
+        sp10.unk14 = arg1->unk0.unk;
     }
     sp10.unk12 = temp_s0->unk2;
     func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
@@ -1922,7 +1916,54 @@ void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C5AC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C84C);
+int func_8006C84C(int arg0)
+{
+    D_800F19CC_t2* temp_s0;
+    int i;
+
+    temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    for (i = 0; i < temp_s0->unk4A; ++i) {
+        if (temp_s0->unk4C[i].unk40 == 0) {
+            if (temp_s0->unk0 < 0x28) {
+                if (((vs_main_skills[temp_s0->unk0].hitParams[0].unk0_7)) == 3) {
+                    func_8006C4C4(temp_s0->unk0, &temp_s0->unk4C[i],
+                        temp_s0->unk4C[i].unk0.unk.unk3);
+                } else {
+                    switch (temp_s0->unk4C[i].unk0.unk.unk3) {
+                    case 0:
+                    case 2:
+                    case 5:
+                        if (temp_s0->unk0 < 0x16) {
+                            func_8006C4C4(
+                                1, &temp_s0->unk4C[i], temp_s0->unk4C[i].unk0.unk.unk3);
+                        } else {
+                            func_8006C4C4(temp_s0->unk0, &temp_s0->unk4C[i],
+                                temp_s0->unk4C[i].unk0.unk.unk3);
+                        }
+                        break;
+                    case 1:
+                        func_8006C4C4(
+                            0x27, &temp_s0->unk4C[i], temp_s0->unk4C[i].unk0.unk.unk3);
+                        break;
+                    case 3:
+                    case 4:
+                    case 6:
+                        func_8006C4C4(
+                            0x26, &temp_s0->unk4C[i], temp_s0->unk4C[i].unk0.unk.unk3);
+                        break;
+                    }
+                }
+            } else {
+                func_8006C4C4(
+                    temp_s0->unk0, &temp_s0->unk4C[i], temp_s0->unk4C[i].unk0.unk.unk3);
+            }
+        } else {
+            func_8006C4C4(0x26, &temp_s0->unk4C[i], 0);
+        }
+        func_8006C5AC(arg0);
+    }
+    return 1;
+}
 
 void func_8006CA20(int arg0)
 {
@@ -3855,11 +3896,11 @@ void func_80077F70(void)
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
     func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
     if (temp_s0->unk4A != 0) {
-        if (temp_s0->unk8C == 0) {
+        if (temp_s0->unk4C[0].unk40 == 0) {
             func_80077F14(
-                temp_s0->unk4C.indices.unk0, temp_s0->unk4C.indices.unk1, &sp18);
+                temp_s0->unk4C[0].unk0.unk.unk0, temp_s0->unk4C[0].unk0.unk.unk1, &sp18);
         } else {
-            sp18 = temp_s0->unk4C.vec;
+            sp18 = temp_s0->unk4C[0].unk0.vec;
         }
     } else {
         func_800A1AF8(temp_s0->unk4.unk0, 0, &sp18, 0);
@@ -3880,11 +3921,11 @@ void func_800780A8(SVECTOR* arg0)
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
     func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
     if (temp_s0->unk4A != 0) {
-        if (temp_s0->unk8C == 0) {
+        if (temp_s0->unk4C[0].unk40 == 0) {
             func_80077F14(
-                temp_s0->unk4C.indices.unk0, temp_s0->unk4C.indices.unk1, &sp18);
+                temp_s0->unk4C[0].unk0.unk.unk0, temp_s0->unk4C[0].unk0.unk.unk1, &sp18);
         } else {
-            sp18 = temp_s0->unk4C.vec;
+            sp18 = temp_s0->unk4C[0].unk0.vec;
         }
     } else {
         sp18 = temp_s0->unk844;

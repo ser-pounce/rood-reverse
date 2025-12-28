@@ -68,7 +68,7 @@ typedef struct {
 typedef struct {
     u_char unk0;
     signed char unk1;
-    signed char unk2;
+    char unk2;
     signed char unk3;
     short unk4;
     short unk6;
@@ -714,6 +714,8 @@ void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
 int func_8007E454(int);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
+int func_8007F230(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
 int func_8007F434(void);
 int func_8007F4B0(int arg0, u_char* arg1);
 int func_8007F518(u_char*);
@@ -811,6 +813,7 @@ extern int D_80068C1C[];
 extern char D_800E8184[];
 extern char D_800E81E4[];
 extern u_char D_800E8200[];
+extern int (*D_800E8234[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern int (*D_800E8254[])(vs_skill_t*, char*);
 extern void (*D_800E8378[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern short (*D_800E830C[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
@@ -844,6 +847,7 @@ extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
+extern int D_800F1A00;
 extern int D_800F1A04;
 extern u_int D_800F1A08;
 extern int D_800F1A0C;
@@ -5745,19 +5749,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E6A0);
 
 int func_8007E974(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)))
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)))
 {
 }
 
 int func_8007E97C(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)))
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)))
 {
     return D_800F1A04 != 0 ? 100 : 255;
 }
 
-int func_8007E99C(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3)
+int func_8007E99C(vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
+    int arg3, int arg4 __attribute__((unused)))
 {
     int var_s0;
 
@@ -5775,21 +5781,25 @@ int func_8007E99C(
 
 int func_8007EA74(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)));
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007EA74);
 
 int func_8007ECA8(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)));
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ECA8);
 
 int func_8007EEFC(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)));
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007EEFC);
 
 int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)))
+    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)))
 {
     int temp_v0 = (vs_battle_actors[arg1->unk0]->unk3C->risk + 150) * 100;
     int var_v1 = temp_v0 >> 8;
@@ -5804,7 +5814,7 @@ int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* 
 
 int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
-    int arg3 __attribute__((unused)))
+    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int var_v0;
 
@@ -5817,7 +5827,46 @@ int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
     return var_v0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007F230);
+int func_8007F230(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+{
+    int temp_v1;
+    int var_s0;
+
+    if ((arg2->unk40 == 0)
+        && (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 == 0x80)) {
+        var_s0 = 100;
+    } else {
+        var_s0 = D_800E8234[arg0->hitParams[arg3].unk0_E](arg0, arg1, arg2, arg3, arg4);
+        if ((arg0->unk2_1 == 1) && (vs_battle_actors[arg2->unk0]->unk3C->unk948 < 0)) {
+            var_s0 = 0;
+        }
+    }
+    if (D_800F1A00 == 0) {
+        var_s0 = 0xFF;
+    }
+    if (var_s0 != 0xFF) {
+        if (arg2->unk40 == 0) {
+            if (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 4) {
+                var_s0 *= 2;
+            }
+        }
+        if (var_s0 > 100) {
+            var_s0 = 100;
+        }
+    }
+    if ((arg3 == 0) || (arg2->unk2 == 0xFF)) {
+        arg2->unk2 = var_s0;
+    }
+    temp_v1 = vs_main_getRand(100);
+    if (var_s0 != 0xFF) {
+        if ((arg1->unk40 == 0) && (arg1->unk0 == 0)) {
+            var_s0 += 10;
+        }
+        return temp_v1 < var_s0;
+    }
+    return 0;
+}
 
 int func_8007F434(void)
 {

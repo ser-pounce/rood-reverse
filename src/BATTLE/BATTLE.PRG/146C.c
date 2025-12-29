@@ -762,6 +762,7 @@ void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 func_8008BC04_t* func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
+int func_8008BEBC(func_8008C1C8_t* arg0);
 int func_8008BF48(func_8008C1C8_t*);
 void func_8008C070(int arg0, func_8008C1C8_t* arg1);
 int func_8008C1C8(func_8008C1C8_t* arg0);
@@ -796,9 +797,10 @@ void func_80093A14(void);
 void func_80093B04(void*);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
-void func_80095B7C(int, int);
 void func_800936F8(int);
 void func_80093914(char);
+void func_80095B7C(int, int);
+void func_80096768(int, int, int);
 void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);
@@ -6643,7 +6645,68 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800807E8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080A9C);
+void func_80080A9C(
+    vs_skill_t* arg0, vs_battle_equipment* arg1, int arg2, int arg3, int arg4)
+{
+    int var_s1;
+    int var_s2;
+    int a2 = arg2;
+
+    switch (arg2) {
+    case 0:
+        var_s1 = 1;
+        var_s2 = 2;
+        break;
+    case 1:
+        var_s1 = 2;
+        var_s2 = 3;
+        break;
+    case 2:
+        var_s1 = 3;
+        var_s2 = 4;
+        break;
+    case 3:
+        var_s1 = 4;
+        var_s2 = 5;
+        break;
+    case 4:
+        var_s1 = 5;
+        var_s2 = 0;
+        break;
+    case 5:
+        var_s1 = 0;
+        var_s2 = 1;
+        break;
+    }
+
+    if (arg1->classes[a2] < 100) {
+        int temp_a2 = vs_main_getRand(256);
+        if ((70 - (arg1->classes[a2] + 100) / 4) >= temp_a2) {
+            ++arg1->classes[a2];
+            if (arg4 == 0) {
+                func_80096768(arg3, a2, 1);
+            }
+            if (arg1->classes[var_s1] >= -99) {
+                int temp_a2 = vs_main_getRand(256);
+                if (((arg1->classes[var_s1] + 100) / 4 + 20) >= temp_a2) {
+                    --arg1->classes[var_s1];
+                    if (arg4 == 0) {
+                        func_80096768(arg3, var_s1, 0x80000001);
+                    }
+                }
+            }
+            if (arg1->classes[var_s2] >= -99) {
+                int temp_a2 = vs_main_getRand(256);
+                if (((arg1->classes[var_s2] + 100) / 4 + 20) >= temp_a2) {
+                    --arg1->classes[var_s2];
+                    if (arg4 == 0) {
+                        func_80096768(arg3, var_s2, 0x80000001);
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080C9C);
 

@@ -345,7 +345,8 @@ typedef struct {
     vs_battle_shieldInfo shield; // 1C4
     vs_battle_accessoryInfo accessory; // 328
     vs_battle_equipment_hitLocations hitLocations[6]; // 388
-    u_short unk8C0[66];
+    u_short unk8C0[48];
+    char unk920[6][6];
     int unk944;
     int unk948;
     char unk94C[8];

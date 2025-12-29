@@ -6358,7 +6358,56 @@ short func_8007FF8C(int arg0, short arg1, char* arg2)
     return (arg1 * var_t0) / 100;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080000);
+void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
+{
+    int i;
+    int var_t0;
+    vs_battle_actor2* temp_t2;
+
+    for (i = 0; i < 6; ++i) {
+        D_800F1A10[i] = 0;
+    }
+
+    temp_t2 = vs_battle_actors[arg1->unk0]->unk3C;
+
+    switch (arg0->unk2_4) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        var_t0 = 0;
+
+        for (i = 0; i < 6; ++i) {
+            if (temp_t2->hitLocations[i].unk2 != 0) {
+                ++var_t0;
+            }
+        }
+
+        for (i = 0; i < 6; ++i) {
+            if (temp_t2->hitLocations[i].unk2 != 0) {
+                D_800F1A10[i] = arg2 / var_t0;
+                arg1->unk20.s16[i][0] = arg1->unk20.s16[i][0] + D_800F1A10[i];
+            }
+        }
+        break;
+    case 5:
+    case 7:
+    case 14:
+        for (i = 0; i < 6; ++i) {
+            D_800F1A10[i] = (arg2 * temp_t2->unk920[arg1->unk1][i]) / 100;
+            arg1->unk20.s16[i][0] += D_800F1A10[i];
+        }
+        break;
+    case 6:
+    case 8:
+    case 11:
+    case 12:
+        D_800F1A10[arg1->unk1] = arg2;
+        arg1->unk20.s16[arg1->unk1][0] += arg2;
+        break;
+    }
+}
 
 void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
 {

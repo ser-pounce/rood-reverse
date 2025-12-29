@@ -3027,7 +3027,75 @@ void func_80073ACC(void)
     func_8006F5CC();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80073AFC);
+int func_80073AFC(func_8008C1C8_t* arg0)
+{
+    short sp10[4];
+    int var_s1;
+    int var_s2;
+
+    if (arg0->unkE == 0) {
+        if (arg0->unk12 == 0) {
+            int v = 7;
+            sp10[0] = (arg0->unk0.unk0 << v) + 0x40;
+            sp10[2] = (arg0->unk0.unk2 << v) + 0x40;
+            var_s1 = 0;
+            switch (arg0->unk0.unk8.u8[0]) {
+            case 0:
+                var_s1 = 1;
+                break;
+            case 1:
+            case 3:
+                if (func_8007E454(arg0->unkC) != 0) {
+                    if (arg0->unkC >= 0x1D2) {
+                        func_800BEC14(arg0->unkC + 0x1B6, 2);
+                        func_800CCB9C(arg0->unkC);
+                    }
+                    arg0->unk0.unk8.u8[0] = 0;
+                    var_s1 = 2;
+                } else if (func_800BEBF4(arg0->unkC + 0x1B6)) {
+                    arg0->unk0.unk8.u8[0] = 0;
+                    var_s1 = 3;
+                }
+                break;
+            }
+            if (var_s1 != 0) {
+                if (var_s1 == 2) {
+                    var_s2 = 7;
+                    if (arg0->unkC >= 0x1D2) {
+                        var_s2 = 9;
+                    }
+                    func_800CB2B8(var_s2, arg0->unkC, 1);
+                }
+                func_8009E070(0, sp10, 5);
+                func_8008BEBC(arg0);
+                return 0;
+            }
+            if (arg0->unk0.unk8.u8[0] != 0) {
+                switch (arg0->unk0.unk8.u8[0]) {
+                case 1:
+                    var_s2 = 6;
+                    if (arg0->unkC >= 0x1D2) {
+                        var_s2 = 8;
+                    }
+                    break;
+                case 2:
+                    var_s2 = 5;
+                    break;
+                case 3:
+                    var_s2 = 0xA;
+                    break;
+                }
+                func_800CB2B8(var_s2, arg0->unkC, 1);
+            }
+
+            vs_main_playSfxDefault(0x7E, 0x65);
+            vs_main_playSfxDefault(0x7E, 0x66);
+            func_8009E5C4(0);
+            return 0;
+        }
+    }
+    return 1;
+}
 
 void func_80073D30(func_8008C1C8_t* arg0, func_8006EBF8_t* arg1, int arg2)
 {
@@ -4199,7 +4267,6 @@ void func_800790BC(void)
     int j;
     int i;
     int var_s4;
-    int var_v1;
 
     var_s4 = 1;
 

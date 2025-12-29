@@ -264,7 +264,7 @@ typedef struct {
 
 typedef struct {
     u_int unk0;
-    int unk4;
+    u_int unk4;
     func_8008631C_t unk8;
     D_800F19CC_t2 unk854[4];
     int unk2984;
@@ -810,6 +810,7 @@ void func_8009D7E8(int, int);
 void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
+u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
 void func_8009F990(int, char*);
 void func_8009FC60(int, int, int, int);
@@ -4192,7 +4193,55 @@ void func_80079050(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800790BC);
+void func_800790BC(void)
+{
+    D_800F19CC_t2* var_s3;
+    int j;
+    int i;
+    int var_s4;
+    int var_v1;
+
+    var_s4 = 1;
+
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+
+        var_s3 = &D_800F19CC->unk854[i % 4];
+
+        for (j = 0; j < var_s3->unk4A; ++j) {
+            if ((var_s3->unk4C[j].unk40 == 0)
+                && ((func_8009E4B0(var_s3->unk4C[j].unk0.unk.unk0) + 1) > 1)) {
+                var_s4 = 0;
+            }
+        }
+    }
+
+    if (var_s4 != 0) {
+
+        var_s4 = 1;
+
+        for (i = 0; i < D_800F19CC->unk4; ++i) {
+
+            var_s3 = &D_800F19CC->unk854[i % 4];
+
+            if (var_s3->unk44 == 0) {
+                func_80074A20(var_s3->unk4.unk0);
+            }
+
+            for (j = 0; j < var_s3->unk4A; ++j) {
+                if ((var_s3->unk4C[j].unk40 == 0)
+                    && (func_80074A20(var_s3->unk4C[j].unk0.unk.unk0) != 0)) {
+                    var_s4 = 2;
+                }
+            }
+        }
+
+        if (var_s3->unk4.unk0 != 0) {
+            var_s4 = 0;
+        }
+
+        func_8006FBCC(var_s4);
+    }
+}
 
 int func_800792E4(int arg0, int arg1, int arg2)
 {

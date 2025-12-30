@@ -5990,11 +5990,60 @@ int func_8007ECA8(vs_skill_t* arg0 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ECA8);
 
-int func_8007EEFC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007EEFC);
+int func_8007EEFC(
+    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+{
+    int var_a1;
+    int var_s0;
+    int var_t0;
+    int i;
+    int v;
+    vs_battle_actor2* temp_s1;
+    vs_battle_actor2* temp_s2;
+    int target = arg2->unk1;
+
+    temp_s2 = vs_battle_actors[arg1->unk0]->unk3C;
+    temp_s1 = vs_battle_actors[arg2->unk0]->unk3C;
+    var_a1 = temp_s2->agility + temp_s2->accessory.currentAgility;
+    var_t0 = temp_s1->agility + temp_s1->accessory.currentAgility;
+
+    for (i = 0; i < 6; ++i) {
+        var_a1 += temp_s2->hitLocations[i].armor.currentAgility;
+        var_t0 += temp_s1->hitLocations[i].armor.currentAgility;
+    }
+
+    if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
+        var_a1 += temp_s2->weapon.currentAgility + temp_s2->shield.currentAgility;
+    }
+
+    if (vs_battle_actors[temp_s1->flags.fields.unk3]->unk20 & 1) {
+        var_t0 += temp_s1->weapon.currentAgility + temp_s1->shield.currentAgility;
+    }
+
+    var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
+    var_t0 = var_t0 + temp_s1->hitLocations[target].unk4;
+    var_t0 = var_t0 * (100 - temp_s1->risk) / 100;
+    var_s0 = var_a1 - var_t0;
+    v = var_s0 + 130;
+    var_s0 = v - arg0->unk3;
+
+    if (arg4 != 0) {
+        int v0 = vs_main_getRandSmoothed(0xB);
+        int v1 = var_s0 - 5;
+        var_s0 = v1 + v0;
+    }
+
+    var_s0 += func_8007E5E0(arg0, temp_s2);
+    var_s0 -= func_8007E6A0(arg0, temp_s1, arg3);
+
+    if (var_s0 < 0) {
+        var_s0 = 0;
+    } else if (var_s0 == 0xFF) {
+        var_s0 = 0xFE;
+    }
+
+    return var_s0;
+}
 
 int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),

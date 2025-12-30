@@ -294,7 +294,8 @@ typedef struct {
     int unk2BF8;
     int unk2BFC;
     u_short unk2C00;
-    short unk2C02;
+    char unk2C02;
+    char unk2C03;
     char unk2C04;
     char unk2C05;
     char unk2C06;
@@ -2606,7 +2607,60 @@ void func_8006FD0C(void) { D_800F18F0 = 9; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FD1C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070278);
+void func_80070278(void)
+{
+    D_800F19CC_t2* temp_s0;
+    int temp_a3;
+
+    D_800F19CC->unk2C0A = 0;
+    D_800F19CC->unk2C08 = 0;
+    temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+
+    if (((u_int)(temp_s0->unk0 - 0x16) < 0x20) && (temp_s0->unk44 == 0)
+        && (temp_s0->unk4.unk0 == 0)) {
+        func_800BEC14(0xB8, 1);
+    }
+
+    temp_a3 = D_800F19CC->unk0;
+
+    if (temp_a3 == 0) {
+        if (!(vs_main_skills[temp_s0->unk0].unk2_0)) {
+            func_8009DD00(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, temp_s0->unk48);
+            D_800F19CC->unk2C0A = func_8009F8DC(temp_s0->unk4.unk0) * 2;
+        } else {
+            if (temp_s0->unk0 >= 0x8D) {
+                if (temp_s0->unk0 < 0xB8) {
+                    func_8009F298(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                } else if (temp_s0->unk0 < 0xE0) {
+                    func_8009EFEC(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                } else {
+                    func_8009E2E0(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                }
+            } else {
+                func_8009E2E0(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+            }
+            D_800F19CC->unk2C0A = 0;
+            vs_gametime_tickspeed = 4;
+        }
+    } else {
+        if (temp_s0->unk0 < 0x28) {
+            func_8009EC9C(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844,
+                vs_main_settings.mappedChainAbilities[D_800F19CC->unk2C03 - 1] - 0x16,
+                temp_a3);
+        } else {
+            func_8009EE9C(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 0);
+        }
+        D_800F19CC->unk2C0A = func_8009F8DC(temp_s0->unk4.unk0) * 2;
+    }
+
+    func_80045D64(0x7E, 0x34);
+    func_80045D64(0x7E, 0x35);
+    func_80045D64(0x7E, 0x36);
+    func_800CB50C();
+
+    D_800F19CC->unk2C03 = 0;
+    D_800F18F0 = 7;
+}
 
 void func_800704B0(void)
 {

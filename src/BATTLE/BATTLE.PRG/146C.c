@@ -17,6 +17,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
+#include <abs.h>
 
 typedef struct {
     u_char unk0;
@@ -9500,7 +9501,86 @@ void _setDoorEntered(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DA24);
+short func_8008DA24(int arg0, int arg1)
+{
+    D_800F1C60_t* temp_s4;
+    int temp_fp;
+    int temp_s0_2;
+    int temp_s0_3;
+    int temp_s7;
+    int temp_v0;
+    int temp_v0_2;
+    int var_s0;
+    int var_s1;
+    int var_s3;
+    int var_s5;
+    int var_v0;
+    int var_v0_3;
+    int v;
+    int temp_s6 = 0x8000;
+
+    if (D_800F1C60 != NULL) {
+        temp_s7 = arg0;
+        temp_s7 = temp_s7 & 0x1F;
+        arg0 >>= 5;
+        temp_fp = arg1 & 0x1F;
+        arg1 >>= 5;
+        temp_s4 = D_800F1C60;
+
+        if (((arg0 >> 2) >= (u_int)temp_s4->unk0)
+            || ((arg1 >> 2) >= (u_int)temp_s4->unk2)) {
+            return -0x8000;
+        }
+
+        temp_s6 = func_80099514(arg0, arg1, 0);
+        var_s5 = (temp_s4->unk4 - ((temp_s6 & 0x7F) * 2)) * 8;
+
+        var_s3 = temp_s7 < 0x10 ? arg0 - 1 : arg0 + 1;
+        var_s1 = arg1 - 1;
+
+        if (temp_fp >= 0x10) {
+            var_s1 = arg1 + 1;
+        }
+
+        if ((var_s3 >> 2) < (u_int)temp_s4->unk0) {
+            var_s3 = (temp_s4->unk4 - ((func_80099514(var_s3, arg1, 0) & 0x7F) * 2)) * 8;
+            var_v0 = var_s3 - var_s5;
+            if (ABS(var_v0) >= 0x40) {
+                var_s3 = var_s5;
+            }
+        } else {
+            var_s3 = var_s5;
+        }
+
+        if ((var_s1 >> 2) < (u_int)temp_s4->unk2) {
+            var_s1 = (temp_s4->unk4 - ((func_80099514(arg0, var_s1, 0) & 0x7F) * 2)) * 8;
+            var_v0 = var_s1 - var_s5;
+            if (ABS(var_v0) >= 0x40) {
+                var_s1 = var_s5;
+            }
+        } else {
+            var_s1 = var_s5;
+        }
+
+        var_s0 = temp_s7 - 0x10;
+        v = ABS(var_s0);
+        var_v0_3 = temp_fp - 0x10;
+
+        temp_s0_2 = v | (ABS(var_v0_3) << 0x10);
+        temp_s0_3 = NormalClip(0, 0x20, temp_s0_2);
+        temp_v0 = NormalClip(0, temp_s0_2, 0x200000);
+
+        temp_v0_2 = 0x400 - temp_v0;
+        temp_v0_2 -= temp_s0_3;
+
+        if (temp_v0_2 >= 0) {
+            temp_v0_2 = (var_s1 * temp_s0_3) + (var_s3 * temp_v0) + (var_s5 * temp_v0_2);
+            var_s5 = temp_v0_2 / 1024;
+        }
+        temp_s6 = (var_s5 & 0x7FFF) | ((temp_s6 & 0x80) << 8);
+    }
+    return temp_s6;
+}
 
 short func_8008DC7C(int arg0, int arg1)
 {

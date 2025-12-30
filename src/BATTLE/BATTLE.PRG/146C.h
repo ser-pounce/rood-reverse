@@ -66,17 +66,13 @@ typedef struct {
 } func_8008D710_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    int unkC;
-    int unk10;
-} func_8008BC04_t;
+    D_800F1910_t2 unk0;
+    short unkC;
+    short unkE;
+    short unk10;
+    char unk12;
+    char unk13;
+} func_8008C1C8_t;
 
 typedef struct {
     u_short unk0_0 : 5;
@@ -95,6 +91,66 @@ typedef struct {
     char unkA;
     char unkB;
 } func_8008B960_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+} D_800F1C60_t;
+
+typedef struct {
+    int unk0[5];
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
+    short unk34;
+    short unk36;
+    short unk38;
+    short unk3A;
+    short unk3C;
+    short unk3E;
+    short unk40;
+    short unk42;
+    short unk44;
+    short unk46;
+    union {
+        short s16[2];
+        int s32;
+    } unk48[2];
+    short sceneId;
+    short unk52;
+    short unk54;
+    short unk56;
+} D_800F1C84_t;
+
+typedef struct {
+    int visited;
+    void* dataAddress;
+    short zoneId;
+    short mapId;
+} vs_battle_room;
+
+typedef struct {
+    int roomCount;
+    vs_battle_room rooms[0];
+} vs_battle_scene;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int* unkC;
+    int* unk10;
+} func_8008A908_t;
 
 typedef struct {
     char unk0;
@@ -124,8 +180,8 @@ typedef struct {
     int unk58;
     int unk5C;
     int unk60;
-    int unk64;
-    short* unk68;
+    int* unk64;
+    D_800F1C60_t* unk68;
     func_8008B764_t* unk6C;
     func_8008B960_t* unk70;
     int unk74;
@@ -133,17 +189,21 @@ typedef struct {
     int unk7C;
     int unk80;
     D_800F1910_t2* unk84;
-    func_8008BC04_t* unk88;
-    int unk8C;
+    func_8008C1C8_t* unk88;
+    D_800F1C84_t* unk8C;
     int unk90;
     int unk94;
-    int unk98;
-    int unk9C;
-    int unkA0;
+    func_8008A908_t* unk98;
+    vs_battle_scene* unk9C;
+    u_short* unkA0;
     int unkA4;
     D_800F1CA0_t* unkA8;
     func_8008D710_t* unkAC;
-    int unkB0[5];
+    u_int unkB0;
+    int unkB4;
+    int unkB8;
+    int unkBC;
+    int unkC0;
 } D_800F1BF8_t;
 
 typedef struct {
@@ -416,13 +476,6 @@ typedef struct {
 } vs_battle_actor_dat;
 
 typedef struct {
-    int visited;
-    void* dataAddress;
-    short zoneId;
-    short mapId;
-} vs_battle_room;
-
-typedef struct {
     char id;
     char exit;
     char flags;
@@ -446,11 +499,6 @@ typedef struct {
     short prev;
     short next;
 } vs_battle_roomName;
-
-typedef struct {
-    int roomCount;
-    vs_battle_room rooms[0];
-} vs_battle_scene;
 
 typedef struct {
     u_short currentManual;
@@ -601,7 +649,6 @@ extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern u_char D_800F1BF0[8];
 extern char D_800F1BF7;
 extern D_800F1BF8_t D_800F1BF8;
-extern vs_battle_scene* vs_battle_currentScene;
 extern void* D_800F1CBC;
 extern func_8008B960_t D_800F1CC8;
 extern short D_800F1CD4;

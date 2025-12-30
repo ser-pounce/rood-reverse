@@ -9,6 +9,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -1530,7 +1531,7 @@ int _getCurrentRoomIndex(vs_battle_scene* scene)
     int i;
 
     int roomCount = scene->roomCount;
-    vs_battle_room* room = vs_battle_currentScene->rooms;
+    vs_battle_room* room = D_800F1BF8.unk9C->rooms;
     int zoneId = room->zoneId;
     int mapId = room->mapId;
     room = scene->rooms;

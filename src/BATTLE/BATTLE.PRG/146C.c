@@ -5,6 +5,7 @@
 #include <rand.h>
 #include "146C.h"
 #include "2842C.h"
+#include "2EA3C.h"
 #include "30D14.h"
 #include "38C1C.h"
 #include "3A1A0.h"
@@ -32,39 +33,6 @@ typedef struct {
     int unk14;
     int unk18;
 } func_8008418C_t;
-
-typedef struct {
-    int unk0[5];
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    char unk30;
-    char unk31;
-    char unk32;
-    char unk33;
-    short unk34;
-    short unk36;
-    short unk38;
-    short unk3A;
-    short unk3C;
-    short unk3E;
-    short unk40;
-    short unk42;
-    short unk44;
-    short unk46;
-    union {
-        short s16[2];
-        int s32;
-    } unk48[2];
-    short sceneId;
-    short unk52;
-    short unk54;
-    short unk56;
-} D_800F1C84_t;
 
 typedef struct {
     u_char unk0;
@@ -109,12 +77,6 @@ typedef struct {
     short unk3E;
     int unk40;
 } func_80085718_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-} D_800F1C60_t;
 
 typedef struct {
     u_char unk0;
@@ -750,6 +712,8 @@ void func_800875C8(D_800F19CC_t3*);
 void func_80088554(void);
 void func_80088CA0(void);
 int func_8008ABF0(int arg0);
+void func_8008B320(void);
+void func_8008B390(int arg0, int* arg1);
 int func_8008B4C8(char arg0);
 void func_8008C40C(void);
 static void _loadZnd(int id);
@@ -765,7 +729,7 @@ void _nop(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
-func_8008BC04_t* func_8008BC04(int, int, int);
+func_8008C1C8_t* func_8008BC04(int, int, int);
 void func_8008BD74(func_8008C1C8_t*);
 int func_8008BEBC(func_8008C1C8_t* arg0);
 int func_8008BF48(func_8008C1C8_t*);
@@ -773,6 +737,7 @@ void func_8008C070(int arg0, func_8008C1C8_t* arg1);
 int func_8008C1C8(func_8008C1C8_t* arg0);
 void func_8008C2C0(char, char, char, int);
 int func_8008C49C(int, int);
+void func_8008C538(void);
 void func_8008C6B4(int, int);
 D_800F1910_t2* func_8008D438(int, int, int);
 func_8008D710_t* func_8008D508(int arg0, int arg1, int arg2);
@@ -780,14 +745,17 @@ void func_8008D5A0(int);
 void func_8008D594(int arg0);
 void func_8008D5FC(func_8008C1C8_t* arg0);
 void func_8008D658(func_8008C1C8_t*);
+void func_8008D710(void);
+void _setDoorEntered(int arg0);
 int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
 func_8008D710_t* func_8008E370(int* arg0);
-func_8008BC04_t* func_8008E3B8(int* arg0);
+func_8008C1C8_t* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
 void func_8008E6DC(int);
+void func_8008E8F8(void);
 void func_8008E938(void);
 int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
@@ -888,19 +856,6 @@ extern short D_800F1BB6;
 extern int D_800F1BB8;
 extern short vs_battle_doorEntered;
 extern D_800F1BF8_t D_800F1BF8;
-extern u_int D_800F1C40;
-extern int* D_800F1C5C;
-extern D_800F1C60_t* D_800F1C60;
-extern int D_800F1C64;
-extern int D_800F1C70;
-extern int D_800F1C74;
-extern func_8008C1C8_t* D_800F1C80;
-extern D_800F1C84_t* D_800F1C84;
-extern u_short* D_800F1C98;
-extern D_800F1CA0_t* D_800F1CA0;
-extern int* D_800F1CA4;
-extern u_int D_800F1CA8;
-extern int D_800F1CB8;
 extern u_short D_800F1CCA;
 extern int D_800F1CC0;
 extern char D_800F1CD6;
@@ -2066,7 +2021,7 @@ void func_8006CE50(void) { func_8008D5A0(0xB4); }
 void func_8006CE70(func_8006CE70_t* arg0)
 {
     int sp10;
-    func_8008BC04_t* temp_v0;
+    func_8008C1C8_t* temp_v0;
     func_8008D710_t* temp_v0_2;
     int new_var2 = 4;
     int new_var3 = 2;
@@ -2074,9 +2029,10 @@ void func_8006CE70(func_8006CE70_t* arg0)
     switch (arg0->unk6 & 0x1F0) {
     case 0x10:
         temp_v0 = func_8008E3B8(&sp10);
-        if ((temp_v0[arg0->unk6 & 0xF].unk8 < new_var2)
-            && (temp_v0[arg0->unk6 & 0xF].unk8 >= new_var3) && (func_8007F434() != 0)) {
-            temp_v0[arg0->unk6 & 0xF].unk8 = 0;
+        if ((temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] < new_var2)
+            && (temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] >= new_var3)
+            && (func_8007F434() != 0)) {
+            temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] = 0;
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
         } else {
@@ -3546,11 +3502,11 @@ int func_80074860(int arg0)
     return func_800BEC58(4, 0, sp20, 1) == 1;
 }
 
-func_8008BC04_t* func_800748B8(int arg0)
+func_8008C1C8_t* func_800748B8(int arg0)
 {
     func_8006EBF8_t sp10;
     char sp20[4];
-    func_8008BC04_t* temp_s1;
+    func_8008C1C8_t* temp_s1;
     char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
@@ -8714,6 +8670,7 @@ int func_8008ABF0(int arg0)
     return 0;
 }
 
+// https://decomp.me/scratch/jsBf0
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
 
 void func_8008B1FC(void* arg0)
@@ -8849,30 +8806,29 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-int func_8008B6EC(void) { return D_800F1C64; }
+func_8008B764_t* func_8008B6EC(void) { return D_800F1BF8.unk6C; }
 
-int func_8008B6FC(void) { return D_800F1C70; }
+int func_8008B6FC(void) { return D_800F1BF8.unk78; }
 
 int func_8008B70C(void)
 {
-    if (D_800F1C60 != 0) {
-        return (D_800F1C60->unk2 << 0x14) | ((u_short)(D_800F1C60->unk0 * 0x10));
+    if (D_800F1BF8.unk68 != 0) {
+        return (D_800F1BF8.unk68->unk2 << 0x14)
+             | ((u_short)(D_800F1BF8.unk68->unk0 * 0x10));
     }
     return 0;
 }
 
 int func_8008B744(void)
 {
-    if (D_800F1CB8 != 0) {
-        return D_800F1CB8;
+    if (D_800F1BF8.unkC0 != 0) {
+        return D_800F1BF8.unkC0;
     }
     return 0;
 }
 
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2)
 {
-    short temp_a1;
-
     if (D_800F1BF8.unk6C != NULL) {
         if (arg2 >= 2) {
             if (D_800F1BF8.unkA8 != NULL) {
@@ -8880,9 +8836,8 @@ func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2)
             }
             return NULL;
         }
-        temp_a1 = D_800F1BF8.unk68[0];
-        if ((arg0 < (u_int)temp_a1) && (arg1 < (u_int)D_800F1BF8.unk68[1])) {
-            return &D_800F1BF8.unk6C[arg1 * temp_a1 + arg0];
+        if ((arg0 < D_800F1BF8.unk68->unk0) && (arg1 < D_800F1BF8.unk68->unk2)) {
+            return &D_800F1BF8.unk6C[arg1 * D_800F1BF8.unk68->unk0 + arg0];
         }
     }
     return NULL;
@@ -8949,43 +8904,43 @@ void func_8008B960(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BAC8);
 
-func_8008BC04_t* func_8008BC04(int arg0, int arg1, int arg2)
+func_8008C1C8_t* func_8008BC04(int arg0, int arg1, int arg2)
 {
     int temp_t2;
-    func_8008BC04_t* var_t0;
+    func_8008C1C8_t* var_t0;
     int i;
 
     if (D_800F1BF8.unk88 != 0) {
         temp_t2 = D_800F1BF8.unk28 / 20;
         var_t0 = D_800F1BF8.unk88;
-        if (var_t0->unkA != 0) {
+        if (var_t0->unk0.unk8.u8[2] != 0) {
             for (i = 0; i < temp_t2; ++i, ++var_t0) {
-                if ((var_t0->unk0 == arg0) && (var_t0->unk2 == arg1)
-                    && (var_t0->unk4 == arg2)) {
+                if ((var_t0->unk0.unk0 == arg0) && (var_t0->unk0.unk2 == arg1)
+                    && (var_t0->unk0.unk4 == arg2)) {
                     return var_t0;
                 }
-                switch (var_t0->unk6 - 4) {
+                switch (var_t0->unk0.unk6 - 4) {
                 case 0:
-                    if ((var_t0->unk0 == arg0) && ((var_t0->unk2 - 1) == arg1)
-                        && (var_t0->unk4 == arg2)) {
+                    if ((var_t0->unk0.unk0 == arg0) && ((var_t0->unk0.unk2 - 1) == arg1)
+                        && (var_t0->unk0.unk4 == arg2)) {
                         return var_t0;
                     }
                     break;
                 case 1:
-                    if (((var_t0->unk0 + 1) == arg0) && (var_t0->unk2 == arg1)
-                        && (var_t0->unk4 == arg2)) {
+                    if (((var_t0->unk0.unk0 + 1) == arg0) && (var_t0->unk0.unk2 == arg1)
+                        && (var_t0->unk0.unk4 == arg2)) {
                         return var_t0;
                     }
                     break;
                 case 2:
-                    if ((var_t0->unk0 == arg0) && ((var_t0->unk2 + 1) == arg1)
-                        && (var_t0->unk4 == arg2)) {
+                    if ((var_t0->unk0.unk0 == arg0) && ((var_t0->unk0.unk2 + 1) == arg1)
+                        && (var_t0->unk0.unk4 == arg2)) {
                         return var_t0;
                     }
                     break;
                 case 3:
-                    if (((var_t0->unk0 - 1) == arg0) && (var_t0->unk2 == arg1)
-                        && (var_t0->unk4 == arg2)) {
+                    if (((var_t0->unk0.unk0 - 1) == arg0) && (var_t0->unk0.unk2 == arg1)
+                        && (var_t0->unk0.unk4 == arg2)) {
                         return var_t0;
                     }
                     break;
@@ -9059,7 +9014,7 @@ int func_8008BF48(func_8008C1C8_t* arg0)
         func_8008BD74(arg0);
     }
     if (arg0->unk10 != -1) {
-        temp_s0 = D_800F1C80;
+        temp_s0 = D_800F1BF8.unk88;
         if (temp_s0[arg0->unk10].unk0.unkA != 0) {
             func_8009291C(temp_s0[arg0->unk10].unk0.unk8.u8[1]);
             if (temp_s0[arg0->unk10].unkE != 0) {
@@ -9134,7 +9089,7 @@ int func_8008C1C8(func_8008C1C8_t* arg0)
     arg0->unk12 = 0;
     arg0->unkE = arg0->unkE == 0;
     if (arg0->unk10 != -1) {
-        func_8008C1C8_t* p = D_800F1C80;
+        func_8008C1C8_t* p = D_800F1BF8.unk88;
         if (p[arg0->unk10].unk0.unkA != 0) {
             if (p[arg0->unk10].unkE == 0) {
                 func_8008BD74(&p[arg0->unk10]);
@@ -9154,9 +9109,9 @@ void func_8008C40C(void)
     int i;
     int* var_a0;
 
-    var_a0 = D_800F1C5C + 1;
-    if (D_800F1C5C != 0) {
-        temp_a1 = D_800F1C5C[0];
+    var_a0 = D_800F1BF8.unk64 + 1;
+    if (D_800F1BF8.unk64 != 0) {
+        temp_a1 = D_800F1BF8.unk64[0];
         for (i = 0; i < temp_a1; ++i) {
             *var_a0 &= ~0x1000;
             var_a0 += 16;
@@ -9168,16 +9123,16 @@ void func_8008C458(int arg0) { func_80098B38(arg0, 0); }
 
 int func_8008C478(int arg0)
 {
-    if (D_800F1C74 != 0) {
-        return D_800F1C74 + (arg0 * 8);
+    if (D_800F1BF8.unk7C != 0) {
+        return D_800F1BF8.unk7C + (arg0 * 8);
     }
     return 0;
 }
 
 int func_8008C49C(int arg0, int arg1)
 {
-    if (D_800F1CA0 != NULL) {
-        D_800F1CA0[arg0].unk4_1 = arg1;
+    if (D_800F1BF8.unkA8 != NULL) {
+        D_800F1BF8.unkA8[arg0].unk4_1 = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
             D_800F1D70[arg0] = 0;
         }
@@ -9232,8 +9187,8 @@ void func_8008C6B4(int arg0, int arg1)
     D_800F1CA0_t* temp_s0;
     int* temp_v0_5;
 
-    if (D_800F1CA0 != NULL) {
-        temp_s0 = &D_800F1CA0[arg0];
+    if (D_800F1BF8.unkA8 != NULL) {
+        temp_s0 = &D_800F1BF8.unkA8[arg0];
         if (arg1 == -1) {
             arg1 = temp_s0->unk4_8;
         }
@@ -9306,13 +9261,16 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
     return 0;
 }
 
-char func_8008D3D0(void) { return D_800F1C84->unk30; }
+char func_8008D3D0(void) { return D_800F1BF8.unk8C->unk30; }
 
-char func_8008D3E8(void) { return D_800F1C84->unk31; }
+char func_8008D3E8(void) { return D_800F1BF8.unk8C->unk31; }
 
-int vs_battle_getCurrentSceneId(void) { return D_800F1C84->sceneId; }
+int vs_battle_getCurrentSceneId(void) { return D_800F1BF8.unk8C->sceneId; }
 
-int func_8008D418(void) { return (D_800F1C84->unk52 << 0x10) | D_800F1C84->unk54; }
+int func_8008D418(void)
+{
+    return (D_800F1BF8.unk8C->unk52 << 0x10) | D_800F1BF8.unk8C->unk54;
+}
 
 D_800F1910_t2* func_8008D438(int arg0, int arg1, int arg2)
 {
@@ -9362,7 +9320,7 @@ void func_8008D594(int arg0) { D_800F1D6E = arg0; }
 void func_8008D5A0(int arg0)
 {
 
-    if ((D_800F1C40 / 184) != 0) {
+    if ((D_800F1BF8.unk48 / 184) != 0) {
         if (arg0 != 0) {
             func_8008E4DC(1);
         } else {
@@ -9459,9 +9417,8 @@ int _getDoorId(int door)
 {
     int* temp_v1;
 
-    if (vs_battle_currentScene != NULL) {
-        temp_v1 =
-            (int*)vs_battle_currentScene + (vs_battle_currentScene->roomCount * 3 + 1);
+    if (D_800F1BF8.unk9C != NULL) {
+        temp_v1 = (int*)D_800F1BF8.unk9C + (D_800F1BF8.unk9C->roomCount * 3 + 1);
         temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
@@ -9482,9 +9439,9 @@ void _setDoorEntered(int arg0)
 
     vs_battle_doorEntered = arg0;
 
-    if (vs_battle_currentScene != NULL) {
-        int* temp_v1 = (int*)vs_battle_currentScene;
-        temp_v1 += vs_battle_currentScene->roomCount * 3 + 1;
+    if (D_800F1BF8.unk9C != NULL) {
+        int* temp_v1 = (int*)D_800F1BF8.unk9C;
+        temp_v1 += D_800F1BF8.unk9C->roomCount * 3 + 1;
         temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
@@ -9519,13 +9476,13 @@ short func_8008DA24(int arg0, int arg1)
     int v;
     int temp_s6 = 0x8000;
 
-    if (D_800F1C60 != NULL) {
+    if (D_800F1BF8.unk68 != NULL) {
         temp_s7 = arg0;
         temp_s7 = temp_s7 & 0x1F;
         arg0 >>= 5;
         temp_fp = arg1 & 0x1F;
         arg1 >>= 5;
-        temp_s4 = D_800F1C60;
+        temp_s4 = D_800F1BF8.unk68;
 
         if (((arg0 >> 2) >= (u_int)temp_s4->unk0)
             || ((arg1 >> 2) >= (u_int)temp_s4->unk2)) {
@@ -9587,7 +9544,7 @@ short func_8008DC7C(int arg0, int arg1)
     D_800F1C60_t* temp_s0;
     int var_a2;
 
-    temp_s0 = D_800F1C60;
+    temp_s0 = D_800F1BF8.unk68;
     var_a2 = 0x8000;
     if ((temp_s0 != NULL) && ((u_int)(arg0 >> 7) < temp_s0->unk0)
         && ((u_int)(arg1 >> 7) < temp_s0->unk2)) {
@@ -9605,10 +9562,10 @@ short func_8008DD0C(int arg0, int arg1)
     int temp_v1;
     int new_var;
 
-    temp_s0 = D_800F1C60;
+    temp_s0 = D_800F1BF8.unk68;
     var_a2 = 0;
     new_var = 8;
-    if ((D_800F1C60 != NULL) && ((arg0 >> 7) < (u_int)temp_s0->unk0)
+    if ((D_800F1BF8.unk68 != NULL) && ((arg0 >> 7) < (u_int)temp_s0->unk0)
         && ((arg1 >> 7) < (u_int)temp_s0->unk2)) {
         var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 1);
         temp_v1 = (temp_s0->unk4 - ((var_a2 & 0x7F) * 2)) * new_var;
@@ -9626,7 +9583,7 @@ int func_8008DDA8(int arg0, int arg1)
     int sp10 = 0x80008000;
     short* new_var = (short*)&sp10;
 
-    D_800F1C60_t* temp_s2 = D_800F1C60;
+    D_800F1C60_t* temp_s2 = D_800F1BF8.unk68;
 
     if ((temp_s2 != NULL) && ((u_int)(arg0 >> 7) < temp_s2->unk0)) {
         if ((u_int)(arg1 >> 7) < temp_s2->unk2) {
@@ -9699,10 +9656,10 @@ void func_8008E19C(int arg0, int arg1, int arg2, int arg3)
 void func_8008E224(int arg0, int arg1)
 {
     int* temp_v0;
-    D_800F1CA0_t* temp_s0 = D_800F1CA0;
+    D_800F1CA0_t* temp_s0 = D_800F1BF8.unkA8;
 
     if (temp_s0 != NULL) {
-        temp_s0 = &D_800F1CA0[arg0];
+        temp_s0 = &D_800F1BF8.unkA8[arg0];
         temp_s0->unk0_9 = arg1 - 1;
         temp_v0 = func_8009195C(temp_s0->unk0_0);
         if (temp_v0 != NULL) {
@@ -9717,10 +9674,10 @@ void func_8008E224(int arg0, int arg1)
 
 void* func_8008E2D4(int arg0)
 {
-    D_800F1CA0_t* temp_v1 = D_800F1CA0;
+    D_800F1CA0_t* temp_v1 = D_800F1BF8.unkA8;
 
-    if (D_800F1CA0 != NULL) {
-        temp_v1 = &D_800F1CA0[arg0];
+    if (D_800F1BF8.unkA8 != NULL) {
+        temp_v1 = &D_800F1BF8.unkA8[arg0];
         return ((char*)temp_v1) + 8 + temp_v1->unk0_27 * 16;
     }
     return NULL;
@@ -9728,9 +9685,9 @@ void* func_8008E2D4(int arg0)
 
 u_int func_8008E320(int arg0)
 {
-    D_800F1CA0_t* temp_v1 = D_800F1CA0;
-    if (D_800F1CA0 != NULL) {
-        temp_v1 = &D_800F1CA0[arg0];
+    D_800F1CA0_t* temp_v1 = D_800F1BF8.unkA8;
+    if (D_800F1BF8.unkA8 != NULL) {
+        temp_v1 = &D_800F1BF8.unkA8[arg0];
         if (temp_v1->unk4_0 == 1) {
             return temp_v1->unk4_16;
         }
@@ -9748,7 +9705,7 @@ func_8008D710_t* func_8008E370(int* arg0)
     return NULL;
 }
 
-func_8008BC04_t* func_8008E3B8(int* arg0)
+func_8008C1C8_t* func_8008E3B8(int* arg0)
 {
     if (D_800F1BF8.unk88 != 0) {
         *arg0 = D_800F1BF8.unk28 / 20;
@@ -9772,7 +9729,7 @@ D_800F1910_t2* func_8008E400(int* arg0)
     return NULL;
 }
 
-int func_8008E470(void) { return D_800F1CA8 < 1; }
+int func_8008E470(void) { return D_800F1BF8.unkB0 < 1; }
 
 void func_8008E480(int arg0)
 {
@@ -9780,9 +9737,9 @@ void func_8008E480(int arg0)
     func_800918E8(arg0);
 }
 
-short func_8008E4AC(void) { return D_800F1C84->unk56; }
+short func_8008E4AC(void) { return D_800F1BF8.unk8C->unk56; }
 
-char func_8008E4C4(void) { return D_800F1C84->unk32; }
+char func_8008E4C4(void) { return D_800F1BF8.unk8C->unk32; }
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", D_80068BEC);
 
@@ -9827,9 +9784,9 @@ void func_8008E4DC(int arg0)
             }
             ++var_s0;
         }
-        if (D_800F1C84 != NULL) {
-            if (D_800F1C84->unk2C >= 0) {
-                func_800936F8(D_800F1C84->unk2C);
+        if (D_800F1BF8.unk8C != NULL) {
+            if (D_800F1BF8.unk8C->unk2C >= 0) {
+                func_800936F8(D_800F1BF8.unk8C->unk2C);
             }
         }
         D_800F1D6F = !D_800F1D6F;
@@ -9858,10 +9815,10 @@ int vs_battle_getMapCompletion(void)
     return (value * 100) / 361;
 }
 
-void func_8008E6A8(void* arg0)
+void func_8008E6A8(int (*arg0)[136])
 {
-    if (D_800F1CA4 != 0) {
-        vs_main_memcpy(D_800F1CA4 + 5, arg0, 0x220);
+    if (D_800F1BF8.unkAC != NULL) {
+        vs_main_memcpy(&D_800F1BF8.unkAC->unk14, arg0, sizeof D_800F1BF8.unkAC->unk14);
     }
 }
 
@@ -9874,7 +9831,7 @@ void func_8008E6DC(int arg0)
     int i;
     vs_battle_room* room;
 
-    room = vs_battle_currentScene->rooms;
+    room = D_800F1BF8.unk9C->rooms;
     zoneId = room->zoneId;
     mapId = room->mapId;
 
@@ -9931,9 +9888,9 @@ void func_8008E938(void)
     D_800F1DB8 = 0x1000;
     D_800F1DBA = 0x1000;
 
-    if (D_800F1C84 != NULL) {
+    if (D_800F1BF8.unk8C != NULL) {
 
-        temp_s0 = D_800F1C84;
+        temp_s0 = D_800F1BF8.unk8C;
 
         for (i = 1; i < 5; ++i) {
             if (temp_s0->unk0[0] != temp_s0->unk0[i]) {
@@ -9947,9 +9904,10 @@ void func_8008E938(void)
             func_8008EB30(temp_s0->unk0);
         }
         if ((temp_s0->unk48[0].s32 == 0) && (temp_s0->unk48[1].s32 == 0)) {
-            if (D_800F1C60 != NULL) {
-                temp_s0->unk48[1].s16[0] = D_800F1C60->unk0 * 4;
-                temp_s0->unk48[1].s16[1] = D_800F1C60->unk2 * 4;
+            D_800F1C60_t* s = D_800F1BF8.unk68;
+            if (s != NULL) {
+                temp_s0->unk48[1].s16[0] = s->unk0 * 4;
+                temp_s0->unk48[1].s16[1] = s->unk2 * 4;
             } else {
                 temp_s0->unk48[1].s16[0] = 0x20;
                 temp_s0->unk48[1].s16[1] = 0x20;
@@ -9968,11 +9926,11 @@ int func_80090C2C(int);
 
 int func_8008EA90(int arg0)
 {
-    D_800F1C84_t* new_var2 = D_800F1C84;
+    D_800F1C84_t* new_var2 = D_800F1BF8.unk8C;
 
     if (new_var2 != 0) {
         D_800F1C84_t* new_var4 = new_var2;
-        new_var2 = D_800F1C84;
+        new_var2 = D_800F1BF8.unk8C;
         if ((arg0 == 0) || (new_var4->unk34 != 1)) {
             func_80090C2C(new_var4->unk34);
         } else {
@@ -10048,7 +10006,7 @@ int func_8008EFCC(int arg0)
     int var_a0;
     int var_s0;
 
-    temp_s0 = D_800F1C98;
+    temp_s0 = D_800F1BF8.unkA0;
     D_800F1DC8 = arg0;
     if (temp_s0 != 0) {
         D_800F1DBE = *temp_s0;
@@ -10177,7 +10135,7 @@ void func_8008F9A4(int arg0, int arg1)
 
 void func_8008FA14(D_800F1DD4_t* arg0)
 {
-    D_800F1C84_t* temp_s0 = D_800F1C84;
+    D_800F1C84_t* temp_s0 = D_800F1BF8.unk8C;
 
     arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
     arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
@@ -10196,7 +10154,7 @@ void func_80090A1C(D_800F1DD4_t* arg0)
 {
     D_800F1C84_t* temp_s0;
 
-    temp_s0 = D_800F1C84;
+    temp_s0 = D_800F1BF8.unk8C;
     if (temp_s0 != NULL) {
         arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
         arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);

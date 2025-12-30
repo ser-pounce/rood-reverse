@@ -273,7 +273,7 @@ typedef struct {
 typedef struct {
     short unk0;
     short unk2;
-    char unk4;
+    signed char unk4;
     char unk5;
     u_char nameIndex;
     char unk7;

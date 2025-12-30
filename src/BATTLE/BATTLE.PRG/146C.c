@@ -737,7 +737,9 @@ int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
 short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
 short func_800838EC(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
-int func_8008574C(int, vs_battle_actor2*, int);
+int func_8008574C(u_int, vs_battle_actor2*, int, int);
+// Aliased at link time
+int func_8008574C_alias(u_int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
 void func_80085390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
@@ -8138,11 +8140,100 @@ void func_80085718(func_80085718_t* arg0)
     arg0->unk1C.value = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008574C);
+// Mostly invoked as func_8008574C_alias without arg3
+int func_8008574C(u_int arg0, vs_battle_actor2* arg1, int arg2, int arg3)
+{
+    int var_v1;
+    int var_t0;
+    int var_t1;
+    vs_skill_t* temp_v0;
+
+    temp_v0 = &vs_main_skills[arg0];
+    var_t1 = temp_v0->unk3;
+    var_t0 = temp_v0->unk2_1;
+
+    switch (var_t0) {
+    case 1:
+        arg3 = arg1->currentMP;
+        break;
+    case 2:
+        arg3 = 100 - arg1->risk;
+        break;
+    case 3:
+        arg3 = arg1->currentHP;
+        ++var_t1;
+        break;
+    case 4:
+        arg3 = arg1->weapon.currentPp;
+        break;
+    case 6:
+        var_t1 = arg1->weapon.risk;
+        switch (arg1->weapon.unk10F) {
+        case 1:
+            arg3 = arg1->currentMP;
+            break;
+        case 2:
+            arg3 = 100 - arg1->risk;
+            break;
+        case 3:
+            arg3 = arg1->currentHP;
+            ++var_t1;
+            break;
+        case 4:
+            arg3 = arg1->weapon.currentPp;
+            break;
+        }
+        var_t0 = arg1->weapon.unk10F;
+        break;
+    default:
+        arg3 = 0;
+        break;
+    }
+
+    if (var_t0 == 2) {
+        if (D_800F19CC->unk4 >= 0xA) {
+            if ((arg0 - 0x16) < 0x12) {
+                var_t1 += (D_800F19CC->unk4 * D_800F19CC->unk4) / 10;
+            }
+        }
+    }
+    if (arg3 >= var_t1) {
+        if (var_t0 == 3) {
+            --var_t1;
+        }
+        arg3 -= var_t1;
+        var_v1 = 1;
+    } else {
+        if (var_t0 == 2) {
+            arg3 = 0;
+            var_v1 = 1;
+        } else {
+            var_v1 = 0;
+        }
+    }
+
+    if (arg2 != 0) {
+        switch (var_t0) {
+        case 1:
+            arg1->currentMP = arg3;
+            break;
+        case 2:
+            arg1->risk = 100 - arg3;
+            break;
+        case 3:
+            arg1->currentHP = arg3;
+            break;
+        case 4:
+            arg1->weapon.currentPp = (u_short)arg3;
+            break;
+        }
+    }
+    return (var_v1 << 0x18) + (var_t0 << 0x10) + var_t1;
+}
 
 void func_80085978(int arg0, int arg1)
 {
-    func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0);
+    func_8008574C_alias(arg0, vs_battle_actors[arg1]->unk3C, 0);
 }
 
 void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
@@ -8207,7 +8298,7 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
     sp10.unk8C = 0;
     sp10.unk4C.unk.unk1 = arg3;
     func_80085B10(arg0, arg4, &sp10, 0);
-    return func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
+    return func_8008574C_alias(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
@@ -8541,7 +8632,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     temp_s1 = vs_battle_actors[arg0]->unk3C;
     ret = temp_s1->flags.fields.unk0 != 0;
 
-    if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
+    if (!(func_8008574C_alias(id, temp_s1, 0) & 0xFF000000)) {
         ret |= 2;
     }
 

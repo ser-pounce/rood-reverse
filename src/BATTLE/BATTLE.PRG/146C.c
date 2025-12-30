@@ -2350,7 +2350,50 @@ void func_8006EF10(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EF5C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006F204);
+int func_8006F204(void)
+{
+    int temp_a0;
+    int temp_v0;
+    int temp_v1;
+    int new_var;
+    int _[4] __attribute__((unused));
+
+    temp_v0 = D_1F800000[14];
+    new_var = temp_v0 & (~0xFFF);
+    temp_a0 = D_800F1904->unkA8 & ~0xFFF;
+    temp_v1 = (temp_v0 + (D_800F1904->unkC8 * D_800F1904->unkF0)) & ~0xFFF;
+
+    if (((new_var >= temp_a0) && (temp_a0 >= temp_v1))
+        || ((temp_a0 >= new_var) && (temp_v1 >= temp_a0))) {
+
+        D_1F800000[13] = D_800F1904->unkA4;
+        D_1F800000[15] = D_800F1904->unkAC;
+        D_1F800000[14] = D_800F1904->unkA8;
+        D_1F800000[17] = D_800F1904->unkB4;
+        D_1F800000[19] = D_800F1904->unkBC;
+        D_1F800000[18] = D_800F1904->unkB8;
+
+        D_800F19D0 = D_800F1904->unk6C;
+
+        D_1F800000[25] = D_800F1904->unkA0;
+
+        func_8007CCCC(D_800F1904->unk98);
+        func_8007CCF0(D_800F1904->unk9C);
+        return 1;
+    }
+    D_1F800000[13] += ((D_800F1904->unkC4 * D_800F1904->unkF0));
+    D_1F800000[15] += ((D_800F1904->unkCC * D_800F1904->unkF0));
+    D_1F800000[14] += ((D_800F1904->unkC8 * D_800F1904->unkF0));
+    D_1F800000[17] += (D_800F1904->unkD4);
+    D_1F800000[19] += (D_800F1904->unkDC);
+    D_1F800000[18] += (D_800F1904->unkD8);
+    D_1F800000[25] += (D_800F1904->unkE4);
+
+    func_8007CCCC(D_8005E0C8 + D_800F1904->unkE8);
+    func_8007CCF0(vs_main_projectionDistance + D_800F1904->unkEC);
+
+    return 0;
+}
 
 void func_8006F450(func_800CF0E8_t* arg0)
 {

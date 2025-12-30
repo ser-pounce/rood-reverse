@@ -16,11 +16,13 @@ typedef struct {
 } D_800F1910_t2;
 
 typedef struct {
-    u_int unk0_0 : 9;
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 1;
     u_int unk0_9 : 1;
     u_int unk0_10 : 3;
     u_int unk0_13 : 3;
-    u_int unk0_16 : 2;
+    u_int unk0_16 : 1;
+    u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_19 : 12;
 } func_8008B764_t;
@@ -392,10 +394,10 @@ typedef struct vs_battle_actor {
     char unk29;
     char unk2A;
     char unk2B;
-    char unk2C;
-    char unk2D;
-    char unk2E;
-    char unk2F;
+    union {
+        char u8[4];
+        int s32;
+    } unk2C;
     int unk30;
     int unk34;
     int unk38;

@@ -604,6 +604,11 @@ typedef struct {
     u_short unk6;
 } func_8006CE70_t;
 
+typedef struct {
+    int count;
+    func_8008B960_t* values[0];
+} D_800F1D08_t;
+
 void func_8006A334(vs_battle_weaponInfo*, vs_battle_equipment*);
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
@@ -860,6 +865,7 @@ extern u_short D_800F1CCA;
 extern int D_800F1CC0;
 extern char D_800F1CD6;
 extern short D_800F1CDC;
+extern D_800F1D08_t D_800F1D08;
 extern D_800F1D28_t D_800F1D28[8];
 extern short D_800F1D6A;
 extern short D_800F1D6C;
@@ -8926,7 +8932,35 @@ void func_8008B960(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008BAC8);
+D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
+{
+    func_8008B960_t* var_s0;
+    int temp_s1;
+    int i;
+    func_8008B960_t* new_var;
+
+    if (D_800F1BF8.unk70 != NULL) {
+        var_s0 = D_800F1BF8.unk70;
+        D_800F1D08.count = 0;
+        temp_s1 = D_800F1BF8.unk10 / 12;
+
+        vs_main_stateFlags.unkAC[7] = rand();
+
+        for (i = 0; i < temp_s1; ++i, ++var_s0) {
+            new_var = var_s0;
+            if (((arg2 >= 2) && ((&new_var->unk2)->unk0_10 == arg2))
+                || (((((&var_s0->unk2)->unk0_0) == arg0))
+                    && ((((&var_s0->unk2)->unk0_5)) == arg1)
+                    && ((((&var_s0->unk2)->unk0_10)) == arg2))) {
+                do {
+                    D_800F1D08.values[D_800F1D08.count++] = var_s0;
+                } while (0);
+            }
+        }
+        return &D_800F1D08;
+    }
+    return NULL;
+}
 
 func_8008C1C8_t* func_8008BC04(int arg0, int arg1, int arg2)
 {

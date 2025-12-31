@@ -278,7 +278,7 @@ typedef struct {
     char unk10C;
     u_char unk10D;
     u_char unk10E;
-    u_char unk10F;
+    u_char skillType;
     u_short currentPp;
     u_short maxPp;
     u_short currentDp;
@@ -458,7 +458,7 @@ typedef struct vs_battle_actor {
     char unk1F;
     int unk20;
     char unk24;
-    char equippedWeaponType;
+    char equippedWeaponCategory;
     char unk26;
     u_char unk27;
     char unk28;

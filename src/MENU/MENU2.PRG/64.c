@@ -15,7 +15,7 @@ static void _setAbilityCost(int ability)
     int cost;
 
     vs_mainmenu_setAbilityCost(1, "RISK", 8, 0);
-    cost = vs_main_skills[ability].unk3;
+    cost = vs_main_skills[ability].cost;
     _stringBuffer[15] = 0;
 
     i = 15;
@@ -420,7 +420,7 @@ static int _chainAbilityMenu(int arg0)
         count = 0;
         for (i = 0; i < 14; ++i) {
             skill = vs_battle_chainAbilityOffsets[i];
-            if (vs_main_skills[skill].flags_15) {
+            if (vs_main_skills[skill].unlocked) {
                 menuStrings[count * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[count * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_chainAbilityEffect0 + i]];
@@ -465,7 +465,7 @@ static int _defenseAbilityMenu(int arg0)
         row = 0;
         for (i = 0; i < 14; ++i) {
             skill = vs_battle_defenseAbilityOffsets[i];
-            if (vs_main_skills[skill].flags_15) {
+            if (vs_main_skills[skill].unlocked) {
                 menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
                 menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_defenseAbilityEffect0 + i]];

@@ -16,7 +16,7 @@ static void _setArtCost(int art)
 
     flags = vs_battle_getSkillFlags(0, art);
     vs_mainmenu_setAbilityCost(1, "HP", 8, (flags >> 1) & 1);
-    cost = vs_main_skills[art].unk3;
+    cost = vs_main_skills[art].cost;
     _digitBuffer[15] = 0;
 
     i = 15;
@@ -124,13 +124,13 @@ static int _drawArtsList(int typeCursorMem)
         rowCount = 0;
         for (i = 0; i < 4; ++i) {
             int skillId = vs_main_skills_daggerArt1 + (weaponType - 1) * 4 + i;
-            if (vs_main_skills[skillId].flags_15) {
+            if (vs_main_skills[skillId].unlocked) {
                 menuStrings[rowCount * 2] = (char*)vs_main_skills[skillId].name;
                 menuStrings[rowCount * 2 + 1] =
                     (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
                                               + ((weaponType - 1) * 4)]];
                 rowTypes[rowCount] = 0;
-                if ((weaponType != vs_battle_characterState->equippedWeaponType)
+                if ((weaponType != vs_battle_characterState->equippedWeaponCategory)
                     || (vs_battle_getSkillFlags(0, skillId) != 0)) {
                     rowTypes[rowCount] = 1;
                 }
@@ -246,14 +246,14 @@ static int _drawWeaponTypeList(int init)
             menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 1]];
             rowType[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
-                if (vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].flags_15) {
+                if (vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].unlocked) {
                     break;
                 }
             }
             if (j == 4) {
                 menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 2]];
                 rowType[i] |= 1;
-            } else if (i == (vs_battle_characterState->equippedWeaponType - 1)) {
+            } else if (i == (vs_battle_characterState->equippedWeaponCategory - 1)) {
                 rowType[i] |= 4;
             }
         }
@@ -317,7 +317,7 @@ int vs_menu1_exec(char* state)
             break;
         }
         func_800FFBC8();
-        weaponType = vs_battle_characterState->equippedWeaponType;
+        weaponType = vs_battle_characterState->equippedWeaponCategory;
         // Fallthrough
     case artsInit:
         _drawArtsList(weaponType);

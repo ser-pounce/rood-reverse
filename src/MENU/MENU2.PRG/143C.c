@@ -15,37 +15,37 @@ static int _breakArtUnlocked(int init)
     static char messageTimeout;
     static char _[15] __attribute__((unused));
 
-    int weaponTypeMod;
+    int weaponCategoryMod;
     int skillId;
-    int weaponType;
+    int weaponCategory;
     u_char(*new_var)[12];
 
     if (init != 0) {
 
-        weaponType = vs_battle_characterState->equippedWeaponType;
-        weaponTypeMod = weaponType;
+        weaponCategory = vs_battle_characterState->equippedWeaponCategory;
+        weaponCategoryMod = weaponCategory;
         new_var = &vs_main_artsStatus.artsLearned;
-        weaponTypeMod %= 10;
-        skillId = (*new_var)[weaponTypeMod];
+        weaponCategoryMod %= 10;
+        skillId = (*new_var)[weaponCategoryMod];
 
         if (skillId == 4) {
             return 1;
         }
 
-        if (vs_main_artsStatus.kills.weaponCategories[weaponTypeMod]
-            < vs_main_artsPointsRequirements[weaponTypeMod][skillId]) {
+        if (vs_main_artsStatus.kills.weaponCategories[weaponCategoryMod]
+            < vs_main_artsPointsRequirements[weaponCategoryMod][skillId]) {
             return 1;
         }
 
         func_800C8E04(3);
-        vs_main_artsStatus.artsLearned[weaponTypeMod] = skillId + 1;
-        skillId = 184 + ((weaponType - 1) * 4) + skillId;
+        vs_main_artsStatus.artsLearned[weaponCategoryMod] = skillId + 1;
+        skillId = 184 + ((weaponCategory - 1) * 4) + skillId;
         vs_battle_stringContext.strings[0] =
-            (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponType]];
+            (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponCategory]];
         vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
         vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
-        vs_main_skills[skillId].flags_15 = 1;
+        vs_main_skills[skillId].unlocked = 1;
         messageTimeout = 120;
 
     } else if ((D_800F5130 >> 0x1E) & 1) {
@@ -147,7 +147,7 @@ static int _battleAbilityUnlocked(int arg0)
         remainingChainAbilityCount = 0;
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableChainAbilities[i];
-            if (!vs_main_skills[ability].flags_15) {
+            if (!vs_main_skills[ability].unlocked) {
                 remainingChainAbilities[remainingChainAbilityCount++] = ability;
             }
         }
@@ -155,7 +155,7 @@ static int _battleAbilityUnlocked(int arg0)
         remainingDefenseAbilityCount = 0;
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableDefenseAbilities[i];
-            if (!vs_main_skills[ability].flags_15) {
+            if (!vs_main_skills[ability].unlocked) {
                 remainingDefenseAbilities[remainingDefenseAbilityCount++] = ability;
             }
         }
@@ -298,7 +298,7 @@ static int _battleAbilityUnlocked(int arg0)
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
-            vs_main_skills[skill].flags_15 = 1;
+            vs_main_skills[skill].unlocked = 1;
             state = showMessage;
         }
         break;
@@ -316,7 +316,7 @@ static int _battleAbilityUnlocked(int arg0)
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
             vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
-            vs_main_skills[skill].flags_15 = 1;
+            vs_main_skills[skill].unlocked = 1;
             state = showMessage;
         }
         break;

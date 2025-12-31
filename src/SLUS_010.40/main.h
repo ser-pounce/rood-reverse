@@ -36,13 +36,22 @@ typedef union {
     u_int s32;
 } vs_hitParams_t;
 
+enum skillTypes {
+    skillTypeSpell = 1,
+    skillTypeAbility,
+    skillTypeBreakArt,
+    skillTypeItem = 5,
+    skillTypeBaseAttack,
+    skillTypeTrap
+};
+
 typedef struct {
-    char unk0;
+    char id;
     char unk1;
     char unk2_0 : 1;
-    char unk2_1 : 3;
+    char type : 3;
     u_char unk2_4 : 4;
-    char unk3;
+    char cost;
     char rangeX;
     char rangeY;
     char rangeZ;
@@ -51,15 +60,15 @@ typedef struct {
     int aoe;
     char flags_0;
     u_int flags_7 : 7;
-    u_int flags_15 : 1;
+    u_int unlocked : 1;
     u_int flags_16 : 16;
     int unk10;
     struct {
-        u_int unk0 : 7;
-        u_int unk0_7 : 6;
-        u_int unk0_E : 3;
-        u_int unk0_10 : 6;
-        u_int damage : 5;
+        u_int effect : 7;
+        u_int prerequisites : 6;
+        u_int hitRate : 3;
+        u_int damageCalculator : 6;
+        u_int damageFactor : 5;
         int type : 2;
         int affinity : 3;
     } hitParams[2];

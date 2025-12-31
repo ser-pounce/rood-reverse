@@ -26,7 +26,7 @@ static void _setMPCost(int id)
 
     flags = vs_battle_getSkillFlags(0, id);
     vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
-    cost = vs_main_skills[id].unk3;
+    cost = vs_main_skills[id].cost;
     _MPCostTextBuffer[15] = NULL;
 
     i = 15;
@@ -163,7 +163,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
             int skillId = vs_battle_warlockSpellIds[i];
-            if (vs_main_skills[skillId].flags_15) {
+            if (vs_main_skills[skillId].unlocked) {
                 menuStrings[rowCount * 2] =
                     (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpells]];
                 menuStrings[rowCount * 2 + 1] =
@@ -208,7 +208,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                 selectedRow = _availableWarlockSpells[selectedRow - 1];
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
                     if ((selectedRow == levelledSpells[rowCount])
-                        && (vs_main_skills[selectedRow + 1].flags_15)) {
+                        && (vs_main_skills[selectedRow + 1].unlocked)) {
                         func_800FA92C(D_800F4EE8.unk0[0xE], 2);
                         vs_mainMenu_isLevelledSpell = 1;
                         state = levelledSpell;
@@ -226,7 +226,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
             i = _availableWarlockSpells[func_801008B0()];
             for (rowCount = 0; rowCount < 7; ++rowCount) {
                 if (i == levelledSpells[rowCount]) {
-                    if (vs_main_skills[i + 1].flags_15) {
+                    if (vs_main_skills[i + 1].unlocked) {
                         i = -i;
                     }
                     break;
@@ -245,9 +245,9 @@ static int _warlockMagicMenu(u_int initCursorMemory)
             break;
         }
         i = 2;
-        if (vs_main_skills[selectedRow + 2].flags_15) {
+        if (vs_main_skills[selectedRow + 2].unlocked) {
             i = 3;
-            if (vs_main_skills[selectedRow + 3].flags_15) {
+            if (vs_main_skills[selectedRow + 3].unlocked) {
                 i = 4;
             }
         }
@@ -415,7 +415,7 @@ static int _shamanMagicMenu(u_int initCursorMemory)
         rowCount = 0;
         for (i = 0; i < 6; ++i) {
             skillId = vs_battle_shamanSpellIds[i];
-            if (!vs_main_skills[skillId].flags_15) {
+            if (!vs_main_skills[skillId].unlocked) {
                 continue;
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
@@ -505,7 +505,7 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
             skillId = vs_battle_sorcererSpellIds[i];
-            if (!vs_main_skills[skillId].flags_15) {
+            if (!vs_main_skills[skillId].unlocked) {
                 continue;
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
@@ -594,7 +594,7 @@ static int _enchanterMagicMenu(u_int initCursorMemory)
         rowCount = 0;
         for (i = 0; i < 8; ++i) {
             skillId = vs_battle_enchanterSpellIds[i];
-            if (!vs_main_skills[skillId].flags_15) {
+            if (!vs_main_skills[skillId].unlocked) {
                 continue;
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;

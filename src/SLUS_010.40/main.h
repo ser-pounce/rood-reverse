@@ -341,10 +341,10 @@ typedef struct {
     char unk0;
     char unk1;
     u_short unk2;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
+    signed char unk4;
+    signed char unk5;
+    signed char unk6;
+    signed char unk7;
 } D_80050468_t;
 
 void func_80048FEC(short arg0);

@@ -422,10 +422,7 @@ typedef struct {
 } func_80077DF0_t3;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
+    VECTOR unk0;
     func_80077DF0_t2 unk10;
 } func_80077DF0_t;
 
@@ -614,7 +611,7 @@ void func_8006A334(vs_battle_weaponInfo*, vs_battle_equipment*);
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
-void func_8006DFE0(func_8006EBF8_t2*);
+void func_8006DFE0(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -630,7 +627,7 @@ void func_8006B2D4(void);
 void func_8006C004(vs_battle_actor*);
 void func_8006C164(int);
 void func_8006D0A4(u_int*);
-void func_8006D9FC(func_80077DF0_t*, func_80077DF0_t*);
+void func_8006D9FC(VECTOR*, VECTOR*);
 int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
 int func_8006DEFC(SVECTOR*, int, int);
 void func_8006E158(void);
@@ -2114,7 +2111,7 @@ int _add_min(int base, int a, int b)
     return base;
 }
 
-void func_8006D9FC(func_80077DF0_t* arg0, func_80077DF0_t* arg1)
+void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
 {
     int _[2] __attribute__((unused));
     int temp_a1;
@@ -2127,14 +2124,14 @@ void func_8006D9FC(func_80077DF0_t* arg0, func_80077DF0_t* arg1)
     temp_v1_2 = (D_800F1880.unk44 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
-        arg1->unk0 = (temp_a1 + temp_v1_2) >> 1;
+        arg1->vx = (temp_a1 + temp_v1_2) >> 1;
     } else {
-        if (arg0->unk0 < temp_a1) {
-            arg1->unk0 = temp_a1;
-        } else if (temp_v1_2 < arg0->unk0) {
-            arg1->unk0 = temp_v1_2;
+        if (arg0->vx < temp_a1) {
+            arg1->vx = temp_a1;
+        } else if (temp_v1_2 < arg0->vx) {
+            arg1->vx = temp_v1_2;
         } else {
-            arg1->unk0 = arg0->unk0;
+            arg1->vx = arg0->vx;
         }
     }
 
@@ -2142,34 +2139,120 @@ void func_8006D9FC(func_80077DF0_t* arg0, func_80077DF0_t* arg1)
     temp_v1_2 = (D_800F1880.unk46 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
-        arg1->unk8 = (temp_a1 + temp_v1_2) >> 1;
+        arg1->vz = (temp_a1 + temp_v1_2) >> 1;
     } else {
-        if (arg0->unk8 < temp_a1) {
-            arg1->unk8 = temp_a1;
-        } else if (temp_v1_2 < arg0->unk8) {
-            arg1->unk8 = temp_v1_2;
+        if (arg0->vz < temp_a1) {
+            arg1->vz = temp_a1;
+        } else if (temp_v1_2 < arg0->vz) {
+            arg1->vz = temp_v1_2;
         } else {
-            arg1->unk8 = arg0->unk8;
+            arg1->vz = arg0->vz;
         }
     }
 
-    arg1->unk0 &= ~0xFFF;
-    arg1->unk8 &= ~0xFFF;
+    arg1->vx &= ~0xFFF;
+    arg1->vz &= ~0xFFF;
 
-    temp_a1 = arg0->unk4 - D_1F800000[18];
+    temp_a1 = arg0->vy - D_1F800000[18];
 
     v = 0xFFFA0000;
     if ((temp_a1 > 0x60000) || (temp_a1 < v)) {
-        arg1->unk4 = arg0->unk4;
+        arg1->vy = arg0->vy;
     } else {
-        arg1->unk4 = D_1F800000[18];
+        arg1->vy = D_1F800000[18];
     }
-    if (arg1->unk4 > 0) {
-        arg1->unk4 = 0;
+    if (arg1->vy > 0) {
+        arg1->vy = 0;
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006DB98);
+int func_8006DB98(SVECTOR* arg0, int* arg1, int* arg2, int arg3, int arg4)
+{
+    SVECTOR sp10;
+    VECTOR sp18;
+    VECTOR sp28;
+    long sp38;
+    long sp3C;
+    long sp40;
+    int temp_a0;
+    int var_v0;
+
+    sp18.vx = arg0->vx * ONE;
+    sp18.vz = arg0->vz * ONE;
+    sp18.vy = arg0->vy * ONE;
+
+    if (arg3 != 0) {
+        func_8006D9FC(&sp18, &sp18);
+    }
+
+    sp10.vx = sp18.vx / ONE;
+    sp10.vz = sp18.vz / ONE;
+    sp10.vy = sp18.vy / ONE;
+
+    SetRotMatrix((MATRIX*)&D_1F800000[5]);
+    SetTransMatrix((MATRIX*)&D_1F800000[5]);
+    RotTransPers(&sp10, &sp38, &sp3C, &sp40);
+
+    if (arg3 == 0) {
+        temp_a0 = sp38 / 0x10000;
+        if (((sp38 - (temp_a0 * 0x10000)) - 0x3D) < 0xC7U) {
+            int new_var = 0xB4;
+            if ((temp_a0 >= 0x3D) && (temp_a0 < new_var)) {
+                sp40 = 0;
+            } else {
+                sp40 = 1;
+            }
+        } else {
+            sp40 = 1;
+        }
+    } else {
+        sp40 = 1;
+    }
+
+    arg2[0] = (sp10.vx * ONE) - D_1F800000[17];
+    sp18.vx = arg2[0] / ONE;
+    arg2[2] = (sp10.vz * ONE) - D_1F800000[19];
+    sp18.vz = arg2[2] / ONE;
+    arg2[1] = (sp10.vy * ONE) - D_1F800000[18];
+    sp18.vy = arg2[1] / ONE;
+
+    VectorNormal(&sp18, &sp28);
+
+    if (sp40 != 0) {
+        if (sp28.vx != 0) {
+            var_v0 = arg2[0] / sp28.vx;
+        } else if (sp28.vz != 0) {
+            var_v0 = arg2[2] / sp28.vz;
+        } else if (sp28.vy != 0) {
+            var_v0 = arg2[1] / sp28.vy;
+        } else {
+            var_v0 = 1;
+        }
+        if (var_v0 >= 0x29) {
+            D_800F19D0.unk28 += 8;
+            if (arg4 < D_800F19D0.unk28) {
+                D_800F19D0.unk28 = arg4;
+            }
+        } else {
+            D_800F19D0.unk28 -= 8;
+            if (D_800F19D0.unk28 < 8) {
+                D_800F19D0.unk28 = 8;
+            }
+        }
+        arg1[0] = sp28.vx * D_800F19D0.unk28;
+        arg1[2] = sp28.vz * D_800F19D0.unk28;
+        arg1[1] = sp28.vy * D_800F19D0.unk28;
+    } else {
+        D_800F19D0.unk28 -= 8;
+        if (D_800F19D0.unk28 < 0) {
+            D_800F19D0.unk28 = 0;
+        }
+        arg1[0] = sp28.vx * D_800F19D0.unk28;
+        arg1[2] = sp28.vz * D_800F19D0.unk28;
+        arg1[1] = sp28.vy * D_800F19D0.unk28;
+    }
+    return sp40;
+}
 
 int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
 {
@@ -2191,15 +2274,15 @@ int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
     return D_800F19D0.unk28;
 }
 
-void func_8006DFE0(func_8006EBF8_t2* arg0)
+void func_8006DFE0(VECTOR* arg0)
 {
     func_80077DF0_t sp10;
     int new_var;
 
-    func_8006D9FC((func_80077DF0_t*)arg0, &sp10);
-    sp10.unk10.unk0[0] = sp10.unk0 - D_1F800000[17];
-    sp10.unk10.unk0[2] = sp10.unk8 - D_1F800000[19];
-    sp10.unk10.unk0[1] = sp10.unk4 - D_1F800000[18];
+    func_8006D9FC(arg0, &sp10.unk0);
+    sp10.unk10.unk0[0] = sp10.unk0.vx - D_1F800000[17];
+    sp10.unk10.unk0[2] = sp10.unk0.vz - D_1F800000[19];
+    sp10.unk10.unk0[1] = sp10.unk0.vy - D_1F800000[18];
 
     if (sp10.unk10.unk0[0] > 0x12000) {
         D_1F800000[17] += 0x12000;
@@ -2208,7 +2291,7 @@ void func_8006DFE0(func_8006EBF8_t2* arg0)
         if (sp10.unk10.unk0[0] < new_var) {
             D_1F800000[17] -= 0x12000;
         } else {
-            D_1F800000[17] = sp10.unk0;
+            D_1F800000[17] = sp10.unk0.vx;
         }
     }
     if (sp10.unk10.unk0[2] > 0x12000) {
@@ -2218,7 +2301,7 @@ void func_8006DFE0(func_8006EBF8_t2* arg0)
         if (sp10.unk10.unk0[2] < new_var) {
             D_1F800000[19] -= 0x12000;
         } else {
-            D_1F800000[19] = sp10.unk8;
+            D_1F800000[19] = sp10.unk0.vz;
         }
     }
     if (sp10.unk10.unk0[1] < 0) {
@@ -2285,16 +2368,16 @@ int func_8006EBF8(void)
 {
     int v;
     func_8006EBF8_t sp10;
-    func_8006EBF8_t2 sp20;
+    VECTOR sp20;
 
     if (D_800F1968 == 0) {
         func_800A4D8C();
     }
     func_800A1108(0, &sp10);
 
-    sp20.unk0 = sp10.unk0.unk4 << 0xC;
-    sp20.unk4 = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
-    sp20.unk8 = sp10.unk0.unk8 << 0xC;
+    sp20.vx = sp10.unk0.unk4 << 0xC;
+    sp20.vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
+    sp20.vz = sp10.unk0.unk8 << 0xC;
     func_8006DFE0(&sp20);
     func_8007AACC(&D_800F19D0.unk0);
     return v;
@@ -4224,18 +4307,18 @@ int func_80077DF0(void)
     func_8006EBF8_t sp30;
 
     func_800A1108(0, &sp30);
-    sp10.unk0 = sp30.unk0.unk4 * ONE;
-    sp10.unk4 = sp30.unk0.unk6 * ONE + 0xFFFA6000;
-    sp10.unk8 = sp30.unk0.unk8 * ONE;
-    if (sp10.unk4 > 0) {
-        sp10.unk4 = 0;
+    sp10.unk0.vx = sp30.unk0.unk4 * ONE;
+    sp10.unk0.vy = sp30.unk0.unk6 * ONE + 0xFFFA6000;
+    sp10.unk0.vz = sp30.unk0.unk8 * ONE;
+    if (sp10.unk0.vy > 0) {
+        sp10.unk0.vy = 0;
     }
-    func_8006D9FC(&sp10, &sp10);
+    func_8006D9FC(&sp10.unk0, &sp10.unk0);
     sp10.unk10 = ((func_80077DF0_t3*)D_1F800000)->unk44;
 
-    if ((sp10.unk0 == (sp10.unk10.unk0[0] & ~0xFFF))
-        && (sp10.unk8 == (sp10.unk10.unk0[2] & ~0xFFF))
-        && (sp10.unk4 == (sp10.unk10.unk0[1] & ~0xFFF))) {
+    if ((sp10.unk0.vx == (sp10.unk10.unk0[0] & ~0xFFF))
+        && (sp10.unk0.vz == (sp10.unk10.unk0[2] & ~0xFFF))
+        && (sp10.unk0.vy == (sp10.unk10.unk0[1] & ~0xFFF))) {
         return 1;
     }
     return 0;
@@ -5541,7 +5624,7 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
     arg1->vx = sp10.unk0.unk4 << 0xC;
     arg1->vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     arg1->vz = sp10.unk0.unk8 << 0xC;
-    func_8006D9FC((func_80077DF0_t*)arg1, (func_80077DF0_t*)arg1);
+    func_8006D9FC(arg1, arg1);
     func_8007A9DC(arg0, arg1, &D_800F19D0.unk0);
 }
 
@@ -8432,7 +8515,7 @@ static void _loadZnd(int id)
     }
 }
 
-// https://decomp.me/scratch/Wau7O
+// https://decomp.me/scratch/zOx7I
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088EF0);
 
 void func_80089098(void)

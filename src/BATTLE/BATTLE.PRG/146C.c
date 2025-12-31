@@ -607,6 +607,16 @@ typedef struct {
     func_8008B960_t* values[0];
 } D_800F1D08_t;
 
+typedef struct {
+    char* unk0;
+    int unk4;
+    char* unk8;
+    int unkC;
+    char* unk10;
+    int unk14;
+    int unk18;
+} D_800F1880_t2;
+
 void func_8006A334(vs_battle_weaponInfo*, vs_battle_equipment*);
 void func_8006A65C(vs_battle_shieldInfo*, func_8006B02C_t*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
@@ -724,6 +734,7 @@ void func_80089CE4(void);
 void func_80089D04(void);
 void func_80089D24(int arg0);
 void func_8008A6FC(void);
+void func_8008A744(void*);
 int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
@@ -8515,8 +8526,64 @@ static void _loadZnd(int id)
     }
 }
 
-// https://decomp.me/scratch/zOx7I
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088EF0);
+void func_80088EF0(int arg0)
+{
+    int temp_s1;
+    int i;
+    D_800F1880_t2* temp_s0;
+
+    if (D_800F1880.unk20 == NULL) {
+        _loadZnd(arg0);
+    }
+
+    while (D_800F1880.unk20->state != 4) {
+        vs_main_gametimeUpdate(0);
+    }
+
+    vs_main_freeCdQueueSlot(D_800F1880.unk20);
+
+    D_800F1880.unk20 = NULL;
+
+    if (D_80050468.unk2 == 1) {
+        func_8007BCCC();
+    }
+
+    temp_s0 = D_800F1880.unk24;
+
+    func_80088D40((int*)(temp_s0->unk8 + (int)temp_s0), temp_s0->unkC);
+    func_8008A744((int*)(temp_s0->unk10 + (int)temp_s0));
+
+    _allocHeap((int*)(temp_s0->unk0 + (int)temp_s0), temp_s0->unk4);
+
+    temp_s1 = temp_s0->unk18;
+    vs_main_freeHeapR(temp_s0);
+
+    D_800F1880.unk24 = NULL;
+    if (vs_main_startState == 1) {
+        func_800BEB9C(1);
+    } else {
+        func_800BEB9C(0);
+    }
+
+    if (func_800450E4() != temp_s1) {
+        if (D_800F18B0 != 0) {
+            vs_main_stopMusic();
+
+            for (i = 0; i < 4;) {
+                vs_main_freeMusic(++i);
+            }
+
+            D_800F1880.unk2C = 0;
+            if (temp_s1 != 0) {
+                vs_main_loadAndWaitSoundSlot(temp_s1);
+                D_800F1880.unk2C = vs_main_loadAndWaitMusicSlot(temp_s1, 3);
+            }
+        }
+    }
+    D_800F1880.unk28 = temp_s1;
+    D_800F1880.unk30 = 1;
+    D_800F1880.unk38 = 0;
+}
 
 void func_80089098(void)
 {

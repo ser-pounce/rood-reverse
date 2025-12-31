@@ -153,6 +153,17 @@ typedef struct {
 } func_8008A908_t;
 
 typedef struct {
+    u_short unk0_0 : 5;
+    u_short unk0_5 : 5;
+    u_short unk0_10 : 1;
+    u_short unk0_11 : 3;
+    u_short unk0_14 : 1;
+    u_short unk0_15 : 1;
+    u_short unk2;
+    char unk4[0];
+} func_8008C2C0_t;
+
+typedef struct {
     char unk0;
     char unk1;
     short unk2;
@@ -196,7 +207,7 @@ typedef struct {
     func_8008A908_t* unk98;
     vs_battle_scene* unk9C;
     u_short* unkA0;
-    int unkA4;
+    func_8008C2C0_t* unkA4;
     D_800F1CA0_t* unkA8;
     func_8008D710_t* unkAC;
     u_int unkB0;

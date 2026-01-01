@@ -31,7 +31,7 @@ typedef struct {
     short material;
     char unk2A;
     char index;
-} vs_battle_droppedBlade;
+} vs_battle_inventoryBlade;
 
 typedef struct {
     u_short id;
@@ -44,7 +44,7 @@ typedef struct {
     char types[4];
     u_short unkC;
     u_short unkE;
-} vs_battle_droppedGrip;
+} vs_battle_inventoryGrip;
 
 typedef struct {
     u_short id;
@@ -59,7 +59,7 @@ typedef struct {
     u_short unk18;
     char unk1A;
     char unk1B;
-} vs_battle_droppedGem;
+} vs_battle_inventoryGem;
 
 typedef struct {
     char unk0;
@@ -68,7 +68,7 @@ typedef struct {
     char unk3;
     u_char gems[4];
     char name[24];
-} vs_battle_droppedWeapon;
+} vs_battle_inventoryWeapon;
 
 typedef struct {
     char id;
@@ -83,18 +83,18 @@ typedef struct {
     char strength;
     char intelligence;
     char agility;
-    char types[4];
+    char types[4]; // 0x10
     char classes[8];
     char affinities[8];
     u_short material;
     u_char unk26;
     u_char unk27;
-} vs_battle_droppedArmor;
+} vs_battle_inventoryArmor;
 
 typedef struct {
     char unk0;
     char unk1;
     short unk2;
-    vs_battle_droppedArmor unk4;
-    char gems[4];
-} vs_battle_droppedShield;
+    vs_battle_inventoryArmor unk4;
+    u_char gems[4]; // 0x2C
+} vs_battle_inventoryShield;

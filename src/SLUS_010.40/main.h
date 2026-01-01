@@ -320,20 +320,17 @@ typedef struct {
 } D_80060168_t2;
 
 typedef struct {
-    vs_battle_droppedWeapon unk0[2]; // 1st dimension unknown
-    int unk40[48];
-    vs_battle_droppedShield unk100[2]; // 1st dimension unknown
-    char unk160[244];
-    vs_battle_droppedBlade unk254[1];
-    vs_battle_droppedBlade unk280[2]; // 1st dimension unknown
-    char unk2D8[600];
-    vs_battle_droppedGrip unk530[1];
-    vs_battle_droppedGrip unk540[2]; // 1st dimension unknown
+    vs_battle_inventoryWeapon unk0[8];
+    vs_battle_inventoryShield unk100[8];
+    vs_battle_inventoryBlade unk280[15];
+    int unk514[7];
+    vs_battle_inventoryGrip unk530[1];
+    vs_battle_inventoryGrip unk540[2]; // 1st dimension unknown
     char unk56C[224];
-    vs_battle_droppedArmor unk640[4]; // 1st dimension unknown
+    vs_battle_inventoryArmor unk640[4]; // 1st dimension unknown
     char unk6E0[452];
-    vs_battle_droppedGem unk8A4[1];
-    vs_battle_droppedGem unk8C0[2]; // 1st dimension unknown
+    vs_battle_inventoryGem unk8A4[1];
+    vs_battle_inventoryGem unk8C0[2]; // 1st dimension unknown
     char unk8F8[1288];
     D_80060168_t2 unkE00[64];
 } D_80060168_t;
@@ -408,11 +405,11 @@ extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern vs_battle_droppedWeapon D_80060148[];
+extern vs_battle_inventoryWeapon D_80060148[];
 extern D_80060168_t D_80060168;
 extern char D_80060238[][48];
-extern vs_battle_droppedArmor D_80060780[];
-extern vs_battle_droppedGrip D_80060A0C[];
+extern vs_battle_inventoryArmor D_80060780[];
+extern vs_battle_inventoryGrip D_80060A0C[];
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];

@@ -48,7 +48,7 @@ extern short _currentPp;
 extern short _maxPp;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
-extern vs_battle_droppedShield* D_8010246C;
+extern vs_battle_inventoryShield* D_8010246C;
 extern D_80060168_t* D_80102470;
 extern char D_80102480[];
 extern char D_801024A1;
@@ -65,7 +65,7 @@ void func_800FA448(void)
     }
 
     if (temp_s1->shield.unkDA != 0) {
-        func_8006B9E0(D_80060238[temp_s1->shield.unkDA], &temp_s1->shield);
+        func_8006B9E0(&D_80060168.unk100[temp_s1->shield.unkDA - 1], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {
@@ -397,11 +397,11 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 void vs_mainMenu_setWeaponStrings(
-    vs_battle_weaponInfo* weapon, char** rowStrings, int* rowTypes, char* description)
+    vs_battle_equippedWeapon* weapon, char** rowStrings, int* rowTypes, char* description)
 {
     int temp_v1;
 
-    vs_battle_equipment* blade = &weapon->blade;
+    vs_battle_equippedItem* blade = &weapon->blade;
     int temp_v0 = func_800FA598((short*)weapon, 0);
 
     vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
@@ -429,9 +429,9 @@ void vs_mainMenu_setWeaponStrings(
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
-void func_800FCA08(vs_battle_droppedWeapon* arg0, char** arg1, int* arg2, char* arg3)
+void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_weaponInfo sp10;
+    vs_battle_equippedWeapon sp10;
 
     if (D_80102470 == &D_80060168) {
         func_8006AEAC(&sp10, arg0);
@@ -450,7 +450,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShiel
 
 void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_shieldInfo shield;
+    vs_battle_equippedShield shield;
 
     if (D_8010246C == &D_80060168.unk100[0]) {
         func_8006B02C(&shield, arg0);
@@ -463,16 +463,16 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);
 
 void vs_mainMenu_setAccessoryStrings(
-    vs_battle_droppedArmor* arg0, char** arg1, int* arg2, char* arg3)
+    vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_armorInfo sp10;
+    vs_battle_equippedArmor sp10;
 
     func_8006B110(&sp10, arg0);
     vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
 }
 
 void func_800FD0E0(
-    vs_battle_droppedGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+    vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
@@ -482,7 +482,7 @@ void func_800FD0E0(
 }
 
 void func_800FD17C(
-    vs_battle_droppedGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+    vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);

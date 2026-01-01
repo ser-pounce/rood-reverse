@@ -389,7 +389,7 @@ int func_80103034(int arg0)
             D_80109654 = temp_v0_2;
             temp_v0_3 = func_80102D30(1, temp_v0_2);
             func_800FCAA4(
-                &D_80060168.unk254[temp_v0_3], &sp10, &sp18, vs_battle_stringBuf);
+                &D_80060168.unk280[temp_v0_3 - 1], &sp10, &sp18, vs_battle_stringBuf);
             func_800FD404(temp_v0_3);
             func_80102C94(D_80109653, &sp10.unk0, sp18, temp_v0_2);
         }
@@ -552,7 +552,7 @@ int func_80103AD0(int arg0)
 
 INCLUDE_RODATA("build/src/MENU/MENU3.PRG/nonmatchings/16C", D_80102800);
 
-int func_80103BE4(int arg0, vs_battle_weaponInfo* weapon)
+int func_80103BE4(int arg0, vs_battle_equippedWeapon* weapon)
 {
     switch (arg0) {
     case 0:
@@ -587,14 +587,14 @@ int func_80103BE4(int arg0, vs_battle_weaponInfo* weapon)
 
 void func_80103CC8(int arg0)
 {
-    vs_battle_weaponInfo sp10;
+    vs_battle_equippedWeapon sp10;
     char sp1A8[8];
     int temp_v0;
     int i;
     int var_s3;
     int var_s4;
     int temp_s0;
-    vs_battle_droppedWeapon* new_var2 = D_80060168.unk0;
+    vs_battle_inventoryWeapon* new_var2 = D_80060168.unk0;
     char* new_var = D_800619D8.unk0;
 
     vs_battle_rMemzero(sp1A8, 8);
@@ -632,7 +632,7 @@ void func_80103CC8(int arg0)
     vs_battle_memcpy(new_var, sp1A8, 8);
 }
 
-int _getShieldStat(int arg0, vs_battle_shieldInfo* shield)
+int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
 {
     switch (arg0) {
     case 1:
@@ -664,14 +664,14 @@ int _getShieldStat(int arg0, vs_battle_shieldInfo* shield)
 
 void func_80103F00(int arg0)
 {
-    vs_battle_shieldInfo shield;
+    vs_battle_equippedShield shield;
     char sp1A8[8];
     int temp_v0;
     int i;
     int var_s3;
     int var_s4;
     int temp_s0;
-    vs_battle_droppedShield* new_var2 = (vs_battle_droppedShield*)D_80060168.unk100;
+    vs_battle_inventoryShield* new_var2 = &D_80060168.unk100[0];
     char* new_var = D_800619D8.unk28;
 
     vs_battle_rMemzero(sp1A8, sizeof sp1A8);
@@ -761,7 +761,7 @@ void func_8010408C(int arg0)
     vs_battle_memcpy(new_var, sp10, 0x40);
 }
 
-int func_801041CC(int arg0, vs_battle_equipment* arg1)
+int func_801041CC(int arg0, vs_battle_equippedItem* arg1)
 {
     switch (arg0) {
     case 0:
@@ -800,7 +800,7 @@ int func_801041CC(int arg0, vs_battle_equipment* arg1)
     }
 }
 
-void func_801042C4(vs_battle_equipment* arg0, int arg1, int arg2)
+void func_801042C4(vs_battle_equippedItem* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
@@ -820,7 +820,7 @@ void func_801042C4(vs_battle_equipment* arg0, int arg1, int arg2)
 
 void func_8010439C(int arg0, int arg1)
 {
-    vs_battle_equipment sp10;
+    vs_battle_equippedItem sp10;
     int temp_v0;
     int i;
     int var_s3;
@@ -1045,14 +1045,14 @@ INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010659C);
 
 void func_80106BB4(int arg0)
 {
-    vs_battle_accessoryInfo accessory;
+    vs_battle_equippedAccessory accessory;
     int i;
 
     vs_mainMenu_resetStats();
 
     if (arg0 != 0) {
         func_8006B194(
-            &accessory, (vs_battle_droppedArmor*)(D_80102468 + ((arg0 * 10) - 10)));
+            &accessory, (vs_battle_inventoryArmor*)(D_80102468 + ((arg0 * 10) - 10)));
 
         for (i = 0; i < 16; ++i) {
             vs_mainMenu_equipmentStats[i] = accessory.classes[i & 7];

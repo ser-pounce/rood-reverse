@@ -367,7 +367,7 @@ static int func_801049A0(int arg0)
     int temp_v0_10;
     int var_a1;
     int var_s1;
-    vs_battle_droppedWeapon* temp_s0;
+    vs_battle_inventoryWeapon* temp_s0;
     if (arg0 != 0) {
         _charTableColumn = 0;
         _charTableRow = 0;

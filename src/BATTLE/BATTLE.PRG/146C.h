@@ -360,7 +360,7 @@ typedef struct {
     short currentStr;
     short currentInt;
     short currentAgility;
-    char unk36;
+    char material;
     u_char unk37;
     u_short types[4];
     u_short classes[8];
@@ -439,8 +439,8 @@ typedef struct {
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {
-    struct vs_battle_actor* unk0;
-    int unk4;
+    struct vs_battle_actor* next;
+    int active;
     char unk8;
     char unk9;
     char unkA;

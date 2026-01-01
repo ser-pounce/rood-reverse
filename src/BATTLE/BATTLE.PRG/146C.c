@@ -1120,7 +1120,55 @@ int _removeActorAtIndex(u_int index, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A334);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A65C);
+void func_8006A65C(vs_battle_shieldInfo* arg0, func_8006B02C_t* arg1)
+{
+    int i;
+
+    vs_main_memcpy(&arg0->shield, &arg1->unk0, sizeof arg1->unk0);
+
+    for (i = 0; i < 3; ++i) {
+        vs_main_memcpy(&arg0->gems[i], &arg1->gems[i], sizeof arg0->gems[i]);
+    }
+
+    arg0->unkD8 = arg1->unk0.wepId;
+    arg0->unkD9 = arg1->unkC1;
+    arg0->unkDA = arg1->unkC2;
+    arg0->shield.material = arg1->material;
+
+    for (i = 0; i < 4; ++i) {
+        arg0->types[i] = arg1->unk0.types[i];
+    }
+
+    arg0->currentPp = arg1->unk0.currentDp;
+    arg0->maxPp = arg1->unk0.maxDp;
+
+    arg0->currentDp = arg1->unk0.currentPp;
+    arg0->maxDp = arg1->unk0.maxPp;
+    arg0->currentStr = arg0->baseStr = arg1->unk0.strength + arg1->gems[0].strength
+                                     + arg1->gems[1].strength + arg1->gems[2].strength;
+    arg0->currentInt = arg0->baseInt =
+        arg1->unk0.intelligence + arg1->gems[0].intelligence + arg1->gems[1].intelligence
+        + arg1->gems[2].intelligence;
+    arg0->currentAgility = arg0->baseAgility = arg1->unk0.agility + arg1->gems[0].agility
+                                             + arg1->gems[1].agility
+                                             + arg1->gems[2].agility;
+
+    for (i = 0; i < 6; ++i) {
+        arg0->classAffinityBaseline.class[i] = arg0->classAffinityCurrent.class[0][i] =
+            arg0->classAffinityCurrent.class[1][i] =
+                arg1->unk0.classes[i] + arg1->gems[0].classes[i]
+                + arg1->gems[1].classes[i] + arg1->gems[2].classes[i];
+    }
+
+    for (i = 0; i < 7; ++i) {
+        arg0->classAffinityBaseline.affinity[i] =
+            arg0->classAffinityCurrent.affinity[0][i] =
+                arg0->classAffinityCurrent.affinity[1][i] =
+                    arg1->unk0.affinities[i] + arg1->gems[0].affinities[i]
+                    + arg1->gems[1].affinities[i] + arg1->gems[2].affinities[i];
+        arg0->unk134[i] = 0;
+    }
+}
 
 void func_8006A8EC(vs_battle_accessoryInfo* accessory, func_8006A9F0_t* arg1)
 {

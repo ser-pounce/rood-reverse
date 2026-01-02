@@ -1938,7 +1938,7 @@ int func_801080E4(void)
         func_80108688(0xA0, 0x64, D_8010989C - 0x4B);
         func_8010880C(0xA0, 0x7C, D_8010989C - 0x5A, temp_s0);
         func_801064D4(0xD6, 0xBB, D_8010989C - 0x5A, D_8010989C);
-        if (D_8010989C < 0x7FFF) {
+        if (D_8010989C < 32767) {
             ++D_8010989C;
         }
         if (vs_main_buttonsPressed.all & PADRright) {

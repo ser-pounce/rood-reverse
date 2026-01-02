@@ -16,7 +16,6 @@ $(configDir)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
-$(BUILD)/data/$(battle.prg).elf: LDFLAGS += --defsym=func_8008574C_alias=0x8008574C
 $(BUILD)/data/$(battle.prg).elf: $(assetsDir)/menuStrings.vsString.o
 $(assetsDir)/menuStrings.vsString.o: OBJCOPYFLAGS += --pad-to 0x1DC
 

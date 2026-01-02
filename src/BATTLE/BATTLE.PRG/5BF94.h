@@ -189,6 +189,7 @@ void func_800CB114(void);
 void func_800CB158(void*);
 void func_800CB18C(func_8008C1C8_t*);
 void func_800CB1C0(int);
+void func_800CB208(int art, int battleAbility);
 void func_800CB2B8(int, int, int);
 int func_800CB45C(void);
 void func_800CB50C(void);

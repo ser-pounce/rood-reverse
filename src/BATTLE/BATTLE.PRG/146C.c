@@ -19,6 +19,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
 #include <abs.h>
+#include <limits.h>
 
 typedef struct {
     u_char unk0;
@@ -617,6 +618,17 @@ typedef struct {
     int unk18;
 } D_800F1880_t2;
 
+typedef struct {
+    vs_battle_actor unk0;
+    vs_battle_actor2 unk50;
+    vs_battle_actor3 unk9B4;
+} vs_battle_actor_dat2;
+
+typedef union {
+    char u8[4];
+    int s32;
+} func_800765B0_t;
+
 void vs_battle_applyWeaponStats(vs_battle_equippedWeapon*, _weaponIntermediate*);
 void vs_battle_applyShieldStats(vs_battle_equippedShield*, _shieldIntermediate*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
@@ -634,8 +646,8 @@ void vs_battle_copyEquipmentStats(
     vs_battle_inventoryArmor*, vs_battle_equippedItem* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
-void func_8006C004(vs_battle_actor*);
-void func_8006C164(int);
+void _updateEnemyKills(vs_battle_actor*);
+void _updateWeaponKillStreak(int);
 void func_8006D0A4(u_int*);
 void func_8006D9FC(VECTOR*, VECTOR*);
 int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
@@ -696,7 +708,7 @@ int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
-int func_8007E454(int);
+int _itemIdIsInInventory(int);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
 int func_8007F230(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
@@ -713,9 +725,7 @@ int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
 short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
 short _calculateDamage(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
-int func_8008574C(u_int, vs_battle_actor2*, int, int);
-// Aliased at link time
-int func_8008574C_alias(u_int, vs_battle_actor2*, int);
+int func_8008574C(u_int, vs_battle_actor2*, int);
 void func_80085008(func_80085718_t*);
 void func_80085390(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
@@ -739,7 +749,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void _nop1(int arg0);
+void nop2(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
@@ -1118,7 +1128,8 @@ int _removeActorAtIndex(u_int index, int arg1)
     return 0;
 }
 
-void vs_battle_applyWeaponStats(vs_battle_equippedWeapon* target, _weaponIntermediate* source)
+void vs_battle_applyWeaponStats(
+    vs_battle_equippedWeapon* target, _weaponIntermediate* source)
 {
     int i;
 
@@ -1144,21 +1155,23 @@ void vs_battle_applyWeaponStats(vs_battle_equippedWeapon* target, _weaponInterme
 
     target->currentPp = source->blade.currentPp;
     target->maxPp = source->blade.maxPp;
-    target->currentStr = target->baseStr = source->blade.strength + source->grip.strength
-                                     + source->gems[0].strength + source->gems[1].strength
-                                     + source->gems[2].strength;
+    target->currentStr = target->baseStr =
+        source->blade.strength + source->grip.strength + source->gems[0].strength
+        + source->gems[1].strength + source->gems[2].strength;
     target->currentInt = target->baseInt =
-        source->blade.intelligence + source->grip.intelligence + source->gems[0].intelligence
-        + source->gems[1].intelligence + source->gems[2].intelligence;
+        source->blade.intelligence + source->grip.intelligence
+        + source->gems[0].intelligence + source->gems[1].intelligence
+        + source->gems[2].intelligence;
     target->currentAgility = target->baseAgility =
         source->blade.agility + source->grip.agility + source->gems[0].agility
         + source->gems[1].agility + source->gems[2].agility;
 
     for (i = 0; i < 6; ++i) {
-        target->classAffinityBaseline.class[i] = target->classAffinityCurrent.class[0][i] =
-            target->classAffinityCurrent.class[1][i] =
-                source->blade.classes[i] + source->gems[0].classes[i]
-                + source->gems[1].classes[i] + source->gems[2].classes[i];
+        target->classAffinityBaseline.class[i] =
+            target->classAffinityCurrent.class[0][i] =
+                target->classAffinityCurrent.class[1][i] =
+                    source->blade.classes[i] + source->gems[0].classes[i]
+                    + source->gems[1].classes[i] + source->gems[2].classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
@@ -1529,7 +1542,7 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
     _nop0(vs_battle_characterState->unk3C);
 
     if (weapon == NULL) {
-        vs_battle_characterState->equippedWeaponCategory = 0xA;
+        vs_battle_characterState->equippedWeaponCategory = 10;
     } else {
         vs_battle_characterState->equippedWeaponCategory =
             vs_battle_inventory.blades[weapon->blade - 1].category;
@@ -1880,20 +1893,21 @@ void func_8006BE64(vs_battle_actor* arg0)
     }
 }
 
-void func_8006C004(vs_battle_actor* arg0)
+void _updateEnemyKills(vs_battle_actor* enemy)
 {
-    u_int temp_t1 = arg0->unk1A;
-    if (arg0->unk3C != NULL) {
-        if (arg0->unk1C == 4) {
-            vs_battle_actor2* actor = arg0->unk3C;
-            if (vs_main_scoredata.enemyKills[actor->unk37_0] <= 0xFFFE) {
+    u_int temp_t1 = enemy->unk1A;
+
+    if (enemy->unk3C != NULL) {
+        if (enemy->unk1C == 4) {
+            vs_battle_actor2* actor = enemy->unk3C;
+            if (vs_main_scoredata.enemyKills[actor->unk37_0] < USHRT_MAX) {
                 ++vs_main_scoredata.enemyKills[actor->unk37_0];
             }
-            if (vs_main_scoredata.unk10C != (arg0->unk3C->unk37_0)) {
-                vs_main_scoredata.unk10C = arg0->unk3C->unk37_0;
+            if (vs_main_scoredata.unk10C != (enemy->unk3C->unk37_0)) {
+                vs_main_scoredata.unk10C = enemy->unk3C->unk37_0;
                 vs_main_scoredata.unk10D = 0;
             } else if (vs_main_scoredata.unk10D < 100) {
-                vs_main_scoredata.unk10D = vs_main_scoredata.unk10D + 1;
+                ++vs_main_scoredata.unk10D;
             }
             vs_main_scoredata.streakScore +=
                 actor->maxHP + ((actor->maxHP * vs_main_scoredata.unk10D) / 2)
@@ -1904,12 +1918,12 @@ void func_8006C004(vs_battle_actor* arg0)
             }
         }
     }
-    if (temp_t1 < 0x100) {
+    if (temp_t1 < 256) {
         vs_main_scoredata.unk9C[temp_t1 >> 5] |= 1 << (temp_t1 & 0x1F);
     }
 }
 
-void func_8006C164(int arg0 __attribute__((unused)))
+void _updateWeaponKillStreak(int arg0 __attribute__((unused)))
 {
     vs_battle_actor2* actor = vs_battle_characterState->unk3C;
     if (D_800F19CC->unk8.unk0 < 40) {
@@ -1918,9 +1932,7 @@ void func_8006C164(int arg0 __attribute__((unused)))
             vs_main_scoredata.weaponKillStreakBladeCategory =
                 actor->weapon.blade.category;
             vs_main_scoredata.weaponKillStreak = 0;
-            return;
-        }
-        if (vs_main_scoredata.weaponKillStreak < 100) {
+        } else if (vs_main_scoredata.weaponKillStreak < 100) {
             ++vs_main_scoredata.weaponKillStreak;
         }
     }
@@ -1931,8 +1943,8 @@ void func_8006C1CC(int arg0, int arg1, int arg2)
     vs_battle_actor* actor = vs_battle_actors[arg1];
     if ((actor->unk27 != 0x80) && (actor->unk28 == 0)) {
         if ((arg2 != 0) && (arg0 == 0)) {
-            func_8006C004(actor);
-            func_8006C164(0);
+            _updateEnemyKills(actor);
+            _updateWeaponKillStreak(0);
         }
         func_8006BE64(actor);
         actor->unk28 = 1;
@@ -1989,7 +2001,7 @@ void func_8006C350(void)
 
 void func_8006C39C(void)
 {
-    func_8007B10C(0xD, 4, -4, -4, 0);
+    func_8007B10C(13, 4, -4, -4, 0);
     func_80048FEC(0);
     func_8006C2A0();
     func_8008B4BC(1);
@@ -2013,7 +2025,7 @@ void func_8006C40C(void)
     D_800F1968 = 0;
 }
 
-void func_8006C478(void) { }
+void _nop1(void) { }
 
 void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
 
@@ -2209,7 +2221,7 @@ void func_8006D064(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D0A4);
 
-int func_8006D97C(int base, int a, int b)
+int _addMinDelta(int base, int a, int b)
 {
     if (b < 0) {
         if (a >= b) {
@@ -2395,9 +2407,9 @@ int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
     int sp28[3];
 
     if (func_8006DB98(arg0, sp28, sp18, arg1, arg2) != 0) {
-        D_1F800000[17] = func_8006D97C(D_1F800000[17], sp28[0], sp18[0]);
-        D_1F800000[19] = func_8006D97C(D_1F800000[19], sp28[2], sp18[2]);
-        D_1F800000[18] = func_8006D97C(D_1F800000[18], sp28[1], sp18[1]);
+        D_1F800000[17] = _addMinDelta(D_1F800000[17], sp28[0], sp18[0]);
+        D_1F800000[19] = _addMinDelta(D_1F800000[19], sp28[2], sp18[2]);
+        D_1F800000[18] = _addMinDelta(D_1F800000[18], sp28[1], sp18[1]);
     } else {
         D_1F800000[17] = _add_min(D_1F800000[17], sp28[0], sp18[0]);
         D_1F800000[19] = _add_min(D_1F800000[19], sp28[2], sp18[2]);
@@ -2640,7 +2652,7 @@ void func_8006F5CC(void)
 
 void func_8006F5FC(void)
 {
-    D_800F196C = 0xC;
+    D_800F196C = 12;
     D_800F18F0 = 0;
     func_8009E5C4(0);
 }
@@ -2682,33 +2694,32 @@ void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630
     arg0->unk17 = vs_battle_actors[arg2->unk0_0]->unk3C->unk37_0;
 }
 
-int func_8006F760(void)
+int _isArtOrAbilityUnlocked(void)
 {
     int category;
-    int var_a0;
-    int var_t0;
+    int unlockArt;
+    int unlockBattleAbility;
     u_int artsLearned;
 
-    var_t0 = 0;
+    unlockBattleAbility = 0;
     category = vs_battle_characterState->equippedWeaponCategory % 10;
     artsLearned = vs_main_artsStatus.artsLearned[category];
-    var_a0 = 0;
+    unlockArt = 0;
 
     if (artsLearned < 4) {
-        var_a0 = (vs_main_artsStatus.kills.weaponCategories[category]
-                     < vs_main_artsPointsRequirements[category][artsLearned])
-               ^ 1;
+        unlockArt = vs_main_artsStatus.kills.weaponCategories[category]
+                 >= vs_main_artsPointsRequirements[category][artsLearned];
     }
-    if (var_a0 == 0) {
+    if (unlockArt == 0) {
         if (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22) {
             if (vs_main_artsStatus.kills.total
                 >= vs_main_battleAbilitiesPointsRequirements
                     [vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
-                var_t0 = 1;
+                unlockBattleAbility = 1;
             }
         }
     }
-    return (var_a0 << 0x10) | var_t0;
+    return (unlockArt << 0x10) | unlockBattleAbility;
 }
 
 void func_8006F848(void)
@@ -2732,7 +2743,7 @@ void func_8006F89C(void)
         func_8006F5FC();
         break;
     case 2:
-        if (func_8006F760() != 0) {
+        if (_isArtOrAbilityUnlocked() != 0) {
             D_800F18F0 = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
@@ -2765,8 +2776,6 @@ void func_8006F89C(void)
     }
 }
 
-void func_800CB208(u_int, int);
-
 void func_8006FA20(void)
 {
     u_int temp_v0_2;
@@ -2781,8 +2790,8 @@ void func_8006FA20(void)
         vs_main_skills[D_800F19CC->unk8.unk0].unlocked = 1;
         return;
     }
-    temp_v0_2 = func_8006F760();
-    D_800F18F0 = 0xE;
+    temp_v0_2 = _isArtOrAbilityUnlocked();
+    D_800F18F0 = 14;
     func_8006C39C();
     func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
 }
@@ -2793,7 +2802,7 @@ void func_8006FB48(void)
         if (D_800F1900 != NULL) {
             func_800CB158(D_800F1900);
             D_800F196C = 2;
-            D_800F18F0 = 0xC;
+            D_800F18F0 = 12;
             func_8006C39C();
         } else {
             func_8006F89C();
@@ -2827,7 +2836,7 @@ void func_8006FCBC(void)
 {
     D_800F19CC_t2* temp_s0;
 
-    D_800F18F0 = 0xA;
+    D_800F18F0 = 10;
     temp_s0 = &D_800F19CC->unk854[0];
     func_8006C4A4(temp_s0->unk4.unk0, func_800A152C(temp_s0->unk4.unk0, 0xF0, 0));
 }
@@ -2845,7 +2854,7 @@ void func_80070278(void)
     D_800F19CC->unk2C08 = 0;
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
 
-    if (((u_int)(temp_s0->unk0 - 0x16) < 0x20) && (temp_s0->unk44 == 0)
+    if (((temp_s0->unk0 - 0x16u) < 0x20) && (temp_s0->unk44 == 0)
         && (temp_s0->unk4.unk0 == 0)) {
         func_800BEC14(0xB8, 1);
     }
@@ -2914,8 +2923,8 @@ void func_8007087C(D_800F19CC_t* arg0)
     func_8006EBF8_t sp10;
 
     func_800A1108((char)arg0->unk4, &sp10);
-    arg0->unk8.unk83C = (sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800));
-    arg0->unk8.unk840 = (sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800));
+    arg0->unk8.unk83C = sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800);
+    arg0->unk8.unk840 = sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800);
     arg0->unk8.unk83E = sp10.unk0.unk6;
 }
 
@@ -3364,7 +3373,7 @@ int func_80073AFC(func_8008C1C8_t* arg0)
                 break;
             case 1:
             case 3:
-                if (func_8007E454(arg0->unkC) != 0) {
+                if (_itemIdIsInInventory(arg0->unkC) != 0) {
                     if (arg0->unkC >= 0x1D2) {
                         func_800BEC14(arg0->unkC + 0x1B6, 2);
                         func_800CCB9C(arg0->unkC);
@@ -3458,7 +3467,7 @@ void func_80073E30(func_8008C1C8_t* arg0, int arg1)
     case 1:
     case 3:
         if (!func_800BEBF4(arg0->unkE + 0x1B6)) {
-            if (func_8007E454(arg0->unkE) == 0) {
+            if (_itemIdIsInInventory(arg0->unkE) == 0) {
                 break;
             }
             func_800BEC14(arg0->unkE + 0x1B6, 1);
@@ -4043,14 +4052,13 @@ int func_8007629C(u_long* otag)
 
 void func_8007647C(int arg0, int arg1)
 {
-    int temp_a1;
     int i;
-    vs_battle_actor* temp_s1;
-    vs_battle_actor2* temp_s0;
 
-    temp_s1 = vs_battle_actors[arg0];
-    temp_s0 = temp_s1->unk3C;
+    vs_battle_actor* temp_s1 = vs_battle_actors[arg0];
+    vs_battle_actor2* temp_s0 = temp_s1->unk3C;
+
     vs_main_bzero(temp_s0, 0x964);
+
     temp_s0->maxHP = 1;
     temp_s0->currentHP = 1;
 
@@ -4059,8 +4067,7 @@ void func_8007647C(int arg0, int arg1)
             D_8004FDD0[i]; // Cube // Ashley Riot? But also reads 4 bytes over...
     }
 
-    temp_a1 = arg1 & 0xFF;
-    switch (temp_a1) {
+    switch (arg1 & 0xFF) {
     case 1:
         temp_s0->flags.fields.unk2_0 = 1;
         func_80095B7C(arg0, 8);
@@ -4078,17 +4085,6 @@ void func_8007647C(int arg0, int arg1)
     temp_s1->unk28 = 0;
     temp_s0->flags.fields.unk3 = 0x80;
 }
-
-typedef struct {
-    vs_battle_actor unk0;
-    vs_battle_actor2 unk50;
-    vs_battle_actor3 unk9B4;
-} vs_battle_actor_dat2;
-
-typedef union {
-    char u8[4];
-    int s32;
-} func_800765B0_t;
 
 vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int arg3)
 {
@@ -4951,7 +4947,7 @@ void func_8007B508(void)
 {
     if (!(func_800BEBF4(0xB6)) || ((func_800BEBF4(0xB6)) == 2)
         || ((func_800BEBF4(0xB6)) == 3)) {
-        if (func_8006F760() != 0) {
+        if (_isArtOrAbilityUnlocked() != 0) {
             D_800F18F0 = 5;
             if (D_800F1864 != 0) {
                 func_8009E070(0, NULL, 6);
@@ -4990,7 +4986,7 @@ void func_8007B63C(void)
         vs_main_skills[D_800F19CC->unk8.unk0].unlocked = 1;
         return;
     }
-    temp_v0_2 = func_8006F760();
+    temp_v0_2 = _isArtOrAbilityUnlocked();
     D_800F18F0 = 6;
     func_8007B410();
     func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
@@ -6177,50 +6173,50 @@ void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
 
 extern u_int _itemCategorySizes[];
 
-int func_8007E454(int arg0)
+int _itemIdIsInInventory(int id)
 {
-    int var_a2;
+    int ret;
     int i;
 
-    if (arg0 != 0) {
+    if (id != 0) {
         for (i = 0; i < 8; ++i) {
-            if (arg0 < _itemCategorySizes[i]) {
+            if (id < _itemCategorySizes[i]) {
                 break;
             }
         }
 
-        var_a2 = 0;
+        ret = 0;
 
         if (i < 8) {
             switch (i) {
             case 0:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.blades[i].id == arg0) {
-                        var_a2 = 1;
+                    if (vs_battle_inventory.blades[i].id == id) {
+                        ret = 1;
                         break;
                     }
                 }
                 break;
             case 1:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.grips[i].id == arg0) {
-                        var_a2 = 1;
+                    if (vs_battle_inventory.grips[i].id == id) {
+                        ret = 1;
                         break;
                     }
                 }
                 break;
             case 2:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.armor[i].id == arg0) {
-                        var_a2 = 1;
+                    if (vs_battle_inventory.armor[i].id == id) {
+                        ret = 1;
                         break;
                     }
                 }
                 break;
             case 4:
                 for (i = 0; i < 48; ++i) {
-                    if (vs_battle_inventory.gems[i].id == arg0) {
-                        var_a2 = 1;
+                    if (vs_battle_inventory.gems[i].id == id) {
+                        ret = 1;
                         break;
                     }
                 }
@@ -6229,16 +6225,16 @@ int func_8007E454(int arg0)
             case 6:
             case 7:
                 for (i = 0; i < 64; ++i) {
-                    if ((vs_battle_inventory.items[i].id == arg0)
+                    if ((vs_battle_inventory.items[i].id == id)
                         && (vs_battle_inventory.items[i].unk2 != 0)) {
-                        var_a2 = vs_battle_inventory.items[i].unk2;
+                        ret = vs_battle_inventory.items[i].unk2;
                         break;
                     }
                 }
                 break;
             }
         }
-        return var_a2;
+        return ret;
     }
     return 1;
 }
@@ -6474,30 +6470,26 @@ int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* 
     func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    int temp_v0 = (vs_battle_actors[arg1->unk0]->unk3C->risk + 150) * 100;
-    int var_v1 = temp_v0 >> 8;
-    if (temp_v0 < 0) {
-        var_v1 = (temp_v0 + 255) >> 8;
+    int rate = ((vs_battle_actors[arg1->unk0]->unk3C->risk + 150) * 100) / 256;
+    if (rate == 255) {
+        rate = 254;
     }
-    if (var_v1 == 255) {
-        var_v1 = 254;
-    }
-    return var_v1;
+    return rate;
 }
 
 int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    int var_v0;
+    int rate;
 
-    var_v0 =
+    rate =
         ((255 - vs_battle_actors[arg2->unk0]->unk3C->hitLocations[arg2->unk1].unk7) * 100)
         / 255;
-    if (var_v0 == 255) {
-        var_v0 = 254;
+    if (rate == 255) {
+        rate = 254;
     }
-    return var_v0;
+    return rate;
 }
 
 int func_8007F230(
@@ -6544,11 +6536,7 @@ int func_8007F230(
 
 int func_8007F434(void)
 {
-    int temp_v0 = (vs_battle_characterState->unk3C->risk + 150) * 100;
-    int var_s0 = temp_v0 >> 8;
-    if (temp_v0 < 0) {
-        var_s0 = (temp_v0 + 255) >> 8;
-    }
+    int var_s0 = ((vs_battle_characterState->unk3C->risk + 150) * 100 / 256);
     if (var_s0 > 100) {
         var_s0 = 100;
     }
@@ -6660,10 +6648,10 @@ int func_8007F628(vs_skill_t* arg0, u_char* arg1)
         var_a1 = 1;
     }
     if (var_a1 != 0) {
-        i = 1;
         return 1;
     }
-    return 0;
+
+    return i = 0;
 }
 
 int func_8007F6D8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
@@ -6711,10 +6699,10 @@ int func_8007F758(vs_skill_t* arg0, u_char* arg1)
         var_a1 = 1;
     }
     if (var_a1 != 0) {
-        i = 1;
         return 1;
     }
-    return 0;
+
+    return i = 0;
 }
 
 int func_8007F808(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
@@ -6843,19 +6831,19 @@ int func_8007FBD0(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     if (func_8007F4B0(0x1B, arg1) == 0) {
         int i;
-        int var_a1 = 0;
-        vs_battle_actor2* temp_a2 = vs_battle_actors[*arg1]->unk3C;
+        int ret = 0;
+        vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (temp_a2->hitLocations[i].armor.armor.id != 0) {
-                var_a1 = 1;
+            if (actor->hitLocations[i].armor.armor.id != 0) {
+                ret = 1;
             }
         }
 
-        if (temp_a2->shield.shield.id != 0) {
-            var_a1 = 1;
+        if (actor->shield.shield.id != 0) {
+            ret = 1;
         }
-        if (var_a1 != 0) {
+        if (ret != 0) {
             return 1;
         }
     }
@@ -8360,13 +8348,13 @@ void func_80085718(func_80085718_t* arg0)
     arg0->unk1C.value = 0;
 }
 
-// Mostly invoked as func_8008574C_alias without arg3
-int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2, int statValue)
+int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2)
 {
     int var_v1;
     int skillType;
     int cost;
     vs_skill_t* skill;
+    int statValue;
 
     skill = &vs_main_skills[arg0];
     cost = skill->cost;
@@ -8453,7 +8441,7 @@ int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2, int statValue)
 
 void func_80085978(int arg0, int arg1)
 {
-    func_8008574C_alias(arg0, vs_battle_actors[arg1]->unk3C, 0);
+    func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0);
 }
 
 void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
@@ -8483,7 +8471,7 @@ void func_80085A34(func_80085A34_t* arg0)
         if (arg0->unk3 == 6) {
             var_a1 = arg0->unk1C;
             if (var_a1 != 0) {
-                for (i = 0; i < 9; var_a1 >>= 2, ++i) {
+                for (i = 0; i < 9; var_a1 /= 4, ++i) {
                     switch (var_a1 & 3) {
                     case 2:
                         arg0->unk3 = 5;
@@ -8518,7 +8506,7 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
     sp10.unk4C[0].unk8C = 0;
     sp10.unk4C[0].unk4C.unk.unk1 = arg3;
     func_80085B10(arg0, arg4, &sp10, 0);
-    return func_8008574C_alias(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
+    return func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
@@ -8629,19 +8617,19 @@ void func_80088D40(int* arg0, int arg1 __attribute__((unused)))
 
 static void _loadZnd(int id)
 {
-    vs_main_CdFile sp10;
+    vs_main_CdFile cdFile;
     int temp_s0;
 
-    sp10.lba = vs_main_zndFiles[id].lba;
-    sp10.size = vs_main_zndFiles[id].size;
+    cdFile.lba = vs_main_zndFiles[id].lba;
+    cdFile.size = vs_main_zndFiles[id].size;
     if (D_800F1880.unk20 != 0) {
         vs_main_nop9(0x87, 0);
     }
-    D_800F1880.unk20 = vs_main_allocateCdQueueSlot(&sp10);
+    D_800F1880.unk20 = vs_main_allocateCdQueueSlot(&cdFile);
     if (D_800F1880.unk24 != 0) {
         vs_main_nop9(0x88, 0);
     }
-    D_800F1880.unk24 = vs_main_allocHeapR(sp10.size);
+    D_800F1880.unk24 = vs_main_allocHeapR(cdFile.size);
     vs_main_cdEnqueueUrgent(D_800F1880.unk20, D_800F1880.unk24);
     if (D_800F1880.unk30 != 0) {
         temp_s0 = D_8004FCCC[id];
@@ -8661,7 +8649,7 @@ void func_80088EF0(int arg0)
         _loadZnd(arg0);
     }
 
-    while (D_800F1880.unk20->state != 4) {
+    while (D_800F1880.unk20->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -8713,7 +8701,7 @@ void func_80088EF0(int arg0)
 void func_80089098(void)
 {
     func_800BEBEC();
-    _nop1(0);
+    nop2(0);
     if (D_800F1880.unkC != 0) {
         vs_main_freeHeap(D_800F1880.unkC);
     }
@@ -8909,7 +8897,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     temp_s1 = vs_battle_actors[arg0]->unk3C;
     ret = temp_s1->flags.fields.unk0 != 0;
 
-    if (!(func_8008574C_alias(id, temp_s1, 0) & 0xFF000000)) {
+    if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
         ret |= 2;
     }
 
@@ -9098,7 +9086,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _nop1(int arg0 __attribute__((unused))) { }
+void nop2(int arg0 __attribute__((unused))) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {

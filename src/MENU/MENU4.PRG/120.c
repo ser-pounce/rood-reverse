@@ -1826,7 +1826,7 @@ static void _printSelectedLocationStats(void)
     _drawHitLocationStatuses(_selectedElement + 129);
 }
 
-int vs_menu4_Exec(char* state)
+int vs_menu4_exec(char* state)
 {
     enum state {
         none,

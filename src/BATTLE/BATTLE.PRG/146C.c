@@ -609,14 +609,14 @@ typedef struct {
 } D_800F1D08_t;
 
 typedef struct {
-    char* unk0;
-    int unk4;
-    char* unk8;
-    int unkC;
-    char* unk10;
-    int unk14;
-    int unk18;
-} D_800F1880_t2;
+    long mpdOffset;
+    int mpdLen;
+    long enemiesOffset;
+    int enemiesLen;
+    long timOffset;
+    int timLen;
+    int musicId;
+} _zndHeader;
 
 typedef struct {
     vs_battle_actor unk0;
@@ -744,7 +744,7 @@ void func_80089CE4(void);
 void func_80089D04(void);
 void func_80089D24(int arg0);
 void func_8008A6FC(void);
-void func_8008A744(void*);
+void _loadZndTims(void*);
 int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
@@ -836,7 +836,6 @@ extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
 extern int D_800F186C;
-extern void* D_800F1884;
 extern int D_800F18A8;
 extern int D_800F18AC;
 extern int D_800F18B0;
@@ -8590,16 +8589,16 @@ void func_80088CAC(void)
     func_80069DBC();
 }
 
-void _allocHeap(void* arg0, int size)
+void _allocMpdOffsets(void* arg0, int size)
 {
     if (size == 0) {
         vs_main_nop9(0x8B, 0);
     }
-    D_800F1884 = vs_main_allocHeap(size);
-    vs_main_memcpy(D_800F1884, arg0, size);
+    D_800F1880.unk4 = vs_main_allocHeap(size);
+    vs_main_memcpy(D_800F1880.unk4, arg0, size);
 }
 
-void func_80088D40(int* arg0, int arg1 __attribute__((unused)))
+void _loadZndEnemies(long* arg0, int arg1 __attribute__((unused)))
 {
     int temp_a0 = *arg0;
     D_800F1880.unk8 = temp_a0;
@@ -8622,15 +8621,15 @@ static void _loadZnd(int id)
 
     cdFile.lba = vs_main_zndFiles[id].lba;
     cdFile.size = vs_main_zndFiles[id].size;
-    if (D_800F1880.unk20 != 0) {
+    if (D_800F1880.zndCdFile != 0) {
         vs_main_nop9(0x87, 0);
     }
-    D_800F1880.unk20 = vs_main_allocateCdQueueSlot(&cdFile);
-    if (D_800F1880.unk24 != 0) {
+    D_800F1880.zndCdFile = vs_main_allocateCdQueueSlot(&cdFile);
+    if (D_800F1880.zndData != NULL) {
         vs_main_nop9(0x88, 0);
     }
-    D_800F1880.unk24 = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueueUrgent(D_800F1880.unk20, D_800F1880.unk24);
+    D_800F1880.zndData = vs_main_allocHeapR(cdFile.size);
+    vs_main_cdEnqueueUrgent(D_800F1880.zndCdFile, D_800F1880.zndData);
     if (D_800F1880.unk30 != 0) {
         temp_s0 = D_8004FCCC[id];
         if (func_800450E4() != temp_s0) {
@@ -8641,44 +8640,43 @@ static void _loadZnd(int id)
 
 void func_80088EF0(int arg0)
 {
-    int temp_s1;
+    int musicId;
     int i;
-    D_800F1880_t2* temp_s0;
+    _zndHeader* header;
 
-    if (D_800F1880.unk20 == NULL) {
+    if (D_800F1880.zndCdFile == NULL) {
         _loadZnd(arg0);
     }
 
-    while (D_800F1880.unk20->state != vs_main_CdQueueStateLoaded) {
+    while (D_800F1880.zndCdFile->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
-    vs_main_freeCdQueueSlot(D_800F1880.unk20);
+    vs_main_freeCdQueueSlot(D_800F1880.zndCdFile);
 
-    D_800F1880.unk20 = NULL;
+    D_800F1880.zndCdFile = NULL;
 
     if (D_80050468.unk2 == 1) {
         func_8007BCCC();
     }
 
-    temp_s0 = D_800F1880.unk24;
+    header = D_800F1880.zndData;
 
-    func_80088D40((int*)(temp_s0->unk8 + (int)temp_s0), temp_s0->unkC);
-    func_8008A744((int*)(temp_s0->unk10 + (int)temp_s0));
+    _loadZndEnemies((long*)(header->enemiesOffset + (long)header), header->enemiesLen);
+    _loadZndTims((long*)(header->timOffset + (long)header));
+    _allocMpdOffsets((long*)(header->mpdOffset + (long)header), header->mpdLen);
 
-    _allocHeap((int*)(temp_s0->unk0 + (int)temp_s0), temp_s0->unk4);
+    musicId = header->musicId;
+    vs_main_freeHeapR(header);
 
-    temp_s1 = temp_s0->unk18;
-    vs_main_freeHeapR(temp_s0);
-
-    D_800F1880.unk24 = NULL;
+    D_800F1880.zndData = NULL;
     if (vs_main_startState == 1) {
         func_800BEB9C(1);
     } else {
         func_800BEB9C(0);
     }
 
-    if (func_800450E4() != temp_s1) {
+    if (func_800450E4() != musicId) {
         if (D_800F18B0 != 0) {
             vs_main_stopMusic();
 
@@ -8686,14 +8684,15 @@ void func_80088EF0(int arg0)
                 vs_main_freeMusic(++i);
             }
 
-            D_800F1880.unk2C = 0;
-            if (temp_s1 != 0) {
-                vs_main_loadAndWaitSoundSlot(temp_s1);
-                D_800F1880.unk2C = vs_main_loadAndWaitMusicSlot(temp_s1, 3);
+            D_800F1880.musicSlot = 0;
+
+            if (musicId != 0) {
+                vs_main_loadAndWaitSoundSlot(musicId);
+                D_800F1880.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
             }
         }
     }
-    D_800F1880.unk28 = temp_s1;
+    D_800F1880.musicId = musicId;
     D_800F1880.unk30 = 1;
     D_800F1880.unk38 = 0;
 }
@@ -8933,8 +8932,63 @@ void func_8008A6FC(void)
     D_800F1900 = NULL;
 }
 
-// https://decomp.me/scratch/tkgPf
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A744);
+void _loadZndTims(void* data)
+{
+    func_80103530_t sp10;
+    u_int* timPtrs[4];
+    int line;
+    int numTims;
+    int i;
+    u_short* pixels;
+    u_int clutIndex;
+    u_int* dataPtr = data;
+    int byteOffset = 0;
+    int* sizePtr = (int*)dataPtr;
+    u_int** ptrTableEntry = timPtrs;
+
+    do {
+        if (*sizePtr > 0) {
+            *ptrTableEntry = (int*)dataPtr + ((byteOffset / 4) + 4);
+        } else {
+            *ptrTableEntry = NULL;
+        }
+        byteOffset += *sizePtr;
+        ++sizePtr;
+        ++ptrTableEntry;
+    } while ((long)sizePtr < ((long)data + 0x10));
+
+    dataPtr = timPtrs[0];
+    numTims = *dataPtr++;
+
+    for (i = 0; i < numTims; ++i) {
+        byteOffset = *dataPtr++;
+
+        func_8008D820((u_int*)dataPtr, &sp10);
+
+        if (sp10.unk10 != NULL) {
+            if (sp10.unkC->x >= 768) {
+                line = sp10.unkC->y;
+                pixels = sp10.unk10;
+
+                while (line < (sp10.unkC->y + sp10.unkC->h)) {
+                    clutIndex = line - 224;
+                    if (clutIndex < 4) {
+                        func_8008B2E0(
+                            pixels, clutIndex, sp10.unkC->x - 768, sp10.unkC->w);
+                    }
+                    ++line;
+                    pixels += sp10.unkC->w;
+                }
+            } else {
+                sp10.unkC->x -= 320;
+                sp10.unkC->y += 256;
+                LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+            }
+        }
+        dataPtr += byteOffset >> 2;
+    }
+    DrawSync(0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 

@@ -533,10 +533,10 @@ typedef struct {
     int unk14;
     int unk18;
     int unk1C;
-    vs_main_CdQueueSlot* unk20;
-    void* unk24;
-    int unk28;
-    int unk2C;
+    vs_main_CdQueueSlot* zndCdFile;
+    void* zndData;
+    int musicId;
+    int musicSlot;
     int unk30;
     int mapId;
     int unk38;

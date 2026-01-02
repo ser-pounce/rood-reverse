@@ -5,6 +5,7 @@
 #include "../MAINMENU.PRG/8170.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
+#include "../../SLUS_010.40/sfx.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
 #include "../../BATTLE/BATTLE.PRG/2EA3C.h"
@@ -57,16 +58,16 @@ typedef struct {
     int unk20;
     int unk24;
     int unk28;
-} D_8010A470_t;
+} _monBinData_t;
 
 int func_80101268(int, int, vs_battle_menuItem_t*, u_long*);
 void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
-int func_801031BC(void);
-int func_8010337C(void);
+int _initData(void);
+int _handleMenu(void);
 void func_80104AF8(void);
 void func_80104B40(void);
-int func_80104BD0(int arg0);
+int _initStringsAndGetSelectedRow(int arg0);
 void func_80104CBC(MATRIX*);
 void func_80104E90(MATRIX* arg0, short arg1);
 void func_80104F04(MATRIX* arg0, short arg1);
@@ -118,14 +119,14 @@ extern char D_80109899;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A214;
-extern int D_8010A218;
+extern int _initDataComplete;
 extern int D_8010A21C;
 extern int D_8010A220;
 extern int D_8010A224;
-extern int D_8010A228;
+extern int _selectedRow;
 extern D_8010A230_t D_8010A230[];
 extern short D_8010A430[];
-extern int D_8010A43C;
+extern int _menuState;
 extern int D_8010A438;
 extern int D_8010A440;
 extern int D_8010A444;
@@ -142,8 +143,8 @@ extern u_short D_8010A464;
 extern u_short _clearCount;
 extern u_short D_8010A468;
 extern u_short _mapCompletion;
-extern vs_main_CdQueueSlot* D_8010A46C;
-extern D_8010A470_t* D_8010A470;
+extern vs_main_CdQueueSlot* _monBinCdQueueSlot;
+extern _monBinData_t* _monBinData;
 extern u_short* D_8010A474;
 extern char D_8010A480[16];
 extern char D_8010A490[16];
@@ -301,7 +302,7 @@ void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
     vs_main_settings.cursorMemory = temp_s1;
 }
 
-int func_80102F0C(void)
+int _getSelectedRow(void)
 {
     int row;
 
@@ -329,32 +330,41 @@ void func_80102FB8(void) { func_800FA8E0(8); }
 
 void _menuReady(void) { vs_mainmenu_ready(); }
 
-int func_80102FF8(char* state)
+int vs_menu9_exec(char* state)
 {
+    enum state {
+        init = 3,
+        initData,
+        waitMenuReady,
+    };
+
     switch (*state) {
-    case 3:
+    case init:
         func_800FFB68(1);
         D_8010A214 = 8;
-        D_8010A218 = 0;
-        *state = 4;
+        _initDataComplete = 0;
+        *state = initData;
         break;
-    case 4:
-        if (D_8010A218 == 0) {
-            D_8010A218 = func_801031BC();
+    case initData:
+        if (_initDataComplete == 0) {
+            _initDataComplete = _initData();
         }
         if (D_8010A214 != 0) {
             D_8010A214 -= 1;
-        } else if (D_8010A218 != 0) {
-            func_8008A4DC(0);
-            func_800CB654(1);
-            D_800EB9B0 = 0x200000;
-            *state = 5;
-        case 5:
-            *state += vs_mainmenu_ready();
+            break;
+        } else if (_initDataComplete == 0) {
+            break;
         }
+        func_8008A4DC(0);
+        func_800CB654(1);
+        D_800EB9B0 = 0x200000;
+        *state = waitMenuReady;
+        // Fallthrough
+    case waitMenuReady:
+        *state += vs_mainmenu_ready();
         break;
     case 6:
-        D_8010A21C = func_8010337C();
+        D_8010A21C = _handleMenu();
         if (D_8010A21C != 0) {
             func_80100414(-4, 0x80);
             func_800CB654(0);
@@ -383,7 +393,7 @@ int func_80102FF8(char* state)
     return 0;
 }
 
-int func_801031BC(void)
+int _initData(void)
 {
     int i;
     int j;
@@ -392,7 +402,7 @@ int func_801031BC(void)
         vs_main_mapStatus.roomFlags[1] |= 0x400000;
     }
 
-    D_8010A43C = 0;
+    _menuState = 0;
     D_8010A45C = 0;
 
     if (vs_main_settings.cursorMemory == 0) {
@@ -437,7 +447,7 @@ int func_801031BC(void)
     return 1;
 }
 
-static const vs_main_CdFile D_80102818 = { 0x14FF0, 0x3800 }; // data/SMALL/MON.BIN
+static const vs_main_CdFile _monBinFile = { 0x14FF0, 0x3800 }; // data/SMALL/MON.BIN
 
 static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B, 0x00 },
     { 0x19, 0x82, 0x6C, 0x00 }, { 0x40, 0x30, 0x66, 0x00 }, { 0x40, 0x38, 0x20, 0x00 } };
@@ -453,21 +463,27 @@ static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33, 0x00 },
     { 0x24, 0x30, 0x30, 0x3A }, { 0x32, 0x35, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
     { 0x00, 0x00, 0x00, 0x00 } };
 
-int func_8010337C(void)
+int _handleMenu(void)
 {
+    enum state {
+        init,
+        initData,
+        handleInput,
+    };
+
     int _[8] __attribute__((unused));
     D_800F4FE0_t* temp_v0;
     D_8010A230_t* var_s0;
     int lStickX;
     int lStickY;
-    int a0;
+    int selectedRow;
 
-    switch (D_8010A43C) {
-    case 0:
+    switch (_menuState) {
+    case init:
         func_80100414(0x7FF, 0x80);
-        ++D_8010A43C;
+        ++_menuState;
         break;
-    case 1:
+    case initData:
         func_800F9A24(0);
         func_801080C8();
         D_8010A444 = 0x150;
@@ -478,11 +494,11 @@ int func_8010337C(void)
         D_8010A430[2] = 0;
         func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
         func_800C6BF0(0, &_rankStrings[_rankStrings[D_8010A464]]);
-        func_80104BD0(1);
+        _initStringsAndGetSelectedRow(1);
         D_8010A220 = 0;
-        ++D_8010A43C;
+        ++_menuState;
         break;
-    case 2:
+    case handleInput:
         func_8010552C(D_8010A220);
         if (D_8010A220 < 8) {
             temp_v0 = func_800CCDF4(0);
@@ -490,25 +506,25 @@ int func_8010337C(void)
             temp_v0->unk4[7] -= 6;
             ++D_8010A220;
         }
-        a0 = func_80104BD0(0);
-        if (a0 == -1) {
+        selectedRow = _initStringsAndGetSelectedRow(0);
+        if (selectedRow == -1) {
             return 0;
         }
-        if (a0 == -3) {
+        if (selectedRow == -3) {
             D_8010A440 = 2;
-        } else if (a0 == -2) {
+        } else if (selectedRow == -2) {
             D_8010A440 = 1;
-        } else if (a0 == 3) {
-            D_8010A470 = vs_main_allocHeapR(D_80102818.size);
-            D_8010A46C = vs_main_allocateCdQueueSlot(&D_80102818);
-            vs_main_cdEnqueue(D_8010A46C, D_8010A470);
+        } else if (selectedRow == 3) {
+            _monBinData = vs_main_allocHeapR(_monBinFile.size);
+            _monBinCdQueueSlot = vs_main_allocateCdQueueSlot(&_monBinFile);
+            vs_main_cdEnqueue(_monBinCdQueueSlot, _monBinData);
             D_8010A440 = 0;
         } else {
             D_8010A440 = 0;
         }
         D_800F1BF7 = D_800F4EE8.unk0[2] + D_800F4EE8.unk0[3];
         func_800CD064(0);
-        ++D_8010A43C;
+        ++_menuState;
         break;
     case 3:
         func_8010552C(D_8010A220);
@@ -523,7 +539,7 @@ int func_8010337C(void)
         }
         func_800F9E0C();
         if (D_8010A440 == 0) {
-            D_8010A43C = (D_800F1BF7 * 3) + 4;
+            _menuState = (D_800F1BF7 * 3) + 4;
             break;
         }
         func_80104AF8();
@@ -532,54 +548,54 @@ int func_8010337C(void)
         func_800FFBC8();
         func_801056B8();
         D_8010A220 = 0;
-        ++D_8010A43C;
+        ++_menuState;
         break;
     case 5:
         if ((D_800F1BF0[1] == 0) && (D_800F1BF0[0] == 0)
             && (vs_main_buttonsPressed.all & PADLup)) {
-            vs_main_playSfxDefault(0x7E, 4);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             D_800F1BF0[0] = 0x18;
             D_800F1BF0[1] = 7;
         } else if ((D_800F1BF0[1] == 7) && (D_800F1BF0[0] == 0x18)
                    && (vs_main_buttonsPressed.all & PADLdown)) {
-            vs_main_playSfxDefault(0x7E, 4);
+            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             D_800F1BF0[0] = 0;
             D_800F1BF0[1] = 0;
         } else {
             if (vs_main_buttonRepeat & PADLup) {
                 if (D_800F1BF0[1] >= 2) {
-                    vs_main_playSfxDefault(0x7E, 4);
+                    vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     --D_800F1BF0[1];
                 } else {
                     if (D_800F1BF0[0] != 0) {
                         --D_800F1BF0[0];
-                        vs_main_playSfxDefault(0x7E, 4);
+                        vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     } else if (D_800F1BF0[1] != 0) {
                         --D_800F1BF0[1];
-                        vs_main_playSfxDefault(0x7E, 4);
+                        vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     }
                 }
             } else if (vs_main_buttonRepeat & PADLdown) {
                 if (D_800F1BF0[1] >= 6U) {
                     if (D_800F1BF0[0] < 0x18U) {
                         ++D_800F1BF0[0];
-                        vs_main_playSfxDefault(0x7E, 4);
+                        vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     } else {
                         if (D_800F1BF0[1] < 7) {
                             ++D_800F1BF0[1];
-                            vs_main_playSfxDefault(0x7E, 4);
+                            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                         }
                     }
                 } else {
                     ++D_800F1BF0[1];
-                    vs_main_playSfxDefault(0x7E, 4);
+                    vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                 }
             }
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
             func_800FFBA8();
-            ++D_8010A43C;
+            ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
@@ -595,7 +611,7 @@ int func_8010337C(void)
         func_8010579C(D_8010A220);
         if (D_8010A220 <= 0) {
             if (D_8010A440 == 0) {
-                D_8010A43C = 1;
+                _menuState = 1;
                 break;
             }
             func_80104AF8();
@@ -607,7 +623,7 @@ int func_8010337C(void)
         func_800FFBC8();
         func_80106780();
         D_8010A220 = 0;
-        ++D_8010A43C;
+        ++_menuState;
         break;
     case 8:
         if ((D_800F1BF0[5] == 0) && (D_800F1BF0[4] == 0)
@@ -654,7 +670,7 @@ int func_8010337C(void)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
             func_800FFBA8();
-            ++D_8010A43C;
+            ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
@@ -670,7 +686,7 @@ int func_8010337C(void)
         func_80106808(D_8010A220);
         if (D_8010A220 <= 0) {
             if (D_8010A440 == 0) {
-                D_8010A43C = 1;
+                _menuState = 1;
                 break;
             }
             func_80104AF8();
@@ -681,7 +697,7 @@ int func_8010337C(void)
     case 10:
         func_800FFBC8();
         func_80106F9C();
-        ++D_8010A43C;
+        ++_menuState;
         break;
     case 11:
         if (vs_main_buttonRepeat & PADLup) {
@@ -697,7 +713,7 @@ int func_8010337C(void)
             vs_main_playSfxDefault(0x7E, 6);
             func_800FFBA8();
             func_80107090();
-            ++D_8010A43C;
+            ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
@@ -724,19 +740,19 @@ int func_8010337C(void)
 
         D_8010A220 = 0;
         if (D_8010A440 == 0) {
-            D_8010A43C = 1;
+            _menuState = 1;
             break;
         }
         func_80104AF8();
         return 2;
     case 13:
-        if (D_8010A46C->state == 4) {
-            vs_main_freeCdQueueSlot(D_8010A46C);
-            D_8010A474 = (u_short*)(D_8010A470 + 150);
+        if (_monBinCdQueueSlot->state == 4) {
+            vs_main_freeCdQueueSlot(_monBinCdQueueSlot);
+            D_8010A474 = (u_short*)(_monBinData + 150);
             func_800FFBC8();
             func_80105D8C();
             D_8010A220 = 0;
-            ++D_8010A43C;
+            ++_menuState;
         }
         break;
     case 14:
@@ -778,10 +794,10 @@ int func_8010337C(void)
             }
         }
         if (vs_main_buttonsPressed.all & PADRright) {
-            if (D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unkC != 0) {
+            if (_monBinData[D_800F1BF0[2] + D_800F1BF0[3]].unkC != 0) {
                 vs_main_playSfxDefault(0x7E, 5);
-                func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0);
-                ++D_8010A43C;
+                func_80107FBC(_monBinData[D_800F1BF0[2] + D_800F1BF0[3]].unk0);
+                ++_menuState;
                 D_8010A440 = 2;
             } else {
                 vs_main_playSfxDefault(0x7E, 7);
@@ -789,7 +805,7 @@ int func_8010337C(void)
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
             func_800FFBA8();
-            ++D_8010A43C;
+            ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
@@ -805,22 +821,22 @@ int func_8010337C(void)
         func_80105F00(D_8010A220);
         if (D_8010A220 <= 0) {
             if (D_8010A440 == 2) {
-                D_8010A43C = 0x13;
+                _menuState = 0x13;
                 break;
             }
             if (D_8010A440 != 1) {
-                vs_main_freeHeapR(D_8010A470);
-                D_8010A43C = 1;
+                vs_main_freeHeapR(_monBinData);
+                _menuState = 1;
                 break;
             }
-            vs_main_freeHeapR(D_8010A470);
+            vs_main_freeHeapR(_monBinData);
             func_80104AF8();
             return 2;
         }
         --D_8010A220;
         break;
     case 19:
-        if (func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
+        if (func_80107FBC(_monBinData[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
             int temp_v1_4 = D_800F453C->unk656;
             D_8010A44C = temp_v1_4;
             D_8010A44E = D_800F453C->unk63E;
@@ -837,12 +853,12 @@ int func_8010337C(void)
             D_8010A450 = D_800F1BF0[2] + D_800F1BF0[3];
             func_80104B40();
             func_80102A38(D_8010A45C == 0);
-            ++D_8010A43C;
+            ++_menuState;
             break;
         }
         break;
     case 20:
-        if (D_8010A470[D_8010A450].unkD != D_8010A450) {
+        if (_monBinData[D_8010A450].unkD != D_8010A450) {
             D_8010A438 = (D_8010A438 + 1) & 0xF;
             func_80107A98(0);
             func_80107A98(1);
@@ -852,7 +868,7 @@ int func_8010337C(void)
             if (D_8010A45C != 0) {
                 func_80102A38(1);
             }
-            D_8010A43C += 1;
+            _menuState += 1;
             if (vs_main_buttonsPressed.all & PADRup) {
                 func_800FFBA8();
                 D_8010A440 = 1;
@@ -966,9 +982,9 @@ int func_8010337C(void)
             }
             if (vs_main_buttonRepeat & 8) {
                 if (D_8010A452 == 0) {
-                    if (D_8010A470[D_8010A450].unkE != D_8010A450) {
+                    if (_monBinData[D_8010A450].unkE != D_8010A450) {
                         vs_main_playSfxDefault(0x7E, 0xB);
-                        D_8010A450 = D_8010A470[D_8010A450].unkE;
+                        D_8010A450 = _monBinData[D_8010A450].unkE;
                         D_8010A448 = 8;
                         func_80104B40();
                     }
@@ -977,9 +993,9 @@ int func_8010337C(void)
             }
             if (vs_main_buttonRepeat & PADL1) {
                 if (D_8010A452 == 0) {
-                    if (D_8010A470[D_8010A450].unkD != D_8010A450) {
+                    if (_monBinData[D_8010A450].unkD != D_8010A450) {
                         vs_main_playSfxDefault(0x7E, 0xB);
-                        D_8010A450 = D_8010A470[D_8010A450].unkD;
+                        D_8010A450 = _monBinData[D_8010A450].unkD;
                         D_8010A448 = 4;
                         func_80104B40();
                     }
@@ -1002,7 +1018,7 @@ int func_8010337C(void)
             }
             D_8010A458 = 0x202020;
             D_8010A454 = 0x202020;
-            D_8010A43C = 0x19;
+            _menuState = 0x19;
         }
         break;
     case 21:
@@ -1020,13 +1036,13 @@ int func_8010337C(void)
         }
         func_80108098();
         if (D_8010A440 != 0) {
-            vs_main_freeHeapR(D_8010A470);
+            vs_main_freeHeapR(_monBinData);
             func_80104AF8();
             return 2;
         }
         D_8010A450 = D_800F1BF0[2] + D_800F1BF0[3];
         vs_mainmenu_setMessage((char*)&D_8010A474[D_8010A474[D_8010A450]]);
-        D_8010A43C = 0xE;
+        _menuState = 0xE;
         break;
     case 25:
         func_80107A98(2);
@@ -1037,14 +1053,14 @@ int func_8010337C(void)
             break;
         }
         func_80108098();
-        func_80107FBC(D_8010A470[D_8010A450].unk0);
-        ++D_8010A43C;
+        func_80107FBC(_monBinData[D_8010A450].unk0);
+        ++_menuState;
         break;
     case 26:
         func_80107A98(2);
         func_80107A98(3);
         func_801061F8(D_8010A220, 3);
-        if (func_80107FBC(D_8010A470[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
+        if (func_80107FBC(_monBinData[D_800F1BF0[2] + D_800F1BF0[3]].unk0) == 0) {
             int temp_v1_10 = D_800F453C->unk656;
             D_8010A44C = temp_v1_10;
             D_8010A44E = D_800F453C->unk63E;
@@ -1054,7 +1070,7 @@ int func_8010337C(void)
             } else if (D_8010A444 >= 0x1801) {
                 D_8010A444 = 0x1800;
             }
-            ++D_8010A43C;
+            ++_menuState;
         }
         break;
     case 27:
@@ -1065,7 +1081,7 @@ int func_8010337C(void)
             D_8010A220 += 1;
         } else {
             D_8010A448 = 0;
-            D_8010A43C = 0x14;
+            _menuState = 0x14;
         }
         break;
     }
@@ -1080,21 +1096,21 @@ void func_80104AF8(void)
 
 void func_80104B40(void)
 {
-    if (D_8010A470[D_8010A450].unkC != 0) {
+    if (_monBinData[D_8010A450].unkC != 0) {
         vs_mainmenu_setMessage((char*)&D_8010A474[D_8010A474[D_8010A450]]);
     } else {
         vs_mainmenu_setMessage((char*)&_miscInfo[_miscInfo[2]]);
     }
 }
 
-int func_80104BD0(int arg0)
+int _initStringsAndGetSelectedRow(int arg0)
 {
     char* sp10[8];
     int i;
 
     if (arg0 != 0) {
         D_8010A224 = 0;
-        D_8010A228 = 0;
+        _selectedRow = 0;
     }
 
     switch (D_8010A224) {
@@ -1107,11 +1123,11 @@ int func_80104BD0(int arg0)
         ++D_8010A224;
         break;
     case 1:
-        D_8010A228 = func_80102F0C();
-        if (D_8010A228 == -1) {
+        _selectedRow = _getSelectedRow();
+        if (_selectedRow == -1) {
             break;
         }
-        return D_8010A228;
+        return _selectedRow;
     }
     return -1;
 }
@@ -1508,11 +1524,11 @@ void func_80105D8C(void)
     int var_v0;
     int i;
     char var_a0_2;
-    D_8010A470_t* var_a3;
+    _monBinData_t* var_a3;
     int new_var;
     int* new_var2;
 
-    for (i = 0, var_a3 = D_8010A470; i < 0x4E; ++i, ++var_a3) {
+    for (i = 0, var_a3 = _monBinData; i < 0x4E; ++i, ++var_a3) {
         var_a3->unkC = 0;
         for (j = var_a3->unk4; j < (var_a3->unk4 + var_a3->unk6); ++j) {
             var_v0 = j;
@@ -1529,28 +1545,28 @@ void func_80105D8C(void)
         }
     }
 
-    for (i = 0, var_a3 = D_8010A470, var_a0_2 = -1; i < 0x4E; ++i, ++var_a3) {
+    for (i = 0, var_a3 = _monBinData, var_a0_2 = -1; i < 0x4E; ++i, ++var_a3) {
         if (var_a3->unkC != 0) {
             var_a3->unkD = var_a0_2;
             var_a0_2 = i;
         }
     }
 
-    for (i = 0, var_a3 = D_8010A470; i < 0x4E; ++i, ++var_a3) {
+    for (i = 0, var_a3 = _monBinData; i < 0x4E; ++i, ++var_a3) {
         if (var_a3->unkC != 0) {
             var_a3->unkD = var_a0_2;
             break;
         }
     }
 
-    for (i = 0x4D, var_a3 = &D_8010A470[77], var_a0_2 = -1; i >= 0; --i, --var_a3) {
+    for (i = 0x4D, var_a3 = &_monBinData[77], var_a0_2 = -1; i >= 0; --i, --var_a3) {
         if (var_a3->unkC != 0) {
             var_a3->unkE = var_a0_2;
             var_a0_2 = i;
         }
     }
 
-    for (i = 0x4D, var_a3 = &D_8010A470[77]; i >= 0; --i, --var_a3) {
+    for (i = 0x4D, var_a3 = &_monBinData[77]; i >= 0; --i, --var_a3) {
         if (var_a3->unkC != 0) {
             var_a3->unkE = var_a0_2;
             break;
@@ -1561,7 +1577,7 @@ void func_80105D8C(void)
 void func_80105F00(int arg0)
 {
     int sp18;
-    D_8010A470_t* var_s4;
+    _monBinData_t* var_s4;
     int temp_s3;
     int var_s1;
     int i;
@@ -1569,7 +1585,7 @@ void func_80105F00(int arg0)
     int s6;
 
     temp_s3 = D_800F1BF0[2] + D_800F1BF0[3];
-    var_s4 = D_8010A470;
+    var_s4 = _monBinData;
     for (i = 0; i < 0x4E; ++i) {
         if (i == temp_s3) {
             if (var_s4->unk8 == 0) {
@@ -1594,7 +1610,7 @@ void func_80105F00(int arg0)
 
     i = 0;
     sp18 = arg0 * 0x17;
-    var_s4 = &D_8010A470[D_800F1BF0[2]];
+    var_s4 = &_monBinData[D_800F1BF0[2]];
 
     for (; i < 8; ++i, ++var_s4) {
         u_char* new_var = D_800F1BF0;
@@ -1666,7 +1682,7 @@ void func_801061F8(int arg0, int arg1)
     if (D_8010A45C == 0) {
         temp_s2 = (8 - arg0) * 0x10;
         func_800C9078(vs_battle_setMenuItem(
-            0, temp_s2 + 0xB8, 0xA6, 0x100, 0, (char*)&D_8010A470[D_8010A450].unk12));
+            0, temp_s2 + 0xB8, 0xA6, 0x100, 0, (char*)&_monBinData[D_8010A450].unk12));
         vs_battle_getMenuItem(0)->state = 0;
         temp_s4 = arg0 * 0x10;
         scratch = (void**)getScratchAddr(0);
@@ -1682,7 +1698,7 @@ void func_801061F8(int arg0, int arg1)
         func_800C6540(
             sp60, ((temp_s4 - 0x78) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
         func_801051AC(temp_s4 - 0x80, 0xA0, 0x64, 0xC, 2);
-        func_800C6540(sp18[D_8010A470[D_8010A450].unk2],
+        func_800C6540(sp18[_monBinData[D_8010A450].unk2],
             ((temp_s2 + 0xBC) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
         func_801051AC(temp_s2 + 0xB4, 0x9B, 0x8C, 0x1A, 1);
     }

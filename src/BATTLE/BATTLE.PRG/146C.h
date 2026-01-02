@@ -271,13 +271,13 @@ typedef struct {
     vs_battle_equippedItem blade; // 0x18
     vs_battle_equippedItem grip; // 0x48
     vs_battle_equippedItem gems[3]; // 0x78
-    char unk108;
-    char unk10A;
+    char wepId;
+    char damageTypeValue;
     char risk;
     char unk10B;
     char unk10C;
     u_char unk10D;
-    u_char unk10E;
+    u_char damageType;
     u_char skillType;
     u_short currentPp;
     u_short maxPp;
@@ -289,11 +289,7 @@ typedef struct {
     u_short baseInt;
     short currentAgility;
     u_short baseAgility;
-    u_int range : 8;
-    u_int unk125 : 8;
-    u_int unk126 : 8;
-    u_int unk127_0 : 3;
-    u_int unk127_3 : 5;
+    vs_battle_range_t range;
     vs_battle_classAffinityCurrent classAffinityCurrent;
     short unk168[8];
     vs_battle_classAffinityBaseline classAffinityBaseline;
@@ -588,25 +584,29 @@ typedef struct {
 } D_800F1904_t3;
 
 void func_80069FC4(int, int);
-void _copyBladeStats(vs_battle_equippedItem*, vs_battle_inventoryBlade*);
-void _copyGripStats(vs_battle_equippedItem*, vs_battle_inventoryGrip*);
-void _copyArmorStats(vs_battle_equippedItem*, vs_battle_inventoryArmor*);
-void _copyGemStats(vs_battle_equippedItem*, vs_battle_inventoryGem*);
+void vs_battle_copyInventoryBladeStats(
+    vs_battle_equippedItem*, vs_battle_inventoryBlade*);
+void vs_battle_copyInventoryGripStats(vs_battle_equippedItem*, vs_battle_inventoryGrip*);
+void vs_battle_copyInventoryArmorStats(
+    vs_battle_equippedItem*, vs_battle_inventoryArmor*);
+void vs_battle_copyInventoryGemStats(vs_battle_equippedItem*, vs_battle_inventoryGem*);
 void vs_battle_applyWeapon(vs_battle_equippedWeapon*, vs_battle_inventoryWeapon*);
 void vs_battle_applyShield(vs_battle_equippedShield*, vs_battle_inventoryShield*);
 void vs_battle_applyArmor(vs_battle_equippedArmor*, vs_battle_inventoryArmor*);
 void vs_battle_applyAccessory(
     vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
-void vs_battle_setBladeForDrop(
+void vs_battle_copyEquippedBladeStats(
     vs_battle_inventoryBlade* dropBlade, vs_battle_equippedItem* targetBlade);
-void vs_battle_setGripForDrop(vs_battle_inventoryGrip*, vs_battle_equippedItem*);
-void vs_battle_setGemForDrop(vs_battle_inventoryGem*, vs_battle_equippedItem*);
-void vs_battle_setWeaponForDrop(
+void vs_battle_copyEquippedGripStats(vs_battle_inventoryGrip*, vs_battle_equippedItem*);
+void vs_battle_copyEquippedGemStats(vs_battle_inventoryGem*, vs_battle_equippedItem*);
+void vs_battle_copyEquippedWeaponStats(
     vs_battle_inventoryWeapon* arg0, vs_battle_equippedWeapon* arg1);
-void func_8006B9E0(vs_battle_inventoryShield*, vs_battle_equippedShield*);
-void vs_battle_setArmorForDrop(vs_battle_inventoryArmor*, vs_battle_equippedArmor*);
-void vs_battle_setAccessoryForDrop(
+void vs_battle_copyEquippedShieldStats(
+    vs_battle_inventoryShield*, vs_battle_equippedShield*);
+void vs_battle_copyEquippedArmorStats(
+    vs_battle_inventoryArmor*, vs_battle_equippedArmor*);
+void vs_battle_copyEquippedAccessoryStats(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);

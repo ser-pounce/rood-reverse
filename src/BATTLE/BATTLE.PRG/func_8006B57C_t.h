@@ -4,7 +4,8 @@ typedef struct {
     char unk0;
     char unk1;
     char unk2;
-    char unk3;
+    char unk3_0 : 3;
+    char unk3_3 : 5;
 } vs_battle_range_t;
 
 typedef struct {

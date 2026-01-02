@@ -562,9 +562,9 @@ int func_80103BE4(int arg0, vs_battle_equippedWeapon* weapon)
     case 1:
         return -weapon->blade.material;
     case 2:
-        return weapon->range;
+        return weapon->range.unk0;
     case 3:
-        return -weapon->unk10E;
+        return -weapon->damageType;
     case 4:
         return weapon->currentDp;
     case 5:
@@ -806,16 +806,16 @@ void func_801042C4(vs_battle_equippedItem* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
-        _copyBladeStats(arg0, &vs_battle_inventory.blades[arg2]);
+        vs_battle_copyInventoryBladeStats(arg0, &vs_battle_inventory.blades[arg2]);
         return;
     case 2:
-        _copyGripStats(arg0, &vs_battle_inventory.grips[arg2]);
+        vs_battle_copyInventoryGripStats(arg0, &vs_battle_inventory.grips[arg2]);
         return;
     case 4:
-        _copyArmorStats(arg0, &vs_battle_inventory.armor[arg2]);
+        vs_battle_copyInventoryArmorStats(arg0, &vs_battle_inventory.armor[arg2]);
         return;
     case 5:
-        _copyGemStats(arg0, &vs_battle_inventory.gems[arg2]);
+        vs_battle_copyInventoryGemStats(arg0, &vs_battle_inventory.gems[arg2]);
         return;
     }
 }

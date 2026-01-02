@@ -48,7 +48,7 @@ static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
         }
 
         do {
-            D_80102508 = weapon->unk10E;
+            D_80102508 = weapon->damageType;
         } while (0);
 
         vs_mainMenu_setDpPp(
@@ -59,7 +59,7 @@ static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
         vs_mainMenu_strIntAgi[1].strength = weapon->baseStr;
         vs_mainMenu_strIntAgi[1].intelligence = weapon->baseInt;
         vs_mainMenu_strIntAgi[1].agility = weapon->baseAgility;
-        vs_mainMenu_setRangeRisk(weapon->range, weapon->risk, 0, 1);
+        vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
@@ -317,7 +317,7 @@ static char* _drawAccessoryInfoRow(vs_battle_equippedAccessory* arg0)
     vs_battle_inventoryArmor sp18;
     int sp30[2];
 
-    vs_battle_setAccessoryForDrop(&sp18, arg0);
+    vs_battle_copyEquippedAccessoryStats(&sp18, arg0);
     vs_mainMenu_setAccessoryStrings(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
@@ -1091,10 +1091,10 @@ static void _setWeaponRow(int row, vs_battle_equippedWeapon* weapon, int arg2)
     int gemSlots = weapon->grip.gemSlots;
 
     if (row == 1) {
-        vs_battle_setBladeForDrop(&sp20, &weapon->blade);
+        vs_battle_copyEquippedBladeStats(&sp20, &weapon->blade);
         func_800FCAA4(&sp20, &sp18, &sp80, vs_battle_stringBuf);
     } else if (row == 2) {
-        vs_battle_setGripForDrop(&sp50, &weapon->grip);
+        vs_battle_copyEquippedGripStats(&sp50, &weapon->grip);
         func_800FCC0C(&sp50, &sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = row - 3;
@@ -1103,7 +1103,7 @@ static void _setWeaponRow(int row, vs_battle_equippedWeapon* weapon, int arg2)
             sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
             sp80 = 0x58000000;
             if (weapon->gems[var_s1].id != 0) {
-                vs_battle_setGemForDrop(&sp60, &weapon->gems[var_s1]);
+                vs_battle_copyEquippedGemStats(&sp60, &weapon->gems[var_s1]);
                 func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, vs_battle_stringBuf);
             }
             var_s1 = 151;
@@ -1143,7 +1143,7 @@ static void _setShieldRow(int row, vs_battle_equippedShield* shield, int arg2)
         sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
         if (shield->gems[var_s0].id != 0) {
-            vs_battle_setGemForDrop(&sp20, &shield->gems[var_s0]);
+            vs_battle_copyEquippedGemStats(&sp20, &shield->gems[var_s0]);
             func_800FD0E0(&sp20, &sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 151;
@@ -1358,7 +1358,7 @@ static int _equipmentDetailScreen(int row)
                         vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo(
                             (vs_battle_equippedAccessory*)&temp_s1->accessory);
-                        vs_battle_setAccessoryForDrop(&sp20, &temp_s1->accessory);
+                        vs_battle_copyEquippedAccessoryStats(&sp20, &temp_s1->accessory);
                         vs_mainMenu_setAccessoryStrings(
                             &sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
@@ -1572,7 +1572,7 @@ static int _equipmentScreen(int element)
                 }
                 rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
             } else {
-                vs_battle_setAccessoryForDrop(p, &temp_s6->accessory);
+                vs_battle_copyEquippedAccessoryStats(p, &temp_s6->accessory);
                 vs_mainMenu_setAccessoryStrings(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
                 rowTypes[i] |= rowType;

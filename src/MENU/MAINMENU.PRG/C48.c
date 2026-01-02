@@ -61,25 +61,25 @@ void func_800FA448(void)
     temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->weapon.unk10D != 0) {
-        vs_battle_setWeaponForDrop(
+        vs_battle_copyEquippedWeaponStats(
             &vs_battle_inventory.weapons[temp_s1->weapon.unk10D - 1], &temp_s1->weapon);
     }
 
     if (temp_s1->shield.unkDA != 0) {
-        func_8006B9E0(
+        vs_battle_copyEquippedShieldStats(
             &vs_battle_inventory.shields[temp_s1->shield.unkDA - 1], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {
         if (temp_s1->hitLocations[i].armor.unk9A != 0) {
-            vs_battle_setArmorForDrop(
+            vs_battle_copyEquippedArmorStats(
                 &vs_battle_inventory.armor[temp_s1->hitLocations[i].armor.unk9A - 1],
                 &temp_s1->hitLocations[i].armor);
         }
     }
 
     if (temp_s1->accessory.unk37 != 0) {
-        vs_battle_setAccessoryForDrop(
+        vs_battle_copyEquippedAccessoryStats(
             &vs_battle_inventory.armor[temp_s1->accessory.unk37 - 1],
             &temp_s1->accessory);
     }

@@ -597,7 +597,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof(vs_main_mapStatus));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy(&D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof(vs_battle_inventory));
     _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
@@ -689,7 +689,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = 0x30;
     s5->stats.mapCompletion = 0;
-    memset(&D_80060168.unkE00, 0, sizeof(D_80060168.unkE00));
+    memset(&vs_battle_inventory.items, 0, sizeof(vs_battle_inventory.items));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
     memset(savedata2->containerData.unk3800, 0, sizeof(savedata2->containerData.unk3800));
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
@@ -700,7 +700,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof(savedata->mapStatus));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
-    _rMemcpy(savedata->unk7C8, &D_80060168, sizeof(savedata->unk7C8));
+    _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof(savedata->unk7C8));
     _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
     _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
@@ -5006,7 +5006,7 @@ static void _initGameData(void)
     }
 
     vs_main_bzero(&D_80061068, sizeof(D_80061068));
-    vs_main_memcpy(&D_80060168, D_80074C24, sizeof(D_80060168));
+    vs_main_memcpy(&vs_battle_inventory, D_80074C24, sizeof(vs_battle_inventory));
 
     vs_gametime_tickspeed = 2;
     D_80061068.unk4_8 = 4;

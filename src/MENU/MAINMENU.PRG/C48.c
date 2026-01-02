@@ -49,7 +49,7 @@ extern short _maxPp;
 extern D_80102458_t* D_80102458;
 extern D_80102460_t* D_80102460;
 extern vs_battle_inventoryShield* D_8010246C;
-extern D_80060168_t* D_80102470;
+extern vs_battle_inventory_t* D_80102470;
 extern char D_80102480[];
 extern char D_801024A1;
 
@@ -61,23 +61,27 @@ void func_800FA448(void)
     temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->weapon.unk10D != 0) {
-        vs_battle_setWeaponForDrop(&D_80060148[temp_s1->weapon.unk10D], &temp_s1->weapon);
+        vs_battle_setWeaponForDrop(
+            &vs_battle_inventory.weapons[temp_s1->weapon.unk10D - 1], &temp_s1->weapon);
     }
 
     if (temp_s1->shield.unkDA != 0) {
-        func_8006B9E0(&D_80060168.unk100[temp_s1->shield.unkDA - 1], &temp_s1->shield);
+        func_8006B9E0(
+            &vs_battle_inventory.shields[temp_s1->shield.unkDA - 1], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {
         if (temp_s1->hitLocations[i].armor.unk9A != 0) {
-            vs_battle_setArmorForDrop(&D_80060780[temp_s1->hitLocations[i].armor.unk9A],
+            vs_battle_setArmorForDrop(
+                &vs_battle_inventory.armor[temp_s1->hitLocations[i].armor.unk9A - 1],
                 &temp_s1->hitLocations[i].armor);
         }
     }
 
     if (temp_s1->accessory.unk37 != 0) {
-        vs_battle_setAccesoryForDrop(
-            &D_80060780[temp_s1->accessory.unk37], &temp_s1->accessory);
+        vs_battle_setAccessoryForDrop(
+            &vs_battle_inventory.armor[temp_s1->accessory.unk37 - 1],
+            &temp_s1->accessory);
     }
 }
 
@@ -433,8 +437,8 @@ void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char
 {
     vs_battle_equippedWeapon sp10;
 
-    if (D_80102470 == &D_80060168) {
-        func_8006AEAC(&sp10, arg0);
+    if (D_80102470 == &vs_battle_inventory) {
+        vs_battle_applyWeapon(&sp10, arg0);
     } else {
         func_80102A34(&sp10, arg0, D_80109A8C);
     }
@@ -452,8 +456,8 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_equippedShield shield;
 
-    if (D_8010246C == &D_80060168.unk100[0]) {
-        func_8006B02C(&shield, arg0);
+    if (D_8010246C == &vs_battle_inventory.shields[0]) {
+        vs_battle_applyShield(&shield, arg0);
     } else {
         func_80102BB0(&shield, arg0, D_80109A8C);
     }
@@ -467,7 +471,7 @@ void vs_mainMenu_setAccessoryStrings(
 {
     vs_battle_equippedArmor sp10;
 
-    func_8006B110(&sp10, arg0);
+    vs_battle_applyArmor(&sp10, arg0);
     vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
 }
 

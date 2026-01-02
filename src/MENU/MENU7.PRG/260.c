@@ -615,7 +615,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof(vs_main_mapStatus));
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy(&D_80060168, spmcimg[1].unk7C8, sizeof(D_80060168));
+    _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof(vs_battle_inventory));
     _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
@@ -717,7 +717,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof(savedata->mapStatus));
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
-    _rMemcpy(savedata->unk7C8, &D_80060168, sizeof(savedata->unk7C8));
+    _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof(savedata->unk7C8));
     _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
     _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
@@ -3640,7 +3640,8 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 7:
-        vs_battle_memcpy(D_8010245C->unk0, &D_80060168, sizeof(D_8010245C->unk0));
+        vs_battle_memcpy(
+            D_8010245C->unk0, &vs_battle_inventory, sizeof(D_8010245C->unk0));
         vs_battle_memcpy(&D_8010245C->unkF00, &D_800619D8, sizeof(D_8010245C->unkF00));
         vs_battle_memcpy(
             &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
@@ -3708,7 +3709,8 @@ int vs_menu7_saveContainerMenu(char* state)
         char v0 = (*(int*)&vs_main_settings);
         char v1 = D_80102578 & 1;
         *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
-        vs_battle_memcpy(&D_80060168, D_8010245C->unk0, sizeof(D_8010245C->unk0));
+        vs_battle_memcpy(
+            &vs_battle_inventory, D_8010245C->unk0, sizeof(D_8010245C->unk0));
         vs_battle_memcpy(&D_800619D8, &D_8010245C->unkF00, sizeof(D_8010245C->unkF00));
     }
         /* fallthrough */

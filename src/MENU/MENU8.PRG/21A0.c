@@ -569,7 +569,9 @@ static int func_801049A0(int arg0)
             if (_copyNormalizedString(_nameBuffer) != 0) {
                 vs_battle_rMemcpy(_nameBuffer,
                     vs_mainMenu_itemNames
-                        + D_80060168.unk280[D_80060168.unk0[D_80105F2E].blade - 1].id,
+                        + vs_battle_inventory
+                              .blades[vs_battle_inventory.weapons[D_80105F2E].blade - 1]
+                              .id,
                     0x18);
             }
             func_800C8E04(1);
@@ -592,19 +594,20 @@ static int func_801049A0(int arg0)
                 D_80105F28 = 6;
                 break;
             }
-            temp_s0 = &D_80060168.unk0[D_80105F2E];
+            temp_s0 = &vs_battle_inventory.weapons[D_80105F2E];
             if (temp_v0_10 == 1) {
                 vs_main_playSfxDefault(0x7E, 0xD);
                 vs_battle_rMemcpy(temp_s0->name, _nameBuffer, sizeof(_nameBuffer));
                 if (temp_s0->unk3 != 0) {
-                    func_8006B338(temp_s0);
+                    vs_battle_equipWeapon(temp_s0);
                 }
                 return 1;
             }
             vs_battle_playMenuLeaveSfx();
             if (temp_s0->name[0] == 0xE7) {
                 vs_battle_rMemcpy(temp_s0->name,
-                    vs_mainMenu_itemNames + D_80060168.unk280[temp_s0->blade - 1].id,
+                    vs_mainMenu_itemNames
+                        + vs_battle_inventory.blades[temp_s0->blade - 1].id,
                     0x18);
             }
             return 1;
@@ -651,7 +654,7 @@ int vs_menu8_execRename(char* state)
             *var_v0-- = v1;
         }
         if (vs_battle_stringBuf[0] == 1) {
-            var_v1 = D_80060168.unk0[D_80105F2E].name;
+            var_v1 = vs_battle_inventory.weapons[D_80105F2E].name;
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;
                 if (c == vs_char_terminator) {

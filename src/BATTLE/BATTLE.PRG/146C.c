@@ -448,7 +448,7 @@ typedef struct {
     char material;
     char unkC1;
     short unkC2;
-} func_8006B02C_t;
+} _shieldIntermediate;
 
 typedef struct {
     short unk0;
@@ -540,7 +540,7 @@ typedef struct {
     char unk31;
     char unk32;
     char unk33;
-} func_8006A9F0_t;
+} _armorIntermediate;
 
 typedef struct {
     D_800F1904_t3 unk0;
@@ -594,7 +594,7 @@ typedef struct {
     char unkF1;
     short unkF2;
     char name[24];
-} vs_battle_inventoryWeapon2;
+} _weaponIntermediate;
 
 typedef struct {
     int unk0;
@@ -617,8 +617,8 @@ typedef struct {
     int unk18;
 } D_800F1880_t2;
 
-void func_8006A334(vs_battle_equippedWeapon*, vs_battle_equippedItem*);
-void func_8006A65C(vs_battle_equippedShield*, func_8006B02C_t*);
+void _applyWeaponStats(vs_battle_equippedWeapon*, vs_battle_equippedItem*);
+void _applyShieldStats(vs_battle_equippedShield*, _shieldIntermediate*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(VECTOR*);
@@ -628,8 +628,8 @@ void func_8006C40C(void);
 void func_8006C5AC(int);
 void func_80069DEC(int, int);
 int _removeActorAtIndex(u_int, int);
-void func_8006A8EC(vs_battle_equippedAccessory*, func_8006A9F0_t*);
-void func_8006A9F0(vs_battle_equippedArmor* arg0, func_8006A9F0_t* arg1);
+void _applyAccessoryStats(vs_battle_equippedAccessory*, _armorIntermediate*);
+void _applyArmorStats(vs_battle_equippedArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_setEquipmentForDrop(
     vs_battle_inventoryArmor*, vs_battle_equippedItem* equipment);
 void func_8006B214(void);
@@ -739,7 +739,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void _nop(int arg0);
+void _nop1(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
@@ -1118,309 +1118,319 @@ int _removeActorAtIndex(u_int index, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006A334);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", _applyWeaponStats);
 
-void func_8006A65C(vs_battle_equippedShield* arg0, func_8006B02C_t* arg1)
+void _applyShieldStats(vs_battle_equippedShield* target, _shieldIntermediate* source)
 {
     int i;
 
-    vs_main_memcpy(&arg0->shield, &arg1->unk0, sizeof arg1->unk0);
+    vs_main_memcpy(&target->shield, &source->unk0, sizeof source->unk0);
 
     for (i = 0; i < 3; ++i) {
-        vs_main_memcpy(&arg0->gems[i], &arg1->gems[i], sizeof arg0->gems[i]);
+        vs_main_memcpy(&target->gems[i], &source->gems[i], sizeof target->gems[i]);
     }
 
-    arg0->unkD8 = arg1->unk0.wepId;
-    arg0->unkD9 = arg1->unkC1;
-    arg0->unkDA = arg1->unkC2;
-    arg0->shield.material = arg1->material;
+    target->unkD8 = source->unk0.wepId;
+    target->unkD9 = source->unkC1;
+    target->unkDA = source->unkC2;
+    target->shield.material = source->material;
 
     for (i = 0; i < 4; ++i) {
-        arg0->types[i] = arg1->unk0.types[i];
+        target->types[i] = source->unk0.types[i];
     }
 
-    arg0->currentPp = arg1->unk0.currentDp;
-    arg0->maxPp = arg1->unk0.maxDp;
-
-    arg0->currentDp = arg1->unk0.currentPp;
-    arg0->maxDp = arg1->unk0.maxPp;
-    arg0->currentStr = arg0->baseStr = arg1->unk0.strength + arg1->gems[0].strength
-                                     + arg1->gems[1].strength + arg1->gems[2].strength;
-    arg0->currentInt = arg0->baseInt =
-        arg1->unk0.intelligence + arg1->gems[0].intelligence + arg1->gems[1].intelligence
-        + arg1->gems[2].intelligence;
-    arg0->currentAgility = arg0->baseAgility = arg1->unk0.agility + arg1->gems[0].agility
-                                             + arg1->gems[1].agility
-                                             + arg1->gems[2].agility;
+    target->currentPp = source->unk0.currentDp;
+    target->maxPp = source->unk0.maxDp;
+    target->currentDp = source->unk0.currentPp;
+    target->maxDp = source->unk0.maxPp;
+    target->currentStr = target->baseStr =
+        source->unk0.strength + source->gems[0].strength + source->gems[1].strength
+        + source->gems[2].strength;
+    target->currentInt = target->baseInt =
+        source->unk0.intelligence + source->gems[0].intelligence
+        + source->gems[1].intelligence + source->gems[2].intelligence;
+    target->currentAgility = target->baseAgility =
+        source->unk0.agility + source->gems[0].agility + source->gems[1].agility
+        + source->gems[2].agility;
 
     for (i = 0; i < 6; ++i) {
-        arg0->classAffinityBaseline.class[i] = arg0->classAffinityCurrent.class[0][i] =
-            arg0->classAffinityCurrent.class[1][i] =
-                arg1->unk0.classes[i] + arg1->gems[0].classes[i]
-                + arg1->gems[1].classes[i] + arg1->gems[2].classes[i];
+        target->classAffinityBaseline.class[i] =
+            target->classAffinityCurrent.class[0][i] =
+                target->classAffinityCurrent.class[1][i] =
+                    source->unk0.classes[i] + source->gems[0].classes[i]
+                    + source->gems[1].classes[i] + source->gems[2].classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        arg0->classAffinityBaseline.affinity[i] =
-            arg0->classAffinityCurrent.affinity[0][i] =
-                arg0->classAffinityCurrent.affinity[1][i] =
-                    arg1->unk0.affinities[i] + arg1->gems[0].affinities[i]
-                    + arg1->gems[1].affinities[i] + arg1->gems[2].affinities[i];
-        arg0->unk134[i] = 0;
+        target->classAffinityBaseline.affinity[i] =
+            target->classAffinityCurrent.affinity[0][i] =
+                target->classAffinityCurrent.affinity[1][i] =
+                    source->unk0.affinities[i] + source->gems[0].affinities[i]
+                    + source->gems[1].affinities[i] + source->gems[2].affinities[i];
+        target->unk134[i] = 0;
     }
 }
 
-void func_8006A8EC(vs_battle_equippedAccessory* accessory, func_8006A9F0_t* arg1)
+void _applyAccessoryStats(vs_battle_equippedAccessory* target, _armorIntermediate* source)
 {
     int i;
 
-    vs_main_memcpy(accessory, &arg1->equip, sizeof accessory->accessory);
-    accessory->currentStr = arg1->equip.strength;
-    accessory->currentInt = arg1->equip.intelligence;
-    accessory->currentAgility = arg1->equip.agility;
+    vs_main_memcpy(target, &source->equip, sizeof target->accessory);
 
-    accessory->material = arg1->material;
-    accessory->unk37 = arg1->unk31;
+    target->currentStr = source->equip.strength;
+    target->currentInt = source->equip.intelligence;
+    target->currentAgility = source->equip.agility;
+    target->material = source->material;
+    target->unk37 = source->unk31;
 
     for (i = 0; i < 4; ++i) {
-        accessory->types[i] = arg1->equip.types[i];
+        target->types[i] = source->equip.types[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        accessory->classes[i] = arg1->equip.classes[i];
+        target->classes[i] = source->equip.classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        accessory->affinities[i] = arg1->equip.affinities[i];
+        target->affinities[i] = source->equip.affinities[i];
     }
 }
 
-void func_8006A9F0(vs_battle_equippedArmor* armor, func_8006A9F0_t* arg1)
+void _applyArmorStats(vs_battle_equippedArmor* target, _armorIntermediate* source)
 {
     int i;
 
-    vs_main_memcpy(&armor->armor, &arg1->equip, sizeof armor->armor);
-    armor->armor.material = arg1->material;
-    armor->currentDp = arg1->equip.currentDp;
-    armor->maxDp = arg1->equip.maxDp;
-    armor->currentStr = armor->baseStr = arg1->equip.strength;
-    armor->currentInt = armor->baseInt = arg1->equip.intelligence;
-    armor->currentAgility = armor->baseAgility = arg1->equip.agility;
-    armor->unk9A = arg1->unk33;
+    vs_main_memcpy(&target->armor, &source->equip, sizeof target->armor);
+
+    target->armor.material = source->material;
+    target->currentDp = source->equip.currentDp;
+    target->maxDp = source->equip.maxDp;
+    target->currentStr = target->baseStr = source->equip.strength;
+    target->currentInt = target->baseInt = source->equip.intelligence;
+    target->currentAgility = target->baseAgility = source->equip.agility;
+    target->unk9A = source->unk33;
 
     for (i = 0; i < 4; ++i) {
-        armor->types[i] = arg1->equip.types[i];
+        target->types[i] = source->equip.types[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        signed char v = arg1->equip.classes[i];
-        armor->classAffinityCurrent.class[1][i] = v;
-        armor->classAffinityCurrent.class[0][i] = v;
-        armor->classAffinityBaseline.class[i] = v;
+        signed char v = source->equip.classes[i];
+        target->classAffinityCurrent.class[1][i] = v;
+        target->classAffinityCurrent.class[0][i] = v;
+        target->classAffinityBaseline.class[i] = v;
     }
 
     for (i = 0; i < 7; ++i) {
-        signed char v = arg1->equip.affinities[i];
-        armor->unk88[i] = 0;
-        armor->classAffinityCurrent.affinity[1][i] = v;
-        armor->classAffinityCurrent.affinity[0][i] = v;
-        armor->classAffinityBaseline.affinity[i] = v;
+        signed char v = source->equip.affinities[i];
+        target->unk88[i] = 0;
+        target->classAffinityCurrent.affinity[1][i] = v;
+        target->classAffinityCurrent.affinity[0][i] = v;
+        target->classAffinityBaseline.affinity[i] = v;
     }
-    armor->unk98 = arg1->unk31;
-    armor->unk99 = arg1->unk32;
+    target->unk98 = source->unk31;
+    target->unk99 = source->unk32;
 }
 
-void func_8006AB44(vs_battle_equippedItem* equip, vs_battle_inventoryBlade* blade)
+void _copyBladeStats(vs_battle_equippedItem* target, vs_battle_inventoryBlade* source)
 {
     int i;
-    vs_battle_inventoryBlade* a3;
+    vs_battle_inventoryBlade* tempBlade;
 
-    equip->id = blade->id;
-    equip->subId = blade->subId;
-    equip->wepId = blade->wepId;
-    equip->category = blade->category;
-    equip->currentDp = blade->currentDp;
-    equip->maxDp = blade->maxDp;
-    equip->currentPp = blade->currentPp;
-    equip->maxPp = blade->maxPp;
-    equip->strength = blade->strength;
-    equip->intelligence = blade->intelligence;
-    equip->agility = blade->agility;
-    equip->cost = blade->cost;
-    equip->damageType = blade->damageType;
-    equip->costType = blade->costType;
-    equip->unk14 = blade->unk12;
-    equip->range = blade->range;
-    equip->index = blade->index;
+    target->id = source->id;
+    target->subId = source->subId;
+    target->wepId = source->wepId;
+    target->category = source->category;
+    target->currentDp = source->currentDp;
+    target->maxDp = source->maxDp;
+    target->currentPp = source->currentPp;
+    target->maxPp = source->maxPp;
+    target->strength = source->strength;
+    target->intelligence = source->intelligence;
+    target->agility = source->agility;
+    target->cost = source->cost;
+    target->damageType = source->damageType;
+    target->costType = source->costType;
+    target->unk14 = source->unk12;
+    target->range = source->range;
+    target->index = source->index;
 
-    a3 = blade;
+    tempBlade = source;
+
     for (i = 0; i < 6; ++i) {
-        equip->classes[i] = a3->classes[i];
+        target->classes[i] = tempBlade->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        equip->affinities[i] = a3->affinities[i];
+        target->affinities[i] = tempBlade->affinities[i];
     }
-    equip->material = blade->material;
+
+    target->material = source->material;
 }
 
-void func_8006AC74(vs_battle_equippedItem* equip, vs_battle_inventoryGrip* grip)
+void _copyGripStats(vs_battle_equippedItem* target, vs_battle_inventoryGrip* source)
 {
     int i;
 
-    equip->id = grip->id;
-    equip->subId = grip->subId;
-    equip->category = grip->category;
-    equip->gemSlots = grip->gemSlots;
-    equip->strength = grip->strength;
-    equip->intelligence = grip->intelligence;
-    equip->agility = grip->agility;
-    equip->index = grip->unkE;
+    target->id = source->id;
+    target->subId = source->subId;
+    target->category = source->category;
+    target->gemSlots = source->gemSlots;
+    target->strength = source->strength;
+    target->intelligence = source->intelligence;
+    target->agility = source->agility;
+    target->index = source->unkE;
 
     for (i = 0; i < 4; ++i) {
-        equip->types[i] = grip->types[i];
+        target->types[i] = source->types[i];
     }
 }
 
-void func_8006ACFC(vs_battle_equippedItem* equip, vs_battle_inventoryArmor* armor)
+void _copyArmorStats(vs_battle_equippedItem* target, vs_battle_inventoryArmor* source)
 {
     int i;
-    vs_battle_inventoryArmor* a3;
+    vs_battle_inventoryArmor* tempArmor;
 
-    equip->id = armor->id;
-    equip->subId = armor->subId;
-    equip->wepId = armor->wepId;
-    equip->category = armor->category;
-    equip->currentDp = armor->currentDp;
-    equip->maxDp = armor->maxDp;
-    equip->currentPp = armor->currentPp;
-    equip->maxPp = armor->maxPp;
-    equip->gemSlots = armor->gemSlots;
-    equip->strength = armor->strength;
-    equip->intelligence = armor->intelligence;
-    equip->agility = armor->agility;
-    equip->index = armor->unk27;
+    target->id = source->id;
+    target->subId = source->subId;
+    target->wepId = source->wepId;
+    target->category = source->category;
+    target->currentDp = source->currentDp;
+    target->maxDp = source->maxDp;
+    target->currentPp = source->currentPp;
+    target->maxPp = source->maxPp;
+    target->gemSlots = source->gemSlots;
+    target->strength = source->strength;
+    target->intelligence = source->intelligence;
+    target->agility = source->agility;
+    target->index = source->index;
 
-    a3 = armor;
+    tempArmor = source;
 
     for (i = 0; i < 4; ++i) {
-        equip->types[i] = a3->types[i];
+        target->types[i] = tempArmor->types[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        equip->classes[i] = a3->classes[i];
+        target->classes[i] = tempArmor->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        equip->affinities[i] = a3->affinities[i];
+        target->affinities[i] = tempArmor->affinities[i];
     }
 
-    equip->material = armor->material;
+    target->material = source->material;
 }
 
-void func_8006AE0C(vs_battle_equippedItem* equip, vs_battle_inventoryGem* gem)
+void _copyGemStats(vs_battle_equippedItem* target, vs_battle_inventoryGem* source)
 {
     int i;
 
-    equip->id = gem->id;
-    equip->subId = gem->unk2;
-    equip->gemEffects = gem->gemEffects;
-    equip->strength = gem->strength;
-    equip->intelligence = gem->intelligence;
-    equip->agility = gem->agility;
-    equip->index = gem->unk1A;
+    target->id = source->id;
+    target->subId = source->unk2;
+    target->gemEffects = source->gemEffects;
+    target->strength = source->strength;
+    target->intelligence = source->intelligence;
+    target->agility = source->agility;
+    target->index = source->unk1A;
 
     for (i = 0; i < 6; ++i) {
-        equip->classes[i] = gem->classes[i];
+        target->classes[i] = source->classes[i];
     }
 
     for (i = 0; i < 7; ++i) {
-        equip->affinities[i] = gem->affinities[i];
+        target->affinities[i] = source->affinities[i];
     }
 }
 
-void func_8006AEAC(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source)
+void vs_battle_applyWeapon(
+    vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source)
 {
     int i;
-    vs_battle_inventoryWeapon2* temp_v0;
 
-    temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
-    vs_main_bzero(temp_v0, sizeof *temp_v0);
+    _weaponIntermediate* tempWeapon = vs_main_allocHeapR(sizeof *tempWeapon);
+    vs_main_bzero(tempWeapon, sizeof *tempWeapon);
 
     if (source != NULL) {
-        temp_v0->unkF2 = source->unk0;
+        tempWeapon->unkF2 = source->unk0;
         if (source->blade != 0) {
-            func_8006AB44(&temp_v0->blade, &D_80060168.unk280[source->blade - 1]);
-            temp_v0->material = D_80060168.unk280[source->blade - 1].material;
+            _copyBladeStats(
+                &tempWeapon->blade, &vs_battle_inventory.blades[source->blade - 1]);
+            tempWeapon->material = vs_battle_inventory.blades[source->blade - 1].material;
         }
         if (source->grip != 0) {
-            func_8006AC74(&temp_v0->grip, &D_80060168.unk530[source->grip]);
+            _copyGripStats(
+                &tempWeapon->grip, &vs_battle_inventory.grips[source->grip - 1]);
         }
 
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
-                func_8006AE0C(&temp_v0->gems[i], &D_80060168.unk8A4[source->gems[i]]);
+                _copyGemStats(
+                    &tempWeapon->gems[i], &vs_battle_inventory.gems[source->gems[i] - 1]);
             }
         }
 
         for (i = 0; i < 24; ++i) {
-            temp_v0->name[i] = source->name[i];
+            tempWeapon->name[i] = source->name[i];
         }
     }
-    func_8006A334(target, &temp_v0->blade);
-    vs_main_freeHeapR(temp_v0);
+    _applyWeaponStats(target, &tempWeapon->blade);
+    vs_main_freeHeapR(tempWeapon);
 }
 
-void func_8006B02C(vs_battle_equippedShield* target, vs_battle_inventoryShield* source)
+void vs_battle_applyShield(
+    vs_battle_equippedShield* target, vs_battle_inventoryShield* source)
 {
-    func_8006B02C_t* temp_v0;
     int i;
 
-    temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
-    vs_main_bzero(temp_v0, sizeof *temp_v0);
+    _shieldIntermediate* tempShield = vs_main_allocHeapR(sizeof *tempShield);
+    vs_main_bzero(tempShield, sizeof *tempShield);
 
     if (source != NULL) {
-        temp_v0->unkC2 = source->unk0;
-        func_8006ACFC(&temp_v0->unk0, &source->unk4);
-        temp_v0->material = source->unk4.material;
+        tempShield->unkC2 = source->unk0;
+        _copyArmorStats(&tempShield->unk0, &source->unk4);
+        tempShield->material = source->unk4.material;
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
-                func_8006AE0C(
-                    &temp_v0->gems[i], &D_80060168.unk8A4[source->gems[i] & 0x7F]);
+                _copyGemStats(&tempShield->gems[i],
+                    &vs_battle_inventory.gems[(source->gems[i] & 0x7F) - 1]);
             }
         }
     }
-    func_8006A65C(target, temp_v0);
-    vs_main_freeHeapR(temp_v0);
+    _applyShieldStats(target, tempShield);
+    vs_main_freeHeapR(tempShield);
 }
 
-void func_8006B110(vs_battle_equippedArmor* target, vs_battle_inventoryArmor* source)
+void vs_battle_applyArmor(
+    vs_battle_equippedArmor* target, vs_battle_inventoryArmor* source)
 {
-    func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    _armorIntermediate* tempArmor = vs_main_allocHeapR(sizeof *tempArmor);
+    vs_main_bzero(tempArmor, sizeof *tempArmor);
+
+    if (source != NULL) {
+        tempArmor->unk33 = source->index;
+        _copyArmorStats(&tempArmor->equip, source);
+        tempArmor->material = source->material;
+    }
+    _applyArmorStats(target, tempArmor);
+    vs_main_freeHeapR(tempArmor);
+}
+
+void vs_battle_applyAccessory(
+    vs_battle_equippedAccessory* target, vs_battle_inventoryArmor* source)
+{
+    _armorIntermediate* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
 
     if (source != NULL) {
-        temp_v0->unk33 = source->unk27;
-        func_8006ACFC(&temp_v0->equip, source);
-        temp_v0->material = source->material;
+        temp_v0->unk31 = source->index;
+        _copyArmorStats(&temp_v0->equip, source);
     }
-    func_8006A9F0(target, temp_v0);
+    _applyAccessoryStats(target, temp_v0);
     vs_main_freeHeapR(temp_v0);
 }
 
-void func_8006B194(vs_battle_equippedAccessory* target, vs_battle_inventoryArmor* source)
-{
-    func_8006A9F0_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
-    vs_main_bzero(temp_v0, sizeof *temp_v0);
-    if (source != NULL) {
-        temp_v0->unk31 = source->unk27;
-        func_8006ACFC(&temp_v0->equip, source);
-    }
-    func_8006A8EC(target, temp_v0);
-    vs_main_freeHeapR(temp_v0);
-}
-
-void func_8006B20C(vs_battle_actor2* arg0 __attribute__((unused))) { }
+void _nop0(vs_battle_actor2* arg0 __attribute__((unused))) { }
 
 void func_8006B214(void)
 {
@@ -1451,48 +1461,52 @@ void func_8006B2D4(void)
     }
 }
 
-void func_8006B338(vs_battle_inventoryWeapon* arg0)
+void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
 {
     vs_battle_actor2* temp_a0;
 
-    func_8006AEAC(&vs_battle_characterState->unk3C->weapon, arg0);
-    func_8006B20C(vs_battle_characterState->unk3C);
-    if (arg0 == NULL) {
+    vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, weapon);
+    _nop0(vs_battle_characterState->unk3C);
+
+    if (weapon == NULL) {
         vs_battle_characterState->equippedWeaponCategory = 0xA;
     } else {
         vs_battle_characterState->equippedWeaponCategory =
-            D_80060168.unk280[arg0->blade - 1].category;
+            vs_battle_inventory.blades[weapon->blade - 1].category;
     }
+
     temp_a0 = vs_battle_characterState->unk3C;
     temp_a0->unk38 = temp_a0->weapon.range + temp_a0->unk37_3;
     temp_a0->unk39 = temp_a0->weapon.unk125 + temp_a0->unk37_3;
     temp_a0->unk3A = temp_a0->weapon.unk126 + temp_a0->unk37_3;
     temp_a0->unk3B_3 = temp_a0->weapon.unk127_3;
     temp_a0->unk3B_0 = 1;
+
     func_8006B214();
     func_8006B270();
 }
 
-void func_8006B460(vs_battle_inventoryShield* arg0)
+void vs_battle_equipShield(vs_battle_inventoryShield* shield)
 {
-    func_8006B02C(&vs_battle_characterState->unk3C->shield, arg0);
-    func_8006B20C(vs_battle_characterState->unk3C);
+    vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, shield);
+    _nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
 
-void func_8006B4B8(int arg0, vs_battle_inventoryArmor* arg1)
+void vs_battle_equipArmor(int part, vs_battle_inventoryArmor* armor)
 {
-    func_8006B110(&vs_battle_characterState->unk3C->hitLocations[arg0].armor, arg1);
-    func_8006B20C(vs_battle_characterState->unk3C);
+    vs_battle_applyArmor(
+        &vs_battle_characterState->unk3C->hitLocations[part].armor, armor);
+    _nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
 
-void func_8006B524(vs_battle_inventoryArmor* arg0)
+void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory)
 {
-    func_8006B194(&vs_battle_characterState->unk3C->accessory, arg0);
-    func_8006B20C(vs_battle_characterState->unk3C);
+    vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, accessory);
+    _nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
@@ -1613,12 +1627,14 @@ void vs_battle_setWeaponForDrop(
     if (weapon->blade.id != 0) {
         weapon->blade.currentDp = weapon->currentDp;
         weapon->blade.currentPp = weapon->currentPp;
-        vs_battle_setBladeForDrop(&D_80060168.unk280[drop->blade - 1], &weapon->blade);
-        vs_battle_setGripForDrop(&D_80060168.unk530[drop->grip], &weapon->grip);
+        vs_battle_setBladeForDrop(
+            &vs_battle_inventory.blades[drop->blade - 1], &weapon->blade);
+        vs_battle_setGripForDrop(
+            &vs_battle_inventory.grips[drop->grip - 1], &weapon->grip);
         for (i = 0; i < 3; ++i) {
             if (weapon->gems[i].id != 0) {
                 vs_battle_setGemForDrop(
-                    &D_80060168.unk8A4[drop->gems[i]], &weapon->gems[i]);
+                    &vs_battle_inventory.gems[drop->gems[i] - 1], &weapon->gems[i]);
             }
         }
 
@@ -1639,7 +1655,7 @@ void func_8006B9E0(vs_battle_inventoryShield* arg0, vs_battle_equippedShield* ar
         for (i = 0; i < 3; ++i) {
             if (arg1->gems[i].id != 0) {
                 vs_battle_setGemForDrop(
-                    &D_80060168.unk8A4[arg0->gems[i]], &arg1->gems[i]);
+                    &vs_battle_inventory.gems[arg0->gems[i] - 1], &arg1->gems[i]);
             }
         }
     }
@@ -1654,7 +1670,7 @@ void vs_battle_setArmorForDrop(
     }
 }
 
-void vs_battle_setAccesoryForDrop(
+void vs_battle_setAccessoryForDrop(
     vs_battle_inventoryArmor* arg0, vs_battle_equippedAccessory* accessory)
 {
     if (accessory->accessory.id != 0) {
@@ -6097,7 +6113,7 @@ void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
     }
 }
 
-extern u_int D_800E8214[];
+extern u_int _itemCategorySizes[];
 
 int func_8007E454(int arg0)
 {
@@ -6106,7 +6122,7 @@ int func_8007E454(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 8; ++i) {
-            if (arg0 < D_800E8214[i]) {
+            if (arg0 < _itemCategorySizes[i]) {
                 break;
             }
         }
@@ -6117,7 +6133,7 @@ int func_8007E454(int arg0)
             switch (i) {
             case 0:
                 for (i = 0; i < 16; ++i) {
-                    if (D_80060168.unk280[i].id == arg0) {
+                    if (vs_battle_inventory.blades[i].id == arg0) {
                         var_a2 = 1;
                         break;
                     }
@@ -6125,7 +6141,7 @@ int func_8007E454(int arg0)
                 break;
             case 1:
                 for (i = 0; i < 16; ++i) {
-                    if (D_80060168.unk540[i].id == arg0) {
+                    if (vs_battle_inventory.grips[i].id == arg0) {
                         var_a2 = 1;
                         break;
                     }
@@ -6133,7 +6149,7 @@ int func_8007E454(int arg0)
                 break;
             case 2:
                 for (i = 0; i < 16; ++i) {
-                    if (D_80060168.unk640[i].id == arg0) {
+                    if (vs_battle_inventory.armor[i].id == arg0) {
                         var_a2 = 1;
                         break;
                     }
@@ -6141,7 +6157,7 @@ int func_8007E454(int arg0)
                 break;
             case 4:
                 for (i = 0; i < 48; ++i) {
-                    if (D_80060168.unk8C0[i].id == arg0) {
+                    if (vs_battle_inventory.gems[i].id == arg0) {
                         var_a2 = 1;
                         break;
                     }
@@ -6151,9 +6167,9 @@ int func_8007E454(int arg0)
             case 6:
             case 7:
                 for (i = 0; i < 64; ++i) {
-                    if ((D_80060168.unkE00[i].unk0 == arg0)
-                        && (D_80060168.unkE00[i].unk2 != 0)) {
-                        var_a2 = D_80060168.unkE00[i].unk2;
+                    if ((vs_battle_inventory.items[i].id == arg0)
+                        && (vs_battle_inventory.items[i].unk2 != 0)) {
+                        var_a2 = vs_battle_inventory.items[i].unk2;
                         break;
                     }
                 }
@@ -8635,7 +8651,7 @@ void func_80088EF0(int arg0)
 void func_80089098(void)
 {
     func_800BEBEC();
-    _nop(0);
+    _nop1(0);
     if (D_800F1880.unkC != 0) {
         vs_main_freeHeap(D_800F1880.unkC);
     }
@@ -9020,7 +9036,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _nop(int arg0 __attribute__((unused))) { }
+void _nop1(int arg0 __attribute__((unused))) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {

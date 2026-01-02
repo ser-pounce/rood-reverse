@@ -588,15 +588,16 @@ typedef struct {
 } D_800F1904_t3;
 
 void func_80069FC4(int, int);
-void func_8006AB44(vs_battle_equippedItem*, vs_battle_inventoryBlade*);
-void func_8006AC74(vs_battle_equippedItem*, vs_battle_inventoryGrip*);
-void func_8006ACFC(vs_battle_equippedItem*, vs_battle_inventoryArmor*);
-void func_8006AE0C(vs_battle_equippedItem*, vs_battle_inventoryGem*);
-void func_8006AEAC(vs_battle_equippedWeapon*, vs_battle_inventoryWeapon*);
-void func_8006B02C(vs_battle_equippedShield*, vs_battle_inventoryShield*);
-void func_8006B110(vs_battle_equippedArmor*, vs_battle_inventoryArmor*);
-void func_8006B194(vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
-void func_8006B338(vs_battle_inventoryWeapon*);
+void _copyBladeStats(vs_battle_equippedItem*, vs_battle_inventoryBlade*);
+void _copyGripStats(vs_battle_equippedItem*, vs_battle_inventoryGrip*);
+void _copyArmorStats(vs_battle_equippedItem*, vs_battle_inventoryArmor*);
+void _copyGemStats(vs_battle_equippedItem*, vs_battle_inventoryGem*);
+void vs_battle_applyWeapon(vs_battle_equippedWeapon*, vs_battle_inventoryWeapon*);
+void vs_battle_applyShield(vs_battle_equippedShield*, vs_battle_inventoryShield*);
+void vs_battle_applyArmor(vs_battle_equippedArmor*, vs_battle_inventoryArmor*);
+void vs_battle_applyAccessory(
+    vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
+void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
 void vs_battle_setBladeForDrop(
     vs_battle_inventoryBlade* dropBlade, vs_battle_equippedItem* targetBlade);
 void vs_battle_setGripForDrop(vs_battle_inventoryGrip*, vs_battle_equippedItem*);
@@ -605,7 +606,7 @@ void vs_battle_setWeaponForDrop(
     vs_battle_inventoryWeapon* arg0, vs_battle_equippedWeapon* arg1);
 void func_8006B9E0(vs_battle_inventoryShield*, vs_battle_equippedShield*);
 void vs_battle_setArmorForDrop(vs_battle_inventoryArmor*, vs_battle_equippedArmor*);
-void vs_battle_setAccesoryForDrop(
+void vs_battle_setAccessoryForDrop(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);

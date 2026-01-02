@@ -317,7 +317,7 @@ static char* _drawAccessoryInfoRow(vs_battle_equippedAccessory* arg0)
     vs_battle_inventoryArmor sp18;
     int sp30[2];
 
-    vs_battle_setAccesoryForDrop(&sp18, arg0);
+    vs_battle_setAccessoryForDrop(&sp18, arg0);
     vs_mainMenu_setAccessoryStrings(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
@@ -1358,7 +1358,7 @@ static int _equipmentDetailScreen(int row)
                         vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo(
                             (vs_battle_equippedAccessory*)&temp_s1->accessory);
-                        vs_battle_setAccesoryForDrop(&sp20, &temp_s1->accessory);
+                        vs_battle_setAccessoryForDrop(&sp20, &temp_s1->accessory);
                         vs_mainMenu_setAccessoryStrings(
                             &sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
@@ -1572,7 +1572,7 @@ static int _equipmentScreen(int element)
                 }
                 rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
             } else {
-                vs_battle_setAccesoryForDrop(p, &temp_s6->accessory);
+                vs_battle_setAccessoryForDrop(p, &temp_s6->accessory);
                 vs_mainMenu_setAccessoryStrings(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
                 rowTypes[i] |= rowType;

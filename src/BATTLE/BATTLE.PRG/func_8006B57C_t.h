@@ -88,7 +88,7 @@ typedef struct {
     char affinities[8];
     u_short material;
     u_char unk26;
-    u_char unk27;
+    u_char index;
 } vs_battle_inventoryArmor;
 
 typedef struct {

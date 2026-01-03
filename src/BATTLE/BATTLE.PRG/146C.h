@@ -525,11 +525,15 @@ typedef struct {
 } func_80103530_t;
 
 typedef struct {
+    char unk0[0x464];
+} _enemy_t;
+
+typedef struct {
     int zndId;
-    vs_main_CdFile* unk4;
-    int unk8;
-    void* unkC;
-    void* unk10;
+    vs_main_CdFile* mpdLbas;
+    int enemyCount;
+    _enemy_t* enemies;
+    vs_main_CdFile* zudFiles;
     int unk14;
     int unk18;
     int unk1C;
@@ -549,12 +553,12 @@ typedef struct {
     int unk4C;
     int unk50;
     int unk54;
-    vs_main_CdQueueSlot* unk58;
-    void* unk5C;
+    vs_main_CdQueueSlot* mpdCdFile;
+    void* mpdData;
     int unk60;
     void* unk64;
     int unk68;
-} D_800F1880_t;
+} _zoneContext_t;
 
 typedef struct {
     char unk0;
@@ -646,7 +650,7 @@ void vs_battle_exec(void);
 
 extern int vs_battle_mapCompletionFlags[];
 extern char D_800E8F28;
-extern D_800F1880_t D_800F1880;
+extern _zoneContext_t _zoneContext;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_actor* vs_battle_actors[];
 extern D_800F1904_t3 D_800F19D0;

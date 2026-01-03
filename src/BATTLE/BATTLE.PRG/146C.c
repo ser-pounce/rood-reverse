@@ -742,7 +742,7 @@ void func_8008C40C(void);
 static void _loadZnd(int id);
 void func_80089CE4(void);
 void func_80089D04(void);
-void func_80089D24(int arg0);
+void _loadMpd(int arg0);
 void func_8008A6FC(void);
 void _loadZndTims(void*);
 int func_8008AB80(int);
@@ -2266,8 +2266,8 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
     int v;
 
     temp_a3 = (D_800F19D0.unk0.vz * ONE) / 2304;
-    temp_a1 = (D_800F1880.unk40 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (D_800F1880.unk44 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.unk40 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.unk44 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->vx = (temp_a1 + temp_v1_2) >> 1;
@@ -2281,8 +2281,8 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
         }
     }
 
-    temp_a1 = (D_800F1880.unk42 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (D_800F1880.unk46 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.unk42 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.unk46 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->vz = (temp_a1 + temp_v1_2) >> 1;
@@ -5465,8 +5465,8 @@ int func_8007C4E0(D_80061068_t* arg0, int arg1, int arg2)
     D_800F1A48 = 1;
     D_800F1A98 = arg1;
     D_800F1AA8 = arg2;
-    D_800F1AB0.zndId = D_800F1880.zndId;
-    func_80089D24(arg0->unk1);
+    D_800F1AB0.zndId = _zoneContext.zndId;
+    _loadMpd(arg0->unk1);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -5541,7 +5541,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
         _loadZnd(temp_s1);
     } else if (temp_s2 != D_800F1AB0.unk1) {
         D_800F1A48 = 1;
-        func_80089D24(temp_s2);
+        _loadMpd(temp_s2);
     }
 
     D_800F1AB0.zndId = temp_s1;
@@ -5568,7 +5568,7 @@ int _getLocationId(int zoneId, int mapId)
 
 int vs_battle_getCurrentRoomId(void)
 {
-    return _getLocationId(D_800F1880.zndId, D_800F1880.mapId);
+    return _getLocationId(_zoneContext.zndId, _zoneContext.mapId);
 }
 
 void func_8007C8A4(int arg0)
@@ -8589,29 +8589,32 @@ void func_80088CAC(void)
     func_80069DBC();
 }
 
-void _allocMpdOffsets(void* arg0, int size)
+void _loadMpdLbas(void* arg0, int size)
 {
     if (size == 0) {
         vs_main_nop9(0x8B, 0);
     }
-    D_800F1880.unk4 = vs_main_allocHeap(size);
-    vs_main_memcpy(D_800F1880.unk4, arg0, size);
+    _zoneContext.mpdLbas = vs_main_allocHeap(size);
+    vs_main_memcpy(_zoneContext.mpdLbas, arg0, size);
 }
 
 void _loadZndEnemies(long* arg0, int arg1 __attribute__((unused)))
 {
-    int temp_a0 = *arg0;
-    D_800F1880.unk8 = temp_a0;
-    if (temp_a0 != 0) {
-        D_800F1880.unk10 = vs_main_allocHeap(temp_a0 * 8);
-        vs_main_memcpy(D_800F1880.unk10, arg0 + 1, D_800F1880.unk8 * 8);
-        D_800F1880.unkC = vs_main_allocHeap(D_800F1880.unk8 * 0x464);
-        vs_main_memcpy(
-            D_800F1880.unkC, arg0 + ((D_800F1880.unk8 * 2) + 1), D_800F1880.unk8 * 0x464);
+    _zoneContext.enemyCount = *arg0;
+
+    if (_zoneContext.enemyCount != 0) {
+        _zoneContext.zudFiles = vs_main_allocHeap(_zoneContext.enemyCount * 8);
+        vs_main_memcpy(_zoneContext.zudFiles, arg0 + 1,
+            _zoneContext.enemyCount * sizeof *_zoneContext.zudFiles);
+        _zoneContext.enemies =
+            vs_main_allocHeap(_zoneContext.enemyCount * sizeof *_zoneContext.enemies);
+        vs_main_memcpy(_zoneContext.enemies, arg0 + ((_zoneContext.enemyCount * 2) + 1),
+            _zoneContext.enemyCount * sizeof *_zoneContext.enemies);
         return;
     }
-    D_800F1880.unk10 = NULL;
-    D_800F1880.unkC = NULL;
+
+    _zoneContext.zudFiles = NULL;
+    _zoneContext.enemies = NULL;
 }
 
 static void _loadZnd(int id)
@@ -8621,16 +8624,16 @@ static void _loadZnd(int id)
 
     cdFile.lba = vs_main_zndFiles[id].lba;
     cdFile.size = vs_main_zndFiles[id].size;
-    if (D_800F1880.zndCdFile != 0) {
+    if (_zoneContext.zndCdFile != 0) {
         vs_main_nop9(0x87, 0);
     }
-    D_800F1880.zndCdFile = vs_main_allocateCdQueueSlot(&cdFile);
-    if (D_800F1880.zndData != NULL) {
+    _zoneContext.zndCdFile = vs_main_allocateCdQueueSlot(&cdFile);
+    if (_zoneContext.zndData != NULL) {
         vs_main_nop9(0x88, 0);
     }
-    D_800F1880.zndData = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueueUrgent(D_800F1880.zndCdFile, D_800F1880.zndData);
-    if (D_800F1880.unk30 != 0) {
+    _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
+    vs_main_cdEnqueueUrgent(_zoneContext.zndCdFile, _zoneContext.zndData);
+    if (_zoneContext.unk30 != 0) {
         temp_s0 = D_8004FCCC[id];
         if (func_800450E4() != temp_s0) {
             func_8004552C(vs_main_soundData.currentMusicId, 0, 0x78);
@@ -8638,38 +8641,38 @@ static void _loadZnd(int id)
     }
 }
 
-void func_80088EF0(int arg0)
+void _finishLoadZnd(int arg0)
 {
     int musicId;
     int i;
     _zndHeader* header;
 
-    if (D_800F1880.zndCdFile == NULL) {
+    if (_zoneContext.zndCdFile == NULL) {
         _loadZnd(arg0);
     }
 
-    while (D_800F1880.zndCdFile->state != vs_main_CdQueueStateLoaded) {
+    while (_zoneContext.zndCdFile->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
-    vs_main_freeCdQueueSlot(D_800F1880.zndCdFile);
+    vs_main_freeCdQueueSlot(_zoneContext.zndCdFile);
 
-    D_800F1880.zndCdFile = NULL;
+    _zoneContext.zndCdFile = NULL;
 
     if (D_80050468.unk2 == 1) {
         func_8007BCCC();
     }
 
-    header = D_800F1880.zndData;
+    header = _zoneContext.zndData;
 
     _loadZndEnemies((long*)(header->enemiesOffset + (long)header), header->enemiesLen);
     _loadZndTims((long*)(header->timOffset + (long)header));
-    _allocMpdOffsets((long*)(header->mpdOffset + (long)header), header->mpdLen);
+    _loadMpdLbas((long*)(header->mpdOffset + (long)header), header->mpdLen);
 
     musicId = header->musicId;
     vs_main_freeHeapR(header);
 
-    D_800F1880.zndData = NULL;
+    _zoneContext.zndData = NULL;
     if (vs_main_startState == 1) {
         func_800BEB9C(1);
     } else {
@@ -8684,30 +8687,30 @@ void func_80088EF0(int arg0)
                 vs_main_freeMusic(++i);
             }
 
-            D_800F1880.musicSlot = 0;
+            _zoneContext.musicSlot = 0;
 
             if (musicId != 0) {
                 vs_main_loadAndWaitSoundSlot(musicId);
-                D_800F1880.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
+                _zoneContext.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
             }
         }
     }
-    D_800F1880.musicId = musicId;
-    D_800F1880.unk30 = 1;
-    D_800F1880.unk38 = 0;
+    _zoneContext.musicId = musicId;
+    _zoneContext.unk30 = 1;
+    _zoneContext.unk38 = 0;
 }
 
 void func_80089098(void)
 {
     func_800BEBEC();
     nop2(0);
-    if (D_800F1880.unkC != 0) {
-        vs_main_freeHeap(D_800F1880.unkC);
+    if (_zoneContext.enemies != NULL) {
+        vs_main_freeHeap(_zoneContext.enemies);
     }
-    if (D_800F1880.unk10 != 0) {
-        vs_main_freeHeap(D_800F1880.unk10);
+    if (_zoneContext.zudFiles != NULL) {
+        vs_main_freeHeap(_zoneContext.zudFiles);
     }
-    vs_main_freeHeap(D_800F1880.unk4);
+    vs_main_freeHeap(_zoneContext.mpdLbas);
 }
 
 int func_80089104(void) { return D_800F18A8; }
@@ -8767,35 +8770,35 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089A00);
 void func_80089C5C(void* arg0, u_int arg1)
 {
     if (arg1 != 0) {
-        D_800F1880.unk64 = vs_main_allocHeap(arg1);
-        vs_main_memcpy(D_800F1880.unk64, arg0, arg1);
-        D_800F1880.unk60 = arg1 / 40;
+        _zoneContext.unk64 = vs_main_allocHeap(arg1);
+        vs_main_memcpy(_zoneContext.unk64, arg0, arg1);
+        _zoneContext.unk60 = arg1 / 40;
         return;
     }
-    D_800F1880.unk64 = NULL;
-    D_800F1880.unk60 = NULL;
+    _zoneContext.unk64 = NULL;
+    _zoneContext.unk60 = NULL;
 }
 
 void func_80089CE4(void) { SetDispMask(1); }
 
 void func_80089D04(void) { SetDispMask(0); }
 
-void func_80089D24(int arg0)
+void _loadMpd(int id)
 {
     vs_main_CdFile file;
 
-    file.lba = D_800F1880.unk4[arg0].lba;
-    file.size = D_800F1880.unk4[arg0].size;
+    file.lba = _zoneContext.mpdLbas[id].lba;
+    file.size = _zoneContext.mpdLbas[id].size;
 
-    if (D_800F1880.unk58 != 0) {
+    if (_zoneContext.mpdCdFile != NULL) {
         vs_main_nop9(0x89, 0);
     }
-    D_800F1880.unk58 = vs_main_allocateCdQueueSlot(&file);
-    if (D_800F1880.unk5C != 0) {
+    _zoneContext.mpdCdFile = vs_main_allocateCdQueueSlot(&file);
+    if (_zoneContext.mpdData != NULL) {
         vs_main_nop9(0x8A, 0);
     }
-    D_800F1880.unk5C = vs_main_allocHeapR(file.size);
-    vs_main_cdEnqueueUrgent(D_800F1880.unk58, D_800F1880.unk5C);
+    _zoneContext.mpdData = vs_main_allocHeapR(file.size);
+    vs_main_cdEnqueueUrgent(_zoneContext.mpdCdFile, _zoneContext.mpdData);
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089DC0);
@@ -8936,11 +8939,8 @@ void _loadZndTims(void* data)
 {
     func_80103530_t sp10;
     u_int* timPtrs[4];
-    int line;
     int numTims;
     int i;
-    u_short* pixels;
-    u_int clutIndex;
     u_int* dataPtr = data;
     int byteOffset = 0;
     int* sizePtr = (int*)dataPtr;
@@ -8948,7 +8948,7 @@ void _loadZndTims(void* data)
 
     do {
         if (*sizePtr > 0) {
-            *ptrTableEntry = (int*)dataPtr + ((byteOffset / 4) + 4);
+            *ptrTableEntry = dataPtr + ((byteOffset / 4) + 4);
         } else {
             *ptrTableEntry = NULL;
         }
@@ -8967,11 +8967,11 @@ void _loadZndTims(void* data)
 
         if (sp10.unk10 != NULL) {
             if (sp10.unkC->x >= 768) {
-                line = sp10.unkC->y;
-                pixels = sp10.unk10;
+                int line = sp10.unkC->y;
+                u_short* pixels = sp10.unk10;
 
                 while (line < (sp10.unkC->y + sp10.unkC->h)) {
-                    clutIndex = line - 224;
+                    u_int clutIndex = line - 224;
                     if (clutIndex < 4) {
                         func_8008B2E0(
                             pixels, clutIndex, sp10.unkC->x - 768, sp10.unkC->w);

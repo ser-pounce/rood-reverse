@@ -171,7 +171,7 @@ typedef struct {
 } D_800F19CC_t4;
 
 typedef struct {
-    char unk0;
+    u_char unk0;
     signed char unk1;
     char unk2;
     char unk3;
@@ -4653,7 +4653,94 @@ void func_800787F0(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80078828);
+int func_80078828(int arg0)
+{
+    D_800F19CC_t2* temp_s1;
+    int var_a0;
+    int ret;
+    int i;
+
+    temp_s1 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    ret = 1;
+
+    if ((temp_s1->unk44 == 0) && (temp_s1->unk4A != 0)
+        && (temp_s1->unk4C[0].unk40 == 0)) {
+        if (temp_s1->unk4.unk0 == 0) {
+            var_a0 = 0;
+            if (arg0 == 0) {
+                for (i = 0; i < 3; ++i) {
+                    ret = 1;
+                    if (vs_main_settings.mappedChainAbilities[i] != 0) {
+                        var_a0 = 1;
+                    }
+                }
+                if (var_a0 == 0) {
+                    ret = 0;
+                }
+            }
+        } else {
+            var_a0 = 0;
+            if (arg0 == 0) {
+                for (i = 0; i < 3; ++i) {
+                    if (vs_main_settings.mappedDefenseAbilities[i] != 0) {
+                        var_a0 = 1;
+                    }
+                }
+                if (var_a0 == 0) {
+                    ret = 0;
+                }
+            }
+        }
+
+        if (temp_s1->unk4C[0].unk0.unk.unk0 == 0) {
+            func_800A0BE0(0);
+        } else if (vs_battle_actors[temp_s1->unk4C[0].unk0.unk.unk0]->unk27 == 0x80) {
+            ret = 0;
+        }
+
+        if (temp_s1->unk4.unk0 != 0) {
+            if (temp_s1->unk4C[0].unk0.unk.unk0 != 0) {
+                ret = 0;
+            }
+        } else if (temp_s1->unk0 >= 0x28) {
+            ret = 0;
+        }
+
+        if ((temp_s1->unk0 - 0x28u) < 0xE) {
+            ret = 0;
+        }
+
+        if (temp_s1->unk4.unk0 == temp_s1->unk4C[0].unk0.unk.unk0) {
+            ret = 0;
+        }
+
+        if (arg0 != 0) {
+            if (temp_s1->unk4.unk0 == 0) {
+                if (!(func_8008574C(vs_main_settings.mappedChainAbilities[arg0 - 1],
+                          vs_battle_characterState->unk3C, 0)
+                        & 0xFF000000)) {
+                    ret = 0;
+                }
+            } else {
+                if (!(func_8008574C(vs_main_settings.mappedDefenseAbilities[arg0 - 1],
+                          vs_battle_characterState->unk3C, 0)
+                        & 0xFF000000)) {
+                    ret = 0;
+                }
+            }
+            if (D_800F19CC->unk2C04 == arg0) {
+                ret = 0;
+            }
+        }
+        if (D_800F19CC->unk2C06 != 0) {
+            ret = 0;
+        }
+    } else {
+        ret = 0;
+    }
+
+    return ret;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80078AB4);
 

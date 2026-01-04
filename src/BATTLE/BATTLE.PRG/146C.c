@@ -638,7 +638,7 @@ void _updateEnemyKills(vs_battle_actor*);
 void _updateWeaponKillStreak(int);
 void func_8006D0A4(u_int*);
 void func_8006D9FC(VECTOR*, VECTOR*);
-int func_8006DB98(SVECTOR* arg0, int*, int*, int, int);
+int func_8006DB98(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
 int func_8006DEFC(SVECTOR*, int, int);
 void func_8006E158(void);
 void func_8006EF5C(VECTOR*);
@@ -2305,7 +2305,7 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
     }
 }
 
-int func_8006DB98(SVECTOR* arg0, int* arg1, int* arg2, int arg3, int arg4)
+int func_8006DB98(SVECTOR* arg0, VECTOR* arg1, VECTOR* arg2, int arg3, int arg4)
 {
     SVECTOR sp10;
     VECTOR sp18;
@@ -2348,22 +2348,22 @@ int func_8006DB98(SVECTOR* arg0, int* arg1, int* arg2, int arg3, int arg4)
         sp40 = 1;
     }
 
-    arg2[0] = (sp10.vx * ONE) - D_1F800000[17];
-    sp18.vx = arg2[0] / ONE;
-    arg2[2] = (sp10.vz * ONE) - D_1F800000[19];
-    sp18.vz = arg2[2] / ONE;
-    arg2[1] = (sp10.vy * ONE) - D_1F800000[18];
-    sp18.vy = arg2[1] / ONE;
+    arg2->vx = (sp10.vx * ONE) - D_1F800000[17];
+    sp18.vx = arg2->vx / ONE;
+    arg2->vz = (sp10.vz * ONE) - D_1F800000[19];
+    sp18.vz = arg2->vz / ONE;
+    arg2->vy = (sp10.vy * ONE) - D_1F800000[18];
+    sp18.vy = arg2->vy / ONE;
 
     VectorNormal(&sp18, &sp28);
 
     if (sp40 != 0) {
         if (sp28.vx != 0) {
-            var_v0 = arg2[0] / sp28.vx;
+            var_v0 = arg2->vx / sp28.vx;
         } else if (sp28.vz != 0) {
-            var_v0 = arg2[2] / sp28.vz;
+            var_v0 = arg2->vz / sp28.vz;
         } else if (sp28.vy != 0) {
-            var_v0 = arg2[1] / sp28.vy;
+            var_v0 = arg2->vy / sp28.vy;
         } else {
             var_v0 = 1;
         }
@@ -2378,34 +2378,34 @@ int func_8006DB98(SVECTOR* arg0, int* arg1, int* arg2, int arg3, int arg4)
                 D_800F19D0.unk28 = 8;
             }
         }
-        arg1[0] = sp28.vx * D_800F19D0.unk28;
-        arg1[2] = sp28.vz * D_800F19D0.unk28;
-        arg1[1] = sp28.vy * D_800F19D0.unk28;
+        arg1->vx = sp28.vx * D_800F19D0.unk28;
+        arg1->vz = sp28.vz * D_800F19D0.unk28;
+        arg1->vy = sp28.vy * D_800F19D0.unk28;
     } else {
         D_800F19D0.unk28 -= 8;
         if (D_800F19D0.unk28 < 0) {
             D_800F19D0.unk28 = 0;
         }
-        arg1[0] = sp28.vx * D_800F19D0.unk28;
-        arg1[2] = sp28.vz * D_800F19D0.unk28;
-        arg1[1] = sp28.vy * D_800F19D0.unk28;
+        arg1->vx = sp28.vx * D_800F19D0.unk28;
+        arg1->vz = sp28.vz * D_800F19D0.unk28;
+        arg1->vy = sp28.vy * D_800F19D0.unk28;
     }
     return sp40;
 }
 
 int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
 {
-    int sp18[4];
-    int sp28[3];
+    VECTOR sp18;
+    VECTOR sp28;
 
-    if (func_8006DB98(arg0, sp28, sp18, arg1, arg2) != 0) {
-        D_1F800000[17] = _addMinDelta(D_1F800000[17], sp28[0], sp18[0]);
-        D_1F800000[19] = _addMinDelta(D_1F800000[19], sp28[2], sp18[2]);
-        D_1F800000[18] = _addMinDelta(D_1F800000[18], sp28[1], sp18[1]);
+    if (func_8006DB98(arg0, &sp28, &sp18, arg1, arg2) != 0) {
+        D_1F800000[17] = _addMinDelta(D_1F800000[17], sp28.vx, sp18.vx);
+        D_1F800000[19] = _addMinDelta(D_1F800000[19], sp28.vz, sp18.vz);
+        D_1F800000[18] = _addMinDelta(D_1F800000[18], sp28.vy, sp18.vy);
     } else {
-        D_1F800000[17] = _add_min(D_1F800000[17], sp28[0], sp18[0]);
-        D_1F800000[19] = _add_min(D_1F800000[19], sp28[2], sp18[2]);
-        D_1F800000[18] = _add_min(D_1F800000[18], sp28[1], sp18[1]);
+        D_1F800000[17] = _add_min(D_1F800000[17], sp28.vx, sp18.vx);
+        D_1F800000[19] = _add_min(D_1F800000[19], sp28.vz, sp18.vz);
+        D_1F800000[18] = _add_min(D_1F800000[18], sp28.vy, sp18.vy);
     }
     if (D_1F800000[18] > 0) {
         D_1F800000[18] = 0;
@@ -4633,7 +4633,72 @@ void func_80078364(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800784AC);
+void func_800784AC(void)
+{
+    SVECTOR sp18;
+    VECTOR sp20;
+    VECTOR sp30;
+
+    if ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3)) {
+        if (D_800F19CC->unk2C0E == 0) {
+            func_8007820C(1);
+            func_800780A8(&sp18);
+            func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+            if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
+                if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
+                    return;
+                }
+                func_8007138C();
+            }
+        } else if (D_800F19CC->unk2C0E == 1) {
+            func_8007820C(1);
+            vs_main_projectionDistance += 0x40;
+            if (vs_main_projectionDistance >= 0x300) {
+                vs_main_projectionDistance = 0x300;
+            }
+            SetGeomScreen(vs_main_projectionDistance);
+            if (D_800F19D0.unk0.vz >= 0x601) {
+                D_800F19D0.unk0.vz -= 0xC0;
+                if (D_800F19D0.unk0.vz < 0x600) {
+                    D_800F19D0.unk0.vz = 0x600;
+                }
+            }
+            if (vs_main_projectionDistance == 0x300) {
+                func_800780A8(&sp18);
+                func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+                if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
+                    if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
+                        return;
+                    }
+                    func_8007138C();
+                }
+            }
+        } else if (D_800F19CC->unk2C0E == 2) {
+            func_8007820C(1);
+            if (D_800F19D0.unk0.vz < 0x900) {
+                D_800F19D0.unk0.vz += 0xC0;
+                if (D_800F19D0.unk0.vz >= 0x901) {
+                    D_800F19D0.unk0.vz = 0x900;
+                }
+            }
+            if (D_800F19D0.unk0.vz == 0x900) {
+                func_800780A8(&sp18);
+                func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+                if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
+                    if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
+                        return;
+                    }
+                    func_8007138C();
+                }
+            }
+        } else {
+            if ((D_800F19D0.unk10.vx == 0)
+                && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
+                func_8007138C();
+            }
+        }
+    }
+}
 
 void func_80078748(void)
 {

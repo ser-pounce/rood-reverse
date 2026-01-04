@@ -559,22 +559,10 @@ typedef struct {
     int unk98;
     int unk9C;
     int unkA0;
-    int unkA4;
-    int unkA8;
-    int unkAC;
-    int unkB0;
-    int unkB4;
-    int unkB8;
-    int unkBC;
-    int unkC0;
-    int unkC4;
-    int unkC8;
-    int unkCC;
-    int unkD0;
-    int unkD4;
-    int unkD8;
-    int unkDC;
-    int unkE0;
+    VECTOR unkA4;
+    VECTOR unkB4;
+    VECTOR unkC4;
+    VECTOR unkD4;
     int unkE4;
     int unkE8;
     int unkEC;
@@ -750,6 +738,8 @@ int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void nop2(int arg0);
+int func_8008B70C(int arg0);
+void* func_8008B744(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
@@ -778,9 +768,11 @@ func_8008D710_t* func_8008E370(int* arg0);
 func_8008C1C8_t* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
+void func_8008E6A8(int (*arg0)[136]);
 void func_8008E6DC(int);
 void func_8008E8F8(void);
 void func_8008E938(void);
+int func_8008EA90(int arg0);
 int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
@@ -2134,6 +2126,7 @@ void func_8006CA20(int arg0)
     }
 }
 
+// https://decomp.me/scratch/vphlQ
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CB04);
 
 void func_8006CD60(u_int* arg0, int arg1, int arg2)
@@ -2266,8 +2259,8 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
     int v;
 
     temp_a3 = (D_800F19D0.unk0.vz * ONE) / 2304;
-    temp_a1 = (_zoneContext.unk40 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (_zoneContext.unk44 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.unk40.unk0 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.unk40.unk4 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->vx = (temp_a1 + temp_v1_2) >> 1;
@@ -2281,8 +2274,8 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
         }
     }
 
-    temp_a1 = (_zoneContext.unk42 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (_zoneContext.unk46 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.unk40.unk2 << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.unk40.unk6 << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
         arg1->vz = (temp_a1 + temp_v1_2) >> 1;
@@ -2545,7 +2538,44 @@ void func_8006EF10(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EF5C);
+void func_8006EF5C(VECTOR* arg0)
+{
+    VECTOR sp10;
+
+    sp10.vx = (arg0->vx - D_1F800000[13]) / ONE;
+    sp10.vz = (arg0->vz - D_1F800000[15]) / ONE;
+    sp10.vy = (arg0->vy - D_1F800000[14]) / ONE;
+
+    VectorNormal(&sp10, &D_800F1904->unkC4);
+
+    D_800F1904->unkF0 = 0x80;
+
+    copyVector(&D_800F1904->unkA4, arg0);
+
+    sp10.vy = arg0->vy - D_1F800000[14];
+
+    D_800F1904->unkF4 = sp10.vy / (D_800F1904->unkC4.vy * D_800F1904->unkF0);
+
+    D_800F1904->unkB4.vx = -rsin(D_800F1904->unk6C.unk0.vx);
+    D_800F1904->unkB4.vz = -rcos(D_800F1904->unk6C.unk0.vx);
+    D_800F1904->unkB4.vy =
+        (-rsin(D_800F1904->unk6C.unk0.vy) * ONE) / rcos(D_800F1904->unk6C.unk0.vy);
+
+    VectorNormal(&D_800F1904->unkB4, &D_800F1904->unkB4);
+
+    D_800F1904->unkB4.vx = (D_800F1904->unkB4.vx * 0x900) + D_800F1904->unkA4.vx;
+    D_800F1904->unkB4.vz = (D_800F1904->unkB4.vz * 0x900) + D_800F1904->unkA4.vz;
+    D_800F1904->unkB4.vy = (D_800F1904->unkB4.vy * 0x900) + D_800F1904->unkA4.vy;
+
+    D_800F1904->unkD4.vx = (D_800F1904->unkB4.vx - D_1F800000[17]) / D_800F1904->unkF4;
+    D_800F1904->unkD4.vz = (D_800F1904->unkB4.vz - D_1F800000[19]) / D_800F1904->unkF4;
+    D_800F1904->unkD4.vy = (D_800F1904->unkB4.vy - D_1F800000[18]) / D_800F1904->unkF4;
+
+    D_800F1904->unkE4 = (D_800F1904->unkA0 - D_1F800000[25]) / D_800F1904->unkF4;
+    D_800F1904->unkE8 = (D_800F1904->unk98 - D_8005E0C8) / D_800F1904->unkF4;
+    D_800F1904->unkEC =
+        (D_800F1904->unk9C - vs_main_projectionDistance) / D_800F1904->unkF4;
+}
 
 int func_8006F204(void)
 {
@@ -2557,18 +2587,18 @@ int func_8006F204(void)
 
     temp_v0 = D_1F800000[14];
     new_var = temp_v0 & (~0xFFF);
-    temp_a0 = D_800F1904->unkA8 & ~0xFFF;
-    temp_v1 = (temp_v0 + (D_800F1904->unkC8 * D_800F1904->unkF0)) & ~0xFFF;
+    temp_a0 = D_800F1904->unkA4.vy & ~0xFFF;
+    temp_v1 = (temp_v0 + (D_800F1904->unkC4.vy * D_800F1904->unkF0)) & ~0xFFF;
 
     if (((new_var >= temp_a0) && (temp_a0 >= temp_v1))
         || ((temp_a0 >= new_var) && (temp_v1 >= temp_a0))) {
 
-        D_1F800000[13] = D_800F1904->unkA4;
-        D_1F800000[15] = D_800F1904->unkAC;
-        D_1F800000[14] = D_800F1904->unkA8;
-        D_1F800000[17] = D_800F1904->unkB4;
-        D_1F800000[19] = D_800F1904->unkBC;
-        D_1F800000[18] = D_800F1904->unkB8;
+        D_1F800000[13] = D_800F1904->unkA4.vx;
+        D_1F800000[15] = D_800F1904->unkA4.vz;
+        D_1F800000[14] = D_800F1904->unkA4.vy;
+        D_1F800000[17] = D_800F1904->unkB4.vx;
+        D_1F800000[19] = D_800F1904->unkB4.vz;
+        D_1F800000[18] = D_800F1904->unkB4.vy;
 
         D_800F19D0 = D_800F1904->unk6C;
 
@@ -2578,12 +2608,12 @@ int func_8006F204(void)
         func_8007CCF0(D_800F1904->unk9C);
         return 1;
     }
-    D_1F800000[13] += ((D_800F1904->unkC4 * D_800F1904->unkF0));
-    D_1F800000[15] += ((D_800F1904->unkCC * D_800F1904->unkF0));
-    D_1F800000[14] += ((D_800F1904->unkC8 * D_800F1904->unkF0));
-    D_1F800000[17] += (D_800F1904->unkD4);
-    D_1F800000[19] += (D_800F1904->unkDC);
-    D_1F800000[18] += (D_800F1904->unkD8);
+    D_1F800000[13] += ((D_800F1904->unkC4.vx * D_800F1904->unkF0));
+    D_1F800000[15] += ((D_800F1904->unkC4.vz * D_800F1904->unkF0));
+    D_1F800000[14] += ((D_800F1904->unkC4.vy * D_800F1904->unkF0));
+    D_1F800000[17] += (D_800F1904->unkD4.vx);
+    D_1F800000[19] += (D_800F1904->unkD4.vz);
+    D_1F800000[18] += (D_800F1904->unkD4.vy);
     D_1F800000[25] += (D_800F1904->unkE4);
 
     func_8007CCCC(D_8005E0C8 + D_800F1904->unkE8);
@@ -2993,6 +3023,7 @@ void func_80070B04(void)
     D_800F19CC->unk8.unk844 = D_800F19CC->unk2990;
 }
 
+// https://decomp.me/scratch/CcHt5
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070CAC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070F28);
@@ -8670,9 +8701,10 @@ void _finishLoadZnd(int arg0)
     _loadMpdLbas((long*)(header->mpdOffset + (long)header), header->mpdLen);
 
     musicId = header->musicId;
-    vs_main_freeHeapR(header);
 
+    vs_main_freeHeapR(header);
     _zoneContext.zndData = NULL;
+
     if (vs_main_startState == 1) {
         func_800BEB9C(1);
     } else {
@@ -8801,6 +8833,7 @@ void _loadMpd(int id)
     vs_main_cdEnqueueUrgent(_zoneContext.mpdCdFile, _zoneContext.mpdData);
 }
 
+// https://decomp.me/scratch/6U28u
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089DC0);
 
 void func_8008A364(void)
@@ -8990,6 +9023,7 @@ void _loadZndTims(void* data)
     DrawSync(0);
 }
 
+// https://decomp.me/scratch/jsBf0
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008A908);
 
 void vs_battle_setDoorEntered(void)
@@ -9172,7 +9206,7 @@ func_8008B764_t* func_8008B6EC(void) { return D_800F1BF8.unk6C; }
 
 int func_8008B6FC(void) { return D_800F1BF8.unk78; }
 
-int func_8008B70C(void)
+int func_8008B70C(int arg0 __attribute__((unused)))
 {
     if (D_800F1BF8.unk68 != 0) {
         return (D_800F1BF8.unk68->unk2 << 0x14)
@@ -9181,9 +9215,9 @@ int func_8008B70C(void)
     return 0;
 }
 
-int func_8008B744(void)
+void* func_8008B744(int arg0 __attribute__((unused)))
 {
-    if (D_800F1BF8.unkC0 != 0) {
+    if (D_800F1BF8.unkC0 != NULL) {
         return D_800F1BF8.unkC0;
     }
     return 0;

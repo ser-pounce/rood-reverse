@@ -214,7 +214,7 @@ typedef struct {
     int unkB4;
     int unkB8;
     int unkBC;
-    int unkC0;
+    void* unkC0;
 } D_800F1BF8_t;
 
 typedef struct {
@@ -529,6 +529,13 @@ typedef struct {
 } _enemy_t;
 
 typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+} _zoneContext_t2;
+
+typedef struct {
     int zndId;
     vs_main_CdFile* mpdLbas;
     int enemyCount;
@@ -544,11 +551,9 @@ typedef struct {
     int unk30;
     int mapId;
     int unk38;
-    int unk3C;
-    short unk40;
-    short unk42;
-    short unk44;
-    short unk46;
+    short unk3C;
+    short unk3E;
+    _zoneContext_t2 unk40;
     int unk48;
     int unk4C;
     int unk50;

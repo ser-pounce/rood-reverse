@@ -626,7 +626,7 @@ void func_8006DFE0(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
-void func_8006C5AC(int);
+int func_8006C5AC(int);
 void func_80069DEC(int, int);
 int _removeActorAtIndex(u_int, int);
 void _applyAccessoryStats(vs_battle_equippedAccessory*, _armorIntermediate*);
@@ -2049,7 +2049,81 @@ void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
     func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006C5AC);
+int func_8006C5AC(int arg0)
+{
+    func_8006EBF8_t sp10;
+    SVECTOR sp20;
+    D_800F19CC_t2* temp_s3;
+    int i;
+
+    temp_s3 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+
+    for (i = 0; i < temp_s3->unk4A; ++i) {
+        if (temp_s3->unk4C[i].unk40 == 0) {
+
+            func_800A1108(temp_s3->unk4C[i].unk0.unk.unk0, &sp10);
+
+            sp20.vx = sp10.unk0.unk4;
+            sp20.vz = sp10.unk0.unk8;
+            sp20.vy = sp10.unk0.unk6;
+
+            switch (temp_s3->unk4C[i].unk0.unk.unk3) {
+            case 0:
+            case 1:
+            case 2:
+            case 4:
+                switch (vs_battle_actors[arg0]->equippedWeaponCategory) {
+                case 1:
+                    vs_main_panSfx(0x7E, 0x47, &sp20);
+                    vs_main_panSfx(0x7E, 0x48, &sp20);
+                    break;
+                case 2:
+                    vs_main_panSfx(0x7E, 0x49, &sp20);
+                    vs_main_panSfx(0x7E, 0x4A, &sp20);
+                    break;
+                case 3:
+                    vs_main_panSfx(0x7E, 0x4B, &sp20);
+                    vs_main_panSfx(0x7E, 0x4C, &sp20);
+                    break;
+                case 4:
+                    vs_main_panSfx(0x7E, 0x50, &sp20);
+                    vs_main_panSfx(0x7E, 0x51, &sp20);
+                    break;
+                case 5:
+                    vs_main_panSfx(0x7E, 0x52, &sp20);
+                    vs_main_panSfx(0x7E, 0x53, &sp20);
+                    break;
+                case 6:
+                    vs_main_panSfx(0x7E, 0x4D, &sp20);
+                    break;
+                case 7:
+                    vs_main_panSfx(0x7E, 0x4E, &sp20);
+                    vs_main_panSfx(0x7E, 0x4F, &sp20);
+                    break;
+                case 8:
+                    vs_main_panSfx(0x7E, 0x54, &sp20);
+                    vs_main_panSfx(0x7E, 0x55, &sp20);
+                    break;
+                case 10:
+                    vs_main_panSfx(0x7E, 0x5B, &sp20);
+                    vs_main_panSfx(0x7E, 0x5C, &sp20);
+                    break;
+                case 9:
+                    vs_main_panSfx(0x7E, 0x69, &sp20);
+                    vs_main_panSfx(0x7E, 0x6A, &sp20);
+                    break;
+                }
+                break;
+            case 3:
+                vs_main_panSfx(0x7E, 0x33, &sp20);
+                break;
+            case 5:
+                break;
+            }
+        }
+    }
+    return 1;
+}
 
 int func_8006C84C(int arg0)
 {

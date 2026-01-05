@@ -82,8 +82,8 @@ typedef struct {
         u_int hitRate : 3;
         u_int damageCalculator : 6;
         u_int damageFactor : 5;
-        int type : 2;
-        int affinity : 3;
+        u_int type : 2;
+        u_int affinity : 3;
     } hitParams[2];
     char name[24];
 } vs_skill_t;

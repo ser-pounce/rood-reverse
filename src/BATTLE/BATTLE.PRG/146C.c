@@ -6574,7 +6574,125 @@ short func_8007E5E0(vs_skill_t* skill, vs_battle_actor2* arg1)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007E6A0);
+short func_8007E6A0(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2)
+{
+    int var_t1;
+    int var_t0;
+    int i;
+
+    var_t1 = 0;
+    if (vs_battle_actors[arg1->flags.fields.unk3]->unk20 & 1) {
+        var_t0 = 0;
+        if (arg0->type == 1) {
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 6) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+        } else {
+            u_int v = arg0->id;
+            if ((v < 40) || (((v - 54) & 0xFF) < 170)) {
+                var_t0 = 0;
+                for (i = 0; i < 3; ++i) {
+                    if (arg1->shield.gems[i].gemEffects == 5) {
+                        var_t0 = 1;
+                    }
+                }
+                if (var_t0 != 0) {
+                    var_t1 += 20;
+                }
+            }
+        }
+
+        var_t0 = 0;
+        switch (arg0->hitParams[arg2].effect) {
+        case 1:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0xB) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 2:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0xC) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 3:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0xD) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 5:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0xE) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 11:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0x10) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 15:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0x12) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 16:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0x13) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        case 17:
+            for (i = 0; i < 3; ++i) {
+                if (arg1->shield.gems[i].gemEffects == 0x15) {
+                    var_t0 = 1;
+                }
+            }
+            if (var_t0 != 0) {
+                var_t1 += 20;
+            }
+            break;
+        }
+    }
+    return var_t1;
+}
 
 int func_8007E974(vs_skill_t* arg0 __attribute__((unused)),
     func_80085718_t* arg1 __attribute__((unused)),
@@ -7454,8 +7572,12 @@ void func_800803A4(
     }
 }
 
+// https://decomp.me/scratch/HH1u5
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
 
+// https://decomp.me/scratch/RCJDN
+void func_800807E8(
+    vs_skill_t* arg0, vs_battle_equippedItem* arg1, int arg2, int arg3, int arg4);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800807E8);
 
 void func_80080A9C(

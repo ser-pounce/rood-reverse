@@ -17,19 +17,6 @@
 #include <rand.h>
 
 typedef struct {
-    char mode;
-    char exId;
-    char states;
-    char rStickX;
-    char rStickY;
-    char lStickX;
-    char lStickY;
-    char lock;
-    char actData[2];
-    char connected;
-} portInfo_t;
-
-typedef struct {
     int unk0[2];
     u_short unk8;
     u_short unkA;
@@ -7972,7 +7959,6 @@ int D_8004EF1C = 32;
 extern int randArr[97];
 extern vs_main_HeapHeader* _cdReadBuffer;
 extern padAct_t _padAct[2];
-extern portInfo_t _portInfo[2];
 extern vs_main_HeapHeader heapA;
 extern vs_main_HeapHeader heapB;
 extern int randIndex;

@@ -7,6 +7,19 @@
 #include <libgpu.h>
 
 typedef struct {
+    char mode;
+    char exId;
+    char states;
+    char rStickX;
+    char rStickY;
+    char lStickX;
+    char lStickY;
+    char lock;
+    char actData[2];
+    char connected;
+} portInfo_t;
+
+typedef struct {
     int lba;
     int size;
 } vs_main_CdFile;
@@ -347,7 +360,7 @@ typedef struct {
     signed char unk7;
 } D_80050468_t;
 
-void func_80048FEC(short arg0);
+extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern int D_8004A52C;
@@ -459,6 +472,7 @@ void vs_main_nop9(int, int);
 void vs_main_nop10(int, int);
 void func_80048A64(u_short const* img, u_int y, u_int x, u_int w);
 void func_80048F8C(void);
+void func_80048FEC(short arg0);
 void func_80048FF8(void);
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);
 void vs_main_resetPadAct(void);

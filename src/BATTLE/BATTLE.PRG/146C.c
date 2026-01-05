@@ -9,6 +9,7 @@
 #include "30D14.h"
 #include "38C1C.h"
 #include "3A1A0.h"
+#include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
 #include "573B8.h"
@@ -670,6 +671,7 @@ int func_800792E4(int arg0, int arg1, int arg2);
 int func_8007A850(D_800F1904_t3*);
 void func_8007A9DC(VECTOR*, VECTOR*, VECTOR*);
 void func_8007AACC(VECTOR* arg0);
+void func_8007AAF8(VECTOR* arg0);
 void func_8007AC94(int arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
@@ -764,6 +766,7 @@ void _setDoorEntered(int arg0);
 int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
+void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 func_8008D710_t* func_8008E370(int* arg0);
 func_8008C1C8_t* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
@@ -876,11 +879,11 @@ extern D_800F1BF8_t D_800F1BF8;
 extern u_short D_800F1CCA;
 extern int D_800F1CC0;
 extern char D_800F1CD6;
-extern short D_800F1CDC;
+extern u_short D_800F1CDC;
 extern D_800F1D08_t D_800F1D08;
 extern D_800F1D28_t D_800F1D28[8];
 extern short D_800F1D6A;
-extern short D_800F1D6C;
+extern u_short D_800F1D6C;
 extern int D_800F1D78[5];
 extern char D_800F1DC7;
 extern short D_800F1D68;
@@ -2523,7 +2526,59 @@ int func_8006EBF8(void)
     return v;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006EC7C);
+void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
+{
+    func_8006EBF8_t sp10;
+    int temp_a1;
+    int var_a0;
+
+    if (vs_main_buttonsPreviousState & 0x1000) {
+        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy - 0x20) % ONE;
+    }
+    if (vs_main_buttonsPreviousState & 0x4000) {
+        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy + 0x20) % ONE;
+    }
+    if (vs_main_buttonsPreviousState & 0x8000) {
+        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx - 0x20) % ONE;
+    }
+    if (vs_main_buttonsPreviousState & 0x2000) {
+        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx + 0x20) % ONE;
+    }
+    if (_portInfo->mode == 7) {
+        var_a0 = _portInfo->rStickX - 0x80;
+        temp_a1 = _portInfo->rStickY - 0x80;
+
+        if ((_portInfo->rStickX - 0x40u) > 0x80) {
+            if (var_a0 <= 0) {
+                var_a0 = _portInfo->rStickX - 0x40;
+            } else {
+                var_a0 = _portInfo->rStickX - 0xC0;
+            }
+            D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx + (var_a0 / 3)) % ONE;
+        }
+        if ((temp_a1 + 0x40) > 0x80u) {
+            if (temp_a1 <= 0) {
+                temp_a1 += 0x40;
+            } else {
+                temp_a1 -= 0x40;
+            }
+            D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy + (temp_a1 / 3)) % ONE;
+        }
+    }
+
+    if (D_800F19D0.unk0.vy > 0x380) {
+        D_800F19D0.unk0.vy = 0x380;
+    } else if (D_800F19D0.unk0.vy < -0x380) {
+        D_800F19D0.unk0.vy = -0x380;
+    }
+
+    func_800AA850(0, D_800F19D0.unk0.vx & 0xFFF, 0);
+    func_800A1108(0, &sp10);
+    D_1F800000[13] = sp10.unk0.unk4 * ONE;
+    D_1F800000[15] = sp10.unk0.unk8 * ONE;
+    D_1F800000[14] = (sp10.unk0.unk6 - 0xB4) * ONE;
+    func_8007AAF8(&D_800F19D0.unk0);
+}
 
 void func_8006EF10(void)
 {
@@ -4644,10 +4699,8 @@ void func_800784AC(void)
             func_8007820C(1);
             func_800780A8(&sp18);
             func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
-            if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
-                if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
-                    return;
-                }
+            if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
+                && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                 func_8007138C();
             }
         } else if (D_800F19CC->unk2C0E == 1) {
@@ -4657,7 +4710,7 @@ void func_800784AC(void)
                 vs_main_projectionDistance = 0x300;
             }
             SetGeomScreen(vs_main_projectionDistance);
-            if (D_800F19D0.unk0.vz >= 0x601) {
+            if (D_800F19D0.unk0.vz > 0x600) {
                 D_800F19D0.unk0.vz -= 0xC0;
                 if (D_800F19D0.unk0.vz < 0x600) {
                     D_800F19D0.unk0.vz = 0x600;
@@ -4666,10 +4719,8 @@ void func_800784AC(void)
             if (vs_main_projectionDistance == 0x300) {
                 func_800780A8(&sp18);
                 func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
-                if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
-                    if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
-                        return;
-                    }
+                if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
+                    && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                     func_8007138C();
                 }
             }
@@ -4677,25 +4728,21 @@ void func_800784AC(void)
             func_8007820C(1);
             if (D_800F19D0.unk0.vz < 0x900) {
                 D_800F19D0.unk0.vz += 0xC0;
-                if (D_800F19D0.unk0.vz >= 0x901) {
+                if (D_800F19D0.unk0.vz > 0x900) {
                     D_800F19D0.unk0.vz = 0x900;
                 }
             }
             if (D_800F19D0.unk0.vz == 0x900) {
                 func_800780A8(&sp18);
                 func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
-                if (((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0)) {
-                    if ((D_800F19D0.unk10.pad != 1) && (D_800F19D0.unk10.pad != 3)) {
-                        return;
-                    }
+                if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
+                    && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                     func_8007138C();
                 }
             }
-        } else {
-            if ((D_800F19D0.unk10.vx == 0)
-                && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
-                func_8007138C();
-            }
+        } else if ((D_800F19D0.unk10.vx == 0)
+                   && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
+            func_8007138C();
         }
     }
 }
@@ -4975,15 +5022,15 @@ void func_8007AACC(VECTOR* arg0)
     func_8007A9DC((VECTOR*)D_1F800034, (VECTOR*)&D_1F800034[4], arg0);
 }
 
-void func_8007AAF8(int* arg0)
+void func_8007AAF8(VECTOR* arg0)
 {
-    D_1F800000[17] = -rsin(arg0[0]);
-    D_1F800000[19] = -rcos(arg0[0]);
-    D_1F800000[18] = (-rsin(arg0[1]) * 0x1000) / rcos(arg0[1]);
+    D_1F800000[17] = -rsin(arg0->vx);
+    D_1F800000[19] = -rcos(arg0->vx);
+    D_1F800000[18] = (-rsin(arg0->vy) * 0x1000) / rcos(arg0->vy);
     VectorNormal((VECTOR*)(D_1F800000 + 0x11), (VECTOR*)(D_1F800000 + 0x11));
-    D_1F800000[17] = (D_1F800000[17] * arg0[2]) + D_1F800000[13];
-    D_1F800000[19] = (D_1F800000[19] * arg0[2]) + D_1F800000[15];
-    D_1F800000[18] = (D_1F800000[18] * arg0[2]) + D_1F800000[14];
+    D_1F800000[17] = (D_1F800000[17] * arg0->vz) + D_1F800000[13];
+    D_1F800000[19] = (D_1F800000[19] * arg0->vz) + D_1F800000[15];
+    D_1F800000[18] = (D_1F800000[18] * arg0->vz) + D_1F800000[14];
 }
 
 void func_8007ABEC(int* arg0)
@@ -9968,7 +10015,7 @@ void func_8008D5A0(int arg0)
 
 void func_8008D5FC(func_8008C1C8_t* arg0)
 {
-    if (arg0->unk0.unkB == 0) {
+    if ((signed char)arg0->unk0.unkB == 0) {
         arg0->unk0.unkB = 1;
         if (arg0->unk0.unk8.s16 == 0) {
             arg0->unk0.unkA = 0x14;
@@ -10260,9 +10307,10 @@ void func_8008DEAC(D_800F1910_t2* arg0, int arg1)
     }
 }
 
+// https://decomp.me/scratch/hhjjS
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DF14);
 
-void func_8008E19C(int arg0, int arg1, int arg2, int arg3)
+void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 {
     int i;
     char(*var_t0)[4];

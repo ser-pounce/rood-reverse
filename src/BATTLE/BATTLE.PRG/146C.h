@@ -12,7 +12,7 @@ typedef struct {
         char u8[2];
     } unk8;
     char unkA;
-    signed char unkB;
+    char unkB;
 } D_800F1910_t2;
 
 typedef struct {

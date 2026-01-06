@@ -10207,7 +10207,7 @@ void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
     }
 }
 
-static void func_800462E8(int arg0, u_int* arg1, u_int arg2)
+void func_800462E8(int arg0, int* arg1, u_int arg2)
 {
     func_800461CC(arg0, arg1, arg2, 0x80, 0x7F);
 }
@@ -10277,7 +10277,7 @@ static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     func_80046310(arg0, arg1, arg2, sxy, z);
 }
 
-static void func_8004644C(int arg0, int* arg1, int arg2)
+void func_8004644C(int arg0, int* arg1, int arg2)
 {
     int var_a1;
     char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];

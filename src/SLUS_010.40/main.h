@@ -458,6 +458,8 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec);
 void func_80045BFC(int arg0, int arg1, int arg2, int arg3);
 void func_80045C74(int arg0, int arg1, int arg2, int arg3);
 void func_800461CC(int, u_int[], u_int, int, int);
+void func_800462E8(int arg0, int* arg1, u_int arg2);
+void func_8004644C(int arg0, int* arg1, int arg2);
 void vs_main_setMonoSound(int);
 // BUG: Function seems to be called with 3 and 4 parameters
 // but always reads 4th

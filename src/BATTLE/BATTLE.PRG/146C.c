@@ -10625,7 +10625,7 @@ D_800F1910_t2* func_8008E400(int* arg0)
     return NULL;
 }
 
-int func_8008E470(void) { return D_800F1BF8.unkB0 < 1; }
+int func_8008E470(void) { return (u_int)D_800F1BF8.unkB0 < 1; }
 
 void func_8008E480(int arg0)
 {

@@ -68,6 +68,7 @@ _setDoorEntered = 0x8008D948;
 vs_battle_getMapCompletion = 0x8008E5F0;
 func_8008EB24 = 0x8008EB24;
 func_8008EB30 = 0x8008EB30;
+_clamp = 0x800911B8;
 func_80095C18 = 0x80095C18; // type:func
 func_80096254 = 0x80096254; // type:func
 func_8009627C = 0x8009627C; // type:func

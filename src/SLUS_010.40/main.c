@@ -10291,7 +10291,7 @@ void func_8004644C(int arg0, int* arg1, int arg2)
     func_80012288((int)var_a0, var_a1);
 }
 
-static void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
+void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
 {
     int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
 

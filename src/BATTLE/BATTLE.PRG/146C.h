@@ -566,13 +566,6 @@ typedef struct {
 } _zoneContext_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-} D_800F1A78_t;
-
-typedef struct {
     int unk0;
     int unk4;
     int unk8;
@@ -591,6 +584,15 @@ typedef struct {
     int unk24;
     int unk28;
 } D_800F1904_t3;
+
+typedef struct {
+    char unk0[6];
+    short unk6;
+    short unk8;
+    char unkA;
+    char unkB;
+    int unkC[189];
+} D_800F1BAC_t;
 
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(
@@ -625,7 +627,7 @@ void func_8007CCF0(int);
 void func_8007DD50(int);
 void func_8007DDAC(int arg0);
 void func_8007DDB8(int* arg0);
-void func_8007DDD4(D_800F1A78_t* arg0);
+void func_8007DDD4(P_CODE* arg0);
 void func_8007DDF8(D_800F1A68_t* arg0);
 void func_8007DE2C(int arg0);
 void func_8007DE44(u_int arg0);
@@ -663,7 +665,7 @@ extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;
 extern u_short* D_800F1BA8;
-extern void* D_800F1BAC;
+extern D_800F1BAC_t* D_800F1BAC;
 extern short D_800F1BB6;
 extern short vs_battle_doorEntered;
 extern void* vs_battle_sceneBuffer;

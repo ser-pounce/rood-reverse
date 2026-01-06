@@ -242,16 +242,25 @@ typedef struct {
     char unk298F;
     SVECTOR unk2990;
     SVECTOR unk2998;
-    int unk29A0;
-    int unk29A4;
+    char unk29A0;
+    char unk29A1;
+    short unk29A2;
+    char unk29A4;
+    char unk29A5;
+    char unk29A6;
+    char unk29A7;
     short unk29A8;
     short unk29AA;
     short unk29AC;
     short unk29AE;
-    int unk29B0;
-    int unk29B4;
-    int unk29B8;
-    int unk29BC;
+    char unk29B0;
+    char unk29B1;
+    short unk29B2;
+    char unk29B4;
+    char unk29B5;
+    char unk29B6;
+    char unk29B7;
+    SVECTOR unk29B8;
     D_800F19CC_t5 unk29C0[23];
     int unk2BE8;
     int unk2BEC;
@@ -618,6 +627,12 @@ typedef union {
     int s32;
 } func_800765B0_t;
 
+typedef struct {
+    POLY_FT4 poly[10];
+    SPRT sprite[10];
+    int unk258[30];
+} D_800F1ABC_t;
+
 void vs_battle_applyWeaponStats(vs_battle_equippedWeapon*, _weaponIntermediate*);
 void vs_battle_applyShieldStats(vs_battle_equippedShield*, _shieldIntermediate*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
@@ -862,12 +877,12 @@ extern int D_800F1A40;
 extern u_int D_800F1A44;
 extern u_int D_800F1A48;
 extern D_800F1A68_t D_800F1A68;
-extern D_800F1A78_t D_800F1A78;
+extern P_CODE D_800F1A78;
 extern int D_800F1A98;
 extern char D_800F1A9C[];
 extern int D_800F1AA4;
 extern int D_800F1AA8;
-extern void* D_800F1ABC;
+extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
 extern u_short D_800F1BA4;
@@ -3159,7 +3174,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070F28);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007138C);
 
-void func_800719DC(void) { func_80070F28(0); }
+void func_800719DC(int arg0 __attribute__((unused))) { func_80070F28(0); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800719FC);
 
@@ -6226,9 +6241,9 @@ void func_8007D360(void)
     D_800F1A30[0] = 0x1000;
     D_800F1A30[1] = 0x1000;
     D_800F1A30[2] = 0;
-    D_800F1A78.unk0 = 0x80;
-    D_800F1A78.unk1 = 0x80;
-    D_800F1A78.unk2 = 0x80;
+    D_800F1A78.r0 = 0x80;
+    D_800F1A78.g0 = 0x80;
+    D_800F1A78.b0 = 0x80;
     D_800F1A9C[0] = 0x80;
     D_800F1A9C[1] = 0x80;
     D_800F1A9C[2] = 0x80;
@@ -6245,6 +6260,7 @@ void func_8007D3F8(void)
     func_8007D360();
 }
 
+// https://decomp.me/scratch/JK0nT
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D41C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D734);
@@ -6270,7 +6286,7 @@ void func_8007DDB8(int* arg0)
     D_800F1A30[1] = arg0[1];
 }
 
-void func_8007DDD4(D_800F1A78_t* arg0) { D_800F1A78 = *arg0; }
+void func_8007DDD4(P_CODE* arg0) { D_800F1A78 = *arg0; }
 
 void func_8007DDF8(D_800F1A68_t* arg0) { D_800F1A68 = *arg0; }
 
@@ -6298,7 +6314,7 @@ void func_8007DE88(int* arg0)
     arg0[2] = 0;
 }
 
-void func_8007DEA8(D_800F1A78_t* arg0) { *arg0 = D_800F1A78; }
+void func_8007DEA8(P_CODE* arg0) { *arg0 = D_800F1A78; }
 
 void func_8007DECC(D_800F1A68_t* arg0) { *arg0 = D_800F1A68; }
 

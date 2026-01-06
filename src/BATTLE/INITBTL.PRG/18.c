@@ -162,7 +162,7 @@ void func_800FA6B8(void)
     vs_main_bzero(D_800F1BF0, 8);
     vs_main_bzero(&vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
     D_800F1BA8 = vs_main_allocHeap(0x800);
-    D_800F1BAC = vs_main_allocHeap(0x300);
+    D_800F1BAC = vs_main_allocHeap(sizeof *D_800F1BAC);
     D_800F1CBC = vs_main_allocHeap(0x80);
     vs_battle_doorEntered = -1;
     D_800F1BA4 = 0;

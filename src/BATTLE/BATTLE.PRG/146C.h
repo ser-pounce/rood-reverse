@@ -210,7 +210,7 @@ typedef struct {
     func_8008C2C0_t* unkA4;
     D_800F1CA0_t* unkA8;
     func_8008D710_t* unkAC;
-    int* unkB0;
+    u_int* unkB0;
     int unkB4;
     int unkB8;
     int unkBC;

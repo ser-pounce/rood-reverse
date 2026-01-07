@@ -79,6 +79,7 @@ void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
 void func_8009406C(int, int, int, int);
 void func_80095C18(int, char);
 void* func_800962E4();
+void func_80096444(int);
 
 extern char D_80068EB4[];
 extern short D_800F1D00;
@@ -650,7 +651,20 @@ void func_8009627C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800962E4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009639C);
+void func_8009639C(int arg0)
+{
+    int j;
+    int i;
+
+    for (i = 0; i < arg0; ++i) {
+        for (j = 0; j < D_800F227E; ++j) {
+            if ((*D_800F1BAC)[j].unk8 == 0) {
+                func_80096444(j);
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80096444);
 

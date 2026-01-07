@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "../../SLUS_010.40/main.h"
+#include <memory.h>
 
 typedef struct {
     int* unk0;
@@ -55,7 +56,7 @@ typedef struct {
     char unk2;
     char unk3;
     D_800F1DD8_t2* unk4;
-    int unk8;
+    D_800F1DD8_t2* unk8;
 } D_800F1DD8_t;
 
 typedef struct {
@@ -372,8 +373,16 @@ int func_8009361C(func_80092F74_t* unk0 __attribute__((unused)), func_80092F74_t
     return 0;
 }
 
-int func_80093640(func_80092F74_t* arg0, func_80092F74_t2* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093640);
+int func_80093640(func_80092F74_t* arg0, func_80092F74_t2* arg1)
+{
+    if (D_800F1DD8[arg1->unk4[0].s32 + 0x40].unk0 != 0) {
+        vs_main_freeHeap(D_800F1DD8[arg1->unk4[0].s32 + 0x40].unk4);
+        D_800F1DD8[arg1->unk4[0].s32 + 0x40].unk4 =
+            D_800F1DD8[arg1->unk4[0].s32 + 0x40].unk8;
+        D_800F1DD8[arg1->unk4[0].s32 + 0x40].unk0 = 0;
+    }
+    return 0;
+}
 
 int func_800936F0(func_80092F74_t* arg0 __attribute__((unused)),
     func_80092F74_t2* arg1 __attribute__((unused)))
@@ -600,7 +609,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095A4C);
 
 void func_80095B70(int arg0) { D_800F2270 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095B7C);
+void func_80095B7C(int arg0, int arg1)
+{
+    if (arg0 != 0) {
+        if (arg1 & 0x80) {
+            D_800F2260[arg0] |= 0x80;
+            return;
+        }
+        if (arg1 & 0x40) {
+            D_800F2260[arg0] &= 0x7F;
+            return;
+        }
+        D_800F2260[arg0] &= 0x80;
+        D_800F2260[arg0] |= arg1 & 0x7F;
+        return;
+    }
+    memset(D_800F2260, arg1, 0x10);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095C18);
 

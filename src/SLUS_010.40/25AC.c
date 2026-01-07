@@ -834,7 +834,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CCE8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CD08);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CD24);
+void func_8001CD24(short* arg0) { arg0[105] = 0; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CD2C);
 

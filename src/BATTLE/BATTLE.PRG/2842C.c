@@ -158,7 +158,23 @@ void func_80091378(void)
     D_800F1DD4 = NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800913BC);
+int func_800913BC(int arg0)
+{
+    int temp_s3;
+
+    temp_s3 = D_800F1DBC;
+    D_800F1DBC = arg0;
+
+    if (arg0 >= 0) {
+        if (D_80068EB4[D_800F1DC4] != 0) {
+            vs_main_playSfxDefault(0x200, (short)arg0);
+            func_80045BFC(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+        } else {
+            func_80045D64(0x200, (short)arg0);
+        }
+    }
+    return temp_s3;
+}
 
 void func_80091468(int arg0, int arg1)
 {

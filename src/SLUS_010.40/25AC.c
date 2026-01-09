@@ -12,6 +12,27 @@ typedef struct {
     int unkC;
 } D_80036770_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14[507];
+    u_char unk800[0];
+} D_80039B08_t2;
+
+typedef struct {
+    D_80039B08_t2* unk0;
+    D_80039B08_t2* unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    u_int unk14;
+    int unk18;
+    int unk1C;
+} D_80039B08_t;
+
 static int func_80013468(int*);
 int func_80013588(void*, int);
 void func_800135D8(void*, int, int, int);
@@ -22,6 +43,13 @@ u_int func_80018C30(int);
 long func_80019A58(void);
 static void _shutdown(void);
 static void _writeSpu(char* data, u_int len);
+void spuTransferCallback(void);
+void func_8001D0E4(int, int, int, int);
+void func_8001D2A0(int, int, void (*)(void));
+void func_8001D438(int, int, int, void (*)(void));
+void func_8001D584(void);
+void func_8001D5B4(void);
+void IRQCallbackProc(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -36,6 +64,7 @@ extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
 extern int D_80039AFC;
+extern D_80039B08_t D_80039B08;
 
 int vs_sound_init(void)
 {
@@ -842,7 +871,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", IRQCallbackProc);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CDD0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CE60);
+void func_8001CE60(void)
+{
+    u_char* temp_s0 = D_80039B08.unk0->unk800;
+    SpuSetTransferStartAddr(0x2100);
+    SpuSetTransferCallback(spuTransferCallback);
+    SpuWrite(temp_s0, 0x800);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CEA8);
 
@@ -850,15 +885,46 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D0E4);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D2A0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", spuTransferCallback);
+void spuTransferCallback(void)
+{
+    func_8001D0E4(D_80039B08.unk10, 0, 0x1100, 0x2100);
+    func_8001D0E4(D_80039B08.unk10 + 1, 0, 0x1100, 0x2100);
+    func_8001D2A0(0x1000, 0x2100, func_8001D584);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D438);
+void func_8001D438(int spuStartAddr, int arg1, int size, void (*arg3)())
+{
+    if ((D_80039B08.unkC != 0) && (D_80039B08.unk14 != 0)) {
+        SpuSetTransferStartAddr(spuStartAddr);
+        spuSetTransferCallback();
+        SpuWrite((u_char*)D_80039B08.unk0, size);
+        SpuSetIRQ(0);
+        if (D_80039B08.unk14 > 0x800) {
+            SpuSetIRQCallback(arg3);
+            D_80039B08.unk14 -= 0x800;
+            D_80039B08.unk0 = (void*)D_80039B08.unk0 + size;
+        } else if (D_80039B08.unk4 != 0) {
+            SpuSetIRQCallback(arg3);
+            D_80039B08.unk0 = D_80039B08.unk4;
+            D_80039B08.unk14 = D_80039B08.unk1C;
+        } else {
+            SpuSetIRQCallback(IRQCallbackProc);
+            arg1 = 0x1030;
+            spuStartAddr = 0x1030;
+            D_80039B08.unk14 = 0;
+        }
+        func_80013BD4(D_80039B08.unk10, spuStartAddr);
+        func_80013BD4(D_80039B08.unk10 + 1, arg1);
+        SpuSetIRQAddr(spuStartAddr + 8);
+        SpuSetIRQ(1);
+    }
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D584);
+void func_8001D584(void) { func_8001D438(0x1100, 0x1100, 0x800, func_8001D5B4); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D5B4);
+void func_8001D5B4(void) { func_8001D438(0x2100, 0x2100, 0x800, func_8001D584); }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D5E4);
 

@@ -589,8 +589,10 @@ typedef struct {
     int unk0;
     short unk4;
     short unk6;
-    char unk8;
-    char unk9;
+    union {
+        char u8[2];
+        u_short u16;
+    } unk8;
     char unkA;
     char unkB;
     int unkC;

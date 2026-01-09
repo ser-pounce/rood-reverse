@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "../../SLUS_010.40/main.h"
 #include <memory.h>
+#include <rand.h>
 
 typedef struct {
     int* unk0;
@@ -68,6 +69,9 @@ typedef struct {
     char unk9;
     char unkA;
     char unkB;
+    short unkC;
+    char unkE;
+    char unkF;
 } func_800962E4_t;
 
 void func_80090B28(void);
@@ -76,6 +80,8 @@ int func_80091998(int);
 int func_800919D8(int);
 void func_8009291C(int);
 void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
+int func_8009306C(func_80092F74_t* arg0);
+int func_80093364(func_80092F74_t* arg0);
 void func_8009406C(int, int, int, int);
 void func_80095C18(int, char);
 void* func_800962E4();
@@ -696,7 +702,7 @@ void func_8009639C(int arg0)
 
     for (i = 0; i < arg0; ++i) {
         for (j = 0; j < D_800F227E; ++j) {
-            if ((*D_800F1BAC)[j].unk8 == 0) {
+            if ((*D_800F1BAC)[j].unk8.u8[0] == 0) {
                 func_80096444(j);
                 break;
             }
@@ -722,8 +728,8 @@ void func_800971D4(void)
     D_800F1BAC_t* p = *D_800F1BAC;
 
     for (i = 0; i < D_800F227E; ++i, ++p) {
-        if (p->unk8 == 7) {
-            p->unk8 = 6;
+        if (p->unk8.u8[0] == 7) {
+            p->unk8.u8[0] = 6;
         }
     }
 }

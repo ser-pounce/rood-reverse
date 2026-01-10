@@ -1,5 +1,13 @@
 #pragma once
 #include <sys/types.h>
+
+typedef struct {
+    int unk0;
+    int unk4;
+    char unk8;
+    char unk9;
+} vs_main_sfxContext;
+
 int vs_sound_shutdown(void);
 int vs_sound_init(void);
 int func_80011DEC(int* arg0);
@@ -16,7 +24,7 @@ int func_8001217C(void*, int, int, int);
 int func_800121F0(void*, int, int, int);
 void func_80012288(int, int);
 void* func_80012358(int);
-u_int func_800123C8(void*);
+int func_800123C8(vs_main_sfxContext*);
 void vs_sound_setMonoSound(int);
 void func_80012468(void);
 void func_8001264C(int, int, int, int);

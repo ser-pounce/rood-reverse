@@ -1,4 +1,5 @@
 #include "common.h"
+#include "25AC.h"
 #include <kernel.h>
 #include <libspu.h>
 #include <libapi.h>
@@ -140,7 +141,16 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122F0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012358);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800123C8);
+int func_800123C8(vs_main_sfxContext* arg0)
+{
+    int ret = 0;
+    if ((long)arg0 >= 0x80000000) {
+        ret = arg0->unk9 >> 7;
+    } else if ((*D_800377F4)[(long)arg0] & 0x8000) {
+        ret = 1;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", vs_sound_setMonoSound);
 
@@ -894,19 +904,19 @@ void spuTransferCallback(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
-void func_8001D438(int spuStartAddr, int arg1, int size, void (*arg3)())
+void func_8001D438(int spuStartAddr, int arg1, int size, void (*callback)())
 {
     if ((D_80039B08.unkC != 0) && (D_80039B08.unk14 != 0)) {
         SpuSetTransferStartAddr(spuStartAddr);
         spuSetTransferCallback();
         SpuWrite((u_char*)D_80039B08.unk0, size);
-        SpuSetIRQ(0);
+        SpuSetIRQ(SPU_OFF);
         if (D_80039B08.unk14 > 0x800) {
-            SpuSetIRQCallback(arg3);
+            SpuSetIRQCallback(callback);
             D_80039B08.unk14 -= 0x800;
             D_80039B08.unk0 = (void*)D_80039B08.unk0 + size;
         } else if (D_80039B08.unk4 != 0) {
-            SpuSetIRQCallback(arg3);
+            SpuSetIRQCallback(callback);
             D_80039B08.unk0 = D_80039B08.unk4;
             D_80039B08.unk14 = D_80039B08.unk1C;
         } else {
@@ -918,7 +928,7 @@ void func_8001D438(int spuStartAddr, int arg1, int size, void (*arg3)())
         func_80013BD4(D_80039B08.unk10, spuStartAddr);
         func_80013BD4(D_80039B08.unk10 + 1, arg1);
         SpuSetIRQAddr(spuStartAddr + 8);
-        SpuSetIRQ(1);
+        SpuSetIRQ(SPU_ON);
     }
 }
 

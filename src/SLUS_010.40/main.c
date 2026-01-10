@@ -9808,7 +9808,7 @@ static void func_800456EC(void* arg0, int arg1, int arg2, int arg3)
     }
 }
 
-void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
+void vs_main_playSfx(int arg0, long arg1, int arg2, int arg3)
 {
     void* var_s0_2;
 
@@ -9825,6 +9825,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
             func_80045684((void*)(arg1 & 0xFFFF), 0, arg2, arg3);
         }
         break;
+
     case 0x100:
     case 0x200:
         if (func_800123C8((void*)(arg1 & 0xFFFF)) != 0) {
@@ -9832,11 +9833,11 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
         } else {
             func_80045684((void*)(arg1 & 0xFFFF), 0, arg2, arg3);
         }
-
         break;
+
     case 0xFF000:
         var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        var_s0_2 = (char*)var_s0_2 + (arg1 + (int*)var_s0_2)[1];
+        var_s0_2 += *((int*)var_s0_2 + arg1 + 1);
         if (func_800123C8(var_s0_2) != 0) {
             func_800456EC(var_s0_2, D_8005FE80, arg2, arg3);
             D_8005FE80 *= 2;
@@ -9847,9 +9848,10 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
             func_800456EC(var_s0_2, 0, arg2, arg3);
         }
         break;
+
     case 0xF00000:
         var_s0_2 = D_8005E08C;
-        var_s0_2 = (char*)D_8005E08C + (arg1 + ((int*)D_8005E08C))[1];
+        var_s0_2 += *((int*)var_s0_2 + arg1 + 1);
         if (func_800123C8(var_s0_2) != 0) {
             func_800456EC(var_s0_2, D_8005FE84, arg2, arg3);
             D_8005FE84 *= 2;
@@ -9860,6 +9862,7 @@ void vs_main_playSfx(int arg0, int arg1, int arg2, int arg3)
             func_800456EC(var_s0_2, 0, arg2, arg3);
         }
         break;
+
     default:
         vs_main_nop10(0x95, 0);
         break;

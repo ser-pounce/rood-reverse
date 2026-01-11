@@ -34,6 +34,26 @@ typedef struct {
     int unk1C;
 } D_80039B08_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40[52];
+} D_80035910_t;
+
 static int func_80013468(int*);
 int func_80013588(void*, int);
 void func_800135D8(void*, int, int, int);
@@ -55,12 +75,14 @@ void IRQCallbackProc(void);
 extern int _soundEvent;
 extern char _soundFlush[64];
 extern short D_800358FE;
+extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
 extern int* D_800377EC;
 extern int* D_800377F8;
 extern u_short (*D_800377F4)[];
+extern int D_80037890;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
@@ -139,7 +161,23 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122C4);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122F0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012358);
+int func_80012358(int arg0)
+{
+    D_80035910_t* var_a1;
+    int var_v1;
+    int a2;
+
+    if ((arg0 == 0) || ((a2 = D_80037890) == 0)) {
+        return 0;
+    }
+
+    for (var_a1 = D_80035910, var_v1 = 0x1000; var_v1 & 0xFFFFFF; var_v1 *= 2, ++var_a1) {
+        if ((a2 & var_v1) && (arg0 == var_a1->unk28)) {
+            return var_a1->unk3C;
+        }
+    }
+    return 0;
+}
 
 int func_800123C8(vs_main_sfxContext* arg0)
 {

@@ -51,15 +51,12 @@ typedef struct {
     int unk34;
     int unk38;
     int unk3C;
-    int unk40[52];
+    int unk40[45];
+    int unkF4;
+    int unkF8[6];
 } D_80035910_t;
 
 // From https://ff7-mods.github.io/ff7-flat-wiki/FF7/PSX/Sound/AKAO_sequence.html
-// Format used for EFFECT00.DAT:
-// AkaoSeqHeader (Magic string only, everything else is 0)
-// 384 pairs of u16 offsets into blocks 1 and 2, 0xFFFF == no data
-// Block 1: 0x300 bytes TBD
-// Block 2: TBD 
 
 typedef struct {
     char year_bcd;
@@ -78,6 +75,13 @@ typedef struct {
     AkaoTimeStamp timestamp;
 } AkaoSeqHeader;
 
+// Format used for EFFECT00.DAT:
+// 384 sfx slots total
+// AkaoSeqHeader (Magic string only, everything else is 0)
+// Block 0: 84 pairs of u16 offsets into data block, 0xFFFF == no data
+// Block 1: 384 u16 flags, one for each sfx, function TBD but only value seems to be 0xC8
+// Block 2: Akao data indexed by block 0 offsets
+
 typedef struct {
     int index;
     int unk4;
@@ -92,6 +96,9 @@ void func_800135D8(void*, int, int, int);
 void func_8001369C(void);
 static void _soundInit(void);
 static void func_80013AE8(u_int);
+void func_800161C4(int, int);
+void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
+void func_800166E8(int*, int);
 void func_80016744(func_800172D4_t*, void*, void*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
@@ -108,15 +115,17 @@ void IRQCallbackProc(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
+extern int D_80033690[];
+extern D_80035910_t D_800363B0[];
 extern short D_800358FE;
 extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
-extern void* _akaoSfxBlock0;
-extern u_short *_akaoSfxBlock1;
-extern void* _akaoSfxBlock2;
-extern int D_80037890;
+extern void* _akaoSfxDataOffsets;
+extern u_short* _akaoSfxFlags;
+extern void* _akaoSfxData;
+extern int D_80037890[];
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
@@ -142,11 +151,11 @@ int vs_sound_setCommonSfx(void* arg0)
     arg0 += sizeof(AkaoSeqHeader);
 
     if (notAkao == 0) {
-        _akaoSfxBlock0 = arg0;
+        _akaoSfxDataOffsets = arg0;
         arg0 += 0x600;
-        _akaoSfxBlock1 = arg0;
+        _akaoSfxFlags = arg0;
         arg0 += 0x300;
-        _akaoSfxBlock2 = arg0;
+        _akaoSfxData = arg0;
     }
     return notAkao;
 }
@@ -201,7 +210,7 @@ int func_80012358(int arg0)
     int var_v1;
     int a2;
 
-    if ((arg0 == 0) || ((a2 = D_80037890) == 0)) {
+    if ((arg0 == 0) || ((a2 = D_80037890[0]) == 0)) {
         return 0;
     }
 
@@ -218,7 +227,7 @@ int func_800123C8(vs_main_sfxContext* arg0)
     int ret = 0;
     if ((long)arg0 >= 0x80000000) {
         ret = arg0->unk9 >> 7;
-    } else if (_akaoSfxBlock1[(long)arg0] & 0x8000) {
+    } else if (_akaoSfxFlags[(long)arg0] & 0x8000) {
         ret = 1;
     }
     return ret;
@@ -596,7 +605,64 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800166E8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016744);
+void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
+{
+    D_80035910_t* var_s1;
+    int temp_s2;
+    int var_a1;
+    u_int var_s0;
+
+    if ((arg1 == NULL) && (arg2 == NULL)) {
+        return;
+    }
+
+    if ((arg3 == 0) && (arg0->unk4 != 0)) {
+        func_800161C4(0, arg0->unk4);
+    }
+
+    while (1) {
+        var_s1 = D_800363B0;
+        var_s0 = 0x400000;
+
+        temp_s2 = D_80037890[0] | D_80037890[4] | D_80039B08.unkC;
+
+        for (var_a1 = 0xC; var_a1 != 0; var_a1 -= 2, var_s1 -= 2, var_s0 /= 4) {
+            if (!(temp_s2 & (var_s0 | (var_s0 * 2)))) {
+                break;
+            }
+        }
+
+        if (var_a1 != 0) {
+            break;
+        }
+
+        func_800161C4(0, 0x40000000);
+
+        if (temp_s2 == (D_80037890[0] | D_80037890[4] | D_80039B08.unkC)) {
+            return;
+        }
+    }
+
+    if (arg1 != NULL) {
+        func_8001653C(var_s1, arg0, var_s0, arg1);
+        func_800166E8(D_80033690, var_s1->unkF4);
+    }
+
+    if (arg2 != NULL) {
+        if (arg1 != NULL) {
+            ++var_s1;
+            var_s0 *= 2;
+        }
+
+        func_8001653C(var_s1, arg0, var_s0, arg2);
+        func_800166E8(D_80033690, var_s1->unkF4);
+
+        if (arg1 != NULL) {
+            var_s1->unk34 |= 0x10000;
+        }
+    }
+    D_80039AF8[2] |= 0x110;
+}
 
 void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
 {
@@ -605,8 +671,8 @@ void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
 
     index &= 0x3FF;
     index *= 2;
-    block2 = _akaoSfxBlock2;
-    block0 = _akaoSfxBlock0;
+    block2 = _akaoSfxData;
+    block0 = _akaoSfxDataOffsets;
 
     *arg0 = block0[index] == 0xFFFF ? NULL : (void*)block2 + block0[index];
 
@@ -621,17 +687,18 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800169AC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016A00);
 
-int func_80016DA8(int arg0) {
+int func_80016DA8(int flags)
+{
     int var_v1 = 0;
-    
-    arg0 &= 0x7FFF;
-    
-    if (arg0 == 0) {
+
+    flags &= 0x7FFF;
+
+    if (flags == 0) {
         return 0;
     }
-    if (arg0 == D_800377E0[1]) {
+    if (flags == D_800377E0[1]) {
         var_v1 = 1;
-    } else if (arg0 == D_800377E0[2]) {
+    } else if (flags == D_800377E0[2]) {
         var_v1 = 2;
     }
     return var_v1;
@@ -651,12 +718,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017254);
 
-void func_800172D4(func_800172D4_t* arg0) {
+void func_800172D4(func_800172D4_t* arg0)
+{
     void* akaoOffset;
     void* akaoData;
 
     _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->index);
-    arg0->unk10 = func_80016DA8(_akaoSfxBlock1[arg0->index]);
+    arg0->unk10 = func_80016DA8(_akaoSfxFlags[arg0->index]);
     func_80016744(arg0, akaoOffset, akaoData, 0);
 }
 

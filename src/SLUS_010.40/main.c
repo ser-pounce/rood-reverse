@@ -7972,7 +7972,7 @@ extern struct {
     short processing;
     short queued;
 } _cdQueueCount;
-extern int _sfxData[VS_EFFECT00_DAT_SIZE];
+extern u_short _sfxData[];
 extern int sp2;
 extern int _resetEnabled;
 extern u_int _buttonHeldFrameCount[];
@@ -10459,8 +10459,8 @@ static void _loadMenuSound(void)
     vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
     func_800131DC(buf, 0, 1);
     vs_main_freeHeapR(buf);
-    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, &_sfxData);
-    func_80011DEC(_sfxData);
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
+    vs_sound_setCommonSfx(_sfxData);
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;

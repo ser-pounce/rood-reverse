@@ -10,7 +10,7 @@ typedef struct {
 
 int vs_sound_shutdown(void);
 int vs_sound_init(void);
-int func_80011DEC(int* arg0);
+int vs_sound_setCommonSfx(void* arg0);
 int func_80011EBC(u_int);
 int func_80011F08(void);
 int func_80011F90(void);

@@ -621,7 +621,21 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800169AC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016A00);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016DA8);
+int func_80016DA8(int arg0) {
+    int var_v1 = 0;
+    
+    arg0 &= 0x7FFF;
+    
+    if (arg0 == 0) {
+        return 0;
+    }
+    if (arg0 == D_800377E0[1]) {
+        var_v1 = 1;
+    } else if (arg0 == D_800377E0[2]) {
+        var_v1 = 2;
+    }
+    return var_v1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016DF8);
 

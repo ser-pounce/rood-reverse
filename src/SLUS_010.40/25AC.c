@@ -55,23 +55,36 @@ typedef struct {
 } D_80035910_t;
 
 // From https://ff7-mods.github.io/ff7-flat-wiki/FF7/PSX/Sound/AKAO_sequence.html
+// Format used for EFFECT00.DAT:
+// AkaoSeqHeader (Magic string only, everything else is 0)
+// 384 pairs of u16 offsets into blocks 1 and 2, 0xFFFF == no data
+// Block 1: 0x300 bytes TBD
+// Block 2: TBD 
 
 typedef struct {
-    char year_bcd; // year (in binary coded decimal)
-    char month_bcd; // month (in binary coded decimal, between 0x01 - 0x12)
-    char day_bcd; // day (in binary coded decimal, between 0x01 - 0x31)
-    char hours_bcd; // hours (in binary coded decimal, between 0x00 - 0x23)
-    char minutes_bcd; // minutes (in binary coded decimal, between 0x00 - 0x59)
-    char seconds_bcd; // seconds (in binary coded decimal, between 0x00 - 0x59)
+    char year_bcd;
+    char month_bcd;
+    char day_bcd;
+    char hours_bcd;
+    char minutes_bcd;
+    char seconds_bcd;
 } AkaoTimeStamp;
 
 typedef struct {
-    char magic[4]; // "AKAO" C-string
-    u_short id; // song ID, used for playing sequence
-    u_short length; // data length - sizeof(header)
-    u_short reverb_type; // reverb type (range from 0 to 9)
-    AkaoTimeStamp timestamp; // creation time
+    char magic[4];
+    u_short id;
+    u_short length;
+    u_short reverb_type;
+    AkaoTimeStamp timestamp;
 } AkaoSeqHeader;
+
+typedef struct {
+    int index;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+} func_800172D4_t;
 
 static int _isNotAkaoFormat(int*);
 int func_80013588(void*, int);
@@ -79,6 +92,8 @@ void func_800135D8(void*, int, int, int);
 void func_8001369C(void);
 static void _soundInit(void);
 static void func_80013AE8(u_int);
+void func_80016744(func_800172D4_t*, void*, void*, int);
+int func_80016DA8(int);
 u_int func_80018C30(int);
 long func_80019A58(void);
 static void _shutdown(void);
@@ -99,7 +114,7 @@ extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
 extern void* _akaoSfxBlock0;
-extern u_short (*_akaoSfxBlock1)[];
+extern u_short *_akaoSfxBlock1;
 extern void* _akaoSfxBlock2;
 extern int D_80037890;
 extern char _spuMemInfo;
@@ -203,7 +218,7 @@ int func_800123C8(vs_main_sfxContext* arg0)
     int ret = 0;
     if ((long)arg0 >= 0x80000000) {
         ret = arg0->unk9 >> 7;
-    } else if ((*_akaoSfxBlock1)[(long)arg0] & 0x8000) {
+    } else if (_akaoSfxBlock1[(long)arg0] & 0x8000) {
         ret = 1;
     }
     return ret;
@@ -622,7 +637,14 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017254);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800172D4);
+void func_800172D4(func_800172D4_t* arg0) {
+    void* akaoOffset;
+    void* akaoData;
+
+    _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->index);
+    arg0->unk10 = func_80016DA8(_akaoSfxBlock1[arg0->index]);
+    func_80016744(arg0, akaoOffset, akaoData, 0);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001733C);
 

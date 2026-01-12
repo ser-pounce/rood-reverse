@@ -586,16 +586,6 @@ typedef struct {
 } D_800FAB18_t;
 
 typedef struct {
-    vs_battle_equippedItem blade;
-    vs_battle_equippedItem grip;
-    vs_battle_equippedItem gems[3];
-    char material;
-    char unkF1;
-    short unkF2;
-    char name[24];
-} _weaponIntermediate;
-
-typedef struct {
     int unk0;
     short unk4;
     u_short unk6;
@@ -633,7 +623,6 @@ typedef struct {
     int unk258[30];
 } D_800F1ABC_t;
 
-void vs_battle_applyWeaponStats(vs_battle_equippedWeapon*, _weaponIntermediate*);
 void vs_battle_applyShieldStats(vs_battle_equippedShield*, _shieldIntermediate*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
@@ -1138,7 +1127,7 @@ int _removeActorAtIndex(u_int index, int arg1)
 }
 
 void vs_battle_applyWeaponStats(
-    vs_battle_equippedWeapon* target, _weaponIntermediate* source)
+    vs_battle_equippedWeapon* target, vs_battle_weaponIntermediate* source)
 {
     int i;
 
@@ -1430,7 +1419,7 @@ void vs_battle_applyWeapon(
 {
     int i;
 
-    _weaponIntermediate* tempWeapon = vs_main_allocHeapR(sizeof *tempWeapon);
+    vs_battle_weaponIntermediate* tempWeapon = vs_main_allocHeapR(sizeof *tempWeapon);
     vs_main_bzero(tempWeapon, sizeof *tempWeapon);
 
     if (source != NULL) {

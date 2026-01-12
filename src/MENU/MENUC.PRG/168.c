@@ -1,5 +1,6 @@
 #include "common.h"
 #include "168.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 extern void* _sydData;
 extern int _sydLbas[];

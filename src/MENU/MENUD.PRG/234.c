@@ -1,6 +1,7 @@
 #include "common.h"
 #include "234.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 
 typedef struct {
     char unk0[0x2318];
@@ -23,7 +24,41 @@ extern signed char D_80109A7C;
 extern signed char D_80109A7D;
 extern short D_80109A82;
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102A34);
+void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source,
+    vs_menu_containerData* container)
+{
+    int i;
+    vs_battle_weaponIntermediate* weapon = vs_main_allocHeapR(sizeof *weapon);
+    vs_main_bzero(weapon, sizeof *weapon);
+
+    if (source != NULL) {
+        weapon->unkF2 = source->unk0;
+        if (source->blade != 0) {
+            vs_battle_copyInventoryBladeStats(
+                &weapon->blade, &container->blades[source->blade - 1]);
+            weapon->material = container->blades[source->blade - 1].material;
+        }
+
+        if (source->grip != 0) {
+            vs_battle_copyInventoryGripStats(
+                &weapon->grip, &container->grips[source->grip - 1]);
+        }
+
+        for (i = 0; i < 3; ++i) {
+            if (source->gems[i] != 0) {
+                vs_battle_copyInventoryGemStats(
+                    &weapon->gems[i], &container->gems[source->gems[i] - 1]);
+            }
+        }
+    }
+
+    for (i = 0; i < 24; ++i) {
+        weapon->name[i] = source->name[i];
+    }
+
+    vs_battle_applyWeaponStats(target, weapon);
+    vs_main_freeHeapR(weapon);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
 

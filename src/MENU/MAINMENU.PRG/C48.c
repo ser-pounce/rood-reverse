@@ -2,7 +2,6 @@
 #include "C48.h"
 #include "413C.h"
 #include "../SLUS_010.40/main.h"
-#include "../MENUC.PRG/168.h"
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
 #include "../BATTLE/BATTLE.PRG/2842C.h"
@@ -440,7 +439,7 @@ void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char
     if (D_80102470 == &vs_battle_inventory) {
         vs_battle_applyWeapon(&sp10, arg0);
     } else {
-        func_80102A34(&sp10, arg0, D_80109A8C);
+        func_80102A34(&sp10, arg0, vs_menuD_containerData);
     }
     vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
     *arg1 = arg0->name;
@@ -459,7 +458,7 @@ void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
     if (D_8010246C == &vs_battle_inventory.shields[0]) {
         vs_battle_applyShield(&shield, arg0);
     } else {
-        func_80102BB0(&shield, arg0, D_80109A8C);
+        func_80102BB0(&shield, arg0, vs_menuD_containerData);
     }
     vs_mainMenu_setShieldStrings(&shield, arg1, arg2, arg3);
 }

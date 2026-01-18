@@ -58,8 +58,7 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     u_short unk18;
-    char unk1A;
-    char unk1B;
+    short unk1A;
 } vs_battle_inventoryGem;
 
 typedef struct {
@@ -99,3 +98,20 @@ typedef struct {
     vs_battle_inventoryArmor unk4;
     u_char gems[4]; // 0x2C
 } vs_battle_inventoryShield;
+
+typedef struct {
+    u_short id;
+    char unk2;
+    char unk3;
+} vs_battle_inventoryItem;
+
+typedef struct {
+    vs_battle_inventoryWeapon weapons[32];
+    vs_battle_inventoryShield shields[32]; // 0x400
+    vs_battle_inventoryBlade blades[64]; // 0xA00
+    vs_battle_inventoryGrip grips[64]; // 0x1500
+    vs_battle_inventoryArmor armor[64]; // 0x1900
+    vs_battle_inventoryGem gems[192]; // 0x2300
+    vs_battle_inventoryItem items[256]; // 0x3800
+    // 0x3C00
+} vs_menu_containerData;

@@ -4,19 +4,24 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 typedef struct {
-    u_short containerData[0x1C00];
-    char unk3800[0x100];
-    char unk3900[0x300];
-} containerData_t;
+    u_short weapons[32];
+    u_short blades[64];
+    u_short grips[64];
+    u_short shields[32];
+    u_short armor[64];
+    u_short gems[192];
+    u_short items[256];
+} vs_menu_containerIndices;
 
 typedef struct {
     char unk0[15][256];
     D_800619D8_t unkF00;
-    containerData_t unkFB0;
+    vs_menu_containerData unkFB0;
     char unk4BB0[0x7800];
     u_short unkC3B0[0x40];
-    containerData_t unkC430;
-    signed char unk10030[0x4700];
+    vs_menu_containerData unkC430;
+    vs_menu_containerIndices indices;
+    int unk105B0[0x1060];
 } D_8010245C_t;
 
 typedef struct {

@@ -14,7 +14,7 @@ typedef struct {
 } func_801055D0_t;
 
 typedef struct {
-    containerData_t unk0;
+    vs_menu_containerData unk0;
     short unk3C00[1];
 } func_80102C94_t;
 

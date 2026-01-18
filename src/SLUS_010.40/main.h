@@ -327,12 +327,6 @@ typedef struct {
 } vs_main_mapStatus_t;
 
 typedef struct {
-    u_short id;
-    char unk2;
-    char unk3;
-} vs_battle_inventoryItem;
-
-typedef struct {
     vs_battle_inventoryWeapon weapons[8];
     vs_battle_inventoryShield shields[8];
     vs_battle_inventoryBlade blades[16];

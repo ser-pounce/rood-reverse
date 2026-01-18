@@ -6,6 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "../../build/assets/MENU/MENU7.PRG/container.h"
 #include "gpu.h"
 #include "../../assets/MENU/MCMAN.BIN.h"
@@ -102,7 +103,7 @@ typedef struct {
     int unk1898;
     char unk189C[0x520];
     vs_main_artsStatus_t artsStatus;
-    containerData_t containerData;
+    vs_menu_containerData containerData;
     char unk59E0[0x220];
 } savedata_t;
 
@@ -3510,27 +3511,137 @@ static int _promptYesNo(int initParams)
     return 0;
 }
 
-static u_short _containerOffsets[] = { 0x20, 0x40, 0x40, 0x20, 0x40, 0xC0, 0x100, 0x2 };
+static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 
-static void* _getContainerOffset(int section, void* arg1)
+static void* _getContainerIndexOffset(int section, void* arg1)
 {
-    int i;
-    int offset;
-
-    i = 0;
-    offset = 0;
+    int i = 0;
+    int offset = 0;
 
     if (section > 0) {
         do {
-            offset += _containerOffsets[i++];
+            offset += _containerItemCapacities[i++];
         } while (i < section);
     }
-    return ((containerData_t*)arg1)->containerData + offset;
+    return (u_short*)arg1 + offset;
 }
 
-void func_801092C4(
-    containerData_t* arg0, containerData_t* arg1, signed char arg2[0x4700]);
-INCLUDE_ASM("build/src/MENU/MENU7.PRG/nonmatchings/260", func_801092C4);
+void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
+    vs_menu_containerIndices* toCopy)
+{
+    int i;
+    int j;
+    vs_menu_containerIndices* targetIndices;
+    int sourceIndex;
+
+    targetIndices = vs_main_allocHeapR(sizeof *targetIndices);
+    vs_battle_rMemzero(targetIndices, sizeof *targetIndices);
+    vs_battle_rMemzero(target, sizeof *target);
+
+    for (i = 0; i < 7; ++i) {
+        u_short* sourceOffset = _getContainerIndexOffset(i, toCopy);
+        u_short* targetOffset = _getContainerIndexOffset(i, targetIndices);
+        for (j = 0; j < _containerItemCapacities[i]; ++j) {
+            if (sourceOffset[j] != 0) {
+                targetOffset[sourceOffset[j] - 1] = j + 1;
+            }
+        }
+    }
+
+    for (i = 0; i < 32; ++i) {
+        sourceIndex = toCopy->weapons[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryWeapon* weapon = &target->weapons[i];
+            vs_battle_copyAligned(
+                weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
+            weapon->unk0 = i + 1;
+            weapon->blade = targetIndices->blades[weapon->blade - 1];
+            weapon->grip = targetIndices->grips[weapon->grip - 1];
+
+            for (j = 0; j < 4; ++j) {
+                if (weapon->gems[j] != 0) {
+                    weapon->gems[j] = targetIndices->gems[weapon->gems[j] - 1];
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < 64; ++i) {
+        sourceIndex = toCopy->blades[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryBlade* blade = &target->blades[i];
+            vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
+            blade->index = i + 1;
+            if (blade->unk2A != 0) {
+                blade->unk2A = targetIndices->weapons[blade->unk2A - 1];
+            }
+        }
+    }
+
+    for (i = 0; i < 64; ++i) {
+        sourceIndex = toCopy->grips[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryGrip* grip = &target->grips[i];
+            vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
+            grip->unkE = i + 1;
+            if (grip->unkC != 0) {
+                grip->unkC = targetIndices->weapons[grip->unkC - 1];
+            }
+        }
+    }
+
+    for (i = 0; i < 32; ++i) {
+        sourceIndex = toCopy->shields[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryShield* shield = &target->shields[i];
+            vs_battle_copyAligned(
+                shield, &source->shields[sourceIndex - 1], sizeof *shield);
+            shield->unk0 = i + 1;
+            for (j = 0; j < 4; ++j) {
+                if (shield->gems[j] != 0) {
+                    shield->gems[j] = targetIndices->gems[shield->gems[j] - 1];
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < 64; ++i) {
+        sourceIndex = toCopy->armor[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryArmor* armor = &target->armor[i];
+            vs_battle_copyAligned(armor, &source->armor[sourceIndex - 1], sizeof *armor);
+            armor->index = i + 1;
+        }
+    }
+
+    for (i = 0; i < 192; ++i) {
+        sourceIndex = toCopy->gems[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryGem* gem = &target->gems[i];
+            vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
+            gem->unk1A = i + 1;
+            if (gem->unk18 != 0) {
+                if (gem->unk18 & 0x80) {
+                    gem->unk18 =
+                        targetIndices->shields[(gem->unk18 & 0xFFFF) - 0x81] | 0x80;
+                } else {
+                    gem->unk18 = targetIndices->weapons[gem->unk18 - 1];
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < 256; ++i) {
+        sourceIndex = toCopy->items[i];
+        if (sourceIndex != 0) {
+            vs_battle_inventoryItem* item = &target->items[i];
+            vs_battle_rMemcpy(item, &source->items[sourceIndex - 1], sizeof *item);
+            item->unk3 = i + 1;
+        }
+    }
+
+    vs_main_freeHeapR(targetIndices);
+}
 
 int vs_menu7_saveContainerMenu(char* state)
 {
@@ -3675,8 +3786,8 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 10:
-        func_801092C4((containerData_t*)(_spmcimg + 0x79E0), &D_8010245C->unkC430,
-            D_8010245C->unk10030);
+        _copyContainer((vs_menu_containerData*)(_spmcimg + 0x79E0), &D_8010245C->unkC430,
+            &D_8010245C->indices);
         _showSaveMenu(2);
         *state = 11;
         break;

@@ -1,6 +1,7 @@
 #include "22C.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/sfx.h"
+#include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "gpu.h"
 #include "lbas.h"
 #include "vs_string.h"
@@ -256,12 +257,6 @@ typedef struct {
 } savedata_unk180_t;
 
 typedef struct {
-    char containerData[0x3800];
-    char unk3800[0x100];
-    char unk3900[0x300];
-} containerData_t;
-
-typedef struct {
     saveFileInfo_t fileInfo;
     char unk80[0x80];
     char unk100[0x80];
@@ -278,7 +273,7 @@ typedef struct {
     int unk1898;
     char unk189C[0x520];
     vs_main_artsStatus_t artsStatus;
-    containerData_t containerData;
+    vs_menu_containerData containerData;
     char unk59E0[0x220];
 } savedata_t;
 
@@ -691,7 +686,8 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.mapCompletion = 0;
     memset(&vs_battle_inventory.items, 0, sizeof(vs_battle_inventory.items));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
-    memset(savedata2->containerData.unk3800, 0, sizeof(savedata2->containerData.unk3800));
+    memset(&savedata2->containerData.items, 0,
+        sizeof savedata2->containerData.items / 4); // Why / 4?
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;

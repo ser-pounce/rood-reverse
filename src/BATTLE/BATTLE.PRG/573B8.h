@@ -1,6 +1,6 @@
 #pragma once
 
-void vs_battle_copyAligned(short* dst, const short* src, int numBytes);
+void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);
 u_long* vs_battle_setSprite(int, int x, int wh, u_long* nextPrim);
 u_long* func_800C0214(int, int);

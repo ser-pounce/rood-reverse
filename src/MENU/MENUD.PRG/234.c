@@ -2,6 +2,8 @@
 #include "234.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
+#include <libetc.h>
 
 typedef struct {
     char unk0[0x2318];
@@ -17,6 +19,12 @@ typedef struct {
     vs_menu_containerData unk0;
     short unk3C00[1];
 } func_80102C94_t;
+
+void func_80102D80(int, int, vs_menu_containerData*);
+int func_80102F88(int, int, int);
+short func_80103070(int, void*);
+void func_801031A0(void);
+void func_801032AC(int, char*, int, vs_menu_containerData*);
 
 extern u_short D_80109944[];
 extern signed char D_80109A7B;
@@ -62,7 +70,7 @@ void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* 
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
 
-static short* func_80102C94(int arg0, func_80102C94_t* arg1)
+static u_short* func_80102C94(int arg0, func_80102C94_t* arg1)
 {
     int i;
     int var_a3;
@@ -102,12 +110,20 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102F88);
 
-short func_80103070(int, void*);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103070);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103110);
+int func_80103110(int arg0, int arg1)
+{
+    int i;
 
-void func_801031A0(void);
+    for (i = 0; i < D_80109944[arg0]; ++i) {
+        if (func_80102F88(arg0, i, arg1) == 0) {
+            break;
+        }
+    }
+    return i;
+}
+
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
 
 static void func_80103270(void)
@@ -152,16 +168,43 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D6C);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103F64);
+void func_80103F64(int arg0)
+{
+    vs_battle_menuItem_t* menuItem;
 
-void func_80103FD4(void);
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103FD4);
+    func_800FA8E0(0x28);
 
-static void func_80104034(int arg0 __attribute__((unused)), int arg1)
+    menuItem = vs_battle_getMenuItem(0x1F);
+    menuItem->state = 3;
+    menuItem->x = 0x12;
+
+    menuItem = vs_battle_getMenuItem(arg0);
+    menuItem->state = 2;
+    menuItem->x = 0x9B;
+    menuItem->selected = 1;
+    menuItem->unk3A = 0;
+    menuItem->unk7 = 0;
+}
+
+void func_80103FD4(int arg0)
+{
+    vs_battle_menuItem_t* menuItem;
+
+    menuItem = vs_battle_getMenuItem(0x1F);
+    menuItem->state = 2;
+    menuItem->x = 0x10;
+    menuItem->unk1 = 0xA4;
+
+    menuItem = vs_battle_getMenuItem(arg0);
+    menuItem->state = 3;
+    menuItem->x = 0x12;
+}
+
+static void func_80104034(int arg0, int arg1)
 {
     D_80109A7C = 0;
     D_80109A7D = 0;
-    func_80103FD4();
+    func_80103FD4(arg0);
     func_800FBBD4(arg1);
     func_800FBEA4(1);
 }
@@ -170,11 +213,41 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104078);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104114);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104170);
+extern char D_80109A81;
+extern int D_80109A84;
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801041E0);
+void func_80104170(int arg0)
+{
+    vs_battle_playMenuLeaveSfx();
+    func_800FA8E0(0x28);
+    func_800FA810(-1);
+    func_800FBBD4(-1);
+    func_800FBEA4(2);
+    D_80109A81 = 2;
+    D_80109A84 = vs_main_buttonsPressed.all & PADRup;
+    if (arg0 != 0) {
+        vs_mainMenu_drawDpPpbars(4);
+    }
+}
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010425C);
+void func_801041E0(
+    vs_menu_containerData* arg0, char** arg1, int* arg2, char* arg3, int arg4)
+{
+    vs_battle_equippedWeapon sp10;
+
+    func_80102A34(&sp10, &arg0->weapons[arg4], arg0);
+    vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
+    *arg1 = arg0->weapons[arg4].name;
+}
+
+void func_8010425C(
+    vs_menu_containerData* arg0, char** arg1, int* arg2, char* arg3, int arg4)
+{
+    vs_battle_equippedShield sp10;
+
+    func_80102BB0(&sp10, &arg0->shields[arg4], arg0);
+    vs_mainMenu_setShieldStrings(&sp10, arg1, arg2, arg3);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801042D0);
 
@@ -226,9 +299,29 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106464);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106504);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106624);
+int _getWeaponGemSlotCount(int arg0)
+{
+    int i;
+    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->weapons[arg0];
+    int count = 0;
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106684);
+    for (i = 0; i < vs_menuD_containerData->grips[weapon->grip - 1].gemSlots; ++i) {
+        count += weapon->gems[i] != 0;
+    }
+    return count;
+}
+
+int _getShieldGemSlotCount(int arg0)
+{
+    int i;
+    vs_battle_inventoryShield* shield = &vs_menuD_containerData->shields[arg0];
+    int count = 0;
+
+    for (i = 0; i < shield->unk4.gemSlots; ++i) {
+        count += shield->gems[i] != 0;
+    }
+    return count;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801066DC);
 
@@ -236,7 +329,12 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106784);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801068BC);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106948);
+void func_80106948(int arg0, int arg1)
+{
+    func_801032AC(
+        arg0 | 0x10, &D_8010245C->unk4BB0[0x3C00], arg1, vs_menuD_containerData);
+    func_80102D80(arg0, arg1, vs_menuD_containerData);
+}
 
 static int func_801069B0(int arg0, int arg1)
 {

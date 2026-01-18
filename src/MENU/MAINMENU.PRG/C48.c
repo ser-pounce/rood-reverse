@@ -451,7 +451,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldStrings);
 
-void func_800FCE40(void* arg0, char** arg1, int* arg2, char* arg3)
+void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_equippedShield shield;
 

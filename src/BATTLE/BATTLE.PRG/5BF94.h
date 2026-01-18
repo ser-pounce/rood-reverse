@@ -74,7 +74,8 @@ typedef struct {
     char unk0[0x34];
     char unk34[6];
     char unk3A[6];
-    char unk40[0x44];
+    char unk40[17];
+    char unk51[51];
     char selectedEquipment;
     char unk85[0x6D];
 } D_800F4EE8_t;

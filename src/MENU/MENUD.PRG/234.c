@@ -22,12 +22,14 @@ typedef struct {
 } func_80102C94_t;
 
 void func_80102D80(int, int, vs_menu_containerData*);
-int func_80102F88(int, int, void*);
-int func_80103070(int, void*);
+int _getContainerItemId(int, int, vs_menu_containerData*);
+int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
 void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
 
 extern u_short D_80109944[];
+extern int (*D_80109958[])(int);
+extern u_char D_80109A48[];
 extern char D_80109A7A;
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;
@@ -73,7 +75,28 @@ void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* 
     vs_main_freeHeapR(weapon);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102BB0);
+void func_80102BB0(vs_battle_equippedShield* target, vs_battle_inventoryShield* source,
+    vs_menu_containerData* container)
+{
+    int i;
+    vs_battle_shieldIntermediate* tempShield = vs_main_allocHeapR(sizeof *tempShield);
+    vs_main_bzero(tempShield, sizeof *tempShield);
+
+    if (source != NULL) {
+        tempShield->unkC2 = source->unk0;
+        vs_battle_copyInventoryArmorStats(&tempShield->unk0, &source->unk4);
+        tempShield->material = source->unk4.material;
+
+        for (i = 0; i < 3; ++i) {
+            if (source->gems[i] != 0) {
+                vs_battle_copyInventoryGemStats(
+                    &tempShield->gems[i], &container->gems[(source->gems[i] & 0x7F) - 1]);
+            }
+        }
+    }
+    vs_battle_applyShieldStats(target, tempShield);
+    vs_main_freeHeapR(tempShield);
+}
 
 static u_short* func_80102C94(int arg0, func_80102C94_t* arg1)
 {
@@ -113,15 +136,43 @@ static void func_80102D28(int arg0, int arg1, u_short* arg2)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102F88);
+int _getContainerItemId(int type, int index, vs_menu_containerData* container)
+{
+    int ret = 0;
 
-int func_80103070(int arg0, void* arg1)
+    switch (type) {
+    case 0:
+        ret = container->weapons[index].blade;
+        break;
+    case 1:
+        ret = container->blades[index].id;
+        break;
+    case 2:
+        ret = container->grips[index].id;
+        break;
+    case 3:
+        ret = container->shields[index].unk4.id;
+        break;
+    case 4:
+        ret = container->armor[index].id;
+        break;
+    case 5:
+        ret = container->gems[index].id;
+        break;
+    case 6:
+        ret = container->items[index].id;
+        break;
+    }
+    return ret;
+}
+
+int func_80103070(int arg0, vs_menu_containerData* arg1)
 {
     int i;
     int var_s1 = 0;
 
     for (i = 0; i < D_80109944[arg0]; ++i) {
-        if (func_80102F88(arg0, i, arg1) != 0) {
+        if (_getContainerItemId(arg0, i, arg1) != 0) {
             ++var_s1;
         }
     }
@@ -133,14 +184,28 @@ int func_80103110(int arg0, void* arg1)
     int i;
 
     for (i = 0; i < D_80109944[arg0]; ++i) {
-        if (func_80102F88(arg0, i, arg1) == 0) {
+        if (_getContainerItemId(arg0, i, arg1) == 0) {
             break;
         }
     }
     return i;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801031A0);
+void func_801031A0(void)
+{
+    int i;
+    int var_a2;
+    vs_menu_containerData* temp_s2 = &D_8010245C->unk4BB0;
+
+    vs_battle_memcpy(&temp_s2->items, D_80109A88 + 0x3800, sizeof temp_s2->items);
+
+    for (var_a2 = D_8010245C->unkC3B0[0], i = 0; var_a2 != 0;
+         ++i, var_a2 = D_8010245C->unkC3B0[i]) {
+        if ((var_a2 >> 8) == 6) {
+            func_801032AC(0x16, temp_s2, (var_a2 - 1) & 0xFF, &D_8010245C->unk87B0);
+        }
+    }
+}
 
 static void func_80103270(void)
 {
@@ -313,15 +378,105 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104BDC);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104E14);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105008);
+int func_80105008(int arg0)
+{
+    int temp_v0;
+    int var_s0 = 0;
+
+    if (arg0 != 0) {
+        var_s0 = arg0 >> 4;
+        D_80109A48[3] = arg0 & 0xF;
+        D_80109A81 = 1;
+        D_80109A84 = 0;
+        func_800FDD78();
+        vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
+        func_800FFA88(0);
+    }
+
+    temp_v0 = D_80109958[D_80109A48[3]](var_s0);
+
+    if (temp_v0 != 0) {
+        if (D_80109A84 != 0) {
+            return -2;
+        }
+        D_80109A7C = 1;
+        D_80109A81 = 0;
+        D_80109A7D = 1;
+        func_800FFA88(2);
+    } else if (vs_mainmenu_ready() != 0) {
+        D_801022D5 = D_801024B8 != 9;
+        func_801013F8(1);
+        func_800FDEBC();
+    }
+    return temp_v0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUD.PRG/nonmatchings/234", D_8010285C);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105114);
+int _getWeaponStat(int type, vs_battle_equippedWeapon* weapon)
+{
+    switch (type) {
+    case 0:
+        return -weapon->blade.category;
+    case 1:
+        return -weapon->blade.material;
+    case 2:
+        return weapon->range.unk0;
+    case 3:
+        return -weapon->damageType;
+    case 4:
+        return weapon->currentDp;
+    case 5:
+        return weapon->maxDp;
+    case 6:
+        return weapon->currentPp;
+    case 7:
+        return weapon->maxPp;
+    case 8:
+        return weapon->currentStr;
+    case 9:
+        return weapon->currentInt;
+    case 10:
+        return weapon->currentAgility;
+    default:
+        if (type >= 17) {
+            return weapon->classAffinityCurrent.affinity[0][type - 17];
+        }
+        return weapon->classAffinityCurrent.class[0][type - 11];
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801051F8);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105378);
+int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
+{
+    switch (arg0) {
+    case 1:
+        return -shield->shield.material;
+    case 4:
+        return shield->currentPp;
+    case 5:
+        return shield->maxPp;
+    case 6:
+        return shield->currentDp;
+    case 7:
+        return shield->maxDp;
+    case 8:
+        return shield->currentStr;
+    case 9:
+        return shield->currentInt;
+    case 10:
+        return shield->currentAgility;
+    default:
+        if (arg0 < 33) {
+            return shield->classAffinityCurrent.class[0][arg0 - 27];
+        }
+        if (arg0 >= 40) {
+            return shield->types[arg0 - 39];
+        }
+        return shield->classAffinityCurrent.affinity[0][arg0 - 33];
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
 
@@ -337,7 +492,23 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801055F0);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010574C);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105844);
+void func_80105844(vs_battle_equippedItem* item, int type, int index)
+{
+    switch (type) {
+    case 1:
+        vs_battle_copyInventoryBladeStats(item, &vs_menuD_containerData->blades[index]);
+        return;
+    case 2:
+        vs_battle_copyInventoryGripStats(item, &vs_menuD_containerData->grips[index]);
+        return;
+    case 4:
+        vs_battle_copyInventoryArmorStats(item, &vs_menuD_containerData->armor[index]);
+        return;
+    case 5:
+        vs_battle_copyInventoryGemStats(item, &vs_menuD_containerData->gems[index]);
+        return;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010592C);
 

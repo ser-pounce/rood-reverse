@@ -17,7 +17,7 @@ typedef struct {
     char unk0[15][256];
     D_800619D8_t unkF00;
     vs_menu_containerData unkFB0;
-    char unk4BB0[0x3C00];
+    vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
     u_short unkC3B0[0x40];
     vs_menu_containerData unkC430;

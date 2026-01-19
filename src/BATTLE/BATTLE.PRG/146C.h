@@ -610,6 +610,14 @@ typedef struct {
     char name[24];
 } vs_battle_weaponIntermediate;
 
+typedef struct {
+    vs_battle_equippedItem unk0;
+    vs_battle_equippedItem gems[3];
+    char material;
+    char unkC1;
+    short unkC2;
+} vs_battle_shieldIntermediate;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(
     vs_battle_equippedItem*, vs_battle_inventoryBlade*);
@@ -623,6 +631,7 @@ void vs_battle_applyArmor(vs_battle_equippedArmor*, vs_battle_inventoryArmor*);
 void vs_battle_applyAccessory(
     vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
+void vs_battle_applyShieldStats(vs_battle_equippedShield*, vs_battle_shieldIntermediate*);
 void vs_battle_applyWeaponStats(vs_battle_equippedWeapon*, vs_battle_weaponIntermediate*);
 void vs_battle_copyEquippedBladeStats(
     vs_battle_inventoryBlade* dropBlade, vs_battle_equippedItem* targetBlade);

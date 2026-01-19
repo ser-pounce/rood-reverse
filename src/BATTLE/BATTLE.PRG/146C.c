@@ -454,14 +454,6 @@ typedef struct {
 } func_80085A34_t;
 
 typedef struct {
-    vs_battle_equippedItem unk0;
-    vs_battle_equippedItem gems[3];
-    char material;
-    char unkC1;
-    short unkC2;
-} _shieldIntermediate;
-
-typedef struct {
     short unk0;
     char unk2;
     char unk3;
@@ -623,7 +615,6 @@ typedef struct {
     int unk258[30];
 } D_800F1ABC_t;
 
-void vs_battle_applyShieldStats(vs_battle_equippedShield*, _shieldIntermediate*);
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(VECTOR*);
@@ -1187,7 +1178,7 @@ void vs_battle_applyWeaponStats(
 }
 
 void vs_battle_applyShieldStats(
-    vs_battle_equippedShield* target, _shieldIntermediate* source)
+    vs_battle_equippedShield* target, vs_battle_shieldIntermediate* source)
 {
     int i;
 
@@ -1454,7 +1445,7 @@ void vs_battle_applyShield(
 {
     int i;
 
-    _shieldIntermediate* tempShield = vs_main_allocHeapR(sizeof *tempShield);
+    vs_battle_shieldIntermediate* tempShield = vs_main_allocHeapR(sizeof *tempShield);
     vs_main_bzero(tempShield, sizeof *tempShield);
 
     if (source != NULL) {

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "234.h"
 #include "../MAINMENU.PRG/C48.h"
+#include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include <libetc.h>
@@ -21,16 +22,20 @@ typedef struct {
 } func_80102C94_t;
 
 void func_80102D80(int, int, vs_menu_containerData*);
-int func_80102F88(int, int, int);
-short func_80103070(int, void*);
+int func_80102F88(int, int, void*);
+int func_80103070(int, void*);
 void func_801031A0(void);
-void func_801032AC(int, char*, int, vs_menu_containerData*);
+void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
 
 extern u_short D_80109944[];
+extern char D_80109A7A;
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;
 extern signed char D_80109A7D;
+extern char D_80109A81;
 extern short D_80109A82;
+extern int D_80109A84;
+extern void* D_80109A88;
 
 void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source,
     vs_menu_containerData* container)
@@ -110,9 +115,20 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102F88);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103070);
+int func_80103070(int arg0, void* arg1)
+{
+    int i;
+    int var_s1 = 0;
 
-int func_80103110(int arg0, int arg1)
+    for (i = 0; i < D_80109944[arg0]; ++i) {
+        if (func_80102F88(arg0, i, arg1) != 0) {
+            ++var_s1;
+        }
+    }
+    return var_s1;
+}
+
+int func_80103110(int arg0, void* arg1)
 {
     int i;
 
@@ -209,12 +225,20 @@ static void func_80104034(int arg0, int arg1)
     func_800FBEA4(1);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104078);
+void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
+{
+    vs_battle_menuItem_t* temp_v0;
+
+    vs_battle_playMenuChangeSfx();
+    temp_v0 = vs_battle_setMenuItem(arg0, 0x9B, 0x12, 0xA5, 0, arg1[0]);
+    temp_v0->selected = 1;
+    temp_v0->flags = (arg2 >> 0x1A);
+    temp_v0->unkC = (arg2 >> 0x10) & 7;
+    vs_mainmenu_setMessage(arg1[1]);
+    vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104114);
-
-extern char D_80109A81;
-extern int D_80109A84;
 
 void func_80104170(int arg0)
 {
@@ -323,16 +347,36 @@ int _getShieldGemSlotCount(int arg0)
     return count;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801066DC);
+int func_801066DC(int arg0, int arg1)
+{
+    int temp_s0 = func_80103070(arg0, D_80109A88);
+    int temp_s1 = arg1 + (temp_s0 + func_80103070(arg0, &D_8010245C->unk87B0));
+
+    if (D_80109A7A != 0) {
+        return D_80109944[arg0] < temp_s1;
+    }
+    return D_801022A0[arg0] < temp_s1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106784);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801068BC);
+void func_801068BC(int arg0)
+{
+    int temp_s0_2;
+    int temp_s2;
+    int temp_s0;
+
+    temp_s0 = D_8010245C->unkC3B0[arg0];
+    temp_s2 = temp_s0 >> 8;
+    temp_s0_2 = (temp_s0 - 1) & 0xFF;
+    func_801032AC(
+        temp_s2 | 0x10, vs_menuD_containerData, temp_s0_2, &D_8010245C->unk87B0);
+    func_80102D80(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
+}
 
 void func_80106948(int arg0, int arg1)
 {
-    func_801032AC(
-        arg0 | 0x10, &D_8010245C->unk4BB0[0x3C00], arg1, vs_menuD_containerData);
+    func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, vs_menuD_containerData);
     func_80102D80(arg0, arg1, vs_menuD_containerData);
 }
 

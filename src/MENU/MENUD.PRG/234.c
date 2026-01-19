@@ -180,7 +180,35 @@ static void func_80103D50(signed char arg0)
     D_80109A7D = arg0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103D6C);
+int func_80103D6C(int arg0, int arg1)
+{
+    int temp_s1;
+    int temp_a1;
+    int temp_a0;
+
+    if ((vs_main_buttonsState & 0xC) != 0xC) {
+        temp_s1 = arg1;
+        temp_a1 = func_80103070(arg0, vs_menuD_containerData);
+        temp_a0 = temp_a1;
+
+        if (vs_main_buttonRepeat & 4) {
+            int temp = arg1 - 1;
+            arg1 = temp + temp_a1;
+        }
+        do {
+            if (vs_main_buttonRepeat & 8) {
+                arg1++;
+            }
+            if (arg1 >= temp_a0) {
+                arg1 -= temp_a0;
+            }
+        } while (0);
+        if ((vs_main_buttonsPressed.all & 0xC) && (arg1 == temp_s1)) {
+            func_800C02E0();
+        }
+    }
+    return arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
 
@@ -319,7 +347,20 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105D24);
 
 INCLUDE_RODATA("build/src/MENU/MENUD.PRG/nonmatchings/234", D_80102910);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106464);
+void func_80106464(int arg0, int arg1, int arg2)
+{
+    int var_s2;
+    int temp_s0;
+
+    var_s2 = 0x808080;
+    func_800FFD64(arg0, arg1, 0x808080, 0);
+    temp_s0 = arg1 - 0x20;
+    func_800C6540("/", temp_s0, 0x808080, NULL);
+    if ((arg2 * 2) < arg0) {
+        var_s2 = 0x804020;
+    }
+    func_800FFD64(arg2, temp_s0, var_s2, 0);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106504);
 

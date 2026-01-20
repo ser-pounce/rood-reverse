@@ -22,7 +22,8 @@ typedef struct {
     u_short unkC3B0[0x40];
     vs_menu_containerData unkC430;
     vs_menu_containerIndices indices;
-    int unk105B0[0x1060];
+    vs_menu_containerData unk105B0;
+    int unk141B0[0x160];
 } D_8010245C_t;
 
 typedef struct {

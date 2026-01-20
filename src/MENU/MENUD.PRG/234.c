@@ -29,6 +29,8 @@ void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
 
 extern u_short D_80109944[];
 extern int (*D_80109958[])(int);
+extern char* D_80109A08[];
+extern char* D_80109A10[];
 extern u_char D_80109A48[];
 extern char D_80109A7A;
 extern signed char D_80109A7B;
@@ -490,7 +492,44 @@ static int func_801055D0(int arg0, func_801055D0_t* arg1)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801055F0);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010574C);
+int _getItemStat(int stat, vs_battle_equippedItem* item)
+{
+    switch (stat) {
+    case 0:
+        return -item->category;
+    case 1:
+        return -item->material;
+    case 2:
+        return item->range.unk0;
+    case 3:
+        return -item->damageType;
+    case 4:
+        return item->currentDp;
+    case 5:
+        return item->maxDp;
+    case 6:
+        return item->currentPp;
+    case 7:
+        return item->maxPp;
+    case 8:
+        return item->strength;
+    case 9:
+        return item->intelligence;
+    case 10:
+        return item->agility;
+    default:
+        if (stat >= 27) {
+            stat -= 16;
+        }
+        if (stat < 17) {
+            return item->classes[stat - 11];
+        }
+        if (stat >= 24) {
+            return item->types[stat - 23];
+        }
+        return item->affinities[stat - 17];
+    }
+}
 
 void func_80105844(vs_battle_equippedItem* item, int type, int index)
 {
@@ -533,9 +572,25 @@ void func_80106464(int arg0, int arg1, int arg2)
     func_800FFD64(arg2, temp_s0, var_s2, 0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106504);
+void func_80106504(void)
+{
+    int i;
+    int var_s1_2;
 
-int _getWeaponGemSlotCount(int arg0)
+    for (i = 0; i < 2; ++i) {
+        vs_battle_renderTextRaw(D_80109A08[i], (0x3A + i * 0x80) | 0x580000, NULL);
+    }
+
+    for (i = 0; i < 7; ++i, var_s1_2 += 0xC) {
+        func_80106464(D_801022A0[i], ((0x64 + 0xC * i) << 16) | 0x70,
+            func_80103070(i, &D_8010245C->unk105B0));
+        vs_battle_renderTextRaw(D_80109A10[i], ((0x64 + 0xC * i) << 16) | 0xA0, NULL);
+        func_80106464(D_80109944[i], ((0x64 + 0xC * i) << 16) | 0xF8,
+            func_80103070(i, &D_8010245C->unkC430));
+    }
+}
+
+int _getWeaponGemCount(int arg0)
 {
     int i;
     vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->weapons[arg0];
@@ -547,7 +602,7 @@ int _getWeaponGemSlotCount(int arg0)
     return count;
 }
 
-int _getShieldGemSlotCount(int arg0)
+int _getShieldGemCount(int arg0)
 {
     int i;
     vs_battle_inventoryShield* shield = &vs_menuD_containerData->shields[arg0];

@@ -625,7 +625,47 @@ int func_801066DC(int arg0, int arg1)
     return D_801022A0[arg0] < temp_s1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106784);
+int func_80106784(int arg0, int arg1)
+{
+    int i;
+
+    for (i = 0; i < 64; ++i) {
+        if (D_8010245C->unkC3B0[i] == 0) {
+            break;
+        }
+    }
+
+    if (arg0 == 0) {
+        i += 2 + _getWeaponGemCount(arg1);
+    }
+
+    if (arg0 == 3) {
+        i += _getShieldGemCount(arg1);
+    }
+
+    if (i >= 64) {
+        return 1;
+    }
+
+    if (func_801066DC(arg0, 1) != 0) {
+        return 2;
+    }
+
+    if (arg0 == 0) {
+        if (func_801066DC(1, 1) != 0)
+            return 2;
+        if (func_801066DC(2, 1) != 0)
+            return 2;
+        if (func_801066DC(5, _getWeaponGemCount(arg1)) != 0)
+            return 2;
+    }
+
+    if (arg0 == 3 && func_801066DC(5, _getShieldGemCount(arg1)) != 0) {
+        return 2;
+    }
+
+    return 0;
+}
 
 void func_801068BC(int arg0)
 {

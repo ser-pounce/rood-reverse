@@ -209,12 +209,6 @@ typedef struct {
 } D_80060068_t;
 
 typedef struct {
-    char unk0[40];
-    char unk28[72];
-    char unk70[64];
-} D_800619D8_t;
-
-typedef struct {
     char clearCount;
     char unk1;
     char unk2;

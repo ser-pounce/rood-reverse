@@ -115,3 +115,36 @@ typedef struct {
     vs_battle_inventoryItem items[256]; // 0x3800
     // 0x3C00
 } vs_menu_containerData;
+
+typedef struct {
+    u_short weapons[32];
+    u_short blades[64];
+    u_short grips[64];
+    u_short shields[32];
+    u_short armor[64];
+    u_short gems[192];
+    u_short items[256];
+} vs_menu_containerIndices;
+
+typedef struct {
+    vs_menu_containerData unk0;
+    short unk3C00[0x2C0];
+} func_80102C94_t;
+
+typedef struct {
+    char unk0[40];
+    char unk28[72];
+    char unk70[64];
+} D_800619D8_t;
+
+typedef struct {
+    char unk0[15][256];
+    D_800619D8_t unkF00;
+    vs_menu_containerData unkFB0;
+    vs_menu_containerData unk4BB0;
+    vs_menu_containerData unk87B0;
+    u_short unkC3B0[0x40];
+    vs_menu_containerData unkC430;
+    vs_menu_containerIndices indices;
+    func_80102C94_t unk105B0;
+} D_8010245C_t;

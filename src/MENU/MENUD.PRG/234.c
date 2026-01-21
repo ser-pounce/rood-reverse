@@ -212,7 +212,42 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801032AC);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801037D8);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801039AC);
+void func_801039AC(void)
+{
+    int i;
+
+    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+    func_80102C94_t* container = &D_8010245C->unk105B0;
+
+    vs_battle_rMemzero(&container->unk0, sizeof container->unk0);
+    vs_battle_rMemzero(
+        &D_8010245C->unk105B0.unk3C00, sizeof D_8010245C->unk105B0.unk3C00);
+
+    for (i = 0; i < 7; ++i) {
+        int j;
+        char* temp_s0 = D_801022A8[i];
+        u_short* temp_a1 = func_80102C94(i, container);
+
+        for (j = 0; j < D_801022A0[i]; ++j) {
+            temp_a1[j] = temp_s0[j];
+        }
+    }
+
+    vs_battle_memcpy(
+        container->unk0.weapons, inventory->weapons, sizeof container->unk0.weapons / 4);
+    vs_battle_memcpy(
+        container->unk0.blades, inventory->blades, sizeof container->unk0.blades / 4);
+    vs_battle_memcpy(
+        container->unk0.grips, inventory->grips, sizeof container->unk0.grips / 4);
+    vs_battle_memcpy(
+        container->unk0.shields, inventory->shields, sizeof container->unk0.shields / 4);
+    vs_battle_memcpy(
+        container->unk0.armor, inventory->armor, sizeof container->unk0.armor / 4);
+    vs_battle_memcpy(
+        container->unk0.gems, inventory->gems, sizeof container->unk0.gems / 4);
+    vs_battle_memcpy(
+        container->unk0.items, inventory->items, sizeof container->unk0.items / 4);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103B20);
 
@@ -655,7 +690,7 @@ void func_80106504(void)
 
     for (i = 0; i < 7; ++i, var_s1_2 += 0xC) {
         func_80106464(D_801022A0[i], ((0x64 + 0xC * i) << 16) | 0x70,
-            func_80103070(i, &D_8010245C->unk105B0));
+            func_80103070(i, &D_8010245C->unk105B0.unk0));
         vs_battle_renderTextRaw(D_80109A10[i], ((0x64 + 0xC * i) << 16) | 0xA0, NULL);
         func_80106464(D_80109944[i], ((0x64 + 0xC * i) << 16) | 0xF8,
             func_80103070(i, &D_8010245C->unkC430));

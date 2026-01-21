@@ -11,21 +11,13 @@ typedef struct {
     u_short unk2318[1][0xE];
 } func_80103D14_t;
 
-typedef struct {
-    u_short unk0;
-    char unk2;
-} func_801055D0_t;
-
-typedef struct {
-    vs_menu_containerData unk0;
-    short unk3C00[1];
-} func_80102C94_t;
-
 void func_80102D80(int, int, vs_menu_containerData*);
 int _getContainerItemId(int, int, vs_menu_containerData*);
 int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
 void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
+
+extern u_long* D_1F800000[];
 
 extern u_short D_80109944[];
 extern int (*D_80109958[])(int);
@@ -255,7 +247,7 @@ int func_80103D6C(int arg0, int arg1)
 
     if ((vs_main_buttonsState & 0xC) != 0xC) {
         temp_s1 = arg1;
-        temp_a1 = func_80103070(arg0, vs_menuD_containerData);
+        temp_a1 = func_80103070(arg0, &vs_menuD_containerData->unk0);
         temp_a0 = temp_a1;
 
         if (vs_main_buttonRepeat & 4) {
@@ -277,7 +269,40 @@ int func_80103D6C(int arg0, int arg1)
     return arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103E24);
+void func_80103E24(int arg0, int arg1)
+{
+    int temp_s0;
+    int temp_s4;
+    int i;
+    u_long* var_v1;
+    vs_battle_menuItem_t* temp_v0;
+
+    temp_s4 = (D_800F4EE8.unk85[0x1B] - 1) & 7;
+
+    if (arg0 == 4) {
+        func_801013F8(0);
+    }
+
+    arg0 = (arg0 * 8) - 0x10;
+
+    for (i = 0; i < 8; ++i) {
+        temp_s0 = (((i + 1) & 7) * 0x10) + 0x20;
+        if ((i == temp_s4) && (arg1 == 1)) {
+            temp_v0 = vs_battle_getMenuItem(0x1F);
+            if (temp_s0 >= (temp_v0->animSpeed - 0xC)) {
+                temp_v0->flags = i + 0x18;
+                continue;
+            } else {
+                var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
+            }
+        } else {
+            var_v1 = func_800C0224(
+                0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1] - 3);
+        }
+
+        var_v1[4] = (0x78 + i * 0x10) | 0x8000 | (i == temp_s4 ? 0x37FD0000 : 0x37FE0000);
+    }
+}
 
 void func_80103F64(int arg0)
 {
@@ -482,15 +507,59 @@ int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
 
-static int func_801055D0(int arg0, func_801055D0_t* arg1)
+static int func_801055D0(int arg0, vs_battle_inventoryItem* item)
 {
     if (arg0 == 0) {
-        return -arg1->unk0;
+        return -item->id;
     }
-    return arg1->unk2;
+    return item->unk2;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801055F0);
+void func_801055F0(int arg0)
+{
+    u_short sp10[0x100];
+    u_short* sp210;
+    int temp_v0;
+    int i;
+    int var_s4;
+    int var_s5;
+    int temp_s0;
+    u_short* temp_s7;
+    vs_battle_inventoryItem* item;
+
+    item = vs_menuD_containerData->unk0.items;
+    temp_s7 = func_80102C94(6, vs_menuD_containerData);
+    vs_battle_rMemzero(&sp10, sizeof sp10);
+    var_s5 = 0;
+    sp210 = sp10;
+
+    while (1) {
+        var_s4 = 0x80000000;
+
+        for (i = 0; i < 256; ++i) {
+            temp_s0 = temp_s7[i];
+            if (temp_s0 != 0) {
+                temp_v0 = func_801055D0(arg0, &item[temp_s0 - 1]);
+                if (var_s4 < temp_v0) {
+                    var_s4 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s4 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 256; ++i) {
+            temp_s0 = temp_s7[i];
+            if ((temp_s0 != 0) && (func_801055D0(arg0, &item[temp_s0 - 1]) == var_s4)) {
+                sp210[var_s5++] = temp_s0;
+                temp_s7[i] = 0;
+            }
+        }
+    }
+    vs_battle_memcpy(temp_s7, &sp10, sizeof sp10);
+}
 
 int _getItemStat(int stat, vs_battle_equippedItem* item)
 {
@@ -535,16 +604,19 @@ void func_80105844(vs_battle_equippedItem* item, int type, int index)
 {
     switch (type) {
     case 1:
-        vs_battle_copyInventoryBladeStats(item, &vs_menuD_containerData->blades[index]);
+        vs_battle_copyInventoryBladeStats(
+            item, &vs_menuD_containerData->unk0.blades[index]);
         return;
     case 2:
-        vs_battle_copyInventoryGripStats(item, &vs_menuD_containerData->grips[index]);
+        vs_battle_copyInventoryGripStats(
+            item, &vs_menuD_containerData->unk0.grips[index]);
         return;
     case 4:
-        vs_battle_copyInventoryArmorStats(item, &vs_menuD_containerData->armor[index]);
+        vs_battle_copyInventoryArmorStats(
+            item, &vs_menuD_containerData->unk0.armor[index]);
         return;
     case 5:
-        vs_battle_copyInventoryGemStats(item, &vs_menuD_containerData->gems[index]);
+        vs_battle_copyInventoryGemStats(item, &vs_menuD_containerData->unk0.gems[index]);
         return;
     }
 }
@@ -593,10 +665,10 @@ void func_80106504(void)
 int _getWeaponGemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->weapons[arg0];
+    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->unk0.weapons[arg0];
     int count = 0;
 
-    for (i = 0; i < vs_menuD_containerData->grips[weapon->grip - 1].gemSlots; ++i) {
+    for (i = 0; i < vs_menuD_containerData->unk0.grips[weapon->grip - 1].gemSlots; ++i) {
         count += weapon->gems[i] != 0;
     }
     return count;
@@ -605,7 +677,7 @@ int _getWeaponGemCount(int arg0)
 int _getShieldGemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryShield* shield = &vs_menuD_containerData->shields[arg0];
+    vs_battle_inventoryShield* shield = &vs_menuD_containerData->unk0.shields[arg0];
     int count = 0;
 
     for (i = 0; i < shield->unk4.gemSlots; ++i) {
@@ -677,14 +749,14 @@ void func_801068BC(int arg0)
     temp_s2 = temp_s0 >> 8;
     temp_s0_2 = (temp_s0 - 1) & 0xFF;
     func_801032AC(
-        temp_s2 | 0x10, vs_menuD_containerData, temp_s0_2, &D_8010245C->unk87B0);
+        temp_s2 | 0x10, &vs_menuD_containerData->unk0, temp_s0_2, &D_8010245C->unk87B0);
     func_80102D80(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
 }
 
 void func_80106948(int arg0, int arg1)
 {
-    func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, vs_menuD_containerData);
-    func_80102D80(arg0, arg1, vs_menuD_containerData);
+    func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, &vs_menuD_containerData->unk0);
+    func_80102D80(arg0, arg1, &vs_menuD_containerData->unk0);
 }
 
 static int func_801069B0(int arg0, int arg1)

@@ -6,4 +6,9 @@ void func_80102A34(
 void func_80102BB0(
     vs_battle_equippedShield*, vs_battle_inventoryShield*, vs_menu_containerData*);
 
-extern vs_menu_containerData* vs_menuD_containerData;
+typedef struct {
+    vs_menu_containerData unk0;
+    short unk3C00[1];
+} func_80102C94_t;
+
+extern func_80102C94_t* vs_menuD_containerData;

@@ -211,7 +211,63 @@ static void func_80103270(void)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801032AC);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801037D8);
+void func_801037D8(int arg0, func_80102C94_t* arg1)
+{
+    int i;
+    int j;
+    int var_a1;
+    int temp_a1;
+    int temp_s2;
+    u_short* temp_s3;
+
+    temp_s3 = func_80102C94(arg0, arg1);
+    temp_s2 = D_80109944[arg0];
+
+    for (i = 0; i < temp_s2; ++i) {
+        temp_a1 = temp_s3[i];
+        if ((temp_a1 != 0)
+            && (_getContainerItemId(arg0, temp_a1 - 1, &arg1->unk0) == 0)) {
+            temp_s3[i] = 0;
+        }
+    }
+
+    i = 0;
+
+    while (1) {
+        if (temp_s3[i] != 0) {
+            ++i;
+            if (i == (temp_s2 - 1)) {
+                break;
+            }
+        } else {
+            var_a1 = i + 1;
+            while (var_a1 < temp_s2) {
+                if (temp_s3[var_a1] != 0) {
+                    break;
+                }
+                ++var_a1;
+            }
+
+            if (var_a1 == temp_s2) {
+                break;
+            }
+
+            for (j = var_a1; j < temp_s2; ++j) {
+                temp_s3[(j + i) - var_a1] = temp_s3[j];
+            }
+
+            for (j = j + (i - var_a1); j < temp_s2; ++j) {
+                temp_s3[j] = 0;
+            }
+        }
+    }
+    for (i = 0; i < temp_s2; ++i) {
+        if ((_getContainerItemId(arg0, i, &arg1->unk0) != 0)
+            && (func_80102CD0(arg0, i, temp_s3) == 0)) {
+            func_80102D28(arg0, i, temp_s3);
+        }
+    }
+}
 
 void func_801039AC(void)
 {

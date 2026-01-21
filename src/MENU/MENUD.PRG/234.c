@@ -16,6 +16,7 @@ int _getContainerItemId(int, int, vs_menu_containerData*);
 int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
 void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
+void func_801037D8(int, func_80102C94_t*);
 
 extern u_long* D_1F800000[];
 
@@ -249,7 +250,38 @@ void func_801039AC(void)
         container->unk0.items, inventory->items, sizeof container->unk0.items / 4);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103B20);
+void func_80103B20(void)
+{
+    int i;
+
+    func_80102C94_t* temp_s2 = &D_8010245C->unk105B0;
+    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+
+    for (i = 0; i < 7; ++i) {
+        int j;
+        int k;
+        char* temp_s5 = D_801022A8[i];
+        u_short* temp_s3 = func_80102C94(i, temp_s2);
+
+        for (j = 0; j < 7; ++j) {
+            func_801037D8(j, temp_s2);
+        }
+
+        for (k = 0; k < D_801022A0[i]; ++k) {
+            temp_s5[k] = temp_s3[k];
+        }
+    }
+
+    vs_battle_memcpy(
+        inventory->weapons, temp_s2->unk0.weapons, sizeof inventory->weapons);
+    vs_battle_memcpy(inventory->blades, temp_s2->unk0.blades, sizeof inventory->blades);
+    vs_battle_memcpy(inventory->grips, temp_s2->unk0.grips, sizeof inventory->grips);
+    vs_battle_memcpy(
+        inventory->shields, temp_s2->unk0.shields, sizeof inventory->shields);
+    vs_battle_memcpy(inventory->armor, temp_s2->unk0.armor, sizeof inventory->armor);
+    vs_battle_memcpy(inventory->gems, temp_s2->unk0.gems, sizeof inventory->gems);
+    vs_battle_memcpy(inventory->items, temp_s2->unk0.items, sizeof inventory->items);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103C9C);
 

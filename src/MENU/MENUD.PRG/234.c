@@ -680,7 +680,6 @@ static int func_801055D0(int arg0, vs_battle_inventoryItem* item)
 void func_801055F0(int arg0)
 {
     u_short sp10[0x100];
-    u_short* sp210;
     int temp_v0;
     int i;
     int var_s4;
@@ -693,7 +692,6 @@ void func_801055F0(int arg0)
     temp_s7 = func_80102C94(6, vs_menuD_containerData);
     vs_battle_rMemzero(&sp10, sizeof sp10);
     var_s5 = 0;
-    sp210 = sp10;
 
     while (1) {
         var_s4 = 0x80000000;
@@ -715,7 +713,7 @@ void func_801055F0(int arg0)
         for (i = 0; i < 256; ++i) {
             temp_s0 = temp_s7[i];
             if ((temp_s0 != 0) && (func_801055D0(arg0, &item[temp_s0 - 1]) == var_s4)) {
-                sp210[var_s5++] = temp_s0;
+                sp10[var_s5++] = temp_s0;
                 temp_s7[i] = 0;
             }
         }
@@ -783,7 +781,57 @@ void func_80105844(vs_battle_equippedItem* item, int type, int index)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010592C);
+void func_8010592C(int arg0, int arg1)
+{
+    vs_battle_equippedItem sp10;
+    int temp_v0;
+    int i;
+    int var_s4;
+    int var_s6;
+    int temp_s0;
+    int temp_s5;
+    u_short* temp_s7;
+
+    var_s6 = 0;
+    temp_s5 = D_80109944[arg0];
+
+    {
+        u_short sp40[temp_s5];
+        temp_s7 = func_80102C94(arg0, vs_menuD_containerData);
+        vs_battle_rMemzero(sp40, temp_s5 * 2);
+
+        while (1) {
+            var_s4 = 0x80000000;
+
+            for (i = 0; i < temp_s5; ++i) {
+                temp_s0 = temp_s7[i];
+                if (temp_s0 != 0) {
+                    func_80105844(&sp10, arg0, temp_s0 - 1);
+                    temp_v0 = _getItemStat(arg1, &sp10);
+                    if (var_s4 < temp_v0) {
+                        var_s4 = temp_v0;
+                    }
+                }
+            }
+
+            if (var_s4 == 0x80000000) {
+                break;
+            }
+
+            for (i = 0; i < temp_s5; ++i) {
+                temp_s0 = temp_s7[i];
+                if (temp_s0 != 0) {
+                    func_80105844(&sp10, arg0, temp_s0 - 1);
+                    if (_getItemStat(arg1, &sp10) == var_s4) {
+                        sp40[var_s6++] = temp_s0;
+                        temp_s7[i] = 0;
+                    }
+                }
+            }
+        }
+        vs_battle_memcpy(temp_s7, sp40, temp_s5 * 2);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105ACC);
 

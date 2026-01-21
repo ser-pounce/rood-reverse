@@ -540,7 +540,54 @@ int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80105454);
+void func_80105454(int arg0)
+{
+    vs_battle_equippedShield sp10;
+    u_short sp178[0x20];
+    int temp_v0;
+    int i;
+    int var_s3;
+    int temp_s0;
+
+    vs_battle_inventoryShield* temp_s5 = vs_menuD_containerData->unk0.shields;
+    u_short* temp_s6 = func_80102C94(3, vs_menuD_containerData);
+    int var_s4 = 0;
+
+    vs_battle_rMemzero(&sp178, sizeof sp178);
+
+    while (1) {
+        var_s3 = 0x80000000;
+
+        for (i = 0; i < 32; ++i) {
+            temp_s0 = temp_s6[i];
+            if (temp_s0 != 0) {
+                func_80102BB0(
+                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                temp_v0 = _getShieldStat(arg0, &sp10);
+                if (var_s3 < temp_v0) {
+                    var_s3 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s3 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 32; ++i) {
+            temp_s0 = temp_s6[i];
+            if (temp_s0 != 0) {
+                func_80102BB0(
+                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                if (_getShieldStat(arg0, &sp10) == var_s3) {
+                    sp178[var_s4++] = temp_s0;
+                    temp_s6[i] = 0;
+                }
+            }
+        }
+    }
+    vs_battle_memcpy(temp_s6, &sp178, sizeof sp178);
+}
 
 static int func_801055D0(int arg0, vs_battle_inventoryItem* item)
 {

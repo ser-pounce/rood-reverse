@@ -540,7 +540,55 @@ int _getWeaponStat(int type, vs_battle_equippedWeapon* weapon)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801051F8);
+void func_801051F8(int arg0)
+{
+    vs_battle_equippedWeapon sp10;
+    u_short sp1A8[0x20];
+    vs_battle_inventoryWeapon* temp_s6;
+    int temp_v0;
+    int i;
+    int var_s4;
+    int var_s5;
+    int temp_s0;
+    u_short* temp_s7;
+
+    temp_s6 = vs_menuD_containerData->unk0.weapons;
+    temp_s7 = func_80102C94(0, vs_menuD_containerData);
+    vs_battle_rMemzero(sp1A8, 0x40);
+    var_s5 = 0;
+
+    while (1) {
+        var_s4 = 0x80000000;
+        for (i = 0; i < 32; ++i) {
+            temp_s0 = temp_s7[i];
+            if (temp_s0 != 0) {
+                func_80102A34(
+                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                temp_v0 = _getWeaponStat(arg0, &sp10);
+                if (var_s4 < temp_v0) {
+                    var_s4 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s4 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 32; ++i) {
+            temp_s0 = temp_s7[i];
+            if (temp_s0 != 0) {
+                func_80102A34(
+                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                if (_getWeaponStat(arg0, &sp10) == var_s4) {
+                    sp1A8[var_s5++] = temp_s0;
+                    temp_s7[i] = 0;
+                }
+            }
+        }
+    }
+    vs_battle_memcpy(temp_s7, &sp1A8, sizeof sp1A8);
+}
 
 int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
 {

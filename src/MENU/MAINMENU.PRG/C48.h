@@ -48,6 +48,7 @@ void func_800FD17C(
     vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_800FD270(int);
 void func_800FD404(int);
+void func_800FD504(int);
 void func_800FD700(int);
 void func_800FD878(int);
 void vs_mainMenu_resetStats(void);

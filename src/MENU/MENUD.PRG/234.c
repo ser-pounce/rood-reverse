@@ -17,11 +17,13 @@ int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
 void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
 void func_801037D8(int, func_80102C94_t*);
+int func_80104114(int, int);
 
 extern u_long* D_1F800000[];
 
 extern u_short D_8010952C[];
 extern u_short D_80109944[];
+extern char* D_80109954;
 extern int (*D_80109958[])(int);
 extern char D_80109970[];
 extern char D_80109990[];
@@ -30,6 +32,15 @@ extern char D_801099D4[];
 extern char* D_801099DC[];
 extern char* D_80109A08[];
 extern char* D_80109A10[];
+extern char D_80109A35;
+extern char D_80109A36;
+extern char D_80109A37;
+extern u_char D_80109A38;
+extern char D_80109A39;
+extern char D_80109A3A;
+extern char D_80109A3B;
+extern u_char D_80109A3C;
+extern char D_80109A3D;
 extern char D_80109A43;
 extern char D_80109A44;
 extern char D_80109A45;
@@ -602,12 +613,6 @@ void func_8010425C(
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801042D0);
 
-int func_80104114(int, int);
-extern char D_80109A35;
-extern char D_80109A36;
-extern char D_80109A37;
-extern u_char D_80109A38;
-
 int func_80104534(int arg0)
 {
     func_800FD0E0_t sp10;
@@ -662,7 +667,65 @@ int func_80104534(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104728);
+int func_80104728(int arg0)
+{
+    func_800FD0E0_t sp10;
+    int sp18;
+    int temp_v0;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109A3B = arg0 >> 8;
+        D_80109A3C = arg0 - 1;
+        func_80103F64(D_80109A3B);
+        D_80109A3D = 0;
+        D_80109A3A = 0;
+        D_80109A39 = 0;
+        return 0;
+    }
+    switch (D_80109A39) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80104034(D_80109A3B, 4);
+            func_800FD504(vs_menuD_containerData->unk3C00.unkC0[D_80109A3C]);
+            D_80109A39 = 1U;
+        }
+        break;
+    case 1:
+        if (D_80109A3A < 0xAU) {
+            D_80109A3A = (D_80109A3A + 1);
+        } else {
+            D_80109A39 = 2U;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80104170(0);
+            D_80109A39 = 3U;
+        } else {
+            temp_v0_2 = func_80103D6C(2, D_80109A3C);
+            if (temp_v0_2 != D_80109A3C) {
+                D_80109A3C = temp_v0_2;
+                temp_v0_3 = func_80104114(2, temp_v0_2);
+                func_800FCC0C(&vs_menuD_containerData->unk0.grips[temp_v0_3 - 1], &sp10,
+                    &sp18, vs_battle_stringBuf);
+                func_800FD504(temp_v0_3);
+                func_80104078(D_80109A3B, &sp10.unk0, sp18, temp_v0_2);
+            }
+        }
+        D_80109954[6] = (vs_menuD_containerData->unk0
+                             .grips[vs_menuD_containerData->unk3C00.unkC0[D_80109A3C] - 1]
+                             .gemSlots
+                         + 0x30);
+        func_80100004(0x116, 0x100, 0x20);
+        vs_battle_renderTextRaw(D_80109954, 0x240118, NULL);
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010496C);
 

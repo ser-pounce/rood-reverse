@@ -22,6 +22,7 @@ int func_800FFCDC(int, int);
 void func_800FFD64(int, int, int, int);
 void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
+void func_80100004(int, int, int);
 void func_80100164(void);
 void func_80100344(int, int, int, int);
 void func_80100414(int, int);

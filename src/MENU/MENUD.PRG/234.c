@@ -102,7 +102,7 @@ static u_short* func_80102C94(int arg0, func_80102C94_t* arg1)
     for (i = 0; i < arg0; ++i) {
         var_a3 += D_80109944[i];
     }
-    return arg1->unk3C00 + var_a3;
+    return arg1->unk3C00.unk0 + var_a3;
 }
 
 static int func_80102CD0(int arg0, int arg1, u_short* arg2)
@@ -518,7 +518,65 @@ void func_8010425C(
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801042D0);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104534);
+int func_80104114(int, int);
+extern char D_80109A35;
+extern char D_80109A36;
+extern char D_80109A37;
+extern u_char D_80109A38;
+
+int func_80104534(int arg0)
+{
+    func_800FD0E0_t sp10;
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109A37 = arg0 >> 8;
+        D_80109A38 = arg0 - 1;
+        func_80103F64(D_80109A37);
+        D_80109A36 = 10;
+        D_80109A35 = 0;
+        return 0;
+    }
+
+    switch (D_80109A35) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80104034(D_80109A37, 3);
+            func_800FD404(vs_menuD_containerData->unk3C00.unk40[D_80109A38]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_80109A35 = 1;
+        }
+        break;
+    case 1:
+        if (D_80109A36 != 0) {
+            --D_80109A36;
+        } else {
+            D_80109A35 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80104170(1);
+            D_80109A35 = 3;
+        } else {
+            temp_v0_2 = func_80103D6C(1, D_80109A38);
+            if (temp_v0_2 != D_80109A38) {
+                D_80109A38 = temp_v0_2;
+                temp_v0_3 = func_80104114(1, temp_v0_2);
+                func_800FCAA4(&vs_menuD_containerData->unk0.blades[temp_v0_3 - 1], &sp10,
+                    &sp18, vs_battle_stringBuf);
+                func_800FD404(temp_v0_3);
+                func_80104078(D_80109A37, &sp10.unk0, sp18, temp_v0_2);
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104728);
 

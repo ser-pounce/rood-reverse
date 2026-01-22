@@ -128,7 +128,10 @@ typedef struct {
 
 typedef struct {
     vs_menu_containerData unk0;
-    short unk3C00[0x2C0];
+    struct {
+        short unk0[0x20];
+        u_short unk40[0x2A0];
+    } unk3C00;
 } func_80102C94_t;
 
 typedef struct {

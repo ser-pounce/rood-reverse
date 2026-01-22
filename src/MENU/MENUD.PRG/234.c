@@ -20,6 +20,7 @@ void func_801037D8(int, func_80102C94_t*);
 
 extern u_long* D_1F800000[];
 
+extern u_short D_8010952C[];
 extern u_short D_80109944[];
 extern int (*D_80109958[])(int);
 extern char* D_80109A08[];
@@ -29,6 +30,8 @@ extern u_char D_80109A48;
 extern u_char D_80109A49;
 extern u_char D_80109A4A;
 extern u_char D_80109A4B;
+extern int D_80109A58;
+extern char D_80109A5C;
 extern char D_80109A7A;
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;
@@ -244,12 +247,10 @@ void func_801037D8(int arg0, func_80102C94_t* arg1)
                 break;
             }
         } else {
-            var_a1 = i + 1;
-            while (var_a1 < temp_s2) {
+            for (var_a1 = i + 1; var_a1 < temp_s2; ++var_a1) {
                 if (temp_s3[var_a1] != 0) {
                     break;
                 }
-                ++var_a1;
             }
 
             if (var_a1 == temp_s2) {
@@ -265,6 +266,7 @@ void func_801037D8(int arg0, func_80102C94_t* arg1)
             }
         }
     }
+
     for (i = 0; i < temp_s2; ++i) {
         if ((_getContainerItemId(arg0, i, &arg1->unk0) != 0)
             && (func_80102CD0(arg0, i, temp_s3) == 0)) {
@@ -587,8 +589,6 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104728);
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010496C);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104BDC);
-
-extern char D_80109A47;
 
 int func_80104E14(int arg0)
 {
@@ -1168,15 +1168,66 @@ static void func_80106A04(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106A50);
+void func_80106A50(void)
+{
+    int j;
+    int var_a1;
+    int i;
+    int k;
+    u_short* temp_s2 = D_8010245C->unkC3B0;
+
+    for (i = 0; i < 64; ++i) {
+        int temp_a1 = temp_s2[i];
+        if ((temp_a1 != 0)
+            && (_getContainerItemId(
+                    (temp_a1 >> 8), (temp_a1 - 1) & 0xFF, &D_8010245C->unk87B0)
+                == 0)) {
+            temp_s2[i] = 0;
+        }
+    }
+
+    i = 0;
+
+    while (1) {
+        if (temp_s2[i] != 0) {
+            ++i;
+            if (i == 0x3F) {
+                break;
+            }
+        } else {
+            for (var_a1 = i + 1; var_a1 < 0x40; ++var_a1) {
+                if (temp_s2[var_a1] != 0) {
+                    break;
+                }
+            }
+
+            if (var_a1 == 0x40) {
+                break;
+            }
+
+            for (j = var_a1; j < 0x40; ++j) {
+                temp_s2[j + i - var_a1] = temp_s2[j];
+            }
+
+            for (j = j + (i - var_a1); j < 64; ++j) {
+                temp_s2[j] = 0;
+            }
+        }
+    }
+
+    for (k = 0; k < 7; ++k) {
+        for (i = 0; i < D_80109944[k]; ++i) {
+            if ((_getContainerItemId(k, i, &D_8010245C->unk87B0) != 0)
+                && (func_801069B0(k, i) == 0)) {
+                func_80106A04(k, i);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106C64);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801071D8);
-
-extern u_short D_8010952C[];
-extern int D_80109A58;
-extern char D_80109A5C;
 
 int func_801072B0(int arg0)
 {

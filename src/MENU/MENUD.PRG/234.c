@@ -32,6 +32,11 @@ extern char D_801099D4[];
 extern char* D_801099DC[];
 extern char* D_80109A08[];
 extern char* D_80109A10[];
+extern char D_80109A30;
+extern char D_80109A31;
+extern char D_80109A32;
+extern u_char D_80109A33;
+extern char D_80109A34;
 extern char D_80109A35;
 extern char D_80109A36;
 extern char D_80109A37;
@@ -611,7 +616,68 @@ void func_8010425C(
     vs_mainMenu_setShieldStrings(&sp10, arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801042D0);
+int func_801042D0(int arg0)
+{
+    char* sp18[2];
+    int sp20;
+    int temp_v0_2;
+    int i;
+
+    if (arg0 != 0) {
+        D_80109A32 = arg0 >> 8;
+        D_80109A33 = arg0 - 1;
+        func_80103F64(D_80109A32);
+        D_80109A34 = 0;
+        D_80109A31 = 0;
+        D_80109A30 = 0;
+        return 0;
+    }
+
+    switch (D_80109A30) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80104034(D_80109A32, 7);
+            func_800FD270(vs_menuD_containerData->unk3C00.unk0[D_80109A33]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_80109A30 = 1;
+        }
+        break;
+    case 1:
+        if (D_80109A31 < 10) {
+            ++D_80109A31;
+            if (D_80109A31 < 6) {
+                func_800FC510(
+                    D_80109A31, vs_menuD_containerData->unk3C00.unk0[D_80109A33], 1);
+            }
+            break;
+        }
+        D_80109A30 = 2;
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80104170(1);
+            D_80109A30 = 3;
+        } else {
+            temp_v0_2 = func_80103D6C(0, D_80109A33);
+            if (temp_v0_2 != D_80109A33) {
+                D_80109A33 = temp_v0_2;
+                i = func_80104114(0, temp_v0_2);
+                func_801041E0(&vs_menuD_containerData->unk0, sp18, &sp20,
+                    vs_battle_stringBuf, i - 1);
+                func_800FD270(i);
+
+                func_80104078(D_80109A32, sp18, sp20, temp_v0_2);
+                for (i = 1; i < 6; ++i) {
+                    func_800FC510(i, vs_menuD_containerData->unk3C00.unk0[temp_v0_2], 0);
+                }
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_80104534(int arg0)
 {
@@ -671,7 +737,6 @@ int func_80104728(int arg0)
 {
     func_800FD0E0_t sp10;
     int sp18;
-    int temp_v0;
     int temp_v0_2;
     int temp_v0_3;
 

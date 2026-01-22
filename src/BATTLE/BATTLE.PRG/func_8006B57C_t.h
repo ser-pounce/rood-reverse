@@ -129,7 +129,7 @@ typedef struct {
 typedef struct {
     vs_menu_containerData unk0;
     struct {
-        short unk0[0x20];
+        u_short unk0[0x20];
         u_short unk40[0x40];
         u_short unkC0[0x60];
         u_short unk180[0x40];

@@ -25,6 +25,10 @@ extern u_short D_80109944[];
 extern int (*D_80109958[])(int);
 extern char* D_80109A08[];
 extern char* D_80109A10[];
+extern char D_80109A43;
+extern char D_80109A44;
+extern char D_80109A45;
+extern u_char D_80109A46;
 extern u_char D_80109A47;
 extern u_char D_80109A48;
 extern u_char D_80109A49;
@@ -655,7 +659,65 @@ INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104728);
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010496C);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104BDC);
+int func_80104BDC(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109A45 = arg0 >> 8;
+        D_80109A46 = (arg0 - 1);
+        func_80103F64(D_80109A45);
+        D_80109A44 = 10;
+        D_80109A43 = 0;
+        return 0;
+    }
+
+    switch (D_80109A43) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80104034(D_80109A45, 7);
+            func_800FD700(vs_menuD_containerData->unk3C00.unk180[D_80109A46]);
+            if (vs_battle_inventory
+                    .armor[vs_menuD_containerData->unk3C00.unk180[D_80109A46] - 1]
+                    .category
+                != 7) {
+                vs_mainMenu_drawDpPpbars(1);
+            }
+            D_80109A43 = 1;
+        }
+        break;
+    case 1:
+        if (D_80109A44 != 0) {
+            D_80109A44 = (D_80109A44 - 1);
+        } else {
+            D_80109A43 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80104170(1);
+            D_80109A43 = 3;
+        } else {
+            temp_v0_2 = func_80103D6C(4, D_80109A46);
+            if (temp_v0_2 != D_80109A46) {
+                D_80109A46 = temp_v0_2;
+                temp_v0_3 = func_80104114(4, temp_v0_2);
+                vs_mainMenu_setAccessoryStrings(
+                    &vs_menuD_containerData->unk0.armor[temp_v0_3 - 1], sp10, &sp18,
+                    vs_battle_stringBuf);
+                func_800FD700(temp_v0_3);
+                func_80104078(D_80109A45, sp10, sp18, temp_v0_2);
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_80104E14(int arg0)
 {

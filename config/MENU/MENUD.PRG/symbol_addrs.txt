@@ -1,3 +1,4 @@
+_initContainerObject = 0x80102D80;
 _getContainerItemId = 0x80102F88;
 _getWeaponStat = 0x80105114;
 _getShieldStat = 0x80105378;

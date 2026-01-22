@@ -11,7 +11,7 @@ typedef struct {
     u_short unk2318[1][0xE];
 } func_80103D14_t;
 
-void func_80102D80(int, int, vs_menu_containerData*);
+void _initContainerObject(int, int, vs_menu_containerData*);
 int _getContainerItemId(int, int, vs_menu_containerData*);
 int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
@@ -136,7 +136,74 @@ static void func_80102D28(int arg0, int arg1, u_short* arg2)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80102D80);
+void _initContainerObject(int type, int index, vs_menu_containerData* container)
+{
+    int i;
+
+    switch (type) {
+    case 0: {
+        vs_battle_inventoryWeapon* weapon = &container->weapons[index];
+
+        _initContainerObject(1, weapon->blade - 1, container);
+        _initContainerObject(2, weapon->grip - 1, container);
+
+        for (i = 0; i < 3; ++i) {
+            int g = weapon->gems[i];
+            if (g != 0) {
+                _initContainerObject(5, g - 1, container);
+            }
+        }
+
+        vs_battle_rMemzero(weapon, sizeof *weapon);
+        weapon->unk0 = index + 1;
+        break;
+    }
+    case 1: {
+        vs_battle_inventoryBlade* blade = &container->blades[index];
+        vs_battle_rMemzero(blade, sizeof *blade);
+        blade->index = index + 1;
+        break;
+    }
+    case 2: {
+        vs_battle_inventoryGrip* grip = &container->grips[index];
+        vs_battle_rMemzero(grip, sizeof *grip);
+        grip->unkE = index + 1;
+        break;
+    }
+    case 3: {
+        vs_battle_inventoryShield* shield = &container->shields[index];
+
+        for (i = 0; i < 3; ++i) {
+            int g = shield->gems[i];
+            if (g != 0) {
+                _initContainerObject(5, g - 1, container);
+            }
+        }
+
+        vs_battle_rMemzero(shield, sizeof *shield);
+        shield->unk0 = index + 1;
+        break;
+    }
+    case 4: {
+        vs_battle_inventoryArmor* armor = &container->armor[index];
+        vs_battle_rMemzero(armor, sizeof *armor);
+        armor->index = index + 1;
+        break;
+    }
+    case 5: {
+        vs_battle_inventoryGem* gem = &container->gems[index];
+        vs_battle_rMemzero(gem, sizeof *gem);
+        gem->unk1A = index + 1;
+        break;
+    }
+    case 6: {
+        vs_battle_inventoryItem* item = &container->items[index];
+        vs_battle_rMemzero(item, sizeof *item);
+        item->unk3 = index + 1;
+        break;
+    }
+    }
+}
 
 int _getContainerItemId(int type, int index, vs_menu_containerData* container)
 {
@@ -1132,13 +1199,13 @@ void func_801068BC(int arg0)
     temp_s0_2 = (temp_s0 - 1) & 0xFF;
     func_801032AC(
         temp_s2 | 0x10, &vs_menuD_containerData->unk0, temp_s0_2, &D_8010245C->unk87B0);
-    func_80102D80(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
+    _initContainerObject(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
 }
 
 void func_80106948(int arg0, int arg1)
 {
     func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, &vs_menuD_containerData->unk0);
-    func_80102D80(arg0, arg1, &vs_menuD_containerData->unk0);
+    _initContainerObject(arg0, arg1, &vs_menuD_containerData->unk0);
 }
 
 static int func_801069B0(int arg0, int arg1)

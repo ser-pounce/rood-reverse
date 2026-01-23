@@ -1,5 +1,6 @@
 #include "common.h"
 #include "234.h"
+#include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -22,6 +23,7 @@ int func_80104114(int, int);
 extern u_long* D_1F800000[];
 
 extern u_short D_8010952C[];
+extern char D_8010957C[];
 extern u_short D_80109944[];
 extern char* D_80109954;
 extern int (*D_80109958[])(int);
@@ -32,6 +34,9 @@ extern char D_801099D4[];
 extern char* D_801099DC[];
 extern char* D_80109A08[];
 extern char* D_80109A10[];
+extern char D_80109A2C;
+extern char D_80109A2D;
+extern char D_80109A2E;
 extern char D_80109A30;
 extern char D_80109A31;
 extern char D_80109A32;
@@ -59,6 +64,7 @@ extern char D_80109A4C;
 extern u_char D_80109A4D;
 extern int D_80109A58;
 extern char D_80109A5C;
+extern char D_80109A70;
 extern char D_80109A7A;
 extern signed char D_80109A7B;
 extern signed char D_80109A7C;
@@ -1682,6 +1688,87 @@ int func_801072B0(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80107490);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801089BC);
+int func_801089BC(int arg0)
+{
+    int i;
+    int var_s1;
+    vs_battle_menuItem_t* temp_v0_2;
+    int v;
+    char* a0;
+
+    if (arg0 != 0) {
+        if (D_80109A2E != 0) {
+            D_80109A2E = 0;
+            if (vs_main_settings.cursorMemory == 0) {
+                D_800F4EE8.unk9E = 0;
+            }
+        }
+        D_80109A2C = 0;
+        D_80109A70 = 0;
+        return 0;
+    }
+
+    switch (D_80109A70) {
+    case 0:
+    case 1:
+        temp_v0_2 =
+            vs_battle_setMenuItem(D_80109A70 + 0xA, 0x140, (D_80109A70 * 0x10) + 0x22,
+                0x7E, 0, (char*)&D_8010952C[D_8010952C[D_80109A70 * 2 + 12]]);
+        temp_v0_2->state = 2;
+        temp_v0_2->x = 0xC2;
+        ++D_80109A70;
+        break;
+    case 2:
+        D_80109A70 += vs_mainmenu_ready();
+        break;
+    case 3:
+        var_s1 = D_800F4EE8.unk9E;
+
+        for (i = 0; i < 2; ++i) {
+            vs_battle_getMenuItem(i + 0xA)->selected = i == var_s1;
+        }
+        if (vs_main_buttonsPressed.all & 0x10) {
+            vs_battle_playMenuLeaveSfx();
+            func_800FA8E0(0x28);
+            return -2;
+        }
+        if (vs_main_buttonsPressed.all & 0x40) {
+            vs_battle_playMenuLeaveSfx();
+            return -1;
+        }
+        if (vs_main_buttonsPressed.all & 0x20) {
+            vs_battle_playMenuSelectSfx();
+            return var_s1 + 1;
+        }
+        D_80109A2C += 16;
+        func_800C6540("OK", 0x4200C8, ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101,
+            D_1F800000[1] - 3);
+        v = 0x1A;
+        D_80109A2D = func_800FFCDC(
+            D_80109A2D, (((var_s1 * 0x10) - (((var_s1 * 2) & 4) - v)) << 0x10) | 0xB4);
+        if (vs_main_buttonRepeat & 0x1000) {
+            var_s1 += 2;
+        }
+        if (vs_main_buttonRepeat & 0x4000) {
+            ++var_s1;
+        }
+        if (var_s1 >= 3) {
+            var_s1 -= 3;
+        }
+        if (var_s1 != ((u_short*)&D_800F4EE8)[0x4F]) {
+            vs_battle_playMenuChangeSfx();
+            ((u_short*)&D_800F4EE8)[0x4F] = var_s1;
+        }
+        if (var_s1 != 2) {
+            a0 = (char*)&D_8010952C[D_8010952C[var_s1 * 2 + 13]];
+        } else {
+            a0 = D_8010957C;
+        }
+        vs_mainmenu_setMessage(a0);
+        break;
+    }
+    func_80106504();
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80108C6C);

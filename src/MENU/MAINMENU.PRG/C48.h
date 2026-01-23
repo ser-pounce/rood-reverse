@@ -45,7 +45,7 @@ void vs_mainMenu_setAccessoryStrings(
 void func_800FD0E0(
     vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_800FD17C(
-    vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
+    vs_battle_inventoryItem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3);
 void func_800FD270(int);
 void func_800FD404(int);
 void func_800FD504(int);

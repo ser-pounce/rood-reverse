@@ -485,7 +485,7 @@ void func_800FD0E0(
 }
 
 void func_800FD17C(
-    vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+    vs_battle_inventoryItem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);

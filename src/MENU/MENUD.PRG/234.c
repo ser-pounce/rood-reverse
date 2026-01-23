@@ -646,7 +646,23 @@ void func_80103B20(void)
     vs_battle_memcpy(inventory->items, temp_s2->unk0.items, sizeof inventory->items);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80103C9C);
+int func_80103C9C(int arg0, int arg1, vs_menu_containerData* arg2)
+{
+    int var_v1 = 0;
+    if (arg0 == 1) {
+        var_v1 = arg2->blades[arg1].unk2A;
+    }
+    if (arg0 == 2) {
+        var_v1 = arg2->grips[arg1].unkC;
+    }
+    if (arg0 == 5) {
+        var_v1 = arg2->gems[arg1].unk18;
+        if (var_v1 & 0x80) {
+            var_v1 = 0;
+        }
+    }
+    return var_v1;
+}
 
 static int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2)
 {

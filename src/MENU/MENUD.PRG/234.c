@@ -792,7 +792,79 @@ int func_80104728(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_8010496C);
+void func_800FC704(int, int, int);
+void func_800FD5A0(int);
+extern char D_80109A3E;
+extern char D_80109A3F;
+extern char D_80109A40;
+extern u_char D_80109A41;
+extern char D_80109A42;
+
+int func_8010496C(int arg0)
+{
+    char* sp18[2];
+    int sp20;
+    int temp_v0_2;
+    int i;
+
+    if (arg0 != 0) {
+        D_80109A40 = arg0 >> 8;
+        D_80109A41 = arg0 - 1;
+        func_80103F64(D_80109A40);
+        D_80109A42 = 0;
+        D_80109A3F = 0;
+        D_80109A3E = 0;
+        return 0;
+    }
+
+    switch (D_80109A3E) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80104034(D_80109A40, 7);
+            func_800FD5A0(vs_menuD_containerData->unk3C00.unk140[D_80109A41]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_80109A3E = 1;
+        }
+        break;
+    case 1:
+        if (D_80109A3F < 10) {
+            ++D_80109A3F;
+            if (D_80109A3F < 4) {
+                func_800FC704(
+                    D_80109A3F, vs_menuD_containerData->unk3C00.unk140[D_80109A41], 1);
+            }
+            break;
+        }
+        if (vs_mainmenu_ready() != 0) {
+            D_80109A3E = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80104170(1);
+            D_80109A3E = 3;
+        } else {
+            temp_v0_2 = func_80103D6C(3, D_80109A41);
+            if (temp_v0_2 != D_80109A41) {
+                D_80109A41 = temp_v0_2;
+                i = func_80104114(3, temp_v0_2);
+                func_8010425C(&vs_menuD_containerData->unk0, sp18, &sp20,
+                    vs_battle_stringBuf, i - 1);
+                func_800FD5A0(i);
+                func_80104078(D_80109A40, sp18, sp20, temp_v0_2);
+                for (i = 1; i < 4; ++i) {
+                    func_800FC704(
+                        i, vs_menuD_containerData->unk3C00.unk140[temp_v0_2], 0);
+                }
+                return 0;
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_80104BDC(int arg0)
 {

@@ -131,7 +131,8 @@ typedef struct {
     struct {
         u_short unk0[0x20];
         u_short unk40[0x40];
-        u_short unkC0[0x60];
+        u_short unkC0[0x40];
+        u_short unk140[0x20];
         u_short unk180[0x40];
         u_short unk200[0x1C0];
     } unk3C00;

@@ -16,7 +16,7 @@ void _initContainerObject(int, int, vs_menu_containerData*);
 int _getContainerItemId(int, int, vs_menu_containerData*);
 int func_80103070(int, vs_menu_containerData*);
 void func_801031A0(void);
-void func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
+int func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
 void func_801037D8(int, func_80102C94_t*);
 int func_80104114(int, int);
 
@@ -316,7 +316,208 @@ static void func_80103270(void)
     D_80109A82 = func_80103070(6, &D_8010245C->unk4BB0);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801032AC);
+int func_801032AC(
+    int arg0, vs_menu_containerData* arg1, int arg2, vs_menu_containerData* arg3)
+{
+    int temp_fp;
+    int temp_s2;
+    int temp_s3;
+    int temp_s7;
+    int i;
+    int var_s1;
+    int var_s1_2;
+    int var_s5;
+    vs_battle_inventoryArmor* temp_s0_4;
+    vs_battle_inventoryArmor* new_var3;
+    vs_battle_inventoryBlade* temp_s0_2;
+    vs_battle_inventoryBlade* new_var;
+    vs_battle_inventoryGem* temp_s0_5;
+    vs_battle_inventoryGem* new_var4;
+    vs_battle_inventoryGrip* temp_s0_3;
+    vs_battle_inventoryGrip* new_var2;
+    vs_battle_inventoryItem* temp_a0;
+    vs_battle_inventoryItem* temp_a1;
+    vs_battle_inventoryShield* temp_s3_3;
+    vs_battle_inventoryShield* temp_s4_2;
+    vs_battle_inventoryWeapon* temp_s3_2;
+    vs_battle_inventoryWeapon* temp_s4;
+
+    temp_s3 = arg0 >> 8;
+    temp_fp = (arg0 >> 4) & 1;
+    arg0 = arg0 & 0xF;
+    var_s5 = 0;
+    temp_s7 = func_80103070(arg0, arg1);
+    temp_s2 = func_80103110(arg0, arg1);
+
+    switch (arg0) {
+    case 0:
+        temp_s4 = &arg3->weapons[arg2];
+        temp_s3_2 = &arg1->weapons[temp_s2];
+
+        if (((temp_s7 != 0x20) && (func_80103070(1, arg1) != 0x40))
+            && (func_80103070(2, arg1) != 0x40)) {
+
+            var_s1 = 0;
+
+            for (i = 0; i < 3; ++i) {
+                if (temp_s4->gems[i] != 0) {
+                    ++var_s1;
+                }
+            }
+
+            if ((func_80103070(5, arg1) + var_s1) >= 0xC1) {
+                break;
+            }
+
+            var_s5 = temp_s2 + 1;
+
+            if (temp_fp != 0) {
+                vs_battle_rMemzero(temp_s3_2, 0x20);
+                temp_s3_2->unk0 = var_s5;
+                temp_s3_2->blade =
+                    func_801032AC((var_s5 << 8) | 0x11, arg1, temp_s4->blade - 1, arg3);
+                temp_s3_2->grip =
+                    func_801032AC((var_s5 << 8) | 0x12, arg1, temp_s4->grip - 1, arg3);
+                for (i = 0; i < 3; ++i) {
+                    if (temp_s4->gems[i] != 0) {
+                        temp_s3_2->gems[i] = func_801032AC(
+                            (var_s5 << 8) | 0x15, arg1, temp_s4->gems[i] - 1, arg3);
+                    }
+                }
+                vs_battle_rMemcpy(temp_s3_2->name, temp_s4->name, 0x18);
+            }
+        }
+        break;
+    case 1:
+        new_var = &arg3->blades[arg2];
+        temp_s0_2 = &arg1->blades[temp_s2];
+        if (temp_s7 == 0x40) {
+            break;
+        }
+        var_s5 = temp_s2 + 1;
+        if (temp_fp != 0) {
+            vs_battle_copyAligned(temp_s0_2, new_var, 0x2C);
+            temp_s0_2->index = var_s5;
+            temp_s0_2->unk2A = temp_s3;
+        }
+        break;
+    case 2:
+        new_var2 = &arg3->grips[arg2];
+        temp_s0_3 = &arg1->grips[temp_s2];
+
+        if (temp_s7 == 0x40) {
+            break;
+        }
+
+        var_s5 = temp_s2 + 1;
+
+        if (temp_fp != 0) {
+            vs_battle_copyAligned(temp_s0_3, new_var2, 0x10);
+            temp_s0_3->unkE = var_s5;
+            temp_s0_3->unkC = temp_s3;
+        }
+        break;
+    case 3:
+        temp_s4_2 = &arg3->shields[arg2];
+        temp_s3_3 = &arg1->shields[temp_s2];
+
+        if (temp_s7 == 0x20) {
+            break;
+        }
+
+        var_s1_2 = 0;
+
+        for (i = 0; i < 3; ++i) {
+            if (temp_s4_2->gems[i] != 0) {
+                ++var_s1_2;
+            }
+        }
+
+        if ((func_80103070(5, arg1) + var_s1_2) >= 0xC1) {
+            break;
+        }
+
+        var_s5 = temp_s2 + 1;
+
+        if (temp_fp != 0) {
+            vs_battle_rMemzero(temp_s3_3, 0x30);
+            vs_battle_copyAligned(&temp_s3_3->unk4, &temp_s4_2->unk4, 0x28);
+            temp_s3_3->unk0 = var_s5;
+            for (i = 0; i < 3; ++i) {
+                if (temp_s4_2->gems[i] != 0) {
+                    temp_s3_3->gems[i] = func_801032AC(((var_s5 | 0x80) << 8) | 0x15,
+                        arg1, temp_s4_2->gems[i] - 1, arg3);
+                }
+            }
+        }
+        break;
+    case 4:
+        new_var3 = &arg3->armor[arg2];
+        temp_s0_4 = &arg1->armor[temp_s2];
+        if (temp_s7 == 0x40) {
+            break;
+        }
+        var_s5 = temp_s2 + 1;
+        if (temp_fp != 0) {
+            vs_battle_copyAligned(temp_s0_4, new_var3, 0x28);
+            temp_s0_4->index = var_s5;
+        }
+        break;
+    case 5:
+        new_var4 = &arg3->gems[arg2];
+        temp_s0_5 = &arg1->gems[temp_s2];
+        if (temp_s7 == 0xC0) {
+            break;
+        }
+        var_s5 = temp_s2 + 1;
+        if (temp_fp != 0) {
+            vs_battle_copyAligned(temp_s0_5, new_var4, 0x1C);
+            temp_s0_5->unk1A = var_s5;
+            temp_s0_5->unk18 = temp_s3;
+        }
+        break;
+    case 6:
+        temp_a0 = arg1->items;
+        temp_a1 = &arg3->items[arg2];
+        var_s1 = temp_a1->unk2;
+
+        for (i = 0; i < 256; ++i) {
+            if (temp_a0[i].id == temp_a1->id) {
+                if (temp_fp != 0) {
+                    if ((0x64 - temp_a0[i].unk2) >= var_s1) {
+                        temp_a0[i].unk2 = temp_a0[i].unk2 + var_s1;
+                        var_s1 = 0;
+                    } else {
+                        int v0 = var_s1 - 0x64;
+                        var_s1 = v0 + temp_a0[i].unk2;
+                        temp_a0[i].unk2 = 0x64;
+                    }
+                } else {
+                    int v0 = var_s1 - 0x64;
+                    var_s1 = v0 + temp_a0[i].unk2;
+                    if (var_s1 < 0) {
+                        var_s1 = 0;
+                    }
+                }
+            }
+        }
+
+        if (var_s1 == 0) {
+            var_s5 = 1;
+            break;
+        }
+        if (temp_s7 == 0x100) {
+            break;
+        }
+        var_s5 = temp_s2 + 1;
+        if (temp_fp != 0) {
+            temp_a0[temp_s2].id = temp_a1->id;
+            temp_a0[temp_s2].unk2 = var_s1;
+        }
+        break;
+    }
+    return var_s5;
+}
 
 void func_801037D8(int arg0, func_80102C94_t* arg1)
 {

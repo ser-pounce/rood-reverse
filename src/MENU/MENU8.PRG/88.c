@@ -139,7 +139,7 @@ static int _weaponStatusOptionMenu(int init)
                     [_menuStrings[i * 2 + VS_menu_INDEX_weaponStatusOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = 1 - ((*(u_int*)&vs_main_settings >> 6) & 1);
+            i = 1 - vs_main_settings.weaponStatChange;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x248, menuStrings, rowTypes);
             state = 1;
@@ -192,7 +192,7 @@ static int _armorStatusOptionMenu(int init)
                                                       + VS_menu_INDEX_armorStatusOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = 1 - (vs_main_settings.timingWeaponArmor >> 7);
+            i = 1 - vs_main_settings.armorStatChange;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x249, menuStrings, rowTypes);
             state = 1;

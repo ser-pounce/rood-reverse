@@ -9,28 +9,9 @@
 #include "../BATTLE/BATTLE.PRG/44F14.h"
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <libetc.h>
 #include "../../assets/MENU/ITEMHELP.BIN.h"
-
-typedef struct {
-    int unk0;
-    signed char unk4;
-    signed char unk5;
-    signed char unk6;
-    signed char unk7;
-    signed char unk8[8];
-} D_80102460_t;
-
-typedef struct {
-    int unk0;
-    char unk4;
-    signed char unk5;
-    signed char unk6;
-    signed char unk7;
-    signed char unk8[8];
-    signed char unk10[8];
-    int unk18;
-} D_80102458_t;
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
@@ -45,10 +26,6 @@ extern short _currentDp;
 extern short _maxDp;
 extern short _currentPp;
 extern short _maxPp;
-extern D_80102458_t* D_80102458;
-extern D_80102460_t* D_80102460;
-extern vs_battle_inventoryShield* D_8010246C;
-extern vs_battle_inventory_t* D_80102470;
 extern char D_80102480[];
 extern char D_801024A1;
 
@@ -436,7 +413,7 @@ void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char
 {
     vs_battle_equippedWeapon sp10;
 
-    if (D_80102470 == &vs_battle_inventory) {
+    if (D_80102470 == vs_battle_inventory.weapons) {
         vs_battle_applyWeapon(&sp10, arg0);
     } else {
         func_80102A34(&sp10, arg0, &vs_menuD_containerData->unk0);
@@ -508,12 +485,13 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD404);
 void func_800FD504(int arg0)
 {
     int i;
-    D_80102460_t* temp_a2 = &D_80102460[arg0 - 1];
+    vs_battle_inventoryGrip* temp_a2 = &D_80102460[arg0 - 1];
 
     for (i = 0; i < 4; ++i) {
-        vs_mainMenu_equipmentStats[i + 0x20] = temp_a2->unk8[i];
+        vs_mainMenu_equipmentStats[i + 0x20] = temp_a2->types[i];
     }
-    vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    vs_mainMenu_setStrIntAgi(
+        temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
     vs_mainMenu_equipmentSubtype = 4;
     D_801024A1 = arg0;
     func_800FBB8C(4);
@@ -526,14 +504,15 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD700);
 void func_800FD878(int arg0)
 {
     int i;
-    D_80102458_t* temp_a2 = &D_80102458[arg0 - 1];
+    vs_battle_inventoryGem* temp_a2 = &D_80102458[arg0 - 1];
 
     for (i = 0; i < 16; ++i) {
-        vs_mainMenu_equipmentStats[i] = temp_a2->unk8[i & 7];
-        vs_mainMenu_equipmentStats[i + 0x10] = temp_a2->unk10[i & 7];
+        vs_mainMenu_equipmentStats[i] = temp_a2->classes[i & 7];
+        vs_mainMenu_equipmentStats[i + 0x10] = temp_a2->affinities[i & 7];
     }
 
-    vs_mainMenu_setStrIntAgi(temp_a2->unk5, temp_a2->unk6, temp_a2->unk7, 1);
+    vs_mainMenu_setStrIntAgi(
+        temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
     vs_mainMenu_equipmentSubtype = 0x40;
     D_801024A1 = arg0;
     func_800FBB8C(3);

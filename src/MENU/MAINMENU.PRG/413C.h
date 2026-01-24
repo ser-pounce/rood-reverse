@@ -41,6 +41,5 @@ extern int D_801021A0[];
 extern int vs_mainMenu_mainCursorXY;
 extern char D_801022D5;
 extern char D_801023E3;
-extern int* D_80102468;
 extern char D_801024A1;
 extern char D_801024B8;

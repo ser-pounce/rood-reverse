@@ -1053,8 +1053,7 @@ void func_80106BB4(int arg0)
     vs_mainMenu_resetStats();
 
     if (arg0 != 0) {
-        vs_battle_applyAccessory(
-            &accessory, (vs_battle_inventoryArmor*)(D_80102468 + ((arg0 * 10) - 10)));
+        vs_battle_applyAccessory(&accessory, &D_80102468[arg0 - 1]);
 
         for (i = 0; i < 16; ++i) {
             vs_mainMenu_equipmentStats[i] = accessory.classes[i & 7];

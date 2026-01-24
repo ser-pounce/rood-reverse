@@ -39,10 +39,10 @@ typedef struct {
     char subId;
     char category;
     char gemSlots;
-    char strength;
-    char intelligence;
-    char agility;
-    char types[4];
+    signed char strength;
+    signed char intelligence;
+    signed char agility;
+    signed char types[4];
     u_short unkC;
     u_short unkE;
 } vs_battle_inventoryGrip;
@@ -52,9 +52,9 @@ typedef struct {
     char unk2;
     char unk3;
     char gemEffects;
-    char strength;
-    char intelligence;
-    char agility;
+    signed char strength;
+    signed char intelligence;
+    signed char agility;
     signed char classes[8];
     signed char affinities[8];
     u_short unk18;

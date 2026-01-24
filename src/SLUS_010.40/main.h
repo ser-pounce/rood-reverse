@@ -116,7 +116,11 @@ typedef struct vs_main_HeapHeader {
 } vs_main_HeapHeader;
 
 typedef struct {
-    char timingWeaponArmor;
+    u_char unk0_0 : 4;
+    u_char unk0_4 : 1;
+    u_char abilityTimingDisplay : 1;
+    u_char weaponStatChange : 1;
+    u_char armorStatChange : 1;
     char cursorMemory;
     short unk2;
     u_int slotState;

@@ -75,12 +75,12 @@ extern char D_80109A54;
 extern int D_80109A58;
 extern char D_80109A5C;
 extern char D_80109A70;
-extern char D_80109A7A;
-extern signed char D_80109A7B;
-extern signed char D_80109A7C;
-extern signed char D_80109A7D;
+extern u_char D_80109A7A;
+extern char D_80109A7B;
+extern char D_80109A7C;
+extern char D_80109A7D;
 extern char D_80109A81;
-extern short D_80109A82;
+extern u_short D_80109A82;
 extern int D_80109A84;
 extern void* D_80109A88;
 
@@ -321,7 +321,6 @@ void func_801031A0(void)
 
 static void func_80103270(void)
 {
-    short* s0 = &D_80109A82;
     func_801031A0();
     D_80109A82 = func_80103070(6, &D_8010245C->unk4BB0);
 }
@@ -814,7 +813,12 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80104114);
+int func_80104114(int arg0, int arg1)
+{
+    D_800F4EE8.unk0[(arg0 + 0x51) * 2] = 0;
+    D_800F4EE8.unk0[(arg0 + 0x51) * 2 + 1] = arg1;
+    return func_80102C94(arg0, (func_80102C94_t*)vs_menuD_containerData)[arg1];
+}
 
 void func_80104170(int arg0)
 {
@@ -2051,7 +2055,25 @@ void func_80106A50(void)
 
 INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106C64);
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_801071D8);
+void func_801071D8(int arg0)
+{
+    int temp_v0_2;
+    int i;
+
+    while (D_801023D0 < 16) {
+        func_80100A5C();
+    }
+
+    for (i = 20; i < 40; ++i) {
+        vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
+        if (temp_v0->state == 2) {
+            temp_v0->state = 1;
+            temp_v0->animSpeed = temp_v0->x;
+        }
+        temp_v0_2 = i ^ (D_800F4EE8.unk0[(arg0 + 81) * 2] + 20);
+        temp_v0->selected = temp_v0_2 == 0;
+    }
+}
 
 int func_801072B0(int arg0)
 {

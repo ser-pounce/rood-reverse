@@ -3786,8 +3786,8 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 10:
-        _copyContainer((vs_menu_containerData*)(_spmcimg + 0x79E0), &D_8010245C->unkC430,
-            &D_8010245C->indices);
+        _copyContainer((vs_menu_containerData*)(_spmcimg + 0x79E0),
+            &D_8010245C->unkC430.data, &D_8010245C->unkC430.indices);
         _showSaveMenu(2);
         *state = 11;
         break;

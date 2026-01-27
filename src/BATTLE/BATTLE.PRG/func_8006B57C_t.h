@@ -127,15 +127,8 @@ typedef struct {
 } vs_menu_containerIndices;
 
 typedef struct {
-    vs_menu_containerData unk0;
-    struct {
-        u_short unk0[0x20];
-        u_short unk40[0x40];
-        u_short unkC0[0x40];
-        u_short unk140[0x20];
-        u_short unk180[0x40];
-        u_short unk200[0x1C0];
-    } unk3C00;
+    vs_menu_containerData data;
+    vs_menu_containerIndices indices;
 } func_80102C94_t;
 
 typedef struct {
@@ -151,7 +144,6 @@ typedef struct {
     vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
     u_short unkC3B0[0x40];
-    vs_menu_containerData unkC430;
-    vs_menu_containerIndices indices;
+    func_80102C94_t unkC430;
     func_80102C94_t unk105B0;
 } D_8010245C_t;

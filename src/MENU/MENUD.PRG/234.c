@@ -6,11 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include <libetc.h>
-
-typedef struct {
-    char unk0[0x2318];
-    u_short unk2318[1][0xE];
-} func_80103D14_t;
+#include <memory.h>
 
 void _initContainerObject(int, int, vs_menu_containerData*);
 int _getContainerItemId(int, int, vs_menu_containerData*);
@@ -82,7 +78,7 @@ extern char D_80109A7D;
 extern char D_80109A81;
 extern u_short D_80109A82;
 extern int D_80109A84;
-extern void* D_80109A88;
+extern func_80102C94_t* D_80109A88;
 
 void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source,
     vs_menu_containerData* container)
@@ -152,7 +148,7 @@ static u_short* func_80102C94(int arg0, func_80102C94_t* arg1)
     for (i = 0; i < arg0; ++i) {
         var_a3 += D_80109944[i];
     }
-    return arg1->unk3C00.unk0 + var_a3;
+    return arg1->indices.weapons + var_a3;
 }
 
 static int func_80102CD0(int arg0, int arg1, u_short* arg2)
@@ -309,7 +305,7 @@ void func_801031A0(void)
     int var_a2;
     vs_menu_containerData* temp_s2 = &D_8010245C->unk4BB0;
 
-    vs_battle_memcpy(&temp_s2->items, D_80109A88 + 0x3800, sizeof temp_s2->items);
+    vs_battle_memcpy(&temp_s2->items, D_80109A88->data.items, sizeof temp_s2->items);
 
     for (var_a2 = D_8010245C->unkC3B0[0], i = 0; var_a2 != 0;
          ++i, var_a2 = D_8010245C->unkC3B0[i]) {
@@ -543,7 +539,7 @@ void func_801037D8(int arg0, func_80102C94_t* arg1)
     for (i = 0; i < temp_s2; ++i) {
         temp_a1 = temp_s3[i];
         if ((temp_a1 != 0)
-            && (_getContainerItemId(arg0, temp_a1 - 1, &arg1->unk0) == 0)) {
+            && (_getContainerItemId(arg0, temp_a1 - 1, &arg1->data) == 0)) {
             temp_s3[i] = 0;
         }
     }
@@ -578,7 +574,7 @@ void func_801037D8(int arg0, func_80102C94_t* arg1)
     }
 
     for (i = 0; i < temp_s2; ++i) {
-        if ((_getContainerItemId(arg0, i, &arg1->unk0) != 0)
+        if ((_getContainerItemId(arg0, i, &arg1->data) != 0)
             && (func_80102CD0(arg0, i, temp_s3) == 0)) {
             func_80102D28(arg0, i, temp_s3);
         }
@@ -592,9 +588,9 @@ void func_801039AC(void)
     vs_battle_inventory_t* inventory = &vs_battle_inventory;
     func_80102C94_t* container = &D_8010245C->unk105B0;
 
-    vs_battle_rMemzero(&container->unk0, sizeof container->unk0);
+    vs_battle_rMemzero(&container->data, sizeof container->data);
     vs_battle_rMemzero(
-        &D_8010245C->unk105B0.unk3C00, sizeof D_8010245C->unk105B0.unk3C00);
+        &D_8010245C->unk105B0.indices, sizeof D_8010245C->unk105B0.indices);
 
     for (i = 0; i < 7; ++i) {
         int j;
@@ -607,19 +603,19 @@ void func_801039AC(void)
     }
 
     vs_battle_memcpy(
-        container->unk0.weapons, inventory->weapons, sizeof container->unk0.weapons / 4);
+        container->data.weapons, inventory->weapons, sizeof container->data.weapons / 4);
     vs_battle_memcpy(
-        container->unk0.blades, inventory->blades, sizeof container->unk0.blades / 4);
+        container->data.blades, inventory->blades, sizeof container->data.blades / 4);
     vs_battle_memcpy(
-        container->unk0.grips, inventory->grips, sizeof container->unk0.grips / 4);
+        container->data.grips, inventory->grips, sizeof container->data.grips / 4);
     vs_battle_memcpy(
-        container->unk0.shields, inventory->shields, sizeof container->unk0.shields / 4);
+        container->data.shields, inventory->shields, sizeof container->data.shields / 4);
     vs_battle_memcpy(
-        container->unk0.armor, inventory->armor, sizeof container->unk0.armor / 4);
+        container->data.armor, inventory->armor, sizeof container->data.armor / 4);
     vs_battle_memcpy(
-        container->unk0.gems, inventory->gems, sizeof container->unk0.gems / 4);
+        container->data.gems, inventory->gems, sizeof container->data.gems / 4);
     vs_battle_memcpy(
-        container->unk0.items, inventory->items, sizeof container->unk0.items / 4);
+        container->data.items, inventory->items, sizeof container->data.items / 4);
 }
 
 void func_80103B20(void)
@@ -645,14 +641,14 @@ void func_80103B20(void)
     }
 
     vs_battle_memcpy(
-        inventory->weapons, temp_s2->unk0.weapons, sizeof inventory->weapons);
-    vs_battle_memcpy(inventory->blades, temp_s2->unk0.blades, sizeof inventory->blades);
-    vs_battle_memcpy(inventory->grips, temp_s2->unk0.grips, sizeof inventory->grips);
+        inventory->weapons, temp_s2->data.weapons, sizeof inventory->weapons);
+    vs_battle_memcpy(inventory->blades, temp_s2->data.blades, sizeof inventory->blades);
+    vs_battle_memcpy(inventory->grips, temp_s2->data.grips, sizeof inventory->grips);
     vs_battle_memcpy(
-        inventory->shields, temp_s2->unk0.shields, sizeof inventory->shields);
-    vs_battle_memcpy(inventory->armor, temp_s2->unk0.armor, sizeof inventory->armor);
-    vs_battle_memcpy(inventory->gems, temp_s2->unk0.gems, sizeof inventory->gems);
-    vs_battle_memcpy(inventory->items, temp_s2->unk0.items, sizeof inventory->items);
+        inventory->shields, temp_s2->data.shields, sizeof inventory->shields);
+    vs_battle_memcpy(inventory->armor, temp_s2->data.armor, sizeof inventory->armor);
+    vs_battle_memcpy(inventory->gems, temp_s2->data.gems, sizeof inventory->gems);
+    vs_battle_memcpy(inventory->items, temp_s2->data.items, sizeof inventory->items);
 }
 
 int func_80103C9C(int arg0, int arg1, vs_menu_containerData* arg2)
@@ -673,18 +669,16 @@ int func_80103C9C(int arg0, int arg1, vs_menu_containerData* arg2)
     return var_v1;
 }
 
-static int func_80103D14(int arg0, int arg1, func_80103D14_t* arg2)
+static int func_80103D14(int arg0, int arg1, vs_menu_containerData* arg2)
 {
-    u_short var_v1;
-
-    var_v1 = 0;
+    u_short ret = 0;
     if (arg0 == 5) {
-        var_v1 = arg2->unk2318[arg1][0];
-        if (!(var_v1 & 0x80)) {
-            var_v1 = 0;
+        ret = arg2->gems[arg1].unk18;
+        if (!(arg2->gems[arg1].unk18 & 0x80)) {
+            ret = 0;
         }
     }
-    return var_v1 & 0x7F;
+    return ret & 0x7F;
 }
 
 static void func_80103D50(signed char arg0)
@@ -702,7 +696,7 @@ int func_80103D6C(int arg0, int arg1)
 
     if ((vs_main_buttonsState & 0xC) != 0xC) {
         temp_s1 = arg1;
-        temp_a1 = func_80103070(arg0, &vs_menuD_containerData->unk0);
+        temp_a1 = func_80103070(arg0, &vs_menuD_containerData->data);
         temp_a0 = temp_a1;
 
         if (vs_main_buttonRepeat & 4) {
@@ -817,7 +811,7 @@ int func_80104114(int arg0, int arg1)
 {
     D_800F4EE8.unk0[(arg0 + 0x51) * 2] = 0;
     D_800F4EE8.unk0[(arg0 + 0x51) * 2 + 1] = arg1;
-    return func_80102C94(arg0, (func_80102C94_t*)vs_menuD_containerData)[arg1];
+    return func_80102C94(arg0, vs_menuD_containerData)[arg1];
 }
 
 void func_80104170(int arg0)
@@ -874,7 +868,7 @@ int func_801042D0(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A32, 7);
-            func_800FD270(vs_menuD_containerData->unk3C00.unk0[D_80109A33]);
+            func_800FD270(vs_menuD_containerData->indices.weapons[D_80109A33]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109A30 = 1;
         }
@@ -884,7 +878,7 @@ int func_801042D0(int arg0)
             ++D_80109A31;
             if (D_80109A31 < 6) {
                 func_800FC510(
-                    D_80109A31, vs_menuD_containerData->unk3C00.unk0[D_80109A33], 1);
+                    D_80109A31, vs_menuD_containerData->indices.weapons[D_80109A33], 1);
             }
             break;
         }
@@ -899,13 +893,14 @@ int func_801042D0(int arg0)
             if (temp_v0_2 != D_80109A33) {
                 D_80109A33 = temp_v0_2;
                 i = func_80104114(0, temp_v0_2);
-                func_801041E0(&vs_menuD_containerData->unk0, sp18, &sp20,
+                func_801041E0(&vs_menuD_containerData->data, sp18, &sp20,
                     vs_battle_stringBuf, i - 1);
                 func_800FD270(i);
 
                 func_80104078(D_80109A32, sp18, sp20, temp_v0_2);
                 for (i = 1; i < 6; ++i) {
-                    func_800FC510(i, vs_menuD_containerData->unk3C00.unk0[temp_v0_2], 0);
+                    func_800FC510(
+                        i, vs_menuD_containerData->indices.weapons[temp_v0_2], 0);
                 }
             }
         }
@@ -936,7 +931,7 @@ int func_80104534(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A37, 3);
-            func_800FD404(vs_menuD_containerData->unk3C00.unk40[D_80109A38]);
+            func_800FD404(vs_menuD_containerData->indices.blades[D_80109A38]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109A35 = 1;
         }
@@ -957,7 +952,7 @@ int func_80104534(int arg0)
             if (temp_v0_2 != D_80109A38) {
                 D_80109A38 = temp_v0_2;
                 temp_v0_3 = func_80104114(1, temp_v0_2);
-                func_800FCAA4(&vs_menuD_containerData->unk0.blades[temp_v0_3 - 1], &sp10,
+                func_800FCAA4(&vs_menuD_containerData->data.blades[temp_v0_3 - 1], &sp10,
                     &sp18, vs_battle_stringBuf);
                 func_800FD404(temp_v0_3);
                 func_80104078(D_80109A37, &sp10.unk0, sp18, temp_v0_2);
@@ -990,7 +985,7 @@ int func_80104728(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A3B, 4);
-            func_800FD504(vs_menuD_containerData->unk3C00.unkC0[D_80109A3C]);
+            func_800FD504(vs_menuD_containerData->indices.grips[D_80109A3C]);
             D_80109A39 = 1U;
         }
         break;
@@ -1010,14 +1005,14 @@ int func_80104728(int arg0)
             if (temp_v0_2 != D_80109A3C) {
                 D_80109A3C = temp_v0_2;
                 temp_v0_3 = func_80104114(2, temp_v0_2);
-                func_800FCC0C(&vs_menuD_containerData->unk0.grips[temp_v0_3 - 1], &sp10,
+                func_800FCC0C(&vs_menuD_containerData->data.grips[temp_v0_3 - 1], &sp10,
                     &sp18, vs_battle_stringBuf);
                 func_800FD504(temp_v0_3);
                 func_80104078(D_80109A3B, &sp10.unk0, sp18, temp_v0_2);
             }
         }
-        D_80109954[6] = (vs_menuD_containerData->unk0
-                             .grips[vs_menuD_containerData->unk3C00.unkC0[D_80109A3C] - 1]
+        D_80109954[6] = (vs_menuD_containerData->data
+                             .grips[vs_menuD_containerData->indices.grips[D_80109A3C] - 1]
                              .gemSlots
                          + 0x30);
         func_80100004(0x116, 0x100, 0x20);
@@ -1058,7 +1053,7 @@ int func_8010496C(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A40, 7);
-            func_800FD5A0(vs_menuD_containerData->unk3C00.unk140[D_80109A41]);
+            func_800FD5A0(vs_menuD_containerData->indices.shields[D_80109A41]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109A3E = 1;
         }
@@ -1068,7 +1063,7 @@ int func_8010496C(int arg0)
             ++D_80109A3F;
             if (D_80109A3F < 4) {
                 func_800FC704(
-                    D_80109A3F, vs_menuD_containerData->unk3C00.unk140[D_80109A41], 1);
+                    D_80109A3F, vs_menuD_containerData->indices.shields[D_80109A41], 1);
             }
             break;
         }
@@ -1085,13 +1080,13 @@ int func_8010496C(int arg0)
             if (temp_v0_2 != D_80109A41) {
                 D_80109A41 = temp_v0_2;
                 i = func_80104114(3, temp_v0_2);
-                func_8010425C(&vs_menuD_containerData->unk0, sp18, &sp20,
+                func_8010425C(&vs_menuD_containerData->data, sp18, &sp20,
                     vs_battle_stringBuf, i - 1);
                 func_800FD5A0(i);
                 func_80104078(D_80109A40, sp18, sp20, temp_v0_2);
                 for (i = 1; i < 4; ++i) {
                     func_800FC704(
-                        i, vs_menuD_containerData->unk3C00.unk140[temp_v0_2], 0);
+                        i, vs_menuD_containerData->indices.shields[temp_v0_2], 0);
                 }
                 return 0;
             }
@@ -1123,9 +1118,9 @@ int func_80104BDC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A45, 7);
-            func_800FD700(vs_menuD_containerData->unk3C00.unk180[D_80109A46]);
+            func_800FD700(vs_menuD_containerData->indices.armor[D_80109A46]);
             if (vs_battle_inventory
-                    .armor[vs_menuD_containerData->unk3C00.unk180[D_80109A46] - 1]
+                    .armor[vs_menuD_containerData->indices.armor[D_80109A46] - 1]
                     .category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
@@ -1150,7 +1145,7 @@ int func_80104BDC(int arg0)
                 D_80109A46 = temp_v0_2;
                 temp_v0_3 = func_80104114(4, temp_v0_2);
                 vs_mainMenu_setAccessoryStrings(
-                    &vs_menuD_containerData->unk0.armor[temp_v0_3 - 1], sp10, &sp18,
+                    &vs_menuD_containerData->data.armor[temp_v0_3 - 1], sp10, &sp18,
                     vs_battle_stringBuf);
                 func_800FD700(temp_v0_3);
                 func_80104078(D_80109A45, sp10, sp18, temp_v0_2);
@@ -1183,7 +1178,7 @@ int func_80104E14(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A49, 3);
-            func_800FD878(vs_menuD_containerData->unk3C00.unk200[D_80109A4A]);
+            func_800FD878(vs_menuD_containerData->indices.gems[D_80109A4A]);
             D_80109A47 = 1;
         }
         break;
@@ -1204,7 +1199,7 @@ int func_80104E14(int arg0)
             if (temp_v0_2 != D_80109A4A) {
                 D_80109A4A = temp_v0_2;
                 temp_v0_3 = func_80104114(5, temp_v0_2);
-                func_800FD0E0(&vs_menuD_containerData->unk0.gems[temp_v0_3 - 1], &sp10,
+                func_800FD0E0(&vs_menuD_containerData->data.gems[temp_v0_3 - 1], &sp10,
                     &sp18, vs_battle_stringBuf);
                 func_800FD878(temp_v0_3);
                 func_80104078(D_80109A49, &sp10.unk0, sp18, temp_v0_2);
@@ -1297,7 +1292,7 @@ void func_801051F8(int arg0)
     int temp_s0;
     u_short* temp_s7;
 
-    temp_s6 = vs_menuD_containerData->unk0.weapons;
+    temp_s6 = vs_menuD_containerData->data.weapons;
     temp_s7 = func_80102C94(0, vs_menuD_containerData);
     vs_battle_rMemzero(sp1A8, 0x40);
     var_s5 = 0;
@@ -1308,7 +1303,7 @@ void func_801051F8(int arg0)
             temp_s0 = temp_s7[i];
             if (temp_s0 != 0) {
                 func_80102A34(
-                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->data);
                 temp_v0 = _getWeaponStat(arg0, &sp10);
                 if (var_s4 < temp_v0) {
                     var_s4 = temp_v0;
@@ -1324,7 +1319,7 @@ void func_801051F8(int arg0)
             temp_s0 = temp_s7[i];
             if (temp_s0 != 0) {
                 func_80102A34(
-                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                    &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->data);
                 if (_getWeaponStat(arg0, &sp10) == var_s4) {
                     sp1A8[var_s5++] = temp_s0;
                     temp_s7[i] = 0;
@@ -1374,7 +1369,7 @@ void func_80105454(int arg0)
     int var_s3;
     int temp_s0;
 
-    vs_battle_inventoryShield* temp_s5 = vs_menuD_containerData->unk0.shields;
+    vs_battle_inventoryShield* temp_s5 = vs_menuD_containerData->data.shields;
     u_short* temp_s6 = func_80102C94(3, vs_menuD_containerData);
     int var_s4 = 0;
 
@@ -1387,7 +1382,7 @@ void func_80105454(int arg0)
             temp_s0 = temp_s6[i];
             if (temp_s0 != 0) {
                 func_80102BB0(
-                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
                 temp_v0 = _getShieldStat(arg0, &sp10);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
@@ -1403,7 +1398,7 @@ void func_80105454(int arg0)
             temp_s0 = temp_s6[i];
             if (temp_s0 != 0) {
                 func_80102BB0(
-                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->unk0);
+                    &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
                 if (_getShieldStat(arg0, &sp10) == var_s3) {
                     sp178[var_s4++] = temp_s0;
                     temp_s6[i] = 0;
@@ -1433,7 +1428,7 @@ void func_801055F0(int arg0)
     u_short* temp_s7;
     vs_battle_inventoryItem* item;
 
-    item = vs_menuD_containerData->unk0.items;
+    item = vs_menuD_containerData->data.items;
     temp_s7 = func_80102C94(6, vs_menuD_containerData);
     vs_battle_rMemzero(&sp10, sizeof sp10);
     var_s5 = 0;
@@ -1510,18 +1505,18 @@ void func_80105844(vs_battle_equippedItem* item, int type, int index)
     switch (type) {
     case 1:
         vs_battle_copyInventoryBladeStats(
-            item, &vs_menuD_containerData->unk0.blades[index]);
+            item, &vs_menuD_containerData->data.blades[index]);
         return;
     case 2:
         vs_battle_copyInventoryGripStats(
-            item, &vs_menuD_containerData->unk0.grips[index]);
+            item, &vs_menuD_containerData->data.grips[index]);
         return;
     case 4:
         vs_battle_copyInventoryArmorStats(
-            item, &vs_menuD_containerData->unk0.armor[index]);
+            item, &vs_menuD_containerData->data.armor[index]);
         return;
     case 5:
-        vs_battle_copyInventoryGemStats(item, &vs_menuD_containerData->unk0.gems[index]);
+        vs_battle_copyInventoryGemStats(item, &vs_menuD_containerData->data.gems[index]);
         return;
     }
 }
@@ -1683,7 +1678,7 @@ int func_80105D24(int arg0)
         D_80109A4E = 3;
         break;
     case 2:
-        D_80109A54 = vs_menuD_containerData->unk0.items[D_80109A50].unk2;
+        D_80109A54 = vs_menuD_containerData->data.items[D_80109A50].unk2;
         i = vs_battle_toBCD(D_80109A54);
         D_801099F8[8] = i & 0xF;
         i = vs_battle_toBCD(i >> 4);
@@ -1709,7 +1704,7 @@ int func_80105D24(int arg0)
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
                 _initContainerObject(
-                    (int)D_80109A4F, (int)D_80109A50, &vs_menuD_containerData->unk0);
+                    (int)D_80109A4F, (int)D_80109A50, &vs_menuD_containerData->data);
             } else {
                 vs_battle_playMenuLeaveSfx();
             }
@@ -1821,11 +1816,11 @@ int func_80105D24(int arg0)
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
-                if (vs_menuD_containerData->unk0.items[D_80109A50].unk2 == D_80109A53) {
+                if (vs_menuD_containerData->data.items[D_80109A50].unk2 == D_80109A53) {
                     _initContainerObject(
-                        D_80109A4F, D_80109A50, &vs_menuD_containerData->unk0);
+                        D_80109A4F, D_80109A50, &vs_menuD_containerData->data);
                 } else {
-                    vs_menuD_containerData->unk0.items[D_80109A50].unk2 -= D_80109A53;
+                    vs_menuD_containerData->data.items[D_80109A50].unk2 -= D_80109A53;
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();
@@ -1865,20 +1860,20 @@ void func_80106504(void)
 
     for (i = 0; i < 7; ++i, var_s1_2 += 0xC) {
         func_80106464(D_801022A0[i], ((0x64 + 0xC * i) << 16) | 0x70,
-            func_80103070(i, &D_8010245C->unk105B0.unk0));
+            func_80103070(i, &D_8010245C->unk105B0.data));
         vs_battle_renderTextRaw(D_80109A10[i], ((0x64 + 0xC * i) << 16) | 0xA0, NULL);
         func_80106464(D_80109944[i], ((0x64 + 0xC * i) << 16) | 0xF8,
-            func_80103070(i, &D_8010245C->unkC430));
+            func_80103070(i, &D_8010245C->unkC430.data));
     }
 }
 
 int _getWeaponGemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->unk0.weapons[arg0];
+    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->data.weapons[arg0];
     int count = 0;
 
-    for (i = 0; i < vs_menuD_containerData->unk0.grips[weapon->grip - 1].gemSlots; ++i) {
+    for (i = 0; i < vs_menuD_containerData->data.grips[weapon->grip - 1].gemSlots; ++i) {
         count += weapon->gems[i] != 0;
     }
     return count;
@@ -1887,7 +1882,7 @@ int _getWeaponGemCount(int arg0)
 int _getShieldGemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryShield* shield = &vs_menuD_containerData->unk0.shields[arg0];
+    vs_battle_inventoryShield* shield = &vs_menuD_containerData->data.shields[arg0];
     int count = 0;
 
     for (i = 0; i < shield->unk4.gemSlots; ++i) {
@@ -1898,7 +1893,7 @@ int _getShieldGemCount(int arg0)
 
 int func_801066DC(int arg0, int arg1)
 {
-    int temp_s0 = func_80103070(arg0, D_80109A88);
+    int temp_s0 = func_80103070(arg0, &D_80109A88->data);
     int temp_s1 = arg1 + (temp_s0 + func_80103070(arg0, &D_8010245C->unk87B0));
 
     if (D_80109A7A != 0) {
@@ -1959,14 +1954,14 @@ void func_801068BC(int arg0)
     temp_s2 = temp_s0 >> 8;
     temp_s0_2 = (temp_s0 - 1) & 0xFF;
     func_801032AC(
-        temp_s2 | 0x10, &vs_menuD_containerData->unk0, temp_s0_2, &D_8010245C->unk87B0);
+        temp_s2 | 0x10, &vs_menuD_containerData->data, temp_s0_2, &D_8010245C->unk87B0);
     _initContainerObject(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
 }
 
 void func_80106948(int arg0, int arg1)
 {
-    func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, &vs_menuD_containerData->unk0);
-    _initContainerObject(arg0, arg1, &vs_menuD_containerData->unk0);
+    func_801032AC(arg0 | 0x10, &D_8010245C->unk87B0, arg1, &vs_menuD_containerData->data);
+    _initContainerObject(arg0, arg1, &vs_menuD_containerData->data);
 }
 
 static int func_801069B0(int arg0, int arg1)

@@ -79,7 +79,8 @@ typedef struct {
     char selectedEquipment;
     char unk85[25];
     u_short unk9E;
-    char unkA0[0x52];
+    char unkA0[0x12];
+    char unkB2[0x40];
 } D_800F4EE8_t;
 
 typedef struct {
@@ -242,7 +243,7 @@ extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;
 extern D_800F453C_t* D_800F453C;
 extern char D_800F4E6B;
-extern void* D_800F4E84;
+extern int* D_800F4E84;
 extern char D_800F4E88;
 extern char* vs_battle_stringBuf;
 extern char D_800F4E90;

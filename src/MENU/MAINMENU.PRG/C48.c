@@ -416,7 +416,7 @@ void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char
     if (D_80102470 == vs_battle_inventory.weapons) {
         vs_battle_applyWeapon(&sp10, arg0);
     } else {
-        func_80102A34(&sp10, arg0, &vs_menuD_containerData->unk0);
+        func_80102A34(&sp10, arg0, &vs_menuD_containerData->data);
     }
     vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
     *arg1 = arg0->name;
@@ -435,7 +435,7 @@ void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char
     if (D_8010246C == &vs_battle_inventory.shields[0]) {
         vs_battle_applyShield(&shield, arg0);
     } else {
-        func_80102BB0(&shield, arg0, &vs_menuD_containerData->unk0);
+        func_80102BB0(&shield, arg0, &vs_menuD_containerData->data);
     }
     vs_mainMenu_setShieldStrings(&shield, arg1, arg2, arg3);
 }

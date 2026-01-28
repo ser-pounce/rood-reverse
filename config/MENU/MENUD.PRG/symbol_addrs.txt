@@ -1,10 +1,17 @@
+vs_menuD_initUiWeapon = 0x80102A34;
+vs_menuD_initUiShield = 0x80102BB0;
+_getContainerIndexOffset = 0x80102C94;
 _initContainerObject = 0x80102D80;
 _getContainerItemId = 0x80102F88;
+_countItems = 0x80103070;
+_getEmptyContainerSlot = 0x80103110;  // allow_duplicated:True
+_setWeaponUi = 0x801041E0;
 _getWeaponStat = 0x80105114;
 _getShieldStat = 0x80105378;
 _getItemStat = 0x8010574C;
 _getWeaponGemCount = 0x80106624;
 _getShieldGemCount = 0x80106684;
+_containerItemCapacities = 0x80109944;
 D_80109A2D = 0x80109A2D;
 D_80109A2E = 0x80109A2E;
 D_80109A31 = 0x80109A31;

@@ -377,7 +377,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 void vs_mainMenu_setWeaponStrings(
-    vs_battle_equippedWeapon* weapon, char** rowStrings, int* rowTypes, char* description)
+    vs_battle_uiWeapon* weapon, char** rowStrings, int* rowTypes, char* description)
 {
     int temp_v1;
 
@@ -411,12 +411,12 @@ void vs_mainMenu_setWeaponStrings(
 
 void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_equippedWeapon sp10;
+    vs_battle_uiWeapon sp10;
 
     if (D_80102470 == vs_battle_inventory.weapons) {
         vs_battle_applyWeapon(&sp10, arg0);
     } else {
-        func_80102A34(&sp10, arg0, &vs_menuD_containerData->data);
+        vs_menuD_initUiWeapon(&sp10, arg0, &vs_menuD_containerData->data);
     }
     vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
     *arg1 = arg0->name;
@@ -430,12 +430,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShiel
 
 void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_equippedShield shield;
+    vs_battle_uiShield shield;
 
     if (D_8010246C == &vs_battle_inventory.shields[0]) {
         vs_battle_applyShield(&shield, arg0);
     } else {
-        func_80102BB0(&shield, arg0, &vs_menuD_containerData->data);
+        vs_menuD_initUiShield(&shield, arg0, &vs_menuD_containerData->data);
     }
     vs_mainMenu_setShieldStrings(&shield, arg1, arg2, arg3);
 }

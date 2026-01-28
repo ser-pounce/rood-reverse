@@ -554,7 +554,7 @@ int func_80103AD0(int arg0)
 
 INCLUDE_RODATA("build/src/MENU/MENU3.PRG/nonmatchings/16C", D_80102800);
 
-int func_80103BE4(int arg0, vs_battle_equippedWeapon* weapon)
+int func_80103BE4(int arg0, vs_battle_uiWeapon* weapon)
 {
     switch (arg0) {
     case 0:
@@ -589,7 +589,7 @@ int func_80103BE4(int arg0, vs_battle_equippedWeapon* weapon)
 
 void func_80103CC8(int arg0)
 {
-    vs_battle_equippedWeapon sp10;
+    vs_battle_uiWeapon sp10;
     char sp1A8[8];
     int temp_v0;
     int i;
@@ -634,11 +634,11 @@ void func_80103CC8(int arg0)
     vs_battle_memcpy(new_var, sp1A8, 8);
 }
 
-int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
+int _getShieldStat(int arg0, vs_battle_uiShield* shield)
 {
     switch (arg0) {
     case 1:
-        return -shield->shield.material;
+        return -shield->base.material;
     case 4:
         return shield->currentPp;
     case 5:
@@ -666,7 +666,7 @@ int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
 
 void func_80103F00(int arg0)
 {
-    vs_battle_equippedShield shield;
+    vs_battle_uiShield shield;
     char sp1A8[8];
     int temp_v0;
     int i;

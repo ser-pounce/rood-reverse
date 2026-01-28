@@ -3513,7 +3513,7 @@ static int _promptYesNo(int initParams)
 
 static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 
-static void* _getContainerIndexOffset(int section, void* arg1)
+static void* _getContainerIndexOffset(int section, vs_menu_containerIndices* indices)
 {
     int i = 0;
     int offset = 0;
@@ -3523,7 +3523,7 @@ static void* _getContainerIndexOffset(int section, void* arg1)
             offset += _containerItemCapacities[i++];
         } while (i < section);
     }
-    return (u_short*)arg1 + offset;
+    return (u_short*)indices + offset;
 }
 
 void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
@@ -3554,7 +3554,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryWeapon* weapon = &target->weapons[i];
             vs_battle_copyAligned(
                 weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
-            weapon->unk0 = i + 1;
+            weapon->index = i + 1;
             weapon->blade = targetIndices->blades[weapon->blade - 1];
             weapon->grip = targetIndices->grips[weapon->grip - 1];
 
@@ -3583,7 +3583,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
         if (sourceIndex != 0) {
             vs_battle_inventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
-            grip->unkE = i + 1;
+            grip->index = i + 1;
             if (grip->unkC != 0) {
                 grip->unkC = targetIndices->weapons[grip->unkC - 1];
             }
@@ -3596,7 +3596,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryShield* shield = &target->shields[i];
             vs_battle_copyAligned(
                 shield, &source->shields[sourceIndex - 1], sizeof *shield);
-            shield->unk0 = i + 1;
+            shield->index = i + 1;
             for (j = 0; j < 4; ++j) {
                 if (shield->gems[j] != 0) {
                     shield->gems[j] = targetIndices->gems[shield->gems[j] - 1];
@@ -3619,7 +3619,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
         if (sourceIndex != 0) {
             vs_battle_inventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
-            gem->unk1A = i + 1;
+            gem->index = i + 1;
             if (gem->unk18 != 0) {
                 if (gem->unk18 & 0x80) {
                     gem->unk18 =
@@ -3636,7 +3636,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
         if (sourceIndex != 0) {
             vs_battle_inventoryItem* item = &target->items[i];
             vs_battle_rMemcpy(item, &source->items[sourceIndex - 1], sizeof *item);
-            item->unk3 = i + 1;
+            item->index = i + 1;
         }
     }
 

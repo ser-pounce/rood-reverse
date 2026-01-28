@@ -44,7 +44,7 @@ typedef struct {
     signed char agility;
     signed char types[4];
     u_short unkC;
-    u_short unkE;
+    u_short index;
 } vs_battle_inventoryGrip;
 
 typedef struct {
@@ -58,11 +58,11 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     u_short unk18;
-    short unk1A;
+    short index;
 } vs_battle_inventoryGem;
 
 typedef struct {
-    char unk0;
+    char index;
     u_char blade;
     u_char grip;
     char unk3;
@@ -92,17 +92,17 @@ typedef struct {
 } vs_battle_inventoryArmor;
 
 typedef struct {
-    char unk0;
+    char index;
     char unk1;
     short unk2;
-    vs_battle_inventoryArmor unk4;
+    vs_battle_inventoryArmor base;
     u_char gems[4]; // 0x2C
 } vs_battle_inventoryShield;
 
 typedef struct {
     u_short id;
     char unk2;
-    char unk3;
+    char index;
 } vs_battle_inventoryItem;
 
 typedef struct {
@@ -129,7 +129,7 @@ typedef struct {
 typedef struct {
     vs_menu_containerData data;
     vs_menu_containerIndices indices;
-} func_80102C94_t;
+} vs_menu_container;
 
 typedef struct {
     char unk0[40];
@@ -144,6 +144,6 @@ typedef struct {
     vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
     u_short unkC3B0[0x40];
-    func_80102C94_t unkC430;
-    func_80102C94_t unk105B0;
+    vs_menu_container unkC430;
+    vs_menu_container unk105B0;
 } D_8010245C_t;

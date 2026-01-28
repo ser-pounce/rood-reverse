@@ -27,7 +27,7 @@ static u_short _statusStrings[] = {
 #include "../../assets/MENU/MENU4.PRG/status.vsString"
 };
 
-static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
+static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
 {
     vs_mainMenu_equipmentSubtype = 1;
     vs_mainMenu_resetStats();
@@ -64,12 +64,12 @@ static void _drawWeaponInfo(vs_battle_equippedWeapon* weapon)
     func_800FBB8C(7);
 }
 
-static void _drawShieldInfo(vs_battle_equippedShield* shield)
+static void _drawShieldInfo(vs_battle_uiShield* shield)
 {
     vs_mainMenu_equipmentSubtype = 8;
     vs_mainMenu_resetStats();
 
-    if (shield->shield.id != 0) {
+    if (shield->base.id != 0) {
         int i;
 
         vs_battle_memcpy(vs_mainMenu_equipmentStats, &shield->classAffinityCurrent,
@@ -146,7 +146,7 @@ static void _drawAccessoryInfo(vs_battle_equippedAccessory* accessory)
     func_800FBB8C(7);
 }
 
-static void _drawBladeInfo(vs_battle_equippedWeapon* weapon)
+static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
 {
     int i;
 
@@ -244,7 +244,7 @@ static void _initGemInfo(
 static char* _hitLocationStatuses[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT",
     NULL };
 
-static char* _drawWeaponInfoRow(int row, vs_battle_equippedWeapon* weapon)
+static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
 {
     char* sp10[2];
     int sp18;
@@ -279,7 +279,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_equippedWeapon* weapon)
     return sp10[1];
 }
 
-static char* _drawShieldInfoRow(int row, vs_battle_equippedShield* shield)
+static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
 {
     char* sp10[2];
     int sp18;
@@ -1079,7 +1079,7 @@ static void func_80104C0C(int selectedRow, int arg1)
     func_800FBEA4(1);
 }
 
-static void _setWeaponRow(int row, vs_battle_equippedWeapon* weapon, int arg2)
+static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 {
     func_800FD0E0_t sp18;
     vs_battle_inventoryBlade sp20;
@@ -1128,7 +1128,7 @@ static void _setWeaponRow(int row, vs_battle_equippedWeapon* weapon, int arg2)
     }
 }
 
-static void _setShieldRow(int row, vs_battle_equippedShield* shield, int arg2)
+static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
 {
     func_800FD0E0_t sp18;
     vs_battle_inventoryGem sp20;
@@ -1138,7 +1138,7 @@ static void _setShieldRow(int row, vs_battle_equippedShield* shield, int arg2)
 
     var_s0 = row - 1;
 
-    if (var_s0 < shield->shield.gemSlots) {
+    if (var_s0 < shield->base.gemSlots) {
         sp18.unk4 = 0;
         sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
@@ -1304,7 +1304,7 @@ static int _equipmentDetailScreen(int row)
                     }
                     break;
                 case 1:
-                    if (temp_s1->shield.shield.id != 0) {
+                    if (temp_s1->shield.base.id != 0) {
                         equipmentCount = 0;
                     }
                     break;
@@ -1411,7 +1411,7 @@ static int _equipmentDetailScreen(int row)
             vs_mainMenu_drawDpPpbars(11);
             _drawShieldInfo(&temp_s1->shield);
             newSelection = _updateEquipmentDetailSelection(
-                previousSelection, temp_s1->shield.shield.gemSlots + 96);
+                previousSelection, temp_s1->shield.base.gemSlots + 96);
             break;
         default:
             var_a0_5 = 8;
@@ -1550,7 +1550,7 @@ static int _equipmentScreen(int element)
                 &temp_s6->weapon, rowStrings, rowTypes, equipmentDescriptions[0]);
             rowStrings[0] = temp_s6->weapon.name;
         }
-        if (temp_s6->shield.shield.id != 0) {
+        if (temp_s6->shield.base.id != 0) {
             vs_mainMenu_setShieldStrings(
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }

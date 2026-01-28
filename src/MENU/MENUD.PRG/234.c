@@ -8,20 +8,14 @@
 #include <libetc.h>
 #include <memory.h>
 
-void _initContainerObject(int, int, vs_menu_containerData*);
-int _getContainerItemId(int, int, vs_menu_containerData*);
-int func_80103070(int, vs_menu_containerData*);
-void func_801031A0(void);
 int func_801032AC(int, vs_menu_containerData*, int, vs_menu_containerData*);
-void func_801037D8(int, func_80102C94_t*);
-int func_80104114(int, int);
 int func_80106C64(int, char**, int*, void*);
 
 extern u_long* D_1F800000[];
 
 extern u_short D_8010952C[];
 extern char D_8010957C[];
-extern u_short D_80109944[];
+extern u_short _containerItemCapacities[];
 extern char* D_80109954;
 extern int (*D_80109958[])(int);
 extern char D_80109970[];
@@ -86,84 +80,84 @@ extern char D_80109A7E;
 extern char D_80109A81;
 extern u_short D_80109A82;
 extern int D_80109A84;
-extern func_80102C94_t* D_80109A88;
+extern vs_menu_container* D_80109A88;
 
-void func_80102A34(vs_battle_equippedWeapon* target, vs_battle_inventoryWeapon* source,
+void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon* source,
     vs_menu_containerData* container)
 {
     int i;
-    vs_battle_weaponIntermediate* weapon = vs_main_allocHeapR(sizeof *weapon);
-    vs_main_bzero(weapon, sizeof *weapon);
+    vs_battle_weaponIntermediate* temp = vs_main_allocHeapR(sizeof *temp);
+    vs_main_bzero(temp, sizeof *temp);
 
     if (source != NULL) {
-        weapon->unkF2 = source->unk0;
+        temp->index = source->index;
         if (source->blade != 0) {
             vs_battle_copyInventoryBladeStats(
-                &weapon->blade, &container->blades[source->blade - 1]);
-            weapon->material = container->blades[source->blade - 1].material;
+                &temp->blade, &container->blades[source->blade - 1]);
+            temp->material = container->blades[source->blade - 1].material;
         }
 
         if (source->grip != 0) {
             vs_battle_copyInventoryGripStats(
-                &weapon->grip, &container->grips[source->grip - 1]);
+                &temp->grip, &container->grips[source->grip - 1]);
         }
 
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
                 vs_battle_copyInventoryGemStats(
-                    &weapon->gems[i], &container->gems[source->gems[i] - 1]);
+                    &temp->gems[i], &container->gems[source->gems[i] - 1]);
             }
         }
     }
 
     for (i = 0; i < 24; ++i) {
-        weapon->name[i] = source->name[i];
+        temp->name[i] = source->name[i];
     }
 
-    vs_battle_applyWeaponStats(target, weapon);
-    vs_main_freeHeapR(weapon);
+    vs_battle_applyWeaponStats(target, temp);
+    vs_main_freeHeapR(temp);
 }
 
-void func_80102BB0(vs_battle_equippedShield* target, vs_battle_inventoryShield* source,
+void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_battle_inventoryShield* source,
     vs_menu_containerData* container)
 {
     int i;
-    vs_battle_shieldIntermediate* tempShield = vs_main_allocHeapR(sizeof *tempShield);
-    vs_main_bzero(tempShield, sizeof *tempShield);
+    vs_battle_shieldIntermediate* temp = vs_main_allocHeapR(sizeof *temp);
+    vs_main_bzero(temp, sizeof *temp);
 
     if (source != NULL) {
-        tempShield->unkC2 = source->unk0;
-        vs_battle_copyInventoryArmorStats(&tempShield->unk0, &source->unk4);
-        tempShield->material = source->unk4.material;
+        temp->unkC2 = source->index;
+        vs_battle_copyInventoryArmorStats(&temp->base, &source->base);
+        temp->material = source->base.material;
 
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
                 vs_battle_copyInventoryGemStats(
-                    &tempShield->gems[i], &container->gems[(source->gems[i] & 0x7F) - 1]);
+                    &temp->gems[i], &container->gems[(source->gems[i] & 0x7F) - 1]);
             }
         }
     }
-    vs_battle_applyShieldStats(target, tempShield);
-    vs_main_freeHeapR(tempShield);
+    vs_battle_applyShieldStats(target, temp);
+    vs_main_freeHeapR(temp);
 }
 
-static u_short* func_80102C94(int arg0, func_80102C94_t* arg1)
+static u_short* _getContainerIndexOffset(int itemType, vs_menu_container* container)
 {
     int i;
-    int var_a3;
+    int offset;
 
-    var_a3 = 0;
-    for (i = 0; i < arg0; ++i) {
-        var_a3 += D_80109944[i];
+    offset = 0;
+    for (i = 0; i < itemType; ++i) {
+        offset += _containerItemCapacities[i];
     }
-    return arg1->indices.weapons + var_a3;
+    return (u_short*)&container->indices + offset;
 }
 
-static int func_80102CD0(int arg0, int arg1, u_short* arg2)
+static int func_80102CD0(int itemType, int arg1, u_short* arg2)
 {
     int i;
 
-    for (i = 0; i < D_80109944[arg0]; ++i) {
+    for (i = 0; i < _containerItemCapacities[itemType]; ++i) {
         if (arg2[i] == (arg1 + 1)) {
             return i + 1;
         }
@@ -171,11 +165,11 @@ static int func_80102CD0(int arg0, int arg1, u_short* arg2)
     return 0;
 }
 
-static void func_80102D28(int arg0, int arg1, u_short* arg2)
+static void func_80102D28(int itemType, int arg1, u_short* arg2)
 {
     int i;
 
-    for (i = 0; i < D_80109944[arg0]; ++i) {
+    for (i = 0; i < _containerItemCapacities[itemType]; ++i) {
         if (arg2[i] == 0) {
             arg2[i] = arg1 + 1;
             return;
@@ -183,7 +177,7 @@ static void func_80102D28(int arg0, int arg1, u_short* arg2)
     }
 }
 
-void _initContainerObject(int type, int index, vs_menu_containerData* container)
+static void _initContainerObject(int type, int index, vs_menu_containerData* container)
 {
     int i;
 
@@ -195,14 +189,14 @@ void _initContainerObject(int type, int index, vs_menu_containerData* container)
         _initContainerObject(2, weapon->grip - 1, container);
 
         for (i = 0; i < 3; ++i) {
-            int g = weapon->gems[i];
-            if (g != 0) {
-                _initContainerObject(5, g - 1, container);
+            int gem = weapon->gems[i];
+            if (gem != 0) {
+                _initContainerObject(5, gem - 1, container);
             }
         }
 
         vs_battle_rMemzero(weapon, sizeof *weapon);
-        weapon->unk0 = index + 1;
+        weapon->index = index + 1;
         break;
     }
     case 1: {
@@ -214,21 +208,21 @@ void _initContainerObject(int type, int index, vs_menu_containerData* container)
     case 2: {
         vs_battle_inventoryGrip* grip = &container->grips[index];
         vs_battle_rMemzero(grip, sizeof *grip);
-        grip->unkE = index + 1;
+        grip->index = index + 1;
         break;
     }
     case 3: {
         vs_battle_inventoryShield* shield = &container->shields[index];
 
         for (i = 0; i < 3; ++i) {
-            int g = shield->gems[i];
-            if (g != 0) {
-                _initContainerObject(5, g - 1, container);
+            int gem = shield->gems[i];
+            if (gem != 0) {
+                _initContainerObject(5, gem - 1, container);
             }
         }
 
         vs_battle_rMemzero(shield, sizeof *shield);
-        shield->unk0 = index + 1;
+        shield->index = index + 1;
         break;
     }
     case 4: {
@@ -240,19 +234,19 @@ void _initContainerObject(int type, int index, vs_menu_containerData* container)
     case 5: {
         vs_battle_inventoryGem* gem = &container->gems[index];
         vs_battle_rMemzero(gem, sizeof *gem);
-        gem->unk1A = index + 1;
+        gem->index = index + 1;
         break;
     }
     case 6: {
         vs_battle_inventoryItem* item = &container->items[index];
         vs_battle_rMemzero(item, sizeof *item);
-        item->unk3 = index + 1;
+        item->index = index + 1;
         break;
     }
     }
 }
 
-int _getContainerItemId(int type, int index, vs_menu_containerData* container)
+static int _getContainerItemId(int type, int index, vs_menu_containerData* container)
 {
     int ret = 0;
 
@@ -267,7 +261,7 @@ int _getContainerItemId(int type, int index, vs_menu_containerData* container)
         ret = container->grips[index].id;
         break;
     case 3:
-        ret = container->shields[index].unk4.id;
+        ret = container->shields[index].base.id;
         break;
     case 4:
         ret = container->armor[index].id;
@@ -282,43 +276,43 @@ int _getContainerItemId(int type, int index, vs_menu_containerData* container)
     return ret;
 }
 
-int func_80103070(int arg0, vs_menu_containerData* arg1)
+static int _countItems(int itemType, vs_menu_containerData* container)
 {
     int i;
-    int var_s1 = 0;
+    int count = 0;
 
-    for (i = 0; i < D_80109944[arg0]; ++i) {
-        if (_getContainerItemId(arg0, i, arg1) != 0) {
-            ++var_s1;
+    for (i = 0; i < _containerItemCapacities[itemType]; ++i) {
+        if (_getContainerItemId(itemType, i, container) != 0) {
+            ++count;
         }
     }
-    return var_s1;
+    return count;
 }
 
-int func_80103110(int arg0, void* arg1)
+static int _getEmptyContainerSlot(int itemType, vs_menu_containerData* container)
 {
     int i;
 
-    for (i = 0; i < D_80109944[arg0]; ++i) {
-        if (_getContainerItemId(arg0, i, arg1) == 0) {
+    for (i = 0; i < _containerItemCapacities[itemType]; ++i) {
+        if (_getContainerItemId(itemType, i, container) == 0) {
             break;
         }
     }
     return i;
 }
 
-void func_801031A0(void)
+static void func_801031A0(void)
 {
     int i;
     int var_a2;
-    vs_menu_containerData* temp_s2 = &D_8010245C->unk4BB0;
+    vs_menu_containerData* container = &D_8010245C->unk4BB0;
 
-    vs_battle_memcpy(&temp_s2->items, D_80109A88->data.items, sizeof temp_s2->items);
+    vs_battle_memcpy(&container->items, D_80109A88->data.items, sizeof container->items);
 
     for (var_a2 = D_8010245C->unkC3B0[0], i = 0; var_a2 != 0;
          ++i, var_a2 = D_8010245C->unkC3B0[i]) {
         if ((var_a2 >> 8) == 6) {
-            func_801032AC(0x16, temp_s2, (var_a2 - 1) & 0xFF, &D_8010245C->unk87B0);
+            func_801032AC(0x16, container, (var_a2 - 1) & 0xFF, &D_8010245C->unk87B0);
         }
     }
 }
@@ -326,7 +320,7 @@ void func_801031A0(void)
 static void func_80103270(void)
 {
     func_801031A0();
-    D_80109A82 = func_80103070(6, &D_8010245C->unk4BB0);
+    D_80109A82 = _countItems(6, &D_8010245C->unk4BB0);
 }
 
 int func_801032AC(
@@ -359,16 +353,16 @@ int func_801032AC(
     temp_fp = (arg0 >> 4) & 1;
     arg0 = arg0 & 0xF;
     var_s5 = 0;
-    temp_s7 = func_80103070(arg0, arg1);
-    temp_s2 = func_80103110(arg0, arg1);
+    temp_s7 = _countItems(arg0, arg1);
+    temp_s2 = _getEmptyContainerSlot(arg0, arg1);
 
     switch (arg0) {
     case 0:
         temp_s4 = &arg3->weapons[arg2];
         temp_s3_2 = &arg1->weapons[temp_s2];
 
-        if (((temp_s7 != 0x20) && (func_80103070(1, arg1) != 0x40))
-            && (func_80103070(2, arg1) != 0x40)) {
+        if (((temp_s7 != 0x20) && (_countItems(1, arg1) != 0x40))
+            && (_countItems(2, arg1) != 0x40)) {
 
             var_s1 = 0;
 
@@ -378,7 +372,7 @@ int func_801032AC(
                 }
             }
 
-            if ((func_80103070(5, arg1) + var_s1) >= 0xC1) {
+            if ((_countItems(5, arg1) + var_s1) >= 0xC1) {
                 break;
             }
 
@@ -386,7 +380,7 @@ int func_801032AC(
 
             if (temp_fp != 0) {
                 vs_battle_rMemzero(temp_s3_2, 0x20);
-                temp_s3_2->unk0 = var_s5;
+                temp_s3_2->index = var_s5;
                 temp_s3_2->blade =
                     func_801032AC((var_s5 << 8) | 0x11, arg1, temp_s4->blade - 1, arg3);
                 temp_s3_2->grip =
@@ -426,7 +420,7 @@ int func_801032AC(
 
         if (temp_fp != 0) {
             vs_battle_copyAligned(temp_s0_3, new_var2, 0x10);
-            temp_s0_3->unkE = var_s5;
+            temp_s0_3->index = var_s5;
             temp_s0_3->unkC = temp_s3;
         }
         break;
@@ -446,7 +440,7 @@ int func_801032AC(
             }
         }
 
-        if ((func_80103070(5, arg1) + var_s1_2) >= 0xC1) {
+        if ((_countItems(5, arg1) + var_s1_2) >= 0xC1) {
             break;
         }
 
@@ -454,8 +448,8 @@ int func_801032AC(
 
         if (temp_fp != 0) {
             vs_battle_rMemzero(temp_s3_3, 0x30);
-            vs_battle_copyAligned(&temp_s3_3->unk4, &temp_s4_2->unk4, 0x28);
-            temp_s3_3->unk0 = var_s5;
+            vs_battle_copyAligned(&temp_s3_3->base, &temp_s4_2->base, 0x28);
+            temp_s3_3->index = var_s5;
             for (i = 0; i < 3; ++i) {
                 if (temp_s4_2->gems[i] != 0) {
                     temp_s3_3->gems[i] = func_801032AC(((var_s5 | 0x80) << 8) | 0x15,
@@ -485,7 +479,7 @@ int func_801032AC(
         var_s5 = temp_s2 + 1;
         if (temp_fp != 0) {
             vs_battle_copyAligned(temp_s0_5, new_var4, 0x1C);
-            temp_s0_5->unk1A = var_s5;
+            temp_s0_5->index = var_s5;
             temp_s0_5->unk18 = temp_s3;
         }
         break;
@@ -532,7 +526,7 @@ int func_801032AC(
     return var_s5;
 }
 
-void func_801037D8(int arg0, func_80102C94_t* arg1)
+void func_801037D8(int arg0, vs_menu_container* arg1)
 {
     int i;
     int j;
@@ -541,8 +535,8 @@ void func_801037D8(int arg0, func_80102C94_t* arg1)
     int temp_s2;
     u_short* temp_s3;
 
-    temp_s3 = func_80102C94(arg0, arg1);
-    temp_s2 = D_80109944[arg0];
+    temp_s3 = _getContainerIndexOffset(arg0, arg1);
+    temp_s2 = _containerItemCapacities[arg0];
 
     for (i = 0; i < temp_s2; ++i) {
         temp_a1 = temp_s3[i];
@@ -594,7 +588,7 @@ void func_801039AC(void)
     int i;
 
     vs_battle_inventory_t* inventory = &vs_battle_inventory;
-    func_80102C94_t* container = &D_8010245C->unk105B0;
+    vs_menu_container* container = &D_8010245C->unk105B0;
 
     vs_battle_rMemzero(&container->data, sizeof container->data);
     vs_battle_rMemzero(
@@ -603,7 +597,7 @@ void func_801039AC(void)
     for (i = 0; i < 7; ++i) {
         int j;
         char* temp_s0 = D_801022A8[i];
-        u_short* temp_a1 = func_80102C94(i, container);
+        u_short* temp_a1 = _getContainerIndexOffset(i, container);
 
         for (j = 0; j < D_801022A0[i]; ++j) {
             temp_a1[j] = temp_s0[j];
@@ -630,14 +624,14 @@ void func_80103B20(void)
 {
     int i;
 
-    func_80102C94_t* temp_s2 = &D_8010245C->unk105B0;
+    vs_menu_container* temp_s2 = &D_8010245C->unk105B0;
     vs_battle_inventory_t* inventory = &vs_battle_inventory;
 
     for (i = 0; i < 7; ++i) {
         int j;
         int k;
         char* temp_s5 = D_801022A8[i];
-        u_short* temp_s3 = func_80102C94(i, temp_s2);
+        u_short* temp_s3 = _getContainerIndexOffset(i, temp_s2);
 
         for (j = 0; j < 7; ++j) {
             func_801037D8(j, temp_s2);
@@ -704,7 +698,7 @@ int func_80103D6C(int arg0, int arg1)
 
     if ((vs_main_buttonsState & 0xC) != 0xC) {
         temp_s1 = arg1;
-        temp_a1 = func_80103070(arg0, &vs_menuD_containerData->data);
+        temp_a1 = _countItems(arg0, &vs_menuD_containerData->data);
         temp_a0 = temp_a1;
 
         if (vs_main_buttonRepeat & 4) {
@@ -819,7 +813,7 @@ int func_80104114(int arg0, int arg1)
 {
     D_800F4EE8.unk0[(arg0 + 0x51) * 2] = 0;
     D_800F4EE8.unk0[(arg0 + 0x51) * 2 + 1] = arg1;
-    return func_80102C94(arg0, vs_menuD_containerData)[arg1];
+    return _getContainerIndexOffset(arg0, vs_menuD_containerData)[arg1];
 }
 
 void func_80104170(int arg0)
@@ -836,22 +830,22 @@ void func_80104170(int arg0)
     }
 }
 
-void func_801041E0(
-    vs_menu_containerData* arg0, char** arg1, int* arg2, char* arg3, int arg4)
+static void _setWeaponUi(vs_menu_containerData* container, char** rowStrings,
+    int* rowTypes, char* description, int index)
 {
-    vs_battle_equippedWeapon sp10;
+    vs_battle_uiWeapon weapon;
 
-    func_80102A34(&sp10, &arg0->weapons[arg4], arg0);
-    vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
-    *arg1 = arg0->weapons[arg4].name;
+    vs_menuD_initUiWeapon(&weapon, &container->weapons[index], container);
+    vs_mainMenu_setWeaponStrings(&weapon, rowStrings, rowTypes, description);
+    rowStrings[0] = container->weapons[index].name;
 }
 
 void func_8010425C(
     vs_menu_containerData* arg0, char** arg1, int* arg2, char* arg3, int arg4)
 {
-    vs_battle_equippedShield sp10;
+    vs_battle_uiShield sp10;
 
-    func_80102BB0(&sp10, &arg0->shields[arg4], arg0);
+    vs_menuD_initUiShield(&sp10, &arg0->shields[arg4], arg0);
     vs_mainMenu_setShieldStrings(&sp10, arg1, arg2, arg3);
 }
 
@@ -901,7 +895,7 @@ int func_801042D0(int arg0)
             if (temp_v0_2 != D_80109A33) {
                 D_80109A33 = temp_v0_2;
                 i = func_80104114(0, temp_v0_2);
-                func_801041E0(&vs_menuD_containerData->data, sp18, &sp20,
+                _setWeaponUi(&vs_menuD_containerData->data, sp18, &sp20,
                     vs_battle_stringBuf, i - 1);
                 func_800FD270(i);
 
@@ -1255,42 +1249,42 @@ int func_80105008(int arg0)
 
 INCLUDE_RODATA("build/src/MENU/MENUD.PRG/nonmatchings/234", D_8010285C);
 
-int _getWeaponStat(int type, vs_battle_equippedWeapon* weapon)
+int _getWeaponStat(int type, vs_battle_uiWeapon* temp)
 {
     switch (type) {
     case 0:
-        return -weapon->blade.category;
+        return -temp->blade.category;
     case 1:
-        return -weapon->blade.material;
+        return -temp->blade.material;
     case 2:
-        return weapon->range.unk0;
+        return temp->range.unk0;
     case 3:
-        return -weapon->damageType;
+        return -temp->damageType;
     case 4:
-        return weapon->currentDp;
+        return temp->currentDp;
     case 5:
-        return weapon->maxDp;
+        return temp->maxDp;
     case 6:
-        return weapon->currentPp;
+        return temp->currentPp;
     case 7:
-        return weapon->maxPp;
+        return temp->maxPp;
     case 8:
-        return weapon->currentStr;
+        return temp->currentStr;
     case 9:
-        return weapon->currentInt;
+        return temp->currentInt;
     case 10:
-        return weapon->currentAgility;
+        return temp->currentAgility;
     default:
         if (type >= 17) {
-            return weapon->classAffinityCurrent.affinity[0][type - 17];
+            return temp->classAffinityCurrent.affinity[0][type - 17];
         }
-        return weapon->classAffinityCurrent.class[0][type - 11];
+        return temp->classAffinityCurrent.class[0][type - 11];
     }
 }
 
 void func_801051F8(int arg0)
 {
-    vs_battle_equippedWeapon sp10;
+    vs_battle_uiWeapon sp10;
     u_short sp1A8[0x20];
     vs_battle_inventoryWeapon* temp_s6;
     int temp_v0;
@@ -1301,7 +1295,7 @@ void func_801051F8(int arg0)
     u_short* temp_s7;
 
     temp_s6 = vs_menuD_containerData->data.weapons;
-    temp_s7 = func_80102C94(0, vs_menuD_containerData);
+    temp_s7 = _getContainerIndexOffset(0, vs_menuD_containerData);
     vs_battle_rMemzero(sp1A8, 0x40);
     var_s5 = 0;
 
@@ -1310,7 +1304,7 @@ void func_801051F8(int arg0)
         for (i = 0; i < 32; ++i) {
             temp_s0 = temp_s7[i];
             if (temp_s0 != 0) {
-                func_80102A34(
+                vs_menuD_initUiWeapon(
                     &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->data);
                 temp_v0 = _getWeaponStat(arg0, &sp10);
                 if (var_s4 < temp_v0) {
@@ -1326,7 +1320,7 @@ void func_801051F8(int arg0)
         for (i = 0; i < 32; ++i) {
             temp_s0 = temp_s7[i];
             if (temp_s0 != 0) {
-                func_80102A34(
+                vs_menuD_initUiWeapon(
                     &sp10, &temp_s6[temp_s0 - 1], &vs_menuD_containerData->data);
                 if (_getWeaponStat(arg0, &sp10) == var_s4) {
                     sp1A8[var_s5++] = temp_s0;
@@ -1338,11 +1332,11 @@ void func_801051F8(int arg0)
     vs_battle_memcpy(temp_s7, &sp1A8, sizeof sp1A8);
 }
 
-int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
+int _getShieldStat(int arg0, vs_battle_uiShield* shield)
 {
     switch (arg0) {
     case 1:
-        return -shield->shield.material;
+        return -shield->base.material;
     case 4:
         return shield->currentPp;
     case 5:
@@ -1370,7 +1364,7 @@ int _getShieldStat(int arg0, vs_battle_equippedShield* shield)
 
 void func_80105454(int arg0)
 {
-    vs_battle_equippedShield sp10;
+    vs_battle_uiShield sp10;
     u_short sp178[0x20];
     int temp_v0;
     int i;
@@ -1378,7 +1372,7 @@ void func_80105454(int arg0)
     int temp_s0;
 
     vs_battle_inventoryShield* temp_s5 = vs_menuD_containerData->data.shields;
-    u_short* temp_s6 = func_80102C94(3, vs_menuD_containerData);
+    u_short* temp_s6 = _getContainerIndexOffset(3, vs_menuD_containerData);
     int var_s4 = 0;
 
     vs_battle_rMemzero(&sp178, sizeof sp178);
@@ -1389,7 +1383,7 @@ void func_80105454(int arg0)
         for (i = 0; i < 32; ++i) {
             temp_s0 = temp_s6[i];
             if (temp_s0 != 0) {
-                func_80102BB0(
+                vs_menuD_initUiShield(
                     &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
                 temp_v0 = _getShieldStat(arg0, &sp10);
                 if (var_s3 < temp_v0) {
@@ -1405,7 +1399,7 @@ void func_80105454(int arg0)
         for (i = 0; i < 32; ++i) {
             temp_s0 = temp_s6[i];
             if (temp_s0 != 0) {
-                func_80102BB0(
+                vs_menuD_initUiShield(
                     &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
                 if (_getShieldStat(arg0, &sp10) == var_s3) {
                     sp178[var_s4++] = temp_s0;
@@ -1437,7 +1431,7 @@ void func_801055F0(int arg0)
     vs_battle_inventoryItem* item;
 
     item = vs_menuD_containerData->data.items;
-    temp_s7 = func_80102C94(6, vs_menuD_containerData);
+    temp_s7 = _getContainerIndexOffset(6, vs_menuD_containerData);
     vs_battle_rMemzero(&sp10, sizeof sp10);
     var_s5 = 0;
 
@@ -1541,11 +1535,11 @@ void func_8010592C(int arg0, int arg1)
     u_short* temp_s7;
 
     var_s6 = 0;
-    temp_s5 = D_80109944[arg0];
+    temp_s5 = _containerItemCapacities[arg0];
 
     {
         u_short sp40[temp_s5];
-        temp_s7 = func_80102C94(arg0, vs_menuD_containerData);
+        temp_s7 = _getContainerIndexOffset(arg0, vs_menuD_containerData);
         vs_battle_rMemzero(sp40, temp_s5 * 2);
 
         while (1) {
@@ -1868,21 +1862,21 @@ void func_80106504(void)
 
     for (i = 0; i < 7; ++i, var_s1_2 += 0xC) {
         func_80106464(D_801022A0[i], ((0x64 + 0xC * i) << 16) | 0x70,
-            func_80103070(i, &D_8010245C->unk105B0.data));
+            _countItems(i, &D_8010245C->unk105B0.data));
         vs_battle_renderTextRaw(D_80109A10[i], ((0x64 + 0xC * i) << 16) | 0xA0, NULL);
-        func_80106464(D_80109944[i], ((0x64 + 0xC * i) << 16) | 0xF8,
-            func_80103070(i, &D_8010245C->unkC430.data));
+        func_80106464(_containerItemCapacities[i], ((0x64 + 0xC * i) << 16) | 0xF8,
+            _countItems(i, &D_8010245C->unkC430.data));
     }
 }
 
 int _getWeaponGemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryWeapon* weapon = &vs_menuD_containerData->data.weapons[arg0];
+    vs_battle_inventoryWeapon* temp = &vs_menuD_containerData->data.weapons[arg0];
     int count = 0;
 
-    for (i = 0; i < vs_menuD_containerData->data.grips[weapon->grip - 1].gemSlots; ++i) {
-        count += weapon->gems[i] != 0;
+    for (i = 0; i < vs_menuD_containerData->data.grips[temp->grip - 1].gemSlots; ++i) {
+        count += temp->gems[i] != 0;
     }
     return count;
 }
@@ -1893,7 +1887,7 @@ int _getShieldGemCount(int arg0)
     vs_battle_inventoryShield* shield = &vs_menuD_containerData->data.shields[arg0];
     int count = 0;
 
-    for (i = 0; i < shield->unk4.gemSlots; ++i) {
+    for (i = 0; i < shield->base.gemSlots; ++i) {
         count += shield->gems[i] != 0;
     }
     return count;
@@ -1901,11 +1895,11 @@ int _getShieldGemCount(int arg0)
 
 int func_801066DC(int arg0, int arg1)
 {
-    int temp_s0 = func_80103070(arg0, &D_80109A88->data);
-    int temp_s1 = arg1 + (temp_s0 + func_80103070(arg0, &D_8010245C->unk87B0));
+    int temp_s0 = _countItems(arg0, &D_80109A88->data);
+    int temp_s1 = arg1 + (temp_s0 + _countItems(arg0, &D_8010245C->unk87B0));
 
     if (D_80109A7A != 0) {
-        return D_80109944[arg0] < temp_s1;
+        return _containerItemCapacities[arg0] < temp_s1;
     }
     return D_801022A0[arg0] < temp_s1;
 }
@@ -2047,7 +2041,7 @@ void func_80106A50(void)
     }
 
     for (k = 0; k < 7; ++k) {
-        for (i = 0; i < D_80109944[k]; ++i) {
+        for (i = 0; i < _containerItemCapacities[k]; ++i) {
             if ((_getContainerItemId(k, i, &D_8010245C->unk87B0) != 0)
                 && (func_801069B0(k, i) == 0)) {
                 func_80106A04(k, i);
@@ -2182,7 +2176,7 @@ loop_1:
         return 0;
     }
     var_s4 = (D_800F4EE8.unkA0[0] - 1) & 7;
-    temp_s1 = func_80102C94(var_s4, vs_menuD_containerData);
+    temp_s1 = _getContainerIndexOffset(var_s4, vs_menuD_containerData);
 
     switch (D_80109A68) { /* switch 1 */
     case 0:
@@ -2477,7 +2471,7 @@ loop_1:
             int temp_s0 = 0;
 
             for (temp_s2 = 0; temp_s2 < 7; ++temp_s2) {
-                temp_s0 += func_80103070(temp_s2, &D_8010245C->unk87B0);
+                temp_s0 += _countItems(temp_s2, &D_8010245C->unk87B0);
             }
 
             func_801031A0();
@@ -2597,9 +2591,9 @@ loop_1:
                 switch (D_80109A60[temp_s3]) {
                 case 1:
                     func_800FFBC8();
-                    func_80106948(var_s4,
-                        func_80102C94(var_s4, vs_menuD_containerData)[D_80109A6C - 1]
-                            - 1);
+                    func_80106948(var_s4, _getContainerIndexOffset(var_s4,
+                                              vs_menuD_containerData)[D_80109A6C - 1]
+                                              - 1);
                     func_800FA8E0(0);
                     D_80109A68 = 4;
                     break;
@@ -2651,9 +2645,9 @@ loop_1:
                     var_s4, temp_s1[D_80109A6C - 1] - 1, &vs_menuD_containerData->data);
                 var_s4 = 3;
             }
-            temp_s2 = func_80103070(var_s4, &vs_menuD_containerData->data);
-            temp_v0_17 = func_80102CD0(
-                var_s4, temp_s3 - 1, func_80102C94(var_s4, vs_menuD_containerData));
+            temp_s2 = _countItems(var_s4, &vs_menuD_containerData->data);
+            temp_v0_17 = func_80102CD0(var_s4, temp_s3 - 1,
+                _getContainerIndexOffset(var_s4, vs_menuD_containerData));
             temp_s3 = temp_v0_17 - 1;
             if ((temp_s2 < 9) || (temp_s3 < 8)) {
                 temp_s2 = 0;

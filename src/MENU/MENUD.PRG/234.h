@@ -1,9 +1,9 @@
 #pragma once
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 
-void func_80102A34(
-    vs_battle_equippedWeapon*, vs_battle_inventoryWeapon*, vs_menu_containerData*);
-void func_80102BB0(
-    vs_battle_equippedShield*, vs_battle_inventoryShield*, vs_menu_containerData*);
+void vs_menuD_initUiWeapon(
+    vs_battle_uiWeapon*, vs_battle_inventoryWeapon*, vs_menu_containerData*);
+void vs_menuD_initUiShield(
+    vs_battle_uiShield*, vs_battle_inventoryShield*, vs_menu_containerData*);
 
-extern func_80102C94_t* vs_menuD_containerData;
+extern vs_menu_container* vs_menuD_containerData;

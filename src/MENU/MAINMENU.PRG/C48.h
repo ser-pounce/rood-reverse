@@ -56,8 +56,8 @@ void func_8010044C(u_int*);
 
 extern char vs_mainMenu_weaponHands[];
 extern char (*vs_mainMenu_itemNames)[24];
-extern char D_801022A0[];
-extern char* D_801022A8[];
+extern char vs_mainMenu_inventoryItemCapacities[];
+extern char* vs_mainMenu_inventoryIndices[];
 extern char D_801023D0;
 extern D_8010245C_t* D_8010245C;
 extern vs_mainMenu_strIntAgi_t vs_mainMenu_strIntAgi[2];

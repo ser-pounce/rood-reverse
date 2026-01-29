@@ -265,7 +265,7 @@ int func_80102D30(int arg0, int arg1)
 {
     D_800F4EE8.unk0[(arg0 + 0x1E) * 2] = 0;
     D_800F4EE8.unk0[(arg0 + 0x1E) * 2 + 1] = arg1;
-    return *(D_801022A8[arg0] + arg1);
+    return *(vs_mainMenu_inventoryIndices[arg0] + arg1);
 }
 
 void func_80102D7C(int arg0)
@@ -832,10 +832,10 @@ void func_8010439C(int arg0, int arg1)
     int temp_s4;
 
     var_s5 = 0;
-    temp_s4 = D_801022A0[arg0];
+    temp_s4 = vs_mainMenu_inventoryItemCapacities[arg0];
     {
         char spVLA[temp_s4];
-        temp_s6 = D_801022A8[arg0];
+        temp_s6 = vs_mainMenu_inventoryIndices[arg0];
         vs_battle_rMemzero(spVLA, temp_s4);
 
         while (1) {
@@ -1304,7 +1304,7 @@ int func_80108970(char* arg0)
             0x1F, var_s0 + 0xB4, 0x22, 0x8C, 8, (char*)&D_801093B8[D_801093B8[temp_s1]]);
         temp_v0_3->selected = 1;
         if (temp_s1 != 7) {
-            temp_v0_3->unk12 = D_801022A0[temp_s1];
+            temp_v0_3->unk12 = vs_mainMenu_inventoryItemCapacities[temp_s1];
             temp_v0_3->unk10 = func_800FEA6C(temp_s1, 0);
         }
     }

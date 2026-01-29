@@ -538,7 +538,7 @@ typedef struct {
 } func_8006F630_t3;
 
 typedef struct {
-    vs_battle_equippedItem equip;
+    vs_battle_uiEquipment equip;
     char material;
     char unk31;
     char unk32;
@@ -627,7 +627,7 @@ int _removeActorAtIndex(u_int, int);
 void _applyAccessoryStats(vs_battle_equippedAccessory*, _armorIntermediate*);
 void _applyArmorStats(vs_battle_equippedArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_copyEquipmentStats(
-    vs_battle_inventoryArmor*, vs_battle_equippedItem* equipment);
+    vs_battle_inventoryArmor*, vs_battle_uiEquipment* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
 void _updateEnemyKills(vs_battle_actor*);
@@ -704,8 +704,8 @@ void func_80080000(vs_skill_t*, func_80085718_t*, short);
 void func_800801E0(vs_skill_t*, func_80085718_t*, short);
 void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
-void func_80080534(vs_skill_t*, vs_battle_equippedItem*, int, int, int);
-void func_80080A9C(vs_skill_t* arg0, vs_battle_equippedItem*, int, int, int);
+void func_80080534(vs_skill_t*, vs_battle_uiEquipment*, int, int, int);
+void func_80080A9C(vs_skill_t* arg0, vs_battle_uiEquipment*, int, int, int);
 int func_80081020(int, func_80085718_t*);
 int func_800810CC(int, func_80085718_t*);
 short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
@@ -1291,7 +1291,7 @@ void _applyArmorStats(vs_battle_equippedArmor* target, _armorIntermediate* sourc
 }
 
 void vs_battle_copyInventoryBladeStats(
-    vs_battle_equippedItem* target, vs_battle_inventoryBlade* source)
+    vs_battle_uiEquipment* target, vs_battle_inventoryBlade* source)
 {
     int i;
     vs_battle_inventoryBlade* tempBlade;
@@ -1328,7 +1328,7 @@ void vs_battle_copyInventoryBladeStats(
 }
 
 void vs_battle_copyInventoryGripStats(
-    vs_battle_equippedItem* target, vs_battle_inventoryGrip* source)
+    vs_battle_uiEquipment* target, vs_battle_inventoryGrip* source)
 {
     int i;
 
@@ -1347,7 +1347,7 @@ void vs_battle_copyInventoryGripStats(
 }
 
 void vs_battle_copyInventoryArmorStats(
-    vs_battle_equippedItem* target, vs_battle_inventoryArmor* source)
+    vs_battle_uiEquipment* target, vs_battle_inventoryArmor* source)
 {
     int i;
     vs_battle_inventoryArmor* tempArmor;
@@ -1384,7 +1384,7 @@ void vs_battle_copyInventoryArmorStats(
 }
 
 void vs_battle_copyInventoryGemStats(
-    vs_battle_equippedItem* target, vs_battle_inventoryGem* source)
+    vs_battle_uiEquipment* target, vs_battle_inventoryGem* source)
 {
     int i;
 
@@ -1572,7 +1572,7 @@ void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory)
 }
 
 void vs_battle_copyEquippedBladeStats(
-    vs_battle_inventoryBlade* target, vs_battle_equippedItem* source)
+    vs_battle_inventoryBlade* target, vs_battle_uiEquipment* source)
 {
     int i;
     vs_battle_inventoryBlade* tempBlade;
@@ -1607,7 +1607,7 @@ void vs_battle_copyEquippedBladeStats(
 }
 
 void vs_battle_copyEquippedGripStats(
-    vs_battle_inventoryGrip* target, vs_battle_equippedItem* source)
+    vs_battle_inventoryGrip* target, vs_battle_uiEquipment* source)
 {
     int i;
 
@@ -1625,7 +1625,7 @@ void vs_battle_copyEquippedGripStats(
 }
 
 void vs_battle_copyEquippedGemStats(
-    vs_battle_inventoryGem* target, vs_battle_equippedItem* source)
+    vs_battle_inventoryGem* target, vs_battle_uiEquipment* source)
 {
     int i;
 
@@ -1646,7 +1646,7 @@ void vs_battle_copyEquippedGemStats(
 }
 
 void vs_battle_copyEquipmentStats(
-    vs_battle_inventoryArmor* target, vs_battle_equippedItem* source)
+    vs_battle_inventoryArmor* target, vs_battle_uiEquipment* source)
 {
     int i;
     vs_battle_inventoryArmor* tempArmor;
@@ -7571,11 +7571,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
 
 // https://decomp.me/scratch/RCJDN
 void func_800807E8(
-    vs_skill_t* arg0, vs_battle_equippedItem* arg1, int arg2, int arg3, int arg4);
+    vs_skill_t* arg0, vs_battle_uiEquipment* arg1, int arg2, int arg3, int arg4);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800807E8);
 
 void func_80080A9C(
-    vs_skill_t* arg0, vs_battle_equippedItem* arg1, int arg2, int arg3, int arg4)
+    vs_skill_t* arg0, vs_battle_uiEquipment* arg1, int arg2, int arg3, int arg4)
 {
     int var_s1;
     int var_s2;
@@ -7642,7 +7642,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080C9C);
 void func_80080F78(vs_skill_t* skill, vs_battle_actor2* arg1, int arg2, int arg3)
 {
     if (skill->type != skillTypeSpell) {
-        vs_battle_equippedItem* temp_s1 = &arg1->weapon.blade;
+        vs_battle_uiEquipment* temp_s1 = &arg1->weapon.blade;
         if (arg1->weapon.blade.id != 0) {
             if (arg2 != 0) {
                 func_80080A9C(skill, temp_s1, arg2 - 1, 0xF0, arg1->flags.fields.unk3);

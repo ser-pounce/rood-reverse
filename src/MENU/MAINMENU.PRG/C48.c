@@ -381,7 +381,7 @@ void vs_mainMenu_setWeaponStrings(
 {
     int temp_v1;
 
-    vs_battle_equippedItem* blade = &weapon->blade;
+    vs_battle_uiEquipment* blade = &weapon->blade;
     int temp_v0 = func_800FA598((short*)weapon, 0);
 
     vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
@@ -451,23 +451,21 @@ void vs_mainMenu_setAccessoryStrings(
     vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
 }
 
-void func_800FD0E0(
-    vs_battle_inventoryGem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+void func_800FD0E0(vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
-    arg1->unk0 = vs_mainMenu_itemNames[arg0->id];
-    arg1->unk4 = arg3;
+    arg1[0] = vs_mainMenu_itemNames[arg0->id];
+    arg1[1] = arg3;
     *arg2 = 0x58000000;
 }
 
-void func_800FD17C(
-    vs_battle_inventoryItem* arg0, func_800FD0E0_t* arg1, int* arg2, void* arg3)
+void func_800FD17C(vs_battle_inventoryItem* arg0, char** arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
-    arg1->unk0 = vs_mainMenu_itemNames[arg0->id];
-    arg1->unk4 = arg3;
+    arg1[0] = vs_mainMenu_itemNames[arg0->id];
+    arg1[1] = arg3;
     *arg2 = arg0->count << 9;
 }
 

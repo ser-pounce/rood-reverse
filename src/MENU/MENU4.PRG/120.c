@@ -150,7 +150,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
 {
     int i;
 
-    vs_battle_equippedItem* blade = &weapon->blade;
+    vs_battle_uiEquipment* blade = &weapon->blade;
     vs_mainMenu_equipmentSubtype = 2;
 
     for (i = 0; i < 16; ++i) {
@@ -164,7 +164,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
     vs_mainMenu_drawDpPpbars(11);
 }
 
-static void _drawGripInfo(vs_battle_equippedItem* grip)
+static void _drawGripInfo(vs_battle_uiEquipment* grip)
 {
     int i;
 
@@ -179,7 +179,7 @@ static void _drawGripInfo(vs_battle_equippedItem* grip)
     vs_mainMenu_drawDpPpbars(8);
 }
 
-static void _drawGemInfo(vs_battle_equippedItem* gem)
+static void _drawGemInfo(vs_battle_uiEquipment* gem)
 {
     int i;
 
@@ -196,7 +196,7 @@ static void _drawGemInfo(vs_battle_equippedItem* gem)
 }
 
 static void _initBladeInfo(
-    vs_battle_equippedItem* blade, char** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_uiEquipment* blade, char** arg1, int* arg2 __attribute__((unused)))
 {
     char* str;
 
@@ -218,7 +218,7 @@ static void _initBladeInfo(
 }
 
 static void _initGripInfo(
-    vs_battle_equippedItem* grip, char** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_uiEquipment* grip, char** arg1, int* arg2 __attribute__((unused)))
 {
     char* str;
 
@@ -234,7 +234,7 @@ static void _initGripInfo(
 }
 
 static void _initGemInfo(
-    vs_battle_equippedItem* gem, char** arg1, int* arg2 __attribute__((unused)))
+    vs_battle_uiEquipment* gem, char** arg1, int* arg2 __attribute__((unused)))
 {
     vs_battle_memcpy(vs_battle_stringBuf,
         &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 0x8C]], 0x60);
@@ -920,7 +920,7 @@ static int _drawHitLocationStatuses(int arg0)
 
     int sp10[2];
     vs_battle_actor2* actor;
-    vs_battle_equippedItem_hitLocations* hitLocation;
+    vs_battle_uiEquipment_hitLocations* hitLocation;
     int hitLocationCount;
     int sp20;
     int sp24;
@@ -1081,7 +1081,7 @@ static void func_80104C0C(int selectedRow, int arg1)
 
 static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 {
-    func_800FD0E0_t sp18;
+    char* sp18[2];
     vs_battle_inventoryBlade sp20;
     vs_battle_inventoryGrip sp50;
     vs_battle_inventoryGem sp60;
@@ -1092,19 +1092,19 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 
     if (row == 1) {
         vs_battle_copyEquippedBladeStats(&sp20, &weapon->blade);
-        func_800FCAA4(&sp20, &sp18, &sp80, vs_battle_stringBuf);
+        func_800FCAA4(&sp20, sp18, &sp80, vs_battle_stringBuf);
     } else if (row == 2) {
         vs_battle_copyEquippedGripStats(&sp50, &weapon->grip);
-        func_800FCC0C(&sp50, &sp18, &sp80, vs_battle_stringBuf);
+        func_800FCC0C(&sp50, sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = row - 3;
         if (var_s1 < gemSlots) {
-            sp18.unk4 = 0;
-            sp18.unk0 = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
+            sp18[1] = 0;
+            sp18[0] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
             sp80 = 0x58000000;
             if (weapon->gems[var_s1].id != 0) {
                 vs_battle_copyEquippedGemStats(&sp60, &weapon->gems[var_s1]);
-                func_800FD0E0(&sp60, (func_800FD0E0_t*)&sp18, &sp80, vs_battle_stringBuf);
+                func_800FD0E0(&sp60, sp18, &sp80, vs_battle_stringBuf);
             }
             var_s1 = 151;
         } else {
@@ -1116,8 +1116,8 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 
     if (var_s1 != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
-            row + 20, 320 - var_s1, (row * 16) + 18, var_s1, 0, sp18.unk0);
-        menuItem->unk7 = sp18.unk4 == 0;
+            row + 20, 320 - var_s1, (row * 16) + 18, var_s1, 0, sp18[0]);
+        menuItem->unk7 = sp18[1] == 0;
         if (arg2 & 1) {
             menuItem->animSpeed = 320;
             menuItem->state = 2;
@@ -1130,7 +1130,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 
 static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
 {
-    func_800FD0E0_t sp18;
+    char* sp18[2];
     vs_battle_inventoryGem sp20;
     int sp40;
     int var_s0;
@@ -1139,12 +1139,12 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
     var_s0 = row - 1;
 
     if (var_s0 < shield->base.gemSlots) {
-        sp18.unk4 = 0;
-        sp18.unk0 = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
+        sp18[1] = 0;
+        sp18[0] = (char*)(&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none]);
         sp40 = 0x58000000;
         if (shield->gems[var_s0].id != 0) {
             vs_battle_copyEquippedGemStats(&sp20, &shield->gems[var_s0]);
-            func_800FD0E0(&sp20, &sp18, &sp40, vs_battle_stringBuf);
+            func_800FD0E0(&sp20, sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 151;
     } else {
@@ -1155,8 +1155,8 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
 
     if (var_s0 != 0) {
         meuItem = vs_battle_setMenuItem(
-            row + 20, 320 - var_s0, (row * 16) + 18, var_s0, 0, sp18.unk0);
-        meuItem->unk7 = sp18.unk4 == 0;
+            row + 20, 320 - var_s0, (row * 16) + 18, var_s0, 0, sp18[0]);
+        meuItem->unk7 = sp18[1] == 0;
         if (arg2 & 1) {
             meuItem->animSpeed = 320;
             meuItem->state = 2;
@@ -1526,7 +1526,7 @@ static int _equipmentScreen(int element)
     int new_var;
 
     vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
-    vs_battle_equippedItem_hitLocations* hitLocations = temp_s6->hitLocations;
+    vs_battle_uiEquipment_hitLocations* hitLocations = temp_s6->hitLocations;
 
     hitLocationCount = _getHitLocationCount(_selectedActor - 1);
     rowCount = _getEquipmentCount();
@@ -1798,7 +1798,7 @@ static void _drawScreen(void)
 
 static void _printSelectedLocationCondition(void)
 {
-    vs_battle_equippedItem_hitLocations* location =
+    vs_battle_uiEquipment_hitLocations* location =
         &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&D_800EA868[D_800EA868[location->nameIndex]];
@@ -1814,7 +1814,7 @@ static void _printSelectedLocationCondition(void)
 static void _printSelectedLocationStats(void)
 {
     int i;
-    vs_battle_equippedItem_hitLocations* location =
+    vs_battle_uiEquipment_hitLocations* location =
         &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
 
     for (i = 0; i < 16; ++i) {

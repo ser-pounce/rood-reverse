@@ -349,7 +349,7 @@ int func_80102DEC(int arg0)
 
 int func_80103034(int arg0)
 {
-    func_800FD0E0_t sp10;
+    char* sp10[2];
     int sp18;
     int temp_v0_2;
     int temp_v0_3;
@@ -389,10 +389,10 @@ int func_80103034(int arg0)
         if (temp_v0_2 != D_80109654) {
             D_80109654 = temp_v0_2;
             temp_v0_3 = func_80102D30(1, temp_v0_2);
-            func_800FCAA4(&vs_battle_inventory.blades[temp_v0_3 - 1], &sp10, &sp18,
+            func_800FCAA4(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10, &sp18,
                 vs_battle_stringBuf);
             func_800FD404(temp_v0_3);
-            func_80102C94(D_80109653, &sp10.unk0, sp18, temp_v0_2);
+            func_80102C94(D_80109653, sp10, sp18, temp_v0_2);
         }
         break;
     case 3:
@@ -466,7 +466,7 @@ int func_801036BC(int arg0)
 
 int func_801038E4(int arg0)
 {
-    func_800FD0E0_t sp10;
+    char* sp10[2];
     int sp18;
     int temp_v0_2;
     int temp_v0_3;
@@ -505,10 +505,10 @@ int func_801038E4(int arg0)
         if (temp_v0_2 != D_80109666) {
             D_80109666 = temp_v0_2;
             temp_v0_3 = func_80102D30(5, temp_v0_2);
-            func_800FD0E0(&vs_battle_inventory.gems[temp_v0_3 - 1], &sp10, &sp18,
+            func_800FD0E0(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
                 vs_battle_stringBuf);
             func_800FD878(temp_v0_3);
-            func_80102C94(D_80109665, (void*)&sp10, sp18, temp_v0_2);
+            func_80102C94(D_80109665, sp10, sp18, temp_v0_2);
             return 0;
         }
         break;
@@ -763,7 +763,7 @@ void func_8010408C(int arg0)
     vs_battle_memcpy(new_var, sp10, 0x40);
 }
 
-int func_801041CC(int arg0, vs_battle_equippedItem* arg1)
+int func_801041CC(int arg0, vs_battle_uiEquipment* arg1)
 {
     switch (arg0) {
     case 0:
@@ -802,7 +802,7 @@ int func_801041CC(int arg0, vs_battle_equippedItem* arg1)
     }
 }
 
-void func_801042C4(vs_battle_equippedItem* arg0, int arg1, int arg2)
+void func_801042C4(vs_battle_uiEquipment* arg0, int arg1, int arg2)
 {
     switch (arg1) {
     case 1:
@@ -822,7 +822,7 @@ void func_801042C4(vs_battle_equippedItem* arg0, int arg1, int arg2)
 
 void func_8010439C(int arg0, int arg1)
 {
-    vs_battle_equippedItem sp10;
+    vs_battle_uiEquipment sp10;
     int temp_v0;
     int i;
     int var_s3;

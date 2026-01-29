@@ -30,7 +30,7 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     short material;
-    char unk2A;
+    char combinedWeaponIndex;
     char index;
 } vs_battle_inventoryBlade;
 
@@ -43,7 +43,7 @@ typedef struct {
     signed char intelligence;
     signed char agility;
     signed char types[4];
-    u_short unkC;
+    u_short combinedWeaponIndex;
     u_short index;
 } vs_battle_inventoryGrip;
 
@@ -57,7 +57,7 @@ typedef struct {
     signed char agility;
     signed char classes[8];
     signed char affinities[8];
-    u_short unk18;
+    u_short setItemIndex;
     short index;
 } vs_battle_inventoryGem;
 
@@ -101,7 +101,7 @@ typedef struct {
 
 typedef struct {
     u_short id;
-    char unk2;
+    char count;
     char index;
 } vs_battle_inventoryItem;
 
@@ -147,3 +147,15 @@ typedef struct {
     vs_menu_container unkC430;
     vs_menu_container unk105B0;
 } D_8010245C_t;
+
+enum vs_itemCategories {
+    itemCategoryWeapon,
+    itemCategoryBlade,
+    itemCategoryGrip,
+    itemCategoryShield,
+    itemCategoryArmor,
+    itemCategoryGem,
+    itemCategoryItem
+};
+
+enum vs_gemTargets { gemTargetShield = 0x80 };

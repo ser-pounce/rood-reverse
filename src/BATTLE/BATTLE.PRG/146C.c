@@ -6523,8 +6523,8 @@ int _itemIdIsInInventory(int id)
             case 7:
                 for (i = 0; i < 64; ++i) {
                     if ((vs_battle_inventory.items[i].id == id)
-                        && (vs_battle_inventory.items[i].unk2 != 0)) {
-                        ret = vs_battle_inventory.items[i].unk2;
+                        && (vs_battle_inventory.items[i].count != 0)) {
+                        ret = vs_battle_inventory.items[i].count;
                         break;
                     }
                 }

@@ -939,13 +939,13 @@ int func_80104EC0(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 1) {
-        var_v1 = vs_battle_inventory.blades[arg1].unk2A;
+        var_v1 = vs_battle_inventory.blades[arg1].combinedWeaponIndex;
     }
     if (arg0 == 2) {
-        var_v1 = vs_battle_inventory.grips[arg1].unkC;
+        var_v1 = vs_battle_inventory.grips[arg1].combinedWeaponIndex;
     }
     if (arg0 == 5) {
-        var_v1 = vs_battle_inventory.gems[arg1].unk18;
+        var_v1 = vs_battle_inventory.gems[arg1].setItemIndex;
         if (var_v1 & 0x80) {
             var_v1 = 0;
         }
@@ -959,7 +959,7 @@ int func_80104F50(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 5) {
-        var_v1 = vs_battle_inventory.gems[arg1].unk18;
+        var_v1 = vs_battle_inventory.gems[arg1].setItemIndex;
         if (!(var_v1 & 0x80)) {
             var_v1 = 0;
         }

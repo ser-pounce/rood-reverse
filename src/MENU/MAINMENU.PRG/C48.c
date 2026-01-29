@@ -468,7 +468,7 @@ void func_800FD17C(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
     arg1->unk0 = vs_mainMenu_itemNames[arg0->id];
     arg1->unk4 = arg3;
-    *arg2 = arg0->unk2 << 9;
+    *arg2 = arg0->count << 9;
 }
 
 void vs_mainMenu_resetStats(void)

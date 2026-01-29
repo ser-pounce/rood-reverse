@@ -3572,8 +3572,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
-            if (blade->unk2A != 0) {
-                blade->unk2A = targetIndices->weapons[blade->unk2A - 1];
+            if (blade->combinedWeaponIndex != 0) {
+                blade->combinedWeaponIndex =
+                    targetIndices->weapons[blade->combinedWeaponIndex - 1];
             }
         }
     }
@@ -3584,8 +3585,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
-            if (grip->unkC != 0) {
-                grip->unkC = targetIndices->weapons[grip->unkC - 1];
+            if (grip->combinedWeaponIndex != 0) {
+                grip->combinedWeaponIndex =
+                    targetIndices->weapons[grip->combinedWeaponIndex - 1];
             }
         }
     }
@@ -3620,12 +3622,13 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
             gem->index = i + 1;
-            if (gem->unk18 != 0) {
-                if (gem->unk18 & 0x80) {
-                    gem->unk18 =
-                        targetIndices->shields[(gem->unk18 & 0xFFFF) - 0x81] | 0x80;
+            if (gem->setItemIndex != 0) {
+                if (gem->setItemIndex & 0x80) {
+                    gem->setItemIndex =
+                        targetIndices->shields[(gem->setItemIndex & 0xFFFF) - 0x81]
+                        | 0x80;
                 } else {
-                    gem->unk18 = targetIndices->weapons[gem->unk18 - 1];
+                    gem->setItemIndex = targetIndices->weapons[gem->setItemIndex - 1];
                 }
             }
         }

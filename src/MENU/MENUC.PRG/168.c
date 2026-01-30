@@ -118,7 +118,12 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108A9C);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108AD4);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108E9C);
+void func_80108E9C(char* arg0, char* arg1)
+{
+    arg0[9] = 0xF;
+    arg0[12] = arg1[40];
+    arg0[13] = arg1[1] != 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108EC4);
 

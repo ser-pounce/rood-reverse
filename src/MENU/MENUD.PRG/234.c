@@ -14,7 +14,7 @@
 
 enum copyContainerFlags { copyContainerFlagsCopy = 0x10 };
 static int _copyContainerItem(int, vs_menu_containerData*, int, vs_menu_containerData*);
-int func_80106C64(int, char**, int*, void*);
+int func_80106C64(int, char**, int*, char*);
 
 extern u_long* D_1F800000[];
 
@@ -249,7 +249,7 @@ static void _initContainerObject(
         break;
     }
     case itemCategoryItem: {
-        vs_battle_inventoryItem* item = &container->items[index];
+        vs_battle_inventoryMisc* item = &container->misc[index];
         vs_battle_rMemzero(item, sizeof *item);
         item->index = index + 1;
         break;
@@ -281,7 +281,7 @@ static int _getContainerItemId(int type, int index, vs_menu_containerData* conta
         ret = container->gems[index].id;
         break;
     case itemCategoryItem:
-        ret = container->items[index].id;
+        ret = container->misc[index].id;
         break;
     }
     return ret;
@@ -316,15 +316,15 @@ static void func_801031A0(void)
 {
     int i;
     int var_a2;
-    vs_menu_containerData* container = &D_8010245C->unk4BB0;
+    vs_menu_containerData* container = &vs_menu_inventoryStorage->unk4BB0;
 
-    vs_battle_memcpy(&container->items, D_80109A88->data.items, sizeof container->items);
+    vs_battle_memcpy(&container->misc, D_80109A88->data.misc, sizeof container->misc);
 
-    for (var_a2 = D_8010245C->unkC3B0[0], i = 0; var_a2 != 0;
-         ++i, var_a2 = D_8010245C->unkC3B0[i]) {
+    for (var_a2 = vs_menu_inventoryStorage->itemsToTransfer[0], i = 0; var_a2 != 0;
+         ++i, var_a2 = vs_menu_inventoryStorage->itemsToTransfer[i]) {
         if ((var_a2 >> 8) == itemCategoryItem) {
             _copyContainerItem(copyContainerFlagsCopy | itemCategoryItem, container,
-                (var_a2 - 1) & 0xFF, &D_8010245C->unk87B0);
+                (var_a2 - 1) & 0xFF, &vs_menu_inventoryStorage->unk87B0);
         }
     }
 }
@@ -332,7 +332,8 @@ static void func_801031A0(void)
 static void func_80103270(void)
 {
     func_801031A0();
-    D_80109A82 = _countContainerItems(itemCategoryItem, &D_8010245C->unk4BB0);
+    D_80109A82 =
+        _countContainerItems(itemCategoryItem, &vs_menu_inventoryStorage->unk4BB0);
 }
 
 static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetContainer,
@@ -504,8 +505,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryItem: {
-        vs_battle_inventoryItem* target = targetContainer->items;
-        vs_battle_inventoryItem* source = &sourceContainer->items[sourceSlot];
+        vs_battle_inventoryMisc* target = targetContainer->misc;
+        vs_battle_inventoryMisc* source = &sourceContainer->misc[sourceSlot];
 
         subItemCount = source->count;
 
@@ -612,11 +613,11 @@ static void _copyInventoryToContainer(void)
     int i;
 
     vs_battle_inventory_t* inventory = &vs_battle_inventory;
-    vs_menu_container* container = &D_8010245C->unk105B0;
+    vs_menu_container* container = &vs_menu_inventoryStorage->unk105B0;
 
     vs_battle_rMemzero(&container->data, sizeof container->data);
-    vs_battle_rMemzero(
-        &D_8010245C->unk105B0.indices, sizeof D_8010245C->unk105B0.indices);
+    vs_battle_rMemzero(&vs_menu_inventoryStorage->unk105B0.indices,
+        sizeof vs_menu_inventoryStorage->unk105B0.indices);
 
     for (i = 0; i < 7; ++i) {
         int j;
@@ -641,14 +642,14 @@ static void _copyInventoryToContainer(void)
     vs_battle_memcpy(
         container->data.gems, inventory->gems, sizeof container->data.gems / 4);
     vs_battle_memcpy(
-        container->data.items, inventory->items, sizeof container->data.items / 4);
+        container->data.misc, inventory->items, sizeof container->data.misc / 4);
 }
 
 static void _copyContainerToInventory(void)
 {
     int i;
 
-    vs_menu_container* container = &D_8010245C->unk105B0;
+    vs_menu_container* container = &vs_menu_inventoryStorage->unk105B0;
     vs_battle_inventory_t* inventory = &vs_battle_inventory;
 
     for (i = 0; i < 7; ++i) {
@@ -674,7 +675,7 @@ static void _copyContainerToInventory(void)
         inventory->shields, container->data.shields, sizeof inventory->shields);
     vs_battle_memcpy(inventory->armor, container->data.armor, sizeof inventory->armor);
     vs_battle_memcpy(inventory->gems, container->data.gems, sizeof inventory->gems);
-    vs_battle_memcpy(inventory->items, container->data.items, sizeof inventory->items);
+    vs_battle_memcpy(inventory->items, container->data.misc, sizeof inventory->items);
 }
 
 static int _getParentItemIndex(
@@ -863,22 +864,22 @@ void func_80104170(int arg0)
 }
 
 static void _setWeaponUi(vs_menu_containerData* container, char** rowStrings,
-    int* rowTypes, char* description, int index)
+    int* rowTypes, char* buf, int index)
 {
     vs_battle_uiWeapon weapon;
 
     vs_menuD_initUiWeapon(&weapon, &container->weapons[index], container);
-    vs_mainMenu_setWeaponStrings(&weapon, rowStrings, rowTypes, description);
+    vs_mainMenu_setWeaponUi(&weapon, rowStrings, rowTypes, buf);
     rowStrings[0] = container->weapons[index].name;
 }
 
 static void _setShieldUi(vs_menu_containerData* container, char** rowStrings,
-    int* rowTypes, char* description, int index)
+    int* rowTypes, char* buf, int index)
 {
     vs_battle_uiShield shield;
 
     vs_menuD_initUiShield(&shield, &container->shields[index], container);
-    vs_mainMenu_setShieldStrings(&shield, rowStrings, rowTypes, description);
+    vs_mainMenu_setShieldUi(&shield, rowStrings, rowTypes, buf);
 }
 
 int _weaponNavigation(int weaponIndex)
@@ -990,8 +991,9 @@ int _bladeNavigation(int bladeIndex)
             if (selectedBlade != D_80109A38) {
                 D_80109A38 = selectedBlade;
                 temp_v0_3 = func_80104114(1, selectedBlade);
-                func_800FCAA4(&vs_menuD_containerData->data.blades[temp_v0_3 - 1], text,
-                    &sp18, vs_battle_stringBuf);
+                vs_mainMenu_setBladeUi(
+                    &vs_menuD_containerData->data.blades[temp_v0_3 - 1], text, &sp18,
+                    vs_battle_stringBuf);
                 func_800FD404(temp_v0_3);
                 func_80104078(D_80109A37, text, sp18, selectedBlade);
             }
@@ -1043,8 +1045,8 @@ int _gripNavigation(int arg0)
             if (temp_v0_2 != D_80109A3C) {
                 D_80109A3C = temp_v0_2;
                 temp_v0_3 = func_80104114(2, temp_v0_2);
-                func_800FCC0C(&vs_menuD_containerData->data.grips[temp_v0_3 - 1], sp10,
-                    &sp18, vs_battle_stringBuf);
+                vs_mainMenu_setGripUi(&vs_menuD_containerData->data.grips[temp_v0_3 - 1],
+                    sp10, &sp18, vs_battle_stringBuf);
                 func_800FD504(temp_v0_3);
                 func_80104078(D_80109A3B, sp10, sp18, temp_v0_2);
             }
@@ -1174,7 +1176,7 @@ int _armorNavigation(int arg0)
             if (temp_v0_2 != D_80109A46) {
                 D_80109A46 = temp_v0_2;
                 temp_v0_3 = func_80104114(4, temp_v0_2);
-                vs_mainMenu_setAccessoryStrings(
+                vs_mainMenu_setAccessoryUi(
                     &vs_menuD_containerData->data.armor[temp_v0_3 - 1], sp10, &sp18,
                     vs_battle_stringBuf);
                 func_800FD700(temp_v0_3);
@@ -1229,8 +1231,8 @@ int _gemNavigation(int arg0)
             if (temp_v0_2 != D_80109A4A) {
                 D_80109A4A = temp_v0_2;
                 temp_v0_3 = func_80104114(5, temp_v0_2);
-                func_800FD0E0(&vs_menuD_containerData->data.gems[temp_v0_3 - 1], sp10,
-                    &sp18, vs_battle_stringBuf);
+                vs_mainMenu_setGemUi(&vs_menuD_containerData->data.gems[temp_v0_3 - 1],
+                    sp10, &sp18, vs_battle_stringBuf);
                 func_800FD878(temp_v0_3);
                 func_80104078(D_80109A49, sp10, sp18, temp_v0_2);
             }
@@ -1441,7 +1443,7 @@ static void _sortShieldsByStat(int arg0)
     vs_battle_memcpy(temp_s6, &sp178, sizeof sp178);
 }
 
-static int _getItemStat(int arg0, vs_battle_inventoryItem* item)
+static int _getItemStat(int arg0, vs_battle_inventoryMisc* item)
 {
     if (arg0 == 0) {
         return -item->id;
@@ -1458,9 +1460,9 @@ static void _sortItemsByStat(int arg0)
     int var_s5;
     int temp_s0;
     u_short* temp_s7;
-    vs_battle_inventoryItem* item;
+    vs_battle_inventoryMisc* item;
 
-    item = vs_menuD_containerData->data.items;
+    item = vs_menuD_containerData->data.misc;
     temp_s7 = _getContainerIndicesOffset(6, vs_menuD_containerData);
     vs_battle_rMemzero(&sp10, sizeof sp10);
     var_s5 = 0;
@@ -1722,7 +1724,7 @@ int _displayDiscardMenu(int arg0)
         D_80109A4E = execDiscardOne;
         break;
     case discardMultiple:
-        _discardMaxAmount = vs_menuD_containerData->data.items[_discardIndex].count;
+        _discardMaxAmount = vs_menuD_containerData->data.misc[_discardIndex].count;
         i = vs_battle_toBCD(_discardMaxAmount);
         _discardAmountFormat[8] = i & 0xF;
         i = vs_battle_toBCD(i >> 4);
@@ -1865,12 +1867,12 @@ int _displayDiscardMenu(int arg0)
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
-                if (vs_menuD_containerData->data.items[_discardIndex].count
+                if (vs_menuD_containerData->data.misc[_discardIndex].count
                     == _discardAmount) {
                     _initContainerObject(_discardItemCategory, _discardIndex,
                         &vs_menuD_containerData->data);
                 } else {
-                    vs_menuD_containerData->data.items[_discardIndex].count -=
+                    vs_menuD_containerData->data.misc[_discardIndex].count -=
                         _discardAmount;
                 }
             } else {
@@ -1912,10 +1914,10 @@ void func_80106504(void)
     for (i = 0; i < 7; ++i, var_s1_2 += 0xC) {
         func_80106464(vs_mainMenu_inventoryItemCapacities[i],
             ((0x64 + 0xC * i) << 16) | 0x70,
-            _countContainerItems(i, &D_8010245C->unk105B0.data));
+            _countContainerItems(i, &vs_menu_inventoryStorage->unk105B0.data));
         vs_battle_renderTextRaw(D_80109A10[i], ((0x64 + 0xC * i) << 16) | 0xA0, NULL);
         func_80106464(_containerItemCapacities[i], ((0x64 + 0xC * i) << 16) | 0xF8,
-            _countContainerItems(i, &D_8010245C->unkC430.data));
+            _countContainerItems(i, &vs_menu_inventoryStorage->unkC430.data));
     }
 }
 
@@ -1946,7 +1948,8 @@ int _getShieldsubItemCount(int arg0)
 int func_801066DC(int arg0, int arg1)
 {
     int temp_s0 = _countContainerItems(arg0, &D_80109A88->data);
-    int temp_s1 = arg1 + (temp_s0 + _countContainerItems(arg0, &D_8010245C->unk87B0));
+    int temp_s1 =
+        arg1 + (temp_s0 + _countContainerItems(arg0, &vs_menu_inventoryStorage->unk87B0));
 
     if (D_80109A7A != 0) {
         return _containerItemCapacities[arg0] < temp_s1;
@@ -1959,7 +1962,7 @@ int func_80106784(int arg0, int arg1)
     int i;
 
     for (i = 0; i < 64; ++i) {
-        if (D_8010245C->unkC3B0[i] == 0) {
+        if (vs_menu_inventoryStorage->itemsToTransfer[i] == 0) {
             break;
         }
     }
@@ -2002,18 +2005,18 @@ void func_801068BC(int arg0)
     int temp_s2;
     int temp_s0;
 
-    temp_s0 = D_8010245C->unkC3B0[arg0];
+    temp_s0 = vs_menu_inventoryStorage->itemsToTransfer[arg0];
     temp_s2 = temp_s0 >> 8;
     temp_s0_2 = (temp_s0 - 1) & 0xFF;
-    _copyContainerItem(
-        temp_s2 | 0x10, &vs_menuD_containerData->data, temp_s0_2, &D_8010245C->unk87B0);
-    _initContainerObject(temp_s2, temp_s0_2, &D_8010245C->unk87B0);
+    _copyContainerItem(temp_s2 | 0x10, &vs_menuD_containerData->data, temp_s0_2,
+        &vs_menu_inventoryStorage->unk87B0);
+    _initContainerObject(temp_s2, temp_s0_2, &vs_menu_inventoryStorage->unk87B0);
 }
 
 void func_80106948(int arg0, int arg1)
 {
-    _copyContainerItem(
-        arg0 | 0x10, &D_8010245C->unk87B0, arg1, &vs_menuD_containerData->data);
+    _copyContainerItem(arg0 | 0x10, &vs_menu_inventoryStorage->unk87B0, arg1,
+        &vs_menuD_containerData->data);
     _initContainerObject(arg0, arg1, &vs_menuD_containerData->data);
 }
 
@@ -2022,7 +2025,7 @@ static int func_801069B0(int arg0, int arg1)
     int i;
 
     for (i = 0; i < 64; ++i) {
-        if (D_8010245C->unkC3B0[i] == ((arg0 << 8) | (arg1 + 1))) {
+        if (vs_menu_inventoryStorage->itemsToTransfer[i] == ((arg0 << 8) | (arg1 + 1))) {
             return i + 1;
         }
     }
@@ -2035,7 +2038,7 @@ static void func_80106A04(int arg0, int arg1)
     u_short* var_v1;
 
     i = 0;
-    var_v1 = (u_short*)D_8010245C + 0x61D8;
+    var_v1 = (u_short*)vs_menu_inventoryStorage + 0x61D8;
     for (i = 0; i < 64; ++i) {
         if (var_v1[i] == 0) {
             var_v1[i] = ((arg0 << 8) | (arg1 + 1));
@@ -2050,13 +2053,13 @@ void func_80106A50(void)
     int var_a1;
     int i;
     int k;
-    u_short* temp_s2 = D_8010245C->unkC3B0;
+    u_short* temp_s2 = vs_menu_inventoryStorage->itemsToTransfer;
 
     for (i = 0; i < 64; ++i) {
         int source = temp_s2[i];
         if ((source != 0)
-            && (_getContainerItemId(
-                    (source >> 8), (source - 1) & 0xFF, &D_8010245C->unk87B0)
+            && (_getContainerItemId((source >> 8), (source - 1) & 0xFF,
+                    &vs_menu_inventoryStorage->unk87B0)
                 == 0)) {
             temp_s2[i] = 0;
         }
@@ -2093,7 +2096,7 @@ void func_80106A50(void)
 
     for (k = 0; k < 7; ++k) {
         for (i = 0; i < _containerItemCapacities[k]; ++i) {
-            if ((_getContainerItemId(k, i, &D_8010245C->unk87B0) != 0)
+            if ((_getContainerItemId(k, i, &vs_menu_inventoryStorage->unk87B0) != 0)
                 && (func_801069B0(k, i) == 0)) {
                 func_80106A04(k, i);
             }
@@ -2213,15 +2216,17 @@ loop_1:
         if (vs_main_settings.cursorMemory == 0) {
             memset(D_800F4EE8.unkA0, 0, sizeof D_800F4EE8.unkA0);
         }
-        vs_battle_rMemzero(&D_8010245C->unk87B0, sizeof D_8010245C->unk87B0);
-        vs_battle_rMemzero(D_8010245C->unkC3B0, sizeof D_8010245C->unkC3B0);
+        vs_battle_rMemzero(
+            &vs_menu_inventoryStorage->unk87B0, sizeof vs_menu_inventoryStorage->unk87B0);
+        vs_battle_rMemzero(vs_menu_inventoryStorage->itemsToTransfer,
+            sizeof vs_menu_inventoryStorage->itemsToTransfer);
         D_80109A7A = arg0 - 1;
         if (D_80109A7A) {
-            vs_menuD_containerData = &D_8010245C->unk105B0;
-            D_80109A88 = &D_8010245C->unkC430;
+            vs_menuD_containerData = &vs_menu_inventoryStorage->unk105B0;
+            D_80109A88 = &vs_menu_inventoryStorage->unkC430;
         } else {
-            vs_menuD_containerData = &D_8010245C->unkC430;
-            D_80109A88 = &D_8010245C->unk105B0;
+            vs_menuD_containerData = &vs_menu_inventoryStorage->unkC430;
+            D_80109A88 = &vs_menu_inventoryStorage->unk105B0;
         }
         D_80109A68 = 1;
         return 0;
@@ -2234,7 +2239,7 @@ loop_1:
         func_800FFBC8();
         /* fallthrough */
     case 1:
-        temp_s1 = vs_main_allocHeapR(0x6C00U);
+        temp_s1 = vs_main_allocHeapR(0x6C00);
         temp_s6 = (void*)temp_s1 + 0x6000;
         temp_s5 = (void*)temp_s1 + 0x6400;
         D_801023E3 = 1;
@@ -2244,7 +2249,7 @@ loop_1:
         }
 
         func_80106A50();
-        temp_s2 = func_80106C64(var_s4, temp_s5, temp_s6, temp_s1);
+        temp_s2 = func_80106C64(var_s4, temp_s5, temp_s6, (char*)temp_s1);
         D_80109A69 = temp_s2 == 0;
         if (D_80109A69 != 0) {
             vs_mainmenu_setMessage((
@@ -2273,7 +2278,7 @@ loop_1:
             }
             if (vs_main_buttonsPressed.all & 0x40) {
                 vs_battle_playMenuLeaveSfx();
-                if (D_8010245C->unkC3B0[0] == 0) {
+                if (vs_menu_inventoryStorage->itemsToTransfer[0] == 0) {
                     return -1;
                 }
                 if (var_s4 == 7) {
@@ -2333,7 +2338,7 @@ loop_1:
             } else if (D_80109A6C == -2) {
                 return -2;
             } else {
-                if (D_8010245C->unkC3B0[0] == 0) {
+                if (vs_menu_inventoryStorage->itemsToTransfer[0] == 0) {
                     func_800FA8E0(0);
                     return -1;
                 }
@@ -2424,14 +2429,14 @@ loop_1:
                 temp_s0 = temp_s1[temp_s3 - 1];
                 var_a2 = temp_s1[temp_s2 - 1];
                 if ((var_s4 == 6)
-                    && (vs_menuD_containerData->data.items[temp_s0 - 1].id
-                        == vs_menuD_containerData->data.items[var_a2 - 1].id)) {
-                    vs_menuD_containerData->data.items[var_a2 - 1].count +=
-                        vs_menuD_containerData->data.items[temp_s0 - 1].count;
-                    if (vs_menuD_containerData->data.items[var_a2 - 1].count > 0x64) {
-                        vs_menuD_containerData->data.items[temp_s0 - 1].count =
-                            vs_menuD_containerData->data.items[var_a2 - 1].count - 0x64;
-                        vs_menuD_containerData->data.items[var_a2 - 1].count = 0x64;
+                    && (vs_menuD_containerData->data.misc[temp_s0 - 1].id
+                        == vs_menuD_containerData->data.misc[var_a2 - 1].id)) {
+                    vs_menuD_containerData->data.misc[var_a2 - 1].count +=
+                        vs_menuD_containerData->data.misc[temp_s0 - 1].count;
+                    if (vs_menuD_containerData->data.misc[var_a2 - 1].count > 0x64) {
+                        vs_menuD_containerData->data.misc[temp_s0 - 1].count =
+                            vs_menuD_containerData->data.misc[var_a2 - 1].count - 0x64;
+                        vs_menuD_containerData->data.misc[var_a2 - 1].count = 0x64;
                     } else {
                         _initContainerObject(
                             6, temp_s0 - 1, &vs_menuD_containerData->data);
@@ -2488,7 +2493,7 @@ loop_1:
             temp_s2 = 0x4A;
             break;
         case 6:
-            temp_s0 = (vs_menuD_containerData->data.items[temp_s3].id < 0x1CA) ^ 1;
+            temp_s0 = (vs_menuD_containerData->data.misc[temp_s3].id < 0x1CA) ^ 1;
             break;
         }
 
@@ -2522,12 +2527,13 @@ loop_1:
             int temp_s0 = 0;
 
             for (temp_s2 = 0; temp_s2 < 7; ++temp_s2) {
-                temp_s0 += _countContainerItems(temp_s2, &D_8010245C->unk87B0);
+                temp_s0 +=
+                    _countContainerItems(temp_s2, &vs_menu_inventoryStorage->unk87B0);
             }
 
             func_801031A0();
-            var_a2 = _copyContainerItem(
-                6, &D_8010245C->unk4BB0, temp_s3, &vs_menuD_containerData->data);
+            var_a2 = _copyContainerItem(6, &vs_menu_inventoryStorage->unk4BB0, temp_s3,
+                &vs_menuD_containerData->data);
             if ((D_80109A7A == 0) && (var_a2 > 0x40)) {
                 var_a2 = 0;
             }
@@ -2535,11 +2541,12 @@ loop_1:
             if (var_a2 != 0) {
                 if (temp_s0 == 0x40) {
                     int i;
-                    int temp_a0 = vs_menuD_containerData->data.items[temp_s3].count;
+                    int temp_a0 = vs_menuD_containerData->data.misc[temp_s3].count;
                     for (i = 0; i < 256; ++i) {
-                        if (D_8010245C->unk87B0.items[i].id
-                            == vs_menuD_containerData->data.items[temp_s3].id) {
-                            temp_a0 += D_8010245C->unk87B0.items[i].count - 0x64;
+                        if (vs_menu_inventoryStorage->unk87B0.misc[i].id
+                            == vs_menuD_containerData->data.misc[temp_s3].id) {
+                            temp_a0 +=
+                                vs_menu_inventoryStorage->unk87B0.misc[i].count - 0x64;
                         }
                     }
                     var_a2 = temp_a0 < 1;
@@ -2588,7 +2595,7 @@ loop_1:
             temp_s0 = vs_menuD_containerData->data.armor[temp_s3].unk26 != 0;
             break;
         case 6:
-            if (vs_menuD_containerData->data.items[temp_s3].id >= 0x1CA) {
+            if (vs_menuD_containerData->data.misc[temp_s3].id >= 0x1CA) {
                 temp_s0 = 3;
             }
             break;
@@ -2617,7 +2624,7 @@ loop_1:
         if (var_s4 == 6) {
             sp10[temp_s2 * 2] = vs_mainMenu_itemHelp + 0x356D;
             sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x3574;
-            if (vs_menuD_containerData->data.items[temp_s3].id >= 0x1CA) {
+            if (vs_menuD_containerData->data.misc[temp_s3].id >= 0x1CA) {
                 sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x350E;
                 D_800F4E84[temp_s2] = 1;
             }
@@ -2657,8 +2664,7 @@ loop_1:
                 case 3:
                     temp_s2 = temp_s1[D_80109A6C - 1] | (var_s4 << 0xC);
                     if ((var_s4 == 6)
-                        && (vs_menuD_containerData->data
-                                .items[temp_s1[D_80109A6C - 1] - 1]
+                        && (vs_menuD_containerData->data.misc[temp_s1[D_80109A6C - 1] - 1]
                                 .count
                             >= 2)) {
                         temp_s2 |= 0x10000;
@@ -2782,19 +2788,19 @@ loop_1:
             } else {
                 // Pointless check and duplicated loops
                 if (D_80109A7A != 0) {
-                    while ((temp_s2 = D_8010245C->unkC3B0[0])) {
+                    while ((temp_s2 = vs_menu_inventoryStorage->itemsToTransfer[0])) {
                         _copyContainerItem((temp_s2 >> 8) | 0x10, &D_80109A88->data,
-                            (temp_s2 - 1) & 0xFF, &D_8010245C->unk87B0);
-                        _initContainerObject(
-                            (temp_s2 >> 8), (temp_s2 - 1) & 0xFF, &D_8010245C->unk87B0);
+                            (temp_s2 - 1) & 0xFF, &vs_menu_inventoryStorage->unk87B0);
+                        _initContainerObject((temp_s2 >> 8), (temp_s2 - 1) & 0xFF,
+                            &vs_menu_inventoryStorage->unk87B0);
                         func_80106A50();
                     }
                 } else {
-                    while ((temp_s2 = D_8010245C->unkC3B0[0])) {
+                    while ((temp_s2 = vs_menu_inventoryStorage->itemsToTransfer[0])) {
                         _copyContainerItem((temp_s2 >> 8) | 0x10, &D_80109A88->data,
-                            (temp_s2 - 1) & 0xFF, &D_8010245C->unk87B0);
-                        _initContainerObject(
-                            (temp_s2 >> 8), (temp_s2 - 1) & 0xFF, &D_8010245C->unk87B0);
+                            (temp_s2 - 1) & 0xFF, &vs_menu_inventoryStorage->unk87B0);
+                        _initContainerObject((temp_s2 >> 8), (temp_s2 - 1) & 0xFF,
+                            &vs_menu_inventoryStorage->unk87B0);
                         func_80106A50();
                     }
                 }

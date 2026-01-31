@@ -103,7 +103,7 @@ typedef struct {
     u_short id;
     char count;
     char index;
-} vs_battle_inventoryItem;
+} vs_battle_inventoryMisc;
 
 typedef struct {
     vs_battle_inventoryWeapon weapons[32];
@@ -112,7 +112,7 @@ typedef struct {
     vs_battle_inventoryGrip grips[64]; // 0x1500
     vs_battle_inventoryArmor armor[64]; // 0x1900
     vs_battle_inventoryGem gems[192]; // 0x2300
-    vs_battle_inventoryItem items[256]; // 0x3800
+    vs_battle_inventoryMisc misc[256]; // 0x3800
     // 0x3C00
 } vs_menu_containerData;
 
@@ -123,7 +123,7 @@ typedef struct {
     u_short shields[32];
     u_short armor[64];
     u_short gems[192];
-    u_short items[256];
+    u_short misc[256];
 } vs_menu_containerIndices;
 
 typedef struct {
@@ -143,10 +143,10 @@ typedef struct {
     vs_menu_containerData unkFB0;
     vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
-    u_short unkC3B0[0x40];
+    u_short itemsToTransfer[64];
     vs_menu_container unkC430;
     vs_menu_container unk105B0;
-} D_8010245C_t;
+} vs_menu_inventoryStorage_t;
 
 enum vs_itemCategories {
     itemCategoryWeapon,

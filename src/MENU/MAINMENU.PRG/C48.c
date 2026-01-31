@@ -376,8 +376,8 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
-void vs_mainMenu_setWeaponStrings(
-    vs_battle_uiWeapon* weapon, char** rowStrings, int* rowTypes, char* description)
+void vs_mainMenu_setWeaponUi(
+    vs_battle_uiWeapon* weapon, char** rowStrings, int* rowTypes, char* buf)
 {
     int temp_v1;
 
@@ -402,10 +402,10 @@ void vs_mainMenu_setWeaponStrings(
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
                               + VS_ITEMHELP_BIN_INDEX_oneHanded]];
     vs_battle_printf(
-        vs_battle_printf(description,
-            (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
-    rowStrings[1] = description;
+    rowStrings[1] = buf;
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
@@ -418,15 +418,15 @@ void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char
     } else {
         vs_menuD_initUiWeapon(&sp10, arg0, &vs_menuD_containerData->data);
     }
-    vs_mainMenu_setWeaponStrings(&sp10, arg1, arg2, arg3);
+    vs_mainMenu_setWeaponUi(&sp10, arg1, arg2, arg3);
     *arg1 = arg0->name;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCAA4);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setBladeUi);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FCC0C);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setGripUi);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldStrings);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldUi);
 
 void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
 {
@@ -437,21 +437,22 @@ void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char
     } else {
         vs_menuD_initUiShield(&shield, arg0, &vs_menuD_containerData->data);
     }
-    vs_mainMenu_setShieldStrings(&shield, arg1, arg2, arg3);
+    vs_mainMenu_setShieldUi(&shield, arg1, arg2, arg3);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorStrings);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmorUi);
 
-void vs_mainMenu_setAccessoryStrings(
+void vs_mainMenu_setAccessoryUi(
     vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3)
 {
     vs_battle_equippedArmor sp10;
 
     vs_battle_applyArmor(&sp10, arg0);
-    vs_mainMenu_setArmorStrings(&sp10, arg1, arg2, arg3);
+    vs_mainMenu_setArmorUi(&sp10, arg1, arg2, arg3);
 }
 
-void func_800FD0E0(vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3)
+void vs_mainMenu_setGemUi(
+    vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
@@ -460,7 +461,8 @@ void func_800FD0E0(vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* a
     *arg2 = 0x58000000;
 }
 
-void func_800FD17C(vs_battle_inventoryItem* arg0, char** arg1, int* arg2, void* arg3)
+void vs_mainMenu_setItemUi(
+    vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3)
 {
     vs_battle_memcpy(
         arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);

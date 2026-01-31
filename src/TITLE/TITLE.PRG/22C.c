@@ -686,8 +686,8 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.mapCompletion = 0;
     memset(&vs_battle_inventory.items, 0, sizeof(vs_battle_inventory.items));
     memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
-    memset(&savedata2->containerData.items, 0,
-        sizeof savedata2->containerData.items / 4); // Why / 4?
+    memset(&savedata2->containerData.misc, 0,
+        sizeof savedata2->containerData.misc / 4); // Why / 4?
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;

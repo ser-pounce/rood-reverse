@@ -331,7 +331,7 @@ typedef struct {
     vs_battle_inventoryGrip grips[16];
     vs_battle_inventoryArmor armor[16];
     vs_battle_inventoryGem gems[48];
-    vs_battle_inventoryItem items[64];
+    vs_battle_inventoryMisc items[64];
 } vs_battle_inventory_t;
 
 typedef struct {

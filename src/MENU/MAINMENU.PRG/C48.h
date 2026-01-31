@@ -27,19 +27,21 @@ void func_800FBD80(int);
 void func_800FBEA4(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
 void vs_mainMenu_drawDpPpbars(int);
-void vs_mainMenu_setWeaponStrings(vs_battle_uiWeapon*, char**, int*, char*);
+void vs_mainMenu_setWeaponUi(vs_battle_uiWeapon*, char**, int*, char*);
 void func_800FC510(int, int, int);
 void func_800FC704(int, int, int);
 void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);
-void func_800FCAA4(vs_battle_inventoryBlade*, char**, int*, char*);
-void func_800FCC0C(vs_battle_inventoryGrip*, char**, int*, char*);
+void vs_mainMenu_setBladeUi(vs_battle_inventoryBlade*, char**, int*, char*);
+void vs_mainMenu_setGripUi(vs_battle_inventoryGrip*, char**, int*, char*);
 void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
-void vs_mainMenu_setShieldStrings(vs_battle_uiShield*, char**, int*, char*);
-void vs_mainMenu_setArmorStrings(vs_battle_equippedArmor*, char**, int*, char*);
-void vs_mainMenu_setAccessoryStrings(
+void vs_mainMenu_setShieldUi(vs_battle_uiShield*, char**, int*, char*);
+void vs_mainMenu_setArmorUi(vs_battle_equippedArmor*, char**, int*, char*);
+void vs_mainMenu_setAccessoryUi(
     vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3);
-void func_800FD0E0(vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
-void func_800FD17C(vs_battle_inventoryItem* arg0, char** arg1, int* arg2, void* arg3);
+void vs_mainMenu_setGemUi(
+    vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
+void vs_mainMenu_setItemUi(
+    vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
 void func_800FD270(int);
 void func_800FD404(int);
 void func_800FD504(int);
@@ -54,7 +56,7 @@ extern char (*vs_mainMenu_itemNames)[24];
 extern char vs_mainMenu_inventoryItemCapacities[];
 extern char* vs_mainMenu_inventoryIndices[];
 extern char D_801023D0;
-extern D_8010245C_t* D_8010245C;
+extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
 extern vs_mainMenu_strIntAgi_t vs_mainMenu_strIntAgi[2];
 extern char D_801024B9;
 extern short vs_mainMenu_equipmentStats[0x40];

@@ -389,8 +389,8 @@ int func_80103034(int arg0)
         if (temp_v0_2 != D_80109654) {
             D_80109654 = temp_v0_2;
             temp_v0_3 = func_80102D30(1, temp_v0_2);
-            func_800FCAA4(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10, &sp18,
-                vs_battle_stringBuf);
+            vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
+                &sp18, vs_battle_stringBuf);
             func_800FD404(temp_v0_3);
             func_80102C94(D_80109653, sp10, sp18, temp_v0_2);
         }
@@ -451,8 +451,8 @@ int func_801036BC(int arg0)
         if (temp_v0_2 != D_80109662) {
             D_80109662 = temp_v0_2;
             temp_v0_3 = func_80102D30(4, temp_v0_2);
-            vs_mainMenu_setAccessoryStrings(&vs_battle_inventory.armor[temp_v0_3 - 1],
-                sp10, &sp18, vs_battle_stringBuf);
+            vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
+                &sp18, vs_battle_stringBuf);
             func_800FD700(temp_v0_3);
             func_80102C94(D_80109661, sp10, sp18, temp_v0_2);
             return 0;
@@ -505,7 +505,7 @@ int func_801038E4(int arg0)
         if (temp_v0_2 != D_80109666) {
             D_80109666 = temp_v0_2;
             temp_v0_3 = func_80102D30(5, temp_v0_2);
-            func_800FD0E0(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
+            vs_mainMenu_setGemUi(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
                 vs_battle_stringBuf);
             func_800FD878(temp_v0_3);
             func_80102C94(D_80109665, sp10, sp18, temp_v0_2);
@@ -727,7 +727,7 @@ void func_8010408C(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    vs_battle_inventoryItem* new_var2 = vs_battle_inventory.items;
+    vs_battle_inventoryMisc* new_var2 = vs_battle_inventory.items;
     char* new_var = D_800619D8.unk70;
 
     vs_battle_rMemzero(sp10, 0x40);

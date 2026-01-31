@@ -252,7 +252,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     switch (row) {
     case 0:
-        vs_mainMenu_setWeaponStrings(weapon, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setWeaponUi(weapon, sp10, &sp18, vs_battle_stringBuf);
         sp10[0] = weapon->name;
         break;
     case 1:
@@ -286,7 +286,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
 
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     if (row == 0) {
-        vs_mainMenu_setShieldStrings(shield, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setShieldUi(shield, sp10, &sp18, vs_battle_stringBuf);
     } else if (row < 0) {
 
     } else if (row < 4) {
@@ -307,7 +307,7 @@ static char* _drawArmorInfoRow(vs_battle_equippedArmor* arg0)
     char* sp10[2];
     int sp18;
 
-    vs_mainMenu_setArmorStrings(arg0, sp10, &sp18, vs_battle_stringBuf);
+    vs_mainMenu_setArmorUi(arg0, sp10, &sp18, vs_battle_stringBuf);
     return sp10[1];
 }
 
@@ -318,7 +318,7 @@ static char* _drawAccessoryInfoRow(vs_battle_equippedAccessory* arg0)
     int sp30[2];
 
     vs_battle_copyEquippedAccessoryStats(&sp18, arg0);
-    vs_mainMenu_setAccessoryStrings(&sp18, sp10, sp30, vs_battle_stringBuf);
+    vs_mainMenu_setAccessoryUi(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
 
@@ -1092,10 +1092,10 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 
     if (row == 1) {
         vs_battle_copyEquippedBladeStats(&sp20, &weapon->blade);
-        func_800FCAA4(&sp20, sp18, &sp80, vs_battle_stringBuf);
+        vs_mainMenu_setBladeUi(&sp20, sp18, &sp80, vs_battle_stringBuf);
     } else if (row == 2) {
         vs_battle_copyEquippedGripStats(&sp50, &weapon->grip);
-        func_800FCC0C(&sp50, sp18, &sp80, vs_battle_stringBuf);
+        vs_mainMenu_setGripUi(&sp50, sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = row - 3;
         if (var_s1 < gemSlots) {
@@ -1104,7 +1104,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
             sp80 = 0x58000000;
             if (weapon->gems[var_s1].id != 0) {
                 vs_battle_copyEquippedGemStats(&sp60, &weapon->gems[var_s1]);
-                func_800FD0E0(&sp60, sp18, &sp80, vs_battle_stringBuf);
+                vs_mainMenu_setGemUi(&sp60, sp18, &sp80, vs_battle_stringBuf);
             }
             var_s1 = 151;
         } else {
@@ -1144,7 +1144,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
         sp40 = 0x58000000;
         if (shield->gems[var_s0].id != 0) {
             vs_battle_copyEquippedGemStats(&sp20, &shield->gems[var_s0]);
-            func_800FD0E0(&sp20, sp18, &sp40, vs_battle_stringBuf);
+            vs_mainMenu_setGemUi(&sp20, sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 151;
     } else {
@@ -1334,7 +1334,7 @@ static int _equipmentDetailScreen(int row)
                     for (i = 1; i < 6; ++i) {
                         _setWeaponRow(i, &temp_s1->weapon, 0);
                     }
-                    vs_mainMenu_setWeaponStrings(
+                    vs_mainMenu_setWeaponUi(
                         &temp_s1->weapon, sp18, &sp48, vs_battle_stringBuf);
                     sp18[0] = (char*)&temp_s1->weapon;
                     break;
@@ -1344,22 +1344,21 @@ static int _equipmentDetailScreen(int row)
                     for (i = 1; i < 4; ++i) {
                         _setShieldRow(i, &temp_s1->shield, 0);
                     }
-                    vs_mainMenu_setShieldStrings(
+                    vs_mainMenu_setShieldUi(
                         &temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
                     break;
                 default:
                     if ((var_s2 - 2) < hitLocations) {
                         vs_mainMenu_drawDpPpbars(9);
                         _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].armor);
-                        vs_mainMenu_setArmorStrings(
-                            &temp_s1->hitLocations[var_s2 - 2].armor, sp18, &sp48,
-                            vs_battle_stringBuf);
+                        vs_mainMenu_setArmorUi(&temp_s1->hitLocations[var_s2 - 2].armor,
+                            sp18, &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo(
                             (vs_battle_equippedAccessory*)&temp_s1->accessory);
                         vs_battle_copyEquippedAccessoryStats(&sp20, &temp_s1->accessory);
-                        vs_mainMenu_setAccessoryStrings(
+                        vs_mainMenu_setAccessoryUi(
                             &sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
                     break;
@@ -1546,12 +1545,12 @@ static int _equipmentScreen(int element)
             rowTypes[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
-            vs_mainMenu_setWeaponStrings(
+            vs_mainMenu_setWeaponUi(
                 &temp_s6->weapon, rowStrings, rowTypes, equipmentDescriptions[0]);
             rowStrings[0] = temp_s6->weapon.name;
         }
         if (temp_s6->shield.base.id != 0) {
-            vs_mainMenu_setShieldStrings(
+            vs_mainMenu_setShieldUi(
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
@@ -1567,13 +1566,13 @@ static int _equipmentScreen(int element)
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
                 if (hitLocations->armor.armor.id != 0) {
-                    vs_mainMenu_setArmorStrings(&hitLocations->armor, &rowStrings[i * 2],
+                    vs_mainMenu_setArmorUi(&hitLocations->armor, &rowStrings[i * 2],
                         &rowTypes[i], equipmentDescriptions[i]);
                 }
                 rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
             } else {
                 vs_battle_copyEquippedAccessoryStats(p, &temp_s6->accessory);
-                vs_mainMenu_setAccessoryStrings(
+                vs_mainMenu_setAccessoryUi(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
                 rowTypes[i] |= rowType;
             }

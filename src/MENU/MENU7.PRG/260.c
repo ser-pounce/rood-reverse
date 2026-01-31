@@ -3635,10 +3635,10 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     }
 
     for (i = 0; i < 256; ++i) {
-        sourceIndex = toCopy->items[i];
+        sourceIndex = toCopy->misc[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryItem* item = &target->items[i];
-            vs_battle_rMemcpy(item, &source->items[sourceIndex - 1], sizeof *item);
+            vs_battle_inventoryMisc* item = &target->misc[i];
+            vs_battle_rMemcpy(item, &source->misc[sourceIndex - 1], sizeof *item);
             item->index = i + 1;
         }
     }
@@ -3660,8 +3660,8 @@ int vs_menu7_saveContainerMenu(char* state)
     case init:
         vs_battle_playSfx10();
         D_80102578 = ((*(u_int*)&vs_main_settings) >> 4) & 1;
-        D_8010245C = vs_main_allocHeapR(sizeof(*D_8010245C));
-        vs_battle_rMemzero(D_8010245C, sizeof(*D_8010245C));
+        vs_menu_inventoryStorage = vs_main_allocHeapR(sizeof(*vs_menu_inventoryStorage));
+        vs_battle_rMemzero(vs_menu_inventoryStorage, sizeof(*vs_menu_inventoryStorage));
         func_800FBD80(16);
         func_800C8E04(1);
         _promptYesNo(5);
@@ -3754,11 +3754,12 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 7:
-        vs_battle_memcpy(
-            D_8010245C->unk0, &vs_battle_inventory, sizeof(D_8010245C->unk0));
-        vs_battle_memcpy(&D_8010245C->unkF00, &D_800619D8, sizeof(D_8010245C->unkF00));
-        vs_battle_memcpy(
-            &D_8010245C->unkFB0, (_spmcimg + 0x79E0), sizeof(D_8010245C->unkFB0));
+        vs_battle_memcpy(vs_menu_inventoryStorage->unk0, &vs_battle_inventory,
+            sizeof(vs_menu_inventoryStorage->unk0));
+        vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &D_800619D8,
+            sizeof(vs_menu_inventoryStorage->unkF00));
+        vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0, (_spmcimg + 0x79E0),
+            sizeof(vs_menu_inventoryStorage->unkFB0));
         _shutdownMemcard();
         *state = 8;
         vs_battle_menuState.returnState = vs_battle_menuState.currentState;
@@ -3790,7 +3791,8 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 10:
         _copyContainer((vs_menu_containerData*)(_spmcimg + 0x79E0),
-            &D_8010245C->unkC430.data, &D_8010245C->unkC430.indices);
+            &vs_menu_inventoryStorage->unkC430.data,
+            &vs_menu_inventoryStorage->unkC430.indices);
         _showSaveMenu(2);
         *state = 11;
         break;
@@ -3823,9 +3825,10 @@ int vs_menu7_saveContainerMenu(char* state)
         char v0 = (*(int*)&vs_main_settings);
         char v1 = D_80102578 & 1;
         *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
-        vs_battle_memcpy(
-            &vs_battle_inventory, D_8010245C->unk0, sizeof(D_8010245C->unk0));
-        vs_battle_memcpy(&D_800619D8, &D_8010245C->unkF00, sizeof(D_8010245C->unkF00));
+        vs_battle_memcpy(&vs_battle_inventory, vs_menu_inventoryStorage->unk0,
+            sizeof(vs_menu_inventoryStorage->unk0));
+        vs_battle_memcpy(&D_800619D8, &vs_menu_inventoryStorage->unkF00,
+            sizeof(vs_menu_inventoryStorage->unkF00));
     }
         /* fallthrough */
     case 14:
@@ -3847,7 +3850,7 @@ int vs_menu7_saveContainerMenu(char* state)
         break;
     case 16:
         if ((func_800CD064(7) == 0) && (D_801022D8 == 0)) {
-            vs_main_freeHeapR(D_8010245C);
+            vs_main_freeHeapR(vs_menu_inventoryStorage);
             *state = init;
             return 1;
         }

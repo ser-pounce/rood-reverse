@@ -94,7 +94,7 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
     func_800FBB8C(7);
 }
 
-static void _drawArmorInfo(vs_battle_equippedArmor* armor)
+static void _drawArmorInfo(vs_battle_uiArmor* armor)
 {
     vs_mainMenu_equipmentSubtype = 16;
     vs_mainMenu_resetStats();
@@ -302,7 +302,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
     return sp10[1];
 }
 
-static char* _drawArmorInfoRow(vs_battle_equippedArmor* arg0)
+static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
 {
     char* sp10[2];
     int sp18;

@@ -9,7 +9,7 @@ typedef struct {
 } vs_battle_range_t;
 
 typedef struct {
-    char id;
+    u_char id;
     char subId;
     char wepId;
     char category;
@@ -29,7 +29,7 @@ typedef struct {
     vs_battle_range_t range;
     signed char classes[8];
     signed char affinities[8];
-    short material;
+    u_short material;
     char combinedWeaponIndex;
     char index;
 } vs_battle_inventoryBlade;

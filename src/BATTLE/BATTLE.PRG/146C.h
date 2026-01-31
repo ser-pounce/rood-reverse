@@ -337,7 +337,7 @@ typedef struct {
     u_char unk9A;
     u_char unk9B;
     vs_battle_classAffinityBaseline classAffinityBaseline;
-} vs_battle_equippedArmor;
+} vs_battle_uiArmor;
 
 typedef struct {
     short unk0;
@@ -348,7 +348,7 @@ typedef struct {
     char unk7;
     u_short types[4];
     u_short affinities[8];
-    vs_battle_equippedArmor armor; // 0x18
+    vs_battle_uiArmor armor; // 0x18
 } vs_battle_uiEquipment_hitLocations;
 
 typedef struct {
@@ -625,7 +625,7 @@ void vs_battle_copyInventoryArmorStats(vs_battle_uiEquipment*, vs_battle_invento
 void vs_battle_copyInventoryGemStats(vs_battle_uiEquipment*, vs_battle_inventoryGem*);
 void vs_battle_applyWeapon(vs_battle_uiWeapon*, vs_battle_inventoryWeapon*);
 void vs_battle_applyShield(vs_battle_uiShield*, vs_battle_inventoryShield*);
-void vs_battle_applyArmor(vs_battle_equippedArmor*, vs_battle_inventoryArmor*);
+void vs_battle_applyArmor(vs_battle_uiArmor*, vs_battle_inventoryArmor*);
 void vs_battle_applyAccessory(
     vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
@@ -638,8 +638,7 @@ void vs_battle_copyEquippedGemStats(vs_battle_inventoryGem*, vs_battle_uiEquipme
 void vs_battle_copyEquippedWeaponStats(
     vs_battle_inventoryWeapon* arg0, vs_battle_uiWeapon* arg1);
 void vs_battle_copyEquippedShieldStats(vs_battle_inventoryShield*, vs_battle_uiShield*);
-void vs_battle_copyEquippedArmorStats(
-    vs_battle_inventoryArmor*, vs_battle_equippedArmor*);
+void vs_battle_copyEquippedArmorStats(vs_battle_inventoryArmor*, vs_battle_uiArmor*);
 void vs_battle_copyEquippedAccessoryStats(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
 void func_8006CE50(void);

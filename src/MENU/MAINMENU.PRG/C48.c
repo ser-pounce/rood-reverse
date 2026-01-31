@@ -17,8 +17,8 @@ int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
 
-extern short D_80102014[];
-extern short D_8010202C[];
+extern short _weaponTitleSubmaxThresholds[];
+extern short _weaponTitleMaxThresholds[];
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;
@@ -69,111 +69,134 @@ void func_800FA570(void)
     func_800995B0();
 }
 
-int func_800FA598(short* arg0, unsigned int arg1)
+static int _getEquipmentMaxStats(void* item, u_int itemCategory)
 {
-    int var_a2;
-    int var_a3;
     int i;
-    int var_t0;
-    int var_t1;
-    int var_t2;
-    int var_v1;
+    int subMaxRank;
+    int maxRank;
+    int isAffinity = 0;
+    int param = 0;
+    int maxParam = 0;
+    int subMaxParam = 0;
 
-    var_t2 = 0;
-    var_t1 = 0;
-    var_a3 = 0;
-    var_a2 = 0;
-
-    switch (arg1) {
+    switch (itemCategory) {
     case 0:
         for (i = 0; i < 6; ++i) {
-            if (var_a3 < arg0[156 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[156 + i];
-                var_t1 = i;
-            } else if (var_a2 < arg0[156 + i]) {
-                var_a2 = arg0[156 + i];
+            if (maxParam
+                < ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = maxParam;
+                maxParam =
+                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
+                param = i;
+            } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
+                                         ->classAffinityCurrent.class[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
             }
         }
+
         for (i = 0; i < 7; ++i) {
-            if (var_a3 < arg0[172 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[172 + i];
-                var_t1 = i;
-                var_t2 = 1;
-            } else if (var_a2 < arg0[172 + i]) {
-                var_a2 = arg0[172 + i];
+            if (maxParam
+                < ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = maxParam;
+                maxParam =
+                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
+                param = i;
+                isAffinity = 1;
+            } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
+                                         ->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
+
         break;
 
     case 1:
         for (i = 0; i < 6; ++i) {
-            if (var_a3 < arg0[130 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[130 + i];
-                var_t1 = i;
-            } else if (var_a2 < arg0[130 + i]) {
-                var_a2 = arg0[130 + i];
+            if (maxParam
+                < ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = maxParam;
+                maxParam =
+                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
+                param = i;
+            } else if (subMaxParam < ((vs_battle_uiShield*)(item))
+                                         ->classAffinityCurrent.class[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
             }
         }
 
         for (i = 0; i < 7; ++i) {
-            if (var_a3 < arg0[146 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[146 + i];
-                var_t1 = i;
-                var_t2 = 1;
-            } else if (var_a2 < arg0[146 + i]) {
-                var_a2 = arg0[146 + i];
+            if (maxParam
+                < ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = maxParam;
+                maxParam =
+                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i];
+                param = i;
+                isAffinity = 1;
+            } else if (subMaxParam < ((vs_battle_uiShield*)(item))
+                                         ->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
+
         break;
 
-    case 100: // arbitrary
+    case 2:
     default:
         for (i = 0; i < 6; ++i) {
-            if (var_a3 < arg0[44 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[44 + i];
-                var_t1 = i;
-            } else if (var_a2 < arg0[44 + i]) {
-                var_a2 = arg0[44 + i];
+            if (maxParam
+                < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = maxParam;
+                maxParam = ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i];
+                param = i;
+            } else if (subMaxParam
+                       < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i];
             }
         }
 
         for (i = 0; i < 7; ++i) {
-            if (var_a3 < arg0[60 + i]) {
-                var_a2 = var_a3;
-                var_a3 = arg0[60 + i];
-                var_t1 = i;
-                var_t2 = 1;
-            } else if (var_a2 < arg0[60 + i]) {
-                var_a2 = arg0[60 + i];
+            if (maxParam
+                < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = maxParam;
+                maxParam =
+                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i];
+                param = i;
+                isAffinity = 1;
+            } else if (subMaxParam < ((vs_battle_uiArmor*)(item))
+                                         ->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam =
+                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
+
         break;
     }
 
-    var_t0 = 0;
+    subMaxRank = 0;
     for (i = 0; i < 11; ++i) {
-        if (var_a2 < D_80102014[i]) {
-            var_t0 = i;
+        if (subMaxParam < _weaponTitleSubmaxThresholds[i]) {
+            subMaxRank = i;
             break;
         }
     }
-    var_v1 = 0;
+
+    maxRank = 0;
     for (i = 0; i < 3; ++i) {
-        if (var_a3 < D_8010202C[i]) {
-            var_v1 = i;
+        if (maxParam < _weaponTitleMaxThresholds[i]) {
+            maxRank = i;
             break;
         }
     }
 
     {
-        int a = (var_t2 * 6) + var_t1;
-        int b = var_t0 + (var_v1 * 256);
-        return b + (a << 0x10);
+        int a = (isAffinity * 6) + param;
+        int b = subMaxRank + (maxRank << 8);
+        return b + (a << 16);
     }
 }
 
@@ -377,27 +400,30 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 
 void vs_mainMenu_setWeaponUi(
-    vs_battle_uiWeapon* weapon, char** rowStrings, int* rowTypes, char* buf)
+    vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)
 {
-    int temp_v1;
+    int maxRank;
 
     vs_battle_uiEquipment* blade = &weapon->blade;
-    int temp_v0 = func_800FA598((short*)weapon, 0);
+    int stats = _getEquipmentMaxStats(weapon, 0);
 
     vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
-            [(temp_v0 & 0xFF) + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
-    temp_v1 = ((temp_v0 >> 8) & 0xFF);
+            [(stats & 0xFF) + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
+    maxRank = ((stats >> 8) & 0xFF);
     vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
-        [temp_v1 != 0
-                ? vs_mainMenu_itemHelp[temp_v1 + (temp_v0 >> 0xF) + 0x22D]
-                : vs_mainMenu_itemHelp[blade->category
-                                       + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon - 1]];
+        [maxRank != 0
+                ? vs_mainMenu_itemHelp[maxRank + (stats >> 15)
+                                       + VS_ITEMHELP_BIN_INDEX_weaponPrestige]
+                : vs_mainMenu_itemHelp[blade->category - 1
+                                       + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon]];
     vs_battle_stringContext.strings[9] =
-        (char*)&vs_mainMenu_itemNames[blade->material + 253];
+        (char*)&vs_mainMenu_itemNames[blade->material
+                                      + VS_ITEMHELP_BIN_INDEX_bladeMaterial];
     vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
-        [vs_mainMenu_itemHelp[blade->category + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
-    vs_battle_stringContext.strings[7] = (char*)&vs_mainMenu_itemHelp
-        [vs_mainMenu_itemHelp[blade->damageType + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
+        [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
+    vs_battle_stringContext.strings[7] =
+        (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType - 1
+                                                          + VS_ITEMHELP_BIN_INDEX_blunt]];
     vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
                               + VS_ITEMHELP_BIN_INDEX_oneHanded]];
@@ -405,26 +431,62 @@ void vs_mainMenu_setWeaponUi(
         vs_battle_printf(
             buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
-    rowStrings[1] = buf;
+    text[1] = buf;
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
-void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3)
+void func_800FCA08(
+    vs_battle_inventoryWeapon* source, char** text, int* rowTypes, char* buf)
 {
-    vs_battle_uiWeapon sp10;
+    vs_battle_uiWeapon target;
 
     if (D_80102470 == vs_battle_inventory.weapons) {
-        vs_battle_applyWeapon(&sp10, arg0);
+        vs_battle_applyWeapon(&target, source);
     } else {
-        vs_menuD_initUiWeapon(&sp10, arg0, &vs_menuD_containerData->data);
+        vs_menuD_initUiWeapon(&target, source, &vs_menuD_containerData->data);
     }
-    vs_mainMenu_setWeaponUi(&sp10, arg1, arg2, arg3);
-    *arg1 = arg0->name;
+    vs_mainMenu_setWeaponUi(&target, text, rowTypes, buf);
+    text[0] = source->name;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setBladeUi);
+void vs_mainMenu_setBladeUi(
+    vs_battle_inventoryBlade* blade, char** text, int* rowType, char* buf)
+{
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[blade->material
+                                      + VS_ITEMHELP_BIN_INDEX_bladeMaterial];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
+    vs_battle_stringContext.strings[7] =
+        (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType - 1
+                                                          + VS_ITEMHELP_BIN_INDEX_blunt]];
+    vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
+                              + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                         [blade->id - 1 + VS_ITEMHELP_BIN_INDEX_battleKnifeDesc]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
+    text[0] = vs_mainMenu_itemNames[blade->id];
+    text[1] = buf;
+    rowType[0] = (blade->category << 0x1A) + (blade->material << 0x10);
+}
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setGripUi);
+void vs_mainMenu_setGripUi(
+    vs_battle_inventoryGrip* grip, char** arg1, int* arg2, char* buf)
+{
+    u_short* id;
+    vs_battle_stringContext.strings[5] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[grip->category - 1 + VS_ITEMHELP_BIN_INDEX_shortGrip]];
+    id = &grip->id;
+    vs_battle_printf(vs_battle_printf(buf,
+                         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*id - 6]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_gripTemplate]);
+    arg1[0] = vs_mainMenu_itemNames[grip->id];
+    arg1[1] = buf;
+    arg2[0] = (grip->category + 0xA) << 0x1A;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldUi);
 
@@ -432,7 +494,7 @@ void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char
 {
     vs_battle_uiShield shield;
 
-    if (D_8010246C == &vs_battle_inventory.shields[0]) {
+    if (D_8010246C == vs_battle_inventory.shields) {
         vs_battle_applyShield(&shield, arg0);
     } else {
         vs_menuD_initUiShield(&shield, arg0, &vs_menuD_containerData->data);
@@ -445,7 +507,7 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setArmor
 void vs_mainMenu_setAccessoryUi(
     vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3)
 {
-    vs_battle_equippedArmor sp10;
+    vs_battle_uiArmor sp10;
 
     vs_battle_applyArmor(&sp10, arg0);
     vs_mainMenu_setArmorUi(&sp10, arg1, arg2, arg3);

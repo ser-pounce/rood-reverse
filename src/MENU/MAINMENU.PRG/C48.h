@@ -35,7 +35,7 @@ void vs_mainMenu_setBladeUi(vs_battle_inventoryBlade*, char**, int*, char*);
 void vs_mainMenu_setGripUi(vs_battle_inventoryGrip*, char**, int*, char*);
 void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setShieldUi(vs_battle_uiShield*, char**, int*, char*);
-void vs_mainMenu_setArmorUi(vs_battle_equippedArmor*, char**, int*, char*);
+void vs_mainMenu_setArmorUi(vs_battle_uiArmor*, char**, int*, char*);
 void vs_mainMenu_setAccessoryUi(
     vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setGemUi(

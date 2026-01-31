@@ -1,3 +1,4 @@
+_getEquipmentMaxStats = 0x800FA598;
 vs_mainmenu_ready = 0x800FA9D0;
 vs_mainMenu_setRangeRisk = 0x800FBD0C;
 vs_mainMenu_setStrIntAgi = 0x800FBD28;
@@ -20,6 +21,8 @@ vs_mainmenu_drawButton = 0x800FFC68;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainmenu_setMenuRows = 0x801005E0;
 vs_mainmenu_getSelectedRow = 0x801008C8;
+_weaponTitleSubmaxThresholds = 0x80102014;
+_weaponTitleMaxThresholds = 0x8010202C;
 _submenuEntrypoints = 0x80102038;
 _currentDp = 0x80102134;
 _maxDp = 0x80102136;

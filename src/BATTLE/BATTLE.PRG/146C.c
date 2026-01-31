@@ -625,7 +625,7 @@ int func_8006C5AC(int);
 void func_80069DEC(int, int);
 int _removeActorAtIndex(u_int, int);
 void _applyAccessoryStats(vs_battle_equippedAccessory*, _armorIntermediate*);
-void _applyArmorStats(vs_battle_equippedArmor* arg0, _armorIntermediate* arg1);
+void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_copyEquipmentStats(
     vs_battle_inventoryArmor*, vs_battle_uiEquipment* equipment);
 void func_8006B214(void);
@@ -1254,7 +1254,7 @@ void _applyAccessoryStats(vs_battle_equippedAccessory* target, _armorIntermediat
     }
 }
 
-void _applyArmorStats(vs_battle_equippedArmor* target, _armorIntermediate* source)
+void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
 {
     int i;
 
@@ -1461,8 +1461,7 @@ void vs_battle_applyShield(vs_battle_uiShield* target, vs_battle_inventoryShield
     vs_main_freeHeapR(tempShield);
 }
 
-void vs_battle_applyArmor(
-    vs_battle_equippedArmor* target, vs_battle_inventoryArmor* source)
+void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_battle_inventoryArmor* source)
 {
     _armorIntermediate* tempArmor = vs_main_allocHeapR(sizeof *tempArmor);
     vs_main_bzero(tempArmor, sizeof *tempArmor);
@@ -1724,7 +1723,7 @@ void vs_battle_copyEquippedShieldStats(
 }
 
 void vs_battle_copyEquippedArmorStats(
-    vs_battle_inventoryArmor* target, vs_battle_equippedArmor* source)
+    vs_battle_inventoryArmor* target, vs_battle_uiArmor* source)
 {
     if (source->armor.id != 0) {
         source->armor.currentDp = source->currentDp;
@@ -1787,7 +1786,7 @@ int _setAccessoryForDropRand(
     return 0;
 }
 
-int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_equippedArmor* arg1)
+int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_uiArmor* arg1)
 {
     int i;
 

@@ -4,10 +4,11 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <memory.h>
 
-void func_8010306C(int);
+void _disassembleWeapon(int);
 int func_80103380(int);
 void func_80103C20(int, int);
 vs_battle_menuItem_t* func_801077DC(int, int);
@@ -20,7 +21,7 @@ extern vs_main_CdQueueSlot* _sydCdQueueSlot;
 extern char _sydFileLoading;
 
 extern u_short D_8010BB24[];
-extern u_char D_8010BC81;
+extern u_char _combiningWeapon;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
 extern int D_8010BC9C;
@@ -125,62 +126,68 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102C58);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102E40);
 
-void func_8010306C(int arg0)
+void _disassembleWeapon(int weaponIndex)
 {
     int i;
-    int temp_s0;
-    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[arg0];
+    int index;
+    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[weaponIndex];
 
-    if (weapon->blade != 0) {
-        for (i = 0; i < vs_battle_inventory.grips[weapon->grip - 1].gemSlots; ++i) {
-            temp_s0 = weapon->gems[i];
-            if (temp_s0 != 0) {
-                vs_battle_inventory.gems[temp_s0 - 1].setItemIndex = 0;
-                weapon->gems[i] = 0;
-            }
-        }
-        vs_battle_inventory.grips[weapon->grip - 1].combinedWeaponIndex = 0;
-        vs_battle_inventory.blades[weapon->blade - 1].combinedWeaponIndex = 0;
-        temp_s0 = weapon->index;
-        vs_battle_rMemzero(weapon, 0x20);
-        weapon->index = temp_s0;
-        func_800FE8B0(0);
+    if (weapon->blade == 0) {
+        return;
     }
+
+    for (i = 0; i < vs_battle_inventory.grips[weapon->grip - 1].gemSlots; ++i) {
+        index = weapon->gems[i];
+        if (index != 0) {
+            vs_battle_inventory.gems[index - 1].setItemIndex = 0;
+            weapon->gems[i] = 0;
+        }
+    }
+
+    vs_battle_inventory.grips[weapon->grip - 1].combinedWeaponIndex = 0;
+    vs_battle_inventory.blades[weapon->blade - 1].combinedWeaponIndex = 0;
+    index = weapon->index;
+
+    vs_battle_rMemzero(weapon, sizeof *weapon);
+
+    weapon->index = index;
+
+    func_800FE8B0(0);
 }
 
-void func_80103188(int arg0, int arg1, int arg2)
+void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
 {
     int i;
-    int temp_a1;
-    int temp_s4;
-    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[D_8010BC81];
-    vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[arg0];
-    vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[arg1];
+    int weaponIndex;
+    int gemSlots;
+    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[_combiningWeapon];
+    vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[bladeIndex];
+    vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[gripIndex];
 
-    temp_s4 = grip->gemSlots;
+    gemSlots = grip->gemSlots;
 
-    func_8010306C(D_8010BC81);
+    _disassembleWeapon(_combiningWeapon);
 
-    weapon->blade = arg0 + 1;
-    weapon->grip = arg1 + 1;
+    weapon->blade = bladeIndex + 1;
+    weapon->grip = gripIndex + 1;
 
-    for (i = 0; i < temp_s4; ++i) {
-        weapon->gems[i] = arg2;
-        arg2 = (arg2 >> 8);
+    for (i = 0; i < gemSlots; ++i) {
+        weapon->gems[i] = gemInfo;
+        gemInfo >>= 8;
     }
 
-    temp_a1 = D_8010BC81 + 1;
-    blade->combinedWeaponIndex = temp_a1;
-    grip->combinedWeaponIndex = temp_a1;
+    weaponIndex = _combiningWeapon + 1;
+    blade->combinedWeaponIndex = weaponIndex;
+    grip->combinedWeaponIndex = weaponIndex;
 
-    for (i = 0; i < temp_s4; ++i) {
-        arg2 = weapon->gems[i];
-        if (arg2 != 0) {
-            vs_battle_inventory.gems[arg2 - 1].setItemIndex = temp_a1;
+    for (i = 0; i < gemSlots; ++i) {
+        gemInfo = weapon->gems[i];
+        if (gemInfo != 0) {
+            vs_battle_inventory.gems[gemInfo - 1].setItemIndex = weaponIndex;
         }
     }
 
-    memset(weapon->name, 0xE7, sizeof weapon->name);
+    memset(weapon->name, vs_char_terminator, sizeof weapon->name);
     func_800FE8B0(0);
 }
 
@@ -252,7 +259,7 @@ void func_80103C20(int arg0, int arg1)
         func_800FD504(arg1);
         break;
     case 3:
-        func_800FD270(D_8010BC81 + 1);
+        func_800FD270(_combiningWeapon + 1);
         break;
     }
 
@@ -295,7 +302,7 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80104534);
 
 void func_80104868(void)
 {
-    func_8010306C(D_8010BC81);
+    _disassembleWeapon(_combiningWeapon);
     func_80103380(1);
 }
 

@@ -17,9 +17,9 @@ typedef struct {
     u_short maxPp;
     u_short currentDp;
     u_short currentPp;
-    char strength;
-    char intelligence;
-    char agility;
+    signed char strength;
+    signed char intelligence;
+    signed char agility;
     char cost;
     char damageType : 2;
     char costType : 3;

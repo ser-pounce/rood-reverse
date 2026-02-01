@@ -651,7 +651,22 @@ void func_800FD270(int index)
     func_800FBB8C(7);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD404);
+void func_800FD404(int index)
+{
+    int i;
+    vs_battle_inventoryBlade* blade = &D_80102464[index - 1];
+
+    for (i = 0; i < 16; ++i) {
+        vs_mainMenu_equipmentStats[i] = blade->classes[i & 7];
+        vs_mainMenu_equipmentStats[16 + i] = blade->affinities[i & 7];
+    }
+    vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, blade->currentPp, blade->maxPp);
+    vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
+    vs_mainMenu_setRangeRisk(blade->range.unk0, blade->cost, 0, 1);
+    vs_mainMenu_equipmentSubtype = 2;
+    D_801024A1 = index;
+    func_800FBB8C(3);
+}
 
 void func_800FD504(int arg0)
 {
@@ -668,7 +683,40 @@ void func_800FD504(int arg0)
     func_800FBB8C(4);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD5A0);
+void func_800FD5A0(int index)
+{
+    vs_battle_uiShield uiShield;
+    int i;
+    vs_battle_uiShield* shield = &uiShield;
+
+    vs_mainMenu_resetStats();
+    if (index != 0) {
+        if (D_8010246C[index - 1].unk1 != 0) {
+            shield = &vs_battle_characterState->unk3C->shield;
+        } else if (D_8010246C == vs_battle_inventory.shields) {
+            vs_battle_applyShield(shield, &D_8010246C[index - 1]);
+        } else {
+            vs_menuD_initUiShield(
+                shield, &D_8010246C[index - 1], &vs_menuD_containerData->data);
+        }
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &shield->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = shield->types[i];
+        }
+
+        vs_mainMenu_setDpPp(
+            shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
+        vs_mainMenu_setStrIntAgi(
+            shield->currentStr, shield->currentInt, shield->currentAgility, 1);
+        vs_mainMenu_strIntAgi[1].strength = shield->baseStr;
+        vs_mainMenu_strIntAgi[1].intelligence = shield->baseInt;
+        vs_mainMenu_strIntAgi[1].agility = shield->baseAgility;
+    }
+    vs_mainMenu_equipmentSubtype = 8;
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD700);
 

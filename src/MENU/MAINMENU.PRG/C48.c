@@ -718,7 +718,43 @@ void func_800FD5A0(int index)
     func_800FBB8C(7);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD700);
+void func_800FD700(int index)
+{
+    vs_battle_uiArmor uiArmor;
+    int i;
+    vs_battle_uiArmor* armor = &uiArmor;
+    int var_s2 = 0;
+
+    vs_mainMenu_resetStats();
+    if (index != 0) {
+        u_int temp_a0 = D_80102468[index - 1].unk26 - 1;
+        if (temp_a0 < 5) {
+            armor = &vs_battle_characterState->unk3C->hitLocations[temp_a0].armor;
+        } else {
+            vs_battle_applyArmor(armor, &D_80102468[index - 1]);
+        }
+        var_s2 = armor->armor.category == 7;
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &armor->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = armor->types[i];
+        }
+
+        vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
+        vs_mainMenu_setStrIntAgi(
+            armor->currentStr, armor->currentInt, armor->currentAgility, var_s2 + 1);
+        vs_mainMenu_strIntAgi[1].strength = armor->baseStr;
+        vs_mainMenu_strIntAgi[1].intelligence = armor->baseInt;
+        vs_mainMenu_strIntAgi[1].agility = armor->baseAgility;
+    }
+    if (var_s2 != 0) {
+        vs_mainMenu_equipmentSubtype = 0x20;
+    } else {
+        vs_mainMenu_equipmentSubtype = 0x10;
+    }
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
 
 void func_800FD878(int arg0)
 {

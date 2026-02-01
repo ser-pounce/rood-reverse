@@ -2,11 +2,13 @@
 #include "168.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include <libetc.h>
 
 void func_8010306C(int);
-void func_80103380(int);
-void* func_801077DC(void);
+int func_80103380(int);
+vs_battle_menuItem_t* func_801077DC(int, int);
 
 extern void* _sydData;
 extern int _sydLbas[];
@@ -19,9 +21,28 @@ extern char D_8010BC81;
 extern int D_8010BC98;
 extern int D_8010BC9C;
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102968);
+extern u_long* D_1F800000[];
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801029D0);
+void func_80102968(int arg0, int arg1)
+{
+    func_800C6540("OK", (((arg0 * 0x10) + 0x20) << 0x10) | 0xAF,
+        ((rsin(arg1 * 8) >> 5) + 0x40) * 0x10101, D_1F800000[1] - 3);
+}
+
+void func_801029D0(int arg0, int arg1)
+{
+    vs_battle_menuItem_t* temp_v0;
+
+    int var_a2 = 0x12;
+    if (arg0 != 0) {
+        var_a2 = 0x22;
+    }
+    temp_v0 = vs_battle_setMenuItem(
+        arg0, 0x140, var_a2, 0x8C, 8, (char*)&vs_mainMenu_menu12Text[arg1]);
+    temp_v0->state = 2;
+    temp_v0->x = 0xB4;
+    temp_v0->selected = 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102A34);
 
@@ -29,7 +50,14 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102AB8);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102B50);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102C0C);
+void func_80102C0C(int arg0, int arg1)
+{
+    if (arg0 != arg1) {
+        vs_battle_copyAligned(
+            &vs_battle_menuItems[arg1], &vs_battle_menuItems[arg0], 0x40);
+        func_800FFB90(arg0);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102C58);
 
@@ -39,9 +67,22 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010306C);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80103188);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801032CC);
+void _unsetShieldGems(int index)
+{
+    int i;
+    vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[index];
+    int slots = shield->base.gemSlots;
 
-int func_8010333C(char* arg0, char* arg1)
+    for (i = 0; i < slots; ++i) {
+        int gemIndex = shield->gems[i];
+        if (gemIndex != 0) {
+            vs_battle_inventory.gems[gemIndex - 1].setItemIndex = 0;
+            shield->gems[i] = 0;
+        }
+    }
+}
+
+int func_8010333C(char* arg0, u_char* arg1)
 {
     if ((arg0 == NULL) || (arg1 == NULL)) {
         return 1;
@@ -49,7 +90,23 @@ int func_8010333C(char* arg0, char* arg1)
     return (1 << arg0[3]) & D_8010BB24[arg1[3]];
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80103380);
+int func_80103380(int arg0)
+{
+
+    vs_battle_playMenuLeaveSfx();
+    func_800FA8E0(0x28);
+    func_800FA810(0);
+
+    if (arg0 != 0) {
+        func_800FBBD4(-1);
+        func_800FBEA4(2);
+        vs_mainMenu_drawDpPpbars(4);
+    }
+
+    func_800FFA88(2);
+
+    return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801033FC);
 
@@ -85,7 +142,14 @@ void func_80104868(void)
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80104898);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80105618);
+void func_80105618(int arg0 __attribute__((unused)), int arg1)
+{
+    vs_battle_menuItem_t* temp_v0 = vs_battle_setMenuItem(arg1 + 0xA, 0x140,
+        (arg1 * 0x10) + 0x12, 0x97, 0, (char*)(vs_mainMenu_menu12Text + 0x421));
+    temp_v0->state = 2;
+    temp_v0->x = 0xA9;
+    temp_v0->unkA = 1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80105674);
 
@@ -127,13 +191,14 @@ int vs_menuC_loadSyd(int id)
     return 0;
 }
 
+// https://decomp.me/scratch/3biiU
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801077DC);
 
-void func_8010785C(void)
+void func_8010785C(int arg0, int arg1)
 {
     vs_battle_menuItem_t* temp_v0;
 
-    temp_v0 = func_801077DC();
+    temp_v0 = func_801077DC(arg0, arg1);
     temp_v0->state = 2;
     temp_v0->x = 0x9B;
     temp_v0->animSpeed = 0x140;
@@ -180,7 +245,25 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80109DBC);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80109DEC);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010A63C);
+int func_8010A63C(int arg0)
+{
+    int i;
+    vs_battle_inventoryArmor* var_a1 = vs_battle_inventory.armor;
+    int var_a2 = 0;
+
+    if (arg0 == 2) {
+        for (i = 0; i < 16; ++i, ++var_a1) {
+            int var_v1 = 0;
+            if (var_a1->id != 0) {
+                var_v1 = (var_a1->category ^ 7) > 0;
+            }
+            var_a2 += var_v1;
+        }
+    } else {
+        var_a2 = func_800FEA6C((arg0 * 2) | 1, 0);
+    }
+    return var_a2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010A6BC);
 

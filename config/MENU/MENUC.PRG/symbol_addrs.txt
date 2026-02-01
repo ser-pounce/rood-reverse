@@ -1,3 +1,4 @@
+_unsetShieldGems = 0x801032CC;
 vs_menuC_loadSyd = 0x80107704;
 _sydData = 0x8010BB58;
 _sydLbas = 0x8010BB5C;

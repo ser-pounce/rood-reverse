@@ -29,7 +29,6 @@ extern char D_801023DE;
 extern char* vs_mainMenu_itemNames;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
-extern void* vs_mainMenu_menu12Text;
 extern void* vs_mainMenu_itemHelp;
 extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];

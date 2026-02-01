@@ -12,6 +12,7 @@
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <libetc.h>
 #include "../../assets/MENU/ITEMHELP.BIN.h"
+#include "../../assets/MENU/ITEMNAME.BIN.h"
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
@@ -402,23 +403,22 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 void vs_mainMenu_setWeaponUi(
     vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)
 {
-    int maxRank;
+    int maxStatRank;
 
     vs_battle_uiEquipment* blade = &weapon->blade;
     int stats = _getEquipmentMaxStats(weapon, 0);
 
     vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
             [(stats & 0xFF) + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
-    maxRank = ((stats >> 8) & 0xFF);
+    maxStatRank = ((stats >> 8) & 0xFF);
     vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
-        [maxRank != 0
-                ? vs_mainMenu_itemHelp[maxRank + (stats >> 15)
+        [maxStatRank != 0
+                ? vs_mainMenu_itemHelp[maxStatRank + (stats >> 15) - 1
                                        + VS_ITEMHELP_BIN_INDEX_weaponPrestige]
                 : vs_mainMenu_itemHelp[blade->category - 1
-                                       + VS_ITEMHELP_BIN_INDEX_bladeCategoryWeapon]];
+                                       + VS_ITEMHELP_BIN_INDEX_weaponBasePrestige]];
     vs_battle_stringContext.strings[9] =
-        (char*)&vs_mainMenu_itemNames[blade->material
-                                      + VS_ITEMHELP_BIN_INDEX_bladeMaterial];
+        (char*)&vs_mainMenu_itemNames[blade->material - 1 + VS_ITEMNAME_BIN_INDEX_wood];
     vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
     vs_battle_stringContext.strings[7] =
@@ -453,8 +453,7 @@ void vs_mainMenu_setBladeUi(
     vs_battle_inventoryBlade* blade, char** text, int* rowType, char* buf)
 {
     vs_battle_stringContext.strings[9] =
-        (char*)&vs_mainMenu_itemNames[blade->material
-                                      + VS_ITEMHELP_BIN_INDEX_bladeMaterial];
+        (char*)&vs_mainMenu_itemNames[blade->material - 1 + VS_ITEMNAME_BIN_INDEX_wood];
     vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
     vs_battle_stringContext.strings[7] =
@@ -468,7 +467,7 @@ void vs_mainMenu_setBladeUi(
             buf, (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                          [blade->id - 1 + VS_ITEMHELP_BIN_INDEX_battleKnifeDesc]]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
-    text[0] = vs_mainMenu_itemNames[blade->id];
+    text[0] = vs_mainMenu_itemNames[blade->id + VS_ITEMNAME_BIN_INDEX_item0];
     text[1] = buf;
     rowType[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
@@ -483,12 +482,43 @@ void vs_mainMenu_setGripUi(
     vs_battle_printf(vs_battle_printf(buf,
                          (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*id - 6]]),
         (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_gripTemplate]);
-    arg1[0] = vs_mainMenu_itemNames[grip->id];
+    arg1[0] = vs_mainMenu_itemNames[grip->id + VS_ITEMNAME_BIN_INDEX_item0];
     arg1[1] = buf;
     arg2[0] = (grip->category + 0xA) << 0x1A;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_setShieldUi);
+void vs_mainMenu_setShieldUi(
+    vs_battle_uiShield* shield, char** text, int* rowTypes, char* buf)
+{
+    int maxStatRank;
+
+    vs_battle_uiEquipment* shieldBase = &shield->base;
+    int stats = _getEquipmentMaxStats(shield, 1);
+
+    vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [(stats & 0xFF) - 1 + VS_ITEMHELP_BIN_INDEX_warriorEquipment]];
+
+    maxStatRank = (stats >> 8) & 0xFF;
+
+    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
+        [maxStatRank != 0 ? vs_mainMenu_itemHelp[maxStatRank + (stats >> 0xF) - 1
+                                                 + VS_ITEMHELP_BIN_INDEX_armorPrestige]
+                          : VS_ITEMHELP_BIN_OFFSET_armorBasePrestige];
+    vs_battle_stringContext.strings[8] =
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_armorCategory];
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[shieldBase->material - 1
+                                      + VS_ITEMNAME_BIN_INDEX_wood];
+
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_shieldTemplate]);
+
+    text[0] = vs_mainMenu_itemNames[shieldBase->id + VS_ITEMNAME_BIN_INDEX_item0];
+    text[1] = buf;
+    rowTypes[0] = (shieldBase->material << 0x10) + 0x3C000000;
+}
 
 void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
 {

@@ -22,8 +22,12 @@ $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.yaml: data/MENU/ITEMNAME.BIN ass
 	$(ECHO) Extracting $<
 	$(VPYTHON) -m tools.etc.vsString_dumpFixedTable $< assets/MENU/ITEMNAME.BIN.yaml $@ 24
 
-$(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.yaml | $$(@D)/
+$(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.bin $(BUILD)/assets/MENU/ITEMNAME.BIN.h &: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.yaml | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.etc.vsString_yamlToDataFixed $< $@ 24
+	$(VPYTHON) -m tools.etc.vsString_yamlToDataFixed $< $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.bin 24 $(BUILD)/assets/MENU/ITEMNAME.BIN.h
+
+$(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.bin | $$(@D)/
+	$(ECHO) Converting $<
+	cp $< $@
 
 all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12)

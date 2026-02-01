@@ -251,7 +251,7 @@ line249:
 line250:
 line251:
 line252:
-bladeMaterial:
+line253:
 line254:
 line255:
 line256:
@@ -381,7 +381,7 @@ line379:
 line380:
 line381:
 line382:
-bladeCategoryWeapon:
+weaponBasePrestige:
 line384:
 line385:
 line386:
@@ -390,7 +390,7 @@ line388:
 line389:
 line390:
 line391:
-line392:
+armorBasePrestige:
 line393:
 line394:
 line395:
@@ -555,8 +555,8 @@ confirmNo:
 discardConfirm:
 line555:
 line556:
+line557:
 weaponPrestige:
-line558:
 line559:
 line560:
 line561:
@@ -582,7 +582,7 @@ line580:
 line581:
 line582:
 line583:
-line584:
+armorPrestige:
 line585:
 line586:
 line587:
@@ -643,7 +643,7 @@ shortGrip:
 longGrip:
 polearmGrip:
 crossbowGrip:
-line645:
+armorCategory:
 line646:
 line647:
 line648:
@@ -652,7 +652,7 @@ line650:
 classTemplate:
 weaponDescTemplate:
 gripTemplate:
-line654:
+shieldTemplate:
 none:
 noGems:
 line657:

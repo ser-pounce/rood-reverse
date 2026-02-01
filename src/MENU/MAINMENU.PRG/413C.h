@@ -15,6 +15,7 @@ void func_800FFA94(void);
 void func_800FFB68(int);
 void func_800FFB90(int);
 void func_800FFBA8(void);
+void func_800FE8B0(int);
 void func_800FFBC8(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(int, int);

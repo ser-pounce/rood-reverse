@@ -80,12 +80,12 @@ typedef struct {
     u_short currentDp;
     u_short currentPp;
     char gemSlots;
-    char strength;
-    char intelligence;
-    char agility;
-    char types[4]; // 0x10
-    char classes[8];
-    char affinities[8];
+    signed char strength;
+    signed char intelligence;
+    signed char agility;
+    signed char types[4]; // 0x10
+    signed char classes[8];
+    signed char affinities[8];
     u_short material;
     u_char unk26;
     u_char index;

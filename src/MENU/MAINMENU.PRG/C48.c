@@ -610,7 +610,46 @@ void vs_mainMenu_resetStats(void)
     vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD270);
+void func_800FD270(int index)
+{
+    vs_battle_uiWeapon uiWeapon;
+    vs_battle_uiWeapon* weapon = &uiWeapon;
+
+    vs_mainMenu_resetStats();
+    vs_mainMenu_setRangeRisk(0, 0, 0, 1);
+
+    if (index != 0) {
+        int i;
+        if (D_80102470[index - 1].unk3 != 0) {
+            weapon = &vs_battle_characterState->unk3C->weapon;
+        } else if (D_80102470 == vs_battle_inventory.weapons) {
+            vs_battle_applyWeapon(weapon, &D_80102470[index - 1]);
+        } else {
+            vs_menuD_initUiWeapon(
+                weapon, &D_80102470[index - 1], &vs_menuD_containerData->data);
+        }
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &weapon->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = weapon->grip.types[i];
+        }
+
+        D_80102508 = weapon->damageType;
+        do {
+        } while (0);
+        vs_mainMenu_setDpPp(
+            weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);
+        vs_mainMenu_setStrIntAgi(
+            weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
+        vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
+        vs_mainMenu_strIntAgi[1].strength = weapon->baseStr;
+        vs_mainMenu_strIntAgi[1].intelligence = weapon->baseInt;
+        vs_mainMenu_strIntAgi[1].agility = weapon->baseAgility;
+    }
+    vs_mainMenu_equipmentSubtype = 1;
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FD404);
 

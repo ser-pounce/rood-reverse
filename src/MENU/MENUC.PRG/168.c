@@ -20,6 +20,8 @@ vs_battle_menuItem_t* func_801077DC(int, int);
 void func_801087E4(vs_battle_inventoryShield* arg0);
 void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
+void func_8010B80C(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
+    vs_battle_inventoryArmor*, void*);
 
 extern void* _sydData;
 extern int _sydLbas[];
@@ -47,6 +49,8 @@ extern vs_battle_inventoryBlade D_8010BCE4;
 extern char D_8010BD10[2];
 extern vs_battle_inventoryShield D_8010BD14;
 extern u_char D_8010BD44[];
+extern vs_battle_inventoryArmor D_8010BD54;
+extern char D_8010BD7C[2];
 
 extern u_long* D_1F800000[];
 
@@ -869,7 +873,69 @@ void func_80108E9C(char* arg0, char* arg1)
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108EC4);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80109790);
+void func_80109790(int arg0)
+{
+    int var_a0;
+    int i;
+    int var_s2;
+    u_int temp_v1;
+    int temp_s3;
+    vs_battle_inventoryArmor* var_s0;
+
+    i = D_8010BD7C[0];
+    temp_s3 = D_8010BD7C[1];
+
+    var_s2 = i != 0;
+    if (temp_s3 != 0) {
+        var_s2 += 2;
+    }
+
+    switch (var_s2) {
+    case 0:
+        vs_battle_rMemzero(&D_8010BD54, 0x28);
+        break;
+    case 1:
+    case 2:
+        vs_battle_copyAligned(
+            &D_8010BD54, &vs_battle_inventory.armor[i + temp_s3 - 1], 0x28);
+        break;
+    case 3:
+        vs_battle_rMemzero(&D_8010BD54, 0x28);
+        func_8010B80C(&vs_battle_inventory.armor[i - 1],
+            &vs_battle_inventory.armor[temp_s3 - 1], &D_8010BD54, _sydData);
+        break;
+    }
+
+    var_s0 = &D_8010BD54;
+    var_s0->unk26 = 0;
+
+    vs_mainMenu_resetStats();
+
+    temp_v1 = arg0 - 1;
+
+    if (temp_v1 >= 2) {
+        if (D_8010BD54.id != 0) {
+            for (i = 0; i < 16; ++i) {
+                vs_mainMenu_equipmentStats[i] = var_s0->classes[i & 7];
+                vs_mainMenu_equipmentStats[16 + i] = var_s0->affinities[i & 7];
+            }
+
+            for (i = 0; i < 4; ++i) {
+                vs_mainMenu_equipmentStats[32 + i] = var_s0->types[i];
+                var_a0 += 2;
+            }
+            vs_mainMenu_setDpPp(var_s0->currentDp, var_s0->maxDp, 0, 0);
+            vs_mainMenu_setStrIntAgi(
+                var_s0->strength, var_s0->intelligence, var_s0->agility, 1);
+            vs_mainMenu_equipmentSubtype = 0x10;
+            vs_mainMenu_strIntAgi[1].strength = var_s0->strength;
+            vs_mainMenu_strIntAgi[1].intelligence = var_s0->intelligence;
+            vs_mainMenu_strIntAgi[1].agility = var_s0->agility;
+        }
+    } else if (var_s2 & arg0) {
+        func_800FD700(D_8010BD7C[temp_v1]);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801099FC);
 

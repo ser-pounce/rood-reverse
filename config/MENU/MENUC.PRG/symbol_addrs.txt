@@ -5,6 +5,7 @@ vs_menuC_loadSyd = 0x80107704;
 _sydData = 0x8010BB58;
 _sydLbas = 0x8010BB5C;
 _sydSizes = 0x8010BB68;
+D_8010BBF5 = 0x8010BBF5;
 _sydCdQueueSlot = 0x8010BC54;
 _sydFileLoading = 0x8010BC58;
 _combiningItem = 0x8010BC81;

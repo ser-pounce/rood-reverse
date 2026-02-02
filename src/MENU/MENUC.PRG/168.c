@@ -23,7 +23,10 @@ extern int _sydSizes[];
 extern vs_main_CdQueueSlot* _sydCdQueueSlot;
 extern char _sydFileLoading;
 
+extern char D_8010BB20;
 extern u_short D_8010BB24[];
+extern char D_8010BBF4;
+extern char D_8010BBF5;
 extern u_char _combiningItem;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
@@ -127,7 +130,65 @@ void func_80102C0C(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102C58);
+int func_80102C58(int arg0)
+{
+    int i;
+    int var_s1;
+    vs_battle_menuItem_t* temp_v0_2;
+
+    var_s1 = 0;
+
+    if (arg0 != 0) {
+        func_800C8E04(1);
+        D_8010BBF5 = 0;
+        D_8010BBF4 = 0;
+        return 0;
+    }
+
+    switch (D_8010BBF4) {
+    case 0:
+    case 1:
+        temp_v0_2 = vs_battle_setMenuItem(D_8010BBF4 + 0x1D, 0x140,
+            (D_8010BBF4 * 0x10) + 0x92, 0x7E, 0,
+            (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[D_8010BBF4 + 0x22]]);
+        temp_v0_2->state = 2;
+        temp_v0_2->x = 0xC2;
+        D_8010BBF4 = (char)(D_8010BBF4 + 1);
+        break;
+    case 2:
+        D_8010BBF4 += vs_mainmenu_ready();
+        break;
+    case 3:
+        for (i = 0; i < 2; ++i) {
+            vs_battle_getMenuItem(i + 0x1D)->selected = (i ^ D_8010BBF5) == 0;
+        }
+        if (vs_main_buttonsPressed.all & 0x10) {
+            var_s1 = 3;
+        } else if (vs_main_buttonsPressed.all & 0x40) {
+            var_s1 = 2;
+        } else if (vs_main_buttonsPressed.all & 0x20) {
+            var_s1 = D_8010BBF5 + 1;
+        } else {
+            if (vs_main_buttonRepeat & 0x5000) {
+                vs_battle_playMenuChangeSfx();
+                D_8010BBF5 = 1 - D_8010BBF5;
+            }
+            D_8010BB20 = vs_battle_drawCursor(D_8010BB20, D_8010BBF5 + 8);
+        }
+        break;
+    }
+
+    if (var_s1 != 0) {
+        if (var_s1 == 2) {
+            vs_battle_playMenuLeaveSfx();
+        }
+        for (i = 0x1D; i < 0x1F; ++i) {
+            func_800FA8A0(i);
+        }
+    }
+
+    return var_s1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80102E40);
 

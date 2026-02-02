@@ -10,6 +10,8 @@
 #include <memory.h>
 
 void _disassembleWeapon(int);
+void func_8010B2B4(vs_battle_inventoryBlade*, vs_battle_inventoryBlade*,
+    vs_battle_inventoryBlade*, void*);
 int func_80103380(int);
 void func_80103C20(int, int);
 int func_801057BC(int);
@@ -38,6 +40,8 @@ extern char D_8010BC35;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
 extern int D_8010BC9C;
+extern vs_battle_inventoryBlade D_8010BCE4;
+extern char D_8010BD10[2];
 extern vs_battle_inventoryShield D_8010BD14;
 extern u_char D_8010BD44[];
 
@@ -626,7 +630,63 @@ void func_8010785C(int arg0, int arg1)
     temp_v0->animSpeed = 0x140;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107894);
+void func_80107894(int arg0)
+{
+    int i;
+    int var_s3;
+    u_int temp_v1;
+    int temp_s2;
+    vs_battle_inventoryBlade* var_s0;
+
+    i = D_8010BD10[0];
+    temp_s2 = D_8010BD10[1];
+
+    var_s3 = i != 0;
+    if (temp_s2 != 0) {
+        var_s3 += 2;
+    }
+
+    switch (var_s3) {
+    case 0:
+        vs_battle_rMemzero(&D_8010BCE4, 0x2C);
+        break;
+    case 1:
+    case 2:
+        vs_battle_copyAligned(
+            &D_8010BCE4, &vs_battle_inventory.blades[i + temp_s2 - 1], 0x2C);
+        break;
+    case 3:
+        vs_battle_rMemzero(&D_8010BCE4, 0x2C);
+        func_8010B2B4(&vs_battle_inventory.blades[i - 1],
+            &vs_battle_inventory.blades[temp_s2 - 1], &D_8010BCE4, _sydData);
+        break;
+    }
+
+    var_s0 = &D_8010BCE4;
+    var_s0->combinedWeaponIndex = 0;
+
+    vs_mainMenu_resetStats();
+    vs_mainMenu_setRangeRisk(0, 0, 0, 1);
+
+    temp_v1 = arg0 - 1;
+
+    if (temp_v1 >= 2) {
+        if (D_8010BCE4.id != 0) {
+            for (i = 0; i < 16; ++i) {
+                vs_mainMenu_equipmentStats[i] = var_s0->classes[i & 7];
+                vs_mainMenu_equipmentStats[16 + i] = var_s0->affinities[i & 7];
+            }
+            vs_mainMenu_setDpPp(
+                var_s0->currentDp, var_s0->maxDp, var_s0->currentPp, var_s0->maxPp);
+            vs_mainMenu_setStrIntAgi(
+                var_s0->strength, var_s0->intelligence, var_s0->agility, 1);
+            vs_mainMenu_setRangeRisk(var_s0->range.unk0, var_s0->cost, 0, 1);
+            vs_mainMenu_equipmentSubtype = 2;
+        }
+    } else if (var_s3 & arg0) {
+        func_800FD404(D_8010BD10[temp_v1]);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107AD4);
 

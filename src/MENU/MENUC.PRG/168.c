@@ -2,6 +2,7 @@
 #include "168.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
+#include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "vs_string.h"
@@ -13,6 +14,8 @@ int func_80103380(int);
 void func_80103C20(int, int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_801087E4(vs_battle_inventoryShield* arg0);
+void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
+    vs_battle_inventoryArmor*, void*);
 
 extern void* _sydData;
 extern int _sydLbas[];
@@ -21,10 +24,12 @@ extern vs_main_CdQueueSlot* _sydCdQueueSlot;
 extern char _sydFileLoading;
 
 extern u_short D_8010BB24[];
-extern u_char _combiningWeapon;
+extern u_char _combiningItem;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
 extern int D_8010BC9C;
+extern vs_battle_inventoryShield D_8010BD14;
+extern u_char D_8010BD44[];
 
 extern u_long* D_1F800000[];
 
@@ -160,13 +165,13 @@ void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
     int i;
     int weaponIndex;
     int gemSlots;
-    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[_combiningWeapon];
+    vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[_combiningItem];
     vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[bladeIndex];
     vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[gripIndex];
 
     gemSlots = grip->gemSlots;
 
-    _disassembleWeapon(_combiningWeapon);
+    _disassembleWeapon(_combiningItem);
 
     weapon->blade = bladeIndex + 1;
     weapon->grip = gripIndex + 1;
@@ -176,7 +181,7 @@ void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
         gemInfo >>= 8;
     }
 
-    weaponIndex = _combiningWeapon + 1;
+    weaponIndex = _combiningItem + 1;
     blade->combinedWeaponIndex = weaponIndex;
     grip->combinedWeaponIndex = weaponIndex;
 
@@ -259,7 +264,7 @@ void func_80103C20(int arg0, int arg1)
         func_800FD504(arg1);
         break;
     case 3:
-        func_800FD270(_combiningWeapon + 1);
+        func_800FD270(_combiningItem + 1);
         break;
     }
 
@@ -302,7 +307,7 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80104534);
 
 void func_80104868(void)
 {
-    _disassembleWeapon(_combiningWeapon);
+    _disassembleWeapon(_combiningItem);
     func_80103380(1);
 }
 
@@ -317,7 +322,48 @@ void func_80105618(int arg0 __attribute__((unused)), int arg1)
     temp_v0->unkA = 1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80105674);
+void func_80105674(char* arg0, int arg1)
+{
+    int i;
+    int gem;
+    u_char* var_t1;
+    vs_battle_inventoryShield* temp_a0;
+    vs_battle_inventoryWeapon* temp_t2;
+
+    temp_t2 = &vs_battle_inventory.weapons[_combiningItem];
+    temp_a0 = &vs_battle_inventory.shields[_combiningItem];
+
+    if (arg1 != 0) {
+        var_t1 = temp_a0->gems;
+    } else {
+        var_t1 = temp_t2->gems;
+    }
+
+    for (i = 0; i < 3; ++i) {
+        gem = var_t1[i];
+        if (gem != 0) {
+            vs_battle_inventory.gems[gem - 1].setItemIndex = 0;
+            var_t1[i] = 0;
+        }
+    }
+
+    for (i = 0; i < 3; ++i) {
+        gem = arg0[i];
+        if (gem != 0) {
+            vs_battle_inventory.gems[gem - 1].setItemIndex =
+                _combiningItem + ((arg1 << 7) + 1);
+            var_t1[i] = gem;
+        }
+    }
+    if (arg1 != 0) {
+        if (temp_a0->unk1 != 0) {
+            vs_battle_equipShield(temp_a0);
+        }
+    } else if (temp_t2->unk3 != 0) {
+        vs_battle_equipWeapon(temp_t2);
+    }
+    func_80103380(1);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801057BC);
 
@@ -402,7 +448,54 @@ void func_801087E4(vs_battle_inventoryShield* shield)
     vs_mainMenu_equipmentSubtype = 8;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80108908);
+void func_80108908(int arg0)
+{
+    int var_s2;
+    u_int temp_v1;
+    int temp_s1;
+    int temp_s3;
+    vs_battle_inventoryShield* var_s0;
+
+    temp_s1 = D_8010BD44[0];
+    temp_s3 = D_8010BD44[1];
+
+    var_s2 = temp_s1 > 0;
+
+    if (temp_s3 != 0) {
+        var_s2 += 2;
+    }
+
+    switch (var_s2) {
+    case 0:
+        vs_battle_rMemzero(&D_8010BD14, sizeof D_8010BD14);
+        break;
+    case 1:
+    case 2:
+        vs_battle_copyAligned(&D_8010BD14,
+            &vs_battle_inventory.shields[temp_s1 + temp_s3 - 1], sizeof D_8010BD14);
+        break;
+    case 3:
+        vs_battle_rMemzero(&D_8010BD14, sizeof D_8010BD14);
+        func_8010B598(&vs_battle_inventory.shields[temp_s1 - 1].base,
+            &vs_battle_inventory.shields[temp_s3 - 1].base, &D_8010BD14.base, _sydData);
+        break;
+    }
+
+    var_s0 = &D_8010BD14;
+    var_s0->unk1 = 0;
+
+    vs_mainMenu_resetStats();
+
+    temp_v1 = arg0 - 1;
+
+    if (temp_v1 > 1) {
+        if (var_s0->base.id != 0) {
+            func_801087E4(var_s0);
+        }
+    } else if (var_s2 & arg0) {
+        func_801087E4(&vs_battle_inventory.shields[D_8010BD44[temp_v1] - 1]);
+    }
+}
 
 void func_80108A9C(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
 {

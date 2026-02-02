@@ -107,12 +107,12 @@ typedef struct {
 
 typedef struct {
     vs_battle_inventoryWeapon weapons[32];
-    vs_battle_inventoryShield shields[32]; // 0x400
-    vs_battle_inventoryBlade blades[64]; // 0xA00
-    vs_battle_inventoryGrip grips[64]; // 0x1500
-    vs_battle_inventoryArmor armor[64]; // 0x1900
-    vs_battle_inventoryGem gems[192]; // 0x2300
-    vs_battle_inventoryMisc misc[256]; // 0x3800
+    vs_battle_inventoryShield shields[32];
+    vs_battle_inventoryBlade blades[64];
+    vs_battle_inventoryGrip grips[64];
+    vs_battle_inventoryArmor armor[64];
+    vs_battle_inventoryGem gems[192];
+    vs_battle_inventoryMisc misc[256];
     // 0x3C00
 } vs_menu_containerData;
 

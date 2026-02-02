@@ -12,6 +12,7 @@
 void _disassembleWeapon(int);
 int func_80103380(int);
 void func_80103C20(int, int);
+int func_801057BC(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_801087E4(vs_battle_inventoryShield* arg0);
 void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
@@ -32,6 +33,8 @@ extern char D_8010BBF7;
 extern char D_8010BBF8;
 extern char D_8010BB21;
 extern u_char _combiningItem;
+extern char D_8010BC34;
+extern char D_8010BC35;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
 extern int D_8010BC9C;
@@ -504,7 +507,77 @@ void func_80105674(char* arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801057BC);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801063E4);
+int func_801063E4(int arg0)
+{
+    char* text[4];
+    int rowTypes[4];
+    int i;
+
+    if (arg0 != 0) {
+        D_8010BC35 = 1;
+        func_800FA92C(1, 1);
+        D_8010BC34 = 0;
+        return 0;
+    }
+
+    switch (D_8010BC34) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 4; ++i) {
+                text[i] =
+                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[0x1C + i]];
+                rowTypes[i] = 0;
+            }
+            if (func_800FEA6C(0, 0) == 0) {
+                rowTypes[0] = 1;
+                text[1] = (char*)&vs_mainMenu_menu12Text[0x374];
+            }
+            if (func_800FEA6C(3, 0) == 0) {
+                rowTypes[1] = 1;
+                text[3] = (char*)&vs_mainMenu_menu12Text[0x374];
+            }
+            i = vs_main_settings.cursorMemory;
+            if (D_8010BC35 == 0) {
+                vs_main_settings.cursorMemory = 1;
+            }
+            D_8010BC35 = 0U;
+            vs_mainmenu_setMenuRows(2, 0x236, text, rowTypes);
+            vs_main_settings.cursorMemory = i;
+            D_8010BC34 = 1U;
+        }
+        break;
+    case 1:
+        i = vs_mainmenu_getSelectedRow() + 1;
+        if (i != 0) {
+            if (i < 0) {
+                func_800FA8E0(0);
+                return i;
+            }
+            func_800FA8E0(0x28);
+            func_801057BC(i);
+            D_8010BC34 = 2;
+        }
+        break;
+    case 2:
+        i = func_801057BC(0);
+        if (i != 0) {
+            if (i != -1) {
+                return i;
+            }
+            D_8010BC34 = 3U;
+        }
+        break;
+    case 3:
+        if (vs_mainmenu_ready() != 0) {
+            func_800FFBC8();
+            func_801029D0(0, 0x57);
+            func_801029D0(0xB, 0x7B);
+            D_8010BC34 = 0U;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80106610);
 

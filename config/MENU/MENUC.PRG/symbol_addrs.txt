@@ -8,6 +8,7 @@ _sydLbas = 0x8010BB5C;
 _sydSizes = 0x8010BB68;
 D_8010BBF5 = 0x8010BBF5;
 D_8010BBF7 = 0x8010BBF7;
+D_8010BC35 = 0x8010BC35;
 _sydCdQueueSlot = 0x8010BC54;
 _sydFileLoading = 0x8010BC58;
 _combiningItem = 0x8010BC81;

@@ -201,7 +201,7 @@ typedef struct {
     u_short flags;
     int unk1C;
     char unk20[8];
-    D_80060068_t2 hitLocations[6];
+    D_80060068_t2 bodyParts[6];
     int unk7C;
     int unk80;
     int unk84;

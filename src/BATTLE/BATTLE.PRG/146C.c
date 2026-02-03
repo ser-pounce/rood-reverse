@@ -1028,7 +1028,7 @@ void func_80069FC4(int arg0, int arg1)
             temp_v0->totalIntelligence = temp_s1->totalIntelligence;
             temp_v0->totalAgility = temp_s1->totalAgility;
             for (i = 0; i < 6; ++i) {
-                temp_v0->unk12[i] = temp_s1->hitLocations[i].unk0;
+                temp_v0->unk12[i] = temp_s1->bodyParts[i].unk0;
             }
 
             temp_v0->unk20 = temp_s1->unk948;
@@ -1553,10 +1553,10 @@ void vs_battle_equipShield(vs_battle_inventoryShield* shield)
     func_8006B2D4();
 }
 
-void vs_battle_equipArmor(int part, vs_battle_inventoryArmor* armor)
+void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
 {
     vs_battle_applyArmor(
-        &vs_battle_characterState->unk3C->hitLocations[part].armor, armor);
+        &vs_battle_characterState->unk3C->bodyParts[bodyPart].armor, armor);
     _nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
@@ -1850,9 +1850,9 @@ void func_8006BE64(vs_battle_actor* arg0)
         temp_v0->unk4 |=
             _setAccessoryForDropRand(&temp_v0->unk8.accessory, &temp_s2->accessory);
         for (i = 0; i < 6; ++i) {
-            if (temp_s2->hitLocations[i].armor.armor.id != 0) {
+            if (temp_s2->bodyParts[i].armor.armor.id != 0) {
                 temp_v0->unk4 |= _setArmorForDropRand(
-                    &temp_v0->unk8.armor, &temp_s2->hitLocations[i].armor);
+                    &temp_v0->unk8.armor, &temp_s2->bodyParts[i].armor);
             }
         }
         temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, &temp_s2->unk958);
@@ -5680,7 +5680,7 @@ void func_8007C28C(int arg0)
             temp_a1->currentHP = temp_a1->maxHP;
             temp_a1->currentMP = temp_a1->maxMP;
             for (i = 0; i < 6; ++i) {
-                temp_a1->hitLocations[i].unk0 = temp_a1->hitLocations[i].unk2;
+                temp_a1->bodyParts[i].unk0 = temp_a1->bodyParts[i].unk2;
             }
             func_80086754(0x7FFFFFFF, temp_a1);
             D_800F5160 = 0;
@@ -6410,16 +6410,16 @@ void _calculateArmorClassAffinity(vs_battle_actor2* arg0, int arg1)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        u_short v = arg0->hitLocations[arg1].armor.armor.classes[i];
-        arg0->hitLocations[arg1].armor.classAffinityCurrent.class[1][i] = v;
-        arg0->hitLocations[arg1].armor.classAffinityCurrent.class[0][i] = v;
+        u_short v = arg0->bodyParts[arg1].armor.armor.classes[i];
+        arg0->bodyParts[arg1].armor.classAffinityCurrent.class[1][i] = v;
+        arg0->bodyParts[arg1].armor.classAffinityCurrent.class[0][i] = v;
     }
 
     for (i = 0; i < 7; ++i) {
-        u_short v = arg0->hitLocations[arg1].armor.armor.affinities[i];
-        arg0->hitLocations[arg1].armor.classAffinityCurrent.affinity[1][i] = v;
-        arg0->hitLocations[arg1].armor.classAffinityCurrent.affinity[0][i] =
-            v + arg0->hitLocations[arg1].armor.unk88[i];
+        u_short v = arg0->bodyParts[arg1].armor.armor.affinities[i];
+        arg0->bodyParts[arg1].armor.classAffinityCurrent.affinity[1][i] = v;
+        arg0->bodyParts[arg1].armor.classAffinityCurrent.affinity[0][i] =
+            v + arg0->bodyParts[arg1].armor.unk88[i];
     }
 }
 
@@ -6736,8 +6736,8 @@ int func_8007EA74(
     var_t0 = temp_s1->agility + temp_s1->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->hitLocations[i].armor.currentAgility;
-        var_t0 += temp_s1->hitLocations[i].armor.currentAgility;
+        var_a1 += temp_s2->bodyParts[i].armor.currentAgility;
+        var_t0 += temp_s1->bodyParts[i].armor.currentAgility;
     }
 
     if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
@@ -6749,7 +6749,7 @@ int func_8007EA74(
     }
 
     var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->hitLocations[target].unk4;
+    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
     var_t0 = var_t0 * (100 - temp_s1->risk) / 100;
     var_s0 = var_a1 - var_t0;
     var_s0 += 100;
@@ -6789,8 +6789,8 @@ int func_8007ECA8(
     var_t0 = temp_s1->intelligence + temp_s1->accessory.currentInt;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->hitLocations[i].armor.currentInt;
-        var_t0 += temp_s1->hitLocations[i].armor.currentInt;
+        var_a1 += temp_s2->bodyParts[i].armor.currentInt;
+        var_t0 += temp_s1->bodyParts[i].armor.currentInt;
     }
 
     if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
@@ -6802,7 +6802,7 @@ int func_8007ECA8(
     }
 
     var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->hitLocations[target].unk4;
+    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
     var_t0 = (var_t0 * (100 - temp_s1->risk) / 100);
     var_t0 = var_t0 * temp_s1->currentHP / temp_s1->maxHP;
     var_s0 = var_a1 - var_t0;
@@ -6843,8 +6843,8 @@ int func_8007EEFC(
     var_t0 = temp_s1->agility + temp_s1->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->hitLocations[i].armor.currentAgility;
-        var_t0 += temp_s1->hitLocations[i].armor.currentAgility;
+        var_a1 += temp_s2->bodyParts[i].armor.currentAgility;
+        var_t0 += temp_s1->bodyParts[i].armor.currentAgility;
     }
 
     if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
@@ -6856,7 +6856,7 @@ int func_8007EEFC(
     }
 
     var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->hitLocations[target].unk4;
+    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
     var_t0 = var_t0 * (100 - temp_s1->risk) / 100;
     var_s0 = var_a1 - var_t0;
     v = var_s0 + 130;
@@ -6897,9 +6897,8 @@ int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
 {
     int rate;
 
-    rate =
-        ((255 - vs_battle_actors[arg2->unk0]->unk3C->hitLocations[arg2->unk1].unk7) * 100)
-        / 255;
+    rate = ((255 - vs_battle_actors[arg2->unk0]->unk3C->bodyParts[arg2->unk1].unk7) * 100)
+         / 255;
     if (rate == 255) {
         rate = 254;
     }
@@ -7050,7 +7049,7 @@ int func_8007F628(vs_skill_t* arg0, u_char* arg1)
     temp_a2 = vs_battle_actors[*arg1]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+        if (temp_a2->bodyParts[i].armor.armor.id != 0) {
             var_a1 = 1;
         }
     }
@@ -7101,7 +7100,7 @@ int func_8007F758(vs_skill_t* arg0, u_char* arg1)
     temp_a2 = vs_battle_actors[*arg1]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+        if (temp_a2->bodyParts[i].armor.armor.id != 0) {
             var_a1 = 1;
         }
     }
@@ -7203,7 +7202,7 @@ int func_8007FA98(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
         vs_battle_actor2* temp_a2 = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+            if (temp_a2->bodyParts[i].armor.armor.id != 0) {
                 var_a1 = 1;
             }
         }
@@ -7226,7 +7225,7 @@ int func_8007FB34(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
         vs_battle_actor2* temp_a2 = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+            if (temp_a2->bodyParts[i].armor.armor.id != 0) {
                 var_a1 = 1;
             }
         }
@@ -7249,7 +7248,7 @@ int func_8007FBD0(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->hitLocations[i].armor.armor.id != 0) {
+            if (actor->bodyParts[i].armor.armor.id != 0) {
                 ret = 1;
             }
         }
@@ -7272,7 +7271,7 @@ int func_8007FC6C(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
         vs_battle_actor2* temp_a2 = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (temp_a2->hitLocations[i].armor.armor.id != 0) {
+            if (temp_a2->bodyParts[i].armor.armor.id != 0) {
                 var_a1 = 1;
             }
         }
@@ -7421,13 +7420,13 @@ void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
         var_t0 = 0;
 
         for (i = 0; i < 6; ++i) {
-            if (temp_t2->hitLocations[i].unk2 != 0) {
+            if (temp_t2->bodyParts[i].unk2 != 0) {
                 ++var_t0;
             }
         }
 
         for (i = 0; i < 6; ++i) {
-            if (temp_t2->hitLocations[i].unk2 != 0) {
+            if (temp_t2->bodyParts[i].unk2 != 0) {
                 D_800F1A10[i] = arg2 / var_t0;
                 arg1->unk20.s16[i][0] = arg1->unk20.s16[i][0] + D_800F1A10[i];
             }
@@ -7462,17 +7461,16 @@ void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     temp_t1 = vs_battle_actors[arg1->unk0]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (temp_t1->hitLocations[i].unk2 != 0) {
-            var_t0 += temp_t1->hitLocations[i].unk2 - temp_t1->hitLocations[i].unk0;
+        if (temp_t1->bodyParts[i].unk2 != 0) {
+            var_t0 += temp_t1->bodyParts[i].unk2 - temp_t1->bodyParts[i].unk0;
         }
     }
 
     if (var_t0 != 0) {
         for (i = 0; i < 6; ++i) {
-            if (temp_t1->hitLocations[i].unk2 != 0) {
+            if (temp_t1->bodyParts[i].unk2 != 0) {
                 temp_lo =
-                    (arg2
-                        * (temp_t1->hitLocations[i].unk2 - temp_t1->hitLocations[i].unk0))
+                    (arg2 * (temp_t1->bodyParts[i].unk2 - temp_t1->bodyParts[i].unk0))
                     / var_t0;
                 D_800F1A10[i] = temp_lo;
                 arg1->unk20.s16[i][0] =
@@ -7504,10 +7502,10 @@ void func_800802C4(
 
     for (i = 0; i < 6; ++i) {
         if (D_800F1A10[i] != 0) {
-            if (arg2->hitLocations[i].armor.currentDp >= D_800F1A10[i]) {
-                arg2->hitLocations[i].armor.currentDp -= D_800F1A10[i];
+            if (arg2->bodyParts[i].armor.currentDp >= D_800F1A10[i]) {
+                arg2->bodyParts[i].armor.currentDp -= D_800F1A10[i];
             } else {
-                arg2->hitLocations[i].armor.currentDp = 0;
+                arg2->bodyParts[i].armor.currentDp = 0;
             }
         }
     }
@@ -8643,20 +8641,20 @@ void func_80085008(func_80085718_t* arg0)
     switch (arg0->unk1C.fields.unk1C_0) {
     case 2:
         var_a2 =
-            temp_s3->hitLocations[temp_s3->unk34].unk0 + arg0->unk20.s32[temp_s3->unk34];
+            temp_s3->bodyParts[temp_s3->unk34].unk0 + arg0->unk20.s32[temp_s3->unk34];
         var_a1 =
-            temp_s3->hitLocations[temp_s3->unk35].unk0 + arg0->unk20.s32[temp_s3->unk35];
+            temp_s3->bodyParts[temp_s3->unk35].unk0 + arg0->unk20.s32[temp_s3->unk35];
         break;
     case 3:
     case 1:
         var_a2 =
-            temp_s3->hitLocations[temp_s3->unk34].unk0 - arg0->unk20.s32[temp_s3->unk34];
+            temp_s3->bodyParts[temp_s3->unk34].unk0 - arg0->unk20.s32[temp_s3->unk34];
         var_a1 =
-            temp_s3->hitLocations[temp_s3->unk35].unk0 - arg0->unk20.s32[temp_s3->unk35];
+            temp_s3->bodyParts[temp_s3->unk35].unk0 - arg0->unk20.s32[temp_s3->unk35];
         break;
     default:
-        var_a2 = temp_s3->hitLocations[temp_s3->unk34].unk0;
-        var_a1 = temp_s3->hitLocations[temp_s3->unk35].unk0;
+        var_a2 = temp_s3->bodyParts[temp_s3->unk34].unk0;
+        var_a1 = temp_s3->bodyParts[temp_s3->unk35].unk0;
         break;
     }
     if (!(temp_s3->unk948 & 0x10)) {
@@ -8690,14 +8688,14 @@ void func_80085008(func_80085718_t* arg0)
         for (i = 0; i < 4; ++i) {
             switch (arg0->unk1C.fields.unk1C_0) {
             case 2:
-                var_a2 = temp_s3->hitLocations[i].unk0 + arg0->unk20.s32[i];
+                var_a2 = temp_s3->bodyParts[i].unk0 + arg0->unk20.s32[i];
                 break;
             case 3:
             case 1:
-                var_a2 = temp_s3->hitLocations[i].unk0 - arg0->unk20.s32[i];
+                var_a2 = temp_s3->bodyParts[i].unk0 - arg0->unk20.s32[i];
                 break;
             default:
-                var_a2 = temp_s3->hitLocations[i].unk0;
+                var_a2 = temp_s3->bodyParts[i].unk0;
                 break;
             }
             if (!(temp_s3->unk948 & D_8004EECC[D_800E8200[i]][0])) {
@@ -8953,11 +8951,11 @@ void func_80086EF4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
     }
 
     for (i = 0; i < 6; ++i) {
-        if (arg0->hitLocations[i].armor.armor.id != 0) {
-            arg0->hitLocations[i].armor.classAffinityCurrent.affinity[0][arg1] += arg3;
-            arg0->hitLocations[i].armor.classAffinityCurrent.affinity[0][arg2] -= arg3;
-            arg0->hitLocations[i].armor.unk88[arg1] = arg3;
-            arg0->hitLocations[i].armor.unk88[arg2] = -arg3;
+        if (arg0->bodyParts[i].armor.armor.id != 0) {
+            arg0->bodyParts[i].armor.classAffinityCurrent.affinity[0][arg1] += arg3;
+            arg0->bodyParts[i].armor.classAffinityCurrent.affinity[0][arg2] -= arg3;
+            arg0->bodyParts[i].armor.unk88[arg1] = arg3;
+            arg0->bodyParts[i].armor.unk88[arg2] = -arg3;
         }
     }
 }

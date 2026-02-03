@@ -2489,7 +2489,7 @@ loop_1:
             temp_s2 = 0x4A;
             break;
         case 4:
-            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].unk26;
+            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].bodyPart;
             temp_s2 = 0x4A;
             break;
         case 6:
@@ -2592,7 +2592,7 @@ loop_1:
             temp_s0 = vs_menuD_containerData->data.shields[temp_s3].unk1 != 0;
             break;
         case 4:
-            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].unk26 != 0;
+            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].bodyPart != 0;
             break;
         case 6:
             if (vs_menuD_containerData->data.misc[temp_s3].id >= 0x1CA) {

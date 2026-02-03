@@ -110,7 +110,7 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
 
         for (i = 0; i < 5; ++i) {
             vs_mainMenu_equipmentStats[63] |=
-                armor == &vs_battle_characterState->unk3C->hitLocations[i].armor;
+                armor == &vs_battle_characterState->unk3C->bodyParts[i].armor;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -900,7 +900,7 @@ static int _getHitLocationCount(int actor)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        if (vs_battle_actors[actor]->unk3C->hitLocations[i].nameIndex == 0) {
+        if (vs_battle_actors[actor]->unk3C->bodyParts[i].nameIndex == 0) {
             break;
         }
     }
@@ -920,7 +920,7 @@ static int _drawHitLocationStatuses(int arg0)
 
     int sp10[2];
     vs_battle_actor2* actor;
-    vs_battle_uiEquipment_hitLocations* hitLocation;
+    vs_battle_uiEquipment_bodyParts* hitLocation;
     int hitLocationCount;
     int sp20;
     int sp24;
@@ -957,7 +957,7 @@ static int _drawHitLocationStatuses(int arg0)
     case 1:
         func_80103FEC(actor, vs_battle_rowAnimationSteps[_hitLocationAnimSteps[0]]);
         for (i = 0; i < hitLocationCount; ++i) {
-            hitLocation = &actor->hitLocations[i];
+            hitLocation = &actor->bodyParts[i];
             step = _hitLocationAnimSteps[i];
             vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                 (vs_battle_rowAnimationSteps[step] + 216) | ((34 + i * 16) << 16), NULL);
@@ -987,7 +987,7 @@ static int _drawHitLocationStatuses(int arg0)
 
         step = D_800F4EE8.unk3A[0x48];
         for (i = 0; i < hitLocationCount; ++i) {
-            hitLocation = &actor->hitLocations[i];
+            hitLocation = &actor->bodyParts[i];
             temp_s6 = step >> 7;
             sp20 = step - 128;
             sp24 = temp_s6 - 1;
@@ -1015,7 +1015,7 @@ static int _drawHitLocationStatuses(int arg0)
 
         for (i = 0; i < hitLocationCount; ++i) {
             if (_hitLocationAnimSteps[i] < 8) {
-                hitLocation = &actor->hitLocations[i];
+                hitLocation = &actor->bodyParts[i];
                 ++_hitLocationAnimSteps[i];
                 vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                     ((_hitLocationAnimSteps[i] << 5) + 216) | ((34 + i * 16) << 16), 0);
@@ -1187,7 +1187,7 @@ static int _equipmentDetailScreen(int row)
     char* sp18[2];
     vs_battle_inventoryArmor sp20;
     u_int sp48;
-    int hitLocations;
+    int bodyParts;
     int equipmentCount;
     int var_a0_5;
     int var_s0_2;
@@ -1214,7 +1214,7 @@ static int _equipmentDetailScreen(int row)
         return 0;
     }
 
-    hitLocations = _getHitLocationCount(_selectedActor - 1);
+    bodyParts = _getHitLocationCount(_selectedActor - 1);
 
     state = _equipmentDetailState;
     switch (state) {
@@ -1236,9 +1236,9 @@ static int _equipmentDetailScreen(int row)
             _drawShieldInfo(&temp_s1->shield);
             break;
         default:
-            if ((_selectedEquipmentRow - 2) < hitLocations) {
+            if ((_selectedEquipmentRow - 2) < bodyParts) {
                 vs_mainMenu_drawDpPpbars(1);
-                _drawArmorInfo(&temp_s1->hitLocations[_selectedEquipmentRow - 2].armor);
+                _drawArmorInfo(&temp_s1->bodyParts[_selectedEquipmentRow - 2].armor);
             } else {
                 vs_mainMenu_drawDpPpbars(0);
                 _drawAccessoryInfo(&temp_s1->accessory);
@@ -1309,8 +1309,8 @@ static int _equipmentDetailScreen(int row)
                     }
                     break;
                 default:
-                    if ((var_s2 - 2) >= hitLocations
-                        || (temp_s1->hitLocations[var_s2 - 2].armor.armor.id != 0)) {
+                    if ((var_s2 - 2) >= bodyParts
+                        || (temp_s1->bodyParts[var_s2 - 2].armor.armor.id != 0)) {
                         equipmentCount = 0;
                     }
                 }
@@ -1348,10 +1348,10 @@ static int _equipmentDetailScreen(int row)
                         &temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
                     break;
                 default:
-                    if ((var_s2 - 2) < hitLocations) {
+                    if ((var_s2 - 2) < bodyParts) {
                         vs_mainMenu_drawDpPpbars(9);
-                        _drawArmorInfo(&temp_s1->hitLocations[var_s2 - 2].armor);
-                        vs_mainMenu_setArmorUi(&temp_s1->hitLocations[var_s2 - 2].armor,
+                        _drawArmorInfo(&temp_s1->bodyParts[var_s2 - 2].armor);
+                        vs_mainMenu_setArmorUi(&temp_s1->bodyParts[var_s2 - 2].armor,
                             sp18, &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_drawDpPpbars(8);
@@ -1414,12 +1414,12 @@ static int _equipmentDetailScreen(int row)
             break;
         default:
             var_a0_5 = 8;
-            if ((_selectedEquipmentRow - 2) < hitLocations) {
+            if ((_selectedEquipmentRow - 2) < bodyParts) {
                 var_a0_5 = 9;
             }
             vs_mainMenu_drawDpPpbars(var_a0_5);
             newSelection = _updateEquipmentDetailSelection(
-                previousSelection, ((_selectedEquipmentRow - 2) < hitLocations) << 6);
+                previousSelection, ((_selectedEquipmentRow - 2) < bodyParts) << 6);
             break;
         }
 
@@ -1454,9 +1454,9 @@ static int _equipmentDetailScreen(int row)
                 var_s3 = _drawShieldInfoRow(newSelection - 9, &temp_s1->shield);
                 break;
             default:
-                if ((_selectedEquipmentRow - 2) < hitLocations) {
+                if ((_selectedEquipmentRow - 2) < bodyParts) {
                     var_s3 = _drawArmorInfoRow(
-                        &temp_s1->hitLocations[_selectedEquipmentRow - 2].armor);
+                        &temp_s1->bodyParts[_selectedEquipmentRow - 2].armor);
                 } else {
                     var_s3 = _drawAccessoryInfoRow(&temp_s1->accessory);
                 }
@@ -1469,7 +1469,7 @@ static int _equipmentDetailScreen(int row)
                 if (_selectedEquipmentRow == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                             [newSelection + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
-                } else if ((_selectedEquipmentRow - 2) < hitLocations) {
+                } else if ((_selectedEquipmentRow - 2) < bodyParts) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                             [newSelection + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
                 }
@@ -1525,7 +1525,7 @@ static int _equipmentScreen(int element)
     int new_var;
 
     vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
-    vs_battle_uiEquipment_hitLocations* hitLocations = temp_s6->hitLocations;
+    vs_battle_uiEquipment_bodyParts* bodyParts = temp_s6->bodyParts;
 
     hitLocationCount = _getHitLocationCount(_selectedActor - 1);
     rowCount = _getEquipmentCount();
@@ -1561,15 +1561,15 @@ static int _equipmentScreen(int element)
         rowTypes[0] |= temp_s5 | new_var;
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
-        for (i = 2; i < rowCount; ++i, ++hitLocations) {
+        for (i = 2; i < rowCount; ++i, ++bodyParts) {
             vs_battle_inventoryArmor* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
-                if (hitLocations->armor.armor.id != 0) {
-                    vs_mainMenu_setArmorUi(&hitLocations->armor, &rowStrings[i * 2],
+                if (bodyParts->armor.armor.id != 0) {
+                    vs_mainMenu_setArmorUi(&bodyParts->armor, &rowStrings[i * 2],
                         &rowTypes[i], equipmentDescriptions[i]);
                 }
-                rowTypes[i] |= ((hitLocations->nameIndex + 103) << 9) + temp_s5;
+                rowTypes[i] |= ((bodyParts->nameIndex + 103) << 9) + temp_s5;
             } else {
                 vs_battle_copyEquippedAccessoryStats(p, &temp_s6->accessory);
                 vs_mainMenu_setAccessoryUi(
@@ -1797,8 +1797,8 @@ static void _drawScreen(void)
 
 static void _printSelectedLocationCondition(void)
 {
-    vs_battle_uiEquipment_hitLocations* location =
-        &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
+    vs_battle_uiEquipment_bodyParts* location =
+        &vs_battle_actors[_selectedActor - 1]->unk3C->bodyParts[_selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&D_800EA868[D_800EA868[location->nameIndex]];
     vs_battle_stringContext.strings[1] =
@@ -1813,8 +1813,8 @@ static void _printSelectedLocationCondition(void)
 static void _printSelectedLocationStats(void)
 {
     int i;
-    vs_battle_uiEquipment_hitLocations* location =
-        &vs_battle_actors[_selectedActor - 1]->unk3C->hitLocations[_selectedElement];
+    vs_battle_uiEquipment_bodyParts* location =
+        &vs_battle_actors[_selectedActor - 1]->unk3C->bodyParts[_selectedElement];
 
     for (i = 0; i < 16; ++i) {
         vs_mainMenu_equipmentStats[i + 16] = location->affinities[i & 7];
@@ -1842,7 +1842,7 @@ int vs_menu4_exec(char* state)
     static int _screenEnabled;
     static int D_80108134;
 
-    int hitLocations;
+    int bodyParts;
     int var_s5;
     int var_s6;
     D_801081B8_t* var_a0;
@@ -1916,9 +1916,9 @@ int vs_menu4_exec(char* state)
                 func_800FBEA4(1);
                 userInput = _selectedElement;
                 if (userInput < VS_status_INDEX_statDesc) {
-                    hitLocations = _getHitLocationCount(_selectedActor - 1) - 1;
-                    if (hitLocations < userInput) {
-                        _selectedElement = hitLocations;
+                    bodyParts = _getHitLocationCount(_selectedActor - 1) - 1;
+                    if (bodyParts < userInput) {
+                        _selectedElement = bodyParts;
                     }
                     _printSelectedLocationCondition();
                 } else {
@@ -1966,15 +1966,14 @@ int vs_menu4_exec(char* state)
                 }
                 if (vs_main_buttonsState & PADL2) {
                     userInput = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickX);
-                    hitLocations =
-                        vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickY);
+                    bodyParts = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickY);
                     if (userInput == 0) {
-                        if (hitLocations == 0) {
+                        if (bodyParts == 0) {
                             if (vs_main_buttonsState & PADLup) {
-                                hitLocations = -64;
+                                bodyParts = -64;
                             }
                             if (vs_main_buttonsState & PADLdown) {
-                                hitLocations = 64;
+                                bodyParts = 64;
                             }
                             if (vs_main_buttonsState & PADLleft) {
                                 userInput = -64;
@@ -1986,7 +1985,7 @@ int vs_menu4_exec(char* state)
                     }
 
                     _xPos += userInput;
-                    _yPos -= hitLocations;
+                    _yPos -= bodyParts;
                     if (_yPos < 0) {
                         _yPos = 0;
                     }
@@ -2003,17 +2002,17 @@ int vs_menu4_exec(char* state)
                         0x080D0807, 0x0A090B09, 0x0009000A, 0x000B0D09 };
 
                     userInput = _selectedElement;
-                    hitLocations = D_801080FC[userInput];
+                    bodyParts = D_801080FC[userInput];
                     if (vs_main_buttonRepeat & PADLup) {
-                        userInput = hitLocations;
+                        userInput = bodyParts;
                     } else if (vs_main_buttonRepeat & PADLdown) {
-                        userInput = hitLocations >> 8;
+                        userInput = bodyParts >> 8;
                     } else if (vs_main_buttonRepeat & PADLleft) {
-                        userInput = hitLocations >> 16;
+                        userInput = bodyParts >> 16;
                     } else {
                         userInput = _selectedElement;
                         if (vs_main_buttonRepeat & PADLright) {
-                            userInput = hitLocations >> 24;
+                            userInput = bodyParts >> 24;
                         }
                     }
                     userInput &= 0xFF;
@@ -2029,13 +2028,13 @@ int vs_menu4_exec(char* state)
                         userInput = _selectedElement;
                     }
                     if (userInput < 6) {
-                        hitLocations = _getHitLocationCount(_selectedActor - 1);
-                        if (userInput < hitLocations) {
+                        bodyParts = _getHitLocationCount(_selectedActor - 1);
+                        if (userInput < bodyParts) {
                             _drawHitLocationStatuses(userInput + 1);
                         } else {
                             userInput = 6;
                             if (!(vs_main_buttonRepeat & PADLdown)) {
-                                userInput = hitLocations - 1;
+                                userInput = bodyParts - 1;
                                 if (!(vs_main_buttonRepeat & PADLup)) {
                                     _selectedElement = userInput;
                                 }
@@ -2062,18 +2061,18 @@ int vs_menu4_exec(char* state)
             userInput = _selectedActor - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
                 userInput = _getNextValidActor(userInput, 1);
-                hitLocations = 17;
+                bodyParts = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
                 userInput = _getNextValidActor(userInput, 14);
-                hitLocations = 1;
+                bodyParts = 1;
             }
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
                 _initEquipmentScreen(userInput);
-                func_80103744(userInput + hitLocations);
+                func_80103744(userInput + bodyParts);
                 animWait = 1;
             }
         }
@@ -2114,18 +2113,18 @@ int vs_menu4_exec(char* state)
             userInput = _selectedActor - 1;
             if (vs_main_buttonsPressed.all & PADR1) {
                 userInput = _getNextValidActor(userInput, 1);
-                hitLocations = 17;
+                bodyParts = 17;
             }
             if (vs_main_buttonsPressed.all & PADL1) {
                 userInput = _getNextValidActor(userInput, 14);
-                hitLocations = 1;
+                bodyParts = 1;
             }
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
                 func_800FBEA4(2);
                 _initEquipmentScreen(userInput);
-                func_80103744(userInput + hitLocations);
+                func_80103744(userInput + bodyParts);
                 animWait = 1;
                 if (vs_battle_getStatusFlags(vs_battle_actors[userInput]->unk3C) == 0) {
                     *state = 5;
@@ -2167,16 +2166,16 @@ int vs_menu4_exec(char* state)
         } else {
             if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
                 userInput = _selectedElement;
-                hitLocations = _getHitLocationCount(_selectedActor - 1);
+                bodyParts = _getHitLocationCount(_selectedActor - 1);
                 if (vs_main_buttonRepeat & PADL1) {
                     char new_var = 1;
-                    userInput = (userInput - new_var) + hitLocations;
+                    userInput = (userInput - new_var) + bodyParts;
                 }
                 if (vs_main_buttonRepeat & PADR1) {
                     ++userInput;
                 }
-                if (userInput >= hitLocations) {
-                    userInput -= hitLocations;
+                if (userInput >= bodyParts) {
+                    userInput -= bodyParts;
                 }
                 if (userInput != _selectedElement) {
                     vs_battle_playMenuChangeSfx();
@@ -2185,29 +2184,29 @@ int vs_menu4_exec(char* state)
                 }
             }
             userInput = D_801081EE;
-            hitLocations = 11 - D_801024B9 * 4;
-            if (userInput >= hitLocations) {
-                userInput = hitLocations - 1;
+            bodyParts = 11 - D_801024B9 * 4;
+            if (userInput >= bodyParts) {
+                userInput = bodyParts - 1;
             }
             if (vs_main_buttonRepeat & PADLup) {
                 char new_var = 1;
-                userInput = (userInput - new_var) + hitLocations;
+                userInput = (userInput - new_var) + bodyParts;
             }
             if (vs_main_buttonRepeat & PADLdown) {
                 ++userInput;
             }
-            if (userInput >= hitLocations) {
-                userInput -= hitLocations;
+            if (userInput >= bodyParts) {
+                userInput -= bodyParts;
             }
             if (userInput != D_801081EE) {
                 vs_battle_playMenuChangeSfx();
                 D_801081EE = userInput;
             }
 
-            vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings
-                    [userInput
-                        + (hitLocations != 3 ? VS_status_INDEX_physicalDefense
-                                             : VS_status_INDEX_bluntDefense)]]);
+            vs_mainmenu_setMessage((char*)&_statusStrings
+                    [_statusStrings[userInput
+                                    + (bodyParts != 3 ? VS_status_INDEX_physicalDefense
+                                                      : VS_status_INDEX_bluntDefense)]]);
             D_80108134 = func_800FFCDC(D_80108134, ((userInput * 16) + 50) << 16);
         }
         break;

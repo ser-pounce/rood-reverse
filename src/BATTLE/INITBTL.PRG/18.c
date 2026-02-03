@@ -122,15 +122,15 @@ void func_800F9AD8(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->hitLocations[i].unk0 = s1->hitLocations[i].unk0;
-        temp_s0->hitLocations[i].unk2 = s1->hitLocations[i].unk2;
+        temp_s0->bodyParts[i].unk0 = s1->bodyParts[i].unk0;
+        temp_s0->bodyParts[i].unk2 = s1->bodyParts[i].unk2;
 
         for (j = 0; j < 4; ++j) {
-            temp_s0->hitLocations[i].types[j] = s1->hitLocations[i].types[j];
+            temp_s0->bodyParts[i].types[j] = s1->bodyParts[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_s0->hitLocations[i].affinities[j] = s1->hitLocations[i].affinities[j];
+            temp_s0->bodyParts[i].affinities[j] = s1->bodyParts[i].affinities[j];
         }
     }
 

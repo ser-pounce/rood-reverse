@@ -5,6 +5,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../assets/MENU/MENU12.BIN.h"
 #include "vs_string.h"
 #include <libetc.h>
 #include <memory.h>
@@ -200,7 +201,8 @@ int func_80102C58(int arg0)
     case 1:
         temp_v0_2 = vs_battle_setMenuItem(D_8010BBF4 + 0x1D, 0x140,
             (D_8010BBF4 * 0x10) + 0x92, 0x7E, 0,
-            (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[D_8010BBF4 + 0x22]]);
+            (char*)&vs_mainMenu_menu12Text
+                [vs_mainMenu_menu12Text[D_8010BBF4 + VS_MENU12_BIN_INDEX_optionYes]]);
         temp_v0_2->state = 2;
         temp_v0_2->x = 0xC2;
         D_8010BBF4 = (char)(D_8010BBF4 + 1);
@@ -260,9 +262,11 @@ int func_80102E40(int arg0)
     case 0:
     case 1:
     case 2:
-        var_v0_2 = &vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[D_8010BBF6 + 0x22]];
+        var_v0_2 =
+            &vs_mainMenu_menu12Text
+                [vs_mainMenu_menu12Text[D_8010BBF6 + VS_MENU12_BIN_INDEX_optionYes]];
         if (D_8010BBF6 == D_8010BBF8) {
-            var_v0_2 = vs_mainMenu_menu12Text + 0x49F;
+            var_v0_2 = vs_mainMenu_menu12Text + VS_MENU12_BIN_OFFSET_cancelCombine;
         }
         temp_v0_2 = vs_battle_setMenuItem(D_8010BBF6 + 0x1D, 0x140,
             (D_8010BBF6 * 0x10) + 0x82, 0x7E, 0, (char*)var_v0_2);
@@ -464,7 +468,8 @@ void func_80103CEC(int arg0)
     int new_var2 = s2 & 0x3F;
     arg0 &= 0xF;
     menuItem = vs_battle_setMenuItem(0x20, 0x10, 0x12, 0xA4, 8,
-        (char*)(&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[arg0 + 13]]));
+        (char*)(&vs_mainMenu_menu12Text
+                    [vs_mainMenu_menu12Text[arg0 + VS_MENU12_BIN_INDEX_assemble]]));
     menuItem->flags = 0x18;
     menuItem->selected = 1;
     if (arg0 == 0) {
@@ -516,8 +521,9 @@ int func_80103DC4(int arg0)
             temp_s7 = vs_main_allocHeapR(0x72C);
             temp_fp = (char**)(temp_s7 + 0x6A4);
             if (var_s2 == NULL) {
-                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[0x40A];
-                temp_fp[1] = (char*)&vs_mainMenu_menu12Text[0x40E];
+                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_blades];
+                temp_fp[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_bladesDesc];
                 *D_800F4E84 = 1;
             } else {
                 vs_mainMenu_setBladeUi(var_s2, temp_fp, D_800F4E84, temp_s7);
@@ -535,8 +541,8 @@ int func_80103DC4(int arg0)
                         vs_mainMenu_setBladeUi(var_s2, temp_fp + var_s4 * 2,
                             &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
                         if (_isValidGrip(var_s2, sp10) == 0) {
-                            temp_fp[var_s4 * 2 + 1] =
-                                (char*)&vs_mainMenu_menu12Text[0x151];
+                            temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                                [VS_MENU12_BIN_OFFSET_invalidBlade];
                             D_800F4E84[var_s4] |= 1;
                         }
                         D_8010BCA4[var_s4] = temp_s0;
@@ -616,8 +622,9 @@ int func_8010418C(int arg0)
             temp_s7 = vs_main_allocHeapR(0x72CU);
             temp_fp = temp_s7 + 0x6A4;
             if (temp_s2 == NULL) {
-                *(u_short**)(temp_s7 + 0x6A4) = vs_mainMenu_menu12Text + 0x416;
-                temp_fp[1] = (char*)(vs_mainMenu_menu12Text + 0x419);
+                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_grips];
+                temp_fp[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gripsDesc];
                 *D_800F4E84 = 1;
             } else {
                 vs_mainMenu_setGripUi(temp_s2, temp_fp, D_800F4E84, temp_s7);
@@ -634,8 +641,8 @@ int func_8010418C(int arg0)
                         vs_mainMenu_setGripUi(temp_s2, temp_fp + var_s4 * 2,
                             &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
                         if (_isValidGrip(sp10, temp_s2) == 0) {
-                            temp_fp[var_s4 * 2 + 1] =
-                                (char*)(vs_mainMenu_menu12Text + 0x135);
+                            temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                                [VS_MENU12_BIN_OFFSET_invalidGrip];
                             D_800F4E84[var_s4] |= 1;
                         }
                         D_8010BCA4[var_s4] = temp_s0;
@@ -713,8 +720,9 @@ int func_80104534(int arg0)
             temp_s7 = temp_s6 + 0x1324;
 
             if (temp_s1 == NULL) {
-                *(u_short**)(temp_s6 + 0x1324) = vs_mainMenu_menu12Text + 0x421;
-                temp_s7[1] = (char*)&vs_mainMenu_menu12Text[0x424];
+                temp_s7[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems];
+                temp_s7[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gemsDesc];
                 *D_800F4E84 = 1;
             } else {
                 vs_mainMenu_setGemUi(temp_s1, temp_s7, D_800F4E84, temp_s6);
@@ -782,8 +790,9 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80104898);
 
 void func_80105618(int arg0 __attribute__((unused)), int arg1)
 {
-    vs_battle_menuItem_t* temp_v0 = vs_battle_setMenuItem(arg1 + 0xA, 0x140,
-        (arg1 * 0x10) + 0x12, 0x97, 0, (char*)(vs_mainMenu_menu12Text + 0x421));
+    vs_battle_menuItem_t* temp_v0 =
+        vs_battle_setMenuItem(arg1 + 0xA, 0x140, (arg1 * 0x10) + 0x12, 0x97, 0,
+            (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
     temp_v0->x = 0xA9;
     temp_v0->unkA = 1;
@@ -851,17 +860,17 @@ int func_801063E4(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 4; ++i) {
-                text[i] =
-                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[0x1C + i]];
+                text[i] = (char*)&vs_mainMenu_menu12Text
+                    [vs_mainMenu_menu12Text[VS_MENU12_BIN_INDEX_weapons + i]];
                 rowTypes[i] = 0;
             }
             if (func_800FEA6C(0, 0) == 0) {
                 rowTypes[0] = 1;
-                text[1] = (char*)&vs_mainMenu_menu12Text[0x374];
+                text[1] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noItems];
             }
             if (func_800FEA6C(3, 0) == 0) {
                 rowTypes[1] = 1;
-                text[3] = (char*)&vs_mainMenu_menu12Text[0x374];
+                text[3] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noItems];
             }
             i = vs_main_settings.cursorMemory;
             if (D_8010BC35 == 0) {
@@ -927,10 +936,10 @@ int func_80106C64(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                text[i * 2] =
-                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i * 2 + 28]];
-                text[i * 2 + 1] =
-                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i + 37]];
+                text[i * 2] = (char*)&vs_mainMenu_menu12Text
+                    [vs_mainMenu_menu12Text[i * 2 + VS_MENU12_BIN_INDEX_weapons]];
+                text[i * 2 + 1] = (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
+                        [i + VS_MENU12_BIN_INDEX_disassembleWeaponDesc]];
 
                 var_a0 = 0;
                 if (i != 0) {
@@ -941,7 +950,8 @@ int func_80106C64(int arg0)
                 rowTypes[i] = (temp_v0 << 9) + 0x400000;
 
                 if (temp_v0 == 0) {
-                    text[i * 2 + 1] = (char*)&vs_mainMenu_menu12Text[0x374];
+                    text[i * 2 + 1] =
+                        (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noItems];
                     rowTypes[i] |= 1;
                 }
             }
@@ -992,12 +1002,8 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80106ECC);
 
 int func_801072FC(int arg0)
 {
-    int temp_a2;
+    int ppCost;
     int i;
-    vs_battle_inventoryBlade* temp_a1;
-    vs_battle_inventoryArmor* temp_a1_3;
-    vs_battle_inventoryShield* temp_a1_2;
-    vs_battle_inventoryWeapon* temp_a0;
     int new_var;
 
     if (arg0 != 0) {
@@ -1010,7 +1016,8 @@ int func_801072FC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C58(1);
-            vs_mainmenu_setMessage((char*)&vs_mainMenu_menu12Text[0x302]);
+            vs_mainmenu_setMessage(
+                (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairConfirm]);
             D_8010BC50 = 1;
         }
         break;
@@ -1034,19 +1041,23 @@ int func_801072FC(int arg0)
         break;
     case 2:
         func_800C8E04(3);
-        vs_mainmenu_setMessage((char*)&vs_mainMenu_menu12Text[0x30D]);
+        vs_mainmenu_setMessage(
+            (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairComplete]);
 
         for (i = 0; i < 16; ++i) {
             new_var = D_800619D8.unk0[i + 8];
             if (new_var != 0) {
-                temp_a1 = &vs_battle_inventory.blades[new_var - 1];
-                temp_a2 = temp_a1->maxDp - temp_a1->currentDp;
-                temp_a1->currentDp = temp_a1->maxDp;
-                temp_a2 = temp_a1->currentPp - (temp_a2 / 100);
-                if (temp_a2 >= 0) {
-                    temp_a1->currentPp = temp_a2;
+                vs_battle_inventoryBlade* blade =
+                    &vs_battle_inventory.blades[new_var - 1];
+
+                ppCost = blade->maxDp - blade->currentDp;
+                ppCost = blade->currentPp - (ppCost / 100);
+                blade->currentDp = blade->maxDp;
+
+                if (ppCost >= 0) {
+                    blade->currentPp = ppCost;
                 } else {
-                    temp_a1->currentPp = 0;
+                    blade->currentPp = 0;
                 }
             }
         }
@@ -1054,9 +1065,10 @@ int func_801072FC(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = D_800619D8.unk0[i];
             if (new_var != 0) {
-                temp_a0 = &vs_battle_inventory.weapons[new_var - 1];
-                if (temp_a0->unk3 != 0) {
-                    vs_battle_equipWeapon(temp_a0);
+                vs_battle_inventoryWeapon* weapon =
+                    &vs_battle_inventory.weapons[new_var - 1];
+                if (weapon->unk3 != 0) {
+                    vs_battle_equipWeapon(weapon);
                 }
             }
         }
@@ -1064,17 +1076,21 @@ int func_801072FC(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = D_800619D8.unk28[i];
             if (new_var != 0) {
-                temp_a1_2 = &vs_battle_inventory.shields[new_var - 1];
-                temp_a2 = temp_a1_2->base.maxDp - temp_a1_2->base.currentDp;
-                temp_a1_2->base.currentDp = temp_a1_2->base.maxDp;
-                temp_a2 = temp_a1_2->base.currentPp - (temp_a2 / 100);
-                if (temp_a2 >= 0) {
-                    temp_a1_2->base.currentPp = temp_a2;
+                vs_battle_inventoryShield* shield =
+                    &vs_battle_inventory.shields[new_var - 1];
+
+                ppCost = shield->base.maxDp - shield->base.currentDp;
+                ppCost = shield->base.currentPp - (ppCost / 100);
+                shield->base.currentDp = shield->base.maxDp;
+
+                if (ppCost >= 0) {
+                    shield->base.currentPp = ppCost;
                 } else {
-                    temp_a1_2->base.currentPp = 0;
+                    shield->base.currentPp = 0;
                 }
-                if (temp_a1_2->unk1 != 0) {
-                    vs_battle_equipShield(temp_a1_2);
+
+                if (shield->unk1 != 0) {
+                    vs_battle_equipShield(shield);
                 }
             }
         }
@@ -1082,18 +1098,20 @@ int func_801072FC(int arg0)
         for (i = 0; i < 16; ++i) {
             new_var = D_800619D8.unk28[i + 8];
             if (new_var != 0) {
-                temp_a1_3 = &vs_battle_inventory.armor[new_var - 1];
-                if (temp_a1_3->category != 7) {
-                    temp_a2 = temp_a1_3->maxDp - temp_a1_3->currentDp;
-                    temp_a1_3->currentDp = temp_a1_3->maxDp;
-                    temp_a2 = temp_a1_3->currentPp - (temp_a2 / 100);
-                    if (temp_a2 >= 0) {
-                        temp_a1_3->currentPp = temp_a2;
+                vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[new_var - 1];
+                if (armor->category != 7) {
+
+                    ppCost = armor->maxDp - armor->currentDp;
+                    ppCost = armor->currentPp - (ppCost / 100);
+                    armor->currentDp = armor->maxDp;
+
+                    if (ppCost >= 0) {
+                        armor->currentPp = ppCost;
                     } else {
-                        temp_a1_3->currentPp = 0;
+                        armor->currentPp = 0;
                     }
-                    if (temp_a1_3->unk26 != 0) {
-                        vs_battle_equipArmor(temp_a1_3->unk26 - 1, temp_a1_3);
+                    if (armor->bodyPart != 0) {
+                        vs_battle_equipArmor(armor->bodyPart - 1, armor);
                     }
                 }
             }
@@ -1105,7 +1123,7 @@ int func_801072FC(int arg0)
         if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_battle_playMenuLeaveSfx();
             func_800FA8A0(0xE);
-            if (vs_main_buttonsPressed.all & 0x10) {
+            if (vs_main_buttonsPressed.all & PADRup) {
                 return -2;
             }
             func_800FFBC8();
@@ -1246,8 +1264,9 @@ int func_80107AD4(int arg0)
             temp_s7 = vs_main_allocHeapR(0x72C);
             temp_fp = (char**)(temp_s7 + 0x6A4);
             if (var_s2 == NULL) {
-                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[0x436];
-                temp_fp[1] = (char*)&vs_mainMenu_menu12Text[0x459];
+                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_blade];
+                temp_fp[1] = (char*)&vs_mainMenu_menu12Text
+                    [VS_MENU12_BIN_OFFSET_selectBladeToCombine];
                 *D_800F4E84 = 1;
             } else {
                 vs_mainMenu_setBladeUi(var_s2, temp_fp, D_800F4E84, temp_s7);
@@ -1265,7 +1284,8 @@ int func_80107AD4(int arg0)
                     vs_mainMenu_setBladeUi(var_s2, temp_fp + var_s4 * 2,
                         &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
                     if (!((D_8010BB30[D_8010BC80] >> var_s2->material) & 1)) {
-                        temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text[0x16D];
+                        temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                            [VS_MENU12_BIN_OFFSET_invalidBladeMaterial];
                         D_800F4E84[var_s4] |= 1;
                     }
 
@@ -1434,8 +1454,9 @@ int func_80108AD4(int arg0)
             temp_v0 = vs_main_allocHeapR(0x3CC);
             sp10 = (char**)(temp_v0 + 0x384);
             if (var_s2 == NULL) {
-                sp10[0] = (char*)&vs_mainMenu_menu12Text[0x439];
-                sp10[1] = (char*)&vs_mainMenu_menu12Text[0x461];
+                sp10[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_shield];
+                sp10[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectShield];
                 *D_800F4E84 = 1;
             } else {
                 func_80108A9C(var_s2, sp10, D_800F4E84, temp_v0);
@@ -1452,7 +1473,8 @@ int func_80108AD4(int arg0)
                     func_80108A9C(var_s2, sp10 + var_s4 * 2, &D_800F4E84[var_s4],
                         temp_v0 + var_s4 * 0x60);
                     if (!((D_8010BB30[D_8010BC80] >> var_s2->base.material) & 1)) {
-                        sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text[0x18B];
+                        sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                            [VS_MENU12_BIN_OFFSET_invalidShieldMaterial];
                         D_800F4E84[var_s4] |= 1;
                     }
                     if (var_s2->unk1 != 0) {
@@ -1541,7 +1563,7 @@ void func_80109790(int arg0)
     }
 
     var_s0 = &D_8010BD54;
-    var_s0->unk26 = 0;
+    var_s0->bodyPart = 0;
 
     vs_mainMenu_resetStats();
 
@@ -1601,8 +1623,9 @@ int func_801099FC(int arg0)
             temp_v0 = vs_main_allocHeapR(0x72CU);
             sp10 = (char**)(temp_v0 + 0x6A4);
             if (var_s2 == NULL) {
-                sp10[0] = (char*)&vs_mainMenu_menu12Text[0x43D];
-                sp10[1] = (char*)&vs_mainMenu_menu12Text[0x46A];
+                sp10[0] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_armor];
+                sp10[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectArmor];
                 *D_800F4E84 = 1;
             } else {
                 vs_mainMenu_setAccessoryUi(var_s2, sp10, D_800F4E84, temp_v0);
@@ -1620,10 +1643,11 @@ int func_801099FC(int arg0)
                         vs_mainMenu_setAccessoryUi(var_s2, sp10 + var_s4 * 2,
                             &D_800F4E84[var_s4], temp_v0 + var_s4 * 0x60);
                         if (!((D_8010BB30[D_8010BC80] >> var_s2->material) & 1)) {
-                            sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text[0x1AA];
+                            sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                                [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
                             D_800F4E84[var_s4] |= 1;
                         }
-                        if (var_s2->unk26 != 0) {
+                        if (var_s2->bodyPart != 0) {
                             D_800F4E84[var_s4] |= 0xCA00;
                         }
                         D_8010BCA4[var_s4] = temp_s0;
@@ -1710,14 +1734,13 @@ int func_8010A6BC(int arg0)
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
                 temp_a2 = func_8010A63C(i);
-                text[i * 2] =
-                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i + 0x46]];
+                text[i * 2] = (char*)&vs_mainMenu_menu12Text
+                    [vs_mainMenu_menu12Text[i + VS_MENU12_BIN_INDEX_blade]];
                 text[i * 2 + 1] =
-                    temp_a2 < 2
-                        ? (char*)&vs_mainMenu_menu12Text
-                              [vs_mainMenu_menu12Text[0x35 - (temp_a2 * 4)]]
-                        : (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i
-                                                                                + 0x49]];
+                    temp_a2 < 2 ? (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
+                                          [VS_MENU12_BIN_INDEX_noItems - (temp_a2 * 4)]]
+                                : (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
+                                          [i + VS_MENU12_BIN_INDEX_combineBlades]];
                 D_800F4E84[i] = temp_a2 < 2;
             }
 

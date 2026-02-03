@@ -1,8 +1,10 @@
 _disassembleWeapon = 0x8010306C;
 _assembleWeapon = 0x80103188;
 _unsetShieldGems = 0x801032CC;
+_isValidGrip = 0x8010333C;
 vs_menuC_loadSyd = 0x80107704;
 D_8010BB21 = 0x8010BB21;
+_validGripFlags = 0x8010BB24;
 _sydData = 0x8010BB58;
 _sydLbas = 0x8010BB5C;
 _sydSizes = 0x8010BB68;

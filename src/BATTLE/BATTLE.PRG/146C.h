@@ -630,6 +630,7 @@ void vs_battle_applyAccessory(
     vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
 void vs_battle_equipShield(vs_battle_inventoryShield* shield);
+void vs_battle_equipArmor(int part, vs_battle_inventoryArmor* armor);
 void vs_battle_applyShieldStats(vs_battle_uiShield*, vs_battle_shieldIntermediate*);
 void vs_battle_applyWeaponStats(vs_battle_uiWeapon*, vs_battle_weaponIntermediate*);
 void vs_battle_copyEquippedBladeStats(

@@ -57,6 +57,9 @@ extern char D_8010BC34;
 extern char D_8010BC35;
 extern char D_8010BC3F;
 extern char D_8010BC41;
+extern int D_8010BC5C;
+extern char D_8010BC60;
+extern char D_8010BC61;
 extern int D_8010BC68;
 extern char D_8010BC6C;
 extern char D_8010BC6D;
@@ -1084,7 +1087,107 @@ void func_80107894(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107AD4);
+int func_80107AD4(int arg0)
+{
+    int var_s4;
+    int i;
+    int var_v0_2;
+    char* temp_s7;
+    char** temp_fp;
+    int temp_a0;
+    int temp_s0;
+    vs_battle_inventoryBlade* var_s2 = NULL;
+
+    if (arg0 != 0) {
+        D_8010BC61 = arg0;
+        func_80103D8C(arg0 + 0xA);
+        D_8010BC60 = 0;
+        return 0;
+    }
+
+    temp_s0 = D_8010BD10[D_8010BC61 - 1];
+    if (temp_s0 != 0) {
+        var_s2 = &vs_battle_inventory.blades[temp_s0 - 1];
+    }
+
+    switch (D_8010BC60) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            temp_s7 = vs_main_allocHeapR(0x72C);
+            temp_fp = (char**)(temp_s7 + 0x6A4);
+            if (var_s2 == NULL) {
+                temp_fp[0] = (char*)&vs_mainMenu_menu12Text[0x436];
+                temp_fp[1] = (char*)&vs_mainMenu_menu12Text[0x459];
+                *D_800F4E84 = 1;
+            } else {
+                vs_mainMenu_setBladeUi(var_s2, temp_fp, D_800F4E84, temp_s7);
+            }
+
+            *D_8010BCA4 = temp_s0;
+            var_s4 = 1;
+
+            for (i = 0; i < 16; ++i) {
+                temp_s0 = D_800619D8.unk0[i + 8];
+                if ((temp_s0 != 0) && (temp_s0 != D_8010BD10[0])
+                    && (temp_s0 != D_8010BD10[1])) {
+                    int new_var = temp_s0;
+                    var_s2 = &vs_battle_inventory.blades[temp_s0 - 1];
+                    vs_mainMenu_setBladeUi(var_s2, temp_fp + var_s4 * 2,
+                        &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
+                    if (!((D_8010BB30[D_8010BC80] >> var_s2->material) & 1)) {
+                        temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text[0x16D];
+                        D_800F4E84[var_s4] |= 1;
+                    }
+
+                    temp_a0 = var_s2->combinedWeaponIndex;
+
+                    if (temp_a0 != 0) {
+                        D_800F4E84[var_s4] =
+                            D_800F4E84[var_s4]
+                            | (vs_battle_inventory.weapons[temp_a0 - 1].unk3 == 0
+                                    ? 0xCC00
+                                    : 0xCA00);
+                    }
+                    D_8010BCA4[var_s4] = new_var;
+                    ++var_s4;
+                }
+            }
+
+            func_801033FC(var_s4, temp_fp, D_800F4E84);
+            vs_main_freeHeapR(temp_s7);
+            D_8010BC60 = 1;
+        }
+        break;
+    case 1:
+        temp_s0 = D_8010BCA4[D_8010BCA2 + D_8010BC9C];
+        if (temp_s0 != 0) {
+            func_800FD404(temp_s0);
+        } else {
+            vs_mainMenu_resetStats();
+            vs_mainMenu_setRangeRisk(0, 0, 0, 1);
+        }
+        func_800FF9E4(D_8010BC9C + D_8010BCA2, D_8010BCA0);
+        func_80103608(2);
+        D_8010BC5C = func_801035E0() + 1;
+        if (D_8010BC5C != 0) {
+            func_800FA8E0(0x28);
+            if (D_8010BC5C == -2) {
+                return -2;
+            }
+            if (D_8010BC5C > 0) {
+                D_8010BC5C = D_8010BCA4[D_8010BC5C - 1];
+            }
+            D_8010BC60 = 2;
+        }
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            return D_8010BC5C;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107EBC);
 

@@ -31,7 +31,7 @@ typedef struct {
     char unk4;
     char unk5;
     signed char selected;
-    signed char unk7;
+    char unk7;
     char unk8;
     char flags;
     char unkA;

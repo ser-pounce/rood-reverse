@@ -17,4 +17,6 @@ _sydCdQueueSlot = 0x8010BC54;
 _sydFileLoading = 0x8010BC58;
 D_8010BC7D = 0x8010BC7D;
 D_8010BC7E = 0x8010BC7E;
+D_8010BC7F = 0x8010BC7F;
+_isLocationWorkshop = 0x8010BC80;
 _combiningItem = 0x8010BC81;

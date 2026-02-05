@@ -17,6 +17,7 @@ int func_80103380(int);
 void func_801033FC(int, char**, int*);
 void func_80103608(int);
 void func_80103C20(int, int);
+int func_80104898(int);
 int func_801057BC(int);
 int func_80106610(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
@@ -74,7 +75,8 @@ extern char D_8010BC78;
 extern char D_8010BC79;
 extern char D_8010BC7D;
 extern char D_8010BC7E;
-extern u_char D_8010BC80;
+extern char D_8010BC7F;
+extern u_char _isLocationWorkshop;
 extern u_int D_8010BC84[5];
 extern int D_8010BC98;
 extern int D_8010BC9C;
@@ -1401,7 +1403,7 @@ int func_80107AD4(int arg0)
                     var_s2 = &vs_battle_inventory.blades[temp_s0 - 1];
                     vs_mainMenu_setBladeUi(var_s2, temp_fp + var_s4 * 2,
                         &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
-                    if (!((D_8010BB30[D_8010BC80] >> var_s2->material) & 1)) {
+                    if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->material) & 1)) {
                         temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidBladeMaterial];
                         D_800F4E84[var_s4] |= 1;
@@ -1590,7 +1592,8 @@ int func_80108AD4(int arg0)
                     var_s2 = &vs_battle_inventory.shields[temp_s0 - 1];
                     func_80108A9C(var_s2, sp10 + var_s4 * 2, &D_800F4E84[var_s4],
                         temp_v0 + var_s4 * 0x60);
-                    if (!((D_8010BB30[D_8010BC80] >> var_s2->base.material) & 1)) {
+                    if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->base.material)
+                            & 1)) {
                         sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidShieldMaterial];
                         D_800F4E84[var_s4] |= 1;
@@ -1760,7 +1763,8 @@ int func_801099FC(int arg0)
                     if (var_s2->category != 7) {
                         vs_mainMenu_setAccessoryUi(var_s2, sp10 + var_s4 * 2,
                             &D_800F4E84[var_s4], temp_v0 + var_s4 * 0x60);
-                        if (!((D_8010BB30[D_8010BC80] >> var_s2->material) & 1)) {
+                        if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->material)
+                                & 1)) {
                             sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
                             D_800F4E84[var_s4] |= 1;
@@ -1915,7 +1919,200 @@ int func_8010A6BC(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010A978);
+int func_8010A978(char* state)
+{
+    char* sp10[12];
+    int i;
+    int temp_v0_5;
+    vs_battle_menuItem_t* temp_v0;
+
+    switch (*state) {
+    case 0:
+        D_8010BC7F = 1;
+        // fallthrough
+    case 1:
+
+        for (i = 0; i < 7; ++i) {
+            func_800FE8B0(i);
+        }
+        func_80100414(0x7FE, 0x80);
+        temp_v0 = vs_battle_getMenuItem(0);
+        if ((temp_v0->state != 1) || (temp_v0->animSpeed != 0xB4)) {
+            func_801029D0(0, 0x57);
+        }
+        *state = 2;
+        break;
+    case 2:
+        if (vs_mainmenu_ready() != 0) {
+            for (i = 0; i < 6; ++i) {
+                sp10[i * 2] =
+                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i * 2 + 1]];
+                sp10[i * 2 + 1] =
+                    (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[i * 2 + 2]];
+                D_800F4E84[i] = 0;
+            }
+
+            i = func_800FEA6C(0, 0);
+            if (i == 8) {
+                sp10[1] =
+                    (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_weaponsFull];
+                D_800F4E84[0] = 1;
+            }
+            if (i == 0) {
+                sp10[7] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noWeapons];
+                D_800F4E84[3] = 1;
+            }
+            _isLocationWorkshop = vs_battle_isLocationWorkshop();
+            if (!_isLocationWorkshop) {
+                for (i = 3; i != 0;) {
+                    if (++i == 6) {
+                        i = 0;
+                    }
+                    sp10[i * 2 + 1] = (char*)&vs_mainMenu_menu12Text
+                        [VS_MENU12_BIN_OFFSET_notInWorkshop];
+                    D_800F4E84[i] = 1;
+                }
+            }
+            i = vs_main_settings.cursorMemory;
+            if (D_8010BC7F == 0) {
+                vs_main_settings.cursorMemory = 1;
+            }
+            D_8010BC7F = 0;
+            vs_mainmenu_setMenuRows(6, 0x135, sp10, D_800F4E84);
+            vs_main_settings.cursorMemory = i;
+            *state = 3;
+        }
+        break;
+    case 3:
+        func_800FF9E4(func_801008B0(), D_801023D0);
+        temp_v0_5 = vs_mainmenu_getSelectedRow();
+        i = temp_v0_5 + 1;
+        if (i != 0) {
+            if (i < 0) {
+                func_800FA8E0(0x28);
+                if (i == -2) {
+                    D_800F514C = 0;
+                    *state = 0xB;
+                } else {
+                    vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+                    vs_battle_menuState.returnState = 0;
+                    D_800F4EA0 &= ~0x200;
+                    *state = 0;
+                }
+            } else {
+                switch (temp_v0_5) {
+                case 0:
+                    func_80104898(1);
+                    *state = 4;
+                    break;
+                case 1:
+                    func_801063E4(1);
+                    *state = 5;
+                    break;
+                case 2:
+                    func_80106C64(1);
+                    *state = 6;
+                    break;
+                case 3:
+                    func_80106ECC(1);
+                    *state = 7;
+                    break;
+                case 4:
+                    func_801072FC(1);
+                    *state = 8;
+                    break;
+                case 5:
+                    func_8010A6BC(1);
+                    *state = 9;
+                    break;
+                }
+            }
+        }
+        break;
+    case 4:
+        i = func_80104898(0);
+        if (i != 0) {
+            if (i != -2) {
+                *state = 0xA;
+                if (i == 1) {
+                    vs_battle_menuState.currentState = 8;
+                    func_800FFBA8();
+                } else {
+                    func_800FFBC8();
+                }
+            } else {
+                *state = 0xB;
+            }
+        }
+        break;
+    case 5:
+        i = func_801063E4(0);
+        if (i != 0) {
+            if (i == -2) {
+                *state = 0xB;
+            } else {
+                *state = 0xA;
+            }
+        }
+        break;
+    case 6:
+        i = func_80106C64(0);
+        if (i != 0) {
+            if (i == -2) {
+                *state = 0xB;
+            } else {
+                *state = 0xA;
+            }
+        }
+        break;
+    case 7:
+        i = func_80106ECC(0);
+        if (i != 0) {
+            if (i != -2) {
+                *state = 0xA;
+                if (i == 1) {
+                    vs_battle_menuState.currentState = 8;
+                }
+            } else {
+                *state = 0xB;
+            }
+        }
+        break;
+    case 8:
+        i = func_801072FC(0);
+        if (i != 0) {
+            if (i == -2) {
+                *state = 0xB;
+            } else {
+                *state = 0xA;
+            }
+        }
+        break;
+    case 9:
+        i = func_8010A6BC(0);
+        if (i != 0) {
+            if (i == -2) {
+                *state = 0xB;
+            } else {
+                *state = 0xA;
+            }
+        }
+        break;
+    case 10:
+        func_800FFBC8();
+        if (vs_mainmenu_ready() != 0) {
+            *state = 1;
+        }
+        break;
+    case 11:
+        vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+        vs_battle_menuState.returnState = 1;
+        D_800F4EA0 &= ~0x200;
+        *state = 0;
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010AE38);
 

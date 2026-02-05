@@ -108,7 +108,7 @@ typedef struct {
     int unk24;
     int unk28;
     int unk2C;
-    char unk30;
+    char isWorkshop;
     char unk31;
     char unk32;
     char unk33;
@@ -669,6 +669,7 @@ void func_8008B430(char*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int vs_battle_getCurrentSceneId(void);
+int vs_battle_isLocationWorkshop(void);
 void func_8008D820(u_int*, func_80103530_t*);
 int vs_battle_getMapCompletion(void);
 int func_8008E7BC(int, int, u_int);

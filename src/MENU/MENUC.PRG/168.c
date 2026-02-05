@@ -78,10 +78,12 @@ extern char D_8010BC7E;
 extern char D_8010BC7F;
 extern u_char _isLocationWorkshop;
 extern u_int D_8010BC84[5];
-extern int D_8010BC98;
+extern u_short* D_8010BC98;
 extern int D_8010BC9C;
 extern char D_8010BCA0;
+extern char D_8010BCA1;
 extern char D_8010BCA2;
+extern char D_8010BCA3;
 extern char D_8010BCA4[];
 extern vs_battle_inventoryBlade D_8010BCE4;
 extern char D_8010BD10[2];
@@ -429,9 +431,57 @@ int func_80103380(int arg0)
     return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801033FC);
+void func_801033FC(int arg0, char** arg1, int* arg2)
+{
+    int j;
+    int i;
+    u_short* temp_v1;
+    vs_battle_menuItem_t* temp_v0;
 
-int func_801035E0(void) { return D_8010BC98 == 0 ? D_8010BC9C : -1; }
+    D_8010BCA1 = (char)arg0;
+    D_8010BCA2 = 0;
+    D_8010BC9C = 0;
+    D_8010BCA0 = 1;
+    D_8010BC98 = vs_main_allocHeapR(arg0 << 7);
+
+    for (i = 0; i < arg0; ++i) {
+
+        *((int*)(&(&D_8010BC98[i * 0x40])[14])) = arg2[i];
+
+        temp_v1 = (u_short*)arg1[i * 2];
+
+        if (temp_v1 != NULL) {
+            for (j = 0; j < 13; ++j) {
+                D_8010BC98[(i * 0x40) + j] = temp_v1[j];
+            }
+            D_8010BC98[(i * 0x40) + 13] = 0xE7E7;
+        } else {
+            D_8010BC98[i * 0x40] = 0xE7E7;
+        }
+
+        temp_v1 = (u_short*)arg1[i * 2 + 1];
+
+        if (temp_v1 != NULL) {
+            D_8010BC98[(i * 0x40) + 16] = 0xF8;
+            for (j = 0; j < 46; ++j) {
+                D_8010BC98[(i * 0x40) + j + 17] = temp_v1[j];
+            }
+            D_8010BC98[(i * 0x40) + 63] = 0xE7E7;
+        } else {
+            D_8010BC98[(i * 0x40) + 16] = 0xE7E7;
+        }
+    }
+
+    j = *arg2;
+    temp_v0 = vs_battle_setMenuItem(0x14, 0x9B, 0x12, 0xA5, 0, (char*)D_8010BC98);
+    temp_v0->unk7 = j & 1;
+    temp_v0->flags = j >> 0x1A;
+    temp_v0->unkC = (j >> 0x10) & 7;
+    temp_v0->selected = 1;
+    D_8010BCA3 = (j >> 0x13) & 0x7F;
+}
+
+int func_801035E0(void) { return D_8010BC98 == NULL ? D_8010BC9C : -1; }
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80103608);
 

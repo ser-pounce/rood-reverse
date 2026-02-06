@@ -26,6 +26,7 @@ void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
 void func_8010B80C(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
+int func_8010BA58(int);
 
 extern void* _sydData;
 extern int _sydLbas[];
@@ -58,6 +59,10 @@ extern char D_8010BC10;
 extern char D_8010BC11;
 extern char D_8010BC34;
 extern char D_8010BC35;
+extern int D_8010BC38;
+extern char D_8010BC3C;
+extern char D_8010BC3D;
+extern char D_8010BC3E;
 extern char D_8010BC3F;
 extern char D_8010BC41;
 extern int D_8010BC44;
@@ -1142,7 +1147,171 @@ int func_801063E4(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80106610);
+int func_80106610(int arg0)
+{
+    char* sp10[16];
+    int sp50[8];
+    int temp_v0_6;
+    int var_s7;
+    int i;
+    int j;
+    int var_s1;
+    int var_s0;
+    vs_battle_inventoryShield* temp_s0;
+    vs_battle_menuItem_t* temp_v0_2;
+
+    if (arg0 != 0) {
+        func_800C8E04(1);
+        D_8010BC3E = (char)(arg0 - 1);
+        D_8010BC3C = 0;
+        return 0;
+    }
+    switch (D_8010BC3C) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_801029D0(0, (int)vs_mainMenu_menu12Text[D_8010BC3E + 0x29]);
+            D_8010BC3C = 1;
+        }
+        break;
+    case 1:
+        if (vs_mainmenu_ready() != 0) {
+            var_s7 = 0;
+            for (i = 0; i < 8; i++) {
+                if (D_8010BC3E != 0) {
+                    var_s1 = D_800619D8.unk28[i];
+                    if (var_s1 != 0) {
+                        temp_s0 = &vs_battle_inventory.shields[var_s1 - 1];
+                        func_800FCE40(temp_s0, &sp10[var_s7 * 2], &sp50[var_s7],
+                            vs_battle_stringBuf);
+                        sp10[var_s7 * 2 + 1] = (char*)(vs_mainMenu_menu12Text + 0x201);
+                        for (j = 0; j < temp_s0->base.gemSlots; ++j) {
+                            if (temp_s0->gems[j] != 0) {
+                                break;
+                            }
+                        }
+                        if (j == temp_s0->base.gemSlots) {
+                            sp10[var_s7 * 2 + 1] =
+                                (char*)(vs_mainMenu_menu12Text + 0x1E0);
+                            sp50[var_s7] |= 1;
+                        }
+                        ++var_s7;
+                        D_8010BCA4[var_s7] = var_s1;
+                    }
+                } else {
+                    var_s1 = D_800619D8.unk0[i];
+                    if (var_s1 != 0) {
+                        func_800FCA08(&vs_battle_inventory.weapons[var_s1 - 1],
+                            &sp10[var_s7 * 2], &sp50[var_s7], vs_battle_stringBuf);
+                        sp10[var_s7 * 2 + 1] = (char*)(vs_mainMenu_menu12Text + 0x1F1);
+                        ++var_s7;
+                        D_8010BCA4[var_s7] = var_s1;
+                    }
+                }
+            }
+            vs_mainmenu_setMenuRows(var_s7, (D_8010BC3E + 0x3A) | 0x19100, sp10, sp50);
+            D_8010BC3C = 2;
+        }
+        break;
+    case 2:
+        D_8010BC38 = vs_mainmenu_getSelectedRow() + 1;
+        if (D_8010BC38 != 0) {
+            func_800FA8E0(0x28);
+            if (D_8010BC38 < 0) {
+                return D_8010BC38;
+            }
+            temp_v0_2 = vs_battle_getMenuItem(0);
+            temp_v0_2->state = 2;
+            temp_v0_2->unk1 = 0xA4;
+            temp_v0_2->x = 0x10;
+            temp_v0_2 = vs_battle_getMenuItem(D_8010BC38 + 9);
+            temp_v0_2->state = 4;
+            temp_v0_2->x = 0x9B;
+            temp_v0_2->unk1A = 0x12;
+            D_8010BC3C = 3;
+        }
+        break;
+    case 3:
+        if (vs_mainmenu_ready() != 0) {
+            vs_battle_getMenuItem(0)->flags = D_8010BC3E != 0 ? 0x1B : 0x18;
+            func_80102C0C(0, 0x20);
+            func_80102C0C(D_8010BC38 + 9, 0xA);
+            var_s1 = D_8010BCA4[D_8010BC38];
+            _combiningItem = var_s1 - 1;
+            if (D_8010BC3E != 0) {
+                func_800FD5A0(var_s1);
+            } else {
+                func_800FD270(var_s1);
+            }
+            func_800FBBD4(7);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010BC3D = 0U;
+            D_8010BC3C = 4;
+        }
+        break;
+    case 4:
+        if (D_8010BC3D < 5) {
+            ++D_8010BC3D;
+            if (D_8010BC3E != 0) {
+                func_800FC704(D_8010BC3D, _combiningItem + 1, 1);
+            } else {
+                func_800FC510(D_8010BC3D, _combiningItem + 1, 1);
+            }
+            break;
+        }
+        if (D_8010BC3E != 0) {
+            var_s0 = vs_battle_inventory.shields[_combiningItem].unk1;
+        } else {
+            var_s0 = vs_battle_inventory.weapons[_combiningItem].unk3;
+        }
+        func_80102C58(1);
+        vs_mainmenu_setMessage(
+            (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[D_8010BC3E * 4 + 0x27
+                                                                  + (var_s0 != 0)]]);
+        D_8010BC3C = var_s0 + 5;
+        break;
+    case 5:
+    case 6:
+        temp_v0_6 = func_80102C58(0);
+        if (temp_v0_6 != 0) {
+            func_800FBBD4(-1);
+            vs_mainMenu_drawDpPpbars(4);
+            func_800FA8E0(0x28);
+            func_800FA810(0);
+
+            switch (temp_v0_6) {
+            case 1:
+                vs_main_playSfxDefault(0x7E, 0x19);
+                if (D_8010BC3E != 0) {
+                    _unsetShieldGems(_combiningItem);
+                } else {
+                    _disassembleWeapon(_combiningItem);
+                }
+                if (D_8010BC3C == 5) {
+                    return -1;
+                }
+                if (D_8010BC3E != 0) {
+                    func_800FE3A0();
+                } else {
+                    func_800FE360();
+                }
+                D_8010BC3C = 7;
+                break;
+            case 2:
+                D_8010BC3C = 0;
+                break;
+            case 3:
+                return func_80103380(0);
+            }
+        }
+        break;
+    case 7:
+        if (func_8010BA58(D_8010BC3E) == 0) {
+            return -1;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_80106C64(int arg0)
 {

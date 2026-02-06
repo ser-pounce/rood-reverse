@@ -2252,8 +2252,8 @@ loop_1:
         temp_s2 = func_80106C64(var_s4, temp_s5, temp_s6, (char*)temp_s1);
         D_80109A69 = temp_s2 == 0;
         if (D_80109A69 != 0) {
-            vs_mainmenu_setMessage((
-                char*)&D_8010952C[D_8010952C[D_80109A7A + 27 + ((var_s4 == 7) ? 2 : 0)]]);
+            vs_mainmenu_setMessage(
+                (char*)&D_8010952C[D_8010952C[D_80109A7A + 27 + (var_s4 == 7) * 2]]);
         } else {
             temp_s3 = vs_main_settings.cursorMemory;
             if (D_80109A6A == 0) {

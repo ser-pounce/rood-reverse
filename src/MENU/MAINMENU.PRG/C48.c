@@ -396,7 +396,65 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_drawDpPpbars);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC510);
+vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
+{
+    char* sp18[2];
+    int sp20;
+    vs_battle_inventoryWeapon* temp_t0;
+    int temp_s0;
+    int var_s0;
+    int var_s1;
+    int temp_v1;
+    int temp_v1_2;
+    vs_battle_menuItem_t* var_s2;
+    int new_var;
+
+    var_s2 = NULL;
+    temp_t0 = &D_80102470[arg1 - 1];
+    temp_v1 = temp_t0->grip;
+    new_var = D_80102460[temp_v1 - 1].gemSlots;
+    var_s1 = 0x9E;
+
+    if (arg0 == 1) {
+        vs_mainMenu_setBladeUi(
+            &D_80102464[temp_t0->blade - 1], sp18, &sp20, vs_battle_stringBuf);
+    } else if (arg0 == 2) {
+        vs_mainMenu_setGripUi(&D_80102460[temp_v1 - 1], sp18, &sp20, vs_battle_stringBuf);
+    } else {
+        var_s1 = arg0 - 3;
+        if (var_s1 < new_var) {
+            sp18[1] = NULL;
+            sp20 = 0x58000000;
+            sp18[0] = (char*)(vs_mainMenu_itemHelp + 0x340B);
+            temp_v1_2 = temp_t0->gems[var_s1];
+            if (temp_v1_2 != 0) {
+                vs_mainMenu_setGemUi(
+                    &D_80102458[temp_v1_2 - 1], sp18, &sp20, vs_battle_stringBuf);
+            }
+            var_s1 = 0x97;
+        } else {
+            var_s1 = 0;
+        }
+    }
+
+    var_s0 = arg0 + 0xA;
+    func_800FFB90(var_s0);
+
+    if (var_s1 != 0) {
+        temp_s0 = 0x140 - var_s1;
+        var_s2 = vs_battle_setMenuItem(
+            var_s0, temp_s0, (arg0 * 0x10) + 0x12, var_s1, 0, sp18[0]);
+        var_s2->unk7 = sp18[1] == NULL;
+        if (arg2 & 1) {
+            var_s2->animSpeed = 0x140;
+            var_s2->state = 2;
+            var_s2->x = temp_s0;
+        }
+        var_s2->flags = (u_int)sp20 >> 0x1A;
+        var_s2->unkC = ((u_int)sp20 >> 16) & 7;
+    }
+    return var_s2;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
 

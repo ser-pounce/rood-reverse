@@ -10,20 +10,12 @@
 #include <libetc.h>
 #include <memory.h>
 
-void _disassembleWeapon(int);
 void func_8010B2B4(vs_battle_inventoryBlade*, vs_battle_inventoryBlade*,
     vs_battle_inventoryBlade*, void*);
-int func_80103380(int);
-void func_801033FC(int, char**, int*);
-void func_80103608(int);
-void func_80103C20(int, int);
 int func_80104898(int);
 int func_801057BC(int);
-int func_80106610(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_80107EBC(vs_battle_menuItem_t*, vs_battle_inventoryBlade*);
-void func_801087E4(vs_battle_inventoryShield* arg0);
-void func_80109DBC(vs_battle_menuItem_t*, vs_battle_inventoryArmor*);
 void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
 void func_8010B80C(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
@@ -1862,7 +1854,21 @@ int func_80107AD4(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_80107EBC);
+void func_80107EBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryBlade* arg1)
+{
+    int temp_v1;
+
+    arg0->flags = arg1->category;
+    arg0->unkC = arg1->material;
+    temp_v1 = arg1->combinedWeaponIndex;
+    if (temp_v1 != 0) {
+        int var_v1 = 1;
+        if (vs_battle_inventory.weapons[temp_v1 - 1].unk3 == 0) {
+            var_v1 = 2;
+        }
+        arg0->unkD = var_v1;
+    }
+}
 
 int func_80107F14(int arg0)
 {

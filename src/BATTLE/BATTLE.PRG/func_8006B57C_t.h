@@ -71,7 +71,7 @@ typedef struct {
 } vs_battle_inventoryWeapon;
 
 typedef struct {
-    char id;
+    u_char id;
     char subId;
     char wepId;
     char category;

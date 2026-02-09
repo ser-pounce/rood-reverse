@@ -3987,7 +3987,3 @@ vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     }
     return result;
 }
-
-// Potentially 2.7.2
-// https://decomp.me/scratch/yg4QQ
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010BA58);

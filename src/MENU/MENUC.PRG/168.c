@@ -35,7 +35,7 @@ int func_801057BC(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_80107EBC(vs_battle_menuItem_t*, vs_battle_inventoryBlade*);
 void func_8010AE38(signed char*, signed char*, signed char*, int, int);
-void func_8010B150(signed char*, signed char*, signed char*, int);
+void _setTypeValues(signed char*, signed char*, signed char*, int);
 void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
 vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor*,
@@ -54,6 +54,8 @@ extern char D_8010BB56;
 extern char D_8010BB57;
 extern char D_8010BB74;
 extern u_short _validGripFlags[];
+extern short _sameMaxTypeFactors[];
+extern short _differentMaxTypeFactors[];
 extern char D_8010BBF4;
 extern char D_8010BBF5;
 extern char D_8010BBF6;
@@ -3732,7 +3734,53 @@ int func_8010A978(char* state)
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010AE38);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B150);
+void _setTypeValues(
+    signed char* first, signed char* second, signed char* result, int materialsDifferent)
+{
+    short typeValue;
+    short typeValueSum;
+    int sameMaxType;
+    int i;
+    u_int firstMaxType;
+    u_int secondMaxType;
+    signed char firstMaxVal;
+    signed char secondMaxVal;
+
+    secondMaxVal = -0x80;
+    firstMaxVal = -0x80;
+    secondMaxType = 1;
+    firstMaxType = 1;
+
+    for (i = 1; i < 4; ++i) {
+        if (firstMaxVal < first[i]) {
+            firstMaxVal = first[i];
+            firstMaxType = i;
+        }
+    }
+
+    for (i = 1; i < 4; ++i) {
+        if (secondMaxVal < second[i]) {
+            secondMaxVal = second[i];
+            secondMaxType = i;
+        }
+    }
+
+    for (i = 1; i < 4; ++i) {
+        sameMaxType = firstMaxType == secondMaxType;
+        typeValueSum = first[i] + second[i];
+        if (materialsDifferent == 0) {
+            typeValue = (typeValueSum * _sameMaxTypeFactors[sameMaxType]) / 10;
+        } else {
+            typeValue = (typeValueSum * _differentMaxTypeFactors[sameMaxType]) / 10;
+        }
+        if (typeValue > 100) {
+            typeValue = 100;
+        } else if (typeValue < -100) {
+            typeValue = -100;
+        }
+        result[i] = typeValue;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B2B4);
 
@@ -3762,11 +3810,11 @@ vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     if (first->material == second->material) {
         func_8010AE38(first->classes, second->classes, result->classes, 0, 0);
         func_8010AE38(first->affinities, second->affinities, result->affinities, 0, 1);
-        func_8010B150(first->types, second->types, result->types, 0);
+        _setTypeValues(first->types, second->types, result->types, 0);
     } else {
         func_8010AE38(first->classes, second->classes, result->classes, 1, 0);
         func_8010AE38(first->affinities, second->affinities, result->affinities, 1, 1);
-        func_8010B150(first->types, second->types, result->types, 1);
+        _setTypeValues(first->types, second->types, result->types, 1);
     }
     return result;
 }

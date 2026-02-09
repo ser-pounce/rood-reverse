@@ -28,8 +28,8 @@ typedef struct {
     char data[0];
 } _syd;
 
-void func_8010B2B4(vs_battle_inventoryBlade*, vs_battle_inventoryBlade*,
-    vs_battle_inventoryBlade*, void*);
+vs_battle_inventoryBlade* func_8010B2B4(vs_battle_inventoryBlade*,
+    vs_battle_inventoryBlade*, vs_battle_inventoryBlade*, void*);
 int func_80104898(int);
 int func_801057BC(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
@@ -141,6 +141,7 @@ extern char* _combinationResults;
 extern char* _materialResults;
 extern _armorInfo* _combinationInitData;
 extern _armorInfo* _shieldCombinationInitData;
+extern void* D_8010BD88;
 
 extern u_long* D_1F800000[];
 
@@ -3783,7 +3784,47 @@ void _setTypeValues(
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B2B4);
+vs_battle_inventoryBlade* func_8010B2B4(vs_battle_inventoryBlade* arg0,
+    vs_battle_inventoryBlade* arg1, vs_battle_inventoryBlade* arg2, void* sydData)
+{
+    char* temp_a0;
+    int new_var;
+
+    _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
+    _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
+    D_8010BD88 = sydData + ((_syd*)sydData)->initDataOffset;
+
+    vs_main_memcpy(arg2, arg0, sizeof *arg2);
+
+    new_var = arg0->category * 0x32 + arg0->material * 0x1F4 + arg1->material * 0xA
+            + arg1->category;
+    arg2->material = _materialResults[new_var - 0x5FA];
+    arg2->subId = _combinationResults[(arg0->id * 0x60) + arg1->id];
+    arg2->id = arg2->subId;
+
+    temp_a0 = D_8010BD88 + (arg2->id * 0x10);
+    arg2->wepId = temp_a0[1];
+    arg2->category = temp_a0[2];
+    arg2->cost = temp_a0[5];
+    arg2->damageType = temp_a0[3] & 3;
+    arg2->costType = temp_a0[4] & 7;
+    arg2->unk12 = temp_a0[6];
+    arg2->range = *(vs_battle_range_t*)&temp_a0[12];
+    arg2->strength = temp_a0[8] + D_8004EDDC[arg2->material][0x18];
+    arg2->intelligence = temp_a0[9] + D_8004EDDC[arg2->material][0x1A];
+    arg2->agility = temp_a0[10] + D_8004EDDC[arg2->material][0x1C];
+    arg2->maxDp = arg2->currentDp = (arg0->maxDp + arg1->maxDp) >> 1;
+    arg2->maxPp = ((arg0->maxPp + arg1->maxPp) >> 1);
+    arg2->currentPp = ((arg0->currentPp + arg1->currentPp) >> 1);
+    if (arg0->material == arg1->material) {
+        _setClassAffinities(arg0->classes, arg1->classes, arg2->classes, 0, 0);
+        _setClassAffinities(arg0->affinities, arg1->affinities, arg2->affinities, 0, 1);
+    } else {
+        _setClassAffinities(arg0->classes, arg1->classes, arg2->classes, 1, 0);
+        _setClassAffinities(arg0->affinities, arg1->affinities, arg2->affinities, 1, 1);
+    }
+    return arg2;
+}
 
 vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)

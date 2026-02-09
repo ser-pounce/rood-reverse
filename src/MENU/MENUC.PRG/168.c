@@ -12,9 +12,9 @@
 
 typedef struct {
     char subId;
-    char shieldModel;
+    char wepId;
     char category;
-    char unk3;
+    char gemSlots;
     char strength;
     char intelligence;
     char agility;
@@ -34,10 +34,10 @@ int func_80104898(int);
 int func_801057BC(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_80107EBC(vs_battle_menuItem_t*, vs_battle_inventoryBlade*);
-void func_8010AE38(signed char*, signed char*, signed char*, int, int);
+void _setClassAffinities(signed char*, signed char*, signed char*, int, int);
 void _setTypeValues(signed char*, signed char*, signed char*, int);
-void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
-    vs_battle_inventoryArmor*, void*);
+vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor*,
+    vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 int func_8010BA58(int);
@@ -140,6 +140,7 @@ extern char D_8010BD7C[2];
 extern char* _combinationResults;
 extern char* _materialResults;
 extern _armorInfo* _combinationInitData;
+extern _armorInfo* _shieldCombinationInitData;
 
 extern u_long* D_1F800000[];
 
@@ -2561,7 +2562,7 @@ void func_80108908(int arg0)
         break;
     case 3:
         vs_battle_rMemzero(&D_8010BD14, sizeof D_8010BD14);
-        func_8010B598(&vs_battle_inventory.shields[temp_s1 - 1].base,
+        _combineShields(&vs_battle_inventory.shields[temp_s1 - 1].base,
             &vs_battle_inventory.shields[temp_s3 - 1].base, &D_8010BD14.base, _sydData);
         break;
     }
@@ -3732,7 +3733,7 @@ int func_8010A978(char* state)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010AE38);
+INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", _setClassAffinities);
 
 void _setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
@@ -3784,7 +3785,43 @@ void _setTypeValues(
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B2B4);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B598);
+vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
+    vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)
+{
+    _armorInfo* info;
+
+    _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
+    _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
+    _shieldCombinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
+
+    vs_main_memcpy(result, first, sizeof *result);
+
+    result->material = _materialResults[(first->material * 8) + second->material];
+    result->subId = _combinationResults[(first->subId * 0x11) + second->subId];
+    result->id = result->subId + 0x7E;
+    info = &_shieldCombinationInitData[result->subId];
+    result->wepId = info->wepId;
+    result->category = info->category;
+    result->gemSlots = info->gemSlots;
+    result->strength = info->strength + D_8004EDDC[result->material][0x18];
+    result->intelligence = info->intelligence + D_8004EDDC[result->material][0x1A];
+    result->agility = info->agility + D_8004EDDC[result->material][0x1C];
+    result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
+    result->maxPp = ((first->maxPp + second->maxPp) >> 1);
+    result->currentPp = ((first->currentPp + second->currentPp) >> 1);
+    if (first->material == second->material) {
+        _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
+        _setClassAffinities(
+            first->affinities, second->affinities, result->affinities, 0, 1);
+        _setTypeValues(first->types, second->types, result->types, 0);
+    } else {
+        _setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
+        _setClassAffinities(
+            first->affinities, second->affinities, result->affinities, 1, 1);
+        _setTypeValues(first->types, second->types, result->types, 1);
+    }
+    return result;
+}
 
 vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)
@@ -3795,7 +3832,7 @@ vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
     _combinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
 
-    vs_main_memcpy(result, first, 0x28U);
+    vs_main_memcpy(result, first, sizeof *result);
 
     result->material = _materialResults[first->material * 128 + (first->category - 2) * 32
                                         + second->material * 4 + (second->category - 2)];
@@ -3808,12 +3845,14 @@ vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     result->agility = info->agility + D_8004EDDC[result->material][0x1C];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     if (first->material == second->material) {
-        func_8010AE38(first->classes, second->classes, result->classes, 0, 0);
-        func_8010AE38(first->affinities, second->affinities, result->affinities, 0, 1);
+        _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
+        _setClassAffinities(
+            first->affinities, second->affinities, result->affinities, 0, 1);
         _setTypeValues(first->types, second->types, result->types, 0);
     } else {
-        func_8010AE38(first->classes, second->classes, result->classes, 1, 0);
-        func_8010AE38(first->affinities, second->affinities, result->affinities, 1, 1);
+        _setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
+        _setClassAffinities(
+            first->affinities, second->affinities, result->affinities, 1, 1);
         _setTypeValues(first->types, second->types, result->types, 1);
     }
     return result;

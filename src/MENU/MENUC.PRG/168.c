@@ -16,10 +16,12 @@ int func_80104898(int);
 int func_801057BC(int);
 vs_battle_menuItem_t* func_801077DC(int, int);
 void func_80107EBC(vs_battle_menuItem_t*, vs_battle_inventoryBlade*);
+void func_8010AE38(signed char*, signed char*, signed char*, int, int);
+void func_8010B150(signed char*, signed char*, signed char*, int);
 void func_8010B598(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, void*);
-void func_8010B80C(vs_battle_inventoryArmor*, vs_battle_inventoryArmor*,
-    vs_battle_inventoryArmor*, void*);
+vs_battle_inventoryArmor* func_8010B80C(vs_battle_inventoryArmor*,
+    vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 int func_8010BA58(int);
 
 extern void* _sydData;
@@ -115,6 +117,9 @@ extern char D_8010BD18;
 extern u_char D_8010BD44[];
 extern vs_battle_inventoryArmor D_8010BD54;
 extern char D_8010BD7C[2];
+extern char* D_8010BD80;
+extern char* D_8010BD84;
+extern void* D_8010BD90;
 
 extern u_long* D_1F800000[];
 
@@ -3715,7 +3720,39 @@ INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B2B4);
 
 INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B598);
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_8010B80C);
+vs_battle_inventoryArmor* func_8010B80C(vs_battle_inventoryArmor* arg0,
+    vs_battle_inventoryArmor* arg1, vs_battle_inventoryArmor* arg2, void* arg3)
+{
+    char* temp_a2;
+
+    D_8010BD80 = arg3 + ((int*)arg3)[0];
+    D_8010BD84 = arg3 + ((int*)arg3)[1];
+    D_8010BD90 = arg3 + ((int*)arg3)[2];
+
+    vs_main_memcpy(arg2, arg0, 0x28U);
+
+    arg2->material = D_8010BD84[arg0->category * 32 + arg0->material * 128
+                                + arg1->material * 4 + arg1->category - 0x42];
+    arg2->subId = D_8010BD80[(arg0->subId - 0x10) * 65 + (arg1->subId - 0x10)];
+    arg2->id = arg2->subId + 0x7E;
+    temp_a2 = D_8010BD90;
+    temp_a2 = temp_a2 + (arg2->subId * 8);
+    arg2->category = temp_a2[2];
+    arg2->strength = temp_a2[4] + D_8004EDDC[arg2->material][0x18];
+    arg2->intelligence = temp_a2[5] + D_8004EDDC[arg2->material][0x1A];
+    arg2->agility = temp_a2[6] + D_8004EDDC[arg2->material][0x1C];
+    arg2->maxDp = arg2->currentDp = (arg0->maxDp + arg1->maxDp) / 2;
+    if (arg0->material == arg1->material) {
+        func_8010AE38(arg0->classes, arg1->classes, arg2->classes, 0, 0);
+        func_8010AE38(arg0->affinities, arg1->affinities, arg2->affinities, 0, 1);
+        func_8010B150(arg0->types, arg1->types, arg2->types, 0);
+    } else {
+        func_8010AE38(arg0->classes, arg1->classes, arg2->classes, 1, 0);
+        func_8010AE38(arg0->affinities, arg1->affinities, arg2->affinities, 1, 1);
+        func_8010B150(arg0->types, arg1->types, arg2->types, 1);
+    }
+    return arg2;
+}
 
 // Potentially 2.7.2
 // https://decomp.me/scratch/yg4QQ

@@ -72,7 +72,7 @@ typedef struct {
 
 typedef struct {
     u_char id;
-    char subId;
+    u_char subId;
     char wepId;
     char category;
     u_short maxDp;

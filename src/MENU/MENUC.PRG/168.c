@@ -53,9 +53,13 @@ extern char D_8010BB2E;
 extern char D_8010BB56;
 extern char D_8010BB57;
 extern char D_8010BB74;
+extern char _classFactorLookup[];
+extern char _affinityFactorLookup[];
+extern short _sameMaterialStatFactors[];
+extern short _differentMaterialStatFactors[];
 extern u_short _validGripFlags[];
-extern short _sameMaxTypeFactors[];
-extern short _differentMaxTypeFactors[];
+extern short _sameMaterialTypeFactors[];
+extern short _differentMaterialTypeFactors[];
 extern char D_8010BBF4;
 extern char D_8010BBF5;
 extern char D_8010BBF6;
@@ -3734,7 +3738,92 @@ int func_8010A978(char* state)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", _setClassAffinities);
+void _setClassAffinities(signed char* first, signed char* second, signed char* result,
+    int materialsDifferent, int setAffinities)
+{
+    short statSum;
+    short statValue;
+    int i;
+    int nStats;
+    u_int firstMaxStat;
+    u_int secondMaxStat;
+    signed char firstMaxVal;
+    signed char secondMaxVal;
+    signed char minStatVal;
+    signed char maxStatValue;
+    short factorLookup;
+
+    nStats = 6;
+    if (setAffinities != 0) {
+        nStats = 7;
+    }
+    secondMaxVal = -128;
+    firstMaxVal = -128;
+    maxStatValue = -128;
+    secondMaxStat = 0;
+    firstMaxStat = 0;
+
+    for (i = 0; i < nStats; ++i) {
+        if (firstMaxVal < first[i]) {
+            firstMaxVal = first[i];
+            firstMaxStat = i;
+        }
+        if (maxStatValue < first[i]) {
+            maxStatValue = first[i];
+        }
+    }
+
+    for (i = 0; i < nStats; ++i) {
+        if (secondMaxVal < second[i]) {
+            secondMaxVal = second[i];
+            secondMaxStat = i;
+        }
+        if (maxStatValue < second[i]) {
+            maxStatValue = second[i];
+        }
+    }
+
+    minStatVal = 127;
+
+    for (i = 0; i < nStats; ++i) {
+        if (first[i] < minStatVal) {
+            minStatVal = first[i];
+        }
+    }
+
+    for (i = 0; i < nStats; ++i) {
+        if (second[i] < minStatVal) {
+            minStatVal = second[i];
+        }
+    }
+
+    for (i = 0; i < nStats; ++i) {
+        if ((first[i] == maxStatValue) || ((second[i] == maxStatValue))) {
+            result[i] = maxStatValue;
+        } else if ((first[i] == minStatVal) || (second[i] == minStatVal)) {
+            result[i] = minStatVal;
+        } else {
+            if (setAffinities == 0) {
+                factorLookup = _classFactorLookup[secondMaxStat + (firstMaxStat * 6)];
+            } else {
+                factorLookup = _affinityFactorLookup[secondMaxStat + (firstMaxStat * 7)];
+            }
+            statSum = first[i] + second[i];
+            if (materialsDifferent == 0) {
+                statValue = (statSum * _sameMaterialStatFactors[factorLookup]) / 10;
+            } else {
+                statValue =
+                    (statSum * *(factorLookup + _differentMaterialStatFactors)) / 10;
+            }
+            if (statValue > 100) {
+                statValue = 100;
+            } else if (statValue < -100) {
+                statValue = -100;
+            }
+            result[i] = statValue;
+        }
+    }
+}
 
 void _setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
@@ -3748,8 +3837,8 @@ void _setTypeValues(
     signed char firstMaxVal;
     signed char secondMaxVal;
 
-    secondMaxVal = -0x80;
-    firstMaxVal = -0x80;
+    secondMaxVal = -128;
+    firstMaxVal = -128;
     secondMaxType = 1;
     firstMaxType = 1;
 
@@ -3771,9 +3860,9 @@ void _setTypeValues(
         sameMaxType = firstMaxType == secondMaxType;
         typeValueSum = first[i] + second[i];
         if (materialsDifferent == 0) {
-            typeValue = (typeValueSum * _sameMaxTypeFactors[sameMaxType]) / 10;
+            typeValue = (typeValueSum * _sameMaterialTypeFactors[sameMaxType]) / 10;
         } else {
-            typeValue = (typeValueSum * _differentMaxTypeFactors[sameMaxType]) / 10;
+            typeValue = (typeValueSum * _differentMaterialTypeFactors[sameMaxType]) / 10;
         }
         if (typeValue > 100) {
             typeValue = 100;

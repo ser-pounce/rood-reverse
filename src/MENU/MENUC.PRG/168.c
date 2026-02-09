@@ -2043,8 +2043,14 @@ int vs_menuC_loadSyd(int id)
     return 0;
 }
 
-// https://decomp.me/scratch/3biiU
-INCLUDE_ASM("build/src/MENU/MENUC.PRG/nonmatchings/168", func_801077DC);
+vs_battle_menuItem_t* func_801077DC(int arg0, int arg1)
+{
+    vs_battle_menuItem_t* item = vs_battle_setMenuItem(0, 0x9B, 0x12, 0xA5, 0,
+        (arg1 == 0 ? (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text[arg0 + 0x4F]]
+                   : vs_mainMenu_itemNames[arg1]));
+    item->selected = 1;
+    return item;
+}
 
 vs_battle_menuItem_t* func_8010785C(int arg0, int arg1)
 {

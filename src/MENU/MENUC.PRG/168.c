@@ -7,6 +7,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/MENU12.BIN.h"
 #include "vs_string.h"
+#include "lbas.h"
 #include <libetc.h>
 #include <memory.h>
 
@@ -42,22 +43,12 @@ vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 int func_8010BA58(int);
 
-extern void* _sydData;
-extern int _sydLbas[];
-extern int _sydSizes[];
-extern vs_main_CdQueueSlot* _sydCdQueueSlot;
-extern char _sydFileLoading;
+extern u_long* D_1F800000[];
 
-extern char D_8010BB20;
-extern char D_8010BB2E;
-extern char D_8010BB56;
-extern char D_8010BB57;
-extern char D_8010BB74;
 extern char _classFactorLookup[];
 extern char _affinityFactorLookup[];
 extern short _sameMaterialStatFactors[];
 extern short _differentMaterialStatFactors[];
-extern u_short _validGripFlags[];
 extern short _sameMaterialTypeFactors[];
 extern short _differentMaterialTypeFactors[];
 extern char D_8010BBF4;
@@ -66,12 +57,6 @@ extern char D_8010BBF6;
 extern char D_8010BBF7;
 extern char D_8010BBF8;
 extern int D_8010BBFC;
-extern char D_8010BB21;
-extern char D_8010BB30[];
-extern char D_8010BB75;
-extern char D_8010BB76;
-extern int (*D_8010BB78[])(int);
-extern u_char _combiningItem;
 extern char D_8010BC00;
 extern char D_8010BC01;
 extern char D_8010BC02;
@@ -82,6 +67,11 @@ extern char D_8010BC0A;
 extern int D_8010BC0C;
 extern char D_8010BC10;
 extern char D_8010BC11;
+extern char D_8010BC12;
+extern char D_8010BC13;
+extern char D_8010BC14;
+extern char D_8010BC15;
+extern char D_8010BC18[];
 extern int D_8010BC1C;
 extern char D_8010BC20;
 extern char D_8010BC21;
@@ -104,6 +94,8 @@ extern char D_8010BC48;
 extern char D_8010BC49;
 extern int D_8010BC4C;
 extern char D_8010BC50;
+extern vs_main_CdQueueSlot* _sydCdQueueSlot;
+extern char _sydFileLoading;
 extern int D_8010BC5C;
 extern char D_8010BC60;
 extern char D_8010BC61;
@@ -125,7 +117,8 @@ extern char D_8010BC7C;
 extern char D_8010BC7D;
 extern char D_8010BC7E;
 extern char D_8010BC7F;
-extern u_char _isLocationWorkshop;
+extern u_char _workshopFlags;
+extern u_char _combiningItem;
 extern u_int D_8010BC84[5];
 extern u_short* D_8010BC98;
 extern int D_8010BC9C;
@@ -143,11 +136,9 @@ extern vs_battle_inventoryArmor D_8010BD54;
 extern char D_8010BD7C[2];
 extern char* _combinationResults;
 extern char* _materialResults;
-extern _armorInfo* _combinationInitData;
-extern _armorInfo* _shieldCombinationInitData;
 extern void* D_8010BD88;
-
-extern u_long* D_1F800000[];
+extern _armorInfo* _shieldCombinationInitData;
+extern _armorInfo* _combinationInitData;
 
 void func_80102968(int arg0, int arg1)
 {
@@ -245,6 +236,8 @@ void func_80102C0C(int arg0, int arg1)
 
 int func_80102C58(int arg0)
 {
+    static char D_8010BB20 = 0;
+
     int i;
     int var_s1;
     vs_battle_menuItem_t* temp_v0_2;
@@ -306,6 +299,8 @@ int func_80102C58(int arg0)
 
 int func_80102E40(int arg0)
 {
+    static char D_8010BB21 = 0;
+
     int i;
     int var_s2;
     u_short* var_v0_2;
@@ -462,6 +457,8 @@ void _unsetShieldGems(int index)
 
 int _isValidGrip(vs_battle_inventoryBlade* blade, vs_battle_inventoryGrip* grip)
 {
+    static u_short _validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
+
     if ((blade == NULL) || (grip == NULL)) {
         return 1;
     }
@@ -540,6 +537,8 @@ int func_801035E0(void) { return D_8010BC98 == NULL ? D_8010BC9C : -1; }
 
 void func_80103608(int arg0)
 {
+    static char D_8010BB2E = 0;
+
     int var_s0;
     int temp_s4;
     int temp_s2_2;
@@ -1067,18 +1066,16 @@ int func_80104868(void)
     return func_80103380(1);
 }
 
-int func_800FEB08(int, int);
-extern int D_8010BB38[];
-extern char D_8010BB54;
-extern char D_8010BB55;
-extern char D_8010BC12;
-extern char D_8010BC13;
-extern char D_8010BC14;
-extern char D_8010BC15;
-extern char D_8010BC18[];
+static char D_8010BB30[] = { 0, 0xE, 0x18, 0x38, 0xC0, 0x3E, 0xFE };
 
 int func_80104898(int arg0)
 {
+    static int D_8010BB38[] = { 0x000A008D, 0x001A0094, 0x002A0094, 0x003A009B,
+        0x004A009B, 0x005A009B, 0x006A009B };
+
+    static char D_8010BB54 = 0;
+    static char D_8010BB55 = 0;
+
     char* sp18[2];
     int sp20;
     int var_s0;
@@ -1535,6 +1532,9 @@ int func_80105674(char* arg0, int arg1)
 
 int func_801057BC(int arg0)
 {
+    static char D_8010BB56 = 0;
+    static char D_8010BB57 = 0;
+
     char sp18[0x300];
     char* sp318[16];
     int sp358[8];
@@ -2428,8 +2428,13 @@ int func_801072FC(int arg0)
     return 0;
 }
 
+static void* _sydData = NULL;
+
 int vs_menuC_loadSyd(int id)
 {
+    static int _sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
+    static int _sydSizes[] = { VS_BLADE_SYD_SIZE, VS_SHIELD_SYD_SIZE, VS_ARMOR_SYD_SIZE };
+
     vs_main_CdFile cdFile;
 
     if (id != 0) {
@@ -2580,7 +2585,7 @@ int func_80107AD4(int arg0)
                     var_s2 = &vs_battle_inventory.blades[temp_s0 - 1];
                     vs_mainMenu_setBladeUi(var_s2, temp_fp + var_s4 * 2,
                         &D_800F4E84[var_s4], temp_s7 + var_s4 * 0x60);
-                    if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->material) & 1)) {
+                    if (!((D_8010BB30[_workshopFlags] >> var_s2->material) & 1)) {
                         temp_fp[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidBladeMaterial];
                         D_800F4E84[var_s4] |= 1;
@@ -2654,6 +2659,8 @@ void func_80107EBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryBlade* arg1)
 
 int func_80107F14(int arg0)
 {
+    static char D_8010BB74 = 0;
+
     char* sp18[2];
     int sp20;
     int temp_s0;
@@ -3061,8 +3068,7 @@ int func_80108AD4(int arg0)
                     var_s2 = &vs_battle_inventory.shields[temp_s0 - 1];
                     func_80108A9C(var_s2, sp10 + var_s4 * 2, &D_800F4E84[var_s4],
                         temp_v0 + var_s4 * 0x60);
-                    if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->base.material)
-                            & 1)) {
+                    if (!((D_8010BB30[_workshopFlags] >> var_s2->base.material) & 1)) {
                         sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidShieldMaterial];
                         D_800F4E84[var_s4] |= 1;
@@ -3119,6 +3125,8 @@ void func_80108E9C(vs_battle_menuItem_t* arg0, vs_battle_inventoryShield* arg1)
 
 int func_80108EC4(int arg0)
 {
+    static char D_8010BB75 = 0;
+
     char* sp18[2];
     int sp20;
     int temp_s0_3;
@@ -3526,8 +3534,7 @@ int func_801099FC(int arg0)
                     if (var_s2->category != 7) {
                         vs_mainMenu_setAccessoryUi(var_s2, sp10 + var_s4 * 2,
                             &D_800F4E84[var_s4], temp_v0 + var_s4 * 0x60);
-                        if (!((D_8010BB30[_isLocationWorkshop] >> var_s2->material)
-                                & 1)) {
+                        if (!((D_8010BB30[_workshopFlags] >> var_s2->material) & 1)) {
                             sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
                             D_800F4E84[var_s4] |= 1;
@@ -3584,6 +3591,8 @@ void func_80109DBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryArmor* arg1)
 
 int func_80109DEC(int arg0)
 {
+    static char D_8010BB76 = 0;
+
     char* sp18[2];
     int sp20;
     int temp_v0_2;
@@ -3879,6 +3888,8 @@ int func_8010A63C(int arg0)
 
 int func_8010A6BC(int arg0)
 {
+    extern int (*D_8010BB78[])(int);
+
     char* text[6];
     int temp_a2;
     int temp_v0;
@@ -4003,8 +4014,8 @@ int func_8010A978(char* state)
                 sp10[7] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noWeapons];
                 D_800F4E84[3] = 1;
             }
-            _isLocationWorkshop = vs_battle_isLocationWorkshop();
-            if (!_isLocationWorkshop) {
+            _workshopFlags = vs_battle_getWorkshopFlags();
+            if (!_workshopFlags) {
                 for (i = 3; i != 0;) {
                     if (++i == 6) {
                         i = 0;

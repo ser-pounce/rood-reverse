@@ -669,7 +669,7 @@ void func_8008B430(char*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int vs_battle_getCurrentSceneId(void);
-int vs_battle_isLocationWorkshop(void);
+int vs_battle_getWorkshopFlags(void);
 void func_8008D820(u_int*, func_80103530_t*);
 int vs_battle_getMapCompletion(void);
 int func_8008E7BC(int, int, u_int);

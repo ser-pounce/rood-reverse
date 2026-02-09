@@ -10131,7 +10131,7 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
     return 0;
 }
 
-int vs_battle_isLocationWorkshop(void) { return D_800F1BF8.unk8C->isWorkshop; }
+int vs_battle_getWorkshopFlags(void) { return D_800F1BF8.unk8C->isWorkshop; }
 
 char func_8008D3E8(void) { return D_800F1BF8.unk8C->unk31; }
 

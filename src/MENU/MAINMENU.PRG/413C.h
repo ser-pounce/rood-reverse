@@ -8,6 +8,7 @@ void func_800FE3A0(void);
 void func_800FE3E0(int, char);
 int func_800FE694(void);
 int func_800FEA6C(int, int);
+int func_800FEB08(int, int);
 void func_800FF0EC(int, int, char**, int*);
 int func_800FF348();
 int func_800FF360(void);

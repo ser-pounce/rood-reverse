@@ -51,6 +51,8 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                     "MENU8.PRG/88",
                     "MENU8.PRG/21A0",
                     "MENUE.PRG/494",
+                    "MENUC.PRG/168",
+                    "MENUC.PRG/9258",
                     "TITLE.PRG/22C",
                     "TITLE.PRG/libpress/VLC_C",
                     "TITLE.PRG/libpress/BUILD"

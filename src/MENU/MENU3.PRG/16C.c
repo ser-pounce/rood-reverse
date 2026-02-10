@@ -195,7 +195,7 @@ void func_80102A3C(int arg0, int arg1)
 
         if (i == temp_s4 && arg1 == 1) {
             temp_v0 = vs_battle_getMenuItem(0x1F);
-            if (temp_s0 >= (temp_v0->animSpeed - 0xC)) {
+            if (temp_s0 >= (temp_v0->initialX - 0xC)) {
                 temp_v0->flags = i + 0x18;
                 continue;
             } else {
@@ -222,7 +222,7 @@ void func_80102B78(int arg0)
     menuItem->state = 2;
     menuItem->x = 0x9B;
     menuItem->selected = 1;
-    menuItem->unk3A = 0;
+    menuItem->unk3C = 0;
 }
 
 void func_80102BE4(int arg0)
@@ -232,7 +232,7 @@ void func_80102BE4(int arg0)
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 2;
     menuItem->x = 0x10;
-    menuItem->unk1 = 0xA4;
+    menuItem->w = 0xA4;
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 3;
     menuItem->x = 0x12;
@@ -245,7 +245,7 @@ void func_80102C44(int arg0, int arg1)
     D_80109713 = 0;
     func_80102BE4(arg0);
     func_800FBBD4(arg1);
-    func_800FBEA4(1);
+    vs_battle_renderEquipStats(1);
 }
 
 void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
@@ -274,7 +274,7 @@ void func_80102D7C(int arg0)
     func_800FA8E0(0x28);
     func_800FA810(-1);
     func_800FBBD4(-1);
-    func_800FBEA4(2);
+    vs_battle_renderEquipStats(2);
     D_80109717 = 2;
     D_80109718 = vs_main_buttonsPressed.all & 0x10;
     if (arg0 != 0) {
@@ -983,7 +983,7 @@ void func_80105314(int arg0)
         temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->animSpeed = temp_v0->x;
+            temp_v0->initialX = temp_v0->x;
         }
         temp_v0->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
     }
@@ -1331,7 +1331,7 @@ int func_80108970(char* arg0)
     if (D_80109716 != 0) {
         func_80100344(0x10 - var_s0, 0x26, 0x58, 0xA);
         vs_mainmenu_drawButton(1, 8 - var_s0, 0x24, NULL);
-        func_800C6540("STATUS", ((0x1C - var_s0) & 0xFFFF) | 0x260000,
+        vs_battle_renderTextRawColor("STATUS", ((0x1C - var_s0) & 0xFFFF) | 0x260000,
             0x202020 << D_80109713, NULL);
     }
     return 0;

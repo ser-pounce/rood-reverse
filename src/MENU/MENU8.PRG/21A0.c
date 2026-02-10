@@ -192,11 +192,11 @@ static void func_80103FD8(int arg0)
         }
         D_80105DB0 = 0;
         j = (D_80105DB1 >> 2);
-        func_800C6540("1", 0x330098, temp_s3, 0);
-        func_800C6540("L", 0x330092, temp_s3, 0);
+        vs_battle_renderTextRawColor("1", 0x330098, temp_s3, 0);
+        vs_battle_renderTextRawColor("L", 0x330092, temp_s3, 0);
         func_800C0214(0x100010, (136 - j) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3000;
-        func_800C6540("1", 0x330124, temp_s3, 0);
-        func_800C6540("R", 0x33011E, temp_s3, 0);
+        vs_battle_renderTextRawColor("1", 0x330124, temp_s3, 0);
+        vs_battle_renderTextRawColor("R", 0x33011E, temp_s3, 0);
         func_800C0214(0x100010, (j + 0x128) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3010;
         a1 = D_1F800000[2];
         var_s1 = D_1F800000[0];
@@ -315,7 +315,7 @@ static int _confirmScreen(int init)
 
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             for (i = 0; i < 3; ++i) {
-                func_800FA8A0(i + 20);
+                vs_mainMenu_menuItemLeaveRight(i + 20);
             }
             if (vs_main_buttonsPressed.all & PADRdown) {
                 selectedRow = 1;
@@ -679,7 +679,7 @@ int vs_menu8_execRename(char* state)
         break;
     case 2:
         if (func_801049A0(0) != 0) {
-            func_800FA8A0(0xA);
+            vs_mainMenu_menuItemLeaveRight(0xA);
             func_800FA810(0);
             func_800FFBC8();
             *state = 3;

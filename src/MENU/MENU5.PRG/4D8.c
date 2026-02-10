@@ -1720,85 +1720,85 @@ void _drawUIControls(void)
             case 0: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x808080, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x808080, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080, s0[1] + 0x18);
                 break;
             }
             case 1: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x808080, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x202020, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080, s0[1] + 0x18);
                 break;
             }
             case 2: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x202020, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080, s0[1] + 0x18);
                 break;
             }
             case 3: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x808080, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x808080, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080, s0[1] + 0x18);
                 break;
             }
             case 4: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x202020, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x808080, s0[1] + 0x18);
                 break;
             }
             case 5: {
                 int v = ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000;
                 void** s0 = (void**)0x1F800000;
-                func_800C6540("BACK", v, 0x202020, s0[1] + 0x18);
-                func_800C6540("NEXT", ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("ROTATION", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000,
-                    0x202020, s0[1] + 0x18);
-                func_800C6540("ZOOM", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020,
-                    s0[1] + 0x18);
-                func_800C6540("MENU", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x202020,
-                    s0[1] + 0x18);
+                vs_battle_renderTextRawColor("BACK", v, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("NEXT",
+                    ((D_80108D5C + 0x54) & 0xFFFF) | 0x120000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ROTATION",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x240000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("ZOOM",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x360000, 0x202020, s0[1] + 0x18);
+                vs_battle_renderTextRawColor("MENU",
+                    ((D_80108D5C + 0x1C) & 0xFFFF) | 0x480000, 0x202020, s0[1] + 0x18);
                 break;
             }
             }
@@ -1810,8 +1810,8 @@ void _drawUIControls(void)
             func_80107B10(0x3E, 0xB8, D_80108DA4[1]);
             return;
         }
-        func_800C6540("JAMMING", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000, 0x808080,
-            *(void**)0x1F800004 + 0x18);
+        vs_battle_renderTextRawColor("JAMMING", ((D_80108D5C + 0x1C) & 0xFFFF) | 0x120000,
+            0x808080, *(void**)0x1F800004 + 0x18);
     }
 }
 

@@ -280,7 +280,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
         if (vs_main_buttonsPressed.all & PADRdown) {
             vs_battle_playMenuLeaveSfx();
             for (i = 20; i < 30; ++i) {
-                func_800FA8A0(i);
+                vs_mainMenu_menuItemLeaveRight(i);
             }
             state = init;
             break;

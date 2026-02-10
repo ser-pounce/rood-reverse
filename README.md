@@ -44,7 +44,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![MENU8.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU8.PRG&color=%2332a934)
 ![MENU9.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU9.PRG)
 ![MENUB.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUB.PRG)
-![MENUC.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUC.PRG)
+![MENUC.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUC.PRG&color=%2332a934)
 ![MENUD.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUD.PRG)
 ![MENUE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUE.PRG&color=%2332a934)
 ![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUF.PRG)
@@ -65,12 +65,13 @@ data/MENU/
     MENU5.PRG
     MENU7.PRG
     MENU8.PRG
+    MENUC.PRG
     MENUE.PRG
-    MCMAN.BIN 
-    SPMCIMG.BIN 
-    MAPBG.BIN 
-    ITEMNAME.BIN 
-    ITEMHELP.BIN 
+    MCMAN.BIN
+    SPMCIMG.BIN
+    MAPBG.BIN
+    ITEMNAME.BIN
+    ITEMHELP.BIN
     MENU12.BIN
 
 data/SMALL/

@@ -25,7 +25,7 @@ enum vs_battle_warlockSpellIds_e {
 
 typedef struct {
     char state;
-    char unk1;
+    char w;
     char unk2;
     char unk3;
     char unk4;
@@ -41,12 +41,12 @@ typedef struct {
     short unkE;
     short unk10;
     short unk12;
-    short animSpeed;
+    short initialX;
     short y;
     short x;
     short unk1A;
     char text[32];
-    int unk3A;
+    int unk3C;
 } vs_battle_menuItem_t;
 
 typedef struct {
@@ -164,7 +164,7 @@ typedef struct {
 
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
-void func_800C6540(char const*, int, int, u_long*);
+void vs_battle_renderTextRawColor(char const*, int, int, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);
@@ -174,7 +174,7 @@ void func_800C8E04(int);
 int func_800C8FAC(int, int, int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
 vs_battle_menuItem_t* vs_battle_setMenuItem(
-    int id, int animSpeed, int y, int arg3, int arg4, char* text);
+    int id, int initialX, int y, int arg3, int arg4, char* text);
 void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);

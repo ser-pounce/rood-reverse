@@ -38,6 +38,6 @@ void func_80101F38(void)
     }
     func_80100164();
     func_800FBBD4(0);
-    func_800FBEA4(0);
+    vs_battle_renderEquipStats(0);
     vs_mainMenu_drawDpPpbars(0);
 }

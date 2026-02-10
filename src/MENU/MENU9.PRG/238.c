@@ -186,10 +186,10 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
         sp14 = 0x140;
     }
 
-    var_s4 = *(int*)&arg0->animSpeed;
+    var_s4 = *(int*)&arg0->initialX;
     temp_s7 = D_1F800000[2] + 8;
 
-    sp10 = arg0->unk1;
+    sp10 = arg0->w;
     sp18 = arg0->unk4;
     temp_fp = arg0->unk5 - 1;
     sp1C = arg0->unk2;
@@ -204,18 +204,18 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
 
     temp_v1 = arg0->state;
 
-    if ((temp_v1 == 1) && (arg0->animSpeed < 0x80U)) {
+    if ((temp_v1 == 1) && (arg0->initialX < 0x80U)) {
         var_s0 = D_8010851D >> 2;
         if (temp_fp == 0) {
             var_s0 = var_s0 - 5;
         } else {
             var_s0 = temp_v1 - var_s0;
         }
-        func_800C0224(0x80, (arg0->animSpeed - 0xE) | ((arg0->y + var_s0) << 0x10),
+        func_800C0224(0x80, (arg0->initialX - 0xE) | ((arg0->y + var_s0) << 0x10),
             0x100010, temp_s7 - 1)[4] = (temp_fp * 0x10) | 0x37F93000;
     }
 
-    i = arg0->animSpeed + 6;
+    i = arg0->initialX + 6;
     while ((var_s0 = *temp_s1++) != 0xFF) {
         if (var_s0 == 0xFA) {
             i += *temp_s1++;
@@ -259,7 +259,7 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
 
     var_s4 = var_s4 + 0xFFF40000;
     sp10 |= 0x10000;
-    var_s0 = ((arg0->animSpeed < 0x80) ^ 1) << 7;
+    var_s0 = ((arg0->initialX < 0x80) ^ 1) << 7;
 
     for (i = 0; i < 12; ++i) {
         if (temp_fp == 0) {
@@ -734,7 +734,7 @@ int _handleMenu(void)
         for (D_8010A220 = 0, var_s0 = D_8010A230; D_8010A220 < 8;
              ++D_8010A220, ++var_s0) {
             if (var_s0->unk2 == 0) {
-                func_800FFB90(D_8010A220);
+                vs_mainMenu_deactivateMenuItem(D_8010A220);
             }
         }
 
@@ -1346,12 +1346,13 @@ void func_8010552C(int arg0)
     vs_battle_setGeomOffset(&sp18);
     sprintf(sp28, "#%ld", _score);
     scratch = (void**)getScratchAddr(0);
-    func_800C6540("SCORE", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x100000, 0x808080,
-        scratch[1] + 0x1C);
-    func_800C6540(sp28, ((arg0 * 0x10) & 0xFFFF) | 0x100000, 0x808080, scratch[1] + 0x1C);
-    func_801051AC((arg0 * 0x10) - 0x80, 0x10, 0x88, 0xC, 2);
-    func_800C6540("RISK   BREAKER   RANK", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0xB80000,
+    vs_battle_renderTextRawColor("SCORE", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x100000,
         0x808080, scratch[1] + 0x1C);
+    vs_battle_renderTextRawColor(
+        sp28, ((arg0 * 0x10) & 0xFFFF) | 0x100000, 0x808080, scratch[1] + 0x1C);
+    func_801051AC((arg0 * 0x10) - 0x80, 0x10, 0x88, 0xC, 2);
+    vs_battle_renderTextRawColor("RISK   BREAKER   RANK",
+        (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0xB80000, 0x808080, scratch[1] + 0x1C);
     func_801051AC((arg0 * 0x10) - 0x80, 0xB8, 0x88, 0xC, 1);
     func_8010539C(0xEC - (arg0 * 6));
 }
@@ -1688,17 +1689,19 @@ void func_801061F8(int arg0, int arg1)
         scratch = (void**)getScratchAddr(0);
         vs_mainmenu_drawButton(6, temp_s4 - 0x78, 0xF, scratch[1] + 0x18);
         temp_s0 = (temp_s4 - 0x64) & 0xFFFF;
-        func_800C6540("ROTATION", temp_s0 | 0x120000, D_8010A458, scratch[1] + 0x18);
+        vs_battle_renderTextRawColor(
+            "ROTATION", temp_s0 | 0x120000, D_8010A458, scratch[1] + 0x18);
         temp_s6 = temp_s4 - 0x70;
         func_80104F74(temp_s6, 0x12, 0x60, 0xC, 3);
         vs_mainmenu_drawButton(7, temp_s4 - 0x78, 0x22, scratch[1] + 0x18);
-        func_800C6540("ZOOM", temp_s0 | 0x240000, D_8010A454, scratch[1] + 0x18);
+        vs_battle_renderTextRawColor(
+            "ZOOM", temp_s0 | 0x240000, D_8010A454, scratch[1] + 0x18);
         func_80104F74(temp_s6, 0x24, 0x4E, 0xC, 3);
         sprintf(sp60, "NO.   %03d/%03d", D_8010A450 + 1, 0x4E);
-        func_800C6540(
+        vs_battle_renderTextRawColor(
             sp60, ((temp_s4 - 0x78) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
         func_801051AC(temp_s4 - 0x80, 0xA0, 0x64, 0xC, 2);
-        func_800C6540(sp18[_monBinData[D_8010A450].unk2],
+        vs_battle_renderTextRawColor(sp18[_monBinData[D_8010A450].unk2],
             ((temp_s2 + 0xBC) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
         func_801051AC(temp_s2 + 0xB4, 0x9B, 0x8C, 0x1A, 1);
     }
@@ -2040,14 +2043,14 @@ void func_80107A98(int arg0)
             clut = getClut(912, 223);
         }
         if (arg0 != 0) {
-            func_800C6540("#R1", 0x62011E, 0x808080, NULL);
+            vs_battle_renderTextRawColor("#R1", 0x62011E, 0x808080, NULL);
             if (D_8010A438 < 9) {
                 x = (D_8010A438 >> 1) + 0x120;
             } else {
                 x = -(D_8010A438 >> 2) + 0x126;
             }
         } else {
-            func_800C6540("L1", 0x620022, 0x808080, NULL);
+            vs_battle_renderTextRawColor("L1", 0x620022, 0x808080, NULL);
             if (D_8010A438 < 9) {
                 new_var = 0x20;
                 x = new_var - (D_8010A438 >> 1);

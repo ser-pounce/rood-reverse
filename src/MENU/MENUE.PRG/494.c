@@ -385,16 +385,16 @@ static int _showMenu(void)
         }
         s0 = (u_long**)getScratchAddr(0);
         vs_mainmenu_drawButton(1, 8, 16, s0[1] + 6);
-        func_800C6540("TURN    PAGE", 0x12001C, 0x808080, s0[1] + 6);
+        vs_battle_renderTextRawColor("TURN    PAGE", 0x12001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x12, 0x60, 0xC);
         vs_mainmenu_drawButton(2, 8, 34, s0[1] + 6);
-        func_800C6540("MENU", 0x24001C, 0x808080, s0[1] + 6);
+        vs_battle_renderTextRawColor("MENU", 0x24001C, 0x808080, s0[1] + 6);
         _drawControlsBg(0x10, 0x24, 0x40, 0xC);
-        func_800C6540("PAGE", 0xC400D8, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor("PAGE", 0xC400D8, 0x808080, s0[1] + 7);
         sprintf(charBuf, "#%d/", currentPage + 1);
-        func_800C6540(charBuf, 0xC40118, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor(charBuf, 0xC40118, 0x808080, s0[1] + 7);
         sprintf(charBuf, "#%d", lastPage + 1);
-        func_800C6540(charBuf, 0xC40130, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor(charBuf, 0xC40130, 0x808080, s0[1] + 7);
         vs_battle_manualDisplayState
             .scrollPositions[vs_battle_manualDisplayState.currentManual] =
             _scrollPosition;

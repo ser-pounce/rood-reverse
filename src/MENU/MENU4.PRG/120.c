@@ -991,7 +991,7 @@ static int _drawHitLocationStatuses(int arg0)
             temp_s6 = step >> 7;
             sp20 = step - 128;
             sp24 = temp_s6 - 1;
-            func_800C6540(vs_battle_hitlocations[hitLocation->nameIndex],
+            vs_battle_renderTextRawColor(vs_battle_hitlocations[hitLocation->nameIndex],
                 216 | ((34 + i * 16) << 16),
                 i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
                           : vs_getRGB888(128, 128, 128) >> temp_s6,
@@ -999,7 +999,7 @@ static int _drawHitLocationStatuses(int arg0)
             hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
             _drawStatusIndicator(hitLocationStatus, (0x24 + i * 0x10) * 0x10000 | 0xD8,
                 temp_s6 - (i == sp20));
-            func_800C6540(_hitLocationStatuses[hitLocationStatus],
+            vs_battle_renderTextRawColor(_hitLocationStatuses[hitLocationStatus],
                 224 | ((34 + i * 16) << 16),
                 i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
                           : vs_getRGB888(128, 128, 128) >> temp_s6,
@@ -1037,12 +1037,12 @@ static void _setActiveRow(int row)
 {
     vs_battle_menuItem_t* menuItem;
 
-    func_800FA8A0(4);
+    vs_mainMenu_menuItemLeaveRight(4);
     menuItem = vs_battle_getMenuItem(row + 10);
     menuItem->state = 2;
     menuItem->x = 155;
     menuItem->selected = 1;
-    menuItem->unk3A = 0;
+    menuItem->unk3C = 0;
 }
 
 static void _animateEquipmentDetailTransition(int selectedRow)
@@ -1076,7 +1076,7 @@ static void func_80104C0C(int selectedRow, int arg1)
 {
     _animateEquipmentDetailTransition(selectedRow);
     func_800FBBD4(arg1);
-    func_800FBEA4(1);
+    vs_battle_renderEquipStats(1);
 }
 
 static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
@@ -1112,14 +1112,14 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
         }
     }
 
-    func_800FFB90(row + 20);
+    vs_mainMenu_deactivateMenuItem(row + 20);
 
     if (var_s1 != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
             row + 20, 320 - var_s1, (row * 16) + 18, var_s1, 0, sp18[0]);
         menuItem->unk7 = sp18[1] == 0;
         if (arg2 & 1) {
-            menuItem->animSpeed = 320;
+            menuItem->initialX = 320;
             menuItem->state = 2;
             menuItem->x = 320 - var_s1;
         }
@@ -1151,14 +1151,14 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
         var_s0 = 0;
     }
 
-    func_800FFB90(row + 20);
+    vs_mainMenu_deactivateMenuItem(row + 20);
 
     if (var_s0 != 0) {
         meuItem = vs_battle_setMenuItem(
             row + 20, 320 - var_s0, (row * 16) + 18, var_s0, 0, sp18[0]);
         meuItem->unk7 = sp18[1] == 0;
         if (arg2 & 1) {
-            meuItem->animSpeed = 320;
+            meuItem->initialX = 320;
             meuItem->state = 2;
             meuItem->x = 320 - var_s0;
         }
@@ -1172,7 +1172,7 @@ static void _exitEquipmentDetail(int arg0)
     func_800FA8E0(40);
     func_800FA810(0);
     func_800FBBD4(-1);
-    func_800FBEA4(2);
+    vs_battle_renderEquipStats(2);
     if (arg0 != 0) {
         vs_mainMenu_drawDpPpbars(4);
     }
@@ -1323,7 +1323,7 @@ static int _equipmentDetailScreen(int row)
             if (var_s2 != _selectedEquipmentRow) {
                 vs_battle_playMenuChangeSfx();
                 for (i = 10; i < 26; ++i) {
-                    func_800FFB90(i);
+                    vs_mainMenu_deactivateMenuItem(i);
                 }
                 _selectedEquipmentRow = var_s2;
                 switch (var_s2) {
@@ -1644,7 +1644,7 @@ static int _equipmentScreen(int element)
     case waitActorInit:
         if (vs_mainmenu_ready() != 0) {
             menuItem = vs_battle_getMenuItem(4);
-            if (menuItem->animSpeed >= 181) {
+            if (menuItem->initialX >= 181) {
                 menuItem->state = 2;
                 menuItem->x = 180;
                 menuItem->selected = 1;
@@ -1897,7 +1897,7 @@ int vs_menu4_exec(char* state)
         if (animWait != 0) {
             --animWait;
             _drawHitLocationStatuses(-1);
-            func_800FBEA4(1);
+            vs_battle_renderEquipStats(1);
         } else {
             _printSelectedLocationCondition();
             *state = 5;
@@ -1913,7 +1913,7 @@ int vs_menu4_exec(char* state)
             if (func_80103744(0) != 0) {
                 animWait = 0;
                 _drawHitLocationStatuses(-1);
-                func_800FBEA4(1);
+                vs_battle_renderEquipStats(1);
                 userInput = _selectedElement;
                 if (userInput < VS_status_INDEX_statDesc) {
                     bodyParts = _getHitLocationCount(_selectedActor - 1) - 1;
@@ -1941,7 +1941,7 @@ int vs_menu4_exec(char* state)
                                    < _getHitLocationCount(_selectedActor - 1))
                                != 0)) {
                     vs_battle_playMenuSelectSfx();
-                    func_800FBEA4(2);
+                    vs_battle_renderEquipStats(2);
                     _drawHitLocationStatuses(-2);
                     animWait = 8;
                     *state = viewEquipment;
@@ -2070,7 +2070,7 @@ int vs_menu4_exec(char* state)
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
-                func_800FBEA4(2);
+                vs_battle_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
                 func_80103744(userInput + bodyParts);
                 animWait = 1;
@@ -2089,7 +2089,7 @@ int vs_menu4_exec(char* state)
                 _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->unk3C, 0);
                 animWait = 0;
                 _drawHitLocationStatuses(-1);
-                func_800FBEA4(1);
+                vs_battle_renderEquipStats(1);
             }
         } else {
             if (_drawHitLocationStatuses(-3) == 2) {
@@ -2122,7 +2122,7 @@ int vs_menu4_exec(char* state)
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
-                func_800FBEA4(2);
+                vs_battle_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
                 func_80103744(userInput + bodyParts);
                 animWait = 1;
@@ -2221,7 +2221,7 @@ int vs_menu4_exec(char* state)
         break;
     case waitQuitToMenu:
     case waitQuitToBattle:
-        func_800FBEA4(2);
+        vs_battle_renderEquipStats(2);
         _drawHitLocationStatuses(-2);
         _drawHitLocationStatuses(0);
         _initEquipmentScreen(0);
@@ -2284,7 +2284,7 @@ int vs_menu4_exec(char* state)
         userInput = vs_battle_rowAnimationSteps[_animationIndex];
         func_80100344(16 - userInput, 38, 88, 10);
         vs_mainmenu_drawButton(1, 8 - userInput, 36, 0);
-        func_800C6540(
+        vs_battle_renderTextRawColor(
             "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
     }
     return 0;

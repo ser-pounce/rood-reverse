@@ -773,7 +773,7 @@ void func_80103E24(int arg0, int arg1)
 
         if ((i == temp_s4) && (arg1 == 1)) {
             temp_v0 = vs_battle_getMenuItem(0x1F);
-            if (temp_s0 >= (temp_v0->animSpeed - 0xC)) {
+            if (temp_s0 >= (temp_v0->initialX - 0xC)) {
                 temp_v0->flags = i + 0x18;
                 continue;
             } else {
@@ -802,7 +802,7 @@ void func_80103F64(int arg0)
     menuItem->state = 2;
     menuItem->x = 0x9B;
     menuItem->selected = 1;
-    menuItem->unk3A = 0;
+    menuItem->unk3C = 0;
     menuItem->unk7 = 0;
 }
 
@@ -813,7 +813,7 @@ void func_80103FD4(int arg0)
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 2;
     menuItem->x = 0x10;
-    menuItem->unk1 = 0xA4;
+    menuItem->w = 0xA4;
 
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 3;
@@ -826,7 +826,7 @@ static void func_80104034(int arg0, int arg1)
     D_80109A7D = 0;
     func_80103FD4(arg0);
     func_800FBBD4(arg1);
-    func_800FBEA4(1);
+    vs_battle_renderEquipStats(1);
 }
 
 void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
@@ -855,7 +855,7 @@ void func_80104170(int arg0)
     func_800FA8E0(0x28);
     func_800FA810(-1);
     func_800FBBD4(-1);
-    func_800FBEA4(2);
+    vs_battle_renderEquipStats(2);
     D_80109A81 = 2;
     D_80109A84 = vs_main_buttonsPressed.all & PADRup;
     if (arg0 != 0) {
@@ -1895,7 +1895,7 @@ void func_80106464(int arg0, int arg1, int arg2)
     var_s2 = 0x808080;
     func_800FFD64(arg0, arg1, 0x808080, 0);
     temp_s0 = arg1 - 0x20;
-    func_800C6540("/", temp_s0, 0x808080, NULL);
+    vs_battle_renderTextRawColor("/", temp_s0, 0x808080, NULL);
     if ((arg2 * 2) < arg0) {
         var_s2 = 0x804020;
     }
@@ -2119,7 +2119,7 @@ void func_801071D8(int arg0)
         vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->animSpeed = temp_v0->x;
+            temp_v0->initialX = temp_v0->x;
         }
         temp_v0_2 = i ^ (D_800F4EE8.unk0[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
@@ -2463,9 +2463,9 @@ loop_1:
             }
             D_80109A7B = 1;
             temp_v0_11 = vs_battle_getMenuItem(0);
-            if (temp_v0_11->animSpeed >= 0xB5) {
-                if (temp_v0_11->animSpeed >= 0xCD) {
-                    temp_v0_11->animSpeed = (u_short)temp_v0_11->animSpeed - 0x18;
+            if (temp_v0_11->initialX >= 0xB5) {
+                if (temp_v0_11->initialX >= 0xCD) {
+                    temp_v0_11->initialX = (u_short)temp_v0_11->initialX - 0x18;
                 }
                 temp_v0_11->state = 2;
                 temp_v0_11->x = 0xB4;
@@ -2871,8 +2871,8 @@ int func_801089BC(int arg0)
             return var_s1 + 1;
         }
         D_80109A2C += 16;
-        func_800C6540("OK", 0x4200C8, ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101,
-            D_1F800000[1] - 3);
+        vs_battle_renderTextRawColor("OK", 0x4200C8,
+            ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101, D_1F800000[1] - 3);
         v = 0x1A;
         D_80109A2D = func_800FFCDC(
             D_80109A2D, (((var_s1 * 0x10) - (((var_s1 * 2) & 4) - v)) << 0x10) | 0xB4);

@@ -154,7 +154,7 @@ void func_800FFB68(int arg0)
     D_801022DC = arg0;
 }
 
-void func_800FFB90(int arg0)
+void vs_mainMenu_deactivateMenuItem(int arg0)
 {
     vs_battle_menuItem_t* item = &vs_battle_menuItems[arg0];
     item->state = 0;

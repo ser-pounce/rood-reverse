@@ -11,7 +11,7 @@ typedef struct {
 } vs_mainMenu_strIntAgi_t;
 
 void func_800FA448(void);
-void func_800FA8A0(int arg0);
+void vs_mainMenu_menuItemLeaveRight(int arg0);
 void func_800FA810(int arg0);
 void func_800FA854(int arg0);
 void func_800FA8E0(int);
@@ -24,7 +24,7 @@ void func_800FBBD4(int);
 void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3);
 void vs_mainMenu_setStrIntAgi(int, int, int, int);
 void func_800FBD80(int);
-void func_800FBEA4(int);
+void vs_battle_renderEquipStats(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
 void vs_mainMenu_drawDpPpbars(int);
 void vs_mainMenu_setWeaponUi(vs_battle_uiWeapon*, char**, int*, char*);

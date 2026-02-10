@@ -1402,8 +1402,9 @@ void func_801064D4(int arg0, int arg1, int arg2, int arg3)
 
     arg0 = (v1 - (arg2 * 6));
 
-    func_800C6540("PRESS", ((arg0 + 0x12) & 0xFFFF) | (arg1 << 0x10), 0x8080FF, NULL);
-    func_800C6540(
+    vs_battle_renderTextRawColor(
+        "PRESS", ((arg0 + 0x12) & 0xFFFF) | (arg1 << 0x10), 0x8080FF, NULL);
+    vs_battle_renderTextRawColor(
         "BUTTON", ((arg0 + 0x12) & 0xFFFF) | ((arg1 + 0xA) << 0x10), 0x8080FF, NULL);
 
     arg1 += 0x16;

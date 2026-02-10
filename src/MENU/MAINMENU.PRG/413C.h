@@ -17,7 +17,7 @@ void func_800FF9E4(int, int);
 void func_800FFA88(int);
 void func_800FFA94(void);
 void func_800FFB68(int);
-void func_800FFB90(int);
+void vs_mainMenu_deactivateMenuItem(int);
 void func_800FFBA8(void);
 void func_800FE8B0(int);
 void func_800FFBC8(void);

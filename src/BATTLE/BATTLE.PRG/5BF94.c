@@ -129,11 +129,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C64D0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6540);
+INCLUDE_ASM(
+    "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);
 
 void vs_battle_renderTextRaw(char const* text, int xy, void* arg2)
 {
-    func_800C6540(text, xy, 0x808080, arg2);
+    vs_battle_renderTextRawColor(text, xy, 0x808080, arg2);
 }
 
 void func_800C6850(char* arg0) { *arg0 = 0xE7; }
@@ -358,7 +359,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
 vs_battle_menuItem_t* vs_battle_setMenuItem(
-    int id, int animSpeed, int y, int arg3, int arg4, char* text)
+    int id, int x, int y, int w, int arg4, char* text)
 {
     vs_battle_menuItem_t* menuItem;
     vs_battle_menuItem_t* var_a0;
@@ -367,13 +368,13 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
 
     menuItem = &vs_battle_menuItems[id];
     menuItem->state = 1;
-    menuItem->unk1 = arg3;
+    menuItem->w = w;
     menuItem->unk2 = arg4;
 
     vs_battle_rMemzero(&menuItem->unk4, 0x3C);
 
     var_a0 = menuItem;
-    menuItem->animSpeed = animSpeed;
+    menuItem->initialX = x;
     menuItem->y = y;
 
     for (i = 0; i < 31;) {

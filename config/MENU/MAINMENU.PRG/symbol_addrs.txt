@@ -1,4 +1,5 @@
 _getEquipmentMaxStats = 0x800FA598;
+vs_mainMenu_menuItemLeaveRight = 0x800FA8A0;
 vs_mainmenu_ready = 0x800FA9D0;
 vs_mainMenu_setRangeRisk = 0x800FBD0C;
 vs_mainMenu_setStrIntAgi = 0x800FBD28;
@@ -15,6 +16,7 @@ vs_mainMenu_setItemUi = 0x800FD17C;
 vs_mainMenu_resetStats = 0x800FD220;
 vs_mainMenu_loadItemNames = 0x800FE5CC;
 func_800FFA88 = 0x800FFA88; 
+vs_mainMenu_deactivateMenuItem = 0x800FFB90;
 func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;
 vs_mainmenu_drawButton = 0x800FFC68;

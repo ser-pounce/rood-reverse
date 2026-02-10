@@ -206,7 +206,7 @@ void func_800FA810(int arg0)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
     if (menuItem->state != 0) {
         menuItem->state = 5;
-        menuItem->x = -menuItem->unk1;
+        menuItem->x = -menuItem->w;
     }
 }
 
@@ -221,7 +221,7 @@ void func_800FA854(int arg0)
     }
 }
 
-void func_800FA8A0(int arg0)
+void vs_mainMenu_menuItemLeaveRight(int arg0)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -238,7 +238,7 @@ void func_800FA8E0(int arg0)
 
     for (i = 0; i < 32; ++i) {
         if (i != arg0) {
-            func_800FA8A0(i);
+            vs_mainMenu_menuItemLeaveRight(i);
         }
     }
 }
@@ -249,7 +249,7 @@ void func_800FA92C(int arg0, int arg1)
     int i;
 
     for (i = arg1 * 10; i < 30; ++i) {
-        func_800FA8A0(i);
+        vs_mainMenu_menuItemLeaveRight(i);
     }
 
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
@@ -384,7 +384,7 @@ void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int a
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBD80);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBEA4);
+INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_battle_renderEquipStats);
 
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
@@ -438,7 +438,7 @@ vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
     }
 
     var_s0 = arg0 + 0xA;
-    func_800FFB90(var_s0);
+    vs_mainMenu_deactivateMenuItem(var_s0);
 
     if (var_s1 != 0) {
         temp_s0 = 0x140 - var_s1;
@@ -446,7 +446,7 @@ vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
             var_s0, temp_s0, (arg0 * 0x10) + 0x12, var_s1, 0, sp18[0]);
         var_s2->unk7 = sp18[1] == NULL;
         if (arg2 & 1) {
-            var_s2->animSpeed = 0x140;
+            var_s2->initialX = 0x140;
             var_s2->state = 2;
             var_s2->x = temp_s0;
         }

@@ -45,101 +45,6 @@ int func_8010BA58(int);
 
 extern u_long* D_1F800000[];
 
-extern char _classFactorLookup[];
-extern char _affinityFactorLookup[];
-extern short _sameMaterialStatFactors[];
-extern short _differentMaterialStatFactors[];
-extern short _sameMaterialTypeFactors[];
-extern short _differentMaterialTypeFactors[];
-extern char D_8010BBF4;
-extern char D_8010BBF5;
-extern char D_8010BBF6;
-extern char D_8010BBF7;
-extern char D_8010BBF8;
-extern int D_8010BBFC;
-extern char D_8010BC00;
-extern char D_8010BC01;
-extern char D_8010BC02;
-extern int D_8010BC04;
-extern char D_8010BC08;
-extern char D_8010BC09;
-extern char D_8010BC0A;
-extern int D_8010BC0C;
-extern char D_8010BC10;
-extern char D_8010BC11;
-extern char D_8010BC12;
-extern char D_8010BC13;
-extern char D_8010BC14;
-extern char D_8010BC15;
-extern char D_8010BC18[];
-extern int D_8010BC1C;
-extern char D_8010BC20;
-extern char D_8010BC21;
-extern u_char D_8010BC22;
-extern char D_8010BC23;
-extern char D_8010BC24;
-extern char D_8010BC28[4];
-extern char D_8010BC2C[4];
-extern u_char* D_8010BC30;
-extern char D_8010BC34;
-extern char D_8010BC35;
-extern int D_8010BC38;
-extern char D_8010BC3C;
-extern char D_8010BC3D;
-extern char D_8010BC3E;
-extern char D_8010BC3F;
-extern char D_8010BC41;
-extern int D_8010BC44;
-extern char D_8010BC48;
-extern char D_8010BC49;
-extern int D_8010BC4C;
-extern char D_8010BC50;
-extern vs_main_CdQueueSlot* _sydCdQueueSlot;
-extern char _sydFileLoading;
-extern int D_8010BC5C;
-extern char D_8010BC60;
-extern char D_8010BC61;
-extern char D_8010BC62;
-extern char D_8010BC63;
-extern char D_8010BC64;
-extern int D_8010BC68;
-extern char D_8010BC6C;
-extern char D_8010BC6D;
-extern char D_8010BC6E;
-extern char D_8010BC6F;
-extern char D_8010BC70;
-extern int D_8010BC74;
-extern char D_8010BC78;
-extern char D_8010BC79;
-extern char D_8010BC7A;
-extern char D_8010BC7B;
-extern char D_8010BC7C;
-extern char D_8010BC7D;
-extern char D_8010BC7E;
-extern char D_8010BC7F;
-extern u_char _workshopFlags;
-extern u_char _combiningItem;
-extern u_int D_8010BC84[5];
-extern u_short* D_8010BC98;
-extern int D_8010BC9C;
-extern char D_8010BCA0;
-extern char D_8010BCA1;
-extern char D_8010BCA2;
-extern char D_8010BCA3;
-extern char D_8010BCA4[];
-extern vs_battle_inventoryBlade D_8010BCE4;
-extern char D_8010BD10[2];
-extern vs_battle_inventoryShield D_8010BD14;
-extern char D_8010BD18;
-extern u_char D_8010BD44[];
-extern vs_battle_inventoryArmor D_8010BD54;
-extern char D_8010BD7C[2];
-extern char* _combinationResults;
-extern char* _materialResults;
-extern void* D_8010BD88;
-extern _armorInfo* _shieldCombinationInitData;
-extern _armorInfo* _combinationInitData;
-
 void func_80102968(int arg0, int arg1)
 {
     func_800C6540("OK", (((arg0 * 0x10) + 0x20) << 0x10) | 0xAF,
@@ -160,6 +65,11 @@ void func_801029D0(int arg0, int arg1)
     temp_v0->x = 0xB4;
     temp_v0->selected = 1;
 }
+
+static u_char _workshopFlags;
+static u_char _combiningItem;
+static char _[2] __attribute__((unused));
+static u_int D_8010BC84[5];
 
 void func_80102A34(int arg0)
 {
@@ -237,6 +147,8 @@ void func_80102C0C(int arg0, int arg1)
 int func_80102C58(int arg0)
 {
     static char D_8010BB20 = 0;
+    static char D_8010BBF4;
+    static char D_8010BBF5;
 
     int i;
     int var_s1;
@@ -300,6 +212,10 @@ int func_80102C58(int arg0)
 int func_80102E40(int arg0)
 {
     static char D_8010BB21 = 0;
+    static char D_8010BBF6;
+    static char D_8010BBF7;
+    static char D_8010BBF8;
+    static char _[3] __attribute__((unused));
 
     int i;
     int var_s2;
@@ -482,6 +398,13 @@ int func_80103380(int arg0)
 
     return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
 }
+
+static u_short* D_8010BC98;
+static int D_8010BC9C;
+static char D_8010BCA0;
+static char D_8010BCA1;
+static char D_8010BCA2;
+static char D_8010BCA3;
 
 void func_801033FC(int count, char** text, int* rowTypes)
 {
@@ -757,6 +680,8 @@ void func_80103CEC(int arg0)
     }
 }
 
+static char D_8010BCA4[64];
+
 void func_80103D8C(int arg0)
 {
     vs_battle_menuItem_t* temp_v0;
@@ -769,6 +694,12 @@ void func_80103D8C(int arg0)
 
 int func_80103DC4(int arg0)
 {
+    static int D_8010BBFC;
+    static char D_8010BC00;
+    static char D_8010BC01;
+    static char D_8010BC02;
+    static char _[1] __attribute__((unused));
+
     vs_battle_inventoryGrip* sp10;
     int var_s4;
     int i;
@@ -810,7 +741,7 @@ int func_80103DC4(int arg0)
             }
 
             var_s4 = 1;
-            *D_8010BCA4 = D_8010BC01;
+            D_8010BCA4[0] = D_8010BC01;
 
             for (i = 0; i < 16; ++i) {
                 char(*p)[40] = &D_800619D8.unk0;
@@ -870,6 +801,12 @@ int func_80103DC4(int arg0)
 
 int func_8010418C(int arg0)
 {
+    static int D_8010BC04;
+    static char D_8010BC08;
+    static char D_8010BC09;
+    static char D_8010BC0A;
+    static char _ __attribute__((unused));
+
     vs_battle_inventoryBlade* sp10;
     int temp_v0;
     int var_s4;
@@ -971,6 +908,10 @@ int func_8010418C(int arg0)
 
 int func_80104534(int arg0)
 {
+    static int D_8010BC0C;
+    static char D_8010BC10;
+    static char D_8010BC11;
+
     int i;
     int temp_s0;
     vs_battle_inventoryGem* temp_s1;
@@ -1075,6 +1016,13 @@ int func_80104898(int arg0)
 
     static char D_8010BB54 = 0;
     static char D_8010BB55 = 0;
+
+    static char D_8010BC12;
+    static char D_8010BC13;
+    static char D_8010BC14;
+    static char D_8010BC15;
+    static char _[2] __attribute__((unused));
+    static char D_8010BC18[4];
 
     char* sp18[2];
     int sp20;
@@ -1535,6 +1483,17 @@ int func_801057BC(int arg0)
     static char D_8010BB56 = 0;
     static char D_8010BB57 = 0;
 
+    static int D_8010BC1C;
+    static char D_8010BC20;
+    static char D_8010BC21;
+    static u_char D_8010BC22;
+    static char D_8010BC23;
+    static char D_8010BC24;
+    static char _0[3] __attribute__((unused));
+    static char D_8010BC28[4];
+    static char D_8010BC2C[4];
+    static u_char* D_8010BC30;
+
     char sp18[0x300];
     char* sp318[16];
     int sp358[8];
@@ -1855,6 +1814,10 @@ int func_801057BC(int arg0)
 
 int func_801063E4(int arg0)
 {
+    static char D_8010BC34;
+    static char D_8010BC35;
+    static char _[2] __attribute__((unused));
+
     char* text[4];
     int rowTypes[4];
     int i;
@@ -1927,6 +1890,11 @@ int func_801063E4(int arg0)
 
 int func_80106610(int arg0)
 {
+    static int D_8010BC38;
+    static char D_8010BC3C;
+    static char D_8010BC3D;
+    static char D_8010BC3E;
+
     char* sp10[16];
     int sp50[8];
     int temp_v0_6;
@@ -2093,6 +2061,11 @@ int func_80106610(int arg0)
 
 int func_80106C64(int arg0)
 {
+    static char D_8010BC3F;
+    static char _0 __attribute__((unused));
+    extern char D_8010BC41;
+    static char _1[3] __attribute__((unused));
+
     char* text[4];
     int rowTypes[2];
     int temp_s0;
@@ -2174,6 +2147,11 @@ int func_80106C64(int arg0)
 
 int func_80106ECC(int arg0)
 {
+    static int D_8010BC44;
+    static char D_8010BC48;
+    static char D_8010BC49;
+    static char _[2] __attribute__((unused));
+
     char* sp10[16];
     int sp50[8];
     int i;
@@ -2291,6 +2269,10 @@ int func_80106ECC(int arg0)
 
 int func_801072FC(int arg0)
 {
+    static int D_8010BC4C;
+    static char D_8010BC50;
+    static char _[3] __attribute__((unused));
+
     int ppCost;
     int i;
     int new_var;
@@ -2435,6 +2417,10 @@ int vs_menuC_loadSyd(int id)
     static int _sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
     static int _sydSizes[] = { VS_BLADE_SYD_SIZE, VS_SHIELD_SYD_SIZE, VS_ARMOR_SYD_SIZE };
 
+    static vs_main_CdQueueSlot* _sydCdQueueSlot;
+    static char _sydFileLoading;
+    static char _[3] __attribute__((unused));
+
     vs_main_CdFile cdFile;
 
     if (id != 0) {
@@ -2479,6 +2465,10 @@ vs_battle_menuItem_t* func_8010785C(int arg0, int arg1)
 
     return temp_v0;
 }
+
+static vs_battle_inventoryBlade D_8010BCE4;
+static char D_8010BD10[2];
+static char _1[2] __attribute__((unused));
 
 void func_80107894(int arg0)
 {
@@ -2540,6 +2530,10 @@ void func_80107894(int arg0)
 
 int func_80107AD4(int arg0)
 {
+    static int D_8010BC5C;
+    static char D_8010BC60;
+    static char D_8010BC61;
+
     int var_s4;
     int i;
     char* temp_s7;
@@ -2660,6 +2654,11 @@ void func_80107EBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryBlade* arg1)
 int func_80107F14(int arg0)
 {
     static char D_8010BB74 = 0;
+
+    static char D_8010BC62;
+    static char D_8010BC63;
+    static char D_8010BC64;
+    static char _[3] __attribute__((unused));
 
     char* sp18[2];
     int sp20;
@@ -2963,6 +2962,9 @@ void func_801087E4(vs_battle_inventoryShield* shield)
     vs_mainMenu_equipmentSubtype = 8;
 }
 
+static vs_battle_inventoryShield D_8010BD14;
+static u_char D_8010BD44[16];
+
 void func_80108908(int arg0)
 {
     int var_s2;
@@ -3024,6 +3026,10 @@ void func_80108A9C(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char
 
 int func_80108AD4(int arg0)
 {
+    static int D_8010BC68;
+    static char D_8010BC6C;
+    static char D_8010BC6D;
+
     char** sp10;
     int var_s4;
     int i;
@@ -3126,6 +3132,11 @@ void func_80108E9C(vs_battle_menuItem_t* arg0, vs_battle_inventoryShield* arg1)
 int func_80108EC4(int arg0)
 {
     static char D_8010BB75 = 0;
+
+    static char D_8010BC6E;
+    static char D_8010BC6F;
+    static char D_8010BC70;
+    static char _[3] __attribute__((unused));
 
     char* sp18[2];
     int sp20;
@@ -3271,7 +3282,7 @@ int func_80108EC4(int arg0)
                     D_8010BC6F = temp_s2;
                     func_80108908(D_8010BC6F);
                 }
-                D_800F4E84[0] = D_8010BD18 < 1;
+                D_800F4E84[0] = D_8010BD14.base.id < 1;
 
                 for (var_s1 = 1; var_s1 < 3; ++var_s1) {
                     vs_battle_getMenuItem(var_s1 + 0xA)->selected =
@@ -3421,6 +3432,10 @@ int func_80108EC4(int arg0)
     return 0;
 }
 
+static vs_battle_inventoryArmor D_8010BD54;
+static char D_8010BD7C[2];
+static char _2[2] __attribute__((unused));
+
 void func_80109790(int arg0)
 {
     int var_a0;
@@ -3440,7 +3455,7 @@ void func_80109790(int arg0)
 
     switch (var_s2) {
     case 0:
-        vs_battle_rMemzero(&D_8010BD54, 0x28);
+        vs_battle_rMemzero(&D_8010BD54, sizeof D_8010BD54);
         break;
     case 1:
     case 2:
@@ -3487,6 +3502,10 @@ void func_80109790(int arg0)
 
 int func_801099FC(int arg0)
 {
+    static int D_8010BC74;
+    static char D_8010BC78;
+    static char D_8010BC79;
+
     char** sp10;
     int var_s4;
     int i;
@@ -3592,6 +3611,10 @@ void func_80109DBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryArmor* arg1)
 int func_80109DEC(int arg0)
 {
     static char D_8010BB76 = 0;
+
+    static char D_8010BC7A;
+    static char D_8010BC7B;
+    static char D_8010BC7C;
 
     char* sp18[2];
     int sp20;
@@ -3888,7 +3911,10 @@ int func_8010A63C(int arg0)
 
 int func_8010A6BC(int arg0)
 {
-    extern int (*D_8010BB78[])(int);
+    static int (*D_8010BB78[])(int) = { func_80107F14, func_80108EC4, func_80109DEC };
+
+    static char D_8010BC7D;
+    static char D_8010BC7E;
 
     char* text[6];
     int temp_a2;
@@ -3973,6 +3999,8 @@ int func_8010A6BC(int arg0)
 
 int func_8010A978(char* state)
 {
+    static char D_8010BC7F;
+
     char* sp10[12];
     int i;
     int temp_v0_5;
@@ -4169,6 +4197,17 @@ int func_8010A978(char* state)
 void _setClassAffinities(signed char* first, signed char* second, signed char* result,
     int materialsDifferent, int setAffinities)
 {
+    static char _classFactorLookup[][6] = { { 2, 0, 1, 1, 1, 0 }, { 0, 2, 0, 1, 1, 1 },
+        { 1, 0, 2, 0, 1, 1 }, { 1, 1, 0, 2, 0, 1 }, { 1, 1, 1, 0, 2, 0 },
+        { 0, 1, 1, 1, 0, 2 } };
+
+    static char _affinityFactorLookup[][7] = { { 2, 1, 1, 1, 1, 1, 1 },
+        { 1, 2, 1, 0, 1, 1, 1 }, { 1, 1, 2, 1, 0, 1, 1 }, { 1, 0, 1, 2, 1, 1, 1 },
+        { 1, 1, 0, 1, 2, 1, 1 }, { 1, 1, 1, 1, 1, 2, 0 }, { 1, 1, 1, 1, 1, 0, 2 } };
+
+    static short _sameMaterialStatFactors[] = { 4, 6, 8 };
+    static short _differentMaterialStatFactors[] = { 3, 5, 7 };
+
     short statSum;
     short statValue;
     int i;
@@ -4232,9 +4271,9 @@ void _setClassAffinities(signed char* first, signed char* second, signed char* r
             result[i] = minStatVal;
         } else {
             if (setAffinities == 0) {
-                factorLookup = _classFactorLookup[secondMaxStat + (firstMaxStat * 6)];
+                factorLookup = _classFactorLookup[firstMaxStat][secondMaxStat];
             } else {
-                factorLookup = _affinityFactorLookup[secondMaxStat + (firstMaxStat * 7)];
+                factorLookup = _affinityFactorLookup[firstMaxStat][secondMaxStat];
             }
             statSum = first[i] + second[i];
             if (materialsDifferent == 0) {
@@ -4256,6 +4295,9 @@ void _setClassAffinities(signed char* first, signed char* second, signed char* r
 void _setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
 {
+    static short _sameMaterialTypeFactors[] = { 6, 8 };
+    static short _differentMaterialTypeFactors[] = { 4, 6 };
+
     short typeValue;
     short typeValueSum;
     int sameMaxType;
@@ -4301,6 +4343,10 @@ void _setTypeValues(
     }
 }
 
+static char* _combinationResults;
+static char* _materialResults;
+static void* D_8010BD88;
+
 vs_battle_inventoryBlade* func_8010B2B4(vs_battle_inventoryBlade* arg0,
     vs_battle_inventoryBlade* arg1, vs_battle_inventoryBlade* arg2, void* sydData)
 {
@@ -4343,6 +4389,8 @@ vs_battle_inventoryBlade* func_8010B2B4(vs_battle_inventoryBlade* arg0,
     return arg2;
 }
 
+static _armorInfo* _shieldCombinationInitData;
+
 vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)
 {
@@ -4380,6 +4428,8 @@ vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
     }
     return result;
 }
+
+static _armorInfo* _combinationInitData;
 
 vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)

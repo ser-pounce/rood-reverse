@@ -22,9 +22,7 @@ segments:
     vram: 0x80102800
     align: 4
     subsegments:
-      - [0x0, .rodata, 168]
       - [0x168, c]
       - [0x9258, c]
-      - [0x9378, data]
-      - [0x93F4, bss, 168]
+      - [0x93F4, .bss, 168]
   - [0x9594]

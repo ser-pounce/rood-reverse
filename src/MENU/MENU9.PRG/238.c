@@ -321,7 +321,7 @@ void func_80102F64(char* arg0)
 
     temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 9, arg0);
     temp_v0->state = 2;
-    temp_v0->x = 0xB4;
+    temp_v0->targetX = 0xB4;
     temp_v0->selected = 1;
     temp_v0->unkA = 1;
 }
@@ -1892,7 +1892,7 @@ void func_80107090(void)
         if (p->unk2 == 0) {
             vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
             temp_v0->state = 2;
-            temp_v0->x = 0x140;
+            temp_v0->targetX = 0x140;
         } else {
             p->unk2 = -1;
         }

@@ -206,7 +206,7 @@ void func_800FA810(int arg0)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
     if (menuItem->state != 0) {
         menuItem->state = 5;
-        menuItem->x = -menuItem->w;
+        menuItem->targetX = -menuItem->w;
     }
 }
 
@@ -228,7 +228,7 @@ void vs_mainMenu_menuItemLeaveRight(int arg0)
     menuItem = vs_battle_getMenuItem(arg0);
     if (menuItem->state != 0) {
         menuItem->state = 2;
-        menuItem->x = 320;
+        menuItem->targetX = 320;
     }
 }
 
@@ -254,7 +254,7 @@ void func_800FA92C(int arg0, int arg1)
 
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
     menuItem->state = 4;
-    menuItem->x = 180;
+    menuItem->targetX = 180;
     menuItem->unk1A = (arg1 * 16) + 18;
     if (menuItem->unk2 == 0) {
         menuItem->unk2 = 1;
@@ -448,7 +448,7 @@ vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
         if (arg2 & 1) {
             var_s2->initialX = 0x140;
             var_s2->state = 2;
-            var_s2->x = temp_s0;
+            var_s2->targetX = temp_s0;
         }
         var_s2->flags = (u_int)sp20 >> 0x1A;
         var_s2->unkC = ((u_int)sp20 >> 16) & 7;

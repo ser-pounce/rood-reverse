@@ -217,10 +217,10 @@ void func_80102B78(int arg0)
     func_800FA8E0(0x28);
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 3;
-    menuItem->x = 0x12;
+    menuItem->targetX = 0x12;
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 2;
-    menuItem->x = 0x9B;
+    menuItem->targetX = 0x9B;
     menuItem->selected = 1;
     menuItem->unk3C = 0;
 }
@@ -231,11 +231,11 @@ void func_80102BE4(int arg0)
 
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 2;
-    menuItem->x = 0x10;
+    menuItem->targetX = 0x10;
     menuItem->w = 0xA4;
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 3;
-    menuItem->x = 0x12;
+    menuItem->targetX = 0x12;
 }
 
 void func_80102C44(int arg0, int arg1)
@@ -983,7 +983,7 @@ void func_80105314(int arg0)
         temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->initialX = temp_v0->x;
+            temp_v0->initialX = temp_v0->targetX;
         }
         temp_v0->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
     }

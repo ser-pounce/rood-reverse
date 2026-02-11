@@ -783,7 +783,7 @@ static void _drawMagicMenuHeader(void)
     menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);
     menuItem->state = 2;
-    menuItem->x = 180;
+    menuItem->targetX = 180;
     menuItem->selected = 1;
     func_800FFA88(2);
     func_800FFBC8();

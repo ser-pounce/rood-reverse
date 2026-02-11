@@ -190,7 +190,7 @@ static int _abilityMenu(void)
             (_abilityMenuState * 16) + 50, 0x7E, 0,
             (char*)(_abilityText + ((_firstAbility + _abilityMenuState) << 6)));
         menuItem->state = 2;
-        menuItem->x = 194;
+        menuItem->targetX = 194;
         if ((_abilityMenuState == 0) && (_firstAbility != 0)) {
             menuItem->unk5 = 1;
         }

@@ -301,7 +301,7 @@ static int _confirmScreen(int init)
             (char*)&_renameMenuStrings[_renameMenuStrings[state
                                                           + VS_rename_INDEX_optionYes]]);
         menuItem->state = 2;
-        menuItem->x = 194;
+        menuItem->targetX = 194;
         ++state;
         break;
     }

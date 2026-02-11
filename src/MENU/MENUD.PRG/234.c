@@ -796,11 +796,11 @@ void func_80103F64(int arg0)
 
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 3;
-    menuItem->x = 0x12;
+    menuItem->targetX = 0x12;
 
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 2;
-    menuItem->x = 0x9B;
+    menuItem->targetX = 0x9B;
     menuItem->selected = 1;
     menuItem->unk3C = 0;
     menuItem->unk7 = 0;
@@ -812,12 +812,12 @@ void func_80103FD4(int arg0)
 
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 2;
-    menuItem->x = 0x10;
+    menuItem->targetX = 0x10;
     menuItem->w = 0xA4;
 
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 3;
-    menuItem->x = 0x12;
+    menuItem->targetX = 0x12;
 }
 
 static void func_80104034(int arg0, int arg1)
@@ -1739,7 +1739,7 @@ int _displayDiscardMenu(int arg0)
         menuItem =
             vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, _discardAmountFormat);
         menuItem->state = 5;
-        menuItem->x = 0;
+        menuItem->targetX = 0;
         _discardBulkStep = 0;
         _discardAmount = 0;
         D_80109A4E = clearFormat;
@@ -2119,7 +2119,7 @@ void func_801071D8(int arg0)
         vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->initialX = temp_v0->x;
+            temp_v0->initialX = temp_v0->targetX;
         }
         temp_v0_2 = i ^ (D_800F4EE8.unk0[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
@@ -2468,7 +2468,7 @@ loop_1:
                     temp_v0_11->initialX = (u_short)temp_v0_11->initialX - 0x18;
                 }
                 temp_v0_11->state = 2;
-                temp_v0_11->x = 0xB4;
+                temp_v0_11->targetX = 0xB4;
             }
             D_80109A68 = 1;
         }
@@ -2845,7 +2845,7 @@ int func_801089BC(int arg0)
             vs_battle_setMenuItem(D_80109A70 + 0xA, 0x140, (D_80109A70 * 0x10) + 0x22,
                 0x7E, 0, (char*)&D_8010952C[D_8010952C[D_80109A70 * 2 + 12]]);
         temp_v0_2->state = 2;
-        temp_v0_2->x = 0xC2;
+        temp_v0_2->targetX = 0xC2;
         ++D_80109A70;
         break;
     case 2:

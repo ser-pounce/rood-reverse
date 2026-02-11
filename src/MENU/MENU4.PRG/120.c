@@ -1040,7 +1040,7 @@ static void _setActiveRow(int row)
     vs_mainMenu_menuItemLeaveRight(4);
     menuItem = vs_battle_getMenuItem(row + 10);
     menuItem->state = 2;
-    menuItem->x = 155;
+    menuItem->targetX = 155;
     menuItem->selected = 1;
     menuItem->unk3C = 0;
 }
@@ -1056,7 +1056,7 @@ static void _animateEquipmentDetailTransition(int selectedRow)
                                                   : VS_status_INDEX_armor]]);
 
     menuItem->state = 5;
-    menuItem->x = 16;
+    menuItem->targetX = 16;
     menuItem->selected = 1;
 
     flags = 28;
@@ -1069,7 +1069,7 @@ static void _animateEquipmentDetailTransition(int selectedRow)
     menuItem->flags = flags;
     menuItem = vs_battle_getMenuItem(selectedRow + 10);
     menuItem->state = 3;
-    menuItem->x = 18;
+    menuItem->targetX = 18;
 }
 
 static void func_80104C0C(int selectedRow, int arg1)
@@ -1121,7 +1121,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
         if (arg2 & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;
-            menuItem->x = 320 - var_s1;
+            menuItem->targetX = 320 - var_s1;
         }
         menuItem->flags = sp80 >> 26;
         menuItem->unkC = ((sp80 & 0xFFFF0000) >> 16) & 7;
@@ -1160,7 +1160,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
         if (arg2 & 1) {
             meuItem->initialX = 320;
             meuItem->state = 2;
-            meuItem->x = 320 - var_s0;
+            meuItem->targetX = 320 - var_s0;
         }
         meuItem->flags = 0x16;
     }
@@ -1646,7 +1646,7 @@ static int _equipmentScreen(int element)
             menuItem = vs_battle_getMenuItem(4);
             if (menuItem->initialX >= 181) {
                 menuItem->state = 2;
-                menuItem->x = 180;
+                menuItem->targetX = 180;
                 menuItem->selected = 1;
             }
             _equipmentScreenState = init;

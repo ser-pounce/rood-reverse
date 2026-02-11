@@ -142,7 +142,7 @@ void _setMenuItemMapName(char* mapName, char arg1)
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
 
     menuItem->state = 2;
-    menuItem->x = 0xB4;
+    menuItem->targetX = 0xB4;
     menuItem->selected = 1;
     menuItem->unkA = arg1;
 }

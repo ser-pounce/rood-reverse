@@ -43,7 +43,7 @@ typedef struct {
     short unk12;
     short initialX;
     short y;
-    short x;
+    short targetX;
     short unk1A;
     char text[32];
     int unk3C;

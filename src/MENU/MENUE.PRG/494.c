@@ -123,7 +123,7 @@ void func_80102E48(char* text)
 
     menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 9, text);
     menuItem->state = 2;
-    menuItem->x = 180;
+    menuItem->targetX = 180;
     menuItem->selected = 1;
     menuItem->unkA = 1;
 }

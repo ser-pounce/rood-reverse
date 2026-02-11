@@ -49,7 +49,7 @@ static void _renderMenuTitle(int row, int textOffset)
     menuItem = vs_battle_setMenuItem(
         row, 320, y, 140, 8, (char*)&vs_mainMenu_menu12Text[textOffset]);
     menuItem->state = 2;
-    menuItem->x = 180;
+    menuItem->targetX = 180;
     menuItem->selected = 1;
 }
 
@@ -105,7 +105,7 @@ void func_80102B50(int textOffset, int flags)
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
         32, -164, 18, 164, 8, (char*)&vs_mainMenu_menu12Text[textOffset]);
     menuItem->state = 5;
-    menuItem->x = 0x10;
+    menuItem->targetX = 0x10;
     menuItem->selected = 1;
     menuItem->flags = flags;
 
@@ -162,7 +162,7 @@ static int _confirmationPrompt(int arg0)
                 (char*)&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[state + VS_MENU12_BIN_INDEX_optionYes]]);
         menuItem->state = 2;
-        menuItem->x = 194;
+        menuItem->targetX = 194;
         ++state;
         break;
     case 2:
@@ -203,43 +203,43 @@ static int _confirmationPrompt(int arg0)
 int func_80102E40(int arg0)
 {
     static char D_8010BB21 = 0;
-    static char D_8010BBF6;
+    static char state;
     static char D_8010BBF7;
     static char D_8010BBF8;
     static char _[3] __attribute__((unused));
 
     int i;
-    int var_s2;
-    u_short* var_v0_2;
-    vs_battle_menuItem_t* temp_v0_2;
+    u_short* text;
+    vs_battle_menuItem_t* menuItem;
 
-    var_s2 = 0;
+    int var_s2 = 0;
+
     if (arg0 != 0) {
         func_800C8E04(1);
         D_8010BBF8 = arg0;
         D_8010BBF7 = 0;
-        D_8010BBF6 = 0;
+        state = 0;
         return 0;
     }
 
-    switch (D_8010BBF6) {
+    switch (state) {
     case 0:
     case 1:
     case 2:
-        var_v0_2 =
+        text =
             &vs_mainMenu_menu12Text
-                [vs_mainMenu_menu12Text[D_8010BBF6 + VS_MENU12_BIN_INDEX_optionYes]];
-        if (D_8010BBF6 == D_8010BBF8) {
-            var_v0_2 = vs_mainMenu_menu12Text + VS_MENU12_BIN_OFFSET_cancelCombine;
+                [vs_mainMenu_menu12Text[state + VS_MENU12_BIN_INDEX_optionYes]];
+        if (state == D_8010BBF8) {
+            text = vs_mainMenu_menu12Text + VS_MENU12_BIN_OFFSET_cancelCombine;
         }
-        temp_v0_2 = vs_battle_setMenuItem(D_8010BBF6 + 0x1D, 0x140,
-            (D_8010BBF6 * 0x10) + 0x82, 0x7E, 0, (char*)var_v0_2);
-        temp_v0_2->state = 2;
-        temp_v0_2->x = 0xC2;
-        ++D_8010BBF6;
+        menuItem = vs_battle_setMenuItem(state + 29, 320,
+            (state * 16) + 130, 320 - 194, 0, (char*)text);
+        menuItem->state = 2;
+        menuItem->targetX = 194;
+        ++state;
         break;
     case 3:
-        D_8010BBF6 += vs_mainmenu_ready();
+        state += vs_mainmenu_ready();
         break;
     case 4:
         for (i = 0; i < 3; ++i) {
@@ -468,7 +468,7 @@ void func_80103608(int arg0)
             temp_s2 = vs_battle_setMenuItem(D_8010BCA0 + 0x14, 0x140,
                 (D_8010BCA0 * 0x10) + 0x12, 0x97, 0, (char*)&D_8010BC98[D_8010BCA0 * 64]);
             temp_s2->state = 2;
-            temp_s2->x = 0xA9;
+            temp_s2->targetX = 0xA9;
             var_s0 = *(int*)&D_8010BC98[D_8010BCA0 * 64 + 14];
             temp_s2->unk7 = var_s0 & 1;
             temp_s2->flags = (var_s0 >> 0x1A);
@@ -679,7 +679,7 @@ void func_80103D8C(int arg0)
 
     temp_v0 = vs_battle_getMenuItem(arg0);
     temp_v0->state = 4;
-    temp_v0->x = 0x9B;
+    temp_v0->targetX = 0x9B;
     temp_v0->unk1A = 0x12;
 }
 
@@ -1072,12 +1072,12 @@ int func_80104898(int arg0)
             0xA, 0x140, 0x12, 0xA5, 0, (char*)(vs_mainMenu_menu12Text + 0x406));
         temp_v0->state = 2;
         temp_v0->selected = 1;
-        temp_v0->x = 0x9B;
+        temp_v0->targetX = 0x9B;
         temp_v0 = vs_battle_setMenuItem(0xB, 0x147, 0x22, 0x9E, 0,
             D_8010BC14 == 0 ? (char*)(vs_mainMenu_menu12Text + 0x40A)
                             : vs_mainMenu_itemNames[var_s2->id]);
         temp_v0->state = 2;
-        temp_v0->x = 0xA2;
+        temp_v0->targetX = 0xA2;
         if (D_8010BC14 != 0) {
             temp_v0->flags = var_s2->category;
             temp_v0->unkC = var_s2->material;
@@ -1090,7 +1090,7 @@ int func_80104898(int arg0)
                 : vs_mainMenu_itemNames[vs_battle_inventory.grips[D_8010BC15 - 1].id]);
         temp_v0->state = 2;
         temp_v0->unkA = D_8010BC15 == 0;
-        temp_v0->x = 0xA2;
+        temp_v0->targetX = 0xA2;
         if (D_8010BC15 != 0) {
             temp_v0->flags = var_s4->category + 0xA;
         } else {
@@ -1103,7 +1103,7 @@ int func_80104898(int arg0)
                 v == 0 ? (char*)(vs_mainMenu_menu12Text + 0x421)
                        : vs_mainMenu_itemNames[vs_battle_inventory.gems[v - 1].id]);
             temp_v0->state = 2;
-            temp_v0->x = 0xA9;
+            temp_v0->targetX = 0xA9;
             if (v != 0) {
                 temp_v0->flags = 0x16;
             } else {
@@ -1422,7 +1422,7 @@ void func_80105618(int arg0 __attribute__((unused)), int arg1)
         vs_battle_setMenuItem(arg1 + 0xA, 0x140, (arg1 * 0x10) + 0x12, 0x97, 0,
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
-    temp_v0->x = 0xA9;
+    temp_v0->targetX = 0xA9;
     temp_v0->unkA = 1;
 }
 
@@ -1562,10 +1562,10 @@ int func_801057BC(int arg0)
             temp_v0_3 = vs_battle_getMenuItem(0);
             temp_v0_3->state = 2;
             temp_v0_3->w = 0xA4;
-            temp_v0_3->x = 0x10;
+            temp_v0_3->targetX = 0x10;
             temp_v0_3 = vs_battle_getMenuItem(D_8010BC1C + 9);
             temp_v0_3->state = 4;
-            temp_v0_3->x = 0x9B;
+            temp_v0_3->targetX = 0x9B;
             temp_v0_3->unk1A = 0x12;
             D_8010BC20 = 3;
         }
@@ -1757,7 +1757,7 @@ int func_801057BC(int arg0)
                 }
                 temp_v0_3 = vs_battle_setMenuItem(0xA, 0x140, 0x12, 0x89, 0, sp318[0]);
                 temp_v0_3->state = 2;
-                temp_v0_3->x = 0x9B;
+                temp_v0_3->targetX = 0x9B;
                 temp_v0_3->selected = 1;
                 i = sp358[0];
                 temp_v0_3->flags = i >> 0x1A;
@@ -1961,10 +1961,10 @@ int func_80106610(int arg0)
             temp_v0_2 = vs_battle_getMenuItem(0);
             temp_v0_2->state = 2;
             temp_v0_2->w = 0xA4;
-            temp_v0_2->x = 0x10;
+            temp_v0_2->targetX = 0x10;
             temp_v0_2 = vs_battle_getMenuItem(D_8010BC38 + 9);
             temp_v0_2->state = 4;
-            temp_v0_2->x = 0x9B;
+            temp_v0_2->targetX = 0x9B;
             temp_v0_2->unk1A = 0x12;
             D_8010BC3C = 3;
         }
@@ -2193,10 +2193,10 @@ int func_80106ECC(int arg0)
             temp_v0_2 = vs_battle_getMenuItem(0);
             temp_v0_2->state = 2;
             temp_v0_2->w = 0xA4;
-            temp_v0_2->x = 0x10;
+            temp_v0_2->targetX = 0x10;
             temp_v0_2 = vs_battle_getMenuItem(D_8010BC44 + 9);
             temp_v0_2->state = 4;
-            temp_v0_2->x = 0x9B;
+            temp_v0_2->targetX = 0x9B;
             temp_v0_2->unk1A = 0x12;
             D_8010BC48 = 3;
         }
@@ -2453,7 +2453,7 @@ vs_battle_menuItem_t* func_8010785C(int arg0, int arg1)
 
     temp_v0 = func_801077DC(arg0, arg1);
     temp_v0->state = 2;
-    temp_v0->x = 0x9B;
+    temp_v0->targetX = 0x9B;
     temp_v0->initialX = 0x140;
 
     return temp_v0;
@@ -2711,7 +2711,7 @@ int func_80107F14(int arg0)
                 (char*)(var_s1 == 0 ? vs_mainMenu_menu12Text + (new_var = 0x436)
                                     : (u_short*)vs_mainMenu_itemNames[temp_s3->id]));
             temp_v0->state = 2;
-            temp_v0->x = 0xA9;
+            temp_v0->targetX = 0xA9;
             if (var_s1 == 0) {
                 temp_v0->unkA = 1;
             } else {
@@ -3195,7 +3195,7 @@ int func_80108EC4(int arg0)
                 (char*)(temp_s1 == 0 ? vs_mainMenu_menu12Text + (new_var = 0x439)
                                      : (u_short*)vs_mainMenu_itemNames[var_s0->base.id]));
             temp_v0->state = 2;
-            temp_v0->x = 0xA9;
+            temp_v0->targetX = 0xA9;
             if (temp_s1 == 0) {
                 temp_v0->unkA = 1;
             } else {
@@ -3675,7 +3675,7 @@ int func_80109DEC(int arg0)
                 (char*)(var_s1 == 0 ? vs_mainMenu_menu12Text + (new_var = 0x43D)
                                     : (u_short*)vs_mainMenu_itemNames[var_s3->id]));
             temp_v0->state = 2;
-            temp_v0->x = 0xA9;
+            temp_v0->targetX = 0xA9;
 
             if (var_s1 == 0) {
                 temp_v0->unkA = 1;

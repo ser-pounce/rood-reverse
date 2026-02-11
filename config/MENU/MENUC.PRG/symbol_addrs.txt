@@ -1,7 +1,8 @@
 _disassembleWeapon = 0x8010306C;
 _assembleWeapon = 0x80103188;
-_unsetShieldGems = 0x801032CC;
+_disassembleShield = 0x801032CC;
 _isValidGrip = 0x8010333C;
+_populateItemsList = 0x801033FC;
 vs_menuC_loadSyd = 0x80107704;
 _setClassAffinities = 0x8010AE38;
 _setTypeValues = 0x8010B150;

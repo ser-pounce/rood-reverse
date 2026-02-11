@@ -196,7 +196,7 @@ void func_80102A3C(int arg0, int arg1)
         if (i == temp_s4 && arg1 == 1) {
             temp_v0 = vs_battle_getMenuItem(0x1F);
             if (temp_s0 >= (temp_v0->initialX - 0xC)) {
-                temp_v0->flags = i + 0x18;
+                temp_v0->icon = i + 0x18;
                 continue;
             } else {
                 var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
@@ -214,7 +214,7 @@ void func_80102B78(int arg0)
 {
     vs_battle_menuItem_t* menuItem;
 
-    func_800FA8E0(0x28);
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 3;
     menuItem->targetX = 0x12;
@@ -255,8 +255,8 @@ void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_playMenuChangeSfx();
     temp_v0 = vs_battle_setMenuItem(arg0, 0x9B, 0x12, 0xA5, 0, arg1[0]);
     temp_v0->selected = 1;
-    temp_v0->flags = (arg2 >> 0x1A);
-    temp_v0->unkC = (arg2 >> 0x10) & 7;
+    temp_v0->icon = (arg2 >> 0x1A);
+    temp_v0->material = (arg2 >> 0x10) & 7;
     vs_mainmenu_setMessage(arg1[1]);
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
@@ -271,7 +271,7 @@ int func_80102D30(int arg0, int arg1)
 void func_80102D7C(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
-    func_800FA8E0(0x28);
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     func_800FA810(-1);
     func_800FBBD4(-1);
     vs_battle_renderEquipStats(2);
@@ -1035,8 +1035,8 @@ void func_80106390(int arg0, func_80106390_t* arg1, int* arg2)
     j = *arg2;
     temp_v0 = vs_battle_setMenuItem(0x14, 0x9B, 0x12, 0xA5, 0, (char*)D_8010975C);
     temp_v0->unk7 = j & 1;
-    temp_v0->flags = j >> 0x1A;
-    temp_v0->unkC = (j >> 0x10) & 7;
+    temp_v0->icon = j >> 0x1A;
+    temp_v0->material = (j >> 0x10) & 7;
     temp_v0->selected = 1;
     D_80109767 = (j >> 0x13) & 0x7F;
 }
@@ -1150,7 +1150,7 @@ int func_80108970(char* arg0)
                 break;
             case 2:
                 D_80109568 = 3;
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 D_80109711 = 0;
                 D_80109712 = 0;
                 D_80109713 = 0;
@@ -1158,7 +1158,7 @@ int func_80108970(char* arg0)
                 break;
             case 3:
                 func_8010296C(0);
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_8008A4DC(1);
                 vs_battle_executeAbilityType = 0xD;
                 *arg0 = 0xC;
@@ -1174,7 +1174,7 @@ int func_80108970(char* arg0)
             } else {
                 *arg0 = 9;
                 func_8010296C(0);
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_8008A4DC(1);
                 func_800CB654(0);
                 D_800EB9B0 = 0;
@@ -1214,7 +1214,7 @@ int func_80108970(char* arg0)
             func_80100414(-4, 0x80);
             func_8008A4DC(1);
             func_8010296C(0);
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800CB654(0);
             D_800EB9B0 = 0;
             D_80109710 = 0xA;
@@ -1244,7 +1244,7 @@ int func_80108970(char* arg0)
     case 10:
         func_8008A4DC(1);
         func_8010296C(0);
-        func_800FA8E0(0x28);
+        vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800CB654(0);
         D_800EB9B0 = 0;
         func_80108518(2);

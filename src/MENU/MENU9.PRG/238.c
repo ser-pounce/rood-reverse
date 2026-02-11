@@ -308,7 +308,7 @@ int _getSelectedRow(void)
 
     row = vs_mainmenu_getSelectedRow();
     if (row < -1) {
-        func_800FA8E0(5);
+        vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
         func_800FA92C(D_800F4EE8.unk0[2], 1);
     }
@@ -326,7 +326,7 @@ void func_80102F64(char* arg0)
     temp_v0->unkA = 1;
 }
 
-void func_80102FB8(void) { func_800FA8E0(8); }
+void func_80102FB8(void) { vs_mainMenu_clearMenuExcept(8); }
 
 void _menuReady(void) { vs_mainmenu_ready(); }
 
@@ -371,7 +371,7 @@ int vs_menu9_exec(char* state)
             D_800EB9B0 = 0;
             func_8008A4DC(1);
             func_800FFA88(0);
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             *state = 7;
         }
         break;

@@ -232,12 +232,12 @@ void vs_mainMenu_menuItemLeaveRight(int arg0)
     }
 }
 
-void func_800FA8E0(int arg0)
+void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id)
 {
     int i;
 
     for (i = 0; i < 32; ++i) {
-        if (i != arg0) {
+        if (i != id) {
             vs_mainMenu_menuItemLeaveRight(i);
         }
     }
@@ -280,7 +280,7 @@ int vs_mainmenu_ready(void)
 int func_800FAA20(void)
 {
     int temp_s0 = ++D_80102034;
-    func_800FA8E0(0x28);
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     return temp_s0 == 5;
 }
 
@@ -450,8 +450,8 @@ vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
             var_s2->state = 2;
             var_s2->targetX = temp_s0;
         }
-        var_s2->flags = (u_int)sp20 >> 0x1A;
-        var_s2->unkC = ((u_int)sp20 >> 16) & 7;
+        var_s2->icon = (u_int)sp20 >> 0x1A;
+        var_s2->material = ((u_int)sp20 >> 16) & 7;
     }
     return var_s2;
 }

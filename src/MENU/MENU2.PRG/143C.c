@@ -224,7 +224,7 @@ static int _battleAbilityUnlocked(int arg0)
         i = vs_mainmenu_getSelectedRow() + 1;
         if (i != 0) {
             if (i < 0) {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 state = reinit;
             } else {
                 func_800FA92C(i - 1, 0);
@@ -288,7 +288,7 @@ static int _battleAbilityUnlocked(int arg0)
         row = vs_mainmenu_getSelectedRow();
         skill = row + 1;
         if (skill != 0) {
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             if (skill < 0) {
                 state = reinit;
                 break;
@@ -306,7 +306,7 @@ static int _battleAbilityUnlocked(int arg0)
         row = vs_mainmenu_getSelectedRow();
         skill = row + 1;
         if (skill != 0) {
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             if (skill < 0) {
                 state = reinit;
                 break;

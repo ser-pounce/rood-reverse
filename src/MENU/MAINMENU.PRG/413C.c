@@ -150,33 +150,30 @@ static void _setItemIndex(int itemCategory, int id)
 void vs_mainMenu_rebuildInventory(int category)
 {
     int i;
-    int j;
-    int k;
-    char* index;
-    int temp_a1;
-    int capacity;
-
-    index = vs_mainMenu_inventoryIndices[category];
-    capacity = vs_mainMenu_inventoryItemCapacities[category];
+    char* indices = vs_mainMenu_inventoryIndices[category];
+    int capacity = vs_mainMenu_inventoryItemCapacities[category];
 
     for (i = 0; i < capacity; ++i) {
-        temp_a1 = index[i];
-        if ((temp_a1 != 0) && (_getItemId(category, temp_a1 - 1, NULL) == 0)) {
-            index[i] = 0;
+        int index = indices[i];
+        if ((index != 0) && (_getItemId(category, index - 1, NULL) == 0)) {
+            indices[i] = 0;
         }
     }
 
     i = 0;
 
     while (1) {
-        if (index[i] != 0) {
+        if (indices[i] != 0) {
             i += 1;
             if (i == (capacity - 1)) {
                 break;
             }
         } else {
+            int j;
+            int k;
+
             for (j = i + 1; j < capacity; ++j) {
-                if (index[j] != 0) {
+                if (indices[j] != 0) {
                     break;
                 }
             }
@@ -186,11 +183,11 @@ void vs_mainMenu_rebuildInventory(int category)
             }
 
             for (k = j; k < capacity; ++k) {
-                index[k + i - j] = index[k];
+                indices[k + i - j] = indices[k];
             }
 
             for (k = k + (i - j); k < capacity; ++k) {
-                index[k] = 0;
+                indices[k] = 0;
             }
         }
     }

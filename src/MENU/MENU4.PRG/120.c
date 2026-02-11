@@ -1066,7 +1066,7 @@ static void _animateEquipmentDetailTransition(int selectedRow)
     } else if (selectedRow == 1) {
         flags = 27;
     }
-    menuItem->flags = flags;
+    menuItem->icon = flags;
     menuItem = vs_battle_getMenuItem(selectedRow + 10);
     menuItem->state = 3;
     menuItem->targetX = 18;
@@ -1123,8 +1123,8 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
             menuItem->state = 2;
             menuItem->targetX = 320 - var_s1;
         }
-        menuItem->flags = sp80 >> 26;
-        menuItem->unkC = ((sp80 & 0xFFFF0000) >> 16) & 7;
+        menuItem->icon = sp80 >> 26;
+        menuItem->material = ((sp80 & 0xFFFF0000) >> 16) & 7;
     }
 }
 
@@ -1162,14 +1162,14 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
             meuItem->state = 2;
             meuItem->targetX = 320 - var_s0;
         }
-        meuItem->flags = 0x16;
+        meuItem->icon = 0x16;
     }
 }
 
 static void _exitEquipmentDetail(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
-    func_800FA8E0(40);
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     func_800FA810(0);
     func_800FBBD4(-1);
     vs_battle_renderEquipStats(2);
@@ -1366,8 +1366,8 @@ static int _equipmentDetailScreen(int row)
 
                 menuItem = vs_battle_setMenuItem(var_s2 + 10, 155, 18, 165, 0, sp18[0]);
                 menuItem->selected = 1;
-                menuItem->flags = (sp48 >> 0x1A);
-                menuItem->unkC = ((sp48 & 0xFFFF0000) >> 16) & 7;
+                menuItem->icon = (sp48 >> 0x1A);
+                menuItem->material = ((sp48 & 0xFFFF0000) >> 16) & 7;
 
                 vs_mainmenu_setMessage(sp18[1]);
 
@@ -1382,7 +1382,7 @@ static int _equipmentDetailScreen(int row)
                 } else if (var_s2 == 1) {
                     i = 0x1B;
                 }
-                menuItem->flags = i;
+                menuItem->icon = i;
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
                 _cursorAnimState =
@@ -1600,7 +1600,7 @@ static int _equipmentScreen(int element)
         i = vs_mainmenu_getSelectedRow() + 1;
         if (i != 0) {
             func_800FBD80(_selectedActor + 15);
-            func_800FA8E0(4);
+            vs_mainMenu_clearMenuExcept(4);
             if (i < 0) {
                 temp_s5 = D_800F4EE8.selectedEquipment - 2;
                 if (temp_s5 < 0) {
@@ -1631,7 +1631,7 @@ static int _equipmentScreen(int element)
                 _initEquipmentScreen(i);
                 func_80103744(i + temp_s5);
                 func_80100814();
-                func_800FA8E0(4);
+                vs_mainMenu_clearMenuExcept(4);
                 _equipmentScreenState = waitChangeActor;
             }
         }
@@ -2233,7 +2233,7 @@ int vs_menu4_exec(char* state)
         *var_a0 = D_801081B8;
         func_8008A4DC(1);
         func_800FFA88(0);
-        func_800FA8E0(40);
+        vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800F9E0C();
         func_80100414(-2, 128);
         D_800EB9AE = 0;

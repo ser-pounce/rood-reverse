@@ -129,7 +129,7 @@ int func_80102ED8(void)
     int row = vs_mainmenu_getSelectedRow();
 
     if (row < -1) {
-        func_800FA8E0(5);
+        vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
         func_800FA92C(D_800F4EE8.unk0[0], 1);
     }
@@ -147,7 +147,7 @@ void _setMenuItemMapName(char* mapName, char arg1)
     menuItem->unkA = arg1;
 }
 
-void func_80102F8C(void) { func_800FA8E0(5); }
+void func_80102F8C(void) { vs_mainMenu_clearMenuExcept(5); }
 
 void _menuReady(void) { vs_mainmenu_ready(); }
 
@@ -247,7 +247,7 @@ int func_801030F4(char* state)
             D_800EB9B0 = 0;
             func_8008A4DC(1);
             func_800FFA88(0);
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             D_80108D30 = 10;
             *state = 8;
         }

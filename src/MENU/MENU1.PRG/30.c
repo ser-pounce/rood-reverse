@@ -107,7 +107,7 @@ static int _drawArtsList(int typeCursorMem)
         menuItem->state = 2;
         menuItem->targetX = 180;
         menuItem->selected = 1;
-        menuItem->flags = typeCursorMem;
+        menuItem->icon = typeCursorMem;
         state = init;
         return 0;
     }
@@ -181,9 +181,9 @@ static int _drawArtsList(int typeCursorMem)
                 selectedRow = selectionBack;
             }
             if (selectedRow == 0xFFFF) {
-                func_800FA8E0(1);
+                vs_mainMenu_clearMenuExcept(1);
             } else {
-                func_800FA8E0(40);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
@@ -265,11 +265,11 @@ static int _drawWeaponTypeList(int init)
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
             if (selectedRow == selectionBack) {
-                func_800FA8E0(40);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             } else {
-                func_800FA8E0(1);
+                vs_mainMenu_clearMenuExcept(1);
             }
             state = returnRow;
         }

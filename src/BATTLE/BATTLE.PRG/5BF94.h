@@ -33,10 +33,10 @@ typedef struct {
     signed char selected;
     char unk7;
     char unk8;
-    char flags;
+    char icon;
     char unkA;
     char unkB;
-    char unkC;
+    char material;
     char unkD;
     short unkE;
     short unk10;
@@ -45,7 +45,8 @@ typedef struct {
     short y;
     short targetX;
     short unk1A;
-    char text[32];
+    char text[28];
+    int unk38;
     int unk3C;
 } vs_battle_menuItem_t;
 

@@ -200,7 +200,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                 selectedRow = -2;
             }
             if (selectedRow == -1) {
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
                 state = returnIfReady;
                 break;
             }
@@ -218,7 +218,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                     break;
                 }
             }
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FFBA8();
             func_800FFA88(0);
             state = returnIfReady;
@@ -270,7 +270,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
         if (vs_main_buttonsPressed.all & PADRup) {
             vs_battle_playMenuLeaveSfx();
             vs_mainMenu_isLevelledSpell = 0;
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FFBA8();
             func_800FFA88(0);
             selectedRow = -2;
@@ -288,7 +288,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
             if (vs_battle_getSkillFlags(0, selectedRow + i) == 0) {
                 vs_battle_playMenuSelectSfx();
                 vs_mainMenu_isLevelledSpell = 0;
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
                 state = returnIfReady;
@@ -451,12 +451,12 @@ static int _shamanMagicMenu(u_int initCursorMemory)
                 selectedRow = -2;
             }
             if (selectedRow == -1) {
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
                     selectedRow = _availableShamanSpells[selectedRow - 1];
                 }
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
@@ -541,12 +541,12 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
                 selectedRow = -2;
             }
             if (selectedRow == -1) {
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
                     selectedRow = _availableSorcereSpells[selectedRow - 1];
                 }
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
@@ -630,12 +630,12 @@ static int _enchanterMagicMenu(u_int initCursorMemory)
                 selectedRow = -2;
             }
             if (selectedRow == -1) {
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
                     selectedRow = _availableEnchanterSpells[selectedRow - 1];
                 }
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
@@ -736,9 +736,9 @@ static int _teleportMenu(int init)
         if (_selectedRow != 0) {
             vs_mainMenu_isLevelledSpell = 0;
             if (_selectedRow == (-1)) {
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
             } else {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 func_800FFA88(0);
             }
@@ -930,10 +930,10 @@ int vs_menu0_exec(char* state)
             }
         } else {
             if (i == -2) {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 *state = exit;
             } else {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 *state = exitToMainMenu;
             }
         }

@@ -10,11 +10,13 @@ typedef struct {
     short unk6;
 } vs_mainMenu_strIntAgi_t;
 
+enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
+
 void func_800FA448(void);
 void vs_mainMenu_menuItemLeaveRight(int arg0);
 void func_800FA810(int arg0);
 void func_800FA854(int arg0);
-void func_800FA8E0(int);
+void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id);
 int vs_mainmenu_ready(void);
 void func_800FA92C(int arg0, int arg1);
 void func_800FAAC8(int);

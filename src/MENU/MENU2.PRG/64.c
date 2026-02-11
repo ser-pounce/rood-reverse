@@ -433,7 +433,7 @@ static int _chainAbilityMenu(int arg0)
         break;
     case 1:
         if (_abilityMenu() != 0) {
-            func_800FA8E0(2);
+            vs_mainMenu_clearMenuExcept(2);
             return 1;
         }
         break;
@@ -478,7 +478,7 @@ static int _defenseAbilityMenu(int arg0)
         break;
     case 1:
         if (_abilityMenu() != 0) {
-            func_800FA8E0(2);
+            vs_mainMenu_clearMenuExcept(2);
             return 1;
         }
         break;
@@ -618,7 +618,7 @@ int vs_menu2_exec(char* state)
                 _defenseAbilityMenu(1);
                 break;
             }
-            func_800FA8E0(0x28);
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             if (val != -2) {
                 *state = exitToMainMenu;
             } else {
@@ -629,7 +629,7 @@ int vs_menu2_exec(char* state)
     case chain:
         if (_chainAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 *state = exitToBattle;
             } else {
                 *state = selectTypeInit;
@@ -639,7 +639,7 @@ int vs_menu2_exec(char* state)
     case defense:
         if (_defenseAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 *state = exitToBattle;
             } else {
                 *state = selectTypeInit;

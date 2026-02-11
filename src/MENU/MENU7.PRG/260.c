@@ -3486,11 +3486,11 @@ static int _promptYesNo(int initParams)
         if (buttons & (PADRup | PADRright | PADRdown)) {
             if ((selectedOption != 0) || (buttons & (PADRup | PADRdown))) {
                 vs_battle_playMenuLeaveSfx();
-                func_800FA8E0(40);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 selectedOption = -1;
             } else {
                 vs_battle_playMenuSelectSfx();
-                func_800FA8E0(0);
+                vs_mainMenu_clearMenuExcept(0);
                 selectedOption = 1;
             }
             state = returnSelection;
@@ -3835,7 +3835,7 @@ int vs_menu7_saveContainerMenu(char* state)
         func_8008A4DC(1);
         func_800CB654(0);
         D_800EB9B0 = 0;
-        func_800FA8E0(0x28);
+        vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_80100414(-4, 0x80);
         *state = 15;
         break;
@@ -3945,7 +3945,7 @@ int vs_menu7_dataMenu(char* state)
         row = vs_mainmenu_getSelectedRow() + 1;
         if (row != 0) {
             if (row > 0) {
-                func_800FA8E0(6);
+                vs_mainMenu_clearMenuExcept(6);
                 _initFileMenu();
                 switch (row) {
                 case 1:
@@ -3959,7 +3959,7 @@ int vs_menu7_dataMenu(char* state)
 
             } else {
                 func_8008A4DC(1);
-                func_800FA8E0(0x28);
+                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 if (row == -2) {
                     *state = 12;
                 } else {

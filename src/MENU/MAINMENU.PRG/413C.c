@@ -1,5 +1,6 @@
 #include "common.h"
 #include "413C.h"
+#include "C48.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -26,10 +27,8 @@ extern char D_801023DC;
 extern char D_801023DD;
 extern int _selectedRow;
 extern char D_801023DE;
-extern char* vs_mainMenu_itemNames;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
-extern void* vs_mainMenu_itemHelp;
 extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];
 
@@ -64,8 +63,8 @@ int vs_mainMenu_loadItemNames(int arg0)
     if (arg0 != 0) {
         vs_mainMenu_itemNames = vs_main_allocHeapR(
             VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE);
-        vs_mainMenu_itemHelp = vs_mainMenu_itemNames + VS_ITEMNAME_BIN_SIZE;
-        vs_mainMenu_menu12Text = vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_SIZE;
+        vs_mainMenu_itemHelp = (void*)vs_mainMenu_itemNames + VS_ITEMNAME_BIN_SIZE;
+        vs_mainMenu_menu12Text = (void*)vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_SIZE;
         // These three files must be contiguous on disk
         cdFile.lba = VS_ITEMNAME_BIN_LBA;
         cdFile.size = VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE;
@@ -87,13 +86,122 @@ int vs_mainMenu_loadItemNames(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE694);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE6EC);
+static int _getItemId(int category, int index, vs_battle_inventory_t* inventory)
+{
+    int id = 0;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE7E0);
+    if (inventory == NULL) {
+        inventory = &vs_battle_inventory;
+    }
+    switch (category) {
+    case 0:
+        id = inventory->weapons[index].blade;
+        break;
+    case 1:
+        id = inventory->blades[index].id;
+        break;
+    case 2:
+        id = inventory->grips[index].id;
+        break;
+    case 3:
+        id = inventory->shields[index].base.id;
+        break;
+    case 4:
+        id = inventory->armor[index].id;
+        break;
+    case 5:
+        id = inventory->gems[index].id;
+        break;
+    case 6:
+        id = inventory->items[index].id;
+        break;
+    }
+    return id;
+}
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE848);
+int vs_mainMenu_findItem(int category, int id)
+{
+    int i;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE8B0);
+    char* index = vs_mainMenu_inventoryIndices[category];
+    char capacity = vs_mainMenu_inventoryItemCapacities[category];
+
+    for (i = 0; i < capacity; ++i) {
+        if (index[i] == (id + 1)) {
+            return i + 1;
+        }
+    }
+    return 0;
+}
+
+static void _setItemIndex(int itemCategory, int id)
+{
+    int i;
+    char* index = vs_mainMenu_inventoryIndices[itemCategory];
+
+    for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory]; ++i) {
+        if (index[i] == 0) {
+            index[i] = id + 1;
+            return;
+        }
+    }
+}
+
+void vs_mainMenu_rebuildInventory(int category)
+{
+    int i;
+    int j;
+    int k;
+    char* index;
+    int temp_a1;
+    int capacity;
+
+    index = vs_mainMenu_inventoryIndices[category];
+    capacity = vs_mainMenu_inventoryItemCapacities[category];
+
+    for (i = 0; i < capacity; ++i) {
+        temp_a1 = index[i];
+        if ((temp_a1 != 0) && (_getItemId(category, temp_a1 - 1, NULL) == 0)) {
+            index[i] = 0;
+        }
+    }
+
+    i = 0;
+
+    while (1) {
+        if (index[i] != 0) {
+            i += 1;
+            if (i == (capacity - 1)) {
+                break;
+            }
+        } else {
+            for (j = i + 1; j < capacity; ++j) {
+                if (index[j] != 0) {
+                    break;
+                }
+            }
+
+            if (j == capacity) {
+                break;
+            }
+
+            for (k = j; k < capacity; ++k) {
+                index[k + i - j] = index[k];
+            }
+
+            for (k = k + (i - j); k < capacity; ++k) {
+                index[k] = 0;
+            }
+        }
+    }
+
+    for (i = 0; i < capacity; ++i) {
+        if ((_getItemId(category, i, NULL) != 0)
+            && (vs_mainMenu_findItem(category, i) == 0)) {
+            _setItemIndex(category, i);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEA6C);
 

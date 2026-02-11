@@ -115,14 +115,14 @@ void func_80102B50(int textOffset, int flags)
         vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         a0 = 3;
     }
-    
+
     func_800FBBD4(a0);
-    
+
     a0 = 3;
     if (flags == 28) {
         a0 = 1;
     }
-    
+
     vs_mainMenu_drawDpPpbars(a0);
     vs_battle_renderEquipStats(1);
 }
@@ -202,9 +202,9 @@ static int _confirmationPrompt(int arg0)
 
 int func_80102E40(int arg0)
 {
-    static char D_8010BB21 = 0;
+    static char cursorState = 0;
     static char state;
-    static char D_8010BBF7;
+    static char selectedOption;
     static char D_8010BBF8;
     static char _[3] __attribute__((unused));
 
@@ -212,12 +212,12 @@ int func_80102E40(int arg0)
     u_short* text;
     vs_battle_menuItem_t* menuItem;
 
-    int var_s2 = 0;
+    int action = 0;
 
     if (arg0 != 0) {
         func_800C8E04(1);
         D_8010BBF8 = arg0;
-        D_8010BBF7 = 0;
+        selectedOption = 0;
         state = 0;
         return 0;
     }
@@ -226,14 +226,13 @@ int func_80102E40(int arg0)
     case 0:
     case 1:
     case 2:
-        text =
-            &vs_mainMenu_menu12Text
-                [vs_mainMenu_menu12Text[state + VS_MENU12_BIN_INDEX_optionYes]];
+        text = &vs_mainMenu_menu12Text
+                   [vs_mainMenu_menu12Text[state + VS_MENU12_BIN_INDEX_optionYes]];
         if (state == D_8010BBF8) {
             text = vs_mainMenu_menu12Text + VS_MENU12_BIN_OFFSET_cancelCombine;
         }
-        menuItem = vs_battle_setMenuItem(state + 29, 320,
-            (state * 16) + 130, 320 - 194, 0, (char*)text);
+        menuItem = vs_battle_setMenuItem(
+            state + 29, 320, (state * 16) + 130, 320 - 194, 0, (char*)text);
         menuItem->state = 2;
         menuItem->targetX = 194;
         ++state;
@@ -243,43 +242,43 @@ int func_80102E40(int arg0)
         break;
     case 4:
         for (i = 0; i < 3; ++i) {
-            vs_battle_getMenuItem(i + 0x1D)->selected = (i ^ D_8010BBF7) == 0;
+            vs_battle_getMenuItem(i + 29)->selected = i == selectedOption;
         }
-        if (vs_main_buttonsPressed.all & 0x10) {
-            var_s2 = 3;
-        } else if (vs_main_buttonsPressed.all & 0x40) {
-            var_s2 = 2;
-        } else if (vs_main_buttonsPressed.all & 0x20) {
-            var_s2 = D_8010BBF7 + 1;
+        if (vs_main_buttonsPressed.all & PADRup) {
+            action = 3;
+        } else if (vs_main_buttonsPressed.all & PADRdown) {
+            action = 2;
+        } else if (vs_main_buttonsPressed.all & PADRright) {
+            action = selectedOption + 1;
         } else {
-            i = D_8010BBF7;
-            if (vs_main_buttonRepeat & 0x1000) {
+            i = selectedOption;
+            if (vs_main_buttonRepeat & PADLup) {
                 i += 2;
             }
-            if (vs_main_buttonRepeat & 0x4000) {
+            if (vs_main_buttonRepeat & PADLdown) {
                 ++i;
             }
             if (i >= 3) {
                 i -= 3;
             }
-            if (i != D_8010BBF7) {
+            if (i != selectedOption) {
                 vs_battle_playMenuChangeSfx();
-                D_8010BBF7 = i;
+                selectedOption = i;
             }
-            D_8010BB21 = vs_battle_drawCursor(D_8010BB21, D_8010BBF7 + 7);
+            cursorState = vs_battle_drawCursor(cursorState, selectedOption + 7);
         }
         break;
     }
 
-    if (var_s2 != 0) {
-        if (var_s2 == 2) {
+    if (action != 0) {
+        if (action == 2) {
             vs_battle_playMenuLeaveSfx();
         }
         for (i = 0x1D; i < 0x20; ++i) {
             vs_mainMenu_menuItemLeaveRight(i);
         }
     }
-    return var_s2;
+    return action;
 }
 
 void _disassembleWeapon(int weaponIndex)
@@ -308,7 +307,7 @@ void _disassembleWeapon(int weaponIndex)
 
     weapon->index = index;
 
-    func_800FE8B0(0);
+    vs_mainMenu_rebuildInventory(0);
 }
 
 void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
@@ -344,7 +343,7 @@ void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
     }
 
     memset(weapon->name, vs_char_terminator, sizeof weapon->name);
-    func_800FE8B0(0);
+    vs_mainMenu_rebuildInventory(0);
 }
 
 void _unsetShieldGems(int index)
@@ -1376,7 +1375,8 @@ int func_80104898(int arg0)
     case 6:
         vs_battle_renderEquipStats(2);
         func_80102E40(3);
-        vs_mainmenu_setMessage((char*)(vs_mainMenu_menu12Text + 0x42B));
+        vs_mainmenu_setMessage(
+            (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
         D_8010BC12 = 7;
         break;
     case 7:
@@ -2914,7 +2914,7 @@ int func_80107F14(int arg0)
             temp_s3 = &vs_battle_inventory.blades[temp_s0 - 1];
             vs_battle_copyAligned(temp_s3, &D_8010BCE4, 0x2C);
             temp_s3->index = temp_s0;
-            func_800FE8B0(1);
+            vs_mainMenu_rebuildInventory(1);
             return D_8010BC62 != 6;
         case 2:
             vs_battle_playMenuLeaveSfx();
@@ -3411,7 +3411,7 @@ int func_80108EC4(int arg0)
             temp_s0 = &vs_battle_inventory.shields[temp_s2 - 1];
             vs_battle_copyAligned(temp_s0, &D_8010BD14, 0x30);
             temp_s0->index = temp_s2;
-            func_800FE8B0(3);
+            vs_mainMenu_rebuildInventory(3);
             return D_8010BC6E != 6;
         case 2:
             vs_battle_playMenuLeaveSfx();
@@ -3876,7 +3876,7 @@ int func_80109DEC(int arg0)
             var_s3 = &vs_battle_inventory.armor[temp_s0 - 1];
             vs_battle_copyAligned(var_s3, &D_8010BD54, 0x28);
             var_s3->index = temp_s0;
-            func_800FE8B0(4);
+            vs_mainMenu_rebuildInventory(4);
             return 1;
         case 2:
             vs_battle_playMenuLeaveSfx();
@@ -4015,7 +4015,7 @@ int func_8010A978(char* state)
     case 1:
 
         for (i = 0; i < 7; ++i) {
-            func_800FE8B0(i);
+            vs_mainMenu_rebuildInventory(i);
         }
         func_80100414(0x7FE, 0x80);
         temp_v0 = vs_battle_getMenuItem(0);

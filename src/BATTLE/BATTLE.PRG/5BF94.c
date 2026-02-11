@@ -585,7 +585,7 @@ int func_800CACD0(int arg0, int arg1)
             var_a1 = D_80060022;
             vs_battle_stringBuf = temp_v0 + 0xA00;
             vs_battle_menuItems = temp_v0;
-            D_800F4E84 = temp_v0 + 0xA60;
+            vs_battle_rowTypeBuf = temp_v0 + 0xA60;
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
                      ++var_a0) {

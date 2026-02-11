@@ -2476,7 +2476,7 @@ loop_1:
     case 8:
         D_80109A7D = 0;
         temp_s3 = temp_s1[D_80109A6C - 1] - 1;
-        vs_battle_rMemzero(D_800F4E84, 0x10);
+        vs_battle_rMemzero(vs_battle_rowTypeBuf, 0x10);
         temp_s0 = 0;
         temp_s2 = 0x33;
         switch (var_s4) {
@@ -2563,7 +2563,7 @@ loop_1:
         sp10[0] = &D_8010952C[D_8010952C[D_80109A7A * 2 + 0x1F]];
 
         if (var_a2 != 0) {
-            D_800F4E84[0] = 1;
+            vs_battle_rowTypeBuf[0] = 1;
         } else {
             sp10[1] = &D_8010952C[D_8010952C[D_80109A7A * 2 + 0x20]];
         }
@@ -2576,7 +2576,7 @@ loop_1:
                 && (_getSetShieldIndex(var_s4, temp_s3, &vs_menuD_containerData->data)
                     == 0)) {
                 sp10[3] = vs_mainMenu_itemHelp + 0x35B2;
-                D_800F4E84[1] = 1;
+                vs_battle_rowTypeBuf[1] = 1;
             }
             ++temp_s2;
             D_80109A60[temp_s2] = 2;
@@ -2619,14 +2619,14 @@ loop_1:
                 &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp_s0 + 663]];
             temp_s0 = 1;
         }
-        D_800F4E84[temp_s2++] = temp_s0;
+        vs_battle_rowTypeBuf[temp_s2++] = temp_s0;
         D_80109A60[temp_s2] = 3;
         if (var_s4 == 6) {
             sp10[temp_s2 * 2] = vs_mainMenu_itemHelp + 0x356D;
             sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x3574;
             if (vs_menuD_containerData->data.misc[temp_s3].id >= 0x1CA) {
                 sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x350E;
-                D_800F4E84[temp_s2] = 1;
+                vs_battle_rowTypeBuf[temp_s2] = 1;
             }
             ++temp_s2;
             D_80109A60[temp_s2] = 4;
@@ -2636,7 +2636,7 @@ loop_1:
         sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x358A;
         ++temp_s2;
         D_80109A60[temp_s2] = 5;
-        func_800FF0EC(temp_s2, var_s4 + 0x59, (char**)&sp10, (int*)D_800F4E84);
+        func_800FF0EC(temp_s2, var_s4 + 0x59, (char**)&sp10, (int*)vs_battle_rowTypeBuf);
         D_80109A68 = 9;
         break;
     case 9:

@@ -918,6 +918,7 @@ vs_battle_manualDisplayState = 0x800F1BC8;
 D_800F1BF8 = 0x800F1BF8; // size:0xC4
 _evtFile = 0x800F4C52;
 vs_battle_shortcutInvoked = 0x800F4E6A;
+vs_battle_rowTypeBuf = 0x800F4E84;
 vs_battle_stringBuf = 0x800F4E8C;
 D_800F4E98 = 0x800F4E98; // size:0x8
 D_800F4EE8 = 0x800F4EE8; // type:u8 size:0xF2

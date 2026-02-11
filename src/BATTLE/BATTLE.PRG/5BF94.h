@@ -244,7 +244,7 @@ extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;
 extern D_800F453C_t* D_800F453C;
 extern char D_800F4E6B;
-extern int* D_800F4E84;
+extern int* vs_battle_rowTypeBuf;
 extern char D_800F4E88;
 extern char* vs_battle_stringBuf;
 extern char D_800F4E90;

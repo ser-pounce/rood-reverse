@@ -59,7 +59,7 @@ void vs_mainMenu_unequipShield(void)
     vs_battle_equipShield(NULL);
 
     for (i = 0; i < 8; ++i) {
-        vs_battle_inventory.shields[i].unk1 = 0;
+        vs_battle_inventory.shields[i].isEquipped = 0;
     }
 }
 

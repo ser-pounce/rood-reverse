@@ -17,6 +17,7 @@ vs_mainMenu_setAccessoryUi = 0x800FD084;
 vs_mainMenu_setGemUi = 0x800FD0E0;
 vs_mainMenu_setItemUi = 0x800FD17C;
 vs_mainMenu_resetStats = 0x800FD220;
+vs_mainMenu_setUiWeaponStats = 0x800FD270;
 vs_mainMenu_unequipShield = 0x800FE3A0;
 vs_mainMenu_loadItemNames = 0x800FE5CC;
 _getItemId = 0x800FE6EC;

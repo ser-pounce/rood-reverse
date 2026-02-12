@@ -398,62 +398,59 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_drawDpPp
 
 vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
 {
-    char* sp18[2];
-    int sp20;
-    vs_battle_inventoryWeapon* temp_t0;
-    int temp_s0;
+    char* menuText[2];
+    int rowType;
+    int initialX;
     int var_s0;
-    int var_s1;
-    int temp_v1;
-    int temp_v1_2;
-    vs_battle_menuItem_t* var_s2;
-    int new_var;
+    int gem;
 
-    var_s2 = NULL;
-    temp_t0 = &D_80102470[arg1 - 1];
-    temp_v1 = temp_t0->grip;
-    new_var = D_80102460[temp_v1 - 1].gemSlots;
-    var_s1 = 0x9E;
+    vs_battle_menuItem_t* menuItem = NULL;
+    vs_battle_inventoryWeapon* weapon = &D_80102470[arg1 - 1];
+    int grip = weapon->grip;
+    int gemSlots = D_80102460[grip - 1].gemSlots;
+    int var_s1 = 158;
 
     if (arg0 == 1) {
         vs_mainMenu_setBladeUi(
-            &D_80102464[temp_t0->blade - 1], sp18, &sp20, vs_battle_stringBuf);
+            &D_80102464[weapon->blade - 1], menuText, &rowType, vs_battle_stringBuf);
     } else if (arg0 == 2) {
-        vs_mainMenu_setGripUi(&D_80102460[temp_v1 - 1], sp18, &sp20, vs_battle_stringBuf);
+        vs_mainMenu_setGripUi(
+            &D_80102460[grip - 1], menuText, &rowType, vs_battle_stringBuf);
     } else {
         var_s1 = arg0 - 3;
-        if (var_s1 < new_var) {
-            sp18[1] = NULL;
-            sp20 = 0x58000000;
-            sp18[0] = (char*)(vs_mainMenu_itemHelp + 0x340B);
-            temp_v1_2 = temp_t0->gems[var_s1];
-            if (temp_v1_2 != 0) {
+        if (var_s1 < gemSlots) {
+            menuText[1] = NULL;
+            rowType = 0x58000000;
+            menuText[0] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
+            gem = weapon->gems[var_s1];
+            if (gem != 0) {
                 vs_mainMenu_setGemUi(
-                    &D_80102458[temp_v1_2 - 1], sp18, &sp20, vs_battle_stringBuf);
+                    &D_80102458[gem - 1], menuText, &rowType, vs_battle_stringBuf);
             }
-            var_s1 = 0x97;
+            var_s1 = 151;
         } else {
             var_s1 = 0;
         }
     }
 
-    var_s0 = arg0 + 0xA;
+    var_s0 = arg0 + 10;
     vs_mainMenu_deactivateMenuItem(var_s0);
 
     if (var_s1 != 0) {
-        temp_s0 = 0x140 - var_s1;
-        var_s2 = vs_battle_setMenuItem(
-            var_s0, temp_s0, (arg0 * 0x10) + 0x12, var_s1, 0, sp18[0]);
-        var_s2->unk7 = sp18[1] == NULL;
+        initialX = 320 - var_s1;
+        menuItem = vs_battle_setMenuItem(
+            var_s0, initialX, (arg0 * 16) + 18, var_s1, 0, menuText[0]);
+        menuItem->unk7 = menuText[1] == NULL;
         if (arg2 & 1) {
-            var_s2->initialX = 0x140;
-            var_s2->state = 2;
-            var_s2->targetX = temp_s0;
+            menuItem->initialX = 320;
+            menuItem->state = 2;
+            menuItem->targetX = initialX;
         }
-        var_s2->icon = (u_int)sp20 >> 0x1A;
-        var_s2->material = ((u_int)sp20 >> 16) & 7;
+        menuItem->icon = (u_int)rowType >> 0x1A;
+        menuItem->material = ((u_int)rowType >> 16) & 7;
     }
-    return var_s2;
+
+    return menuItem;
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
@@ -669,7 +666,7 @@ void vs_mainMenu_resetStats(void)
     vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
 }
 
-void func_800FD270(int index)
+void vs_mainMenu_setUiWeaponStats(int index)
 {
     vs_battle_uiWeapon uiWeapon;
     vs_battle_uiWeapon* weapon = &uiWeapon;
@@ -679,7 +676,7 @@ void func_800FD270(int index)
 
     if (index != 0) {
         int i;
-        if (D_80102470[index - 1].unk3 != 0) {
+        if (D_80102470[index - 1].isEquipped != 0) {
             weapon = &vs_battle_characterState->unk3C->weapon;
         } else if (D_80102470 == vs_battle_inventory.weapons) {
             vs_battle_applyWeapon(weapon, &D_80102470[index - 1]);
@@ -750,7 +747,7 @@ void func_800FD5A0(int index)
 
     vs_mainMenu_resetStats();
     if (index != 0) {
-        if (D_8010246C[index - 1].unk1 != 0) {
+        if (D_8010246C[index - 1].isEquipped != 0) {
             shield = &vs_battle_characterState->unk3C->shield;
         } else if (D_8010246C == vs_battle_inventory.shields) {
             vs_battle_applyShield(shield, &D_8010246C[index - 1]);

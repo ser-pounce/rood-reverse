@@ -412,7 +412,7 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         if (copyFlag != 0) {
             vs_battle_copyAligned(target, source, sizeof *target);
             target->index = index;
-            target->combinedWeaponIndex = parentIndex;
+            target->assembledWeaponIndex = parentIndex;
         }
         break;
     }
@@ -429,7 +429,7 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         if (copyFlag != 0) {
             vs_battle_copyAligned(target, source, sizeof *target);
             target->index = index;
-            target->combinedWeaponIndex = parentIndex;
+            target->assembledWeaponIndex = parentIndex;
         }
         break;
     }
@@ -684,10 +684,10 @@ static int _getParentItemIndex(
     int parentIndex = 0;
 
     if (itemCategory == itemCategoryBlade) {
-        parentIndex = container->blades[index].combinedWeaponIndex;
+        parentIndex = container->blades[index].assembledWeaponIndex;
     }
     if (itemCategory == itemCategoryGrip) {
-        parentIndex = container->grips[index].combinedWeaponIndex;
+        parentIndex = container->grips[index].assembledWeaponIndex;
     }
     if (itemCategory == itemCategoryGem) {
         parentIndex = container->gems[index].setItemIndex;
@@ -905,7 +905,8 @@ int _weaponNavigation(int weaponIndex)
     case init:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A32, 7);
-            func_800FD270(vs_menuD_containerData->indices.weapons[_selectedWeapon]);
+            vs_mainMenu_setUiWeaponStats(
+                vs_menuD_containerData->indices.weapons[_selectedWeapon]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109A30 = animate;
         }
@@ -932,7 +933,7 @@ int _weaponNavigation(int weaponIndex)
                 i = func_80104114(0, selectedWeapon);
                 _setWeaponUi(&vs_menuD_containerData->data, text, &rowId,
                     vs_battle_stringBuf, i - 1);
-                func_800FD270(i);
+                vs_mainMenu_setUiWeaponStats(i);
 
                 func_80104078(D_80109A32, text, rowId, selectedWeapon);
                 for (i = 1; i < 6; ++i) {
@@ -2304,7 +2305,7 @@ loop_1:
                     if ((temp_s0 != 0) && (vs_mainmenu_ready() != 0)) {
                         vs_battle_playMenuSelectSfx();
                         temp_s0 = func_80100814();
-                        vs_battle_getMenuItem(temp_s0 >> 8)->unkD = 0;
+                        vs_battle_getMenuItem(temp_s0 >> 8)->itemState = 0;
                         func_80105008(var_s4 | ((temp_s0 + s6) * 0x10));
                         D_80109A7B = 0;
                         D_80109A68 = 7;
@@ -2481,11 +2482,11 @@ loop_1:
         temp_s2 = 0x33;
         switch (var_s4) {
         case 0:
-            temp_s0 = vs_menuD_containerData->data.weapons[temp_s3].unk3;
+            temp_s0 = vs_menuD_containerData->data.weapons[temp_s3].isEquipped;
             temp_s2 = 0x4A;
             break;
         case 3:
-            temp_s0 = vs_menuD_containerData->data.shields[temp_s3].unk1;
+            temp_s0 = vs_menuD_containerData->data.shields[temp_s3].isEquipped;
             temp_s2 = 0x4A;
             break;
         case 4:
@@ -2503,7 +2504,8 @@ loop_1:
         if (var_a2 != 0) {
             temp_s0 = 1;
             temp_s2 =
-                D_8010952C[vs_menuD_containerData->data.weapons[var_a2 - 1].unk3 == 0
+                D_8010952C[vs_menuD_containerData->data.weapons[var_a2 - 1].isEquipped
+                                   == 0
                                ? 5
                                : 4];
         }
@@ -2514,7 +2516,8 @@ loop_1:
         if (var_a2 != 0) {
             temp_s0 = 1;
             temp_s2 =
-                D_8010952C[vs_menuD_containerData->data.shields[var_a2 - 1].unk1 == 0
+                D_8010952C[vs_menuD_containerData->data.shields[var_a2 - 1].isEquipped
+                                   == 0
                                ? 5
                                : 4];
         }
@@ -2586,10 +2589,10 @@ loop_1:
         sp10[temp_s2 * 2 + 1] = vs_mainMenu_itemHelp + 0x354F;
         switch (var_s4) {
         case 0:
-            temp_s0 = vs_menuD_containerData->data.weapons[temp_s3].unk3 != 0;
+            temp_s0 = vs_menuD_containerData->data.weapons[temp_s3].isEquipped != 0;
             break;
         case 3:
-            temp_s0 = vs_menuD_containerData->data.shields[temp_s3].unk1 != 0;
+            temp_s0 = vs_menuD_containerData->data.shields[temp_s3].isEquipped != 0;
             break;
         case 4:
             temp_s0 = vs_menuD_containerData->data.armor[temp_s3].bodyPart != 0;
@@ -2603,14 +2606,14 @@ loop_1:
         var_a2 = _getParentItemIndex(var_s4, temp_s3, &vs_menuD_containerData->data);
         if (var_a2 != 0) {
             temp_s0 = 1;
-            if (vs_menuD_containerData->data.weapons[var_a2 - 1].unk3 == 0) {
+            if (vs_menuD_containerData->data.weapons[var_a2 - 1].isEquipped == 0) {
                 temp_s0 = 2;
             }
         }
         var_a2 = _getSetShieldIndex(var_s4, temp_s3, &vs_menuD_containerData->data);
         if (var_a2 != 0) {
             temp_s0 = 1;
-            if (vs_menuD_containerData->data.shields[var_a2 - 1].unk1 == 0) {
+            if (vs_menuD_containerData->data.shields[var_a2 - 1].isEquipped == 0) {
                 temp_s0 = 2;
             }
         }

@@ -3572,9 +3572,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
-            if (blade->combinedWeaponIndex != 0) {
-                blade->combinedWeaponIndex =
-                    targetIndices->weapons[blade->combinedWeaponIndex - 1];
+            if (blade->assembledWeaponIndex != 0) {
+                blade->assembledWeaponIndex =
+                    targetIndices->weapons[blade->assembledWeaponIndex - 1];
             }
         }
     }
@@ -3585,9 +3585,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
             vs_battle_inventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
-            if (grip->combinedWeaponIndex != 0) {
-                grip->combinedWeaponIndex =
-                    targetIndices->weapons[grip->combinedWeaponIndex - 1];
+            if (grip->assembledWeaponIndex != 0) {
+                grip->assembledWeaponIndex =
+                    targetIndices->weapons[grip->assembledWeaponIndex - 1];
             }
         }
     }

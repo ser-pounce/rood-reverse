@@ -30,7 +30,7 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     u_short material;
-    char combinedWeaponIndex;
+    char assembledWeaponIndex;
     char index;
 } vs_battle_inventoryBlade;
 
@@ -43,7 +43,7 @@ typedef struct {
     signed char intelligence;
     signed char agility;
     signed char types[4];
-    u_short combinedWeaponIndex;
+    u_short assembledWeaponIndex;
     u_short index;
 } vs_battle_inventoryGrip;
 
@@ -65,7 +65,7 @@ typedef struct {
     char index;
     u_char blade;
     u_char grip;
-    char unk3;
+    char isEquipped;
     u_char gems[4];
     char name[24];
 } vs_battle_inventoryWeapon;
@@ -93,7 +93,7 @@ typedef struct {
 
 typedef struct {
     char index;
-    char unk1;
+    char isEquipped;
     short unk2;
     vs_battle_inventoryArmor base;
     u_char gems[4]; // 0x2C

@@ -37,7 +37,7 @@ typedef struct {
     char unkA;
     char unkB;
     char material;
-    char unkD;
+    char itemState;
     short unkE;
     short unk10;
     short unk12;

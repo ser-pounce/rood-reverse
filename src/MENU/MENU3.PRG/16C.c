@@ -304,7 +304,7 @@ int func_80102DEC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_8010964E, 7);
-            func_800FD270(D_800619D8.unk0[D_8010964F]);
+            vs_mainMenu_setUiWeaponStats(D_800619D8.unk0[D_8010964F]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010964C = 1;
         }
@@ -332,7 +332,7 @@ int func_80102DEC(int arg0)
             vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[temp_v0_3 - 1], sp10,
                 &sp18, vs_battle_stringBuf);
             do {
-                func_800FD270(temp_v0_3);
+                vs_mainMenu_setUiWeaponStats(temp_v0_3);
                 func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
                 for (i = 1; i < 6; ++i) {
                     func_800FC510(i, D_800619D8.unk0[temp_v0_2], 0);
@@ -939,10 +939,10 @@ int func_80104EC0(int arg0, int arg1)
 
     var_v1 = 0;
     if (arg0 == 1) {
-        var_v1 = vs_battle_inventory.blades[arg1].combinedWeaponIndex;
+        var_v1 = vs_battle_inventory.blades[arg1].assembledWeaponIndex;
     }
     if (arg0 == 2) {
-        var_v1 = vs_battle_inventory.grips[arg1].combinedWeaponIndex;
+        var_v1 = vs_battle_inventory.grips[arg1].assembledWeaponIndex;
     }
     if (arg0 == 5) {
         var_v1 = vs_battle_inventory.gems[arg1].setItemIndex;

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../SLUS_010.40/main.h"
 
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
@@ -7,7 +8,7 @@ void func_800FE360(void);
 void func_800FE3A0(void);
 void func_800FE3E0(int, char);
 int func_800FE694(void);
-int func_800FEA6C(int, int);
+int func_800FEA6C(int, vs_battle_inventory_t*);
 int func_800FEB08(int, int);
 void func_800FF0EC(int, int, char**, int*);
 int func_800FF348();

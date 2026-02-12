@@ -493,7 +493,7 @@ void vs_mainMenu_setWeaponUi(
     rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
 }
 
-void func_800FCA08(
+void vs_mainMenu_initUiWeapon(
     vs_battle_inventoryWeapon* source, char** text, int* rowTypes, char* buf)
 {
     vs_battle_uiWeapon target;
@@ -578,16 +578,17 @@ void vs_mainMenu_setShieldUi(
     rowTypes[0] = (shieldBase->material << 0x10) + 0x3C000000;
 }
 
-void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
+void vs_mainMenu_initUiShield(
+    vs_battle_inventoryShield* shield, char** text, int* rowTypes, char* buf)
 {
-    vs_battle_uiShield shield;
+    vs_battle_uiShield uiShield;
 
     if (D_8010246C == vs_battle_inventory.shields) {
-        vs_battle_applyShield(&shield, arg0);
+        vs_battle_applyShield(&uiShield, shield);
     } else {
-        vs_menuD_initUiShield(&shield, arg0, &vs_menuD_containerData->data);
+        vs_menuD_initUiShield(&uiShield, shield, &vs_menuD_containerData->data);
     }
-    vs_mainMenu_setShieldUi(&shield, arg1, arg2, arg3);
+    vs_mainMenu_setShieldUi(&uiShield, text, rowTypes, buf);
 }
 
 void vs_mainMenu_setArmorUi(

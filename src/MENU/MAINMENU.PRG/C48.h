@@ -32,10 +32,12 @@ void vs_mainMenu_drawDpPpbars(int);
 void vs_mainMenu_setWeaponUi(vs_battle_uiWeapon*, char**, int*, char*);
 vs_battle_menuItem_t* func_800FC510(int, int, int);
 vs_battle_menuItem_t* func_800FC704(int, int, int);
-void func_800FCA08(vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);
+void vs_mainMenu_initUiWeapon(
+    vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setBladeUi(vs_battle_inventoryBlade*, char**, int*, char*);
 void vs_mainMenu_setGripUi(vs_battle_inventoryGrip*, char**, int*, char*);
-void func_800FCE40(vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
+void vs_mainMenu_initUiShield(
+    vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setShieldUi(vs_battle_uiShield*, char**, int*, char*);
 void vs_mainMenu_setArmorUi(vs_battle_uiArmor*, char**, int*, char*);
 void vs_mainMenu_setAccessoryUi(

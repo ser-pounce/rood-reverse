@@ -329,8 +329,8 @@ int func_80102DEC(int arg0)
         if (temp_v0_2 != D_8010964F) {
             D_8010964F = temp_v0_2;
             temp_v0_3 = func_80102D30(0, temp_v0_2);
-            func_800FCA08(&vs_battle_inventory.weapons[temp_v0_3 - 1], sp10, &sp18,
-                vs_battle_stringBuf);
+            vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[temp_v0_3 - 1], sp10,
+                &sp18, vs_battle_stringBuf);
             do {
                 func_800FD270(temp_v0_3);
                 func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);

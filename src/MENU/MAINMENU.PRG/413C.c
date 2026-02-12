@@ -52,7 +52,16 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDEBC);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE360);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE3A0);
+void vs_mainMenu_unequipShield(void)
+{
+    int i;
+
+    vs_battle_equipShield(NULL);
+
+    for (i = 0; i < 8; ++i) {
+        vs_battle_inventory.shields[i].unk1 = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE3E0);
 

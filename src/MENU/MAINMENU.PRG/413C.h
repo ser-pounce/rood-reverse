@@ -5,7 +5,7 @@ int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
 void func_800FDEBC(void);
 void func_800FE360(void);
-void func_800FE3A0(void);
+void vs_mainMenu_unequipShield(void);
 void func_800FE3E0(int, char);
 int func_800FE694(void);
 int vs_mainMenu_getItemCount(int, vs_battle_inventory_t*);

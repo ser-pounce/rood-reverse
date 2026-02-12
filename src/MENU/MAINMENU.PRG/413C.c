@@ -200,7 +200,18 @@ void vs_mainMenu_rebuildInventory(int category)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEA6C);
+int vs_mainMenu_getItemCount(int category, vs_battle_inventory_t* inventory)
+{
+    int i;
+    int count = 0;
+
+    for (i = 0; i < vs_mainMenu_inventoryItemCapacities[category]; ++i) {
+        if (_getItemId(category, i, inventory) != 0) {
+            count += 1;
+        }
+    }
+    return count;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEB08);
 

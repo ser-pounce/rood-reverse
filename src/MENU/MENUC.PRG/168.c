@@ -1881,11 +1881,11 @@ static int _attachGemsTopMenu(int arg0)
                 [vs_mainMenu_menu12Text[VS_MENU12_BIN_INDEX_weapons + i]];
             rowTypes[i] = 0;
         }
-        if (func_800FEA6C(0, 0) == 0) {
+        if (vs_mainMenu_getItemCount(0, NULL) == 0) {
             rowTypes[0] = 1;
             text[1] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noItems];
         }
-        if (func_800FEA6C(3, 0) == 0) {
+        if (vs_mainMenu_getItemCount(3, NULL) == 0) {
             rowTypes[1] = 1;
             text[3] = (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noItems];
         }
@@ -2138,7 +2138,7 @@ int func_80106C64(int arg0)
                     var_a0 = 3;
                 }
 
-                temp_v0 = func_800FEA6C(var_a0, 0);
+                temp_v0 = vs_mainMenu_getItemCount(var_a0, 0);
                 rowTypes[i] = (temp_v0 << 9) + 0x400000;
 
                 if (temp_v0 == 0) {
@@ -3959,7 +3959,7 @@ int func_8010A63C(int arg0)
             var_a2 += var_v1;
         }
     } else {
-        var_a2 = func_800FEA6C((arg0 * 2) | 1, 0);
+        var_a2 = vs_mainMenu_getItemCount((arg0 * 2) | 1, 0);
     }
     return var_a2;
 }
@@ -4087,7 +4087,7 @@ int func_8010A978(char* state)
                 vs_battle_rowTypeBuf[i] = 0;
             }
 
-            i = func_800FEA6C(0, 0);
+            i = vs_mainMenu_getItemCount(0, 0);
             if (i == 8) {
                 sp10[1] =
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_weaponsFull];

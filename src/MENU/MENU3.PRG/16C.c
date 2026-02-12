@@ -157,7 +157,7 @@ int func_80102988(int arg0, int arg1)
     if ((vs_main_buttonsState & 0xC) != 0xC) {
         temp_s1 = arg1;
         temp_a1 = 1;
-        arg0 = func_800FEA6C(arg0, 0);
+        arg0 = vs_mainMenu_getItemCount(arg0, 0);
         if (vs_main_buttonRepeat & 4) {
             arg1 = arg1 - temp_a1 + arg0;
         }
@@ -1305,7 +1305,7 @@ int func_80108970(char* arg0)
         temp_v0_3->selected = 1;
         if (temp_s1 != 7) {
             temp_v0_3->unk12 = vs_mainMenu_inventoryItemCapacities[temp_s1];
-            temp_v0_3->unk10 = func_800FEA6C(temp_s1, 0);
+            temp_v0_3->unk10 = vs_mainMenu_getItemCount(temp_s1, 0);
         }
     }
     func_80108518(0);

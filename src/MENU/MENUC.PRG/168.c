@@ -3003,7 +3003,7 @@ static int _combineBladeMenu(int arg0)
     return 0;
 }
 
-void func_801087E4(vs_battle_inventoryShield* shield)
+static void _setShieldUi(vs_battle_inventoryShield* shield)
 {
     int i;
     vs_battle_inventoryArmor* base = &shield->base;
@@ -3031,22 +3031,19 @@ vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 
 static vs_battle_inventoryShield D_8010BD14;
-static u_char D_8010BD44[16];
+static u_char _itemsToCombine[16];
 
-void func_80108908(int arg0)
+static void _initCombineShields(int arg0)
 {
-    int var_s2;
     u_int temp_v1;
-    int temp_s1;
-    int temp_s3;
-    vs_battle_inventoryShield* itemInfo;
+    vs_battle_inventoryShield* shield;
 
-    temp_s1 = D_8010BD44[0];
-    temp_s3 = D_8010BD44[1];
+    int first = _itemsToCombine[0];
+    int second = _itemsToCombine[1];
 
-    var_s2 = temp_s1 > 0;
+    int var_s2 = first > 0;
 
-    if (temp_s3 != 0) {
+    if (second != 0) {
         var_s2 += 2;
     }
 
@@ -3057,28 +3054,28 @@ void func_80108908(int arg0)
     case 1:
     case 2:
         vs_battle_copyAligned(&D_8010BD14,
-            &vs_battle_inventory.shields[temp_s1 + temp_s3 - 1], sizeof D_8010BD14);
+            &vs_battle_inventory.shields[first + second - 1], sizeof D_8010BD14);
         break;
     case 3:
         vs_battle_rMemzero(&D_8010BD14, sizeof D_8010BD14);
-        _combineShields(&vs_battle_inventory.shields[temp_s1 - 1].base,
-            &vs_battle_inventory.shields[temp_s3 - 1].base, &D_8010BD14.base, _sydData);
+        _combineShields(&vs_battle_inventory.shields[first - 1].base,
+            &vs_battle_inventory.shields[second - 1].base, &D_8010BD14.base, _sydData);
         break;
     }
 
-    itemInfo = &D_8010BD14;
-    itemInfo->isEquipped = 0;
+    shield = &D_8010BD14;
+    shield->isEquipped = 0;
 
     vs_mainMenu_resetStats();
 
     temp_v1 = arg0 - 1;
 
     if (temp_v1 > 1) {
-        if (itemInfo->base.id != 0) {
-            func_801087E4(itemInfo);
+        if (shield->base.id != 0) {
+            _setShieldUi(shield);
         }
     } else if (var_s2 & arg0) {
-        func_801087E4(&vs_battle_inventory.shields[D_8010BD44[temp_v1] - 1]);
+        _setShieldUi(&vs_battle_inventory.shields[_itemsToCombine[temp_v1] - 1]);
     }
 }
 
@@ -3115,7 +3112,7 @@ static int _selectShield(int arg0)
         return 0;
     }
 
-    itemId = D_8010BD44[D_8010BC6D - 1];
+    itemId = _itemsToCombine[D_8010BC6D - 1];
     if (itemId != 0) {
         shield = &vs_battle_inventory.shields[itemId - 1];
     }
@@ -3139,8 +3136,8 @@ static int _selectShield(int arg0)
 
             for (i = 0; i < 8; ++i) {
                 itemId = D_800619D8.unk0[i + 0x28];
-                if ((itemId != 0) && (itemId != D_8010BD44[0])
-                    && (itemId != D_8010BD44[1])) {
+                if ((itemId != 0) && (itemId != _itemsToCombine[0])
+                    && (itemId != _itemsToCombine[1])) {
                     shield = &vs_battle_inventory.shields[itemId - 1];
                     _initUiShield(shield, menuText + rowType * 2,
                         &vs_battle_rowTypeBuf[rowType], stringBuf + rowType * 0x60);
@@ -3165,7 +3162,7 @@ static int _selectShield(int arg0)
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         if (itemId != 0) {
-            func_801087E4(&vs_battle_inventory.shields[itemId - 1]);
+            _setShieldUi(&vs_battle_inventory.shields[itemId - 1]);
         } else {
             vs_mainMenu_resetStats();
         }
@@ -3225,8 +3222,8 @@ static int _combineShieldMenu(int arg0)
 
     if (arg0 != 0) {
         _pushSelectionHistory(5);
-        *(u_short*)D_8010BD44 = 0;
-        func_80108908(0);
+        *(u_short*)_itemsToCombine = 0;
+        _initCombineShields(0);
         D_8010BC6F = 1;
         state = 0;
         return 0;
@@ -3234,8 +3231,8 @@ static int _combineShieldMenu(int arg0)
 
     var_s1 = 0;
 
-    if (D_8010BD44[0] != 0) {
-        var_s1 = D_8010BD44[1] > 0;
+    if (_itemsToCombine[0] != 0) {
+        var_s1 = _itemsToCombine[1] > 0;
     }
 
     D_8010BC70 += 0x10;
@@ -3258,7 +3255,7 @@ static int _combineShieldMenu(int arg0)
         }
 
         for (i = 0; i < 2; ++i) {
-            temp_s1 = D_8010BD44[i];
+            temp_s1 = _itemsToCombine[i];
             if (temp_s1 != 0) {
                 shield0 = &vs_battle_inventory.shields[temp_s1 - 1];
             }
@@ -3279,17 +3276,17 @@ static int _combineShieldMenu(int arg0)
         break;
     case 2:
         if (vs_mainmenu_ready() != 0) {
-            if (!(vs_main_buttonsPressed.all & 0x10)) {
+            if (!(vs_main_buttonsPressed.all & PADRup)) {
                 if (var_s1 != 0) {
                     _drawOk(2, D_8010BC70);
                 }
-                if (vs_main_buttonsPressed.all & 0x40) {
+                if (vs_main_buttonsPressed.all & PADRdown) {
                     temp_s2 = _popSelectionHistory(5);
                     if (temp_s2 != 0) {
                         vs_battle_playMenuLeaveSfx();
                         D_8010BC6F = temp_s2;
-                        D_8010BD44[temp_s2 - 1] = 0;
-                        func_80108908(temp_s2);
+                        _itemsToCombine[temp_s2 - 1] = 0;
+                        _initCombineShields(temp_s2);
                         temp_v0 = vs_battle_setMenuItem(temp_s2 + 0xA, 0xA9,
                             (temp_s2 * 0x10) + 0x12, 0x97, 0,
                             (char*)(vs_mainMenu_menu12Text + 0x439));
@@ -3309,9 +3306,9 @@ static int _combineShieldMenu(int arg0)
                     if (var_s1 != 0) {
                         vs_battle_playMenuSelectSfx();
                         vs_battle_getMenuItem(D_8010BC6F + 0xA)->selected = 0;
-                        D_8010BC6F = 3U;
+                        D_8010BC6F = 3;
                         state = 4U;
-                        func_80108908(3);
+                        _initCombineShields(3);
                         return 0;
                     }
                 }
@@ -3351,14 +3348,13 @@ static int _combineShieldMenu(int arg0)
                 if (temp_s2 != D_8010BC6F) {
                     vs_battle_playMenuChangeSfx();
                     D_8010BC6F = temp_s2;
-                    func_80108908(D_8010BC6F);
+                    _initCombineShields(D_8010BC6F);
                 }
                 vs_battle_rowTypeBuf[0] = D_8010BD14.base.id < 1;
 
                 for (var_s1 = 1; var_s1 < 3; ++var_s1) {
-                    vs_battle_getMenuItem(var_s1 + 0xA)->selected =
-                        (var_s1 ^ D_8010BC6F) == 0;
-                    vs_battle_rowTypeBuf[var_s1] = D_8010BD44[var_s1 - 1] == 0;
+                    vs_battle_getMenuItem(var_s1 + 0xA)->selected = var_s1 == D_8010BC6F;
+                    vs_battle_rowTypeBuf[var_s1] = _itemsToCombine[var_s1 - 1] == 0;
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
@@ -3374,7 +3370,7 @@ static int _combineShieldMenu(int arg0)
                     break;
                 case 1:
                 case 2:
-                    var_s1 = D_8010BD44[temp_s2 - 1];
+                    var_s1 = _itemsToCombine[temp_s2 - 1];
                     if (var_s1 != 0) {
                         shield1 = &vs_battle_inventory.shields[var_s1 - 1];
                         var_s1 = *(int*)shield1->gems;
@@ -3408,20 +3404,20 @@ static int _combineShieldMenu(int arg0)
             if (temp_s2 != -2) {
                 if (temp_s2 > 0) {
                     var_s1 = D_8010BC6F - 1;
-                    if (temp_s2 == D_8010BD44[D_8010BC6F - 1]) {
-                        D_8010BD44[D_8010BC6F - 1] = 0;
+                    if (temp_s2 == _itemsToCombine[D_8010BC6F - 1]) {
+                        _itemsToCombine[D_8010BC6F - 1] = 0;
                         _popSelectionHistory(var_s1);
                     } else {
-                        D_8010BD44[D_8010BC6F - 1] = temp_s2;
+                        _itemsToCombine[D_8010BC6F - 1] = temp_s2;
                         _pushSelectionHistory(var_s1);
                         D_8010BC6F = (D_8010BC6F + 1);
                         if (var_s1 == 1) {
-                            if (D_8010BD44[0] == 0) {
+                            if (_itemsToCombine[0] == 0) {
                                 D_8010BC6F = var_s1;
                             }
                         }
                     }
-                    func_80108908(D_8010BC6F);
+                    _initCombineShields(D_8010BC6F);
                 }
                 state = 1;
                 break;
@@ -3436,7 +3432,7 @@ static int _combineShieldMenu(int arg0)
 
         for (i = 0; i < 2; ++i) {
 
-            shield0 = &vs_battle_inventory.shields[D_8010BD44[i] - 1];
+            shield0 = &vs_battle_inventory.shields[_itemsToCombine[i] - 1];
             temp_v1_2 = shield0->base.gemSlots;
             var_s1 |= shield0->isEquipped;
 
@@ -3471,7 +3467,7 @@ static int _combineShieldMenu(int arg0)
             func_800FA810(0);
 
             for (i = 0; i < 2; ++i) {
-                temp_s1 = D_8010BD44[i];
+                temp_s1 = _itemsToCombine[i];
                 itemId_3 = temp_s1 - 1;
                 if (vs_battle_inventory.shields[itemId_3].isEquipped != 0) {
                     vs_mainMenu_unequipShield();
@@ -3481,7 +3477,7 @@ static int _combineShieldMenu(int arg0)
                 func_800FE3E0(3, temp_s1);
             }
 
-            temp_s2 = D_8010BD44[0];
+            temp_s2 = _itemsToCombine[0];
             shield1 = &vs_battle_inventory.shields[temp_s2 - 1];
             vs_battle_copyAligned(shield1, &D_8010BD14, 0x30);
             shield1->index = temp_s2;
@@ -3512,19 +3508,16 @@ static vs_battle_inventoryArmor D_8010BD54;
 static char D_8010BD7C[2];
 static char _2[2] __attribute__((unused));
 
-void func_80109790(int arg0)
+static void _initCombineArmor(int arg0)
 {
     int var_a0;
-    int i;
-    int var_s2;
     u_int temp_v1;
-    int temp_s3;
-    vs_battle_inventoryArmor* itemInfo;
+    vs_battle_inventoryArmor* armor;
 
-    i = D_8010BD7C[0];
-    temp_s3 = D_8010BD7C[1];
+    int i = D_8010BD7C[0];
+    int temp_s3 = D_8010BD7C[1];
+    int var_s2 = i != 0;
 
-    var_s2 = i != 0;
     if (temp_s3 != 0) {
         var_s2 += 2;
     }
@@ -3536,17 +3529,17 @@ void func_80109790(int arg0)
     case 1:
     case 2:
         vs_battle_copyAligned(
-            &D_8010BD54, &vs_battle_inventory.armor[i + temp_s3 - 1], 0x28);
+            &D_8010BD54, &vs_battle_inventory.armor[i + temp_s3 - 1], sizeof D_8010BD54);
         break;
     case 3:
-        vs_battle_rMemzero(&D_8010BD54, 0x28);
+        vs_battle_rMemzero(&D_8010BD54, sizeof D_8010BD54);
         _combineArmor(&vs_battle_inventory.armor[i - 1],
             &vs_battle_inventory.armor[temp_s3 - 1], &D_8010BD54, _sydData);
         break;
     }
 
-    itemInfo = &D_8010BD54;
-    itemInfo->bodyPart = 0;
+    armor = &D_8010BD54;
+    armor->bodyPart = 0;
 
     vs_mainMenu_resetStats();
 
@@ -3555,28 +3548,28 @@ void func_80109790(int arg0)
     if (temp_v1 >= 2) {
         if (D_8010BD54.id != 0) {
             for (i = 0; i < 16; ++i) {
-                vs_mainMenu_equipmentStats[i] = itemInfo->classes[i & 7];
-                vs_mainMenu_equipmentStats[16 + i] = itemInfo->affinities[i & 7];
+                vs_mainMenu_equipmentStats[i] = armor->classes[i & 7];
+                vs_mainMenu_equipmentStats[16 + i] = armor->affinities[i & 7];
             }
 
             for (i = 0; i < 4; ++i) {
-                vs_mainMenu_equipmentStats[32 + i] = itemInfo->types[i];
+                vs_mainMenu_equipmentStats[32 + i] = armor->types[i];
                 var_a0 += 2;
             }
-            vs_mainMenu_setDpPp(itemInfo->currentDp, itemInfo->maxDp, 0, 0);
+            vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
             vs_mainMenu_setStrIntAgi(
-                itemInfo->strength, itemInfo->intelligence, itemInfo->agility, 1);
+                armor->strength, armor->intelligence, armor->agility, 1);
             vs_mainMenu_equipmentSubtype = 0x10;
-            vs_mainMenu_strIntAgi[1].strength = itemInfo->strength;
-            vs_mainMenu_strIntAgi[1].intelligence = itemInfo->intelligence;
-            vs_mainMenu_strIntAgi[1].agility = itemInfo->agility;
+            vs_mainMenu_strIntAgi[1].strength = armor->strength;
+            vs_mainMenu_strIntAgi[1].intelligence = armor->intelligence;
+            vs_mainMenu_strIntAgi[1].agility = armor->agility;
         }
     } else if (var_s2 & arg0) {
         func_800FD700(D_8010BD7C[temp_v1]);
     }
 }
 
-int func_801099FC(int arg0)
+static int _initUiArmor(int arg0)
 {
     static int D_8010BC74;
     static char D_8010BC78;
@@ -3677,11 +3670,12 @@ int func_801099FC(int arg0)
     return 0;
 }
 
-void func_80109DBC(vs_battle_menuItem_t* arg0, vs_battle_inventoryArmor* arg1)
+static void _setArmorMenuItem(
+    vs_battle_menuItem_t* menuItem, vs_battle_inventoryArmor* armor)
 {
-    arg0->icon = arg1->category + 0xE;
-    arg0->material = arg1->material;
-    arg0->itemState = arg1->bodyPart != 0;
+    menuItem->icon = armor->category + 14;
+    menuItem->material = armor->material;
+    menuItem->itemState = armor->bodyPart != 0;
 }
 
 int _combineArmorMenu(int arg0)
@@ -3707,7 +3701,7 @@ int _combineArmorMenu(int arg0)
     if (arg0 != 0) {
         _pushSelectionHistory(5);
         *(u_short*)D_8010BD7C = 0;
-        func_80109790(0);
+        _initCombineArmor(0);
         D_8010BC7B = 1;
         state = 0;
         return 0;
@@ -3735,7 +3729,7 @@ int _combineArmorMenu(int arg0)
         var_s1 = D_8010BD54.id;
         temp_a0 = _initItemRow(2, var_s1);
         if (var_s1 != 0) {
-            func_80109DBC(temp_a0, &D_8010BD54);
+            _setArmorMenuItem(temp_a0, &D_8010BD54);
         }
 
         for (i = 0; i < 2; ++i) {
@@ -3752,7 +3746,7 @@ int _combineArmorMenu(int arg0)
             if (var_s1 == 0) {
                 temp_v0->unkA = 1;
             } else {
-                func_80109DBC(temp_v0, armor);
+                _setArmorMenuItem(temp_v0, armor);
             }
         }
 
@@ -3770,7 +3764,7 @@ int _combineArmorMenu(int arg0)
                         vs_battle_playMenuLeaveSfx();
                         D_8010BC7B = temp_v0_2;
                         D_8010BD7C[temp_v0_2 - 1] = 0;
-                        func_80109790(temp_v0_2);
+                        _initCombineArmor(temp_v0_2);
                         temp_v0 = vs_battle_setMenuItem(temp_v0_2 + 10, 169,
                             (temp_v0_2 * 16) + 18, 151, 0,
                             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_armor]);
@@ -3779,7 +3773,7 @@ int _combineArmorMenu(int arg0)
                         var_s1 = D_8010BD54.id;
                         temp_a0 = _setItemRow(2, var_s1);
                         if (var_s1 != 0) {
-                            func_80109DBC(temp_a0, &D_8010BD54);
+                            _setArmorMenuItem(temp_a0, &D_8010BD54);
                         }
                         break;
                     }
@@ -3791,7 +3785,7 @@ int _combineArmorMenu(int arg0)
                         vs_battle_getMenuItem(D_8010BC7B + 10)->selected = 0;
                         D_8010BC7B = 3;
                         state = 4;
-                        func_80109790(3);
+                        _initCombineArmor(3);
                         return 0;
                     }
                 }
@@ -3805,7 +3799,7 @@ int _combineArmorMenu(int arg0)
                             state = 4;
                         } else {
                             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                            func_801099FC(i_2);
+                            _initUiArmor(i_2);
                             state = 3;
                         }
                         break;
@@ -3829,7 +3823,7 @@ int _combineArmorMenu(int arg0)
                 if (i_2 != D_8010BC7B) {
                     vs_battle_playMenuChangeSfx();
                     D_8010BC7B = i_2;
-                    func_80109790(D_8010BC7B);
+                    _initCombineArmor(D_8010BC7B);
                 }
                 vs_battle_rowTypeBuf[0] = D_8010BD54.id < 1;
 
@@ -3878,7 +3872,7 @@ int _combineArmorMenu(int arg0)
         D_8010BC7C = 0;
         break;
     case 3:
-        itemId = func_801099FC(0);
+        itemId = _initUiArmor(0);
         if (itemId == 0) {
             break;
         }
@@ -3900,7 +3894,7 @@ int _combineArmorMenu(int arg0)
                     }
                 }
             }
-            func_80109790(D_8010BC7B);
+            _initCombineArmor(D_8010BC7B);
         }
         state = 1;
         break;
@@ -3967,7 +3961,7 @@ int _combineArmorMenu(int arg0)
     return 0;
 }
 
-int func_8010A63C(int arg0)
+static int _countArmor(int arg0)
 {
     int i;
 
@@ -3978,7 +3972,7 @@ int func_8010A63C(int arg0)
         for (i = 0; i < 16; ++i, ++armor) {
             int var_v1 = 0;
             if (armor->id != 0) {
-                var_v1 = (armor->category ^ 7) != 0;
+                var_v1 = armor->category != 7;
             }
             count += var_v1;
         }
@@ -4012,7 +4006,7 @@ static int _combineTopMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
-                int count = func_8010A63C(i);
+                int count = _countArmor(i);
                 text[i * 2] = (char*)&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[i + VS_MENU12_BIN_INDEX_blade]];
                 text[i * 2 + 1] =

@@ -707,7 +707,7 @@ void vs_mainMenu_setUiWeaponStats(int index)
     func_800FBB8C(7);
 }
 
-void func_800FD404(int index)
+void vs_mainMenu_setUiBladeStats(int index)
 {
     int i;
     vs_battle_inventoryBlade* blade = &D_80102464[index - 1];
@@ -724,16 +724,15 @@ void func_800FD404(int index)
     func_800FBB8C(3);
 }
 
-void func_800FD504(int arg0)
+void vs_mainMenu_setUiGripStats(int arg0)
 {
     int i;
-    vs_battle_inventoryGrip* temp_a2 = &D_80102460[arg0 - 1];
+    vs_battle_inventoryGrip* grip = &D_80102460[arg0 - 1];
 
     for (i = 0; i < 4; ++i) {
-        vs_mainMenu_equipmentStats[i + 0x20] = temp_a2->types[i];
+        vs_mainMenu_equipmentStats[i + 0x20] = grip->types[i];
     }
-    vs_mainMenu_setStrIntAgi(
-        temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
+    vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     vs_mainMenu_equipmentSubtype = 4;
     D_801024A1 = arg0;
     func_800FBB8C(4);

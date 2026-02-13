@@ -971,7 +971,8 @@ int _bladeNavigation(int bladeIndex)
     case init:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A37, 3);
-            func_800FD404(vs_menuD_containerData->indices.blades[D_80109A38]);
+            vs_mainMenu_setUiBladeStats(
+                vs_menuD_containerData->indices.blades[D_80109A38]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109A35 = animate;
         }
@@ -995,7 +996,7 @@ int _bladeNavigation(int bladeIndex)
                 vs_mainMenu_setBladeUi(
                     &vs_menuD_containerData->data.blades[temp_v0_3 - 1], text, &sp18,
                     vs_battle_stringBuf);
-                func_800FD404(temp_v0_3);
+                vs_mainMenu_setUiBladeStats(temp_v0_3);
                 func_80104078(D_80109A37, text, sp18, selectedBlade);
             }
         }
@@ -1026,7 +1027,7 @@ int _gripNavigation(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A3B, 4);
-            func_800FD504(vs_menuD_containerData->indices.grips[D_80109A3C]);
+            vs_mainMenu_setUiGripStats(vs_menuD_containerData->indices.grips[D_80109A3C]);
             D_80109A39 = 1U;
         }
         break;
@@ -1048,7 +1049,7 @@ int _gripNavigation(int arg0)
                 temp_v0_3 = func_80104114(2, temp_v0_2);
                 vs_mainMenu_setGripUi(&vs_menuD_containerData->data.grips[temp_v0_3 - 1],
                     sp10, &sp18, vs_battle_stringBuf);
-                func_800FD504(temp_v0_3);
+                vs_mainMenu_setUiGripStats(temp_v0_3);
                 func_80104078(D_80109A3B, sp10, sp18, temp_v0_2);
             }
         }

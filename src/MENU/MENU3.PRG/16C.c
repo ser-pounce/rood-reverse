@@ -367,7 +367,7 @@ int func_80103034(int arg0)
     case 0:
         if ((D_80109651 == 0) && (vs_mainmenu_ready() != 0)) {
             func_80102C44(D_80109653, 3);
-            func_800FD404(D_800619D8.unk0[D_80109654 + 8]);
+            vs_mainMenu_setUiBladeStats(D_800619D8.unk0[D_80109654 + 8]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109651 = 1;
         }
@@ -391,7 +391,7 @@ int func_80103034(int arg0)
             temp_v0_3 = func_80102D30(1, temp_v0_2);
             vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
                 &sp18, vs_battle_stringBuf);
-            func_800FD404(temp_v0_3);
+            vs_mainMenu_setUiBladeStats(temp_v0_3);
             func_80102C94(D_80109653, sp10, sp18, temp_v0_2);
         }
         break;

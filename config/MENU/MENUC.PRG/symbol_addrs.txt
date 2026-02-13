@@ -4,6 +4,7 @@ _disassembleShield = 0x801032CC;
 _isValidGrip = 0x8010333C;
 _populateItemsList = 0x801033FC;
 _loadSyd = 0x80107704;
+vs_menuC_exec = 0x8010A978;
 _setClassAffinities = 0x8010AE38;
 _setTypeValues = 0x8010B150;
 _combineShields = 0x8010B598;

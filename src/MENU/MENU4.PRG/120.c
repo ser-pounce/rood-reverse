@@ -2247,7 +2247,7 @@ int vs_menu4_exec(char* state)
         func_800FFB68(0);
         func_800FFBA8();
         if (animWait <= 0) {
-            if (func_800FE694() != 0) {
+            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 *state = none;
                 return 1;
             }
@@ -2260,7 +2260,7 @@ int vs_menu4_exec(char* state)
         func_800FFB68(0);
         func_800FFBA8();
         if (animWait <= 0) {
-            if (func_800FE694() != 0) {
+            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 vs_battle_menuState.currentState = 5;
                 *state = none;
                 return 1;

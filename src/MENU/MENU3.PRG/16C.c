@@ -1235,7 +1235,7 @@ int func_80108970(char* arg0)
         func_800FFBA8();
         func_800FFA88(0);
         if (vs_mainmenu_ready() != 0) {
-            if (func_800FE694() != 0) {
+            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 *arg0 = 0;
                 return 1;
             }
@@ -1260,7 +1260,7 @@ int func_80108970(char* arg0)
             break;
         }
         if (vs_mainmenu_ready() != 0) {
-            if (func_800FE694() != 0) {
+            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 vs_battle_menuState.currentState = 4;
                 *arg0 = 0;
                 return 1;
@@ -1272,7 +1272,7 @@ int func_80108970(char* arg0)
         func_800FFBA8();
         func_800FFA88(0);
         if (D_801022D8 == 0) {
-            if (func_800FE694() != 0) {
+            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 D_800F4E98.unk2 = 8;
                 temp_a1_2 = (char)vs_battle_menuState.currentState;
                 vs_battle_menuState.currentState = 4;

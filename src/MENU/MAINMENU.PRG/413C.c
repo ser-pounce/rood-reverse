@@ -13,6 +13,9 @@ typedef struct {
 } textHeader_t;
 
 extern char vs_mainMenu_isLevelledSpell;
+extern int D_801022C8;
+extern int D_801022CC;
+extern char D_801022D2;
 extern char D_801022DC;
 extern short D_801022DE;
 extern short D_801022E0;
@@ -34,23 +37,62 @@ extern u_long* D_1F800000[];
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDB04);
+char* func_800FDB04(void)
+{
+    char* sp10[2];
+    int sp18;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDB60);
+    vs_mainMenu_setBladeUi(&D_80102464[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
+    return sp10[1];
+}
+
+char* func_800FDB60(void)
+{
+    char* menuText[2];
+    int rowType;
+
+    vs_mainMenu_setGripUi(
+        &D_80102460[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    return menuText[1];
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDBAC);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDCD0);
+char* func_800FDCD0(void)
+{
+    char* sp10[2];
+    int sp18;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDD24);
+    vs_mainMenu_setAccessoryUi(
+        &D_80102468[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
+    return sp10[1];
+}
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDD78);
+char* func_800FDD24(void)
+{
+    char* sp10[2];
+    int sp18;
+
+    vs_mainMenu_setGemUi(&D_80102458[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
+    return sp10[1];
+}
+
+void func_800FDD78(void) { D_801024B8 = 9; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDD88);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDEBC);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE360);
+void vs_mainMenu_unequipAllWeapons(void)
+{
+    int i;
+
+    vs_battle_equipWeapon(NULL);
+
+    for (i = 0; i < 8; ++i) {
+        vs_battle_inventory.weapons[i].isEquipped = 0;
+    }
+}
 
 void vs_mainMenu_unequipShield(void)
 {
@@ -93,7 +135,18 @@ int vs_mainMenu_loadItemNames(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE694);
+int vs_mainMenu_ensureItemNamesLoaded(void)
+{
+    if (vs_mainMenu_itemNames == NULL) {
+        return 1;
+    }
+    if (vs_mainMenu_loadItemNames(0) != 0) {
+        vs_main_freeHeapR(vs_mainMenu_itemNames);
+        vs_mainMenu_itemNames = NULL;
+        return 1;
+    }
+    return 0;
+}
 
 static int _getItemId(int category, int index, vs_battle_inventory_t* inventory)
 {
@@ -222,17 +275,26 @@ int vs_mainMenu_getItemCount(int category, vs_battle_inventory_t* inventory)
     return count;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEB08);
+int vs_mainMenu_getFirstItem(int itemCategory, vs_battle_inventory_t* inventory)
+{
+    int i;
+
+    for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory]; ++i) {
+        if (_getItemId(itemCategory, i, inventory) == 0) {
+            break;
+        }
+    }
+    return i;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEB94);
 
 void func_800FF0EC(int, int, char**, int*);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF0EC);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF348);
+int func_800FF348(void) { return D_801022CC + D_801022D2; }
 
-int func_800FF360(void);
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF360);
+int func_800FF360(void) { return D_801022C8 == 0 ? D_801022CC : -1; }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF388);
 
@@ -312,19 +374,66 @@ void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
         ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFCDC);
+int func_800FFCDC(u_int arg0, int arg1)
+{
+    int var_a0;
+    int temp_s0;
+    u_long* temp_a1;
+
+    temp_s0 = arg0 >> (D_801022D5 * 8);
+    temp_a1 = func_800C0224(D_800EC270[temp_s0], arg1, 0x100010, D_1F800000[2]);
+
+    if (D_801022D5 == 0) {
+        var_a0 = 0x37F83020;
+    } else {
+        var_a0 = 0x37FA3020;
+    }
+    temp_a1[4] = var_a0;
+    D_801022D5 = 0;
+    return (temp_s0 + 1) & 0xF;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFD64);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFE20);
+void func_800FFE20(int arg0, int arg1, int arg2, int arg3)
+{
+    int var_a2;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFE70);
+    var_a2 = 0x808080;
+    if (arg2 < arg0) {
+        var_a2 = 0x804020;
+    }
+    if (arg0 < arg2) {
+        var_a2 = 0x204080;
+    }
+    func_800FFD64(arg0, arg1, var_a2, arg3);
+}
+
+void func_800FFE70(int arg0, int arg1, int arg2)
+{
+    func_800FFD64(arg0, arg1, 0x808080, arg2);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFE98);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFF38);
+void func_800FFF38(int arg0, int arg1)
+{
+    u_long* temp_a1;
+    int new_var2;
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFFBC);
+    temp_a1 = func_800C0214(0x70007, arg1);
+    new_var2 = (((arg0 / 3) * 8) + 0xD8) | ((((arg0 % 3) * 8) + 0xC8) << 8);
+    if (arg0 == 2) {
+        temp_a1[4] = new_var2 | 0x37FA0000;
+    } else {
+        temp_a1[4] = new_var2 | 0x37F90000;
+    }
+}
+
+void func_800FFFBC(int arg0, int arg1)
+{
+    func_800C0214(0x100010, arg1)[4] = (0x60 - (arg0 * 0x10)) | 0x37FD8000;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100004);
 

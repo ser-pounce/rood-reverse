@@ -2282,7 +2282,7 @@ int vs_menu4_exec(char* state)
     }
     if (_animationIndex < 10) {
         userInput = vs_battle_rowAnimationSteps[_animationIndex];
-        func_80100344(16 - userInput, 38, 88, 10);
+        vs_mainMenu_drawButtonUiBackground(16 - userInput, 38, 88, 10);
         vs_mainmenu_drawButton(1, 8 - userInput, 36, 0);
         vs_battle_renderTextRawColor(
             "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);

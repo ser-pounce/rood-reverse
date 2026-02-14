@@ -5,6 +5,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "lbas.h"
+#include "gpu.h"
 #include <libetc.h>
 
 typedef struct {
@@ -516,7 +517,25 @@ void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100164);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100344);
+void vs_mainMenu_drawButtonUiBackground(int arg0, int arg1, int arg2, int count)
+{
+    int i;
+    u_long* var_t2 = D_1F800000[0];
+    u_long* temp_v1 = D_1F800000[1] - 3;
+
+    for (i = 0; i < count; ++i) {
+        var_t2[0] = vs_getTag(u_long[6], temp_v1[0]);
+        var_t2[1] = vs_getTpage(0, 0, 0, 0, ditheringOn);
+        var_t2[2] = vs_getRGB0(primLineG2, 0x40, 0x38, 0x20);
+        var_t2[3] = ((arg0 & 0xFFFF) | ((arg1 + i) << 0x10));
+        var_t2[4] = vs_getRGB888(16, 16, 8);
+        var_t2[5] = ((((arg0 + arg2) - i) & 0xFFFF) | ((arg1 + i) << 0x10));
+        var_t2[6] = vs_getTpage(0, 0, 0, 0, ditheringOff);
+        temp_v1[0] = (((u_long)var_t2 << 8) >> 8);
+        var_t2 += 7;
+    }
+    D_1F800000[0] = var_t2;
+}
 
 void func_80100414(int arg0, int arg1)
 {

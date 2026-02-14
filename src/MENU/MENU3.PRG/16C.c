@@ -1329,7 +1329,7 @@ int func_80108970(char* arg0)
         var_s0 = (0xA - D_80109716) << 5;
     }
     if (D_80109716 != 0) {
-        func_80100344(0x10 - var_s0, 0x26, 0x58, 0xA);
+        vs_mainMenu_drawButtonUiBackground(0x10 - var_s0, 0x26, 0x58, 0xA);
         vs_mainmenu_drawButton(1, 8 - var_s0, 0x24, NULL);
         vs_battle_renderTextRawColor("STATUS", ((0x1C - var_s0) & 0xFFFF) | 0x260000,
             0x202020 << D_80109713, NULL);

@@ -26,6 +26,7 @@ enum vs_primType {
     primPolyGT4SemiTrans = primPolyGT4 | primSemiTrans,
     primLineF2 = 0x40,
     primLineF2SemiTrans = primLineF2 | primSemiTrans,
+    primLineG2 = 0x50,
     primTile = 0x60,
     primTileSemiTrans = primTile | primSemiTrans,
     primSprt = 0x64,

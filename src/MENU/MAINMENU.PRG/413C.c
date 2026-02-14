@@ -14,7 +14,7 @@ typedef struct {
 } textHeader_t;
 
 extern char vs_mainMenu_isLevelledSpell;
-extern int D_801022C8;
+extern int (*D_801022C8)[32];
 extern int D_801022CC;
 extern char D_801022D2;
 extern char D_801022DC;
@@ -31,6 +31,7 @@ extern char D_801023DC;
 extern char D_801023DD;
 extern int _selectedRow;
 extern char D_801023DE;
+extern char D_801024A0;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
 extern textHeader_t _textHeaders[];
@@ -295,9 +296,21 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF0EC);
 
 int func_800FF348(void) { return D_801022CC + D_801022D2; }
 
-int func_800FF360(void) { return D_801022C8 == 0 ? D_801022CC : -1; }
+int func_800FF360(void) { return D_801022C8 == NULL ? D_801022CC : -1; }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF388);
+vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
+{
+    vs_battle_menuItem_t* temp_v0 =
+        vs_battle_setMenuItem(arg0 + 0x20, arg1, ((arg0 + D_801024A0) * 0x10) + 0x12,
+            0x7E, 0, (char*)D_801022C8[D_801022D2 + arg0]);
+    int v;
+    v = D_801022C8[D_801022D2 + arg0][7];
+    temp_v0->unk7 = v & 1;
+    if ((arg0 == 0) && (D_801022D2 != 0)) {
+        temp_v0->unk5 = 1;
+    }
+    return temp_v0;
+}
 
 void func_800FF43C(void);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF43C);
@@ -411,9 +424,32 @@ int func_800FFCDC(u_int arg0, int arg1)
     return (temp_s0 + 1) & 0xF;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFD64);
+int vs_mainMenu_printIntColor(int arg0, int arg1, int arg2, u_long* arg3)
+{
+    int sp10;
+    int var_s0 = arg0;
 
-void func_800FFE20(int arg0, int arg1, int arg2, int arg3)
+    if (arg0 < 0) {
+        var_s0 = -arg0;
+    }
+
+    do {
+        var_s0 = vs_battle_toBCD(var_s0);
+        sp10 = ((var_s0 & 0xF) << 8) | ('0' << 8) | '#';
+        vs_battle_renderTextRawColor((char*)&sp10, arg1, arg2, arg3);
+        var_s0 = var_s0 >> 4;
+        arg1 -= 8;
+    } while (var_s0 != 0);
+
+    if (arg0 < 0) {
+        sp10 = ('-' << 8) | '#';
+        vs_battle_renderTextRawColor((char*)&sp10, arg1 + 1, arg2, arg3);
+    }
+
+    return arg1;
+}
+
+void func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
 {
     int var_a2;
 
@@ -424,12 +460,12 @@ void func_800FFE20(int arg0, int arg1, int arg2, int arg3)
     if (arg0 < arg2) {
         var_a2 = 0x204080;
     }
-    func_800FFD64(arg0, arg1, var_a2, arg3);
+    vs_mainMenu_printIntColor(arg0, arg1, var_a2, arg3);
 }
 
-void func_800FFE70(int arg0, int arg1, int arg2)
+void func_800FFE70(int arg0, int arg1, u_long* arg2)
 {
-    func_800FFD64(arg0, arg1, 0x808080, arg2);
+    vs_mainMenu_printIntColor(arg0, arg1, 0x808080, arg2);
 }
 
 void func_800FFE98(int arg0, int arg1, int arg2, u_long* arg3)

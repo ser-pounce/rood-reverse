@@ -778,7 +778,8 @@ static int _assembleBladeMenu(int params)
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
 
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         selectedRow = _getSelectedRow() + 1;
@@ -892,7 +893,8 @@ int _assembleGripMenu(int params)
             vs_mainMenu_resetStats();
         }
 
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         D_8010BC04 = _getSelectedRow() + 1;
@@ -993,7 +995,8 @@ static int _attachGem(int params)
             vs_mainMenu_resetStats();
         }
 
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         D_8010BC0C = _getSelectedRow() + 1;
@@ -2674,7 +2677,8 @@ static int _selectBlade(int arg0)
             vs_mainMenu_resetStats();
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         selectedRow = _getSelectedRow() + 1;
         if (selectedRow != 0) {
@@ -3162,7 +3166,8 @@ static int _selectShields(int arg0)
         } else {
             vs_mainMenu_resetStats();
         }
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         D_8010BC68 = _getSelectedRow() + 1;
         if (D_8010BC68 != 0) {
@@ -3643,7 +3648,8 @@ static int _initUiArmor(int arg0)
         } else {
             vs_mainMenu_resetStats();
         }
-        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(
+            _itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         D_8010BC74 = _getSelectedRow() + 1;
         if (D_8010BC74 != 0) {

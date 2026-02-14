@@ -24,7 +24,7 @@ void vs_mainMenu_rebuildInventory(int);
 void func_800FFBC8(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(u_int, int);
-void func_800FFD64(int, int, int, int);
+int vs_mainMenu_printIntColor(int, int, int, u_long*);
 void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
 void func_80100004(int, int, int);

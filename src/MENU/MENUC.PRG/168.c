@@ -681,9 +681,7 @@ static void _assembleBladeMenuHeader(int arg0)
 
 static void _initMenuHeader(int arg0)
 {
-    vs_battle_menuItem_t* menuItem;
-
-    menuItem = vs_battle_getMenuItem(arg0);
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 4;
     menuItem->targetX = 155;
     menuItem->unk1A = 18;
@@ -3080,17 +3078,15 @@ static void _initCombineShields(int arg0)
 }
 
 static void _initUiShield(
-    vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3)
+    vs_battle_inventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
 {
-    int temp_s1;
-
-    temp_s1 = *(int*)arg0->gems;
-    *(int*)arg0->gems = 0;
-    vs_mainMenu_initUiShield(arg0, arg1, arg2, arg3);
-    *(int*)arg0->gems = temp_s1;
+    int gems = *(int*)shield->gems;
+    *(int*)shield->gems = 0;
+    vs_mainMenu_initUiShield(shield, menuText, rowTypes, stringBuf);
+    *(int*)shield->gems = gems;
 }
 
-static int _selectShield(int arg0)
+static int _selectShields(int arg0)
 {
     static int D_8010BC68;
     static char state;
@@ -3107,7 +3103,7 @@ static int _selectShield(int arg0)
 
     if (arg0 != 0) {
         D_8010BC6D = arg0;
-        _initMenuHeader(arg0 + 0xA);
+        _initMenuHeader(arg0 + 10);
         state = 0;
         return 0;
     }
@@ -3322,7 +3318,7 @@ static int _combineShieldMenu(int arg0)
                             state = 4;
                         } else {
                             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                            _selectShield(temp_s2);
+                            _selectShields(temp_s2);
                             state = 3;
                         }
                         break;
@@ -3399,7 +3395,7 @@ static int _combineShieldMenu(int arg0)
         D_8010BC70 = 0;
         break;
     case 3:
-        temp_s2 = _selectShield(0);
+        temp_s2 = _selectShields(0);
         if (temp_s2 != 0) {
             if (temp_s2 != -2) {
                 if (temp_s2 > 0) {

@@ -771,14 +771,14 @@ static int _assembleBladeMenu(int params)
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         if (itemId != 0) {
-            vs_mainMenu_setUiBladeStats((int)itemId);
+            vs_mainMenu_setUiBladeStats(itemId);
         } else {
             func_800FBB8C(3);
             vs_mainMenu_resetStats();
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
 
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, (int)_itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         selectedRow = _getSelectedRow() + 1;
@@ -892,7 +892,7 @@ int _assembleGripMenu(int params)
             vs_mainMenu_resetStats();
         }
 
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         D_8010BC04 = _getSelectedRow() + 1;
@@ -993,7 +993,7 @@ static int _attachGem(int params)
             vs_mainMenu_resetStats();
         }
 
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
 
         D_8010BC0C = _getSelectedRow() + 1;
@@ -1273,7 +1273,7 @@ static int _assembleMenu(int arg0)
 
                 vs_battle_rowTypeBuf[i + 2] = 1;
 
-                func_800FF9E4(selectedOption, 16);
+                vs_mainMenu_printInformation(selectedOption, 16);
 
                 if (selectedOption >= 2) {
                     i = VS_MENU12_BIN_INDEX_selectGem;
@@ -1732,7 +1732,7 @@ static int _attachGemsMenu(int arg0)
                         }
 
                         vs_battle_rowTypeBuf[i] = 1;
-                        func_800FF9E4(itemInfo, 16);
+                        vs_mainMenu_printInformation(itemInfo, 16);
                         menuText[1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_selectGem];
                         if (itemInfo == gemSlots) {
@@ -2674,7 +2674,7 @@ static int _selectBlade(int arg0)
             vs_mainMenu_resetStats();
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         selectedRow = _getSelectedRow() + 1;
         if (selectedRow != 0) {
@@ -2863,7 +2863,7 @@ static int _combineBladeMenu(int arg0)
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
-                func_800FF9E4(i_2, 16);
+                vs_mainMenu_printInformation(i_2, 16);
                 menuText[1] = (char*)&vs_mainMenu_menu12Text
                     [VS_MENU12_BIN_OFFSET_selectBladeToCombine];
                 switch (i_2) {
@@ -3162,7 +3162,7 @@ static int _selectShields(int arg0)
         } else {
             vs_mainMenu_resetStats();
         }
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         D_8010BC68 = _getSelectedRow() + 1;
         if (D_8010BC68 != 0) {
@@ -3354,7 +3354,7 @@ static int _combineShieldMenu(int arg0)
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
-                func_800FF9E4(temp_s2, 0x10);
+                vs_mainMenu_printInformation(temp_s2, 0x10);
                 menuText[1] =
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectShield];
                 switch (temp_s2) {
@@ -3643,7 +3643,7 @@ static int _initUiArmor(int arg0)
         } else {
             vs_mainMenu_resetStats();
         }
-        func_800FF9E4(_itemsListSelection + _itemsListWindow, _itemsListState);
+        vs_mainMenu_printInformation(_itemsListSelection + _itemsListWindow, _itemsListState);
         _navigateItemsList(2);
         D_8010BC74 = _getSelectedRow() + 1;
         if (D_8010BC74 != 0) {
@@ -3829,7 +3829,7 @@ int _combineArmorMenu(int arg0)
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
-                func_800FF9E4(i_2, 16);
+                vs_mainMenu_printInformation(i_2, 16);
                 menuText[1] =
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectArmor];
                 switch (i_2) {
@@ -4024,7 +4024,7 @@ static int _combineTopMenu(int arg0)
         }
         break;
     case 1:
-        func_800FF9E4(func_801008B0(), D_801023D0);
+        vs_mainMenu_printInformation(func_801008B0(), D_801023D0);
         selectedRow = vs_mainmenu_getSelectedRow();
         i = selectedRow + 1;
         if (i != 0) {
@@ -4135,7 +4135,7 @@ int vs_menuC_exec(char* state)
         }
         break;
     case 3:
-        func_800FF9E4(func_801008B0(), D_801023D0);
+        vs_mainMenu_printInformation(func_801008B0(), D_801023D0);
         selectedRow = vs_mainmenu_getSelectedRow();
         i = selectedRow + 1;
         if (i != 0) {

@@ -14,7 +14,7 @@ void func_800FF0EC(int, int, char**, int*);
 int func_800FF348();
 int func_800FF360(void);
 void func_800FF43C(void);
-void func_800FF9E4(int, int);
+void vs_mainMenu_printInformation(int, int);
 void func_800FFA88(int);
 void func_800FFA94(void);
 void func_800FFB68(int);

@@ -399,7 +399,7 @@ static int _soundOptionMenu(int init)
                     (char*)&_menuStrings[_menuStrings[i * 2 + VS_menu_INDEX_stereoDesc]];
                 rowTypes[i] = 0;
             }
-            i = vs_main_soundMono;
+            i = vs_main_settings.monoSound;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24D, menuStrings, rowTypes);
             state = 1;
@@ -453,7 +453,7 @@ static int _vibrationOptionMenu(int init)
                                                       + VS_menu_INDEX_vibrationOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = 1 - vs_main_vibrationEnabled;
+            i = 1 - vs_main_settings.vibrationOn;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24E, menuStrings, rowTypes);
             state = 1;
@@ -736,7 +736,7 @@ int vs_menu8_exec(char* state)
             break;
         }
         if (i > 0) {
-            vs_main_vibrationEnabled = 2 - i;
+            vs_main_settings.vibrationOn = 2 - i;
         }
         *state = init;
         break;

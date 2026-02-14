@@ -397,8 +397,6 @@ extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_skillsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
-extern char vs_main_soundMono;
-extern char vs_main_vibrationEnabled;
 extern int vs_main_startState;
 extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;

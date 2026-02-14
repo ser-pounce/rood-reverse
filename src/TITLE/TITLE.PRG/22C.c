@@ -4356,7 +4356,7 @@ static void _menuVibrationSettings(void)
     _menuItemStates[menuItemSound].targetPos = 128;
     _menuItemStates[menuItemContinue].targetPos = 0;
     _menuItemStates[menuItemVibration].state = menuItemStateSubmenu;
-    vibrationSetting = vs_main_vibrationEnabled + menuItemVibrationOff;
+    vibrationSetting = vs_main_settings.vibrationOn + menuItemVibrationOff;
     _setMenuItemFadeIn(menuItemVibrationOn, 64);
     _setMenuItemFadeIn(menuItemVibrationOff, 96);
     _menuItemStates[menuItemVibrationOff].state = menuItemStateSubmenu;
@@ -4463,7 +4463,7 @@ static void _menuSoundSettings(void)
     _menuItemStates[menuItemNewGame].targetPos = 128;
     _menuItemStates[menuItemVibration].targetPos = 0;
     _menuItemStates[menuItemSound].state = menuItemStateSubmenu;
-    soundSetting = menuItemSoundStereo - (vs_main_soundMono * 3);
+    soundSetting = menuItemSoundStereo - (vs_main_settings.monoSound * 3);
     _setMenuItemFadeIn(menuItemSoundStereo, 64);
     _setMenuItemFadeIn(menuItemSoundMono, 96);
     _menuItemStates[menuItemSoundMono].state = menuItemStateSubmenu;

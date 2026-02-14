@@ -2644,7 +2644,7 @@ loop_1:
         D_80109A68 = 9;
         break;
     case 9:
-        func_800FF9E4(func_800FF348(), D_801022C4);
+        vs_mainMenu_printInformation(func_800FF348(), D_801022C4);
         func_800FF43C();
         temp_s3 = func_800FF360() + 1;
         if (temp_s3 != 0) {

@@ -5,6 +5,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "lbas.h"
+#include <libetc.h>
 
 typedef struct {
     char text[14];
@@ -301,7 +302,24 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF388);
 void func_800FF43C(void);
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF43C);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF9E4);
+void vs_mainMenu_printInformation(int arg0, int arg1)
+{
+    if (arg1 >= 16) {
+        if (vs_battle_rowTypeBuf[arg0] & 1) {
+            if ((vs_main_settings.information == 0)
+                && (vs_main_buttonsState & (PADLup | PADLdown))) {
+                return;
+            }
+            func_800C8E04(1);
+            D_800F514C = 0xB;
+        } else if (vs_main_settings.information != 0) {
+            func_800C8E04(2);
+            D_800F514C = 0xB;
+        } else {
+            D_800F514C = 0;
+        }
+    }
+}
 
 void func_800FFA88(int arg0) { D_801022E3 = arg0; }
 
@@ -414,7 +432,22 @@ void func_800FFE70(int arg0, int arg1, int arg2)
     func_800FFD64(arg0, arg1, 0x808080, arg2);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FFE98);
+void func_800FFE98(int arg0, int arg1, int arg2, u_long* arg3)
+{
+    int i = 0;
+
+    if (arg0 < 0) {
+        arg1 += 0xF0000;
+        arg2 += 0xF00;
+    }
+
+    do {
+        ++i;
+        func_800C0224((i * 8) | 0x100, arg1, 0x10010, arg3)[4] = arg2;
+        arg1 += arg0 << 0x10;
+        arg2 += arg0 << 8;
+    } while (i < 16);
+}
 
 void func_800FFF38(int arg0, int arg1)
 {

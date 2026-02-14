@@ -64,3 +64,4 @@ vs_mainMenu_itemHelp = 0x80102540;
 vs_mainMenu_equipmentSubtype = 0x80102545;
 _textHeaders = 0x80102558;
 D_80102578 = 0x80102578;
+vs_mainMenu_printInformation = 0x800FF9E4;

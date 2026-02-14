@@ -7991,7 +7991,6 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern char vs_main_vibrationEnabled;
 extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 
@@ -8757,7 +8756,7 @@ void vs_main_setVibrateParams(void)
         _padAct[j].unk8 = 0;
     }
 
-    if (vs_main_vibrationEnabled != 0) {
+    if (vs_main_settings.vibrationOn != 0) {
         _padSetActData(0, 0, _abs2(_padAct[0].unk0[0]) >> 8);
         _padSetActData(0, 1, _abs2(_padAct[0].unk0[1]) >> 8);
     }

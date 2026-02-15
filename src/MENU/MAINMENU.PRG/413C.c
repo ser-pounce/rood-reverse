@@ -119,7 +119,66 @@ char* func_800FDD24(void)
 
 void func_800FDD78(void) { D_801024B8 = 9; }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDD88);
+extern char D_8010214A;
+
+int func_800FDD88(int arg0)
+{
+    int var_a0 = 0;
+    int subType = vs_mainMenu_equipmentSubtype;
+
+    switch (arg0) {
+    case 0:
+        var_a0 = subType & 0xB;
+        break;
+    case 1:
+        var_a0 = subType & 0x1B;
+        break;
+    case 2:
+    case 3:
+    case 4:
+        var_a0 = 1;
+        break;
+    case 5:
+    case 6:
+    case 7:
+        var_a0 = D_801024B9 != 2;
+        break;
+    case 8:
+        var_a0 = D_801024B9 == 1;
+        break;
+    case 9:
+        var_a0 = 1;
+        // Fallthrough
+    case 10:
+    case 11:
+    case 12:
+        if ((subType & 8) && (D_801024A1 != 0)) {
+            var_a0 = (arg0 - 10) < D_8010246C[D_801024A1 - 1].base.gemSlots;
+            break;
+        }
+        // Fallthrough
+    case 13:
+    case 14:
+        if ((subType & 1) && (D_801024A1 != 0)) {
+            var_a0 =
+                (arg0 - 12) < D_80102460[D_80102470[D_801024A1 - 1].grip - 1].gemSlots;
+        }
+        break;
+    case 15:
+        var_a0 = D_8010214A;
+        break;
+    case 16:
+    case 17:
+        var_a0 = subType & 3;
+        break;
+    case 18:
+    case 19:
+    case 20:
+        var_a0 = 1;
+        break;
+    }
+    return var_a0;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDEBC);
 

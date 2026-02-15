@@ -822,7 +822,36 @@ int func_801008B0(void) { return _selectedRow + D_801023DE; }
 
 int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != NULL ? -1 : _selectedRow; }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
+vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
+{
+    int temp_a1;
+    int temp_v1;
+    vs_battle_menuItem_t* temp_v0 = vs_battle_setMenuItem(arg0 + (D_801023DD * 0xA), arg1,
+        ((arg0 + D_801023DD) * 0x10) + 0x12, D_801023DF + 0x7E, 0,
+        (char*)&D_801023D4[(D_801023DE + arg0) * 0x40]);
+
+    temp_a1 = *((int*)(&(&D_801023D4[(D_801023DE + arg0) * 0x40])[14]));
+    temp_v0->unk7 = temp_a1 & 1;
+    temp_v0->unk2 = temp_v0->unk2 + ((temp_a1 & 2) * 0xC);
+    temp_v1 = (temp_a1 >> 3) & 1;
+    temp_v0->unkB = temp_v1;
+    temp_v0->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
+    temp_v0->icon = (temp_a1 >> 0x1A);
+    if ((arg0 == 0) && (D_801023DE != 0)) {
+        temp_v0->unk5 = 1;
+    }
+    arg0 = (temp_a1 >> 9) & 0x7F;
+    if (arg0 < 0x65) {
+        temp_v0->unk10 = arg0;
+    } else if (arg0 < 0x67) {
+        temp_v0->itemState = arg0 - 0x64;
+    } else {
+        temp_v0->unk3C = vs_battle_hitlocations[arg0 - 0x67];
+    }
+    temp_v0->material = (temp_a1 >> 0x10) & 7;
+    temp_v0->unk12 = (temp_a1 >> 0x13) & 0x7F;
+    return temp_v0;
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100A5C);
 

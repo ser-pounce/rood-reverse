@@ -33,6 +33,9 @@ extern char D_801023DC;
 extern char D_801023DD;
 extern int _selectedRow;
 extern char D_801023DE;
+extern char D_801023E4;
+extern char* D_801023E8[];
+extern int D_801023F8[];
 extern char D_801024A0;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
@@ -674,7 +677,43 @@ void func_80101118(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80101268);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801013F8);
+void func_801013F8(int arg0)
+{
+    int i;
+    int var_s3;
+    int var_s4;
+    u_int temp_s5;
+
+    var_s4 = 0x37F90000;
+    var_s3 = 0x404040;
+
+    if ((D_801023E3 != 0) || (D_801023E4 != 0xB)) {
+        var_s4 = 0x37F80000;
+        ++D_801023E4;
+        var_s3 = 0x808080;
+        if (D_801023E4 >= 12) {
+            D_801023E4 = 0;
+        }
+    }
+
+    temp_s5 = D_801023E4 >> 2;
+
+    if (arg0 != 0) {
+        for (i = 0; i < 4; ++i) {
+            vs_battle_renderTextRawColor(D_801023E8[i], D_801023F8[i], var_s3, NULL);
+        }
+        i = 0x500C8;
+    } else {
+        i = 0x100010;
+    }
+    func_800C0214(0x100010, i - temp_s5)[4] = (int)(var_s4 | 0x3000);
+
+    i = 0x1100A2;
+    if (arg0 != 0) {
+        i = 0x60124;
+    }
+    func_800C0214(0x100010, i + temp_s5)[4] = (int)(var_s4 | 0x3010);
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010154C);
 

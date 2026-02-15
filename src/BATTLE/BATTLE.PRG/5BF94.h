@@ -165,7 +165,7 @@ typedef struct {
 
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
-void vs_battle_renderTextRawColor(char const*, int, int, u_long*);
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
 void func_800C6BF0(int, void*);

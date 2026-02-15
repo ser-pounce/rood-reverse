@@ -10,16 +10,20 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include <libetc.h>
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "../../assets/MENU/ITEMNAME.BIN.h"
+#include <libetc.h>
+#include <limits.h>
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
 
-extern short _weaponTitleSubmaxThresholds[];
-extern short _weaponTitleMaxThresholds[];
+static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+    SHRT_MAX };
+
+static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX, 8192 }; // Last one junk?
+
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;

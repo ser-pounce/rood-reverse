@@ -27,6 +27,7 @@ options:
     - config/MENU/MENUF.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MAINMENU.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MAINMENU.PRG/undefined_syms_auto.txt
+  subalign: 4
 
 segments:
   - start: 0x0
@@ -41,5 +42,5 @@ segments:
       - [0xC48, c]
       - [0x413C, c]
       - [0x8170, c]
-      - [0x8814, data]
+      - [0x8834, data]
   - [0x8D79]

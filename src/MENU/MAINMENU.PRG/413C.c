@@ -4,6 +4,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "lbas.h"
 #include "gpu.h"
 #include <libetc.h>
@@ -28,11 +29,13 @@ extern u_short D_801022E8[];
 extern int D_801022F8[];
 extern char D_8010231A[];
 extern u_short D_8010237C[];
-extern void* D_801023D4;
+extern u_short* D_801023D4;
 extern char D_801023DC;
 extern char D_801023DD;
-extern int _selectedRow;
+extern char D_801023DF;
 extern char D_801023DE;
+extern short D_801023E0;
+extern int _selectedRow;
 extern char D_801023E4;
 extern char* D_801023E8[];
 extern int D_801023F8[];
@@ -50,7 +53,7 @@ char* func_800FD93C(u_int arg0)
     int weaponId;
     vs_battle_inventoryWeapon* weapon;
 
-    menuText[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
+    menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     weaponId = D_801024A1;
     weapon = &D_80102470[weaponId - 1];
 
@@ -118,7 +121,7 @@ char* func_800FDBAC(int arg0)
     int temp_s2;
     vs_battle_inventoryShield* shield;
 
-    menuText[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
+    menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     shield = &D_8010246C[D_801024A1 - 1];
     temp_s2 = D_801024A1;
 
@@ -717,8 +720,94 @@ void func_80100414(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
 
-// https://decomp.me/scratch/Oo0p8
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", vs_mainmenu_setMenuRows);
+void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTypes)
+{
+    int temp_v1_2;
+    int i;
+    int var_v0;
+    int temp_a0;
+    u_int var_a0;
+    int var_a2;
+
+    i = 0;
+    var_a2 = 0;
+    temp_a0 = arg1 & 0xFF;
+    D_801023DF = (arg1 >> 0xC);
+    D_801023DC = temp_a0;
+    arg1 = (arg1 >> 8) & 0xF;
+
+    if (vs_main_settings.cursorMemory != 0) {
+        i = D_800F4EE8.unk0[temp_a0 * 2];
+        var_a2 = D_800F4EE8.unk0[temp_a0 * 2 + 1];
+    }
+
+    temp_v1_2 = 0xA;
+    temp_v1_2 = rowCount - temp_v1_2 + arg1;
+
+    if (temp_v1_2 < 0) {
+        i += var_a2;
+        var_a2 = 0;
+        if (i >= rowCount) {
+            i = 0;
+        }
+    } else {
+        if (temp_v1_2 < var_a2) {
+            if ((i + var_a2) >= rowCount) {
+                i = 0;
+                var_a2 = 0;
+            } else {
+                i += var_a2 - temp_v1_2;
+                var_a2 = temp_v1_2;
+            }
+        }
+
+        var_v0 = var_a2 < temp_v1_2;
+
+        if ((var_a2 > 0) && (i == 0)) {
+            i = 1;
+            var_a2 -= 1;
+            var_v0 = var_a2 < temp_v1_2;
+        }
+
+        if (var_v0 != 0) {
+            var_a0 = rowCount << 7;
+            if (i == (9 - arg1)) {
+                i -= 1;
+                var_a2 += 1;
+                ;
+            }
+        }
+    }
+
+    _selectedRow = i;
+
+    D_801023DE = var_a2;
+    D_801023E0 = rowCount;
+    D_801023DD = arg1;
+    D_801023D0 = 0;
+    D_801023D4 = vs_main_allocHeapR(rowCount << 7);
+
+    for (i = 0; i < rowCount; ++i) {
+        char* s;
+        *((int*)(&(&D_801023D4[i * 0x40])[14])) = rowTypes[i];
+
+        if (strings[i * 2] != NULL) {
+            vs_battle_copyAligned(&D_801023D4[i * 0x40], strings[i * 2], 0x1A);
+            D_801023D4[(i * 0x40) + 13] = 0xE7E7;
+        } else {
+            D_801023D4[i * 0x40] = 0xE7E7;
+        }
+
+        s = strings[i * 2 + 1];
+        if (s != NULL) {
+            D_801023D4[(i * 0x40) + 16] = 0xF8;
+            vs_battle_copyAligned(&D_801023D4[(i * 0x40) + 17], s, 0x5C);
+            D_801023D4[(i * 0x40) + 63] = 0xE7E7;
+        } else {
+            D_801023D4[(i * 0x40) + 16] = 0xE7E7;
+        }
+    }
+}
 
 int func_80100814(void)
 {
@@ -785,17 +874,17 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80101268);
 void func_801013F8(int arg0)
 {
     int i;
-    int var_s3;
+    int color;
     int var_s4;
     u_int temp_s5;
 
     var_s4 = 0x37F90000;
-    var_s3 = 0x404040;
+    color = 0x404040;
 
     if ((D_801023E3 != 0) || (D_801023E4 != 0xB)) {
         var_s4 = 0x37F80000;
         ++D_801023E4;
-        var_s3 = 0x808080;
+        color = 0x808080;
         if (D_801023E4 >= 12) {
             D_801023E4 = 0;
         }
@@ -805,19 +894,19 @@ void func_801013F8(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 4; ++i) {
-            vs_battle_renderTextRawColor(D_801023E8[i], D_801023F8[i], var_s3, NULL);
+            vs_battle_renderTextRawColor(D_801023E8[i], D_801023F8[i], color, NULL);
         }
         i = 0x500C8;
     } else {
         i = 0x100010;
     }
-    func_800C0214(0x100010, i - temp_s5)[4] = (int)(var_s4 | 0x3000);
+    func_800C0214(0x100010, i - temp_s5)[4] = var_s4 | 0x3000;
 
     i = 0x1100A2;
     if (arg0 != 0) {
         i = 0x60124;
     }
-    func_800C0214(0x100010, i + temp_s5)[4] = (int)(var_s4 | 0x3010);
+    func_800C0214(0x100010, i + temp_s5)[4] = var_s4 | 0x3010;
 }
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010154C);

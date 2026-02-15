@@ -898,7 +898,45 @@ void func_80101118(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80101268);
+int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3)
+{
+    int i;
+    int var_s2;
+    u_long* temp_v0_2;
+    int new_var;
+
+    int s7 = arg0 >> 0x1F;
+    arg0 &= 0xFFFF;
+    new_var = 0xE5;
+
+    if ((arg0 < new_var) && (arg0 == 0x8F)) {
+        do {
+            do {
+                return arg1 + 6;
+            } while (0);
+        } while (0);
+    }
+
+    i = arg2->unkA * 0x10;
+
+    if (arg2->unkA == 0) {
+        i = arg2->unk7 * 0x30;
+    }
+
+    var_s2 = (((arg0 & 0x1FF) % 21) * 0xC) | (((arg0 & 0x1FF) / 21) * 0xC00)
+           | (((((i + 0x380) >> 4) & 0x3F) | 0x3780) << 0x10);
+
+    for (i = 0; i < 12; ++i) {
+
+        temp_v0_2 = vs_battle_setSprite(s7 == 0 ? (i * 8) + 0x108 : 0x160 - (i * 8),
+            (arg1 & 0xFFFF) | ((arg2->y + i) << 0x10), 0x1000C, arg3);
+        temp_v0_2[4] = var_s2;
+        temp_v0_2[1] = 0xE100002D;
+        var_s2 += 0x100;
+    }
+
+    return arg1 + D_800EB810[arg0];
+}
 
 void func_801013F8(int arg0)
 {

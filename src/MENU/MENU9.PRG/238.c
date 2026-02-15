@@ -60,7 +60,6 @@ typedef struct {
     int unk28;
 } _monBinData_t;
 
-int func_80101268(int, int, vs_battle_menuItem_t*, u_long*);
 void func_80102A7C(vs_battle_menuItem_t*);
 void func_80102E10(int, int, char**, int);
 int _initData(void);

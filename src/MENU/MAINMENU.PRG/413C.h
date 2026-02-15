@@ -1,5 +1,6 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
+#include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
@@ -37,6 +38,7 @@ int func_801008B0(void);
 int vs_mainmenu_getSelectedRow(void);
 void func_80100A5C(void);
 void func_80101118(int);
+int func_80101268(u_int, int, vs_battle_menuItem_t*, u_long*);
 void func_801013F8(int);
 
 extern char vs_mainMenu_isLevelledSpell;

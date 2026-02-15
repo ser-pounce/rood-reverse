@@ -30,6 +30,7 @@ extern u_short D_801022E8[];
 extern int D_801022F8[];
 extern char D_8010231A[];
 extern u_short D_8010237C[];
+extern u_char D_801023BE;
 extern RECT D_801023C0[];
 extern u_short* D_801023D4;
 extern char D_801023DC;
@@ -687,7 +688,55 @@ void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
     _textHeaders[index].x = x;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100164);
+void func_80100164(void)
+{
+    int temp_s2;
+    int temp_t1;
+    int var_s1;
+    u_long* temp_s5;
+    u_long* temp_v1_2;
+
+    temp_s5 = D_1F800000[1] - 1;
+
+    if (vs_mainMenu_isLevelledSpell != 0) {
+        if (D_801023BE != 0) {
+            --D_801023BE;
+        }
+    } else {
+        if (D_801023BE < 5) {
+            D_801023BE = 5;
+        } else if (D_801023BE < 8) {
+            ++D_801023BE;
+        }
+    }
+
+    if (D_801023BE < 8) {
+        temp_s2 = -vs_battle_rowAnimationSteps[D_801023BE];
+
+        for (var_s1 = 0; var_s1 < 2; ++var_s1) {
+            vs_battle_renderTextRawColor(_textHeaders[var_s1].text,
+                ((temp_s2 + _textHeaders[var_s1].x) & 0xFFFF) | 0xA00000,
+                0x808080 >> _textHeaders[var_s1].unk14, NULL);
+        }
+
+        temp_t1 = temp_s2 & 0xFFFF;
+        temp_v1_2 = D_1F800000[0];
+        temp_v1_2[0] = (*temp_s5 & 0xFFFFFF) | 0x0A000000;
+        temp_v1_2[1] = 0xE1000200;
+        temp_v1_2[2] = 0x38200808;
+        temp_v1_2[3] = temp_t1 | 0xA00000;
+        temp_v1_2[4] = 0x663040;
+        temp_v1_2[5] = (temp_s2 + 0x50) | 0xA00000;
+        temp_v1_2[6] = 0x200808;
+        temp_v1_2[7] = temp_t1 | 0xAB0000;
+        temp_v1_2[8] = 0x663040;
+        temp_v1_2[9] = (temp_s2 + 0x50) | 0xAB0000;
+        temp_v1_2[10] = 0xE1000000;
+        *temp_s5 = ((u_long)temp_v1_2 << 8) >> 8;
+        D_1F800000[0] = temp_v1_2 + 11;
+        func_800CCCB8(temp_s5, 0x60000000, temp_t1 | 0xA20000, 0xB0052);
+    }
+}
 
 void vs_mainMenu_drawButtonUiBackground(int arg0, int arg1, int arg2, int count)
 {

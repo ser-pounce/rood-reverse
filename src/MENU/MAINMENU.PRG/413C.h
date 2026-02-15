@@ -27,7 +27,7 @@ int func_800FFCDC(u_int, int);
 int vs_mainMenu_printIntColor(int, int, int, u_long*);
 void vs_mainmenu_setMessage(char*);
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
-void func_80100004(int, int, int);
+void vs_mainMenu_drawRowIcon(int, int, int);
 void func_80100164(void);
 void vs_mainMenu_drawButtonUiBackground(int, int, int, int);
 void func_80100414(int, int);

@@ -1057,7 +1057,7 @@ int _gripNavigation(int arg0)
                              .grips[vs_menuD_containerData->indices.grips[D_80109A3C] - 1]
                              .gemSlots
                          + 0x30);
-        func_80100004(0x116, 0x100, 0x20);
+        vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_80109954, 0x240118, NULL);
         break;
     case 3:

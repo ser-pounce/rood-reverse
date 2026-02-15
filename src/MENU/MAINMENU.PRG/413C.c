@@ -27,6 +27,7 @@ extern int D_801022E4;
 extern u_short D_801022E8[];
 extern int D_801022F8[];
 extern char D_8010231A[];
+extern u_short D_8010237C[];
 extern void* D_801023D4;
 extern char D_801023DC;
 extern char D_801023DD;
@@ -505,7 +506,32 @@ void func_800FFFBC(int arg0, int arg1)
     func_800C0214(0x100010, arg1)[4] = (0x60 - (arg0 * 0x10)) | 0x37FD8000;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100004);
+void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
+{
+    int v1;
+    int var_a0;
+    u_long* temp_v0;
+
+    var_a0 = arg0 >> 0x10;
+    v1 = (arg0 >> 8) & 1;
+    arg0 = (arg0 - 1) & 0xFF;
+
+    if (var_a0 == 0) {
+        temp_v0 = func_800C0224(
+            0x40 << v1, (arg1 & 0xFFFF) | (arg2 << 0x10), 0x100010, D_1F800000[2] + 1);
+        temp_v0[4] = D_8010237C[arg0] | 0x37FE0000;
+        if (arg0 >= 0x17) {
+            temp_v0[3] -= 12;
+            temp_v0[4] = D_8010237C[arg0] | 0x37FD0000;
+        }
+    } else {
+        if (var_a0 == 2) {
+            var_a0 = -1;
+        }
+        func_800FFE98(var_a0, (arg1 & 0xFFFF) | (arg2 << 0x10),
+            D_8010237C[arg0] | 0x37FE0000, D_1F800000[2] + 1);
+    }
+}
 
 void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 {

@@ -37,6 +37,7 @@ func_800FFBC8 = 0x800FFBC8;
 vs_mainmenu_setMessage = 0x800FFC04;
 vs_mainmenu_drawButton = 0x800FFC68;
 vs_mainMenu_printIntColor = 0x800FFD64;
+vs_mainMenu_drawRowIcon = 0x80100004;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainMenu_drawButtonUiBackground = 0x80100344;
 vs_mainmenu_setMenuRows = 0x801005E0;

@@ -42,7 +42,53 @@ extern char _itemNamesLoading;
 extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
+char* func_800FD93C(u_int arg0)
+{
+    char* menuText[2];
+    int rowType;
+    int gem;
+    int weaponId;
+    vs_battle_inventoryWeapon* weapon;
+
+    menuText[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
+    weaponId = D_801024A1;
+    weapon = &D_80102470[weaponId - 1];
+
+    switch (arg0) {
+    case 0:
+        vs_mainMenu_initUiWeapon(weapon, menuText, &rowType, vs_battle_stringBuf);
+        break;
+    case 1:
+        vs_mainMenu_drawDpPpbars(0xB);
+        vs_mainMenu_setBladeUi(
+            &D_80102464[weapon->blade - 1], menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setUiBladeStats(weapon->blade);
+        break;
+    case 2:
+        vs_mainMenu_drawDpPpbars(8);
+        vs_mainMenu_setGripUi(
+            &D_80102460[weapon->grip - 1], menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setUiGripStats(weapon->grip);
+        break;
+    case 3:
+    case 4:
+    case 5:
+        vs_mainMenu_drawDpPpbars(8);
+        gem = weapon->gems[arg0 - 3];
+        if (gem != 0) {
+            vs_mainMenu_setGemUi(
+                &D_80102458[gem - 1], menuText, &rowType, vs_battle_stringBuf);
+            func_800FD878(gem);
+        } else {
+            vs_mainMenu_resetStats();
+        }
+        break;
+    }
+    vs_mainMenu_equipmentSubtype = 1;
+    D_801024A1 = weaponId;
+    vs_battle_getMenuItem(arg0 + 0xA)->selected = 1;
+    return menuText[1];
+}
 
 char* func_800FDB04(void)
 {

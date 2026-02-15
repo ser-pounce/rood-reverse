@@ -43,11 +43,12 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FD93C);
 
 char* func_800FDB04(void)
 {
-    char* sp10[2];
-    int sp18;
+    char* menuText[2];
+    int rowType;
 
-    vs_mainMenu_setBladeUi(&D_80102464[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
-    return sp10[1];
+    vs_mainMenu_setBladeUi(
+        &D_80102464[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    return menuText[1];
 }
 
 char* func_800FDB60(void)
@@ -60,25 +61,57 @@ char* func_800FDB60(void)
     return menuText[1];
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDBAC);
+char* func_800FDBAC(int arg0)
+{
+    char* menuText[2];
+    int rowType;
+    int gem;
+    int temp_s2;
+    vs_battle_inventoryShield* shield;
+
+    menuText[1] = (char*)&vs_mainMenu_itemHelp[0x340E];
+    shield = &D_8010246C[D_801024A1 - 1];
+    temp_s2 = D_801024A1;
+
+    if (arg0 == 0) {
+        vs_mainMenu_initUiShield(shield, menuText, &rowType, vs_battle_stringBuf);
+    } else if (arg0 >= 0) {
+        if (arg0 < 4) {
+            vs_mainMenu_drawDpPpbars(8);
+            gem = shield->gems[arg0 - 1];
+            if (gem != 0) {
+                vs_mainMenu_setGemUi(
+                    &D_80102458[gem - 1], menuText, &rowType, vs_battle_stringBuf);
+                func_800FD878(gem);
+            } else {
+                vs_mainMenu_resetStats();
+            }
+        }
+    }
+    vs_mainMenu_equipmentSubtype = 8;
+    D_801024A1 = temp_s2;
+    vs_battle_getMenuItem(arg0 + 10)->selected = 1;
+    return menuText[1];
+}
 
 char* func_800FDCD0(void)
 {
-    char* sp10[2];
-    int sp18;
+    char* menuText[2];
+    int rowType;
 
     vs_mainMenu_setAccessoryUi(
-        &D_80102468[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
-    return sp10[1];
+        &D_80102468[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    return menuText[1];
 }
 
 char* func_800FDD24(void)
 {
-    char* sp10[2];
-    int sp18;
+    char* menuText[2];
+    int rowType;
 
-    vs_mainMenu_setGemUi(&D_80102458[D_801024A1 - 1], sp10, &sp18, vs_battle_stringBuf);
-    return sp10[1];
+    vs_mainMenu_setGemUi(
+        &D_80102458[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    return menuText[1];
 }
 
 void func_800FDD78(void) { D_801024B8 = 9; }

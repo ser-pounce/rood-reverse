@@ -629,7 +629,48 @@ INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_801008F0);
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80100A5C);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80101118);
+void func_80101118(int arg0)
+{
+    int var_a0;
+    int temp_s4;
+    int var_s3;
+    u_long* temp_s2;
+    u_long* temp_v0;
+
+    var_s3 = 0;
+    temp_s2 = D_1F800000[1] + D_801022DE;
+
+    if (vs_main_frameBuf == 0) {
+        var_s3 = 0x140;
+    }
+
+    arg0 *= 8;
+    temp_s4 = arg0 == 0x80;
+
+    if (temp_s4 != 0) {
+        arg0 = D_801022E0;
+        var_a0 = arg0;
+    } else {
+        arg0 = arg0 | 0x100;
+        var_a0 = arg0;
+    }
+    temp_v0 = vs_battle_setSprite(var_a0, 0x100, 0xF00040, temp_s2);
+    temp_v0[1] = 0xE10000BC;
+    temp_v0[4] = 0x38F00000;
+
+    temp_v0 = vs_battle_setSprite(arg0, 0, 0xF00100, temp_s2);
+    temp_v0[1] = 0xE10000BA;
+    temp_v0[4] = 0x38F00000;
+
+    if (temp_s4 == 0) {
+        int new_var = 0x120;
+        arg0 = 0x180 - arg0;
+        vs_battle_setSprite(arg0, 0, 0xF00100, temp_s2)[1] =
+            (((u_int)var_s3 >> 6) | new_var | 0xE1000000);
+        vs_battle_setSprite(arg0, 0x100, 0xF00040, temp_s2)[1] =
+            (((var_s3 + 0x100) >> 6) | new_var | 0xE1000000);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_80101268);
 

@@ -347,7 +347,7 @@ int func_800C8C50(int arg0)
             return 1;
         }
         if (temp_s0 == 0) {
-            D_800EB9D4 = (u_int*)vs_main_allocHeapR(0xB400U);
+            D_800EB9D4 = (u_int*)vs_main_allocHeapR(0xB400);
             func_8010044C(D_800EB9D4);
         }
     }

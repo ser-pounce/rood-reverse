@@ -2,6 +2,7 @@
 #include "413C.h"
 #include "C48.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/overlay.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
@@ -29,6 +30,7 @@ extern u_short D_801022E8[];
 extern int D_801022F8[];
 extern char D_8010231A[];
 extern u_short D_8010237C[];
+extern RECT D_801023C0[];
 extern u_short* D_801023D4;
 extern char D_801023DC;
 extern char D_801023DD;
@@ -718,7 +720,43 @@ void func_80100414(int arg0, int arg1)
     D_801022E0 = arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010044C);
+void func_8010044C(u_int* arg0)
+{
+    int var_a2;
+    int i;
+    u_int var_v1;
+    u_int temp_a0;
+    u_int* temp_t1;
+    void* temp_s1;
+
+    temp_s1 = vs_overlay_slots[2];
+    temp_t1 = temp_s1 + 0x200;
+
+    for (i = 0, var_a2 = 0; i < 0x1780;) {
+        temp_a0 = temp_t1[i++];
+        for (var_v1 = temp_a0 & 0xFFFF; var_v1 != 0; --var_v1) {
+            arg0[var_a2++] = 0;
+        }
+
+        for (var_v1 = temp_a0 >> 0x10; var_v1 != 0; --var_v1) {
+            arg0[var_a2++] = temp_t1[i++];
+        }
+    }
+
+    func_8007DFF0(0x1A, 3, 6);
+    ClearImage(&D_801023C0[0], 0, 0, 0);
+    ClearImage(&D_801023C0[1], 0, 0, 0);
+
+    if (((vs_battle_menuState.currentState & 0x3F) == 7) && (D_800F4EA0 & 0x200)
+        && (vs_main_stateFlags.gameOver == 1)) {
+        vs_battle_drawImage(0x01FF0280, temp_s1, 0x10100);
+    } else {
+        func_80048A64((u_short*)temp_s1, 3, 0, 0x100);
+    }
+
+    vs_battle_drawImage(0x010002A0, arg0, 0xF00060);
+    func_80100414(-4, 0x80);
+}
 
 void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTypes)
 {

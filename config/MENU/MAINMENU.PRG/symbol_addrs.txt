@@ -22,6 +22,7 @@ vs_mainMenu_setUiBladeStats = 0x800FD404;
 vs_mainMenu_setUiGripStats = 0x800FD504;
 vs_mainMenu_unequipAllWeapons = 0x800FE360;
 vs_mainMenu_unequipShield = 0x800FE3A0;
+vs_mainMenu_initItem = 0x800FE3E0;
 vs_mainMenu_loadItemNames = 0x800FE5CC;
 vs_mainMenu_ensureItemNamesLoaded = 0x800FE694;
 _getItemId = 0x800FE6EC;

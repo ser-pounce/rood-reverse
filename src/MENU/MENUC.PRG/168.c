@@ -2978,7 +2978,7 @@ static int _combineBladeMenu(int arg0)
                     }
                     _disassembleWeapon(var_s1 - 1);
                 }
-                func_800FE3E0(1, D_8010BD10[i]);
+                vs_mainMenu_initItem(1, D_8010BD10[i]);
             }
 
             itemId = D_8010BD10[0];
@@ -3475,7 +3475,7 @@ static int _combineShieldMenu(int arg0)
                     state = 6;
                 }
                 _disassembleShield(itemId_3);
-                func_800FE3E0(3, temp_s1);
+                vs_mainMenu_initItem(3, temp_s1);
             }
 
             temp_s2 = _itemsToCombine[0];
@@ -3942,7 +3942,7 @@ int _combineArmorMenu(int arg0)
                     vs_battle_equipArmor(var_s1 - 1, NULL);
                     armor->bodyPart = 0;
                 }
-                func_800FE3E0(4, D_8010BD7C[i]);
+                vs_mainMenu_initItem(4, D_8010BD7C[i]);
             }
             itemId = D_8010BD7C[0];
             armor = &vs_battle_inventory.armor[itemId - 1];

@@ -256,7 +256,72 @@ void vs_mainMenu_unequipShield(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FE3E0);
+void vs_mainMenu_initItem(int arg0, int arg1)
+{
+    int i;
+
+    switch (arg0) {
+    case 0: {
+        vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[arg1 - 1];
+
+        vs_mainMenu_initItem(1, weapon->blade);
+        vs_mainMenu_initItem(2, weapon->grip);
+
+        for (i = 0; i < 3; ++i) {
+            int gem = weapon->gems[i];
+            if (gem != 0) {
+                vs_mainMenu_initItem(5, gem);
+            }
+        }
+
+        vs_battle_rMemzero(weapon, sizeof *weapon);
+        weapon->index = arg1;
+        break;
+    }
+    case 1: {
+        vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[arg1 - 1];
+        vs_battle_rMemzero(blade, sizeof *blade);
+        blade->index = arg1;
+        break;
+    }
+    case 2: {
+        vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[arg1 - 1];
+        vs_battle_rMemzero(grip, sizeof *grip);
+        grip->index = arg1;
+        break;
+    }
+    case 3: {
+        vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[arg1 - 1];
+        for (i = 0; i < 3; ++i) {
+            int gem = shield->gems[i];
+            if (gem != 0) {
+                vs_mainMenu_initItem(5, gem);
+            }
+        }
+        vs_battle_rMemzero(shield, sizeof *shield);
+        shield->index = arg1;
+        break;
+    }
+    case 4: {
+        vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[arg1 - 1];
+        vs_battle_rMemzero(armor, sizeof *armor);
+        armor->index = arg1;
+        break;
+    }
+    case 5: {
+        vs_battle_inventoryGem* gem = &vs_battle_inventory.gems[arg1 - 1];
+        vs_battle_rMemzero(gem, sizeof *gem);
+        gem->index = arg1;
+        break;
+    }
+    case 6: {
+        vs_battle_inventoryMisc* misc = &vs_battle_inventory.items[arg1 - 1];
+        vs_battle_rMemzero(misc, sizeof *misc);
+        misc->index = arg1;
+        break;
+    }
+    }
+}
 
 int vs_mainMenu_loadItemNames(int arg0)
 {

@@ -49,5 +49,5 @@ extern char D_801022C4;
 extern char D_801022D5;
 extern char D_801023E3;
 extern char D_801024A1;
-extern char D_801024B8;
+extern u_char D_801024B8;
 extern u_short* vs_mainMenu_menu12Text;

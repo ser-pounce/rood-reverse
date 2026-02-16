@@ -16,6 +16,9 @@ typedef struct {
     char x;
 } textHeader_t;
 
+extern char* (*D_801021F4[])(int);
+extern char D_80102210;
+extern char D_80102211;
 extern char vs_mainMenu_isLevelledSpell;
 extern u_short* D_801022C8;
 extern int D_801022CC;
@@ -236,7 +239,128 @@ int func_800FDD88(int arg0)
     return var_a0;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FDEBC);
+void func_800FDEBC(void)
+{
+    int i;
+    int var_s3;
+    char* var_s4;
+    u_int var_s2;
+
+    var_s2 = D_801024B8;
+    var_s3 = 0;
+    i = var_s2;
+
+    if (vs_main_buttonRepeat & PADLup) {
+        var_s3 = 1;
+    } else if (vs_main_buttonRepeat & PADLdown) {
+        var_s3 = 2;
+    } else if (vs_main_buttonRepeat & PADLleft) {
+        var_s3 = 3;
+    } else if (vs_main_buttonRepeat & PADLright) {
+        var_s3 = 4;
+    }
+
+    if (var_s3 != 0) {
+        D_801024B8 = vs_mainMenu_equipmentDetailNavigationMap[var_s2][var_s3 - 1];
+    }
+
+    while (func_800FDD88(D_801024B8) == 0) {
+        if (var_s2 == D_801024B8) {
+            if ((var_s2 - 2) < 0xE) {
+                do {
+                    --D_801024B8;
+                } while (func_800FDD88(D_801024B8) == 0);
+            } else {
+                do {
+                    ++D_801024B8;
+                } while (func_800FDD88(D_801024B8) == 0);
+            }
+            break;
+        } else {
+            var_s2 = D_801024B8;
+            D_801024B8 = vs_mainMenu_equipmentDetailNavigationMap[var_s2][var_s3 - 1];
+        }
+    }
+    if (D_80102211 == D_801024A1) {
+        if (i != D_801024B8) {
+            vs_battle_playMenuChangeSfx();
+        }
+    } else {
+        D_80102211 = D_801024A1;
+    }
+    for (i = 11; i < 16; ++i) {
+        vs_battle_getMenuItem(i)->selected = 0;
+    }
+    if (vs_mainMenu_equipmentSubtype & 1) {
+        vs_mainMenu_drawDpPpbars(0xB);
+        vs_mainMenu_setUiWeaponStats((int)D_801024A1);
+    }
+    if (vs_mainMenu_equipmentSubtype & 8) {
+        vs_mainMenu_drawDpPpbars(0xB);
+        func_800FD5A0((int)D_801024A1);
+    }
+    if (vs_mainMenu_equipmentSubtype & 0x10) {
+        vs_mainMenu_drawDpPpbars(9);
+    }
+    if (vs_mainMenu_equipmentSubtype & 0x20) {
+        vs_mainMenu_drawDpPpbars(8);
+    }
+    if (D_801024B8 < 2) {
+        var_s4 = (char*)&vs_mainMenu_itemHelp
+            [vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_INDEX_phantomPointsDesc - D_801024B8]];
+    } else if (D_801024B8 < 9) {
+        switch (D_801024B9) {
+        case 0:
+            var_s4 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [D_801024B8 + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
+            break;
+        case 1:
+            var_s4 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [D_801024B8 + VS_ITEMHELP_BIN_INDEX_dragonClassDesc]];
+            break;
+        case 2:
+            var_s4 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [D_801024B8 + VS_ITEMHELP_BIN_INDEX_lightAffinityDesc]];
+            break;
+        }
+    } else {
+
+        if (D_801024B8 < 0xF) {
+            for (i = 0; i < 7; ++i) {
+                if ((vs_mainMenu_equipmentSubtype >> i) & 1) {
+                    var_s4 = D_801021F4[i](D_801024B8 - 9);
+                }
+            }
+        } else if (D_801024B8 == 0xF) {
+            var_s4 = (char*)(vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_OFFSET_line657);
+        } else {
+            var_s4 = (char*)&vs_mainMenu_itemHelp
+                [vs_mainMenu_itemHelp[D_801024B8 + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
+            if (D_801024B8 >= 0x12) {
+                if (vs_mainMenu_equipmentSubtype & 7) {
+                    var_s4 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                            [D_801024B8 + VS_ITEMHELP_BIN_INDEX_line640]];
+                }
+                if (vs_mainMenu_equipmentSubtype & 0x18) {
+                    var_s4 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                            [D_801024B8 + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
+                }
+            }
+        }
+    }
+    vs_mainmenu_setMessage(var_s4);
+    i = D_801021A0[D_801024B8];
+    if (D_801024B8 == 0xF) {
+        i += D_8010214A << 0x14;
+    }
+    if (vs_mainMenu_equipmentSubtype & 8) {
+        if ((D_801024B8 - 10) < 2U) {
+            i += 7;
+        }
+    }
+    D_80102210 = func_800FFCDC(D_80102210, i);
+    D_8010214A = 0;
+}
 
 void vs_mainMenu_unequipAllWeapons(void)
 {

@@ -17,7 +17,7 @@ typedef struct {
 } textHeader_t;
 
 extern char vs_mainMenu_isLevelledSpell;
-extern int (*D_801022C8)[32];
+extern u_short* D_801022C8;
 extern int D_801022CC;
 extern char D_801022D2;
 extern char D_801022DC;
@@ -505,8 +505,91 @@ int vs_mainMenu_getFirstItem(int itemCategory, vs_battle_inventory_t* inventory)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEB94);
 
-void func_800FF0EC(int, int, char**, int*);
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FF0EC);
+extern char D_80060021;
+extern char D_801022D0;
+extern char D_801022D1;
+
+void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
+{
+    int temp_v1_2;
+    int i;
+    int var_a2;
+
+    i = 0;
+    var_a2 = 0;
+    D_801024A0 = rowCount >> 8;
+    rowCount &= 0xFF;
+
+    if (!D_801024A0) {
+        if (rowCount < 7) {
+            D_801024A0 = 0xA - rowCount;
+        } else {
+            D_801024A0 = 3;
+        }
+    }
+
+    D_801022D0 = arg1;
+
+    if (arg1 == 4) {
+        i = 1;
+    } else if ((D_80060021 != 0) && (arg1 != 3)) {
+        i = D_800F4EE8.unk0[arg1 * 2];
+        var_a2 = D_800F4EE8.unk0[arg1 * 2 + 1];
+    }
+    temp_v1_2 = rowCount - 7;
+    if (temp_v1_2 < 0) {
+        i += var_a2;
+        var_a2 = 0;
+        if (i >= rowCount) {
+            i = 0;
+        }
+    } else if (temp_v1_2 < var_a2) {
+        if ((i + var_a2) >= rowCount) {
+            i = 0;
+            var_a2 = 0;
+        } else {
+            i += var_a2 - temp_v1_2;
+            var_a2 = temp_v1_2;
+        }
+    }
+
+    if ((var_a2 > 0) && (i == 0)) {
+        i = 1;
+        --var_a2;
+    }
+    if (var_a2 < temp_v1_2) {
+        if (i == 6) {
+            i = 5;
+            ++var_a2;
+        }
+    }
+    D_801022CC = i;
+    D_801022D2 = var_a2;
+    D_801022D1 = rowCount;
+    D_801022C4 = 0;
+    D_801022C8 = vs_main_allocHeapR(rowCount << 7);
+
+    for (i = 0; i < rowCount; ++i) {
+        char* s;
+        *((int*)(&(&D_801022C8[i * 0x40])[14])) = rowTypes[i];
+
+        if (strings[i * 2] != NULL) {
+            vs_battle_copyAligned(&D_801022C8[i * 0x40], strings[i * 2], 0x1A);
+            D_801022C8[(i * 0x40) + 13] = 0xE7E7;
+        } else {
+            D_801022C8[i * 0x40] = 0xE7E7;
+        }
+
+        s = strings[i * 2 + 1];
+        if (s != NULL) {
+            D_801022C8[(i * 0x40) + 16] = 0xF8;
+            vs_battle_copyAligned(&D_801022C8[(i * 0x40) + 17], s, 0x5C);
+            D_801022C8[(i * 0x40) + 63] = 0xE7E7;
+        } else {
+            D_801022C8[(i * 0x40) + 16] = 0xE7E7;
+        }
+    }
+}
 
 int func_800FF348(void) { return D_801022CC + D_801022D2; }
 
@@ -516,9 +599,8 @@ vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
 {
     vs_battle_menuItem_t* temp_v0 =
         vs_battle_setMenuItem(arg0 + 0x20, arg1, ((arg0 + D_801024A0) * 0x10) + 0x12,
-            0x7E, 0, (char*)D_801022C8[D_801022D2 + arg0]);
-    int v;
-    v = D_801022C8[D_801022D2 + arg0][7];
+            0x7E, 0, (char*)&D_801022C8[(D_801022D2 + arg0) * 0x40]);
+    int v = *((int*)&D_801022C8[(D_801022D2 + arg0) * 0x40 + 14]);
     temp_v0->unk7 = v & 1;
     if ((arg0 == 0) && (D_801022D2 != 0)) {
         temp_v0->unk5 = 1;

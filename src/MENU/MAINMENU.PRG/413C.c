@@ -19,6 +19,8 @@ typedef struct {
 extern char vs_mainMenu_isLevelledSpell;
 extern u_short* D_801022C8;
 extern int D_801022CC;
+extern char D_801022D0;
+extern char D_801022D1;
 extern char D_801022D2;
 extern char D_801022DC;
 extern short D_801022DE;
@@ -42,6 +44,8 @@ extern int _selectedRow;
 extern char D_801023E4;
 extern char* D_801023E8[];
 extern int D_801023F8[];
+extern char D_80102408;
+extern char D_80102409;
 extern char D_801024A0;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
@@ -505,10 +509,6 @@ int vs_mainMenu_getFirstItem(int itemCategory, vs_battle_inventory_t* inventory)
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_800FEB94);
 
-extern char D_80060021;
-extern char D_801022D0;
-extern char D_801022D1;
-
 void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
 {
     int temp_v1_2;
@@ -532,7 +532,7 @@ void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
 
     if (arg1 == 4) {
         i = 1;
-    } else if ((D_80060021 != 0) && (arg1 != 3)) {
+    } else if ((vs_main_settings.cursorMemory != 0) && (arg1 != 3)) {
         i = D_800F4EE8.unk0[arg1 * 2];
         var_a2 = D_800F4EE8.unk0[arg1 * 2 + 1];
     }
@@ -1210,7 +1210,137 @@ void func_801013F8(int arg0)
     func_800C0214(0x100010, i + temp_s5)[4] = var_s4 | 0x3010;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", func_8010154C);
+void func_8010154C(vs_battle_menuItem_t* arg0)
+{
+    int sp10;
+    u_int sp14;
+    int sp18;
+    int sp1C;
+    int temp_v1;
+    int temp_fp;
+    int temp_v1_2;
+    int i;
+    u_long* var_s2;
+    int var_s3;
+    u_int var_s5;
+    int temp_a0;
+    u_int temp_v0_3;
+    u_long* temp_s7;
+
+    char* ptr = &arg0->text[0];
+    sp14 = 0;
+
+    if (vs_main_frameBuf == 0) {
+        sp14 = 0x140;
+    }
+
+    var_s5 = *(int*)&arg0->initialX;
+    temp_s7 = D_1F800000[2] + 2;
+    sp10 = arg0->w;
+    sp18 = arg0->unk4;
+    temp_fp = arg0->unk5 - 1;
+    sp1C = arg0->unk2;
+
+    if (vs_main_frameBuf != D_80102408) {
+        ++D_80102409;
+        D_80102408 = vs_main_frameBuf;
+        if (D_80102409 >= 0xC) {
+            D_80102409 = 0;
+        }
+    }
+
+    var_s3 = D_80102409 >> 2;
+    var_s3 = temp_fp == 0 ? var_s3 - 5 : 1 - var_s3;
+
+    if (arg0->initialX == 0) {
+        for (i = 32; i < 40; ++i) {
+            if (vs_battle_getMenuItem(i)->state >= 2) {
+                break;
+            }
+        }
+        if (i == 0x28) {
+            var_s2 = temp_s7 - 2;
+            func_800C0224(0x80, ((arg0->y + var_s3) << 0x10) | 0x7E, 0x100010,
+                var_s2)[4] = ((temp_fp * 0x10) | 0x37F93000);
+        }
+    } else {
+        for (i = 0; i < 32; ++i) {
+            if (vs_battle_getMenuItem(i)->state >= 2) {
+                break;
+            }
+        }
+        if (i == 0x20) {
+            func_800C0224(0x80,
+                ((arg0->initialX - 0xE) & 0xFFFF) | ((arg0->y + var_s3) << 0x10),
+                0x100010, temp_s7 - 2)[4] = (int)((temp_fp * 0x10) | 0x37F93000);
+        }
+    }
+
+    temp_v1 = arg0->initialX;
+
+    i = temp_v1 + 6;
+    if (arg0->icon != 0) {
+        i = temp_v1 + 0x16;
+    }
+
+    while ((var_s3 = *ptr++) != 0xFF) {
+        if (var_s3 == 0xFA) {
+            i += *ptr++;
+        } else {
+            i = func_80101268(var_s3 | (temp_fp << 0x1F), i, arg0, temp_s7);
+        }
+    }
+
+    if (sp10 != 0) {
+        var_s2 = D_1F800000[0];
+
+        for (i = 0; i < 12; ++i) {
+            if (temp_fp == 0) {
+                var_s3 = i * 8 + 0x20;
+            } else {
+                var_s3 = 0x78 - i * 8;
+            }
+            var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
+            var_s2[1] = 0xE1000220;
+            var_s2[2] = (func_800C8FAC(8 - sp18, sp1C, var_s3) | 0x52000000);
+            var_s2[3] = var_s5;
+            var_s2[4] = func_800C8FAC(sp18, sp1C, var_s3);
+            var_s2[5] = ((var_s5 + sp10 - 1) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10);
+            var_s2[6] = 0xE1000020;
+            temp_v0_3 = (u_long)var_s2 << 8;
+            var_s2 += 7;
+            *temp_s7 = temp_v0_3 >> 8;
+            var_s5 += 0x10000;
+        }
+
+        D_1F800000[0] = var_s2;
+
+        if (temp_fp == 0) {
+            func_800CCCB8(temp_s7, 0x60000000,
+                ((var_s5 + 2) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10), sp10 | 0x20000);
+        }
+
+        if (sp18 != 0) {
+            arg0->unk4 = sp18 - 1;
+        }
+
+        var_s5 = var_s5 + 0xFFF40000;
+
+        sp10 |= 0x10000;
+        var_s3 = ((arg0->initialX < 0x80) ^ 1) << 7;
+
+        for (i = 0; i < 12; ++i) {
+            var_s2 = vs_battle_setSprite(
+                temp_fp == 0 ? 0x78 - i * 8 : i * 8 + 0x20, var_s5, sp10, temp_s7);
+            temp_v1_2 = (var_s5 - var_s3);
+            temp_a0 = var_s5 >> 0x10;
+            var_s5 += 0x10000;
+            var_s2[1] = ((sp14 + var_s3) >> 6) | 0xE1000120;
+            var_s2[4] = temp_v1_2 & 0xFF;
+            var_s2[4] = var_s2[4] | (temp_a0 << 8);
+        }
+    }
+}
 
 INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", D_800F99F8);
 

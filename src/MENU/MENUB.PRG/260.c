@@ -5,11 +5,13 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include <libetc.h>
+#include <stddef.h>
 
 void func_800BEC14(short, int);
 void func_80102CBC(int);
 void func_8010837C(int);
-void func_801088D4(int);
+void func_801088D4(func_801088D4_t*);
 void func_80108938(int);
 int func_80109750(int);
 
@@ -32,12 +34,27 @@ extern char D_8010A6B8;
 extern char D_8010A6B9;
 extern char D_8010A6BA;
 extern char D_8010A6BB;
+extern char D_8010A6BF;
+extern int D_8010A6C0;
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102A60);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102B14);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102C50);
+void func_80102C50(int arg0)
+{
+    vs_battle_menuItem_t* temp_v0;
+
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
+    temp_v0 = vs_battle_getMenuItem(0x1F);
+    temp_v0->state = 3;
+    temp_v0->targetX = 0x12;
+    temp_v0 = vs_battle_getMenuItem(arg0);
+    temp_v0->state = 2;
+    temp_v0->targetX = 0x9B;
+    temp_v0->selected = 1;
+    temp_v0->unk3C = NULL;
+}
 
 void func_80102CBC(int arg0)
 {
@@ -71,7 +88,19 @@ int func_80102E08(int arg0, int arg1)
     return vs_mainMenu_inventoryIndices[arg0][arg1];
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102E54);
+void func_80102E54(int arg0)
+{
+    vs_battle_playMenuLeaveSfx();
+    vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
+    func_800FA810(-1);
+    func_800FBBD4(-1);
+    vs_battle_renderEquipStats(2);
+    D_8010A6BF = 2;
+    D_8010A6C0 = vs_main_buttonsPressed.all & PADRup;
+    if (arg0 != 0) {
+        vs_mainMenu_drawDpPpbars(4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102EC4);
 
@@ -97,7 +126,13 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103EFC);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103FD8);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104144);
+int func_80104144(int arg0, vs_battle_inventoryMisc* arg1)
+{
+    if (arg0 == 0) {
+        return -arg1->id;
+    }
+    return arg1->count;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104164);
 
@@ -148,21 +183,74 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801073E0);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107C54);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107CE8);
+int func_80107CE8(vs_battle_inventoryGrip* source, int weaponIndex)
+{
+    int index = 1;
+    vs_battle_inventoryGrip* grip = _inventory->grips;
+
+    while (grip->id != 0) {
+        ++grip;
+        ++index;
+        if (index == 16) {
+            return 0;
+        }
+    }
+    vs_battle_copyAligned(grip, source, sizeof *grip);
+    grip->assembledWeaponIndex = weaponIndex;
+    grip->index = index;
+    return index;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107D7C);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107E10);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107F1C);
+int func_80107F1C(vs_battle_inventoryArmor* source)
+{
+    int index = 1;
+    vs_battle_inventoryArmor* armor = _inventory->armor;
+
+    while (armor->id != 0) {
+        ++armor;
+        ++index;
+        if (index == 16) {
+            return 0;
+        }
+    }
+    vs_battle_copyAligned(armor, source, sizeof *armor);
+    armor->index = index;
+    return index;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107F9C);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010808C);
+int func_8010808C(vs_battle_inventoryMisc* arg0)
+{
+    int index = 1;
+    vs_battle_inventoryMisc* item = _inventory->items;
+
+    while (item->id != 0) {
+        ++index;
+        ++item;
+        if (index == 64) {
+            return 0;
+        }
+    }
+
+    item->id = arg0->id;
+    item->count = arg0->index;
+    return index;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801080F0);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010822C);
+void func_8010822C(int arg0, int arg1)
+{
+    char* temp_v1 = D_8010A6A0 + (D_8010A6B6++ * 4);
+    temp_v1[0] = arg0;
+    temp_v1[1] = arg1 - 1;
+    temp_v1[2] = 0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102950);
 
@@ -174,7 +262,22 @@ int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801086F4);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801088D4);
+void func_801086F4(int*);
+extern int* D_800EB9C8;
+
+void func_801088D4(func_801088D4_t* arg0)
+{
+    vs_battle_rMemzero(_inventory, sizeof *_inventory);
+
+    if (arg0 != 0) {
+        while (arg0 != 0) {
+            func_801086F4(&arg0->unk8);
+            arg0 = arg0->next;
+        }
+    } else {
+        func_801086F4(D_800EB9C8);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108938);
 

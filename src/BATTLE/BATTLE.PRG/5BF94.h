@@ -163,6 +163,12 @@ typedef struct {
     short unkE4;
 } func_800CF0E8_t;
 
+typedef struct func_801088D4_t {
+    struct func_801088D4_t* next;
+    int unk4;
+    int unk8;
+} func_801088D4_t;
+
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
@@ -227,7 +233,7 @@ extern char D_800EB810[];
 extern u_short D_800EA868[];
 extern char D_800EB9AE;
 extern int D_800EB9B0;
-extern int D_800EB9C4;
+extern func_801088D4_t* D_800EB9C4;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];

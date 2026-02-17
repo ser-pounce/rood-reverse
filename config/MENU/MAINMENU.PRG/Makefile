@@ -1,6 +1,7 @@
 $(BUILD)/data/MENU/MAINMENU.PRG: fixup = $(call pad,+1)
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.0-psx
+$(BUILD)/src/MENU/MAINMENU.PRG/413C.o: CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/MENU/MAINMENU.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

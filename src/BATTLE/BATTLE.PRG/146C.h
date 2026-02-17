@@ -664,6 +664,7 @@ void func_80086FA8(int, vs_battle_actor2*);
 void vs_battle_setDoorEntered(void);
 void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
+void func_8008A6FC(void);
 int vs_battle_getSkillFlags(int, int);
 void func_8008B430(char*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);

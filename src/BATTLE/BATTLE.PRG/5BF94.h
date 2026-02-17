@@ -227,6 +227,7 @@ extern char D_800EB810[];
 extern u_short D_800EA868[];
 extern char D_800EB9AE;
 extern int D_800EB9B0;
+extern int D_800EB9C4;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];

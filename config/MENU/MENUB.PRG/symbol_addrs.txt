@@ -1,0 +1,1 @@
+_inventory = 0x8010A6A8;

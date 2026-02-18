@@ -820,7 +820,7 @@ void func_801042C4(vs_battle_uiEquipment* arg0, int arg1, int arg2)
     }
 }
 
-void func_8010439C(int arg0, int arg1)
+void _copyEquipmentStats(int arg0, int arg1)
 {
     vs_battle_uiEquipment sp10;
     int temp_v0;
@@ -916,7 +916,7 @@ int func_80104530(int arg0)
                     func_8010408C(D_801095E8[i]);
                     break;
                 default:
-                    func_8010439C(D_80109669, D_801095F4[D_80109669][i]);
+                    _copyEquipmentStats(D_80109669, D_801095F4[D_80109669][i]);
                     break;
                 }
             } else {

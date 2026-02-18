@@ -100,6 +100,15 @@ typedef struct {
 } vs_battle_inventoryShield;
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor shield;
+    vs_battle_inventoryGem gems[3];
+} vs_battle_shieldForDropRand;
+
+typedef struct {
     u_short id;
     char count;
     char index;

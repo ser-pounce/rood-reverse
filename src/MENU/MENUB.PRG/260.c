@@ -11,6 +11,7 @@
 void func_800BEC14(short, int);
 void func_80102CBC(int);
 void func_8010837C(int);
+void func_801086F4(int*);
 void func_801088D4(func_801088D4_t*);
 void func_80108938(int);
 int func_80109750(int);
@@ -37,7 +38,27 @@ extern char D_8010A6BB;
 extern char D_8010A6BF;
 extern int D_8010A6C0;
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102A60);
+int func_80102A60(int arg0, int arg1)
+{
+    if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
+        int temp_s1 = arg1;
+        arg0 = vs_mainMenu_getItemCount(arg0, NULL);
+        if (vs_main_buttonRepeat & PADL1) {
+            int new_var = arg1 - 1;
+            arg1 = new_var + arg0;
+        }
+        if (vs_main_buttonRepeat & PADR1) {
+            ++arg1;
+        }
+        if (arg1 >= arg0) {
+            arg1 -= arg0;
+        }
+        if ((vs_main_buttonsPressed.all & (PADL1 | PADR1)) && (arg1 == temp_s1)) {
+            func_800C02E0();
+        }
+    }
+    return arg1;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102B14);
 
@@ -79,7 +100,18 @@ void func_80102D1C(int arg0, int arg1)
     vs_battle_renderEquipStats(1);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102D6C);
+void func_80102D6C(int id, char** menuText, u_int rowType, int arg3)
+{
+    vs_battle_menuItem_t* temp_v0;
+
+    vs_battle_playMenuChangeSfx();
+    temp_v0 = vs_battle_setMenuItem(id, 0x9B, 0x12, 0xA5, 0, menuText[0]);
+    temp_v0->selected = 1;
+    temp_v0->icon = rowType >> 0x1A;
+    temp_v0->material = (rowType >> 0x10) & 7;
+    vs_mainmenu_setMessage(menuText[1]);
+    vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
+}
 
 int func_80102E08(int arg0, int arg1)
 {
@@ -138,7 +170,23 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104164);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801042A4);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010439C);
+void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int index)
+{
+    switch (itemCategory) {
+    case 1:
+        vs_battle_copyInventoryBladeStats(equipment, &vs_battle_inventory.blades[index]);
+        return;
+    case 2:
+        vs_battle_copyInventoryGripStats(equipment, &vs_battle_inventory.grips[index]);
+        return;
+    case 4:
+        vs_battle_copyInventoryArmorStats(equipment, &vs_battle_inventory.armor[index]);
+        return;
+    case 5:
+        vs_battle_copyInventoryGemStats(equipment, &vs_battle_inventory.gems[index]);
+        return;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104474);
 
@@ -153,7 +201,24 @@ void func_80104F98(int arg0)
     D_8010A6BB = arg0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104FB4);
+int _getParentItem(int itemCategory, int index)
+{
+    int parentIndex = 0;
+
+    if (itemCategory == 1) {
+        parentIndex = vs_battle_inventory.blades[index].assembledWeaponIndex;
+    }
+    if (itemCategory == 2) {
+        parentIndex = vs_battle_inventory.grips[index].assembledWeaponIndex;
+    }
+    if (itemCategory == 5) {
+        parentIndex = vs_battle_inventory.gems[index].setItemIndex;
+        if (parentIndex & 0x80) {
+            parentIndex = 0;
+        }
+    }
+    return parentIndex;
+}
 
 int func_80105044(int arg0, int arg1)
 {
@@ -169,7 +234,24 @@ int func_80105044(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80105088);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010537C);
+void func_8010537C(int arg0)
+{
+    int i;
+    vs_battle_menuItem_t* menuItem;
+
+    while (D_801023D0 < 16) {
+        func_80100A5C();
+    }
+
+    for (i = 20; i < 40; ++i) {
+        menuItem = vs_battle_getMenuItem(i);
+        if (menuItem->state == 2) {
+            menuItem->state = 1;
+            menuItem->initialX = (short)(u_short)menuItem->targetX;
+        }
+        menuItem->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80105454);
 
@@ -181,9 +263,25 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80106B80);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801073E0);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107C54);
+int _copyBladeToInventory(vs_battle_inventoryBlade* source, int weapon)
+{
+    int index = 1;
+    vs_battle_inventoryBlade* blade = _inventory->blades;
 
-int func_80107CE8(vs_battle_inventoryGrip* source, int weaponIndex)
+    while (blade->id != 0) {
+        ++blade;
+        ++index;
+        if (index == 16) {
+            return 0;
+        }
+    }
+    vs_battle_copyAligned(blade, source, sizeof *blade);
+    blade->assembledWeaponIndex = weapon;
+    blade->index = index;
+    return index;
+}
+
+int _copyGripToInventory(vs_battle_inventoryGrip* source, int weaponIndex)
 {
     int index = 1;
     vs_battle_inventoryGrip* grip = _inventory->grips;
@@ -201,11 +299,27 @@ int func_80107CE8(vs_battle_inventoryGrip* source, int weaponIndex)
     return index;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107D7C);
+int _copyGemToInventory(vs_battle_inventoryGem* source, int item)
+{
+    int index = 1;
+    vs_battle_inventoryGem* gem = _inventory->gems;
+
+    while (gem->id != 0) {
+        ++gem;
+        ++index;
+        if (index == 0x30) {
+            return 0;
+        }
+    }
+    vs_battle_copyAligned(gem, source, sizeof *gem);
+    gem->setItemIndex = item;
+    gem->index = index;
+    return index;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107E10);
 
-int func_80107F1C(vs_battle_inventoryArmor* source)
+int _copyArmorToInventory(vs_battle_inventoryArmor* source)
 {
     int index = 1;
     vs_battle_inventoryArmor* armor = _inventory->armor;
@@ -222,9 +336,34 @@ int func_80107F1C(vs_battle_inventoryArmor* source)
     return index;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107F9C);
+int _copyShieldToInventory(vs_battle_shieldForDropRand* arg0)
+{
+    int i;
 
-int func_8010808C(vs_battle_inventoryMisc* arg0)
+    vs_battle_inventoryShield* shield = _inventory->shields;
+    int index = 1;
+
+    while (shield->base.id != 0) {
+        ++shield;
+        ++index;
+        if (index == 8) {
+            return 0;
+        }
+    }
+    vs_battle_rMemzero(shield, sizeof *shield);
+    vs_battle_copyAligned(&shield->base, &arg0->shield, sizeof shield->base);
+
+    shield->base.bodyPart = index;
+
+    for (i = 0; i < 3; ++i) {
+        if (arg0->gems[i].id != 0) {
+            shield->gems[i] = _copyGemToInventory(&arg0->gems[i], index | 0x80);
+        }
+    }
+    return index;
+}
+
+int _copyMiscToInventory(vs_battle_inventoryMisc* arg0)
 {
     int index = 1;
     vs_battle_inventoryMisc* item = _inventory->items;
@@ -261,9 +400,6 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010837C);
 int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801086F4);
-
-void func_801086F4(int*);
-extern int* D_800EB9C8;
 
 void func_801088D4(func_801088D4_t* arg0)
 {

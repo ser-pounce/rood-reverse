@@ -169,7 +169,65 @@ void func_80102E54(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102EC4);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010310C);
+extern char D_8010A5F1;
+extern char D_8010A5F2;
+extern char D_8010A5F3;
+extern char D_8010A5F4;
+
+int func_8010310C(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_8010A5F3 = arg0 >> 8;
+        D_8010A5F4 = arg0 - 1;
+        func_80102C50(D_8010A5F3);
+        D_8010A5F2 = 10;
+        D_8010A5F1 = 0;
+        return 0;
+    }
+
+    switch (D_8010A5F1)
+    case 0: {
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A5F3, 3);
+            vs_mainMenu_setUiBladeStats(D_800619D8.unk0[D_8010A5F4 + 8]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010A5F1 = 1;
+        }
+        break;
+    case 1:
+        if (D_8010A5F2 != 0) {
+            D_8010A5F2 = (D_8010A5F2 - 1);
+        } else {
+            D_8010A5F1 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(1);
+            D_8010A5F1 = 3;
+            break;
+        }
+        temp_v0_2 = func_80102A60(1, D_8010A5F4);
+        if (temp_v0_2 != D_8010A5F4) {
+            D_8010A5F4 = temp_v0_2;
+            temp_v0_3 = func_80102E08(1, temp_v0_2);
+            vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
+                &sp18, vs_battle_stringBuf);
+            vs_mainMenu_setUiBladeStats(temp_v0_3);
+            func_80102D6C(D_8010A5F3, sp10, sp18, temp_v0_2);
+            return 0;
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+        return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801032F8);
 

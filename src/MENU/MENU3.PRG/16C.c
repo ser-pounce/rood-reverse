@@ -587,7 +587,7 @@ int func_80103BE4(int arg0, vs_battle_uiWeapon* weapon)
     }
 }
 
-void func_80103CC8(int arg0)
+void _getWeaponStat(int arg0)
 {
     vs_battle_uiWeapon sp10;
     char sp1A8[8];
@@ -907,7 +907,7 @@ int func_80104530(int arg0)
                 vs_battle_playMenuSelectSfx();
                 switch (D_80109669) {
                 case 0:
-                    func_80103CC8(D_80109588[i]);
+                    _getWeaponStat(D_80109588[i]);
                     break;
                 case 3:
                     func_80103F00(D_801095A8[i]);

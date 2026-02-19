@@ -251,7 +251,52 @@ int _getWeaponStat(int stat, vs_battle_uiWeapon* weapon)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103DA0);
+void func_80103DA0(int arg0)
+{
+    vs_battle_uiWeapon sp10;
+    char sp1A8[8];
+    int temp_v0;
+    int i;
+    int var_s3;
+    int var_s4;
+    int temp_s0;
+    vs_battle_inventoryWeapon* new_var2 = vs_battle_inventory.weapons;
+    char* new_var = D_800619D8.unk0;
+
+    vs_battle_rMemzero(sp1A8, 8);
+    var_s4 = 0;
+
+    while (1) {
+        var_s3 = 0x80000000;
+
+        for (i = 0; i < 8; ++i) {
+            temp_s0 = new_var[i];
+            if (temp_s0 != 0) {
+                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
+                temp_v0 = _getWeaponStat(arg0, &sp10);
+                if (var_s3 < temp_v0) {
+                    var_s3 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s3 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 8; ++i) {
+            temp_s0 = new_var[i];
+            if (temp_s0 != 0) {
+                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
+                if (_getWeaponStat(arg0, &sp10) == var_s3) {
+                    sp1A8[var_s4++] = temp_s0;
+                    new_var[i] = 0;
+                }
+            }
+        }
+    }
+    vs_battle_memcpy(new_var, sp1A8, sizeof sp1A8);
+}
 
 int _getShieldStat(int arg0, vs_battle_uiShield* shield)
 {

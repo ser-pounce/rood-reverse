@@ -21,6 +21,20 @@ extern u_long* D_1F800000[];
 extern char D_8010A2C4;
 extern int D_8010A50C;
 extern char D_8010A505;
+extern int (*D_8010A514[])(int);
+extern char D_8010A5F1;
+extern char D_8010A5F2;
+extern char D_8010A5F3;
+extern char D_8010A5F4;
+extern char D_8010A5FF;
+extern char D_8010A600;
+extern char D_8010A601;
+extern char D_8010A602;
+extern char D_8010A603;
+extern char D_8010A604;
+extern char D_8010A605;
+extern char D_8010A606;
+extern u_char D_8010A607;
 extern char D_8010A69E;
 extern char (*D_8010A6A0)[4];
 extern void* D_8010A6A4;
@@ -169,11 +183,6 @@ void func_80102E54(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102EC4);
 
-extern char D_8010A5F1;
-extern char D_8010A5F2;
-extern char D_8010A5F3;
-extern char D_8010A5F4;
-
 int func_8010310C(int arg0)
 {
     char* sp10[2];
@@ -232,12 +241,61 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801032F8);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103538);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103794);
+int func_80103794(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
 
-extern char D_8010A603;
-extern char D_8010A604;
-extern char D_8010A605;
-extern char D_8010A606;
+    if (arg0 != 0) {
+        D_8010A601 = arg0 >> 8;
+        D_8010A602 = (arg0 - 1);
+        func_80102C50(D_8010A601);
+        D_8010A600 = 0xA;
+        D_8010A5FF = 0;
+        return 0;
+    }
+    switch (D_8010A5FF) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A601, 7);
+            func_800FD700(D_800619D8.unk0[D_8010A602 + 0x30]);
+            if (vs_battle_inventory.armor[D_800619D8.unk0[D_8010A602 + 0x30] - 1].category
+                != 7) {
+                vs_mainMenu_drawDpPpbars(1);
+            }
+            D_8010A5FF = 1;
+        }
+        break;
+    case 1:
+        if (D_8010A600 != 0) {
+            D_8010A600 = (D_8010A600 - 1);
+        } else {
+            D_8010A5FF = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(1);
+            D_8010A5FF = 3;
+            break;
+        }
+        temp_v0_2 = func_80102A60(4, D_8010A602);
+        if (temp_v0_2 != D_8010A602) {
+            D_8010A602 = temp_v0_2;
+            temp_v0_3 = func_80102E08(4, temp_v0_2);
+            vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
+                &sp18, vs_battle_stringBuf);
+            func_800FD700(temp_v0_3);
+            func_80102D6C(D_8010A601, sp10, sp18, temp_v0_2);
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_801039BC(int arg0)
 {
@@ -291,9 +349,6 @@ int func_801039BC(int arg0)
     }
     return 0;
 }
-
-extern int (*D_8010A514[])(int);
-extern u_char D_8010A607;
 
 int func_80103BA8(int arg0)
 {

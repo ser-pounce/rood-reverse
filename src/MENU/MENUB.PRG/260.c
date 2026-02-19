@@ -57,7 +57,7 @@ extern char D_8010A69E;
 extern char (*D_8010A6A0)[4];
 extern void* D_8010A6A4;
 extern vs_battle_inventory_t* _inventory;
-extern void* D_8010A6AC;
+extern vs_battle_inventory_t* D_8010A6AC;
 extern char D_8010A6B0;
 extern u_char D_8010A6B1;
 extern char D_8010A6B2;
@@ -1256,7 +1256,48 @@ void func_801088D4(func_801088D4_t* arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108938);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108E78);
+void func_80108E78(int arg0)
+{
+    char* menuText[2];
+    int rowType;
+    int temp_s3 = D_8010A6A0[arg0][1];
+
+    vs_battle_memcpy(D_8010A6AC, &vs_battle_inventory, sizeof *D_8010A6AC);
+    vs_battle_memcpy(&vs_battle_inventory, _inventory, sizeof vs_battle_inventory);
+
+    switch (D_8010A6A0[arg0][0]) {
+    case 0:
+        vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[temp_s3], menuText,
+            &rowType, vs_battle_stringBuf);
+        break;
+    case 1:
+        vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[temp_s3], menuText, &rowType,
+            vs_battle_stringBuf);
+        break;
+    case 2:
+        vs_mainMenu_setGripUi(
+            &vs_battle_inventory.grips[temp_s3], menuText, &rowType, vs_battle_stringBuf);
+        break;
+    case 3:
+        vs_mainMenu_initUiShield(&vs_battle_inventory.shields[temp_s3], menuText,
+            &rowType, vs_battle_stringBuf);
+        break;
+    case 4:
+        vs_mainMenu_setAccessoryUi(
+            &vs_battle_inventory.armor[temp_s3], menuText, &rowType, vs_battle_stringBuf);
+        break;
+    case 5:
+        vs_mainMenu_setGemUi(
+            &vs_battle_inventory.gems[temp_s3], menuText, &rowType, vs_battle_stringBuf);
+        break;
+    case 6:
+        vs_mainMenu_setItemUi(
+            &vs_battle_inventory.items[temp_s3], menuText, &rowType, vs_battle_stringBuf);
+        break;
+    }
+    vs_mainmenu_setMessage(menuText[1]);
+    vs_battle_memcpy(&vs_battle_inventory, D_8010A6AC, sizeof vs_battle_inventory);
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801090A4);
 

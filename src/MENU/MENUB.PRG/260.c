@@ -32,6 +32,7 @@ extern char* D_8010A598[];
 extern char* D_8010A5CC[];
 extern char D_8010A608;
 extern u_char D_8010A609;
+extern char D_8010A5E8;
 extern char D_8010A5E9;
 extern char D_8010A5EC;
 extern char D_8010A5ED;
@@ -61,12 +62,15 @@ extern char D_8010A604;
 extern char D_8010A605;
 extern char D_8010A606;
 extern u_char D_8010A607;
+extern char D_8010A691;
+extern char D_8010A692;
+extern char* D_8010A694;
 extern char D_8010A698;
 extern char D_8010A699;
 extern char D_8010A69A;
 extern char D_8010A69B;
 extern char D_8010A69E;
-extern char (*D_8010A6A0)[4];
+extern u_char (*D_8010A6A0)[4];
 extern void* D_8010A6A4;
 extern vs_battle_inventory_t* _inventory;
 extern vs_battle_inventory_t* D_8010A6AC;
@@ -1265,7 +1269,7 @@ void func_801080F0(void)
 {
     int i;
     int temp_v1;
-    char(*var_s1)[4] = D_8010A6A0;
+    u_char(*var_s1)[4] = D_8010A6A0;
 
     for (i = 0; i < D_8010A6B6; ++i, ++var_s1) {
         (*var_s1)[3] =
@@ -1538,7 +1542,102 @@ void func_80108E78(int arg0)
     vs_battle_memcpy(&vs_battle_inventory, D_8010A6AC, sizeof vs_battle_inventory);
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801090A4);
+int func_801090A4(int arg0)
+{
+    int i;
+    int var_v1;
+    int temp_a1;
+    vs_battle_menuItem_t* menuItem;
+
+    if (arg0 != 0) {
+        D_8010A692 = 1;
+        D_8010A691 = 0;
+        if (D_8010A6B6 == 0) {
+            D_8010A691 = 4;
+            return 0;
+        }
+        if ((D_8010A6B8 == 0) && (D_800EB9C8 != NULL)) {
+            D_8010A691 = 5;
+            return 0;
+        }
+
+        for (i = 0; i < D_8010A6B6; ++i) {
+            temp_a1 = D_8010A6A0[i][0];
+            if (temp_a1 == 6) {
+                if (_inventory->items[D_8010A6A0[i][1]].id >= 0x1CA) {
+                    D_8010A694 =
+                        vs_mainMenu_itemNames[_inventory->items[D_8010A6A0[i][1]].id];
+                    D_8010A691 = temp_a1;
+                }
+            }
+        }
+        return 0;
+    }
+    switch (D_8010A691) {
+    case 0:
+        menuItem =
+            vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0, (char*)&D_8010A280[0x45]);
+        menuItem->state = 2;
+        menuItem->targetX = 0xC2;
+        D_8010A691 = 1;
+        break;
+    case 1:
+        menuItem =
+            vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&D_8010A280[0x47]);
+        menuItem->state = 2;
+        menuItem->targetX = 0xC2;
+        func_800C8E04(1);
+        vs_mainmenu_setMessage(
+            D_8010A6B8 == 0 ? (char*)(&D_8010A280[0x6D]) : (char*)(&D_8010A280[0x49]));
+        D_8010A691 = 2;
+        break;
+    case 2:
+        D_8010A691 = (D_8010A691 + vs_mainmenu_ready());
+        break;
+    case 3:
+        vs_battle_getMenuItem(D_8010A692 + 0x1E)->selected = 1;
+        vs_battle_getMenuItem(0x1F - D_8010A692)->selected = 0;
+        if (vs_main_buttonsPressed.all & 0x60) {
+            vs_mainMenu_menuItemLeaveRight(0x1E);
+            vs_mainMenu_menuItemLeaveRight(0x1F);
+            if (vs_main_settings.information == 0) {
+                func_800FFBA8();
+            }
+            if ((D_8010A692 == 0) && !(vs_main_buttonsPressed.all & 0x40)) {
+                vs_main_playSfxDefault(0x7E, 0x1C);
+                var_v1 = 1;
+                if (D_8010A6B8 == 0) {
+                    var_v1 = 2;
+                }
+                return var_v1;
+            }
+            vs_battle_playMenuLeaveSfx();
+            return -1;
+        }
+        if (vs_main_buttonRepeat & 0x5000) {
+            vs_battle_playMenuChangeSfx();
+            D_8010A692 = (1 - D_8010A692);
+        }
+        D_8010A5E8 = vs_battle_drawCursor(D_8010A5E8, D_8010A692 + 8);
+        break;
+    case 4:
+    case 5:
+        return D_8010A691 - 3;
+    case 6:
+        vs_battle_stringContext.strings[0] = D_8010A694;
+        func_800C8E04(1);
+        vs_mainmenu_setMessage((char*)&D_8010A280[0x61]);
+        D_8010A691 = 7;
+        /* fallthrough */
+    case 7:
+        if (vs_main_buttonsPressed.pad[0].low != 0) {
+            vs_battle_playMenuLeaveSfx();
+            return -1;
+        }
+        break;
+    }
+    return 0;
+}
 
 int func_80109444(u_char* arg0)
 {

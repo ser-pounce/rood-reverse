@@ -21,11 +21,17 @@ extern u_long* D_1F800000[];
 extern char D_8010A2C4;
 extern int D_8010A50C;
 extern char D_8010A505;
+extern char* D_8010A510;
 extern int (*D_8010A514[])(int);
 extern char D_8010A5F1;
 extern char D_8010A5F2;
 extern char D_8010A5F3;
 extern char D_8010A5F4;
+extern char D_8010A5F8;
+extern char D_8010A5F9;
+extern char D_8010A5F5;
+extern char D_8010A5F6;
+extern char D_8010A5F7;
 extern char D_8010A5FF;
 extern char D_8010A600;
 extern char D_8010A601;
@@ -237,7 +243,63 @@ int func_8010310C(int arg0)
         return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801032F8);
+int func_801032F8(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_8010A5F7 = arg0 >> 8;
+        D_8010A5F8 = arg0 - 1;
+        func_80102C50(D_8010A5F7);
+        D_8010A5F9 = 0;
+        D_8010A5F6 = 0U;
+        D_8010A5F5 = 0U;
+        return 0;
+    }
+    switch (D_8010A5F5) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A5F7, 4);
+            vs_mainMenu_setUiGripStats(D_800619D8.unk0[D_8010A5F8 + 0x18]);
+            D_8010A5F5 = 1U;
+        }
+        break;
+    case 1:
+        if (D_8010A5F6 < 0xAU) {
+            D_8010A5F6 = (D_8010A5F6 + 1);
+        } else {
+            D_8010A5F5 = 2U;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(0);
+            D_8010A5F5 = 3U;
+        } else {
+            temp_v0_2 = func_80102A60(2, D_8010A5F8);
+            if (temp_v0_2 != D_8010A5F8) {
+                D_8010A5F8 = temp_v0_2;
+                temp_v0_3 = func_80102E08(2, temp_v0_2);
+                vs_mainMenu_setGripUi(&vs_battle_inventory.grips[temp_v0_3 - 1], sp10,
+                    &sp18, vs_battle_stringBuf);
+                vs_mainMenu_setUiGripStats(temp_v0_3);
+                func_80102D6C(D_8010A5F7, sp10, sp18, temp_v0_2);
+            }
+        }
+        D_8010A510[6] =
+            (vs_battle_inventory.grips[D_800619D8.unk0[D_8010A5F8 + 0x18] - 1].gemSlots
+                + 0x30);
+        vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
+        vs_battle_renderTextRaw(D_8010A510, 0x240118, NULL);
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103538);
 

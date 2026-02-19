@@ -71,6 +71,17 @@ typedef struct {
 } vs_battle_inventoryWeapon;
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryBlade blade;
+    vs_battle_inventoryGrip grip;
+    vs_battle_inventoryGem gems[3];
+    char unk94[0x18];
+} vs_battle_setWeaponForDropRand;
+
+typedef struct {
     u_char id;
     u_char subId;
     char wepId;

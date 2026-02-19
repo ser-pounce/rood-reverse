@@ -5,6 +5,7 @@ _getParentItem = 0x80104FB4;
 _copyBladeToInventory = 0x80107C54;
 _copyGripToInventory = 0x80107CE8;
 _copyGemToInventory = 0x80107D7C;
+_copyWeaponToInventory = 0x80107E10;
 _copyArmorToInventory = 0x80107F1C;
 _copyShieldToInventory = 0x80107F9C;
 _copyMiscToInventory = 0x8010808C;

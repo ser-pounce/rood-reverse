@@ -376,7 +376,32 @@ int _copyGemToInventory(vs_battle_inventoryGem* source, int item)
     return index;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80107E10);
+int _copyWeaponToInventory(vs_battle_setWeaponForDropRand* arg0)
+{
+    int i;
+    vs_battle_inventoryWeapon* slot = _inventory->weapons;
+    int index = 1;
+
+    while (slot->blade != 0) {
+        ++slot;
+        if (++index == 8) {
+            return 0;
+        }
+    }
+
+    vs_battle_rMemzero(slot, 0x20);
+    slot->index = index;
+    slot->blade = _copyBladeToInventory(&arg0->blade, index);
+    slot->grip = _copyGripToInventory(&arg0->grip, index);
+
+    for (i = 0; i < 3; i++) {
+        if (arg0->gems[i].id != 0)
+            slot->gems[i] = _copyGemToInventory(&arg0->gems[i], index);
+    }
+
+    vs_battle_rMemcpy(slot->name, arg0->unk94, 0x18);
+    return index;
+}
 
 int _copyArmorToInventory(vs_battle_inventoryArmor* source)
 {

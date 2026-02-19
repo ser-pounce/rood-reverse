@@ -304,17 +304,6 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryBlade blade;
-    vs_battle_inventoryGrip grip;
-    vs_battle_inventoryGem gems[3];
-    char unk94[0x18];
-} _setWeaponForDropRand_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
     vs_battle_inventoryArmor accessory;
 } _setAccessoryForDropRand_t;
 
@@ -327,7 +316,7 @@ typedef struct {
 } _setArmorForDropRand_t;
 
 typedef struct {
-    _setWeaponForDropRand_t weapon;
+    vs_battle_setWeaponForDropRand weapon;
     int unkAC[17];
     vs_battle_shieldForDropRand shield; // 0xF0
     _setArmorForDropRand_t armor; // 0x170
@@ -1730,7 +1719,7 @@ void vs_battle_copyEquippedAccessoryStats(
     }
 }
 
-int _setWeaponForDropRand(_setWeaponForDropRand_t* arg0, vs_battle_uiWeapon* arg1)
+int _setWeaponForDropRand(vs_battle_setWeaponForDropRand* arg0, vs_battle_uiWeapon* arg1)
 {
     int i;
 

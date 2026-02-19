@@ -16,6 +16,8 @@ void func_801088D4(func_801088D4_t*);
 void func_80108938(int);
 int func_80109750(int);
 
+extern u_long* D_1F800000[];
+
 extern char D_8010A2C4;
 extern int D_8010A50C;
 extern char D_8010A505;
@@ -60,7 +62,37 @@ int func_80102A60(int arg0, int arg1)
     return arg1;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102B14);
+void func_80102B14(int arg0, int arg1)
+{
+    int i;
+    u_long* var_v1;
+    vs_battle_menuItem_t* menuItem;
+
+    int temp_s4 = (D_800F4EE8.unk3A[0] - 1) & 7;
+
+    if (arg0 == 4) {
+        func_801013F8(0);
+    }
+
+    arg0 = (arg0 * 8) - 0x10;
+
+    for (i = 0; i < 8; ++i) {
+        int temp_s0 = (((i + 1) & 7) * 0x10) + 0x20;
+        if (i == temp_s4 && arg1 == 1) {
+            menuItem = vs_battle_getMenuItem(0x1F);
+            if (temp_s0 >= (menuItem->initialX - 0xC)) {
+                menuItem->icon = i + 0x18;
+                continue;
+            } else {
+                var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
+            }
+        } else {
+            var_v1 =
+                func_800C0224(0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1]);
+        }
+        var_v1[4] = (0x78 + i * 0x10) | 0x8000 | (i == temp_s4 ? 0x37FD0000 : 0x37FE0000);
+    }
+}
 
 void func_80102C50(int arg0)
 {
@@ -260,7 +292,49 @@ int func_80104144(int arg0, vs_battle_inventoryMisc* arg1)
     return arg1->count;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104164);
+void func_80104164(int arg0)
+{
+    char sp10[64];
+    int temp_v0;
+    int i;
+    int var_s4;
+
+    vs_battle_inventoryMisc* item = vs_battle_inventory.items;
+    char* c = D_800619D8.unk70;
+
+    vs_battle_rMemzero(sp10, sizeof sp10);
+    var_s4 = 0;
+
+    while (1) {
+        int temp_s0;
+        int var_s3 = 0x80000000;
+
+        for (i = 0; i < 64; ++i) {
+            temp_s0 = c[i];
+            if (temp_s0 != 0) {
+                temp_v0 = func_80104144(arg0, &item[temp_s0 - 1]);
+                if (var_s3 < temp_v0) {
+                    var_s3 = temp_v0;
+                }
+            }
+        }
+
+        if (var_s3 == 0x80000000) {
+            break;
+        }
+
+        for (i = 0; i < 64; ++i) {
+            temp_s0 = c[i];
+            if (temp_s0 != 0) {
+                if (func_80104144(arg0, &item[temp_s0 - 1]) == var_s3) {
+                    sp10[var_s4++] = temp_s0;
+                    c[i] = 0;
+                }
+            }
+        }
+    }
+    vs_battle_memcpy(c, &sp10, sizeof sp10);
+}
 
 int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
 {
@@ -552,13 +626,11 @@ INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102950);
 int func_80108264(int arg0, u_char* arg1)
 {
     int i;
-    int var_a2;
-    int temp_t0;
     vs_battle_inventoryShield* shield;
     vs_battle_inventoryWeapon* weapon;
 
-    temp_t0 = arg1[0];
-    var_a2 = 0;
+    int temp_t0 = arg1[0];
+    int var_a2 = 0;
 
     switch (arg0) {
     case 1:

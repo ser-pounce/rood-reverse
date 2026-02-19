@@ -154,7 +154,35 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103CBC);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103DA0);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103EFC);
+int _getShieldStat(int arg0, vs_battle_uiShield* shield)
+{
+    switch (arg0) {
+    case 1:
+        return -shield->base.material;
+    case 4:
+        return shield->currentPp;
+    case 5:
+        return shield->maxPp;
+    case 6:
+        return shield->currentDp;
+    case 7:
+        return shield->maxDp;
+    case 8:
+        return shield->currentStr;
+    case 9:
+        return shield->currentInt;
+    case 10:
+        return shield->currentAgility;
+    default:
+        if (arg0 < 33) {
+            return shield->classAffinityCurrent.class[0][arg0 - 27];
+        }
+        if (arg0 >= 40) {
+            return shield->types[arg0 - 39];
+        }
+        return shield->classAffinityCurrent.affinity[0][arg0 - 33];
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103FD8);
 

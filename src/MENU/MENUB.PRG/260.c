@@ -999,7 +999,88 @@ int func_80105044(int arg0, int arg1)
     return var_v1 & 0x7F;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80105088);
+int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
+{
+    char* sp10;
+    int sp14;
+    int temp_s1_2;
+    int temp_v0;
+    int temp_v0_2;
+    int var_s3;
+    int i;
+    vs_battle_inventoryWeapon* temp_s0;
+    char* s5 = arg3;
+    sp10 = vs_mainMenu_inventoryIndices[arg0];
+    sp14 = 0;
+    for (i = 0; i < vs_mainMenu_inventoryItemCapacities[arg0]; ++i, s5 += 0x60) {
+        temp_s1_2 = sp10[i];
+        if (temp_s1_2 == 0) {
+            break;
+        }
+
+        temp_s1_2 = sp10[i] - 1;
+        var_s3 = 0;
+
+        switch (arg0) {
+        case 0:
+            temp_s0 = &vs_battle_inventory.weapons[temp_s1_2];
+            vs_mainMenu_initUiWeapon(temp_s0, &arg1[i * 2], &arg2[i], s5);
+            if (temp_s0->isEquipped != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 1:
+            vs_mainMenu_setBladeUi(
+                &vs_battle_inventory.blades[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            break;
+        case 2:
+            vs_mainMenu_setGripUi(
+                &vs_battle_inventory.grips[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            break;
+        case 3:
+            vs_mainMenu_initUiShield(
+                &vs_battle_inventory.shields[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            if (vs_battle_inventory.shields[temp_s1_2].isEquipped != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 4:
+            vs_mainMenu_setAccessoryUi(
+                &vs_battle_inventory.armor[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            if (vs_battle_inventory.armor[temp_s1_2].bodyPart != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 5:
+            vs_mainMenu_setGemUi(
+                &vs_battle_inventory.gems[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            break;
+        case 6:
+            vs_mainMenu_setItemUi(
+                &vs_battle_inventory.items[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
+            /* fallthrough */
+        default:
+            break;
+        }
+        temp_v0 = _getParentItem(arg0, temp_s1_2);
+        if (temp_v0 != 0) {
+            var_s3 = 0xCA00;
+            if (vs_battle_inventory.weapons[temp_v0 - 1].isEquipped == 0) {
+                var_s3 = 0xCC00;
+            }
+        }
+        temp_v0_2 = func_80105044(arg0, temp_s1_2);
+        if (temp_v0_2 != 0) {
+            var_s3 = 0xCA00;
+            if (vs_battle_inventory.shields[temp_v0_2 - 1].isEquipped == 0) {
+                var_s3 = 0xCC00;
+            }
+        }
+        arg2[i] |= var_s3;
+        ++sp14;
+    }
+    return sp14;
+}
 
 void func_8010537C(int arg0)
 {

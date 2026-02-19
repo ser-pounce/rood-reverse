@@ -29,6 +29,7 @@ extern char D_8010A54C[];
 extern char D_8010A58C[];
 extern char D_8010A590[];
 extern char* D_8010A598[];
+extern char* D_8010A5CC[];
 extern char D_8010A608;
 extern u_char D_8010A609;
 extern char D_8010A5E9;
@@ -1346,7 +1347,92 @@ int func_80108264(int arg0, u_char* arg1)
     return var_a2;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010837C);
+void func_8010837C(int arg0)
+{
+    int sp10;
+    int temp_s0;
+    int temp_s4;
+    int var_a2;
+    int var_fp;
+    int var_s0;
+    int var_s0_2;
+    int i;
+    int var_s2;
+    int temp_s3;
+    u_char* var_s6;
+    unsigned int new_var;
+    char* c;
+    int new_var2;
+
+    var_s6 = NULL;
+    var_fp = 1;
+    if (D_8010A6B7 != 0) {
+        var_s6 = (u_char*)1;
+        if (D_8010A6B7 & 0xF) {
+
+            var_fp = 0;
+            var_s6 = D_8010A6A0[D_8010A6B5 + D_8010A6B7 - 1];
+            for (i = 0; i < D_8010A6B6; ++i) {
+                var_fp += D_8010A6A0[i][3];
+            }
+        }
+    }
+    vs_battle_renderTextRaw("GADGET BAG", (arg0 + 0xB0) | 0xC0000, NULL);
+
+    sp10 = arg0 + 0x110;
+
+    for (i = 0; i < 7; ++i) {
+        var_s0 = 0x808080;
+        temp_s3 = vs_mainMenu_inventoryItemCapacities[i];
+        temp_s4 = vs_mainMenu_getItemCount(i, NULL);
+
+        if (var_s6 != NULL) {
+            var_s0_2 = 0;
+            if ((var_s6 == (u_char*)1) || (func_80108264(i, var_s6) != 0)) {
+                var_s0_2 = 1;
+            }
+            var_s0 = 0x404040 << var_s0_2;
+        }
+        new_var2 = 0x180000;
+        var_s2 = (new_var2 + i * 0xC0000);
+        vs_battle_renderTextRawColor("/", sp10 | var_s2, var_s0, NULL);
+        vs_battle_renderTextRawColor(D_8010A5CC[i], (arg0 + 0xC0) | var_s2, var_s0, NULL);
+        vs_mainMenu_printIntColor(temp_s3, (arg0 + 0x128) | var_s2, var_s0, NULL);
+
+        if (((u_int)var_s0 >> 0x17) != 0) {
+            if ((temp_s4 * 2) < (int)temp_s3) {
+                var_s0 = 0x804020;
+            }
+            if (((u_long)var_s6 >> 1) != 0) {
+                if (temp_s3 < (func_80108264(i, var_s6) + temp_s4)) {
+                    var_s0 = 0x204080;
+                }
+            }
+        }
+        vs_mainMenu_printIntColor(temp_s4, sp10 | var_s2, var_s0, NULL);
+    }
+
+    temp_s0 = arg0 + 0xB8;
+    vs_mainMenu_drawButtonUiBackground(temp_s0, 0x70, 0x70, 0xA);
+    vs_mainMenu_drawButtonUiBackground(temp_s0, 0x80, 0x40, 0xA);
+    vs_battle_renderTextRawColor(
+        "GET", (arg0 + 0xC4) | 0x700000, 0x404040 << D_8010A505, NULL);
+    vs_mainmenu_drawButton(2, arg0 + 0xB0, 0x6E, NULL);
+
+    c = "ALL";
+    new_var = (arg0 + 0xFC) | 0x700000;
+    if (var_fp != 0) {
+        var_a2 = 0x404040 << (D_8010A505 & 1);
+    } else {
+        var_a2 = 0x404040;
+    }
+
+    vs_battle_renderTextRawColor(c, new_var, var_a2, NULL);
+    vs_mainmenu_drawButton(1, arg0 + 0xE8, 0x6E, NULL);
+    vs_battle_renderTextRawColor(
+        "END", (arg0 + 0xC4) | 0x800000, 0x404040 << D_8010A505, NULL);
+    vs_mainmenu_drawButton(3, arg0 + 0xB0, 0x7E, NULL);
+}
 
 int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 

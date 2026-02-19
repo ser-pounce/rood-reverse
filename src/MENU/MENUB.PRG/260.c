@@ -44,6 +44,11 @@ extern char D_8010A5F9;
 extern char D_8010A5F5;
 extern char D_8010A5F6;
 extern char D_8010A5F7;
+extern char D_8010A5FA;
+extern char D_8010A5FB;
+extern char D_8010A5FC;
+extern u_char D_8010A5FD;
+extern char D_8010A5FE;
 extern char D_8010A5FF;
 extern char D_8010A600;
 extern char D_8010A601;
@@ -372,7 +377,68 @@ int func_801032F8(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103538);
+int func_80103538(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int i;
+
+    if (arg0 != 0) {
+        D_8010A5FC = arg0 >> 8;
+        D_8010A5FD = arg0 - 1;
+        func_80102C50(D_8010A5FC);
+        D_8010A5FE = 0;
+        D_8010A5FB = 0U;
+        D_8010A5FA = 0U;
+        return 0;
+    }
+    switch (D_8010A5FA) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A5FC, 7);
+            func_800FD5A0(D_800619D8.unk28[D_8010A5FD]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010A5FA = 1U;
+        }
+        break;
+    case 1:
+        if (D_8010A5FB < 0xAU) {
+            ++D_8010A5FB;
+            if (D_8010A5FB < 4) {
+                func_800FC704(D_8010A5FB, D_800619D8.unk28[D_8010A5FD], 1);
+            }
+            break;
+        }
+        if (vs_mainmenu_ready() != 0) {
+            D_8010A5FA = 2U;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(1);
+            D_8010A5FA = 3U;
+            break;
+        }
+        temp_v0_2 = func_80102A60(3, D_8010A5FD);
+        if (temp_v0_2 != D_8010A5FD) {
+            D_8010A5FD = temp_v0_2;
+            i = func_80102E08(3, temp_v0_2);
+            vs_mainMenu_initUiShield(
+                &vs_battle_inventory.shields[i - 1], sp10, &sp18, vs_battle_stringBuf);
+            func_800FD5A0(i);
+            func_80102D6C(D_8010A5FC, sp10, sp18, temp_v0_2);
+
+            for (i = 1; i < 4; ++i) {
+                func_800FC704(i, D_800619D8.unk28[temp_v0_2], 0);
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_80103794(int arg0)
 {

@@ -23,6 +23,11 @@ extern int D_8010A50C;
 extern char D_8010A505;
 extern char* D_8010A510;
 extern int (*D_8010A514[])(int);
+extern char D_8010A5EC;
+extern char D_8010A5ED;
+extern char D_8010A5EE;
+extern u_char D_8010A5EF;
+extern char D_8010A5F0;
 extern char D_8010A5F1;
 extern char D_8010A5F2;
 extern char D_8010A5F3;
@@ -187,7 +192,66 @@ void func_80102E54(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80102EC4);
+int func_80102EC4(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int i;
+
+    if (arg0 != 0) {
+        D_8010A5EE = arg0 >> 8;
+        D_8010A5EF = arg0 - 1;
+        func_80102C50(D_8010A5EE);
+        D_8010A5F0 = 0;
+        D_8010A5ED = 0;
+        D_8010A5EC = 0;
+        return 0;
+    }
+    switch (D_8010A5EC) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A5EE, 7);
+            vs_mainMenu_setUiWeaponStats(D_800619D8.unk0[D_8010A5EF]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010A5EC = 1;
+        }
+        break;
+    case 1:
+        if (D_8010A5ED < 10) {
+            ++D_8010A5ED;
+            if (D_8010A5ED < 6) {
+                func_800FC510(D_8010A5ED, D_800619D8.unk0[D_8010A5EF], 1);
+            }
+            break;
+        }
+        D_8010A5EC = 2;
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(1);
+            D_8010A5EC = 3;
+            break;
+        }
+        temp_v0_2 = func_80102A60(0, D_8010A5EF);
+        if (temp_v0_2 != D_8010A5EF) {
+            D_8010A5EF = temp_v0_2;
+            i = func_80102E08(0, temp_v0_2);
+            vs_mainMenu_initUiWeapon(
+                &vs_battle_inventory.weapons[i - 1], sp10, &sp18, vs_battle_stringBuf);
+            vs_mainMenu_setUiWeaponStats(i);
+
+            func_80102D6C(D_8010A5EE, sp10, sp18, temp_v0_2);
+            for (i = 1; i < 6; ++i) {
+                func_800FC510(i, D_800619D8.unk0[temp_v0_2], 0);
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_8010310C(int arg0)
 {

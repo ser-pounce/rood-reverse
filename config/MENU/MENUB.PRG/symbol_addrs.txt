@@ -1,5 +1,6 @@
 _getWeaponStat = 0x80103CBC;
 _getShieldStat = 0x80103EFC;
+_getEquipmentStat = 0x801042A4;
 _copyEquipmentStats = 0x8010439C;
 _getParentItem = 0x80104FB4;
 _copyBladeToInventory = 0x80107C54;

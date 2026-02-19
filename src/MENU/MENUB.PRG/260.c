@@ -227,7 +227,44 @@ int func_80104144(int arg0, vs_battle_inventoryMisc* arg1)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104164);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801042A4);
+int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
+{
+    switch (stat) {
+    case 0:
+        return -item->category;
+    case 1:
+        return -item->material;
+    case 2:
+        return item->range.unk0;
+    case 3:
+        return -item->damageType;
+    case 4:
+        return item->currentDp;
+    case 5:
+        return item->maxDp;
+    case 6:
+        return item->currentPp;
+    case 7:
+        return item->maxPp;
+    case 8:
+        return item->strength;
+    case 9:
+        return item->intelligence;
+    case 10:
+        return item->agility;
+    default:
+        if (stat >= 27) {
+            stat -= 16;
+        }
+        if (stat < 17) {
+            return item->classes[stat - 11];
+        }
+        if (stat >= 24) {
+            return item->types[stat - 23];
+        }
+        return item->affinities[stat - 17];
+    }
+}
 
 void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int index)
 {
@@ -389,7 +426,7 @@ int _copyWeaponToInventory(vs_battle_setWeaponForDropRand* arg0)
         }
     }
 
-    vs_battle_rMemzero(slot, 0x20);
+    vs_battle_rMemzero(slot, sizeof *slot);
     slot->index = index;
     slot->blade = _copyBladeToInventory(&arg0->blade, index);
     slot->grip = _copyGripToInventory(&arg0->grip, index);
@@ -399,7 +436,7 @@ int _copyWeaponToInventory(vs_battle_setWeaponForDropRand* arg0)
             slot->gems[i] = _copyGemToInventory(&arg0->gems[i], index);
     }
 
-    vs_battle_rMemcpy(slot->name, arg0->unk94, 0x18);
+    vs_battle_rMemcpy(slot->name, arg0->unk94, sizeof slot->name);
     return index;
 }
 

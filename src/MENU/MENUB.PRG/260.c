@@ -484,7 +484,55 @@ void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104474);
+void func_80104474(int arg0, int arg1)
+{
+    vs_battle_uiEquipment sp10;
+    int temp_v0;
+    int i;
+    int var_s3;
+    int var_s5;
+    char* temp_s6;
+    int temp_s0;
+    int temp_s4;
+
+    var_s5 = 0;
+    temp_s4 = vs_mainMenu_inventoryItemCapacities[arg0];
+    {
+        char spVLA[temp_s4];
+        temp_s6 = vs_mainMenu_inventoryIndices[arg0];
+        vs_battle_rMemzero(spVLA, temp_s4);
+
+        while (1) {
+            var_s3 = 0x80000000;
+            for (i = 0; i < temp_s4; ++i) {
+                temp_s0 = temp_s6[i];
+                if (temp_s0 != 0) {
+                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
+                    temp_v0 = _getEquipmentStat(arg1, &sp10);
+                    if (var_s3 < temp_v0) {
+                        var_s3 = temp_v0;
+                    }
+                }
+            }
+
+            if (var_s3 == 0x80000000) {
+                break;
+            }
+
+            for (i = 0; i < temp_s4; ++i) {
+                temp_s0 = temp_s6[i];
+                if (temp_s0 != 0) {
+                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
+                    if (_getEquipmentStat(arg1, &sp10) == var_s3) {
+                        spVLA[var_s5++] = temp_s0;
+                        temp_s6[i] = 0;
+                    }
+                }
+            }
+        }
+        vs_battle_memcpy(temp_s6, spVLA, temp_s4);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104608);
 

@@ -150,7 +150,38 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103BA8);
 
 INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102800);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103CBC);
+int _getWeaponStat(int stat, vs_battle_uiWeapon* weapon)
+{
+    switch (stat) {
+    case 0:
+        return -weapon->blade.category;
+    case 1:
+        return -weapon->blade.material;
+    case 2:
+        return weapon->range.unk0;
+    case 3:
+        return -weapon->damageType;
+    case 4:
+        return weapon->currentDp;
+    case 5:
+        return weapon->maxDp;
+    case 6:
+        return weapon->currentPp;
+    case 7:
+        return weapon->maxPp;
+    case 8:
+        return weapon->currentStr;
+    case 9:
+        return weapon->currentInt;
+    case 10:
+        return weapon->currentAgility;
+    default:
+        if (stat >= 17) {
+            return weapon->classAffinityCurrent.affinity[0][stat - 17];
+        }
+        return weapon->classAffinityCurrent.class[0][stat - 11];
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103DA0);
 

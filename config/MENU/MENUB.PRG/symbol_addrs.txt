@@ -1,3 +1,4 @@
+_getWeaponStat = 0x80103CBC;
 _getShieldStat = 0x80103EFC;
 _copyEquipmentStats = 0x8010439C;
 _getParentItem = 0x80104FB4;

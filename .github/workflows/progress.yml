@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - progress.json
+  workflow_dispatch:
 jobs:
   upload-progress:
     runs-on: ubuntu-latest

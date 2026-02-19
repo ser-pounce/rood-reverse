@@ -549,7 +549,48 @@ void func_8010822C(int arg0, int arg1)
 
 INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102950);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108264);
+int func_80108264(int arg0, u_char* arg1)
+{
+    int i;
+    int var_a2;
+    int temp_t0;
+    vs_battle_inventoryShield* shield;
+    vs_battle_inventoryWeapon* weapon;
+
+    temp_t0 = arg1[0];
+    var_a2 = 0;
+
+    switch (arg0) {
+    case 1:
+    case 2:
+        var_a2 += temp_t0 == 0;
+        // Fallthrough
+    case 0:
+    case 3:
+    case 4:
+    case 6:
+        var_a2 += temp_t0 == arg0;
+        break;
+    case 5:
+        var_a2 += temp_t0 == 5;
+        if (temp_t0 == 0) {
+            weapon = &_inventory->weapons[arg1[1]];
+
+            for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
+                var_a2 += weapon->gems[i] != 0;
+            }
+        }
+        if (temp_t0 == 3) {
+            shield = &_inventory->shields[arg1[1]];
+
+            for (i = 0; i < shield->base.gemSlots; ++i) {
+                var_a2 += shield->gems[i] != 0;
+            }
+        }
+        break;
+    }
+    return var_a2;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010837C);
 

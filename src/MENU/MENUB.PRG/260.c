@@ -146,7 +146,42 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103794);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801039BC);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103BA8);
+extern int (*D_8010A514[])(int);
+extern u_char D_8010A607;
+
+int func_80103BA8(int arg0)
+{
+    int temp_v0;
+    int var_s0 = 0;
+
+    if (arg0 != 0) {
+        var_s0 = arg0 >> 4;
+        D_8010A607 = arg0 & 0xF;
+        D_8010A6BF = 1;
+        D_8010A6C0 = 0;
+        func_800FDD78();
+        vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
+        func_800FFA88(0);
+    }
+
+    temp_v0 = D_8010A514[D_8010A607](var_s0);
+
+    if (temp_v0 != 0) {
+        if (D_8010A6C0 != 0) {
+            return -2;
+        }
+        D_8010A6BA = 1;
+        D_8010A6BF = 0;
+        D_8010A6BB = 1;
+        D_8010A50C = 0;
+        func_800FFA88(2);
+    } else if (vs_mainmenu_ready() != 0) {
+        D_801022D5 = D_801024B8 != 9;
+        func_801013F8(1);
+        func_800FDEBC();
+    }
+    return temp_v0;
+}
 
 INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102800);
 

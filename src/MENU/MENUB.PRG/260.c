@@ -220,7 +220,6 @@ int func_8010310C(int arg0)
                 &sp18, vs_battle_stringBuf);
             vs_mainMenu_setUiBladeStats(temp_v0_3);
             func_80102D6C(D_8010A5F3, sp10, sp18, temp_v0_2);
-            return 0;
         }
         break;
     case 3:
@@ -235,7 +234,63 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103538);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80103794);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801039BC);
+extern char D_8010A603;
+extern char D_8010A604;
+extern char D_8010A605;
+extern char D_8010A606;
+
+int func_801039BC(int arg0)
+{
+    char* sp10[2];
+    int sp18;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_8010A605 = arg0 >> 8;
+        D_8010A606 = (arg0 - 1);
+        func_80102C50(D_8010A605);
+        D_8010A604 = 10;
+        D_8010A603 = 0U;
+        return 0;
+    }
+    switch (D_8010A603) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102D1C(D_8010A605, 3);
+            func_800FD878(D_800619D8.unk0[D_8010A606 + 0x40]);
+            D_8010A603 = 1;
+        }
+        break;
+    case 1:
+        if (D_8010A604 != 0) {
+            D_8010A604 = (D_8010A604 - 1);
+        } else {
+            D_8010A603 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102E54(0);
+            D_8010A603 = 3;
+            D_8010A6C0 = vs_main_buttonsPressed.all & 0x10;
+            break;
+        }
+        temp_v0_2 = func_80102A60(5, D_8010A606);
+        if (temp_v0_2 != D_8010A606) {
+            D_8010A606 = temp_v0_2;
+            temp_v0_3 = func_80102E08(5, temp_v0_2);
+            vs_mainMenu_setGemUi(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
+                vs_battle_stringBuf);
+            func_800FD878(temp_v0_3);
+            func_80102D6C(D_8010A605, sp10, sp18, temp_v0_2);
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 extern int (*D_8010A514[])(int);
 extern u_char D_8010A607;

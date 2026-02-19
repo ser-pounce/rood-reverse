@@ -23,6 +23,13 @@ extern int D_8010A50C;
 extern char D_8010A505;
 extern char* D_8010A510;
 extern int (*D_8010A514[])(int);
+extern char D_8010A52C[];
+extern char D_8010A54C[];
+extern char D_8010A58C[];
+extern char D_8010A590[];
+extern char* D_8010A598[];
+extern char D_8010A608;
+extern u_char D_8010A609;
 extern char D_8010A5EC;
 extern char D_8010A5ED;
 extern char D_8010A5EE;
@@ -828,7 +835,63 @@ void func_80104474(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104608);
+int func_80104608(int arg0)
+{
+    char* sp10[48];
+    int spD0[24];
+    int i;
+
+    if (arg0 != 0) {
+        D_8010A609 = arg0 - 1;
+        D_8010A608 = 0;
+        return 0;
+    }
+
+    switch (D_8010A608) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            char* new_var = D_8010A598[D_8010A609];
+            for (i = 0; i < D_8010A590[D_8010A609]; ++i) {
+                sp10[i * 2] =
+                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[new_var[i] * 2
+                                                                      + 0x1B6]];
+                sp10[i * 2 + 1] =
+                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[new_var[i] * 2
+                                                                      + 0x1B7]];
+                spD0[i] = 0;
+            }
+            func_800FF0EC(i, D_8010A609 + 0x2D, sp10, spD0);
+            D_8010A608 = 1;
+        }
+        break;
+    case 1:
+        func_800FF43C();
+        i = func_800FF360();
+        if ((i + 1) != 0) {
+            if (i >= 0) {
+                vs_battle_playMenuSelectSfx();
+                switch (D_8010A609) {
+                case 0:
+                    func_80103DA0(D_8010A52C[i]);
+                    break;
+                case 3:
+                    func_80103FD8(D_8010A54C[i]);
+                    break;
+                case 6:
+                    func_80104164(D_8010A58C[i]);
+                    break;
+                default:
+                    func_80104474(D_8010A609, D_8010A598[D_8010A609][i]);
+                    break;
+                }
+            } else {
+                vs_battle_playMenuLeaveSfx();
+            }
+            return i + 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80104860);
 

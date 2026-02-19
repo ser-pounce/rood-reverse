@@ -179,3 +179,57 @@ enum vs_itemCategories {
 };
 
 enum vs_gemTargets { gemTargetShield = 0x80 };
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor accessory;
+} _setAccessoryForDropRand_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor armor;
+} _setArmorForDropRand_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryBlade blade;
+} _setBladeForDropRand_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryGrip grip;
+} _setGripForDropRand_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryGem gem;
+} _setGemForDropRand_t;
+
+typedef struct {
+    vs_battle_setWeaponForDropRand weapon;
+    _setBladeForDropRand_t unkB0;
+    _setGripForDropRand_t unkE0;
+    vs_battle_shieldForDropRand shield; // 0xF0
+    _setArmorForDropRand_t armor[2]; // 0x170
+    _setAccessoryForDropRand_t accessory; // 0x1C8
+    _setGemForDropRand_t gem; // 0x1F4
+    vs_battle_inventoryMisc misc[2]; // 0x214
+    u_short unk21C;
+    char unk21E;
+    char unk21F;
+} func_8006BE64_t2;

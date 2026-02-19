@@ -11,7 +11,7 @@
 void func_800BEC14(short, int);
 void func_80102CBC(int);
 void func_8010837C(int);
-void func_801086F4(int*);
+void _applyDropList(func_8006BE64_t2* arg0);
 void func_801088D4(func_801088D4_t*);
 void func_80108938(int);
 int func_80109750(int);
@@ -840,7 +840,48 @@ INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_8010837C);
 
 int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801086F4);
+void _applyDropList(func_8006BE64_t2* arg0)
+{
+    int i;
+
+    if (func_801086DC(arg0->weapon.unk0) != 0) {
+        func_8010822C(0, _copyWeaponToInventory(&arg0->weapon));
+    }
+
+    if (func_801086DC(arg0->unkB0.unk0) != 0) {
+        func_8010822C(1, _copyBladeToInventory(&arg0->unkB0.blade, 0));
+    }
+
+    if (func_801086DC(arg0->unkE0.unk0) != 0) {
+        func_8010822C(2, _copyGripToInventory(&arg0->unkE0.grip, 0));
+    }
+
+    if (func_801086DC(arg0->shield.unk0) != 0) {
+        func_8010822C(3, _copyShieldToInventory(&arg0->shield));
+    }
+
+    for (i = 0; i < 2; ++i) {
+        if (func_801086DC(arg0->armor[i].unk0) != 0) {
+            func_8010822C(4, _copyArmorToInventory(&arg0->armor[i].armor));
+        }
+    }
+
+    if (func_801086DC(arg0->accessory.unk0) != 0) {
+        func_8010822C(4, _copyArmorToInventory(&arg0->accessory.accessory));
+    }
+
+    if (func_801086DC(arg0->gem.unk0) != 0) {
+        func_8010822C(5, _copyGemToInventory(&arg0->gem.gem, 0));
+    }
+
+    for (i = 0; i < 3; ++i) {
+        if ((func_801086DC(arg0->misc[i].count) != 0) && (arg0->misc[i].id != 0)
+            && (arg0->misc[i].index != 0)) {
+            func_8010822C(6, _copyMiscToInventory(&arg0->misc[i]));
+        }
+    }
+    func_801080F0();
+}
 
 void func_801088D4(func_801088D4_t* arg0)
 {
@@ -848,11 +889,11 @@ void func_801088D4(func_801088D4_t* arg0)
 
     if (arg0 != 0) {
         while (arg0 != 0) {
-            func_801086F4(&arg0->unk8);
+            _applyDropList(&arg0->unk8);
             arg0 = arg0->next;
         }
     } else {
-        func_801086F4(D_800EB9C8);
+        _applyDropList(D_800EB9C8);
     }
 }
 

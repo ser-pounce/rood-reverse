@@ -302,43 +302,6 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_inventoryArmor accessory;
-} _setAccessoryForDropRand_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_inventoryArmor armor;
-} _setArmorForDropRand_t;
-
-typedef struct {
-    vs_battle_setWeaponForDropRand weapon;
-    int unkAC[17];
-    vs_battle_shieldForDropRand shield; // 0xF0
-    _setArmorForDropRand_t armor; // 0x170
-    int unk19C[11];
-    _setAccessoryForDropRand_t accessory; // 0x1C8
-    int unk1F4;
-    int unk1F8;
-    int unk1FC;
-    int unk200;
-    int unk204;
-    int unk208;
-    int unk20C;
-    int unk210;
-    func_8006BE64_t3 unk214[2];
-    u_short unk21C;
-    char unk21E;
-    char unk21F;
-} func_8006BE64_t2;
-
-typedef struct {
-    char unk0;
-    char unk1;
     short unk2;
     short currentHP;
     short maxHP;
@@ -1790,11 +1753,11 @@ int func_8006BDA0(func_8006BE64_t2* arg0, func_8006BE64_t3* arg1)
     ret = 0;
 
     for (i = 0; i < 2; ++i) {
-        arg0->unk214[i].unk0 = arg1[i].unk0;
-        if (arg0->unk214[i].unk0) {
+        arg0->misc[i].id = arg1[i].unk0;
+        if (arg0->misc[i].id) {
             ret = 1;
-            arg0->unk214[i].unk3 = arg1[i].unk2;
-            arg0->unk214[i].unk2 = 3;
+            arg0->misc[i].index = arg1[i].unk2;
+            arg0->misc[i].count = 3;
         }
     }
 
@@ -1832,7 +1795,7 @@ void func_8006BE64(vs_battle_actor* arg0)
         for (i = 0; i < 6; ++i) {
             if (temp_s2->bodyParts[i].armor.armor.id != 0) {
                 temp_v0->unk4 |= _setArmorForDropRand(
-                    &temp_v0->unk8.armor, &temp_s2->bodyParts[i].armor);
+                    &temp_v0->unk8.armor[0], &temp_s2->bodyParts[i].armor);
             }
         }
         temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, &temp_s2->unk958);
@@ -5379,16 +5342,16 @@ void func_8007BA98(int arg0, int arg1, int arg2, int arg3)
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->unk8.unk214[0].unk0 = arg0;
+        temp_v0->unk8.misc[0].id = arg0;
         if (arg0 & 0xFFFF) {
-            temp_v0->unk8.unk214[0].unk3 = arg1;
-            temp_v0->unk8.unk214[0].unk2 = 3;
+            temp_v0->unk8.misc[0].index = arg1;
+            temp_v0->unk8.misc[0].count = 3;
             temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
         }
-        temp_v0->unk8.unk214[1].unk0 = arg2;
+        temp_v0->unk8.misc[1].id = arg2;
         if (arg2 & 0xFFFF) {
-            temp_v0->unk8.unk214[1].unk3 = arg3;
-            temp_v0->unk8.unk214[1].unk2 = 3;
+            temp_v0->unk8.misc[1].index = arg3;
+            temp_v0->unk8.misc[1].count = 3;
             temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
         }
         if (temp_v0->unk4 != 0) {

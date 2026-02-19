@@ -10,5 +10,6 @@ _copyWeaponToInventory = 0x80107E10;
 _copyArmorToInventory = 0x80107F1C;
 _copyShieldToInventory = 0x80107F9C;
 _copyMiscToInventory = 0x8010808C;
+_applyDropList = 0x801086F4;
 D_8010A607 = 0x8010A607;
 _inventory = 0x8010A6A8;

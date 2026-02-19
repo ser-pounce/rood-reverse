@@ -18,6 +18,7 @@ int func_80109750(int);
 
 extern u_long* D_1F800000[];
 
+extern u_short D_8010A280[];
 extern char D_8010A2C4;
 extern int D_8010A50C;
 extern char D_8010A505;
@@ -30,6 +31,7 @@ extern char D_8010A590[];
 extern char* D_8010A598[];
 extern char D_8010A608;
 extern u_char D_8010A609;
+extern char D_8010A5E9;
 extern char D_8010A5EC;
 extern char D_8010A5ED;
 extern char D_8010A5EE;
@@ -58,6 +60,10 @@ extern char D_8010A604;
 extern char D_8010A605;
 extern char D_8010A606;
 extern u_char D_8010A607;
+extern char D_8010A698;
+extern char D_8010A699;
+extern char D_8010A69A;
+extern char D_8010A69B;
 extern char D_8010A69E;
 extern char (*D_8010A6A0)[4];
 extern void* D_8010A6A4;
@@ -1448,7 +1454,81 @@ void func_80108E78(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801090A4);
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80109444);
+int func_80109444(u_char* arg0)
+{
+    vs_battle_menuItem_t* temp_v0;
+
+    if (arg0 != NULL) {
+        func_800FFBC8();
+        D_8010A699 = arg0[0];
+        D_8010A698 = 0;
+        D_8010A69A = 0;
+        D_8010A69B = 0;
+
+        if (D_8010A699 == 0) {
+            D_8010A69B = 1;
+        } else if (D_8010A699 == 3) {
+            D_8010A69B = 1;
+        } else if ((D_8010A699 == 6) && (_inventory->items[arg0[1]].id < 0x1CA)) {
+            D_8010A69B = 2;
+        } else {
+            D_8010A69A = 1;
+        }
+
+        if (D_8010A69B != 0) {
+            temp_v0 = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0,
+                (char*)&D_8010A280[D_8010A280[(D_8010A69B + 4) * 2]]);
+            temp_v0->state = 2;
+            temp_v0->targetX = 0xC2;
+        }
+        return 0;
+    }
+
+    switch (D_8010A698) {
+    case 0:
+        temp_v0 =
+            vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&D_8010A280[0xBE]);
+        temp_v0->state = 2;
+        temp_v0->targetX = 0xC2;
+        D_8010A698 = 1;
+        break;
+    case 1:
+        D_8010A698 += vs_mainmenu_ready();
+        break;
+    case 2:
+        vs_battle_getMenuItem(D_8010A69A + 0x1E)->selected = 1;
+        vs_battle_getMenuItem(0x1F - D_8010A69A)->selected = 0;
+        if (vs_main_buttonsPressed.all & 0x60) {
+            vs_mainMenu_menuItemLeaveRight(0x1E);
+            vs_mainMenu_menuItemLeaveRight(0x1F);
+            if (vs_main_buttonsPressed.all & 0x40) {
+                vs_battle_playMenuLeaveSfx();
+                return -1;
+            }
+            vs_battle_playMenuSelectSfx();
+            if (D_8010A69A == 0) {
+                D_8010A69A = D_8010A69B + 1;
+            }
+            return D_8010A69A;
+        }
+        if (D_8010A69B != 0) {
+            if (vs_main_buttonRepeat & 0x5000) {
+                vs_battle_playMenuChangeSfx();
+                D_8010A69A = 1 - D_8010A69A;
+            }
+        }
+        if (D_8010A69A != 0) {
+            vs_mainmenu_setMessage((char*)&D_8010A280[0xC8]);
+        } else if (D_8010A69B == 1) {
+            vs_mainmenu_setMessage((char*)&D_8010A280[0x7D]);
+        } else {
+            vs_mainmenu_setMessage((char*)&D_8010A280[0x9B]);
+        }
+        D_8010A5E9 = vs_battle_drawCursor(D_8010A5E9, D_8010A69A + 8);
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80109750);
 

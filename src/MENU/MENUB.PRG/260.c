@@ -22,7 +22,7 @@ extern char D_8010A2C4;
 extern int D_8010A50C;
 extern char D_8010A505;
 extern char D_8010A69E;
-extern void* D_8010A6A0;
+extern char (*D_8010A6A0)[4];
 extern void* D_8010A6A4;
 extern vs_battle_inventory_t* _inventory;
 extern void* D_8010A6AC;
@@ -30,8 +30,9 @@ extern char D_8010A6B0;
 extern u_char D_8010A6B1;
 extern char D_8010A6B2;
 extern u_char D_8010A6B3;
+extern char D_8010A6B4;
 extern char D_8010A6B5;
-extern char D_8010A6B6;
+extern u_char D_8010A6B6;
 extern char D_8010A6B7;
 extern char D_8010A6B8;
 extern char D_8010A6B9;
@@ -611,11 +612,44 @@ int _copyMiscToInventory(vs_battle_inventoryMisc* arg0)
     return index;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801080F0);
+void func_801080F0(void)
+{
+    int i;
+    int temp_v1;
+    char(*var_s1)[4] = D_8010A6A0;
+
+    for (i = 0; i < D_8010A6B6; ++i, ++var_s1) {
+        (*var_s1)[3] =
+            (func_800FEB94((*var_s1)[0], &vs_battle_inventory, (*var_s1)[1], _inventory)
+                != 0);
+    }
+
+    i = D_8010A6B4 + D_8010A6B5;
+
+    if (i >= D_8010A6B6) {
+        i = D_8010A6B6 - 1;
+        D_8010A6B5 = D_8010A6B6 - 8;
+        D_8010A6B4 = 7;
+    }
+    if (D_8010A6B6 < 9) {
+        D_8010A6B4 = i;
+        D_8010A6B5 = 0;
+        return;
+    }
+    temp_v1 = D_8010A6B6 - 8;
+    if (temp_v1 < D_8010A6B5) {
+        D_8010A6B5 = temp_v1;
+        D_8010A6B4 = i - temp_v1;
+    }
+    if ((D_8010A6B4 == 7) && (i != (D_8010A6B6 - 1))) {
+        D_8010A6B4 -= 1;
+        D_8010A6B5 = D_8010A6B5 + 1;
+    }
+}
 
 void func_8010822C(int arg0, int arg1)
 {
-    char* temp_v1 = D_8010A6A0 + (D_8010A6B6++ * 4);
+    char* temp_v1 = D_8010A6A0[D_8010A6B6++];
     temp_v1[0] = arg0;
     temp_v1[1] = arg1 - 1;
     temp_v1[2] = 0;

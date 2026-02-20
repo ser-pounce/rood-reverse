@@ -232,6 +232,7 @@ extern char* vs_battle_hitlocations[];
 extern char D_800EB810[];
 extern u_short D_800EA868[];
 extern char D_800EB9AE;
+extern char D_800EB9AF;
 extern int D_800EB9B0;
 extern func_801088D4_t* D_800EB9C4;
 extern func_8006BE64_t2* D_800EB9C8;

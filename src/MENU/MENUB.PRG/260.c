@@ -21,6 +21,7 @@ int func_80105454(int);
 void func_80106274(int);
 int func_80106B80(int);
 int func_801073E0(int);
+void func_801080F0(void);
 void func_80108938(int);
 void func_8010A24C(int arg0);
 
@@ -28,6 +29,9 @@ extern u_long* D_1F800000[];
 
 extern u_short D_8010A280[];
 extern char D_8010A2C4;
+extern char D_8010A30A;
+extern char D_8010A30E;
+extern char D_8010A440;
 extern int D_8010A50C;
 extern char D_8010A505;
 extern char* D_8010A510;
@@ -40,6 +44,7 @@ extern char* D_8010A598[];
 extern char D_8010A5B4[];
 extern char D_8010A5C0[];
 extern char D_8010A5C3;
+extern char D_8010A5C9;
 extern char* D_8010A5CC[];
 extern char D_8010A5E8;
 extern char D_8010A5E9;
@@ -83,6 +88,11 @@ extern char D_8010A60F;
 extern char D_8010A610;
 extern char D_8010A680;
 extern char D_8010A681;
+extern char D_8010A682;
+extern char D_8010A683;
+extern char D_8010A684;
+extern u_char D_8010A685;
+extern char D_8010A686;
 extern char D_8010A691;
 extern char D_8010A692;
 extern char* D_8010A694;
@@ -94,7 +104,7 @@ extern char D_8010A69C;
 extern char D_8010A69D;
 extern char D_8010A69E;
 extern D_8010A6A0_t* D_8010A6A0;
-extern void* D_8010A6A4;
+extern D_8010A6A0_t* D_8010A6A4;
 extern vs_battle_inventory_t* _inventory;
 extern vs_battle_inventory_t* D_8010A6AC;
 extern char D_8010A6B0;
@@ -1456,7 +1466,177 @@ int func_801066CC(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80106B80);
+int func_80106B80(int arg0)
+{
+    int i;
+    int temp_v0_3;
+    int temp_v0_4;
+    vs_battle_inventoryShield* temp_a0;
+    vs_battle_inventoryShield* shield;
+    vs_battle_inventoryWeapon* temp_a2;
+    vs_battle_inventoryWeapon* weapon;
+    vs_battle_menuItem_t* menuItem;
+
+    if (arg0 != 0) {
+        vs_battle_memcpy(D_8010A6A4, D_8010A6A0, 0x280);
+        D_8010A6B2 = 0;
+        D_8010A684 = D_8010A6B6;
+        D_8010A685 = arg0 - 1;
+        D_8010A686 = D_8010A6A0[D_8010A685].unk0;
+        D_8010A6B4 = 0;
+        D_8010A6B5 = 0;
+        D_8010A683 = 0;
+        D_8010A682 = 0;
+        return 0;
+    }
+
+    i = D_8010A6A4[D_8010A685].unk1;
+
+    switch (D_8010A682) {
+    case 0:
+        if (D_8010A6B3 != 6) {
+            break;
+        }
+        vs_battle_rMemzero(D_8010A6A0, 0x280);
+        D_8010A6A0->unk0 = D_8010A6A4[D_8010A685].unk0;
+        D_8010A6A0->unk1 = i;
+        D_8010A6A0->unk3 = 2;
+        if (D_8010A686 != 0) {
+            shield = &_inventory->shields[i];
+            D_8010A6A0[1].unk0 = 3;
+            D_8010A6A0[1].unk1 = i;
+            D_8010A6A0[1].unk3 = 3;
+            D_8010A6B6 = 2;
+
+            for (i = 0; i < shield->base.gemSlots; ++i) {
+                if (shield->gems[i] != 0) {
+                    D_8010A6A0[D_8010A6B6].unk0 = 5;
+                    D_8010A6A0[D_8010A6B6].unk1 = shield->gems[i] - 1;
+                    D_8010A6A0[D_8010A6B6].unk3 = 5;
+                    ++D_8010A6B6;
+                }
+            }
+        } else {
+            weapon = &_inventory->weapons[i];
+            D_8010A6A0[1].unk0 = 1;
+            D_8010A6A0[1].unk1 = weapon->blade - 1;
+            D_8010A6A0[1].unk3 = 4;
+            D_8010A6A0[2].unk0 = 2;
+            D_8010A6A0[2].unk1 = weapon->grip - 1;
+            D_8010A6A0[2].unk3 = 4;
+            D_8010A6B6 = 3;
+
+            for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
+                if (weapon->gems[i] != 0) {
+                    D_8010A6A0[D_8010A6B6].unk0 = 5;
+                    D_8010A6A0[D_8010A6B6].unk1 = weapon->gems[i] - 1;
+                    D_8010A6A0[D_8010A6B6].unk3 = 5;
+                    ++D_8010A6B6;
+                }
+            }
+        }
+        D_8010A6B3 = 10;
+        D_8010A6B2 = 1;
+        D_8010A682 = 1;
+        break;
+    case 1:
+        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A30A);
+        menuItem->state = 2;
+        menuItem->targetX = 0xC2;
+        D_8010A682 = 2;
+        break;
+    case 2:
+        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A30E);
+        menuItem->state = 2;
+        menuItem->targetX = 0xC2;
+        vs_battle_stringContext.strings[0] =
+            D_8010A686 == 0 ? _inventory->weapons[i].name
+                            : vs_mainMenu_itemNames[_inventory->shields[i].base.id];
+        func_800C8E04(1);
+        vs_mainmenu_setMessage(&D_8010A440);
+        D_8010A682 = 3;
+        break;
+    case 3:
+        D_8010A682 += vs_mainmenu_ready();
+        break;
+    case 4:
+        vs_battle_getMenuItem(D_8010A683 + 0x1E)->selected = 1;
+        vs_battle_getMenuItem(0x1F - D_8010A683)->selected = 0;
+        if (vs_main_buttonsPressed.all & 0x60) {
+            vs_mainMenu_menuItemLeaveRight(0x1E);
+            vs_mainMenu_menuItemLeaveRight(0x1F);
+            D_8010A6B2 = 0;
+            if ((D_8010A683 != 0) || (vs_main_buttonsPressed.all & 0x40)) {
+                vs_battle_playMenuLeaveSfx();
+                D_8010A682 = 6;
+            } else {
+                vs_main_playSfxDefault(0x7E, 0x19);
+                D_8010A682 = 5;
+            }
+            if (vs_main_settings.information == 0) {
+                func_800FFBA8();
+            }
+            break;
+        }
+        if (vs_main_buttonRepeat & 0x5000) {
+            vs_battle_playMenuChangeSfx();
+            D_8010A683 = (1 - D_8010A683);
+        }
+        D_8010A5C9 = vs_battle_drawCursor(D_8010A5C9, D_8010A683 + 8);
+        break;
+    case 5:
+        if (D_8010A6B3 != 6) {
+            break;
+        }
+
+        vs_battle_rMemcpy(&D_8010A6A4[D_8010A684], &D_8010A6A0[1], (D_8010A6B6 - 1) * 4);
+
+        if (D_8010A686 != 0) {
+            temp_a0 = &_inventory->shields[i];
+            for (i = 0; i < temp_a0->base.gemSlots; ++i) {
+                temp_v0_3 = temp_a0->gems[i];
+                if (temp_v0_3 != 0) {
+                    temp_a0->gems[i] = 0;
+                    _inventory->gems[temp_v0_3 - 1].setItemIndex = 0;
+                }
+            }
+        } else {
+            temp_a2 = &_inventory->weapons[i];
+            _inventory->blades[temp_a2->blade - 1].assembledWeaponIndex = 0;
+            _inventory->grips[temp_a2->grip - 1].assembledWeaponIndex = 0;
+
+            for (i = 0; i < _inventory->grips[temp_a2->grip - 1].gemSlots; ++i) {
+                temp_v0_4 = temp_a2->gems[i];
+                if (temp_v0_4 != 0) {
+                    temp_a2->gems[i] = 0;
+                    _inventory->gems[temp_v0_4 - 1].setItemIndex = 0;
+                }
+            }
+        }
+
+        D_8010A684 = D_8010A6B6 + (D_8010A684 + 0xFE);
+        for (i = D_8010A685; i < D_8010A684; ++i) {
+            D_8010A6A4[i] = D_8010A6A4[i + 1];
+        }
+        // Fallthrough
+    case 6:
+        if (D_8010A6B3 == 6) {
+            D_8010A6B6 = D_8010A684;
+            vs_battle_memcpy(D_8010A6A0, D_8010A6A4, 0x280);
+            func_801080F0();
+            D_8010A6B3 = 10;
+            D_8010A6B2 = 1;
+            D_8010A682 = 7;
+        }
+        break;
+    case 7:
+        if (D_8010A6B3 != 0) {
+            break;
+        }
+        return -1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_801073E0);
 

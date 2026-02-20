@@ -1,5 +1,6 @@
 $(BUILD)/src/MENU/MENUB.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENUB.PRG/%.o: CC1VER := 2.8.0-psx
+$(BUILD)/src/MENU/MENUB.PRG/260.o: CC1FLAGS += -Wno-char-subscripts
 
 $(BUILD)/config/MENU/MENUB.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

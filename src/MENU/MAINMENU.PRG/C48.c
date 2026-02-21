@@ -484,7 +484,48 @@ vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
     return menuItem;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FC704);
+vs_battle_menuItem_t* func_800FC704(int arg0, int arg1, int arg2)
+{
+    char* sp18[2];
+    int rowType;
+    vs_battle_inventoryShield* shield;
+    int var_s0;
+    char temp_v1;
+    vs_battle_menuItem_t* menuItem;
+
+    menuItem = NULL;
+    var_s0 = arg0 - 1;
+    shield = &D_8010246C[arg1 - 1];
+
+    if (var_s0 < shield->base.gemSlots) {
+        sp18[1] = 0;
+        rowType = 0x58000000;
+        sp18[0] = (char*)&vs_mainMenu_itemHelp[0x0340B];
+        temp_v1 = shield->gems[var_s0];
+        if (temp_v1 != 0) {
+            vs_mainMenu_setGemUi(
+                &D_80102458[temp_v1 - 1], (char**)&sp18, &rowType, vs_battle_stringBuf);
+        }
+        var_s0 = 151;
+    } else {
+        var_s0 = 0;
+    }
+
+    vs_mainMenu_deactivateMenuItem(arg0 + 10);
+
+    if (var_s0 != 0) {
+        menuItem = vs_battle_setMenuItem(
+            arg0 + 10, 0x140 - var_s0, (arg0 * 16) + 18, var_s0, 0, (char*)sp18[0]);
+        menuItem->unk7 = sp18[1] == 0;
+        if (arg2 & 1) {
+            menuItem->initialX = 320;
+            menuItem->state = 2;
+            menuItem->targetX = 320 - var_s0;
+        }
+        menuItem->icon = 0x16;
+    }
+    return menuItem;
+}
 
 void vs_mainMenu_setWeaponUi(
     vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)

@@ -933,7 +933,7 @@ static int _drawHitLocationStatuses(int arg0)
     hitLocationCount = _getHitLocationCount(tempSelectedActor);
     if (arg0 != 0) {
         if (arg0 > 0) {
-            D_800F4EE8.unk3A[0x48] = arg0 - 1;
+            D_800F4EE8.unk51[49] = arg0 - 1;
             return 0;
         }
         if (arg0 == -3) {
@@ -985,7 +985,7 @@ static int _drawHitLocationStatuses(int arg0)
     case 2:
         func_80103FEC(actor, 0);
 
-        step = D_800F4EE8.unk3A[0x48];
+        step = D_800F4EE8.unk51[49];
         for (i = 0; i < hitLocationCount; ++i) {
             hitLocation = &actor->bodyParts[i];
             temp_s6 = step >> 7;

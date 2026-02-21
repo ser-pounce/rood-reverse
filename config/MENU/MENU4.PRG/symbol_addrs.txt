@@ -1,1 +1,2 @@
+_drawHitLocationStatuses = 0x801045b8;
 vs_menu4_exec = 0x801064D4;

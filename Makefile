@@ -234,7 +234,7 @@ $(DUMPSXISO):
 $(VPYTHON):
 	$(ECHO) Installing virtual python environment to $(VPYDIR)
 	$(PYTHON) -m venv $(VPYDIR)
-	$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser pandas
+	$(VPYTHON) -m pip install --quiet splat64[mips] toml pycparser==2.23 pandas
 
 $(compilers): tools/old-gcc/build-gcc-%/cc1: tools/old-gcc/gcc-%.Dockerfile
 	$(ECHO) Building GCC $*

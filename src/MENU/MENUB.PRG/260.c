@@ -161,7 +161,7 @@ void func_80102B14(int arg0, int arg1)
     u_long* var_v1;
     vs_battle_menuItem_t* menuItem;
 
-    int temp_s4 = (D_800F4EE8.unk3A[0] - 1) & 7;
+    int temp_s4 = (D_800F4EE8.unk3A.unk0 - 1) & 7;
 
     if (arg0 == 4) {
         func_801013F8(0);
@@ -1350,6 +1350,7 @@ void func_8010537C(int arg0)
     }
 }
 
+// https://decomp.me/scratch/SFsdf
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80105454);
 
 INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80106274);
@@ -1360,7 +1361,7 @@ int func_801066CC(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        D_800F4EE8.unk3A[0] = arg0;
+        D_800F4EE8.unk3A.unk0 = arg0;
         D_8010A6B0 = 0;
         D_8010A6B2 = 0;
         D_8010A680 = 0;
@@ -1436,7 +1437,7 @@ int func_801066CC(int arg0)
         var_s0 = (0xA - D_8010A6BC) << 5;
     }
     if ((D_8010A6BC != 0) && (D_8010A6BF == 0)) {
-        int temp_s1 = (D_800F4EE8.unk3A[0] - 1) & 7;
+        int temp_s1 = (D_800F4EE8.unk3A.unk0 - 1) & 7;
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(0x1F, var_s0 + 0xB4, 0x22,
             0x8C, 8, (char*)&D_8010A280[D_8010A280[temp_s1 + 0x17]]);
         menuItem->selected = 1;

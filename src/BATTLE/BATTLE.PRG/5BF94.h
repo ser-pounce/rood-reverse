@@ -74,8 +74,13 @@ typedef struct {
 typedef struct {
     char unk0[0x34];
     char unk34[6];
-    char unk3A[6];
-    char unk40[17];
+    struct {
+        char unk0;
+        char unk1;
+        short unk2[8];
+    } unk3A;
+    char unk4C[4];
+    char unk50;
     char unk51[51];
     char selectedEquipment;
     char unk85[25];

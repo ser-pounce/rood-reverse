@@ -24,13 +24,18 @@ static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 
 
 static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX, 8192 }; // Last one junk?
 
+extern u_long* D_1F800000[];
+
 extern int D_80102034;
 extern int D_801020F4;
 extern u_char D_801020F8;
-extern short _currentDp;
-extern short _maxDp;
-extern short _currentPp;
-extern short _maxPp;
+extern u_short D_80102132;
+extern char D_8010213C;
+extern char D_8010213D;
+extern u_short _currentDp;
+extern u_short _maxDp;
+extern u_short _currentPp;
+extern u_short _maxPp;
 extern char D_80102480[];
 extern u_short D_80102488[];
 extern char D_80102490[8];
@@ -425,7 +430,76 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
     _maxDp = (maxDp + 99) / 100;
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_mainMenu_drawDpPpbars);
+void vs_mainMenu_drawDpPpbars(int arg0)
+{
+    int temp_s1;
+    int temp_v0_3;
+    int temp_v0_4;
+    int var_s0;
+    void* temp_s2 = D_1F800000[1] - 3;
+
+    if (arg0 != 0) {
+        D_8010213C = arg0 >> 2;
+        if (!(D_8010213C & 1)) {
+            D_8010213D = arg0 & 3;
+        }
+    } else {
+        int var_s0 = D_80102132;
+
+        switch (D_8010213C) {
+        case 0:
+            if (var_s0 < 5) {
+                ++D_80102132;
+            }
+            break;
+        case 1:
+            if (var_s0 != 0) {
+                --D_80102132;
+            }
+            break;
+        case 2:
+            D_80102132 = 5;
+            break;
+        }
+
+        if (D_80102132 != 0) {
+
+            temp_s1 = ((D_80102132 * 8) - 8) << 0x10;
+
+            if (D_8010213D & 1) {
+                vs_battle_renderTextRaw("DP", (temp_s1 + 0xFFFF0000) | 0xA, temp_s2);
+                var_s0 = vs_battle_renderValue(0, temp_s1 | 0x42, _maxDp, temp_s2);
+                vs_battle_renderValue(2, var_s0, 0, temp_s2);
+                vs_battle_renderValue(1, var_s0 + 0xFFFEFFF9, _currentDp, temp_s2);
+            }
+            if (D_8010213D & 2) {
+                vs_battle_renderTextRaw("PP", (temp_s1 + 0xFFFF0000) | 0x50, temp_s2);
+                var_s0 = vs_battle_renderValue(0, temp_s1 | 0x88, _maxPp, temp_s2);
+                vs_battle_renderValue(2, var_s0, 0, temp_s2);
+                vs_battle_renderValue(1, var_s0 + 0xFFFEFFF9, _currentPp, temp_s2);
+            }
+
+            temp_s1 = temp_s1 + 0x80000;
+
+            if (D_8010213D & 1) {
+                var_s0 = _maxDp;
+                if (var_s0 == 0) {
+                    var_s0 = 1;
+                }
+                vs_battle_drawStatBar(0, (((_currentDp << 6) + var_s0) - 1) / var_s0,
+                    temp_s2, temp_s1 | 0xA);
+            }
+            if (D_8010213D & 2) {
+                var_s0 = _maxPp;
+                if (var_s0 == 0) {
+                    var_s0 = 1;
+                }
+                vs_battle_drawStatBar(1, (((_currentPp << 6) + var_s0) - 1) / var_s0,
+                    temp_s2, temp_s1 | 0x50);
+            }
+        }
+    }
+}
 
 vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
 {

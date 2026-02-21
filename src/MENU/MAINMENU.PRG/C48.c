@@ -32,6 +32,9 @@ extern short _maxDp;
 extern short _currentPp;
 extern short _maxPp;
 extern char D_80102480[];
+extern u_short D_80102488[];
+extern char D_80102490[8];
+extern u_short D_80102498[];
 extern char D_801024A1;
 
 void func_800FA448(void)
@@ -386,7 +389,31 @@ void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int a
         sizeof vs_mainMenu_strIntAgi[0]);
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FBD80);
+void func_800FBD80(int arg0)
+{
+    vs_battle_actor2* temp_t0 = vs_battle_actors[arg0 & 0xF]->unk3C;
+    D_80102488[3] = arg0 & 0xF;
+    D_80102498[0] = temp_t0->accessory.currentStr;
+    D_80102498[1] = temp_t0->accessory.currentInt;
+    D_80102498[2] = temp_t0->accessory.currentAgility;
+    D_80102488[0] = temp_t0->strength;
+    D_80102488[1] = temp_t0->intelligence;
+    D_80102488[2] = temp_t0->agility;
+    D_80102488[4] = temp_t0->totalStrength;
+    D_80102488[5] = temp_t0->totalIntelligence;
+    vs_mainMenu_equipmentSubtype = 0;
+    D_80102488[6] = temp_t0->totalAgility;
+
+    if (arg0 < 16) {
+        int i;
+        for (i = 0; i < 3; ++i) {
+            D_80102488[i] -= D_80102488[4 + i];
+        }
+        vs_mainMenu_setStrIntAgi(temp_t0->totalStrength, temp_t0->totalIntelligence,
+            temp_t0->totalAgility, temp_t0->flags.fields.unk2_1 | (arg0 == 0));
+        vs_battle_rMemzero(&D_80102490, 8);
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_battle_renderEquipStats);
 

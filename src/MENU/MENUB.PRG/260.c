@@ -9,6 +9,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <libetc.h>
 #include <stddef.h>
+#include <memory.h>
 
 typedef struct {
     char unk0;

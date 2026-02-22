@@ -1,4 +1,5 @@
 _getEquipmentMaxStats = 0x800FA598;
+vs_mainMenu_menuItemLeaveLeft = 0x800FA810;
 vs_mainMenu_menuItemLeaveRight = 0x800FA8A0;
 vs_mainMenu_clearMenuExcept = 0x800FA8E0;
 vs_mainmenu_ready = 0x800FA9D0;

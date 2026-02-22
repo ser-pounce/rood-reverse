@@ -213,7 +213,7 @@ static int _getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 }
 
-void func_800FA810(int arg0)
+void vs_mainMenu_menuItemLeaveLeft(int arg0)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
     if (menuItem->state != 0) {
@@ -228,7 +228,7 @@ void func_800FA854(int arg0)
 
     for (i = 0; i < 8; ++i) {
         if (i != arg0) {
-            func_800FA810(i);
+            vs_mainMenu_menuItemLeaveLeft(i);
         }
     }
 }

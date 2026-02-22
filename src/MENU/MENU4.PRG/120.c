@@ -1170,7 +1170,7 @@ static void _exitEquipmentDetail(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    func_800FA810(0);
+    vs_mainMenu_menuItemLeaveLeft(0);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_battle_renderEquipStats(2);
     if (arg0 != 0) {

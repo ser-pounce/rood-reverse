@@ -853,7 +853,7 @@ void func_80104170(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    func_800FA810(-1);
+    vs_mainMenu_menuItemLeaveLeft(-1);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_battle_renderEquipStats(2);
     D_80109A81 = 2;
@@ -2162,8 +2162,8 @@ int func_801072B0(int arg0)
         D_80109A58 = func_800FF360() + 1;
 
         if (D_80109A58 != 0) {
-            func_800FA810(0);
-            func_800FA810(1);
+            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemLeaveLeft(1);
             if (D_80109A58 == temp_s0) {
                 vs_battle_playMenuSelectSfx();
                 vs_mainMenu_clearMenuExcept(0);

@@ -198,7 +198,7 @@ void func_80102E54(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    func_800FA810(-1);
+    vs_mainMenu_menuItemLeaveLeft(-1);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_battle_renderEquipStats(2);
     D_8010A6BF = 2;

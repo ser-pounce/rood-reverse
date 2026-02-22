@@ -281,7 +281,7 @@ static int _confirmCombine(int arg0)
     return action;
 }
 
-void _disassembleWeapon(int weaponIndex)
+static void _disassembleWeapon(int weaponIndex)
 {
     int i;
     int index;
@@ -309,7 +309,7 @@ void _disassembleWeapon(int weaponIndex)
     vs_mainMenu_rebuildInventory(0);
 }
 
-void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
+static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
 {
     int i;
     int weaponIndex;
@@ -344,7 +344,7 @@ void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
     vs_mainMenu_rebuildInventory(0);
 }
 
-void _disassembleShield(int index)
+static void _disassembleShield(int index)
 {
     int i;
     vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[index];
@@ -359,7 +359,7 @@ void _disassembleShield(int index)
     }
 }
 
-int _isValidGrip(vs_battle_inventoryBlade* blade, vs_battle_inventoryGrip* grip)
+static int _isValidGrip(vs_battle_inventoryBlade* blade, vs_battle_inventoryGrip* grip)
 {
     static u_short _validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
 
@@ -374,7 +374,7 @@ static int _leaveItemSlotSelection(int arg0)
 
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    func_800FA810(0);
+    vs_mainMenu_menuItemLeaveLeft(0);
 
     if (arg0 != 0) {
         vs_mainMenu_drawClassAffinityType(-1);
@@ -394,7 +394,7 @@ static char _itemCount;
 static char _itemsListWindow;
 static char D_8010BCA3;
 
-void _populateItemsList(int count, char** text, int* rowTypes)
+static void _populateItemsList(int count, char** text, int* rowTypes)
 {
     int j;
     int i;
@@ -445,10 +445,10 @@ void _populateItemsList(int count, char** text, int* rowTypes)
     j = rowTypes[0];
     menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsList);
     menuItem->unk7 = j & 1;
-    menuItem->icon = j >> 0x1A;
-    menuItem->material = (j >> 0x10) & 7;
+    menuItem->icon = j >> 26;
+    menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
-    D_8010BCA3 = (j >> 0x13) & 0x7F;
+    D_8010BCA3 = (j >> 19) & 0x7F;
 }
 
 static int _getSelectedRow(void) { return _itemsList == NULL ? _itemsListSelection : -1; }
@@ -804,7 +804,7 @@ static int _assembleBladeMenu(int params)
     return 0;
 }
 
-int _assembleGripMenu(int params)
+static int _assembleGripMenu(int params)
 {
     static int D_8010BC04;
     static char state;
@@ -1839,7 +1839,7 @@ static int _attachGemsMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FA810(0);
+            vs_mainMenu_menuItemLeaveLeft(0);
             return 1;
         case 2:
             vs_battle_playMenuLeaveSfx();
@@ -2077,7 +2077,7 @@ static int _disassembleMenu(int arg0)
         vs_mainMenu_drawClassAffinityType(-1);
         vs_mainMenu_drawDpPpbars(4);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        func_800FA810(0);
+        vs_mainMenu_menuItemLeaveLeft(0);
 
         switch (confirmation) {
         case 1:
@@ -2303,7 +2303,7 @@ static int _renameWeaponMenu(int arg0)
                 break;
             case 2:
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FA810(0);
+                vs_mainMenu_menuItemLeaveLeft(0);
                 state = 0;
                 break;
             case 3:
@@ -2966,7 +2966,7 @@ static int _combineBladeMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FA810(0);
+            vs_mainMenu_menuItemLeaveLeft(0);
 
             for (i = 0; i < 2; ++i) {
                 blade = &vs_battle_inventory.blades[D_8010BD10[i] - 1];
@@ -3029,7 +3029,7 @@ static void _setShieldUi(vs_battle_inventoryShield* shield)
     vs_mainMenu_equipmentSubtype = 8;
 }
 
-vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor*,
+static vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 
 static vs_battle_inventoryShield D_8010BD14;
@@ -3465,7 +3465,7 @@ static int _combineShieldMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FA810(0);
+            vs_mainMenu_menuItemLeaveLeft(0);
 
             for (i = 0; i < 2; ++i) {
                 temp_s1 = _itemsToCombine[i];
@@ -3502,7 +3502,7 @@ static int _combineShieldMenu(int arg0)
     return 0;
 }
 
-vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor*,
+static vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor*,
     vs_battle_inventoryArmor*, vs_battle_inventoryArmor*, void*);
 
 static vs_battle_inventoryArmor D_8010BD54;
@@ -3680,7 +3680,7 @@ static void _setArmorMenuItem(
     menuItem->itemState = armor->bodyPart != 0;
 }
 
-int _combineArmorMenu(int arg0)
+static int _combineArmorMenu(int arg0)
 {
     static char D_8010BB76 = 0;
 
@@ -3934,7 +3934,7 @@ int _combineArmorMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FA810(0);
+            vs_mainMenu_menuItemLeaveLeft(0);
             for (i = 0; i < 2; ++i) {
                 armor = &vs_battle_inventory.armor[D_8010BD7C[i] - 1];
                 var_s1 = armor->bodyPart;
@@ -4271,8 +4271,8 @@ int vs_menuC_exec(char* state)
     return 0;
 }
 
-void _setClassAffinities(signed char* first, signed char* second, signed char* result,
-    int materialsDifferent, int setAffinities)
+static void _setClassAffinities(signed char* first, signed char* second,
+    signed char* result, int materialsDifferent, int setAffinities)
 {
     static char _classFactorLookup[][6] = { { 2, 0, 1, 1, 1, 0 }, { 0, 2, 0, 1, 1, 1 },
         { 1, 0, 2, 0, 1, 1 }, { 1, 1, 0, 2, 0, 1 }, { 1, 1, 1, 0, 2, 0 },
@@ -4369,7 +4369,7 @@ void _setClassAffinities(signed char* first, signed char* second, signed char* r
     }
 }
 
-void _setTypeValues(
+static void _setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
 {
     static short _sameMaterialTypeFactors[] = { 6, 8 };
@@ -4470,7 +4470,7 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
 
 static _armorInfo* _shieldCombinationInitData;
 
-vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
+static vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)
 {
     _armorInfo* info;
@@ -4510,7 +4510,7 @@ vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first,
 
 static _armorInfo* _combinationInitData;
 
-vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
+static vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     vs_battle_inventoryArmor* second, vs_battle_inventoryArmor* result, void* sydData)
 {
     _armorInfo* info;

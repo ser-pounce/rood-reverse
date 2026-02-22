@@ -680,7 +680,7 @@ int vs_menu8_execRename(char* state)
     case 2:
         if (func_801049A0(0) != 0) {
             vs_mainMenu_menuItemLeaveRight(0xA);
-            func_800FA810(0);
+            vs_mainMenu_menuItemLeaveLeft(0);
             func_800FFBC8();
             *state = 3;
         }

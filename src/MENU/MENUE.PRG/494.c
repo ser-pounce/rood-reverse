@@ -404,7 +404,7 @@ static int _showMenu(void)
             } else {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             }
-            func_800CCDF4(0)->unk4[12] = 0;
+            func_800CCDF4(0)->unk1C = 0;
             if (_helpText != NULL) {
                 vs_main_freeHeapR(_helpText);
             }

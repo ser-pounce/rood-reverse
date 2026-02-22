@@ -2,6 +2,7 @@ _getEquipmentMaxStats = 0x800FA598;
 vs_mainMenu_menuItemLeaveRight = 0x800FA8A0;
 vs_mainMenu_clearMenuExcept = 0x800FA8E0;
 vs_mainmenu_ready = 0x800FA9D0;
+vs_mainMenu_drawClassAffinityType = 0x800FBBD4;
 vs_mainMenu_setRangeRisk = 0x800FBD0C;
 vs_mainMenu_setStrIntAgi = 0x800FBD28;
 vs_mainMenu_setDpPp = 0x800FC208;

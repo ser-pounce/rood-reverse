@@ -501,8 +501,8 @@ int _handleMenu(void)
         func_8010552C(D_8010A220);
         if (D_8010A220 < 8) {
             temp_v0 = func_800CCDF4(0);
-            temp_v0->unk4[9] -= 6;
-            temp_v0->unk4[7] -= 6;
+            temp_v0->unk16 -= 6;
+            temp_v0->unk12 -= 6;
             ++D_8010A220;
         }
         selectedRow = _initStringsAndGetSelectedRow(0);
@@ -530,8 +530,8 @@ int _handleMenu(void)
         if (D_8010A220 > 0) {
             temp_v0 = func_800CCDF4(0);
             if (temp_v0 != NULL) {
-                temp_v0->unk4[9] += 6;
-                temp_v0->unk4[7] += 6;
+                temp_v0->unk16 += 6;
+                temp_v0->unk12 += 6;
             }
             --D_8010A220;
             break;
@@ -1005,8 +1005,8 @@ int _handleMenu(void)
         func_801061F8(D_8010A220, 0);
         if (D_8010A220 < 8) {
             temp_v0 = func_800CCDF4(0);
-            temp_v0->unk4[8] -= 0x10;
-            temp_v0->unk4[6] -= 0x10;
+            temp_v0->unk14 -= 0x10;
+            temp_v0->unk10 -= 0x10;
             ++D_8010A220;
         }
         if (vs_main_buttonsReleased & D_8010A448) {
@@ -1027,8 +1027,8 @@ int _handleMenu(void)
         if (D_8010A220 > 0) {
             temp_v0 = func_800CCDF4(0);
             if (temp_v0 != NULL) {
-                temp_v0->unk4[8] += 0x10;
-                temp_v0->unk4[6] += 0x10;
+                temp_v0->unk14 += 0x10;
+                temp_v0->unk10 += 0x10;
             }
             --D_8010A220;
             break;

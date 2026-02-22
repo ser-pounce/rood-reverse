@@ -1693,16 +1693,16 @@ void _drawUIControls(void)
         if (D_80108D5C < 0) {
             D_80108D5C += 0x10;
             if (temp_a0 != NULL) {
-                temp_a0->unk4[9] = temp_a0->unk4[9] - 8;
-                temp_a0->unk4[7] = temp_a0->unk4[7] - 8;
+                temp_a0->unk16 -= 8;
+                temp_a0->unk12 -= 8;
             }
         }
     } else if (D_80108D9E == 2) {
         if (D_80108D5C >= -0x7F) {
             D_80108D5C -= 0x10;
             if (temp_a0 != NULL) {
-                temp_a0->unk4[9] = temp_a0->unk4[9] + 8;
-                temp_a0->unk4[7] = temp_a0->unk4[7] + 8;
+                temp_a0->unk16 += 8;
+                temp_a0->unk12 += 8;
             }
         }
     }

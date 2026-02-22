@@ -353,7 +353,7 @@ int func_800C8C50(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8E04);
+void func_800C8E04(int arg0) { func_800CCF08(7, (arg0 << 8) | 4, 0, 1, 0, 4, 0, 0); }
 
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
@@ -769,28 +769,66 @@ D_800F4FE0_t* func_800CCDF4(int arg0) { return D_800F4FE0 + arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCE10);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCF08);
+void func_800CCF08(
+    int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7)
+{
+    D_800F4FE0_t* temp_t0;
+    int temp_v1;
+    u_int temp_a0;
+
+    temp_t0 = &D_800F4FE0[arg0];
+    temp_t0->unk0.value = (arg1 & 0xFFFF) | 0x20000000;
+    temp_t0->unk14 = arg2;
+    temp_t0->unk16 = arg3;
+    temp_t0->unk4 = 0;
+    temp_t0->unk6 = 0;
+    temp_t0->unkC = 0;
+    temp_t0->unk10 = arg2 + 5;
+    temp_t0->unk12 = arg3 + 3;
+    temp_t0->unk2E = 0;
+    temp_t0->unk1E = 0x80;
+    temp_t0->unk20 = arg4;
+    temp_t0->unk21 = arg5;
+    temp_t0->unk18 = arg6;
+    temp_t0->unk1A = arg7;
+    temp_t0->unk22 = ((0x45A5 >> ((temp_t0->unk0.fields.unk0_4 * 4))) & 0xF) * 2;
+    if (temp_t0->unk1C <= 0) {
+        temp_t0->unk1C = 1;
+    }
+
+    switch (temp_t0->unk0.fields.unk0_0) {
+    case 1:
+        temp_t0->unk0.fields.unk0_0 = 7;
+        temp_t0->unk0.fields.unk1_0 = 0;
+        return;
+    case 4:
+        temp_t0->unk20 = 0x18;
+        temp_t0->unk18 = 0xA0;
+        temp_t0->unk1A = 0xF0;
+        temp_t0->unk10 = 0x10;
+        temp_t0->unk12 = 0xF2 - (arg5 * 0xD);
+        return;
+    case 5:
+        temp_t0->unk0.fields.unk0_0 = 7;
+        temp_t0->unk0.fields.unk1_0 = 2;
+        return;
+    }
+}
 
 void func_800AAD4C(int, int, int, int);
 
 int func_800CD064(int arg0)
 {
-    D_800F4FE0_t* temp_s0;
-    char temp_v0;
-    int new_var;
-
-    temp_s0 = &D_800F4FE0[arg0];
-    temp_v0 = temp_s0->unk0.unk0_1[3];
-    new_var = temp_v0 & 0x3F;
-    if (!(temp_v0 & 0x20)) {
-        func_800AAD4C(new_var, 0, 0, 0);
+    D_800F4FE0_t* temp_s0 = &D_800F4FE0[arg0];
+    if (!(temp_s0->unk0.fields.unk3_0 & 0x20)) {
+        func_800AAD4C(temp_s0->unk0.fields.unk3_0, 0, 0, 0);
     }
 
-    if (temp_s0->unk4[0xC] != 0) {
-        if (temp_s0->unk4[0xC] > 0) {
+    if (temp_s0->unk1C != 0) {
+        if (temp_s0->unk1C > 0) {
             temp_s0->unk22 = 8;
-            temp_s0->unk4[0xC] = -1;
-            temp_s0->unk0.unk0_0 &= ~0x30;
+            temp_s0->unk1C = -1;
+            temp_s0->unk0.fields.unk0_4 = 0;
         }
         return -1;
     }

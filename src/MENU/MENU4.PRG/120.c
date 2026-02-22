@@ -1075,7 +1075,7 @@ static void _animateEquipmentDetailTransition(int selectedRow)
 static void func_80104C0C(int selectedRow, int arg1)
 {
     _animateEquipmentDetailTransition(selectedRow);
-    func_800FBBD4(arg1);
+    vs_mainMenu_drawClassAffinityType(arg1);
     vs_battle_renderEquipStats(1);
 }
 
@@ -1171,7 +1171,7 @@ static void _exitEquipmentDetail(int arg0)
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     func_800FA810(0);
-    func_800FBBD4(-1);
+    vs_mainMenu_drawClassAffinityType(-1);
     vs_battle_renderEquipStats(2);
     if (arg0 != 0) {
         vs_mainMenu_drawDpPpbars(4);
@@ -1956,7 +1956,7 @@ int vs_menu4_exec(char* state)
                     if (var_s6 != 0) {
                         vs_battle_playMenuSelectSfx();
                         _printSelectedLocationStats();
-                        func_800FBBD4(6);
+                        vs_mainMenu_drawClassAffinityType(6);
                         D_801081EE = 0;
                         animWait = 10;
                         *state = 9;
@@ -2156,7 +2156,7 @@ int vs_menu4_exec(char* state)
             _animationStep = 128 - vs_battle_rowAnimationSteps[--animWait];
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_battle_playMenuLeaveSfx();
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             if (vs_main_buttonsPressed.all & PADRup) {
                 *state = waitQuitToBattle;
                 break;

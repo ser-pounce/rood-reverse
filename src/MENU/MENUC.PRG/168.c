@@ -38,7 +38,7 @@ static void _drawOk(int row, int arg1)
         ((rsin(arg1 * 8) >> 5) + 64) * 0x10101, D_1F800000[1] - 3);
 }
 
-static void _addMenuTitle(int id, int textOffset)
+static void _addMenuTitle(int id, int textTableOffset)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -47,7 +47,7 @@ static void _addMenuTitle(int id, int textOffset)
         y = 34;
     }
     menuItem = vs_battle_setMenuItem(
-        id, 320, y, 140, 8, (char*)&vs_mainMenu_menu12Text[textOffset]);
+        id, 320, y, 140, 8, (char*)&vs_mainMenu_menu12Text[textTableOffset]);
     menuItem->state = 2;
     menuItem->targetX = 180;
     menuItem->selected = 1;
@@ -116,7 +116,7 @@ static void _initMenuItem(int textOffset, int icon)
         a0 = 3;
     }
 
-    func_800FBBD4(a0);
+    vs_mainMenu_drawClassAffinityType(a0);
 
     a0 = 3;
     if (icon == 28) {
@@ -377,7 +377,7 @@ static int _leaveItemSlotSelection(int arg0)
     func_800FA810(0);
 
     if (arg0 != 0) {
-        func_800FBBD4(-1);
+        vs_mainMenu_drawClassAffinityType(-1);
         vs_battle_renderEquipStats(2);
         vs_mainMenu_drawDpPpbars(4);
     }
@@ -1435,7 +1435,7 @@ static int _assembleMenu(int arg0)
         case 1:
             vs_battle_playMenuSelectSfx();
             vs_mainMenu_clearMenuExcept(10);
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             state = 8;
             break;
@@ -1647,7 +1647,7 @@ static int _attachGemsMenu(int arg0)
                 gemSlots = vs_battle_inventory.grips[weapon->grip - 1].gemSlots;
                 attachedGems = weapon->gems;
             }
-            func_800FBBD4(7);
+            vs_mainMenu_drawClassAffinityType(7);
             vs_mainMenu_drawDpPpbars(3);
             vs_battle_renderEquipStats(1);
 
@@ -1836,7 +1836,7 @@ static int _attachGemsMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
             func_800FFBC8();
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FA810(0);
@@ -2042,7 +2042,7 @@ static int _disassembleMenu(int arg0)
         } else {
             vs_mainMenu_setUiWeaponStats(selectedItem);
         }
-        func_800FBBD4(7);
+        vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_drawDpPpbars(3);
         D_8010BC3D = 0;
         state = 4;
@@ -2074,7 +2074,7 @@ static int _disassembleMenu(int arg0)
         if (confirmation == 0) {
             break;
         }
-        func_800FBBD4(-1);
+        vs_mainMenu_drawClassAffinityType(-1);
         vs_mainMenu_drawDpPpbars(4);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800FA810(0);
@@ -2272,7 +2272,7 @@ static int _renameWeaponMenu(int arg0)
             itemId = _availableItems[selectedRow];
             _combiningItem = itemId - 1;
             vs_mainMenu_setUiWeaponStats(itemId);
-            func_800FBBD4(7);
+            vs_mainMenu_drawClassAffinityType(7);
             vs_mainMenu_drawDpPpbars(3);
             D_8010BC49 = 0;
             state = 4;
@@ -2292,7 +2292,7 @@ static int _renameWeaponMenu(int arg0)
     case 5:
         i = _confirmationPrompt(0);
         if (i != 0) {
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             switch (i) {
             case 1:
@@ -2963,7 +2963,7 @@ static int _combineBladeMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
             func_800FFBC8();
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FA810(0);
@@ -3462,7 +3462,7 @@ static int _combineShieldMenu(int arg0)
             vs_main_playSfxDefault(0x7E, 0x18);
 
             func_800FFBC8();
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FA810(0);
@@ -3931,7 +3931,7 @@ int _combineArmorMenu(int arg0)
             vs_main_playSfxDefault(0x7E, 0x18);
 
             func_800FFBC8();
-            func_800FBBD4(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800FA810(0);

@@ -335,7 +335,7 @@ void func_800FBB8C(int arg0)
     }
 }
 
-void func_800FBBD4(int arg0)
+void vs_mainMenu_drawClassAffinityType(int arg0)
 {
     int var_s1;
     int var_s0;

@@ -22,7 +22,7 @@ void func_800FA92C(int arg0, int arg1);
 void func_800FAAC8(int);
 void func_800FAEBC(int);
 void func_800FBB8C(int arg0);
-void func_800FBBD4(int);
+void vs_mainMenu_drawClassAffinityType(int);
 void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3);
 void vs_mainMenu_setStrIntAgi(int, int, int, int);
 void func_800FBD80(int);

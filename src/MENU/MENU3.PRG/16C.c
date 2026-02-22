@@ -244,7 +244,7 @@ void func_80102C44(int arg0, int arg1)
     D_80109712 = 0;
     D_80109713 = 0;
     func_80102BE4(arg0);
-    func_800FBBD4(arg1);
+    vs_mainMenu_drawClassAffinityType(arg1);
     vs_battle_renderEquipStats(1);
 }
 
@@ -273,7 +273,7 @@ void func_80102D7C(int arg0)
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     func_800FA810(-1);
-    func_800FBBD4(-1);
+    vs_mainMenu_drawClassAffinityType(-1);
     vs_battle_renderEquipStats(2);
     D_80109717 = 2;
     D_80109718 = vs_main_buttonsPressed.all & 0x10;

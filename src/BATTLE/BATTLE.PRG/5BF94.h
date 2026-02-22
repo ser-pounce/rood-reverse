@@ -60,15 +60,40 @@ typedef struct {
 
 typedef struct {
     union {
-        int unk0_0;
-        char unk0_1[4];
+        struct {
+            u_int unk0_0 : 4;
+            u_int unk0_4 : 2;
+            u_int unk0_6 : 2;
+            u_int unk1_0 : 4;
+            u_int unk1_4 : 4;
+            u_int unk2 : 8;
+            u_int unk3_0 : 6;
+        } fields;
+        u_int value;
     } unk0;
-    short unk4[15];
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    short unk1C;
+    char unk1E;
+    char unk1F;
+    char unk20;
+    char unk21;
     char unk22;
     char unk23;
     int unk24;
     int unk28;
-    int unk2C;
+    short unk2C;
+    short unk2E;
 } D_800F4FE0_t;
 
 typedef struct {

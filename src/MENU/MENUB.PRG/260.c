@@ -50,109 +50,6 @@ void func_8010A24C(int arg0);
 
 extern u_long* D_1F800000[];
 
-static u_short _menuText[] = {
-#include "../../assets/MENU/MENUB.PRG/menuText.vsString"
-};
-
-static char D_8010A504 = 0;
-static char D_8010A505 = 0;
-static int D_8010A508 = 0;
-static int D_8010A50C = 0;
-
-extern char D_8010A5E8;
-extern char D_8010A5E9;
-extern char D_8010A5EA;
-extern char D_8010A5EC;
-extern char D_8010A5ED;
-extern char D_8010A5EE;
-extern u_char D_8010A5EF;
-extern char D_8010A5F0;
-extern char D_8010A5F1;
-extern char D_8010A5F2;
-extern char D_8010A5F3;
-extern char D_8010A5F4;
-extern char D_8010A5F8;
-extern char D_8010A5F9;
-extern char D_8010A5F5;
-extern char D_8010A5F6;
-extern char D_8010A5F7;
-extern char D_8010A5FA;
-extern char D_8010A5FB;
-extern char D_8010A5FC;
-extern u_char D_8010A5FD;
-extern char D_8010A5FE;
-extern char D_8010A5FF;
-extern char D_8010A600;
-extern char D_8010A601;
-extern char D_8010A602;
-extern char D_8010A603;
-extern char D_8010A604;
-extern char D_8010A605;
-extern char D_8010A606;
-extern u_char D_8010A607;
-extern char D_8010A608;
-extern u_char D_8010A609;
-extern char D_8010A60A;
-extern char D_8010A60B;
-extern char D_8010A60C;
-extern char D_8010A60D;
-extern u_char D_8010A60E;
-extern char D_8010A60F;
-extern char D_8010A610;
-extern char D_8010A614[];
-extern char D_8010A615;
-extern char D_8010A61C;
-extern char D_8010A61D;
-extern char D_8010A61E;
-extern int D_8010A620;
-extern int D_8010A624;
-extern vs_unk_gfx_t2 D_8010A62C;
-extern vs_unk_gfx_t D_8010A64C;
-extern char D_8010A680;
-extern char D_8010A681;
-extern char D_8010A682;
-extern char D_8010A683;
-extern char D_8010A684;
-extern u_char D_8010A685;
-extern char D_8010A686;
-extern u_short D_8010A688;
-extern u_short D_8010A68A;
-extern u_short D_8010A68C;
-extern char D_8010A68E;
-extern char D_8010A68F;
-extern u_char D_8010A690;
-extern char D_8010A691;
-extern char D_8010A692;
-extern char* D_8010A694;
-extern char D_8010A698;
-extern char D_8010A699;
-extern char D_8010A69A;
-extern char D_8010A69B;
-extern char D_8010A69C;
-extern char D_8010A69D;
-extern char D_8010A69E;
-extern D_8010A6A0_t* D_8010A6A0;
-extern D_8010A6A0_t* D_8010A6A4;
-extern vs_battle_inventory_t* _inventory;
-extern vs_battle_inventory_t* D_8010A6AC;
-extern char D_8010A6B0;
-extern u_char D_8010A6B1;
-extern char D_8010A6B2;
-extern u_char D_8010A6B3;
-extern char D_8010A6B4;
-extern u_char D_8010A6B5;
-extern u_char D_8010A6B6;
-extern char D_8010A6B7;
-extern char D_8010A6B8;
-extern char D_8010A6B9;
-extern char D_8010A6BA;
-extern char D_8010A6BB;
-extern char D_8010A6BC;
-extern char D_8010A6BD;
-extern char D_8010A6BE;
-extern char D_8010A6BF;
-extern int D_8010A6C0;
-
 int func_80102A60(int arg0, int arg1)
 {
     if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
@@ -235,6 +132,32 @@ void func_80102CBC(int arg0)
     menuItem->targetX = 18;
 }
 
+static u_short _menuText[] = {
+#include "../../assets/MENU/MENUB.PRG/menuText.vsString"
+};
+
+static char D_8010A504 = 0;
+static char D_8010A505 = 0;
+static int D_8010A508 = 0;
+static int D_8010A50C = 0;
+
+static D_8010A6A0_t* D_8010A6A0;
+static D_8010A6A0_t* D_8010A6A4;
+static vs_battle_inventory_t* _inventory;
+static vs_battle_inventory_t* D_8010A6AC;
+static char D_8010A6B0;
+static u_char D_8010A6B1;
+static char D_8010A6B2;
+static u_char D_8010A6B3;
+static char D_8010A6B4;
+static u_char D_8010A6B5;
+static u_char D_8010A6B6;
+static char D_8010A6B7;
+static char D_8010A6B8;
+static char D_8010A6B9;
+static char D_8010A6BA;
+static char D_8010A6BB;
+
 void func_80102D1C(int arg0, int arg1)
 {
     D_8010A50C = 1;
@@ -265,6 +188,12 @@ int func_80102E08(int arg0, int arg1)
     return vs_mainMenu_inventoryIndices[arg0][arg1];
 }
 
+static char D_8010A6BC;
+static char D_8010A6BD;
+static char D_8010A6BE;
+static char D_8010A6BF;
+static int D_8010A6C0;
+
 void func_80102E54(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
@@ -281,6 +210,12 @@ void func_80102E54(int arg0)
 
 int func_80102EC4(int arg0)
 {
+    static char D_8010A5EC;
+    static char D_8010A5ED;
+    static char D_8010A5EE;
+    static u_char D_8010A5EF;
+    static char D_8010A5F0;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -342,6 +277,11 @@ int func_80102EC4(int arg0)
 
 int func_8010310C(int arg0)
 {
+    static char D_8010A5F1;
+    static char D_8010A5F2;
+    static char D_8010A5F3;
+    static char D_8010A5F4;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -394,10 +334,16 @@ int func_8010310C(int arg0)
         return 0;
 }
 
-char* D_8010A510 = "X     0";
-
 int func_801032F8(int arg0)
 {
+    static char* D_8010A510 = "X     0";
+
+    static char D_8010A5F5;
+    static char D_8010A5F6;
+    static char D_8010A5F7;
+    static char D_8010A5F8;
+    static char D_8010A5F9;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -456,6 +402,12 @@ int func_801032F8(int arg0)
 
 int func_80103538(int arg0)
 {
+    static char D_8010A5FA;
+    static char D_8010A5FB;
+    static char D_8010A5FC;
+    static u_char D_8010A5FD;
+    static char D_8010A5FE;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -519,6 +471,11 @@ int func_80103538(int arg0)
 
 int func_80103794(int arg0)
 {
+    static char D_8010A5FF;
+    static char D_8010A600;
+    static char D_8010A601;
+    static char D_8010A602;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -575,6 +532,11 @@ int func_80103794(int arg0)
 
 int func_801039BC(int arg0)
 {
+    static char D_8010A603;
+    static char D_8010A604;
+    static char D_8010A605;
+    static char D_8010A606;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -626,32 +588,13 @@ int func_801039BC(int arg0)
     return 0;
 }
 
-static int (*D_8010A514[])(int) = { func_80102EC4, func_8010310C, func_801032F8,
-    func_80103538, func_80103794, func_801039BC };
-static char D_8010A52C[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-    18, 19, 20, 21, 22, 23 };
-static char D_8010A544[] = { 0, 8, 9, 10, 24, 25, 26 };
-static char D_8010A54C[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32,
-    33, 34, 35, 36, 37, 38, 39 };
-static char D_8010A564[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32, 33,
-    34, 35, 36, 37, 38, 39 };
-static char D_8010A57C[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-    39 };
-static char D_8010A58C[] = { 0, 56, 0, 0 };
-static char D_8010A590[] = { 24, 24, 7, 24, 23, 16, 2 };
-static char* D_8010A598[] = { D_8010A52C, D_8010A52C, D_8010A544, D_8010A54C, D_8010A564,
-    D_8010A57C, D_8010A58C };
-static char D_8010A5B4[] = { vs_char_spacing, 0x30, 0, 0, 0, vs_char_forwardSlash, 0, 0,
-    0, vs_char_terminator };
-static char D_8010A5C0[] = { 1, 10, 100 };
-static char D_8010A5C3 = 0;
-static int D_8010A5C4 = 0;
-static char D_8010A5C8 = 0;
-static char D_8010A5C9 = 0;
-static char D_8010A5CA = 0;
-
 int func_80103BA8(int arg0)
 {
+    static int (*D_8010A514[])(int) = { func_80102EC4, func_8010310C, func_801032F8,
+        func_80103538, func_80103794, func_801039BC };
+
+    static u_char D_8010A607;
+
     int temp_v0;
     int var_s0 = 0;
 
@@ -1002,6 +945,23 @@ void func_80104474(int arg0, int arg1)
 
 int func_80104608(int arg0)
 {
+    static char D_8010A52C[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23 };
+    static char D_8010A544[] = { 0, 8, 9, 10, 24, 25, 26 };
+    static char D_8010A54C[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31,
+        32, 33, 34, 35, 36, 37, 38, 39 };
+    static char D_8010A564[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32,
+        33, 34, 35, 36, 37, 38, 39 };
+    static char D_8010A57C[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+        39 };
+    static char D_8010A58C[] = { 0, 56, 0, 0 };
+    static char D_8010A590[] = { 24, 24, 7, 24, 23, 16, 2 };
+    static char* D_8010A598[] = { D_8010A52C, D_8010A52C, D_8010A544, D_8010A54C,
+        D_8010A564, D_8010A57C, D_8010A58C };
+
+    static char D_8010A608;
+    static u_char D_8010A609;
+
     char* sp10[48];
     int spD0[24];
     int i;
@@ -1060,6 +1020,20 @@ int func_80104608(int arg0)
 
 int func_80104860(int arg0)
 {
+    static char D_8010A5B4[] = { vs_char_spacing, 0x30, 0, 0, 0, vs_char_forwardSlash, 0,
+        0, 0, vs_char_terminator };
+    static char D_8010A5C0[] = { 1, 10, 100 };
+    static char D_8010A5C3 = 0;
+
+    static char D_8010A60A;
+    static char D_8010A60B;
+    static char D_8010A60C;
+    static char D_8010A60D;
+    static u_char D_8010A60E;
+    static char D_8010A60F;
+    static char D_8010A610;
+    static char _[3] __attribute__((unused));
+
     char* sp18[4];
     int sp28[2];
     char* sp30[4];
@@ -1396,6 +1370,13 @@ void func_8010537C(int arg0)
 
 int func_80105454(int arg0)
 {
+    static char D_8010A614[8];
+    static char D_8010A61C;
+    static char D_8010A61D;
+    static char D_8010A61E;
+    static char _ __attribute__((unused));
+    static int D_8010A620;
+
     char* sp10[128];
     int sp210[64];
     char* sp310[128];
@@ -1681,7 +1662,7 @@ int func_80105454(int arg0)
             sp310[1] = (char*)&_menuText[VS_menuText_OFFSET_itemUseProhibited];
             *vs_battle_rowTypeBuf = 1;
             var_s0 = 1;
-            D_8010A615 = 1;
+            D_8010A614[1] = 1;
         }
 
         if (((char)(var_s4 - 1) < 2U) || (var_s4 == 5)) {
@@ -1853,6 +1834,14 @@ int func_80105454(int arg0)
 
 void func_80106274(int arg0)
 {
+    static int D_8010A5C4 = 0;
+    static char D_8010A5C8 = 0;
+
+    static int D_8010A624;
+    static int _ __attribute__((unused));
+    static vs_unk_gfx_t2 D_8010A62C;
+    static vs_unk_gfx_t D_8010A64C;
+
     int temp_lo;
     int temp_lo_2;
     int temp_s1_2;
@@ -1959,6 +1948,9 @@ void func_80106274(int arg0)
 
 int func_801066CC(int arg0)
 {
+    static char D_8010A680;
+    static char D_8010A681;
+
     int var_s0;
     vs_battle_menuItem_t* menuItem;
 
@@ -2080,6 +2072,15 @@ int func_801066CC(int arg0)
 
 int func_80106B80(int arg0)
 {
+    static char D_8010A5C9 = 0;
+
+    static char D_8010A682;
+    static char D_8010A683;
+    static char D_8010A684;
+    static u_char D_8010A685;
+    static char D_8010A686;
+    static char _ __attribute__((unused));
+
     int i;
     int temp_v0_3;
     int temp_v0_4;
@@ -2254,6 +2255,15 @@ int func_80106B80(int arg0)
 
 int func_801073E0(int arg0)
 {
+    static char D_8010A5CA = 0;
+
+    static u_short D_8010A688;
+    static u_short D_8010A68A;
+    static u_short D_8010A68C;
+    static char D_8010A68E;
+    static char D_8010A68F;
+    static u_char D_8010A690;
+
     D_8010A6A0_t* temp_a3;
     int j;
     int i;
@@ -2987,6 +2997,13 @@ void func_80108E78(int arg0)
 
 int func_801090A4(int arg0)
 {
+    static char D_8010A5E8 = 0;
+
+    static char D_8010A691;
+    static char D_8010A692;
+    static char _ __attribute__((unused));
+    static char* D_8010A694;
+
     int i;
     int var_v1;
     int temp_a1;
@@ -3085,6 +3102,13 @@ int func_801090A4(int arg0)
 
 int func_80109444(D_8010A6A0_t* arg0)
 {
+    static char D_8010A5E9 = 0;
+
+    static char D_8010A698;
+    static char D_8010A699;
+    static char D_8010A69A;
+    static char D_8010A69B;
+
     vs_battle_menuItem_t* temp_v0;
 
     if (arg0 != NULL) {
@@ -3162,6 +3186,11 @@ int func_80109444(D_8010A6A0_t* arg0)
 
 int func_80109750(int arg0)
 {
+    static char D_8010A5EA = 0;
+
+    static char D_8010A69C;
+    static char D_8010A69D;
+
     D_8010A6A0_t* temp_s1;
     int temp_a3;
     int temp_s2;
@@ -3396,6 +3425,9 @@ int func_80109750(int arg0)
 
 int func_80109E90(char* state)
 {
+    static char D_8010A69E;
+    static char _ __attribute__((unused));
+
     int i;
     void* temp_v0;
 

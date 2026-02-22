@@ -4436,13 +4436,13 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
 
     vs_main_memcpy(result, first, sizeof *result);
 
-    new_var = first->category * 0x32 + first->material * 0x1F4 + second->material * 0xA
+    new_var = first->category * 50 + first->material * 500 + second->material * 10
             + second->category;
-    result->material = _materialResults[new_var - 0x5FA];
-    result->subId = _combinationResults[(first->id * 0x60) + second->id];
+    result->material = _materialResults[new_var - 1530];
+    result->subId = _combinationResults[(first->id * 96) + second->id];
     result->id = result->subId;
 
-    temp_a0 = D_8010BD88 + (result->id * 0x10);
+    temp_a0 = D_8010BD88 + (result->id * 16);
     result->wepId = temp_a0[1];
     result->category = temp_a0[2];
     result->cost = temp_a0[5];
@@ -4450,9 +4450,9 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
     result->costType = temp_a0[4] & 7;
     result->unk12 = temp_a0[6];
     result->range = *(vs_battle_range_t*)&temp_a0[12];
-    result->strength = temp_a0[8] + D_8004EDDC[result->material][0x18];
-    result->intelligence = temp_a0[9] + D_8004EDDC[result->material][0x1A];
-    result->agility = temp_a0[10] + D_8004EDDC[result->material][0x1C];
+    result->strength = temp_a0[8] + D_8004EDDC[result->material][24];
+    result->intelligence = temp_a0[9] + D_8004EDDC[result->material][26];
+    result->agility = temp_a0[10] + D_8004EDDC[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) >> 1;
     result->maxPp = ((first->maxPp + second->maxPp) >> 1);
     result->currentPp = ((first->currentPp + second->currentPp) >> 1);

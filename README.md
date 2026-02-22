@@ -58,6 +58,7 @@ Thanks also to the following amazing projects (and their dependencies):
 The following files can be freely edited*, either as source code or by editing the dumped .yaml or .obj formats
 ```
 data/MENU/
+    ARMOR.SYD
     MENU0.PRG
     MENU1.PRG
     MENU2.PRG
@@ -68,6 +69,7 @@ data/MENU/
     MENUC.PRG
     MENUE.PRG
     MCMAN.BIN
+    SHIELD.SYD
     SPMCIMG.BIN
     MAPBG.BIN
     ITEMNAME.BIN

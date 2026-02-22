@@ -38,4 +38,12 @@ $(BUILD)/data/MENU/ARMOR.SYD: $(BUILD)/assets/MENU/ARMOR.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_encode $< $@
 
-all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) ARMOR.SYD)
+$(BUILD)/assets/MENU/SHIELD.SYD.yaml: data/MENU/SHIELD.SYD | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_dump $< $@
+
+$(BUILD)/data/MENU/SHIELD.SYD: $(BUILD)/assets/MENU/SHIELD.SYD.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_encode $< $@
+
+all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, ARMOR SHIELD))

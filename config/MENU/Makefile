@@ -30,4 +30,12 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
-all: $(patsubst %, $(BUILD)/data/MENU/%.BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12)
+$(BUILD)/assets/MENU/ARMOR.SYD.yaml: data/MENU/ARMOR.SYD | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_dump $< $@
+
+$(BUILD)/data/MENU/ARMOR.SYD: $(BUILD)/assets/MENU/ARMOR.SYD.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_encode $< $@
+
+all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) ARMOR.SYD)

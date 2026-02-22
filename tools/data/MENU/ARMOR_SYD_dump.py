@@ -9,6 +9,7 @@ The file structure consists of:
 Currently handles:
 - First section: 65x65 array of bytes (output 64x64 without first row/col as "combinations")
 - Second section: 8x4x8x4 array of bytes (output as "materials")
+- Third section: 81x8 armor info structures (output 80, skipping first zero element)
 """
 
 import struct
@@ -20,8 +21,6 @@ import yaml
 class BlockList(list):
     """A list that should be formatted in block style in YAML."""
     pass
-
-
 
 
 def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
@@ -55,7 +54,7 @@ def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
                 row_data.append(material_values[byte_value])
             else:
                 row_data.append(str(byte_value))
-        combinations[f'row_{row-1:02d}'] = row_data
+        combinations[f'armor_{row-1:02d}'] = row_data
     
     # Parse the second section (8x4x8x4 array of bytes)
     # Skip first d0 block and first d2 row
@@ -85,8 +84,9 @@ def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
         materials[material_name] = d0_group
     
     # Parse the third section (81 armor info structures, 8 bytes each)
+    # Skip first element (index 0), which is always filled with zeros
     armor_info_list = []
-    for i in range(81):
+    for i in range(1, 81):
         info_offset = offset3 + (i * 8)
         subId = struct.unpack('b', data[info_offset:info_offset+1])[0]
         wepId = struct.unpack('b', data[info_offset+1:info_offset+2])[0]
@@ -97,7 +97,7 @@ def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
         agility = struct.unpack('b', data[info_offset+6:info_offset+7])[0]
         # unk7 is skipped
         
-        armor_info_list.append({
+        armor_info_list.append(FlowDict({
             'subId': subId,
             'wepId': wepId,
             'category': category,
@@ -105,7 +105,7 @@ def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
             'strength': strength,
             'intelligence': intelligence,
             'agility': agility
-        })
+        }))
     
     armor_info = BlockList(armor_info_list)
     
@@ -117,29 +117,15 @@ def parse_armor_syd(binary_file_path: str, output_yaml_path: str) -> None:
     }
     
     with open(output_yaml_path, 'w') as f:
-        yaml.dump(output_data, f, Dumper=FlowListDumper, default_flow_style=False, sort_keys=False)
-
-
-def _write_yaml_manual(f, data, indent=0):
-    """Manually write YAML without yaml library."""
-    indent_str = '  ' * indent
-    
-    if isinstance(data, dict):
-        for key, value in data.items():
-            if isinstance(value, dict):
-                f.write(f"{indent_str}{key}:\n")
-                _write_yaml_manual(f, value, indent + 1)
-            elif isinstance(value, list):
-                # Write lists in flow style (single line) for compact output
-                f.write(f"{indent_str}{key}: {value}\n")
-            else:
-                f.write(f"{indent_str}{key}: {value}\n")
-    elif isinstance(data, list):
-        for item in data:
-            f.write(f"{indent_str}- {item}\n")
+        yaml.dump(output_data, f, Dumper=FlowListDumper, default_flow_style=False, sort_keys=False, width=float('inf'))
 
 
 class FlowListDumper(yaml.Dumper):
+    pass
+
+
+class FlowDict(dict):
+    """A dict that should be formatted in flow style in YAML."""
     pass
 
 
@@ -151,8 +137,13 @@ def _represent_block_list(dumper, data):
     return dumper.represent_sequence('tag:yaml.org,2002:seq', data, flow_style=False)
 
 
+def _represent_flow_dict(dumper, data):
+    return dumper.represent_mapping('tag:yaml.org,2002:map', data, flow_style=True)
+
+
 FlowListDumper.add_representer(list, _represent_list)
 FlowListDumper.add_representer(BlockList, _represent_block_list)
+FlowListDumper.add_representer(FlowDict, _represent_flow_dict)
 
 
 if __name__ == '__main__':
@@ -173,4 +164,3 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
-

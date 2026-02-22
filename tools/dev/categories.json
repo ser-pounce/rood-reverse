@@ -77,11 +77,11 @@
     },
     {
         "id": "menus.MENUB.PRG",
-        "name": "Enemy drop menu"
+        "name": "Loot menu"
     },
     {
         "id": "menus.MENUC.PRG",
-        "name": "Setup menu"
+        "name": "Item setup menu"
     },
     {
         "id": "menus.MENUD.PRG",

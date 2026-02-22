@@ -58,6 +58,7 @@ extern char D_8010A30E;
 extern char D_8010A440;
 extern char D_8010A4B0[];
 extern int D_8010A50C;
+extern char D_8010A504;
 extern char D_8010A505;
 extern int D_8010A508;
 extern char* D_8010A510;
@@ -156,7 +157,7 @@ extern u_char D_8010A6B1;
 extern char D_8010A6B2;
 extern u_char D_8010A6B3;
 extern char D_8010A6B4;
-extern char D_8010A6B5;
+extern u_char D_8010A6B5;
 extern u_char D_8010A6B6;
 extern char D_8010A6B7;
 extern char D_8010A6B8;
@@ -2812,8 +2813,122 @@ void func_801088D4(func_801088D4_t* arg0)
     }
 }
 
-// https://decomp.me/scratch/L3amq
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80108938);
+void func_80108938(int arg0)
+{
+    char sp18[0x100];
+    int sp118;
+    D_8010A6A0_t* var_fp;
+    int i;
+    int temp_s1;
+    int temp_v1_3;
+    vs_battle_inventoryWeapon* weapon;
+    vs_battle_inventoryBlade* blade;
+    vs_battle_inventoryBlade* blade2;
+    vs_battle_inventoryGrip* grip;
+    vs_battle_inventoryShield* shield;
+    vs_battle_inventoryArmor* armor;
+    vs_battle_inventoryGem* gem;
+    vs_battle_inventoryMisc* misc;
+    vs_battle_menuItem_t* menuItem;
+
+    sp118 = D_8010A6B6;
+    var_fp = &D_8010A6A0[D_8010A6B5];
+    vs_battle_rMemzero(&sp18, 0x100);
+
+    for (i = 0; i < 8; ++i) {
+        menuItem = vs_battle_getMenuItem(i + 0x20);
+        sp18[i + D_8010A504] = menuItem->unk4;
+        menuItem->state = 0;
+    }
+
+    if (sp118 >= 9) {
+        sp118 = 8;
+    }
+
+    for (i = 0; i < sp118;) {
+        temp_s1 = var_fp->unk1;
+        menuItem = vs_battle_getMenuItem(0x20 + i);
+
+        switch (var_fp->unk0) {
+        case 0:
+            weapon = &_inventory->weapons[temp_s1];
+            blade = &_inventory->blades[weapon->blade - 1];
+            menuItem = vs_battle_setMenuItem(
+                0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98, 0, weapon->name);
+            menuItem->icon = blade->category;
+            menuItem->material = blade->material;
+            break;
+        case 1:
+            blade2 = &_inventory->blades[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[blade2->id]);
+            menuItem->icon = blade2->category;
+            menuItem->material = blade2->material;
+            break;
+        case 2:
+            grip = &_inventory->grips[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[grip->id]);
+            menuItem->icon = grip->category + 10;
+            break;
+        case 3:
+            shield = &_inventory->shields[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[shield->base.id]);
+            menuItem->icon = 0xF;
+            menuItem->material = shield->base.material;
+            break;
+        case 4:
+            armor = &_inventory->armor[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[armor->id]);
+            menuItem->icon = armor->category + 0xE;
+            menuItem->material = armor->material;
+            break;
+        case 5:
+            gem = &_inventory->gems[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[gem->id]);
+            menuItem->icon = 22;
+            break;
+        case 6:
+            misc = &_inventory->items[temp_s1];
+            menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
+                0, vs_mainMenu_itemNames[misc->id]);
+            menuItem->unk10 = misc->count;
+            menuItem->unkA = (misc->id < 0x1CA) ^ 1;
+            break;
+        }
+        menuItem->unk4 = sp18[i + D_8010A6B5];
+        menuItem->unk7 = var_fp->unk3 == 0;
+
+        if (var_fp->unk2 != 0) {
+            menuItem->initialX -= var_fp->unk2 * 0x30;
+            ++var_fp->unk2;
+            if (var_fp->unk2 == 4) {
+                menuItem->unk4 = 0;
+            }
+        }
+        if (i == 0) {
+            if (D_8010A6B5 != 0) {
+                menuItem->unk5 = 1;
+            }
+        }
+        if ((i == 7) && (D_8010A6B5 != (D_8010A6B6 - 8))) {
+            menuItem->unk5 = 2;
+        }
+        temp_v1_3 = var_fp->unk3;
+        if (temp_v1_3 == 2) {
+            menuItem->unk2 = 0x18;
+        }
+        if (temp_v1_3 >= 3) {
+            menuItem->initialX += (temp_v1_3 - 3) * 7;
+        }
+        ++i;
+        ++var_fp;
+    }
+    D_8010A504 = D_8010A6B5;
+}
 
 void func_80108E78(int arg0)
 {

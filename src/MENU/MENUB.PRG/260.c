@@ -4,6 +4,7 @@
 #include "../MAINMENU.PRG/413C.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/4A0A8.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -19,8 +20,27 @@ typedef struct {
     char unk3;
 } D_8010A6A0_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+} vs_unk_gfx_t2;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    vs_unk_gfx_t2 unk14;
+} vs_unk_gfx_t;
+
 int func_80105454(int);
-void func_80106274(int);
 int func_80106B80(int);
 int func_801073E0(int);
 void func_801080F0(void);
@@ -39,6 +59,7 @@ extern char D_8010A440;
 extern char D_8010A4B0[];
 extern int D_8010A50C;
 extern char D_8010A505;
+extern int D_8010A508;
 extern char* D_8010A510;
 extern int (*D_8010A514[])(int);
 extern char D_8010A52C[];
@@ -49,6 +70,8 @@ extern char* D_8010A598[];
 extern char D_8010A5B4[];
 extern char D_8010A5C0[];
 extern char D_8010A5C3;
+extern int D_8010A5C4;
+extern char D_8010A5C8;
 extern char D_8010A5C9;
 extern char D_8010A5CA;
 extern char* D_8010A5CC[];
@@ -98,6 +121,9 @@ extern char D_8010A61C;
 extern char D_8010A61D;
 extern char D_8010A61E;
 extern int D_8010A620;
+extern int D_8010A624;
+extern vs_unk_gfx_t2 D_8010A62C;
+extern vs_unk_gfx_t D_8010A64C;
 extern char D_8010A680;
 extern char D_8010A681;
 extern char D_8010A682;
@@ -1817,7 +1843,111 @@ int func_80105454(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENUB.PRG/nonmatchings/260", func_80106274);
+void func_80106274(int arg0)
+{
+    int temp_lo;
+    int temp_lo_2;
+    int temp_s1_2;
+    int var_s2;
+    int var_v0;
+    int temp_s1;
+    vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
+
+    switch (arg0) {
+    case 0:
+        var_s2 = D_8010A508;
+        switch (D_8010A50C) {
+        case 0:
+            if (var_s2 < 0xA) {
+                var_s2 += 1;
+                D_8010A508 = var_s2;
+            }
+            var_s2 = 0x80 - vs_battle_rowAnimationSteps[0xA - var_s2];
+            break;
+        case 1:
+            if (var_s2 > 0) {
+                var_s2 -= 1;
+                D_8010A508 = var_s2;
+            }
+            var_s2 = vs_battle_rowAnimationSteps[var_s2];
+            break;
+        case 2:
+            if (var_s2 < 0xA) {
+                var_s2 += 1;
+                D_8010A508 = var_s2;
+            } else {
+                D_8010A50C = 0;
+            }
+            var_s2 = vs_battle_rowAnimationSteps[0xA - var_s2] + 0x80;
+            break;
+        case 3:
+            var_v0 = var_s2 * 2;
+            if (var_s2 > 0) {
+                var_s2 -= 1;
+                D_8010A508 = var_s2;
+                var_v0 = var_s2 * 2;
+            }
+            var_s2 = 0x260 - ((var_v0 + var_s2) * 0x10);
+            break;
+        }
+        if (D_8010A5C8 != 0) {
+            D_8010A5C8 = 0;
+            return;
+        }
+        if (D_8010A5C4 != 0) {
+            temp_s1 = ((u_short*)D_800F4538[1])[0x32B];
+            p->unk10 = ((-rsin(0xB00) * var_s2) >> 8) * temp_s1;
+            p->unk14.unk0 = -(((u_short*)D_800F4538[1])[0x31F] << 0xB);
+            p->unk14.unk4 = ((rcos(0xB00) * var_s2) >> 8) * temp_s1;
+            temp_s1_2 = temp_s1 * 4;
+            temp_lo = rcos(0xB00) * temp_s1_2;
+            p->unk0 = p->unk10 + temp_lo;
+            p->unk4 = p->unk14.unk0;
+            temp_lo_2 = rsin(0xB00) * temp_s1_2;
+            p->unk14.unkC = 0;
+            p->unk14.unk10 = 0;
+            p->unk14.unk14 = 0;
+            p->unk14.unk1C = 0x1000;
+            p->unk8 = p->unk14.unk4 + temp_lo_2;
+            func_8007ACB0();
+            func_800F9EB8(&D_1F800000[5]);
+            return;
+        }
+        return;
+    case 1:
+        if (D_8010A5C4 == 0) {
+            D_8010A508 = 0;
+            D_8010A50C = 2;
+            D_8010A5C8 = arg0;
+            D_8010A5C4 = arg0;
+            D_8010A624 = vs_main_projectionDistance;
+            func_8007CCF0(0x200);
+
+            D_8010A62C = p[-1].unk14;
+            D_8010A64C = *p;
+
+            p->unk14.unkC = 0;
+            p->unk14.unk10 = 0;
+            p->unk14.unk14 = 0;
+            p->unk14.unk1C = 0x1000;
+            func_8007ACB0();
+            func_80100414(0x7FE, 0x80);
+            func_800F9A24(0);
+            return;
+        }
+        break;
+    case 2:
+        if (D_8010A5C4 != 0) {
+            func_800F9E0C();
+            func_80100414(-4, 0x80);
+            func_8007CCF0(D_8010A624);
+            p[-1].unk14 = D_8010A62C;
+            *p = D_8010A64C;
+            D_8010A5C4 = 0;
+        }
+        break;
+    }
+}
 
 int func_801066CC(int arg0)
 {

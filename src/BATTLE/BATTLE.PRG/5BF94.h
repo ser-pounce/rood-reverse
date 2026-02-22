@@ -75,7 +75,7 @@ typedef struct {
     char unk0[0x34];
     char unk34[6];
     struct {
-        char unk0;
+        char itemCategory;
         char unk1;
         short unk2[8];
     } unk3A;

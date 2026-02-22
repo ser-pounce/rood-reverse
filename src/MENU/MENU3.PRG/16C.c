@@ -1299,7 +1299,7 @@ int func_80108970(char* arg0)
         var_s0 = (0xA - D_80109714) << 5;
     }
     if ((D_80109714 != 0) && (D_80109717 == 0)) {
-        temp_s1 = (D_800F4EE8.unk3A.unk0 - 1) & 7;
+        temp_s1 = (D_800F4EE8.unk3A.itemCategory - 1) & 7;
         temp_v0_3 = vs_battle_setMenuItem(
             0x1F, var_s0 + 0xB4, 0x22, 0x8C, 8, (char*)&D_801093B8[D_801093B8[temp_s1]]);
         temp_v0_3->selected = 1;

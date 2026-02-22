@@ -11,6 +11,7 @@ _copyArmorToInventory = 0x80107F1C;
 _copyShieldToInventory = 0x80107F9C;
 _copyMiscToInventory = 0x8010808C;
 _applyDropList = 0x801086F4;
+_menuText = 0x8010A280;
 D_8010A5C9 = 0x8010A5C9;
 D_8010A5E9 = 0x8010A5E9;
 D_8010A5ED = 0x8010A5ED;

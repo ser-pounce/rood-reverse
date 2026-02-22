@@ -8,6 +8,7 @@ enum vs_string_chars {
     vs_char_j = 0x2D,
     vs_char_space = 0x8F,
     vs_char_colon = 0x9E,
+    vs_char_forwardSlash = 0xA1,
     vs_char_hyphen = 0xA7,
     vs_char_arrow = 0xBC,
     vs_char_nonPrinting = 0xE5,

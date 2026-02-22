@@ -9,6 +9,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/MENUB.PRG/menuText.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <stddef.h>
 #include <memory.h>
@@ -52,30 +53,12 @@ extern u_long* D_1F800000[];
 static u_short _menuText[] = {
 #include "../../assets/MENU/MENUB.PRG/menuText.vsString"
 };
-extern char D_8010A2C4;
-extern char D_8010A30A;
-extern char D_8010A30E;
-extern char D_8010A440;
-extern char D_8010A4B0[];
-extern int D_8010A50C;
-extern char D_8010A504;
-extern char D_8010A505;
-extern int D_8010A508;
-extern char* D_8010A510;
-extern int (*D_8010A514[])(int);
-extern char D_8010A52C[];
-extern char D_8010A54C[];
-extern char D_8010A58C[];
-extern char D_8010A590[];
-extern char* D_8010A598[];
-extern char D_8010A5B4[];
-extern char D_8010A5C0[];
-extern char D_8010A5C3;
-extern int D_8010A5C4;
-extern char D_8010A5C8;
-extern char D_8010A5C9;
-extern char D_8010A5CA;
-extern char* D_8010A5CC[];
+
+static char D_8010A504 = 0;
+static char D_8010A505 = 0;
+static int D_8010A508 = 0;
+static int D_8010A50C = 0;
+
 extern char D_8010A5E8;
 extern char D_8010A5E9;
 extern char D_8010A5EA;
@@ -411,6 +394,8 @@ int func_8010310C(int arg0)
         return 0;
 }
 
+char* D_8010A510 = "X     0";
+
 int func_801032F8(int arg0)
 {
     char* sp10[2];
@@ -459,7 +444,7 @@ int func_801032F8(int arg0)
         }
         D_8010A510[6] =
             (vs_battle_inventory.grips[D_800619D8.unk0[D_8010A5F8 + 0x18] - 1].gemSlots
-                + 0x30);
+                + 0x30); // BUG: Write to const char
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_8010A510, 0x240118, NULL);
         break;
@@ -641,6 +626,30 @@ int func_801039BC(int arg0)
     return 0;
 }
 
+static int (*D_8010A514[])(int) = { func_80102EC4, func_8010310C, func_801032F8,
+    func_80103538, func_80103794, func_801039BC };
+static char D_8010A52C[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+    18, 19, 20, 21, 22, 23 };
+static char D_8010A544[] = { 0, 8, 9, 10, 24, 25, 26 };
+static char D_8010A54C[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32,
+    33, 34, 35, 36, 37, 38, 39 };
+static char D_8010A564[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32, 33,
+    34, 35, 36, 37, 38, 39 };
+static char D_8010A57C[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+    39 };
+static char D_8010A58C[] = { 0, 56, 0, 0 };
+static char D_8010A590[] = { 24, 24, 7, 24, 23, 16, 2 };
+static char* D_8010A598[] = { D_8010A52C, D_8010A52C, D_8010A544, D_8010A54C, D_8010A564,
+    D_8010A57C, D_8010A58C };
+static char D_8010A5B4[] = { vs_char_spacing, 0x30, 0, 0, 0, vs_char_forwardSlash, 0, 0,
+    0, vs_char_terminator };
+static char D_8010A5C0[] = { 1, 10, 100 };
+static char D_8010A5C3 = 0;
+static int D_8010A5C4 = 0;
+static char D_8010A5C8 = 0;
+static char D_8010A5C9 = 0;
+static char D_8010A5CA = 0;
+
 int func_80103BA8(int arg0)
 {
     int temp_v0;
@@ -674,8 +683,6 @@ int func_80103BA8(int arg0)
     }
     return temp_v0;
 }
-
-INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102800);
 
 int _getWeaponStat(int stat, vs_battle_uiWeapon* weapon)
 {
@@ -1671,7 +1678,7 @@ int func_80105454(int arg0)
 
         if (var_s4 == 6) {
             sp310[0] = (char*)&vs_mainMenu_itemHelp[0x351D];
-            sp310[1] = D_8010A4B0;
+            sp310[1] = (char*)&_menuText[VS_menuText_OFFSET_itemUseProhibited];
             *vs_battle_rowTypeBuf = 1;
             var_s0 = 1;
             D_8010A615 = 1;
@@ -2145,20 +2152,22 @@ int func_80106B80(int arg0)
         D_8010A682 = 1;
         break;
     case 1:
-        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A30A);
+        menuItem = vs_battle_setMenuItem(
+            0x1E, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
         D_8010A682 = 2;
         break;
     case 2:
-        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A30E);
+        menuItem = vs_battle_setMenuItem(
+            0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
         vs_battle_stringContext.strings[0] =
             D_8010A686 == 0 ? _inventory->weapons[i].name
                             : vs_mainMenu_itemNames[_inventory->shields[i].base.id];
         func_800C8E04(1);
-        vs_mainmenu_setMessage(&D_8010A440);
+        vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_disassembleConfirm]);
         D_8010A682 = 3;
         break;
     case 3:
@@ -2337,18 +2346,20 @@ int func_801073E0(int arg0)
         }
         break;
     case 1:
-        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0, &D_8010A30A);
+        menuItem = vs_battle_setMenuItem(
+            0x1E, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
         D_8010A68E = 2;
         break;
     case 2:
-        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0, &D_8010A30E);
+        menuItem = vs_battle_setMenuItem(
+            0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
         vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[D_8010A68C];
         func_800C8E04(1);
-        vs_mainmenu_setMessage(&D_8010A30E + 0x142);
+        vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_organizeConfirm]);
         D_8010A68E = 3;
         break;
     case 3:
@@ -2624,7 +2635,8 @@ void func_8010822C(int arg0, int arg1)
     temp_v1->unk2 = 0;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUB.PRG/nonmatchings/260", D_80102950);
+static char* D_8010A5CC[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARMOR", "GEM",
+    "MISC" };
 
 int func_80108264(int arg0, D_8010A6A0_t* arg1)
 {
@@ -3419,7 +3431,7 @@ int func_80109E90(char* state)
             D_8010A6B2 = 1;
             if (D_8010A6B6 == 0) {
                 func_800C8E04(1);
-                vs_mainmenu_setMessage(&D_8010A2C4);
+                vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
                 *state = 4;
             } else {
                 func_800FFBC8();

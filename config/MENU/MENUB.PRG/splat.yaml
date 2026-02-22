@@ -14,6 +14,7 @@ options:
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MENUB.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENUB.PRG/undefined_syms_auto.txt
+  subalign: 4
 
 segments:
   - start: 0x0
@@ -24,6 +25,5 @@ segments:
       - [0x0, .rodata, 260]
       - [0x260, c]
       - {start: 0x7A80, type: vsStringTable, name: menuText, linker_entry: false}
-      - [0x7D04, data]
       - [0x7DE8, bss, 260]
   - [0x7EC4]

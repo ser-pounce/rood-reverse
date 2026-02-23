@@ -64,6 +64,11 @@ extern char D_80109656;
 extern char D_80109657;
 extern char D_80109658;
 extern char D_80109659;
+extern char D_8010965A;
+extern char D_8010965B;
+extern char D_8010965C;
+extern u_char D_8010965D;
+extern char D_8010965E;
 extern char D_8010965F;
 extern char D_80109660;
 extern char D_80109661;
@@ -410,7 +415,69 @@ int func_80103220(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103460);
+int func_80103460(int arg0)
+{
+    char* menuText[2];
+    int rowType;
+    int temp_v0_2;
+    int i;
+
+    if (arg0 != 0) {
+        D_8010965C = arg0 >> 8;
+        D_8010965D = arg0 - 1;
+        func_80102B78(D_8010965C);
+        D_8010965E = 0;
+        D_8010965B = 0;
+        D_8010965A = 0;
+        return 0;
+    }
+
+    switch (D_8010965A) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102C44(D_8010965C, 7);
+            func_800FD5A0(D_800619D8.unk28[D_8010965D]);
+            vs_mainMenu_drawDpPpbars(3);
+            D_8010965A = 1;
+        }
+        break;
+    case 1:
+        if (D_8010965B < 10) {
+            ++D_8010965B;
+            if (D_8010965B < 4) {
+                func_800FC704(D_8010965B, D_800619D8.unk28[D_8010965D], 1);
+            }
+            break;
+        }
+        if (vs_mainmenu_ready() != 0) {
+            D_8010965A = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102D7C(1);
+            D_8010965A = 3;
+            break;
+        }
+        temp_v0_2 = func_80102988(3, D_8010965D);
+        if (temp_v0_2 != D_8010965D) {
+            D_8010965D = temp_v0_2;
+            i = func_80102D30(3, temp_v0_2);
+            vs_mainMenu_initUiShield(&vs_battle_inventory.shields[i - 1], menuText,
+                &rowType, vs_battle_stringBuf);
+            func_800FD5A0(i);
+            func_80102C94(D_8010965C, menuText, rowType, temp_v0_2);
+
+            for (i = 1; i < 4; ++i) {
+                func_800FC704(i, D_800619D8.unk28[temp_v0_2], 0);
+            }
+        }
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 int func_801036BC(int arg0)
 {

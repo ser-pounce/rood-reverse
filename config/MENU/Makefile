@@ -30,6 +30,14 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
+$(BUILD)/assets/MENU/BLADE.SYD.yaml: data/MENU/BLADE.SYD | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.BLADE_SYD_dump $< $@
+
+$(BUILD)/data/MENU/BLADE.SYD: $(BUILD)/assets/MENU/BLADE.SYD.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.BLADE_SYD_encode $< $@
+
 $(BUILD)/assets/MENU/ARMOR.SYD.yaml: data/MENU/ARMOR.SYD | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_dump $< $@
@@ -46,4 +54,4 @@ $(BUILD)/data/MENU/SHIELD.SYD: $(BUILD)/assets/MENU/SHIELD.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_encode $< $@
 
-all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, ARMOR SHIELD))
+all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, BLADE ARMOR SHIELD))

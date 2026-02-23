@@ -66,6 +66,7 @@ data/MENU/
     MENU5.PRG
     MENU7.PRG
     MENU8.PRG
+    MENUB.PRG
     MENUC.PRG
     MENUE.PRG
     MCMAN.BIN

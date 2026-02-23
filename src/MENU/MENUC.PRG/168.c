@@ -12,24 +12,6 @@
 #include <libetc.h>
 #include <memory.h>
 
-typedef struct {
-    char subId;
-    char wepId;
-    char category;
-    char gemSlots;
-    char strength;
-    char intelligence;
-    char agility;
-    char unk7;
-} _armorInfo;
-
-typedef struct {
-    u_long combinationsOffset;
-    u_long materialsOffset;
-    u_long initDataOffset;
-    char data[0];
-} _syd;
-
 extern u_long* D_1F800000[];
 
 static void _drawOk(int row, int arg1)
@@ -4420,42 +4402,61 @@ static void _setTypeValues(
     }
 }
 
+typedef struct {
+    u_long combinationsOffset;
+    u_long materialsOffset;
+    u_long initDataOffset;
+    char data[0];
+} _syd;
+
 static char* _combinationResults;
 static char* _materialResults;
-static void* D_8010BD88;
+static void* _bladeCombinationInitData;
 
 static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
     vs_battle_inventoryBlade* second, vs_battle_inventoryBlade* result, void* sydData)
 {
-    char* temp_a0;
-    int new_var;
+    struct {
+        char subId;
+        char wepId;
+        char category;
+        char damageType;
+        char costType;
+        char cost;
+        char unk6;
+        char unk7;
+        char strength;
+        char intelligence;
+        char agility;
+        char _;
+        vs_battle_range_t range;
+    }* info;
 
     _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
     _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
-    D_8010BD88 = sydData + ((_syd*)sydData)->initDataOffset;
+    _bladeCombinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
 
-    vs_main_memcpy(result, first, sizeof *result);
+    vs_main_memcpy(result, first, sizeof(*result));
 
-    new_var = first->category * 50 + first->material * 500 + second->material * 10
-            + second->category;
-    result->material = _materialResults[new_var - 1530];
+    result->material = _materialResults[(first->material - 3) * 500 + first->category * 50
+                                        + (second->material - 3) * 10 + second->category];
     result->subId = _combinationResults[(first->id * 96) + second->id];
     result->id = result->subId;
-
-    temp_a0 = D_8010BD88 + (result->id * 16);
-    result->wepId = temp_a0[1];
-    result->category = temp_a0[2];
-    result->cost = temp_a0[5];
-    result->damageType = temp_a0[3] & 3;
-    result->costType = temp_a0[4] & 7;
-    result->unk12 = temp_a0[6];
-    result->range = *(vs_battle_range_t*)&temp_a0[12];
-    result->strength = temp_a0[8] + D_8004EDDC[result->material][24];
-    result->intelligence = temp_a0[9] + D_8004EDDC[result->material][26];
-    result->agility = temp_a0[10] + D_8004EDDC[result->material][28];
+    info = _bladeCombinationInitData + (result->id * 16);
+    result->wepId = info->wepId;
+    result->category = info->category;
+    result->cost = info->cost;
+    result->damageType = info->damageType & 3;
+    result->costType = info->costType & 7;
+    result->unk12 = info->unk6;
+    result->range = info->range;
+    result->strength = info->strength + D_8004EDDC[result->material][24];
+    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
+    result->agility = info->agility + D_8004EDDC[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) >> 1;
-    result->maxPp = ((first->maxPp + second->maxPp) >> 1);
-    result->currentPp = ((first->currentPp + second->currentPp) >> 1);
+    result->maxPp = (first->maxPp + second->maxPp) >> 1;
+    result->currentPp = (first->currentPp + second->currentPp) >> 1;
+
     if (first->material == second->material) {
         _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
         _setClassAffinities(
@@ -4467,6 +4468,17 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
     }
     return result;
 }
+
+typedef struct {
+    char subId;
+    char wepId;
+    char category;
+    char gemSlots;
+    char strength;
+    char intelligence;
+    char agility;
+    char _;
+} _armorInfo;
 
 static _armorInfo* _shieldCombinationInitData;
 
@@ -4482,15 +4494,15 @@ static vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first
     vs_main_memcpy(result, first, sizeof *result);
 
     result->material = _materialResults[(first->material * 8) + second->material];
-    result->subId = _combinationResults[(first->subId * 0x11) + second->subId];
-    result->id = result->subId + 0x7E;
+    result->subId = _combinationResults[(first->subId * 17) + second->subId];
+    result->id = result->subId + 126;
     info = &_shieldCombinationInitData[result->subId];
     result->wepId = info->wepId;
     result->category = info->category;
     result->gemSlots = info->gemSlots;
-    result->strength = info->strength + D_8004EDDC[result->material][0x18];
-    result->intelligence = info->intelligence + D_8004EDDC[result->material][0x1A];
-    result->agility = info->agility + D_8004EDDC[result->material][0x1C];
+    result->strength = info->strength + D_8004EDDC[result->material][24];
+    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
+    result->agility = info->agility + D_8004EDDC[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     result->maxPp = ((first->maxPp + second->maxPp) >> 1);
     result->currentPp = ((first->currentPp + second->currentPp) >> 1);
@@ -4524,12 +4536,12 @@ static vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     result->material = _materialResults[first->material * 128 + (first->category - 2) * 32
                                         + second->material * 4 + (second->category - 2)];
     result->subId = _combinationResults[(first->subId - 16) * 65 + (second->subId - 16)];
-    result->id = result->subId + 0x7E;
+    result->id = result->subId + 126;
     info = &_combinationInitData[result->subId];
     result->category = info->category;
-    result->strength = info->strength + D_8004EDDC[result->material][0x18];
-    result->intelligence = info->intelligence + D_8004EDDC[result->material][0x1A];
-    result->agility = info->agility + D_8004EDDC[result->material][0x1C];
+    result->strength = info->strength + D_8004EDDC[result->material][24];
+    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
+    result->agility = info->agility + D_8004EDDC[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     if (first->material == second->material) {
         _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);

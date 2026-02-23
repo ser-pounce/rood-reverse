@@ -21,26 +21,6 @@ typedef struct {
     char unk3;
 } D_8010A6A0_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-} vs_unk_gfx_t2;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    vs_unk_gfx_t2 unk14;
-} vs_unk_gfx_t;
-
 int func_80105454(int);
 int func_80106B80(int);
 int func_801073E0(int);
@@ -1279,8 +1259,11 @@ int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
     char* s5 = arg3;
     sp10 = vs_mainMenu_inventoryIndices[arg0];
     sp14 = 0;
+
     for (i = 0; i < vs_mainMenu_inventoryItemCapacities[arg0]; ++i, s5 += 0x60) {
+
         temp_s1_2 = sp10[i];
+
         if (temp_s1_2 == 0) {
             break;
         }
@@ -1325,8 +1308,6 @@ int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
         case 6:
             vs_mainMenu_setItemUi(
                 &vs_battle_inventory.items[temp_s1_2], &arg1[i * 2], &arg2[i], s5);
-            /* fallthrough */
-        default:
             break;
         }
         temp_v0 = _getParentItem(arg0, temp_s1_2);
@@ -1846,7 +1827,6 @@ void func_80106274(int arg0)
     int temp_lo_2;
     int temp_s1_2;
     int var_s2;
-    int var_v0;
     int temp_s1;
     vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
 
@@ -1878,13 +1858,11 @@ void func_80106274(int arg0)
             var_s2 = vs_battle_rowAnimationSteps[0xA - var_s2] + 0x80;
             break;
         case 3:
-            var_v0 = var_s2 * 2;
             if (var_s2 > 0) {
                 var_s2 -= 1;
                 D_8010A508 = var_s2;
-                var_v0 = var_s2 * 2;
             }
-            var_s2 = 0x260 - ((var_v0 + var_s2) * 0x10);
+            var_s2 = 0x260 - var_s2 * 0x30;
             break;
         }
         if (D_8010A5C8 != 0) {

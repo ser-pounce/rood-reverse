@@ -618,6 +618,26 @@ typedef struct {
     short unkC2;
 } vs_battle_shieldIntermediate;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+} vs_unk_gfx_t2;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    vs_unk_gfx_t2 unk14;
+} vs_unk_gfx_t;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -631,6 +651,7 @@ void vs_battle_applyAccessory(
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
 void vs_battle_equipShield(vs_battle_inventoryShield* shield);
 void vs_battle_equipArmor(int part, vs_battle_inventoryArmor* armor);
+void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory);
 void vs_battle_applyShieldStats(vs_battle_uiShield*, vs_battle_shieldIntermediate*);
 void vs_battle_applyWeaponStats(vs_battle_uiWeapon*, vs_battle_weaponIntermediate*);
 void vs_battle_copyEquippedBladeStats(

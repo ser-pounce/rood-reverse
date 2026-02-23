@@ -40,6 +40,7 @@ void func_80108518(int);
 extern void* D_1F800000[];
 
 extern u_short D_801093B8[];
+extern int D_80109564;
 extern int D_80109568;
 extern char* D_8010956C;
 extern int (*D_80109570[])(int);
@@ -49,6 +50,8 @@ extern char D_801095E8[]; // size 4?
 extern char D_801095EC[]; // size 8?
 extern u_char* D_801095F4[]; // unknown size
 extern void (*D_8010962C[])(int);
+extern int D_80109644;
+extern char D_80109648;
 extern char D_80109649;
 extern char D_8010964C;
 extern char D_8010964D;
@@ -81,6 +84,9 @@ extern u_char D_80109667;
 extern u_char D_80109668;
 extern u_char D_80109669;
 extern u_char D_801096A3;
+extern int D_801096AC;
+extern vs_unk_gfx_t2 D_801096BC;
+extern vs_unk_gfx_t D_801096DC;
 extern char D_80109710;
 extern char D_80109711;
 extern char D_80109712;
@@ -1040,7 +1046,7 @@ int func_80104F50(int arg0, int arg1)
     return var_v1 & 0x7F;
 }
 
-// https://decomp.me/scratch/oTNTS
+// https://decomp.me/scratch/MXJiz
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F94);
 
 void func_80105314(int arg0)
@@ -1168,7 +1174,108 @@ void func_80108010(int arg0)
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80108088);
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80108518);
+void func_80108518(int arg0)
+{
+    int temp_lo;
+    int temp_lo_2;
+    int temp_s1_2;
+    int var_s2;
+    int var_v0;
+    vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
+
+    switch (arg0) {
+    case 0:
+        var_s2 = D_80109564;
+        switch (D_80109568) {
+        case 0:
+            if (var_s2 < 0xA) {
+                ++var_s2;
+                D_80109564 = var_s2;
+            }
+            var_s2 = 0x80 - vs_battle_rowAnimationSteps[0xA - var_s2];
+            break;
+        case 1:
+            if (var_s2 > 0) {
+                --var_s2;
+                D_80109564 = var_s2;
+            }
+            var_s2 = vs_battle_rowAnimationSteps[var_s2];
+            break;
+        case 2:
+            if (var_s2 < 0xA) {
+                ++var_s2;
+                D_80109564 = var_s2;
+            } else {
+                D_80109568 = 0;
+            }
+            var_s2 = vs_battle_rowAnimationSteps[0xA - var_s2] + 0x80;
+            break;
+        case 3:
+            if (var_s2 > 0) {
+                --var_s2;
+                D_80109564 = var_s2;
+            }
+            var_s2 = 0x260 - var_s2 * 0x30;
+            break;
+        }
+        if (D_80109648 != 0) {
+            D_80109648 = 0;
+            return;
+        }
+        if (D_80109644 != 0) {
+            int temp_s1 = ((u_short*)D_800F4538[1])[0x32B];
+            p->unk10 = ((-rsin(0xB00) * var_s2) >> 8) * temp_s1;
+            p->unk14.unk0 = -(((u_short*)D_800F4538[1])[0x31F] << 0xB);
+            p->unk14.unk4 = ((rcos(0xB00) * var_s2) >> 8) * temp_s1;
+            temp_s1_2 = temp_s1 * 4;
+            temp_lo = rcos(0xB00) * temp_s1_2;
+            p->unk0 = p->unk10 + temp_lo;
+            p->unk4 = p->unk14.unk0;
+            temp_lo_2 = rsin(0xB00) * temp_s1_2;
+            p->unk14.unkC = 0;
+            p->unk14.unk10 = 0;
+            p->unk14.unk14 = 0;
+            p->unk14.unk1C = 0x1000;
+            p->unk8 = p->unk14.unk4 + temp_lo_2;
+            func_8007ACB0();
+            func_800F9EB8(&D_1F800000[5]);
+            return;
+        }
+        return;
+    case 1:
+        if (D_80109644 == 0) {
+            D_80109564 = 0;
+            D_80109568 = 2;
+            D_80109648 = arg0;
+            D_80109644 = arg0;
+            D_801096AC = vs_main_projectionDistance;
+            func_8007CCF0(0x200);
+
+            D_801096BC = p[-1].unk14;
+            D_801096DC = *p;
+
+            p->unk14.unkC = 0;
+            p->unk14.unk10 = 0;
+            p->unk14.unk14 = 0;
+            p->unk14.unk1C = 0x1000;
+            func_8007ACB0();
+            func_80100414(0x7FE, 0x80);
+            func_800F9A24(0);
+            return;
+        }
+        break;
+    case 2:
+        if (D_80109644 != 0) {
+            func_800F9E0C();
+            func_80100414(-4, 0x80);
+            func_8007CCF0(D_801096AC);
+            p[-1].unk14 = D_801096BC;
+            *p = D_801096DC;
+            D_80109644 = 0;
+        }
+        break;
+    }
+}
 
 int func_80108970(char* arg0)
 {

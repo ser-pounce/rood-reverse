@@ -32,62 +32,6 @@ typedef struct {
     u_short unk7E;
 } D_8010975C_t;
 
-typedef struct {
-    int unk0;
-    char unk4;
-    signed char unk5;
-    signed char unk6;
-    signed char unk7;
-    u_short unk8;
-    u_short unkA;
-    u_short unkC;
-    u_short unkE;
-    char unk10;
-    char unk11;
-    char unk12;
-    char unk13;
-    int unk14;
-    char unk18;
-    char unk19;
-    char unk1A;
-    char unk1B;
-    char unk1C;
-    char unk1D;
-    char unk1E;
-    char unk1F;
-    int unk20;
-    int unk24;
-    char unk28;
-    char unk29;
-    char unk2A;
-    char unk2B;
-    int unk2C[39];
-    char unkC8;
-    char unkC9[19];
-    u_short unkDC;
-    u_short unkDE;
-    u_short unkE0;
-    u_short unkE2;
-    short unkE4;
-    short unkE6;
-    short unkE8;
-    short unkEA;
-    short unkEC;
-    short unkEE;
-    int unkF0;
-    short unkF4[13];
-    char unk10E;
-    char unk10F;
-    u_short unk110;
-    u_short unk112;
-    short unk114[8];
-    char unk124;
-    char unk125;
-    short unk126;
-    short unk128[16];
-    short unk148[16];
-} _getShieldStat_t;
-
 void func_80102BE4(int);
 int func_801053EC(int);
 int func_80108088(int);
@@ -97,6 +41,7 @@ extern void* D_1F800000[];
 
 extern u_short D_801093B8[];
 extern int D_80109568;
+extern char* D_8010956C;
 extern int (*D_80109570[])(int);
 extern char D_80109588[]; // size 0x30?
 extern char D_801095A8[]; // size 0x40?
@@ -114,6 +59,11 @@ extern char D_80109651;
 extern char D_80109652;
 extern char D_80109653;
 extern char D_80109654;
+extern char D_80109655;
+extern char D_80109656;
+extern char D_80109657;
+extern char D_80109658;
+extern char D_80109659;
 extern char D_8010965F;
 extern char D_80109660;
 extern char D_80109661;
@@ -401,8 +351,64 @@ int func_80103034(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/Cy7Zo
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103220);
+int func_80103220(int arg0)
+{
+    char* menuText[2];
+    int rowType;
+    int temp_v0_2;
+    int temp_v0_3;
+
+    if (arg0 != 0) {
+        D_80109657 = arg0 >> 8;
+        D_80109658 = arg0 - 1;
+        func_80102B78(D_80109657);
+        D_80109659 = 0;
+        D_80109656 = 0;
+        D_80109655 = 0;
+        return 0;
+    }
+
+    switch (D_80109655) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            func_80102C44(D_80109657, 4);
+            vs_mainMenu_setUiGripStats(D_800619D8.unk0[D_80109658 + 0x18]);
+            D_80109655 = 1;
+        }
+        break;
+    case 1:
+        if (D_80109656 < 10) {
+            D_80109656 = (D_80109656 + 1);
+        } else {
+            D_80109655 = 2;
+        }
+        break;
+    case 2:
+        if (vs_main_buttonsPressed.all & 0x50) {
+            func_80102D7C(0);
+            D_80109655 = 3;
+        } else {
+            temp_v0_2 = func_80102988(2, D_80109658);
+            if (temp_v0_2 != D_80109658) {
+                D_80109658 = temp_v0_2;
+                temp_v0_3 = func_80102D30(2, temp_v0_2);
+                vs_mainMenu_setGripUi(&vs_battle_inventory.grips[temp_v0_3 - 1], menuText,
+                    &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setUiGripStats(temp_v0_3);
+                func_80102C94(D_80109657, menuText, rowType, temp_v0_2);
+            }
+        }
+        D_8010956C[6] =
+            vs_battle_inventory.grips[D_800619D8.unk0[D_80109658 + 0x18] - 1].gemSlots
+            + '0';
+        vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
+        vs_battle_renderTextRaw(D_8010956C, 0x240118, NULL);
+        break;
+    case 3:
+        return vs_mainmenu_ready();
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80103460);
 

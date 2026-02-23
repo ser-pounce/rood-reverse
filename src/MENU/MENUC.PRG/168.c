@@ -4450,9 +4450,10 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
     result->costType = info->costType & 7;
     result->unk12 = info->unk6;
     result->range = info->range;
-    result->strength = info->strength + D_8004EDDC[result->material][24];
-    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
-    result->agility = info->agility + D_8004EDDC[result->material][28];
+    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->intelligence =
+        info->intelligence + vs_main_materialModifiers[result->material][26];
+    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) >> 1;
     result->maxPp = (first->maxPp + second->maxPp) >> 1;
     result->currentPp = (first->currentPp + second->currentPp) >> 1;
@@ -4500,9 +4501,10 @@ static vs_battle_inventoryArmor* _combineShields(vs_battle_inventoryArmor* first
     result->wepId = info->wepId;
     result->category = info->category;
     result->gemSlots = info->gemSlots;
-    result->strength = info->strength + D_8004EDDC[result->material][24];
-    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
-    result->agility = info->agility + D_8004EDDC[result->material][28];
+    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->intelligence =
+        info->intelligence + vs_main_materialModifiers[result->material][26];
+    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     result->maxPp = ((first->maxPp + second->maxPp) >> 1);
     result->currentPp = ((first->currentPp + second->currentPp) >> 1);
@@ -4539,9 +4541,10 @@ static vs_battle_inventoryArmor* _combineArmor(vs_battle_inventoryArmor* first,
     result->id = result->subId + 126;
     info = &_combinationInitData[result->subId];
     result->category = info->category;
-    result->strength = info->strength + D_8004EDDC[result->material][24];
-    result->intelligence = info->intelligence + D_8004EDDC[result->material][26];
-    result->agility = info->agility + D_8004EDDC[result->material][28];
+    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->intelligence =
+        info->intelligence + vs_main_materialModifiers[result->material][26];
+    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     if (first->material == second->material) {
         _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);

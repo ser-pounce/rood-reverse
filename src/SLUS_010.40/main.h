@@ -356,7 +356,7 @@ extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
 extern vs_skill_t vs_main_skills[256];
 extern int D_8004A52C;
-extern char D_8004EDDC[8][30];
+extern char vs_main_materialModifiers[8][30];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];

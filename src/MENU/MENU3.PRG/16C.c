@@ -1147,6 +1147,7 @@ void func_80106BB4(int arg0)
     func_800FBB8C(7);
 }
 
+// https://decomp.me/scratch/T9DYj
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106C94);
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107148);
@@ -1180,7 +1181,6 @@ void func_80108518(int arg0)
     int temp_lo_2;
     int temp_s1_2;
     int var_s2;
-    int var_v0;
     vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
 
     switch (arg0) {

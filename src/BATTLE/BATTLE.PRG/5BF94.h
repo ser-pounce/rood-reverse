@@ -25,12 +25,12 @@ enum vs_battle_warlockSpellIds_e {
 
 typedef struct {
     char state;
-    char w;
+    u_char w;
     char unk2;
     char unk3;
     char unk4;
     char unk5;
-    signed char selected;
+    char selected;
     char unk7;
     char unk8;
     char icon;
@@ -38,9 +38,9 @@ typedef struct {
     char unkB;
     char material;
     char itemState;
-    short unkE;
-    short unk10;
-    short unk12;
+    u_short unkE;
+    u_short unk10;
+    u_short unk12;
     short initialX;
     short y;
     short targetX;

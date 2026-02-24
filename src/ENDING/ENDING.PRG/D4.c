@@ -66,7 +66,7 @@ extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
 
-// https://decomp.me/scratch/xHta5
+// https://decomp.me/scratch/Y9v8c
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);

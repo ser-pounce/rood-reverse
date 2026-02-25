@@ -12,12 +12,14 @@
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "../../assets/MENU/ITEMNAME.BIN.h"
+#include "gpu.h"
 #include <libetc.h>
 #include <limits.h>
 
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
+void func_800FFE20(int, int, int, u_long*);
 
 static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
     SHRT_MAX };
@@ -28,7 +30,11 @@ extern u_long* D_1F800000[];
 
 extern int D_80102034;
 extern int D_801020F4;
+extern char* D_801020FC[];
 extern u_char D_801020F8;
+extern char* D_80102104[];
+extern char D_80102130;
+extern u_char D_80102131;
 extern u_short D_80102132;
 extern char D_8010213C;
 extern char D_8010213D;
@@ -37,10 +43,12 @@ extern u_short _maxDp;
 extern u_short _currentPp;
 extern u_short _maxPp;
 extern char D_80102480[];
-extern u_short D_80102488[];
+extern short D_80102488[];
+extern short D_8010248E;
 extern char D_80102490[8];
-extern u_short D_80102498[];
+extern short D_80102498[];
 extern char D_801024A1;
+extern short D_801024AE;
 
 void func_800FA448(void)
 {
@@ -385,13 +393,12 @@ void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3)
 
 void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int arg3)
 {
-    vs_mainMenu_strIntAgi[0].strength = strength;
-    vs_mainMenu_strIntAgi[0].intelligence = intelligence;
-    vs_mainMenu_strIntAgi[0].agility = agility;
-    vs_mainMenu_strIntAgi[0].unk6 = arg3;
+    vs_mainMenu_strIntAgi[0] = strength;
+    vs_mainMenu_strIntAgi[1] = intelligence;
+    vs_mainMenu_strIntAgi[2] = agility;
+    vs_mainMenu_strIntAgi[3] = arg3;
     vs_mainMenu_setRangeRisk(0, 0, 0, 0);
-    vs_battle_memcpy(&vs_mainMenu_strIntAgi[1], &vs_mainMenu_strIntAgi[0],
-        sizeof vs_mainMenu_strIntAgi[0]);
+    vs_battle_memcpy(&vs_mainMenu_strIntAgi[4], &vs_mainMenu_strIntAgi[0], 8);
 }
 
 void func_800FBD80(int arg0)
@@ -420,7 +427,91 @@ void func_800FBD80(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", vs_battle_renderEquipStats);
+// arg0: 0 = render, 1 = slide in, 2 = slide out
+void vs_mainMenu_renderEquipStats(int arg0)
+{
+    int temp_fp;
+    int temp_s0;
+    int var_a3;
+    int statName;
+    int i;
+    u_long* temp_s4;
+    int position;
+    vs_battle_actor2* actor;
+
+    position = vs_getXY(248, 126);
+    actor = vs_battle_actors[D_8010248E]->unk3C;
+    temp_s4 = D_1F800000[1] - 6;
+
+    if (arg0 != 0) {
+        if (D_80102130 != arg0) {
+            D_80102130 = arg0;
+            D_80102131 = 0xF - (arg0 * 4);
+        }
+        return;
+    }
+
+    temp_fp = D_801024AE;
+
+    if (D_80102130 == 1) {
+        if (D_80102131 != 0) {
+            position += vs_battle_rowAnimationSteps[D_80102131];
+            --D_80102131;
+        }
+    } else if (D_80102131 == 0) {
+        return;
+    } else {
+        position += ((8 - D_80102131) << 5);
+        --D_80102131;
+    }
+
+    if (D_80102480[3] != 0) {
+        vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
+
+        for (i = 0; i < 2; ++i) {
+            position += vs_getXY(0, 10);
+            vs_battle_renderTextRaw(D_801020FC[i], position, temp_s4);
+            if (temp_fp != 0) {
+                temp_s0 = D_80102480[i];
+                func_800FFE70(temp_s0, position + 28, temp_s4);
+                if (i == 0) {
+                    temp_s0 += actor->unk38 - actor->weapon.range.unk0;
+                }
+                func_800FFE70(temp_s0, position + 60, temp_s4);
+            } else {
+                vs_battle_renderTextRaw("#??", position + 28, temp_s4);
+                vs_battle_renderTextRaw("#??", position + 60, temp_s4);
+            }
+        }
+    } else {
+        position += vs_getXY(0, 20);
+        vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
+    }
+    for (i = 0; i < 3; ++i) {
+        position += vs_getXY(0, 10);
+        statName = ((vs_mainMenu_equipmentSubtype & 7) != 0) * 4;
+        vs_battle_renderTextRaw(
+            D_80102104[vs_mainMenu_equipmentSubtype & 0x18 ? 8 + statName + i
+                                                           : statName + i],
+            position, temp_s4);
+
+        if (temp_fp != 0) {
+            int new_var2;
+            temp_s0 = vs_mainMenu_strIntAgi[i];
+            func_800FFE20(temp_s0, position + 28, vs_mainMenu_strIntAgi[i + 4], temp_s4);
+            new_var2 = temp_s0 + D_80102488[i + 4];
+            temp_s0 += D_80102488[i];
+            var_a3 = temp_fp & 1;
+            if (var_a3 != 0) {
+                var_a3 = D_80102498[i];
+            }
+            func_800FFE20(temp_s0 + var_a3, position + 60, new_var2 + var_a3, temp_s4);
+        } else {
+            vs_battle_renderTextRaw("#??", position + 28, temp_s4);
+            vs_battle_renderTextRaw("#??", position + 60, temp_s4);
+        }
+    }
+}
 
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
@@ -433,9 +524,6 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 void vs_mainMenu_drawDpPpbars(int arg0)
 {
     int temp_s1;
-    int temp_v0_3;
-    int temp_v0_4;
-    int var_s0;
     void* temp_s2 = D_1F800000[1] - 3;
 
     if (arg0 != 0) {
@@ -844,9 +932,9 @@ void vs_mainMenu_setUiWeaponStats(int index)
         vs_mainMenu_setStrIntAgi(
             weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
         vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
-        vs_mainMenu_strIntAgi[1].strength = weapon->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = weapon->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = weapon->baseAgility;
+        vs_mainMenu_strIntAgi[4] = weapon->baseStr;
+        vs_mainMenu_strIntAgi[5] = weapon->baseInt;
+        vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
     }
     vs_mainMenu_equipmentSubtype = 1;
     D_801024A1 = index;
@@ -910,9 +998,9 @@ void func_800FD5A0(int index)
             shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
         vs_mainMenu_setStrIntAgi(
             shield->currentStr, shield->currentInt, shield->currentAgility, 1);
-        vs_mainMenu_strIntAgi[1].strength = shield->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = shield->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = shield->baseAgility;
+        vs_mainMenu_strIntAgi[4] = shield->baseStr;
+        vs_mainMenu_strIntAgi[5] = shield->baseInt;
+        vs_mainMenu_strIntAgi[6] = shield->baseAgility;
     }
     vs_mainMenu_equipmentSubtype = 8;
     D_801024A1 = index;
@@ -944,9 +1032,9 @@ void func_800FD700(int index)
         vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
         vs_mainMenu_setStrIntAgi(
             armor->currentStr, armor->currentInt, armor->currentAgility, var_s2 + 1);
-        vs_mainMenu_strIntAgi[1].strength = armor->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = armor->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = armor->baseAgility;
+        vs_mainMenu_strIntAgi[4] = armor->baseStr;
+        vs_mainMenu_strIntAgi[5] = armor->baseInt;
+        vs_mainMenu_strIntAgi[6] = armor->baseAgility;
     }
     if (var_s2 != 0) {
         vs_mainMenu_equipmentSubtype = 0x20;

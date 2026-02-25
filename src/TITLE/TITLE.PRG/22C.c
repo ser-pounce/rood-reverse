@@ -623,7 +623,7 @@ static void _packageGameSaveData(int targetFile)
     savedata_unk180_t* s5 = &savedata->unk180;
 
     vs_main_gametime.all = 0;
-    vs_main_settings.unk2 &= 0xFFDF;
+    vs_main_settings.menuFlags &= 0xFFDF;
     vs_main_stateFlags.puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
     memset(savedata, 0, sizeof(*savedata));
     ((char*)&savedata->fileInfo.key)[0] = 0x53;
@@ -4571,7 +4571,7 @@ static void _initEnvironment(void)
     vibrationOn = vs_main_settings.vibrationOn;
     monoSound = vs_main_settings.monoSound;
     memset(&vs_main_settings, 0, sizeof(vs_main_settings));
-    vs_main_settings.unk2 = 0x2D8;
+    vs_main_settings.menuFlags = 0x2D8;
     vs_main_settings.information = 1;
     vs_main_settings.simpleMap = 3;
     vs_main_settings.unk0_4 = 1;

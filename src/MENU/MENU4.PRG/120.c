@@ -56,9 +56,9 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
         vs_mainMenu_setStrIntAgi(
             weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
 
-        vs_mainMenu_strIntAgi[1].strength = weapon->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = weapon->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = weapon->baseAgility;
+        vs_mainMenu_strIntAgi[4] = weapon->baseStr;
+        vs_mainMenu_strIntAgi[5] = weapon->baseInt;
+        vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
         vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
@@ -87,9 +87,9 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
             shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
         vs_mainMenu_setStrIntAgi(
             shield->currentStr, shield->currentInt, shield->currentAgility, 1);
-        vs_mainMenu_strIntAgi[1].strength = shield->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = shield->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = shield->baseAgility;
+        vs_mainMenu_strIntAgi[4] = shield->baseStr;
+        vs_mainMenu_strIntAgi[5] = shield->baseInt;
+        vs_mainMenu_strIntAgi[6] = shield->baseAgility;
     }
     func_800FBB8C(7);
 }
@@ -120,9 +120,9 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
         vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
         vs_mainMenu_setStrIntAgi(
             armor->currentStr, armor->currentInt, armor->currentAgility, 1);
-        vs_mainMenu_strIntAgi[1].strength = armor->baseStr;
-        vs_mainMenu_strIntAgi[1].intelligence = armor->baseInt;
-        vs_mainMenu_strIntAgi[1].agility = armor->baseAgility;
+        vs_mainMenu_strIntAgi[4] = armor->baseStr;
+        vs_mainMenu_strIntAgi[5] = armor->baseInt;
+        vs_mainMenu_strIntAgi[6] = armor->baseAgility;
     }
     func_800FBB8C(7);
 }
@@ -1076,7 +1076,7 @@ static void func_80104C0C(int selectedRow, int arg1)
 {
     _animateEquipmentDetailTransition(selectedRow);
     vs_mainMenu_drawClassAffinityType(arg1);
-    vs_battle_renderEquipStats(1);
+    vs_mainMenu_renderEquipStats(1);
 }
 
 static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
@@ -1172,7 +1172,7 @@ static void _exitEquipmentDetail(int arg0)
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     vs_mainMenu_menuItemLeaveLeft(0);
     vs_mainMenu_drawClassAffinityType(-1);
-    vs_battle_renderEquipStats(2);
+    vs_mainMenu_renderEquipStats(2);
     if (arg0 != 0) {
         vs_mainMenu_drawDpPpbars(4);
     }
@@ -1897,7 +1897,7 @@ int vs_menu4_exec(char* state)
         if (animWait != 0) {
             --animWait;
             _drawHitLocationStatuses(-1);
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
         } else {
             _printSelectedLocationCondition();
             *state = 5;
@@ -1913,7 +1913,7 @@ int vs_menu4_exec(char* state)
             if (func_80103744(0) != 0) {
                 animWait = 0;
                 _drawHitLocationStatuses(-1);
-                vs_battle_renderEquipStats(1);
+                vs_mainMenu_renderEquipStats(1);
                 userInput = _selectedElement;
                 if (userInput < VS_status_INDEX_statDesc) {
                     bodyParts = _getHitLocationCount(_selectedActor - 1) - 1;
@@ -1941,7 +1941,7 @@ int vs_menu4_exec(char* state)
                                    < _getHitLocationCount(_selectedActor - 1))
                                != 0)) {
                     vs_battle_playMenuSelectSfx();
-                    vs_battle_renderEquipStats(2);
+                    vs_mainMenu_renderEquipStats(2);
                     _drawHitLocationStatuses(-2);
                     animWait = 8;
                     *state = viewEquipment;
@@ -2070,7 +2070,7 @@ int vs_menu4_exec(char* state)
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
-                vs_battle_renderEquipStats(2);
+                vs_mainMenu_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
                 func_80103744(userInput + bodyParts);
                 animWait = 1;
@@ -2089,7 +2089,7 @@ int vs_menu4_exec(char* state)
                 _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->unk3C, 0);
                 animWait = 0;
                 _drawHitLocationStatuses(-1);
-                vs_battle_renderEquipStats(1);
+                vs_mainMenu_renderEquipStats(1);
             }
         } else {
             if (_drawHitLocationStatuses(-3) == 2) {
@@ -2122,7 +2122,7 @@ int vs_menu4_exec(char* state)
             if (userInput != (_selectedActor - 1)) {
                 D_801080A4 = _selectedActor;
                 _drawHitLocationStatuses(-2);
-                vs_battle_renderEquipStats(2);
+                vs_mainMenu_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
                 func_80103744(userInput + bodyParts);
                 animWait = 1;
@@ -2221,7 +2221,7 @@ int vs_menu4_exec(char* state)
         break;
     case waitQuitToMenu:
     case waitQuitToBattle:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _drawHitLocationStatuses(-2);
         _drawHitLocationStatuses(0);
         _initEquipmentScreen(0);

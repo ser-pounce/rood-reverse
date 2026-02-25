@@ -122,7 +122,7 @@ typedef struct {
     u_char weaponStatChange : 1;
     u_char armorStatChange : 1;
     char cursorMemory;
-    short unk2;
+    u_short menuFlags;
     u_int slotState;
     char information;
     char simpleMap;
@@ -398,7 +398,6 @@ extern char vs_main_skillsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern int vs_main_startState;
-extern u_short D_80060022;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;

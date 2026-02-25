@@ -145,7 +145,7 @@ void func_80102D1C(int arg0, int arg1)
     D_8010A6BB = 0;
     func_80102CBC(arg0);
     vs_mainMenu_drawClassAffinityType(arg1);
-    vs_battle_renderEquipStats(1);
+    vs_mainMenu_renderEquipStats(1);
 }
 
 void func_80102D6C(int id, char** menuText, u_int rowType, int arg3)
@@ -180,7 +180,7 @@ void func_80102E54(int arg0)
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     vs_mainMenu_menuItemLeaveLeft(-1);
     vs_mainMenu_drawClassAffinityType(-1);
-    vs_battle_renderEquipStats(2);
+    vs_mainMenu_renderEquipStats(2);
     D_8010A6BF = 2;
     D_8010A6C0 = vs_main_buttonsPressed.all & PADRup;
     if (arg0 != 0) {

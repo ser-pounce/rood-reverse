@@ -581,7 +581,7 @@ int func_800CACD0(int arg0, int arg1)
             D_800EB9AD = -1;
             func_8007E180(6);
             temp_v0 = vs_main_allocHeapR(0xB24);
-            var_a1 = D_80060022;
+            var_a1 = vs_main_settings.menuFlags;
             vs_battle_stringBuf = temp_v0 + 0xA00;
             vs_battle_menuItems = temp_v0;
             vs_battle_rowTypeBuf = temp_v0 + 0xA60;
@@ -601,7 +601,7 @@ int func_800CACD0(int arg0, int arg1)
             if (vs_main_stateFlags.introState >= 3) {
                 var_a1 |= 0x120;
             }
-            D_80060022 = var_a1;
+            vs_main_settings.menuFlags = var_a1;
             func_800C930C(2);
         }
         return 1;

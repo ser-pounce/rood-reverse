@@ -106,7 +106,7 @@ static void _initMenuItem(int textOffset, int icon)
     }
 
     vs_mainMenu_drawDpPpbars(a0);
-    vs_battle_renderEquipStats(1);
+    vs_mainMenu_renderEquipStats(1);
 }
 
 static void _copyMenuItem(int source, int target)
@@ -360,7 +360,7 @@ static int _leaveItemSlotSelection(int arg0)
 
     if (arg0 != 0) {
         vs_mainMenu_drawClassAffinityType(-1);
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         vs_mainMenu_drawDpPpbars(4);
     }
 
@@ -1400,7 +1400,7 @@ static int _assembleMenu(int arg0)
         }
         return _leaveAssembleMenu();
     case 6:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _confirmCombine(3);
         vs_mainmenu_setMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
@@ -1422,7 +1422,7 @@ static int _assembleMenu(int arg0)
             state = 8;
             break;
         case 2:
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
             state = itemSlot;
             break;
         case 3:
@@ -1631,7 +1631,7 @@ static int _attachGemsMenu(int arg0)
             }
             vs_mainMenu_drawClassAffinityType(7);
             vs_mainMenu_drawDpPpbars(3);
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
 
             *(int*)D_8010BC28 = 0;
             for (itemInfo = 0; itemInfo < gemSlots; ++itemInfo) {
@@ -1803,7 +1803,7 @@ static int _attachGemsMenu(int arg0)
         }
         break;
     case 7:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _confirmCombine(3);
         vs_mainmenu_setMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
@@ -1825,7 +1825,7 @@ static int _attachGemsMenu(int arg0)
             return 1;
         case 2:
             vs_battle_playMenuLeaveSfx();
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
             state = 5;
             break;
         case 3:
@@ -2917,7 +2917,7 @@ static int _combineBladeMenu(int arg0)
         state = 1;
         break;
     case 4:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _confirmCombine(2);
         var_s1 = 0;
 
@@ -2971,7 +2971,7 @@ static int _combineBladeMenu(int arg0)
             return state != 6;
         case 2:
             vs_battle_playMenuLeaveSfx();
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
             state = 2;
             break;
         case 3:
@@ -3005,9 +3005,9 @@ static void _setShieldUi(vs_battle_inventoryShield* shield)
 
     vs_mainMenu_setDpPp(base->currentDp, base->maxDp, 0, 0);
     vs_mainMenu_setStrIntAgi(base->strength, base->intelligence, base->agility, 1);
-    vs_mainMenu_strIntAgi[1].strength = base->strength;
-    vs_mainMenu_strIntAgi[1].intelligence = base->intelligence;
-    vs_mainMenu_strIntAgi[1].agility = base->agility;
+    vs_mainMenu_strIntAgi[4] = base->strength;
+    vs_mainMenu_strIntAgi[5] = base->intelligence;
+    vs_mainMenu_strIntAgi[6] = base->agility;
     vs_mainMenu_equipmentSubtype = 8;
 }
 
@@ -3409,7 +3409,7 @@ static int _combineShieldMenu(int arg0)
         }
         break;
     case 4:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _confirmCombine(2);
         var_s1 = 0;
 
@@ -3468,7 +3468,7 @@ static int _combineShieldMenu(int arg0)
             return state != 6;
         case 2:
             vs_battle_playMenuLeaveSfx();
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
             state = temp_s2;
             break;
         case 3:
@@ -3543,9 +3543,9 @@ static void _initCombineArmor(int arg0)
             vs_mainMenu_setStrIntAgi(
                 armor->strength, armor->intelligence, armor->agility, 1);
             vs_mainMenu_equipmentSubtype = 0x10;
-            vs_mainMenu_strIntAgi[1].strength = armor->strength;
-            vs_mainMenu_strIntAgi[1].intelligence = armor->intelligence;
-            vs_mainMenu_strIntAgi[1].agility = armor->agility;
+            vs_mainMenu_strIntAgi[4] = armor->strength;
+            vs_mainMenu_strIntAgi[5] = armor->intelligence;
+            vs_mainMenu_strIntAgi[6] = armor->agility;
         }
     } else if (var_s2 & arg0) {
         func_800FD700(D_8010BD7C[temp_v1]);
@@ -3883,7 +3883,7 @@ static int _combineArmorMenu(int arg0)
         state = 1;
         break;
     case 4:
-        vs_battle_renderEquipStats(2);
+        vs_mainMenu_renderEquipStats(2);
         _confirmCombine(2);
 
         var_s1 = 0;
@@ -3934,7 +3934,7 @@ static int _combineArmorMenu(int arg0)
             return 1;
         case 2:
             vs_battle_playMenuLeaveSfx();
-            vs_battle_renderEquipStats(1);
+            vs_mainMenu_renderEquipStats(1);
             state = temp_v0_6;
             break;
         case 3:

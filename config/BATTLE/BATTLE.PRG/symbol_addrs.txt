@@ -927,4 +927,3 @@ D_800F4FDB = 0x800F4FDB;
 vs_battle_stringContext = 0x800F5168; // size:0x38
 vs_battle_menuState = 0x800F51C0;
 vs_battle_executeAbilityType = 0x800F51C2;
-vs_battle_renderEquipStats = 0x800FBEA4;

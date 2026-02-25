@@ -238,6 +238,6 @@ void func_80101F38(void)
     }
     func_80100164();
     vs_mainMenu_drawClassAffinityType(0);
-    vs_battle_renderEquipStats(0);
+    vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_drawDpPpbars(0);
 }

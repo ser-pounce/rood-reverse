@@ -235,7 +235,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7010);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C70F8);
 
-void func_800C7210(char arg0)
+void func_800C7210(int arg0)
 {
     D_800F4CB9 = 0;
     D_800F4CBC = 0x180;
@@ -747,7 +747,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_encode);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCCB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCD00);
+void func_800CCD00(int arg0, u_long* arg1)
+{
+    u_long* temp_v1;
+
+    temp_v1 = D_1F800000[0];
+    temp_v1[0] = (int)((*arg1 & 0xFFFFFF) | 0x01000000);
+    temp_v1[1] = arg0;
+    *arg1 = (u_int)((int)temp_v1 << 8) >> 8;
+    D_1F800000[0] = temp_v1 + 2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_drawCursor);
 
@@ -772,8 +781,6 @@ void func_800CCF08(
     int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7)
 {
     D_800F4FE0_t* temp_t0;
-    int temp_v1;
-    u_int temp_a0;
 
     temp_t0 = &D_800F4FE0[arg0];
     temp_t0->unk0.value = (arg1 & 0xFFFF) | 0x20000000;

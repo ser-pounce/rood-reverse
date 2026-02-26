@@ -27,7 +27,6 @@
 int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
-void func_800FFE20(int, int, int, u_long*);
 
 static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
     SHRT_MAX };
@@ -38,6 +37,10 @@ extern u_long* D_1F800000[];
 
 extern int D_80102034;
 extern char D_80102060;
+extern char* D_80102068[];
+extern int D_801020B4[];
+extern char D_801020D4[];
+extern int D_801020C4[];
 extern int D_801020F4;
 extern char* D_801020FC[];
 extern u_char D_801020F8;
@@ -64,6 +67,9 @@ extern char D_80102490[8];
 extern short D_80102498[];
 extern char D_801024A1;
 extern short D_801024AE;
+extern short D_801024E0[];
+extern short D_80102502;
+extern short D_8010253E;
 
 extern int (*_submenuEntrypoints[])(char*);
 
@@ -462,7 +468,6 @@ void func_800FAEBC(int arg0)
     int var_s5;
     int* temp_fp;
     char** temp_s7;
-    int temp_s1;
     int temp_v0_3;
     u_int var_a0;
     void* temp_s6;
@@ -589,7 +594,205 @@ void func_800FAEBC(int arg0)
 
 INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", D_800F9814);
 
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FB3C8);
+static inline int inline_fn(int a0, int a1, int a2) { return (a0 - (a1 - a2)) & 0xFFFF; }
+
+void func_800FB3C8(int arg0)
+{
+    int sp10;
+    int sp14;
+    int sp18;
+    int sp1C;
+    short* sp20;
+    short* sp24;
+    int sp28;
+    short* var_s7;
+    int temp_a0;
+    int temp_a0_2;
+    int i;
+    int i_2;
+    int j;
+    int temp_v0_2;
+    int temp_v0_3;
+    int temp_v1_3;
+    int var_s6;
+    u_long* var_a2_2;
+    u_long* temp_s4;
+    int a0;
+
+    temp_s4 = D_1F800000[1] - 3;
+    sp10 = D_801024B9;
+
+    switch (sp10) {
+    case 0:
+        var_s7 = vs_mainMenu_equipmentStats;
+        sp20 = &var_s7[8];
+        sp24 = &var_s7[0x30];
+        sp18 = 0x60;
+        break;
+    case 1:
+        var_s7 = D_801024E0;
+        sp20 = &D_801024E0[8];
+        sp24 = &D_801024E0[0x28];
+        sp18 = 0x70;
+        sp1C = D_801024E0[0];
+        for (i = 0; i < 7; ++i) {
+            if (sp1C < D_801024E0[i]) {
+                sp1C = D_801024E0[i];
+            }
+        }
+        break;
+    case 2:
+        var_s7 = &D_80102502;
+        sp20 = &D_80102502;
+        sp18 = 0x30;
+        break;
+    }
+
+    for (var_s6 = 0; var_s6 < sp18; var_s6 += 0x10) {
+
+        sp14 = (arg0 + 0x74) & 0xFFFF;
+        sp28 = (arg0 + 0x58) & 0xFFFF;
+
+        j = var_s6 >> 4;
+
+        if (D_8010253E != 0) {
+            if ((D_80102544 == 7) && (sp10 != 2)) {
+                i = func_800FFE20(var_s7[j] - sp24[j],
+                    ((arg0 + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
+                if (var_s7[j] > sp24[j]) {
+                    vs_battle_renderTextRawColor("#+", i + 1, 0x804020, temp_s4);
+                }
+                if (var_s7[j] == sp24[j]) {
+                    vs_battle_renderTextRawColor("#*", i + 1, 0x808080, temp_s4);
+                }
+            }
+        }
+
+        i = 0x808080;
+        a0 = vs_mainMenu_equipmentSubtype;
+
+        if ((a0 == 1) && ((D_80102544 == 7) && (sp10 != 0))) {
+            if (sp10 == a0) {
+                if (sp20[j] != var_s7[j]) {
+                    if (sp20[j] < var_s7[j]) {
+                        i = 0x804020;
+                    } else {
+                        i = 0x204080;
+                    }
+                } else {
+                    i = 0x808080;
+                    if (sp20[j] != sp1C) {
+                        i = 0x404040;
+                    }
+                }
+                vs_mainMenu_printIntColor(
+                    var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), i, temp_s4);
+                i = 0x404040;
+                if (var_s7[j] == sp1C) {
+                    i = 0x808080;
+                    sp1C = 0xFFFF;
+                }
+            } else {
+                if (j != (D_80102508 - 1)) {
+                    i = 0x404040;
+                }
+                vs_mainMenu_printIntColor(
+                    var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), i, temp_s4);
+            }
+        } else {
+            func_800FFE20(
+                var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), sp20[j], temp_s4);
+        }
+        vs_battle_renderTextRawColor(D_80102068[j + (sp10 * 8)],
+            ((arg0 + 0x40) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), i, temp_s4);
+        func_800CCCB8(temp_s4, 0x40D0E030, sp14 | ((var_s6 + 0x42) << 0x10),
+            sp14 | ((var_s6 + 0x45) << 0x10));
+        func_800CCCB8(temp_s4, 0x40978918, sp14 | (0x400000 + var_s6 * 0x10000),
+            sp14 | ((var_s6 + 0x47) << 0x10));
+        j = (var_s7[j] * 0x18) / 100;
+
+        if (j > 0x18) {
+            j = 0x18;
+        }
+        if (j < -0x18) {
+            j = -0x18;
+        }
+
+        if (j >= 0) {
+            for (i = 0; i < 4; ++i) {
+                temp_v0_2 = (var_s6 + i + 0x42) << 0x10;
+                func_800CCCB8(temp_s4, D_801020B4[i], sp14 | temp_v0_2,
+                    ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_2);
+                if (j == (0x18 - i)) {
+                    --j;
+                }
+            }
+        } else {
+            for (i = 0; i < 4; ++i) {
+                temp_v0_3 = ((var_s6 - i) + 0x45) << 0x10;
+                func_800CCCB8(temp_s4, D_801020C4[i], sp14 | temp_v0_3,
+                    ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_3);
+                if (j == (i - 0x18)) {
+                    j = i - 0x17;
+                }
+            }
+        }
+
+        for (j = 2; j < 6; ++j) {
+            func_800CCCB8(temp_s4, 0x40330500,
+                inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
+                inline_fn(arg0, j, 0x8E) | ((var_s6 + j + 0x40) << 0x10));
+        }
+
+        for (j = 0; j < 8; ++j) {
+            func_800CCCB8(temp_s4, 0x405D3200,
+                inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
+                inline_fn(arg0, j, 0x91) | ((var_s6 + j + 0x40) << 0x10));
+        }
+
+        func_800CCD00(0xE1000000, temp_s4);
+        var_a2_2 = D_1F800000[0];
+
+        for (j = 0; j < 11; ++j) {
+            temp_a0 = var_s6 + j;
+            temp_v1_3 = j - 0x60;
+            temp_a0_2 = (temp_a0 + 0x40) << 0x10;
+            var_a2_2[0] = (*temp_s4 & 0xFFFFFF) | 0x04000000;
+            var_a2_2[1] = 0x50330500;
+            var_a2_2[2] = ((arg0 & 0xFFFF) | temp_a0_2);
+            var_a2_2[3] = 0x5D3200;
+            var_a2_2[4] = (((arg0 - temp_v1_3) & 0xFFFF) | temp_a0_2);
+            *temp_s4 = ((u_long)var_a2_2 << 8) >> 8;
+            var_a2_2 += 5;
+        }
+
+        D_1F800000[0] = var_a2_2;
+        func_800CCD00(0xE1000200, temp_s4);
+    }
+
+    vs_mainMenu_drawButtonUiBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
+    vs_mainmenu_drawButton(1, arg0 + 0x10, 0x2E, temp_s4 - 1);
+
+    arg0 = (arg0 & 0xFFFF) + 0x22;
+
+    for (j = 0; j < 3; ++j) {
+        D_801020D4[(0x180B01 >> (j * 8)) & 0xFF] = ((D_80102544 >> j) & 1) ? 0 : 3;
+    }
+
+    D_801020D4[(0x180B01 >> (D_801024B9 * 8)) & 0xFF] = 1;
+
+    for (i_2 = 0; i_2 < 0x1D; ++i_2) {
+        i = D_801020D4[i_2];
+        if (i == 0xFB) {
+            ++i_2;
+            func_800C7210(D_801020D4[i_2] + 4);
+        } else {
+            arg0 = func_800C70F8(i, arg0, 0x30, temp_s4 - 4);
+        }
+    }
+}
+
+INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", D_800F98A8);
 
 int func_800FBB64(int arg0)
 {

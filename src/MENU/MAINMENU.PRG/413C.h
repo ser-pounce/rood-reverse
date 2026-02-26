@@ -28,6 +28,7 @@ void vs_mainMenu_rebuildInventory(int);
 void func_800FFBC8(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(u_int, int);
+int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);
 void func_800FFE70(int, int, u_long*);
 void func_800FFF38(int arg0, int arg1);
 void func_800FFFBC(int arg0, int arg1);

@@ -1206,7 +1206,7 @@ int vs_mainMenu_printIntColor(int arg0, int arg1, int arg2, u_long* arg3)
     return arg1;
 }
 
-void func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
+int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
 {
     int var_a2;
 
@@ -1217,7 +1217,7 @@ void func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
     if (arg0 < arg2) {
         var_a2 = 0x204080;
     }
-    vs_mainMenu_printIntColor(arg0, arg1, var_a2, arg3);
+    return vs_mainMenu_printIntColor(arg0, arg1, var_a2, arg3);
 }
 
 void func_800FFE70(int arg0, int arg1, u_long* arg2)

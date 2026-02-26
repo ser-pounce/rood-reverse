@@ -1,6 +1,7 @@
 #include "common.h"
 #include "C48.h"
 #include "413C.h"
+#include "8170.h"
 #include "../SLUS_010.40/main.h"
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"
@@ -10,6 +11,13 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "../MENU2.PRG/143C.h"
+#include "../MENU7.PRG/260.h"
+#include "../MENU8.PRG/21A0.h"
+#include "../MENUB.PRG/260.h"
+#include "../MENUC.PRG/168.h"
+#include "../MENUD.PRG/234.h"
+#include "../MENUF.PRG/3B8.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "../../assets/MENU/ITEMNAME.BIN.h"
 #include "gpu.h"
@@ -49,6 +57,8 @@ extern char D_80102490[8];
 extern short D_80102498[];
 extern char D_801024A1;
 extern short D_801024AE;
+
+extern int (*_submenuEntrypoints[])(char*);
 
 void func_800FA448(void)
 {
@@ -318,8 +328,125 @@ int func_800FAA5C(int arg0)
     return 1;
 }
 
-// https://decomp.me/scratch/b42Kb
-INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FAAC8);
+void func_800FAAC8(int arg0)
+{
+    int selectedMenu;
+    int temp_s5;
+    int var_s0;
+    char* temp_s3;
+    int temp_v1;
+    vs_battle_menuState_t* ptr = &vs_battle_menuState;
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
+    int var_s4 = 0;
+    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+
+    D_80102470 = inventory->weapons;
+    D_80102464 = inventory->blades;
+    D_80102460 = inventory->grips;
+    D_8010246C = inventory->shields;
+    D_80102468 = inventory->armor;
+    D_80102458 = inventory->gems;
+
+    temp_s3 = &D_800F4E70[arg0 & 0xF];
+    temp_s5 = func_800C8C50(arg0);
+    selectedMenu = arg0 & 0x3F;
+
+    if (selectedMenu != 0) {
+        if (selectedMenu == 31) {
+            var_s4 = func_800FAA20();
+        } else if (D_800F4EA0 & 0x200) {
+            if (temp_s5 != 0) {
+                if (selectedMenu == 15) {
+                    var_s4 = func_80102BB8(temp_s3);
+                } else if (selectedMenu == 3) {
+                    var_s4 = vs_menu2_skillUnlock(temp_s3);
+                } else if (selectedMenu == 14) {
+                    var_s4 = func_80108C6C(temp_s3);
+                } else if (selectedMenu == 8) {
+                    var_s4 = vs_menu8_execRename(temp_s3);
+                } else if (selectedMenu == 13) {
+                    var_s4 = vs_menuC_exec(temp_s3);
+                } else if (selectedMenu == 12) {
+                    var_s4 = func_80109E90(temp_s3);
+                } else if (selectedMenu == 7 && (D_800F4EA0 & 0x400)) {
+                    var_s4 = vs_menu7_saveContainerMenu(temp_s3);
+                } else if (selectedMenu == 7 && vs_main_stateFlags.gameOver == 1) {
+                    var_s4 = vs_menu7_gameOver(temp_s3);
+                } else {
+                    D_800F4EA0 = 0;
+                }
+            }
+        } else {
+            temp_v1 = *temp_s3;
+            switch (temp_v1) {
+            case 0:
+                if (!(arg0 & 0x40)) {
+                    var_s0 = 0;
+                    if (selectedMenu == 1) {
+                        var_s0 = (D_800F4EA0 & 0xB7) != 0;
+                    }
+                    if (selectedMenu == 2) {
+                        var_s0 = (D_800F4EA0 & 0x15F) != 0;
+                    }
+                    vs_battle_setMenuItem(selectedMenu - 1, 0x140, 0x12, 0x8C, 8,
+                        (char*)&vs_battle_menuStrings[vs_battle_menuStrings[selectedMenu
+                                                                            - 1]])
+                        ->unk7 = var_s0;
+                }
+                if (((selectedMenu - 4) < 2U) || (selectedMenu == 7)
+                    || (selectedMenu == 9)) {
+                    func_800FFB68(1);
+                }
+                func_800FFA88(2);
+                vs_mainMenu_clearMenuExcept(selectedMenu - 1);
+                menuItem->state = 2;
+                menuItem->targetX = 0xB4;
+                menuItem->selected = 1;
+                if (selectedMenu == 5) {
+                    func_80100414(-2, 0x80);
+                    menuItem->targetX = 0x140;
+                }
+                *temp_s3 = 1;
+                break;
+            case 1:
+                var_s0 = menuItem->state;
+                if (var_s0 == temp_v1) {
+                    menuItem->state = 3;
+                    menuItem->targetX = 0x12;
+                    if (selectedMenu == 5) {
+                        menuItem = vs_battle_setMenuItem(4, 0x140, 0x12, 0x8C, 8,
+                            vs_battle_characterState->unk3C->name);
+                        menuItem->state = 2;
+                        menuItem->targetX = 0xB4;
+                        menuItem->selected = var_s0;
+                    }
+                    *temp_s3 = 3;
+                default:
+                    if (temp_s5 != 0) {
+                        var_s4 = _submenuEntrypoints[selectedMenu - 1](temp_s3);
+                    }
+                }
+                break;
+            }
+        }
+    } else {
+        func_800FFA88(1);
+        var_s0 = func_800C930C(0);
+        if (var_s0 != 0) {
+            if (var_s0 > 0)
+                var_s0 |= 0x40;
+            else {
+                var_s0 = 0x1F;
+                func_800FFA88(0);
+            }
+            ptr->currentState = var_s0;
+        }
+    }
+
+    if ((var_s4 == 0) || (func_800FAA5C(ptr->currentState) == 0)) {
+        func_80101F38();
+    }
+}
 
 INCLUDE_ASM("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", func_800FAEBC);
 

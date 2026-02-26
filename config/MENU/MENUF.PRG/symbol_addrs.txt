@@ -1,4 +1,5 @@
 _disFiles = 0x80102AE0;
+func_80102BB8 = 0x80102BB8;
 _loadRankDis = 0x80102D10;
 _loadAttackDis = 0x80103530;
 _loadIqDis = 0x80107A8C;

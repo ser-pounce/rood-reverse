@@ -35,6 +35,7 @@ _displaySortMenu = 0x80105ACC;
 _displayDiscardMenu = 0x80105D24;
 _getWeaponGemCount = 0x80106624;
 _getShieldGemCount = 0x80106684;
+func_80108C6C = 0x80108C6C;
 _containerItemCapacities = 0x80109944;
 _discardAmountFormat = 0x801099F8;
 _discardBulkSteps = 0x80109A04;

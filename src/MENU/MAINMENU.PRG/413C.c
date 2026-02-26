@@ -16,6 +16,7 @@ typedef struct {
     char x;
 } textHeader_t;
 
+extern char D_8010214A;
 extern char* (*D_801021F4[])(int);
 extern char D_80102210;
 extern char D_80102211;
@@ -179,8 +180,6 @@ char* func_800FDD24(void)
 }
 
 void func_800FDD78(void) { D_801024B8 = 9; }
-
-extern char D_8010214A;
 
 int func_800FDD88(int arg0)
 {

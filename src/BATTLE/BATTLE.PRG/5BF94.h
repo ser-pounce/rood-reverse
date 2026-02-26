@@ -117,7 +117,10 @@ typedef struct {
 typedef struct {
     short unk0;
     short unk2;
-    int executeAbility;
+    union {
+        short s16[2];
+        int s32;
+    } executeAbility;
 } D_800F4E98_t;
 
 typedef struct {
@@ -298,5 +301,6 @@ extern char D_800F4FDB;
 extern D_800F4FE0_t D_800F4FE0[];
 extern u_int D_800F5130;
 extern short D_800F514C;
+extern u_char D_800F5210;
 extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;

@@ -952,7 +952,7 @@ int vs_menu0_exec(char* state)
             break;
         }
         if (i > 0) {
-            D_800F4E98.executeAbility = i;
+            D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 6;
             *state = executeArt;
         } else {
@@ -977,7 +977,7 @@ int vs_menu0_exec(char* state)
             break;
         }
         if (i > 0) {
-            D_800F4E98.executeAbility = i;
+            D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 8;
             *state = executeArt;
         } else {
@@ -1002,7 +1002,7 @@ int vs_menu0_exec(char* state)
             break;
         }
         if (i > 0) {
-            D_800F4E98.executeAbility = i;
+            D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 10;
             *state = executeArt;
         } else {
@@ -1027,7 +1027,7 @@ int vs_menu0_exec(char* state)
             break;
         }
         if (i > 0) {
-            D_800F4E98.executeAbility = i;
+            D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 12;
             *state = executeArt;
         } else {
@@ -1045,7 +1045,7 @@ int vs_menu0_exec(char* state)
         }
         if (i > 0) {
             D_800F4E98.unk2 = 0xA;
-            D_800F4E98.executeAbility = i - 1;
+            D_800F4E98.executeAbility.s32 = i - 1;
             *state = exit;
         } else {
             if (i == -2) {

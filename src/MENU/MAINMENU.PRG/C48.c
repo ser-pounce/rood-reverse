@@ -11,12 +11,21 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "../MENU0.PRG/84.h"
+#include "../MENU1.PRG/30.h"
+#include "../MENU2.PRG/64.h"
 #include "../MENU2.PRG/143C.h"
+#include "../MENU3.PRG/16C.h"
+#include "../MENU4.PRG/120.h"
+#include "../MENU5.PRG/4D8.h"
 #include "../MENU7.PRG/260.h"
+#include "../MENU8.PRG/88.h"
 #include "../MENU8.PRG/21A0.h"
+#include "../MENU9.PRG/238.h"
 #include "../MENUB.PRG/260.h"
 #include "../MENUC.PRG/168.h"
 #include "../MENUD.PRG/234.h"
+#include "../MENUE.PRG/494.h"
 #include "../MENUF.PRG/3B8.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "../../assets/MENU/ITEMNAME.BIN.h"
@@ -35,7 +44,6 @@ static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX, 8192 }; // Last o
 
 extern u_long* D_1F800000[];
 
-extern int D_80102034;
 extern char D_80102060;
 extern char* D_80102068[];
 extern int D_801020B4[];
@@ -70,8 +78,6 @@ extern short D_801024AE;
 extern short D_801024E0[];
 extern short D_80102502;
 extern short D_8010253E;
-
-extern int (*_submenuEntrypoints[])(char*);
 
 void func_800FA448(void)
 {
@@ -319,6 +325,20 @@ int vs_mainmenu_ready(void)
     }
     return 1;
 }
+
+extern int D_80102034;
+extern int (*_submenuEntrypoints[])(char*); /* = {
+    vs_menu0_exec,
+    vs_menu1_exec,
+    vs_menu2_exec,
+    vs_menu3_exec,
+    vs_menu4_exec,
+    vs_menu5_exec,
+    vs_menu7_dataMenu,
+    vs_menu8_exec,
+    vs_menu9_exec,
+    vs_menuE_exec
+};*/
 
 int func_800FAA20(void)
 {

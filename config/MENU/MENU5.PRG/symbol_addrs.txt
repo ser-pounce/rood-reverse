@@ -1,5 +1,6 @@
 _sceneArmFiles = 0x80102B00;
 _setMenuItemMapName = 0x80102F30;
+vs_menu5_exec = 0x801030F4;
 _snapMapToRoom = 0x80105B18;
 _setCenterpoint = 0x80105D3C;
 _smoothMapToCenterpoint = 0x80105EC0;

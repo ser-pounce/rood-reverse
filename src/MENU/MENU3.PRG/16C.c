@@ -1277,7 +1277,7 @@ void func_80108518(int arg0)
     }
 }
 
-int func_80108970(char* arg0)
+int vs_menu3_exec(char* arg0)
 {
     int temp_s1;
     int var_s0;

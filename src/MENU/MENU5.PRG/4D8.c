@@ -185,7 +185,7 @@ int _loadMapBackground(int arg0)
     }
 }
 
-int func_801030F4(char* state)
+int vs_menu5_exec(char* state)
 {
     static int D_80108D30;
     static int D_80108D34;

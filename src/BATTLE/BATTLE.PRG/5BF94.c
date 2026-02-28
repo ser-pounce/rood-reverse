@@ -745,7 +745,18 @@ int vs_battle_toBCD(int arg0) { return (arg0 % 10) | ((arg0 / 10) * 16); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_encode);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCCB8);
+void func_800CCCB8(u_long* arg0, int arg1, int arg2, int arg3)
+{
+    u_long* temp_v1;
+
+    temp_v1 = D_1F800000[0];
+    temp_v1[0] = (int)((*arg0 & 0xFFFFFF) | 0x03000000);
+    temp_v1[1] = arg1;
+    temp_v1[2] = arg2;
+    temp_v1[3] = arg3;
+    *arg0 = ((u_long)temp_v1 << 8) >> 8;
+    D_1F800000[0] = temp_v1 + 4;
+}
 
 void func_800CCD00(int arg0, u_long* arg1)
 {

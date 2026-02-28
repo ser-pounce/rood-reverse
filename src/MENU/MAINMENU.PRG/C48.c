@@ -30,6 +30,7 @@
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "../../assets/MENU/ITEMNAME.BIN.h"
 #include "gpu.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <limits.h>
 
@@ -37,32 +38,9 @@ int func_800FA238(int arg0, int arg1, int arg2);
 void func_800FA3FC(int arg0);
 void func_800FB3C8(int);
 
-static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-    SHRT_MAX };
-
-static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX, 8192 }; // Last one junk?
-
 extern u_long* D_1F800000[];
 
-extern char D_80102060;
-extern char* D_80102068[];
-extern int D_801020B4[];
-extern char D_801020D4[];
-extern int D_801020C4[];
-extern int D_801020F4;
-extern char* D_801020FC[];
-extern u_char D_801020F8;
-extern char* D_80102104[];
-extern char D_80102130;
-extern u_char D_80102131;
-extern u_short D_80102132;
-extern char D_8010213C;
-extern char D_8010213D;
 extern char D_80102214[];
-extern u_short _currentDp;
-extern u_short _maxDp;
-extern u_short _currentPp;
-extern u_short _maxPp;
 extern char D_80102410[];
 extern int D_80102450;
 extern char D_80102454;
@@ -121,6 +99,12 @@ void func_800FA570(void)
 
 static int _getEquipmentMaxStats(void* item, u_int itemCategory)
 {
+    static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90,
+        100, SHRT_MAX };
+
+    static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX,
+        8192 }; // Last one junk?
+
     int i;
     int subMaxRank;
     int maxRank;
@@ -326,13 +310,10 @@ int vs_mainmenu_ready(void)
     return 1;
 }
 
-static int D_80102034 = 0;
-static int (*_submenuEntrypoints[])(char*) = { vs_menu0_exec, vs_menu1_exec,
-    vs_menu2_exec, vs_menu3_exec, vs_menu4_exec, vs_menu5_exec, vs_menu7_dataMenu,
-    vs_menu8_exec, vs_menu9_exec, vs_menuE_exec };
-
 int func_800FAA20(void)
 {
+    static int D_80102034 = 0;
+
     int temp_s0 = ++D_80102034;
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     return temp_s0 == 5;
@@ -354,6 +335,10 @@ int func_800FAA5C(int arg0)
 
 void func_800FAAC8(int arg0)
 {
+    static int (*_submenuEntrypoints[])(char*) = { vs_menu0_exec, vs_menu1_exec,
+        vs_menu2_exec, vs_menu3_exec, vs_menu4_exec, vs_menu5_exec, vs_menu7_dataMenu,
+        vs_menu8_exec, vs_menu9_exec, vs_menuE_exec };
+
     int selectedMenu;
     int temp_s5;
     int var_s0;
@@ -474,6 +459,11 @@ void func_800FAAC8(int arg0)
 
 void func_800FAEBC(int arg0)
 {
+#pragma vsstring(start)
+    // Fixed size to force truncation of final (junk) byte
+    static char D_80102060[8] = "MISC\00000|!0|";
+#pragma vsstring(end)
+
     int j;
     int i;
     int var_s5;
@@ -506,7 +496,7 @@ void func_800FAEBC(int arg0)
         break;
     case 1:
         if ((vs_mainmenu_ready() != 0) && (vs_mainMenu_loadItemNames(0) != 0)) {
-            temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 8, &D_80102060);
+            temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 8, D_80102060);
             temp_v0->state = 2;
             temp_v0->targetX = 0xB4;
             temp_v0->selected = 1;
@@ -603,12 +593,19 @@ void func_800FAEBC(int arg0)
     return;
 }
 
-INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", D_800F9814);
-
 static inline int inline_fn(int a0, int a1, int a2) { return (a0 - (a1 - a2)) & 0xFFFF; }
 
 void func_800FB3C8(int arg0)
 {
+    static char const* D_80102068[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
+        "#DRAGON", "#EVIL", NULL, NULL, "#PHYSICAL", "#AIR", "#FIRE", "#EARTH", "#WATER",
+        "#LIGHT", "#DARK", NULL, "#BLUNT", "#EDGED", "#PIERCING" };
+    static int D_801020B4[] = { 0x40817318, 0x40D0E030, 0x40D0E030, 0x40817318 };
+    static int D_801020C4[] = { 0x40693F6E, 0x409F78DC, 0x409F78DC, 0x40693F6E };
+#pragma vsstring(start)
+    static char D_801020D4[] = "|f0|CLASS|f0|/|f0|AFFINITY|f0|/|f0|TYPE";
+#pragma vsstring(end)
+
     int sp10;
     int sp14;
     int sp18;
@@ -792,7 +789,7 @@ void func_800FB3C8(int arg0)
 
     D_801020D4[(0x180B01 >> (D_801024B9 * 8)) & 0xFF] = 1;
 
-    for (i_2 = 0; i_2 < 0x1D; ++i_2) {
+    for (i_2 = 0; i_2 < 29; ++i_2) {
         i = D_801020D4[i_2];
         if (i == 0xFB) {
             ++i_2;
@@ -802,8 +799,6 @@ void func_800FB3C8(int arg0)
         }
     }
 }
-
-INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/C48", D_800F98A8);
 
 int func_800FBB64(int arg0)
 {
@@ -823,6 +818,9 @@ void func_800FBB8C(int arg0)
 
 void vs_mainMenu_drawClassAffinityType(int arg0)
 {
+    static int D_801020F4 = 0;
+    static u_char D_801020F8 = 0;
+
     int var_s1;
     int var_s0;
 
@@ -908,6 +906,13 @@ void func_800FBD80(int arg0)
 // arg0: 0 = render, 1 = slide in, 2 = slide out
 void vs_mainMenu_renderEquipStats(int arg0)
 {
+    static char const* D_801020FC[] = { "#RANGE", "#RISK" };
+    static char const* D_80102104[] = { "#STRENGTH", "#INTELLIGENCE", "#AGILITY", NULL,
+        "#ATTACK/STR", "#ATTACK/INT", "#AGILITY", NULL, "#DEFENSE/STR", "#DEFENSE/INT",
+        "#AGILITY" };
+    static char D_80102130 = 0;
+    static u_char D_80102131 = 0;
+
     int temp_fp;
     int temp_s0;
     int var_a3;
@@ -991,6 +996,12 @@ void vs_mainMenu_renderEquipStats(int arg0)
     }
 }
 
+static u_short D_80102132 = 0;
+static u_short _currentDp = 0;
+static u_short _maxDp = 0;
+static u_short _currentPp = 0;
+static u_short _maxPp = 0;
+
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
     _currentPp = currentPp;
@@ -1001,6 +1012,9 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 
 void vs_mainMenu_drawDpPpbars(int arg0)
 {
+    static char D_8010213C = 1;
+    static char D_8010213D = 0;
+
     int temp_s1;
     void* temp_s2 = D_1F800000[1] - 3;
 
@@ -1166,6 +1180,8 @@ vs_battle_menuItem_t* func_800FC704(int arg0, int arg1, int arg2)
     }
     return menuItem;
 }
+
+static char vs_mainMenu_weaponHands[] = { 0, 0, 1, 0, 1, 0, 1, 1, 1, 0 };
 
 void vs_mainMenu_setWeaponUi(
     vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)

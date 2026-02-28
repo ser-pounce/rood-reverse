@@ -15,47 +15,6 @@ typedef struct {
     char unk14;
     char x;
 } textHeader_t;
-
-extern char D_8010214A;
-extern char* (*D_801021F4[])(int);
-extern char D_80102210;
-extern char D_80102211;
-extern char vs_mainMenu_isLevelledSpell;
-extern u_short* D_801022C8;
-extern int D_801022CC;
-extern char D_801022D0;
-extern char D_801022D1;
-extern char D_801022D2;
-extern char D_801022D3;
-extern char D_801022DC;
-extern short D_801022DE;
-extern short D_801022E0;
-extern char D_801022E2;
-extern char D_801022E3;
-extern int D_801022E4;
-extern u_short D_801022E8[];
-extern int D_801022F8[];
-extern char D_8010231A[];
-extern u_short D_8010237C[];
-extern u_char D_801023BE;
-extern RECT D_801023C0[];
-extern u_short* D_801023D4;
-extern u_char D_801023DC;
-extern char D_801023DD;
-extern char D_801023DF;
-extern char D_801023DE;
-extern u_short D_801023E0;
-extern char D_801023E2;
-extern int _selectedRow;
-extern char D_801023E4;
-extern char* D_801023E8[];
-extern int D_801023F8[];
-extern char D_80102408;
-extern char D_80102409;
-extern char D_801024A0;
-extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
-extern char _itemNamesLoading;
-extern textHeader_t _textHeaders[];
 extern u_long* D_1F800000[];
 
 char* func_800FD93C(u_int arg0)
@@ -181,6 +140,11 @@ char* func_800FDD24(void)
 
 void func_800FDD78(void) { D_801024B8 = 9; }
 
+/* This doesn't seem to be used so it could be a bug in
+ the original data definition and therefore correct to leave
+ as extern and undefined here */
+extern char D_8010214A;
+
 int func_800FDD88(int arg0)
 {
     int var_a0 = 0;
@@ -239,6 +203,25 @@ int func_800FDD88(int arg0)
     }
     return var_a0;
 }
+static char vs_mainMenu_equipmentDetailNavigationMap[][4] = { { 0, 2, 1, 10 },
+    { 1, 2, 1, 0 }, { 1, 3, 2, 11 }, { 2, 4, 3, 12 }, { 3, 5, 4, 13 }, { 4, 6, 5, 14 },
+    { 5, 7, 6, 16 }, { 6, 8, 7, 17 }, { 7, 8, 8, 18 }, { 9, 10, 0, 9 }, { 9, 11, 0, 10 },
+    { 10, 12, 2, 11 }, { 11, 13, 3, 12 }, { 12, 14, 4, 13 }, { 13, 15, 5, 14 },
+    { 14, 16, 5, 15 }, { 15, 17, 6, 16 }, { 16, 18, 7, 17 }, { 17, 19, 8, 18 },
+    { 18, 20, 8, 19 }, { 19, 20, 8, 20 } };
+
+static int D_801021A0[] = { vs_getXY(66, 28), vs_getXY(-4, 28), vs_getXY(0, 50),
+    vs_getXY(0, 66), vs_getXY(0, 82), vs_getXY(0, 98), vs_getXY(0, 114), vs_getXY(0, 130),
+    vs_getXY(0, 146) };
+
+static int vs_mainMenu_mainCursorXY[] = { vs_getXY(141, 10), vs_getXY(148, 26),
+    vs_getXY(148, 42), vs_getXY(155, 58), vs_getXY(155, 74), vs_getXY(155, 90),
+    vs_getXY(180, 24), vs_getXY(192, 126), vs_getXY(192, 136), vs_getXY(152, 146),
+    vs_getXY(152, 156), vs_getXY(152, 166) };
+
+extern char* (*D_801021F4[])(int);
+extern char D_80102210;
+extern char D_80102211;
 
 void func_800FDEBC(void)
 {
@@ -451,6 +434,10 @@ void vs_mainMenu_initItem(int arg0, int arg1)
     }
     }
 }
+
+extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
+extern char _itemNamesLoading;
+extern textHeader_t _textHeaders[];
 
 int vs_mainMenu_loadItemNames(int arg0)
 {
@@ -818,6 +805,40 @@ int func_800FEB94(
     }
     return var_s5;
 }
+
+extern char vs_mainMenu_isLevelledSpell;
+extern u_short* D_801022C8;
+extern int D_801022CC;
+extern char D_801022D0;
+extern char D_801022D1;
+extern char D_801022D2;
+extern char D_801022D3;
+extern char D_801022DC;
+extern short D_801022DE;
+extern short D_801022E0;
+extern char D_801022E2;
+extern char D_801022E3;
+extern int D_801022E4;
+extern u_short D_801022E8[];
+extern int D_801022F8[];
+extern char D_8010231A[];
+extern u_short D_8010237C[];
+extern u_char D_801023BE;
+extern RECT D_801023C0[];
+extern u_short* D_801023D4;
+extern u_char D_801023DC;
+extern char D_801023DD;
+extern char D_801023DF;
+extern char D_801023DE;
+extern u_short D_801023E0;
+extern char D_801023E2;
+extern int _selectedRow;
+extern char D_801023E4;
+extern char* D_801023E8[];
+extern int D_801023F8[];
+extern char D_80102408;
+extern char D_80102409;
+extern char D_801024A0;
 
 void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
 {

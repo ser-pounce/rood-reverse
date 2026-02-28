@@ -1386,7 +1386,7 @@ static int _equipmentDetailScreen(int row)
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
                 _cursorAnimState =
-                    func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY);
+                    func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY[0]);
                 D_801023E3 = 1;
                 func_801013F8(1);
                 return 0;

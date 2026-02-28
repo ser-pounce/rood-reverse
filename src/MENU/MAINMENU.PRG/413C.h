@@ -52,7 +52,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0);
 extern char vs_mainMenu_isLevelledSpell;
 extern char vs_mainMenu_equipmentDetailNavigationMap[][4];
 extern int D_801021A0[];
-extern int vs_mainMenu_mainCursorXY;
+extern int vs_mainMenu_mainCursorXY[];
 extern char D_801022C4;
 extern char D_801022D5;
 extern char D_801023E3;

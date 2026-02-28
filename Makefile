@@ -170,7 +170,7 @@ $(BUILD)/%.o: %.s | $$(@D)/
 
 $(BUILD)/%.o: %.c | $$(@D)/
 	$(ECHO) Compiling $<
-	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
+	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
 	$(CAT) $@.d >> $(BUILD)/$*.d
 	$(RM) $(RMFLAGS) $@.d
 

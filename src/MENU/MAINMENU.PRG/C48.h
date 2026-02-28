@@ -56,10 +56,6 @@ void vs_mainMenu_resetStats(void);
 void func_8010044C(u_int*);
 
 extern char vs_mainMenu_weaponHands[];
-extern char (*vs_mainMenu_itemNames)[24];
-extern char vs_mainMenu_inventoryItemCapacities[];
-extern char* vs_mainMenu_inventoryIndices[];
-extern char D_801023D0;
 extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
 extern short vs_mainMenu_strIntAgi[8];
 extern char D_801024B9;

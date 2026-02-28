@@ -720,9 +720,7 @@ static int _assembleBladeMenu(int params)
             _availableItems[0] = bladeToAssemble;
 
             for (i = 0; i < 16; ++i) {
-
-                char(*p)[40] = &D_800619D8.unk0;
-                itemId = (*p)[i + 8];
+                itemId = D_800619D8.unk8[i];
 
                 if ((itemId != 0) && (itemId != bladeToAssemble)) {
 
@@ -836,7 +834,7 @@ static int _assembleGripMenu(int params)
 
             for (i = 0; i < 16; ++i) {
 
-                itemId = D_800619D8.unk0[i + 0x18];
+                itemId = D_800619D8.unk18[i];
 
                 if ((itemId != 0) && (itemId != gripToAssemble)) {
 
@@ -948,7 +946,7 @@ static int _attachGem(int params)
 
             for (i = 0; i < 48; ++i) {
 
-                itemId = D_800619D8.unk0[i + 0x40];
+                itemId = D_800619D8.unk40[i];
 
                 if ((itemId != 0) && (itemId != gemToAttach)) {
 
@@ -2356,7 +2354,7 @@ static int _repairMenu(int arg0)
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairComplete]);
 
         for (i = 0; i < 16; ++i) {
-            new_var = D_800619D8.unk0[i + 8];
+            new_var = D_800619D8.unk8[i];
             if (new_var != 0) {
                 vs_battle_inventoryBlade* blade =
                     &vs_battle_inventory.blades[new_var - 1];
@@ -2407,7 +2405,7 @@ static int _repairMenu(int arg0)
         }
 
         for (i = 0; i < 16; ++i) {
-            new_var = D_800619D8.unk28[i + 8];
+            new_var = D_800619D8.unk30[i];
             if (new_var != 0) {
                 vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[new_var - 1];
                 if (armor->category != 7) {
@@ -2621,7 +2619,7 @@ static int _selectBlade(int arg0)
         count = 1;
 
         for (i = 0; i < 16; ++i) {
-            itemId = D_800619D8.unk0[i + 8];
+            itemId = D_800619D8.unk8[i];
             if ((itemId != 0) && (itemId != D_8010BD10[0]) && (itemId != D_8010BD10[1])) {
                 int new_var = itemId;
                 blade = &vs_battle_inventory.blades[itemId - 1];
@@ -3117,7 +3115,7 @@ static int _selectShields(int arg0)
             rowType = 1;
 
             for (i = 0; i < 8; ++i) {
-                itemId = D_800619D8.unk0[i + 0x28];
+                itemId = D_800619D8.unk28[i];
                 if ((itemId != 0) && (itemId != _itemsToCombine[0])
                     && (itemId != _itemsToCombine[1])) {
                     shield = &vs_battle_inventory.shields[itemId - 1];
@@ -3598,7 +3596,7 @@ static int _initUiArmor(int arg0)
             var_s4 = 1;
 
             for (i = 0; i < 16; ++i) {
-                itemId = D_800619D8.unk0[i + 0x30];
+                itemId = D_800619D8.unk30[i];
                 if ((itemId != 0) && (itemId != D_8010BD7C[0])
                     && (itemId != D_8010BD7C[1])) {
                     var_s2 = &vs_battle_inventory.armor[itemId - 1];

@@ -40,7 +40,6 @@ void func_800FB3C8(int);
 
 extern u_long* D_1F800000[];
 
-extern char D_80102214[];
 extern char D_80102410[];
 extern int D_80102450;
 extern char D_80102454;

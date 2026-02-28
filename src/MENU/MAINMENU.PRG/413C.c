@@ -8,6 +8,7 @@
 #include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "lbas.h"
 #include "gpu.h"
+#include "vs_string.h"
 #include <libetc.h>
 
 typedef struct {
@@ -17,7 +18,7 @@ typedef struct {
 } textHeader_t;
 extern u_long* D_1F800000[];
 
-char* func_800FD93C(u_int arg0)
+char* func_800FD93C(int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -65,7 +66,7 @@ char* func_800FD93C(u_int arg0)
     return menuText[1];
 }
 
-char* func_800FDB04(void)
+char* func_800FDB04(int arg0 __attribute__((unused)))
 {
     char* menuText[2];
     int rowType;
@@ -75,7 +76,7 @@ char* func_800FDB04(void)
     return menuText[1];
 }
 
-char* func_800FDB60(void)
+char* func_800FDB60(int arg0 __attribute__((unused)))
 {
     char* menuText[2];
     int rowType;
@@ -118,7 +119,7 @@ char* func_800FDBAC(int arg0)
     return menuText[1];
 }
 
-char* func_800FDCD0(void)
+char* func_800FDCD0(int arg0 __attribute__((unused)))
 {
     char* menuText[2];
     int rowType;
@@ -128,7 +129,7 @@ char* func_800FDCD0(void)
     return menuText[1];
 }
 
-char* func_800FDD24(void)
+char* func_800FDD24(int arg0 __attribute__((unused)))
 {
     char* menuText[2];
     int rowType;
@@ -140,9 +141,9 @@ char* func_800FDD24(void)
 
 void func_800FDD78(void) { D_801024B8 = 9; }
 
-/* This doesn't seem to be used so it could be a bug in
+/* This doesn't seem to be used for anything useful so it could be a bug in
  the original data definition and therefore correct to leave
- as extern and undefined here */
+ as extern and undefined here. Defining it causes aliasing issues when subalign = 4 */
 extern char D_8010214A;
 
 int func_800FDD88(int arg0)
@@ -203,9 +204,9 @@ int func_800FDD88(int arg0)
     }
     return var_a0;
 }
-static char vs_mainMenu_equipmentDetailNavigationMap[][4] = { { 0, 2, 1, 10 },
-    { 1, 2, 1, 0 }, { 1, 3, 2, 11 }, { 2, 4, 3, 12 }, { 3, 5, 4, 13 }, { 4, 6, 5, 14 },
-    { 5, 7, 6, 16 }, { 6, 8, 7, 17 }, { 7, 8, 8, 18 }, { 9, 10, 0, 9 }, { 9, 11, 0, 10 },
+char vs_mainMenu_equipmentDetailNavigationMap[][4] = { { 0, 2, 1, 10 }, { 1, 2, 1, 0 },
+    { 1, 3, 2, 11 }, { 2, 4, 3, 12 }, { 3, 5, 4, 13 }, { 4, 6, 5, 14 }, { 5, 7, 6, 16 },
+    { 6, 8, 7, 17 }, { 7, 8, 8, 18 }, { 9, 10, 0, 9 }, { 9, 11, 0, 10 },
     { 10, 12, 2, 11 }, { 11, 13, 3, 12 }, { 12, 14, 4, 13 }, { 13, 15, 5, 14 },
     { 14, 16, 5, 15 }, { 15, 17, 6, 16 }, { 16, 18, 7, 17 }, { 17, 19, 8, 18 },
     { 18, 20, 8, 19 }, { 19, 20, 8, 20 } };
@@ -219,9 +220,21 @@ static int vs_mainMenu_mainCursorXY[] = { vs_getXY(141, 10), vs_getXY(148, 26),
     vs_getXY(180, 24), vs_getXY(192, 126), vs_getXY(192, 136), vs_getXY(152, 146),
     vs_getXY(152, 156), vs_getXY(152, 166) };
 
-extern char* (*D_801021F4[])(int);
-extern char D_80102210;
-extern char D_80102211;
+static char* (*D_801021F4[])(int) = { func_800FD93C, func_800FDB04, func_800FDB60,
+    func_800FDBAC, func_800FDCD0, func_800FDCD0, func_800FDD24 };
+
+static char D_80102210 = 0;
+static char D_80102211 = 0;
+char D_80102214[] = { 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xF3, 0xF4, 0xF5,
+    0xF6, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEF, 0xEE, 0xF0, 0xF2, 0xF7, 0xF8, 0xF9,
+    0xFA, 0xFB, 0xFC, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xF1, 0x00, 0xFE, 0xFD, 0xFB, 0xF4,
+    0xFE, 0xFB, 0xF6, 0xF3, 0xF3, 0xFC, 0xFD, 0xFF, 0xFB, 0xF5, 0xFE, 0xFD, 0xFF, 0xFD,
+    0xFD, 0xFF, 0xFD, 0xFE, 0xFE, 0xFF, 0xFE, 0xFC, 0xFF, 0xFD, 0x61, 0x62, 0x63, 0x64,
+    0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x00, 0x00, 0x00, 0x6E, 0x00, 0x00, 0x00, 0x72,
+    0x00, 0x00, 0x00, 0x76, 0x00, 0x00, 0x00, 0x7A, 0x00, 0x00, 0x00, 0x7E, 0x00, 0x00,
+    0x00, 0x82, 0x00, 0x00, 0x00, 0x5E, 0x5F, 0x60, 0x57, 0x58, 0x5A, 0x5B, 0x4D, 0x3C,
+    0x36, 0x3D, 0x37, 0x3E, 0x38, 0x3F, 0x39, 0x4B, 0x4C, 0x52, 0x53, 0x55, 0x4F, 0x50,
+    0x5C, 0x5D, 0x3A, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x00, 0x00 };
 
 void func_800FDEBC(void)
 {
@@ -439,6 +452,8 @@ extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
 extern textHeader_t _textHeaders[];
 
+char (*vs_mainMenu_itemNames)[24] = NULL;
+
 int vs_mainMenu_loadItemNames(int arg0)
 {
     vs_main_CdFile cdFile;
@@ -512,6 +527,12 @@ static int _getItemId(int category, int index, vs_battle_inventory_t* inventory)
     }
     return id;
 }
+
+char vs_mainMenu_inventoryItemCapacities[] = { 8, 16, 16, 8, 16, 48, 64, 2 };
+
+char* vs_mainMenu_inventoryIndices[] = { D_800619D8.unk0, D_800619D8.unk8,
+    D_800619D8.unk18, D_800619D8.unk28, D_800619D8.unk30, D_800619D8.unk40,
+    D_800619D8.unk70 };
 
 int vs_mainMenu_findItem(int category, int id)
 {
@@ -806,38 +827,60 @@ int func_800FEB94(
     return var_s5;
 }
 
-extern char vs_mainMenu_isLevelledSpell;
-extern u_short* D_801022C8;
-extern int D_801022CC;
-extern char D_801022D0;
-extern char D_801022D1;
-extern char D_801022D2;
-extern char D_801022D3;
-extern char D_801022DC;
-extern short D_801022DE;
-extern short D_801022E0;
-extern char D_801022E2;
-extern char D_801022E3;
-extern int D_801022E4;
-extern u_short D_801022E8[];
-extern int D_801022F8[];
-extern char D_8010231A[];
-extern u_short D_8010237C[];
-extern u_char D_801023BE;
-extern RECT D_801023C0[];
-extern u_short* D_801023D4;
-extern u_char D_801023DC;
-extern char D_801023DD;
-extern char D_801023DF;
-extern char D_801023DE;
-extern u_short D_801023E0;
-extern char D_801023E2;
-extern int _selectedRow;
-extern char D_801023E4;
-extern char* D_801023E8[];
-extern int D_801023F8[];
-extern char D_80102408;
-extern char D_80102409;
+static char D_801022C4 = 0;
+static u_short* D_801022C8 = NULL;
+static int D_801022CC = 0;
+static char D_801022D0 = 0;
+static char D_801022D1 = 0;
+static char D_801022D2 = 0;
+static char D_801022D3 = 0;
+static char vs_mainMenu_isLevelledSpell = 0;
+static char D_801022D5 = 0;
+static char D_801022D6 = 0;
+int D_801022D8 = 0;
+char D_801022DC = 0;
+static short D_801022DE = -4;
+static short D_801022E0 = 128;
+static char D_801022E2 = 0;
+static char D_801022E3 = 0;
+static int D_801022E4 = 0;
+static u_short D_801022E8[] = { vs_getUV(0, 0), vs_getUV(0, 64), vs_getUV(64, 64),
+    vs_getUV(100, 64), vs_getUV(132, 64), vs_getUV(188, 64), vs_getUV(0, 74) };
+static int D_801022F8[] = { vs_getXY(0, 0), vs_getXY(0x3E, 10), vs_getXY(0x24, 10),
+    vs_getXY(0x1E, 10), vs_getXY(0x38, 10), vs_getXY(0x1E, 10), vs_getXY(0x20, 10),
+    vs_getXY(0, 0) };
+#pragma vsstring(start)
+static char D_80102318[] =
+    "|!0|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\0\0";
+#pragma vsstring(end)
+static u_short D_8010237C[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
+    vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96), vs_getUV(208, 96),
+    vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112), vs_getUV(0, 112),
+    vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96), vs_getUV(64, 112),
+    vs_getUV(80, 112), vs_getUV(96, 112), vs_getUV(112, 112), vs_getUV(128, 112),
+    vs_getUV(144, 112), vs_getUV(160, 112), vs_getUV(32, 96), vs_getUV(176, 112),
+    vs_getUV(120, 128), vs_getUV(136, 128), vs_getUV(152, 128), vs_getUV(168, 128),
+    vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128), vs_getUV(232, 128),
+    vs_getUV(96, 128), vs_getUV(80, 128) };
+static u_char D_801023BE = 8;
+static RECT D_801023C0[] = { { 640, 256, 32, 240 }, { 768, 256, 32, 240 } };
+char D_801023D0 = 0;
+u_short* D_801023D4 = NULL;
+static int _selectedRow = 0;
+static u_char D_801023DC = 0;
+static char D_801023DD = 0;
+static char D_801023DE = 0;
+static char D_801023DF = 0;
+static u_short D_801023E0 = 0;
+static char D_801023E2 = 0;
+char D_801023E3 = 0;
+static char D_801023E4 = 11;
+static char const* D_801023E8[] = { "1", "L", "1", "R" };
+static int D_801023F8[] = { vs_getXY(0xD8, 8), vs_getXY(0xD2, 8), vs_getXY(0x120, 8),
+    vs_getXY(0x11A, 8) };
+static char D_80102408 = 0;
+static char D_80102409 = 0;
+static u_short _2 = 0xF800;
 extern char D_801024A0;
 
 void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
@@ -1169,9 +1212,9 @@ void func_800FFBC8(void)
 
 void vs_mainmenu_setMessage(char* arg0)
 {
-    vs_battle_memcpy(&D_8010231A, arg0, 0x60);
+    vs_battle_memcpy(&D_80102318[2], arg0, 0x60);
     D_800F4FE0[7].unk0.fields.unk3_0 = 32;
-    func_800C6BF0(7, D_8010231A - 2);
+    func_800C6BF0(7, D_80102318);
 }
 
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
@@ -1988,8 +2031,6 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         }
     }
 }
-
-INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", D_800F99F8);
 
 INCLUDE_RODATA("build/src/MENU/MAINMENU.PRG/nonmatchings/413C", D_800F9A04);
 

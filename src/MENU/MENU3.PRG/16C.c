@@ -61,11 +61,11 @@ extern char D_80109650;
 extern char D_80109651;
 extern char D_80109652;
 extern char D_80109653;
-extern char D_80109654;
+extern u_char D_80109654;
 extern char D_80109655;
 extern char D_80109656;
 extern char D_80109657;
-extern char D_80109658;
+extern u_char D_80109658;
 extern char D_80109659;
 extern char D_8010965A;
 extern char D_8010965B;
@@ -75,11 +75,11 @@ extern char D_8010965E;
 extern char D_8010965F;
 extern char D_80109660;
 extern char D_80109661;
-extern char D_80109662;
+extern u_char D_80109662;
 extern char D_80109663;
 extern char D_80109664;
 extern char D_80109665;
-extern char D_80109666;
+extern u_char D_80109666;
 extern u_char D_80109667;
 extern u_char D_80109668;
 extern u_char D_80109669;
@@ -328,7 +328,7 @@ int func_80103034(int arg0)
     case 0:
         if ((D_80109651 == 0) && (vs_mainmenu_ready() != 0)) {
             func_80102C44(D_80109653, 3);
-            vs_mainMenu_setUiBladeStats(D_800619D8.unk0[D_80109654 + 8]);
+            vs_mainMenu_setUiBladeStats(D_800619D8.unk8[D_80109654]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109651 = 1;
         }
@@ -383,7 +383,7 @@ int func_80103220(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109657, 4);
-            vs_mainMenu_setUiGripStats(D_800619D8.unk0[D_80109658 + 0x18]);
+            vs_mainMenu_setUiGripStats(D_800619D8.unk18[D_80109658]);
             D_80109655 = 1;
         }
         break;
@@ -410,8 +410,7 @@ int func_80103220(int arg0)
             }
         }
         D_8010956C[6] =
-            vs_battle_inventory.grips[D_800619D8.unk0[D_80109658 + 0x18] - 1].gemSlots
-            + '0';
+            vs_battle_inventory.grips[D_800619D8.unk18[D_80109658] - 1].gemSlots + '0';
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_8010956C, 0x240118, NULL);
         break;
@@ -505,8 +504,8 @@ int func_801036BC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109661, 7);
-            func_800FD700(D_800619D8.unk0[D_80109662 + 48]);
-            if (vs_battle_inventory.armor[D_800619D8.unk0[D_80109662 + 48] - 1].category
+            func_800FD700(D_800619D8.unk30[D_80109662]);
+            if (vs_battle_inventory.armor[D_800619D8.unk30[D_80109662] - 1].category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
@@ -562,7 +561,7 @@ int func_801038E4(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109665, 3);
-            func_800FD878(D_800619D8.unk0[D_80109666 + 64]);
+            func_800FD878(D_800619D8.unk40[D_80109666]);
             D_80109663 = 1;
         }
         break;

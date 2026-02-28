@@ -260,7 +260,7 @@ int func_8010310C(int arg0)
     static char D_8010A5F1;
     static char D_8010A5F2;
     static char D_8010A5F3;
-    static char D_8010A5F4;
+    static u_char D_8010A5F4;
 
     char* sp10[2];
     int sp18;
@@ -280,7 +280,7 @@ int func_8010310C(int arg0)
     case 0: {
         if (vs_mainmenu_ready() != 0) {
             func_80102D1C(D_8010A5F3, 3);
-            vs_mainMenu_setUiBladeStats(D_800619D8.unk0[D_8010A5F4 + 8]);
+            vs_mainMenu_setUiBladeStats(D_800619D8.unk8[D_8010A5F4]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010A5F1 = 1;
         }
@@ -342,7 +342,7 @@ int func_801032F8(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102D1C(D_8010A5F7, 4);
-            vs_mainMenu_setUiGripStats(D_800619D8.unk0[D_8010A5F8 + 0x18]);
+            vs_mainMenu_setUiGripStats(D_800619D8.unk18[D_8010A5F8]);
             D_8010A5F5 = 1U;
         }
         break;
@@ -369,7 +369,7 @@ int func_801032F8(int arg0)
             }
         }
         D_8010A510[6] =
-            (vs_battle_inventory.grips[D_800619D8.unk0[D_8010A5F8 + 0x18] - 1].gemSlots
+            (vs_battle_inventory.grips[D_800619D8.unk18[D_8010A5F8] - 1].gemSlots
                 + 0x30); // BUG: Write to const char
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_8010A510, 0x240118, NULL);
@@ -473,8 +473,8 @@ int func_80103794(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102D1C(D_8010A601, 7);
-            func_800FD700(D_800619D8.unk0[D_8010A602 + 0x30]);
-            if (vs_battle_inventory.armor[D_800619D8.unk0[D_8010A602 + 0x30] - 1].category
+            func_800FD700(D_800619D8.unk30[D_8010A602]);
+            if (vs_battle_inventory.armor[D_800619D8.unk30[D_8010A602] - 1].category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
@@ -534,7 +534,7 @@ int func_801039BC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102D1C(D_8010A605, 3);
-            func_800FD878(D_800619D8.unk0[D_8010A606 + 0x40]);
+            func_800FD878(D_800619D8.unk40[D_8010A606]);
             D_8010A603 = 1;
         }
         break;

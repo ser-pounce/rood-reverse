@@ -152,8 +152,12 @@ typedef struct {
 } vs_menu_container;
 
 typedef struct {
-    char unk0[40];
-    char unk28[72];
+    char unk0[8];
+    char unk8[16];
+    char unk18[16];
+    char unk28[8];
+    char unk30[16];
+    char unk40[48];
     char unk70[64];
 } D_800619D8_t;
 

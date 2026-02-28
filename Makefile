@@ -40,9 +40,8 @@ BCONFIG = $(BUILD)/config/$*
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS) \
                   -D "__attribute__(x)="
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
-LDFLAGS         = -nostdlib --build-id=none -x \
-              	  -L $(BCONFIG) $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
-LDFLAGS_BIN    := --oformat=binary -e 0x0
+LDFLAGS         = -nostdlib --build-id=none -L $(BCONFIG) \
+				   $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I include $(AS_DEPS) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
@@ -145,11 +144,18 @@ $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%
 	$(TOUCH) $@
 endif
 
-$(targets): $(BUILD)/data/%: $(BUILD)/data/%.elf | $$(@D)/
+$(targets): private LDFLAGS := --oformat=binary -e 0x0
+$(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
 	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS_BIN) $< -o $@
+	$(LD) $(LDFLAGS) $< -o $@
 	$(fixup)
 
+$(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
+$(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
+	$(ECHO) Linking $@
+	$(LD) $(LDFLAGS) -o $@
+
+$(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
 $(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) -o $@

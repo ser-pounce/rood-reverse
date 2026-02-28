@@ -326,19 +326,10 @@ int vs_mainmenu_ready(void)
     return 1;
 }
 
-extern int D_80102034;
-extern int (*_submenuEntrypoints[])(char*); /* = {
-    vs_menu0_exec,
-    vs_menu1_exec,
-    vs_menu2_exec,
-    vs_menu3_exec,
-    vs_menu4_exec,
-    vs_menu5_exec,
-    vs_menu7_dataMenu,
-    vs_menu8_exec,
-    vs_menu9_exec,
-    vs_menuE_exec
-};*/
+static int D_80102034 = 0;
+static int (*_submenuEntrypoints[])(char*) = { vs_menu0_exec, vs_menu1_exec,
+    vs_menu2_exec, vs_menu3_exec, vs_menu4_exec, vs_menu5_exec, vs_menu7_dataMenu,
+    vs_menu8_exec, vs_menu9_exec, vs_menuE_exec };
 
 int func_800FAA20(void)
 {

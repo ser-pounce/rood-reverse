@@ -1,4 +1,4 @@
-$(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
+$(BUILD)/data/SLUS_010.40.linked.elf: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000
 

@@ -1,4 +1,7 @@
-$(BUILD)/src/MENU/MENU8.PRG/%.o: ASFLAGS += -no-pad-sections
+$(BUILD)/data/MENU/MENU8.PRG.elf: LDFLAGS += \
+	--retain-symbols-file=config/MENU/MENU8.PRG/exports.txt
+$(BUILD)/src/MENU/MENU8.PRG/%.o: ASFLAGS += \
+	-no-pad-sections
 $(BUILD)/src/MENU/MENU8.PRG/%.o: CC1VER := 2.8.0-psx
 
 $(BUILD)/config/MENU/MENU8.PRG/link.d: \

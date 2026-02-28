@@ -1,5 +1,6 @@
 $(BUILD)/data/MENU/MENU7.PRG.elf: LDFLAGS += \
-	--defsym=D_1F800000=0x1F800000
+	--defsym=D_1F800000=0x1F800000 \
+	--retain-symbols-file=config/MENU/MENU7.PRG/exports.txt
 $(BUILD)/src/MENU/MENU7.PRG/260.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENU7.PRG/260.o: CC1VER := 2.8.0-psx
 

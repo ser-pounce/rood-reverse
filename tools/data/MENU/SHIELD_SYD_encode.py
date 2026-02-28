@@ -98,8 +98,6 @@ def build_shield_syd(yaml_path: str, output_path: str) -> None:
         f.write(section2)
         f.write(section3)
 
-    print(f"Successfully wrote binary to {output_path}")
-
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:

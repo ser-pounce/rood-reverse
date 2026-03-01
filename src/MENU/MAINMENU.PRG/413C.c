@@ -680,8 +680,8 @@ char vs_mainMenu_equipmentDetailNavigationMap[][4] = { { 0, 2, 1, 10 }, { 1, 2, 
     { 14, 16, 5, 15 }, { 15, 17, 6, 16 }, { 16, 18, 7, 17 }, { 17, 19, 8, 18 },
     { 18, 20, 8, 19 }, { 19, 20, 8, 20 } };
 
-int D_801021A0[] = { vs_getXY(66, 28), vs_getXY(-4, 28), vs_getXY(0, 50),
-    vs_getXY(0, 66), vs_getXY(0, 82), vs_getXY(0, 98), vs_getXY(0, 114), vs_getXY(0, 130),
+int D_801021A0[] = { vs_getXY(66, 28), vs_getXY(-4, 28), vs_getXY(0, 50), vs_getXY(0, 66),
+    vs_getXY(0, 82), vs_getXY(0, 98), vs_getXY(0, 114), vs_getXY(0, 130),
     vs_getXY(0, 146) };
 
 int vs_mainMenu_mainCursorXY[] = { vs_getXY(141, 10), vs_getXY(148, 26),

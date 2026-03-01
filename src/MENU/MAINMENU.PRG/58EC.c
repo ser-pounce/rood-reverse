@@ -128,7 +128,7 @@ vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
 void func_800FF43C(void)
 {
     static char D_801022D3 = 0;
-    
+
     int temp_s6;
     int var_a0;
     int i;
@@ -372,7 +372,6 @@ void func_800FFBC8(void)
     func_800FFBA8();
 }
 
-
 void vs_mainmenu_setMessage(char* arg0)
 {
 #pragma vsstring(start)
@@ -495,15 +494,15 @@ void func_800FFFBC(int arg0, int arg1)
 
 void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
 {
-    static u_short D_8010237C[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
-        vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96), vs_getUV(208, 96),
-        vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112), vs_getUV(0, 112),
-        vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96), vs_getUV(64, 112),
-        vs_getUV(80, 112), vs_getUV(96, 112), vs_getUV(112, 112), vs_getUV(128, 112),
-        vs_getUV(144, 112), vs_getUV(160, 112), vs_getUV(32, 96), vs_getUV(176, 112),
-        vs_getUV(120, 128), vs_getUV(136, 128), vs_getUV(152, 128), vs_getUV(168, 128),
-        vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128), vs_getUV(232, 128),
-        vs_getUV(96, 128), vs_getUV(80, 128) };
+    static u_short D_8010237C[] = { vs_getUV(80, 96), vs_getUV(144, 96),
+        vs_getUV(160, 96), vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96),
+        vs_getUV(208, 96), vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112),
+        vs_getUV(0, 112), vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96),
+        vs_getUV(64, 112), vs_getUV(80, 112), vs_getUV(96, 112), vs_getUV(112, 112),
+        vs_getUV(128, 112), vs_getUV(144, 112), vs_getUV(160, 112), vs_getUV(32, 96),
+        vs_getUV(176, 112), vs_getUV(120, 128), vs_getUV(136, 128), vs_getUV(152, 128),
+        vs_getUV(168, 128), vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128),
+        vs_getUV(232, 128), vs_getUV(96, 128), vs_getUV(80, 128) };
 
     int v1;
     int var_a0;
@@ -806,7 +805,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
 void func_80100A5C(void)
 {
     static char D_801023E2 = 0;
-    
+
     int temp_s6;
     int temp_v1;
     int i;
@@ -1062,8 +1061,7 @@ void func_801013F8(int arg0)
     static char D_801023E4 = 11;
     static char const* D_801023E8[] = { "1", "L", "1", "R" };
     static int D_801023F8[] = { vs_getXY(0xD8, 8), vs_getXY(0xD2, 8), vs_getXY(0x120, 8),
-
-    vs_getXY(0x11A, 8) };
+        vs_getXY(0x11A, 8) };
     int i;
     int color;
     int var_s4;

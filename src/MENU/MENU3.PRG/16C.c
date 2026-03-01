@@ -2,7 +2,7 @@
 #include "../MAINMENU.PRG/278.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/413C.h"
-#include "../MAINMENU.PRG/8170.h"
+#include "../MAINMENU.PRG/58EC.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"

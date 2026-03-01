@@ -1,7 +1,7 @@
 #include "common.h"
 #include "C48.h"
 #include "413C.h"
-#include "8170.h"
+#include "58EC.h"
 #include "../SLUS_010.40/main.h"
 #include "../MENUD.PRG/234.h"
 #include "../BATTLE/BATTLE.PRG/146C.h"

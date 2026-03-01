@@ -8,14 +8,13 @@
 #include "gpu.h"
 #include <libetc.h>
 
-extern u_long* D_1F800000[];
-
 typedef struct {
     char text[14];
     char unk14;
     char x;
 } textHeader_t;
 
+extern u_long* D_1F800000[];
 extern textHeader_t _textHeaders[];
 
 static char D_801022C4 = 0;
@@ -24,55 +23,6 @@ static int D_801022CC = 0;
 static char D_801022D0 = 0;
 static char D_801022D1 = 0;
 static char D_801022D2 = 0;
-static char D_801022D3 = 0;
-static char vs_mainMenu_isLevelledSpell = 0;
-static char D_801022D5 = 0;
-static char D_801022D6 = 0;
-int D_801022D8 = 0;
-char D_801022DC = 0;
-static short D_801022DE = -4;
-static short D_801022E0 = 128;
-static char D_801022E2 = 0;
-static char D_801022E3 = 0;
-static int D_801022E4 = 0;
-static u_short D_801022E8[] = { vs_getUV(0, 0), vs_getUV(0, 64), vs_getUV(64, 64),
-    vs_getUV(100, 64), vs_getUV(132, 64), vs_getUV(188, 64), vs_getUV(0, 74) };
-static int D_801022F8[] = { vs_getXY(0, 0), vs_getXY(0x3E, 10), vs_getXY(0x24, 10),
-    vs_getXY(0x1E, 10), vs_getXY(0x38, 10), vs_getXY(0x1E, 10), vs_getXY(0x20, 10),
-    vs_getXY(0, 0) };
-#pragma vsstring(start)
-static char D_80102318[] =
-    "|!0|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\0\0";
-#pragma vsstring(end)
-static u_short D_8010237C[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
-    vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96), vs_getUV(208, 96),
-    vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112), vs_getUV(0, 112),
-    vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96), vs_getUV(64, 112),
-    vs_getUV(80, 112), vs_getUV(96, 112), vs_getUV(112, 112), vs_getUV(128, 112),
-    vs_getUV(144, 112), vs_getUV(160, 112), vs_getUV(32, 96), vs_getUV(176, 112),
-    vs_getUV(120, 128), vs_getUV(136, 128), vs_getUV(152, 128), vs_getUV(168, 128),
-    vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128), vs_getUV(232, 128),
-    vs_getUV(96, 128), vs_getUV(80, 128) };
-static u_char D_801023BE = 8;
-static RECT D_801023C0[] = { { 640, 256, 32, 240 }, { 768, 256, 32, 240 } };
-char D_801023D0 = 0;
-u_short* D_801023D4 = NULL;
-static int _selectedRow = 0;
-static u_char D_801023DC = 0;
-static char D_801023DD = 0;
-static char D_801023DE = 0;
-static char D_801023DF = 0;
-static u_short D_801023E0 = 0;
-static char D_801023E2 = 0;
-char D_801023E3 = 0;
-static char D_801023E4 = 11;
-static char const* D_801023E8[] = { "1", "L", "1", "R" };
-static int D_801023F8[] = { vs_getXY(0xD8, 8), vs_getXY(0xD2, 8), vs_getXY(0x120, 8),
-    vs_getXY(0x11A, 8) };
-static char D_80102408 = 0;
-static char D_80102409 = 0;
-static u_short _ __attribute__((unused)) = 0xF800;
-static int _1 __attribute__((unused)) = 0x38B1F8F8;
 
 extern char D_801024A0;
 
@@ -177,6 +127,8 @@ vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
 
 void func_800FF43C(void)
 {
+    static char D_801022D3 = 0;
+    
     int temp_s6;
     int var_a0;
     int i;
@@ -348,10 +300,27 @@ void vs_mainMenu_printInformation(int arg0, int arg1)
     }
 }
 
+static char vs_mainMenu_isLevelledSpell = 0;
+static char D_801022D5 = 0;
+static char D_801022D6 = 0;
+int D_801022D8 = 0;
+char D_801022DC = 0;
+static short D_801022DE = -4;
+static short D_801022E0 = 128;
+static char D_801022E2 = 0;
+static char D_801022E3 = 0;
+
 void func_800FFA88(int arg0) { D_801022E3 = arg0; }
 
 void func_800FFA94(void)
 {
+    static int D_801022E4 = 0;
+    static u_short D_801022E8[] = { vs_getUV(0, 0), vs_getUV(0, 64), vs_getUV(64, 64),
+        vs_getUV(100, 64), vs_getUV(132, 64), vs_getUV(188, 64), vs_getUV(0, 74) };
+    static int D_801022F8[] = { vs_getXY(0, 0), vs_getXY(0x3E, 10), vs_getXY(0x24, 10),
+        vs_getXY(0x1E, 10), vs_getXY(0x38, 10), vs_getXY(0x1E, 10), vs_getXY(0x20, 10),
+        vs_getXY(0, 0) };
+
     int var_a1;
     u_long* temp_v0;
     int temp_s0;
@@ -403,8 +372,14 @@ void func_800FFBC8(void)
     func_800FFBA8();
 }
 
+
 void vs_mainmenu_setMessage(char* arg0)
 {
+#pragma vsstring(start)
+    static char D_80102318[] =
+        "|!0|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\0\0";
+#pragma vsstring(end)
+
     vs_battle_memcpy(&D_80102318[2], arg0, 0x60);
     D_800F4FE0[7].unk0.fields.unk3_0 = 32;
     func_800C6BF0(7, D_80102318);
@@ -520,6 +495,16 @@ void func_800FFFBC(int arg0, int arg1)
 
 void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
 {
+    static u_short D_8010237C[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
+        vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96), vs_getUV(208, 96),
+        vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112), vs_getUV(0, 112),
+        vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96), vs_getUV(64, 112),
+        vs_getUV(80, 112), vs_getUV(96, 112), vs_getUV(112, 112), vs_getUV(128, 112),
+        vs_getUV(144, 112), vs_getUV(160, 112), vs_getUV(32, 96), vs_getUV(176, 112),
+        vs_getUV(120, 128), vs_getUV(136, 128), vs_getUV(152, 128), vs_getUV(168, 128),
+        vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128), vs_getUV(232, 128),
+        vs_getUV(96, 128), vs_getUV(80, 128) };
+
     int v1;
     int var_a0;
     u_long* temp_v0;
@@ -555,6 +540,8 @@ void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
 
 void func_80100164(void)
 {
+    static u_char D_801023BE = 8;
+
     int temp_s2;
     int temp_t1;
     int var_s1;
@@ -636,6 +623,8 @@ void func_80100414(int arg0, int arg1)
 
 void func_8010044C(u_int* arg0)
 {
+    static RECT D_801023C0[] = { { 640, 256, 32, 240 }, { 768, 256, 32, 240 } };
+
     int var_a2;
     int i;
     u_int var_v1;
@@ -671,6 +660,15 @@ void func_8010044C(u_int* arg0)
     vs_battle_drawImage(0x010002A0, arg0, 0xF00060);
     func_80100414(-4, 0x80);
 }
+
+char D_801023D0 = 0;
+u_short* D_801023D4 = NULL;
+static int _selectedRow = 0;
+static u_char D_801023DC = 0;
+static char D_801023DD = 0;
+static char D_801023DE = 0;
+static char D_801023DF = 0;
+static u_short D_801023E0 = 0;
 
 void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTypes)
 {
@@ -807,6 +805,8 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
 
 void func_80100A5C(void)
 {
+    static char D_801023E2 = 0;
+    
     int temp_s6;
     int temp_v1;
     int i;
@@ -1055,8 +1055,15 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3
     return arg1 + D_800EB810[arg0];
 }
 
+char D_801023E3 = 0;
+
 void func_801013F8(int arg0)
 {
+    static char D_801023E4 = 11;
+    static char const* D_801023E8[] = { "1", "L", "1", "R" };
+    static int D_801023F8[] = { vs_getXY(0xD8, 8), vs_getXY(0xD2, 8), vs_getXY(0x120, 8),
+
+    vs_getXY(0x11A, 8) };
     int i;
     int color;
     int var_s4;
@@ -1095,6 +1102,9 @@ void func_801013F8(int arg0)
 
 void func_8010154C(vs_battle_menuItem_t* arg0)
 {
+    static char D_80102408 = 0;
+    static char D_80102409 = 0;
+
     int sp10;
     u_int sp14;
     int sp18;
@@ -1224,9 +1234,6 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         }
     }
 }
-
-extern char const D_800F9A04[];
-extern char const D_800F9A08[];
 
 void func_80101970(void)
 {
@@ -1460,3 +1467,7 @@ void func_80101F38(void)
     vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_drawDpPpbars(0);
 }
+
+// Some kind of junk
+static u_short _0 __attribute__((unused)) = 0xF800;
+static int _1 __attribute__((unused)) = 0x38B1F8F8;

@@ -5,12 +5,489 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
+#include "../../assets/MENU/ITEMNAME.BIN.h"
+#include "../MENUD.PRG/234.h"
 #include "lbas.h"
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>
 
 extern u_long* D_1F800000[];
+
+vs_battle_menuItem_t* func_800FC510(int arg0, int arg1, int arg2)
+{
+    char* menuText[2];
+    int rowType;
+    int initialX;
+    int var_s0;
+    int gem;
+
+    vs_battle_menuItem_t* menuItem = NULL;
+    vs_battle_inventoryWeapon* weapon = &D_80102470[arg1 - 1];
+    int grip = weapon->grip;
+    int gemSlots = D_80102460[grip - 1].gemSlots;
+    int var_s1 = 158;
+
+    if (arg0 == 1) {
+        vs_mainMenu_setBladeUi(
+            &D_80102464[weapon->blade - 1], menuText, &rowType, vs_battle_stringBuf);
+    } else if (arg0 == 2) {
+        vs_mainMenu_setGripUi(
+            &D_80102460[grip - 1], menuText, &rowType, vs_battle_stringBuf);
+    } else {
+        var_s1 = arg0 - 3;
+        if (var_s1 < gemSlots) {
+            menuText[1] = NULL;
+            rowType = 0x58000000;
+            menuText[0] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_none];
+            gem = weapon->gems[var_s1];
+            if (gem != 0) {
+                vs_mainMenu_setGemUi(
+                    &D_80102458[gem - 1], menuText, &rowType, vs_battle_stringBuf);
+            }
+            var_s1 = 151;
+        } else {
+            var_s1 = 0;
+        }
+    }
+
+    var_s0 = arg0 + 10;
+    vs_mainMenu_deactivateMenuItem(var_s0);
+
+    if (var_s1 != 0) {
+        initialX = 320 - var_s1;
+        menuItem = vs_battle_setMenuItem(
+            var_s0, initialX, (arg0 * 16) + 18, var_s1, 0, menuText[0]);
+        menuItem->unk7 = menuText[1] == NULL;
+        if (arg2 & 1) {
+            menuItem->initialX = 320;
+            menuItem->state = 2;
+            menuItem->targetX = initialX;
+        }
+        menuItem->icon = (u_int)rowType >> 0x1A;
+        menuItem->material = ((u_int)rowType >> 16) & 7;
+    }
+
+    return menuItem;
+}
+
+vs_battle_menuItem_t* func_800FC704(int arg0, int arg1, int arg2)
+{
+    char* sp18[2];
+    int rowType;
+    vs_battle_inventoryShield* shield;
+    int var_s0;
+    char temp_v1;
+    vs_battle_menuItem_t* menuItem;
+
+    menuItem = NULL;
+    var_s0 = arg0 - 1;
+    shield = &D_8010246C[arg1 - 1];
+
+    if (var_s0 < shield->base.gemSlots) {
+        sp18[1] = 0;
+        rowType = 0x58000000;
+        sp18[0] = (char*)&vs_mainMenu_itemHelp[0x0340B];
+        temp_v1 = shield->gems[var_s0];
+        if (temp_v1 != 0) {
+            vs_mainMenu_setGemUi(
+                &D_80102458[temp_v1 - 1], (char**)&sp18, &rowType, vs_battle_stringBuf);
+        }
+        var_s0 = 151;
+    } else {
+        var_s0 = 0;
+    }
+
+    vs_mainMenu_deactivateMenuItem(arg0 + 10);
+
+    if (var_s0 != 0) {
+        menuItem = vs_battle_setMenuItem(
+            arg0 + 10, 0x140 - var_s0, (arg0 * 16) + 18, var_s0, 0, (char*)sp18[0]);
+        menuItem->unk7 = sp18[1] == 0;
+        if (arg2 & 1) {
+            menuItem->initialX = 320;
+            menuItem->state = 2;
+            menuItem->targetX = 320 - var_s0;
+        }
+        menuItem->icon = 0x16;
+    }
+    return menuItem;
+}
+
+static char vs_mainMenu_weaponHands[] = { 0, 0, 1, 0, 1, 0, 1, 1, 1, 0 };
+
+void vs_mainMenu_setWeaponUi(
+    vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)
+{
+    int maxStatRank;
+
+    vs_battle_uiEquipment* blade = &weapon->blade;
+    int stats = vs_mainMenu_getEquipmentMaxStats(weapon, 0);
+
+    vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [(stats & 0xFF) + VS_ITEMHELP_BIN_INDEX_warriorEquipment - 1]];
+    maxStatRank = ((stats >> 8) & 0xFF);
+    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
+        [maxStatRank != 0
+                ? vs_mainMenu_itemHelp[maxStatRank + (stats >> 15) - 1
+                                       + VS_ITEMHELP_BIN_INDEX_weaponPrestige]
+                : vs_mainMenu_itemHelp[blade->category - 1
+                                       + VS_ITEMHELP_BIN_INDEX_weaponBasePrestige]];
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[blade->material - 1 + VS_ITEMNAME_BIN_INDEX_wood];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
+    vs_battle_stringContext.strings[7] =
+        (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType - 1
+                                                          + VS_ITEMHELP_BIN_INDEX_blunt]];
+    vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
+                              + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
+    text[1] = buf;
+    rowTypes[0] = (blade->category << 0x1A) + (blade->material << 0x10);
+}
+
+void vs_mainMenu_initUiWeapon(
+    vs_battle_inventoryWeapon* source, char** text, int* rowTypes, char* buf)
+{
+    vs_battle_uiWeapon target;
+
+    if (D_80102470 == vs_battle_inventory.weapons) {
+        vs_battle_applyWeapon(&target, source);
+    } else {
+        vs_menuD_initUiWeapon(&target, source, &vs_menuD_containerData->data);
+    }
+    vs_mainMenu_setWeaponUi(&target, text, rowTypes, buf);
+    text[0] = source->name;
+}
+
+void vs_mainMenu_setBladeUi(
+    vs_battle_inventoryBlade* blade, char** text, int* rowType, char* buf)
+{
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[blade->material - 1 + VS_ITEMNAME_BIN_INDEX_wood];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[blade->category - 1 + VS_ITEMHELP_BIN_INDEX_dagger]];
+    vs_battle_stringContext.strings[7] =
+        (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[blade->damageType - 1
+                                                          + VS_ITEMHELP_BIN_INDEX_blunt]];
+    vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
+                              + VS_ITEMHELP_BIN_INDEX_oneHanded]];
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                         [blade->id - 1 + VS_ITEMHELP_BIN_INDEX_battleKnifeDesc]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_weaponDescTemplate]);
+    text[0] = vs_mainMenu_itemNames[blade->id + VS_ITEMNAME_BIN_INDEX_item0];
+    text[1] = buf;
+    rowType[0] = (blade->category << 0x1A) + (blade->material << 0x10);
+}
+
+void vs_mainMenu_setGripUi(
+    vs_battle_inventoryGrip* grip, char** arg1, int* arg2, char* buf)
+{
+    u_short* id;
+    vs_battle_stringContext.strings[5] = (char*)&vs_mainMenu_itemHelp
+        [vs_mainMenu_itemHelp[grip->category - 1 + VS_ITEMHELP_BIN_INDEX_shortGrip]];
+    id = &grip->id;
+    vs_battle_printf(vs_battle_printf(buf,
+                         (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[*id - 6]]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_gripTemplate]);
+    arg1[0] = vs_mainMenu_itemNames[grip->id + VS_ITEMNAME_BIN_INDEX_item0];
+    arg1[1] = buf;
+    arg2[0] = (grip->category + 0xA) << 0x1A;
+}
+
+void vs_mainMenu_setShieldUi(
+    vs_battle_uiShield* shield, char** text, int* rowTypes, char* buf)
+{
+    int maxStatRank;
+
+    vs_battle_uiEquipment* shieldBase = &shield->base;
+    int stats = vs_mainMenu_getEquipmentMaxStats(shield, 1);
+
+    vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [(stats & 0xFF) - 1 + VS_ITEMHELP_BIN_INDEX_warriorEquipment]];
+
+    maxStatRank = (stats >> 8) & 0xFF;
+
+    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
+        [maxStatRank != 0 ? vs_mainMenu_itemHelp[maxStatRank + (stats >> 0xF) - 1
+                                                 + VS_ITEMHELP_BIN_INDEX_armorPrestige]
+                          : VS_ITEMHELP_BIN_OFFSET_armorBasePrestige];
+    vs_battle_stringContext.strings[8] =
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_armorCategory];
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[shieldBase->material - 1
+                                      + VS_ITEMNAME_BIN_INDEX_wood];
+
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_armorTemplate]);
+
+    text[0] = vs_mainMenu_itemNames[shieldBase->id + VS_ITEMNAME_BIN_INDEX_item0];
+    text[1] = buf;
+    rowTypes[0] = (shieldBase->material << 0x10) + 0x3C000000;
+}
+
+void vs_mainMenu_initUiShield(
+    vs_battle_inventoryShield* shield, char** text, int* rowTypes, char* buf)
+{
+    vs_battle_uiShield uiShield;
+
+    if (D_8010246C == vs_battle_inventory.shields) {
+        vs_battle_applyShield(&uiShield, shield);
+    } else {
+        vs_menuD_initUiShield(&uiShield, shield, &vs_menuD_containerData->data);
+    }
+    vs_mainMenu_setShieldUi(&uiShield, text, rowTypes, buf);
+}
+
+void vs_mainMenu_setArmorUi(
+    vs_battle_uiArmor* armor, char** text, int* rowTypes, char* buf)
+{
+    int stats;
+    int maxStatRank;
+    vs_battle_uiEquipment* armorBase = &armor->armor;
+
+    text[0] = vs_mainMenu_itemNames[armorBase->id];
+    rowTypes[0] = ((armorBase->category + 0xE) << 0x1A) + (armorBase->material << 0x10);
+
+    if (armorBase->category == 7) {
+        text[1] = (char*)&vs_mainMenu_itemHelp
+            [vs_mainMenu_itemHelp[armorBase->id + VS_ITEMHELP_BIN_INDEX_line387]];
+        return;
+    }
+
+    stats = vs_mainMenu_getEquipmentMaxStats(armor, 2);
+
+    vs_battle_stringContext.strings[0] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [(stats & 0xFF) - 1 + VS_ITEMHELP_BIN_INDEX_warriorEquipment]];
+
+    maxStatRank = (stats >> 8) & 0xFF;
+
+    vs_battle_stringContext.strings[1] = (char*)&vs_mainMenu_itemHelp
+        [maxStatRank != 0
+                ? vs_mainMenu_itemHelp[maxStatRank + (stats >> 0xF) - 1
+                                       + VS_ITEMHELP_BIN_INDEX_armorPrestige]
+                : vs_mainMenu_itemHelp[armorBase->category - 1
+                                       + VS_ITEMHELP_BIN_INDEX_armorBasePrestige]];
+    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+            [armorBase->category - 1 + VS_ITEMHELP_BIN_INDEX_armorCategory]];
+    vs_battle_stringContext.strings[9] =
+        (char*)&vs_mainMenu_itemNames[armorBase->material - 1
+                                      + VS_ITEMNAME_BIN_INDEX_wood];
+
+    vs_battle_printf(
+        vs_battle_printf(
+            buf, (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_classTemplate]),
+        (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_armorTemplate]);
+    text[1] = (char*)buf;
+}
+
+void vs_mainMenu_setAccessoryUi(
+    vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3)
+{
+    vs_battle_uiArmor sp10;
+
+    vs_battle_applyArmor(&sp10, arg0);
+    vs_mainMenu_setArmorUi(&sp10, arg1, arg2, arg3);
+}
+
+void vs_mainMenu_setGemUi(
+    vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3)
+{
+    vs_battle_memcpy(
+        arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
+    arg1[0] = vs_mainMenu_itemNames[arg0->id];
+    arg1[1] = arg3;
+    *arg2 = 0x58000000;
+}
+
+void vs_mainMenu_setItemUi(
+    vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3)
+{
+    vs_battle_memcpy(
+        arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
+    arg1[0] = vs_mainMenu_itemNames[arg0->id];
+    arg1[1] = arg3;
+    *arg2 = arg0->count << 9;
+}
+
+void vs_mainMenu_resetStats(void)
+{
+    vs_battle_rMemzero(vs_mainMenu_equipmentStats, sizeof vs_mainMenu_equipmentStats);
+    vs_mainMenu_setDpPp(0, 0, 0, 0);
+    vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
+}
+
+void vs_mainMenu_setUiWeaponStats(int index)
+{
+    vs_battle_uiWeapon uiWeapon;
+    vs_battle_uiWeapon* weapon = &uiWeapon;
+
+    vs_mainMenu_resetStats();
+    vs_mainMenu_setRangeRisk(0, 0, 0, 1);
+
+    if (index != 0) {
+        int i;
+        if (D_80102470[index - 1].isEquipped != 0) {
+            weapon = &vs_battle_characterState->unk3C->weapon;
+        } else if (D_80102470 == vs_battle_inventory.weapons) {
+            vs_battle_applyWeapon(weapon, &D_80102470[index - 1]);
+        } else {
+            vs_menuD_initUiWeapon(
+                weapon, &D_80102470[index - 1], &vs_menuD_containerData->data);
+        }
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &weapon->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = weapon->grip.types[i];
+        }
+
+        D_80102508 = weapon->damageType;
+        do {
+        } while (0);
+        vs_mainMenu_setDpPp(
+            weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);
+        vs_mainMenu_setStrIntAgi(
+            weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
+        vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
+        vs_mainMenu_strIntAgi[4] = weapon->baseStr;
+        vs_mainMenu_strIntAgi[5] = weapon->baseInt;
+        vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
+    }
+    vs_mainMenu_equipmentSubtype = 1;
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
+
+void vs_mainMenu_setUiBladeStats(int index)
+{
+    int i;
+    vs_battle_inventoryBlade* blade = &D_80102464[index - 1];
+
+    for (i = 0; i < 16; ++i) {
+        vs_mainMenu_equipmentStats[i] = blade->classes[i & 7];
+        vs_mainMenu_equipmentStats[16 + i] = blade->affinities[i & 7];
+    }
+    vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, blade->currentPp, blade->maxPp);
+    vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
+    vs_mainMenu_setRangeRisk(blade->range.unk0, blade->cost, 0, 1);
+    vs_mainMenu_equipmentSubtype = 2;
+    D_801024A1 = index;
+    func_800FBB8C(3);
+}
+
+void vs_mainMenu_setUiGripStats(int arg0)
+{
+    int i;
+    vs_battle_inventoryGrip* grip = &D_80102460[arg0 - 1];
+
+    for (i = 0; i < 4; ++i) {
+        vs_mainMenu_equipmentStats[i + 0x20] = grip->types[i];
+    }
+    vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
+    vs_mainMenu_equipmentSubtype = 4;
+    D_801024A1 = arg0;
+    func_800FBB8C(4);
+}
+
+void func_800FD5A0(int index)
+{
+    vs_battle_uiShield uiShield;
+    int i;
+    vs_battle_uiShield* shield = &uiShield;
+
+    vs_mainMenu_resetStats();
+    if (index != 0) {
+        if (D_8010246C[index - 1].isEquipped != 0) {
+            shield = &vs_battle_characterState->unk3C->shield;
+        } else if (D_8010246C == vs_battle_inventory.shields) {
+            vs_battle_applyShield(shield, &D_8010246C[index - 1]);
+        } else {
+            vs_menuD_initUiShield(
+                shield, &D_8010246C[index - 1], &vs_menuD_containerData->data);
+        }
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &shield->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = shield->types[i];
+        }
+
+        vs_mainMenu_setDpPp(
+            shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
+        vs_mainMenu_setStrIntAgi(
+            shield->currentStr, shield->currentInt, shield->currentAgility, 1);
+        vs_mainMenu_strIntAgi[4] = shield->baseStr;
+        vs_mainMenu_strIntAgi[5] = shield->baseInt;
+        vs_mainMenu_strIntAgi[6] = shield->baseAgility;
+    }
+    vs_mainMenu_equipmentSubtype = 8;
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
+
+void func_800FD700(int index)
+{
+    vs_battle_uiArmor uiArmor;
+    int i;
+    vs_battle_uiArmor* armor = &uiArmor;
+    int var_s2 = 0;
+
+    vs_mainMenu_resetStats();
+    if (index != 0) {
+        u_int temp_a0 = D_80102468[index - 1].bodyPart - 1;
+        if (temp_a0 < 5) {
+            armor = &vs_battle_characterState->unk3C->bodyParts[temp_a0].armor;
+        } else {
+            vs_battle_applyArmor(armor, &D_80102468[index - 1]);
+        }
+        var_s2 = armor->armor.category == 7;
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &armor->classAffinityCurrent, 0x40);
+
+        for (i = 0; i < 4; ++i) {
+            vs_mainMenu_equipmentStats[32 + i] = armor->types[i];
+        }
+
+        vs_mainMenu_setDpPp(armor->currentDp, armor->maxDp, 0, 0);
+        vs_mainMenu_setStrIntAgi(
+            armor->currentStr, armor->currentInt, armor->currentAgility, var_s2 + 1);
+        vs_mainMenu_strIntAgi[4] = armor->baseStr;
+        vs_mainMenu_strIntAgi[5] = armor->baseInt;
+        vs_mainMenu_strIntAgi[6] = armor->baseAgility;
+    }
+    if (var_s2 != 0) {
+        vs_mainMenu_equipmentSubtype = 0x20;
+    } else {
+        vs_mainMenu_equipmentSubtype = 0x10;
+    }
+    D_801024A1 = index;
+    func_800FBB8C(7);
+}
+
+void func_800FD878(int arg0)
+{
+    int i;
+    vs_battle_inventoryGem* temp_a2 = &D_80102458[arg0 - 1];
+
+    for (i = 0; i < 16; ++i) {
+        vs_mainMenu_equipmentStats[i] = temp_a2->classes[i & 7];
+        vs_mainMenu_equipmentStats[i + 0x10] = temp_a2->affinities[i & 7];
+    }
+
+    vs_mainMenu_setStrIntAgi(
+        temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
+    vs_mainMenu_equipmentSubtype = 0x40;
+    D_801024A1 = arg0;
+    func_800FBB8C(3);
+}
 
 char* func_800FD93C(int arg0)
 {
@@ -135,10 +612,7 @@ char* func_800FDD24(int arg0 __attribute__((unused)))
 
 void func_800FDD78(void) { D_801024B8 = 9; }
 
-/* This doesn't seem to be used for anything useful so it could be a bug in
- the original data definition and therefore correct to leave
- as extern and undefined here. Defining it causes aliasing issues when subalign = 4 */
-extern char D_8010214A;
+static char D_8010214A = 0;
 
 int func_800FDD88(int arg0)
 {
@@ -198,6 +672,7 @@ int func_800FDD88(int arg0)
     }
     return var_a0;
 }
+
 char vs_mainMenu_equipmentDetailNavigationMap[][4] = { { 0, 2, 1, 10 }, { 1, 2, 1, 0 },
     { 1, 3, 2, 11 }, { 2, 4, 3, 12 }, { 3, 5, 4, 13 }, { 4, 6, 5, 14 }, { 5, 7, 6, 16 },
     { 6, 8, 7, 17 }, { 7, 8, 8, 18 }, { 9, 10, 0, 9 }, { 9, 11, 0, 10 },

@@ -1,5 +1,5 @@
 D_800F98A8 = 0x800F98A8; // type:asciz size:0x70
-_getEquipmentMaxStats = 0x800FA598;
+vs_mainMenu_getEquipmentMaxStats = 0x800FA598;
 vs_mainMenu_menuItemLeaveLeft = 0x800FA810;
 vs_mainMenu_menuItemLeaveRight = 0x800FA8A0;
 vs_mainMenu_clearMenuExcept = 0x800FA8E0;

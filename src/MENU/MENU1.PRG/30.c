@@ -1,6 +1,6 @@
 #include "30.h"
 #include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/BATTLE/BATTLE.PRG/menuStrings.h"

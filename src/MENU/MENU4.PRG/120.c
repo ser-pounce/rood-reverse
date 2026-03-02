@@ -1,6 +1,7 @@
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/278.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
+#include "../MAINMENU.PRG/58EC.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
@@ -47,9 +48,7 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
             vs_mainMenu_equipmentStats[i + 32] = weapon->grip.types[i];
         }
 
-        do {
-            D_80102508 = weapon->damageType;
-        } while (0);
+        vs_mainMenu_equipmentStats[36] = weapon->damageType;
 
         vs_mainMenu_setDpPp(
             weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "C48.h"
-#include "413C.h"
+#include "2D10.h"
 #include "58EC.h"
 #include "../SLUS_010.40/main.h"
 #include "../MENUD.PRG/234.h"
@@ -38,21 +38,7 @@ void func_800FB3C8(int);
 
 extern u_long* D_1F800000[];
 
-extern char D_80102410[];
-extern int D_80102450;
-extern char D_80102454;
-extern char D_80102455;
-extern char D_80102456;
-extern char D_80102480[];
-extern short D_80102488[];
-extern short D_8010248E;
-extern char D_80102490[8];
-extern short D_80102498[];
-extern char D_801024A1;
 extern short D_801024AE;
-extern short D_801024E0[];
-extern short D_80102502;
-extern short D_8010253E;
 
 void func_800FA448(void)
 {
@@ -635,20 +621,20 @@ void func_800FB3C8(int arg0)
         sp18 = 0x60;
         break;
     case 1:
-        var_s7 = D_801024E0;
-        sp20 = &D_801024E0[8];
-        sp24 = &D_801024E0[0x28];
+        var_s7 = vs_mainMenu_equipmentStats + 16;
+        sp20 = &var_s7[8];
+        sp24 = &var_s7[0x28];
         sp18 = 0x70;
-        sp1C = D_801024E0[0];
+        sp1C = var_s7[0];
         for (i = 0; i < 7; ++i) {
-            if (sp1C < D_801024E0[i]) {
-                sp1C = D_801024E0[i];
+            if (sp1C < var_s7[i]) {
+                sp1C = var_s7[i];
             }
         }
         break;
     case 2:
-        var_s7 = &D_80102502;
-        sp20 = &D_80102502;
+        var_s7 = vs_mainMenu_equipmentStats + 33;
+        sp20 = var_s7;
         sp18 = 0x30;
         break;
     }
@@ -660,7 +646,7 @@ void func_800FB3C8(int arg0)
 
         j = var_s6 >> 4;
 
-        if (D_8010253E != 0) {
+        if (vs_mainMenu_equipmentStats[63] != 0) {
             if ((D_80102544 == 7) && (sp10 != 2)) {
                 i = func_800FFE20(var_s7[j] - sp24[j],
                     ((arg0 + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
@@ -698,7 +684,7 @@ void func_800FB3C8(int arg0)
                     sp1C = 0xFFFF;
                 }
             } else {
-                if (j != (D_80102508 - 1)) {
+                if (j != (vs_mainMenu_equipmentStats[36] - 1)) {
                     i = 0x404040;
                 }
                 vs_mainMenu_printIntColor(
@@ -920,7 +906,7 @@ void vs_mainMenu_renderEquipStats(int arg0)
     vs_battle_actor2* actor;
 
     position = vs_getXY(248, 126);
-    actor = vs_battle_actors[D_8010248E]->unk3C;
+    actor = vs_battle_actors[D_80102488[3]]->unk3C;
     temp_s4 = D_1F800000[1] - 6;
 
     if (arg0 != 0) {

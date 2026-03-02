@@ -3,13 +3,6 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-typedef struct {
-    short strength;
-    short intelligence;
-    short agility;
-    short unk6;
-} vs_mainMenu_strIntAgi_t;
-
 enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 
 void func_800FA448(void);
@@ -47,7 +40,6 @@ void vs_mainMenu_setGemUi(
     vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
 void vs_mainMenu_setItemUi(
     vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
-void vs_mainMenu_setUiWeaponStats(int);
 void vs_mainMenu_setUiBladeStats(int);
 void vs_mainMenu_setUiGripStats(int);
 void func_800FD5A0(int);
@@ -58,17 +50,4 @@ void func_8010044C(u_int*);
 
 extern char vs_mainMenu_weaponHands[];
 extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
-extern short vs_mainMenu_strIntAgi[8];
-extern char D_801024B9;
-extern short vs_mainMenu_equipmentStats[0x40];
-extern short D_80102508;
-extern u_short* vs_mainMenu_itemHelp;
-extern char D_80102544;
-extern char vs_mainMenu_equipmentSubtype;
 extern char D_80102578;
-extern vs_battle_inventoryGem* D_80102458;
-extern vs_battle_inventoryGrip* D_80102460;
-extern vs_battle_inventoryBlade* D_80102464;
-extern vs_battle_inventoryArmor* D_80102468;
-extern vs_battle_inventoryShield* D_8010246C;
-extern vs_battle_inventoryWeapon* D_80102470;

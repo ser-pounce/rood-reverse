@@ -1,6 +1,7 @@
 #include "common.h"
-#include "413C.h"
+#include "2D10.h"
 #include "C48.h"
+#include "58EC.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -322,7 +323,7 @@ void vs_mainMenu_setItemUi(
 
 void vs_mainMenu_resetStats(void)
 {
-    vs_battle_rMemzero(vs_mainMenu_equipmentStats, sizeof vs_mainMenu_equipmentStats);
+    vs_battle_rMemzero(&vs_mainMenu_equipmentStats, sizeof vs_mainMenu_equipmentStats);
     vs_mainMenu_setDpPp(0, 0, 0, 0);
     vs_mainMenu_setStrIntAgi(0, 0, 0, 1);
 }
@@ -345,13 +346,14 @@ void vs_mainMenu_setUiWeaponStats(int index)
             vs_menuD_initUiWeapon(
                 weapon, &D_80102470[index - 1], &vs_menuD_containerData->data);
         }
-        vs_battle_memcpy(vs_mainMenu_equipmentStats, &weapon->classAffinityCurrent, 0x40);
+        vs_battle_memcpy(vs_mainMenu_equipmentStats, &weapon->classAffinityCurrent,
+            sizeof weapon->classAffinityCurrent);
 
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[32 + i] = weapon->grip.types[i];
         }
 
-        D_80102508 = weapon->damageType;
+        vs_mainMenu_equipmentStats[36] = weapon->damageType;
         do {
         } while (0);
         vs_mainMenu_setDpPp(
@@ -391,7 +393,7 @@ void vs_mainMenu_setUiGripStats(int arg0)
     vs_battle_inventoryGrip* grip = &D_80102460[arg0 - 1];
 
     for (i = 0; i < 4; ++i) {
-        vs_mainMenu_equipmentStats[i + 0x20] = grip->types[i];
+        vs_mainMenu_equipmentStats[i + 32] = grip->types[i];
     }
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     vs_mainMenu_equipmentSubtype = 4;
@@ -479,7 +481,7 @@ void func_800FD878(int arg0)
 
     for (i = 0; i < 16; ++i) {
         vs_mainMenu_equipmentStats[i] = temp_a2->classes[i & 7];
-        vs_mainMenu_equipmentStats[i + 0x10] = temp_a2->affinities[i & 7];
+        vs_mainMenu_equipmentStats[i + 16] = temp_a2->affinities[i & 7];
     }
 
     vs_mainMenu_setStrIntAgi(
@@ -749,11 +751,11 @@ void func_800FDEBC(void)
     }
     if (vs_mainMenu_equipmentSubtype & 1) {
         vs_mainMenu_drawDpPpbars(0xB);
-        vs_mainMenu_setUiWeaponStats((int)D_801024A1);
+        vs_mainMenu_setUiWeaponStats(D_801024A1);
     }
     if (vs_mainMenu_equipmentSubtype & 8) {
         vs_mainMenu_drawDpPpbars(0xB);
-        func_800FD5A0((int)D_801024A1);
+        func_800FD5A0(D_801024A1);
     }
     if (vs_mainMenu_equipmentSubtype & 0x10) {
         vs_mainMenu_drawDpPpbars(9);
@@ -906,9 +908,6 @@ void vs_mainMenu_initItem(int arg0, int arg1)
     }
     }
 }
-
-extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
-extern char _itemNamesLoading;
 
 int vs_mainMenu_loadItemNames(int arg0)
 {

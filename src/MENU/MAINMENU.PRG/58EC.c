@@ -1,7 +1,7 @@
 #include "common.h"
 #include "58EC.h"
 #include "C48.h"
-#include "413C.h"
+#include "2D10.h"
 #include "../../SLUS_010.40/overlay.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -14,8 +14,9 @@ typedef struct {
     char x;
 } textHeader_t;
 
+extern textHeader_t _textHeaders[2];
+
 extern u_long* D_1F800000[];
-extern textHeader_t _textHeaders[];
 
 static char D_801022C4 = 0;
 static u_short* D_801022C8 = NULL;
@@ -23,8 +24,6 @@ static int D_801022CC = 0;
 static char D_801022D0 = 0;
 static char D_801022D1 = 0;
 static char D_801022D2 = 0;
-
-extern char D_801024A0;
 
 void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
 {
@@ -1469,3 +1468,40 @@ void func_80101F38(void)
 // Some kind of junk
 static u_short _0 __attribute__((unused)) = 0xF800;
 static int _1 __attribute__((unused)) = 0x38B1F8F8;
+
+// Below might actually be .bss but matching is not trivial,
+// partly due to non-zero garbage
+char D_80102410[64] = { 0 };
+int D_80102450 = 0;
+char D_80102454 = 0;
+char D_80102455 = 0;
+char D_80102456 = 0;
+vs_battle_inventoryGem* D_80102458 = NULL;
+vs_menu_inventoryStorage_t* vs_menu_inventoryStorage = NULL;
+vs_battle_inventoryGrip* D_80102460 = NULL;
+vs_battle_inventoryBlade* D_80102464 = NULL;
+vs_battle_inventoryArmor* D_80102468 = NULL;
+vs_battle_inventoryShield* D_8010246C = NULL;
+vs_battle_inventoryWeapon* D_80102470 = NULL;
+static int _2 = 0x0000D200; // Garbage
+vs_main_CdQueueSlot* _itemNamesCdQueueSlot = NULL;
+char _itemNamesLoading = 0;
+char D_80102480[8] = { 0 };
+short D_80102488[4] = { 0 };
+char D_80102490[8] = { 0 };
+short D_80102498[4] = { 0 };
+char D_801024A0 = 0;
+char D_801024A1 = 0;
+u_short* vs_mainMenu_menu12Text = NULL;
+short vs_mainMenu_strIntAgi[8] = { 0 };
+u_char D_801024B8 = 0;
+char D_801024B9 = 0;
+static char _3[0] = { 0 };
+short vs_mainMenu_equipmentStats[64] = { 0 };
+u_short* vs_mainMenu_itemHelp = 0;
+char D_80102544 = 0;
+char vs_mainMenu_equipmentSubtype = 0;
+static char _4 = 0;
+static char _5 = 0xF8; // More garbage
+static char _6[14] = { 0 };
+static textHeader_t _textHeaders[2] = { { { 0 } } };

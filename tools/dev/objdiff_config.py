@@ -41,7 +41,9 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                 "complete": str(name) in {    
                     "SLUS_010.40/overlay",
                     "MAINMENU.PRG/224",
-                    "MAINMENU.PRG/8170",
+                    "MAINMENU.PRG/C48",
+                    "MAINMENU.PRG/2D10",
+                    "MAINMENU.PRG/58EC",
                     "MENU0.PRG/84",
                     "MENU1.PRG/30",
                     "MENU2.PRG/64",

@@ -36,11 +36,10 @@ segments:
     align: 4
     subsegments:
       - [0x00, .rodata, C48]
-      - [0x12C, .rodata, 413C]
+      - [0x12C, .rodata, 2D10]
       - [0x1F8, .rodata, 58EC]
       - [0x224, c]
       - [0xC48, c]
-      - [0x413C, c]
+      - [0x2D10, c]
       - [0x58EC, c]
-      - [0x8C10, data]
   - [0x8D79]

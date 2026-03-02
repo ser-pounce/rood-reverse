@@ -1,7 +1,7 @@
 #include "common.h"
 #include "../SLUS_010.40/sfx.h"
 #include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
 #include "../MAINMENU.PRG/58EC.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"

@@ -1,7 +1,7 @@
 #include "../../../build/assets/MENU/MENU8.PRG/rename.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"

@@ -1,7 +1,7 @@
 #include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include <memory.h>

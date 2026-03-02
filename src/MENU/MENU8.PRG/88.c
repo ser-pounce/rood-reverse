@@ -1,6 +1,6 @@
 #include "../../../build/assets/MENU/MENU8.PRG/menu.h"
 #include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/413C.h"
+#include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 static u_short _menuStrings[] = {

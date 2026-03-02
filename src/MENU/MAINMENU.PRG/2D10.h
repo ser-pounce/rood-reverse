@@ -48,6 +48,7 @@ void func_80101118(int);
 int func_80101268(u_int, int, vs_battle_menuItem_t*, u_long*);
 void func_801013F8(int);
 void func_8010154C(vs_battle_menuItem_t* arg0);
+void vs_mainMenu_setUiWeaponStats(int);
 
 extern char vs_mainMenu_isLevelledSpell;
 extern char vs_mainMenu_equipmentDetailNavigationMap[][4];
@@ -65,6 +66,3 @@ extern char D_801022DC;
 extern char D_801023D0;
 extern u_short* D_801023D4;
 extern char D_801023E3;
-extern char D_801024A1;
-extern u_char D_801024B8;
-extern u_short* vs_mainMenu_menu12Text;

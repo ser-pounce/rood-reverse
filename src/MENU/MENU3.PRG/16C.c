@@ -96,6 +96,7 @@ extern char D_80109715;
 extern char D_80109716;
 extern char D_80109717;
 extern int D_80109718;
+extern char D_8010971C[];
 extern void* D_8010975C;
 extern int D_80109760;
 extern char D_80109764;
@@ -1045,8 +1046,98 @@ int func_80104F50(int arg0, int arg1)
     return var_v1 & 0x7F;
 }
 
-// https://decomp.me/scratch/MXJiz
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80104F94);
+int func_80104F94(int arg0, char** arg1, int* arg2, char* arg3)
+{
+    int temp_v0;
+    int var_s3;
+    int i;
+    char* sp10 = vs_mainMenu_inventoryIndices[arg0];
+    int sp14 = 0;
+
+    for (i = 0; i < vs_mainMenu_inventoryItemCapacities[arg0];
+         sp14++, i++, arg3 += 0x60) {
+
+        int temp_s1_2 = sp10[i];
+
+        if (temp_s1_2 == 0) {
+            break;
+        }
+
+        temp_s1_2 = sp10[i] - 1;
+        var_s3 = 0;
+
+        switch (arg0) {
+        case 0:
+            vs_mainMenu_initUiWeapon(
+                &vs_battle_inventory.weapons[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            if (vs_battle_inventory.weapons[temp_s1_2].isEquipped != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 1:
+            vs_mainMenu_setBladeUi(
+                &vs_battle_inventory.blades[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            break;
+        case 2:
+            vs_mainMenu_setGripUi(
+                &vs_battle_inventory.grips[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            break;
+        case 3:
+            vs_mainMenu_initUiShield(
+                &vs_battle_inventory.shields[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            if (vs_battle_inventory.shields[temp_s1_2].isEquipped != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 4:
+            vs_mainMenu_setAccessoryUi(
+                &vs_battle_inventory.armor[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            if (vs_battle_inventory.armor[temp_s1_2].bodyPart != 0) {
+                var_s3 = 0xCA00;
+            }
+            break;
+        case 5:
+            vs_mainMenu_setGemUi(
+                &vs_battle_inventory.gems[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+            break;
+        case 6: {
+            u_int var_a0;
+            vs_mainMenu_setItemUi(
+                &vs_battle_inventory.items[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+
+            var_a0 = D_80102214[vs_battle_inventory.items[temp_s1_2].id - 0x143];
+
+            if ((var_a0 - 0x6A) < 0x1C) {
+                int j;
+                for (j = 0; j < 3; ++j) {
+                    if (vs_main_skills[var_a0].unlocked) {
+                        ++var_a0;
+                    }
+                }
+            }
+            D_8010971C[sp14] = var_a0;
+            break;
+        }
+        }
+
+        temp_v0 = func_80104EC0(arg0, temp_s1_2);
+        if (temp_v0 != 0) {
+            var_s3 = 0xCA00;
+            if (vs_battle_inventory.weapons[temp_v0 - 1].isEquipped == 0) {
+                var_s3 = 0xCC00;
+            }
+        }
+        temp_v0 = func_80104F50(arg0, temp_s1_2);
+        if (temp_v0 != 0) {
+            var_s3 = 0xCA00;
+            if (vs_battle_inventory.shields[temp_v0 - 1].isEquipped == 0) {
+                var_s3 = 0xCC00;
+            }
+        }
+        arg2[i] |= var_s3;
+    }
+    return sp14;
+}
 
 void func_80105314(int arg0)
 {

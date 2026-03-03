@@ -1343,7 +1343,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
                 } while (0);
             } else {
                 if (c == vs_char_terminator) {
-                    element->text[i] = 0xFF;
+                    element->text[i] = vs_char_printString;
                     return element;
                 }
                 if (c >= vs_char_nonPrinting) {
@@ -1353,7 +1353,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
             element->text[i++] = c;
         }
     } else {
-        element->text[0] = 0xFF;
+        element->text[0] = vs_char_printString;
     }
     return element;
 }

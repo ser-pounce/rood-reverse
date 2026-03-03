@@ -20,5 +20,6 @@ enum vs_string_chars {
     vs_char_spacing = 0xFA,
     vs_char_fontTable = 0xFB,
     vs_char_printHex = 0xFD,
-    vs_char_printDecimal = 0xFE
+    vs_char_printDecimal = 0xFE,
+    vs_char_printString = 0xFF
 };

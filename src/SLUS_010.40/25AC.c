@@ -90,6 +90,13 @@ typedef struct {
     int unk10;
 } func_800172D4_t;
 
+typedef struct {
+    void* unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+} D_800378C0_t;
+
 static int _isNotAkaoFormat(int*);
 int func_80013588(void*, int);
 void func_800135D8(void*, int, int, int);
@@ -126,6 +133,7 @@ extern void* _akaoSfxDataOffsets;
 extern u_short* _akaoSfxFlags;
 extern void* _akaoSfxData;
 extern int D_80037890[];
+extern D_800378C0_t D_800378C0;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AF8[];
@@ -196,7 +204,21 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001215C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001217C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800121F0);
+int func_800121F0(void* arg0, int arg1, int arg2, int arg3)
+{
+    void* var_v0;
+
+    var_v0 = (void*)-1;
+    if (_isNotAkaoFormat(arg0) == 0) {
+        D_800378C0.unk0 = arg0;
+        D_800378C0.unk4 = (int)(arg1 & 0xFFFFFF);
+        D_800378C0.unk8 = (int)(arg2 & 0xFF);
+        D_800378C0.unkC = (int)(arg3 & 0x7F);
+        func_80018C30(0x24);
+        var_v0 = arg0;
+    }
+    return (u_long)var_v0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012288);
 

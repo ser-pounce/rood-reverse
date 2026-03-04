@@ -405,7 +405,15 @@ int vs_sound_setCdVol(u_int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800132C4);
+void func_800132C4(void* arg0, int arg1, int arg2)
+{
+    if (_isNotAkaoFormat(arg0) == 0) {
+        D_800378C0.unk0 = arg0;
+        D_800378C0.unk4 = (arg1 & 0xFF) << 8;
+        D_800378C0.unk8 = arg2;
+        func_80018C30(0xE0);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013328);
 

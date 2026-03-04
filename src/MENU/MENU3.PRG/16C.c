@@ -49,7 +49,7 @@ extern char D_801095A8[]; // size 0x40?
 extern char D_801095E8[]; // size 4?
 extern char D_801095EC[]; // size 8?
 extern u_char* D_801095F4[]; // unknown size
-extern void (*D_8010962C[])(int);
+extern int (*D_8010962C[])(int);
 extern int D_80109644;
 extern char D_80109648;
 extern char D_80109649;
@@ -1240,13 +1240,16 @@ void func_80106BB4(int arg0)
 // https://decomp.me/scratch/T9DYj
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80106C94);
 
+// https://decomp.me/scratch/qqZpb
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107148);
 
+// https://decomp.me/scratch/7uF9O
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107620);
 
+// https://decomp.me/scratch/OKZQq
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107B14);
 
-void func_80108010(int arg0)
+int func_80108010(int arg0)
 {
     if (arg0 != 0) {
         if (arg0 == 8) {
@@ -1260,7 +1263,7 @@ void func_80108010(int arg0)
             }
         }
     }
-    D_8010962C[D_801096A3](arg0);
+    return D_8010962C[D_801096A3](arg0);
 }
 
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80108088);

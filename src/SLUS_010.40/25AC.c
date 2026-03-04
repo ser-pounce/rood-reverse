@@ -99,7 +99,7 @@ typedef struct {
 
 static int _isNotAkaoFormat(int*);
 int func_80013588(void*, int);
-void func_800135D8(void*, int, int, int);
+int func_800135D8(void*, int, int, int);
 void func_8001369C(void);
 static void _soundInit(void);
 static void func_80013AE8(u_int);
@@ -466,7 +466,14 @@ static void _waitTransferAvailable(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013588);
+int func_80013588(void* arg0, int arg1)
+{
+    if (_isNotAkaoFormat(arg0) == 0) {
+        func_800135D8(arg0, arg1, ((int*)arg0)[6], ((int*)arg0)[4]);
+        return 0;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 

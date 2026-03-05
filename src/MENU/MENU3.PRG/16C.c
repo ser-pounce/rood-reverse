@@ -37,6 +37,7 @@ int func_801053EC(int);
 void func_8010659C(int);
 int func_80108088(int);
 void func_80108518(int);
+int func_801090C4(int, int, int);
 
 extern void* D_1F800000[];
 
@@ -87,6 +88,11 @@ extern u_char D_80109669;
 extern int D_80109684;
 extern char D_80109688;
 extern char D_80109689;
+extern int D_8010968C;
+extern char D_80109690;
+extern char D_80109691;
+extern char D_80109692;
+extern char D_80109693;
 extern u_char D_801096A3;
 extern int D_801096AC;
 extern vs_unk_gfx_t2 D_801096BC;
@@ -1360,8 +1366,142 @@ int func_80106C94(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/qqZpb
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107148);
+int func_80107148(int arg0)
+{
+    int var_a0;
+    int i;
+    int var_s5;
+    int var_s0;
+    int var_s0_2;
+    vs_battle_inventoryBlade* blade;
+    vs_battle_inventoryWeapon* weapon;
+
+    if (arg0 != 0) {
+        for (i = 0; i < 8; ++i) {
+            var_s0 = D_800619D8.unk0[i];
+            if ((var_s0 != 0)
+                && (vs_battle_inventory.weapons[var_s0 - 1].isEquipped != 0)) {
+                break;
+            }
+        }
+
+        if (i == 8) {
+            var_s0 = 0;
+        }
+
+        vs_mainMenu_setUiWeaponStats(var_s0);
+        vs_mainMenu_drawClassAffinityType(7);
+        vs_mainMenu_drawDpPpbars(3);
+        vs_mainMenu_renderEquipStats(1);
+        D_80109690 = 0;
+        return 0;
+    }
+
+    var_s0 = D_80109690;
+
+    switch (var_s0) {
+    case 0:
+        if (vs_mainmenu_ready() != 0) {
+            int temp_s7 = vs_mainMenu_getItemCount(0, NULL);
+            var_a0 = 0;
+
+            for (i = 0; i < 8; ++i) {
+                if (vs_battle_inventory.weapons[i].isEquipped != 0) {
+                    var_a0 = 1;
+                }
+            }
+            {
+                char textBuf[(temp_s7 + 1) * 96];
+                char* menuText[(temp_s7 + 1) * 2];
+                int rowTypes[(temp_s7 + 1)];
+
+                if (var_a0 == 0) {
+                    for (i = 0; i < 2; ++i) {
+                        menuText[i] = (char*)&D_801093B8[D_801093B8[i + 20]];
+                    }
+                    rowTypes[0] = 1;
+                } else {
+                    for (i = 0; i < temp_s7; ++i) {
+                        var_s0_2 = D_800619D8.unk0[i];
+                        if ((var_s0_2 != 0)
+                            && (vs_battle_inventory.weapons[var_s0_2 - 1].isEquipped
+                                != 0)) {
+                            vs_mainMenu_initUiWeapon(
+                                &vs_battle_inventory.weapons[var_s0_2 - 1], menuText,
+                                rowTypes, textBuf);
+                            rowTypes[0] |= var_s0_2 << 0x13;
+                        }
+                    }
+                }
+
+                var_s5 = 1;
+
+                for (i = 0; i < temp_s7; ++i) {
+                    var_s0_2 = D_800619D8.unk0[i];
+                    if (var_s0_2 != 0) {
+                        vs_battle_inventoryWeapon* weapon =
+                            &vs_battle_inventory.weapons[var_s0_2 - 1];
+                        if (weapon->isEquipped == 0) {
+                            vs_mainMenu_initUiWeapon(weapon, menuText + var_s5 * 2,
+                                &rowTypes[var_s5], textBuf + var_s5 * 0x60);
+                            rowTypes[var_s5] |= var_s0_2 << 0x13;
+                            ++var_s5;
+                        }
+                    }
+                }
+                func_80106390(var_s5, (func_80106390_t*)menuText, rowTypes);
+                D_80109690 = 1;
+            }
+        }
+        break;
+    case 1:
+        vs_mainMenu_setUiWeaponStats(D_80109767);
+        func_8010659C(0);
+        D_8010968C = func_80106574() + 1;
+        if (D_8010968C != 0) {
+            vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
+            vs_mainMenu_menuItemLeaveLeft(-1);
+            vs_mainMenu_drawClassAffinityType(-1);
+            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderEquipStats(2);
+            if (D_8010968C < 0) {
+                D_80109690 = 3;
+            } else {
+                vs_mainMenu_unequipAllWeapons();
+                if (D_8010968C == var_s0) {
+                    D_80109691 = 10;
+                    D_80109692 = 0;
+                    D_80109693 = 0;
+                } else {
+                    weapon = &vs_battle_inventory.weapons[D_80109767 - 1];
+                    weapon->isEquipped = var_s0;
+                    blade = &vs_battle_inventory.blades[weapon->blade - 1];
+                    D_80109691 = blade->category;
+                    D_80109692 = blade->wepId;
+                    D_80109693 = blade->material;
+                    if (vs_mainMenu_weaponHands[D_80109691 - 1] != 0) {
+                        vs_mainMenu_unequipShield();
+                    }
+                    vs_battle_equipWeapon(weapon);
+                }
+                D_80109690 = 2;
+            }
+        }
+        break;
+    case 2:
+        if (func_801090C4(D_80109691, D_80109692, D_80109693) != 0) {
+            break;
+        }
+        D_80109690 = 3;
+        // Fallthrough
+    case 3:
+        if (vs_mainmenu_ready() != 0) {
+            return D_8010968C;
+        }
+        break;
+    }
+    return 0;
+}
 
 // https://decomp.me/scratch/7uF9O
 INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_80107620);

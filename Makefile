@@ -71,7 +71,7 @@ makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/
 ifneq ($(wildcard $(BUILD)/src),)
 deps != $(FIND) $(BUILD)/src -type f -name *.d
 endif
-compilers  := $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx)
+compilers  := $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx 2.8.1-psx)
 build_deps := $(DUMPSXISO) $(VPYTHON) $(compilers)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 

@@ -51,6 +51,7 @@ extern char D_801095A8[]; // size 0x40?
 extern char D_801095E8[]; // size 4?
 extern char D_801095EC[]; // size 8?
 extern u_char* D_801095F4[]; // unknown size
+extern char D_80109620;
 extern char D_80109624[];
 extern int (*D_8010962C[])(int);
 extern int D_80109644;
@@ -118,7 +119,7 @@ extern int D_80109718;
 extern char D_8010971C[];
 extern void* D_8010975C;
 extern int D_80109760;
-extern char D_80109764;
+extern u_char D_80109764;
 extern char D_80109765;
 extern char D_80109766;
 extern char D_80109767;
@@ -1231,7 +1232,171 @@ void func_80106390(int arg0, func_80106390_t* arg1, int* arg2)
 
 int func_80106574(void) { return D_8010975C != NULL ? -1 : D_80109760; }
 
-INCLUDE_ASM("build/src/MENU/MENU3.PRG/nonmatchings/16C", func_8010659C);
+void func_8010659C(int arg0)
+{
+    int temp_s0;
+    int temp_s4;
+    int i;
+    int temp_s6;
+    vs_battle_menuItem_t* temp_v0;
+
+    if (D_80109764 < 6) {
+        if (D_80109764 == D_80109765) {
+            D_80109764 = 0x10;
+        } else {
+            temp_v0 = vs_battle_setMenuItem(D_80109764 + 0x14, 0x140,
+                (D_80109764 * 0x10) + 0x12, 0x97, 0, D_8010975C + (D_80109764 << 7));
+            temp_v0->state = 2;
+            temp_v0->targetX = 0xA9;
+            temp_s0 = ((D_8010975C_t*)D_8010975C)[D_80109764].unk1C;
+            temp_v0->unk7 = temp_s0 & 1;
+            temp_v0->icon = (temp_s0 >> 0x1A);
+            if (((temp_s0 >> 9) & 0x7F) != 0) {
+                temp_v0->itemState = ((temp_s0 >> 9) & 0x7F) - 0x64;
+            }
+            temp_v0->material = (temp_s0 >> 0x10) & 7;
+            ++D_80109764;
+            if (D_80109764 == 6) {
+                if (D_80109765 >= 7) {
+                    temp_v0->unk5 = 2;
+                }
+                D_80109764 = 0x10;
+            }
+        }
+    } else {
+        temp_s6 = D_80109766;
+        temp_s4 = D_80109760 + temp_s6;
+        temp_v0 = vs_battle_getMenuItem(D_80109760 + 0x14);
+        vs_mainmenu_setMessage(D_8010975C + ((temp_s4 << 7) + 0x20));
+
+        switch (D_80109764) {
+        case 16:
+            if (vs_mainmenu_ready() != 0) {
+                D_80109764 = 0x11;
+                return;
+            }
+            return;
+        case 17:
+            if (vs_main_buttonsPressed.all & 0x10) {
+                if (!(arg0 & 2)) {
+                    vs_battle_playMenuLeaveSfx();
+                }
+                vs_main_freeHeapR(D_8010975C);
+                D_8010975C = NULL;
+                D_80109760 = -3;
+                return;
+            }
+            if (vs_main_buttonsPressed.all & 0x20) {
+                if (temp_v0->unk7 != 0) {
+                    func_800C02E0();
+                } else {
+                    vs_main_freeHeapR(D_8010975C);
+                    D_8010975C = NULL;
+                    D_80109760 = temp_s4;
+                    if (arg0 != 0) {
+                        if (temp_s4 == 0) {
+                            vs_main_playSfxDefault(0x7E, 0x22);
+                        } else {
+                            vs_main_playSfxDefault(0x7E, 0x21);
+                        }
+                    }
+                    return;
+                }
+            }
+            temp_v0->selected = 0;
+            if (vs_main_buttonsPressed.all & 0x40) {
+                vs_battle_playMenuLeaveSfx();
+                vs_main_freeHeapR(D_8010975C);
+                D_8010975C = NULL;
+                D_80109760 = -2;
+                return;
+            }
+            if (vs_main_buttonRepeat & 0x1000) {
+                if (D_80109765 < 7 || D_80109766 == 0) {
+                    if (D_80109760 != 0) {
+                        --D_80109760;
+                    }
+                } else if (D_80109760 == 2) {
+                    --D_80109766;
+                } else {
+                    --D_80109760;
+                }
+            }
+            if (vs_main_buttonRepeat & 0x4000) {
+                if (D_80109765 < 7) {
+                    if (D_80109760 < (D_80109765 - 1)) {
+                        ++D_80109760;
+                    }
+                } else if (D_80109766 == (D_80109765 - 6)) {
+                    if (D_80109760 < 5) {
+                        ++D_80109760;
+                    }
+                } else if (D_80109760 == 4) {
+                    ++D_80109766;
+                } else {
+                    ++D_80109760;
+                }
+            }
+            if (temp_s4 != (D_80109760 + D_80109766)) {
+                vs_battle_playMenuChangeSfx();
+
+                if (D_80109766 != temp_s6) {
+                    char buf[D_80109765];
+                    for (i = 0; i < D_80109765; ++i) {
+                        buf[i] = 0;
+                    }
+                    temp_s0 = D_80109765;
+
+                    if (D_80109765 >= 7) {
+                        temp_s0 = 6;
+                    }
+                    for (i = 1; i < temp_s0; ++i) {
+                        buf[i + temp_s6] = vs_battle_getMenuItem(i + 0x14)->unk4;
+                    }
+
+                    for (i = 1;;) {
+                        temp_v0 = vs_battle_setMenuItem(i + 0x14, 0xA9, 0x12 + i * 0x10,
+                            0x97, 0, D_8010975C + ((i + D_80109766) << 7));
+                        temp_v0->unk4 = buf[i + D_80109766];
+                        temp_s0 = ((D_8010975C_t*)D_8010975C)[i + D_80109766].unk1C;
+                        temp_v0->unk7 = temp_s0 & 1;
+                        temp_v0->icon = temp_s0 >> 0x1A;
+
+                        if (((temp_s0 >> 9) & 0x7F) != 0) {
+                            temp_v0->itemState = ((temp_s0 >> 9) & 0x7F) - 0x64;
+                        }
+
+                        temp_v0->material = (temp_s0 >> 0x10) & 7;
+                        i++;
+
+                        if (i == D_80109765) {
+                            break;
+                        }
+                        if (i == 6) {
+                            if ((D_80109766 + 6) < D_80109765) {
+                                temp_v0->unk5 = 2;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (D_80109766 != 0) {
+                        vs_battle_getMenuItem(0x15)->unk5 = 1;
+                    }
+                }
+                temp_s0 = ((D_8010975C_t*)D_8010975C)[D_80109760 + D_80109766].unk1C;
+                D_80109767 = (temp_s0 >> 0x13) & 0x7F;
+            }
+            vs_battle_getMenuItem(D_80109760 + 0x14)->selected = 1;
+            i = (((D_80109760 * 0x10) + 0xA) << 0x10) | 0x9B;
+            if (D_80109760 == 0) {
+                i -= 0xE;
+            }
+            D_80109620 = func_800FFCDC(D_80109620, i);
+            break;
+        }
+    }
+}
 
 void func_80106BB4(int arg0)
 {

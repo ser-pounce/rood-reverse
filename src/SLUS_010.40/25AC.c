@@ -97,11 +97,11 @@ typedef struct {
     int unkC;
 } D_800378C0_t;
 
-static int _isNotAkaoFormat(int*);
+static int Sound_IsNotAkaoFile(int*);
 int func_80013588(void*, int);
 int func_800135D8(void*, int, int, int);
 void func_8001369C(void);
-static void _soundInit(void);
+static void StartSound(void);
 static void func_80013AE8(u_int);
 void func_800161C4(int, int);
 void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
@@ -110,7 +110,7 @@ void func_80016744(func_800172D4_t*, void*, void*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
 long func_80019A58(void);
-static void _shutdown(void);
+static void StopSound(void);
 static void _writeSpu(char* data, u_int len);
 void spuTransferCallback(void);
 void func_8001D0E4(int, int, int, int);
@@ -129,9 +129,9 @@ extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
-extern void* _akaoSfxDataOffsets;
-extern u_short* _akaoSfxFlags;
-extern void* _akaoSfxData;
+extern void* g_Sound_SfxProgramOffsets;
+extern u_short* g_Sound_SfxMetadataTable;
+extern void* g_Sound_SfxProgramData;
 extern int D_80037890[];
 extern D_800378C0_t D_800378C0;
 extern char _spuMemInfo;
@@ -140,30 +140,30 @@ extern int D_80039AF8[];
 extern int D_80039AFC;
 extern D_80039B08_t D_80039B08;
 
-int vs_sound_init(void)
+int InitSound(void)
 {
-    _soundInit();
+    StartSound();
     return 0;
 }
 
-int vs_sound_shutdown(void)
+int TeardownSound(void)
 {
-    _shutdown();
+    StopSound();
     return 0;
 }
 
-int vs_sound_setCommonSfx(void* arg0)
+int Sound_BindAkaoSfxBlob(void* in_Blob)
 {
-    int notAkao = _isNotAkaoFormat(arg0);
+    int notAkao = Sound_IsNotAkaoFile(in_Blob);
 
-    arg0 += sizeof(AkaoSeqHeader);
+    in_Blob += sizeof(AkaoSeqHeader);
 
     if (notAkao == 0) {
-        _akaoSfxDataOffsets = arg0;
-        arg0 += 0x600;
-        _akaoSfxFlags = arg0;
-        arg0 += 0x300;
-        _akaoSfxData = arg0;
+        g_Sound_SfxProgramOffsets = in_Blob;
+        in_Blob += 0x600;
+        g_Sound_SfxMetadataTable = in_Blob;
+        in_Blob += 0x300;
+        g_Sound_SfxProgramData = in_Blob;
     }
     return notAkao;
 }
@@ -209,7 +209,7 @@ int func_800121F0(void* arg0, int arg1, int arg2, int arg3)
     void* var_v0;
 
     var_v0 = (void*)-1;
-    if (_isNotAkaoFormat(arg0) == 0) {
+    if (Sound_IsNotAkaoFile(arg0) == 0) {
         D_800378C0.unk0 = arg0;
         D_800378C0.unk4 = (int)(arg1 & 0xFFFFFF);
         D_800378C0.unk8 = (int)(arg2 & 0xFF);
@@ -249,7 +249,7 @@ int func_800123C8(vs_main_sfxContext* arg0)
     int ret = 0;
     if ((long)arg0 >= 0x80000000) {
         ret = arg0->unk9 >> 7;
-    } else if (_akaoSfxFlags[(long)arg0] & 0x8000) {
+    } else if (g_Sound_SfxMetadataTable[(long)arg0] & 0x8000) {
         ret = 1;
     }
     return ret;
@@ -407,7 +407,7 @@ int vs_sound_setCdVol(u_int arg0)
 
 void func_800132C4(void* arg0, int arg1, int arg2)
 {
-    if (_isNotAkaoFormat(arg0) == 0) {
+    if (Sound_IsNotAkaoFile(arg0) == 0) {
         D_800378C0.unk0 = arg0;
         D_800378C0.unk4 = (arg1 & 0xFF) << 8;
         D_800378C0.unk8 = arg2;
@@ -427,7 +427,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800133E0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013418);
 
-static int _isNotAkaoFormat(int* data)
+static int Sound_IsNotAkaoFile(int* data)
 {
     return data[0] - ('A' | ('K' << 8) | ('A' << 16) | ('O' << 24));
 }
@@ -468,7 +468,7 @@ static void _waitTransferAvailable(void)
 
 int func_80013588(void* arg0, int arg1)
 {
-    if (_isNotAkaoFormat(arg0) == 0) {
+    if (Sound_IsNotAkaoFile(arg0) == 0) {
         func_800135D8(arg0, arg1, ((int*)arg0)[6], ((int*)arg0)[4]);
         return 0;
     }
@@ -479,7 +479,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
-static void _soundInit(void)
+static void StartSound(void)
 {
     int event;
 
@@ -504,7 +504,7 @@ static void _soundInit(void)
         ;
 }
 
-static void _shutdown(void)
+static void StopSound(void)
 {
     if (_isSpuTransfer == 1) {
         _writeSpu(_soundFlush, 64);
@@ -708,8 +708,8 @@ void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
 
     index &= 0x3FF;
     index *= 2;
-    block2 = _akaoSfxData;
-    block0 = _akaoSfxDataOffsets;
+    block2 = g_Sound_SfxProgramData;
+    block0 = g_Sound_SfxProgramOffsets;
 
     *arg0 = block0[index] == 0xFFFF ? NULL : (void*)block2 + block0[index];
 
@@ -761,7 +761,7 @@ void func_800172D4(func_800172D4_t* arg0)
     void* akaoData;
 
     _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->index);
-    arg0->unk10 = func_80016DA8(_akaoSfxFlags[arg0->index]);
+    arg0->unk10 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->index]);
     func_80016744(arg0, akaoOffset, akaoData, 0);
 }
 

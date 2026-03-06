@@ -8118,7 +8118,7 @@ void vs_main_resetGame(void)
     _padSetActData(0, 1, 0);
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
-    vs_sound_shutdown();
+    TeardownSound();
     SpuQuit();
     ResetGraph(3);
     VSync(10);
@@ -8168,7 +8168,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     _padSetActData(0, 1, 0);
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
-    vs_sound_shutdown();
+    TeardownSound();
     SpuQuit();
     ResetGraph(3);
     vs_main_saveGameClearData = 1;
@@ -10439,7 +10439,7 @@ static void _loadMenuSound(void)
 {
     void* buf;
 
-    vs_sound_init();
+    InitSound();
     vs_sound_setCdVol(0x7F);
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
@@ -10454,7 +10454,7 @@ static void _loadMenuSound(void)
     func_800131DC(buf, 0, 1);
     vs_main_freeHeapR(buf);
     vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
-    vs_sound_setCommonSfx(_sfxData);
+    Sound_BindAkaoSfxBlob(_sfxData);
     D_8005FE70 = 1;
     D_8005FE74 = 2;
     D_8005FE78 = 0x80;

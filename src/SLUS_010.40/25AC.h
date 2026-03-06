@@ -8,9 +8,9 @@ typedef struct {
     char unk9;
 } vs_main_sfxContext;
 
-int vs_sound_shutdown(void);
-int vs_sound_init(void);
-int vs_sound_setCommonSfx(void* arg0);
+int TeardownSound(void);
+int InitSound(void);
+int Sound_BindAkaoSfxBlob(void* arg0);
 int func_80011EBC(u_int);
 int func_80011F08(void);
 int func_80011F90(void);

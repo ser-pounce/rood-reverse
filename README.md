@@ -59,6 +59,13 @@ The following files can be freely edited*, either as source code or by editing t
 ```
 data/MENU/
     ARMOR.SYD
+    BLADE.SYD
+    SHIELD.SYD
+    ITEMNAME.BIN
+    ITEMHELP.BIN
+    MAPBG.BIN
+    MCMAN.BIN
+    MAINMENU.PRG
     MENU0.PRG
     MENU1.PRG
     MENU2.PRG
@@ -69,19 +76,14 @@ data/MENU/
     MENUB.PRG
     MENUC.PRG
     MENUE.PRG
-    MCMAN.BIN
-    SHIELD.SYD
-    SPMCIMG.BIN
-    MAPBG.BIN
-    ITEMNAME.BIN
-    ITEMHELP.BIN
     MENU12.BIN
+    SPMCIMG.BIN
 
 data/SMALL/
-    DUMMY.ARM
-    SCEN001.ARM - SCEN031.ARM
     HELP01.HF0 - HELP14.HF0
     HELP01.HF1 - HELP14.HF1
+    DUMMY.ARM
+    SCEN001.ARM - SCEN031.ARM
 
 data/TITLE/
     TITLE.PRG

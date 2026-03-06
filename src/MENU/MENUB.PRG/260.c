@@ -1375,7 +1375,6 @@ int func_80105454(int arg0)
     char* temp_s1;
     char* temp_s2;
     char* temp_v0_7;
-    u_int temp_s5;
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
@@ -1462,7 +1461,7 @@ int func_80105454(int arg0)
             }
         } else {
             int s7;
-            temp_s5 = var_s4;
+            u_int temp_s5 = var_s4;
             var_s0 = temp_s5 < 6;
             D_8010A6BB = var_s0 + 1;
             D_8010A620 = vs_mainmenu_getSelectedRow() + 1;

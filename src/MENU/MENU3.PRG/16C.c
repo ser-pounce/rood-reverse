@@ -12,6 +12,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../../build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
+#include <libetc.h>
 
 // Incomplete def, size correct
 typedef struct {
@@ -36,25 +37,24 @@ void func_8010296C(char arg0)
     D_80109713 = arg0;
 }
 
-int func_80102988(int arg0, int arg1)
+int func_80102988(int itemCategory, int arg1)
 {
-    int temp_a1;
     int temp_s1;
 
-    if ((vs_main_buttonsState & 0xC) != 0xC) {
+    if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
         temp_s1 = arg1;
-        temp_a1 = 1;
-        arg0 = vs_mainMenu_getItemCount(arg0, 0);
-        if (vs_main_buttonRepeat & 4) {
-            arg1 = arg1 - temp_a1 + arg0;
+        itemCategory = vs_mainMenu_getItemCount(itemCategory, 0);
+        if (vs_main_buttonRepeat & PADL1) {
+            int v = arg1 - 1;
+            arg1 = v + itemCategory;
         }
-        if (vs_main_buttonRepeat & 8) {
+        if (vs_main_buttonRepeat & PADR1) {
             ++arg1;
         }
-        if (arg1 >= arg0) {
-            arg1 -= arg0;
+        if (arg1 >= itemCategory) {
+            arg1 -= itemCategory;
         }
-        if ((vs_main_buttonsPressed.all & 0xC) && (arg1 == temp_s1)) {
+        if ((vs_main_buttonsPressed.all & (PADL1 | PADR1)) && (arg1 == temp_s1)) {
             func_800C02E0();
         }
     }

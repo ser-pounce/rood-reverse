@@ -77,7 +77,8 @@ typedef struct {
     u_long x3y3;
 } VS_POLY_G4;
 
-#define vs_getXY(x, y) (((y)) << 16 | ((x) & 0xFFFF))
+#define vs_getXY(x, y) (((y) << 16) | ((x) & 0xFFFF))
+#define vs_getXY_2(x, y) (((x) & 0xFFFF) | ((y) << 16))
 #define vs_getWH(w, h) vs_getXY((w), (h))
 #define vs_getTag(type, addr) (((sizeof(type) / 4) << 24) | ((addr) & 0xFFFFFF))
 #define vs_getTpage(x, y, tp, abr, dtd)                                                  \

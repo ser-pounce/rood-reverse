@@ -11,7 +11,7 @@ void vs_mainMenu_unequipAllWeapons(void);
 void vs_mainMenu_unequipShield(void);
 void vs_mainMenu_initItem(int, int);
 int vs_mainMenu_ensureItemNamesLoaded(void);
-int vs_mainMenu_getItemCount(int, vs_battle_inventory_t*);
+int vs_mainMenu_getItemCount(int itemCategory, vs_battle_inventory_t* inventory);
 int vs_mainMenu_getFirstItem(int, vs_battle_inventory_t*);
 void func_800FF0EC(int, int, char**, int*);
 int func_800FF348(void);

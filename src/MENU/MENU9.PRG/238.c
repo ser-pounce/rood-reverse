@@ -20,6 +20,7 @@
 #include <abs.h>
 #include "insertTPage.h"
 #include "vs_string.h"
+#include "gpu.h"
 
 typedef struct {
     char unk0;
@@ -112,9 +113,11 @@ extern u_short _miscInfo[];
 
 extern char D_8010851C;
 extern char D_8010851D;
+extern char* D_80109878[];
 extern D_8010989C_t D_8010989C;
 extern char D_80109898;
 extern char D_80109899;
+extern char D_801098A0;
 extern short D_801098A4[];
 extern u_int D_801098C4[];
 extern int D_8010A214;
@@ -1925,8 +1928,112 @@ void func_80107090(void)
     }
 }
 
-// https://decomp.me/scratch/oR7eY
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80107120);
+void func_80107120(int arg0)
+{
+    char* sp18[] __attribute__((unused)) = { "EASY", "NORMAL" };
+    int sp20[] __attribute__((unused)) = { 0x808000, 0x8080 };
+    char sp28[16];
+    int sp38;
+    _gazetteRow* sp3C;
+    _gazetteRow* var_s1;
+    int var_fp;
+    int i;
+    int j;
+    int var_s7;
+    int temp_a3;
+    vs_battle_menuItem_t* temp_s2;
+    void** p;
+    void** r;
+    void** q;
+
+    var_s1 = _gazetteRows;
+    var_s7 = 0;
+    sp38 = vs_battle_menu9CursorMemory.gazettePage;
+
+    for (i = 0; i < 8; ++i, ++var_s1) {
+        if (var_s1->animationState != 0) {
+            if (!(--var_s1->animationState)) {
+                temp_s2 = vs_battle_setMenuItem(
+                    i, 0x140, 0x32 + i * 0x10, 0x88, 0, var_s1->title);
+                temp_s2->unk7 = var_s1->unk3;
+                temp_s2->state = 2;
+                temp_s2->targetX = 0xC2;
+            }
+        } else if (vs_battle_getMenuItem(i)->state == 1) {
+            ++var_s7;
+        }
+    }
+
+    var_s1 = _gazetteRows;
+
+    for (i = 0; i < 8; ++i) {
+        if ((var_s7 == 8) && (arg0 == var_s7)) {
+            temp_s2 = vs_battle_getMenuItem(i);
+            if (i == sp38) {
+                if (var_s1->selected == 0) {
+                    vs_mainmenu_setInformationMessage(var_s1->description);
+                }
+                var_s1->selected = 1;
+                temp_s2->selected = 1;
+                var_fp = (((sp38 * 0x10) + 0x2A) << 0x10) | 0xB6;
+                D_801098A0 = func_800FFCDC(D_801098A0, var_fp);
+                sp3C = var_s1;
+            } else {
+                var_s1->selected = 0;
+                temp_s2->selected = 0;
+            }
+        }
+        ++var_s1;
+    }
+    p = ((void**)0x1F800000);
+    vs_battle_renderTextRawColor(
+        "PLAYER TIME", vs_getXY((arg0 * 0x10) - 0x78, 0x20), 0x808080, p[1] + 0x1C);
+    func_801051AC((arg0 * 0x10) - 0x80, 0x20, 0x60, 0xC, 1);
+    vs_battle_renderTextRawColor(
+        "1ST", vs_getXY((arg0 * 0x10) - 0x68, 0x32), 0x808080, p[1] + 0x1C);
+    vs_battle_renderTextRawColor(
+        "2ND", vs_getXY((arg0 * 0x10) - 0x68, 0x50), 0x808080, p[1] + 0x1C);
+    vs_battle_renderTextRawColor(
+        "3RD", vs_getXY((arg0 * 0x10) - 0x68, 0x6E), 0x808080, p[1] + 0x1C);
+
+    for (j = 0; j < 3; ++j) {
+
+        temp_a3 = vs_main_scoredata.bossTimeTrialScores[sp38][j].value & 0xFFFFFF;
+
+        if (temp_a3 != 0x800000) {
+            int new_var2 = (arg0 * 0x10) - 0x3C;
+            sprintf(sp28, "$%02d:%02d:%02d", temp_a3 >> 0x10, (temp_a3 >> 8) & 0xFF,
+                vs_main_scoredata.bossTimeTrialScores[sp38][j].value & 0xFF);
+            q = ((void**)0x1F800000);
+            vs_battle_renderTextRawColor(sp28,
+                vs_getXY_2((arg0 * 0x10) - 0x28, 0x32 + j * 0x1E), 0x808080, q[1] + 0x1C);
+            sprintf(sp28, "ROUND    %d",
+                vs_main_scoredata.bossTimeTrialScores[sp38][j].time.unk24 + 1);
+            vs_battle_renderTextRawColor(
+                sp28, vs_getXY_2(new_var2, 0x3E + j * 0x1E), 0x808080, q[1] + 0x1C);
+        } else {
+            q = ((void**)0x1F800000);
+            vs_battle_renderTextRawColor("$--:--:--",
+                vs_getXY_2((arg0 * 0x10) - 0x28, 0x32 + j * 0x1E), 0x505050, q[1] + 0x1C);
+        }
+    }
+
+    func_801051AC((arg0 * 0x10) - 0x70, 0x32, 0x80, 0x54, 2);
+    r = ((void**)0x1F800000);
+    vs_battle_renderTextRawColor("REFERENCE TIME",
+        (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x8C0000, 0x808080, r[1] + 0x1C);
+    func_801051AC((arg0 * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
+
+    if ((var_s7 == 8) && (arg0 == var_s7)) {
+        if (sp3C->unk3 != 0) {
+            vs_battle_renderTextRawColor("$--:--:--", 0x9E0058, 0x505050, r[1] + 0x1C);
+        } else {
+            vs_battle_renderTextRawColor(
+                D_80109878[sp38], 0x9E0058, 0x808080, r[1] + 0x1C);
+        }
+    }
+    func_801051AC((arg0 * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
+}
 
 void func_80107600(void)
 {

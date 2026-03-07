@@ -1,5 +1,6 @@
 _getWeaponStat = 0x80103BE4;
 vs_menu3_exec = 0x80108970;
+_menuText = 0x801093B8;
 D_80109649 = 0x80109649;
 D_8010964D = 0x8010964D;
 D_8010964E = 0x8010964E;

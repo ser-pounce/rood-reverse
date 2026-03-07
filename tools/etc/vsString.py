@@ -88,7 +88,8 @@ jp_table_e = [
 # as it's the only common symbol not represented in the default text table.
 
 # String functions, 1-byte operand
-# 0xF6 -> |a-ln|: Font table for Japanese, not implemented currently
+# 0xED - 
+# 0xF7 -> |a-ln|: Font table for Japanese, not implemented currently
 # 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string before returning
 # 0xFA -> |>n|: Advances the next glyph position by n pixels
 # 0xFB -> |fn|: Manipulate font. n = 0-3 sets the color, n = 4 justifies the text,

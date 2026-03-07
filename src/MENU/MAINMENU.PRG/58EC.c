@@ -6,6 +6,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
+#include "vs_string.h"
 #include <libetc.h>
 
 typedef struct {
@@ -1014,7 +1015,8 @@ void func_80101118(int arg0)
     }
 }
 
-int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3)
+#pragma vsstring(start)
+int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* menuItem, u_long* arg3)
 {
     int i;
     int var_s2;
@@ -1023,9 +1025,9 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3
 
     int s7 = arg0 >> 0x1F;
     arg0 &= 0xFFFF;
-    new_var = 0xE5;
+    new_var = vs_char_nonPrinting;
 
-    if ((arg0 < new_var) && (arg0 == 0x8F)) {
+    if ((arg0 < new_var) && (arg0 == ' ')) {
         do {
             do {
                 return arg1 + 6;
@@ -1033,10 +1035,10 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3
         } while (0);
     }
 
-    i = arg2->unkA * 0x10;
+    i = menuItem->unkA * 16;
 
-    if (arg2->unkA == 0) {
-        i = arg2->unk7 * 0x30;
+    if (menuItem->unkA == 0) {
+        i = menuItem->unk7 * 48;
     }
 
     var_s2 = (((arg0 & 0x1FF) % 21) * 0xC) | (((arg0 & 0x1FF) / 21) * 0xC00)
@@ -1045,14 +1047,15 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* arg2, u_long* arg3
     for (i = 0; i < 12; ++i) {
 
         temp_v0_2 = vs_battle_setSprite(s7 == 0 ? (i * 8) + 0x108 : 0x160 - (i * 8),
-            (arg1 & 0xFFFF) | ((arg2->y + i) << 0x10), 0x1000C, arg3);
+            (arg1 & 0xFFFF) | ((menuItem->y + i) << 0x10), 0x1000C, arg3);
         temp_v0_2[4] = var_s2;
         temp_v0_2[1] = 0xE100002D;
-        var_s2 += 0x100;
+        var_s2 += 256;
     }
 
-    return arg1 + D_800EB810[arg0];
+    return arg1 + vs_battle_characterWidths[arg0];
 }
+#pragma vsstring(end)
 
 char D_801023E3 = 0;
 

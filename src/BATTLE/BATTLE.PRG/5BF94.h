@@ -268,10 +268,11 @@ int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920(void);
+int vs_battle_getTextLineLength(char* str);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_hitlocations[];
-extern char D_800EB810[];
+extern char vs_battle_characterWidths[];
 extern u_short D_800EA868[];
 extern char D_800EB9AE;
 extern char D_800EB9AF;

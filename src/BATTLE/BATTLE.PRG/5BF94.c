@@ -231,7 +231,31 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6BF0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6C8C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7010);
+#pragma vsstring(start)
+int vs_battle_getTextLineLength(char* str)
+{
+    int length = 0;
+
+    while (1) {
+        u_char c = *str++;
+        if (c < vs_char_nonPrinting) {
+            length += vs_battle_characterWidths[c];
+            continue;
+        } else if ((c == 0xE5) || (c == '\0') || (c == '\n')) {
+            return length / 6;
+        } else if (c == vs_char_spacing) {
+            length += *str++;
+        } else if (c == vs_char_printDecimal) {
+            c = *str++;
+            if (c > '9') {
+                length += (c / 10) * 6;
+            }
+        } else if (c >= vs_char_chunkSize) {
+            ++str;
+        }
+    }
+}
+#pragma vsstring(end)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C70F8);
 

@@ -871,8 +871,56 @@ void func_8010489C(int arg0, int arg1, int arg2)
 // https://decomp.me/scratch/UJOBa
 INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104914);
 
-// https://decomp.me/scratch/ZDcyC
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_80104A50);
+void func_80104A50(int arg0)
+{
+    RECT sp10;
+    int var_a1;
+    int var_a1_2;
+    int var_a2;
+    int i;
+    int new_var2;
+    int new_var3;
+    int new_var4;
+    int new_var5;
+
+    for (i = 0; i < 32; ++i) {
+
+        var_a1_2 = D_801098AC[0x80 + i];
+
+        var_a1 = ((D_801098AC[0x60 + i] & 0x1F) * arg0)
+               + ((D_801098AC[0x40 + i] & 0x1F) * (0x10 - arg0));
+
+        if (var_a1 < 0) {
+            var_a1 += 0xF;
+        }
+
+        new_var2 = (var_a1 >> 4) & 0x1F;
+
+        var_a2 = ((D_801098AC[0x60 + i] & 0x3E0) * arg0)
+               + ((D_801098AC[0x40 + i] & 0x3E0) * (0x10 - arg0));
+
+        if (var_a2 < 0) {
+            var_a2 += 0xF;
+        }
+
+        new_var4 = new_var2 | ((var_a2 >> 4) & 0x3E0);
+
+        var_a1_2 = ((D_801098AC[0x60 + i] & 0x7C00) * arg0)
+                 + ((D_801098AC[0x40 + i] & 0x7C00) * (0x10 - arg0));
+
+        if (var_a1_2 < 0) {
+            var_a1_2 += 0xF;
+        }
+
+        new_var3 = (var_a1_2 >> 4) & 0x7C00;
+
+        new_var5 = (new_var4 | new_var3) | (D_801098AC[0x60 + i] & 0x8000);
+        D_801098AC[0x80 + i] = new_var5;
+    }
+
+    setRECT(&sp10, 0x300, 0x1FF, 0xA0, 1);
+    LoadImage(&sp10, (u_long*)D_801098AC);
+}
 
 void func_80104B8C(int arg0, int arg1, int arg2)
 {

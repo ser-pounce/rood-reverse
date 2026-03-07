@@ -1796,7 +1796,7 @@ void func_80106780(void)
     }
 }
 
-// https://decomp.me/scratch/J4g91
+// https://decomp.me/scratch/Xo8T1
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
 
 void _toVsStringInt(char* buf, int value)

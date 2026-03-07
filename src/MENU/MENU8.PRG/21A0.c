@@ -578,7 +578,7 @@ static int func_801049A0(int arg0)
             vs_battle_stringContext.strings[0] = _nameBuffer;
             vs_battle_printf(vs_battle_stringBuf,
                 (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
-            vs_mainmenu_setMessage(vs_battle_stringBuf);
+            vs_mainmenu_setInformationMessage(vs_battle_stringBuf);
             _confirmScreen(1);
             D_80105F28 = 5;
         }

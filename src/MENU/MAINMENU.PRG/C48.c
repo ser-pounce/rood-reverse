@@ -519,7 +519,7 @@ void func_800FAEBC(int arg0)
         }
         D_80102455 = var_s5 == 0;
         if (D_80102455 != 0) {
-            vs_mainmenu_setMessage((char*)&vs_mainMenu_itemHelp[0x33E3]);
+            vs_mainmenu_setInformationMessage((char*)&vs_mainMenu_itemHelp[0x33E3]);
         } else {
             i = vs_main_settings.cursorMemory;
             if (D_80102456 != 0) {

@@ -119,7 +119,7 @@ vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
     int v = *((int*)&D_801022C8[(D_801022D2 + arg0) * 0x40 + 14]);
     temp_v0->unk7 = v & 1;
     if ((arg0 == 0) && (D_801022D2 != 0)) {
-        temp_v0->unk5 = 1;
+        temp_v0->fadeEffect = 1;
     }
     return temp_v0;
 }
@@ -145,13 +145,13 @@ void func_800FF43C(void)
         }
         if (D_801022C4 == 7) {
             if ((D_801022C4 + D_801022D2) < D_801022D1) {
-                menuItem->unk5 = 2;
+                menuItem->fadeEffect = 2;
             }
             D_801022C4 = 0x10;
         }
     } else {
         menuItem = vs_battle_getMenuItem(D_801022CC + 32);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)(D_801022C8 + (((D_801022CC + D_801022D2) << 6) + 16)));
 
         switch (D_801022C4) {
@@ -250,13 +250,14 @@ void func_800FF43C(void)
                         var_s1 = 7;
                     }
                     for (i = 0; i < var_s1; ++i) {
-                        unksp10[i + temp_s5] = vs_battle_getMenuItem(i + 0x20)->unk4;
+                        unksp10[i + temp_s5] =
+                            vs_battle_getMenuItem(i + 0x20)->animationState;
                     }
 
                     var_a0 = 0;
                     for (i = 0;;) {
                         menuItem = func_800FF388(i, 0);
-                        menuItem->unk4 = unksp10[i + D_801022D2];
+                        menuItem->animationState = unksp10[i + D_801022D2];
                         i += 1;
 
                         if (i == D_801022D1) {
@@ -265,7 +266,7 @@ void func_800FF43C(void)
 
                         if (i == 7) {
                             if ((D_801022D2 + 7) < D_801022D1) {
-                                menuItem->unk5 = 2;
+                                menuItem->fadeEffect = 2;
                             }
                             break;
                         }
@@ -371,7 +372,7 @@ void func_800FFBC8(void)
     func_800FFBA8();
 }
 
-void vs_mainmenu_setMessage(char* arg0)
+void vs_mainmenu_setInformationMessage(char* arg0)
 {
 #pragma vsstring(start)
     static char D_80102318[] =
@@ -786,7 +787,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
     temp_v0->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
     temp_v0->icon = (temp_a1 >> 0x1A);
     if ((arg0 == 0) && (D_801023DE != 0)) {
-        temp_v0->unk5 = 1;
+        temp_v0->fadeEffect = 1;
     }
     arg0 = (temp_a1 >> 9) & 0x7F;
     if (arg0 < 0x65) {
@@ -830,14 +831,14 @@ void func_80100A5C(void)
         }
         if (D_801023D0 == (0xA - D_801023DD)) {
             if ((D_801023D0 + D_801023DE) < D_801023E0) {
-                menuItem->unk5 = 2;
+                menuItem->fadeEffect = 2;
             }
             D_801023D0 = 0x10;
         }
     } else {
 
         menuItem = vs_battle_getMenuItem(_selectedRow + (D_801023DD * 10));
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)(D_801023D4 + (((_selectedRow + D_801023DE) << 6) + 16)));
 
         switch (D_801023D0) {
@@ -942,11 +943,11 @@ void func_80100A5C(void)
 
                     for (i = 0; i < var_s1; ++i) {
                         unksp10[i + temp_s5] =
-                            vs_battle_getMenuItem(i + (D_801023DD * 10))->unk4;
+                            vs_battle_getMenuItem(i + (D_801023DD * 10))->animationState;
                     }
                     for (i = 0;;) {
                         menuItem = func_801008F0(i, 0xC2 - D_801023DF);
-                        menuItem->unk4 = unksp10[i + D_801023DE];
+                        menuItem->animationState = unksp10[i + D_801023DE];
                         i += 1;
 
                         if (i == D_801023E0) {
@@ -954,7 +955,7 @@ void func_80100A5C(void)
                         }
                         if (i == (10 - D_801023DD)) {
                             if ((i + D_801023DE) < D_801023E0) {
-                                menuItem->unk5 = 2;
+                                menuItem->fadeEffect = 2;
                             }
                             break;
                         }
@@ -1127,8 +1128,8 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
     var_s5 = *(int*)&arg0->initialX;
     temp_s7 = D_1F800000[2] + 2;
     sp10 = arg0->w;
-    sp18 = arg0->unk4;
-    temp_fp = arg0->unk5 - 1;
+    sp18 = arg0->animationState;
+    temp_fp = arg0->fadeEffect - 1;
     sp1C = arg0->unk2;
 
     if (vs_main_frameBuf != D_80102408) {
@@ -1211,7 +1212,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         }
 
         if (sp18 != 0) {
-            arg0->unk4 = sp18 - 1;
+            arg0->animationState = sp18 - 1;
         }
 
         var_s5 = var_s5 + 0xFFF40000;
@@ -1399,7 +1400,7 @@ void func_80101970(void)
                 }
             }
             if (menuItem->initialX < 320) {
-                if (menuItem->unk5 != 0) {
+                if (menuItem->fadeEffect != 0) {
                     func_8010154C(menuItem);
                 } else {
                     func_800C9078(menuItem);
@@ -1418,7 +1419,7 @@ void func_80101970(void)
             j = menuItem->icon;
             if (j != 0) {
                 vs_mainMenu_drawRowIcon(
-                    (menuItem->unk5 << 0x10) | (menuItem->selected << 8) | j,
+                    (menuItem->fadeEffect << 0x10) | (menuItem->selected << 8) | j,
                     menuItem->initialX, menuItem->y - 2);
             }
             j = menuItem->material;

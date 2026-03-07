@@ -192,14 +192,14 @@ static int _abilityMenu(void)
         menuItem->state = 2;
         menuItem->targetX = 194;
         if ((_abilityMenuState == 0) && (_firstAbility != 0)) {
-            menuItem->unk5 = 1;
+            menuItem->fadeEffect = 1;
         }
         if (++_abilityMenuState == _abilityCount) {
             _abilityMenuState = init;
         }
         if (_abilityMenuState == 8) {
             if ((_firstAbility + 8u) < _abilityCount) {
-                menuItem->unk5 = 2;
+                menuItem->fadeEffect = 2;
             }
             _abilityMenuState = init;
         }
@@ -207,7 +207,7 @@ static int _abilityMenu(void)
     }
 
     vs_battle_getMenuItem(_highlightedAbility + 20);
-    vs_mainmenu_setMessage(
+    vs_mainmenu_setInformationMessage(
         (char*)(_abilityText + (((_highlightedAbility + _firstAbility) << 6) + 16)));
 
     switch (_abilityMenuState) {
@@ -359,22 +359,22 @@ static int _abilityMenu(void)
 
                 for (i = 0; i < ability; ++i) {
                     abilityBuf[i + previousFirstAbility] =
-                        vs_battle_getMenuItem(i + 20)->unk4;
+                        vs_battle_getMenuItem(i + 20)->animationState;
                 }
 
                 for (i = 0;;) {
                     menuItem = vs_battle_setMenuItem(i + 20, 194, i * 16 + 50, 0x7E, 0,
                         (char*)(_abilityText + ((_firstAbility + i) << 6)));
-                    menuItem->unk4 = abilityBuf[i + _firstAbility];
+                    menuItem->animationState = abilityBuf[i + _firstAbility];
                     if ((i == 0) && (_firstAbility != 0)) {
-                        menuItem->unk5 = 1;
+                        menuItem->fadeEffect = 1;
                     }
                     ++i;
                     if (i == _abilityCount) {
                         break;
                     } else if (i == 8) {
                         if ((_firstAbility + 8) < _abilityCount) {
-                            menuItem->unk5 = 2;
+                            menuItem->fadeEffect = 2;
                         }
                         break;
                     }

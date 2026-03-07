@@ -638,6 +638,17 @@ typedef struct {
     vs_unk_gfx_t2 unk14;
 } vs_unk_gfx_t;
 
+typedef struct {
+    u_char titlePage;
+    char titleRow;
+    u_char encyclopaediaPage;
+    char encyclopaediaRow;
+    char recordTimePage;
+    char recordTimeRow;
+    char gazettePage;
+    char gazetteRow;
+} vs_battle_menu9CursorMemory_t;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -717,7 +728,7 @@ extern short D_800F1BB6;
 extern short vs_battle_doorEntered;
 extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
-extern u_char D_800F1BF0[8];
+extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
 extern char D_800F1BF7;
 extern D_800F1BF8_t D_800F1BF8;
 extern void* D_800F1CBC;

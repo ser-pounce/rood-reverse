@@ -883,7 +883,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* target, int arg1)
             _selectedStatusModifier = yPos;
         }
     }
-    vs_mainmenu_setMessage((char*)&_statusStrings[_statusStrings
+    vs_mainmenu_setInformationMessage((char*)&_statusStrings[_statusStrings
             [_activeStatusModifiers[_selectedStatusModifier] + VS_status_INDEX_strDown]]);
     if (arg1 != 0) {
         D_801080C4 = func_800FFCDC(
@@ -1368,7 +1368,7 @@ static int _equipmentDetailScreen(int row)
                 menuItem->icon = (sp48 >> 0x1A);
                 menuItem->material = ((sp48 & 0xFFFF0000) >> 16) & 7;
 
-                vs_mainmenu_setMessage(sp18[1]);
+                vs_mainmenu_setInformationMessage(sp18[1]);
 
                 menuItem = vs_battle_setMenuItem(0x20, 0x10, 0x12, 0xA4, 8,
                     (char*)&_statusStrings
@@ -1474,7 +1474,7 @@ static int _equipmentDetailScreen(int row)
                 }
             }
         }
-        vs_mainmenu_setMessage(var_s3);
+        vs_mainmenu_setInformationMessage(var_s3);
         i = D_801021A0[newSelection];
         if ((_selectedEquipmentRow == 1)
             && ((_equipmentDetailSelectedElement - 10) < 2U)) {
@@ -1805,7 +1805,7 @@ static void _printSelectedLocationCondition(void)
                                               + VS_status_INDEX_critical]];
     vs_battle_printf(
         vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
-    vs_mainmenu_setMessage(vs_battle_stringBuf);
+    vs_mainmenu_setInformationMessage(vs_battle_stringBuf);
     _drawHitLocationStatuses(_selectedElement + 1);
 }
 
@@ -1921,7 +1921,7 @@ int vs_menu4_exec(char* state)
                     }
                     _printSelectedLocationCondition();
                 } else {
-                    vs_mainmenu_setMessage((char*)&_statusStrings
+                    vs_mainmenu_setInformationMessage((char*)&_statusStrings
                             [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
                 }
             }
@@ -2052,7 +2052,7 @@ int vs_menu4_exec(char* state)
                     if (userInput < 6) {
                         _printSelectedLocationCondition();
                     } else {
-                        vs_mainmenu_setMessage((char*)&_statusStrings
+                        vs_mainmenu_setInformationMessage((char*)&_statusStrings
                                 [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
                     }
                 }
@@ -2202,7 +2202,7 @@ int vs_menu4_exec(char* state)
                 D_801081EE = userInput;
             }
 
-            vs_mainmenu_setMessage((char*)&_statusStrings
+            vs_mainmenu_setInformationMessage((char*)&_statusStrings
                     [_statusStrings[userInput
                                     + (bodyParts != 3 ? VS_status_INDEX_physicalDefense
                                                       : VS_status_INDEX_bluntDefense)]]);

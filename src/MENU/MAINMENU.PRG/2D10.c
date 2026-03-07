@@ -806,7 +806,7 @@ void func_800FDEBC(void)
             }
         }
     }
-    vs_mainmenu_setMessage(var_s4);
+    vs_mainmenu_setInformationMessage(var_s4);
     i = D_801021A0[D_801024B8];
     if (D_801024B8 == 0xF) {
         i += D_8010214A << 0x14;

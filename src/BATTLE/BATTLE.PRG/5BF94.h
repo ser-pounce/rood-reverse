@@ -23,13 +23,19 @@ enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_drainMind = 0x5F
 };
 
+enum vs_battle_menuItem_fadeEffect {
+    menuItem_fadeEffect_none,
+    menuItem_fadeEffect_fadeTop,
+    menuItem_fadeEffect_fadeBottom
+};
+
 typedef struct {
     char state;
     u_char w;
     char unk2;
     char unk3;
-    char unk4;
-    char unk5;
+    char animationState;
+    char fadeEffect;
     char selected;
     char unk7;
     char unk8;

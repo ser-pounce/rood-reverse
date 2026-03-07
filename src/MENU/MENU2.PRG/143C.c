@@ -43,7 +43,7 @@ static int _breakArtUnlocked(int init)
         vs_battle_stringContext.strings[0] =
             (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponCategory]];
         vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
-        vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+        vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
         vs_main_skills[skillId].unlocked = 1;
         messageTimeout = 120;
@@ -179,7 +179,7 @@ static int _battleAbilityUnlocked(int arg0)
                 abilitiesBoth
             };
         case abilitiesNone:
-            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+            vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked]);
             state = showMessage;
             break;
@@ -296,7 +296,7 @@ static int _battleAbilityUnlocked(int arg0)
             func_800C8E04(3);
             skill = remainingChainAbilities[row];
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+            vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].unlocked = 1;
             state = showMessage;
@@ -314,7 +314,7 @@ static int _battleAbilityUnlocked(int arg0)
             func_800C8E04(3);
             skill = remainingDefenseAbilities[row];
             vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
-            vs_mainmenu_setMessage((char*)&_battleAbilityMenuStrings
+            vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
             vs_main_skills[skill].unlocked = 1;
             state = showMessage;

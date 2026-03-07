@@ -468,7 +468,7 @@ static void _navigateItemsList(int arg0)
             ++_itemsListState;
             if (_itemsListState == 6) {
                 if (_itemCount >= 7) {
-                    menuItem->unk5 = 2;
+                    menuItem->fadeEffect = 2;
                 }
                 _itemsListState = 16;
             }
@@ -477,7 +477,8 @@ static void _navigateItemsList(int arg0)
         previousWindow = _itemsListWindow;
         previousSelection = _itemsListSelection + previousWindow;
         menuItem = vs_battle_getMenuItem(_itemsListSelection + 20);
-        vs_mainmenu_setMessage((char*)&_itemsList[previousSelection * 64 + 16]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&_itemsList[previousSelection * 64 + 16]);
 
         switch (_itemsListState) {
         case 16:
@@ -566,14 +567,14 @@ static void _navigateItemsList(int arg0)
 
                     for (i = 1; i < itemInfo; ++i) {
                         menuItem = vs_battle_getMenuItem(i + 20);
-                        unksp18[i + previousWindow] = menuItem->unk4;
+                        unksp18[i + previousWindow] = menuItem->animationState;
                     }
 
                     for (i = 1;;) {
                         int v0;
                         menuItem = vs_battle_setMenuItem(i + 20, 169, i * 16 + 18, 151, 0,
                             (char*)&_itemsList[(i + _itemsListWindow) * 64]);
-                        menuItem->unk4 = *(unksp18 + (i + _itemsListWindow));
+                        menuItem->animationState = *(unksp18 + (i + _itemsListWindow));
                         v0 = _itemsListWindow;
                         v0 = i + _itemsListWindow;
                         itemInfo = *(int*)&_itemsList[v0 * 64 + 14];
@@ -590,13 +591,13 @@ static void _navigateItemsList(int arg0)
                         }
                         if (i == 6) {
                             if ((_itemsListWindow + 6) < _itemCount) {
-                                menuItem->unk5 = 2;
+                                menuItem->fadeEffect = 2;
                             }
                             break;
                         }
                     }
                     if (_itemsListWindow != 0) {
-                        vs_battle_getMenuItem(21)->unk5 = 1;
+                        vs_battle_getMenuItem(21)->fadeEffect = 1;
                     }
                 }
                 itemInfo = *(
@@ -1296,7 +1297,7 @@ static int _assembleMenu(int arg0)
                     break;
                 }
 
-                vs_mainmenu_setMessage(menuText[1]);
+                vs_mainmenu_setInformationMessage(menuText[1]);
 
                 i = D_8010BB38[selectedOption + 1];
 
@@ -1401,7 +1402,7 @@ static int _assembleMenu(int arg0)
     case 6:
         vs_mainMenu_renderEquipStats(2);
         _confirmCombine(3);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
         state = 7;
         break;
@@ -1729,7 +1730,7 @@ static int _attachGemsMenu(int arg0)
                                     menuText, rowTypes, &textBuf);
                             }
                         }
-                        vs_mainmenu_setMessage(menuText[1]);
+                        vs_mainmenu_setInformationMessage(menuText[1]);
                         i = 26;
                         i = ((((1 - isShield) << 5) + ((itemInfo * 16) + i)) << 0x10)
                           | 155;
@@ -1804,7 +1805,7 @@ static int _attachGemsMenu(int arg0)
     case 7:
         vs_mainMenu_renderEquipStats(2);
         _confirmCombine(3);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
         state = 8;
         break;
@@ -2044,9 +2045,10 @@ static int _disassembleMenu(int arg0)
             itemInfo = vs_battle_inventory.weapons[_combiningItem].isEquipped;
         }
         _confirmationPrompt(1);
-        vs_mainmenu_setMessage((char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
-                [isShield * 4 + VS_MENU12_BIN_INDEX_disassembleWeaponConfirm
-                    + (itemInfo != 0)]]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
+                    [isShield * 4 + VS_MENU12_BIN_INDEX_disassembleWeaponConfirm
+                        + (itemInfo != 0)]]);
         state = itemInfo + 5;
         break;
     case 5:
@@ -2192,7 +2194,7 @@ static int _renameWeaponMenu(int arg0)
 
     if (arg0 != 0) {
         func_800C8E04(1);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_chooseWeaponRename]);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         state = 0;
@@ -2266,7 +2268,7 @@ static int _renameWeaponMenu(int arg0)
             return 0;
         }
         _confirmationPrompt(1);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_renamePrompt]);
         state = 5;
         break;
@@ -2325,7 +2327,7 @@ static int _repairMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             _confirmationPrompt(1);
-            vs_mainmenu_setMessage(
+            vs_mainmenu_setInformationMessage(
                 (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairConfirm]);
             state = 1;
         }
@@ -2351,7 +2353,7 @@ static int _repairMenu(int arg0)
         break;
     case 2:
         func_800C8E04(3);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairComplete]);
 
         for (i = 0; i < 16; ++i) {
@@ -2872,7 +2874,7 @@ static int _combineBladeMenu(int arg0)
                     break;
                 }
 
-                vs_mainmenu_setMessage(menuText[1]);
+                vs_mainmenu_setInformationMessage(menuText[1]);
                 var_s1 = (((i_2 * 16) + 10) << 0x10) | 0x9B;
 
                 if (i_2 == 0) {
@@ -2930,7 +2932,7 @@ static int _combineBladeMenu(int arg0)
             var_a0_2 =
                 (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_cancelCombineConfirm];
         }
-        vs_mainmenu_setMessage(var_a0_2);
+        vs_mainmenu_setInformationMessage(var_a0_2);
         state = 5;
         break;
     case 5:
@@ -3365,7 +3367,7 @@ static int _combineShieldMenu(int arg0)
                     menuText[1] = (char*)(vs_mainMenu_menu12Text + 0x39E);
                     break;
                 }
-                vs_mainmenu_setMessage((char*)menuText[1]);
+                vs_mainmenu_setInformationMessage((char*)menuText[1]);
                 var_s1 = (((temp_s2 * 0x10) + 0xA) << 0x10) | 0x9B;
                 if (temp_s2 == 0) {
                     var_s1 -= 0xE;
@@ -3428,7 +3430,7 @@ static int _combineShieldMenu(int arg0)
         } else {
             var_a0_2 = vs_mainMenu_menu12Text + 0x4A7;
         }
-        vs_mainmenu_setMessage((char*)var_a0_2);
+        vs_mainmenu_setInformationMessage((char*)var_a0_2);
         state = 5;
         break;
     case 5:
@@ -3839,7 +3841,7 @@ static int _combineArmorMenu(int arg0)
                         (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_pressOk];
                     break;
                 }
-                vs_mainmenu_setMessage((char*)menuText[1]);
+                vs_mainmenu_setInformationMessage((char*)menuText[1]);
                 var_s1 = (((i_2 * 16) + 10) << 0x10) | 0x9B;
                 if (i_2 == 0) {
                     var_s1 -= 14;
@@ -3897,7 +3899,7 @@ static int _combineArmorMenu(int arg0)
             var_a0_2 =
                 (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_cancelCombineConfirm];
         }
-        vs_mainmenu_setMessage(var_a0_2);
+        vs_mainmenu_setInformationMessage(var_a0_2);
         state = 5;
         break;
     case 5:

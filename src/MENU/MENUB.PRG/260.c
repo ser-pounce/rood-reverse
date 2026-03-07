@@ -158,7 +158,7 @@ void func_80102D6C(int id, char** menuText, u_int rowType, int arg3)
     temp_v0->selected = 1;
     temp_v0->icon = rowType >> 0x1A;
     temp_v0->material = (rowType >> 0x10) & 7;
-    vs_mainmenu_setMessage(menuText[1]);
+    vs_mainmenu_setInformationMessage(menuText[1]);
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
 
@@ -1031,7 +1031,7 @@ int func_80104860(int arg0)
         D_8010A60B = (arg0 >> 8);
         D_8010A60C = arg0;
         func_800C8E04(1);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[D_8010A60D + 0x22A]]);
         D_8010A60A = 0;
         return 0;
@@ -1422,7 +1422,7 @@ int func_80105454(int arg0)
         }
         D_8010A61D = var_s0 == 0;
         if (D_8010A61D != 0) {
-            vs_mainmenu_setMessage((char*)&vs_mainMenu_itemHelp[0x33E3]);
+            vs_mainmenu_setInformationMessage((char*)&vs_mainMenu_itemHelp[0x33E3]);
         } else {
             i = vs_main_settings.cursorMemory;
             if (D_8010A61E != 0) {
@@ -2143,7 +2143,8 @@ int func_80106B80(int arg0)
             D_8010A686 == 0 ? _inventory->weapons[i].name
                             : vs_mainMenu_itemNames[_inventory->shields[i].base.id];
         func_800C8E04(1);
-        vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_disassembleConfirm]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&_menuText[VS_menuText_OFFSET_disassembleConfirm]);
         D_8010A682 = 3;
         break;
     case 3:
@@ -2344,7 +2345,8 @@ int func_801073E0(int arg0)
         menuItem->targetX = 0xC2;
         vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[D_8010A68C];
         func_800C8E04(1);
-        vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_organizeConfirm]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&_menuText[VS_menuText_OFFSET_organizeConfirm]);
         D_8010A68E = 3;
         break;
     case 3:
@@ -2834,7 +2836,7 @@ void func_80108938(int arg0)
 
     for (i = 0; i < 8; ++i) {
         menuItem = vs_battle_getMenuItem(i + 0x20);
-        sp18[i + D_8010A504] = menuItem->unk4;
+        sp18[i + D_8010A504] = menuItem->animationState;
         menuItem->state = 0;
     }
 
@@ -2896,23 +2898,23 @@ void func_80108938(int arg0)
             menuItem->unkA = (misc->id < 0x1CA) ^ 1;
             break;
         }
-        menuItem->unk4 = sp18[i + D_8010A6B5];
+        menuItem->animationState = sp18[i + D_8010A6B5];
         menuItem->unk7 = var_fp->unk3 == 0;
 
         if (var_fp->unk2 != 0) {
             menuItem->initialX -= var_fp->unk2 * 0x30;
             ++var_fp->unk2;
             if (var_fp->unk2 == 4) {
-                menuItem->unk4 = 0;
+                menuItem->animationState = 0;
             }
         }
         if (i == 0) {
             if (D_8010A6B5 != 0) {
-                menuItem->unk5 = 1;
+                menuItem->fadeEffect = 1;
             }
         }
         if ((i == 7) && (D_8010A6B5 != (D_8010A6B6 - 8))) {
-            menuItem->unk5 = 2;
+            menuItem->fadeEffect = 2;
         }
         temp_v1_3 = var_fp->unk3;
         if (temp_v1_3 == 2) {
@@ -2966,7 +2968,7 @@ void func_80108E78(int arg0)
             &vs_battle_inventory.items[temp_s3], menuText, &rowType, vs_battle_stringBuf);
         break;
     }
-    vs_mainmenu_setMessage(menuText[1]);
+    vs_mainmenu_setInformationMessage(menuText[1]);
     vs_battle_memcpy(&vs_battle_inventory, D_8010A6AC, sizeof vs_battle_inventory);
 }
 
@@ -3022,7 +3024,7 @@ int func_801090A4(int arg0)
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
         func_800C8E04(1);
-        vs_mainmenu_setMessage(
+        vs_mainmenu_setInformationMessage(
             D_8010A6B8 == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
                             : (char*)(&_menuText[VS_menuText_OFFSET_itemsRemaining]));
         D_8010A691 = 2;
@@ -3062,7 +3064,8 @@ int func_801090A4(int arg0)
     case 6:
         vs_battle_stringContext.strings[0] = D_8010A694;
         func_800C8E04(1);
-        vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_invalidDiscard]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&_menuText[VS_menuText_OFFSET_invalidDiscard]);
         D_8010A691 = 7;
         /* fallthrough */
     case 7:
@@ -3146,12 +3149,14 @@ int func_80109444(D_8010A6A0_t* arg0)
             }
         }
         if (D_8010A69A != 0) {
-            vs_mainmenu_setMessage(
+            vs_mainmenu_setInformationMessage(
                 (char*)&_menuText[VS_menuText_OFFSET_organizeInventoryInfo]);
         } else if (D_8010A69B == 1) {
-            vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_disassembleInfo]);
+            vs_mainmenu_setInformationMessage(
+                (char*)&_menuText[VS_menuText_OFFSET_disassembleInfo]);
         } else {
-            vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_organizeInfo]);
+            vs_mainmenu_setInformationMessage(
+                (char*)&_menuText[VS_menuText_OFFSET_organizeInfo]);
         }
         D_8010A5E9 = vs_battle_drawCursor(D_8010A5E9, D_8010A69A + 8);
         break;
@@ -3438,7 +3443,8 @@ int func_80109E90(char* state)
             D_8010A6B2 = 1;
             if (D_8010A6B6 == 0) {
                 func_800C8E04(1);
-                vs_mainmenu_setMessage((char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
+                vs_mainmenu_setInformationMessage(
+                    (char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
                 *state = 4;
             } else {
                 func_800FFBC8();

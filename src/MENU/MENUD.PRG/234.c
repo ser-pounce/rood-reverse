@@ -839,7 +839,7 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
     menuItem->selected = 1;
     menuItem->icon = (arg2 >> 0x1A);
     menuItem->material = (arg2 >> 0x10) & 7;
-    vs_mainmenu_setMessage(arg1[1]);
+    vs_mainmenu_setInformationMessage(arg1[1]);
     vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
 }
 
@@ -1700,8 +1700,9 @@ int _displayDiscardMenu(int arg0)
         _discardItemCategory = (arg0 >> 0xC) & 0xF;
         _discardIndex = arg0 - 1;
         func_800C8E04(1);
-        vs_mainmenu_setMessage((char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
-                [_discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [_discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]]);
         D_80109A4E = 0;
         return 0;
     }
@@ -2255,7 +2256,7 @@ loop_1:
         temp_s2 = func_80106C64(var_s4, temp_s5, temp_s6, (char*)temp_s1);
         D_80109A69 = temp_s2 == 0;
         if (D_80109A69 != 0) {
-            vs_mainmenu_setMessage(
+            vs_mainmenu_setInformationMessage(
                 (char*)&D_8010952C[D_8010952C[D_80109A7A + 27 + (var_s4 == 7) * 2]]);
         } else {
             temp_s3 = vs_main_settings.cursorMemory;
@@ -2763,7 +2764,8 @@ loop_1:
             temp_s2 = func_80106C64(7, temp_s3_7, temp_s1_4, temp_v0_19);
             D_80109A69 = temp_s2 == 0;
             if (D_80109A69 != 0) {
-                vs_mainmenu_setMessage((char*)&D_8010952C[D_8010952C[D_80109A7A + 0x1D]]);
+                vs_mainmenu_setInformationMessage(
+                    (char*)&D_8010952C[D_8010952C[D_80109A7A + 0x1D]]);
             } else {
                 vs_mainmenu_setMenuRows(
                     temp_s2, (var_s4 + 0x51) | 0x19200, temp_s3_7, temp_s1_4);
@@ -2899,7 +2901,7 @@ int func_801089BC(int arg0)
         } else {
             a0 = D_8010957C;
         }
-        vs_mainmenu_setMessage(a0);
+        vs_mainmenu_setInformationMessage(a0);
         break;
     }
     func_80106504();

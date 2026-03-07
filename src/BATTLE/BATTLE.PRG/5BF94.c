@@ -369,7 +369,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     menuItem->w = w;
     menuItem->unk2 = arg4;
 
-    vs_battle_rMemzero(&menuItem->unk4, 0x3C);
+    vs_battle_rMemzero(&menuItem->animationState, 0x3C);
 
     var_a0 = menuItem;
     menuItem->initialX = x;

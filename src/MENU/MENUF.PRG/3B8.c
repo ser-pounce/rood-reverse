@@ -2185,8 +2185,39 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-// https://decomp.me/scratch/FRfFv
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010887C);
+void func_8010887C(int arg0, int arg1, int arg2)
+{
+    int temp_a3;
+    int var_a3;
+    int new_var2;
+    int* new_var4;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        func_80105C34(arg0, arg1, 0x48, arg2);
+        arg0 += D_8010941A;
+        if (arg2 >= 0x10) {
+            temp_a3 = vs_main_stateFlags.unkA1;
+            new_var2 = vs_main_stateFlags.unkA2;
+            temp_a3 = ((new_var2 * 0x1770) + (temp_a3 * 100)) + vs_main_stateFlags.unkA0;
+            var_a3 = temp_a3;
+            var_a3 = ((*(new_var4 = &var_a3)) * (arg2 - 0x10)) / 48;
+            new_var2 = var_a3 / 6000;
+            var_a3 = var_a3 % 6000;
+            temp_a3 = var_a3 / 100;
+            var_a3 = var_a3 % 100;
+            var_a3 = (new_var2 << 0x10) | (temp_a3 << 8) | var_a3;
+        } else {
+            var_a3 = 0;
+        }
+        func_80105F6C(arg0, arg1 + 2, arg2, var_a3, 0);
+    }
+}
 
 void func_80108A0C(void)
 {

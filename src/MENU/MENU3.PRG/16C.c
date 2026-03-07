@@ -42,89 +42,9 @@ int func_801090C4(int, int, int);
 
 extern void* D_1F800000[];
 
-extern int D_80109644;
-extern char D_80109648;
-extern char D_80109649;
-extern char D_8010964C;
-extern char D_8010964D;
-extern char D_8010964E;
-extern u_char D_8010964F;
-extern char D_80109650;
-extern char D_80109651;
-extern char D_80109652;
-extern char D_80109653;
-extern u_char D_80109654;
-extern char D_80109655;
-extern char D_80109656;
-extern char D_80109657;
-extern u_char D_80109658;
-extern char D_80109659;
-extern char D_8010965A;
-extern char D_8010965B;
-extern char D_8010965C;
-extern u_char D_8010965D;
-extern char D_8010965E;
-extern char D_8010965F;
-extern char D_80109660;
-extern char D_80109661;
-extern u_char D_80109662;
-extern char D_80109663;
-extern char D_80109664;
-extern char D_80109665;
-extern u_char D_80109666;
-extern u_char D_80109667;
-extern u_char D_80109668;
-extern u_char D_80109669;
-extern char D_8010966A;
-extern char D_8010966B;
-extern char D_8010966C;
-extern char D_8010966D;
-extern u_char D_8010966E;
-extern char D_8010966F;
-extern char D_80109670;
-extern char D_80109674[8];
-extern char D_8010967C;
-extern char D_8010967D;
-extern char D_8010967E;
-extern int D_80109680;
-extern int D_80109684;
-extern char D_80109688;
-extern char D_80109689;
-extern int D_8010968C;
-extern char D_80109690;
-extern char D_80109691;
-extern char D_80109692;
-extern char D_80109693;
-extern int D_80109694;
-extern char D_80109698;
-extern char D_80109699;
-extern char D_8010969A;
-extern int D_8010969C;
-extern char D_801096A0;
-extern char D_801096A1;
-extern u_char D_801096A2;
-extern u_char D_801096A3;
-extern int D_801096A4;
-extern char D_801096A8;
-extern int D_801096AC;
-extern vs_unk_gfx_t2 D_801096BC;
-extern vs_unk_gfx_t D_801096DC;
-extern char D_80109710;
-extern char D_80109711;
-extern char D_80109712;
-extern char D_80109713;
-extern char D_80109714;
-extern char D_80109715;
-extern char D_80109716;
-extern char D_80109717;
-extern int D_80109718;
-extern char D_8010971C[];
-extern void* D_8010975C;
-extern int D_80109760;
-extern u_char D_80109764;
-extern char D_80109765;
-extern char D_80109766;
-extern char D_80109767;
+static char D_80109711;
+static char D_80109712;
+static char D_80109713;
 
 void func_8010296C(char arg0)
 {
@@ -259,6 +179,12 @@ int func_80102D30(int arg0, int arg1)
     return *(vs_mainMenu_inventoryIndices[arg0] + arg1);
 }
 
+static char D_80109714;
+static char D_80109715;
+static char D_80109716;
+static char D_80109717;
+static int D_80109718;
+
 void func_80102D7C(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
@@ -275,6 +201,12 @@ void func_80102D7C(int arg0)
 
 int func_80102DEC(int arg0)
 {
+    static char D_8010964C;
+    static char D_8010964D;
+    static char D_8010964E;
+    static u_char D_8010964F;
+    static char D_80109650;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -340,6 +272,11 @@ int func_80102DEC(int arg0)
 
 int func_80103034(int arg0)
 {
+    static char D_80109651;
+    static char D_80109652;
+    static char D_80109653;
+    static u_char D_80109654;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -395,6 +332,12 @@ int func_80103034(int arg0)
 int func_80103220(int arg0)
 {
     static char* D_8010956C = "X     0";
+
+    static char D_80109655;
+    static char D_80109656;
+    static char D_80109657;
+    static u_char D_80109658;
+    static char D_80109659;
 
     char* menuText[2];
     int rowType;
@@ -455,6 +398,12 @@ int func_80103220(int arg0)
 
 int func_80103460(int arg0)
 {
+    static char D_8010965A;
+    static char D_8010965B;
+    static char D_8010965C;
+    static u_char D_8010965D;
+    static char D_8010965E;
+
     char* menuText[2];
     int rowType;
     int temp_v0_2;
@@ -519,6 +468,11 @@ int func_80103460(int arg0)
 
 int func_801036BC(int arg0)
 {
+    static char D_8010965F;
+    static char D_80109660;
+    static char D_80109661;
+    static u_char D_80109662;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -577,6 +531,11 @@ int func_801036BC(int arg0)
 
 int func_801038E4(int arg0)
 {
+    static char D_80109663;
+    static char D_80109664;
+    static char D_80109665;
+    static u_char D_80109666;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -633,6 +592,8 @@ int func_80103AD0(int arg0)
 {
     static int (*D_80109570[])(int) = { func_80102DEC, func_80103034, func_80103220,
         func_80103460, func_801036BC, func_801038E4 };
+
+    static u_char D_80109667;
 
     int var_s0 = 0;
     int new_var;
@@ -998,6 +959,9 @@ int func_80104530(int arg0)
     static u_char* D_801095F4[] = { D_80109588, D_80109588, D_801095A0, D_801095A8,
         D_801095C0, D_801095D8, D_801095E8 };
 
+    static u_char D_80109668;
+    static u_char D_80109669;
+
     char* sp10[48];
     int spD0[24];
     int i;
@@ -1065,6 +1029,15 @@ int func_80104788(int arg0)
 
     static char D_8010961C[] = { 1, 10, 100 };
     static char D_8010961F = 0;
+
+    static char D_8010966A;
+    static char D_8010966B;
+    static char D_8010966C;
+    static char D_8010966D;
+    static u_char D_8010966E;
+    static char D_8010966F;
+    static char D_80109670;
+    static char _[3] __attribute__((unused));
 
     char* sp18[4];
     int sp28[2];
@@ -1293,6 +1266,8 @@ int func_80104F50(int arg0, int arg1)
     return var_v1 & 0x7F;
 }
 
+static char D_8010971C[64];
+
 int func_80104F94(int arg0, char** arg1, int* arg2, char* arg3)
 {
     int temp_v0;
@@ -1407,6 +1382,13 @@ void func_80105314(int arg0)
 
 int func_801053EC(int arg0)
 {
+    static char D_80109674[8];
+    static char D_8010967C;
+    static char D_8010967D;
+    static char D_8010967E;
+    static char _ __attribute__((unused));
+    static int D_80109680;
+
     char* sp10[12];
     int var_v0_3;
     int temp_v0_7;
@@ -1903,6 +1885,13 @@ loop_1:
     return 0;
 }
 
+static void* D_8010975C;
+static int D_80109760;
+static u_char D_80109764;
+static char D_80109765;
+static char D_80109766;
+static char D_80109767;
+
 void func_80106390(int arg0, func_80106390_t* arg1, int* arg2)
 {
     int i;
@@ -2149,6 +2138,11 @@ void func_80106BB4(int arg0)
 
 int func_80106C94(int arg0)
 {
+    static int D_80109684;
+    static char D_80109688;
+    static char D_80109689;
+    static char _[2] __attribute__((unused));
+
     int var_a0_2;
     int i;
     int var_s6;
@@ -2268,6 +2262,12 @@ int func_80106C94(int arg0)
 
 int func_80107148(int arg0)
 {
+    static int D_8010968C;
+    static char D_80109690;
+    static char D_80109691;
+    static char D_80109692;
+    static char D_80109693;
+
     int var_a0;
     int i;
     int var_s5;
@@ -2405,6 +2405,12 @@ int func_80107148(int arg0)
 
 int func_80107620(int arg0)
 {
+    static int D_80109694;
+    static char D_80109698;
+    static char D_80109699;
+    static char D_8010969A;
+    static char _ __attribute__((unused));
+
     int temp_s7;
     int var_a0;
     int i;
@@ -2543,6 +2549,11 @@ int func_80107B14(int arg0)
 {
     static char D_80109624[] = { 0, 5, 5, 2, 3, 4, 6, 7 };
 
+    static int D_8010969C;
+    static char D_801096A0;
+    static char D_801096A1;
+    static u_char D_801096A2;
+
     int temp_s7;
     int temp_v0_3;
     int var_a1;
@@ -2676,6 +2687,8 @@ int func_80108010(int arg0)
     static int (*D_8010962C[])(
         int) = { func_80107B14, func_80107148, func_80107620, func_80106C94 };
 
+    static u_char D_801096A3;
+
     if (arg0 != 0) {
         if (arg0 == 8) {
             D_801096A3 = 3;
@@ -2691,10 +2704,14 @@ int func_80108010(int arg0)
     return D_8010962C[D_801096A3](arg0);
 }
 
-static char D_8010963C[] = { 0x78, 0x79, 0x69, 0x6A, 0x68, 0x6D, 0x6B, 0x7A };
-
 int func_80108088(int arg0)
 {
+    static char D_8010963C[] = { 0x78, 0x79, 0x69, 0x6A, 0x68, 0x6D, 0x6B, 0x7A };
+
+    static int D_801096A4;
+    static char D_801096A8;
+    static char _[3] __attribute__((unused));
+
     char* sp18[16];
     int sp58[8];
     char sp78[768];
@@ -2828,6 +2845,14 @@ int func_80108088(int arg0)
 
 void func_80108518(int arg0)
 {
+    static int D_80109644 = 0;
+    static char D_80109648 = 0;
+
+    static int D_801096AC;
+    static int _[3] __attribute__((unused));
+    static vs_unk_gfx_t2 D_801096BC;
+    static vs_unk_gfx_t D_801096DC;
+
     int temp_lo;
     int temp_lo_2;
     int temp_s1_2;
@@ -2930,6 +2955,10 @@ void func_80108518(int arg0)
 
 int vs_menu3_exec(char* arg0)
 {
+    static char D_80109649 = 0;
+
+    static char D_80109710;
+
     int temp_s1;
     int var_s0;
     char temp_a1;

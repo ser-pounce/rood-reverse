@@ -37,7 +37,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![MENU0.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU0.PRG&color=%2332a934)
 ![MENU1.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU1.PRG&color=%2332a934)
 ![MENU2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU2.PRG&color=%2332a934)
-![MENU3.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU3.PRG)
+![MENU3.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU3.PRG&color=%2332a934)
 ![MENU4.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU4.PRG&color=%2332a934)
 ![MENU5.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU5.PRG&color=%2332a934)
 ![MENU7.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU7.PRG&color=%2332a934)
@@ -69,6 +69,7 @@ data/MENU/
     MENU0.PRG
     MENU1.PRG
     MENU2.PRG
+    MENU3.PRG
     MENU4.PRG
     MENU5.PRG
     MENU7.PRG

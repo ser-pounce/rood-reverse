@@ -22,9 +22,8 @@ segments:
     vram: 0x80102800
     align: 4
     subsegments:
-      - [0x0, .rodata, 16C]
       - [0x16C, c]
       - [0x68C4, c]
       - { start: 0x6BB8, type: vsStringTable, name: menuText, linker_entry: false }
-      - [0x6E44, bss, 16C]
+      - [0x6E44, .bss, 16C]
   - [0x6F68]

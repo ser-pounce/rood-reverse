@@ -1,5 +1,4 @@
 #include "common.h"
-#include "234.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
@@ -20,67 +19,6 @@ static int _copyContainerItem(int, vs_menu_containerData*, int, vs_menu_containe
 int func_80106C64(int, char**, int*, char*);
 
 extern u_long* D_1F800000[];
-
-extern char D_80109A30;
-extern char D_80109A31;
-extern char D_80109A32;
-extern u_char _selectedWeapon;
-extern char D_80109A34;
-extern char D_80109A35;
-extern char D_80109A36;
-extern char D_80109A37;
-extern u_char D_80109A38;
-extern char D_80109A39;
-extern char D_80109A3A;
-extern char D_80109A3B;
-extern u_char D_80109A3C;
-extern char D_80109A3D;
-extern char D_80109A3E;
-extern char D_80109A3F;
-extern char D_80109A40;
-extern u_char D_80109A41;
-extern char D_80109A42;
-extern char D_80109A43;
-extern char D_80109A44;
-extern char D_80109A45;
-extern u_char D_80109A46;
-extern u_char D_80109A47;
-extern u_char D_80109A48;
-extern u_char D_80109A49;
-extern u_char D_80109A4A;
-extern u_char D_80109A4B;
-extern char D_80109A4C;
-extern u_char D_80109A4D;
-extern char D_80109A4E;
-extern char _discardItemCategory;
-extern u_char _discardIndex;
-extern char _discardType;
-extern u_char _discardBulkStep;
-extern char _discardAmount;
-extern char _discardMaxAmount;
-extern int D_80109A58;
-extern char D_80109A5C;
-extern char D_80109A60[];
-extern char D_80109A61;
-extern char D_80109A68;
-extern char D_80109A69;
-extern char D_80109A6A;
-extern int D_80109A6C;
-extern char D_80109A70;
-extern u_int D_80109A74;
-extern char D_80109A78;
-extern u_char D_80109A79;
-extern u_char D_80109A7A;
-extern char D_80109A7B;
-extern char D_80109A7C;
-extern char D_80109A7D;
-extern char D_80109A7E;
-extern char D_80109A7F;
-extern char D_80109A80;
-extern char D_80109A81;
-extern u_short D_80109A82;
-extern int D_80109A84;
-extern vs_menu_container* D_80109A88;
 
 void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon* source,
     vs_menu_containerData* container)
@@ -306,6 +244,19 @@ static int _getEmptyContainerSlot(int itemCategory, vs_menu_containerData* conta
     }
     return i;
 }
+
+static u_char D_80109A7A;
+static char D_80109A7B;
+static char D_80109A7C;
+static char D_80109A7D;
+static char D_80109A7E;
+static char D_80109A7F;
+static char D_80109A80;
+static char D_80109A81;
+static u_short D_80109A82;
+static int D_80109A84;
+static vs_menu_container* D_80109A88;
+vs_menu_container* vs_menuD_containerData;
 
 static void func_801031A0(void)
 {
@@ -879,6 +830,12 @@ static void _setShieldUi(vs_menu_containerData* container, char** rowStrings,
 
 int _weaponNavigation(int weaponIndex)
 {
+    static char D_80109A30;
+    static char D_80109A31;
+    static char D_80109A32;
+    static u_char _selectedWeapon;
+    static char D_80109A34;
+
     enum state { init, animate, handleInput, exit };
 
     char* text[2];
@@ -946,6 +903,11 @@ int _weaponNavigation(int weaponIndex)
 
 int _bladeNavigation(int bladeIndex)
 {
+    static char D_80109A35;
+    static char D_80109A36;
+    static char D_80109A37;
+    static u_char D_80109A38;
+
     enum state { init, animate, handleInput, exit };
 
     char* text[2];
@@ -1002,10 +964,16 @@ int _bladeNavigation(int bladeIndex)
     return 0;
 }
 
-static char* D_80109954 = "X     0";
-
 int _gripNavigation(int arg0)
 {
+    static char* D_80109954 = "X     0";
+
+    static char D_80109A39;
+    static char D_80109A3A;
+    static char D_80109A3B;
+    static u_char D_80109A3C;
+    static char D_80109A3D;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -1066,6 +1034,12 @@ int _gripNavigation(int arg0)
 
 int _shieldNavigation(int arg0)
 {
+    static char D_80109A3E;
+    static char D_80109A3F;
+    static char D_80109A40;
+    static u_char D_80109A41;
+    static char D_80109A42;
+
     char* sp18[2];
     int sp20;
     int temp_v0_2;
@@ -1132,6 +1106,11 @@ int _shieldNavigation(int arg0)
 
 int _armorNavigation(int arg0)
 {
+    static char D_80109A43;
+    static char D_80109A44;
+    static char D_80109A45;
+    static u_char D_80109A46;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -1192,6 +1171,11 @@ int _armorNavigation(int arg0)
 
 int _gemNavigation(int arg0)
 {
+    static u_char D_80109A47;
+    static u_char D_80109A48;
+    static u_char D_80109A49;
+    static u_char D_80109A4A;
+
     char* sp10[2];
     int sp18;
     int temp_v0_2;
@@ -1248,6 +1232,8 @@ int func_80105008(int arg0)
 {
     static int (*D_80109958[])(int) = { _weaponNavigation, _bladeNavigation,
         _gripNavigation, _shieldNavigation, _armorNavigation, _gemNavigation };
+
+    static u_char D_80109A4B;
 
     int temp_v0;
     int var_s0 = 0;
@@ -1624,6 +1610,9 @@ static int _displaySortMenu(int arg0)
     static char* D_801099DC[] = { D_80109970, D_80109970, D_80109988, D_80109990,
         D_801099A8, D_801099C0, D_801099D0 };
 
+    static char D_80109A4C;
+    static u_char D_80109A4D;
+
     enum state { init, display };
 
     char* sp10[48];
@@ -1690,6 +1679,15 @@ int _displayDiscardMenu(int arg0)
 
     static char _discardBulkSteps[] = { 1, 10, 100 };
     static char D_80109A07 = 0;
+
+    static char D_80109A4E;
+    static char _discardItemCategory;
+    static u_char _discardIndex;
+    static char _discardType;
+    static u_char _discardBulkStep;
+    static char _discardAmount;
+    static char _discardMaxAmount;
+    static char _[3] __attribute__((unused));
 
     enum state {
         init,
@@ -2315,6 +2313,10 @@ void func_801071D8(int arg0)
 
 int func_801072B0(int arg0)
 {
+    static int D_80109A58;
+    static char D_80109A5C;
+    static char _[3] __attribute__((unused));
+
     char* sp10[4];
     int sp20[2];
     int i;
@@ -2372,6 +2374,13 @@ int func_801072B0(int arg0)
 
 int func_80107490(int arg0)
 {
+    static char D_80109A60[8];
+    static char D_80109A68;
+    static char D_80109A69;
+    static char D_80109A6A;
+    static char _ __attribute__((unused));
+    static int D_80109A6C;
+
     u_short* sp10[8];
     int temp_a0;
     int temp_s0;
@@ -2754,7 +2763,7 @@ loop_1:
         } else {
             sp10[1] = &_menuText[_menuText[D_80109A7A * 2 + 0x20]];
         }
-        D_80109A61 = 1;
+        D_80109A60[1] = 1;
         temp_s2 = 1;
         if (((u_int)(var_s4 - 1) < 2) || ((var_s4 == 5))) {
             sp10[2] = vs_mainMenu_itemHelp + 0x3527;
@@ -3011,7 +3020,10 @@ int func_801089BC(int arg0)
     static char D_80109A2C = 0;
     static char D_80109A2D = 0;
     static char D_80109A2E = 1;
-    static char _ __attribute__((unused)) = 1;
+    static char _0 __attribute__((unused)) = 1;
+
+    static char D_80109A70;
+    static char _1[3] __attribute__((unused));
 
     int i;
     int var_s1;
@@ -3098,6 +3110,10 @@ int func_801089BC(int arg0)
 
 int func_80108C6C(char* arg0)
 {
+    static u_int D_80109A74;
+    static char D_80109A78;
+    static u_char D_80109A79;
+
     int temp_a2;
     int temp_s0;
     int temp_s0_2;

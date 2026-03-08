@@ -1299,8 +1299,39 @@ void func_80105790(int arg0, int arg1, int arg2)
     }
 }
 
-// https://decomp.me/scratch/2GyJv
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_8010581C);
+void func_8010581C(int arg0, int arg1, int arg2)
+{
+    int temp_a3;
+    int var_a3;
+    int* new_var4;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 >= 0x41) {
+        arg2 = 0x40;
+    }
+    if (arg2 > 0) {
+        func_80105C34(arg0, arg1, 0x48, arg2);
+        arg0 += D_8010941A;
+        if (arg2 >= 0x10) {
+            int a0 = (D_801098A8 >> 0x10) & 0xFF;
+            int a1 = (D_801098A8 >> 8) & 0xFF;
+            int a2 = D_801098A8 & 0xFF;
+            temp_a3 = ((a0 * 0x1770) + (a1 * 100)) + a2;
+            var_a3 = temp_a3;
+            var_a3 = ((*(new_var4 = &var_a3)) * (arg2 - 0x10)) / 48;
+            a0 = var_a3 / 6000;
+            var_a3 = var_a3 % 6000;
+            a1 = var_a3 / 100;
+            var_a3 = var_a3 % 100;
+            var_a3 = (a0 << 0x10) | (a1 << 8) | var_a3;
+        } else {
+            var_a3 = 0;
+        }
+        func_80105F6C(arg0, arg1 + 2, arg2, var_a3, 0);
+    }
+}
 
 void func_801059B8(int arg0, int arg1, int arg2)
 {

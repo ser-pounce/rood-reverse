@@ -13,6 +13,15 @@
 #include "../../BATTLE/BATTLE.PRG/40564.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../assets/MENU/MENU9.PRG/menuText.h"
+#include "../../assets/MENU/MENU9.PRG/rankText.h"
+#include "../../assets/MENU/MENU9.PRG/titleText.h"
+#include "../../assets/MENU/MENU9.PRG/titleDescriptions.h"
+#include "../../assets/MENU/MENU9.PRG/statHeaders.h"
+#include "../../assets/MENU/MENU9.PRG/statDescriptions.h"
+#include "../../assets/MENU/MENU9.PRG/timeAttacks.h"
+#include "../../assets/MENU/MENU9.PRG/timeAttackDescriptions.h"
+#include "../../assets/MENU/MENU9.PRG/miscInfo.h"
 #include <libetc.h>
 #include <stdio.h>
 #include <strings.h>
@@ -101,25 +110,40 @@ int func_8010823C(void);
 
 extern void* D_1F800000[];
 
-extern u_short _menuStrings[];
-extern u_short _rankStrings[];
-extern u_short _titleStrings[];
-extern u_short _titleDescriptions[];
-extern u_short _statHeaders[];
-extern u_short _statDescriptions[];
-extern u_short _timeAttacks[];
-extern u_short _timeAttackDescriptions[];
-extern u_short _miscInfo[];
+static char D_8010851C = 0;
+static char D_8010851D = 0;
+static u_short _menuText[] = {
+#include "../../assets/MENU/MENU9.PRG/menuText.vsString"
+};
+static u_short _rankText[] = {
+#include "../../assets/MENU/MENU9.PRG/rankText.vsString"
+};
+static u_short _titleText[] = {
+#include "../../assets/MENU/MENU9.PRG/titleText.vsString"
+};
+static u_short _titleDescriptions[] = {
+#include "../../assets/MENU/MENU9.PRG/titleDescriptions.vsString"
+};
+static u_short _statHeaders[] = {
+#include "../../assets/MENU/MENU9.PRG/statHeaders.vsString"
+};
+static u_short _statDescriptions[] = {
+#include "../../assets/MENU/MENU9.PRG/statDescriptions.vsString"
+};
+static u_short _timeAttacks[] = {
+#include "../../assets/MENU/MENU9.PRG/timeAttacks.vsString"
+};
+static u_short _timeAttackDescriptions[] = {
+#include "../../assets/MENU/MENU9.PRG/timeAttackDescriptions.vsString"
+};
+static u_short _miscInfo[] = {
+#include "../../assets/MENU/MENU9.PRG/miscInfo.vsString"
+};
+#pragma vsstring(start)
+static char D_80109870[] = "YES\0";
+static char D_80109874[] = "NO\0";
+#pragma vsstring(end)
 
-extern char D_8010851C;
-extern char D_8010851D;
-extern char* D_80109878[];
-extern D_8010989C_t D_8010989C;
-extern char D_80109898;
-extern char D_80109899;
-extern char D_801098A0;
-extern short D_801098A4[];
-extern u_int D_801098C4[];
 extern int D_8010A214;
 extern int _initDataComplete;
 extern int D_8010A21C;
@@ -455,15 +479,10 @@ static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B, 0x00 },
     { 0x19, 0x82, 0x6C, 0x00 }, { 0x40, 0x30, 0x66, 0x00 }, { 0x40, 0x38, 0x20, 0x00 } };
 
 static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33, 0x00 },
-    { 0x01, 0x28, 0x26, 0x00 }, { 0x08, 0x08, 0x20, 0x00 }, { 0x10, 0x10, 0x08, 0x00 },
-    { 0x24, 0x30, 0x31, 0x3A }, { 0x32, 0x35, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x31, 0x3A }, { 0x31, 0x35, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x31, 0x3A }, { 0x30, 0x30, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x30, 0x3A }, { 0x35, 0x30, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x30, 0x3A }, { 0x34, 0x30, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x30, 0x3A }, { 0x33, 0x30, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x24, 0x30, 0x30, 0x3A }, { 0x32, 0x35, 0x3A, 0x30 }, { 0x30, 0x00, 0x00, 0x00 },
-    { 0x00, 0x00, 0x00, 0x00 } };
+    { 0x01, 0x28, 0x26, 0x00 }, { 0x08, 0x08, 0x20, 0x00 }, { 0x10, 0x10, 0x08, 0x00 } };
+
+static char const* D_80109878[] = { "$00:25:00", "$00:30:00", "$00:40:00", "$00:50:00",
+    "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
 
 int _handleMenu(void)
 {
@@ -495,7 +514,7 @@ int _handleMenu(void)
         D_8010A430[1] = 0xE47;
         D_8010A430[2] = 0;
         func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
-        func_800C6BF0(0, &_rankStrings[_rankStrings[D_8010A464]]);
+        func_800C6BF0(0, &_rankText[_rankText[D_8010A464]]);
         _initStringsAndGetSelectedRow(1);
         D_8010A220 = 0;
         ++_menuState;
@@ -1139,7 +1158,7 @@ int _initStringsAndGetSelectedRow(int arg0)
     switch (D_8010A224) {
     case 0:
         for (i = 0; i < 4; ++i) {
-            sp10[i * 2] = (char*)&_menuStrings[_menuStrings[i]];
+            sp10[i * 2] = (char*)&_menuText[_menuText[i]];
             sp10[i * 2 + 1] = NULL;
         }
         func_80102E10(4, D_800F1BF7, sp10, i);
@@ -1394,7 +1413,7 @@ void func_801056B8(void)
         row->unk3 = 0;
         if (vs_main_scoredata.flags & ((new_var = 1) << i)) {
             row->unk1 = 1;
-            row->title = (char*)&_titleStrings[_titleStrings[i]];
+            row->title = (char*)&_titleText[_titleText[i]];
             row->description = (char*)&_titleDescriptions[_titleDescriptions[i]];
         } else {
             row->unk1 = 0;
@@ -1403,6 +1422,13 @@ void func_801056B8(void)
         }
     }
 }
+
+extern D_8010989C_t D_8010989C;
+extern char D_80109898;
+extern char D_80109899;
+extern char D_801098A0;
+extern short D_801098A4[];
+extern u_int D_801098C4[];
 
 void func_8010579C(int arg0)
 {

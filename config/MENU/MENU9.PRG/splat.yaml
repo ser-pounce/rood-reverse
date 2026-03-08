@@ -14,7 +14,7 @@ options:
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MENU9.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU9.PRG/undefined_syms_auto.txt
-
+  subalign: 4
 segments:
   - start: 0x0
     type: code
@@ -25,6 +25,15 @@ segments:
       - [0x238, c]
       - [0x57BC, c]
       - [0x592C, c]
-      - [0x5D1C, data, 238]
+      - {start: 0x5D20, type: vsStringTable, name: menuText, linker_entry: false}
+      - {start: 0x5D64, type: vsStringTable, name: rankText, linker_entry: false}
+      - {start: 0x5EE4, type: vsStringTable, name: titleText, linker_entry: false}
+      - {start: 0x61BC, type: vsStringTable, name: titleDescriptions, linker_entry: false}
+      - {start: 0x67DC, type: vsStringTable, name: statHeaders, linker_entry: false}
+      - {start: 0x6A00, type: vsStringTable, name: statDescriptions, linker_entry: false}
+      - {start: 0x6D98, type: vsStringTable, name: timeAttacks, linker_entry: false}
+      - {start: 0x6E0C, type: vsStringTable, name: timeAttackDescriptions, linker_entry: false}
+      - {start: 0x6FDC, type: vsStringTable, name: miscInfo, linker_entry: false}
+      - [0x7098, data]
       - [0x7A14, bss, 238]
   - [0x7CB8]

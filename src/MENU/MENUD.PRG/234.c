@@ -2129,7 +2129,169 @@ void func_80106A50(void)
     }
 }
 
-INCLUDE_ASM("build/src/MENU/MENUD.PRG/nonmatchings/234", func_80106C64);
+int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
+{
+    int itemCount;
+    u_short* indices;
+    int itemIndex;
+    int parentIndex;
+    int i;
+    int rowType;
+    vs_menu_containerData* container = &vs_menu_inventoryStorage->unk87B0;
+    char* c;
+    itemCount = 0;
+    c = textBuf;
+
+    if (itemCategory == 7) {
+
+        for (i = 0; i < 64; ++i, c += 0x60) {
+            itemIndex = vs_menu_inventoryStorage->itemsToTransfer[i];
+            itemCategory = itemIndex >> 8;
+            itemIndex &= 0xFF;
+
+            if (itemIndex == 0) {
+                break;
+            }
+
+            --itemIndex;
+            rowType = 0;
+
+            switch (itemCategory) {
+            case 0:
+                _setWeaponUi(container, &text[i * 2], &rowTypes[i], c, itemIndex);
+                break;
+            case 1:
+                vs_mainMenu_setBladeUi(
+                    &container->blades[itemIndex], &text[i * 2], &rowTypes[i], c);
+                break;
+            case 2:
+                vs_mainMenu_setGripUi(
+                    &container->grips[itemIndex], &text[i * 2], &rowTypes[i], c);
+                break;
+            case 3:
+                _setShieldUi(container, &text[i * 2], &rowTypes[i], c, itemIndex);
+                break;
+            case 4:
+                vs_mainMenu_setAccessoryUi(
+                    &container->armor[itemIndex], &text[i * 2], &rowTypes[i], c);
+                break;
+            case 5:
+                vs_mainMenu_setGemUi(
+                    &container->gems[itemIndex], &text[i * 2], &rowTypes[i], c);
+                if (_getSetShieldIndex(5, itemIndex, container) != 0) {
+                    rowType = 0xCC01;
+                }
+                break;
+            case 6:
+                vs_mainMenu_setItemUi(
+                    &container->misc[itemIndex], &text[i * 2], &rowTypes[i], c);
+                break;
+            }
+            if (_getParentItemIndex(itemCategory, itemIndex, container) != 0) {
+                rowType = 0xCC01;
+            }
+            ++itemCount;
+            rowTypes[i] |= rowType;
+        }
+    } else {
+        char** t;
+        int* r;
+        indices = _getContainerIndicesOffset(itemCategory, vs_menuD_containerData);
+        if (itemCategory == 6) {
+            int j;
+            for (i = 0, j = 0; i < 256;) {
+                t = &text[j * 2];
+                r = &rowTypes[j];
+                itemIndex = indices[i];
+
+                if (itemIndex == 0) {
+                    break;
+                }
+
+                --itemIndex;
+
+                vs_mainMenu_setItemUi(
+                    &vs_menuD_containerData->data.misc[itemIndex], t, r, c);
+                ++itemCount;
+                ++j;
+                ++i;
+                c += 0x60;
+            }
+        } else {
+
+            for (i = 0; i < _containerItemCapacities[itemCategory]; ++i, c += 0x60) {
+                itemIndex = indices[i];
+
+                if (itemIndex == 0) {
+                    break;
+                }
+
+                --itemIndex;
+                rowType = 0;
+
+                switch (itemCategory) {
+                case 0:
+                    _setWeaponUi(&vs_menuD_containerData->data, &text[i * 2],
+                        &rowTypes[i], c, itemIndex);
+                    if (vs_menuD_containerData->data.weapons[itemIndex].isEquipped != 0) {
+                        rowType = 0xCA00;
+                    }
+                    break;
+                case 1:
+                    vs_mainMenu_setBladeUi(
+                        &vs_menuD_containerData->data.blades[itemIndex], &text[i * 2],
+                        &rowTypes[i], c);
+                    break;
+                case 2:
+                    vs_mainMenu_setGripUi(&vs_menuD_containerData->data.grips[itemIndex],
+                        &text[i * 2], &rowTypes[i], c);
+                    break;
+                case 3:
+                    _setShieldUi(&vs_menuD_containerData->data, &text[i * 2],
+                        &rowTypes[i], c, itemIndex);
+                    if (vs_menuD_containerData->data.shields[itemIndex].isEquipped != 0) {
+                        rowType = 0xCA00;
+                    }
+                    break;
+                case 4:
+                    vs_mainMenu_setAccessoryUi(
+                        &vs_menuD_containerData->data.armor[itemIndex], &text[i * 2],
+                        &rowTypes[i], c);
+                    if (vs_menuD_containerData->data.armor[itemIndex].bodyPart != 0) {
+                        rowType = 0xCA00;
+                    }
+                    break;
+                case 5:
+                    vs_mainMenu_setGemUi(&vs_menuD_containerData->data.gems[itemIndex],
+                        &text[i * 2], &rowTypes[i], c);
+                    break;
+                }
+                parentIndex = _getParentItemIndex(
+                    itemCategory, itemIndex, &vs_menuD_containerData->data);
+                if (parentIndex != 0) {
+                    rowType = 0xCA00;
+                    if (vs_menuD_containerData->data.weapons[parentIndex - 1].isEquipped
+                        == 0) {
+                        rowType = 0xCC00;
+                    }
+                }
+                parentIndex = _getSetShieldIndex(
+                    itemCategory, itemIndex, &vs_menuD_containerData->data);
+                if (parentIndex != 0) {
+                    rowType = 0xCA00;
+                    if (vs_menuD_containerData->data.shields[parentIndex - 1].isEquipped
+                        == 0) {
+                        rowType = 0xCC00;
+                    }
+                }
+
+                ++itemCount;
+                rowTypes[i] |= rowType;
+            }
+        }
+    }
+    return itemCount;
+}
 
 void func_801071D8(int arg0)
 {

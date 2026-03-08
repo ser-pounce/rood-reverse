@@ -6,3 +6,5 @@ $(BUILD)/config/MENU/MENUD.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
+
+$(BUILD)/src/MENU/MENUD.PRG/234.o: $(BUILD)/assets/MENU/MENUD.PRG/menuText.vsString

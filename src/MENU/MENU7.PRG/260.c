@@ -92,14 +92,14 @@ typedef struct {
     char unk100[0x80];
     savedata_unk180_t unk180;
     char stateFlags[0x440];
-    char unk640[0x20];
+    char skillsLearned[32];
     char mapStatus[0x48];
-    vs_main_settings_t unk6A8;
+    vs_main_settings_t settings;
     D_80060068_t unk6C8;
-    char unk7C8[15][256];
+    vs_battle_inventory_t inventory;
     char unk16C8[0xB0];
     D_80061068_t unk1778;
-    vs_main_scoredata_t unk1784;
+    vs_main_scoredata_t scoreData;
     int unk1898;
     char unk189C[0x520];
     vs_main_artsStatus_t artsStatus;
@@ -584,7 +584,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
     return memcardEventPending;
 }
 
-static int _applyLoadedSaveFile(int verifyOnly)
+static int _applyLoadedSaveFile(int write)
 {
     int blockCount;
     savedata_t* spmcimg = (savedata_t*)_spmcimg;
@@ -596,7 +596,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.base.slotState);
 
     blockCount = 92;
-    if (verifyOnly != 0) {
+    if (write != 0) {
         blockCount = 32;
     }
 
@@ -607,19 +607,20 @@ static int _applyLoadedSaveFile(int verifyOnly)
         } while (0);
     }
 
-    if (verifyOnly == 0) {
+    if (write == 0) {
         return 0;
     }
 
     _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof(vs_main_stateFlags));
-    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
+    _rMemcpy(
+        vs_main_skillsLearned, spmcimg[1].skillsLearned, sizeof(vs_main_skillsLearned));
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof(vs_main_mapStatus));
-    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
+    _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof(vs_battle_inventory));
+    _rMemcpy(&vs_battle_inventory, &spmcimg[1].inventory, sizeof(vs_battle_inventory));
     _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
-    _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
+    _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof(vs_main_scoredata));
     D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
     spmcimg2 = &vs_main_artsStatus;
@@ -714,14 +715,15 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
     _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof(savedata->stateFlags));
-    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
+    _rMemcpy(
+        savedata->skillsLearned, vs_main_skillsLearned, sizeof(savedata->skillsLearned));
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof(savedata->mapStatus));
-    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
+    _rMemcpy(&savedata->settings, &vs_main_settings, sizeof(savedata->settings));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
-    _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof(savedata->unk7C8));
+    _rMemcpy(&savedata->inventory, &vs_battle_inventory, sizeof(savedata->inventory));
     _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
-    _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
+    _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof(savedata->scoreData));
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof(savedata->containerData));
     savedata->unk1898 = D_80060064;

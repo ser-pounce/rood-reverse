@@ -7,6 +7,7 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../assets/MENU/ITEMHELP.BIN.h"
+#include "../../assets/MENU/MENUD.PRG/menuText.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include <libetc.h>
@@ -20,25 +21,6 @@ int func_80106C64(int, char**, int*, char*);
 
 extern u_long* D_1F800000[];
 
-extern u_short D_8010952C[];
-extern char D_80109572;
-extern char D_8010957C[];
-extern u_short _containerItemCapacities[];
-extern char* D_80109954;
-extern int (*D_80109958[])(int);
-extern char D_80109970[];
-extern char D_80109990[];
-extern char D_801099D0[];
-extern char D_801099D4[];
-extern char* D_801099DC[];
-extern char _discardAmountFormat[];
-extern char _discardBulkSteps[];
-extern char D_80109A07;
-extern char* D_80109A08[];
-extern char* D_80109A10[];
-extern char D_80109A2C;
-extern char D_80109A2D;
-extern char D_80109A2E;
 extern char D_80109A30;
 extern char D_80109A31;
 extern char D_80109A32;
@@ -158,6 +140,11 @@ void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_battle_inventoryShield
     vs_battle_applyShieldStats(target, temp);
     vs_main_freeHeapR(temp);
 }
+
+static u_short _menuText[] = {
+#include "../../assets/MENU/MENUD.PRG/menuText.vsString"
+};
+static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 
 static u_short* _getContainerIndicesOffset(int itemCategory, vs_menu_container* container)
 {
@@ -1015,6 +1002,8 @@ int _bladeNavigation(int bladeIndex)
     return 0;
 }
 
+static char* D_80109954 = "X     0";
+
 int _gripNavigation(int arg0)
 {
     char* sp10[2];
@@ -1061,6 +1050,7 @@ int _gripNavigation(int arg0)
                 func_80104078(D_80109A3B, sp10, sp18, temp_v0_2);
             }
         }
+        // BUG: write to .rodata
         D_80109954[6] = (vs_menuD_containerData->data
                              .grips[vs_menuD_containerData->indices.grips[D_80109A3C] - 1]
                              .gemSlots
@@ -1256,6 +1246,9 @@ int _gemNavigation(int arg0)
 
 int func_80105008(int arg0)
 {
+    static int (*D_80109958[])(int) = { _weaponNavigation, _bladeNavigation,
+        _gripNavigation, _shieldNavigation, _armorNavigation, _gemNavigation };
+
     int temp_v0;
     int var_s0 = 0;
 
@@ -1286,8 +1279,6 @@ int func_80105008(int arg0)
     }
     return temp_v0;
 }
-
-INCLUDE_RODATA("build/src/MENU/MENUD.PRG/nonmatchings/234", D_8010285C);
 
 int _getWeaponStat(int type, vs_battle_uiWeapon* weapon)
 {
@@ -1619,6 +1610,20 @@ static void _sortEquipmentByStat(int arg0, int arg1)
 
 static int _displaySortMenu(int arg0)
 {
+    static char D_80109970[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23 };
+    static char D_80109988[] = { 0, 8, 9, 10, 24, 25, 26 };
+    static char D_80109990[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31,
+        32, 33, 34, 35, 36, 37, 38, 39 };
+    static char D_801099A8[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32,
+        33, 34, 35, 36, 37, 38, 39 };
+    static char D_801099C0[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+        39 };
+    static char D_801099D0[] = { 0, 56 };
+    static char D_801099D4[] = { 24, 24, 7, 24, 23, 16, 2 };
+    static char* D_801099DC[] = { D_80109970, D_80109970, D_80109988, D_80109990,
+        D_801099A8, D_801099C0, D_801099D0 };
+
     enum state { init, display };
 
     char* sp10[48];
@@ -1679,6 +1684,13 @@ static int _displaySortMenu(int arg0)
 
 int _displayDiscardMenu(int arg0)
 {
+#pragma vsstring(start)
+    static char _discardAmountFormat[] = "|>48|000/000\0";
+#pragma vsstring(end)
+
+    static char _discardBulkSteps[] = { 1, 10, 100 };
+    static char D_80109A07 = 0;
+
     enum state {
         init,
         discardOne,
@@ -1896,7 +1908,9 @@ int _displayDiscardMenu(int arg0)
     return 0;
 }
 
-INCLUDE_RODATA("build/src/MENU/MENUD.PRG/nonmatchings/234", D_80102910);
+static char const* D_80109A08[] = { "GADGET BAG", "CONTAINER" };
+static char const* D_80109A10[] = { "$WEAPON", "$BLADE", "$GRIP", "$SHIELD", "$ARMOR",
+    "$GEM", "$MISC" };
 
 void func_80106464(int arg0, int arg1, int arg2)
 {
@@ -2158,8 +2172,8 @@ int func_801072B0(int arg0)
     switch (temp_s0) {
     case 0:
         for (i = 0; i < 2; ++i) {
-            sp10[i * 2] = (char*)&D_8010952C[D_8010952C[8 + i]];
-            sp10[i * 2 + 1] = (char*)&D_8010952C[D_8010952C[D_80109A7A + 10]];
+            sp10[i * 2] = (char*)&_menuText[_menuText[8 + i]];
+            sp10[i * 2 + 1] = (char*)&_menuText[_menuText[D_80109A7A + 10]];
             sp20[i] = 0;
         }
 
@@ -2264,7 +2278,7 @@ loop_1:
         D_80109A69 = temp_s2 == 0;
         if (D_80109A69 != 0) {
             vs_mainmenu_setInformationMessage(
-                (char*)&D_8010952C[D_8010952C[D_80109A7A + 27 + (var_s4 == 7) * 2]]);
+                (char*)&_menuText[_menuText[D_80109A7A + 27 + (var_s4 == 7) * 2]]);
         } else {
             temp_s3 = vs_main_settings.cursorMemory;
             if (D_80109A6A == 0) {
@@ -2514,10 +2528,9 @@ loop_1:
         if (var_a2 != 0) {
             temp_s0 = 1;
             temp_s2 =
-                D_8010952C[vs_menuD_containerData->data.weapons[var_a2 - 1].isEquipped
-                                   == 0
-                               ? 5
-                               : 4];
+                _menuText[vs_menuD_containerData->data.weapons[var_a2 - 1].isEquipped == 0
+                              ? 5
+                              : 4];
         }
 
         var_a2 = _getSetShieldIndex(var_s4, temp_s3, &vs_menuD_containerData->data);
@@ -2526,16 +2539,15 @@ loop_1:
         if (var_a2 != 0) {
             temp_s0 = 1;
             temp_s2 =
-                D_8010952C[vs_menuD_containerData->data.shields[var_a2 - 1].isEquipped
-                                   == 0
-                               ? 5
-                               : 4];
+                _menuText[vs_menuD_containerData->data.shields[var_a2 - 1].isEquipped == 0
+                              ? 5
+                              : 4];
         }
 
         var_a2 = temp_s0;
 
         if (temp_s0 != 0) {
-            sp10[1] = &D_8010952C[temp_s2];
+            sp10[1] = &_menuText[temp_s2];
         } else if (var_s4 == 6) {
             int temp_s0 = 0;
 
@@ -2567,18 +2579,18 @@ loop_1:
                 }
             }
             var_a2 = var_a2 == 0;
-            sp10[1] = &D_8010952C[temp_s2];
+            sp10[1] = &_menuText[temp_s2];
         } else {
             var_a2 = func_80106784(var_s4, temp_s3);
-            sp10[1] = &D_8010952C[D_8010952C[var_a2 + 5]];
+            sp10[1] = &_menuText[_menuText[var_a2 + 5]];
         }
 
-        sp10[0] = &D_8010952C[D_8010952C[D_80109A7A * 2 + 0x1F]];
+        sp10[0] = &_menuText[_menuText[D_80109A7A * 2 + 0x1F]];
 
         if (var_a2 != 0) {
             vs_battle_rowTypeBuf[0] = 1;
         } else {
-            sp10[1] = &D_8010952C[D_8010952C[D_80109A7A * 2 + 0x20]];
+            sp10[1] = &_menuText[_menuText[D_80109A7A * 2 + 0x20]];
         }
         D_80109A61 = 1;
         temp_s2 = 1;
@@ -2772,7 +2784,7 @@ loop_1:
             D_80109A69 = temp_s2 == 0;
             if (D_80109A69 != 0) {
                 vs_mainmenu_setInformationMessage(
-                    (char*)&D_8010952C[D_8010952C[D_80109A7A + 0x1D]]);
+                    (char*)&_menuText[_menuText[D_80109A7A + 0x1D]]);
             } else {
                 vs_mainmenu_setMenuRows(
                     temp_s2, (var_s4 + 0x51) | 0x19200, temp_s3_7, temp_s1_4);
@@ -2834,6 +2846,11 @@ loop_1:
 
 int func_801089BC(int arg0)
 {
+    static char D_80109A2C = 0;
+    static char D_80109A2D = 0;
+    static char D_80109A2E = 1;
+    static char _ __attribute__((unused)) = 1;
+
     int i;
     int var_s1;
     vs_battle_menuItem_t* temp_v0_2;
@@ -2857,7 +2874,7 @@ int func_801089BC(int arg0)
     case 1:
         temp_v0_2 =
             vs_battle_setMenuItem(D_80109A70 + 0xA, 0x140, (D_80109A70 * 0x10) + 0x22,
-                0x7E, 0, (char*)&D_8010952C[D_8010952C[D_80109A70 * 2 + 12]]);
+                0x7E, 0, (char*)&_menuText[_menuText[D_80109A70 * 2 + 12]]);
         temp_v0_2->state = 2;
         temp_v0_2->targetX = 0xC2;
         ++D_80109A70;
@@ -2904,9 +2921,9 @@ int func_801089BC(int arg0)
             ((u_short*)&D_800F4EE8)[0x4F] = var_s1;
         }
         if (var_s1 != 2) {
-            a0 = (char*)&D_8010952C[D_8010952C[var_s1 * 2 + 13]];
+            a0 = (char*)&_menuText[_menuText[var_s1 * 2 + 13]];
         } else {
-            a0 = D_8010957C;
+            a0 = (char*)&_menuText[VS_menuText_OFFSET_endTransfer];
         }
         vs_mainmenu_setInformationMessage(a0);
         break;
@@ -2968,7 +2985,7 @@ int func_80108C6C(char* arg0)
             if (D_80109A74 < 3) {
                 vs_mainMenu_clearMenuExcept(0);
                 vs_battle_setMenuItem(0, 0xB4, 0x12, 0x8C, 8,
-                    (char*)&D_8010952C[D_8010952C[D_80109A74 + 0xF]])
+                    (char*)&_menuText[_menuText[D_80109A74 + 0xF]])
                     ->selected = 1;
                 *arg0 = 4;
             } else {
@@ -2989,7 +3006,9 @@ int func_80108C6C(char* arg0)
             if (D_80109A74 == -2) {
                 *arg0 = 6;
             } else {
-                vs_battle_setMenuItem(0, 0xB4, 0x12, 0x8C, 8, &D_80109572)->selected = 1;
+                vs_battle_setMenuItem(0, 0xB4, 0x12, 0x8C, 8,
+                    (char*)&_menuText[VS_menuText_OFFSET_container])
+                    ->selected = 1;
                 D_80109A78 = 5;
                 *arg0 = 2;
             }
@@ -3033,9 +3052,9 @@ int func_80108C6C(char* arg0)
             if (*arg0 != 6) {
                 int itemCategory = ((D_800F4EE8.unkA0[0] - 1) & 7);
                 menuItem = vs_battle_setMenuItem(0x1F, i + 0xB4, 0x22, 0x8C, 8,
-                    (char*)&D_8010952C[D_8010952C[itemCategory + 0x12
-                                                  + (itemCategory == 7
-                                                      && D_80109A7A != 0)]]);
+                    (char*)&_menuText[_menuText[itemCategory + 0x12
+                                                + (itemCategory == 7
+                                                    && D_80109A7A != 0)]]);
                 menuItem->selected = 1;
                 if (itemCategory == 7) {
                     for (i = 0; i < 64; ++i) {

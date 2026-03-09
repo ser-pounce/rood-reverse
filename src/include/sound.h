@@ -279,7 +279,7 @@ typedef struct {
     /* 0x08 */ int field2_0x8;
     /* 0x0C */ int VoicesInUseFlags;
     /* 0x10 */ int VoiceIndex;
-    /* 0x14 */ int ChannelFlags;
+    /* 0x14 */ u_int ChannelFlags;
     /* 0x18 */ int field6_0x18;
     /* 0x1C */ int field7_0x1c;
     /* 0x20 */ int field8_0x20;
@@ -448,15 +448,15 @@ typedef struct {
 typedef struct {
     int unk0;
     int unk4;
+    u_int KeyedMask;
     int unk8;
     int StatusFlags;
     u_int ActiveChannelMask;
-    u_int KeyedMask;
+    int PendingKeyOffMask;
     u_int AllocatedVoiceMask;
     int PendingKeyOnMask;
     int ActiveNoteMask;
     u_int PreventRekeyOnMusicResumeMask;
-    int PendingKeyOffMask;
     u_int LastChannelModeFlags;
     int Tempo;
     int TempoSlideStep;

@@ -27,27 +27,6 @@ typedef struct {
     int unk8;
     int unkC;
     int unk10;
-    int unk14[507];
-    u_char unk800[0];
-} D_80039B08_t2;
-
-typedef struct {
-    D_80039B08_t2* unk0;
-    D_80039B08_t2* unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    u_int unk14;
-    int unk18;
-    int unk1C;
-} D_80039B08_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
     int unk14;
     int unk18;
     int unk1C;
@@ -143,7 +122,6 @@ extern D_800378C0_t D_800378C0;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AFC;
-extern D_80039B08_t D_80039B08;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -153,6 +131,7 @@ extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern FSoundChannelConfig* g_pSavedMousicConfig;
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundFadeTimer g_Sound_MasterFadeTimer;
+extern FSound80094FA0 g_Sound_80094FA0;
 
 int InitSound(void)
 {
@@ -1098,7 +1077,62 @@ void ChannelMaskToVoiceMaskFiltered(FSoundChannel* in_Channel, int* io_VoiceMask
     *io_VoiceMask &= in_VoiceMaskFilter;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800157C4);
+void Sound_ProcessKeyOffRequests(void)
+{
+    int VoiceMask;
+    int SavedConfigKeyedMask;
+    int ActiveKeyedMask;
+    int Filter;
+    int ActiveOffMask;
+    int SavedOffMask;
+
+    Filter = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask
+               | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+               | g_Sound_80094FA0.VoicesInUseFlags);
+    VoiceMask = 0;
+    SavedOffMask = 0;
+
+    if (g_pSavedMousicConfig) {
+        SavedOffMask = g_pSavedMousicConfig->PendingKeyOffMask;
+        SavedConfigKeyedMask = SavedOffMask & g_pSavedMousicConfig->KeyedMask;
+
+        if (SavedConfigKeyedMask != 0) {
+            ChannelMaskToVoiceMaskFiltered(
+                g_pSecondaryMusicChannels, &VoiceMask, SavedConfigKeyedMask, Filter);
+            g_pSavedMousicConfig->PendingKeyOffMask &= ~g_pSavedMousicConfig->KeyedMask;
+            SavedOffMask &= ~g_pSavedMousicConfig->KeyedMask;
+        }
+    }
+
+    ActiveOffMask = g_pActiveMusicConfig->PendingKeyOffMask;
+    ActiveKeyedMask = ActiveOffMask & g_pActiveMusicConfig->KeyedMask;
+
+    if (ActiveKeyedMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveKeyedMask, Filter);
+        g_pActiveMusicConfig->PendingKeyOffMask &= ~g_pActiveMusicConfig->KeyedMask;
+        ActiveOffMask &= ~g_pActiveMusicConfig->KeyedMask;
+    }
+
+    if (g_pSavedMousicConfig && (SavedOffMask != 0)) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_pSecondaryMusicChannels, &VoiceMask, SavedOffMask, Filter);
+        g_pSavedMousicConfig->PendingKeyOffMask = 0;
+    }
+
+    if (ActiveOffMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveOffMask, Filter);
+        g_pActiveMusicConfig->PendingKeyOffMask = 0;
+    }
+
+    VoiceMask |= g_Sound_VoiceSchedulerState.KeyOffFlags;
+    g_Sound_VoiceSchedulerState.KeyOffFlags = 0;
+
+    if (VoiceMask != 0) {
+        SetVoiceKeyOff(VoiceMask);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015970);
 
@@ -1142,7 +1176,8 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
         var_s0 = 0x400000;
 
         temp_s2 = g_Sound_VoiceSchedulerState.ActiveChannelMask
-                | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B08.unkC;
+                | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+                | g_Sound_80094FA0.VoicesInUseFlags;
 
         for (var_a1 = 0xC; var_a1 != 0; var_a1 -= 2, var_s1 -= 2, var_s0 /= 4) {
             if (!(temp_s2 & (var_s0 | (var_s0 * 2)))) {
@@ -1158,7 +1193,8 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
 
         if (temp_s2
             == (g_Sound_VoiceSchedulerState.ActiveChannelMask
-                | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B08.unkC)) {
+                | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+                | g_Sound_80094FA0.VoicesInUseFlags)) {
             return;
         }
     }
@@ -1582,7 +1618,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CDD0);
 
 void func_8001CE60(void)
 {
-    u_char* temp_s0 = D_80039B08.unk0->unk800;
+    u_char* temp_s0 = (void*)g_Sound_80094FA0.field0_0x0 + 0x800;
     SpuSetTransferStartAddr(0x2100);
     SpuSetTransferCallback(spuTransferCallback);
     SpuWrite(temp_s0, 0x800);
@@ -1596,8 +1632,8 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D2A0);
 
 void spuTransferCallback(void)
 {
-    func_8001D0E4(D_80039B08.unk10, 0, 0x1100, 0x2100);
-    func_8001D0E4(D_80039B08.unk10 + 1, 0, 0x1100, 0x2100);
+    func_8001D0E4(g_Sound_80094FA0.VoiceIndex, 0, 0x1100, 0x2100);
+    func_8001D0E4(g_Sound_80094FA0.VoiceIndex + 1, 0, 0x1100, 0x2100);
     func_8001D2A0(0x1000, 0x2100, func_8001D584);
 }
 
@@ -1605,27 +1641,28 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
 void func_8001D438(int spuStartAddr, int arg1, int size, void (*callback)())
 {
-    if ((D_80039B08.unkC != 0) && (D_80039B08.unk14 != 0)) {
+    if ((g_Sound_80094FA0.VoicesInUseFlags != 0)
+        && (g_Sound_80094FA0.ChannelFlags != 0)) {
         SpuSetTransferStartAddr(spuStartAddr);
         spuSetTransferCallback();
-        SpuWrite((u_char*)D_80039B08.unk0, size);
+        SpuWrite((u_char*)g_Sound_80094FA0.field0_0x0, size);
         SpuSetIRQ(SPU_OFF);
-        if (D_80039B08.unk14 > 0x800) {
+        if (g_Sound_80094FA0.ChannelFlags > 0x800) {
             SpuSetIRQCallback(callback);
-            D_80039B08.unk14 -= 0x800;
-            D_80039B08.unk0 = (void*)D_80039B08.unk0 + size;
-        } else if (D_80039B08.unk4 != 0) {
+            g_Sound_80094FA0.ChannelFlags -= 0x800;
+            g_Sound_80094FA0.field0_0x0 = (void*)g_Sound_80094FA0.field0_0x0 + size;
+        } else if (g_Sound_80094FA0.unk_Mask_0x4 != 0) {
             SpuSetIRQCallback(callback);
-            D_80039B08.unk0 = D_80039B08.unk4;
-            D_80039B08.unk14 = D_80039B08.unk1C;
+            g_Sound_80094FA0.field0_0x0 = g_Sound_80094FA0.unk_Mask_0x4;
+            g_Sound_80094FA0.ChannelFlags = g_Sound_80094FA0.field7_0x1c;
         } else {
             SpuSetIRQCallback(IRQCallbackProc);
             arg1 = 0x1030;
             spuStartAddr = 0x1030;
-            D_80039B08.unk14 = 0;
+            g_Sound_80094FA0.ChannelFlags = 0;
         }
-        SetVoiceRepeatAddr(D_80039B08.unk10, spuStartAddr);
-        SetVoiceRepeatAddr(D_80039B08.unk10 + 1, arg1);
+        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex, spuStartAddr);
+        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex + 1, arg1);
         SpuSetIRQAddr(spuStartAddr + 8);
         SpuSetIRQ(SPU_ON);
     }

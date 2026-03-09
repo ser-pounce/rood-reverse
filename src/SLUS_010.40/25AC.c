@@ -150,6 +150,8 @@ extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
+extern FSoundChannelConfig* g_pSavedMousicConfig;
+extern FSoundChannel* g_pSecondaryMusicChannels;
 
 int InitSound(void)
 {
@@ -1033,7 +1035,35 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D08);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D70);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", UnassignVoicesFromChannels);
+void UnassignVoicesFromChannels(FSoundChannel* in_pChannel, int arg1)
+{
+    FSoundChannel* pChannel;
+    u_int Count;
+
+    Count = 0;
+    pChannel = in_pChannel;
+
+    do {
+        if (arg1 == pChannel->VoiceParams.AssignedVoiceNumber) {
+            pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+        }
+        Count++;
+        pChannel++;
+    } while (Count < SOUND_CHANNEL_COUNT);
+
+    Count = 0;
+
+    if (g_pSavedMousicConfig != NULL) {
+        pChannel = g_pSecondaryMusicChannels;
+        do {
+            if (arg1 == pChannel->VoiceParams.AssignedVoiceNumber) {
+                pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+            }
+            Count++;
+            pChannel++;
+        } while (Count < SOUND_CHANNEL_COUNT);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001503C);
 

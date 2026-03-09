@@ -32,10 +32,7 @@
 #include "gpu.h"
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    char unk0[4];
 } D_8010989C_t;
 
 typedef struct {
@@ -1423,12 +1420,15 @@ void func_801056B8(void)
     }
 }
 
-extern D_8010989C_t D_8010989C;
-extern char D_80109898;
-extern char D_80109899;
-extern char D_801098A0;
-extern short D_801098A4[];
-extern u_int D_801098C4[];
+static char D_80109898 = 0;
+static char D_80109899 = 0;
+#pragma vsstring(start)
+static D_8010989C_t D_8010989C = { "%\0" };
+#pragma vsstring(end)
+static char D_801098A0 = 0;
+static short D_801098A4[16] = { 16, 12, 8 };
+static u_int D_801098C4[] = { 100000000, 75000000, 60000000, 40000000, 32000000, 24000000,
+    16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000, 1000000, 500000, 0 };
 
 void func_8010579C(int arg0)
 {

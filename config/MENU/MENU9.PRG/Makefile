@@ -13,3 +13,4 @@ $(BUILD)/config/MENU/MENU9.PRG/link.d: \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
 $(BUILD)/src/MENU/MENU9.PRG/238.o: $(patsubst %,$(BUILD)/assets/MENU/MENU9.PRG/%.vsString, menuText rankText titleText titleDescriptions statHeaders statDescriptions timeAttacks timeAttackDescriptions miscInfo)
+$(BUILD)/src/MENU/MENU9.PRG/592C.o: $(BUILD)/src/include/lbas.h

@@ -21,7 +21,6 @@ segments:
     vram: 0x80102800
     align: 4
     subsegments:
-      - [0x0, .rodata, 238]
       - [0x238, c]
       - [0x57BC, c]
       - [0x592C, c]
@@ -34,6 +33,5 @@ segments:
       - {start: 0x6D98, type: vsStringTable, name: timeAttacks, linker_entry: false}
       - {start: 0x6E0C, type: vsStringTable, name: timeAttackDescriptions, linker_entry: false}
       - {start: 0x6FDC, type: vsStringTable, name: miscInfo, linker_entry: false}
-      - [0x7098, data]
       - [0x7A14, bss, 238]
   - [0x7CB8]

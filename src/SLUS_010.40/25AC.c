@@ -130,7 +130,6 @@ void IRQCallbackProc(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
-extern int D_80033690[];
 extern D_80035910_t D_800363B0[];
 extern short D_800358FE;
 extern D_80035910_t D_80035910[];
@@ -149,6 +148,8 @@ extern D_80039B08_t D_80039B08;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
+extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
+extern FSoundChannel g_ActiveMusicChannels[0x20];
 
 int InitSound(void)
 {
@@ -993,13 +994,46 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001436C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800147CC);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014C58);
+void UnassignVoicesFromChannels(FSoundChannel* in_pChannel, int);
+
+int Sound_StealQuietestVoice(int in_bForceFullScan)
+{
+    FSpuVoiceInfo* pVoiceInfo;
+    short EnvX;
+    int i;
+    int out_VoiceIndex;
+
+    if (in_bForceFullScan) {
+        i = 0;
+    } else {
+        i = g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo;
+    }
+
+    EnvX = 0x7FFF;
+    out_VoiceIndex = VOICE_COUNT;
+    pVoiceInfo = &g_SpuVoiceInfo[i];
+
+    do {
+        if (pVoiceInfo->pEnvx < EnvX) {
+            EnvX = pVoiceInfo->pEnvx;
+            out_VoiceIndex = i;
+        }
+        i++;
+        pVoiceInfo++;
+    } while (i < VOICE_COUNT);
+
+    if (EnvX == 0x7FFF) {
+        return VOICE_COUNT;
+    }
+    UnassignVoicesFromChannels(g_ActiveMusicChannels, out_VoiceIndex);
+    return out_VoiceIndex;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D08);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D70);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014FBC);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", UnassignVoicesFromChannels);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001503C);
 
@@ -1080,7 +1114,7 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
 
     if (arg1 != NULL) {
         func_8001653C(var_s1, arg0, var_s0, arg1);
-        func_800166E8(D_80033690, var_s1->unkF4);
+        func_800166E8(g_ActiveMusicChannels, var_s1->unkF4);
     }
 
     if (arg2 != NULL) {
@@ -1090,7 +1124,7 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
         }
 
         func_8001653C(var_s1, arg0, var_s0, arg2);
-        func_800166E8(D_80033690, var_s1->unkF4);
+        func_800166E8(g_ActiveMusicChannels, var_s1->unkF4);
 
         if (arg1 != NULL) {
             var_s1->unk34 |= 0x10000;

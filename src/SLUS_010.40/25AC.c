@@ -1,10 +1,18 @@
+// Largely copied from
+// https://github.com/jdperos/chrono-cross-decomp/blob/master/src/slps_023.64/system/sound.c
+
 #include "common.h"
 #include "25AC.h"
+#include "hw.h"
+#include "sound.h"
 #include <kernel.h>
 #include <libspu.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <libcd.h>
+
+#define SPU_VOICE_INDEX_STRIDE                                                           \
+    8 // u16s to skip per voice when indexing voice register arrays
 
 typedef struct {
     int unk0;
@@ -102,7 +110,7 @@ int func_80013588(void*, int);
 int func_800135D8(void*, int, int, int);
 void func_8001369C(void);
 static void StartSound(void);
-static void func_80013AE8(u_int);
+static void SetVoiceKeyOff(u_int);
 void func_800161C4(int, int);
 void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
 void func_800166E8(int*, int);
@@ -132,13 +140,15 @@ extern int D_800377E0[3];
 extern void* g_Sound_SfxProgramOffsets;
 extern u_short* g_Sound_SfxMetadataTable;
 extern void* g_Sound_SfxProgramData;
-extern int D_80037890[];
 extern D_800378C0_t D_800378C0;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
-extern int D_80039AF8[];
 extern int D_80039AFC;
 extern D_80039B08_t D_80039B08;
+
+extern FSoundChannelConfig* g_pActiveMusicConfig;
+extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
+extern FSoundGlobalFlags g_Sound_GlobalFlags;
 
 int InitSound(void)
 {
@@ -232,7 +242,7 @@ int func_80012358(int arg0)
     int var_v1;
     int a2;
 
-    if ((arg0 == 0) || ((a2 = D_80037890[0]) == 0)) {
+    if ((arg0 == 0) || ((a2 = g_Sound_VoiceSchedulerState.ActiveChannelMask) == 0)) {
         return 0;
     }
 
@@ -368,7 +378,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012E50);
 
 int func_80012EBC(void)
 {
-    D_80039AF8[1] &= ~0x10000;
+    g_Sound_GlobalFlags.MixBehavior &= ~0x10000;
     D_80036770.unk4 = 0;
     D_80036770.unk0 = 0;
     return 0;
@@ -517,82 +527,467 @@ static void StopSound(void)
         ;
     while (CloseEvent(_soundEvent) == 0)
         ;
-    func_80013AE8(0xFFFFFF);
+    SetVoiceKeyOff(0xFFFFFF);
     SpuQuit();
 }
 
-static void func_80013ACC(u_int arg0)
+static void SetVoiceKeyOn(u_int in_KeyOn)
 {
-    *(short*)getScratchAddr(0x762) = arg0;
-    *((short*)getScratchAddr(0x762) + 1) = arg0 >> 16;
+    *SPU_VOICE_KEY_ON_LO = in_KeyOn;
+    *SPU_VOICE_KEY_ON_HI = (in_KeyOn >> 0x10);
 }
 
-static void func_80013AE8(u_int arg0)
+static void SetVoiceKeyOff(u_int in_KeyOff)
 {
-    *(short*)getScratchAddr(0x763) = arg0;
-    *((short*)getScratchAddr(0x763) + 1) = arg0 >> 16;
+    *SPU_VOICE_KEY_OFF_LO = in_KeyOff;
+    *SPU_VOICE_KEY_OFF_HI = (in_KeyOff >> 0x10);
 }
 
-static void func_80013B04(u_int arg0)
+static void SetVoiceReverbMode(u_int in_ReverbMode)
 {
-    *(short*)getScratchAddr(0x766) = arg0;
-    *((short*)getScratchAddr(0x766) + 1) = (arg0 >> 0x10);
+    *SPU_VOICE_CHN_REVERB_MODE_LO = in_ReverbMode;
+    *SPU_VOICE_CHN_REVERB_MODE_HI = (in_ReverbMode >> 0x10);
 }
 
-static void func_80013B20(u_int arg0)
+static void SetVoiceNoiseMode(u_int in_NoiseMode)
 {
-    *(short*)getScratchAddr(0x765) = arg0;
-    *((short*)getScratchAddr(0x765) + 1) = (arg0 >> 0x10);
+    *SPU_VOICE_CHN_NOISE_MODE_LO = in_NoiseMode;
+    *SPU_VOICE_CHN_NOISE_MODE_HI = (in_NoiseMode >> 0x10);
 }
 
-static void func_80013B3C(u_int arg0)
+static void SetVoiceFmMode(u_int in_FmMode)
 {
-    *(short*)getScratchAddr(0x764) = arg0;
-    *((short*)getScratchAddr(0x764) + 1) = (arg0 >> 0x10);
+    *SPU_VOICE_CHN_FM_MODE_LO = in_FmMode;
+    *SPU_VOICE_CHN_FM_MODE_HI = (in_FmMode >> 0x10);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013B58);
-
-static void func_80013BA0(int arg0, short arg1)
+void SetVoiceVolume(int in_VoiceIndex, u_int in_VolL, u_int in_VolR, u_int in_VolumeScale)
 {
-    ((short(*)[8])getScratchAddr(0x701))[arg0][0] = arg1;
+    SpuVolume* pVolume;
+
+    if (in_VolumeScale != 0) {
+        in_VolL = in_VolL * in_VolumeScale;
+        in_VolR = in_VolR * in_VolumeScale;
+        in_VolL = in_VolL >> 7;
+        in_VolR = in_VolR >> 7;
+    }
+
+    pVolume = (SpuVolume*)&VOICE_00_LEFT_RIGHT[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    pVolume->left = in_VolL & 0x7FFF;
+    pVolume->right = in_VolR & 0x7FFF;
 }
 
-static void func_80013BB8(int arg0, u_int arg1)
+static void SetVoiceSampleRate(int in_VoiceIndex, int in_SampleRate)
 {
-    ((short(*)[8])((short*)getScratchAddr(0x701) + 1))[arg0][0] = (arg1 >> 3);
+    VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_SampleRate;
 }
 
-static void func_80013BD4(int arg0, u_int arg1)
+static void SetVoiceStartAddr(int in_VoiceIndex, u_int in_Addr)
 {
-    ((short(*)[8])((short*)getScratchAddr(0x703) + 1))[arg0][0] = (arg1 >> 3);
+    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = (in_Addr >> 3);
 }
 
-static void func_80013BF0(int arg0, short arg1)
+static void SetVoiceRepeatAddr(int in_VoiceIndex, u_int in_Addr)
 {
-    ((short(*)[8])getScratchAddr(0x702))[arg0][0] = arg1;
+    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = (in_Addr >> 3);
 }
 
-static void func_80013C08(int arg0, short arg1)
+static void SetVoiceAdsrLower(int in_VoiceIndex, u_short in_Register)
 {
-    ((short(*)[8])((short*)getScratchAddr(0x702) + 1))[arg0][0] = arg1;
+    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013C20);
+static void SetVoiceAdsrUpper(int in_VoiceIndex, u_short in_Register)
+{
+    VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013C50);
+//----------------------------------------------------------------------------------------------------------------------
+// ADSR LOWER 16-bit (at 1F801C08h+N*10h)
+//----------------------------------------------------------------------------------------------------------------------
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013C78);
+// Bit positions
+#define ADSR_ATTACK_MODE_BIT 15
+#define ADSR_ATTACK_SHIFT_POS 10 // 5 bits (14-10)
+#define ADSR_ATTACK_STEP_POS 8 // 2 bits (9-8)
+#define ADSR_DECAY_SHIFT_POS 4 // 4 bits (7-4)
+#define ADSR_SUSTAIN_LEVEL_POS 0 // 4 bits (3-0)
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013CA0);
+// Bit masks (for masking out fields)
+#define ADSR_ATTACK_MODE_MASK (0x1 << ADSR_ATTACK_MODE_BIT)
+#define ADSR_ATTACK_SHIFT_MASK (0x1F << ADSR_ATTACK_SHIFT_POS)
+#define ADSR_ATTACK_STEP_MASK (0x3 << ADSR_ATTACK_STEP_POS)
+#define ADSR_DECAY_SHIFT_MASK (0xF << ADSR_DECAY_SHIFT_POS)
+#define ADSR_SUSTAIN_LEVEL_MASK (0xF << ADSR_SUSTAIN_LEVEL_POS)
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013CD4);
+// Attack Mode values
+#define ADSR_ATTACK_MODE_LINEAR 0
+#define ADSR_ATTACK_MODE_EXPONENTIAL 1
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013D04);
+// Attack Step values ("+7,+6,+5,+4")
+#define ADSR_ATTACK_STEP_PLUS_7 0
+#define ADSR_ATTACK_STEP_PLUS_6 1
+#define ADSR_ATTACK_STEP_PLUS_5 2
+#define ADSR_ATTACK_STEP_PLUS_4 3
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013DB0);
+// Helper macros to build fields
+#define ADSR_ATTACK_MODE(mode) ((mode) << ADSR_ATTACK_MODE_BIT)
+#define ADSR_ATTACK_SHIFT(shift) (((shift) & 0x1F) << ADSR_ATTACK_SHIFT_POS)
+#define ADSR_ATTACK_STEP(step) (((step) & 0x3) << ADSR_ATTACK_STEP_POS)
+#define ADSR_DECAY_SHIFT(shift) (((shift) & 0xF) << ADSR_DECAY_SHIFT_POS)
+#define ADSR_SUSTAIN_LEVEL(level) (((level) & 0xF) << ADSR_SUSTAIN_LEVEL_POS)
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013ECC);
+//----------------------------------------------------------------------------------------------------------------------
+// ADSR UPPER 16-bit (at 1F801C0Ah+N*10h)
+//----------------------------------------------------------------------------------------------------------------------
+
+// Bit positions (relative to the upper 16-bit word, bits 0-15)
+#define ADSR_SUSTAIN_MODE_BIT 15
+#define ADSR_SUSTAIN_DIRECTION_BIT 14
+// Bit 13 unused
+#define ADSR_SUSTAIN_SHIFT_POS 8 // 5 bits (12-8)
+#define ADSR_SUSTAIN_STEP_POS 6 // 2 bits (7-6)
+#define ADSR_RELEASE_MODE_BIT 5
+#define ADSR_RELEASE_SHIFT_POS 0 // 5 bits (4-0)
+
+// Bit masks (for masking out fields)
+#define ADSR_SUSTAIN_MODE_MASK (0x1 << ADSR_SUSTAIN_MODE_BIT)
+#define ADSR_SUSTAIN_DIRECTION_MASK (0x1 << ADSR_SUSTAIN_DIRECTION_BIT)
+#define ADSR_SUSTAIN_SHIFT_MASK (0x1F << ADSR_SUSTAIN_SHIFT_POS)
+#define ADSR_SUSTAIN_STEP_MASK (0x3 << ADSR_SUSTAIN_STEP_POS)
+#define ADSR_RELEASE_MODE_MASK (0x1 << ADSR_RELEASE_MODE_BIT)
+#define ADSR_RELEASE_SHIFT_MASK (0x1F << ADSR_RELEASE_SHIFT_POS)
+
+// Sustain Mode values
+#define ADSR_SUSTAIN_MODE_LINEAR 0
+#define ADSR_SUSTAIN_MODE_EXPONENTIAL 1
+
+// Sustain Direction values
+#define ADSR_SUSTAIN_DIR_INCREASE 0
+#define ADSR_SUSTAIN_DIR_DECREASE 1
+
+// Sustain Step values
+// When Increase: "+7,+6,+5,+4"
+#define ADSR_SUSTAIN_STEP_INC_PLUS_7 0
+#define ADSR_SUSTAIN_STEP_INC_PLUS_6 1
+#define ADSR_SUSTAIN_STEP_INC_PLUS_5 2
+#define ADSR_SUSTAIN_STEP_INC_PLUS_4 3
+
+// When Decrease: "-8,-7,-6,-5"
+#define ADSR_SUSTAIN_STEP_DEC_MINUS_8 0
+#define ADSR_SUSTAIN_STEP_DEC_MINUS_7 1
+#define ADSR_SUSTAIN_STEP_DEC_MINUS_6 2
+#define ADSR_SUSTAIN_STEP_DEC_MINUS_5 3
+
+// Release Mode values
+#define ADSR_RELEASE_MODE_LINEAR 0
+#define ADSR_RELEASE_MODE_EXPONENTIAL 1
+
+// Helper macros to build fields
+#define ADSR_SUSTAIN_MODE(mode) ((mode) << ADSR_SUSTAIN_MODE_BIT)
+#define ADSR_SUSTAIN_DIRECTION(dir) ((dir) << ADSR_SUSTAIN_DIRECTION_BIT)
+#define ADSR_SUSTAIN_SHIFT(shift) (((shift) & 0x1F) << ADSR_SUSTAIN_SHIFT_POS)
+#define ADSR_SUSTAIN_STEP(step) (((step) & 0x3) << ADSR_SUSTAIN_STEP_POS)
+#define ADSR_RELEASE_MODE(mode) ((mode) << ADSR_RELEASE_MODE_BIT)
+#define ADSR_RELEASE_SHIFT(shift) (((shift) & 0x1F) << ADSR_RELEASE_SHIFT_POS)
+
+void SetVoiceAdsrAttackRateAndMode(
+    int in_VoiceIndex, int in_AttackStep, u_int in_AttackMode)
+{
+    u_short* AdsrLower =
+        &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    // Extract Attack Mode bit (bit 2 of in_AttackRate -> bit 15 of ADSR)
+    u_short AttackMode = ADSR_ATTACK_MODE(in_AttackMode >> 2);
+    // Position Attack Step (0-3) at bits 8-9
+    u_short AttackStep = in_AttackStep << ADSR_ATTACK_STEP_POS;
+    *AdsrLower = AttackMode | AttackStep | *(char*)AdsrLower;
+}
+
+void SetVoiceAdsrDecayRate(int in_VoiceIndex, int in_DecayRate)
+{
+    u_short* AdsrLower =
+        &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    u_short AttackStep = in_DecayRate * 0x10;
+    u_short Masked = (*AdsrLower & 0xFF0F);
+    *AdsrLower = Masked | AttackStep;
+}
+
+void SetVoiceAdsrSustainLevel(int in_VoiceIndex, int in_SustainLevel)
+{
+    u_short* AdsrLower =
+        &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    *AdsrLower = (*AdsrLower & 0xFFF0) | in_SustainLevel;
+}
+
+void SetVoiceAdsrSustainRateAndDirection(
+    int in_VoiceIndex, int in_SustainRate, u_int in_SustainDirection)
+{
+    u_short* AdsrUpper =
+        &VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    u_short SustainDirection = ADSR_SUSTAIN_DIRECTION(in_SustainDirection >> 1);
+    u_short SustainRate = in_SustainRate << ADSR_SUSTAIN_STEP_POS;
+    u_short Masked = *AdsrUpper & 0x3F;
+    *AdsrUpper = Masked | (SustainDirection | SustainRate);
+}
+
+void SetVoiceAdsrReleaseRateAndMode(
+    int in_VoiceIndex, int in_ReleaseRate, u_int in_ReleaseMode)
+{
+    u_short* AdsrUpper =
+        &VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    u_short ReleaseMode = (in_ReleaseMode >> 2) << ADSR_RELEASE_MODE_BIT;
+    u_short ReleaseRate = in_ReleaseRate << ADSR_RELEASE_SHIFT_POS;
+    u_short Masked = *AdsrUpper & 0xFFC0;
+    *AdsrUpper = Masked | (ReleaseMode | ReleaseRate);
+}
+
+void SetVoiceParams(
+    int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, int in_VolumeScale)
+{
+    int left;
+    int right;
+    short* p;
+
+    in_VoiceParams->VoiceParamFlags = 0;
+    p = (short*)&VOICE_00_LEFT_RIGHT[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    if (in_VolumeScale == 0) {
+        left = in_VoiceParams->Volume.left;
+        right = in_VoiceParams->Volume.right;
+    } else {
+        left = in_VoiceParams->Volume.left * in_VolumeScale;
+        right = in_VoiceParams->Volume.right * in_VolumeScale;
+        left >>= 7;
+        right >>= 7;
+    }
+
+    // This is the dumbest shit, but I can't find any other way that compiles correctly
+    *p++ = left & 0x7FFF;
+    *p++ = right & 0x7FFF;
+    *p++ = in_VoiceParams->SampleRate;
+    *p++ = in_VoiceParams->StartAddress >> 3;
+    *p++ = in_VoiceParams->AdsrLower;
+    *p++ = in_VoiceParams->AdsrUpper;
+    p++;
+    *p = in_VoiceParams->LoopAddress >> 3;
+}
+
+void SetVoiceParamsByFlags(u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams)
+{
+    int flags;
+
+    flags = in_VoiceParams->VoiceParamFlags;
+    if (flags == 0) {
+        return;
+    }
+
+    in_VoiceParams->VoiceParamFlags = 0;
+
+    if (flags & VOICE_PARAM_SAMPLE_RATE) {
+        flags &= ~VOICE_PARAM_SAMPLE_RATE;
+        SetVoiceSampleRate(in_VoiceIndex, in_VoiceParams->SampleRate);
+        if (flags == 0)
+            return;
+    }
+
+    if (flags & VOICE_PARAM_VOLUME) {
+        flags &= ~VOICE_PARAM_VOLUME;
+        SetVoiceVolume(in_VoiceIndex, in_VoiceParams->Volume.left,
+            in_VoiceParams->Volume.right, in_VoiceParams->VolumeScale);
+        if (flags == 0)
+            return;
+    }
+
+    if (flags & VOICE_PARAM_START_ADDR) {
+        flags &= ~VOICE_PARAM_START_ADDR;
+        SetVoiceStartAddr(in_VoiceIndex, in_VoiceParams->StartAddress);
+        if (flags == 0)
+            return;
+    }
+
+    if (flags & VOICE_PARAM_LOOP_ADDR) {
+        flags &= ~VOICE_PARAM_LOOP_ADDR;
+        SetVoiceRepeatAddr(in_VoiceIndex, in_VoiceParams->LoopAddress);
+        if (flags == 0)
+            return;
+    }
+
+    if (flags & VOICE_PARAM_ADSR_UPPER) {
+        flags &= ~VOICE_PARAM_ADSR_UPPER;
+        SetVoiceAdsrUpper(in_VoiceIndex, in_VoiceParams->AdsrUpper);
+        if (flags == 0)
+            return;
+    }
+
+    if (flags & VOICE_PARAM_ADSR_LOWER) {
+        SetVoiceAdsrLower(in_VoiceIndex, in_VoiceParams->AdsrLower);
+    }
+}
+
+void Sound_UpdateSlidesAndDelays(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags, int in_Arg2)
+{
+
+    short* Wave;
+    int temp;
+
+    if (in_Arg2 == 0) {
+        if (in_pChannel->VolumeBalanceSlideLength != 0) {
+            in_pChannel->VolumeBalanceSlideLength--;
+            temp = in_pChannel->VolumeBalance + in_pChannel->VolumeBalanceSlideStep;
+            if ((temp & 0x7F00) != (in_pChannel->VolumeBalance & 0x7F00)) {
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+            }
+            in_pChannel->VolumeBalance = temp;
+        }
+    }
+
+    if (in_pChannel->ChannelVolumeSlideLength != 0) {
+        int Volume;
+        in_pChannel->ChannelVolumeSlideLength--;
+        Volume = in_pChannel->Volume;
+        temp = Volume + in_pChannel->VolumeSlideStep;
+        if ((temp & 0xFFE00000) != (Volume & 0xFFE00000)) {
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+        in_pChannel->Volume = temp;
+    }
+
+    if (in_pChannel->ChannelPanSlideLength != 0) {
+        u_short Pan;
+        in_pChannel->ChannelPanSlideLength--;
+        Pan = in_pChannel->ChannelPan;
+        temp = Pan + in_pChannel->PanSlideStep;
+        if ((temp & 0xFF00) != (Pan & 0xFF00)) {
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+        in_pChannel->ChannelPan = temp;
+    }
+
+    if (in_pChannel->VibratoDelayCurrent != 0) {
+        in_pChannel->VibratoDelayCurrent--;
+    }
+
+    if (in_pChannel->TremeloDelayCurrent != 0) {
+        in_pChannel->TremeloDelayCurrent--;
+    }
+
+    if (in_pChannel->NoiseTimer != 0) {
+        in_pChannel->NoiseTimer--;
+        if (!(in_pChannel->NoiseTimer & 0xFFFF)) {
+            if (in_Arg2 == 0) {
+                g_pActiveMusicConfig->NoiseChannelFlags ^= in_VoiceFlags;
+            } else {
+                g_Sound_VoiceSchedulerState.NoiseVoiceFlags ^= in_VoiceFlags;
+            }
+            g_Sound_GlobalFlags.UpdateFlags |=
+                (SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08);
+        }
+    }
+
+    if (in_pChannel->FmTimer != 0) {
+        in_pChannel->FmTimer--;
+        if (!(in_pChannel->FmTimer & 0xFFFF)) {
+            if (in_Arg2 == 0) {
+                g_pActiveMusicConfig->FmChannelFlags ^= in_VoiceFlags;
+            } else {
+                g_Sound_VoiceSchedulerState.FmVoiceFlags ^= in_VoiceFlags;
+            }
+            g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
+        }
+    }
+
+    if (in_pChannel->VibratoDepthSlideLength != 0) {
+        u_int var_lo;
+        u_short VibratoDepth;
+        int NewVibratoDepth;
+
+        in_pChannel->VibratoDepthSlideLength--;
+        VibratoDepth = in_pChannel->VibratoDepth + in_pChannel->VibratoDepthSlideStep;
+        in_pChannel->VibratoDepth = VibratoDepth;
+        NewVibratoDepth = (u_int)(VibratoDepth & 0x7F00) >> 8;
+        if (VibratoDepth & 0x8000) {
+            var_lo = (u_int)(NewVibratoDepth * in_pChannel->PitchBase) >> 7;
+        } else {
+            var_lo = (NewVibratoDepth * ((u_int)(in_pChannel->PitchBase * 15) >> 8)) >> 7;
+        }
+
+        in_pChannel->VibratoBase = var_lo;
+
+        if ((in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->field72_0xb8 != 1)) {
+            Wave = in_pChannel->VibratoWave;
+            if (Wave[0] == 0 && Wave[1] == 0) {
+                Wave += Wave[2];
+            }
+
+            temp = (in_pChannel->VibratoBase * Wave[0]) >> 16;
+            if (temp != in_pChannel->VibratoPitch) {
+                in_pChannel->VibratoPitch = temp;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+                if (temp >= 0) {
+                    in_pChannel->VibratoPitch = temp * 2;
+                }
+            }
+        }
+    }
+
+    if (in_pChannel->TremeloDepthSlideLength != 0) {
+
+        in_pChannel->TremeloDepthSlideLength--;
+        in_pChannel->TremeloDepth += (u_short)in_pChannel->TremeloDepthSlideStep;
+        if (((u_short)in_pChannel->TremeloDelayCurrent == 0)
+            && ((u_short)in_pChannel->field81_0xca != 1)) {
+            int FinalVolume;
+            int TremeloDepthHi8;
+            int VolumeBalanceHigh8;
+            int VolumeHigh16;
+
+            Wave = in_pChannel->TremeloWave;
+            if (Wave[0] == 0 && Wave[1] == 0) {
+                Wave += Wave[2];
+            }
+
+            VolumeBalanceHigh8 = (u_short)in_pChannel->VolumeBalance >> 8;
+            VolumeHigh16 = in_pChannel->Volume >> 16;
+            FinalVolume = (VolumeHigh16 * VolumeBalanceHigh8) >> 7;
+            TremeloDepthHi8 = in_pChannel->TremeloDepth >> 8;
+            temp = ((FinalVolume * TremeloDepthHi8) << 9) >> 16;
+            temp = (temp * *Wave) >> 15;
+            if (temp != in_pChannel->TremeloVolume) {
+                in_pChannel->TremeloVolume = temp;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+            }
+        }
+    }
+
+    if (in_pChannel->AutoPanDepthSlideLength != 0) {
+        in_pChannel->AutoPanDepthSlideLength--;
+        in_pChannel->AutoPanDepth += in_pChannel->AutoPanDepthSlideStep;
+        if (in_pChannel->AutoPanRateCurrent != 1) {
+            Wave = in_pChannel->AutoPanWave;
+            if ((Wave[0] == 0) && (Wave[1] == 0)) {
+                Wave += Wave[2];
+            }
+
+            temp = ((in_pChannel->AutoPanDepth >> 8) * *Wave) >> 15;
+            if (temp != in_pChannel->AutoPanVolume) {
+                in_pChannel->AutoPanVolume = temp;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+            }
+        }
+    }
+
+    if (in_pChannel->PitchSlideStepsCurrent != 0) {
+        int PitchSlide;
+
+        in_pChannel->PitchSlideStepsCurrent--;
+        PitchSlide = in_pChannel->PitchSlide;
+        temp = PitchSlide + in_pChannel->PitchSlideStep;
+        if ((temp & 0xFFFF0000) != (PitchSlide & 0xFFFF0000)) {
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+        }
+        in_pChannel->PitchSlide = temp;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001436C);
 
@@ -661,7 +1056,8 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
         var_s1 = D_800363B0;
         var_s0 = 0x400000;
 
-        temp_s2 = D_80037890[0] | D_80037890[4] | D_80039B08.unkC;
+        temp_s2 = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B08.unkC;
 
         for (var_a1 = 0xC; var_a1 != 0; var_a1 -= 2, var_s1 -= 2, var_s0 /= 4) {
             if (!(temp_s2 & (var_s0 | (var_s0 * 2)))) {
@@ -675,7 +1071,9 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
 
         func_800161C4(0, 0x40000000);
 
-        if (temp_s2 == (D_80037890[0] | D_80037890[4] | D_80039B08.unkC)) {
+        if (temp_s2
+            == (g_Sound_VoiceSchedulerState.ActiveChannelMask
+                | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B08.unkC)) {
             return;
         }
     }
@@ -698,7 +1096,7 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
             var_s1->unk34 |= 0x10000;
         }
     }
-    D_80039AF8[2] |= 0x110;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
 }
 
 void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
@@ -1141,8 +1539,8 @@ void func_8001D438(int spuStartAddr, int arg1, int size, void (*callback)())
             spuStartAddr = 0x1030;
             D_80039B08.unk14 = 0;
         }
-        func_80013BD4(D_80039B08.unk10, spuStartAddr);
-        func_80013BD4(D_80039B08.unk10 + 1, arg1);
+        SetVoiceRepeatAddr(D_80039B08.unk10, spuStartAddr);
+        SetVoiceRepeatAddr(D_80039B08.unk10 + 1, arg1);
         SpuSetIRQAddr(spuStartAddr + 8);
         SpuSetIRQ(SPU_ON);
     }

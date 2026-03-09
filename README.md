@@ -4,6 +4,8 @@ A decompilation project for Vagrant Story for PlayStation 1, with a goal of enab
 
 This project does not contain any of the original files from the game disk, you must own a copy of the game.
 
+Many thanks to the [Chrono Cross Decompilation](https://github.com/jdperos/chrono-cross-decomp) for much of the sound library code.
+
 Heavily inspired by and indebted to the incredible work of the [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) team and the [PS1/PS2 decompilation](https://discord.gg/hKx3FJJgrV) Discord server.
 
 Grateful to the authors of Data Crystal’s [Vagrant Story](https://datacrystal.tcrf.net/wiki/Vagrant_Story) page for their excellent work and insights.

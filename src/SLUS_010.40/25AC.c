@@ -1079,7 +1079,24 @@ void Sound_RestoreChannelVolumeFromMasterFade(FSoundChannelConfig* in_Config)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015220);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015764);
+void ChannelMaskToVoiceMaskFiltered(FSoundChannel* in_Channel, int* io_VoiceMask,
+    int in_ChannelMask, int in_VoiceMaskFilter)
+{
+    u_int bit = 1;
+
+    do {
+        if (in_ChannelMask & bit) {
+            if (in_Channel->VoiceParams.AssignedVoiceNumber < VOICE_COUNT) {
+                *io_VoiceMask |= 1 << in_Channel->VoiceParams.AssignedVoiceNumber;
+            }
+        }
+        in_ChannelMask &= ~bit;
+        in_Channel++;
+        bit <<= 1;
+    } while (in_ChannelMask != 0);
+
+    *io_VoiceMask &= in_VoiceMaskFilter;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800157C4);
 

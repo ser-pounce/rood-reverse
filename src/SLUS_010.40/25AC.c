@@ -152,6 +152,7 @@ extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern FSoundChannelConfig* g_pSavedMousicConfig;
 extern FSoundChannel* g_pSecondaryMusicChannels;
+extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 
 int InitSound(void)
 {
@@ -1071,7 +1072,10 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800151C0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015210);
+void Sound_RestoreChannelVolumeFromMasterFade(FSoundChannelConfig* in_Config)
+{
+    in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015220);
 

@@ -91,8 +91,8 @@ void func_8001369C(void);
 static void StartSound(void);
 static void SetVoiceKeyOff(u_int);
 void func_800161C4(int, int);
-void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
-void func_80016744(func_800172D4_t*, void*, void*, int);
+void func_8001653C(D_80035910_t*, FSoundCommandParams*, int, char*);
+void func_80016744(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
 long func_80019A58(void);
@@ -1237,19 +1237,19 @@ void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice ) {
     }
 }
 
-void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
+void func_80016744(FSoundCommandParams* in_CommandParams, char* in_ProgramCounter1, char* in_ProgramCounter2, int in_SkipRelease)
 {
     D_80035910_t* var_s1;
     int temp_s2;
     int var_a1;
     u_int var_s0;
 
-    if ((arg1 == NULL) && (arg2 == NULL)) {
+    if ((in_ProgramCounter1 == NULL) && (in_ProgramCounter2 == NULL)) {
         return;
     }
 
-    if ((arg3 == 0) && (arg0->unk4 != 0)) {
-        func_800161C4(0, arg0->unk4);
+    if ((in_SkipRelease == 0) && (in_CommandParams->Param2 != 0)) {
+        func_800161C4(0, in_CommandParams->Param2);
     }
 
     while (1) {
@@ -1280,21 +1280,21 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
         }
     }
 
-    if (arg1 != NULL) {
-        func_8001653C(var_s1, arg0, var_s0, arg1);
+    if (in_ProgramCounter1 != NULL) {
+        func_8001653C(var_s1, in_CommandParams, var_s0, in_ProgramCounter1);
         FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
     }
 
-    if (arg2 != NULL) {
-        if (arg1 != NULL) {
+    if (in_ProgramCounter2 != NULL) {
+        if (in_ProgramCounter1 != NULL) {
             ++var_s1;
             var_s0 *= 2;
         }
 
-        func_8001653C(var_s1, arg0, var_s0, arg2);
+        func_8001653C(var_s1, in_CommandParams, var_s0, in_ProgramCounter2);
         FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
 
-        if (arg1 != NULL) {
+        if (in_ProgramCounter1 != NULL) {
             var_s1->unk34 |= 0x10000;
         }
     }
@@ -1355,13 +1355,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017254);
 
-void func_800172D4(func_800172D4_t* arg0)
+void func_800172D4(FSoundCommandParams* arg0)
 {
     void* akaoOffset;
     void* akaoData;
 
-    _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->index);
-    arg0->unk10 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->index]);
+    _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->Param1);
+    arg0->ExtParam1 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->Param1]);
     func_80016744(arg0, akaoOffset, akaoData, 0);
 }
 

@@ -46,6 +46,7 @@ UnassignVoicesFromChannels = 0x80014FBC;
 Sound_RestoreChannelVolumeFromMasterFade = 0x80015210;
 ChannelMaskToVoiceMaskFiltered = 0x80015764;
 Sound_ProcessKeyOffRequests = 0x800157C4;
+Sound_MapInstrumentToAltSampleBank = 0x80015AFC;
 _getAkaoBlocksFromIndex = 0x800168F8;
 _setReverbMode = 0x80018BE0;
 IRQCallbackProc = 0x8001CD4C;

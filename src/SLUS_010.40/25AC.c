@@ -92,7 +92,7 @@ static void StartSound(void);
 static void SetVoiceKeyOff(u_int);
 void func_800161C4(int, int);
 void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
-void func_800166E8(int*, int);
+void func_800166E8(FSoundChannel*, int);
 void func_80016744(func_800172D4_t*, void*, void*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
@@ -1136,7 +1136,31 @@ void Sound_ProcessKeyOffRequests(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015970);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015AFC);
+// 0x20 toggles whether we use the alternate sample bank
+#define SOUND_BANK_FLAG_ALT_SAMPLE_BANK (1u << 6) // 0x40
+
+// the instrument index window that is eligible for bank remap
+#define SOUND_BANK_REMAP_BASE_INDEX 0x20u // first remappable instrument
+#define SOUND_BANK_REMAP_COUNT 0x60u // 64 instruments (0x20..0x5F)
+
+// how far to shift SPU sample addresses when remapping
+#define SOUND_BANK_SPU_ADDR_OFFSET 0x20000u
+
+extern int D_80094FAC[];
+extern int D_80094FFC;
+
+u_short Sound_MapInstrumentToAltSampleBank(u_int in_Flags, FSoundChannel* in_pChannel)
+{
+    if (in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK
+        && 0x40 <= (in_pChannel->InstrumentIndex)
+        && (in_pChannel->InstrumentIndex) < SOUND_BANK_REMAP_COUNT) {
+        in_pChannel->VoiceParams.StartAddress += SOUND_BANK_SPU_ADDR_OFFSET;
+        in_pChannel->VoiceParams.LoopAddress += SOUND_BANK_SPU_ADDR_OFFSET;
+        in_pChannel->InstrumentIndex +=
+            SOUND_BANK_REMAP_BASE_INDEX; // mirror into alt-bank instrument table
+    }
+    return in_pChannel->InstrumentIndex;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015B54);
 
@@ -1650,7 +1674,8 @@ void func_8001D438(int spuStartAddr, int arg1, int size, void (*callback)())
         if (g_Sound_80094FA0.ChannelFlags > 0x800) {
             SpuSetIRQCallback(callback);
             g_Sound_80094FA0.ChannelFlags -= 0x800;
-            g_Sound_80094FA0.field0_0x0 = (void*)g_Sound_80094FA0.field0_0x0 + size;
+            g_Sound_80094FA0.field0_0x0 =
+                (int)((void*)g_Sound_80094FA0.field0_0x0 + size);
         } else if (g_Sound_80094FA0.unk_Mask_0x4 != 0) {
             SpuSetIRQCallback(callback);
             g_Sound_80094FA0.field0_0x0 = g_Sound_80094FA0.unk_Mask_0x4;

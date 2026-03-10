@@ -91,8 +91,8 @@ void func_8001369C(void);
 static void StartSound(void);
 static void SetVoiceKeyOff(u_int);
 void func_800161C4(int, int);
-void func_8001653C(D_80035910_t*, FSoundCommandParams*, int, char*);
-void func_80016744(FSoundCommandParams*, char*, char*, int);
+void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
+void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
 long func_80019A58(void);
@@ -108,7 +108,6 @@ void IRQCallbackProc(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
-extern D_80035910_t D_800363B0[];
 extern short D_800358FE;
 extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
@@ -133,6 +132,7 @@ extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 extern FSound80094FA0 g_Sound_80094FA0;
 extern u_int g_Sound_ProgramCounter;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
+extern FSoundChannel SfxSoundChannels[12];
 
 int InitSound(void)
 {
@@ -1218,16 +1218,14 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800161C4);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
 
-void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice ) {
+void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice)
+{
     u_int VoiceIndex;
 
-    if( in_Voice < VOICE_COUNT )
-    {
+    if (in_Voice < VOICE_COUNT) {
         VoiceIndex = 0;
-        while( VoiceIndex < SOUND_CHANNEL_COUNT )
-        {
-            if( in_Channel->VoiceParams.AssignedVoiceNumber == in_Voice )
-            {
+        while (VoiceIndex < SOUND_CHANNEL_COUNT) {
+            if (in_Channel->VoiceParams.AssignedVoiceNumber == in_Voice) {
                 in_Channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
                 g_pActiveMusicConfig->ActiveNoteMask &= ~(1 << VoiceIndex);
             }
@@ -1237,12 +1235,15 @@ void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice ) {
     }
 }
 
-void func_80016744(FSoundCommandParams* in_CommandParams, char* in_ProgramCounter1, char* in_ProgramCounter2, int in_SkipRelease)
+#define SOUND_UPDATE_STEREO_LINKED (1 << 16) // Second channel of stereo pair
+
+void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_ProgramCounter1,
+    char* in_ProgramCounter2, int in_SkipRelease)
 {
-    D_80035910_t* var_s1;
-    int temp_s2;
-    int var_a1;
-    u_int var_s0;
+    FSoundChannel* channel;
+    int activeVoices;
+    int slotsRemaining;
+    u_int voiceBit;
 
     if ((in_ProgramCounter1 == NULL) && (in_ProgramCounter2 == NULL)) {
         return;
@@ -1253,26 +1254,27 @@ void func_80016744(FSoundCommandParams* in_CommandParams, char* in_ProgramCounte
     }
 
     while (1) {
-        var_s1 = D_800363B0;
-        var_s0 = 0x400000;
+        channel = SfxSoundChannels;
+        voiceBit = 0x400000;
 
-        temp_s2 = g_Sound_VoiceSchedulerState.ActiveChannelMask
-                | g_Sound_VoiceSchedulerState.unk_Flags_0x10
-                | g_Sound_80094FA0.VoicesInUseFlags;
+        activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                     | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+                     | g_Sound_80094FA0.VoicesInUseFlags;
 
-        for (var_a1 = 0xC; var_a1 != 0; var_a1 -= 2, var_s1 -= 2, var_s0 /= 4) {
-            if (!(temp_s2 & (var_s0 | (var_s0 * 2)))) {
+        for (slotsRemaining = 0xC; slotsRemaining != 0;
+             slotsRemaining -= 2, channel -= 2, voiceBit /= 4) {
+            if (!(activeVoices & (voiceBit | (voiceBit * 2)))) {
                 break;
             }
         }
 
-        if (var_a1 != 0) {
+        if (slotsRemaining != 0) {
             break;
         }
 
         func_800161C4(0, 0x40000000);
 
-        if (temp_s2
+        if (activeVoices
             == (g_Sound_VoiceSchedulerState.ActiveChannelMask
                 | g_Sound_VoiceSchedulerState.unk_Flags_0x10
                 | g_Sound_80094FA0.VoicesInUseFlags)) {
@@ -1281,24 +1283,26 @@ void func_80016744(FSoundCommandParams* in_CommandParams, char* in_ProgramCounte
     }
 
     if (in_ProgramCounter1 != NULL) {
-        func_8001653C(var_s1, in_CommandParams, var_s0, in_ProgramCounter1);
-        FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
+        func_8001653C(channel, in_CommandParams, voiceBit, in_ProgramCounter1);
+        FreeVoiceChannels(
+            g_ActiveMusicChannels, channel->VoiceParams.AssignedVoiceNumber);
     }
 
     if (in_ProgramCounter2 != NULL) {
         if (in_ProgramCounter1 != NULL) {
-            ++var_s1;
-            var_s0 *= 2;
+            ++channel;
+            voiceBit *= 2;
         }
 
-        func_8001653C(var_s1, in_CommandParams, var_s0, in_ProgramCounter2);
-        FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
+        func_8001653C(channel, in_CommandParams, voiceBit, in_ProgramCounter2);
+        FreeVoiceChannels(
+            g_ActiveMusicChannels, channel->VoiceParams.AssignedVoiceNumber);
 
         if (in_ProgramCounter1 != NULL) {
-            var_s1->unk34 |= 0x10000;
+            channel->UpdateFlags |= SOUND_UPDATE_STEREO_LINKED;
         }
     }
-    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 
 void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
@@ -1362,7 +1366,7 @@ void func_800172D4(FSoundCommandParams* arg0)
 
     _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->Param1);
     arg0->ExtParam1 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->Param1]);
-    func_80016744(arg0, akaoOffset, akaoData, 0);
+    Sound_PlaySfxProgram(arg0, akaoOffset, akaoData, 0);
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001733C);

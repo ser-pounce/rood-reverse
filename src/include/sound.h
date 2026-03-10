@@ -329,7 +329,7 @@ typedef struct {
     int unk1C;
     int PitchBase;
     int PitchSlide;
-    u_int unk28;
+    u_int UpdateFlags;
     int unk2C;
     u_int unk30;
     int unk34;

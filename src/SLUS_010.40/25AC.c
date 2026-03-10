@@ -132,6 +132,8 @@ extern FSoundChannelConfig* g_pSavedMousicConfig;
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 extern FSound80094FA0 g_Sound_80094FA0;
+extern u_int g_Sound_ProgramCounter;
+extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
 
 int InitSound(void)
 {
@@ -1180,7 +1182,38 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015D38);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015D84);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800160F0);
+void Sound_KillMusicConfig(
+    FSoundChannelConfig* in_Config, FSoundChannel* in_pChannel, u_int arg2)
+{
+    FSoundChannel* pChannel;
+    FSoundChannelConfig** ppThisChannelConfig;
+    u_int Count;
+
+    pChannel = in_pChannel;
+    if ((in_Config->ActiveChannelMask != 0)
+        && ((arg2 == 0) || (arg2 == in_Config->MusicId))) {
+        in_Config->PendingKeyOffMask = -1;
+        for (Count = SOUND_CHANNEL_COUNT; Count != 0; Count--) {
+            pChannel->Length1 = 3;
+            pChannel->Length2 = 1;
+            pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
+            pChannel++;
+        };
+
+        ppThisChannelConfig = g_Sound_VoiceChannelConfigs;
+        in_Config->MusicId = 0;
+        in_Config->ActiveNoteMask = 0;
+        in_Config->PendingKeyOnMask = 0;
+
+        for (Count = 0; Count < VOICE_COUNT; Count++) {
+            if (*ppThisChannelConfig == in_Config) {
+                *ppThisChannelConfig = NULL;
+                SetVoiceAdsrReleaseRateAndMode(Count, 5, 3U);
+            }
+            ppThisChannelConfig++;
+        };
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800161C4);
 

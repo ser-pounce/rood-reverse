@@ -1151,9 +1151,8 @@ extern int D_80094FFC;
 
 u_short Sound_MapInstrumentToAltSampleBank(u_int in_Flags, FSoundChannel* in_pChannel)
 {
-    if (in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK
-        && 0x40 <= (in_pChannel->InstrumentIndex)
-        && (in_pChannel->InstrumentIndex) < SOUND_BANK_REMAP_COUNT) {
+    if (in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK && 0x40 <= in_pChannel->InstrumentIndex
+        && in_pChannel->InstrumentIndex < SOUND_BANK_REMAP_COUNT) {
         in_pChannel->VoiceParams.StartAddress += SOUND_BANK_SPU_ADDR_OFFSET;
         in_pChannel->VoiceParams.LoopAddress += SOUND_BANK_SPU_ADDR_OFFSET;
         in_pChannel->InstrumentIndex +=
@@ -1162,7 +1161,16 @@ u_short Sound_MapInstrumentToAltSampleBank(u_int in_Flags, FSoundChannel* in_pCh
     return in_pChannel->InstrumentIndex;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015B54);
+u_short Sound_MapInstrumentToBaseSampleBank(u_int in_Flags, FSoundChannel* in_Channel)
+{
+    if ((in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK)
+        && 0x60 <= in_Channel->InstrumentIndex && in_Channel->InstrumentIndex < 0x80) {
+        in_Channel->VoiceParams.StartAddress -= SOUND_BANK_SPU_ADDR_OFFSET;
+        in_Channel->VoiceParams.LoopAddress -= SOUND_BANK_SPU_ADDR_OFFSET;
+        in_Channel->InstrumentIndex -= SOUND_BANK_REMAP_BASE_INDEX;
+    }
+    return in_Channel->InstrumentIndex;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015BAC);
 

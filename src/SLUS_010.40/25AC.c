@@ -92,7 +92,6 @@ static void StartSound(void);
 static void SetVoiceKeyOff(u_int);
 void func_800161C4(int, int);
 void func_8001653C(D_80035910_t*, func_800172D4_t*, int, void*);
-void func_800166E8(FSoundChannel*, int);
 void func_80016744(func_800172D4_t*, void*, void*, int);
 int func_80016DA8(int);
 u_int func_80018C30(int);
@@ -1219,7 +1218,24 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800161C4);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800166E8);
+void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice ) {
+    u_int VoiceIndex;
+
+    if( in_Voice < VOICE_COUNT )
+    {
+        VoiceIndex = 0;
+        while( VoiceIndex < SOUND_CHANNEL_COUNT )
+        {
+            if( in_Channel->VoiceParams.AssignedVoiceNumber == in_Voice )
+            {
+                in_Channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+                g_pActiveMusicConfig->ActiveNoteMask &= ~(1 << VoiceIndex);
+            }
+            in_Channel++;
+            VoiceIndex++;
+        };
+    }
+}
 
 void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
 {
@@ -1266,7 +1282,7 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
 
     if (arg1 != NULL) {
         func_8001653C(var_s1, arg0, var_s0, arg1);
-        func_800166E8(g_ActiveMusicChannels, var_s1->unkF4);
+        FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
     }
 
     if (arg2 != NULL) {
@@ -1276,7 +1292,7 @@ void func_80016744(func_800172D4_t* arg0, void* arg1, void* arg2, int arg3)
         }
 
         func_8001653C(var_s1, arg0, var_s0, arg2);
-        func_800166E8(g_ActiveMusicChannels, var_s1->unkF4);
+        FreeVoiceChannels(g_ActiveMusicChannels, var_s1->unkF4);
 
         if (arg1 != NULL) {
             var_s1->unk34 |= 0x10000;

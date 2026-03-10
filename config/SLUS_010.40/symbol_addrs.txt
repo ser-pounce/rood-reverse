@@ -627,3 +627,4 @@ vs_main_gametime = 0x80061074;
 D_80061078 = 0x80061078;
 vs_main_stateFlags = 0x80061598;  // type:u8 size:0x440
 D_800619D8 = 0x800619D8;
+FreeVoiceChannels = 0x800166E8;

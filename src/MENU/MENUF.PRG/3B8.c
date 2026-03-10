@@ -17,7 +17,7 @@ typedef struct {
     char h;
     u_short tpage;
     u_short clut;
-} D_801091D8_t;
+} _texture_t;
 
 typedef struct {
     short unk0;
@@ -93,21 +93,157 @@ void _raiseMaxAgility(int amount);
 void _raiseMaxHP(int amount);
 void _raiseMaxMP(int amount);
 
-extern D_801091D8_t D_801091D8[];
-extern char D_8010923A;
-extern char D_8010941A;
-extern char D_8010951A;
-extern u_char D_801095D0[];
-extern D_80109610_t D_80109610[][16];
-extern int D_801096D0[];
-extern int D_801096F0;
-extern int D_80109700;
-extern int D_80109710;
-extern P_CODE D_80109720;
-extern P_CODE D_80109724;
-extern P_CODE D_80109728;
-extern char D_8010972C[];
-extern char D_80109738[];
+static _texture_t D_801091D8[] = {
+    { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 42, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 56, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 70, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 84, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 98, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 112, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 126, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 240, 16, 4, 8, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 148, 4, 60, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 6, 24, 154, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 50, 44, 44, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 98, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 144, 44, 30, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 182, 44, 34, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 0, 64, 66, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 104, 70, 12, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 118, 70, 28, 14, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 0, 88, 170, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 118, 136, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 150, 134, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 200, 82, 10, 10, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 216, 82, 8, 6, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 232, 82, 6, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 30, 12, 66, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 98, 12, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 170, 12, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 70, 36, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 144, 36, 102, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 78, 60, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 152, 60, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 38, 84, 80, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 118, 84, 122, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 46, 108, 118, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 166, 108, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 78, 132, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 172, 132, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 82, 156, 86, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 170, 156, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 60, 180, 96, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 158, 180, 88, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 120, 204, 54, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 178, 204, 68, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 56, 228, 114, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 172, 228, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 110, 12, 26, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 138, 12, 54, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 194, 12, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 64, 36, 88, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 182, 36, 64, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 90, 60, 90, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 184, 60, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 82, 84, 66, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 148, 84, 98, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 42, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 144, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 50, 132, 116, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 168, 132, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 74, 156, 92, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 166, 156, 80, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 58, 180, 68, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 130, 180, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 184, 180, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 106, 204, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 188, 204, 58, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 106, 228, 140, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 146, 2, 88, 14, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 0, 24, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 48, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 176, 78, 56, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 144, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 152, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 192, 18, 32, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 180, 38, 44, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 184, 58, 40, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 2, 72, 116, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 0, 96, 70, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 72, 96, 68, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 122, 72, 46, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 144, 96, 100, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 238, 4, 12, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 166, 20, 76, 18, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 4, 32, 140, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 56, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 80, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 104, 198, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 128, 232, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 152, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 176, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 122, 56, 100, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 200, 176, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 227, 212, 28, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 146, 180, 100, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 158, 14, 86, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 50, 14, 92, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 16, 14, 30, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 30, 132, 204, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 4, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 110, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 115, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 150, 160, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 176, 170, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 200, 116, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 8, 170, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 28, 134, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 102, 48, 118, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 48, 94, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 142, 28, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 68, 142, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 88, 144, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 108, 128, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 128, 98, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 136, 108, 104, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 148, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 168, 174, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 106, 128, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 188, 154, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 208, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 228, 194, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 0, 0, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 24, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 48, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 0, 72, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
+};
+static u_char D_801095D0[] = { 0x3, 0x1B, 0x1C, 0x1D, 0x2, 0x1B, 0x1E, 0, 0x2, 0x22, 0x25,
+    0, 0x2, 0x20, 0x21, 0, 0x2, 0x42, 0x43, 0, 0x2, 0x23, 0x24, 0, 0x2, 0x1C, 0x1F, 0,
+    0x2, 0x2C, 0x1C, 0, 0x2, 0x37, 0x38, 0, 0x1, 0x1E, 0, 0, 0x1, 0x3B, 0, 0, 0x1, 0x39,
+    0, 0, 0x1, 0x21, 0, 0, 0x1, 0x2A, 0, 0, 0x1, 0x1F, 0, 0, 0x2, 0x3C, 0x41, 0 };
+static D_80109610_t D_80109610[][16] = {
+    { { 0x10, 0x5 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0xE, 0x1 }, { 0x10, 0x4 },
+        { 0xF, 0x1 }, { 0x11, 0x2 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0x11, 0x1 },
+        { 0x10, 0x4 }, { 0x10, 0x4 }, { 0xD, 0x3 }, { 0x10, 0x3 }, { 0x11, 0x2 },
+        { 0xD, 0x1 } },
+    { { 0x11, 0x1 }, { 0x10, 0x4 }, { 0xF, 0x1 }, { 0x10, 0x3 }, { 0x10, 0x5 },
+        { 0x10, 0x4 }, { 0xF, 0x2 }, { 0xD, 0x1 }, { 0x10, 0x4 }, { 0x11, 0x2 },
+        { 0xE, 0x1 }, { 0xF, 0x3 }, { 0x10, 0x4 }, { 0xF, 0x2 }, { 0x10, 0x3 },
+        { 0x10, 0x3 } },
+    { { 0x10, 0x4 }, { 0xF, 0x1 }, { 0xE, 0x2 }, { 0x10, 0x4 }, { 0x11, 0x2 },
+        { 0xE, 0x1 }, { 0x11, 0x1 }, { 0x10, 0x3 }, { 0xE, 0x3 }, { 0x10, 0x4 },
+        { 0x10, 0x3 }, { 0x10, 0x5 }, { 0xE, 0x2 }, { 0x11, 0x2 }, { 0x10, 0x3 },
+        { 0xD, 0x1 } }
+};
+static int D_801096D0[] = { 0x79, 0x5D, 0x43, 0x2B, 0x19, 0xC, 3, 0 };
+static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
+    { 0x107A, 0x107A, 0x1000 } };
+static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 } };
 extern char D_80109744[];
 extern char D_8010974C[];
 extern char D_80109754[];
@@ -727,9 +863,9 @@ int func_8010412C(void)
     } else if (D_801098A0 == 2) {
         func_8007C36C(4);
         func_8007DDAC(0);
-        func_8007DDB8(&D_801096F0);
-        func_8007DDD4(&D_80109724);
-        func_8007DDF8((D_800F1A68_t*)(&D_801096F0 + 8));
+        func_8007DDB8((int*)&D_801096F0);
+        func_8007DDD4(&D_80109720[1]);
+        func_8007DDF8((D_800F1A68_t*)(D_801096F0 + 2));
         func_8007DE2C(0);
         func_8007DE44(0U);
         func_8007DE5C(0);
@@ -756,14 +892,14 @@ int func_8010412C(void)
         if (D_8010989C >= 0x2D) {
             if (D_8010989C == 0x2D) {
                 func_8007DE2C(1);
-                func_8007DDB8(&D_80109700);
-                func_8007DDD4(&D_80109720);
+                func_8007DDB8((int*)&D_801096F0[1]);
+                func_8007DDD4(&D_80109720[0]);
             } else if (D_8010989C == 0x2E) {
                 func_8007DE2C(0);
             } else if (D_8010989C == 0x37) {
-                func_8007DDD4(&D_80109728);
+                func_8007DDD4(&D_80109720[2]);
             } else if (D_8010989C == 0x3C) {
-                func_8007DDB8(&D_801096F0);
+                func_8007DDB8((int*)&D_801096F0);
             }
             var_a3 = 0x68 - D_8010989C;
             if (var_a3 < 0x2D) {
@@ -784,7 +920,7 @@ int func_8010412C(void)
         }
     } else if (D_801098A0 == 4) {
         func_8007C36C(2);
-        func_8007DDB8(&D_80109710);
+        func_8007DDB8((int*)&D_801096F0[2]);
         func_8007DD50(0);
         func_8007E0A8(0x1D, 2, 5);
         return 1;
@@ -801,11 +937,12 @@ void func_8010459C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_8010972C[3] = arg2;
-        D_8010972C[7] = arg2;
+        P_CODE* p = (D_80109720 + 3);
+        p->code = arg2;
+        p[1].code = arg2;
         arg0 -= (D_801091D8[100].w + D_801091D8[101].w) >> 1;
-        func_80106A80(arg0, arg1, 0x64, D_8010972C);
-        func_80106A80(arg0 + D_801091D8[100].w, arg1, 0x65, D_8010972C + 4);
+        func_80106A80(arg0, arg1, 0x64, (char*)p);
+        func_80106A80(arg0 + D_801091D8[100].w, arg1, 0x65, (char*)(p + 1));
     }
 }
 
@@ -975,11 +1112,12 @@ void func_80104B8C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_80109738[3] = arg2;
-        D_80109738[7] = arg2;
+        P_CODE* p = D_80109720 + 6;
+        p->code = arg2;
+        p[1].code = arg2;
         arg0 -= (D_801091D8[22].w + D_801091D8[23].w) >> 1;
-        func_80106A80(arg0, arg1, 0x16, D_80109738);
-        func_80106A80(arg0 + D_801091D8[22].w, arg1, 0x17, D_80109738 + 4);
+        func_80106A80(arg0, arg1, 0x16, (char*)p);
+        func_80106A80(arg0 + D_801091D8[22].w, arg1, 0x17, (char*)(p + 1));
     }
 }
 
@@ -1175,7 +1313,7 @@ void func_801053B0(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         D_80109764[3] = arg2;
-        func_8010664C(arg0 - (D_8010923A >> 1), arg1, 0xC, D_80109764);
+        func_8010664C(arg0 - (D_801091D8[12].w >> 1), arg1, 0xC, D_80109764);
     }
 }
 
@@ -1292,7 +1430,7 @@ void func_80105790(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
-        arg0 += D_8010941A;
+        arg0 += D_801091D8[72].w;
         func_80105F6C(arg0, arg1 + 2, arg2, D_801098A8, 0);
     }
 }
@@ -1311,7 +1449,7 @@ void func_8010581C(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
-        arg0 += D_8010941A;
+        arg0 += D_801091D8[72].w;
         if (arg2 >= 0x10) {
             int a0 = (D_801098A8 >> 0x10) & 0xFF;
             int a1 = (D_801098A8 >> 8) & 0xFF;
@@ -1399,7 +1537,7 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
 
 void func_80105C34(int arg0, int arg1, int arg2, int arg3)
 {
-    D_801091D8_t* temp_a2;
+    _texture_t* temp_a2;
     POLY_FT4* poly;
     void** scratch;
 
@@ -1432,7 +1570,7 @@ void func_80105C34(int arg0, int arg1, int arg2, int arg3)
 
 void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    D_801091D8_t* temp_a2;
+    _texture_t* temp_a2;
     POLY_FT4* poly;
     void** scratch;
 
@@ -2179,7 +2317,7 @@ void func_8010873C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        func_80105C34(arg0 - (D_8010951A >> 1), arg1, 0x68, arg2);
+        func_80105C34(arg0 - (D_801091D8[104].w >> 1), arg1, 0x68, arg2);
     }
 }
 
@@ -2224,7 +2362,7 @@ void func_8010887C(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
-        arg0 += D_8010941A;
+        arg0 += D_801091D8[72].w;
         if (arg2 >= 0x10) {
             temp_a3 = vs_main_stateFlags.unkA1;
             new_var2 = vs_main_stateFlags.unkA2;

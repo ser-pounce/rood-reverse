@@ -243,17 +243,23 @@ static D_80109610_t D_80109610[][16] = {
 static int D_801096D0[] = { 0x79, 0x5D, 0x43, 0x2B, 0x19, 0xC, 3, 0 };
 static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
     { 0x107A, 0x107A, 0x1000 } };
-static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 } };
-extern char D_80109744[];
-extern char D_8010974C[];
-extern char D_80109754[];
-extern char D_8010975C[];
-extern char D_80109764[];
-extern char D_8010976C;
-extern char D_8010976F;
-extern char D_80109774[];
-extern char D_8010977C[];
-extern int D_8010978C[];
+static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
+    { 0x80, 0x80, 0x80 } };
+static P_CODE D_8010972C[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+    { 0x80, 0x60, 0x40 } };
+static P_CODE D_80109738[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+    { 0x80, 0x60, 0x40 } };
+static P_CODE D_80109744[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+static P_CODE D_8010974C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+static P_CODE D_80109754[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+static P_CODE D_8010975C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+static P_CODE D_80109764[] = { { 0xC8, 0x50, 0x14 }, { 0xC8, 0x50, 0x14 } };
+static P_CODE D_8010976C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+static P_CODE D_80109774[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+static P_CODE D_8010977C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
+static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
+    7000, 8000, 9000, 10000, 20000 };
 extern char D_801097CC[];
 extern char D_801097D8[];
 extern char D_801097E4[];
@@ -937,12 +943,11 @@ void func_8010459C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        P_CODE* p = (D_80109720 + 3);
-        p->code = arg2;
-        p[1].code = arg2;
+        D_8010972C[0].code = arg2;
+        D_8010972C[1].code = arg2;
         arg0 -= (D_801091D8[100].w + D_801091D8[101].w) >> 1;
-        func_80106A80(arg0, arg1, 0x64, (char*)p);
-        func_80106A80(arg0 + D_801091D8[100].w, arg1, 0x65, (char*)(p + 1));
+        func_80106A80(arg0, arg1, 0x64, (char*)D_8010972C);
+        func_80106A80(arg0 + D_801091D8[100].w, arg1, 0x65, (char*)(D_8010972C + 1));
     }
 }
 
@@ -1112,12 +1117,11 @@ void func_80104B8C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        P_CODE* p = D_80109720 + 6;
-        p->code = arg2;
-        p[1].code = arg2;
+        D_80109738[0].code = arg2;
+        D_80109738[1].code = arg2;
         arg0 -= (D_801091D8[22].w + D_801091D8[23].w) >> 1;
-        func_80106A80(arg0, arg1, 0x16, (char*)p);
-        func_80106A80(arg0 + D_801091D8[22].w, arg1, 0x17, (char*)(p + 1));
+        func_80106A80(arg0, arg1, 0x16, (char*)D_80109738);
+        func_80106A80(arg0 + D_801091D8[22].w, arg1, 0x17, (char*)(D_80109738 + 1));
     }
 }
 
@@ -1134,26 +1138,26 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_80109744[3] = arg2;
+        D_80109744[0].code = arg2;
         sprintf(buf, "%09d", _score);
         new_var = D_801091D8[18].w + D_801091D8[26].w;
         arg0 -= (((D_801091D8[10].w * 2) + (new_var + D_801091D8[20].w)) + 0x74) >> 1;
-        func_8010664C(arg0, arg1, 0x12, D_80109744);
+        func_8010664C(arg0, arg1, 0x12, (char*)D_80109744);
         arg0 += D_801091D8[18].w;
-        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109744);
+        func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109744);
         i = 2;
         arg0 = (arg0 + i) + D_801091D8[26].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109744);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109744);
             arg0 += 0xC;
             if ((i == 2) || (i == 5)) {
-                func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
+                func_8010664C(arg0, arg1 + 0xE, 0xA, (char*)D_80109744);
                 arg0 += D_801091D8[10].w + 3;
             }
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x14, D_80109744);
+        func_8010664C(arg0, arg1 + 8, 0x14, (char*)D_80109744);
     }
 }
 
@@ -1201,20 +1205,20 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     sprintf(buf, "%09d", D_80109898);
     v = D_801091D8[18].w + D_801091D8[26].w + D_801091D8[20].w;
     arg0 -= (((D_801091D8[10].w * 2) + v) + 0x74) >> 1;
-    func_80107140(arg0, arg1, 0x12, D_8010974C, temp_s2);
+    func_80107140(arg0, arg1, 0x12, (char*)D_8010974C, temp_s2);
     arg0 += D_801091D8[18].w;
-    func_80107140(arg0, arg1 + 7, 0x1A, D_8010974C, temp_s2);
+    func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010974C, temp_s2);
     i = 2;
     arg0 = arg0 + i + D_801091D8[26].w;
     for (i = 0; i < 9; ++i) {
-        func_80107140(arg0, arg1 + 3, buf[i] - '0', D_8010974C, temp_s2);
+        func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010974C, temp_s2);
         arg0 += 0xC;
         if ((i == 2) || (i == 5)) {
-            func_80107140(arg0, arg1 + 0xE, 0xA, D_8010974C, temp_s2);
+            func_80107140(arg0, arg1 + 0xE, 0xA, (char*)D_8010974C, temp_s2);
             arg0 += 3 + D_801091D8[10].w;
         }
     }
-    func_80107140(arg0, arg1 + 8, 0x14, D_8010974C, temp_s2);
+    func_80107140(arg0, arg1 + 8, 0x14, (char*)D_8010974C, temp_s2);
 }
 
 void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
@@ -1229,21 +1233,21 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_80109754[3] = arg2;
+        D_80109754[0].code = arg2;
         sprintf(buf, "%03d", _mapCompletion);
         arg0 -= (D_801091D8[21].w + D_801091D8[26].w + D_801091D8[19].w + 0x26) >> 1;
         i = 2;
-        func_8010664C(arg0, arg1, 0x15, D_80109754);
+        func_8010664C(arg0, arg1, 0x15, (char*)D_80109754);
         arg0 += D_801091D8[21].w;
-        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109754);
+        func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109754);
         arg0 = arg0 + i + D_801091D8[26].w;
 
         for (i = 0; i < 3; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109754);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109754);
             arg0 += 0xC;
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x13, D_80109754);
+        func_8010664C(arg0, arg1 + 8, 0x13, (char*)D_80109754);
     }
 }
 
@@ -1290,17 +1294,17 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     sprintf(buf, "%03d", D_80109894);
     arg0 -= (D_801091D8[21].w + D_801091D8[26].w + D_801091D8[19].w + 0x26) >> 1;
-    func_80107140(arg0, arg1, 0x15, D_8010975C, temp_s4);
+    func_80107140(arg0, arg1, 0x15, (char*)D_8010975C, temp_s4);
     arg0 += D_801091D8[21].w;
     i = 2;
-    func_80107140(arg0, arg1 + 7, 0x1A, D_8010975C, temp_s4);
+    func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010975C, temp_s4);
     arg0 = arg0 + i + D_801091D8[26].w;
 
     for (i = 0; i < 3; ++i) {
-        func_80107140(arg0, arg1 + 3, buf[i] - '0', D_8010975C, temp_s4);
+        func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010975C, temp_s4);
         arg0 += 0xC;
     }
-    func_80107140(arg0, arg1 + 8, 0x13, D_8010975C, temp_s4);
+    func_80107140(arg0, arg1 + 8, 0x13, (char*)D_8010975C, temp_s4);
 }
 
 void func_801053B0(int arg0, int arg1, int arg2)
@@ -1312,8 +1316,8 @@ void func_801053B0(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_80109764[3] = arg2;
-        func_8010664C(arg0 - (D_801091D8[12].w >> 1), arg1, 0xC, D_80109764);
+        D_80109764[0].code = arg2;
+        func_8010664C(arg0 - (D_801091D8[12].w >> 1), arg1, 0xC, (char*)D_80109764);
     }
 }
 
@@ -1331,7 +1335,7 @@ void func_8010540C(int arg0, int arg1, int arg2)
 
     var_a0 = 0;
     if (arg2 > 0) {
-        D_8010976F = arg2;
+        D_8010976C[0].code = arg2;
         for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
             var_a0 += D_801091D8[D_801095D0[i + 1 + (D_8010987C * 4)]].w;
         }
@@ -1340,8 +1344,8 @@ void func_8010540C(int arg0, int arg1, int arg2)
         arg0 -= var_a0;
         for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
             int new_var2 = 1;
-            func_80106A80(
-                arg0, arg1, D_801095D0[i + (D_8010987C * 4 + new_var2)], &D_8010976C);
+            func_80106A80(arg0, arg1, D_801095D0[i + (D_8010987C * 4 + new_var2)],
+                (char*)&D_8010976C[0]);
             arg0 += D_801091D8[D_801095D0[i + (D_8010987C * 4 + new_var2)]].w;
         }
     }
@@ -1356,10 +1360,10 @@ void func_8010559C(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_80109774[3] = arg2;
+        D_80109774[0].code = arg2;
         arg0 -= (D_801091D8[70].w + D_801091D8[71].w) >> 1;
-        func_80106A80(arg0, arg1, 0x46, D_80109774);
-        func_80106A80(arg0 + D_801091D8[70].w, arg1, 0x47, D_80109774);
+        func_80106A80(arg0, arg1, 0x46, (char*)D_80109774);
+        func_80106A80(arg0 + D_801091D8[70].w, arg1, 0x47, (char*)D_80109774);
     }
 }
 
@@ -1417,7 +1421,7 @@ void func_801056E8(int arg0, int arg1, int arg2)
     } else {
         arg2 = 4;
     }
-    func_80107140(arg0, arg1, arg2 + 0x4E, D_8010977C, arg3);
+    func_80107140(arg0, arg1, arg2 + 0x4E, (char*)D_8010977C, arg3);
 }
 
 void func_80105790(int arg0, int arg1, int arg2)

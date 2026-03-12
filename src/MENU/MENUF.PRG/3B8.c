@@ -93,36 +93,6 @@ void _raiseMaxAgility(int amount);
 void _raiseMaxHP(int amount);
 void _raiseMaxMP(int amount);
 
-extern vs_main_CdQueueSlot* D_80109854;
-extern void* D_80109858;
-extern int D_80109864;
-extern vs_main_CdQueueSlot* _rankDataCdSlot;
-extern void* _rankData;
-extern vs_main_CdQueueSlot* _attackDisCdSlot;
-extern void* _attackDisData;
-extern vs_main_CdQueueSlot* _iqDisCdSlot;
-extern void* _iqDisData;
-extern vs_main_CdQueueSlot* _escDisCdSLot;
-extern void* _escDisData;
-extern u_int D_80109878;
-extern int D_8010987C;
-extern int _clearCount;
-extern u_int _score;
-extern u_int _mapCompletion;
-extern u_int D_8010988C;
-extern int D_80109890;
-extern int D_80109894;
-extern int D_80109898;
-extern int D_8010989C;
-extern int D_801098A0;
-extern int D_801098A4;
-extern int D_801098A8;
-extern u_short D_801098AC[0x70];
-extern int D_801099EC;
-extern int D_801099F0;
-extern short D_801099F4;
-extern short D_801099F6;
-
 int func_80102BB8(char* arg0)
 {
     switch (*arg0) {
@@ -182,8 +152,23 @@ int func_80102C54(void)
     return ret;
 }
 
+static u_int D_80109878;
+static int D_8010987C;
+static int _clearCount;
+static u_int _score;
+static u_int _mapCompletion;
+static u_int D_8010988C;
+static int D_80109890;
+static int D_80109894;
+static int D_80109898;
+static int D_8010989C;
+static int D_801098A0;
+
 int _loadRankDis(void)
 {
+    static vs_main_CdQueueSlot* _rankDataCdSlot;
+    static void* _rankData;
+
     func_80103530_t sp10;
     int temp_s0;
     int temp_s1;
@@ -290,8 +275,15 @@ int _loadRankDis(void)
     return 0;
 }
 
+static int D_801098A4;
+static int D_801098A8;
+static u_short D_801098AC[0xA0];
+
 int func_8010310C(void)
 {
+    static vs_main_CdQueueSlot* D_80109854;
+    static void* D_80109858;
+
     func_80103530_t sp10;
     int temp_s0;
     int var_a3;
@@ -378,6 +370,9 @@ int func_8010310C(void)
 
 int _loadAttackDis(void)
 {
+    static vs_main_CdQueueSlot* _attackDisCdSlot;
+    static void* _attackDisData;
+
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 2, 5);
         _attackDisData = vs_main_allocHeapR(_disFiles[attackDis].size);
@@ -612,8 +607,13 @@ static D_80109610_t D_80109610[][16] = {
         { 0xD, 0x1 } }
 };
 
+static int D_801099EC;
+static int D_801099F0;
+
 int func_8010384C(void)
 {
+    static int D_80109864;
+
     int temp_a0;
     int temp_a2_2;
     int temp_v1;
@@ -1989,8 +1989,14 @@ void func_80107698(int arg0, int arg1, int arg2)
     p[0] = poly;
 }
 
+static short D_801099F4;
+static short D_801099F6;
+
 int _loadIqDis(void)
 {
+    static vs_main_CdQueueSlot* _iqDisCdSlot;
+    static void* _iqDisData;
+
     vs_battle_room* room;
     short* var_a0;
 
@@ -2071,6 +2077,9 @@ int func_80107D4C(void)
 
 int _loadEscDis(void)
 {
+    static vs_main_CdQueueSlot* _escDisCdSLot;
+    static void* _escDisData;
+
     func_80103530_t sp10;
     int i;
 

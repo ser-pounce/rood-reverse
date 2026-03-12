@@ -113,9 +113,9 @@ extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
-extern void* g_Sound_SfxProgramOffsets;
+extern u_short* g_Sound_SfxProgramOffsets;
 extern u_short* g_Sound_SfxMetadataTable;
-extern void* g_Sound_SfxProgramData;
+extern char* g_Sound_SfxProgramData;
 extern D_800378C0_t D_800378C0;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
@@ -1305,21 +1305,24 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 
-void _getAkaoBlocksFromIndex(void** arg0, void** arg1, int index)
+void Sound_GetProgramCounters(
+    char** out_ProgramCounter1, char** out_ProgramCounter2, int in_SfxIndex)
 {
-    u_short* block2;
+    char* block2;
     u_short* block0;
 
-    index &= 0x3FF;
-    index *= 2;
+    in_SfxIndex &= 0x3FF;
+    in_SfxIndex *= 2;
     block2 = g_Sound_SfxProgramData;
     block0 = g_Sound_SfxProgramOffsets;
 
-    *arg0 = block0[index] == 0xFFFF ? NULL : (void*)block2 + block0[index];
+    *out_ProgramCounter1 =
+        block0[in_SfxIndex] == 0xFFFF ? NULL : block2 + block0[in_SfxIndex];
 
-    ++index;
+    ++in_SfxIndex;
 
-    *arg1 = block0[index] == 0xFFFF ? NULL : (void*)block2 + block0[index];
+    *out_ProgramCounter2 =
+        block0[in_SfxIndex] == 0xFFFF ? NULL : block2 + block0[in_SfxIndex];
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016964);
@@ -1361,10 +1364,10 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017254);
 
 void func_800172D4(FSoundCommandParams* arg0)
 {
-    void* akaoOffset;
-    void* akaoData;
+    char* akaoOffset;
+    char* akaoData;
 
-    _getAkaoBlocksFromIndex(&akaoOffset, &akaoData, arg0->Param1);
+    Sound_GetProgramCounters(&akaoOffset, &akaoData, arg0->Param1);
     arg0->ExtParam1 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->Param1]);
     Sound_PlaySfxProgram(arg0, akaoOffset, akaoData, 0);
 }

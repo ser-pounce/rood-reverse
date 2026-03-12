@@ -53,6 +53,7 @@ FreeVoiceChannels = 0x800166E8;
 Sound_PlaySfxProgram = 0x80016744;
 Sound_GetProgramCounters = 0x800168F8;
 Sound_MarkActiveChannelsVolumeDirty = 0x80016964;
+Sound_MarkScheduledSfxChannelsVolumeDirty = 0x800169AC;
 _setReverbMode = 0x80018BE0;
 IRQCallbackProc = 0x8001CD4C;
 spuTransferCallback = 0x8001D370;

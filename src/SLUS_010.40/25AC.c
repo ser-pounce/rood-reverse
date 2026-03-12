@@ -1350,7 +1350,28 @@ void Sound_MarkActiveChannelsVolumeDirty(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800169AC);
+void Sound_MarkScheduledSfxChannelsVolumeDirty(void)
+{
+    u_int Mask;
+    u_int ActiveChannelMask;
+    FSoundChannel* pChannel = SfxSoundChannels - 10;
+
+    if (g_Sound_VoiceSchedulerState.ActiveChannelMask == 0) {
+        return;
+    }
+
+    ActiveChannelMask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+
+    Mask = (1 << 12); // SFX Channels start at channel 12
+    while (ActiveChannelMask != 0) {
+        if (ActiveChannelMask & Mask) {
+            ActiveChannelMask ^= Mask;
+            pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+        pChannel++;
+        Mask <<= 1;
+    };
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016A00);
 

@@ -1325,7 +1325,30 @@ void Sound_GetProgramCounters(
         block0[in_SfxIndex] == 0xFFFF ? NULL : block2 + block0[in_SfxIndex];
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016964);
+void Sound_MarkActiveChannelsVolumeDirty(
+    FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel)
+{
+    u_int ActiveChannelMask;
+    u_int Flags;
+    u_int Mask;
+
+    ActiveChannelMask = in_pChannelConfig->ActiveChannelMask;
+    if (ActiveChannelMask == 0) {
+        return;
+    }
+
+    Flags = ActiveChannelMask;
+    Mask = 1;
+
+    while (Flags != 0) {
+        if (Flags & Mask) {
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+            Flags ^= Mask;
+        }
+        in_pChannel++;
+        Mask <<= 1;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800169AC);
 

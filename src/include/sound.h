@@ -540,3 +540,57 @@ typedef struct {
 
 #define SPU_MALLOC_NUM_BLOCKS 4
 char g_SpuMallocRecTable[SPU_MALLOC_RECSIZ * (SPU_MALLOC_NUM_BLOCKS + 1)];
+
+typedef struct FAkaoHeader {
+    /* 0x00 */ u_int Magic;
+    /* 0x04 */ int unk_0x04; // -> StreamState.field8_0x20
+    /* 0x08 */ char unk_0x08[0x8];
+    /* 0x10 */ u_int TotalPages;
+    /* 0x14 */ char unk_0x14[0x4];
+    /* 0x18 */ int unk_0x18; // -> StreamState.field2_0x8
+    /* 0x1C */ u_short SampleRate;
+    /* 0x1E */ char unk_0x1E[0x2];
+    /* 0x20 */ u_int CurrentPage;
+    /* 0x24 */ char unk_0x24[0x4];
+    /* 0x28 */ int unk_0x28; // outgoing voice reference for volume handoff
+} FAkaoHeader; /* size 0x2C */
+
+typedef struct FSoundCutsceneStreamData {
+    /* 0x00 */ char unk_0x00[0x80]; // Probably some pointers to Chunks
+    /* 0x80 */ FAkaoHeader AkaoHeader;
+    /* 0xAC */ char unk_0xAC[0x24];
+    /* 0xD0 */ char AudioData[1];
+} FSoundCutsceneStreamData; /** size 0x80 + DataBlob */
+
+typedef struct FSoundCutsceneStreamState {
+    /* 0x00 */ FSoundCutsceneStreamData* pCurrentChunk;
+    /* 0x04 */ int unk_Mask_0x4;
+    /* 0x08 */ int field2_0x8;
+    /* 0x0C */ int VoicesInUseFlags;
+    /* 0x10 */ int VoiceIndex;
+    /* 0x14 */ int TotalPages; // Probably a bad name judged on the usage in
+                               // Sound_Cutscene_BeginPlayback
+    /* 0x18 */ int CurrentPage;
+    /* 0x1C */ int field7_0x1c;
+    /* 0x20 */ int field8_0x20;
+    /* 0x24 */ int field9_0x24;
+    /* 0x28 */ int PageIndex;
+    /* 0x2C */ FSoundCutsceneStreamData* pStreamBase;
+    /* 0x30 */ int field12_0x30;
+    /* 0x34 */ u_int StreamPageIndex;
+    /* 0x38 */ int field14_0x38;
+    /* 0x3C */ u_int PageRingBufferSize;
+    /* 0x40 */ int Volume;
+    /* 0x44 */ int VolFadeStepSize;
+    /* 0x48 */ int VolFadeStepsRemaining;
+    /* 0x4C */ char field19_0x4c;
+    /* 0x4D */ char PanPosition;
+    /* 0x4E */ char field21_0x4e;
+    /* 0x4F */ char field22_0x4f;
+    /* 0x50 */ int field23_0x50;
+    /* 0x54 */ int field24_0x54;
+    /* 0x58 */ int VoiceSampleRate;
+    /* 0x5C */ int ControlFlags;
+} FSoundCutsceneStreamState; /* size 0x60 */
+
+extern FSoundCutsceneStreamState g_Sound_Cutscene_StreamState;

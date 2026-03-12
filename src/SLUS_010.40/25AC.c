@@ -98,11 +98,11 @@ u_int func_80018C30(int);
 long func_80019A58(void);
 static void StopSound(void);
 static void _writeSpu(char* data, u_int len);
-void spuTransferCallback(void);
-void func_8001D0E4(int, int, int, int);
-void func_8001D2A0(int, int, void (*)(void));
+void Sound_Cutscene_OnInitialTransferComplete(void);
+void Sound_Cutscene_InitVoice(int, int, int, int);
+void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
 void Sound_Cutscene_LoadNextBuffer(int, int, int, void (*)(void));
-void func_8001D584(void);
+void Sound_Cutscene_OnBufferAComplete(void);
 void func_8001D5B4(void);
 void IRQCallbackProc(void);
 
@@ -133,6 +133,7 @@ extern FSound80094FA0 g_Sound_80094FA0;
 extern u_int g_Sound_ProgramCounter;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
 extern FSoundChannel SfxSoundChannels[12];
+extern volatile int g_bSpuTransferring;
 
 int InitSound(void)
 {
@@ -1752,21 +1753,43 @@ void func_8001CE60(void)
 {
     u_char* temp_s0 = (void*)g_Sound_80094FA0.field0_0x0 + 0x800;
     SpuSetTransferStartAddr(0x2100);
-    SpuSetTransferCallback(spuTransferCallback);
+    SpuSetTransferCallback(Sound_Cutscene_OnInitialTransferComplete);
     SpuWrite(temp_s0, 0x800);
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CEA8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D0E4);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_Cutscene_InitVoice);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D2A0);
+extern u_int D_80039B14;
 
-void spuTransferCallback(void)
+void Sound_Cutscene_BeginPlayback(
+    int in_SomeIndex, int in_SampleAddr, void (*in_Callback)())
 {
-    func_8001D0E4(g_Sound_80094FA0.VoiceIndex, 0, 0x1100, 0x2100);
-    func_8001D0E4(g_Sound_80094FA0.VoiceIndex + 1, 0, 0x1100, 0x2100);
-    func_8001D2A0(0x1000, 0x2100, func_8001D584);
+    int var_s2 = in_SampleAddr;
+    if (g_Sound_80094FA0.VoicesInUseFlags != 0) {
+        SpuSetTransferCallback(NULL);
+        _isSpuTransfer = 0;
+        if (g_Sound_80094FA0.ChannelFlags >= 0x1001) {
+            g_Sound_80094FA0.ChannelFlags -= 0x1000;
+            g_Sound_80094FA0.field0_0x0 += in_SomeIndex;
+            SpuSetIRQCallback(in_Callback);
+        } else {
+            SpuSetIRQCallback(IRQCallbackProc);
+            var_s2 = 0x1030;
+            g_Sound_80094FA0.ChannelFlags = 0;
+        }
+        SpuSetIRQAddr(var_s2 + 8);
+        SetVoiceKeyOn(g_Sound_80094FA0.VoicesInUseFlags);
+        SpuSetIRQ(1);
+    }
+}
+
+void Sound_Cutscene_OnInitialTransferComplete(void)
+{
+    Sound_Cutscene_InitVoice(g_Sound_80094FA0.VoiceIndex, 0, 0x1100, 0x2100);
+    Sound_Cutscene_InitVoice(g_Sound_80094FA0.VoiceIndex + 1, 0, 0x1100, 0x2100);
+    Sound_Cutscene_BeginPlayback(0x1000, 0x2100, Sound_Cutscene_OnBufferAComplete);
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
@@ -1802,14 +1825,15 @@ void Sound_Cutscene_LoadNextBuffer(
     }
 }
 
-void func_8001D584(void)
+void Sound_Cutscene_OnBufferAComplete(void)
 {
     Sound_Cutscene_LoadNextBuffer(0x1100, 0x1100, 0x800, func_8001D5B4);
 }
 
 void func_8001D5B4(void)
 {
-    Sound_Cutscene_LoadNextBuffer(0x2100, 0x2100, 0x800, func_8001D584);
+    Sound_Cutscene_LoadNextBuffer(
+        0x2100, 0x2100, 0x800, Sound_Cutscene_OnBufferAComplete);
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D5E4);

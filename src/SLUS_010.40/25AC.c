@@ -101,7 +101,7 @@ static void _writeSpu(char* data, u_int len);
 void spuTransferCallback(void);
 void func_8001D0E4(int, int, int, int);
 void func_8001D2A0(int, int, void (*)(void));
-void func_8001D438(int, int, int, void (*)(void));
+void Sound_Cutscene_LoadNextBuffer(int, int, int, void (*)(void));
 void func_8001D584(void);
 void func_8001D5B4(void);
 void IRQCallbackProc(void);
@@ -1771,39 +1771,46 @@ void spuTransferCallback(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
 
-void func_8001D438(int spuStartAddr, int arg1, int size, void (*callback)())
+void Sound_Cutscene_LoadNextBuffer(
+    int in_RepeatAddressL, int in_RepeatAddressR, int in_Param3, void (*in_IrqCallback)())
 {
     if ((g_Sound_80094FA0.VoicesInUseFlags != 0)
         && (g_Sound_80094FA0.ChannelFlags != 0)) {
-        SpuSetTransferStartAddr(spuStartAddr);
+        SpuSetTransferStartAddr(in_RepeatAddressL);
         spuSetTransferCallback();
-        SpuWrite((u_char*)g_Sound_80094FA0.field0_0x0, size);
-        SpuSetIRQ(SPU_OFF);
+        SpuWrite((u_char*)g_Sound_80094FA0.field0_0x0, in_Param3);
+        SpuSetIRQ(0);
         if (g_Sound_80094FA0.ChannelFlags > 0x800) {
-            SpuSetIRQCallback(callback);
+            SpuSetIRQCallback(in_IrqCallback);
             g_Sound_80094FA0.ChannelFlags -= 0x800;
             g_Sound_80094FA0.field0_0x0 =
-                (int)((void*)g_Sound_80094FA0.field0_0x0 + size);
+                (int)(((void*)g_Sound_80094FA0.field0_0x0) + in_Param3);
         } else if (g_Sound_80094FA0.unk_Mask_0x4 != 0) {
-            SpuSetIRQCallback(callback);
+            SpuSetIRQCallback(in_IrqCallback);
             g_Sound_80094FA0.field0_0x0 = g_Sound_80094FA0.unk_Mask_0x4;
             g_Sound_80094FA0.ChannelFlags = g_Sound_80094FA0.field7_0x1c;
         } else {
             SpuSetIRQCallback(IRQCallbackProc);
-            arg1 = 0x1030;
-            spuStartAddr = 0x1030;
+            in_RepeatAddressR = 0x1030;
+            in_RepeatAddressL = 0x1030;
             g_Sound_80094FA0.ChannelFlags = 0;
         }
-        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex, spuStartAddr);
-        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex + 1, arg1);
-        SpuSetIRQAddr(spuStartAddr + 8);
-        SpuSetIRQ(SPU_ON);
+        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex, in_RepeatAddressL);
+        SetVoiceRepeatAddr(g_Sound_80094FA0.VoiceIndex + 1, in_RepeatAddressR);
+        SpuSetIRQAddr(in_RepeatAddressL + 8);
+        SpuSetIRQ(1);
     }
 }
 
-void func_8001D584(void) { func_8001D438(0x1100, 0x1100, 0x800, func_8001D5B4); }
+void func_8001D584(void)
+{
+    Sound_Cutscene_LoadNextBuffer(0x1100, 0x1100, 0x800, func_8001D5B4);
+}
 
-void func_8001D5B4(void) { func_8001D438(0x2100, 0x2100, 0x800, func_8001D584); }
+void func_8001D5B4(void)
+{
+    Sound_Cutscene_LoadNextBuffer(0x2100, 0x2100, 0x800, func_8001D584);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D5E4);
 

@@ -93,178 +93,6 @@ void _raiseMaxAgility(int amount);
 void _raiseMaxHP(int amount);
 void _raiseMaxMP(int amount);
 
-static _texture_t D_801091D8[] = {
-    { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 42, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 56, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 70, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 84, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 98, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 112, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 126, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 240, 16, 4, 8, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 148, 4, 60, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 6, 24, 154, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 4, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 50, 44, 44, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 98, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 144, 44, 30, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 182, 44, 34, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 0, 64, 66, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 104, 70, 12, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 118, 70, 28, 14, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 0, 88, 170, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 8, 118, 136, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 8, 150, 134, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 200, 82, 10, 10, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 216, 82, 8, 6, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 232, 82, 6, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 30, 12, 66, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 98, 12, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 170, 12, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 70, 36, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 144, 36, 102, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 78, 60, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 152, 60, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 38, 84, 80, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 118, 84, 122, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 46, 108, 118, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 166, 108, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 78, 132, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 172, 132, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 82, 156, 86, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 170, 156, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 60, 180, 96, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 158, 180, 88, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 120, 204, 54, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 178, 204, 68, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 56, 228, 114, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 172, 228, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 110, 12, 26, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 138, 12, 54, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 194, 12, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 64, 36, 88, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 182, 36, 64, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 90, 60, 90, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 184, 60, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 82, 84, 66, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 148, 84, 98, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 42, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 144, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 50, 132, 116, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 168, 132, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 74, 156, 92, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 166, 156, 80, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 58, 180, 68, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 130, 180, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 184, 180, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 106, 204, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 188, 204, 58, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 106, 228, 140, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
-    { 146, 2, 88, 14, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 0, 24, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
-    { 0, 48, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
-    { 176, 78, 56, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 144, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 152, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 192, 18, 32, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 180, 38, 44, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 184, 58, 40, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 2, 72, 116, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 0, 96, 70, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 72, 96, 68, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 122, 72, 46, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 144, 96, 100, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 238, 4, 12, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 166, 20, 76, 18, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 4, 32, 140, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 56, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 80, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 104, 198, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 128, 232, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 152, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 176, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 122, 56, 100, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 200, 176, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
-    { 4, 227, 212, 28, getTPage(0, 0, 832, 256), getClut(864, 511) },
-    { 146, 180, 100, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
-    { 158, 14, 86, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 50, 14, 92, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 16, 14, 30, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 30, 132, 204, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
-    { 4, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 110, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 4, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 115, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 4, 150, 160, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 8, 176, 170, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 8, 200, 116, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
-    { 8, 8, 170, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 28, 134, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 102, 48, 118, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 48, 94, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 142, 28, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 68, 142, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 88, 144, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 108, 128, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 128, 98, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 136, 108, 104, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 148, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 168, 174, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 106, 128, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 188, 154, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 208, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 8, 228, 194, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
-    { 0, 0, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
-    { 0, 24, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
-    { 0, 48, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
-    { 0, 72, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
-};
-static u_char D_801095D0[] = { 0x3, 0x1B, 0x1C, 0x1D, 0x2, 0x1B, 0x1E, 0, 0x2, 0x22, 0x25,
-    0, 0x2, 0x20, 0x21, 0, 0x2, 0x42, 0x43, 0, 0x2, 0x23, 0x24, 0, 0x2, 0x1C, 0x1F, 0,
-    0x2, 0x2C, 0x1C, 0, 0x2, 0x37, 0x38, 0, 0x1, 0x1E, 0, 0, 0x1, 0x3B, 0, 0, 0x1, 0x39,
-    0, 0, 0x1, 0x21, 0, 0, 0x1, 0x2A, 0, 0, 0x1, 0x1F, 0, 0, 0x2, 0x3C, 0x41, 0 };
-static D_80109610_t D_80109610[][16] = {
-    { { 0x10, 0x5 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0xE, 0x1 }, { 0x10, 0x4 },
-        { 0xF, 0x1 }, { 0x11, 0x2 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0x11, 0x1 },
-        { 0x10, 0x4 }, { 0x10, 0x4 }, { 0xD, 0x3 }, { 0x10, 0x3 }, { 0x11, 0x2 },
-        { 0xD, 0x1 } },
-    { { 0x11, 0x1 }, { 0x10, 0x4 }, { 0xF, 0x1 }, { 0x10, 0x3 }, { 0x10, 0x5 },
-        { 0x10, 0x4 }, { 0xF, 0x2 }, { 0xD, 0x1 }, { 0x10, 0x4 }, { 0x11, 0x2 },
-        { 0xE, 0x1 }, { 0xF, 0x3 }, { 0x10, 0x4 }, { 0xF, 0x2 }, { 0x10, 0x3 },
-        { 0x10, 0x3 } },
-    { { 0x10, 0x4 }, { 0xF, 0x1 }, { 0xE, 0x2 }, { 0x10, 0x4 }, { 0x11, 0x2 },
-        { 0xE, 0x1 }, { 0x11, 0x1 }, { 0x10, 0x3 }, { 0xE, 0x3 }, { 0x10, 0x4 },
-        { 0x10, 0x3 }, { 0x10, 0x5 }, { 0xE, 0x2 }, { 0x11, 0x2 }, { 0x10, 0x3 },
-        { 0xD, 0x1 } }
-};
-static int D_801096D0[] = { 0x79, 0x5D, 0x43, 0x2B, 0x19, 0xC, 3, 0 };
-static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
-    { 0x107A, 0x107A, 0x1000 } };
-static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
-    { 0x80, 0x80, 0x80 } };
-static P_CODE D_8010972C[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-    { 0x80, 0x60, 0x40 } };
-static P_CODE D_80109738[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-    { 0x80, 0x60, 0x40 } };
-static P_CODE D_80109744[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
-static P_CODE D_8010974C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
-static P_CODE D_80109754[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
-static P_CODE D_8010975C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
-static P_CODE D_80109764[] = { { 0xC8, 0x50, 0x14 }, { 0xC8, 0x50, 0x14 } };
-static P_CODE D_8010976C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
-static P_CODE D_80109774[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
-static P_CODE D_8010977C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
-static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
-static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
-    7000, 8000, 9000, 10000, 20000 };
-extern char D_801097CC[];
-extern char D_801097D8[];
-extern char D_801097E4[];
-extern short D_801097EC[];
-extern u_int D_8010980C[];
 extern vs_main_CdQueueSlot* D_80109854;
 extern void* D_80109858;
 extern int D_80109864;
@@ -636,6 +464,154 @@ int func_801037A0(void)
     return ret;
 }
 
+static _texture_t D_801091D8[] = {
+    { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 42, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 56, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 70, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 84, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 98, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 112, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 126, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 240, 16, 4, 8, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 148, 4, 60, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 6, 24, 154, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 50, 44, 44, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 98, 44, 38, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 144, 44, 30, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 182, 44, 34, 18, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 0, 64, 66, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 104, 70, 12, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 118, 70, 28, 14, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 0, 88, 170, 22, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 118, 136, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 150, 134, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 200, 82, 10, 10, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 216, 82, 8, 6, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 232, 82, 6, 12, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 30, 12, 66, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 98, 12, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 170, 12, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 70, 36, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 144, 36, 102, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 78, 60, 70, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 152, 60, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 38, 84, 80, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 118, 84, 122, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 46, 108, 118, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 166, 108, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 78, 132, 94, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 172, 132, 74, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 82, 156, 86, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 170, 156, 76, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 60, 180, 96, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 158, 180, 88, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 120, 204, 54, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 178, 204, 68, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 56, 228, 114, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 172, 228, 72, 24, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 110, 12, 26, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 138, 12, 54, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 194, 12, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 64, 36, 88, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 182, 36, 64, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 90, 60, 90, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 184, 60, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 82, 84, 66, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 148, 84, 98, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 42, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 144, 108, 102, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 50, 132, 116, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 168, 132, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 74, 156, 92, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 166, 156, 80, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 58, 180, 68, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 130, 180, 52, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 184, 180, 62, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 106, 204, 78, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 188, 204, 58, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 106, 228, 140, 24, getTPage(0, 0, 960, 256), getClut(768, 511) },
+    { 146, 2, 88, 14, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 0, 24, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 48, 144, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 176, 78, 56, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 144, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 152, 16, 8, 8, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 192, 18, 32, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 180, 38, 44, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 184, 58, 40, 20, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 2, 72, 116, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 0, 96, 70, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 72, 96, 68, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 122, 72, 46, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 144, 96, 100, 20, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 238, 4, 12, 16, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 166, 20, 76, 18, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 4, 32, 140, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 56, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 80, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 104, 198, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 128, 232, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 152, 204, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 176, 114, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 122, 56, 100, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 200, 176, 24, getTPage(0, 0, 832, 256), getClut(896, 511) },
+    { 4, 227, 212, 28, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 146, 180, 100, 18, getTPage(0, 0, 832, 256), getClut(800, 511) },
+    { 158, 14, 86, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 50, 14, 92, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 16, 14, 30, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 30, 132, 204, 106, getTPage(0, 0, 896, 256), getClut(768, 511) },
+    { 4, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 110, 227, 106, 28, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 115, 120, 111, 30, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 4, 150, 160, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 176, 170, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 200, 116, 24, getTPage(0, 0, 832, 256), getClut(768, 511) },
+    { 8, 8, 170, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 28, 134, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 102, 48, 118, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 48, 94, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 142, 28, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 68, 142, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 88, 144, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 108, 128, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 128, 98, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 136, 108, 104, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 148, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 168, 174, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 106, 128, 88, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 188, 154, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 208, 156, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 8, 228, 194, 20, getTPage(0, 0, 896, 256), getClut(896, 511) },
+    { 0, 0, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 24, 160, 24, getTPage(0, 0, 832, 256), getClut(864, 511) },
+    { 0, 48, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
+    { 0, 72, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
+};
+static u_char D_801095D0[] = { 0x3, 0x1B, 0x1C, 0x1D, 0x2, 0x1B, 0x1E, 0, 0x2, 0x22, 0x25,
+    0, 0x2, 0x20, 0x21, 0, 0x2, 0x42, 0x43, 0, 0x2, 0x23, 0x24, 0, 0x2, 0x1C, 0x1F, 0,
+    0x2, 0x2C, 0x1C, 0, 0x2, 0x37, 0x38, 0, 0x1, 0x1E, 0, 0, 0x1, 0x3B, 0, 0, 0x1, 0x39,
+    0, 0, 0x1, 0x21, 0, 0, 0x1, 0x2A, 0, 0, 0x1, 0x1F, 0, 0, 0x2, 0x3C, 0x41, 0 };
+static D_80109610_t D_80109610[][16] = {
+    { { 0x10, 0x5 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0xE, 0x1 }, { 0x10, 0x4 },
+        { 0xF, 0x1 }, { 0x11, 0x2 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0x11, 0x1 },
+        { 0x10, 0x4 }, { 0x10, 0x4 }, { 0xD, 0x3 }, { 0x10, 0x3 }, { 0x11, 0x2 },
+        { 0xD, 0x1 } },
+    { { 0x11, 0x1 }, { 0x10, 0x4 }, { 0xF, 0x1 }, { 0x10, 0x3 }, { 0x10, 0x5 },
+        { 0x10, 0x4 }, { 0xF, 0x2 }, { 0xD, 0x1 }, { 0x10, 0x4 }, { 0x11, 0x2 },
+        { 0xE, 0x1 }, { 0xF, 0x3 }, { 0x10, 0x4 }, { 0xF, 0x2 }, { 0x10, 0x3 },
+        { 0x10, 0x3 } },
+    { { 0x10, 0x4 }, { 0xF, 0x1 }, { 0xE, 0x2 }, { 0x10, 0x4 }, { 0x11, 0x2 },
+        { 0xE, 0x1 }, { 0x11, 0x1 }, { 0x10, 0x3 }, { 0xE, 0x3 }, { 0x10, 0x4 },
+        { 0x10, 0x3 }, { 0x10, 0x5 }, { 0xE, 0x2 }, { 0x11, 0x2 }, { 0x10, 0x3 },
+        { 0xD, 0x1 } }
+};
+
 int func_8010384C(void)
 {
     int temp_a0;
@@ -832,6 +808,14 @@ int func_80103D88(void)
     }
     return 0;
 }
+
+static int D_801096D0[] = { 0x79, 0x5D, 0x43, 0x2B, 0x19, 0xC, 3, 0 };
+static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
+    { 0x107A, 0x107A, 0x1000 } };
+static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
+    { 0x80, 0x80, 0x80 } };
+static P_CODE D_8010972C[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+    { 0x80, 0x60, 0x40 } };
 
 int func_8010412C(void)
 {
@@ -1110,6 +1094,9 @@ void func_80104A50(int arg0)
 
 void func_80104B8C(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_80109738[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+        { 0x80, 0x60, 0x40 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -1127,6 +1114,8 @@ void func_80104B8C(int arg0, int arg1, int arg2)
 
 void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    static P_CODE D_80109744[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+
     char buf[16];
     int i;
     int new_var;
@@ -1163,6 +1152,8 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
 void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    static P_CODE D_8010974C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+
     char buf[16];
     int temp_s2;
     int i;
@@ -1223,6 +1214,8 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
 void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    static P_CODE D_80109754[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+
     char buf[4];
     int i;
 
@@ -1253,6 +1246,8 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
 void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    static P_CODE D_8010975C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+
     char buf[8];
     int temp_s4;
     int i;
@@ -1309,6 +1304,8 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
 void func_801053B0(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_80109764[] = { { 0xC8, 0x50, 0x14 }, { 0xC8, 0x50, 0x14 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -1323,6 +1320,8 @@ void func_801053B0(int arg0, int arg1, int arg2)
 
 void func_8010540C(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_8010976C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+
     int var_a0;
     int i;
 
@@ -1353,6 +1352,8 @@ void func_8010540C(int arg0, int arg1, int arg2)
 
 void func_8010559C(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_80109774[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -1396,6 +1397,8 @@ void func_8010564C(int arg0, int arg1, int arg2)
 
 void func_801056E8(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_8010977C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+
     int arg3;
 
     if (arg2 < 0) {
@@ -2148,6 +2151,10 @@ int func_80107FC0(void)
     return 0;
 }
 
+static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
+static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
+    7000, 8000, 9000, 10000, 20000 };
+
 int func_801080E4(void)
 {
     int temp_s0;
@@ -2283,6 +2290,9 @@ void func_80108564(int arg0, int arg1)
 
 void func_801085D4(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_801097CC[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+        { 0x80, 0x60, 0x40 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -2290,16 +2300,19 @@ void func_801085D4(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_801097CC[3] = arg2;
-        D_801097CC[7] = arg2;
+        D_801097CC[0].code = arg2;
+        D_801097CC[1].code = arg2;
         arg0 -= (D_801091D8[102].w + D_801091D8[103].w) >> 1;
-        func_80106A80(arg0, arg1, 0x66, D_801097CC);
-        func_80106A80(arg0 + D_801091D8[102].w, arg1, 0x67, D_801097CC + 4);
+        func_80106A80(arg0, arg1, 0x66, (char*)D_801097CC);
+        func_80106A80(arg0 + D_801091D8[102].w, arg1, 0x67, (char*)(D_801097CC + 1));
     }
 }
 
 void func_80108688(int arg0, int arg1, int arg2)
 {
+    static P_CODE D_801097D8[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
+        { 0x80, 0x60, 0x40 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -2307,11 +2320,11 @@ void func_80108688(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_801097D8[3] = arg2;
-        D_801097D8[7] = arg2;
+        D_801097D8[0].code = arg2;
+        D_801097D8[1].code = arg2;
         arg0 -= (D_801091D8[105].w + D_801091D8[106].w) >> 1;
-        func_80106A80(arg0, arg1, 0x69, D_801097D8);
-        func_80106A80(arg0 + D_801091D8[105].w, arg1, 0x6A, D_801097D8 + 4);
+        func_80106A80(arg0, arg1, 0x69, (char*)D_801097D8);
+        func_80106A80(arg0 + D_801091D8[105].w, arg1, 0x6A, (char*)(D_801097D8 + 1));
     }
 }
 
@@ -2338,6 +2351,8 @@ void func_80108784(int arg0, int arg1, int arg2)
 
 void func_8010880C(int arg0, int arg1, int arg2, int arg3)
 {
+    static P_CODE D_801097E4[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -2345,9 +2360,9 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_801097E4[3] = arg2;
-        func_80106A80(
-            arg0 - (D_801091D8[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B, D_801097E4);
+        D_801097E4[0].code = arg2;
+        func_80106A80(arg0 - (D_801091D8[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B,
+            (char*)D_801097E4);
     }
 }
 
@@ -2387,6 +2402,11 @@ void func_8010887C(int arg0, int arg1, int arg2)
 
 void func_80108A0C(void)
 {
+    static short D_801097EC[16] = { 16, 12, 8 };
+    static u_int D_8010980C[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
+        24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
+        1000000, 500000, 0 };
+
     int var_a2;
     int i;
     int a1;

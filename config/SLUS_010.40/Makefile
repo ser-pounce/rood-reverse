@@ -3,6 +3,7 @@ $(BUILD)/data/SLUS_010.40.linked.elf: LDFLAGS += \
 	--defsym=__nCtors=0x00000000
 
 $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
+$(BUILD)/src/SLUS_010.40/25AC.o: MASFLAGS += --expand-div
 $(addprefix $(BUILD)/src/SLUS_010.40/, main.o zndFiles.o): $(BUILD)/src/include/lbas.h
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \

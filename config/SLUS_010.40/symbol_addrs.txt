@@ -63,6 +63,7 @@ Sound_Cutscene_LoadNextBuffer = 0x8001D438;
 Sound_Cutscene_OnBufferAComplete = 0x8001D584;
 Sound_Cutscene_OnBufferBComplete = 0x8001D5B4;
 Sound_Cmd_E4_SetCutsceneVolume = 0x8001D6B8;
+Sound_Cmd_E5_FadeOutCutscene = 0x8001D728;
 _SpuInit = 0x8001D8F4;
 SpuStart = 0x8001D9DC;
 _spu_init = 0x8001DA54;

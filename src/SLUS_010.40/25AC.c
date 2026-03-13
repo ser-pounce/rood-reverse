@@ -1875,6 +1875,16 @@ void Sound_Cmd_E4_SetCutsceneVolume(FSoundCommandParams* in_Params)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D728);
+void Sound_Cmd_E5_FadeOutCutscene(FSoundCommandParams* in_Params)
+{
+    short var_a1 = 1;
+    if (in_Params->Param1 != 0) {
+        var_a1 = in_Params->Param1;
+    }
+    g_Sound_Cutscene_StreamState.VolFadeStepSize =
+        (short)((short)(in_Params->Param2 - g_Sound_Cutscene_StreamState.Volume)
+                / var_a1);
+    g_Sound_Cutscene_StreamState.VolFadeStepsRemaining = var_a1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D7A8);

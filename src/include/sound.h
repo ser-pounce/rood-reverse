@@ -563,13 +563,13 @@ typedef struct FSoundCutsceneStreamData {
 } FSoundCutsceneStreamData; /** size 0x80 + DataBlob */
 
 typedef struct FSoundCutsceneStreamState {
-    /* 0x00 */ FSoundCutsceneStreamData* pCurrentChunk;
-    /* 0x04 */ int unk_Mask_0x4;
+    /* 0x00 */ void* pCurrentChunk;
+    /* 0x04 */ void* unk_Mask_0x4;
     /* 0x08 */ int field2_0x8;
     /* 0x0C */ int VoicesInUseFlags;
     /* 0x10 */ int VoiceIndex;
-    /* 0x14 */ int TotalPages; // Probably a bad name judged on the usage in
-                               // Sound_Cutscene_BeginPlayback
+    /* 0x14 */ u_int TotalPages; // Probably a bad name judged on the usage in
+                                 // Sound_Cutscene_BeginPlayback
     /* 0x18 */ int CurrentPage;
     /* 0x1C */ int field7_0x1c;
     /* 0x20 */ int field8_0x20;
@@ -592,5 +592,3 @@ typedef struct FSoundCutsceneStreamState {
     /* 0x58 */ int VoiceSampleRate;
     /* 0x5C */ int ControlFlags;
 } FSoundCutsceneStreamState; /* size 0x60 */
-
-extern FSoundCutsceneStreamState g_Sound_Cutscene_StreamState;

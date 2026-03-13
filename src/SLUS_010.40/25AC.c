@@ -106,6 +106,8 @@ void Sound_Cutscene_OnBufferAComplete(void);
 void Sound_Cutscene_OnBufferBComplete(void);
 void IRQCallbackProc(void);
 
+extern short D_8002F79C[];
+extern short D_8002F89C;
 extern int _soundEvent;
 extern char _soundFlush[64];
 extern short D_800358FE;
@@ -1887,4 +1889,35 @@ void Sound_Cmd_E5_FadeOutCutscene(FSoundCommandParams* in_Params)
     g_Sound_Cutscene_StreamState.VolFadeStepsRemaining = var_a1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D7A8);
+void func_8001D7A8(int* arg0)
+{
+    g_Sound_Cutscene_StreamState.field19_0x4c = *arg0;
+
+    if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
+        if (D_80039AFC & 2) {
+            int var_s0 = (g_Sound_Cutscene_StreamState.Volume * D_8002F89C) >> 0x10;
+            SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex, var_s0, var_s0, 0);
+            SetVoiceVolume(
+                g_Sound_Cutscene_StreamState.VoiceIndex + 1, var_s0, var_s0, 0);
+        } else if (g_Sound_Cutscene_StreamState.field2_0x8 & 1) {
+            int var_s0 = g_Sound_Cutscene_StreamState.Volume;
+            var_s0 <<= 0xF;
+            var_s0 >>= 0x10;
+            SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex, var_s0, 0, 0);
+            SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex + 1, 0, var_s0, 0);
+        } else {
+            int var_s0;
+            int v1 = (g_Sound_Cutscene_StreamState.field19_0x4c >> 8) & 0xFF;
+            short temp_s1 = D_8002F79C[v1];
+            temp_s1 = (g_Sound_Cutscene_StreamState.Volume * temp_s1) >> 0x10;
+            var_s0 = (g_Sound_Cutscene_StreamState.Volume
+                         * *(((((g_Sound_Cutscene_StreamState.field19_0x4c >> 8) & 0xFF)
+                                 ^ 0xFF))
+                             + D_8002F79C))
+                  >> 0x10;
+            SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex, temp_s1, var_s0, 0);
+            SetVoiceVolume(
+                g_Sound_Cutscene_StreamState.VoiceIndex + 1, temp_s1, var_s0, 0);
+        }
+    }
+}

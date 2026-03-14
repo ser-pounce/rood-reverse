@@ -1764,7 +1764,18 @@ void Sound_Cmd_A5_unk(FSoundCommandParams* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018218);
+void Sound_Cmd_AC_unk(FSoundCommandParams* arg0)
+{
+    int i;
+    FSoundChannel* var_a1 = D_80035910;
+    for (i = 12; i != 0; --i, ++var_a1) {
+        if (!(var_a1->unk28 & 0x02000000)) {
+            var_a1->unk40 = (char)arg0->Param1 << 8;
+            var_a1->unk80 = 0;
+            var_a1->VoiceParams.VoiceParamFlags |= 0x10;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018270);
 

@@ -67,6 +67,7 @@ Sound_Cmd_20_unk = 0x800172D4;
 Sound_Cmd_21_unk = 0x8001746C;
 Sound_Cmd_C0_unk = 0x80017498;
 Sound_Cmd_C1_unk = 0x8001754C;
+Sound_Cmd_C2_unk = 0x8001766C;
 Sound_Cmd_A0_unk = 0x80017870;
 Sound_Cmd_A1_unk = 0x80017958;
 Sound_Cmd_A8_unk = 0x80017AD8;

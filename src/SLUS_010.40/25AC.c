@@ -1545,7 +1545,42 @@ void Sound_Cmd_C0_unk(FSoundCommandParams* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001754C);
+void Sound_Cmd_C1_unk(FSoundCommandParams* arg0)
+{
+    FSoundChannel* var_a1;
+    FSoundChannelConfig* var_a0;
+    int temp_a1;
+    int var_v1;
+
+    int var_a2 = 1;
+
+    if (arg0->Param2 != 0) {
+        var_a2 = arg0->Param2;
+    }
+
+    temp_a1 = arg0->Param1;
+    var_v1 = (arg0->Param3 & 0x7F) << 0x10;
+
+    if ((temp_a1 == 0) || (temp_a1 == g_pActiveMusicConfig->MusicId)) {
+        var_a0 = g_pActiveMusicConfig;
+        var_v1 = (int)(var_v1 - var_a0->A_Volume);
+        var_v1 = var_v1 / var_a2;
+        var_a1 = g_ActiveMusicChannels;
+        var_a0->unk68 = var_a2;
+        var_a0->unk64 = var_v1;
+        Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
+    } else {
+        var_a0 = g_pSavedMousicConfig;
+        if ((var_a0 != NULL) && (temp_a1 != 0) && (temp_a1 == var_a0->MusicId)) {
+            var_v1 = (int)(var_v1 - var_a0->A_Volume);
+            var_v1 = var_v1 / var_a2;
+            var_a1 = g_pSecondaryMusicChannels;
+            var_a0->unk68 = var_a2;
+            var_a0->unk64 = var_v1;
+            Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001766C);
 

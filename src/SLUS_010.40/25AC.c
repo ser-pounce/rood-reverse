@@ -1656,7 +1656,7 @@ void Sound_Cmd_9B_unk(FSoundCommandParams* arg0 __attribute__((unused)))
     D_80039B64 |= 1;
 }
 
-void Sound_Cmd_9A_unk(void)
+void Sound_Cmd_9A_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     if (g_pActiveMusicConfig->unk1C != 0) {
         FSoundChannel* c = g_ActiveMusicChannels;
@@ -1680,28 +1680,61 @@ void Sound_Cmd_9A_unk(void)
     D_80039B64 &= ~1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018984);
+void Sound_Cmd_9D_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+{
+    FSoundChannel* var_a0;
+    int var_s0;
+    int var_s2;
+    int var_s1;
+    u_int i;
+
+    if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
+        var_s1 = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+        var_a0 = D_80035910;
+        var_s0 = 0x1000;
+
+        for (i = 0; i < 12; ++i, ++var_a0, var_s0 *= 2) {
+            if ((var_s1 & var_s0) && (var_a0->unk28 & 0x02000000)) {
+                var_s1 &= ~var_s0;
+            }
+        }
+
+        var_s0 = 0x1000;
+        var_s2 = 0xC;
+        g_Sound_VoiceSchedulerState.unk_Flags_0x10 = var_s1;
+        g_Sound_VoiceSchedulerState.ActiveChannelMask &= ~var_s1;
+
+        while (var_s1 != 0) {
+            if (var_s1 & var_s0) {
+                SetVoiceVolume(var_s2, 0, 0, 0);
+                SetVoiceSampleRate(var_s2, 0);
+                SetVoiceAdsrAttackRateAndMode(var_s2, 0x7F, 1);
+                SetVoiceAdsrSustainRateAndDirection(var_s2, 0x7F, 3);
+                var_s1 &= ~var_s0;
+            }
+            var_s0 *= 2;
+            var_s2 += 1;
+        }
+    }
+    D_80039B64 |= 2;
+}
 
 void Sound_Cmd_9C_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 {
-    int var_a1;
-    int var_a2;
-    u_int temp_a2;
-    int i;
-    int new_var = D_800378A0 != 0;
+    if (D_800378A0 != 0) {
+        u_int temp_a2;
+        FSoundChannel* c = D_80035910;
+        int var_a2 = D_800378A0;
+        int var_a1 = 0x1000;
 
-    var_a2 = D_800378A0;
-    if (new_var != 0) {
-        FSoundChannel* c;
-        var_a1 = 0x1000;
-
-        for (i = 0, c = D_80035910; var_a2 != 0; ++i, ++c) {
+        do {
             if (var_a2 & var_a1) {
                 var_a2 &= ~var_a1;
                 c->VoiceParams.VoiceParamFlags |= 0x2B13;
             }
             var_a1 *= 2;
-        }
+            ++c;
+        } while (var_a2 != 0);
 
         temp_a2 = g_Sound_VoiceSchedulerState.unk_Flags_0x10;
         g_Sound_VoiceSchedulerState.unk_Flags_0x10 = 0;

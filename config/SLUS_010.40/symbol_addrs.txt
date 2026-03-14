@@ -409,6 +409,7 @@ _card_status = 0x8002F524;
 _soundEvent = 0x8002F544;
 _soundFlush = 0x8002F560;
 g_Sound_ProgramCounter = 0x8002F638;
+g_Sound_StereoPanGainTableQ15 = 0x8002F79C;
 __initialised = 0x80030FB0;
 __heapbase = 0x80030FB4;
 __heapsize = 0x80030FB8;

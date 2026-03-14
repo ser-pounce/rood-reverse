@@ -583,7 +583,10 @@ typedef struct FSoundCutsceneStreamState {
     /* 0x40 */ int Volume;
     /* 0x44 */ int VolFadeStepSize;
     /* 0x48 */ int VolFadeStepsRemaining;
-    /* 0x4C */ int field19_0x4c;
+    /* 0x4C */ union {
+        int s32;
+        u_char u8[4];
+    } field19_0x4c;
     /* 0x50 */ int field23_0x50;
     /* 0x54 */ int field24_0x54;
     /* 0x58 */ int VoiceSampleRate;

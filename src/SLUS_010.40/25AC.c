@@ -106,7 +106,6 @@ void Sound_Cutscene_OnBufferAComplete(void);
 void Sound_Cutscene_OnBufferBComplete(void);
 void IRQCallbackProc(void);
 
-extern short D_8002F79C[];
 extern short D_8002F89C;
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -136,6 +135,9 @@ extern u_int g_Sound_ProgramCounter;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
 extern FSoundChannel SfxSoundChannels[12];
 extern volatile int g_bSpuTransferring;
+#define SPU_PAN_TABLE_SIZE (0x100)
+#define PAN_CENTER_INDEX (SPU_PAN_TABLE_SIZE / 2)
+extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 
 int InitSound(void)
 {
@@ -1761,7 +1763,51 @@ void func_8001CE60(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CEA8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_Cutscene_InitVoice);
+void Sound_Cutscene_InitVoice(
+    int in_Voice, int in_PanMode, int in_StartAddr, int in_RepeatAddr)
+{
+    short VolR;
+    short VolL;
+
+    if (D_80039AFC & 2) {
+        int volume = (g_Sound_Cutscene_StreamState.Volume
+                         * g_Sound_StereoPanGainTableQ15[PAN_CENTER_INDEX])
+                  >> 0x10;
+        VolR = volume;
+        VolL = volume;
+    } else {
+        if (in_PanMode == 1) {
+            VolR = 0;
+            VolL = g_Sound_Cutscene_StreamState.Volume >> 1;
+        } else if (in_PanMode == 2) {
+            VolL = 0;
+            VolR = g_Sound_Cutscene_StreamState.Volume >> 1;
+        } else if (in_PanMode == 3) {
+            int VolHalfQ16 = (g_Sound_Cutscene_StreamState.Volume >> 1) << 0x10;
+            VolR = (VolHalfQ16 >> 0x11) + (VolHalfQ16 >> 0x12);
+            VolL = VolR;
+        } else {
+            char Mask = 0xFF;
+            VolL = ((g_Sound_Cutscene_StreamState.Volume
+                        * g_Sound_StereoPanGainTableQ15[g_Sound_Cutscene_StreamState
+                                                            .field19_0x4c.u8[1]])
+                    >> 0x10);
+            VolR = ((g_Sound_Cutscene_StreamState.Volume
+                        * g_Sound_StereoPanGainTableQ15
+                            [g_Sound_Cutscene_StreamState.field19_0x4c.u8[1] ^ Mask])
+                    >> 0x10);
+        }
+    }
+    SetVoiceVolume(in_Voice, VolL, VolR, 0);
+    SetVoiceSampleRate(in_Voice, g_Sound_Cutscene_StreamState.VoiceSampleRate);
+    SetVoiceStartAddr(in_Voice, in_StartAddr);
+    SetVoiceRepeatAddr(in_Voice, in_RepeatAddr);
+    SetVoiceAdsrAttackRateAndMode(in_Voice, 0, 1);
+    SetVoiceAdsrDecayRate(in_Voice, 0xF);
+    SetVoiceAdsrSustainLevel(in_Voice, 0xF);
+    SetVoiceAdsrSustainRateAndDirection(in_Voice, 0x7F, 3);
+    SetVoiceAdsrReleaseRateAndMode(in_Voice, 6, 3);
+}
 
 extern u_int D_80039B14;
 
@@ -1899,7 +1945,7 @@ void Sound_Cmd_E5_FadeOutCutscene(FSoundCommandParams* in_Params)
 
 void func_8001D7A8(int* arg0)
 {
-    g_Sound_Cutscene_StreamState.field19_0x4c = *arg0;
+    g_Sound_Cutscene_StreamState.field19_0x4c.s32 = *arg0;
 
     if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
         if (D_80039AFC & 2) {
@@ -1915,14 +1961,15 @@ void func_8001D7A8(int* arg0)
             SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex + 1, 0, var_s0, 0);
         } else {
             int var_s0;
-            int v1 = (g_Sound_Cutscene_StreamState.field19_0x4c >> 8) & 0xFF;
-            short temp_s1 = D_8002F79C[v1];
+            int v1 = (g_Sound_Cutscene_StreamState.field19_0x4c.s32 >> 8) & 0xFF;
+            short temp_s1 = g_Sound_StereoPanGainTableQ15[v1];
             temp_s1 = (g_Sound_Cutscene_StreamState.Volume * temp_s1) >> 0x10;
-            var_s0 = (g_Sound_Cutscene_StreamState.Volume
-                         * *(((((g_Sound_Cutscene_StreamState.field19_0x4c >> 8) & 0xFF)
-                                 ^ 0xFF))
-                             + D_8002F79C))
-                  >> 0x10;
+            var_s0 =
+                (g_Sound_Cutscene_StreamState.Volume
+                    * *(((((g_Sound_Cutscene_StreamState.field19_0x4c.s32 >> 8) & 0xFF)
+                            ^ 0xFF))
+                        + g_Sound_StereoPanGainTableQ15))
+                >> 0x10;
             SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex, temp_s1, var_s0, 0);
             SetVoiceVolume(
                 g_Sound_Cutscene_StreamState.VoiceIndex + 1, temp_s1, var_s0, 0);

@@ -106,7 +106,6 @@ void Sound_Cutscene_OnBufferAComplete(void);
 void Sound_Cutscene_OnBufferBComplete(void);
 void IRQCallbackProc(void);
 
-extern short D_8002F89C;
 extern int _soundEvent;
 extern char _soundFlush[64];
 extern short D_800358FE;
@@ -138,6 +137,7 @@ extern volatile int g_bSpuTransferring;
 #define SPU_PAN_TABLE_SIZE (0x100)
 #define PAN_CENTER_INDEX (SPU_PAN_TABLE_SIZE / 2)
 extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
+extern short D_8002F89C;
 
 int InitSound(void)
 {
@@ -1761,7 +1761,72 @@ void func_8001CE60(void)
     SpuWrite(temp_s0, 0x800);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CEA8);
+int func_8001CDD0(void);
+void func_8001D3D4(void);
+
+void Sound_Cutscene_StartStream(u_int* arg0, int arg1, int arg2)
+{
+    int VoiceIndex;
+    u_int transferSize;
+
+    VoiceIndex = func_8001CDD0();
+    if (VoiceIndex != -1) {
+        u_int* s3;
+        g_Sound_Cutscene_StreamState.field19_0x4c.s32 = arg1;
+        SpuSetIRQ(0);
+        SpuSetIRQCallback(NULL);
+        s3 = arg0;
+        g_Sound_Cutscene_StreamState.pCurrentChunk = s3 + 0x10;
+        g_Sound_Cutscene_StreamState.TotalPages = s3[4];
+        g_Sound_Cutscene_StreamState.CurrentPage = s3[8];
+        g_Sound_Cutscene_StreamState.VoiceIndex = VoiceIndex;
+        g_Sound_Cutscene_StreamState.VoicesInUseFlags =
+            (1 << VoiceIndex) | (1 << (VoiceIndex + 1));
+        SetVoiceKeyOff(g_Sound_Cutscene_StreamState.VoicesInUseFlags);
+        g_Sound_Cutscene_StreamState.field2_0x8 = s3[6];
+        g_Sound_Cutscene_StreamState.VoiceSampleRate = (u_short)s3[7];
+        g_Sound_Cutscene_StreamState.VoiceIndex = VoiceIndex;
+        g_Sound_Cutscene_StreamState.VoicesInUseFlags =
+            (1 << VoiceIndex) | (1 << (VoiceIndex + 1));
+        SetVoiceKeyOff(g_Sound_Cutscene_StreamState.VoicesInUseFlags);
+        SpuSetTransferMode(0);
+        SpuSetTransferStartAddr(0x1100U);
+        _isSpuTransfer = 1;
+
+        g_Sound_Cutscene_StreamState.unk_Mask_0x4 =
+            (g_Sound_Cutscene_StreamState.field2_0x8 & 2)
+                ? g_Sound_Cutscene_StreamState.pCurrentChunk + s3[5]
+                : NULL;
+        if (g_Sound_Cutscene_StreamState.field2_0x8 & 1) {
+            g_Sound_Cutscene_StreamState.field7_0x1c =
+                (g_Sound_Cutscene_StreamState.field2_0x8 & 2)
+                    ? g_Sound_Cutscene_StreamState.TotalPages - (s3[5] >> 1)
+                    : 0;
+            SpuSetTransferCallback(func_8001D3D4);
+            transferSize = 0x2000;
+        } else {
+            g_Sound_Cutscene_StreamState.field7_0x1c =
+                (g_Sound_Cutscene_StreamState.field2_0x8 & 2)
+                    ? g_Sound_Cutscene_StreamState.TotalPages - s3[5]
+                    : 0;
+            SpuSetTransferCallback(func_8001CE60);
+            transferSize = 0x800;
+        }
+        SpuWrite((u_char*)g_Sound_Cutscene_StreamState.pCurrentChunk, transferSize);
+        if (arg2 != 0) {
+            g_Sound_VoiceSchedulerState.ReverbVoiceFlags |=
+                g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+        } else {
+            g_Sound_VoiceSchedulerState.ReverbVoiceFlags &=
+                ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+        }
+        g_Sound_VoiceSchedulerState.FmVoiceFlags &=
+            ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+        g_Sound_VoiceSchedulerState.NoiseVoiceFlags &=
+            ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    }
+}
 
 void Sound_Cutscene_InitVoice(
     int in_Voice, int in_PanMode, int in_StartAddr, int in_RepeatAddr)
@@ -1808,8 +1873,6 @@ void Sound_Cutscene_InitVoice(
     SetVoiceAdsrSustainRateAndDirection(in_Voice, 0x7F, 3);
     SetVoiceAdsrReleaseRateAndMode(in_Voice, 6, 3);
 }
-
-extern u_int D_80039B14;
 
 void Sound_Cutscene_BeginPlayback(
     int in_SomeIndex, int in_SampleAddr, void (*in_Callback)())
@@ -1908,13 +1971,14 @@ void func_8001D614(void)
     Sound_Cutscene_LoadNextBuffer(0x2100, 0x2900, 0x1000, func_8001D5E4);
 }
 
-void func_8001CEA8(int, int, int);
+void Sound_Cutscene_StartStream(u_int*, int, int);
 
 void func_8001D644(int* arg0)
 {
     IRQCallbackProc();
-    func_8001CEA8(arg0[0], arg0[1], arg0[2]);
-    g_Sound_VoiceSchedulerState.ActiveChannelMask &= ~D_80039B14;
+    Sound_Cutscene_StartStream((u_int*)arg0[0], arg0[1], arg0[2]);
+    g_Sound_VoiceSchedulerState.ActiveChannelMask &=
+        ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 }
 
 void func_8001D698(void) { IRQCallbackProc(); }

@@ -56,6 +56,7 @@ Sound_MarkActiveChannelsVolumeDirty = 0x80016964;
 Sound_MarkScheduledSfxChannelsVolumeDirty = 0x800169AC;
 _setReverbMode = 0x80018BE0;
 IRQCallbackProc = 0x8001CD4C;
+Sound_Cutscene_StartStream = 0x8001CEA8;
 Sound_Cutscene_InitVoice = 0x8001D0E4;
 Sound_Cutscene_BeginPlayback = 0x8001D2A0;
 Sound_Cutscene_OnInitialTransferComplete = 0x8001D370;

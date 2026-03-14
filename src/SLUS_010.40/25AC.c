@@ -1579,7 +1579,16 @@ void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018608);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800186E4);
+void Sound_Cmd_80_unk(void)
+{
+    D_80039AFC = 1;
+    Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicConfig, g_ActiveMusicChannels);
+    if (g_pSavedMousicConfig != NULL) {
+        Sound_MarkActiveChannelsVolumeDirty(
+            g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+    }
+    Sound_MarkScheduledSfxChannelsVolumeDirty();
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018744);
 

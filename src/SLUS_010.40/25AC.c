@@ -1615,6 +1615,7 @@ void Sound_Cmd_A2_unk(FSoundCommandParams* arg0)
     }
 }
 
+// https://decomp.me/scratch/pPz9v
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017CFC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017E74);

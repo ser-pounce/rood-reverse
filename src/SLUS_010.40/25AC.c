@@ -1460,9 +1460,20 @@ void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017254);
+void Sound_Cmd_30_unk(FSoundCommandParams* arg0)
+{
+    char* sp10;
+    char* sp14;
 
-void func_800172D4(FSoundCommandParams* arg0)
+    Sound_GetProgramCounters(&sp10, &sp14, arg0->Param1);
+    arg0->Param2 = 0x02000000;
+    arg0->Param3 = 0x80;
+    arg0->Param4 = 0x7F;
+    arg0->ExtParam1 = func_80016DA8(g_Sound_SfxMetadataTable[arg0->Param1]);
+    Sound_PlaySfxProgram(arg0, sp10, sp14, 0);
+}
+
+void Sound_Cmd_20_unk(FSoundCommandParams* arg0)
 {
     char* akaoOffset;
     char* akaoData;
@@ -1472,9 +1483,13 @@ void func_800172D4(FSoundCommandParams* arg0)
     Sound_PlaySfxProgram(arg0, akaoOffset, akaoData, 0);
 }
 
+// https://decomp.me/scratch/wOmFh
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001733C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001746C);
+void Sound_Cmd_21_unk(FSoundCommandParams* arg0)
+{
+    func_800161C4(arg0->Param1, arg0->Param2);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017498);
 

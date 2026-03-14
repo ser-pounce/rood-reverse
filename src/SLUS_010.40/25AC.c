@@ -107,6 +107,7 @@ extern FSoundChannel D_80035910[10];
 extern int D_80039AFC;
 extern int D_80039B14;
 extern int D_80039B64;
+extern int D_80037848;
 extern short D_8003784C;
 extern int D_800378E0;
 
@@ -1624,7 +1625,19 @@ void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
     func_80019134();
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017798);
+void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
+{
+    int temp_v0;
+    int var_a1;
+
+    temp_v0 = arg0->Param1;
+    var_a1 = 1;
+    if (temp_v0 != 0) {
+        var_a1 = temp_v0;
+    }
+    D_8003784C = var_a1;
+    D_80037848 = (((u_short)arg0->Param2 << 0x10) - D_800378E0) / var_a1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017800);
 

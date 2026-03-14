@@ -98,6 +98,7 @@ extern u_short* g_Sound_SfxProgramOffsets;
 extern u_short* g_Sound_SfxMetadataTable;
 extern char* g_Sound_SfxProgramData;
 extern D_800378C0_t D_800378C0;
+extern int D_800378E4;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AFC;
@@ -1579,7 +1580,7 @@ void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018608);
 
-void Sound_Cmd_80_unk(void)
+void Sound_Cmd_80_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     D_80039AFC = 1;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicConfig, g_ActiveMusicChannels);
@@ -1590,7 +1591,7 @@ void Sound_Cmd_80_unk(void)
     Sound_MarkScheduledSfxChannelsVolumeDirty();
 }
 
-void Sound_Cmd_81_unk(void)
+void Sound_Cmd_81_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     D_80039AFC = 2;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicConfig, g_ActiveMusicChannels);
@@ -1601,7 +1602,17 @@ void Sound_Cmd_81_unk(void)
     Sound_MarkScheduledSfxChannelsVolumeDirty();
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187A4);
+void Sound_Cmd_90_unk(FSoundCommandParams* arg0)
+{
+    u_int i;
+    FSoundChannel* c;
+
+    D_800378E4 = arg0->Param1;
+
+    for (i = 0, c = g_ActiveMusicChannels; i < 32; ++i, ++c) {
+        c->VoiceParams.VoiceParamFlags |= 3;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187E4);
 

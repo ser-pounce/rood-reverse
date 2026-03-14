@@ -60,6 +60,7 @@ Sound_Cmd_10_StartFieldMusic = 0x80016DF8;
 Sound_Cmd_19_Unk = 0x80016F0C;
 Sound_Cmd_1A_Unk = 0x80016FF4;
 Sound_Cmd_12_unk = 0x800171C8;
+Sound_Cmd_34_unk = 0x80017208;
 Sound_Cmd_30_unk = 0x80017254;
 Sound_Cmd_20_unk = 0x800172D4;
 Sound_Cmd_21_unk = 0x8001746C;

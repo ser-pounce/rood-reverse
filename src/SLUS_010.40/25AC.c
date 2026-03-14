@@ -1458,7 +1458,20 @@ void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
     g_Music_LoopCounter = LoopCounter;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
+void Sound_Cmd_34_unk(FSoundCommandParams* arg0)
+{
+    char* temp_a1;
+    char* temp_a2;
+
+    temp_a1 = (char*)arg0->Param1;
+    temp_a2 = (char*)arg0->Param2;
+    arg0->Param1 = 0x400;
+    arg0->Param2 = 0x01000000;
+    arg0->Param3 = 0x80;
+    arg0->Param4 = 0x7F;
+    arg0->ExtParam1 = 0;
+    Sound_PlaySfxProgram(arg0, temp_a1, temp_a2, 0);
+}
 
 void Sound_Cmd_30_unk(FSoundCommandParams* arg0)
 {

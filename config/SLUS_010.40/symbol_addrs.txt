@@ -57,6 +57,7 @@ Sound_MarkActiveChannelsVolumeDirty = 0x80016964;
 Sound_MarkScheduledSfxChannelsVolumeDirty = 0x800169AC;
 Sound_SetMusicSequence = 0x80016A00;
 Sound_Cmd_10_StartFieldMusic = 0x80016DF8;
+Sound_Cmd_14_StopAllMusic = 0x800185A0;
 Sound_Cmd_XX_Null = 0x80018BD8;
 Sound_SetReverbMode = 0x80018BE0;
 IRQCallbackProc = 0x8001CD4C;

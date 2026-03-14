@@ -1464,7 +1464,18 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800184B8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001852C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800185A0);
+void Sound_Cmd_14_StopAllMusic(FSoundCommandParams* in_Params)
+{
+    u_int temp_a2;
+
+    Sound_KillMusicConfig(g_pActiveMusicConfig, g_ActiveMusicChannels, in_Params->Param1);
+    if (g_pSavedMousicConfig != NULL) {
+        if (in_Params->Param1 != 0) {
+            Sound_KillMusicConfig(
+                g_pSavedMousicConfig, g_pSecondaryMusicChannels, in_Params->Param1);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018608);
 

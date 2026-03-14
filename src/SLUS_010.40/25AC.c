@@ -1533,7 +1533,31 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017798);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017800);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017870);
+void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
+{
+    u_int i;
+    FSoundChannel* var_a1 = D_80035910;
+    u_int mask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+    int var_a3 = 0x1000;
+
+    if (arg0->Param2 != 0) {
+        for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
+            if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
+                var_a1->unkD6 = (arg0->Param3 & 0x7F) << 8;
+                var_a1->unk86 = 0;
+                var_a1->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    } else {
+        for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
+            if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
+                var_a1->unkD6 = (arg0->Param3 & 0x7F) << 8;
+                var_a1->unk86 = 0;
+                var_a1->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017958);
 

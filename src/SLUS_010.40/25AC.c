@@ -1795,7 +1795,15 @@ void Sound_Cutscene_OnInitialTransferComplete(void)
     Sound_Cutscene_BeginPlayback(0x1000, 0x2100, Sound_Cutscene_OnBufferAComplete);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001D3D4);
+void func_8001D5E4(void);
+
+void func_8001D3D4(void)
+{
+    Sound_Cutscene_InitVoice(g_Sound_Cutscene_StreamState.VoiceIndex, 1, 0x1100, 0x2100);
+    Sound_Cutscene_InitVoice(
+        g_Sound_Cutscene_StreamState.VoiceIndex + 1, 2, 0x1900, 0x2900);
+    Sound_Cutscene_BeginPlayback(0x2000, 0x2100, func_8001D5E4);
+}
 
 void Sound_Cutscene_LoadNextBuffer(
     int in_RepeatAddressL, int in_RepeatAddressR, int in_Param3, void (*in_IrqCallback)())

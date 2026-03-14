@@ -102,6 +102,7 @@ extern int D_800378E4;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AFC;
+extern int D_80039B64;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -1614,11 +1615,36 @@ void Sound_Cmd_90_unk(FSoundCommandParams* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187E4);
+void Sound_Cmd_92_unk(FSoundCommandParams* arg0)
+{
+    g_pActiveMusicConfig->unk70 = arg0->Param1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187F8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800188E8);
+void Sound_Cmd_9A_unk(void)
+{
+    if (g_pActiveMusicConfig->unk1C != 0) {
+        FSoundChannel* c = g_ActiveMusicChannels;
+        int var_a2 = g_pActiveMusicConfig->unk1C;
+        int var_a1 = 1;
+        u_int temp_v1;
+        do {
+            if (var_a2 & var_a1) {
+                var_a2 &= ~var_a1;
+                c->VoiceParams.VoiceParamFlags |= 0x2B13;
+            }
+            var_a1 *= 2;
+            ++c;
+        } while (var_a2 != 0);
+        
+        temp_v1 = g_pActiveMusicConfig->unk1C;
+        g_pActiveMusicConfig->unk1C = 0;
+        g_pActiveMusicConfig->ActiveChannelMask = temp_v1;
+        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    }
+    D_80039B64 &= ~1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018984);
 

@@ -83,6 +83,8 @@ void Sound_Cutscene_LoadNextBuffer(int, int, int, void (*)(void));
 void Sound_Cutscene_OnBufferAComplete(void);
 void Sound_Cutscene_OnBufferBComplete(void);
 void IRQCallbackProc(void);
+void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
+void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -115,6 +117,7 @@ extern volatile int g_bSpuTransferring;
 #define PAN_CENTER_INDEX (SPU_PAN_TABLE_SIZE / 2)
 extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 extern short D_8002F89C;
+extern FSoundChannelConfig g_PushedMusicConfig;
 
 int InitSound(void)
 {
@@ -1161,7 +1164,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015C9C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015D38);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015D84);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_LoadAkaoSequence);
 
 void Sound_KillMusicConfig(
     FSoundChannelConfig* in_Config, FSoundChannel* in_pChannel, u_int arg2)
@@ -1355,7 +1358,7 @@ void Sound_MarkScheduledSfxChannelsVolumeDirty(void)
     };
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016A00);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_SetMusicSequence);
 
 int func_80016DA8(int flags)
 {
@@ -1374,7 +1377,16 @@ int func_80016DA8(int flags)
     return var_v1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016DF8);
+void Sound_Cmd_10_StartFieldMusic(FSoundCommandParams* in_Params)
+{
+    if ((g_PushedMusicConfig.MusicId != 0)
+        && (g_PushedMusicConfig.MusicId == in_Params->Param3)) {
+        Sound_SetMusicSequence((FAkaoSequence*)in_Params->Param1, 0);
+        return;
+    }
+    Sound_LoadAkaoSequence((FAkaoSequence*)in_Params->Param1);
+    g_pActiveMusicConfig->MusicId = (u_short)in_Params->Param3;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016E74);
 
@@ -1470,6 +1482,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800188E8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018984);
 
+// https://decomp.me/scratch/iTHNT
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018AA0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);

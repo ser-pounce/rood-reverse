@@ -118,6 +118,7 @@ extern volatile int g_bSpuTransferring;
 extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 extern short D_8002F89C;
 extern FSoundChannelConfig g_PushedMusicConfig;
+extern u_int g_Music_LoopCounter;
 
 int InitSound(void)
 {
@@ -1394,7 +1395,17 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016F0C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016FF4);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800171C8);
+void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
+{
+    int LoopCounter;
+
+    Sound_Cmd_10_StartFieldMusic(in_Params);
+    LoopCounter = 0;
+    if (in_Params->Param4 != 0) {
+        LoopCounter = in_Params->Param4 - 1;
+    }
+    g_Music_LoopCounter = LoopCounter;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017208);
 
@@ -1464,7 +1475,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800184B8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001852C);
 
-void Sound_Cmd_14_StopAllMusic(FSoundCommandParams* in_Params)
+void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
 {
     u_int temp_a2;
 

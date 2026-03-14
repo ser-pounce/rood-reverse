@@ -87,6 +87,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
 void func_80019154(FSoundChannel*, FSoundChannelConfig*, int);
+void func_80019134(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -106,6 +107,8 @@ extern FSoundChannel D_80035910[10];
 extern int D_80039AFC;
 extern int D_80039B14;
 extern int D_80039B64;
+extern short D_8003784C;
+extern int D_800378E0;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -1614,7 +1617,12 @@ void Sound_Cmd_C2_unk(FSoundCommandParams* arg0)
     Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017764);
+void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
+{
+    D_8003784C = 0;
+    D_800378E0 = (u_short)arg0->Param1 << 0x10;
+    func_80019134();
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017798);
 

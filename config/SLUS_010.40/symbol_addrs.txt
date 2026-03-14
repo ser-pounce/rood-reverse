@@ -68,6 +68,7 @@ Sound_Cmd_21_unk = 0x8001746C;
 Sound_Cmd_A0_unk = 0x80017870;
 Sound_Cmd_A1_unk = 0x80017958;
 Sound_Cmd_A2_unk = 0x80017C1C;
+Sound_Cmd_A3_unk = 0x80017CFC;
 Sound_Cmd_A4_unk = 0x80017FB0;
 Sound_Cmd_11_StopAllMusic = 0x800185A0;
 Sound_Cmd_80_unk = 0x800186E4;

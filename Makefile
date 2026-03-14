@@ -137,7 +137,7 @@ clean-all:
 $(shell $(FIND) config src -type f -regex ".*\.\(yaml\|txt\|h\|c\|s\|inc\)\$$"): ;
 $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 
-ifeq ($(PERMUTER),)
+ifeq ($(PERMUTER)$(__BASH_MAKE_COMPLETION__),)
 $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)

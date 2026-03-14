@@ -85,6 +85,8 @@ void Sound_Cutscene_OnBufferBComplete(void);
 void IRQCallbackProc(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
+void func_80015BAC(void);
+void func_80019154(FSoundChannel*, FSoundChannelConfig*, int);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -119,6 +121,8 @@ extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 extern short D_8002F89C;
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern u_int g_Music_LoopCounter;
+extern FSoundChannel D_800366F0;
+extern FSoundChannel D_800378E8;
 
 int InitSound(void)
 {
@@ -1391,7 +1395,23 @@ void Sound_Cmd_10_StartFieldMusic(FSoundCommandParams* in_Params)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016E74);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016F0C);
+void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
+{
+    if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
+        && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
+        g_pSavedMousicConfig = &g_PushedMusicConfig;
+        g_pSecondaryMusicChannels = &D_800378E8;
+        func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        func_80019154(g_ActiveMusicChannels,
+            (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
+    }
+    Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
+    g_pActiveMusicConfig->A_Volume = (arg0->ExtParam1 & 0x7F) << 0x10;
+    g_pActiveMusicConfig->unk68 = 0;
+    g_pActiveMusicConfig->MusicId = arg0->Param3;
+    func_80015BAC();
+    g_Sound_GlobalFlags.MixBehavior &= ~0x100;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016FF4);
 
@@ -1511,7 +1531,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B84);
 
-void Sound_Cmd_XX_Null(FSoundCommandParams* in_Params) { }
+void Sound_Cmd_11_Nop(FSoundCommandParams* in_Params __attribute__((unused))) { }
 
 void Sound_SetReverbMode(int in_ReverbMode)
 {

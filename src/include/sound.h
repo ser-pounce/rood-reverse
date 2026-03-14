@@ -470,7 +470,8 @@ typedef struct {
     int unk5C;
     u_int A_Volume;
     int unk64;
-    int unk68;
+    short unk68;
+    short unk6A;
     short unk6C;
     u_short MusicId;
     int unk70;

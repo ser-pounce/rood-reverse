@@ -55,7 +55,7 @@ DIFFFLAGS      := -s
 COMMANDFLAGS   := -v
 MKDIRFLAGS     := -p
 
-ifeq ($(PERMUTER),)
+ifndef PERMUTER
 CPP_DEPS = -MD -MF $@.d -MT $@
 AS_DEPS  = --MD $(@:.o=.d)
 endif
@@ -83,7 +83,7 @@ src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
 .PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
 
 all: $(targets)
-ifeq ($(NOCHECK),)
+ifndef NOCHECK
 	echo "Verifying target files"
 	fail=0
 	for t in $(^:$(BUILD)/%=%); do
@@ -137,11 +137,13 @@ clean-all:
 $(shell $(FIND) config src -type f -regex ".*\.\(yaml\|txt\|h\|c\|s\|inc\)\$$"): ;
 $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 
-ifeq ($(PERMUTER)$(__BASH_MAKE_COMPLETION__),)
+ifndef PERMUTER
+ifndef __BASH_MAKE_COMPLETION__
 $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	$(TOUCH) $@
+endif
 endif
 
 $(targets): private LDFLAGS := --oformat=binary -e 0x0
@@ -209,7 +211,7 @@ $(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
 nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
 	$(IMPORT) $(IMPORTFLAGS) $^
 
-ifeq ($(PERMUTER),)
+ifndef PERMUTER
 .PRECIOUS: data/%
 $(sourcedata) &: | disks/$(disk).bin $(build_deps)
 	$(ECHO) Dumping files from disk

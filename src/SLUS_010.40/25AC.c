@@ -1746,7 +1746,15 @@ void Sound_Cmd_9C_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B84);
+void Sound_Cmd_9E_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+{
+    if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
+        SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex,
+            g_Sound_Cutscene_StreamState.VoiceSampleRate);
+        SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex + 1,
+            g_Sound_Cutscene_StreamState.VoiceSampleRate);
+    }
+}
 
 void Sound_Cmd_11_Nop(FSoundCommandParams* in_Params __attribute__((unused))) { }
 

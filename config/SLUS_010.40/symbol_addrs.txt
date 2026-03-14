@@ -74,6 +74,7 @@ Sound_Cmd_9B_unk = 0x800187F8;
 Sound_Cmd_9A_unk = 0x800188E8;
 Sound_Cmd_9D_unk = 0x80018984;
 Sound_Cmd_9C_unk = 0x80018AA0;
+Sound_Cmd_9E_unk = 0x80018B84;
 Sound_Cmd_11_Nop = 0x80018BD8;
 Sound_SetReverbMode = 0x80018BE0;
 IRQCallbackProc = 0x8001CD4C;

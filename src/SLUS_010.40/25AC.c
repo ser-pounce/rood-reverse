@@ -1639,7 +1639,18 @@ void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
     D_80037848 = (((u_short)arg0->Param2 << 0x10) - D_800378E0) / var_a1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80017800);
+void Sound_Cmd_CA_unk(FSoundCommandParams* arg0)
+{
+    unsigned int new_var;
+    int var_a1 = 1;
+    if (arg0->Param1 != 0) {
+        var_a1 = arg0->Param1;
+    }
+    D_8003784C = var_a1;
+    new_var = ((u_short)arg0->Param3) << 0x10;
+    D_800378E0 = (u_short)arg0->Param2 << 0x10;
+    D_80037848 = (int)(new_var - D_800378E0) / var_a1;
+}
 
 void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
 {

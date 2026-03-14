@@ -1499,16 +1499,16 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B84);
 
-void func_80018BD8(void) { }
+void Sound_Cmd_XX_Null(FSoundCommandParams* in_Params) { }
 
-void _setReverbMode(int mode)
+void Sound_SetReverbMode(int in_ReverbMode)
 {
     long curMode;
 
     SpuGetReverbModeType(&curMode);
-    if (curMode != mode) {
+    if (curMode != in_ReverbMode) {
         SpuSetReverb(SPU_OFF);
-        SpuSetReverbModeType(mode | SPU_REV_MODE_CLEAR_WA);
+        SpuSetReverbModeType(in_ReverbMode | SPU_REV_MODE_CLEAR_WA);
         SpuSetReverb(SPU_ON);
     }
 }

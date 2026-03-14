@@ -57,6 +57,7 @@ Sound_MarkActiveChannelsVolumeDirty = 0x80016964;
 Sound_MarkScheduledSfxChannelsVolumeDirty = 0x800169AC;
 Sound_SetMusicSequence = 0x80016A00;
 Sound_Cmd_10_StartFieldMusic = 0x80016DF8;
+Sound_Cmd_40_PushMusicState = 0x80016E74;
 Sound_Cmd_19_Unk = 0x80016F0C;
 Sound_Cmd_1A_Unk = 0x80016FF4;
 Sound_Cmd_12_unk = 0x800171C8;

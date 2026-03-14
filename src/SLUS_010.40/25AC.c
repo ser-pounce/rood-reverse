@@ -122,7 +122,7 @@ extern short D_8002F89C;
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern u_int g_Music_LoopCounter;
 extern FSoundChannel D_800366F0;
-extern FSoundChannel D_800378E8;
+extern FSoundChannel D_800378E8[];
 
 int InitSound(void)
 {
@@ -1390,17 +1390,29 @@ void Sound_Cmd_10_StartFieldMusic(FSoundCommandParams* in_Params)
         return;
     }
     Sound_LoadAkaoSequence((FAkaoSequence*)in_Params->Param1);
-    g_pActiveMusicConfig->MusicId = (u_short)in_Params->Param3;
+    g_pActiveMusicConfig->MusicId = in_Params->Param3;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016E74);
+void Sound_Cmd_40_PushMusicState(void)
+{
+    u_int i;
+
+    if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
+        FSoundChannel* c;
+        func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        func_80019154(g_ActiveMusicChannels, (FSoundChannelConfig*)D_800378E8, 0x2200);
+        for (i = 0, c = D_800378E8; i < 32; ++i, ++c) {
+            Sound_MapInstrumentToBaseSampleBank(g_PushedMusicConfig.unk0, c);
+        }
+    }
+}
 
 void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
 {
     if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
         && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
         g_pSavedMousicConfig = &g_PushedMusicConfig;
-        g_pSecondaryMusicChannels = &D_800378E8;
+        g_pSecondaryMusicChannels = D_800378E8;
         func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
         func_80019154(g_ActiveMusicChannels,
             (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
@@ -1418,13 +1430,13 @@ void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
     if ((g_PushedMusicConfig.MusicId != 0)
         && (g_PushedMusicConfig.MusicId == arg0->Param3)) {
         g_pSavedMousicConfig = &g_PushedMusicConfig;
-        g_pSecondaryMusicChannels = &D_800378E8;
+        g_pSecondaryMusicChannels = D_800378E8;
         Sound_SetMusicSequence((FAkaoSequence*)arg0->Param1, 1);
     } else {
         if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
             && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
             g_pSavedMousicConfig = &g_PushedMusicConfig;
-            g_pSecondaryMusicChannels = &D_800378E8;
+            g_pSecondaryMusicChannels = D_800378E8;
             func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
             func_80019154(g_ActiveMusicChannels,
                 (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);

@@ -102,6 +102,7 @@ extern int D_800378E4;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
 extern int D_80039AFC;
+extern int D_80039B14;
 extern int D_80039B64;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
@@ -1620,7 +1621,38 @@ void Sound_Cmd_92_unk(FSoundCommandParams* arg0)
     g_pActiveMusicConfig->unk70 = arg0->Param1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800187F8);
+void Sound_Cmd_9B_unk(FSoundCommandParams* arg0 __attribute__((unused)))
+{
+    int temp_v1;
+    int var_s0;
+    int var_s1;
+    int var_s2;
+
+    if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
+        int v0 = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask | D_80039B14);
+        var_s2 = 1;
+        var_s1 = v0 & 0xFFFFFF;
+
+        if (var_s1 != 0) {
+            var_s0 = 0;
+            while (var_s1 != 0) {
+                if (var_s1 & var_s2) {
+                    SetVoiceVolume(var_s0, 0, 0, 0);
+                    SetVoiceSampleRate(var_s0, 0);
+                    SetVoiceAdsrAttackRateAndMode(var_s0, 0x7F, 1);
+                    SetVoiceAdsrSustainRateAndDirection(var_s0, 0x7F, 3);
+                    var_s1 &= ~var_s2;
+                }
+                var_s2 *= 2;
+                var_s0 += 1;
+            }
+        }
+        temp_v1 = g_pActiveMusicConfig->ActiveChannelMask;
+        g_pActiveMusicConfig->ActiveChannelMask = 0;
+        g_pActiveMusicConfig->unk1C = temp_v1;
+    }
+    D_80039B64 |= 1;
+}
 
 void Sound_Cmd_9A_unk(void)
 {
@@ -1637,7 +1669,7 @@ void Sound_Cmd_9A_unk(void)
             var_a1 *= 2;
             ++c;
         } while (var_a2 != 0);
-        
+
         temp_v1 = g_pActiveMusicConfig->unk1C;
         g_pActiveMusicConfig->unk1C = 0;
         g_pActiveMusicConfig->ActiveChannelMask = temp_v1;

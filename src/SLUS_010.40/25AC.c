@@ -97,10 +97,12 @@ extern int D_800377E0[3];
 extern u_short* g_Sound_SfxProgramOffsets;
 extern u_short* g_Sound_SfxMetadataTable;
 extern char* g_Sound_SfxProgramData;
+extern int D_800378A0;
 extern D_800378C0_t D_800378C0;
 extern int D_800378E4;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
+extern FSoundChannel D_80035910[10];
 extern int D_80039AFC;
 extern int D_80039B14;
 extern int D_80039B64;
@@ -1680,8 +1682,34 @@ void Sound_Cmd_9A_unk(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018984);
 
-// https://decomp.me/scratch/iTHNT
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018AA0);
+void Sound_Cmd_9C_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+{
+    int var_a1;
+    int var_a2;
+    u_int temp_a2;
+    int i;
+    int new_var = D_800378A0 != 0;
+
+    var_a2 = D_800378A0;
+    if (new_var != 0) {
+        FSoundChannel* c;
+        var_a1 = 0x1000;
+
+        for (i = 0, c = D_80035910; var_a2 != 0; ++i, ++c) {
+            if (var_a2 & var_a1) {
+                var_a2 &= ~var_a1;
+                c->VoiceParams.VoiceParamFlags |= 0x2B13;
+            }
+            var_a1 *= 2;
+        }
+
+        temp_a2 = g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+        g_Sound_VoiceSchedulerState.unk_Flags_0x10 = 0;
+        g_Sound_VoiceSchedulerState.ActiveChannelMask |= temp_a2;
+        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    }
+    D_80039B64 &= ~2;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018B34);
 

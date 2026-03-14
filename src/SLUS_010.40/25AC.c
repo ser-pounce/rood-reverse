@@ -21,28 +21,6 @@ typedef struct {
     int unkC;
 } D_80036770_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3C;
-    int unk40[45];
-    int unkF4;
-    int unkF8[6];
-} D_80035910_t;
-
 // From https://ff7-mods.github.io/ff7-flat-wiki/FF7/PSX/Sound/AKAO_sequence.html
 
 typedef struct {
@@ -109,7 +87,6 @@ void IRQCallbackProc(void);
 extern int _soundEvent;
 extern char _soundFlush[64];
 extern short D_800358FE;
-extern D_80035910_t D_80035910[];
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
@@ -227,19 +204,19 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122F0);
 
 int func_80012358(int arg0)
 {
-    D_80035910_t* var_a1;
+    FSoundChannel* var_a1;
     int var_v1;
     int a2;
-
     if ((arg0 == 0) || ((a2 = g_Sound_VoiceSchedulerState.ActiveChannelMask) == 0)) {
         return 0;
     }
-
-    for (var_a1 = D_80035910, var_v1 = 0x1000; var_v1 & 0xFFFFFF; var_v1 *= 2, ++var_a1) {
+    for (var_a1 = SfxSoundChannels - 10, var_v1 = 0x1000; var_v1 & 0xFFFFFF;
+         var_v1 *= 2, ++var_a1) {
         if ((a2 & var_v1) && (arg0 == var_a1->unk28)) {
             return var_a1->unk3C;
         }
     }
+
     return 0;
 }
 

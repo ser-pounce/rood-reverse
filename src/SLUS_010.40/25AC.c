@@ -1413,7 +1413,38 @@ void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
     g_Sound_GlobalFlags.MixBehavior &= ~0x100;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80016FF4);
+void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
+{
+    if ((g_PushedMusicConfig.MusicId != 0)
+        && (g_PushedMusicConfig.MusicId == arg0->Param3)) {
+        g_pSavedMousicConfig = &g_PushedMusicConfig;
+        g_pSecondaryMusicChannels = &D_800378E8;
+        Sound_SetMusicSequence((FAkaoSequence*)arg0->Param1, 1);
+    } else {
+        if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
+            && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
+            g_pSavedMousicConfig = &g_PushedMusicConfig;
+            g_pSecondaryMusicChannels = &D_800378E8;
+            func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
+            func_80019154(g_ActiveMusicChannels,
+                (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
+        }
+        Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
+        g_pActiveMusicConfig->MusicId = arg0->Param3;
+    }
+    g_Sound_GlobalFlags.MixBehavior &= ~0x100;
+    if (g_pSavedMousicConfig != NULL) {
+        int temp_a1 = arg0->ExtParam1;
+        g_Sound_MasterFadeTimer.Value = 0x7F0000;
+        g_Sound_GlobalFlags.MixBehavior |= 0x100;
+        g_Sound_MasterFadeTimer.TicksRemaining = temp_a1;
+        g_Sound_MasterFadeTimer.Step = (int)0xFF810000 / temp_a1;
+    }
+    g_pActiveMusicConfig->A_Volume = 0;
+    g_pActiveMusicConfig->unk68 = arg0->ExtParam1;
+    g_pActiveMusicConfig->unk64 = ((arg0->ExtParam2 & 0x7F) << 0x10) / arg0->ExtParam1;
+    func_80015BAC();
+}
 
 void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
 {
@@ -1497,8 +1528,6 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001852C);
 
 void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
 {
-    u_int temp_a2;
-
     Sound_KillMusicConfig(g_pActiveMusicConfig, g_ActiveMusicChannels, in_Params->Param1);
     if (g_pSavedMousicConfig != NULL) {
         if (in_Params->Param1 != 0) {

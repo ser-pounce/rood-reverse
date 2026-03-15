@@ -2472,7 +2472,8 @@ void SoundVM_AA_ChannelPan(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_AB_ChannelPanSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_AB_ChannelPanSlide(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     u_short Prev;
     u_short Length;
@@ -2493,7 +2494,11 @@ void SoundVM_AB_ChannelPanSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
     in_pChannel->ChannelPan = Prev;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8C4);
+void SoundVM_A5_SetOctave(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->Octave = *in_pChannel->ProgramCounter++;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8E0);
 

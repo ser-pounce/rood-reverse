@@ -359,7 +359,7 @@ typedef struct {
     u_short ChannelPan;
     u_short ChannelPanSlideLength;
     u_short PitchSlideStepsCurrent;
-    u_short unk94;
+    u_short Octave;
     short unk96;
     u_short unk98;
     short unk9A;

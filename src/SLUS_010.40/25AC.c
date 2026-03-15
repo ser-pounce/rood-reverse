@@ -2224,15 +2224,14 @@ void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_pActiveMusicConfig->TempoSlideLength = 0;
 }
 
-void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags) 
+void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     char* pc;
     int Dest;
     int Prev;
     int Delta;
 
-    if((g_pActiveMusicConfig->TempoSlideLength = *in_pChannel->ProgramCounter++) == 0 )
-    {
+    if ((g_pActiveMusicConfig->TempoSlideLength = *in_pChannel->ProgramCounter++) == 0) {
         g_pActiveMusicConfig->TempoSlideLength = 0x100;
     }
     pc = in_pChannel->ProgramCounter;
@@ -2245,8 +2244,19 @@ void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_pActiveMusicConfig->Tempo = Prev;
 }
 
+void SoundVM_FE02_SetMasterReverbDepth(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    char* pc;
+    u_int Depth;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B334);
+    pc = in_pChannel->ProgramCounter;
+    Depth = (signed char)pc[1] << 0x14;
+    Depth |= pc[0] << 0xC;
+    in_pChannel->ProgramCounter += sizeof(short);
+    g_pActiveMusicConfig->ReverbDepthSlideLength = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_07;
+    g_pActiveMusicConfig->RevDepth = Depth;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B37C);
 

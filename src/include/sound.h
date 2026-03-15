@@ -466,12 +466,12 @@ typedef struct {
     u_int NoiseChannelFlags;
     u_int ReverbChannelFlags;
     u_int FmChannelFlags;
-    int unk58;
+    int RevDepth;
     int unk5C;
     u_int A_Volume;
     int unk64;
     short unk68;
-    short unk6A;
+    short ReverbDepthSlideLength;
     u_short TempoSlideLength;
     u_short MusicId;
     u_short unk70;

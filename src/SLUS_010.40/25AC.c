@@ -2425,9 +2425,19 @@ void SoundVM_FE0C_unk(
     g_pActiveMusicConfig->unk34 = *in_pChannel->ProgramCounter++;
 }
 
-static void func_8001B72C(void) { }
+static void SoundVM_nop(FSoundChannel* in_pChannels __attribute__((unused)),
+    int in_VoiceFlags __attribute__((unused)))
+{
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B734);
+void SoundVM_unused(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    in_pChannel->unkDC = *in_pChannel->ProgramCounter++ << 8;
+    in_pChannel->unk8C = 0;
+    if (in_pChannel->UpdateFlags & 0x100) {
+        in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B778);
 

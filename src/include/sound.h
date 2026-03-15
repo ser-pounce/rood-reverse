@@ -321,7 +321,7 @@ typedef struct {
 typedef struct {
     char* ProgramCounter;
     char* unk4[(4)];
-    char* unk14;
+    char* ReturnProgramCounter;
     char* unk18;
     short* VibratoWave;
     short* TremeloWave;

@@ -2311,11 +2311,14 @@ void SoundVM_FE07_JumpRelativeWithThreshold(FSoundChannel* in_pChannel, int in_V
 void SoundVM_FE0E_CallRelativeOffset(FSoundChannel* in_pChannel, int in_VoiceFlags)
 {
     short Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
-    in_pChannel->unk14 = in_pChannel->ProgramCounter + sizeof(short);
+    in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + sizeof(short);
     in_pChannel->ProgramCounter += Offset;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B4E0);
+void SoundVM_FE0F_Return(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    in_pChannel->ProgramCounter = in_pChannel->ReturnProgramCounter;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B4EC);
 

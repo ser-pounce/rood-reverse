@@ -2283,7 +2283,12 @@ void SoundVM_FE03_SetMasterReverbSlide(
     g_pActiveMusicConfig->unk5C = Delta / g_pActiveMusicConfig->ReverbDepthSlideLength;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B424);
+void SoundVM_FE06_JumpRelativeOffset(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    short Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
+    in_pChannel->ProgramCounter += Offset;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B450);
 

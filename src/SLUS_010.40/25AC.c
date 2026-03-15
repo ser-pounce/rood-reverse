@@ -2425,12 +2425,17 @@ void SoundVM_FE0C_unk(
     g_pActiveMusicConfig->unk34 = *in_pChannel->ProgramCounter++;
 }
 
+static void SoundVM_nop(FSoundChannel* in_pChannels, int in_VoiceFlags)
+    __attribute__((unused));
 static void SoundVM_nop(FSoundChannel* in_pChannels __attribute__((unused)),
     int in_VoiceFlags __attribute__((unused)))
 {
 }
 
-void SoundVM_unused(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_unused1(FSoundChannel* in_pChannel, int in_VoiceFlags)
+    __attribute__((unused));
+void SoundVM_unused1(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->unkDC = *in_pChannel->ProgramCounter++ << 8;
     in_pChannel->unk8C = 0;
@@ -2439,7 +2444,24 @@ void SoundVM_unused(FSoundChannel* in_pChannel, int in_VoiceFlags)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B778);
+void SoundVM_unused2(FSoundChannel* in_pChannel, int in_VoiceFlags)
+    __attribute__((unused));
+void SoundVM_unused2(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    char* temp_a2;
+    short v;
+    int pc;
+
+    if ((in_pChannel->unk8C = *in_pChannel->ProgramCounter++) == 0) {
+        in_pChannel->unk8C = 0x100;
+    }
+
+    pc = (*(in_pChannel->ProgramCounter++)) << 8;
+    v = in_pChannel->unkDC & 0xFF00;
+    in_pChannel->unkDE = ((pc - v) / in_pChannel->unk8C);
+    in_pChannel->unkDC = v;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B804);
 

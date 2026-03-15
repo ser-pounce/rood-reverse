@@ -453,7 +453,7 @@ typedef struct {
     int PendingKeyOffMask;
     u_int unk1C;
     int Tempo;
-    int unk24;
+    int TempoSlideStep;
     u_int unk28;
     u_int unk2C;
     int unk30;
@@ -472,7 +472,7 @@ typedef struct {
     int unk64;
     short unk68;
     short unk6A;
-    short TempoSlideLength;
+    u_short TempoSlideLength;
     u_short MusicId;
     u_short unk70;
     u_short unk72;

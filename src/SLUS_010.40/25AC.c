@@ -2224,7 +2224,27 @@ void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_pActiveMusicConfig->TempoSlideLength = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B294);
+void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags) 
+{
+    char* pc;
+    int Dest;
+    int Prev;
+    int Delta;
+
+    if((g_pActiveMusicConfig->TempoSlideLength = *in_pChannel->ProgramCounter++) == 0 )
+    {
+        g_pActiveMusicConfig->TempoSlideLength = 0x100;
+    }
+    pc = in_pChannel->ProgramCounter;
+    Dest = pc[0] << 0x10;
+    Dest |= pc[1] << 0x18;
+    in_pChannel->ProgramCounter += 2;
+    Prev = g_pActiveMusicConfig->Tempo & 0xFFFF0000;
+    Delta = Dest - Prev;
+    g_pActiveMusicConfig->TempoSlideStep = Delta / g_pActiveMusicConfig->TempoSlideLength;
+    g_pActiveMusicConfig->Tempo = Prev;
+}
+
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B334);
 

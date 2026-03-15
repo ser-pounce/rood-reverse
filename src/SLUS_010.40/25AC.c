@@ -86,7 +86,7 @@ void IRQCallbackProc(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
-void func_80019154(FSoundChannel*, FSoundChannelConfig*, int);
+void Sound_memcpy32(void*, void*, int);
 void UpdateCdVolume(void);
 
 extern int _soundEvent;
@@ -897,7 +897,7 @@ void Sound_UpdateSlidesAndDelays(
 
         in_pChannel->VibratoBase = var_lo;
 
-        if ((in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->field72_0xb8 != 1)) {
+        if ((in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->unkA4 != 1)) {
             Wave = in_pChannel->VibratoWave;
             if (Wave[0] == 0 && Wave[1] == 0) {
                 Wave += Wave[2];
@@ -919,7 +919,7 @@ void Sound_UpdateSlidesAndDelays(
         in_pChannel->TremeloDepthSlideLength--;
         in_pChannel->TremeloDepth += (u_short)in_pChannel->TremeloDepthSlideStep;
         if (((u_short)in_pChannel->TremeloDelayCurrent == 0)
-            && ((u_short)in_pChannel->field81_0xca != 1)) {
+            && ((u_short)in_pChannel->unkB6 != 1)) {
             int FinalVolume;
             int TremeloDepthHi8;
             int VolumeBalanceHigh8;
@@ -1409,10 +1409,10 @@ void Sound_Cmd_40_PushMusicState(void)
 
     if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
         FSoundChannel* c;
-        func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
-        func_80019154(g_ActiveMusicChannels, (FSoundChannelConfig*)D_800378E8, 0x2200);
+        Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        Sound_memcpy32(g_ActiveMusicChannels, (FSoundChannelConfig*)D_800378E8, 0x2200);
         for (i = 0, c = D_800378E8; i < 32; ++i, ++c) {
-            Sound_MapInstrumentToBaseSampleBank(g_PushedMusicConfig.unk0, c);
+            Sound_MapInstrumentToBaseSampleBank(g_PushedMusicConfig.StatusFlags, c);
         }
     }
 }
@@ -1423,8 +1423,8 @@ void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
         && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
         g_pSavedMousicConfig = &g_PushedMusicConfig;
         g_pSecondaryMusicChannels = D_800378E8;
-        func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
-        func_80019154(g_ActiveMusicChannels,
+        Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        Sound_memcpy32(g_ActiveMusicChannels,
             (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
     }
     Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
@@ -1447,8 +1447,8 @@ void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
             && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
             g_pSavedMousicConfig = &g_PushedMusicConfig;
             g_pSecondaryMusicChannels = D_800378E8;
-            func_80019154(&D_800366F0, &g_PushedMusicConfig, 0x80);
-            func_80019154(g_ActiveMusicChannels,
+            Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+            Sound_memcpy32(g_ActiveMusicChannels,
                 (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
         }
         Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
@@ -1663,16 +1663,16 @@ void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
             if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
-                var_a1->unkD6 = (arg0->Param3 & 0x7F) << 8;
-                var_a1->unk86 = 0;
+                var_a1->unkDC = (arg0->Param3 & 0x7F) << 8;
+                var_a1->unk8C = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
             if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
-                var_a1->unkD6 = (arg0->Param3 & 0x7F) << 8;
-                var_a1->unk86 = 0;
+                var_a1->unkDC = (arg0->Param3 & 0x7F) << 8;
+                var_a1->unk8C = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
@@ -1690,16 +1690,16 @@ void Sound_Cmd_A1_unk(FSoundCommandParams* arg0)
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
             if ((mask & var_t0) && (var_a2->unk28 & arg0->Param2)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkD8 = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkD6) / v;
-                var_a2->unk86 = v;
+                var_a2->unkDE = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkDC) / v;
+                var_a2->unk8C = v;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
             if ((mask & var_t0) && (var_a2->unk3C == arg0->Param1)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkD8 = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkD6) / v;
-                var_a2->unk86 = v;
+                var_a2->unkDE = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkDC) / v;
+                var_a2->unk8C = v;
             }
         }
     }
@@ -1714,8 +1714,8 @@ void Sound_Cmd_A8_unk(FSoundCommandParams* arg0)
 
     for (i = 0, var_a1 = D_80035910; i < 12; ++i, ++var_a1, var_a3 *= 2) {
         if ((mask & var_a3) && !(var_a1->unk28 & 0x02000000)) {
-            var_a1->unkD6 = (arg0->Param1 & 0x7F) << 8;
-            var_a1->unk86 = 0;
+            var_a1->unkDC = (arg0->Param1 & 0x7F) << 8;
+            var_a1->unk8C = 0;
             var_a1->VoiceParams.VoiceParamFlags |= 3;
         }
     }
@@ -1735,9 +1735,9 @@ void Sound_Cmd_A9_unk(FSoundCommandParams* arg0)
             if (arg0->Param1 != 0) {
                 var_a1 = arg0->Param1;
             }
-            var_a2->unkD8 =
-                ((short)(((arg0->Param2 & 0x7F) << 8) - var_a2->unkD6) / var_a1);
-            var_a2->unk86 = var_a1;
+            var_a2->unkDE =
+                ((short)(((arg0->Param2 & 0x7F) << 8) - var_a2->unkDC) / var_a1);
+            var_a2->unk8C = var_a1;
         }
     }
 }
@@ -1779,7 +1779,7 @@ void Sound_Cmd_A3_unk(FSoundCommandParams* arg0)
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
             if ((mask & var_t0) && (var_a2->unk28 & arg0->Param2)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkD4 = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
+                var_a2->unkDA = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
                 var_a2->unk6E = v;
             }
         }
@@ -1787,7 +1787,7 @@ void Sound_Cmd_A3_unk(FSoundCommandParams* arg0)
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
             if ((mask & var_t0) && (var_a2->unk3C == arg0->Param1)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkD4 = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
+                var_a2->unkDA = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
                 var_a2->unk6E = v;
             }
         }
@@ -1824,7 +1824,7 @@ void Sound_Cmd_AB_unk(FSoundCommandParams* arg0)
             if (arg0->Param1 != 0) {
                 var_a1 = arg0->Param1;
             }
-            var_a2->unkD4 = (short)((((char)arg0->Param2) << 8) - var_a2->unk6C) / var_a1;
+            var_a2->unkDA = (short)((((char)arg0->Param2) << 8) - var_a2->unk6C) / var_a1;
             var_a2->unk6E = var_a1;
         }
     }
@@ -1841,7 +1841,7 @@ void Sound_Cmd_A4_unk(FSoundCommandParams* arg0)
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
             if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
                 var_a1->unk40 = ((char)arg0->Param3) << 8;
-                var_a1->unk80 = 0;
+                var_a1->unk86 = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 16;
             }
         }
@@ -1849,7 +1849,7 @@ void Sound_Cmd_A4_unk(FSoundCommandParams* arg0)
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
             if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
                 var_a1->unk40 = ((char)arg0->Param3) << 8;
-                var_a1->unk80 = 0;
+                var_a1->unk86 = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 16;
             }
         }
@@ -1869,7 +1869,7 @@ void Sound_Cmd_A5_unk(FSoundCommandParams* arg0)
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
                 var_a2->unk44 =
                     (short)((short)((((char)arg0->Param4) << 8) - var_a2->unk40) / v);
-                var_a2->unk80 = v;
+                var_a2->unk86 = v;
             }
         }
     } else {
@@ -1878,7 +1878,7 @@ void Sound_Cmd_A5_unk(FSoundCommandParams* arg0)
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
                 var_a2->unk44 =
                     (short)((short)((((char)arg0->Param4) << 8) - var_a2->unk40) / v);
-                var_a2->unk80 = v;
+                var_a2->unk86 = v;
             }
         }
     }
@@ -1891,7 +1891,7 @@ void Sound_Cmd_AC_unk(FSoundCommandParams* arg0)
     for (i = 12; i != 0; --i, ++var_a1) {
         if (!(var_a1->unk28 & 0x02000000)) {
             var_a1->unk40 = (char)arg0->Param1 << 8;
-            var_a1->unk80 = 0;
+            var_a1->unk86 = 0;
             var_a1->VoiceParams.VoiceParamFlags |= 0x10;
         }
     }
@@ -1913,7 +1913,7 @@ void Sound_Cmd_AD_unk(FSoundCommandParams* arg0)
             }
             var_a2->unk44 =
                 (short)((short)((((char)arg0->Param2) << 8) - var_a2->unk40) / var_a1);
-            var_a2->unk80 = var_a1;
+            var_a2->unk86 = var_a1;
         }
     }
 }
@@ -2146,9 +2146,9 @@ void UpdateCdVolume(void)
     *CD_VOL_R = v;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019154);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memcpy32);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800191D4);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memswp32);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001924C);
 
@@ -2178,9 +2178,36 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B060);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B094);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B0CC);
+void Sound_ClearVoiceFromSchedulerState(FSoundChannel*, int);
+INCLUDE_ASM(
+    "build/src/SLUS_010.40/nonmatchings/25AC", Sound_ClearVoiceFromSchedulerState);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B138);
+#define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
+#define SOUND_DEFAULT_DELAY_TIME (0x101) // 256 + 1
+
+#define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
+
+void SoundVM_A0_FinishChannel(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
+        g_pActiveMusicConfig->ActiveChannelMask &= ~in_VoiceFlags;
+        if (g_pActiveMusicConfig->ActiveChannelMask == 0) {
+            g_Music_LoopCounter = 0;
+            g_pActiveMusicConfig->MusicId = 0;
+            g_pActiveMusicConfig->StatusFlags = 0;
+        }
+        g_pActiveMusicConfig->ActiveNoteMask &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->KeyedMask &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->AllocatedVoiceMask &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->NoiseChannelFlags &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->ReverbChannelFlags &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->FmChannelFlags &= ~in_VoiceFlags;
+    } else {
+        Sound_ClearVoiceFromSchedulerState(in_pChannel, in_VoiceFlags);
+    }
+    in_pChannel->UpdateFlags = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B20C);
 
@@ -2248,7 +2275,10 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB50);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB98);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BBD0);
+void func_8001BBD0(FSoundChannel* arg0, int arg __attribute__((unused)))
+{
+    arg0->unk9A = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BBD8);
 

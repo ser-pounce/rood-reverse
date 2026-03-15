@@ -2320,9 +2320,32 @@ void SoundVM_FE0F_Return(FSoundChannel* in_pChannel, int in_VoiceFlags)
     in_pChannel->ProgramCounter = in_pChannel->ReturnProgramCounter;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B4EC);
+void SoundVM_A3_ChannelMasterVolume(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    in_pChannel->VolumeBalance = *in_pChannel->ProgramCounter++ << 8;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B514);
+void SoundVM_FE12_VolumeBalanceSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    u_short VolumeBalance;
+    u_short Length;
+    int Target;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->VolumeBalanceSlideLength = Length;
+    if (Length == 0) {
+        in_pChannel->VolumeBalanceSlideLength = 0x100;
+    }
+
+    Target = *in_pChannel->ProgramCounter++ << 8;
+
+    VolumeBalance = in_pChannel->VolumeBalance & 0x7F00;
+    in_pChannel->VolumeBalance = VolumeBalance;
+    Delta = Target - VolumeBalance;
+    in_pChannel->VolumeBalanceSlideStep = Delta / in_pChannel->VolumeBalanceSlideLength;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B598);
 

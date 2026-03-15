@@ -87,7 +87,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
 void func_80019154(FSoundChannel*, FSoundChannelConfig*, int);
-void func_80019134(void);
+void UpdateCdVolume(void);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -110,6 +110,7 @@ extern int D_80039B64;
 extern int D_80037848;
 extern short D_8003784C;
 extern int D_800378E0;
+extern short D_800378E2;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -1622,7 +1623,7 @@ void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
 {
     D_8003784C = 0;
     D_800378E0 = (u_short)arg0->Param1 << 0x10;
-    func_80019134();
+    UpdateCdVolume();
 }
 
 void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
@@ -2138,7 +2139,12 @@ void Sound_SetReverbMode(int in_ReverbMode)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018C30);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019134);
+void UpdateCdVolume(void)
+{
+    int v = D_800378E2;
+    *CD_VOL_L = v;
+    *CD_VOL_R = v;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019154);
 

@@ -2449,7 +2449,6 @@ void SoundVM_unused2(FSoundChannel* in_pChannel, int in_VoiceFlags)
 void SoundVM_unused2(
     FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
-    char* temp_a2;
     short v;
     int pc;
 
@@ -2457,13 +2456,21 @@ void SoundVM_unused2(
         in_pChannel->unk8C = 0x100;
     }
 
-    pc = (*(in_pChannel->ProgramCounter++)) << 8;
+    pc = *(in_pChannel->ProgramCounter++) << 8;
     v = in_pChannel->unkDC & 0xFF00;
     in_pChannel->unkDE = ((pc - v) / in_pChannel->unk8C);
     in_pChannel->unkDC = v;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B804);
+void SoundVM_AA_ChannelPan(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    // Convert signed pan (-64..+63) to unsigned 0..255, center at 0x40 and store as Q8.8
+    // pan value
+    in_pChannel->ChannelPan = ((*in_pChannel->ProgramCounter++ + 0x40) & 0xFF) << 8;
+    in_pChannel->ChannelPanSlideLength = 0;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B838);
 

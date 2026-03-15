@@ -1981,7 +1981,7 @@ void Sound_Cmd_90_unk(FSoundCommandParams* arg0)
 
 void Sound_Cmd_92_unk(FSoundCommandParams* arg0)
 {
-    g_pActiveMusicConfig->unk70 = arg0->Param1;
+    g_pActiveMusicConfig->JumpThresholdValue = arg0->Param1;
 }
 
 void Sound_Cmd_9B_unk(FSoundCommandParams* arg0 __attribute__((unused)))
@@ -2290,7 +2290,23 @@ void SoundVM_FE06_JumpRelativeOffset(
     in_pChannel->ProgramCounter += Offset;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B450);
+void SoundVM_FE07_JumpRelativeWithThreshold(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    short Threshold;
+    short Offset;
+
+    Threshold = *in_pChannel->ProgramCounter++;
+
+    if (g_pActiveMusicConfig->JumpThresholdValue >= Threshold) {
+        // Read signed 16-bit LE offset at current pc, jump relative to pc
+        Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
+        in_pChannel->ProgramCounter += Offset;
+        return;
+    }
+
+    // Skip over the 16-bit offset operand
+    in_pChannel->ProgramCounter += sizeof(short);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B4A8);
 

@@ -474,7 +474,7 @@ typedef struct {
     short ReverbDepthSlideLength;
     u_short TempoSlideLength;
     u_short MusicId;
-    u_short unk70;
+    u_short JumpThresholdValue;
     u_short unk72;
     int unk74;
     int unk78;

@@ -88,6 +88,9 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
 void func_80015BAC(void);
 void Sound_memcpy32(void*, void*, int);
 void UpdateCdVolume(void);
+int func_8001A1F4(int, int);
+int func_8001A22C(int, int);
+void func_8001B060(FSoundChannel*, FSoundInstrumentInfo*, int);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -133,6 +136,7 @@ extern FSoundChannelConfig g_PushedMusicConfig;
 extern u_int g_Music_LoopCounter;
 extern FSoundChannel D_800366F0;
 extern FSoundChannel D_800378E8[];
+extern FSoundInstrumentInfo g_InstrumentInfo[256];
 
 int InitSound(void)
 {
@@ -2500,14 +2504,32 @@ void SoundVM_A5_SetOctave(
     in_pChannel->Octave = *in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_A6_IncreaseOctave(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_A6_IncreaseOctave(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->Octave = (in_pChannel->Octave + 1) & 0xF;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8F8);
+void SoundVM_A7_DecreaseOctave(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->Octave = (in_pChannel->Octave - 1) & 0xF;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B910);
+void SoundVM_A1_LoadInstrument(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int pc = *in_pChannel->ProgramCounter++;
+
+    int var_s0 = in_pChannel->Type == 0
+                   ? func_8001A22C(g_pActiveMusicConfig->StatusFlags, pc)
+                   : func_8001A1F4(in_pChannel->unk38, pc);
+    func_8001B060(
+        in_pChannel, &g_InstrumentInfo[var_s0], g_InstrumentInfo[var_s0].StartAddr);
+    in_pChannel->InstrumentIndex = var_s0;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &= 0xE6FFEFF7;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B9B8);
 

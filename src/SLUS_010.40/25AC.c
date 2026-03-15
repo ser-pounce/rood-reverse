@@ -2216,7 +2216,8 @@ void SoundVM_FE19_unk(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     }
 }
 
-void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_FE00_SetTempo(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     g_pActiveMusicConfig->Tempo = in_pChannel->ProgramCounter[0] << 0x10;
     g_pActiveMusicConfig->Tempo |= in_pChannel->ProgramCounter[1] << 0x18;
@@ -2224,7 +2225,8 @@ void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_pActiveMusicConfig->TempoSlideLength = 0;
 }
 
-void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_FE01_SetTempoSlide(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     char* pc;
     int Dest;
@@ -2244,7 +2246,8 @@ void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_pActiveMusicConfig->Tempo = Prev;
 }
 
-void SoundVM_FE02_SetMasterReverbDepth(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_FE02_SetMasterReverbDepth(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     char* pc;
     u_int Depth;
@@ -2258,7 +2261,27 @@ void SoundVM_FE02_SetMasterReverbDepth(FSoundChannel* in_pChannel, u_int in_Voic
     g_pActiveMusicConfig->RevDepth = Depth;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B37C);
+void SoundVM_FE03_SetMasterReverbSlide(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int Prev;
+    int Dest;
+    int Delta;
+    char* pc;
+
+    g_pActiveMusicConfig->ReverbDepthSlideLength = *in_pChannel->ProgramCounter++;
+    if (g_pActiveMusicConfig->ReverbDepthSlideLength == 0) {
+        g_pActiveMusicConfig->ReverbDepthSlideLength = 0x100;
+    }
+    pc = in_pChannel->ProgramCounter;
+    Dest = (signed char)pc[1] << 0x14;
+    Dest |= (char)pc[0] << 0xC;
+    in_pChannel->ProgramCounter += 2;
+    Prev = g_pActiveMusicConfig->RevDepth & ~0xFFF;
+    g_pActiveMusicConfig->RevDepth = Prev;
+    Delta = Dest - Prev;
+    g_pActiveMusicConfig->unk5C = Delta / g_pActiveMusicConfig->ReverbDepthSlideLength;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B424);
 

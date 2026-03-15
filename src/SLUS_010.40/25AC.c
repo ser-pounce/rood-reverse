@@ -2472,7 +2472,26 @@ void SoundVM_AA_ChannelPan(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B838);
+void SoundVM_AB_ChannelPanSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    u_short Prev;
+    u_short Length;
+    u_short Dest;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->ChannelPanSlideLength = Length;
+    if (Length == 0) {
+        in_pChannel->ChannelPanSlideLength = 0x100;
+    }
+
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = ((Dest + 0x40) & 0xFF) << 8; // Center it
+    Prev = in_pChannel->ChannelPan & 0xFF00;
+    Delta = Dest - Prev;
+    in_pChannel->PanSlideStep = Delta / in_pChannel->ChannelPanSlideLength;
+    in_pChannel->ChannelPan = Prev;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8C4);
 

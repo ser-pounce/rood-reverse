@@ -2419,7 +2419,11 @@ void SoundVM_FE1B_unk(
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_01;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B70C);
+void SoundVM_FE0C_unk(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    g_pActiveMusicConfig->unk34 = *in_pChannel->ProgramCounter++;
+}
 
 static void func_8001B72C(void) { }
 

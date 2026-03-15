@@ -2500,7 +2500,10 @@ void SoundVM_A5_SetOctave(
     in_pChannel->Octave = *in_pChannel->ProgramCounter++;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8E0);
+void SoundVM_A6_IncreaseOctave(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    in_pChannel->Octave = (in_pChannel->Octave + 1) & 0xF;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B8F8);
 

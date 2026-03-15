@@ -124,6 +124,7 @@ SoundVM_unused2 = 0x8001B778;
 SoundVM_AA_ChannelPan = 0x8001B804;
 SoundVM_AB_ChannelPanSlide = 0x8001B838;
 SoundVM_A5_SetOctave = 0x8001B8C4;
+SoundVM_A6_IncreaseOctave = 0x8001B8E0;
 SoundVM_BB_SustainMode = 0x8001C5B0;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;

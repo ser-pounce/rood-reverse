@@ -2507,7 +2507,24 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C52C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C56C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C5B0);
+void SoundVM_BB_SustainMode(FSoundChannel* in_pChannel, int arg)
+{
+    u_short mode = *(in_pChannel->ProgramCounter++);
+    in_pChannel->VoiceParams.AdsrUpper &= ~((1 << 14) | (1 << 15));
+
+    switch (mode) {
+    case 3:
+        in_pChannel->VoiceParams.AdsrUpper |= 0x4000;
+        break;
+    case 5:
+        in_pChannel->VoiceParams.AdsrUpper |= 0x8000;
+        break;
+    case 7:
+        in_pChannel->VoiceParams.AdsrUpper |= 0xC000;
+        break;
+    }
+    in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C628);
 

@@ -354,7 +354,7 @@ typedef struct {
     u_short VolumeBalanceSlideLength;
     short unk86;
     u_short ChannelVolumeSlideLength;
-    u_short unk8A;
+    u_short KeyOnVolumeSlideLength;
     short unk8C;
     u_short ChannelPan;
     u_short ChannelPanSlideLength;

@@ -2347,9 +2347,36 @@ void SoundVM_FE12_VolumeBalanceSlide(FSoundChannel* in_pChannel, int in_VoiceFla
     in_pChannel->VolumeBalanceSlideStep = Delta / in_pChannel->VolumeBalanceSlideLength;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B598);
+void SoundVM_A8_ChannelVolume(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    in_pChannel->Volume = (signed char)*in_pChannel->ProgramCounter++ << 0x17;
+    in_pChannel->ChannelVolumeSlideLength = 0;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+    in_pChannel->KeyOnVolumeSlideLength = 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B5C8);
+void SoundVM_A9_ChannelVolumeSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    int Prev;
+    int Dest;
+    u_short Length;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->ChannelVolumeSlideLength = Length;
+    if (Length == 0) {
+        in_pChannel->ChannelVolumeSlideLength = 0x100;
+    }
+    Dest = ((signed char)*in_pChannel->ProgramCounter++ << 0x17);
+
+    Prev = in_pChannel->Volume & 0xFFFF0000;
+    in_pChannel->Volume = Prev;
+
+    Delta = Dest - Prev;
+    in_pChannel->VolumeSlideStep = Delta / in_pChannel->ChannelVolumeSlideLength;
+
+    in_pChannel->KeyOnVolumeSlideLength = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B654);
 

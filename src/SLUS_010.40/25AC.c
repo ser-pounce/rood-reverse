@@ -2209,14 +2209,20 @@ void SoundVM_A0_FinishChannel(FSoundChannel* in_pChannel, int in_VoiceFlags)
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 
-void func_8001B20C(FSoundChannel* in_pChannel, u_int in_VoiceFlags) 
+void SoundVM_FE19_unk(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (g_pActiveMusicConfig->StatusFlags & 0x10000) {
         SoundVM_A0_FinishChannel(in_pChannel, in_VoiceFlags);
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B248);
+void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    g_pActiveMusicConfig->Tempo = in_pChannel->ProgramCounter[0] << 0x10;
+    g_pActiveMusicConfig->Tempo |= in_pChannel->ProgramCounter[1] << 0x18;
+    in_pChannel->ProgramCounter += sizeof(short);
+    g_pActiveMusicConfig->TempoSlideLength = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B294);
 

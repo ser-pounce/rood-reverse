@@ -452,7 +452,7 @@ typedef struct {
     u_int ActiveNoteMask;
     int PendingKeyOffMask;
     u_int unk1C;
-    int unk20;
+    int Tempo;
     int unk24;
     u_int unk28;
     u_int unk2C;
@@ -472,7 +472,7 @@ typedef struct {
     int unk64;
     short unk68;
     short unk6A;
-    short unk6C;
+    short TempoSlideLength;
     u_short MusicId;
     u_short unk70;
     u_short unk72;

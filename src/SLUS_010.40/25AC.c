@@ -2290,7 +2290,8 @@ void SoundVM_FE06_JumpRelativeOffset(
     in_pChannel->ProgramCounter += Offset;
 }
 
-void SoundVM_FE07_JumpRelativeWithThreshold(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE07_JumpRelativeWithThreshold(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     short Threshold;
     short Offset;
@@ -2308,25 +2309,29 @@ void SoundVM_FE07_JumpRelativeWithThreshold(FSoundChannel* in_pChannel, int in_V
     in_pChannel->ProgramCounter += sizeof(short);
 }
 
-void SoundVM_FE0E_CallRelativeOffset(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE0E_CallRelativeOffset(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     short Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
     in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + sizeof(short);
     in_pChannel->ProgramCounter += Offset;
 }
 
-void SoundVM_FE0F_Return(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE0F_Return(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->ProgramCounter = in_pChannel->ReturnProgramCounter;
 }
 
-void SoundVM_A3_ChannelMasterVolume(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_A3_ChannelMasterVolume(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->VolumeBalance = *in_pChannel->ProgramCounter++ << 8;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_FE12_VolumeBalanceSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE12_VolumeBalanceSlide(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     u_short VolumeBalance;
     u_short Length;
@@ -2347,7 +2352,8 @@ void SoundVM_FE12_VolumeBalanceSlide(FSoundChannel* in_pChannel, int in_VoiceFla
     in_pChannel->VolumeBalanceSlideStep = Delta / in_pChannel->VolumeBalanceSlideLength;
 }
 
-void SoundVM_A8_ChannelVolume(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_A8_ChannelVolume(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->Volume = (signed char)*in_pChannel->ProgramCounter++ << 0x17;
     in_pChannel->ChannelVolumeSlideLength = 0;
@@ -2355,7 +2361,8 @@ void SoundVM_A8_ChannelVolume(FSoundChannel* in_pChannel, int in_VoiceFlags)
     in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
-void SoundVM_A9_ChannelVolumeSlide(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_A9_ChannelVolumeSlide(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int Prev;
     int Dest;
@@ -2378,7 +2385,8 @@ void SoundVM_A9_ChannelVolumeSlide(FSoundChannel* in_pChannel, u_int in_VoiceFla
     in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
-void SoundVM_FE19_unk(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE19_unk(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     u_short pPc1;
     int Dest;
@@ -2399,12 +2407,17 @@ void SoundVM_FE19_unk(FSoundChannel* in_pChannel, int in_VoiceFlags)
     in_pChannel->unk60 = Delta / in_pChannel->KeyOnVolumeSlideLength;
 }
 
-void SoundVM_FE1A_unk(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE1A_unk(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_01;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B6F8);
+void SoundVM_FE1B_unk(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_01;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B70C);
 

@@ -381,9 +381,9 @@ typedef struct {
     u_short TremeloDepth;
     u_short TremeloDepthSlideLength;
     short TremeloDepthSlideStep;
-    u_short unkC0;
+    u_short AutoPanRatePhase;
     u_short AutoPanRateCurrent;
-    u_short unkC4;
+    u_short AutoPanType;
     u_short AutoPanDepth;
     u_short AutoPanDepthSlideLength;
     short AutoPanDepthSlideStep;

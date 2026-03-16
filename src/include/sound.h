@@ -361,9 +361,9 @@ typedef struct {
     u_short PitchSlideStepsCurrent;
     u_short Octave;
     short PitchBendSlideLength;
-    u_short unk98;
-    short unk9A;
-    u_short unk9C;
+    u_short KeyStored;
+    short PortamentoSteps;
+    u_short SfxMask;
     short unk9E;
     u_short VibratoDelayCurrent;
     u_short unkA2;
@@ -402,7 +402,7 @@ typedef struct {
     short unkE4;
     short Key;
     short PitchBendSlideTranspose;
-    short unkEA;
+    short TransposeStored;
     short VibratoPitch;
     short TremeloVolume;
     short AutoPanVolume;

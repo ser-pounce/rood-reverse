@@ -2604,11 +2604,23 @@ void SoundVM_A4_PitchBendSlide(
     in_pChannel->PitchBendSlideTranspose = (signed char)*in_pChannel->ProgramCounter++;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB98);
-
-void func_8001BBD0(FSoundChannel* arg0, int arg __attribute__((unused)))
+void SoundVM_DA_EnablePortamento(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
-    arg0->unk9A = 0;
+    int Steps = *in_pChannel->ProgramCounter++;
+    in_pChannel->PortamentoSteps = Steps;
+    if (Steps == 0) {
+        in_pChannel->PortamentoSteps = SOUND_DEFAULT_PORTAMENTO_STEPS;
+    }
+    in_pChannel->TransposeStored = 0;
+    in_pChannel->KeyStored = 0;
+    in_pChannel->SfxMask = 1;
+}
+
+void SoundVM_DB_DisablePortamento(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->PortamentoSteps = 0;
 }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BBD8);

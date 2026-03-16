@@ -3330,7 +3330,16 @@ void SoundVM_D3_ToggleFmDelay(
     in_pChannel->FmTimer = SOUND_DEFAULT_DELAY_TIME;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CB14);
+void SoundVM_CB_DisableVoiceModes(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    in_pChannel->UpdateFlags &=
+        ~(SOUND_UPDATE_SIDE_CHAIN_PITCH | SOUND_UPDATE_SIDE_CHAIN_VOL
+            | SOUND_UPDATE_PAN_LFO | SOUND_UPDATE_TREMOLO | SOUND_UPDATE_VIBRATO);
+    SoundVM_C5_DisableNoiseVoices(in_pChannel, in_VoiceFlags);
+    SoundVM_C7_DisableFmVoices(in_pChannel, in_VoiceFlags);
+    SoundVM_C3_DisableReverbVoices(in_pChannel, in_VoiceFlags);
+    in_pChannel->SfxMask &= ~(SOUND_SFX_LEGATO | SOUND_SFX_FULL_LENGTH);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CB7C);
 

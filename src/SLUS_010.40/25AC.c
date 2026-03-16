@@ -2777,7 +2777,7 @@ void SoundVM_B8_Tremelo(
     int Delay;
     int Rate;
 
-    in_pChannel->UpdateFlags |= 2;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_TREMOLO;
     Delay = *in_pChannel->ProgramCounter++;
     if (in_pChannel->Type != 0) {
         in_pChannel->TremeloDelay = 0;
@@ -2801,7 +2801,11 @@ void SoundVM_B8_Tremelo(
     in_pChannel->unkB6 = 1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BF34);
+void SoundVM_B9_TremeloDepth(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->TremeloDepth = (*in_pChannel->ProgramCounter++ & 0x7F) << 8;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BF58);
 

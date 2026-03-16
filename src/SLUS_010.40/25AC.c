@@ -3144,7 +3144,8 @@ void SoundVM_C9_LoopN(
         (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
 }
 
-void SoundVM_FE08_JumpOnNthLoopPass(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_FE08_JumpOnNthLoopPass(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     u_short N;
     short JumpOffset;
@@ -3171,7 +3172,28 @@ void SoundVM_FE08_JumpOnNthLoopPass(FSoundChannel* in_pChannel, u_int in_VoiceFl
     in_pChannel->ProgramCounter += JumpOffset;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C7EC);
+void SoundVM_FE09_JumpAndPopStackOnNthLoopPass(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short N;
+    short JumpOffset;
+
+    N = *in_pChannel->ProgramCounter++;
+    if (N == 0) {
+        N = 0x100;
+    }
+
+    if ((in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] + 1) != N) {
+        in_pChannel->ProgramCounter += sizeof(u_short);
+        return;
+    }
+
+    JumpOffset = READ_16LE_PC(in_pChannel->ProgramCounter);
+
+    in_pChannel->ProgramCounter += JumpOffset;
+    in_pChannel->LoopStackTop =
+        (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C868);
 

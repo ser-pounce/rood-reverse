@@ -3269,9 +3269,29 @@ void SoundVM_FE16_unk(
     g_pActiveMusicConfig->TimerTopCurrent |= *in_pChannel->ProgramCounter++ << 8;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C9F0);
+void SoundVM_B0_DecayRateAndSustainLevel(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    SoundVM_AE_DecayRate(in_pChannel, in_VoiceFlags);
+    SoundVM_AF_SustainLevel(in_pChannel, in_VoiceFlags);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CA2C);
+void SoundVM_CE_EnableNoiseAndDelayToggle(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    u_short Timer;
+    u_short Value;
+
+    Value = *in_pChannel->ProgramCounter++;
+    if (Value != 0) {
+        Timer = Value + 1;
+    } else {
+        Timer = SOUND_DEFAULT_DELAY_TIME;
+    }
+
+    in_pChannel->NoiseTimer = Timer;
+
+    SoundVM_C4_EnableNoiseVoices(in_pChannel, in_VoiceFlags);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CA70);
 

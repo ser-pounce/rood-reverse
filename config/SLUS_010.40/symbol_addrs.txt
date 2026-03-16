@@ -129,6 +129,7 @@ SoundVM_A6_IncreaseOctave = 0x8001B8E0;
 SoundVM_A7_DecreaseOctave = 0x8001B8F8;
 SoundVM_A1_LoadInstrument = 0x8001B910;
 SoundVM_FE0A_ClearInstrument = 0x8001B9B8;
+SoundVM_FE14_ChangePatch = 0x8001BA24;
 SoundVM_BB_SustainMode = 0x8001C5B0;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;

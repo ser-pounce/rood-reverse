@@ -2545,7 +2545,27 @@ void SoundVM_FE0A_ClearInstrument(
             | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BA24);
+void SoundVM_FE14_ChangePatch(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    u_short* pPatchTable;
+    u_char PatchIndex;
+
+    PatchIndex = *in_pChannel->ProgramCounter++;
+    if (g_pActiveMusicConfig->SequencePatchTable != NULL) {
+        pPatchTable = (u_short*)g_pActiveMusicConfig->SequencePatchTable;
+        if (pPatchTable[PatchIndex] > 0x8000) {
+            in_pChannel->VoiceParams.VolumeScale = 0;
+            in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_12;
+            return;
+        }
+        in_pChannel->Keymap = (char*)((int)pPatchTable + pPatchTable[PatchIndex] + 0x20);
+        in_pChannel->UpdateFlags &=
+            ~(SOUND_UPDATE_DRUM_MODE | SOUND_UPDATE_UNKNOWN_12 | SOUND_UPDATE_UNKNOWN_24
+                | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+        in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_12;
+        in_pChannel->Key = 0xFF;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BAB8);
 

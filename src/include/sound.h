@@ -322,7 +322,7 @@ typedef struct {
     char* ProgramCounter;
     char* unk4[(4)];
     char* ReturnProgramCounter;
-    char* unk18;
+    char* Keymap;
     short* VibratoWave;
     short* TremeloWave;
     short* AutoPanWave;
@@ -400,7 +400,7 @@ typedef struct {
     short PanSlideStep;
     short unkE2;
     short unkE4;
-    short unkE6;
+    short Key;
     short unkE8;
     short unkEA;
     short VibratoPitch;
@@ -459,7 +459,7 @@ typedef struct {
     int unk30;
     int unk34;
     int unk38;
-    FAkaoSequence* unk3C;
+    FAkaoSequence* SequencePatchTable;
     u_short* unk40;
     FSoundKeymapEntry8* unk44;
     int SomeIndexRelatedToSpuVoiceInfo;

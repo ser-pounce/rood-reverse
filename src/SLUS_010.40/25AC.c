@@ -2961,11 +2961,23 @@ void SoundVM_CC_EnableLegato(
     in_pChannel->SfxMask = SOUND_SFX_LEGATO;
 }
 
-void func_8001C378(void) { }
+void SoundVM_CD_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
+    u_int in_VoiceFlags __attribute__((unused)))
+{
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C380);
+void SoundVM_D0_EnableSustainedNote(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    if (in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC) {
+        in_pChannel->SfxMask = SOUND_SFX_FULL_LENGTH;
+    }
+}
 
-void func_8001C39C(void) { }
+void SoundVM_D1_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
+    u_int in_VoiceFlags __attribute__((unused)))
+{
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C3A4);
 

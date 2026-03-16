@@ -2545,7 +2545,8 @@ void SoundVM_FE0A_ClearInstrument(
             | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
 }
 
-void SoundVM_FE14_ChangePatch(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_FE14_ChangePatch(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     u_short* pPatchTable;
     u_char PatchIndex;
@@ -2567,7 +2568,8 @@ void SoundVM_FE14_ChangePatch(FSoundChannel* in_pChannel, int in_VoiceFlags)
     }
 }
 
-void SoundVM_B3_ResetAdsr(FSoundChannel* in_pChannel, int in_VoiceFlags)
+void SoundVM_B3_ResetAdsr(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     FSoundInstrumentInfo* InstrumentInfo =
         &g_InstrumentInfo[in_pChannel->InstrumentIndex];
@@ -2578,7 +2580,11 @@ void SoundVM_B3_ResetAdsr(FSoundChannel* in_pChannel, int in_VoiceFlags)
         ~(SOUND_UPDATE_UNKNOWN_24 | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB00);
+void SoundVM_C0_ChannelTranspose_Absolute(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->Transpose = (signed char)*in_pChannel->ProgramCounter++;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB24);
 

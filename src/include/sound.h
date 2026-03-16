@@ -398,7 +398,7 @@ typedef struct {
     short unkDC;
     short unkDE;
     short PanSlideStep;
-    short unkE2;
+    short Transpose;
     short unkE4;
     short Key;
     short unkE8;

@@ -2999,7 +2999,16 @@ void SoundVM_AC_NoiseClockFrequency(
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C440);
+void SoundVM_AD_AttackRate(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short AttackRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= AttackRate << SOUND_ADSR_ATTACK_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |=
+        (VOICE_PARAM_ADSR_AMODE | VOICE_PARAM_ADSR_AR);
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_24;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C484);
 

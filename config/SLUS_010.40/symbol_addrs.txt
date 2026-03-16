@@ -174,6 +174,7 @@ SoundVM_FE10_unk = 0x8001C66C;
 SoundVM_FE11_unk = 0x8001C68C;
 SoundVM_C8_LoopPoint = 0x8001C69C;
 SoundVM_C9_LoopN = 0x8001C6EC;
+SoundVM_FE08_JumpOnNthLoopPass = 0x8001C780;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;
 Sound_Cutscene_InitVoice = 0x8001D0E4;

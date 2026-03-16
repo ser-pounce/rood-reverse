@@ -3144,7 +3144,32 @@ void SoundVM_C9_LoopN(
         (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C780);
+void SoundVM_FE08_JumpOnNthLoopPass(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    u_short N;
+    short JumpOffset;
+
+    // pLoopCount   pOffset
+    // 0x01         0x02          0x03         0x04
+
+    N = *in_pChannel->ProgramCounter++;
+    if (N == 0) {
+        N = 0x100;
+    }
+
+    // If current loop's iteration + 1 != N
+    if ((in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] + 1) != N) {
+        // Jumps to next program instruction
+        in_pChannel->ProgramCounter = in_pChannel->ProgramCounter + sizeof(u_short);
+        return;
+    }
+
+    // Read the relative offset
+    JumpOffset = READ_16LE_PC(in_pChannel->ProgramCounter);
+
+    // Jump from pOffset to the relative offset
+    in_pChannel->ProgramCounter += JumpOffset;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C7EC);
 

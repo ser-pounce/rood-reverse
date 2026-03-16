@@ -2887,7 +2887,16 @@ void SoundVM_BE_DisableAutoPan(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C108);
+void SoundVM_C4_EnableNoiseVoices(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
+        g_pActiveMusicConfig->NoiseChannelFlags |= in_VoiceFlags;
+    } else {
+        g_Sound_VoiceSchedulerState.NoiseVoiceFlags |= in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C168);
 

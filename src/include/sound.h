@@ -360,7 +360,7 @@ typedef struct {
     u_short ChannelPanSlideLength;
     u_short PitchSlideStepsCurrent;
     u_short Octave;
-    short unk96;
+    short PitchBendSlideLength;
     u_short unk98;
     short unk9A;
     u_short unk9C;
@@ -401,7 +401,7 @@ typedef struct {
     short Transpose;
     short unkE4;
     short Key;
-    short unkE8;
+    short PitchBendSlideTranspose;
     short unkEA;
     short VibratoPitch;
     short TremeloVolume;

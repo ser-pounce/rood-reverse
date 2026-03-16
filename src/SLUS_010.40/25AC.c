@@ -2592,7 +2592,17 @@ void SoundVM_C1_ChannelTranspose_Relative(
     in_pChannel->Transpose += (signed char)*in_pChannel->ProgramCounter++;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB50);
+void SoundVM_A4_PitchBendSlide(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->PitchBendSlideLength = Length;
+    if (Length == 0) {
+        in_pChannel->PitchBendSlideLength = 0x100;
+    }
+
+    in_pChannel->PitchBendSlideTranspose = (signed char)*in_pChannel->ProgramCounter++;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB98);
 

@@ -2834,7 +2834,8 @@ void SoundVM_BA_DisableTremelo(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_BC_AutoPan(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_BC_AutoPan(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int Rate;
 
@@ -2851,7 +2852,11 @@ void SoundVM_BC_AutoPan(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     in_pChannel->AutoPanRateCurrent = 1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C058);
+void SoundVM_BD_AutoPanDepth(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->AutoPanDepth = *in_pChannel->ProgramCounter++ << 7;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C078);
 

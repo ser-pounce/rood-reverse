@@ -3195,9 +3195,26 @@ void SoundVM_FE09_JumpAndPopStackOnNthLoopPass(
         (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C868);
+void SoundVM_CA_LoopInf(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] += 1;
+    in_pChannel->ProgramCounter = in_pChannel->LoopStartPc[in_pChannel->LoopStackTop];
+    in_pChannel->OpcodeStepCounter =
+        in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop];
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C8BC);
+void SoundVM_A2_OverwriteNextNoteLength(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Length;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->LengthFixed = 0;
+    in_pChannel->Length2 = Length;
+    in_pChannel->Length1 = Length;
+    in_pChannel->LengthStored = Length;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C8E4);
 

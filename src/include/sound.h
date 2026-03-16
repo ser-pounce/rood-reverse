@@ -391,8 +391,8 @@ typedef struct {
     u_short FmTimer;
     u_short LoopStackTop;
     u_short unkD2;
-    short unkD4;
-    u_short unkD6;
+    short LengthStored;
+    u_short LengthFixed;
     short VolumeBalanceSlideStep;
     short unkDA;
     short unkDC;

@@ -3010,9 +3010,23 @@ void SoundVM_AD_AttackRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_24;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C484);
+void SoundVM_AE_DecayRate(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short DecayRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_DECAY_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= DecayRate << SOUND_ADSR_DECAY_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_DR;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C4B8);
+void SoundVM_AF_SustainLevel(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short SustainLevel = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUS_LEVEL_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= SustainLevel;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C4E8);
 

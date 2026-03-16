@@ -2586,7 +2586,11 @@ void SoundVM_C0_ChannelTranspose_Absolute(
     in_pChannel->Transpose = (signed char)*in_pChannel->ProgramCounter++;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB24);
+void SoundVM_C1_ChannelTranspose_Relative(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->Transpose += (signed char)*in_pChannel->ProgramCounter++;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB50);
 

@@ -2743,7 +2743,25 @@ void SoundVM_B5_VibratoDepth(
     in_pChannel->VibratoBase = VibratoProduct >> 7;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BDF4);
+void SoundVM_DD_VibratoDepthSlide(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Length;
+    u_short Prev;
+    u_short Dest;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    if (Length == 0) {
+        Length = 0x100;
+    }
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = Dest << 8;
+    Prev = in_pChannel->VibratoDepth;
+    Delta = Dest - Prev;
+    in_pChannel->VibratoDepthSlideStep = Delta / Length;
+    in_pChannel->VibratoDepthSlideLength = Length;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BE60);
 

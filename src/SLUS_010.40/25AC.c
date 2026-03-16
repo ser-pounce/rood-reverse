@@ -3246,9 +3246,21 @@ void SoundVM_FE04_ClearKeymapTable(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C964);
+void SoundVM_FE05_MuteVoice(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_DRUM_MODE;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C97C);
+void SoundVM_FE15_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    g_pActiveMusicConfig->TimerLower = *in_pChannel->ProgramCounter++;
+    g_pActiveMusicConfig->TimerUpper = *in_pChannel->ProgramCounter++;
+    g_pActiveMusicConfig->TimerLowerCurrent = 0;
+    g_pActiveMusicConfig->TimerUpperCurrent = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C9B4);
 

@@ -136,6 +136,7 @@ SoundVM_C1_ChannelTranspose_Relative = 0x8001BB24;
 SoundVM_A4_PitchBendSlide = 0x8001BB50;
 SoundVM_DA_EnablePortamento = 0x8001BB98;
 SoundVM_DB_DisablePortamento = 0x8001BBD0;
+SoundVM_D8_ChannelFineTune_Absolute = 0x8001BBD8;
 SoundVM_BB_SustainMode = 0x8001C5B0;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;

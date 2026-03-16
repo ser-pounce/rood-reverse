@@ -2623,7 +2623,25 @@ void SoundVM_DB_DisablePortamento(
     in_pChannel->PortamentoSteps = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BBD8);
+void SoundVM_D8_ChannelFineTune_Absolute(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int FinePitchDelta;
+    u_int ScaledFineTune;
+
+    in_pChannel->FineTune = (signed char)*in_pChannel->ProgramCounter++;
+    ScaledFineTune = in_pChannel->PitchBase * (char)in_pChannel->FineTune;
+
+    if (in_pChannel->FineTune < 0) {
+        FinePitchDelta = (ScaledFineTune >> 8) - in_pChannel->PitchBase;
+    } else {
+        FinePitchDelta = ScaledFineTune >> 7;
+    }
+
+    in_pChannel->FinePitchDelta = FinePitchDelta;
+
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BC38);
 

@@ -337,7 +337,7 @@ typedef struct {
     int Volume;
     int VolumeSlideStep;
     int PitchSlideStep;
-    int unk54;
+    int FinePitchDelta;
     u_int unk58;
     int unk5C;
     int unk60;
@@ -399,7 +399,7 @@ typedef struct {
     short unkDE;
     short PanSlideStep;
     short Transpose;
-    short unkE4;
+    short FineTune;
     short Key;
     short PitchBendSlideTranspose;
     short TransposeStored;

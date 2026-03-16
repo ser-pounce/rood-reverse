@@ -2979,7 +2979,25 @@ void SoundVM_D1_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
 {
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C3A4);
+void SoundVM_AC_NoiseClockFrequency(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    int Frequency = *in_pChannel->ProgramCounter++;
+    if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
+        if (Frequency & 0xC0) {
+            g_pActiveMusicConfig->NoiseClock =
+                (g_pActiveMusicConfig->NoiseClock + (Frequency & 0x3F)) & 0x3F;
+        } else {
+            g_pActiveMusicConfig->NoiseClock = Frequency;
+        }
+    } else if (Frequency & 0xC0) {
+        g_Sound_VoiceSchedulerState.NoiseClock =
+            (g_Sound_VoiceSchedulerState.NoiseClock + (Frequency & 0x3F)) & 0x3F;
+    } else {
+        g_Sound_VoiceSchedulerState.NoiseClock = Frequency;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C440);
 

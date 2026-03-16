@@ -475,7 +475,7 @@ typedef struct {
     u_short TempoSlideLength;
     u_short MusicId;
     u_short JumpThresholdValue;
-    u_short unk72;
+    u_short NoiseClock;
     int unk74;
     int unk78;
     int unk7C;

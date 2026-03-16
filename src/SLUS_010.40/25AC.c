@@ -2567,7 +2567,16 @@ void SoundVM_FE14_ChangePatch(FSoundChannel* in_pChannel, int in_VoiceFlags)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BAB8);
+void SoundVM_B3_ResetAdsr(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    FSoundInstrumentInfo* InstrumentInfo =
+        &g_InstrumentInfo[in_pChannel->InstrumentIndex];
+    in_pChannel->VoiceParams.AdsrLower = InstrumentInfo->AdsrLower;
+    in_pChannel->VoiceParams.AdsrUpper = InstrumentInfo->AdsrUpper;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_FULL;
+    in_pChannel->UpdateFlags &=
+        ~(SOUND_UPDATE_UNKNOWN_24 | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BB00);
 

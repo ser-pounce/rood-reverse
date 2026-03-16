@@ -3216,7 +3216,24 @@ void SoundVM_A2_OverwriteNextNoteLength(
     in_pChannel->LengthStored = Length;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C8E4);
+// Set the duration for all the upcoming notes (same as A2 except it doesn't apply only to
+// the next note)
+void SoundVM_DC_FixNoteLength(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    int NoteLength;
+
+    NoteLength = *(signed char*)in_pChannel->ProgramCounter++;
+    if (NoteLength != 0) {
+        NoteLength += in_pChannel->LengthStored;
+        if (NoteLength <= 0) {
+            NoteLength = 1;
+        } else if (NoteLength >= 256) {
+            NoteLength = 255;
+        }
+    }
+    in_pChannel->LengthFixed = NoteLength;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C92C);
 

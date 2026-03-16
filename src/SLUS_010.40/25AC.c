@@ -3095,9 +3095,17 @@ void SoundVM_BF_ReleaseMode(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_RMODE;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C66C);
+void SoundVM_FE10_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = *in_pChannel->ProgramCounter++;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C68C);
+void SoundVM_FE11_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C69C);
 

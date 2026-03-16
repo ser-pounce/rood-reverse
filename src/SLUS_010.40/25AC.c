@@ -2710,7 +2710,38 @@ void SoundVM_B4_Vibrato(
     in_pChannel->unkA4 = 1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BD94);
+void SoundVM_B5_VibratoDepth(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int PitchBase; // Base pitch around which the vibrato will oscillate
+    u_int DepthAmount; // This is just the magnitude part of the vibrato depth parameter,
+                       // 0-127 depth scalar
+    u_int VibratoProduct; // Intermediate scaled value
+
+    PitchBase = in_pChannel->PitchBase;
+
+    // Read vibrato depth parameter from the sequence.
+    // Stored in the high byte so bit 15 can act as a mode flag.
+    in_pChannel->VibratoDepth = *in_pChannel->ProgramCounter++ << 8;
+
+    // Extract the depth magnitude (bits 8–14)
+    DepthAmount = (in_pChannel->VibratoDepth & 0x7F00) >> 8;
+    if (!(in_pChannel->VibratoDepth & VIBRATO_FLAG_ABSOLUTE)) {
+        // Relative mode:
+        // Vibrato depth is scaled down relative to pitch so higher notes
+        // don’t produce excessively wide vibrato.
+        // (PitchBase * 15) >> 8 ≈ PitchBase * 0.0586
+        VibratoProduct = DepthAmount * ((PitchBase * 15) >> 8);
+    } else {
+        // Absolute mode:
+        // Vibrato depth is directly proportional to pitch.
+        VibratoProduct = DepthAmount * PitchBase;
+    }
+
+    // Final vibrato amplitude in pitch units.
+    // The >> 7 normalizes the multiplication into a usable range.
+    in_pChannel->VibratoBase = VibratoProduct >> 7;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BDF4);
 

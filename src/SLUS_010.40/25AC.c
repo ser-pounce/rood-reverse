@@ -3400,7 +3400,11 @@ void SoundVM_FE0B_unk(
     in_pChannel->ProgramCounter += 4;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CC84);
+void SoundVM_E0_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_20;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CC98);
 

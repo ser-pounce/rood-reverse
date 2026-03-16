@@ -90,7 +90,7 @@ void Sound_memcpy32(void*, void*, int);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, int);
-void func_8001B060(FSoundChannel*, FSoundInstrumentInfo*, int);
+void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -2178,7 +2178,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A64C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A8D8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B060);
+INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_CopyInstrumentInfoToChannel);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B094);
 
@@ -2524,14 +2524,26 @@ void SoundVM_A1_LoadInstrument(
     int var_s0 = in_pChannel->Type == 0
                    ? func_8001A22C(g_pActiveMusicConfig->StatusFlags, pc)
                    : func_8001A1F4(in_pChannel->unk38, pc);
-    func_8001B060(
+    Sound_CopyInstrumentInfoToChannel(
         in_pChannel, &g_InstrumentInfo[var_s0], g_InstrumentInfo[var_s0].StartAddr);
     in_pChannel->InstrumentIndex = var_s0;
     in_pChannel->VoiceParams.VolumeScale = 0;
     in_pChannel->UpdateFlags &= 0xE6FFEFF7;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B9B8);
+void SoundVM_FE0A_ClearInstrument(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Index;
+
+    Index = *in_pChannel->ProgramCounter++;
+    Sound_CopyInstrumentInfoToChannel(in_pChannel, &g_InstrumentInfo[Index], 0x1010);
+    in_pChannel->InstrumentIndex = Index;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &=
+        ~(SOUND_UPDATE_DRUM_MODE | SOUND_UPDATE_UNKNOWN_12 | SOUND_UPDATE_UNKNOWN_24
+            | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BA24);
 

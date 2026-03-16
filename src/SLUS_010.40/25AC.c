@@ -2910,7 +2910,15 @@ void SoundVM_C5_DisableNoiseVoices(
     in_pChannel->NoiseTimer = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C1D0);
+void SoundVM_C6_EnableFmVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
+        g_pActiveMusicConfig->FmChannelFlags |= in_VoiceFlags;
+    } else if (in_pChannel->UpdateFlags & SOUND_UPDATE_UNKNOWN_16) {
+        g_Sound_VoiceSchedulerState.FmVoiceFlags |= in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C244);
 

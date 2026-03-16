@@ -166,6 +166,7 @@ SoundVM_AD_AttackRate = 0x8001C440;
 SoundVM_AE_DecayRate = 0x8001C484;
 SoundVM_AF_SustainLevel = 0x8001C4B8;
 SoundVM_B1_SustainRate = 0x8001C4E8;
+SoundVM_B2_ReleaseRate = 0x8001C52C;
 SoundVM_BB_SustainMode = 0x8001C5B0;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;

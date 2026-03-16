@@ -3039,7 +3039,16 @@ void SoundVM_B1_SustainRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_27;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C52C);
+void SoundVM_B2_ReleaseRate(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short ReleaseRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_RELEASE_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrUpper |= ReleaseRate << SOUND_ADSR_RELEASE_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |=
+        (VOICE_PARAM_ADSR_RR | VOICE_PARAM_ADSR_RMODE);
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_28;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C56C);
 

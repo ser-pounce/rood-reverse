@@ -3113,10 +3113,36 @@ void SoundVM_C8_LoopPoint(
     in_pChannel->LoopStackTop = (in_pChannel->LoopStackTop + 1) & 3;
     in_pChannel->LoopStartPc[in_pChannel->LoopStackTop] = in_pChannel->ProgramCounter;
     in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] = 0;
-    in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop] = in_pChannel->unk70;
+    in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop] =
+        in_pChannel->OpcodeStepCounter;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C6EC);
+void SoundVM_C9_LoopN(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short NewCount;
+    u_short TopIndex;
+    u_short DesiredLoopCount;
+
+    DesiredLoopCount = *in_pChannel->ProgramCounter++;
+    if (DesiredLoopCount == 0) {
+        DesiredLoopCount = 0x100;
+    }
+
+    TopIndex = in_pChannel->LoopStackTop;
+    NewCount = in_pChannel->LoopIterationCount[TopIndex] + 1;
+    in_pChannel->LoopIterationCount[TopIndex] = NewCount;
+
+    if (NewCount != DesiredLoopCount) {
+        in_pChannel->ProgramCounter = in_pChannel->LoopStartPc[in_pChannel->LoopStackTop];
+        in_pChannel->OpcodeStepCounter =
+            in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop];
+        return;
+    }
+
+    in_pChannel->LoopStackTop =
+        (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C780);
 

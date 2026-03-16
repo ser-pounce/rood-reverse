@@ -347,7 +347,7 @@ typedef struct {
     u_short InstrumentIndex;
     u_short unk6C;
     short unk6E;
-    u_short unk70;
+    u_short OpcodeStepCounter;
     u_short LoopIterationCount[(4)];
     short LoopStepCounterSnapshot[(4)];
     u_short VolumeBalance;

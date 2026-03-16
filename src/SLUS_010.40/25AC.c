@@ -3262,7 +3262,12 @@ void SoundVM_FE15_unk(
     g_pActiveMusicConfig->TimerUpperCurrent = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C9B4);
+void SoundVM_FE16_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    g_pActiveMusicConfig->TimerTopCurrent = *in_pChannel->ProgramCounter++;
+    g_pActiveMusicConfig->TimerTopCurrent |= *in_pChannel->ProgramCounter++ << 8;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C9F0);
 

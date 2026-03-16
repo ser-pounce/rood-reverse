@@ -480,7 +480,7 @@ typedef struct {
     short TimerUpperCurrent;
     short TimerLower;
     short TimerLowerCurrent;
-    int unk7C;
+    short TimerTopCurrent;
     int unk80;
     int unk84;
     int unk88;

@@ -182,6 +182,7 @@ SoundVM_DC_FixNoteLength = 0x8001C8E4;
 SoundVM_FE04_ClearKeymapTable = 0x8001C92C;
 SoundVM_FE05_MuteVoice = 0x8001C964;
 SoundVM_FE15_unk = 0x8001C97C;
+SoundVM_FE16_unk = 0x8001C9B4;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;
 Sound_Cutscene_InitVoice = 0x8001D0E4;

@@ -138,6 +138,7 @@ extern FSoundChannel D_800366F0;
 extern FSoundChannel D_800378E8[];
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern short* g_Sound_LfoTable[];
+extern FSoundCommandParams D_80037800;
 
 int InitSound(void)
 {
@@ -3341,15 +3342,63 @@ void SoundVM_CB_DisableVoiceModes(FSoundChannel* in_pChannel, u_int in_VoiceFlag
     in_pChannel->SfxMask &= ~(SOUND_SFX_LEGATO | SOUND_SFX_FULL_LENGTH);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CB7C);
+void SoundVM_D4_EnablePlaybackRateSidechain(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_PITCH;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CB90);
+void SoundVM_D5_DisablePlaybackRateSidechain(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_PITCH;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CBA4);
+void SoundVM_D6_EnablePitchVolumeSidechain(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_VOL;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CBB8);
+void SoundVM_D7_DisablePitchVolumeSidechain(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_VOL;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CBCC);
+void SoundVM_FE0B_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    int temp_v0;
+    char* pc;
+    char* var_a1;
+    char* var_a2;
+
+    pc = in_pChannel->ProgramCounter;
+    temp_v0 = (pc[1] << 8) | pc[0];
+
+    if (temp_v0 != 0) {
+        var_a1 = &pc[temp_v0] + 2;
+    } else {
+        var_a1 = NULL;
+    }
+
+    pc += 2;
+    temp_v0 = (pc[1] << 8) | pc[0];
+
+    if (temp_v0 != 0) {
+        var_a2 = &pc[temp_v0] + 2;
+    } else {
+        var_a2 = NULL;
+    }
+
+    D_80037800.Param1 = 0;
+    D_80037800.Param2 = 0;
+    D_80037800.Param3 = in_pChannel->ChannelPan >> 8;
+    D_80037800.Param4 = in_pChannel->Volume >> 0x17;
+    Sound_PlaySfxProgram(&D_80037800, var_a1, var_a2, 0);
+    in_pChannel->ProgramCounter += 4;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CC84);
 

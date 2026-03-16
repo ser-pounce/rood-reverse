@@ -114,6 +114,7 @@ extern int D_80037848;
 extern short D_8003784C;
 extern int D_800378E0;
 extern short D_800378E2;
+extern char D_8002F66C[];
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -3406,17 +3407,41 @@ void SoundVM_E0_unk(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_20;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CC98);
+void SoundVM_FE1C_unk(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    int temp_v0 = *in_pChannel->ProgramCounter++;
+    g_pActiveMusicConfig->unk44 = (FSoundKeymapEntry8*)&D_8002F66C[temp_v0];
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CCC8);
+void SoundVM_FE1D_MarkVoicesKeyed(
+    FSoundChannel* in_pChannel __attribute__((unused)), u_int in_VoiceFlags)
+{
+    g_pActiveMusicConfig->KeyedMask |= in_VoiceFlags;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CCE8);
+void SoundVM_FE1E_ClearVoicesKeyed(
+    FSoundChannel* in_pChannel __attribute__((unused)), u_int in_VoiceFlags)
+{
+    g_pActiveMusicConfig->KeyedMask &= ~in_VoiceFlags;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CD08);
+void SoundVM_E1_SetRandomPitchDepth(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->RandomPitchDepth = *in_pChannel->ProgramCounter++;
+}
 
-void func_8001CD24(short* arg0) { arg0[105] = 0; }
+void SoundVM_E2_ResetRandomPitchDepth(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->RandomPitchDepth = 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CD2C);
+void SoundVM_XX_Unimplemented(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+{
+    SoundVM_A0_FinishChannel(in_pChannel, in_VoiceFlags);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", IRQCallbackProc);
 

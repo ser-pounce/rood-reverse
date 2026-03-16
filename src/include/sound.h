@@ -390,7 +390,7 @@ typedef struct {
     u_short NoiseTimer;
     u_short FmTimer;
     u_short LoopStackTop;
-    u_short unkD2;
+    u_short RandomPitchDepth;
     short LengthStored;
     u_short LengthFixed;
     short VolumeBalanceSlideStep;

@@ -2858,7 +2858,26 @@ void SoundVM_BD_AutoPanDepth(
     in_pChannel->AutoPanDepth = *in_pChannel->ProgramCounter++ << 7;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C078);
+void SoundVM_DF_AutoPanDepthSlide(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Length;
+    u_short Prev;
+    u_short Dest;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    if (Length == 0) {
+        Length = 0x100;
+    }
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = Dest << 7;
+    Prev = in_pChannel->AutoPanDepth;
+
+    Delta = Dest - Prev;
+    in_pChannel->AutoPanDepthSlideStep = Delta / Length;
+    in_pChannel->AutoPanDepthSlideLength = Length;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C0E4);
 

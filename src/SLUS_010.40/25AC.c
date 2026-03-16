@@ -2763,7 +2763,12 @@ void SoundVM_DD_VibratoDepthSlide(
     in_pChannel->VibratoDepthSlideLength = Length;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BE60);
+void SoundVM_B6_DisableVibrato(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->VibratoPitch = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_VIBRATO;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BE84);
 

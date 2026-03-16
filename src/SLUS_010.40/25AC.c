@@ -3050,7 +3050,18 @@ void SoundVM_B2_ReleaseRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_28;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C56C);
+void SoundVM_B7_AttackMode(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Mode = *in_pChannel->ProgramCounter++;
+
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_MODE_MASK;
+
+    if (Mode == SOUND_AMODE_5) {
+        in_pChannel->VoiceParams.AdsrLower |= SOUND_ADSR_ATTACK_MODE_MASK;
+    }
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
+}
 
 void SoundVM_BB_SustainMode(FSoundChannel* in_pChannel, int arg)
 {

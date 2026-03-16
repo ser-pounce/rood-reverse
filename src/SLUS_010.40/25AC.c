@@ -2879,7 +2879,13 @@ void SoundVM_DF_AutoPanDepthSlide(
     in_pChannel->AutoPanDepthSlideLength = Length;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C0E4);
+void SoundVM_BE_DisableAutoPan(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->AutoPanVolume = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_PAN_LFO;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C108);
 

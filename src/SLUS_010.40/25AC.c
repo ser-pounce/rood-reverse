@@ -2609,9 +2609,11 @@ void SoundVM_DA_EnablePortamento(
 {
     int Steps = *in_pChannel->ProgramCounter++;
     in_pChannel->PortamentoSteps = Steps;
+    
     if (Steps == 0) {
         in_pChannel->PortamentoSteps = SOUND_DEFAULT_PORTAMENTO_STEPS;
     }
+    
     in_pChannel->TransposeStored = 0;
     in_pChannel->KeyStored = 0;
     in_pChannel->SfxMask = 1;
@@ -2626,8 +2628,8 @@ void SoundVM_DB_DisablePortamento(
 void SoundVM_D8_ChannelFineTune_Absolute(
     FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
-    int FinePitchDelta;
     u_int ScaledFineTune;
+    int FinePitchDelta;
 
     in_pChannel->FineTune = (signed char)*in_pChannel->ProgramCounter++;
     ScaledFineTune = in_pChannel->PitchBase * (char)in_pChannel->FineTune;
@@ -2639,11 +2641,28 @@ void SoundVM_D8_ChannelFineTune_Absolute(
     }
 
     in_pChannel->FinePitchDelta = FinePitchDelta;
-
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BC38);
+void SoundVM_D9_ChannelFineTune_Relative(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    u_int ScaledFineTune;
+    int FinePitchDelta;
+
+    in_pChannel->FineTune =
+        in_pChannel->FineTune + (signed char)*in_pChannel->ProgramCounter++;
+    ScaledFineTune = in_pChannel->PitchBase * (char)in_pChannel->FineTune;
+
+    if (in_pChannel->FineTune < 0) {
+        FinePitchDelta = (ScaledFineTune >> 8) - in_pChannel->PitchBase;
+    } else {
+        FinePitchDelta = ScaledFineTune >> 7;
+    }
+    
+    in_pChannel->FinePitchDelta = FinePitchDelta;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BC9C);
 

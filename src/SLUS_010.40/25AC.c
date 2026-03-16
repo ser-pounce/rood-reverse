@@ -2763,14 +2763,43 @@ void SoundVM_DD_VibratoDepthSlide(
     in_pChannel->VibratoDepthSlideLength = Length;
 }
 
-void SoundVM_B6_DisableVibrato(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B6_DisableVibrato(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->VibratoPitch = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_VIBRATO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BE84);
+void SoundVM_B8_Tremelo(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    int Delay;
+    int Rate;
+
+    in_pChannel->UpdateFlags |= 2;
+    Delay = *in_pChannel->ProgramCounter++;
+    if (in_pChannel->Type != 0) {
+        in_pChannel->TremeloDelay = 0;
+        if (Delay != 0) {
+            in_pChannel->TremeloDepth = (Delay & 0x7F) << 8;
+        }
+    } else {
+        in_pChannel->TremeloDelay = Delay;
+    }
+
+    Rate = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremeloRatePhase = Rate;
+
+    if (Rate == 0) {
+        in_pChannel->TremeloRatePhase = 0x100;
+    }
+
+    in_pChannel->TremeloType = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremeloWave = g_Sound_LfoTable[in_pChannel->TremeloType];
+    in_pChannel->TremeloDelayCurrent = in_pChannel->TremeloDelay;
+    in_pChannel->unkB6 = 1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BF34);
 

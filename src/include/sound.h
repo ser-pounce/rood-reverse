@@ -373,11 +373,11 @@ typedef struct {
     u_short VibratoDepth;
     u_short VibratoDepthSlideLength;
     u_short VibratoDepthSlideStep;
-    short unkB0;
+    short TremeloDelay;
     u_short TremeloDelayCurrent;
-    u_short unkB4;
+    u_short TremeloRatePhase;
     short unkB6;
-    u_short unkB8;
+    u_short TremeloType;
     u_short TremeloDepth;
     u_short TremeloDepthSlideLength;
     short TremeloDepthSlideStep;

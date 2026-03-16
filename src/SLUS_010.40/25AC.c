@@ -3028,7 +3028,16 @@ void SoundVM_AF_SustainLevel(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C4E8);
+void SoundVM_B1_SustainRate(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short SustainRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_SUS_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrUpper |= SustainRate << SOUND_ADSR_SUS_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |=
+        (VOICE_PARAM_ADSR_SR | VOICE_PARAM_ADSR_SMODE);
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_27;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C52C);
 

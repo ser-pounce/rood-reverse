@@ -2807,7 +2807,23 @@ void SoundVM_B9_TremeloDepth(
     in_pChannel->TremeloDepth = (*in_pChannel->ProgramCounter++ & 0x7F) << 8;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BF58);
+void SoundVM_DE_TremeloDepthSlide(FSoundChannel* in_pChannel, int in_VoiceFlags)
+{
+    int Length;
+    int Prev;
+    u_int Dest;
+    int Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    if (Length == 0) {
+        Length = 0x100;
+    }
+    Dest = (*in_pChannel->ProgramCounter++ & 0x7f) << 8;
+    Prev = in_pChannel->TremeloDepth;
+    Delta = Dest - Prev;
+    in_pChannel->TremeloDepthSlideStep = Delta / Length;
+    in_pChannel->TremeloDepthSlideLength = Length;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BFC8);
 

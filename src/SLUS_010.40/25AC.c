@@ -3107,7 +3107,14 @@ void SoundVM_FE11_unk(
     g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C69C);
+void SoundVM_C8_LoopPoint(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    in_pChannel->LoopStackTop = (in_pChannel->LoopStackTop + 1) & 3;
+    in_pChannel->LoopStartPc[in_pChannel->LoopStackTop] = in_pChannel->ProgramCounter;
+    in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] = 0;
+    in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop] = in_pChannel->unk70;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C6EC);
 

@@ -320,7 +320,7 @@ typedef struct {
 
 typedef struct {
     char* ProgramCounter;
-    char* unk4[(4)];
+    char* LoopStartPc[(4)];
     char* ReturnProgramCounter;
     char* Keymap;
     short* VibratoWave;
@@ -348,8 +348,8 @@ typedef struct {
     u_short unk6C;
     short unk6E;
     u_short unk70;
-    u_short unk72[(4)];
-    short unk7A[(4)];
+    u_short LoopIterationCount[(4)];
+    short LoopStepCounterSnapshot[(4)];
     u_short VolumeBalance;
     u_short VolumeBalanceSlideLength;
     short unk86;
@@ -389,7 +389,7 @@ typedef struct {
     short AutoPanDepthSlideStep;
     u_short NoiseTimer;
     u_short FmTimer;
-    u_short unkD0;
+    u_short LoopStackTop;
     u_short unkD2;
     short unkD4;
     u_short unkD6;

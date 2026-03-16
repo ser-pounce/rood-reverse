@@ -3063,7 +3063,8 @@ void SoundVM_B7_AttackMode(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
 }
 
-void SoundVM_BB_SustainMode(FSoundChannel* in_pChannel, int arg)
+void SoundVM_BB_SustainMode(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     u_short mode = *(in_pChannel->ProgramCounter++);
     in_pChannel->VoiceParams.AdsrUpper &= ~((1 << 14) | (1 << 15));
@@ -3082,7 +3083,17 @@ void SoundVM_BB_SustainMode(FSoundChannel* in_pChannel, int arg)
     in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C628);
+void SoundVM_BF_ReleaseMode(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Value = *in_pChannel->ProgramCounter++;
+
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_RELEASE_MODE_MASK;
+    if (Value == SOUND_RMODE_7) {
+        in_pChannel->VoiceParams.AdsrUpper |= SOUND_ADSR_RELEASE_MODE_MASK;
+    }
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_RMODE;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C66C);
 

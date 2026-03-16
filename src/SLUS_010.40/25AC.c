@@ -3319,7 +3319,16 @@ void SoundVM_D2_EnableFmAndDelayToggle(FSoundChannel* in_pChannel, u_int in_Voic
     SoundVM_C6_EnableFmVoices(in_pChannel, in_VoiceFlags);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CAE4);
+void SoundVM_D3_ToggleFmDelay(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    u_short Delay = *in_pChannel->ProgramCounter++;
+    if (Delay != 0) {
+        in_pChannel->FmTimer = Delay + 1;
+        return;
+    }
+    in_pChannel->FmTimer = SOUND_DEFAULT_DELAY_TIME;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CB14);
 

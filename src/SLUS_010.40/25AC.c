@@ -137,6 +137,7 @@ extern u_int g_Music_LoopCounter;
 extern FSoundChannel D_800366F0;
 extern FSoundChannel D_800378E8[];
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
+extern short* g_Sound_LfoTable[];
 
 int InitSound(void)
 {
@@ -2609,11 +2610,11 @@ void SoundVM_DA_EnablePortamento(
 {
     int Steps = *in_pChannel->ProgramCounter++;
     in_pChannel->PortamentoSteps = Steps;
-    
+
     if (Steps == 0) {
         in_pChannel->PortamentoSteps = SOUND_DEFAULT_PORTAMENTO_STEPS;
     }
-    
+
     in_pChannel->TransposeStored = 0;
     in_pChannel->KeyStored = 0;
     in_pChannel->SfxMask = 1;
@@ -2659,12 +2660,55 @@ void SoundVM_D9_ChannelFineTune_Relative(
     } else {
         FinePitchDelta = ScaledFineTune >> 7;
     }
-    
+
     in_pChannel->FinePitchDelta = FinePitchDelta;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BC9C);
+void SoundVM_B4_Vibrato(
+    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    u_short PitchBase;
+    int DepthHigh;
+    u_int VibratoBase;
+    int VibratoDepth;
+    int VibratoRatePhase;
+    int new_var;
+
+    in_pChannel->UpdateFlags |= 1;
+
+    if (in_pChannel->Type != 0) {
+        in_pChannel->VibratoDelay = 0;
+        VibratoDepth = *in_pChannel->ProgramCounter++;
+        if (VibratoDepth != 0) {
+            in_pChannel->VibratoDepth = VibratoDepth << 8;
+        }
+    } else {
+        in_pChannel->VibratoDelay = *in_pChannel->ProgramCounter++;
+    }
+
+    VibratoRatePhase = *in_pChannel->ProgramCounter++;
+    in_pChannel->VibratoRatePhase = VibratoRatePhase;
+
+    if (VibratoRatePhase == 0) {
+        in_pChannel->VibratoRatePhase = 0x100;
+    }
+
+    in_pChannel->VibratoType = *in_pChannel->ProgramCounter++;
+    PitchBase = in_pChannel->PitchBase;
+    new_var = PitchBase;
+    DepthHigh = (in_pChannel->VibratoDepth & 0x7F00) >> 8;
+
+    if (!(in_pChannel->VibratoDepth & 0x8000)) {
+        VibratoBase = DepthHigh * ((new_var * 0xF) >> 8);
+    } else {
+        VibratoBase = DepthHigh * new_var;
+    }
+    in_pChannel->VibratoBase = VibratoBase >> 7;
+    in_pChannel->VibratoWave = g_Sound_LfoTable[in_pChannel->VibratoType];
+    in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
+    in_pChannel->unkA4 = 1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001BD94);
 

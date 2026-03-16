@@ -364,11 +364,11 @@ typedef struct {
     u_short KeyStored;
     short PortamentoSteps;
     u_short SfxMask;
-    short unk9E;
+    short VibratoDelay;
     u_short VibratoDelayCurrent;
-    u_short unkA2;
+    u_short VibratoRatePhase;
     u_short unkA4;
-    u_short unkA6;
+    u_short VibratoType;
     u_short VibratoBase;
     u_short VibratoDepth;
     u_short VibratoDepthSlideLength;

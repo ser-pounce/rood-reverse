@@ -3235,7 +3235,16 @@ void SoundVM_DC_FixNoteLength(
     in_pChannel->LengthFixed = NoteLength;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C92C);
+void SoundVM_FE04_ClearKeymapTable(
+    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+{
+    if (g_pActiveMusicConfig->KeymapTable != NULL) {
+        in_pChannel->UpdateFlags &=
+            ~(SOUND_UPDATE_DRUM_MODE | SOUND_UPDATE_UNKNOWN_12 | SOUND_UPDATE_UNKNOWN_24
+                | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+        in_pChannel->UpdateFlags |= SOUND_UPDATE_DRUM_MODE;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001C964);
 

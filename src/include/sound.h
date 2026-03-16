@@ -460,7 +460,7 @@ typedef struct {
     int unk34;
     int unk38;
     FAkaoSequence* SequencePatchTable;
-    u_short* unk40;
+    u_short* KeymapTable;
     FSoundKeymapEntry8* unk44;
     int SomeIndexRelatedToSpuVoiceInfo;
     u_int NoiseChannelFlags;

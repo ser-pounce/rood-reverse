@@ -179,6 +179,7 @@ SoundVM_FE09_JumpAndPopStackOnNthLoopPass = 0x8001C7EC;
 SoundVM_CA_LoopInf = 0x8001C868;
 SoundVM_A2_OverwriteNextNoteLength = 0x8001C8BC;
 SoundVM_DC_FixNoteLength = 0x8001C8E4;
+SoundVM_FE04_ClearKeymapTable = 0x8001C92C;
 IRQCallbackProc = 0x8001CD4C;
 Sound_Cutscene_StartStream = 0x8001CEA8;
 Sound_Cutscene_InitVoice = 0x8001D0E4;

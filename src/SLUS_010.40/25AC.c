@@ -115,6 +115,7 @@ extern short g_Sound_CdVolumeFadeLength;
 extern int g_CdVolume;
 extern short D_800378E2;
 extern char D_8002F66C[];
+extern int D_800378D4;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -2279,7 +2280,41 @@ void func_8001924C(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019614);
+void func_80019614(void)
+{
+    int temp_v1;
+    if (g_Sound_GlobalFlags.ControlLatches & 0x6600) {
+        temp_v1 = g_pActiveMusicConfig->TimerLowerCurrent
+                + (g_pActiveMusicConfig->TimerUpperCurrent << 0x10);
+        D_800378D4 = temp_v1;
+        if (D_800378D4 == 0) {
+            if (g_Sound_GlobalFlags.ControlLatches & 0x100) {
+                if (g_Sound_GlobalFlags.ControlLatches & 0x4000) {
+                    g_Sound_GlobalFlags.ControlLatches =
+                        (g_Sound_GlobalFlags.ControlLatches & ~0x4000) | 0x2000;
+                    return;
+                }
+                g_Sound_GlobalFlags.ControlLatches =
+                    (g_Sound_GlobalFlags.ControlLatches & ~0x2100) | 0x1000;
+                g_pActiveMusicConfig->PendingKeyOffMask |=
+                    g_pActiveMusicConfig->ActiveChannelMask
+                    & ~g_pActiveMusicConfig->unk30;
+                g_pActiveMusicConfig->ActiveNoteMask &= g_pActiveMusicConfig->unk30;
+                return;
+            }
+            if (g_Sound_GlobalFlags.ControlLatches & 0x400) {
+                g_Sound_GlobalFlags.ControlLatches =
+                    (g_Sound_GlobalFlags.ControlLatches & ~0x400) | 0x200;
+                return;
+            }
+            g_Sound_GlobalFlags.ControlLatches =
+                (g_Sound_GlobalFlags.ControlLatches & ~0x1200) | 0x100;
+            g_pSavedMousicConfig->ActiveNoteMask = 0;
+            g_pSavedMousicConfig->PendingKeyOffMask |=
+                g_pSavedMousicConfig->ActiveChannelMask;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019704);
 

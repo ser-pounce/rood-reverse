@@ -477,9 +477,9 @@ typedef struct {
     u_short JumpThresholdValue;
     u_short NoiseClock;
     short TimerUpper;
-    short TimerUpperCurrent;
+    u_short TimerUpperCurrent;
     short TimerLower;
-    short TimerLowerCurrent;
+    u_short TimerLowerCurrent;
     short TimerTopCurrent;
     int unk80;
     int unk84;

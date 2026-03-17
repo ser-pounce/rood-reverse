@@ -346,13 +346,13 @@ typedef struct {
     short Length2;
     u_short InstrumentIndex;
     u_short unk6C;
-    short unk6E;
+    u_short unk6E;
     u_short OpcodeStepCounter;
     u_short LoopIterationCount[(4)];
     short LoopStepCounterSnapshot[(4)];
     u_short VolumeBalance;
     u_short VolumeBalanceSlideLength;
-    short unk86;
+    u_short unk86;
     u_short ChannelVolumeSlideLength;
     u_short KeyOnVolumeSlideLength;
     u_short unk8C;

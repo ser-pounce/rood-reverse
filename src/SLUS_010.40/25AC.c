@@ -110,9 +110,9 @@ extern FSoundChannel D_80035910[10];
 extern int D_80039AFC;
 extern int D_80039B14;
 extern int D_80039B64;
-extern int D_80037848;
-extern short D_8003784C;
-extern int D_800378E0;
+extern int g_Sound_CdVolumeFadeStep;
+extern short g_Sound_CdVolumeFadeLength;
+extern int g_CdVolume;
 extern short D_800378E2;
 extern char D_8002F66C[];
 
@@ -140,6 +140,14 @@ extern FSoundChannel D_800378E8[];
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern short* g_Sound_LfoTable[];
 extern FSoundCommandParams D_80037800;
+extern int D_80036778;
+extern int D_8003677C;
+extern short D_80036780;
+extern short D_80036782;
+extern int g_Sound_MasterPitchScaleQ16_16;
+extern int g_Sound_TempoMultiplier;
+extern int D_80039B48;
+extern int g_Sound_LfoPhase;
 
 int InitSound(void)
 {
@@ -1628,8 +1636,8 @@ void Sound_Cmd_C2_unk(FSoundCommandParams* arg0)
 
 void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
 {
-    D_8003784C = 0;
-    D_800378E0 = (u_short)arg0->Param1 << 0x10;
+    g_Sound_CdVolumeFadeLength = 0;
+    g_CdVolume = (u_short)arg0->Param1 << 0x10;
     UpdateCdVolume();
 }
 
@@ -1643,8 +1651,8 @@ void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
     if (temp_v0 != 0) {
         var_a1 = temp_v0;
     }
-    D_8003784C = var_a1;
-    D_80037848 = (((u_short)arg0->Param2 << 0x10) - D_800378E0) / var_a1;
+    g_Sound_CdVolumeFadeLength = var_a1;
+    g_Sound_CdVolumeFadeStep = (((u_short)arg0->Param2 << 0x10) - g_CdVolume) / var_a1;
 }
 
 void Sound_Cmd_CA_unk(FSoundCommandParams* arg0)
@@ -1654,10 +1662,10 @@ void Sound_Cmd_CA_unk(FSoundCommandParams* arg0)
     if (arg0->Param1 != 0) {
         var_a1 = arg0->Param1;
     }
-    D_8003784C = var_a1;
+    g_Sound_CdVolumeFadeLength = var_a1;
     new_var = ((u_short)arg0->Param3) << 0x10;
-    D_800378E0 = (u_short)arg0->Param2 << 0x10;
-    D_80037848 = (int)(new_var - D_800378E0) / var_a1;
+    g_CdVolume = (u_short)arg0->Param2 << 0x10;
+    g_Sound_CdVolumeFadeStep = (int)(new_var - g_CdVolume) / var_a1;
 }
 
 void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
@@ -2157,7 +2165,119 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memcpy32);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memswp32);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001924C);
+void func_8001924C(void)
+{
+    int temp_s1;
+    int var_a2;
+    FSoundChannel* var_a1_2;
+    int var_a3;
+    FSoundChannel* var_v1;
+
+    g_Sound_LfoPhase = (g_Sound_LfoPhase + 1) & 0xFF;
+    if (g_Sound_CdVolumeFadeLength != 0) {
+        --g_Sound_CdVolumeFadeLength;
+        g_CdVolume += g_Sound_CdVolumeFadeStep;
+        UpdateCdVolume();
+    }
+    if ((g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0)
+        && (g_Sound_Cutscene_StreamState.VolFadeStepsRemaining != 0)) {
+        --g_Sound_Cutscene_StreamState.VolFadeStepsRemaining;
+        temp_s1 = g_Sound_Cutscene_StreamState.Volume
+                + g_Sound_Cutscene_StreamState.VolFadeStepSize;
+        if ((temp_s1 & 0xFF00) != (g_Sound_Cutscene_StreamState.Volume & 0xFF00)) {
+            if (D_80039AFC & 2) {
+                int temp_s0 = (g_Sound_Cutscene_StreamState.Volume * D_8002F89C) >> 0x10;
+                SetVoiceVolume(
+                    g_Sound_Cutscene_StreamState.VoiceIndex, temp_s0, temp_s0, 0);
+                SetVoiceVolume(
+                    g_Sound_Cutscene_StreamState.VoiceIndex + 1, temp_s0, temp_s0, 0);
+            } else {
+                int temp_s0 = (temp_s1 << 0xF) >> 0x10;
+                SetVoiceVolume(g_Sound_Cutscene_StreamState.VoiceIndex, temp_s0, 0, 0);
+                SetVoiceVolume(
+                    g_Sound_Cutscene_StreamState.VoiceIndex + 1, 0, temp_s0, 0);
+            }
+        }
+        D_80039B48 = temp_s1 & 0xFFFF;
+    }
+    if (D_80036782 != 0) {
+        --D_80036782;
+        g_Sound_TempoMultiplier += D_8003677C;
+    }
+    if (D_80036780 != 0) {
+        --D_80036780;
+        temp_s1 = g_Sound_MasterPitchScaleQ16_16 + D_80036778;
+
+        if ((temp_s1 & 0xFF0000) != (g_Sound_MasterPitchScaleQ16_16 & 0xFF0000)) {
+            var_v1 = g_ActiveMusicChannels;
+            for (var_a2 = 0x20; var_a2 != 0; --var_a2, ++var_v1) {
+                var_v1->VoiceParams.VoiceParamFlags |= 0x10;
+            }
+        }
+        g_Sound_MasterPitchScaleQ16_16 = temp_s1;
+    }
+    if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
+        && (g_pActiveMusicConfig->unk68 != 0)) {
+        --g_pActiveMusicConfig->unk68;
+        temp_s1 = g_pActiveMusicConfig->A_Volume + g_pActiveMusicConfig->unk64;
+        if ((temp_s1 & 0x7F0000) != (g_pActiveMusicConfig->A_Volume & 0x7F0000)) {
+            Sound_MarkActiveChannelsVolumeDirty(
+                g_pActiveMusicConfig, g_ActiveMusicChannels);
+        }
+        g_pActiveMusicConfig->A_Volume = temp_s1;
+    }
+    if ((g_pSavedMousicConfig != NULL)
+        && (g_pSavedMousicConfig->ActiveChannelMask != 0)) {
+        if (g_pSavedMousicConfig->unk68 != 0) {
+            --g_pSavedMousicConfig->unk68;
+            temp_s1 = g_pSavedMousicConfig->A_Volume + g_pSavedMousicConfig->unk64;
+            if ((temp_s1 & 0x7F0000) != (g_pSavedMousicConfig->A_Volume & 0x7F0000)) {
+                Sound_MarkActiveChannelsVolumeDirty(
+                    g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+            }
+            g_pSavedMousicConfig->A_Volume = temp_s1;
+        }
+    }
+    if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
+        var_a3 = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+        var_a1_2 = D_80035910;
+        do {
+        } while (0);
+        for (var_a2 = 0x1000; var_a3 != 0; var_a2 <<= 1, ++var_a1_2) {
+            if (!(var_a3 & var_a2)) {
+                continue;
+            }
+
+            if (var_a1_2->unk8C != 0) {
+                --var_a1_2->unk8C;
+                temp_s1 = var_a1_2->unkDC + var_a1_2->unkDE;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->unkDC & 0xFF00)) {
+                    var_a1_2->VoiceParams.VoiceParamFlags |= 3;
+                }
+                var_a1_2->unkDC = temp_s1;
+            }
+
+            if (var_a1_2->unk6E != 0) {
+                --var_a1_2->unk6E;
+                temp_s1 = var_a1_2->unk6C + var_a1_2->unkDA;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->unk6C & 0xFF00)) {
+                    var_a1_2->VoiceParams.VoiceParamFlags |= 3;
+                }
+                var_a1_2->unk6C = temp_s1;
+            }
+
+            if (var_a1_2->unk86 != 0) {
+                --var_a1_2->unk86;
+                temp_s1 = var_a1_2->unk40 + var_a1_2->unk44;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->unk40 & 0xFF00)) {
+                    var_a1_2->VoiceParams.VoiceParamFlags |= 0x10;
+                }
+                var_a1_2->unk40 = temp_s1;
+            }
+            var_a3 ^= var_a2;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019614);
 

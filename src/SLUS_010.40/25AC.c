@@ -2342,78 +2342,95 @@ int func_80019704(FSoundChannel* arg0, int arg1)
         g_pActiveMusicConfig->unk28 = g_pActiveMusicConfig->unk28 & 0xFFFF;
 
         do {
+            var_s2 = arg0;
+            var_s1 = 1;
+            var_s3 = g_pActiveMusicConfig->ActiveChannelMask;
+
             do {
-                var_s2 = arg0;
-                var_s1 = 1;
-                var_s3 = g_pActiveMusicConfig->ActiveChannelMask;
-
-                do {
-                    if (var_s3 & var_s1) {
-                        --var_s2->Length1;
-                        --var_s2->Length2;
-                        if (var_s2->Length1 == 0) {
-                            func_8001A8D8(var_s2, var_s1);
-                        } else if (var_s2->Length2 == 0) {
-                            g_pActiveMusicConfig->PendingKeyOffMask |= var_s1;
-                        }
-                        Sound_UpdateSlidesAndDelays(var_s2, var_s1, 0);
-                        var_s3 &= ~var_s1;
+                if (var_s3 & var_s1) {
+                    --var_s2->Length1;
+                    --var_s2->Length2;
+                    if (var_s2->Length1 == 0) {
+                        func_8001A8D8(var_s2, var_s1);
+                    } else if (var_s2->Length2 == 0) {
+                        g_pActiveMusicConfig->PendingKeyOffMask |= var_s1;
                     }
-                    ++var_s2;
-                    var_s1 *= 2;
-                } while (var_s3 != 0);
-
-                if (g_pActiveMusicConfig->TempoSlideLength != 0) {
-                    --g_pActiveMusicConfig->TempoSlideLength;
-                    g_pActiveMusicConfig->Tempo += g_pActiveMusicConfig->TempoSlideStep;
+                    Sound_UpdateSlidesAndDelays(var_s2, var_s1, 0);
+                    var_s3 &= ~var_s1;
                 }
+                ++var_s2;
+                var_s1 *= 2;
+            } while (var_s3 != 0);
 
-                if (g_pActiveMusicConfig->ReverbDepthSlideLength != 0) {
-                    int updateFlags;
-                    --g_pActiveMusicConfig->ReverbDepthSlideLength;
-                    g_pActiveMusicConfig->RevDepth += g_pActiveMusicConfig->unk5C;
-                    updateFlags = g_Sound_GlobalFlags.UpdateFlags;
-                    if (arg1 == 0) {
-                        g_Sound_GlobalFlags.UpdateFlags = updateFlags | 0x80;
-                    }
-                }
+            if (g_pActiveMusicConfig->TempoSlideLength != 0) {
+                --g_pActiveMusicConfig->TempoSlideLength;
+                g_pActiveMusicConfig->Tempo += g_pActiveMusicConfig->TempoSlideStep;
+            }
 
-                if (g_pActiveMusicConfig->TimerLower == 0) {
-                    continue;
-                }
+            if (g_pActiveMusicConfig->ReverbDepthSlideLength != 0) {
+                --g_pActiveMusicConfig->ReverbDepthSlideLength;
+                g_pActiveMusicConfig->RevDepth += g_pActiveMusicConfig->unk5C;
+                g_Sound_GlobalFlags.UpdateFlags |= (arg1 == 0) ? 0x80 : 0;
+            }
 
-                ++g_pActiveMusicConfig->TimerLowerCurrent;
+            if (g_pActiveMusicConfig->TimerLower == 0) {
+                continue;
+            }
 
-                if (g_pActiveMusicConfig->TimerLowerCurrent
-                    != g_pActiveMusicConfig->TimerLower) {
-                    continue;
-                }
+            ++g_pActiveMusicConfig->TimerLowerCurrent;
 
-                g_pActiveMusicConfig->TimerLowerCurrent = 0;
-                ++g_pActiveMusicConfig->TimerUpperCurrent;
+            if (g_pActiveMusicConfig->TimerLowerCurrent
+                != g_pActiveMusicConfig->TimerLower) {
+                continue;
+            }
 
-                if (g_pActiveMusicConfig->TimerUpperCurrent
-                    != g_pActiveMusicConfig->TimerUpper) {
-                    continue;
-                }
+            g_pActiveMusicConfig->TimerLowerCurrent = 0;
+            ++g_pActiveMusicConfig->TimerUpperCurrent;
 
-                g_pActiveMusicConfig->TimerUpperCurrent = 0;
-                ++g_pActiveMusicConfig->TimerTopCurrent;
+            if (g_pActiveMusicConfig->TimerUpperCurrent
+                != g_pActiveMusicConfig->TimerUpper) {
+                continue;
+            }
 
-                if ((arg1 == 0) && (g_Music_LoopCounter != 0)) {
-                    --g_Music_LoopCounter;
-                }
+            g_pActiveMusicConfig->TimerUpperCurrent = 0;
+            ++g_pActiveMusicConfig->TimerTopCurrent;
 
-                if (g_pActiveMusicConfig == &D_800366F0) {
-                    func_80019614();
-                }
-            } while (arg1 == 0 && g_Music_LoopCounter != 0);
-        } while (0);
+            if ((arg1 == 0) && (g_Music_LoopCounter != 0)) {
+                --g_Music_LoopCounter;
+            }
+
+            if (g_pActiveMusicConfig == &D_800366F0) {
+                func_80019614();
+            }
+        } while (arg1 == 0 && g_Music_LoopCounter != 0);
     }
+    while (0)
+        ;
     return g_pActiveMusicConfig->ActiveChannelMask;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800199C4);
+void func_800199C4(FSoundChannelConfig* arg0, FSoundChannel* arg1)
+{
+    int temp_s0;
+
+    if (g_Sound_MasterFadeTimer.TicksRemaining != 0) {
+        --g_Sound_MasterFadeTimer.TicksRemaining;
+        if (g_Sound_MasterFadeTimer.TicksRemaining == 0) {
+            int temp_v0 = arg0->ActiveChannelMask;
+            arg0->MusicId = 0;
+            arg0->ActiveChannelMask = 0;
+            arg0->PendingKeyOnMask = 0;
+            arg0->ActiveNoteMask = 0;
+            arg0->PendingKeyOffMask = temp_v0;
+            return;
+        }
+        temp_s0 = g_Sound_MasterFadeTimer.Value + g_Sound_MasterFadeTimer.Step;
+        if ((temp_s0 & 0xFFFF0000) != (g_Sound_MasterFadeTimer.Value & 0xFFFF0000)) {
+            Sound_MarkActiveChannelsVolumeDirty(arg0, arg1);
+        }
+        g_Sound_MasterFadeTimer.Value = temp_s0;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019A58);
 

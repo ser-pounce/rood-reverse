@@ -93,6 +93,8 @@ int func_8001A22C(int, int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 void func_8001A8D8(FSoundChannel*, int);
 
+void func_80015220(int);
+
 extern int _soundEvent;
 extern char _soundFlush[64];
 extern short D_800358FE;
@@ -118,6 +120,13 @@ extern short D_800378E2;
 extern char D_8002F66C[];
 extern int D_800378D4;
 extern char D_80039AF2;
+extern int D_8002F548;
+extern u_short D_8002F54C;
+extern int D_8002F550[];
+extern FSoundCommandParams D_80037788;
+extern int D_80037898;
+extern int D_8003789C;
+extern int D_80039B00;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -2322,7 +2331,6 @@ int func_80019704(FSoundChannel* arg0, int arg1)
 {
     FSoundChannel* var_s2;
     int var_s3;
-    u_int temp_lo;
     u_int var_s1;
 
     int var_a0 = (u_short)(g_pActiveMusicConfig->Tempo >> 16);
@@ -2432,7 +2440,151 @@ void func_800199C4(FSoundChannelConfig* arg0, FSoundChannel* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019A58);
+long func_80019A58(void)
+{
+    FSoundChannel* var_s2_2;
+    FSoundChannelConfig* temp_v0;
+    FSoundChannelConfig* var_a0;
+    int temp_a2;
+    int temp_a3;
+    int var_s5;
+    int temp_v1_3;
+    int var_s1;
+    int i;
+    u_short* p;
+
+    var_s5 = GetRCnt(0xF2000002U);
+    ++D_8002F54C;
+    if (g_Sound_GlobalFlags.ControlLatches & 0x1100) {
+        if (g_Sound_GlobalFlags.ControlLatches & 0x100) {
+            if (g_Sound_GlobalFlags.ControlLatches & 0x6000) {
+                g_pSavedMousicConfig->PendingKeyOnMask &= g_pSavedMousicConfig->unk2C;
+                g_pSavedMousicConfig->ActiveNoteMask &= g_pSavedMousicConfig->unk2C;
+            } else {
+                g_pSavedMousicConfig->PendingKeyOnMask = 0;
+                g_pSavedMousicConfig->ActiveNoteMask = 0;
+            }
+            var_a0 = g_pActiveMusicConfig;
+        } else {
+            if (g_Sound_GlobalFlags.ControlLatches & 0x600) {
+                g_pActiveMusicConfig->PendingKeyOnMask &=
+                    g_pActiveMusicConfig->unk2C | g_pActiveMusicConfig->unk30;
+                g_pActiveMusicConfig->ActiveNoteMask &=
+                    g_pActiveMusicConfig->unk2C | g_pActiveMusicConfig->unk30;
+            } else {
+                g_pActiveMusicConfig->PendingKeyOnMask &= g_pActiveMusicConfig->unk30;
+                g_pActiveMusicConfig->ActiveNoteMask &= g_pActiveMusicConfig->unk30;
+            }
+            var_a0 = g_pSavedMousicConfig;
+        }
+        var_a0->PendingKeyOnMask &= ~var_a0->unk2C;
+        var_a0->ActiveNoteMask &= ~var_a0->unk2C;
+    }
+    if ((g_pActiveMusicConfig->PendingKeyOffMask != 0) || (D_8003789C != 0)
+        || (g_pSavedMousicConfig != NULL
+            && g_pSavedMousicConfig->PendingKeyOffMask != 0)) {
+        Sound_ProcessKeyOffRequests();
+    }
+
+    if (g_pSavedMousicConfig != NULL) {
+        if (g_pSavedMousicConfig->ActiveChannelMask == 0) {
+            g_pSavedMousicConfig = NULL;
+        } else if ((g_pActiveMusicConfig->ActiveChannelMask | g_pActiveMusicConfig->unk1C)
+                   == 0) {
+            Sound_memcpy32(g_pSavedMousicConfig, g_pActiveMusicConfig, 0x80);
+            Sound_memcpy32(g_pSecondaryMusicChannels, g_ActiveMusicChannels, 0x2200);
+            temp_v0 = g_pSavedMousicConfig;
+            g_pSavedMousicConfig = NULL;
+            temp_v0->MusicId = 0;
+            temp_v0->ActiveChannelMask = 0;
+        }
+    }
+    p = (u_short*)D_80037788.Param1;
+    if (p != 0) {
+        if (g_pActiveMusicConfig->ActiveChannelMask == 0) {
+            D_80037800.Param1 = (u_int)p;
+            D_80037800.Param3 = p[2];
+            Sound_Cmd_10_StartFieldMusic(&D_80037800);
+
+            var_s2_2 = g_ActiveMusicChannels;
+            for (i = 32; i != 0; --i) {
+                var_s2_2->Length1 = 1;
+                ++var_s2_2;
+            }
+
+            D_80037788.Param1 = 0;
+        }
+    }
+    if (((D_80039B00 | g_pActiveMusicConfig->ActiveNoteMask | D_80037898) != 0)
+        || ((g_pSavedMousicConfig != NULL)
+            && (g_pSavedMousicConfig->ActiveNoteMask != 0))) {
+        func_80015220(D_80037898);
+    }
+    if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
+        func_80019704(g_ActiveMusicChannels, 0);
+    }
+    if (g_pSavedMousicConfig != NULL) {
+        if (g_pSavedMousicConfig->ActiveChannelMask != 0) {
+            g_pActiveMusicConfig = g_pSavedMousicConfig;
+            func_80019704(g_pSecondaryMusicChannels, 1);
+            g_pActiveMusicConfig = &D_800366F0;
+        }
+        if (g_Sound_GlobalFlags.MixBehavior & 0x100) {
+            if (!(D_8002F54C & 3)) {
+                func_800199C4(g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+                if (g_pSavedMousicConfig->ActiveChannelMask == 0) {
+                    g_Sound_GlobalFlags.MixBehavior &= ~0x100;
+                }
+            }
+        }
+    }
+    if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
+        i = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+        g_Sound_VoiceSchedulerState.TempoAccumumulator +=
+            g_Sound_VoiceSchedulerState.unk16;
+        if ((g_Sound_VoiceSchedulerState.TempoAccumumulator & 0xFFFF0000)
+            || (D_80039B64 & 4)) {
+            g_Sound_VoiceSchedulerState.TempoAccumumulator &= 0xFFFF;
+            var_s1 = 0x1000;
+            var_s2_2 = D_80035910;
+            do {
+                if (i & var_s1) {
+                    if (!(D_80039B64 & 2) || (var_s2_2->unk28 & 0x02000000)) {
+                        ++var_s2_2->unk58;
+                        --var_s2_2->Length1;
+                        --var_s2_2->Length2;
+                        if (var_s2_2->Length1 == 0) {
+                            func_8001A8D8(var_s2_2, var_s1);
+                        } else if (var_s2_2->Length2 == 0) {
+                            g_Sound_VoiceSchedulerState.KeyOffFlags |= var_s1;
+                            g_Sound_VoiceSchedulerState.KeyedFlags &= ~var_s1;
+                        }
+                        Sound_UpdateSlidesAndDelays(var_s2_2, var_s1, 1);
+                    }
+                    i ^= var_s1;
+                }
+                ++var_s2_2;
+                var_s1 *= 2;
+            } while (i != 0);
+        }
+    }
+    if (!(D_8002F54C & 3)) {
+        func_8001924C();
+    }
+    var_s5 = GetRCnt(0xF2000002U) - var_s5;
+    if (var_s5 <= 0) {
+        var_s5 += 0x44E8;
+    }
+    temp_v1_3 = D_8002F550[1];
+    temp_a2 = D_8002F550[2];
+    temp_a3 = D_8002F550[3];
+    D_8002F550[0] = temp_v1_3;
+    D_8002F550[1] = temp_a2;
+    D_8002F550[2] = temp_a3;
+    D_8002F550[3] = var_s5;
+    D_8002F548 = temp_v1_3 + temp_a2 + temp_a3 + var_s5;
+    return var_s5;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
 

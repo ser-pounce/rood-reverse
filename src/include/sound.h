@@ -342,8 +342,8 @@ typedef struct {
     int unk5C;
     int unk60;
     u_short Type;
-    short Length1;
-    short Length2;
+    u_short Length1;
+    u_short Length2;
     u_short InstrumentIndex;
     u_short unk6C;
     u_short unk6E;
@@ -476,9 +476,9 @@ typedef struct {
     u_short MusicId;
     u_short JumpThresholdValue;
     u_short NoiseClock;
-    short TimerUpper;
+    u_short TimerUpper;
     u_short TimerUpperCurrent;
-    short TimerLower;
+    u_short TimerLower;
     u_short TimerLowerCurrent;
     short TimerTopCurrent;
     int unk80;

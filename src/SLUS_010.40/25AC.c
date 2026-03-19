@@ -91,6 +91,7 @@ void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
+void func_8001A8D8(FSoundChannel*, int);
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -116,6 +117,7 @@ extern int g_CdVolume;
 extern short D_800378E2;
 extern char D_8002F66C[];
 extern int D_800378D4;
+extern char D_80039AF2;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -136,7 +138,7 @@ extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 extern short D_8002F89C;
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern u_int g_Music_LoopCounter;
-extern FSoundChannel D_800366F0;
+extern FSoundChannelConfig D_800366F0;
 extern FSoundChannel D_800378E8[];
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern short* g_Sound_LfoTable[];
@@ -2316,7 +2318,100 @@ void func_80019614(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019704);
+int func_80019704(FSoundChannel* arg0, int arg1)
+{
+    FSoundChannel* var_s2;
+    int var_s3;
+    u_int temp_lo;
+    u_int var_s1;
+
+    int var_a0 = (u_short)(g_pActiveMusicConfig->Tempo >> 16);
+    u_int tempoScale = D_80039AF2;
+
+    if (tempoScale != 0) {
+        if (tempoScale < 0x80) {
+            var_a0 += (var_a0 * tempoScale) >> 7;
+        } else {
+            var_a0 = (var_a0 * tempoScale) >> 8;
+        }
+    }
+
+    g_pActiveMusicConfig->unk28 += var_a0;
+
+    if ((g_pActiveMusicConfig->unk28 & 0xFFFF0000) || (D_80039B64 & 4)) {
+        g_pActiveMusicConfig->unk28 = g_pActiveMusicConfig->unk28 & 0xFFFF;
+
+        do {
+            do {
+                var_s2 = arg0;
+                var_s1 = 1;
+                var_s3 = g_pActiveMusicConfig->ActiveChannelMask;
+
+                do {
+                    if (var_s3 & var_s1) {
+                        --var_s2->Length1;
+                        --var_s2->Length2;
+                        if (var_s2->Length1 == 0) {
+                            func_8001A8D8(var_s2, var_s1);
+                        } else if (var_s2->Length2 == 0) {
+                            g_pActiveMusicConfig->PendingKeyOffMask |= var_s1;
+                        }
+                        Sound_UpdateSlidesAndDelays(var_s2, var_s1, 0);
+                        var_s3 &= ~var_s1;
+                    }
+                    ++var_s2;
+                    var_s1 *= 2;
+                } while (var_s3 != 0);
+
+                if (g_pActiveMusicConfig->TempoSlideLength != 0) {
+                    --g_pActiveMusicConfig->TempoSlideLength;
+                    g_pActiveMusicConfig->Tempo += g_pActiveMusicConfig->TempoSlideStep;
+                }
+
+                if (g_pActiveMusicConfig->ReverbDepthSlideLength != 0) {
+                    int updateFlags;
+                    --g_pActiveMusicConfig->ReverbDepthSlideLength;
+                    g_pActiveMusicConfig->RevDepth += g_pActiveMusicConfig->unk5C;
+                    updateFlags = g_Sound_GlobalFlags.UpdateFlags;
+                    if (arg1 == 0) {
+                        g_Sound_GlobalFlags.UpdateFlags = updateFlags | 0x80;
+                    }
+                }
+
+                if (g_pActiveMusicConfig->TimerLower == 0) {
+                    continue;
+                }
+
+                ++g_pActiveMusicConfig->TimerLowerCurrent;
+
+                if (g_pActiveMusicConfig->TimerLowerCurrent
+                    != g_pActiveMusicConfig->TimerLower) {
+                    continue;
+                }
+
+                g_pActiveMusicConfig->TimerLowerCurrent = 0;
+                ++g_pActiveMusicConfig->TimerUpperCurrent;
+
+                if (g_pActiveMusicConfig->TimerUpperCurrent
+                    != g_pActiveMusicConfig->TimerUpper) {
+                    continue;
+                }
+
+                g_pActiveMusicConfig->TimerUpperCurrent = 0;
+                ++g_pActiveMusicConfig->TimerTopCurrent;
+
+                if ((arg1 == 0) && (g_Music_LoopCounter != 0)) {
+                    --g_Music_LoopCounter;
+                }
+
+                if (g_pActiveMusicConfig == &D_800366F0) {
+                    func_80019614();
+                }
+            } while (arg1 == 0 && g_Music_LoopCounter != 0);
+        } while (0);
+    }
+    return g_pActiveMusicConfig->ActiveChannelMask;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800199C4);
 

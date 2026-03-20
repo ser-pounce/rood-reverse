@@ -2445,15 +2445,12 @@ long func_80019A58(void)
     FSoundChannel* var_s2_2;
     FSoundChannelConfig* temp_v0;
     FSoundChannelConfig* var_a0;
-    int temp_a2;
-    int temp_a3;
     int var_s5;
-    int temp_v1_3;
     int var_s1;
     int i;
     u_short* p;
 
-    var_s5 = GetRCnt(0xF2000002U);
+    var_s5 = GetRCnt(RCntCNT2);
     ++D_8002F54C;
     if (g_Sound_GlobalFlags.ControlLatches & 0x1100) {
         if (g_Sound_GlobalFlags.ControlLatches & 0x100) {
@@ -2571,24 +2568,34 @@ long func_80019A58(void)
     if (!(D_8002F54C & 3)) {
         func_8001924C();
     }
-    var_s5 = GetRCnt(0xF2000002U) - var_s5;
+    var_s5 = GetRCnt(RCntCNT2) - var_s5;
     if (var_s5 <= 0) {
         var_s5 += 0x44E8;
     }
-    temp_v1_3 = D_8002F550[1];
-    temp_a2 = D_8002F550[2];
-    temp_a3 = D_8002F550[3];
-    D_8002F550[0] = temp_v1_3;
-    D_8002F550[1] = temp_a2;
-    D_8002F550[2] = temp_a3;
+
+    D_8002F550[0] = D_8002F550[1];
+    D_8002F550[1] = D_8002F550[2];
+    D_8002F550[2] = D_8002F550[3];
     D_8002F550[3] = var_s5;
-    D_8002F548 = temp_v1_3 + temp_a2 + temp_a3 + var_s5;
+    D_8002F548 = D_8002F550[0] + D_8002F550[1] + D_8002F550[2] + D_8002F550[3];
     return var_s5;
 }
 
+int func_80019FC4(FSoundChannel* channel);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A1F4);
+int func_8001A1F4(int arg0, int arg1)
+{
+    if ((arg1 - 0x80u) < 0x20) {
+        if (arg0 & 2) {
+            return arg1 + 0x20;
+        }
+        if (arg0 & 4) {
+            return arg1 + 0x40;
+        }
+    }
+    return arg1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A22C);
 

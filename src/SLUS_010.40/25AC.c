@@ -2606,7 +2606,71 @@ int func_8001A22C(int arg0, u_int arg1)
     return arg1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A258);
+void func_8001A258(FSoundChannel* arg0, u_int arg1)
+{
+    FSoundInstrumentInfo* temp_a0;
+    char* var_s0;
+    int temp_v0;
+    int temp_s2;
+
+    if ((arg0->Key < arg1) || (arg0->Key == 0xFF)) {
+        var_s0 = arg0->Keymap;
+        while (var_s0[13] != 0 && var_s0[2] < arg1) {
+            var_s0 += 8;
+        }
+    } else {
+        if (arg1 >= arg0->Key) {
+            return;
+        }
+        var_s0 = arg0->Keymap;
+        while (var_s0[13] != 0 && arg1 >= var_s0[9]) {
+            var_s0 += 8;
+        }
+    }
+
+    temp_s2 = arg0->UpdateFlags;
+
+    temp_v0 = func_8001A22C(g_pActiveMusicConfig->StatusFlags, var_s0[0]);
+    arg0->InstrumentIndex = temp_v0;
+    temp_a0 = &g_InstrumentInfo[temp_v0];
+    arg0->VoiceParams.StartAddress = temp_a0->StartAddr;
+    arg0->VoiceParams.LoopAddress = temp_a0->LoopAddr;
+
+    if (!(temp_s2 & 0x01000000)) {
+        arg0->VoiceParams.AdsrLower = var_s0[3] << 8;
+    } else {
+        arg0->VoiceParams.AdsrLower &= 0x7F00;
+    }
+
+    arg0->VoiceParams.AdsrLower |= temp_a0->AdsrLower & 0x80FF;
+
+    if (!(temp_s2 & 0x08000000)) {
+        arg0->VoiceParams.AdsrUpper &= 0x201F;
+        arg0->VoiceParams.AdsrUpper |= var_s0[4] << 6;
+    } else {
+        arg0->VoiceParams.AdsrUpper &= 0x3FDF;
+    }
+
+    switch (var_s0[5]) {
+    case 3:
+        arg0->VoiceParams.AdsrUpper |= 0x4000;
+        break;
+    case 5:
+        arg0->VoiceParams.AdsrUpper |= 0x8000;
+        break;
+    case 7:
+        arg0->VoiceParams.AdsrUpper |= 0xC000;
+        break;
+    }
+
+    if ((temp_s2 & 0x10000000) == 0) {
+        arg0->VoiceParams.AdsrUpper &= 0xFFE0;
+        arg0->VoiceParams.AdsrUpper |= var_s0[6];
+    }
+
+    arg0->VoiceParams.AdsrUpper |= temp_a0->AdsrUpper & 0x20;
+    arg0->VoiceParams.VolumeScale = var_s0[7];
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A4BC);
 

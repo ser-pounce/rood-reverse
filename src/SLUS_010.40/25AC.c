@@ -2812,9 +2812,19 @@ void func_8001B094(FSoundChannel* arg0, int arg1)
         arg0, &g_InstrumentInfo[arg1], g_InstrumentInfo[arg1].StartAddr);
 }
 
-void Sound_ClearVoiceFromSchedulerState(FSoundChannel*, int);
-INCLUDE_ASM(
-    "build/src/SLUS_010.40/nonmatchings/25AC", Sound_ClearVoiceFromSchedulerState);
+void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1)
+{
+    int temp_a1 = ~arg1;
+    g_Sound_VoiceSchedulerState.ActiveChannelMask &= temp_a1;
+    g_Sound_VoiceSchedulerState.unk_Flags_0x10 &= temp_a1;
+    g_Sound_VoiceSchedulerState.NoiseVoiceFlags &= temp_a1;
+    g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= temp_a1;
+    g_Sound_VoiceSchedulerState.FmVoiceFlags &= temp_a1;
+    g_Sound_VoiceSchedulerState.KeyOnFlags &= temp_a1;
+    g_Sound_VoiceSchedulerState.KeyedFlags &= temp_a1;
+    arg0->unk28 = 0;
+    arg0->unk3C = 0;
+}
 
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
 #define SOUND_DEFAULT_DELAY_TIME (0x101) // 256 + 1

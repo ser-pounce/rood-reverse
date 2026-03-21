@@ -361,9 +361,9 @@ typedef struct {
     u_short ChannelPanSlideLength;
     u_short PitchSlideStepsCurrent;
     u_short Octave;
-    short PitchBendSlideLength;
+    u_short PitchBendSlideLength;
     u_short KeyStored;
-    short PortamentoSteps;
+    u_short PortamentoSteps;
     u_short SfxMask;
     short VibratoDelay;
     u_short VibratoDelayCurrent;
@@ -393,7 +393,7 @@ typedef struct {
     u_short LoopStackTop;
     u_short RandomPitchDepth;
     short LengthStored;
-    u_short LengthFixed;
+    short LengthFixed;
     short VolumeBalanceSlideStep;
     short unkDA;
     short unkDC;
@@ -411,7 +411,7 @@ typedef struct {
 } FSoundChannel;
 
 typedef struct {
-    char InstrumentIndex;
+    signed char InstrumentIndex;
     char Note;
     char AdsrAttackRate;
     char AdsrSustainRate;

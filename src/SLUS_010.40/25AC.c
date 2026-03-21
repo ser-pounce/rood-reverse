@@ -2583,7 +2583,7 @@ long func_80019A58(void)
 }
 
 // https://decomp.me/scratch/qmxvP
-int func_80019FC4(FSoundChannel* channel);
+char func_80019FC4(FSoundChannel* channel);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
 
 int func_8001A1F4(int arg0, int arg1)
@@ -2791,9 +2791,19 @@ int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
     return temp_v0;
 }
 
+// https://decomp.me/scratch/755HY
+void func_8001A8D8(FSoundChannel* arg0, int arg1);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A8D8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_CopyInstrumentInfoToChannel);
+void Sound_CopyInstrumentInfoToChannel(
+    FSoundChannel* arg0, FSoundInstrumentInfo* arg1, int arg2)
+{
+    arg0->VoiceParams.StartAddress = arg2;
+    arg0->VoiceParams.LoopAddress = arg1->LoopAddr;
+    arg0->VoiceParams.AdsrLower = arg1->AdsrLower;
+    arg0->VoiceParams.AdsrUpper = arg1->AdsrUpper;
+    arg0->VoiceParams.VoiceParamFlags |= 0x1FF80;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B094);
 

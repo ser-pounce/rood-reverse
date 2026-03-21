@@ -469,7 +469,7 @@ typedef struct {
     u_int FmChannelFlags;
     int RevDepth;
     int unk5C;
-    u_int A_Volume;
+    int A_Volume;
     int unk64;
     short unk68;
     short ReverbDepthSlideLength;
@@ -481,7 +481,7 @@ typedef struct {
     u_short TimerUpperCurrent;
     u_short TimerLower;
     u_short TimerLowerCurrent;
-    short TimerTopCurrent;
+    u_short TimerTopCurrent;
     int unk80;
     int unk84;
     int unk88;

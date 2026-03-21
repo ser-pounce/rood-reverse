@@ -101,7 +101,7 @@ extern short D_800358FE;
 extern CdlATV _cdlAtv;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
-extern u_short* g_Sound_SfxProgramOffsets;
+extern u_int* g_Sound_SfxProgramOffsets;
 extern u_short* g_Sound_SfxMetadataTable;
 extern char* g_Sound_SfxProgramData;
 extern int D_800378A0;
@@ -273,19 +273,64 @@ int func_80012024(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012034);
+void func_8001286C(u_long, int);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012080);
+u_int func_80012034(void* arg0, int arg1)
+{
+    u_int temp_v0;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800120B8);
+    D_800378C0.unk0 = arg0;
+    temp_v0 = func_80018C30(0x19);
+    func_8001286C(temp_v0, arg1);
+    return temp_v0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800120E8);
+u_int func_80012080(void* arg0, u_int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1;
+    D_800378C0.unk8 = arg2 & 0x7F;
+    return func_80018C30(0x1A);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012110);
+void func_800120B8(void* arg0, int arg1)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1;
+    func_80018C30(0x12);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001215C);
+u_int func_800120E8(void* arg0)
+{
+    D_800378C0.unk0 = arg0;
+    return func_80018C30(0x14);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001217C);
+void* func_80012110(void* arg0, int arg1)
+{
+    u_long v0;
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1;
+    func_80018C30(0x16);
+    v0 = D_800378C0.unk4 << 0x10;
+    v0 += (u_long)D_800378C0.unk0;
+    return (void*)v0;
+}
+
+void func_8001215C(void) { func_80018C30(0x17); }
+
+int func_8001217C(u_long arg0, int arg1, int arg2, int arg3)
+{
+    int temp_s0 = g_Sound_SfxProgramOffsets[arg0 & 0x3FF];
+    if (temp_s0 != -1) {
+        D_800378C0.unk0 = (void*)(arg0 & 0x3FF);
+        D_800378C0.unk4 = arg1 & 0xFFFFFF;
+        D_800378C0.unk8 = arg2 & 0xFF;
+        D_800378C0.unkC = arg3 & 0x7F;
+        func_80018C30(0x20);
+    }
+    return temp_s0;
+}
 
 int func_800121F0(void* arg0, int arg1, int arg2, int arg3)
 {
@@ -303,11 +348,45 @@ int func_800121F0(void* arg0, int arg1, int arg2, int arg3)
     return (u_long)var_v0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012288);
+void func_80012288(u_long arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    func_80018C30(0x21);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122C4);
+void func_800122C4(u_long arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0x3FF);
+    func_80018C30(0x30);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800122F0);
+int func_800122F0(void)
+{
+    FSoundChannel* var_a1;
+    int var_a0;
+    int var_v1;
+    int mask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+
+    var_a0 = mask == 0;
+    if (var_a0) {
+        return 0;
+    }
+
+    var_a1 = D_80035910;
+    var_a0 = 0;
+    var_v1 = 0x1000;
+
+    do {
+        if (mask & var_v1) {
+            var_a0 |= var_a1->unk28;
+        }
+        var_v1 *= 2;
+        ++var_a1;
+    } while (var_v1 & 0xFFFFFF);
+
+    return var_a0 & 0xFFFFFF;
+}
 
 int func_80012358(int arg0)
 {
@@ -338,71 +417,270 @@ int func_800123C8(vs_main_sfxContext* arg0)
     return ret;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", vs_sound_setMonoSound);
+void vs_sound_setMonoSound(int arg0)
+{
+    if (arg0 == 1) {
+        func_80018C30(0x81);
+    } else {
+        func_80018C30(0x80);
+    }
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012440);
+void func_80012440(void* arg0)
+{
+    D_800378C0.unk0 = arg0;
+    func_80018C30(0x90);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012468);
+void func_80012468(void* arg0)
+{
+    D_800378C0.unk0 = arg0;
+    func_80018C30(0x92);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012490);
+void func_80012490(u_int arg0)
+{
+    switch (arg0) {
+    case 1:
+        func_80018C30(0x9B);
+        break;
+    case 2:
+        func_80018C30(0x9D);
+        break;
+    case 3:
+        func_80018C30(0x9F);
+        break;
+    default:
+        func_80018C30(0x99);
+        break;
+    }
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800124FC);
+void func_800124FC(u_int arg0)
+{
+    switch (arg0) {
+    case 1:
+        func_80018C30(0x9A);
+        break;
+    case 2:
+        func_80018C30(0x9C);
+        break;
+    case 3:
+        func_80018C30(0x9E);
+        break;
+    default:
+        func_80018C30(0x98);
+        break;
+    }
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012568);
+int func_80012568(int arg0)
+{
+    if (arg0 != 0) {
+        g_Sound_GlobalFlags.MixBehavior |= 0x10;
+    } else {
+        g_Sound_GlobalFlags.MixBehavior &= ~0x10;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800125A8);
+void func_800125A8(u_long arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0x7F);
+    func_80018C30(0xA8);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800125D4);
+void func_800125D4(void* arg0, int arg1)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0x7F;
+    func_80018C30(0xA9);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012608);
+void func_80012608(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2 & 0x7F;
+    func_80018C30(0xA0);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001264C);
+void func_8001264C(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2;
+    D_800378C0.unkC = arg3 & 0x7F;
+    func_80018C30(0xA1);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012694);
+void func_80012694(int arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0xFF);
+    func_80018C30(0xAA);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800126C0);
+void func_800126C0(void* arg0, int arg1)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    func_80018C30(0xAB);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800126F4);
+void func_800126F4(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2 & 0xFF;
+    func_80018C30(0xA2);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012738);
+void func_80012738(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2;
+    D_800378C0.unkC = arg3 & 0xFF;
+    func_80018C30(0xA3);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012780);
+void func_80012780(int arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0xFF);
+    func_80018C30(0xAC);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800127AC);
+void func_800127AC(void* arg0, int arg1)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    func_80018C30(0xAD);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800127E0);
+void func_800127E0(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2 & 0xFF;
+    func_80018C30(0xA4);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012824);
+void func_80012824(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFFFFFF;
+    D_800378C0.unk8 = arg2;
+    D_800378C0.unkC = arg3 & 0xFF;
+    func_80018C30(0xA5);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001286C);
+void func_8001286C(u_long arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0x7F;
+    func_80018C30(0xC0);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800128A0);
+void func_800128A0(u_long arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1;
+    D_800378C0.unk8 = arg2 & 0x7F;
+    func_80018C30(0xC1);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800128D8);
+void func_800128D8(void* arg0, int arg1, int arg2, int arg3)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1;
+    D_800378C0.unk8 = arg2 & 0x7F;
+    D_800378C0.unkC = arg3 & 0x7F;
+    func_80018C30(0xC2);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012918);
+void func_80012918(int arg0)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    func_80018C30(0xC8);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012940);
+void func_80012940(int arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1;
+    func_80018C30(0xC9);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012970);
+void func_80012970(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1;
+    D_800378C0.unk8 = arg2;
+    func_80018C30(0xCA);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800129A4);
+void func_800129A4(int arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0xFF);
+    func_80018C30(0xD0);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800129D0);
+void func_800129D0(int arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    func_80018C30(0xD1);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012A04);
+void func_80012A04(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    D_800378C0.unk8 = arg2 & 0xFF;
+    func_80018C30(0xD2);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012A40);
+void func_80012A40(int arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0xFF);
+    func_80018C30(0xD4);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012A6C);
+int func_80012A6C(int arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    return func_80018C30(0xD5);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012AA0);
+void func_80012AA0(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    D_800378C0.unk8 = arg2 & 0xFF;
+    func_80018C30(0xD6);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012ADC);
+void func_80012ADC(int arg0)
+{
+    D_800378C0.unk0 = (void*)(arg0 & 0xFF);
+    func_80018C30(0xD8);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012B08);
+void func_80012B08(void* arg0, int arg1)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    func_80018C30(0xD9);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012B3C);
+void func_80012B3C(void* arg0, int arg1, int arg2)
+{
+    D_800378C0.unk0 = arg0;
+    D_800378C0.unk4 = arg1 & 0xFF;
+    D_800378C0.unk8 = arg2 & 0xFF;
+    func_80018C30(0xDA);
+}
 
 void func_80012B78(void) { func_80018C30(240); }
 
@@ -416,7 +694,46 @@ void func_80012BB8(void* arg0, int arg1)
 
 int vs_sound_spuTransferring(void) { return _isSpuTransfer; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012C14);
+int func_80012C14(u_int* arg0, int* arg1, int* arg2)
+{
+    int var_a3;
+
+    if (g_pActiveMusicConfig->ActiveChannelMask == 0) {
+        g_pActiveMusicConfig->StatusFlags &= ~0x60;
+    }
+
+    var_a3 = 0;
+
+    if ((arg0[7] >= 0x21U) || (arg0[5] > 0x20000U)) {
+        g_Sound_GlobalFlags.MixBehavior &= 0xFFFEFFFF;
+        D_80036770.unk4 = 0;
+        D_80036770.unk0 = 0;
+    } else {
+        if ((g_pActiveMusicConfig->StatusFlags & 0x20)
+            || (!(g_pActiveMusicConfig->StatusFlags & 0x40) && (D_80039AFC & 0x10000))) {
+            var_a3 = 1;
+            g_Sound_GlobalFlags.MixBehavior &= 0xFFFEFFFF;
+        } else {
+            g_Sound_GlobalFlags.MixBehavior |= 0x10000;
+        }
+    }
+    if (var_a3 == 0) {
+        *arg1 = 0x40;
+        *arg2 = 0x35100;
+        D_80036770.unk0 = arg0[1];
+        if (D_80036770.unk4 == arg0[1]) {
+            D_80036770.unk4 = 0;
+        }
+    } else {
+        *arg1 = 0x60;
+        *arg2 = 0x55100;
+        D_80036770.unk4 = arg0[1];
+        if (D_80036770.unk0 == arg0[1]) {
+            D_80036770.unk0 = 0;
+        }
+    }
+    return var_a3;
+}
 
 static int func_80012D9C(int* arg0, int* arg1, int* arg2, int arg3)
 {
@@ -1403,7 +1720,7 @@ void Sound_GetProgramCounters(
     in_SfxIndex &= 0x3FF;
     in_SfxIndex *= 2;
     block2 = g_Sound_SfxProgramData;
-    block0 = g_Sound_SfxProgramOffsets;
+    block0 = (u_short*)g_Sound_SfxProgramOffsets;
 
     *out_ProgramCounter1 =
         block0[in_SfxIndex] == 0xFFFF ? NULL : block2 + block0[in_SfxIndex];

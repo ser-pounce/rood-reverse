@@ -9480,7 +9480,7 @@ static int func_80044D94(void) { return func_80011F90(); }
 
 static void func_80044DB4(void) { func_80012004(); }
 
-static void func_80044DD4(void) { func_80012468(); }
+static void func_80044DD4(void* arg0) { func_80012468(arg0); }
 
 static int func_80044DF4(int id)
 {

@@ -2723,8 +2723,73 @@ int func_8001A4BC(FSoundInstrumentInfo* arg0, int arg1, u_int arg2, int* arg3)
     return (u_short)var_t0;
 }
 
-int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A64C);
+int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
+{
+    FSoundInstrumentInfo* temp_a0;
+    int temp_v0;
+    int temp_v0_2;
+    int temp_v1;
+    int temp_s2;
+    char* temp_s1;
+
+    temp_s1 = (char*)g_pActiveMusicConfig->KeymapTable;
+    temp_s1 += arg2 * 8;
+    g_pActiveMusicConfig->PendingKeyOnMask |= arg1;
+    if (g_pActiveMusicConfig->ActiveNoteMask & arg1) {
+        g_pActiveMusicConfig->PendingKeyOffMask |= arg1;
+    }
+
+    temp_s2 = arg0->UpdateFlags;
+    temp_v0_2 = func_8001A22C(g_pActiveMusicConfig->StatusFlags, (u_int)temp_s1[0]);
+    arg0->InstrumentIndex = temp_v0_2;
+    temp_a0 = &g_InstrumentInfo[temp_v0_2];
+    arg0->VoiceParams.StartAddress = temp_a0->StartAddr;
+    arg0->VoiceParams.LoopAddress = temp_a0->LoopAddr;
+
+    if (!(temp_s2 & 0x01000000)) {
+        arg0->VoiceParams.AdsrLower = temp_s1[2] << 8;
+    } else {
+        arg0->VoiceParams.AdsrLower &= 0x7F00;
+    }
+    arg0->VoiceParams.AdsrLower |= temp_a0->AdsrLower & 0x80FF;
+    if (!(temp_s2 & 0x08000000)) {
+        temp_v1 = arg0->VoiceParams.AdsrUpper & 0x201F;
+        arg0->VoiceParams.AdsrUpper = temp_v1;
+        arg0->VoiceParams.AdsrUpper = temp_v1 | (temp_s1[3] << 6);
+    } else {
+        arg0->VoiceParams.AdsrUpper &= 0x3FDF;
+    }
+
+    switch (temp_s1[4]) {
+    case 3:
+        arg0->VoiceParams.AdsrUpper |= 0x4000;
+        break;
+    case 5:
+        arg0->VoiceParams.AdsrUpper |= 0x8000;
+        break;
+    case 7:
+        arg0->VoiceParams.AdsrUpper |= 0xC000;
+        break;
+    }
+
+    if ((temp_s2 & 0x10000000) == 0) {
+        arg0->VoiceParams.AdsrUpper &= 0xFFE0;
+        arg0->VoiceParams.AdsrUpper |= temp_s1[5];
+    }
+
+    arg0->VoiceParams.AdsrUpper |= temp_a0->AdsrUpper & 0x20;
+    temp_v0 = func_8001A4BC(temp_a0, temp_s1[1], arg0->FineTune, &arg0->FinePitchDelta);
+    arg0->VoiceParams.VolumeScale = temp_s1[6];
+    arg0->ChannelPan = ((temp_s1[7] & 0x7F) + 0x40) << 8;
+
+    if (temp_s1[7] & 0x80) {
+        g_pActiveMusicConfig->ReverbChannelFlags |= arg1;
+    } else {
+        g_pActiveMusicConfig->ReverbChannelFlags &= ~arg1;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    return temp_v0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A8D8);
 

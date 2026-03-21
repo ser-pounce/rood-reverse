@@ -127,6 +127,7 @@ extern FSoundCommandParams D_80037788;
 extern int D_80037898;
 extern int D_8003789C;
 extern int D_80039B00;
+extern u_int D_8002F63C[];
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -2672,8 +2673,57 @@ void func_8001A258(FSoundChannel* arg0, u_int arg1)
     arg0->VoiceParams.VolumeScale = var_s0[7];
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A4BC);
+int func_8001A4BC(FSoundInstrumentInfo* arg0, int arg1, u_int arg2, int* arg3)
+{
+    int var_a0;
+    u_int temp_v0;
+    int var_t0;
 
+    var_a0 = arg1 - arg0->SampleNote;
+
+    while (var_a0 < 0) {
+        var_a0 += 0xC;
+    }
+
+    var_a0 = var_a0 % 12;
+    if (arg0->FineTune == 0) {
+        var_t0 = D_8002F63C[var_a0] << 8;
+    } else if (arg0->FineTune < 0) {
+        var_t0 = (D_8002F63C[var_a0] * (u_short)arg0->FineTune) >> 8;
+    } else {
+        temp_v0 = D_8002F63C[var_a0];
+        var_t0 = (temp_v0 * arg0->FineTune) >> 7;
+        var_t0 += temp_v0 << 8;
+    }
+
+    arg2 &= 0xFF;
+
+    if (arg2 != 0) {
+        if (arg2 < 0x80) {
+            *arg3 = (var_t0 * arg2) >> 7;
+        } else {
+            *arg3 = ((var_t0 * arg2) >> 8) - var_t0;
+        }
+    }
+
+    if (arg1 < arg0->SampleNote) {
+        for (; arg1 < arg0->SampleNote; arg1 += 0xC) {
+            *arg3 = *arg3 >> 1;
+            var_t0 = (var_t0 >> 1);
+        }
+    } else {
+        var_a0 = (arg1 - arg0->SampleNote) / 12;
+        if (var_a0 != 0) {
+            var_t0 <<= var_a0;
+            *arg3 <<= var_a0;
+        }
+    }
+    var_t0 >>= 8;
+    *arg3 >>= 8;
+    return (u_short)var_t0;
+}
+
+int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A64C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A8D8);

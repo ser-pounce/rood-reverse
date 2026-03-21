@@ -2805,7 +2805,12 @@ void Sound_CopyInstrumentInfoToChannel(
     arg0->VoiceParams.VoiceParamFlags |= 0x1FF80;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001B094);
+void func_8001B094(FSoundChannel* arg0, int arg1)
+{
+    arg0->InstrumentIndex = arg1;
+    Sound_CopyInstrumentInfoToChannel(
+        arg0, &g_InstrumentInfo[arg1], g_InstrumentInfo[arg1].StartAddr);
+}
 
 void Sound_ClearVoiceFromSchedulerState(FSoundChannel*, int);
 INCLUDE_ASM(

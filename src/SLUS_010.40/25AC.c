@@ -89,7 +89,7 @@ void func_80015BAC(void);
 void Sound_memcpy32(void*, void*, int);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
-int func_8001A22C(int, int);
+int func_8001A22C(int, u_int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 void func_8001A8D8(FSoundChannel*, int);
 
@@ -2581,6 +2581,7 @@ long func_80019A58(void)
     return var_s5;
 }
 
+// https://decomp.me/scratch/qmxvP
 int func_80019FC4(FSoundChannel* channel);
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
 
@@ -2597,7 +2598,13 @@ int func_8001A1F4(int arg0, int arg1)
     return arg1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A22C);
+int func_8001A22C(int arg0, u_int arg1)
+{
+    if ((arg0 & 0x40) && (arg1 >= 0x40) && (arg1 < 0x80)) {
+        return arg1 + 0x20;
+    }
+    return arg1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A258);
 

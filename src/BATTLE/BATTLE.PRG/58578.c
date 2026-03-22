@@ -20,7 +20,10 @@ typedef struct {
     char unk2D;
     char unk2E;
     char unk2F;
-    int unk30;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
     int unk34;
     int unk38;
     short unk3C;
@@ -66,7 +69,31 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1564);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1664);
+void func_800C58F8(int); /* extern */
+
+void func_800C1664(int arg0, int arg1, int arg2)
+{
+    int var_a0;
+    int var_v0;
+
+    var_a0 = arg0;
+    if (D_800EB9B8 != NULL) {
+        if (var_a0 >= 0x19) {
+            var_a0 = 0x18;
+        }
+        D_800EB9B8->unk2C = var_a0;
+        D_800EB9B8->unk40[0] = arg1;
+        if (D_800EB9B8->unk2D >= var_a0) {
+            var_v0 = 0;
+            if (var_a0 == 0) {
+                var_v0 = 0xFF;
+            }
+            D_800EB9B8->unk2D = var_v0;
+        }
+        D_800EB9B8->unk31 = arg2;
+        func_800C58F8(0);
+    }
+}
 
 void func_800C16DC(void)
 {

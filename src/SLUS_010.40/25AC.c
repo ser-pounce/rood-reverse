@@ -2441,7 +2441,16 @@ void func_8001833C(signed char* arg0)
     D_80036782 = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018358);
+void func_80018358(FSoundCommandParams* arg0)
+{
+    int temp_v0 = arg0->Param1;
+    int var_a1 = 1;
+    if (temp_v0 != 0) {
+        var_a1 = temp_v0;
+    }
+    D_8003677C = (((signed char)arg0->Param2 << 0x10) - g_Sound_TempoMultiplier) / var_a1;
+    D_80036782 = var_a1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800183C0);
 
@@ -2451,7 +2460,21 @@ void func_80018434(signed char* arg0)
     D_80036780 = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018450);
+void func_80018450(FSoundCommandParams* arg0)
+{
+    int temp_v0;
+    int var_a1;
+
+    temp_v0 = arg0->Param1;
+    var_a1 = 1;
+    if (temp_v0 != 0) {
+        var_a1 = temp_v0;
+    }
+    D_80036778 =
+        (int)(((signed char)arg0->Param2 << 0x10) - g_Sound_MasterPitchScaleQ16_16)
+        / var_a1;
+    D_80036780 = (short)var_a1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800184B8);
 

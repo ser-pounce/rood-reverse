@@ -596,6 +596,7 @@ g_Sound_TempoMultiplier = 0x80039AF0;
 g_Sound_GlobalFlags = 0x80039AF8;
 g_Sound_Cutscene_StreamState = 0x80039B08;
 g_Sound_VoiceChannelConfigs = 0x80039B68;
+g_Sound_VoiceModeFlags = 0x80039BD8; // size:0xC
 StCdIntrFlag = 0x80039C14;
 _trig_table = 0x80040210;
 rcos = 0x80040F24;

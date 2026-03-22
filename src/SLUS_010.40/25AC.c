@@ -93,7 +93,7 @@ int func_8001A22C(int, u_int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 void func_8001A8D8(FSoundChannel*, int);
 
-void func_80015220(int);
+void func_80015220();
 
 extern int _soundEvent;
 extern char _soundFlush[64];
@@ -162,6 +162,7 @@ extern int g_Sound_MasterPitchScaleQ16_16;
 extern int g_Sound_TempoMultiplier;
 extern int D_80039B48;
 extern int g_Sound_LfoPhase;
+extern FSoundVoiceModeFlags g_Sound_VoiceModeFlags;
 
 int InitSound(void)
 {
@@ -1217,7 +1218,8 @@ void SetVoiceParams(
     *p = in_VoiceParams->LoopAddress >> 3;
 }
 
-void SetVoiceParamsByFlags(u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams)
+void SetVoiceParamsByFlags(u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams,
+    int arg2 __attribute__((unused)))
 {
     int flags;
 
@@ -1552,7 +1554,8 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
 // https://decomp.me/scratch/VmgoV
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
 
-void Sound_ApplyMasterFadeToChannelVolume(FSoundChannelConfig* in_Context)
+void Sound_ApplyMasterFadeToChannelVolume(
+    FSoundChannelConfig* in_Context, FSoundChannel* arg1 __attribute__((unused)))
 {
     int Volume;
 
@@ -1565,7 +1568,8 @@ void Sound_ApplyMasterFadeToChannelVolume(FSoundChannelConfig* in_Context)
     in_Context->A_Volume = Volume;
 }
 
-void Sound_RestoreChannelVolumeFromMasterFade(FSoundChannelConfig* in_Config)
+void Sound_RestoreChannelVolumeFromMasterFade(
+    FSoundChannelConfig* in_Config, FSoundChannel* arg1 __attribute__((unused)))
 {
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
@@ -1739,6 +1743,7 @@ u_int func_80015D38(FSoundChannel* arg0, u_int arg1)
     return var_a3;
 }
 
+// https://decomp.me/scratch/1nmK4
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_LoadAkaoSequence);
 
 void Sound_KillMusicConfig(
@@ -3123,7 +3128,7 @@ long func_80019A58(void)
     if (((D_80039B00 | g_pActiveMusicConfig->ActiveNoteMask | D_80037898) != 0)
         || ((g_pSavedMousicConfig != NULL)
             && (g_pSavedMousicConfig->ActiveNoteMask != 0))) {
-        func_80015220(D_80037898);
+        func_80015220();
     }
     if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
         func_80019704(g_ActiveMusicChannels, 0);

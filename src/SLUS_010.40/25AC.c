@@ -784,7 +784,13 @@ int func_80012EF0(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013188);
+int func_80013188(void* arg0, int arg1) {
+    int sp10;
+    int sp14;
+    int temp_s0 = func_80012C14(arg0, &sp10, &sp14);
+    func_800135D8(arg0, arg1, sp10, sp14);
+    return temp_s0;
+}
 
 int func_800131DC(void* arg0, int arg1, int arg2)
 {

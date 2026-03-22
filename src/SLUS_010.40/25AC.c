@@ -128,6 +128,7 @@ extern int D_80037898;
 extern int D_8003789C;
 extern int D_80039B00;
 extern u_int D_8002F63C[];
+extern int D_80039BCC;
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -774,7 +775,12 @@ int func_80012EBC(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012EF0);
+int func_80012EF0(void)
+{
+    D_80039BCC = 0;
+    g_Sound_GlobalFlags.ControlLatches |= 1;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
 
@@ -815,15 +821,37 @@ void func_800132C4(void* arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013328);
+void func_80013328(void) { func_80018C30(0xE2); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013348);
+void func_80013348(int arg0)
+{
+    D_800378C0.unk0 = (void*)((arg0 & 0x7F) << 8);
+    func_80018C30(0xE4);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013378);
+void func_80013378(int arg0, int arg1)
+{
+    D_800378C0.unk0 = (void*)arg0;
+    D_800378C0.unk4 = (arg1 & 0x7F) << 8;
+    func_80018C30(0xE5);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800133B0);
+void func_800133B0(int arg0)
+{
+    D_800378C0.unk0 = (void*)((arg0 & 0xFF) << 8);
+    func_80018C30(0xE6);
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800133E0);
+u_int func_800133E0(u_int* arg0)
+{
+    int i;
+    FSoundChannel* var_a1 = D_80035910;
+
+    for (i = 0; i < 12; ++i) {
+        *arg0++ = (var_a1++)->unk3C;
+    }
+    return g_Sound_VoiceSchedulerState.ActiveChannelMask;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013418);
 
@@ -1452,7 +1480,19 @@ void UnassignVoicesFromChannels(FSoundChannel* in_pChannel, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001503C);
+int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
+{
+    u_int i;
+    for (i = 0; i < 32; i++) {
+        int v = 1;
+        if (voiceNumber == channels[i].VoiceParams.AssignedVoiceNumber) {
+            if (mask & (v << i)) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
 
@@ -1583,7 +1623,21 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015BAC);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015C9C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015D38);
+u_int func_80015D38(FSoundChannel* arg0, u_int arg1)
+{
+    u_int i;
+    u_int var_a3;
+
+    for (i = 0, var_a3 = 0; i < 32; ++i) {
+        if (arg1 & (1 << i)) {
+            if (arg0->VoiceParams.AssignedVoiceNumber < 0x18) {
+                var_a3 |= 1 << arg0->VoiceParams.AssignedVoiceNumber;
+            }
+        }
+        ++arg0;
+    }
+    return var_a3;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_LoadAkaoSequence);
 
@@ -2324,13 +2378,21 @@ void Sound_Cmd_AD_unk(FSoundCommandParams* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001833C);
+void func_8001833C(signed char* arg0)
+{
+    g_Sound_TempoMultiplier = *arg0 << 0x10;
+    D_80036782 = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018358);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800183C0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018434);
+void func_80018434(signed char* arg0)
+{
+    g_Sound_MasterPitchScaleQ16_16 = *arg0 << 0x10;
+    D_80036780 = 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018450);
 

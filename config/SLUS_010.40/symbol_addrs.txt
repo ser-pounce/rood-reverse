@@ -17,6 +17,7 @@ Sound_BindAkaoSfxBlob = 0x80011DEC;
 vs_sound_setMonoSound = 0x8001240C;
 vs_sound_spuTransferring = 0x80012C04;
 vs_sound_setCdVol = 0x80013230;
+Sound_CopyAndRelocateInstruments = 0x80013418;
 Sound_IsNotAkaoFile = 0x80013468;
 _spuWriteComplete = 0x8001347C;
 spuSetTransferCallback = 0x800134A0;

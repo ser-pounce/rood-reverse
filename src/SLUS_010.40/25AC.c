@@ -853,7 +853,19 @@ u_int func_800133E0(u_int* arg0)
     return g_Sound_VoiceSchedulerState.ActiveChannelMask;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80013418);
+void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
+    FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count)
+{
+    do {
+        in_B->StartAddr = in_A->StartAddr + in_AddrOffset;
+        in_B->LoopAddr = in_A->LoopAddr + in_AddrOffset;
+        *(int*)&in_B->FineTune = *(int*)&in_A->FineTune;
+        *(int*)&in_B->AdsrLower = *(int*)&in_A->AdsrLower;
+        in_A++;
+        in_B++;
+        in_Count--;
+    } while (in_Count != 0);
+}
 
 static int Sound_IsNotAkaoFile(int* data)
 {

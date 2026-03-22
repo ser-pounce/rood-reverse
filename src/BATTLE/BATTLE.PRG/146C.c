@@ -5810,10 +5810,10 @@ int vs_battle_getCurrentRoomId(void)
     return _getLocationId(_zoneContext.zndId, _zoneContext.mapId);
 }
 
-void func_8007C8A4(int arg0)
+void func_8007C8A4(int arg0, int arg1)
 {
     if ((vs_battle_actors[arg0] != 0) && (arg0 < 16)) {
-        func_800AE4FC(vs_battle_actors[arg0]->unk44);
+        func_800AE4FC(vs_battle_actors[arg0]->unk44, arg1);
     }
 }
 

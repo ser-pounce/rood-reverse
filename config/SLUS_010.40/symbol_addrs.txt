@@ -317,6 +317,7 @@ init_ring_status = 0x80022444;
 StGetNext = 0x80022484;
 StSetMask = 0x80022544;
 StCdInterrupt = 0x80022564;
+CdIntToPos = 0x80023054;
 CdPosToInt = 0x80023158;
 DS_CQ_flush = 0x80023300;
 DsInit = 0x800238C4;

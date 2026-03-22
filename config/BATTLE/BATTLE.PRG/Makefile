@@ -6,7 +6,7 @@ assetsDir := $(BUILD)/assets/$(battle.prg)
 $(buildDir)/%.o: CC1VER := 2.8.0-psx
 $(buildDir)/%.o: ASFLAGS += -no-pad-sections
 
-battle.prg_cdk := $(patsubst %, $(buildDir)/%.o, 30D14 3A1A0 40564)
+battle.prg_cdk := $(patsubst %, $(buildDir)/%.o, 30D14 3A1A0 40564 44F14)
 $(battle.prg_cdk): CC1VER := 2.7.2-cdk
 $(battle.prg_cdk): CC1FLAGS += -msoft-float
 

@@ -262,8 +262,7 @@ typedef struct {
     u_int KeyedFlags;
     u_int KeyOffFlags;
     u_int unk_Flags_0x10;
-    u_short unk14;
-    u_short unk16;
+    u_int unk14;
     u_int TempoAccumumulator;
     u_int NoiseVoiceFlags;
     u_int ReverbVoiceFlags;

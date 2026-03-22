@@ -92,6 +92,7 @@ int func_8001A1F4(int, int);
 int func_8001A22C(int, u_int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 void func_8001A8D8(FSoundChannel*, int);
+void Sound_SetReverbMode(int in_ReverbMode);
 
 void func_80015220();
 
@@ -934,6 +935,7 @@ int func_80013588(void* arg0, int arg1)
 // https://decomp.me/scratch/xpW1h
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 
+// https://decomp.me/scratch/nDizh
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
 static void StartSound(void)
@@ -1574,6 +1576,7 @@ void Sound_RestoreChannelVolumeFromMasterFade(
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
+// https://decomp.me/scratch/0wUZ7
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015220);
 
 void ChannelMaskToVoiceMaskFiltered(FSoundChannel* in_Channel, int* io_VoiceMask,
@@ -3151,7 +3154,7 @@ long func_80019A58(void)
     if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
         i = g_Sound_VoiceSchedulerState.ActiveChannelMask;
         g_Sound_VoiceSchedulerState.TempoAccumumulator +=
-            g_Sound_VoiceSchedulerState.unk16;
+            (g_Sound_VoiceSchedulerState.unk14 >> 0x10) & 0xFFFF;
         if ((g_Sound_VoiceSchedulerState.TempoAccumumulator & 0xFFFF0000)
             || (D_80039B64 & 4)) {
             g_Sound_VoiceSchedulerState.TempoAccumumulator &= 0xFFFF;

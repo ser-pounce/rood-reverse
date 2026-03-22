@@ -2,8 +2,11 @@
 #include "30D14.h"
 #include "../SLUS_010.40/main.h"
 
+int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
+
 extern char D_800E8F2C;
 extern char D_800E8FC0;
+extern char D_800F4448[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
@@ -17,7 +20,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099854);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099900);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099960);
+void func_80099960(void* arg0) { vs_main_memcpy(&D_800F4448, arg0, 0xE0); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009998C);
 
@@ -219,4 +222,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A11D8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A1280);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A13EC);
+int func_800A13EC(int arg0, int arg1, int* arg2, int arg3)
+{
+    int var_v0 = func_800A141C(arg0, arg1, arg2, arg3);
+    if (var_v0 < 0) {
+        return var_v0;
+    }
+    return 0;
+}

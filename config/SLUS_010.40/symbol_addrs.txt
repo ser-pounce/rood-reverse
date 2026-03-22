@@ -46,6 +46,7 @@ SetVoiceParams = 0x80013D04;
 SetVoiceParamsByFlags = 0x80013DB0;
 Sound_UpdateSlidesAndDelays = 0x80013ECC;
 Sound_StealQuietestVoice = 0x80014C58;
+Sound_FindFreeVoice = 0x80014D08;
 UnassignVoicesFromChannels = 0x80014FBC;
 Sound_ApplyMasterFadeToChannelVolume = 0x800151C0;
 Sound_RestoreChannelVolumeFromMasterFade = 0x80015210;

@@ -784,7 +784,8 @@ int func_80012EF0(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
 
-int func_80013188(void* arg0, int arg1) {
+int func_80013188(void* arg0, int arg1)
+{
     int sp10;
     int sp14;
     int temp_s0 = func_80012C14(arg0, &sp10, &sp14);
@@ -1464,7 +1465,34 @@ int Sound_StealQuietestVoice(int in_bForceFullScan)
     return out_VoiceIndex;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D08);
+int Sound_FindFreeVoice(int arg0)
+{
+    FSpuVoiceInfo* var_v1;
+
+    if (arg0 != 0) {
+        arg0 = 0;
+    } else {
+        arg0 = g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo;
+    }
+
+    var_v1 = &g_SpuVoiceInfo[arg0];
+
+    if (var_v1->pEnvx != 0) {
+        ++arg0;
+        while (1) {
+            if (arg0 >= 0x18) {
+                break;
+            }
+            ++var_v1;
+            ++arg0;
+            if (var_v1->pEnvx == 0) {
+                --arg0;
+                break;
+            }
+        }
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D70);
 

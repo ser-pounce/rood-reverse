@@ -1507,7 +1507,67 @@ int Sound_FindFreeVoice(int arg0)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80014D70);
+void func_8001436C(FSoundChannel*, int);
+
+void func_80014D70(
+    FSoundChannel* in_pChannel, u_int in_Flags1, u_int in_Flags2, u_int* out_KeyOnFlags)
+{
+    u_int* new_var = out_KeyOnFlags;
+    int var_s2 = 1;
+    int var_s5 = 0;
+    int sp10 = in_Flags1 & g_pActiveMusicConfig->PendingKeyOnMask;
+
+    do {
+        if (in_Flags1 & var_s2) {
+            func_8001436C(in_pChannel, var_s2);
+            if (in_pChannel->VoiceParams.VoiceParamFlags != 0) {
+                if (D_800378E4 & var_s2) {
+                    in_pChannel->VoiceParams.Volume.right = 0;
+                    in_pChannel->VoiceParams.Volume.left = 0;
+                }
+                if (sp10 & var_s2) {
+                    if (in_Flags2 & var_s2) {
+                        *new_var |= 1 << var_s5;
+                        in_pChannel->VoiceParams.AssignedVoiceNumber = var_s5;
+                    } else {
+                        int temp_s0 = g_pActiveMusicConfig->KeyedMask & var_s2;
+                        int var_a0 = Sound_FindFreeVoice(temp_s0);
+                        if ((var_a0 == 0x18)
+                            && (g_pActiveMusicConfig->StatusFlags |= 2,
+                                var_a0 = Sound_StealQuietestVoice(temp_s0),
+                                (var_a0 == 0x18))) {
+                            in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
+                            g_pActiveMusicConfig->StatusFlags |= 1;
+                        } else {
+                            *new_var |= 1 << var_a0;
+                            in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
+                            g_SpuVoiceInfo[var_a0].pEnvx = 0x7FFF;
+                        }
+                    }
+                    if (in_pChannel->VoiceParams.AssignedVoiceNumber < 0x18) {
+                        SetVoiceParams(in_pChannel->VoiceParams.AssignedVoiceNumber,
+                            &in_pChannel->VoiceParams,
+                            in_pChannel->VoiceParams.VolumeScale);
+                        g_Sound_VoiceChannelConfigs[in_pChannel->VoiceParams
+                                                        .AssignedVoiceNumber] =
+                            g_pActiveMusicConfig;
+                        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+                    }
+                } else {
+                    if (in_pChannel->VoiceParams.AssignedVoiceNumber < 0x18) {
+                        SetVoiceParamsByFlags(
+                            in_pChannel->VoiceParams.AssignedVoiceNumber,
+                            &in_pChannel->VoiceParams, in_pChannel->UpdateFlags);
+                    }
+                }
+            }
+            in_Flags1 &= ~var_s2;
+        }
+        var_s2 *= 2;
+        ++in_pChannel;
+        ++var_s5;
+    } while (in_Flags1 != 0);
+}
 
 void UnassignVoicesFromChannels(FSoundChannel* in_pChannel, int arg1)
 {

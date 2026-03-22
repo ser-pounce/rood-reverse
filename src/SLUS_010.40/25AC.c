@@ -1508,7 +1508,18 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800151C0);
+void Sound_ApplyMasterFadeToChannelVolume(FSoundChannelConfig* in_Context)
+{
+    int Volume;
+
+    Volume = in_Context->A_Volume;
+    g_Sound_MasterFadeTimer.SavedValue = in_Context->A_Volume;
+    Volume >>= 16;
+    Volume *= g_Sound_MasterFadeTimer.Value >> 8;
+    Volume /= 127;
+    Volume <<= 8;
+    in_Context->A_Volume = Volume;
+}
 
 void Sound_RestoreChannelVolumeFromMasterFade(FSoundChannelConfig* in_Config)
 {

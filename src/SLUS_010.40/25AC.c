@@ -765,7 +765,15 @@ static int func_80012D9C(int* arg0, int* arg1, int* arg2, int arg3)
     return arg3;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012E50);
+int func_80012E50(int arg0)
+{
+    if (D_80036770.unk0 == arg0) {
+        g_Sound_GlobalFlags.MixBehavior |= 0x10000;
+    } else if (D_80036770.unk4 == arg0) {
+        g_Sound_GlobalFlags.MixBehavior &= 0xFFFEFFFF;
+    }
+    return D_80039AFC & 0x10000;
+}
 
 int func_80012EBC(void)
 {
@@ -922,6 +930,7 @@ int func_80013588(void* arg0, int arg1)
     return -1;
 }
 
+// https://decomp.me/scratch/xpW1h
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
@@ -1540,6 +1549,7 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
     return 0;
 }
 
+// https://decomp.me/scratch/VmgoV
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
 
 void Sound_ApplyMasterFadeToChannelVolume(FSoundChannelConfig* in_Context)
@@ -1678,7 +1688,40 @@ u_short Sound_MapInstrumentToBaseSampleBank(u_int in_Flags, FSoundChannel* in_Ch
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015BAC);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015C9C);
+void func_8001B094(FSoundChannel* arg0, int arg1);
+
+void func_80015C9C(FSoundChannel* arg0, char* arg1)
+{
+    arg0->VolumeBalance = 0x6E00;
+    arg0->Volume = 0x32000000;
+    arg0->ProgramCounter = arg1;
+    arg0->Transpose = 0;
+    arg0->FineTune = 0;
+    arg0->PortamentoSteps = 0;
+    arg0->PitchSlide = 0;
+    arg0->PitchBendSlideTranspose = 0;
+    arg0->PitchSlideStepsCurrent = 0;
+    arg0->LengthFixed = 0;
+    arg0->LengthStored = 0;
+    arg0->ChannelVolumeSlideLength = 0;
+    arg0->FinePitchDelta = 0;
+    arg0->RandomPitchDepth = 0;
+    arg0->LoopStackTop = 0;
+    arg0->UpdateFlags = 0;
+    arg0->AutoPanVolume = 0;
+    arg0->SfxMask = 0;
+    arg0->OpcodeStepCounter = 0xFFFF;
+    arg0->VoiceParams.VolumeScale = 0;
+    arg0->AutoPanDepth = 0;
+    arg0->TremeloDepth = 0;
+    arg0->VibratoDepth = 0;
+    arg0->AutoPanDepthSlideLength = 0;
+    arg0->TremeloDepthSlideLength = 0;
+    arg0->VibratoDepthSlideLength = 0;
+    arg0->FmTimer = 0;
+    arg0->NoiseTimer = 0;
+    func_8001B094(arg0, 0);
+}
 
 u_int func_80015D38(FSoundChannel* arg0, u_int arg1)
 {
@@ -2452,7 +2495,19 @@ void func_80018358(FSoundCommandParams* arg0)
     D_80036782 = var_a1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800183C0);
+void func_800183C0(FSoundCommandParams* arg0)
+{
+    int var_a1;
+
+    var_a1 = 1;
+    if (arg0->Param2 != 0) {
+        var_a1 = arg0->Param1;
+    }
+    g_Sound_TempoMultiplier = (signed char)arg0->Param2 << 0x10;
+    D_8003677C =
+        (int)(((signed char)arg0->Param3 << 0x10) - g_Sound_TempoMultiplier) / var_a1;
+    D_80036782 = var_a1;
+}
 
 void func_80018434(signed char* arg0)
 {
@@ -2476,8 +2531,21 @@ void func_80018450(FSoundCommandParams* arg0)
     D_80036780 = (short)var_a1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800184B8);
+void func_800184B8(FSoundCommandParams* arg0)
+{
+    int var_a1;
 
+    var_a1 = 1;
+    if (arg0->Param2 != 0) {
+        var_a1 = arg0->Param1;
+    }
+    g_Sound_MasterPitchScaleQ16_16 = (signed char)arg0->Param2 << 0x10;
+    D_80036778 =
+        (((signed char)arg0->Param3 << 0x10) - g_Sound_MasterPitchScaleQ16_16) / var_a1;
+    D_80036780 = var_a1;
+}
+
+// https://decomp.me/scratch/zbb0j
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001852C);
 
 void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
@@ -2491,7 +2559,26 @@ void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018608);
+void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1);
+
+void func_80018608(void)
+{
+    FSoundChannel* var_s2;
+    int var_s1;
+    u_int i;
+
+    var_s2 = D_80035910;
+    var_s1 = 0x1000;
+    for (i = 0; i < 12; ++i, ++var_s2, var_s1 *= 2) {
+        if ((g_Sound_VoiceSchedulerState.ActiveChannelMask & var_s1)
+            && !(var_s2->unk28 & 0x02000000)) {
+            g_Sound_VoiceSchedulerState.KeyOffFlags |= var_s1;
+            Sound_ClearVoiceFromSchedulerState(var_s2, var_s1);
+            var_s2->UpdateFlags = 0;
+        }
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
 
 void Sound_Cmd_80_unk(FSoundCommandParams* in_Params __attribute__((unused)))
 {
@@ -3247,7 +3334,6 @@ int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
     FSoundInstrumentInfo* temp_a0;
     int temp_v0;
     int temp_v0_2;
-    int temp_v1;
     int temp_s2;
     char* temp_s1;
 
@@ -4795,8 +4881,22 @@ void SoundVM_XX_Unimplemented(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     SoundVM_A0_FinishChannel(in_pChannel, in_VoiceFlags);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", IRQCallbackProc);
+void IRQCallbackProc(void)
+{
+    int temp_a2;
 
+    if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
+        SpuSetIRQ(0);
+        SpuSetIRQCallback(NULL);
+        SetVoiceKeyOff(g_Sound_Cutscene_StreamState.VoicesInUseFlags);
+        temp_a2 = g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+        g_Sound_Cutscene_StreamState.VoicesInUseFlags = 0;
+        g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= ~temp_a2;
+        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    }
+}
+
+// https://decomp.me/scratch/OSu3P
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001CDD0);
 
 void func_8001CE60(void)

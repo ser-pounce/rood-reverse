@@ -551,10 +551,9 @@ typedef struct FAkaoHeader {
     /* 0x04 */ int unk_0x04; // -> StreamState.field8_0x20
     /* 0x08 */ char unk_0x08[0x8];
     /* 0x10 */ u_int TotalPages;
-    /* 0x14 */ char unk_0x14[0x4];
+    /* 0x14 */ int unk_0x14;
     /* 0x18 */ int unk_0x18; // -> StreamState.field2_0x8
-    /* 0x1C */ u_short SampleRate;
-    /* 0x1E */ char unk_0x1E[0x2];
+    /* 0x1C */ int SampleRate;
     /* 0x20 */ u_int CurrentPage;
     /* 0x24 */ char unk_0x24[0x4];
     /* 0x28 */ int unk_0x28; // outgoing voice reference for volume handoff

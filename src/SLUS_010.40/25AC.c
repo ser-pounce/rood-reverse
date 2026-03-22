@@ -3054,7 +3054,6 @@ void func_8001A258(FSoundChannel* arg0, u_int arg1)
 int func_8001A4BC(FSoundInstrumentInfo* arg0, int arg1, u_int arg2, int* arg3)
 {
     int var_a0;
-    u_int temp_v0;
     int var_t0;
 
     var_a0 = arg1 - arg0->SampleNote;
@@ -3063,15 +3062,15 @@ int func_8001A4BC(FSoundInstrumentInfo* arg0, int arg1, u_int arg2, int* arg3)
         var_a0 += 0xC;
     }
 
-    var_a0 = var_a0 % 12;
+    var_a0 %= 12;
+
     if (arg0->FineTune == 0) {
         var_t0 = D_8002F63C[var_a0] << 8;
     } else if (arg0->FineTune < 0) {
         var_t0 = (D_8002F63C[var_a0] * (u_short)arg0->FineTune) >> 8;
     } else {
-        temp_v0 = D_8002F63C[var_a0];
-        var_t0 = (temp_v0 * arg0->FineTune) >> 7;
-        var_t0 += temp_v0 << 8;
+        var_t0 = (D_8002F63C[var_a0] * arg0->FineTune) >> 7;
+        var_t0 += D_8002F63C[var_a0] << 8;
     }
 
     arg2 &= 0xFF;
@@ -3113,6 +3112,7 @@ int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
     temp_s1 = (char*)g_pActiveMusicConfig->KeymapTable;
     temp_s1 += arg2 * 8;
     g_pActiveMusicConfig->PendingKeyOnMask |= arg1;
+
     if (g_pActiveMusicConfig->ActiveNoteMask & arg1) {
         g_pActiveMusicConfig->PendingKeyOffMask |= arg1;
     }
@@ -3129,11 +3129,12 @@ int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
     } else {
         arg0->VoiceParams.AdsrLower &= 0x7F00;
     }
+
     arg0->VoiceParams.AdsrLower |= temp_a0->AdsrLower & 0x80FF;
+
     if (!(temp_s2 & 0x08000000)) {
-        temp_v1 = arg0->VoiceParams.AdsrUpper & 0x201F;
-        arg0->VoiceParams.AdsrUpper = temp_v1;
-        arg0->VoiceParams.AdsrUpper = temp_v1 | (temp_s1[3] << 6);
+        arg0->VoiceParams.AdsrUpper &= 0x201F;
+        arg0->VoiceParams.AdsrUpper |= temp_s1[3] << 6;
     } else {
         arg0->VoiceParams.AdsrUpper &= 0x3FDF;
     }
@@ -3169,9 +3170,203 @@ int func_8001A64C(FSoundChannel* arg0, int arg1, int arg2)
     return temp_v0;
 }
 
-// https://decomp.me/scratch/755HY
-void func_8001A8D8(FSoundChannel* arg0, int arg1);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001A8D8);
+extern u_short D_8002F620[];
+extern char D_8002F69C[];
+extern void (*D_800305E0[])(FSoundChannel*, int);
+extern void (*D_80030760[])(FSoundChannel*, int);
+
+void func_8001A8D8(FSoundChannel* arg0, int arg1)
+{
+    u_int sp10;
+    u_int temp_a2_2;
+    u_int temp_s0;
+    u_int temp_v0;
+    u_char* temp_a1;
+    int var_v1;
+    u_int temp_a1_2;
+    u_int temp_v1;
+    u_int temp_v1_6;
+    u_int var_s0;
+
+    do {
+        temp_a1 = arg0->ProgramCounter;
+        var_s0 = temp_a1[0];
+        arg0->ProgramCounter = ++temp_a1;
+
+        if (var_s0 >= 0xA0) {
+            temp_v1 = var_s0 - 0xF0;
+            if (var_s0 == 0xFE) {
+                temp_a2_2 = temp_a1[0];
+                arg0->ProgramCounter = temp_a1 + 1;
+                D_80030760[temp_a2_2](arg0, arg1);
+            } else {
+                if (temp_v1 < 0xE) {
+                    var_s0 = temp_v1 * 0xB;
+                    arg0->Length1 = temp_a1[0];
+                    arg0->ProgramCounter = temp_a1 + 1;
+                } else {
+                    if (var_s0 == 0xFF) {
+                        var_s0 = 0xA0;
+                    } else if ((var_s0 == 0xCA) && (arg0->UpdateFlags & 0x200000)) {
+                        var_s0 = 0xA0;
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= arg1;
+                    }
+                    D_800305E0[var_s0 - 0xA0](arg0, arg1);
+                }
+            }
+        }
+        ++arg0->OpcodeStepCounter;
+    } while (var_s0 > 0xA0);
+
+    if (var_s0 == 0xA0) {
+        if (arg0->Type == 0) {
+            g_pActiveMusicConfig->PendingKeyOffMask |= arg1;
+        }
+    } else {
+        temp_a2_2 = func_80019FC4(arg0);
+        if (arg0->LengthFixed != 0) {
+            arg0->Length1 = arg0->Length2 = arg0->LengthFixed;
+        }
+        if (arg0->Length1 != 0) {
+            if ((temp_a2_2 >= 0x8F) || ((temp_a2_2 < 0x84) && !(arg0->SfxMask & 5))) {
+                arg0->Length2 -= 2;
+            }
+        } else {
+            int tmp = D_8002F620[var_s0 % 11];
+            arg0->Length1 = tmp;
+            var_v1 = tmp;
+            if (((temp_a2_2 - 0x84) >= 0xB) && !(arg0->SfxMask & 5)) {
+                var_v1 -= 2;
+            }
+            arg0->Length2 = var_v1;
+        }
+        if ((arg0->Type == 0) && (arg0->UpdateFlags & 0x40)) {
+            arg0->Length2 = arg0->Length1;
+        }
+
+        arg0->LengthStored = arg0->Length1;
+        arg0->VoiceParams.VoiceParamFlags |= 0x4000;
+
+        if (var_s0 >= 0x8F) {
+            if (arg0->Type == 0) {
+                g_pActiveMusicConfig->ActiveNoteMask &= ~arg1;
+                if (arg0->VoiceParams.AssignedVoiceNumber < 0x18) {
+                    g_pActiveMusicConfig->PendingKeyOffMask |= arg1;
+                }
+            }
+            arg0->PortamentoSteps = 0;
+            arg0->VibratoPitch = 0;
+            arg0->TremeloVolume = 0;
+            arg0->SfxMask &= 0xFFFD;
+            return;
+        }
+        if (var_s0 < 0x84) {
+            temp_a1_2 = arg0->UpdateFlags;
+            temp_v0 = arg0->Octave * 0xC;
+            temp_s0 = var_s0 / 11;
+            temp_s0 += temp_v0;
+            if (temp_a1_2 & 8) {
+                temp_a2_2 = func_8001A64C(arg0, arg1, temp_s0);
+            } else {
+                if (!(arg0->SfxMask & 2)) {
+                    if (arg0->Type == 0) {
+                        if (D_80039AFC & 0x10) {
+                            temp_s0 += *((signed char*)g_pActiveMusicConfig->unk44
+                                         + ((temp_s0) % 12));
+                        }
+                        if (temp_a1_2 & 0x1000) {
+                            func_8001A258(arg0, temp_s0);
+                        }
+                        g_pActiveMusicConfig->PendingKeyOnMask |= arg1;
+                        if ((g_pActiveMusicConfig->ActiveNoteMask & arg1)
+                            && (arg0->VoiceParams.AssignedVoiceNumber < 0x18)) {
+                            g_pActiveMusicConfig->PendingKeyOffMask |= arg1;
+                        }
+
+                        if (arg0->KeyOnVolumeSlideLength != 0) {
+                            arg0->ChannelVolumeSlideLength = arg0->KeyOnVolumeSlideLength;
+                            arg0->Volume = arg0->unk5C;
+                            arg0->VolumeSlideStep = arg0->unk60;
+                        }
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOnFlags |= arg1;
+                    }
+                    arg0->PitchSlideStepsCurrent = 0;
+                }
+
+                if ((arg0->PortamentoSteps != 0) && (arg0->KeyStored != 0)) {
+                    arg0->PitchBendSlideLength = arg0->PortamentoSteps;
+                    arg0->PitchBendSlideTranspose =
+                        ((arg0->Transpose + temp_s0) - arg0->KeyStored)
+                        - arg0->TransposeStored;
+                    arg0->Key =
+                        arg0->KeyStored - (arg0->Transpose - arg0->TransposeStored);
+                    temp_s0 = arg0->KeyStored + arg0->TransposeStored;
+                } else {
+                    arg0->Key = temp_s0;
+                    temp_s0 = temp_s0 + arg0->Transpose;
+                }
+
+                temp_a2_2 = func_8001A4BC(&g_InstrumentInfo[arg0->InstrumentIndex],
+                    temp_s0, arg0->FineTune, &arg0->FinePitchDelta);
+                if (arg0->RandomPitchDepth != 0) {
+                    sp10 = (temp_a2_2 * arg0->RandomPitchDepth) >> 8;
+                    sp10 *= D_8002F69C[g_Sound_LfoPhase];
+                    if (D_8002F69C[g_Sound_LfoPhase] & 0x80) {
+                        sp10 >>= 9;
+                        temp_a2_2 -= sp10;
+                    } else {
+                        sp10 >>= 7;
+                        temp_a2_2 += sp10;
+                    }
+                }
+            }
+            arg0->PitchBase = temp_a2_2;
+            if (arg0->Type == 0) {
+                g_pActiveMusicConfig->ActiveNoteMask |= arg1;
+            } else {
+                g_Sound_VoiceSchedulerState.KeyedFlags |= arg1;
+            }
+            temp_s0 = arg0->UpdateFlags;
+            arg0->VoiceParams.VoiceParamFlags |= 0x13;
+            if (temp_s0 & 1) {
+                temp_v1_6 = ((arg0->VibratoDepth & 0x7F00) >> 8);
+                arg0->VibratoBase = (!(arg0->VibratoDepth & 0x8000)
+                                            ? (temp_v1_6 * ((temp_a2_2 * 0xF) >> 8))
+                                            : (temp_v1_6 * temp_a2_2))
+                                 >> 7;
+                if (!(arg0->SfxMask & 2)) {
+                    arg0->VibratoWave = g_Sound_LfoTable[arg0->VibratoType];
+                    arg0->VibratoDelayCurrent = arg0->VibratoDelay;
+                    arg0->unkA4 = 1;
+                }
+            }
+            if ((temp_s0 & 2) && !(arg0->SfxMask & 2)) {
+                arg0->TremeloWave = g_Sound_LfoTable[arg0->TremeloType];
+                arg0->TremeloDelayCurrent = arg0->TremeloDelay;
+                arg0->unkB6 = 1;
+            }
+            arg0->VibratoPitch = 0;
+            arg0->TremeloVolume = 0;
+            arg0->PitchSlide = 0;
+        }
+
+        arg0->SfxMask = (arg0->SfxMask & 0xFFFD) | ((arg0->SfxMask & 1) * 2);
+        if (arg0->PitchBendSlideTranspose != 0) {
+            arg0->Key += arg0->PitchBendSlideTranspose;
+            temp_a2_2 = func_8001A4BC(&g_InstrumentInfo[arg0->InstrumentIndex],
+                arg0->Key + arg0->Transpose, arg0->FineTune, (int*)&sp10);
+            temp_a2_2 <<= 0x10;
+            arg0->PitchSlideStepsCurrent = arg0->PitchBendSlideLength;
+            arg0->PitchBendSlideTranspose = 0;
+            arg0->PitchSlideStep =
+                ((int)temp_a2_2 - ((arg0->PitchBase << 0x10) + arg0->PitchSlide))
+                / arg0->PitchSlideStepsCurrent;
+        }
+        arg0->KeyStored = arg0->Key;
+        arg0->TransposeStored = arg0->Transpose;
+    }
+}
 
 void Sound_CopyInstrumentInfoToChannel(
     FSoundChannel* arg0, FSoundInstrumentInfo* arg1, int arg2)

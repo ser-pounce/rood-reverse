@@ -28,9 +28,7 @@ VPYDIR    := tools/python
 VPYTHON   := $(VPYDIR)/bin/$(PYTHON)
 MAS       := $(VPYTHON) tools/maspsx/maspsx.py
 SPLAT     := $(VPYTHON) -m splat split
-IMPORT    := $(VPYTHON) tools/decomp-permuter/import.py
 VSSTRING  := $(VPYTHON) tools/etc/vsStringTransformer.py
-PERMUTE   := $(VPYTHON) tools/decomp-permuter/permuter.py
 DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
 MKPSXISO  := tools/mkpsxiso/build/Release/mkpsxiso
 
@@ -47,7 +45,6 @@ ASFLAGS         = -I include $(AS_DEPS) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
 MASFLAGS       := --aspsx-version=2.77 --macro-inc
 SPLATFLAGS     := --disassemble-all
-PERMUTEFLAGS   := -j8
 DUMPSXISOFLAGS  = -x data -s config/$(disk).xml
 FORMATFLAGS    := -i --style=file:tools/.clang-format
 RMFLAGS        := -Rf
@@ -65,7 +62,7 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 sourcedata := $(binaries:%=data/%)
-targets    = $(binaries:%=$(BUILD)/data/%)
+targets     = $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt)
 makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
 ifneq ($(wildcard $(BUILD)/src),)
@@ -75,12 +72,10 @@ compilers  := $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8
 build_deps := $(DUMPSXISO) $(VPYTHON) $(compilers)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
 
-src_from_target = $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$1)))
-
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all format sortsyms lintsrc decompme permute objdiff clean remake clean-all
+.PHONY: all format sortsyms lintsrc objdiff clean remake clean-all
 
 all: $(targets)
 ifndef NOCHECK
@@ -108,13 +103,6 @@ lintsrc:
 	$(ECHO) Linting source
 	$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
 		$(FORMAT) $(FORMATFLAGS)
-
-decompme: IMPORTFLAGS += --decompme --preserve-macros="NULL"
-decompme: $(call src_from_target,$(TARGET)) $(TARGET)
-	$(IMPORT) $(IMPORTFLAGS) $^
-
-permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))
-	$(PERMUTE) $(PERMUTEFLAGS) $<
 
 objdiff: all
 	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
@@ -208,9 +196,6 @@ $(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
 	$(ECHO) Assembling $@
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-nonmatchings/%/: $(call src_from_target,$(TARGET)) $(TARGET)
-	$(IMPORT) $(IMPORTFLAGS) $^
-
 ifndef PERMUTER
 .PRECIOUS: data/%
 $(sourcedata) &: | disks/$(disk).bin $(build_deps)
@@ -274,6 +259,8 @@ Makefile $(makefiles) $(deps):: ;
 %: s.%
 %: SCCS/s.%
 %.c: %.w %.ch
+
+include tools/make/permuter.mk
 
 include $(makefiles)
 ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)

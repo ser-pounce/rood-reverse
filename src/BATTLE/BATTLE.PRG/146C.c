@@ -558,6 +558,28 @@ typedef struct {
     int unk258[30];
 } D_800F1ABC_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    VECTOR position;
+    VECTOR lookAt;
+    int pitch;
+    int yaw;
+} camera_t;
+
+extern camera_t _camera;
+
 int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
 int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
 void func_8006DFE0(VECTOR*);
@@ -578,7 +600,7 @@ void _updateWeaponKillStreak(int);
 void func_8006D0A4(u_int*);
 void func_8006D9FC(VECTOR*, VECTOR*);
 int func_8006DB98(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
-int func_8006DEFC(SVECTOR*, int, int);
+int _stepTowardTarget(SVECTOR*, int, int);
 void func_8006E158(void);
 void func_8006EF5C(VECTOR*);
 int func_8006F204(void);
@@ -606,10 +628,10 @@ void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
-int func_8007A850(D_800F1904_t3*);
-void func_8007A9DC(VECTOR*, VECTOR*, VECTOR*);
-void func_8007AACC(VECTOR* arg0);
-void func_8007AAF8(VECTOR* arg0);
+int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3*);
+void _computeSphericalOffset(VECTOR*, VECTOR*, VECTOR*);
+void _setCameraPositionFromAngles(VECTOR* arg0);
+void _setCameraLookAtFromAngles(VECTOR* arg0);
 void func_8007AC94(int arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
@@ -889,7 +911,7 @@ void func_80069D14(void)
 
 void func_80069D78(void)
 {
-    func_8007A850(NULL);
+    vs_battle_syncCameraAnglesFromPosition(NULL);
     D_1F800000[4] = ((D_1F800000[4] & 0x7FFF) | (D_800F186C << 0x10));
 }
 
@@ -2405,22 +2427,22 @@ int func_8006DB98(SVECTOR* arg0, VECTOR* arg1, VECTOR* arg2, int arg3, int arg4)
     return sp40;
 }
 
-int func_8006DEFC(SVECTOR* arg0, int arg1, int arg2)
+int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
 {
-    VECTOR sp18;
-    VECTOR sp28;
+    VECTOR displacement;
+    VECTOR step;
 
-    if (func_8006DB98(arg0, &sp28, &sp18, arg1, arg2) != 0) {
-        D_1F800000[17] = _addMinDelta(D_1F800000[17], sp28.vx, sp18.vx);
-        D_1F800000[19] = _addMinDelta(D_1F800000[19], sp28.vz, sp18.vz);
-        D_1F800000[18] = _addMinDelta(D_1F800000[18], sp28.vy, sp18.vy);
+    if (func_8006DB98(targetPos, &step, &displacement, transformFlag, maxSpeed) != 0) {
+        _camera.lookAt.vx = _addMinDelta(_camera.lookAt.vx, step.vx, displacement.vx);
+        _camera.lookAt.vz = _addMinDelta(_camera.lookAt.vz, step.vz, displacement.vz);
+        _camera.lookAt.vy = _addMinDelta(_camera.lookAt.vy, step.vy, displacement.vy);
     } else {
-        D_1F800000[17] = _add_min(D_1F800000[17], sp28.vx, sp18.vx);
-        D_1F800000[19] = _add_min(D_1F800000[19], sp28.vz, sp18.vz);
-        D_1F800000[18] = _add_min(D_1F800000[18], sp28.vy, sp18.vy);
+        _camera.lookAt.vx = _add_min(_camera.lookAt.vx, step.vx, displacement.vx);
+        _camera.lookAt.vz = _add_min(_camera.lookAt.vz, step.vz, displacement.vz);
+        _camera.lookAt.vy = _add_min(_camera.lookAt.vy, step.vy, displacement.vy);
     }
-    if (D_1F800000[18] > 0) {
-        D_1F800000[18] = 0;
+    if (_camera.lookAt.vy > 0) {
+        _camera.lookAt.vy = 0;
     }
     return D_800F19D0.unk28;
 }
@@ -2491,7 +2513,7 @@ void func_8006E640(int arg0)
             sp20.vy = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vy;
             sp20.vz = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vz;
         }
-        func_8006DEFC(&sp20, 0, 0x28);
+        _stepTowardTarget(&sp20, 0, 0x28);
         break;
     case 2:
         func_8006E158();
@@ -2499,14 +2521,14 @@ void func_8006E640(int arg0)
         sp20.vy = D_800F19CC->unk2998.vy;
         sp20.vz = D_800F19CC->unk2998.vz;
         if (func_800C4734() == 1) {
-            func_8006DEFC(&sp20, 0, 8);
+            _stepTowardTarget(&sp20, 0, 8);
             return;
         }
-        func_8006DEFC(&sp20, 0, 0x28);
+        _stepTowardTarget(&sp20, 0, 0x28);
         break;
     case 11:
         func_8006E158();
-        func_8006DEFC(&sp20, 1, 0x28);
+        _stepTowardTarget(&sp20, 1, 0x28);
         break;
     case 4:
         func_8006E158();
@@ -2531,7 +2553,7 @@ int func_8006EBF8(void)
     sp20.vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     sp20.vz = sp10.unk0.unk8 << 0xC;
     func_8006DFE0(&sp20);
-    func_8007AACC(&D_800F19D0.unk0);
+    _setCameraPositionFromAngles(&D_800F19D0.unk0);
     return v;
 }
 
@@ -2586,7 +2608,7 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
     D_1F800000[13] = sp10.unk0.unk4 * ONE;
     D_1F800000[15] = sp10.unk0.unk8 * ONE;
     D_1F800000[14] = (sp10.unk0.unk6 - 0xB4) * ONE;
-    func_8007AAF8(&D_800F19D0.unk0);
+    _setCameraLookAtFromAngles(&D_800F19D0.unk0);
 }
 
 void func_8006EF10(void)
@@ -3636,7 +3658,7 @@ int func_80074120(void)
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
 
-    if ((func_8006DEFC(&sp10, 0, 0x28) == 0)
+    if ((_stepTowardTarget(&sp10, 0, 0x28) == 0)
         && (((func_800A0BE0(0) & 0x08000000) != 0))) {
         return 0;
     }
@@ -3650,7 +3672,7 @@ void func_8007418C(void)
     sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4;
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
-    func_8006DEFC(&sp10, 0, 0x28);
+    _stepTowardTarget(&sp10, 0, 0x28);
 }
 
 void func_800741D4(void)
@@ -3708,7 +3730,7 @@ int func_80074374(void)
     sp10.vx = sp18[2];
     sp10.vz = sp18[4];
     sp10.vy = sp18[3] - 0x5A;
-    temp_s0 = func_8006DEFC(&sp10, 1, 0x28);
+    temp_s0 = _stepTowardTarget(&sp10, 1, 0x28);
 
     if (func_8009E480() != 0) {
         return 0;
@@ -3794,7 +3816,7 @@ void func_800745EC(void)
         D_800F19C8 = 0;
         func_800A1108(0, &sp10);
         func_80074B14(0, &sp10.unk0.unk0.fields.unk0);
-        func_8007A850(&D_800F1904->unk6C);
+        vs_battle_syncCameraAnglesFromPosition(&D_800F1904->unk6C);
         if ((D_800F1904->unk6C.unk0.vx
                 - (D_800F1904->unk6C.unk0.vx - (D_800F1904->unk6C.unk0.vx % 512)))
             >= 0x101) {
@@ -3811,7 +3833,7 @@ void func_800745EC(void)
         D_800F1904->unk98 = D_800F1904->unk60;
         D_800F1904->unk9C = D_800F1904->unk64;
         D_800F1904->unkA0 = D_800F1904->unk68;
-        func_8007A9DC(&D_800F1904->unk0.unk0.unk0, &D_800F1904->unk0.unk0.unk10,
+        _computeSphericalOffset(&D_800F1904->unk0.unk0.unk0, &D_800F1904->unk0.unk0.unk10,
             &D_800F1904->unk6C.unk0);
         func_8006EF5C(&D_800F1904->unk0.unk0.unk0);
     }
@@ -4632,7 +4654,7 @@ void func_8007820C(int arg0)
 
     func_800780A8(&sp10);
     if (arg0 != 0) {
-        func_8006DEFC(&sp10, 1, 0x28);
+        _stepTowardTarget(&sp10, 1, 0x28);
     }
 }
 
@@ -4977,97 +4999,94 @@ void func_8007983C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
-int func_8007A850(D_800F1904_t3* arg0)
+int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3* arg0)
 {
-    VECTOR sp10;
-    VECTOR sp20;
-    int temp_s0;
-    int temp_v0_2;
-    int temp_v1;
+    VECTOR toCamera;
+    VECTOR toCameraNorm;
+    int yaw;
+    int pitch;
 
-    sp10.vx = (D_1F800000[13] - D_1F800000[17]) / ONE;
-    sp10.vz = (D_1F800000[15] - D_1F800000[19]) / ONE;
-    sp10.vy = (D_1F800000[14] - D_1F800000[18]) / ONE;
+    toCamera.vx = (_camera.position.vx - _camera.lookAt.vx) / ONE;
+    toCamera.vz = (_camera.position.vz - _camera.lookAt.vz) / ONE;
+    toCamera.vy = (_camera.position.vy - _camera.lookAt.vy) / ONE;
 
-    VectorNormal(&sp10, &sp20);
-    temp_s0 = ratan2(sp20.vx, sp20.vz);
-    temp_v1 = temp_s0 + 0x1000;
-    temp_s0 = temp_v1 / ONE;
-    temp_s0 = temp_v1 - (temp_s0 * ONE);
-    D_1F800000[22] = temp_s0;
-    temp_v0_2 = ratan2(
-        sp20.vy, SquareRoot12((sp20.vx * sp20.vx) / ONE + (sp20.vz * sp20.vz) / ONE));
-    D_1F800000[21] = temp_v0_2;
+    VectorNormal(&toCamera, &toCameraNorm);
+
+    yaw = ratan2(toCameraNorm.vx, toCameraNorm.vz);
+    yaw = (yaw + 0x1000) % ONE;
+    _camera.yaw = yaw;
+    pitch = ratan2(
+        toCameraNorm.vy, SquareRoot12((toCameraNorm.vx * toCameraNorm.vx) / ONE
+                                      + (toCameraNorm.vz * toCameraNorm.vz) / ONE));
+    _camera.pitch = pitch;
+
     if (arg0 != NULL) {
-        arg0->unk0.vx = temp_s0;
-        arg0->unk0.vy = temp_v0_2;
-        if (sp10.vx != 0) {
-            arg0->unk0.vz = (sp10.vx * ONE) / sp20.vx;
-        } else if (sp10.vz != 0) {
-            arg0->unk0.vz = (sp10.vz * ONE) / sp20.vz;
+        arg0->unk0.vx = yaw;
+        arg0->unk0.vy = pitch;
+        if (toCamera.vx != 0) {
+            arg0->unk0.vz = (toCamera.vx * ONE) / toCameraNorm.vx;
+        } else if (toCamera.vz != 0) {
+            arg0->unk0.vz = (toCamera.vz * ONE) / toCameraNorm.vz;
         } else {
             arg0->unk0.vz = 0x400;
         }
     }
-    return temp_s0;
+    return yaw;
 }
 
-void func_8007A9DC(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+void _computeSphericalOffset(VECTOR* outPosition, VECTOR* basePosition, VECTOR* angles)
 {
-    int temp_s0;
-
-    arg0->vx = rsin(arg2->vx);
-    arg0->vz = rcos(arg2->vx);
-    temp_s0 = rsin(arg2->vy);
-    arg0->vy = (temp_s0 * ONE) / rcos(arg2->vy);
-    VectorNormal(arg0, arg0);
-    arg0->vx = (arg0->vx * arg2->vz) + arg1->vx;
-    arg0->vz = (arg0->vz * arg2->vz) + arg1->vz;
-    arg0->vy = (arg0->vy * arg2->vz) + arg1->vy;
+    outPosition->vx = rsin(angles->vx);
+    outPosition->vz = rcos(angles->vx);
+    outPosition->vy = (rsin(angles->vy) * ONE) / rcos(angles->vy);
+    VectorNormal(outPosition, outPosition);
+    outPosition->vx = (outPosition->vx * angles->vz) + basePosition->vx;
+    outPosition->vz = (outPosition->vz * angles->vz) + basePosition->vz;
+    outPosition->vy = (outPosition->vy * angles->vz) + basePosition->vy;
 }
 
-void func_8007AACC(VECTOR* arg0)
+void _setCameraPositionFromAngles(VECTOR* spherical)
 {
-    func_8007A9DC((VECTOR*)D_1F800034, (VECTOR*)&D_1F800034[4], arg0);
+    _computeSphericalOffset(&_camera.position, &_camera.lookAt, spherical);
 }
 
-void func_8007AAF8(VECTOR* arg0)
+void _setCameraLookAtFromAngles(VECTOR* spherical)
 {
-    D_1F800000[17] = -rsin(arg0->vx);
-    D_1F800000[19] = -rcos(arg0->vx);
-    D_1F800000[18] = (-rsin(arg0->vy) * 0x1000) / rcos(arg0->vy);
-    VectorNormal((VECTOR*)(D_1F800000 + 0x11), (VECTOR*)(D_1F800000 + 0x11));
-    D_1F800000[17] = (D_1F800000[17] * arg0->vz) + D_1F800000[13];
-    D_1F800000[19] = (D_1F800000[19] * arg0->vz) + D_1F800000[15];
-    D_1F800000[18] = (D_1F800000[18] * arg0->vz) + D_1F800000[14];
+    _camera.lookAt.vx = -rsin(spherical->vx);
+    _camera.lookAt.vz = -rcos(spherical->vx);
+    _camera.lookAt.vy = (-rsin(spherical->vy) * 0x1000) / rcos(spherical->vy);
+    VectorNormal(&_camera.lookAt, &_camera.lookAt);
+    _camera.lookAt.vx = (_camera.lookAt.vx * spherical->vz) + _camera.position.vx;
+    _camera.lookAt.vz = (_camera.lookAt.vz * spherical->vz) + _camera.position.vz;
+    _camera.lookAt.vy = (_camera.lookAt.vy * spherical->vz) + _camera.position.vy;
 }
 
-void func_8007ABEC(int* arg0)
+void vs_battle_getCameraPosition(VECTOR* outPosition)
 {
-    arg0[0] = D_1F800000[13];
-    arg0[1] = D_1F800000[14];
-    arg0[2] = D_1F800000[15];
+    outPosition->vx = _camera.position.vx;
+    outPosition->vy = _camera.position.vy;
+    outPosition->vz = _camera.position.vz;
 }
 
-void func_8007AC18(int* arg0)
+void vs_battle_setCameraPosition(VECTOR* inPosition)
 {
-    D_1F800000[13] = arg0[0];
-    D_1F800000[14] = arg0[1];
-    D_1F800000[15] = arg0[2];
+    _camera.position.vx = inPosition->vx;
+    _camera.position.vy = inPosition->vy;
+    _camera.position.vz = inPosition->vz;
 }
 
-void func_8007AC40(int* arg0)
+void vs_battle_getCameraLookAt(VECTOR* outLookAt)
 {
-    arg0[0] = D_1F800000[17];
-    arg0[1] = D_1F800000[18];
-    arg0[2] = D_1F800000[19];
+    outLookAt->vx = _camera.lookAt.vx;
+    outLookAt->vy = _camera.lookAt.vy;
+    outLookAt->vz = _camera.lookAt.vz;
 }
 
-void func_8007AC6C(int* arg0)
+void vs_battle_setCameraLookAt(VECTOR* inLookAt)
 {
-    D_1F800000[17] = arg0[0];
-    D_1F800000[18] = arg0[1];
-    D_1F800000[19] = arg0[2];
+    _camera.lookAt.vx = inLookAt->vx;
+    _camera.lookAt.vy = inLookAt->vy;
+    _camera.lookAt.vz = inLookAt->vz;
 }
 
 void func_8007AC94(int arg0) { D_1F800000[23] = arg0; }
@@ -5995,7 +6014,7 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
     arg1->vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     arg1->vz = sp10.unk0.unk8 << 0xC;
     func_8006D9FC(arg1, arg1);
-    func_8007A9DC(arg0, arg1, &D_800F19D0.unk0);
+    _computeSphericalOffset(arg0, arg1, &D_800F19D0.unk0);
 }
 
 void func_8007CE74(int arg0)

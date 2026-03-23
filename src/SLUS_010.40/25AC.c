@@ -1512,7 +1512,6 @@ void func_8001436C(FSoundChannel*, int);
 void func_80014D70(
     FSoundChannel* in_pChannel, u_int in_Flags1, u_int in_Flags2, u_int* out_KeyOnFlags)
 {
-    u_int* new_var = out_KeyOnFlags;
     int var_s2 = 1;
     int var_s5 = 0;
     int sp10 = in_Flags1 & g_pActiveMusicConfig->PendingKeyOnMask;
@@ -1527,19 +1526,24 @@ void func_80014D70(
                 }
                 if (sp10 & var_s2) {
                     if (in_Flags2 & var_s2) {
-                        *new_var |= 1 << var_s5;
+                        *out_KeyOnFlags |= 1 << var_s5;
                         in_pChannel->VoiceParams.AssignedVoiceNumber = var_s5;
                     } else {
                         int temp_s0 = g_pActiveMusicConfig->KeyedMask & var_s2;
                         int var_a0 = Sound_FindFreeVoice(temp_s0);
-                        if ((var_a0 == 0x18)
-                            && (g_pActiveMusicConfig->StatusFlags |= 2,
-                                var_a0 = Sound_StealQuietestVoice(temp_s0),
-                                (var_a0 == 0x18))) {
-                            in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
-                            g_pActiveMusicConfig->StatusFlags |= 1;
+                        if (var_a0 == 0x18) {
+                            g_pActiveMusicConfig->StatusFlags |= 2;
+                            var_a0 = Sound_StealQuietestVoice(temp_s0);
+                            if (var_a0 == 0x18) {
+                                in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
+                                g_pActiveMusicConfig->StatusFlags |= 1;
+                            } else {
+                                *out_KeyOnFlags |= 1 << var_a0;
+                                in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
+                                g_SpuVoiceInfo[var_a0].pEnvx = 0x7FFF;
+                            }
                         } else {
-                            *new_var |= 1 << var_a0;
+                            *out_KeyOnFlags |= 1 << var_a0;
                             in_pChannel->VoiceParams.AssignedVoiceNumber = var_a0;
                             g_SpuVoiceInfo[var_a0].pEnvx = 0x7FFF;
                         }

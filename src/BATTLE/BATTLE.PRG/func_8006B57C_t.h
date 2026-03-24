@@ -49,7 +49,7 @@ typedef struct {
 
 typedef struct {
     u_short id;
-    char unk2;
+    char subId;
     char unk3;
     char gemEffects;
     signed char strength;
@@ -79,7 +79,7 @@ typedef struct {
     vs_battle_inventoryGrip grip;
     vs_battle_inventoryGem gems[3];
     char unk94[0x18];
-} vs_battle_setWeaponForDropRand;
+} vs_battle_lootedWeapon;
 
 typedef struct {
     u_char id;
@@ -117,7 +117,7 @@ typedef struct {
     char unk3;
     vs_battle_inventoryArmor shield;
     vs_battle_inventoryGem gems[3];
-} vs_battle_shieldForDropRand;
+} vs_battle_lootedShield;
 
 typedef struct {
     u_short id;
@@ -190,7 +190,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_inventoryArmor accessory;
-} _setAccessoryForDropRand_t;
+} vs_battle_lootedAccessory;
 
 typedef struct {
     char unk0;
@@ -198,7 +198,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_inventoryArmor armor;
-} _setArmorForDropRand_t;
+} vs_battle_lootedArmor;
 
 typedef struct {
     char unk0;
@@ -206,7 +206,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_inventoryBlade blade;
-} _setBladeForDropRand_t;
+} vs_battle_lootedBlade;
 
 typedef struct {
     char unk0;
@@ -214,7 +214,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_inventoryGrip grip;
-} _setGripForDropRand_t;
+} vs_battle_lootedGrip;
 
 typedef struct {
     char unk0;
@@ -222,18 +222,18 @@ typedef struct {
     char unk2;
     char unk3;
     vs_battle_inventoryGem gem;
-} _setGemForDropRand_t;
+} vs_battle_lootedGem;
 
 typedef struct {
-    vs_battle_setWeaponForDropRand weapon;
-    _setBladeForDropRand_t unkB0;
-    _setGripForDropRand_t unkE0;
-    vs_battle_shieldForDropRand shield; // 0xF0
-    _setArmorForDropRand_t armor[2]; // 0x170
-    _setAccessoryForDropRand_t accessory; // 0x1C8
-    _setGemForDropRand_t gem; // 0x1F4
+    vs_battle_lootedWeapon weapon;
+    vs_battle_lootedBlade unkB0;
+    vs_battle_lootedGrip unkE0;
+    vs_battle_lootedShield shield; // 0xF0
+    vs_battle_lootedArmor armor[2]; // 0x170
+    vs_battle_lootedAccessory accessory; // 0x1C8
+    vs_battle_lootedGem gem; // 0x1F4
     vs_battle_inventoryMisc misc[2]; // 0x214
     u_short unk21C;
     char unk21E;
     char unk21F;
-} func_8006BE64_t2;
+} vs_battle_loot;

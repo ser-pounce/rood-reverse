@@ -205,7 +205,7 @@ typedef struct {
 typedef struct func_801088D4_t {
     struct func_801088D4_t* next;
     int unk4;
-    func_8006BE64_t2 unk8;
+    vs_battle_loot unk8;
 } func_801088D4_t;
 
 int func_800C4794(SVECTOR*);
@@ -278,7 +278,7 @@ extern char D_800EB9AE;
 extern char D_800EB9AF;
 extern int D_800EB9B0;
 extern func_801088D4_t* D_800EB9C4;
-extern func_8006BE64_t2* D_800EB9C8;
+extern vs_battle_loot* D_800EB9C8;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];

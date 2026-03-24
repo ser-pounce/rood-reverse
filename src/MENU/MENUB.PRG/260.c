@@ -2490,7 +2490,7 @@ int _copyGemToInventory(vs_battle_inventoryGem* source, int item)
     return index;
 }
 
-int _copyWeaponToInventory(vs_battle_setWeaponForDropRand* arg0)
+int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
 {
     int i;
     vs_battle_inventoryWeapon* slot = _inventory->weapons;
@@ -2534,7 +2534,7 @@ int _copyArmorToInventory(vs_battle_inventoryArmor* source)
     return index;
 }
 
-int _copyShieldToInventory(vs_battle_shieldForDropRand* arg0)
+int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 {
     int i;
 
@@ -2755,7 +2755,7 @@ void func_8010837C(int arg0)
 
 int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
 
-void _applyDropList(func_8006BE64_t2* arg0)
+void _applyDropList(vs_battle_loot* arg0)
 {
     int i;
 

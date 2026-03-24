@@ -64,7 +64,7 @@ void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_battle_inventoryShield
     vs_main_bzero(temp, sizeof *temp);
 
     if (source != NULL) {
-        temp->unkC2 = source->index;
+        temp->index = source->index;
         vs_battle_copyInventoryArmorStats(&temp->base, &source->base);
         temp->material = source->base.material;
 

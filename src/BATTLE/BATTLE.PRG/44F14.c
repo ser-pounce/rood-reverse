@@ -18,7 +18,7 @@ void func_800AE68C(int arg0, int arg1) { func_800AE4FC(D_800F4538[arg0], arg1 + 
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE6C0);
 
-void func_800AE7D8(int arg0, int arg1, int arg2)
+void func_800AE7D8(void* arg0, int arg1, int arg2)
 {
     SVECTOR* temp_s0;
 

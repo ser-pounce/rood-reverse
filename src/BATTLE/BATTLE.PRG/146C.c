@@ -376,8 +376,8 @@ typedef struct {
 } func_80077DF0_t3;
 
 typedef struct {
-    VECTOR unk0;
-    func_80077DF0_t2 unk10;
+    VECTOR position;
+    VECTOR lookAt;
 } func_80077DF0_t;
 
 typedef struct {
@@ -439,11 +439,11 @@ typedef struct {
     } unk4;
 } D_800F18EC_t;
 
-typedef struct D_800F1900_t {
-    struct D_800F1900_t* unk0;
-    int unk4;
-    func_8006BE64_t2 unk8;
-} D_800F1900_t;
+typedef struct vs_battle_lootListNode {
+    struct vs_battle_lootListNode* next;
+    int actorId;
+    vs_battle_loot loot;
+} vs_battle_lootListNode;
 
 typedef struct {
     int unk0;
@@ -564,14 +564,7 @@ typedef struct {
     int unk8;
     int unkC;
     int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
+    MATRIX viewMatrix;
     VECTOR position;
     VECTOR lookAt;
     int pitch;
@@ -580,9 +573,9 @@ typedef struct {
 
 extern camera_t _camera;
 
-int func_8006BDA0(func_8006BE64_t2*, func_8006BE64_t3*);
-int func_8006BDF0(func_8006BE64_t2*, func_8006BDF0_t*);
-void func_8006DFE0(VECTOR*);
+int _dropMisc(vs_battle_loot*, vs_battle_lootedMisc*);
+int func_8006BDF0(vs_battle_loot*, func_8006BDF0_t*);
+void _snapLookAtToPosition(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
@@ -598,8 +591,8 @@ void func_8006B2D4(void);
 void _updateEnemyKills(vs_battle_actor*);
 void _updateWeaponKillStreak(int);
 void func_8006D0A4(u_int*);
-void func_8006D9FC(VECTOR*, VECTOR*);
-int func_8006DB98(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
+void _clampPositionToZoneBounds(VECTOR*, VECTOR*);
+int _computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
 int _stepTowardTarget(SVECTOR*, int, int);
 void func_8006E158(void);
 void func_8006EF5C(VECTOR*);
@@ -798,7 +791,7 @@ extern void* D_800F18E4;
 extern u_int D_800F18F0;
 extern char D_800F18F8;
 extern int D_800F18FC;
-extern D_800F1900_t* D_800F1900;
+extern vs_battle_lootListNode* _lootListHead;
 extern D_800F1904_t2* D_800F1904;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
@@ -912,7 +905,7 @@ void func_80069D14(void)
 void func_80069D78(void)
 {
     vs_battle_syncCameraAnglesFromPosition(NULL);
-    D_1F800000[4] = ((D_1F800000[4] & 0x7FFF) | (D_800F186C << 0x10));
+    _camera.unk10 = ((_camera.unk10 & 0x7FFF) | (D_800F186C << 0x10));
 }
 
 void func_80069DBC(void)
@@ -1015,7 +1008,7 @@ int _insertActor(vs_battle_actor* actor)
 {
     int i;
 
-    if ((actor->unk1C & 7) && (actor->active != 0)) {
+    if ((actor->unk1C & 7) && (actor->id != 0)) {
 
         for (i = 0; i < 16; ++i) {
             if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->next == actor)) {
@@ -1023,7 +1016,7 @@ int _insertActor(vs_battle_actor* actor)
             }
         }
 
-        if (actor->active != 0) {
+        if (actor->id != 0) {
             actor->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = actor;
         } else {
@@ -1038,7 +1031,7 @@ int _removeActor(vs_battle_actor* actor)
 {
     int i;
 
-    if (actor->active != 0) {
+    if (actor->id != 0) {
         for (i = 0; i < 16; ++i) {
             if (vs_battle_actors[i] != NULL && vs_battle_actors[i]->next == actor) {
                 vs_battle_actors[i]->next = actor->next;
@@ -1096,7 +1089,7 @@ void vs_battle_applyWeaponStats(
 
     target->wepId = source->blade.wepId;
     target->unk10C = source->unkF1;
-    target->unk10D = source->index;
+    target->index = source->index;
     target->blade.material = source->material;
     target->damageType = source->blade.damageType;
     target->skillType = source->blade.costType;
@@ -1153,9 +1146,9 @@ void vs_battle_applyShieldStats(
         vs_main_memcpy(&target->gems[i], &source->gems[i], sizeof target->gems[i]);
     }
 
-    target->unkD8 = source->base.wepId;
+    target->wepId = source->base.wepId;
     target->unkD9 = source->unkC1;
-    target->unkDA = source->unkC2;
+    target->index = source->index;
     target->base.material = source->material;
 
     for (i = 0; i < 4; ++i) {
@@ -1203,7 +1196,7 @@ void _applyAccessoryStats(vs_battle_equippedAccessory* target, _armorIntermediat
     target->currentStr = source->equip.strength;
     target->currentInt = source->equip.intelligence;
     target->currentAgility = source->equip.agility;
-    target->material = source->material;
+    target->unk36 = source->material;
     target->unk37 = source->unk31;
 
     for (i = 0; i < 4; ++i) {
@@ -1354,7 +1347,7 @@ void vs_battle_copyInventoryGemStats(
     int i;
 
     target->id = source->id;
-    target->subId = source->unk2;
+    target->subId = source->subId;
     target->gemEffects = source->gemEffects;
     target->strength = source->strength;
     target->intelligence = source->intelligence;
@@ -1412,7 +1405,7 @@ void vs_battle_applyShield(vs_battle_uiShield* target, vs_battle_inventoryShield
     vs_main_bzero(tempShield, sizeof *tempShield);
 
     if (source != NULL) {
-        tempShield->unkC2 = source->index;
+        tempShield->index = source->index;
         vs_battle_copyInventoryArmorStats(&tempShield->base, &source->base);
         tempShield->material = source->base.material;
         for (i = 0; i < 3; ++i) {
@@ -1594,7 +1587,7 @@ void vs_battle_copyEquippedGemStats(
     int i;
 
     target->id = source->id;
-    target->unk2 = source->subId;
+    target->subId = source->subId;
     target->gemEffects = source->gemEffects;
     target->strength = source->strength;
     target->intelligence = source->intelligence;
@@ -1704,7 +1697,7 @@ void vs_battle_copyEquippedAccessoryStats(
     }
 }
 
-int _setWeaponForDropRand(vs_battle_setWeaponForDropRand* arg0, vs_battle_uiWeapon* arg1)
+int _dropWeaponRand(vs_battle_lootedWeapon* arg0, vs_battle_uiWeapon* arg1)
 {
     int i;
 
@@ -1723,7 +1716,7 @@ int _setWeaponForDropRand(vs_battle_setWeaponForDropRand* arg0, vs_battle_uiWeap
     return 0;
 }
 
-int _setShieldForDropRand(vs_battle_shieldForDropRand* arg0, vs_battle_uiShield* arg1)
+int _dropShieldRand(vs_battle_lootedShield* arg0, vs_battle_uiShield* arg1)
 {
     int i;
 
@@ -1740,10 +1733,9 @@ int _setShieldForDropRand(vs_battle_shieldForDropRand* arg0, vs_battle_uiShield*
     return 0;
 }
 
-int _setAccessoryForDropRand(
-    _setAccessoryForDropRand_t* arg0, vs_battle_equippedAccessory* arg1)
+int _dropAccessoryRand(vs_battle_lootedAccessory* arg0, vs_battle_equippedAccessory* arg1)
 {
-    if (vs_main_getRand(0xFF) < arg1->material) {
+    if (vs_main_getRand(0xFF) < arg1->unk36) {
         vs_battle_copyEquipmentStats(&arg0->accessory, &arg1->accessory);
         arg0->unk0 = 3;
         return 1;
@@ -1751,7 +1743,7 @@ int _setAccessoryForDropRand(
     return 0;
 }
 
-int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_uiArmor* arg1)
+int _dropArmorRand(vs_battle_lootedArmor* arg0, vs_battle_uiArmor* arg1)
 {
     int i;
 
@@ -1767,7 +1759,7 @@ int _setArmorForDropRand(_setArmorForDropRand_t* arg0, vs_battle_uiArmor* arg1)
     return 0;
 }
 
-int func_8006BDA0(func_8006BE64_t2* arg0, func_8006BE64_t3* arg1)
+int _dropMisc(vs_battle_loot* arg0, vs_battle_lootedMisc* arg1)
 {
     int ret;
     int i;
@@ -1775,10 +1767,10 @@ int func_8006BDA0(func_8006BE64_t2* arg0, func_8006BE64_t3* arg1)
     ret = 0;
 
     for (i = 0; i < 2; ++i) {
-        arg0->misc[i].id = arg1[i].unk0;
+        arg0->misc[i].id = arg1[i].id;
         if (arg0->misc[i].id) {
             ret = 1;
-            arg0->misc[i].index = arg1[i].unk2;
+            arg0->misc[i].index = arg1[i].index;
             arg0->misc[i].count = 3;
         }
     }
@@ -1786,7 +1778,7 @@ int func_8006BDA0(func_8006BE64_t2* arg0, func_8006BE64_t3* arg1)
     return ret;
 }
 
-int func_8006BDF0(func_8006BE64_t2* arg0, func_8006BDF0_t* arg1)
+int func_8006BDF0(vs_battle_loot* arg0, func_8006BDF0_t* arg1)
 {
     arg0->unk21C = arg1->unk0;
     if (arg0->unk21C) {
@@ -1799,48 +1791,46 @@ int func_8006BDF0(func_8006BE64_t2* arg0, func_8006BDF0_t* arg1)
     return 0;
 }
 
-void func_8006BE64(vs_battle_actor* arg0)
+void _dropLoot(vs_battle_actor* enemy)
 {
-    int var_a0;
     int i;
-    D_800F1900_t* temp_a0;
-    D_800F1900_t* var_v1;
-    vs_battle_actor2* temp_s2 = arg0->unk3C;
-    D_800F1900_t* temp_v0 = vs_main_allocHeapR(sizeof(D_800F1900_t));
 
-    if (temp_v0 != NULL) {
-        vs_main_bzero(temp_v0, sizeof(D_800F1900_t));
-        temp_v0->unk4 |= _setWeaponForDropRand(&temp_v0->unk8.weapon, &temp_s2->weapon);
-        temp_v0->unk4 |= _setShieldForDropRand(&temp_v0->unk8.shield, &temp_s2->shield);
-        temp_v0->unk4 |=
-            _setAccessoryForDropRand(&temp_v0->unk8.accessory, &temp_s2->accessory);
+    vs_battle_actor2* temp_s2 = enemy->unk3C;
+    vs_battle_lootListNode* lootList = vs_main_allocHeapR(sizeof(vs_battle_lootListNode));
+
+    if (lootList != NULL) {
+        vs_main_bzero(lootList, sizeof(vs_battle_lootListNode));
+        lootList->actorId |= _dropWeaponRand(&lootList->loot.weapon, &temp_s2->weapon);
+        lootList->actorId |= _dropShieldRand(&lootList->loot.shield, &temp_s2->shield);
+        lootList->actorId |=
+            _dropAccessoryRand(&lootList->loot.accessory, &temp_s2->accessory);
         for (i = 0; i < 6; ++i) {
             if (temp_s2->bodyParts[i].armor.armor.id != 0) {
-                temp_v0->unk4 |= _setArmorForDropRand(
-                    &temp_v0->unk8.armor[0], &temp_s2->bodyParts[i].armor);
+                lootList->actorId |=
+                    _dropArmorRand(lootList->loot.armor, &temp_s2->bodyParts[i].armor);
             }
         }
-        temp_v0->unk4 |= func_8006BDA0(&temp_v0->unk8, &temp_s2->unk958);
-        temp_v0->unk4 |= func_8006BDF0(&temp_v0->unk8, &temp_s2->unk960);
-        if (temp_v0->unk4 != 0) {
-            var_v1 = D_800F1900;
-            var_a0 = 1;
-            while (var_v1 != NULL) {
-                if (var_v1->unk4 == arg0->active) {
-                    var_a0 = 0;
+        lootList->actorId |= _dropMisc(&lootList->loot, &temp_s2->miscItem);
+        lootList->actorId |= func_8006BDF0(&lootList->loot, &temp_s2->unk960);
+        if (lootList->actorId != 0) {
+            vs_battle_lootListNode* node = _lootListHead;
+            int insertLoot = 1;
+            while (node != NULL) {
+                if (node->actorId == enemy->id) {
+                    insertLoot = 0;
                 }
-                var_v1 = var_v1->unk0;
+                node = node->next;
             }
-            if (var_a0 != 0) {
-                int new_var = arg0->active;
-                temp_a0 = D_800F1900;
-                D_800F1900 = temp_v0;
-                temp_v0->unk4 = new_var;
-                temp_v0->unk0 = temp_a0;
+            if (insertLoot != 0) {
+                int actorId = enemy->id;
+                vs_battle_lootListNode* next = _lootListHead;
+                _lootListHead = lootList;
+                lootList->actorId = actorId;
+                lootList->next = next;
                 return;
             }
         }
-        vs_main_freeHeapR(temp_v0);
+        vs_main_freeHeapR(lootList);
     }
 }
 
@@ -1889,16 +1879,16 @@ void _updateWeaponKillStreak(int arg0 __attribute__((unused)))
     }
 }
 
-void func_8006C1CC(int arg0, int arg1, int arg2)
+void _enemyDefeated(int arg0, int actorId, int arg2)
 {
-    vs_battle_actor* actor = vs_battle_actors[arg1];
-    if ((actor->unk27 != 0x80) && (actor->unk28 == 0)) {
+    vs_battle_actor* enemy = vs_battle_actors[actorId];
+    if ((enemy->unk27 != 0x80) && (enemy->unk28 == 0)) {
         if ((arg2 != 0) && (arg0 == 0)) {
-            _updateEnemyKills(actor);
+            _updateEnemyKills(enemy);
             _updateWeaponKillStreak(0);
         }
-        func_8006BE64(actor);
-        actor->unk28 = 1;
+        _dropLoot(enemy);
+        enemy->unk28 = 1;
     }
 }
 
@@ -2284,7 +2274,7 @@ int _add_min(int base, int a, int b)
     return base;
 }
 
-void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
+void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
 {
     int _[2] __attribute__((unused));
     int temp_a1;
@@ -2293,138 +2283,138 @@ void func_8006D9FC(VECTOR* arg0, VECTOR* arg1)
     int v;
 
     temp_a3 = (D_800F19D0.unk0.vz * ONE) / 2304;
-    temp_a1 = (_zoneContext.unk40.unk0 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (_zoneContext.unk40.unk4 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.bounds.minX << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.bounds.maxX << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
-        arg1->vx = (temp_a1 + temp_v1_2) >> 1;
+        outPos->vx = (temp_a1 + temp_v1_2) >> 1;
     } else {
-        if (arg0->vx < temp_a1) {
-            arg1->vx = temp_a1;
-        } else if (temp_v1_2 < arg0->vx) {
-            arg1->vx = temp_v1_2;
+        if (inPos->vx < temp_a1) {
+            outPos->vx = temp_a1;
+        } else if (temp_v1_2 < inPos->vx) {
+            outPos->vx = temp_v1_2;
         } else {
-            arg1->vx = arg0->vx;
+            outPos->vx = inPos->vx;
         }
     }
 
-    temp_a1 = (_zoneContext.unk40.unk2 << 0x13) + temp_a3 * 360;
-    temp_v1_2 = (_zoneContext.unk40.unk6 << 0x13) - temp_a3 * 360;
+    temp_a1 = (_zoneContext.bounds.minZ << 0x13) + temp_a3 * 360;
+    temp_v1_2 = (_zoneContext.bounds.maxZ << 0x13) - temp_a3 * 360;
 
     if (temp_v1_2 < temp_a1) {
-        arg1->vz = (temp_a1 + temp_v1_2) >> 1;
+        outPos->vz = (temp_a1 + temp_v1_2) >> 1;
     } else {
-        if (arg0->vz < temp_a1) {
-            arg1->vz = temp_a1;
-        } else if (temp_v1_2 < arg0->vz) {
-            arg1->vz = temp_v1_2;
+        if (inPos->vz < temp_a1) {
+            outPos->vz = temp_a1;
+        } else if (temp_v1_2 < inPos->vz) {
+            outPos->vz = temp_v1_2;
         } else {
-            arg1->vz = arg0->vz;
+            outPos->vz = inPos->vz;
         }
     }
 
-    arg1->vx &= ~0xFFF;
-    arg1->vz &= ~0xFFF;
+    outPos->vx &= ~0xFFF;
+    outPos->vz &= ~0xFFF;
 
-    temp_a1 = arg0->vy - D_1F800000[18];
+    temp_a1 = inPos->vy - D_1F800000[18];
 
     v = 0xFFFA0000;
     if ((temp_a1 > 0x60000) || (temp_a1 < v)) {
-        arg1->vy = arg0->vy;
+        outPos->vy = inPos->vy;
     } else {
-        arg1->vy = D_1F800000[18];
+        outPos->vy = D_1F800000[18];
     }
-    if (arg1->vy > 0) {
-        arg1->vy = 0;
+    if (outPos->vy > 0) {
+        outPos->vy = 0;
     }
 }
 
-int func_8006DB98(SVECTOR* arg0, VECTOR* arg1, VECTOR* arg2, int arg3, int arg4)
+int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
+    VECTOR* outDisplacement, int clampToZone, int maxSpeed)
 {
-    SVECTOR sp10;
-    VECTOR sp18;
-    VECTOR sp28;
-    long sp38;
-    long sp3C;
-    long sp40;
-    int temp_a0;
-    int var_v0;
+    SVECTOR targetPosScaled;
+    VECTOR targetPosFixed;
+    VECTOR direction;
+    long sxy;
+    long p;
+    long notCentered;
 
-    sp18.vx = arg0->vx * ONE;
-    sp18.vz = arg0->vz * ONE;
-    sp18.vy = arg0->vy * ONE;
+    targetPosFixed.vx = targetPos->vx * ONE;
+    targetPosFixed.vz = targetPos->vz * ONE;
+    targetPosFixed.vy = targetPos->vy * ONE;
 
-    if (arg3 != 0) {
-        func_8006D9FC(&sp18, &sp18);
+    if (clampToZone != 0) {
+        _clampPositionToZoneBounds(&targetPosFixed, &targetPosFixed);
     }
 
-    sp10.vx = sp18.vx / ONE;
-    sp10.vz = sp18.vz / ONE;
-    sp10.vy = sp18.vy / ONE;
+    targetPosScaled.vx = targetPosFixed.vx / ONE;
+    targetPosScaled.vz = targetPosFixed.vz / ONE;
+    targetPosScaled.vy = targetPosFixed.vy / ONE;
 
-    SetRotMatrix((MATRIX*)&D_1F800000[5]);
-    SetTransMatrix((MATRIX*)&D_1F800000[5]);
-    RotTransPers(&sp10, &sp38, &sp3C, &sp40);
+    SetRotMatrix(&_camera.viewMatrix);
+    SetTransMatrix(&_camera.viewMatrix);
+    RotTransPers(&targetPosScaled, &sxy, &p, &notCentered);
 
-    if (arg3 == 0) {
-        temp_a0 = sp38 / 0x10000;
-        if (((sp38 - (temp_a0 * 0x10000)) - 0x3D) < 0xC7U) {
-            int new_var = 0xB4;
-            if ((temp_a0 >= 0x3D) && (temp_a0 < new_var)) {
-                sp40 = 0;
+    if (clampToZone == 0) {
+        int temp_a0 = sxy / 0x10000;
+        if (((sxy - (temp_a0 * 0x10000)) - 61) < 199U) {
+            int new_var = 180;
+            if ((temp_a0 > 60) && (temp_a0 < new_var)) {
+                notCentered = 0;
             } else {
-                sp40 = 1;
+                notCentered = 1;
             }
         } else {
-            sp40 = 1;
+            notCentered = 1;
         }
     } else {
-        sp40 = 1;
+        notCentered = 1;
     }
 
-    arg2->vx = (sp10.vx * ONE) - D_1F800000[17];
-    sp18.vx = arg2->vx / ONE;
-    arg2->vz = (sp10.vz * ONE) - D_1F800000[19];
-    sp18.vz = arg2->vz / ONE;
-    arg2->vy = (sp10.vy * ONE) - D_1F800000[18];
-    sp18.vy = arg2->vy / ONE;
+    outDisplacement->vx = (targetPosScaled.vx * ONE) - _camera.lookAt.vx;
+    targetPosFixed.vx = outDisplacement->vx / ONE;
+    outDisplacement->vz = (targetPosScaled.vz * ONE) - _camera.lookAt.vz;
+    targetPosFixed.vz = outDisplacement->vz / ONE;
+    outDisplacement->vy = (targetPosScaled.vy * ONE) - _camera.lookAt.vy;
+    targetPosFixed.vy = outDisplacement->vy / ONE;
 
-    VectorNormal(&sp18, &sp28);
+    VectorNormal(&targetPosFixed, &direction);
 
-    if (sp40 != 0) {
-        if (sp28.vx != 0) {
-            var_v0 = arg2->vx / sp28.vx;
-        } else if (sp28.vz != 0) {
-            var_v0 = arg2->vz / sp28.vz;
-        } else if (sp28.vy != 0) {
-            var_v0 = arg2->vy / sp28.vy;
+    if (notCentered) {
+        int distanceToTarget;
+        if (direction.vx != 0) {
+            distanceToTarget = outDisplacement->vx / direction.vx;
+        } else if (direction.vz != 0) {
+            distanceToTarget = outDisplacement->vz / direction.vz;
+        } else if (direction.vy != 0) {
+            distanceToTarget = outDisplacement->vy / direction.vy;
         } else {
-            var_v0 = 1;
+            distanceToTarget = 1;
         }
-        if (var_v0 >= 0x29) {
-            D_800F19D0.unk28 += 8;
-            if (arg4 < D_800F19D0.unk28) {
-                D_800F19D0.unk28 = arg4;
+        if (distanceToTarget > 40) {
+            D_800F19D0.speed += 8;
+            if (maxSpeed < D_800F19D0.speed) {
+                D_800F19D0.speed = maxSpeed;
             }
         } else {
-            D_800F19D0.unk28 -= 8;
-            if (D_800F19D0.unk28 < 8) {
-                D_800F19D0.unk28 = 8;
+            D_800F19D0.speed -= 8;
+            if (D_800F19D0.speed < 8) {
+                D_800F19D0.speed = 8;
             }
         }
-        arg1->vx = sp28.vx * D_800F19D0.unk28;
-        arg1->vz = sp28.vz * D_800F19D0.unk28;
-        arg1->vy = sp28.vy * D_800F19D0.unk28;
+        outStep->vx = direction.vx * D_800F19D0.speed;
+        outStep->vz = direction.vz * D_800F19D0.speed;
+        outStep->vy = direction.vy * D_800F19D0.speed;
     } else {
-        D_800F19D0.unk28 -= 8;
-        if (D_800F19D0.unk28 < 0) {
-            D_800F19D0.unk28 = 0;
+        D_800F19D0.speed -= 8;
+        if (D_800F19D0.speed < 0) {
+            D_800F19D0.speed = 0;
         }
-        arg1->vx = sp28.vx * D_800F19D0.unk28;
-        arg1->vz = sp28.vz * D_800F19D0.unk28;
-        arg1->vy = sp28.vy * D_800F19D0.unk28;
+        outStep->vx = direction.vx * D_800F19D0.speed;
+        outStep->vz = direction.vz * D_800F19D0.speed;
+        outStep->vy = direction.vy * D_800F19D0.speed;
     }
-    return sp40;
+    return notCentered;
 }
 
 int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
@@ -2432,7 +2422,9 @@ int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
     VECTOR displacement;
     VECTOR step;
 
-    if (func_8006DB98(targetPos, &step, &displacement, transformFlag, maxSpeed) != 0) {
+    if (_computeStepAndDisplacement(
+            targetPos, &step, &displacement, transformFlag, maxSpeed)
+        != 0) {
         _camera.lookAt.vx = _addMinDelta(_camera.lookAt.vx, step.vx, displacement.vx);
         _camera.lookAt.vz = _addMinDelta(_camera.lookAt.vz, step.vz, displacement.vz);
         _camera.lookAt.vy = _addMinDelta(_camera.lookAt.vy, step.vy, displacement.vy);
@@ -2444,49 +2436,49 @@ int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
     if (_camera.lookAt.vy > 0) {
         _camera.lookAt.vy = 0;
     }
-    return D_800F19D0.unk28;
+    return D_800F19D0.speed;
 }
 
-void func_8006DFE0(VECTOR* arg0)
+void _snapLookAtToPosition(VECTOR* arg0)
 {
     func_80077DF0_t sp10;
     int new_var;
 
-    func_8006D9FC(arg0, &sp10.unk0);
-    sp10.unk10.unk0[0] = sp10.unk0.vx - D_1F800000[17];
-    sp10.unk10.unk0[2] = sp10.unk0.vz - D_1F800000[19];
-    sp10.unk10.unk0[1] = sp10.unk0.vy - D_1F800000[18];
+    _clampPositionToZoneBounds(arg0, &sp10.position);
+    sp10.lookAt.vx = sp10.position.vx - _camera.lookAt.vx;
+    sp10.lookAt.vz = sp10.position.vz - _camera.lookAt.vz;
+    sp10.lookAt.vy = sp10.position.vy - _camera.lookAt.vy;
 
-    if (sp10.unk10.unk0[0] > 0x12000) {
-        D_1F800000[17] += 0x12000;
+    if (sp10.lookAt.vx > 0x12000) {
+        _camera.lookAt.vx += 0x12000;
     } else {
         new_var = 0xFFFEE000;
-        if (sp10.unk10.unk0[0] < new_var) {
-            D_1F800000[17] -= 0x12000;
+        if (sp10.lookAt.vx < new_var) {
+            _camera.lookAt.vx -= 0x12000;
         } else {
-            D_1F800000[17] = sp10.unk0.vx;
+            _camera.lookAt.vx = sp10.position.vx;
         }
     }
-    if (sp10.unk10.unk0[2] > 0x12000) {
-        D_1F800000[19] += 0x12000;
+    if (sp10.lookAt.vz > 0x12000) {
+        _camera.lookAt.vz += 0x12000;
     } else {
         new_var = 0xFFFEE000;
-        if (sp10.unk10.unk0[2] < new_var) {
-            D_1F800000[19] -= 0x12000;
+        if (sp10.lookAt.vz < new_var) {
+            _camera.lookAt.vz -= 0x12000;
         } else {
-            D_1F800000[19] = sp10.unk0.vz;
+            _camera.lookAt.vz = sp10.position.vz;
         }
     }
-    if (sp10.unk10.unk0[1] < 0) {
+    if (sp10.lookAt.vy < 0) {
         new_var = 0xFFFA0000;
-        if (sp10.unk10.unk0[1] < new_var) {
-            D_1F800000[18] += 0x60000 + sp10.unk10.unk0[1];
+        if (sp10.lookAt.vy < new_var) {
+            _camera.lookAt.vy += 0x60000 + sp10.lookAt.vy;
         }
-    } else if (sp10.unk10.unk0[1] > 0x60000) {
-        D_1F800000[18] -= 0x60000 - sp10.unk10.unk0[1];
+    } else if (sp10.lookAt.vy > 0x60000) {
+        _camera.lookAt.vy -= 0x60000 - sp10.lookAt.vy;
     }
-    if (D_1F800000[18] > 0) {
-        D_1F800000[18] = 0;
+    if (_camera.lookAt.vy > 0) {
+        _camera.lookAt.vy = 0;
     }
 }
 
@@ -2552,7 +2544,7 @@ int func_8006EBF8(void)
     sp20.vx = sp10.unk0.unk4 << 0xC;
     sp20.vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     sp20.vz = sp10.unk0.unk8 << 0xC;
-    func_8006DFE0(&sp20);
+    _snapLookAtToPosition(&sp20);
     _setCameraPositionFromAngles(&D_800F19D0.unk0);
     return v;
 }
@@ -2914,8 +2906,8 @@ void func_8006FA20(void)
 void func_8006FB48(void)
 {
     if (func_800BEBF4(0xAB) > 2) {
-        if (D_800F1900 != NULL) {
-            func_800CB158(D_800F1900);
+        if (_lootListHead != NULL) {
+            func_800CB158(_lootListHead);
             D_800F196C = 2;
             D_800F18F0 = 12;
             func_8006C39C();
@@ -4230,7 +4222,7 @@ vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int ar
         temp_v0->unk0.unk18 = 0xFE;
         temp_v0->unk0.unk1C = 0x10;
         temp_v0->unk0.unk40 = 0;
-        temp_v0->unk0.active = arg0;
+        temp_v0->unk0.id = arg0;
         temp_v0->unk0.next = NULL;
         temp_v0->unk0.unk26 = 0;
         sp10.unk0 = 6;
@@ -4269,7 +4261,7 @@ void func_80076D50(u_int arg0, int arg1, int arg2, int arg3, int arg4)
 
     temp_s1 = vs_battle_actors[arg0];
     temp_s0 = temp_s1->unk3C;
-    temp_s1->active = arg0;
+    temp_s1->id = arg0;
     temp_s1->unk18 = arg1;
     temp_s1->unk1A = 0;
     temp_s1->unk2A = arg2;
@@ -4346,7 +4338,7 @@ void func_80076F24(int arg0, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, i
     vs_battle_actor2* temp_s4;
 
     temp_s0 = vs_battle_actors[arg0];
-    temp_s0->active = arg0;
+    temp_s0->id = arg0;
     temp_s4 = temp_s0->unk3C;
     temp_s0->unk18 = arg1->unk2;
     temp_s0->unk1A = arg1->unk0;
@@ -4549,24 +4541,24 @@ vs_battle_actor* func_800774FC(
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
 
-int func_80077DF0(void)
+int _isLookAtAtDestination(void)
 {
     func_80077DF0_t sp10;
     func_8006EBF8_t sp30;
 
     func_800A1108(0, &sp30);
-    sp10.unk0.vx = sp30.unk0.unk4 * ONE;
-    sp10.unk0.vy = sp30.unk0.unk6 * ONE + 0xFFFA6000;
-    sp10.unk0.vz = sp30.unk0.unk8 * ONE;
-    if (sp10.unk0.vy > 0) {
-        sp10.unk0.vy = 0;
+    sp10.position.vx = sp30.unk0.unk4 * ONE;
+    sp10.position.vy = sp30.unk0.unk6 * ONE + 0xFFFA6000;
+    sp10.position.vz = sp30.unk0.unk8 * ONE;
+    if (sp10.position.vy > 0) {
+        sp10.position.vy = 0;
     }
-    func_8006D9FC(&sp10.unk0, &sp10.unk0);
-    sp10.unk10 = ((func_80077DF0_t3*)D_1F800000)->unk44;
+    _clampPositionToZoneBounds(&sp10.position, &sp10.position);
+    sp10.lookAt = _camera.lookAt;
 
-    if ((sp10.unk0.vx == (sp10.unk10.unk0[0] & ~0xFFF))
-        && (sp10.unk0.vz == (sp10.unk10.unk0[2] & ~0xFFF))
-        && (sp10.unk0.vy == (sp10.unk10.unk0[1] & ~0xFFF))) {
+    if ((sp10.position.vx == (sp10.lookAt.vx & ~0xFFF))
+        && (sp10.position.vz == (sp10.lookAt.vz & ~0xFFF))
+        && (sp10.position.vy == (sp10.lookAt.vy & ~0xFFF))) {
         return 1;
     }
     return 0;
@@ -4729,7 +4721,7 @@ void func_800784AC(void)
         if (D_800F19CC->unk2C0E == 0) {
             func_8007820C(1);
             func_800780A8(&sp18);
-            func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+            _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
             if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
                 && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                 func_8007138C();
@@ -4749,7 +4741,7 @@ void func_800784AC(void)
             }
             if (vs_main_projectionDistance == 0x300) {
                 func_800780A8(&sp18);
-                func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+                _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
                     && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                     func_8007138C();
@@ -4765,7 +4757,7 @@ void func_800784AC(void)
             }
             if (D_800F19D0.unk0.vz == 0x900) {
                 func_800780A8(&sp18);
-                func_8006DB98(&sp18, &sp30, &sp20, 1, 0x28);
+                _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0) && (D_800F19D0.unk10.vx == 0))
                     && ((D_800F19D0.unk10.pad == 1) || (D_800F19D0.unk10.pad == 3))) {
                     func_8007138C();
@@ -4951,7 +4943,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
     int ret = 0;
     if (vs_battle_actors[arg1] != NULL) {
         if (vs_battle_actors[arg1]->unk3C->currentHP == 0) {
-            func_8006C1CC(arg0, arg1, arg2);
+            _enemyDefeated(arg0, arg1, arg2);
             if (arg1 == 0) {
                 func_8009722C();
                 func_800BEC58(0x40, 0, NULL, 0);
@@ -5252,8 +5244,8 @@ void func_8007B63C(void)
 void func_8007B764(void)
 {
     if ((func_800BEBF4(0xAB) & 0xFF) >= 3) {
-        if (D_800F1900 != NULL) {
-            func_800CB158(D_800F1900);
+        if (_lootListHead != NULL) {
+            func_800CB158(_lootListHead);
             D_800F18F0 = 4;
             func_8007B410();
             return;
@@ -5355,36 +5347,36 @@ int func_8007B9FC(void)
 
 void func_8007BA98(int arg0, int arg1, int arg2, int arg3)
 {
-    D_800F1900_t* temp_a0;
-    D_800F1900_t* temp_v0;
+    vs_battle_lootListNode* temp_a0;
+    vs_battle_lootListNode* temp_v0;
 
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->unk8.misc[0].id = arg0;
+        temp_v0->loot.misc[0].id = arg0;
         if (arg0 & 0xFFFF) {
-            temp_v0->unk8.misc[0].index = arg1;
-            temp_v0->unk8.misc[0].count = 3;
-            temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
+            temp_v0->loot.misc[0].index = arg1;
+            temp_v0->loot.misc[0].count = 3;
+            temp_v0->actorId |= 1;
         }
-        temp_v0->unk8.misc[1].id = arg2;
+        temp_v0->loot.misc[1].id = arg2;
         if (arg2 & 0xFFFF) {
-            temp_v0->unk8.misc[1].index = arg3;
-            temp_v0->unk8.misc[1].count = 3;
-            temp_v0->unk4 = (int)(temp_v0->unk4 | 1);
+            temp_v0->loot.misc[1].index = arg3;
+            temp_v0->loot.misc[1].count = 3;
+            temp_v0->actorId |= 1;
         }
-        if (temp_v0->unk4 != 0) {
-            temp_a0 = D_800F1900;
-            temp_v0->unk4 = 0xFF;
-            D_800F1900 = temp_v0;
-            temp_v0->unk0 = temp_a0;
+        if (temp_v0->actorId != 0) {
+            temp_a0 = _lootListHead;
+            temp_v0->actorId = 0xFF;
+            _lootListHead = temp_v0;
+            temp_v0->next = temp_a0;
         } else {
             vs_main_freeHeapR(temp_v0);
         }
     }
-    if (D_800F1900 != NULL) {
+    if (_lootListHead != NULL) {
         D_800F1860 = 1;
-        func_800CB158(D_800F1900);
+        func_800CB158(_lootListHead);
         D_800F18F0 = 4;
         func_8007B410();
         return;
@@ -5902,7 +5894,7 @@ void func_8007CAA4(int arg0)
                 func_80077130(temp_s1, arg0, 0, 0, 0);
             }
             if (temp_s0->shield.base.id != 0) {
-                func_80077130(temp_s1, arg0, temp_s0->shield.unkD8, 1,
+                func_80077130(temp_s1, arg0, temp_s0->shield.wepId, 1,
                     temp_s0->shield.base.material);
             } else {
                 func_80077130(temp_s1, arg0, 0, 0, 0);
@@ -6013,7 +6005,7 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
     arg1->vx = sp10.unk0.unk4 << 0xC;
     arg1->vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
     arg1->vz = sp10.unk0.unk8 << 0xC;
-    func_8006D9FC(arg1, arg1);
+    _clampPositionToZoneBounds(arg1, arg1);
     _computeSphericalOffset(arg0, arg1, &D_800F19D0.unk0);
 }
 
@@ -9306,14 +9298,14 @@ int vs_battle_getSkillFlags(int arg0, int id)
 
 void func_8008A6FC(void)
 {
-    D_800F1900_t* var_a0 = D_800F1900;
+    vs_battle_lootListNode* var_a0 = _lootListHead;
 
     while (var_a0 != 0) {
-        D_800F1900_t* temp_s0 = var_a0->unk0;
+        vs_battle_lootListNode* temp_s0 = var_a0->next;
         vs_main_freeHeapR(var_a0);
         var_a0 = temp_s0;
     }
-    D_800F1900 = NULL;
+    _lootListHead = NULL;
 }
 
 void _loadZndTims(void* data)

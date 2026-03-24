@@ -276,7 +276,7 @@ typedef struct {
     char risk;
     char unk10B;
     char unk10C;
-    u_char unk10D;
+    u_char index;
     u_char damageType;
     u_char skillType;
     u_short currentPp;
@@ -299,9 +299,9 @@ typedef struct {
     int unk0[6];
     vs_battle_uiEquipment base; // 0x18
     vs_battle_uiEquipment gems[3]; // 0x48
-    char unkD8; // 0xD8
+    char wepId; // 0xD8
     char unkD9;
-    u_char unkDA;
+    u_char index;
     char unkDB;
     u_short currentDp;
     u_short maxDp;
@@ -356,7 +356,7 @@ typedef struct {
     short currentStr;
     short currentInt;
     short currentAgility;
-    char material;
+    char unk36;
     u_char unk37;
     u_short types[4];
     u_short classes[8];
@@ -364,10 +364,10 @@ typedef struct {
 } vs_battle_equippedAccessory;
 
 typedef struct {
-    u_short unk0;
-    char unk2;
+    u_short id;
+    char index;
     char unk3;
-} func_8006BE64_t3;
+} vs_battle_lootedMisc;
 
 typedef struct {
     u_short unk0;
@@ -429,14 +429,14 @@ typedef struct {
         } fields;
         u_int u32;
     } flags;
-    func_8006BE64_t3 unk958;
+    vs_battle_lootedMisc miscItem;
     int unk95C;
     func_8006BDF0_t unk960;
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {
     struct vs_battle_actor* next;
-    int active;
+    int id;
     char unk8;
     char unk9;
     char unkA;
@@ -529,11 +529,11 @@ typedef struct {
 } _enemy_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-} _zoneContext_t2;
+    short minX;
+    short minZ;
+    short maxX;
+    short maxZ;
+} _zoneContextBounds;
 
 typedef struct {
     int zndId;
@@ -553,7 +553,7 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    _zoneContext_t2 unk40;
+    _zoneContextBounds bounds;
     int unk48;
     int unk4C;
     int unk50;
@@ -582,7 +582,7 @@ typedef struct {
     VECTOR unk10;
     int unk20;
     int unk24;
-    int unk28;
+    int speed;
 } D_800F1904_t3;
 
 typedef struct {
@@ -615,7 +615,7 @@ typedef struct {
     vs_battle_uiEquipment gems[3];
     char material;
     char unkC1;
-    short unkC2;
+    short index;
 } vs_battle_shieldIntermediate;
 
 typedef struct {

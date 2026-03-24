@@ -47,14 +47,14 @@ void func_800FA448(void)
 
     temp_s1 = vs_battle_characterState->unk3C;
 
-    if (temp_s1->weapon.unk10D != 0) {
+    if (temp_s1->weapon.index != 0) {
         vs_battle_copyEquippedWeaponStats(
-            &vs_battle_inventory.weapons[temp_s1->weapon.unk10D - 1], &temp_s1->weapon);
+            &vs_battle_inventory.weapons[temp_s1->weapon.index - 1], &temp_s1->weapon);
     }
 
-    if (temp_s1->shield.unkDA != 0) {
+    if (temp_s1->shield.index != 0) {
         vs_battle_copyEquippedShieldStats(
-            &vs_battle_inventory.shields[temp_s1->shield.unkDA - 1], &temp_s1->shield);
+            &vs_battle_inventory.shields[temp_s1->shield.index - 1], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {

@@ -86,7 +86,7 @@ void IRQCallbackProc(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
-void Sound_memcpy32(void*, void*, int);
+void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, u_int);
@@ -2853,9 +2853,64 @@ void UpdateCdVolume(void)
     *CD_VOL_R = v;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memcpy32);
+void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size)
+{
+    int w0, w1, w2, w3;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_memswp32);
+    in_Size >>= 2;
+
+    while ((in_Size >> 2) != 0) {
+        w0 = ((int*)in_Src)[0];
+        w1 = ((int*)in_Src)[1];
+        w2 = ((int*)in_Src)[2];
+        w3 = ((int*)in_Src)[3];
+        ((int*)in_Dst)[0] = w0;
+        ((int*)in_Dst)[1] = w1;
+        ((int*)in_Dst)[2] = w2;
+        ((int*)in_Dst)[3] = w3;
+        in_Src += 0x10;
+        in_Dst += 0x10;
+        in_Size -= 4;
+    }
+
+    while (in_Size != 0) {
+        *(int*)in_Dst = *(int*)in_Src;
+        in_Dst += 4;
+        in_Src += 4;
+        in_Size--;
+    }
+}
+
+void Sound_memswp32(void* in_A, void* in_B, u_int in_Size)
+{
+    int a0, a1, b0, b1;
+
+    in_Size >>= 2;
+
+    while ((in_Size >> 1) != 0) {
+        a0 = ((int*)in_A)[0];
+        b0 = ((int*)in_B)[0];
+        a1 = ((int*)in_A)[1];
+        b1 = ((int*)in_B)[1];
+
+        ((int*)in_B)[0] = a0;
+        ((int*)in_B)[1] = a1;
+        ((int*)in_A)[0] = b0;
+        ((int*)in_A)[1] = b1;
+
+        in_A += 8;
+        in_B += 8;
+
+        in_Size -= 2;
+    }
+
+    if (in_Size != 0) {
+        a0 = *(int*)in_A;
+        b0 = *(int*)in_B;
+        *(int*)in_B = a0;
+        *(int*)in_A = b0;
+    }
+}
 
 void func_8001924C(void)
 {

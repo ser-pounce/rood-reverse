@@ -559,16 +559,19 @@ typedef struct {
 } D_800F1ABC_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    MATRIX viewMatrix;
-    VECTOR position;
-    VECTOR lookAt;
-    int pitch;
-    int yaw;
+    /* 0x00 */ int unk0;
+    /* 0x04 */ void* unk4;
+    /* 0x08 */ int unk8;
+    /* 0x0C */ int unkC;
+    /* 0x10 */ int unk10;
+    /* 0x14 */ MATRIX viewMatrix;
+    /* 0x34 */ VECTOR position;
+    /* 0x44 */ VECTOR lookAt;
+    /* 0x54 */ int pitch;
+    /* 0x58 */ int yaw;
+    /* 0x5C */ int unk5C;
+    /* 0x60 */ int unk60;
+    /* 0x64 */ int unk64;
 } camera_t;
 
 extern camera_t _camera;
@@ -866,8 +869,6 @@ extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
 
 extern int D_1F800000[];
-extern int D_1F800034[];
-extern int D_1F800064[];
 
 // invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle
 // Abilities or Items) invoked just before the skill takes effect
@@ -2316,13 +2317,13 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
     outPos->vx &= ~0xFFF;
     outPos->vz &= ~0xFFF;
 
-    temp_a1 = inPos->vy - D_1F800000[18];
+    temp_a1 = inPos->vy - _camera.lookAt.vy;
 
     v = 0xFFFA0000;
     if ((temp_a1 > 0x60000) || (temp_a1 < v)) {
         outPos->vy = inPos->vy;
     } else {
-        outPos->vy = D_1F800000[18];
+        outPos->vy = _camera.lookAt.vy;
     }
     if (outPos->vy > 0) {
         outPos->vy = 0;
@@ -2555,51 +2556,51 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
     int temp_a1;
     int var_a0;
 
-    if (vs_main_buttonsPreviousState & 0x1000) {
-        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy - 0x20) % ONE;
+    if (vs_main_buttonsPreviousState & PADLup) {
+        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy - 32) % ONE;
     }
-    if (vs_main_buttonsPreviousState & 0x4000) {
-        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy + 0x20) % ONE;
+    if (vs_main_buttonsPreviousState & PADLdown) {
+        D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy + 32) % ONE;
     }
-    if (vs_main_buttonsPreviousState & 0x8000) {
-        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx - 0x20) % ONE;
+    if (vs_main_buttonsPreviousState & PADLleft) {
+        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx - 32) % ONE;
     }
-    if (vs_main_buttonsPreviousState & 0x2000) {
-        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx + 0x20) % ONE;
+    if (vs_main_buttonsPreviousState & PADLright) {
+        D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx + 32) % ONE;
     }
     if (_portInfo->mode == 7) {
-        var_a0 = _portInfo->rStickX - 0x80;
-        temp_a1 = _portInfo->rStickY - 0x80;
+        var_a0 = _portInfo->rStickX - 128;
+        temp_a1 = _portInfo->rStickY - 128;
 
-        if ((_portInfo->rStickX - 0x40u) > 0x80) {
+        if ((_portInfo->rStickX - 64u) > 128) {
             if (var_a0 <= 0) {
-                var_a0 = _portInfo->rStickX - 0x40;
+                var_a0 = _portInfo->rStickX - 64;
             } else {
-                var_a0 = _portInfo->rStickX - 0xC0;
+                var_a0 = _portInfo->rStickX - 192;
             }
             D_800F19D0.unk0.vx = (D_800F19D0.unk0.vx + (var_a0 / 3)) % ONE;
         }
-        if ((temp_a1 + 0x40) > 0x80u) {
+        if ((temp_a1 + 64) > 128u) {
             if (temp_a1 <= 0) {
-                temp_a1 += 0x40;
+                temp_a1 += 64;
             } else {
-                temp_a1 -= 0x40;
+                temp_a1 -= 64;
             }
             D_800F19D0.unk0.vy = (D_800F19D0.unk0.vy + (temp_a1 / 3)) % ONE;
         }
     }
 
-    if (D_800F19D0.unk0.vy > 0x380) {
-        D_800F19D0.unk0.vy = 0x380;
-    } else if (D_800F19D0.unk0.vy < -0x380) {
-        D_800F19D0.unk0.vy = -0x380;
+    if (D_800F19D0.unk0.vy > 896) {
+        D_800F19D0.unk0.vy = 896;
+    } else if (D_800F19D0.unk0.vy < -896) {
+        D_800F19D0.unk0.vy = -896;
     }
 
     func_800AA850(0, D_800F19D0.unk0.vx & 0xFFF, 0);
     func_800A1108(0, &sp10);
-    D_1F800000[13] = sp10.unk0.unk4 * ONE;
-    D_1F800000[15] = sp10.unk0.unk8 * ONE;
-    D_1F800000[14] = (sp10.unk0.unk6 - 0xB4) * ONE;
+    _camera.position.vx = sp10.unk0.unk4 * ONE;
+    _camera.position.vz = sp10.unk0.unk8 * ONE;
+    _camera.position.vy = (sp10.unk0.unk6 - 180) * ONE;
     _setCameraLookAtFromAngles(&D_800F19D0.unk0);
 }
 
@@ -2620,9 +2621,9 @@ void func_8006EF5C(VECTOR* arg0)
 {
     VECTOR sp10;
 
-    sp10.vx = (arg0->vx - D_1F800000[13]) / ONE;
-    sp10.vz = (arg0->vz - D_1F800000[15]) / ONE;
-    sp10.vy = (arg0->vy - D_1F800000[14]) / ONE;
+    sp10.vx = (arg0->vx - _camera.position.vx) / ONE;
+    sp10.vz = (arg0->vz - _camera.position.vz) / ONE;
+    sp10.vy = (arg0->vy - _camera.position.vy) / ONE;
 
     VectorNormal(&sp10, &D_800F1904->unkC4);
 
@@ -2630,7 +2631,7 @@ void func_8006EF5C(VECTOR* arg0)
 
     copyVector(&D_800F1904->unkA4, arg0);
 
-    sp10.vy = arg0->vy - D_1F800000[14];
+    sp10.vy = arg0->vy - _camera.position.vy;
 
     D_800F1904->unkF4 = sp10.vy / (D_800F1904->unkC4.vy * D_800F1904->unkF0);
 
@@ -2645,11 +2646,11 @@ void func_8006EF5C(VECTOR* arg0)
     D_800F1904->unkB4.vz = (D_800F1904->unkB4.vz * 0x900) + D_800F1904->unkA4.vz;
     D_800F1904->unkB4.vy = (D_800F1904->unkB4.vy * 0x900) + D_800F1904->unkA4.vy;
 
-    D_800F1904->unkD4.vx = (D_800F1904->unkB4.vx - D_1F800000[17]) / D_800F1904->unkF4;
-    D_800F1904->unkD4.vz = (D_800F1904->unkB4.vz - D_1F800000[19]) / D_800F1904->unkF4;
-    D_800F1904->unkD4.vy = (D_800F1904->unkB4.vy - D_1F800000[18]) / D_800F1904->unkF4;
+    D_800F1904->unkD4.vx = (D_800F1904->unkB4.vx - _camera.lookAt.vx) / D_800F1904->unkF4;
+    D_800F1904->unkD4.vz = (D_800F1904->unkB4.vz - _camera.lookAt.vz) / D_800F1904->unkF4;
+    D_800F1904->unkD4.vy = (D_800F1904->unkB4.vy - _camera.lookAt.vy) / D_800F1904->unkF4;
 
-    D_800F1904->unkE4 = (D_800F1904->unkA0 - D_1F800000[25]) / D_800F1904->unkF4;
+    D_800F1904->unkE4 = (D_800F1904->unkA0 - _camera.unk64) / D_800F1904->unkF4;
     D_800F1904->unkE8 = (D_800F1904->unk98 - D_8005E0C8) / D_800F1904->unkF4;
     D_800F1904->unkEC =
         (D_800F1904->unk9C - vs_main_projectionDistance) / D_800F1904->unkF4;
@@ -2663,7 +2664,7 @@ int func_8006F204(void)
     int new_var;
     int _[4] __attribute__((unused));
 
-    temp_v0 = D_1F800000[14];
+    temp_v0 = _camera.position.vy;
     new_var = temp_v0 & (~0xFFF);
     temp_a0 = D_800F1904->unkA4.vy & ~0xFFF;
     temp_v1 = (temp_v0 + (D_800F1904->unkC4.vy * D_800F1904->unkF0)) & ~0xFFF;
@@ -2671,28 +2672,28 @@ int func_8006F204(void)
     if (((new_var >= temp_a0) && (temp_a0 >= temp_v1))
         || ((temp_a0 >= new_var) && (temp_v1 >= temp_a0))) {
 
-        D_1F800000[13] = D_800F1904->unkA4.vx;
-        D_1F800000[15] = D_800F1904->unkA4.vz;
-        D_1F800000[14] = D_800F1904->unkA4.vy;
-        D_1F800000[17] = D_800F1904->unkB4.vx;
-        D_1F800000[19] = D_800F1904->unkB4.vz;
-        D_1F800000[18] = D_800F1904->unkB4.vy;
+        _camera.position.vx = D_800F1904->unkA4.vx;
+        _camera.position.vz = D_800F1904->unkA4.vz;
+        _camera.position.vy = D_800F1904->unkA4.vy;
+        _camera.lookAt.vx = D_800F1904->unkB4.vx;
+        _camera.lookAt.vz = D_800F1904->unkB4.vz;
+        _camera.lookAt.vy = D_800F1904->unkB4.vy;
 
         D_800F19D0 = D_800F1904->unk6C;
 
-        D_1F800000[25] = D_800F1904->unkA0;
+        _camera.unk64 = D_800F1904->unkA0;
 
         func_8007CCCC(D_800F1904->unk98);
         func_8007CCF0(D_800F1904->unk9C);
         return 1;
     }
-    D_1F800000[13] += ((D_800F1904->unkC4.vx * D_800F1904->unkF0));
-    D_1F800000[15] += ((D_800F1904->unkC4.vz * D_800F1904->unkF0));
-    D_1F800000[14] += ((D_800F1904->unkC4.vy * D_800F1904->unkF0));
-    D_1F800000[17] += (D_800F1904->unkD4.vx);
-    D_1F800000[19] += (D_800F1904->unkD4.vz);
-    D_1F800000[18] += (D_800F1904->unkD4.vy);
-    D_1F800000[25] += (D_800F1904->unkE4);
+    _camera.position.vx += ((D_800F1904->unkC4.vx * D_800F1904->unkF0));
+    _camera.position.vz += ((D_800F1904->unkC4.vz * D_800F1904->unkF0));
+    _camera.position.vy += ((D_800F1904->unkC4.vy * D_800F1904->unkF0));
+    _camera.lookAt.vx += (D_800F1904->unkD4.vx);
+    _camera.lookAt.vz += (D_800F1904->unkD4.vz);
+    _camera.lookAt.vy += (D_800F1904->unkD4.vy);
+    _camera.unk64 += (D_800F1904->unkE4);
 
     func_8007CCCC(D_8005E0C8 + D_800F1904->unkE8);
     func_8007CCF0(vs_main_projectionDistance + D_800F1904->unkEC);
@@ -3193,7 +3194,7 @@ void func_800730BC(void)
         D_800F1904->unk34 = D_800F19D0;
         D_800F1904->unk60 = D_8005E0C8;
         D_800F1904->unk64 = vs_main_projectionDistance;
-        D_800F1904->unk68 = D_1F800000[25];
+        D_800F1904->unk68 = _camera.unk64;
     }
     D_800F1904->unk98 = 4;
     D_800F1904->unk9C = 0xE0;
@@ -4566,14 +4567,11 @@ int _isLookAtAtDestination(void)
 
 void func_80077EC4(void)
 {
-    int* temp_s0;
-
-    func_8007CD70((VECTOR*)D_1F800034, (VECTOR*)(D_1F800034 + 4), -1, -1);
-    temp_s0 = D_1F800034 - 13;
-    temp_s0[25] = 0x1000;
-    temp_s0[23] = 0;
-    temp_s0[22] = 0;
-    temp_s0[21] = 0;
+    func_8007CD70(&_camera.position, &_camera.lookAt, -1, -1);
+    _camera.unk64 = 0x1000;
+    _camera.unk5C = 0;
+    _camera.yaw = 0;
+    _camera.pitch = 0;
 }
 
 void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
@@ -5081,9 +5079,9 @@ void vs_battle_setCameraLookAt(VECTOR* inLookAt)
     _camera.lookAt.vz = inLookAt->vz;
 }
 
-void func_8007AC94(int arg0) { D_1F800000[23] = arg0; }
+void func_8007AC94(int arg0) { _camera.unk5C = arg0; }
 
-int func_8007ACA0(void) { return *getScratchAddr(0x17) & 0xFFF; }
+int func_8007ACA0(void) { return _camera.unk5C & 0xFFF; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
@@ -5961,7 +5959,7 @@ void func_8007CCF0(int arg0)
 
 void func_8007CD14(int arg0, int arg1)
 {
-    D_1F800000[25] = arg0;
+    _camera.unk64 = arg0;
 
     if (arg1 == 0) {
         if (arg0 < 0) {
@@ -9132,7 +9130,7 @@ void func_80089888(void)
     }
     func_800A1108(0, &sp18);
     func_8009E5C4(0);
-    func_800A4828(0, &D_1F800000[5]);
+    func_800A4828(0, &_camera.viewMatrix);
     func_800A0A1C(0, 0);
     func_800E6158();
 }
@@ -9190,11 +9188,11 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        D_1F800000[1] = (int)D_80055C80[vs_main_frameBuf] + 0x10;
-        ClearOTagR((void*)D_1F800000[1], 0x800);
+        _camera.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
+        ClearOTagR(_camera.unk4, 0x800);
         func_8007DF40();
-        func_8006D0A4((void*)D_1F800000[1]);
-        func_8007629C((void*)D_1F800000[1] + 0x1FFC);
+        func_8006D0A4(_camera.unk4);
+        func_8007629C(_camera.unk4 + 0x1FFC);
     }
 
     DrawSync(0);
@@ -9900,7 +9898,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
 
     if (D_800F1BF8.unkA4 != 0) {
         func_8008C40C();
-        v = ((D_1F800000[22] + 0x900) & 0xFFF) >> 9;
+        v = ((_camera.yaw + 0x900) & 0xFFF) >> 9;
         var_a1 = D_800F1BF8.unkA4;
         len = D_800F1BF8.unk44;
         for (i = 0; i < len;) {

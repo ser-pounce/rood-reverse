@@ -3,7 +3,7 @@
 typedef struct {
     char unk0;
     char unk1;
-    short unk2;
+    short wepId;
     void* unk4;
     int unk8;
     union {
@@ -12,7 +12,7 @@ typedef struct {
     } unkC;
     char unk10;
     char unk11;
-    char unk12;
+    char material;
     char unk13;
 } func_8007C8F8_t;
 

@@ -106,12 +106,12 @@ void func_800F9A78(int arg0)
     temp_s3 = vs_main_allocHeap(0x1900);
     sp10.unk0 = 2;
     sp10.unk1 = 1;
-    sp10.unk2 = temp_s2->unk6E6;
+    sp10.wepId = temp_s2->unk6E6;
     sp10.unk8 = arg0;
     sp10.unk4 = temp_s3;
     sp10.unk10 = 0xFF;
     sp10.unk13 = temp_s2->unk10;
-    sp10.unk12 = 0;
+    sp10.material = 0;
     func_800995E8(&sp10);
 
     if (temp_s2->unk17FD >= 2) {
@@ -119,13 +119,13 @@ void func_800F9A78(int arg0)
         temp_v0 = vs_main_allocHeap(0x1900);
         sp10.unk0 = 2;
         sp10.unk1 = 0x10;
-        sp10.unk2 = temp_s0->unk6E6;
+        sp10.wepId = temp_s0->unk6E6;
         sp10.unk8 = temp_s2->unk17FD;
         sp10.unk4 = temp_v0;
         sp10.unk10 = 1;
         sp10.unk11 = 0xFC;
         sp10.unk13 = temp_s2->unk10;
-        sp10.unk12 = 0;
+        sp10.material = 0;
         func_800995E8(&sp10);
     }
     for (i = 0; i < 2; ++i) {
@@ -134,12 +134,12 @@ void func_800F9A78(int arg0)
             temp_v0 = vs_main_allocHeap(0x5E8);
             sp10.unk0 = 4;
             sp10.unk1 = i + 2;
-            sp10.unk2 = temp_s0->unkE;
+            sp10.wepId = temp_s0->unkE;
             sp10.unk8 = arg0 * 2 + i;
             sp10.unk4 = temp_v0;
             sp10.unk10 = 1;
             sp10.unk11 = temp_s0->unkC;
-            sp10.unk12 = ((u_int)temp_s0->unk8 >> 0xC) & 0xF;
+            sp10.material = ((u_int)temp_s0->unk8 >> 0xC) & 0xF;
             func_800995E8(&sp10);
         }
     }
@@ -414,7 +414,7 @@ void func_800FA3FC(int arg0)
     func_8009CC20(0, 0);
     sp10.unk0 = 7;
     sp10.unk1 = 0;
-    sp10.unk2 = arg0;
+    sp10.wepId = arg0;
     sp10.unk10 = 0;
     func_800995E8(&sp10);
 }

@@ -212,16 +212,16 @@ int func_8010823C(void)
         sp10.unk0 = 2;
         sp10.unk1 = 1;
         sp10.unk8 = D_8010A4A8->unk8 + (long)D_8010A4A8;
-        sp10.unk2 = D_8010A4A8->unk0;
+        sp10.wepId = D_8010A4A8->unk0;
         sp10.unk4 = D_8010A4AC;
         sp10.unk10 = 0xFF;
         sp10.unk13 = D_8010A4B4 & 1;
-        sp10.unk12 = D_8010A4A8->unk6;
+        sp10.material = D_8010A4A8->unk6;
         func_800995E8(&sp10);
         if (D_8010A4B0 != 0) {
             sp10.unk0 = 1;
             sp10.unk1 = 0x10;
-            sp10.unk2 = D_8010A20C[D_8010A4B0];
+            sp10.wepId = D_8010A20C[D_8010A4B0];
             sp10.unk4 = D_8010A4AC + 0x1900;
             sp10.unk10 = 1;
             sp10.unk11 = 0xFC;
@@ -232,22 +232,22 @@ int func_8010823C(void)
                 sp10.unk0 = temp_s0;
                 sp10.unk1 = 2;
                 sp10.unk8 = D_8010A4A8->unk10 + (long)D_8010A4A8;
-                sp10.unk2 = D_8010A4A8->unk1;
+                sp10.wepId = D_8010A4A8->unk1;
                 sp10.unk4 = D_8010A4AC + 0x1900;
                 sp10.unk10 = 1;
                 sp10.unk11 = 0xF0;
-                sp10.unk12 = D_8010A4A8->unk3;
+                sp10.material = D_8010A4A8->unk3;
                 func_800995E8(&sp10);
             }
             if (D_8010A4A8->unk4 != 0) {
                 sp10.unk0 = temp_s0;
                 sp10.unk1 = 3;
                 sp10.unk8 = D_8010A4A8->unk18 + (long)D_8010A4A8;
-                sp10.unk2 = D_8010A4A8->unk4;
+                sp10.wepId = D_8010A4A8->unk4;
                 sp10.unk4 = D_8010A4AC + 0x1EE8;
                 sp10.unk10 = 1;
                 sp10.unk11 = 0xF1;
-                sp10.unk12 = D_8010A4A8->unk5;
+                sp10.material = D_8010A4A8->unk5;
                 func_800995E8(&sp10);
             }
         }
@@ -256,7 +256,7 @@ int func_8010823C(void)
             sp10.unk1 = 1;
             sp10.unk8 = D_8010A4A8->unk28 + (long)D_8010A4A8;
             sp10.unk10 = 0;
-            sp10.unk2 = D_8010A4A8->unk2;
+            sp10.wepId = D_8010A4A8->unk2;
             func_800995E8(&sp10);
         }
         if (D_8010A4A8->unk24 != 0) {
@@ -264,7 +264,7 @@ int func_8010823C(void)
             sp10.unk1 = 1;
             sp10.unk8 = D_8010A4A8->unk20 + (long)D_8010A4A8;
             sp10.unk10 = 0;
-            sp10.unk2 = 0;
+            sp10.wepId = 0;
             func_800995E8(&sp10);
         }
         return 1;

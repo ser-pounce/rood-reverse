@@ -170,8 +170,8 @@ typedef struct {
     int unk9C[26];
     u_int streakScore;
     u_int enemyKillStreak;
-    char unk10C;
-    char unk10D;
+    char killStreakEnemyClass;
+    char killStreakEnemyCount;
     char weaponKillStreakBladeCategory;
     char weaponKillStreak;
     u_short chainStreak;

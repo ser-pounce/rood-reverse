@@ -232,8 +232,5 @@ typedef struct {
     vs_battle_lootedArmor armor[2]; // 0x170
     vs_battle_lootedAccessory accessory; // 0x1C8
     vs_battle_lootedGem gem; // 0x1F4
-    vs_battle_inventoryMisc misc[2]; // 0x214
-    u_short unk21C;
-    char unk21E;
-    char unk21F;
+    vs_battle_inventoryMisc misc[3]; // 0x214
 } vs_battle_loot;

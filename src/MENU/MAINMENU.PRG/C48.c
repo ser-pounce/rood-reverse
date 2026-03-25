@@ -48,25 +48,25 @@ void func_800FA448(void)
     temp_s1 = vs_battle_characterState->unk3C;
 
     if (temp_s1->weapon.index != 0) {
-        vs_battle_copyEquippedWeaponStats(
+        vs_battle_copyUiWeaponStats(
             &vs_battle_inventory.weapons[temp_s1->weapon.index - 1], &temp_s1->weapon);
     }
 
     if (temp_s1->shield.index != 0) {
-        vs_battle_copyEquippedShieldStats(
+        vs_battle_copyUiShieldStats(
             &vs_battle_inventory.shields[temp_s1->shield.index - 1], &temp_s1->shield);
     }
 
     for (i = 0; i < 6; ++i) {
         if (temp_s1->bodyParts[i].armor.unk9A != 0) {
-            vs_battle_copyEquippedArmorStats(
+            vs_battle_copyUiArmorStats(
                 &vs_battle_inventory.armor[temp_s1->bodyParts[i].armor.unk9A - 1],
                 &temp_s1->bodyParts[i].armor);
         }
     }
 
     if (temp_s1->accessory.unk37 != 0) {
-        vs_battle_copyEquippedAccessoryStats(
+        vs_battle_copyUiAccessoryStats(
             &vs_battle_inventory.armor[temp_s1->accessory.unk37 - 1],
             &temp_s1->accessory);
     }

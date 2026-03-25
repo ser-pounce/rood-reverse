@@ -88,15 +88,15 @@ int func_80109320(int a0)
     return a0 & 1;
 }
 
-void func_80109344(int arg0, int arg1)
+void func_80109344(int wepId, int arg1)
 {
     func_8007C8F8_t sp10;
     int var_a2;
     int var_a3;
 
-    if (arg0 != 0) {
+    if (wepId != 0) {
         var_a2 = 0;
-        if (arg0 < 0x60) {
+        if (wepId < 0x60) {
             var_a3 = 0xF0;
         } else {
             var_a2 = 1;
@@ -104,11 +104,11 @@ void func_80109344(int arg0, int arg1)
         }
         sp10.unk0 = 3;
         sp10.unk1 = var_a2;
-        sp10.unk2 = arg0;
+        sp10.wepId = wepId;
         sp10.unk4 = vs_battle_characterState->unk48[var_a2];
         sp10.unk10 = 0;
         sp10.unk11 = var_a3;
-        sp10.unk12 = arg1;
+        sp10.material = arg1;
         func_800995E8(&sp10);
     }
 }

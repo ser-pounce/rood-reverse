@@ -89,7 +89,7 @@ typedef struct {
 } vs_skill_t;
 
 typedef struct {
-    int currentMusicId;
+    int currentMusicSlot;
     u_int unk4;
     int unk8;
     void* currentMusicData;
@@ -433,7 +433,7 @@ void* vs_main_allocHeap(u_int);
 vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const*);
 void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot*);
 void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram);
-void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram);
+void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram);
 int vs_main_loadMusicSlot(int id, int targetSlot);
 int vs_main_clearMusicLoadQueue(void);
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot);
@@ -472,7 +472,7 @@ void vs_main_resetPadAct(void);
 int vs_main_streamXa(int sector, int byteCount);
 int vs_main_checkStreamXaEnd(void);
 int func_8004552C(int id, int arg1, int arg2);
-int func_800450E4(void);
+int vs_main_getCurrentMusicId(void);
 void func_80045D64(int arg0, int arg1);
 void vs_main_wait(void);
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);

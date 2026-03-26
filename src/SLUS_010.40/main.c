@@ -7997,7 +7997,7 @@ static void _loadBattlePrg(void)
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -8008,7 +8008,7 @@ static void _loadBattlePrg(void)
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[1]);
+    vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -8027,7 +8027,7 @@ static void _loadTitlePrg(void)
     cdFile.size = VS_TITLE_PRG_SIZE;
 
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -8046,7 +8046,7 @@ static void _loadEndingPrg(void)
     cdFile.size = VS_ENDING_PRG_SIZE;
 
     slot = vs_main_allocateCdQueueSlot(&cdFile);
-    vs_main_cdEnqueueUrgent(slot, vs_overlay_slots[0]);
+    vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
     while (slot->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
@@ -9428,7 +9428,7 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
     slot->priority = _cdQueueCount.queued++;
 }
 
-void vs_main_cdEnqueueUrgent(vs_main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
 {
     int i;
     vs_main_CdQueueSlot* queue = _cdQueue;
@@ -9492,15 +9492,15 @@ static int func_80044DF4(int id)
             func_80011FDC(vs_main_soundData.unk14[id - 1]);
             vs_main_soundData.unk14[id - 1] = 0xFFFF;
         }
-        if (vs_main_soundData.currentMusicId == id) {
-            vs_main_soundData.currentMusicId = 0;
+        if (vs_main_soundData.currentMusicSlot == id) {
+            vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
             vs_main_soundData.unk4 = 0xFFFF;
         }
         return 1;
     }
     func_80012B78();
-    vs_main_soundData.currentMusicId = 0;
+    vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk4 = 0xFFFF;
 
@@ -9517,7 +9517,7 @@ static int func_80044EC8(int id)
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
-            vs_main_soundData.currentMusicId = id;
+            vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
             temp_v0 = func_800120E8(vs_main_soundData.currentMusicData);
             if (temp_v0 != 0) {
@@ -9537,7 +9537,7 @@ static int func_80044F60(int id, int arg1, u_int arg2)
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
-            vs_main_soundData.currentMusicId = id;
+            vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
             temp_v0 = func_80012080(vs_main_soundData.currentMusicData, arg2, arg1);
             if (temp_v0 != 0) {
@@ -9557,7 +9557,7 @@ int func_80045000(int id, int arg1, int arg2)
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
-            vs_main_soundData.currentMusicId = id;
+            vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
             func_800128A0(0, arg2, arg1);
             temp_v0 = func_80011FB4(vs_main_soundData.currentMusicData);
@@ -9573,12 +9573,15 @@ int func_80045000(int id, int arg1, int arg2)
     return 0;
 }
 
-static int vs_main_getCurrentMusicId(void) { return vs_main_soundData.currentMusicId; }
-
-int func_800450E4(void)
+static int vs_main_getcurrentMusicSlot(void)
 {
-    if (vs_main_soundData.currentMusicId != 0) {
-        return vs_main_soundData.musicIds[vs_main_soundData.currentMusicId - 1];
+    return vs_main_soundData.currentMusicSlot;
+}
+
+int vs_main_getCurrentMusicId(void)
+{
+    if (vs_main_soundData.currentMusicSlot != 0) {
+        return vs_main_soundData.musicIds[vs_main_soundData.currentMusicSlot - 1];
     }
     return 0;
 }
@@ -9730,7 +9733,7 @@ static void func_8004550C(int arg0) { func_800454B8(arg0); }
 
 int func_8004552C(int id, int arg1, int arg2)
 {
-    if (vs_main_soundData.currentMusicId == id) {
+    if (vs_main_soundData.currentMusicSlot == id) {
         func_800128A0(vs_main_soundData.unk4, arg2, arg1);
         return 1;
     }
@@ -9739,7 +9742,7 @@ int func_8004552C(int id, int arg1, int arg2)
 
 static int func_80045574(int id, int arg1, int arg2)
 {
-    if (vs_main_soundData.currentMusicId == id) {
+    if (vs_main_soundData.currentMusicSlot == id) {
         func_800129D0(arg2, arg1);
         return 1;
     }
@@ -9748,7 +9751,7 @@ static int func_80045574(int id, int arg1, int arg2)
 
 static int func_800455AC(int id, int arg1, int arg2)
 {
-    if (vs_main_soundData.currentMusicId == id) {
+    if (vs_main_soundData.currentMusicSlot == id) {
         func_80012A6C(arg2, arg1);
         return 1;
     }
@@ -9761,7 +9764,7 @@ static int nop7(void) { return 0; }
 
 void vs_main_stopMusic(void)
 {
-    int id = vs_main_soundData.currentMusicId;
+    int id = vs_main_soundData.currentMusicSlot;
     if (id != 0) {
         func_80044DF4(id);
         vs_main_freeMusic(id);
@@ -10467,7 +10470,7 @@ void vs_main_resetSound(void)
 {
     int i;
 
-    vs_main_soundData.currentMusicId = 0;
+    vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk8 = 0xFFFF;
     vs_main_soundData.unk4 = 0xFFFF;

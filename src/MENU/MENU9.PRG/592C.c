@@ -179,7 +179,7 @@ void func_8010812C(int id)
     cdFile.size = D_80109D04[id];
     D_8010A4A4 = vs_main_allocateCdQueueSlot(&cdFile);
     D_8010A4A8 = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueueUrgent(D_8010A4A4, D_8010A4A8);
+    vs_main_cdEnqueuePriority(D_8010A4A4, D_8010A4A8);
     D_8010A4B4 = D_8010A104[id];
     D_8010A4B0 = 0;
 

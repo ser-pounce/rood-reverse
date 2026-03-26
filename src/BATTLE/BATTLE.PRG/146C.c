@@ -8998,23 +8998,23 @@ static void _loadZnd(int id)
         vs_main_nop9(0x88, 0);
     }
     _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueueUrgent(_zoneContext.zndCdFile, _zoneContext.zndData);
+    vs_main_cdEnqueuePriority(_zoneContext.zndCdFile, _zoneContext.zndData);
     if (_zoneContext.unk30 != 0) {
         temp_s0 = D_8004FCCC[id];
-        if (func_800450E4() != temp_s0) {
-            func_8004552C(vs_main_soundData.currentMusicId, 0, 0x78);
+        if (vs_main_getCurrentMusicId() != temp_s0) {
+            func_8004552C(vs_main_soundData.currentMusicSlot, 0, 0x78);
         }
     }
 }
 
-void _finishLoadZnd(int arg0)
+void _finishLoadZnd(int id)
 {
     int musicId;
     int i;
     _zndHeader* header;
 
     if (_zoneContext.zndCdFile == NULL) {
-        _loadZnd(arg0);
+        _loadZnd(id);
     }
 
     while (_zoneContext.zndCdFile->state != vs_main_CdQueueStateLoaded) {
@@ -9046,7 +9046,7 @@ void _finishLoadZnd(int arg0)
         func_800BEB9C(0);
     }
 
-    if (func_800450E4() != musicId) {
+    if (vs_main_getCurrentMusicId() != musicId) {
         if (D_800F18B0 != 0) {
             vs_main_stopMusic();
 
@@ -9165,7 +9165,7 @@ void _loadMpd(int id)
         vs_main_nop9(0x8A, 0);
     }
     _zoneContext.mpdData = vs_main_allocHeapR(file.size);
-    vs_main_cdEnqueueUrgent(_zoneContext.mpdCdFile, _zoneContext.mpdData);
+    vs_main_cdEnqueuePriority(_zoneContext.mpdCdFile, _zoneContext.mpdData);
 }
 
 // https://decomp.me/scratch/6U28u

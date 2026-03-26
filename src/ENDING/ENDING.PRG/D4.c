@@ -202,7 +202,7 @@ void func_8006A5C0(void)
         file.size = _illustSizes[i - 5];
         D_800DC1A8[i] = vs_main_allocHeapR(file.size);
         slot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueueUrgent(slot, D_800DC1A8[i]);
+        vs_main_cdEnqueuePriority(slot, D_800DC1A8[i]);
 
         do {
             vs_main_gametimeUpdate(0);

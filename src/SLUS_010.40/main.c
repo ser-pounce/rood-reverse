@@ -8433,8 +8433,8 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.unk7C = vs_battle_characterState->unk20;
-    temp_t5->unk0.unk80 = D_800F19D0.unk10.vy;
-    temp_t5->unk0.unk84 = D_800F19D0.unk20;
+    temp_t5->unk0.unk80 = vs_battle_cameraCurrentSpherical.delta.vy;
+    temp_t5->unk0.unk84 = vs_battle_cameraCurrentSpherical.unk20;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);

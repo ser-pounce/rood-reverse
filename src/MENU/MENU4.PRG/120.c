@@ -1875,7 +1875,7 @@ int vs_menu4_exec(char* state)
         _screenEnabled = 1;
         animWait = 1;
         D_80108188 = vs_main_projectionDistance;
-        func_8007CCF0(0x200);
+        vs_battle_setProjectionDistance(0x200);
         new_var2 = 13;
         var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);
         D_80108198 = *(D_80108198_t*)&D_1F800000[5];
@@ -2225,7 +2225,7 @@ int vs_menu4_exec(char* state)
         _drawHitLocationStatuses(0);
         _initEquipmentScreen(0);
         func_80103AC8();
-        func_8007CCF0(D_80108188);
+        vs_battle_setProjectionDistance(D_80108188);
         new_var2 = 13;
         var_a0 = (D_801081B8_t*)&D_1F800000[new_var2];
         *(D_80108198_t*)&D_1F800000[5] = D_80108198;

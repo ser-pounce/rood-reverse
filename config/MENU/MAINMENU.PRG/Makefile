@@ -17,4 +17,3 @@ $(BUILD)/src/MENU/MAINMENU.PRG/2D10.o: $(BUILD)/src/include/lbas.h $(BUILD)/asse
 
 mainMenu_cdkFiles := $(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o,224 278)
 $(mainMenu_cdkFiles): CC1VER := 2.7.2-cdk
-$(mainMenu_cdkFiles): CC1FLAGS += -msoft-float 

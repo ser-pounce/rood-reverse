@@ -2912,7 +2912,7 @@ static void func_80108518(int arg0)
             D_80109648 = arg0;
             D_80109644 = arg0;
             D_801096AC = vs_main_projectionDistance;
-            func_8007CCF0(0x200);
+            vs_battle_setProjectionDistance(0x200);
 
             D_801096BC = p[-1].unk14;
             D_801096DC = *p;
@@ -2931,7 +2931,7 @@ static void func_80108518(int arg0)
         if (D_80109644 != 0) {
             func_800F9E0C();
             func_80100414(-4, 0x80);
-            func_8007CCF0(D_801096AC);
+            vs_battle_setProjectionDistance(D_801096AC);
             p[-1].unk14 = D_801096BC;
             *p = D_801096DC;
             D_80109644 = 0;

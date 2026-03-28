@@ -584,8 +584,28 @@ typedef struct {
 } D_800F18E8_t;
 
 typedef struct {
-    VECTOR unk0;
-    VECTOR unk10;
+    /* 0x00 */ VECTOR position;
+    /* 0x10 */ VECTOR lookAt;
+    /* 0x20 */ int pitch;
+    /* 0x24 */ int yaw;
+    /* 0x28 */ int unk5C;
+    /* 0x2C */ int unk60;
+    /* 0x30 */ int unk64;
+} camera_t2;
+
+typedef struct {
+    /* 0x00 */ void* unk0;
+    /* 0x04 */ void* unk4;
+    /* 0x08 */ void* unk8;
+    /* 0x0C */ int unkC;
+    /* 0x10 */ int firstPersonViewFacing;
+    /* 0x14 */ MATRIX viewMatrix;
+    /* 0x34 */ camera_t2 t2;
+} camera_t;
+
+typedef struct {
+    VECTOR values;
+    VECTOR delta;
     int unk20;
     int unk24;
     int speed;
@@ -691,7 +711,7 @@ void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
 void func_8007ACB0(void);
 int func_8007C36C(int arg0);
-void func_8007CCF0(int);
+void vs_battle_setProjectionDistance(int);
 void func_8007DD50(int);
 void func_8007DDAC(int arg0);
 void func_8007DDB8(int* arg0);
@@ -731,7 +751,7 @@ extern _zoneContext_t _zoneContext;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_lootListNode* _lootListHead;
 extern vs_battle_actor* vs_battle_actors[];
-extern D_800F1904_t3 D_800F19D0;
+extern D_800F1904_t3 vs_battle_cameraCurrentSpherical;
 extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;

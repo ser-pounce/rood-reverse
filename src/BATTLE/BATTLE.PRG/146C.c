@@ -439,12 +439,6 @@ typedef struct {
     } unk4;
 } D_800F18EC_t;
 
-typedef struct vs_battle_lootListNode {
-    struct vs_battle_lootListNode* next;
-    int actorId;
-    vs_battle_loot loot;
-} vs_battle_lootListNode;
-
 typedef struct {
     int unk0;
     int unk4;
@@ -788,7 +782,6 @@ extern void* D_800F18E4;
 extern u_int D_800F18F0;
 extern char D_800F18F8;
 extern int D_800F18FC;
-extern vs_battle_lootListNode* _lootListHead;
 extern D_800F1904_t2* D_800F1904;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;

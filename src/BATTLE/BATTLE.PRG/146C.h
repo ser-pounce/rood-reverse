@@ -655,6 +655,12 @@ typedef struct {
     char gazetteRow;
 } vs_battle_menu9CursorMemory_t;
 
+typedef struct vs_battle_lootListNode {
+    struct vs_battle_lootListNode* next;
+    int actorId;
+    vs_battle_loot loot;
+} vs_battle_lootListNode;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -723,6 +729,7 @@ extern int vs_battle_mapCompletionFlags[];
 extern char D_800E8F28;
 extern _zoneContext_t _zoneContext;
 extern D_800F18E8_t D_800F18E8;
+extern vs_battle_lootListNode* _lootListHead;
 extern vs_battle_actor* vs_battle_actors[];
 extern D_800F1904_t3 D_800F19D0;
 extern vs_battle_actor* vs_battle_characterState;

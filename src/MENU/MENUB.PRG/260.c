@@ -2798,13 +2798,13 @@ void _applyDropList(vs_battle_loot* arg0)
     func_801080F0();
 }
 
-void func_801088D4(func_801088D4_t* arg0)
+void func_801088D4(vs_battle_lootListNode* arg0)
 {
     vs_battle_rMemzero(_inventory, sizeof *_inventory);
 
-    if (arg0 != 0) {
-        while (arg0 != 0) {
-            _applyDropList(&arg0->unk8);
+    if (arg0 != NULL) {
+        while (arg0 != NULL) {
+            _applyDropList(&arg0->loot);
             arg0 = arg0->next;
         }
     } else {

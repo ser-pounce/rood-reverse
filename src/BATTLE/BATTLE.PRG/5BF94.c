@@ -37,21 +37,66 @@ typedef struct {
     int unk3F4;
 } gim_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+} D_800F53B8_t3;
+
+typedef struct {
+    D_800F53B8_t3* unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+} D_800F53B8_t2;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    short unk8;
+    short unkA;
+    int unkC;
+    int unk10[835];
+    D_800F53B8_t3 unkD1C;
+} D_800F53B8_t;
+
 void func_800C98C0(int, int, int, u_long*);
 void func_800CA97C(void);
+int func_800CAF40(void);
 void func_800CE67C(void);
+void func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
-void func_800CFEF0(void);
+void func_800CF694(D_800F53B8_t*, int, int);
+void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
-void func_800D0D08(void);
+void func_800D0D08(D_800F53B8_t*);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
 void func_800D268C(void);
-void func_800D46DC(int, int);
-u_char func_800D5170(void*);
-int func_800D5198(void*);
-void func_800D6AEC(void*, u_short);
-extern int (*D_800EC3F4[])(void*);
+void func_800D46DC(int, D_800F53B8_t*);
+u_char func_800D5170(D_800F53B8_t*);
+int func_800D5198(D_800F53B8_t*);
+void func_800D55A4(D_800F53B8_t*, int, int);
+void func_800D6AEC(D_800F53B8_t*, u_short);
 
 extern u_long* D_1F800000[];
 
@@ -70,6 +115,8 @@ extern u_int* D_800EB9D4;
 extern int D_800EBC04[];
 extern char D_800EBC78;
 extern char D_800EBD68[];
+extern int D_800EC324[];
+extern int (*D_800EC3F4[])(void*);
 extern char D_800F522C;
 extern char D_800F4CB8;
 extern char D_800F4CB9;
@@ -653,7 +700,45 @@ int vs_battle_abilitiesUnlocked(int defense)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB030);
+int func_800CB030(int arg0)
+{
+    int var_a1 = 0;
+    int var_a0 = 0;
+
+    switch (arg0) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        var_a1 = func_800CAEAC(arg0 - 1) == 0;
+        var_a0 = 1;
+        break;
+    case 5:
+        var_a0 = 4;
+        break;
+    case 6:
+        var_a1 = func_800CAF40() == 0;
+        var_a0 = 2;
+        break;
+    case 7:
+    case 8:
+        var_a1 = vs_battle_abilitiesUnlocked(arg0 - 7) == 0;
+        var_a0 = 3;
+        break;
+    }
+
+    if (var_a1 != 0) {
+        func_800C02E0();
+        var_a0 = 0;
+        D_800F4E98.unk2 = 0;
+        D_800F4E98.unk0 = 2;
+    } else {
+        var_a0 = func_800CACD0(var_a0, 0);
+        vs_battle_shortcutInvoked = arg0;
+        D_800F4FDB = 1;
+    }
+    return var_a0;
+}
 
 void func_800CB114(void)
 {
@@ -664,13 +749,33 @@ void func_800CB114(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB158);
+void func_800CB158(vs_battle_lootListNode* arg0)
+{
+    D_800EB9C4 = arg0;
+    D_800EB9C8 = NULL;
+    func_800CACD0(0xC, 2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB18C);
+void func_800CB18C(vs_battle_loot* arg0)
+{
+    D_800EB9C8 = arg0;
+    D_800EB9C4 = NULL;
+    func_800CACD0(0xC, 2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB1C0);
+void func_800CB1C0(int arg0)
+{
+    func_800CACD0(7, 2);
+    D_800F4E6B = arg0 + 0x40;
+    D_800F4EA0 |= 0x400;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB208);
+void func_800CB208(int art, int battleAbility)
+{
+    D_800F4E88 = art;
+    D_800F4FDA = battleAbility;
+    func_800CACD0(3, 2);
+}
 
 void func_800CB23C(void)
 {
@@ -888,7 +993,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
 
-void func_800CE644(int i __attribute__((unused))) { }
+int func_800CE644(int i __attribute__((unused))) { }
 
 void func_800CE64C(void)
 {
@@ -1142,45 +1247,88 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D46DC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4720);
+int func_800D4720(D_800F53B8_t* arg0)
+{
+    arg0->unkA = func_800D5198(arg0);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D474C);
+int func_800D474C(D_800F53B8_t* arg0)
+{
+    arg0->unkA = func_800D5198(arg0);
+    return 1;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4778);
+int func_800D4778(D_800F53B8_t* arg0)
+{
+    D_800F53B8_t2 sp10;
 
-int func_800D47C0(void) { return 2; }
+    sp10.unk14 = arg0->unkC;
+    sp10.unk18 = func_800D5198(arg0) & 0xFFFF;
+    sp10.unk0 = &arg0->unkD1C;
+    func_800CE83C(&sp10);
+    return 1;
+}
 
-int func_800D47C8(void* arg0)
+int func_800D47C0(D_800F53B8_t* arg0 __attribute__((unused))) { return 2; }
+
+int func_800D47C8(D_800F53B8_t* arg0)
 {
     D_800F5610 = func_800D5170(arg0);
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D47F4);
+int func_800D47F4(D_800F53B8_t* arg0)
+{
+    int temp_s0;
+    int temp_s2;
+    int var_s0;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D487C);
+    temp_s2 = func_800D5170(arg0) & 0xFF;
+    temp_s0 = func_800D5198(arg0) & 0xFFFF;
+    temp_s0 = temp_s0 + (func_800D5198(arg0) << 0x10);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D48A4);
+    if (arg0->unkD1C.unk3C != 0) {
+        temp_s0 = arg0->unkD1C.unk3C;
+    }
 
-int func_800D48E4(int arg0)
+    func_800CF694(arg0, D_800EC324[temp_s2], temp_s0);
+    return 1;
+}
+
+int func_800D487C(D_800F53B8_t* arg0)
+{
+    func_800D46DC(arg0->unkD1C.unk34 == 0, arg0);
+    return 1;
+}
+
+int func_800D48A4(D_800F53B8_t* arg0)
+{
+    func_800D55A4(arg0, func_800D5170(arg0) & 0xFF, 0);
+    arg0->unkA = 0xB7;
+    return 1;
+}
+
+int func_800D48E4(D_800F53B8_t* arg0)
 {
     func_800D46DC(D_800F522C == 0, arg0);
     return 1;
 }
 
+int func_800D4910(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4910);
 
-int func_800D4984(void)
+int func_800D4984(D_800F53B8_t* arg0)
 {
-    func_800D0D08();
+    func_800D0D08(arg0);
     return 1;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D49A4);
 
-int func_800D4A94(void)
+int func_800D4A94(D_800F53B8_t* arg0)
 {
-    func_800CFEF0();
+    func_800CFEF0(arg0);
     return 1;
 }
 
@@ -1196,7 +1344,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4BD0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
 
-int func_800D4D44(void)
+int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 {
     func_800D78F0();
     return 1;
@@ -1204,17 +1352,17 @@ int func_800D4D44(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4D64);
 
-int func_800D4D98(void)
+int func_800D4D98(D_800F53B8_t* arg0 __attribute__((unused)))
 {
     D_800F522C = 0;
     return 1;
 }
 
-int func_800D4DA8(void) { return 1; }
+int func_800D4DA8(D_800F53B8_t* arg0 __attribute__((unused))) { return 1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
 
-int func_800D4E5C(void* arg0)
+int func_800D4E5C(D_800F53B8_t* arg0)
 {
     func_800D6AEC(arg0, func_800D5198(arg0));
     return 1;
@@ -1232,13 +1380,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5048);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5088);
 
-void func_800D5150(void) { func_800CE644(0x1E); }
+int func_800D5150(D_800F53B8_t* arg0 __attribute__((unused)))
+{
+    return func_800CE644(0x1E);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5170);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5198);
 
-int func_800D51D8(void* arg0)
+int func_800D51D8(D_800F53B8_t* arg0)
 {
     int temp_v0;
 

@@ -202,12 +202,6 @@ typedef struct {
     short unkE4;
 } func_800CF0E8_t;
 
-typedef struct func_801088D4_t {
-    struct func_801088D4_t* next;
-    int unk4;
-    vs_battle_loot unk8;
-} func_801088D4_t;
-
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
@@ -237,8 +231,8 @@ void func_800CB23C(void);
 void func_800CB660(int arg0);
 D_800F4E98_t* func_800CB66C(void);
 void func_800CB114(void);
-void func_800CB158(void*);
-void func_800CB18C(func_8008C1C8_t*);
+void func_800CB158(vs_battle_lootListNode*);
+void func_800CB18C(vs_battle_loot*);
 void func_800CB1C0(int);
 void func_800CB208(int art, int battleAbility);
 void func_800CB2B8(int, int, int);
@@ -277,7 +271,7 @@ extern u_short D_800EA868[];
 extern char D_800EB9AE;
 extern char D_800EB9AF;
 extern int D_800EB9B0;
-extern func_801088D4_t* D_800EB9C4;
+extern vs_battle_lootListNode* D_800EB9C4;
 extern vs_battle_loot* D_800EB9C8;
 extern vs_battle_menuItem_t* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];

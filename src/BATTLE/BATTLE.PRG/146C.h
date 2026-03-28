@@ -590,7 +590,7 @@ typedef struct {
     /* 0x24 */ int yaw;
     /* 0x28 */ int unk5C;
     /* 0x2C */ int unk60;
-    /* 0x30 */ int unk64;
+    /* 0x30 */ int farClip;
 } camera_t2;
 
 typedef struct {

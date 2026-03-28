@@ -483,21 +483,21 @@ typedef struct {
 } _armorIntermediate;
 
 typedef struct {
-    camera_t2 unk0;
+    camera_t2 fromCameraState;
     D_800F1904_t3 fromSpherical;
-    int unk60;
+    int fromNearClip;
     int fromProjectionDistance;
-    int unk68;
+    int fromFarClip;
     D_800F1904_t3 toSpherical;
-    int unk98;
+    int toNearClip;
     int toProjectionDistance;
-    int unkA0;
-    VECTOR unkA4;
-    VECTOR unkB4;
-    VECTOR unkC4;
-    VECTOR unkD4;
-    int unkE4;
-    int unkE8;
+    int toFarClip;
+    VECTOR targetPosition;
+    VECTOR targetLookAt;
+    VECTOR direction;
+    VECTOR lookAtStep;
+    int farClipStep;
+    int nearClipStep;
     int projectionDistanceStep;
     int transitionSpeed;
     int transitionFrames;
@@ -564,8 +564,8 @@ void _clampPositionToZoneBounds(VECTOR*, VECTOR*);
 int _computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
 int _stepTowardTarget(SVECTOR*, int, int);
 void func_8006E158(void);
-void func_8006EF5C(VECTOR*);
-int func_8006F204(void);
+void _computeCameraTransition(VECTOR*);
+int _stepCameraTransition(void);
 void _setRoomSeen(void);
 void func_8006F5CC(void);
 void func_8006F89C(void);
@@ -612,7 +612,7 @@ void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
 int func_8007C694(int, int, int, int, int);
-void func_8007CCCC(int arg0);
+void vs_battle_setNearClip(int arg0);
 void func_8007CD14(int arg0, int arg1);
 void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
@@ -719,7 +719,7 @@ void func_80096768(int, int, int);
 void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);
-void func_80098D6C(int, int, D_800F1BB0_t*, int);
+void func_80098D6C(void*, void*, D_800F1BB0_t*, int);
 void func_80099960(u_short*);
 void func_8009D458(void);
 void func_8009D6F4(void);
@@ -794,11 +794,11 @@ extern int D_800F1B9C;
 extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
-extern int D_800F1BB8;
+extern void* D_800F1BB8;
 extern short vs_battle_doorEntered;
 extern D_800F1BF8_t D_800F1BF8;
 extern u_short D_800F1CCA;
-extern int D_800F1CC0;
+extern void* D_800F1CC0;
 extern char D_800F1CD6;
 extern u_short D_800F1CDC;
 extern D_800F1D08_t D_800F1D08;
@@ -2596,110 +2596,113 @@ void func_8006EF10(void)
     }
 }
 
-void func_8006EF5C(VECTOR* arg0)
+void _computeCameraTransition(VECTOR* targetPosition)
 {
-    VECTOR sp10;
+    VECTOR cameraToTarget;
 
-    sp10.vx = (arg0->vx - _camera.t2.position.vx) / ONE;
-    sp10.vz = (arg0->vz - _camera.t2.position.vz) / ONE;
-    sp10.vy = (arg0->vy - _camera.t2.position.vy) / ONE;
+    cameraToTarget.vx = (targetPosition->vx - _camera.t2.position.vx) / ONE;
+    cameraToTarget.vz = (targetPosition->vz - _camera.t2.position.vz) / ONE;
+    cameraToTarget.vy = (targetPosition->vy - _camera.t2.position.vy) / ONE;
 
-    VectorNormal(&sp10, &vs_battle_cameraTransition->unkC4);
+    VectorNormal(&cameraToTarget, &vs_battle_cameraTransition->direction);
 
     vs_battle_cameraTransition->transitionSpeed = 0x80;
 
-    copyVector(&vs_battle_cameraTransition->unkA4, arg0);
+    copyVector(&vs_battle_cameraTransition->targetPosition, targetPosition);
 
-    sp10.vy = arg0->vy - _camera.t2.position.vy;
+    cameraToTarget.vy = (targetPosition->vy - _camera.t2.position.vy);
 
     vs_battle_cameraTransition->transitionFrames =
-        sp10.vy
-        / (vs_battle_cameraTransition->unkC4.vy
+        cameraToTarget.vy
+        / (vs_battle_cameraTransition->direction.vy
             * vs_battle_cameraTransition->transitionSpeed);
 
-    vs_battle_cameraTransition->unkB4.vx =
+    vs_battle_cameraTransition->targetLookAt.vx =
         -rsin(vs_battle_cameraTransition->toSpherical.values.vx);
-    vs_battle_cameraTransition->unkB4.vz =
+    vs_battle_cameraTransition->targetLookAt.vz =
         -rcos(vs_battle_cameraTransition->toSpherical.values.vx);
-    vs_battle_cameraTransition->unkB4.vy =
+    vs_battle_cameraTransition->targetLookAt.vy =
         (-rsin(vs_battle_cameraTransition->toSpherical.values.vy) * ONE)
         / rcos(vs_battle_cameraTransition->toSpherical.values.vy);
 
-    VectorNormal(&vs_battle_cameraTransition->unkB4, &vs_battle_cameraTransition->unkB4);
+    VectorNormal(&vs_battle_cameraTransition->targetLookAt,
+        &vs_battle_cameraTransition->targetLookAt);
 
-    vs_battle_cameraTransition->unkB4.vx = (vs_battle_cameraTransition->unkB4.vx * 0x900)
-                                         + vs_battle_cameraTransition->unkA4.vx;
-    vs_battle_cameraTransition->unkB4.vz = (vs_battle_cameraTransition->unkB4.vz * 0x900)
-                                         + vs_battle_cameraTransition->unkA4.vz;
-    vs_battle_cameraTransition->unkB4.vy = (vs_battle_cameraTransition->unkB4.vy * 0x900)
-                                         + vs_battle_cameraTransition->unkA4.vy;
+    vs_battle_cameraTransition->targetLookAt.vx =
+        (vs_battle_cameraTransition->targetLookAt.vx * 0x900)
+        + vs_battle_cameraTransition->targetPosition.vx;
+    vs_battle_cameraTransition->targetLookAt.vz =
+        (vs_battle_cameraTransition->targetLookAt.vz * 0x900)
+        + vs_battle_cameraTransition->targetPosition.vz;
+    vs_battle_cameraTransition->targetLookAt.vy =
+        (vs_battle_cameraTransition->targetLookAt.vy * 0x900)
+        + vs_battle_cameraTransition->targetPosition.vy;
 
-    vs_battle_cameraTransition->unkD4.vx =
-        (vs_battle_cameraTransition->unkB4.vx - _camera.t2.lookAt.vx)
+    vs_battle_cameraTransition->lookAtStep.vx =
+        (vs_battle_cameraTransition->targetLookAt.vx - _camera.t2.lookAt.vx)
         / vs_battle_cameraTransition->transitionFrames;
-    vs_battle_cameraTransition->unkD4.vz =
-        (vs_battle_cameraTransition->unkB4.vz - _camera.t2.lookAt.vz)
+    vs_battle_cameraTransition->lookAtStep.vz =
+        (vs_battle_cameraTransition->targetLookAt.vz - _camera.t2.lookAt.vz)
         / vs_battle_cameraTransition->transitionFrames;
-    vs_battle_cameraTransition->unkD4.vy =
-        (vs_battle_cameraTransition->unkB4.vy - _camera.t2.lookAt.vy)
+    vs_battle_cameraTransition->lookAtStep.vy =
+        (vs_battle_cameraTransition->targetLookAt.vy - _camera.t2.lookAt.vy)
         / vs_battle_cameraTransition->transitionFrames;
 
-    vs_battle_cameraTransition->unkE4 =
-        (vs_battle_cameraTransition->unkA0 - _camera.t2.unk64)
+    vs_battle_cameraTransition->farClipStep =
+        (vs_battle_cameraTransition->toFarClip - _camera.t2.farClip)
         / vs_battle_cameraTransition->transitionFrames;
-    vs_battle_cameraTransition->unkE8 = (vs_battle_cameraTransition->unk98 - D_8005E0C8)
-                                      / vs_battle_cameraTransition->transitionFrames;
+    vs_battle_cameraTransition->nearClipStep =
+        (vs_battle_cameraTransition->toNearClip - vs_main_nearClip)
+        / vs_battle_cameraTransition->transitionFrames;
     vs_battle_cameraTransition->projectionDistanceStep =
         (vs_battle_cameraTransition->toProjectionDistance - vs_main_projectionDistance)
         / vs_battle_cameraTransition->transitionFrames;
 }
 
-int func_8006F204(void)
+int _stepCameraTransition(void)
 {
-    int temp_a0;
-    int temp_v0;
-    int temp_v1;
-    int new_var;
+    int targetY;
+    int nextY;
+    int currentY;
     int _[4] __attribute__((unused));
 
-    temp_v0 = _camera.t2.position.vy;
-    new_var = temp_v0 & (~0xFFF);
-    temp_a0 = vs_battle_cameraTransition->unkA4.vy & ~0xFFF;
-    temp_v1 = (temp_v0
-                  + (vs_battle_cameraTransition->unkC4.vy
-                      * vs_battle_cameraTransition->transitionSpeed))
-            & ~0xFFF;
+    currentY = _camera.t2.position.vy & ~0xFFF;
+    targetY = vs_battle_cameraTransition->targetPosition.vy & ~0xFFF;
+    nextY = (_camera.t2.position.vy
+                + (vs_battle_cameraTransition->direction.vy
+                    * vs_battle_cameraTransition->transitionSpeed))
+          & ~0xFFF;
 
-    if (((new_var >= temp_a0) && (temp_a0 >= temp_v1))
-        || ((temp_a0 >= new_var) && (temp_v1 >= temp_a0))) {
+    if (((currentY >= targetY) && (targetY >= nextY))
+        || ((targetY >= currentY) && (nextY >= targetY))) {
 
-        _camera.t2.position.vx = vs_battle_cameraTransition->unkA4.vx;
-        _camera.t2.position.vz = vs_battle_cameraTransition->unkA4.vz;
-        _camera.t2.position.vy = vs_battle_cameraTransition->unkA4.vy;
-        _camera.t2.lookAt.vx = vs_battle_cameraTransition->unkB4.vx;
-        _camera.t2.lookAt.vz = vs_battle_cameraTransition->unkB4.vz;
-        _camera.t2.lookAt.vy = vs_battle_cameraTransition->unkB4.vy;
+        _camera.t2.position.vx = vs_battle_cameraTransition->targetPosition.vx;
+        _camera.t2.position.vz = vs_battle_cameraTransition->targetPosition.vz;
+        _camera.t2.position.vy = vs_battle_cameraTransition->targetPosition.vy;
+        _camera.t2.lookAt.vx = vs_battle_cameraTransition->targetLookAt.vx;
+        _camera.t2.lookAt.vz = vs_battle_cameraTransition->targetLookAt.vz;
+        _camera.t2.lookAt.vy = vs_battle_cameraTransition->targetLookAt.vy;
 
         vs_battle_cameraCurrentSpherical = vs_battle_cameraTransition->toSpherical;
 
-        _camera.t2.unk64 = vs_battle_cameraTransition->unkA0;
+        _camera.t2.farClip = vs_battle_cameraTransition->toFarClip;
 
-        func_8007CCCC(vs_battle_cameraTransition->unk98);
+        vs_battle_setNearClip(vs_battle_cameraTransition->toNearClip);
         vs_battle_setProjectionDistance(vs_battle_cameraTransition->toProjectionDistance);
         return 1;
     }
-    _camera.t2.position.vx += ((vs_battle_cameraTransition->unkC4.vx
-                                * vs_battle_cameraTransition->transitionSpeed));
-    _camera.t2.position.vz += ((vs_battle_cameraTransition->unkC4.vz
-                                * vs_battle_cameraTransition->transitionSpeed));
-    _camera.t2.position.vy += ((vs_battle_cameraTransition->unkC4.vy
-                                * vs_battle_cameraTransition->transitionSpeed));
-    _camera.t2.lookAt.vx += (vs_battle_cameraTransition->unkD4.vx);
-    _camera.t2.lookAt.vz += (vs_battle_cameraTransition->unkD4.vz);
-    _camera.t2.lookAt.vy += (vs_battle_cameraTransition->unkD4.vy);
-    _camera.t2.unk64 += (vs_battle_cameraTransition->unkE4);
+    _camera.t2.position.vx += vs_battle_cameraTransition->direction.vx
+                            * vs_battle_cameraTransition->transitionSpeed;
+    _camera.t2.position.vz += vs_battle_cameraTransition->direction.vz
+                            * vs_battle_cameraTransition->transitionSpeed;
+    _camera.t2.position.vy += vs_battle_cameraTransition->direction.vy
+                            * vs_battle_cameraTransition->transitionSpeed;
+    _camera.t2.lookAt.vx += vs_battle_cameraTransition->lookAtStep.vx;
+    _camera.t2.lookAt.vz += vs_battle_cameraTransition->lookAtStep.vz;
+    _camera.t2.lookAt.vy += vs_battle_cameraTransition->lookAtStep.vy;
+    _camera.t2.farClip += vs_battle_cameraTransition->farClipStep;
 
-    func_8007CCCC(D_8005E0C8 + vs_battle_cameraTransition->unkE8);
+    vs_battle_setNearClip(vs_main_nearClip + vs_battle_cameraTransition->nearClipStep);
     vs_battle_setProjectionDistance(
         vs_main_projectionDistance + vs_battle_cameraTransition->projectionDistanceStep);
 
@@ -3192,16 +3195,15 @@ void _initBattleCameraTransition(void)
             vs_main_allocHeapR(sizeof *vs_battle_cameraTransition);
     }
     if (D_800F196C != 7) {
-        vs_battle_cameraTransition->unk0 = _camera.t2;
-
+        vs_battle_cameraTransition->fromCameraState = _camera.t2;
         vs_battle_cameraTransition->fromSpherical = vs_battle_cameraCurrentSpherical;
-        vs_battle_cameraTransition->unk60 = D_8005E0C8;
+        vs_battle_cameraTransition->fromNearClip = vs_main_nearClip;
         vs_battle_cameraTransition->fromProjectionDistance = vs_main_projectionDistance;
-        vs_battle_cameraTransition->unk68 = _camera.t2.unk64;
+        vs_battle_cameraTransition->fromFarClip = _camera.t2.farClip;
     }
-    vs_battle_cameraTransition->unk98 = 4;
+    vs_battle_cameraTransition->toNearClip = 4;
     vs_battle_cameraTransition->toProjectionDistance = 224;
-    vs_battle_cameraTransition->unkA0 = 0x2000;
+    vs_battle_cameraTransition->toFarClip = 0x2000;
     func_800A1108(0, &sp20);
 
     setVector(&vs_battle_cameraTransition->toSpherical.values, sp20.unk0.unkA, 0,
@@ -3209,7 +3211,7 @@ void _initBattleCameraTransition(void)
     setVector(
         &sp10, sp20.unk0.unk4 * ONE, (sp20.unk0.unk6 - 0xB4) * ONE, sp20.unk0.unk8 * ONE);
 
-    func_8006EF5C(&sp10);
+    _computeCameraTransition(&sp10);
 
     D_800F196C = 7;
     _cameraMode = 0;
@@ -3228,13 +3230,13 @@ void _initBattleCameraTransition(void)
 
 void _endBattleCameraTransition(void)
 {
-    _camera.t2 = vs_battle_cameraTransition->unk0;
+    _camera.t2 = vs_battle_cameraTransition->fromCameraState;
 
     vs_battle_cameraCurrentSpherical = vs_battle_cameraTransition->fromSpherical;
 
     vs_battle_cameraCurrentSpherical.delta.vy =
         vs_battle_cameraCurrentSpherical.values.vx;
-    func_8007CCCC(vs_battle_cameraTransition->unk60);
+    vs_battle_setNearClip(vs_battle_cameraTransition->fromNearClip);
     vs_battle_setProjectionDistance(vs_battle_cameraTransition->fromProjectionDistance);
     if (vs_battle_cameraTransition != NULL) {
         vs_main_freeHeapR(vs_battle_cameraTransition);
@@ -3795,7 +3797,7 @@ void func_80074580(void)
         func_800A087C(0, func_800A0BE0(0) & ~2);
     }
 
-    if (func_8006F204() != 0) {
+    if (_stepCameraTransition() != 0) {
         _cameraMode = 1;
         _firstPersonViewEnabled = 1;
         D_800F19C8 = 1;
@@ -3822,7 +3824,7 @@ void _checkFirstPersonViewExit(void)
     if ((vs_battle_cameraTransition->toSpherical.values.vx
             - (vs_battle_cameraTransition->toSpherical.values.vx
                 - (vs_battle_cameraTransition->toSpherical.values.vx % 512)))
-        >= 0x101) {
+        > 0x100) {
         vs_battle_cameraTransition->toSpherical.values.vx =
             (vs_battle_cameraTransition->toSpherical.values.vx & ~0x1FF) + 0x200;
     } else {
@@ -3836,14 +3838,14 @@ void _checkFirstPersonViewExit(void)
 
     vs_battle_cameraTransition->toSpherical = vs_battle_cameraTransition->fromSpherical;
 
-    vs_battle_cameraTransition->unk98 = vs_battle_cameraTransition->unk60;
+    vs_battle_cameraTransition->toNearClip = vs_battle_cameraTransition->fromNearClip;
     vs_battle_cameraTransition->toProjectionDistance =
         vs_battle_cameraTransition->fromProjectionDistance;
-    vs_battle_cameraTransition->unkA0 = vs_battle_cameraTransition->unk68;
-    _computeSphericalOffset(&vs_battle_cameraTransition->unk0.position,
-        &vs_battle_cameraTransition->unk0.lookAt,
+    vs_battle_cameraTransition->toFarClip = vs_battle_cameraTransition->fromFarClip;
+    _computeSphericalOffset(&vs_battle_cameraTransition->fromCameraState.position,
+        &vs_battle_cameraTransition->fromCameraState.lookAt,
         &vs_battle_cameraTransition->toSpherical.values);
-    func_8006EF5C(&vs_battle_cameraTransition->unk0.position);
+    _computeCameraTransition(&vs_battle_cameraTransition->fromCameraState.position);
 }
 
 void func_80074744(void)
@@ -3851,7 +3853,7 @@ void func_80074744(void)
     if (vs_main_projectionDistance > 272) {
         func_800A087C(0, func_800A0BE0(0) | 2);
     }
-    if (func_8006F204() != 0) {
+    if (_stepCameraTransition() != 0) {
         _endBattleCameraTransition();
     }
 }
@@ -4581,7 +4583,7 @@ int _isLookAtAtDestination(void)
 void func_80077EC4(void)
 {
     func_8007CD70(&_camera.t2.position, &_camera.t2.lookAt, -1, -1);
-    _camera.t2.unk64 = 0x1000;
+    _camera.t2.farClip = 0x1000;
     _camera.t2.unk5C = 0;
     _camera.t2.yaw = 0;
     _camera.t2.pitch = 0;
@@ -5969,9 +5971,9 @@ void func_8007CC8C(void) { func_8009CFA0(); }
 
 void func_8007CCAC(void) { func_800995B0(); }
 
-void func_8007CCCC(int arg0)
+void vs_battle_setNearClip(int arg0)
 {
-    D_8005E0C8 = arg0;
+    vs_main_nearClip = arg0;
     func_80098160(arg0);
 }
 
@@ -5983,7 +5985,7 @@ void vs_battle_setProjectionDistance(int projectionDistance)
 
 void func_8007CD14(int arg0, int arg1)
 {
-    _camera.t2.unk64 = arg0;
+    _camera.t2.farClip = arg0;
 
     if (arg1 == 0) {
         if (arg0 < 0) {
@@ -9436,9 +9438,9 @@ void func_8008B1FC(void* arg0)
     SetRotMatrix((MATRIX*)0x1F800014); // _camera.viewMatrix
     SetTransMatrix((MATRIX*)0x1F800014); // _camera.viewMatrix
     func_800983F8(arg0);
-    D_800F1CC0 = *(int*)0x1F800000; // _camera.unk0
+    D_800F1CC0 = *(void**)0x1F800000; // _camera.unk0
     func_8009723C(arg0, D_800F19C8);
-    D_800F1BB8 = *(int*)0x1F800000; // _camera.unk0
+    D_800F1BB8 = *(void**)0x1F800000; // _camera.unk0
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
     }

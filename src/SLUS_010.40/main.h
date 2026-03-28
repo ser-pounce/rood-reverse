@@ -376,7 +376,7 @@ extern short D_8005DFD8;
 extern short D_8005DFDA;
 extern u_int D_8005E040;
 extern void* D_8005E0C0[];
-extern int D_8005E0C8;
+extern int vs_main_nearClip;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;
 extern char vs_main_padBuffer[2][34];

@@ -1,6 +1,7 @@
 
 
  
+ 
 D_1F800014_mat = 0x1F800014;
 vs_overlay_slots = 0x80010000; // size:0x14
 jtbl_800100EC = 0x800100EC; // type:jtbl
@@ -779,7 +780,7 @@ vs_main_buttonRepeat = 0x8005DFDC;
 vs_main_padBuffer = 0x8005DFF0;
 vs_main_soundData = 0x8005E038;
 D_8005E0C0 = 0x8005E0C0;
-D_8005E0C8 = 0x8005E0C8;
+vs_main_nearClip = 0x8005E0C8;
 vs_main_drawEnv = 0x8005E0D0;
 vs_main_dispEnv = 0x8005E188;
 vs_main_buttonsPreviousState = 0x8005E1C0;

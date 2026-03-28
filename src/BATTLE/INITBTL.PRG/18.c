@@ -142,7 +142,7 @@ void func_800F9AD8(void)
     }
 
     D_80060068.unk0.unk0 = 0;
-    vs_battle_cameraCurrentSpherical.delta.vy = s1->unk80;
+    vs_battle_cameraCurrentSpherical.delta.pitch = s1->unk80;
     vs_battle_cameraCurrentSpherical.unk20 = s1->unk84;
 }
 

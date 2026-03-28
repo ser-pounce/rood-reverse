@@ -604,8 +604,15 @@ typedef struct {
 } camera_t;
 
 typedef struct {
-    VECTOR values;
-    VECTOR delta;
+    int yaw;
+    int pitch;
+    int distance;
+    int mode;
+} _sphericalValues;
+
+typedef struct {
+    _sphericalValues values;
+    _sphericalValues delta;
     int unk20;
     int unk24;
     int speed;
@@ -709,9 +716,14 @@ void vs_battle_copyUiAccessoryStats(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
+void func_8007AC94(int arg0);
 void func_8007ACB0(void);
 int func_8007C36C(int arg0);
 void vs_battle_setProjectionDistance(int);
+void vs_battle_setCameraPosition(VECTOR* inPosition);
+void vs_battle_setCameraLookAt(VECTOR* inLookAt);
+void vs_battle_setNearClip(int arg0);
+void func_8007CD14(int arg0, int arg1);
 void func_8007DD50(int);
 void func_8007DDAC(int arg0);
 void func_8007DDB8(int* arg0);

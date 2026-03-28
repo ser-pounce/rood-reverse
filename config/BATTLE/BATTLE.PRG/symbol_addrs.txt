@@ -52,6 +52,7 @@ _initBattleCameraTransition = 0x800730BC;
 _endBattleCameraTransition = 0x800732AC;
 _checkFirstPersonViewExit = 0x800745EC;
 _isLookAtAtDestination = 0x80077DF0;
+_handleCombatCameraZoom = 0x800784AC;
 vs_battle_exec = 0x800798A4;
 vs_battle_syncCameraAnglesFromPosition = 0x8007A850;
 _computeSphericalOffset = 0x8007A9DC;

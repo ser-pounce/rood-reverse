@@ -9,6 +9,7 @@
 #include "gpu.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
+#include "../SLUS_010.40/32154.h"
 #include "../MENU/MAINMENU.PRG/C48.h"
 #include <memory.h>
 

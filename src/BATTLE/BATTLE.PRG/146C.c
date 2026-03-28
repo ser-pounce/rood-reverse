@@ -591,10 +591,9 @@ void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
 int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3*);
-void _computeSphericalOffset(VECTOR*, VECTOR*, VECTOR*);
-void _setCameraPositionFromAngles(VECTOR* arg0);
-void _setCameraLookAtFromAngles(VECTOR* arg0);
-void func_8007AC94(int arg0);
+void _computeSphericalOffset(VECTOR*, VECTOR*, _sphericalValues*);
+void _setCameraPositionFromAngles(_sphericalValues* arg0);
+void _setCameraLookAtFromAngles(_sphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
@@ -612,8 +611,6 @@ void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
 int func_8007C694(int, int, int, int, int);
-void vs_battle_setNearClip(int arg0);
-void func_8007CD14(int arg0, int arg1);
 void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 int func_8007D08C(int, int);
@@ -2253,7 +2250,7 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
     int maxBound;
     int v;
 
-    entityRadius = (vs_battle_cameraCurrentSpherical.values.vz * ONE) / 2304;
+    entityRadius = (vs_battle_cameraCurrentSpherical.values.distance * ONE) / 2304;
     bound = _zoneContext.bounds.minX * ONE * 128 + entityRadius * 360;
     maxBound = _zoneContext.bounds.maxX * ONE * 128 - entityRadius * 360;
 
@@ -2530,20 +2527,20 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
     int var_a0;
 
     if (vs_main_buttonsPreviousState & PADLup) {
-        vs_battle_cameraCurrentSpherical.values.vy =
-            (vs_battle_cameraCurrentSpherical.values.vy - 32) % ONE;
+        vs_battle_cameraCurrentSpherical.values.pitch =
+            (vs_battle_cameraCurrentSpherical.values.pitch - 32) % ONE;
     }
     if (vs_main_buttonsPreviousState & PADLdown) {
-        vs_battle_cameraCurrentSpherical.values.vy =
-            (vs_battle_cameraCurrentSpherical.values.vy + 32) % ONE;
+        vs_battle_cameraCurrentSpherical.values.pitch =
+            (vs_battle_cameraCurrentSpherical.values.pitch + 32) % ONE;
     }
     if (vs_main_buttonsPreviousState & PADLleft) {
-        vs_battle_cameraCurrentSpherical.values.vx =
-            (vs_battle_cameraCurrentSpherical.values.vx - 32) % ONE;
+        vs_battle_cameraCurrentSpherical.values.yaw =
+            (vs_battle_cameraCurrentSpherical.values.yaw - 32) % ONE;
     }
     if (vs_main_buttonsPreviousState & PADLright) {
-        vs_battle_cameraCurrentSpherical.values.vx =
-            (vs_battle_cameraCurrentSpherical.values.vx + 32) % ONE;
+        vs_battle_cameraCurrentSpherical.values.yaw =
+            (vs_battle_cameraCurrentSpherical.values.yaw + 32) % ONE;
     }
     if (_portInfo->mode == 7) {
         var_a0 = _portInfo->rStickX - 128;
@@ -2555,8 +2552,8 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
             } else {
                 var_a0 = _portInfo->rStickX - 192;
             }
-            vs_battle_cameraCurrentSpherical.values.vx =
-                (vs_battle_cameraCurrentSpherical.values.vx + (var_a0 / 3)) % ONE;
+            vs_battle_cameraCurrentSpherical.values.yaw =
+                (vs_battle_cameraCurrentSpherical.values.yaw + (var_a0 / 3)) % ONE;
         }
         if ((temp_a1 + 64) > 128u) {
             if (temp_a1 <= 0) {
@@ -2564,18 +2561,18 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
             } else {
                 temp_a1 -= 64;
             }
-            vs_battle_cameraCurrentSpherical.values.vy =
-                (vs_battle_cameraCurrentSpherical.values.vy + (temp_a1 / 3)) % ONE;
+            vs_battle_cameraCurrentSpherical.values.pitch =
+                (vs_battle_cameraCurrentSpherical.values.pitch + (temp_a1 / 3)) % ONE;
         }
     }
 
-    if (vs_battle_cameraCurrentSpherical.values.vy > 896) {
-        vs_battle_cameraCurrentSpherical.values.vy = 896;
-    } else if (vs_battle_cameraCurrentSpherical.values.vy < -896) {
-        vs_battle_cameraCurrentSpherical.values.vy = -896;
+    if (vs_battle_cameraCurrentSpherical.values.pitch > 896) {
+        vs_battle_cameraCurrentSpherical.values.pitch = 896;
+    } else if (vs_battle_cameraCurrentSpherical.values.pitch < -896) {
+        vs_battle_cameraCurrentSpherical.values.pitch = -896;
     }
 
-    func_800AA850(0, vs_battle_cameraCurrentSpherical.values.vx & 0xFFF, 0);
+    func_800AA850(0, vs_battle_cameraCurrentSpherical.values.yaw & 0xFFF, 0);
     func_800A1108(0, &sp10);
     _camera.t2.position.vx = sp10.unk0.unk4 * ONE;
     _camera.t2.position.vz = sp10.unk0.unk8 * ONE;
@@ -2585,14 +2582,15 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
 
 void func_8006EF10(void)
 {
-    if (vs_battle_cameraCurrentSpherical.delta.pad >= 0) {
-        if (vs_battle_cameraCurrentSpherical.delta.pad < 2) {
-            D_800F19CC->unk2C0C = 0x600;
-            return;
-        }
-        if (vs_battle_cameraCurrentSpherical.delta.pad < 4) {
-            D_800F19CC->unk2C0C = 0x900;
-        }
+    switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+    case 0:
+    case 1:
+        D_800F19CC->unk2C0C = 0x600;
+        break;
+    case 2:
+    case 3:
+        D_800F19CC->unk2C0C = 0x900;
+        break;
     }
 }
 
@@ -2618,12 +2616,12 @@ void _computeCameraTransition(VECTOR* targetPosition)
             * vs_battle_cameraTransition->transitionSpeed);
 
     vs_battle_cameraTransition->targetLookAt.vx =
-        -rsin(vs_battle_cameraTransition->toSpherical.values.vx);
+        -rsin(vs_battle_cameraTransition->toSpherical.values.yaw);
     vs_battle_cameraTransition->targetLookAt.vz =
-        -rcos(vs_battle_cameraTransition->toSpherical.values.vx);
+        -rcos(vs_battle_cameraTransition->toSpherical.values.yaw);
     vs_battle_cameraTransition->targetLookAt.vy =
-        (-rsin(vs_battle_cameraTransition->toSpherical.values.vy) * ONE)
-        / rcos(vs_battle_cameraTransition->toSpherical.values.vy);
+        (-rsin(vs_battle_cameraTransition->toSpherical.values.pitch) * ONE)
+        / rcos(vs_battle_cameraTransition->toSpherical.values.pitch);
 
     VectorNormal(&vs_battle_cameraTransition->targetLookAt,
         &vs_battle_cameraTransition->targetLookAt);
@@ -3206,8 +3204,11 @@ void _initBattleCameraTransition(void)
     vs_battle_cameraTransition->toFarClip = 0x2000;
     func_800A1108(0, &sp20);
 
-    setVector(&vs_battle_cameraTransition->toSpherical.values, sp20.unk0.unkA, 0,
-        vs_battle_cameraCurrentSpherical.values.vz);
+    vs_battle_cameraTransition->toSpherical.values.yaw = sp20.unk0.unkA;
+    vs_battle_cameraTransition->toSpherical.values.pitch = 0;
+    vs_battle_cameraTransition->toSpherical.values.distance =
+        vs_battle_cameraCurrentSpherical.values.distance;
+
     setVector(
         &sp10, sp20.unk0.unk4 * ONE, (sp20.unk0.unk6 - 0xB4) * ONE, sp20.unk0.unk8 * ONE);
 
@@ -3234,8 +3235,8 @@ void _endBattleCameraTransition(void)
 
     vs_battle_cameraCurrentSpherical = vs_battle_cameraTransition->fromSpherical;
 
-    vs_battle_cameraCurrentSpherical.delta.vy =
-        vs_battle_cameraCurrentSpherical.values.vx;
+    vs_battle_cameraCurrentSpherical.delta.pitch =
+        vs_battle_cameraCurrentSpherical.values.yaw;
     vs_battle_setNearClip(vs_battle_cameraTransition->fromNearClip);
     vs_battle_setProjectionDistance(vs_battle_cameraTransition->fromProjectionDistance);
     if (vs_battle_cameraTransition != NULL) {
@@ -3361,7 +3362,7 @@ void func_80073718(void)
     D_800F196C = 3;
     _cameraMode = 2;
     func_800BEC14(0xAC, vs_battle_characterState->unk20 & 1);
-    func_800BEC14(0xAF, (vs_battle_cameraCurrentSpherical.delta.vy / 512) & 7);
+    func_800BEC14(0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
     if (vs_battle_cameraCurrentSpherical.unk20 == 0x600) {
         func_800BEC14(0xB0, 0);
     } else {
@@ -3821,20 +3822,20 @@ void _checkFirstPersonViewExit(void)
     func_80074B14(0, &sp10.unk0.unk0.fields.unk0);
     vs_battle_syncCameraAnglesFromPosition(&vs_battle_cameraTransition->toSpherical);
 
-    if ((vs_battle_cameraTransition->toSpherical.values.vx
-            - (vs_battle_cameraTransition->toSpherical.values.vx
-                - (vs_battle_cameraTransition->toSpherical.values.vx % 512)))
+    if ((vs_battle_cameraTransition->toSpherical.values.yaw
+            - (vs_battle_cameraTransition->toSpherical.values.yaw
+                - (vs_battle_cameraTransition->toSpherical.values.yaw % 512)))
         > 0x100) {
-        vs_battle_cameraTransition->toSpherical.values.vx =
-            (vs_battle_cameraTransition->toSpherical.values.vx & ~0x1FF) + 0x200;
+        vs_battle_cameraTransition->toSpherical.values.yaw =
+            (vs_battle_cameraTransition->toSpherical.values.yaw & ~0x1FF) + 0x200;
     } else {
-        vs_battle_cameraTransition->toSpherical.values.vx =
-            vs_battle_cameraTransition->toSpherical.values.vx & ~0x1FF;
+        vs_battle_cameraTransition->toSpherical.values.yaw =
+            vs_battle_cameraTransition->toSpherical.values.yaw & ~0x1FF;
     }
 
-    vs_battle_cameraTransition->fromSpherical.delta.vx = 0;
-    vs_battle_cameraTransition->fromSpherical.values.vx =
-        vs_battle_cameraTransition->toSpherical.values.vx;
+    vs_battle_cameraTransition->fromSpherical.delta.yaw = 0;
+    vs_battle_cameraTransition->fromSpherical.values.yaw =
+        vs_battle_cameraTransition->toSpherical.values.yaw;
 
     vs_battle_cameraTransition->toSpherical = vs_battle_cameraTransition->fromSpherical;
 
@@ -4724,22 +4725,22 @@ void func_80078364(void)
     }
 }
 
-void func_800784AC(void)
+void _handleCombatCameraZoom(void)
 {
     SVECTOR sp18;
     VECTOR sp20;
     VECTOR sp30;
 
-    if ((vs_battle_cameraCurrentSpherical.delta.pad == 1)
-        || (vs_battle_cameraCurrentSpherical.delta.pad == 3)) {
+    if ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+        || (vs_battle_cameraCurrentSpherical.delta.mode == 3)) {
         if (D_800F19CC->unk2C0E == 0) {
             func_8007820C(1);
             func_800780A8(&sp18);
             _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
             if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
-                    && (vs_battle_cameraCurrentSpherical.delta.vx == 0))
-                && ((vs_battle_cameraCurrentSpherical.delta.pad == 1)
-                    || (vs_battle_cameraCurrentSpherical.delta.pad == 3))) {
+                    && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
+                && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+                    || (vs_battle_cameraCurrentSpherical.delta.mode == 3))) {
                 func_8007138C();
             }
         } else if (D_800F19CC->unk2C0E == 1) {
@@ -4749,43 +4750,43 @@ void func_800784AC(void)
                 vs_main_projectionDistance = 0x300;
             }
             SetGeomScreen(vs_main_projectionDistance);
-            if (vs_battle_cameraCurrentSpherical.values.vz > 0x600) {
-                vs_battle_cameraCurrentSpherical.values.vz -= 0xC0;
-                if (vs_battle_cameraCurrentSpherical.values.vz < 0x600) {
-                    vs_battle_cameraCurrentSpherical.values.vz = 0x600;
+            if (vs_battle_cameraCurrentSpherical.values.distance > 0x600) {
+                vs_battle_cameraCurrentSpherical.values.distance -= 0xC0;
+                if (vs_battle_cameraCurrentSpherical.values.distance < 0x600) {
+                    vs_battle_cameraCurrentSpherical.values.distance = 0x600;
                 }
             }
             if (vs_main_projectionDistance == 0x300) {
                 func_800780A8(&sp18);
                 _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
-                        && (vs_battle_cameraCurrentSpherical.delta.vx == 0))
-                    && ((vs_battle_cameraCurrentSpherical.delta.pad == 1)
-                        || (vs_battle_cameraCurrentSpherical.delta.pad == 3))) {
+                        && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
+                    && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+                        || (vs_battle_cameraCurrentSpherical.delta.mode == 3))) {
                     func_8007138C();
                 }
             }
         } else if (D_800F19CC->unk2C0E == 2) {
             func_8007820C(1);
-            if (vs_battle_cameraCurrentSpherical.values.vz < 0x900) {
-                vs_battle_cameraCurrentSpherical.values.vz += 0xC0;
-                if (vs_battle_cameraCurrentSpherical.values.vz > 0x900) {
-                    vs_battle_cameraCurrentSpherical.values.vz = 0x900;
+            if (vs_battle_cameraCurrentSpherical.values.distance < 0x900) {
+                vs_battle_cameraCurrentSpherical.values.distance += 0xC0;
+                if (vs_battle_cameraCurrentSpherical.values.distance > 0x900) {
+                    vs_battle_cameraCurrentSpherical.values.distance = 0x900;
                 }
             }
-            if (vs_battle_cameraCurrentSpherical.values.vz == 0x900) {
+            if (vs_battle_cameraCurrentSpherical.values.distance == 0x900) {
                 func_800780A8(&sp18);
                 _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
-                        && (vs_battle_cameraCurrentSpherical.delta.vx == 0))
-                    && ((vs_battle_cameraCurrentSpherical.delta.pad == 1)
-                        || (vs_battle_cameraCurrentSpherical.delta.pad == 3))) {
+                        && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
+                    && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+                        || (vs_battle_cameraCurrentSpherical.delta.mode == 3))) {
                     func_8007138C();
                 }
             }
-        } else if ((vs_battle_cameraCurrentSpherical.delta.vx == 0)
-                   && ((vs_battle_cameraCurrentSpherical.delta.pad == 1)
-                       || (vs_battle_cameraCurrentSpherical.delta.pad == 3))) {
+        } else if ((vs_battle_cameraCurrentSpherical.delta.yaw == 0)
+                   && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+                       || (vs_battle_cameraCurrentSpherical.delta.mode == 3))) {
             func_8007138C();
         }
     }
@@ -5034,47 +5035,48 @@ int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3* arg0)
     _camera.t2.pitch = pitch;
 
     if (arg0 != NULL) {
-        arg0->values.vx = yaw;
-        arg0->values.vy = pitch;
+        arg0->values.yaw = yaw;
+        arg0->values.pitch = pitch;
         if (toCamera.vx != 0) {
-            arg0->values.vz = (toCamera.vx * ONE) / toCameraNorm.vx;
+            arg0->values.distance = (toCamera.vx * ONE) / toCameraNorm.vx;
         } else if (toCamera.vz != 0) {
-            arg0->values.vz = (toCamera.vz * ONE) / toCameraNorm.vz;
+            arg0->values.distance = (toCamera.vz * ONE) / toCameraNorm.vz;
         } else {
-            arg0->values.vz = 0x400;
+            arg0->values.distance = 0x400;
         }
     }
     return yaw;
 }
 
-void _computeSphericalOffset(VECTOR* outPosition, VECTOR* basePosition, VECTOR* angles)
+void _computeSphericalOffset(
+    VECTOR* outPosition, VECTOR* basePosition, _sphericalValues* angles)
 {
-    outPosition->vx = rsin(angles->vx);
-    outPosition->vz = rcos(angles->vx);
-    outPosition->vy = (rsin(angles->vy) * ONE) / rcos(angles->vy);
+    outPosition->vx = rsin(angles->yaw);
+    outPosition->vz = rcos(angles->yaw);
+    outPosition->vy = (rsin(angles->pitch) * ONE) / rcos(angles->pitch);
     VectorNormal(outPosition, outPosition);
-    outPosition->vx = (outPosition->vx * angles->vz) + basePosition->vx;
-    outPosition->vz = (outPosition->vz * angles->vz) + basePosition->vz;
-    outPosition->vy = (outPosition->vy * angles->vz) + basePosition->vy;
+    outPosition->vx = (outPosition->vx * angles->distance) + basePosition->vx;
+    outPosition->vz = (outPosition->vz * angles->distance) + basePosition->vz;
+    outPosition->vy = (outPosition->vy * angles->distance) + basePosition->vy;
 }
 
-void _setCameraPositionFromAngles(VECTOR* spherical)
+void _setCameraPositionFromAngles(_sphericalValues* spherical)
 {
     _computeSphericalOffset(&_camera.t2.position, &_camera.t2.lookAt, spherical);
 }
 
-void _setCameraLookAtFromAngles(VECTOR* spherical)
+void _setCameraLookAtFromAngles(_sphericalValues* spherical)
 {
-    _camera.t2.lookAt.vx = -rsin(spherical->vx);
-    _camera.t2.lookAt.vz = -rcos(spherical->vx);
-    _camera.t2.lookAt.vy = (-rsin(spherical->vy) * 0x1000) / rcos(spherical->vy);
+    _camera.t2.lookAt.vx = -rsin(spherical->yaw);
+    _camera.t2.lookAt.vz = -rcos(spherical->yaw);
+    _camera.t2.lookAt.vy = (-rsin(spherical->pitch) * 0x1000) / rcos(spherical->pitch);
     VectorNormal(&_camera.t2.lookAt, &_camera.t2.lookAt);
     _camera.t2.lookAt.vx =
-        (_camera.t2.lookAt.vx * spherical->vz) + _camera.t2.position.vx;
+        (_camera.t2.lookAt.vx * spherical->distance) + _camera.t2.position.vx;
     _camera.t2.lookAt.vz =
-        (_camera.t2.lookAt.vz * spherical->vz) + _camera.t2.position.vz;
+        (_camera.t2.lookAt.vz * spherical->distance) + _camera.t2.position.vz;
     _camera.t2.lookAt.vy =
-        (_camera.t2.lookAt.vy * spherical->vz) + _camera.t2.position.vy;
+        (_camera.t2.lookAt.vy * spherical->distance) + _camera.t2.position.vy;
 }
 
 void vs_battle_getCameraPosition(VECTOR* outPosition)
@@ -5983,25 +5985,25 @@ void vs_battle_setProjectionDistance(int projectionDistance)
     SetGeomScreen(projectionDistance);
 }
 
-void func_8007CD14(int arg0, int arg1)
+void func_8007CD14(int farClip, int arg1)
 {
-    _camera.t2.farClip = arg0;
+    _camera.t2.farClip = farClip;
 
     if (arg1 == 0) {
-        if (arg0 < 0) {
-            arg0 += 7;
+        if (farClip < 0) {
+            farClip += 7;
         }
-        arg0 >>= 3;
-        if (arg0 >= 0x801) {
-            arg0 = 0x800;
-        } else if (arg0 < 0) {
-            arg0 = 0;
+        farClip >>= 3;
+        if (farClip > 0x800) {
+            farClip = 0x800;
+        } else if (farClip < 0) {
+            farClip = 0;
         }
-        func_80098194(arg0);
+        func_80098194(farClip);
     }
 }
 
-void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
+void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int mode)
 {
     func_8006EBF8_t sp10;
     int temp_v0;
@@ -6009,21 +6011,21 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
 
     if (arg2 != -1) {
         var_v0 = arg2;
-        temp_v0 = vs_battle_cameraCurrentSpherical.values.vx;
+        temp_v0 = vs_battle_cameraCurrentSpherical.values.yaw;
         if (arg2 < 0) {
             var_v0 = arg2 + 7;
         }
-        vs_battle_cameraCurrentSpherical.delta.vy = (arg2 - ((var_v0 >> 3) * 8)) << 9;
-        vs_battle_cameraCurrentSpherical.values.vx = (arg2 - ((var_v0 >> 3) * 8)) << 9;
+        vs_battle_cameraCurrentSpherical.delta.pitch = (arg2 - ((var_v0 >> 3) * 8)) << 9;
+        vs_battle_cameraCurrentSpherical.values.yaw = (arg2 - ((var_v0 >> 3) * 8)) << 9;
     }
-    if (arg3 == 1) {
+    if (mode == 1) {
         vs_battle_cameraCurrentSpherical.unk20 = 0x600;
-        vs_battle_cameraCurrentSpherical.values.vz = 0x600;
-        vs_battle_cameraCurrentSpherical.delta.pad = 0;
-    } else if (arg3 == 2) {
+        vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+        vs_battle_cameraCurrentSpherical.delta.mode = 0;
+    } else if (mode == 2) {
         vs_battle_cameraCurrentSpherical.unk20 = 0x900;
-        vs_battle_cameraCurrentSpherical.values.vz = 0x900;
-        vs_battle_cameraCurrentSpherical.delta.pad = arg3;
+        vs_battle_cameraCurrentSpherical.values.distance = 0x900;
+        vs_battle_cameraCurrentSpherical.delta.mode = mode;
     }
     func_800A1108(0, &sp10);
     arg1->vx = sp10.unk0.unk4 << 0xC;
@@ -6036,10 +6038,10 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3)
 void func_8007CE74(int arg0)
 {
     if ((arg0 == -0x300) || (arg0 == -0x80)) {
-        vs_battle_cameraCurrentSpherical.values.vy = arg0;
+        vs_battle_cameraCurrentSpherical.values.pitch = arg0;
         return;
     }
-    vs_battle_cameraCurrentSpherical.values.vy = -0x180;
+    vs_battle_cameraCurrentSpherical.values.pitch = -0x180;
 }
 
 void func_8007CEA0(int arg0) { func_8009E5C4(arg0); }

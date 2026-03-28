@@ -613,10 +613,10 @@ typedef struct {
 typedef struct {
     _sphericalValues values;
     _sphericalValues delta;
-    int unk20;
+    int initialDistance;
     int unk24;
     int speed;
-} D_800F1904_t3;
+} _sphericalCamera;
 
 typedef struct {
     int unk0;
@@ -763,7 +763,7 @@ extern _zoneContext_t _zoneContext;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_lootListNode* _lootListHead;
 extern vs_battle_actor* vs_battle_actors[];
-extern D_800F1904_t3 vs_battle_cameraCurrentSpherical;
+extern _sphericalCamera vs_battle_cameraCurrentSpherical;
 extern vs_battle_actor* vs_battle_characterState;
 extern D_80061068_t D_800F1AB0;
 extern u_short D_800F1BA4;

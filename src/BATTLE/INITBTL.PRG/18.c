@@ -143,7 +143,7 @@ void func_800F9AD8(void)
 
     D_80060068.unk0.unk0 = 0;
     vs_battle_cameraCurrentSpherical.delta.pitch = s1->unk80;
-    vs_battle_cameraCurrentSpherical.unk20 = s1->unk84;
+    vs_battle_cameraCurrentSpherical.initialDistance = s1->unk84;
 }
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);

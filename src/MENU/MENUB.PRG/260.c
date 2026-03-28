@@ -3525,6 +3525,6 @@ int func_80109E90(char* state)
 void func_8010A24C(int arg0)
 {
     if (arg0 >= 0x1CA) {
-        func_800BEC14(arg0 + 0x1B6, 1);
+        vs_battle_setStateFlag(arg0 + 0x1B6, 1);
     }
 }

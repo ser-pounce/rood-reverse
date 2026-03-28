@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../../SLUS_010.40/main.h"
 #include <stdio.h>
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B28A8);
@@ -514,7 +515,11 @@ void func_800BEBEC(void) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEBF4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC14);
+void vs_battle_setStateFlag(short arg0, int arg1)
+{
+    char* flags = (char*)&vs_main_stateFlags;
+    flags[arg0] = arg1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC30);
 

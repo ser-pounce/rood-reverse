@@ -484,11 +484,11 @@ typedef struct {
 
 typedef struct {
     camera_t2 fromCameraState;
-    D_800F1904_t3 fromSpherical;
+    _sphericalCamera fromSpherical;
     int fromNearClip;
     int fromProjectionDistance;
     int fromFarClip;
-    D_800F1904_t3 toSpherical;
+    _sphericalCamera toSpherical;
     int toNearClip;
     int toProjectionDistance;
     int toFarClip;
@@ -590,7 +590,7 @@ void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
-int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3*);
+int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
 void _computeSphericalOffset(VECTOR*, VECTOR*, _sphericalValues*);
 void _setCameraPositionFromAngles(_sphericalValues* arg0);
 void _setCameraLookAtFromAngles(_sphericalValues* arg0);
@@ -2970,7 +2970,7 @@ void func_80070278(void)
 
     if (((temp_s0->unk0 - 0x16u) < 0x20) && (temp_s0->unk44 == 0)
         && (temp_s0->unk4.unk0 == 0)) {
-        func_800BEC14(0xB8, 1);
+        vs_battle_setStateFlag(0xB8, 1);
     }
 
     temp_a3 = D_800F19CC->unk0;
@@ -3342,7 +3342,7 @@ void func_800735F8(D_800F18EC_t* arg0)
     case 10:
         func_800A1108(0, &sp18);
         func_8006F4B0(&sp18.unk0);
-        func_800BEC14(0xB7, 1);
+        vs_battle_setStateFlag(0xB7, 1);
         func_8007C694(arg0->unk4.fields.unk0_0, arg0->unk4.fields.unk0_9,
             arg0->unk4.fields.unk0_14, 0, 8);
         if (vs_battle_characterState->unk3C->currentMP >= arg0->unk4.fields.unk0_19) {
@@ -3361,12 +3361,13 @@ void func_80073718(void)
 
     D_800F196C = 3;
     _cameraMode = 2;
-    func_800BEC14(0xAC, vs_battle_characterState->unk20 & 1);
-    func_800BEC14(0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
-    if (vs_battle_cameraCurrentSpherical.unk20 == 0x600) {
-        func_800BEC14(0xB0, 0);
+    vs_battle_setStateFlag(0xAC, vs_battle_characterState->unk20 & 1);
+    vs_battle_setStateFlag(
+        0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
+    if (vs_battle_cameraCurrentSpherical.initialDistance == 0x600) {
+        vs_battle_setStateFlag(0xB0, 0);
     } else {
-        func_800BEC14(0xB0, 1);
+        vs_battle_setStateFlag(0xB0, 1);
     }
 
     for (i = 0; i < 16; ++i) {
@@ -3490,7 +3491,7 @@ int func_80073AFC(func_8008C1C8_t* arg0)
             case 3:
                 if (_itemIdIsInInventory(arg0->unkC) != 0) {
                     if (arg0->unkC >= 0x1D2) {
-                        func_800BEC14(arg0->unkC + 0x1B6, 2);
+                        vs_battle_setStateFlag(arg0->unkC + 0x1B6, 2);
                         func_800CCB9C(arg0->unkC);
                     }
                     arg0->unk0.unk8.u8[0] = 0;
@@ -3585,7 +3586,7 @@ void func_80073E30(func_8008C1C8_t* arg0, int arg1)
             if (_itemIdIsInInventory(arg0->unkE) == 0) {
                 break;
             }
-            func_800BEC14(arg0->unkE + 0x1B6, 1);
+            vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
             if (arg0->unkE >= 0x1D2) {
                 func_800CCB9C(arg0->unkE);
             }
@@ -3783,7 +3784,7 @@ int func_800744B8(void)
         return 1;
     }
     if (temp_v0->unk2 != 0) {
-        func_800BEC14((D_800F1910.unk0->unk10 + 0x3C0), 1);
+        vs_battle_setStateFlag((D_800F1910.unk0->unk10 + 0x3C0), 1);
     } else {
         func_8008D5FC(D_800F1910.unk0);
     }
@@ -3983,8 +3984,8 @@ void func_80074B14(int arg0, char* arg1)
         var_a2 = arg1[1];
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
-        func_8008C2C0(
-            arg1[0], arg1[2], arg1[1], vs_battle_cameraCurrentSpherical.unk20 == 0x900);
+        func_8008C2C0(arg1[0], arg1[2], arg1[1],
+            vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
         return;
     }
     func_8008C40C();
@@ -5013,7 +5014,7 @@ void func_8007983C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
-int vs_battle_syncCameraAnglesFromPosition(D_800F1904_t3* arg0)
+int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
 {
     VECTOR toCamera;
     VECTOR toCameraNorm;
@@ -5414,55 +5415,24 @@ void func_8007BBB8(int arg0, int arg1) { func_80069DEC(arg0, arg1); }
 
 void func_8007BBD8(int arg0, int arg1, int arg2)
 {
-    int temp_a0;
-    int temp_v1;
-    int var_v0;
-    int new_var;
-    int new_var2;
-
     D_80050468.unk0 = arg0;
     D_80050468.unk2 = arg1;
-    D_80050468.unk7 = 0U;
-    D_80050468.unk6 = 0U;
-    D_80050468.unk5 = 0U;
-    D_80050468.unk4 = 0U;
+    D_80050468.unk7 = 0;
+    D_80050468.unk6 = 0;
+    D_80050468.unk5 = 0;
+    D_80050468.unk4 = 0;
 
     if (arg0 != 1) {
-        new_var2 = arg2 < 0;
-        var_v0 = arg2;
-        if (new_var2) {
-            var_v0 = 0xFF;
-            var_v0 = arg2 + var_v0;
-        }
-        new_var = 8;
-        temp_v1 = var_v0 >> new_var;
-        D_80050468.unk4 = (arg2 - (temp_v1 << new_var));
-
-        var_v0 = temp_v1;
-        if (temp_v1 < 0) {
-            var_v0 = temp_v1 + 0xFF;
-        }
-        temp_a0 = var_v0 >> new_var;
-        D_80050468.unk5 = (temp_v1 - (temp_a0 << new_var));
-
-        var_v0 = temp_a0;
-        if (temp_a0 < 0) {
-            var_v0 = temp_a0 + 0xFF;
-        }
-        temp_v1 = var_v0 >> new_var;
-        D_80050468.unk6 = (temp_a0 - (temp_v1 << new_var));
-
-        var_v0 = temp_v1;
-        if (temp_v1 < 0) {
-            var_v0 = temp_v1 + 0xFF;
-        }
-        D_80050468.unk7 = temp_v1 - ((var_v0 >> new_var) << (temp_a0 = new_var));
+        D_80050468.unk4 = arg2 % 256;
+        D_80050468.unk5 = (arg2 / 256) % 256;
+        D_80050468.unk6 = (arg2 / 65536) % 256;
+        D_80050468.unk7 = (arg2 / 16777216) % 256;
     }
 
-    func_800BEC14(0xA0, D_80050468.unk4);
-    func_800BEC14(0xA1, D_80050468.unk5);
-    func_800BEC14(0xA2, D_80050468.unk6);
-    func_800BEC14(0xA3, D_80050468.unk7);
+    vs_battle_setStateFlag(0xA0, D_80050468.unk4);
+    vs_battle_setStateFlag(0xA1, D_80050468.unk5);
+    vs_battle_setStateFlag(0xA2, D_80050468.unk6);
+    vs_battle_setStateFlag(0xA3, D_80050468.unk7);
     func_800CB550();
 }
 
@@ -5473,10 +5443,10 @@ void func_8007BCCC(void)
     D_80050468.unk6 = 0;
     D_80050468.unk5 = 0;
     D_80050468.unk4 = 0;
-    func_800BEC14(0xA0, 0);
-    func_800BEC14(0xA1, D_80050468.unk5);
-    func_800BEC14(0xA2, D_80050468.unk6);
-    func_800BEC14(0xA3, D_80050468.unk7);
+    vs_battle_setStateFlag(0xA0, 0);
+    vs_battle_setStateFlag(0xA1, D_80050468.unk5);
+    vs_battle_setStateFlag(0xA2, D_80050468.unk6);
+    vs_battle_setStateFlag(0xA3, D_80050468.unk7);
     func_800CB560();
 }
 
@@ -6019,11 +5989,11 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int mode)
         vs_battle_cameraCurrentSpherical.values.yaw = (arg2 - ((var_v0 >> 3) * 8)) << 9;
     }
     if (mode == 1) {
-        vs_battle_cameraCurrentSpherical.unk20 = 0x600;
+        vs_battle_cameraCurrentSpherical.initialDistance = 0x600;
         vs_battle_cameraCurrentSpherical.values.distance = 0x600;
         vs_battle_cameraCurrentSpherical.delta.mode = 0;
     } else if (mode == 2) {
-        vs_battle_cameraCurrentSpherical.unk20 = 0x900;
+        vs_battle_cameraCurrentSpherical.initialDistance = 0x900;
         vs_battle_cameraCurrentSpherical.values.distance = 0x900;
         vs_battle_cameraCurrentSpherical.delta.mode = mode;
     }
@@ -8270,7 +8240,7 @@ int func_80084310(vs_skill_t* arg0 __attribute__((unused)),
     int arg4)
 {
     if (arg4 != 0) {
-        func_800BEC14(0x40, 1);
+        vs_battle_setStateFlag(0x40, 1);
     }
 }
 
@@ -8280,7 +8250,7 @@ int func_80084340(vs_skill_t* arg0 __attribute__((unused)),
     int arg4)
 {
     if (arg4 != 0) {
-        func_800BEC14(0x20, 1);
+        vs_battle_setStateFlag(0x20, 1);
     }
 }
 

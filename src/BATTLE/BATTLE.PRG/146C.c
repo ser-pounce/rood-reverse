@@ -485,27 +485,6 @@ typedef struct {
 } _armorIntermediate;
 
 typedef struct {
-    camera_t2 fromCameraState;
-    _sphericalCamera fromSpherical;
-    int fromNearClip;
-    int fromProjectionDistance;
-    int fromFarClip;
-    _sphericalCamera toSpherical;
-    int toNearClip;
-    int toProjectionDistance;
-    int toFarClip;
-    VECTOR targetPosition;
-    VECTOR targetLookAt;
-    VECTOR direction;
-    VECTOR lookAtStep;
-    int farClipStep;
-    int nearClipStep;
-    int projectionDistanceStep;
-    int transitionSpeed;
-    int transitionFrames;
-} _cameraTransition;
-
-typedef struct {
     u_short unk0;
     char unk2;
 } D_800FAB18_t;
@@ -541,8 +520,6 @@ typedef struct {
     SPRT sprite[10];
     int unk258[30];
 } D_800F1ABC_t;
-
-extern camera_t _camera;
 
 int _dropMisc(vs_battle_loot*, vs_battle_lootedMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_lootedMiscRand*);
@@ -759,7 +736,6 @@ extern void* D_800F18E4;
 extern u_int _cameraMode;
 extern char D_800F18F8;
 extern int D_800F18FC;
-extern _cameraTransition* vs_battle_cameraTransition;
 extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern vs_battle_actor* D_800F192C;
@@ -780,13 +756,9 @@ extern short D_800F1A2C;
 extern int D_800F1A30[];
 extern int D_800F1A40;
 extern u_int D_800F1A44;
-extern u_int vs_battle_screenTransitionStep;
 extern D_800F1A68_t D_800F1A68;
 extern P_CODE D_800F1A78;
-extern int vs_battle_screenTransitionEffect;
 extern char D_800F1A9C[];
-extern int vs_battle_screenTransitionWipeAngle;
-extern int vs_battle_screenTransitionSpeed;
 extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;

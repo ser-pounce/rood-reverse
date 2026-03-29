@@ -693,6 +693,27 @@ typedef struct {
     POLY_F4 edge;
 } vs_battle_screenTransitionWipePoly;
 
+typedef struct {
+    camera_t2 fromCameraState;
+    _sphericalCamera fromSpherical;
+    int fromNearClip;
+    int fromProjectionDistance;
+    int fromFarClip;
+    _sphericalCamera toSpherical;
+    int toNearClip;
+    int toProjectionDistance;
+    int toFarClip;
+    VECTOR targetPosition;
+    VECTOR targetLookAt;
+    VECTOR direction;
+    VECTOR lookAtStep;
+    int farClipStep;
+    int nearClipStep;
+    int projectionDistanceStep;
+    int transitionSpeed;
+    int transitionFrames;
+} vs_battle_cameraTransition_t;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -721,9 +742,13 @@ void vs_battle_copyUiAccessoryStats(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
+void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
+void func_80077EC4(void);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);
 int func_8007C36C(int arg0);
+void func_8007D3F8(void);
+void func_8007DF48(void);
 void vs_battle_setProjectionDistance(int);
 void vs_battle_setCameraPosition(VECTOR* inPosition);
 void vs_battle_setCameraLookAt(VECTOR* inLookAt);
@@ -794,3 +819,9 @@ extern int vs_battle_screenTransitionAlpha;
 extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
 extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
 extern POLY_F4 vs_battle_screenTransitionPolyF4[];
+extern camera_t _camera;
+extern vs_battle_cameraTransition_t* vs_battle_cameraTransition;
+extern u_int vs_battle_screenTransitionStep;
+extern int vs_battle_screenTransitionEffect;
+extern int vs_battle_screenTransitionWipeAngle;
+extern int vs_battle_screenTransitionSpeed;

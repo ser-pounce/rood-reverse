@@ -6,6 +6,7 @@
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
 #include "../BATTLE.PRG/5BF94.h"
+#include "../BATTLE.PRG/6E644.h"
 #include <memory.h>
 
 typedef struct {
@@ -22,6 +23,19 @@ typedef struct {
 void func_800CA9C0(void*);
 void func_800FA6B8(void);
 void func_800FAAAC(void);
+void func_800F9CCC(void);
+void func_800FA7B0(void);
+
+extern int D_800F1874;
+extern int D_800F18F4;
+extern int D_800F190C;
+extern int D_800F1968;
+extern int D_800F196C;
+extern DR_STP D_800F1970[];
+extern DR_STP D_800F1988[];
+extern void* D_800F19CC;
+extern RECT const D_800F9800;
+extern VECTOR const D_800F9808;
 
 extern signed char D_800FAF7C[0x400];
 
@@ -182,8 +196,98 @@ static void _initTransitionState(void)
     vs_battle_screenTransitionAlpha = 255;
 }
 
-// https://decomp.me/scratch/zPzit
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);
+void func_800FA35C(void)
+{
+    int _0[2];
+    RECT rect;
+    VECTOR vector;
+    int _1[6];
+    int i;
+
+    rect = D_800F9800;
+    vector = D_800F9808;
+
+    DrawSync(0);
+    DrawSync(0);
+    vs_main_resetSound();
+    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    D_8005E0C0[1] = 0;
+    D_8005E0C0[0] = NULL;
+    D_80055C80[0] = vs_main_allocHeap(0x2088);
+    D_80055C80[1] = vs_main_allocHeap(0x2088);
+    SetDrawStp(&D_800F1970[0], 0);
+    SetDrawStp(&D_800F1970[1], 0);
+    SetDrawStp(&D_800F1988[0], 1);
+    SetDrawStp(&D_800F1988[1], 1);
+    func_80048FF8();
+    _initTransitionState();
+    func_8007D3F8();
+    func_800FAAAC();
+    func_800CE64C();
+    func_800FA6B8();
+    func_800FA7B0();
+    func_8007DF48();
+    _loadSystemDat();
+    func_800E6EAC();
+    vs_main_resetPadAct();
+    func_800F9818();
+    _zoneContext.unk68 = 0;
+    _zoneContext.unk38 = 0;
+    _zoneContext.mapId = 0;
+    _zoneContext.zndId = 0;
+    _zoneContext.unk18 = 0;
+    _zoneContext.mpdCdFile = NULL;
+    _zoneContext.zndCdFile = NULL;
+    _zoneContext.mpdData = NULL;
+    _zoneContext.zndData = NULL;
+    _zoneContext.musicSlot = 0;
+    _zoneContext.musicId = 0;
+    _zoneContext.unk30 = 1;
+    _zoneContext.unk14 = 0;
+    D_800F1AB0 = D_80061068;
+    vs_battle_screenTransitionEffect = 0;
+    vs_battle_screenTransitionStep = 4;
+    vs_battle_screenTransitionSpeed = 8;
+    vs_battle_screenTransitionWipeAngle = 0xC00;
+    D_800F1968 = 0;
+    _lootListHead = NULL;
+    D_800F1874 = 0;
+    D_800F196C = 0;
+    vs_gametime_tickspeed = 2;
+    vs_main_projectionDistance = 0x200;
+    vs_main_nearClip = 0x40;
+    D_80050468.unk0 = 0;
+    D_80050468.unk7 = 0;
+    D_80050468.unk6 = 0;
+    D_80050468.unk5 = 0;
+    D_80050468.unk4 = 0;
+    _zoneContext.unk68 = D_80061068.unk6_0 & 0x3FF;
+    vs_battle_cameraTransition = NULL;
+    func_80077EC4();
+    _camera.t2.farClip = 0x1000;
+    vs_battle_cameraCurrentSpherical.delta.pitch = 0x800;
+    vs_battle_cameraCurrentSpherical.values.yaw = 0x800;
+    vs_battle_cameraCurrentSpherical.values.pitch = -0x180;
+    vs_battle_cameraCurrentSpherical.initialDistance = 0x600;
+    vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+    vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+    vs_battle_cameraCurrentSpherical.delta.distance = 0;
+    vs_battle_cameraCurrentSpherical.delta.mode = 1;
+    vs_battle_cameraCurrentSpherical.unk24 = 0;
+
+    func_8009FB64(&vector);
+
+    for (i = 0; i < 16; ++i) {
+        vs_battle_actors[i] = NULL;
+    }
+
+    func_800F9CCC();
+    D_800F19CC = vs_main_allocHeapR(0x2C10);
+    vs_main_bzero(D_800F19CC, 0x2C10);
+    D_800F190C = 1;
+    D_800F18F4 = 0;
+    func_800760CC(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
+}
 
 void func_800FA6B8(void)
 {

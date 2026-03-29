@@ -254,6 +254,7 @@ void func_800CCF08(int, int, int, int, int, int, int, int);
 int func_800CD064(int);
 void func_800CCD00(int, u_long*);
 void vs_battle_drawImage(int xy, void* buffer, int wh);
+void func_800CE64C(void);
 int func_800CEEBC(void);
 void func_800CEF74(int);
 void func_800CF0E8(func_800CF0E8_t*, int, int);

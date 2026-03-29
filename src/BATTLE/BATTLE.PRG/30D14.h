@@ -42,6 +42,7 @@ void func_8009EC9C(char, SVECTOR*, int, int);
 void func_8009EE9C(char, SVECTOR*, int);
 void func_8009EFEC(char, SVECTOR*, int);
 void func_8009F298(char, SVECTOR*, int);
+void func_8009FB64(VECTOR*);
 int func_8009F8DC(int);
 void func_8009F530(int);
 void func_800A0204(int, int, int, int);

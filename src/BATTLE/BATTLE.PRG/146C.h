@@ -688,6 +688,11 @@ typedef struct vs_battle_lootListNode {
     vs_battle_loot loot;
 } vs_battle_lootListNode;
 
+typedef struct {
+    POLY_F4 covered;
+    POLY_F4 edge;
+} vs_battle_screenTransitionWipePoly;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -784,3 +789,8 @@ extern int D_800F1CD8;
 extern int D_800F1CE0[8];
 extern char vs_battle_executeAbilityType;
 extern char D_800F51C1;
+extern DR_MODE vs_battle_screenTransitionDrMode[];
+extern int vs_battle_screenTransitionAlpha;
+extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
+extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
+extern POLY_F4 vs_battle_screenTransitionPolyF4[];

@@ -148,8 +148,39 @@ void func_800F9AD8(void)
 
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);
 
-// https://decomp.me/scratch/b3iic
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA0EC);
+static void _initTransitionState(void)
+{
+    RECT sp18;
+    memset(&sp18, 0, sizeof sp18);
+
+    SetPolyF4(&vs_battle_screenTransitionPolyF4[0]);
+    setRGB0(&vs_battle_screenTransitionPolyF4[0], 0, 0, 0);
+    setXY4(&vs_battle_screenTransitionPolyF4[0], 0, 0, 320, 0, 0, 240, 320, 240);
+    SetSemiTrans(&vs_battle_screenTransitionPolyF4[0], 1);
+    vs_battle_screenTransitionPolyF4[1] = vs_battle_screenTransitionPolyF4[0];
+
+    SetPolyF4(&vs_battle_screenTransitionWipePolyF4[0].covered);
+    setRGB0(&vs_battle_screenTransitionWipePolyF4[0].covered, 0, 0, 0);
+    SetSemiTrans(vs_battle_screenTransitionWipePolyF4, 0);
+    setRGB0(&vs_battle_screenTransitionWipePolyF4[0].covered, 0, 0, 1);
+    vs_battle_screenTransitionWipePolyF4[0].edge =
+        vs_battle_screenTransitionWipePolyF4[0].covered;
+    vs_battle_screenTransitionWipePolyF4[1] = vs_battle_screenTransitionWipePolyF4[0];
+
+    SetPolyG4(&vs_battle_screenTransitionEdgePolyG4[0]);
+    setRGB0(&vs_battle_screenTransitionEdgePolyG4[0], 255, 255, 255);
+    setRGB2(&vs_battle_screenTransitionEdgePolyG4[0], 255, 255, 255);
+    setRGB1(&vs_battle_screenTransitionEdgePolyG4[0], 0, 0, 0);
+    setRGB3(&vs_battle_screenTransitionEdgePolyG4[0], 0, 0, 0);
+    setXY4(&vs_battle_screenTransitionEdgePolyG4[0], 0, 0, 320, 0, 0, 240, 320, 240);
+    SetSemiTrans(vs_battle_screenTransitionEdgePolyG4, 1);
+    vs_battle_screenTransitionEdgePolyG4[1] = vs_battle_screenTransitionEdgePolyG4[0];
+
+    SetDrawMode(vs_battle_screenTransitionDrMode, 0, 1, getTPage(0, 2, 0, 0), &sp18);
+    vs_battle_screenTransitionDrMode[1] = vs_battle_screenTransitionDrMode[0];
+
+    vs_battle_screenTransitionAlpha = 255;
+}
 
 // https://decomp.me/scratch/zPzit
 INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA35C);

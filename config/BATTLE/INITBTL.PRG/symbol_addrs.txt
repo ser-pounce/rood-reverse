@@ -1,1 +1,2 @@
 _loadSystemDat = 0x800F989C;
+_initTransitionState = 0x800FA0EC;

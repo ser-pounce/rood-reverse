@@ -485,11 +485,6 @@ typedef struct {
 } _armorIntermediate;
 
 typedef struct {
-    u_short unk0;
-    char unk2;
-} D_800FAB18_t;
-
-typedef struct {
     int unk0;
     short unk4;
     u_short unk6;
@@ -710,7 +705,7 @@ void func_8009FC60(int, int, int, int);
 
 extern int D_80068C1C[];
 extern char D_800E8184[];
-extern char D_800E81E4[];
+extern char _wepIdCategories[];
 extern u_char D_800E8200[];
 extern int (*D_800E8234[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
 extern int (*D_800E8254[])(vs_skill_t*, char*);
@@ -1385,7 +1380,7 @@ void vs_battle_applyAccessory(
     vs_main_freeHeapR(temp_v0);
 }
 
-void _nop0(vs_battle_actor2* arg0 __attribute__((unused))) { }
+void vs_battle_nop0(vs_battle_actor2* arg0 __attribute__((unused))) { }
 
 void func_8006B214(void)
 {
@@ -1421,7 +1416,7 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
     vs_battle_actor2* temp_a0;
 
     vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, weapon);
-    _nop0(vs_battle_characterState->unk3C);
+    vs_battle_nop0(vs_battle_characterState->unk3C);
 
     if (weapon == NULL) {
         vs_battle_characterState->equippedWeaponCategory = 10;
@@ -1444,7 +1439,7 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
 void vs_battle_equipShield(vs_battle_inventoryShield* shield)
 {
     vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, shield);
-    _nop0(vs_battle_characterState->unk3C);
+    vs_battle_nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
@@ -1453,7 +1448,7 @@ void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
 {
     vs_battle_applyArmor(
         &vs_battle_characterState->unk3C->bodyParts[bodyPart].armor, armor);
-    _nop0(vs_battle_characterState->unk3C);
+    vs_battle_nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
@@ -1461,7 +1456,7 @@ void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
 void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory)
 {
     vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, accessory);
-    _nop0(vs_battle_characterState->unk3C);
+    vs_battle_nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
 }
@@ -4352,7 +4347,7 @@ void func_8007647C(int arg0, int arg1)
     temp_s0->flags.fields.unk3 = 0x80;
 }
 
-vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int material)
+vs_battle_actor* func_800765B0(int arg0, int actorId, func_800765B0_t* arg2, int material)
 {
     func_8007C8F8_t sp10;
     int i;
@@ -4387,11 +4382,11 @@ vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int ma
         sp10.unk1 = (char)arg0;
         sp10.unkC.s32 = arg2->s32;
         sp10.unkC.u8[1] &= 1;
-        var_v1_2 = arg1;
+        var_v1_2 = actorId;
         sp10.unk4 = temp_v0->unk0.unk0.unk44;
-        sp10.unk10 = arg1;
-        if (arg1 < 0) {
-            var_v1_2 = arg1 + 0xFF;
+        sp10.actorId = actorId;
+        if (actorId < 0) {
+            var_v1_2 = actorId + 0xFF;
         }
         sp10.unk11 = var_v1_2 >> 8;
         sp10.material = material;
@@ -4402,7 +4397,7 @@ vs_battle_actor* func_800765B0(int arg0, int arg1, func_800765B0_t* arg2, int ma
             vs_main_gametimeUpdate(0);
         }
         vs_battle_actors[arg0] = &temp_v0->unk0.unk0;
-        func_8007647C(arg0, arg1);
+        func_8007647C(arg0, actorId);
         func_800E6178(&temp_v0->unk0.unk0, -1);
         func_800A087C(arg0, 0x1846);
         return &temp_v0->unk0.unk0;
@@ -4552,10 +4547,10 @@ int func_80077078(vs_battle_actor* arg0, int arg1, int wepId, int* arg3, int arg
     sp10.unkC.s32 = *arg3;
     sp10.unk4 = arg0->unk44;
     if (arg4 & 0x80) {
-        sp10.unk10 = (arg4 & 0xF00) >> 8;
+        sp10.actorId = (arg4 & 0xF00) >> 8;
         sp10.unk11 = (arg4 & 0xF000) >> 0xC;
     } else {
-        sp10.unk10 = 0xFF;
+        sp10.actorId = 0xFF;
     }
     sp10.unk13 = 0;
     sp10.material = 2;
@@ -4569,24 +4564,25 @@ void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
     sp10.unk0 = 7;
     sp10.unk1 = arg1;
     sp10.wepId = 0;
-    sp10.unk10 = 0;
+    sp10.actorId = 0;
     func_800995E8(&sp10);
 }
 
-void func_80077130(vs_battle_actor* arg0, int arg1, int wepId, int arg3, int material)
+void func_80077130(
+    vs_battle_actor* actor, int actorId, int wepId, int isShield, int material)
 {
     func_8007C8F8_t sp10;
 
     if (wepId != 0xFF) {
-        int temp_s0 = (arg1 * 2) + arg3;
+        int temp_s0 = (actorId * 2) + isShield;
         func_8009AA84(temp_s0);
         if (wepId != 0) {
             sp10.unk0 = 3;
             sp10.unk1 = temp_s0;
             sp10.wepId = wepId;
-            sp10.unk4 = arg0->unk48[arg3];
-            sp10.unk10 = arg1;
-            if (arg3 == 0) {
+            sp10.unk4 = actor->unk48[isShield];
+            sp10.actorId = actorId;
+            if (isShield == 0) {
                 sp10.unk11 = 0xF0;
             } else {
                 sp10.unk11 = 0xF1;
@@ -4605,13 +4601,13 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
         sp10.unk0 = 7;
         sp10.unk1 = arg1;
         sp10.wepId = arg0[37];
-        sp10.unk10 = 0;
+        sp10.actorId = 0;
         func_800995E8(&sp10);
     }
 }
 
-vs_battle_actor_dat* func_80077240(
-    int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int* arg6, int arg7)
+vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, int* arg6, int arg7)
 {
     int i;
     vs_battle_actor_dat* temp_v0;
@@ -4630,19 +4626,21 @@ vs_battle_actor_dat* func_80077240(
         temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
         temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
 
-        if (arg2 != 0) {
+        if (bladeWepId != 0) {
             for (i = 1; i < 11; ++i) {
-                if (D_800E81E4[i] >= arg2) {
+                if (_wepIdCategories[i] >= bladeWepId) {
                     break;
                 }
             }
         }
+
         temp_v0->unk0.unk0.unk0.equippedWeaponCategory = i;
+
         func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg6, arg7);
         if (arg1 != 0x7F) {
             func_800770FC(&temp_v0->unk0.unk0.unk0, arg0);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, arg2, 0, arg3);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, arg4, 1, arg5);
+            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
+            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
             func_800771E0((char*)&temp_v0->unk0, arg0,
                 temp_v0->unk0.unk0.unk0.equippedWeaponCategory, arg7);
         }
@@ -4677,19 +4675,17 @@ void func_800773BC(
     func_800E6178(arg0, -1);
 }
 
-vs_battle_actor* func_800774FC(
-    int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int* arg6, int arg7)
+vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, int* arg6, int arg7)
 {
-    vs_battle_actor* temp_v0;
-
-    temp_v0 =
-        (vs_battle_actor*)func_80077240(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    vs_battle_actor* temp_v0 = (vs_battle_actor*)func_80077240(
+        arg0, arg1, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, arg6, arg7);
     if (temp_v0 != NULL) {
         while (func_800995B0() != 0) {
             func_8009967C();
             vs_main_gametimeUpdate(0);
         }
-        func_800773BC(temp_v0, arg0, arg1, arg2, arg4, arg7);
+        func_800773BC(temp_v0, arg0, arg1, bladeWepId, shieldWepId, arg7);
         return temp_v0;
     }
     return 0;
@@ -6002,14 +5998,12 @@ int func_8007C928(u_int arg0, int arg1, int* arg2)
     return 0;
 }
 
-void func_8007CA20(int arg0, int arg1, int arg2)
+void func_8007CA20(int actorId, int bladeWepId, int shieldWepId)
 {
-    vs_battle_actor* temp_s0;
-
-    temp_s0 = vs_battle_actors[arg0];
+    vs_battle_actor* temp_s0 = vs_battle_actors[actorId];
     if (temp_s0 != NULL) {
-        func_80077130(temp_s0, arg0, arg1, 0, 0);
-        func_80077130(temp_s0, arg0, arg2, 1, 0);
+        func_80077130(temp_s0, actorId, bladeWepId, 0, 0);
+        func_80077130(temp_s0, actorId, shieldWepId, 1, 0);
     }
 }
 
@@ -6046,7 +6040,7 @@ void func_8007CB84(int arg0, int wepId)
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
     sp10.wepId = wepId;
-    sp10.unk10 = 1;
+    sp10.actorId = 1;
     func_800995E8(&sp10);
 }
 
@@ -6059,7 +6053,7 @@ void func_8007CBDC(int arg0, int wepId, int arg2)
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
     sp10.wepId = wepId;
-    sp10.unk10 = 2;
+    sp10.actorId = 2;
     sp10.unk11 = arg2;
     func_800995E8((func_8007C8F8_t*)&sp10);
 }

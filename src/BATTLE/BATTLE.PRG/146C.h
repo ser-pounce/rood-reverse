@@ -714,6 +714,11 @@ typedef struct {
     int transitionFrames;
 } vs_battle_cameraTransition_t;
 
+typedef struct {
+    u_short unk0;
+    char unk2;
+} D_800FAB18_t;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -740,9 +745,13 @@ void vs_battle_copyUiShieldStats(vs_battle_inventoryShield*, vs_battle_uiShield*
 void vs_battle_copyUiArmorStats(vs_battle_inventoryArmor*, vs_battle_uiArmor*);
 void vs_battle_copyUiAccessoryStats(
     vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
+void vs_battle_nop0(vs_battle_actor2*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
+void func_80076F24(int id, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int arg5);
+vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, int* arg6, int arg7);
 void func_80077EC4(void);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);
@@ -825,3 +834,4 @@ extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;
 extern int vs_battle_screenTransitionSpeed;
+extern D_800FAB18_t D_800FAB18;

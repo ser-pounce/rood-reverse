@@ -105,7 +105,7 @@ void _loadSystemDat(void)
 
 void func_800F9AB0(void) { }
 
-void func_800F9AB8(void) { func_800995B0(); }
+int func_800F9AB8(void) { return func_800995B0(); }
 
 void func_800CB660(int);
 
@@ -160,7 +160,110 @@ void func_800F9AD8(void)
     vs_battle_cameraCurrentSpherical.initialDistance = s1->unk84;
 }
 
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800F9CCC);
+void func_800F9CCC(void)
+{
+    int i;
+    int bladeIndex;
+    int shieldIndex;
+    int j;
+    int shieldWepId;
+    int bladeWepId;
+    int bladeMaterial;
+    int shieldMaterial;
+
+    int sp20 = ((((sp20 & (~0xFF)) | 4) & 0xFF00FFFF) | 0x20000) & 0xFFFF00FF;
+    sp20 = (sp20 & 0xFFFFFF) | 0x80000000;
+
+    bladeWepId = 0;
+    bladeIndex = 0;
+
+    for (i = 0; i < 8; ++i) {
+        if (vs_battle_inventory.weapons[i].isEquipped != 0) {
+            bladeIndex = i + 1;
+            bladeWepId =
+                vs_battle_inventory.blades[vs_battle_inventory.weapons[i].blade - 1]
+                    .wepId;
+            bladeMaterial =
+                vs_battle_inventory.blades[vs_battle_inventory.weapons[i].blade - 1]
+                    .material;
+        }
+    }
+
+    shieldWepId = 0;
+    shieldIndex = 0;
+
+    for (i = 0; i < 8; ++i) {
+        if (vs_battle_inventory.shields[i].isEquipped != 0) {
+            shieldIndex = i + 1;
+            shieldWepId = vs_battle_inventory.shields[i].base.wepId;
+            shieldMaterial = vs_battle_inventory.shields[i].base.material;
+        }
+    }
+
+    vs_battle_characterState = func_800774FC(
+        0, 0, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, &sp20, 0);
+
+    func_80076F24(0, &D_800FAB18, 0x10, 0, 0x80, 0);
+    if (bladeIndex != 0) {
+        vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon,
+            &vs_battle_inventory.weapons[bladeIndex - 1]);
+    } else {
+        vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, NULL);
+    }
+
+    vs_battle_characterState->unk3C->unk38 =
+        vs_battle_characterState->unk3C->weapon.range.unk0
+        + vs_battle_characterState->unk3C->unk37_3;
+    vs_battle_characterState->unk3C->unk39 =
+        vs_battle_characterState->unk3C->weapon.range.unk1
+        + vs_battle_characterState->unk3C->unk37_3;
+    vs_battle_characterState->unk3C->unk3A =
+        vs_battle_characterState->unk3C->weapon.range.unk2
+        + vs_battle_characterState->unk3C->unk37_3;
+    vs_battle_characterState->unk3C->unk3B_3 =
+        vs_battle_characterState->unk3C->weapon.range.unk3_3;
+    vs_battle_characterState->unk3C->unk3B_0 = 1;
+
+    if (shieldIndex != 0) {
+        vs_battle_applyShield(&vs_battle_characterState->unk3C->shield,
+            &vs_battle_inventory.shields[shieldIndex - 1]);
+    } else {
+        vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, NULL);
+    }
+
+    for (i = 0; i < 6; ++i) {
+        vs_battle_applyArmor(&vs_battle_characterState->unk3C->bodyParts[i].armor, NULL);
+
+        for (j = 0; j < 16; ++j) {
+            if (vs_battle_inventory.armor[j].bodyPart == i + 1) {
+                vs_battle_applyArmor(&vs_battle_characterState->unk3C->bodyParts[i].armor,
+                    &vs_battle_inventory.armor[j]);
+            }
+        }
+    }
+
+    vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, NULL);
+
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_inventory.armor[i].bodyPart == 7) {
+            vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory,
+                &vs_battle_inventory.armor[i]);
+        }
+    }
+
+    vs_battle_nop0(vs_battle_characterState->unk3C);
+
+    if (D_80060068.unk0.unk0 != 0) {
+        func_800F9AD8();
+    }
+
+    func_800F9AB0();
+
+    while (func_800F9AB8() != 0) {
+        func_8009967C();
+        vs_main_gametimeUpdate(0);
+    }
+}
 
 static void _initTransitionState(void)
 {

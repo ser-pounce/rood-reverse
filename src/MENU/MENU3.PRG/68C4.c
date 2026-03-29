@@ -106,7 +106,7 @@ void func_80109344(int wepId, int arg1)
         sp10.unk1 = var_a2;
         sp10.wepId = wepId;
         sp10.unk4 = vs_battle_characterState->unk48[var_a2];
-        sp10.unk10 = 0;
+        sp10.actorId = 0;
         sp10.unk11 = var_a3;
         sp10.material = arg1;
         func_800995E8(&sp10);

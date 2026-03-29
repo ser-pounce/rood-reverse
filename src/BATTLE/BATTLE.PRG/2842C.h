@@ -10,7 +10,7 @@ typedef struct {
         char u8[4];
         int s32;
     } unkC;
-    char unk10;
+    char actorId;
     char unk11;
     char material;
     char unk13;

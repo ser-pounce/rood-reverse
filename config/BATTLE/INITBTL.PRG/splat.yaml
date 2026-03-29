@@ -20,7 +20,9 @@ segments:
     vram: 0x800F9800
     align: 4
     subsegments:
-      - [0x00, rodata]
+      - [0x00, .rodata, 18]
       - [0x18, c]
+      - [0xFB0, c]
+      - [0x12AC, c]
       - [0x1318, data]
   - [0x1B7C]

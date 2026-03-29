@@ -2,6 +2,8 @@ $(BUILD)/src/BATTLE/INITBTL.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/BATTLE/INITBTL.PRG/%.o: CC1VER := 2.8.0-psx
 $(BUILD)/src/BATTLE/INITBTL.PRG/18.o: $(BUILD)/src/include/lbas.h
 
+$(BUILD)/src/BATTLE/INITBTL.PRG/FB0.o: CC1VER := 2.7.2-cdk
+
 $(BUILD)/data/BATTLE/INITBTL.PRG.linked.elf: LDFLAGS += \
 	--defsym=_camera=0x1F800000
 

@@ -23,7 +23,7 @@ typedef struct {
 
 void func_800CA9C0(void*);
 void func_800FA6B8(void);
-void func_800FAAAC(void);
+void _initScriptFunctionTable(void);
 void func_800F9CCC(void);
 void func_800FA7B0(void);
 
@@ -35,10 +35,6 @@ extern int D_800F196C;
 extern DR_STP D_800F1970[];
 extern DR_STP D_800F1988[];
 extern void* D_800F19CC;
-extern RECT const D_800F9800;
-extern VECTOR const D_800F9808;
-
-extern signed char D_800FAF7C[0x400];
 
 void func_800F9818(void)
 {
@@ -312,8 +308,8 @@ void func_800FA35C(void)
     int _1[6];
     int i;
 
-    rect = D_800F9800;
-    vector = D_800F9808;
+    rect = (RECT) { 0, 0, 0x400, 0x200 };
+    vector = (VECTOR) { 0x71C, 0x71C, 0x71C };
 
     DrawSync(0);
     DrawSync(0);
@@ -330,7 +326,7 @@ void func_800FA35C(void)
     func_80048FF8();
     _initTransitionState();
     func_8007D3F8();
-    func_800FAAAC();
+    _initScriptFunctionTable();
     func_800CE64C();
     func_800FA6B8();
     func_800FA7B0();
@@ -417,16 +413,4 @@ void func_800FA6B8(void)
     func_8008E88C();
     func_8008B6B4();
     func_8008EB30(D_800F1CE0);
-}
-
-INCLUDE_ASM("build/src/BATTLE/INITBTL.PRG/nonmatchings/18", func_800FA7B0);
-
-void func_800FAAAC(void)
-{
-    D_800F4C08 = 0;
-    D_800F4BE2 = 0;
-    D_800F4C30 = vs_main_allocHeap(0x1800);
-    D_800F4C48 = vs_main_allocHeap(0x80);
-    D_800F4C28 = vs_main_allocHeap(0x400);
-    vs_main_memcpy(D_800F4C28, D_800FAF7C, 0x400);
 }

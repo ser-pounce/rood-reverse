@@ -2,6 +2,7 @@
 #include "lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
+#include "../BATTLE.PRG/2842C.h"
 #include "../BATTLE.PRG/30D14.h"
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
@@ -171,8 +172,12 @@ void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    int sp20 = ((((sp20 & (~0xFF)) | 4) & 0xFF00FFFF) | 0x20000) & 0xFFFF00FF;
-    sp20 = (sp20 & 0xFFFFFF) | 0x80000000;
+    func_8007C8F8_t_flags sp20;
+
+    sp20.unk0_0 = 4;
+    sp20.unk0_16 = 2;
+    sp20.unk0_8 = 0;
+    sp20.unk0_24 = 128;
 
     bladeWepId = 0;
     bladeIndex = 0;

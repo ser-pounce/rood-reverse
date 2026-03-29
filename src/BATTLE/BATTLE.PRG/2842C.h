@@ -1,15 +1,19 @@
 #pragma once
-#include "146C.h"
+
+typedef struct {
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 8;
+    u_int unk0_16 : 8;
+    u_int unk0_24 : 8;
+} func_8007C8F8_t_flags;
+
 typedef struct {
     char unk0;
     char unk1;
     short wepId;
     void* unk4;
     int unk8;
-    union {
-        char u8[4];
-        int s32;
-    } unkC;
+    func_8007C8F8_t_flags unkC;
     char actorId;
     char unk11;
     char material;
@@ -17,7 +21,7 @@ typedef struct {
 } func_8007C8F8_t;
 
 void func_800918E8(int);
-void func_800938AC(void);
+void func_800938AC(int);
 void func_80095B70(int);
 void func_8009722C(void);
 void func_80098160(int);

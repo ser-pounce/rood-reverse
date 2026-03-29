@@ -1,6 +1,7 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/D_80061068_t.h"
+#include "2842C.h"
 
 typedef struct {
     short unk0;
@@ -751,7 +752,7 @@ int vs_battle_getCurrentRoomId(void);
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 void func_80076F24(int id, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int arg5);
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, int* arg6, int arg7);
+    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7);
 void func_80077EC4(void);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);

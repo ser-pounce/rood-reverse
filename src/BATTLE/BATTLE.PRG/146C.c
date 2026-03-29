@@ -559,7 +559,8 @@ int func_80074798(func_8006EBF8_t*, char*);
 void func_80074B14(int arg0, char* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
-vs_battle_actor_dat* func_80077240(int, int, int, int, int, int, int*, int);
+vs_battle_actor_dat* func_80077240(
+    int, int, int, int, int, int, func_8007C8F8_t_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -4347,7 +4348,8 @@ void func_8007647C(int arg0, int arg1)
     temp_s0->flags.fields.unk3 = 0x80;
 }
 
-vs_battle_actor* func_800765B0(int arg0, int actorId, func_800765B0_t* arg2, int material)
+vs_battle_actor* func_800765B0(
+    int arg0, int actorId, func_8007C8F8_t_flags* arg2, int material)
 {
     func_8007C8F8_t sp10;
     int i;
@@ -4380,8 +4382,8 @@ vs_battle_actor* func_800765B0(int arg0, int actorId, func_800765B0_t* arg2, int
         temp_v0->unk0.unk0.unk26 = 0;
         sp10.unk0 = 6;
         sp10.unk1 = (char)arg0;
-        sp10.unkC.s32 = arg2->s32;
-        sp10.unkC.u8[1] &= 1;
+        sp10.unkC = *arg2;
+        sp10.unkC.unk0_8 &= 1;
         var_v1_2 = actorId;
         sp10.unk4 = temp_v0->unk0.unk0.unk44;
         sp10.actorId = actorId;
@@ -4390,7 +4392,7 @@ vs_battle_actor* func_800765B0(int arg0, int actorId, func_800765B0_t* arg2, int
         }
         sp10.unk11 = var_v1_2 >> 8;
         sp10.material = material;
-        sp10.unk13 = arg2->u8[1] >> 4;
+        sp10.unk13 = arg2->unk0_8 >> 4;
         func_800995E8(&sp10);
         while (func_800995B0() != 0) {
             func_8009967C();
@@ -4537,14 +4539,15 @@ void func_80076F24(int id, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int
     func_80076784(id, temp_s4, arg1, arg5);
 }
 
-int func_80077078(vs_battle_actor* arg0, int arg1, int wepId, int* arg3, int arg4)
+int func_80077078(
+    vs_battle_actor* arg0, int arg1, int wepId, func_8007C8F8_t_flags* arg3, int arg4)
 {
     func_8007C8F8_t sp10;
 
     sp10.unk0 = 1;
     sp10.unk1 = arg1;
     sp10.wepId = wepId;
-    sp10.unkC.s32 = *arg3;
+    sp10.unkC = *arg3;
     sp10.unk4 = arg0->unk44;
     if (arg4 & 0x80) {
         sp10.actorId = (arg4 & 0xF00) >> 8;
@@ -4607,7 +4610,7 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
 }
 
 vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, int* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7)
 {
     int i;
     vs_battle_actor_dat* temp_v0;
@@ -4676,7 +4679,7 @@ void func_800773BC(
 }
 
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, int* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7)
 {
     vs_battle_actor* temp_v0 = (vs_battle_actor*)func_80077240(
         arg0, arg1, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, arg6, arg7);
@@ -5972,7 +5975,7 @@ int func_8007C8F8(short arg0)
     return func_800995E8(&sp10) + 1;
 }
 
-int func_8007C928(u_int arg0, int arg1, int* arg2)
+int func_8007C928(u_int arg0, int arg1, func_8007C8F8_t_flags* arg2)
 {
     int _[6] __attribute__((unused));
     vs_battle_actor_dat* temp_v0;
@@ -10688,7 +10691,7 @@ int func_8008E470(void) { return (u_int)D_800F1BF8.unkB0 < 1; }
 
 void func_8008E480(int arg0)
 {
-    func_800938AC();
+    func_800938AC(arg0);
     func_800918E8(arg0);
 }
 

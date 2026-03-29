@@ -21,6 +21,8 @@
 #include "../../SLUS_010.40/32154.h"
 #include <abs.h>
 #include <limits.h>
+#include <libgpu.h>
+#include <memory.h>
 
 typedef struct {
     u_char unk0;
@@ -558,8 +560,8 @@ void vs_battle_copyUiEquipmentStats(
 void func_8006B214(void);
 void func_8006B2D4(void);
 void _updateEnemyKills(vs_battle_actor*);
+void _drawScreenTransition(void*);
 void _updateWeaponKillStreak(int);
-void func_8006D0A4(u_int*);
 void _clampPositionToZoneBounds(VECTOR*, VECTOR*);
 int _computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
 int _stepTowardTarget(SVECTOR*, int, int);
@@ -778,13 +780,13 @@ extern short D_800F1A2C;
 extern int D_800F1A30[];
 extern int D_800F1A40;
 extern u_int D_800F1A44;
-extern u_int D_800F1A48;
+extern u_int vs_battle_screenTransitionStep;
 extern D_800F1A68_t D_800F1A68;
 extern P_CODE D_800F1A78;
-extern int D_800F1A98;
+extern int vs_battle_screenTransitionEffect;
 extern char D_800F1A9C[];
-extern int D_800F1AA4;
-extern int D_800F1AA8;
+extern int vs_battle_screenTransitionWipeAngle;
+extern int vs_battle_screenTransitionSpeed;
 extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
@@ -829,6 +831,11 @@ extern int* D_800F1DCC;
 extern int* D_800F1DD0;
 extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
+extern DR_MODE vs_battle_screenTransitionDrMode[];
+extern int vs_battle_screenTransitionAlpha;
+extern POLY_F4 vs_battle_screenTransitionWipePolyF4[][2];
+extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
+extern POLY_F4 vs_battle_screenTransitionPolyF4[];
 
 extern int D_1F800000[];
 
@@ -2203,7 +2210,170 @@ void func_8006D064(void)
     D_800F185C = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006D0A4);
+void _drawScreenTransition(void* ot)
+{
+    MATRIX rotTransMatrix;
+    VECTOR screenCenter;
+    SVECTOR zRotation;
+    SVECTOR wipeEdgePos;
+    VECTOR projectedPos;
+    RECT rect;
+    long flag;
+
+    memset(&rect, 0, sizeof rect);
+
+    if (vs_battle_screenTransitionAlpha != 0) {
+        switch (vs_battle_screenTransitionEffect) {
+        // Fade to black
+        case 0:
+        case 4:
+        case 5:
+            setXY4(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf], 0, 0, 320, 0, 0,
+                240, 320, 240);
+            SetDrawMode(&vs_battle_screenTransitionDrMode[vs_main_frameBuf], 0, 1,
+                getTPage(0, 2, 0, 0), &rect);
+            SetSemiTrans(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf], 1);
+            setRGB0(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf],
+                vs_battle_screenTransitionAlpha, vs_battle_screenTransitionAlpha,
+                vs_battle_screenTransitionAlpha);
+            AddPrim(ot + 4, &vs_battle_screenTransitionPolyF4[vs_main_frameBuf]);
+            AddPrim(ot + 4, &vs_battle_screenTransitionDrMode[vs_main_frameBuf]);
+            break;
+        // Fade to white
+        case 1:
+            setXY4(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf], 0, 0, 320, 0, 0,
+                240, 320, 240);
+            SetDrawMode(&vs_battle_screenTransitionDrMode[vs_main_frameBuf], 0, 1,
+                getTPage(0, 1, 0, 0), &rect);
+
+            if (vs_battle_screenTransitionAlpha == 255) {
+                SetSemiTrans(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf], 0);
+            } else {
+                SetSemiTrans(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf], 1);
+            }
+
+            setRGB0(&vs_battle_screenTransitionPolyF4[vs_main_frameBuf],
+                vs_battle_screenTransitionAlpha, vs_battle_screenTransitionAlpha,
+                vs_battle_screenTransitionAlpha);
+            AddPrim(ot + 4, &vs_battle_screenTransitionPolyF4[vs_main_frameBuf]);
+            AddPrim(ot + 4, &vs_battle_screenTransitionDrMode[vs_main_frameBuf]);
+            break;
+        // Screen wipe
+        case 2:
+            if ((vs_battle_screenTransitionStep == 4)
+                || (vs_battle_screenTransitionStep == 7)) {
+                setVector(
+                    &zRotation, 0, 0, vs_battle_screenTransitionWipeAngle + ONE / 2);
+            } else {
+                setVector(&zRotation, 0, 0, vs_battle_screenTransitionWipeAngle);
+            }
+            setVector(&screenCenter, 160, 120, 0);
+            RotMatrix_gte(&zRotation, &rotTransMatrix);
+            TransMatrix(&rotTransMatrix, &screenCenter);
+            SetRotMatrix(&rotTransMatrix);
+            SetTransMatrix(&rotTransMatrix);
+
+            wipeEdgePos.vz = 0;
+            wipeEdgePos.vx = -360;
+            wipeEdgePos.vy = -200;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].x0 =
+                projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].y0 =
+                projectedPos.vy;
+
+            wipeEdgePos.vx = -360;
+            wipeEdgePos.vy = 200;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].x2 =
+                projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].y2 =
+                projectedPos.vy;
+
+            wipeEdgePos.vy = -200;
+            wipeEdgePos.vx =
+                ((((vs_battle_screenTransitionAlpha * 560) / 255) - 720) / 2);
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].x0 =
+                vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].x1 =
+                    projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].y0 =
+                vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].y1 =
+                    projectedPos.vy;
+
+            wipeEdgePos.vy = 200;
+            wipeEdgePos.vx =
+                ((((vs_battle_screenTransitionAlpha * 560) / 255) - 720) / 2);
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].x2 =
+                vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].x3 =
+                    projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].y2 =
+                vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0].y3 =
+                    projectedPos.vy;
+
+            wipeEdgePos.vy = -200;
+            wipeEdgePos.vx = ((vs_battle_screenTransitionAlpha * 560) / 255) - 360;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].x1 =
+                vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].x0 =
+                    projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].y1 =
+                vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].y0 =
+                    projectedPos.vy;
+
+            wipeEdgePos.vy = 200;
+            wipeEdgePos.vx = ((vs_battle_screenTransitionAlpha * 560) / 255) - 360;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].x3 =
+                vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].x2 =
+                    projectedPos.vx;
+            vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1].y3 =
+                vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].y2 =
+                    projectedPos.vy;
+
+            wipeEdgePos.vy = -200;
+            wipeEdgePos.vx = ((vs_battle_screenTransitionAlpha * 560) / 255) - 200;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].x1 = projectedPos.vx;
+            vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].y1 = projectedPos.vy;
+
+            wipeEdgePos.vy = 200;
+            wipeEdgePos.vx = ((vs_battle_screenTransitionAlpha * 560) / 255) - 200;
+            RotTrans(&wipeEdgePos, &projectedPos, &flag);
+            vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].x3 = projectedPos.vx;
+            vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf].y3 = projectedPos.vy;
+
+            AddPrim(ot + 4, &vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][0]);
+            AddPrim(ot + 4, &vs_battle_screenTransitionWipePolyF4[vs_main_frameBuf][1]);
+            AddPrim(ot + 4, &vs_battle_screenTransitionEdgePolyG4[vs_main_frameBuf]);
+            SetDrawMode(
+                &vs_battle_screenTransitionDrMode[vs_main_frameBuf], 0, 1, 64, &rect);
+            AddPrim(ot + 4, &vs_battle_screenTransitionDrMode[vs_main_frameBuf]);
+            break;
+        }
+    }
+
+    if (vs_battle_screenTransitionStep == 1 || vs_battle_screenTransitionStep == 2
+        || vs_battle_screenTransitionStep == 5) {
+        if (vs_battle_screenTransitionAlpha >= (255 - vs_battle_screenTransitionSpeed)) {
+            if (vs_battle_screenTransitionStep == 5) {
+                vs_battle_screenTransitionStep = 6;
+            }
+            vs_battle_screenTransitionAlpha = 255;
+        } else {
+            vs_battle_screenTransitionAlpha += vs_battle_screenTransitionSpeed;
+        }
+    } else if (vs_battle_screenTransitionStep == 4
+               || vs_battle_screenTransitionStep == 7) {
+        if (vs_battle_screenTransitionAlpha <= vs_battle_screenTransitionSpeed) {
+            vs_battle_screenTransitionAlpha = 0;
+            vs_battle_screenTransitionStep = 0;
+        } else {
+            vs_battle_screenTransitionAlpha -= vs_battle_screenTransitionSpeed;
+        }
+    }
+}
 
 int _addMinDelta(int base, int a, int b)
 {
@@ -4016,7 +4186,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
             arg1->unk0.fields.unk0, arg1->unk0.fields.unk2, arg1->unk0.fields.unk1);
     }
 
-    if (D_800F1A48 == 0) {
+    if (vs_battle_screenTransitionStep == 0) {
         if (!(temp_v0 & 0x01000000)) {
             temp_s0 = vs_battle_actors[arg0];
 
@@ -5652,7 +5822,7 @@ int func_8007C36C(int arg0)
 
 int func_8007C398(void)
 {
-    switch (D_800F1A48) {
+    switch (vs_battle_screenTransitionStep) {
     case 1:
     case 2:
         return 1;
@@ -5678,39 +5848,41 @@ void func_8007C424(void) { func_80089D04(); }
 
 void func_8007C444(int arg0, int arg1, int arg2)
 {
-    D_800F1A98 = arg0;
-    D_800F1AA8 = arg1;
-    D_800F1AA4 = arg2;
+    vs_battle_screenTransitionEffect = arg0;
+    vs_battle_screenTransitionSpeed = arg1;
+    vs_battle_screenTransitionWipeAngle = arg2;
 }
 
-void func_8007C460(int arg0) { D_800F1AA4 = arg0; }
+void func_8007C460(int arg0) { vs_battle_screenTransitionWipeAngle = arg0; }
 
-void func_8007C46C(int arg0, int arg1, int arg2)
+void func_8007C46C(int effect, int arg1, int arg2)
 {
-    if ((D_800F1A48 - 1) >= 2) {
-        D_800F1A48 = 5;
-        D_800F1A98 = arg0;
-        D_800F1AA8 = arg1;
-        D_800F1AA4 = arg2;
+    if (vs_battle_screenTransitionStep == 1 || vs_battle_screenTransitionStep == 2) {
+        return;
     }
+
+    vs_battle_screenTransitionStep = 5;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = arg1;
+    vs_battle_screenTransitionWipeAngle = arg2;
 }
 
-void func_8007C4AC(int arg0, int arg1, int arg2)
+void func_8007C4AC(int effect, int arg1, int arg2)
 {
-    D_800F1A48 = 7;
-    D_800F1A98 = arg0;
-    D_800F1AA8 = arg1;
-    D_800F1AA4 = arg2;
+    vs_battle_screenTransitionStep = 7;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = arg1;
+    vs_battle_screenTransitionWipeAngle = arg2;
 }
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(D_80061068_t* arg0, int arg1, int arg2)
+int func_8007C4E0(D_80061068_t* arg0, int effect, int arg2)
 {
     D_800F1AB0 = *arg0;
-    D_800F1A48 = 1;
-    D_800F1A98 = arg1;
-    D_800F1AA8 = arg2;
+    vs_battle_screenTransitionStep = 1;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = arg2;
     D_800F1AB0.zndId = _zoneContext.zndId;
     _loadMpd(arg0->unk1);
     func_8009E5C4(0);
@@ -5733,9 +5905,9 @@ void func_8007C580(D_80061068_t* arg0, int arg1, int arg2)
 int func_8007C5C0(D_80061068_t* arg0, int arg1, int arg2)
 {
     D_800F1AB0 = *arg0;
-    D_800F1A48 = 2;
-    D_800F1A98 = arg1;
-    D_800F1AA8 = arg2;
+    vs_battle_screenTransitionStep = 2;
+    vs_battle_screenTransitionEffect = arg1;
+    vs_battle_screenTransitionSpeed = arg2;
     _loadZnd(arg0->zndId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
@@ -5776,17 +5948,17 @@ int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
         var_a0 += 0x3FF;
     }
 
-    D_800F1A48 = 1;
-    D_800F1A98 = arg3;
-    D_800F1AA8 = arg4;
+    vs_battle_screenTransitionStep = 1;
+    vs_battle_screenTransitionEffect = arg3;
+    vs_battle_screenTransitionSpeed = arg4;
     D_800F1AB0.unk4_13 = var_a0 >> 10;
     D_800F1AB0.unk6_15 = 0;
 
     if (temp_s1 != D_800F1AB0.zndId) {
-        D_800F1A48 = 2;
+        vs_battle_screenTransitionStep = 2;
         _loadZnd(temp_s1);
     } else if (temp_s2 != D_800F1AB0.unk1) {
-        D_800F1A48 = 1;
+        vs_battle_screenTransitionStep = 1;
         _loadMpd(temp_s2);
     }
 
@@ -9189,7 +9361,7 @@ void func_8008A3A0(void)
         _camera.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
         ClearOTagR(_camera.unk4, 0x800);
         func_8007DF40();
-        func_8006D0A4(_camera.unk4);
+        _drawScreenTransition(_camera.unk4);
         func_8007629C(_camera.unk4 + 0x1FFC);
     }
 

@@ -347,8 +347,8 @@ typedef struct {
     char unk5;
     u_char nameIndex;
     char unk7;
-    u_short types[4];
-    u_short affinities[8];
+    short types[4];
+    short affinities[8];
     vs_battle_uiArmor armor; // 0x18
 } vs_battle_uiEquipment_bodyParts;
 
@@ -384,6 +384,13 @@ typedef struct {
 } vs_battle_actor3;
 
 typedef struct {
+    short unk0;
+    char unk2_0 : 4;
+    char unk2_4 : 4;
+    char unk3;
+} vs_battle_actor_unk8C0;
+
+typedef struct {
     char name[24];
     short currentHP;
     short maxHP;
@@ -396,7 +403,8 @@ typedef struct {
     u_short totalIntelligence;
     u_short agility;
     u_short totalAgility;
-    short unk2E;
+    char unk2E;
+    char unk2F;
     char unk30;
     char unk31;
     char unk32;
@@ -415,7 +423,7 @@ typedef struct {
     vs_battle_uiShield shield; // 1C4
     vs_battle_equippedAccessory accessory; // 328
     vs_battle_uiEquipment_bodyParts bodyParts[6]; // 388
-    u_short unk8C0[48];
+    vs_battle_actor_unk8C0 unk8C0[6][4];
     char unk920[6][6];
     int unk944;
     int unk948;

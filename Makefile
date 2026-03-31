@@ -46,11 +46,14 @@ OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
 MASFLAGS       := --aspsx-version=2.77 --macro-inc
 SPLATFLAGS     := --disassemble-all
 DUMPSXISOFLAGS  = -x data -s config/$(disk).xml
+MKPSXISOFLAGS  := -q -lba -noisogen
 FORMATFLAGS    := -i --style=file:tools/.clang-format
 RMFLAGS        := -Rf
 DIFFFLAGS      := -s
 COMMANDFLAGS   := -v
 MKDIRFLAGS     := -p
+
+PARENT_DIR = $(@D)/
 
 ifndef PERMUTER
 CPP_DEPS = -MD -MF $@.d -MT $@
@@ -65,9 +68,6 @@ sourcedata := $(binaries:%=data/%)
 targets     = $(binaries:%=$(BUILD)/data/%)
 symfiles   := $(binaries:%=config/%/symbol_addrs.txt)
 makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
-ifneq ($(wildcard $(BUILD)/src),)
-deps != $(FIND) $(BUILD)/src -type f -name *.d
-endif
 compilers  := $(patsubst %,tools/old-gcc/build-gcc-%/cc1,2.7.2-psx 2.7.2-cdk 2.8.0-psx 2.8.1-psx)
 build_deps := $(DUMPSXISO) $(VPYTHON) $(compilers)
 sysdeps    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
@@ -127,7 +127,7 @@ $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__
-$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(@D)/
+$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(PARENT_DIR)
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	$(TOUCH) $@
@@ -137,41 +137,42 @@ endif
 $(targets): private LDFLAGS := --oformat=binary -e 0x0
 $(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
 	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) $< -o $@
+	$(LD) $(LDFLAGS) $(OUTPUT_OPTION) $<
 	$(fixup)
+	$(file >>$(BUILD)/config/$*/link.d,include $(wildcard $(patsubst %.o,%.d,$(filter %.o,$(file <$(BUILD)/config/$*/link.d)))))
 
 $(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
 $(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
 	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) -o $@
+	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
 $(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
-$(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
+$(targets:=.elf): $(BUILD)/data/%.elf: | $$(PARENT_DIR)
 	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) -o $@
+	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
-%.o: %.s | $$(@D)/
+%.o: %.s | $$(PARENT_DIR)
 	$(ECHO) Assembling $<
-	$(AS) $(ASFLAGS) -no-pad-sections -o $@ $<
+	$(AS) $(ASFLAGS) -no-pad-sections $(OUTPUT_OPTION) $<
 
-$(BUILD)/%.o: %.s | $$(@D)/
+$(BUILD)/%.o: %.s | $$(PARENT_DIR)
 	$(ECHO) Assembling $<
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) $(OUTPUT_OPTION) $<
 
-$(BUILD)/%.o: %.c | $$(@D)/
+$(BUILD)/%.o: %.c | $$(PARENT_DIR)
 	$(ECHO) Compiling $<
-	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) -o $@
+	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) $(OUTPUT_OPTION)
 	$(CAT) $@.d >> $(BUILD)/$*.d
 	$(RM) $(RMFLAGS) $@.d
 
 %.img.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
 %.img.o: filename = $(word 1,$(subst ., ,$(@F)))
-%.img.o: %.img.bin | $$(@D)/
+%.img.o: %.img.bin | $$(PARENT_DIR)
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
 .PRECIOUS: %.img.bin
-%.img.bin: %.img.png | $$(@D)/
+%.img.bin: %.img.png | $$(PARENT_DIR)
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
 
@@ -180,15 +181,15 @@ $(BUILD)/%.o: %.c | $$(@D)/
 	--add-symbol $(filename)_data=.data:4
 
 .PRECIOUS: $(BUILD)/assets/%.vsString.yaml
-$(BUILD)/assets/%.vsString.yaml: data/% assets/%.yaml | $$(@D)/
+$(BUILD)/assets/%.vsString.yaml: data/% assets/%.yaml | $$(PARENT_DIR)
 	$(ECHO) Extracting $<
 	$(VPYTHON) -m tools.etc.vsString_dumpTable $< assets/$*.yaml $@
 
-$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(@D)/
+$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(PARENT_DIR)
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/$*.vsString $(BUILD)/$*.h
 
-$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
+$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(PARENT_DIR)
 	$(ECHO) Converting $<
 	cp $< $@
 
@@ -203,12 +204,12 @@ $(sourcedata) &: | disks/$(disk).bin $(build_deps)
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
-$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(@D)/
+$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(PARENT_DIR)
 	$(ECHO) Generating $@
-	$(MKPSXISO) -q -lba -noisogen config/$(disk).xml
+	$(MKPSXISO) $(MKPSXISOFLAGS) config/$(disk).xml
 	$(MV) $(disk)_LBA.txt $(BUILD)/config/
 
-$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(@D)/
+$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(PARENT_DIR)
 	$(ECHO) Generating $@
 	$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
@@ -246,13 +247,11 @@ tools/.sysdeps:
 %/:
 	$(MKDIR) $(MKDIRFLAGS) $(@D)
 
-define pad
-@$(TRUNCATE) -s $1 $@
-endef
+pad = @$(TRUNCATE) -s $1 $@
 
 # De-crud
 .SUFFIXES:
-Makefile $(makefiles) $(deps):: ;
+Makefile $(makefiles):: ;
 %: %,v
 %: RCS/%,v
 %: RCS/%
@@ -264,5 +263,5 @@ include tools/make/permuter.mk
 
 include $(makefiles)
 ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)
--include $(binaries:%=$(BUILD)/config/%/link.d) $(deps)
+-include $(binaries:%=$(BUILD)/config/%/link.d)
 endif

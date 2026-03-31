@@ -554,7 +554,6 @@ void _endBattleCameraTransition(void);
 void func_80073718(void);
 void func_80073D30(func_8008C1C8_t*, func_8006EBF8_t*, int);
 void func_80073E30(func_8008C1C8_t*, int);
-void func_80076784(int, vs_battle_actor2*, void*, int);
 int func_80074798(func_8006EBF8_t*, char*);
 void func_80074B14(int arg0, char* arg1);
 void func_80076D50(u_int, int, int, int, int);

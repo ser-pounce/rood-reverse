@@ -1,0 +1,2 @@
+build/src/MENU/MENUC.PRG/168.o: src/MENU/MENUC.PRG/168.c \
+ include/gte_macros.inc include/macro.inc

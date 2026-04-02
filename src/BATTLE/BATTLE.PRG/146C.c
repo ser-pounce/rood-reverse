@@ -478,6 +478,14 @@ typedef struct {
 
 typedef struct {
     vs_battle_uiEquipment equip;
+    char dropRate;
+    char unk31;
+    char unk32;
+    char unk33;
+} _accessoryIntermediate;
+
+typedef struct {
+    vs_battle_uiEquipment equip;
     char material;
     char unk31;
     char unk32;
@@ -525,7 +533,7 @@ void func_8006C40C(void);
 int func_8006C5AC(int);
 void func_80069DEC(int, int);
 int _removeActorAtIndex(u_int, int);
-void _applyAccessoryStats(vs_battle_equippedAccessory*, _armorIntermediate*);
+void _applyAccessoryStats(vs_battle_uiAccessory*, _accessoryIntermediate*);
 void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_copyUiEquipmentStats(
     vs_battle_inventoryArmor*, vs_battle_uiEquipment* equipment);
@@ -1021,7 +1029,7 @@ void vs_battle_applyWeaponStats(
     }
 
     target->wepId = source->blade.wepId;
-    target->unk10C = source->unkF1;
+    target->dropRate = source->dropRate;
     target->index = source->index;
     target->blade.material = source->material;
     target->damageType = source->blade.damageType;
@@ -1080,7 +1088,7 @@ void vs_battle_applyShieldStats(
     }
 
     target->wepId = source->base.wepId;
-    target->unkD9 = source->unkC1;
+    target->dropRate = source->dropRate;
     target->index = source->index;
     target->base.material = source->material;
 
@@ -1120,7 +1128,7 @@ void vs_battle_applyShieldStats(
     }
 }
 
-void _applyAccessoryStats(vs_battle_equippedAccessory* target, _armorIntermediate* source)
+void _applyAccessoryStats(vs_battle_uiAccessory* target, _accessoryIntermediate* source)
 {
     int i;
 
@@ -1129,7 +1137,7 @@ void _applyAccessoryStats(vs_battle_equippedAccessory* target, _armorIntermediat
     target->currentStr = source->equip.strength;
     target->currentInt = source->equip.intelligence;
     target->currentAgility = source->equip.agility;
-    target->unk36 = source->material;
+    target->dropRate = source->dropRate;
     target->unk37 = source->unk31;
 
     for (i = 0; i < 4; ++i) {
@@ -1367,9 +1375,9 @@ void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_battle_inventoryArmor* s
 }
 
 void vs_battle_applyAccessory(
-    vs_battle_equippedAccessory* target, vs_battle_inventoryArmor* source)
+    vs_battle_uiAccessory* target, vs_battle_inventoryArmor* source)
 {
-    _armorIntermediate* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    _accessoryIntermediate* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
 
     if (source != NULL) {
@@ -1394,9 +1402,8 @@ void func_8006B214(void)
 void func_8006B270(void)
 {
     vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
-    int temp_a2 = temp_s0->unk948 & 0x01E00000;
-    if (temp_a2 != 0) {
-        func_80093FEC(temp_s0->flags.fields.unk3, 0, temp_a2, 1);
+    if (temp_s0->unk948 & 0x01E00000) {
+        func_80093FEC(temp_s0->flags.fields.unk3, 0, temp_s0->unk948 & 0x01E00000, 1);
         func_80086754(temp_s0->unk948 & 0x01E00000, temp_s0);
     }
 }
@@ -1404,9 +1411,8 @@ void func_8006B270(void)
 void func_8006B2D4(void)
 {
     vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
-    int temp_a2 = temp_s0->unk948 & 0x1E000000;
-    if (temp_a2 != 0) {
-        func_80093FEC(temp_s0->flags.fields.unk3, 0, temp_a2, 1);
+    if (temp_s0->unk948 & 0x1E000000) {
+        func_80093FEC(temp_s0->flags.fields.unk3, 0, temp_s0->unk948 & 0x1E000000, 1);
         func_80086754(temp_s0->unk948 & 0x1E000000, temp_s0);
     }
 }
@@ -1623,7 +1629,7 @@ void vs_battle_copyUiArmorStats(
 }
 
 void vs_battle_copyUiAccessoryStats(
-    vs_battle_inventoryArmor* target, vs_battle_equippedAccessory* source)
+    vs_battle_inventoryArmor* target, vs_battle_uiAccessory* source)
 {
     if (source->accessory.id != 0) {
         vs_battle_copyUiEquipmentStats(target, &source->accessory);
@@ -1634,7 +1640,7 @@ int _dropWeaponRand(vs_battle_lootedWeapon* arg0, vs_battle_uiWeapon* arg1)
 {
     int i;
 
-    if (vs_main_getRand(0xFF) < arg1->unk10C) {
+    if (vs_main_getRand(0xFF) < arg1->dropRate) {
         vs_battle_copyUiBladeStats(&arg0->blade, &arg1->blade);
         vs_battle_copyUiGripStats(&arg0->grip, &arg1->grip);
         for (i = 0; i < 3; ++i) {
@@ -1653,7 +1659,7 @@ int _dropShieldRand(vs_battle_lootedShield* arg0, vs_battle_uiShield* arg1)
 {
     int i;
 
-    if (vs_main_getRand(0xFF) < arg1->unkD9) {
+    if (vs_main_getRand(0xFF) < arg1->dropRate) {
         vs_battle_copyUiEquipmentStats(&arg0->shield, &arg1->base);
         for (i = 0; i < 3; ++i) {
             if (arg1->gems[i].id != 0) {
@@ -1666,9 +1672,9 @@ int _dropShieldRand(vs_battle_lootedShield* arg0, vs_battle_uiShield* arg1)
     return 0;
 }
 
-int _dropAccessoryRand(vs_battle_lootedAccessory* arg0, vs_battle_equippedAccessory* arg1)
+int _dropAccessoryRand(vs_battle_lootedAccessory* arg0, vs_battle_uiAccessory* arg1)
 {
-    if (vs_main_getRand(0xFF) < arg1->unk36) {
+    if (vs_main_getRand(0xFF) < arg1->dropRate) {
         vs_battle_copyUiEquipmentStats(&arg0->accessory, &arg1->accessory);
         arg0->unk0 = 3;
         return 1;
@@ -1715,7 +1721,7 @@ int _dropMiscRand(vs_battle_loot* arg0, vs_battle_lootedMiscRand* arg1)
 {
     arg0->misc[2].id = arg1->id;
     if (arg0->misc[2].id) {
-        if (vs_main_getRand(0xFF) < arg1->dropChance) {
+        if (vs_main_getRand(0xFF) < arg1->dropRate) {
             arg0->misc[2].index = 1;
             arg0->misc[2].count = 3;
             return 1;
@@ -4406,6 +4412,7 @@ vs_battle_actor* func_800765B0(
     return NULL;
 }
 
+void func_80076784(int arg0, vs_battle_actor2* arg1, void* arg2, int arg3);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80076784);
 
 void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)

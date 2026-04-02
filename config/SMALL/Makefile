@@ -1,18 +1,18 @@
 .PRECIOUS: $(BUILD)/assets/%/help_data.yaml $(BUILD)/assets/SMALL/%.obj
 
-$(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(PARENT_DIR)
+$(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(@D)/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
 
-$(BUILD)/assets/%/help_data.yaml: data/%.HF0 data/%.HF1 | $$(PARENT_DIR)
+$(BUILD)/assets/%/help_data.yaml: data/%.HF0 data/%.HF1 | $$(@D)/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.help_dumper $^ $|
 
-$(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(PARENT_DIR)
+$(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(@D)/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.buildArmFile $< $@
 
-$(BUILD)/assets/SMALL/%.obj: data/SMALL/%.ARM | $$(PARENT_DIR)
+$(BUILD)/assets/SMALL/%.obj: data/SMALL/%.ARM | $$(@D)/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.dumpArmFile $< $@
 

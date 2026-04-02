@@ -33,7 +33,7 @@ DUMPSXISO := tools/mkpsxiso/build/Release/dumpsxiso
 MKPSXISO  := tools/mkpsxiso/build/Release/mkpsxiso
 
 BUILD   := build
-BCONFIG = $(BUILD)/config/$*
+BCONFIG  = $(BUILD)/config/$*
 
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include $(CPP_DEPS) \
                   -D "__attribute__(x)="
@@ -52,8 +52,6 @@ RMFLAGS        := -Rf
 DIFFFLAGS      := -s
 COMMANDFLAGS   := -v
 MKDIRFLAGS     := -p
-
-PARENT_DIR = $(@D)/
 
 ifndef PERMUTER
 CPP_DEPS = -MD -MF $@.d -MT $@
@@ -127,7 +125,7 @@ $(compilers:tools/old-gcc/build-%/cc1=tools/old-gcc/%.Dockerfile): ;
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__
-$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(PARENT_DIR)
+$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile data/% | $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
 	$(TOUCH) $@
@@ -147,19 +145,19 @@ $(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
 $(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
-$(targets:=.elf): $(BUILD)/data/%.elf: | $$(PARENT_DIR)
+$(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
-%.o: %.s | $$(PARENT_DIR)
+%.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<
 	$(AS) $(ASFLAGS) -no-pad-sections $(OUTPUT_OPTION) $<
 
-$(BUILD)/%.o: %.s | $$(PARENT_DIR)
+$(BUILD)/%.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<
 	$(AS) $(ASFLAGS) $(OUTPUT_OPTION) $<
 
-$(BUILD)/%.o: %.c | $$(PARENT_DIR)
+$(BUILD)/%.o: %.c | $$(@D)/
 	$(ECHO) Compiling $<
 	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) $(OUTPUT_OPTION)
 	$(CAT) $@.d >> $(BUILD)/$*.d
@@ -167,12 +165,12 @@ $(BUILD)/%.o: %.c | $$(PARENT_DIR)
 
 %.img.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
 %.img.o: filename = $(word 1,$(subst ., ,$(@F)))
-%.img.o: %.img.bin | $$(PARENT_DIR)
+%.img.o: %.img.bin | $$(@D)/
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
 .PRECIOUS: %.img.bin
-%.img.bin: %.img.png | $$(PARENT_DIR)
+%.img.bin: %.img.png | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $@
 
@@ -181,15 +179,15 @@ $(BUILD)/%.o: %.c | $$(PARENT_DIR)
 	--add-symbol $(filename)_data=.data:4
 
 .PRECIOUS: $(BUILD)/assets/%.vsString.yaml
-$(BUILD)/assets/%.vsString.yaml: data/% assets/%.yaml | $$(PARENT_DIR)
+$(BUILD)/assets/%.vsString.yaml: data/% assets/%.yaml | $$(@D)/
 	$(ECHO) Extracting $<
 	$(VPYTHON) -m tools.etc.vsString_dumpTable $< assets/$*.yaml $@
 
-$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(PARENT_DIR)
+$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/$*.vsString $(BUILD)/$*.h
 
-$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(PARENT_DIR)
+$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
 	$(ECHO) Converting $<
 	cp $< $@
 
@@ -204,12 +202,12 @@ $(sourcedata) &: | disks/$(disk).bin $(build_deps)
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) disks/$(disk).bin $(if $(DEBUG),,> /dev/null)
 endif
 
-$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(PARENT_DIR)
+$(BUILD)/config/$(disk)_LBA.txt: $(sourcedata) | $$(@D)/
 	$(ECHO) Generating $@
 	$(MKPSXISO) $(MKPSXISOFLAGS) config/$(disk).xml
 	$(MV) $(disk)_LBA.txt $(BUILD)/config/
 
-$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(PARENT_DIR)
+$(BUILD)/src/include/lbas.h: $(BUILD)/config/$(disk)_LBA.txt | $$(@D)/
 	$(ECHO) Generating $@
 	$(VPYTHON) tools/etc/make_lba_import.py $< $@
 

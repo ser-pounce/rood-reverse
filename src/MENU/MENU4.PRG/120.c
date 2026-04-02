@@ -126,7 +126,7 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
     func_800FBB8C(7);
 }
 
-static void _drawAccessoryInfo(vs_battle_equippedAccessory* accessory)
+static void _drawAccessoryInfo(vs_battle_uiAccessory* accessory)
 {
     vs_mainMenu_equipmentSubtype = 32;
     vs_mainMenu_resetStats();
@@ -310,7 +310,7 @@ static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
     return sp10[1];
 }
 
-static char* _drawAccessoryInfoRow(vs_battle_equippedAccessory* arg0)
+static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
 {
     char* sp10[2];
     vs_battle_inventoryArmor sp18;
@@ -1354,8 +1354,7 @@ static int _equipmentDetailScreen(int row)
                             sp18, &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_drawDpPpbars(8);
-                        _drawAccessoryInfo(
-                            (vs_battle_equippedAccessory*)&temp_s1->accessory);
+                        _drawAccessoryInfo((vs_battle_uiAccessory*)&temp_s1->accessory);
                         vs_battle_copyUiAccessoryStats(&sp20, &temp_s1->accessory);
                         vs_mainMenu_setAccessoryUi(
                             &sp20, sp18, &sp48, vs_battle_stringBuf);

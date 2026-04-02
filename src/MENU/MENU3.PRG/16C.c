@@ -10,6 +10,7 @@
 #include "../../BATTLE/BATTLE.PRG/44F14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../../build/assets/MENU/ITEMHELP.BIN.h"
 #include "../../../build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 #include <libetc.h>
@@ -1366,7 +1367,7 @@ static void func_80105314(int arg0)
 static int func_801053EC(int arg0)
 {
     static char D_80109674[8];
-    static char D_8010967C;
+    static char state;
     static char D_8010967D;
     static char D_8010967E;
     static char _ __attribute__((unused));
@@ -1415,14 +1416,14 @@ loop_1:
                 memset(&D_800F4EE8.unk3A, 0, 0x12);
             }
         }
-        D_8010967C = 1;
+        state = 1;
         return 0;
     }
 
     var_s4 = (D_800F4EE8.unk3A.itemCategory - 1) & 7;
     temp_s2 = vs_mainMenu_inventoryIndices[var_s4];
 
-    switch (D_8010967C) { /* switch 1 */
+    switch (state) { /* switch 1 */
     case 0:
     case 1:
         temp_s5 = vs_main_allocHeapR(0x1B00);
@@ -1435,7 +1436,7 @@ loop_1:
 
         if (var_s4 == 7) {
             for (i = 0; i < 4; ++i) {
-                temp_s2_2[i] = (char*)&_menuText[_menuText[8 + i]];
+                temp_s2_2[i] = (char*)&_menuText[_menuText[VS_menuText_INDEX_equip + i]];
                 temp_s1[i] = vs_main_stateFlags.introState < 3;
             }
 
@@ -1460,7 +1461,8 @@ loop_1:
 
         D_8010967D = var_s0_2 == 0;
         if (D_8010967D != 0) {
-            vs_mainmenu_setInformationMessage((char*)(vs_mainMenu_itemHelp + 0x33E3));
+            vs_mainmenu_setInformationMessage(
+                (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noItemsInCategory]);
         } else {
             i = vs_main_settings.cursorMemory;
             if (D_8010967E != 0) {
@@ -1475,26 +1477,26 @@ loop_1:
                 var_a1_2 |= 0x19200;
             }
             vs_mainmenu_setMenuRows(var_s0_2, var_a1_2, temp_s2_2, temp_s1);
-            if (D_8010967C == 0) {
+            if (state == 0) {
                 func_80105314(var_s4);
             }
             vs_main_settings.cursorMemory = i;
         }
         vs_main_freeHeapR(temp_s5);
-        D_8010967C = 2;
+        state = 2;
         break;
     case 2:
         D_80109713 = 1;
         if (D_8010967D != 0) {
-            if (vs_main_buttonsPressed.all & 0x10) {
+            if (vs_main_buttonsPressed.all & PADRup) {
                 vs_battle_playMenuLeaveSfx();
                 return -2;
             }
-            if (vs_main_buttonsPressed.all & 0x40) {
+            if (vs_main_buttonsPressed.all & PADRdown) {
                 vs_battle_playMenuLeaveSfx();
                 return -1;
             }
-            if (vs_main_buttonsPressed.all & 0xA0) {
+            if (vs_main_buttonsPressed.all & (PADRright | PADRleft)) {
                 func_800C02E0();
             }
         } else {
@@ -1514,7 +1516,7 @@ loop_1:
                         vs_battle_getMenuItem(var_s1 >> 8)->itemState = 0;
                         func_80103AD0(var_s4 | ((var_s1 + 1) * 0x10));
                         D_80109711 = 0;
-                        D_8010967C = 7;
+                        state = 7;
                         break;
                     }
                     func_800C02E0();
@@ -1538,13 +1540,13 @@ loop_1:
                 D_80109713 = 1;
                 D_801023E3 = 0;
                 vs_main_freeHeapR(temp_v0_8);
-                D_8010967C = 6;
+                state = 6;
                 break;
             }
         }
     case 3:
-        i = vs_main_buttonsState & 0x8004;
-        var_s0_2 = vs_main_buttonsState & 0x2008;
+        i = vs_main_buttonsState & (PADL1 | PADLleft);
+        var_s0_2 = vs_main_buttonsState & (PADR1 | PADLright);
         temp_v0_7 = i != 0;
 
         if (var_s0_2 != 0) {
@@ -1553,9 +1555,9 @@ loop_1:
             var_s1 = temp_v0_7 & 1;
         }
         if (var_s1 != 0) {
-            var_a1_2 = 0x8004;
-            if (i == 0x8004) {
-                var_a1_2 = 0x8000;
+            var_a1_2 = (PADL1 | PADLleft);
+            if (i == (PADL1 | PADLleft)) {
+                var_a1_2 = PADLleft;
             }
             if (vs_main_buttonRepeat & var_a1_2) {
                 var_s4 = (var_s4 - 1) & 7;
@@ -1574,22 +1576,22 @@ loop_1:
             if (var_s4 != ((D_800F4EE8.unk3A.itemCategory - 1) & 7)) {
                 vs_battle_playMenuChangeSfx();
                 D_800F4EE8.unk3A.itemCategory = (var_s4 + 1) & 7;
-                if (D_8010967C == 2) {
+                if (state == 2) {
                     if (D_8010967D == 0) {
                         func_80100814();
                         vs_mainMenu_clearMenuExcept(3);
                     }
-                    D_8010967C = 3;
+                    state = 3;
                 }
             }
         }
 
-        if (D_8010967C == 3) {
+        if (state == 3) {
             if (vs_mainmenu_ready() != 0) {
                 if ((vs_main_buttonsState & 0xA00C) && (var_s1 != 0)) {
                     break;
                 }
-                D_8010967C = 1;
+                state = 1;
                 arg0 = 0;
                 goto loop_1;
             }
@@ -1604,11 +1606,11 @@ loop_1:
             temp_v0_9->state = 2;
             temp_v0_9->targetX = 0xB4;
         }
-        D_8010967C = 5;
+        state = 5;
         /* fallthrough */
     case 5:
         if (vs_mainmenu_ready() != 0) {
-            D_8010967C = 1;
+            state = 1;
             break;
         }
         break;
@@ -1622,7 +1624,7 @@ loop_1:
         if (i != 0) {
             var_s0_2 = D_80109680;
             if (var_s0_2 == i) {
-                D_8010967C = 8;
+                state = 8;
                 break;
             }
             if (i > 0) {
@@ -1646,13 +1648,13 @@ loop_1:
                     temp_s2[var_s0_2 - 1] = var_s1;
                 }
                 vs_mainMenu_clearMenuExcept(3);
-                D_8010967C = 4;
+                state = 4;
                 break;
             }
             if (i != -1) {
                 return -2;
             }
-            D_8010967C = 0;
+            state = 0;
         }
         break;
     case 7:
@@ -1674,7 +1676,7 @@ loop_1:
             temp_v0_14->state = 2;
             temp_v0_14->targetX = 0xB4;
         }
-        D_8010967C = 1;
+        state = 1;
         break;
     case 8:
         var_s0_2 = 0;
@@ -1771,7 +1773,7 @@ loop_1:
 
         D_80109674[var_s0_2] = 5;
         func_800FF0EC(var_s0_2, var_s4 + 0x26, (char**)sp10, vs_battle_rowTypeBuf);
-        D_8010967C = 9;
+        state = 9;
         break;
     case 9:
         vs_mainMenu_printInformation(func_800FF348(), (int)(char)D_801022C4);
@@ -1792,7 +1794,7 @@ loop_1:
                 case 2:
                     func_800FFBC8();
                     vs_mainMenu_clearMenuExcept(3);
-                    D_8010967C = 10;
+                    state = 10;
                     break;
                 case 3:
                     var_s0_2 = temp_s2[D_80109680 - 1] | (var_s4 << 8);
@@ -1803,16 +1805,16 @@ loop_1:
                         var_s0_2 |= 0x10000;
                     }
                     func_80104788(var_s0_2);
-                    D_8010967C = 11;
+                    state = 11;
                     break;
                 case 4:
                     func_80104788(temp_s2[D_80109680 - 1] | (var_s4 << 8) | 0x20000);
-                    D_8010967C = 11;
+                    state = 11;
                     break;
                 case 5:
                     func_800FFBC8();
                     func_80104530(var_s4 + 1);
-                    D_8010967C = 12;
+                    state = 12;
                     break;
                 }
             } else {
@@ -1822,7 +1824,7 @@ loop_1:
                     return -2;
                 }
                 func_800FFBC8();
-                D_8010967C = 0;
+                state = 0;
             }
         }
         break;
@@ -1839,7 +1841,7 @@ loop_1:
         }
         D_800F4EE8.unk3A.itemCategory = (var_s4 + 1) & 7;
         (&D_800F4EE8.unk3A)->unk2[var_s4] = vs_mainMenu_findItem(var_s4, i - 1) - 1;
-        D_8010967C = 1;
+        state = 1;
         break;
     case 11:
         i = func_80104788(0);
@@ -1850,7 +1852,7 @@ loop_1:
             if (i == -2) {
                 return -2;
             }
-            D_8010967C = 5;
+            state = 5;
         }
         break;
     case 12:
@@ -1861,7 +1863,7 @@ loop_1:
             if (i == -2) {
                 return -2;
             }
-            D_8010967C = 5;
+            state = 5;
         }
         break;
     }
@@ -2098,7 +2100,7 @@ static void func_8010659C(int arg0)
 
 static void func_80106BB4(int arg0)
 {
-    vs_battle_equippedAccessory accessory;
+    vs_battle_uiAccessory accessory;
     int i;
 
     vs_mainMenu_resetStats();
@@ -2174,7 +2176,7 @@ static int func_80106C94(int arg0)
 
             if (var_a0_2 == 0) {
                 for (i = 0; i < 2; ++i) {
-                    menuText[i] = &_menuText[_menuText[i + 20]];
+                    menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
                 }
                 rowTypes[0] = 1;
             } else {
@@ -2303,7 +2305,7 @@ static int func_80107148(int arg0)
 
                 if (var_a0 == 0) {
                     for (i = 0; i < 2; ++i) {
-                        menuText[i] = &_menuText[_menuText[i + 20]];
+                        menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
                     }
                     rowTypes[0] = 1;
                 } else {
@@ -2446,7 +2448,7 @@ static int func_80107620(int arg0)
 
                 if (var_a0 == 0) {
                     for (i = 0; i < 2; ++i) {
-                        menuText[i] = &_menuText[_menuText[i + 20]];
+                        menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
                     }
                     rowTypes[0] = 1;
                 } else {
@@ -2593,7 +2595,7 @@ static int func_80107B14(int arg0)
 
                 if (var_a1 == 0) {
                     for (i = 0; i < 2; ++i) {
-                        menuText[i] = &_menuText[_menuText[i + 20]];
+                        menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
                     }
                     rowTypes[0] = 1;
                 } else {
@@ -2695,38 +2697,37 @@ static int func_80108088(int arg0)
 {
     static char D_8010963C[] = { 0x78, 0x79, 0x69, 0x6A, 0x68, 0x6D, 0x6B, 0x7A };
 
-    static int D_801096A4;
-    static char D_801096A8;
+    static int selectedRow;
+    static char state;
     static char _[3] __attribute__((unused));
 
-    char* sp18[16];
-    int sp58[8];
-    char sp78[768];
-    int temp_v0_5;
+    char* rowStrings[16];
+    int rowTypes[8];
+    char buf[768];
     int j;
     int i;
-    vs_battle_menuItem_t* temp_v0;
+    vs_battle_menuItem_t* menuItem;
     vs_battle_inventoryShield* shield;
     vs_battle_inventoryWeapon* weapon;
 
     if (arg0 != 0) {
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         D_80109717 = 1;
-        D_801096A8 = 0;
+        state = 0;
         return 0;
     }
 
-    switch (D_801096A8) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        temp_v0 = vs_battle_setMenuItem(
+        menuItem = vs_battle_setMenuItem(
             0x1F, 0x140, 0x12, 0x7E, 8, (char*)&_menuText[VS_menuText_OFFSET_equip]);
-        temp_v0->state = 2;
-        temp_v0->targetX = 0xB4;
-        temp_v0->selected = 1;
-        D_801096A8 = 1;
+        menuItem->state = 2;
+        menuItem->targetX = 0xB4;
+        menuItem->selected = 1;
+        state = 1;
         // Fallthrough
     case 1:
         if (vs_mainmenu_ready() == 0) {
@@ -2737,15 +2738,16 @@ static int func_80108088(int arg0)
 
         for (i = 0; i < 8; ++i) {
             for (j = 0; j < 2; ++j) {
-                sp18[i * 2 + j] = (char*)&_menuText[_menuText[j + 0x14]];
+                rowStrings[i * 2 + j] =
+                    (char*)&_menuText[_menuText[VS_menuText_INDEX_none + j]];
             }
-            sp58[i] = 0;
+            rowTypes[i] = 0;
         }
 
         weapon = vs_battle_inventory.weapons;
         for (j = 0; j < 8; ++j, ++weapon) {
             if (weapon->isEquipped != 0) {
-                vs_mainMenu_initUiWeapon(weapon, (char**)sp18, sp58, sp78);
+                vs_mainMenu_initUiWeapon(weapon, (char**)rowStrings, rowTypes, buf);
                 break;
             }
         }
@@ -2753,7 +2755,7 @@ static int func_80108088(int arg0)
         shield = vs_battle_inventory.shields;
         for (j = 0; j < 8; ++j, ++shield) {
             if (shield->isEquipped != 0) {
-                vs_mainMenu_initUiShield(shield, &sp18[2], &sp58[1], sp78 + 96);
+                vs_mainMenu_initUiShield(shield, &rowStrings[2], &rowTypes[1], buf + 96);
                 break;
             }
         }
@@ -2763,69 +2765,69 @@ static int func_80108088(int arg0)
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->bodyPart) == i) {
                     vs_mainMenu_setAccessoryUi(
-                        armor, &sp18[i * 2], &sp58[i], &sp78[i * 96]);
+                        armor, &rowStrings[i * 2], &rowTypes[i], &buf[i * 96]);
                     break;
                 }
             }
         }
 
         for (i = 0; i < 8; ++i) {
-            sp58[i] |= D_8010963C[i] << 9;
+            rowTypes[i] |= D_8010963C[i] << 9;
         }
-        vs_mainmenu_setMenuRows(8, 0x19134, &sp18[0], sp58);
-        D_801096A8 = 2;
+        vs_mainmenu_setMenuRows(8, 0x19134, &rowStrings[0], rowTypes);
+        state = 2;
         break;
     case 2:
-        if (vs_main_buttonsPressed.all & 0x80) {
+        if (vs_main_buttonsPressed.all & PADRleft) {
             func_800C02E0();
         }
-        D_801096A4 = vs_mainmenu_getSelectedRow() + 1;
-        if (D_801096A4 != 0) {
-            if (D_801096A4 < 0) {
-                D_80109717 = -D_801096A4;
+        selectedRow = vs_mainmenu_getSelectedRow() + 1;
+        if (selectedRow != 0) {
+            if (selectedRow < 0) {
+                D_80109717 = -selectedRow;
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                D_801096A8 = 3;
+                state = 3;
             } else {
-                func_80102B78(D_801096A4 - 1 + 0xA);
-                D_801096A8 = 4;
+                func_80102B78(selectedRow - 1 + 10);
+                state = 4;
             }
         }
         break;
     case 3:
-        if ((D_801096A4 == -2) || (vs_mainmenu_ready() != 0)) {
-            return D_801096A4;
+        if ((selectedRow == -2) || (vs_mainmenu_ready() != 0)) {
+            return selectedRow;
         }
         break;
     case 4:
         if (vs_mainmenu_ready() != 0) {
             D_80109568 = 1;
-            func_80102BE4(D_801096A4 + 9);
+            func_80102BE4(selectedRow + 9);
             D_80109712 = 0;
             D_80109713 = 0;
-            func_80108010(D_801096A4);
-            D_801096A8 = 5;
+            func_80108010(selectedRow);
+            state = 5;
         }
         break;
     case 5:
-        temp_v0_5 = func_80108010(0);
-        D_801096A4 = temp_v0_5;
-        if (temp_v0_5 != 0) {
-            if (temp_v0_5 == -2) {
-                D_801096A8 = 3;
+        selectedRow = func_80108010(0);
+        if (selectedRow != 0) {
+            if (selectedRow == -2) {
+                state = 3;
                 break;
             }
             D_80109568 = 0;
             D_80109712 = 1;
             D_80109717 = 2;
             D_80109713 = 1;
-            D_801096A8 = 0;
+            state = 0;
         }
         break;
     }
-    if (D_801096A8 == 2) {
-        temp_v0 = vs_battle_setMenuItem(0x1F, 0xB4, 0x12, 0x8C, 8,
-            (char*)&_menuText[_menuText[func_801008B0() + 0xC]]);
-        temp_v0->selected = 1;
+    if (state == 2) {
+        menuItem = vs_battle_setMenuItem(0x1F, 0xB4, 0x12, 0x8C, 8,
+            (char*)&_menuText[_menuText[VS_menuText_INDEX_equipWeapon
+                                        + func_801008B0()]]);
+        menuItem->selected = 1;
     }
     return 0;
 }
@@ -3036,7 +3038,7 @@ int vs_menu3_exec(char* arg0)
             if (var_s0 == -2) {
                 D_80109711 = 0;
                 D_80109714 = 0;
-                *arg0 = 0xA;
+                *arg0 = 10;
                 break;
             }
             D_80109712 = 1;
@@ -3095,8 +3097,8 @@ int vs_menu3_exec(char* arg0)
         func_800CB654(0);
         D_800EB9B0 = 0;
         func_80108518(2);
-        D_80109710 = 0xA;
-        *arg0 = 0xB;
+        D_80109710 = 10;
+        *arg0 = 11;
         break;
     case 11:
         func_800FFB68(0);

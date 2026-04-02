@@ -10,4 +10,4 @@ $(BUILD)/config/MENU/MENU3.PRG/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
-$(BUILD)/src/MENU/MENU3.PRG/16C.o: $(BUILD)/assets/MENU/MENU3.PRG/menuText.vsString
+$(BUILD)/src/MENU/MENU3.PRG/16C.o: $(BUILD)/assets/MENU/MENU3.PRG/menuText.vsString $(BUILD)/assets/MENU/ITEMHELP.BIN.h

@@ -276,7 +276,7 @@ typedef struct {
     char damageTypeValue;
     char risk;
     char unk10B;
-    char unk10C;
+    char dropRate;
     u_char index;
     u_char damageType;
     u_char skillType;
@@ -301,7 +301,7 @@ typedef struct {
     vs_battle_uiEquipment base; // 0x18
     vs_battle_uiEquipment gems[3]; // 0x48
     char wepId; // 0xD8
-    char unkD9;
+    char dropRate;
     u_char index;
     char unkDB;
     u_short currentDp;
@@ -357,12 +357,12 @@ typedef struct {
     short currentStr;
     short currentInt;
     short currentAgility;
-    char unk36;
+    char dropRate;
     u_char unk37;
     u_short types[4];
     u_short classes[8];
     u_short affinities[8];
-} vs_battle_equippedAccessory;
+} vs_battle_uiAccessory;
 
 typedef struct {
     u_short id;
@@ -372,7 +372,7 @@ typedef struct {
 
 typedef struct {
     u_short id;
-    char dropChance;
+    char dropRate;
 } vs_battle_lootedMiscRand;
 
 typedef struct {
@@ -421,7 +421,7 @@ typedef struct {
     u_int unk3B_3 : 5;
     vs_battle_uiWeapon weapon; // 0x3C
     vs_battle_uiShield shield; // 1C4
-    vs_battle_equippedAccessory accessory; // 328
+    vs_battle_uiAccessory accessory; // 328
     vs_battle_uiEquipment_bodyParts bodyParts[6]; // 388
     vs_battle_actor_unk8C0 unk8C0[6][4];
     char unk920[6][6];
@@ -647,7 +647,7 @@ typedef struct {
     vs_battle_uiEquipment grip;
     vs_battle_uiEquipment gems[3];
     char material;
-    char unkF1;
+    char dropRate;
     short index;
     char name[24];
 } vs_battle_weaponIntermediate;
@@ -656,7 +656,7 @@ typedef struct {
     vs_battle_uiEquipment base;
     vs_battle_uiEquipment gems[3];
     char material;
-    char unkC1;
+    char dropRate;
     short index;
 } vs_battle_shieldIntermediate;
 
@@ -737,7 +737,7 @@ void vs_battle_applyWeapon(vs_battle_uiWeapon*, vs_battle_inventoryWeapon*);
 void vs_battle_applyShield(vs_battle_uiShield*, vs_battle_inventoryShield*);
 void vs_battle_applyArmor(vs_battle_uiArmor*, vs_battle_inventoryArmor*);
 void vs_battle_applyAccessory(
-    vs_battle_equippedAccessory* arg0, vs_battle_inventoryArmor* arg1);
+    vs_battle_uiAccessory* arg0, vs_battle_inventoryArmor* arg1);
 void vs_battle_equipWeapon(vs_battle_inventoryWeapon*);
 void vs_battle_equipShield(vs_battle_inventoryShield* shield);
 void vs_battle_equipArmor(int part, vs_battle_inventoryArmor* armor);
@@ -752,8 +752,7 @@ void vs_battle_copyUiWeaponStats(
     vs_battle_inventoryWeapon* arg0, vs_battle_uiWeapon* arg1);
 void vs_battle_copyUiShieldStats(vs_battle_inventoryShield*, vs_battle_uiShield*);
 void vs_battle_copyUiArmorStats(vs_battle_inventoryArmor*, vs_battle_uiArmor*);
-void vs_battle_copyUiAccessoryStats(
-    vs_battle_inventoryArmor*, vs_battle_equippedAccessory*);
+void vs_battle_copyUiAccessoryStats(vs_battle_inventoryArmor*, vs_battle_uiAccessory*);
 void vs_battle_nop0(vs_battle_actor2*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);

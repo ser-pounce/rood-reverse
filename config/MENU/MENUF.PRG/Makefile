@@ -1,5 +1,5 @@
 $(BUILD)/src/MENU/MENUF.PRG/%.o: ASFLAGS += -no-pad-sections
-$(BUILD)/src/MENU/MENUF.PRG/%.o: CC1VER := 2.8.0-psx
+$(BUILD)/src/MENU/MENUF.PRG/%.o: CC1VER := 2.8.1-psx
 $(BUILD)/src/MENU/MENUF.PRG/%.o: CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/MENU/MENUF.PRG/link.d: \

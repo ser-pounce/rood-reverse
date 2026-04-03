@@ -2,7 +2,7 @@ $(BUILD)/data/MENU/MENU8.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/MENU/MENU8.PRG/exports.txt
 $(BUILD)/src/MENU/MENU8.PRG/%.o: ASFLAGS += \
 	-no-pad-sections
-$(BUILD)/src/MENU/MENU8.PRG/%.o: CC1VER := 2.8.0-psx
+$(BUILD)/src/MENU/MENU8.PRG/%.o: CC1VER := 2.8.1-psx
 
 $(BUILD)/config/MENU/MENU8.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

@@ -3,7 +3,7 @@ $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CPPFLAGS += -D MENUBGSZ=$(strip \
 )
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1FLAGS += -Wno-uninitialized
 $(addprefix $(BUILD)/src/TITLE/TITLE.PRG/, 22C.o): ASFLAGS += -no-pad-sections
-$(addprefix $(BUILD)/src/TITLE/TITLE.PRG/, 22C.o): CC1VER := 2.8.0-psx
+$(addprefix $(BUILD)/src/TITLE/TITLE.PRG/, 22C.o): CC1VER := 2.8.1-psx
 
 $(BUILD)/config/TITLE/TITLE.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt

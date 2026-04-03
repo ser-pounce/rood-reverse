@@ -4,17 +4,17 @@ $(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
 
-$(BUILD)/assets/%/help_data.yaml: data/%.HF0 data/%.HF1 | $$(@D)/
-	echo Converting $<
-	$(VPYTHON) -m tools.data.SMALL.help_dumper $^ $|
+$(BUILD)/assets/%/help_data.yaml: | $$(@D)/
+	echo Converting data/$*.HF0 data/$*.HF1
+	$(VPYTHON) -m tools.data.SMALL.help_dumper data/$*.HF0 data/$*.HF1 $|
 
 $(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(@D)/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.buildArmFile $< $@
 
-$(BUILD)/assets/SMALL/%.obj: data/SMALL/%.ARM | $$(@D)/
-	echo Converting $<
-	$(VPYTHON) -m tools.data.SMALL.dumpArmFile $< $@
+$(BUILD)/assets/SMALL/%.obj: | $$(@D)/
+	echo Converting data/SMALL/$*.ARM
+	$(VPYTHON) -m tools.data.SMALL.dumpArmFile data/SMALL/$*.ARM $@
 
 helpfiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14
 helpfiles := $(helpfiles:%=$(BUILD)/data/SMALL/HELP%.HF)

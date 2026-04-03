@@ -5,7 +5,7 @@ $(BUILD)/data/MENU/MAINMENU.PRG.linked.elf: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG.linked.elf: LDLIBS += $(mainmenu_LDLIBS)
 
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections
-$(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.0-psx
+$(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.1-psx
 $(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o, 2D10 C48): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/MENU/MAINMENU.PRG/link.d: \

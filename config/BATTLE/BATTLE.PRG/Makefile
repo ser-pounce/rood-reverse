@@ -6,7 +6,7 @@ assetsDir := $(BUILD)/assets/$(battle.prg)
 $(BUILD)/data/BATTLE/BATTLE.PRG.linked.elf: LDFLAGS += \
 	--defsym=_camera=0x1F800000
 
-$(buildDir)/%.o: CC1VER := 2.8.0-psx
+$(buildDir)/%.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.o: ASFLAGS += -no-pad-sections
 
 battle.prg_cdk := $(patsubst %, $(buildDir)/%.o, 30D14 3A1A0 40564 44F14)

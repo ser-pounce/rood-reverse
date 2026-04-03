@@ -728,6 +728,69 @@ typedef struct {
     char unk2;
 } D_800FAB18_t;
 
+typedef struct {
+    vs_battle_uiEquipment equip;
+    char material;
+    char unk31;
+    char unk32;
+    char unk33;
+} _armorIntermediate;
+
+typedef struct {
+    vs_battle_uiEquipment equip;
+    char dropRate;
+    char unk31;
+    char unk32;
+    char unk33;
+} _accessoryIntermediate;
+
+typedef struct {
+    u_short unk0;
+    char unk2;
+    char unk3;
+} _armorIntermediateInit_unk10;
+
+typedef struct {
+    u_short hp;
+    char agilityDefenseBonus;
+    char chainEvasion;
+    signed char unk4[4];
+    signed char unk8[4];
+    int unkC;
+    _armorIntermediateInit_unk10 unk10[4];
+    _armorIntermediate unk20;
+    char unk54[6];
+    char unk5A[2];
+} _armorIntermediateInit;
+
+typedef struct {
+    u_short unk0;
+    char unk2;
+    u_int unk3_0 : 5;
+    u_int unk3_5 : 3;
+    char name[24];
+    short hp;
+    short mp;
+    char strength;
+    char intelligence;
+    char agility;
+    char unk23;
+    char unk24;
+    char walkSpeed;
+    char unk26;
+    char runSpeed;
+    int unk28;
+    int unk2C;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
+    vs_battle_weaponIntermediate unk34;
+    vs_battle_shieldIntermediate unk140;
+    _accessoryIntermediate unk204;
+    _armorIntermediateInit unk238[6];
+} vs_battle_charInitData;
+
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -757,7 +820,8 @@ void vs_battle_nop0(vs_battle_actor2*);
 void func_8006CE50(void);
 int vs_battle_getCurrentRoomId(void);
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
-void func_80076F24(int id, D_800FAB18_t* arg1, int arg2, int arg3, int arg4, int arg5);
+void func_80076F24(
+    int id, vs_battle_charInitData* arg1, int arg2, int arg3, int arg4, int arg5);
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7);
 void func_80077EC4(void);

@@ -27,6 +27,10 @@ void _initScriptFunctionTable(void);
 void func_800F9CCC(void);
 void func_800FA7B0(void);
 
+static vs_battle_charInitData D_800FAB18 = {
+#include "../../assets/BATTLE/INITBTL.PRG/charInit.h"
+};
+
 extern int D_800F1874;
 extern int D_800F18F4;
 extern int D_800F190C;

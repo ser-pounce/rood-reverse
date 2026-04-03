@@ -649,7 +649,7 @@ typedef struct {
     char material;
     char dropRate;
     short index;
-    char name[24];
+    char name[24]; /* vs_string */
 } vs_battle_weaponIntermediate;
 
 typedef struct {
@@ -724,11 +724,6 @@ typedef struct {
 } vs_battle_cameraTransition_t;
 
 typedef struct {
-    u_short unk0;
-    char unk2;
-} D_800FAB18_t;
-
-typedef struct {
     vs_battle_uiEquipment equip;
     char material;
     char unk31;
@@ -768,7 +763,7 @@ typedef struct {
     char unk2;
     u_int unk3_0 : 5;
     u_int unk3_5 : 3;
-    char name[24];
+    char name[24]; /* vs_string */
     short hp;
     short mp;
     char strength;
@@ -789,6 +784,7 @@ typedef struct {
     vs_battle_shieldIntermediate unk140;
     _accessoryIntermediate unk204;
     _armorIntermediateInit unk238[6];
+    int unk460;
 } vs_battle_charInitData;
 
 void func_80069FC4(int, int);
@@ -906,4 +902,3 @@ extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;
 extern int vs_battle_screenTransitionSpeed;
-extern D_800FAB18_t D_800FAB18;

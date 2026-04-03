@@ -1,5 +1,5 @@
-PERMUTE         := $(VPYTHON) tools/decomp-permuter/permuter.py
-IMPORT          := $(VPYTHON) tools/decomp-permuter/import.py
+PERMUTE         = $(VPYTHON) tools/decomp-permuter/permuter.py
+IMPORT          = $(VPYTHON) tools/decomp-permuter/import.py
 PERMUTEFLAGS    := -j8
 PERMUTER_SOURCE := $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$(TARGET))))
 

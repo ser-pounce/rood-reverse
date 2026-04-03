@@ -53,9 +53,15 @@ int _invalidOpcode(char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B66E4);
+int func_800B66E4(char* arg0, short arg1)
+{
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B66EC);
+int func_800B66EC(char* arg0, short arg1)
+{
+    return 4;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B66F4);
 

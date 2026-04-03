@@ -29,7 +29,7 @@ Thanks also to the following amazing projects (and their dependencies):
 
 ### Main game engine
 ![BATTLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.BATTLE.PRG)
-![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.INITBTL.PRG)
+![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.INITBTL.PRG&color=%2332a934)
 
 ### Menus
 ![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus)
@@ -59,6 +59,9 @@ Thanks also to the following amazing projects (and their dependencies):
 ### Editable content
 The following files can be freely edited*, either as source code or by editing the dumped .yaml or .obj formats
 ```
+data/BATTLE/
+    INITBTL.PRG
+
 data/MENU/
     ARMOR.SYD
     BLADE.SYD

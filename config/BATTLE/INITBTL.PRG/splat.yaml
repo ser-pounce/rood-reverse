@@ -25,5 +25,4 @@ segments:
       - [0xFB0, c]
       - [0x12AC, c]
       - [0x1318, .data, 18]
-      - [0x177C, data]
   - [0x1B7C]

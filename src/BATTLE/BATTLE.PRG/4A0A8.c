@@ -1,6 +1,21 @@
 #include "common.h"
 #include "../../SLUS_010.40/main.h"
+#include "2842C.h"
+#include "4A0A8.h"
 #include <stdio.h>
+#include <memory.h>
+
+void func_800AACDC(void);
+int func_800B9C58(u_char*, int);
+
+extern char D_800E9BE0[];
+extern char D_800E9BE8[];
+extern u_char D_800E9C30[];
+extern u_int* D_800EB9BC;
+extern short* D_800F4BBC;
+extern char D_800F4C20;
+extern char D_800F4C2C;
+extern char D_800F4C68;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B28A8);
 
@@ -44,32 +59,60 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6634);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B668C);
 
-int _invalidOpcode(char* arg0, short arg1)
+int _invalidOpcode(u_char* arg0, int arg1)
 {
     char buf[64];
 
-    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
+    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", (short)arg1, (u_int)arg0, *arg0);
     // Debug printing presumably ifdef'd out
     return 0;
 }
 
-int func_800B66E4(char* arg0, short arg1)
+int func_800B66E4(u_char* arg0, int arg1) { return 0; }
+
+int func_800B66EC(u_char* arg0, int arg1) { return 4; }
+
+int func_800B66F4(u_char* arg0, int arg1)
 {
+    if ((D_800F4BBC != 0) && (*D_800F4BBC != 4)) {
+        return 1;
+    }
     return 0;
 }
 
-int func_800B66EC(char* arg0, short arg1)
+int func_800B6724(u_char* arg0, int arg1) { return (*D_800EB9BC >> 1) & 1; }
+
+int func_800B6744(u_char* arg0, int arg1)
 {
-    return 4;
+    D_800F4C2C = 1;
+    D_800F4C20 = !(arg0[1] & 1);
+    return (D_800F4C68 != 0) * 4;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B66F4);
+int func_800B6778(u_char* arg0, int arg1)
+{
+    short i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6724);
+    for (i = 0; i < 3; ++i) {
+        D_800E9BE0[1] = (i << 4) | 8;
+        func_800B9C58(D_800E9BE0, 0);
+    }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6744);
+    func_800AACDC();
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6778);
+    i = 0xF;
+    while (*arg0 != i) {
+        if (memcmp(arg0, D_800E9BE8, 4) == 0) {
+            vs_battle_setStateFlag(0xA8, 0);
+            return;
+        }
+        arg0 = &arg0[D_800E9C30[*arg0]];
+    }
+
+    func_80093A70();
+    vs_battle_setStateFlag(0xA8, 0);
+    // No return value
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6868);
 
@@ -521,7 +564,7 @@ void func_800BEBEC(void) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEBF4);
 
-void vs_battle_setStateFlag(short arg0, int arg1)
+void vs_battle_setStateFlag(short arg0, char arg1)
 {
     char* flags = (char*)&vs_main_stateFlags;
     flags[arg0] = arg1;

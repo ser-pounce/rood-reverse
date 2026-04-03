@@ -52,6 +52,8 @@ makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/
 .SECONDEXPANSION:
 .PHONY: all objdiff clean remake clean-all
 
+SKIPSPLAT += objdiff clean remake clean-all
+
 all: $(targets)
 ifndef NOCHECK
 	echo "Verifying target files"
@@ -147,7 +149,8 @@ pad = @$(TRUNCATE) -s $1 $@
 %.c: %.w %.ch
 
 include $(makefiles)
-ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)
+
+ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
 -include $(binaries:%=$(BUILD)/config/%/link.d)
 endif
 

@@ -1,6 +1,8 @@
 FORMAT      := clang-format
 FORMATFLAGS := -i --style=file:tools/.clang-format
 
+SKIPSPLAT  += format sortsyms lintsrc
+
 .PHONY: format sortsyms lintsrc
 
 format: sortsyms lintsrc

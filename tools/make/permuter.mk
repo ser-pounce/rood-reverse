@@ -4,6 +4,7 @@ PERMUTEFLAGS    := -j8
 PERMUTER_SOURCE := $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$(TARGET))))
 
 PYTHONDEPS += toml
+SKIPSPLAT  += permute decompme
 
 .PHONY: permute decompme
 

@@ -9,9 +9,10 @@ MKPSXISO       := $(PSXISOBUILD)/Release/mkpsxiso
 DUMPSXISOFLAGS  = -x data -s $(DISKCONFIG)
 MKPSXISOFLAGS  := -q -lba -noisogen
 
-BUILD_DEPENDENCIES += $(DUMPSXISO)
+BUILDDEPS  += $(DUMPSXISO)
+PYTHONDEPS += pandas
 
-$(DISKCONFIG): | $(DISKIMAGE) $$(BUILD_DEPENDENCIES)
+$(DISKCONFIG): | $(DISKIMAGE) $$(BUILDDEPS)
 	$(ECHO) Dumping files from disk
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) $(DISKIMAGE) $(if $(DEBUG),,> /dev/null)
 

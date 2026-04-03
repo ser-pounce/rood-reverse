@@ -3,6 +3,8 @@ IMPORT          := $(VPYTHON) tools/decomp-permuter/import.py
 PERMUTEFLAGS    := -j8
 PERMUTER_SOURCE := $(patsubst $(BUILD)/%/,%.c,$(dir $(subst nonmatchings/,,$(TARGET))))
 
+PYTHONDEPS += toml
+
 .PHONY: permute decompme
 
 permute: $(patsubst %.s,nonmatchings/%/,$(notdir $(TARGET)))

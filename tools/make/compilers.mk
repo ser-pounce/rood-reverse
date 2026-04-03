@@ -2,7 +2,7 @@ COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 OLDGCC    := tools/old-gcc
 COMPILERS := $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
 
-BUILD_DEPENDENCIES += $(COMPILERS)
+BUILDDEPS += $(COMPILERS)
 
 $(COMPILERS): $(OLDGCC)/build-gcc-%/cc1: $(OLDGCC)/gcc-%.Dockerfile
 	$(ECHO) Building GCC $*

@@ -9,12 +9,10 @@ PYTHON   := python3
 GIT      := git
 CMAKE    := cmake
 DOCKER   := docker
-FORMAT   := clang-format
 DIFF     := diff
 CAT      := cat
 TOUCH    := touch
 ECHO     := echo
-COMMAND  := command
 MKDIR    := mkdir
 MV       := mv
 CP       := cp
@@ -25,8 +23,6 @@ TRUNCATE := truncate
 CC1VER    := 2.7.2-psx
 CC1        = tools/old-gcc/build-gcc-$(CC1VER)/cc1
 MAS        = $(VPYTHON) tools/maspsx/maspsx.py
-SPLAT      = $(VPYTHON) -m splat
-VSSTRING   = $(VPYTHON) tools/etc/vsStringTransformer.py
 
 BUILD   := build
 BCONFIG  = $(BUILD)/config/$*
@@ -40,25 +36,21 @@ LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I include --MD $(@:.o=.d) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
 MASFLAGS       := --aspsx-version=2.77 --macro-inc
-SPLATFLAGS     := split --disassemble-all
-FORMATFLAGS    := -i --style=file:tools/.clang-format
 RMFLAGS        := -Rf
 DIFFFLAGS      := -s
-COMMANDFLAGS   := -v
 MKDIRFLAGS     := -p
 
 binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 targets     = $(binaries:%=$(BUILD)/data/%)
-symfiles   := $(binaries:%=config/%/symbol_addrs.txt)
-makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile
-SYSDEPS    := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT)
+makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
+				$(patsubst %,tools/make/%.mk,compilers lint permuter psxiso python splat sysdeps vsstring)
 
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all format sortsyms lintsrc objdiff clean remake clean-all
+.PHONY: all objdiff clean remake clean-all
 
 all: $(targets)
 ifndef NOCHECK
@@ -75,17 +67,6 @@ ifndef NOCHECK
 	fi
 	exit $$fail
 endif
-
-format: sortsyms lintsrc
-
-sortsyms:
-	$(ECHO) Sorting symbols
-	for f in $(symfiles) ; do sort $$f -t = -k 2 -o $$f ; done
-
-lintsrc:
-	$(ECHO) Linting source
-	$(FIND) src/ -type f -name *.h -o -name *.c | xargs \
-		$(FORMAT) $(FORMATFLAGS)
 
 objdiff: all
 	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
@@ -104,15 +85,6 @@ clean-all:
 	$(GIT) submodule foreach --recursive $(GIT) clean -xfd
 	$(GIT) reset --hard
 	$(GIT) submodule foreach --recursive $(GIT) reset --hard
-
-ifndef PERMUTER
-ifndef __BASH_MAKE_COMPLETION__
-$(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile | $$(if $$(wildcard $$(DISKCONFIG)),,$$(DISKCONFIG)) $$(@D)/
-	$(ECHO) Splitting $*
-	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
-	$(TOUCH) $@
-endif
-endif
 
 $(targets): private LDFLAGS := --oformat=binary -e 0x0
 $(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
@@ -160,23 +132,6 @@ $(BUILD)/%.o: %.c | $$(@D)/
 	--add-symbol $(filename)_header=.data:0 \
 	--add-symbol $(filename)_data=.data:4
 
-.PRECIOUS: $(BUILD)/assets/%.vsString.yaml
-$(BUILD)/assets/%.vsString.yaml: assets/%.yaml | $$(@D)/
-	$(ECHO) Extracting data/$*
-	$(VPYTHON) -m tools.etc.vsString_dumpTable data/$* assets/$*.yaml $@
-
-$(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(@D)/
-	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.etc.vsString_yamlToData $< $(BUILD)/$*.vsString $(BUILD)/$*.h
-
-$(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
-	$(ECHO) Converting $<
-	cp $< $@
-
-%.vsString.o: %.vsString.bin
-	$(ECHO) Assembling $@
-	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
-
 .PRECIOUS: %/
 %/:
 	$(MKDIR) $(MKDIRFLAGS) $(@D)
@@ -191,18 +146,9 @@ pad = @$(TRUNCATE) -s $1 $@
 %: SCCS/s.%
 %.c: %.w %.ch
 
-include tools/make/permuter.mk tools/make/psxiso.mk tools/make/python.mk tools/make/compilers.mk
-
-$(BUILD_DEPENDENCIES): | sysdeps
-
-.PHONY: sysdeps
-sysdeps:
-	$(GIT) submodule update --init --recursive
-	$(COMMAND) $(COMMANDFLAGS) $(SYSDEPS) >/dev/null 2>&1 || ($(ECHO) One or more applications are missing: \\n \
-		$(SYSDEPS); false)
-	$(ECHO) Welcome to Rood Reverse!\\nPrerequisites checked.\\nSetting up remaining tools, this could take a while.\\n\\n
-
 include $(makefiles)
 ifeq ($(filter decompme permute format sortsyms lintsrc clean remake clean-all,$(MAKECMDGOALS)),)
 -include $(binaries:%=$(BUILD)/config/%/link.d)
 endif
+
+$(BUILDDEPS): | sysdeps

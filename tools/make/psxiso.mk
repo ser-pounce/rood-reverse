@@ -1,4 +1,3 @@
-DISKCODE       := SLUS-01040
 DISKIMAGE      := disks/$(DISKCODE).bin
 DISKCONFIG     := config/$(DISKCODE).xml
 DISKLBA        := $(BUILD)/config/$(DISKCODE)_LBA.txt

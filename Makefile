@@ -9,6 +9,7 @@ PYTHON   := python3
 GIT      := git
 CMAKE    := cmake
 DOCKER   := docker
+CARGO    := cargo
 DIFF     := diff
 CAT      := cat
 TOUCH    := touch
@@ -45,35 +46,19 @@ binaries   := SLUS_010.40 $(addsuffix .PRG, \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
 targets     = $(binaries:%=$(BUILD)/data/%)
 makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,compilers lint permuter psxiso python splat sysdeps vsstring)
+				$(patsubst %,tools/make/%.mk,compilers lint objdiff permuter psxiso python shell splat sysdeps vsstring)
+DISKCODE  := SLUS-01040
+COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all objdiff clean remake clean-all
+.PHONY: all clean remake clean-all
 
-SKIPSPLAT += objdiff clean remake clean-all
+SKIPSPLAT += clean remake clean-all
 
-all: $(targets)
-ifndef NOCHECK
-	echo "Verifying target files"
-	fail=0
-	for t in $(^:$(BUILD)/%=%); do
-	    if ! $(DIFF) $(DIFFFLAGS) "$$t" "$(BUILD)/$$t" >/dev/null 2>&1; then
-	        printf '\033[0;31m✘ [%s]\033[0m\n' "$(BUILD)/$$t"
-	        fail=1
-	    fi
-	done
-	if [ $$fail -eq 0 ]; then
-	    printf '\033[0;32m✔ All files match\033[0m\n'
-	fi
-	exit $$fail
-endif
-
-objdiff: all
-	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
-	../.cargo/bin/objdiff-cli report generate > progress.json
-	$(VPYTHON) tools/dev/progress.py
+all: check
+check: $(targets)
 
 clean:
 	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
@@ -82,7 +67,7 @@ remake: MAKEFLAGS += --no-print-directory
 remake: clean
 	$(MAKE)
 
-clean-all:
+clean-all: confirm-reset
 	$(GIT) clean -xfd -e $(DISKIMAGE)
 	$(GIT) submodule foreach --recursive $(GIT) clean -xfd
 	$(GIT) reset --hard

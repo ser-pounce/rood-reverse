@@ -124,6 +124,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 | python3                 | 3.12.3         |
 | python3-pip             | 24.0           |
 | python3-venv            | 3.12.3         |
+| rustup                  | 1.26.0         |
 - If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`, then log out and back in again
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build

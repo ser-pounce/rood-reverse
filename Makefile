@@ -26,7 +26,6 @@ CC1        = tools/old-gcc/build-gcc-$(CC1VER)/cc1
 MAS        = $(VPYTHON) tools/maspsx/maspsx.py
 
 BUILD   := build
-BCONFIG  = $(BUILD)/config/$*
 
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include \
                   -MD -MF $@.d -MT $@ -D "__attribute__(x)="
@@ -58,7 +57,7 @@ COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 SKIPSPLAT += clean remake clean-all
 
 all: check
-check: $(targets)
+check: $$(targets)
 
 clean:
 	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
@@ -80,15 +79,16 @@ $(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
 	$(fixup)
 	$(file >>$(BUILD)/config/$*/link.d,include $(wildcard $(patsubst %.o,%.d,$(filter %.o,$(file <$(BUILD)/config/$*/link.d)))))
 
-$(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
-$(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
+$(BUILD)/data/%.elf: BCONFIG = $(BUILD)/config/$(*:%.linked=%)
+$(BUILD)/data/%.elf:
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
+$(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
+$(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
+
 $(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
 $(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
-	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 
 %.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<

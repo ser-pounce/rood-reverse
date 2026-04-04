@@ -823,7 +823,11 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
 void func_80077EC4(void);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);
+int func_8007BF0C(void);
+void func_8007C31C(void);
 int func_8007C36C(int arg0);
+int func_8007C398(void);
+int func_8007CCAC(void);
 void func_8007D3F8(void);
 void func_8007DF48(void);
 void vs_battle_setProjectionDistance(int);

@@ -9478,9 +9478,9 @@ static void _processCdQueue(void)
 
 static int func_80044D94(void) { return func_80011F90(); }
 
-static void func_80044DB4(void) { func_80012004(); }
+void func_80044DB4(void) { func_80012004(); }
 
-static void func_80044DD4(void* arg0) { func_80012468(arg0); }
+void func_80044DD4(int arg0) { func_80012468((void*)arg0); }
 
 static int func_80044DF4(int id)
 {
@@ -10029,7 +10029,7 @@ void func_80045D64(int arg0, int arg1)
     }
 }
 
-static void func_80045DC0(void) { func_80012B98(); }
+void func_80045DC0(void) { func_80012B98(); }
 
 int vs_main_loadSfxSlot(int id, u_int slot)
 {

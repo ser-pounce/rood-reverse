@@ -3882,7 +3882,7 @@ void func_800743E0(int arg0, int arg1)
     } else {
         short temp_v1_2 = D_800F1910.unk0->unk10;
         if (temp_v1_2 < 0x40) {
-            func_800CB18C(D_800F1910.unk0 + 1);
+            func_800CB18C((vs_battle_loot*)(D_800F1910.unk0 + 1));
         } else {
             func_800CB1C0(temp_v1_2 - 0x40);
         }
@@ -6230,7 +6230,7 @@ void func_8007CC6C(void) { func_8009CE9C(); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 
-void func_8007CCAC(void) { func_800995B0(); }
+int func_8007CCAC(void) { return func_800995B0(); }
 
 void vs_battle_setNearClip(int arg0)
 {

@@ -76,8 +76,6 @@ typedef struct {
 
 void func_80090B28(void);
 void func_8009121C(void);
-int func_80091998(int);
-int func_800919D8(int);
 void func_8009291C(int);
 void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
 int func_8009306C(func_80092F74_t* arg0);

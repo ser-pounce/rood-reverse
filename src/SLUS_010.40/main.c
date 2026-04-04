@@ -109,7 +109,6 @@ static void _padSetActData(int arg0, int arg1, int arg2);
 static void _initCdQueue(void);
 static void _diskReset(void);
 static void _processCdQueue(void);
-static int vs_main_processSoundQueue(void);
 static void _loadMenuSound(void);
 static void _asmNop(void);
 

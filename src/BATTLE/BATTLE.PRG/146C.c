@@ -647,7 +647,6 @@ void func_8008D594(int arg0);
 void func_8008D5FC(func_8008C1C8_t* arg0);
 void func_8008D658(func_8008C1C8_t*);
 void func_8008D710(void);
-void _setDoorEntered(int arg0);
 int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(D_800F1910_t2* arg0, int arg1);
@@ -6226,7 +6225,7 @@ void func_8007CC18(int arg0, int wepId, int arg2)
 
 void func_8007CC4C(void) { func_8009D208(); }
 
-void func_8007CC6C(void) { func_8009CE9C(); }
+void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 
@@ -10541,7 +10540,7 @@ int _getDoorId(int door)
     return -1;
 }
 
-void _setDoorEntered(int arg0)
+void vs_battle_setDoorEntered2(int arg0)
 {
     int temp_a3;
     int i;

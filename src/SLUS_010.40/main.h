@@ -480,3 +480,6 @@ void func_80045D64(int arg0, int arg1);
 void vs_main_wait(void);
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
 void vs_main_resetGame(void);
+int vs_main_processSoundQueue(void);
+int vs_main_setCurrentSfx(int id);
+int vs_main_freeSfxQueueSlot(u_int slot);

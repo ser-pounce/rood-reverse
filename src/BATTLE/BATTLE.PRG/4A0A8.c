@@ -13,6 +13,7 @@ short func_800BFE00(u_char*);
 int func_800C6BF0(int, u_short*);
 void func_800CB79C(void);
 int func_800CD064(int);
+void func_800CEF38(int);
 
 extern char D_800E9BE0[];
 extern char D_800E9BE8[];
@@ -52,7 +53,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6404);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6438);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B64A8);
+__asm__(".set push;"
+        ".set noreorder;"
+        "glabel func_800B64A8;"
+        "addu       $sp, -0x4;"
+        "sw         $ra, 0x0($sp);"
+        "jal        func_800B64CC;"
+        "addu       $a3, $a1, $zero;"
+        "or         $v1, $zero, 0x0;"
+        "sb         $v1, 0x1848($v0);"
+        "lw         $ra, 0x0($sp);"
+        "addu       $sp, 0x4;"
+        "j          $ra;"
+        "endlabel func_800B64A8;"
+        ".set pop");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B64CC);
 
@@ -128,15 +142,15 @@ void func_800B6634()
             "addu       $sp, -0xC;"
             "lhu        $t0, 0x63C($v0);"
             "sw         $ra, 0x0($sp);"
-            "ori        $a2, $zero, 0x80;"
+            "or         $a2, $zero, 0x80;"
             "sltu       $t0, 0x80;"
             "beqz       $t0, .L800B6668;"
             "sw         $a0, 0x4($sp);"
-            "ori        $a2, $zero, 0x20;"
-            ".L800B6668:;"
+            "or         $a2, $zero, 0x20;"
+            ".L800B6668:"
             "jal        func_800A9EB4;"
             "sw         $a1, 0x8($sp);"
-            ".L800B6670:;"
+            ".L800B6670:"
             "lw         $a0, 0x4($sp);"
             "jal        func_800A249C;"
             "lw         $a1, 0x8($sp);"
@@ -147,7 +161,7 @@ void func_800B6634()
 __asm__(".set push;"
         ".set reorder;"
         "glabel func_800B668C;"
-        "addiu      $sp, $sp, -0xC;"
+        "addu       $sp, -0xC;"
         "sw         $ra, 0x0($sp);"
         "sw         $a0, 0x4($sp);"
         "sw         $a1, 0x8($sp);"
@@ -352,7 +366,11 @@ int func_800B86E8(u_char* arg0, int arg1) { return func_8007CCAC() > 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8708);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8764);
+int func_800B8764(u_char* arg0, int arg1)
+{
+    func_8007CC6C(arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8788);
 
@@ -390,7 +408,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B91C4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B91F0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9230);
+int func_800B9230(u_char* arg0, int arg1)
+{
+    func_8007D15C(arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9254);
 
@@ -428,9 +450,17 @@ int func_800B97F8(u_char* arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9818);
+int func_800B9818(u_char* arg0, int arg1)
+{
+    func_80091998(arg0[1]);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B983C);
+int func_800B983C(u_char* arg0, int arg1)
+{
+    func_800919D8(arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9860);
 
@@ -442,7 +472,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9A40);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9A94);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9AC4);
+int func_800B9AC4(u_char* arg0, int arg1)
+{
+    func_8007C460(arg0[1] * 0x10);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9AE8);
 
@@ -458,9 +492,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9D74);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9DB4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9F28);
+int func_800B9F28(u_char* arg0, int arg1)
+{
+    func_8008EAF8(arg0[1]);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9F4C);
+int func_800B9F4C(u_char* arg0, int arg1)
+{
+    func_8008EFCC(arg0[1]);
+    return 0;
+}
 
 int func_800B9F70(u_char* arg0, int arg1) { return func_8008F0FC() == 0; }
 
@@ -498,11 +540,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA404);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA444);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA470);
+int func_800BA470(u_char* arg0, int arg1)
+{
+    return vs_main_freeSfxQueueSlot(arg0[1]) != 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA494);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA4C8);
+int func_800BA4C8(u_char* arg0, int arg1)
+{
+    vs_main_setCurrentSfx(arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA4EC);
 
@@ -532,9 +581,13 @@ int func_800BA72C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA74C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA774);
+int func_800BA774(u_char* arg0, int arg1)
+{
+    vs_main_loadSoundFile(arg0[1]);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA798);
+int func_800BA798(u_char* arg0, int arg1) { return vs_main_processSoundQueue() == 1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA7BC);
 
@@ -556,7 +609,11 @@ int func_800BAA34(u_char* arg0, int arg1) { return func_8007BF0C() != 1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAA58);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAACC);
+int func_800BAACC(u_char* arg0, int arg1)
+{
+    func_800CEF38(arg0[1]);
+    return 0;
+}
 
 int func_800BAAF0(u_char* arg0, int arg1)
 {
@@ -568,7 +625,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAB14);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BABCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAC38);
+int func_800BAC38(u_char* arg0, int arg1)
+{
+    vs_battle_setDoorEntered2(arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAC5C);
 

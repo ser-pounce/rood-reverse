@@ -511,7 +511,7 @@ int _handleMenu(void)
         D_8010A430[1] = 0xE47;
         D_8010A430[2] = 0;
         func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
-        func_800C6BF0(0, &_rankText[_rankText[D_8010A464]]);
+        func_800C6BF0(0, (char*)&_rankText[_rankText[D_8010A464]]);
         _initStringsAndGetSelectedRow(1);
         D_8010A220 = 0;
         ++_menuState;

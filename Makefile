@@ -55,17 +55,21 @@ O_DEPS := $(SED) -En 's/(.*).o:$$/-include \1.d/p'
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean remake clean-all
+.PHONY: all clean commit-check remake clean-all
 
 SKIPSPLAT += clean remake clean-all
 
 all: check
+
 check: $$(TARGETS)
+
+commit-check: format
+	$(MAKE) remake
+	$(MAKE) objdiff
 
 clean:
 	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
 
-remake: MAKEFLAGS += --no-print-directory
 remake: clean
 	$(MAKE)
 
@@ -74,6 +78,8 @@ clean-all: confirm-reset
 	$(GIT) submodule foreach --recursive $(GIT) clean -xfd
 	$(GIT) reset --hard
 	$(GIT) submodule foreach --recursive $(GIT) reset --hard
+	
+commit-check remake: MAKEFLAGS += --no-print-directory
 
 $(BINTARGETS): private LDFLAGS := --oformat=binary -e 0x0
 $(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf

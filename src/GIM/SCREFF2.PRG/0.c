@@ -1,4 +1,5 @@
 #include "common.h"
+#include "0.h"
 #include "../../SLUS_010.40/31724.h"
 #include <libgte.h>
 

@@ -439,7 +439,7 @@ int func_80103684(void)
             _geomOffsetX += 0x40;
         } else {
             func_800CCF08(0, 0, 0x3C, 0xE0, 0x10, 1, 0x3C, 0xE0);
-            func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+            func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
             ++D_80108D60;
         }
         func_801042B0();
@@ -620,7 +620,7 @@ int func_80103684(void)
                         }
                     }
                     if (temp_s3 != _currentRoomIndex) {
-                        func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+                        func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
                     }
                 }
             }
@@ -678,7 +678,7 @@ int func_80103684(void)
             _scaleRoomVertices(vs_battle_sceneBuffer, 4);
             _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
             _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
-            func_800C6BF0(0, &_roomNamesTable[_currentRoomIndex]);
+            func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
             _geomOffsetX = -0x180;
             _geomOffsetY = 0;
             D_80108D60 = 5;
@@ -727,7 +727,7 @@ void func_801042B0(void)
     *(DR_STP**)pScratch = stp;
     if (flags->mapPaling[scene] != 0) {
         _applyPalingScreenEffect();
-        func_800C6BF0(0, &_paling[_paling[0]]);
+        func_800C6BF0(0, (char*)&_paling[_paling[0]]);
         return;
     }
     func_80104384();

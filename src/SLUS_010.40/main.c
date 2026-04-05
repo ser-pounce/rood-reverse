@@ -9510,7 +9510,7 @@ int func_80044DF4(int id)
     return 1;
 }
 
-static int func_80044EC8(int id)
+int func_80044EC8(int id)
 {
     u_int temp_v0;
 

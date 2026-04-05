@@ -556,7 +556,7 @@ static void _copyNextPageText(void)
     }
 
     pBuffer[-1] = vs_char_terminator;
-    func_800C6BF0(0, &buffer);
+    func_800C6BF0(0, buffer);
 }
 
 static char* _vsStrcpy(char* arg0, char* arg1)

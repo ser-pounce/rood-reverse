@@ -446,6 +446,7 @@ void vs_main_resetSound(void);
 void func_80044DB4(void);
 void func_80044DD4(int);
 int func_80044DF4(int);
+int func_80044EC8(int);
 int func_80045000(int id, int arg1, int arg2);
 void func_80045DC0(void);
 void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec);

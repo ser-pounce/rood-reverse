@@ -7,7 +7,7 @@ void func_800BEB9C(int);
 void func_800BEBEC(void);
 char func_800BEBF4(short);
 void vs_battle_setStateFlag(short, char);
-void func_800BEC30(void);
+int func_800BEC30(void);
 short func_800BEC58(int, int, char*, int);
 
 int _invalidOpcode(u_char*, int);
@@ -155,6 +155,6 @@ int func_800BB5AC(u_char*, int);
 int func_800BB604(u_char*, int);
 
 extern short D_800F4BE2;
-extern signed char D_800F4C08;
+extern char D_800F4C08;
 extern void* D_800F4C30;
 extern void* D_800F4C48;

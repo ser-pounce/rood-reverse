@@ -11032,7 +11032,7 @@ int func_8008EA90(int arg0)
     return 0;
 }
 
-void func_8008EAE4(short arg0, short arg1)
+void func_8008EAE4(int arg0, int arg1)
 {
     D_800F1DB8 = arg0;
     D_800F1DBA = arg1;

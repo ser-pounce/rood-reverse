@@ -17,6 +17,7 @@ int func_800CD064(int);
 void func_800CEF38(int);
 
 extern char D_800E9BE0[];
+extern int D_800E9B34[];
 extern char D_800E9BE8[];
 extern u_char D_800E9C30[];
 extern u_int* D_800EB9BC;
@@ -25,13 +26,16 @@ extern char D_800F4B30[];
 extern char D_800F4BA0;
 extern void* D_800F4BA4;
 extern u_short* D_800F4BB0;
+extern char D_800F4BB8;
 extern short* D_800F4BBC;
 extern u_short D_800F4BE0;
 extern char D_800F4BE4;
 extern char D_800F4C00[];
+extern char D_800F4C10[];
 extern char D_800F4C20;
 extern char D_800F4C2C;
 extern char D_800F4C34;
+extern short D_800F4C4C;
 extern int D_800F4C64;
 extern char D_800F4C68;
 extern char D_800F4C69;
@@ -404,7 +408,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8BF8);
 
 int func_800B8C44(void) { return D_800F4C64; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8C54);
+int func_800B8C54(u_char* arg0, int arg1)
+{
+    if (arg0[1] != 0xFF) {
+        D_800F4C10[arg0[1]] = arg0[2];
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8C7C);
 
@@ -418,7 +428,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8EDC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9170);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B91C4);
+int func_800B91C4(u_char* arg0, int arg1)
+{
+    func_8007BBB8(arg0[2], arg0[1]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B91F0);
 
@@ -452,7 +466,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B96B0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9724);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9770);
+int func_800B9770(u_char* arg0, int arg1)
+{
+    func_8008E224(arg0[1], arg0[2]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B979C);
 
@@ -480,7 +498,11 @@ int func_800B983C(u_char* arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9860);
+int func_800B9860(u_char* arg0, int arg1)
+{
+    func_80091A1C(arg0[1], arg0[2]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B988C);
 
@@ -546,11 +568,29 @@ int func_800BA264(u_char* arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA288);
+int func_800BA288(u_char* arg0, int arg1)
+{
+    func_80091A78(arg0[1], (signed char)arg0[2]);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA2B4);
+int func_800BA2B4(u_char* arg0, int arg1)
+{
+    func_8008EAE4((signed char)arg0[1] << 7, (signed char)arg0[2] << 7);
+    return 0;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA2E0);
+int func_800BA2E0(u_char* arg0)
+{
+    if (arg0[1] == 2 && D_800F4C08 == 0) {
+        return 0;
+    }
+    if (arg0[1] == 2) {
+        D_800F4C4C = arg0[2];
+    }
+    vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA35C);
 
@@ -564,7 +604,11 @@ int func_800BA3E4(u_char* arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA404);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA444);
+int func_800BA444(u_char* arg0, int arg1)
+{
+    vs_main_loadSfxSlot(arg0[1], arg0[2]);
+    return 0;
+}
 
 int func_800BA470(u_char* arg0, int arg1)
 {
@@ -583,7 +627,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA4EC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA52C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA588);
+int func_800BA588(u_char* arg0, int arg1)
+{
+    vs_main_loadMusicSlot(arg0[1], arg0[2]);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA5B4);
 
@@ -866,7 +914,14 @@ void vs_battle_setStateFlag(short arg0, char arg1)
     flags[arg0] = arg1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC30);
+int func_800BEC30(void)
+{
+    if (D_800F4C34 == 1) {
+        D_800F4BB8 = D_800F4C34;
+        return 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC58);
 

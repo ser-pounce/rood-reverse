@@ -24,6 +24,8 @@ void func_80091314(int);
 void func_800918E8(int);
 int func_80091998(int);
 int func_800919D8(int);
+int func_80091A1C(int, int);
+int func_80091A78(int, int);
 void func_80093A70(void);
 void func_800938AC(int);
 void func_80095B70(int);

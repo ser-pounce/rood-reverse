@@ -6,7 +6,6 @@ SHELL_RESET  := \033[0m
 .PHONY: check confirm-reset
 
 check:
-ifndef NOCHECK
 	echo "Verifying target files..."
 	fail=0
 	for t in $(^:$(BUILD)/%=%); do
@@ -19,7 +18,6 @@ ifndef NOCHECK
 		printf '$(SHELL_GREEN)✔ All files match$(SHELL_RESET)\n'
 	fi
 	exit $$fail
-endif
 
 confirm-reset:
 	$(ECHO) ""

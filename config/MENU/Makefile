@@ -54,4 +54,4 @@ $(BUILD)/data/MENU/SHIELD.SYD: $(BUILD)/assets/MENU/SHIELD.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_encode $< $@
 
-all: $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, BLADE ARMOR SHIELD))

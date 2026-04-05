@@ -31,8 +31,7 @@ BUILD   := build
 CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include \
                   -MD -MF $@.d -MT $@ -D "__attribute__(x)="
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
-LDFLAGS         = -nostdlib --build-id=none -L $(BCONFIG) \
-				   $(LDSCRIPT:%=-T %)
+LDFLAGS         = -nostdlib --build-id=none -L $(BCONFIG) $(LDSCRIPT:%=-T %)
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I include --MD $(@:.o=.d) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
@@ -41,11 +40,12 @@ RMFLAGS        := -Rf
 DIFFFLAGS      := -s
 MKDIRFLAGS     := -p
 
-binaries   := SLUS_010.40 $(addsuffix .PRG, \
+BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
-targets     = $(binaries:%=$(BUILD)/data/%)
-makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
+BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
+TARGETS      := $(BINTARGETS)
+INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
 				$(patsubst %,tools/make/%.mk,compilers lint objdiff permuter psxiso python shell splat sysdeps vsstring)
 DISKCODE  := SLUS-01040
 COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
@@ -60,7 +60,7 @@ O_DEPS := $(SED) -En 's/(.*).o:$$/-include \1.d/p'
 SKIPSPLAT += clean remake clean-all
 
 all: check
-check: $$(targets)
+check: $$(TARGETS)
 
 clean:
 	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
@@ -75,24 +75,24 @@ clean-all: confirm-reset
 	$(GIT) reset --hard
 	$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
-$(targets): private LDFLAGS := --oformat=binary -e 0x0
-$(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
+$(BINTARGETS): private LDFLAGS := --oformat=binary -e 0x0
+$(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION) $<
 	$(fixup)
 
-$(BUILD)/data/%.elf: BCONFIG = $(BUILD)/config/$(*:%.linked=%)
+$(BUILD)/data/%.elf: private BCONFIG = $(BUILD)/config/$(*:%.linked=%)
 $(BUILD)/data/%.elf:
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
 	$(UPDATE_DEPS)
 
-$(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
-$(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
+$(BINTARGETS:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
+$(BINTARGETS:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
 
-$(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all --dependency-file=$(BCONFIG)/link.d
-$(targets:=.elf): private UPDATE_DEPS = $(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
-$(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
+$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all --dependency-file=$(BCONFIG)/link.d
+$(BINTARGETS:=.elf): private UPDATE_DEPS = $(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
+$(BINTARGETS:=.elf): | $$(@D)/
 
 %.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<
@@ -137,10 +137,10 @@ pad = @$(TRUNCATE) -s $1 $@
 %: SCCS/s.%
 %.c: %.w %.ch
 
-include $(makefiles)
+include $(INCMAKEFILES)
 
 ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
--include $(binaries:%=$(BUILD)/config/%/link.d)
+-include $(BINARIES:%=$(BUILD)/config/%/link.d)
 endif
 
 $(BUILDDEPS): | sysdeps

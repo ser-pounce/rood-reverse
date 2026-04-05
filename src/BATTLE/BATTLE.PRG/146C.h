@@ -821,8 +821,10 @@ void func_80076F24(
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7);
 void func_80077EC4(void);
+int func_8007BD8C(int);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);
+int func_8007BDD8(int);
 int func_8007BF0C(void);
 void func_8007C31C(void);
 int func_8007C36C(int arg0);

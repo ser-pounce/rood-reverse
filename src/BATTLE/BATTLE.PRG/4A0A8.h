@@ -1,7 +1,7 @@
 #pragma once
 
 void func_800B28A8(void*, void*, char);
-int func_800BEB10(void);
+short func_800BEB10(void);
 void func_800BEB34(void);
 void func_800BEB9C(int);
 void func_800BEBEC(void);

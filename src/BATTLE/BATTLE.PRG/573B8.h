@@ -16,3 +16,4 @@ void vs_battle_playMenuChangeSfx(void);
 void vs_battle_playSfx10(void);
 
 extern void* D_800F4C28;
+extern short _evtFile;

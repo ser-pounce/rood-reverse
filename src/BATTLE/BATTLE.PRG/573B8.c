@@ -1,10 +1,10 @@
 #include "common.h"
 #include "lbas.h"
+#include "573B8.h"
 #include "../SLUS_010.40/main.h"
 
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
-extern short _evtFile;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 

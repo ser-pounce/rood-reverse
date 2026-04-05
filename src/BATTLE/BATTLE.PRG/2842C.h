@@ -20,6 +20,7 @@ typedef struct {
     char unk13;
 } func_8007C8F8_t;
 
+void func_80091314(int);
 void func_800918E8(int);
 int func_80091998(int);
 int func_800919D8(int);

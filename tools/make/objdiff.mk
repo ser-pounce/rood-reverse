@@ -1,7 +1,7 @@
 OBJDIFF      := ~/.cargo/bin/objdiff-cli
 OBJDIFFFLAGS := report generate
 
-.PHONY: objdiff
+.PHONY: objdiff objdiff.json
 
 BUILDDEPS += $(OBJDIFF)
 SKIPSPLAT += objdiff

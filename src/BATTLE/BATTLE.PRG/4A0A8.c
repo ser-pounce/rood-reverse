@@ -34,6 +34,7 @@ extern char D_800F4C2C;
 extern char D_800F4C34;
 extern int D_800F4C64;
 extern char D_800F4C68;
+extern char D_800F4C69;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B28A8);
 
@@ -290,7 +291,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6D48);
 
 int func_800B6F8C(char* arg0) { return func_800CD064(arg0[1]) != 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6FB0);
+int func_800B6FB0(u_char* arg0)
+{
+    if (vs_main_buttonsPressed.all & arg0[1]) {
+        return 4;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6FD8);
 
@@ -588,7 +595,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA650);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA684);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA6B8);
+int func_800BA6B8(void)
+{
+    func_80044DF4(D_800F4C69);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA6E0);
 
@@ -598,7 +609,10 @@ int func_800BA72C(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA74C);
+int func_800BA74C(u_char* arg0, int arg1)
+{
+    return vs_main_clearMusicLoadSlot(arg0[1]) == 1;
+}
 
 int func_800BA774(u_char* arg0, int arg1)
 {

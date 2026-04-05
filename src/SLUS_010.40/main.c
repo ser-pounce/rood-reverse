@@ -9481,7 +9481,7 @@ void func_80044DB4(void) { func_80012004(); }
 
 void func_80044DD4(int arg0) { func_80012468((void*)arg0); }
 
-static int func_80044DF4(int id)
+int func_80044DF4(int id)
 {
     u_int new_var;
     int var_a1;
@@ -9640,7 +9640,7 @@ static int _loadMusicIntoFreeSlot(int id)
     return 0;
 }
 
-static int vs_main_clearMusicLoadSlot(u_int slot)
+int vs_main_clearMusicLoadSlot(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {

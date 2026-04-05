@@ -32,7 +32,7 @@ CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include \
                   -MD -MF $@.d -MT $@ -D "__attribute__(x)="
 CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
 LDFLAGS         = -nostdlib --build-id=none -L $(BCONFIG) \
-				   $(LDSCRIPT:%=-T %) --dependency-file=$(BCONFIG)/link.d
+				   $(LDSCRIPT:%=-T %)
 LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 ASFLAGS         = -I include --MD $(@:.o=.d) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
@@ -85,12 +85,13 @@ $(BUILD)/data/%.elf: BCONFIG = $(BUILD)/config/$(*:%.linked=%)
 $(BUILD)/data/%.elf:
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
+	$(UPDATE_DEPS)
 
 $(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
 $(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
 
-$(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
+$(targets:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all --dependency-file=$(BCONFIG)/link.d
+$(targets:=.elf): private UPDATE_DEPS = $(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
 $(targets:=.elf): $(BUILD)/data/%.elf: | $$(@D)/
 
 %.o: %.s | $$(@D)/

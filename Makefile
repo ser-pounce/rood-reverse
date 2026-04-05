@@ -10,6 +10,7 @@ GIT      := git
 CMAKE    := cmake
 DOCKER   := docker
 CARGO    := cargo
+SED      := sed
 DIFF     := diff
 CAT      := cat
 TOUCH    := touch
@@ -49,6 +50,8 @@ makefiles  := $(binaries:%=config/%/Makefile) config/MENU/Makefile config/SMALL/
 DISKCODE  := SLUS-01040
 COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
+O_DEPS := $(SED) -En 's/(.*).o:$$/-include \1.d/p'
+
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
@@ -77,12 +80,12 @@ $(targets): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION) $<
 	$(fixup)
-	$(file >>$(BUILD)/config/$*/link.d,include $(wildcard $(patsubst %.o,%.d,$(filter %.o,$(file <$(BUILD)/config/$*/link.d)))))
 
 $(BUILD)/data/%.elf: BCONFIG = $(BUILD)/config/$(*:%.linked=%)
 $(BUILD)/data/%.elf:
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
+	$(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
 
 $(targets:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
 $(targets:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf

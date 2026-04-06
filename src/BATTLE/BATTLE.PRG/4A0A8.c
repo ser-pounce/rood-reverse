@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "2842C.h"
 #include "30D14.h"
+#include "3A1A0.h"
 #include "40564.h"
 #include "4A0A8.h"
 #include "573B8.h"
@@ -12,6 +13,30 @@
 #include <stdio.h>
 #include <memory.h>
 #include <stddef.h>
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    char unk4;
+    char unk5;
+    char unk6;
+    char unk7;
+    char unk8[0xAC];
+    char unkB4;
+    char unkB5;
+    char unkB6;
+    char unkB7;
+    char unkB8;
+    char unkB9;
+    char unkBA;
+    char unkBB;
+    char unkBC[0x12C];
+    u_short unk1E8;
+    u_short unk1EA;
+    VECTOR unk1EC;
+} D_800F4BA4_t;
 
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
@@ -43,7 +68,7 @@ extern int D_800F19C8;
 extern u_short D_800F4B28[];
 extern char D_800F4B30[];
 extern char D_800F4BA0;
-extern char* D_800F4BA4;
+extern D_800F4BA4_t* D_800F4BA4;
 extern void* D_800F4BAC;
 extern u_short* D_800F4BB0;
 extern char D_800F4BB4;
@@ -555,7 +580,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7A98);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7B58);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7C90);
+int func_800B7C90(u_char* arg0, short arg1)
+{
+    u_short temp_s1 = func_800BFE50(func_800BFE00(arg0 + 1));
+    u_int temp_a1 = func_800BFE50(func_800BFE00(arg0 + 3)) & 0xFFFF;
+    if (temp_a1 >= 0x2000) {
+        func_8009FFA8(temp_s1, temp_a1);
+    } else {
+        func_8009FF08(temp_s1, temp_a1, arg0[5], arg0[6]);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7D10);
 
@@ -1469,7 +1504,21 @@ void func_800BBE04(int arg0) { D_800F4BA0 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBE10);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBE94);
+void func_800BBE94(void)
+{
+    func_8006EBF8_t sp10;
+
+    if (D_800F4BA4->unk1E8 == 0x2000) {
+        D_800F4BA4->unk1EC.vz = 0;
+        D_800F4BA4->unk1EC.vy = 0;
+        D_800F4BA4->unk1EC.vx = 0;
+        return;
+    }
+    func_800A1108(D_800F4BA4->unk1E8, &sp10);
+    D_800F4BA4->unk1EC.vx = sp10.unk0.unk4.vx * ONE;
+    D_800F4BA4->unk1EC.vy = sp10.unk0.unk4.vy * ONE;
+    D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBF14);
 
@@ -1507,23 +1556,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
 
 void func_800BE36C(int arg0, int arg1)
 {
-    D_800F4BA4[6] = arg0;
-    D_800F4BA4[7] = 0;
-    D_800F4BA4[0xBA] = arg1;
-    D_800F4BA4[0xBB] = 0;
+    D_800F4BA4->unk6 = arg0;
+    D_800F4BA4->unk7 = 0;
+    D_800F4BA4->unkBA = arg1;
+    D_800F4BA4->unkBB = 0;
 }
 
 void func_800BE3A0(void)
 {
-    char* c1 = D_800F4BA4;
-    char* c2;
-    c1[0xB4] = 0xF;
-    c1[0] = 0xF;
+    D_800F4BA4_t* c1 = D_800F4BA4;
+    D_800F4BA4_t* c2;
+    c1->unkB4 = 0xF;
+    c1->unk0 = 0xF;
     c2 = D_800F4BA4;
-    c2[0xBB] = 0;
-    c2[0xBA] = 0;
-    c2[7] = 0;
-    c2[6] = 0;
+    c2->unkBB = 0;
+    c2->unkBA = 0;
+    c2->unk7 = 0;
+    c2->unk6 = 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE3D0);

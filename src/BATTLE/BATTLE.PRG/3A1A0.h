@@ -35,10 +35,7 @@ typedef struct {
         func_8006EBF8_t_fields fields;
         int value;
     } unk0;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
+    SVECTOR unk4;
 } func_8006EBF8_t3;
 
 typedef struct {

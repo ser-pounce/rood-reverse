@@ -1934,9 +1934,9 @@ int func_8006C5AC(int arg0)
 
             func_800A1108(temp_s3->unk4C[i].unk0.unk.unk0, &sp10);
 
-            sp20.vx = sp10.unk0.unk4;
-            sp20.vz = sp10.unk0.unk8;
-            sp20.vy = sp10.unk0.unk6;
+            sp20.vx = sp10.unk0.unk4.vx;
+            sp20.vz = sp10.unk0.unk4.vz;
+            sp20.vy = sp10.unk0.unk4.vy;
 
             switch (temp_s3->unk4C[i].unk0.unk.unk3) {
             case 0:
@@ -2583,9 +2583,9 @@ void func_8006E640(int arg0)
     int _[2] __attribute__((unused));
 
     func_800A1108(arg0, &sp10);
-    targetPos.vx = sp10.unk0.unk4;
-    targetPos.vz = sp10.unk0.unk8;
-    targetPos.vy = sp10.unk0.unk6 - 0x5A;
+    targetPos.vx = sp10.unk0.unk4.vx;
+    targetPos.vz = sp10.unk0.unk4.vz;
+    targetPos.vy = sp10.unk0.unk4.vy - 0x5A;
     func_80074B14(arg0, &sp10.unk0.unk0.fields.unk0);
     switch (_cameraMode) {
     case 1:
@@ -2632,9 +2632,9 @@ int func_8006EBF8(void)
     }
     func_800A1108(0, &sp10);
 
-    position.vx = sp10.unk0.unk4 << 0xC;
-    position.vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
-    position.vz = sp10.unk0.unk8 << 0xC;
+    position.vx = sp10.unk0.unk4.vx << 0xC;
+    position.vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
+    position.vz = sp10.unk0.unk4.vz << 0xC;
     _snapLookAtToPosition(&position);
     _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     return v;
@@ -2694,9 +2694,9 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
 
     func_800AA850(0, vs_battle_cameraCurrentSpherical.values.yaw & 0xFFF, 0);
     func_800A1108(0, &sp10);
-    _camera.t2.position.vx = sp10.unk0.unk4 * ONE;
-    _camera.t2.position.vz = sp10.unk0.unk8 * ONE;
-    _camera.t2.position.vy = (sp10.unk0.unk6 - 180) * ONE;
+    _camera.t2.position.vx = sp10.unk0.unk4.vx * ONE;
+    _camera.t2.position.vz = sp10.unk0.unk4.vz * ONE;
+    _camera.t2.position.vy = (sp10.unk0.unk4.vy - 180) * ONE;
     _setCameraLookAtFromAngles(&vs_battle_cameraCurrentSpherical.values);
 }
 
@@ -2855,7 +2855,7 @@ void func_8006F4B0(func_8006EBF8_t3* arg0)
     sp10.unk10 = 5;
     sp10.unk14.u16 = (arg0->unk0.fields.unk0 << 7) + 0x40;
     sp10.unk18 = (arg0->unk0.fields.unk2 << 7) + 0x40;
-    sp10.unk16.u16 = arg0->unk6;
+    sp10.unk16.u16 = arg0->unk4.vy;
     if (!(D_800F1868 & 2)) {
         func_800CF3F8(&sp10, 0);
     }
@@ -3157,9 +3157,9 @@ void func_8007087C(D_800F19CC_t* arg0)
     func_8006EBF8_t sp10;
 
     func_800A1108((char)arg0->unk4, &sp10);
-    arg0->unk8.unk83C = sp10.unk0.unk4 + rsin(sp10.unk0.unkA + 0x800);
-    arg0->unk8.unk840 = sp10.unk0.unk8 + rcos(sp10.unk0.unkA + 0x800);
-    arg0->unk8.unk83E = sp10.unk0.unk6;
+    arg0->unk8.unk83C = sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + 0x800);
+    arg0->unk8.unk840 = sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + 0x800);
+    arg0->unk8.unk83E = sp10.unk0.unk4.vy;
 }
 
 void func_800708EC(void)
@@ -3324,13 +3324,13 @@ void _initBattleCameraTransition(void)
     vs_battle_cameraTransition->toFarClip = 0x2000;
     func_800A1108(0, &sp20);
 
-    vs_battle_cameraTransition->toSpherical.values.yaw = sp20.unk0.unkA;
+    vs_battle_cameraTransition->toSpherical.values.yaw = sp20.unk0.unk4.pad;
     vs_battle_cameraTransition->toSpherical.values.pitch = 0;
     vs_battle_cameraTransition->toSpherical.values.distance =
         vs_battle_cameraCurrentSpherical.values.distance;
 
-    setVector(
-        &sp10, sp20.unk0.unk4 * ONE, (sp20.unk0.unk6 - 0xB4) * ONE, sp20.unk0.unk8 * ONE);
+    setVector(&sp10, sp20.unk0.unk4.vx * ONE, (sp20.unk0.unk4.vy - 0xB4) * ONE,
+        sp20.unk0.unk4.vz * ONE);
 
     _computeCameraTransition(&sp10);
 
@@ -3672,9 +3672,9 @@ void func_80073D30(func_8008C1C8_t* arg0, func_8006EBF8_t* arg1, int arg2)
     D_800F19CC->unk8.unk4C[0].unk4C.unk.unk1 = vs_battle_actors[arg2]->unk3C->unk36;
     D_800F19CC->unk4 = 1;
     D_800F19CC->unk0 = 0;
-    D_800F19CC->unk29A8 = arg1->unk0.unk4;
-    D_800F19CC->unk29AA = arg1->unk0.unk6;
-    D_800F19CC->unk29AC = arg1->unk0.unk8;
+    D_800F19CC->unk29A8 = arg1->unk0.unk4.vx;
+    D_800F19CC->unk29AA = arg1->unk0.unk4.vy;
+    D_800F19CC->unk29AC = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
     sp10.unk0 = arg0->unk0.unk6 + 6;
     sp10.unk4 = 5;
@@ -3774,9 +3774,9 @@ int func_80074120(void)
 {
     SVECTOR sp10;
 
-    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4;
-    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
-    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
+    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4.vx;
+    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
+    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
 
     if ((_stepTowardTarget(&sp10, 0, 0x28) == 0)
         && (((func_800A0BE0(0) & 0x08000000) != 0))) {
@@ -3789,9 +3789,9 @@ void func_8007418C(void)
 {
     SVECTOR sp10;
 
-    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4;
-    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk6;
-    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk8;
+    sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4.vx;
+    sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
+    sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
     _stepTowardTarget(&sp10, 0, 0x28);
 }
 
@@ -3982,7 +3982,7 @@ void func_80074744(void)
 
 int func_80074798(func_8006EBF8_t* arg0, char* arg1)
 {
-    int var_v1 = (arg0->unk0.unkA + 0x200) & 0xFFF;
+    int var_v1 = (arg0->unk0.unk4.pad + 0x200) & 0xFFF;
     if (var_v1 < 0) {
         var_v1 += 0x3FF;
     }
@@ -4029,7 +4029,7 @@ func_8008C1C8_t* func_800748B8(int arg0)
     func_80074798(&sp10, sp20);
     temp_s1 = func_8008BC04(s0[0], s0[2], s0[1]);
     if (((((func_8008DC7C((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
-             - sp10.unk0.unk6)
+             - sp10.unk0.unk4.vy)
             + 0x3F)
         >= 0x7FU) {
         temp_s1 = NULL;
@@ -4054,7 +4054,7 @@ func_8008D710_t* func_80074950(int arg0)
             int v = ((func_8008DC7C((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
                         >> 0x11)
                   + 0x60;
-            if (sp10.unk0.unk6 == v) {
+            if (sp10.unk0.unk4.vy == v) {
                 return temp_v0;
             }
         }
@@ -4162,7 +4162,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                 temp_s0->unk2C.u8[3] = temp_s3;
             }
             if ((temp_s4->unk0_17)) {
-                if (arg1->unk6 >= 0x11) {
+                if (arg1->unk4.vy >= 0x11) {
                     vs_battle_actors[arg0]->unk3C->currentHP = 0;
                     func_800792E4(0, arg0, 0);
                     if (func_800BEC58(0xC, 0, NULL, 0) == 1) {
@@ -4851,9 +4851,9 @@ int _isLookAtAtDestination(void)
     func_8006EBF8_t sp30;
 
     func_800A1108(0, &sp30);
-    sp10.position.vx = sp30.unk0.unk4 * ONE;
-    sp10.position.vy = sp30.unk0.unk6 * ONE + 0xFFFA6000;
-    sp10.position.vz = sp30.unk0.unk8 * ONE;
+    sp10.position.vx = sp30.unk0.unk4.vx * ONE;
+    sp10.position.vy = sp30.unk0.unk4.vy * ONE + 0xFFFA6000;
+    sp10.position.vz = sp30.unk0.unk4.vz * ONE;
     if (sp10.position.vy > 0) {
         sp10.position.vy = 0;
     }
@@ -6058,7 +6058,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
 
     func_800A1108(0, &sp10);
 
-    temp_v1_2 = sp10.unk0.unkA + 0x200;
+    temp_v1_2 = sp10.unk0.unk4.pad + 0x200;
     var_a0 = temp_v1_2 - ((temp_v1_2 / ONE) * ONE);
     if (var_a0 < 0) {
         var_a0 += 0x3FF;
@@ -6284,9 +6284,9 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int mode)
         vs_battle_cameraCurrentSpherical.delta.mode = mode;
     }
     func_800A1108(0, &sp10);
-    arg1->vx = sp10.unk0.unk4 << 0xC;
-    arg1->vy = (sp10.unk0.unk6 << 0xC) + 0xFFFA6000;
-    arg1->vz = sp10.unk0.unk8 << 0xC;
+    arg1->vx = sp10.unk0.unk4.vx << 0xC;
+    arg1->vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
+    arg1->vz = sp10.unk0.unk4.vz << 0xC;
     _clampPositionToZoneBounds(arg1, arg1);
     _computeSphericalOffset(arg0, arg1, &vs_battle_cameraCurrentSpherical.values);
 }

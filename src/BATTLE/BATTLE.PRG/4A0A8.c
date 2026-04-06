@@ -12,6 +12,7 @@
 
 void func_800AACDC(void);
 int func_800B9C58(u_char*, int);
+void func_800BBE10(u_short);
 void func_800BE36C(int, int);
 void func_800BE3A0(void);
 short func_800BFE00(u_char*);
@@ -835,7 +836,11 @@ int func_800BB35C(u_char* arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB38C);
+int func_800BB38C(u_char* arg0, int arg1)
+{
+    func_800BBE10(func_800BFE50(func_800BFE00(arg0 + 1)));
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB3BC);
 

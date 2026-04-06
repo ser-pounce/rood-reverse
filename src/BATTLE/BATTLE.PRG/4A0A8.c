@@ -114,7 +114,37 @@ __asm__(".set push;"
         "endlabel func_800B653C;"
         ".set pop;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6580);
+__asm__(".set push;"
+        ".set noreorder;"
+        "glabel func_800B6580;"
+        "la         $v0, D_800F4538;"
+        "sll        $v1, $a0, 2;"
+        "addu       $v0, $v1;"
+        "lw         $v0, 0x0($v0);"
+        "lw         $t2, 0x0($a1);"
+        "lb         $t1, 0xB($v0);"
+        "sll        $t0, $a2, 16;"
+        "and        $t1, 0xF;"
+        "bnez       $t1, .L800B65E4;"
+        "or         $t1, 0x1;"
+        "lbu        $a0, 0x17FD($v0);"
+        "sh         $zero, 0x1A($v0);"
+        "sw         $t2, 0x5EC($v0);"
+        "sw         $t0, 0x5F0($v0);"
+        "sb         $t1, 0xB($v0);"
+        "slt        $t3, $a0, 0x2;"
+        "bnez       $t3, .L800B65E4;"
+        ".nop;"
+        "addu       $sp, -0x4;"
+        "sw         $ra, 0x0($sp);"
+        "jal        func_800B6580;"
+        ".nop;"
+        "lw         $ra, 0x0($sp);"
+        "addu       $sp, 0x4;"
+        ".L800B65E4:"
+        "jr         $ra;"
+        "endlabel func_800B6580;"
+        ".set pop;");
 
 __asm__(".set push;"
         ".set nomove;"
@@ -452,7 +482,11 @@ int func_800B9230(u_char* arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9254);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B92A0);
+int func_800B92A0(u_char* arg0, int arg1)
+{
+    func_8007C28C(func_800BFE50(func_800BFE00(arg0 + 1)));
+    return 0;
+}
 
 int func_800B92D0(u_char* arg0, int arg1)
 {
@@ -518,7 +552,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B98C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9A40);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9A94);
+int func_800B9A94(u_char* arg0)
+{
+    func_8007C4AC(arg0[1], arg0[2], arg0[3] * 0x10);
+    return 0;
+}
 
 int func_800B9AC4(u_char* arg0, int arg1)
 {

@@ -583,7 +583,7 @@ int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
-int _itemIdIsInInventory(int);
+int vs_battle_itemIdIsInInventory(int);
 short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
 int func_8007F230(
     vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
@@ -3611,7 +3611,7 @@ int func_80073AFC(func_8008C1C8_t* arg0)
                 break;
             case 1:
             case 3:
-                if (_itemIdIsInInventory(arg0->unkC) != 0) {
+                if (vs_battle_itemIdIsInInventory(arg0->unkC) != 0) {
                     if (arg0->unkC >= 0x1D2) {
                         vs_battle_setStateFlag(arg0->unkC + 0x1B6, 2);
                         func_800CCB9C(arg0->unkC);
@@ -3705,7 +3705,7 @@ void func_80073E30(func_8008C1C8_t* arg0, int arg1)
     case 1:
     case 3:
         if (!func_800BEBF4(arg0->unkE + 0x1B6)) {
-            if (_itemIdIsInInventory(arg0->unkE) == 0) {
+            if (vs_battle_itemIdIsInInventory(arg0->unkE) == 0) {
                 break;
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
@@ -6707,7 +6707,7 @@ void _calculateWeaponClassAffinity(vs_battle_actor2* arg0)
 
 extern u_int _itemCategorySizes[];
 
-int _itemIdIsInInventory(int id)
+int vs_battle_itemIdIsInInventory(int id)
 {
     int ret;
     int i;

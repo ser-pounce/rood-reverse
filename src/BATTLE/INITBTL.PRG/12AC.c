@@ -3,7 +3,7 @@
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
 
-static int (*D_800FAF7C[])(u_char*, int) = { _invalidOpcode, _invalidOpcode,
+static int (*D_800FAF7C[])(u_char*, short) = { _invalidOpcode, _invalidOpcode,
     _invalidOpcode, _invalidOpcode, _invalidOpcode, _invalidOpcode, _invalidOpcode,
     _invalidOpcode, _invalidOpcode, _invalidOpcode, func_800B66F4, _invalidOpcode,
     func_800B6724, func_800B6744, func_800B6868, func_800B68C4, func_800B66E4,

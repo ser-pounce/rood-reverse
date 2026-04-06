@@ -91,10 +91,12 @@ $(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.elf
 $(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
 $(BINTARGETS:=.elf): | $$(@D)/
 
+# Splitted asm
 %.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<
 	$(AS) $(ASFLAGS) -no-pad-sections $(OUTPUT_OPTION) $<
 
+# Hasm in src folder
 $(BUILD)/%.o: %.s | $$(@D)/
 	$(ECHO) Assembling $<
 	$(AS) $(ASFLAGS) $(OUTPUT_OPTION) $<

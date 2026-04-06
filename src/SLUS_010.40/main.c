@@ -9475,7 +9475,7 @@ static void _processCdQueue(void)
     func_800443CC();
 }
 
-static int func_80044D94(void) { return func_80011F90(); }
+int func_80044D94(void) { return func_80011F90(); }
 
 void func_80044DB4(void) { func_80012004(); }
 
@@ -9718,7 +9718,7 @@ int vs_main_freeMusic(int slotId)
 
 static int nop5(void) { return 0; }
 
-static int func_800454B8(int arg0)
+int func_800454B8(int arg0)
 {
     if (arg0 != 0) {
         if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
@@ -9728,7 +9728,7 @@ static int func_800454B8(int arg0)
     return 0;
 }
 
-static void func_8004550C(int arg0) { func_800454B8(arg0); }
+int func_8004550C(int arg0) { return func_800454B8(arg0); }
 
 int func_8004552C(int id, int arg1, int arg2)
 {
@@ -9960,7 +9960,7 @@ static int func_80045B28(int arg0, int arg1)
     return temp_v1;
 }
 
-void func_80045BFC(int arg0, int arg1, int arg2, int arg3)
+void func_80045BFC(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
@@ -9968,48 +9968,48 @@ void func_80045BFC(int arg0, int arg1, int arg2, int arg3)
         temp_v0 = func_80045B28(arg0, arg1);
 
         if (temp_v0 != 0) {
-            func_8001264C(temp_v0, 0, arg3 & 0xFF, arg2);
+            func_8001264C(temp_v0, 0, arg3, arg2);
         } else {
             do {
-                func_8001264C(arg1, 0, arg3 & 0xFF, arg2);
+                func_8001264C(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_8001264C(0, arg0, arg3 & 0xFF, arg2);
+        func_8001264C(0, arg0, arg3, arg2);
     }
 }
 
-void func_80045C74(int arg0, int arg1, int arg2, int arg3)
+void func_80045C74(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
     if (arg1 != 0) {
         temp_v0 = func_80045B28(arg0, arg1);
         if (temp_v0 != 0) {
-            func_80012824(temp_v0, 0, arg3 & 0xFF, arg2);
+            func_80012824(temp_v0, 0, arg3, arg2);
         } else {
             do {
-                func_80012824(arg1, 0, arg3 & 0xFF, arg2);
+                func_80012824(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_80012824(0, arg0, arg3 & 0xFF, arg2);
+        func_80012824(0, arg0, arg3, arg2);
     }
 }
 
-static void func_80045CEC(int arg0, int arg1, int arg2, int arg3)
+void func_80045CEC(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
         arg0 = func_80045B28(arg0, arg1);
         if (arg0 != 0) {
-            func_80012738(arg0, 0, arg3 & 0xFF, arg2);
+            func_80012738(arg0, 0, arg3, arg2);
         } else {
             do {
-                func_80012738(arg1, 0, arg3 & 0xFF, arg2);
+                func_80012738(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_80012738(0, arg0, arg3 & 0xFF, arg2);
+        func_80012738(0, arg0, arg3, arg2);
     }
 }
 

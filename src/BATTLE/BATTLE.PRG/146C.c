@@ -691,7 +691,6 @@ int func_8009E480(void);
 u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
 void func_8009F990(int, char*);
-void func_8009FC60(int, int, int, int);
 
 extern int D_80068C1C[];
 extern char D_800E8184[];
@@ -3493,7 +3492,7 @@ void func_80073718(void)
 
     for (i = 0; i < 16; ++i) {
         if (vs_battle_actors[i] != NULL) {
-            func_8009FC60(i, -2, 0, -1);
+            func_8009FC60(i, -2, NULL, -1);
             switch (vs_battle_actors[i]->unk8) {
             case 0x10:
                 break;
@@ -5802,7 +5801,7 @@ void func_8007BE20(int arg0, int arg1)
 
 void func_8007BEC4(int arg0) { func_800CEF74(arg0); }
 
-void func_8007BEE4(void) { func_800CF48C(); }
+int func_8007BEE4(void) { return func_800CF48C(); }
 
 void func_8007BF04(void) { }
 

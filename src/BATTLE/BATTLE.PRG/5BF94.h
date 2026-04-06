@@ -211,6 +211,7 @@ void func_800C86AC(void);
 int func_800C6BF0(int, char*);
 int func_800C70F8(int, int, int, u_long*);
 void func_800C7210(int arg0);
+void vs_battle_loadGim(int, int);
 int func_800C8C50(int arg0);
 void func_800C8E04(int);
 int func_800C8FAC(int, int, int);

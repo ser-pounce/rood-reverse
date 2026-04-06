@@ -9739,7 +9739,7 @@ int func_8004552C(int id, int arg1, int arg2)
     return 0;
 }
 
-static int func_80045574(int id, int arg1, int arg2)
+int func_80045574(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
         func_800129D0(arg2, arg1);
@@ -9748,7 +9748,7 @@ static int func_80045574(int id, int arg1, int arg2)
     return 0;
 }
 
-static int func_800455AC(int id, int arg1, int arg2)
+int func_800455AC(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
         func_80012A6C(arg2, arg1);

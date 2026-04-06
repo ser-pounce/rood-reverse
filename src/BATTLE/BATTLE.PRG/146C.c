@@ -579,7 +579,6 @@ int func_8007C5C0(D_80061068_t*, int, int);
 int func_8007C694(int, int, int, int, int);
 void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
-int func_8007D08C(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
@@ -6223,7 +6222,7 @@ void func_8007CC18(int arg0, int wepId, int arg2)
     func_800995E8(&sp10);
 }
 
-void func_8007CC4C(void) { func_8009D208(); }
+void func_8007CC4C(int arg0) { func_8009D208(arg0); }
 
 void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 

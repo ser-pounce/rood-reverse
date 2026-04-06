@@ -448,6 +448,7 @@ int func_80044D94(void);
 void func_80044DD4(int);
 int func_80044DF4(int);
 int func_80044EC8(int);
+int func_80044F60(int, int, u_int);
 int func_80045000(int id, int arg1, int arg2);
 int func_800454B8(int);
 int func_80045574(int, int, int);

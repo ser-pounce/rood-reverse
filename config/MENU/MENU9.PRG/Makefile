@@ -1,6 +1,6 @@
 $(BUILD)/data/MENU/MENU9.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/MENU/MENU9.PRG/exports.txt
-$(BUILD)/data/MENU/MENU9.PRG.linked.elf: LDFLAGS += \
+$(BUILD)/data/MENU/MENU9.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 $(BUILD)/src/MENU/MENU9.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENU9.PRG/238.o: CC1FLAGS += -Wno-uninitialized

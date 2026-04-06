@@ -50,8 +50,6 @@ INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMAL
 DISKCODE  := SLUS-01040
 COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
-O_DEPS := $(SED) -En 's/(.*).o:$$/-include \1.d/p'
-
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
@@ -81,23 +79,16 @@ clean-all: confirm-reset
 	
 commit-check remake: MAKEFLAGS += --no-print-directory
 
-$(BINTARGETS): private LDFLAGS := --oformat=binary -e 0x0
-$(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.linked.elf
-	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) $(OUTPUT_OPTION) $<
-	$(fixup)
-
-$(BUILD)/data/%.elf: private BCONFIG = $(BUILD)/config/$(*:%.linked=%)
-$(BUILD)/data/%.elf:
+$(BINTARGETS) $(BINTARGETS:=.elf): private BCONFIG = $(patsubst $(BUILD)/data/%,$(BUILD)/config/%,$(@:.elf=))
+$(BINTARGETS) $(BINTARGETS:=.elf):
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(UPDATE_DEPS)
+	$(fixup)
 
-$(BINTARGETS:=.linked.elf): private LDFLAGS += $(addprefix -R ,$(LDLIBS))
-$(BINTARGETS:=.linked.elf): $(BUILD)/data/%.linked.elf: $(BUILD)/data/%.elf
+$(BINTARGETS): private LDFLAGS += --oformat=binary -e 0x0 $(addprefix -R,$(LDLIBS))
+$(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.elf
 
-$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all --dependency-file=$(BCONFIG)/link.d
-$(BINTARGETS:=.elf): private UPDATE_DEPS = $(O_DEPS) $(BCONFIG)/link.d >> $(BCONFIG)/link.d
+$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
 $(BINTARGETS:=.elf): | $$(@D)/
 
 %.o: %.s | $$(@D)/

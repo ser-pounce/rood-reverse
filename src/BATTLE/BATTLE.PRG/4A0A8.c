@@ -23,19 +23,20 @@ typedef struct {
     char unk5;
     char unk6;
     char unk7;
-    char unk8[0xAC];
-    char unkB4;
-    char unkB5;
-    char unkB6;
-    char unkB7;
-    char unkB8;
-    char unkB9;
-    char unkBA;
-    char unkBB;
-    char unkBC[0x12C];
+    char unk8[0x1C];
+    VECTOR unk24;
+    char unk34[0x60];
+    VECTOR unk94;
+    char unkA4[0x10];
+} D_800F4BA4_t2;
+
+typedef struct {
+    D_800F4BA4_t2 unk0[2];
+    char unk168[0x80];
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
+    char unk1F0[0x30];
 } D_800F4BA4_t;
 
 void func_800AACDC(void);
@@ -684,7 +685,25 @@ int func_800B849C(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8510);
+int func_800B8510(u_char* arg0, short arg1)
+{
+    int var_a3;
+
+    int temp_s0 = func_800BFE50(func_800BFE00(arg0 + 3) & 0xFFFF);
+    int temp_a0 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
+
+    int var_a1 = -2;
+    if (temp_s0 != 0x2000) {
+        var_a1 = temp_s0;
+    }
+
+    var_a3 = 0x1000;
+    if (arg0[5] != 0) {
+        var_a3 = arg0[5];
+    }
+    func_8009FC60(temp_a0, var_a1, 0, var_a3);
+    return 0;
+}
 
 int func_800B8590(u_char* arg0, short arg1)
 {
@@ -1030,7 +1049,23 @@ int func_800BA0E4(u_char* arg0, short arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA108);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA194);
+int func_800BA194(u_char* arg0, short arg1)
+{
+    int temp_s0 = arg0[2];
+
+    switch (arg0[1]) {
+    case 0:
+        if ((D_800F4C2C == 2) && (func_80093764(temp_s0) != 0)) {
+            func_80093788(temp_s0);
+        }
+        func_8009291C(temp_s0);
+        break;
+    case 1:
+        func_800936F8(temp_s0);
+        break;
+    }
+    return 0;
+}
 
 int func_800BA218(u_char* arg0, short arg1)
 {
@@ -1556,36 +1591,57 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
 
 void func_800BE36C(int arg0, int arg1)
 {
-    D_800F4BA4->unk6 = arg0;
-    D_800F4BA4->unk7 = 0;
-    D_800F4BA4->unkBA = arg1;
-    D_800F4BA4->unkBB = 0;
+    D_800F4BA4->unk0[0].unk6 = arg0;
+    D_800F4BA4->unk0[0].unk7 = 0;
+    D_800F4BA4->unk0[1].unk6 = arg1;
+    D_800F4BA4->unk0[1].unk7 = 0;
 }
 
 void func_800BE3A0(void)
 {
     D_800F4BA4_t* c1 = D_800F4BA4;
     D_800F4BA4_t* c2;
-    c1->unkB4 = 0xF;
-    c1->unk0 = 0xF;
+    c1->unk0[1].unk0 = 0xF;
+    c1->unk0[0].unk0 = 0xF;
     c2 = D_800F4BA4;
-    c2->unkBB = 0;
-    c2->unkBA = 0;
-    c2->unk7 = 0;
-    c2->unk6 = 0;
+    c2->unk0[1].unk7 = 0;
+    c2->unk0[1].unk6 = 0;
+    c2->unk0[0].unk7 = 0;
+    c2->unk0[0].unk6 = 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE3D0);
 
-void func_800BE53C(u_char* arg0)
+void func_800BE53C(D_800F4BA4_t2* arg0)
 {
     VECTOR sp10;
 
-    func_800BE66C(&sp10, (VECTOR*)(arg0 + 0x94), (VECTOR*)(arg0 + 0x24));
-    arg0[5] = ((_vectorMagnitude(&sp10) >> 0xC) * arg0[5]) / 1000;
+    func_800BE66C(&sp10, &arg0->unk94, &arg0->unk24);
+    arg0->unk5 = ((_vectorMagnitude(&sp10) >> 0xC) * arg0->unk5) / 1000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE5A4);
+void func_800BE5A4(short arg0)
+{
+    D_800F4BA4_t2* temp_s0;
+    D_800F4BA4_t2* var_a0;
+    D_800F4BA4_t2* temp_s1;
+
+    temp_s0 = &D_800F4BA4->unk0[0];
+    temp_s1 = &D_800F4BA4->unk0[1];
+
+    if (arg0 == 2) {
+        func_800BE53C(temp_s0);
+        func_800BE53C(temp_s1);
+        temp_s0->unk5 = temp_s1->unk5 = (temp_s0->unk5 + temp_s1->unk5) >> 1;
+
+        return;
+    }
+    var_a0 = temp_s0;
+    if (arg0 != 0) {
+        var_a0 = temp_s1;
+    }
+    func_800BE53C(var_a0);
+}
 
 VECTOR* func_800BE628(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {

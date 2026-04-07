@@ -901,9 +901,6 @@ void func_8008EB30(int*);
 int func_8008EFCC(int);
 int func_8008F0FC(void);
 int func_8008F234(void);
-void func_80098194(int);
-int func_800995B0(void);
-int func_8009967C(void);
 void vs_battle_exec(void);
 
 extern int vs_battle_mapCompletionFlags[];

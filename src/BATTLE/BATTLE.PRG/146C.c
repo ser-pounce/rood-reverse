@@ -673,7 +673,6 @@ void func_80093A14(void);
 void func_80093B04(void*);
 void func_80093B68(void);
 void func_80093FEC(int, int, int, int);
-void func_800936F8(int);
 void func_80093914(char);
 void func_80095B7C(int, int);
 void func_80096768(int, int, int);

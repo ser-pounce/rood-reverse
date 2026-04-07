@@ -1,8 +1,5 @@
 # Configure these to your needs
 ARCH     := mipsel-linux-gnu-
-CPP      := $(ARCH)cpp
-LD       := $(ARCH)ld
-AS       := $(ARCH)as
 OBJCOPY  := $(ARCH)objcopy
 SIZE     := $(ARCH)size
 PYTHON   := python3
@@ -22,20 +19,10 @@ FIND     := find
 TRUNCATE := truncate
 
 # Anything below this line should not need editing
-CC1VER    := 2.7.2-psx
-CC1        = tools/old-gcc/build-gcc-$(CC1VER)/cc1
-MAS        = $(VPYTHON) tools/maspsx/maspsx.py
 
 BUILD   := build
 
-CPPFLAGS 		= -nostdinc -I src/include -I include/psx -I $(BUILD)/src/include \
-                  -MD -MF $@.d -MT $@ -D "__attribute__(x)="
-CC1FLAGS       := -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
-LDFLAGS         = -nostdlib --build-id=none -L $(BCONFIG) $(LDSCRIPT:%=-T %)
-LDSCRIPT       := link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
-ASFLAGS         = -I include --MD $(@:.o=.d) -G0
 OBJCOPYFLAGS   := -I binary -O elf32-tradlittlemips
-MASFLAGS       := --aspsx-version=2.77 --macro-inc
 RMFLAGS        := -Rf
 DIFFFLAGS      := -s
 MKDIRFLAGS     := -p
@@ -46,7 +33,7 @@ BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)
 INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,compilers lint objdiff permuter psxiso python shell splat sysdeps vsstring)
+				$(patsubst %,tools/make/%.mk,assemble compile compilers link lint objdiff permuter psxiso python shell splat sysdeps vsstring)
 DISKCODE  := SLUS-01040
 COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
@@ -78,34 +65,6 @@ clean-all: confirm-reset
 	$(GIT) submodule foreach --recursive $(GIT) reset --hard
 	
 commit-check remake: MAKEFLAGS += --no-print-directory
-
-$(BINTARGETS) $(BINTARGETS:=.elf): private BCONFIG = $(patsubst $(BUILD)/data/%,$(BUILD)/config/%,$(@:.elf=))
-$(BINTARGETS) $(BINTARGETS:=.elf):
-	$(ECHO) Linking $@
-	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(fixup)
-
-$(BINTARGETS): private LDFLAGS += --oformat=binary -e 0x0 $(addprefix -R,$(LDLIBS))
-$(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.elf
-
-$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
-$(BINTARGETS:=.elf): | $$(@D)/
-
-# Splitted asm
-%.o: %.s | $$(@D)/
-	$(ECHO) Assembling $<
-	$(AS) $(ASFLAGS) -no-pad-sections $(OUTPUT_OPTION) $<
-
-# Hasm in src folder
-$(BUILD)/%.o: %.s | $$(@D)/
-	$(ECHO) Assembling $<
-	$(AS) $(ASFLAGS) $(OUTPUT_OPTION) $<
-
-$(BUILD)/%.o: %.c | $$(@D)/
-	$(ECHO) Compiling $<
-	$(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(AS) $(ASFLAGS) $(OUTPUT_OPTION)
-	$(CAT) $@.d >> $(BUILD)/$*.d
-	$(RM) $(RMFLAGS) $@.d
 
 %.img.o: OBJCOPYFLAGS += --add-symbol $(filename)=.data:0
 %.img.o: filename = $(word 1,$(subst ., ,$(@F)))

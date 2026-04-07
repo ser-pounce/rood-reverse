@@ -12,6 +12,7 @@ objdiff: progress.json
 progress.json: objdiff.json
 	$(OBJDIFF) $(OBJDIFFFLAGS) > progress.json
 
+.INTERMEDIATE: objdiff.json
 objdiff.json:
 	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
 

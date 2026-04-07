@@ -152,7 +152,7 @@ void func_800C5164(int arg0)
     }
 }
 
-void func_800C518C(int arg0, int arg1)
+void func_800C518C(int arg0, void* arg1)
 {
     if (!(arg0 & 0xF0)) {
         func_800A07FC(arg0, arg1);

@@ -204,14 +204,15 @@ typedef struct {
 
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
+int func_800C6BF0(int, char*);
+int func_800C6C8C(int);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
-void func_800C86AC(void);
-int func_800C6BF0(int, char*);
 int func_800C70F8(int, int, int, u_long*);
 void func_800C7210(int arg0);
 void vs_battle_loadGim(int, int);
+void func_800C86AC(void);
 int func_800C8C50(int arg0);
 void func_800C8E04(int);
 int func_800C8FAC(int, int, int);

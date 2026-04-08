@@ -1,4 +1,5 @@
 #pragma once
+#include "func_8006EBF8_t.h"
 #include <stddef.h>
 #include <libgte.h>
 

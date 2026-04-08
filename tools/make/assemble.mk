@@ -1,4 +1,4 @@
-AS      := $(ARCH)as
+AS       = $(ARCH)as
 ASFLAGS  = -I include --MD $(@:.o=.d) -G0
 
 # Splitted asm

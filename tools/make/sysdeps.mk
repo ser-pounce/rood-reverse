@@ -1,7 +1,7 @@
 COMMAND      := command
 COMMANDFLAGS := -v
 
-SYSDEPS := $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(CARGO) $(FORMAT)
+SYSDEPS = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(CARGO) $(FORMAT)
 
 .PHONY: sysdeps
 sysdeps:

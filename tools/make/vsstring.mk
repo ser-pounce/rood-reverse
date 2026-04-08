@@ -1,5 +1,3 @@
-VSSTRING = $(VPYTHON) tools/etc/vsStringTransformer.py
-
 .PRECIOUS: $(BUILD)/assets/%.vsString.yaml
 $(BUILD)/assets/%.vsString.yaml: assets/%.yaml | $$(@D)/
 	$(ECHO) Extracting data/$*

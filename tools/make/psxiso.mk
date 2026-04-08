@@ -5,7 +5,7 @@ PSXISO         := tools/mkpsxiso
 PSXISOBUILD    := $(PSXISO)/build
 DUMPSXISO      := $(PSXISOBUILD)/Release/dumpsxiso
 MKPSXISO       := $(PSXISOBUILD)/Release/mkpsxiso
-DUMPSXISOFLAGS  = -x data -s $(DISKCONFIG)
+DUMPSXISOFLAGS := -x data -s $(DISKCONFIG)
 MKPSXISOFLAGS  := -q -lba -noisogen
 
 BUILDDEPS  += $(DUMPSXISO)

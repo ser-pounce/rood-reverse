@@ -1,9 +1,9 @@
-OLDGCC    := tools/old-gcc
-COMPILERS := $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
+OLDGCC         := tools/old-gcc
+COMPILER_PATHS := $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
 
-BUILDDEPS += $(COMPILERS)
+BUILDDEPS += $(COMPILER_PATHS)
 
-$(COMPILERS): $(OLDGCC)/build-gcc-%/cc1: $(OLDGCC)/gcc-%.Dockerfile
+$(COMPILER_PATHS): $(OLDGCC)/build-gcc-%/cc1: $(OLDGCC)/gcc-%.Dockerfile
 	$(ECHO) Building GCC $*
 	$(DOCKER) build -f $< --target export \
 		--output $(OLDGCC)/build-gcc-$* $(OLDGCC)/ $(if $(DEBUG),,2> /dev/null)

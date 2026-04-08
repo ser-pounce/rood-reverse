@@ -84,6 +84,7 @@ extern u_int* D_800EB9BC;
 extern int D_800F19C8;
 extern u_short D_800F4B28[];
 extern char D_800F4B30[];
+extern char D_800F4B70[];
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern void* D_800F4BAC;
@@ -96,6 +97,7 @@ extern short* D_800F4BBC;
 extern u_short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* D_800F4BE8;
+extern char D_800F4BF8;
 extern char D_800F4C00[];
 extern char D_800F4C10[];
 extern char D_800F4C20;
@@ -633,7 +635,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7D10);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7DC4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7EF0);
+int func_800B7EF0(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t sp10;
+    int temp_s0;
+    int temp_s0_2;
+    int var_a2;
+
+    temp_s0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 3)), &sp10);
+    var_a2 = -1;
+    temp_s0_2 = temp_s0 & 0xFFFF;
+    if (arg0[5] != 0xFF) {
+        var_a2 = arg0[5];
+    }
+    func_800A9CDC(temp_s0_2, &sp10, var_a2);
+    D_800F4B70[temp_s0_2] = 1;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7F84);
 
@@ -951,7 +970,24 @@ int func_800B94D8(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9564);
+int func_800B9564(u_char* arg0, short arg1)
+{
+    D_800F4FE0_t* temp_s1;
+    u_short temp_s0;
+    int var_a0;
+
+    temp_s0 = func_800BFE00(arg0 + 2);
+    temp_s1 = func_800CCDF4(arg0[1] & 0xF);
+
+    if (temp_s0 < 0x2000) {
+        var_a0 = func_800BFE50(temp_s0);
+    } else {
+        var_a0 = 0x20;
+    }
+    temp_s1->unk0.fields.unk3_0 = var_a0;
+    temp_s1->unk2E = arg0[1] >> 4;
+    return 0;
+}
 
 int func_800B9608(u_char* arg0, short arg1)
 {
@@ -1459,7 +1495,20 @@ int func_800BAD78(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BADE0);
+int func_800BADE0(u_char* arg0)
+{
+    if (D_800F4BF8 == 0) {
+        func_8007BA98(func_800BFE00(arg0 + 1), arg0[3], func_800BFE00(arg0 + 4), arg0[6]);
+        D_800F4BF8 = 1;
+        return 1;
+    }
+
+    if (func_8007B9FC() == 0) {
+        D_800F4BF8 = 0;
+        return 4;
+    }
+    return 1;
+}
 
 int func_800BAE74(u_char* arg0, short arg1)
 {
@@ -1852,7 +1901,19 @@ static int _fixedPointMult(int a, int b)
 
 int func_800BE878(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE89C);
+void _vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+{
+    SVECTOR sp10;
+    SVECTOR sp18;
+
+    sp18.vx = arg0->vx >> 0xC;
+    sp18.vy = arg0->vy >> 0xC;
+    sp18.vz = arg0->vz >> 0xC;
+    sp10.vy = ratan2(sp18.vx, sp18.vz);
+    sp10.vx = ratan2(sp18.vy, vs_gte_rsqrt((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
+    sp10.vz = 0;
+    RotMatrix_gte(&sp10, arg1);
+}
 
 static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
 {

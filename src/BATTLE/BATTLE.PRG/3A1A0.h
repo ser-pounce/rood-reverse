@@ -1,5 +1,5 @@
 #pragma once
-#include <libgte.h>
+#include "func_8006EBF8_t.h"
 
 typedef struct {
     int unk0;
@@ -22,26 +22,6 @@ typedef struct {
 } D_800F45E0_t;
 
 extern D_800F45E0_t* D_800F45E0[];
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-} func_8006EBF8_t_fields;
-
-typedef struct {
-    union {
-        func_8006EBF8_t_fields fields;
-        int value;
-    } unk0;
-    SVECTOR unk4;
-} func_8006EBF8_t3;
-
-typedef struct {
-    func_8006EBF8_t3 unk0;
-    int unkC;
-} func_8006EBF8_t;
 
 typedef struct {
     char unk0_0;

@@ -828,6 +828,8 @@ void func_8007AC94(int arg0);
 void func_8007ACB0(void);
 void func_8007B0FC(void);
 void func_8007B104(void);
+int func_8007B9FC(void);
+void func_8007BA98(int, int, int, int);
 void func_8007BBB8(int, int);
 void func_8007BBD8(int, int, int);
 void func_8007BCCC(void);

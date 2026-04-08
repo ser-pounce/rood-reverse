@@ -32,11 +32,42 @@ typedef struct {
 
 typedef struct {
     D_800F4BA4_t2 unk0[2];
-    char unk168[0x80];
+    char unk168[10];
+    short unk172;
+    int unk174[5];
+    char unk188;
+    char unk189;
+    char unk18A;
+    char unk18B;
+    int unk18C;
+    int unk190;
+    char unk194;
+    char unk195;
+    char unk196;
+    char unk197;
+    int unk198;
+    int unk19C;
+    char unk1A0;
+    char unk1A1;
+    char unk1A2;
+    char unk1A3;
+    int unk1A4;
+    int unk1A8;
+    char unk1AC;
+    char unk1AD;
+    char unk1AE;
+    char unk1AF;
+    char unk1B0[10];
+    char unk1BA;
+    char unk1BB;
+    int unk1BC[11];
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
-    char unk1F0[0x30];
+    char unk1FC[0x7C];
+    short unk278;
+    short unk27A;
+    int unk27C;
 } D_800F4BA4_t;
 
 typedef struct {
@@ -1758,7 +1789,33 @@ void func_800BD57C(func_800BD57C_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD610);
+int func_800BD610(void)
+{
+    char temp_a2 = D_800F4BA4->unk0[0].unk0 == 0xF;
+
+    if (D_800F4BA4->unk0[1].unk0 == 0xF) {
+        temp_a2 = temp_a2 | 2;
+    }
+    if (D_800F4BA4->unk172 == 0) {
+        temp_a2 |= 4;
+    }
+    if (D_800F4BA4->unk189 == 0) {
+        temp_a2 |= 8;
+    }
+    if (D_800F4BA4->unk195 == 0) {
+        temp_a2 |= 0x10;
+    }
+    if (D_800F4BA4->unk1A1 == 0) {
+        temp_a2 |= 0x20;
+    }
+    if (D_800F4BA4->unk27A == 0) {
+        temp_a2 |= 0x40;
+    }
+    if ((D_800F4BA4->unk1AF + D_800F4BA4->unk1BB) == 0) {
+        temp_a2 |= 0x80;
+    }
+    return temp_a2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD6C4);
 

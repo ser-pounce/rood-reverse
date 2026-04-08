@@ -1712,7 +1712,22 @@ u_short func_800BB788(char* arg0)
     return arg0[(u_int)(arg0[1]++ + 2)];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB7C4);
+int func_800BB7C4(int arg0, SVECTOR* arg1)
+{
+    MATRIX sp10;
+    long sp30[5];
+
+    arg1->vx = 0;
+    arg1->vy = -0x3E8;
+    arg1->vz = 0;
+    func_800A1178(arg0, 1, &sp10, &sp30[2]);
+    SetRotMatrix(&sp10);
+    SetTransMatrix(&sp10);
+    RotTransPers(arg1, sp30, &sp30[3], &sp30[4]);
+    func_800A1280(arg0, 1, arg1, sp30[2]);
+    arg1->vz = ratan2(((short*)&sp30)[1] - arg1->vy, (short)sp30[0] - arg1->vx);
+    return arg1->vz;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB874);
 

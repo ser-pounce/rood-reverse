@@ -62,4 +62,6 @@ void func_800A09D8(int, int);
 int func_800A0A74(int);
 void func_800A0AFC(int, int, int);
 u_int func_800A0BE0(int actor);
+void func_800A1178(int, int, MATRIX*, long*);
+void func_800A1280(int, int, SVECTOR*, int);
 int func_800A13EC(int, int, int*, int);

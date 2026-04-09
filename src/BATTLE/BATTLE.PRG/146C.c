@@ -547,7 +547,7 @@ void func_80073718(void);
 void func_80073D30(func_8008C1C8_t*, func_8006EBF8_t*, int);
 void func_80073E30(func_8008C1C8_t*, int);
 int func_80074798(func_8006EBF8_t*, char*);
-void func_80074B14(int arg0, char* arg1);
+void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
@@ -2585,7 +2585,7 @@ void func_8006E640(int arg0)
     targetPos.vx = sp10.unk0.unk4.vx;
     targetPos.vz = sp10.unk0.unk4.vz;
     targetPos.vy = sp10.unk0.unk4.vy - 0x5A;
-    func_80074B14(arg0, &sp10.unk0.unk0.fields.unk0);
+    func_80074B14(arg0, &sp10.unk0.unk0.fields);
     switch (_cameraMode) {
     case 1:
     case 3:
@@ -2852,8 +2852,8 @@ void func_8006F4B0(func_8006EBF8_t3* arg0)
     sp10.unk3 = 0;
     sp10.unk8.u8[0] = 0;
     sp10.unk10 = 5;
-    sp10.unk14.u16 = (arg0->unk0.fields.unk0 << 7) + 0x40;
-    sp10.unk18 = (arg0->unk0.fields.unk2 << 7) + 0x40;
+    sp10.unk14.u16 = (arg0->unk0.fields.unk0_0 << 7) + 0x40;
+    sp10.unk18 = (arg0->unk0.fields.unk0_16 << 7) + 0x40;
     sp10.unk16.u16 = arg0->unk4.vy;
     if (!(D_800F1868 & 2)) {
         func_800CF3F8(&sp10, 0);
@@ -3939,7 +3939,7 @@ void _checkFirstPersonViewExit(void)
     D_800F19C8 = 0;
 
     func_800A1108(0, &sp10);
-    func_80074B14(0, &sp10.unk0.unk0.fields.unk0);
+    func_80074B14(0, &sp10.unk0.unk0.fields);
     vs_battle_syncCameraAnglesFromPosition(&vs_battle_cameraTransition->toSpherical);
 
     if ((vs_battle_cameraTransition->toSpherical.values.yaw
@@ -3985,9 +3985,9 @@ int func_80074798(func_8006EBF8_t* arg0, char* arg1)
     if (var_v1 < 0) {
         var_v1 += 0x3FF;
     }
-    arg1[0] = arg0->unk0.unk0.fields.unk0;
-    arg1[2] = arg0->unk0.unk0.fields.unk2;
-    arg1[1] = arg0->unk0.unk0.fields.unk1;
+    arg1[0] = arg0->unk0.unk0.fields.unk0_0;
+    arg1[2] = arg0->unk0.unk0.fields.unk0_16;
+    arg1[1] = arg0->unk0.unk0.fields.unk0_8;
 
     var_v1 = var_v1 >> 0xA;
     switch (var_v1) {
@@ -4085,7 +4085,7 @@ int func_80074A20(int arg0)
     return ret;
 }
 
-void func_80074B14(int arg0, char* arg1)
+void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1)
 {
     u_int temp_v0;
     int var_a2;
@@ -4098,12 +4098,12 @@ void func_80074B14(int arg0, char* arg1)
         var_a1 = 0;
         var_a2 = temp_v0 >> 0x10;
     } else {
-        var_a0 = arg1[0];
-        var_a1 = arg1[2];
-        var_a2 = arg1[1];
+        var_a0 = arg1->unk0_0;
+        var_a1 = arg1->unk0_16;
+        var_a2 = arg1->unk0_8;
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
-        func_8008C2C0(arg1[0], arg1[2], arg1[1],
+        func_8008C2C0(arg1->unk0_0, arg1->unk0_16, arg1->unk0_8,
             vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
         return;
     }
@@ -4131,8 +4131,8 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
     if (temp_a2 != 0) {
         temp_s4 = func_8008B764(0, 0, temp_a2 >> 0x10);
     } else {
-        temp_s4 = func_8008B764(
-            arg1->unk0.fields.unk0, arg1->unk0.fields.unk2, arg1->unk0.fields.unk1);
+        temp_s4 = func_8008B764(arg1->unk0.fields.unk0_0, arg1->unk0.fields.unk0_16,
+            arg1->unk0.fields.unk0_8);
     }
 
     if (vs_battle_screenTransitionStep == 0) {
@@ -4144,8 +4144,8 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                 if (D_800F196C != 3) {
                     if (temp_s4->unk0_16) {
                         if (!(temp_v0 & 0x16704000)) {
-                            temp_v0_2 = func_8008D438(s2->unk0.fields.unk0,
-                                s2->unk0.fields.unk2, s2->unk0.fields.unk1);
+                            temp_v0_2 = func_8008D438(s2->unk0.fields.unk0_0,
+                                s2->unk0.fields.unk0_16, s2->unk0.fields.unk0_8);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
                                 func_80073F7C((func_8008C1C8_t*)temp_v0_2, arg1, arg0);
                                 temp_s0->unk2C.s32 = s2->unk0.value;
@@ -6013,8 +6013,8 @@ void func_8007C580(D_80061068_t* arg0, int arg1, int arg2)
 
     func_8007C4E0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(sp10.unk0.unk0.fields.unk0, sp10.unk0.unk0.fields.unk2,
-        sp10.unk0.unk0.fields.unk1);
+    func_8008B960(sp10.unk0.unk0.fields.unk0_0, sp10.unk0.unk0.fields.unk0_16,
+        sp10.unk0.unk0.fields.unk0_8);
 }
 
 int func_8007C5C0(D_80061068_t* arg0, int arg1, int arg2)
@@ -6036,8 +6036,8 @@ void func_8007C654(D_80061068_t* arg0, int arg1, int arg2)
 
     func_8007C5C0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(sp10.unk0.unk0.fields.unk0, sp10.unk0.unk0.fields.unk2,
-        sp10.unk0.unk0.fields.unk1);
+    func_8008B960(sp10.unk0.unk0.fields.unk0_0, sp10.unk0.unk0.fields.unk0_16,
+        sp10.unk0.unk0.fields.unk0_8);
 }
 
 int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
@@ -9514,10 +9514,9 @@ int func_8008A4FC(void)
     u_int temp_a2;
     u_int temp_v0_2;
     u_int var_a2;
-    char var_a0;
-    char var_a1;
+    int var_a0;
+    int var_a1;
     func_8006EBF8_t_fields* s0;
-
     func_800A1108(0, &sp10);
     temp_v0_2 = func_800A0BE0(0);
     temp_a2 = temp_v0_2 & 0x70000;
@@ -9527,14 +9526,14 @@ int func_8008A4FC(void)
         var_a1 = 0;
         var_a2 = temp_a2 >> 0x10;
     } else {
-        var_a0 = s0->unk0;
-        var_a1 = s0->unk2;
-        var_a2 = s0->unk1;
+        var_a0 = s0->unk0_0;
+        var_a1 = s0->unk0_16;
+        var_a2 = s0->unk0_8;
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_16 & 1) {
         if (!(temp_v0_2 & 0x504000)) {
-            temp_v0 = func_8008D438(s0->unk0, s0->unk2, s0->unk1);
-            if (temp_v0 != NULL) {
+            temp_v0 = func_8008D438(s0->unk0_0, s0->unk0_16, s0->unk0_8);
+            if (temp_v0 != 0) {
                 if (temp_v0->unk6 == 0x10) {
                     return temp_v0->unkA;
                 }

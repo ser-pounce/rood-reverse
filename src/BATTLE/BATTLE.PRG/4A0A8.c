@@ -758,12 +758,24 @@ int func_800B7EF0(u_char* arg0, short arg1)
     if (arg0[5] != 0xFF) {
         var_a2 = arg0[5];
     }
-    func_800A9CDC(temp_s0_2, &sp10, var_a2);
+    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0.fields, var_a2);
     D_800F4B70[temp_s0_2] = 1;
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7F84);
+int func_800B7F84(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t_fields sp10;
+    int temp_s0 = func_800BFE50(func_800BFE00(arg0 + 1)) & 0xFFFF;
+
+    sp10.unk0_0 = arg0[3];
+    sp10.unk0_8 = arg0[4];
+    sp10.unk0_16 = arg0[5];
+
+    func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
+    D_800F4B70[temp_s0] = 1;
+    return 0;
+}
 
 int func_800B804C(u_char* arg0, short arg1)
 {

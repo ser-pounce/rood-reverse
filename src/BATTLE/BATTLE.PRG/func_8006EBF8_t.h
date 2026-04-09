@@ -2,10 +2,10 @@
 #include <libgte.h>
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 8;
+    u_int unk0_16 : 8;
+    u_int unk0_24 : 8;
 } func_8006EBF8_t_fields;
 
 typedef struct {

@@ -1450,7 +1450,22 @@ int func_800BA90C(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BA94C);
+int func_800BA94C(u_char* arg0, short arg1)
+{
+    if ((D_800F4C2C == 2) && ((arg0[1] == 0) || (arg0[1] == 5))) {
+        if (D_800F4BB9 != 0) {
+            if (func_8007BEE4() == arg0[1]) {
+                D_800F4BB9 = 0;
+                return 0;
+            }
+        } else {
+            func_800CF1A8();
+            D_800F4BB9 = 1;
+        }
+        return 1;
+    }
+    return func_8007BEE4() != arg0[1];
+}
 
 int func_800BAA04(u_char* arg0, short arg1)
 {

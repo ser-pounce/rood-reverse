@@ -420,6 +420,8 @@ void vs_main_enableReset(int);
 void func_80041C68(MATRIX*, MATRIX*);
 void func_80042CA0(void);
 void func_80042CB0(void);
+int func_800433B4(char* arg0, u_int arg1, int arg2);
+int func_800434A4(u_int arg0, int arg1);
 void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);
 void vs_main_padConnect(int, char[34]);

@@ -8551,7 +8551,7 @@ static void _padSetActData(int port, int pos, int val)
 
 static char _padGetActData(int port, int pos) { return _portInfo[port].actData[pos]; }
 
-static int func_800433B4(char* arg0, u_int arg1, short arg2)
+int func_800433B4(char* arg0, u_int arg1, int arg2)
 {
     int i;
     int ret = 0;
@@ -8594,7 +8594,7 @@ static int func_80043470(int arg0)
     return arg0;
 }
 
-static int func_800434A4(unsigned int arg0, int arg1)
+int func_800434A4(u_int arg0, int arg1)
 {
     int i;
     if (arg0 - 1 < 2) {

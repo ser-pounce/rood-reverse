@@ -120,6 +120,7 @@ extern short D_800F4BB6;
 extern char D_800F4BB8;
 extern u_char D_800F4BB9;
 extern short* D_800F4BBC;
+extern char* D_800F4BC0[];
 extern u_short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* D_800F4BE8;
@@ -1531,7 +1532,23 @@ int func_800BAAF0(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAB14);
+int func_800BAB14(u_char* arg0)
+{
+    short a0 = arg0[1];
+    if (a0 == 0xFF) {
+        func_800434A4(0, 2);
+    } else {
+        if (a0 & 8) {
+            vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);
+            func_800433B4(D_800F4C48 + 8, 0xFF, 2);
+        } else {
+            if (D_800F4BC0[a0] != 0) {
+                func_800433B4(D_800F4BC0[a0] + 8, 0xFF, 2);
+            }
+        }
+    }
+    return 0;
+}
 
 int func_800BABCC(u_char* arg0, short arg1)
 {

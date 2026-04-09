@@ -858,7 +858,7 @@ void func_8007CC4C(int);
 void func_8007CC6C(int);
 int func_8007CCAC(void);
 void func_8007CD14(int arg0, int arg1);
-int func_8007CF64(int);
+vs_battle_actor* func_8007CF64(int actorId);
 void func_8007CFF8(int, RECT*);
 int func_8007D03C(int);
 int func_8007D08C(int, int);

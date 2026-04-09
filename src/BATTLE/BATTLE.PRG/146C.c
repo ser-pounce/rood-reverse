@@ -6323,7 +6323,7 @@ u_int func_8007CF18(int arg0)
     return 1;
 }
 
-vs_battle_actor* func_8007CF64(int arg0) { return vs_battle_actors[arg0]; }
+vs_battle_actor* func_8007CF64(int actorId) { return vs_battle_actors[actorId]; }
 
 u_int func_8007CF80(int arg0)
 {

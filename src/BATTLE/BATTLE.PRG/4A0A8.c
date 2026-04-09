@@ -888,7 +888,25 @@ int func_800B8764(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8788);
+int func_800B8788(u_char* arg0, short arg1)
+{
+    char sp10[24];
+
+    sp10[0] = arg0[7];
+    sp10[1] = arg0[8];
+    sp10[2] = arg0[9];
+
+    if (sp10[0] | sp10[1] | sp10[2]) {
+        sp10[8] = arg0[3];
+        sp10[9] = arg0[4];
+        sp10[10] = arg0[5];
+        sp10[11] = arg0[6];
+        func_8009F940(func_800BFE50(func_800BFE00(arg0 + 1)), 1, (int*)(sp10 + 8), sp10);
+    } else {
+        func_8009F940(func_800BFE50(func_800BFE00(arg0 + 1)), 0, 0, 0);
+    }
+    return 0;
+}
 
 int func_800B884C(u_char* arg0, short arg1)
 {
@@ -1610,14 +1628,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAEA0);
 
 void func_800BAF6C(short arg0)
 {
-    short i;
+    short actorId;
 
-    for (i = 1; i < 17; ++i) {
-        if (func_8007CF64(i) != 0) {
+    for (actorId = 1; actorId < 17; ++actorId) {
+        if (func_8007CF64(actorId) != NULL) {
             if (arg0 != 0) {
-                func_800A087C(i, func_800A0BE0(i) | 1);
+                func_800A087C(actorId, func_800A0BE0(actorId) | 1);
             } else {
-                func_800A087C(i, func_800A0BE0(i) & ~1);
+                func_800A087C(actorId, func_800A0BE0(actorId) & ~1);
             }
         }
     }

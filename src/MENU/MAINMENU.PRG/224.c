@@ -187,10 +187,10 @@ void func_800F9CB0(void)
     sp10[1] = -1;
     sp10[2] = -1;
     // BUG: reads junk
-    sp18 &= ~0xFF;
+    sp18 &= 0xFFFFFF00;
     sp18 |= 2;
     sp18 &= 0xFFFF00FF;
-    sp18 |= 0xFE00;
+    sp18 |= 0x0000FE00;
     new_var = 0x20000;
     sp18 &= 0xFE02;
     sp18 |= new_var;

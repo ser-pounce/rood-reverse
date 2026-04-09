@@ -673,7 +673,23 @@ int func_800B7C90(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7D10);
+int func_800B7D10(u_char* arg0, short arg1)
+{
+    RECT sp10;
+    u_short temp_s1 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
+    sp10.x = func_800BFE00(arg0 + 3);
+    sp10.y = 0;
+    sp10.w = func_800BFE00(arg0 + 5);
+    if (D_800F4C2C == 2) {
+        sp10.h = -0x8000;
+        func_800A9D90(temp_s1, &sp10, 0);
+    } else {
+        func_8007CFF8(temp_s1, &sp10);
+    }
+    func_8009DC8C(temp_s1);
+    D_800F4B70[temp_s1] = 1;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7DC4);
 

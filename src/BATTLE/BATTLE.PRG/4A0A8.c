@@ -27,48 +27,8 @@ typedef struct {
     VECTOR unk24;
     char unk34[0x60];
     VECTOR unk94;
-    char unkA4[0x10];
+    VECTOR unkA4;
 } D_800F4BA4_t2;
-
-typedef struct {
-    D_800F4BA4_t2 unk0[2];
-    char unk168[10];
-    short unk172;
-    int unk174[5];
-    char unk188;
-    char unk189;
-    char unk18A;
-    char unk18B;
-    int unk18C;
-    int unk190;
-    char unk194;
-    char unk195;
-    char unk196;
-    char unk197;
-    int unk198;
-    int unk19C;
-    char unk1A0;
-    char unk1A1;
-    char unk1A2;
-    char unk1A3;
-    int unk1A4;
-    int unk1A8;
-    char unk1AC;
-    char unk1AD;
-    char unk1AE;
-    char unk1AF;
-    char unk1B0[10];
-    char unk1BA;
-    char unk1BB;
-    int unk1BC[11];
-    u_short unk1E8;
-    u_short unk1EA;
-    VECTOR unk1EC;
-    char unk1FC[0x7C];
-    short unk278;
-    short unk27A;
-    int unk27C;
-} D_800F4BA4_t;
 
 typedef struct {
     char unk0;
@@ -80,14 +40,49 @@ typedef struct {
     short unkA;
 } func_800BD57C_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    short unk2;
+    short unk4;
+    short unk6;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+} func_800BDF6C_t;
+
+typedef struct {
+    D_800F4BA4_t2 unk0[2];
+    func_800BD57C_t unk168;
+    func_800BD57C_t unk174;
+    func_800BDF6C_t unk180;
+    func_800BDF6C_t unk18C;
+    func_800BDF6C_t unk198;
+    func_800BDF6C_t unk1A4;
+    func_800BDF6C_t unk1B0;
+    int unk1BC[11];
+    u_short unk1E8;
+    u_short unk1EA;
+    VECTOR unk1EC;
+    char unk1FC[0x7C];
+    short unk278;
+    short unk27A;
+    int unk27C;
+} D_800F4BA4_t;
+
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, char*);
 u_short func_800BB788(char* arg0);
 void func_800BBE10(u_short);
 void func_800BBE94(void);
+void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
+void func_800BD57C(func_800BD57C_t* arg0);
 int func_800BD610(void);
+void func_800BDF6C(func_800BDF6C_t* arg0);
+void func_800BE180(void);
 void func_800BE36C(int, int);
 void func_800BE3A0(void);
 VECTOR* func_800BE628(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
@@ -1778,7 +1773,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC1CC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC2E8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC9E0);
+void func_800BC9E0(void)
+{
+    D_800F4BA4->unk0[1].unkA4.vx = D_800F4BA4->unk0[0].unk94.vx;
+    D_800F4BA4->unk0[1].unkA4.vy = D_800F4BA4->unk0[0].unk94.vy;
+    D_800F4BA4->unk0[1].unkA4.vz = D_800F4BA4->unk0[0].unk94.vz;
+    D_800F4BA4->unk0[0].unkA4.vx = D_800F4BA4->unk0[1].unk94.vx;
+    D_800F4BA4->unk0[0].unkA4.vy = D_800F4BA4->unk0[1].unk94.vy;
+    D_800F4BA4->unk0[0].unkA4.vz = D_800F4BA4->unk0[1].unk94.vz;
+    func_800BCA8C(&D_800F4BA4->unk0[0], &D_800F4BA4->unk0[1]);
+    func_800BCA8C(&D_800F4BA4->unk0[1], &D_800F4BA4->unk0[0]);
+    func_800BD57C(&D_800F4BA4->unk168);
+    func_800BD57C(&D_800F4BA4->unk174);
+    func_800BDF6C(&D_800F4BA4->unk180);
+    func_800BDF6C(&D_800F4BA4->unk18C);
+    func_800BDF6C(&D_800F4BA4->unk198);
+    func_800BE180();
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCA8C);
 
@@ -1791,7 +1802,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD444);
 void func_800BD57C(func_800BD57C_t* arg0)
 {
     if (arg0->unkA > 0) {
-        arg0->unk8 = arg0->unk8 + (vs_gametime_tickspeed >> 1);
+        arg0->unk8 += vs_gametime_tickspeed >> 1;
 
         arg0->unk2 = (arg0->unk4
                       + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
@@ -1811,22 +1822,22 @@ int func_800BD610(void)
     if (D_800F4BA4->unk0[1].unk0 == 0xF) {
         temp_a2 = temp_a2 | 2;
     }
-    if (D_800F4BA4->unk172 == 0) {
+    if (D_800F4BA4->unk168.unkA == 0) {
         temp_a2 |= 4;
     }
-    if (D_800F4BA4->unk189 == 0) {
+    if (D_800F4BA4->unk180.unk9 == 0) {
         temp_a2 |= 8;
     }
-    if (D_800F4BA4->unk195 == 0) {
+    if (D_800F4BA4->unk18C.unk9 == 0) {
         temp_a2 |= 0x10;
     }
-    if (D_800F4BA4->unk1A1 == 0) {
+    if (D_800F4BA4->unk198.unk9 == 0) {
         temp_a2 |= 0x20;
     }
     if (D_800F4BA4->unk27A == 0) {
         temp_a2 |= 0x40;
     }
-    if ((D_800F4BA4->unk1AF + D_800F4BA4->unk1BB) == 0) {
+    if ((D_800F4BA4->unk1A4.unkB + D_800F4BA4->unk1B0.unkB) == 0) {
         temp_a2 |= 0x80;
     }
     return temp_a2;
@@ -1840,7 +1851,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BDBB4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BDC9C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BDF6C);
+void func_800BDF6C(func_800BDF6C_t* arg0)
+{
+    if (arg0->unk9 != 0) {
+        short* new_var;
+        arg0->unk8 += vs_gametime_tickspeed >> 1;
+        if (arg0->unk9 < arg0->unk8) {
+            arg0->unk8 = arg0->unk9;
+        }
+        *(int*)0x1F800088 = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
+        new_var = &arg0->unk6;
+        arg0->unk2 = arg0->unk4 + ((*new_var * *(int*)0x1F800088) >> 0xC);
+        if (arg0->unk8 == arg0->unk9) {
+            arg0->unk9 = 0;
+        }
+        arg0->unk0 = 1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE01C);
 

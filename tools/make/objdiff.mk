@@ -1,5 +1,5 @@
-OBJDIFF      := ~/.cargo/bin/objdiff-cli
-OBJDIFFFLAGS := report generate
+OBJDIFF      ?= ~/.cargo/bin/objdiff-cli
+OBJDIFFFLAGS ?= report generate
 
 .PHONY: objdiff objdiff.json
 

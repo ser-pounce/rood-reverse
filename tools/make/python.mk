@@ -1,5 +1,5 @@
-VPYDIR    := tools/python
-VPYTHON   := $(VPYDIR)/bin/$(PYTHON)
+VPYDIR  ?= tools/python
+VPYTHON ?= $(VPYDIR)/bin/$(PYTHON)
 
 BUILDDEPS += $(VPYTHON)
 

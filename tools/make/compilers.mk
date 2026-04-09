@@ -1,5 +1,5 @@
-OLDGCC         := tools/old-gcc
-COMPILER_PATHS := $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
+OLDGCC         ?= tools/old-gcc
+COMPILER_PATHS ?= $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
 
 BUILDDEPS += $(COMPILER_PATHS)
 

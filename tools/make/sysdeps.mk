@@ -1,5 +1,5 @@
-COMMAND      := command
-COMMANDFLAGS := -v
+COMMAND      ?= command
+COMMANDFLAGS ?= -v
 
 SYSDEPS = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(CARGO) $(FORMAT)
 

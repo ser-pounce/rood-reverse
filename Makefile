@@ -19,6 +19,7 @@ INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMAL
 				$(patsubst %,tools/make/%.mk,assemble compile compilers img link lint objdiff permuter psxiso python shell splat sysdeps util vsstring)
 
 DISKCODE  := SLUS-01040
+DISKIMAGE := disks/$(DISKCODE).bin
 COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
 .ONESHELL:

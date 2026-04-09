@@ -1,5 +1,5 @@
-FORMAT      := clang-format
-FORMATFLAGS := -i --style=file:tools/.clang-format
+FORMAT      ?= clang-format
+FORMATFLAGS ?= -i --style=file:tools/.clang-format
 
 SKIPSPLAT += format sortsyms lintsrc
 

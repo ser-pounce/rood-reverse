@@ -1,16 +1,16 @@
-SED      := sed
-DIFF     := diff
-CAT      := cat
-TOUCH    := touch
-ECHO     := echo
-MKDIR    := mkdir
-MV       := mv
-FIND     := find
-TRUNCATE := truncate
+SED      ?= sed
+DIFF     ?= diff
+CAT      ?= cat
+TOUCH    ?= touch
+ECHO     ?= echo
+MKDIR    ?= mkdir
+MV       ?= mv
+FIND     ?= find
+TRUNCATE ?= truncate
 
-RMFLAGS    := -Rf
-DIFFFLAGS  := -s
-MKDIRFLAGS := -p
+RMFLAGS    ?= -Rf
+DIFFFLAGS  ?= -s
+MKDIRFLAGS ?= -p
 
 .PRECIOUS: %/
 %/:

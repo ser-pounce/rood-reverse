@@ -1,12 +1,11 @@
-DISKIMAGE      := disks/$(DISKCODE).bin
-DISKCONFIG     := config/$(DISKCODE).xml
-DISKLBA        := $(BUILD)/config/$(DISKCODE)_LBA.txt
+DISKCONFIG     ?= config/$(DISKCODE).xml
+DISKLBA        ?= $(BUILD)/config/$(DISKCODE)_LBA.txt
 PSXISO         := tools/mkpsxiso
 PSXISOBUILD    := $(PSXISO)/build
-DUMPSXISO      := $(PSXISOBUILD)/Release/dumpsxiso
-MKPSXISO       := $(PSXISOBUILD)/Release/mkpsxiso
-DUMPSXISOFLAGS := -x data -s $(DISKCONFIG)
-MKPSXISOFLAGS  := -q -lba -noisogen
+DUMPSXISO      ?= $(PSXISOBUILD)/Release/dumpsxiso
+MKPSXISO       ?= $(PSXISOBUILD)/Release/mkpsxiso
+DUMPSXISOFLAGS ?= -x data -s $(DISKCONFIG)
+MKPSXISOFLAGS  ?= -q -lba -noisogen
 
 BUILDDEPS  += $(DUMPSXISO)
 PYTHONDEPS += pandas

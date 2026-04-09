@@ -1,5 +1,5 @@
 SPLAT       = $(VPYTHON) -m splat
-SPLATFLAGS := split --disassemble-all
+SPLATFLAGS ?= split --disassemble-all
 
 PYTHONDEPS += splat64[mips]
 

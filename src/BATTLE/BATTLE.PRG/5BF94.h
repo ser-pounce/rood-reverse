@@ -212,6 +212,7 @@ void vs_battle_renderTextRaw(char const* text, int xy, void*);
 int func_800C70F8(int, int, int, u_long*);
 void func_800C7210(int arg0);
 void vs_battle_loadGim(int, int);
+void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
 int func_800C8C50(int arg0);
 void func_800C8E04(int);

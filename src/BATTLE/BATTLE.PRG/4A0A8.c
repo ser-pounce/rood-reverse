@@ -71,6 +71,20 @@ typedef struct {
     int unk27C;
 } D_800F4BA4_t;
 
+typedef struct {
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 1;
+    u_int unk0_2 : 1;
+    u_int unk0_3 : 3;
+    u_int unk0_6 : 18;
+    u_int unk0_24 : 8;
+    int unk4;
+    short unk8;
+    short unkA;
+    short unkC;
+    int unk10[0xFA];
+} D_800EB9BC_t;
+
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, char*);
@@ -106,7 +120,7 @@ extern short D_800E9BF4[];
 extern short D_800E9BF8[];
 extern u_char D_800E9C30[];
 extern u_char* D_800EB9B4;
-extern u_int* D_800EB9BC;
+extern D_800EB9BC_t* D_800EB9BC;
 extern int D_800F19C8;
 extern u_short D_800F4B28[];
 extern char D_800F4B30[];
@@ -428,7 +442,7 @@ int func_800B66F4(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B6724(u_char* arg0, short arg1) { return (*D_800EB9BC >> 1) & 1; }
+int func_800B6724(u_char* arg0, short arg1) { return D_800EB9BC->unk0_1; }
 
 int func_800B6744(u_char* arg0, short arg1)
 {
@@ -537,7 +551,27 @@ int func_800B6FD8(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7014);
+int func_800B7014(u_char* arg0, short arg1)
+{
+    char* new_var;
+
+    D_800EB9BC_t* temp_a1 = D_800EB9BC;
+
+    if (temp_a1 == NULL) {
+        return 0;
+    }
+
+    new_var = (arg0[1] >> 6) * 0x14 + D_800F4B30;
+    new_var[3] = 0;
+    temp_a1 = temp_a1 + ((arg0[1] >> 6));
+    temp_a1->unk0_3 = arg0[1] & 3;
+    temp_a1->unk8 = (signed char)arg0[2] * 2;
+    temp_a1->unkA = (signed char)arg0[3] * 2;
+    temp_a1->unkC = arg0[4] << 7;
+    temp_a1->unk0_24 = arg0[5];
+    func_800C8550(arg0[1] >> 6, temp_a1, arg0);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B70E8);
 

@@ -21,6 +21,8 @@ typedef struct {
 } func_8007C8F8_t;
 
 void func_80091314(int);
+void func_80091320(int);
+void func_8009134C(int, int);
 int func_800913BC(int);
 void func_80091468(int, int);
 void func_800918E8(int);

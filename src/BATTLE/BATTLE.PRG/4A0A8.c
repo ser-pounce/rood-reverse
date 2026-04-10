@@ -100,6 +100,22 @@ typedef struct {
     short unk12;
 } D_800F4B30_t;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    short unk14;
+} D_800F4B88_t;
+
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, char*);
@@ -140,6 +156,7 @@ extern int D_800F19C8;
 extern u_short D_800F4B28[];
 extern D_800F4B30_t D_800F4B30[];
 extern char D_800F4B70[];
+extern D_800F4B88_t D_800F4B88;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern void* D_800F4BAC;
@@ -2039,7 +2056,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB874);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB9B0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBAFC);
+void func_800BBAFC(void)
+{
+    if (D_800F4B88.unk3 != 0) {
+        short temp_lo = ((++D_800F4B88.unk2 << 0xC) / D_800F4B88.unk3);
+        D_800F4B88.unk4 =
+            (D_800F4B88.unk6 + ((D_800F4B88.unk8 * temp_lo) >> 0xC)) & 0xFFF;
+        D_800F4B88.unkA = D_800F4B88.unkC + ((D_800F4B88.unkE * temp_lo) >> 0xC);
+        D_800F4B88.unk10 = (D_800F4B88.unk12 + ((D_800F4B88.unk14 * temp_lo) >> 0xC));
+        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
+        func_80091320(D_800F4B88.unk10);
+        if (D_800F4B88.unk2 == D_800F4B88.unk3) {
+            D_800F4B88.unk3 = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBBE8);
 

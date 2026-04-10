@@ -876,9 +876,28 @@ int func_800B822C(u_char* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8290);
+int func_800B8290(u_char* arg0, short arg1)
+{
+    SVECTOR sp10;
+    u_short temp_s2;
+    short var_s1;
 
-void func_8009FC60(int, int, SVECTOR*, int);
+    temp_s2 = func_800BFE50(func_800BFE00(arg0 + 1));
+    var_s1 = -1;
+    if (arg0[10] != 0xFF) {
+        var_s1 = arg0[10];
+    }
+    sp10.vx = func_800BFE00(arg0 + 4);
+    sp10.vy = func_800BFE00(arg0 + 6);
+    sp10.vz = func_800BFE00(arg0 + 8);
+    if (arg0[3] != 0) {
+        func_800A9F64(temp_s2, &sp10, var_s1);
+    } else {
+        func_800A9FD0(temp_s2, &sp10, var_s1);
+    }
+    D_800F4B70[temp_s2] = 1;
+    return 0;
+}
 
 int func_800B8360(u_char* arg0, short arg1)
 {

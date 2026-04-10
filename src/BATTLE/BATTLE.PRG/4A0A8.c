@@ -65,7 +65,23 @@ typedef struct {
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
-    char unk1FC[0x7C];
+    short unk1FC;
+    short unk1FE;
+    short unk200;
+    char unk202[0x1C];
+    char unk21E;
+    char unk21F;
+    char unk220;
+    char unk221;
+    char unk222;
+    char unk223;
+    char unk224[0x1A];
+    short unk23E;
+    short unk240;
+    char unk242[0x1C];
+    short unk25E;
+    short unk260;
+    char unk262[0x16];
     short unk278;
     short unk27A;
     int unk27C;
@@ -150,6 +166,7 @@ void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
 void func_800BD57C(func_800BD57C_t* arg0);
 int func_800BD610(void);
+int func_800BDBB4(func_800BDBB4_t* arg0);
 void func_800BDF6C(func_800BDF6C_t* arg0);
 void func_800BE180(void);
 void func_800BE36C(int, int);
@@ -709,6 +726,7 @@ int func_800B7428(u_char* arg0, short arg1)
     return 0;
 }
 
+// https://decomp.me/scratch/hkP4X
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7490);
 
 int func_800B7574(u_char* arg0, short arg1)
@@ -2228,7 +2246,33 @@ int func_800BD610(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD6C4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BDAB4);
+void func_800F9BC0(int, int);
+
+void func_800BDAB4(void)
+{
+    D_800F1A68_t sp10;
+    P_CODE sp20;
+
+    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk1FC) != 0) {
+        sp10.unk0 = D_800F4BA4->unk1FE;
+        sp10.unk4 = D_800F4BA4->unk200;
+        func_8007DDB8(&sp10);
+    }
+    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk202[0x1A]) != 0) {
+        sp20.r0 = D_800F4BA4->unk21E;
+        sp20.g0 = D_800F4BA4->unk220;
+        sp20.b0 = D_800F4BA4->unk222;
+        func_8007DDD4(&sp20);
+    }
+    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk224[0x18]) != 0) {
+        sp10.unk0 = D_800F4BA4->unk23E;
+        sp10.unk4 = D_800F4BA4->unk240;
+        func_8007DDF8(&sp10);
+    }
+    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk242[0x1A]) != 0) {
+        func_800F9BC0(D_800F4BA4->unk25E, D_800F4BA4->unk260);
+    }
+}
 
 int func_800BDBB4(func_800BDBB4_t* arg0)
 {

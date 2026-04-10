@@ -6492,10 +6492,10 @@ void func_8007DD50(int arg0)
 
 void func_8007DDAC(int arg0) { D_800F1A2C = arg0; }
 
-void func_8007DDB8(int* arg0)
+void func_8007DDB8(D_800F1A68_t* arg0)
 {
-    D_800F1A30[0] = arg0[0];
-    D_800F1A30[1] = arg0[1];
+    D_800F1A30[0] = arg0->unk0;
+    D_800F1A30[1] = arg0->unk4;
 }
 
 void func_8007DDD4(P_CODE* arg0) { D_800F1A78 = *arg0; }

@@ -851,7 +851,7 @@ int func_8010412C(void)
     } else if (D_801098A0 == 2) {
         func_8007C36C(4);
         func_8007DDAC(0);
-        func_8007DDB8((int*)&D_801096F0);
+        func_8007DDB8(&D_801096F0[0]);
         func_8007DDD4(&D_80109720[1]);
         func_8007DDF8((D_800F1A68_t*)(D_801096F0 + 2));
         func_8007DE2C(0);
@@ -880,14 +880,14 @@ int func_8010412C(void)
         if (D_8010989C >= 0x2D) {
             if (D_8010989C == 0x2D) {
                 func_8007DE2C(1);
-                func_8007DDB8((int*)&D_801096F0[1]);
+                func_8007DDB8(&D_801096F0[1]);
                 func_8007DDD4(&D_80109720[0]);
             } else if (D_8010989C == 0x2E) {
                 func_8007DE2C(0);
             } else if (D_8010989C == 0x37) {
                 func_8007DDD4(&D_80109720[2]);
             } else if (D_8010989C == 0x3C) {
-                func_8007DDB8((int*)&D_801096F0);
+                func_8007DDB8(&D_801096F0[0]);
             }
             var_a3 = 0x68 - D_8010989C;
             if (var_a3 < 0x2D) {
@@ -908,7 +908,7 @@ int func_8010412C(void)
         }
     } else if (D_801098A0 == 4) {
         func_8007C36C(2);
-        func_8007DDB8((int*)&D_801096F0[2]);
+        func_8007DDB8(&D_801096F0[2]);
         func_8007DD50(0);
         func_8007E0A8(0x1D, 2, 5);
         return 1;

@@ -10,7 +10,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFD9C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE00);
+short func_800BFE00(u_char* arg0)
+{
+    if (!((long)arg0 & 1)) {
+        return *(short*)arg0;
+    }
+    return arg0[0] | (arg0[1] << 8);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE34);
 

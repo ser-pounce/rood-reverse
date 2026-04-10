@@ -1262,7 +1262,36 @@ int func_800B9AE8(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9B18);
+int func_800B9B18(u_char* arg0, short arg1)
+{
+    switch (arg0[1] & 3) {
+    case 0:
+        func_8007C424();
+        break;
+    case 1:
+        func_8007C404();
+        break;
+    }
+
+    switch ((arg0[1] >> 2) & 3) {
+    case 0:
+        func_8007BF4C();
+        break;
+    case 1:
+        func_8007BF2C();
+        break;
+    }
+
+    switch ((arg0[1] >> 4) & 3) {
+    case 0:
+        func_8007C050();
+        break;
+    case 1:
+        func_8007BFC0();
+        break;
+    }
+    return 0;
+}
 
 int func_800B9BF8(void) { return func_8007C398() != 0; }
 

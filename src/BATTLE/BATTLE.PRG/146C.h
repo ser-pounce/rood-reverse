@@ -869,6 +869,7 @@ void func_8007CFF8(int, RECT*);
 int func_8007D03C(int);
 int func_8007D08C(int, int);
 int func_8007D15C(int);
+void func_8007D1A8(int, int);
 void func_8007D340(int);
 void func_8007D3F8(void);
 void func_8007DF48(void);

@@ -669,7 +669,38 @@ int func_800B76A8(u_char* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B770C);
+int func_800B770C(u_char* arg0, short arg1)
+{
+    char sp10[24];
+    int temp_s0;
+    int var_s1;
+    int var_s2;
+    int temp_v0;
+    u_int a1;
+
+    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+
+    while (1) {
+        temp_s0 = func_800BB788(sp10);
+        if (temp_s0 == 1) {
+            break;
+        }
+        temp_v0 = func_800A0BE0(temp_s0);
+        var_s2 = temp_v0 & 0x800;
+        var_s1 = temp_v0 & 0x1000;
+        a1 = arg0[4];
+        if (!(a1 & 2)) {
+            var_s2 = (a1 & 1) << 0xB;
+        }
+        if (!(a1 & 8)) {
+            var_s1 = (a1 << 0xA) & 0x1000;
+        }
+        func_8007D1A8(temp_s0, (a1 >> 5) & 1);
+        func_800A087C(temp_s0, var_s2 | var_s1 | arg0[3]);
+        func_8009D88C(temp_s0);
+    }
+    return 0;
+}
 
 int func_800B77DC(u_char* arg0, short arg1)
 {

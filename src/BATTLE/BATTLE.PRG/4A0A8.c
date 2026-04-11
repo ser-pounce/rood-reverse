@@ -963,6 +963,7 @@ int func_800B7D10(u_char* arg0, short arg1)
     return 0;
 }
 
+// https://decomp.me/scratch/8dS3J
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7DC4);
 
 int func_800B7EF0(u_char* arg0, short arg1)
@@ -2372,7 +2373,51 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCFB4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD2B8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD444);
+int func_800BD444(u_char* arg0, short arg1)
+{
+    func_800BD57C_t* var_s0;
+
+    switch (arg0[0]) {
+    case 0xE2:
+        var_s0 = &D_800F4BA4->unk168;
+        break;
+    case 0xE3:
+        var_s0 = &D_800F4BA4->unk174;
+        break;
+    }
+
+    var_s0->unkA = arg0[4];
+
+    if (var_s0->unkA == 0) {
+        var_s0->unk2 = func_800BFE00(arg0 + 1);
+        var_s0->unk0 = 1;
+    } else {
+        var_s0->unk4 = var_s0->unk2;
+        var_s0->unk6 = func_800BFE00(arg0 + 1) - var_s0->unk2;
+        if (var_s0->unk6 < -(ONE / 2)) {
+            var_s0->unk6 += ONE;
+        } else if (var_s0->unk6 > (ONE / 2)) {
+            var_s0->unk6 -= ONE;
+        }
+
+        switch (arg0[3] >> 4) {
+        case 0:
+            if (var_s0->unk6 > 0) {
+                var_s0->unk6 -= ONE;
+            }
+            break;
+        case 2:
+            if (var_s0->unk6 < 0) {
+                var_s0->unk6 += ONE;
+            }
+            break;
+        }
+
+        var_s0->unk1 = arg0[3] & 0xF;
+        var_s0->unk8 = 0;
+    }
+    return 0;
+}
 
 void func_800BD57C(func_800BD57C_t* arg0)
 {

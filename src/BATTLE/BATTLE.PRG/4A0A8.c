@@ -181,7 +181,7 @@ VECTOR* func_800BE628(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* func_800BE66C(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 static int _fixedPointMult(int a, int b);
 void func_800BFD9C();
-short func_800BFE00(u_char*);
+short vs_battle_getShort(u_char*);
 int func_800BFEBC(int, int, int);
 int func_800C6BF0(int, char*);
 void func_800CB79C(void);
@@ -638,7 +638,7 @@ int func_800B6868(u_char* arg0, short arg1)
         func_800B6778(arg0);
         return 4;
     }
-    return (int)&arg0[func_800BFE00(arg0 + 1)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
 int func_800B68C4(u_char* arg0, short arg1)
@@ -701,7 +701,7 @@ int func_800B6FB0(u_char* arg0, short arg1)
 
 int func_800B6FD8(u_char* arg0, short arg1)
 {
-    vs_battle_loadGim(func_800BFE00(arg0 + 1), arg0[3]);
+    vs_battle_loadGim(vs_battle_getShort(arg0 + 1), arg0[3]);
     return 0;
 }
 
@@ -766,7 +766,7 @@ int func_800B71F4(u_char* arg0, short arg1)
 
 int func_800B7218(u_char* arg0, short arg1)
 {
-    int temp_s0 = func_800BFE00(arg0 + 2) & 0x3FF;
+    int temp_s0 = vs_battle_getShort(arg0 + 2) & 0x3FF;
     switch (arg0[3] >> 6) {
     case 0:
         vs_battle_stringContext.integers[arg0[1]] = func_800BEBF4(temp_s0);
@@ -816,7 +816,7 @@ int func_800B7428(u_char* arg0, short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
+    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -838,15 +838,15 @@ int func_800B7574(u_char* arg0, short arg1)
     sp10[1] = arg0[6];
     sp10[2] = arg0[7];
     sp10[3] = arg0[8];
-    func_8007C928(func_800BFE50(func_800BFE00(arg0 + 1)), func_800BFE00(arg0 + 3),
-        (func_8007C8F8_t_flags*)(sp10));
+    func_8007C928(func_800BFE50(vs_battle_getShort(arg0 + 1)),
+        vs_battle_getShort(arg0 + 3), (func_8007C8F8_t_flags*)(sp10));
     return 0;
 }
 
 int func_800B75F4(u_char* arg0, short arg1)
 {
     SVECTOR sp10;
-    u_short temp_v0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    u_short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     sp10.vx = (arg0[3] << 7) + 0x40;
     sp10.vy = 0;
     sp10.vz = (arg0[5] << 7) + 0x40;
@@ -863,7 +863,7 @@ int func_800B75F4(u_char* arg0, short arg1)
 
 int func_800B76A8(u_char* arg0)
 {
-    func_800A0204(func_800BFE50(func_800BFE00(arg0 + 1)),
+    func_800A0204(func_800BFE50(vs_battle_getShort(arg0 + 1)),
         D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[4], arg0[5] & 0x3F);
     return 0;
 }
@@ -877,7 +877,7 @@ int func_800B770C(u_char* arg0, short arg1)
     int temp_v0;
     u_int a1;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
+    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
 
     while (1) {
         temp_s0 = func_800BB788(&sp10);
@@ -910,7 +910,7 @@ int func_800B77DC(u_char* arg0, short arg1)
     sp10[1] = arg0[4];
     sp10[2] = arg0[5];
     sp10[3] = arg0[6];
-    var_a0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    var_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     if (var_a0 == 0x2001) {
         var_a0 = -1;
     }
@@ -921,7 +921,7 @@ int func_800B77DC(u_char* arg0, short arg1)
 int func_800B784C(u_char* arg0, short arg1)
 {
     u_char sp10[10];
-    u_short temp_v0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    u_short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     sp10[0] = arg0[3];
     sp10[1] = arg0[4];
     sp10[2] = arg0[5];
@@ -943,10 +943,10 @@ int func_800B792C(u_char* arg0, short arg1)
 {
     func_8006EBF8_t sp10;
 
-    u_short temp_s4 = func_800BFE50(func_800BFE00(arg0 + 1));
-    int temp_s1 = func_800BFE00(arg0 + 3) >> 1;
-    short temp_s2 = func_800BFE00(arg0 + 5);
-    short temp_s3 = func_800BFE00(arg0 + 7);
+    u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
+    short temp_s2 = vs_battle_getShort(arg0 + 5);
+    short temp_s3 = vs_battle_getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
         func_800A1108(temp_s4, &sp10);
@@ -974,7 +974,7 @@ int func_800B792C(u_char* arg0, short arg1)
 int func_800B7A98(u_char* arg0, short arg1)
 {
     u_char sp10[16];
-    u_short temp_s0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    u_short temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     sp10[0] = arg0[3];
     sp10[1] = arg0[4];
     sp10[2] = arg0[5];
@@ -997,10 +997,10 @@ int func_800B7B58(u_char* arg0, short arg1)
     int temp_s1;
     u_short temp_s2;
 
-    temp_s2 = func_800BFE50(func_800BFE00(arg0 + 1));
-    temp_s1 = func_800BFE00(arg0 + 3) >> 1;
-    temp_s3 = func_800BFE00(arg0 + 5);
-    temp_s4 = func_800BFE00(arg0 + 7);
+    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
+    temp_s3 = vs_battle_getShort(arg0 + 5);
+    temp_s4 = vs_battle_getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
         func_800A1108(temp_s2, &sp10);
@@ -1024,8 +1024,8 @@ int func_800B7B58(u_char* arg0, short arg1)
 
 int func_800B7C90(u_char* arg0, short arg1)
 {
-    u_short temp_s1 = func_800BFE50(func_800BFE00(arg0 + 1));
-    u_int temp_a1 = func_800BFE50(func_800BFE00(arg0 + 3)) & 0xFFFF;
+    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    u_int temp_a1 = func_800BFE50(vs_battle_getShort(arg0 + 3)) & 0xFFFF;
     if (temp_a1 >= 0x2000) {
         func_8009FFA8(temp_s1, temp_a1);
     } else {
@@ -1037,10 +1037,10 @@ int func_800B7C90(u_char* arg0, short arg1)
 int func_800B7D10(u_char* arg0, short arg1)
 {
     SVECTOR sp10;
-    u_short temp_s1 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
-    sp10.vx = func_800BFE00(arg0 + 3);
+    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1) & 0xFFFF);
+    sp10.vx = vs_battle_getShort(arg0 + 3);
     sp10.vy = 0;
-    sp10.vz = func_800BFE00(arg0 + 5);
+    sp10.vz = vs_battle_getShort(arg0 + 5);
     if (D_800F4C2C == 2) {
         sp10.pad = -0x8000;
         func_800A9D90(temp_s1, &sp10, 0);
@@ -1062,8 +1062,8 @@ int func_800B7EF0(u_char* arg0, short arg1)
     int temp_s0_2;
     int var_a2;
 
-    temp_s0 = func_800BFE50(func_800BFE00(arg0 + 1));
-    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 3)), &sp10);
+    temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp10);
     var_a2 = -1;
     temp_s0_2 = temp_s0 & 0xFFFF;
     if (arg0[5] != 0xFF) {
@@ -1077,7 +1077,7 @@ int func_800B7EF0(u_char* arg0, short arg1)
 int func_800B7F84(u_char* arg0, short arg1)
 {
     func_8006EBF8_t_fields sp10;
-    int temp_s0 = func_800BFE50(func_800BFE00(arg0 + 1)) & 0xFFFF;
+    int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.unk0_0 = arg0[3];
     sp10.unk0_8 = arg0[4];
@@ -1092,9 +1092,9 @@ int func_800B804C(u_char* arg0, short arg1)
 {
     SVECTOR sp10;
 
-    setVector(
-        &sp10, func_800BFE00(arg0 + 3), func_800BFE00(arg0 + 5), func_800BFE00(arg0 + 7));
-    func_800AABD0(func_800BFE50(func_800BFE00(arg0 + 1)), &sp10, arg0[9]);
+    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
+        vs_battle_getShort(arg0 + 7));
+    func_800AABD0(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10, arg0[9]);
     return 0;
 }
 
@@ -1102,7 +1102,7 @@ int func_800B80B4(u_char* arg0, short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
+    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -1120,9 +1120,9 @@ int func_800B810C(u_char* arg0)
     int temp_s2;
     u_short var_v0;
 
-    temp_s2 = func_800BFE50(func_800BFE00(arg0 + 1)) & 0xFFFF;
+    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
     temp_s3 = func_800A0BE0(temp_s2) ^ 0x81;
-    temp_v0 = func_800BFE00(arg0 + 3);
+    temp_v0 = vs_battle_getShort(arg0 + 3);
 
     if (temp_v0 & 1) {
         if (func_8007D03C(temp_s2) == 0) {
@@ -1142,16 +1142,16 @@ int func_800B81A0(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
 
     if (sp10[0] | sp10[1] | sp10[2]) {
-        func_800A07FC(func_800BFE50(func_800BFE00(arg0 + 1)), &sp10);
+        func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
     } else {
-        func_800A07FC(func_800BFE50(func_800BFE00(arg0 + 1)), 0);
+        func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0);
     }
     return 0;
 }
 
 int func_800B822C(u_char* arg0)
 {
-    func_800A01C8(func_800BFE50(func_800BFE00(arg0 + 1)),
+    func_800A01C8(func_800BFE50(vs_battle_getShort(arg0 + 1)),
         D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
     return 0;
 }
@@ -1162,14 +1162,14 @@ int func_800B8290(u_char* arg0, short arg1)
     u_short temp_s2;
     short var_s1;
 
-    temp_s2 = func_800BFE50(func_800BFE00(arg0 + 1));
+    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     var_s1 = -1;
     if (arg0[10] != 0xFF) {
         var_s1 = arg0[10];
     }
-    sp10.vx = func_800BFE00(arg0 + 4);
-    sp10.vy = func_800BFE00(arg0 + 6);
-    sp10.vz = func_800BFE00(arg0 + 8);
+    sp10.vx = vs_battle_getShort(arg0 + 4);
+    sp10.vy = vs_battle_getShort(arg0 + 6);
+    sp10.vz = vs_battle_getShort(arg0 + 8);
     if (arg0[3] != 0) {
         func_800A9F64(temp_s2, &sp10, var_s1);
     } else {
@@ -1185,10 +1185,10 @@ int func_800B8360(u_char* arg0, short arg1)
     int temp_v0;
     int var_a3;
 
-    sp10.vx = func_800BFE00(arg0 + 3);
-    sp10.vy = func_800BFE00(arg0 + 5);
+    sp10.vx = vs_battle_getShort(arg0 + 3);
+    sp10.vy = vs_battle_getShort(arg0 + 5);
     sp10.vz = 0;
-    temp_v0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     var_a3 = 0x1000;
     if (arg0[7] != 0) {
         var_a3 = arg0[7];
@@ -1199,21 +1199,21 @@ int func_800B8360(u_char* arg0, short arg1)
 
 int func_800B83D4(u_char* arg0)
 {
-    func_800A0618(func_800BFE50(func_800BFE00(arg0 + 1)),
+    func_800A0618(func_800BFE50(vs_battle_getShort(arg0 + 1)),
         D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
     return 0;
 }
 
 int func_800B8438(u_char* arg0)
 {
-    func_800A01C8(func_800BFE50(func_800BFE00(arg0 + 1)),
+    func_800A01C8(func_800BFE50(vs_battle_getShort(arg0 + 1)),
         D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
     return 0;
 }
 
 int func_800B849C(u_char* arg0, short arg1)
 {
-    int temp_a0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    int temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
 
     if (arg0[4] == 0xFF) {
         func_8009FBD8(temp_a0, -1);
@@ -1227,8 +1227,8 @@ int func_800B8510(u_char* arg0, short arg1)
 {
     int var_a3;
 
-    int temp_s0 = func_800BFE50(func_800BFE00(arg0 + 3) & 0xFFFF);
-    int temp_a0 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
+    int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 3) & 0xFFFF);
+    int temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1) & 0xFFFF);
 
     int var_a1 = -2;
     if (temp_s0 != 0x2000) {
@@ -1249,9 +1249,9 @@ int func_800B8590(u_char* arg0, short arg1)
     int temp_v0;
     int var_a3;
 
-    setVector(
-        &sp10, func_800BFE00(arg0 + 3), func_800BFE00(arg0 + 5), func_800BFE00(arg0 + 7));
-    temp_v0 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
+    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
+        vs_battle_getShort(arg0 + 7));
+    temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1) & 0xFFFF);
     var_a3 = 0x1000;
     if (arg0[9] != 0) {
         var_a3 = arg0[9];
@@ -1264,13 +1264,13 @@ int func_800B860C(u_char* arg0, short arg1)
 {
     switch ((arg0[3] >> 2) & 3) {
     case 0:
-        func_8007CB84(arg0[3] & 3, func_800BFE00(arg0 + 1));
+        func_8007CB84(arg0[3] & 3, vs_battle_getShort(arg0 + 1));
         break;
     case 1:
-        func_8007CBDC(arg0[3] & 3, func_800BFE00(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        func_8007CBDC(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     case 2:
-        func_8007CC18(arg0[3] & 3, func_800BFE00(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        func_8007CC18(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     }
     return 0;
@@ -1307,9 +1307,10 @@ int func_800B8788(u_char* arg0, short arg1)
         sp10[9] = arg0[4];
         sp10[10] = arg0[5];
         sp10[11] = arg0[6];
-        func_8009F940(func_800BFE50(func_800BFE00(arg0 + 1)), 1, (int*)(sp10 + 8), sp10);
+        func_8009F940(
+            func_800BFE50(vs_battle_getShort(arg0 + 1)), 1, (int*)(sp10 + 8), sp10);
     } else {
-        func_8009F940(func_800BFE50(func_800BFE00(arg0 + 1)), 0, 0, 0);
+        func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0, 0, 0);
     }
     return 0;
 }
@@ -1319,7 +1320,7 @@ int func_800B884C(u_char* arg0, short arg1)
     func_800BB68C_t sp10;
     int temp_a0;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
+    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
 
     while (1) {
         temp_a0 = func_800BB788(&sp10);
@@ -1374,7 +1375,7 @@ int func_800B88D4(u_char* arg0, short arg1)
         }
         break;
     }
-    return (long)&arg0[func_800BFE00(arg0 + 4)];
+    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
 }
 
 int func_800B8A10(u_char* arg0, short arg1)
@@ -1414,29 +1415,29 @@ int func_800B8A10(u_char* arg0, short arg1)
         }
         break;
     }
-    return (long)&arg0[func_800BFE00(arg0 + 4)];
+    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
 }
 
 int func_800B8B5C(u_char* arg0, short arg1)
 {
-    return (int)&arg0[func_800BFE00(arg0 + 1)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
 int func_800B8B90(u_char* arg0, short arg1)
 {
-    return (int)&arg0[func_800BFE00(arg0 + 1)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
 int func_800B8BC4(u_char* arg0, short arg1)
 {
-    D_800F4BB4 = func_800BEBF4(func_800BFE00(arg0 + 1));
+    D_800F4BB4 = func_800BEBF4(vs_battle_getShort(arg0 + 1));
     return 0;
 }
 
 int func_800B8BF8(u_char* arg0, short arg1)
 {
     if (D_800F4BB4 == arg0[1]) {
-        return (int)&arg0[func_800BFE00(arg0 + 2)];
+        return (int)&arg0[vs_battle_getShort(arg0 + 2)];
     }
     return 0;
 }
@@ -1454,22 +1455,22 @@ int func_800B8C54(u_char* arg0, short arg1)
 int func_800B8C7C(u_char* arg0, short arg1)
 {
     if (arg0[1] == 0xFF) {
-        return (int)(arg0 - func_800BFE00(arg0 + 2));
+        return (int)(arg0 - vs_battle_getShort(arg0 + 2));
     }
     if (--D_800F4C10[arg0[1]] != 0) {
-        return (int)(arg0 - func_800BFE00(arg0 + 2));
+        return (int)(arg0 - vs_battle_getShort(arg0 + 2));
     }
     return 0;
 }
 
 int func_800B8CE8(u_char* arg0, short arg1)
 {
-    return (int)&arg0[func_800BFE00(arg0 + 1)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
 int func_800B8D1C(u_char* arg0, short arg1)
 {
-    return (int)&arg0[func_800BFE00(arg0 + 1)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8D50);
@@ -1478,8 +1479,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8EDC);
 
 int func_800B9170(u_char* arg0, short arg1)
 {
-    vs_battle_setStateFlag(
-        func_800BFE00(arg0 + 3), vs_battle_itemIdIsInInventory(func_800BFE00(arg0 + 1)));
+    vs_battle_setStateFlag(vs_battle_getShort(arg0 + 3),
+        vs_battle_itemIdIsInInventory(vs_battle_getShort(arg0 + 1)));
     return 0;
 }
 
@@ -1491,7 +1492,7 @@ int func_800B91C4(u_char* arg0, short arg1)
 
 int func_800B91F0(u_char* arg0, short arg1)
 {
-    func_8009DBDC(func_800BFE50(func_800BFE00(arg0 + 1)), arg0[3]);
+    func_8009DBDC(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
     return 0;
 }
 
@@ -1503,7 +1504,7 @@ int func_800B9230(u_char* arg0, short arg1)
 
 int func_800B9254(u_char* arg0, short arg1)
 {
-    short temp_v0 = func_800BFE00(arg0 + 1);
+    short temp_v0 = vs_battle_getShort(arg0 + 1);
     vs_battle_setStateFlag(temp_v0 & 0x3FF, temp_v0 & 0x8000
                                                 ? vs_main_buttonsPressed.pad[0].low
                                                 : vs_main_buttonsPreviousState);
@@ -1512,7 +1513,7 @@ int func_800B9254(u_char* arg0, short arg1)
 
 int func_800B92A0(u_char* arg0, short arg1)
 {
-    func_8007C28C(func_800BFE50(func_800BFE00(arg0 + 1)));
+    func_8007C28C(func_800BFE50(vs_battle_getShort(arg0 + 1)));
     return 0;
 }
 
@@ -1541,7 +1542,7 @@ int func_800B9564(u_char* arg0, short arg1)
     u_short temp_s0;
     int var_a0;
 
-    temp_s0 = func_800BFE00(arg0 + 2);
+    temp_s0 = vs_battle_getShort(arg0 + 2);
     temp_s1 = func_800CCDF4(arg0[1] & 0xF);
 
     if (temp_s0 < 0x2000) {
@@ -1556,7 +1557,7 @@ int func_800B9564(u_char* arg0, short arg1)
 
 int func_800B9608(u_char* arg0, short arg1)
 {
-    u_short temp_a0 = func_800BFE50(func_800BFE00(arg0 + 1));
+    u_short temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
 
     if (arg0[3] == 0xFE) {
         func_8007CAA4(temp_a0);
@@ -1568,7 +1569,7 @@ int func_800B9608(u_char* arg0, short arg1)
 
 int func_800B9670(u_char* arg0, short arg1)
 {
-    func_8009D7E8(func_800BFE50(func_800BFE00(arg0 + 1)), arg0[3]);
+    func_8009D7E8(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
     return 0;
 }
 
@@ -1612,7 +1613,7 @@ int func_800B9770(u_char* arg0, short arg1)
 
 int func_800B979C(u_char* arg0, short arg1)
 {
-    short temp_v0 = func_800BFE00(arg0 + 1);
+    short temp_v0 = vs_battle_getShort(arg0 + 1);
     D_800F4C6A = (temp_v0 << 0x10) >> 0x1F;
     if (D_800F4C6A) {
         func_80098194(temp_v0 & 0x7FF);
@@ -1658,18 +1659,18 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    func_800B98C0_t sp10;
+    D_80061068_t sp10;
 
     if (D_800F4BE2 == 0) {
 
-        sp10.unk0_0 = arg0[1];
-        sp10.unk0_8 = arg0[2];
+        sp10.zndId = arg0[1];
+        sp10.unk1 = arg0[2];
         sp10.unk4_8 = arg0[3];
-        sp10.unk4_26 = arg0[5];
-        sp10.unk0_29 = arg0[4];
+        sp10.unk6_10 = arg0[5];
+        sp10.unk2_13 = arg0[4];
         sp10.unk4_13 = arg0[6];
         sp10.unk4_15 = arg0[7];
-        sp10.unk4_31 = arg0[7] >> 1;
+        sp10.unk6_15 = arg0[7] >> 1;
 
         if (arg0[1] == 0) {
             func_8007C580(&sp10, arg0[8], arg0[9]);
@@ -1767,7 +1768,7 @@ int func_800B9C58(u_char* arg0, short arg1)
 
     switch (arg0[1] >> 4) {
     case 0:
-        func_800BB68C(func_800BFE00(arg0 + 2), &sp18);
+        func_800BB68C(vs_battle_getShort(arg0 + 2), &sp18);
         while (1) {
             temp_a2 = func_800BB788(&sp18);
             if (temp_a2 == 1) {
@@ -1791,7 +1792,7 @@ int func_800B9C58(u_char* arg0, short arg1)
 
 int func_800B9D74(u_char* arg0, short arg1)
 {
-    func_800AC37C(func_800BFE50(func_800BFE00(arg0 + 1)), arg0[3]);
+    func_800AC37C(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
     return 0;
 }
 
@@ -1868,7 +1869,7 @@ int func_800BA194(u_char* arg0, short arg1)
 
 int func_800BA218(u_char* arg0, short arg1)
 {
-    func_80091468(func_800BFE00(arg0 + 1), func_800BFE00(arg0 + 3));
+    func_80091468(vs_battle_getShort(arg0 + 1), vs_battle_getShort(arg0 + 3));
     return 0;
 }
 
@@ -1904,7 +1905,7 @@ int func_800BA2E0(u_char* arg0)
 
 int func_800BA35C(u_char* arg0, short arg1)
 {
-    func_8007C8A4(func_800BFE50(func_800BFE00(arg0 + 1)), arg0[3]);
+    func_8007C8A4(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
     return 0;
 }
 
@@ -2040,7 +2041,7 @@ int func_800BA798(u_char* arg0, short arg1) { return vs_main_processSoundQueue()
 int func_800BA7BC(u_char* arg0, short arg1)
 {
     int temp_s1 = func_80044D94() >> 0x10;
-    return temp_s1 < func_800BFE00(arg0 + 1);
+    return temp_s1 < vs_battle_getShort(arg0 + 1);
 }
 
 int func_800BA800(u_char* arg0, short arg1)
@@ -2063,7 +2064,8 @@ int func_800BA890(u_char* arg0, short arg1)
 
 int func_800BA8BC(u_char* arg0, short arg1)
 {
-    func_8007BE20(func_800BFE00(arg0 + 1), func_800BFE50(func_800BFE00(arg0 + 3)));
+    func_8007BE20(
+        vs_battle_getShort(arg0 + 1), func_800BFE50(vs_battle_getShort(arg0 + 3)));
     return 0;
 }
 
@@ -2145,7 +2147,7 @@ int func_800BAB14(u_char* arg0)
 
 int func_800BABCC(u_char* arg0, short arg1)
 {
-    short temp_v0 = func_800BFE50(func_800BFE00(arg0 + 2));
+    short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 2));
 
     if (arg0[1] != 0) {
         func_8006C480(temp_v0, arg0[4]);
@@ -2170,9 +2172,9 @@ int func_800BAC5C(u_char* arg0, short arg1)
     short temp_v0_2;
     int temp_lo;
 
-    temp_s3 = func_800BFE00(arg0 + 6);
-    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 1)), &sp10);
-    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 3)), &sp20);
+    temp_s3 = vs_battle_getShort(arg0 + 6);
+    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
+    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp20);
     temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
@@ -2185,7 +2187,7 @@ int func_800BAD78(u_char* arg0, short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
+    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -2199,7 +2201,8 @@ int func_800BAD78(u_char* arg0, short arg1)
 int func_800BADE0(u_char* arg0)
 {
     if (D_800F4BF8 == 0) {
-        func_8007BA98(func_800BFE00(arg0 + 1), arg0[3], func_800BFE00(arg0 + 4), arg0[6]);
+        func_8007BA98(
+            vs_battle_getShort(arg0 + 1), arg0[3], vs_battle_getShort(arg0 + 4), arg0[6]);
         D_800F4BF8 = 1;
         return 1;
     }
@@ -2213,7 +2216,7 @@ int func_800BADE0(u_char* arg0)
 
 int func_800BAE74(u_char* arg0, short arg1)
 {
-    func_800CCB9C(func_800BFE00(arg0 + 1));
+    func_800CCB9C(vs_battle_getShort(arg0 + 1));
     return 0;
 }
 
@@ -2226,11 +2229,11 @@ int func_800BAEA0(u_char* arg0, short arg1)
     short temp_s1;
     int var_v0;
 
-    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 1)), &sp10);
-    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 3)), &sp20);
+    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
+    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp20);
     temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = func_800BFE00(arg0 + 5);
+    temp_s0_2 = vs_battle_getShort(arg0 + 5);
     var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
     if (var_v0 < 0) {
         var_v0 += 0x7F;
@@ -2268,7 +2271,7 @@ int func_800BB288(u_char* arg0, short arg1)
 
 int func_800BB2B8(u_char* arg0, short arg1)
 {
-    func_800F9800(func_800BFE00(arg0 + 1));
+    func_800F9800(vs_battle_getShort(arg0 + 1));
     return 0;
 }
 
@@ -2301,7 +2304,7 @@ int func_800BB35C(u_char* arg0, short arg1)
 
 int func_800BB38C(u_char* arg0, short arg1)
 {
-    func_800BBE10(func_800BFE50(func_800BFE00(arg0 + 1)));
+    func_800BBE10(func_800BFE50(vs_battle_getShort(arg0 + 1)));
     return 0;
 }
 
@@ -2365,14 +2368,14 @@ int func_800BB504(u_char* arg0, short arg1)
 int func_800BB554(u_char* arg0, short arg1)
 {
     D_800F4C38[arg0[1]] = arg0 + 4;
-    return (int)&arg0[func_800BFE00(arg0 + 2)];
+    return (int)&arg0[vs_battle_getShort(arg0 + 2)];
 }
 
 int func_800BB5A4(u_char* arg0, short arg1) { return 3; }
 
 int func_800BB5AC(u_char* arg0, short arg1)
 {
-    _evtFile = func_800BFE00(arg0 + 1);
+    _evtFile = vs_battle_getShort(arg0 + 1);
     D_800F4C24 = vs_main_allocHeapR(0x1800);
     func_800C00E8(_evtFile, D_800F4C24);
     D_800F4C54 = 1;
@@ -2644,11 +2647,11 @@ int func_800BD444(u_char* arg0, short arg1)
     var_s0->unkA = arg0[4];
 
     if (var_s0->unkA == 0) {
-        var_s0->unk2 = func_800BFE00(arg0 + 1);
+        var_s0->unk2 = vs_battle_getShort(arg0 + 1);
         var_s0->unk0 = 1;
     } else {
         var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = func_800BFE00(arg0 + 1) - var_s0->unk2;
+        var_s0->unk6 = vs_battle_getShort(arg0 + 1) - var_s0->unk2;
         if (var_s0->unk6 < -(ONE / 2)) {
             var_s0->unk6 += ONE;
         } else if (var_s0->unk6 > (ONE / 2)) {
@@ -2961,8 +2964,8 @@ static int _vectorMagnitude(VECTOR* arg0)
 
 VECTOR* func_800BE7B8(VECTOR* arg0, u_char* arg1)
 {
-    setVector(arg0, func_800BFE00(arg1) * ONE, func_800BFE00(arg1 + 2) * ONE,
-        func_800BFE00(arg1 + 4) * ONE);
+    setVector(arg0, vs_battle_getShort(arg1) * ONE, vs_battle_getShort(arg1 + 2) * ONE,
+        vs_battle_getShort(arg1 + 4) * ONE);
     return arg0;
 }
 

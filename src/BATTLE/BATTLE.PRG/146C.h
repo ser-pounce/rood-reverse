@@ -787,21 +787,6 @@ typedef struct {
     int unk460;
 } vs_battle_charInitData;
 
-typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 13;
-    u_int unk0_29 : 3;
-    u_int unk4_0 : 8;
-    u_int unk4_8 : 5;
-    u_int unk4_13 : 2;
-    u_int unk4_15 : 1;
-    u_int unk4_16 : 10;
-    u_int unk4_26 : 5;
-    u_int unk4_31 : 1;
-    int unk8;
-} func_800B98C0_t;
-
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);
@@ -852,7 +837,7 @@ void func_8007BBB8(int, int);
 void func_8007BBD8(int, int, int);
 void func_8007BCCC(void);
 int func_8007BDD8(int);
-void func_8007BE10(int);
+int func_8007BE10(int);
 void func_8007BE20(int, int);
 void func_8007BEC4(int);
 int func_8007BEE4(void);
@@ -874,8 +859,8 @@ void func_8007C444(int, int, int);
 void func_8007C460(int);
 void func_8007C46C(int, int, int);
 void func_8007C4AC(int, int, int);
-void func_8007C580(func_800B98C0_t*, int, int);
-void func_8007C654(func_800B98C0_t*, int, int);
+void func_8007C580(D_80061068_t*, int, int);
+void func_8007C654(D_80061068_t*, int, int);
 void func_8007C8A4(int, int);
 int func_8007C928(u_int arg0, int arg1, func_8007C8F8_t_flags* arg2);
 void func_8007CA20(int, int, int);

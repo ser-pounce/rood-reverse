@@ -188,6 +188,7 @@ void func_800CB79C(void);
 int func_800CD064(int);
 void func_800CEF38(int);
 static int _vectorMagnitude(VECTOR*);
+static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
@@ -196,6 +197,7 @@ extern char D_800E9BE0[];
 extern char D_800E9BE8[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
+extern u_char D_800E9C1C[];
 extern u_char D_800E9C30[];
 extern u_char* D_800EB9B4;
 extern D_800EB9BC_t* D_800EB9BC;
@@ -1614,6 +1616,7 @@ int func_800B9F90(u_char* arg0, short arg1)
     return (D_800F4C2C == 2) * 4;
 }
 
+// https://decomp.me/scratch/kvMAx
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9FC0);
 
 int func_800BA0E4(u_char* arg0, short arg1)
@@ -2316,7 +2319,32 @@ void func_800BBE94(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBF14);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC1CC);
+void func_800BC1CC(short arg0, int arg1)
+{
+    VECTOR sp10;
+    VECTOR sp20;
+    int temp_s0;
+    short temp_v0;
+
+    if (D_800F4BA0 != 0) {
+        D_800F4BA0 = 0;
+        return;
+    }
+    func_8007CD70(&sp10, &sp20, arg0, (short)arg1);
+    _copyVector(&D_800F4BA4->unk0[1].unk24, &sp10);
+    _copyVector(&D_800F4BA4->unk0[0].unk24, &sp20);
+    temp_s0 = _vectorMagnitude(func_800BE66C(
+        (VECTOR*)0x1F800098, &D_800F4BA4->unk0[1].unk94, &D_800F4BA4->unk0[1].unk24));
+    temp_v0 = (temp_s0
+                  + _vectorMagnitude(func_800BE66C((VECTOR*)0x1F800098,
+                      &D_800F4BA4->unk0[0].unk94, &D_800F4BA4->unk0[0].unk24)))
+            / 0x28000;
+    if ((temp_v0 << 0x10) != 0) {
+        D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
+        func_800BC2E8(D_800E9C1C, 0);
+        func_800BC2E8(D_800E9C1C + 3, 0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC2E8);
 

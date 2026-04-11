@@ -1656,7 +1656,36 @@ int func_800B988C(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B98C0);
+int func_800B98C0(u_char* arg0, short arg1)
+{
+    func_800B98C0_t sp10;
+
+    if (D_800F4BE2 == 0) {
+
+        sp10.unk0_0 = arg0[1];
+        sp10.unk0_8 = arg0[2];
+        sp10.unk4_8 = arg0[3];
+        sp10.unk4_26 = arg0[5];
+        sp10.unk0_29 = arg0[4];
+        sp10.unk4_13 = arg0[6];
+        sp10.unk4_15 = arg0[7];
+        sp10.unk4_31 = arg0[7] >> 1;
+
+        if (arg0[1] == 0) {
+            func_8007C580(&sp10, arg0[8], arg0[9]);
+        } else {
+            func_8007BE10((arg0[7] >> 3) & 1);
+            func_8007C654(&sp10, arg0[8], arg0[9]);
+        }
+        D_800F4BE2 = arg0[7] & 4 ? 1 : 3;
+    }
+
+    if (D_800F4BE2 == 2) {
+        D_800F4BE2 = 0;
+        return 0;
+    }
+    return 1;
+}
 
 int func_800B9A40(u_char* arg0, short arg1)
 {
@@ -1766,6 +1795,7 @@ int func_800B9D74(u_char* arg0, short arg1)
     return 0;
 }
 
+// https://decomp.me/scratch/cNU0W
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9DB4);
 
 int func_800B9F28(u_char* arg0, short arg1)

@@ -2338,7 +2338,29 @@ int func_800BB7C4(int arg0, SVECTOR* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB874);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB9B0);
+void func_800BB9B0(void)
+{
+    short i;
+    short temp_a0;
+    D_800F4B30_t* var_s0 = D_800F4B30;
+    D_800EB9BC_t* var_s1 = D_800EB9BC;
+
+    for (i = 0; i < 3; ++i, ++var_s0, ++var_s1) {
+        if (var_s0->unk3 != 0) {
+            var_s0->unk2 += vs_gametime_tickspeed >> 1;
+            temp_a0 = func_800BFEBC(var_s0->unk1, var_s0->unk2, var_s0->unk3);
+            if (D_800EB9BC != NULL) {
+                var_s1->unk8 = (var_s0->unk4 + ((var_s0->unk8 * temp_a0) >> 0xC));
+                var_s1->unkA = (var_s0->unk6 + ((var_s0->unkA * temp_a0) >> 0xC));
+                var_s1->unkC = (var_s0->unkC + ((var_s0->unkE * temp_a0) >> 0xC));
+                var_s1->unk0_24 = (var_s0->unk10 + ((var_s0->unk12 * temp_a0) >> 0xC));
+            }
+            if (var_s0->unk2 >= var_s0->unk3) {
+                var_s0->unk3 = 0;
+            }
+        }
+    }
+}
 
 void func_800BBAFC(void)
 {

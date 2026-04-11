@@ -200,6 +200,9 @@ extern char D_800E9BE8[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
 extern u_char D_800E9C1C[];
+extern short D_800E9C24[];
+extern u_char D_800E9C28;
+extern u_char D_800E9C2C;
 extern u_char D_800E9C30[];
 extern u_char* D_800EB9B4;
 extern D_800EB9BC_t* D_800EB9BC;
@@ -2819,7 +2822,39 @@ void func_800BE3A0(void)
     c2->unk0[0].unk6 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE3D0);
+void func_800BE3D0(char arg0)
+{
+    VECTOR sp10;
+    VECTOR sp20;
+    VECTOR sp30;
+    VECTOR sp40;
+    u_char temp_s0;
+    u_char temp_s3;
+    int new_var;
+
+    temp_s3 = func_800BEBF4(0xAF);
+    temp_s0 = func_800BEBF4(0xB0);
+    new_var = temp_s3 - 1;
+    func_8007CD70(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
+
+    sp30.vy += D_800E9C24[temp_s0] << 0xC;
+    sp10.vy += D_800E9C24[temp_s0] << 0xC;
+
+    _copyVector(&D_800F4BA4->unk0[0].unk94, &sp10);
+    _copyVector(&D_800F4BA4->unk0[0].unkA4, &sp30);
+    _copyVector(&D_800F4BA4->unk0[1].unkA4, &sp10);
+    _copyVector(&D_800F4BA4->unk0[1].unk94, &sp30);
+
+    D_800F4BA4->unk0[0].unk0 = 0xF;
+
+    func_8007CD70(&sp40, &sp20, temp_s3, temp_s0 + 1);
+
+    _copyVector(&D_800F4BA4->unk0[1].unk24, &sp40);
+    _copyVector(&D_800F4BA4->unk0[0].unk24, &sp20);
+
+    func_800BC2E8(&D_800E9C28, 0);
+    func_800BC2E8(&D_800E9C2C, 0);
+}
 
 void func_800BE53C(D_800F4BA4_t2* arg0)
 {

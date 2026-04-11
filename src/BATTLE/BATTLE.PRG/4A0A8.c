@@ -1862,7 +1862,25 @@ int func_800BAC38(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAC5C);
+int func_800BAC5C(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t sp10;
+    func_8006EBF8_t sp20;
+    short temp_s3;
+    short temp_v0;
+    short temp_v0_2;
+    int temp_lo;
+
+    temp_s3 = func_800BFE00(arg0 + 6);
+    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 1)), &sp10);
+    func_800A1108(func_800BFE50(func_800BFE00(arg0 + 3)), &sp20);
+    temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
+    temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
+    temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
+    vs_battle_setStateFlag(temp_s3, temp_lo < 0x100 ? temp_lo & 0xFF : -1);
+    vs_battle_setStateFlag(temp_s3 + 1, (ratan2(temp_v0, temp_v0_2) >> 4) & 0xFF);
+    return 0;
+}
 
 int func_800BAD78(u_char* arg0, short arg1)
 {

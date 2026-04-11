@@ -6347,10 +6347,10 @@ char func_8007CFCC(int arg0)
     return 0;
 }
 
-void func_8007CFF8(int arg0, RECT* arg1)
+void func_8007CFF8(int arg0, SVECTOR* arg1)
 {
     func_800A0A1C(arg0, 2);
-    func_800E527C(arg0, arg1->x, arg1->w);
+    func_800E527C(arg0, arg1->vx, arg1->vz);
 }
 
 int func_8007D03C(int arg0)

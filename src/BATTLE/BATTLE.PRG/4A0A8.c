@@ -819,13 +819,13 @@ int func_800B7574(u_char* arg0, short arg1)
 
 int func_800B75F4(u_char* arg0, short arg1)
 {
-    RECT sp10;
+    SVECTOR sp10;
     u_short temp_v0 = func_800BFE50(func_800BFE00(arg0 + 1));
-    sp10.x = (arg0[3] << 7) + 0x40;
-    sp10.y = 0;
-    sp10.w = (arg0[5] << 7) + 0x40;
+    sp10.vx = (arg0[3] << 7) + 0x40;
+    sp10.vy = 0;
+    sp10.vz = (arg0[5] << 7) + 0x40;
     if (D_800F4C2C == 2) {
-        sp10.h = -0x8000;
+        sp10.pad = -0x8000;
         func_800A9D90(temp_v0, &sp10, 0);
     } else {
         func_8007CFF8(temp_v0, &sp10);
@@ -931,7 +931,38 @@ int func_800B7A98(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7B58);
+int func_800B7B58(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t sp10;
+    short temp_s3;
+    short temp_s4;
+    int temp_s1;
+    u_short temp_s2;
+
+    temp_s2 = func_800BFE50(func_800BFE00(arg0 + 1));
+    temp_s1 = func_800BFE00(arg0 + 3) >> 1;
+    temp_s3 = func_800BFE00(arg0 + 5);
+    temp_s4 = func_800BFE00(arg0 + 7);
+
+    if (arg0[3] & 1) {
+        func_800A1108(temp_s2, &sp10);
+        applyVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4, +=);
+    } else {
+        setVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4);
+    }
+
+    sp10.unk0.unk4.pad = -0x8000;
+
+    if (D_800F4C2C == 2) {
+        func_800A9D90(temp_s2, &sp10.unk0.unk4, 0);
+    } else {
+        func_800A9D90(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
+    }
+
+    func_8009DC8C(temp_s2);
+    D_800F4B70[temp_s2] = 1;
+    return 0;
+}
 
 int func_800B7C90(u_char* arg0, short arg1)
 {
@@ -947,13 +978,13 @@ int func_800B7C90(u_char* arg0, short arg1)
 
 int func_800B7D10(u_char* arg0, short arg1)
 {
-    RECT sp10;
+    SVECTOR sp10;
     u_short temp_s1 = func_800BFE50(func_800BFE00(arg0 + 1) & 0xFFFF);
-    sp10.x = func_800BFE00(arg0 + 3);
-    sp10.y = 0;
-    sp10.w = func_800BFE00(arg0 + 5);
+    sp10.vx = func_800BFE00(arg0 + 3);
+    sp10.vy = 0;
+    sp10.vz = func_800BFE00(arg0 + 5);
     if (D_800F4C2C == 2) {
-        sp10.h = -0x8000;
+        sp10.pad = -0x8000;
         func_800A9D90(temp_s1, &sp10, 0);
     } else {
         func_8007CFF8(temp_s1, &sp10);

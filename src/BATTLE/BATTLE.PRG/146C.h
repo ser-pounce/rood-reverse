@@ -872,7 +872,7 @@ int func_8007CCAC(void);
 void func_8007CD14(int arg0, int arg1);
 void func_8007CD70(VECTOR*, VECTOR*, int, int);
 vs_battle_actor* func_8007CF64(int actorId);
-void func_8007CFF8(int, RECT*);
+void func_8007CFF8(int, SVECTOR*);
 int func_8007D03C(int);
 int func_8007D08C(int, int);
 int func_8007D15C(int);

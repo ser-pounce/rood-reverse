@@ -2727,7 +2727,50 @@ void func_800BDF6C(func_800BDF6C_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE01C);
+int func_800BE01C(func_800BDF6C_t* arg0)
+{
+    int temp_s1;
+    int var_a0;
+    int var_a0_2;
+    int var_v0;
+    int var_v0_2;
+    u_char temp_v0;
+    u_char temp_v1;
+    u_char temp_v1_2;
+
+    temp_s1 = arg0->unk4 << 0xC;
+
+    if (arg0->unk9 == 0) {
+        return 0;
+    }
+
+    arg0->unk8 += vs_gametime_tickspeed >> 1;
+    if (arg0->unk9 < arg0->unk8) {
+        arg0->unk8 = arg0->unk9;
+    }
+
+    switch (arg0->unk1) {
+    case 0:
+        *(int*)0x1F800088 = 0x1000;
+        break;
+    case 1:
+        *(int*)0x1F800088 = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        break;
+    case 2:
+        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        break;
+    case 3:
+        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        break;
+    }
+    arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
+                     * *(int*)0x1F800088)
+              >> 0xC;
+    if (arg0->unk8 == arg0->unk9) {
+        arg0->unk9 = 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
 

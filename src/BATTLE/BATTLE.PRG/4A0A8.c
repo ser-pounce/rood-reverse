@@ -934,7 +934,39 @@ int func_800B784C(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B792C);
+void func_800A9988(int, SVECTOR*, int, int);
+
+int func_800B792C(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t sp10;
+
+    u_short temp_s4 = func_800BFE50(func_800BFE00(arg0 + 1));
+    int temp_s1 = func_800BFE00(arg0 + 3) >> 1;
+    short temp_s2 = func_800BFE00(arg0 + 5);
+    short temp_s3 = func_800BFE00(arg0 + 7);
+
+    if (arg0[3] & 1) {
+        func_800A1108(temp_s4, &sp10);
+        applyVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3, +=);
+    } else {
+        setVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3);
+    }
+    if (arg0[9] != 0xFF) {
+        char v = 0x10;
+        sp10.unk0.unk4.pad = arg0[9] * v;
+    } else {
+        sp10.unk0.unk4.pad = -0x8000;
+    }
+    if (D_800F4C2C == 2) {
+        func_800A9988(temp_s4, &sp10.unk0.unk4, 0, 0);
+    } else {
+        func_800A9988(temp_s4, &sp10.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
+            arg0[11] != 0xFF ? arg0[11] : -1);
+    }
+    func_8009DC8C(temp_s4);
+    D_800F4B70[temp_s4] = 1;
+    return 0;
+}
 
 int func_800B7A98(u_char* arg0, short arg1)
 {
@@ -2729,22 +2761,14 @@ void func_800BDF6C(func_800BDF6C_t* arg0)
 
 int func_800BE01C(func_800BDF6C_t* arg0)
 {
-    int temp_s1;
-    int var_a0;
-    int var_a0_2;
-    int var_v0;
-    int var_v0_2;
-    u_char temp_v0;
-    u_char temp_v1;
-    u_char temp_v1_2;
-
-    temp_s1 = arg0->unk4 << 0xC;
+    int temp_s1 = arg0->unk4 << 0xC;
 
     if (arg0->unk9 == 0) {
         return 0;
     }
 
     arg0->unk8 += vs_gametime_tickspeed >> 1;
+
     if (arg0->unk9 < arg0->unk8) {
         arg0->unk8 = arg0->unk9;
     }

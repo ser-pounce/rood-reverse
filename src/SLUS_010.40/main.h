@@ -373,7 +373,7 @@ extern void* D_80055C80[];
 extern short D_8005DFD4;
 extern short D_8005DFD6;
 extern short D_8005DFD8;
-extern short D_8005DFDA;
+extern u_short D_8005DFDA;
 extern u_int D_8005E040;
 extern void* D_8005E0C0[];
 extern int vs_main_nearClip;

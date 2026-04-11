@@ -190,6 +190,8 @@ void func_800CEF38(int);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 
+extern void* D_1F800000[];
+
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
 extern char D_800E9B58[];
@@ -202,6 +204,7 @@ extern u_char D_800E9C30[];
 extern u_char* D_800EB9B4;
 extern D_800EB9BC_t* D_800EB9BC;
 extern int D_800F19C8;
+extern u_short D_800F4B20;
 extern u_short D_800F4B28[];
 extern D_800F4B30_t D_800F4B30[];
 extern char D_800F4B70[];
@@ -2336,7 +2339,39 @@ int func_800BB7C4(int arg0, SVECTOR* arg1)
     return arg1->vz;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB874);
+void func_800BB874(void)
+{
+    LINE_F2* var_s3;
+    short i;
+    u_int temp_v0_2;
+
+    void** p = (void**)0x1F800000;
+    var_s3 = (LINE_F2*)p[0];
+
+    ++D_800F4B20;
+
+    for (i = 0; i < D_8005DFDA; ++i) {
+        u_short v;
+        temp_v0_2 = (((i + (D_800F4B20 >> 1)) & 1) << 5);
+        v = temp_v0_2;
+        if (temp_v0_2 != 0) {
+            SetLineF2(var_s3);
+            var_s3->r0 = var_s3->g0 = var_s3->b0 = v;
+            setSemiTrans(var_s3, 1);
+            var_s3->x0 = 0;
+            var_s3->y0 = var_s3->y1 = i;
+            var_s3->x1 = D_8005DFD6;
+            p = (void**)0x1F800000;
+            AddPrim(p[2], var_s3++);
+        }
+    }
+
+    SetDrawTPage((DR_TPAGE*)var_s3, 1, 1, GetTPage(0, 2, 0, 0));
+
+    p = (void**)0x1F800000;
+    AddPrim(p[2], var_s3);
+    p[0] = (LINE_F2*)&var_s3->x0;
+}
 
 void func_800BB9B0(void)
 {

@@ -156,10 +156,16 @@ typedef struct {
     int unk0;
 } func_800BDBB4_t2;
 
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2[22];
+} func_800BB68C_t;
+
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
-void func_800BB68C(u_short, char*);
-u_short func_800BB788(char* arg0);
+void func_800BB68C(u_short, func_800BB68C_t*);
+u_short func_800BB788(func_800BB68C_t* arg0);
 void func_800BBE10(u_short);
 void func_800BBE94(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
@@ -713,11 +719,11 @@ int func_800B7398(u_char* arg0)
 
 int func_800B7428(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(sp10);
+        int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -769,17 +775,17 @@ int func_800B76A8(u_char* arg0)
 
 int func_800B770C(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    func_800BB68C_t sp10;
     int temp_s0;
     int var_s1;
     int var_s2;
     int temp_v0;
     u_int a1;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
 
     while (1) {
-        temp_s0 = func_800BB788(sp10);
+        temp_s0 = func_800BB788(&sp10);
         if (temp_s0 == 1) {
             break;
         }
@@ -935,11 +941,11 @@ int func_800B804C(u_char* arg0, short arg1)
 
 int func_800B80B4(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(sp10);
+        int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -1151,13 +1157,13 @@ int func_800B8788(u_char* arg0, short arg1)
 
 int func_800B884C(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    func_800BB68C_t sp10;
     int temp_a0;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
 
     while (1) {
-        temp_a0 = func_800BB788(sp10) & 0xFFFF;
+        temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -1860,11 +1866,11 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BAC5C);
 
 int func_800BAD78(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    func_800BB68C_t sp10;
 
-    func_800BB68C(func_800BFE00(arg0 + 1), sp10);
+    func_800BB68C(func_800BFE00(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(sp10);
+        int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -2082,16 +2088,44 @@ int func_800BB668(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB68C);
-
-u_short func_800BB788(char* arg0)
+void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
 {
-    if (arg0[0] == 0) {
+    vs_battle_actor* temp_v0;
+    short var_s3 = 0;
+    arg1->unk0 = 0;
+    arg1->unk1 = 0;
+
+    if (arg0 & 0x2000) {
+        short i;
+        short var_a0 = -1;
+        if (arg0 == 0x2003) {
+            var_a0 = 4;
+        }
+
+        for (i = 0; i < 17; ++i) {
+            temp_v0 = func_8007CF64(i);
+            if (temp_v0 != NULL) {
+                if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
+                    arg1->unk2[var_s3++] = i;
+                    ++arg1->unk0;
+                }
+            }
+        }
+
+        return;
+    }
+    ++arg1->unk0;
+    arg1->unk2[0] = func_800BFE50(arg0);
+}
+
+u_short func_800BB788(func_800BB68C_t* arg0)
+{
+    if (arg0->unk0 == 0) {
         return 1;
     }
 
-    --arg0[0];
-    return arg0[(u_int)(arg0[1]++ + 2)];
+    --arg0->unk0;
+    return arg0->unk2[(u_int)(arg0->unk1++)];
 }
 
 int func_800BB7C4(int arg0, SVECTOR* arg1)

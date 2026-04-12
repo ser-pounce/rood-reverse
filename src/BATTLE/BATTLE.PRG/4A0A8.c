@@ -234,6 +234,7 @@ extern char D_800F4C2C;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
+extern short D_800F4C50;
 extern short D_800F4C54;
 extern short D_800F4C58[];
 extern char D_800F4C60;
@@ -2629,6 +2630,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCA8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCFB4);
 
+// https://decomp.me/scratch/gzNKP
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD2B8);
 
 int func_800BD444(u_char* arg0, short arg1)
@@ -3015,7 +3017,43 @@ static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
     VectorNormal(&sp10, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE98C);
+int func_800BE98C(void* arg0, u_short arg1, void* arg2, u_short arg3, void* arg4,
+    u_short arg5, int arg6)
+{
+    vs_battle_setStateFlag(0xA9, 0);
+    if (arg6 == 0) {
+        short i;
+        for (i = 32; i < 64; ++i) {
+            vs_battle_setStateFlag(i, 0);
+        }
+    }
+    if (arg1 != 0) {
+        D_800F4BAC = vs_main_allocHeap(arg1);
+        memcpy(D_800F4BAC, arg0, arg1);
+    } else {
+        D_800F4BAC = NULL;
+    }
+    if (arg5 != 0) {
+        D_800F4BE8 = vs_main_allocHeap(arg5);
+        memcpy(D_800F4BE8, arg4, arg5);
+    } else {
+        D_800F4BE8 = NULL;
+    }
+    if (D_800F4BE2 == 1) {
+        D_800F4BE2 = 2;
+        return 1;
+    }
+    if (D_800F4BE2 == 3) {
+        D_800F4C34 = 0;
+        D_800F4BE2 = 0;
+        D_800F4BB8 = 0;
+    }
+    D_800F4C50 = arg3 != 0;
+    if (D_800F4C50 != 0) {
+        memcpy(D_800F4C30, arg2, arg3);
+    }
+    return 0;
+}
 
 int func_800BEB00(void) { return D_800F4C34; }
 

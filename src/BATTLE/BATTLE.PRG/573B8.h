@@ -7,7 +7,7 @@ int func_800BFE50(u_short);
 void func_800C00E8(int, void*);
 u_long* func_800C0214(int, int);
 u_long* func_800C0224(int, int, int, u_long*);
-void func_800C02E0(void);
+void vs_battle_playInvalidSfx(void);
 void func_800C031C(void);
 void func_800C05B4(void);
 void func_800C06E0(void);

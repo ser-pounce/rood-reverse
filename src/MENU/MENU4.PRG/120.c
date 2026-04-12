@@ -1960,7 +1960,7 @@ int vs_menu4_exec(char* state)
                         *state = 9;
                         break;
                     }
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 }
                 if (vs_main_buttonsState & PADL2) {
                     userInput = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickX);

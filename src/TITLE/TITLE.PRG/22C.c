@@ -685,7 +685,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.saveLocation = 0x30;
     s5->stats.mapCompletion = 0;
     memset(&vs_battle_inventory.items, 0, sizeof(vs_battle_inventory.items));
-    memset(&D_800619D8.unk70, 0, sizeof(D_800619D8.unk70));
+    memset(&D_800619D8.misc, 0, sizeof(D_800619D8.misc));
     memset(&savedata2->containerData.misc, 0,
         sizeof savedata2->containerData.misc / 4); // Why / 4?
     s5->stats.clearCount = vs_main_stateFlags.clearCount;

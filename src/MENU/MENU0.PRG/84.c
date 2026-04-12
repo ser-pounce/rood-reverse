@@ -295,7 +295,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
                 selectedRow += i;
                 break;
             } else {
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
         }
         if (vs_main_buttonRepeat & PADLright) {

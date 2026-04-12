@@ -495,7 +495,7 @@ void func_800C97BC(void)
                 func_800FAEBC(0);
                 return;
             }
-            func_800FAAC8(var_s0);
+            vs_mainMenu_exec(var_s0);
             return;
         }
         if (temp_s1 == 0) {
@@ -677,7 +677,7 @@ int func_800CACD0(int arg0, int arg1)
         }
         return 1;
     }
-    func_800C02E0();
+    vs_battle_playInvalidSfx();
     return 0;
 }
 
@@ -729,7 +729,7 @@ int func_800CB030(int arg0)
     }
 
     if (var_a1 != 0) {
-        func_800C02E0();
+        vs_battle_playInvalidSfx();
         var_a0 = 0;
         D_800F4E98.unk2 = 0;
         D_800F4E98.unk0 = 2;

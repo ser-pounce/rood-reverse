@@ -693,7 +693,7 @@ static int _pollItemNavigation(int itemCategory, int currentSelection)
 
         if ((vs_main_buttonsPressed.all & (PADL1 | PADR1))
             && (currentSelection == previousSelection)) {
-            func_800C02E0();
+            vs_battle_playInvalidSfx();
         }
     }
     return currentSelection;
@@ -867,7 +867,7 @@ int _weaponNavigation(int weaponIndex)
         if (D_80109A31 < 10) {
             ++D_80109A31;
             if (D_80109A31 < 6) {
-                func_800FC510(D_80109A31,
+                vs_mainMenu_initSetWeaponGemMenu(D_80109A31,
                     vs_menuD_containerData->indices.weapons[_selectedWeapon], 1);
             }
             break;
@@ -889,7 +889,7 @@ int _weaponNavigation(int weaponIndex)
 
                 func_80104078(D_80109A32, text, rowId, selectedWeapon);
                 for (i = 1; i < 6; ++i) {
-                    func_800FC510(
+                    vs_mainMenu_initSetWeaponGemMenu(
                         i, vs_menuD_containerData->indices.weapons[selectedWeapon], 0);
                 }
             }
@@ -1068,7 +1068,7 @@ int _shieldNavigation(int arg0)
         if (D_80109A3F < 10) {
             ++D_80109A3F;
             if (D_80109A3F < 4) {
-                func_800FC704(
+                vs_mainMenu_initSetShieldGemMenu(
                     D_80109A3F, vs_menuD_containerData->indices.shields[D_80109A41], 1);
             }
             break;
@@ -1091,7 +1091,7 @@ int _shieldNavigation(int arg0)
                 func_800FD5A0(i);
                 func_80104078(D_80109A40, sp18, sp20, temp_v0_2);
                 for (i = 1; i < 4; ++i) {
-                    func_800FC704(
+                    vs_mainMenu_initSetShieldGemMenu(
                         i, vs_menuD_containerData->indices.shields[temp_v0_2], 0);
                 }
                 return 0;
@@ -2488,7 +2488,7 @@ loop_1:
                 break;
             }
             if (vs_main_buttonsPressed.all & 0xA0) {
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
         } else {
             int s6 = 1;
@@ -2506,7 +2506,7 @@ loop_1:
                         D_80109A68 = 7;
                         break;
                     }
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 }
             } else if (D_80109A6C > 0) {
                 if (var_s4 == 7) {
@@ -2612,7 +2612,7 @@ loop_1:
         break;
     case 6:
         if (vs_main_buttonsPressed.all & 0x80) {
-            func_800C02E0();
+            vs_battle_playInvalidSfx();
         }
         temp_s3 = vs_mainmenu_getSelectedRow() + 1;
         if (temp_s3 != 0) {
@@ -3123,12 +3123,12 @@ int func_80108C6C(char* arg0)
     int var_v0;
     vs_battle_menuItem_t* menuItem;
 
-    D_80102470 = vs_menuD_containerData->data.weapons;
-    D_80102464 = vs_menuD_containerData->data.blades;
-    D_80102460 = vs_menuD_containerData->data.grips;
-    D_8010246C = vs_menuD_containerData->data.shields;
-    D_80102468 = vs_menuD_containerData->data.armor;
-    D_80102458 = vs_menuD_containerData->data.gems;
+    vs_mainMenu_weapons = vs_menuD_containerData->data.weapons;
+    vs_mainMenu_blades = vs_menuD_containerData->data.blades;
+    vs_mainMenu_grips = vs_menuD_containerData->data.grips;
+    vs_mainMenu_shields = vs_menuD_containerData->data.shields;
+    vs_mainMenu_armor = vs_menuD_containerData->data.armor;
+    vs_mainMenu_gems = vs_menuD_containerData->data.gems;
 
     switch (*arg0) {
     case 0:

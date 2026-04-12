@@ -1,4 +1,4 @@
-_testMemcardEvents = 0x80102A60;
+_testMemcardEvents = 0x80102A60; // allow_duplicated:True
 _resetMemcardEvents = 0x80102ADC;
 _drawImage = 0x80102B3C;
 _readImage = 0x80102B6C;

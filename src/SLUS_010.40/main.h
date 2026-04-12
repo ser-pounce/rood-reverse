@@ -403,7 +403,7 @@ extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
-extern D_800619D8_t D_800619D8;
+extern vs_main_inventoryIndices D_800619D8;
 extern vs_main_stickPos vs_main_stickPosBuf;
 
 int vs_main_gametimeUpdate(int vsync);

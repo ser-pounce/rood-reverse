@@ -97,7 +97,7 @@ typedef struct {
     vs_main_settings_t settings;
     D_80060068_t unk6C8;
     vs_battle_inventory_t inventory;
-    D_800619D8_t unk16C8;
+    vs_main_inventoryIndices unk16C8;
     D_80061068_t unk1778;
     vs_main_scoredata_t scoreData;
     int unk1898;
@@ -2137,7 +2137,7 @@ static int _showSaveFilesMenu(int initPort)
                     state = slotSelected;
                     break;
                 } else {
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 }
             }
             if (vs_main_buttonRepeat & PADLup) {
@@ -3482,7 +3482,7 @@ static int _promptYesNo(int initParams)
         if (cancelWithMenuButton == 0) {
             if (buttons & PADRup) {
                 buttons -= PADRup;
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
         }
         if (buttons & (PADRup | PADRright | PADRdown)) {

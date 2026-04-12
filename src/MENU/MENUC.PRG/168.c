@@ -499,7 +499,7 @@ static void _navigateItemsList(int arg0)
             }
             if (vs_main_buttonsPressed.all & PADRright) {
                 if (menuItem->unk7 != 0) {
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 } else {
                     vs_main_freeHeapR(_itemsList);
                     _itemsList = NULL;
@@ -722,7 +722,7 @@ static int _assembleBladeMenu(int params)
             _availableItems[0] = bladeToAssemble;
 
             for (i = 0; i < 16; ++i) {
-                itemId = D_800619D8.unk8[i];
+                itemId = D_800619D8.blades[i];
 
                 if ((itemId != 0) && (itemId != bladeToAssemble)) {
 
@@ -836,7 +836,7 @@ static int _assembleGripMenu(int params)
 
             for (i = 0; i < 16; ++i) {
 
-                itemId = D_800619D8.unk18[i];
+                itemId = D_800619D8.grips[i];
 
                 if ((itemId != 0) && (itemId != gripToAssemble)) {
 
@@ -948,7 +948,7 @@ static int _attachGem(int params)
 
             for (i = 0; i < 48; ++i) {
 
-                itemId = D_800619D8.unk40[i];
+                itemId = D_800619D8.gems[i];
 
                 if ((itemId != 0) && (itemId != gemToAttach)) {
 
@@ -1550,7 +1550,7 @@ static int _attachGemsMenu(int arg0)
             itemInfo = 0;
 
             if (isShield != 0) {
-                var_s2 = D_800619D8.unk28[j];
+                var_s2 = D_800619D8.shields[j];
                 if (var_s2 != 0) {
                     shield = &vs_battle_inventory.shields[var_s2 - 1];
                     vs_mainMenu_initUiShield(
@@ -1558,7 +1558,7 @@ static int _attachGemsMenu(int arg0)
                     itemInfo = shield->base.gemSlots;
                 }
             } else {
-                var_s2 = D_800619D8.unk0[j];
+                var_s2 = D_800619D8.weapons[j];
                 if (var_s2 != 0) {
                     weapon = &vs_battle_inventory.weapons[var_s2 - 1];
                     vs_mainMenu_initUiWeapon(
@@ -1647,9 +1647,11 @@ static int _attachGemsMenu(int arg0)
         if (D_8010BC21 < 5) {
             ++D_8010BC21;
             if (isShield != 0) {
-                menuItem = func_800FC704(D_8010BC21, _combiningItem + 1, 1);
+                menuItem =
+                    vs_mainMenu_initSetShieldGemMenu(D_8010BC21, _combiningItem + 1, 1);
             } else {
-                menuItem = func_800FC510(D_8010BC21, _combiningItem + 1, 1);
+                menuItem =
+                    vs_mainMenu_initSetWeaponGemMenu(D_8010BC21, _combiningItem + 1, 1);
             }
             if (menuItem != NULL) {
                 if (menuItem->unk7 != 0) {
@@ -1954,7 +1956,7 @@ static int _disassembleMenu(int arg0)
             count = 0;
             for (i = 0; i < 8; i++) {
                 if (isShield != 0) {
-                    selectedItem = D_800619D8.unk28[i];
+                    selectedItem = D_800619D8.shields[i];
                     if (selectedItem != 0) {
                         shield = &vs_battle_inventory.shields[selectedItem - 1];
                         vs_mainMenu_initUiShield(shield, &menuText[count * 2],
@@ -1975,7 +1977,7 @@ static int _disassembleMenu(int arg0)
                         _availableItems[count] = selectedItem;
                     }
                 } else {
-                    selectedItem = D_800619D8.unk0[i];
+                    selectedItem = D_800619D8.weapons[i];
                     if (selectedItem != 0) {
                         vs_mainMenu_initUiWeapon(
                             &vs_battle_inventory.weapons[selectedItem - 1],
@@ -2033,9 +2035,9 @@ static int _disassembleMenu(int arg0)
         if (D_8010BC3D < 5) {
             ++D_8010BC3D;
             if (isShield != 0) {
-                func_800FC704(D_8010BC3D, _combiningItem + 1, 1);
+                vs_mainMenu_initSetShieldGemMenu(D_8010BC3D, _combiningItem + 1, 1);
             } else {
-                func_800FC510(D_8010BC3D, _combiningItem + 1, 1);
+                vs_mainMenu_initSetWeaponGemMenu(D_8010BC3D, _combiningItem + 1, 1);
             }
             break;
         }
@@ -2212,7 +2214,7 @@ static int _renameWeaponMenu(int arg0)
         if (vs_mainmenu_ready() != 0) {
             int count = 0;
             for (i = 0; i < 8; ++i) {
-                itemId = D_800619D8.unk0[i];
+                itemId = D_800619D8.weapons[i];
                 if (itemId != 0) {
                     vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[itemId - 1],
                         &menuText[count * 2], &rowTypes[count], vs_battle_stringBuf);
@@ -2264,7 +2266,7 @@ static int _renameWeaponMenu(int arg0)
     case 4:
         if (D_8010BC49 < 5) {
             ++D_8010BC49;
-            func_800FC510(D_8010BC49, _combiningItem + 1, 1);
+            vs_mainMenu_initSetWeaponGemMenu(D_8010BC49, _combiningItem + 1, 1);
             return 0;
         }
         _confirmationPrompt(1);
@@ -2357,7 +2359,7 @@ static int _repairMenu(int arg0)
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairComplete]);
 
         for (i = 0; i < 16; ++i) {
-            new_var = D_800619D8.unk8[i];
+            new_var = D_800619D8.blades[i];
             if (new_var != 0) {
                 vs_battle_inventoryBlade* blade =
                     &vs_battle_inventory.blades[new_var - 1];
@@ -2375,7 +2377,7 @@ static int _repairMenu(int arg0)
         }
 
         for (i = 0; i < 8; ++i) {
-            new_var = D_800619D8.unk0[i];
+            new_var = D_800619D8.weapons[i];
             if (new_var != 0) {
                 vs_battle_inventoryWeapon* weapon =
                     &vs_battle_inventory.weapons[new_var - 1];
@@ -2386,7 +2388,7 @@ static int _repairMenu(int arg0)
         }
 
         for (i = 0; i < 8; ++i) {
-            new_var = D_800619D8.unk28[i];
+            new_var = D_800619D8.shields[i];
             if (new_var != 0) {
                 vs_battle_inventoryShield* shield =
                     &vs_battle_inventory.shields[new_var - 1];
@@ -2408,7 +2410,7 @@ static int _repairMenu(int arg0)
         }
 
         for (i = 0; i < 16; ++i) {
-            new_var = D_800619D8.unk30[i];
+            new_var = D_800619D8.armor[i];
             if (new_var != 0) {
                 vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[new_var - 1];
                 if (armor->category != 7) {
@@ -2622,7 +2624,7 @@ static int _selectBlade(int arg0)
         count = 1;
 
         for (i = 0; i < 16; ++i) {
-            itemId = D_800619D8.unk8[i];
+            itemId = D_800619D8.blades[i];
             if ((itemId != 0) && (itemId != D_8010BD10[0]) && (itemId != D_8010BD10[1])) {
                 int new_var = itemId;
                 blade = &vs_battle_inventory.blades[itemId - 1];
@@ -2809,7 +2811,7 @@ static int _combineBladeMenu(int arg0)
                 i_2 = D_8010BC63;
                 if (vs_main_buttonsPressed.all & PADRright) {
                     if (i_2 == 0) {
-                        func_800C02E0();
+                        vs_battle_playInvalidSfx();
                     } else {
                         vs_battle_playMenuSelectSfx();
                         if (i_2 == 3) {
@@ -3118,7 +3120,7 @@ static int _selectShields(int arg0)
             rowType = 1;
 
             for (i = 0; i < 8; ++i) {
-                itemId = D_800619D8.unk28[i];
+                itemId = D_800619D8.shields[i];
                 if ((itemId != 0) && (itemId != _itemsToCombine[0])
                     && (itemId != _itemsToCombine[1])) {
                     shield = &vs_battle_inventory.shields[itemId - 1];
@@ -3299,7 +3301,7 @@ static int _combineShieldMenu(int arg0)
                 temp_s2 = D_8010BC6F;
                 if (vs_main_buttonsPressed.all & 0x20) {
                     if (temp_s2 == 0) {
-                        func_800C02E0();
+                        vs_battle_playInvalidSfx();
                     } else {
                         vs_battle_playMenuSelectSfx();
                         if (temp_s2 == 3) {
@@ -3599,7 +3601,7 @@ static int _initUiArmor(int arg0)
             var_s4 = 1;
 
             for (i = 0; i < 16; ++i) {
-                itemId = D_800619D8.unk30[i];
+                itemId = D_800619D8.armor[i];
                 if ((itemId != 0) && (itemId != D_8010BD7C[0])
                     && (itemId != D_8010BD7C[1])) {
                     var_s2 = &vs_battle_inventory.armor[itemId - 1];
@@ -3777,7 +3779,7 @@ static int _combineArmorMenu(int arg0)
                 i_2 = D_8010BC7B;
                 if (vs_main_buttonsPressed.all & PADRright) {
                     if (i_2 == 0) {
-                        func_800C02E0();
+                        vs_battle_playInvalidSfx();
                     } else {
                         vs_battle_playMenuSelectSfx();
                         if (i_2 == 3) {

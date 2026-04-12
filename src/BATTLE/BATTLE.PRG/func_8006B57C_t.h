@@ -100,15 +100,6 @@ typedef struct {
 } vs_battle_inventoryShield;
 
 typedef struct {
-    char difficultyFlags;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_inventoryArmor shield;
-    vs_battle_inventoryGem gems[3];
-} vs_battle_lootedShield;
-
-typedef struct {
     u_short id;
     char count;
     char index;
@@ -141,18 +132,18 @@ typedef struct {
 } vs_menu_container;
 
 typedef struct {
-    char unk0[8];
-    char unk8[16];
-    char unk18[16];
-    char unk28[8];
-    char unk30[16];
-    char unk40[48];
-    char unk70[64];
-} D_800619D8_t;
+    char weapons[8];
+    char blades[16];
+    char grips[16];
+    char shields[8];
+    char armor[16];
+    char gems[48];
+    char misc[64];
+} vs_main_inventoryIndices;
 
 typedef struct {
     char unk0[15][256];
-    D_800619D8_t unkF00;
+    vs_main_inventoryIndices unkF00;
     vs_menu_containerData unkFB0;
     vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
@@ -199,13 +190,15 @@ typedef struct {
     char unk3;
     vs_battle_inventoryGrip grip;
 } vs_battle_lootedGrip;
+
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryArmor accessory;
-} vs_battle_lootedAccessory;
+    vs_battle_inventoryArmor shield;
+    vs_battle_inventoryGem gems[3];
+} vs_battle_lootedShield;
 
 typedef struct {
     char difficultyFlags;
@@ -214,6 +207,14 @@ typedef struct {
     char unk3;
     vs_battle_inventoryArmor armor;
 } vs_battle_lootedArmor;
+
+typedef struct {
+    char difficultyFlags;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor accessory;
+} vs_battle_lootedAccessory;
 
 typedef struct {
     char difficultyFlags;

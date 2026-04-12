@@ -183,7 +183,7 @@ void func_800FF43C(void)
                     D_801022CC = temp_s6;
                     return;
                 }
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
             menuItem->selected = 0;
             if (vs_main_buttonsPressed.all & 0x40) {
@@ -872,7 +872,7 @@ void func_80100A5C(void)
                     _selectedRow = temp_s6;
                     return;
                 }
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
             menuItem->selected = 0;
             if (vs_main_buttonsPressed.all & 0x40) {
@@ -1480,13 +1480,13 @@ int D_80102450 = 0;
 char D_80102454 = 0;
 char D_80102455 = 0;
 char D_80102456 = 0;
-vs_battle_inventoryGem* D_80102458 = NULL;
+vs_battle_inventoryGem* vs_mainMenu_gems = NULL;
 vs_menu_inventoryStorage_t* vs_menu_inventoryStorage = NULL;
-vs_battle_inventoryGrip* D_80102460 = NULL;
-vs_battle_inventoryBlade* D_80102464 = NULL;
-vs_battle_inventoryArmor* D_80102468 = NULL;
-vs_battle_inventoryShield* D_8010246C = NULL;
-vs_battle_inventoryWeapon* D_80102470 = NULL;
+vs_battle_inventoryGrip* vs_mainMenu_grips = NULL;
+vs_battle_inventoryBlade* vs_mainMenu_blades = NULL;
+vs_battle_inventoryArmor* vs_mainMenu_armor = NULL;
+vs_battle_inventoryShield* vs_mainMenu_shields = NULL;
+vs_battle_inventoryWeapon* vs_mainMenu_weapons = NULL;
 static int _2 = 0x0000D200; // Garbage
 vs_main_CdQueueSlot* _itemNamesCdQueueSlot = NULL;
 char _itemNamesLoading = 0;

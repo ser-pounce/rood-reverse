@@ -56,7 +56,7 @@ static int func_80102988(int itemCategory, int arg1)
             arg1 -= itemCategory;
         }
         if ((vs_main_buttonsPressed.all & (PADL1 | PADR1)) && (arg1 == temp_s1)) {
-            func_800C02E0();
+            vs_battle_playInvalidSfx();
         }
     }
     return arg1;
@@ -211,7 +211,7 @@ static int func_80102DEC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_8010964E, 7);
-            vs_mainMenu_setUiWeaponStats(D_800619D8.unk0[D_8010964F]);
+            vs_mainMenu_setUiWeaponStats(D_800619D8.weapons[D_8010964F]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010964C = 1;
         }
@@ -219,7 +219,8 @@ static int func_80102DEC(int arg0)
     case 1:
         if (D_8010964D < 0xA) {
             if (++D_8010964D < 6) {
-                func_800FC510(D_8010964D, D_800619D8.unk0[D_8010964F], 1);
+                vs_mainMenu_initSetWeaponGemMenu(
+                    D_8010964D, D_800619D8.weapons[D_8010964F], 1);
                 return 0;
             }
             break;
@@ -242,7 +243,7 @@ static int func_80102DEC(int arg0)
                 vs_mainMenu_setUiWeaponStats(temp_v0_3);
                 func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
                 for (i = 1; i < 6; ++i) {
-                    func_800FC510(i, D_800619D8.unk0[temp_v0_2], 0);
+                    vs_mainMenu_initSetWeaponGemMenu(i, D_800619D8.weapons[temp_v0_2], 0);
                 }
             } while (0);
         }
@@ -279,7 +280,7 @@ static int func_80103034(int arg0)
     case 0:
         if ((D_80109651 == 0) && (vs_mainmenu_ready() != 0)) {
             func_80102C44(D_80109653, 3);
-            vs_mainMenu_setUiBladeStats(D_800619D8.unk8[D_80109654]);
+            vs_mainMenu_setUiBladeStats(D_800619D8.blades[D_80109654]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109651 = 1;
         }
@@ -342,7 +343,7 @@ static int func_80103220(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109657, 4);
-            vs_mainMenu_setUiGripStats(D_800619D8.unk18[D_80109658]);
+            vs_mainMenu_setUiGripStats(D_800619D8.grips[D_80109658]);
             D_80109655 = 1;
         }
         break;
@@ -370,7 +371,7 @@ static int func_80103220(int arg0)
         }
         // BUG: rodata .write
         D_8010956C[6] =
-            vs_battle_inventory.grips[D_800619D8.unk18[D_80109658] - 1].gemSlots + '0';
+            vs_battle_inventory.grips[D_800619D8.grips[D_80109658] - 1].gemSlots + '0';
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_8010956C, 0x240118, NULL);
         break;
@@ -407,7 +408,7 @@ static int func_80103460(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_8010965C, 7);
-            func_800FD5A0(D_800619D8.unk28[D_8010965D]);
+            func_800FD5A0(D_800619D8.shields[D_8010965D]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010965A = 1;
         }
@@ -416,7 +417,8 @@ static int func_80103460(int arg0)
         if (D_8010965B < 10) {
             ++D_8010965B;
             if (D_8010965B < 4) {
-                func_800FC704(D_8010965B, D_800619D8.unk28[D_8010965D], 1);
+                vs_mainMenu_initSetShieldGemMenu(
+                    D_8010965B, D_800619D8.shields[D_8010965D], 1);
             }
             break;
         }
@@ -440,7 +442,7 @@ static int func_80103460(int arg0)
             func_80102C94(D_8010965C, menuText, rowType, temp_v0_2);
 
             for (i = 1; i < 4; ++i) {
-                func_800FC704(i, D_800619D8.unk28[temp_v0_2], 0);
+                vs_mainMenu_initSetShieldGemMenu(i, D_800619D8.shields[temp_v0_2], 0);
             }
         }
         break;
@@ -475,8 +477,8 @@ static int func_801036BC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109661, 7);
-            func_800FD700(D_800619D8.unk30[D_80109662]);
-            if (vs_battle_inventory.armor[D_800619D8.unk30[D_80109662] - 1].category
+            func_800FD700(D_800619D8.armor[D_80109662]);
+            if (vs_battle_inventory.armor[D_800619D8.armor[D_80109662] - 1].category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
@@ -537,7 +539,7 @@ static int func_801038E4(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109665, 3);
-            func_800FD878(D_800619D8.unk40[D_80109666]);
+            func_800FD878(D_800619D8.gems[D_80109666]);
             D_80109663 = 1;
         }
         break;
@@ -654,7 +656,7 @@ static void _getWeaponStat(int arg0)
     int var_s4;
     int temp_s0;
     vs_battle_inventoryWeapon* new_var2 = vs_battle_inventory.weapons;
-    char* new_var = D_800619D8.unk0;
+    char* new_var = D_800619D8.weapons;
 
     vs_battle_rMemzero(sp1A8, 8);
     var_s4 = 0;
@@ -731,7 +733,7 @@ static void func_80103F00(int arg0)
     int var_s4;
     int temp_s0;
     vs_battle_inventoryShield* new_var2 = &vs_battle_inventory.shields[0];
-    char* new_var = D_800619D8.unk28;
+    char* new_var = D_800619D8.shields;
 
     vs_battle_rMemzero(sp1A8, sizeof sp1A8);
     var_s4 = 0;
@@ -785,7 +787,7 @@ static void func_8010408C(int arg0)
     int var_s4;
     int temp_s0;
     vs_battle_inventoryMisc* new_var2 = vs_battle_inventory.items;
-    char* new_var = D_800619D8.unk70;
+    char* new_var = D_800619D8.misc;
 
     vs_battle_rMemzero(sp10, 0x40);
     var_s4 = 0;
@@ -1497,7 +1499,7 @@ loop_1:
                 return -1;
             }
             if (vs_main_buttonsPressed.all & (PADRright | PADRleft)) {
-                func_800C02E0();
+                vs_battle_playInvalidSfx();
             }
         } else {
             if (!(D_800F4EA0 & 7)) {
@@ -1519,7 +1521,7 @@ loop_1:
                         state = 7;
                         break;
                     }
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 }
             } else {
                 if ((D_80109680 <= 0) || (var_s4 == 7)) {
@@ -1616,7 +1618,7 @@ loop_1:
         break;
     case 6:
         if (vs_main_buttonsPressed.all & 0x80) {
-            func_800C02E0();
+            vs_battle_playInvalidSfx();
         }
 
         i = vs_mainmenu_getSelectedRow() + 1;
@@ -1987,7 +1989,7 @@ static void func_8010659C(int arg0)
             }
             if (vs_main_buttonsPressed.all & 0x20) {
                 if (temp_v0->unk7 != 0) {
-                    func_800C02E0();
+                    vs_battle_playInvalidSfx();
                 } else {
                     vs_main_freeHeapR(D_8010975C);
                     D_8010975C = NULL;
@@ -2106,7 +2108,7 @@ static void func_80106BB4(int arg0)
     vs_mainMenu_resetStats();
 
     if (arg0 != 0) {
-        vs_battle_applyAccessory(&accessory, &D_80102468[arg0 - 1]);
+        vs_battle_applyAccessory(&accessory, &vs_mainMenu_armor[arg0 - 1]);
 
         for (i = 0; i < 16; ++i) {
             vs_mainMenu_equipmentStats[i] = accessory.classes[i & 7];
@@ -2138,7 +2140,7 @@ static int func_80106C94(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 16; ++i) {
-            var_a0 = D_800619D8.unk30[i];
+            var_a0 = D_800619D8.armor[i];
             if ((var_a0 != 0) && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 7)) {
                 break;
             }
@@ -2181,7 +2183,7 @@ static int func_80106C94(int arg0)
                 rowTypes[0] = 1;
             } else {
                 for (i = 0; i < temp_s7; ++i) {
-                    var_a0 = D_800619D8.unk30[i];
+                    var_a0 = D_800619D8.armor[i];
                     if ((var_a0 != 0)
                         && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 7)) {
                         vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
@@ -2194,7 +2196,7 @@ static int func_80106C94(int arg0)
             var_s6 = 1;
 
             for (i = 0; i < temp_s7; ++i) {
-                var_a0 = D_800619D8.unk30[i];
+                var_a0 = D_800619D8.armor[i];
                 if ((var_a0 != 0) && (vs_battle_inventory.armor[var_a0 - 1].category == 7)
                     && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 0)) {
                     vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
@@ -2266,7 +2268,7 @@ static int func_80107148(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 8; ++i) {
-            var_s0 = D_800619D8.unk0[i];
+            var_s0 = D_800619D8.weapons[i];
             if ((var_s0 != 0)
                 && (vs_battle_inventory.weapons[var_s0 - 1].isEquipped != 0)) {
                 break;
@@ -2310,7 +2312,7 @@ static int func_80107148(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        var_s0_2 = D_800619D8.unk0[i];
+                        var_s0_2 = D_800619D8.weapons[i];
                         if ((var_s0_2 != 0)
                             && (vs_battle_inventory.weapons[var_s0_2 - 1].isEquipped
                                 != 0)) {
@@ -2325,7 +2327,7 @@ static int func_80107148(int arg0)
                 var_s5 = 1;
 
                 for (i = 0; i < temp_s7; ++i) {
-                    var_s0_2 = D_800619D8.unk0[i];
+                    var_s0_2 = D_800619D8.weapons[i];
                     if (var_s0_2 != 0) {
                         vs_battle_inventoryWeapon* weapon =
                             &vs_battle_inventory.weapons[var_s0_2 - 1];
@@ -2411,7 +2413,7 @@ static int func_80107620(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 8; ++i) {
-            var_s0 = D_800619D8.unk28[i];
+            var_s0 = D_800619D8.shields[i];
             if ((var_s0 != 0)
                 && (vs_battle_inventory.shields[var_s0 - 1].isEquipped != 0)) {
                 break;
@@ -2453,7 +2455,7 @@ static int func_80107620(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        var_s0_2 = D_800619D8.unk28[i];
+                        var_s0_2 = D_800619D8.shields[i];
                         if ((var_s0_2 != 0)
                             && (vs_battle_inventory.shields[var_s0_2 - 1].isEquipped
                                 != 0)) {
@@ -2468,7 +2470,7 @@ static int func_80107620(int arg0)
                 var_s6 = 1;
 
                 for (i = 0; i < temp_s7; ++i) {
-                    var_s0_2 = D_800619D8.unk28[i];
+                    var_s0_2 = D_800619D8.shields[i];
                     if (var_s0_2 != 0) {
                         if (vs_battle_inventory.shields[var_s0_2 - 1].isEquipped == 0) {
                             vs_mainMenu_initUiShield(
@@ -2555,7 +2557,7 @@ static int func_80107B14(int arg0)
     if (arg0 != 0) {
         D_801096A2 = arg0;
         for (i = 0; i < 16; ++i) {
-            temp_s0 = D_800619D8.unk30[i];
+            temp_s0 = D_800619D8.armor[i];
             if ((temp_s0 != 0)
                 && (vs_battle_inventory.armor[temp_s0 - 1].bodyPart == arg0)) {
                 break;
@@ -2600,7 +2602,7 @@ static int func_80107B14(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        temp_s0_3 = D_800619D8.unk30[i];
+                        temp_s0_3 = D_800619D8.armor[i];
                         if ((temp_s0_3 != 0)
                             && (vs_battle_inventory.armor[temp_s0_3 - 1].bodyPart
                                 == D_801096A2)) {
@@ -2613,7 +2615,7 @@ static int func_80107B14(int arg0)
                 }
                 var_s6 = 1;
                 for (i = 0; i < temp_s7; ++i) {
-                    temp_s0_3 = D_800619D8.unk30[i];
+                    temp_s0_3 = D_800619D8.armor[i];
                     if ((temp_s0_3 != 0)
                         && (vs_battle_inventory.armor[temp_s0_3 - 1].category
                             == D_80109624[D_801096A2])
@@ -2779,7 +2781,7 @@ static int func_80108088(int arg0)
         break;
     case 2:
         if (vs_main_buttonsPressed.all & PADRleft) {
-            func_800C02E0();
+            vs_battle_playInvalidSfx();
         }
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {

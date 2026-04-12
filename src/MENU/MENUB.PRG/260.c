@@ -2561,7 +2561,7 @@ int _copyShieldToInventory(vs_battle_lootedShield* arg0)
     return index;
 }
 
-int _copyMiscToInventory(vs_battle_inventoryMisc* arg0)
+int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
 {
     int index = 1;
     vs_battle_inventoryMisc* item = _inventory->items;
@@ -2575,7 +2575,7 @@ int _copyMiscToInventory(vs_battle_inventoryMisc* arg0)
     }
 
     item->id = arg0->id;
-    item->count = arg0->index;
+    item->count = arg0->count;
     return index;
 }
 
@@ -2753,45 +2753,48 @@ void func_8010837C(int arg0)
     vs_mainmenu_drawButton(3, arg0 + 0xB0, 0x7E, NULL);
 }
 
-int func_801086DC(int arg0) { return arg0 & (vs_main_stateFlags.unk1 + 1); }
+static int _droppableUnderCurrentDifficulty(int arg0)
+{
+    return arg0 & (vs_main_stateFlags.difficulty + 1);
+}
 
 void _applyDropList(vs_battle_loot* arg0)
 {
     int i;
 
-    if (func_801086DC(arg0->weapon.unk0) != 0) {
+    if (_droppableUnderCurrentDifficulty(arg0->weapon.difficultyFlags) != 0) {
         func_8010822C(0, _copyWeaponToInventory(&arg0->weapon));
     }
 
-    if (func_801086DC(arg0->unkB0.unk0) != 0) {
-        func_8010822C(1, _copyBladeToInventory(&arg0->unkB0.blade, 0));
+    if (_droppableUnderCurrentDifficulty(arg0->blade.difficultyFlags) != 0) {
+        func_8010822C(1, _copyBladeToInventory(&arg0->blade.blade, 0));
     }
 
-    if (func_801086DC(arg0->unkE0.unk0) != 0) {
-        func_8010822C(2, _copyGripToInventory(&arg0->unkE0.grip, 0));
+    if (_droppableUnderCurrentDifficulty(arg0->grip.difficultyFlags) != 0) {
+        func_8010822C(2, _copyGripToInventory(&arg0->grip.grip, 0));
     }
 
-    if (func_801086DC(arg0->shield.unk0) != 0) {
+    if (_droppableUnderCurrentDifficulty(arg0->shield.difficultyFlags) != 0) {
         func_8010822C(3, _copyShieldToInventory(&arg0->shield));
     }
 
     for (i = 0; i < 2; ++i) {
-        if (func_801086DC(arg0->armor[i].unk0) != 0) {
+        if (_droppableUnderCurrentDifficulty(arg0->armor[i].difficultyFlags) != 0) {
             func_8010822C(4, _copyArmorToInventory(&arg0->armor[i].armor));
         }
     }
 
-    if (func_801086DC(arg0->accessory.unk0) != 0) {
+    if (_droppableUnderCurrentDifficulty(arg0->accessory.difficultyFlags) != 0) {
         func_8010822C(4, _copyArmorToInventory(&arg0->accessory.accessory));
     }
 
-    if (func_801086DC(arg0->gem.unk0) != 0) {
+    if (_droppableUnderCurrentDifficulty(arg0->gem.difficultyFlags) != 0) {
         func_8010822C(5, _copyGemToInventory(&arg0->gem.gem, 0));
     }
 
     for (i = 0; i < 3; ++i) {
-        if ((func_801086DC(arg0->misc[i].count) != 0) && (arg0->misc[i].id != 0)
-            && (arg0->misc[i].index != 0)) {
+        if ((_droppableUnderCurrentDifficulty(arg0->misc[i].difficultyFlags) != 0)
+            && (arg0->misc[i].id != 0) && (arg0->misc[i].count != 0)) {
             func_8010822C(6, _copyMiscToInventory(&arg0->misc[i]));
         }
     }

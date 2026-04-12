@@ -30,6 +30,7 @@
 #include "insertTPage.h"
 #include "vs_string.h"
 #include "gpu.h"
+#include "lbas.h"
 
 typedef struct {
     char unk0[4];
@@ -66,44 +67,6 @@ typedef struct {
     int unk24;
     int unk28;
 } _monBinData_t;
-
-void func_80102A7C(vs_battle_menuItem_t*);
-void func_80102E10(int, int, char**, int);
-int _initData(void);
-int _handleMenu(void);
-void func_80104AF8(void);
-void func_80104B40(void);
-int _initStringsAndGetSelectedRow(int arg0);
-void func_80104CBC(MATRIX*);
-void func_80104E90(MATRIX* arg0, short arg1);
-void func_80104F04(MATRIX* arg0, short arg1);
-void func_80104F74(int, int, int, int, int);
-void func_801051AC(int, int, int, int, int);
-void func_8010552C(int arg0);
-void func_801056B8(void);
-void func_8010579C(int arg0);
-void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
-void func_80105D8C(void);
-void func_80105F00(int arg0);
-void func_801061F8(int arg0, int arg1);
-void func_80106528(void);
-void func_80106780(void);
-void func_80106808(int);
-void _toVsStringInt(char* buf, int value);
-void func_80106DE0(char* buf, int rank, int totalSeconds);
-void func_80106F9C(void);
-void _toVsStringPercent(char* buf, int value);
-void func_80107090(void);
-void func_80107120(int);
-void func_80107600(void);
-void _setScoreFlags(void);
-void func_80107A98(int arg0);
-void _calculateScore(void);
-int func_80107FBC(short);
-void func_80108098(void);
-void func_801080C8(void);
-void func_8010812C(int);
-int func_8010823C(void);
 
 extern void* D_1F800000[];
 
@@ -162,7 +125,7 @@ extern int D_8010A454;
 extern int D_8010A458;
 extern int D_8010A45C;
 extern u_long _score;
-extern u_short D_8010A464;
+extern u_short _characterRank;
 extern u_short _clearCount;
 extern u_short D_8010A468;
 extern u_short _mapCompletion;
@@ -353,6 +316,9 @@ void func_80102FB8(void) { vs_mainMenu_clearMenuExcept(8); }
 
 void _menuReady(void) { vs_mainmenu_ready(); }
 
+int _initData(void);
+int _handleMenu(void);
+
 int vs_menu9_exec(char* state)
 {
     enum state {
@@ -416,6 +382,10 @@ int vs_menu9_exec(char* state)
     return 0;
 }
 
+static void _determineCharacterRank(void);
+void _setScoreFlags(void);
+void _calculateScore(void);
+
 int _initData(void)
 {
     int i;
@@ -461,25 +431,44 @@ int _initData(void)
         vs_main_scoredata.unk98 = D_8010A468;
     }
 
-    vs_main_memcpy(D_8010A480, (void*)0x1F800034, 0x10);
-    vs_main_memcpy(D_8010A490, (void*)0x1F800054, 0x10);
+    vs_main_memcpy(D_8010A480, (void*)0x1F800034, sizeof D_8010A480);
+    vs_main_memcpy(D_8010A490, (void*)0x1F800054, sizeof D_8010A490);
     _setScoreFlags();
     _calculateScore();
-    func_80107600();
+    _determineCharacterRank();
 
     return 1;
 }
 
-static const vs_main_CdFile _monBinFile = { 0x14FF0, 0x3800 }; // data/SMALL/MON.BIN
+static const vs_main_CdFile _monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 
-static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B, 0x00 },
-    { 0x19, 0x82, 0x6C, 0x00 }, { 0x40, 0x30, 0x66, 0x00 }, { 0x40, 0x38, 0x20, 0x00 } };
+static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B }, { 0x19, 0x82, 0x6C },
+    { 0x40, 0x30, 0x66 }, { 0x40, 0x38, 0x20 } };
 
-static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33, 0x00 },
-    { 0x01, 0x28, 0x26, 0x00 }, { 0x08, 0x08, 0x20, 0x00 }, { 0x10, 0x10, 0x08, 0x00 } };
+static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33 }, { 0x01, 0x28, 0x26 },
+    { 0x08, 0x08, 0x20 }, { 0x10, 0x10, 0x08 } };
 
-static char const* D_80109878[] = { "$00:25:00", "$00:30:00", "$00:40:00", "$00:50:00",
-    "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
+static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$00:40:00",
+    "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
+
+void func_80104AF8(void);
+void func_80104B40(void);
+int _initStringsAndGetSelectedRow(int arg0);
+void func_8010552C(int arg0);
+void func_801056B8(void);
+void func_8010579C(int arg0);
+void func_80105D8C(void);
+void func_80105F00(int arg0);
+void func_801061F8(int arg0, int arg1);
+void func_80106780(void);
+void func_80106808(int);
+void func_80106F9C(void);
+void func_80107090(void);
+void func_80107120(int);
+void func_80107A98(int arg0);
+int func_80107FBC(short);
+void func_801080C8(void);
+void func_80108098(void);
 
 int _handleMenu(void)
 {
@@ -511,7 +500,7 @@ int _handleMenu(void)
         D_8010A430[1] = 0xE47;
         D_8010A430[2] = 0;
         func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
-        func_800C6BF0(0, (char*)&_rankText[_rankText[D_8010A464]]);
+        func_800C6BF0(0, (char*)&_rankText[_rankText[_characterRank]]);
         _initStringsAndGetSelectedRow(1);
         D_8010A220 = 0;
         ++_menuState;
@@ -1171,6 +1160,9 @@ int _initStringsAndGetSelectedRow(int arg0)
     return -1;
 }
 
+void func_80104E90(MATRIX* arg0, short arg1);
+void func_80104F04(MATRIX* arg0, short arg1);
+
 void func_80104CBC(MATRIX* arg0)
 {
     SVECTOR sp10;
@@ -1365,6 +1357,8 @@ void func_8010539C(int arg0)
     _insertTPage(7, getTPage(0, 2, 0, 0));
 }
 
+void func_80106528(void);
+
 void func_8010552C(int arg0)
 {
     vs_battle_geomOffset sp18;
@@ -1426,9 +1420,12 @@ static char D_80109899 = 0;
 static D_8010989C_t D_8010989C = { "%\0" };
 #pragma vsstring(end)
 static char D_801098A0 = 0;
-static short D_801098A4[16] = { 16, 12, 8 };
-static u_int D_801098C4[] = { 100000000, 75000000, 60000000, 40000000, 32000000, 24000000,
-    16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000, 1000000, 500000, 0 };
+static short _characterRankTitleThresholds[16] = { 16, 12, 8 };
+static u_int _characterRankPointThresholds[] = { 100000000, 75000000, 60000000, 40000000,
+    32000000, 24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
+    1000000, 500000, 0 };
+
+void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
 
 void func_8010579C(int arg0)
 {
@@ -1922,7 +1919,7 @@ void func_80106F9C(void)
 
     for (i = 0, row = _gazetteRows; i < 8; ++i, ++row) {
         row->y = 194;
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) == 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time) == 0x800000) {
             row->unk3 = 1;
             row->title = (char*)&_miscInfo[_miscInfo[4]];
             row->description = (char*)&_miscInfo[_miscInfo[5]];
@@ -1956,8 +1953,9 @@ void func_80107090(void)
 
 void func_80107120(int arg0)
 {
-    char* sp18[] __attribute__((unused)) = { "EASY", "NORMAL" };
-    int sp20[] __attribute__((unused)) = { 0x808000, 0x8080 };
+    char* difficulty[] __attribute__((unused)) = { "EASY", "NORMAL" };
+    int difficultyColors[]
+        __attribute__((unused)) = { vs_getRGB(0, 128, 128), vs_getRGB(128, 128, 0) };
     char sp28[16];
     int sp38;
     _gazetteRow* sp3C;
@@ -1966,7 +1964,7 @@ void func_80107120(int arg0)
     int i;
     int j;
     int var_s7;
-    int temp_a3;
+    int time;
     vs_battle_menuItem_t* temp_s2;
     void** p;
     void** r;
@@ -2024,58 +2022,60 @@ void func_80107120(int arg0)
 
     for (j = 0; j < 3; ++j) {
 
-        temp_a3 = vs_main_scoredata.bossTimeTrialScores[sp38][j].value & 0xFFFFFF;
+        time = vs_main_scoredata.bossTimeTrialScores[sp38][j].time;
 
-        if (temp_a3 != 0x800000) {
-            int new_var2 = (arg0 * 0x10) - 0x3C;
-            sprintf(sp28, "$%02d:%02d:%02d", temp_a3 >> 0x10, (temp_a3 >> 8) & 0xFF,
-                vs_main_scoredata.bossTimeTrialScores[sp38][j].value & 0xFF);
+        if (time != 0x800000) {
+            sprintf(
+                sp28, "$%02d:%02d:%02d", time >> 0x10, (time >> 8) & 0xFF, time & 0xFF);
             q = ((void**)0x1F800000);
-            vs_battle_renderTextRawColor(sp28,
-                vs_getXY_2((arg0 * 0x10) - 0x28, 0x32 + j * 0x1E), 0x808080, q[1] + 0x1C);
+            vs_battle_renderTextRawColor(sp28, vs_getXY_2((arg0 * 16) - 40, 50 + j * 30),
+                vs_getRGB(128, 128, 128), q[1] + 0x1C);
             sprintf(sp28, "ROUND    %d",
-                vs_main_scoredata.bossTimeTrialScores[sp38][j].time.unk24 + 1);
-            vs_battle_renderTextRawColor(
-                sp28, vs_getXY_2(new_var2, 0x3E + j * 0x1E), 0x808080, q[1] + 0x1C);
+                vs_main_scoredata.bossTimeTrialScores[sp38][j].round + 1);
+            vs_battle_renderTextRawColor(sp28, vs_getXY_2((arg0 * 16) - 60, 62 + j * 30),
+                vs_getRGB(128, 128, 128), q[1] + 0x1C);
         } else {
             q = ((void**)0x1F800000);
             vs_battle_renderTextRawColor("$--:--:--",
-                vs_getXY_2((arg0 * 0x10) - 0x28, 0x32 + j * 0x1E), 0x505050, q[1] + 0x1C);
+                vs_getXY_2((arg0 * 16) - 40, 50 + j * 30), vs_getRGB(80, 80, 80),
+                q[1] + 0x1C);
         }
     }
 
     func_801051AC((arg0 * 0x10) - 0x70, 0x32, 0x80, 0x54, 2);
     r = ((void**)0x1F800000);
-    vs_battle_renderTextRawColor("REFERENCE TIME",
-        (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x8C0000, 0x808080, r[1] + 0x1C);
+    vs_battle_renderTextRawColor("REFERENCE TIME", vs_getXY(arg0 * 16 - 0x78, 0x8C),
+        vs_getRGB(128, 128, 128), r[1] + 0x1C);
     func_801051AC((arg0 * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
 
     if ((var_s7 == 8) && (arg0 == var_s7)) {
         if (sp3C->unk3 != 0) {
-            vs_battle_renderTextRawColor("$--:--:--", 0x9E0058, 0x505050, r[1] + 0x1C);
-        } else {
             vs_battle_renderTextRawColor(
-                D_80109878[sp38], 0x9E0058, 0x808080, r[1] + 0x1C);
+                "$--:--:--", vs_getXY(88, 158), vs_getRGB(80, 80, 80), r[1] + 0x1C);
+        } else {
+            vs_battle_renderTextRawColor(_timeAttackReferenceTimes[sp38],
+                vs_getXY(88, 158), vs_getRGB(128, 128, 128), r[1] + 0x1C);
         }
     }
     func_801051AC((arg0 * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
 }
 
-void func_80107600(void)
+void _determineCharacterRank(void)
 {
     int i;
-    int var_a2;
-    int a1;
+    int titleCount;
+    int flag;
 
-    for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (vs_main_scoredata.flags & (a1 << i)) {
-            ++var_a2;
+    for (i = 0, titleCount = 0, flag = 1; i < 16; ++i) {
+        if (vs_main_scoredata.flags & (flag << i)) {
+            ++titleCount;
         }
     }
 
     for (i = 0; i < 16; ++i) {
-        if ((var_a2 >= D_801098A4[i]) && (_score >= D_801098C4[i])) {
-            D_8010A464 = i;
+        if ((titleCount >= _characterRankTitleThresholds[i])
+            && (_score >= _characterRankPointThresholds[i])) {
+            _characterRank = i;
             return;
         }
     }
@@ -2114,7 +2114,7 @@ void _setScoreFlags(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) == 0x800000) {
+        if (vs_main_scoredata.bossTimeTrialScores[i][0].time == 0x800000) {
             break;
         }
     }
@@ -2249,8 +2249,8 @@ void _calculateScore(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) != 0x800000) {
-            _score += 0x4E20;
+        if (vs_main_scoredata.bossTimeTrialScores[i][0].time != 0x800000) {
+            _score += 20000;
         }
     }
 
@@ -2272,20 +2272,20 @@ void _calculateScore(void)
         _score += vs_main_scoredata.maxChain * 1280;
     }
 
-    _score = _score + (_clearCount * 100000);
+    _score += _clearCount * 100000;
 
     if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
         if (vs_main_scoredata.completionTimeMinutes >= 540) {
-            _score = _score + (_score >> 2);
+            _score += _score / 4;
         } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
-            _score = _score + (_score >> 1);
+            _score += _score / 2;
         } else {
-            _score = _score * 2;
+            _score *= 2;
         }
     }
 
-    _score = _score + vs_main_scoredata.streakScore;
-    _score = _score + vs_main_scoredata.enemyKillStreak;
+    _score += vs_main_scoredata.streakScore;
+    _score += vs_main_scoredata.enemyKillStreak;
     if (_score > 999999999) {
         _score = 999999999;
     }

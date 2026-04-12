@@ -1,5 +1,6 @@
 #include "common.h"
 #include "lbas.h"
+#include "146C.h"
 #include "573B8.h"
 #include "../SLUS_010.40/main.h"
 
@@ -20,7 +21,17 @@ short vs_battle_getShort(u_char* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE34);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE50);
+int func_800BFE50(u_short arg0)
+{
+    switch (arg0 >> 12) {
+    case 0:
+        return func_8007CF18(arg0 & 0xFFF);
+    case 1:
+        return arg0 & 0x1F;
+    case 2:
+        return arg0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFEBC);
 

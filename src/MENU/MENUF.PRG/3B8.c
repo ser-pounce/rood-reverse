@@ -325,34 +325,32 @@ int func_8010310C(void)
         }
 
         for (i = 0; i < 3; ++i) {
-            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
-                        .time.unk0)
+            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time)
                 < D_801098A8) {
                 continue;
             }
             for (var_a3 = 2; i < var_a3; --var_a3) {
                 vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
-                    .time.unk0 =
-                    vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
-                        .time.unk0;
+                    .time = vs_main_scoredata
+                                .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                                .time;
                 vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
-                    .time.unk24 =
+                    .round =
                     vs_main_scoredata
                         .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
-                        .time.unk24;
+                        .round;
                 vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
-                    .time.unk31 =
+                    .difficulty =
                     vs_main_scoredata
                         .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
-                        .time.unk31;
+                        .difficulty;
             }
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time.unk0 =
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time =
                 D_801098A8;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].round =
+                vs_main_stateFlags.clearCount;
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
-                .time.unk24 = vs_main_stateFlags.clearCount;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
-                .time.unk31 = vs_main_stateFlags.unk1;
+                .difficulty = vs_main_stateFlags.difficulty;
             break;
         }
         D_801098A4 = i;
@@ -980,8 +978,7 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].w, arg1 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0].time.unk0,
-            0);
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0].time, 0);
     }
 }
 
@@ -1509,7 +1506,7 @@ void func_801059FC(int arg0, int arg1, int arg2)
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
             vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.unkC4 * 3 + i]
-                .time.unk0,
+                .time,
             temp_v0);
         func_80105DD8((arg0 - D_801091D8[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B,
             arg2, var_s3);
@@ -1534,7 +1531,7 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
     }
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2].time.unk0,
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2].time,
         temp_t1);
     func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
@@ -2451,7 +2448,7 @@ void _calculateScore(void)
     }
 
     for (i = 0; i < 8; ++i) {
-        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time.unk0) != 0x800000) {
+        if ((vs_main_scoredata.bossTimeTrialScores[i][0].time) != 0x800000) {
             _score += 20000;
         }
     }

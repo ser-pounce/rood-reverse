@@ -4587,7 +4587,7 @@ static void _initEnvironment(void)
     vs_main_setMonoSound(vs_main_settings.monoSound);
     vs_sound_setCdVol(0x7F);
     memset(&D_800619D8, 0, sizeof(D_800619D8));
-    vs_main_stateFlags.unk1 = 1;
+    vs_main_stateFlags.difficulty = 1;
     vs_main_stateFlags.puzzleMode = 1;
 }
 
@@ -4991,10 +4991,9 @@ static void _initGameData(void)
 
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 3; ++j) {
-            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0xFF000000;
-            vs_main_scoredata.bossTimeTrialScores[i][j].value |= 0x800000;
-            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0x80FFFFFF;
-            vs_main_scoredata.bossTimeTrialScores[i][j].value &= 0x7FFFFFFF;
+            vs_main_scoredata.bossTimeTrialScores[i][j].time = -8388608; // int24_min
+            vs_main_scoredata.bossTimeTrialScores[i][j].round = 0;
+            vs_main_scoredata.bossTimeTrialScores[i][j].difficulty = 0;
         }
     }
 
@@ -5019,21 +5018,21 @@ static void _setTitleExitFlags(int cause)
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 0;
         D_80061068.zndId = 1;
-        D_80061068.unk1 = 0;
+        D_80061068.mpdId = 0;
         return;
     case 3: // Timeout cutscene1
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
         D_80061068.zndId = 20;
-        D_80061068.unk1 = 0;
+        D_80061068.mpdId = 0;
         return;
     case 4: // Timeout cutscene2
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
         D_80061068.zndId = 2;
-        D_80061068.unk1 = 1;
+        D_80061068.mpdId = 1;
         return;
     case 1: // Continue
         vs_main_stateFlags.unkC = 0;

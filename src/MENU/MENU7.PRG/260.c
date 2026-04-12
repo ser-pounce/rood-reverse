@@ -3339,7 +3339,7 @@ int vs_menu7_gameOver(char* state)
     static u_short D_8010AB80[256];
     static vs_main_settings_t settingsBackup;
     static int resetDelay;
-    static int D_8010ADA4;
+    static int _difficulty;
 
     RECT rect;
     int option;
@@ -3349,7 +3349,7 @@ int vs_menu7_gameOver(char* state)
         func_8007E0A8(0x1F, 1, 6);
         func_8008A4DC(0);
         settingsBackup = vs_main_settings;
-        D_8010ADA4 = vs_main_stateFlags.unk1;
+        _difficulty = vs_main_stateFlags.difficulty;
         _initGameOver(1);
         *state = loadAssets;
         break;
@@ -3417,7 +3417,7 @@ int vs_menu7_gameOver(char* state)
     case restartIntro:
         if (_loadIntroSaveFile(0) != 0) {
             vs_main_settings = settingsBackup;
-            vs_main_stateFlags.unk1 = D_8010ADA4;
+            vs_main_stateFlags.difficulty = _difficulty;
             vs_main_freeMusic(1);
             vs_main_setMonoSound(vs_main_settings.monoSound);
             vs_main_stateFlags.gameOver = 0;

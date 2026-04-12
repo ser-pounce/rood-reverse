@@ -366,14 +366,14 @@ typedef struct {
 
 typedef struct {
     u_short id;
-    char index;
+    char count;
     char unk3;
-} vs_battle_lootedMisc;
+} vs_battle_uiMisc;
 
 typedef struct {
     u_short id;
     char dropRate;
-} vs_battle_lootedMiscRand;
+} vs_battle_uiMiscRand;
 
 typedef struct {
     char unk0[0x5E8];
@@ -438,9 +438,9 @@ typedef struct {
         } fields;
         u_int u32;
     } flags;
-    vs_battle_lootedMisc miscItem;
+    vs_battle_uiMisc miscItem;
     int unk95C;
-    vs_battle_lootedMiscRand unk960;
+    vs_battle_uiMiscRand unk960;
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {
@@ -874,6 +874,7 @@ void func_8007CC6C(int);
 int func_8007CCAC(void);
 void func_8007CD14(int arg0, int arg1);
 void func_8007CD70(VECTOR*, VECTOR*, int, int);
+int func_8007CF18(int);
 vs_battle_actor* func_8007CF64(int actorId);
 void func_8007CFF8(int, SVECTOR*);
 int func_8007D03C(int);

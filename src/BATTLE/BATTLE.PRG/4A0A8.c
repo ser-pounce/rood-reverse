@@ -61,7 +61,15 @@ typedef struct {
     func_800BDF6C_t unk198;
     func_800BDF6C_t unk1A4;
     func_800BDF6C_t unk1B0;
-    int unk1BC[11];
+    short unk1BC;
+    short unk1BE;
+    short unk1C0;
+    short unk1C2;
+    short unk1C4;
+    short unk1C6;
+    short unk1C8;
+    short unk1CA;
+    int unk1CC[7];
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
@@ -712,6 +720,7 @@ int func_800B6B74(u_char* arg0, short arg1)
     return 0;
 }
 
+// https://decomp.me/scratch/0ihTK
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6B98);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6D48);
@@ -1724,7 +1733,7 @@ int func_800B98C0(u_char* arg0, short arg1)
     if (D_800F4BE2 == 0) {
 
         sp10.zndId = arg0[1];
-        sp10.unk1 = arg0[2];
+        sp10.mpdId = arg0[2];
         sp10.unk4_8 = arg0[3];
         sp10.unk6_10 = arg0[5];
         sp10.unk2_13 = arg0[4];
@@ -2893,6 +2902,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
     return 1;
 }
 
+// https://decomp.me/scratch/3pQUE
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
 
 void func_800BE36C(int arg0, int arg1)

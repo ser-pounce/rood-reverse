@@ -71,17 +71,6 @@ typedef struct {
 } vs_battle_inventoryWeapon;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_inventoryBlade blade;
-    vs_battle_inventoryGrip grip;
-    vs_battle_inventoryGem gems[3];
-    char unk94[0x18];
-} vs_battle_lootedWeapon;
-
-typedef struct {
     u_char id;
     u_char subId;
     char wepId;
@@ -111,7 +100,7 @@ typedef struct {
 } vs_battle_inventoryShield;
 
 typedef struct {
-    char unk0;
+    char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
@@ -185,23 +174,18 @@ enum vs_itemCategories {
 enum vs_gemTargets { gemTargetShield = 0x80 };
 
 typedef struct {
-    char unk0;
+    char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryArmor accessory;
-} vs_battle_lootedAccessory;
+    vs_battle_inventoryBlade blade;
+    vs_battle_inventoryGrip grip;
+    vs_battle_inventoryGem gems[3];
+    char unk94[0x18];
+} vs_battle_lootedWeapon;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    vs_battle_inventoryArmor armor;
-} vs_battle_lootedArmor;
-
-typedef struct {
-    char unk0;
+    char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
@@ -209,15 +193,30 @@ typedef struct {
 } vs_battle_lootedBlade;
 
 typedef struct {
-    char unk0;
+    char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
     vs_battle_inventoryGrip grip;
 } vs_battle_lootedGrip;
+typedef struct {
+    char difficultyFlags;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor accessory;
+} vs_battle_lootedAccessory;
 
 typedef struct {
-    char unk0;
+    char difficultyFlags;
+    char unk1;
+    char unk2;
+    char unk3;
+    vs_battle_inventoryArmor armor;
+} vs_battle_lootedArmor;
+
+typedef struct {
+    char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
@@ -225,12 +224,18 @@ typedef struct {
 } vs_battle_lootedGem;
 
 typedef struct {
+    u_short id;
+    char difficultyFlags;
+    char count;
+} vs_battle_lootedMisc;
+
+typedef struct {
     vs_battle_lootedWeapon weapon;
-    vs_battle_lootedBlade unkB0;
-    vs_battle_lootedGrip unkE0;
+    vs_battle_lootedBlade blade;
+    vs_battle_lootedGrip grip;
     vs_battle_lootedShield shield; // 0xF0
     vs_battle_lootedArmor armor[2]; // 0x170
     vs_battle_lootedAccessory accessory; // 0x1C8
     vs_battle_lootedGem gem; // 0x1F4
-    vs_battle_inventoryMisc misc[3]; // 0x214
+    vs_battle_lootedMisc misc[3]; // 0x214
 } vs_battle_loot;

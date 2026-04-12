@@ -508,8 +508,8 @@ typedef struct {
     int unk258[30];
 } D_800F1ABC_t;
 
-int _dropMisc(vs_battle_loot*, vs_battle_lootedMisc*);
-int _dropMiscRand(vs_battle_loot*, vs_battle_lootedMiscRand*);
+int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
+int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
 void _snapLookAtToPosition(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
@@ -568,7 +568,7 @@ void func_8007B63C(void);
 void func_8007B470(void);
 void func_8007B508(void);
 void func_8007B764(void);
-void func_8007B7DC(int, int);
+void func_8007B7DC(void);
 void func_8007BCCC(void);
 int func_8007BD8C(int arg0);
 void func_8007BF6C(int);
@@ -1629,7 +1629,7 @@ int _dropWeaponRand(vs_battle_lootedWeapon* arg0, vs_battle_uiWeapon* arg1)
             }
         }
         vs_main_memcpy(arg0->unk94, arg1, sizeof arg0->unk94);
-        arg0->unk0 = 3;
+        arg0->difficultyFlags = 3;
         return 1;
     }
     return 0;
@@ -1646,7 +1646,7 @@ int _dropShieldRand(vs_battle_lootedShield* arg0, vs_battle_uiShield* arg1)
                 vs_battle_copyUiGemStats(&arg0->gems[i], &arg1->gems[i]);
             }
         }
-        arg0->unk0 = 3;
+        arg0->difficultyFlags = 3;
         return 1;
     }
     return 0;
@@ -1656,7 +1656,7 @@ int _dropAccessoryRand(vs_battle_lootedAccessory* arg0, vs_battle_uiAccessory* a
 {
     if (vs_main_getRand(0xFF) < arg1->dropRate) {
         vs_battle_copyUiEquipmentStats(&arg0->accessory, &arg1->accessory);
-        arg0->unk0 = 3;
+        arg0->difficultyFlags = 3;
         return 1;
     }
     return 0;
@@ -1670,7 +1670,7 @@ int _dropArmorRand(vs_battle_lootedArmor* arg0, vs_battle_uiArmor* arg1)
         for (i = 0; i < 2; ++i) {
             if (arg0[i].armor.id == 0) {
                 vs_battle_copyUiEquipmentStats(&arg0[i].armor, &arg1->armor);
-                arg0[i].unk0 = 3;
+                arg0[i].difficultyFlags = 3;
                 return 1;
             }
         }
@@ -1678,7 +1678,7 @@ int _dropArmorRand(vs_battle_lootedArmor* arg0, vs_battle_uiArmor* arg1)
     return 0;
 }
 
-int _dropMisc(vs_battle_loot* arg0, vs_battle_lootedMisc* arg1)
+int _dropMisc(vs_battle_loot* arg0, vs_battle_uiMisc* arg1)
 {
     int ret;
     int i;
@@ -1688,8 +1688,8 @@ int _dropMisc(vs_battle_loot* arg0, vs_battle_lootedMisc* arg1)
     for (i = 0; i < 2; ++i) {
         arg0->misc[i].id = arg1[i].id;
         if (arg0->misc[i].id) {
-            arg0->misc[i].index = arg1[i].index;
-            arg0->misc[i].count = 3;
+            arg0->misc[i].count = arg1[i].count;
+            arg0->misc[i].difficultyFlags = 3;
             ret = 1;
         }
     }
@@ -1697,13 +1697,13 @@ int _dropMisc(vs_battle_loot* arg0, vs_battle_lootedMisc* arg1)
     return ret;
 }
 
-int _dropMiscRand(vs_battle_loot* arg0, vs_battle_lootedMiscRand* arg1)
+int _dropMiscRand(vs_battle_loot* arg0, vs_battle_uiMiscRand* arg1)
 {
     arg0->misc[2].id = arg1->id;
     if (arg0->misc[2].id) {
         if (vs_main_getRand(0xFF) < arg1->dropRate) {
-            arg0->misc[2].index = 1;
-            arg0->misc[2].count = 3;
+            arg0->misc[2].count = 1;
+            arg0->misc[2].difficultyFlags = 3;
             return 1;
         }
     }
@@ -4366,7 +4366,7 @@ vs_battle_actor* func_800765B0(
         temp_v0->unk0.unk0.next = NULL;
         temp_v0->unk0.unk0.unk26 = 0;
         sp10.unk0 = 6;
-        sp10.unk1 = (char)arg0;
+        sp10.unk1 = arg0;
         sp10.unkC = *arg2;
         sp10.unkC.unk0_8 &= 1;
         var_v1_2 = actorId;
@@ -5555,7 +5555,7 @@ void func_8007B63C(void)
 
 void func_8007B764(void)
 {
-    if ((func_800BEBF4(0xAB) & 0xFF) >= 3) {
+    if ((func_800BEBF4(0xAB)) >= 3) {
         if (_lootListHead != NULL) {
             func_800CB158(_lootListHead);
             _cameraMode = 4;
@@ -5568,7 +5568,7 @@ void func_8007B764(void)
     func_8007B4C4();
 }
 
-void func_8007B7DC(int arg0, int arg1)
+void func_8007B7DC()
 {
     if (func_800BEBF4(0xAB) >= 3) {
         func_800CB23C();
@@ -5623,11 +5623,11 @@ void func_8007B938(void)
     }
 }
 
-void func_8007B9A0(int arg0, int arg1)
+void func_8007B9A0(void)
 {
     D_800F1860 = 0;
     D_800F1864 = 0;
-    func_8007B7DC(arg0, arg1);
+    func_8007B7DC();
 }
 
 void func_8007B9CC(void)
@@ -5657,7 +5657,7 @@ int func_8007B9FC(void)
     }
 }
 
-void func_8007BA98(int arg0, int arg1, int arg2, int arg3)
+void func_8007BA98(int id0, int count0, int id1, int count1)
 {
     vs_battle_lootListNode* temp_a0;
     vs_battle_lootListNode* temp_v0;
@@ -5665,16 +5665,16 @@ void func_8007BA98(int arg0, int arg1, int arg2, int arg3)
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->loot.misc[0].id = arg0;
-        if (arg0 & 0xFFFF) {
-            temp_v0->loot.misc[0].index = arg1;
-            temp_v0->loot.misc[0].count = 3;
+        temp_v0->loot.misc[0].id = id0;
+        if (id0 & 0xFFFF) {
+            temp_v0->loot.misc[0].count = count0;
+            temp_v0->loot.misc[0].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
-        temp_v0->loot.misc[1].id = arg2;
-        if (arg2 & 0xFFFF) {
-            temp_v0->loot.misc[1].index = arg3;
-            temp_v0->loot.misc[1].count = 3;
+        temp_v0->loot.misc[1].id = id1;
+        if (id1 & 0xFFFF) {
+            temp_v0->loot.misc[1].count = count1;
+            temp_v0->loot.misc[1].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
         if (temp_v0->actorId != 0) {
@@ -5970,7 +5970,7 @@ void func_8007C444(int arg0, int arg1, int arg2)
 
 void func_8007C460(int arg0) { vs_battle_screenTransitionWipeAngle = arg0; }
 
-void func_8007C46C(int effect, int arg1, int arg2)
+void func_8007C46C(int effect, int speed, int angle)
 {
     if (vs_battle_screenTransitionStep == 1 || vs_battle_screenTransitionStep == 2) {
         return;
@@ -5978,8 +5978,8 @@ void func_8007C46C(int effect, int arg1, int arg2)
 
     vs_battle_screenTransitionStep = 5;
     vs_battle_screenTransitionEffect = effect;
-    vs_battle_screenTransitionSpeed = arg1;
-    vs_battle_screenTransitionWipeAngle = arg2;
+    vs_battle_screenTransitionSpeed = speed;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
 void func_8007C4AC(int effect, int arg1, int arg2)
@@ -5992,14 +5992,14 @@ void func_8007C4AC(int effect, int arg1, int arg2)
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(D_80061068_t* arg0, int effect, int arg2)
+int func_8007C4E0(D_80061068_t* arg0, int effect, int speed)
 {
     D_800F1AB0 = *arg0;
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
-    vs_battle_screenTransitionSpeed = arg2;
+    vs_battle_screenTransitionSpeed = speed;
     D_800F1AB0.zndId = _zoneContext.zndId;
-    _loadMpd(arg0->unk1);
+    _loadMpd(arg0->mpdId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -6017,12 +6017,12 @@ void func_8007C580(D_80061068_t* arg0, int arg1, int arg2)
         sp10.unk0.unk0.fields.unk0_8);
 }
 
-int func_8007C5C0(D_80061068_t* arg0, int arg1, int arg2)
+int func_8007C5C0(D_80061068_t* arg0, int effect, int speed)
 {
     D_800F1AB0 = *arg0;
     vs_battle_screenTransitionStep = 2;
-    vs_battle_screenTransitionEffect = arg1;
-    vs_battle_screenTransitionSpeed = arg2;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = speed;
     _loadZnd(arg0->zndId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
@@ -6040,16 +6040,16 @@ void func_8007C654(D_80061068_t* arg0, int arg1, int arg2)
         sp10.unk0.unk0.fields.unk0_8);
 }
 
-int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
+int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
 {
     func_8006EBF8_t sp10;
     int temp_v1_2;
     int var_a0;
-    int temp_s1;
-    int temp_s2;
+    int zndId;
+    int mpdId;
 
-    temp_s1 = vs_main_locationZoneMapIds[arg0 * 2];
-    temp_s2 = vs_main_locationZoneMapIds[arg0 * 2 + 1];
+    zndId = vs_main_locationZoneMapIds[arg0 * 2];
+    mpdId = vs_main_locationZoneMapIds[arg0 * 2 + 1];
 
     D_800F1AB0.unk4_8 = arg1;
     D_800F1AB0.unk6_10 = arg2;
@@ -6064,21 +6064,21 @@ int func_8007C694(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 
     vs_battle_screenTransitionStep = 1;
-    vs_battle_screenTransitionEffect = arg3;
-    vs_battle_screenTransitionSpeed = arg4;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = speed;
     D_800F1AB0.unk4_13 = var_a0 >> 10;
     D_800F1AB0.unk6_15 = 0;
 
-    if (temp_s1 != D_800F1AB0.zndId) {
+    if (zndId != D_800F1AB0.zndId) {
         vs_battle_screenTransitionStep = 2;
-        _loadZnd(temp_s1);
-    } else if (temp_s2 != D_800F1AB0.unk1) {
+        _loadZnd(zndId);
+    } else if (mpdId != D_800F1AB0.mpdId) {
         vs_battle_screenTransitionStep = 1;
-        _loadMpd(temp_s2);
+        _loadMpd(mpdId);
     }
 
-    D_800F1AB0.zndId = temp_s1;
-    D_800F1AB0.unk1 = temp_s2;
+    D_800F1AB0.zndId = zndId;
+    D_800F1AB0.mpdId = mpdId;
     func_8006C250();
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -6311,7 +6311,7 @@ void func_8007CEC0(void)
     }
 }
 
-u_int func_8007CF18(int arg0)
+int func_8007CF18(int arg0)
 {
     u_int i;
 

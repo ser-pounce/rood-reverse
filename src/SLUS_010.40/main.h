@@ -147,9 +147,9 @@ typedef union {
 } vs_Gametime_t;
 
 typedef struct {
-    u_int unk0 : 24;
-    u_int unk24 : 7;
-    u_int unk31 : 1;
+    u_int time : 24;
+    u_int round : 7;
+    u_int difficulty : 1;
 } vs_trialScore_t;
 
 typedef struct {
@@ -157,10 +157,7 @@ typedef struct {
     u_short enemyKills[6];
     int unk10;
     u_short weaponAttacks[10];
-    union {
-        u_int value;
-        vs_trialScore_t time;
-    } bossTimeTrialScores[8][3];
+    vs_trialScore_t bossTimeTrialScores[8][3];
     u_short maxChain;
     u_short unk8A;
     u_int unk8C;
@@ -214,7 +211,7 @@ typedef struct {
 
 typedef struct {
     char clearCount;
-    char unk1;
+    char difficulty;
     char unk2;
     char unk3;
     char unk4;

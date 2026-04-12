@@ -328,7 +328,7 @@ typedef struct {
     vs_battle_inventoryGrip grips[16]; // 0x540
     vs_battle_inventoryArmor armor[16]; // 0x640
     vs_battle_inventoryGem gems[48]; // 0x8C0
-    vs_battle_inventoryMisc items[64]; // 0xE00
+    vs_battle_inventoryMisc misc[64]; // 0xE00
 } vs_battle_inventory_t;
 
 typedef struct {
@@ -403,7 +403,7 @@ extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
-extern vs_main_inventoryIndices D_800619D8;
+extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
 extern vs_main_stickPos vs_main_stickPosBuf;
 
 int vs_main_gametimeUpdate(int vsync);

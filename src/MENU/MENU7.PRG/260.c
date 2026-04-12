@@ -97,7 +97,7 @@ typedef struct {
     vs_main_settings_t settings;
     D_80060068_t unk6C8;
     vs_battle_inventory_t inventory;
-    vs_main_inventoryIndices unk16C8;
+    vs_main_inventoryIndices_t unk16C8;
     D_80061068_t unk1778;
     vs_main_scoredata_t scoreData;
     int unk1898;
@@ -618,7 +618,8 @@ static int _applyLoadedSaveFile(int write)
     _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
     _rMemcpy(&vs_battle_inventory, &spmcimg[1].inventory, sizeof(vs_battle_inventory));
-    _rMemcpy(&D_800619D8, &spmcimg[1].unk16C8, sizeof(D_800619D8));
+    _rMemcpy(
+        &vs_main_inventoryIndices, &spmcimg[1].unk16C8, sizeof(vs_main_inventoryIndices));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof(vs_main_scoredata));
     D_80060064 = s4->unk1898;
@@ -721,7 +722,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(&savedata->settings, &vs_main_settings, sizeof(savedata->settings));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
     _rMemcpy(&savedata->inventory, &vs_battle_inventory, sizeof(savedata->inventory));
-    _rMemcpy(&savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
+    _rMemcpy(&savedata->unk16C8, &vs_main_inventoryIndices, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
     _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof(savedata->scoreData));
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
@@ -3758,7 +3759,7 @@ int vs_menu7_saveContainerMenu(char* state)
     case 7:
         vs_battle_memcpy(vs_menu_inventoryStorage->unk0, &vs_battle_inventory,
             sizeof(vs_menu_inventoryStorage->unk0));
-        vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &D_800619D8,
+        vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof(vs_menu_inventoryStorage->unkF00));
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0, (_spmcimg + 0x79E0),
             sizeof(vs_menu_inventoryStorage->unkFB0));
@@ -3829,7 +3830,7 @@ int vs_menu7_saveContainerMenu(char* state)
         *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
         vs_battle_memcpy(&vs_battle_inventory, vs_menu_inventoryStorage->unk0,
             sizeof(vs_menu_inventoryStorage->unk0));
-        vs_battle_memcpy(&D_800619D8, &vs_menu_inventoryStorage->unkF00,
+        vs_battle_memcpy(&vs_main_inventoryIndices, &vs_menu_inventoryStorage->unkF00,
             sizeof(vs_menu_inventoryStorage->unkF00));
     }
         /* fallthrough */

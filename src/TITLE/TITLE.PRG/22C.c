@@ -593,7 +593,8 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
     _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof(vs_battle_inventory));
-    _rMemcpy(&D_800619D8, spmcimg[1].unk16C8, sizeof(D_800619D8));
+    _rMemcpy(
+        &vs_main_inventoryIndices, spmcimg[1].unk16C8, sizeof(vs_main_inventoryIndices));
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
     D_80060064 = s4->unk1898;
@@ -684,8 +685,8 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = 0x30;
     s5->stats.mapCompletion = 0;
-    memset(&vs_battle_inventory.items, 0, sizeof(vs_battle_inventory.items));
-    memset(&D_800619D8.misc, 0, sizeof(D_800619D8.misc));
+    memset(&vs_battle_inventory.misc, 0, sizeof(vs_battle_inventory.misc));
+    memset(&vs_main_inventoryIndices.misc, 0, sizeof(vs_main_inventoryIndices.misc));
     memset(&savedata2->containerData.misc, 0,
         sizeof savedata2->containerData.misc / 4); // Why / 4?
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
@@ -697,7 +698,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
     _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof(savedata->unk7C8));
-    _rMemcpy(savedata->unk16C8, &D_800619D8, sizeof(savedata->unk16C8));
+    _rMemcpy(savedata->unk16C8, &vs_main_inventoryIndices, sizeof(savedata->unk16C8));
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
     _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
@@ -4586,7 +4587,7 @@ static void _initEnvironment(void)
     vs_main_settings.vibrationOn = vibrationOn != 0;
     vs_main_setMonoSound(vs_main_settings.monoSound);
     vs_sound_setCdVol(0x7F);
-    memset(&D_800619D8, 0, sizeof(D_800619D8));
+    memset(&vs_main_inventoryIndices, 0, sizeof(vs_main_inventoryIndices));
     vs_main_stateFlags.difficulty = 1;
     vs_main_stateFlags.puzzleMode = 1;
 }

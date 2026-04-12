@@ -7,4 +7,4 @@ $(BUILD)/config/MENU/MENUB.PRG/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
-$(BUILD)/src/MENU/MENUB.PRG/260.o: $(BUILD)/assets/MENU/MENUB.PRG/menuText.vsString
+$(BUILD)/src/MENU/MENUB.PRG/260.o: $(addprefix $(BUILD)/assets/MENU/,MENUB.PRG/menuText.vsString ITEMHELP.BIN.h)

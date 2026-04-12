@@ -21,12 +21,12 @@ extern u_long* D_1F800000[];
 
 static char D_801022C4 = 0;
 static u_short* D_801022C8 = NULL;
-static int D_801022CC = 0;
+static int _selectedItemAction = 0;
 static char D_801022D0 = 0;
-static char D_801022D1 = 0;
-static char D_801022D2 = 0;
+static char _itemActionCount = 0;
+static char _itemActionListOffset = 0;
 
-void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
+void vs_mainMenu_initSortUi(int rowCount, int arg1, char** strings, int* rowTypes)
 {
     int temp_v1_2;
     int i;
@@ -80,52 +80,55 @@ void func_800FF0EC(int rowCount, int arg1, char** strings, int* rowTypes)
             ++var_a2;
         }
     }
-    D_801022CC = i;
-    D_801022D2 = var_a2;
-    D_801022D1 = rowCount;
+    _selectedItemAction = i;
+    _itemActionListOffset = var_a2;
+    _itemActionCount = rowCount;
     D_801022C4 = 0;
     D_801022C8 = vs_main_allocHeapR(rowCount << 7);
 
     for (i = 0; i < rowCount; ++i) {
         char* s;
-        *((int*)(&(&D_801022C8[i * 0x40])[14])) = rowTypes[i];
+        *((int*)(&(&D_801022C8[i * 64])[14])) = rowTypes[i];
 
         if (strings[i * 2] != NULL) {
-            vs_battle_copyAligned(&D_801022C8[i * 0x40], strings[i * 2], 0x1A);
-            D_801022C8[(i * 0x40) + 13] = 0xE7E7;
+            vs_battle_copyAligned(&D_801022C8[i * 64], strings[i * 2], 0x1A);
+            D_801022C8[(i * 64) + 13] = 0xE7E7;
         } else {
-            D_801022C8[i * 0x40] = 0xE7E7;
+            D_801022C8[i * 64] = 0xE7E7;
         }
 
         s = strings[i * 2 + 1];
         if (s != NULL) {
-            D_801022C8[(i * 0x40) + 16] = 0xF8;
-            vs_battle_copyAligned(&D_801022C8[(i * 0x40) + 17], s, 0x5C);
-            D_801022C8[(i * 0x40) + 63] = 0xE7E7;
+            D_801022C8[(i * 64) + 16] = 0xF8;
+            vs_battle_copyAligned(&D_801022C8[(i * 64) + 17], s, 0x5C);
+            D_801022C8[(i * 64) + 63] = 0xE7E7;
         } else {
-            D_801022C8[(i * 0x40) + 16] = 0xE7E7;
+            D_801022C8[(i * 64) + 16] = 0xE7E7;
         }
     }
 }
 
-int func_800FF348(void) { return D_801022CC + D_801022D2; }
+int func_800FF348(void) { return _selectedItemAction + _itemActionListOffset; }
 
-int func_800FF360(void) { return D_801022C8 == NULL ? D_801022CC : -1; }
+int vs_mainMenu_getSelectedItemAction(void)
+{
+    return D_801022C8 == NULL ? _selectedItemAction : -1;
+}
 
 vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
 {
     vs_battle_menuItem_t* temp_v0 =
         vs_battle_setMenuItem(arg0 + 0x20, arg1, ((arg0 + D_801024A0) * 0x10) + 0x12,
-            0x7E, 0, (char*)&D_801022C8[(D_801022D2 + arg0) * 0x40]);
-    int v = *((int*)&D_801022C8[(D_801022D2 + arg0) * 0x40 + 14]);
+            0x7E, 0, (char*)&D_801022C8[(_itemActionListOffset + arg0) * 0x40]);
+    int v = *((int*)&D_801022C8[(_itemActionListOffset + arg0) * 0x40 + 14]);
     temp_v0->unk7 = v & 1;
-    if ((arg0 == 0) && (D_801022D2 != 0)) {
+    if ((arg0 == 0) && (_itemActionListOffset != 0)) {
         temp_v0->fadeEffect = 1;
     }
     return temp_v0;
 }
 
-void func_800FF43C(void)
+void vs_mainMenu_processItemActionMenu(void)
 {
     static char D_801022D3 = 0;
 
@@ -136,137 +139,146 @@ void func_800FF43C(void)
     int var_s1;
     vs_battle_menuItem_t* menuItem;
 
-    if (D_801022C4 < 0xA) {
-        menuItem = func_800FF388(D_801022C4, -0xC2);
+    if (D_801022C4 < 10) {
+        menuItem = func_800FF388(D_801022C4, -194);
         menuItem->state = 5;
         menuItem->targetX = 0;
         ++D_801022C4;
-        if (D_801022C4 == D_801022D1) {
-            D_801022C4 = 0x10;
+        if (D_801022C4 == _itemActionCount) {
+            D_801022C4 = 16;
         }
         if (D_801022C4 == 7) {
-            if ((D_801022C4 + D_801022D2) < D_801022D1) {
+            if ((D_801022C4 + _itemActionListOffset) < _itemActionCount) {
                 menuItem->fadeEffect = 2;
             }
-            D_801022C4 = 0x10;
+            D_801022C4 = 16;
         }
     } else {
-        menuItem = vs_battle_getMenuItem(D_801022CC + 32);
+        menuItem = vs_battle_getMenuItem(_selectedItemAction + 32);
         vs_mainmenu_setInformationMessage(
-            (char*)(D_801022C8 + (((D_801022CC + D_801022D2) << 6) + 16)));
+            (char*)(D_801022C8
+                    + (((_selectedItemAction + _itemActionListOffset) << 6) + 16)));
 
         switch (D_801022C4) {
         case 16:
             if (vs_mainmenu_ready() != 0) {
-                D_801022C4 = 0x11;
+                D_801022C4 = 17;
                 return;
             }
             return;
         case 17:
-            temp_s6 = D_801022CC + D_801022D2;
-            temp_s5 = D_801022D2;
-            if (vs_main_buttonsPressed.all & 0x10) {
+            temp_s6 = _selectedItemAction + _itemActionListOffset;
+            temp_s5 = _itemActionListOffset;
+
+            if (vs_main_buttonsPressed.all & PADRup) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.unk0[D_801022D0 * 2] = D_801022CC;
-                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = D_801022D2;
-                D_801022CC = -3;
+                D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
+                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                _selectedItemAction = -3;
                 return;
             }
-            if (vs_main_buttonsPressed.all & 0x20) {
+
+            if (vs_main_buttonsPressed.all & PADRright) {
                 if (menuItem->unk7 == 0) {
                     menuItem->selected = 1;
                     vs_main_freeHeapR(D_801022C8);
                     D_801022C8 = NULL;
-                    D_800F4EE8.unk0[D_801022D0 * 2] = D_801022CC;
-                    D_800F4EE8.unk0[D_801022D0 * 2 + 1] = D_801022D2;
-                    D_801022CC = temp_s6;
+                    D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
+                    D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                    _selectedItemAction = temp_s6;
                     return;
                 }
                 vs_battle_playInvalidSfx();
             }
+
             menuItem->selected = 0;
-            if (vs_main_buttonsPressed.all & 0x40) {
+
+            if (vs_main_buttonsPressed.all & PADRdown) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.unk0[D_801022D0 * 2] = D_801022CC;
-                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = D_801022D2;
-                D_801022CC = -2;
+                D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
+                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                _selectedItemAction = -2;
                 return;
             }
-            if (vs_main_buttonRepeat & 0x1000) {
-                if (D_801022D1 < 8) {
-                    if (D_801022CC == 0) {
-                        D_801022CC = D_801022D1 - 1;
+
+            if (vs_main_buttonRepeat & PADLup) {
+                if (_itemActionCount < 8) {
+                    if (_selectedItemAction == 0) {
+                        _selectedItemAction = _itemActionCount - 1;
                     } else {
-                        --D_801022CC;
+                        --_selectedItemAction;
                     }
-                } else if (D_801022D2 == 0) {
-                    if (D_801022CC == 0) {
-                        if (vs_main_buttonsPressed.all & 0x1000) {
-                            D_801022CC = 6;
-                            D_801022D2 = D_801022D1 - 7;
+                } else if (_itemActionListOffset == 0) {
+                    if (_selectedItemAction == 0) {
+                        if (vs_main_buttonsPressed.all & PADLup) {
+                            _selectedItemAction = 6;
+                            _itemActionListOffset = _itemActionCount - 7;
                         }
                     } else {
-                        --D_801022CC;
+                        --_selectedItemAction;
                     }
-                } else if (D_801022CC == 1) {
-                    --D_801022D2;
+                } else if (_selectedItemAction == 1) {
+                    --_itemActionListOffset;
                 } else {
-                    --D_801022CC;
+                    --_selectedItemAction;
                 }
             }
-            if (vs_main_buttonRepeat & 0x4000) {
-                if (D_801022D1 < 8) {
-                    if (D_801022CC == (D_801022D1 - 1)) {
-                        D_801022CC = 0;
+
+            if (vs_main_buttonRepeat & PADLdown) {
+                if (_itemActionCount < 8) {
+                    if (_selectedItemAction == (_itemActionCount - 1)) {
+                        _selectedItemAction = 0;
                     } else {
-                        ++D_801022CC;
+                        ++_selectedItemAction;
                     }
-                } else if (D_801022D2 == (D_801022D1 - 7)) {
-                    if (D_801022CC == 6) {
-                        if (vs_main_buttonsPressed.all & 0x4000) {
-                            D_801022CC = 0;
-                            D_801022D2 = 0;
+                } else if (_itemActionListOffset == (_itemActionCount - 7)) {
+                    if (_selectedItemAction == 6) {
+                        if (vs_main_buttonsPressed.all & PADLdown) {
+                            _selectedItemAction = 0;
+                            _itemActionListOffset = 0;
                         }
                     } else {
-                        ++D_801022CC;
+                        ++_selectedItemAction;
                     }
-                } else if (D_801022CC == 5) {
-                    D_801022D2 = D_801022D2 + 1;
+                } else if (_selectedItemAction == 5) {
+                    _itemActionListOffset = _itemActionListOffset + 1;
                 } else {
-                    D_801022CC += 1;
+                    _selectedItemAction += 1;
                 }
             }
-            if (temp_s6 != (D_801022CC + D_801022D2)) {
+
+            if (temp_s6 != (_selectedItemAction + _itemActionListOffset)) {
                 vs_battle_playMenuChangeSfx();
 
-                if (D_801022D2 != temp_s5) {
-                    char unksp10[D_801022D1];
-                    for (i = 0; i < D_801022D1; ++i) {
-                        unksp10[i] = 0;
+                if (_itemActionListOffset != temp_s5) {
+                    char animationStates[_itemActionCount];
+                    for (i = 0; i < _itemActionCount; ++i) {
+                        animationStates[i] = 0;
                     }
-                    var_s1 = D_801022D1;
-                    if (var_s1 >= 8U) {
+                    var_s1 = _itemActionCount;
+                    if (var_s1 > 7u) {
                         var_s1 = 7;
                     }
                     for (i = 0; i < var_s1; ++i) {
-                        unksp10[i + temp_s5] =
-                            vs_battle_getMenuItem(i + 0x20)->animationState;
+                        animationStates[i + temp_s5] =
+                            vs_battle_getMenuItem(i + 32)->animationState;
                     }
 
                     var_a0 = 0;
                     for (i = 0;;) {
                         menuItem = func_800FF388(i, 0);
-                        menuItem->animationState = unksp10[i + D_801022D2];
-                        i += 1;
+                        menuItem->animationState =
+                            animationStates[i + _itemActionListOffset];
+                        ++i;
 
-                        if (i == D_801022D1) {
+                        if (i == _itemActionCount) {
                             break;
                         }
 
                         if (i == 7) {
-                            if ((D_801022D2 + 7) < D_801022D1) {
+                            if ((_itemActionListOffset + 7) < _itemActionCount) {
                                 menuItem->fadeEffect = 2;
                             }
                             break;
@@ -274,7 +286,8 @@ void func_800FF43C(void)
                     }
                 }
             }
-            menuItem = vs_battle_getMenuItem(D_801022CC + 0x20);
+
+            menuItem = vs_battle_getMenuItem(_selectedItemAction + 32);
             menuItem->selected = 1;
             D_801022D3 = func_800FFCDC((u_int)D_801022D3, (menuItem->y - 8) << 0x10);
             break;

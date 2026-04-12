@@ -139,11 +139,11 @@ typedef struct {
     char armor[16];
     char gems[48];
     char misc[64];
-} vs_main_inventoryIndices;
+} vs_main_inventoryIndices_t;
 
 typedef struct {
     char unk0[15][256];
-    vs_main_inventoryIndices unkF00;
+    vs_main_inventoryIndices_t unkF00;
     vs_menu_containerData unkFB0;
     vs_menu_containerData unk4BB0;
     vs_menu_containerData unk87B0;
@@ -159,7 +159,7 @@ enum vs_itemCategories {
     itemCategoryShield,
     itemCategoryArmor,
     itemCategoryGem,
-    itemCategoryItem
+    itemCategoryMisc
 };
 
 enum vs_gemTargets { gemTargetShield = 0x80 };

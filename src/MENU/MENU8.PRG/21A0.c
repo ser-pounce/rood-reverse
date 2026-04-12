@@ -104,7 +104,7 @@ static u_short _renameMenuStrings[] = {
 
 extern u_long* D_1F800000[];
 
-static void func_80103FD8(int arg0)
+static void _sortShieldsByStat(int arg0)
 {
     static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070,
         0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122,
@@ -696,10 +696,10 @@ int vs_menu8_execRename(char* state)
         if (_animStep != 0) {
             --_animStep;
         }
-        func_80103FD8(vs_battle_rowAnimationSteps[_animStep]);
+        _sortShieldsByStat(vs_battle_rowAnimationSteps[_animStep]);
     } else if (_animStep < 10) {
         ++_animStep;
-        func_80103FD8(_animStep << 5);
+        _sortShieldsByStat(_animStep << 5);
     }
     return 0;
 }

@@ -401,7 +401,7 @@ void vs_mainMenu_setUiGripStats(int arg0)
     func_800FBB8C(4);
 }
 
-void func_800FD5A0(int index)
+void vs_mainMenu_setShieldStats(int index)
 {
     vs_battle_uiShield uiShield;
     int i;
@@ -436,7 +436,7 @@ void func_800FD5A0(int index)
     func_800FBB8C(7);
 }
 
-void func_800FD700(int index)
+void vs_mainMenu_setArmorStats(int index)
 {
     vs_battle_uiArmor uiArmor;
     int i;
@@ -474,7 +474,7 @@ void func_800FD700(int index)
     func_800FBB8C(7);
 }
 
-void func_800FD878(int arg0)
+void vs_mainMenu_setGemStats(int arg0)
 {
     int i;
     vs_battle_inventoryGem* temp_a2 = &vs_mainMenu_gems[arg0 - 1];
@@ -527,7 +527,7 @@ char* func_800FD93C(int arg0)
         if (gem != 0) {
             vs_mainMenu_setGemUi(
                 &vs_mainMenu_gems[gem - 1], menuText, &rowType, vs_battle_stringBuf);
-            func_800FD878(gem);
+            vs_mainMenu_setGemStats(gem);
         } else {
             vs_mainMenu_resetStats();
         }
@@ -580,7 +580,7 @@ char* func_800FDBAC(int arg0)
             if (gem != 0) {
                 vs_mainMenu_setGemUi(
                     &vs_mainMenu_gems[gem - 1], menuText, &rowType, vs_battle_stringBuf);
-                func_800FD878(gem);
+                vs_mainMenu_setGemStats(gem);
             } else {
                 vs_mainMenu_resetStats();
             }
@@ -756,7 +756,7 @@ void func_800FDEBC(void)
     }
     if (vs_mainMenu_equipmentSubtype & 8) {
         vs_mainMenu_drawDpPpbars(0xB);
-        func_800FD5A0(D_801024A1);
+        vs_mainMenu_setShieldStats(D_801024A1);
     }
     if (vs_mainMenu_equipmentSubtype & 0x10) {
         vs_mainMenu_drawDpPpbars(9);
@@ -843,13 +843,13 @@ void vs_mainMenu_unequipShield(void)
     }
 }
 
-void vs_mainMenu_initItem(int arg0, int arg1)
+void vs_mainMenu_initItem(int itemCategory, int index)
 {
     int i;
 
-    switch (arg0) {
-    case 0: {
-        vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[arg1 - 1];
+    switch (itemCategory) {
+    case itemCategoryWeapon: {
+        vs_battle_inventoryWeapon* weapon = &vs_battle_inventory.weapons[index - 1];
 
         vs_mainMenu_initItem(1, weapon->blade);
         vs_mainMenu_initItem(2, weapon->grip);
@@ -862,23 +862,23 @@ void vs_mainMenu_initItem(int arg0, int arg1)
         }
 
         vs_battle_rMemzero(weapon, sizeof *weapon);
-        weapon->index = arg1;
+        weapon->index = index;
         break;
     }
-    case 1: {
-        vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[arg1 - 1];
+    case itemCategoryBlade: {
+        vs_battle_inventoryBlade* blade = &vs_battle_inventory.blades[index - 1];
         vs_battle_rMemzero(blade, sizeof *blade);
-        blade->index = arg1;
+        blade->index = index;
         break;
     }
-    case 2: {
-        vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[arg1 - 1];
+    case itemCategoryGrip: {
+        vs_battle_inventoryGrip* grip = &vs_battle_inventory.grips[index - 1];
         vs_battle_rMemzero(grip, sizeof *grip);
-        grip->index = arg1;
+        grip->index = index;
         break;
     }
-    case 3: {
-        vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[arg1 - 1];
+    case itemCategoryShield: {
+        vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[index - 1];
         for (i = 0; i < 3; ++i) {
             int gem = shield->gems[i];
             if (gem != 0) {
@@ -886,25 +886,25 @@ void vs_mainMenu_initItem(int arg0, int arg1)
             }
         }
         vs_battle_rMemzero(shield, sizeof *shield);
-        shield->index = arg1;
+        shield->index = index;
         break;
     }
-    case 4: {
-        vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[arg1 - 1];
+    case itemCategoryArmor: {
+        vs_battle_inventoryArmor* armor = &vs_battle_inventory.armor[index - 1];
         vs_battle_rMemzero(armor, sizeof *armor);
-        armor->index = arg1;
+        armor->index = index;
         break;
     }
-    case 5: {
-        vs_battle_inventoryGem* gem = &vs_battle_inventory.gems[arg1 - 1];
+    case itemCategoryGem: {
+        vs_battle_inventoryGem* gem = &vs_battle_inventory.gems[index - 1];
         vs_battle_rMemzero(gem, sizeof *gem);
-        gem->index = arg1;
+        gem->index = index;
         break;
     }
-    case 6: {
-        vs_battle_inventoryMisc* misc = &vs_battle_inventory.items[arg1 - 1];
+    case itemCategoryMisc: {
+        vs_battle_inventoryMisc* misc = &vs_battle_inventory.misc[index - 1];
         vs_battle_rMemzero(misc, sizeof *misc);
-        misc->index = arg1;
+        misc->index = index;
         break;
     }
     }
@@ -978,7 +978,7 @@ static int _getItemId(int category, int index, vs_battle_inventory_t* inventory)
         id = inventory->gems[index].id;
         break;
     case 6:
-        id = inventory->items[index].id;
+        id = inventory->misc[index].id;
         break;
     }
     return id;
@@ -1227,13 +1227,13 @@ int func_800FEB94(
         break;
     }
     case 6: {
-        vs_battle_inventoryMisc* source = &arg3->items[arg2];
-        vs_battle_inventoryMisc* target = arg1->items;
+        vs_battle_inventoryMisc* source = &arg3->misc[arg2];
+        vs_battle_inventoryMisc* target = arg1->misc;
         var_s1_3 = source->count;
         vs_mainMenu_rebuildInventory(6);
 
         for (i = 0; i < 0x40; ++i) {
-            int slot = D_800619D8.misc[i];
+            int slot = vs_main_inventoryIndices.misc[i];
             if (slot == 0) {
                 continue;
             }
@@ -1292,6 +1292,7 @@ char (*vs_mainMenu_itemNames)[24] = NULL;
 
 char vs_mainMenu_inventoryItemCapacities[] = { 8, 16, 16, 8, 16, 48, 64, 2 };
 
-char* vs_mainMenu_inventoryIndices[] = { D_800619D8.weapons, D_800619D8.blades,
-    D_800619D8.grips, D_800619D8.shields, D_800619D8.armor, D_800619D8.gems,
-    D_800619D8.misc };
+char* vs_mainMenu_inventoryIndices[] = { vs_main_inventoryIndices.weapons,
+    vs_main_inventoryIndices.blades, vs_main_inventoryIndices.grips,
+    vs_main_inventoryIndices.shields, vs_main_inventoryIndices.armor,
+    vs_main_inventoryIndices.gems, vs_main_inventoryIndices.misc };

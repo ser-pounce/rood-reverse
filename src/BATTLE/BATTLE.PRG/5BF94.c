@@ -310,7 +310,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C70F8);
 void func_800C7210(int arg0)
 {
     D_800F4CB9 = 0;
-    D_800F4CBC = 0x180;
+    D_800F4CBC = 384;
     D_800F4CB8 = arg0;
 }
 

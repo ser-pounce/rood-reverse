@@ -42,9 +42,9 @@ void vs_mainMenu_setItemUi(
     vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
 void vs_mainMenu_setUiBladeStats(int);
 void vs_mainMenu_setUiGripStats(int);
-void func_800FD5A0(int);
-void func_800FD700(int);
-void func_800FD878(int);
+void vs_mainMenu_setShieldStats(int);
+void vs_mainMenu_setArmorStats(int);
+void vs_mainMenu_setGemStats(int);
 void vs_mainMenu_resetStats(void);
 void func_8010044C(u_int*);
 

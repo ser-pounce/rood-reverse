@@ -211,7 +211,7 @@ static int func_80102DEC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_8010964E, 7);
-            vs_mainMenu_setUiWeaponStats(D_800619D8.weapons[D_8010964F]);
+            vs_mainMenu_setUiWeaponStats(vs_main_inventoryIndices.weapons[D_8010964F]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010964C = 1;
         }
@@ -220,7 +220,7 @@ static int func_80102DEC(int arg0)
         if (D_8010964D < 0xA) {
             if (++D_8010964D < 6) {
                 vs_mainMenu_initSetWeaponGemMenu(
-                    D_8010964D, D_800619D8.weapons[D_8010964F], 1);
+                    D_8010964D, vs_main_inventoryIndices.weapons[D_8010964F], 1);
                 return 0;
             }
             break;
@@ -243,7 +243,8 @@ static int func_80102DEC(int arg0)
                 vs_mainMenu_setUiWeaponStats(temp_v0_3);
                 func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
                 for (i = 1; i < 6; ++i) {
-                    vs_mainMenu_initSetWeaponGemMenu(i, D_800619D8.weapons[temp_v0_2], 0);
+                    vs_mainMenu_initSetWeaponGemMenu(
+                        i, vs_main_inventoryIndices.weapons[temp_v0_2], 0);
                 }
             } while (0);
         }
@@ -280,7 +281,7 @@ static int func_80103034(int arg0)
     case 0:
         if ((D_80109651 == 0) && (vs_mainmenu_ready() != 0)) {
             func_80102C44(D_80109653, 3);
-            vs_mainMenu_setUiBladeStats(D_800619D8.blades[D_80109654]);
+            vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[D_80109654]);
             vs_mainMenu_drawDpPpbars(3);
             D_80109651 = 1;
         }
@@ -343,7 +344,7 @@ static int func_80103220(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109657, 4);
-            vs_mainMenu_setUiGripStats(D_800619D8.grips[D_80109658]);
+            vs_mainMenu_setUiGripStats(vs_main_inventoryIndices.grips[D_80109658]);
             D_80109655 = 1;
         }
         break;
@@ -371,7 +372,9 @@ static int func_80103220(int arg0)
         }
         // BUG: rodata .write
         D_8010956C[6] =
-            vs_battle_inventory.grips[D_800619D8.grips[D_80109658] - 1].gemSlots + '0';
+            vs_battle_inventory.grips[vs_main_inventoryIndices.grips[D_80109658] - 1]
+                .gemSlots
+            + '0';
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_8010956C, 0x240118, NULL);
         break;
@@ -408,7 +411,7 @@ static int func_80103460(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_8010965C, 7);
-            func_800FD5A0(D_800619D8.shields[D_8010965D]);
+            vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[D_8010965D]);
             vs_mainMenu_drawDpPpbars(3);
             D_8010965A = 1;
         }
@@ -418,7 +421,7 @@ static int func_80103460(int arg0)
             ++D_8010965B;
             if (D_8010965B < 4) {
                 vs_mainMenu_initSetShieldGemMenu(
-                    D_8010965B, D_800619D8.shields[D_8010965D], 1);
+                    D_8010965B, vs_main_inventoryIndices.shields[D_8010965D], 1);
             }
             break;
         }
@@ -438,11 +441,12 @@ static int func_80103460(int arg0)
             i = func_80102D30(3, temp_v0_2);
             vs_mainMenu_initUiShield(&vs_battle_inventory.shields[i - 1], menuText,
                 &rowType, vs_battle_stringBuf);
-            func_800FD5A0(i);
+            vs_mainMenu_setShieldStats(i);
             func_80102C94(D_8010965C, menuText, rowType, temp_v0_2);
 
             for (i = 1; i < 4; ++i) {
-                vs_mainMenu_initSetShieldGemMenu(i, D_800619D8.shields[temp_v0_2], 0);
+                vs_mainMenu_initSetShieldGemMenu(
+                    i, vs_main_inventoryIndices.shields[temp_v0_2], 0);
             }
         }
         break;
@@ -477,8 +481,9 @@ static int func_801036BC(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109661, 7);
-            func_800FD700(D_800619D8.armor[D_80109662]);
-            if (vs_battle_inventory.armor[D_800619D8.armor[D_80109662] - 1].category
+            vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[D_80109662]);
+            if (vs_battle_inventory.armor[vs_main_inventoryIndices.armor[D_80109662] - 1]
+                    .category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
@@ -504,7 +509,7 @@ static int func_801036BC(int arg0)
             temp_v0_3 = func_80102D30(4, temp_v0_2);
             vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
                 &sp18, vs_battle_stringBuf);
-            func_800FD700(temp_v0_3);
+            vs_mainMenu_setArmorStats(temp_v0_3);
             func_80102C94(D_80109661, sp10, sp18, temp_v0_2);
             return 0;
         }
@@ -539,7 +544,7 @@ static int func_801038E4(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80102C44(D_80109665, 3);
-            func_800FD878(D_800619D8.gems[D_80109666]);
+            vs_mainMenu_setGemStats(vs_main_inventoryIndices.gems[D_80109666]);
             D_80109663 = 1;
         }
         break;
@@ -563,7 +568,7 @@ static int func_801038E4(int arg0)
             temp_v0_3 = func_80102D30(5, temp_v0_2);
             vs_mainMenu_setGemUi(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
                 vs_battle_stringBuf);
-            func_800FD878(temp_v0_3);
+            vs_mainMenu_setGemStats(temp_v0_3);
             func_80102C94(D_80109665, sp10, sp18, temp_v0_2);
             return 0;
         }
@@ -656,7 +661,7 @@ static void _getWeaponStat(int arg0)
     int var_s4;
     int temp_s0;
     vs_battle_inventoryWeapon* new_var2 = vs_battle_inventory.weapons;
-    char* new_var = D_800619D8.weapons;
+    char* new_var = vs_main_inventoryIndices.weapons;
 
     vs_battle_rMemzero(sp1A8, 8);
     var_s4 = 0;
@@ -733,7 +738,7 @@ static void func_80103F00(int arg0)
     int var_s4;
     int temp_s0;
     vs_battle_inventoryShield* new_var2 = &vs_battle_inventory.shields[0];
-    char* new_var = D_800619D8.shields;
+    char* new_var = vs_main_inventoryIndices.shields;
 
     vs_battle_rMemzero(sp1A8, sizeof sp1A8);
     var_s4 = 0;
@@ -786,8 +791,8 @@ static void func_8010408C(int arg0)
     int var_s3;
     int var_s4;
     int temp_s0;
-    vs_battle_inventoryMisc* new_var2 = vs_battle_inventory.items;
-    char* new_var = D_800619D8.misc;
+    vs_battle_inventoryMisc* new_var2 = vs_battle_inventory.misc;
+    char* new_var = vs_main_inventoryIndices.misc;
 
     vs_battle_rMemzero(sp10, 0x40);
     var_s4 = 0;
@@ -971,13 +976,13 @@ static int func_80104530(int arg0)
                                                                       + 0x1B7]];
                 spD0[i] = 0;
             }
-            func_800FF0EC(i, D_80109669 + 0x2D, sp10, spD0);
+            vs_mainMenu_initSortUi(i, D_80109669 + 0x2D, sp10, spD0);
             D_80109668 = 1;
         }
         break;
     case 1:
-        func_800FF43C();
-        i = func_800FF360();
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction();
         if ((i + 1) != 0) {
             if (i >= 0) {
                 vs_battle_playMenuSelectSfx();
@@ -1062,11 +1067,11 @@ static int func_80104788(int arg0)
             sp28[i] = 0;
         }
 
-        func_800FF0EC(2, 4, sp18, sp28);
+        vs_mainMenu_initSortUi(2, 4, sp18, sp28);
         D_8010966A = 3;
         break;
     case 2:
-        D_80109670 = vs_battle_inventory.items[D_8010966C - 1].count;
+        D_80109670 = vs_battle_inventory.misc[D_8010966C - 1].count;
         i = vs_battle_toBCD(D_80109670);
         D_80109610[8] = (i & 0xF);
         i = vs_battle_toBCD(i >> 4);
@@ -1083,8 +1088,8 @@ static int func_80104788(int arg0)
         D_8010966A = 4U;
         break;
     case 3:
-        func_800FF43C();
-        i = func_800FF360() + 1;
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction() + 1;
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
@@ -1191,21 +1196,21 @@ static int func_80104788(int arg0)
                 sp30[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x2E49];
                 sp40[i] = 0;
             }
-            func_800FF0EC(2, 4, sp30, sp40);
+            vs_mainMenu_initSortUi(2, 4, sp30, sp40);
             D_8010966A = 7;
         }
         break;
     case 7:
-        func_800FF43C();
-        i = func_800FF360() + 1;
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction() + 1;
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
-                temp_v1_4 = vs_battle_inventory.items[D_8010966C - 1].count;
+                temp_v1_4 = vs_battle_inventory.misc[D_8010966C - 1].count;
                 if (temp_v1_4 == D_8010966F) {
                     vs_mainMenu_initItem(D_8010966B, D_8010966C);
                 } else {
-                    vs_battle_inventory.items[D_8010966C - 1].count =
+                    vs_battle_inventory.misc[D_8010966C - 1].count =
                         temp_v1_4 - D_8010966F;
                 }
             } else {
@@ -1311,9 +1316,9 @@ static int func_80104F94(int arg0, char** arg1, int* arg2, char* arg3)
         case 6: {
             u_int var_a0;
             vs_mainMenu_setItemUi(
-                &vs_battle_inventory.items[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
+                &vs_battle_inventory.misc[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
 
-            var_a0 = D_80102214[vs_battle_inventory.items[temp_s1_2].id - 0x143];
+            var_a0 = D_80102214[vs_battle_inventory.misc[temp_s1_2].id - 0x143];
 
             if ((var_a0 - 0x6A) < 0x1C) {
                 int j;
@@ -1633,15 +1638,15 @@ loop_1:
                 var_s1 = temp_s2[i - 1];
                 var_a1_2 = temp_s2[var_s0_2 - 1];
                 if ((var_s4 == 6)
-                    && ((vs_battle_inventory.items[var_s1 - 1].id
-                         == vs_battle_inventory.items[var_a1_2 - 1].id))) {
-                    vs_battle_inventory.items[var_a1_2 - 1].count =
-                        vs_battle_inventory.items[var_a1_2 - 1].count
-                        + vs_battle_inventory.items[var_s1 - 1].count;
-                    if (vs_battle_inventory.items[var_a1_2 - 1].count > 100) {
-                        vs_battle_inventory.items[var_s1 - 1].count =
-                            vs_battle_inventory.items[var_a1_2 - 1].count - 100;
-                        vs_battle_inventory.items[var_a1_2 - 1].count = 100;
+                    && ((vs_battle_inventory.misc[var_s1 - 1].id
+                         == vs_battle_inventory.misc[var_a1_2 - 1].id))) {
+                    vs_battle_inventory.misc[var_a1_2 - 1].count =
+                        vs_battle_inventory.misc[var_a1_2 - 1].count
+                        + vs_battle_inventory.misc[var_s1 - 1].count;
+                    if (vs_battle_inventory.misc[var_a1_2 - 1].count > 100) {
+                        vs_battle_inventory.misc[var_s1 - 1].count =
+                            vs_battle_inventory.misc[var_a1_2 - 1].count - 100;
+                        vs_battle_inventory.misc[var_a1_2 - 1].count = 100;
                     } else {
                         vs_mainMenu_initItem(6, var_s1);
                     }
@@ -1687,7 +1692,7 @@ loop_1:
         if (var_s4 == 6) {
             sp10[0] = (char*)&vs_mainMenu_itemHelp[0x351D];
             sp10[1] = (char*)&vs_mainMenu_itemHelp[0x3520];
-            if (vs_battle_inventory.items[temp_s3_5].id >= 0x1CA) {
+            if (vs_battle_inventory.misc[temp_s3_5].id >= 0x1CA) {
                 *vs_battle_rowTypeBuf = 1;
                 sp10[1] = (char*)&vs_mainMenu_itemHelp[0x35D1];
             } else if (vs_battle_getSkillFlags(0, (int)D_8010971C[D_80109680 - 1]) & 2) {
@@ -1728,7 +1733,7 @@ loop_1:
             var_s1_2 = vs_battle_inventory.armor[temp_s3_5].bodyPart != 0;
             break;
         case 6: /* switch 2 */
-            if (vs_battle_inventory.items[temp_s3_5].id >= 0x1CAU) {
+            if (vs_battle_inventory.misc[temp_s3_5].id >= 0x1CAU) {
                 var_s1_2 = 3;
             }
             break;
@@ -1760,7 +1765,7 @@ loop_1:
         if (var_s4 == 6) {
             sp10[var_s0_2 * 2] = (char*)&vs_mainMenu_itemHelp[0x356D];
             sp10[var_s0_2 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x3574];
-            if (vs_battle_inventory.items[temp_s3_5].id >= 0x1CAU) {
+            if (vs_battle_inventory.misc[temp_s3_5].id >= 0x1CAU) {
                 sp10[var_s0_2 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x350E];
                 vs_battle_rowTypeBuf[var_s0_2] = 1;
             }
@@ -1774,13 +1779,14 @@ loop_1:
         ++var_s0_2;
 
         D_80109674[var_s0_2] = 5;
-        func_800FF0EC(var_s0_2, var_s4 + 0x26, (char**)sp10, vs_battle_rowTypeBuf);
+        vs_mainMenu_initSortUi(
+            var_s0_2, var_s4 + 0x26, (char**)sp10, vs_battle_rowTypeBuf);
         state = 9;
         break;
     case 9:
         vs_mainMenu_printInformation(func_800FF348(), (int)(char)D_801022C4);
-        func_800FF43C();
-        temp_s3_5 = func_800FF360() + 1;
+        vs_mainMenu_processItemActionMenu();
+        temp_s3_5 = vs_mainMenu_getSelectedItemAction() + 1;
         if (temp_s3_5 != 0) {
             func_800FA854(0x28);
             if (temp_s3_5 > 0) {
@@ -1791,7 +1797,7 @@ loop_1:
                     D_800F5210 = temp_s2[D_80109680 - 1] - 1;
                     D_800F4E98.executeAbility.s16[0] = (short)D_8010971C[D_80109680 - 1];
                     D_800F4E98.executeAbility.s16[1] =
-                        (short)vs_battle_inventory.items[D_800F5210].id;
+                        (short)vs_battle_inventory.misc[D_800F5210].id;
                     return 3;
                 case 2:
                     func_800FFBC8();
@@ -1801,7 +1807,7 @@ loop_1:
                 case 3:
                     var_s0_2 = temp_s2[D_80109680 - 1] | (var_s4 << 8);
                     if ((var_s4 == 6)
-                        && ((char)vs_battle_inventory.items[temp_s2[D_80109680 - 1] - 1]
+                        && ((char)vs_battle_inventory.misc[temp_s2[D_80109680 - 1] - 1]
                                 .count
                             >= 2U)) {
                         var_s0_2 |= 0x10000;
@@ -2140,7 +2146,7 @@ static int func_80106C94(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 16; ++i) {
-            var_a0 = D_800619D8.armor[i];
+            var_a0 = vs_main_inventoryIndices.armor[i];
             if ((var_a0 != 0) && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 7)) {
                 break;
             }
@@ -2183,7 +2189,7 @@ static int func_80106C94(int arg0)
                 rowTypes[0] = 1;
             } else {
                 for (i = 0; i < temp_s7; ++i) {
-                    var_a0 = D_800619D8.armor[i];
+                    var_a0 = vs_main_inventoryIndices.armor[i];
                     if ((var_a0 != 0)
                         && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 7)) {
                         vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
@@ -2196,7 +2202,7 @@ static int func_80106C94(int arg0)
             var_s6 = 1;
 
             for (i = 0; i < temp_s7; ++i) {
-                var_a0 = D_800619D8.armor[i];
+                var_a0 = vs_main_inventoryIndices.armor[i];
                 if ((var_a0 != 0) && (vs_battle_inventory.armor[var_a0 - 1].category == 7)
                     && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 0)) {
                     vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
@@ -2268,7 +2274,7 @@ static int func_80107148(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 8; ++i) {
-            var_s0 = D_800619D8.weapons[i];
+            var_s0 = vs_main_inventoryIndices.weapons[i];
             if ((var_s0 != 0)
                 && (vs_battle_inventory.weapons[var_s0 - 1].isEquipped != 0)) {
                 break;
@@ -2312,7 +2318,7 @@ static int func_80107148(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        var_s0_2 = D_800619D8.weapons[i];
+                        var_s0_2 = vs_main_inventoryIndices.weapons[i];
                         if ((var_s0_2 != 0)
                             && (vs_battle_inventory.weapons[var_s0_2 - 1].isEquipped
                                 != 0)) {
@@ -2327,7 +2333,7 @@ static int func_80107148(int arg0)
                 var_s5 = 1;
 
                 for (i = 0; i < temp_s7; ++i) {
-                    var_s0_2 = D_800619D8.weapons[i];
+                    var_s0_2 = vs_main_inventoryIndices.weapons[i];
                     if (var_s0_2 != 0) {
                         vs_battle_inventoryWeapon* weapon =
                             &vs_battle_inventory.weapons[var_s0_2 - 1];
@@ -2413,7 +2419,7 @@ static int func_80107620(int arg0)
 
     if (arg0 != 0) {
         for (i = 0; i < 8; ++i) {
-            var_s0 = D_800619D8.shields[i];
+            var_s0 = vs_main_inventoryIndices.shields[i];
             if ((var_s0 != 0)
                 && (vs_battle_inventory.shields[var_s0 - 1].isEquipped != 0)) {
                 break;
@@ -2422,7 +2428,7 @@ static int func_80107620(int arg0)
         if (i == 8) {
             var_s0 = 0;
         }
-        func_800FD5A0(var_s0);
+        vs_mainMenu_setShieldStats(var_s0);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_drawDpPpbars(3);
         vs_mainMenu_renderEquipStats(1);
@@ -2455,7 +2461,7 @@ static int func_80107620(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        var_s0_2 = D_800619D8.shields[i];
+                        var_s0_2 = vs_main_inventoryIndices.shields[i];
                         if ((var_s0_2 != 0)
                             && (vs_battle_inventory.shields[var_s0_2 - 1].isEquipped
                                 != 0)) {
@@ -2470,7 +2476,7 @@ static int func_80107620(int arg0)
                 var_s6 = 1;
 
                 for (i = 0; i < temp_s7; ++i) {
-                    var_s0_2 = D_800619D8.shields[i];
+                    var_s0_2 = vs_main_inventoryIndices.shields[i];
                     if (var_s0_2 != 0) {
                         if (vs_battle_inventory.shields[var_s0_2 - 1].isEquipped == 0) {
                             vs_mainMenu_initUiShield(
@@ -2488,7 +2494,7 @@ static int func_80107620(int arg0)
         }
         break;
     case 1:
-        func_800FD5A0(D_80109767);
+        vs_mainMenu_setShieldStats(D_80109767);
         func_8010659C(0);
         D_80109694 = func_80106574() + 1;
         if (D_80109694 != 0) {
@@ -2557,7 +2563,7 @@ static int func_80107B14(int arg0)
     if (arg0 != 0) {
         D_801096A2 = arg0;
         for (i = 0; i < 16; ++i) {
-            temp_s0 = D_800619D8.armor[i];
+            temp_s0 = vs_main_inventoryIndices.armor[i];
             if ((temp_s0 != 0)
                 && (vs_battle_inventory.armor[temp_s0 - 1].bodyPart == arg0)) {
                 break;
@@ -2569,7 +2575,7 @@ static int func_80107B14(int arg0)
         }
 
         D_801096A1 = temp_s0;
-        func_800FD700(temp_s0);
+        vs_mainMenu_setArmorStats(temp_s0);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_drawDpPpbars(1);
         vs_mainMenu_renderEquipStats(1);
@@ -2602,7 +2608,7 @@ static int func_80107B14(int arg0)
                     rowTypes[0] = 1;
                 } else {
                     for (i = 0; i < temp_s7; ++i) {
-                        temp_s0_3 = D_800619D8.armor[i];
+                        temp_s0_3 = vs_main_inventoryIndices.armor[i];
                         if ((temp_s0_3 != 0)
                             && (vs_battle_inventory.armor[temp_s0_3 - 1].bodyPart
                                 == D_801096A2)) {
@@ -2615,7 +2621,7 @@ static int func_80107B14(int arg0)
                 }
                 var_s6 = 1;
                 for (i = 0; i < temp_s7; ++i) {
-                    temp_s0_3 = D_800619D8.armor[i];
+                    temp_s0_3 = vs_main_inventoryIndices.armor[i];
                     if ((temp_s0_3 != 0)
                         && (vs_battle_inventory.armor[temp_s0_3 - 1].category
                             == D_80109624[D_801096A2])
@@ -2634,7 +2640,7 @@ static int func_80107B14(int arg0)
         }
         break;
     case 1:
-        func_800FD700(D_80109767);
+        vs_mainMenu_setArmorStats(D_80109767);
         func_8010659C(1);
         temp_v0_3 = func_80106574() + 1;
         D_8010969C = temp_v0_3;

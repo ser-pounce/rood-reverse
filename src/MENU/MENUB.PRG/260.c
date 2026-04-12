@@ -10,11 +10,13 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../assets/MENU/MENUB.PRG/menuText.h"
+#include "../../assets/MENU/ITEMHELP.BIN.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include <libetc.h>
 #include <stddef.h>
 #include <memory.h>
+#include <limits.h>
 
 typedef struct {
     char unk0;
@@ -23,41 +25,32 @@ typedef struct {
     char unk3;
 } D_8010A6A0_t;
 
-int func_80105454(int);
-int func_80106B80(int);
-int func_801073E0(int);
-void func_801080F0(void);
-void func_80108938(int);
-void func_8010A24C(int arg0);
-
 extern u_long* D_1F800000[];
 
-static int _handleItemPaging(int items, int arg1)
+static int _handleItemPaging(int items, int page)
 {
     if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
-        int temp_s1 = arg1;
+        int previousPage = page;
         items = vs_mainMenu_getItemCount(items, NULL);
         if (vs_main_buttonRepeat & PADL1) {
-            arg1 += items - 1;
+            page += items - 1;
         }
         if (vs_main_buttonRepeat & PADR1) {
-            ++arg1;
+            ++page;
         }
-        if (arg1 >= items) {
-            arg1 -= items;
+        if (page >= items) {
+            page -= items;
         }
-        if ((vs_main_buttonsPressed.all & (PADL1 | PADR1)) && (arg1 == temp_s1)) {
+        if ((vs_main_buttonsPressed.all & (PADL1 | PADR1)) && (page == previousPage)) {
             vs_battle_playInvalidSfx();
         }
     }
-    return arg1;
+    return page;
 }
 
 static void func_80102B14(int arg0, int arg1)
 {
     int i;
-    u_long* var_v1;
-    vs_battle_menuItem_t* menuItem;
 
     int temp_s4 = (D_800F4EE8.unk3A.itemCategory - 1) & 7;
 
@@ -65,14 +58,15 @@ static void func_80102B14(int arg0, int arg1)
         func_801013F8(0);
     }
 
-    arg0 = (arg0 * 8) - 0x10;
+    arg0 = (arg0 * 8) - 16;
 
     for (i = 0; i < 8; ++i) {
-        int temp_s0 = (((i + 1) & 7) * 0x10) + 0x20;
+        u_long* var_v1;
+        int temp_s0 = (((i + 1) & 7) * 16) + 32;
         if (i == temp_s4 && arg1 == 1) {
-            menuItem = vs_battle_getMenuItem(0x1F);
-            if (temp_s0 >= (menuItem->initialX - 0xC)) {
-                menuItem->icon = i + 0x18;
+            vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
+            if (temp_s0 >= (menuItem->initialX - 12)) {
+                menuItem->icon = i + 24;
                 continue;
             } else {
                 var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
@@ -198,11 +192,6 @@ static int _weaponDetailsPage(int selectedMenuItem)
     static u_char selectedWeapon;
     static char _ __attribute__((unused));
 
-    char* text[2];
-    int rowType;
-    int weaponPage;
-    int i;
-
     if (selectedMenuItem != 0) {
         menuItemId = selectedMenuItem >> 8;
         selectedWeapon = selectedMenuItem - 1;
@@ -212,11 +201,13 @@ static int _weaponDetailsPage(int selectedMenuItem)
         state = init;
         return 0;
     }
+
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 7);
-            vs_mainMenu_setUiWeaponStats(D_800619D8.weapons[selectedWeapon]);
+            vs_mainMenu_setUiWeaponStats(
+                vs_main_inventoryIndices.weapons[selectedWeapon]);
             vs_mainMenu_drawDpPpbars(3);
             state = initRows;
         }
@@ -226,7 +217,7 @@ static int _weaponDetailsPage(int selectedMenuItem)
             ++row;
             if (row < 6) {
                 vs_mainMenu_initSetWeaponGemMenu(
-                    row, D_800619D8.weapons[selectedWeapon], 1);
+                    row, vs_main_inventoryIndices.weapons[selectedWeapon], 1);
             }
             break;
         }
@@ -236,19 +227,23 @@ static int _weaponDetailsPage(int selectedMenuItem)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             _initMenuLeave(1);
             state = leave;
-            break;
-        }
-        weaponPage = _handleItemPaging(0, selectedWeapon);
-        if (weaponPage != selectedWeapon) {
-            selectedWeapon = weaponPage;
-            i = _getItemIndex(0, weaponPage);
-            vs_mainMenu_initUiWeapon(
-                &vs_battle_inventory.weapons[i - 1], text, &rowType, vs_battle_stringBuf);
-            vs_mainMenu_setUiWeaponStats(i);
+        } else {
+            int weaponPage = _handleItemPaging(0, selectedWeapon);
+            if (weaponPage != selectedWeapon) {
+                char* text[2];
+                int rowType;
+                int i;
+                selectedWeapon = weaponPage;
+                i = _getItemIndex(0, weaponPage);
+                vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[i - 1], text,
+                    &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setUiWeaponStats(i);
 
-            _setSubMenu(menuItemId, text, rowType, weaponPage);
-            for (i = 1; i < 6; ++i) {
-                vs_mainMenu_initSetWeaponGemMenu(i, D_800619D8.weapons[weaponPage], 0);
+                _setSubMenu(menuItemId, text, rowType, weaponPage);
+                for (i = 1; i < 6; ++i) {
+                    vs_mainMenu_initSetWeaponGemMenu(
+                        i, vs_main_inventoryIndices.weapons[weaponPage], 0);
+                }
             }
         }
         break;
@@ -267,11 +262,6 @@ static int _bladeDetailsPage(int selectedMenuItem)
     static char menuItemId;
     static u_char selectedBlade;
 
-    char* text[2];
-    int rowType;
-    int selectedBladePage;
-    int bladeIndex;
-
     if (selectedMenuItem != 0) {
         menuItemId = selectedMenuItem >> 8;
         selectedBlade = selectedMenuItem - 1;
@@ -285,7 +275,7 @@ static int _bladeDetailsPage(int selectedMenuItem)
     case init: {
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 3);
-            vs_mainMenu_setUiBladeStats(D_800619D8.blades[selectedBlade]);
+            vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[selectedBlade]);
             vs_mainMenu_drawDpPpbars(3);
             state = animationWait;
         }
@@ -301,16 +291,19 @@ static int _bladeDetailsPage(int selectedMenuItem)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             _initMenuLeave(1);
             state = leave;
-            break;
-        }
-        selectedBladePage = _handleItemPaging(1, selectedBlade);
-        if (selectedBladePage != selectedBlade) {
-            selectedBlade = selectedBladePage;
-            bladeIndex = _getItemIndex(1, selectedBladePage);
-            vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[bladeIndex - 1], text,
-                &rowType, vs_battle_stringBuf);
-            vs_mainMenu_setUiBladeStats(bladeIndex);
-            _setSubMenu(menuItemId, text, rowType, selectedBladePage);
+        } else {
+            int selectedBladePage = _handleItemPaging(1, selectedBlade);
+            if (selectedBladePage != selectedBlade) {
+                char* text[2];
+                int rowType;
+                int bladeIndex;
+                selectedBlade = selectedBladePage;
+                bladeIndex = _getItemIndex(1, selectedBladePage);
+                vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[bladeIndex - 1], text,
+                    &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setUiBladeStats(bladeIndex);
+                _setSubMenu(menuItemId, text, rowType, selectedBladePage);
+            }
         }
         break;
     case leave:
@@ -331,11 +324,6 @@ static int _gripDetailsPage(int selectedMenuItem)
     static char selectedGrip;
     static char _ __attribute__((unused));
 
-    char* menuText[2];
-    int rowType;
-    int selectedGripPage;
-    int gripIndex;
-
     if (selectedMenuItem != 0) {
         menuItemId = selectedMenuItem >> 8;
         selectedGrip = selectedMenuItem - 1;
@@ -345,11 +333,12 @@ static int _gripDetailsPage(int selectedMenuItem)
         state = init;
         return 0;
     }
+
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 4);
-            vs_mainMenu_setUiGripStats(D_800619D8.grips[selectedGrip]);
+            vs_mainMenu_setUiGripStats(vs_main_inventoryIndices.grips[selectedGrip]);
             state = animationWait;
         }
         break;
@@ -365,8 +354,11 @@ static int _gripDetailsPage(int selectedMenuItem)
             _initMenuLeave(0);
             state = leave;
         } else {
-            selectedGripPage = _handleItemPaging(2, selectedGrip);
+            int selectedGripPage = _handleItemPaging(2, selectedGrip);
             if (selectedGripPage != selectedGrip) {
+                char* menuText[2];
+                int rowType;
+                int gripIndex;
                 selectedGrip = selectedGripPage;
                 gripIndex = _getItemIndex(2, selectedGripPage);
                 vs_mainMenu_setGripUi(&vs_battle_inventory.grips[gripIndex - 1], menuText,
@@ -376,7 +368,8 @@ static int _gripDetailsPage(int selectedMenuItem)
             }
         }
         gemCountText[6] =
-            (vs_battle_inventory.grips[D_800619D8.grips[selectedGrip] - 1].gemSlots
+            (vs_battle_inventory.grips[vs_main_inventoryIndices.grips[selectedGrip] - 1]
+                    .gemSlots
                 + '0'); // BUG: Write to const char
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(gemCountText, vs_getXY(280, 36), NULL);
@@ -387,190 +380,196 @@ static int _gripDetailsPage(int selectedMenuItem)
     return 0;
 }
 
-static int _shieldDetailsPage(int arg0)
+static int _shieldDetailsPage(int selectedMenuItem)
 {
-    static char D_8010A5FA;
-    static char D_8010A5FB;
+    enum state { init, animationWait, render, leave };
+
+    static char state;
+    static char animationTimer;
     static char menuItemId;
-    static u_char D_8010A5FD;
-    static char D_8010A5FE;
+    static u_char selectedShield;
+    static char _ __attribute__((unused));
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int i;
-
-    if (arg0 != 0) {
-        menuItemId = arg0 >> 8;
-        D_8010A5FD = arg0 - 1;
+    if (selectedMenuItem != 0) {
+        menuItemId = selectedMenuItem >> 8;
+        selectedShield = selectedMenuItem - 1;
         _initMenuItem(menuItemId);
-        D_8010A5FE = 0;
-        D_8010A5FB = 0U;
-        D_8010A5FA = 0U;
+        _ = 0;
+        animationTimer = 0;
+        state = init;
         return 0;
     }
-    switch (D_8010A5FA) {
-    case 0:
+
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 7);
-            func_800FD5A0(D_800619D8.shields[D_8010A5FD]);
+            vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[selectedShield]);
             vs_mainMenu_drawDpPpbars(3);
-            D_8010A5FA = 1U;
+            state = animationWait;
         }
         break;
-    case 1:
-        if (D_8010A5FB < 0xAU) {
-            ++D_8010A5FB;
-            if (D_8010A5FB < 4) {
+    case animationWait:
+        if (animationTimer < 10) {
+            ++animationTimer;
+            if (animationTimer < 4) {
                 vs_mainMenu_initSetShieldGemMenu(
-                    D_8010A5FB, D_800619D8.shields[D_8010A5FD], 1);
+                    animationTimer, vs_main_inventoryIndices.shields[selectedShield], 1);
             }
             break;
         }
         if (vs_mainmenu_ready() != 0) {
-            D_8010A5FA = 2U;
+            state = render;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
+    case render:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             _initMenuLeave(1);
-            D_8010A5FA = 3U;
-            break;
-        }
-        temp_v0_2 = _handleItemPaging(3, D_8010A5FD);
-        if (temp_v0_2 != D_8010A5FD) {
-            D_8010A5FD = temp_v0_2;
-            i = _getItemIndex(3, temp_v0_2);
-            vs_mainMenu_initUiShield(
-                &vs_battle_inventory.shields[i - 1], sp10, &sp18, vs_battle_stringBuf);
-            func_800FD5A0(i);
-            _setSubMenu(menuItemId, sp10, sp18, temp_v0_2);
+            state = leave;
+        } else {
+            int selectedShieldPage = _handleItemPaging(3, selectedShield);
+            if (selectedShieldPage != selectedShield) {
+                char* text[2];
+                int rowType;
+                int i;
+                selectedShield = selectedShieldPage;
+                i = _getItemIndex(3, selectedShieldPage);
+                vs_mainMenu_initUiShield(&vs_battle_inventory.shields[i - 1], text,
+                    &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setShieldStats(i);
+                _setSubMenu(menuItemId, text, rowType, selectedShieldPage);
 
-            for (i = 1; i < 4; ++i) {
-                vs_mainMenu_initSetShieldGemMenu(i, D_800619D8.shields[temp_v0_2], 0);
+                for (i = 1; i < 4; ++i) {
+                    vs_mainMenu_initSetShieldGemMenu(
+                        i, vs_main_inventoryIndices.shields[selectedShieldPage], 0);
+                }
             }
         }
         break;
-    case 3:
+    case leave:
         return vs_mainmenu_ready();
     }
     return 0;
 }
 
-static int _armorDetailsPage(int arg0)
+static int _armorDetailsPage(int selectedMenuItem)
 {
-    static char D_8010A5FF;
-    static char D_8010A600;
+    enum state { init, animationWait, render, leave };
+
+    static char state;
+    static char animationTimer;
     static char menuItemId;
-    static char D_8010A602;
+    static char selectedArmor;
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
-
-    if (arg0 != 0) {
-        menuItemId = arg0 >> 8;
-        D_8010A602 = arg0 - 1;
+    if (selectedMenuItem != 0) {
+        menuItemId = selectedMenuItem >> 8;
+        selectedArmor = selectedMenuItem - 1;
         _initMenuItem(menuItemId);
-        D_8010A600 = 0xA;
-        D_8010A5FF = 0;
+        animationTimer = 10;
+        state = init;
         return 0;
     }
-    switch (D_8010A5FF) {
-    case 0:
+
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 7);
-            func_800FD700(D_800619D8.armor[D_8010A602]);
-            if (vs_battle_inventory.armor[D_800619D8.armor[D_8010A602] - 1].category
+            vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[selectedArmor]);
+            if (vs_battle_inventory
+                    .armor[vs_main_inventoryIndices.armor[selectedArmor] - 1]
+                    .category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
-            D_8010A5FF = 1;
+            state = animationWait;
         }
         break;
-    case 1:
-        if (D_8010A600 != 0) {
-            --D_8010A600;
+    case animationWait:
+        if (animationTimer != 0) {
+            --animationTimer;
         } else {
-            D_8010A5FF = 2;
+            state = render;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
+    case render:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             _initMenuLeave(1);
-            D_8010A5FF = 3;
-            break;
-        }
-        temp_v0_2 = _handleItemPaging(4, D_8010A602);
-        if (temp_v0_2 != D_8010A602) {
-            D_8010A602 = temp_v0_2;
-            temp_v0_3 = _getItemIndex(4, temp_v0_2);
-            vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
-                &sp18, vs_battle_stringBuf);
-            func_800FD700(temp_v0_3);
-            _setSubMenu(menuItemId, sp10, sp18, temp_v0_2);
+            state = leave;
+        } else {
+            int selectedArmorPage = _handleItemPaging(4, selectedArmor);
+            if (selectedArmorPage != selectedArmor) {
+                char* text[2];
+                int rowType;
+                int armorIndex;
+                selectedArmor = selectedArmorPage;
+                armorIndex = _getItemIndex(4, selectedArmorPage);
+                vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[armorIndex - 1],
+                    text, &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setArmorStats(armorIndex);
+                _setSubMenu(menuItemId, text, rowType, selectedArmorPage);
+            }
         }
         break;
-    case 3:
+    case leave:
         return vs_mainmenu_ready();
     }
     return 0;
 }
 
-static int _gemDetailsPage(int arg0)
+static int _gemDetailsPage(int selectedMenuItem)
 {
-    static char D_8010A603;
-    static char D_8010A604;
+    enum state { init, animationWait, render, leave };
+
+    static char state;
+    static char animationTimer;
     static char menuItemId;
-    static char D_8010A606;
+    static char selectedGem;
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
-
-    if (arg0 != 0) {
-        menuItemId = arg0 >> 8;
-        D_8010A606 = arg0 - 1;
+    if (selectedMenuItem != 0) {
+        menuItemId = selectedMenuItem >> 8;
+        selectedGem = selectedMenuItem - 1;
         _initMenuItem(menuItemId);
-        D_8010A604 = 10;
-        D_8010A603 = 0;
+        animationTimer = 10;
+        state = init;
         return 0;
     }
-    switch (D_8010A603) {
-    case 0:
+
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(menuItemId, 3);
-            func_800FD878(D_800619D8.gems[D_8010A606]);
-            D_8010A603 = 1;
+            vs_mainMenu_setGemStats(vs_main_inventoryIndices.gems[selectedGem]);
+            state = animationWait;
         }
         break;
-    case 1:
-        if (D_8010A604 != 0) {
-            --D_8010A604;
+    case animationWait:
+        if (animationTimer != 0) {
+            --animationTimer;
         } else {
-            D_8010A603 = 2;
+            state = render;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
+    case render:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             _initMenuLeave(0);
-            D_8010A603 = 3;
-            _exitToBattle = vs_main_buttonsPressed.all & 0x10;
-            break;
-        }
-        temp_v0_2 = _handleItemPaging(5, D_8010A606);
-        if (temp_v0_2 != D_8010A606) {
-            D_8010A606 = temp_v0_2;
-            temp_v0_3 = _getItemIndex(5, temp_v0_2);
-            vs_mainMenu_setGemUi(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
-                vs_battle_stringBuf);
-            func_800FD878(temp_v0_3);
-            _setSubMenu(menuItemId, sp10, sp18, temp_v0_2);
+            state = leave;
+            _exitToBattle = vs_main_buttonsPressed.all & PADRup;
+        } else {
+            int selectedGemPage = _handleItemPaging(5, selectedGem);
+            if (selectedGemPage != selectedGem) {
+                char* text[2];
+                int rowType;
+                int gemIndex;
+                selectedGem = selectedGemPage;
+                gemIndex = _getItemIndex(5, selectedGemPage);
+                vs_mainMenu_setGemUi(&vs_battle_inventory.gems[gemIndex - 1], text,
+                    &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setGemStats(gemIndex);
+                _setSubMenu(menuItemId, text, rowType, selectedGemPage);
+            }
         }
         break;
-    case 3:
+    case leave:
         return vs_mainmenu_ready();
     }
     return 0;
@@ -648,56 +647,55 @@ static int _getWeaponStat(int stat, vs_battle_uiWeapon* weapon)
     }
 }
 
-static void func_80103DA0(int arg0)
+static void _sortWeaponsByStat(int stat)
 {
-    vs_battle_uiWeapon sp10;
-    char sp1A8[8];
-    int temp_v0;
-    int i;
-    int var_s3;
-    int var_s4;
-    int temp_s0;
-    vs_battle_inventoryWeapon* new_var2 = vs_battle_inventory.weapons;
-    char* new_var = D_800619D8.weapons;
+    vs_battle_uiWeapon weapon;
+    char sortedIndices[8];
+    int sortedIndex;
+    vs_battle_inventoryWeapon* weapons = vs_battle_inventory.weapons;
+    char* indices = vs_main_inventoryIndices.weapons;
 
-    vs_battle_rMemzero(sp1A8, 8);
-    var_s4 = 0;
+    vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
+    sortedIndex = 0;
 
     while (1) {
-        var_s3 = 0x80000000;
+        int i;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
-                temp_v0 = _getWeaponStat(arg0, &sp10);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            index = indices[i];
+            if (index != 0) {
+                int value;
+                vs_battle_applyWeapon(&weapon, &weapons[index - 1]);
+                value = _getWeaponStat(stat, &weapon);
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
-                if (_getWeaponStat(arg0, &sp10) == var_s3) {
-                    sp1A8[var_s4++] = temp_s0;
-                    new_var[i] = 0;
+            index = indices[i];
+            if (index != 0) {
+                vs_battle_applyWeapon(&weapon, &weapons[index - 1]);
+                if (_getWeaponStat(stat, &weapon) == maxValue) {
+                    sortedIndices[sortedIndex++] = index;
+                    indices[i] = 0;
                 }
             }
         }
     }
-    vs_battle_memcpy(new_var, sp1A8, sizeof sp1A8);
+    vs_battle_memcpy(indices, sortedIndices, sizeof sortedIndices);
 }
 
-int _getShieldStat(int arg0, vs_battle_uiShield* shield)
+static int _getShieldStat(int stat, vs_battle_uiShield* shield)
 {
-    switch (arg0) {
+    switch (stat) {
     case 1:
         return -shield->base.material;
     case 4:
@@ -715,64 +713,63 @@ int _getShieldStat(int arg0, vs_battle_uiShield* shield)
     case 10:
         return shield->currentAgility;
     default:
-        if (arg0 < 33) {
-            return shield->classAffinityCurrent.class[0][arg0 - 27];
+        if (stat < 33) {
+            return shield->classAffinityCurrent.class[0][stat - 27];
         }
-        if (arg0 >= 40) {
-            return shield->types[arg0 - 39];
+        if (stat >= 40) {
+            return shield->types[stat - 39];
         }
-        return shield->classAffinityCurrent.affinity[0][arg0 - 33];
+        return shield->classAffinityCurrent.affinity[0][stat - 33];
     }
 }
 
-void func_80103FD8(int arg0)
+static void _sortShieldsByStat(int stat)
 {
     vs_battle_uiShield shield;
-    char sp1A8[8];
-    int temp_v0;
-    int i;
-    int var_s3;
-    int var_s4;
-    int temp_s0;
-    vs_battle_inventoryShield* new_var2 = &vs_battle_inventory.shields[0];
-    char* new_var = D_800619D8.shields;
+    char sortedIndices[8];
+    int sortedIndex;
+    vs_battle_inventoryShield* shields = &vs_battle_inventory.shields[0];
+    char* shieldIndices = vs_main_inventoryIndices.shields;
 
-    vs_battle_rMemzero(sp1A8, sizeof sp1A8);
-    var_s4 = 0;
+    vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
+    sortedIndex = 0;
 
     while (1) {
-        var_s3 = 0x80000000;
+        int i;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyShield(&shield, &new_var2[temp_s0 - 1]);
-                temp_v0 = _getShieldStat(arg0, &shield);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            index = shieldIndices[i];
+            if (index != 0) {
+                int value;
+                vs_battle_applyShield(&shield, &shields[index - 1]);
+                value = _getShieldStat(stat, &shield);
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyShield(&shield, &new_var2[temp_s0 - 1]);
-                if (_getShieldStat(arg0, &shield) == var_s3) {
-                    sp1A8[var_s4++] = temp_s0;
-                    new_var[i] = 0;
+            index = shieldIndices[i];
+            if (index != 0) {
+                vs_battle_applyShield(&shield, &shields[index - 1]);
+                if (_getShieldStat(stat, &shield) == maxValue) {
+                    sortedIndices[sortedIndex++] = index;
+                    shieldIndices[i] = 0;
                 }
             }
         }
     }
-    vs_battle_memcpy(new_var, sp1A8, 8);
+    vs_battle_memcpy(shieldIndices, sortedIndices, 8);
 }
 
-int func_80104144(int arg0, vs_battle_inventoryMisc* arg1)
+static int _getMiscStat(int arg0, vs_battle_inventoryMisc* arg1)
 {
     if (arg0 == 0) {
         return -arg1->id;
@@ -780,51 +777,49 @@ int func_80104144(int arg0, vs_battle_inventoryMisc* arg1)
     return arg1->count;
 }
 
-void func_80104164(int arg0)
+static void _sortMiscByStat(int stat)
 {
-    char sp10[64];
-    int temp_v0;
-    int i;
-    int var_s4;
+    char sortedIndices[64];
+    int sortedIndex;
+    vs_battle_inventoryMisc* item = vs_battle_inventory.misc;
+    char* indices = vs_main_inventoryIndices.misc;
 
-    vs_battle_inventoryMisc* item = vs_battle_inventory.items;
-    char* c = D_800619D8.misc;
-
-    vs_battle_rMemzero(sp10, sizeof sp10);
-    var_s4 = 0;
+    vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
+    sortedIndex = 0;
 
     while (1) {
-        int temp_s0;
-        int var_s3 = 0x80000000;
+        int i;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 64; ++i) {
-            temp_s0 = c[i];
-            if (temp_s0 != 0) {
-                temp_v0 = func_80104144(arg0, &item[temp_s0 - 1]);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            index = indices[i];
+            if (index != 0) {
+                int value = _getMiscStat(stat, &item[index - 1]);
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 64; ++i) {
-            temp_s0 = c[i];
-            if (temp_s0 != 0) {
-                if (func_80104144(arg0, &item[temp_s0 - 1]) == var_s3) {
-                    sp10[var_s4++] = temp_s0;
-                    c[i] = 0;
+            index = indices[i];
+            if (index != 0) {
+                if (_getMiscStat(stat, &item[index - 1]) == maxValue) {
+                    sortedIndices[sortedIndex++] = index;
+                    indices[i] = 0;
                 }
             }
         }
     }
-    vs_battle_memcpy(c, &sp10, sizeof sp10);
+    vs_battle_memcpy(indices, &sortedIndices, sizeof sortedIndices);
 }
 
-int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
+static int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
 {
     switch (stat) {
     case 0:
@@ -866,135 +861,132 @@ int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
 void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int index)
 {
     switch (itemCategory) {
-    case 1:
+    case itemCategoryBlade:
         vs_battle_copyInventoryBladeStats(equipment, &vs_battle_inventory.blades[index]);
         return;
-    case 2:
+    case itemCategoryGrip:
         vs_battle_copyInventoryGripStats(equipment, &vs_battle_inventory.grips[index]);
         return;
-    case 4:
+    case itemCategoryArmor:
         vs_battle_copyInventoryArmorStats(equipment, &vs_battle_inventory.armor[index]);
         return;
-    case 5:
+    case itemCategoryGem:
         vs_battle_copyInventoryGemStats(equipment, &vs_battle_inventory.gems[index]);
         return;
     }
 }
 
-void func_80104474(int arg0, int arg1)
+static void _sortEquipmentByStat(int itemCategory, int stat)
 {
-    vs_battle_uiEquipment sp10;
-    int temp_v0;
-    int i;
-    int var_s3;
-    int var_s5;
-    char* temp_s6;
-    int temp_s0;
-    int temp_s4;
+    vs_battle_uiEquipment equipment;
 
-    var_s5 = 0;
-    temp_s4 = vs_mainMenu_inventoryItemCapacities[arg0];
+    int sortedIndex = 0;
+    int capacity = vs_mainMenu_inventoryItemCapacities[itemCategory];
     {
-        char spVLA[temp_s4];
-        temp_s6 = vs_mainMenu_inventoryIndices[arg0];
-        vs_battle_rMemzero(spVLA, temp_s4);
+        char sortedIndices[capacity];
+        char* indices = vs_mainMenu_inventoryIndices[itemCategory];
+        vs_battle_rMemzero(sortedIndices, capacity);
 
         while (1) {
-            var_s3 = 0x80000000;
-            for (i = 0; i < temp_s4; ++i) {
-                temp_s0 = temp_s6[i];
-                if (temp_s0 != 0) {
-                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
-                    temp_v0 = _getEquipmentStat(arg1, &sp10);
-                    if (var_s3 < temp_v0) {
-                        var_s3 = temp_v0;
+            int i;
+            int index;
+            int maxValue = -INT_MAX - 1;
+            for (i = 0; i < capacity; ++i) {
+                index = indices[i];
+                if (index != 0) {
+                    int value;
+                    _copyEquipmentStats(&equipment, itemCategory, index - 1);
+                    value = _getEquipmentStat(stat, &equipment);
+                    if (maxValue < value) {
+                        maxValue = value;
                     }
                 }
             }
 
-            if (var_s3 == 0x80000000) {
+            if (maxValue == -INT_MAX - 1) {
                 break;
             }
 
-            for (i = 0; i < temp_s4; ++i) {
-                temp_s0 = temp_s6[i];
-                if (temp_s0 != 0) {
-                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
-                    if (_getEquipmentStat(arg1, &sp10) == var_s3) {
-                        spVLA[var_s5++] = temp_s0;
-                        temp_s6[i] = 0;
+            for (i = 0; i < capacity; ++i) {
+                index = indices[i];
+                if (index != 0) {
+                    _copyEquipmentStats(&equipment, itemCategory, index - 1);
+                    if (_getEquipmentStat(stat, &equipment) == maxValue) {
+                        sortedIndices[sortedIndex++] = index;
+                        indices[i] = 0;
                     }
                 }
             }
         }
-        vs_battle_memcpy(temp_s6, spVLA, temp_s4);
+        vs_battle_memcpy(indices, sortedIndices, capacity);
     }
 }
 
-int func_80104608(int arg0)
+static int _sortItems(int selectedCategory)
 {
-    static char D_8010A52C[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23 };
-    static char D_8010A544[] = { 0, 8, 9, 10, 24, 25, 26 };
-    static char D_8010A54C[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31,
+    static char bladeSortStats[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23 };
+    static char gripSortStats[] = { 0, 8, 9, 10, 24, 25, 26 };
+    static char shieldSortStats[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 39 };
+    static char armorSortStats[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31,
         32, 33, 34, 35, 36, 37, 38, 39 };
-    static char D_8010A564[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31, 32,
-        33, 34, 35, 36, 37, 38, 39 };
-    static char D_8010A57C[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-        39 };
-    static char D_8010A58C[] = { 0, 56, 0, 0 };
-    static char D_8010A590[] = { 24, 24, 7, 24, 23, 16, 2 };
-    static char* D_8010A598[] = { D_8010A52C, D_8010A52C, D_8010A544, D_8010A54C,
-        D_8010A564, D_8010A57C, D_8010A58C };
+    static char gemSortStats[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+        38, 39 };
+    static char miscSortStats[] = { 0, 56 };
+    static char sortStatsCounts[] = { sizeof bladeSortStats, sizeof bladeSortStats,
+        sizeof gripSortStats, sizeof shieldSortStats, sizeof armorSortStats,
+        sizeof gemSortStats, sizeof miscSortStats };
+    static char* equipmentSortStats[] = { bladeSortStats, bladeSortStats, gripSortStats,
+        shieldSortStats, armorSortStats, gemSortStats, miscSortStats };
 
-    static char D_8010A608;
-    static u_char D_8010A609;
+    static char state;
+    static u_char itemCategory;
 
-    char* sp10[48];
-    int spD0[24];
+    char* statTextBuf[48];
+    int statRowTypes[24];
     int i;
 
-    if (arg0 != 0) {
-        D_8010A609 = arg0 - 1;
-        D_8010A608 = 0;
+    if (selectedCategory != 0) {
+        itemCategory = selectedCategory - 1;
+        state = 0;
         return 0;
     }
 
-    switch (D_8010A608) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            char* new_var = D_8010A598[D_8010A609];
-            for (i = 0; i < D_8010A590[D_8010A609]; ++i) {
-                sp10[i * 2] =
-                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[new_var[i] * 2
-                                                                      + 0x1B6]];
-                sp10[i * 2 + 1] =
-                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[new_var[i] * 2
-                                                                      + 0x1B7]];
-                spD0[i] = 0;
+            char* stats = equipmentSortStats[itemCategory];
+            for (i = 0; i < sortStatsCounts[itemCategory]; ++i) {
+                statTextBuf[i * 2] = (char*)&vs_mainMenu_itemHelp
+                    [vs_mainMenu_itemHelp[stats[i] * 2 + VS_ITEMHELP_BIN_INDEX_sortMenu]];
+                statTextBuf[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [stats[i] * 2 + VS_ITEMHELP_BIN_INDEX_sortMenuDesc]];
+                statRowTypes[i] = 0;
             }
-            func_800FF0EC(i, D_8010A609 + 0x2D, sp10, spD0);
-            D_8010A608 = 1;
+            vs_mainMenu_initSortUi(i, itemCategory + 45, statTextBuf, statRowTypes);
+            state = 1;
         }
         break;
     case 1:
-        func_800FF43C();
-        i = func_800FF360();
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction();
         if ((i + 1) != 0) {
             if (i >= 0) {
                 vs_battle_playMenuSelectSfx();
-                switch (D_8010A609) {
-                case 0:
-                    func_80103DA0(D_8010A52C[i]);
+                switch (itemCategory) {
+                case itemCategoryWeapon:
+                    _sortWeaponsByStat(bladeSortStats[i]);
                     break;
-                case 3:
-                    func_80103FD8(D_8010A54C[i]);
+                case itemCategoryShield:
+                    _sortShieldsByStat(shieldSortStats[i]);
                     break;
-                case 6:
-                    func_80104164(D_8010A58C[i]);
+                case itemCategoryMisc:
+                    _sortMiscByStat(miscSortStats[i]);
                     break;
                 default:
-                    func_80104474(D_8010A609, D_8010A598[D_8010A609][i]);
+                    _sortEquipmentByStat(
+                        itemCategory, equipmentSortStats[itemCategory][i]);
                     break;
                 }
             } else {
@@ -1006,206 +998,222 @@ int func_80104608(int arg0)
     return 0;
 }
 
-int func_80104860(int arg0)
+static int _discardMenu(int arg0)
 {
+    enum state {
+        init,
+        discardOneInit,
+        discardMultipleInit,
+        discardOne,
+        clearTemplate,
+        determineDiscardAmount,
+        discardMultipleConfirm,
+        discardMultiple
+    };
+
 #pragma vsstring(start)
-    static char D_8010A5B4[] = "|>48|000/000\0";
+    static char countTemplate[] = "|>48|000/000\0";
 #pragma vsstring(end)
-    static char D_8010A5C0[] = { 1, 10, 100 };
+    static char discardSteps[] = { 1, 10, 100 };
     static char D_8010A5C3 = 0;
 
-    static char D_8010A60A;
-    static char D_8010A60B;
-    static char D_8010A60C;
-    static char D_8010A60D;
-    static u_char D_8010A60E;
-    static char D_8010A60F;
-    static char D_8010A610;
+    static char state;
+    static char itemCategory;
+    static char selectedItem;
+    static char discardType;
+    static u_char discardStep;
+    static char discardCount;
+    static char maxAmount;
     static char _[3] __attribute__((unused));
 
-    char* sp18[4];
-    int sp28[2];
-    char* sp30[4];
-    int sp40[2];
+    char* discardOneText[4];
+    int discardOneRowTypes[2];
+    char* discardMultipleText[4];
+    int discardMultipleRowTypes[2];
     int i;
-    int temp_v1_4;
     vs_battle_menuItem_t* menuItem;
     int a0;
     int a2;
 
     if (arg0 != 0) {
-        D_8010A60D = (arg0 >> 0x10);
-        D_8010A60B = (arg0 >> 8);
-        D_8010A60C = arg0;
+        discardType = (arg0 >> 0x10);
+        itemCategory = (arg0 >> 8);
+        selectedItem = arg0;
         func_800C8E04(1);
         vs_mainmenu_setInformationMessage(
-            (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[D_8010A60D + 0x22A]]);
-        D_8010A60A = 0;
+            (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]]);
+        state = init;
         return 0;
     }
-    switch (D_8010A60A) {
-    case 0:
+
+    switch (state) {
+    case init:
         if ((D_800F5130 >> 0x1E) & 1) {
             if (vs_mainmenu_ready() != 0) {
-                D_8010A60A = ((D_8010A60D & 1) + 1);
+                state = ((discardType & 1) + 1);
             }
         }
         break;
-    case 1:
+    case discardOneInit:
         for (i = 0; i < 2; ++i) {
-            sp18[i * 2] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[i + 0x228]];
-            sp18[i * 2 + 1] =
-                (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[D_8010A60D + 0x22A]];
-            sp28[i] = 0;
+            discardOneText[i * 2] = (char*)&vs_mainMenu_itemHelp
+                [vs_mainMenu_itemHelp[i + VS_ITEMHELP_BIN_INDEX_confirmYes]];
+            discardOneText[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                    [discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]];
+            discardOneRowTypes[i] = 0;
         }
 
-        func_800FF0EC(2, 4, sp18, sp28);
-        D_8010A60A = 3U;
+        vs_mainMenu_initSortUi(2, 4, discardOneText, discardOneRowTypes);
+        state = discardOne;
         break;
-    case 2:
-        D_8010A610 = vs_battle_inventory.items[D_8010A60C - 1].count;
-        i = vs_battle_toBCD(D_8010A610);
-        D_8010A5B4[8] = (i & 0xF);
+    case discardMultipleInit:
+        maxAmount = vs_battle_inventory.misc[selectedItem - 1].count;
+        i = vs_battle_toBCD(maxAmount);
+        countTemplate[8] = i & 0xF;
         i = vs_battle_toBCD(i >> 4);
 
-        D_8010A5B4[7] = (i & 0xF);
-        D_8010A5B4[6] = (i >> 4);
+        countTemplate[7] = i & 0xF;
+        countTemplate[6] = i >> 4;
         for (i = 2; i < 5; ++i) {
-            D_8010A5B4[i] = 0;
+            countTemplate[i] = 0;
         }
-        menuItem = vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, D_8010A5B4);
+        menuItem = vs_battle_setMenuItem(34, -126, 130, 0x7E, 0, countTemplate);
         menuItem->state = 5;
         menuItem->targetX = 0;
-        D_8010A60E = 0;
-        D_8010A60F = 0;
-        D_8010A60A = 4;
+        discardStep = 0;
+        discardCount = 0;
+        state = clearTemplate;
         break;
-    case 3:
-        func_800FF43C();
-        i = func_800FF360() + 1;
+    case discardOne:
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction() + 1;
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
-                vs_mainMenu_initItem(D_8010A60B, D_8010A60C);
+                vs_mainMenu_initItem(itemCategory, selectedItem);
             } else {
                 vs_battle_playMenuLeaveSfx();
             }
             return i;
         }
         break;
-    case 4:
-
-        if (vs_mainmenu_ready() != 0) {
-            for (i = 2; i < 5; ++i) {
-                D_8010A5B4[i] = 0x8F;
-            }
-
-            vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, D_8010A5B4);
-            D_8010A60A = 5;
-        case 5:
-            if (vs_main_buttonsPressed.all & 0x70) {
-                i = vs_battle_toBCD(D_8010A60F);
-                D_8010A5B4[4] = (i & 0xF);
-                i = vs_battle_toBCD(i >> 4);
-                D_8010A5B4[3] = (i & 0xF);
-                D_8010A5B4[2] = (i >> 4);
-                vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, D_8010A5B4);
-                if (vs_main_buttonsPressed.all & 0x50) {
-                    vs_battle_playMenuLeaveSfx();
-                    if ((vs_main_buttonsPressed.all & 0x10)) {
-                        return -2;
-                    }
-                    return -1;
-                }
-                if (D_8010A60F == 0) {
-                    vs_battle_playMenuLeaveSfx();
-                    return -1;
-                }
-                vs_battle_playMenuSelectSfx();
-                D_8010A60A = 6;
-                break;
-            }
-
-            i = 0;
-            a0 = a2 = D_8010A60F;
-            if (vs_main_buttonRepeat & 0x1000) {
-                i = 1;
-            }
-            if (vs_main_buttonRepeat & 0x4000) {
-                --i;
-            }
-            if (i == 1) {
-                a0 = a2 + D_8010A5C0[D_8010A60E];
-            } else if (i == -1) {
-                a0 = a2 - D_8010A5C0[D_8010A60E];
-            }
-            if (a0 >= 0) {
-                if (D_8010A610 >= a0) {
-                    D_8010A60F = a0;
-                }
-            }
-            i = 0;
-            a0 = D_8010A60E;
-            if (vs_main_buttonRepeat & 0x2000) {
-                i = -1;
-            }
-            if (vs_main_buttonRepeat & 0x8000) {
-                i += 1;
-            }
-            if (i == 1) {
-                if ((a0 & 0xFF) == 2) {
-                    if (D_8010A60F != D_8010A610) {
-                        D_8010A60F = D_8010A610;
-                    }
-                } else {
-                    ++D_8010A60E;
-                }
-            } else if (i == -1) {
-                if (!(a0 & 0xFF)) {
-                    if (D_8010A60F != 0) {
-                        D_8010A60F = 0;
-                    }
-                } else {
-                    --D_8010A60E;
-                }
-            }
-            if ((a0 != D_8010A60E) || (a2 != D_8010A60F)) {
-                vs_battle_playMenuChangeSfx();
-            }
-            func_800C7210(5);
-            i = vs_battle_toBCD(D_8010A60F);
-            func_800C70F8(i & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
-            i = vs_battle_toBCD(i >> 4);
-            func_800C70F8(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
-            func_800C70F8(i >> 4, 0x36, 0x82, D_1F800000[2] - 3);
-            D_8010A5C3 = func_800FFCDC(D_8010A5C3, (0x36 - (D_8010A60E * 6)) | 0x720000);
+    case clearTemplate:
+        if (vs_mainmenu_ready() == 0) {
+            break;
         }
+
+        for (i = 2; i < 5; ++i) {
+#pragma vsstring(start)
+            countTemplate[i] = ' ';
+#pragma vsstring(end)
+        }
+
+        vs_battle_setMenuItem(34, 0, 130, 0x7E, 0, countTemplate);
+        state = determineDiscardAmount;
+        // Fallthrough
+    case determineDiscardAmount:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRright | PADRdown)) {
+            i = vs_battle_toBCD(discardCount);
+            countTemplate[4] = (i & 0xF);
+            i = vs_battle_toBCD(i >> 4);
+            countTemplate[3] = (i & 0xF);
+            countTemplate[2] = (i >> 4);
+            vs_battle_setMenuItem(34, 0, 130, 0x7E, 0, countTemplate);
+            if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+                vs_battle_playMenuLeaveSfx();
+                if ((vs_main_buttonsPressed.all & PADRup)) {
+                    return -2;
+                }
+                return -1;
+            }
+            if (discardCount == 0) {
+                vs_battle_playMenuLeaveSfx();
+                return -1;
+            }
+            vs_battle_playMenuSelectSfx();
+            state = discardMultipleConfirm;
+            break;
+        }
+
+        i = 0;
+        a0 = a2 = discardCount;
+        if (vs_main_buttonRepeat & PADLup) {
+            i = 1;
+        }
+        if (vs_main_buttonRepeat & PADLdown) {
+            --i;
+        }
+        if (i == 1) {
+            a0 = a2 + discardSteps[discardStep];
+        } else if (i == -1) {
+            a0 = a2 - discardSteps[discardStep];
+        }
+        if (a0 >= 0) {
+            if (maxAmount >= a0) {
+                discardCount = a0;
+            }
+        }
+        i = 0;
+        a0 = discardStep;
+        if (vs_main_buttonRepeat & PADLright) {
+            i = -1;
+        }
+        if (vs_main_buttonRepeat & PADLleft) {
+            i += 1;
+        }
+        if (i == 1) {
+            if ((a0 & 0xFF) == 2) {
+                if (discardCount != maxAmount) {
+                    discardCount = maxAmount;
+                }
+            } else {
+                ++discardStep;
+            }
+        } else if (i == -1) {
+            if (!(a0 & 0xFF)) {
+                if (discardCount != 0) {
+                    discardCount = 0;
+                }
+            } else {
+                --discardStep;
+            }
+        }
+        if ((a0 != discardStep) || (a2 != discardCount)) {
+            vs_battle_playMenuChangeSfx();
+        }
+        func_800C7210(5);
+        i = vs_battle_toBCD(discardCount);
+        func_800C70F8(i & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
+        i = vs_battle_toBCD(i >> 4);
+        func_800C70F8(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
+        func_800C70F8(i >> 4, 0x36, 0x82, D_1F800000[2] - 3);
+        D_8010A5C3 = func_800FFCDC(D_8010A5C3, (54 - (discardStep * 6)) | (114 << 0x10));
         break;
-    case 6:
+    case discardMultipleConfirm:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 2; ++i) {
-                sp30[i * 2] =
+                discardMultipleText[i * 2] =
                     (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[i + 0x228]];
-                sp30[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x2E49];
-                sp40[i] = 0;
+                discardMultipleText[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x2E49];
+                discardMultipleRowTypes[i] = 0;
             }
 
-            func_800FF0EC(2, 4, sp30, sp40);
-            D_8010A60A = 7;
+            vs_mainMenu_initSortUi(2, 4, discardMultipleText, discardMultipleRowTypes);
+            state = discardMultiple;
         }
         break;
-    case 7:
-        func_800FF43C();
-        i = func_800FF360() + 1;
+    case discardMultiple:
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction() + 1;
         if (i != 0) {
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
-                temp_v1_4 = vs_battle_inventory.items[D_8010A60C - 1].count;
-                if (temp_v1_4 == D_8010A60F) {
-                    vs_mainMenu_initItem(D_8010A60B, D_8010A60C);
+                if (vs_battle_inventory.misc[selectedItem - 1].count == discardCount) {
+                    vs_mainMenu_initItem(itemCategory, selectedItem);
                 } else {
-                    vs_battle_inventory.items[D_8010A60C - 1].count =
-                        temp_v1_4 - D_8010A60F;
+                    vs_battle_inventory.misc[selectedItem - 1].count =
+                        vs_battle_inventory.misc[selectedItem - 1].count - discardCount;
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();
@@ -1217,24 +1225,24 @@ int func_80104860(int arg0)
     return 0;
 }
 
-void func_80104F98(int arg0)
+static void func_80104F98(int arg0)
 {
     D_8010A6B9 = arg0;
     D_8010A6BA = arg0;
     D_8010A6BB = arg0;
 }
 
-int _getParentItem(int itemCategory, int index)
+static int _getParentItem(int itemCategory, int index)
 {
     int parentIndex = 0;
 
-    if (itemCategory == 1) {
+    if (itemCategory == itemCategoryBlade) {
         parentIndex = vs_battle_inventory.blades[index].assembledWeaponIndex;
     }
-    if (itemCategory == 2) {
+    if (itemCategory == itemCategoryGrip) {
         parentIndex = vs_battle_inventory.grips[index].assembledWeaponIndex;
     }
-    if (itemCategory == 5) {
+    if (itemCategory == itemCategoryGem) {
         parentIndex = vs_battle_inventory.gems[index].setItemIndex;
         if (parentIndex & 0x80) {
             parentIndex = 0;
@@ -1243,16 +1251,16 @@ int _getParentItem(int itemCategory, int index)
     return parentIndex;
 }
 
-int func_80105044(int arg0, int arg1)
+static int _getParentItemIfGem(int itemCategory, int index)
 {
-    int var_v1 = 0;
-    if (arg0 == 5) {
-        var_v1 = vs_battle_inventory.gems[arg1].setItemIndex;
-        if (!(var_v1 & 0x80)) {
-            var_v1 = 0;
+    int parentIndex = 0;
+    if (itemCategory == itemCategoryGem) {
+        parentIndex = vs_battle_inventory.gems[index].setItemIndex;
+        if (!(parentIndex & 0x80)) {
+            parentIndex = 0;
         }
     }
-    return var_v1 & 0x7F;
+    return parentIndex & 0x7F;
 }
 
 int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
@@ -1310,7 +1318,7 @@ int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
             break;
         case 6:
             vs_mainMenu_setItemUi(
-                &vs_battle_inventory.items[temp_s1_2], &arg1[i * 2], &arg2[i], arg3);
+                &vs_battle_inventory.misc[temp_s1_2], &arg1[i * 2], &arg2[i], arg3);
             break;
         }
 
@@ -1322,7 +1330,7 @@ int func_80105088(u_int arg0, char** arg1, int* arg2, char* arg3)
             }
         }
 
-        temp_v0 = func_80105044(arg0, temp_s1_2);
+        temp_v0 = _getParentItemIfGem(arg0, temp_s1_2);
         if (temp_v0 != 0) {
             var_s3 = 0xCA00;
             if (vs_battle_inventory.shields[temp_v0 - 1].isEquipped == 0) {
@@ -1588,15 +1596,15 @@ int func_80105454(int arg0)
                 var_s1 = temp_s2[i - 1];
                 var_a1_3 = temp_s2[var_s0 - 1];
                 if ((var_s4 == 6)
-                    && (vs_battle_inventory.items[var_s1 - 1].id
-                        == vs_battle_inventory.items[var_a1_3 - 1].id)) {
-                    vs_battle_inventory.items[var_a1_3 - 1].count =
-                        vs_battle_inventory.items[var_a1_3 - 1].count
-                        + vs_battle_inventory.items[var_s1 - 1].count;
-                    if (vs_battle_inventory.items[var_a1_3 - 1].count > 100) {
-                        vs_battle_inventory.items[var_s1 - 1].count =
-                            vs_battle_inventory.items[var_a1_3 - 1].count - 100;
-                        vs_battle_inventory.items[var_a1_3 - 1].count = 100;
+                    && (vs_battle_inventory.misc[var_s1 - 1].id
+                        == vs_battle_inventory.misc[var_a1_3 - 1].id)) {
+                    vs_battle_inventory.misc[var_a1_3 - 1].count =
+                        vs_battle_inventory.misc[var_a1_3 - 1].count
+                        + vs_battle_inventory.misc[var_s1 - 1].count;
+                    if (vs_battle_inventory.misc[var_a1_3 - 1].count > 100) {
+                        vs_battle_inventory.misc[var_s1 - 1].count =
+                            vs_battle_inventory.misc[var_a1_3 - 1].count - 100;
+                        vs_battle_inventory.misc[var_a1_3 - 1].count = 100;
                     } else {
                         vs_mainMenu_initItem(6, var_a1_3);
                     }
@@ -1654,7 +1662,7 @@ int func_80105454(int arg0)
             sp310[var_s0 * 2] = (char*)&vs_mainMenu_itemHelp[0x3527];
             sp310[var_s0 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x352C];
             if ((_getParentItem(var_s4, temp_s3_5) == 0)
-                && (func_80105044(var_s4, temp_s3_5) == 0)) {
+                && (_getParentItemIfGem(var_s4, temp_s3_5) == 0)) {
                 sp310[var_s0 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x35B2];
                 vs_battle_rowTypeBuf[var_s0] = 1;
             }
@@ -1677,7 +1685,7 @@ int func_80105454(int arg0)
             var_s1_2 = vs_battle_inventory.armor[temp_s3_5].bodyPart != 0;
             break;
         case 6:
-            if (vs_battle_inventory.items[temp_s3_5].id >= 0x1CAU) {
+            if (vs_battle_inventory.misc[temp_s3_5].id >= 0x1CAU) {
                 var_s1_2 = 3;
             }
             break;
@@ -1689,7 +1697,7 @@ int func_80105454(int arg0)
                 var_s1_2 = 2;
             }
         }
-        temp_a1_2 = func_80105044(var_s4, temp_s3_5);
+        temp_a1_2 = _getParentItemIfGem(var_s4, temp_s3_5);
         if (temp_a1_2 != 0) {
             var_s1_2 = 1;
             if (vs_battle_inventory.shields[temp_a1_2 - 1].isEquipped == 0) {
@@ -1710,7 +1718,7 @@ int func_80105454(int arg0)
         if (var_s4 == 6) {
             sp310[var_s0 * 2] = (char*)&vs_mainMenu_itemHelp[0x356D];
             sp310[var_s0 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x3574];
-            if (vs_battle_inventory.items[temp_s3_5].id >= 0x1CA) {
+            if (vs_battle_inventory.misc[temp_s3_5].id >= 0x1CA) {
                 sp310[var_s0 * 2 + 1] = (char*)&vs_mainMenu_itemHelp[0x350E];
                 vs_battle_rowTypeBuf[var_s0] = 1;
             }
@@ -1724,14 +1732,14 @@ int func_80105454(int arg0)
         ++var_s0;
 
         D_8010A614[var_s0] = 5;
-        func_800FF0EC(var_s0, var_s4 + 0x26, sp310, vs_battle_rowTypeBuf);
+        vs_mainMenu_initSortUi(var_s0, var_s4 + 0x26, sp310, vs_battle_rowTypeBuf);
         D_8010A61C = 9;
         break;
     case 9:
         var_s1 = func_800FF348();
         vs_mainMenu_printInformation(var_s1, D_801022C4);
-        func_800FF43C();
-        i = func_800FF360() + 1;
+        vs_mainMenu_processItemActionMenu();
+        i = vs_mainMenu_getSelectedItemAction() + 1;
         var_v0 = 0;
         if (i != 0) {
             if (i > 0) {
@@ -1746,20 +1754,20 @@ int func_80105454(int arg0)
                 case 3:
                     var_s0 = temp_s2[D_8010A620 - 1] | (var_s4 << 8);
                     if ((var_s4 == 6)
-                        && (vs_battle_inventory.items[temp_s2[D_8010A620 - 1] - 1].count
+                        && (vs_battle_inventory.misc[temp_s2[D_8010A620 - 1] - 1].count
                             >= 2U)) {
                         var_s0 |= 0x10000;
                     }
-                    func_80104860(var_s0);
+                    _discardMenu(var_s0);
                     D_8010A61C = 0xB;
                     break;
                 case 4:
-                    func_80104860(temp_s2[D_8010A620 - 1] | (var_s4 << 8) | 0x20000);
+                    _discardMenu(temp_s2[D_8010A620 - 1] | (var_s4 << 8) | 0x20000);
                     D_8010A61C = 0xB;
                     break;
                 case 5:
                     func_800FFBC8();
-                    func_80104608(var_s4 + 1);
+                    _sortItems(var_s4 + 1);
                     D_8010A61C = 0xC;
                     break;
                 }
@@ -1781,7 +1789,7 @@ int func_80105454(int arg0)
         }
         i = _getParentItem(var_s4, temp_s2[D_8010A620 - 1] - 1);
         if (i == 0) {
-            i = func_80105044(var_s4, temp_s2[D_8010A620 - 1] - 1);
+            i = _getParentItemIfGem(var_s4, temp_s2[D_8010A620 - 1] - 1);
             var_s4 = 3;
         } else {
             var_s4 = 0;
@@ -1791,7 +1799,7 @@ int func_80105454(int arg0)
         D_8010A61C = 1;
         break;
     case 11:
-        i = func_80104860(0);
+        i = _discardMenu(0);
         if (i != 0) {
             func_800FFBC8();
             func_800FA854(0x28);
@@ -1803,7 +1811,7 @@ int func_80105454(int arg0)
         }
         break;
     case 12:
-        i = func_80104608(0);
+        i = _sortItems(0);
         if (i != 0) {
             func_800FA854(0x28);
             vs_mainMenu_clearMenuExcept(3);
@@ -2052,6 +2060,8 @@ int func_801066CC(int arg0)
     return 0;
 }
 
+void func_801080F0(void);
+
 int func_80106B80(int arg0)
 {
     static char D_8010A5C9 = 0;
@@ -2259,7 +2269,7 @@ int func_801073E0(int arg0)
         vs_battle_memcpy(D_8010A6AC, _inventory, 0xF00);
         D_8010A6B2 = 0;
         D_8010A690 = D_8010A6B6;
-        D_8010A68C = _inventory->items[D_8010A6A0[arg0 - 1].unk1].id;
+        D_8010A68C = _inventory->misc[D_8010A6A0[arg0 - 1].unk1].id;
         D_8010A6B4 = 0;
         D_8010A6B5 = 0;
         D_8010A68F = 0;
@@ -2270,7 +2280,7 @@ int func_801073E0(int arg0)
     case 0:
         if (D_8010A6B3 == 6) {
             D_8010A68A = 0;
-            item = vs_battle_inventory.items;
+            item = vs_battle_inventory.misc;
             for (i = 0; i < 64; ++i, ++item) {
                 if (item->id == D_8010A68C) {
                     int v0 = D_8010A68A + 100;
@@ -2283,7 +2293,7 @@ int func_801073E0(int arg0)
 
             for (i = 0; i < D_8010A6B6; ++i) {
                 if (D_8010A6A0[i].unk0 == 6) {
-                    item = &_inventory->items[D_8010A6A0[i].unk1];
+                    item = &_inventory->misc[D_8010A6A0[i].unk1];
                     if (item->id == D_8010A68C) {
                         D_8010A688 += item->count;
                         vs_battle_rMemzero(item, 4);
@@ -2300,7 +2310,7 @@ int func_801073E0(int arg0)
 
             while (D_8010A688 != 0) {
                 for (i = 0; i < 64; ++i) {
-                    if (_inventory->items[i].id == 0) {
+                    if (_inventory->misc[i].id == 0) {
                         break;
                     }
                 }
@@ -2313,23 +2323,23 @@ int func_801073E0(int arg0)
                 temp_a3->unk0 = 6;
                 temp_a3->unk1 = i;
                 temp_a3->unk2 = 0;
-                _inventory->items[i].id = D_8010A68C;
+                _inventory->misc[i].id = D_8010A68C;
                 temp_a3->unk3 = D_8010A68A != 0;
                 if (temp_a3->unk3 != 0) {
                     if (D_8010A68A > 100) {
-                        _inventory->items[i].count = 100;
+                        _inventory->misc[i].count = 100;
                         D_8010A688 -= 100;
                         D_8010A68A -= 100;
                     } else {
-                        _inventory->items[i].count = D_8010A68A;
+                        _inventory->misc[i].count = D_8010A68A;
                         D_8010A688 = D_8010A688 - D_8010A68A;
                         D_8010A68A = 0;
                     }
                 } else if (D_8010A688 > 100) {
-                    _inventory->items[i].count = 100;
+                    _inventory->misc[i].count = 100;
                     D_8010A688 -= 100;
                 } else {
-                    _inventory->items[i].count = D_8010A688;
+                    _inventory->misc[i].count = D_8010A688;
                     D_8010A688 = 0;
                 }
             }
@@ -2392,7 +2402,7 @@ int func_801073E0(int arg0)
 
         for (i = 0; i < D_8010A690; ++i) {
             if (D_8010A6A4[i].unk0 == 6) {
-                item = &D_8010A6AC->items[D_8010A6A4[i].unk1];
+                item = &D_8010A6AC->misc[D_8010A6A4[i].unk1];
                 if (item->id == D_8010A68C) {
                     vs_battle_rMemzero(item, 4);
                     --D_8010A690;
@@ -2406,7 +2416,7 @@ int func_801073E0(int arg0)
 
         for (i = 0; i < D_8010A6B6; ++i) {
             for (j = 0; j < 64; ++j) {
-                if (D_8010A6AC->items[j].id == 0) {
+                if (D_8010A6AC->misc[j].id == 0) {
                     break;
                 }
             }
@@ -2419,9 +2429,9 @@ int func_801073E0(int arg0)
             temp_a3->unk1 = j;
             temp_a3->unk2 = 0;
             temp_a3->unk3 = D_8010A6A0[i].unk3;
-            item = &D_8010A6AC->items[j];
+            item = &D_8010A6AC->misc[j];
             item->id = D_8010A68C;
-            item->count = _inventory->items[D_8010A6A0[i].unk1].count;
+            item->count = _inventory->misc[D_8010A6A0[i].unk1].count;
         }
         // Fallthrough
     case 6:
@@ -2571,7 +2581,7 @@ int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
 {
     int index = 1;
-    vs_battle_inventoryMisc* item = _inventory->items;
+    vs_battle_inventoryMisc* item = _inventory->misc;
 
     while (item->id != 0) {
         ++index;
@@ -2901,7 +2911,7 @@ void func_80108938(int arg0)
             menuItem->icon = 22;
             break;
         case 6:
-            misc = &_inventory->items[temp_s1];
+            misc = &_inventory->misc[temp_s1];
             menuItem = vs_battle_setMenuItem(0x20 + i, 0x18 - arg0, 0x32 + i * 0x10, 0x98,
                 0, vs_mainMenu_itemNames[misc->id]);
             menuItem->unk10 = misc->count;
@@ -2975,7 +2985,7 @@ void func_80108E78(int arg0)
         break;
     case 6:
         vs_mainMenu_setItemUi(
-            &vs_battle_inventory.items[temp_s3], menuText, &rowType, vs_battle_stringBuf);
+            &vs_battle_inventory.misc[temp_s3], menuText, &rowType, vs_battle_stringBuf);
         break;
     }
     vs_mainmenu_setInformationMessage(menuText[1]);
@@ -3011,9 +3021,9 @@ int func_801090A4(int arg0)
         for (i = 0; i < D_8010A6B6; ++i) {
             temp_a1 = D_8010A6A0[i].unk0;
             if (temp_a1 == 6) {
-                if (_inventory->items[D_8010A6A0[i].unk1].id >= 0x1CA) {
+                if (_inventory->misc[D_8010A6A0[i].unk1].id >= 0x1CA) {
                     D_8010A694 =
-                        vs_mainMenu_itemNames[_inventory->items[D_8010A6A0[i].unk1].id];
+                        vs_mainMenu_itemNames[_inventory->misc[D_8010A6A0[i].unk1].id];
                     D_8010A691 = temp_a1;
                 }
             }
@@ -3110,7 +3120,7 @@ int func_80109444(D_8010A6A0_t* arg0)
             D_8010A69B = VS_menuText_INDEX_disassemble - 9;
         } else if (D_8010A699 == 3) {
             D_8010A69B = VS_menuText_INDEX_disassemble - 9;
-        } else if ((D_8010A699 == 6) && (_inventory->items[arg0->unk1].id < 0x1CA)) {
+        } else if ((D_8010A699 == 6) && (_inventory->misc[arg0->unk1].id < 0x1CA)) {
             D_8010A69B = VS_menuText_INDEX_organize - 10;
         } else {
             D_8010A69A = VS_menuText_INDEX_disassemble - 9;
@@ -3174,6 +3184,8 @@ int func_80109444(D_8010A6A0_t* arg0)
     return 0;
 }
 
+void func_8010A24C(int arg0);
+
 int func_80109750(int arg0)
 {
     static char D_8010A5EA = 0;
@@ -3217,7 +3229,7 @@ int func_80109750(int arg0)
                         temp_s1->unk1, _inventory)
                     != 0) {
                     if (temp_s1->unk0 == 6) {
-                        temp_a0 = _inventory->items[temp_s1->unk1].id;
+                        temp_a0 = _inventory->misc[temp_s1->unk1].id;
                         if (temp_a0 >= 0x1CA) {
                             func_8010A24C(temp_a0);
                         }
@@ -3244,7 +3256,7 @@ int func_80109750(int arg0)
             } else {
                 vs_main_playSfxDefault(0x7E, 0xD);
                 if (temp_s1->unk0 == 6) {
-                    i = _inventory->items[temp_s1->unk1].id;
+                    i = _inventory->misc[temp_s1->unk1].id;
                     if (i >= 0x1CA) {
                         func_8010A24C(i);
                     }

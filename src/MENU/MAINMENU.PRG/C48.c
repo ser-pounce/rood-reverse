@@ -494,11 +494,11 @@ void func_800FAEBC(int arg0)
         temp_s7 = temp_s6 + 0x1900;
 
         for (i = 0; i < 64; ++i, ++var_s5) {
-            temp_v0_3 = D_800619D8.misc[i];
+            temp_v0_3 = vs_main_inventoryIndices.misc[i];
             if (temp_v0_3 == 0) {
                 break;
             }
-            temp_s0 = &vs_battle_inventory.items[temp_v0_3 - 1];
+            temp_s0 = &vs_battle_inventory.misc[temp_v0_3 - 1];
             vs_mainMenu_setItemUi(
                 temp_s0, &temp_s7[i * 2], temp_fp - -i, temp_s6 + i * 96);
             if (temp_s0->id < 0x1CA) {
@@ -552,10 +552,10 @@ void func_800FAEBC(int arg0)
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
                 if (D_80102450 > 0) {
-                    D_800F5210 = D_800619D8.misc[D_80102450 - 1] - 1;
+                    D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
                     D_800F4E98.executeAbility.s16[0] = D_80102410[D_80102450 - 1];
                     D_800F4E98.executeAbility.s16[1] =
-                        vs_battle_inventory.items[D_800F5210].id;
+                        vs_battle_inventory.misc[D_800F5210].id;
                 }
                 D_80102454 = 4;
             }

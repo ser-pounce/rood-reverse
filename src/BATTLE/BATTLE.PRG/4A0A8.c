@@ -1474,7 +1474,40 @@ int func_800B8D1C(u_char* arg0, short arg1)
     return (int)&arg0[vs_battle_getShort(arg0 + 1)];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8D50);
+int func_800B8D50(u_char* arg0, short arg1)
+{
+    int temp_a1 = arg0[1];
+    short temp_s1 = arg0[3];
+    int temp_s0 = (arg0[2] >> 2) + ((temp_a1 & 0xF) << 6);
+
+    switch (temp_a1 & 0xF0) {
+    case 0x0:
+        vs_battle_setStateFlag(temp_s0, temp_s1 + func_800BEBF4(temp_s0));
+        break;
+    case 0x10:
+        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) - temp_s1);
+        break;
+    case 0x20:
+        vs_battle_setStateFlag(temp_s0, temp_s1 * func_800BEBF4(temp_s0));
+        break;
+    case 0x30:
+        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) / temp_s1);
+        break;
+    case 0x40:
+        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) % temp_s1);
+        break;
+    case 0x50:
+        vs_battle_setStateFlag(temp_s0, temp_s1 & func_800BEBF4(temp_s0));
+        break;
+    case 0x60:
+        vs_battle_setStateFlag(temp_s0, temp_s1 | func_800BEBF4(temp_s0));
+        break;
+    case 0x70:
+        vs_battle_setStateFlag(temp_s0, temp_s1);
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8EDC);
 

@@ -715,7 +715,7 @@ static int _assembleBladeMenu(int params)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_bladesDesc];
                 *vs_battle_rowTypeBuf = 1;
             } else {
-                vs_mainMenu_setBladeUi(blade, menuText, vs_battle_rowTypeBuf, textBuf);
+                vs_mainMenu_setUiBlade(blade, menuText, vs_battle_rowTypeBuf, textBuf);
             }
 
             bladeCount = 1;
@@ -730,7 +730,7 @@ static int _assembleBladeMenu(int params)
 
                     if (blade->assembledWeaponIndex == 0) {
 
-                        vs_mainMenu_setBladeUi(blade, menuText + bladeCount * 2,
+                        vs_mainMenu_setUiBlade(blade, menuText + bladeCount * 2,
                             &vs_battle_rowTypeBuf[bladeCount], textBuf + bladeCount * 96);
 
                         if (_isValidGrip(blade, grip) == 0) {
@@ -828,7 +828,7 @@ static int _assembleGripMenu(int params)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gripsDesc];
                 *vs_battle_rowTypeBuf = 1;
             } else {
-                vs_mainMenu_setGripUi(grip, menuText, vs_battle_rowTypeBuf, textBuf);
+                vs_mainMenu_setUiGrip(grip, menuText, vs_battle_rowTypeBuf, textBuf);
             }
 
             gripCount = 1;
@@ -844,7 +844,7 @@ static int _assembleGripMenu(int params)
 
                     if (grip->assembledWeaponIndex == 0) {
 
-                        vs_mainMenu_setGripUi(grip, menuText + gripCount * 2,
+                        vs_mainMenu_setUiGrip(grip, menuText + gripCount * 2,
                             &vs_battle_rowTypeBuf[gripCount], textBuf + gripCount * 0x60);
 
                         if (_isValidGrip(blade, grip) == 0) {
@@ -940,7 +940,7 @@ static int _attachGem(int params)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gemsDesc];
                 *vs_battle_rowTypeBuf = 1;
             } else {
-                vs_mainMenu_setGemUi(gem, menuText, vs_battle_rowTypeBuf, textBuf);
+                vs_mainMenu_setUiGem(gem, menuText, vs_battle_rowTypeBuf, textBuf);
             }
 
             gemCount = 1;
@@ -955,7 +955,7 @@ static int _attachGem(int params)
                     gem = &vs_battle_inventory.gems[itemId - 1];
 
                     if (gem->setItemIndex == 0) {
-                        vs_mainMenu_setGemUi(gem, menuText + gemCount * 2,
+                        vs_mainMenu_setUiGem(gem, menuText + gemCount * 2,
                             &vs_battle_rowTypeBuf[gemCount], textBuf + gemCount * 96);
                         _availableItems[gemCount] = itemId;
                         ++gemCount;
@@ -1274,14 +1274,14 @@ static int _assembleMenu(int arg0)
                 switch (selectedOption) {
                 case 0:
                     if (bladeToAssemble != 0) {
-                        vs_mainMenu_setBladeUi(
+                        vs_mainMenu_setUiBlade(
                             &vs_battle_inventory.blades[bladeToAssemble - 1], menuText,
                             &sp20, vs_battle_stringBuf);
                     }
                     break;
                 case 1:
                     if (gripToAssemble != 0) {
-                        vs_mainMenu_setGripUi(
+                        vs_mainMenu_setUiGrip(
                             &vs_battle_inventory.grips[gripToAssemble - 1], menuText,
                             &sp20, vs_battle_stringBuf);
                     }
@@ -1291,7 +1291,7 @@ static int _assembleMenu(int arg0)
                 case 4:
                     itemSlot = gemInfo[selectedOption - 2];
                     if (itemSlot != 0) {
-                        vs_mainMenu_setGemUi(&vs_battle_inventory.gems[itemSlot - 1],
+                        vs_mainMenu_setUiGem(&vs_battle_inventory.gems[itemSlot - 1],
                             menuText, &sp20, vs_battle_stringBuf);
                     }
                     break;
@@ -1728,7 +1728,7 @@ static int _attachGemsMenu(int arg0)
                         } else {
                             i = *(itemInfo + D_8010BC28);
                             if (i != 0) {
-                                vs_mainMenu_setGemUi(&vs_battle_inventory.gems[i - 1],
+                                vs_mainMenu_setUiGem(&vs_battle_inventory.gems[i - 1],
                                     menuText, rowTypes, &textBuf);
                             }
                         }
@@ -2617,7 +2617,7 @@ static int _selectBlade(int arg0)
                 (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectBladeToCombine];
             *vs_battle_rowTypeBuf = 1;
         } else {
-            vs_mainMenu_setBladeUi(blade, menuText, vs_battle_rowTypeBuf, textBuf);
+            vs_mainMenu_setUiBlade(blade, menuText, vs_battle_rowTypeBuf, textBuf);
         }
 
         _availableItems[0] = itemId;
@@ -2628,7 +2628,7 @@ static int _selectBlade(int arg0)
             if ((itemId != 0) && (itemId != D_8010BD10[0]) && (itemId != D_8010BD10[1])) {
                 int new_var = itemId;
                 blade = &vs_battle_inventory.blades[itemId - 1];
-                vs_mainMenu_setBladeUi(blade, menuText + count * 2,
+                vs_mainMenu_setUiBlade(blade, menuText + count * 2,
                     &vs_battle_rowTypeBuf[count], textBuf + count * 0x60);
                 if (!((D_8010BB30[_workshopFlags] >> blade->material) & 1)) {
                     menuText[count * 2 + 1] = (char*)&vs_mainMenu_menu12Text
@@ -2858,7 +2858,7 @@ static int _combineBladeMenu(int arg0)
                 switch (i_2) {
                 case 0:
                     if (_combinedBlade.id != 0) {
-                        vs_mainMenu_setBladeUi(
+                        vs_mainMenu_setUiBlade(
                             &_combinedBlade, menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;
@@ -2866,7 +2866,7 @@ static int _combineBladeMenu(int arg0)
                 case 2:
                     var_s1 = D_8010BD10[i_2 - 1];
                     if (var_s1 != 0) {
-                        vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[var_s1 - 1],
+                        vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[var_s1 - 1],
                             menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;
@@ -3594,7 +3594,7 @@ static int _initUiArmor(int arg0)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectArmor];
                 *vs_battle_rowTypeBuf = 1;
             } else {
-                vs_mainMenu_setAccessoryUi(var_s2, sp10, vs_battle_rowTypeBuf, temp_v0);
+                vs_mainMenu_initUiArmor(var_s2, sp10, vs_battle_rowTypeBuf, temp_v0);
             }
 
             *_availableItems = s0_2;
@@ -3606,7 +3606,7 @@ static int _initUiArmor(int arg0)
                     && (itemId != D_8010BD7C[1])) {
                     var_s2 = &vs_battle_inventory.armor[itemId - 1];
                     if (var_s2->category != 7) {
-                        vs_mainMenu_setAccessoryUi(var_s2, sp10 + var_s4 * 2,
+                        vs_mainMenu_initUiArmor(var_s2, sp10 + var_s4 * 2,
                             &vs_battle_rowTypeBuf[var_s4], temp_v0 + var_s4 * 0x60);
                         if (!((D_8010BB30[_workshopFlags] >> var_s2->material) & 1)) {
                             sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
@@ -3826,7 +3826,7 @@ static int _combineArmorMenu(int arg0)
                 switch (i_2) {
                 case 0:
                     if (D_8010BD54.id != 0) {
-                        vs_mainMenu_setAccessoryUi(
+                        vs_mainMenu_initUiArmor(
                             &D_8010BD54, menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;
@@ -3834,7 +3834,7 @@ static int _combineArmorMenu(int arg0)
                 case 2:
                     var_s1 = D_8010BD7C[i_2 - 1];
                     if (var_s1 != 0) {
-                        vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_s1 - 1],
+                        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[var_s1 - 1],
                             menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;

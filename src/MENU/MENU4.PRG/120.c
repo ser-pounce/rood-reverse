@@ -251,7 +251,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     switch (row) {
     case 0:
-        vs_mainMenu_setWeaponUi(weapon, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setUiWeapon(weapon, sp10, &sp18, vs_battle_stringBuf);
         sp10[0] = weapon->name;
         break;
     case 1:
@@ -285,7 +285,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
 
     sp10[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
     if (row == 0) {
-        vs_mainMenu_setShieldUi(shield, sp10, &sp18, vs_battle_stringBuf);
+        vs_mainMenu_setUiShield(shield, sp10, &sp18, vs_battle_stringBuf);
     } else if (row < 0) {
 
     } else if (row < 4) {
@@ -306,7 +306,7 @@ static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
     char* sp10[2];
     int sp18;
 
-    vs_mainMenu_setArmorUi(arg0, sp10, &sp18, vs_battle_stringBuf);
+    vs_mainMenu_setUiArmor(arg0, sp10, &sp18, vs_battle_stringBuf);
     return sp10[1];
 }
 
@@ -317,7 +317,7 @@ static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
     int sp30[2];
 
     vs_battle_copyUiAccessoryStats(&sp18, arg0);
-    vs_mainMenu_setAccessoryUi(&sp18, sp10, sp30, vs_battle_stringBuf);
+    vs_mainMenu_initUiArmor(&sp18, sp10, sp30, vs_battle_stringBuf);
     return sp10[1];
 }
 
@@ -1091,10 +1091,10 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
 
     if (row == 1) {
         vs_battle_copyUiBladeStats(&sp20, &weapon->blade);
-        vs_mainMenu_setBladeUi(&sp20, sp18, &sp80, vs_battle_stringBuf);
+        vs_mainMenu_setUiBlade(&sp20, sp18, &sp80, vs_battle_stringBuf);
     } else if (row == 2) {
         vs_battle_copyUiGripStats(&sp50, &weapon->grip);
-        vs_mainMenu_setGripUi(&sp50, sp18, &sp80, vs_battle_stringBuf);
+        vs_mainMenu_setUiGrip(&sp50, sp18, &sp80, vs_battle_stringBuf);
     } else {
         var_s1 = row - 3;
         if (var_s1 < gemSlots) {
@@ -1103,7 +1103,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
             sp80 = 0x58000000;
             if (weapon->gems[var_s1].id != 0) {
                 vs_battle_copyUiGemStats(&sp60, &weapon->gems[var_s1]);
-                vs_mainMenu_setGemUi(&sp60, sp18, &sp80, vs_battle_stringBuf);
+                vs_mainMenu_setUiGem(&sp60, sp18, &sp80, vs_battle_stringBuf);
             }
             var_s1 = 151;
         } else {
@@ -1143,7 +1143,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
         sp40 = 0x58000000;
         if (shield->gems[var_s0].id != 0) {
             vs_battle_copyUiGemStats(&sp20, &shield->gems[var_s0]);
-            vs_mainMenu_setGemUi(&sp20, sp18, &sp40, vs_battle_stringBuf);
+            vs_mainMenu_setUiGem(&sp20, sp18, &sp40, vs_battle_stringBuf);
         }
         var_s0 = 151;
     } else {
@@ -1333,7 +1333,7 @@ static int _equipmentDetailScreen(int row)
                     for (i = 1; i < 6; ++i) {
                         _setWeaponRow(i, &temp_s1->weapon, 0);
                     }
-                    vs_mainMenu_setWeaponUi(
+                    vs_mainMenu_setUiWeapon(
                         &temp_s1->weapon, sp18, &sp48, vs_battle_stringBuf);
                     sp18[0] = (char*)&temp_s1->weapon;
                     break;
@@ -1343,21 +1343,20 @@ static int _equipmentDetailScreen(int row)
                     for (i = 1; i < 4; ++i) {
                         _setShieldRow(i, &temp_s1->shield, 0);
                     }
-                    vs_mainMenu_setShieldUi(
+                    vs_mainMenu_setUiShield(
                         &temp_s1->shield, sp18, &sp48, vs_battle_stringBuf);
                     break;
                 default:
                     if ((var_s2 - 2) < bodyParts) {
                         vs_mainMenu_drawDpPpbars(9);
                         _drawArmorInfo(&temp_s1->bodyParts[var_s2 - 2].armor);
-                        vs_mainMenu_setArmorUi(&temp_s1->bodyParts[var_s2 - 2].armor,
+                        vs_mainMenu_setUiArmor(&temp_s1->bodyParts[var_s2 - 2].armor,
                             sp18, &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_drawDpPpbars(8);
                         _drawAccessoryInfo((vs_battle_uiAccessory*)&temp_s1->accessory);
                         vs_battle_copyUiAccessoryStats(&sp20, &temp_s1->accessory);
-                        vs_mainMenu_setAccessoryUi(
-                            &sp20, sp18, &sp48, vs_battle_stringBuf);
+                        vs_mainMenu_initUiArmor(&sp20, sp18, &sp48, vs_battle_stringBuf);
                     }
                     break;
                 }
@@ -1543,12 +1542,12 @@ static int _equipmentScreen(int element)
             rowTypes[i] = 1;
         }
         if (temp_s6->weapon.blade.id != 0) {
-            vs_mainMenu_setWeaponUi(
+            vs_mainMenu_setUiWeapon(
                 &temp_s6->weapon, rowStrings, rowTypes, equipmentDescriptions[0]);
             rowStrings[0] = temp_s6->weapon.name;
         }
         if (temp_s6->shield.base.id != 0) {
-            vs_mainMenu_setShieldUi(
+            vs_mainMenu_setUiShield(
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
@@ -1564,13 +1563,13 @@ static int _equipmentScreen(int element)
             rowType = temp_s5 | 0xF400;
             if ((i - 2) < hitLocationCount) {
                 if (bodyParts->armor.armor.id != 0) {
-                    vs_mainMenu_setArmorUi(&bodyParts->armor, &rowStrings[i * 2],
+                    vs_mainMenu_setUiArmor(&bodyParts->armor, &rowStrings[i * 2],
                         &rowTypes[i], equipmentDescriptions[i]);
                 }
                 rowTypes[i] |= ((bodyParts->nameIndex + 103) << 9) + temp_s5;
             } else {
                 vs_battle_copyUiAccessoryStats(p, &temp_s6->accessory);
-                vs_mainMenu_setAccessoryUi(
+                vs_mainMenu_initUiArmor(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
                 rowTypes[i] |= rowType;
             }

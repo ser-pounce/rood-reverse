@@ -303,7 +303,7 @@ static int func_80103034(int arg0)
         if (temp_v0_2 != D_80109654) {
             D_80109654 = temp_v0_2;
             temp_v0_3 = func_80102D30(1, temp_v0_2);
-            vs_mainMenu_setBladeUi(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
+            vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
                 &sp18, vs_battle_stringBuf);
             vs_mainMenu_setUiBladeStats(temp_v0_3);
             func_80102C94(D_80109653, sp10, sp18, temp_v0_2);
@@ -364,7 +364,7 @@ static int func_80103220(int arg0)
             if (temp_v0_2 != D_80109658) {
                 D_80109658 = temp_v0_2;
                 temp_v0_3 = func_80102D30(2, temp_v0_2);
-                vs_mainMenu_setGripUi(&vs_battle_inventory.grips[temp_v0_3 - 1], menuText,
+                vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[temp_v0_3 - 1], menuText,
                     &rowType, vs_battle_stringBuf);
                 vs_mainMenu_setUiGripStats(temp_v0_3);
                 func_80102C94(D_80109657, menuText, rowType, temp_v0_2);
@@ -507,7 +507,7 @@ static int func_801036BC(int arg0)
         if (temp_v0_2 != D_80109662) {
             D_80109662 = temp_v0_2;
             temp_v0_3 = func_80102D30(4, temp_v0_2);
-            vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
+            vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
                 &sp18, vs_battle_stringBuf);
             vs_mainMenu_setArmorStats(temp_v0_3);
             func_80102C94(D_80109661, sp10, sp18, temp_v0_2);
@@ -566,7 +566,7 @@ static int func_801038E4(int arg0)
         if (temp_v0_2 != D_80109666) {
             D_80109666 = temp_v0_2;
             temp_v0_3 = func_80102D30(5, temp_v0_2);
-            vs_mainMenu_setGemUi(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
+            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
                 vs_battle_stringBuf);
             vs_mainMenu_setGemStats(temp_v0_3);
             func_80102C94(D_80109665, sp10, sp18, temp_v0_2);
@@ -1288,11 +1288,11 @@ static int func_80104F94(int arg0, char** arg1, int* arg2, char* arg3)
             }
             break;
         case 1:
-            vs_mainMenu_setBladeUi(
+            vs_mainMenu_setUiBlade(
                 &vs_battle_inventory.blades[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
             break;
         case 2:
-            vs_mainMenu_setGripUi(
+            vs_mainMenu_setUiGrip(
                 &vs_battle_inventory.grips[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
             break;
         case 3:
@@ -1303,19 +1303,19 @@ static int func_80104F94(int arg0, char** arg1, int* arg2, char* arg3)
             }
             break;
         case 4:
-            vs_mainMenu_setAccessoryUi(
+            vs_mainMenu_initUiArmor(
                 &vs_battle_inventory.armor[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
             if (vs_battle_inventory.armor[temp_s1_2].bodyPart != 0) {
                 var_s3 = 0xCA00;
             }
             break;
         case 5:
-            vs_mainMenu_setGemUi(
+            vs_mainMenu_setUiGem(
                 &vs_battle_inventory.gems[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
             break;
         case 6: {
             u_int var_a0;
-            vs_mainMenu_setItemUi(
+            vs_mainMenu_setUiItem(
                 &vs_battle_inventory.misc[temp_s1_2], &arg1[sp14 * 2], &arg2[i], arg3);
 
             var_a0 = D_80102214[vs_battle_inventory.misc[temp_s1_2].id - 0x143];
@@ -2192,7 +2192,7 @@ static int func_80106C94(int arg0)
                     var_a0 = vs_main_inventoryIndices.armor[i];
                     if ((var_a0 != 0)
                         && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 7)) {
-                        vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
+                        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[var_a0 - 1],
                             (char**)menuText, rowTypes, textBuf);
                         rowTypes[0] |= var_a0 << 0x13;
                     }
@@ -2205,7 +2205,7 @@ static int func_80106C94(int arg0)
                 var_a0 = vs_main_inventoryIndices.armor[i];
                 if ((var_a0 != 0) && (vs_battle_inventory.armor[var_a0 - 1].category == 7)
                     && (vs_battle_inventory.armor[var_a0 - 1].bodyPart == 0)) {
-                    vs_mainMenu_setAccessoryUi(&vs_battle_inventory.armor[var_a0 - 1],
+                    vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[var_a0 - 1],
                         (char**)&menuText[var_s6 * 2], &rowTypes[var_s6],
                         textBuf + var_s6 * 96);
                     rowTypes[var_s6] |= var_a0 << 0x13;
@@ -2612,7 +2612,7 @@ static int func_80107B14(int arg0)
                         if ((temp_s0_3 != 0)
                             && (vs_battle_inventory.armor[temp_s0_3 - 1].bodyPart
                                 == D_801096A2)) {
-                            vs_mainMenu_setAccessoryUi(
+                            vs_mainMenu_initUiArmor(
                                 &vs_battle_inventory.armor[temp_s0_3 - 1],
                                 (char**)menuText, rowTypes, textBuf);
                             rowTypes[0] |= temp_s0_3 << 0x13;
@@ -2626,8 +2626,7 @@ static int func_80107B14(int arg0)
                         && (vs_battle_inventory.armor[temp_s0_3 - 1].category
                             == D_80109624[D_801096A2])
                         && (vs_battle_inventory.armor[temp_s0_3 - 1].bodyPart == 0)) {
-                        vs_mainMenu_setAccessoryUi(
-                            &vs_battle_inventory.armor[temp_s0_3 - 1],
+                        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[temp_s0_3 - 1],
                             (char**)&menuText[var_s6 * 2], &rowTypes[var_s6],
                             textBuf + var_s6 * 0x60);
                         rowTypes[var_s6] |= temp_s0_3 << 0x13;
@@ -2772,7 +2771,7 @@ static int func_80108088(int arg0)
             vs_battle_inventoryArmor* armor = vs_battle_inventory.armor;
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->bodyPart) == i) {
-                    vs_mainMenu_setAccessoryUi(
+                    vs_mainMenu_initUiArmor(
                         armor, &rowStrings[i * 2], &rowTypes[i], &buf[i * 96]);
                     break;
                 }

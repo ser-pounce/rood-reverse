@@ -815,7 +815,7 @@ static void _setWeaponUi(vs_menu_containerData* container, char** rowStrings,
     vs_battle_uiWeapon weapon;
 
     vs_menuD_initUiWeapon(&weapon, &container->weapons[index], container);
-    vs_mainMenu_setWeaponUi(&weapon, rowStrings, rowTypes, buf);
+    vs_mainMenu_setUiWeapon(&weapon, rowStrings, rowTypes, buf);
     rowStrings[0] = container->weapons[index].name;
 }
 
@@ -825,7 +825,7 @@ static void _setShieldUi(vs_menu_containerData* container, char** rowStrings,
     vs_battle_uiShield shield;
 
     vs_menuD_initUiShield(&shield, &container->shields[index], container);
-    vs_mainMenu_setShieldUi(&shield, rowStrings, rowTypes, buf);
+    vs_mainMenu_setUiShield(&shield, rowStrings, rowTypes, buf);
 }
 
 int _weaponNavigation(int weaponIndex)
@@ -950,7 +950,7 @@ int _bladeNavigation(int bladeIndex)
             if (selectedBlade != D_80109A38) {
                 D_80109A38 = selectedBlade;
                 temp_v0_3 = func_80104114(1, selectedBlade);
-                vs_mainMenu_setBladeUi(
+                vs_mainMenu_setUiBlade(
                     &vs_menuD_containerData->data.blades[temp_v0_3 - 1], text, &sp18,
                     vs_battle_stringBuf);
                 vs_mainMenu_setUiBladeStats(temp_v0_3);
@@ -1012,7 +1012,7 @@ int _gripNavigation(int arg0)
             if (temp_v0_2 != D_80109A3C) {
                 D_80109A3C = temp_v0_2;
                 temp_v0_3 = func_80104114(2, temp_v0_2);
-                vs_mainMenu_setGripUi(&vs_menuD_containerData->data.grips[temp_v0_3 - 1],
+                vs_mainMenu_setUiGrip(&vs_menuD_containerData->data.grips[temp_v0_3 - 1],
                     sp10, &sp18, vs_battle_stringBuf);
                 vs_mainMenu_setUiGripStats(temp_v0_3);
                 func_80104078(D_80109A3B, sp10, sp18, temp_v0_2);
@@ -1156,7 +1156,7 @@ int _armorNavigation(int arg0)
             if (temp_v0_2 != D_80109A46) {
                 D_80109A46 = temp_v0_2;
                 temp_v0_3 = func_80104114(4, temp_v0_2);
-                vs_mainMenu_setAccessoryUi(
+                vs_mainMenu_initUiArmor(
                     &vs_menuD_containerData->data.armor[temp_v0_3 - 1], sp10, &sp18,
                     vs_battle_stringBuf);
                 vs_mainMenu_setArmorStats(temp_v0_3);
@@ -1216,7 +1216,7 @@ int _gemNavigation(int arg0)
             if (temp_v0_2 != D_80109A4A) {
                 D_80109A4A = temp_v0_2;
                 temp_v0_3 = func_80104114(5, temp_v0_2);
-                vs_mainMenu_setGemUi(&vs_menuD_containerData->data.gems[temp_v0_3 - 1],
+                vs_mainMenu_setUiGem(&vs_menuD_containerData->data.gems[temp_v0_3 - 1],
                     sp10, &sp18, vs_battle_stringBuf);
                 vs_mainMenu_setGemStats(temp_v0_3);
                 func_80104078(D_80109A49, sp10, sp18, temp_v0_2);
@@ -2160,29 +2160,29 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                 _setWeaponUi(container, &text[i * 2], &rowTypes[i], c, itemIndex);
                 break;
             case 1:
-                vs_mainMenu_setBladeUi(
+                vs_mainMenu_setUiBlade(
                     &container->blades[itemIndex], &text[i * 2], &rowTypes[i], c);
                 break;
             case 2:
-                vs_mainMenu_setGripUi(
+                vs_mainMenu_setUiGrip(
                     &container->grips[itemIndex], &text[i * 2], &rowTypes[i], c);
                 break;
             case 3:
                 _setShieldUi(container, &text[i * 2], &rowTypes[i], c, itemIndex);
                 break;
             case 4:
-                vs_mainMenu_setAccessoryUi(
+                vs_mainMenu_initUiArmor(
                     &container->armor[itemIndex], &text[i * 2], &rowTypes[i], c);
                 break;
             case 5:
-                vs_mainMenu_setGemUi(
+                vs_mainMenu_setUiGem(
                     &container->gems[itemIndex], &text[i * 2], &rowTypes[i], c);
                 if (_getSetShieldIndex(5, itemIndex, container) != 0) {
                     rowType = 0xCC01;
                 }
                 break;
             case 6:
-                vs_mainMenu_setItemUi(
+                vs_mainMenu_setUiItem(
                     &container->misc[itemIndex], &text[i * 2], &rowTypes[i], c);
                 break;
             }
@@ -2209,7 +2209,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
 
                 --itemIndex;
 
-                vs_mainMenu_setItemUi(
+                vs_mainMenu_setUiItem(
                     &vs_menuD_containerData->data.misc[itemIndex], t, r, c);
                 ++itemCount;
                 ++j;
@@ -2237,12 +2237,12 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                     }
                     break;
                 case 1:
-                    vs_mainMenu_setBladeUi(
+                    vs_mainMenu_setUiBlade(
                         &vs_menuD_containerData->data.blades[itemIndex], &text[i * 2],
                         &rowTypes[i], c);
                     break;
                 case 2:
-                    vs_mainMenu_setGripUi(&vs_menuD_containerData->data.grips[itemIndex],
+                    vs_mainMenu_setUiGrip(&vs_menuD_containerData->data.grips[itemIndex],
                         &text[i * 2], &rowTypes[i], c);
                     break;
                 case 3:
@@ -2253,7 +2253,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                     }
                     break;
                 case 4:
-                    vs_mainMenu_setAccessoryUi(
+                    vs_mainMenu_initUiArmor(
                         &vs_menuD_containerData->data.armor[itemIndex], &text[i * 2],
                         &rowTypes[i], c);
                     if (vs_menuD_containerData->data.armor[itemIndex].bodyPart != 0) {
@@ -2261,7 +2261,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                     }
                     break;
                 case 5:
-                    vs_mainMenu_setGemUi(&vs_menuD_containerData->data.gems[itemIndex],
+                    vs_mainMenu_setUiGem(&vs_menuD_containerData->data.gems[itemIndex],
                         &text[i * 2], &rowTypes[i], c);
                     break;
                 }

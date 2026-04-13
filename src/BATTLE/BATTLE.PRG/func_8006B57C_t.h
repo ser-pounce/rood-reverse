@@ -159,7 +159,8 @@ enum vs_itemCategories {
     itemCategoryShield,
     itemCategoryArmor,
     itemCategoryGem,
-    itemCategoryMisc
+    itemCategoryMisc,
+    itemCategoryManage
 };
 
 enum vs_gemTargets { gemTargetShield = 0x80 };

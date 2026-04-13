@@ -499,7 +499,7 @@ void func_800FAEBC(int arg0)
                 break;
             }
             temp_s0 = &vs_battle_inventory.misc[temp_v0_3 - 1];
-            vs_mainMenu_setItemUi(
+            vs_mainMenu_setUiItem(
                 temp_s0, &temp_s7[i * 2], temp_fp - -i, temp_s6 + i * 96);
             if (temp_s0->id < 0x1CA) {
                 var_a0 = D_80102214[temp_s0->id - 0x143];

@@ -173,7 +173,7 @@ static void func_80102D7C(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    vs_mainMenu_menuItemLeaveLeft(-1);
+    vs_mainMenu_menuItemFlyoutLeft(-1);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_mainMenu_renderEquipStats(2);
     D_80109717 = 2;
@@ -2222,7 +2222,7 @@ static int func_80106C94(int arg0)
         D_80109684 = func_80106574() + 1;
         if (D_80109684 != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(-1);
+            vs_mainMenu_menuItemFlyoutLeft(-1);
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderEquipStats(2);
             if (D_80109684 < 0) {
@@ -2357,7 +2357,7 @@ static int func_80107148(int arg0)
         D_8010968C = func_80106574() + 1;
         if (D_8010968C != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(-1);
+            vs_mainMenu_menuItemFlyoutLeft(-1);
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_renderEquipStats(2);
@@ -2499,7 +2499,7 @@ static int func_80107620(int arg0)
         D_80109694 = func_80106574() + 1;
         if (D_80109694 != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(-1);
+            vs_mainMenu_menuItemFlyoutLeft(-1);
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_renderEquipStats(2);
@@ -2645,7 +2645,7 @@ static int func_80107B14(int arg0)
         D_8010969C = temp_v0_3;
         if (temp_v0_3 != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(-1);
+            vs_mainMenu_menuItemFlyoutLeft(-1);
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_renderEquipStats(2);

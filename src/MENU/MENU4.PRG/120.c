@@ -1036,7 +1036,7 @@ static void _setActiveRow(int row)
 {
     vs_battle_menuItem_t* menuItem;
 
-    vs_mainMenu_menuItemLeaveRight(4);
+    vs_mainMenu_menuItemFlyoutRight(4);
     menuItem = vs_battle_getMenuItem(row + 10);
     menuItem->state = 2;
     menuItem->targetX = 155;
@@ -1169,7 +1169,7 @@ static void _exitEquipmentDetail(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    vs_mainMenu_menuItemLeaveLeft(0);
+    vs_mainMenu_menuItemFlyoutLeft(0);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_mainMenu_renderEquipStats(2);
     if (arg0 != 0) {

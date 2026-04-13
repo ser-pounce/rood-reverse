@@ -315,7 +315,7 @@ static int _confirmScreen(int init)
 
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             for (i = 0; i < 3; ++i) {
-                vs_mainMenu_menuItemLeaveRight(i + 20);
+                vs_mainMenu_menuItemFlyoutRight(i + 20);
             }
             if (vs_main_buttonsPressed.all & PADRdown) {
                 selectedRow = 1;
@@ -679,8 +679,8 @@ int vs_menu8_execRename(char* state)
         break;
     case 2:
         if (func_801049A0(0) != 0) {
-            vs_mainMenu_menuItemLeaveRight(0xA);
-            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemFlyoutRight(0xA);
+            vs_mainMenu_menuItemFlyoutLeft(0);
             func_800FFBC8();
             *state = 3;
         }

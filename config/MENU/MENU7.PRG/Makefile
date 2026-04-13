@@ -1,13 +1,12 @@
-$(BUILD)/data/MENU/MENU7.PRG.elf: LDFLAGS += \
-	--defsym=D_1F800000=0x1F800000 \
-	--retain-symbols-file=config/MENU/MENU7.PRG/exports.txt
-$(BUILD)/src/MENU/MENU7.PRG/260.o: ASFLAGS += -no-pad-sections
-$(BUILD)/src/MENU/MENU7.PRG/260.o: CC1VER := 2.8.1-psx
+MENU7   := MENU/MENU7.PRG
+MENU7.o := $(BUILD)/src/$(MENU7)/260.o
 
-$(BUILD)/config/MENU/MENU7.PRG/link.d: \
-	config/SLUS_010.40/symbol_addrs.txt \
-	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
-	config/MENU/MAINMENU.PRG/symbol_addrs.txt
+$(BUILD)/config/$(MENU7)/link.d: $(patsubst %,config/%/symbol_addrs.txt,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
 
-$(BUILD)/src/MENU/MENU7.PRG/260.o: \
-	$(BUILD)/src/include/lbas.h $(BUILD)/assets/MENU/MENU7.PRG/container.vsString $(BUILD)/assets/MENU/MCMAN.BIN.h
+$(BUILD)/data/$(MENU7).elf: LDFLAGS += \
+	--retain-symbols-file=config/$(MENU7)/exports.txt
+
+$(MENU7.o): ASFLAGS += -no-pad-sections
+$(MENU7.o): CC1VER := 2.8.1-psx
+$(MENU7.o): \
+	$(BUILD)/src/include/lbas.h $(BUILD)/assets/$(MENU7)/container.vsString $(BUILD)/assets/MENU/MCMAN.BIN.h

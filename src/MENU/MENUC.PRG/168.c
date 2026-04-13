@@ -176,7 +176,7 @@ static int _confirmationPrompt(int arg0)
             vs_battle_playMenuLeaveSfx();
         }
         for (i = 29; i < 31; ++i) {
-            vs_mainMenu_menuItemLeaveRight(i);
+            vs_mainMenu_menuItemFlyoutRight(i);
         }
     }
 
@@ -258,7 +258,7 @@ static int _confirmCombine(int arg0)
             vs_battle_playMenuLeaveSfx();
         }
         for (i = 29; i < 32; ++i) {
-            vs_mainMenu_menuItemLeaveRight(i);
+            vs_mainMenu_menuItemFlyoutRight(i);
         }
     }
     return action;
@@ -357,7 +357,7 @@ static int _leaveItemSlotSelection(int arg0)
 
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-    vs_mainMenu_menuItemLeaveLeft(0);
+    vs_mainMenu_menuItemFlyoutLeft(0);
 
     if (arg0 != 0) {
         vs_mainMenu_drawClassAffinityType(-1);
@@ -1153,7 +1153,7 @@ static int _assembleMenu(int arg0)
                         bladeToAssemble = 0;
                         *(int*)gemInfo = 0;
                         for (itemInfo = 13; itemInfo < 16; ++itemInfo) {
-                            vs_mainMenu_menuItemLeaveRight(itemInfo);
+                            vs_mainMenu_menuItemFlyoutRight(itemInfo);
                         }
                         itemInfo = VS_MENU12_BIN_OFFSET_blades;
                         break;
@@ -1161,7 +1161,7 @@ static int _assembleMenu(int arg0)
                         gripToAssemble = 0;
                         *(int*)gemInfo = 0;
                         for (itemInfo = 13; itemInfo < 16; ++itemInfo) {
-                            vs_mainMenu_menuItemLeaveRight(itemInfo);
+                            vs_mainMenu_menuItemFlyoutRight(itemInfo);
                         }
                         itemInfo = VS_MENU12_BIN_OFFSET_grips;
                         break;
@@ -1325,7 +1325,7 @@ static int _assembleMenu(int arg0)
                 *(int*)gemInfo = 0;
 
                 for (itemInfo = 13; itemInfo < 16; ++itemInfo) {
-                    vs_mainMenu_menuItemLeaveRight(itemInfo);
+                    vs_mainMenu_menuItemFlyoutRight(itemInfo);
                 }
 
                 if (submenuResult == bladeToAssemble) {
@@ -1356,7 +1356,7 @@ static int _assembleMenu(int arg0)
             if (submenuResult > 0) {
                 *(int*)gemInfo = 0;
                 for (itemInfo = 13; itemInfo < 16; ++itemInfo) {
-                    vs_mainMenu_menuItemLeaveRight(itemInfo);
+                    vs_mainMenu_menuItemFlyoutRight(itemInfo);
                 }
                 if (submenuResult == gripToAssemble) {
                     gripToAssemble = 0;
@@ -1823,7 +1823,7 @@ static int _attachGemsMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemFlyoutLeft(0);
             return 1;
         case 2:
             vs_battle_playMenuLeaveSfx();
@@ -2062,7 +2062,7 @@ static int _disassembleMenu(int arg0)
         vs_mainMenu_drawClassAffinityType(-1);
         vs_mainMenu_drawDpPpbars(4);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        vs_mainMenu_menuItemLeaveLeft(0);
+        vs_mainMenu_menuItemFlyoutLeft(0);
 
         switch (confirmation) {
         case 1:
@@ -2288,7 +2288,7 @@ static int _renameWeaponMenu(int arg0)
                 break;
             case 2:
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_menuItemLeaveLeft(0);
+                vs_mainMenu_menuItemFlyoutLeft(0);
                 state = 0;
                 break;
             case 3:
@@ -2349,7 +2349,7 @@ static int _repairMenu(int arg0)
                 return -2;
             }
             func_800FFBC8();
-            vs_mainMenu_menuItemLeaveRight(14);
+            vs_mainMenu_menuItemFlyoutRight(14);
             state = 4;
         }
         break;
@@ -2436,7 +2436,7 @@ static int _repairMenu(int arg0)
     case 3:
         if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_battle_playMenuLeaveSfx();
-            vs_mainMenu_menuItemLeaveRight(0xE);
+            vs_mainMenu_menuItemFlyoutRight(0xE);
             if (vs_main_buttonsPressed.all & PADRup) {
                 return -2;
             }
@@ -2951,7 +2951,7 @@ static int _combineBladeMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemFlyoutLeft(0);
 
             for (i = 0; i < 2; ++i) {
                 blade = &vs_battle_inventory.blades[D_8010BD10[i] - 1];
@@ -3450,7 +3450,7 @@ static int _combineShieldMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemFlyoutLeft(0);
 
             for (i = 0; i < 2; ++i) {
                 temp_s1 = _itemsToCombine[i];
@@ -3919,7 +3919,7 @@ static int _combineArmorMenu(int arg0)
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_menuItemLeaveLeft(0);
+            vs_mainMenu_menuItemFlyoutLeft(0);
             for (i = 0; i < 2; ++i) {
                 armor = &vs_battle_inventory.armor[D_8010BD7C[i] - 1];
                 var_s1 = armor->bodyPart;

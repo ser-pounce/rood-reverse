@@ -217,7 +217,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 }
 
-void vs_mainMenu_menuItemLeaveLeft(int arg0)
+void vs_mainMenu_menuItemFlyoutLeft(int arg0)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
     if (menuItem->state != 0) {
@@ -232,12 +232,12 @@ void func_800FA854(int arg0)
 
     for (i = 0; i < 8; ++i) {
         if (i != arg0) {
-            vs_mainMenu_menuItemLeaveLeft(i);
+            vs_mainMenu_menuItemFlyoutLeft(i);
         }
     }
 }
 
-void vs_mainMenu_menuItemLeaveRight(int arg0)
+void vs_mainMenu_menuItemFlyoutRight(int arg0)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -254,7 +254,7 @@ void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id)
 
     for (i = 0; i < 32; ++i) {
         if (i != id) {
-            vs_mainMenu_menuItemLeaveRight(i);
+            vs_mainMenu_menuItemFlyoutRight(i);
         }
     }
 }
@@ -265,7 +265,7 @@ void func_800FA92C(int arg0, int arg1)
     int i;
 
     for (i = arg1 * 10; i < 30; ++i) {
-        vs_mainMenu_menuItemLeaveRight(i);
+        vs_mainMenu_menuItemFlyoutRight(i);
     }
 
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));

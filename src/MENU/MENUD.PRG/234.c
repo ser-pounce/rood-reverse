@@ -1917,13 +1917,13 @@ void func_80106464(int arg0, int arg1, int arg2)
     int temp_s0;
 
     var_s2 = 0x808080;
-    vs_mainMenu_printIntColor(arg0, arg1, 0x808080, 0);
+    vs_mainMenu_renderIntColor(arg0, arg1, 0x808080, 0);
     temp_s0 = arg1 - 0x20;
     vs_battle_renderTextRawColor("/", temp_s0, 0x808080, NULL);
     if ((arg2 * 2) < arg0) {
         var_s2 = 0x804020;
     }
-    vs_mainMenu_printIntColor(arg2, temp_s0, var_s2, 0);
+    vs_mainMenu_renderIntColor(arg2, temp_s0, var_s2, 0);
 }
 
 void func_80106504(void)

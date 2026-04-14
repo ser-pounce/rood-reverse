@@ -359,7 +359,7 @@ void vs_mainMenu_exec(int arg0)
                 } else if (selectedMenu == 13) {
                     var_s4 = vs_menuC_exec(temp_s3);
                 } else if (selectedMenu == 12) {
-                    var_s4 = func_80109E90(temp_s3);
+                    var_s4 = vs_menuB_exec(temp_s3);
                 } else if (selectedMenu == 7 && (D_800F4EA0 & 0x400)) {
                     var_s4 = vs_menu7_saveContainerMenu(temp_s3);
                 } else if (selectedMenu == 7 && vs_main_stateFlags.gameOver == 1) {
@@ -402,21 +402,23 @@ void vs_mainMenu_exec(int arg0)
                 break;
             case 1:
                 state = menuItem->state;
-                if (state == temp_v1) {
-                    menuItem->state = 3;
-                    menuItem->targetX = 0x12;
-                    if (selectedMenu == 5) {
-                        menuItem = vs_battle_setMenuItem(4, 0x140, 0x12, 0x8C, 8,
-                            vs_battle_characterState->unk3C->name);
-                        menuItem->state = 2;
-                        menuItem->targetX = 0xB4;
-                        menuItem->selected = state;
-                    }
-                    *temp_s3 = 3;
-                default:
-                    if (temp_s5 != 0) {
-                        var_s4 = _submenuEntrypoints[selectedMenu - 1](temp_s3);
-                    }
+                if (state != temp_v1) {
+                    break;
+                }
+                menuItem->state = 3;
+                menuItem->targetX = 0x12;
+                if (selectedMenu == 5) {
+                    menuItem = vs_battle_setMenuItem(
+                        4, 0x140, 0x12, 0x8C, 8, vs_battle_characterState->unk3C->name);
+                    menuItem->state = 2;
+                    menuItem->targetX = 0xB4;
+                    menuItem->selected = state;
+                }
+                *temp_s3 = 3;
+                // Fallthrough
+            default:
+                if (temp_s5 != 0) {
+                    var_s4 = _submenuEntrypoints[selectedMenu - 1](temp_s3);
                 }
                 break;
             }
@@ -676,7 +678,7 @@ void func_800FB3C8(int arg0)
                         i = 0x404040;
                     }
                 }
-                vs_mainMenu_printIntColor(
+                vs_mainMenu_renderIntColor(
                     var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), i, temp_s4);
                 i = 0x404040;
                 if (var_s7[j] == sp1C) {
@@ -687,7 +689,7 @@ void func_800FB3C8(int arg0)
                 if (j != (vs_mainMenu_equipmentStats[36] - 1)) {
                     i = 0x404040;
                 }
-                vs_mainMenu_printIntColor(
+                vs_mainMenu_renderIntColor(
                     var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), i, temp_s4);
             }
         } else {

@@ -24,7 +24,7 @@ typedef struct {
     u_char itemIndex;
     char unk2;
     char unk3;
-} D_8010A6A0_t;
+} _lootListItem;
 
 extern u_long* D_1F800000[];
 
@@ -113,21 +113,21 @@ static u_short _menuText[] = {
 };
 
 static char D_8010A504 = 0;
-static char D_8010A505 = 0;
+static char _controlsEnabled = 0;
 static int D_8010A508 = 0;
 static int D_8010A50C = 0;
 
-static D_8010A6A0_t* D_8010A6A0;
-static D_8010A6A0_t* D_8010A6A4;
+static _lootListItem* _lootList;
+static _lootListItem* D_8010A6A4;
 static vs_battle_inventory_t* _inventory;
 static vs_battle_inventory_t* D_8010A6AC;
 static char D_8010A6B0;
-static u_char D_8010A6B1;
+static u_char _inventoryCapacityFlyinTimer;
 static char D_8010A6B2;
 static u_char D_8010A6B3;
 static char D_8010A6B4;
 static u_char D_8010A6B5;
-static u_char _targetItemIndex;
+static u_char _lootListCount;
 static char D_8010A6B7;
 static char D_8010A6B8;
 static char menuTitleFlyin;
@@ -2131,11 +2131,11 @@ static int disassembleItem(int itemIndex)
     vs_battle_menuItem_t* menuItem;
 
     if (itemIndex != 0) {
-        vs_battle_memcpy(D_8010A6A4, D_8010A6A0, 0x280);
+        vs_battle_memcpy(D_8010A6A4, _lootList, 0x280);
         D_8010A6B2 = 0;
-        D_8010A684 = _targetItemIndex;
+        D_8010A684 = _lootListCount;
         targetItemIndex = itemIndex - 1;
-        disassembleItemCategory = D_8010A6A0[targetItemIndex].itemCategory;
+        disassembleItemCategory = _lootList[targetItemIndex].itemCategory;
         D_8010A6B4 = 0;
         D_8010A6B5 = 0;
         D_8010A683 = 0;
@@ -2150,41 +2150,41 @@ static int disassembleItem(int itemIndex)
         if (D_8010A6B3 != 6) {
             break;
         }
-        vs_battle_rMemzero(D_8010A6A0, 0x280);
-        D_8010A6A0->itemCategory = D_8010A6A4[targetItemIndex].itemCategory;
-        D_8010A6A0->itemIndex = i;
-        D_8010A6A0->unk3 = 2;
+        vs_battle_rMemzero(_lootList, 0x280);
+        _lootList->itemCategory = D_8010A6A4[targetItemIndex].itemCategory;
+        _lootList->itemIndex = i;
+        _lootList->unk3 = 2;
         if (disassembleItemCategory != itemCategoryWeapon) {
             vs_battle_inventoryShield* shield = &_inventory->shields[i];
-            D_8010A6A0[1].itemCategory = itemCategoryShield;
-            D_8010A6A0[1].itemIndex = i;
-            D_8010A6A0[1].unk3 = 3;
-            _targetItemIndex = 2;
+            _lootList[1].itemCategory = itemCategoryShield;
+            _lootList[1].itemIndex = i;
+            _lootList[1].unk3 = 3;
+            _lootListCount = 2;
 
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 if (shield->gems[i] != 0) {
-                    D_8010A6A0[_targetItemIndex].itemCategory = itemCategoryGem;
-                    D_8010A6A0[_targetItemIndex].itemIndex = shield->gems[i] - 1;
-                    D_8010A6A0[_targetItemIndex].unk3 = 5;
-                    ++_targetItemIndex;
+                    _lootList[_lootListCount].itemCategory = itemCategoryGem;
+                    _lootList[_lootListCount].itemIndex = shield->gems[i] - 1;
+                    _lootList[_lootListCount].unk3 = 5;
+                    ++_lootListCount;
                 }
             }
         } else {
             vs_battle_inventoryWeapon* weapon = &_inventory->weapons[i];
-            D_8010A6A0[1].itemCategory = itemCategoryBlade;
-            D_8010A6A0[1].itemIndex = weapon->blade - 1;
-            D_8010A6A0[1].unk3 = 4;
-            D_8010A6A0[2].itemCategory = itemCategoryGrip;
-            D_8010A6A0[2].itemIndex = weapon->grip - 1;
-            D_8010A6A0[2].unk3 = 4;
-            _targetItemIndex = 3;
+            _lootList[1].itemCategory = itemCategoryBlade;
+            _lootList[1].itemIndex = weapon->blade - 1;
+            _lootList[1].unk3 = 4;
+            _lootList[2].itemCategory = itemCategoryGrip;
+            _lootList[2].itemIndex = weapon->grip - 1;
+            _lootList[2].unk3 = 4;
+            _lootListCount = 3;
 
             for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
                 if (weapon->gems[i] != 0) {
-                    D_8010A6A0[_targetItemIndex].itemCategory = itemCategoryGem;
-                    D_8010A6A0[_targetItemIndex].itemIndex = weapon->gems[i] - 1;
-                    D_8010A6A0[_targetItemIndex].unk3 = 5;
-                    ++_targetItemIndex;
+                    _lootList[_lootListCount].itemCategory = itemCategoryGem;
+                    _lootList[_lootListCount].itemIndex = weapon->gems[i] - 1;
+                    _lootList[_lootListCount].unk3 = 5;
+                    ++_lootListCount;
                 }
             }
         }
@@ -2246,8 +2246,8 @@ static int disassembleItem(int itemIndex)
             break;
         }
 
-        vs_battle_rMemcpy(
-            &D_8010A6A4[D_8010A684], &D_8010A6A0[1], (_targetItemIndex - 1) * 4);
+        vs_battle_rMemcpy(&D_8010A6A4[D_8010A684], &_lootList[1],
+            (_lootListCount - 1) * sizeof(_lootListItem));
 
         if (disassembleItemCategory != itemCategoryWeapon) {
             vs_battle_inventoryShield* shield = &_inventory->shields[i];
@@ -2272,15 +2272,15 @@ static int disassembleItem(int itemIndex)
             }
         }
 
-        D_8010A684 = _targetItemIndex + (D_8010A684 + 0xFE);
+        D_8010A684 = _lootListCount + (D_8010A684 + 0xFE);
         for (i = targetItemIndex; i < D_8010A684; ++i) {
             D_8010A6A4[i] = D_8010A6A4[i + 1];
         }
         // Fallthrough
     case finalize:
         if (D_8010A6B3 == 6) {
-            _targetItemIndex = D_8010A684;
-            vs_battle_memcpy(D_8010A6A0, D_8010A6A4, 0x280);
+            _lootListCount = D_8010A684;
+            vs_battle_memcpy(_lootList, D_8010A6A4, 0x280);
             func_801080F0();
             D_8010A6B3 = 10;
             D_8010A6B2 = 1;
@@ -2307,7 +2307,7 @@ int func_801073E0(int arg0)
     static char D_8010A68F;
     static u_char D_8010A690;
 
-    D_8010A6A0_t* temp_a3;
+    _lootListItem* temp_a3;
     int j;
     int i;
     int var_v0;
@@ -2315,11 +2315,11 @@ int func_801073E0(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        vs_battle_memcpy(D_8010A6A4, D_8010A6A0, 0x280);
-        vs_battle_memcpy(D_8010A6AC, _inventory, 0xF00);
+        vs_battle_memcpy(D_8010A6A4, _lootList, 0x280);
+        vs_battle_memcpy(D_8010A6AC, _inventory, sizeof *_inventory);
         D_8010A6B2 = 0;
-        D_8010A690 = _targetItemIndex;
-        D_8010A68C = _inventory->misc[D_8010A6A0[arg0 - 1].itemIndex].id;
+        D_8010A690 = _lootListCount;
+        D_8010A68C = _inventory->misc[_lootList[arg0 - 1].itemIndex].id;
         D_8010A6B4 = 0;
         D_8010A6B5 = 0;
         D_8010A68F = 0;
@@ -2342,22 +2342,22 @@ int func_801073E0(int arg0)
 
             D_8010A688 = 0;
 
-            for (i = 0; i < _targetItemIndex; ++i) {
-                if (D_8010A6A0[i].itemCategory == 6) {
-                    item = &_inventory->misc[D_8010A6A0[i].itemIndex];
+            for (i = 0; i < _lootListCount; ++i) {
+                if (_lootList[i].itemCategory == itemCategoryMisc) {
+                    item = &_inventory->misc[_lootList[i].itemIndex];
                     if (item->id == D_8010A68C) {
                         D_8010A688 += item->count;
                         vs_battle_rMemzero(item, 4);
-                        --_targetItemIndex;
-                        for (j = i; j < _targetItemIndex; ++j) {
-                            D_8010A6A0[j] = D_8010A6A0[j + 1];
+                        --_lootListCount;
+                        for (j = i; j < _lootListCount; ++j) {
+                            _lootList[j] = _lootList[j + 1];
                         }
                         --i;
                     }
                 }
             }
 
-            _targetItemIndex = 0;
+            _lootListCount = 0;
 
             while (D_8010A688 != 0) {
                 for (i = 0; i < 64; ++i) {
@@ -2370,7 +2370,7 @@ int func_801073E0(int arg0)
                     break;
                 }
 
-                temp_a3 = &D_8010A6A0[_targetItemIndex++];
+                temp_a3 = &_lootList[_lootListCount++];
                 temp_a3->itemCategory = 6;
                 temp_a3->itemIndex = i;
                 temp_a3->unk2 = 0;
@@ -2465,7 +2465,7 @@ int func_801073E0(int arg0)
             }
         }
 
-        for (i = 0; i < _targetItemIndex; ++i) {
+        for (i = 0; i < _lootListCount; ++i) {
             for (j = 0; j < 64; ++j) {
                 if (D_8010A6AC->misc[j].id == 0) {
                     break;
@@ -2479,16 +2479,16 @@ int func_801073E0(int arg0)
             temp_a3->itemCategory = itemCategoryMisc;
             temp_a3->itemIndex = j;
             temp_a3->unk2 = 0;
-            temp_a3->unk3 = D_8010A6A0[i].unk3;
+            temp_a3->unk3 = _lootList[i].unk3;
             item = &D_8010A6AC->misc[j];
             item->id = D_8010A68C;
-            item->count = _inventory->misc[D_8010A6A0[i].itemIndex].count;
+            item->count = _inventory->misc[_lootList[i].itemIndex].count;
         }
         // Fallthrough
     case 6:
         if (D_8010A6B3 == 6) {
-            _targetItemIndex = D_8010A690;
-            vs_battle_memcpy(D_8010A6A0, D_8010A6A4, 0x280);
+            _lootListCount = D_8010A690;
+            vs_battle_memcpy(_lootList, D_8010A6A4, 0x280);
             vs_battle_memcpy(_inventory, D_8010A6AC, 0xF00);
             D_8010A6B3 = 0xA;
             D_8010A6B2 = 1;
@@ -2651,9 +2651,9 @@ static void func_801080F0(void)
 {
     int i;
     int temp_v1;
-    D_8010A6A0_t* var_s1 = D_8010A6A0;
+    _lootListItem* var_s1 = _lootList;
 
-    for (i = 0; i < _targetItemIndex; ++i, ++var_s1) {
+    for (i = 0; i < _lootListCount; ++i, ++var_s1) {
         var_s1->unk3 = func_800FEB94(var_s1->itemCategory, &vs_battle_inventory,
                            var_s1->itemIndex, _inventory)
                     != 0;
@@ -2661,39 +2661,39 @@ static void func_801080F0(void)
 
     i = D_8010A6B4 + D_8010A6B5;
 
-    if (i >= _targetItemIndex) {
-        i = _targetItemIndex - 1;
-        D_8010A6B5 = _targetItemIndex - 8;
+    if (i >= _lootListCount) {
+        i = _lootListCount - 1;
+        D_8010A6B5 = _lootListCount - 8;
         D_8010A6B4 = 7;
     }
-    if (_targetItemIndex < 9) {
+    if (_lootListCount < 9) {
         D_8010A6B4 = i;
         D_8010A6B5 = 0;
         return;
     }
-    temp_v1 = _targetItemIndex - 8;
+    temp_v1 = _lootListCount - 8;
     if (temp_v1 < D_8010A6B5) {
         D_8010A6B5 = temp_v1;
         D_8010A6B4 = i - temp_v1;
     }
-    if ((D_8010A6B4 == 7) && (i != (_targetItemIndex - 1))) {
+    if ((D_8010A6B4 == 7) && (i != (_lootListCount - 1))) {
         D_8010A6B4 -= 1;
         D_8010A6B5 = D_8010A6B5 + 1;
     }
 }
 
-static void func_8010822C(int arg0, int arg1)
+static void _addLootToList(int itemCategory, int itemIndex)
 {
-    D_8010A6A0_t* temp_v1 = &D_8010A6A0[_targetItemIndex++];
-    temp_v1->itemCategory = arg0;
-    temp_v1->itemIndex = arg1 - 1;
-    temp_v1->unk2 = 0;
+    _lootListItem* item = &_lootList[_lootListCount++];
+    item->itemCategory = itemCategory;
+    item->itemIndex = itemIndex - 1;
+    item->unk2 = 0;
 }
 
 static char* _itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARMOR",
     "GEM", "MISC" };
 
-static int _countSetItemsInCategory(int arg0, D_8010A6A0_t* arg1)
+static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
 {
     int i;
     vs_battle_inventoryShield* shield;
@@ -2732,93 +2732,87 @@ static int _countSetItemsInCategory(int arg0, D_8010A6A0_t* arg1)
     return count;
 }
 
-void func_8010837C(int arg0)
+void _displayInventoryCapacities(int edgeX)
 {
-    int sp10;
-    int temp_s0;
-    int temp_s4;
+    int itemCountPos;
+    int buttonBgPos;
     int var_a2;
     int var_fp;
-    int var_s0;
-    int var_s0_2;
     int i;
-    int var_s2;
-    int temp_s3;
-    D_8010A6A0_t* var_s6;
-    unsigned int new_var;
-    char* c;
-    int new_var2;
+    int y;
+    _lootListItem* item;
+    unsigned int xy;
+    char* str;
 
-    var_s6 = NULL;
+    item = NULL;
     var_fp = 1;
+
     if (D_8010A6B7 != 0) {
-        var_s6 = (D_8010A6A0_t*)1;
+        item = (_lootListItem*)1;
         if (D_8010A6B7 & 0xF) {
 
             var_fp = 0;
-            var_s6 = &D_8010A6A0[D_8010A6B5 + D_8010A6B7 - 1];
-            for (i = 0; i < _targetItemIndex; ++i) {
-                var_fp += D_8010A6A0[i].unk3;
+            item = &_lootList[D_8010A6B5 + D_8010A6B7 - 1];
+            for (i = 0; i < _lootListCount; ++i) {
+                var_fp += _lootList[i].unk3;
             }
         }
     }
-    vs_battle_renderTextRaw("GADGET BAG", (arg0 + 0xB0) | 0xC0000, NULL);
 
-    sp10 = arg0 + 0x110;
+    vs_battle_renderTextRaw("GADGET BAG", (edgeX + 176) | (12 << 16), NULL);
+
+    itemCountPos = edgeX + 272;
 
     for (i = 0; i < 7; ++i) {
-        var_s0 = 0x808080;
-        temp_s3 = vs_mainMenu_inventoryItemCapacities[i];
-        temp_s4 = vs_mainMenu_getItemCount(i, NULL);
+        int color = vs_getRGB(128, 128, 128);
+        int capacity = vs_mainMenu_inventoryItemCapacities[i];
+        int itemCount = vs_mainMenu_getItemCount(i, NULL);
 
-        if (var_s6 != NULL) {
-            var_s0_2 = 0;
-            if ((var_s6 == (D_8010A6A0_t*)1)
-                || (_countSetItemsInCategory(i, var_s6) != 0)) {
-                var_s0_2 = 1;
-            }
-            var_s0 = 0x404040 << var_s0_2;
+        if (item != NULL) {
+            color = vs_getRGB(64, 64, 64)
+                 << ((item == (_lootListItem*)1)
+                        || (_itemIncludesItemsInCategory(i, item) != 0));
         }
-        new_var2 = 0x180000;
-        var_s2 = (new_var2 + i * 0xC0000);
-        vs_battle_renderTextRawColor("/", sp10 | var_s2, var_s0, NULL);
-        vs_battle_renderTextRawColor(
-            _itemCategoryHeaders[i], (arg0 + 0xC0) | var_s2, var_s0, NULL);
-        vs_mainMenu_printIntColor(temp_s3, (arg0 + 0x128) | var_s2, var_s0, NULL);
 
-        if (((u_int)var_s0 >> 0x17) != 0) {
-            if ((temp_s4 * 2) < (int)temp_s3) {
-                var_s0 = 0x804020;
+        y = (24 + i * 12) << 16;
+        vs_battle_renderTextRawColor("/", itemCountPos | y, color, NULL);
+        vs_battle_renderTextRawColor(
+            _itemCategoryHeaders[i], (edgeX + 192) | y, color, NULL);
+        vs_mainMenu_renderIntColor(capacity, (edgeX + 296) | y, color, NULL);
+
+        if (((u_int)color >> 23) != 0) {
+            if ((itemCount * 2) < capacity) {
+                color = vs_getRGB(32, 64, 128);
             }
-            if (((u_long)var_s6 >> 1) != 0) {
-                if (temp_s3 < (_countSetItemsInCategory(i, var_s6) + temp_s4)) {
-                    var_s0 = 0x204080;
+            if (((u_long)item >> 1) != 0) {
+                if (capacity < (_itemIncludesItemsInCategory(i, item) + itemCount)) {
+                    color = vs_getRGB(128, 64, 32);
                 }
             }
         }
-        vs_mainMenu_printIntColor(temp_s4, sp10 | var_s2, var_s0, NULL);
+        vs_mainMenu_renderIntColor(itemCount, itemCountPos | y, color, NULL);
     }
 
-    temp_s0 = arg0 + 0xB8;
-    vs_mainMenu_drawButtonUiBackground(temp_s0, 0x70, 0x70, 0xA);
-    vs_mainMenu_drawButtonUiBackground(temp_s0, 0x80, 0x40, 0xA);
-    vs_battle_renderTextRawColor(
-        "GET", (arg0 + 0xC4) | 0x700000, 0x404040 << D_8010A505, NULL);
-    vs_mainmenu_drawButton(2, arg0 + 0xB0, 0x6E, NULL);
+    buttonBgPos = edgeX + 184;
+    vs_mainMenu_drawButtonUiBackground(buttonBgPos, 112, 112, 10);
+    vs_mainMenu_drawButtonUiBackground(buttonBgPos, 128, 64, 10);
+    vs_battle_renderTextRawColor("GET", (edgeX + 196) | (112 << 16),
+        vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
+    vs_mainmenu_drawButton(2, edgeX + 176, 110, NULL);
 
-    c = "ALL";
-    new_var = (arg0 + 0xFC) | 0x700000;
+    str = "ALL";
+    xy = (edgeX + 252) | (112 << 16);
     if (var_fp != 0) {
-        var_a2 = 0x404040 << (D_8010A505 & 1);
+        var_a2 = vs_getRGB(64, 64, 64) << (_controlsEnabled & 1);
     } else {
-        var_a2 = 0x404040;
+        var_a2 = vs_getRGB(64, 64, 64);
     }
 
-    vs_battle_renderTextRawColor(c, new_var, var_a2, NULL);
-    vs_mainmenu_drawButton(1, arg0 + 0xE8, 0x6E, NULL);
-    vs_battle_renderTextRawColor(
-        "END", (arg0 + 0xC4) | 0x800000, 0x404040 << D_8010A505, NULL);
-    vs_mainmenu_drawButton(3, arg0 + 0xB0, 0x7E, NULL);
+    vs_battle_renderTextRawColor(str, xy, var_a2, NULL);
+    vs_mainmenu_drawButton(1, edgeX + 232, 110, NULL);
+    vs_battle_renderTextRawColor("END", (edgeX + 196) | (128 << 16),
+        vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
+    vs_mainmenu_drawButton(3, edgeX + 176, 126, NULL);
 }
 
 static int _droppableUnderCurrentDifficulty(int arg0)
@@ -2831,39 +2825,41 @@ void _applyLootList(vs_battle_loot* arg0)
     int i;
 
     if (_droppableUnderCurrentDifficulty(arg0->weapon.difficultyFlags) != 0) {
-        func_8010822C(0, _copyWeaponToInventory(&arg0->weapon));
+        _addLootToList(itemCategoryWeapon, _copyWeaponToInventory(&arg0->weapon));
     }
 
     if (_droppableUnderCurrentDifficulty(arg0->blade.difficultyFlags) != 0) {
-        func_8010822C(1, _copyBladeToInventory(&arg0->blade.blade, 0));
+        _addLootToList(itemCategoryBlade, _copyBladeToInventory(&arg0->blade.blade, 0));
     }
 
     if (_droppableUnderCurrentDifficulty(arg0->grip.difficultyFlags) != 0) {
-        func_8010822C(2, _copyGripToInventory(&arg0->grip.grip, 0));
+        _addLootToList(itemCategoryGrip, _copyGripToInventory(&arg0->grip.grip, 0));
     }
 
     if (_droppableUnderCurrentDifficulty(arg0->shield.difficultyFlags) != 0) {
-        func_8010822C(3, _copyShieldToInventory(&arg0->shield));
+        _addLootToList(itemCategoryShield, _copyShieldToInventory(&arg0->shield));
     }
 
     for (i = 0; i < 2; ++i) {
         if (_droppableUnderCurrentDifficulty(arg0->armor[i].difficultyFlags) != 0) {
-            func_8010822C(4, _copyArmorToInventory(&arg0->armor[i].armor));
+            _addLootToList(
+                itemCategoryArmor, _copyArmorToInventory(&arg0->armor[i].armor));
         }
     }
 
     if (_droppableUnderCurrentDifficulty(arg0->accessory.difficultyFlags) != 0) {
-        func_8010822C(4, _copyArmorToInventory(&arg0->accessory.accessory));
+        _addLootToList(
+            itemCategoryArmor, _copyArmorToInventory(&arg0->accessory.accessory));
     }
 
     if (_droppableUnderCurrentDifficulty(arg0->gem.difficultyFlags) != 0) {
-        func_8010822C(5, _copyGemToInventory(&arg0->gem.gem, 0));
+        _addLootToList(itemCategoryGem, _copyGemToInventory(&arg0->gem.gem, 0));
     }
 
     for (i = 0; i < 3; ++i) {
         if ((_droppableUnderCurrentDifficulty(arg0->misc[i].difficultyFlags) != 0)
             && (arg0->misc[i].id != 0) && (arg0->misc[i].count != 0)) {
-            func_8010822C(6, _copyMiscToInventory(&arg0->misc[i]));
+            _addLootToList(itemCategoryMisc, _copyMiscToInventory(&arg0->misc[i]));
         }
     }
     func_801080F0();
@@ -2887,7 +2883,7 @@ void func_80108938(int arg0)
 {
     char sp18[0x100];
     int sp118;
-    D_8010A6A0_t* var_fp;
+    _lootListItem* var_fp;
     int i;
     int temp_s1;
     int temp_v1_3;
@@ -2901,8 +2897,8 @@ void func_80108938(int arg0)
     vs_battle_inventoryMisc* misc;
     vs_battle_menuItem_t* menuItem;
 
-    sp118 = _targetItemIndex;
-    var_fp = &D_8010A6A0[D_8010A6B5];
+    sp118 = _lootListCount;
+    var_fp = &_lootList[D_8010A6B5];
     vs_battle_rMemzero(&sp18, 0x100);
 
     for (i = 0; i < 8; ++i) {
@@ -2984,7 +2980,7 @@ void func_80108938(int arg0)
                 menuItem->fadeEffect = 1;
             }
         }
-        if ((i == 7) && (D_8010A6B5 != (_targetItemIndex - 8))) {
+        if ((i == 7) && (D_8010A6B5 != (_lootListCount - 8))) {
             menuItem->fadeEffect = 2;
         }
         temp_v1_3 = var_fp->unk3;
@@ -3004,12 +3000,12 @@ void func_80108E78(int arg0)
 {
     char* menuText[2];
     int rowType;
-    int temp_s3 = D_8010A6A0[arg0].itemIndex;
+    int temp_s3 = _lootList[arg0].itemIndex;
 
     vs_battle_memcpy(D_8010A6AC, &vs_battle_inventory, sizeof *D_8010A6AC);
     vs_battle_memcpy(&vs_battle_inventory, _inventory, sizeof vs_battle_inventory);
 
-    switch (D_8010A6A0[arg0].itemCategory) {
+    switch (_lootList[arg0].itemCategory) {
     case 0:
         vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[temp_s3], menuText,
             &rowType, vs_battle_stringBuf);
@@ -3060,7 +3056,7 @@ int func_801090A4(int arg0)
     if (arg0 != 0) {
         D_8010A692 = 1;
         D_8010A691 = 0;
-        if (_targetItemIndex == 0) {
+        if (_lootListCount == 0) {
             D_8010A691 = 4;
             return 0;
         }
@@ -3069,12 +3065,12 @@ int func_801090A4(int arg0)
             return 0;
         }
 
-        for (i = 0; i < _targetItemIndex; ++i) {
-            temp_a1 = D_8010A6A0[i].itemCategory;
+        for (i = 0; i < _lootListCount; ++i) {
+            temp_a1 = _lootList[i].itemCategory;
             if (temp_a1 == 6) {
-                if (_inventory->misc[D_8010A6A0[i].itemIndex].id >= 0x1CA) {
+                if (_inventory->misc[_lootList[i].itemIndex].id >= 0x1CA) {
                     D_8010A694 =
-                        vs_mainMenu_itemNames[_inventory->misc[D_8010A6A0[i].itemIndex]
+                        vs_mainMenu_itemNames[_inventory->misc[_lootList[i].itemIndex]
                                                   .id];
                     D_8010A691 = temp_a1;
                 }
@@ -3150,7 +3146,7 @@ int func_801090A4(int arg0)
     return 0;
 }
 
-int func_80109444(D_8010A6A0_t* arg0)
+int func_80109444(_lootListItem* arg0)
 {
     static char D_8010A5E9 = 0;
 
@@ -3236,54 +3232,53 @@ int func_80109444(D_8010A6A0_t* arg0)
     return 0;
 }
 
-void func_8010A24C(int arg0);
+static void _setKeyFlag(int arg0);
 
 int func_80109750(int arg0)
 {
     static char D_8010A5EA = 0;
 
-    static char D_8010A69C;
+    static char state;
     static char D_8010A69D;
 
-    D_8010A6A0_t* temp_s1;
+    _lootListItem* temp_s1;
     int temp_a3;
     int temp_s2;
     int i;
     int var_v0_4;
-    int temp_a0;
 
     if (arg0 != 0) {
         D_8010A6B4 = 0;
-        D_8010A69C = 0;
+        state = 0;
         return 0;
     }
-    switch (D_8010A69C) {
+    switch (state) {
     case 0:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
         func_800FFBC8();
-        D_8010A69C = 1;
+        state = 1;
         // Fallthrough
     case 1:
-        D_8010A505 = 1;
-        if (vs_main_buttonsPressed.all & 0x40) {
+        _controlsEnabled = 1;
+        if (vs_main_buttonsPressed.all & PADRdown) {
             vs_battle_playMenuLeaveSfx();
-            D_8010A505 = 0;
+            _controlsEnabled = 0;
             func_801090A4(1);
-            D_8010A69C = 2;
+            state = 2;
             break;
-        } else if (vs_main_buttonsPressed.all & 0x80) {
+        } else if (vs_main_buttonsPressed.all & PADRleft) {
             temp_s2 = D_8010A6B8;
-            for (i = 0; i < _targetItemIndex; ++i) {
-                temp_s1 = &D_8010A6A0[i];
+            for (i = 0; i < _lootListCount; ++i) {
+                temp_s1 = &_lootList[i];
                 if (func_800FEB94(temp_s1->itemCategory | 0x10, &vs_battle_inventory,
                         temp_s1->itemIndex, _inventory)
                     != 0) {
-                    if (temp_s1->itemCategory == 6) {
-                        temp_a0 = _inventory->misc[temp_s1->itemIndex].id;
-                        if (temp_a0 >= 0x1CA) {
-                            func_8010A24C(temp_a0);
+                    if (temp_s1->itemCategory == itemCategoryMisc) {
+                        int miscId = _inventory->misc[temp_s1->itemIndex].id;
+                        if (miscId > 457) {
+                            _setKeyFlag(miscId);
                         }
                     }
                     temp_s1->unk2 = 1;
@@ -3292,25 +3287,25 @@ int func_80109750(int arg0)
             }
             if (temp_s2 != D_8010A6B8) {
                 vs_main_playSfxDefault(0x7E, 0xD);
-                D_8010A69C = 9;
+                state = 9;
                 break;
             }
             vs_battle_playInvalidSfx();
         }
         temp_a3 = D_8010A6B4 + D_8010A6B5;
-        temp_s1 = &D_8010A6A0[temp_a3];
-        if (vs_main_buttonsPressed.all & 0x20) {
+        temp_s1 = &_lootList[temp_a3];
+        if (vs_main_buttonsPressed.all & PADRright) {
             if (temp_s1->unk3 == 0) {
                 vs_battle_playMenuSelectSfx();
-                D_8010A505 = 0;
+                _controlsEnabled = 0;
                 func_80109444(temp_s1);
-                D_8010A69C = 3;
+                state = 3;
             } else {
                 vs_main_playSfxDefault(0x7E, 0xD);
-                if (temp_s1->itemCategory == 6) {
+                if (temp_s1->itemCategory == itemCategoryMisc) {
                     i = _inventory->misc[temp_s1->itemIndex].id;
-                    if (i >= 0x1CA) {
-                        func_8010A24C(i);
+                    if (i > 457) {
+                        _setKeyFlag(i);
                     }
                 }
                 func_800FEB94(temp_s1->itemCategory | 0x10, &vs_battle_inventory,
@@ -3318,23 +3313,23 @@ int func_80109750(int arg0)
                 temp_s1->unk2 = 1;
                 D_8010A69D = 3;
                 ++D_8010A6B8;
-                D_8010A69C = 9;
+                state = 9;
             }
         } else {
             i = temp_a3;
-            if (vs_main_buttonRepeat & 0x1000) {
-                if (_targetItemIndex < 9) {
+            if (vs_main_buttonRepeat & PADLup) {
+                if (_lootListCount < 9) {
                     if (D_8010A6B4 == 0) {
-                        D_8010A6B4 = _targetItemIndex - 1;
+                        D_8010A6B4 = _lootListCount - 1;
                     } else {
                         --D_8010A6B4;
                     }
                 } else {
                     if (D_8010A6B5 == 0) {
                         if (D_8010A6B4 == 0) {
-                            if (vs_main_buttonsPressed.all & 0x1000) {
+                            if (vs_main_buttonsPressed.all & PADLup) {
                                 D_8010A6B4 = 7;
-                                D_8010A6B5 = _targetItemIndex - 8;
+                                D_8010A6B5 = _lootListCount - 8;
                             }
                         } else {
                             --D_8010A6B4;
@@ -3348,16 +3343,16 @@ int func_80109750(int arg0)
                     }
                 }
             }
-            if (vs_main_buttonRepeat & 0x4000) {
-                if (_targetItemIndex < 9) {
-                    if (D_8010A6B4 == (_targetItemIndex - 1)) {
+            if (vs_main_buttonRepeat & PADLdown) {
+                if (_lootListCount < 9) {
+                    if (D_8010A6B4 == (_lootListCount - 1)) {
                         D_8010A6B4 = 0;
                     } else {
                         ++D_8010A6B4;
                     }
-                } else if (D_8010A6B5 == (_targetItemIndex - 8)) {
+                } else if (D_8010A6B5 == (_lootListCount - 8)) {
                     if (D_8010A6B4 == 7) {
-                        if (vs_main_buttonsPressed.all & 0x4000) {
+                        if (vs_main_buttonsPressed.all & PADLdown) {
                             D_8010A6B4 = 0;
                             D_8010A6B5 = 0;
                         }
@@ -3382,7 +3377,7 @@ int func_80109750(int arg0)
         i = func_801090A4(0);
         if (i != 0) {
             if (i < 0) {
-                D_8010A69C = 8;
+                state = 8;
             } else {
                 return i;
             }
@@ -3395,39 +3390,39 @@ int func_80109750(int arg0)
                 temp_s2 = D_8010A6B4 + D_8010A6B5;
                 switch (i) {
                 case 1:
-                    _topLevelMenuTransition(D_8010A6A0[temp_s2].itemCategory + 1);
-                    D_8010A69C = 4;
+                    _topLevelMenuTransition(_lootList[temp_s2].itemCategory + 1);
+                    state = 4;
                     break;
                 case 2:
                     disassembleItem(temp_s2 + 1);
-                    D_8010A69C = 5;
+                    state = 5;
                     break;
                 case 3:
                     func_801073E0(temp_s2 + 1);
-                    D_8010A69C = 6;
+                    state = 6;
                     break;
                 }
             } else {
-                D_8010A69C = 0;
+                state = 0;
             }
         }
         break;
     case 4:
         var_v0_4 = _topLevelMenuTransition(0);
         if (var_v0_4 != 0) {
-            D_8010A69C = 8;
+            state = 8;
         }
         break;
     case 5:
         var_v0_4 = disassembleItem(0);
         if (var_v0_4 != 0) {
-            D_8010A69C = 8;
+            state = 8;
         }
         break;
     case 6:
         var_v0_4 = func_801073E0(0);
         if (var_v0_4 != 0) {
-            D_8010A69C = 8;
+            state = 8;
         }
         break;
     case 7:
@@ -3437,8 +3432,8 @@ int func_80109750(int arg0)
     // Fallthrough
     case 8:
         if (D_8010A6B3 == 0) {
-            D_8010A505 = 1;
-            D_8010A69C = 0;
+            _controlsEnabled = 1;
+            state = 0;
             func_801080F0();
         }
         break;
@@ -3447,37 +3442,37 @@ int func_80109750(int arg0)
             D_8010A69D = (D_8010A69D - 1);
         } else {
             while (1) {
-                for (i = 0; i < _targetItemIndex; ++i) {
-                    if (D_8010A6A0[i].unk2 != 0) {
+                for (i = 0; i < _lootListCount; ++i) {
+                    if (_lootList[i].unk2 != 0) {
                         break;
                     }
                 }
 
-                if (i == _targetItemIndex) {
+                if (i == _lootListCount) {
                     break;
                 }
 
-                --_targetItemIndex;
-                for (; i < _targetItemIndex; ++i) {
-                    D_8010A6A0[i] = D_8010A6A0[i + 1];
+                --_lootListCount;
+                for (; i < _lootListCount; ++i) {
+                    _lootList[i] = _lootList[i + 1];
                 }
             }
             func_801080F0();
-            if (_targetItemIndex == 0) {
-                D_8010A505 = 0;
+            if (_lootListCount == 0) {
+                _controlsEnabled = 0;
                 func_801090A4(1);
-                D_8010A69C = 2;
+                state = 2;
             } else {
-                D_8010A69C = 0;
+                state = 0;
             }
         }
         break;
     }
-    D_8010A6B7 = (D_8010A69C & 7) == 1 ? D_8010A6B4 + 1 : -0x80;
+    D_8010A6B7 = (state & 7) == 1 ? D_8010A6B4 + 1 : -0x80;
     return 0;
 }
 
-int func_80109E90(char* state)
+int vs_menuB_exec(char* state)
 {
     static char D_8010A69E;
     static char _ __attribute__((unused));
@@ -3496,18 +3491,18 @@ int func_80109E90(char* state)
         }
         temp_v0 = vs_main_allocHeapR(0x2300);
         _inventory = temp_v0;
-        D_8010A6AC = temp_v0 + 0xF00;
-        D_8010A6A0 = temp_v0 + 0x1E00;
+        D_8010A6AC = temp_v0 + sizeof *_inventory;
+        _lootList = temp_v0 + sizeof *_inventory + sizeof *D_8010A6AC;
         D_8010A6A4 = temp_v0 + 0x2080;
         D_8010A6B8 = 0;
-        _targetItemIndex = 0;
+        _lootListCount = 0;
         D_8010A6B5 = 0;
         D_8010A69E = 0;
         vs_mainMenu_loadItemNames(1);
         _applyAllLootLists(D_800EB9C4);
-        D_8010A505 = 0;
+        _controlsEnabled = 0;
         D_8010A6B0 = 1;
-        D_8010A6B1 = 10;
+        _inventoryCapacityFlyinTimer = 10;
         D_8010A6B2 = 0;
         D_8010A6B3 = 10;
         *state = 1;
@@ -3515,7 +3510,7 @@ int func_80109E90(char* state)
     case 1:
         if (vs_mainMenu_loadItemNames(0) != 0) {
             D_8010A6B2 = 1;
-            if (_targetItemIndex == 0) {
+            if (_lootListCount == 0) {
                 func_800C8E04(1);
                 vs_mainmenu_setInformationMessage(
                     (char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
@@ -3562,20 +3557,23 @@ int func_80109E90(char* state)
         }
         break;
     }
+
     if (D_8010A6B0 != 0) {
-        if (D_8010A6B1 != 0) {
-            --D_8010A6B1;
+        if (_inventoryCapacityFlyinTimer != 0) {
+            --_inventoryCapacityFlyinTimer;
         }
-        i = vs_battle_rowAnimationSteps[D_8010A6B1];
+        i = vs_battle_rowAnimationSteps[_inventoryCapacityFlyinTimer];
     } else {
-        if (D_8010A6B1 < 10) {
-            ++D_8010A6B1;
+        if (_inventoryCapacityFlyinTimer < 10) {
+            ++_inventoryCapacityFlyinTimer;
         }
-        i = D_8010A6B1 << 5;
+        i = _inventoryCapacityFlyinTimer << 5;
     }
-    if (D_8010A6B1 < 10) {
-        func_8010837C(i);
+
+    if (_inventoryCapacityFlyinTimer < 10) {
+        _displayInventoryCapacities(i);
     }
+
     if (D_8010A6B2 != 0) {
         if (D_8010A6B3 != 0) {
             --D_8010A6B3;
@@ -3587,6 +3585,7 @@ int func_80109E90(char* state)
         }
         i = D_8010A6B3 << 5;
     }
+
     if (D_8010A6B3 < 10) {
         func_80108938(i);
         if (D_8010A6B7 & 0xF) {
@@ -3596,9 +3595,9 @@ int func_80109E90(char* state)
     return 0;
 }
 
-void func_8010A24C(int arg0)
+static void _setKeyFlag(int arg0)
 {
-    if (arg0 >= 0x1CA) {
-        vs_battle_setStateFlag(arg0 + 0x1B6, 1);
+    if (arg0 > 457) {
+        vs_battle_setStateFlag(arg0 + 438, 1);
     }
 }

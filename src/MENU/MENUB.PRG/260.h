@@ -1,3 +1,3 @@
 #pragma once
 
-int func_80109E90(char* state);
+int vs_menuB_exec(char* state);

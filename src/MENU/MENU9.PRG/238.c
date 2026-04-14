@@ -2091,7 +2091,7 @@ void _setScoreFlags(void)
     if (vs_main_scoredata.unk98 >= 0x34) {
         vs_main_scoredata.flags |= 4;
     }
-    if (vs_main_scoredata.mapCompletion >= 0x169) {
+    if (vs_main_scoredata.mapCompletion > 360) {
         vs_main_scoredata.flags |= 8;
     }
     if (vs_main_stateFlags.unkCC != 0) {
@@ -2127,11 +2127,11 @@ void _setScoreFlags(void)
         vs_main_scoredata.flags |= 0x800;
     }
 
-    if (vs_main_stateFlags.unk383 != 0) {
+    if (vs_main_stateFlags.goldKeyObtained != 0) {
         vs_main_scoredata.flags |= 0x1000;
     }
 
-    if (vs_main_stateFlags.unk387 != 0) {
+    if (vs_main_stateFlags.chestKeyObtained != 0) {
         vs_main_scoredata.flags |= 0x2000;
     }
 

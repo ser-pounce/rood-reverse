@@ -180,7 +180,7 @@ INCLUDE_ASM(
 
 void vs_battle_renderTextRaw(char const* text, int xy, void* arg2)
 {
-    vs_battle_renderTextRawColor(text, xy, 0x808080, arg2);
+    vs_battle_renderTextRawColor(text, xy, vs_getRGB(128, 128, 128), arg2);
 }
 
 void func_800C6850(char* arg0) { *arg0 = 0xE7; }

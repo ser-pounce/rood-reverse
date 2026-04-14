@@ -426,7 +426,7 @@ int func_800FFCDC(u_int arg0, int arg1)
     return (temp_s0 + 1) & 0xF;
 }
 
-int vs_mainMenu_printIntColor(int arg0, int arg1, int arg2, u_long* arg3)
+int vs_mainMenu_renderIntColor(int arg0, int arg1, int arg2, u_long* arg3)
 {
     int sp10;
     int var_s0 = arg0;
@@ -462,12 +462,12 @@ int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
     if (arg0 < arg2) {
         var_a2 = 0x204080;
     }
-    return vs_mainMenu_printIntColor(arg0, arg1, var_a2, arg3);
+    return vs_mainMenu_renderIntColor(arg0, arg1, var_a2, arg3);
 }
 
 void func_800FFE70(int arg0, int arg1, u_long* arg2)
 {
-    vs_mainMenu_printIntColor(arg0, arg1, 0x808080, arg2);
+    vs_mainMenu_renderIntColor(arg0, arg1, 0x808080, arg2);
 }
 
 void func_800FFE98(int arg0, int arg1, int arg2, u_long* arg3)
@@ -603,19 +603,19 @@ void func_80100164(void)
     }
 }
 
-void vs_mainMenu_drawButtonUiBackground(int arg0, int arg1, int arg2, int count)
+void vs_mainMenu_drawButtonUiBackground(int x, int y, int w, int h)
 {
     int i;
     u_long* var_t2 = D_1F800000[0];
     u_long* temp_v1 = D_1F800000[1] - 3;
 
-    for (i = 0; i < count; ++i) {
+    for (i = 0; i < h; ++i) {
         var_t2[0] = vs_getTag(u_long[6], temp_v1[0]);
         var_t2[1] = vs_getTpage(0, 0, 0, 0, ditheringOn);
         var_t2[2] = vs_getRGB0(primLineG2, 0x40, 0x38, 0x20);
-        var_t2[3] = ((arg0 & 0xFFFF) | ((arg1 + i) << 0x10));
+        var_t2[3] = ((x & 0xFFFF) | ((y + i) << 0x10));
         var_t2[4] = vs_getRGB888(16, 16, 8);
-        var_t2[5] = ((((arg0 + arg2) - i) & 0xFFFF) | ((arg1 + i) << 0x10));
+        var_t2[5] = ((((x + w) - i) & 0xFFFF) | ((y + i) << 0x10));
         var_t2[6] = vs_getTpage(0, 0, 0, 0, ditheringOff);
         temp_v1[0] = (((u_long)var_t2 << 8) >> 8);
         var_t2 += 7;

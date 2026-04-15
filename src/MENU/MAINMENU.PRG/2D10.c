@@ -1078,7 +1078,7 @@ int vs_mainMenu_getItemCount(int category, vs_battle_inventory_t* inventory)
     return count;
 }
 
-int vs_mainMenu_getFirstItem(int itemCategory, vs_battle_inventory_t* inventory)
+int vs_mainMenu_getFirstEmptyItemSlot(int itemCategory, vs_battle_inventory_t* inventory)
 {
     int i;
 
@@ -1090,110 +1090,115 @@ int vs_mainMenu_getFirstItem(int itemCategory, vs_battle_inventory_t* inventory)
     return i;
 }
 
-int func_800FEB94(
-    int arg0, vs_battle_inventory_t* arg1, int arg2, vs_battle_inventory_t* arg3)
+int vs_mainMenu_copyItem(int itemCategory, vs_battle_inventory_t* targetInventory,
+    int sourceItemIndex, vs_battle_inventory_t* sourceInventory)
 {
     vs_battle_inventoryMisc* temp_a0;
-    int temp_fp;
-    int temp_s2;
-    int temp_s3;
-    int temp_s7;
+    int emptySlot;
+    int itemCount;
     int i;
-    int var_s1;
-    int var_s5;
-    int var_s1_3;
+    int gemCount;
+    int index;
 
-    temp_s3 = arg0 >> 8;
-    temp_fp = (arg0 >> 4) & 1;
-    arg0 = arg0 & 0xF;
-    var_s5 = 0;
-    temp_s7 = vs_mainMenu_getItemCount(arg0, arg1);
-    temp_s2 = vs_mainMenu_getFirstItem(arg0, arg1);
+    int parentIndex = itemCategory >> 8;
+    int write = (itemCategory >> 4) & 1;
+    itemCategory &= 0xF;
+    index = 0;
+    itemCount = vs_mainMenu_getItemCount(itemCategory, targetInventory);
+    emptySlot = vs_mainMenu_getFirstEmptyItemSlot(itemCategory, targetInventory);
 
-    switch (arg0) {
-    case 0: {
-        vs_battle_inventoryWeapon* temp_s4 = &arg3->weapons[arg2];
-        vs_battle_inventoryWeapon* temp_s3_2 = &arg1->weapons[temp_s2];
+    switch (itemCategory) {
+    case itemCategoryWeapon: {
+        vs_battle_inventoryWeapon* source = &sourceInventory->weapons[sourceItemIndex];
+        vs_battle_inventoryWeapon* target = &targetInventory->weapons[emptySlot];
 
-        if ((temp_s7 != 8) && (vs_mainMenu_getItemCount(1, arg1) != 0x10)) {
-            if (vs_mainMenu_getItemCount(2, arg1) != 0x10) {
-                var_s1 = 0;
+        if ((itemCount != 8)
+            && (vs_mainMenu_getItemCount(itemCategoryBlade, targetInventory) != 16)) {
+            if (vs_mainMenu_getItemCount(itemCategoryGrip, targetInventory) != 16) {
+                gemCount = 0;
                 for (i = 0; i < 3; ++i) {
-                    if (temp_s4->gems[i] != 0) {
-                        ++var_s1;
+                    if (source->gems[i] != 0) {
+                        ++gemCount;
                     }
                 }
 
-                if ((vs_mainMenu_getItemCount(5, arg1) + var_s1) < 0x31) {
-                    var_s5 = temp_s2 + 1;
-                    if (temp_fp != 0) {
-                        vs_battle_rMemzero(temp_s3_2, 0x20);
-                        temp_s3_2->index = var_s5;
-                        temp_s3_2->blade = func_800FEB94(
-                            (var_s5 << 8) | 0x11, arg1, temp_s4->blade - 1, arg3);
-                        temp_s3_2->grip = func_800FEB94(
-                            (var_s5 << 8) | 0x12, arg1, temp_s4->grip - 1, arg3);
+                if ((vs_mainMenu_getItemCount(itemCategoryGem, targetInventory)
+                        + gemCount)
+                    < 49) {
+                    index = emptySlot + 1;
+                    if (write != 0) {
+                        vs_battle_rMemzero(target, sizeof *target);
+                        target->index = index;
+                        target->blade = vs_mainMenu_copyItem(
+                            (index << 8) | itemCategoryBlade | copyItemFlagsWrite,
+                            targetInventory, source->blade - 1, sourceInventory);
+                        target->grip = vs_mainMenu_copyItem(
+                            (index << 8) | itemCategoryGrip | copyItemFlagsWrite,
+                            targetInventory, source->grip - 1, sourceInventory);
 
                         for (i = 0; i < 3; ++i) {
-                            if (temp_s4->gems[i] != 0) {
-                                temp_s3_2->gems[i] = func_800FEB94((var_s5 << 8) | 0x15,
-                                    arg1, temp_s4->gems[i] - 1, arg3);
+                            if (source->gems[i] != 0) {
+                                target->gems[i] = vs_mainMenu_copyItem(
+                                    (index << 8) | 0x15, targetInventory,
+                                    source->gems[i] - 1, sourceInventory);
                             }
                         }
-                        vs_battle_rMemcpy(temp_s3_2->name, temp_s4->name, 0x18);
+                        vs_battle_rMemcpy(target->name, source->name, 0x18);
                     }
                 }
             }
         }
         break;
     }
-    case 1: {
-        vs_battle_inventoryBlade* source = &arg3->blades[arg2];
-        vs_battle_inventoryBlade* target = &arg1->blades[temp_s2];
-        if (temp_s7 != 0x10) {
-            var_s5 = temp_s2 + 1;
-            if (temp_fp != 0) {
+    case itemCategoryBlade: {
+        vs_battle_inventoryBlade* source = &sourceInventory->blades[sourceItemIndex];
+        vs_battle_inventoryBlade* target = &targetInventory->blades[emptySlot];
+        if (itemCount != 0x10) {
+            index = emptySlot + 1;
+            if (write != 0) {
                 vs_battle_copyAligned(target, source, sizeof *target);
-                target->index = var_s5;
-                target->assembledWeaponIndex = temp_s3;
+                target->index = index;
+                target->assembledWeaponIndex = parentIndex;
             }
         }
         break;
     }
-    case 2: {
-        vs_battle_inventoryGrip* source = &arg3->grips[arg2];
-        vs_battle_inventoryGrip* target = &arg1->grips[temp_s2];
-        if (temp_s7 != 0x10) {
-            var_s5 = temp_s2 + 1;
-            if (temp_fp != 0) {
+    case itemCategoryGrip: {
+        vs_battle_inventoryGrip* source = &sourceInventory->grips[sourceItemIndex];
+        vs_battle_inventoryGrip* target = &targetInventory->grips[emptySlot];
+        if (itemCount != 0x10) {
+            index = emptySlot + 1;
+            if (write != 0) {
                 vs_battle_copyAligned(target, source, sizeof *target);
-                target->index = var_s5;
-                target->assembledWeaponIndex = temp_s3;
+                target->index = index;
+                target->assembledWeaponIndex = parentIndex;
             }
         }
         break;
     }
-    case 3: {
-        vs_battle_inventoryShield* target = &arg3->shields[arg2];
-        vs_battle_inventoryShield* source = &arg1->shields[temp_s2];
-        if (temp_s7 != 8) {
-            var_s1 = 0;
+    case itemCategoryShield: {
+        vs_battle_inventoryShield* target = &sourceInventory->shields[sourceItemIndex];
+        vs_battle_inventoryShield* source = &targetInventory->shields[emptySlot];
+        if (itemCount != 8) {
+            gemCount = 0;
             for (i = 0; i < 3; ++i) {
                 if (target->gems[i] != 0) {
-                    ++var_s1;
+                    ++gemCount;
                 }
             }
-            if ((vs_mainMenu_getItemCount(5, arg1) + var_s1) < 49) {
-                var_s5 = temp_s2 + 1;
-                if (temp_fp != 0) {
+            if ((vs_mainMenu_getItemCount(5, targetInventory) + gemCount) < 49) {
+                index = emptySlot + 1;
+                if (write != 0) {
                     vs_battle_rMemzero(source, 0x30);
                     vs_battle_copyAligned(
                         &source->base, &target->base, sizeof source->base);
-                    source->index = var_s5;
+                    source->index = index;
                     for (i = 0; i < 3; ++i) {
                         if (target->gems[i] != 0) {
-                            source->gems[i] = func_800FEB94(((var_s5 | 0x80) << 8) | 0x15,
-                                arg1, target->gems[i] - 1, arg3);
+                            source->gems[i] = vs_mainMenu_copyItem(
+                                ((index | 0x80) << 8) | itemCategoryGem
+                                    | copyItemFlagsWrite,
+                                targetInventory, target->gems[i] - 1, sourceInventory);
                         }
                     }
                 }
@@ -1201,35 +1206,35 @@ int func_800FEB94(
         }
         break;
     }
-    case 4: {
-        vs_battle_inventoryArmor* source = &arg3->armor[arg2];
-        vs_battle_inventoryArmor* target = &arg1->armor[temp_s2];
-        if (temp_s7 != 16) {
-            var_s5 = temp_s2 + 1;
-            if (temp_fp != 0) {
+    case itemCategoryArmor: {
+        vs_battle_inventoryArmor* source = &sourceInventory->armor[sourceItemIndex];
+        vs_battle_inventoryArmor* target = &targetInventory->armor[emptySlot];
+        if (itemCount != 16) {
+            index = emptySlot + 1;
+            if (write != 0) {
                 vs_battle_copyAligned(target, source, sizeof *target);
-                target->index = var_s5;
+                target->index = index;
             }
         }
         break;
     }
-    case 5: {
-        vs_battle_inventoryGem* source = &arg3->gems[arg2];
-        vs_battle_inventoryGem* target = &arg1->gems[temp_s2];
-        if (temp_s7 != 0x30) {
-            var_s5 = temp_s2 + 1;
-            if (temp_fp != 0) {
+    case itemCategoryGem: {
+        vs_battle_inventoryGem* source = &sourceInventory->gems[sourceItemIndex];
+        vs_battle_inventoryGem* target = &targetInventory->gems[emptySlot];
+        if (itemCount != 0x30) {
+            index = emptySlot + 1;
+            if (write != 0) {
                 vs_battle_copyAligned(target, source, sizeof *target);
-                target->index = var_s5;
-                target->setItemIndex = temp_s3;
+                target->index = index;
+                target->setItemIndex = parentIndex;
             }
         }
         break;
     }
-    case 6: {
-        vs_battle_inventoryMisc* source = &arg3->misc[arg2];
-        vs_battle_inventoryMisc* target = arg1->misc;
-        var_s1_3 = source->count;
+    case itemCategoryMisc: {
+        vs_battle_inventoryMisc* source = &sourceInventory->misc[sourceItemIndex];
+        vs_battle_inventoryMisc* target = targetInventory->misc;
+        int count = source->count;
         vs_mainMenu_rebuildInventory(6);
 
         for (i = 0; i < 0x40; ++i) {
@@ -1242,39 +1247,39 @@ int func_800FEB94(
             if (temp_a0->id != source->id)
                 continue;
 
-            if (temp_fp != 0) {
+            if (write != 0) {
                 int space_left = 100 - temp_a0->count;
-                if (space_left >= var_s1_3) {
-                    temp_a0->count += var_s1_3;
-                    var_s1_3 = 0;
+                if (space_left >= count) {
+                    temp_a0->count += count;
+                    count = 0;
                 } else {
-                    var_s1_3 = var_s1_3 + (temp_a0->count - 100);
+                    count = count + (temp_a0->count - 100);
                     temp_a0->count = 100;
                 }
             } else {
-                var_s1_3 = var_s1_3 - (100 - temp_a0->count);
-                if (var_s1_3 < 0) {
-                    var_s1_3 = 0;
+                count = count - (100 - temp_a0->count);
+                if (count < 0) {
+                    count = 0;
                 }
             }
         }
 
-        if (var_s1_3 == 0) {
-            var_s5 = 1;
+        if (count == 0) {
+            index = 1;
             break;
         }
 
-        if (temp_s7 != 0x40) {
-            var_s5 = temp_s2 + 1;
-            if (temp_fp != 0) {
-                target[temp_s2].id = source->id;
-                target[temp_s2].count = var_s1_3;
+        if (itemCount != 0x40) {
+            index = emptySlot + 1;
+            if (write != 0) {
+                target[emptySlot].id = source->id;
+                target[emptySlot].count = count;
             }
         }
         break;
     }
     }
-    return var_s5;
+    return index;
 }
 
 char D_80102214[] = { 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xF3, 0xF4, 0xF5,

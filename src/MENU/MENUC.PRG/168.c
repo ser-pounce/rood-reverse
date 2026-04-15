@@ -1042,7 +1042,7 @@ static int _assembleMenu(int arg0)
         func_800C8E04(1);
         _pushSelectionHistory(5);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        _combiningItem = vs_mainMenu_getFirstItem(0, NULL);
+        _combiningItem = vs_mainMenu_getFirstEmptyItemSlot(0, NULL);
         bladeToAssemble = 0;
         gripToAssemble = 0;
         *(int*)gemInfo = 0;

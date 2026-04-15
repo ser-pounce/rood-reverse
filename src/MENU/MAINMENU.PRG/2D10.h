@@ -5,14 +5,15 @@
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
 void func_800FDEBC(void);
-int func_800FEB94(
+enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
+int vs_mainMenu_copyItem(
     int arg0, vs_battle_inventory_t* arg1, int arg2, vs_battle_inventory_t* arg3);
 void vs_mainMenu_unequipAllWeapons(void);
 void vs_mainMenu_unequipShield(void);
 void vs_mainMenu_initItem(int, int);
 int vs_mainMenu_ensureItemNamesLoaded(void);
 int vs_mainMenu_getItemCount(int itemCategory, vs_battle_inventory_t* inventory);
-int vs_mainMenu_getFirstItem(int, vs_battle_inventory_t*);
+int vs_mainMenu_getFirstEmptyItemSlot(int, vs_battle_inventory_t*);
 void vs_mainMenu_initSortUi(int, int, char**, int*);
 int func_800FF348(void);
 int vs_mainMenu_getSelectedItemAction(void);

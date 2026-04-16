@@ -176,6 +176,7 @@ int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
 u_short func_800BB788(func_800BB68C_t* arg0);
 void func_800BBE10(u_short);
+void func_800BBE04(int arg0);
 void func_800BBE94(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
@@ -186,6 +187,8 @@ void func_800BDF6C(func_800BDF6C_t* arg0);
 void func_800BE180(void);
 void func_800BE36C(int, int);
 void func_800BE3A0(void);
+void func_800BE3D0(char arg0);
+void func_800BE5A4(short arg0);
 VECTOR* func_800BE628(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* func_800BE66C(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 static int _fixedPointMult(int a, int b);
@@ -208,6 +211,8 @@ extern char D_800E9BE0[];
 extern char D_800E9BE8[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
+extern void D_800E9B5C;
+extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
 extern u_char D_800E9C28;
@@ -2385,7 +2390,87 @@ void func_800BAF6C(short arg0)
     func_8007D15C(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BB028);
+int func_800BB028(u_char* arg0, short arg1)
+{
+    char sp10[32];
+
+    switch (arg0[1]) {
+    case 0:
+        func_8007C8F8(arg0[2]);
+        break;
+    case 1:
+        if (D_800F4BF8 != 0) {
+            if (func_8007B9FC() != 0) {
+                return 1;
+            }
+            vs_battle_setStateFlag(0xB6, 0);
+            D_800F4BF8 = 0;
+            vs_main_showEndingAndReturnToTitle();
+            break;
+        }
+        vs_battle_setStateFlag(0xB6, 3);
+        func_8007B9A0();
+        D_800F4BF8 = 1;
+        return 1;
+    case 2:
+        D_800F4C68 = 1;
+        break;
+    case 3:
+        if (vs_battle_isSkillUnlocked(arg0[2]) != 0) {
+            vs_battle_setStateFlag(0xB1, 0);
+        } else {
+            vs_battle_setSkillUnlocked(arg0[2]);
+            vs_battle_setStateFlag(0xB1, 1);
+        }
+        break;
+    case 4:
+        vs_battle_setStateFlag(0xB1, func_8007CF80(4));
+        break;
+    case 5:
+        func_800BAF6C(arg0[2]);
+        break;
+    case 6:
+        vs_main_freeHeapR(D_800F4C24);
+        break;
+    case 7:
+        func_800BBE04(arg0[2]);
+        break;
+    case 8:
+        func_8007BD3C(arg0[2]);
+        break;
+    case 9:
+        func_800BE3D0(arg0[2]);
+        break;
+    case 10:
+        func_8007CE74(D_800E9C00[arg0[2]]);
+        break;
+    case 11:
+        func_800BE5A4(arg0[2]);
+        break;
+    case 12:
+        func_8008D5A0(arg0[2]);
+        break;
+    case 13:
+        func_8008C40C();
+        break;
+    case 14:
+        func_8008D594(arg0[2]);
+        break;
+    case 15:
+        func_800F9DE8(arg0[2]);
+        break;
+    case 16:
+        D_800F4C64 = (long)(arg0 + 6);
+        return (long)&D_800E9B5C;
+    case 17:
+        func_8007C4D4();
+        break;
+    default:
+        sprintf(sp10, "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
+        break;
+    }
+    return 0;
+}
 
 int func_800BB288(u_char* arg0, short arg1)
 {

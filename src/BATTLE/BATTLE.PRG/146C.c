@@ -6113,7 +6113,7 @@ void func_8007C8A4(int arg0, int arg1)
 
 int func_8007C8F0(void) { return 0; }
 
-int func_8007C8F8(short arg0)
+int func_8007C8F8(int arg0)
 {
     func_8007C8F8_t sp10;
 
@@ -6325,7 +6325,7 @@ int func_8007CF18(int arg0)
 
 vs_battle_actor* func_8007CF64(int actorId) { return vs_battle_actors[actorId]; }
 
-u_int func_8007CF80(int arg0)
+int func_8007CF80(int arg0)
 {
     u_int i;
     u_int var_a2;
@@ -6425,7 +6425,7 @@ void func_8007D260(int arg0)
     func_8009DC38(arg0);
 }
 
-u_int func_8007D2B4(u_int arg0)
+int vs_battle_isSkillUnlocked(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
         return vs_main_skills[arg0].unlocked;
@@ -6433,7 +6433,7 @@ u_int func_8007D2B4(u_int arg0)
     return 0;
 }
 
-void func_8007D2FC(u_int arg0)
+void vs_battle_setSkillUnlocked(u_int arg0)
 {
     if ((arg0 - 1) < 0xFF) {
         vs_main_skills[arg0].unlocked = 1;

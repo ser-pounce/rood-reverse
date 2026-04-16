@@ -13,7 +13,8 @@ battle.prg_cdk := $(patsubst %, $(buildDir)/%.o, 30D14 3A1A0 40564 44F14)
 $(battle.prg_cdk): CC1VER := 2.7.2-cdk
 
 $(buildDir)/146C.o: CC1FLAGS += -Wno-return-type -Wno-uninitialized
-$(buildDir)/4A0A8.o: CC1FLAGS += -Wno-return-type
+$(buildDir)/4A0A8.o: CC1FLAGS += -Wno-return-type -Wno-uninitialized
+$(buildDir)/573B8.o: CC1FLAGS += -Wno-return-type
 $(buildDir)/5BF94.o: CC1FLAGS += -Wno-return-type
 
 $(configDir)/link.d: \

@@ -2134,7 +2134,7 @@ void func_8006CE70(func_8006CE70_t* arg0)
         temp_v0_2 = func_8008E370(&sp10);
         if ((temp_v0_2[arg0->unk6 & 0xF].unkC < new_var2)
             && (temp_v0_2[arg0->unk6 & 0xF].unkC >= 2)
-            && !func_800BEBF4(temp_v0_2[arg0->unk6 & 0xF].unk10 + 0x3C0)
+            && !vs_battle_getStateFlag(temp_v0_2[arg0->unk6 & 0xF].unk10 + 0x3C0)
             && (func_8007F434() != 0)) {
             temp_v0_2[arg0->unk6 & 0xF].unkC = 0;
             vs_main_playSfxDefault(0x7E, 0x3F);
@@ -3031,7 +3031,7 @@ void func_8006FA20(void)
 
 void func_8006FB48(void)
 {
-    if (func_800BEBF4(0xAB) > 2) {
+    if (vs_battle_getStateFlag(0xAB) > 2) {
         if (_lootListHead != NULL) {
             func_800CB158(_lootListHead);
             D_800F196C = 2;
@@ -3615,7 +3615,7 @@ int func_80073AFC(func_8008C1C8_t* arg0)
                     }
                     arg0->unk0.unk8.u8[0] = 0;
                     var_s1 = 2;
-                } else if (func_800BEBF4(arg0->unkC + 0x1B6)) {
+                } else if (vs_battle_getStateFlag(arg0->unkC + 0x1B6)) {
                     arg0->unk0.unk8.u8[0] = 0;
                     var_s1 = 3;
                 }
@@ -3701,7 +3701,7 @@ void func_80073E30(func_8008C1C8_t* arg0, int arg1)
         break;
     case 1:
     case 3:
-        if (!func_800BEBF4(arg0->unkE + 0x1B6)) {
+        if (!vs_battle_getStateFlag(arg0->unkE + 0x1B6)) {
             if (vs_battle_itemIdIsInInventory(arg0->unkE) == 0) {
                 break;
             }
@@ -4049,7 +4049,7 @@ func_8008D710_t* func_80074950(int arg0)
     temp_v0 = func_8008D508(s1[0], s1[2], s1[1]);
 
     if ((temp_v0 != NULL) && (temp_v0->unk12 == temp_s2)) {
-        if (!func_800BEBF4((temp_v0->unk10 + 0x3C0))) {
+        if (!vs_battle_getStateFlag((temp_v0->unk10 + 0x3C0))) {
             int v = ((func_8008DC7C((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
                         >> 0x11)
                   + 0x60;
@@ -5506,8 +5506,8 @@ void func_8007B4C4(void)
 
 void func_8007B508(void)
 {
-    if (!(func_800BEBF4(0xB6)) || ((func_800BEBF4(0xB6)) == 2)
-        || ((func_800BEBF4(0xB6)) == 3)) {
+    if (!(vs_battle_getStateFlag(0xB6)) || ((vs_battle_getStateFlag(0xB6)) == 2)
+        || ((vs_battle_getStateFlag(0xB6)) == 3)) {
         if (_isArtOrAbilityUnlocked() != 0) {
             _cameraMode = 5;
             if (D_800F1864 != 0) {
@@ -5555,7 +5555,7 @@ void func_8007B63C(void)
 
 void func_8007B764(void)
 {
-    if ((func_800BEBF4(0xAB)) >= 3) {
+    if ((vs_battle_getStateFlag(0xAB)) >= 3) {
         if (_lootListHead != NULL) {
             func_800CB158(_lootListHead);
             _cameraMode = 4;
@@ -5570,7 +5570,7 @@ void func_8007B764(void)
 
 void func_8007B7DC()
 {
-    if (func_800BEBF4(0xAB) >= 3) {
+    if (vs_battle_getStateFlag(0xAB) >= 3) {
         func_800CB23C();
         _cameraMode = 3;
         func_8007B410();
@@ -8981,7 +8981,8 @@ void func_80085390(
         int temp_s0;
         vs_battle_actors[arg2->unk0]->unk29 = 1;
         temp_s0 = vs_battle_characterState->equippedWeaponCategory % 10;
-        if ((func_800BEBF4(0x82) >= 0xA) && (vs_main_artsStatus.artsLearned[temp_s0] < 4)
+        if ((vs_battle_getStateFlag(0x82) >= 0xA)
+            && (vs_main_artsStatus.artsLearned[temp_s0] < 4)
             && (vs_main_artsStatus.kills.weaponCategories[temp_s0]
                 < vs_main_artsPointsRequirements[temp_s0][vs_main_artsStatus
                                                               .artsLearned[temp_s0]])) {
@@ -10482,7 +10483,7 @@ void func_8008D710(void)
         for (i = 0; i < temp_s4; ++i, ++var_s3) {
             temp_s0 = func_8008B764(
                 (u_int)var_s3->unk0, (u_int)var_s3->unk2, (int)var_s3->unk4);
-            if (func_800BEBF4((short)(var_s3->unk10 + 0x3C0))) {
+            if (vs_battle_getStateFlag((short)(var_s3->unk10 + 0x3C0))) {
                 var_s3->unk8 = 1;
                 func_80093824(var_s3->unk6);
                 if (temp_s0 != NULL) {

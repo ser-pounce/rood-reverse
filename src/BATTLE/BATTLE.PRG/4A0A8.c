@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <stddef.h>
+#include <abs.h>
 
 typedef struct {
     char unk0;
@@ -805,18 +806,21 @@ int func_800B7218(u_char* arg0, short arg1)
     int temp_s0 = vs_battle_getShort(arg0 + 2) & 0x3FF;
     switch (arg0[3] >> 6) {
     case 0:
-        vs_battle_stringContext.integers[arg0[1]] = func_800BEBF4(temp_s0);
+        vs_battle_stringContext.integers[arg0[1]] = vs_battle_getStateFlag(temp_s0);
         break;
     case 1:
-        vs_battle_stringContext.integers[arg0[1]] = (signed char)func_800BEBF4(temp_s0);
+        vs_battle_stringContext.integers[arg0[1]] =
+            (signed char)vs_battle_getStateFlag(temp_s0);
         break;
     case 2:
         vs_battle_stringContext.integers[arg0[1]] =
-            func_800BEBF4(temp_s0) | ((func_800BEBF4(temp_s0 + 1)) << 8);
+            vs_battle_getStateFlag(temp_s0)
+            | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8);
         break;
     case 3:
         vs_battle_stringContext.integers[arg0[1]] =
-            (short)(func_800BEBF4(temp_s0) | ((func_800BEBF4(temp_s0 + 1)) << 8));
+            (short)(vs_battle_getStateFlag(temp_s0)
+                    | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8));
         break;
     }
     return 0;
@@ -1370,7 +1374,8 @@ int func_800B884C(u_char* arg0, short arg1)
 
 int func_800B88D4(u_char* arg0, short arg1)
 {
-    char temp_a0 = func_800BEBF4(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 =
+        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
     char temp_a1 = arg0[3];
     int temp_v1 = arg0[1] & 0xF0;
 
@@ -1416,8 +1421,9 @@ int func_800B88D4(u_char* arg0, short arg1)
 
 int func_800B8A10(u_char* arg0, short arg1)
 {
-    char temp_s0 = func_800BEBF4(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a0 = func_800BEBF4(arg0[3] | ((arg0[2] & 3) << 8));
+    char temp_s0 =
+        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 = vs_battle_getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
 
     switch (arg0[1] & 0xF0) {
     case 0:
@@ -1466,7 +1472,7 @@ int func_800B8B90(u_char* arg0, short arg1)
 
 int func_800B8BC4(u_char* arg0, short arg1)
 {
-    D_800F4BB4 = func_800BEBF4(vs_battle_getShort(arg0 + 1));
+    D_800F4BB4 = vs_battle_getStateFlag(vs_battle_getShort(arg0 + 1));
     return 0;
 }
 
@@ -1517,25 +1523,25 @@ int func_800B8D50(u_char* arg0, short arg1)
 
     switch (temp_a1 & 0xF0) {
     case 0x0:
-        vs_battle_setStateFlag(temp_s0, temp_s1 + func_800BEBF4(temp_s0));
+        vs_battle_setStateFlag(temp_s0, temp_s1 + vs_battle_getStateFlag(temp_s0));
         break;
     case 0x10:
-        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) - temp_s1);
+        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) - temp_s1);
         break;
     case 0x20:
-        vs_battle_setStateFlag(temp_s0, temp_s1 * func_800BEBF4(temp_s0));
+        vs_battle_setStateFlag(temp_s0, temp_s1 * vs_battle_getStateFlag(temp_s0));
         break;
     case 0x30:
-        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) / temp_s1);
+        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) / temp_s1);
         break;
     case 0x40:
-        vs_battle_setStateFlag(temp_s0, func_800BEBF4(temp_s0) % temp_s1);
+        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) % temp_s1);
         break;
     case 0x50:
-        vs_battle_setStateFlag(temp_s0, temp_s1 & func_800BEBF4(temp_s0));
+        vs_battle_setStateFlag(temp_s0, temp_s1 & vs_battle_getStateFlag(temp_s0));
         break;
     case 0x60:
-        vs_battle_setStateFlag(temp_s0, temp_s1 | func_800BEBF4(temp_s0));
+        vs_battle_setStateFlag(temp_s0, temp_s1 | vs_battle_getStateFlag(temp_s0));
         break;
     case 0x70:
         vs_battle_setStateFlag(temp_s0, temp_s1);
@@ -1544,7 +1550,58 @@ int func_800B8D50(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B8EDC);
+int func_800B8EDC(u_char* arg0, short arg1)
+{
+    int tmp;
+    char prev;
+
+    int flag0 = (arg0[2] >> 2) + ((arg0[1] & 0xF) << 6);
+    int flag1 = arg0[3] + ((arg0[2] & 3) << 8);
+
+    switch (arg0[1] & 0xF0) {
+    case 0x0:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) + vs_battle_getStateFlag(flag1));
+        break;
+    case 0x10:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1));
+        break;
+    case 0x20:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) * vs_battle_getStateFlag(flag1));
+        break;
+    case 0x30:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) / vs_battle_getStateFlag(flag1));
+        break;
+    case 0x40:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) % vs_battle_getStateFlag(flag1));
+        break;
+    case 0x50:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) & vs_battle_getStateFlag(flag1));
+        break;
+    case 0x60:
+        vs_battle_setStateFlag(
+            flag0, vs_battle_getStateFlag(flag0) | vs_battle_getStateFlag(flag1));
+        break;
+    case 0x70:
+        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        break;
+    case 0x80:
+        tmp = vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1);
+        vs_battle_setStateFlag(flag0, ABS(tmp));
+        break;
+    case 0x90:
+        prev = vs_battle_getStateFlag(flag0);
+        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag1, prev);
+        break;
+    }
+    return 0;
+}
 
 int func_800B9170(u_char* arg0, short arg1)
 {
@@ -2936,8 +2993,8 @@ void func_800BE3D0(char arg0)
     u_char temp_s3;
     int new_var;
 
-    temp_s3 = func_800BEBF4(0xAF);
-    temp_s0 = func_800BEBF4(0xB0);
+    temp_s3 = vs_battle_getStateFlag(0xAF);
+    temp_s0 = vs_battle_getStateFlag(0xB0);
     new_var = temp_s3 - 1;
     func_8007CD70(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
 
@@ -3153,7 +3210,7 @@ void func_800BEB9C(int arg0)
 
 void func_800BEBEC(void) { }
 
-char func_800BEBF4(short arg0)
+char vs_battle_getStateFlag(short arg0)
 {
     char* flags = (char*)&vs_main_stateFlags;
     return flags[arg0];

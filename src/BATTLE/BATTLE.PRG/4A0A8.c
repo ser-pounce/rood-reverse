@@ -2787,7 +2787,60 @@ void func_800BBE94(void)
     D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBF14);
+void func_800BBF14(void)
+{
+    VECTOR sp10;
+    VECTOR sp20;
+    SVECTOR* vec;
+
+    if (D_800F4BA0 != 0) {
+        func_8007CD70(&sp20, &sp10, -1, -1);
+        _copyVector(&D_800F4BA4->unk0[0].unk94, &sp10);
+        _copyVector(&D_800F4BA4->unk0[1].unk94, &sp20);
+    } else {
+        _copyVector(&sp10, &D_800F4BA4->unk0[0].unk94);
+        _copyVector(&sp20, &D_800F4BA4->unk0[1].unk94);
+        if (D_800F4BA4->unk1E8 != 0x2000) {
+            func_800BE628(&sp10, &sp10, &D_800F4BA4->unk1EC);
+            func_800BE628(&sp20, &sp20, &D_800F4BA4->unk1EC);
+        }
+    }
+    if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
+        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
+        _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
+        vec = (SVECTOR*)0x1F800088;
+        vec[10].vz = 0;
+        vec[10].vx = 0;
+        vec[10].vy = func_800BE878(sp10.vx - sp20.vx, sp10.vz - sp20.vz);
+        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8);
+        func_800BE628(&sp10, &sp10, (VECTOR*)0x1F800098);
+        func_800BE628(&sp20, &sp20, (VECTOR*)0x1F8000A8);
+    }
+    vs_battle_setCameraLookAt(&sp10);
+    vs_battle_setCameraPosition(&sp20);
+    if (D_800F4BA4->unk168.unk0 != 0) {
+        func_8007AC94(D_800F4BA4->unk168.unk2);
+        D_800F4BA4->unk168.unk0 = 0;
+    }
+    if (D_800F4BA4->unk174.unk0 != 0) {
+        func_8007DDAC(D_800F4BA4->unk174.unk2);
+        D_800F4BA4->unk174.unk0 = 0;
+    }
+    if (D_800F4BA4->unk180.unk0 != 0) {
+        vs_battle_setProjectionDistance(D_800F4BA4->unk180.unk2);
+        D_800F4BA4->unk180.unk0 = 0;
+    }
+    if (D_800F4BA4->unk18C.unk0 != 0) {
+        vs_battle_setNearClip(D_800F4BA4->unk18C.unk2);
+        D_800F4BA4->unk18C.unk0 = 0;
+    }
+    if (D_800F4BA4->unk198.unk0 != 0) {
+        func_8007CD14(D_800F4BA4->unk198.unk2, D_800F4C6A);
+        D_800F4BA4->unk198.unk0 = 0;
+    }
+}
 
 void func_800BC1CC(short arg0, int arg1)
 {

@@ -577,7 +577,8 @@ void func_8007C0AC(int, int);
 int func_8007C4E0(D_80061068_t*, int, int);
 int func_8007C5C0(D_80061068_t*, int, int);
 int func_8007C694(int, int, int, int, int);
-void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
+void vs_battle_initialiseCameraFromSpherical(
+    VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
@@ -3563,7 +3564,7 @@ void func_800738E4(void)
     }
 
     func_80093A14();
-    func_8007CD14(0x1000, 1);
+    vs_battle_setFarClip(0x1000, 1);
     func_8007AC94(0);
     func_8007BD8C(0);
     if (vs_main_soundData.unk4 == 0xFFFF) {
@@ -4869,7 +4870,8 @@ int _isLookAtAtDestination(void)
 
 void func_80077EC4(void)
 {
-    func_8007CD70(&_camera.t2.position, &_camera.t2.lookAt, -1, -1);
+    vs_battle_initialiseCameraFromSpherical(
+        &_camera.t2.position, &_camera.t2.lookAt, -1, -1);
     _camera.t2.farClip = 0x1000;
     _camera.t2.unk5C = 0;
     _camera.t2.yaw = 0;
@@ -6240,7 +6242,7 @@ void vs_battle_setProjectionDistance(int projectionDistance)
     SetGeomScreen(projectionDistance);
 }
 
-void func_8007CD14(int farClip, int arg1)
+void vs_battle_setFarClip(int farClip, int arg1)
 {
     _camera.t2.farClip = farClip;
 
@@ -6258,20 +6260,22 @@ void func_8007CD14(int farClip, int arg1)
     }
 }
 
-void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int mode)
+void vs_battle_initialiseCameraFromSpherical(
+    VECTOR* outputPos, VECTOR* outputLookAt, int facing, int mode)
 {
     func_8006EBF8_t sp10;
     int temp_v0;
     int var_v0;
 
-    if (arg2 != -1) {
-        var_v0 = arg2;
+    if (facing != -1) {
+        var_v0 = facing;
         temp_v0 = vs_battle_cameraCurrentSpherical.values.yaw;
-        if (arg2 < 0) {
-            var_v0 = arg2 + 7;
+        if (facing < 0) {
+            var_v0 = facing + 7;
         }
-        vs_battle_cameraCurrentSpherical.delta.pitch = (arg2 - ((var_v0 >> 3) * 8)) << 9;
-        vs_battle_cameraCurrentSpherical.values.yaw = (arg2 - ((var_v0 >> 3) * 8)) << 9;
+        vs_battle_cameraCurrentSpherical.delta.pitch = (facing - ((var_v0 >> 3) * 8))
+                                                    << 9;
+        vs_battle_cameraCurrentSpherical.values.yaw = (facing - ((var_v0 >> 3) * 8)) << 9;
     }
     if (mode == 1) {
         vs_battle_cameraCurrentSpherical.initialDistance = 0x600;
@@ -6283,11 +6287,12 @@ void func_8007CD70(VECTOR* arg0, VECTOR* arg1, int arg2, int mode)
         vs_battle_cameraCurrentSpherical.delta.mode = mode;
     }
     func_800A1108(0, &sp10);
-    arg1->vx = sp10.unk0.unk4.vx << 0xC;
-    arg1->vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
-    arg1->vz = sp10.unk0.unk4.vz << 0xC;
-    _clampPositionToZoneBounds(arg1, arg1);
-    _computeSphericalOffset(arg0, arg1, &vs_battle_cameraCurrentSpherical.values);
+    outputLookAt->vx = sp10.unk0.unk4.vx << 0xC;
+    outputLookAt->vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
+    outputLookAt->vz = sp10.unk0.unk4.vz << 0xC;
+    _clampPositionToZoneBounds(outputLookAt, outputLookAt);
+    _computeSphericalOffset(
+        outputPos, outputLookAt, &vs_battle_cameraCurrentSpherical.values);
 }
 
 void func_8007CE74(int arg0)
@@ -6482,7 +6487,7 @@ void func_8007DD50(int arg0)
     if (arg0 != 0) {
         D_800F1B98 = 1;
         if (D_800F1ABC == NULL) {
-            D_800F1ABC = vs_main_allocHeapR(0x2D0);
+            D_800F1ABC = vs_main_allocHeapR(sizeof *D_800F1ABC);
             func_8007D41C();
         }
     } else {

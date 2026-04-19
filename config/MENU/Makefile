@@ -1,14 +1,13 @@
 $(BUILD)/assets/MENU/GAMEOVER.BIN.png: imgWH := 24 128
-$(BUILD)/assets/MENU/SPMCIMG.BIN.png: imgWH := 448 256
 $(BUILD)/assets/MENU/MAPBG.BIN.png: imgWH := 320 240
 
-$(patsubst %, $(BUILD)/assets/MENU/%.BIN.png, SPMCIMG): $(BUILD)/assets/%.png: | $$(@D)/
-	$(ECHO) Converting data/$*
-	$(VPYTHON) -m tools.etc.clut8 data/$* $(imgWH) $@
+$(BUILD)/assets/MENU/SPMCIMG.BIN.png: | $$(@D)/
+	$(ECHO) Converting data/SPMCIMG.BIN
+	$(VPYTHON) -m tools.etc.spmcimg to-png data/MENU/SPMCIMG.BIN data/MENU/MCDATA.BIN $@
 
-$(patsubst %, $(BUILD)/data/MENU/%.BIN, SPMCIMG): $(BUILD)/data/%: $(BUILD)/assets/%.png | $$(@D)/
+$(BUILD)/data/MENU/SPMCIMG.BIN: $(BUILD)/assets/MENU/SPMCIMG.BIN.png | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.splat_ext.rgb8 $< $@
+	$(VPYTHON) -m tools.etc.spmcimg to-bin $< $@
 
 $(patsubst %, $(BUILD)/assets/MENU/%.BIN.png, MAPBG): $(BUILD)/assets/%.png: | $$(@D)/
 	$(ECHO) Converting data/$*

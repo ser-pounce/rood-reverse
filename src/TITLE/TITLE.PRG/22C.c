@@ -3115,7 +3115,7 @@ typedef struct {
 extern fontTable_t _fontTable[];
 extern u_long _debugFont[];
 extern uiTable_t _uiTable;
-extern menuBg_t _saveMenuBg;
+extern menuBg_t _saveMenuBg_clut;
 
 static int _gameLoadScreen(void)
 {
@@ -3135,13 +3135,13 @@ static int _gameLoadScreen(void)
     _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
     _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), &_saveMenuBg.clut, vs_getWH(256, 1));
+    _drawImage(vs_getXY(768, 227), &_saveMenuBg_clut.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), &_saveMenuBg.data, vs_getWH(96, 240));
+    _drawImage(vs_getXY(672, 256), &_saveMenuBg_clut.data, vs_getWH(96, 240));
     _initSaveScreen();
     state = init;
 
@@ -3317,13 +3317,13 @@ static void _gameSaveScreen(void)
     _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
     _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
     _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), &_saveMenuBg.clut, vs_getWH(256, 1));
+    _drawImage(vs_getXY(768, 227), &_saveMenuBg_clut.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), &_saveMenuBg.data, vs_getWH(96, 240));
+    _drawImage(vs_getXY(672, 256), &_saveMenuBg_clut.data, vs_getWH(96, 240));
     _initSaveScreen();
 
     state = init;
@@ -3501,38 +3501,12 @@ static int _decodeNextMovieFrame(MovieData_t* movie)
     return 0;
 }
 
-static short publisherClut[] = { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(2, 2, 2, 1),
-    vs_getRGB5551(4, 4, 4, 1), vs_getRGB5551(6, 6, 6, 1), vs_getRGB5551(8, 8, 8, 1),
-    vs_getRGB5551(10, 10, 10, 1), vs_getRGB5551(12, 12, 12, 1),
-    vs_getRGB5551(16, 16, 16, 1), vs_getRGB5551(17, 17, 17, 1),
-    vs_getRGB5551(19, 19, 19, 1), vs_getRGB5551(21, 21, 21, 1),
-    vs_getRGB5551(23, 23, 23, 1), vs_getRGB5551(25, 25, 25, 1),
-    vs_getRGB5551(27, 27, 27, 1), vs_getRGB5551(29, 29, 29, 1),
-    vs_getRGB5551(31, 31, 31, 1) };
-
 static char publisher[] = {
-#include "../../assets/TITLE/TITLE.PRG/publisher.rgb4.img.bin.dat"
+#include "../../assets/TITLE/TITLE.PRG/publisher.rgbClut.img.dat"
 };
 
 static char developer[] = {
-#include "../../assets/TITLE/TITLE.PRG/developer.rgb4.img.bin.dat"
-};
-
-static short developerClut[][16] = {
-    { vs_getRGB5551(0, 0, 0, 1), vs_getRGB5551(2, 2, 2, 0), vs_getRGB5551(3, 3, 3, 0),
-        vs_getRGB5551(5, 5, 6, 0), vs_getRGB5551(21, 1, 3, 0), vs_getRGB5551(9, 9, 9, 0),
-        vs_getRGB5551(21, 8, 8, 0), vs_getRGB5551(12, 12, 12, 0),
-        vs_getRGB5551(14, 14, 14, 0), vs_getRGB5551(17, 17, 17, 0),
-        vs_getRGB5551(20, 20, 20, 0), vs_getRGB5551(22, 22, 22, 0),
-        vs_getRGB5551(24, 24, 24, 0), vs_getRGB5551(26, 26, 26, 0),
-        vs_getRGB5551(29, 29, 29, 0), vs_getRGB5551(31, 31, 31, 0) },
-    { vs_getRGB5551(0, 0, 0, 1), vs_getRGB5551(2, 2, 2, 0), vs_getRGB5551(3, 3, 3, 0),
-        vs_getRGB5551(5, 5, 6, 0), vs_getRGB5551(21, 1, 3, 0), vs_getRGB5551(9, 9, 9, 0),
-        vs_getRGB5551(21, 8, 8, 0), vs_getRGB5551(12, 12, 12, 0),
-        vs_getRGB5551(14, 14, 14, 0), vs_getRGB5551(17, 17, 17, 0),
-        vs_getRGB5551(20, 20, 20, 0), vs_getRGB5551(22, 22, 22, 0),
-        vs_getRGB5551(24, 24, 24, 0), vs_getRGB5551(26, 26, 26, 0),
-        vs_getRGB5551(29, 29, 29, 0), vs_getRGB5551(31, 31, 31, 0) }
+#include "../../assets/TITLE/TITLE.PRG/developer.rgbClut.img.dat"
 };
 
 static u_short* _getNextMovieFrame(MovieData_t* movie)
@@ -3616,8 +3590,8 @@ static void _displayPublisherAndDeveloper()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(320, 64), publisherClut, vs_getWH(16, 1));
-    _drawImage(vs_getXY(320, 0), &publisherClut + 1, vs_getWH(256 / 4, 48));
+    _drawImage(vs_getXY(320, 64), publisher, vs_getWH(16, 1));
+    _drawImage(vs_getXY(320, 0), publisher + 32, vs_getWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;

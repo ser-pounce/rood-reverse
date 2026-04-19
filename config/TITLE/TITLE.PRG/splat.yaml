@@ -26,21 +26,17 @@ segments:
       - [0x9C1C, hasm, libpress/VLC_C]
       - [0x9F9C, c, libpress/BUILD]
       - [0xA08C, .data, 22C]
-      - {start: 0xA72C, type: rgb4, name: publisher, width: 256, height: 48, linker_entry: false}
-      - {start: 0xBF2C, type: rgb4, name: developer, width: 128, height: 13, linker_entry: false}
+      - {start: 0xA70C, type: rgbClut, name: publisher, width: 256, height: 48, cluts_before: 1, linker_entry: false}
+      - {start: 0xBF2C, type: rgbClut, name: developer, width: 128, height: 13, cluts_after: 2, linker_entry: false}
       - [0xD344, .data, libpress/LIBPRESS]
       - [0xD494, .data, libpress/VLC_C]
       - [0xD4C4, .data, libpress/BUILD]
       - [0xE2D4, rgba16Compressed, _titleScreenBg, 544, 576]
       - [0x449A8, rgba16, _menuCopyright, 180, 24]
-      - [0x46B68, rgb4, _fontTable, 256, 220]
-      - [0x4D968, rgba16, _fontTable0Clut, 16, 16]
-      - [0x4DB68, rgb4, _fontTable1, 256, 220]
-      - [0x54968, rgba16, _fontTable1Clut, 16, 16]
-      - [0x54B68, rgb4, _debugFont, 256, 154]
-      - [0x59868, rgba16, _debugFontClut, 16, 16]
-      - [0x59A68, rgb4, _uiTable, 256, 480]
-      - [0x68A68, rgba16, _saveMenuBg, 256, 1]
-      - [0x68C68, rgb8, _saveMenuBgData, 192, 240]
+      - {start: 0x46B68, type: rgbClut, name: _fontTable, width: 256, height: 220, cluts_after: 16, plte_clut: 14 }
+      - {start: 0x4DB68, type: rgbClut, name: _fontTable1, width: 256, height: 220, cluts_after: 16, plte_clut: 8 }
+      - {start: 0x54B68, type: rgbClut, name: _debugFont, width: 256, height: 154 }
+      - {start: 0x59868, type: rgbClut, name: _uiTable, width: 256, height: 480, cluts_before: 16 }
+      - {start: 0x68A68, type: rgbClut, name: _saveMenuBg, width: 192, height: 240, cluts_before: 1, bitdepth: 8 }
       - [0x74068, .bss, 22C]
   - [0x87648]

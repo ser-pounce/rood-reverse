@@ -1,24 +1,40 @@
 import sys
 import ctypes
+from pathlib import Path
+from typing import Any
+
 from tools.splat_ext.img import PSXSegImg
 from tools.etc.rgba16 import to_rgba8888, to_png, to_bytes
 
 
-class Header(ctypes.LittleEndianStructure):
-    _fields_ = [
-        ("w", ctypes.c_uint16),
-        ("h", ctypes.c_uint16),
-    ]
-
 class PSXSegRgba16(PSXSegImg):
 
-    def split(self, rom_bytes):
-        path = self.make_path()
+    def split(self, rom_bytes: bytes) -> None:
         img = to_rgba8888(rom_bytes[self.rom_start:], self.width * self.height)
-        to_png(img, self.width, self.height, path)
+        to_png(img, self.width, self.height, self.make_path())
 
 
 if __name__ == '__main__':
-    data, _, _ = to_bytes(sys.argv[1])
-    with open(sys.argv[2], "wb") as f:
-        f.write(data)
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input',  type=Path, help='Input PNG file')
+    parser.add_argument('output', type=Path, help='Output file')
+    parser.add_argument('--dat',  action='store_true', help='Write a .dat text file instead of a .o object file')
+    args = parser.parse_args()
+
+    data, _, _  = to_bytes(str(args.input))
+    binary      = bytes(data)
+    symbol_name = args.input.name.split('.')[0]
+
+    if args.dat:
+        with open(args.output, 'w') as h:
+            for byte in binary:
+                h.write(f'0x{byte:02X},')
+    else:
+        PSXSegRgba16.write_object_file(
+            binary,
+            args.output,
+            [(symbol_name, 0)],
+            *PSXSegRgba16.objcopy_from_env(),
+        )

@@ -11,4 +11,4 @@ $(BUILD)/config/TITLE/TITLE.PRG/link.d: \
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/src/include/lbas.h $(BUILD)/assets/MENU/MCMAN.BIN.h \
 	$(addprefix $(BUILD)/assets/TITLE/TITLE.PRG/, \
 		_titleScreenBg.rgba16Compressed.img.o \
-		$(addsuffix .img.bin, publisher.rgb4 developer.rgb4))
+		$(addsuffix .img.dat, publisher.rgbClut developer.rgbClut))

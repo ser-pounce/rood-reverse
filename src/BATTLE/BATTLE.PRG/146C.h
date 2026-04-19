@@ -343,7 +343,7 @@ typedef struct {
 typedef struct {
     short unk0;
     short unk2;
-    signed char unk4;
+    signed char agilityDefenseBonus;
     char unk5;
     u_char nameIndex;
     char unk7;
@@ -413,12 +413,12 @@ typedef struct {
     u_int unk35 : 8;
     u_int unk36 : 8;
     u_int enemyClass : 3;
-    u_int unk37_3 : 5;
-    u_int unk38 : 8;
+    u_int reach : 5;
+    u_int currentRange : 8;
     u_int unk39 : 8;
     u_int unk3A : 8;
     u_int unk3B_0 : 3;
-    u_int unk3B_3 : 5;
+    u_int currentAttackShapeAngle : 5;
     vs_battle_uiWeapon weapon; // 0x3C
     vs_battle_uiShield shield; // 1C4
     vs_battle_uiAccessory accessory; // 328
@@ -761,7 +761,7 @@ typedef struct {
 typedef struct {
     u_short unk0;
     char unk2;
-    u_int unk3_0 : 5;
+    u_int reach : 5;
     u_int unk3_5 : 3;
     char name[24]; /* vs_string */
     short hp;

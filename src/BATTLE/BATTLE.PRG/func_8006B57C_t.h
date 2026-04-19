@@ -1,11 +1,11 @@
 #pragma once
 
 typedef struct {
-    char unk0;
+    char range;
     char unk1;
     char unk2;
-    char unk3_0 : 3;
-    char unk3_3 : 5;
+    char attackShape : 3;
+    char attackShapeAngle : 5;
 } vs_battle_range_t;
 
 typedef struct {

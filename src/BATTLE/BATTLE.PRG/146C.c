@@ -39,9 +39,9 @@ typedef struct {
 } func_8008418C_t;
 
 typedef struct {
-    u_char unk0;
-    signed char unk1;
-    char unk2;
+    u_char actorId;
+    signed char targetedBodyPart;
+    char hitThreshold;
     signed char unk3;
     short unk4;
     short unk6;
@@ -80,7 +80,7 @@ typedef struct {
     short unk3C;
     short unk3E;
     int unk40;
-} func_80085718_t;
+} _hitEntity_t;
 
 typedef struct {
     u_char unk0;
@@ -584,26 +584,26 @@ void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
 int vs_battle_itemIdIsInInventory(int);
-short func_8007E6A0(vs_skill_t*, vs_battle_actor2*, int);
-int func_8007F230(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
+short _getDefenseGemBuff(vs_skill_t*, vs_battle_actor2*, int);
+int _doesAttackHit(
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 int func_8007F434(void);
 int func_8007F4B0(int arg0, u_char* arg1);
 int _getEnemyClass(u_char*);
-void func_80080000(vs_skill_t*, func_80085718_t*, short);
-void func_800801E0(vs_skill_t*, func_80085718_t*, short);
+void func_80080000(vs_skill_t*, _hitEntity_t*, short);
+void func_800801E0(vs_skill_t*, _hitEntity_t*, short);
 void func_800802C4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_80080534(vs_skill_t*, vs_battle_uiEquipment*, int, int, int);
 void func_80080A9C(vs_skill_t* arg0, vs_battle_uiEquipment*, int, int, int);
-int func_80081020(int, func_80085718_t*);
-int func_800810CC(int, func_80085718_t*);
-short func_80081148(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int, int);
-short _calculateDamage(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
+int func_80081020(int, _hitEntity_t*);
+int func_800810CC(int, _hitEntity_t*);
+short func_80081148(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
+short _calculateDamage(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 int func_8008574C(u_int, vs_battle_actor2*, int);
-void func_80085008(func_80085718_t*);
+void func_80085008(_hitEntity_t*);
 void func_80085390(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4);
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, func_8008631C_t*, int);
 void func_80086754(int, vs_battle_actor2*);
 void func_800875C8(D_800F19CC_t3*);
@@ -696,12 +696,11 @@ extern int D_80068C1C[];
 extern char D_800E8184[];
 extern char _wepIdCategories[];
 extern u_char D_800E8200[];
-extern int (*D_800E8234[])(vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
-extern int (*D_800E8254[])(vs_skill_t*, char*);
+extern int (*_hitFunctions[])(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
+extern int (*_attackPrerequisiteFunctions[])(vs_skill_t*, char*);
 extern void (*_skillEffectMediators[])(
-    vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
-extern short (*_damageCalculators[])(
-    vs_skill_t*, func_80085718_t*, func_80085718_t*, int, int);
+    vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
+extern short (*_damageCalculators[])(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 extern int D_800E8498;
 extern short D_800E849C[];
 extern char D_800E84AC[][4];
@@ -1413,10 +1412,10 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
     }
 
     temp_a0 = vs_battle_characterState->unk3C;
-    temp_a0->unk38 = temp_a0->weapon.range.unk0 + temp_a0->unk37_3;
-    temp_a0->unk39 = temp_a0->weapon.range.unk1 + temp_a0->unk37_3;
-    temp_a0->unk3A = temp_a0->weapon.range.unk2 + temp_a0->unk37_3;
-    temp_a0->unk3B_3 = temp_a0->weapon.range.unk3_3;
+    temp_a0->currentRange = temp_a0->weapon.range.range + temp_a0->reach;
+    temp_a0->unk39 = temp_a0->weapon.range.unk1 + temp_a0->reach;
+    temp_a0->unk3A = temp_a0->weapon.range.unk2 + temp_a0->reach;
+    temp_a0->currentAttackShapeAngle = temp_a0->weapon.range.attackShapeAngle;
     temp_a0->unk3B_0 = 1;
 
     func_8006B214();
@@ -2005,7 +2004,8 @@ int func_8006C84C(int arg0)
     for (i = 0; i < temp_s0->unk4A; ++i) {
         if (temp_s0->unk4C[i].unk40 == 0) {
             if (temp_s0->unk0 < 0x28) {
-                if (((vs_main_skills[temp_s0->unk0].hitParams[0].prerequisites)) == 3) {
+                if (((vs_main_skills[temp_s0->unk0].hitParams[0].prerequisiteFunction))
+                    == 3) {
                     func_8006C4C4(temp_s0->unk0, &temp_s0->unk4C[i],
                         temp_s0->unk4C[i].unk0.unk.unk3);
                 } else {
@@ -4478,7 +4478,7 @@ void func_80076784(
     arg1->unk31 = arg1->unk2E = (arg2->walkSpeed * 9) / 10;
     arg1->unk33 = arg1->unk2F = (arg2->runSpeed * 9) / 10;
     arg1->enemyClass = arg2->unk3_5;
-    arg1->unk37_3 = arg2->unk3_0;
+    arg1->reach = arg2->reach;
     arg1->flags.fields.unk2_2 = arg2->unk23;
     arg1->unk34 = arg2->unk30;
     arg1->unk35 = arg2->unk31;
@@ -4486,17 +4486,17 @@ void func_80076784(
     arg1->flags.fields.unk2_0 = 0;
     arg1->flags.fields.unk2_1 = 0;
     vs_battle_applyWeaponStats(&arg1->weapon, &arg2->unk34);
-    arg1->unk38 = arg1->weapon.range.unk0 + arg1->unk37_3;
-    arg1->unk39 = arg1->weapon.range.unk1 + arg1->unk37_3;
-    arg1->unk3A = arg1->weapon.range.unk2 + arg1->unk37_3;
-    arg1->unk3B_3 = arg1->weapon.range.unk3_3;
+    arg1->currentRange = arg1->weapon.range.range + arg1->reach;
+    arg1->unk39 = arg1->weapon.range.unk1 + arg1->reach;
+    arg1->unk3A = arg1->weapon.range.unk2 + arg1->reach;
+    arg1->currentAttackShapeAngle = arg1->weapon.range.attackShapeAngle;
     arg1->unk3B_0 = 1;
     vs_battle_applyShieldStats(&arg1->shield, &arg2->unk140);
     _applyAccessoryStats(&arg1->accessory, &arg2->unk204);
 
     for (i = 0; i < 6; ++i) {
         arg1->bodyParts[i].unk0 = arg1->bodyParts[i].unk2 = arg2->unk238[i].hp;
-        arg1->bodyParts[i].unk4 = arg2->unk238[i].agilityDefenseBonus;
+        arg1->bodyParts[i].agilityDefenseBonus = arg2->unk238[i].agilityDefenseBonus;
 
         j = func_800A152C(arg0, i, 2);
 
@@ -4621,11 +4621,11 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     temp_s0->unk31 = 9;
     temp_s0->unk33 = 18;
     temp_s0->weapon.unk10B = 20;
-    temp_s0->weapon.range.unk0 = 5;
+    temp_s0->weapon.range.range = 5;
     temp_s0->weapon.range.unk1 = 4;
     temp_s0->weapon.range.unk2 = 5;
     temp_s0->flags.fields.unk2_0 = 0;
-    temp_s0->weapon.range.unk3_3 = 0;
+    temp_s0->weapon.range.attackShapeAngle = 0;
     temp_s1->unk27 = 128;
     temp_s1->unk29 = 0;
     temp_s1->defeated = 0;
@@ -6775,356 +6775,343 @@ int vs_battle_itemIdIsInInventory(int id)
     return 1;
 }
 
-short func_8007E5E0(vs_skill_t* skill, vs_battle_actor2* arg1)
+short _getAttackGemBuff(vs_skill_t* skill, vs_battle_actor2* actor)
 {
-    int var_a0;
-    int ret;
-    int i;
+    int hasGemBuff = 0;
+    int gemBuff = 0;
 
-    var_a0 = 0;
-    ret = 0;
-    if (vs_battle_actors[arg1->flags.fields.unk3]->unk20 & 1) {
+    if (vs_battle_actors[actor->flags.fields.unk3]->unk20 & 1) {
+        int i;
         if (skill->type == skillTypeSpell) {
-            var_a0 = 0;
+            hasGemBuff = 0;
             for (i = 0; i < 3; ++i) {
-                if (arg1->weapon.gems[i].gemEffects == 2) {
-                    var_a0 = 1;
+                if (actor->weapon.gems[i].gemEffects == 2) {
+                    hasGemBuff = 1;
                 }
             }
-
         } else {
-            var_a0 = 0;
+            hasGemBuff = 0;
             for (i = 0; i < 3; ++i) {
-                if (arg1->weapon.gems[i].gemEffects == 1) {
-                    var_a0 = 1;
+                if (actor->weapon.gems[i].gemEffects == 1) {
+                    hasGemBuff = 1;
                 }
             }
         }
-        if (var_a0 != 0) {
-            ret = 0x14;
+        if (hasGemBuff != 0) {
+            gemBuff = 20;
         }
     }
-    return ret;
+    return gemBuff;
 }
 
-short func_8007E6A0(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2)
+short _getDefenseGemBuff(vs_skill_t* skill, vs_battle_actor2* actor, int hitNumber)
 {
-    int var_t1;
-    int var_t0;
+    int hasGemBuff;
     int i;
 
-    var_t1 = 0;
-    if (vs_battle_actors[arg1->flags.fields.unk3]->unk20 & 1) {
-        var_t0 = 0;
-        if (arg0->type == 1) {
+    int gemBuff = 0;
+    if (vs_battle_actors[actor->flags.fields.unk3]->unk20 & 1) {
+        hasGemBuff = 0;
+        if (skill->type == 1) {
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 6) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 6) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
         } else {
-            u_int v = arg0->id;
+            u_int v = skill->id;
             if ((v < 40) || (((v - 54) & 0xFF) < 170)) {
-                var_t0 = 0;
+                hasGemBuff = 0;
                 for (i = 0; i < 3; ++i) {
-                    if (arg1->shield.gems[i].gemEffects == 5) {
-                        var_t0 = 1;
+                    if (actor->shield.gems[i].gemEffects == 5) {
+                        hasGemBuff = 1;
                     }
                 }
-                if (var_t0 != 0) {
-                    var_t1 += 20;
+                if (hasGemBuff != 0) {
+                    gemBuff += 20;
                 }
             }
         }
 
-        var_t0 = 0;
-        switch (arg0->hitParams[arg2].effect) {
+        hasGemBuff = 0;
+        switch (skill->hitParams[hitNumber].effect) {
         case 1:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0xB) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 11) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 2:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0xC) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 12) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 3:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0xD) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 13) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 5:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0xE) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 14) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 11:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0x10) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 16) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 15:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0x12) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 18) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 16:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0x13) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 19) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         case 17:
             for (i = 0; i < 3; ++i) {
-                if (arg1->shield.gems[i].gemEffects == 0x15) {
-                    var_t0 = 1;
+                if (actor->shield.gems[i].gemEffects == 21) {
+                    hasGemBuff = 1;
                 }
             }
-            if (var_t0 != 0) {
-                var_t1 += 20;
+            if (hasGemBuff != 0) {
+                gemBuff += 20;
             }
             break;
         }
     }
-    return var_t1;
+    return gemBuff;
 }
 
-int func_8007E974(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+int _invalidHitFunction(vs_skill_t* arg0 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
 int func_8007E97C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     return D_800F1A04 != 0 ? 100 : 255;
 }
 
-int func_8007E99C(vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2,
-    int arg3, int arg4 __attribute__((unused)))
+int _getHitGemModifier(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+    int hitNumber, int arg4 __attribute__((unused)))
 {
-    int var_s0;
-
-    var_s0 = 100;
-    if ((arg1 != NULL) && (arg1->unk40 == 0)) {
-        var_s0 = func_8007E5E0(arg0, vs_battle_actors[arg1->unk0]->unk3C) + 100;
+    int gemModifier = 100;
+    if ((source != NULL) && (source->unk40 == 0)) {
+        gemModifier += _getAttackGemBuff(skill, vs_battle_actors[source->actorId]->unk3C);
     }
-    if (arg2 != NULL) {
-        if (arg2->unk40 == 0) {
-            var_s0 -= func_8007E6A0(arg0, vs_battle_actors[arg2->unk0]->unk3C, arg3);
-        }
+    if ((target != NULL) && (target->unk40 == 0)) {
+        gemModifier -= _getDefenseGemBuff(
+            skill, vs_battle_actors[target->actorId]->unk3C, hitNumber);
     }
-    return var_s0;
+    return gemModifier;
 }
 
-int func_8007EA74(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+int _getAgilityDifference(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+    int hitNumber, int addVariance)
 {
-    int var_a1;
-    int var_s0;
-    int var_t0;
+    int agiDiff;
     int i;
-    vs_battle_actor2* temp_s1;
-    vs_battle_actor2* temp_s2;
-    int target = arg2->unk1;
+    int targetBodyPart = target->targetedBodyPart;
 
-    temp_s2 = vs_battle_actors[arg1->unk0]->unk3C;
-    temp_s1 = vs_battle_actors[arg2->unk0]->unk3C;
-    var_a1 = temp_s2->agility + temp_s2->accessory.currentAgility;
-    var_t0 = temp_s1->agility + temp_s1->accessory.currentAgility;
+    vs_battle_actor2* sourceActor = vs_battle_actors[source->actorId]->unk3C;
+    vs_battle_actor2* targetActor = vs_battle_actors[target->actorId]->unk3C;
+    int sourceActorValue = sourceActor->agility + sourceActor->accessory.currentAgility;
+    int targetActorValue = targetActor->agility + targetActor->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->bodyParts[i].armor.currentAgility;
-        var_t0 += temp_s1->bodyParts[i].armor.currentAgility;
+        sourceActorValue += sourceActor->bodyParts[i].armor.currentAgility;
+        targetActorValue += targetActor->bodyParts[i].armor.currentAgility;
     }
 
-    if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
-        var_a1 += temp_s2->weapon.currentAgility + temp_s2->shield.currentAgility;
+    if (vs_battle_actors[sourceActor->flags.fields.unk3]->unk20 & 1) {
+        sourceActorValue +=
+            sourceActor->weapon.currentAgility + sourceActor->shield.currentAgility;
     }
 
-    if (vs_battle_actors[temp_s1->flags.fields.unk3]->unk20 & 1) {
-        var_t0 += temp_s1->weapon.currentAgility + temp_s1->shield.currentAgility;
+    if (vs_battle_actors[targetActor->flags.fields.unk3]->unk20 & 1) {
+        targetActorValue +=
+            targetActor->weapon.currentAgility + targetActor->shield.currentAgility;
     }
 
-    var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
-    var_t0 = var_t0 * (100 - temp_s1->risk) / 100;
-    var_s0 = var_a1 - var_t0;
-    var_s0 += 100;
+    sourceActorValue = sourceActorValue * (100 - sourceActor->risk) / 100;
+    targetActorValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetActorValue = targetActorValue * (100 - targetActor->risk) / 100;
+    agiDiff = sourceActorValue - targetActorValue;
+    agiDiff += 100;
 
-    if (arg4 != 0) {
-        int v0 = vs_main_getRandSmoothed(0xB);
-        int v1 = var_s0 - 5;
-        var_s0 = v1 + v0;
+    if (addVariance != 0) {
+        int variance = vs_main_getRandSmoothed(11);
+        int v1 = agiDiff - 5;
+        agiDiff = v1 + variance;
     }
 
-    var_s0 += func_8007E5E0(arg0, temp_s2);
-    var_s0 -= func_8007E6A0(arg0, temp_s1, arg3);
+    agiDiff += _getAttackGemBuff(skill, sourceActor);
+    agiDiff -= _getDefenseGemBuff(skill, targetActor, hitNumber);
 
-    if (var_s0 < 0) {
-        var_s0 = 0;
-    } else if (var_s0 == 0xFF) {
-        var_s0 = 0xFE;
+    if (agiDiff < 0) {
+        agiDiff = 0;
+    } else if (agiDiff == 255) {
+        agiDiff = 254;
     }
 
-    return var_s0;
+    return agiDiff;
 }
 
-int func_8007ECA8(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+int _getIntelligenceDifference(vs_skill_t* skill, _hitEntity_t* source,
+    _hitEntity_t* target, int hitNumber, int addVariance)
 {
-    int var_a1;
-    int var_s0;
-    int var_t0;
+    int intDiff;
     int i;
-    vs_battle_actor2* temp_s1;
-    vs_battle_actor2* temp_s2;
-    int target = arg2->unk1;
+    int targetBodyPart = target->targetedBodyPart;
 
-    temp_s2 = vs_battle_actors[arg1->unk0]->unk3C;
-    temp_s1 = vs_battle_actors[arg2->unk0]->unk3C;
-    var_a1 = temp_s2->intelligence + temp_s2->accessory.currentInt;
-    var_t0 = temp_s1->intelligence + temp_s1->accessory.currentInt;
+    vs_battle_actor2* sourceActor = vs_battle_actors[source->actorId]->unk3C;
+    vs_battle_actor2* targetActor = vs_battle_actors[target->actorId]->unk3C;
+    int sourceActorValue = sourceActor->intelligence + sourceActor->accessory.currentInt;
+    int targetActorValue = targetActor->intelligence + targetActor->accessory.currentInt;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->bodyParts[i].armor.currentInt;
-        var_t0 += temp_s1->bodyParts[i].armor.currentInt;
+        sourceActorValue += sourceActor->bodyParts[i].armor.currentInt;
+        targetActorValue += targetActor->bodyParts[i].armor.currentInt;
     }
 
-    if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
-        var_a1 += temp_s2->weapon.currentInt + temp_s2->shield.currentInt;
+    if (vs_battle_actors[sourceActor->flags.fields.unk3]->unk20 & 1) {
+        sourceActorValue +=
+            sourceActor->weapon.currentInt + sourceActor->shield.currentInt;
     }
 
-    if (vs_battle_actors[temp_s1->flags.fields.unk3]->unk20 & 1) {
-        var_t0 += temp_s1->weapon.currentInt + temp_s1->shield.currentInt;
+    if (vs_battle_actors[targetActor->flags.fields.unk3]->unk20 & 1) {
+        targetActorValue +=
+            targetActor->weapon.currentInt + targetActor->shield.currentInt;
     }
 
-    var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
-    var_t0 = (var_t0 * (100 - temp_s1->risk) / 100);
-    var_t0 = var_t0 * temp_s1->currentHP / temp_s1->maxHP;
-    var_s0 = var_a1 - var_t0;
+    sourceActorValue = (sourceActorValue * (100 - sourceActor->risk)) / 100;
+    targetActorValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetActorValue = (targetActorValue * (100 - targetActor->risk) / 100);
+    targetActorValue = targetActorValue * targetActor->currentHP / targetActor->maxHP;
+    intDiff = sourceActorValue - targetActorValue;
 
-    if (arg4 != 0) {
-        int v0 = vs_main_getRandSmoothed(0xB);
-        int v1 = var_s0 - 5;
-        var_s0 = v1 + v0;
+    if (addVariance != 0) {
+        int variance = vs_main_getRandSmoothed(11);
+        int v1 = intDiff - 5;
+        intDiff = v1 + variance;
     }
 
-    var_s0 += func_8007E5E0(arg0, temp_s2);
-    var_s0 -= func_8007E6A0(arg0, temp_s1, arg3);
+    intDiff += _getAttackGemBuff(skill, sourceActor);
+    intDiff -= _getDefenseGemBuff(skill, targetActor, hitNumber);
 
-    if (var_s0 < 0) {
-        var_s0 = 0;
-    } else if (var_s0 == 0xFF) {
-        var_s0 = 0xFE;
+    if (intDiff < 0) {
+        intDiff = 0;
+    } else if (intDiff == 255) {
+        intDiff = 254;
     }
 
-    return var_s0;
+    return intDiff;
 }
 
-int func_8007EEFC(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+int _getAgilityDifference2(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+    int hitNumber, int addVariance)
 {
-    int var_a1;
-    int var_s0;
-    int var_t0;
+    int agiDiff;
     int i;
     int v;
-    vs_battle_actor2* temp_s1;
-    vs_battle_actor2* temp_s2;
-    int target = arg2->unk1;
+    int targetBodyPart = target->targetedBodyPart;
 
-    temp_s2 = vs_battle_actors[arg1->unk0]->unk3C;
-    temp_s1 = vs_battle_actors[arg2->unk0]->unk3C;
-    var_a1 = temp_s2->agility + temp_s2->accessory.currentAgility;
-    var_t0 = temp_s1->agility + temp_s1->accessory.currentAgility;
+    vs_battle_actor2* sourceActor = vs_battle_actors[source->actorId]->unk3C;
+    vs_battle_actor2* targetActor = vs_battle_actors[target->actorId]->unk3C;
+    int sourceValue = sourceActor->agility + sourceActor->accessory.currentAgility;
+    int targetValue = targetActor->agility + targetActor->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        var_a1 += temp_s2->bodyParts[i].armor.currentAgility;
-        var_t0 += temp_s1->bodyParts[i].armor.currentAgility;
+        sourceValue += sourceActor->bodyParts[i].armor.currentAgility;
+        targetValue += targetActor->bodyParts[i].armor.currentAgility;
     }
 
-    if (vs_battle_actors[temp_s2->flags.fields.unk3]->unk20 & 1) {
-        var_a1 += temp_s2->weapon.currentAgility + temp_s2->shield.currentAgility;
+    if (vs_battle_actors[sourceActor->flags.fields.unk3]->unk20 & 1) {
+        sourceValue +=
+            sourceActor->weapon.currentAgility + sourceActor->shield.currentAgility;
     }
 
-    if (vs_battle_actors[temp_s1->flags.fields.unk3]->unk20 & 1) {
-        var_t0 += temp_s1->weapon.currentAgility + temp_s1->shield.currentAgility;
+    if (vs_battle_actors[targetActor->flags.fields.unk3]->unk20 & 1) {
+        targetValue +=
+            targetActor->weapon.currentAgility + targetActor->shield.currentAgility;
     }
 
-    var_a1 = (var_a1 * (100 - temp_s2->risk)) / 100;
-    var_t0 = var_t0 + temp_s1->bodyParts[target].unk4;
-    var_t0 = var_t0 * (100 - temp_s1->risk) / 100;
-    var_s0 = var_a1 - var_t0;
-    v = var_s0 + 130;
-    var_s0 = v - skill->cost;
+    sourceValue = (sourceValue * (100 - sourceActor->risk)) / 100;
+    targetValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetValue = targetValue * (100 - targetActor->risk) / 100;
+    agiDiff = sourceValue - targetValue;
+    v = agiDiff + 130;
+    agiDiff = v - skill->cost;
 
-    if (arg4 != 0) {
-        int v0 = vs_main_getRandSmoothed(0xB);
-        int v1 = var_s0 - 5;
-        var_s0 = v1 + v0;
+    if (addVariance != 0) {
+        int variance = vs_main_getRandSmoothed(11);
+        int v1 = agiDiff - 5;
+        agiDiff = v1 + variance;
     }
 
-    var_s0 += func_8007E5E0(skill, temp_s2);
-    var_s0 -= func_8007E6A0(skill, temp_s1, arg3);
+    agiDiff += _getAttackGemBuff(skill, sourceActor);
+    agiDiff -= _getDefenseGemBuff(skill, targetActor, hitNumber);
 
-    if (var_s0 < 0) {
-        var_s0 = 0;
-    } else if (var_s0 == 0xFF) {
-        var_s0 = 0xFE;
+    if (agiDiff < 0) {
+        agiDiff = 0;
+    } else if (agiDiff == 255) {
+        agiDiff = 254;
     }
 
-    return var_s0;
+    return agiDiff;
 }
 
-int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* source,
+    _hitEntity_t* arg2 __attribute__((unused)), int hitNumber __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    int rate = ((vs_battle_actors[arg1->unk0]->unk3C->risk + 150) * 100) / 256;
+    int rate = ((vs_battle_actors[source->actorId]->unk3C->risk + 150) * 100) / 256;
     if (rate == 255) {
         rate = 254;
     }
@@ -7132,12 +7119,16 @@ int _getSpellHitRate(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* 
 }
 
 int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* target,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int rate;
 
-    rate = ((255 - vs_battle_actors[arg2->unk0]->unk3C->bodyParts[arg2->unk1].unk7) * 100)
+    rate = ((255
+                - vs_battle_actors[target->actorId]
+                      ->unk3C->bodyParts[target->targetedBodyPart]
+                      .unk7)
+               * 100)
          / 255;
     if (rate == 255) {
         rate = 254;
@@ -7145,45 +7136,52 @@ int func_8007F1A4(vs_skill_t* arg0 __attribute__((unused)),
     return rate;
 }
 
-int func_8007F230(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int hit, int arg4)
+int _doesAttackHit(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+    int hitNumber, int addVariance)
 {
-    int temp_v1;
-    int var_s0;
+    int chance;
+    int threshold;
 
-    if ((arg2->unk40 == 0)
-        && (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 == 0x80)) {
-        var_s0 = 100;
+    if ((target->unk40 == 0)
+        && (vs_battle_actors[target->actorId]->unk3C->flags.fields.unk3 == 0x80)) {
+        threshold = 100;
     } else {
-        var_s0 = D_800E8234[skill->hitParams[hit].hitRate](skill, arg1, arg2, hit, arg4);
+        threshold = _hitFunctions[skill->hitParams[hitNumber].hitFunction](
+            skill, source, target, hitNumber, addVariance);
         if ((skill->type == skillTypeSpell)
-            && (vs_battle_actors[arg2->unk0]->unk3C->unk948 < 0)) {
-            var_s0 = 0;
+            && (vs_battle_actors[target->actorId]->unk3C->unk948 < 0)) {
+            threshold = 0;
         }
     }
+
     if (D_800F1A00 == 0) {
-        var_s0 = 0xFF;
+        threshold = 255;
     }
-    if (var_s0 != 0xFF) {
-        if (arg2->unk40 == 0) {
-            if (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 4) {
-                var_s0 *= 2;
+
+    if (threshold != 255) {
+        if (target->unk40 == 0) {
+            if (vs_battle_actors[target->actorId]->unk3C->unk948 & 4) {
+                threshold *= 2;
             }
         }
-        if (var_s0 > 100) {
-            var_s0 = 100;
+        if (threshold > 100) {
+            threshold = 100;
         }
     }
-    if ((hit == 0) || (arg2->unk2 == 0xFF)) {
-        arg2->unk2 = var_s0;
+
+    if ((hitNumber == 0) || (target->hitThreshold == 255)) {
+        target->hitThreshold = threshold;
     }
-    temp_v1 = vs_main_getRand(100);
-    if (var_s0 != 0xFF) {
-        if ((arg1->unk40 == 0) && (arg1->unk0 == 0)) {
-            var_s0 += 10;
+
+    chance = vs_main_getRand(100);
+
+    if (threshold != 255) {
+        if ((source->unk40 == 0) && (source->actorId == 0)) {
+            threshold += 10;
         }
-        return temp_v1 < var_s0;
+        return chance < threshold;
     }
+
     return 0;
 }
 
@@ -7360,47 +7358,47 @@ int func_8007F758(vs_skill_t* arg0, u_char* arg1)
 
 int func_8007F808(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0xB, arg1) == 0;
+    return func_8007F4B0(11, arg1) == 0;
 }
 
 int func_8007F828(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0xC, arg1) == 0;
+    return func_8007F4B0(12, arg1) == 0;
 }
 
 int func_8007F848(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0x12, arg1) == 0;
+    return func_8007F4B0(18, arg1) == 0;
 }
 
 int func_8007F868(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0x11, arg1) == 0;
+    return func_8007F4B0(17, arg1) == 0;
 }
 
 int func_8007F888(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0xD, arg1) == 0;
+    return func_8007F4B0(13, arg1) == 0;
 }
 
 int func_8007F8A8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0xE, arg1) == 0;
+    return func_8007F4B0(14, arg1) == 0;
 }
 
 int func_8007F8C8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0xF, arg1) == 0;
+    return func_8007F4B0(15, arg1) == 0;
 }
 
 int func_8007F8E8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(0x10, arg1) == 0;
+    return func_8007F4B0(16, arg1) == 0;
 }
 
 int func_8007F908(vs_skill_t* arg0 __attribute__((unused)), u_char* arg1)
 {
-    if ((func_8007F4B0(0x15, arg1) == 0)
+    if ((func_8007F4B0(21, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
         return 1;
     }
@@ -7553,14 +7551,15 @@ void func_8007FDC8(vs_skill_t* arg0 __attribute__((unused)), char* arg1) { }
 
 void func_8007FDD0(vs_skill_t* arg0 __attribute__((unused)), char* arg1) { }
 
-int func_8007FDD8(vs_skill_t* arg0, char* arg1, int arg2)
+int _canPerformAttack(vs_skill_t* skill, char* arg1, int hitNumber)
 {
-    if (arg2 != 0) {
-        if ((arg0->hitParams[arg2].prerequisites == 1) && (arg1[3] == 4)) {
+    if (hitNumber != 0) {
+        if ((skill->hitParams[hitNumber].prerequisiteFunction == 1) && (arg1[3] == 4)) {
             return 0;
         }
     }
-    return D_800E8254[arg0->hitParams[arg2].prerequisites](arg0, arg1);
+    return _attackPrerequisiteFunctions[skill->hitParams[hitNumber].prerequisiteFunction](
+        skill, arg1);
 }
 
 short func_8007FE5C(
@@ -7639,7 +7638,7 @@ short func_8007FF8C(int arg0, short arg1, char* arg2)
     return (arg1 * var_t0) / 100;
 }
 
-void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
+void func_80080000(vs_skill_t* arg0, _hitEntity_t* arg1, short arg2)
 {
     int i;
     int var_t0;
@@ -7649,7 +7648,7 @@ void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
         D_800F1A10[i] = 0;
     }
 
-    temp_t2 = vs_battle_actors[arg1->unk0]->unk3C;
+    temp_t2 = vs_battle_actors[arg1->actorId]->unk3C;
 
     switch (arg0->unk2_4) {
     case 0:
@@ -7676,7 +7675,7 @@ void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     case 7:
     case 14:
         for (i = 0; i < 6; ++i) {
-            D_800F1A10[i] = (arg2 * temp_t2->unk920[arg1->unk1][i]) / 100;
+            D_800F1A10[i] = (arg2 * temp_t2->unk920[arg1->targetedBodyPart][i]) / 100;
             arg1->unk20.s16[i][0] += D_800F1A10[i];
         }
         break;
@@ -7684,13 +7683,13 @@ void func_80080000(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     case 8:
     case 11:
     case 12:
-        D_800F1A10[arg1->unk1] = arg2;
-        arg1->unk20.s16[arg1->unk1][0] += arg2;
+        D_800F1A10[arg1->targetedBodyPart] = arg2;
+        arg1->unk20.s16[arg1->targetedBodyPart][0] += arg2;
         break;
     }
 }
 
-void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
+void func_800801E0(vs_skill_t* arg0, _hitEntity_t* arg1, short arg2)
 {
     int temp_lo;
     int i;
@@ -7698,7 +7697,7 @@ void func_800801E0(vs_skill_t* arg0, func_80085718_t* arg1, short arg2)
     vs_battle_actor2* temp_t1;
 
     var_t0 = 0;
-    temp_t1 = vs_battle_actors[arg1->unk0]->unk3C;
+    temp_t1 = vs_battle_actors[arg1->actorId]->unk3C;
 
     for (i = 0; i < 6; ++i) {
         if (temp_t1->bodyParts[i].unk2 != 0) {
@@ -7892,7 +7891,7 @@ void func_80080F78(vs_skill_t* skill, vs_battle_actor2* arg1, int arg2, int arg3
     }
 }
 
-int func_80081020(int arg0, func_80085718_t* arg1)
+int func_80081020(int arg0, _hitEntity_t* arg1)
 {
     int temp_t0;
     int var_a3;
@@ -7903,7 +7902,7 @@ int func_80081020(int arg0, func_80085718_t* arg1)
     var_a3 = 0;
     var_t1 = 0;
     temp_a1 = D_8004EECC[arg0];
-    temp_a2 = vs_battle_actors[arg1->unk0]->unk3C;
+    temp_a2 = vs_battle_actors[arg1->actorId]->unk3C;
 
     if (temp_a2->flags.fields.unk3 != 0x80) {
         temp_t0 = temp_a2->unk948;
@@ -7917,52 +7916,52 @@ int func_80081020(int arg0, func_80085718_t* arg1)
     return var_t1 | var_a3;
 }
 
-int func_800810CC(int arg0, func_80085718_t* arg1)
+int func_800810CC(int arg0, _hitEntity_t* arg1)
 {
     int ret = 0;
     int* new_var = D_8004EECC[arg0];
-    if (vs_battle_actors[arg1->unk0]->unk3C->flags.fields.unk3 != 0x80) {
-        ret = new_var[0] & vs_battle_actors[arg1->unk0]->unk3C->unk948;
+    if (vs_battle_actors[arg1->actorId]->unk3C->flags.fields.unk3 != 0x80) {
+        ret = new_var[0] & vs_battle_actors[arg1->actorId]->unk3C->unk948;
         arg1->unk18 |= ret;
     }
     return ret;
 }
 
 void func_80081130(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
 short func_80081138(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     return D_800F1A08;
 }
 
 short func_80081148(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)), int arg5);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80081148);
 
 short func_800819D0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 0);
 }
 
 short func_800819FC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800819FC);
 
-short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+short func_80082144(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     int v = (D_800F19CC->unk8.unk4C[0].unk4C.unk.unk4
@@ -7971,17 +7970,17 @@ short func_80082144(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_800821B0(vs_skill_t* arg0, func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_800821B0(vs_skill_t* arg0, _hitEntity_t* arg1,
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0]->unk3C;
+    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->actorId]->unk3C;
     int v = (temp_v0->maxHP - temp_v0->currentHP) * arg0->hitParams[arg3].damageFactor;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_80082234(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     int v = (D_800F19CC->unk8.unk4C[0].unk4C.unk.unk4
@@ -7990,25 +7989,25 @@ short func_80082234(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_800822A0(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_800822A0(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    int v = vs_battle_actors[arg2->unk0]->unk3C->currentHP
+    int v = vs_battle_actors[arg2->actorId]->unk3C->currentHP
           * arg0->hitParams[arg3].damageFactor;
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
-short func_8008231C(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+short func_8008231C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    return vs_battle_actors[arg1->unk0]->unk3C->weapon.currentPp
+    return vs_battle_actors[arg1->actorId]->unk3C->weapon.currentPp
          + ((u_short)D_800F19CC->unk0 - 1);
 }
 
-short func_80082360(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_80082360(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
@@ -8022,8 +8021,8 @@ short func_80082360(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unus
     return var_a2;
 }
 
-short func_8008241C(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_8008241C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
@@ -8038,33 +8037,33 @@ short func_8008241C(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unus
 }
 
 short func_800824D8(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
-    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0]->unk3C;
+    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->actorId]->unk3C;
     return (temp_v0->maxMP - temp_v0->currentMP) * arg0->hitParams[arg3].damageFactor / 10
          + (D_800F19CC->unk0 - 1);
 }
 
 short func_8008255C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008255C);
 
 short func_800829B8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800829B8);
 
 short func_80082FF4(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)));
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80082FF4);
 
-short func_80083430(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3, int arg4)
+short func_80083430(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3, int arg4)
 {
     short temp_s0;
     short temp_v0;
@@ -8084,23 +8083,23 @@ short func_80083430(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
 }
 
 short func_800834A4(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return vs_battle_actors[arg2->unk0]->unk3C->maxHP
-         - vs_battle_actors[arg2->unk0]->unk3C->currentHP;
+    return vs_battle_actors[arg2->actorId]->unk3C->maxHP
+         - vs_battle_actors[arg2->actorId]->unk3C->currentHP;
 }
 
 short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return vs_battle_actors[arg2->unk0]->unk3C->maxMP
-         - vs_battle_actors[arg2->unk0]->unk3C->currentMP;
+    return vs_battle_actors[arg2->actorId]->unk3C->maxMP
+         - vs_battle_actors[arg2->actorId]->unk3C->currentMP;
 }
 
-short func_80083524(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_80083524(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     return (((D_800F19CC->unk8.unk4C[0].unk4C.unk.unk4
@@ -8110,8 +8109,8 @@ short func_80083524(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
          + (D_800F19CC->unk0 - 1);
 }
 
-short func_80083590(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_80083590(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
@@ -8126,8 +8125,8 @@ short func_80083590(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unus
     return var_a2;
 }
 
-short func_8008364C(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_8008364C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
@@ -8142,7 +8141,7 @@ short func_8008364C(vs_skill_t* skill, func_80085718_t* arg1 __attribute__((unus
 }
 
 short func_80083708(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* skill, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short var_v0;
 
@@ -8156,8 +8155,8 @@ short func_80083708(
     return var_v0;
 }
 
-short func_8008379C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3,
+short func_8008379C(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
     short var_a2 = 0;
@@ -8170,39 +8169,39 @@ short func_8008379C(vs_skill_t* arg0, func_80085718_t* arg1 __attribute__((unuse
 }
 
 short vs_battle_getEquippedShieldDp(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1, func_80085718_t* arg2 __attribute__((unused)),
+    _hitEntity_t* arg1, _hitEntity_t* arg2 __attribute__((unused)),
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return vs_battle_actors[arg1->unk0]->unk3C->shield.currentDp;
+    return vs_battle_actors[arg1->actorId]->unk3C->shield.currentDp;
 }
 
-short func_8008384C(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+short func_8008384C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     return (D_800F1A08 * arg0->hitParams[arg3].damageFactor) / 10;
 }
 
 short func_8008388C(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
 short _getRisk(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    return vs_battle_actors[arg2->unk0]->unk3C->risk;
+    return vs_battle_actors[arg2->actorId]->unk3C->risk;
 }
 
 short _calculateDamage(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int hit, int arg4)
+    vs_skill_t* skill, _hitEntity_t* arg1, _hitEntity_t* arg2, int hit, int arg4)
 {
     short damage;
 
     if ((arg2->unk40 == 0)
-        && (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 == 0x80)) {
+        && (vs_battle_actors[arg2->actorId]->unk3C->flags.fields.unk3 == 0x80)) {
         damage = 999;
     } else {
         damage = _damageCalculators[skill->hitParams[hit].damageCalculator](
@@ -8213,15 +8212,15 @@ short _calculateDamage(
 }
 
 int func_80083990(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
 // TODO: Change return type, these only match with int and undefined return
 int func_80083998(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(5, arg2) != 0) {
@@ -8230,7 +8229,7 @@ int func_80083998(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_800839E8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(7, arg2) != 0) {
@@ -8239,7 +8238,7 @@ int func_800839E8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083A38(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(9, arg2) != 0) {
@@ -8248,7 +8247,7 @@ int func_80083A38(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083A88(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(19, arg2) != 0) {
@@ -8257,7 +8256,7 @@ int func_80083A88(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083AD8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(4, arg2) != 0) {
@@ -8266,7 +8265,7 @@ int func_80083AD8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083B28(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(6, arg2) != 0) {
@@ -8275,7 +8274,7 @@ int func_80083B28(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083B78(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(8, arg2) != 0) {
@@ -8284,7 +8283,7 @@ int func_80083B78(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083BC8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(10, arg2) != 0) {
@@ -8293,7 +8292,7 @@ int func_80083BC8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083C18(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(20, arg2) != 0) {
@@ -8302,7 +8301,7 @@ int func_80083C18(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083C68(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(11, arg2) != 0) {
@@ -8311,7 +8310,7 @@ int func_80083C68(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083CB8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(12, arg2) != 0) {
@@ -8320,15 +8319,15 @@ int func_80083CB8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083D08(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     func_80081020(0x12, arg2);
 }
 
 int func_80083D2C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(17, arg2) != 0) {
@@ -8337,17 +8336,17 @@ int func_80083D2C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083D7C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4)
 {
     func_80081020(0x1D, arg2);
     if (arg4 != 0) {
-        vs_battle_actors[arg2->unk0]->unk3C->flags.u32 |= 0x20000;
+        vs_battle_actors[arg2->actorId]->unk3C->flags.u32 |= 0x20000;
     }
 }
 
 int func_80083DEC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(13, arg2) != 0) {
@@ -8356,7 +8355,7 @@ int func_80083DEC(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083E3C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(14, arg2) != 0) {
@@ -8365,7 +8364,7 @@ int func_80083E3C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083E8C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(15, arg2) != 0) {
@@ -8374,7 +8373,7 @@ int func_80083E8C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083EDC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_80081020(16, arg2) != 0) {
@@ -8383,63 +8382,63 @@ int func_80083EDC(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80083F2C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x15, arg2);
 }
 
 int func_80083F50(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x16, arg2);
 }
 
 int func_80083F74(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x17, arg2);
 }
 
 int func_80083F98(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x18, arg2);
 }
 
 int func_80083FBC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x19, arg2);
 }
 
 int func_80083FE0(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1A, arg2);
 }
 
 int func_80084004(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1B, arg2);
 }
 
 int func_80084028(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_80081020(0x1C, arg2);
 }
 
 int func_8008404C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xD, arg2) != 0) {
@@ -8448,7 +8447,7 @@ int func_8008404C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_8008409C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xE, arg2) != 0) {
@@ -8457,7 +8456,7 @@ int func_8008409C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_800840EC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0x10, arg2) != 0) {
@@ -8466,7 +8465,7 @@ int func_800840EC(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_8008413C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     if (func_800810CC(0xF, arg2) != 0) {
@@ -8475,58 +8474,58 @@ int func_8008413C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_8008418C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    arg2->unk18 |= (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x1FFE1FE0);
+    arg2->unk18 |= (vs_battle_actors[arg2->actorId]->unk3C->unk948 & 0x1FFE1FE0);
 }
 
 int func_800841C8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    int temp_v1 = vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0xE000;
+    int temp_v1 = vs_battle_actors[arg2->actorId]->unk3C->unk948 & 0xE000;
     arg2->unk18 = arg2->unk18 | temp_v1;
     if (temp_v1 != 0) {
         arg2->unk1C.fields.unk1E_0 = 2;
     }
 }
 
-int func_80084228(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2, int arg3 __attribute__((unused)),
+int func_80084228(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+    _hitEntity_t* arg2, int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 int func_80084248(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     func_800810CC(0x1E, arg2);
-    arg2->unk4 = vs_battle_actors[arg2->unk0]->unk3C->currentHP;
+    arg2->unk4 = vs_battle_actors[arg2->actorId]->unk3C->currentHP;
     arg2->unk1C.fields.unk1C_0 = 1;
 }
 
 int func_800842AC(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     arg2->unk3C = arg2->unk4 * 2;
-    arg2->unk20.s16[arg2->unk1][1] = arg2->unk4 * 2;
+    arg2->unk20.s16[arg2->targetedBodyPart][1] = arg2->unk4 * 2;
     arg2->unk1C.fields.unk1E_6 = 1;
 }
 
-int func_800842F0(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+int func_800842F0(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 int func_80084310(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
 {
     if (arg4 != 0) {
@@ -8535,8 +8534,8 @@ int func_80084310(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084340(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4)
 {
     if (arg4 != 0) {
@@ -8544,15 +8543,15 @@ int func_80084340(vs_skill_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084370(vs_skill_t* arg0 __attribute__((unused)), func_80085718_t* arg1,
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+int func_80084370(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
     arg1->unk1C.fields.unk1F_2 = 2;
 }
 
 int func_80084390(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* skill, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (vs_main_skills[D_800F19CC->unk8.unk0].type == skillTypeSpell) {
         short temp_a2 = _calculateDamage(skill, arg1, arg2, arg3, arg4);
@@ -8563,7 +8562,7 @@ int func_80084390(
 }
 
 int func_80084440(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* skill, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (vs_main_skills[D_800F19CC->unk8.unk0].type != skillTypeSpell) {
         short temp_a2 = _calculateDamage(skill, arg1, arg2, arg3, arg4);
@@ -8574,7 +8573,7 @@ int func_80084440(
 }
 
 int func_800844F0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 0) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8585,7 +8584,7 @@ int func_800844F0(
 }
 
 int func_80084570(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 1) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8596,7 +8595,7 @@ int func_80084570(
 }
 
 int func_800845F0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 2) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8607,7 +8606,7 @@ int func_800845F0(
 }
 
 int func_80084670(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 3) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8618,7 +8617,7 @@ int func_80084670(
 }
 
 int func_800846F0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 4) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8629,7 +8628,7 @@ int func_800846F0(
 }
 
 int func_80084770(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 5) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8640,7 +8639,7 @@ int func_80084770(
 }
 
 int func_800847F0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 6) {
         short temp_a2 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
@@ -8651,7 +8650,7 @@ int func_800847F0(
 }
 
 int func_80084870(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     int temp_v1 = D_800F19CC->unk8.unk20 & 3;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
@@ -8663,7 +8662,7 @@ int func_80084870(
 }
 
 int func_8008490C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8672,7 +8671,7 @@ int func_8008490C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084958(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8681,7 +8680,7 @@ int func_80084958(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_800849A4(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8690,7 +8689,7 @@ int func_800849A4(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_800849F0(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8699,7 +8698,7 @@ int func_800849F0(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084A3C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8708,7 +8707,7 @@ int func_80084A3C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084A8C(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8717,7 +8716,7 @@ int func_80084A8C(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084AD8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8726,7 +8725,7 @@ int func_80084AD8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     int temp_v0 = vs_main_getRand(4) + 1;
@@ -8735,11 +8734,11 @@ int func_80084B24(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084B70(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0;
-    vs_battle_actor2* temp_s4 = vs_battle_actors[arg1->unk0]->unk3C;
-    vs_battle_actor2* temp_s2 = vs_battle_actors[arg2->unk0]->unk3C;
+    vs_battle_actor2* temp_s4 = vs_battle_actors[arg1->actorId]->unk3C;
+    vs_battle_actor2* temp_s2 = vs_battle_actors[arg2->actorId]->unk3C;
     D_800F1A0C = 0;
     temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     arg2->unk4 += temp_v0;
@@ -8763,9 +8762,9 @@ int func_80084B70(
 }
 
 int func_80084CAC(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
-    vs_battle_actor2* temp_s0 = vs_battle_actors[arg2->unk0]->unk3C;
+    vs_battle_actor2* temp_s0 = vs_battle_actors[arg2->actorId]->unk3C;
     short var_a0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     if (temp_s0->currentMP < var_a0) {
         var_a0 = temp_s0->currentMP;
@@ -8776,23 +8775,23 @@ int func_80084CAC(
 }
 
 int func_80084D44(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
     u_short new_var;
 
-    if (vs_battle_actors[arg2->unk0]->unk3C->weapon.blade.id != 0) {
-        new_var = vs_battle_actors[arg2->unk0]->unk3C->weapon.currentPp;
+    if (vs_battle_actors[arg2->actorId]->unk3C->weapon.blade.id != 0) {
+        new_var = vs_battle_actors[arg2->actorId]->unk3C->weapon.currentPp;
         arg2->unk20.s16[6][1] += new_var;
         arg2->unk1C.fields.unk1E_4 = 1;
     }
 }
 
 int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)), func_80085718_t* arg2,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
-    vs_battle_actor2* temp_a1 = vs_battle_actors[arg2->unk0]->unk3C;
+    vs_battle_actor2* temp_a1 = vs_battle_actors[arg2->actorId]->unk3C;
     if (((D_800F19CC->unk8.unk20 & 3) == 1) || ((D_800F19CC->unk8.unk20 & 3) == 3)) {
         if (temp_a1->shield.base.id != 0) {
             short var_v0 = temp_a1->shield.currentDp;
@@ -8803,7 +8802,7 @@ int func_80084DA8(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 int func_80084E28(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     arg2->unk4 += temp_v0;
@@ -8814,7 +8813,7 @@ int func_80084E28(
 }
 
 int func_80084EA0(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     arg2->unk6 = arg2->unk6 + temp_v0;
@@ -8822,7 +8821,7 @@ int func_80084EA0(
 }
 
 int func_80084EEC(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     arg2->unk20.s16[6][1] += temp_v0;
@@ -8830,7 +8829,7 @@ int func_80084EEC(
 }
 
 int func_80084F40(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     arg2->unk20.s16[6][0] += temp_v0;
@@ -8838,7 +8837,7 @@ int func_80084F40(
 }
 
 int func_80084F94(
-    vs_skill_t* arg0, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int arg4)
+    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateDamage(arg0, arg1, arg2, arg3, arg4);
     int var_v0 = temp_v0 << 0x10;
@@ -8849,27 +8848,27 @@ int func_80084F94(
 }
 
 int func_80084FF0(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
 int func_80084FF8(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
 int func_80085000(vs_skill_t* arg0 __attribute__((unused)),
-    func_80085718_t* arg1 __attribute__((unused)),
-    func_80085718_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
-void func_80085008(func_80085718_t* arg0)
+void func_80085008(_hitEntity_t* arg0)
 {
     int i;
     int var_v1;
@@ -8877,7 +8876,7 @@ void func_80085008(func_80085718_t* arg0)
     u_short var_a2;
     vs_battle_actor2* temp_s3;
 
-    temp_s3 = vs_battle_actors[arg0->unk0]->unk3C;
+    temp_s3 = vs_battle_actors[arg0->actorId]->unk3C;
     switch (arg0->unk1C.fields.unk1C_0) {
     case 2:
         var_a2 =
@@ -8924,7 +8923,7 @@ void func_80085008(func_80085718_t* arg0)
             }
         }
     }
-    if (arg0->unk0 == 0) {
+    if (arg0->actorId == 0) {
         for (i = 0; i < 4; ++i) {
             switch (arg0->unk1C.fields.unk1C_0) {
             case 2:
@@ -8955,36 +8954,36 @@ void func_80085008(func_80085718_t* arg0)
 }
 
 void func_80085390(
-    vs_skill_t* skill, func_80085718_t* arg1, func_80085718_t* arg2, int arg3, int hit)
+    vs_skill_t* skill, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int hit)
 {
     if ((arg2->unk40 == 0)
-        && (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 == 0x80)) {
+        && (vs_battle_actors[arg2->actorId]->unk3C->flags.fields.unk3 == 0x80)) {
         arg2->unk4 += 999;
         arg2->unk1C.fields.unk1C_0 = 1;
     } else if (skill->type == skillTypeSpell) {
         if ((arg2->unk40 == 0)
-            && (vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x80040000)) {
+            && (vs_battle_actors[arg2->actorId]->unk3C->unk948 & 0x80040000)) {
             D_800F1A08 = 0;
         } else {
             _skillEffectMediators[skill->hitParams[hit].effect](
                 skill, arg1, arg2, hit, arg3);
         }
         if (arg2->unk40 == 0) {
-            if (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 != 0x80) {
-                arg2->unk18 |= vs_battle_actors[arg2->unk0]->unk3C->unk948 & 0x61000;
+            if (vs_battle_actors[arg2->actorId]->unk3C->flags.fields.unk3 != 0x80) {
+                arg2->unk18 |= vs_battle_actors[arg2->actorId]->unk3C->unk948 & 0x61000;
             }
         }
     } else {
         _skillEffectMediators[skill->hitParams[hit].effect](skill, arg1, arg2, hit, arg3);
     }
-    if ((arg3 != 0) && (arg1->unk40 == 0) && (arg1->unk0 == 0) && (arg2->unk40 == 0)
-        && (vs_battle_actors[arg2->unk0]->unk3C->flags.fields.unk3 != 0x80)
+    if ((arg3 != 0) && (arg1->unk40 == 0) && (arg1->actorId == 0) && (arg2->unk40 == 0)
+        && (vs_battle_actors[arg2->actorId]->unk3C->flags.fields.unk3 != 0x80)
         && (skill->type == skillTypeAbility || skill->type == skillTypeBreakArt
             || skill->type == skillTypeBaseAttack)
-        && (vs_battle_actors[arg2->unk0]->unk3C->currentHP <= arg2->unk4)
-        && (arg2->unk0 != 0) && (vs_battle_actors[arg2->unk0]->unk29 == 0)) {
+        && (vs_battle_actors[arg2->actorId]->unk3C->currentHP <= arg2->unk4)
+        && (arg2->actorId != 0) && (vs_battle_actors[arg2->actorId]->unk29 == 0)) {
         int temp_s0;
-        vs_battle_actors[arg2->unk0]->unk29 = 1;
+        vs_battle_actors[arg2->actorId]->unk29 = 1;
         temp_s0 = vs_battle_characterState->equippedWeaponCategory % 10;
         if ((vs_battle_getStateFlag(0x82) >= 0xA)
             && (vs_main_artsStatus.artsLearned[temp_s0] < 4)
@@ -8998,7 +8997,7 @@ void func_80085390(
 
 void func_800856F8(void* arg0) { vs_main_bzero(arg0, 0x84C); }
 
-void func_80085718(func_80085718_t* arg0)
+void func_80085718(_hitEntity_t* arg0)
 {
     vs_main_bzero(arg0, sizeof *arg0);
     arg0->unk3 = 6;

@@ -626,7 +626,7 @@ static int func_80103BE4(int arg0, vs_battle_uiWeapon* weapon)
     case 1:
         return -weapon->blade.material;
     case 2:
-        return weapon->range.unk0;
+        return weapon->range.range;
     case 3:
         return -weapon->damageType;
     case 4:
@@ -835,7 +835,7 @@ static int func_801041CC(int arg0, vs_battle_uiEquipment* arg1)
     case 1:
         return -arg1->material;
     case 2:
-        return arg1->range.unk0;
+        return arg1->range.range;
     case 3:
         return -arg1->damageType;
     case 4:

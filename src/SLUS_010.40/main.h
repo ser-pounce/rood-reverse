@@ -78,8 +78,8 @@ typedef struct {
     int unk10;
     struct {
         u_int effect : 7;
-        u_int prerequisites : 6;
-        u_int hitRate : 3;
+        u_int prerequisiteFunction : 6;
+        u_int hitFunction : 3;
         u_int damageCalculator : 6;
         u_int damageFactor : 5;
         u_int type : 2;

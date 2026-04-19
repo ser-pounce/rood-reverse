@@ -38,8 +38,6 @@ void func_800FB3C8(int);
 
 extern u_long* D_1F800000[];
 
-extern short D_801024AE;
-
 void func_800FA448(void)
 {
     vs_battle_actor2* temp_s1;
@@ -844,20 +842,21 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     D_801024B9 = var_s0;
 }
 
-void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3)
+void vs_mainMenu_setRangeRisk(int range, int risk, int arg2, int arg3)
 {
-    D_80102480[0] = arg0;
-    D_80102480[1] = arg1;
-    D_80102480[2] = arg2;
-    D_80102480[3] = arg3;
+    _rangeRiskData[0] = range;
+    _rangeRiskData[1] = risk;
+    _rangeRiskData[2] = arg2;
+    _rangeRiskData[3] = arg3;
 }
 
-void vs_mainMenu_setStrIntAgi(int strength, int intelligence, int agility, int arg3)
+void vs_mainMenu_setStrIntAgi(
+    int strength, int intelligence, int agility, int valuesKnown)
 {
     vs_mainMenu_strIntAgi[0] = strength;
     vs_mainMenu_strIntAgi[1] = intelligence;
     vs_mainMenu_strIntAgi[2] = agility;
-    vs_mainMenu_strIntAgi[3] = arg3;
+    vs_mainMenu_strIntAgi[3] = valuesKnown;
     vs_mainMenu_setRangeRisk(0, 0, 0, 0);
     vs_battle_memcpy(&vs_mainMenu_strIntAgi[4], &vs_mainMenu_strIntAgi[0], 8);
 }
@@ -891,15 +890,15 @@ void func_800FBD80(int arg0)
 // arg0: 0 = render, 1 = slide in, 2 = slide out
 void vs_mainMenu_renderEquipStats(int arg0)
 {
-    static char const* D_801020FC[] = { "#RANGE", "#RISK" };
-    static char const* D_80102104[] = { "#STRENGTH", "#INTELLIGENCE", "#AGILITY", NULL,
+    static char const* rangeRiskStr[] = { "#RANGE", "#RISK" };
+    static char const* statStr[] = { "#STRENGTH", "#INTELLIGENCE", "#AGILITY", NULL,
         "#ATTACK/STR", "#ATTACK/INT", "#AGILITY", NULL, "#DEFENSE/STR", "#DEFENSE/INT",
         "#AGILITY" };
     static char D_80102130 = 0;
     static u_char D_80102131 = 0;
 
-    int temp_fp;
-    int temp_s0;
+    int valuesKnown;
+    int stat;
     int var_a3;
     int statName;
     int i;
@@ -919,7 +918,7 @@ void vs_mainMenu_renderEquipStats(int arg0)
         return;
     }
 
-    temp_fp = D_801024AE;
+    valuesKnown = vs_mainMenu_strIntAgi[3];
 
     if (D_80102130 == 1) {
         if (D_80102131 != 0) {
@@ -933,19 +932,19 @@ void vs_mainMenu_renderEquipStats(int arg0)
         --D_80102131;
     }
 
-    if (D_80102480[3] != 0) {
+    if (_rangeRiskData[3] != 0) {
         vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
 
         for (i = 0; i < 2; ++i) {
             position += vs_getXY(0, 10);
-            vs_battle_renderTextRaw(D_801020FC[i], position, temp_s4);
-            if (temp_fp != 0) {
-                temp_s0 = D_80102480[i];
-                func_800FFE70(temp_s0, position + 28, temp_s4);
+            vs_battle_renderTextRaw(rangeRiskStr[i], position, temp_s4);
+            if (valuesKnown != 0) {
+                stat = _rangeRiskData[i];
+                vs_mainMenu_renderIntColorDefault(stat, position + 28, temp_s4);
                 if (i == 0) {
-                    temp_s0 += actor->unk38 - actor->weapon.range.unk0;
+                    stat += actor->currentRange - actor->weapon.range.range;
                 }
-                func_800FFE70(temp_s0, position + 60, temp_s4);
+                vs_mainMenu_renderIntColorDefault(stat, position + 60, temp_s4);
             } else {
                 vs_battle_renderTextRaw("#??", position + 28, temp_s4);
                 vs_battle_renderTextRaw("#??", position + 60, temp_s4);
@@ -955,25 +954,26 @@ void vs_mainMenu_renderEquipStats(int arg0)
         position += vs_getXY(0, 20);
         vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
     }
+
     for (i = 0; i < 3; ++i) {
         position += vs_getXY(0, 10);
         statName = ((vs_mainMenu_equipmentSubtype & 7) != 0) * 4;
         vs_battle_renderTextRaw(
-            D_80102104[vs_mainMenu_equipmentSubtype & 0x18 ? 8 + statName + i
-                                                           : statName + i],
+            statStr[vs_mainMenu_equipmentSubtype & 0x18 ? 8 + statName + i
+                                                        : statName + i],
             position, temp_s4);
 
-        if (temp_fp != 0) {
+        if (valuesKnown != 0) {
             int new_var2;
-            temp_s0 = vs_mainMenu_strIntAgi[i];
-            func_800FFE20(temp_s0, position + 28, vs_mainMenu_strIntAgi[i + 4], temp_s4);
-            new_var2 = temp_s0 + D_80102488[i + 4];
-            temp_s0 += D_80102488[i];
-            var_a3 = temp_fp & 1;
+            stat = vs_mainMenu_strIntAgi[i];
+            func_800FFE20(stat, position + 28, vs_mainMenu_strIntAgi[i + 4], temp_s4);
+            new_var2 = stat + D_80102488[i + 4];
+            stat += D_80102488[i];
+            var_a3 = valuesKnown & 1;
             if (var_a3 != 0) {
                 var_a3 = D_80102498[i];
             }
-            func_800FFE20(temp_s0 + var_a3, position + 60, new_var2 + var_a3, temp_s4);
+            func_800FFE20(stat + var_a3, position + 60, new_var2 + var_a3, temp_s4);
         } else {
             vs_battle_renderTextRaw("#??", position + 28, temp_s4);
             vs_battle_renderTextRaw("#??", position + 60, temp_s4);

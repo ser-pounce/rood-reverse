@@ -360,7 +360,7 @@ void vs_mainMenu_setUiWeaponStats(int index)
             weapon->currentDp, weapon->maxDp, weapon->currentPp, weapon->maxPp);
         vs_mainMenu_setStrIntAgi(
             weapon->currentStr, weapon->currentInt, weapon->currentAgility, 1);
-        vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
+        vs_mainMenu_setRangeRisk(weapon->range.range, weapon->risk, 0, 1);
         vs_mainMenu_strIntAgi[4] = weapon->baseStr;
         vs_mainMenu_strIntAgi[5] = weapon->baseInt;
         vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
@@ -381,7 +381,7 @@ void vs_mainMenu_setUiBladeStats(int index)
     }
     vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, blade->currentPp, blade->maxPp);
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
-    vs_mainMenu_setRangeRisk(blade->range.unk0, blade->cost, 0, 1);
+    vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
     vs_mainMenu_equipmentSubtype = 2;
     D_801024A1 = index;
     func_800FBB8C(3);

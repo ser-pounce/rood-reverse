@@ -58,7 +58,7 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
         vs_mainMenu_strIntAgi[4] = weapon->baseStr;
         vs_mainMenu_strIntAgi[5] = weapon->baseInt;
         vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
-        vs_mainMenu_setRangeRisk(weapon->range.unk0, weapon->risk, 0, 1);
+        vs_mainMenu_setRangeRisk(weapon->range.range, weapon->risk, 0, 1);
     }
     func_800FBB8C(7);
 }
@@ -158,7 +158,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
     }
     vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, weapon->currentPp, weapon->maxPp);
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
-    vs_mainMenu_setRangeRisk(blade->range.unk0, blade->cost, 0, 1);
+    vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
     func_800FBB8C(3);
     vs_mainMenu_drawDpPpbars(11);
 }

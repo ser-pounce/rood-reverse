@@ -24,7 +24,7 @@ extern vs_battle_inventoryShield* vs_mainMenu_shields;
 extern vs_battle_inventoryWeapon* vs_mainMenu_weapons;
 extern vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
 extern char _itemNamesLoading;
-extern char D_80102480[8];
+extern char _rangeRiskData[8];
 extern short D_80102488[4];
 extern char D_80102490[8];
 extern short D_80102498[];

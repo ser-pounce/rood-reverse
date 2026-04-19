@@ -2568,7 +2568,7 @@ static void _setCombineBladeUi(int arg0)
                 blade->currentDp, blade->maxDp, blade->currentPp, blade->maxPp);
             vs_mainMenu_setStrIntAgi(
                 blade->strength, blade->intelligence, blade->agility, 1);
-            vs_mainMenu_setRangeRisk(blade->range.unk0, blade->cost, 0, 1);
+            vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
             vs_mainMenu_equipmentSubtype = 2;
         }
     } else if (var_s3 & arg0) {

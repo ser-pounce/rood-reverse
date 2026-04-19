@@ -465,7 +465,7 @@ int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
     return vs_mainMenu_renderIntColor(arg0, arg1, var_a2, arg3);
 }
 
-void func_800FFE70(int arg0, int arg1, u_long* arg2)
+void vs_mainMenu_renderIntColorDefault(int arg0, int arg1, u_long* arg2)
 {
     vs_mainMenu_renderIntColor(arg0, arg1, 0x808080, arg2);
 }
@@ -1398,12 +1398,13 @@ void func_80101970(void)
                     var_v1 = (((menuItem->initialX * 19) >> 4) + 96) & 0xFFFF;
                     origin = var_v1 | ((menuItem->y + 1) << 0x10);
                 }
-                func_800FFE70(j, origin, temp_s3);
+                vs_mainMenu_renderIntColorDefault(j, origin, temp_s3);
                 temp_s0 = origin - 30;
                 vs_battle_renderTextRaw("/", temp_s0, temp_s3);
-                func_800FFE70(menuItem->unk10, temp_s0, temp_s3);
+                vs_mainMenu_renderIntColorDefault(menuItem->unk10, temp_s0, temp_s3);
                 if ((menuItem->y == 18) && (menuItem->initialX < 96)) {
-                    func_800FFE70(menuItem->unkE, origin + 32, temp_s3);
+                    vs_mainMenu_renderIntColorDefault(
+                        menuItem->unkE, origin + 32, temp_s3);
                     vs_battle_renderTextRaw("-", origin, temp_s3);
                 }
             } else {
@@ -1503,7 +1504,7 @@ vs_battle_inventoryWeapon* vs_mainMenu_weapons = NULL;
 static int _2 = 0x0000D200; // Garbage
 vs_main_CdQueueSlot* _itemNamesCdQueueSlot = NULL;
 char _itemNamesLoading = 0;
-char D_80102480[8] = { 0 };
+char _rangeRiskData[8] = { 0 };
 short D_80102488[4] = { 0 };
 char D_80102490[8] = { 0 };
 short D_80102498[4] = { 0 };

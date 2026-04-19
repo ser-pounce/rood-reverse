@@ -216,17 +216,17 @@ void func_800F9CCC(void)
         vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, NULL);
     }
 
-    vs_battle_characterState->unk3C->unk38 =
-        vs_battle_characterState->unk3C->weapon.range.unk0
-        + vs_battle_characterState->unk3C->unk37_3;
+    vs_battle_characterState->unk3C->currentRange =
+        vs_battle_characterState->unk3C->weapon.range.range
+        + vs_battle_characterState->unk3C->reach;
     vs_battle_characterState->unk3C->unk39 =
         vs_battle_characterState->unk3C->weapon.range.unk1
-        + vs_battle_characterState->unk3C->unk37_3;
+        + vs_battle_characterState->unk3C->reach;
     vs_battle_characterState->unk3C->unk3A =
         vs_battle_characterState->unk3C->weapon.range.unk2
-        + vs_battle_characterState->unk3C->unk37_3;
-    vs_battle_characterState->unk3C->unk3B_3 =
-        vs_battle_characterState->unk3C->weapon.range.unk3_3;
+        + vs_battle_characterState->unk3C->reach;
+    vs_battle_characterState->unk3C->currentAttackShapeAngle =
+        vs_battle_characterState->unk3C->weapon.range.attackShapeAngle;
     vs_battle_characterState->unk3C->unk3B_0 = 1;
 
     if (shieldIndex != 0) {

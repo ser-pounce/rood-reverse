@@ -1275,7 +1275,7 @@ int _getWeaponStat(int type, vs_battle_uiWeapon* weapon)
     case 1:
         return -weapon->blade.material;
     case 2:
-        return weapon->range.unk0;
+        return weapon->range.range;
     case 3:
         return -weapon->damageType;
     case 4:
@@ -1491,7 +1491,7 @@ static int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
     case 1:
         return -item->material;
     case 2:
-        return item->range.unk0;
+        return item->range.range;
     case 3:
         return -item->damageType;
     case 4:

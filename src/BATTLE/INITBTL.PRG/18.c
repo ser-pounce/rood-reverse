@@ -128,7 +128,7 @@ void func_800F9AD8(void)
     temp_s0->agility = s1->agility;
     temp_s0->totalAgility = s1->totalAgility;
     temp_s0->risk = s1->risk;
-    temp_s0->flags.fields.unk0 = s1->flags;
+    temp_s0->unk954 = s1->flags;
 
     func_80086FA8(s1->unk1C, temp_s0);
 

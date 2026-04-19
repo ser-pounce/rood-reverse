@@ -391,6 +391,14 @@ typedef struct {
 } vs_battle_actor_unk8C0;
 
 typedef struct {
+    u_short unk0;
+    char unk2_0 : 1;
+    char unk2_1 : 1;
+    char unk2_2 : 6;
+    u_char unk3;
+} vs_battle_actor2_flags;
+
+typedef struct {
     char name[24];
     short currentHP;
     short maxHP;
@@ -427,17 +435,12 @@ typedef struct {
     char unk920[6][6];
     int unk944;
     int unk948;
-    char unk94C[8];
-    union {
-        struct {
-            u_short unk0;
-            char unk2_0 : 1;
-            char unk2_1 : 1;
-            char unk2_2 : 6;
-            u_char unk3;
-        } fields;
-        u_int u32;
-    } flags;
+    u_char unk94C[8];
+    u_short unk954;
+    u_char unk956_0 : 1;
+    u_char unk956_1 : 1;
+    u_char unk956_2 : 6;
+    u_char unk957;
     vs_battle_uiMisc miscItem;
     int unk95C;
     vs_battle_uiMiscRand unk960;
@@ -607,7 +610,7 @@ typedef struct {
     /* 0x04 */ void* unk4;
     /* 0x08 */ void* unk8;
     /* 0x0C */ int unkC;
-    /* 0x10 */ int firstPersonViewFacing;
+    /* 0x10 */ u_int firstPersonViewFacing;
     /* 0x14 */ MATRIX viewMatrix;
     /* 0x34 */ camera_t2 t2;
 } camera_t;
@@ -921,7 +924,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int func_8008B808(int, int, int, int);
 int vs_battle_getCurrentSceneId(void);
-int vs_battle_getWorkshopFlags(void);
+int vs_battle_inWorkshop(void);
 void vs_battle_setDoorEntered2(int arg0);
 void func_8008C40C(void);
 void func_8008D594(int);

@@ -882,7 +882,7 @@ void func_800FBD80(int arg0)
             D_80102488[i] -= D_80102488[4 + i];
         }
         vs_mainMenu_setStrIntAgi(temp_t0->totalStrength, temp_t0->totalIntelligence,
-            temp_t0->totalAgility, temp_t0->flags.fields.unk2_1 | (arg0 == 0));
+            temp_t0->totalAgility, temp_t0->unk956_1 | (arg0 == 0));
         vs_battle_rMemzero(&D_80102490, 8);
     }
 }

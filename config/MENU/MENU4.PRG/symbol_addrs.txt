@@ -1,2 +1,3 @@
 _drawHitLocationStatuses = 0x801045b8;
+_equipmentScreen = 0x80105970;
 vs_menu4_exec = 0x801064D4;

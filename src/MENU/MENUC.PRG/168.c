@@ -36,7 +36,7 @@ static void _addMenuTitle(int id, int textTableOffset)
     menuItem->selected = 1;
 }
 
-static u_char _workshopFlags;
+static u_char _inWorkshop;
 static u_char _combiningItem;
 static char _[2] __attribute__((unused));
 static u_int _slotSelectionHistory[5];
@@ -2630,7 +2630,7 @@ static int _selectBlade(int arg0)
                 blade = &vs_battle_inventory.blades[itemId - 1];
                 vs_mainMenu_setUiBlade(blade, menuText + count * 2,
                     &vs_battle_rowTypeBuf[count], textBuf + count * 0x60);
-                if (!((D_8010BB30[_workshopFlags] >> blade->material) & 1)) {
+                if (!((D_8010BB30[_inWorkshop] >> blade->material) & 1)) {
                     menuText[count * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                         [VS_MENU12_BIN_OFFSET_invalidBladeMaterial];
                     vs_battle_rowTypeBuf[count] |= 1;
@@ -3126,7 +3126,7 @@ static int _selectShields(int arg0)
                     shield = &vs_battle_inventory.shields[itemId - 1];
                     _initUiShield(shield, menuText + rowType * 2,
                         &vs_battle_rowTypeBuf[rowType], stringBuf + rowType * 0x60);
-                    if (!((D_8010BB30[_workshopFlags] >> shield->base.material) & 1)) {
+                    if (!((D_8010BB30[_inWorkshop] >> shield->base.material) & 1)) {
                         menuText[rowType * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidShieldMaterial];
                         vs_battle_rowTypeBuf[rowType] |= 1;
@@ -3608,7 +3608,7 @@ static int _initUiArmor(int arg0)
                     if (var_s2->category != 7) {
                         vs_mainMenu_initUiArmor(var_s2, sp10 + var_s4 * 2,
                             &vs_battle_rowTypeBuf[var_s4], temp_v0 + var_s4 * 0x60);
-                        if (!((D_8010BB30[_workshopFlags] >> var_s2->material) & 1)) {
+                        if (!((D_8010BB30[_inWorkshop] >> var_s2->material) & 1)) {
                             sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
                             vs_battle_rowTypeBuf[var_s4] |= 1;
@@ -4104,8 +4104,8 @@ int vs_menuC_exec(char* state)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noWeapons];
                 vs_battle_rowTypeBuf[3] = 1;
             }
-            _workshopFlags = vs_battle_getWorkshopFlags();
-            if (!_workshopFlags) {
+            _inWorkshop = vs_battle_inWorkshop();
+            if (!_inWorkshop) {
                 for (i = 3; i != 0;) {
                     if (++i == 6) {
                         i = 0;

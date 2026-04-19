@@ -8407,7 +8407,7 @@ void func_80042CB0(void)
     temp_t5->unk0.agility = temp_t0->agility;
     temp_t5->unk0.totalAgility = temp_t0->totalAgility;
     temp_t5->unk0.risk = temp_t0->risk;
-    temp_t5->unk0.flags = temp_t0->flags.u32;
+    temp_t5->unk0.flags = temp_t0->unk954;
     temp_t5->unk0.unk1C = temp_t0->unk948;
 
     for (i = 0; i < 8; ++i) {

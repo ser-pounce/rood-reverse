@@ -346,7 +346,7 @@ typedef struct {
     signed char agilityDefenseBonus;
     char unk5;
     u_char nameIndex;
-    char unk7;
+    char chainEvasion;
     short types[4];
     short affinities[8];
     vs_battle_uiArmor armor; // 0x18
@@ -826,6 +826,7 @@ void func_80076F24(
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7);
 void func_80077EC4(void);
+int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
 int func_8007BD8C(int);
 void func_8007AC94(int arg0);
 void func_8007ACB0(void);

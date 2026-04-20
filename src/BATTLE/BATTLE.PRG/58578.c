@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "58578.h"
 #include "../../SLUS_010.40/main.h"
 #include <stddef.h>
@@ -12,7 +13,8 @@ typedef struct {
     int unk14;
     int unk18;
     int unk1C;
-    int unk20;
+    short unk20;
+    short unk22;
     int unk24;
     short unk28;
     short unk2A;
@@ -57,7 +59,38 @@ extern D_800EB9B8_t* D_800EB9B8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0D78);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0FA8);
+typedef struct {
+    short unk0;
+    short unk2;
+    char unk4[4];
+    u_short unk8[4];
+} func_800C0FA8_t;
+
+typedef struct {
+    SVECTOR unk0;
+    int unk8;
+    int unkC;
+    short unk10[4];
+    short unk18[4];
+} func_800C0FA8_t2;
+
+void func_800C0FA8(func_800C0FA8_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
+{
+    int temp_v0;
+    int i;
+    char* new_var;
+
+    for (i = 0; i < 3; ++i) {
+        arg1->unk10[i] = arg0->unk8[i];
+        arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4[i]);
+    }
+
+    arg1->unk0.vx = arg0->unk4[3] * 0x10;
+    arg1->unk0.vy = -arg0->unk2;
+    arg1->unk0.vz = 0;
+
+    RotMatrix_gte(&arg1->unk0, arg2);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1034);
 
@@ -127,7 +160,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2368);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C253C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C282C);
+void* func_800C282C(void)
+{
+    _sphericalCamera camera;
+    int temp_a0;
+    int temp_s2;
+    int yaw;
+    short* p = (short*)0x1F800350;
+    vs_battle_syncCameraAnglesFromPosition(&camera);
+    yaw = camera.values.yaw;
+    temp_s2 = rcos(yaw);
+    temp_a0 = rsin(yaw);
+    p[0] = temp_s2;
+    p[2] = temp_a0;
+    p[8] = -temp_a0;
+    p[10] = temp_s2;
+    D_800EB9B8->unk22 = yaw;
+    return (void*)0x1F800350;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C28AC);
 

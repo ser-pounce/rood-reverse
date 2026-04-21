@@ -618,7 +618,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void nop2(int arg0);
+void _nop2(int arg0);
 int func_8008B70C(int arg0);
 void* func_8008B744(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
@@ -829,13 +829,13 @@ void func_80069DBC(void)
     vs_main_bzero(D_80061078, sizeof D_80061078);
 }
 
-void func_80069DEC(int arg0, int arg1)
+void func_80069DEC(int mapId, int zndId)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if ((D_80061078[i].unk2 == arg0) && (D_80061078[i].unk1 == arg1)) {
-            vs_main_bzero(D_80061078[i].unk8, 0x140);
+        if ((D_80061078[i].mapId == mapId) && (D_80061078[i].zndId == zndId)) {
+            vs_main_bzero(D_80061078[i].unk8, sizeof D_80061078[i].unk8);
         }
     }
 }
@@ -9257,17 +9257,17 @@ void _loadMpdLbas(void* arg0, int size)
     vs_main_memcpy(_zoneContext.mpdLbas, arg0, size);
 }
 
-void _loadZndEnemies(long* arg0, int arg1 __attribute__((unused)))
+void _loadZndEnemies(long* data, int arg1 __attribute__((unused)))
 {
-    _zoneContext.enemyCount = *arg0;
+    _zoneContext.enemyCount = *data;
 
     if (_zoneContext.enemyCount != 0) {
         _zoneContext.zudFiles = vs_main_allocHeap(_zoneContext.enemyCount * 8);
-        vs_main_memcpy(_zoneContext.zudFiles, arg0 + 1,
+        vs_main_memcpy(_zoneContext.zudFiles, data + 1,
             _zoneContext.enemyCount * sizeof *_zoneContext.zudFiles);
         _zoneContext.enemies =
             vs_main_allocHeap(_zoneContext.enemyCount * sizeof *_zoneContext.enemies);
-        vs_main_memcpy(_zoneContext.enemies, arg0 + ((_zoneContext.enemyCount * 2) + 1),
+        vs_main_memcpy(_zoneContext.enemies, data + ((_zoneContext.enemyCount * 2) + 1),
             _zoneContext.enemyCount * sizeof *_zoneContext.enemies);
         return;
     }
@@ -9279,7 +9279,6 @@ void _loadZndEnemies(long* arg0, int arg1 __attribute__((unused)))
 static void _loadZnd(int id)
 {
     vs_main_CdFile cdFile;
-    int temp_s0;
 
     cdFile.lba = vs_main_zndFiles[id].lba;
     cdFile.size = vs_main_zndFiles[id].size;
@@ -9293,7 +9292,7 @@ static void _loadZnd(int id)
     _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
     vs_main_cdEnqueuePriority(_zoneContext.zndCdFile, _zoneContext.zndData);
     if (_zoneContext.unk30 != 0) {
-        temp_s0 = D_8004FCCC[id];
+        int temp_s0 = D_8004FCCC[id];
         if (vs_main_getCurrentMusicId() != temp_s0) {
             func_8004552C(vs_main_soundData.currentMusicSlot, 0, 0x78);
         }
@@ -9363,7 +9362,7 @@ void _finishLoadZnd(int id)
 void func_80089098(void)
 {
     func_800BEBEC();
-    nop2(0);
+    _nop2(0);
     if (_zoneContext.enemies != NULL) {
         vs_main_freeHeap(_zoneContext.enemies);
     }
@@ -9425,7 +9424,53 @@ void func_80089888(void)
     func_800E6158();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089A00);
+void func_80089A00(void)
+{
+    int j;
+    int i;
+    int var_s4;
+    u_char* temp_s2;
+    u_char* temp_v0;
+
+    var_s4 = 0;
+
+    for (j = 0; j < 4; ++j) {
+        if ((D_80061078[j].unk0 != 0) && (D_80061078[j].zndId == _zoneContext.zndId)
+            && (D_80061078[j].mapId == _zoneContext.mapId)) {
+            var_s4 = 1;
+            D_80060064 = j;
+            for (i = 0; i < _zoneContext.unk60; ++i) {
+                temp_s2 = _zoneContext.unk64[i];
+                temp_v0 = func_80069E80(i);
+                if (temp_v0 != NULL) {
+                    temp_s2[2] = temp_v0[1];
+                }
+            }
+            break;
+        }
+    }
+
+    if (var_s4 == 0) {
+        i = 0;
+        for (j = 0; j < 4; ++j) {
+            if (D_80061078[j].unk0 < D_80061078[i].unk0) {
+                i = j;
+            }
+        }
+        D_80060064 = i;
+        vs_main_bzero(&D_80061078[i], sizeof D_80061078[i]);
+    }
+
+    for (i = 0; i < 4; ++i) {
+        if (D_80061078[D_80060064].unk0 < D_80061078[i].unk0) {
+            --D_80061078[i].unk0;
+        }
+    }
+
+    D_80061078[D_80060064].unk0 = 4;
+    D_80061078[D_80060064].zndId = _zoneContext.zndId;
+    D_80061078[D_80060064].mapId = _zoneContext.mapId;
+}
 
 void func_80089C5C(void* arg0, u_int arg1)
 {
@@ -9801,7 +9846,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void nop2(int arg0 __attribute__((unused))) { }
+void _nop2(int arg0 __attribute__((unused))) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {

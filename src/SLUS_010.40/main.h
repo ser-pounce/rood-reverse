@@ -360,8 +360,8 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
-    u_short unk2;
+    char zndId;
+    u_short mapId;
     u_int unk4;
     char unk8[8][0x28];
 } D_80061078_t;

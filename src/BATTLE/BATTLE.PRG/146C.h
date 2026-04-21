@@ -578,8 +578,8 @@ typedef struct {
     int unk54;
     vs_main_CdQueueSlot* mpdCdFile;
     void* mpdData;
-    int unk60;
-    void* unk64;
+    u_int unk60;
+    u_char (*unk64)[0x28];
     int unk68;
 } _zoneContext_t;
 

@@ -165,6 +165,13 @@ typedef struct {
 } func_8008C2C0_t;
 
 typedef struct {
+    short minX;
+    short minZ;
+    short maxX;
+    short maxZ;
+} _zoneContextBounds;
+
+typedef struct {
     char unk0;
     char unk1;
     short unk2;
@@ -215,7 +222,7 @@ typedef struct {
     int unkB4;
     int unkB8;
     int unkBC;
-    void* unkC0;
+    _zoneContextBounds* unkC0;
 } D_800F1BF8_t;
 
 typedef struct {
@@ -545,13 +552,6 @@ typedef struct {
 typedef struct {
     char unk0[0x464];
 } _enemy_t;
-
-typedef struct {
-    short minX;
-    short minZ;
-    short maxX;
-    short maxZ;
-} _zoneContextBounds;
 
 typedef struct {
     int zndId;

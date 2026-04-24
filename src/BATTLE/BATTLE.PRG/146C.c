@@ -620,7 +620,7 @@ void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void _nop2(int arg0);
 int func_8008B70C(int arg0);
-void* func_8008B744(int arg0);
+_zoneContextBounds* func_8008B744(int arg0);
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
@@ -9506,8 +9506,258 @@ void _loadMpd(int id)
     vs_main_cdEnqueuePriority(_zoneContext.mpdCdFile, _zoneContext.mpdData);
 }
 
-// https://decomp.me/scratch/6U28u
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089DC0);
+typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    int unkC;
+    int unk10;
+    int unk14;
+} D_800F18C8_t;
+
+typedef struct {
+    int roomSectionOffset;
+    u_short roomSectionLen;
+    u_short _pad0;
+    int clearedSectionOffset;
+    u_short clearedSectionLen;
+    u_short _pad1;
+    int scriptSectionOffset;
+    u_short scriptSectionLen;
+    u_short _pad2;
+    int doorSectionOffset;
+    u_short doorSectionLen;
+    u_short _pad3;
+    int enemySectionOffset;
+    int enemySectionLen;
+    int lootSectionOffset;
+    int lootSectionLen;
+} _mpdHeader;
+
+void func_80048EC4(void);
+void func_80089114(void);
+void func_8008A908(int, void*);
+void func_800A35A8(void);
+int func_800BE98C(void* arg0, u_short arg1, void* arg2, u_short arg3, void* arg4,
+    u_short arg5, int arg6);
+extern u_short D_8005046A;
+extern int D_8005E1C4;
+extern int D_8005E1D4;
+extern int D_8005E244;
+extern D_800F18C8_t D_800F18C8;
+extern int D_800F1908;
+extern int D_800F1A50;
+
+void func_80089DC0(int arg0)
+{
+    VECTOR sp20;
+    VECTOR lookAt;
+    func_8006EBF8_t sp40;
+    int temp_s4;
+    int var_a0;
+    char* mpdHeader;
+    int v0;
+
+    if (_zoneContext.mpdCdFile == NULL) {
+        _loadMpd(arg0);
+    }
+
+    while (_zoneContext.mpdCdFile->state != 4) {
+        vs_main_gametimeUpdate(0);
+    }
+
+    vs_main_freeCdQueueSlot(_zoneContext.mpdCdFile);
+    _zoneContext.mpdCdFile = NULL;
+
+    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
+    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
+
+    func_80048FF8();
+
+    mpdHeader = _zoneContext.mpdData;
+    v0 = ((_mpdHeader*)mpdHeader)->roomSectionOffset;
+
+    func_8008A908(0, (void*)(v0 + (int)mpdHeader));
+
+    _zoneContext.zndId = D_800F1AB0.zndId;
+    _zoneContext.mapId = D_800F1AB0.mpdId;
+
+    var_a0 = vs_battle_getCurrentSceneId();
+
+    if (var_a0 != _zoneContext.unk68) {
+        _zoneContext.unk68 = var_a0;
+        func_80088CAC();
+    }
+
+    if (D_8005046A == 0) {
+        func_8007BCCC();
+    }
+
+    D_800F19A0 = 1;
+    var_a0 = func_8008B70C(0);
+    _zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
+
+    if (var_a0 < 0) {
+        var_a0 += 0xFFFFF;
+    }
+    _zoneContext.unk3E = var_a0 >> 0x14;
+
+    if (func_8008B744(0) != NULL) {
+        _zoneContext.bounds = *func_8008B744(0);
+    } else {
+        _zoneContext.bounds.minZ = 0;
+        _zoneContext.bounds.minX = 0;
+        _zoneContext.bounds.maxX = _zoneContext.unk3C;
+        _zoneContext.bounds.maxZ = _zoneContext.unk3E;
+    }
+
+    {
+        short* v0;
+        D_800F18C8.unk0 = 0;
+        v0 = &D_800F18C8.unk8;
+        D_800F18C8.unk2 = 0;
+        D_800F18C8.unk4 = 0;
+        D_800F18C8.unk8 = 0;
+        v0[1] = 0;
+        v0[2] = 0;
+    }
+
+    func_80048EC4();
+
+    if (((_mpdHeader*)mpdHeader)->lootSectionLen != 0) {
+        v0 = ((_mpdHeader*)mpdHeader)->lootSectionOffset;
+        func_8008E6A8((void*)(v0 + (int)mpdHeader));
+    }
+
+    {
+        u_short arg5;
+        int arg2;
+        int new_var;
+        int arg4;
+        int arg0 = ((_mpdHeader*)mpdHeader)->clearedSectionOffset;
+        arg0 += (int)mpdHeader;
+        arg2 = ((_mpdHeader*)mpdHeader)->scriptSectionOffset;
+        arg2 += ((int)mpdHeader);
+        arg4 = ((_mpdHeader*)mpdHeader)->doorSectionOffset;
+        arg4 += ((int)mpdHeader);
+        arg5 = ((_mpdHeader*)mpdHeader)->doorSectionLen;
+        new_var = 1;
+        temp_s4 =
+            func_800BE98C((void*)(arg0), ((_mpdHeader*)mpdHeader)->clearedSectionLen,
+                (void*)(arg2), ((_mpdHeader*)mpdHeader)->scriptSectionLen, (void*)(arg4),
+                arg5, vs_main_startState == new_var);
+    }
+
+    if (vs_main_startState == 1) {
+        vs_main_startState = 5;
+    }
+
+    v0 = ((_mpdHeader*)mpdHeader)->enemySectionOffset;
+    func_80089C5C(
+        (void*)(v0 + (int)mpdHeader), ((_mpdHeader*)mpdHeader)->enemySectionLen);
+
+    vs_main_freeHeapR(mpdHeader);
+
+    D_800F18C8.unk14 = 0;
+
+    func_80089A00();
+    func_80089888();
+    func_80089114();
+    func_800A35A8();
+    func_80093FEC(0, 0, vs_battle_characterState->unk3C->unk948 & 0x21000, 1);
+    func_80086754(0x21000, vs_battle_characterState->unk3C);
+
+    D_800F19C8 = 0;
+    _firstPersonViewEnabled = 0;
+    D_800F1A50 = 1;
+    D_800F1868 = 0;
+    func_8007D15C(1);
+    D_8005E1D4 = 0;
+    D_8005E244 = 0;
+    D_8005E1C4 = 0;
+    vs_main_buttonRepeat = 0;
+    vs_main_buttonsReleased = 0;
+    vs_main_buttonsPressed.all = 0;
+    vs_main_buttonsPreviousState = 0;
+    vs_main_buttonsState = 0;
+    _camera.t2.farClip = ONE;
+
+    if (vs_battle_screenTransitionEffect == 3) {
+        vs_battle_screenTransitionStep = 0;
+        vs_battle_screenTransitionAlpha = 0;
+    } else {
+        vs_battle_screenTransitionStep = 3;
+    }
+
+    vs_battle_setNearClip(ONE / 64);
+    vs_battle_setProjectionDistance(ONE / 8);
+
+    vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+    vs_battle_cameraCurrentSpherical.delta.distance = 0;
+    vs_battle_cameraCurrentSpherical.values.yaw =
+        vs_battle_cameraCurrentSpherical.delta.pitch;
+    vs_battle_cameraCurrentSpherical.values.distance =
+        vs_battle_cameraCurrentSpherical.initialDistance;
+    if (vs_battle_cameraCurrentSpherical.initialDistance == (3 * ONE / 8)) {
+        vs_battle_cameraCurrentSpherical.delta.mode = 1;
+    } else {
+        vs_battle_cameraCurrentSpherical.delta.mode = 3;
+    }
+
+    vs_battle_cameraCurrentSpherical.values.pitch = -384;
+    vs_battle_cameraCurrentSpherical.unk24 = 0;
+
+    if ((_zoneContext.zndId == 27) && (_zoneContext.mapId == 1)) {
+        vs_battle_cameraCurrentSpherical.values.pitch = -128;
+    }
+
+    D_800F1908 = 0;
+
+    func_800A1108(0, &sp40);
+
+    sp20.vx = sp40.unk0.unk4.vx * ONE;
+    sp20.vy = sp40.unk0.unk4.vy * ONE - 90 * ONE;
+    sp20.vz = sp40.unk0.unk4.vz * ONE;
+
+    _clampPositionToZoneBounds(&sp20, &lookAt);
+
+    _camera.t2.lookAt = lookAt;
+    _camera.t2.yaw = vs_battle_cameraCurrentSpherical.values.yaw;
+
+    _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
+    func_800A1108(0, &sp40);
+    func_80074B14(0, &sp40.unk0.unk0.fields);
+    func_8007D360();
+    func_80048F8C();
+    func_800760CC(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
+
+    if ((temp_s4 << 0x10) != 0) {
+        func_8008EA90(1);
+        func_80073718();
+    } else {
+        if (func_800BEC58(1, 0, NULL, 0) == 1) {
+            func_800BEC30();
+            func_8008EA90(1);
+            func_80073718();
+        } else {
+            func_8007BF2C();
+            func_8007BFC0();
+            func_8008EA90(0);
+            func_80093A14();
+            func_8006F5CC();
+            func_800CB654(0);
+            if (D_800F18AC != 0) {
+                func_80045000(D_800F18AC, 0x7F, 0);
+            }
+            vs_battle_screenTransitionStep = 4;
+            func_80089CE4();
+        }
+    }
+    vs_main_padDisconnectAll();
+}
 
 void func_8008A364(void)
 {
@@ -9887,12 +10137,12 @@ int func_8008B70C(int arg0 __attribute__((unused)))
     return 0;
 }
 
-void* func_8008B744(int arg0 __attribute__((unused)))
+_zoneContextBounds* func_8008B744(int arg0 __attribute__((unused)))
 {
     if (D_800F1BF8.unkC0 != NULL) {
         return D_800F1BF8.unkC0;
     }
-    return 0;
+    return NULL;
 }
 
 func_8008B764_t* func_8008B764(u_int arg0, u_int arg1, int arg2)

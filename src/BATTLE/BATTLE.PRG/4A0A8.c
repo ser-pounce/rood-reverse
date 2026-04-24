@@ -243,7 +243,7 @@ extern char D_800F4B70[];
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
-extern void* D_800F4BAC;
+extern void* _mpdClearedSection;
 extern u_short* D_800F4BB0;
 extern char D_800F4BB4;
 extern short D_800F4BB6;
@@ -253,7 +253,7 @@ extern short* D_800F4BBC;
 extern char* D_800F4BC0[];
 extern u_short D_800F4BE0;
 extern char D_800F4BE4;
-extern void* D_800F4BE8;
+extern void* _mpdDoorSection;
 extern char D_800F4BF8;
 extern char D_800F4C00[];
 extern char D_800F4C10[];
@@ -263,7 +263,7 @@ extern char D_800F4C2C;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
-extern short D_800F4C50;
+extern short _mpdScriptSection;
 extern short D_800F4C54;
 extern short D_800F4C58[];
 extern char D_800F4C60;
@@ -3299,40 +3299,47 @@ static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
     VectorNormal(&sp10, arg1);
 }
 
-int func_800BE98C(void* arg0, u_short arg1, void* arg2, u_short arg3, void* arg4,
-    u_short arg5, int arg6)
+int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
+    void* scriptSection, u_short scriptSectionLen, void* doorSection,
+    u_short doorSectionLen, int startState)
 {
     vs_battle_setStateFlag(0xA9, 0);
-    if (arg6 == 0) {
+    if (startState == 0) {
         short i;
         for (i = 32; i < 64; ++i) {
             vs_battle_setStateFlag(i, 0);
         }
     }
-    if (arg1 != 0) {
-        D_800F4BAC = vs_main_allocHeap(arg1);
-        memcpy(D_800F4BAC, arg0, arg1);
+
+    if (clearedSectionLen != 0) {
+        _mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
+        memcpy(_mpdClearedSection, clearedSection, clearedSectionLen);
     } else {
-        D_800F4BAC = NULL;
+        _mpdClearedSection = NULL;
     }
-    if (arg5 != 0) {
-        D_800F4BE8 = vs_main_allocHeap(arg5);
-        memcpy(D_800F4BE8, arg4, arg5);
+
+    if (doorSectionLen != 0) {
+        _mpdDoorSection = vs_main_allocHeap(doorSectionLen);
+        memcpy(_mpdDoorSection, doorSection, doorSectionLen);
     } else {
-        D_800F4BE8 = NULL;
+        _mpdDoorSection = NULL;
     }
+
     if (D_800F4BE2 == 1) {
         D_800F4BE2 = 2;
         return 1;
     }
+
     if (D_800F4BE2 == 3) {
         D_800F4C34 = 0;
         D_800F4BE2 = 0;
         D_800F4BB8 = 0;
     }
-    D_800F4C50 = arg3 != 0;
-    if (D_800F4C50 != 0) {
-        memcpy(D_800F4C30, arg2, arg3);
+
+    _mpdScriptSection = scriptSectionLen != 0;
+
+    if (_mpdScriptSection != 0) {
+        memcpy(D_800F4C30, scriptSection, scriptSectionLen);
     }
     return 0;
 }
@@ -3346,11 +3353,11 @@ void func_800BEB34(void)
     if (D_800F4BE2 == 3) {
         func_800BFD9C();
     }
-    if (D_800F4BAC != 0) {
-        vs_main_freeHeap(D_800F4BAC);
+    if (_mpdClearedSection != 0) {
+        vs_main_freeHeap(_mpdClearedSection);
     }
-    if (D_800F4BE8 != 0) {
-        vs_main_freeHeap(D_800F4BE8);
+    if (_mpdDoorSection != 0) {
+        vs_main_freeHeap(_mpdDoorSection);
     }
 }
 

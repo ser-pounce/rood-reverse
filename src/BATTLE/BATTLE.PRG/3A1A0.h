@@ -34,5 +34,6 @@ void func_800A1108(int, func_8006EBF8_t*);
 void func_800A36E0(int, char, func_8006EBF8_t*);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
+void func_800A35A8(void);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);

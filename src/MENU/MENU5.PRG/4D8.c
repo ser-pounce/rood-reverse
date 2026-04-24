@@ -1531,7 +1531,7 @@ int _getCurrentRoomIndex(vs_battle_scene* scene)
     int i;
 
     int roomCount = scene->roomCount;
-    vs_battle_room* room = D_800F1BF8.unk9C->rooms;
+    vs_battle_room* room = D_800F1BF8.sectionF->rooms;
     int zoneId = room->zoneId;
     int mapId = room->mapId;
     room = scene->rooms;

@@ -403,6 +403,9 @@ extern void* D_8005E0C0[];
 extern int vs_main_nearClip;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;
+extern int D_8005E1C4;
+extern int D_8005E1D4;
+extern int D_8005E244;
 extern char vs_main_padBuffer[2][34];
 extern union {
     u_int all;
@@ -503,6 +506,7 @@ void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void vs_main_nop10(int, int);
 void func_80048A64(u_short const* img, u_int y, u_int x, u_int w);
+void func_80048EC4(void);
 void func_80048F8C(void);
 void func_80048FEC(short arg0);
 void func_80048FF8(void);

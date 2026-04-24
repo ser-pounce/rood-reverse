@@ -153,6 +153,9 @@ int func_800BB554(u_char*, short);
 int func_800BB5A4(u_char*, short);
 int func_800BB5AC(u_char*, short);
 int func_800BB604(u_char*, short);
+int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
+    void* scriptSection, u_short scriptSectionLen, void* doorSection,
+    u_short doorSectionLen, int startState);
 
 extern short D_800F4BE2;
 extern char D_800F4C08;

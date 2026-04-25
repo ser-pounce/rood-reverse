@@ -173,7 +173,7 @@ typedef struct {
     vs_battle_inventoryBlade blade;
     vs_battle_inventoryGrip grip;
     vs_battle_inventoryGem gems[3];
-    char unk94[0x18];
+    char name[24];
 } vs_battle_lootedWeapon;
 
 typedef struct {

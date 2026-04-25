@@ -2590,7 +2590,7 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
             slot->gems[i] = _copyGemToInventory(&arg0->gems[i], index);
     }
 
-    vs_battle_rMemcpy(slot->name, arg0->unk94, sizeof slot->name);
+    vs_battle_rMemcpy(slot->name, arg0->name, sizeof slot->name);
     return index;
 }
 

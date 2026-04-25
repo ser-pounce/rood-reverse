@@ -214,7 +214,7 @@ typedef struct {
     short unkE;
     short unk10;
     short unk12;
-    int unk14[136];
+    vs_battle_loot unk14;
 } _mpdRoomSection13;
 
 typedef struct {
@@ -606,13 +606,29 @@ typedef struct {
 
 typedef struct {
     char unk0[0x464];
-} _enemy_t;
+} _zndEnemy;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+} _mpdEnemy;
 
 typedef struct {
     int zndId;
     vs_main_CdFile* mpdLbas;
-    int enemyCount;
-    _enemy_t* enemies;
+    int zndEnemyCount;
+    _zndEnemy* zndEnemies;
     vs_main_CdFile* zudFiles;
     int unk14;
     int unk18;
@@ -633,8 +649,8 @@ typedef struct {
     int unk54;
     vs_main_CdQueueSlot* mpdCdFile;
     void* mpdData;
-    u_int unk60;
-    u_char (*unk64)[0x28];
+    u_int mpdEnemyCount;
+    _mpdEnemy* mpdEnemies;
     int unk68;
 } _zoneContext_t;
 

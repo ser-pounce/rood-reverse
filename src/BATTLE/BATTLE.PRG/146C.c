@@ -678,7 +678,7 @@ _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
-void _loadMpdLootSection(int (*arg0)[136]);
+void _loadMpdLootSection(void* arg0);
 void func_8008E6DC(int);
 void func_8008E8F8(void);
 void func_8008E938(void);
@@ -727,8 +727,11 @@ extern short (*_damageCalculators[])(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, 
 extern int D_800E8498;
 extern short D_800E849C[];
 extern char D_800E84AC[][4];
+extern MATRIX D_800E856C;
 extern D_800E8594_t D_800E8594;
 extern char D_800E85A0[];
+extern RECT D_800E85BC;
+extern RECT D_800E85C4;
 extern int D_800F1858;
 extern int D_800F185C;
 extern int D_800F1860;
@@ -1655,7 +1658,7 @@ int _dropWeaponRand(vs_battle_lootedWeapon* arg0, vs_battle_uiWeapon* arg1)
                 vs_battle_copyUiGemStats(&arg0->gems[i], &arg1->gems[i]);
             }
         }
-        vs_main_memcpy(arg0->unk94, arg1, sizeof arg0->unk94);
+        vs_main_memcpy(arg0->name, arg1->name, sizeof arg0->name);
         arg0->difficultyFlags = 3;
         return 1;
     }
@@ -9292,21 +9295,22 @@ void _loadMpdLbas(void* arg0, int size)
 
 void _loadZndEnemies(long* data, int arg1 __attribute__((unused)))
 {
-    _zoneContext.enemyCount = *data;
+    _zoneContext.zndEnemyCount = *data;
 
-    if (_zoneContext.enemyCount != 0) {
-        _zoneContext.zudFiles = vs_main_allocHeap(_zoneContext.enemyCount * 8);
+    if (_zoneContext.zndEnemyCount != 0) {
+        _zoneContext.zudFiles = vs_main_allocHeap(_zoneContext.zndEnemyCount * 8);
         vs_main_memcpy(_zoneContext.zudFiles, data + 1,
-            _zoneContext.enemyCount * sizeof *_zoneContext.zudFiles);
-        _zoneContext.enemies =
-            vs_main_allocHeap(_zoneContext.enemyCount * sizeof *_zoneContext.enemies);
-        vs_main_memcpy(_zoneContext.enemies, data + ((_zoneContext.enemyCount * 2) + 1),
-            _zoneContext.enemyCount * sizeof *_zoneContext.enemies);
+            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zudFiles);
+        _zoneContext.zndEnemies = vs_main_allocHeap(
+            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zndEnemies);
+        vs_main_memcpy(_zoneContext.zndEnemies,
+            data + ((_zoneContext.zndEnemyCount * 2) + 1),
+            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zndEnemies);
         return;
     }
 
     _zoneContext.zudFiles = NULL;
-    _zoneContext.enemies = NULL;
+    _zoneContext.zndEnemies = NULL;
 }
 
 static void _loadZnd(int id)
@@ -9396,8 +9400,8 @@ void func_80089098(void)
 {
     func_800BEBEC();
     _nop2(0);
-    if (_zoneContext.enemies != NULL) {
-        vs_main_freeHeap(_zoneContext.enemies);
+    if (_zoneContext.zndEnemies != NULL) {
+        vs_main_freeHeap(_zoneContext.zndEnemies);
     }
     if (_zoneContext.zudFiles != NULL) {
         vs_main_freeHeap(_zoneContext.zudFiles);
@@ -9462,7 +9466,7 @@ void func_80089A00(void)
     int j;
     int i;
     int var_s4;
-    u_char* temp_s2;
+    _mpdEnemy* temp_s2;
     u_char* temp_v0;
 
     var_s4 = 0;
@@ -9472,11 +9476,11 @@ void func_80089A00(void)
             && (D_80061078[j].mapId == _zoneContext.mapId)) {
             var_s4 = 1;
             D_80060064 = j;
-            for (i = 0; i < _zoneContext.unk60; ++i) {
-                temp_s2 = _zoneContext.unk64[i];
+            for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
+                temp_s2 = &_zoneContext.mpdEnemies[i];
                 temp_v0 = func_80069E80(i);
                 if (temp_v0 != NULL) {
-                    temp_s2[2] = temp_v0[1];
+                    temp_s2->unk2 = temp_v0[1];
                 }
             }
             break;
@@ -9505,16 +9509,16 @@ void func_80089A00(void)
     D_80061078[D_80060064].mapId = _zoneContext.mapId;
 }
 
-void _loadMpdEnemySection(void* arg0, u_int arg1)
+void _loadMpdEnemySection(void* data, u_int dataLen)
 {
-    if (arg1 != 0) {
-        _zoneContext.unk64 = vs_main_allocHeap(arg1);
-        vs_main_memcpy(_zoneContext.unk64, arg0, arg1);
-        _zoneContext.unk60 = arg1 / 40;
+    if (dataLen != 0) {
+        _zoneContext.mpdEnemies = vs_main_allocHeap(dataLen);
+        vs_main_memcpy(_zoneContext.mpdEnemies, data, dataLen);
+        _zoneContext.mpdEnemyCount = dataLen / sizeof(_mpdEnemy);
         return;
     }
-    _zoneContext.unk64 = NULL;
-    _zoneContext.unk60 = NULL;
+    _zoneContext.mpdEnemies = NULL;
+    _zoneContext.mpdEnemyCount = 0;
 }
 
 void func_80089CE4(void) { SetDispMask(1); }
@@ -10362,7 +10366,7 @@ _mpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
     if (vs_battle_roomData.sectionA != 0) {
         temp_t2 = vs_battle_roomData.header.sectionALen / 20;
         var_t0 = vs_battle_roomData.sectionA;
-        if (var_t0->unk0.unk8.u8[2] != 0) {
+        if (var_t0->unk0.unkA != 0) {
             for (i = 0; i < temp_t2; ++i, ++var_t0) {
                 if ((var_t0->unk0.unk0 == arg0) && (var_t0->unk0.unk2 == arg1)
                     && (var_t0->unk0.unk4 == arg2)) {
@@ -10763,7 +10767,8 @@ _mpdRoomSection9* func_8008D438(int arg0, int arg1, int arg2)
 {
     if (vs_battle_roomData.section9 != NULL) {
         _mpdRoomSection9* var_t0 = vs_battle_roomData.section9;
-        int temp_t1 = vs_battle_roomData.header.section9Len / 12;
+        int temp_t1 =
+            vs_battle_roomData.header.section9Len / sizeof *vs_battle_roomData.section9;
         int i;
         for (i = 0; i < temp_t1; ++i, ++var_t0) {
             if ((var_t0->unk0 == arg0) && (var_t0->unk2 == arg1)
@@ -10789,7 +10794,8 @@ _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2)
     var_a3 = vs_battle_roomData.section13;
     do {
         if (var_a3 != NULL) {
-            temp_t1 = vs_battle_roomData.header.section13Len / 564;
+            temp_t1 = vs_battle_roomData.header.section13Len
+                    / sizeof *vs_battle_roomData.section13;
             for (i = 0; i < temp_t1; ++i, ++var_a3) {
                 if ((var_a3->unk0 == arg0) && (var_a3->unk2 == arg1)) {
                     if (var_a3->unk4 == arg2) {
@@ -10860,7 +10866,8 @@ void func_8008D710(void)
     if (vs_battle_roomData.section13 != NULL) {
 
         var_s3 = vs_battle_roomData.section13;
-        temp_s4 = vs_battle_roomData.header.section13Len / 564;
+        temp_s4 =
+            vs_battle_roomData.header.section13Len / sizeof *vs_battle_roomData.section13;
 
         for (i = 0; i < temp_s4; ++i, ++var_s3) {
             temp_s0 = func_8008B764(
@@ -11110,8 +11117,57 @@ void func_8008DEAC(_mpdRoomSection9* arg0, int arg1)
     }
 }
 
-// https://decomp.me/scratch/hhjjS
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008DF14);
+void func_8008DF14(void)
+{
+    _mpdRoomSection9* var_s3;
+    int count;
+    int j;
+    int var_s2;
+    int i;
+
+    if (vs_battle_roomData.section9 != NULL) {
+        var_s3 = vs_battle_roomData.section9;
+        var_s2 = 1;
+        count =
+            vs_battle_roomData.header.section9Len / sizeof *vs_battle_roomData.section9;
+
+        for (i = 0; i < count; ++i, ++var_s3) {
+            if ((vs_main_stateFlags.unk20 == 0) && (vs_main_stateFlags.unk40 == 0)
+                && (var_s3->unkA != 0)) {
+                for (j = 0; j < (vs_gametime_tickspeed * 2); ++j) {
+                    if ((signed char)var_s3->unkB >= 0) {
+                        ++var_s3->unkB;
+                    }
+                }
+            } else {
+                for (j = 0; j < vs_gametime_tickspeed; ++j) {
+                    if (var_s3->unkB != 0) {
+                        --var_s3->unkB;
+                    }
+                }
+            }
+
+            if ((var_s3->unkB != 0) && (var_s3->unk6 < 0x10)) {
+                if (var_s2 != 0) {
+                    vs_main_memcpy(&D_800E856C, (void*)0x1F800014, sizeof D_800E856C);
+                    D_800F1D6C += vs_gametime_tickspeed;
+                    if (D_800F1D6C >= 8) {
+                        D_800F1D6C -= 8;
+                        var_s2 = (D_800F1CDC >> 3) % 5;
+                        D_800E85BC.x = (var_s2 * 8) + 0x48;
+                        D_800E85C4.x = (var_s2 * 4) + 4;
+                        MoveImage(&D_800E85BC, 0x40, 0x180);
+                        MoveImage(&D_800E85C4, 0, 0x140);
+                    }
+                    var_s2 = 0;
+                }
+                j = func_8008DC7C(var_s3->unk0 << 7, var_s3->unk2 << 7) << 0x11;
+                func_8008E19C(
+                    var_s3->unk0 << 7, var_s3->unk2 << 7, j >> 0x11, var_s3->unkB);
+            }
+        }
+    }
+}
 
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 {
@@ -11184,8 +11240,9 @@ u_int func_8008E320(int arg0)
 
 _mpdRoomSection13* func_8008E370(int* arg0)
 {
-    if (vs_battle_roomData.section13 != 0) {
-        *arg0 = vs_battle_roomData.header.section13Len / 564;
+    if (vs_battle_roomData.section13 != NULL) {
+        *arg0 =
+            vs_battle_roomData.header.section13Len / sizeof *vs_battle_roomData.section13;
         return vs_battle_roomData.section13;
     }
     *arg0 = 0;
@@ -11195,7 +11252,8 @@ _mpdRoomSection13* func_8008E370(int* arg0)
 _mpdRoomSectionA* func_8008E3B8(int* arg0)
 {
     if (vs_battle_roomData.sectionA != 0) {
-        *arg0 = vs_battle_roomData.header.sectionALen / 20;
+        *arg0 =
+            vs_battle_roomData.header.sectionALen / sizeof *vs_battle_roomData.sectionA;
         return vs_battle_roomData.sectionA;
     }
     *arg0 = 0;
@@ -11284,10 +11342,10 @@ int vs_battle_getMapCompletion(void)
     return (value * 100) / 361;
 }
 
-void _loadMpdLootSection(int (*arg0)[136])
+void _loadMpdLootSection(void* data)
 {
     if (vs_battle_roomData.section13 != NULL) {
-        vs_main_memcpy(&vs_battle_roomData.section13->unk14, arg0,
+        vs_main_memcpy(&vs_battle_roomData.section13->unk14, data,
             sizeof vs_battle_roomData.section13->unk14);
     }
 }

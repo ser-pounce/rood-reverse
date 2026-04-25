@@ -8,6 +8,5 @@ ifndef __BASH_MAKE_COMPLETION__
 $(BUILD)/config/%/link.d: config/%/splat.yaml config/%/symbol_addrs.txt config/%/Makefile | $$(if $$(wildcard $$(DISKCONFIG)),,$$(DISKCONFIG)) $$(@D)/
 	$(ECHO) Splitting $*
 	$(SPLAT) $(SPLATFLAGS) config/splat.config.yaml $< $(if $(DEBUG),,> $(BUILD)/config/$*/splat.log 2> /dev/null)
-	$(SED) -En 's/(.*).o:$$/-include \1.d/p' $@ | sort -u >> $@
 endif
 endif

@@ -201,9 +201,9 @@ void func_800918E8(int arg0)
 
 void* func_8009195C(int arg0)
 {
-    if (D_800F1BF8.geometrySection != NULL) {
-        int v1 = *D_800F1BF8.geometrySection;
-        int* a1 = D_800F1BF8.geometrySection + 1;
+    if (vs_battle_roomData.geometrySection != NULL) {
+        int v1 = *vs_battle_roomData.geometrySection;
+        int* a1 = vs_battle_roomData.geometrySection + 1;
         if ((arg0 >= 0) && (arg0 < v1)) {
             return a1 + (arg0 * 16);
         }
@@ -384,11 +384,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093364);
 
 int func_8009352C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    if (D_800F1BF8.section14 != NULL) {
+    if (vs_battle_roomData.section14 != NULL) {
         if ((arg1->unk4[0].u16[0] == 0) || (D_800F1D00 != 0)) {
-            func_800462E8(0x200, D_800F1BF8.section14, arg1->unk4[0].u16[1]);
+            func_800462E8(0x200, vs_battle_roomData.section14, arg1->unk4[0].u16[1]);
         } else {
-            func_800461CC(0x200, D_800F1BF8.section14, arg1->unk4[0].u16[1], 0x80, 0);
+            func_800461CC(
+                0x200, vs_battle_roomData.section14, arg1->unk4[0].u16[1], 0x80, 0);
         }
         D_800F2258 = arg1->unk4[0].u16[1];
     }
@@ -397,8 +398,8 @@ int func_8009352C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 
 int func_800935B8(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    if (D_800F1BF8.section14 != NULL) {
-        func_8004644C(0x200, D_800F1BF8.section14, arg1->unk4[0].u16[1]);
+    if (vs_battle_roomData.section14 != NULL) {
+        func_8004644C(0x200, vs_battle_roomData.section14, arg1->unk4[0].u16[1]);
         D_800F2258 = -1;
     }
     return 0;
@@ -459,7 +460,7 @@ void func_80093788(int arg0)
         void* a0;
         if (D_800F1DD8[arg0].unk1 == 6) {
             temp_a2 = D_800F1DD8[arg0].unk4;
-            a0 = (void*)D_800F1BF8.geometrySection;
+            a0 = (void*)vs_battle_roomData.geometrySection;
             if (D_800F1DD8[arg0].unk0 != 0) {
                 temp_v1 = a0 + temp_a2->unk0;
                 temp_v1[5] = temp_a2->unk18;
@@ -485,7 +486,7 @@ void func_80093824(int arg0)
     int* temp_a0;
 
     temp_a2 = (D_800F1DD8_t2*)D_800F1DD8[arg0].unk4;
-    temp_a0 = (void*)D_800F1BF8.geometrySection + temp_a2->unk0;
+    temp_a0 = (void*)vs_battle_roomData.geometrySection + temp_a2->unk0;
 
     if (temp_a2->unk7 == 2) {
         temp_a0[4] = temp_a2->unk18;
@@ -503,11 +504,11 @@ void func_80093824(int arg0)
 
 void func_800938AC(int arg0)
 {
-    if ((D_800F2258 != -1) && (D_800F1BF8.section14 != NULL)) {
+    if ((D_800F2258 != -1) && (vs_battle_roomData.section14 != NULL)) {
         if (arg0 != 0) {
-            func_80046494(0x200, D_800F1BF8.section14, D_800F2258, 0x20, 8);
+            func_80046494(0x200, vs_battle_roomData.section14, D_800F2258, 0x20, 8);
         } else {
-            func_80046494(0x200, D_800F1BF8.section14, D_800F2258, 0x7F, 8);
+            func_80046494(0x200, vs_battle_roomData.section14, D_800F2258, 0x7F, 8);
         }
     }
 }
@@ -517,16 +518,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093914);
 void func_80093A14(void)
 {
     D_800F1D00 = 1;
-    if ((D_800F2258 != -1) && (D_800F1BF8.section14 != NULL)) {
-        func_80046494(0x200, D_800F1BF8.section14, D_800F2258, 0x7F, 0);
+    if ((D_800F2258 != -1) && (vs_battle_roomData.section14 != NULL)) {
+        func_80046494(0x200, vs_battle_roomData.section14, D_800F2258, 0x7F, 0);
     }
 }
 
 void func_80093A70(void)
 {
     if (D_800F2258 != -1) {
-        if (D_800F1BF8.section14 != 0) {
-            func_800462E8(0x200, D_800F1BF8.section14, D_800F2258);
+        if (vs_battle_roomData.section14 != 0) {
+            func_800462E8(0x200, vs_battle_roomData.section14, D_800F2258);
         }
     }
 }

@@ -318,7 +318,7 @@ typedef struct {
 } func_80069EF0_t;
 
 typedef struct {
-    _mpdSectionA* unk0;
+    _mpdRoomSectionA* unk0;
     func_8006EBF8_t unk4;
 } D_800F1910_t;
 
@@ -412,7 +412,7 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    _mpdSectionA* unk4;
+    _mpdRoomSectionA* unk4;
 } D_800F1D28_t;
 
 typedef struct {
@@ -479,7 +479,7 @@ typedef struct {
 
 typedef struct {
     int count;
-    _mpdDoorSection_t* values[0];
+    _mpdRoomDoorSection_t* values[0];
 } D_800F1D08_t;
 
 typedef struct {
@@ -530,7 +530,7 @@ typedef struct {
     int lootSectionLen;
 } _mpdHeader;
 
-void _loadMpdRoomSection(int, void* data);
+int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
 void _snapLookAtToPosition(VECTOR*);
@@ -567,8 +567,8 @@ void func_80072BA8(int);
 void func_80072EC4(int, u_short);
 void _endBattleCameraTransition(void);
 void func_80073718(void);
-void func_80073D30(_mpdSectionA*, func_8006EBF8_t*, int);
-void func_80073E30(_mpdSectionA*, int);
+void func_80073D30(_mpdRoomSectionA*, func_8006EBF8_t*, int);
+void func_80073E30(_mpdRoomSectionA*, int);
 int func_80074798(func_8006EBF8_t*, char*);
 void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1);
 void func_80076D50(u_int, int, int, int, int);
@@ -648,34 +648,34 @@ int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void _nop2(int arg0);
-int func_8008B70C(int arg0);
+int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
-_mpdSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
+_mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
-_mpdSectionA* func_8008BC04(int, int, int);
-void func_8008BD74(_mpdSectionA*);
-int func_8008BEBC(_mpdSectionA* arg0);
-int func_8008BF48(_mpdSectionA*);
-void func_8008C070(int arg0, _mpdSectionA* arg1);
-int func_8008C1C8(_mpdSectionA* arg0);
+_mpdRoomSectionA* func_8008BC04(int, int, int);
+void func_8008BD74(_mpdRoomSectionA*);
+int func_8008BEBC(_mpdRoomSectionA* arg0);
+int func_8008BF48(_mpdRoomSectionA*);
+void func_8008C070(int arg0, _mpdRoomSectionA* arg1);
+int func_8008C1C8(_mpdRoomSectionA* arg0);
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
 int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
-_mpdSection9* func_8008D438(int, int, int);
-_mpdSection13* func_8008D508(int arg0, int arg1, int arg2);
+_mpdRoomSection9* func_8008D438(int, int, int);
+_mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
 void func_8008D594(int arg0);
-void func_8008D5FC(_mpdSectionA* arg0);
-void func_8008D658(_mpdSectionA*);
+void func_8008D5FC(_mpdRoomSectionA* arg0);
+void func_8008D658(_mpdRoomSectionA*);
 void func_8008D710(void);
 int _getDoorId(int);
 short func_8008DC7C(int arg0, int arg1);
-void func_8008DEAC(_mpdSection9* arg0, int arg1);
+void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
-_mpdSection13* func_8008E370(int* arg0);
-_mpdSectionA* func_8008E3B8(int* arg0);
+_mpdRoomSection13* func_8008E370(int* arg0);
+_mpdRoomSectionA* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
 void func_8008E4DC(int);
 void _loadMpdLootSection(int (*arg0)[136]);
@@ -775,8 +775,9 @@ extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
 extern void* D_800F1BB8;
+extern char D_800F1BBC;
 extern short vs_battle_doorEntered;
-extern _mpdRoomSection D_800F1BF8;
+extern _mpdRoomSection vs_battle_roomData;
 extern u_short D_800F1CCA;
 extern void* D_800F1CC0;
 extern char D_800F1CD6;
@@ -2112,7 +2113,7 @@ void func_8006CDB8(void) { func_8009D854(); }
 
 void func_8006CDD8(short* arg0)
 {
-    _mpdSection9* temp_v0;
+    _mpdRoomSection9* temp_v0;
     int var_a0;
     int var_a1;
 
@@ -2138,8 +2139,8 @@ void func_8006CE50(void) { func_8008D5A0(0xB4); }
 void func_8006CE70(func_8006CE70_t* arg0)
 {
     int sp10;
-    _mpdSectionA* temp_v0;
-    _mpdSection13* temp_v0_2;
+    _mpdRoomSectionA* temp_v0;
+    _mpdRoomSection13* temp_v0_2;
     int new_var2 = 4;
     int new_var3 = 2;
 
@@ -3617,7 +3618,7 @@ void func_80073ACC(void)
     func_8006F5CC();
 }
 
-int func_80073AFC(_mpdSectionA* arg0)
+int func_80073AFC(_mpdRoomSectionA* arg0)
 {
     short sp10[4];
     int var_s1;
@@ -3687,7 +3688,7 @@ int func_80073AFC(_mpdSectionA* arg0)
     return 1;
 }
 
-void func_80073D30(_mpdSectionA* arg0, func_8006EBF8_t* arg1, int arg2)
+void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int arg2)
 {
     func_800CF0E8_t sp10;
 
@@ -3712,7 +3713,7 @@ void func_80073D30(_mpdSectionA* arg0, func_8006EBF8_t* arg1, int arg2)
     func_800CF3F8(&sp10, 0);
 }
 
-void func_80073E30(_mpdSectionA* arg0, int arg1)
+void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
 {
     short sp10[4];
     int var_s1;
@@ -3750,7 +3751,7 @@ void func_80073E30(_mpdSectionA* arg0, int arg1)
     func_8009E070(0, sp10, 3);
 }
 
-void func_80073F7C(_mpdSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
+void func_80073F7C(_mpdRoomSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
 {
     int i;
 
@@ -3770,7 +3771,7 @@ void func_80073F7C(_mpdSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
     D_800F19CC->unk8.unk0 = 0;
 }
 
-void func_80074050(_mpdSectionA* arg0, int arg1)
+void func_80074050(_mpdRoomSectionA* arg0, int arg1)
 {
     short sp10[4];
     int i;
@@ -4044,11 +4045,11 @@ int func_80074860(int arg0)
     return func_800BEC58(4, 0, sp20, 1) == 1;
 }
 
-_mpdSectionA* func_800748B8(int arg0)
+_mpdRoomSectionA* func_800748B8(int arg0)
 {
     func_8006EBF8_t sp10;
     char sp20[4];
-    _mpdSectionA* temp_s1;
+    _mpdRoomSectionA* temp_s1;
     char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
@@ -4063,11 +4064,11 @@ _mpdSectionA* func_800748B8(int arg0)
     return temp_s1;
 }
 
-_mpdSection13* func_80074950(int arg0)
+_mpdRoomSection13* func_80074950(int arg0)
 {
     func_8006EBF8_t sp10;
     char sp20[4];
-    _mpdSection13* temp_v0;
+    _mpdRoomSection13* temp_v0;
     int temp_s2;
     char* s1 = sp20;
 
@@ -4141,8 +4142,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074BAC);
 
 int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
 {
-    _mpdSection9* temp_v0_2;
-    _mpdSection3* temp_s4;
+    _mpdRoomSection9* temp_v0_2;
+    _mpdRoomSection3* temp_s4;
     int temp_s3;
     u_int temp_a2;
     u_int temp_v0;
@@ -4174,7 +4175,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                             temp_v0_2 = func_8008D438(s2->unk0.fields.unk0_0,
                                 s2->unk0.fields.unk0_16, s2->unk0.fields.unk0_8);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
-                                func_80073F7C((_mpdSectionA*)temp_v0_2, arg1, arg0);
+                                func_80073F7C((_mpdRoomSectionA*)temp_v0_2, arg1, arg0);
                                 temp_s0->unk2C.s32 = s2->unk0.value;
                                 temp_s0->unk2C.u8[3] = temp_s3;
                                 return 3;
@@ -9584,7 +9585,7 @@ void func_80089DC0(int arg0)
     }
 
     D_800F19A0 = 1;
-    var_a0 = func_8008B70C(0);
+    var_a0 = _getCollisionMapDimensions(0);
     _zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
 
     if (var_a0 < 0) {
@@ -9799,7 +9800,7 @@ void func_8008A4DC(int arg0)
 int func_8008A4FC(void)
 {
     func_8006EBF8_t sp10;
-    _mpdSection9* temp_v0;
+    _mpdRoomSection9* temp_v0;
     u_int temp_a2;
     u_int temp_v0_2;
     u_int var_a2;
@@ -9932,8 +9933,93 @@ void _loadZndTims(void* data)
     DrawSync(0);
 }
 
-// https://decomp.me/scratch/jsBf0
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", _loadMpdRoomSection);
+int _loadMpdRoomSection(int arg0, void* data)
+{
+    int i;
+    void* temp_v0;
+    _mpdRoomSection* var_s0;
+    _mpdRoomSectionE* sectionE;
+    u_int dataSz;
+
+    D_800F1BB6 = 0;
+
+    for (i = 0, dataSz = 0; i < 24; ++i) {
+        dataSz += ((int*)data)[i];
+    }
+
+    if (dataSz == 0) {
+        return 0;
+    }
+
+    vs_main_memcpy(&vs_battle_roomData.header, data, 0x60);
+    temp_v0 = vs_main_allocHeap(dataSz);
+    vs_main_memcpy(temp_v0, data + 0x60, dataSz);
+
+    dataSz = 0;
+    var_s0 = &vs_battle_roomData;
+
+    for (i = 0; i < 24; i++) {
+        if (((int*)data)[i] > 0) {
+            (&var_s0->geometrySection)[i] = (void*)(temp_v0 + dataSz);
+        } else {
+            (&var_s0->geometrySection)[i] = NULL;
+        }
+        dataSz += ((int*)data)[i];
+    }
+
+    vs_battle_roomData.unk0 = 1;
+    vs_battle_roomData.unk1 = 0;
+    vs_battle_roomData.unk2 = arg0;
+
+    if (vs_battle_roomData.geometrySection != NULL) {
+        func_8008B390(11, vs_battle_roomData.geometrySection);
+    }
+
+    sectionE = vs_battle_roomData.sectionE;
+    if (sectionE != NULL) {
+        sectionE->unkC = (int*)(sectionE + 1);
+        if (sectionE->unk8 > 0) {
+            sectionE->unk10 = (int*)(sectionE + 1);
+            sectionE->unk10 += sectionE->unk4 >> 2;
+        } else {
+            sectionE->unk10 = NULL;
+        }
+    }
+
+    if (vs_battle_roomData.collisionMapSection != NULL) {
+        vs_battle_roomData.collisionMapSection->unk6 =
+            vs_battle_roomData.collisionMapSection->width
+            * vs_battle_roomData.collisionMapSection->height;
+    }
+
+    if (vs_battle_roomData.sectionF != NULL) {
+        vs_battle_initSceneAndGetRoomNames(vs_battle_roomData.sectionF);
+        vs_battle_setRoomsUnk0(vs_battle_roomData.sectionF);
+        vs_battle_roomData.sectionF->rooms[0].visited = 1;
+        if (vs_main_stateFlags.doorEntered == 0) {
+            vs_battle_setDoorEntered2(vs_battle_doorEntered);
+        } else {
+            vs_battle_setDoorEntered2(vs_main_stateFlags.doorEntered - 1);
+            vs_main_stateFlags.doorEntered = 0;
+        }
+    }
+
+    func_8008B6B4();
+    func_80092548();
+    func_8008D710();
+    func_8008C538();
+    func_80093AB4();
+    func_8008E8F8();
+    func_8008E938();
+    func_8008B320();
+
+    D_800F1BBC = 0;
+
+    if (vs_battle_roomData.sectionE != NULL) {
+        vs_main_wait();
+    }
+    return 1;
+}
 
 void vs_battle_setDoorEntered(void)
 {
@@ -9942,8 +10028,8 @@ void vs_battle_setDoorEntered(void)
 
 int func_8008AB80(int arg0)
 {
-    if ((D_800F1BF8.unk0 == 1) && (D_800F1BF8.unk2 == arg0)) {
-        D_800F1BF8.unk1 = D_800F1BF8.unk0;
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+        vs_battle_roomData.unk1 = vs_battle_roomData.unk0;
         return 1;
     }
     return 0;
@@ -9951,8 +10037,8 @@ int func_8008AB80(int arg0)
 
 int func_8008ABB8(int arg0)
 {
-    if ((D_800F1BF8.unk0 == 1) && (D_800F1BF8.unk2 == arg0)) {
-        D_800F1BF8.unk1 = 0;
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+        vs_battle_roomData.unk1 = 0;
         return 1;
     }
     return 0;
@@ -9960,15 +10046,15 @@ int func_8008ABB8(int arg0)
 
 int func_8008ABF0(int arg0)
 {
-    if (D_800F1BF8.unk0 == 1) {
-        if (D_800F1BF8.unk2 == arg0) {
+    if (vs_battle_roomData.unk0 == 1) {
+        if (vs_battle_roomData.unk2 == arg0) {
             func_8008F234();
             func_80091378();
             func_80092A18();
-            if (D_800F1BF8.geometrySection != 0) {
-                vs_main_freeHeap((void*)D_800F1BF8.geometrySection);
+            if (vs_battle_roomData.geometrySection != 0) {
+                vs_main_freeHeap((void*)vs_battle_roomData.geometrySection);
             }
-            vs_main_bzero(&D_800F1BF8, 0xC4);
+            vs_main_bzero(&vs_battle_roomData, 0xC4);
             return 1;
         }
     }
@@ -10000,8 +10086,8 @@ void func_8008B28C(void)
 
 void func_8008B2C0(int arg0)
 {
-    if (D_800F1BF8.unk0 != 0) {
-        D_800F1BF8.unk1 = arg0;
+    if (vs_battle_roomData.unk0 != 0) {
+        vs_battle_roomData.unk1 = arg0;
     }
 }
 
@@ -10111,39 +10197,41 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-_mpdSection3* func_8008B6EC(void) { return D_800F1BF8.section3; }
+_mpdRoomSection3* func_8008B6EC(void) { return vs_battle_roomData.section3; }
 
-int func_8008B6FC(void) { return D_800F1BF8.section6; }
+int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 
-int func_8008B70C(int arg0 __attribute__((unused)))
+int _getCollisionMapDimensions(int arg0 __attribute__((unused)))
 {
-    if (D_800F1BF8.collisionSection != 0) {
-        return (D_800F1BF8.collisionSection->unk2 << 0x14)
-             | ((u_short)(D_800F1BF8.collisionSection->unk0 * 0x10));
+    if (vs_battle_roomData.collisionMapSection != NULL) {
+        return (vs_battle_roomData.collisionMapSection->height << 0x14)
+             | ((u_short)(vs_battle_roomData.collisionMapSection->width * 16));
     }
     return 0;
 }
 
 _zoneContextBounds* _getMapBounds(int arg0 __attribute__((unused)))
 {
-    if (D_800F1BF8.section18 != NULL) {
-        return D_800F1BF8.section18;
+    if (vs_battle_roomData.section18 != NULL) {
+        return vs_battle_roomData.section18;
     }
     return NULL;
 }
 
-_mpdSection3* func_8008B764(u_int arg0, u_int arg1, int arg2)
+_mpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
 {
-    if (D_800F1BF8.section3 != NULL) {
+    if (vs_battle_roomData.section3 != NULL) {
         if (arg2 >= 2) {
-            if (D_800F1BF8.section12 != NULL) {
-                return &D_800F1BF8.section12[arg2 - 2].unkB4;
+            if (vs_battle_roomData.section12 != NULL) {
+                return &vs_battle_roomData.section12[arg2 - 2].unkB4;
             }
             return NULL;
         }
-        if ((arg0 < D_800F1BF8.collisionSection->unk0)
-            && (arg1 < D_800F1BF8.collisionSection->unk2)) {
-            return &D_800F1BF8.section3[arg1 * D_800F1BF8.collisionSection->unk0 + arg0];
+        if ((width < vs_battle_roomData.collisionMapSection->width)
+            && (height < vs_battle_roomData.collisionMapSection->height)) {
+            return &vs_battle_roomData
+                        .section3[height * vs_battle_roomData.collisionMapSection->width
+                                  + width];
         }
     }
     return NULL;
@@ -10151,23 +10239,25 @@ _mpdSection3* func_8008B764(u_int arg0, u_int arg1, int arg2)
 
 int func_8008B808(int arg0, int arg1, int arg2, int arg3)
 {
-    _mpdSection3* temp_a0;
+    _mpdRoomSection3* temp_a0;
 
-    if (D_800F1BF8.section3 != NULL) {
+    if (vs_battle_roomData.section3 != NULL) {
         if (arg3 != 0) {
             arg3 = 5;
         }
         if (arg2 >= 2) {
-            if (D_800F1BF8.section12 != NULL) {
-                temp_a0 = &D_800F1BF8.section12[arg2 - 2].unkB4;
+            if (vs_battle_roomData.section12 != NULL) {
+                temp_a0 = &vs_battle_roomData.section12[arg2 - 2].unkB4;
                 temp_a0->unk0_10 = arg3;
                 return 1;
             }
         } else {
             temp_a0 =
-                &D_800F1BF8.section3[(arg2 * D_800F1BF8.collisionSection->unk0
-                                         * D_800F1BF8.collisionSection->unk2)
-                                     + (arg1 * D_800F1BF8.collisionSection->unk0) + arg0];
+                &vs_battle_roomData
+                     .section3[(arg2 * vs_battle_roomData.collisionMapSection->width
+                                   * vs_battle_roomData.collisionMapSection->height)
+                               + (arg1 * vs_battle_roomData.collisionMapSection->width)
+                               + arg0];
             temp_a0->unk0_10 = arg3;
             return 1;
         }
@@ -10192,12 +10282,12 @@ void func_8008B960(int arg0, int arg1, int arg2)
 {
     int temp_t4;
     int j;
-    _mpdDoorSection_t* var_s0;
+    _mpdRoomDoorSection_t* var_s0;
     int i;
 
-    if (D_800F1BF8.doorSection != 0) {
-        temp_t4 = D_800F1BF8.roomSectionHeader.doorSectionLen / 12;
-        var_s0 = D_800F1BF8.doorSection;
+    if (vs_battle_roomData.doorSection != 0) {
+        temp_t4 = vs_battle_roomData.header.doorSectionLen / 12;
+        var_s0 = vs_battle_roomData.doorSection;
         for (i = 0; i < temp_t4; ++i, ++var_s0) {
             if ((arg2 >= 2) && ((&var_s0->unk2)->unk0_10 == arg2)) {
                 break;
@@ -10235,15 +10325,15 @@ void func_8008B960(int arg0, int arg1, int arg2)
 
 D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
 {
-    _mpdDoorSection_t* var_s0;
+    _mpdRoomDoorSection_t* var_s0;
     int temp_s1;
     int i;
-    _mpdDoorSection_t* new_var;
+    _mpdRoomDoorSection_t* new_var;
 
-    if (D_800F1BF8.doorSection != NULL) {
-        var_s0 = D_800F1BF8.doorSection;
+    if (vs_battle_roomData.doorSection != NULL) {
+        var_s0 = vs_battle_roomData.doorSection;
         D_800F1D08.count = 0;
-        temp_s1 = D_800F1BF8.roomSectionHeader.doorSectionLen / 12;
+        temp_s1 = vs_battle_roomData.header.doorSectionLen / 12;
 
         vs_main_stateFlags.unkAC[7] = rand();
 
@@ -10263,15 +10353,15 @@ D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-_mpdSectionA* func_8008BC04(int arg0, int arg1, int arg2)
+_mpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
 {
     int temp_t2;
-    _mpdSectionA* var_t0;
+    _mpdRoomSectionA* var_t0;
     int i;
 
-    if (D_800F1BF8.sectionA != 0) {
-        temp_t2 = D_800F1BF8.roomSectionHeader.sectionALen / 20;
-        var_t0 = D_800F1BF8.sectionA;
+    if (vs_battle_roomData.sectionA != 0) {
+        temp_t2 = vs_battle_roomData.header.sectionALen / 20;
+        var_t0 = vs_battle_roomData.sectionA;
         if (var_t0->unk0.unk8.u8[2] != 0) {
             for (i = 0; i < temp_t2; ++i, ++var_t0) {
                 if ((var_t0->unk0.unk0 == arg0) && (var_t0->unk0.unk2 == arg1)
@@ -10310,9 +10400,9 @@ _mpdSectionA* func_8008BC04(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-void func_8008BD74(_mpdSectionA* arg0)
+void func_8008BD74(_mpdRoomSectionA* arg0)
 {
-    _mpdSection3* var_a0;
+    _mpdRoomSection3* var_a0;
 
     var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (var_a0 != NULL) {
@@ -10338,7 +10428,7 @@ void func_8008BD74(_mpdSectionA* arg0)
     }
 }
 
-int func_8008BEBC(_mpdSectionA* arg0)
+int func_8008BEBC(_mpdRoomSectionA* arg0)
 {
     if (arg0->unk12 == 0) {
         u_int temp_a0 = (u_short)arg0->unkC;
@@ -10357,9 +10447,9 @@ int func_8008BEBC(_mpdSectionA* arg0)
     return 0;
 }
 
-int func_8008BF48(_mpdSectionA* arg0)
+int func_8008BF48(_mpdRoomSectionA* arg0)
 {
-    _mpdSectionA* temp_s0;
+    _mpdRoomSectionA* temp_s0;
 
     if (arg0->unkE == 0) {
         vs_main_playSfxDefault(0x7E, 0x1D);
@@ -10373,7 +10463,7 @@ int func_8008BF48(_mpdSectionA* arg0)
         func_8008BD74(arg0);
     }
     if (arg0->unk10 != -1) {
-        temp_s0 = D_800F1BF8.sectionA;
+        temp_s0 = vs_battle_roomData.sectionA;
         if (temp_s0[arg0->unk10].unk0.unkA != 0) {
             func_8009291C(temp_s0[arg0->unk10].unk0.unk8.u8[1]);
             if (temp_s0[arg0->unk10].unkE != 0) {
@@ -10386,7 +10476,7 @@ int func_8008BF48(_mpdSectionA* arg0)
     return 1;
 }
 
-void func_8008C070(int arg0, _mpdSectionA* arg1)
+void func_8008C070(int arg0, _mpdRoomSectionA* arg1)
 {
     int i;
 
@@ -10403,7 +10493,7 @@ void func_8008C070(int arg0, _mpdSectionA* arg1)
 
 void func_8008C0C0(void)
 {
-    _mpdSectionA* temp_a0;
+    _mpdRoomSectionA* temp_a0;
     int i;
 
     if (D_800F1D6A <= 0) {
@@ -10437,7 +10527,7 @@ void func_8008C0C0(void)
     }
 }
 
-int func_8008C1C8(_mpdSectionA* arg0)
+int func_8008C1C8(_mpdRoomSectionA* arg0)
 {
     if (func_80093764(arg0->unk0.unk8.u8[1]) != 0) {
         return 0;
@@ -10448,7 +10538,7 @@ int func_8008C1C8(_mpdSectionA* arg0)
     arg0->unk12 = 0;
     arg0->unkE = arg0->unkE == 0;
     if (arg0->unk10 != -1) {
-        _mpdSectionA* p = D_800F1BF8.sectionA;
+        _mpdRoomSectionA* p = vs_battle_roomData.sectionA;
         if (p[arg0->unk10].unk0.unkA != 0) {
             if (p[arg0->unk10].unkE == 0) {
                 func_8008BD74(&p[arg0->unk10]);
@@ -10462,19 +10552,19 @@ int func_8008C1C8(_mpdSectionA* arg0)
 
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
 {
-    _mpdSection11* var_a1;
-    _mpdSection11* new_var;
+    _mpdRoomSection11* var_a1;
+    _mpdRoomSection11* new_var;
     int i;
     int j;
     int len;
     int v;
     char* s1;
 
-    if (D_800F1BF8.section11 != 0) {
+    if (vs_battle_roomData.section11 != 0) {
         func_8008C40C();
         v = ((_camera.t2.yaw + 0x900) & 0xFFF) >> 9;
-        var_a1 = D_800F1BF8.section11;
-        len = D_800F1BF8.roomSectionHeader.section11Len;
+        var_a1 = vs_battle_roomData.section11;
+        len = vs_battle_roomData.header.section11Len;
         for (i = 0; i < len;) {
             new_var = var_a1;
             if (new_var->unk0_0 == arg0) {
@@ -10491,7 +10581,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
             }
             j = new_var->unk2 + ((4 - (new_var->unk2 & 3)) & 3) + 4;
             i += j;
-            var_a1 = (_mpdSection11*)((char*)var_a1 + j);
+            var_a1 = (_mpdRoomSection11*)((char*)var_a1 + j);
         }
     }
     return 0;
@@ -10503,9 +10593,9 @@ void func_8008C40C(void)
     int i;
     int* var_a0;
 
-    var_a0 = D_800F1BF8.geometrySection + 1;
-    if (D_800F1BF8.geometrySection != 0) {
-        temp_a1 = D_800F1BF8.geometrySection[0];
+    var_a0 = vs_battle_roomData.geometrySection + 1;
+    if (vs_battle_roomData.geometrySection != 0) {
+        temp_a1 = vs_battle_roomData.geometrySection[0];
         for (i = 0; i < temp_a1; ++i) {
             *var_a0 &= ~0x1000;
             var_a0 += 16;
@@ -10517,16 +10607,16 @@ void func_8008C458(int arg0) { func_80098B38(arg0, 0); }
 
 int func_8008C478(int arg0)
 {
-    if (D_800F1BF8.section7 != 0) {
-        return D_800F1BF8.section7 + (arg0 * 8);
+    if (vs_battle_roomData.section7 != 0) {
+        return vs_battle_roomData.section7 + (arg0 * 8);
     }
     return 0;
 }
 
 int func_8008C49C(int arg0, int arg1)
 {
-    if (D_800F1BF8.section12 != NULL) {
-        D_800F1BF8.section12[arg0].unk4_1 = arg1;
+    if (vs_battle_roomData.section12 != NULL) {
+        vs_battle_roomData.section12[arg0].unk4_1 = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
             D_800F1D70[arg0] = 0;
         }
@@ -10539,7 +10629,7 @@ void func_8008C518(int arg0) { func_8008C49C(arg0, -1); }
 
 void func_8008C538(void)
 {
-    _mpdSection12* var_s2;
+    _mpdRoomSection12* var_s2;
     int temp_s3;
     int i;
     int* temp_v0;
@@ -10553,9 +10643,9 @@ void func_8008C538(void)
         D_800F1D70[i] = 7;
     }
 
-    if (D_800F1BF8.section12 != NULL) {
-        temp_s3 = D_800F1BF8.roomSectionHeader.section12Len / 184;
-        var_s2 = D_800F1BF8.section12;
+    if (vs_battle_roomData.section12 != NULL) {
+        temp_s3 = vs_battle_roomData.header.section12Len / 184;
+        var_s2 = vs_battle_roomData.section12;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
             temp_v0 = func_8009195C(var_s2->unk0_0);
             if (temp_v0 != NULL) {
@@ -10578,11 +10668,11 @@ void func_8008C538(void)
 
 void func_8008C6B4(int arg0, int arg1)
 {
-    _mpdSection12* temp_s0;
+    _mpdRoomSection12* temp_s0;
     int* temp_v0_5;
 
-    if (D_800F1BF8.section12 != NULL) {
-        temp_s0 = &D_800F1BF8.section12[arg0];
+    if (vs_battle_roomData.section12 != NULL) {
+        temp_s0 = &vs_battle_roomData.section12[arg0];
         if (arg1 == -1) {
             arg1 = temp_s0->unk4_8;
         }
@@ -10624,7 +10714,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);
 
 int func_8008D2C0(func_8008D2C0_t arg0[])
 {
-    _mpdSection12* var_t0;
+    _mpdRoomSection12* var_t0;
     int i;
     int var_t1;
     int temp_t3;
@@ -10632,9 +10722,9 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
     func_8008D2C0_t* a0 = arg0;
 
     do {
-        if (D_800F1BF8.section12 != NULL) {
-            var_t0 = D_800F1BF8.section12;
-            temp_t3 = D_800F1BF8.roomSectionHeader.section12Len / 184;
+        if (vs_battle_roomData.section12 != NULL) {
+            var_t0 = vs_battle_roomData.section12;
+            temp_t3 = vs_battle_roomData.header.section12Len / 184;
             var_t1 = 0;
 
             for (i = 0; i < temp_t3; ++i, ++var_t0) {
@@ -10657,22 +10747,23 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
     return 0;
 }
 
-int vs_battle_inWorkshop(void) { return D_800F1BF8.sectionB->isWorkshop; }
+int vs_battle_inWorkshop(void) { return vs_battle_roomData.sectionB->isWorkshop; }
 
-int func_8008D3E8(void) { return D_800F1BF8.sectionB->unk31; }
+int func_8008D3E8(void) { return vs_battle_roomData.sectionB->unk31; }
 
-int vs_battle_getCurrentSceneId(void) { return D_800F1BF8.sectionB->sceneId; }
+int vs_battle_getCurrentSceneId(void) { return vs_battle_roomData.sectionB->sceneId; }
 
 int func_8008D418(void)
 {
-    return (D_800F1BF8.sectionB->unk52 << 0x10) | D_800F1BF8.sectionB->unk54;
+    return (vs_battle_roomData.sectionB->unk52 << 0x10)
+         | vs_battle_roomData.sectionB->unk54;
 }
 
-_mpdSection9* func_8008D438(int arg0, int arg1, int arg2)
+_mpdRoomSection9* func_8008D438(int arg0, int arg1, int arg2)
 {
-    if (D_800F1BF8.section9 != NULL) {
-        _mpdSection9* var_t0 = D_800F1BF8.section9;
-        int temp_t1 = D_800F1BF8.roomSectionHeader.section9Len / 12;
+    if (vs_battle_roomData.section9 != NULL) {
+        _mpdRoomSection9* var_t0 = vs_battle_roomData.section9;
+        int temp_t1 = vs_battle_roomData.header.section9Len / 12;
         int i;
         for (i = 0; i < temp_t1; ++i, ++var_t0) {
             if ((var_t0->unk0 == arg0) && (var_t0->unk2 == arg1)
@@ -10689,16 +10780,16 @@ _mpdSection9* func_8008D438(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-_mpdSection13* func_8008D508(int arg0, int arg1, int arg2)
+_mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2)
 {
     int temp_t1;
-    _mpdSection13* var_a3;
+    _mpdRoomSection13* var_a3;
     int i;
 
-    var_a3 = D_800F1BF8.section13;
+    var_a3 = vs_battle_roomData.section13;
     do {
         if (var_a3 != NULL) {
-            temp_t1 = D_800F1BF8.roomSectionHeader.section13Len / 564;
+            temp_t1 = vs_battle_roomData.header.section13Len / 564;
             for (i = 0; i < temp_t1; ++i, ++var_a3) {
                 if ((var_a3->unk0 == arg0) && (var_a3->unk2 == arg1)) {
                     if (var_a3->unk4 == arg2) {
@@ -10716,7 +10807,7 @@ void func_8008D594(int arg0) { D_800F1D6E = arg0; }
 void func_8008D5A0(int arg0)
 {
 
-    if ((D_800F1BF8.roomSectionHeader.section12Len / 184) != 0) {
+    if ((vs_battle_roomData.header.section12Len / 184) != 0) {
         if (arg0 != 0) {
             func_8008E4DC(1);
         } else {
@@ -10726,7 +10817,7 @@ void func_8008D5A0(int arg0)
     }
 }
 
-void func_8008D5FC(_mpdSectionA* arg0)
+void func_8008D5FC(_mpdRoomSectionA* arg0)
 {
     if ((signed char)arg0->unk0.unkB == 0) {
         arg0->unk0.unkB = 1;
@@ -10739,9 +10830,9 @@ void func_8008D5FC(_mpdSectionA* arg0)
     }
 }
 
-void func_8008D658(_mpdSectionA* arg0)
+void func_8008D658(_mpdRoomSectionA* arg0)
 {
-    _mpdSection3* temp_v0;
+    _mpdRoomSection3* temp_v0;
 
     if (arg0->unk0.unk8.s16 == 0) {
         vs_main_playSfxDefault(0x7E, 0x3B);
@@ -10761,15 +10852,15 @@ void func_8008D658(_mpdSectionA* arg0)
 
 void func_8008D710(void)
 {
-    _mpdSection3* temp_s0;
-    _mpdSection13* var_s3;
+    _mpdRoomSection3* temp_s0;
+    _mpdRoomSection13* var_s3;
     int temp_s4;
     int i;
 
-    if (D_800F1BF8.section13 != NULL) {
+    if (vs_battle_roomData.section13 != NULL) {
 
-        var_s3 = D_800F1BF8.section13;
-        temp_s4 = D_800F1BF8.roomSectionHeader.section13Len / 564;
+        var_s3 = vs_battle_roomData.section13;
+        temp_s4 = vs_battle_roomData.header.section13Len / 564;
 
         for (i = 0; i < temp_s4; ++i, ++var_s3) {
             temp_s0 = func_8008B764(
@@ -10813,8 +10904,9 @@ int _getDoorId(int door)
 {
     int* temp_v1;
 
-    if (D_800F1BF8.sectionF != NULL) {
-        temp_v1 = (int*)D_800F1BF8.sectionF + (D_800F1BF8.sectionF->roomCount * 3 + 1);
+    if (vs_battle_roomData.sectionF != NULL) {
+        temp_v1 = (int*)vs_battle_roomData.sectionF
+                + (vs_battle_roomData.sectionF->roomCount * 3 + 1);
         temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
@@ -10835,9 +10927,9 @@ void vs_battle_setDoorEntered2(int arg0)
 
     vs_battle_doorEntered = arg0;
 
-    if (D_800F1BF8.sectionF != NULL) {
-        int* temp_v1 = (int*)D_800F1BF8.sectionF;
-        temp_v1 += D_800F1BF8.sectionF->roomCount * 3 + 1;
+    if (vs_battle_roomData.sectionF != NULL) {
+        int* temp_v1 = (int*)vs_battle_roomData.sectionF;
+        temp_v1 += vs_battle_roomData.sectionF->roomCount * 3 + 1;
         temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
         temp_v1 = temp_v1 + ((*temp_v1) + 1);
@@ -10856,7 +10948,7 @@ void vs_battle_setDoorEntered2(int arg0)
 
 short func_8008DA24(int arg0, int arg1)
 {
-    _mpdCollisionSection* temp_s4;
+    _mpdRoomCollisionMapSection* collisionMap;
     int temp_fp;
     int temp_s0_2;
     int temp_s0_3;
@@ -10872,21 +10964,21 @@ short func_8008DA24(int arg0, int arg1)
     int v;
     int temp_s6 = 0x8000;
 
-    if (D_800F1BF8.collisionSection != NULL) {
+    if (vs_battle_roomData.collisionMapSection != NULL) {
         temp_s7 = arg0;
         temp_s7 = temp_s7 & 0x1F;
         arg0 >>= 5;
         temp_fp = arg1 & 0x1F;
         arg1 >>= 5;
-        temp_s4 = D_800F1BF8.collisionSection;
+        collisionMap = vs_battle_roomData.collisionMapSection;
 
-        if (((arg0 >> 2) >= (u_int)temp_s4->unk0)
-            || ((arg1 >> 2) >= (u_int)temp_s4->unk2)) {
+        if (((arg0 >> 2) >= (u_int)collisionMap->width)
+            || ((arg1 >> 2) >= (u_int)collisionMap->height)) {
             return -0x8000;
         }
 
         temp_s6 = func_80099514(arg0, arg1, 0);
-        var_s5 = (temp_s4->unk4 - ((temp_s6 & 0x7F) * 2)) * 8;
+        var_s5 = (collisionMap->unk4 - ((temp_s6 & 0x7F) * 2)) * 8;
 
         var_s3 = temp_s7 < 0x10 ? arg0 - 1 : arg0 + 1;
         var_s1 = arg1 - 1;
@@ -10895,8 +10987,9 @@ short func_8008DA24(int arg0, int arg1)
             var_s1 = arg1 + 1;
         }
 
-        if ((var_s3 >> 2) < (u_int)temp_s4->unk0) {
-            var_s3 = (temp_s4->unk4 - ((func_80099514(var_s3, arg1, 0) & 0x7F) * 2)) * 8;
+        if ((var_s3 >> 2) < (u_int)collisionMap->width) {
+            var_s3 =
+                (collisionMap->unk4 - ((func_80099514(var_s3, arg1, 0) & 0x7F) * 2)) * 8;
             var_v0 = var_s3 - var_s5;
             if (ABS(var_v0) >= 0x40) {
                 var_s3 = var_s5;
@@ -10905,8 +10998,9 @@ short func_8008DA24(int arg0, int arg1)
             var_s3 = var_s5;
         }
 
-        if ((var_s1 >> 2) < (u_int)temp_s4->unk2) {
-            var_s1 = (temp_s4->unk4 - ((func_80099514(arg0, var_s1, 0) & 0x7F) * 2)) * 8;
+        if ((var_s1 >> 2) < (u_int)collisionMap->height) {
+            var_s1 =
+                (collisionMap->unk4 - ((func_80099514(arg0, var_s1, 0) & 0x7F) * 2)) * 8;
             var_v0 = var_s1 - var_s5;
             if (ABS(var_v0) >= 0x40) {
                 var_s1 = var_s5;
@@ -10937,15 +11031,13 @@ short func_8008DA24(int arg0, int arg1)
 
 short func_8008DC7C(int arg0, int arg1)
 {
-    _mpdCollisionSection* temp_s0;
-    int var_a2;
+    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
+    int var_a2 = 0x8000;
 
-    temp_s0 = D_800F1BF8.collisionSection;
-    var_a2 = 0x8000;
-    if ((temp_s0 != NULL) && ((u_int)(arg0 >> 7) < temp_s0->unk0)
-        && ((u_int)(arg1 >> 7) < temp_s0->unk2)) {
+    if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)
+        && ((u_int)(arg1 >> 7) < collisionMap->height)) {
         var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
-        var_a2 = (((temp_s0->unk4 - ((var_a2 & 0x7F) * 2)) * 8) & 0x7FFF)
+        var_a2 = (((collisionMap->unk4 - ((var_a2 & 0x7F) * 2)) * 8) & 0x7FFF)
                | ((var_a2 & 0x80) << 8);
     }
     return var_a2;
@@ -10953,18 +11045,16 @@ short func_8008DC7C(int arg0, int arg1)
 
 short func_8008DD0C(int arg0, int arg1)
 {
-    _mpdCollisionSection* temp_s0;
-    int var_a2;
     int temp_v1;
-    int new_var;
+    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
+    int var_a2 = 0;
+    int new_var = 8;
 
-    temp_s0 = D_800F1BF8.collisionSection;
-    var_a2 = 0;
-    new_var = 8;
-    if ((D_800F1BF8.collisionSection != NULL) && ((arg0 >> 7) < (u_int)temp_s0->unk0)
-        && ((arg1 >> 7) < (u_int)temp_s0->unk2)) {
+    if ((vs_battle_roomData.collisionMapSection != NULL)
+        && ((arg0 >> 7) < (u_int)collisionMap->width)
+        && ((arg1 >> 7) < (u_int)collisionMap->height)) {
         var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 1);
-        temp_v1 = (temp_s0->unk4 - ((var_a2 & 0x7F) * 2)) * new_var;
+        temp_v1 = (collisionMap->unk4 - ((var_a2 & 0x7F) * 2)) * new_var;
         if (temp_v1 > 0) {
             var_a2 = 0xF810;
         } else {
@@ -10979,17 +11069,17 @@ int func_8008DDA8(int arg0, int arg1)
     int sp10 = 0x80008000;
     short* new_var = (short*)&sp10;
 
-    _mpdCollisionSection* temp_s2 = D_800F1BF8.collisionSection;
+    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
 
-    if ((temp_s2 != NULL) && ((u_int)(arg0 >> 7) < temp_s2->unk0)) {
-        if ((u_int)(arg1 >> 7) < temp_s2->unk2) {
+    if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)) {
+        if ((u_int)(arg1 >> 7) < collisionMap->height) {
             int temp_v1;
             int temp_a3 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
-            temp_a3 = (((temp_s2->unk4 - ((temp_a3 & 0x7F) * 2)) * 8) & 0x7FFF)
+            temp_a3 = (((collisionMap->unk4 - ((temp_a3 & 0x7F) * 2)) * 8) & 0x7FFF)
                     | ((temp_a3 & 0x80) << 8);
             new_var[0] = temp_a3;
             temp_a3 = func_80099514(arg0 >> 5, arg1 >> 5, 1);
-            temp_v1 = temp_s2->unk4 - (temp_a3 & 0x7F) * 2;
+            temp_v1 = collisionMap->unk4 - (temp_a3 & 0x7F) * 2;
             temp_v1 *= 8;
             if (temp_v1 > 0) {
                 temp_a3 = 0xF810;
@@ -11003,13 +11093,13 @@ int func_8008DDA8(int arg0, int arg1)
     return sp10;
 }
 
-void func_8008DEAC(_mpdSection9* arg0, int arg1)
+void func_8008DEAC(_mpdRoomSection9* arg0, int arg1)
 {
     if (arg0 == NULL) {
-        _mpdSection9* var_a2 = D_800F1BF8.section9;
+        _mpdRoomSection9* var_a2 = vs_battle_roomData.section9;
         if (var_a2 != NULL) {
             int i;
-            int temp_a3 = D_800F1BF8.roomSectionHeader.section9Len / 12;
+            int temp_a3 = vs_battle_roomData.header.section9Len / 12;
             for (i = 0; i < temp_a3; ++i) {
                 var_a2->unkA = arg1;
                 ++var_a2;
@@ -11053,10 +11143,10 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 void func_8008E224(int arg0, int arg1)
 {
     int* temp_v0;
-    _mpdSection12* temp_s0 = D_800F1BF8.section12;
+    _mpdRoomSection12* temp_s0 = vs_battle_roomData.section12;
 
     if (temp_s0 != NULL) {
-        temp_s0 = &D_800F1BF8.section12[arg0];
+        temp_s0 = &vs_battle_roomData.section12[arg0];
         temp_s0->unk0_9 = arg1 - 1;
         temp_v0 = func_8009195C(temp_s0->unk0_0);
         if (temp_v0 != NULL) {
@@ -11071,10 +11161,10 @@ void func_8008E224(int arg0, int arg1)
 
 void* func_8008E2D4(int arg0)
 {
-    _mpdSection12* temp_v1 = D_800F1BF8.section12;
+    _mpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
 
-    if (D_800F1BF8.section12 != NULL) {
-        temp_v1 = &D_800F1BF8.section12[arg0];
+    if (vs_battle_roomData.section12 != NULL) {
+        temp_v1 = &vs_battle_roomData.section12[arg0];
         return ((char*)temp_v1) + 8 + temp_v1->unk0_27 * 16;
     }
     return NULL;
@@ -11082,9 +11172,9 @@ void* func_8008E2D4(int arg0)
 
 u_int func_8008E320(int arg0)
 {
-    _mpdSection12* temp_v1 = D_800F1BF8.section12;
-    if (D_800F1BF8.section12 != NULL) {
-        temp_v1 = &D_800F1BF8.section12[arg0];
+    _mpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
+    if (vs_battle_roomData.section12 != NULL) {
+        temp_v1 = &vs_battle_roomData.section12[arg0];
         if (temp_v1->unk4_0 == 1) {
             return temp_v1->unk4_16;
         }
@@ -11092,41 +11182,41 @@ u_int func_8008E320(int arg0)
     return -1;
 }
 
-_mpdSection13* func_8008E370(int* arg0)
+_mpdRoomSection13* func_8008E370(int* arg0)
 {
-    if (D_800F1BF8.section13 != 0) {
-        *arg0 = D_800F1BF8.roomSectionHeader.section13Len / 564;
-        return D_800F1BF8.section13;
+    if (vs_battle_roomData.section13 != 0) {
+        *arg0 = vs_battle_roomData.header.section13Len / 564;
+        return vs_battle_roomData.section13;
     }
     *arg0 = 0;
     return NULL;
 }
 
-_mpdSectionA* func_8008E3B8(int* arg0)
+_mpdRoomSectionA* func_8008E3B8(int* arg0)
 {
-    if (D_800F1BF8.sectionA != 0) {
-        *arg0 = D_800F1BF8.roomSectionHeader.sectionALen / 20;
-        return D_800F1BF8.sectionA;
+    if (vs_battle_roomData.sectionA != 0) {
+        *arg0 = vs_battle_roomData.header.sectionALen / 20;
+        return vs_battle_roomData.sectionA;
     }
     *arg0 = 0;
     return 0;
 }
 
-_mpdSection9* func_8008E400(int* arg0)
+_mpdRoomSection9* func_8008E400(int* arg0)
 {
     if ((vs_main_stateFlags.unkF[0x11] != 0) || (vs_main_stateFlags.unkF[0x31] != 0)) {
         *arg0 = 0;
         return NULL;
     }
-    if (D_800F1BF8.section9 != NULL) {
-        *arg0 = D_800F1BF8.roomSectionHeader.section9Len / 12;
-        return D_800F1BF8.section9;
+    if (vs_battle_roomData.section9 != NULL) {
+        *arg0 = vs_battle_roomData.header.section9Len / 12;
+        return vs_battle_roomData.section9;
     }
     *arg0 = 0;
     return NULL;
 }
 
-int func_8008E470(void) { return (u_int)D_800F1BF8.section14 < 1; }
+int func_8008E470(void) { return (u_int)vs_battle_roomData.section14 < 1; }
 
 void func_8008E480(int arg0)
 {
@@ -11134,16 +11224,16 @@ void func_8008E480(int arg0)
     func_800918E8(arg0);
 }
 
-short func_8008E4AC(void) { return D_800F1BF8.sectionB->unk56; }
+short func_8008E4AC(void) { return vs_battle_roomData.sectionB->unk56; }
 
-char func_8008E4C4(void) { return D_800F1BF8.sectionB->unk32; }
+char func_8008E4C4(void) { return vs_battle_roomData.sectionB->unk32; }
 
 void func_8008E4DC(int arg0)
 {
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
 
-    _mpdSection12* var_s0;
+    _mpdRoomSection12* var_s0;
     int temp_s2;
     int i;
 
@@ -11154,8 +11244,8 @@ void func_8008E4DC(int arg0)
             func_80048A64(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
-        var_s0 = D_800F1BF8.section12;
-        temp_s2 = D_800F1BF8.roomSectionHeader.section12Len / 184;
+        var_s0 = vs_battle_roomData.section12;
+        temp_s2 = vs_battle_roomData.header.section12Len / 184;
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {
@@ -11163,9 +11253,9 @@ void func_8008E4DC(int arg0)
             }
             ++var_s0;
         }
-        if (D_800F1BF8.sectionB != NULL) {
-            if (D_800F1BF8.sectionB->unk2C >= 0) {
-                func_800936F8(D_800F1BF8.sectionB->unk2C);
+        if (vs_battle_roomData.sectionB != NULL) {
+            if (vs_battle_roomData.sectionB->unk2C >= 0) {
+                func_800936F8(vs_battle_roomData.sectionB->unk2C);
             }
         }
         D_800F1D6F = !D_800F1D6F;
@@ -11196,9 +11286,9 @@ int vs_battle_getMapCompletion(void)
 
 void _loadMpdLootSection(int (*arg0)[136])
 {
-    if (D_800F1BF8.section13 != NULL) {
-        vs_main_memcpy(
-            &D_800F1BF8.section13->unk14, arg0, sizeof D_800F1BF8.section13->unk14);
+    if (vs_battle_roomData.section13 != NULL) {
+        vs_main_memcpy(&vs_battle_roomData.section13->unk14, arg0,
+            sizeof vs_battle_roomData.section13->unk14);
     }
 }
 
@@ -11211,7 +11301,7 @@ void func_8008E6DC(int arg0)
     int i;
     vs_battle_room* room;
 
-    room = D_800F1BF8.sectionF->rooms;
+    room = vs_battle_roomData.sectionF->rooms;
     zoneId = room->zoneId;
     mapId = room->mapId;
 
@@ -11260,7 +11350,7 @@ void func_8008E8F8(void)
 
 void func_8008E938(void)
 {
-    _mpdSectionB* temp_s0;
+    _mpdRoomSectionB* temp_s0;
     int i;
 
     D_800F1DB4 = 0;
@@ -11268,9 +11358,9 @@ void func_8008E938(void)
     D_800F1DB8 = 0x1000;
     D_800F1DBA = 0x1000;
 
-    if (D_800F1BF8.sectionB != NULL) {
+    if (vs_battle_roomData.sectionB != NULL) {
 
-        temp_s0 = D_800F1BF8.sectionB;
+        temp_s0 = vs_battle_roomData.sectionB;
 
         for (i = 1; i < 5; ++i) {
             if (temp_s0->unk0[0] != temp_s0->unk0[i]) {
@@ -11284,10 +11374,11 @@ void func_8008E938(void)
             func_8008EB30(temp_s0->unk0);
         }
         if ((temp_s0->unk48[0].s32 == 0) && (temp_s0->unk48[1].s32 == 0)) {
-            _mpdCollisionSection* s = D_800F1BF8.collisionSection;
-            if (s != NULL) {
-                temp_s0->unk48[1].s16[0] = s->unk0 * 4;
-                temp_s0->unk48[1].s16[1] = s->unk2 * 4;
+            _mpdRoomCollisionMapSection* collisionMap =
+                vs_battle_roomData.collisionMapSection;
+            if (collisionMap != NULL) {
+                temp_s0->unk48[1].s16[0] = collisionMap->width * 4;
+                temp_s0->unk48[1].s16[1] = collisionMap->height * 4;
             } else {
                 temp_s0->unk48[1].s16[0] = 0x20;
                 temp_s0->unk48[1].s16[1] = 0x20;
@@ -11306,11 +11397,11 @@ int func_80090C2C(int);
 
 int func_8008EA90(int arg0)
 {
-    _mpdSectionB* new_var2 = D_800F1BF8.sectionB;
+    _mpdRoomSectionB* new_var2 = vs_battle_roomData.sectionB;
 
     if (new_var2 != 0) {
-        _mpdSectionB* new_var4 = new_var2;
-        new_var2 = D_800F1BF8.sectionB;
+        _mpdRoomSectionB* new_var4 = new_var2;
+        new_var2 = vs_battle_roomData.sectionB;
         if ((arg0 == 0) || (new_var4->unk34 != 1)) {
             func_80090C2C(new_var4->unk34);
         } else {
@@ -11386,7 +11477,7 @@ int func_8008EFCC(int arg0)
     int var_a0;
     int var_s0;
 
-    temp_s0 = D_800F1BF8.section10;
+    temp_s0 = vs_battle_roomData.section10;
     D_800F1DC8 = arg0;
     if (temp_s0 != 0) {
         D_800F1DBE = *temp_s0;
@@ -11515,7 +11606,7 @@ void func_8008F9A4(int arg0, int arg1)
 
 void func_8008FA14(D_800F1DD4_t* arg0)
 {
-    _mpdSectionB* temp_s0 = D_800F1BF8.sectionB;
+    _mpdRoomSectionB* temp_s0 = vs_battle_roomData.sectionB;
 
     arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
     arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
@@ -11532,9 +11623,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
 
 void func_80090A1C(D_800F1DD4_t* arg0)
 {
-    _mpdSectionB* temp_s0;
+    _mpdRoomSectionB* temp_s0;
 
-    temp_s0 = D_800F1BF8.sectionB;
+    temp_s0 = vs_battle_roomData.sectionB;
     if (temp_s0 != NULL) {
         arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
         arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);

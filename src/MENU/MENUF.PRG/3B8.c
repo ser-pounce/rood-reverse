@@ -2033,7 +2033,7 @@ int _loadIqDis(void)
             }
             D_801099F4 = 0x258;
             D_801099F6 = 1;
-            room = D_800F1BF8.sectionF->rooms;
+            room = vs_battle_roomData.sectionF->rooms;
             var_a0 = _iqDisData + 0x10440;
             for (i = 0; i < 0x40; ++i, var_a0 += 4) {
                 if ((var_a0[0] == room->zoneId) && (var_a0[1] == room->mapId)) {

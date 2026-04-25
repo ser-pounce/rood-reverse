@@ -1,5 +1,6 @@
 #include "common.h"
 #include "30D14.h"
+#include "146C.h"
 #include "../SLUS_010.40/main.h"
 
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);

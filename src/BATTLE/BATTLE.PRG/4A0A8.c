@@ -253,7 +253,7 @@ extern short* D_800F4BBC;
 extern char* D_800F4BC0[];
 extern u_short D_800F4BE0;
 extern char D_800F4BE4;
-extern void* _mpdDoorSection;
+extern void* _mpdRoomDoorSection;
 extern char D_800F4BF8;
 extern char D_800F4C00[];
 extern char D_800F4C10[];
@@ -3319,10 +3319,10 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     }
 
     if (doorSectionLen != 0) {
-        _mpdDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(_mpdDoorSection, doorSection, doorSectionLen);
+        _mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
+        memcpy(_mpdRoomDoorSection, doorSection, doorSectionLen);
     } else {
-        _mpdDoorSection = NULL;
+        _mpdRoomDoorSection = NULL;
     }
 
     if (D_800F4BE2 == 1) {
@@ -3356,8 +3356,8 @@ void func_800BEB34(void)
     if (_mpdClearedSection != 0) {
         vs_main_freeHeap(_mpdClearedSection);
     }
-    if (_mpdDoorSection != 0) {
-        vs_main_freeHeap(_mpdDoorSection);
+    if (_mpdRoomDoorSection != 0) {
+        vs_main_freeHeap(_mpdRoomDoorSection);
     }
 }
 

@@ -4,17 +4,63 @@
 #include "2842C.h"
 
 typedef struct {
-    short unk0;
-    short unk2;
+    short width;
+    short height;
     short unk4;
     short unk6;
-    union {
-        short s16;
-        char u8[2];
-    } unk8;
-    char unkA;
-    char unkB;
-} _mpdSection9;
+} _mpdRoomCollisionMapSection;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int dataOffset;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+} _mpdGeometryHeader;
+
+typedef struct {
+    short p1x, p1y, p1z;
+    char p2x, p2y, p2z;
+    char p3x, p3y, p3z;
+    char r1, g1, b1, type;
+    char r2, g2, b2, u3;
+    char r3, g3, b3, v3;
+    char u1, v1;
+    short texelMask;
+    char u2, v2;
+    short idTexture;
+} _mpdPolygt3;
+
+typedef struct {
+    short p1x, p1y, p1z;
+    char p2x, p2y, p2z;
+    char p3x, p3y, p3z;
+    char r1, g1, b1, type;
+    char r2, g2, b2, u3;
+    char r3, g3, b3, v3;
+    char u1, v1;
+    short texelMask;
+    char u2, v2;
+    short idTexture;
+    char p4x, p4y, p4z, u4;
+    char r4, g4, b4, v4;
+} _mpdPolygt4;
+
+typedef struct {
+    int numGroups;
+    _mpdGeometryHeader groups[0];
+} _mpdGeometrySection;
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -26,79 +72,47 @@ typedef struct {
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_19 : 12;
-} _mpdSection3;
-
-typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 1;
-    u_int unk0_9 : 1;
-    u_int unk0_10 : 2;
-    u_int unk0_12 : 2;
-    u_int unk0_14 : 2;
-    u_int unk0_16 : 7;
-    u_int unk0_23 : 3;
-    u_int unk0_26 : 1;
-    u_int unk0_27 : 2;
-    u_int unk0_29 : 3;
-    u_int unk4_0 : 1;
-    u_int unk4_1 : 7;
-    u_int unk4_8 : 2;
-    u_int unk4_10 : 6;
-    u_int unk4_16 : 16;
-    VECTOR unk8[10];
-    int unkA8;
-    int unkAC;
-    int unkB0;
-    _mpdSection3 unkB4;
-} _mpdSection12;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    int unk14[136];
-} _mpdSection13;
-
-typedef struct {
-    _mpdSection9 unk0;
-    short unkC;
-    short unkE;
-    short unk10;
-    char unk12;
-    char unk13;
-} _mpdSectionA;
+} _mpdRoomSection3;
 
 typedef struct {
     u_short unk0_0 : 5;
     u_short unk0_5 : 5;
     u_short unk0_10 : 3;
     u_short unk0_13 : 3;
-} _mpdDoorSection2;
+} _mpdRoomDoorSection2;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    _mpdDoorSection2 unk2;
+    char targetZone;
+    char targetRoom;
+    _mpdRoomDoorSection2 unk2;
     int unk4;
     char unk8;
     char unk9;
     char unkA;
     char unkB;
-} _mpdDoorSection_t;
+} _mpdRoomDoorSection_t;
 
 typedef struct {
     short unk0;
     short unk2;
     short unk4;
     short unk6;
-} _mpdCollisionSection;
+    union {
+        short s16;
+        char u8[2];
+    } unk8;
+    char unkA;
+    char unkB;
+} _mpdRoomSection9;
+
+typedef struct {
+    _mpdRoomSection9 unk0;
+    short unkC;
+    short unkE;
+    short unk10;
+    char unk12;
+    char unk13;
+} _mpdRoomSectionA;
 
 typedef struct {
     int unk0[5];
@@ -131,7 +145,16 @@ typedef struct {
     short unk52;
     short unk54;
     short unk56;
-} _mpdSectionB;
+} _mpdRoomSectionB;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int* unkC;
+    int* unk10;
+    int unk14[0];
+} _mpdRoomSectionE;
 
 typedef struct {
     int visited;
@@ -146,14 +169,6 @@ typedef struct {
 } vs_battle_scene;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int* unkC;
-    int* unk10;
-} _mpdSectionE;
-
-typedef struct {
     u_short unk0_0 : 5;
     u_short unk0_5 : 5;
     u_short unk0_10 : 1;
@@ -162,7 +177,45 @@ typedef struct {
     u_short unk0_15 : 1;
     u_short unk2;
     char unk4[0];
-} _mpdSection11;
+} _mpdRoomSection11;
+
+typedef struct {
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 1;
+    u_int unk0_9 : 1;
+    u_int unk0_10 : 2;
+    u_int unk0_12 : 2;
+    u_int unk0_14 : 2;
+    u_int unk0_16 : 7;
+    u_int unk0_23 : 3;
+    u_int unk0_26 : 1;
+    u_int unk0_27 : 2;
+    u_int unk0_29 : 3;
+    u_int unk4_0 : 1;
+    u_int unk4_1 : 7;
+    u_int unk4_8 : 2;
+    u_int unk4_10 : 6;
+    u_int unk4_16 : 16;
+    VECTOR unk8[10];
+    int unkA8;
+    int unkAC;
+    int unkB0;
+    _mpdRoomSection3 unkB4;
+} _mpdRoomSection12;
+
+typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    int unk14[136];
+} _mpdRoomSection13;
 
 typedef struct {
     short minX;
@@ -177,7 +230,7 @@ typedef struct {
     short unk2;
     struct {
         u_int geometrySectionLen;
-        u_int collisionSectionLen;
+        u_int collisionMapSectionLen;
         u_int section3Len;
         u_int doorSectionLen;
         u_int lightingSectionLen;
@@ -200,26 +253,26 @@ typedef struct {
         u_int section16Len;
         u_int section17Len;
         u_int section18Len;
-    } roomSectionHeader;
+    } header;
     int* geometrySection;
-    _mpdCollisionSection* collisionSection;
-    _mpdSection3* section3;
-    _mpdDoorSection_t* doorSection;
+    _mpdRoomCollisionMapSection* collisionMapSection;
+    _mpdRoomSection3* section3;
+    _mpdRoomDoorSection_t* doorSection;
     int lightingSection;
     int section6;
     int section7;
     int section8;
-    _mpdSection9* section9;
-    _mpdSectionA* sectionA;
-    _mpdSectionB* sectionB;
+    _mpdRoomSection9* section9;
+    _mpdRoomSectionA* sectionA;
+    _mpdRoomSectionB* sectionB;
     int textureEffectsSection;
     int sectionD;
-    _mpdSectionE* sectionE;
+    _mpdRoomSectionE* sectionE;
     vs_battle_scene* sectionF;
     u_short* section10;
-    _mpdSection11* section11;
-    _mpdSection12* section12;
-    _mpdSection13* section13;
+    _mpdRoomSection11* section11;
+    _mpdRoomSection12* section12;
+    _mpdRoomSection13* section13;
     u_int* section14;
     int section15;
     int section16;
@@ -965,9 +1018,9 @@ extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
 extern char D_800F1BF7;
-extern _mpdRoomSection D_800F1BF8;
+extern _mpdRoomSection vs_battle_roomData;
 extern void* D_800F1CBC;
-extern _mpdDoorSection_t D_800F1CC8;
+extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern int D_800F1CD8;

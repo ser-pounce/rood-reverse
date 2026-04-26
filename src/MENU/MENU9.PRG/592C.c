@@ -3,7 +3,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 
 typedef struct {
     char unk0;

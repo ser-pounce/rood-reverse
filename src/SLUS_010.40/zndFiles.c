@@ -1,4 +1,4 @@
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "main.h"
 
 #define mkCdFile(file)                                                                   \

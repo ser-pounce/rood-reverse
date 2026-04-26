@@ -7,11 +7,11 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include "../../build/assets/MENU/MENU7.PRG/container.h"
+#include "build/assets/MENU/MENU7.PRG/container.h"
 #include "gpu.h"
-#include "../../assets/MENU/MCMAN.BIN.h"
+#include "build/assets/MENU/MCMAN.BIN.h"
 #include "vs_string.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -3439,7 +3439,7 @@ int vs_menu7_gameOver(char* state)
 }
 
 static u_short _containerStrings[] = {
-#include "../../assets/MENU/MENU7.PRG/container.vsString"
+#include "build/assets/MENU/MENU7.PRG/container.vsString"
 };
 
 static int _promptYesNo(int initParams)

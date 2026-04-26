@@ -6,5 +6,3 @@ $(BUILD)/config/MENU/MENUB.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
-
-$(BUILD)/src/MENU/MENUB.PRG/260.o: $(addprefix $(BUILD)/assets/MENU/,MENUB.PRG/menuText.vsString ITEMHELP.BIN.h)

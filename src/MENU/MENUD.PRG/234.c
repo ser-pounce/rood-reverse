@@ -5,8 +5,8 @@
 #include "../MAINMENU.PRG/58EC.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../assets/MENU/ITEMHELP.BIN.h"
-#include "../../assets/MENU/MENUD.PRG/menuText.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/MENU/MENUD.PRG/menuText.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include <libetc.h>
@@ -80,7 +80,7 @@ void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_battle_inventoryShield
 }
 
 static u_short _menuText[] = {
-#include "../../assets/MENU/MENUD.PRG/menuText.vsString"
+#include "build/assets/MENU/MENUD.PRG/menuText.vsString"
 };
 static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 

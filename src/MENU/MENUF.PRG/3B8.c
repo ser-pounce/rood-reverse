@@ -3,7 +3,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <libgpu.h>

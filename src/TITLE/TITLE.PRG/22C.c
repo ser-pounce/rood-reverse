@@ -3,9 +3,9 @@
 #include "../SLUS_010.40/sfx.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "gpu.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "vs_string.h"
-#include "../../assets/MENU/MCMAN.BIN.h"
+#include "build/assets/MENU/MCMAN.BIN.h"
 #include <libapi.h>
 #include <libds.h>
 #include <libetc.h>
@@ -3502,11 +3502,11 @@ static int _decodeNextMovieFrame(MovieData_t* movie)
 }
 
 static char publisher[] = {
-#include "../../assets/TITLE/TITLE.PRG/publisher.rgbClut.img.dat"
+#include "build/assets/TITLE/TITLE.PRG/publisher.rgbClut.img.dat"
 };
 
 static char developer[] = {
-#include "../../assets/TITLE/TITLE.PRG/developer.rgbClut.img.dat"
+#include "build/assets/TITLE/TITLE.PRG/developer.rgbClut.img.dat"
 };
 
 static u_short* _getNextMovieFrame(MovieData_t* movie)

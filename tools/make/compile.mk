@@ -4,15 +4,17 @@ CC1      ?= tools/old-gcc/build-gcc-$(CC1VER)/cc1
 MAS       = $(VPYTHON) tools/maspsx/maspsx.py
 VSSTRING  = $(VPYTHON) tools/etc/vsStringTransformer.py
 
-CPPFLAGS  = -nostdinc -I include/psx -I src/include -I $(BUILD)/src/include \
-            -MD -MF $@.d -MT $@ -D "__attribute__(x)="
+CPPFLAGS  = -nostdinc -I include/psx -I src/include -I ./ -D "__attribute__(x)="
 CC1FLAGS ?= -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
 MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 
-COMPILE.c = $(CPP) $(CPPFLAGS) $< | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(COMPILE.s)
+PREPROCESS.c = $(CPP) $(CPPFLAGS) $<
+COMPILE.c    = $(PREPROCESS.c) | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(COMPILE.s)
 
-$(BUILD)/%.o: %.c | $$(@D)/
+$(BUILD)/%.o: %.c
 	$(ECHO) Compiling $<
 	$(COMPILE.c) $(OUTPUT_OPTION)
-	$(CAT) $@.d >> $(BUILD)/$*.d
-	$(RM) $(RMFLAGS) $@.d
+
+$(BUILD)/%.d: CPPFLAGS += -M -MF $@ -MT $(@:.d=.o) -MG
+$(BUILD)/%.d: %.c | $$(@D)/
+	$(PREPROCESS.c) $(OUTPUT_OPTION)

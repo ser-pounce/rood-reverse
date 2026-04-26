@@ -6,5 +6,3 @@ $(BUILD)/config/MENU/MENUF.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
-
-$(BUILD)/src/MENU/MENUF.PRG/3B8.o: $(BUILD)/src/include/lbas.h

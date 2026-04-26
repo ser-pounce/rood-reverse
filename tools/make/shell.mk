@@ -1,9 +1,21 @@
+COMMAND      ?= command
+COMMANDFLAGS ?= -v
+SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(CARGO) $(FORMAT)
+
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m
 SHELL_YELLOW := \033[1;33m
+SHELL_CYAN   := \033[0;36m
 SHELL_RESET  := \033[0m
 
-.PHONY: check confirm-reset
+.PHONY: check clean-all confirm-reset
+
+tools/.sysdeps:
+	$(ECHO) "$(SHELL_CYAN)Welcome to Rood Reverse!\\nChecking prerequisites and setting up remaining tools, this could take a while.\\n$(SHELL_RESET)"
+	$(COMMAND) $(COMMANDFLAGS) $(SYSDEPS) >/dev/null 2>&1 || ($(ECHO) One or more applications are missing: \\n \
+		$(SYSDEPS); false)
+	$(GIT) submodule update --init --recursive
+	$(TOUCH) $@
 
 check:
 	echo "Verifying target files..."
@@ -18,6 +30,12 @@ check:
 		printf '$(SHELL_GREEN)✔ All files match$(SHELL_RESET)\n'
 	fi
 	exit $$fail
+
+clean-all: confirm-reset
+	$(GIT) clean -xfd -e $(DISKIMAGE)
+	$(GIT) submodule foreach --recursive $(GIT) clean -xfd
+	$(GIT) reset --hard
+	$(GIT) submodule foreach --recursive $(GIT) reset --hard
 
 confirm-reset:
 	$(ECHO) ""

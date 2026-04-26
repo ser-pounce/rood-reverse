@@ -1,4 +1,3 @@
-DISKCONFIG     ?= config/$(DISKCODE).xml
 DISKLBA        ?= $(BUILD)/config/$(DISKCODE)_LBA.txt
 PSXISO         := tools/mkpsxiso
 PSXISOBUILD    := $(PSXISO)/build
@@ -10,7 +9,7 @@ MKPSXISOFLAGS  ?= -q -lba -noisogen
 BUILDDEPS  += $(DUMPSXISO)
 PYTHONDEPS += pandas
 
-$(DISKCONFIG): | $(DISKIMAGE) $$(BUILDDEPS)
+$(DISKCONFIG): | $(DISKIMAGE)
 	$(ECHO) Dumping files from disk
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) $(DISKIMAGE) $(if $(DEBUG),,> /dev/null)
 

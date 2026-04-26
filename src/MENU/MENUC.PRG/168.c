@@ -6,9 +6,9 @@
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../assets/MENU/MENU12.BIN.h"
+#include "build/assets/MENU/MENU12.BIN.h"
 #include "vs_string.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "gpu.h"
 #include <libetc.h>
 #include <memory.h>

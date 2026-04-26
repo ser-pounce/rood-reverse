@@ -13,15 +13,15 @@
 #include "../../BATTLE/BATTLE.PRG/40564.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../assets/MENU/MENU9.PRG/menuText.h"
-#include "../../assets/MENU/MENU9.PRG/rankText.h"
-#include "../../assets/MENU/MENU9.PRG/titleText.h"
-#include "../../assets/MENU/MENU9.PRG/titleDescriptions.h"
-#include "../../assets/MENU/MENU9.PRG/statHeaders.h"
-#include "../../assets/MENU/MENU9.PRG/statDescriptions.h"
-#include "../../assets/MENU/MENU9.PRG/timeAttacks.h"
-#include "../../assets/MENU/MENU9.PRG/timeAttackDescriptions.h"
-#include "../../assets/MENU/MENU9.PRG/miscInfo.h"
+#include "build/assets/MENU/MENU9.PRG/menuText.h"
+#include "build/assets/MENU/MENU9.PRG/rankText.h"
+#include "build/assets/MENU/MENU9.PRG/titleText.h"
+#include "build/assets/MENU/MENU9.PRG/titleDescriptions.h"
+#include "build/assets/MENU/MENU9.PRG/statHeaders.h"
+#include "build/assets/MENU/MENU9.PRG/statDescriptions.h"
+#include "build/assets/MENU/MENU9.PRG/timeAttacks.h"
+#include "build/assets/MENU/MENU9.PRG/timeAttackDescriptions.h"
+#include "build/assets/MENU/MENU9.PRG/miscInfo.h"
 #include <libetc.h>
 #include <stdio.h>
 #include <strings.h>
@@ -30,7 +30,7 @@
 #include "insertTPage.h"
 #include "vs_string.h"
 #include "gpu.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 
 typedef struct {
     char unk0[4];
@@ -73,31 +73,31 @@ extern void* D_1F800000[];
 static char D_8010851C = 0;
 static char D_8010851D = 0;
 static u_short _menuText[] = {
-#include "../../assets/MENU/MENU9.PRG/menuText.vsString"
+#include "build/assets/MENU/MENU9.PRG/menuText.vsString"
 };
 static u_short _rankText[] = {
-#include "../../assets/MENU/MENU9.PRG/rankText.vsString"
+#include "build/assets/MENU/MENU9.PRG/rankText.vsString"
 };
 static u_short _titleText[] = {
-#include "../../assets/MENU/MENU9.PRG/titleText.vsString"
+#include "build/assets/MENU/MENU9.PRG/titleText.vsString"
 };
 static u_short _titleDescriptions[] = {
-#include "../../assets/MENU/MENU9.PRG/titleDescriptions.vsString"
+#include "build/assets/MENU/MENU9.PRG/titleDescriptions.vsString"
 };
 static u_short _statHeaders[] = {
-#include "../../assets/MENU/MENU9.PRG/statHeaders.vsString"
+#include "build/assets/MENU/MENU9.PRG/statHeaders.vsString"
 };
 static u_short _statDescriptions[] = {
-#include "../../assets/MENU/MENU9.PRG/statDescriptions.vsString"
+#include "build/assets/MENU/MENU9.PRG/statDescriptions.vsString"
 };
 static u_short _timeAttacks[] = {
-#include "../../assets/MENU/MENU9.PRG/timeAttacks.vsString"
+#include "build/assets/MENU/MENU9.PRG/timeAttacks.vsString"
 };
 static u_short _timeAttackDescriptions[] = {
-#include "../../assets/MENU/MENU9.PRG/timeAttackDescriptions.vsString"
+#include "build/assets/MENU/MENU9.PRG/timeAttackDescriptions.vsString"
 };
 static u_short _miscInfo[] = {
-#include "../../assets/MENU/MENU9.PRG/miscInfo.vsString"
+#include "build/assets/MENU/MENU9.PRG/miscInfo.vsString"
 };
 #pragma vsstring(start)
 static char D_80109870[] = "YES\0";

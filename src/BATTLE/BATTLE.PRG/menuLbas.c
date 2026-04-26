@@ -1,4 +1,4 @@
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "lbaMacros.h"
 
 int _menuLbas[] = { (VS_MAINMENU_PRG_LBA << 8)

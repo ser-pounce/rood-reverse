@@ -8,5 +8,3 @@ $(BUILD)/data/$(MENU7).elf: LDFLAGS += \
 
 $(MENU7.o): ASFLAGS += -no-pad-sections
 $(MENU7.o): CC1VER := 2.8.1-psx
-$(MENU7.o): \
-	$(BUILD)/src/include/lbas.h $(BUILD)/assets/$(MENU7)/container.vsString $(BUILD)/assets/MENU/MCMAN.BIN.h

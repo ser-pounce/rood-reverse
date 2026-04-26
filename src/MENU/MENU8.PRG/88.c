@@ -1,10 +1,10 @@
-#include "../../../build/assets/MENU/MENU8.PRG/menu.h"
+#include "build/assets/MENU/MENU8.PRG/menu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 static u_short _menuStrings[] = {
-#include "../../../build/assets/MENU/MENU8.PRG/menu.vsString"
+#include "build/assets/MENU/MENU8.PRG/menu.vsString"
 };
 
 static char _simpleMapValues[] = { 3, 1, 0 };

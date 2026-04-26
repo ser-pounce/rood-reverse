@@ -1,4 +1,4 @@
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "lbaMacros.h"
 
 int _gimLbas[] = { squashLba(VS_STAFF011_GIM), squashLba(VS_STAFF001_GIM),

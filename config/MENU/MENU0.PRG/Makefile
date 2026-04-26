@@ -10,5 +10,3 @@ $(BUILD)/config/MENU/MENU0.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
-
-$(BUILD)/src/MENU/MENU0.PRG/84.o: $(BUILD)/assets/MENU/MENU0.PRG/base.vsString $(BUILD)/assets/MENU/MENU0.PRG/teleportation.vsString

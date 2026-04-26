@@ -10,8 +10,8 @@
 #include "../../BATTLE/BATTLE.PRG/44F14.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../../build/assets/MENU/ITEMHELP.BIN.h"
-#include "../../../build/assets/MENU/MENU3.PRG/menuText.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 #include <libetc.h>
 
@@ -127,7 +127,7 @@ static void func_80102BE4(int arg0)
 }
 
 static u_short _menuText[] = {
-#include "../../../build/assets/MENU/MENU3.PRG/menuText.vsString"
+#include "build/assets/MENU/MENU3.PRG/menuText.vsString"
 };
 
 static int D_80109564 = 0;

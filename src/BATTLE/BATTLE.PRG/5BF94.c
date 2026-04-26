@@ -4,7 +4,7 @@
 #include "2842C.h"
 #include "573B8.h"
 #include "6E644.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include "../SLUS_010.40/main.h"

@@ -1,5 +1,5 @@
 #include "common.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
 #include "../BATTLE.PRG/2842C.h"
@@ -28,7 +28,7 @@ void func_800F9CCC(void);
 void func_800FA7B0(void);
 
 static vs_battle_charInitData D_800FAB18 = {
-#include "../../assets/BATTLE/INITBTL.PRG/charInit.h"
+#include "build/assets/BATTLE/INITBTL.PRG/charInit.h"
 };
 
 extern int D_800F1874;

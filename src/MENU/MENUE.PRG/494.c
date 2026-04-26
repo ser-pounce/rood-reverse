@@ -8,7 +8,7 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include "lbaMacros.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "vs_string.h"
 #include "insertTPage.h"
 #include <libetc.h>
@@ -134,7 +134,7 @@ void func_80102E9C(void) { vs_mainMenu_clearMenuExcept(8); }
 static void _menuReady(void) { vs_mainmenu_ready(); }
 
 static u_short _menuText[] = {
-#include "../../assets/MENU/MENUE.PRG/menuText.vsString"
+#include "build/assets/MENU/MENUE.PRG/menuText.vsString"
 };
 
 static u_short _0 __attribute__((unused)) = 0x0380;

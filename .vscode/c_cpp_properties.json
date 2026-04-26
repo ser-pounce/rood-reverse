@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/include/psx/**",
                 "${workspaceFolder}/src/include/**",
-                "${workspaceFolder}/build/src/include/**"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_LANGUAGE_C"

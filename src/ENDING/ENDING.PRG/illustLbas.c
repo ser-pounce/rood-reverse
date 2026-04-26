@@ -1,4 +1,4 @@
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 
 int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA, VS_ILLUST08_BIN_LBA,
     VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA, VS_ILLUST12_BIN_LBA,

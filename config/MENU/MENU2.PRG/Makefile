@@ -9,5 +9,3 @@ $(BUILD)/config/MENU/MENU2.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
-
-$(BUILD)/src/MENU/MENU2.PRG/64.o $(BUILD)/src/MENU/MENU2.PRG/143C.o: $(BUILD)/assets/MENU/MENU2.PRG/battleAbilities.vsString $(BUILD)/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString

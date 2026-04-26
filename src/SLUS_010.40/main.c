@@ -6,7 +6,7 @@
 #include "../BATTLE/BATTLE.PRG/30D14.h"
 #include "../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../ENDING/ENDING.PRG/D4.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include <libapi.h>
 #include <libds.h>
 #include <libetc.h>

@@ -1,4 +1,4 @@
-#include "../../../build/assets/MENU/MENU8.PRG/rename.h"
+#include "build/assets/MENU/MENU8.PRG/rename.h"
 #include "../../SLUS_010.40/main.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
@@ -99,7 +99,7 @@ static int _copyNormalizedString(char* stringBuf)
 static char D_80105DB1 = 0;
 static u_char D_80105DB2 = 0;
 static u_short _renameMenuStrings[] = {
-#include "../../../build/assets/MENU/MENU8.PRG/rename.vsString"
+#include "build/assets/MENU/MENU8.PRG/rename.vsString"
 };
 
 extern u_long* D_1F800000[];

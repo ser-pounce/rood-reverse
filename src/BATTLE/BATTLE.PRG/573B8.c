@@ -1,5 +1,5 @@
 #include "common.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "146C.h"
 #include "573B8.h"
 #include "../SLUS_010.40/main.h"

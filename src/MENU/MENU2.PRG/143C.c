@@ -1,5 +1,5 @@
-#include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
-#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
+#include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
+#include "build/assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -7,7 +7,7 @@
 #include <memory.h>
 
 static u_short _battleAbilityMenuStrings[] = {
-#include "../../assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
+#include "build/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };
 
 static int _breakArtUnlocked(int init)

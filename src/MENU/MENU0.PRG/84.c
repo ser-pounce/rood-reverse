@@ -1,7 +1,7 @@
 #include "common.h"
-#include "../../build/assets/MENU/MENU0.PRG/base.h"
-#include "../../build/assets/MENU/MENU0.PRG/teleportation.h"
-#include "../../build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "build/assets/MENU/MENU0.PRG/base.h"
+#include "build/assets/MENU/MENU0.PRG/teleportation.h"
+#include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
@@ -74,10 +74,10 @@ static void _setMPCostDirect(int costDecimal, int arg1)
 }
 
 static u_short _baseStrings[] = {
-#include "../../build/assets/MENU/MENU0.PRG/base.vsString"
+#include "build/assets/MENU/MENU0.PRG/base.vsString"
 };
 static u_short _teleportationStrings[] = {
-#include "../../build/assets/MENU/MENU0.PRG/teleportation.vsString"
+#include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
 
 static int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C,

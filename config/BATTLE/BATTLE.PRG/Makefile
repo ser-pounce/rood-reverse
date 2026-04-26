@@ -21,7 +21,4 @@ $(configDir)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
-$(BUILD)/data/$(battle.prg).elf: $(assetsDir)/menuStrings.vsString.o
 $(assetsDir)/menuStrings.vsString.o: OBJCOPYFLAGS += --pad-to 0x1DC
-
-$(addprefix $(buildDir)/, 573B8.o 5BF94.o menuLbas.o gimLbas.o): $(BUILD)/src/include/lbas.h

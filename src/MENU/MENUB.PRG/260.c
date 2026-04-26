@@ -9,9 +9,9 @@
 #include "../../BATTLE/BATTLE.PRG/4A0A8.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../assets/MENU/MENUB.PRG/menuText.h"
-#include "../../assets/BATTLE/BATTLE.PRG/menuStrings.h"
-#include "../../assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/MENU/MENUB.PRG/menuText.h"
+#include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include <libetc.h>
@@ -118,7 +118,7 @@ static void _transitionToSubMenu(int id)
 }
 
 static u_short _menuText[] = {
-#include "../../assets/MENU/MENUB.PRG/menuText.vsString"
+#include "build/assets/MENU/MENUB.PRG/menuText.vsString"
 };
 
 static char D_8010A504 = 0;

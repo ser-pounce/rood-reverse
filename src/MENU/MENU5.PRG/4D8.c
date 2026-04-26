@@ -1,8 +1,8 @@
 #include "common.h"
-#include "../../assets/MENU/MENU5.PRG/mapNames.h"
-#include "../../assets/MENU/MENU5.PRG/connectingMaps.h"
-#include "../../assets/MENU/MENU5.PRG/doors.h"
-#include "../../assets/MENU/MENU5.PRG/paling.h"
+#include "build/assets/MENU/MENU5.PRG/mapNames.h"
+#include "build/assets/MENU/MENU5.PRG/connectingMaps.h"
+#include "build/assets/MENU/MENU5.PRG/doors.h"
+#include "build/assets/MENU/MENU5.PRG/paling.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../MAINMENU.PRG/58EC.h"
@@ -14,7 +14,7 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include <libetc.h>
 #include <abs.h>
 #include "insertTPage.h"
@@ -326,7 +326,7 @@ int const D_80102C00[] = { 0x00404040, 0x00505050, 0x00606060, 0x00707070, 0x008
     0x00203840, 0x00330500, 0x00262801, 0x00200808, 0x00081010 };
 
 u_short _mapNames[] = {
-#include "../../assets/MENU/MENU5.PRG/mapNames.vsString"
+#include "build/assets/MENU/MENU5.PRG/mapNames.vsString"
 };
 
 static int D_80108D60;
@@ -699,16 +699,16 @@ int func_80103684(void)
 }
 
 static u_short _connectingMaps[] = {
-#include "../../assets/MENU/MENU5.PRG/connectingMaps.vsString"
+#include "build/assets/MENU/MENU5.PRG/connectingMaps.vsString"
 };
 static u_short _doors[] = {
-#include "../../assets/MENU/MENU5.PRG/doors.vsString"
+#include "build/assets/MENU/MENU5.PRG/doors.vsString"
 };
 
 void func_801042B0(void)
 {
     static u_short _paling[] = {
-#include "../../assets/MENU/MENU5.PRG/paling.vsString"
+#include "build/assets/MENU/MENU5.PRG/paling.vsString"
     };
 
     DR_STP* stp;

@@ -5,10 +5,10 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../assets/MENU/ITEMHELP.BIN.h"
-#include "../../assets/MENU/ITEMNAME.BIN.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/MENU/ITEMNAME.BIN.h"
 #include "../MENUD.PRG/234.h"
-#include "lbas.h"
+#include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>

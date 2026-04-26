@@ -7,10 +7,10 @@
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/58578.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../assets/MENU/MENU4.PRG/status.h"
+#include "build/assets/MENU/MENU4.PRG/status.h"
 #include "../../SLUS_010.40/31724.h"
-#include "../../assets/MENU/MENU4.PRG/status.h"
-#include "../../assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/MENU/MENU4.PRG/status.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
 #include <libetc.h>
 #include "gpu.h"
 
@@ -25,7 +25,7 @@ typedef struct {
 extern u_long* D_1F800000[];
 
 static u_short _statusStrings[] = {
-#include "../../assets/MENU/MENU4.PRG/status.vsString"
+#include "build/assets/MENU/MENU4.PRG/status.vsString"
 };
 
 static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)

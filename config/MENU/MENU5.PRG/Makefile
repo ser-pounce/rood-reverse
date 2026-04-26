@@ -12,5 +12,3 @@ $(BUILD)/config/MENU/MENU5.PRG/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt \
 	$(wildcard $(MENU5_stringTables:%=%.yaml))
-
-$(BUILD)/src/MENU/MENU5.PRG/4D8.o: $(BUILD)/src/include/lbas.h $(MENU5_stringTables:%=$(BUILD)/%.vsString)

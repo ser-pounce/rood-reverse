@@ -1,4 +1,4 @@
-#include "../../assets/MENU/MENU2.PRG/battleAbilities.h"
+#include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
@@ -32,7 +32,7 @@ static void _setAbilityCost(int ability)
 }
 
 u_short _battleAbilityStrings[] = {
-#include "../../assets/MENU/MENU2.PRG/battleAbilities.vsString"
+#include "build/assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
 static u_short* _abilityText = NULL;
 static int _highlightedAbility = 0;

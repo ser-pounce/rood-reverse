@@ -13,19 +13,23 @@ BUILD        := build
 BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
 				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
+BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)
-INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,assemble compile compilers img link lint objdiff permuter psxiso python shell splat sysdeps util vsstring)
+INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile tools/make/*.mk
 
-DISKCODE  := SLUS-01040
-DISKIMAGE := disks/$(DISKCODE).bin
-COMPILERS := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
+DISKCODE   := SLUS-01040
+DISKIMAGE  := disks/$(DISKCODE).bin
+DISKCONFIG := config/$(DISKCODE).xml
+COMPILERS  := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
+SHELL := bash
+.SHELLFLAGS := -euc -o pipefail
+.DELETE_ON_ERROR:
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake clean-all
+.PHONY: all clean commit-check remake
 
 SKIPSPLAT += clean remake clean-all
 
@@ -43,14 +47,14 @@ clean:
 remake: clean
 	$(MAKE)
 
-clean-all: confirm-reset
-
 commit-check remake: MAKEFLAGS += --no-print-directory
 
 include $(INCMAKEFILES)
 
-ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
--include $(BINARIES:%=$(BUILD)/config/%/link.d)
-endif
+$(BUILDDEPS): | tools/.sysdeps
+$(DISKCONFIG): | $(BUILDDEPS)
+$(BINARY_DEPS): | $(DISKCONFIG)
 
-$(BUILDDEPS): | sysdeps
+ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
+-include $(BINARY_DEPS)
+endif

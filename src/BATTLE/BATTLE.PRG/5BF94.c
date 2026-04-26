@@ -475,7 +475,7 @@ void func_800C97BC(void)
 {
     vs_battle_menuItem_t* var_s2;
     int temp_s1;
-    int temp_v0;
+    int miscIndex;
     int i;
     int var_s0;
 
@@ -499,11 +499,11 @@ void func_800C97BC(void)
             return;
         }
         if (temp_s1 == 0) {
-            temp_v0 = func_800C930C(0);
-            if (temp_v0 != 0) {
+            miscIndex = func_800C930C(0);
+            if (miscIndex != 0) {
                 var_s0 = 0x1F;
-                if (temp_v0 > 0) {
-                    var_s0 = temp_v0 | 0x40;
+                if (miscIndex > 0) {
+                    var_s0 = miscIndex | 0x40;
                 }
                 vs_battle_menuState.currentState = var_s0;
             }
@@ -636,7 +636,7 @@ int func_800CACD0(int arg0, int arg1)
     int i;
     u_short var_a1;
     int var_a0;
-    void* temp_v0;
+    void* miscIndex;
 
     if (vs_battle_menuState.currentState == 0x3F) {
         vs_battle_shortcutInvoked = 0;
@@ -651,11 +651,11 @@ int func_800CACD0(int arg0, int arg1)
         if (vs_battle_menuItems == 0) {
             D_800EB9AD = -1;
             func_8007E180(6);
-            temp_v0 = vs_main_allocHeapR(0xB24);
+            miscIndex = vs_main_allocHeapR(0xB24);
             var_a1 = vs_main_settings.menuFlags;
-            vs_battle_stringBuf = temp_v0 + 0xA00;
-            vs_battle_menuItems = temp_v0;
-            vs_battle_rowTypeBuf = temp_v0 + 0xA60;
+            vs_battle_stringBuf = miscIndex + 0xA00;
+            vs_battle_menuItems = miscIndex;
+            vs_battle_rowTypeBuf = miscIndex + 0xA60;
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
                      ++var_a0) {
@@ -851,7 +851,27 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC600);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCA90);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCB9C);
+int vs_battle_decreaseMiscCount(int miscId)
+{
+    int i;
+
+    if (miscId < 0x143) {
+        D_800F5210 = 0;
+    }
+
+    for (i = 0; i < 64; ++i) {
+        int miscIndex = (D_800F5210 + i) & 0x3F;
+        if (vs_battle_inventory.misc[miscIndex].id == miscId) {
+            int count = vs_battle_inventory.misc[miscIndex].count - 1;
+            vs_battle_inventory.misc[miscIndex].count = count;
+            if (count == 0) {
+                vs_battle_inventory.misc[miscIndex].id = 0;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void vs_battle_rMemzero(void* arg0, int arg1)
 {
@@ -1283,7 +1303,6 @@ int func_800D47F4(D_800F53B8_t* arg0)
 {
     int temp_s0;
     int temp_s2;
-    int var_s0;
 
     temp_s2 = func_800D5170(arg0) & 0xFF;
     temp_s0 = func_800D5198(arg0) & 0xFFFF;
@@ -1392,14 +1411,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5198);
 
 int func_800D51D8(D_800F53B8_t* arg0)
 {
-    int temp_v0;
+    int miscIndex;
 
     do {
-        temp_v0 = D_800EC3F4[func_800D5170(arg0)](arg0);
-        if (temp_v0 == 2) {
+        miscIndex = D_800EC3F4[func_800D5170(arg0)](arg0);
+        if (miscIndex == 2) {
             return 0;
         }
-    } while (temp_v0 == 1);
+    } while (miscIndex == 1);
     return 1;
 }
 

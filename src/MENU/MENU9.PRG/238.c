@@ -417,7 +417,7 @@ int _initData(void)
     D_8010A468 = 0;
 
     for (i = 0; i < 64; ++i) {
-        if (vs_main_stateFlags.unk33F[i + 0x81] != 0) {
+        if (vs_main_stateFlags.unk3C0[i] != 0) {
             ++D_8010A468;
         }
     }

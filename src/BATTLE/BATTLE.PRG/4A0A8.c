@@ -2363,7 +2363,7 @@ int func_800BADE0(u_char* arg0)
 
 int func_800BAE74(u_char* arg0, short arg1)
 {
-    func_800CCB9C(vs_battle_getShort(arg0 + 1));
+    vs_battle_decreaseMiscCount(vs_battle_getShort(arg0 + 1));
     return 0;
 }
 

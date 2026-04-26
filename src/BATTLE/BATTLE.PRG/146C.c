@@ -2150,10 +2150,10 @@ void func_8006CE70(func_8006CE70_t* arg0)
     switch (arg0->unk6 & 0x1F0) {
     case 0x10:
         temp_v0 = func_8008E3B8(&sp10);
-        if ((temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] < new_var2)
-            && (temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] >= new_var3)
+        if ((temp_v0[arg0->unk6 & 0xF].unk0.unk8.doorState.unk0 < new_var2)
+            && (temp_v0[arg0->unk6 & 0xF].unk0.unk8.doorState.unk0 >= new_var3)
             && (func_8007F434() != 0)) {
-            temp_v0[arg0->unk6 & 0xF].unk0.unk8.u8[0] = 0;
+            temp_v0[arg0->unk6 & 0xF].unk0.unk8.doorState.unk0 = 0;
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
         } else {
@@ -3633,42 +3633,45 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
             sp10[0] = (arg0->unk0.unk0 << v) + 0x40;
             sp10[2] = (arg0->unk0.unk2 << v) + 0x40;
             var_s1 = 0;
-            switch (arg0->unk0.unk8.u8[0]) {
+
+            switch (arg0->unk0.unk8.doorState.unk0) {
             case 0:
                 var_s1 = 1;
                 break;
             case 1:
             case 3:
-                if (vs_battle_itemIdIsInInventory(arg0->unkC) != 0) {
-                    if (arg0->unkC >= 0x1D2) {
-                        vs_battle_setStateFlag(arg0->unkC + 0x1B6, 2);
-                        func_800CCB9C(arg0->unkC);
+                if (vs_battle_itemIdIsInInventory(arg0->sigil) != 0) {
+                    if (arg0->sigil >= chamomileSigil) {
+                        vs_battle_setStateFlag(arg0->sigil + 0x1B6, 2);
+                        vs_battle_decreaseMiscCount(arg0->sigil);
                     }
-                    arg0->unk0.unk8.u8[0] = 0;
+                    arg0->unk0.unk8.doorState.unk0 = 0;
                     var_s1 = 2;
-                } else if (vs_battle_getStateFlag(arg0->unkC + 0x1B6)) {
-                    arg0->unk0.unk8.u8[0] = 0;
+                } else if (vs_battle_getStateFlag(arg0->sigil + 0x1B6)) {
+                    arg0->unk0.unk8.doorState.unk0 = 0;
                     var_s1 = 3;
                 }
                 break;
             }
+
             if (var_s1 != 0) {
                 if (var_s1 == 2) {
                     var_s2 = 7;
-                    if (arg0->unkC >= 0x1D2) {
+                    if (arg0->sigil >= chamomileSigil) {
                         var_s2 = 9;
                     }
-                    func_800CB2B8(var_s2, arg0->unkC, 1);
+                    func_800CB2B8(var_s2, arg0->sigil, 1);
                 }
                 func_8009E070(0, sp10, 5);
                 func_8008BEBC(arg0);
                 return 0;
             }
-            if (arg0->unk0.unk8.u8[0] != 0) {
-                switch (arg0->unk0.unk8.u8[0]) {
+
+            if (arg0->unk0.unk8.doorState.unk0 != 0) {
+                switch (arg0->unk0.unk8.doorState.unk0) {
                 case 1:
                     var_s2 = 6;
-                    if (arg0->unkC >= 0x1D2) {
+                    if (arg0->sigil >= chamomileSigil) {
                         var_s2 = 8;
                     }
                     break;
@@ -3676,10 +3679,10 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
                     var_s2 = 5;
                     break;
                 case 3:
-                    var_s2 = 0xA;
+                    var_s2 = 10;
                     break;
                 }
-                func_800CB2B8(var_s2, arg0->unkC, 1);
+                func_800CB2B8(var_s2, arg0->sigil, 1);
             }
 
             vs_main_playSfxDefault(0x7E, 0x65);
@@ -3726,7 +3729,7 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
     sp10[2] = (arg0->unk0.unk2 << shift) + 0x40;
     var_s1 = 0;
 
-    switch (arg0->unkC) {
+    switch (arg0->sigil) {
     case 0:
         var_s1 = 1;
         break;
@@ -3738,10 +3741,10 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
             if (arg0->unkE >= 0x1D2) {
-                func_800CCB9C(arg0->unkE);
+                vs_battle_decreaseMiscCount(arg0->unkE);
             }
         }
-        arg0->unkC = 0;
+        arg0->sigil = 0;
         func_800CB2B8(4, arg0->unkE, 1);
         var_s1 = 1;
         break;
@@ -3890,7 +3893,7 @@ int func_80074374(void)
 
 void func_800743E0(int arg0, int arg1)
 {
-    int temp_v1 = D_800F1910.unk0->unkC;
+    int temp_v1 = D_800F1910.unk0->sigil;
     _cameraMode = 3;
     if (temp_v1 != 0) {
         switch (temp_v1) {
@@ -3921,7 +3924,7 @@ int func_800744B8(void)
 {
     D_800F4E98_t* temp_v0;
 
-    if (D_800F1910.unk0->unkC != 0) {
+    if (D_800F1910.unk0->sigil != 0) {
         if (func_800CB45C() != 0) {
             return 1;
         }
@@ -10435,7 +10438,7 @@ void func_8008BD74(_mpdRoomSectionA* arg0)
 int func_8008BEBC(_mpdRoomSectionA* arg0)
 {
     if (arg0->unk12 == 0) {
-        u_int temp_a0 = (u_short)arg0->unkC;
+        u_int temp_a0 = (u_short)arg0->sigil;
         arg0->unk12 = 1;
         if ((temp_a0 - 0x1CA) < 7) {
             func_8008E6DC((short)temp_a0 - 0x1CA);
@@ -10462,14 +10465,14 @@ int func_8008BF48(_mpdRoomSectionA* arg0)
         vs_main_playSfxDefault(0x7E, 0x16);
         vs_main_playSfxDefault(0x7E, 0x17);
     }
-    func_8009291C(arg0->unk0.unk8.u8[1]);
+    func_8009291C(arg0->unk0.unk8.doorState.unk1);
     if (arg0->unkE != 0) {
         func_8008BD74(arg0);
     }
     if (arg0->unk10 != -1) {
         temp_s0 = vs_battle_roomData.sectionA;
         if (temp_s0[arg0->unk10].unk0.unkA != 0) {
-            func_8009291C(temp_s0[arg0->unk10].unk0.unk8.u8[1]);
+            func_8009291C(temp_s0[arg0->unk10].unk0.unk8.doorState.unk1);
             if (temp_s0[arg0->unk10].unkE != 0) {
                 func_8008BD74(&temp_s0[arg0->unk10]);
             }
@@ -10533,7 +10536,7 @@ void func_8008C0C0(void)
 
 int func_8008C1C8(_mpdRoomSectionA* arg0)
 {
-    if (func_80093764(arg0->unk0.unk8.u8[1]) != 0) {
+    if (func_80093764(arg0->unk0.unk8.doorState.unk1) != 0) {
         return 0;
     }
     if (arg0->unkE == 0) {

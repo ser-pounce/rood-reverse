@@ -20,6 +20,7 @@ typedef struct {
     char unk13;
 } func_8007C8F8_t;
 
+int vs_battle_clamp(short arg0, int arg1, int arg2);
 void func_80091314(int);
 void func_80091320(int);
 void func_8009134C(int, int);

@@ -323,9 +323,9 @@ typedef struct {
 } D_800F1910_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
+    signed char unk0;
+    signed char unk1;
+    signed char unk2;
     char unk3;
     short unk4;
     short unk6;
@@ -812,7 +812,7 @@ extern char D_800F1DC8;
 extern signed char D_800F1DC9;
 extern char D_800F1DCA;
 extern char D_800F1DCB;
-extern int* D_800F1DCC;
+extern u_int* D_800F1DCC;
 extern int* D_800F1DD0;
 extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
@@ -10714,6 +10714,7 @@ static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C8A8);
 
+// https://decomp.me/scratch/YpZTC
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);
 
 int func_8008D2C0(func_8008D2C0_t arg0[])
@@ -11524,6 +11525,7 @@ void func_8008EB30(int* arg0)
     var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
 }
 
+// https://decomp.me/scratch/c8coB
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 
 int func_8008EFCC(int arg0)

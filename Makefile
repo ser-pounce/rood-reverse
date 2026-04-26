@@ -16,7 +16,14 @@ BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
 BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)
-INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile tools/make/*.mk
+INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
+				$(patsubst %,tools/make/%.mk,assemble compile link permuter python util vsstring)
+
+ifndef PERMUTER
+ifndef __BASH_MAKE_COMPLETION__
+INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso shell splat)
+endif
+endif
 
 DISKCODE   := SLUS-01040
 DISKIMAGE  := disks/$(DISKCODE).bin

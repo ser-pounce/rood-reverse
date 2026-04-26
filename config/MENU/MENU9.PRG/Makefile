@@ -4,9 +4,8 @@ $(BUILD)/data/MENU/MENU9.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 $(BUILD)/src/MENU/MENU9.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENU9.PRG/238.o: CC1FLAGS += -Wno-uninitialized
-$(BUILD)/src/MENU/MENU9.PRG/238.o: CC1VER := 2.8.1-psx
+$(patsubst %,$(BUILD)/src/MENU/MENU9.PRG/%.o,238 592C): CC1VER := 2.8.1-psx
 $(BUILD)/src/MENU/MENU9.PRG/57BC.o: CC1VER := 2.7.2-cdk
-$(BUILD)/src/MENU/MENU9.PRG/592C.o: CC1VER := 2.8.1-psx
 
 $(BUILD)/config/MENU/MENU9.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

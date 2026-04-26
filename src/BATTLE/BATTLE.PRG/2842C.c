@@ -113,7 +113,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090C2C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090EEC);
 
-int _clamp(short arg0, int arg1, int arg2)
+int vs_battle_clamp(short arg0, int arg1, int arg2)
 {
     short var_t0;
     short var_v1;

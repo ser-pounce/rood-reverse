@@ -17,7 +17,7 @@ tools/.sysdeps:
 		command -v "$$cmd" >/dev/null 2>&1 || { echo "Missing: $$cmd"; missing=1; }
 	done
 	[ $$missing -eq 0 ] || exit 1
-	$(GIT) submodule update --init --recursive
+	$(GIT) submodule update --init --recursive -q
 	$(TOUCH) $@
 
 check:

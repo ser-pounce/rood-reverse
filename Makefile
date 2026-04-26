@@ -56,5 +56,5 @@ $(DISKCONFIG): | $(BUILDDEPS)
 $(BINARY_DEPS): | $(DISKCONFIG)
 
 ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
--include $(BINARY_DEPS)
+include $(BINARY_DEPS)
 endif

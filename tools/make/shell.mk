@@ -1,6 +1,6 @@
 COMMAND      ?= command
 COMMANDFLAGS ?= -v
-SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(CARGO) $(FORMAT)
+SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) rustup
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m
@@ -12,8 +12,11 @@ SHELL_RESET  := \033[0m
 
 tools/.sysdeps:
 	$(ECHO) "$(SHELL_CYAN)Welcome to Rood Reverse!\\nChecking prerequisites and setting up remaining tools, this could take a while.\\n$(SHELL_RESET)"
-	$(COMMAND) $(COMMANDFLAGS) $(SYSDEPS) >/dev/null 2>&1 || ($(ECHO) One or more applications are missing: \\n \
-		$(SYSDEPS); false)
+	missing=0
+	for cmd in $(SYSDEPS); do
+		command -v "$$cmd" >/dev/null 2>&1 || { echo "Missing: $$cmd"; missing=1; }
+	done
+	[ $$missing -eq 0 ] || exit 1
 	$(GIT) submodule update --init --recursive
 	$(TOUCH) $@
 

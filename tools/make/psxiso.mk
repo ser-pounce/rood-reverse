@@ -29,5 +29,4 @@ $(DUMPSXISO):
 	$(CMAKE) --build $(PSXISOBUILD) -j --config Release $(if $(DEBUG),,> /dev/null)
 
 $(DISKIMAGE):
-	$(ECHO) $@ not found
-	false
+	$(error $@ not found)

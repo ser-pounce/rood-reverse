@@ -17,4 +17,4 @@ objdiff.json:
 	$(VPYTHON) tools/dev/objdiff_config.py $(BUILD)/ $(BUILD)/ tools/dev/categories.json
 
 $(OBJDIFF):
-	$(CARGO) install --locked --git https://github.com/encounter/objdiff.git objdiff-cli
+	$(CARGO) install -q --locked --git https://github.com/encounter/objdiff.git objdiff-cli

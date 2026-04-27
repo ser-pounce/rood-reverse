@@ -101,9 +101,9 @@ typedef struct {
     union {
         short s16;
         struct {
-            char unk0;
+            char state;
             char unk1;
-        } doorState;
+        } lock;
     } unk8;
     char unkA;
     char unkB;
@@ -111,7 +111,7 @@ typedef struct {
 
 typedef struct {
     _mpdRoomSection9 unk0;
-    short sigil;
+    short keyOrSigil;
     short unkE;
     short unk10;
     char unk12;

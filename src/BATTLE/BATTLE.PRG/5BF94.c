@@ -806,7 +806,7 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
 
     if (arg0 == 12) {
         vs_battle_printf((char*)&D_800EB9D8[1],
-            &vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
+            (char*)&vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
     } else if (arg0 == 11) {
         D_800F4FE0[7].unk0.fields.unk1_0 = 0;
         vs_battle_printf((char*)&D_800EB9D8[1],

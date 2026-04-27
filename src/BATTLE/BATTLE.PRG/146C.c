@@ -3672,7 +3672,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
                 case 1:
                     template = 6; // Locked with key
                     if (arg0->keyOrSigil >= chamomileSigil) {
-                        template = 8; // Locked with sigil 
+                        template = 8; // Locked with sigil
                     }
                     break;
                 case 2:

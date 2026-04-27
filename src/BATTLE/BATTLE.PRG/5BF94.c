@@ -4,13 +4,14 @@
 #include "2842C.h"
 #include "573B8.h"
 #include "6E644.h"
-#include "build/src/include/lbas.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/overlay.h"
 #include "../SLUS_010.40/32154.h"
 #include "../MENU/MAINMENU.PRG/C48.h"
+#include "build/src/include/lbas.h"
+#include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include <memory.h>
 
 typedef struct {
@@ -111,19 +112,23 @@ extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
 extern int D_800EB9D0;
-extern int D_800EB9D8;
 extern u_int* D_800EB9D4;
+extern int* D_800EB9D8;
+extern u_short D_800EBDDC[];
 extern int D_800EBC04[];
 extern char D_800EBC78;
 extern char D_800EBD68[];
 extern int D_800EC324[];
 extern int (*D_800EC3F4[])(void*);
+extern char D_800EBF58[][12];
 extern char D_800F522C;
 extern char D_800F4CB8;
 extern char D_800F4CB9;
 extern int D_800F4CBC;
 extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
+extern char D_800F4E68;
+extern char D_800F4E69;
 extern char D_800F4E90;
 extern int D_800F4ED4;
 extern u_long* D_800F51B8;
@@ -786,7 +791,36 @@ void func_800CB23C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB268);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB2B8);
+void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
+{
+    D_800EB9D8 = vs_main_allocHeapR(112);
+    D_800F4E69 = arg2;
+    if (D_800F4E69) {
+        D_800F4E68 = 0x78;
+    }
+
+    func_800CCF08(7, 0x304, 0, 1, 0, 3, 0, 0);
+
+    D_800EB9D8[0] = 0x00F8 | (0x04FB << 16);
+    vs_battle_stringContext.strings[0] = vs_main_skills[arg1].name;
+
+    if (arg0 == 12) {
+        vs_battle_printf((char*)&D_800EB9D8[1],
+            &vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
+    } else if (arg0 == 11) {
+        D_800F4FE0[7].unk0.fields.unk1_0 = 0;
+        vs_battle_printf((char*)&D_800EB9D8[1],
+            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_skills[arg1].type
+                                                                + 22]]);
+    } else {
+        if (arg1 != 0) {
+            vs_battle_stringContext.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
+        }
+        vs_battle_printf((char*)D_800EB9D8, (char*)&D_800EBDDC[D_800EBDDC[arg0]]);
+    }
+
+    func_800C6BF0(7, (char*)D_800EB9D8);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB45C);
 

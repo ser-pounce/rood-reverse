@@ -3050,7 +3050,7 @@ void func_8006FA20(void)
         && (D_800F19CC->unk8.unk4 == 0)) {
         _cameraMode = 0xE;
         func_8006C39C();
-        func_800CB2B8(0xC, (int)D_800F19CC->unk8.unk0, 1);
+        vs_battle_displaySceneMessage(0xC, (int)D_800F19CC->unk8.unk0, 1);
         vs_main_skills[D_800F19CC->unk8.unk0].unlocked = 1;
         return;
     }
@@ -3660,7 +3660,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
                     if (arg0->sigil >= chamomileSigil) {
                         var_s2 = 9;
                     }
-                    func_800CB2B8(var_s2, arg0->sigil, 1);
+                    vs_battle_displaySceneMessage(var_s2, arg0->sigil, 1);
                 }
                 func_8009E070(0, sp10, 5);
                 func_8008BEBC(arg0);
@@ -3682,7 +3682,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
                     var_s2 = 10;
                     break;
                 }
-                func_800CB2B8(var_s2, arg0->sigil, 1);
+                vs_battle_displaySceneMessage(var_s2, arg0->sigil, 1);
             }
 
             vs_main_playSfxDefault(0x7E, 0x65);
@@ -3745,7 +3745,7 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
             }
         }
         arg0->sigil = 0;
-        func_800CB2B8(4, arg0->unkE, 1);
+        vs_battle_displaySceneMessage(4, arg0->unkE, 1);
         var_s1 = 1;
         break;
     }
@@ -3771,7 +3771,7 @@ void func_80073F7C(_mpdRoomSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
         func_8009E5C4(i);
     }
     if (vs_main_settings.information != 0) {
-        func_800CB2B8(0xB, arg0->unk0.unk6 + 6, 1);
+        vs_battle_displaySceneMessage(0xB, arg0->unk0.unk6 + 6, 1);
     }
     D_800F19CC->unk4 = 0;
     D_800F19CC->unk8.unk0 = 0;
@@ -3907,7 +3907,7 @@ void func_800743E0(int arg0, int arg1)
             arg1 = 3;
             break;
         }
-        func_800CB2B8(arg1, D_800F1910.unk0->unkE, 1);
+        vs_battle_displaySceneMessage(arg1, D_800F1910.unk0->unkE, 1);
         func_8006C2FC();
     } else {
         short temp_v1_2 = D_800F1910.unk0->unk10;
@@ -5578,7 +5578,7 @@ void func_8007B63C(void)
         && (D_800F19CC->unk8.unk4 == 0)) {
         _cameraMode = 6;
         func_8007B410();
-        func_800CB2B8(0xC, D_800F19CC->unk8.unk0, 1);
+        vs_battle_displaySceneMessage(0xC, D_800F19CC->unk8.unk0, 1);
         vs_main_skills[D_800F19CC->unk8.unk0].unlocked = 1;
         return;
     }

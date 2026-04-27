@@ -14,6 +14,7 @@ options:
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MENUF.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENUF.PRG/undefined_syms_auto.txt
+  auto_link_sections: [.rodata, .data, .bss]
 
 segments:
   - start: 0x0
@@ -23,5 +24,4 @@ segments:
     subsegments:
       - [0x0, .rodata, 3B8]
       - [0x3B8, c]
-      - [0x704C, .bss, 3B8]
   - [0x71F8]

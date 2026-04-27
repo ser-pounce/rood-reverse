@@ -14,6 +14,7 @@ options:
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MENUE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENUE.PRG/undefined_syms_auto.txt
+  auto_link_sections: [.rodata, .data, .bss]
 
 segments:
   - start: 0x0
@@ -21,9 +22,6 @@ segments:
     vram: 0x80102800
     align: 4
     subsegments:
-      - [0x0, .rodata, 494]
-      - [0x494, c, 494]
+      - [0x494, c]
       - {start: 0x2654, type: vsStringTable, name: menuText, linker_entry: false}
-#     - [0x2A28, .data, 494]      
-      - [0x2A30, .bss, 494]
   - [0x2A5C]

@@ -35,9 +35,6 @@ segments:
     vram: 0x800F9800
     align: 4
     subsegments:
-      - [0x00, .rodata, C48]
-      - [0x12C, .rodata, 2D10]
-      - [0x1F8, .rodata, 58EC]
       - [0x224, c]
       - [0xC48, c]
       - [0x2D10, c]

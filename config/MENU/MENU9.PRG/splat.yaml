@@ -15,6 +15,8 @@ options:
   undefined_funcs_auto_path: build/config/MENU/MENU9.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU9.PRG/undefined_syms_auto.txt
   subalign: 4
+  auto_link_sections: [.rodata, .data, .bss]
+
 segments:
   - start: 0x0
     type: code
@@ -33,5 +35,4 @@ segments:
       - {start: 0x6D98, type: vsStringTable, name: timeAttacks, linker_entry: false}
       - {start: 0x6E0C, type: vsStringTable, name: timeAttackDescriptions, linker_entry: false}
       - {start: 0x6FDC, type: vsStringTable, name: miscInfo, linker_entry: false}
-      - [0x7A14, bss, 238]
   - [0x7CB8]

@@ -162,15 +162,17 @@ static char D_8010A104[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 1, 1 };
 static char D_8010A204[] = { 30, 31, 32, 33, 172, 173 };
 static char D_8010A20C[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
-extern int D_8010A4A0;
-extern vs_main_CdQueueSlot* D_8010A4A4;
-extern D_8010A4A8_t* D_8010A4A8;
-extern int D_8010A4B0;
-extern int D_8010A4B4;
-extern void* D_8010A4AC;
+
+static vs_main_CdQueueSlot* D_8010A4A4;
+static D_8010A4A8_t* D_8010A4A8;
+static void* D_8010A4AC;
+static int D_8010A4B0;
+static int D_8010A4B4;
 
 void func_8010812C(int id)
 {
+    static int D_8010A4A0;
+
     vs_main_CdFile cdFile;
     int i;
 

@@ -104,37 +104,6 @@ static char D_80109870[] = "YES\0";
 static char D_80109874[] = "NO\0";
 #pragma vsstring(end)
 
-extern int D_8010A214;
-extern int _initDataComplete;
-extern int D_8010A21C;
-extern int D_8010A220;
-extern int D_8010A224;
-extern int _selectedRow;
-extern _gazetteRow _gazetteRows[];
-extern short D_8010A430[];
-extern int _menuState;
-extern int D_8010A438;
-extern int D_8010A440;
-extern int D_8010A444;
-extern int D_8010A448;
-extern u_short D_8010A44C;
-extern short D_8010A44E;
-extern short D_8010A450;
-extern short D_8010A452;
-extern int D_8010A454;
-extern int D_8010A458;
-extern int D_8010A45C;
-extern u_long _score;
-extern u_short _characterRank;
-extern u_short _clearCount;
-extern u_short D_8010A468;
-extern u_short _mapCompletion;
-extern vs_main_CdQueueSlot* _monBinCdQueueSlot;
-extern _monBinData_t* _monBinData;
-extern u_short* _enemyNames;
-extern char D_8010A480[16];
-extern char D_8010A490[16];
-
 void func_80102A38(int arg0)
 {
     if (arg0 != 0) {
@@ -321,6 +290,10 @@ int _handleMenu(void);
 
 int vs_menu9_exec(char* state)
 {
+    static int D_8010A214;
+    static int _initDataComplete;
+    static int D_8010A21C;
+
     enum state {
         init = 3,
         initData,
@@ -385,6 +358,33 @@ int vs_menu9_exec(char* state)
 static void _determineCharacterRank(void);
 void _setScoreFlags(void);
 void _calculateScore(void);
+
+static int _0;
+static _gazetteRow _gazetteRows[32];
+static SVECTOR D_8010A430;
+static int D_8010A438;
+static int _menuState;
+static int D_8010A440;
+static int D_8010A444;
+static int D_8010A448;
+static u_short D_8010A44C;
+static short D_8010A44E;
+static short D_8010A450;
+static short D_8010A452;
+static int D_8010A454;
+static int D_8010A458;
+static int D_8010A45C;
+static u_long _score;
+static u_short _characterRank;
+static u_short _clearCount;
+static u_short D_8010A468;
+static u_short _mapCompletion;
+static vs_main_CdQueueSlot* _monBinCdQueueSlot;
+static _monBinData_t* _monBinData;
+static u_short* _enemyNames;
+static int _1[2];
+static char D_8010A480[16];
+static char D_8010A490[16];
 
 int _initData(void)
 {
@@ -472,6 +472,8 @@ void func_80108098(void);
 
 int _handleMenu(void)
 {
+    static int D_8010A220;
+    
     enum state {
         init,
         initData,
@@ -496,9 +498,9 @@ int _handleMenu(void)
         D_8010A444 = 0x150;
         D_8010A44E = 0x6B;
         D_8010A44C = D_800F453C->unk656;
-        D_8010A430[0] = 0xF40;
-        D_8010A430[1] = 0xE47;
-        D_8010A430[2] = 0;
+        D_8010A430.vx = 0xF40;
+        D_8010A430.vy = 0xE47;
+        D_8010A430.vz = 0;
         func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
         func_800C6BF0(0, (char*)&_rankText[_rankText[_characterRank]]);
         _initStringsAndGetSelectedRow(1);
@@ -869,10 +871,10 @@ int _handleMenu(void)
             } else if (D_8010A444 > 0x1800) {
                 D_8010A444 = 0x1800;
             }
-            D_8010A430[1] = 0x100;
+            D_8010A430.vy = 0x100;
             D_8010A448 = 0;
-            D_8010A430[0] = 0;
-            D_8010A430[2] = 0;
+            D_8010A430.vx = 0;
+            D_8010A430.vz = 0;
             D_8010A450 = vs_battle_menu9CursorMemory.encyclopaediaPage
                        + vs_battle_menu9CursorMemory.encyclopaediaRow;
             func_80104B40();
@@ -908,21 +910,21 @@ int _handleMenu(void)
             || (lStickY = vs_main_stickPosBuf.lStickY - 0x80, ABS(lStickY) > 0x40)) {
             D_8010A454 = 0x202020;
             if (lStickX < -0x40) {
-                D_8010A430[1] -= 0x40;
+                D_8010A430.vy -= 0x40;
             } else if (lStickX > 0x40) {
-                D_8010A430[1] += 0x40;
+                D_8010A430.vy += 0x40;
             }
 
             if ((vs_main_stickPosBuf.lStickY - 0x80) < -0x40) {
-                D_8010A430[0] += 0x40;
+                D_8010A430.vx += 0x40;
             } else if ((vs_main_stickPosBuf.lStickY - 0x80) > 0x40) {
-                D_8010A430[0] -= 0x40;
+                D_8010A430.vx -= 0x40;
             }
-            if (D_8010A430[0] < 0) {
-                D_8010A430[0] = 0;
+            if (D_8010A430.vx < 0) {
+                D_8010A430.vx = 0;
             }
-            if (D_8010A430[0] > 0x400) {
-                D_8010A430[0] = 0x400;
+            if (D_8010A430.vx > 0x400) {
+                D_8010A430.vx = 0x400;
             }
         } else {
             if (vs_main_buttonsPreviousState & PADL2) {
@@ -934,37 +936,37 @@ int _handleMenu(void)
                     || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
                         ABS(rStickY) > 0x40)) {
                     if (rStickX < -0x40) {
-                        D_8010A430[1] -= 0x40;
+                        D_8010A430.vy -= 0x40;
                     } else if (rStickX > 0x40) {
-                        D_8010A430[1] += 0x40;
+                        D_8010A430.vy += 0x40;
                     }
                     if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
-                        D_8010A430[0] += 0x40;
+                        D_8010A430.vx += 0x40;
                     } else if ((vs_main_stickPosBuf.rStickY - 0x80) > 0x40) {
-                        D_8010A430[0] -= 0x40;
+                        D_8010A430.vx -= 0x40;
                     }
-                    if (D_8010A430[0] < 0) {
-                        D_8010A430[0] = 0;
+                    if (D_8010A430.vx < 0) {
+                        D_8010A430.vx = 0;
                     }
-                    if (D_8010A430[0] > 0x400) {
-                        D_8010A430[0] = 0x400;
+                    if (D_8010A430.vx > 0x400) {
+                        D_8010A430.vx = 0x400;
                     }
                 } else {
                     if (vs_main_buttonsPreviousState & PADLup) {
-                        D_8010A430[0] += 0x40;
+                        D_8010A430.vx += 0x40;
                     } else if (vs_main_buttonsPreviousState & PADLdown) {
-                        D_8010A430[0] -= 0x40;
+                        D_8010A430.vx -= 0x40;
                     }
                     if (vs_main_buttonsPreviousState & PADLright) {
-                        D_8010A430[1] = D_8010A430[1] + 0x40;
+                        D_8010A430.vy = D_8010A430.vy + 0x40;
                     } else if (vs_main_buttonsPreviousState & PADLleft) {
-                        D_8010A430[1] = D_8010A430[1] - 0x40;
+                        D_8010A430.vy = D_8010A430.vy - 0x40;
                     }
-                    if (D_8010A430[0] < 0) {
-                        D_8010A430[0] = 0;
+                    if (D_8010A430.vx < 0) {
+                        D_8010A430.vx = 0;
                     }
-                    if (D_8010A430[0] > 0x400) {
-                        D_8010A430[0] = 0x400;
+                    if (D_8010A430.vx > 0x400) {
+                        D_8010A430.vx = 0x400;
                     }
                 }
 
@@ -1133,6 +1135,9 @@ void func_80104B40(void)
 
 int _initStringsAndGetSelectedRow(int arg0)
 {
+    static int D_8010A224;
+    static int _selectedRow;
+
     char* sp10[8];
     int i;
 
@@ -1174,8 +1179,8 @@ void func_80104CBC(MATRIX* arg0)
     int var_v0;
     int* scratch;
 
-    trig0 = rsin(D_8010A430[1]);
-    trig1 = rcos(D_8010A430[0]);
+    trig0 = rsin(D_8010A430.vy);
+    trig1 = rcos(D_8010A430.vx);
     trig0 *= D_8010A444;
     if (trig0 < 0) {
         trig0 += 0xFFF;
@@ -1187,8 +1192,8 @@ void func_80104CBC(MATRIX* arg0)
     }
 
     sp18.vx = var_v0 >> 0xC;
-    trig0 = rcos(D_8010A430[1]);
-    trig1 = rcos(D_8010A430[0]);
+    trig0 = rcos(D_8010A430.vy);
+    trig1 = rcos(D_8010A430.vx);
     trig0 *= -D_8010A444;
     if (trig0 < 0) {
         trig0 += 0xFFF;
@@ -1200,7 +1205,7 @@ void func_80104CBC(MATRIX* arg0)
     }
 
     sp18.vz = var_v0 >> 0xC;
-    trig2 = rsin(D_8010A430[0]) * -D_8010A444;
+    trig2 = rsin(D_8010A430.vx) * -D_8010A444;
     if (trig2 < 0) {
         trig2 += 0xFFF;
     }
@@ -1211,12 +1216,12 @@ void func_80104CBC(MATRIX* arg0)
     scratch[13] = sp18.vx << 0xC;
     scratch[14] = (sp18.vy << 0x10) >> 4;
     scratch[15] = sp18.vz << 0xC;
-    scratch[21] = D_8010A430[0];
-    scratch[22] = D_8010A430[1];
-    scratch[23] = D_8010A430[2];
+    scratch[21] = D_8010A430.vx;
+    scratch[22] = D_8010A430.vy;
+    scratch[23] = D_8010A430.vz;
 
-    func_80104E90(arg0, D_8010A430[1]);
-    func_80104F04(&sp20, D_8010A430[0]);
+    func_80104E90(arg0, D_8010A430.vy);
+    func_80104F04(&sp20, D_8010A430.vx);
     func_80041C68(&sp20, arg0);
 
     sp10.vx = -sp18.vx;

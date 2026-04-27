@@ -15,6 +15,7 @@ options:
   undefined_funcs_auto_path: build/config/MENU/MENU3.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENU3.PRG/undefined_syms_auto.txt
   subalign: 4
+  auto_link_sections: [.rodata, .data, .bss]
 
 segments:
   - start: 0x0
@@ -25,5 +26,4 @@ segments:
       - [0x16C, c]
       - [0x68C4, c]
       - { start: 0x6BB8, type: vsStringTable, name: menuText, linker_entry: false }
-      - [0x6E44, .bss, 16C]
   - [0x6F68]

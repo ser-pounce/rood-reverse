@@ -11,7 +11,7 @@ options:
   image_type_in_extension: true
   gp_value: 0x80033674
   section_order: [.rodata, .text, .data, .sbss, .bss]
-  auto_link_sections: [.data, .rodata]
+  auto_link_sections: [.rodata, .data]
   subalign: 2
   string_encoding: &enc ASCII
   data_string_encoding: *enc

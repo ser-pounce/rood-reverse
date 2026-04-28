@@ -6,6 +6,7 @@ GIT      := git
 CMAKE    := cmake
 DOCKER   := docker
 CARGO    := cargo
+RUSTUP   := rustup
 
 OBJCOPYFLAGS := -I binary -O elf32-tradlittlemips
 
@@ -17,11 +18,11 @@ BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)
 INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,assemble compile link permuter python util vsstring)
+				$(patsubst %,tools/make/%.mk,assemble compile link permuter python shell vsstring)
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__
-INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso shell splat)
+INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso splat)
 endif
 endif
 
@@ -58,8 +59,8 @@ commit-check remake: MAKEFLAGS += --no-print-directory
 
 include $(INCMAKEFILES)
 
-$(BUILDDEPS): | tools/.sysdeps
-$(DISKCONFIG): | $(BUILDDEPS)
+$(BUILDDEPS):   | tools/.sysdeps
+$(DISKCONFIG):  | $(BUILDDEPS)
 $(BINARY_DEPS): | $(DISKCONFIG)
 
 ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)

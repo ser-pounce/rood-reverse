@@ -12,6 +12,7 @@ void func_800A9F64(int, SVECTOR*, int);
 void func_800A9FD0(int, SVECTOR*, int);
 void func_800AA850(int, u_short, int);
 void func_800AABD0(int, SVECTOR*, int);
+void func_800AAD4C(int, int, int, int);
 void func_800AB4F0(void*);
 void func_800AC37C(int, u_char);
 void func_800AD008(void*, void*);

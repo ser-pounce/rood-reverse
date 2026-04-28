@@ -1,6 +1,20 @@
-COMMAND      ?= command
+CAT      ?= cat
+COMMAND  ?= command
+DIFF     ?= diff
+ECHO     ?= echo -e
+FIND     ?= find
+MKDIR    ?= mkdir
+MV       ?= mv
+SED      ?= sed
+TOUCH    ?= touch
+TRUNCATE ?= truncate
+
 COMMANDFLAGS ?= -v
-SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) rustup
+DIFFFLAGS    ?= -s
+MKDIRFLAGS   ?= -p
+RMFLAGS      ?= -Rf
+
+SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) $(RUSTUP)
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m
@@ -47,3 +61,17 @@ confirm-reset:
 	read -p "  Continue? [y/N] " confirm
 	$(ECHO) ""
 	{ [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; } || { $(ECHO) "  $(SHELL_RED)Aborted.$(SHELL_RESET)"; exit 1; }
+
+.PRECIOUS: %/
+%/:
+	$(MKDIR) $(MKDIRFLAGS) $(@D)
+
+pad = @$(TRUNCATE) -s $1 $@
+
+.SUFFIXES:
+%: %,v
+%: RCS/%,v
+%: RCS/%
+%: s.%
+%: SCCS/s.%
+%.c: %.w %.ch

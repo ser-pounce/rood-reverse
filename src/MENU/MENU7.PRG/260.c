@@ -673,7 +673,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
 
     if (vs_main_settings.slotState == 0) {
-        vs_main_settings.slotState = vs_battle_encode(0x20);
+        vs_main_settings.slotState = vs_battle_keystreamBits(0x20);
         if (vs_main_settings.slotState < 3) {
             vs_main_settings.slotState = 0x17385CA9;
         }
@@ -682,7 +682,7 @@ static void _packageGameSaveData(int targetFile)
         }
     }
 
-    vs_main_settings.key = vs_battle_encode(0x20);
+    vs_main_settings.key = vs_battle_keystreamBits(0x20);
     s5->unk180.key = vs_main_settings.key;
     s5->unk180.base.slotState = vs_main_settings.slotState;
     vs_main_settings.saveFileGeneration = 0;
@@ -747,7 +747,7 @@ static void _packageGameSaveData(int targetFile)
     s5->checksums[1] = var_a0;
     for (i = (long)&((savedata_t*)0)->unk180.unk180.base.slotState;
          i < (int)sizeof(savedata_t); ++i) {
-        _spmcimg[i] += vs_battle_encode(8);
+        _spmcimg[i] += vs_battle_keystreamBits(8);
     }
 }
 
@@ -3877,7 +3877,7 @@ static void _drawPlayTime(void)
         time[3] = 0;
         vs_battle_renderTextRaw("1", 0xC800D8, D_1F800000[1] - 5);
     } else {
-        time[0] = ((((time[0] << 14) + vs_battle_encode(15)) * 5u) >> 14) / 3;
+        time[0] = ((((time[0] << 14) + vs_battle_keystreamBits(15)) * 5u) >> 14) / 3;
     }
     for (i = 0; i < 4; ++i) {
         digits = vs_battle_toBCD(time[i]);

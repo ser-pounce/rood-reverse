@@ -472,12 +472,6 @@ typedef struct {
 } func_8006F630_t3;
 
 typedef struct {
-    int unk0;
-    short unk4;
-    u_short unk6;
-} func_8006CE70_t;
-
-typedef struct {
     int count;
     _mpdRoomDoorSection_t* values[0];
 } D_800F1D08_t;
@@ -2114,23 +2108,9 @@ void func_8006CD60(u_int* arg0, int arg1, int arg2)
 
 void func_8006CDB8(void) { func_8009D854(); }
 
-void func_8006CDD8(short* arg0)
+void func_8006CDD8(func_8006CE70_t* arg0)
 {
-    _mpdRoomSection9* temp_v0;
-    int var_a0;
-    int var_a1;
-
-    var_a0 = arg0[0];
-    if (var_a0 < 0) {
-        var_a0 += 0x7F;
-    }
-    var_a0 >>= 7;
-    var_a1 = arg0[2];
-    if (var_a1 < 0) {
-        var_a1 += 0x7F;
-    }
-    var_a1 >>= 7;
-    temp_v0 = func_8008D438(var_a0, var_a1, 0);
+    _mpdRoomSection9* temp_v0 = func_8008D438(arg0->unk0 / 128, arg0->unk4 / 128, 0);
     if (temp_v0 != NULL) {
         func_8008DEAC(temp_v0, 1);
         func_800E68EC(temp_v0->unk0, temp_v0->unk2);

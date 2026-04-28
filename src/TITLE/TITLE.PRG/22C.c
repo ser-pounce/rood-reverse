@@ -46,12 +46,12 @@ enum memcardEventHandler_e {
     memcardEventUnformatted = 3
 };
 
-static u_int _encode(int value)
+static u_int _keystreamBits(int value)
 {
-    static u_int _encodeSeed = 0x19660D;
-    u_int seed = _encodeSeed;
+    static u_int _keystreamState = 0x19660D;
+    u_int seed = _keystreamState;
 
-    _encodeSeed = seed * 0x19660D;
+    _keystreamState = seed * 0x19660D;
     return seed >> (32 - value);
 }
 
@@ -650,14 +650,14 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
 
     if (vs_main_settings.slotState == 0) {
-        vs_main_settings.slotState = _encode(0x20);
+        vs_main_settings.slotState = _keystreamBits(0x20);
         if (vs_main_settings.slotState < 3) {
             vs_main_settings.slotState = 0x17385CA9;
         }
         memset(&savedata2->containerData, 0, sizeof(savedata2->containerData));
     }
 
-    vs_main_settings.key = _encode(0x20);
+    vs_main_settings.key = _keystreamBits(0x20);
     s5->unk180.key = vs_main_settings.key;
     s5->unk180.base.slotState = vs_main_settings.slotState;
     vs_main_settings.saveFileGeneration = 0;
@@ -723,7 +723,7 @@ static void _packageGameSaveData(int targetFile)
     s5->checksums[1] = var_a0;
     for (i = (long)&((savedata_t*)0)->unk180.unk180.base.slotState;
          i < (int)sizeof(savedata_t); ++i) {
-        _spmcimg[i] += _encode(8);
+        _spmcimg[i] += _keystreamBits(8);
     }
 }
 
@@ -3332,7 +3332,7 @@ static void _gameSaveScreen(void)
         vs_main_gametimeUpdate(2);
         _saveScreenSwapBuf();
         vs_main_processPadState();
-        _encode(0);
+        _keystreamBits(0);
 
         switch (state) {
         case init:

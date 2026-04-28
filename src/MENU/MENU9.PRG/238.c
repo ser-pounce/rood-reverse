@@ -473,7 +473,7 @@ void func_80108098(void);
 int _handleMenu(void)
 {
     static int D_8010A220;
-    
+
     enum state {
         init,
         initData,

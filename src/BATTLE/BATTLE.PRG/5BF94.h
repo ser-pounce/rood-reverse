@@ -250,7 +250,7 @@ void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(void* dest, void const* src, int size);
 int vs_battle_toBCD(int);
 int vs_battle_drawCursor(int animStep, int position);
-u_int vs_battle_encode(int value);
+u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);
 void func_800CCCB8(u_long*, int, int, int);
 void func_800CCD00(int arg0, u_long* arg1);

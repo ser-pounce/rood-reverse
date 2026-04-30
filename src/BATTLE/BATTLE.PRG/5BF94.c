@@ -75,10 +75,7 @@ typedef struct {
     short unk8;
     u_short unkA;
     char* unkC;
-    char unk10;
-    char unk11;
-    char unk12;
-    char unk13;
+    char unk10[4];
     char unk14[0x28];
     int unk3C;
     char unk40[0xCDC];
@@ -1449,12 +1446,16 @@ int func_800D4A94(D_800F53B8_t* arg0)
 int func_800D4AB4(D_800F53B8_t* arg0)
 {
     if (D_800F522C < 4) {
-        arg0->unk13 = D_800EC32C[D_800F522C];
+        arg0->unk10[3] = D_800EC32C[D_800F522C];
     }
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4AEC);
+int func_800D4AEC(D_800F53B8_t* arg0)
+{
+    arg0->unk10[func_800D5170(arg0)] = func_800D5198(arg0);
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4B34);
 

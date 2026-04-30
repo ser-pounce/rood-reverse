@@ -1551,6 +1551,7 @@ int func_800D5048(D_800F53B8_t* arg0)
     return 1;
 }
 
+int func_800D5088(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5088);
 
 int func_800D5150(D_800F53B8_t* arg0 __attribute__((unused)))

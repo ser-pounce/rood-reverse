@@ -1408,8 +1408,21 @@ int func_800D48E4(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4910(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4910);
+void func_800CF70C(D_800F53B8_t*, void*);
+
+int func_800D4910(D_800F53B8_t* arg0)
+{
+    func_800D4910_t* var_s0 = arg0->unkD1C.unk1C.unk18;
+
+    while (var_s0 != 0) {
+        func_800D4910_t* s1 = var_s0->next;
+        if (var_s0->unk4(var_s0, 2, 0) == 0) {
+            func_800CF70C(arg0, var_s0);
+        }
+        var_s0 = s1;
+    }
+    return 1;
+}
 
 int func_800D4984(D_800F53B8_t* arg0)
 {

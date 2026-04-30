@@ -873,6 +873,11 @@ typedef struct {
     int unk4;
 } D_800F53B8_t4;
 
+typedef struct func_800D4910_t {
+    struct func_800D4910_t* next;
+    int (*unk4)(struct func_800D4910_t*, int, int);
+} func_800D4910_t;
+
 typedef struct {
     short unk0;
     short unk2;
@@ -886,7 +891,7 @@ typedef struct {
     char unkF;
     int unk10;
     D_800F53B8_t4* unk14;
-    int unk18;
+    func_800D4910_t* unk18;
     short unk1C;
     short unk1E;
     int unk20;

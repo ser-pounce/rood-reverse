@@ -1477,6 +1477,7 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
+int func_800D4C18(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
 
 int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
@@ -1501,6 +1502,7 @@ int func_800D4D98(D_800F53B8_t* arg0 __attribute__((unused)))
 
 int func_800D4DA8(D_800F53B8_t* arg0 __attribute__((unused))) { return 1; }
 
+int func_800D4DB0(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
 
 int func_800D4E5C(D_800F53B8_t* arg0)
@@ -1515,7 +1517,14 @@ int func_800D4E90(D_800F53B8_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4EC0);
+int func_800D4EC0(D_800F53B8_t* arg0)
+{
+    if (arg0->unkD1C.unk1C.unk14 != NULL) {
+        vs_main_freeHeapR(arg0->unkD1C.unk1C.unk14);
+        arg0->unkD1C.unk1C.unk14 = NULL;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
 

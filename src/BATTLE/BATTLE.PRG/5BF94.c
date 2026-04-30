@@ -72,7 +72,8 @@ typedef struct {
 typedef struct {
     int unk0;
     int unk4;
-    short unk8;
+    char unk8;
+    char unk9;
     u_short unkA;
     char* unkC;
     char unk10[4];
@@ -1463,7 +1464,11 @@ int func_800D4B34(D_800F53B8_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4B90);
+int func_800D4B90(D_800F53B8_t* arg0)
+{
+    func_800D46DC(arg0->unk8 == func_800D5170(arg0), arg0);
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4BD0);
 

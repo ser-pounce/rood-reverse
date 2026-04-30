@@ -2106,7 +2106,7 @@ void func_8006CD60(u_int* arg0, int arg1, int arg2)
     func_800461CC(0x7E, arg0, vs_main_getRand(3) + 8, arg1, arg2);
 }
 
-void func_8006CDB8(void) { func_8009D854(); }
+void func_8006CDB8(int arg0) { func_8009D854(arg0); }
 
 void func_8006CDD8(func_8006CE70_t* arg0)
 {

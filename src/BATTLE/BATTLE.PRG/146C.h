@@ -866,12 +866,34 @@ typedef struct {
 } vs_battle_charInitData;
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    int unk4;
+} D_800F53B8_t4;
+
+typedef struct {
     short unk0;
     short unk2;
     short unk4;
     u_short unk6;
+    u_short unk8;
+    u_short unkA;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+    int unk10;
+    D_800F53B8_t4* unk14;
+    int unk18;
+    short unk1C;
+    short unk1E;
+    int unk20;
 } func_8006CE70_t;
 
+void func_80069C6C(int);
+void func_8006CDB8(int);
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);

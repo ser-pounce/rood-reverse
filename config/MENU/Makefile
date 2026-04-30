@@ -29,28 +29,12 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
-$(BUILD)/assets/MENU/BLADE.SYD.yaml: | $$(@D)/
-	$(ECHO) Converting data/MENU/BLADE.SYD
-	$(VPYTHON) -m tools.data.MENU.BLADE_SYD_dump data/MENU/BLADE.SYD $@
+$(BUILD)/assets/MENU/%.SYD.yaml: | $$(@D)/
+	$(ECHO) Converting data/MENU/$*.SYD
+	$(VPYTHON) -m tools.data.MENU.$*_SYD_dump data/MENU/$*.SYD $@
 
-$(BUILD)/data/MENU/BLADE.SYD: $(BUILD)/assets/MENU/BLADE.SYD.yaml | $$(@D)/
+$(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.BLADE_SYD_encode $< $@
-
-$(BUILD)/assets/MENU/ARMOR.SYD.yaml: | $$(@D)/
-	$(ECHO) Converting data/MENU/ARMOR.SYD
-	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_dump data/MENU/ARMOR.SYD $@
-
-$(BUILD)/data/MENU/ARMOR.SYD: $(BUILD)/assets/MENU/ARMOR.SYD.yaml | $$(@D)/
-	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.ARMOR_SYD_encode $< $@
-
-$(BUILD)/assets/MENU/SHIELD.SYD.yaml: | $$(@D)/
-	$(ECHO) Converting data/MENU/SHIELD.SYD
-	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_dump data/MENU/SHIELD.SYD $@
-
-$(BUILD)/data/MENU/SHIELD.SYD: $(BUILD)/assets/MENU/SHIELD.SYD.yaml | $$(@D)/
-	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.SHIELD_SYD_encode $< $@
+	$(VPYTHON) -m tools.data.MENU.$*_SYD_encode $< $@
 
 TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, BLADE ARMOR SHIELD))

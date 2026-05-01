@@ -1181,10 +1181,10 @@ static int func_80104788(int arg0)
         }
         func_800C7210(5);
         i = vs_battle_toBCD(D_8010966F);
-        func_800C70F8(i & 0xF, 0x42, 0x82, D_1F800000[2] - 12);
+        vs_battle_printChar(i & 0xF, 0x42, 0x82, D_1F800000[2] - 12);
         i = vs_battle_toBCD(i >> 4);
-        func_800C70F8(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 12);
-        func_800C70F8(i >> 4, 0x36, 0x82, D_1F800000[2] - 12);
+        vs_battle_printChar(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 12);
+        vs_battle_printChar(i >> 4, 0x36, 0x82, D_1F800000[2] - 12);
         D_8010961F =
             func_800FFCDC((u_int)D_8010961F, (0x36 - (D_8010966E * 6)) | 0x720000);
         break;

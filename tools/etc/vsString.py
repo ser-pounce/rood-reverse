@@ -35,18 +35,15 @@ table = [
     '.', '/', '\\', '<', '>', '?', '_', '-', # 0xA0
     '+', '*', '`', '{', '}', '♪', '△', '□',
     '○', '×', '←', '→', '↑', '↓', 'Lv.', '★', # 0xB0
-    # Dummy hiragana to allow dumping invalid chars
-    # (needed for SCENE018.ARM which uses the JP font table)
-    # TODO: allow for font table switching
-    '◼', '~', 'あ', 'い', 'う', 'え', 'お', 'か',
-    'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', # 0xC0
-    'そ', 'た', 'ち', 'つ', 'て', 'と', 'な', 'に',
-    'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'へ', 'ほ', # 0xD0
-    'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ',
-    'ら', 'り', 'る', 'れ', 'ろ', '\f', '▼', '\0', # 0xE0
+    '◼', '~', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '',         # 0xC0
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '',         # 0xD0
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '\f', '▼', '\0',    # 0xE0
     '\n', '', '', '', '', '|a', '|b', '|c',
     '|d', '|e', '|g', '|h', '|i', '|j', '|k', '|l', # 0xF0
-    '|!', '', '|>', '|f', '', '|x', '|#', '|$',
+    '|!', '|s', '|>', '|f', '', '|x', '|#', '|$',
 ]
 
 jp_table_0 = [
@@ -415,10 +412,14 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # String functions, 1-byte operand
 # 0xED - 
 # 0xF7 -> |a-ln|: Font table for Japanese, partially implemented
-# 0xF8 -> |!n|: Sets the character chunking size to n, where 0 = process entire string before returning
-# 0xFA -> |>n|: Advances the next glyph position by n pixels
-# 0xFB -> |fn|: Manipulate font. n = 0-3 sets the color, n = 4 justifies the text,
+# 0xF8 -> |!n|: Sets the text speed to n, where 0 = instantaneous
+# 0xF9 -> |sn|: Play sfx n after each chunk is rendered
+# 0xFA -> |>n|: Advances the x offset by n pixels
+# 0xFB -> |fn|: Manipulate font. n = 0-3 sets the color, n = 4 toggle text justification,
 #               n = 5 or 6 set font table 1 and 0 respectively.
+#               7 might be unintended, unsure what bit 3 is for but 7 will
+#               enable it, as well as set the color to 3.
+#               Values over 7 are shifted down by 3 and advance the y offset
 # 0xFD -> |xn|: Inserts a contextual hex integer with ID n
 # 0xFE -> |#n|: Inserts a contextual decimal integer with ID n
 # 0xFF -> |$n|: Inserts a contextual string with ID n
@@ -438,7 +439,7 @@ def decode(s, jpTable=False):
                 jp_char = jp_tables[table_index][s[i + 1]]
                 result += jp_char
                 i += 2
-            case 0xF8 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
+            case 0xF8 | 0xF9 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:

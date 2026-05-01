@@ -114,6 +114,35 @@ typedef struct {
     int unkC;
 } D_800F5620_t;
 
+typedef struct {
+    u_int unk0_0 : 4;
+    u_int unk0_4 : 4;
+    u_int unk0_8 : 8;
+    u_int arrowAnimFrame : 8;
+    u_int unk0_24 : 6;
+    u_int done : 1;
+    u_int unk0_31 : 1;
+    int unk4;
+    char* string;
+    u_short speed;
+    u_short prevChunksPrinted;
+    short xIndent;
+    short yIndent;
+    int unk14;
+    int unk18;
+    short unk1C;
+    u_char unk1E;
+    u_char unk1F;
+    char lineWidth;
+    char unk21;
+    char unk22;
+    char unk23;
+    int unk24;
+    int unk28;
+    short unk2C;
+    short unk2E;
+} _printStringContext;
+
 void func_800C98C0(int, int, int, u_long*);
 void func_800CA97C(void);
 int func_800CAF40(void);
@@ -351,7 +380,7 @@ int vs_battle_getTextLineLength(char* str)
 }
 #pragma vsstring(end)
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C70F8);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_printChar);
 
 void func_800C7210(int arg0)
 {
@@ -360,7 +389,272 @@ void func_800C7210(int arg0)
     D_800F4CB8 = arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7230);
+extern u_char D_800F4E80;
+
+void _printString(_printStringContext* arg0)
+{
+    char intBuf[16];
+    u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
+    int done = 0;
+    int sfx = 0;
+    int chunksPrinted = 0;
+    char* savedString;
+    int speed = 1;
+    int justify = 0;
+    int inInlineString = 0;
+    int postContinuation = 0;
+    int charsRemaining = arg0->speed;
+
+    int printX;
+    int printY;
+    int temp_v0;
+    int var_a0;
+    int var_a2;
+    int hexBufPos;
+    int decInt;
+    int decBufPos;
+    char* currentString;
+    u_short temp_v1;
+    u_int currentChar;
+    u_int opcodeParam;
+
+    if (charsRemaining != 0) {
+
+        D_800F4CB9 = arg0->unk0_0 != 4;
+        D_800F4CBC = arg0->unk1E;
+        D_800F4CB8 = (1 - (*((char*)arg0) & 1)) * 4;
+
+        if (arg0->unk0_0 == 2) {
+            D_800F4CB9 = 0;
+            D_800F4CB8 = 0;
+        }
+        currentString = arg0->string;
+        printX = arg0->xIndent;
+        printY = arg0->yIndent;
+
+        arg0->done = 0;
+
+        while (charsRemaining > 0) {
+            if (postContinuation != 0) {
+                --postContinuation;
+            }
+            currentChar = *currentString;
+            ++currentString;
+            if (currentChar < 0xEC) {
+                if (currentChar < 0xE5) {
+                    printX = vs_battle_printChar(currentChar, printX, printY, sp20);
+                    charsRemaining -= speed;
+                    ++chunksPrinted;
+                    continue;
+                }
+
+                switch (currentChar - 0xE5) {
+                case 0: // 0xE5 New page
+                    arg0->string = currentString;
+                    done = (arg0->speed = 1);
+                    arg0->prevChunksPrinted = 0;
+                    break;
+                case 1: // 0xE6 Continuation arrow
+                    if (charsRemaining == 1) {
+                        if ((*(&vs_main_buttonsPressed.pad[0].low)) != 0) {
+                            charsRemaining = 0;
+                        } else {
+                            done = (arg0->arrowAnimFrame + vs_gametime_tickspeed) % 24;
+                            printX = vs_battle_printChar(
+                                0xBC - (done >> 3), printX, printY, sp20);
+                            arg0->arrowAnimFrame = done;
+                        }
+                        done = 1;
+                    } else {
+                        --charsRemaining;
+                        postContinuation = 2;
+                    }
+                    break;
+                case 2: // 0xE7 Termination
+                    if (inInlineString != 0) {
+                        currentString = savedString;
+                        inInlineString = 0;
+                    } else {
+                        temp_v1 = arg0->unk2C;
+                        temp_v0 = temp_v1 << 0x10;
+                        if (temp_v0 > 0) {
+                            arg0->unk2C = ((temp_v0 >> 0x12) - temp_v1);
+                        }
+                        arg0->done = 1;
+                        if (((*(&vs_main_buttonsPressed.pad[0].low)) != 0)
+                            || (postContinuation != 0)) {
+                            arg0->speed = 0xFFFF;
+                        }
+                        done = 1;
+                    }
+                    break;
+                case 3: // 0xE8 New line
+                    printX = arg0->xIndent;
+                    if (justify != 0) {
+                        printX += ((arg0->lineWidth * 2)
+                                      - vs_battle_getTextLineLength(currentString))
+                                * 3;
+                    }
+                    printY += 13;
+                    break;
+                }
+                if (done != 0) {
+                    break;
+                }
+            } else {
+                opcodeParam = *currentString;
+                ++currentString;
+
+                switch (currentChar) {
+                case 0xF8: // Character buffer chunking size
+                    speed = opcodeParam;
+                    break;
+                case 0xF9: // Play sfx
+                    sfx = opcodeParam;
+                    break;
+                case 0xFA: // Advance print position
+                    currentChar = 256;
+                    if (opcodeParam >= 240) {
+                        printX = printX - currentChar + opcodeParam;
+                    } else {
+                        printX += opcodeParam;
+                    }
+                    break;
+                case 0xFB: // Manipulate font
+                    if (opcodeParam & 0xF8) {
+                        printY += opcodeParam >> 3;
+                    } else {
+                        if (opcodeParam == 6) { // Font table 0
+                            D_800F4CB9 = 0;
+                        } else if (opcodeParam == 5) { // Font table 1
+                            D_800F4CB9 = 1;
+                        } else if (opcodeParam == 4) { // Justify
+                            justify ^= 1;
+                            if (justify != 0) {
+                                printX =
+                                    (((arg0->lineWidth * 2)
+                                         - vs_battle_getTextLineLength(currentString))
+                                        * 3)
+                                    + arg0->xIndent;
+                            }
+                        } else {
+                            D_800F4CB8 = (D_800F4CB8 & 4) | opcodeParam;
+                        }
+                    }
+                    break;
+                case 0xFC:
+                    if (arg0->unk2C > 0) {
+                        arg0->unk2C = -opcodeParam;
+                    }
+                    break;
+                case 0xFD: // Print hex
+                    hexBufPos = 0;
+                    var_a2 = vs_battle_stringContext.integers[opcodeParam % 10];
+                    var_a0 = 0x10000000;
+                    if (var_a2 < 0) {
+                        var_a2 = -var_a2;
+                        intBuf[0] = 0xA7;
+                        hexBufPos = 1;
+                    }
+                    if (opcodeParam < 10) {
+                        if (var_a2 == 0) {
+                            intBuf[hexBufPos++] = 0;
+                        } else {
+
+                            while ((var_a2 / var_a0) == 0) {
+                                var_a0 >>= 4;
+                            }
+
+                            while (var_a0 != 0) {
+                                intBuf[hexBufPos++] = (var_a2 / var_a0) & 0xF;
+                                var_a0 >>= 4;
+                            }
+                        }
+                    } else {
+                        opcodeParam = (opcodeParam / 10) - 1;
+                        var_a0 = 1;
+                        while (opcodeParam != 0) {
+                            --opcodeParam;
+                            var_a0 *= 16;
+                        }
+                        while (var_a0 != 0) {
+                            intBuf[hexBufPos++] = (var_a2 / var_a0) & 0xF;
+                            var_a0 >>= 4;
+                        }
+                    }
+                    intBuf[hexBufPos] = 0xE7;
+                    savedString = currentString;
+                    currentString = intBuf;
+                    inInlineString = 1;
+                    break;
+                case 0xFE: // Print decimal
+                    decBufPos = 0;
+                    decInt = vs_battle_stringContext.integers[opcodeParam % 10];
+                    var_a2 = 1000000000;
+                    if (decInt < 0) {
+                        decInt = -decInt;
+                        intBuf[0] = 0xA7; // -
+                        decBufPos = 1;
+                    }
+                    if (opcodeParam < 10) {
+                        if (decInt == 0) {
+                            intBuf[decBufPos] = 0;
+                            ++decBufPos;
+                        } else {
+
+                            while ((decInt / var_a2) == 0) {
+                                var_a2 /= 10;
+                            }
+
+                            while (var_a2 != 0) {
+                                intBuf[decBufPos++] = (decInt / var_a2) % 10;
+                                var_a2 /= 10;
+                            }
+                        }
+                    } else {
+                        opcodeParam = (opcodeParam / 10) - 1;
+                        var_a2 = 1;
+                        while (opcodeParam != 0) {
+                            var_a2 *= 10;
+                            --opcodeParam;
+                        }
+                        while (var_a2 != 0) {
+                            intBuf[decBufPos++] = (decInt / var_a2) % 10;
+                            var_a2 /= 10;
+                        }
+                    }
+                    intBuf[decBufPos] = 0xE7;
+                    savedString = currentString;
+                    currentString = intBuf;
+                    inInlineString = 1;
+                    break;
+                case 0xFF: // Print string reference
+                    savedString = currentString;
+                    currentString = (char*)vs_battle_stringContext.strings[opcodeParam];
+                    inInlineString = 1;
+                    break;
+                }
+            }
+        }
+
+        if (charsRemaining <= 0) {
+            arg0->speed += vs_gametime_tickspeed >> 1;
+        }
+
+        if ((arg0->prevChunksPrinted != chunksPrinted) && (sfx != 0)) {
+            vs_main_playSfxDefault(0x7E, sfx);
+        }
+
+        if (!(arg0->unk0_24 & 0x20)) {
+            if (arg0->unk2C != 0) {
+                ++arg0->unk2C;
+            } else {
+                func_800AAD4C(arg0->unk0_24, 0, 0, 0);
+            }
+        }
+        arg0->prevChunksPrinted = chunksPrinted;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C79D8);
 

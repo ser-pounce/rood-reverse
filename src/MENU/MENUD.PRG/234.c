@@ -1864,10 +1864,10 @@ int _discardMenu(int arg0)
         }
         func_800C7210(5);
         temp_v0_7 = vs_battle_toBCD(discardCount);
-        func_800C70F8(temp_v0_7 & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
+        vs_battle_printChar(temp_v0_7 & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
         temp_v0_7 = vs_battle_toBCD(temp_v0_7 >> 4);
-        func_800C70F8(temp_v0_7 & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
-        func_800C70F8(temp_v0_7 >> 4, 0x36, 0x82, D_1F800000[2] - 3);
+        vs_battle_printChar(temp_v0_7 & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
+        vs_battle_printChar(temp_v0_7 >> 4, 0x36, 0x82, D_1F800000[2] - 3);
         D_80109A07 = func_800FFCDC(D_80109A07, (0x36 - (discardStep * 6)) | 0x720000);
         break;
     case discardMultipleConfirm:

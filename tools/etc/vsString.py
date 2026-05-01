@@ -411,7 +411,7 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 
 # String functions, 1-byte operand
 # 0xED - 
-# 0xF7 -> |a-ln|: Font table for Japanese, partially implemented
+# 0xF7 -> |a-ln|: Font table for Japanese, partially implemented, won't be needed when JP font is complete
 # 0xF8 -> |!n|: Sets the text speed to n, where 0 = instantaneous
 # 0xF9 -> |sn|: Play sfx n after each chunk is rendered
 # 0xFA -> |>n|: Advances the x offset by n pixels

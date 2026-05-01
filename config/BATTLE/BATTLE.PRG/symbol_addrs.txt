@@ -1139,6 +1139,7 @@ _mpdClearedSection = 0x800F4BAC;
 _mpdRoomDoorSection = 0x800F4BE8;
 _mpdScriptSection = 0x800F4C50;
 _evtFile = 0x800F4C52;
+_fontBrightness = 0x800F4CBC;
 vs_battle_shortcutInvoked = 0x800F4E6A;
 vs_battle_rowTypeBuf = 0x800F4E84;
 vs_battle_stringBuf = 0x800F4E8C;

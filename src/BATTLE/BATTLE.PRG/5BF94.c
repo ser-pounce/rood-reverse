@@ -128,16 +128,18 @@ typedef struct {
     u_short prevChunksPrinted;
     short xIndent;
     short yIndent;
-    int unk14;
+    short unk14;
+    short unk16;
     int unk18;
     short unk1C;
-    u_char unk1E;
+    u_char brightness;
     u_char unk1F;
     char lineWidth;
     char unk21;
     char unk22;
     char unk23;
-    int unk24;
+    short unk24;
+    short unk26;
     int unk28;
     short unk2C;
     short unk2E;
@@ -190,7 +192,7 @@ extern int (*D_800EC3F4[])(void*);
 extern u_char D_800F522C;
 extern char D_800F4CB8;
 extern char D_800F4CB9;
-extern int D_800F4CBC;
+extern int _fontBrightness;
 extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
@@ -391,8 +393,8 @@ int vs_battle_printDialogChar(u_int glyphId, int x, int y, u_long* arg3)
     }
 
     glyphId += D_800F4CB9 * 0xBD;
-    sprite =
-        vs_battle_setSprite(D_800F4CBC, (x & 0xFFFF) | (y << 0x10), 0xC000C, arg3 + 3);
+    sprite = vs_battle_setSprite(
+        _fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, arg3 + 3);
     sprite[1] = 0xE100002D;
     glyphRow = glyphId / 21;
     glyphCol = glyphId % 21;
@@ -406,7 +408,7 @@ int vs_battle_printDialogChar(u_int glyphId, int x, int y, u_long* arg3)
 void func_800C7210(int arg0)
 {
     D_800F4CB9 = 0;
-    D_800F4CBC = 384;
+    _fontBrightness = 384;
     D_800F4CB8 = arg0;
 }
 
@@ -442,7 +444,7 @@ void _printDialog(_printDialogContext* arg0)
     if (charsRemaining != 0) {
 
         D_800F4CB9 = arg0->unk0_0 != 4;
-        D_800F4CBC = arg0->unk1E;
+        _fontBrightness = arg0->brightness;
         D_800F4CB8 = (1 - (*((char*)arg0) & 1)) * 4;
 
         if (arg0->unk0_0 == 2) {
@@ -533,7 +535,7 @@ void _printDialog(_printDialogContext* arg0)
                 case 0xF9: // Play sfx
                     sfx = opcodeParam;
                     break;
-                case 0xFA: // Advance print position
+                case 0xFA: // Offset x
                     currentChar = 256;
                     if (opcodeParam >= 240) {
                         printX = printX - currentChar + opcodeParam;
@@ -542,7 +544,7 @@ void _printDialog(_printDialogContext* arg0)
                     }
                     break;
                 case 0xFB: // Manipulate font
-                    if (opcodeParam & 0xF8) {
+                    if (opcodeParam & 0xF8) { // Offset y
                         printY += opcodeParam >> 3;
                     } else {
                         if (opcodeParam == 6) { // Font table 0
@@ -558,7 +560,7 @@ void _printDialog(_printDialogContext* arg0)
                                         * 3)
                                     + arg0->xIndent;
                             }
-                        } else {
+                        } else { // Color
                             D_800F4CB8 = (D_800F4CB8 & 4) | opcodeParam;
                         }
                     }
@@ -677,9 +679,108 @@ void _printDialog(_printDialogContext* arg0)
     }
 }
 
+int func_800C79D8(int charId, int x, int y, int width0, int width1, int scale);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C79D8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7BA4);
+void func_800C7BA4(_printDialogContext* ctx, int scale)
+{
+    int sp18;
+    int lineHeight;
+    int temp_s6;
+    int done;
+    int justify = 0;
+    char* str = ctx->string;
+    int charWidth = scale * 0xC;
+
+    sp18 = charWidth;
+    lineHeight = scale * 0xD;
+
+    if (ctx->speed != 0) {
+        int printX = (ctx->unk24 << 0x10) + ((ctx->xIndent - ctx->unk14) * scale);
+        int printY = (ctx->unk26 << 0x10) + ((ctx->yIndent - ctx->unk16) * scale);
+
+        D_800F4CB8 = (1 - (*((char*)ctx) & 1)) * 4;
+        D_800F4CB9 = ctx->unk0_0 != 4;
+        _fontBrightness = ctx->brightness;
+
+        temp_s6 = printX;
+
+        if (ctx->unk0_0 == 2) {
+            D_800F4CB9 = 0;
+            D_800F4CB8 = 0;
+        }
+
+        done = ctx->brightness;
+        _fontBrightness = done | (done << 8) | (done << 0x10) | 0x2C000000;
+        done = 0;
+
+        while (1) {
+            u_int currentChar = *str++;
+
+            if (currentChar < 0xEC) {
+                if (currentChar < 0xE5) {
+                    printX = func_800C79D8(
+                        currentChar, printX, printY, charWidth, sp18, scale);
+                    continue;
+                }
+
+                switch (currentChar - 0xE5) {
+                case 2: // 0xE7 Termination
+                    done = 1;
+                    break;
+                case 3: // 0xE8 New line
+                    printX = temp_s6;
+                    if (justify != 0) {
+                        printX =
+                            temp_s6
+                            + (((ctx->lineWidth * 2) - vs_battle_getTextLineLength(str))
+                                * (charWidth >> 2));
+                    }
+                    printY += lineHeight;
+                    break;
+                }
+                if (done != 0) {
+                    break;
+                }
+            }
+
+            else if (currentChar >= 0xEC) {
+                u_int opcodeParam = *str++;
+
+                switch (currentChar - 0xF8) {
+                case 2: // Offset x
+                    if (opcodeParam >= 0xF0) {
+                        printX -= ((256 - opcodeParam) * charWidth) / 12;
+                    } else {
+                        printX += (opcodeParam * charWidth) / 12;
+                    }
+                    break;
+                case 3: // Manipulate font
+                    if (opcodeParam & 0xF8) { // Offset y
+                        printY += (opcodeParam >> 3) * scale;
+                    } else {
+                        if (opcodeParam == 6) { // Font table 0
+                            D_800F4CB9 = 0;
+                        } else if (opcodeParam == 5) { // Font table 1
+                            D_800F4CB9 = 1;
+                        } else if (opcodeParam == 4) { // Justify
+                            justify ^= 1;
+                            if (justify != 0) {
+                                printX = temp_s6
+                                       + (((ctx->lineWidth * 2)
+                                              - vs_battle_getTextLineLength(str))
+                                           * (charWidth >> 2));
+                            }
+                        } else { // Color
+                            D_800F4CB8 = (D_800F4CB8 & 4) | opcodeParam;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7EBC);
 

@@ -165,7 +165,8 @@ static void _sortShieldsByStat(int arg0)
             (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
         temp_s4 = 40;
         while ((j = *commandString++) != vs_char_terminator) {
-            vs_battle_printChar(j, temp_s4 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
+            vs_battle_printDialogChar(
+                j, temp_s4 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
             temp_s4 += 6;
         }
     }
@@ -175,7 +176,8 @@ static void _sortShieldsByStat(int arg0)
         temp_s0_2 = _stringBuf[j];
         if (temp_s0_2 != vs_char_space) {
             int new_var3 = (j * 6 + 0xA2);
-            vs_battle_printChar(temp_s0_2, arg0 + new_var3, 0x30, D_1F800000[2] - 2);
+            vs_battle_printDialogChar(
+                temp_s0_2, arg0 + new_var3, 0x30, D_1F800000[2] - 2);
         }
     }
     if (arg0 == 0) {
@@ -222,7 +224,7 @@ static void _sortShieldsByStat(int arg0)
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 14; ++j) {
             int temp_s8 = (arg0 + 0x82);
-            vs_battle_printChar(commandString[i * 15 + j], temp_s8 + j * 12,
+            vs_battle_printDialogChar(commandString[i * 15 + j], temp_s8 + j * 12,
                 (i * 16) + 78, D_1F800000[2] - 2);
         }
     }

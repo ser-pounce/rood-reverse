@@ -141,7 +141,7 @@ typedef struct {
     int unk28;
     short unk2C;
     short unk2E;
-} _printStringContext;
+} _printDialogContext;
 
 void func_800C98C0(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -355,6 +355,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6BF0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6C8C);
 
 #pragma vsstring(start)
+
 int vs_battle_getTextLineLength(char* str)
 {
     int length = 0;
@@ -378,9 +379,29 @@ int vs_battle_getTextLineLength(char* str)
         }
     }
 }
-#pragma vsstring(end)
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_printChar);
+int vs_battle_printDialogChar(u_int glyphId, int x, int y, u_long* arg3)
+{
+    int glyphRow;
+    u_int glyphCol;
+    u_long* sprite;
+
+    if (glyphId == ' ') {
+        return x + 6;
+    }
+
+    glyphId += D_800F4CB9 * 0xBD;
+    sprite =
+        vs_battle_setSprite(D_800F4CBC, (x & 0xFFFF) | (y << 0x10), 0xC000C, arg3 + 3);
+    sprite[1] = 0xE100002D;
+    glyphRow = glyphId / 21;
+    glyphCol = glyphId % 21;
+    sprite[4] = ((glyphCol * 0xC) | (glyphRow * 0xC00)
+                 | ((((((D_800F4CB8 * 0x10) + 0x340) >> 4) & 0x3F) | 0x3780) << 0x10));
+    return x + vs_battle_characterWidths[glyphId];
+}
+
+#pragma vsstring(end)
 
 void func_800C7210(int arg0)
 {
@@ -391,7 +412,7 @@ void func_800C7210(int arg0)
 
 extern u_char D_800F4E80;
 
-void _printString(_printStringContext* arg0)
+void _printDialog(_printDialogContext* arg0)
 {
     char intBuf[16];
     u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
@@ -442,7 +463,7 @@ void _printString(_printStringContext* arg0)
             ++currentString;
             if (currentChar < 0xEC) {
                 if (currentChar < 0xE5) {
-                    printX = vs_battle_printChar(currentChar, printX, printY, sp20);
+                    printX = vs_battle_printDialogChar(currentChar, printX, printY, sp20);
                     charsRemaining -= speed;
                     ++chunksPrinted;
                     continue;
@@ -460,7 +481,7 @@ void _printString(_printStringContext* arg0)
                             charsRemaining = 0;
                         } else {
                             done = (arg0->arrowAnimFrame + vs_gametime_tickspeed) % 24;
-                            printX = vs_battle_printChar(
+                            printX = vs_battle_printDialogChar(
                                 0xBC - (done >> 3), printX, printY, sp20);
                             arg0->arrowAnimFrame = done;
                         }

@@ -209,7 +209,7 @@ int func_800C6C8C(int);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
-int vs_battle_printChar(int, int, int, u_long*);
+int vs_battle_printDialogChar(u_int, int, int, u_long*);
 void func_800C7210(int arg0);
 void vs_battle_loadGim(int, int);
 void func_800C8550(u_int, void*, u_char*);

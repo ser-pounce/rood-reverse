@@ -293,7 +293,7 @@ def write_room_graphics(out, gfx_blocks):
     for block in gfx_blocks:
         out.write(block)
 
-def write_room_names(out, rooms):
+def write_room_names(out, rooms, jpFont):
     """Write room name section to ARM file. Only writes rooms with complete metadata."""
     for room in rooms:
         # Only write rooms that have prev/next data
@@ -301,7 +301,7 @@ def write_room_names(out, rooms):
             continue
         
         # Encode and pad name
-        name = encode(room.get("name", ""), None)[:ROOM_NAME_SIZE]
+        name = encode(room.get("name", ""), None, jpFont)[:ROOM_NAME_SIZE]
         if len(name) < ROOM_NAME_SIZE:
             name += b'\x00' * (ROOM_NAME_SIZE - len(name))
         out.write(name)
@@ -311,7 +311,7 @@ def write_room_names(out, rooms):
         next_ = room.get("next") or 0
         out.write(struct.pack(ROOM_FOOTER_FORMAT, prev, next_))
 
-def rebuild_arm_from_obj(obj_path, out_path):
+def rebuild_arm_from_obj(obj_path, out_path, jpFont):
     """Rebuild ARM file from OBJ."""
     # Parse OBJ file
     blocks = parse_obj_blocks(obj_path)
@@ -339,7 +339,7 @@ def rebuild_arm_from_obj(obj_path, out_path):
         write_room_headers(out, rooms, gfx_blocks)
         write_room_graphics(out, gfx_blocks)
         if has_complete_names:
-            write_room_names(out, rooms)
+            write_room_names(out, rooms, jpFont)
 
 # ---------------------------------------------------------------------------
 # Entry point
@@ -347,11 +347,11 @@ def rebuild_arm_from_obj(obj_path, out_path):
 
 def main():
     if len(sys.argv) < 3:
-        print(f"Usage: {sys.argv[0]} <file.obj> <out.ARM>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <file.obj> <out.ARM> [use JP font]", file=sys.stderr)
         sys.exit(1)
     
     try:
-        rebuild_arm_from_obj(sys.argv[1], sys.argv[2])
+        rebuild_arm_from_obj(sys.argv[1], sys.argv[2], len(sys.argv) > 3)
     except (IOError, ValueError, EOFError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

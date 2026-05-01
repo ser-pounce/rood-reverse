@@ -132,7 +132,7 @@ def export_room_to_obj(out, room_idx, gfx, main, name_data, vertex_offset):
     clean_name = clean_room_name(name)
     
     # Room header
-    out.write(f"o {clean_name} {room_idx}\n")
+    out.write(f"o {room_idx} {clean_name}\n")
     out.write(f"# Room {room_idx}\n")
     if name is not None:
         out.write(f"# Full name: {name}\n")
@@ -169,7 +169,7 @@ def read_arm_binary(filename: str):
     with open(filename, "rb") as f:
         return io.BytesIO(f.read())
 
-def parse_arm(in_name: str, out_name: str):
+def parse_arm(in_name: str, out_name: str, jpFont):
     """Parse a full ARM file and export OBJ."""
     f = read_arm_binary(in_name)
     
@@ -196,7 +196,7 @@ def parse_arm(in_name: str, out_name: str):
         try:
             raw_name = read_bytes(f, ROOM_NAME_SIZE)
             prev, next_ = read_struct(ROOM_FOOTER_FORMAT, f)
-            room_names.append((decode(list(raw_name)), prev, next_))
+            room_names.append((decode(list(raw_name), jpFont), prev, next_))
         except EOFError:
             # File ended before all names - fill remaining with defaults
             room_names.append((None, 0, 0))
@@ -210,11 +210,11 @@ def parse_arm(in_name: str, out_name: str):
 
 def main():
     if len(sys.argv) < 3:
-        print(f"Usage: {sys.argv[0]} <file.ARM> <out.obj>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <file.ARM> <out.obj> [use JP font]", file=sys.stderr)
         sys.exit(1)
     
     try:
-        parse_arm(sys.argv[1], sys.argv[2])
+        parse_arm(sys.argv[1], sys.argv[2], len(sys.argv) > 3)
     except (IOError, EOFError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

@@ -167,6 +167,7 @@ extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
 extern char D_800F4E69;
 extern char D_800F4E90;
+extern u_char D_800F4EA8[];
 extern int D_800F4ED4;
 extern u_long* D_800F51B8;
 extern int D_800F521C;
@@ -347,7 +348,93 @@ int func_800C6BF0(int boxId, char* str)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C6C8C);
+int func_800C6C8C(u_char arg0)
+{
+    vs_battle_textBox sp10;
+    short sp40[8];
+    int i;
+    int j;
+    int var_a3;
+    int temp_a3;
+    int var_s0;
+    u_int var_s1;
+
+    var_s1 = 0;
+
+    if (D_800F4EA8[11] == 0) {
+
+        for (i = 0; i < 8; ++i) {
+            sp40[i] = 0x7FFF;
+            if ((arg0 >> i) & 1) {
+                ++var_s1;
+                sp40[i] = vs_battle_textBoxes[i].y;
+            }
+        }
+
+        for (i = 0; i < var_s1; ++i) {
+            var_a3 = 0;
+            for (j = 0; j < 8; ++j) {
+                if (sp40[var_a3] > sp40[j]) {
+                    var_a3 = j;
+                }
+            }
+            D_800F4EA8[i] = var_a3;
+            sp40[var_a3] = 0x7FFF;
+        }
+
+        var_s0 = vs_main_stateFlags.unkF[2] - 1;
+        if (var_s0 >= var_s1) {
+            var_s0 = 0;
+        }
+        D_800F4EA8[10] = 0;
+        D_800F4EA8[11] = var_s1;
+    } else {
+        var_s0 = D_800F4EA8[10];
+        var_s1 = D_800F4EA8[11];
+
+        if (vs_main_buttonsPressed.all & 0xFF) {
+            vs_battle_playMenuSelectSfx();
+            D_800F4EA8[11] = 0U;
+            return var_s0 + 1;
+        }
+        if (vs_main_buttonsPressed.all & 0x1000) {
+            int v0 = var_s0 - 1;
+            var_s0 = v0 + var_s1;
+        }
+        if (vs_main_buttonsPressed.all & 0x4000) {
+            ++var_s0;
+        }
+
+        var_s0 %= var_s1;
+    }
+
+    if (var_s0 != D_800F4EA8[10]) {
+        vs_battle_playMenuChangeSfx();
+        D_800F4EA8[10] = var_s0;
+    }
+
+    j = var_s0;
+
+    for (i = 0; i < var_s1; ++i) {
+        if (D_800F4EA8[j] < D_800F4EA8[i]) {
+            j = i;
+        }
+    }
+
+    temp_a3 = D_800F4EA8[var_s0];
+    D_800F4EA8[var_s0] = D_800F4EA8[j];
+    D_800F4EA8[j] = temp_a3;
+
+    sp10 = vs_battle_textBoxes[temp_a3];
+    vs_battle_textBoxes[temp_a3] = vs_battle_textBoxes[D_800F4EA8[var_s0]];
+    vs_battle_textBoxes[D_800F4EA8[var_s0]] = sp10;
+
+    for (i = 0; i < var_s1; ++i) {
+        vs_battle_textBoxes[D_800F4EA8[i]].brightness = i == var_s0 ? 0x80 : 0x40;
+    }
+
+    return 0;
+}
 
 #pragma vsstring(start)
 

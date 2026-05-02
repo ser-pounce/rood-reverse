@@ -206,7 +206,7 @@ typedef struct {
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 int func_800C6BF0(int, char*);
-int func_800C6C8C(int);
+int func_800C6C8C(u_char);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);

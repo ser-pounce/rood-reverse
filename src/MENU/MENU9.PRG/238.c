@@ -481,7 +481,7 @@ int _handleMenu(void)
     };
 
     int _[8] __attribute__((unused));
-    D_800F4FE0_t* temp_v0;
+    vs_battle_textBox* temp_v0;
     _gazetteRow* var_s0;
     int lStickX;
     int lStickY;
@@ -511,8 +511,8 @@ int _handleMenu(void)
         func_8010552C(D_8010A220);
         if (D_8010A220 < 8) {
             temp_v0 = func_800CCDF4(0);
-            temp_v0->unk16 -= 6;
-            temp_v0->unk12 -= 6;
+            temp_v0->y -= 6;
+            temp_v0->yIndent -= 6;
             ++D_8010A220;
         }
         selectedRow = _initStringsAndGetSelectedRow(0);
@@ -540,8 +540,8 @@ int _handleMenu(void)
         if (D_8010A220 > 0) {
             temp_v0 = func_800CCDF4(0);
             if (temp_v0 != NULL) {
-                temp_v0->unk16 += 6;
-                temp_v0->unk12 += 6;
+                temp_v0->y += 6;
+                temp_v0->yIndent += 6;
             }
             --D_8010A220;
             break;
@@ -1032,8 +1032,8 @@ int _handleMenu(void)
         func_801061F8(D_8010A220, 0);
         if (D_8010A220 < 8) {
             temp_v0 = func_800CCDF4(0);
-            temp_v0->unk14 -= 0x10;
-            temp_v0->unk10 -= 0x10;
+            temp_v0->x -= 0x10;
+            temp_v0->xIndent -= 0x10;
             ++D_8010A220;
         }
         if (vs_main_buttonsReleased & D_8010A448) {
@@ -1054,8 +1054,8 @@ int _handleMenu(void)
         if (D_8010A220 > 0) {
             temp_v0 = func_800CCDF4(0);
             if (temp_v0 != NULL) {
-                temp_v0->unk14 += 0x10;
-                temp_v0->unk10 += 0x10;
+                temp_v0->x += 0x10;
+                temp_v0->xIndent += 0x10;
             }
             --D_8010A220;
             break;

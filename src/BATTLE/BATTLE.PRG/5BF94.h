@@ -65,42 +65,43 @@ typedef struct {
 } vs_battle_menuState_t;
 
 typedef struct {
-    union {
-        struct {
-            u_int unk0_0 : 4;
-            u_int unk0_4 : 2;
-            u_int unk0_6 : 2;
-            u_int unk1_0 : 4;
-            u_int unk1_4 : 4;
-            u_int unk2 : 8;
-            u_int unk3_0 : 6;
-        } fields;
-        u_int value;
-    } unk0;
+    u_int unk0_0 : 4;
+    u_int unk0_4 : 2;
+    u_int unk0_6 : 2;
+    u_int unk0_8 : 4;
+    u_int unk0_12 : 4;
+    u_int arrowAnimFrame : 8;
+    u_int unk0_24 : 6;
+    u_int done : 1;
+    u_int unk0_31 : 1;
+} vs_battle_textBox_fields;
+
+typedef struct {
+    vs_battle_textBox_fields unk0;
     short unk4;
     short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
+    char* string;
+    u_short speed;
+    u_short prevChunksPrinted;
+    short xIndent;
+    short yIndent;
+    short x;
+    short y;
     short unk18;
     short unk1A;
     short unk1C;
-    char unk1E;
-    char unk1F;
-    char unk20;
+    u_char brightness;
+    u_char unk1F;
+    char lineWidth;
     char unk21;
     char unk22;
     char unk23;
-    int unk24;
+    short unk24;
+    short unk26;
     int unk28;
     short unk2C;
     short unk2E;
-} D_800F4FE0_t;
+} vs_battle_textBox;
 
 typedef struct {
     char unk0[0x34];
@@ -254,7 +255,7 @@ u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);
 void func_800CCCB8(u_long*, int, int, int);
 void func_800CCD00(int arg0, u_long* arg1);
-D_800F4FE0_t* func_800CCDF4(int arg0);
+vs_battle_textBox* func_800CCDF4(int arg0);
 void func_800CCF08(int, int, int, int, int, int, int, int);
 int func_800CD064(int);
 void func_800CCD00(int, u_long*);
@@ -308,7 +309,7 @@ extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4FDA;
 extern char D_800F4FDB;
-extern D_800F4FE0_t D_800F4FE0[];
+extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_int D_800F5130;
 extern short D_800F514C;
 extern u_char D_800F5210;

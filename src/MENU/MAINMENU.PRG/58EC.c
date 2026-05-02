@@ -394,7 +394,7 @@ void vs_mainmenu_setInformationMessage(char* arg0)
 #pragma vsstring(end)
 
     vs_battle_memcpy(&D_80102318[2], arg0, 0x60);
-    D_800F4FE0[7].unk0.fields.unk3_0 = 32;
+    vs_battle_textBoxes[7].unk0.unk0_24 = 32;
     func_800C6BF0(7, D_80102318);
 }
 

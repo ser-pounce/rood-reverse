@@ -683,7 +683,7 @@ int func_800B68C4(u_char* arg0, short arg1)
 
 int func_800B6908(u_char* arg0, short arg1)
 {
-    D_800F4FE0_t* temp_v0_2;
+    vs_battle_textBox* temp_v0_2;
     short temp_v0_4;
     short var_s0;
     short var_s2;
@@ -694,9 +694,9 @@ int func_800B6908(u_char* arg0, short arg1)
         var_s0 = arg0[5] + 0xFFE0 + (((arg0[7] * 0xD) + 4) >> 1);
     } else {
         temp_v0_2 = func_800CCDF4((arg0[1] >> 4));
-        var_s2 = temp_v0_2->unk14 + 4;
-        var_s2 += temp_v0_2->unk20 * 6;
-        var_s0 = temp_v0_2->unk16 + (((temp_v0_2->unk21 * 0xD) + 4) >> 1);
+        var_s2 = temp_v0_2->x + 4;
+        var_s2 += temp_v0_2->lineWidth * 6;
+        var_s0 = temp_v0_2->y + (((temp_v0_2->unk21 * 0xD) + 4) >> 1);
     }
     func_800CCF08(arg0[1] & 0xF, vs_battle_getShort(arg0 + 2), (arg0[4] * 2) - 0x20,
         arg0[5] - 0x20, arg0[6], arg0[7], var_s2, var_s0);
@@ -704,7 +704,7 @@ int func_800B6908(u_char* arg0, short arg1)
     temp_v0_2->unk2E = arg0[10];
     temp_v0_4 = vs_battle_getShort(arg0 + 8);
     if (temp_v0_4 < 0x2000) {
-        temp_v0_2->unk0.fields.unk3_0 = func_800BFE50(temp_v0_4);
+        temp_v0_2->unk0.unk0_24 = func_800BFE50(temp_v0_4);
     }
     return 0;
 }
@@ -1682,7 +1682,7 @@ int func_800B94D8(u_char* arg0, short arg1)
 
 int func_800B9564(u_char* arg0, short arg1)
 {
-    D_800F4FE0_t* temp_s1;
+    vs_battle_textBox* temp_s1;
     u_short temp_s0;
     int var_a0;
 
@@ -1694,7 +1694,7 @@ int func_800B9564(u_char* arg0, short arg1)
     } else {
         var_a0 = 0x20;
     }
-    temp_s1->unk0.fields.unk3_0 = var_a0;
+    temp_s1->unk0.unk0_24 = var_a0;
     temp_s1->unk2E = arg0[1] >> 4;
     return 0;
 }

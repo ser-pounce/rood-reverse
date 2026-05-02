@@ -1147,6 +1147,7 @@ D_800F4E98 = 0x800F4E98; // size:0x8
 D_800F4EE8 = 0x800F4EE8; // type:u8 size:0xF2
 D_800F4FDA = 0x800F4FDA;
 D_800F4FDB = 0x800F4FDB;
+vs_battle_textBoxes = 0x800F4FE0;
 vs_battle_stringContext = 0x800F5168; // size:0x38
 vs_battle_menuState = 0x800F51C0;
 vs_battle_executeAbilityType = 0x800F51C2;

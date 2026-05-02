@@ -1194,10 +1194,10 @@ static int _discardMenu(int arg0)
         }
         func_800C7210(5);
         i = vs_battle_toBCD(discardCount);
-        vs_battle_printDialogChar(i & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
+        vs_battle_printVariableWidthFontChar(i & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
         i = vs_battle_toBCD(i >> 4);
-        vs_battle_printDialogChar(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
-        vs_battle_printDialogChar(i >> 4, 0x36, 0x82, D_1F800000[2] - 3);
+        vs_battle_printVariableWidthFontChar(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
+        vs_battle_printVariableWidthFontChar(i >> 4, 0x36, 0x82, D_1F800000[2] - 3);
         D_8010A5C3 = func_800FFCDC(D_8010A5C3, (54 - (discardStep * 6)) | (114 << 0x10));
         break;
     case discardMultipleConfirm:

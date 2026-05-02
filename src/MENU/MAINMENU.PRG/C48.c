@@ -778,7 +778,7 @@ void func_800FB3C8(int arg0)
             ++i_2;
             func_800C7210(D_801020D4[i_2] + 4);
         } else {
-            arg0 = vs_battle_printDialogChar(i, arg0, 0x30, temp_s4 - 4);
+            arg0 = vs_battle_printVariableWidthFontChar(i, arg0, 0x30, temp_s4 - 4);
         }
     }
 }

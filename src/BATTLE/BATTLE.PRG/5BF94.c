@@ -143,7 +143,7 @@ typedef struct {
     int unk28;
     short unk2C;
     short unk2E;
-} _printDialogContext;
+} _printFontContext;
 
 void func_800C98C0(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -382,7 +382,7 @@ int vs_battle_getTextLineLength(char* str)
     }
 }
 
-int vs_battle_printDialogChar(u_int glyphId, int x, int y, u_long* arg3)
+int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* arg3)
 {
     int glyphRow;
     u_int glyphCol;
@@ -414,7 +414,7 @@ void func_800C7210(int arg0)
 
 extern u_char D_800F4E80;
 
-void _printDialog(_printDialogContext* arg0)
+void _printVariableWidthFont(_printFontContext* arg0)
 {
     char intBuf[16];
     u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
@@ -465,7 +465,8 @@ void _printDialog(_printDialogContext* arg0)
             ++currentString;
             if (currentChar < 0xEC) {
                 if (currentChar < 0xE5) {
-                    printX = vs_battle_printDialogChar(currentChar, printX, printY, sp20);
+                    printX = vs_battle_printVariableWidthFontChar(
+                        currentChar, printX, printY, sp20);
                     charsRemaining -= speed;
                     ++chunksPrinted;
                     continue;
@@ -483,7 +484,7 @@ void _printDialog(_printDialogContext* arg0)
                             charsRemaining = 0;
                         } else {
                             done = (arg0->arrowAnimFrame + vs_gametime_tickspeed) % 24;
-                            printX = vs_battle_printDialogChar(
+                            printX = vs_battle_printVariableWidthFontChar(
                                 0xBC - (done >> 3), printX, printY, sp20);
                             arg0->arrowAnimFrame = done;
                         }
@@ -679,12 +680,129 @@ void _printDialog(_printDialogContext* arg0)
     }
 }
 
-int func_800C79D8(int charId, int x, int y, int width0, int width1, int scale);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C79D8);
+// Looks like some unholy union of hasm and compiled code, leaving as raw asm
+int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
+__asm__("glabel _printFixedWidthFontChar;"
+        "addu       $sp, -8;"
+        "addu       $t7, $a0, $zero;"
+        "addu       $t3, $a1, $zero;"
+        "addu       $t0, $a2, $zero;"
+        "addu       $t5, $a3, $zero;"
+        "lui        $t9, (0x1F800000 >> 16);"
+        "lw         $t6, 0x18($sp);"
+        "lw         $t8, 0x1C($sp);"
+        "lw         $t4, (0x1F800000 & 0xFFFF)($t9);"
+        "li         $v0, 0x8F;"
+        "beq        $t7, $v0, 0f;"
+        "sw         $s0, 0x0($sp);"
+        "addu       $t5, $t3;"
+        "addu       $t6, $t0;"
+        "srl        $t5, 16;"
+        "sra        $v0, $t0, 16;"
+        "sll        $t0, $v0, 16;"
+        "sra        $v0, $t6, 16;"
+        "sll        $t6, $v0, 16;"
+        "lui        $a1, 0xFF;"
+        "lui        $v0, %hi(D_800F4CB9);"
+        "or         $a1, 0xFFFF;"
+        "lui        $t2, %hi(D_800F51B8);"
+        "lui        $a0, %hi(D_800F4CB8);"
+        "lbu        $v0, %lo(D_800F4CB9)($v0);"
+        "lbu        $a2, %lo(D_800F4CB8)($a0);"
+        "sll        $v1, $v0, 1;"
+        "addu       $v1, $v0;"
+        "sll        $v0, $v1, 6;"
+        "subu       $v0, $v1;"
+        "addu       $t7, $v0;"
+        "la         $v0, vs_battle_characterWidths;"
+        "addu       $v0, $t7, $v0;"
+        "lui        $v1, %hi(D_800F4E80);"
+        "sll        $a2, 4;"
+        "addu       $a2, 0x340;"
+        "srl        $a2, 4;"
+        "and        $a2, 0x3F;"
+        "or         $a2, 0x3780;"
+        "lbu        $v0, 0x0($v0);"
+        "lbu        $a3, %lo(D_800F4E80)($v1);"
+        "mult       $v0, $t8;"
+        "sll        $a2, 16;"
+        "sll        $a3, 4;"
+        "lw         $v0, %lo(D_800F51B8)($t2);"
+        "or         $a3, 0xC;"
+        "addu       $v0, $a3, $v0;"
+        "lw         $v1, 0x0($v0);"
+        "or         $v0, $t5, $t0;"
+        "sw         $v0, 0x10($t4);"
+        "lui        $v0, 0x900;"
+        "and        $v1, $a1;"
+        "li         $a1, 0x86186187;"
+        "mflo       $t1;"
+        "or         $v1, $v0;"
+        "lui        $v0, %hi(_fontBrightness);"
+        "multu      $t7, $a1;"
+        "sw         $v1, 0x0($t4);"
+        "lw         $v1, %lo(_fontBrightness)($v0);"
+        "or         $v0, $t5, $t6;"
+        "sw         $v0, 0x20($t4);"
+        "sw         $v1, 0x4($t4);"
+        "addu       $t8, $t3, $t1;"
+        "srl        $t3, 16;"
+        "or         $t0, $t3, $t0;"
+        "or         $t1, $t3, $t6;"
+        "sw         $t0, 0x8($t4);"
+        "sw         $t1, 0x18($t4);"
+        "mfhi       $a1;"
+        "subu       $v0, $t7, $a1;"
+        "srl        $v0, 1;"
+        "addu       $a1, $v0;"
+        "srl        $a1, 4;"
+        "sll        $v0, $a1, 2;"
+        "addu       $v0, $a1;"
+        "sll        $v0, 2;"
+        "addu       $v0, $a1;"
+        "subu       $v0, $t7, $v0;"
+        "sll        $v1, $v0, 1;"
+        "addu       $v1, $v0;"
+        "sll        $t3, $v1, 2;"
+        "addiu      $t5, $t3, 0xC;"
+        "sll        $a0, $a1, 1;"
+        "addu       $a0, $a1;"
+        "sll        $a0, 10;"
+        "addiu      $t6, $a0, 0xC00;"
+        "addu       $v0, $t8, $zero;"
+        "or         $v1, $t3, $a0;"
+        "or         $v1, $a2;"
+        "or         $a0, $t5, $a0;"
+        "sw         $v1, 0xC($t4);"
+        "lui        $v1, 0xD;"
+        "or         $a0, $v1;"
+        "or         $v1, $t3, $t6;"
+        "sw         $v1, 0x1C($t4);"
+        "or         $v1, $t5, $t6;"
+        "sw         $v1, 0x24($t4);"
+        "sll        $v1, $t4, 8;"
+        "sw         $a0, 0x14($t4);"
+        "lw         $a0, %lo(D_800F51B8)($t2);"
+        "srl        $v1, 8;"
+        "addu       $a3, $a0;"
+        "sw         $v1, 0x0($a3);"
+        "addiu      $v1, $t4, 0x28;"
+        "j          1f;"
+        "sw         $v1, 0($t9);"
+        "0:;"
+        "sll        $v0, $t8, 1;"
+        "addu       $v0, $t8;"
+        "sll        $v0, 1;"
+        "addu       $v0, $t3, $v0;"
+        "1:;"
+        "lw         $s0, 0x0($sp);"
+        "j          $ra;"
+        "addiu      $sp, 0x8;"
+        "endlabel _printFixedWidthFontChar;");
 
-void func_800C7BA4(_printDialogContext* ctx, int scale)
+void _printFixedWidthFont(_printFontContext* ctx, int scale)
 {
-    int sp18;
+    int charHeight;
     int lineHeight;
     int temp_s6;
     int done;
@@ -692,7 +810,7 @@ void func_800C7BA4(_printDialogContext* ctx, int scale)
     char* str = ctx->string;
     int charWidth = scale * 0xC;
 
-    sp18 = charWidth;
+    charHeight = charWidth;
     lineHeight = scale * 0xD;
 
     if (ctx->speed != 0) {
@@ -719,8 +837,8 @@ void func_800C7BA4(_printDialogContext* ctx, int scale)
 
             if (currentChar < 0xEC) {
                 if (currentChar < 0xE5) {
-                    printX = func_800C79D8(
-                        currentChar, printX, printY, charWidth, sp18, scale);
+                    printX = _printFixedWidthFontChar(
+                        currentChar, printX, printY, charWidth, charHeight, scale);
                     continue;
                 }
 

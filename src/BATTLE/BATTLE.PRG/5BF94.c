@@ -1247,7 +1247,22 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     return menuItem;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8F44);
+u_int _blendColors(u_int color0, u_int color1, int brightness, int blendFactor)
+{
+    u_int i;
+    u_int ret = 0;
+
+    for (i = 0; i < 3; ++i) {
+        u_int temp_lo = ((((color0 >> 0x10) & 0xFF) * (8 - blendFactor))
+                            + (((color1 >> 0x10) & 0xFF) * blendFactor))
+                      * brightness;
+        color0 <<= 8;
+        ret = (ret << 8) + (temp_lo >> 0xA);
+        color1 <<= 8;
+    }
+
+    return ret;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8FAC);
 

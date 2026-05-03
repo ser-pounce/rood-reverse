@@ -501,8 +501,8 @@ int _handleMenu(void)
         D_8010A430.vx = 0xF40;
         D_8010A430.vy = 0xE47;
         D_8010A430.vz = 0;
-        func_800CCF08(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
-        func_800C6BF0(0, (char*)&_rankText[_rankText[_characterRank]]);
+        vs_battle_initTextBox(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
+        vs_battle_setTextBox(0, (char*)&_rankText[_rankText[_characterRank]]);
         _initStringsAndGetSelectedRow(1);
         D_8010A220 = 0;
         ++_menuState;
@@ -510,7 +510,7 @@ int _handleMenu(void)
     case handleInput:
         func_8010552C(D_8010A220);
         if (D_8010A220 < 8) {
-            temp_v0 = func_800CCDF4(0);
+            temp_v0 = vs_battle_getTextBox(0);
             temp_v0->y -= 6;
             temp_v0->yIndent -= 6;
             ++D_8010A220;
@@ -532,13 +532,13 @@ int _handleMenu(void)
             D_8010A440 = 0;
         }
         D_800F1BF7 = D_800F4EE8.unk0[2] + D_800F4EE8.unk0[3];
-        func_800CD064(0);
+        vs_battle_dismissTextBox(0);
         ++_menuState;
         break;
     case 3:
         func_8010552C(D_8010A220);
         if (D_8010A220 > 0) {
-            temp_v0 = func_800CCDF4(0);
+            temp_v0 = vs_battle_getTextBox(0);
             if (temp_v0 != NULL) {
                 temp_v0->y += 6;
                 temp_v0->yIndent += 6;
@@ -1031,7 +1031,7 @@ int _handleMenu(void)
         }
         func_801061F8(D_8010A220, 0);
         if (D_8010A220 < 8) {
-            temp_v0 = func_800CCDF4(0);
+            temp_v0 = vs_battle_getTextBox(0);
             temp_v0->x -= 0x10;
             temp_v0->xIndent -= 0x10;
             ++D_8010A220;
@@ -1052,7 +1052,7 @@ int _handleMenu(void)
         D_8010A454 = 0x202020;
         func_801061F8(D_8010A220, 0);
         if (D_8010A220 > 0) {
-            temp_v0 = func_800CCDF4(0);
+            temp_v0 = vs_battle_getTextBox(0);
             if (temp_v0 != NULL) {
                 temp_v0->x += 0x10;
                 temp_v0->xIndent += 0x10;

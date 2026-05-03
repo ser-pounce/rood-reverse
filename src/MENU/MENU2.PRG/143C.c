@@ -368,7 +368,7 @@ int vs_menu2_skillUnlock(char* state)
         }
         break;
     case reinit:
-        if (func_800CD064(7) == 0) {
+        if (vs_battle_dismissTextBox(7) == 0) {
             *state = init;
             return 1;
         }

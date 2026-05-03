@@ -325,7 +325,7 @@ static int _showMenu(void)
             break;
         }
         vs_main_freeCdQueueSlot(_helpTextCdQueue);
-        func_800CCF08(0, 0, 8, 0x34, 0x19, 0xA, 8, 0x34);
+        vs_battle_initTextBox(0, 0, 8, 0x34, 0x19, 0xA, 8, 0x34);
         _scrollPosition =
             vs_battle_manualDisplayState
                 .scrollPositions[vs_battle_manualDisplayState.currentManual];
@@ -404,7 +404,7 @@ static int _showMenu(void)
             } else {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
             }
-            func_800CCDF4(0)->unk1C = 0;
+            vs_battle_getTextBox(0)->state = 0;
             if (_helpText != NULL) {
                 vs_main_freeHeapR(_helpText);
             }
@@ -556,7 +556,7 @@ static void _copyNextPageText(void)
     }
 
     pBuffer[-1] = vs_char_terminator;
-    func_800C6BF0(0, buffer);
+    vs_battle_setTextBox(0, buffer);
 }
 
 static char* _vsStrcpy(char* arg0, char* arg1)

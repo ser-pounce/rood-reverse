@@ -43,7 +43,7 @@ table = [
     '', '', '', '', '', '\f', '▼', '\0',    # 0xE0
     '\n', '', '', '', '', '|a', '|b', '|c',
     '|d', '|e', '|g', '|h', '|i', '|j', '|k', '|l', # 0xF0
-    '|!', '|s', '|>', '|f', '', '|x', '|#', '|$',
+    '|!', '|♪', '|>', '|f', '', '|x', '|#', '|$',
 ]
 
 jp_table_0 = [
@@ -413,16 +413,16 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # 0xED - 
 # 0xF7 -> |a-ln|: Font table for Japanese, partially implemented, won't be needed when JP font is complete
 # 0xF8 -> |!n|: Sets the text speed to n, where 0 = instantaneous
-# 0xF9 -> |sn|: Play sfx n after each chunk is rendered
+# 0xF9 -> |♪n|: Play sfx n after each chunk is rendered
 # 0xFA -> |>n|: Advances the x offset by n pixels
 # 0xFB -> |fn|: Manipulate font. n = 0-3 sets the color, n = 4 toggle text justification,
 #               n = 5 or 6 set font table 1 and 0 respectively.
 #               7 might be unintended, unsure what bit 3 is for but 7 will
 #               enable it, as well as set the color to 3.
 #               Values over 7 are shifted down by 3 and advance the y offset
-# 0xFD -> |xn|: Inserts a contextual hex integer with ID n
-# 0xFE -> |#n|: Inserts a contextual decimal integer with ID n
-# 0xFF -> |$n|: Inserts a contextual string with ID n
+# 0xFD -> |xn|: Inserts hex integer argument n
+# 0xFE -> |#n|: Inserts decimal integer argument n
+# 0xFF -> |$n|: Inserts string argument n
 
 def decode(s, jpTable=False):
     baseTable = jp_table_0 if jpTable else table

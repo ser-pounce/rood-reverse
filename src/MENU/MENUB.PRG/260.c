@@ -3555,7 +3555,7 @@ int vs_menuB_exec(char* state)
     case 5:
         D_8010A6B0 = 0;
         D_8010A6B2 = 0;
-        if (func_800CD064(7) == 0) {
+        if (vs_battle_dismissTextBox(7) == 0) {
             if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 vs_main_freeHeapR(_inventory);
                 if (D_800EB9C4 != 0) {

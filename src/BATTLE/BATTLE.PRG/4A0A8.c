@@ -209,9 +209,9 @@ static int _fixedPointMult(int a, int b);
 void func_800BFD9C();
 short vs_battle_getShort(u_char*);
 int func_800BFEBC(int, int, int);
-int func_800C6BF0(int, char*);
+int vs_battle_setTextBox(int, char*);
 void func_800CB79C(void);
-int func_800CD064(int);
+int vs_battle_dismissTextBox(int);
 void func_800CEF38(int);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
@@ -255,7 +255,7 @@ extern u_short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* _mpdRoomDoorSection;
 extern char D_800F4BF8;
-extern char D_800F4C00[];
+extern char vs_battle_textBoxStatuses[];
 extern char D_800F4C10[];
 extern char D_800F4C20;
 extern void* D_800F4C24;
@@ -266,7 +266,7 @@ extern short D_800F4C4C;
 extern short _mpdScriptSection;
 extern short D_800F4C54;
 extern short D_800F4C58[];
-extern char D_800F4C60;
+extern char _textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C68;
 extern char D_800F4C69;
@@ -681,62 +681,78 @@ int func_800B68C4(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B6908(u_char* arg0, short arg1)
+// script[1]    = (parentBoxId << 4) | boxId
+// script[2-3]  = flags/type (passed to arg1 of initTextBox)
+// script[4]    = x (in some unit, scaled *2 - 0x20)
+// script[5]    = y (scaled - 0x20)
+// script[6]    = width in characters
+// script[7]    = height in lines
+// script[8-9]  = possibly texture
+// script[10]   = ?
+int vs_battle_script_initTextBox(u_char* script, short arg1 __attribute__((unused)))
 {
-    vs_battle_textBox* temp_v0_2;
+    vs_battle_textBox* box;
     short temp_v0_4;
-    short var_s0;
-    short var_s2;
+    short centerY;
+    short centerX;
 
-    if ((arg0[1] & 0xF) == (arg0[1] >> 4)) {
-        var_s2 = 0x20;
-        var_s2 = (arg0[4] * 2) + ((((arg0[6] * 0xC) + 8) >> 1) - var_s2);
-        var_s0 = arg0[5] + 0xFFE0 + (((arg0[7] * 0xD) + 4) >> 1);
+    if ((script[1] & 0xF) == (script[1] >> 4)) {
+        centerX = 32;
+        centerX = (script[4] * 2) + ((((script[6] * 0xC) + 8) >> 1) - centerX);
+        centerY = script[5] + 0xFFE0 + (((script[7] * 0xD) + 4) >> 1);
     } else {
-        temp_v0_2 = func_800CCDF4((arg0[1] >> 4));
-        var_s2 = temp_v0_2->x + 4;
-        var_s2 += temp_v0_2->lineWidth * 6;
-        var_s0 = temp_v0_2->y + (((temp_v0_2->unk21 * 0xD) + 4) >> 1);
+        box = vs_battle_getTextBox((script[1] >> 4));
+        centerX = box->x + 4;
+        centerX += box->lineWidth * 6;
+        centerY = box->y + (((box->lineHeight * 0xD) + 4) >> 1);
     }
-    func_800CCF08(arg0[1] & 0xF, vs_battle_getShort(arg0 + 2), (arg0[4] * 2) - 0x20,
-        arg0[5] - 0x20, arg0[6], arg0[7], var_s2, var_s0);
-    temp_v0_2 = func_800CCDF4(arg0[1] & 0xF);
-    temp_v0_2->unk2E = arg0[10];
-    temp_v0_4 = vs_battle_getShort(arg0 + 8);
+
+    vs_battle_initTextBox(script[1] & 0xF, vs_battle_getShort(script + 2),
+        (script[4] * 2) - 32, script[5] - 32, script[6], script[7], centerX, centerY);
+
+    box = vs_battle_getTextBox(script[1] & 0xF);
+    box->unk2E = script[10];
+
+    temp_v0_4 = vs_battle_getShort(&script[8]);
     if (temp_v0_4 < 0x2000) {
-        temp_v0_2->unk0.unk0_24 = func_800BFE50(temp_v0_4);
+        box->unk0.unk0_24 = func_800BFE50(temp_v0_4);
     }
+
     return 0;
 }
 
-int func_800B6AB0(u_char* arg0, short arg1)
+// script[1] = boxId
+// script[2] = string index
+// script[3] = box can be overwritten
+int vs_battle_script_showTextBox(u_char* script, short arg1 __attribute__((unused)))
 {
     int temp_v0;
 
-    if (D_800F4C00[arg0[1]] == 0) {
-        func_800C6BF0(arg0[1], (char*)&D_800F4BB0[D_800F4BB0[arg0[2]]]);
-        if (arg0[3] == 0) {
-            D_800F4C00[arg0[1]] = 1;
+    if (vs_battle_textBoxStatuses[script[1]] == 0) {
+        vs_battle_setTextBox(script[1], (char*)&D_800F4BB0[D_800F4BB0[script[2]]]);
+        if (script[3] == 0) {
+            vs_battle_textBoxStatuses[script[1]] = 1;
             return 1;
         }
         return 0;
     }
 
-    temp_v0 = func_800C6BF0(arg0[1], 0);
+    temp_v0 = vs_battle_setTextBox(script[1], 0);
 
     if (temp_v0 >= 0) {
         if (temp_v0 > 0) {
-            vs_main_stateFlags.unkF[1] = temp_v0;
+            vs_main_stateFlags.textBoxSelection = temp_v0;
         }
-        D_800F4C00[arg0[1]] = 0;
+        vs_battle_textBoxStatuses[script[1]] = 0;
         return 0;
     }
     return 1;
 }
 
-int func_800B6B74(u_char* arg0, short arg1)
+// script[1] = boxId
+int vs_battle_script_dismissTextBox(u_char* arg0, short arg1)
 {
-    func_800CD064(arg0[1]);
+    vs_battle_dismissTextBox(arg0[1]);
     return 0;
 }
 
@@ -745,7 +761,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6B98);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6D48);
 
-int func_800B6F8C(u_char* arg0, short arg1) { return func_800CD064(arg0[1]) != 0; }
+int func_800B6F8C(u_char* arg0, short arg1)
+{
+    return vs_battle_dismissTextBox(arg0[1]) != 0;
+}
 
 int vs_battle_script_buttonPressed(u_char* arg0, short arg1)
 {
@@ -847,26 +866,26 @@ int vs_battle_script_setStringContextInt(u_char* arg0, short arg1)
 
 int func_800B7358(u_char* arg0, short arg1)
 {
-    func_800CCDF4(arg0[1] >> 5)->unk22 = arg0[1] & 0x1F;
+    vs_battle_getTextBox(arg0[1] >> 5)->unk22 = arg0[1] & 0x1F;
     return 0;
 }
 
-int func_800B7398(u_char* arg0)
+int vs_battle_script_selectTextBox(u_char* script, short arg1 __attribute__((unused)))
 {
     if (D_800F4C2C == 2) {
         return 0;
     }
 
-    if (D_800F4C60 != 0) {
-        short temp_v0 = func_800C6C8C(arg0[1]);
+    if (_textBoxSelectionPending != 0) {
+        short temp_v0 = vs_battle_selectTextBox(script[1]);
         if ((temp_v0 << 0x10) != 0) {
             vs_battle_setStateFlag(0x10, temp_v0);
-            D_800F4C60 = 0;
+            _textBoxSelectionPending = 0;
             return 0;
         }
     } else {
-        func_800C6C8C(arg0[1]);
-        D_800F4C60 = 1;
+        vs_battle_selectTextBox(script[1]);
+        _textBoxSelectionPending = 1;
     }
     return 1;
 }
@@ -1687,7 +1706,7 @@ int func_800B9564(u_char* arg0, short arg1)
     int var_a0;
 
     temp_s0 = vs_battle_getShort(arg0 + 2);
-    temp_s1 = func_800CCDF4(arg0[1] & 0xF);
+    temp_s1 = vs_battle_getTextBox(arg0[1] & 0xF);
 
     if (temp_s0 < 0x2000) {
         var_a0 = func_800BFE50(temp_s0);
@@ -2617,7 +2636,7 @@ int func_800BB604(u_char* arg0, short arg1)
     var_s1 = 0;
 
     for (i = 0; i < 8; ++i) {
-        if (func_800CD064(i) != 0) {
+        if (vs_battle_dismissTextBox(i) != 0) {
             ++var_s1;
         }
     }
@@ -3379,10 +3398,10 @@ char vs_battle_getStateFlag(short arg0)
     return flags[arg0];
 }
 
-void vs_battle_setStateFlag(short arg0, char arg1)
+void vs_battle_setStateFlag(short id, char value)
 {
     char* flags = (char*)&vs_main_stateFlags;
-    flags[arg0] = arg1;
+    flags[id] = value;
 }
 
 int func_800BEC30(void)

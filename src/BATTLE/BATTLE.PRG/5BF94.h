@@ -87,13 +87,13 @@ typedef struct {
     short yIndent;
     short x;
     short y;
-    short unk18;
-    short unk1A;
-    short unk1C;
+    short centerX;
+    short centerY;
+    short state;
     u_char brightness;
     u_char unk1F;
     char lineWidth;
-    char unk21;
+    char lineHeight;
     char unk22;
     char unk23;
     short unk24;
@@ -205,8 +205,8 @@ typedef struct {
 
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
-int func_800C6BF0(int, char*);
-int func_800C6C8C(u_char);
+int vs_battle_setTextBox(int, char*);
+int vs_battle_selectTextBox(u_char);
 void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
 void vs_battle_renderTextRaw(char const* text, int xy, void*);
@@ -255,9 +255,10 @@ u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);
 void func_800CCCB8(u_long*, int, int, int);
 void func_800CCD00(int arg0, u_long* arg1);
-vs_battle_textBox* func_800CCDF4(int arg0);
-void func_800CCF08(int, int, int, int, int, int, int, int);
-int func_800CD064(int);
+vs_battle_textBox* vs_battle_getTextBox(int arg0);
+void vs_battle_initTextBox(
+    int id, int flags, int x, int y, int w, int h, int centerX, int centerY);
+int vs_battle_dismissTextBox(int);
 void func_800CCD00(int, u_long*);
 void vs_battle_drawImage(int xy, void* buffer, int wh);
 void func_800CE64C(void);

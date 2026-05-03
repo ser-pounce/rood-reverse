@@ -3852,7 +3852,7 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 16:
-        if ((func_800CD064(7) == 0) && (D_801022D8 == 0)) {
+        if ((vs_battle_dismissTextBox(7) == 0) && (D_801022D8 == 0)) {
             vs_main_freeHeapR(vs_menu_inventoryStorage);
             *state = init;
             return 1;

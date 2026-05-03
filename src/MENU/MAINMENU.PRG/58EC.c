@@ -375,7 +375,7 @@ void vs_mainMenu_deactivateMenuItem(int arg0)
     item->state = 0;
 }
 
-void func_800FFBA8(void) { func_800CD064(7); }
+void func_800FFBA8(void) { vs_battle_dismissTextBox(7); }
 
 void func_800FFBC8(void)
 {
@@ -395,7 +395,7 @@ void vs_mainmenu_setInformationMessage(char* arg0)
 
     vs_battle_memcpy(&D_80102318[2], arg0, 0x60);
     vs_battle_textBoxes[7].unk0.unk0_24 = 32;
-    func_800C6BF0(7, D_80102318);
+    vs_battle_setTextBox(7, D_80102318);
 }
 
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)

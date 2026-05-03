@@ -11246,7 +11246,7 @@ _mpdRoomSectionA* func_8008E3B8(int* arg0)
 
 _mpdRoomSection9* func_8008E400(int* arg0)
 {
-    if ((vs_main_stateFlags.unkF[0x11] != 0) || (vs_main_stateFlags.unkF[0x31] != 0)) {
+    if ((vs_main_stateFlags.unk20 != 0) || (vs_main_stateFlags.unk40 != 0)) {
         *arg0 = 0;
         return NULL;
     }

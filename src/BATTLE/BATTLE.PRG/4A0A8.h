@@ -6,7 +6,7 @@ void func_800BEB34(void);
 void func_800BEB9C(int);
 void func_800BEBEC(void);
 char vs_battle_getStateFlag(short);
-void vs_battle_setStateFlag(short, char);
+void vs_battle_setStateFlag(short id, char value);
 int func_800BEC30(void);
 short func_800BEC58(int, int, char*, int);
 
@@ -17,7 +17,7 @@ int func_800B6744(u_char*, short);
 int func_800B6868(u_char*, short);
 int func_800B68C4(u_char*, short);
 int func_800B66E4(u_char*, short);
-int func_800B6B74(u_char*, short);
+int vs_battle_script_dismissTextBox(u_char*, short);
 int func_800B66EC(u_char*, short);
 int vs_battle_script_loadGim(u_char*, short);
 int func_800B7014(u_char*, short);

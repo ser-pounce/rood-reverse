@@ -438,8 +438,8 @@ int func_80103684(void)
             D_80108D68 -= 0x10;
             _geomOffsetX += 0x40;
         } else {
-            func_800CCF08(0, 0, 0x3C, 0xE0, 0x10, 1, 0x3C, 0xE0);
-            func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
+            vs_battle_initTextBox(0, 0, 0x3C, 0xE0, 0x10, 1, 0x3C, 0xE0);
+            vs_battle_setTextBox(0, _roomNamesTable[_currentRoomIndex].name);
             ++D_80108D60;
         }
         func_801042B0();
@@ -465,7 +465,7 @@ int func_80103684(void)
                 D_80108E44 = 2;
             }
             D_80108D60 = 3;
-            func_800CD064(0);
+            vs_battle_dismissTextBox(0);
         } else if (vs_main_stateFlags.mapPaling[_currentScene] != 0) {
             var_s2 = 5;
         } else {
@@ -620,7 +620,7 @@ int func_80103684(void)
                         }
                     }
                     if (temp_s3 != _currentRoomIndex) {
-                        func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
+                        vs_battle_setTextBox(0, _roomNamesTable[_currentRoomIndex].name);
                     }
                 }
             }
@@ -636,7 +636,7 @@ int func_80103684(void)
         } else if (new_var2 == -3) {
             D_80108D60 = 3;
             D_80108E44 = 2;
-            func_800CD064(0);
+            vs_battle_dismissTextBox(0);
         } else if (new_var2 == -2) {
             D_80108D60 = 1;
             _setMenuItemMapName(
@@ -678,7 +678,7 @@ int func_80103684(void)
             _scaleRoomVertices(vs_battle_sceneBuffer, 4);
             _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
             _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
-            func_800C6BF0(0, _roomNamesTable[_currentRoomIndex].name);
+            vs_battle_setTextBox(0, _roomNamesTable[_currentRoomIndex].name);
             _geomOffsetX = -0x180;
             _geomOffsetY = 0;
             D_80108D60 = 5;
@@ -727,7 +727,7 @@ void func_801042B0(void)
     *(DR_STP**)pScratch = stp;
     if (flags->mapPaling[scene] != 0) {
         _applyPalingScreenEffect();
-        func_800C6BF0(0, (char*)&_paling[_paling[0]]);
+        vs_battle_setTextBox(0, (char*)&_paling[_paling[0]]);
         return;
     }
     func_80104384();
@@ -1684,7 +1684,7 @@ void _drawUIControls(void)
 {
     static int D_80108D5C;
 
-    vs_battle_textBox* temp_a0 = func_800CCDF4(0);
+    vs_battle_textBox* temp_a0 = vs_battle_getTextBox(0);
 
     if (D_80108D9E == 0) {
         D_80108D5C = -0x80;

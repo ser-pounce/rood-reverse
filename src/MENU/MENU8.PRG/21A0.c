@@ -589,7 +589,7 @@ static int func_801049A0(int arg0)
     case 5:
         temp_v0_10 = _confirmScreen(0);
         if (temp_v0_10 != 0) {
-            func_800CD064(7);
+            vs_battle_dismissTextBox(7);
             if (temp_v0_10 == 2) {
                 vs_battle_playMenuLeaveSfx();
                 D_80105F30 = 1;

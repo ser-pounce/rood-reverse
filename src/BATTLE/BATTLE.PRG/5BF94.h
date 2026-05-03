@@ -92,13 +92,14 @@ typedef struct {
     short state;
     u_char brightness;
     u_char unk1F;
-    char lineWidth;
-    char lineHeight;
+    char charsPerLine;
+    char lineCount;
     char unk22;
     char unk23;
     short unk24;
     short unk26;
-    int unk28;
+    short unk28;
+    short unk2A;
     short unk2C;
     short unk2E;
 } vs_battle_textBox;

@@ -698,13 +698,13 @@ int vs_battle_script_initTextBox(u_char* script, short arg1 __attribute__((unuse
 
     if ((script[1] & 0xF) == (script[1] >> 4)) {
         centerX = 32;
-        centerX = (script[4] * 2) + ((((script[6] * 0xC) + 8) >> 1) - centerX);
-        centerY = script[5] + 0xFFE0 + (((script[7] * 0xD) + 4) >> 1);
+        centerX = (script[4] * 2) + ((((script[6] * 12) + 8) >> 1) - centerX);
+        centerY = script[5] + 0xFFE0 + (((script[7] * 13) + 4) >> 1);
     } else {
         box = vs_battle_getTextBox((script[1] >> 4));
         centerX = box->x + 4;
-        centerX += box->lineWidth * 6;
-        centerY = box->y + (((box->lineHeight * 0xD) + 4) >> 1);
+        centerX += box->charsPerLine * 6;
+        centerY = box->y + (((box->lineCount * 13) + 4) >> 1);
     }
 
     vs_battle_initTextBox(script[1] & 0xF, vs_battle_getShort(script + 2),

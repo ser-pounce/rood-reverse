@@ -170,7 +170,7 @@ extern char D_800EC32C[];
 extern int (*D_800EC3F4[])(void*);
 extern u_char D_800F522C;
 extern char D_800F4CB8;
-extern char D_800F4CB9;
+extern char _fontTable;
 extern int _fontBrightness;
 extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
@@ -488,7 +488,7 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ar
         return x + 6;
     }
 
-    glyphId += D_800F4CB9 * 0xBD;
+    glyphId += _fontTable * 0xBD;
     sprite = vs_battle_setSprite(
         _fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, arg3 + 3);
     sprite[1] = 0xE100002D;
@@ -501,7 +501,7 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ar
 
 void func_800C7210(int arg0)
 {
-    D_800F4CB9 = 0;
+    _fontTable = 0;
     _fontBrightness = 384;
     D_800F4CB8 = arg0;
 }
@@ -535,12 +535,12 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
 
     if (charsRemaining != 0) {
 
-        D_800F4CB9 = arg0->unk0.unk0_0 != 4;
+        _fontTable = arg0->unk0.unk0_0 != 4;
         _fontBrightness = arg0->brightness;
         D_800F4CB8 = (1 - (*((char*)arg0) & 1)) * 4;
 
         if (arg0->unk0.unk0_0 == 2) {
-            D_800F4CB9 = 0;
+            _fontTable = 0;
             D_800F4CB8 = 0;
         }
         currentString = arg0->string;
@@ -608,7 +608,7 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                 case 3: // 0xE8 New line
                     printX = arg0->xIndent;
                     if (justify != 0) {
-                        printX += ((arg0->lineWidth * 2)
+                        printX += ((arg0->charsPerLine * 2)
                                       - vs_battle_getTextLineLength(currentString))
                                 * 3;
                     }
@@ -642,14 +642,14 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                         printY += opcodeParam >> 3;
                     } else {
                         if (opcodeParam == 6) { // Font table 0
-                            D_800F4CB9 = 0;
+                            _fontTable = 0;
                         } else if (opcodeParam == 5) { // Font table 1
-                            D_800F4CB9 = 1;
+                            _fontTable = 1;
                         } else if (opcodeParam == 4) { // Justify
                             justify ^= 1;
                             if (justify != 0) {
                                 printX =
-                                    (((arg0->lineWidth * 2)
+                                    (((arg0->charsPerLine * 2)
                                          - vs_battle_getTextLineLength(currentString))
                                         * 3)
                                     + arg0->xIndent;
@@ -798,11 +798,11 @@ __asm__("glabel _printFixedWidthFontChar;"
         "sra        $v0, $t6, 16;"
         "sll        $t6, $v0, 16;"
         "lui        $a1, 0xFF;"
-        "lui        $v0, %hi(D_800F4CB9);"
+        "lui        $v0, %hi(_fontTable);"
         "or         $a1, 0xFFFF;"
         "lui        $t2, %hi(D_800F51B8);"
         "lui        $a0, %hi(D_800F4CB8);"
-        "lbu        $v0, %lo(D_800F4CB9)($v0);"
+        "lbu        $v0, %lo(_fontTable)($v0);"
         "lbu        $a2, %lo(D_800F4CB8)($a0);"
         "sll        $v1, $v0, 1;"
         "addu       $v1, $v0;"
@@ -895,31 +895,29 @@ __asm__("glabel _printFixedWidthFontChar;"
         "addiu      $sp, 0x8;"
         "endlabel _printFixedWidthFontChar;");
 
+#pragma vsstring(start)
 void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 {
-    int charHeight;
-    int lineHeight;
-    int temp_s6;
-    int done;
     int justify = 0;
     char* str = ctx->string;
-    int charWidth = scale * 0xC;
-
-    charHeight = charWidth;
-    lineHeight = scale * 0xD;
+    int charWidth = scale * 12;
+    int charHeight = charWidth;
+    int lineHeight = scale * 13;
 
     if (ctx->speed != 0) {
+        int temp_s6;
+        int done;
         int printX = (ctx->unk24 << 0x10) + ((ctx->xIndent - ctx->x) * scale);
         int printY = (ctx->unk26 << 0x10) + ((ctx->yIndent - ctx->y) * scale);
 
         D_800F4CB8 = (1 - (*((char*)ctx) & 1)) * 4;
-        D_800F4CB9 = ctx->unk0.unk0_0 != 4;
+        _fontTable = ctx->unk0.unk0_0 != 4;
         _fontBrightness = ctx->brightness;
 
         temp_s6 = printX;
 
         if (ctx->unk0.unk0_0 == 2) {
-            D_800F4CB9 = 0;
+            _fontTable = 0;
             D_800F4CB8 = 0;
         }
 
@@ -931,23 +929,23 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
             u_int currentChar = *str++;
 
             if (currentChar < 0xEC) {
-                if (currentChar < 0xE5) {
+                if (currentChar < '\f') {
                     printX = _printFixedWidthFontChar(
                         currentChar, printX, printY, charWidth, charHeight, scale);
                     continue;
                 }
 
-                switch (currentChar - 0xE5) {
+                switch (currentChar - '\f') {
                 case 2: // 0xE7 Termination
                     done = 1;
                     break;
                 case 3: // 0xE8 New line
                     printX = temp_s6;
                     if (justify != 0) {
-                        printX =
-                            temp_s6
-                            + (((ctx->lineWidth * 2) - vs_battle_getTextLineLength(str))
-                                * (charWidth >> 2));
+                        printX = temp_s6
+                               + (((ctx->charsPerLine * 2)
+                                      - vs_battle_getTextLineLength(str))
+                                   * (charWidth >> 2));
                     }
                     printY += lineHeight;
                     break;
@@ -955,9 +953,7 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
                 if (done != 0) {
                     break;
                 }
-            }
-
-            else if (currentChar >= 0xEC) {
+            } else {
                 u_int opcodeParam = *str++;
 
                 switch (currentChar - 0xF8) {
@@ -973,14 +969,14 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
                         printY += (opcodeParam >> 3) * scale;
                     } else {
                         if (opcodeParam == 6) { // Font table 0
-                            D_800F4CB9 = 0;
+                            _fontTable = 0;
                         } else if (opcodeParam == 5) { // Font table 1
-                            D_800F4CB9 = 1;
+                            _fontTable = 1;
                         } else if (opcodeParam == 4) { // Justify
                             justify ^= 1;
                             if (justify != 0) {
                                 printX = temp_s6
-                                       + (((ctx->lineWidth * 2)
+                                       + (((ctx->charsPerLine * 2)
                                               - vs_battle_getTextLineLength(str))
                                            * (charWidth >> 2));
                             }
@@ -994,10 +990,122 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
         }
     }
 }
+#pragma vsstring(end)
 
+void func_800C7EBC(void*, int, int, int);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7EBC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C809C);
+#pragma vsstring(start)
+void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
+{
+    RECT rect;
+    int height;
+    int _y;
+    int done = 0;
+    u_short* buf;
+    int width;
+    int x = arg0->x;
+    int y = arg0->y;
+    int justify = 0;
+    char* str = arg0->string;
+    u_int printX = arg0->xIndent - x;
+    u_int printY;
+
+    _y = y;
+    printY = arg0->yIndent - y;
+    width = arg0->charsPerLine * 12 + 10;
+    height = arg0->lineCount * 13 + 4;
+
+    if ((x < 0) || (y < 0) || ((x + width) >= 320) || ((y + height) >= 224)) {
+        return;
+    }
+
+    buf = vs_main_allocHeapR(width * height * 2);
+
+    if ((arg1 >> 0x10) != 0) {
+        arg1 = 0x10000;
+    }
+
+    setRECT(&rect, x + vs_main_frameBuf * 320, y, width, height);
+    StoreImage(&rect, (void*)buf);
+
+    _fontTable = 1;
+
+    while (1) {
+        u_int currentChar = *str++;
+
+        if (currentChar < 0xEC) {
+            if (currentChar < '\f') {
+                if (currentChar != ' ') {
+                    currentChar += _fontTable * 21 * 9;
+                    if (((width - 12) >= printX) && ((height - 12) >= printY)) {
+                        func_800C7EBC(buf + ((printX + (printY * width))), currentChar,
+                            width, arg1);
+                    }
+                }
+                printX += vs_battle_characterWidths[currentChar];
+            } else {
+                switch (currentChar - '\f') {
+                case 2:
+                    if (vs_main_buttonsPressed.all & PADRright) {
+                        arg0->speed = 0xFFFF;
+                    }
+                    done = 1;
+                    break;
+                case 3:
+                    printX = arg0->xIndent - x;
+                    if (justify != 0) {
+                        printX +=
+                            ((arg0->charsPerLine * 2) - vs_battle_getTextLineLength(str))
+                            * 3;
+                    }
+                    printY += 13;
+                    break;
+                }
+                if (done != 0) {
+                    break;
+                }
+            }
+        } else {
+            u_int opcodeParam = *str++;
+            switch (currentChar - 0xF8) {
+            case 2:
+                currentChar = 256;
+                if (opcodeParam >= 0xF0) {
+                    printX = printX - currentChar + opcodeParam;
+                } else {
+                    printX += opcodeParam;
+                }
+                break;
+            case 3:
+                if (opcodeParam & 0xF8) {
+                    printY += opcodeParam >> 3;
+                } else {
+                    if (opcodeParam == 6) {
+                        _fontTable = 0;
+                    } else if (opcodeParam == 5) {
+                        _fontTable = 1;
+                    } else if (opcodeParam == 4) {
+                        justify ^= 1;
+                        if (justify != 0) {
+                            printX = ((((arg0->charsPerLine * 2)
+                                           - vs_battle_getTextLineLength(str))
+                                          * 3)
+                                         + arg0->xIndent)
+                                   - x;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+    vs_battle_drawImage(
+        (x + (vs_main_frameBuf * 320)) | (_y << 0x10), buf, width | (height << 0x10));
+    DrawSync(0);
+    vs_main_freeHeapR(buf);
+}
+#pragma vsstring(end)
 
 void vs_battle_loadGim(int id, int arg1)
 {
@@ -1649,7 +1757,7 @@ vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCE10);
 
 void vs_battle_initTextBox(
-    int id, int flags, int x, int y, int w, int h, int centerX, int centerY)
+    int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)
 {
     vs_battle_textBox* box = &vs_battle_textBoxes[id];
 
@@ -1664,8 +1772,8 @@ void vs_battle_initTextBox(
     box->yIndent = y + 3;
     box->unk2E = 0;
     box->brightness = 0x80;
-    box->lineWidth = w;
-    box->lineHeight = h;
+    box->charsPerLine = charsPerLine;
+    box->lineCount = h;
     box->centerX = centerX;
     box->centerY = centerY;
     // looks up { 10, 20, 10, 8 };
@@ -1681,7 +1789,7 @@ void vs_battle_initTextBox(
         box->unk0.unk0_8 = 0;
         return;
     case 4:
-        box->lineWidth = 0x18;
+        box->charsPerLine = 0x18;
         box->centerX = 0xA0;
         box->centerY = 0xF0;
         box->xIndent = 0x10;
@@ -1715,6 +1823,7 @@ int vs_battle_dismissTextBox(int id)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD0FC);
 
+// https://decomp.me/scratch/qBmPY
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD158);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3A0);
@@ -1725,7 +1834,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
 
-int func_800CE644(int i __attribute__((unused))) { }
+int func_800CE644(int arg0 __attribute__((unused))) { }
 
 void func_800CE64C(void)
 {

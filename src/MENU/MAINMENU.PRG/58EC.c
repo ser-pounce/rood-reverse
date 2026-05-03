@@ -389,13 +389,13 @@ void func_800FFBC8(void)
 void vs_mainmenu_setInformationMessage(char* arg0)
 {
 #pragma vsstring(start)
-    static char D_80102318[] =
+    static char infoMessage[] =
         "|!0|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\0\0";
 #pragma vsstring(end)
 
-    vs_battle_memcpy(&D_80102318[2], arg0, 0x60);
+    vs_battle_memcpy(&infoMessage[2], arg0, 0x60);
     vs_battle_textBoxes[7].unk0.unk0_24 = 32;
-    vs_battle_setTextBox(7, D_80102318);
+    vs_battle_setTextBox(7, infoMessage);
 }
 
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)

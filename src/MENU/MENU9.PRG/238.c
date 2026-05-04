@@ -192,9 +192,9 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
         }
         var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
         var_s2[1] = 0xE1000220;
-        var_s2[2] = func_800C8FAC(8 - sp18, sp1C, var_s0) | 0x52000000;
+        var_s2[2] = vs_battle_uiGradientStop(8 - sp18, sp1C, var_s0) | 0x52000000;
         var_s2[3] = var_s4;
-        var_s2[4] = func_800C8FAC(sp18, sp1C, var_s0);
+        var_s2[4] = vs_battle_uiGradientStop(sp18, sp1C, var_s0);
         var_s2[5] = ((var_s4 + sp10 - 1) & 0xFFFF) | ((var_s4 >> 0x10) << 0x10);
         var_s2[6] = 0xE1000020;
         *temp_s7 = ((u_long)var_s2 << 8) >> 8;

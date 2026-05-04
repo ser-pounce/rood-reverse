@@ -218,7 +218,7 @@ void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
 int func_800C8C50(int arg0);
 void func_800C8E04(int);
-int func_800C8FAC(int, int, int);
+int vs_battle_uiGradientStop(u_int, u_int, int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
 vs_battle_menuItem_t* vs_battle_setMenuItem(
     int id, int initialX, int y, int arg3, int arg4, char* text);

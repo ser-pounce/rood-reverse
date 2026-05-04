@@ -159,6 +159,8 @@ extern char D_800EB9CE;
 extern int D_800EB9D0;
 extern u_int* D_800EB9D4;
 extern int* D_800EB9D8;
+extern u_int D_800EBBB8[];
+extern u_int D_800EBBC0[];
 extern u_short D_800EBDDC[];
 extern int D_800EBC04[];
 extern char D_800EBC78;
@@ -1247,7 +1249,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     return menuItem;
 }
 
-u_int _blendColors(u_int color0, u_int color1, int brightness, int blendFactor)
+u_int _lerpColor(u_int color0, u_int color1, int brightness, int blendFactor)
 {
     u_int i;
     u_int ret = 0;
@@ -1264,7 +1266,20 @@ u_int _blendColors(u_int color0, u_int color1, int brightness, int blendFactor)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8FAC);
+int vs_battle_uiGradientStop(u_int arg0, u_int arg1, int arg2)
+{
+    u_int var_a0;
+    u_int var_v0;
+
+    if (arg1 < 9) {
+        var_a0 = _lerpColor(0x6B4100, 0x6C8219, 0x80, arg1);
+        var_v0 = _lerpColor(0x330500, 0x262801, 0x80, arg1);
+    } else {
+        var_a0 = D_800EBBB8[((arg1 >> 3) - 2)];
+        var_v0 = D_800EBBC0[((arg1 >> 3) - 2)];
+    }
+    return _lerpColor(var_a0, var_v0, arg2, arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9078);
 

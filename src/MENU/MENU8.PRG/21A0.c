@@ -104,7 +104,7 @@ static u_short _renameMenuStrings[] = {
 
 extern u_long* D_1F800000[];
 
-static void _sortShieldsByStat(int arg0)
+static void _renameMenu(int arg0)
 {
     static int D_80105EA8[] = { 0x004800D8, 0x00B4008E, 0x00480070, 0x00E00070,
         0x004800D8, 0x00E000D8, 0x00B4008E, 0x00E00070, 0x004800D8, 0x00B40122,
@@ -116,8 +116,8 @@ static void _sortShieldsByStat(int arg0)
     static char D_80105EF4 = 0;
 
     u_int* sp18;
-    int temp_s4;
-    int temp_t1;
+    int lineColor0;
+    int lineColor1;
     int j;
     int i;
     char* commandString;
@@ -136,20 +136,23 @@ static void _sortShieldsByStat(int arg0)
     D_80105DB2 = 0;
 
     for (i = 1; i < 5; ++i) {
+
         temp_s0_2 = D_80105EEC[i];
+
         if (D_80105EEC[i] != 0) {
             --D_80105EEC[i];
         }
-        temp_s4 = func_800C8FAC(8 - temp_s0_2, 0, 128) | 0x50000000;
-        temp_t1 = func_800C8FAC(temp_s0_2, 0, 128);
+
+        lineColor0 = vs_battle_uiGradientStop(8 - temp_s0_2, 0, 128) | 0x50000000;
+        lineColor1 = vs_battle_uiGradientStop(temp_s0_2, 0, 128);
 
         for (j = 0; j < 12; ++j) {
             int v1;
             var_s1[0] = (*sp18 & 0xFFFFFF) | 0x06000000;
             var_s1[1] = vs_getTpage(0, 0, 0, 0, 1);
-            var_s1[2] = temp_s4;
+            var_s1[2] = lineColor0;
             var_s1[3] = ((-arg0) & 0xFFFF) | (j + 20 + i * 16) << 16;
-            var_s1[4] = temp_t1;
+            var_s1[4] = lineColor1;
             v1 = j - 96;
             var_s1[5] = ((-arg0 - v1) & 0xFFFF) | (j + 20 + i * 16) << 16;
             var_s1[6] = vs_getTpage(0, 0, 0, 0, 0);
@@ -163,11 +166,11 @@ static void _sortShieldsByStat(int arg0)
     for (i = 0; i < 4; ++i) {
         commandString =
             (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
-        temp_s4 = 40;
+        lineColor0 = 40;
         while ((j = *commandString++) != vs_char_terminator) {
             vs_battle_printVariableWidthFontChar(
-                j, temp_s4 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
-            temp_s4 += 6;
+                j, lineColor0 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
+            lineColor0 += 6;
         }
     }
 
@@ -183,11 +186,11 @@ static void _sortShieldsByStat(int arg0)
     if (arg0 == 0) {
         u_long* a1;
         temp_s3 = 0x404040;
-        temp_s4 = 0x37F9;
+        lineColor0 = 0x37F9;
         if ((D_80105DB0 != 0) || (D_80105DB1 != 0xB)) {
             temp_s3 = 0x808080;
             ++D_80105DB1;
-            --temp_s4;
+            --lineColor0;
             if (D_80105DB1 >= 0xC) {
                 D_80105DB1 = 0;
             }
@@ -196,10 +199,11 @@ static void _sortShieldsByStat(int arg0)
         j = (D_80105DB1 >> 2);
         vs_battle_renderTextRawColor("1", 0x330098, temp_s3, 0);
         vs_battle_renderTextRawColor("L", 0x330092, temp_s3, 0);
-        func_800C0214(0x100010, (136 - j) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3000;
+        func_800C0214(0x100010, (136 - j) | 0x300000)[4] = (lineColor0 << 0x10) | 0x3000;
         vs_battle_renderTextRawColor("1", 0x330124, temp_s3, 0);
         vs_battle_renderTextRawColor("R", 0x33011E, temp_s3, 0);
-        func_800C0214(0x100010, (j + 0x128) | 0x300000)[4] = (temp_s4 << 0x10) | 0x3010;
+        func_800C0214(0x100010, (j + 0x128) | 0x300000)[4] =
+            (lineColor0 << 0x10) | 0x3010;
         a1 = D_1F800000[2];
         var_s1 = D_1F800000[0];
         var_s1[0] = ((u_long)a1[0] & 0xFFFFFF) | 0x09000000;
@@ -698,10 +702,10 @@ int vs_menu8_execRename(char* state)
         if (_animStep != 0) {
             --_animStep;
         }
-        _sortShieldsByStat(vs_battle_rowAnimationSteps[_animStep]);
+        _renameMenu(vs_battle_rowAnimationSteps[_animStep]);
     } else if (_animStep < 10) {
         ++_animStep;
-        _sortShieldsByStat(_animStep << 5);
+        _renameMenu(_animStep << 5);
     }
     return 0;
 }

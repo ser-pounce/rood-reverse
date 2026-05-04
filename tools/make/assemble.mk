@@ -1,5 +1,5 @@
 AS       = $(ARCH)as
-ASFLAGS  = -I include -G0
+ASFLAGS  ?= -I include -G0
 
 # Splitted asm
 %.o: %.s | $$(@D)/

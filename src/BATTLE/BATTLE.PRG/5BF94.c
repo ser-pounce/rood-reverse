@@ -161,6 +161,7 @@ extern u_int* D_800EB9D4;
 extern int* D_800EB9D8;
 extern u_int D_800EBBB8[];
 extern u_int D_800EBBC0[];
+extern int D_800EBBDC[];
 extern u_short D_800EBDDC[];
 extern int D_800EBC04[];
 extern char D_800EBC78;
@@ -1424,33 +1425,33 @@ void func_800C97BC(void)
     }
 }
 
-void _renderDigit(int arg0, int arg1, int arg2, u_long* arg3)
+void _renderDigit(int arg0, int xy, int digit, u_long* prim)
 {
     u_long* temp_v0 = func_800C0224(
-        0x80, arg1 + ((arg0 & 2) << 0x10), (0x05CA0576 >> (arg0 * 4)) & 0xF000F, arg3);
+        0x80, xy + ((arg0 & 2) << 0x10), (0x05CA0576 >> (arg0 * 4)) & 0xF000F, prim);
     temp_v0[4] = 0x37F40B20;
     if (arg0 != 2) {
-        ((short*)temp_v0)[8] = ((((arg2 * 2) + 0x40) * (arg0 + 3)) - 0xC0);
+        ((short*)temp_v0)[8] = ((((digit * 2) + 0x40) * (arg0 + 3)) - 0xC0);
     }
 }
 
-int vs_battle_renderValue(int arg0, int arg1, int value, u_long* arg3)
+int vs_battle_renderValue(int arg0, int xy, int value, u_long* prim)
 {
     int new_var;
 
-    if (0 == arg3) {
-        arg3 = D_1F800000[1] - 4;
+    if (prim == NULL) {
+        prim = D_1F800000[1] - 4;
     }
 
     do {
         value = vs_battle_toBCD(value);
-        _renderDigit(arg0, arg1, value & 0xF, arg3);
-        new_var = arg1 - 5;
-        arg1 = new_var - arg0;
+        _renderDigit(arg0, xy, value & 0xF, prim);
+        new_var = xy - 5;
+        xy = new_var - arg0;
         value >>= 4;
     } while (value != 0);
 
-    return arg1;
+    return xy;
 }
 
 void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
@@ -1487,7 +1488,29 @@ void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
     D_1F800000[0] = primBuf + 14;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9B38);
+void _drawStatBar(int colorIndex, int current, int max)
+{
+    u_long* prim = D_1F800000[1] - 3;
+    int xy = D_800EBBDC[colorIndex] - D_800EB9B0;
+
+    if (max != 0) {
+        vs_battle_drawStatBar(colorIndex, (((current << 6) + max) - 1) / max, prim, xy);
+        if (colorIndex & 2) {
+            xy += 54 | (3 << 0x10);
+            if (colorIndex == 3) {
+                current = (current + 0xFF) >> 8;
+            }
+        } else {
+            xy = vs_battle_renderValue(0, xy + (56 | ((u_short)-8 << 0x10)), max, NULL);
+            _renderDigit(2, xy, 0, prim);
+            xy += (u_short)-7 | ((u_short)-2 << 0x10);
+        }
+        vs_battle_renderValue(1, xy, current, NULL);
+        func_800C0224(0x180, D_800EBBEC[colorIndex] - D_800EB9B0,
+            D_800EBBFC[colorIndex] | 0x90000, prim)[4] =
+            D_800EBC00[colorIndex] | 0x37F60000;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9CB4);
 

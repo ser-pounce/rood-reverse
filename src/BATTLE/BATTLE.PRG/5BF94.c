@@ -124,7 +124,7 @@ typedef struct {
     u_char unkC;
 } _textBoxSelector_t;
 
-void func_800C98C0(int, int, int, u_long*);
+void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 int func_800CAF40(void);
 void func_800CE67C(void);
@@ -1424,7 +1424,15 @@ void func_800C97BC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C98C0);
+void _renderDigit(int arg0, int arg1, int arg2, u_long* arg3)
+{
+    u_long* temp_v0 = func_800C0224(
+        0x80, arg1 + ((arg0 & 2) << 0x10), (0x05CA0576 >> (arg0 * 4)) & 0xF000F, arg3);
+    temp_v0[4] = 0x37F40B20;
+    if (arg0 != 2) {
+        ((short*)temp_v0)[8] = ((((arg2 * 2) + 0x40) * (arg0 + 3)) - 0xC0);
+    }
+}
 
 int vs_battle_renderValue(int arg0, int arg1, int value, u_long* arg3)
 {
@@ -1436,7 +1444,7 @@ int vs_battle_renderValue(int arg0, int arg1, int value, u_long* arg3)
 
     do {
         value = vs_battle_toBCD(value);
-        func_800C98C0(arg0, arg1, value & 0xF, arg3);
+        _renderDigit(arg0, arg1, value & 0xF, arg3);
         new_var = arg1 - 5;
         arg1 = new_var - arg0;
         value >>= 4;

@@ -53,7 +53,7 @@ typedef struct {
     short unk1A;
     char text[28];
     int unk38;
-    void* unk3C;
+    char* subText;
 } vs_battle_menuItem_t;
 
 typedef struct {

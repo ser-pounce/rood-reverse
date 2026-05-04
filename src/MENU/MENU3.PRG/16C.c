@@ -110,7 +110,7 @@ static void func_80102B78(int arg0)
     menuItem->state = 2;
     menuItem->targetX = 0x9B;
     menuItem->selected = 1;
-    menuItem->unk3C = 0;
+    menuItem->subText = NULL;
 }
 
 static void func_80102BE4(int arg0)

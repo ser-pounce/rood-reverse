@@ -1281,7 +1281,100 @@ int vs_battle_uiGradientStop(u_int arg0, u_int arg1, int arg2)
     return _lerpColor(var_a0, var_v0, arg2, arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9078);
+void func_800C9078(vs_battle_menuItem_t* arg0)
+{
+    int sp10;
+    int temp_v1;
+    int x;
+    int var_s1;
+    int var_s2;
+    int y;
+    char* var_s0;
+    u_long* temp_s6;
+    int temp_s5;
+    int var_v0;
+    u_long* temp_v1_2;
+    char* text;
+    char** v;
+
+    y = arg0->animationState;
+    temp_s6 = *(void**)0x1F800008 + 8;
+    sp10 = arg0->w;
+    temp_s5 = arg0->unk2;
+    text = arg0->text;
+
+    if (arg0->state != 0) {
+        if (((arg0->selected | arg0->unkB) != 0) && (arg0->unk7 == 0)) {
+            y = 8;
+        }
+
+        var_v0 = arg0->unkA;
+
+        if (var_v0 == 0) {
+            var_v0 = arg0->unk7 * 3;
+        }
+
+        func_800C7210(var_v0 + 4);
+
+        temp_v1 = arg0->initialX;
+        var_s2 = temp_v1 + 6;
+
+        if ((arg0->icon - 1) < 0x17u) {
+            var_s2 = temp_v1 + 0x16;
+        }
+
+        var_s1 = text[0];
+        var_s0 = text + 1;
+
+        while (var_s1 != 0xFF) {
+            if (var_s1 == 0xFA) {
+                var_s2 += *var_s0++;
+            } else {
+                var_s2 = vs_battle_printVariableWidthFontChar(
+                    var_s1, var_s2, arg0->y, temp_s6 - 3);
+            }
+            var_s1 = *var_s0++;
+        }
+
+        var_s1 = vs_battle_uiGradientStop(8 - y, temp_s5, 0x80);
+        var_s2 = vs_battle_uiGradientStop(y, temp_s5, 0x80);
+
+        if (temp_s5 & 7) {
+            arg0->unk2 = (temp_s5 + 1) & 0xF;
+        }
+
+        if (y != 0) {
+            arg0->animationState = y - 1;
+        }
+
+        x = *(int*)&arg0->initialX;
+        y = x >> 0x10;
+        x &= 0xFFFF;
+        func_800CCCB8(temp_s6 + 1, 0x60000000, ((x + 2) & 0xFFFF) | ((y + 2) << 0x10),
+            sp10 | 0xC0000);
+        temp_v1_2 = *(void**)0x1F800000;
+
+        temp_v1_2[0] = ((*temp_s6 & 0xFFFFFF) | 0x0A000000);
+        temp_v1_2[1] = 0xE1000200;
+        temp_v1_2[2] = (var_s1 | 0x38000000);
+        temp_v1_2[3] = (x | (y << 0x10));
+        temp_v1_2[4] = var_s2;
+        temp_v1_2[5] = (((x + sp10) & 0xFFFF) | (y << 0x10));
+        temp_v1_2[6] = var_s1;
+        temp_v1_2[7] = (x | ((y + 0xC) << 0x10));
+        temp_v1_2[8] = var_s2;
+        temp_v1_2[9] = (((x + sp10) & 0xFFFF) | ((y + 0xC) << 0x10));
+        temp_v1_2[10] = 0xE1000000;
+
+        *temp_s6 = (u_int)((u_long)temp_v1_2 << 8) >> 8;
+        *(void**)0x1F800000 = temp_v1_2 + 11;
+
+        v = (char**)&arg0->subText;
+        if (*v != NULL) {
+            vs_battle_renderTextRaw(*v, (x - 10) | ((y + 1) << 0x10), temp_s6);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
 

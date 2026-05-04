@@ -748,7 +748,7 @@ void func_80103F64(int arg0)
     menuItem->state = 2;
     menuItem->targetX = 0x9B;
     menuItem->selected = 1;
-    menuItem->unk3C = 0;
+    menuItem->subText = NULL;
     menuItem->unk7 = 0;
 }
 

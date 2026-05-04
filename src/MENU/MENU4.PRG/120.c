@@ -1041,7 +1041,7 @@ static void _setActiveRow(int row)
     menuItem->state = 2;
     menuItem->targetX = 155;
     menuItem->selected = 1;
-    menuItem->unk3C = 0;
+    menuItem->subText = NULL;
 }
 
 static void _animateEquipmentDetailTransition(int selectedRow)

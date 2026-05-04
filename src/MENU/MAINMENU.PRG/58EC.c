@@ -789,31 +789,31 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
 {
     int temp_a1;
     int temp_v1;
-    vs_battle_menuItem_t* temp_v0 = vs_battle_setMenuItem(arg0 + (D_801023DD * 0xA), arg1,
-        ((arg0 + D_801023DD) * 0x10) + 0x12, D_801023DF + 0x7E, 0,
+    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(arg0 + (D_801023DD * 0xA),
+        arg1, ((arg0 + D_801023DD) * 0x10) + 0x12, D_801023DF + 0x7E, 0,
         (char*)&D_801023D4[(D_801023DE + arg0) * 0x40]);
 
     temp_a1 = *((int*)(&(&D_801023D4[(D_801023DE + arg0) * 0x40])[14]));
-    temp_v0->unk7 = temp_a1 & 1;
-    temp_v0->unk2 = temp_v0->unk2 + ((temp_a1 & 2) * 0xC);
+    menuItem->unk7 = temp_a1 & 1;
+    menuItem->unk2 = menuItem->unk2 + ((temp_a1 & 2) * 0xC);
     temp_v1 = (temp_a1 >> 3) & 1;
-    temp_v0->unkB = temp_v1;
-    temp_v0->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
-    temp_v0->icon = (temp_a1 >> 0x1A);
+    menuItem->unkB = temp_v1;
+    menuItem->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
+    menuItem->icon = (temp_a1 >> 0x1A);
     if ((arg0 == 0) && (D_801023DE != 0)) {
-        temp_v0->fadeEffect = 1;
+        menuItem->fadeEffect = 1;
     }
     arg0 = (temp_a1 >> 9) & 0x7F;
-    if (arg0 < 0x65) {
-        temp_v0->unk10 = arg0;
-    } else if (arg0 < 0x67) {
-        temp_v0->itemState = arg0 - 0x64;
+    if (arg0 <= 100) {
+        menuItem->unk10 = arg0;
+    } else if (arg0 <= 102) {
+        menuItem->itemState = arg0 - 100;
     } else {
-        temp_v0->unk3C = vs_battle_hitlocations[arg0 - 0x67];
+        menuItem->subText = vs_battle_hitlocations[arg0 - 103];
     }
-    temp_v0->material = (temp_a1 >> 0x10) & 7;
-    temp_v0->unk12 = (temp_a1 >> 0x13) & 0x7F;
-    return temp_v0;
+    menuItem->material = (temp_a1 >> 0x10) & 7;
+    menuItem->unk12 = (temp_a1 >> 0x13) & 0x7F;
+    return menuItem;
 }
 
 void func_80100A5C(void)

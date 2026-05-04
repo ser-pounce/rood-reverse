@@ -101,7 +101,7 @@ static void _initMenuItem(int menuItemId)
     menuItem->state = 2;
     menuItem->targetX = 155;
     menuItem->selected = 1;
-    menuItem->unk3C = NULL;
+    menuItem->subText = NULL;
 }
 
 static void _transitionToSubMenu(int id)

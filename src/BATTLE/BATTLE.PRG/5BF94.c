@@ -164,6 +164,7 @@ extern u_int D_800EBBC0[];
 extern int D_800EBBDC[];
 extern u_short D_800EBDDC[];
 extern int D_800EBC04[];
+extern u_short D_800EBC68[];
 extern char D_800EBC78;
 extern char D_800EBD68[];
 extern u_int _keystreamState;
@@ -1512,9 +1513,67 @@ void _drawStatBar(int colorIndex, int current, int max)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9CB4);
+void func_800C9CB4(int arg0, int arg1, int arg2)
+{
+    int var_s1;
+    int var_s2;
+    u_long* temp_a0;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_getStatusFlags);
+    if ((arg0 != 0xFF) && (D_800EB9B0 == 0)) {
+
+        var_s2 = D_800EBC14[arg0];
+        arg2 = (arg2 * 0x10) + 0xA0;
+
+        if (arg1 < 0) {
+            var_s2 -= arg1;
+            var_s1 = arg1 + 0x10;
+        } else {
+            arg2 += arg1;
+            var_s1 = 0x10 - arg1;
+        }
+
+        temp_a0 =
+            func_800C0224(0x80, arg2 | 0x80000, var_s1 | 0x100000, D_1F800000[1] - 1);
+
+        temp_a0[4] = (var_s2 | (((0x0F0F906A >> arg0) & 1) ? 0x37F90000 : 0x37F80000));
+
+        if ((arg0 & 0x10) && !(arg2 & 8)) {
+            var_s2 = (arg0 & 3) * 8 + 0x3068;
+            if (var_s1 >= 9) {
+                if (arg2 & 7) {
+                    arg2 += 8;
+                    var_s1 -= 8;
+                } else {
+                    int v0 = arg2 - 8;
+                    arg2 = v0 + var_s1;
+                    var_s1 = 8;
+                }
+            } else {
+                int v0 = (arg0 & 3) * 8 + 0x3070;
+                var_s2 = v0 - var_s1;
+            }
+
+            func_800C0224(0x80, arg2 | 0x80000, var_s1 | 0x80000, D_1F800000[1] - 1)[4] =
+                var_s2 | 0x37FF0000;
+        }
+    }
+}
+
+int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
+{
+    int i;
+    int temp_v1 = (u_int)arg0->unk948 >> 5;
+    int var_a2 = temp_v1 & 0xFFFF;
+    temp_v1 >>= 0x10;
+
+    for (i = 0; i < 8; ++i) {
+        if ((temp_v1 >> i) & 1) {
+            var_a2 |= D_800EBC68[i] << 0x10;
+        }
+    }
+
+    return var_a2;
+}
 
 INCLUDE_ASM(
     "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_getHitLocationStatus);

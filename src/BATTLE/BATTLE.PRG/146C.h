@@ -446,7 +446,10 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    char unk0[0x178];
+    int unk0;
+    int unk4;
+    int unk8;
+    char unkC[0x16C];
 } vs_battle_actor3;
 
 typedef struct {

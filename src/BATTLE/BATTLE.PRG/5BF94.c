@@ -124,6 +124,7 @@ typedef struct {
     u_char unkC;
 } _textBoxSelector_t;
 
+int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 int func_800CAF40(void);
@@ -156,7 +157,10 @@ extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
-extern int D_800EB9D0;
+extern union {
+    int s32;
+    u_char u8[4];
+} D_800EB9D0;
 extern u_int* D_800EB9D4;
 extern int* D_800EB9D8;
 extern u_int D_800EBBB8[];
@@ -193,6 +197,7 @@ extern char D_800F4E69;
 extern char D_800F4E90;
 extern _textBoxSelector_t textBoxSelector;
 extern int D_800F4ED4;
+extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern int D_800F521C;
 extern int D_800F5224;
@@ -1716,9 +1721,15 @@ void func_800C9FE8(void)
     D_800EBC78 = 0;
 }
 
+// https://decomp.me/scratch/NSW3O
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA97C);
+void func_800CA97C(void)
+{
+    D_800EB9B4 = NULL;
+    memset(&D_800F4ED8, 0, sizeof D_800F4ED8);
+    D_800F4ED8[2] = 0x1000;
+}
 
 void func_800CA9C0(void* arg0)
 {
@@ -1736,7 +1747,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9AF = 0;
     D_800EB9CC = 0;
     D_800EB9CD = 0;
-    D_800EB9D0 = 0xFFFFFF;
+    D_800EB9D0.s32 = 0xFFFFFF;
     D_800EB9D4 = 0;
     D_800EB9D8 = 0;
     func_800CA97C();
@@ -1754,9 +1765,61 @@ void func_800CA9C0(void* arg0)
     ClearOTag(D_800F51B8, 0x22);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAB40);
+void func_800CAB40(void)
+{
+    D_800F4E98.unk2 = 0;
+    D_800F4E98.unk0 = 1;
+    if (vs_battle_shortcutInvoked == 5) {
+        vs_battle_menuState.currentState = 4;
+        func_800FAEBC(2);
+    } else {
+        vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+        D_800F4E70[vs_battle_menuState.returnState & 0xF] = vs_battle_menuState.unk2;
+    }
+    if (D_800F4FDB == 0) {
+        func_8007DFF0(0x1A, 3, 6);
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CABE0);
+int func_800CABE0(int arg0)
+{
+    int ret;
+    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    int temp_v0 = func_800A0BE0(0);
+    int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
+
+    if ((temp_v0 & 0x40100000) == 0x100000) {
+        var_a0 |= 4;
+    }
+
+    if (!(vs_battle_characterState->unk44->unk8 & 0x800000)) {
+        var_a0 |= 8;
+    }
+
+    ret = var_a0;
+
+    if (actor->currentMP == 0) {
+        ret |= 0x20;
+    }
+
+    if (actor->currentHP == 0) {
+        ret |= 0x40;
+    }
+
+    if (actor->unk948 & 0x1001) {
+        ret |= 0x80;
+    }
+
+    if (actor->unk948 & 0x2000) {
+        ret |= 0x100;
+    }
+
+    if (arg0 == 2) {
+        ret |= 0x200;
+    }
+
+    return ret;
+}
 
 int func_800CACD0(int arg0, int arg1)
 {

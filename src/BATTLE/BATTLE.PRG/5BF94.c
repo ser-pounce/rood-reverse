@@ -1642,7 +1642,12 @@ int func_800C9EB8(int arg0)
 
 void func_800C9F88(void) { D_800EBC78 = 1; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9F98);
+void func_800C9F98(int arg0, int arg1)
+{
+    u_long* temp_v0 = func_800C0224(arg1, arg0, 0x60006, D_1F800000[2]);
+    temp_v0[1] = 0xE1000017;
+    temp_v0[4] = 0x373D80C0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9FE8);
 

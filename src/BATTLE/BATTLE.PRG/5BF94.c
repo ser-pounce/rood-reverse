@@ -1598,7 +1598,47 @@ int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart* limb)
     return limbStatusExcellent;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9EB8);
+int func_800C9EB8(int arg0)
+{
+    int temp_s0 = func_800CABE0(0);
+    int var_s2 = 0x180;
+
+    switch (arg0) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        if (func_800CAEAC((0x3021 >> (arg0 * 4)) & 0xF) == 0) {
+            return 0;
+        }
+        if (temp_s0 & 0xB7) {
+            var_s2 = 0x140;
+        }
+        break;
+    case 4:
+        if (temp_s0 & 0x7) {
+            var_s2 = 0x140;
+        }
+        break;
+    case 5:
+    case 6:
+        if (vs_battle_abilitiesUnlocked(6 - arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 7:
+        if (func_800CAF40() == 0) {
+            return 0;
+        }
+        if (temp_s0 & 0x15F) {
+            var_s2 = 0x140;
+        }
+        break;
+    default:
+        break;
+    }
+    return var_s2;
+}
 
 void func_800C9F88(void) { D_800EBC78 = 1; }
 

@@ -855,7 +855,7 @@ int vs_menu0_exec(char* state)
             menuStrings[i * 2 + 1] =
                 (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlockDesc]];
             rowTypes[i] = 0;
-            if (func_800CAEAC(i) == 0) {
+            if (vs_battle_spellClassUnlocked(i) == 0) {
                 rowTypes[i] |= 1;
                 menuStrings[i * 2 + 1] =
                     (char*)&_baseStrings[_baseStrings[i * 3

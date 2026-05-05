@@ -179,6 +179,8 @@ extern u_char D_800EBCC8[];
 extern int D_800EBCD0[];
 extern u_short D_800EBCE0[];
 extern u_char D_800EBCE8;
+extern u_char _spellClassCounts[];
+extern u_char* _spellIds[];
 extern char D_800EBD68[];
 extern u_short D_800EBDDC[];
 extern u_int _keystreamState;
@@ -1623,7 +1625,7 @@ int func_800C9EB8(int arg0)
     case 1:
     case 2:
     case 3:
-        if (func_800CAEAC((0x3021 >> (arg0 * 4)) & 0xF) == 0) {
+        if (vs_battle_spellClassUnlocked((0x3021 >> (arg0 * 4)) & 0xF) == 0) {
             return 0;
         }
         if (temp_s0 & 0xB7) {
@@ -1871,7 +1873,17 @@ int func_800CACD0(int arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAEAC);
+int vs_battle_spellClassUnlocked(int spellClass)
+{
+    int i;
+
+    for (i = 0; i < _spellClassCounts[spellClass]; ++i) {
+        if (vs_main_skills[_spellIds[spellClass][i]].unlocked) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAF40);
 
@@ -1901,7 +1913,7 @@ int func_800CB030(int arg0)
     case 2:
     case 3:
     case 4:
-        var_a1 = func_800CAEAC(arg0 - 1) == 0;
+        var_a1 = vs_battle_spellClassUnlocked(arg0 - 1) == 0;
         var_a0 = 1;
         break;
     case 5:

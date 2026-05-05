@@ -312,7 +312,7 @@ typedef struct {
     short totalStrength;
     short totalIntelligence;
     short totalAgility;
-    short unk12[6];
+    short limbHp[6];
     int unk20;
     int unk24;
 } func_80069EF0_t;
@@ -931,7 +931,7 @@ void func_80069FC4(int arg0, int arg1)
             temp_v0->totalIntelligence = temp_s1->totalIntelligence;
             temp_v0->totalAgility = temp_s1->totalAgility;
             for (i = 0; i < 6; ++i) {
-                temp_v0->unk12[i] = temp_s1->bodyParts[i].unk0;
+                temp_v0->limbHp[i] = temp_s1->bodyParts[i].hp;
             }
 
             temp_v0->unk20 = temp_s1->unk948;
@@ -4407,19 +4407,19 @@ vs_battle_actor* func_800765B0(
 }
 
 void func_80076784(
-    int arg0, vs_battle_actor2* arg1, vs_battle_charInitData* arg2, int arg3)
+    int arg0, vs_battle_actor2* actor, vs_battle_charInitData* init, int arg3)
 {
     int j;
     int i;
     short var_s0;
 
-    arg1->unk957 = arg0;
+    actor->unk957 = arg0;
 
     for (i = 0; i < 24; ++i) {
-        arg1->name[i] = arg2->name[i];
+        actor->name[i] = init->name[i];
     }
 
-    var_s0 = arg2->hp;
+    var_s0 = init->hp;
     if (arg3 != 0) {
         var_s0 += -10 + vs_main_getRandSmoothed(21);
     }
@@ -4429,11 +4429,11 @@ void func_80076784(
         var_s0 = 999;
     }
 
-    arg1->maxHP = var_s0;
-    arg1->currentHP = var_s0;
-    arg1->risk = 0;
+    actor->maxHP = var_s0;
+    actor->currentHP = var_s0;
+    actor->risk = 0;
 
-    var_s0 = arg2->mp;
+    var_s0 = init->mp;
     if (var_s0 != 0) {
         if (arg3 != 0) {
             var_s0 += -10 + vs_main_getRandSmoothed(21);
@@ -4445,10 +4445,10 @@ void func_80076784(
         }
     }
 
-    arg1->maxMP = var_s0;
-    arg1->currentMP = var_s0;
+    actor->maxMP = var_s0;
+    actor->currentMP = var_s0;
 
-    var_s0 = arg2->strength;
+    var_s0 = init->strength;
     if (arg3 != 0) {
         var_s0 += -10 + vs_main_getRandSmoothed(21);
     }
@@ -4458,10 +4458,10 @@ void func_80076784(
         var_s0 = 999;
     }
 
-    arg1->totalStrength = var_s0;
-    arg1->strength = var_s0;
+    actor->totalStrength = var_s0;
+    actor->strength = var_s0;
 
-    var_s0 = arg2->intelligence;
+    var_s0 = init->intelligence;
     if (arg3 != 0) {
         var_s0 += -10 + vs_main_getRandSmoothed(21);
     }
@@ -4471,10 +4471,10 @@ void func_80076784(
         var_s0 = 999;
     }
 
-    arg1->totalIntelligence = var_s0;
-    arg1->intelligence = var_s0;
+    actor->totalIntelligence = var_s0;
+    actor->intelligence = var_s0;
 
-    var_s0 = arg2->agility;
+    var_s0 = init->agility;
     if (arg3 != 0) {
         var_s0 += -10 + vs_main_getRandSmoothed(21);
     }
@@ -4484,90 +4484,90 @@ void func_80076784(
         var_s0 = 999;
     }
 
-    arg1->totalAgility = var_s0;
-    arg1->agility = var_s0;
-    arg1->unk30 = arg2->unk24;
-    arg1->unk32 = arg2->unk26;
-    arg1->unk31 = arg1->unk2E = (arg2->walkSpeed * 9) / 10;
-    arg1->unk33 = arg1->unk2F = (arg2->runSpeed * 9) / 10;
-    arg1->enemyClass = arg2->unk3_5;
-    arg1->reach = arg2->reach;
-    arg1->unk956_2 = arg2->unk23;
-    arg1->unk34 = arg2->unk30;
-    arg1->unk35 = arg2->unk31;
-    arg1->unk36 = arg2->unk32;
-    arg1->unk956_0 = 0;
-    arg1->unk956_1 = 0;
-    vs_battle_applyWeaponStats(&arg1->weapon, &arg2->unk34);
-    arg1->currentRange = arg1->weapon.range.range + arg1->reach;
-    arg1->unk39 = arg1->weapon.range.unk1 + arg1->reach;
-    arg1->unk3A = arg1->weapon.range.unk2 + arg1->reach;
-    arg1->currentAttackShapeAngle = arg1->weapon.range.attackShapeAngle;
-    arg1->unk3B_0 = 1;
-    vs_battle_applyShieldStats(&arg1->shield, &arg2->unk140);
-    _applyAccessoryStats(&arg1->accessory, &arg2->unk204);
+    actor->totalAgility = var_s0;
+    actor->agility = var_s0;
+    actor->unk30 = init->unk24;
+    actor->unk32 = init->unk26;
+    actor->unk31 = actor->unk2E = (init->walkSpeed * 9) / 10;
+    actor->unk33 = actor->unk2F = (init->runSpeed * 9) / 10;
+    actor->enemyClass = init->unk3_5;
+    actor->reach = init->reach;
+    actor->unk956_2 = init->unk23;
+    actor->unk34 = init->unk30;
+    actor->unk35 = init->unk31;
+    actor->unk36 = init->unk32;
+    actor->unk956_0 = 0;
+    actor->unk956_1 = 0;
+    vs_battle_applyWeaponStats(&actor->weapon, &init->weapon);
+    actor->currentRange = actor->weapon.range.range + actor->reach;
+    actor->unk39 = actor->weapon.range.unk1 + actor->reach;
+    actor->unk3A = actor->weapon.range.unk2 + actor->reach;
+    actor->currentAttackShapeAngle = actor->weapon.range.attackShapeAngle;
+    actor->unk3B_0 = 1;
+    vs_battle_applyShieldStats(&actor->shield, &init->shield);
+    _applyAccessoryStats(&actor->accessory, &init->accessory);
 
     for (i = 0; i < 6; ++i) {
-        arg1->bodyParts[i].unk0 = arg1->bodyParts[i].unk2 = arg2->unk238[i].hp;
-        arg1->bodyParts[i].agilityDefenseBonus = arg2->unk238[i].agilityDefenseBonus;
+        actor->bodyParts[i].hp = actor->bodyParts[i].maxHp = init->armor[i].hp;
+        actor->bodyParts[i].agilityDefenseBonus = init->armor[i].agilityDefenseBonus;
 
         j = func_800A152C(arg0, i, 2);
 
         if (j >= 0) {
-            arg1->bodyParts[i].unk5 = j;
-            arg1->bodyParts[i].nameIndex = func_800A1648(arg0, j, 0);
+            actor->bodyParts[i].unk5 = j;
+            actor->bodyParts[i].nameIndex = func_800A1648(arg0, j, 0);
         } else {
-            arg1->bodyParts[i].nameIndex = 0;
-            arg1->bodyParts[i].unk5 = 0;
+            actor->bodyParts[i].nameIndex = 0;
+            actor->bodyParts[i].unk5 = 0;
         }
 
-        arg1->bodyParts[i].chainEvasion = arg2->unk238[i].chainEvasion;
+        actor->bodyParts[i].chainEvasion = init->armor[i].chainEvasion;
 
         for (j = 0; j < 4; ++j) {
-            arg1->bodyParts[i].types[j] = arg2->unk238[i].unk4[j];
+            actor->bodyParts[i].types[j] = init->armor[i].unk4[j];
         }
 
         for (j = 0; j < 7; ++j) {
-            arg1->bodyParts[i].affinities[j] = arg2->unk238[i].unk8[j];
+            actor->bodyParts[i].affinities[j] = init->armor[i].unk8[j];
         }
 
-        _applyArmorStats(&arg1->bodyParts[i].armor, &arg2->unk238[i].unk20);
+        _applyArmorStats(&actor->bodyParts[i].armor, &init->armor[i].unk20);
     }
 
-    vs_battle_nop0(arg1);
+    vs_battle_nop0(actor);
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 4; ++j) {
-            arg1->unk8C0[i][j].unk0 = arg2->unk238[i].unk10[j].unk0;
-            arg1->unk8C0[i][j].unk2_0 = arg2->unk238[i].unk10[j].unk3;
-            arg1->unk8C0[i][j].unk2_4 = arg2->unk238[i].unk10[j].unk2;
-            arg1->unk8C0[i][j].unk3 = 1;
+            actor->armor[i][j].unk0 = init->armor[i].unk10[j].unk0;
+            actor->armor[i][j].unk2_0 = init->armor[i].unk10[j].unk3;
+            actor->armor[i][j].unk2_4 = init->armor[i].unk10[j].unk2;
+            actor->armor[i][j].unk3 = 1;
         }
     }
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 6; ++j) {
-            arg1->unk920[i][j] = arg2->unk238[i].unk54[j];
+            actor->unk920[i][j] = init->armor[i].unk54[j];
         }
     }
 
-    arg1->unk944 = arg2->unk28;
+    actor->unk944 = init->unk28;
     {
         int v = 0x80000000;
         do {
-            arg1->unk948 = 0;
+            actor->unk948 = 0;
 
-            if (arg1->unk944 < 0) {
-                arg1->unk948 = v;
+            if (actor->unk944 < 0) {
+                actor->unk948 = v;
             }
         } while (0);
     }
 
     for (i = 0; i < 5; ++i) {
-        arg1->unk94C[i] = 0;
+        actor->unk94C[i] = 0;
     }
 
-    arg1->unk954 = 0;
+    actor->unk954 = 0;
 }
 
 void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
@@ -5930,7 +5930,7 @@ void func_8007C28C(int arg0)
             temp_a1->currentHP = temp_a1->maxHP;
             temp_a1->currentMP = temp_a1->maxMP;
             for (i = 0; i < 6; ++i) {
-                temp_a1->bodyParts[i].unk0 = temp_a1->bodyParts[i].unk2;
+                temp_a1->bodyParts[i].hp = temp_a1->bodyParts[i].maxHp;
             }
             func_80086754(0x7FFFFFFF, temp_a1);
             D_800F5160 = 0;
@@ -7664,7 +7664,7 @@ short func_8007FF8C(int arg0, short arg1, char* arg2)
 void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
 {
     int i;
-    int var_t0;
+    int limbs;
     vs_battle_actor2* actor;
 
     for (i = 0; i < 6; ++i) {
@@ -7679,17 +7679,17 @@ void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
     case 2:
     case 3:
     case 4:
-        var_t0 = 0;
+        limbs = 0;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].unk2 != 0) {
-                ++var_t0;
+            if (actor->bodyParts[i].maxHp != 0) {
+                ++limbs;
             }
         }
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].unk2 != 0) {
-                _armorDpAdjustmentAmounts[i] = baseValue / var_t0;
+            if (actor->bodyParts[i].maxHp != 0) {
+                _armorDpAdjustmentAmounts[i] = baseValue / limbs;
                 entity->unk20.s16[i][0] += _armorDpAdjustmentAmounts[i];
             }
         }
@@ -7715,25 +7715,22 @@ void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
 
 void func_800801E0(vs_skill_t* skill, _hitEntity_t* entity, short arg2)
 {
-    int temp_lo;
     int i;
-    int var_t0;
-    vs_battle_actor2* actor;
-
-    var_t0 = 0;
-    actor = vs_battle_actors[entity->actorId]->unk3C;
+    int limbDamageTaken = 0;
+    vs_battle_actor2* actor = vs_battle_actors[entity->actorId]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (actor->bodyParts[i].unk2 != 0) {
-            var_t0 += actor->bodyParts[i].unk2 - actor->bodyParts[i].unk0;
+        if (actor->bodyParts[i].maxHp != 0) {
+            limbDamageTaken += actor->bodyParts[i].maxHp - actor->bodyParts[i].hp;
         }
     }
 
-    if (var_t0 != 0) {
+    if (limbDamageTaken != 0) {
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].unk2 != 0) {
-                temp_lo = (arg2 * (actor->bodyParts[i].unk2 - actor->bodyParts[i].unk0))
-                        / var_t0;
+            if (actor->bodyParts[i].maxHp != 0) {
+                int temp_lo =
+                    (arg2 * (actor->bodyParts[i].maxHp - actor->bodyParts[i].hp))
+                    / limbDamageTaken;
                 _armorDpAdjustmentAmounts[i] = temp_lo;
                 entity->unk20.s16[i][0] =
                     entity->unk20.s16[i][0] + ((temp_lo << 0x10) >> 0xF);
@@ -8902,21 +8899,17 @@ void func_80085008(_hitEntity_t* arg0)
     temp_s3 = vs_battle_actors[arg0->actorId]->unk3C;
     switch (arg0->unk1C.fields.unk1C_0) {
     case 2:
-        var_a2 =
-            temp_s3->bodyParts[temp_s3->unk34].unk0 + arg0->unk20.s32[temp_s3->unk34];
-        var_a1 =
-            temp_s3->bodyParts[temp_s3->unk35].unk0 + arg0->unk20.s32[temp_s3->unk35];
+        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp + arg0->unk20.s32[temp_s3->unk34];
+        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp + arg0->unk20.s32[temp_s3->unk35];
         break;
     case 3:
     case 1:
-        var_a2 =
-            temp_s3->bodyParts[temp_s3->unk34].unk0 - arg0->unk20.s32[temp_s3->unk34];
-        var_a1 =
-            temp_s3->bodyParts[temp_s3->unk35].unk0 - arg0->unk20.s32[temp_s3->unk35];
+        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp - arg0->unk20.s32[temp_s3->unk34];
+        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp - arg0->unk20.s32[temp_s3->unk35];
         break;
     default:
-        var_a2 = temp_s3->bodyParts[temp_s3->unk34].unk0;
-        var_a1 = temp_s3->bodyParts[temp_s3->unk35].unk0;
+        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp;
+        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp;
         break;
     }
     if (!(temp_s3->unk948 & 0x10)) {
@@ -8950,14 +8943,14 @@ void func_80085008(_hitEntity_t* arg0)
         for (i = 0; i < 4; ++i) {
             switch (arg0->unk1C.fields.unk1C_0) {
             case 2:
-                var_a2 = temp_s3->bodyParts[i].unk0 + arg0->unk20.s32[i];
+                var_a2 = temp_s3->bodyParts[i].hp + arg0->unk20.s32[i];
                 break;
             case 3:
             case 1:
-                var_a2 = temp_s3->bodyParts[i].unk0 - arg0->unk20.s32[i];
+                var_a2 = temp_s3->bodyParts[i].hp - arg0->unk20.s32[i];
                 break;
             default:
-                var_a2 = temp_s3->bodyParts[i].unk0;
+                var_a2 = temp_s3->bodyParts[i].hp;
                 break;
             }
             if (!(temp_s3->unk948 & D_8004EECC[D_800E8200[i]][0])) {

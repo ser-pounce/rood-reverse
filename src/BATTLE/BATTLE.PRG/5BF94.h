@@ -204,6 +204,14 @@ typedef struct {
     short unkE4;
 } func_800CF0E8_t;
 
+enum vs_battle_limbStatus {
+    limbStatusCritical,
+    limbStatusDamaged,
+    limbStatusWounded,
+    limbStatusGood,
+    limbStatusExcellent
+};
+
 int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 int vs_battle_setTextBox(int, char*);
@@ -228,7 +236,7 @@ void func_800C97BC(void);
 int vs_battle_renderValue(int, int, int, u_long*);
 void vs_battle_drawStatBar(int, int, u_long*, int);
 int vs_battle_getStatusFlags(vs_battle_actor2*);
-int vs_battle_getHitLocationStatus(void*);
+int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart*);
 void func_800CAB40(void);
 int func_800CABE0(int);
 int func_800CAEAC(int);

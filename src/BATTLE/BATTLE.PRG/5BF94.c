@@ -1575,8 +1575,28 @@ int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
     return var_a2;
 }
 
-INCLUDE_ASM(
-    "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_getHitLocationStatus);
+int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart* limb)
+{
+    int maxHp = limb->maxHp;
+
+    if (limb->hp < 2) {
+        return limbStatusCritical;
+    }
+
+    if ((limb->hp * 4) < maxHp) {
+        return limbStatusDamaged;
+    }
+
+    if ((limb->hp * 4) < (maxHp * 3)) {
+        return limbStatusWounded;
+    }
+
+    if (limb->hp < maxHp) {
+        return limbStatusGood;
+    }
+
+    return limbStatusExcellent;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C9EB8);
 

@@ -919,7 +919,7 @@ static int _drawHitLocationStatuses(int arg0)
 
     int sp10[2];
     vs_battle_actor2* actor;
-    vs_battle_uiEquipment_bodyParts* hitLocation;
+    vs_battle_uiEquipment_bodyPart* hitLocation;
     int hitLocationCount;
     int sp20;
     int sp24;
@@ -956,20 +956,27 @@ static int _drawHitLocationStatuses(int arg0)
     case 1:
         func_80103FEC(actor, vs_battle_rowAnimationSteps[_hitLocationAnimSteps[0]]);
         for (i = 0; i < hitLocationCount; ++i) {
+
             hitLocation = &actor->bodyParts[i];
             step = _hitLocationAnimSteps[i];
+
             vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                 (vs_battle_rowAnimationSteps[step] + 216) | ((34 + i * 16) << 16), NULL);
+
             hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+
             _drawStatusIndicator(hitLocationStatus,
                 (vs_battle_rowAnimationSteps[step] + 216) | ((36 + i * 16) << 16), NULL);
             vs_battle_renderTextRaw(_hitLocationStatuses[hitLocationStatus],
                 (vs_battle_rowAnimationSteps[step] + 224) | ((34 + i * 16) << 16), NULL);
+
             if (step < 8) {
                 func_800A13EC(1, hitLocation->unk5, sp10, 0);
                 _drawHitLocationLeaderLine(i, sp10[0], 8 - step, 0);
             }
+
             hitLocationStatus = 0;
+
             if (step != 0) {
                 _hitLocationAnimSteps[i] = step - 1;
             } else {
@@ -986,16 +993,20 @@ static int _drawHitLocationStatuses(int arg0)
 
         step = D_800F4EE8.unk51[49];
         for (i = 0; i < hitLocationCount; ++i) {
+
             hitLocation = &actor->bodyParts[i];
             temp_s6 = step >> 7;
             sp20 = step - 128;
             sp24 = temp_s6 - 1;
+
             vs_battle_renderTextRawColor(vs_battle_hitlocations[hitLocation->nameIndex],
                 216 | ((34 + i * 16) << 16),
                 i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
                           : vs_getRGB888(128, 128, 128) >> temp_s6,
                 0);
+
             hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+
             _drawStatusIndicator(hitLocationStatus, (0x24 + i * 0x10) * 0x10000 | 0xD8,
                 temp_s6 - (i == sp20));
             vs_battle_renderTextRawColor(_hitLocationStatuses[hitLocationStatus],
@@ -1003,6 +1014,7 @@ static int _drawHitLocationStatuses(int arg0)
                 i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
                           : vs_getRGB888(128, 128, 128) >> temp_s6,
                 0);
+
             func_800A13EC(1, hitLocation->unk5, sp10, 0);
             if (!(step & 0x80) && ((_fadeScreen | _drawBackgroundFirst) == 0)) {
                 _drawHitLocationLeaderLine(i, sp10[0], 8, i == step);
@@ -1014,11 +1026,15 @@ static int _drawHitLocationStatuses(int arg0)
 
         for (i = 0; i < hitLocationCount; ++i) {
             if (_hitLocationAnimSteps[i] < 8) {
+
                 hitLocation = &actor->bodyParts[i];
                 ++_hitLocationAnimSteps[i];
+
                 vs_battle_renderTextRaw(vs_battle_hitlocations[hitLocation->nameIndex],
                     ((_hitLocationAnimSteps[i] << 5) + 216) | ((34 + i * 16) << 16), 0);
+
                 hitLocationStatus = vs_battle_getHitLocationStatus(hitLocation);
+
                 _drawStatusIndicator(hitLocationStatus,
                     ((_hitLocationAnimSteps[i] << 5) + 216) | ((36 + i * 16) << 16), 0);
                 vs_battle_renderTextRaw(_hitLocationStatuses[hitLocationStatus],
@@ -1522,7 +1538,7 @@ static int _equipmentScreen(int element)
     int new_var;
 
     vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
-    vs_battle_uiEquipment_bodyParts* bodyParts = temp_s6->bodyParts;
+    vs_battle_uiEquipment_bodyPart* bodyParts = temp_s6->bodyParts;
 
     hitLocationCount = _getHitLocationCount(_selectedActor - 1);
     rowCount = _getEquipmentCount();
@@ -1793,7 +1809,7 @@ static void _drawScreen(void)
 
 static void _printSelectedLocationCondition(void)
 {
-    vs_battle_uiEquipment_bodyParts* location =
+    vs_battle_uiEquipment_bodyPart* location =
         &vs_battle_actors[_selectedActor - 1]->unk3C->bodyParts[_selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&D_800EA868[D_800EA868[location->nameIndex]];
@@ -1809,7 +1825,7 @@ static void _printSelectedLocationCondition(void)
 static void _printSelectedLocationStats(void)
 {
     int i;
-    vs_battle_uiEquipment_bodyParts* location =
+    vs_battle_uiEquipment_bodyPart* location =
         &vs_battle_actors[_selectedActor - 1]->unk3C->bodyParts[_selectedElement];
 
     for (i = 0; i < 16; ++i) {

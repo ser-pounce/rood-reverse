@@ -407,8 +407,8 @@ typedef struct {
 } vs_battle_uiArmor;
 
 typedef struct {
-    short unk0;
-    short unk2;
+    short hp;
+    short maxHp;
     signed char agilityDefenseBonus;
     char unk5;
     u_char nameIndex;
@@ -416,7 +416,7 @@ typedef struct {
     short types[4];
     short affinities[8];
     vs_battle_uiArmor armor; // 0x18
-} vs_battle_uiEquipment_bodyParts;
+} vs_battle_uiEquipment_bodyPart;
 
 typedef struct {
     vs_battle_uiEquipment accessory;
@@ -496,8 +496,8 @@ typedef struct {
     vs_battle_uiWeapon weapon; // 0x3C
     vs_battle_uiShield shield; // 1C4
     vs_battle_uiAccessory accessory; // 328
-    vs_battle_uiEquipment_bodyParts bodyParts[6]; // 388
-    vs_battle_actor_unk8C0 unk8C0[6][4];
+    vs_battle_uiEquipment_bodyPart bodyParts[6]; // 388
+    vs_battle_actor_unk8C0 armor[6][4];
     char unk920[6][6];
     int unk944;
     int unk948;
@@ -858,10 +858,10 @@ typedef struct {
     char unk31;
     char unk32;
     char unk33;
-    vs_battle_weaponIntermediate unk34;
-    vs_battle_shieldIntermediate unk140;
-    _accessoryIntermediate unk204;
-    _armorIntermediateInit unk238[6];
+    vs_battle_weaponIntermediate weapon;
+    vs_battle_shieldIntermediate shield;
+    _accessoryIntermediate accessory;
+    _armorIntermediateInit armor[6];
     int unk460;
 } vs_battle_charInitData;
 

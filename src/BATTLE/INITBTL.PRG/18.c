@@ -137,8 +137,8 @@ void func_800F9AD8(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->bodyParts[i].unk0 = s1->bodyParts[i].unk0;
-        temp_s0->bodyParts[i].unk2 = s1->bodyParts[i].unk2;
+        temp_s0->bodyParts[i].hp = s1->bodyParts[i].hp;
+        temp_s0->bodyParts[i].maxHp = s1->bodyParts[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
             temp_s0->bodyParts[i].types[j] = s1->bodyParts[i].types[j];

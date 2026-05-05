@@ -176,8 +176,8 @@ typedef struct {
 } vs_main_scoredata_t;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
+    u_short hp;
+    u_short maxHp;
     u_short types[4];
     u_short affinities[8];
 } D_80060068_t2;

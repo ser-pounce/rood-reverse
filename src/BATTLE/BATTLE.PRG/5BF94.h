@@ -240,7 +240,7 @@ int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart*);
 void func_800CAB40(void);
 int func_800CABE0(int);
 int vs_battle_spellClassUnlocked(int);
-int vs_battle_abilitiesUnlocked(int);
+int vs_battle_chainAbilitiesUnlocked(int);
 void func_800CB23C(void);
 void func_800CB660(int arg0);
 D_800F4E98_t* func_800CB66C(void);

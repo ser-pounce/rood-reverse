@@ -127,7 +127,7 @@ typedef struct {
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
-int func_800CAF40(void);
+int _breakArtsUnlocked(void);
 void func_800CE67C(void);
 void func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
@@ -1639,12 +1639,12 @@ int func_800C9EB8(int arg0)
         break;
     case 5:
     case 6:
-        if (vs_battle_abilitiesUnlocked(6 - arg0) == 0) {
+        if (vs_battle_chainAbilitiesUnlocked(6 - arg0) == 0) {
             return 0;
         }
         break;
     case 7:
-        if (func_800CAF40() == 0) {
+        if (_breakArtsUnlocked() == 0) {
             return 0;
         }
         if (temp_s0 & 0x15F) {
@@ -1823,7 +1823,7 @@ int func_800CABE0(int arg0)
     return ret;
 }
 
-int func_800CACD0(int arg0, int arg1)
+int func_800CACD0(int menuState, int arg1)
 {
     int i;
     u_short var_a1;
@@ -1835,19 +1835,24 @@ int func_800CACD0(int arg0, int arg1)
         D_800F4FDB = 0;
         D_800F4EA0 = func_800CABE0(arg1);
         D_800F4E98.unk2 = 0;
-        vs_battle_menuState.currentState = arg0;
+        vs_battle_menuState.currentState = menuState;
         D_800F4E98.unk0 = 1;
+
         if (arg1 == 0) {
             vs_battle_playSfx10();
         }
+
         if (vs_battle_menuItems == 0) {
             D_800EB9AD = -1;
+
             func_8007E180(6);
+
             miscIndex = vs_main_allocHeapR(0xB24);
             var_a1 = vs_main_settings.menuFlags;
             vs_battle_stringBuf = miscIndex + 0xA00;
             vs_battle_menuItems = miscIndex;
             vs_battle_rowTypeBuf = miscIndex + 0xA60;
+
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
                      ++var_a0) {
@@ -1869,6 +1874,7 @@ int func_800CACD0(int arg0, int arg1)
         }
         return 1;
     }
+    
     vs_battle_playInvalidSfx();
     return 0;
 }
@@ -1885,9 +1891,21 @@ int vs_battle_spellClassUnlocked(int spellClass)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CAF40);
+int _breakArtsUnlocked(void)
+{
+    int i;
+    for (i = 0; i < 4; ++i) {
+        if ((vs_main_skills[0xB8
+                            + ((vs_battle_characterState->equippedWeaponCategory - 1) * 4)
+                            + i]
+                    .unlocked)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-int vs_battle_abilitiesUnlocked(int defense)
+int vs_battle_chainAbilitiesUnlocked(int defense)
 {
     int i;
     vs_skill_t* v0;
@@ -1903,44 +1921,45 @@ int vs_battle_abilitiesUnlocked(int defense)
     return 0;
 }
 
-int func_800CB030(int arg0)
+int _validateShortcutSelection(int shortcut)
 {
-    int var_a1 = 0;
-    int var_a0 = 0;
+    int noneUnlocked = 0;
+    int menuState = 0;
 
-    switch (arg0) {
+    switch (shortcut) {
     case 1:
     case 2:
     case 3:
     case 4:
-        var_a1 = vs_battle_spellClassUnlocked(arg0 - 1) == 0;
-        var_a0 = 1;
+        noneUnlocked = vs_battle_spellClassUnlocked(shortcut - 1) == 0;
+        menuState = 1;
         break;
     case 5:
-        var_a0 = 4;
+        menuState = 4;
         break;
     case 6:
-        var_a1 = func_800CAF40() == 0;
-        var_a0 = 2;
+        noneUnlocked = _breakArtsUnlocked() == 0;
+        menuState = 2;
         break;
     case 7:
     case 8:
-        var_a1 = vs_battle_abilitiesUnlocked(arg0 - 7) == 0;
-        var_a0 = 3;
+        noneUnlocked = vs_battle_chainAbilitiesUnlocked(shortcut - 7) == 0;
+        menuState = 3;
         break;
     }
 
-    if (var_a1 != 0) {
+    if (noneUnlocked) {
         vs_battle_playInvalidSfx();
-        var_a0 = 0;
+        menuState = 0;
         D_800F4E98.unk2 = 0;
         D_800F4E98.unk0 = 2;
     } else {
-        var_a0 = func_800CACD0(var_a0, 0);
-        vs_battle_shortcutInvoked = arg0;
+        menuState = func_800CACD0(menuState, 0);
+        vs_battle_shortcutInvoked = shortcut;
         D_800F4FDB = 1;
     }
-    return var_a0;
+
+    return menuState;
 }
 
 void func_800CB114(void)

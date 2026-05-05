@@ -579,7 +579,7 @@ int vs_menu2_exec(char* state)
                 [VS_battleAbilities_OFFSET_chainAbilitiesDesc];
             rowTypes[0] = 0;
             rowTypes[1] = 0;
-            if (vs_battle_abilitiesUnlocked(0) == 0) {
+            if (vs_battle_chainAbilitiesUnlocked(0) == 0) {
                 // BUG: Should be rowTypes, but flow doesn't seem to be used anyway
                 menuStrings[0] = (char*)((long)menuStrings[0] | 1);
                 menuStrings[1] = (char*)&_battleAbilityStrings
@@ -589,7 +589,7 @@ int vs_menu2_exec(char* state)
                 (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_defenseAbilities];
             menuStrings[3] = (char*)&_battleAbilityStrings
                 [VS_battleAbilities_OFFSET_defenseAbilitiesDesc];
-            if (vs_battle_abilitiesUnlocked(1) == 0) {
+            if (vs_battle_chainAbilitiesUnlocked(1) == 0) {
                 rowTypes[1] |= 1;
                 menuStrings[3] = (char*)&_battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noDefenseAbilities];

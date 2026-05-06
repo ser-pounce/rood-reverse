@@ -133,6 +133,7 @@ int _breakArtsUnlocked(void);
 void func_800CE67C(void);
 void func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
+void func_800CF478(int arg0);
 void func_800CF694(D_800F53B8_t*, int, int);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
@@ -207,12 +208,20 @@ extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
+extern int D_800F5218;
 extern int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
 extern char D_800F5310[];
+extern char D_800F5318;
 extern u_int D_800F531C;
+extern int D_800F5320[];
+extern int D_800F5330;
 extern char D_800F54A8;
+extern int D_800F53B4;
+extern int D_800F53B8;
+extern int D_800F53BC;
+extern int D_800F54B0;
 extern u_char D_800F4E80;
 extern char D_800F5518;
 extern int D_800F55E8;
@@ -2418,7 +2427,7 @@ int func_800CD3A0(int arg0, int arg1)
     if (arg1 & 1) {
         var_v1 = (var_v1 & 0xFF) | ((0xFF - (var_v1 >> 8)) << 8);
     }
-    
+
     if (arg1 & 2) {
         var_v1 = (~var_v1 & 0xFF) | (var_v1 & 0xFF00);
     }
@@ -2441,7 +2450,25 @@ void func_800CE64C(void)
     func_800D268C();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE67C);
+void func_800CE67C(void)
+{
+    int i;
+    func_800CF478(0);
+    D_800F5228 = 0;
+    D_800F5224 = 0;
+    D_800F54A8 = 0;
+    D_800F5318 = 0;
+    D_800F54B0 = 0;
+    D_800F53BC = 0;
+    D_800F53B4 = 0;
+    D_800F53B8 = 0;
+    D_800F5330 = 0;
+    D_800F522C = 0;
+    D_800F5218 = 0;
+    for (i = 0; i < 4; ++i) {
+        D_800F5320[i] = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE714);
 

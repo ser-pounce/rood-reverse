@@ -173,7 +173,7 @@ typedef struct {
     short unk0;
     char unk2;
     char unk3;
-    short unk4;
+    u_short unk4;
     short unk6;
     union {
         char u8[2];
@@ -273,7 +273,7 @@ void vs_battle_drawImage(int xy, void* buffer, int wh);
 void func_800CE64C(void);
 int func_800CEEBC(void);
 int func_800CEF74(int);
-void func_800CF0E8(func_800CF0E8_t*, int, int);
+int func_800CF0E8(func_800CF0E8_t*, int, int);
 void func_800CF1A8(void);
 void func_800CF3F8(func_800CF0E8_t*, int);
 int func_800CF48C(void);

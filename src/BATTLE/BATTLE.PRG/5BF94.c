@@ -191,6 +191,7 @@ int func_800CE9B0(void);
 int func_800CF218(void);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
+int func_800CF49C();
 void func_800CF614(D_800F53B8_t*);
 void func_800CF694(D_800F53B8_t*, int, int);
 void func_800CF70C(D_800F53B8_t*, void*);
@@ -200,6 +201,7 @@ void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
+void func_800D1B18(int*);
 void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
@@ -279,19 +281,23 @@ extern vs_main_CdQueueSlot* D_800F5218;
 extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
+extern func_800CF0E8_t D_800F5230;
 extern char D_800F5310[];
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
 extern int D_800F5330;
-extern char D_800F54A8;
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
 extern D_800F53B8_t* D_800F53BC;
+extern char D_800F54A8;
+extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
+extern int D_800F54D8;
 extern u_char D_800F4E80;
 extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
+extern int D_800F55A8;
 extern int D_800F55E8;
 extern int D_800F5600;
 extern int D_800F5610;
@@ -2761,7 +2767,23 @@ int func_800CF060(void)
     return temp_s1 | temp_s0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF0E8);
+int func_800CF0E8(func_800CF0E8_t* arg0, int arg1, int arg2)
+{
+    D_800F5230 = *arg0;
+
+    if ((arg1 != 0) && (arg0->unk4 == 4)) {
+        D_800F522C = arg1;
+        D_800F54A9 = arg2;
+    }
+
+    D_800F5318 = func_800CF49C();
+    func_800D7890(1);
+    func_800D1B18(&D_800F55A8);
+    func_800D1B18(&D_800F54D8);
+    func_800CF478(6);
+
+    return D_800F5318;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF1A8);
 

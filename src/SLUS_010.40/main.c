@@ -10155,7 +10155,7 @@ static int func_80046168(u_int arg0)
     return 0;
 }
 
-static int func_80046194(void)
+int func_80046194(void)
 {
     func_80012288(-2, 0);
     func_80012288(0, 0xF00000);
@@ -10333,7 +10333,7 @@ static int func_80046608(u_int arg0)
     return 0;
 }
 
-static int func_80046634(void)
+int func_80046634(void)
 {
 
     if (vs_main_soundData.unk14[22] != 0) {

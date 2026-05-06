@@ -158,6 +158,24 @@ typedef struct {
     u_char unkC;
 } _textBoxSelector_t;
 
+typedef struct {
+    char unk0[0x14];
+    char unk14;
+} D_800F569C_t2;
+
+typedef struct {
+    char unk0[0x8C];
+    int unk8C;
+    char unk90[0x24];
+    D_800F569C_t2* unkB4;
+    int unkB8;
+    int unkBC;
+    int unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+} D_800F569C_t;
+
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -167,19 +185,25 @@ void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
 void func_800CF478(int arg0);
+void func_800CF484(int arg0, D_800F53B8_t* arg1);
+void func_800CF614(D_800F53B8_t*);
 void func_800CF694(D_800F53B8_t*, int, int);
 void func_800CF70C(D_800F53B8_t*, void*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
 void func_800D0D08(D_800F53B8_t*);
+void func_800D1104(int);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
 void func_800D268C(void);
+void func_800D2698(int);
+void func_800D278C(void);
 void func_800D2904(D_800F53B8_t*);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);
+int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D6AEC(D_800F53B8_t*, u_short);
 
@@ -243,7 +267,7 @@ extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
-extern int D_800F5218;
+extern vs_main_CdQueueSlot* D_800F5218;
 extern int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
@@ -255,8 +279,8 @@ extern int D_800F5330;
 extern char D_800F54A8;
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
-extern int D_800F53BC;
-extern int D_800F54B0;
+extern D_800F53B8_t* D_800F53BC;
+extern D_800F53B8_t* D_800F54B0;
 extern u_char D_800F4E80;
 extern char D_800F5518;
 extern int D_800F55E8;
@@ -264,6 +288,7 @@ extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
+extern D_800F569C_t* D_800F569C;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -2493,13 +2518,13 @@ void func_800CE67C(void)
     D_800F5224 = 0;
     D_800F54A8 = 0;
     D_800F5318 = 0;
-    D_800F54B0 = 0;
+    D_800F54B0 = NULL;
     D_800F53BC = 0;
     D_800F53B4 = 0;
     D_800F53B8 = 0;
     D_800F5330 = 0;
     D_800F522C = 0;
-    D_800F5218 = 0;
+    D_800F5218 = NULL;
     for (i = 0; i < 4; ++i) {
         D_800F5320[i] = 0;
     }
@@ -2601,9 +2626,60 @@ void func_800CE8F4(D_800F53B8_t* arg0)
     vs_main_freeHeapR(arg0);
 }
 
+// https://decomp.me/scratch/pX0Sr
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE9B0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CED60);
+int func_800CED60(void)
+{
+    D_800F53B8_t* temp_s4;
+    D_800F53B8_t* var_s1;
+    func_800D4910_t* var_s0;
+    int var_s3;
+
+    var_s1 = D_800F54B0;
+    var_s3 = 0;
+
+    while (var_s1 != NULL) {
+
+        D_800F53BC = var_s1;
+        temp_s4 = var_s1->next;
+
+        switch (var_s1->unkD1C.unk3A) {
+        case 2:
+            break;
+        case 3:
+            func_800D2698(0xFF);
+            func_800CF484(4, var_s1);
+            break;
+        case 4:
+            if (D_800F569C->unk8C != 0) {
+                func_800D1104(var_s1->unk14_16);
+            }
+
+            func_800D78F0();
+
+            var_s0 = var_s1->unkD1C.unk34;
+
+            while (var_s0 != NULL) {
+                func_800D4910_t* temp_s2 = var_s0->next;
+                if (var_s0->unk4(var_s0, 2, 0) == 0) {
+                    func_800CF70C(var_s1, var_s0);
+                }
+                var_s0 = temp_s2;
+            }
+            if (func_800D51D8(var_s1) == 0) {
+                func_800CF614(var_s1);
+                func_800D278C();
+            } else {
+                ++var_s1->unk14_16;
+            }
+            break;
+        }
+        var_s3 |= var_s1->unk14_8;
+        var_s1 = temp_s4;
+    }
+    return var_s3;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CEEBC);
 

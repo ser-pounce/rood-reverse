@@ -2077,7 +2077,14 @@ int func_800CB45C(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB50C);
+void func_800CB50C(void)
+{
+    if (D_800EB9D8 != NULL) {
+        vs_battle_dismissTextBox(7);
+        vs_main_freeHeapR(D_800EB9D8);
+        D_800EB9D8 = NULL;
+    }
+}
 
 void func_800CB550(void) { D_800F4E90 = 1; }
 

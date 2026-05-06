@@ -168,12 +168,14 @@ D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
 void func_800CF478(int arg0);
 void func_800CF694(D_800F53B8_t*, int, int);
+void func_800CF70C(D_800F53B8_t*, void*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
 void func_800D268C(void);
+void func_800D2904(D_800F53B8_t*);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
@@ -2568,7 +2570,36 @@ D_800F53B8_t* func_800CE83C(D_800F53B8_t2* arg0)
     return newNode;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE8F4);
+void func_800CE8F4(D_800F53B8_t* arg0)
+{
+    func_800D4910_t* var_s1;
+    D_800F53B8_t* var_v1 = D_800F53B8;
+
+    if (var_v1 == arg0) {
+        D_800F53B8 = arg0->next;
+    } else {
+        while (var_v1->next != NULL) {
+            if (var_v1->next == arg0) {
+                var_v1->next = arg0->next;
+                break;
+            }
+            var_v1 = var_v1->next;
+        }
+    }
+
+    func_800D2904(arg0);
+
+    var_s1 = arg0->unkD1C.unk34;
+
+    while (var_s1 != NULL) {
+        func_800D4910_t* temp_s0 = var_s1->next;
+        var_s1->unk4(var_s1, 4, 0);
+        func_800CF70C(arg0, var_s1);
+        var_s1 = temp_s0;
+    }
+
+    vs_main_freeHeapR(arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE9B0);
 
@@ -2887,8 +2918,6 @@ int func_800D48E4(D_800F53B8_t* arg0)
     func_800D46DC(D_800F522C == 0, arg0);
     return 1;
 }
-
-void func_800CF70C(D_800F53B8_t*, void*);
 
 int func_800D4910(D_800F53B8_t* arg0)
 {

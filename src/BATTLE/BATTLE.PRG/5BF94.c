@@ -188,6 +188,8 @@ extern u_short D_800EBDDC[];
 extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
+extern int D_800EC2CC[];
+extern int D_800EC2D8[];
 extern int D_800EC324[];
 extern char D_800EC32C[];
 extern int (*D_800EC3F4[])(void*);
@@ -2399,7 +2401,12 @@ int vs_battle_dismissTextBox(int id)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD0FC);
+void func_800CD0FC(int arg0, u_int arg1)
+{
+    if (arg1 < 3) {
+        func_800C0214(D_800EC2CC[arg1], (arg0 << 0x10) | 0xA)[4] = D_800EC2D8[arg1];
+    }
+}
 
 // https://decomp.me/scratch/qBmPY
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD158);

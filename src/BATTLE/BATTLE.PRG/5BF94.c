@@ -7,17 +7,18 @@
 #include "6E644.h"
 #include "vs_string.h"
 #include "gpu.h"
-#include "../SLUS_010.40/main.h"
-#include "../SLUS_010.40/overlay.h"
-#include "../SLUS_010.40/32154.h"
-#include "../MENU/MAINMENU.PRG/C48.h"
+#include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/overlay.h"
+#include "../../SLUS_010.40/32154.h"
+#include "../../MENU/MAINMENU.PRG/C48.h"
+#include "../../GIM/SCREFF2.PRG/0.h"
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include <memory.h>
 #include <libetc.h>
 
 typedef struct {
-    signed char unk0;
+    u_char unk0;
     signed char unk1;
     short unk2;
     int unk4;
@@ -2090,7 +2091,30 @@ void func_800CB550(void) { D_800F4E90 = 1; }
 
 void func_800CB560(void) { D_800F4E90 = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB56C);
+extern char* D_800EC258;
+
+void _renderTimer(int* value)
+{
+    char sp10[4];
+    int i;
+
+    *(int*)sp10 = *value;
+    sp10[0] = vs_main_stateFlags.unkA0;
+
+    if (sp10[3] != 0) {
+        sp10[2] = 59;
+        sp10[1] = 59;
+        sp10[0] = 99;
+    }
+
+    for (i = 0; i < 3; ++i) {
+        int bcd = vs_battle_toBCD(sp10[i]);
+        D_800EC258[6 - i * 3] = (bcd >> 4) + '0';
+        D_800EC258[7 - i * 3] = (bcd & 0xF) + '0';
+    }
+
+    vs_battle_renderTextRaw(D_800EC258, vs_getXY(128, 200), D_1F800000[1] - 1);
+}
 
 void func_800CB654(int arg0) { D_800EB9AF = arg0; }
 
@@ -2121,7 +2145,27 @@ void _loadScreff2(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB708);
+void func_800CB708(void)
+{
+    D_800EB9B4_t* temp_s0;
+
+    temp_s0 = D_800EB9B4;
+    if (temp_s0 != NULL) {
+        if (temp_s0->unk0 != 0) {
+            _loadScreff2(0);
+            return;
+        }
+        if (temp_s0->unk4 != 0x1000) {
+            func_800F9BD8();
+        }
+        if ((u_short)temp_s0->unk2 != 0) {
+            func_800F986C();
+        }
+        if (temp_s0->unk8 != 0) {
+            func_800F9FB8();
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB79C);
 

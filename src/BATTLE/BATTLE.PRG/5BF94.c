@@ -2411,7 +2411,20 @@ void func_800CD0FC(int arg0, u_int arg1)
 // https://decomp.me/scratch/qBmPY
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD158);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3A0);
+int func_800CD3A0(int arg0, int arg1)
+{
+    int var_v1 = arg0;
+
+    if (arg1 & 1) {
+        var_v1 = (var_v1 & 0xFF) | ((0xFF - (var_v1 >> 8)) << 8);
+    }
+    
+    if (arg1 & 2) {
+        var_v1 = (~var_v1 & 0xFF) | (var_v1 & 0xFF00);
+    }
+
+    return var_v1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
 

@@ -128,6 +128,7 @@ typedef struct {
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
+void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 void func_800CE67C(void);
 void func_800CE83C(D_800F53B8_t2*);
@@ -186,6 +187,7 @@ extern char D_800EBD68[];
 extern u_short D_800EBDDC[];
 extern u_int _keystreamState;
 extern char D_800EBF58[][12];
+extern char* D_800EC258;
 extern int D_800EC324[];
 extern char D_800EC32C[];
 extern int (*D_800EC3F4[])(void*);
@@ -202,6 +204,7 @@ extern _textBoxSelector_t textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
+extern char D_800F51C8;
 extern int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
@@ -2091,7 +2094,7 @@ void func_800CB550(void) { D_800F4E90 = 1; }
 
 void func_800CB560(void) { D_800F4E90 = 0; }
 
-extern char* D_800EC258;
+char const D_80069998[] = "00:00:00";
 
 void _renderTimer(int* value)
 {
@@ -2185,13 +2188,37 @@ void func_800CB7DC(void)
     }
 }
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", D_80069998);
-
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB83C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CBBCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC128);
+void func_800CC128(u_char* arg0, int arg1, u_long* arg2)
+{
+    int var_s1;
+    int new_var;
+
+    int temp_s0 = arg0[3];
+
+    if (temp_s0 == 0x80) {
+        func_800CBBCC(arg0, arg1, arg2);
+        return;
+    }
+
+    D_800F51C8 = 1;
+
+    func_800CBBCC(arg0, arg1, arg2);
+    var_s1 = 0;
+
+    if (vs_main_frameBuf == 0) {
+        var_s1 = 0x140;
+    }
+
+    new_var = 0x120;
+    vs_battle_setSprite(0x80 - temp_s0, 0, 0xF00100, arg2)[1] =
+        ((u_int)var_s1 >> 6) | new_var | 0xE1000000;
+    vs_battle_setSprite(0x80 - temp_s0, 0x100, 0xF00040, arg2)[1] =
+        ((var_s1 + 0x100) >> 6) | new_var | 0xE1000000;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC204);
 

@@ -2050,7 +2050,32 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
     vs_battle_setTextBox(7, (char*)D_800EB9D8);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB45C);
+int func_800CB45C(void)
+{
+    if (D_800EB9D8 != NULL) {
+
+        if (!((D_800F5130 >> 0x1E) & 1)) {
+            return 1;
+        }
+
+        if (D_800F4E69 != 0) {
+
+            if (D_800F4E68 < 4) {
+                D_800F4E68 = 0;
+            } else {
+                D_800F4E68 -= vs_gametime_tickspeed;
+            }
+
+            if (D_800F4E68 != 0) {
+                return -vs_battle_setTextBox(7, NULL);
+            }
+
+            return 0;
+        }
+        return -vs_battle_setTextBox(7, NULL);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB50C);
 

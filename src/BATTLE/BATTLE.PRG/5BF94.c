@@ -19,8 +19,8 @@
 
 typedef struct {
     u_char unk0;
-    signed char unk1;
-    short unk2;
+    u_char unk1;
+    u_short unk2;
     int unk4;
     int unk8;
     vs_main_CdQueueSlot* slot;
@@ -2147,9 +2147,7 @@ void _loadScreff2(int arg0)
 
 void func_800CB708(void)
 {
-    D_800EB9B4_t* temp_s0;
-
-    temp_s0 = D_800EB9B4;
+    D_800EB9B4_t* temp_s0 = D_800EB9B4;
     if (temp_s0 != NULL) {
         if (temp_s0->unk0 != 0) {
             _loadScreff2(0);
@@ -2158,7 +2156,7 @@ void func_800CB708(void)
         if (temp_s0->unk4 != 0x1000) {
             func_800F9BD8();
         }
-        if ((u_short)temp_s0->unk2 != 0) {
+        if (temp_s0->unk2 != 0) {
             func_800F986C();
         }
         if (temp_s0->unk8 != 0) {
@@ -2176,7 +2174,16 @@ void func_800CB79C(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB7DC);
+void func_800CB7DC(void)
+{
+    if (D_800EB9B4 != NULL) {
+        func_8007E1C0(6);
+        if (D_800EB9B4->unk1 == 1) {
+            func_8007E0A8(0x1B, 5, 6);
+        }
+        func_800CA97C();
+    }
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", D_80069998);
 

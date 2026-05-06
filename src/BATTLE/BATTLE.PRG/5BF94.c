@@ -2167,7 +2167,14 @@ void func_800CB708(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB79C);
+void func_800CB79C(void)
+{
+    if (D_800EB9B4 == NULL) {
+        D_800EB9B4 = (D_800EB9B4_t*)D_800F4ED8;
+        func_8007E180(6);
+        _loadScreff2(1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB7DC);
 

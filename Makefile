@@ -39,7 +39,7 @@ SHELL := bash
 .SECONDEXPANSION:
 .PHONY: all clean commit-check remake
 
-SKIPSPLAT += clean remake clean-all
+SKIPSPLAT += commit-check clean remake clean-all
 
 all: check
 

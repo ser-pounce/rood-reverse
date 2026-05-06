@@ -1874,7 +1874,7 @@ int func_800CACD0(int menuState, int arg1)
         }
         return 1;
     }
-    
+
     vs_battle_playInvalidSfx();
     return 0;
 }
@@ -2005,7 +2005,19 @@ void func_800CB23C(void)
     D_800F4FDB = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB268);
+int _dismissAllTextBoxes(void)
+{
+    int i;
+    int var_s1 = 1;
+
+    for (i = 0; i < 8; ++i) {
+        if (vs_battle_dismissTextBox(i) != 0) {
+            var_s1 = 0;
+        }
+    }
+
+    return var_s1;
+}
 
 void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
 {

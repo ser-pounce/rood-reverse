@@ -125,6 +125,66 @@ typedef struct {
     u_char unkC;
 } _textBoxSelector_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+} func_800CE714_t2_3;
+
+typedef struct {
+    func_800CE714_t2_3* unk0;
+    func_800CE714_t2_3* unk4;
+    func_800CE714_t2_3* unk8;
+    func_800CE714_t2_3* unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+} func_800CE714_t1;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    char unk38[0x98];
+} func_800CE714_t2_2;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    u_char unk8;
+    u_char unk9;
+    u_short unkA;
+    int unkC;
+    int unk10;
+    u_int unk14_0 : 8;
+    u_int unk14_8 : 3;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+    int unk18;
+    func_800CE714_t2_2 unk1C[16];
+    func_800CE714_t2_3 unkD1C;
+    func_800CE714_t2_3 unkD28;
+    func_800CE714_t2_3 unkD34;
+    func_800CE714_t2_3 unkD40;
+    int unkD4C;
+    int unkD50;
+    int unkD54;
+    int unkD58;
+} func_800CE714_t2;
+
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -2470,7 +2530,49 @@ void func_800CE67C(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE714);
+void func_800CE714(func_800CE714_t1* arg0, func_800CE714_t2* arg1)
+{
+    int i;
+    void* temp_v0;
+    void* temp_v0_2;
+    void* temp_v0_3;
+    void* temp_v0_4;
+
+    arg1->unk4 = arg0->unk1C;
+    arg1->unk8 = 0;
+    arg1->unk9 = arg0->unk10;
+    arg1->unkA = arg0->unk18;
+    arg1->unkC = arg0->unk14;
+    arg1->unk10 = 0;
+    arg1->unk14_0 = arg0->unk20;
+    arg1->unk18 = 0;
+    arg1->unk14_11 = 0;
+    arg1->unk14_16 = 0;
+
+    for (i = 0; i < 16; ++i) {
+        ((short*)&arg1->unk1C[i].unk4)[1] = 0;
+        arg1->unk1C[i].unk4 = 0;
+        arg1->unk1C[i].unk0 = 0;
+        arg1->unk1C[i].unkC = 0;
+        arg1->unk1C[i].unk8 = 0;
+        arg1->unk1C[i].unk18 = 0;
+        arg1->unk1C[i].unk14 = 0;
+        arg1->unk1C[i].unk10 = 0;
+        arg1->unk1C[i].unk30 = 0;
+        arg1->unk1C[i].unk2C = 0;
+        arg1->unk1C[i].unk28 = 0;
+        arg1->unk1C[i].unk34 = 0;
+    }
+
+    arg1->unkD1C = *arg0->unk0;
+    arg1->unkD28 = *arg0->unk4;
+    arg1->unkD34 = *arg0->unk8;
+    arg1->unkD40 = *arg0->unkC;
+
+    arg1->unkD4C = 0;
+    arg1->unkD50 = 0;
+    arg1->unkD58 = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE83C);
 

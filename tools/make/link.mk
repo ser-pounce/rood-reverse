@@ -11,6 +11,5 @@ $(BINTARGETS) $(BINTARGETS:=.elf):
 $(BINTARGETS): private LDFLAGS += --oformat=binary -e 0x0 $(addprefix -R,$(LDLIBS))
 $(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.elf
 
-.INTERMEDIATE: $(BINTARGETS:=.elf)
 $(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
 $(BINTARGETS:=.elf): | $$(@D)/

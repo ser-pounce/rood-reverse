@@ -187,6 +187,7 @@ void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
+int func_800CE9B0(void);
 int func_800CF218(void);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
@@ -199,6 +200,7 @@ void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
+void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
 void func_800D278C(void);
@@ -255,6 +257,7 @@ extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
+extern u_char D_800EC2E4;
 extern int D_800EC324[];
 extern char D_800EC32C[];
 extern int (*D_800EC3F4[])(void*);
@@ -2741,7 +2744,22 @@ int func_800CEF74(int arg0)
     return v;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF060);
+int func_800CF060(void)
+{
+    int temp_s0;
+    int temp_s1;
+
+    D_800EC2E4 = 1 - D_800EC2E4;
+    func_800D7890(1);
+    temp_s1 = func_800CE9B0();
+    func_800D7890(0);
+    temp_s0 = func_800CED60();
+    func_800D7890(1);
+    if (D_800F531C == 4) {
+        func_800D2560();
+    }
+    return temp_s1 | temp_s0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF0E8);
 

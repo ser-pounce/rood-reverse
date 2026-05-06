@@ -763,13 +763,13 @@ typedef struct {
 
 typedef struct {
     u_char titlePage;
-    char titleRow;
+    u_char titleRow;
     u_char encyclopaediaPage;
-    char encyclopaediaRow;
-    char recordTimePage;
-    char recordTimeRow;
-    char gazettePage;
-    char gazetteRow;
+    u_char encyclopaediaRow;
+    u_char recordTimePage;
+    u_char recordTimeRow;
+    u_char gazettePage;
+    u_char gazetteRow;
 } vs_battle_menu9CursorMemory_t;
 
 typedef struct vs_battle_lootListNode {

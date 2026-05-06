@@ -268,7 +268,7 @@ extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
 extern vs_main_CdQueueSlot* D_800F5218;
-extern int D_800F521C;
+extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
 extern char D_800F5310[];
@@ -2681,7 +2681,14 @@ int func_800CED60(void)
     return var_s3;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CEEBC);
+int func_800CEEBC(void)
+{
+    int var_a1 = 0;
+    if (((D_800F531C - 4) < 2) && (D_800F5224 > D_800F5228)) {
+        var_a1 = D_800F521C > 0;
+    }
+    return var_a1;
+}
 
 int func_800CEF0C(void)
 {

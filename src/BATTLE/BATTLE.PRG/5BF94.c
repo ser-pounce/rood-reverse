@@ -45,31 +45,30 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short unk2;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
+    short unk4;
+    short unk6;
     int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    u_short unk18;
-    u_short unk1A;
-    func_8006CE70_t unk1C;
-} D_800F53B8_t3;
+} D_800F53B8_t3_2;
 
 typedef struct {
-    D_800F53B8_t3* unk0;
-    int unk4;
+    u_short unk0;
+    u_short unk2;
+    short unk4;
+    short unk6;
     int unk8;
-    int unkC;
-    int unk10;
-    char* unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-} D_800F53B8_t2;
+} D_800F53B8_t3_3;
+
+typedef struct {
+    D_800F53B8_t3_2 unk0;
+    D_800F53B8_t3_2 unkC;
+    D_800F53B8_t3_2 unk18;
+    D_800F53B8_t3_2 unk24;
+    D_800F53B8_t4* unk30;
+    func_800D4910_t* unk34;
+    short unk38;
+    short unk3A;
+    int unk3C;
+} D_800F53B8_t3;
 
 typedef struct {
     int unk0;
@@ -83,16 +82,50 @@ typedef struct {
 } D_800F53B8_t5;
 
 typedef struct {
+    D_800F53B8_t3* unk0;
+    D_800F53B8_t3* unk4;
+    D_800F53B8_t3* unk8;
+    D_800F53B8_t3* unkC;
+    int unk10;
+    char* unk14;
+    int unk18;
+    D_800F53B8_t5* unk1C;
+    int unk20;
+    int unk24;
+} D_800F53B8_t2;
+
+typedef struct {
     int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    char unk38[0x98];
+} func_800CE714_t2_2;
+
+typedef struct D_800F53B8_t {
+    struct D_800F53B8_t* unk0;
     D_800F53B8_t5* unk4;
     char unk8;
     char unk9;
     u_short unkA;
     char* unkC;
     char unk10[4];
-    char unk14[0x28];
-    int unk3C;
-    char unk40[0xCDC];
+    u_int unk14_0 : 8;
+    u_int unk14_8 : 3;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+    int unk18;
+    func_800CE714_t2_2 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
 
@@ -124,66 +157,6 @@ typedef struct {
     u_char count;
     u_char unkC;
 } _textBoxSelector_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-} func_800CE714_t2_3;
-
-typedef struct {
-    func_800CE714_t2_3* unk0;
-    func_800CE714_t2_3* unk4;
-    func_800CE714_t2_3* unk8;
-    func_800CE714_t2_3* unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-} func_800CE714_t1;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    int unk34;
-    char unk38[0x98];
-} func_800CE714_t2_2;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    u_short unkA;
-    int unkC;
-    int unk10;
-    u_int unk14_0 : 8;
-    u_int unk14_8 : 3;
-    u_int unk14_11 : 5;
-    u_int unk14_16 : 16;
-    int unk18;
-    func_800CE714_t2_2 unk1C[16];
-    func_800CE714_t2_3 unkD1C;
-    func_800CE714_t2_3 unkD28;
-    func_800CE714_t2_3 unkD34;
-    func_800CE714_t2_3 unkD40;
-    int unkD4C;
-    int unkD50;
-    int unkD54;
-    int unkD58;
-} func_800CE714_t2;
 
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
@@ -279,7 +252,7 @@ extern int D_800F5320[];
 extern int D_800F5330;
 extern char D_800F54A8;
 extern int D_800F53B4;
-extern int D_800F53B8;
+extern D_800F53B8_t* D_800F53B8;
 extern int D_800F53BC;
 extern int D_800F54B0;
 extern u_char D_800F4E80;
@@ -2530,20 +2503,16 @@ void func_800CE67C(void)
     }
 }
 
-void func_800CE714(func_800CE714_t1* arg0, func_800CE714_t2* arg1)
+void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
 {
     int i;
-    void* temp_v0;
-    void* temp_v0_2;
-    void* temp_v0_3;
-    void* temp_v0_4;
 
     arg1->unk4 = arg0->unk1C;
     arg1->unk8 = 0;
     arg1->unk9 = arg0->unk10;
     arg1->unkA = arg0->unk18;
     arg1->unkC = arg0->unk14;
-    arg1->unk10 = 0;
+    *(int*)&arg1->unk10 = 0;
     arg1->unk14_0 = arg0->unk20;
     arg1->unk18 = 0;
     arg1->unk14_11 = 0;
@@ -2564,14 +2533,14 @@ void func_800CE714(func_800CE714_t1* arg0, func_800CE714_t2* arg1)
         arg1->unk1C[i].unk34 = 0;
     }
 
-    arg1->unkD1C = *arg0->unk0;
-    arg1->unkD28 = *arg0->unk4;
-    arg1->unkD34 = *arg0->unk8;
-    arg1->unkD40 = *arg0->unkC;
+    arg1->unkD1C.unk0 = arg0->unk0->unk0;
+    arg1->unkD1C.unkC = arg0->unk4->unk0;
+    arg1->unkD1C.unk18 = arg0->unk8->unk0;
+    arg1->unkD1C.unk24 = arg0->unkC->unk0;
 
-    arg1->unkD4C = 0;
-    arg1->unkD50 = 0;
-    arg1->unkD58 = 0;
+    arg1->unkD1C.unk30 = 0;
+    arg1->unkD1C.unk34 = 0;
+    arg1->unkD1C.unk3C = 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE83C);
@@ -2617,7 +2586,7 @@ char func_800CF458(void) { return func_800CF218(); }
 
 void func_800CF478(int arg0) { D_800F531C = arg0; }
 
-void func_800CF484(int arg0, D_800F53B8_t* arg1) { arg1->unkD1C.unk1C.unk1E = arg0; }
+void func_800CF484(int arg0, D_800F53B8_t* arg1) { arg1->unkD1C.unk3A = arg0; }
 
 int func_800CF48C(void) { return D_800F531C; }
 
@@ -2869,8 +2838,8 @@ int func_800D47F4(D_800F53B8_t* arg0)
     temp_s0 = func_800D5198(arg0) & 0xFFFF;
     temp_s0 = temp_s0 + (func_800D5198(arg0) << 0x10);
 
-    if (arg0->unkD1C.unk1C.unk20 != 0) {
-        temp_s0 = arg0->unkD1C.unk1C.unk20;
+    if (arg0->unkD1C.unk3C != 0) {
+        temp_s0 = arg0->unkD1C.unk3C;
     }
 
     func_800CF694(arg0, D_800EC324[temp_s2], temp_s0);
@@ -2879,7 +2848,7 @@ int func_800D47F4(D_800F53B8_t* arg0)
 
 int func_800D487C(D_800F53B8_t* arg0)
 {
-    func_800D46DC(arg0->unkD1C.unk1C.unk18 == 0, arg0);
+    func_800D46DC(arg0->unkD1C.unk34 == 0, arg0);
     return 1;
 }
 
@@ -2900,7 +2869,7 @@ void func_800CF70C(D_800F53B8_t*, void*);
 
 int func_800D4910(D_800F53B8_t* arg0)
 {
-    func_800D4910_t* var_s0 = arg0->unkD1C.unk1C.unk18;
+    func_800D4910_t* var_s0 = arg0->unkD1C.unk34;
 
     while (var_s0 != 0) {
         func_800D4910_t* s1 = var_s0->next;
@@ -2970,8 +2939,8 @@ int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 
 int func_800D4D64(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk0 == 4) {
-        func_8006CDB8(arg0->unkD1C.unk4);
+    if (arg0->unkD1C.unk0.unk0 == 4) {
+        func_8006CDB8((u_char)arg0->unkD1C.unk0.unk4);
     }
     return 1;
 }
@@ -2995,15 +2964,15 @@ int func_800D4E5C(D_800F53B8_t* arg0)
 
 int func_800D4E90(D_800F53B8_t* arg0)
 {
-    func_800D46DC(arg0->unkD1C.unk1C.unk14->unk4 == 0, arg0);
+    func_800D46DC(arg0->unkD1C.unk30->unk4 == 0, arg0);
     return 1;
 }
 
 int func_800D4EC0(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk1C.unk14 != NULL) {
-        vs_main_freeHeapR(arg0->unkD1C.unk1C.unk14);
-        arg0->unkD1C.unk1C.unk14 = NULL;
+    if (arg0->unkD1C.unk30 != NULL) {
+        vs_main_freeHeapR(arg0->unkD1C.unk30);
+        arg0->unkD1C.unk30 = NULL;
     }
     return 1;
 }
@@ -3095,8 +3064,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D63D0);
 
 void func_800D6418(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk18 == 5) {
-        func_8006CDD8(&arg0->unkD1C.unk1C);
+    if (arg0->unkD1C.unk18.unk0 == 5) {
+        func_8006CDD8((func_8006CE70_t*)&arg0->unkD1C.unk18.unk4);
     }
 }
 
@@ -3110,14 +3079,14 @@ void func_800D6508(func_800D6508_t* arg0, char arg1)
     arg0->unk22_2 = 1;
 }
 
-void func_800D6538(D_800F53B8_t* arg0) { arg0->unkD1C.unk1C.unk14->unk1 |= 1; }
+void func_800D6538(D_800F53B8_t* arg0) { arg0->unkD1C.unk30->unk1 |= 1; }
 
 void func_800D6554(void) { func_8006CE50(); }
 
 void func_800D6574(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk0 == 4) {
-        func_8006CDB8(arg0->unkD1C.unk4);
+    if (arg0->unkD1C.unk0.unk0 == 4) {
+        func_8006CDB8((u_char)arg0->unkD1C.unk0.unk4);
     }
 }
 
@@ -3133,8 +3102,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6628);
 
 void func_800D66CC(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk18 == 5) {
-        func_8006CE70(&arg0->unkD1C.unk1C);
+    if (arg0->unkD1C.unk18.unk0 == 5) {
+        func_8006CE70((func_8006CE70_t*)&arg0->unkD1C.unk18.unk4);
     }
 }
 
@@ -3144,8 +3113,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D67C4);
 
 void func_800D6860(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk1C.unk8 == 4) {
-        func_80069C6C(arg0->unkD1C.unk1C.unkC);
+    if (arg0->unkD1C.unk24.unk0 == 4) {
+        func_80069C6C((u_char)arg0->unkD1C.unk24.unk4);
     }
 }
 

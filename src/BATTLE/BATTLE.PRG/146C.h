@@ -886,18 +886,6 @@ typedef struct {
     short unk2;
     short unk4;
     u_short unk6;
-    u_short unk8;
-    u_short unkA;
-    char unkC;
-    char unkD;
-    char unkE;
-    char unkF;
-    int unk10;
-    D_800F53B8_t4* unk14;
-    func_800D4910_t* unk18;
-    short unk1C;
-    short unk1E;
-    int unk20;
 } func_8006CE70_t;
 
 void func_80069C6C(int);

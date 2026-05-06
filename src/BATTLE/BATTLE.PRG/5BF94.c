@@ -2310,7 +2310,12 @@ void func_800CCD00(int arg0, u_long* arg1)
     D_1F800000[0] = temp_v1 + 2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_drawCursor);
+int vs_battle_drawCursor(int animStep, int position)
+{
+    func_800C0224(D_800EC270[animStep], (((position * 0x10) + 0xA) << 0x10) | 0xB4,
+        0x100010, D_1F800000[2])[4] = 0x37F83020;
+    return (animStep + 1) & 0xF;
+}
 
 void vs_battle_drawImage(int xy, void* buffer, int wh)
 {

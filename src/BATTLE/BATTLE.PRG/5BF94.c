@@ -2222,9 +2222,16 @@ void func_800CC128(u_char* arg0, int arg1, u_long* arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC204);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC580);
+void func_800CC580(u_long* arg0, int arg1)
+{
+    func_800CCCB8(arg0, arg1 | 0xE3040000, (arg1 + 0x3F) | 0xE407FC00, arg1 | 0xE5080000);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC5C0);
+void func_800CC5C0(u_long* arg0, int arg1)
+{
+    func_800CCCB8(
+        arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC600);
 

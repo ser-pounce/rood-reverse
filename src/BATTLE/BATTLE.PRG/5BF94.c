@@ -113,7 +113,7 @@ typedef struct {
 } func_800CE714_t2_2;
 
 typedef struct D_800F53B8_t {
-    struct D_800F53B8_t* unk0;
+    struct D_800F53B8_t* next;
     D_800F53B8_t5* unk4;
     char unk8;
     char unk9;
@@ -164,7 +164,7 @@ void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 void func_800CE67C(void);
-void func_800CE83C(D_800F53B8_t2*);
+D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CF218(void);
 void func_800CF478(int arg0);
 void func_800CF694(D_800F53B8_t*, int, int);
@@ -2543,7 +2543,30 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
     arg1->unkD1C.unk3C = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE83C);
+D_800F53B8_t* func_800CE83C(D_800F53B8_t2* arg0)
+{
+    D_800F53B8_t* currentNode;
+    D_800F53B8_t* newNode = vs_main_allocHeapR(sizeof *newNode);
+
+    func_800CE714(arg0, newNode);
+
+    currentNode = D_800F53B8;
+
+    if ((currentNode == NULL) || (arg0->unk10 < currentNode->unk9)) {
+        newNode->next = currentNode;
+        D_800F53B8 = newNode;
+    } else {
+        while (1) {
+            if ((currentNode->next == NULL) || (arg0->unk10 < currentNode->next->unk9)) {
+                newNode->next = currentNode->next;
+                currentNode->next = newNode;
+                break;
+            }
+            currentNode = currentNode->next;
+        }
+    }
+    return newNode;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE8F4);
 

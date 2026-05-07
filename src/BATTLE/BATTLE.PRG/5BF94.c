@@ -188,7 +188,7 @@ int _breakArtsUnlocked(void);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
-int func_800CF218(void);
+char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
@@ -2804,9 +2804,19 @@ void func_800CF1A8(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF218);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF3F8);
+int func_800CF3F8(func_800CF0E8_t* arg0, int arg1)
+{
+    int _[4] __attribute__((unused));
+    func_800D7890(0);
+    func_800D1B18(&D_800F55A8);
+    func_800D1B18(&D_800F54D8);
+    return func_800CF218(arg0, 0, arg1);
+}
 
-char func_800CF458(void) { return func_800CF218(); }
+int func_800CF458(func_800CF0E8_t* arg0, int arg1, int arg2)
+{
+    return func_800CF218(arg0, arg1, arg2);
+}
 
 void func_800CF478(int arg0) { D_800F531C = arg0; }
 

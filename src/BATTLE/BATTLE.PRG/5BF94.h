@@ -275,7 +275,7 @@ int func_800CEEBC(void);
 int func_800CEF74(int);
 int func_800CF0E8(func_800CF0E8_t*, int, int);
 void func_800CF1A8(void);
-void func_800CF3F8(func_800CF0E8_t*, int);
+int func_800CF3F8(func_800CF0E8_t*, int);
 int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);

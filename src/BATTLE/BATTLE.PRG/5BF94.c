@@ -2824,7 +2824,35 @@ void func_800CF484(int arg0, D_800F53B8_t* arg1) { arg1->unkD1C.unk3A = arg0; }
 
 int func_800CF48C(void) { return D_800F531C; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF49C);
+int func_800CF49C(void)
+{
+    int temp_a1;
+    int j;
+    int i;
+    int var_t2;
+    int* var_a2;
+
+    var_t2 = 0;
+    var_a2 = D_800F5320;
+
+    for (i = 0; i < 4; ++i) {
+        temp_a1 = D_800F5320[i];
+        if (temp_a1 == -2) {
+            continue;
+        }
+
+        for (j = 1; j < 32; ++j) {
+            int v = 1 << j;
+            if (!(temp_a1 & v)) {
+                D_800F5320[i] = temp_a1 | v;
+                var_t2 = (i << 5) + j;
+                goto done;
+            }
+        }
+    }
+done:
+    return var_t2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF514);
 

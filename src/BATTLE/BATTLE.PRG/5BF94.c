@@ -2940,7 +2940,24 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
     vs_main_freeHeapR(arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF7A8);
+void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
+{
+    func_800CF0E8_t sp10;
+
+    sp10.unk0 = 0x36;
+    sp10.unk2 = 1;
+    sp10.unk4 = 5;
+    sp10.unk10 = 5;
+    sp10.unk8.s16 = 0;
+    sp10.unkA.s16 = 0;
+    sp10.unkC = 0;
+    sp10.unk14.u16 = 0;
+    sp10.unk16.u16 = 0;
+    sp10.unk18 = 0;
+    sp10.unk3 = 0;
+    func_800CF3F8(&sp10, (arg0 & 0xFF) | ((arg1 & 0xFF) << 8) | ((arg2 & 0xF) << 0x10)
+                             | ((arg3 & 0xF) << 0x14) | 0xFF000000);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF830);
 

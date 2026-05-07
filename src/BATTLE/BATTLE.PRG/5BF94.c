@@ -16,6 +16,7 @@
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include <memory.h>
 #include <libetc.h>
+#include <rand.h>
 
 typedef struct {
     u_char unk0;
@@ -2991,7 +2992,7 @@ void func_800CF8BC(void)
     sp10.unk18 = 0;
     sp10.unk3 = 0;
     sp10.unk8.u8[0] = D_800F5238;
-    func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
+    func_800CF3F8(&sp10, 0);
 }
 
 void func_800CF920(void) { D_800F522C = 0; }
@@ -3007,7 +3008,19 @@ int func_800CFB68(int arg0, int arg1, int arg2)
     return (((arg1 - arg0) * arg2) >> 7) + arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFB80);
+int func_800CFB80(int arg0, int arg1)
+{
+    int new_var;
+    if (arg0 != arg1) {
+        if (arg1 < arg0) {
+            new_var = rand() % (arg0 - arg1);
+            return new_var + arg1;
+        }
+        new_var = rand() % (arg1 - arg0);
+        return new_var + arg0;
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFBF8);
 

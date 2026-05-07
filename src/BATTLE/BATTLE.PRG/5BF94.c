@@ -193,7 +193,8 @@ void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
 void func_800CF614(D_800F53B8_t*);
-void func_800CF694(D_800F53B8_t*, int, int);
+func_800D4910_t* func_800CF694(
+    D_800F53B8_t*, int (*)(struct func_800D4910_t*, int, int), int);
 void func_800CF70C(D_800F53B8_t*, void*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
@@ -260,7 +261,7 @@ extern char* D_800EC258;
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
-extern int D_800EC324[];
+extern int (*D_800EC324[])(struct func_800D4910_t*, int, int);
 extern char D_800EC32C[];
 extern int (*D_800EC3F4[])(void*);
 extern u_char D_800F522C;
@@ -2908,7 +2909,17 @@ void func_800CF614(D_800F53B8_t* arg0)
     vs_main_freeHeapR(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF694);
+func_800D4910_t* func_800CF694(
+    D_800F53B8_t* arg0, int (*arg1)(func_800D4910_t*, int, int), int arg2)
+{
+    func_800D4910_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    temp_v0->next = arg0->unkD1C.unk34;
+    arg0->unkD1C.unk34 = temp_v0;
+    temp_v0->unk4 = arg1;
+    temp_v0->unk8 = 0;
+    temp_v0->unk4(temp_v0, 1, arg2);
+    return temp_v0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF70C);
 

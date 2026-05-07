@@ -879,6 +879,7 @@ typedef struct {
 typedef struct func_800D4910_t {
     struct func_800D4910_t* next;
     int (*unk4)(struct func_800D4910_t*, int, int);
+    int unk8;
 } func_800D4910_t;
 
 typedef struct {

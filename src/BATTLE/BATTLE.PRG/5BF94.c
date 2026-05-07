@@ -2889,7 +2889,24 @@ D_800F53B8_t* func_800CF55C(D_800F53B8_t2* arg0)
     return temp_v0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF614);
+void func_800CF614(D_800F53B8_t* arg0)
+{
+    D_800F53B8_t* var_v1 = D_800F54B0;
+    if (var_v1 == arg0) {
+        D_800F54B0 = arg0->next;
+    } else {
+        while (var_v1->next != NULL) {
+            if (var_v1->next == arg0) {
+                var_v1->next = arg0->next;
+                break;
+            }
+            var_v1 = var_v1->next;
+        }
+    }
+    func_800D2904(arg0);
+    func_800CF514(arg0->unk14_0);
+    vs_main_freeHeapR(arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF694);
 

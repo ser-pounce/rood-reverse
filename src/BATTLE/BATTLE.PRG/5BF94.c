@@ -2854,7 +2854,16 @@ done:
     return var_t2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF514);
+void func_800CF514(int arg0)
+{
+    int* ptr = D_800F5320;
+    int var_v1 = arg0;
+    if (arg0 < 0) {
+        var_v1 = arg0 + 0x1F;
+    }
+    var_v1 >>= 5;
+    ptr[var_v1] &= ~(1 << (arg0 - (var_v1 << 5)));
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF55C);
 

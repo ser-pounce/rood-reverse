@@ -185,6 +185,7 @@ void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
+extern int func_800CE174(func_800D4910_t*, int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
@@ -2959,7 +2960,21 @@ void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
                              | ((arg3 & 0xF) << 0x14) | 0xFF000000);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF830);
+void func_800CF830(int arg0, int arg1)
+{
+    D_800F53B8_t* var_s1 = D_800F54B0;
+
+    while (var_s1 != NULL) {
+        func_800D4910_t* var_s0 = var_s1->unkD1C.unk34;
+        while (var_s0 != NULL) {
+            if (var_s0->unk4 == func_800CE174) {
+                var_s0->unk4(var_s0, 3, 0);
+            }
+            var_s0 = var_s0->next;
+        }
+        var_s1 = var_s1->next;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF8BC);
 

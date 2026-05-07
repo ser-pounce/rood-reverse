@@ -2865,7 +2865,29 @@ void func_800CF514(int arg0)
     ptr[var_v1] &= ~(1 << (arg0 - (var_v1 << 5)));
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF55C);
+D_800F53B8_t* func_800CF55C(D_800F53B8_t2* arg0)
+{
+    D_800F53B8_t* var_a1;
+    D_800F53B8_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+    func_800CE714(arg0, temp_v0);
+    var_a1 = D_800F54B0;
+
+    if ((var_a1 == NULL) || (arg0->unk10 < var_a1->unk9)) {
+        temp_v0->next = var_a1;
+        D_800F54B0 = temp_v0;
+    } else {
+        while (1) {
+            D_800F53B8_t* temp_a0 = var_a1->next;
+            if ((temp_a0 == NULL) || (arg0->unk10 < temp_a0->unk9)) {
+                temp_v0->next = temp_a0;
+                var_a1->next = temp_v0;
+                break;
+            }
+            var_a1 = temp_a0;
+        }
+    }
+    return temp_v0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF614);
 

@@ -284,6 +284,7 @@ extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
 extern func_800CF0E8_t D_800F5230;
+extern u_char D_800F5238;
 extern char D_800F5310[];
 extern char D_800F5318;
 extern u_int D_800F531C;
@@ -2976,7 +2977,22 @@ void func_800CF830(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF8BC);
+void func_800CF8BC(void)
+{
+    func_800CF0E8_t sp10;
+
+    sp10.unk0 = 0x38;
+    sp10.unk2 = 1;
+    sp10.unk4 = 4;
+    sp10.unkA.u8[0] = 0;
+    sp10.unk10 = 5;
+    sp10.unk14.u16 = 0;
+    sp10.unk16.u16 = 0;
+    sp10.unk18 = 0;
+    sp10.unk3 = 0;
+    sp10.unk8.u8[0] = D_800F5238;
+    func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
+}
 
 void func_800CF920(void) { D_800F522C = 0; }
 

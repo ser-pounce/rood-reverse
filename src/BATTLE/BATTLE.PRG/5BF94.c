@@ -195,7 +195,7 @@ int func_800CF49C();
 void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(
     D_800F53B8_t*, int (*)(struct func_800D4910_t*, int, int), int);
-void func_800CF70C(D_800F53B8_t*, void*);
+void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(void*, int);
 void func_800D0D08(D_800F53B8_t*);
@@ -2921,7 +2921,24 @@ func_800D4910_t* func_800CF694(
     return temp_v0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF70C);
+void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
+{
+    if (arg1->unk8 != NULL) {
+        vs_main_freeHeapR(arg1->unk8);
+    }
+
+    if (arg0->unkD1C.unk34 == arg1) {
+        arg0->unkD1C.unk34 = arg1->next;
+    } else {
+        func_800D4910_t* var_v1 = arg0->unkD1C.unk34;
+        while (var_v1->next != arg1) {
+            var_v1 = var_v1->next;
+        }
+        var_v1->next = arg1->next;
+    }
+
+    vs_main_freeHeapR(arg1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF7A8);
 

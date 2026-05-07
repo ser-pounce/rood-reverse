@@ -170,7 +170,7 @@ typedef struct {
 } D_800F453C_t;
 
 typedef struct {
-    short unk0;
+    u_short unk0;
     char unk2;
     char unk3;
     u_short unk4;

@@ -17,6 +17,7 @@
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
+#include <abs.h>
 
 typedef struct {
     u_char unk0;
@@ -3022,7 +3023,25 @@ int func_800CFB80(int arg0, int arg1)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFBF8);
+int _absMax3(int arg0, int arg1, int arg2)
+{
+    int var_v0;
+    int new_var = 0;
+    int var_t0 = arg0 >= new_var ? arg0 : -arg0;
+    int var_a3 = arg1 >= new_var ? arg1 : -arg1;
+    int var_v1 = arg2 >= new_var ? arg2 : -arg2;
+
+    if (var_t0 < var_a3) {
+        var_v0 = var_a3 < var_v1;
+        arg0 = arg1;
+    } else {
+        var_v0 = var_t0 < var_v1;
+    }
+    if (var_v0 != 0) {
+        arg0 = arg2;
+    }
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 

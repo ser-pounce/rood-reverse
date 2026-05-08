@@ -792,6 +792,7 @@ func_800CF920 = 0x800CF920; // type:func
 func_800CF92C = 0x800CF92C; // type:func
 func_800CF988 = 0x800CF988; // type:func
 func_800CFB80 = 0x800CFB80; // type:func
+_absMax3 = 0x800CFBF8;
 func_800CFCF0 = 0x800CFCF0; // type:func
 func_800CFD60 = 0x800CFD60; // type:func
 func_800CFDD0 = 0x800CFDD0; // type:func

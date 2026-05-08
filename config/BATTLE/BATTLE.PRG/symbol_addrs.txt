@@ -797,6 +797,7 @@ _lerpVector = 0x800CFCF0;
 _lerpSvector = 0x800CFD60; // type:func
 _lerp2DVector = 0x800CFDD0; // type:func
 func_800CFE1C = 0x800CFE1C; // type:func
+_addSVectorToVector = 0x800CFE40;
 func_800CFE7C = 0x800CFE7C; // type:func
 func_800CFE98 = 0x800CFE98; // type:func
 func_800CFEF0 = 0x800CFEF0; // type:func

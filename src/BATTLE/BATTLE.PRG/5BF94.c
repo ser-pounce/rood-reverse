@@ -3093,7 +3093,15 @@ int func_800CFE1C(func_800CFE1C_t* arg0, int arg1)
     return (((arg0->unk2 - new_var) * arg1) >> 7) + new_var;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFE40);
+void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
+{
+    int v = svec->vy;
+    out->vx = vec->vx + svec->vx;
+    do {
+        out->vy = vec->vy + v;
+        out->vz = vec->vz + svec->vz;
+    } while (0);
+}
 
 void func_800CFE7C(int* arg0)
 {

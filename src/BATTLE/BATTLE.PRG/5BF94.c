@@ -182,6 +182,15 @@ typedef struct {
     int unkCC;
 } D_800F569C_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    VECTOR unk14;
+} func_800CFE98_t;
+
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -200,7 +209,7 @@ func_800D4910_t* func_800CF694(
     D_800F53B8_t*, int (*)(struct func_800D4910_t*, int, int), int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
-void func_800CFE98(void*, int);
+void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
@@ -287,7 +296,7 @@ extern int D_800F5224;
 extern int D_800F5228;
 extern func_800CF0E8_t D_800F5230;
 extern u_char D_800F5238;
-extern char D_800F5310[];
+extern SVECTOR D_800F5310[];
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
@@ -3093,6 +3102,7 @@ int func_800CFE1C(func_800CFE1C_t* arg0, int arg1)
     return (((arg0->unk2 - new_var) * arg1) >> 7) + new_var;
 }
 
+void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
 void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
 {
     int v = svec->vy;
@@ -3103,16 +3113,22 @@ void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
     } while (0);
 }
 
-void func_800CFE7C(int* arg0)
+void func_800CFE7C(func_800CFE98_t* arg0)
 {
-    arg0[4] = 0x1000;
-    arg0[2] = 0x1000;
-    arg0[0] = 0x1000;
-    arg0[3] = 0;
-    arg0[1] = 0;
+    arg0->unk10 = 0x1000;
+    arg0->unk8 = 0x1000;
+    arg0->unk0 = 0x1000;
+    arg0->unkC = 0;
+    arg0->unk4 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFE98);
+void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1)
+{
+    func_800CFE7C(arg1);
+    arg1->unk14.vx = arg0->vx;
+    arg1->unk14.vy = arg0->vy;
+    arg1->unk14.vz = arg0->vz;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
 
@@ -3126,7 +3142,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0984);
 
-void func_800D0B08(int arg0) { func_800CFE98(D_800F5310, arg0); }
+void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0B30);
 

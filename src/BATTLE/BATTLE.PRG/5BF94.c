@@ -3048,7 +3048,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC8C);
 
-void _lerp3(short* src, int t, int* dst)
+void _lerpVector(short* src, int t, VECTOR* vec)
 {
     int start0 = src[0];
     int end0 = src[1];
@@ -3057,12 +3057,24 @@ void _lerp3(short* src, int t, int* dst)
     int start2 = src[4];
     int end2 = src[5];
 
-    dst[0] = (((end0 - start0) * t) >> 7) + start0;
-    dst[1] = (((end1 - start1) * t) >> 7) + start1;
-    dst[2] = (((end2 - start2) * t) >> 7) + start2;
+    vec->vx = (((end0 - start0) * t) >> 7) + start0;
+    vec->vy = (((end1 - start1) * t) >> 7) + start1;
+    vec->vz = (((end2 - start2) * t) >> 7) + start2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFD60);
+void _lerpSvector(short* arg0, int t, SVECTOR* vec)
+{
+    int start0 = arg0[0];
+    int end0 = arg0[1];
+    int start1 = arg0[2];
+    int end1 = arg0[3];
+    int start2 = arg0[4];
+    int end2 = arg0[5];
+
+    vec->vx = (((end0 - start0) * t) >> 7) + start0;
+    vec->vy = (((end1 - start1) * t) >> 7) + start1;
+    vec->vz = (((end2 - start2) * t) >> 7) + start2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFDD0);
 

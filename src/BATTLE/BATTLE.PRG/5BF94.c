@@ -3023,6 +3023,7 @@ int func_800CFB80(int arg0, int arg1)
     return arg0;
 }
 
+int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
 int _absMax3(int arg0, int arg1, int arg2)
 {
     int var_v0;
@@ -3047,7 +3048,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC8C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFCF0);
+void _lerp3(short* src, int t, int* dst)
+{
+    int start0 = src[0];
+    int end0 = src[1];
+    int start1 = src[2];
+    int end1 = src[3];
+    int start2 = src[4];
+    int end2 = src[5];
+
+    dst[0] = (((end0 - start0) * t) >> 7) + start0;
+    dst[1] = (((end1 - start1) * t) >> 7) + start1;
+    dst[2] = (((end2 - start2) * t) >> 7) + start2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFD60);
 

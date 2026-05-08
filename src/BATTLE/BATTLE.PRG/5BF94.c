@@ -9,6 +9,7 @@
 #include "gpu.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/overlay.h"
+#include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
 #include "../../MENU/MAINMENU.PRG/C48.h"
 #include "../../GIM/SCREFF2.PRG/0.h"
@@ -166,6 +167,7 @@ typedef struct {
 typedef struct {
     char unk0[0x14];
     char unk14;
+    char unk15;
 } D_800F569C_t2;
 
 typedef struct {
@@ -190,6 +192,34 @@ typedef struct {
     int unk10;
     VECTOR unk14;
 } func_800CFE98_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t1;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    SVECTOR unk8;
+    VECTOR unk10;
+    VECTOR unk20;
+    int unk30[6];
+    MATRIX unk48;
+    int unk5C;
+    int unk60;
+    int unk64;
+} func_800D0B30_t2;
 
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
@@ -3144,7 +3174,29 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0984);
 
 void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0B30);
+void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
+{
+    MATRIX* temp_s2;
+    VECTOR* temp_s0;
+    VECTOR* temp_s0_2;
+
+    if (arg0->unk0 & 1) {
+        _lerpSvector(arg0->unk14, (&D_800F5330)[arg0->unk6], &arg2->unk8);
+        arg1->vx += arg2->unk8.vx;
+        arg1->vy = arg1->vy + arg2->unk8.vy;
+        arg1->vz += arg2->unk8.vz;
+        RotMatrix_gte(arg1, &arg2->unk48);
+        _lerpVector(arg0->unk20, (&D_800F5330)[arg0->unk4], &arg2->unk10);
+        TransMatrix(&arg2->unk48, &arg2->unk10);
+        _lerpVector(arg0->unk2C, (&D_800F5330)[arg0->unk7], &arg2->unk20);
+        func_8004140C(&arg2->unk48, &arg2->unk20);
+        return;
+    }
+    func_800CFE7C((func_800CFE98_t*)&arg2->unk48);
+    arg2->unk48.t[2] = 0;
+    arg2->unk48.t[1] = 0;
+    arg2->unk48.t[0] = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0C60);
 

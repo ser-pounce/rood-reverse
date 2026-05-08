@@ -3062,21 +3062,30 @@ void _lerpVector(short* src, int t, VECTOR* vec)
     vec->vz = (((end2 - start2) * t) >> 7) + start2;
 }
 
-void _lerpSvector(short* arg0, int t, SVECTOR* vec)
+void _lerpSvector(short* src, int t, SVECTOR* vec)
 {
-    int start0 = arg0[0];
-    int end0 = arg0[1];
-    int start1 = arg0[2];
-    int end1 = arg0[3];
-    int start2 = arg0[4];
-    int end2 = arg0[5];
+    int start0 = src[0];
+    int end0 = src[1];
+    int start1 = src[2];
+    int end1 = src[3];
+    int start2 = src[4];
+    int end2 = src[5];
 
     vec->vx = (((end0 - start0) * t) >> 7) + start0;
     vec->vy = (((end1 - start1) * t) >> 7) + start1;
     vec->vz = (((end2 - start2) * t) >> 7) + start2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFDD0);
+void _lerp2DVector(short* src, int t, int* vec)
+{
+    int start0 = src[0];
+    int end0 = src[1];
+    int start1 = src[2];
+    int end1 = src[3];
+
+    vec[0] = ((((end0 - start0) * t) >> 7) + start0);
+    vec[1] = ((((end1 - start1) * t) >> 7) + start1);
+}
 
 int func_800CFE1C(func_800CFE1C_t* arg0, int arg1)
 {

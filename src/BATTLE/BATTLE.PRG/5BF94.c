@@ -2,6 +2,8 @@
 #include "5BF94.h"
 #include "146C.h"
 #include "2842C.h"
+#include "38C1C.h"
+#include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
 #include "6E644.h"
@@ -185,15 +187,6 @@ typedef struct {
 } D_800F569C_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    VECTOR unk14;
-} func_800CFE98_t;
-
-typedef struct {
     u_short unk0;
     u_short unk2;
     u_char unk4;
@@ -221,6 +214,16 @@ typedef struct {
     int unk64;
 } func_800D0B30_t2;
 
+typedef struct {
+    u_char unk0[0x34];
+    u_char unk34;
+    u_char unk35;
+    char unk36[0x42];
+    func_800CFE98_t unk78;
+    char unk9C[0x22];
+    short unkBE;
+} func_800D0C60_t;
+
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -240,6 +243,7 @@ func_800D4910_t* func_800CF694(
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
+void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
@@ -3198,7 +3202,28 @@ void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2
     arg2->unk48.t[0] = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0C60);
+void func_800D0C60(int arg0, func_800D0C60_t* arg1)
+{
+    func_8006EBF8_t sp10;
+    int sp20[2];
+
+    if (arg1->unk34 < 0x10U) {
+        func_800A1720(arg1->unk34, arg1->unk35, &arg1->unk78, sp20);
+        func_800A1108(arg1->unk34, &sp10);
+        arg1->unkBE = sp10.unk0.unk4.pad;
+        return;
+    }
+
+    switch (arg1->unk34) {
+    case 0x10:
+    case 0x11:
+        func_800D0984(arg0, arg1, arg1->unk34 != 0x10);
+        break;
+    case 0x12:
+        func_800D0B08(&arg1->unk78);
+        break;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 

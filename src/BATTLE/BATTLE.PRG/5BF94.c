@@ -23,16 +23,7 @@
 #include <abs.h>
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_short unk2;
-    int unk4;
-    int unk8;
-    vs_main_CdQueueSlot* slot;
-} D_800EB9B4_t;
-
-typedef struct {
-    short unk0;
+    u_short unk0;
     char unk2;
     char unk3;
     short unk4;
@@ -173,10 +164,13 @@ typedef struct {
 } D_800F569C_t2;
 
 typedef struct {
-    char unk0[0x8C];
+    char unk0[0xC];
+    int unkC[4];
+    char unk1C[0x70];
     int unk8C;
     char* unk90;
-    char unk94[0x20];
+    char unk94[0x1C];
+    u_short* unkB0;
     D_800F569C_t2* unkB4;
     int unkB8;
     int unkBC;
@@ -224,6 +218,21 @@ typedef struct {
     short unkBE;
 } func_800D0C60_t;
 
+typedef struct {
+    int unk0;
+    short unk4;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
+    short unkC;
+    short unkE;
+    int unk10;
+    short unk14;
+    u_char unk16;
+    u_char unk17;
+    u_char* unk18;
+} func_800D6CF_t;
+
 int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
@@ -269,7 +278,6 @@ extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern char D_800EB9AC;
 extern signed char D_800EB9AD;
-extern D_800EB9B4_t* D_800EB9B4;
 extern int D_800EB9B8;
 extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
@@ -334,7 +342,7 @@ extern SVECTOR D_800F5310[];
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
-extern int D_800F5330;
+extern int D_800F5330[];
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
 extern D_800F53B8_t* D_800F53BC;
@@ -1289,7 +1297,7 @@ void vs_battle_loadGim(int id, int arg1)
             ++var_s0;
         }
         file.lba = _gimLbas[id] >> 8;
-        file.size = (char)_gimLbas[id] << 0xB;
+        file.size = (u_char)_gimLbas[id] << 0xB;
         D_800EB9BC->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
         vs_main_cdEnqueue(D_800EB9BC->cdQueueSlot, D_800EB9BC->data);
     }
@@ -1878,9 +1886,9 @@ void func_800CA9C0(void* arg0)
     D_800EB9AE = 0;
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
-    D_800EB9B4 = 0;
+    D_800EB9B4 = NULL;
     D_800EB9B8 = 0;
-    D_800EB9BC = 0;
+    D_800EB9BC = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;
     D_800F4E90 = 0;
@@ -2290,7 +2298,7 @@ void func_800CB708(void)
             _loadScreff2(0);
             return;
         }
-        if (temp_s0->unk4 != 0x1000) {
+        if (*(int*)&temp_s0->unk4 != 0x1000) {
             func_800F9BD8();
         }
         if (temp_s0->unk2 != 0) {
@@ -2585,7 +2593,7 @@ void func_800CE67C(void)
     D_800F53BC = 0;
     D_800F53B4 = 0;
     D_800F53B8 = 0;
-    D_800F5330 = 0;
+    D_800F5330[0] = 0;
     D_800F522C = 0;
     D_800F5218 = NULL;
     for (i = 0; i < 4; ++i) {
@@ -3180,19 +3188,15 @@ void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 
 void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
-    MATRIX* temp_s2;
-    VECTOR* temp_s0;
-    VECTOR* temp_s0_2;
-
     if (arg0->unk0 & 1) {
-        _lerpSvector(arg0->unk14, (&D_800F5330)[arg0->unk6], &arg2->unk8);
+        _lerpSvector(arg0->unk14, D_800F5330[arg0->unk6], &arg2->unk8);
         arg1->vx += arg2->unk8.vx;
         arg1->vy = arg1->vy + arg2->unk8.vy;
         arg1->vz += arg2->unk8.vz;
         RotMatrix_gte(arg1, &arg2->unk48);
-        _lerpVector(arg0->unk20, (&D_800F5330)[arg0->unk4], &arg2->unk10);
+        _lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
-        _lerpVector(arg0->unk2C, (&D_800F5330)[arg0->unk7], &arg2->unk20);
+        _lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
         func_8004140C(&arg2->unk48, &arg2->unk20);
         return;
     }
@@ -3687,7 +3691,13 @@ void func_800D6CCC(int* arg0)
     arg0[7] = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6CF0);
+void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2)
+{
+    arg0->unk16 = arg1;
+    arg0->unk18 = (u_char*)D_800F569C->unkB0 + D_800F569C->unkB0[arg2 + 2];
+    arg0->unkE = 0;
+    arg0->unk6 = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6D24);
 

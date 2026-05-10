@@ -3,19 +3,9 @@
 #include "../../SLUS_010.40/31724.h"
 #include <libgte.h>
 
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    int unk8;
-} D_800EB9B4_t;
-
 void func_8007DFF0(int, int, int);
 void func_8007E0A8(int, int, int);
 
-extern D_800EB9B4_t* D_800EB9B4;
 extern int* D_1F800000[];
 
 void func_800F9800(int arg0)

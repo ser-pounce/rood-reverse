@@ -233,7 +233,6 @@ extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_char D_800E9C30[];
-extern u_char* D_800EB9B4;
 extern D_800EB9BC_t* D_800EB9BC;
 extern int D_800F19C8;
 extern u_short D_800F4B20;
@@ -2509,7 +2508,7 @@ int vs_battle_script_specialOp(u_char* arg0, short arg1)
 
 int func_800BB288(u_char* arg0, short arg1)
 {
-    if ((D_800EB9B4 != 0) && ((*D_800EB9B4) != 0)) {
+    if ((D_800EB9B4 != NULL) && (D_800EB9B4->unk0 != 0)) {
         return 1;
     }
     return 0;

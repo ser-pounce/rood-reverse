@@ -6,6 +6,8 @@
 
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
+extern u_char D_800E9C30[];
+extern u_char* D_800EB9B8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
@@ -19,7 +21,7 @@ short vs_battle_getShort(u_char* arg0)
     return arg0[0] | (arg0[1] << 8);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFE34);
+int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
 
 int func_800BFE50(u_short arg0)
 {
@@ -73,11 +75,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05B4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05EC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C06E0);
+void func_800C06E0(void)
+{
+    if (D_800EB9B8 != NULL) {
+        D_800EB9B8[0] = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0700);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0738);
+void func_800C0738(void)
+{
+    if (D_800EB9B8 != NULL) {
+        D_800EB9B8[0x10] = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0758);
 

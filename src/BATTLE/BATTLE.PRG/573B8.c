@@ -4,10 +4,10 @@
 #include "573B8.h"
 #include "../SLUS_010.40/main.h"
 
-extern vs_main_CdQueueSlot* D_800F4BBC;
-extern vs_main_CdFile D_800F4BF0;
 extern u_char D_800E9C30[];
 extern u_char* D_800EB9B8;
+extern vs_main_CdQueueSlot* D_800F4BBC;
+extern vs_main_CdFile D_800F4BF0;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 

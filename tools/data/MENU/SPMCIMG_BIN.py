@@ -68,7 +68,7 @@ def build_lookup(clut: Palette) -> dict[int, int]:
     return lookup
 
 
-def cmd_to_png(args: argparse.Namespace) -> None:
+def decode(args: argparse.Namespace) -> None:
     """Decode index binary + clut file -> RGBA PNG with CLUTs stored as sPLT chunks."""
     clut0, clut1 = read_cluts(args.clut)
     indices = list(args.input.read_bytes())
@@ -92,7 +92,7 @@ def cmd_to_png(args: argparse.Namespace) -> None:
     ])
 
 
-def cmd_to_bin(args: argparse.Namespace) -> None:
+def encode(args: argparse.Namespace) -> None:
     """Re-encode RGBA PNG -> index binary using idxD chunk stored in the PNG."""
     indices = read_idxd_chunk(args.input)
     if indices is None:
@@ -106,16 +106,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SPMCIMG encode/decode')
     sub = parser.add_subparsers(dest='command', required=True)
 
-    p_to_png = sub.add_parser('to-png', help='Decode index binary to RGBA PNG')
+    p_to_png = sub.add_parser('decode', help='Decode index binary to RGBA PNG')
     p_to_png.add_argument('input',  type=Path, help='Input index .bin file')
     p_to_png.add_argument('clut',   type=Path, help='CLUT .bin file')
     p_to_png.add_argument('output', type=Path, help='Output .png file')
-    p_to_png.set_defaults(func=cmd_to_png)
+    p_to_png.set_defaults(func=decode)
 
-    p_to_bin = sub.add_parser('to-bin', help='Re-encode RGBA PNG to index binary')
+    p_to_bin = sub.add_parser('encode', help='Re-encode RGBA PNG to index binary')
     p_to_bin.add_argument('input',  type=Path, help='Input .png file')
     p_to_bin.add_argument('output', type=Path, help='Output index .bin file')
-    p_to_bin.set_defaults(func=cmd_to_bin)
+    p_to_bin.set_defaults(func=encode)
 
     args = parser.parse_args()
     args.func(args)

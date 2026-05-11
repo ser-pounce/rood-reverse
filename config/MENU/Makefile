@@ -3,11 +3,11 @@ $(BUILD)/assets/MENU/MAPBG.BIN.png: imgWH := 320 240
 
 $(BUILD)/assets/MENU/SPMCIMG.BIN.png: | $$(@D)/
 	$(ECHO) Converting data/SPMCIMG.BIN
-	$(VPYTHON) -m tools.etc.spmcimg to-png data/MENU/SPMCIMG.BIN data/MENU/MCDATA.BIN $@
+	$(VPYTHON) -m tools.data.MENU.SPMCIMG_BIN decode data/MENU/SPMCIMG.BIN data/MENU/MCDATA.BIN $@
 
 $(BUILD)/data/MENU/SPMCIMG.BIN: $(BUILD)/assets/MENU/SPMCIMG.BIN.png | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.etc.spmcimg to-bin $< $@
+	$(VPYTHON) -m tools.data.MENU.SPMCIMG_BIN encode $< $@
 
 $(BUILD)/assets/MENU/MAPBG.BIN.png: | $$(@D)/
 	$(ECHO) Converting data/MENU/MAPBG.BIN

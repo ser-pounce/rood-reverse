@@ -401,7 +401,7 @@ typedef struct {
     short unk88[8];
     char unk98;
     char unk99;
-    u_char unk9A;
+    u_char index;
     u_char unk9B;
     vs_battle_classAffinityBaseline classAffinityBaseline;
 } vs_battle_uiArmor;
@@ -424,7 +424,7 @@ typedef struct {
     short currentInt;
     short currentAgility;
     char dropRate;
-    u_char unk37;
+    u_char index;
     u_short types[4];
     u_short classes[8];
     u_short affinities[8];
@@ -809,13 +809,13 @@ typedef struct {
     char material;
     char unk31;
     char unk32;
-    char unk33;
+    char index;
 } _armorIntermediate;
 
 typedef struct {
     vs_battle_uiEquipment equip;
     char dropRate;
-    char unk31;
+    char index;
     char unk32;
     char unk33;
 } _accessoryIntermediate;

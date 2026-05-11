@@ -38,35 +38,32 @@ void func_800FB3C8(int);
 
 extern u_long* D_1F800000[];
 
-void func_800FA448(void)
+void vs_mainMenu_initInventory(void)
 {
-    vs_battle_actor2* temp_s1;
     int i;
+    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
 
-    temp_s1 = vs_battle_characterState->unk3C;
-
-    if (temp_s1->weapon.index != 0) {
+    if (actor->weapon.index != 0) {
         vs_battle_copyUiWeaponStats(
-            &vs_battle_inventory.weapons[temp_s1->weapon.index - 1], &temp_s1->weapon);
+            &vs_battle_inventory.weapons[actor->weapon.index - 1], &actor->weapon);
     }
 
-    if (temp_s1->shield.index != 0) {
+    if (actor->shield.index != 0) {
         vs_battle_copyUiShieldStats(
-            &vs_battle_inventory.shields[temp_s1->shield.index - 1], &temp_s1->shield);
+            &vs_battle_inventory.shields[actor->shield.index - 1], &actor->shield);
     }
 
     for (i = 0; i < 6; ++i) {
-        if (temp_s1->bodyParts[i].armor.unk9A != 0) {
+        if (actor->bodyParts[i].armor.index != 0) {
             vs_battle_copyUiArmorStats(
-                &vs_battle_inventory.armor[temp_s1->bodyParts[i].armor.unk9A - 1],
-                &temp_s1->bodyParts[i].armor);
+                &vs_battle_inventory.armor[actor->bodyParts[i].armor.index - 1],
+                &actor->bodyParts[i].armor);
         }
     }
 
-    if (temp_s1->accessory.unk37 != 0) {
+    if (actor->accessory.index != 0) {
         vs_battle_copyUiAccessoryStats(
-            &vs_battle_inventory.armor[temp_s1->accessory.unk37 - 1],
-            &temp_s1->accessory);
+            &vs_battle_inventory.armor[actor->accessory.index - 1], &actor->accessory);
     }
 }
 
@@ -338,7 +335,7 @@ void vs_mainMenu_exec(int arg0)
     vs_mainMenu_gems = inventory->gems;
 
     temp_s3 = &D_800F4E70[arg0 & 0xF];
-    temp_s5 = func_800C8C50(arg0);
+    temp_s5 = vs_battle_loadMenuPrg(arg0);
     selectedMenu = arg0 & 0x3F;
 
     if (selectedMenu != 0) {

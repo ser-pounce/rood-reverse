@@ -5,7 +5,7 @@
 
 enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 
-void func_800FA448(void);
+void vs_mainMenu_initInventory(void);
 void vs_mainMenu_menuItemFlyoutRight(int arg0);
 void vs_mainMenu_menuItemFlyoutLeft(int arg0);
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
@@ -46,7 +46,7 @@ void vs_mainMenu_setShieldStats(int);
 void vs_mainMenu_setArmorStats(int);
 void vs_mainMenu_setGemStats(int);
 void vs_mainMenu_resetStats(void);
-void func_8010044C(u_int*);
+void vs_mainMenu_unpackMenubg(u_int*);
 
 extern char vs_mainMenu_weaponHands[];
 extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;

@@ -61,7 +61,7 @@ typedef struct {
     char returnState;
     char unk2;
     char unk3;
-    vs_main_CdQueueSlot* unk4;
+    vs_main_CdQueueSlot* cdQueue;
 } vs_battle_menuState_t;
 
 typedef struct {
@@ -224,7 +224,7 @@ void func_800C7210(int arg0);
 void vs_battle_loadGim(int, int);
 void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
-int func_800C8C50(int arg0);
+int vs_battle_loadMenuPrg(int arg0);
 void func_800C8E04(int);
 int vs_battle_uiGradientStop(u_int, u_int, int);
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id);

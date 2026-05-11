@@ -1,4 +1,5 @@
 D_800F98A8 = 0x800F98A8; // type:asciz size:0x70
+vs_mainMenu_initInventory = 0x800FA448;
 vs_mainMenu_getEquipmentMaxStats = 0x800FA598;
 vs_mainMenu_menuItemFlyoutLeft = 0x800FA810;
 vs_mainMenu_menuItemFlyoutRight = 0x800FA8A0;
@@ -55,6 +56,7 @@ vs_mainMenu_renderIntColor = 0x800FFD64;
 vs_mainMenu_drawRowIcon = 0x80100004;
 vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainMenu_drawButtonUiBackground = 0x80100344;
+vs_mainMenu_unpackMenubg = 0x8010044C;
 vs_mainmenu_setMenuRows = 0x801005E0;
 vs_mainmenu_getSelectedRow = 0x801008C8;
 _weaponTitleSubmaxThresholds = 0x80102014;

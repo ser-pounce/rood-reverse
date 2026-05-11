@@ -634,43 +634,39 @@ void func_80100414(int arg0, int arg1)
     D_801022E0 = arg1;
 }
 
-void func_8010044C(u_int* arg0)
+void vs_mainMenu_unpackMenubg(u_int* buf)
 {
-    static RECT D_801023C0[] = { { 640, 256, 32, 240 }, { 768, 256, 32, 240 } };
+    static RECT rects[] = { { 640, 256, 32, 240 }, { 768, 256, 32, 240 } };
 
     int var_a2;
     int i;
     u_int var_v1;
-    u_int temp_a0;
-    u_int* temp_t1;
-    void* temp_s1;
-
-    temp_s1 = vs_overlay_slots[2];
-    temp_t1 = temp_s1 + 0x200;
+    void* data = vs_overlay_slots[2];
+    u_int* temp_t1 = data + 0x200;
 
     for (i = 0, var_a2 = 0; i < 0x1780;) {
-        temp_a0 = temp_t1[i++];
+        u_int temp_a0 = temp_t1[i++];
         for (var_v1 = temp_a0 & 0xFFFF; var_v1 != 0; --var_v1) {
-            arg0[var_a2++] = 0;
+            buf[var_a2++] = 0;
         }
 
-        for (var_v1 = temp_a0 >> 0x10; var_v1 != 0; --var_v1) {
-            arg0[var_a2++] = temp_t1[i++];
+        for (var_v1 = temp_a0 >> 16; var_v1 != 0; --var_v1) {
+            buf[var_a2++] = temp_t1[i++];
         }
     }
 
     func_8007DFF0(0x1A, 3, 6);
-    ClearImage(&D_801023C0[0], 0, 0, 0);
-    ClearImage(&D_801023C0[1], 0, 0, 0);
+    ClearImage(&rects[0], 0, 0, 0);
+    ClearImage(&rects[1], 0, 0, 0);
 
     if (((vs_battle_menuState.currentState & 0x3F) == 7) && (D_800F4EA0 & 0x200)
         && (vs_main_stateFlags.gameOver == 1)) {
-        vs_battle_drawImage(0x01FF0280, temp_s1, 0x10100);
+        vs_battle_drawImage(vs_getXY(640, 511), data, vs_getWH(256, 1));
     } else {
-        func_80048A64((u_short*)temp_s1, 3, 0, 0x100);
+        func_80048A64((u_short*)data, 3, 0, 0x100);
     }
 
-    vs_battle_drawImage(0x010002A0, arg0, 0xF00060);
+    vs_battle_drawImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));
     func_80100414(-4, 0x80);
 }
 

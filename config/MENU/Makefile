@@ -37,4 +37,12 @@ $(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.$*_SYD_encode $< $@
 
-TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, MCMAN SPMCIMG MAPBG ITEMNAME ITEMHELP MENU12) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+$(BUILD)/assets/MENU/MENUBG.BIN.png: data/MENU/MENUBG.BIN
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN_dump $< $@
+
+$(BUILD)/data/MENU/MENUBG.BIN: $(BUILD)/assets/MENU/MENUBG.BIN.png
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN_encode $< $@
+
+TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, ITEMNAME ITEMHELP MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

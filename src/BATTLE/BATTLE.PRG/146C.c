@@ -1142,7 +1142,7 @@ void _applyAccessoryStats(vs_battle_uiAccessory* target, _accessoryIntermediate*
     target->currentInt = source->equip.intelligence;
     target->currentAgility = source->equip.agility;
     target->dropRate = source->dropRate;
-    target->unk37 = source->unk31;
+    target->index = source->index;
 
     for (i = 0; i < 4; ++i) {
         target->types[i] = source->equip.types[i];
@@ -1169,7 +1169,7 @@ void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
     target->currentStr = target->baseStr = source->equip.strength;
     target->currentInt = target->baseInt = source->equip.intelligence;
     target->currentAgility = target->baseAgility = source->equip.agility;
-    target->unk9A = source->unk33;
+    target->index = source->index;
 
     for (i = 0; i < 4; ++i) {
         target->types[i] = source->equip.types[i];
@@ -1370,7 +1370,7 @@ void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_battle_inventoryArmor* s
     vs_main_bzero(tempArmor, sizeof *tempArmor);
 
     if (source != NULL) {
-        tempArmor->unk33 = source->index;
+        tempArmor->index = source->index;
         vs_battle_copyInventoryArmorStats(&tempArmor->equip, source);
         tempArmor->material = source->material;
     }
@@ -1385,7 +1385,7 @@ void vs_battle_applyAccessory(
     vs_main_bzero(temp_v0, sizeof *temp_v0);
 
     if (source != NULL) {
-        temp_v0->unk31 = source->index;
+        temp_v0->index = source->index;
         vs_battle_copyInventoryArmorStats(&temp_v0->equip, source);
     }
     _applyAccessoryStats(target, temp_v0);

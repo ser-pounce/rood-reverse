@@ -5,7 +5,7 @@ from typing import Any
 
 import png
 
-from tools.splat_ext.rgbClut import (
+from tools.etc.psx_img import (
     psx5551_to_rgba, rgba_to_psx5551,
     make_splt_chunk, read_splt_chunks, inject_splt_before_iend,
     crc32_chunk, Palette,

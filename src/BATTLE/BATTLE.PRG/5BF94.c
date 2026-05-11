@@ -277,7 +277,7 @@ extern u_long* D_1F800000[];
 extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern char D_800EB9AC;
-extern signed char D_800EB9AD;
+extern signed char _loadedSubMenu;
 extern int D_800EB9B8;
 extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
@@ -287,7 +287,7 @@ extern union {
     int s32;
     u_char u8[4];
 } D_800EB9D0;
-extern u_int* D_800EB9D4;
+extern u_int* _menuBgUnpackedBuf;
 extern int* D_800EB9D8;
 extern u_int D_800EBBB8[];
 extern u_int D_800EBBC0[];
@@ -1309,54 +1309,61 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C86AC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8778);
 
-int func_800C8C50(int arg0)
+int vs_battle_loadMenuPrg(int arg0)
 {
-    vs_main_CdFile file;
-    int temp_s0;
-    u_int var_v1;
-    void* var_a1;
-    vs_battle_menuState_t* s1 = &vs_battle_menuState;
+    vs_battle_menuState_t* state = &vs_battle_menuState;
+    int subMenu = arg0 & 0x1F;
 
-    temp_s0 = arg0 & 0x1F;
-
-    if (temp_s0 == 0x1F) {
+    if (subMenu == 31) {
         return 1;
     }
 
-    if (temp_s0 == 0 && D_800EB9AD > 0) {
+    if (subMenu == 0 && _loadedSubMenu > 0) {
         return 1;
     }
 
-    if (D_800EB9AD != temp_s0) {
-        D_800EB9AD = temp_s0;
-        s1->unk3 = 1;
+    if (_loadedSubMenu != subMenu) {
+        void* overlaySlot;
+        vs_main_CdFile file;
+        u_int fileData;
+
+        _loadedSubMenu = subMenu;
+        state->unk3 = 1;
+
         if (vs_battle_shortcutInvoked != 5) {
-            var_v1 = _menuLbas[temp_s0];
+            fileData = _menuLbas[subMenu];
         } else {
-            var_v1 = VS_MAINMENU_PRG_LBA << 8 | VS_MAINMENU_PRG_SIZE >> 11;
+            fileData = VS_MAINMENU_PRG_LBA << 8 | VS_MAINMENU_PRG_SIZE >> 11;
         }
-        file.lba = var_v1 >> 8;
-        file.size = (var_v1 & 0xFF) << 11;
-        s1->unk4 = vs_main_allocateCdQueueSlot(&file);
-        if (temp_s0 == 0) {
-            var_a1 = vs_overlay_slots[1];
+
+        file.lba = fileData >> 8;
+        file.size = (fileData & 0xFF) << 11;
+        state->cdQueue = vs_main_allocateCdQueueSlot(&file);
+
+        if (subMenu == 0) {
+            overlaySlot = vs_overlay_slots[1];
         } else {
-            var_a1 = vs_overlay_slots[2];
+            overlaySlot = vs_overlay_slots[2];
         }
-        vs_main_cdEnqueue(s1->unk4, var_a1);
+
+        vs_main_cdEnqueue(state->cdQueue, overlaySlot);
     }
-    if (s1->unk3 == 0) {
-        if (D_800EB9D4 != NULL) {
-            vs_main_freeHeapR(D_800EB9D4);
-            D_800EB9D4 = NULL;
-            func_800FA448();
+
+    if (state->unk3 == 0) {
+        if (_menuBgUnpackedBuf != NULL) {
+            vs_main_freeHeapR(_menuBgUnpackedBuf);
+            _menuBgUnpackedBuf = NULL;
+            vs_mainMenu_initInventory();
         }
         return 1;
     }
-    if (s1->unk4->state == vs_main_CdQueueStateLoaded) {
-        vs_main_freeCdQueueSlot(s1->unk4);
+
+    if (state->cdQueue->state == vs_main_CdQueueStateLoaded) {
+
+        vs_main_freeCdQueueSlot(state->cdQueue);
         vs_main_wait();
-        s1->unk3 = 0;
+        state->unk3 = 0;
+
         if (D_800F4FDB != 0) {
             if (vs_battle_shortcutInvoked == 5) {
                 func_800FAEBC(1);
@@ -1364,9 +1371,10 @@ int func_800C8C50(int arg0)
             }
             return 1;
         }
-        if (temp_s0 == 0) {
-            D_800EB9D4 = (u_int*)vs_main_allocHeapR(0xB400);
-            func_8010044C(D_800EB9D4);
+
+        if (subMenu == 0) {
+            _menuBgUnpackedBuf = (u_int*)vs_main_allocHeapR(0xB400);
+            vs_mainMenu_unpackMenubg(_menuBgUnpackedBuf);
         }
     }
     return 0;
@@ -1562,7 +1570,7 @@ void func_800C97BC(void)
     temp_s1 = var_s0 & 0x3F;
 
     if (temp_s1 != 0x3F) {
-        if (func_800C8C50(0) != 0) {
+        if (vs_battle_loadMenuPrg(0) != 0) {
             if (vs_battle_shortcutInvoked == 5) {
                 func_800FAEBC(0);
                 return;
@@ -1882,7 +1890,7 @@ void func_800CA97C(void)
 void func_800CA9C0(void* arg0)
 {
     D_800EB9AC = 0;
-    D_800EB9AD = 0;
+    _loadedSubMenu = 0;
     D_800EB9AE = 0;
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
@@ -1896,7 +1904,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9CC = 0;
     D_800EB9CD = 0;
     D_800EB9D0.s32 = 0xFFFFFF;
-    D_800EB9D4 = 0;
+    _menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
     func_800CA97C();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
@@ -1989,7 +1997,7 @@ int func_800CACD0(int menuState, int arg1)
         }
 
         if (vs_battle_menuItems == 0) {
-            D_800EB9AD = -1;
+            _loadedSubMenu = -1;
 
             func_8007E180(6);
 
@@ -3333,20 +3341,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2904);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2970);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D29B0);
-
-void func_800D29F0(short* arg0, int* arg1)
+void _addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2)
 {
-    arg1[0] = arg0[0];
-    arg1[1] = arg0[1];
-    arg1[2] = arg0[2];
+    arg2->vx = arg0->vx + arg1->vx;
+    arg2->vy = arg0->vy + arg1->vy;
+    arg2->vz = arg0->vz + arg1->vz;
 }
 
-void func_800D2A14(u_short* arg0, u_short* arg1)
+void _svecToVec(SVECTOR* arg0, VECTOR* arg1)
 {
-    arg1[0] = arg0[0];
-    arg1[1] = arg0[2];
-    arg1[2] = arg0[4];
+    arg1->vx = arg0->vx;
+    arg1->vy = arg0->vy;
+    arg1->vz = arg0->vz;
+}
+
+void func_800D2A14(u_short* arg0, SVECTOR* arg1)
+{
+    arg1->vx = arg0[0];
+    arg1->vy = arg0[2];
+    arg1->vz = arg0[4];
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2A38);

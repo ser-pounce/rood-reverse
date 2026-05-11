@@ -9,13 +9,13 @@ $(BUILD)/data/MENU/SPMCIMG.BIN: $(BUILD)/assets/MENU/SPMCIMG.BIN.png | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.etc.spmcimg to-bin $< $@
 
-$(patsubst %, $(BUILD)/assets/MENU/%.BIN.png, MAPBG): $(BUILD)/assets/%.png: | $$(@D)/
-	$(ECHO) Converting data/$*
-	$(VPYTHON) -m tools.data.MENU.export8bppWithClut data/$* $@ $(imgWH)
+$(BUILD)/assets/MENU/MAPBG.BIN.png: | $$(@D)/
+	$(ECHO) Converting data/MENU/MAPBG.BIN
+	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN decode data/MENU/MAPBG.BIN $@
 
-$(patsubst %, $(BUILD)/data/MENU/%.BIN, MAPBG): $(BUILD)/data/%: $(BUILD)/assets/%.png | $$(@D)/
+$(BUILD)/data/MENU/MAPBG.BIN: $(BUILD)/assets/MENU/MAPBG.BIN.png | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.import8bppWithClut $< $@
+	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN encode $< $@
 
 $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.yaml: assets/MENU/ITEMNAME.BIN.yaml | $$(@D)/
 	$(ECHO) Extracting data/MENU/ITEMNAME.BIN

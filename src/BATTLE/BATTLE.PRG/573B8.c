@@ -88,7 +88,29 @@ void func_800C06E0(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0700);
+u_char* func_800C0700(int* arg0)
+{
+    register int ptr asm("v1") = (int)D_800EB9B8;
+    register u_char* ret asm("v0") = (u_char*)ptr;
+    int temp_a1;
+    int temp_a2;
+    int temp_a3;
+    register int temp_t0 asm("t0");
+
+    __asm__("" : "+r"(ptr) : : "memory");
+
+    temp_a1 = arg0[0];
+    temp_a2 = arg0[1];
+    temp_a3 = arg0[2];
+    temp_t0 = arg0[3];
+
+    *(int*)(ptr + 0x10) = temp_a1;
+    *(int*)(ptr + 0x14) = temp_a2;
+    *(int*)(ptr + 0x18) = temp_a3;
+    *(int*)(ptr + 0x1C) = temp_t0;
+    *(short*)(ret + 0x2A) = 0;
+    return ret;
+}
 
 void func_800C0738(void)
 {

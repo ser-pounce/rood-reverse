@@ -1890,7 +1890,7 @@ void func_8006C350(void)
 void func_8006C39C(void)
 {
     func_8007B10C(13, 4, -4, -4, 0);
-    func_80048FEC(0);
+    vs_main_setClutState(0);
     func_8006C2A0();
     func_8008B4BC(1);
     func_8008D594(1);
@@ -1902,7 +1902,7 @@ void func_8006C39C(void)
 
 void func_8006C40C(void)
 {
-    func_80048FEC(1);
+    vs_main_setClutState(1);
     func_8007B1B8(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
@@ -3068,7 +3068,7 @@ void func_8006FBCC(int arg0)
     }
     func_8007B10C(8, 4, 0, 0, 0);
     func_8006C250();
-    func_80048FEC(1);
+    vs_main_setClutState(1);
     func_8008B4BC(0);
     func_80095B70(0);
     D_800F18FC = arg0;
@@ -3309,7 +3309,7 @@ void func_80072EC4(int arg0, u_short arg1)
         func_80095B70(1);
     }
     func_80072BA8(D_800F19CC->unk8.unk0);
-    func_80048FEC(0);
+    vs_main_setClutState(0);
 }
 
 void _initBattleCameraTransition(void)
@@ -5492,7 +5492,7 @@ void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { func_800472D0(arg0, arg1); }
 void func_8007B410(void)
 {
     func_8007B10C(0xD, 4, -4, -4, 0);
-    func_80048FEC(0);
+    vs_main_setClutState(0);
     func_8006C2A0();
     func_8008B4BC(1);
     func_8008B4C8(0);
@@ -5502,7 +5502,7 @@ void func_8007B410(void)
 
 void func_8007B470(void)
 {
-    func_80048FEC(1);
+    vs_main_setClutState(1);
     func_8007B1B8(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
@@ -9543,7 +9543,7 @@ void func_80089DC0(int arg0)
     D_8005E0C0[0] = vs_main_allocHeap(0x20000);
     D_8005E0C0[1] = vs_main_allocHeap(0x20000);
 
-    func_80048FF8();
+    vs_main_clutInit();
 
     mpdHeader = _zoneContext.mpdData;
     v0 = ((_mpdHeader*)mpdHeader)->roomSectionOffset;

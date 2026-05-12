@@ -53,7 +53,7 @@ typedef struct {
         u_char gindex;
         u_char bindex;
     } colorInfo[256];
-    u_short unk70E[256];
+    u_short clutBase[256];
 } _clutSlot;
 
 typedef struct {
@@ -7992,7 +7992,7 @@ extern int D_8005DBF4[5][6];
 extern u_int _frameDuration;
 extern int vs_main_saveGameClearData;
 extern int _inGame;
-extern u_short _clutBuffer[][256];
+extern u_short _clutBuffer[14][256];
 extern int D_8005FE70;
 extern int D_8005FE74;
 extern int D_8005FE78;
@@ -10518,7 +10518,7 @@ void vs_main_resetSound(void)
     D_8005FE84 = 0x100000;
 }
 
-static void func_80046B3C(int arg0, int arg1, u_short* arg2)
+static void func_80046B3C(int duration, int slot, u_short* targetClut)
 {
     int i;
     u_short g;
@@ -10527,13 +10527,13 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
     struct ColorInfo* p;
 
     for (i = 0; i < 256; ++i) {
-        r = arg2[i] & 0x1F;
-        g = (arg2[i] & 0x3E0) >> 5;
-        b = (arg2[i] & 0x7C00) >> 10;
+        r = targetClut[i] & 0x1F;
+        g = (targetClut[i] & 0x3E0) >> 5;
+        b = (targetClut[i] & 0x7C00) >> 10;
 
-        p = _clutState.slots[arg1].colorInfo;
+        p = _clutState.slots[slot].colorInfo;
 
-        if (arg0 != 0) {
+        if (duration != 0) {
             p[i].rindex = (r - p[i].r) + 31;
             p[i].gindex = (g - p[i].g) + 31;
             p[i].bindex = (b - p[i].b) + 31;
@@ -10541,18 +10541,18 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
             p[i].r = r;
             p[i].g = g;
             p[i].b = b;
-            _clutBuffer[arg1][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
+            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
         }
     }
 
-    if (arg0 != 0) {
-        struct clutAnimState_t* p = &_clutState.slots[arg1].animState;
+    if (duration != 0) {
+        struct clutAnimState_t* p = &_clutState.slots[slot].animState;
         p->active = 1;
         p->frame = 0;
         p->tick = 0;
-        p->speed = arg0;
+        p->speed = duration;
     } else {
-        _clutState.slots[arg1].animState.active = 0;
+        _clutState.slots[slot].animState.active = 0;
     }
 }
 
@@ -10572,7 +10572,7 @@ static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
         func_80046C80(arg0, arg1, arg2, arg3);
 
         for (i = 0; i < 256; ++i) {
-            _clutState.slots[arg1].unk70E[i] = arg2[i];
+            _clutState.slots[arg1].clutBase[i] = arg2[i];
         }
     }
 }
@@ -10583,7 +10583,7 @@ static void func_80046D58(int arg0)
 
     if (_clutState.active != 0) {
         for (i = 0; i < 256; ++i)
-            _clutState.slots[arg0].unk70E[i] = _clutBuffer[arg0][i];
+            _clutState.slots[arg0].clutBase[i] = _clutBuffer[arg0][i];
     }
 }
 
@@ -10606,7 +10606,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
     struct ColorInfo* t2 = _clutState.slots[arg2].colorInfo;
 
     for (i = 0; i < 256; ++i) {
-        temp_t0 = _clutState.slots[arg2].unk70E[i];
+        temp_t0 = _clutState.slots[arg2].clutBase[i];
         if ((t2[i].r + t2[i].g + t2[i].b + t2[i].a) != 0) {
             switch (arg0) {
             case 1:
@@ -10765,7 +10765,6 @@ static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 void func_800472D0(int arg0, D_8005DC6C_t* arg1)
 {
     int sp10[5];
-    int new_var;
     int i;
 
     if (_clutState.active != 0) {
@@ -10799,27 +10798,8 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
         _clutState.bgAnimActive = 0;
 
         for (i = 0; i < 5; ++i) {
-            int temp_a1, var_v0, var_v1;
-            var_v1 = temp_t6[i][0];
-
-            if (var_v1 < 0) {
-                var_v1 += 0xFFFF;
-            }
-
-            temp_a1 = (var_v1 >> 0x10);
-            var_v0 = temp_t6[i][1];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            new_var = temp_a1 + ((var_v0 >> 0x10) << 8);
-            var_v1 = temp_t6[i][2];
-
-            if (var_v1 < 0) {
-                var_v1 += 0xFFFF;
-            }
-            sp10[i] = new_var + ((var_v1 >> 0x10) << 0x10);
+            sp10[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
+                    + (((temp_t6[i][2] / 65536)) << 0x10);
         }
         func_8008EB30(sp10);
     }
@@ -11490,26 +11470,26 @@ void func_800483FC(void)
 
 static void func_80048A3C(int arg0) { _clutState.slots[arg0].animState.active = 0; }
 
-void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w)
+void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)
 {
     RECT rect;
     u_short px;
     u_int i;
     struct ColorInfo* dst;
 
-    if (y >= 14) {
-        setRECT(&rect, x + 768, y + 224, w, 1);
+    if (slot >= 14) {
+        setRECT(&rect, colorOffset + 768, slot + 224, count, 1);
         LoadImage(&rect, (u_long*)img);
         return;
     }
 
-    if (_clutState.slots[y].locked == 0) {
-        _clutState.slots[y].animState.active = 0;
-        for (i = 0; i < w; ++i) {
+    if (_clutState.slots[slot].locked == 0) {
+        _clutState.slots[slot].animState.active = 0;
+        for (i = 0; i < count; ++i) {
             px = img[i];
-            dst = &_clutState.slots[y].colorInfo[x + i];
-            _clutBuffer[y][x + i] = px;
-            _clutState.slots[y].unk70E[x + i] = px;
+            dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
+            _clutBuffer[slot][colorOffset + i] = px;
+            _clutState.slots[slot].clutBase[colorOffset + i] = px;
             dst->r = (px & 0x1F);
             dst->g = ((px & 0x3E0) >> 5);
             dst->b = ((px & 0x7C00) >> 10);
@@ -11519,8 +11499,8 @@ void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w)
     }
 }
 
-void func_80048B8C(
-    int arg0, u_short* arg1, int arg2, short arg3, short arg4, short arg5, int arg6)
+void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gOffset,
+    short bOffset, int arg6)
 {
     int i;
     int new_var;
@@ -11529,54 +11509,54 @@ void func_80048B8C(
     short r;
     short g;
     short b;
-    short a;
-    u_short t4;
+    short value;
+    u_short stp;
 
-    for (i = 0; i < 0x100; ++i) {
-        a = arg1[i];
-        if (a != 0) {
-            switch (arg0) {
+    for (i = 0; i < 256; ++i) {
+        value = srcClut[i];
+        if (value != 0) {
+            switch (mode) {
             case 5:
-                t4 = 0x1F;
-                r = arg3 + ((((char)a) & t4) >> 1);
-                g = arg4 + ((a & 0x3E0) >> 6);
-                b = arg5 + ((a & 0x7C00) >> 11);
+                r = rOffset + (value & 0x1F) / 2;
+                g = gOffset + ((value & 0x3E0) >> 5) / 2;
+                b = bOffset + ((value & 0x7C00) >> 10) / 2;
                 break;
 
             case 6:
-                new_var = a & 0x1F;
-                new_var2 = (a & 0x3E0) >> 5;
-                new_var3 = (a & 0x7C00) >> 10;
-                r = arg3 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                g = arg4 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                b = arg5 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                new_var = value & 0x1F;
+                new_var2 = (value & 0x3E0) >> 5;
+                new_var3 = (value & 0x7C00) >> 10;
+                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
                 break;
 
             case 7:
-                new_var = a & 0x1F;
-                new_var2 = (a & 0x3E0) >> 5;
-                new_var3 = (a & 0x7C00) >> 10;
-                r = arg3 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                g = arg4 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                b = arg5 + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                new_var = value & 0x1F;
+                new_var2 = (value & 0x3E0) >> 5;
+                new_var3 = (value & 0x7C00) >> 10;
+                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
                 break;
 
             case 0:
             default:
-                r = arg3 + (a & 0x1F);
-                g = arg4 + ((a & 0x3E0) >> 5);
-                b = arg5 + ((a & 0x7C00) >> 10);
+                r = rOffset + (value & 0x1F);
+                g = gOffset + ((value & 0x3E0) >> 5);
+                b = bOffset + ((value & 0x7C00) >> 10);
                 break;
             }
 
         } else {
-            r = a & 0x1F;
-            t4 = (a & 0x3E0);
-            g = t4 >> 5;
-            b = (a & 0x7C00) >> 10;
+            r = value & 0x1F;
+            g = (value & 0x3E0) >> 5;
+            b = (value & 0x7C00) >> 10;
         }
-        t4 = a;
-        t4 = t4 >> 15;
+
+        stp = value;
+        stp >>= 15;
+
         if (r >= 32) {
             r = 31;
         }
@@ -11595,54 +11575,49 @@ void func_80048B8C(
         if ((b << 16) <= 0) {
             b = 0;
         }
-        if ((((r | g | b) << 16) == 0) && (a & 0x7FFF)) {
+
+        if ((((r | g | b) << 16) == 0) && (value & 0x7FFF)) {
             b = 1;
         }
+
         if (arg6 != 0) {
-            _clutBuffer[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
-            if (_clutState.slots[arg2].animState.active == 0) {
-                struct ColorInfo* t5 = &_clutState.slots[arg2].colorInfo[i];
-                t5->r = r;
-                t5->g = g;
-                t5->b = b;
-                t5->a = t4;
+            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
+
+            if (_clutState.slots[slot].animState.active == 0) {
+                struct ColorInfo* colors = &_clutState.slots[slot].colorInfo[i];
+                colors->r = r;
+                colors->g = g;
+                colors->b = b;
+                colors->a = stp;
             }
         }
-        _clutState.slots[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
+
+        _clutState.slots[slot].clutBase[i] = r + (g << 5) + (b << 10) + (stp << 15);
     }
 
     _clutState.uploadPending = 1;
 }
 
-void func_80048E68(
-    u_short* arg0, int arg1, u_short arg2, u_short arg3, u_short arg4, int arg5)
+void func_80048E68(u_short* srcClut, int slot, u_short rOffset, u_short gOffset,
+    u_short bOffset, int arg5)
 {
-    func_80048B8C(8, arg0, arg1, arg2, arg3, arg4, arg5);
+    func_80048B8C(8, srcClut, slot, rOffset, gOffset, bOffset, arg5);
 }
 
 void func_80048EC4(void)
 {
     int i;
-    int var_v0;
-    u_int* var_v1;
-    int(*p)[6] = _clutState.bgColors;
+    int(*bgColors)[6] = _clutState.bgColors;
+    int* var_v1 = func_8008EB24();
 
-    var_v1 = func_8008EB24();
     for (i = 0; i < 5; ++i) {
         _clutState.unk7F14[i].unk0 = var_v1[i];
-        var_v0 = var_v1[i] & 0xFF00;
-        if (var_v0 < 0) {
-            var_v0 += 0xFF;
-        }
-        _clutState.unk7F14[i].unk1 = (var_v0 >> 8);
-        var_v0 = var_v1[i] & 0xFF0000;
-        if (var_v0 < 0) {
-            var_v0 += 0xFFFF;
-        }
-        _clutState.unk7F14[i].unk2 = (var_v0 >> 16);
-        p[i][0] = ((var_v1[i] & 0xFF) << 16);
-        p[i][1] = ((var_v1[i] & 0xFF00) << 8);
-        p[i][2] = (var_v1[i] & 0xFF0000);
+        _clutState.unk7F14[i].unk1 = (var_v1[i] & 0xFF00) / 256;
+        _clutState.unk7F14[i].unk2 = (var_v1[i] & 0xFF0000) / 65536;
+
+        bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
+        bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
+        bgColors[i][2] = var_v1[i] & 0xFF0000;
     }
 }
 
@@ -11657,14 +11632,15 @@ void vs_main_commitClut(void)
     }
 }
 
-void func_80048FEC(short arg0) { _clutState.active = arg0; }
+void vs_main_setClutState(int active) { _clutState.active = active; }
 
-void func_80048FF8(void)
+void vs_main_clutInit(void)
 {
     int i;
 
     _clutState.uploadPending = 0;
     _clutState.active = 1;
+
     for (i = 0; i < 14; ++i) {
         _clutState.slots[i].locked = 0;
         _clutState.slots[i].animState.active = 0;

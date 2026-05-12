@@ -327,7 +327,7 @@ void func_800FA35C(void)
     SetDrawStp(&D_800F1970[1], 0);
     SetDrawStp(&D_800F1988[0], 1);
     SetDrawStp(&D_800F1988[1], 1);
-    func_80048FF8();
+    vs_main_clutInit();
     _initTransitionState();
     func_8007D3F8();
     _initScriptFunctionTable();

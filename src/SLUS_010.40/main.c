@@ -32,20 +32,18 @@ typedef struct {
 } D_8005DC80_t;
 
 typedef struct {
-    u_short uploadPending;
-    u_short active;
     char unk4;
     char locked;
-    struct clutOptions {
-        u_char animActive;
-        u_char unk1;
-        u_char unk2;
-        u_char unk3;
-        u_char unk4;
-        signed char unk5;
-        signed char unk6;
-        signed char unk7;
-    } unk6;
+    struct clutAnimState_t {
+        u_char active;
+        u_char frame;
+        u_char tick;
+        u_char speed;
+        u_char transitionMode;
+        signed char transitionTargetR;
+        signed char transitionTargetG;
+        signed char transitionTargetB;
+    } animState;
     struct ColorInfo {
         char r;
         char g;
@@ -54,21 +52,29 @@ typedef struct {
         u_char rindex;
         u_char gindex;
         u_char bindex;
-    } unkE[256];
-    u_short unk70E[254];
-} _clutState_t2;
+    } colorInfo[256];
+    u_short unk70E[256];
+} _clutSlot;
 
 typedef struct {
-    _clutState_t2 unk0[14];
-    char unk7E8C[10];
-    short unk7E96[3];
-    int unk7E9C[5][6];
+    u_short uploadPending;
+    u_short active;
+    _clutSlot slots[14];
+    u_char bgAnimActive;
+    u_char bgAnimFrame;
+    u_char bgAnimTick;
+    u_char bgAnimSpeed;
+    u_char bgTransitionMode;
+    u_char unk7E95;
+    short bgTransitionTargetR;
+    short bgTransitionTargetG;
+    short bgTransitionTargetB;
+    int bgColors[5][6];
     D_8005DC6C_t unk7F14[5];
     D_8005DC80_t unk7F28[17];
 } _clutState_t;
 
 enum diskState_e {
-
     diskIdle = 0,
     diskSeekReady = 1,
     diskReadReady = 2,
@@ -10525,7 +10531,7 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
         g = (arg2[i] & 0x3E0) >> 5;
         b = (arg2[i] & 0x7C00) >> 10;
 
-        p = _clutState.unk0[arg1].unkE;
+        p = _clutState.slots[arg1].colorInfo;
 
         if (arg0 != 0) {
             p[i].rindex = (r - p[i].r) + 31;
@@ -10540,21 +10546,21 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
     }
 
     if (arg0 != 0) {
-        struct clutOptions* p = &_clutState.unk0[arg1].unk6;
-        p->animActive = 1;
-        p->unk1 = 0;
-        p->unk2 = 0;
-        p->unk3 = arg0;
+        struct clutAnimState_t* p = &_clutState.slots[arg1].animState;
+        p->active = 1;
+        p->frame = 0;
+        p->tick = 0;
+        p->speed = arg0;
     } else {
-        _clutState.unk0[arg1].unk6.animActive = 0;
+        _clutState.slots[arg1].animState.active = 0;
     }
 }
 
 void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
 {
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_80046B3C(arg0, arg1, arg2 + (arg3 << 4));
-        _clutState.unk0[0].uploadPending = 1;
+        _clutState.uploadPending = 1;
     }
 }
 
@@ -10562,11 +10568,11 @@ static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int i;
 
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_80046C80(arg0, arg1, arg2, arg3);
 
-        for (i = 0; i < 0x100; ++i) {
-            _clutState.unk0[arg1].unk70E[i] = arg2[i];
+        for (i = 0; i < 256; ++i) {
+            _clutState.slots[arg1].unk70E[i] = arg2[i];
         }
     }
 }
@@ -10575,9 +10581,9 @@ static void func_80046D58(int arg0)
 {
     int i;
 
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         for (i = 0; i < 256; ++i)
-            _clutState.unk0[arg0].unk70E[i] = _clutBuffer[arg0][i];
+            _clutState.slots[arg0].unk70E[i] = _clutBuffer[arg0][i];
     }
 }
 
@@ -10597,10 +10603,10 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
     int tmp;
     int t4 = (u_short)arg4;
     int t5 = (u_short)arg5;
-    struct ColorInfo* t2 = _clutState.unk0[arg2].unkE;
+    struct ColorInfo* t2 = _clutState.slots[arg2].colorInfo;
 
     for (i = 0; i < 256; ++i) {
-        temp_t0 = _clutState.unk0[arg2].unk70E[i];
+        temp_t0 = _clutState.slots[arg2].unk70E[i];
         if ((t2[i].r + t2[i].g + t2[i].b + t2[i].a) != 0) {
             switch (arg0) {
             case 1:
@@ -10657,7 +10663,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 var_a0 = (temp_t0 & 0x7C00) >> 0xA;
                 break;
             case 11:
-                _clutState.unk0[arg2].unk6.unk4 = 0;
+                _clutState.slots[arg2].animState.transitionMode = 0;
                 return;
             case 12:
                 tmp = 0x1F;
@@ -10728,26 +10734,26 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
         }
     }
     if (arg1 != 0) {
-        struct clutOptions* p = &_clutState.unk0[arg2].unk6;
-        p->animActive = 1;
-        p->unk1 = 0;
-        p->unk2 = 0;
-        p->unk3 = arg1;
-        p->unk4 = arg0;
+        struct clutAnimState_t* p = &_clutState.slots[arg2].animState;
+        p->active = 1;
+        p->frame = 0;
+        p->tick = 0;
+        p->speed = arg1;
+        p->transitionMode = arg0;
         if (arg0 == 9) {
-            p->unk5 = arg3;
-            p->unk6 = t4;
-            p->unk7 = t5;
+            p->transitionTargetR = arg3;
+            p->transitionTargetG = t4;
+            p->transitionTargetB = t5;
         }
     } else {
-        _clutState.unk0[arg2].unk6.animActive = 0;
-        _clutState.unk0[0].uploadPending = 1;
+        _clutState.slots[arg2].animState.active = 0;
+        _clutState.uploadPending = 1;
     }
 }
 
 void func_80047280(int arg0, int arg1, int arg2, short arg3, int arg4, int arg5)
 {
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         do {
             func_80046DC0(arg0, arg1, arg2, arg3, arg4, arg5);
         } while (0);
@@ -10762,8 +10768,8 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
     int new_var;
     int i;
 
-    if (_clutState.unk0[0].active != 0) {
-        int(*temp_t6)[6] = _clutState.unk7E9C;
+    if (_clutState.active != 0) {
+        int(*temp_t6)[6] = _clutState.bgColors;
         for (i = 0; i < 5; ++i) {
             int temp_a1, temp_t1, temp_t2;
             temp_a1 = _shift_left(arg1[i].unk0);
@@ -10784,13 +10790,13 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
             }
         }
         if (arg0 != 0) {
-            _clutState.unk7E8C[4] = 1;
-            _clutState.unk7E8C[5] = 0;
-            _clutState.unk7E8C[6] = 0;
-            _clutState.unk7E8C[7] = arg0;
+            _clutState.bgAnimActive = 1;
+            _clutState.bgAnimFrame = 0;
+            _clutState.bgAnimTick = 0;
+            _clutState.bgAnimSpeed = arg0;
             return;
         }
-        _clutState.unk7E8C[4] = 0;
+        _clutState.bgAnimActive = 0;
 
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, var_v1;
@@ -10823,7 +10829,7 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
 {
     int i;
 
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_800472D0(arg0, arg1);
         for (i = 0; i < 5; ++i) {
             _clutState.unk7F14[i] = arg1[i];
@@ -10839,7 +10845,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     int var_t0;
     int var_t1;
     int i;
-    int(*p)[6] = _clutState.unk7E9C;
+    int(*p)[6] = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         switch (arg0) {
@@ -10904,7 +10910,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = _clutState.unk7F14[i].unk2 << 0x10;
             break;
         case 11:
-            _clutState.unk7E8C[8] = 0;
+            _clutState.bgTransitionMode = 0;
             return;
         case 0:
         default:
@@ -10948,18 +10954,18 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 
     if (arg1 != 0) {
-        _clutState.unk7E8C[4] = 1;
-        _clutState.unk7E8C[5] = 0;
-        _clutState.unk7E8C[6] = 0;
-        _clutState.unk7E8C[7] = arg1;
-        _clutState.unk7E8C[8] = arg0;
+        _clutState.bgAnimActive = 1;
+        _clutState.bgAnimFrame = 0;
+        _clutState.bgAnimTick = 0;
+        _clutState.bgAnimSpeed = arg1;
+        _clutState.bgTransitionMode = arg0;
         if (arg0 == 9) {
-            _clutState.unk7E96[0] = arg2;
-            _clutState.unk7E96[1] = arg3;
-            _clutState.unk7E96[2] = arg4;
+            _clutState.bgTransitionTargetR = arg2;
+            _clutState.bgTransitionTargetG = arg3;
+            _clutState.bgTransitionTargetB = arg4;
         }
     } else {
-        _clutState.unk7E8C[4] = 0;
+        _clutState.bgAnimActive = 0;
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, new_var;
             temp_v0 = p[i][0];
@@ -10989,7 +10995,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_800474DC(arg0, arg1, arg2, arg3, arg4);
     }
 }
@@ -11012,7 +11018,7 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     int v0;
     int* temp_a3;
 
-    if (_clutState.unk0[0].active == 0) {
+    if (_clutState.active == 0) {
         return;
     }
 
@@ -11064,7 +11070,7 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_80047910(arg0, arg1, arg2);
         _clutState.unk7F28[arg1].unk28 = *arg2;
     }
@@ -11239,7 +11245,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 
 void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    if (_clutState.unk0[0].active != 0) {
+    if (_clutState.active != 0) {
         func_80047B30(arg0, arg1, arg2, arg3, arg4, arg5);
     }
 }
@@ -11254,11 +11260,11 @@ void func_80047FFC(void)
     int var_v1;
     int(*t1)[6];
 
-    if (_clutState.unk7E8C[4] == 0) {
+    if (_clutState.bgAnimActive == 0) {
         return;
     }
 
-    t1 = _clutState.unk7E9C;
+    t1 = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         t1[i][0] += t1[i][3];
@@ -11284,21 +11290,21 @@ void func_80047FFC(void)
         sp18[i] = new_var + ((var_v1 >> 16) << 16);
     }
     func_8008EB30(sp18);
-    _clutState.unk7E8C[5] += 1;
-    if (_clutState.unk7E8C[5] >= (_clutState.unk7E8C[7] * 2)) {
-        if (_clutState.unk7E8C[8] == 9) {
-            func_800474DC(4, _clutState.unk7E8C[7], _clutState.unk7E96[0] / 2,
-                _clutState.unk7E96[1] / 2, _clutState.unk7E96[2] / 2);
-            _clutState.unk7E8C[8] = 10;
+    _clutState.bgAnimFrame += 1;
+    if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
+        if (_clutState.bgTransitionMode == 9) {
+            func_800474DC(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
+                _clutState.bgTransitionTargetG / 2, _clutState.bgTransitionTargetB / 2);
+            _clutState.bgTransitionMode = 10;
             return;
         }
-        if (_clutState.unk7E8C[8] == 10) {
-            func_800474DC(9, _clutState.unk7E8C[7], _clutState.unk7E96[0],
-                _clutState.unk7E96[1], _clutState.unk7E96[2]);
-            _clutState.unk7E8C[8] = 9;
+        if (_clutState.bgTransitionMode == 10) {
+            func_800474DC(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
+                _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
+            _clutState.bgTransitionMode = 9;
             return;
         }
-        _clutState.unk7E8C[4] = 0;
+        _clutState.bgAnimActive = 0;
     }
 }
 
@@ -11372,17 +11378,18 @@ void func_800483FC(void)
     int c;
 
     for (i = 0; i < 14; ++i) {
-        if (_clutState.unk0[i].unk6.animActive == 0) {
+        if (_clutState.slots[i].animState.active == 0) {
             continue;
         }
-        if (++_clutState.unk0[i].unk6.unk2 >= (_clutState.unk0[i].unk6.unk3 / 8)) {
+        if (++_clutState.slots[i].animState.tick
+            >= (_clutState.slots[i].animState.speed / 8)) {
 
-            _clutState.unk0[i].unk6.unk2 = 0;
+            _clutState.slots[i].animState.tick = 0;
 
-            if (_clutState.unk0[i].unk6.unk3 >= 8) {
+            if (_clutState.slots[i].animState.speed >= 8) {
                 var_t5 = 1;
-                c = _clutState.unk0[i].unk6.unk1;
-                index = _clutState.unk0[i].unkE;
+                c = _clutState.slots[i].animState.frame;
+                index = _clutState.slots[i].colorInfo;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11398,10 +11405,10 @@ void func_800483FC(void)
                     index[j].r = r;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
-            } else if (_clutState.unk0[i].unk6.unk3 >= 4) {
+            } else if (_clutState.slots[i].animState.speed >= 4) {
                 var_t5 = 2;
-                c = _clutState.unk0[i].unk6.unk1;
-                index = _clutState.unk0[i].unkE;
+                c = _clutState.slots[i].animState.frame;
+                index = _clutState.slots[i].colorInfo;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11417,10 +11424,10 @@ void func_800483FC(void)
                     index[j].b = b;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
-            } else if (_clutState.unk0[i].unk6.unk3 >= 2) {
+            } else if (_clutState.slots[i].animState.speed >= 2) {
                 var_t5 = 4;
-                c = _clutState.unk0[i].unk6.unk1;
-                index = _clutState.unk0[i].unkE;
+                c = _clutState.slots[i].animState.frame;
+                index = _clutState.slots[i].colorInfo;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11438,8 +11445,8 @@ void func_800483FC(void)
                 }
             } else {
                 var_t5 = 8;
-                c = _clutState.unk0[i].unk6.unk1;
-                index = _clutState.unk0[i].unkE;
+                c = _clutState.slots[i].animState.frame;
+                index = _clutState.slots[i].colorInfo;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11456,31 +11463,32 @@ void func_800483FC(void)
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             }
-            if (++_clutState.unk0[i].unk6.unk1 >= (16 / var_t5)) {
-                if (_clutState.unk0[i].unk6.unk4 == 9) {
-                    func_80046DC0(4, _clutState.unk0[i].unk6.unk3, i,
-                        _clutState.unk0[i].unk6.unk5 / 2,
-                        _clutState.unk0[i].unk6.unk6 / 2,
-                        _clutState.unk0[i].unk6.unk7 / 2);
-                    _clutState.unk0[i].unk6.unk4 = 10;
-                } else if (_clutState.unk0[i].unk6.unk4 == 10) {
-                    func_80046DC0(9, _clutState.unk0[i].unk6.unk3, i,
-                        _clutState.unk0[i].unk6.unk5, _clutState.unk0[i].unk6.unk6,
-                        _clutState.unk0[i].unk6.unk7);
-                    _clutState.unk0[i].unk6.unk4 = 9;
-                } else if (_clutState.unk0[i].unk6.unk4 == 14) {
-                    func_80046DC0(15, _clutState.unk0[i].unk6.unk3, i, 0, 0, 0);
-                    _clutState.unk0[i].unk6.unk4 = 15;
+            if (++_clutState.slots[i].animState.frame >= (16 / var_t5)) {
+                if (_clutState.slots[i].animState.transitionMode == 9) {
+                    func_80046DC0(4, _clutState.slots[i].animState.speed, i,
+                        _clutState.slots[i].animState.transitionTargetR / 2,
+                        _clutState.slots[i].animState.transitionTargetG / 2,
+                        _clutState.slots[i].animState.transitionTargetB / 2);
+                    _clutState.slots[i].animState.transitionMode = 10;
+                } else if (_clutState.slots[i].animState.transitionMode == 10) {
+                    func_80046DC0(9, _clutState.slots[i].animState.speed, i,
+                        _clutState.slots[i].animState.transitionTargetR,
+                        _clutState.slots[i].animState.transitionTargetG,
+                        _clutState.slots[i].animState.transitionTargetB);
+                    _clutState.slots[i].animState.transitionMode = 9;
+                } else if (_clutState.slots[i].animState.transitionMode == 14) {
+                    func_80046DC0(15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
+                    _clutState.slots[i].animState.transitionMode = 15;
                 } else {
-                    _clutState.unk0[i].unk6.animActive = 0;
+                    _clutState.slots[i].animState.active = 0;
                 }
             }
         }
-        _clutState.unk0[0].uploadPending = 1;
+        _clutState.uploadPending = 1;
     }
 }
 
-static void func_80048A3C(int arg0) { _clutState.unk0[arg0].unk6.animActive = 0; }
+static void func_80048A3C(int arg0) { _clutState.slots[arg0].animState.active = 0; }
 
 void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w)
 {
@@ -11495,19 +11503,19 @@ void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w)
         return;
     }
 
-    if (_clutState.unk0[y].locked == 0) {
-        _clutState.unk0[y].unk6.animActive = 0;
+    if (_clutState.slots[y].locked == 0) {
+        _clutState.slots[y].animState.active = 0;
         for (i = 0; i < w; ++i) {
             px = img[i];
-            dst = &_clutState.unk0[y].unkE[x + i];
+            dst = &_clutState.slots[y].colorInfo[x + i];
             _clutBuffer[y][x + i] = px;
-            _clutState.unk0[y].unk70E[x + i] = px;
+            _clutState.slots[y].unk70E[x + i] = px;
             dst->r = (px & 0x1F);
             dst->g = ((px & 0x3E0) >> 5);
             dst->b = ((px & 0x7C00) >> 10);
             dst->a = ((px & 0x8000) >> 15);
         }
-        _clutState.unk0[0].uploadPending = 1;
+        _clutState.uploadPending = 1;
     }
 }
 
@@ -11592,18 +11600,18 @@ void func_80048B8C(
         }
         if (arg6 != 0) {
             _clutBuffer[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
-            if (_clutState.unk0[arg2].unk6.animActive == 0) {
-                struct ColorInfo* t5 = &_clutState.unk0[arg2].unkE[i];
+            if (_clutState.slots[arg2].animState.active == 0) {
+                struct ColorInfo* t5 = &_clutState.slots[arg2].colorInfo[i];
                 t5->r = r;
                 t5->g = g;
                 t5->b = b;
                 t5->a = t4;
             }
         }
-        _clutState.unk0[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
+        _clutState.slots[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
     }
 
-    _clutState.unk0[0].uploadPending = 1;
+    _clutState.uploadPending = 1;
 }
 
 void func_80048E68(
@@ -11617,7 +11625,7 @@ void func_80048EC4(void)
     int i;
     int var_v0;
     u_int* var_v1;
-    int(*p)[6] = _clutState.unk7E9C;
+    int(*p)[6] = _clutState.bgColors;
 
     var_v1 = func_8008EB24();
     for (i = 0; i < 5; ++i) {
@@ -11642,29 +11650,29 @@ void vs_main_commitClut(void)
 {
     RECT rect;
 
-    if (_clutState.unk0[0].uploadPending != 0) {
+    if (_clutState.uploadPending != 0) {
         setRECT(&rect, 768, 224, 256, 14);
         LoadImage(&rect, (u_long*)_clutBuffer[0]);
-        _clutState.unk0[0].uploadPending = 0;
+        _clutState.uploadPending = 0;
     }
 }
 
-void func_80048FEC(short arg0) { _clutState.unk0[0].active = arg0; }
+void func_80048FEC(short arg0) { _clutState.active = arg0; }
 
 void func_80048FF8(void)
 {
     int i;
 
-    _clutState.unk0[0].uploadPending = 0;
-    _clutState.unk0[0].active = 1;
+    _clutState.uploadPending = 0;
+    _clutState.active = 1;
     for (i = 0; i < 14; ++i) {
-        _clutState.unk0[i].locked = 0;
-        _clutState.unk0[i].unk6.animActive = 0;
-        _clutState.unk0[i].unk6.unk4 = 0;
+        _clutState.slots[i].locked = 0;
+        _clutState.slots[i].animState.active = 0;
+        _clutState.slots[i].animState.transitionMode = 0;
     }
 
-    _clutState.unk7E8C[4] = 0;
-    _clutState.unk7E8C[8] = 0;
+    _clutState.bgAnimActive = 0;
+    _clutState.bgTransitionMode = 0;
 
     for (i = 0; i < 17; ++i) {
         _clutState.unk7F28[i].unk0[0] = 0;

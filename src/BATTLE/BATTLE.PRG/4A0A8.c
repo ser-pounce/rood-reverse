@@ -608,7 +608,7 @@ int _invalidOpcode(u_char* arg0, short arg1)
 {
     char buf[64];
 
-    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
+    snprintf(buf, sizeof(buf), "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
     // Debug printing presumably ifdef'd out
     return 0;
 }
@@ -2500,7 +2500,7 @@ int vs_battle_script_specialOp(u_char* arg0, short arg1)
         func_8007C4D4();
         break;
     default:
-        sprintf(sp10, "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
+        snprintf(sp10, sizeof(sp10), "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
         break;
     }
     return 0;

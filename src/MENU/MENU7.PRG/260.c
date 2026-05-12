@@ -3337,7 +3337,7 @@ int vs_menu7_gameOver(char* state)
         returnToTitle
     };
 
-    static u_short D_8010AB80[256];
+    static u_short clutBuf[256];
     static vs_main_settings_t settingsBackup;
     static int resetDelay;
     static int _difficulty;
@@ -3383,9 +3383,9 @@ int vs_menu7_gameOver(char* state)
         _initMemcard(1);
         _initFileMenu();
         setRECT(&rect, 640, 511, 256, 1);
-        StoreImage(&rect, (u_long*)D_8010AB80);
+        StoreImage(&rect, (u_long*)clutBuf);
         DrawSync(0);
-        func_80048A64(D_8010AB80, 3, 0, 256);
+        vs_main_loadClut(clutBuf, 3, 0, 256);
         *state = displayFileMenu;
         break;
     case displayFileMenu:

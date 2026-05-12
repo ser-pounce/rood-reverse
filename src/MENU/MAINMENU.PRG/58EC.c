@@ -663,7 +663,7 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
         && (vs_main_stateFlags.gameOver == 1)) {
         vs_battle_drawImage(vs_getXY(640, 511), data, vs_getWH(256, 1));
     } else {
-        func_80048A64((u_short*)data, 3, 0, 0x100);
+        vs_main_loadClut((u_short*)data, 3, 0, 256);
     }
 
     vs_battle_drawImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));

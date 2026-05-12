@@ -4305,7 +4305,7 @@ int func_8007629C(u_long* otag)
     }
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
-    func_80048F8C();
+    vs_main_commitClut();
     DrawOTag(otag);
     FntFlush(-1);
     return ret;
@@ -9699,7 +9699,7 @@ void func_80089DC0(int arg0)
     func_800A1108(0, &sp40);
     func_80074B14(0, &sp40.unk0.unk0.fields);
     func_8007D360();
-    func_80048F8C();
+    vs_main_commitClut();
     func_800760CC(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
 
     if ((temp_s4 << 0x10) != 0) {
@@ -10078,9 +10078,9 @@ void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3)
 
 void func_8008B320(void)
 {
-    func_80048A64(D_800F1BA8, 0, 0, 0x100);
-    func_80048A64(D_800F1BA8 + 0x100, 1, 0, 0x100);
-    func_80048A64(D_800F1BA8 + 0x200, 2, 0, 0x100);
+    vs_main_loadClut(D_800F1BA8, 0, 0, 0x100);
+    vs_main_loadClut(D_800F1BA8 + 0x100, 1, 0, 0x100);
+    vs_main_loadClut(D_800F1BA8 + 0x200, 2, 0, 0x100);
     func_80099960(D_800F1BA8 + 0x300);
 }
 
@@ -11274,9 +11274,9 @@ void func_8008E4DC(int arg0)
 
     if (D_800F1D6F != arg0) {
         if (arg0 != 0) {
-            func_80048A64(D_80068BFC, 2, 0x30, 0x10);
+            vs_main_loadClut(D_80068BFC, 2, 0x30, 0x10);
         } else {
-            func_80048A64(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
+            vs_main_loadClut(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
         var_s0 = vs_battle_roomData.section12;
@@ -11559,7 +11559,7 @@ int func_8008F0FC(void)
             LoadImage(sp10.unkC, (u_long*)sp10.unk10);
         }
         if (sp10.unk8 != NULL) {
-            func_80048A64((void*)sp10.unk8, 0xE, 0, 0x100);
+            vs_main_loadClut((void*)sp10.unk8, 0xE, 0, 0x100);
         }
         vs_main_freeCdQueueSlot(D_800F1DAC);
         D_800F1DAC = NULL;

@@ -32,12 +32,20 @@ typedef struct {
 } D_8005DC80_t;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
+    u_short uploadPending;
+    u_short active;
     char unk4;
-    char unk5;
-    char unk6[5];
-    signed char unkB[3];
+    char locked;
+    struct clutOptions {
+        u_char animActive;
+        u_char unk1;
+        u_char unk2;
+        u_char unk3;
+        u_char unk4;
+        signed char unk5;
+        signed char unk6;
+        signed char unk7;
+    } unk6;
     struct ColorInfo {
         char r;
         char g;
@@ -48,16 +56,16 @@ typedef struct {
         u_char bindex;
     } unkE[256];
     u_short unk70E[254];
-} D_80055D58_t2;
+} _clutState_t2;
 
 typedef struct {
-    D_80055D58_t2 unk0[14];
+    _clutState_t2 unk0[14];
     char unk7E8C[10];
     short unk7E96[3];
     int unk7E9C[5][6];
     D_8005DC6C_t unk7F14[5];
     D_8005DC80_t unk7F28[17];
-} D_80055D58_t;
+} _clutState_t;
 
 enum diskState_e {
 
@@ -7972,13 +7980,13 @@ extern int _resetEnabled;
 extern u_int _buttonHeldFrameCount[];
 extern vs_main_disk_t vs_main_disk;
 extern char _dsControlBuf[11];
-extern D_80055D58_t D_80055D58;
+extern _clutState_t _clutState;
 extern int sp;
 extern int D_8005DBF4[5][6];
 extern u_int _frameDuration;
 extern int vs_main_saveGameClearData;
 extern int _inGame;
-extern u_short loadImageSource[][256];
+extern u_short _clutBuffer[][256];
 extern int D_8005FE70;
 extern int D_8005FE74;
 extern int D_8005FE78;
@@ -10517,7 +10525,7 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
         g = (arg2[i] & 0x3E0) >> 5;
         b = (arg2[i] & 0x7C00) >> 10;
 
-        p = D_80055D58.unk0[arg1].unkE;
+        p = _clutState.unk0[arg1].unkE;
 
         if (arg0 != 0) {
             p[i].rindex = (r - p[i].r) + 31;
@@ -10527,26 +10535,26 @@ static void func_80046B3C(int arg0, int arg1, u_short* arg2)
             p[i].r = r;
             p[i].g = g;
             p[i].b = b;
-            loadImageSource[arg1][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
+            _clutBuffer[arg1][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
         }
     }
 
     if (arg0 != 0) {
-        char* p = D_80055D58.unk0[arg1].unk6;
-        p[0] = 1;
-        p[1] = 0;
-        p[2] = 0;
-        p[3] = arg0;
+        struct clutOptions* p = &_clutState.unk0[arg1].unk6;
+        p->animActive = 1;
+        p->unk1 = 0;
+        p->unk2 = 0;
+        p->unk3 = arg0;
     } else {
-        D_80055D58.unk0[arg1].unk6[0] = 0;
+        _clutState.unk0[arg1].unk6.animActive = 0;
     }
 }
 
 void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_80046B3C(arg0, arg1, arg2 + (arg3 << 4));
-        D_80055D58.unk0[0].unk0 = 1;
+        _clutState.unk0[0].uploadPending = 1;
     }
 }
 
@@ -10554,11 +10562,11 @@ static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int i;
 
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_80046C80(arg0, arg1, arg2, arg3);
 
         for (i = 0; i < 0x100; ++i) {
-            D_80055D58.unk0[arg1].unk70E[i] = arg2[i];
+            _clutState.unk0[arg1].unk70E[i] = arg2[i];
         }
     }
 }
@@ -10567,9 +10575,9 @@ static void func_80046D58(int arg0)
 {
     int i;
 
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         for (i = 0; i < 256; ++i)
-            D_80055D58.unk0[arg0].unk70E[i] = loadImageSource[arg0][i];
+            _clutState.unk0[arg0].unk70E[i] = _clutBuffer[arg0][i];
     }
 }
 
@@ -10589,10 +10597,10 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
     int tmp;
     int t4 = (u_short)arg4;
     int t5 = (u_short)arg5;
-    struct ColorInfo* t2 = D_80055D58.unk0[arg2].unkE;
+    struct ColorInfo* t2 = _clutState.unk0[arg2].unkE;
 
     for (i = 0; i < 256; ++i) {
-        temp_t0 = D_80055D58.unk0[arg2].unk70E[i];
+        temp_t0 = _clutState.unk0[arg2].unk70E[i];
         if ((t2[i].r + t2[i].g + t2[i].b + t2[i].a) != 0) {
             switch (arg0) {
             case 1:
@@ -10649,7 +10657,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 var_a0 = (temp_t0 & 0x7C00) >> 0xA;
                 break;
             case 11:
-                D_80055D58.unk0[arg2].unk6[4] = 0;
+                _clutState.unk0[arg2].unk6.unk4 = 0;
                 return;
             case 12:
                 tmp = 0x1F;
@@ -10710,7 +10718,7 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
                 t2[i].b = var_a0;
                 t2[i].r = var_t3;
                 t2[i].g = var_t1;
-                loadImageSource[arg2][i] =
+                _clutBuffer[arg2][i] =
                     var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i].a << 0xF);
             }
         } else {
@@ -10720,26 +10728,26 @@ void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg
         }
     }
     if (arg1 != 0) {
-        char* p = D_80055D58.unk0[arg2].unk6;
-        p[0] = 1;
-        p[1] = 0;
-        p[2] = 0;
-        p[3] = arg1;
-        p[4] = arg0;
+        struct clutOptions* p = &_clutState.unk0[arg2].unk6;
+        p->animActive = 1;
+        p->unk1 = 0;
+        p->unk2 = 0;
+        p->unk3 = arg1;
+        p->unk4 = arg0;
         if (arg0 == 9) {
-            p[5] = arg3;
-            p[6] = t4;
-            p[7] = t5;
+            p->unk5 = arg3;
+            p->unk6 = t4;
+            p->unk7 = t5;
         }
     } else {
-        D_80055D58.unk0[arg2].unk6[0] = 0;
-        D_80055D58.unk0[0].unk0 = 1;
+        _clutState.unk0[arg2].unk6.animActive = 0;
+        _clutState.unk0[0].uploadPending = 1;
     }
 }
 
 void func_80047280(int arg0, int arg1, int arg2, short arg3, int arg4, int arg5)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         do {
             func_80046DC0(arg0, arg1, arg2, arg3, arg4, arg5);
         } while (0);
@@ -10754,8 +10762,8 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
     int new_var;
     int i;
 
-    if (D_80055D58.unk0[0].unk2 != 0) {
-        int(*temp_t6)[6] = D_80055D58.unk7E9C;
+    if (_clutState.unk0[0].active != 0) {
+        int(*temp_t6)[6] = _clutState.unk7E9C;
         for (i = 0; i < 5; ++i) {
             int temp_a1, temp_t1, temp_t2;
             temp_a1 = _shift_left(arg1[i].unk0);
@@ -10776,13 +10784,13 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
             }
         }
         if (arg0 != 0) {
-            D_80055D58.unk7E8C[4] = 1;
-            D_80055D58.unk7E8C[5] = 0;
-            D_80055D58.unk7E8C[6] = 0;
-            D_80055D58.unk7E8C[7] = arg0;
+            _clutState.unk7E8C[4] = 1;
+            _clutState.unk7E8C[5] = 0;
+            _clutState.unk7E8C[6] = 0;
+            _clutState.unk7E8C[7] = arg0;
             return;
         }
-        D_80055D58.unk7E8C[4] = 0;
+        _clutState.unk7E8C[4] = 0;
 
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, var_v1;
@@ -10815,10 +10823,10 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
 {
     int i;
 
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_800472D0(arg0, arg1);
         for (i = 0; i < 5; ++i) {
-            D_80055D58.unk7F14[i] = arg1[i];
+            _clutState.unk7F14[i] = arg1[i];
         }
     }
 }
@@ -10831,7 +10839,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     int var_t0;
     int var_t1;
     int i;
-    int(*p)[6] = D_80055D58.unk7E9C;
+    int(*p)[6] = _clutState.unk7E9C;
 
     for (i = 0; i < 5; ++i) {
         switch (arg0) {
@@ -10853,19 +10861,19 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             break;
         case 4:
         case 9:
-            var_t1 = (D_80055D58.unk7F14[i].unk0 + arg2) << 0x10;
-            var_t0 = (D_80055D58.unk7F14[i].unk1 + arg3) << 0x10;
-            var_a1 = (D_80055D58.unk7F14[i].unk2 + arg4) << 0x10;
+            var_t1 = (_clutState.unk7F14[i].unk0 + arg2) << 0x10;
+            var_t0 = (_clutState.unk7F14[i].unk1 + arg3) << 0x10;
+            var_a1 = (_clutState.unk7F14[i].unk2 + arg4) << 0x10;
             break;
         case 5:
-            var_t1 = (D_80055D58.unk7F14[i].unk0 << 0xF) + (arg2 << 0x10);
-            var_t0 = (D_80055D58.unk7F14[i].unk1 << 0xF) + (arg3 << 0x10);
-            var_a1 = (D_80055D58.unk7F14[i].unk2 << 0xF) + (arg4 << 0x10);
+            var_t1 = (_clutState.unk7F14[i].unk0 << 0xF) + (arg2 << 0x10);
+            var_t0 = (_clutState.unk7F14[i].unk1 << 0xF) + (arg3 << 0x10);
+            var_a1 = (_clutState.unk7F14[i].unk2 << 0xF) + (arg4 << 0x10);
             break;
         case 6: {
-            int v1 = D_80055D58.unk7F14[i].unk1;
-            int a0 = D_80055D58.unk7F14[i].unk2;
-            int v0 = D_80055D58.unk7F14[i].unk0;
+            int v1 = _clutState.unk7F14[i].unk1;
+            int a0 = _clutState.unk7F14[i].unk2;
+            int v0 = _clutState.unk7F14[i].unk0;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -10877,9 +10885,9 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 6 + (arg4 << 0x10);
         } break;
         case 7: {
-            int v1 = D_80055D58.unk7F14[i].unk1;
-            int a0 = D_80055D58.unk7F14[i].unk2;
-            int v0 = D_80055D58.unk7F14[i].unk0;
+            int v1 = _clutState.unk7F14[i].unk1;
+            int a0 = _clutState.unk7F14[i].unk2;
+            int v0 = _clutState.unk7F14[i].unk0;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -10891,12 +10899,12 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 12 + (arg4 << 0x10);
         } break;
         case 8:
-            var_t1 = D_80055D58.unk7F14[i].unk0 << 0x10;
-            var_t0 = D_80055D58.unk7F14[i].unk1 << 0x10;
-            var_a1 = D_80055D58.unk7F14[i].unk2 << 0x10;
+            var_t1 = _clutState.unk7F14[i].unk0 << 0x10;
+            var_t0 = _clutState.unk7F14[i].unk1 << 0x10;
+            var_a1 = _clutState.unk7F14[i].unk2 << 0x10;
             break;
         case 11:
-            D_80055D58.unk7E8C[8] = 0;
+            _clutState.unk7E8C[8] = 0;
             return;
         case 0:
         default:
@@ -10940,18 +10948,18 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 
     if (arg1 != 0) {
-        D_80055D58.unk7E8C[4] = 1;
-        D_80055D58.unk7E8C[5] = 0;
-        D_80055D58.unk7E8C[6] = 0;
-        D_80055D58.unk7E8C[7] = arg1;
-        D_80055D58.unk7E8C[8] = arg0;
+        _clutState.unk7E8C[4] = 1;
+        _clutState.unk7E8C[5] = 0;
+        _clutState.unk7E8C[6] = 0;
+        _clutState.unk7E8C[7] = arg1;
+        _clutState.unk7E8C[8] = arg0;
         if (arg0 == 9) {
-            D_80055D58.unk7E96[0] = arg2;
-            D_80055D58.unk7E96[1] = arg3;
-            D_80055D58.unk7E96[2] = arg4;
+            _clutState.unk7E96[0] = arg2;
+            _clutState.unk7E96[1] = arg3;
+            _clutState.unk7E96[2] = arg4;
         }
     } else {
-        D_80055D58.unk7E8C[4] = 0;
+        _clutState.unk7E8C[4] = 0;
         for (i = 0; i < 5; ++i) {
             int temp_a1, var_v0, new_var;
             temp_v0 = p[i][0];
@@ -10981,7 +10989,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_800474DC(arg0, arg1, arg2, arg3, arg4);
     }
 }
@@ -11004,12 +11012,12 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     int v0;
     int* temp_a3;
 
-    if (D_80055D58.unk0[0].unk2 == 0) {
+    if (_clutState.unk0[0].active == 0) {
         return;
     }
 
-    temp_t0 = &D_80055D58.unk7F28[arg1];
-    temp_a3 = D_80055D58.unk7F28[arg1].unk10;
+    temp_t0 = &_clutState.unk7F28[arg1];
+    temp_a3 = _clutState.unk7F28[arg1].unk10;
     temp_a1 = _shift_left(arg2->unk0);
     temp_t1 = _shift_left(arg2->unk1);
     temp_t2 = _shift_left(arg2->unk2);
@@ -11056,9 +11064,9 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_80047910(arg0, arg1, arg2);
-        D_80055D58.unk7F28[arg1].unk28 = *arg2;
+        _clutState.unk7F28[arg1].unk28 = *arg2;
     }
 }
 
@@ -11071,7 +11079,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     int var_t0;
     int var_v0;
     int var_v1;
-    D_8005DC80_t* t1 = &D_80055D58.unk7F28[arg2];
+    D_8005DC80_t* t1 = &_clutState.unk7F28[arg2];
     int* t2 = t1->unk10;
 
     var_t4 = 0;
@@ -11231,7 +11239,7 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 
 void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    if (D_80055D58.unk0[0].unk2 != 0) {
+    if (_clutState.unk0[0].active != 0) {
         func_80047B30(arg0, arg1, arg2, arg3, arg4, arg5);
     }
 }
@@ -11246,11 +11254,11 @@ void func_80047FFC(void)
     int var_v1;
     int(*t1)[6];
 
-    if (D_80055D58.unk7E8C[4] == 0) {
+    if (_clutState.unk7E8C[4] == 0) {
         return;
     }
 
-    t1 = D_80055D58.unk7E9C;
+    t1 = _clutState.unk7E9C;
 
     for (i = 0; i < 5; ++i) {
         t1[i][0] += t1[i][3];
@@ -11276,21 +11284,21 @@ void func_80047FFC(void)
         sp18[i] = new_var + ((var_v1 >> 16) << 16);
     }
     func_8008EB30(sp18);
-    D_80055D58.unk7E8C[5] += 1;
-    if (D_80055D58.unk7E8C[5] >= (D_80055D58.unk7E8C[7] * 2)) {
-        if (D_80055D58.unk7E8C[8] == 9) {
-            func_800474DC(4, D_80055D58.unk7E8C[7], D_80055D58.unk7E96[0] / 2,
-                D_80055D58.unk7E96[1] / 2, D_80055D58.unk7E96[2] / 2);
-            D_80055D58.unk7E8C[8] = 10;
+    _clutState.unk7E8C[5] += 1;
+    if (_clutState.unk7E8C[5] >= (_clutState.unk7E8C[7] * 2)) {
+        if (_clutState.unk7E8C[8] == 9) {
+            func_800474DC(4, _clutState.unk7E8C[7], _clutState.unk7E96[0] / 2,
+                _clutState.unk7E96[1] / 2, _clutState.unk7E96[2] / 2);
+            _clutState.unk7E8C[8] = 10;
             return;
         }
-        if (D_80055D58.unk7E8C[8] == 10) {
-            func_800474DC(9, D_80055D58.unk7E8C[7], D_80055D58.unk7E96[0],
-                D_80055D58.unk7E96[1], D_80055D58.unk7E96[2]);
-            D_80055D58.unk7E8C[8] = 9;
+        if (_clutState.unk7E8C[8] == 10) {
+            func_800474DC(9, _clutState.unk7E8C[7], _clutState.unk7E96[0],
+                _clutState.unk7E96[1], _clutState.unk7E96[2]);
+            _clutState.unk7E8C[8] = 9;
             return;
         }
-        D_80055D58.unk7E8C[4] = 0;
+        _clutState.unk7E8C[4] = 0;
     }
 }
 
@@ -11299,7 +11307,7 @@ void func_800481C0(void)
     char sp18[4];
     int i;
     int var_v0;
-    D_8005DC80_t* p = D_80055D58.unk7F28;
+    D_8005DC80_t* p = _clutState.unk7F28;
 
     for (i = 0; i < 17; ++i) {
         int* a2 = p[i].unk10;
@@ -11364,17 +11372,17 @@ void func_800483FC(void)
     int c;
 
     for (i = 0; i < 14; ++i) {
-        if (D_80055D58.unk0[i].unk6[0] == 0) {
+        if (_clutState.unk0[i].unk6.animActive == 0) {
             continue;
         }
-        if (++D_80055D58.unk0[i].unk6[2] >= (D_80055D58.unk0[i].unk6[3] / 8)) {
+        if (++_clutState.unk0[i].unk6.unk2 >= (_clutState.unk0[i].unk6.unk3 / 8)) {
 
-            D_80055D58.unk0[i].unk6[2] = 0;
+            _clutState.unk0[i].unk6.unk2 = 0;
 
-            if (D_80055D58.unk0[i].unk6[3] >= 8) {
+            if (_clutState.unk0[i].unk6.unk3 >= 8) {
                 var_t5 = 1;
-                c = D_80055D58.unk0[i].unk6[1];
-                index = D_80055D58.unk0[i].unkE;
+                c = _clutState.unk0[i].unk6.unk1;
+                index = _clutState.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11388,12 +11396,12 @@ void func_800483FC(void)
                     index[j].g = g;
                     index[j].b = b;
                     index[j].r = r;
-                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
-            } else if (D_80055D58.unk0[i].unk6[3] >= 4) {
+            } else if (_clutState.unk0[i].unk6.unk3 >= 4) {
                 var_t5 = 2;
-                c = D_80055D58.unk0[i].unk6[1];
-                index = D_80055D58.unk0[i].unkE;
+                c = _clutState.unk0[i].unk6.unk1;
+                index = _clutState.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11407,12 +11415,12 @@ void func_800483FC(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
-            } else if (D_80055D58.unk0[i].unk6[3] >= 2) {
+            } else if (_clutState.unk0[i].unk6.unk3 >= 2) {
                 var_t5 = 4;
-                c = D_80055D58.unk0[i].unk6[1];
-                index = D_80055D58.unk0[i].unkE;
+                c = _clutState.unk0[i].unk6.unk1;
+                index = _clutState.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11426,12 +11434,12 @@ void func_800483FC(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else {
                 var_t5 = 8;
-                c = D_80055D58.unk0[i].unk6[1];
-                index = D_80055D58.unk0[i].unkE;
+                c = _clutState.unk0[i].unk6.unk1;
+                index = _clutState.unk0[i].unkE;
                 for (j = 0; j < 256; ++j) {
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
@@ -11445,35 +11453,36 @@ void func_800483FC(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    loadImageSource[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             }
-            if (++D_80055D58.unk0[i].unk6[1] >= (16 / var_t5)) {
-                if (D_80055D58.unk0[i].unk6[4] == 9) {
-                    func_80046DC0(4, D_80055D58.unk0[i].unk6[3], i,
-                        D_80055D58.unk0[i].unkB[0] / 2, D_80055D58.unk0[i].unkB[1] / 2,
-                        D_80055D58.unk0[i].unkB[2] / 2);
-                    D_80055D58.unk0[i].unk6[4] = 10;
-                } else if (D_80055D58.unk0[i].unk6[4] == 10) {
-                    func_80046DC0(9, D_80055D58.unk0[i].unk6[3], i,
-                        D_80055D58.unk0[i].unkB[0], D_80055D58.unk0[i].unkB[1],
-                        D_80055D58.unk0[i].unkB[2]);
-                    D_80055D58.unk0[i].unk6[4] = 9;
-                } else if (D_80055D58.unk0[i].unk6[4] == 14) {
-                    func_80046DC0(15, D_80055D58.unk0[i].unk6[3], i, 0, 0, 0);
-                    D_80055D58.unk0[i].unk6[4] = 15;
+            if (++_clutState.unk0[i].unk6.unk1 >= (16 / var_t5)) {
+                if (_clutState.unk0[i].unk6.unk4 == 9) {
+                    func_80046DC0(4, _clutState.unk0[i].unk6.unk3, i,
+                        _clutState.unk0[i].unk6.unk5 / 2,
+                        _clutState.unk0[i].unk6.unk6 / 2,
+                        _clutState.unk0[i].unk6.unk7 / 2);
+                    _clutState.unk0[i].unk6.unk4 = 10;
+                } else if (_clutState.unk0[i].unk6.unk4 == 10) {
+                    func_80046DC0(9, _clutState.unk0[i].unk6.unk3, i,
+                        _clutState.unk0[i].unk6.unk5, _clutState.unk0[i].unk6.unk6,
+                        _clutState.unk0[i].unk6.unk7);
+                    _clutState.unk0[i].unk6.unk4 = 9;
+                } else if (_clutState.unk0[i].unk6.unk4 == 14) {
+                    func_80046DC0(15, _clutState.unk0[i].unk6.unk3, i, 0, 0, 0);
+                    _clutState.unk0[i].unk6.unk4 = 15;
                 } else {
-                    D_80055D58.unk0[i].unk6[0] = 0;
+                    _clutState.unk0[i].unk6.animActive = 0;
                 }
             }
         }
-        D_80055D58.unk0[0].unk0 = 1;
+        _clutState.unk0[0].uploadPending = 1;
     }
 }
 
-static void func_80048A3C(int arg0) { D_80055D58.unk0[arg0].unk6[0] = 0; }
+static void func_80048A3C(int arg0) { _clutState.unk0[arg0].unk6.animActive = 0; }
 
-void func_80048A64(u_short const* img, u_int y, u_int x, u_int w)
+void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w)
 {
     RECT rect;
     u_short px;
@@ -11486,19 +11495,19 @@ void func_80048A64(u_short const* img, u_int y, u_int x, u_int w)
         return;
     }
 
-    if (D_80055D58.unk0[y].unk5 == 0) {
-        D_80055D58.unk0[y].unk6[0] = 0;
+    if (_clutState.unk0[y].locked == 0) {
+        _clutState.unk0[y].unk6.animActive = 0;
         for (i = 0; i < w; ++i) {
             px = img[i];
-            dst = &D_80055D58.unk0[y].unkE[x + i];
-            loadImageSource[y][x + i] = px;
-            D_80055D58.unk0[y].unk70E[x + i] = px;
+            dst = &_clutState.unk0[y].unkE[x + i];
+            _clutBuffer[y][x + i] = px;
+            _clutState.unk0[y].unk70E[x + i] = px;
             dst->r = (px & 0x1F);
             dst->g = ((px & 0x3E0) >> 5);
             dst->b = ((px & 0x7C00) >> 10);
             dst->a = ((px & 0x8000) >> 15);
         }
-        D_80055D58.unk0[0].unk0 = 1;
+        _clutState.unk0[0].uploadPending = 1;
     }
 }
 
@@ -11582,19 +11591,19 @@ void func_80048B8C(
             b = 1;
         }
         if (arg6 != 0) {
-            loadImageSource[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
-            if (D_80055D58.unk0[arg2].unk6[0] == 0) {
-                struct ColorInfo* t5 = &D_80055D58.unk0[arg2].unkE[i];
+            _clutBuffer[arg2][i] = r + (g << 5) + (b << 10) + (t4 << 15);
+            if (_clutState.unk0[arg2].unk6.animActive == 0) {
+                struct ColorInfo* t5 = &_clutState.unk0[arg2].unkE[i];
                 t5->r = r;
                 t5->g = g;
                 t5->b = b;
                 t5->a = t4;
             }
         }
-        D_80055D58.unk0[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
+        _clutState.unk0[arg2].unk70E[i] = r + (g << 5) + (b << 10) + (t4 << 15);
     }
 
-    D_80055D58.unk0[0].unk0 = 1;
+    _clutState.unk0[0].uploadPending = 1;
 }
 
 void func_80048E68(
@@ -11608,63 +11617,63 @@ void func_80048EC4(void)
     int i;
     int var_v0;
     u_int* var_v1;
-    int(*p)[6] = D_80055D58.unk7E9C;
+    int(*p)[6] = _clutState.unk7E9C;
 
     var_v1 = func_8008EB24();
     for (i = 0; i < 5; ++i) {
-        D_80055D58.unk7F14[i].unk0 = var_v1[i];
+        _clutState.unk7F14[i].unk0 = var_v1[i];
         var_v0 = var_v1[i] & 0xFF00;
         if (var_v0 < 0) {
             var_v0 += 0xFF;
         }
-        D_80055D58.unk7F14[i].unk1 = (var_v0 >> 8);
+        _clutState.unk7F14[i].unk1 = (var_v0 >> 8);
         var_v0 = var_v1[i] & 0xFF0000;
         if (var_v0 < 0) {
             var_v0 += 0xFFFF;
         }
-        D_80055D58.unk7F14[i].unk2 = (var_v0 >> 16);
+        _clutState.unk7F14[i].unk2 = (var_v0 >> 16);
         p[i][0] = ((var_v1[i] & 0xFF) << 16);
         p[i][1] = ((var_v1[i] & 0xFF00) << 8);
         p[i][2] = (var_v1[i] & 0xFF0000);
     }
 }
 
-void func_80048F8C(void)
+void vs_main_commitClut(void)
 {
     RECT rect;
 
-    if (D_80055D58.unk0[0].unk0 != 0) {
+    if (_clutState.unk0[0].uploadPending != 0) {
         setRECT(&rect, 768, 224, 256, 14);
-        LoadImage(&rect, (u_long*)loadImageSource[0]);
-        D_80055D58.unk0[0].unk0 = 0;
+        LoadImage(&rect, (u_long*)_clutBuffer[0]);
+        _clutState.unk0[0].uploadPending = 0;
     }
 }
 
-void func_80048FEC(short arg0) { D_80055D58.unk0[0].unk2 = arg0; }
+void func_80048FEC(short arg0) { _clutState.unk0[0].active = arg0; }
 
 void func_80048FF8(void)
 {
     int i;
 
-    D_80055D58.unk0[0].unk0 = 0;
-    D_80055D58.unk0[0].unk2 = 1;
+    _clutState.unk0[0].uploadPending = 0;
+    _clutState.unk0[0].active = 1;
     for (i = 0; i < 14; ++i) {
-        D_80055D58.unk0[i].unk5 = 0;
-        D_80055D58.unk0[i].unk6[0] = 0;
-        D_80055D58.unk0[i].unk6[4] = 0;
+        _clutState.unk0[i].locked = 0;
+        _clutState.unk0[i].unk6.animActive = 0;
+        _clutState.unk0[i].unk6.unk4 = 0;
     }
 
-    D_80055D58.unk7E8C[4] = 0;
-    D_80055D58.unk7E8C[8] = 0;
+    _clutState.unk7E8C[4] = 0;
+    _clutState.unk7E8C[8] = 0;
 
     for (i = 0; i < 17; ++i) {
-        D_80055D58.unk7F28[i].unk0[0] = 0;
-        D_80055D58.unk7F28[i].unk0[4] = 0;
-        D_80055D58.unk7F28[i].unk6[3] = 0;
-        *((int*)&D_80055D58.unk7F28[i].unk28) = 0x404040;
-        D_80055D58.unk7F28[i].unk10[2] = 0x400000;
-        D_80055D58.unk7F28[i].unk10[1] = 0x400000;
-        D_80055D58.unk7F28[i].unk10[0] = 0x400000;
+        _clutState.unk7F28[i].unk0[0] = 0;
+        _clutState.unk7F28[i].unk0[4] = 0;
+        _clutState.unk7F28[i].unk6[3] = 0;
+        *((int*)&_clutState.unk7F28[i].unk28) = 0x404040;
+        _clutState.unk7F28[i].unk10[2] = 0x400000;
+        _clutState.unk7F28[i].unk10[1] = 0x400000;
+        _clutState.unk7F28[i].unk10[0] = 0x400000;
     }
 }
 

@@ -78,7 +78,7 @@ void _loadSystemDat(void)
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk8;
-    func_80048A64((u_short*)p_hdr + 2, 0xF, 0, p_hdr->x);
+    vs_main_loadClut((u_short*)p_hdr + 2, 0xF, 0, p_hdr->x);
 
     p_hdr = (RECT*)((signed char*)buf + buf->unkC);
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);

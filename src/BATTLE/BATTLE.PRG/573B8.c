@@ -71,7 +71,13 @@ INCLUDE_ASM(
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05B4);
+void func_800C05B4(void)
+{
+    if (D_800EB9B8 != NULL) {
+        vs_main_freeHeap(D_800EB9B8);
+        D_800EB9B8 = NULL;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05EC);
 

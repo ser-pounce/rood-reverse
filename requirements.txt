@@ -1,4 +1,4 @@
-splat64[mips]
-pandas
-toml
-cffi
+splat64[mips]==0.40.0
+pandas==3.0.3
+toml==0.10.2
+cffi==2.0.0

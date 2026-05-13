@@ -18,6 +18,8 @@ jobs:
             runner: ubuntu-latest
           - system: aarch64-darwin
             runner: macos-latest
+          - system: x86_64-darwin
+            runner: macos-13
     name: cache-warm (${{ matrix.system }})
     runs-on: ${{ matrix.runner }}
     steps:

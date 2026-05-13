@@ -11,9 +11,6 @@ $(BUILD)/config/BATTLE/INITBTL.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 
-# STRUCT_CC: cffi only needs *some* C preprocessor to expand the SDK headers; fall back
-# to the host compiler (clang/gcc) since the dev shell ships mipsel-linux-gnu binutils
-# only, not the full cross-GCC.
 STRUCT_CC ?= cc
 
 $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.h: $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.yaml | $$(@D)/

@@ -6,16 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Cancel in-progress runs for the same branch when new commits arrive.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # nix-build: validates the nix flake itself plus everything that can be checked
-  # without the original disk image. The disk is copyright-locked and can't be in
-  # CI, so `make check` (which diffs against extracted reference data) only runs
-  # locally or on a self-hosted runner with the disk mounted as a secret.
   nix-build:
     name: nix-build
     runs-on: ubuntu-latest
@@ -35,8 +30,6 @@ jobs:
         uses: cachix/cachix-action@v15
         with:
           name: rood-reverse
-          # No authToken on PR runs (forks can't read secrets); push only on
-          # pushes to main where the secret is available.
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: ${{ github.event_name == 'pull_request' }}
 

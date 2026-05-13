@@ -14,9 +14,6 @@ def encode_c_char_literal(s):
     return str(encoded[0])
 
 def process_vsstring_block(block):
-    # `char NAME[N] = "..."`: gcc 2.7.2 cc1 segfaults if the brace-initialised byte
-    # list we emit is longer than N. The decomp idiom (cf. C48.c) is to rely on the
-    # compiler silently dropping the excess, so reproduce that truncation up-front.
     sized_array_re = re.compile(
         r'(char\s+\w+\s*\[\s*(\d+)\s*\]\s*=\s*)'
         r'("(?:[^"\\]|\\.)*")'

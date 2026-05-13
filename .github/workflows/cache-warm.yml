@@ -1,11 +1,5 @@
 name: cache-warm
 
-# Manually triggered: builds the dev shell on each supported nix system and
-# pushes the resulting closure to rood-reverse.cachix.org so contributors don't
-# pay the from-source cross-gcc cost on first `nix develop`.
-#
-# Run this once per nixpkgs bump (or whenever flake.lock changes), not on every
-# push — it's billed minutes for something contributors only need occasionally.
 on:
   workflow_dispatch:
   push:

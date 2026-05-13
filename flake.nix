@@ -9,10 +9,6 @@
   };
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  # Pinned for the cross-mipsel preprocessor only: Ubuntu 24.04 ships
-  # gcc-mipsel-linux-gnu 12.4.0, and matching codegen depends on cpp from that
-  # exact major version. nixpkgs-unstable removed gcc12 (Aug 2025); nixos-24.11
-  # is the last release branch that still has it.
   inputs.nixpkgs-gcc12.url = "github:NixOS/nixpkgs/nixos-24.11";
 
   outputs = { self, nixpkgs, nixpkgs-gcc12 }:
@@ -79,17 +75,8 @@
             '';
           };
 
-          # crossBt (binutils) is small and cached. crossGcc (gcc-unwrapped) pulls a from-source
-          # cross-GCC closure on Darwin — slow on first build for any individual mac contributor,
-          # but rood-reverse.cachix.org substitutes the result for everyone after the first push.
-          # We need cpp from it: the original Makefile invokes $(ARCH)cpp = mipsel-linux-gnu-cpp,
-          # and matching codegen depends on modern GCC's preprocessor (not old-gcc's PSY-Q-era cpp).
           crossPkgs = pkgs.pkgsCross.mipsel-linux-gnu;
           crossBt = crossPkgs.buildPackages.binutils;
-          # Pin gcc12 cross from nixos-24.11 — modern cpp (>= gcc13) emits subtly different
-          # preprocessed output that breaks matching codegen for SLUS/TITLE/BATTLE/several
-          # MENU PRGs. The Ubuntu 24.04 reference uses gcc-mipsel-linux-gnu 12.4.0; we pin
-          # the same major version through `pkgsGcc12` (a separate nixpkgs input).
           crossGcc = pkgsGcc12.pkgsCross.mipsel-linux-gnu.buildPackages.gcc12.cc;
           crossTriplet = crossPkgs.stdenv.targetPlatform.config;
           mipselLinuxGnuBin = pkgs.runCommand "mipsel-linux-gnu-toolchain-aliases" { } ''

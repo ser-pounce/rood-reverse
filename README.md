@@ -152,8 +152,6 @@ Works only on Ubuntu 24.04 (or WSL). Other Linux distros may need additional pac
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 
-> **Important:** the `gcc-mipsel-linux-gnu` major version matters for matching codegen — the project's reference was built with cpp from gcc 12.x, and newer versions (13+) emit subtly different preprocessed output that breaks `make check`. Stick to the version your distro ships matching the table above, or use the Nix path which pins this for you.
-
 ## Build targets
 - `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
 - `make decompme TARGET=path/to/nonmatchings/source.s` uploads the target function to a new decomp.me scratch.

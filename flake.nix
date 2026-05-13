@@ -90,13 +90,11 @@
         {
           default = pkgs.mkShell {
             packages = [
-              pkgs.bash
               pkgs.cmake
-              pkgs.clang-tools
+              pkgs.llvmPackages_18.clang-tools
               pkgs.gnumake
-              pkgs.git
               pkgs.rustup
-              pkgs.python3
+              pkgs.python312
               setupOldGcc
               crossBt
               mipselLinuxGnuBin

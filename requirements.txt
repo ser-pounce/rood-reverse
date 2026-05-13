@@ -1,0 +1,4 @@
+splat64[mips]
+pandas
+toml
+cffi

@@ -8,16 +8,30 @@ def encode_c_string_literal(s):
     return '{' + byte_array + '}'
 
 def encode_c_char_literal(s):
-    # s includes the surrounding single quotes
-    # evaluate to a Python string of length 1 and encode it
     encoded = encode_raw(eval(s))
     if len(encoded) != 1:
-        # unexpected; fall back to full list
         return '{' + ', '.join(str(b) for b in encoded) + '}'
     return str(encoded[0])
 
 def process_vsstring_block(block):
-    # match C string literals \"...\" and character literals '\''...\''
+    # `char NAME[N] = "..."`: gcc 2.7.2 cc1 segfaults if the brace-initialised byte
+    # list we emit is longer than N. The decomp idiom (cf. C48.c) is to rely on the
+    # compiler silently dropping the excess, so reproduce that truncation up-front.
+    sized_array_re = re.compile(
+        r'(char\s+\w+\s*\[\s*(\d+)\s*\]\s*=\s*)'
+        r'("(?:[^"\\]|\\.)*")'
+    )
+
+    def sized_array_replacer(match):
+        prefix, size_str, literal = match.group(1), match.group(2), match.group(3)
+        encoded = encode_raw(eval(literal))
+        size = int(size_str)
+        truncated = list(encoded[:size])
+        byte_array = ', '.join(str(b) for b in truncated)
+        return f'{prefix}{{{byte_array}}}'
+
+    block = sized_array_re.sub(sized_array_replacer, block)
+
     string_literal_re = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"')
     char_literal_re = re.compile(r"'([^'\\]*(?:\\.[^'\\]*)*)'")
 
@@ -25,10 +39,8 @@ def process_vsstring_block(block):
         return encode_c_string_literal(match.group(0))
 
     def char_replacer(match):
-        # encode character literal without braces
         return encode_c_char_literal(match.group(0))
 
-    # replace string literals first, then character literals
     block = string_literal_re.sub(string_replacer, block)
     block = char_literal_re.sub(char_replacer, block)
     return block

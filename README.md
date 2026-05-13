@@ -152,6 +152,8 @@ Works only on Ubuntu 24.04 (or WSL). Other Linux distros may need additional pac
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 
+> **Important:** install `gcc-mipsel-linux-gnu` at exactly major version 12 — newer versions emit subtly different preprocessed output that breaks `make check` even though everything appears to build cleanly. The Nix path pins this for you and uses the same toolchain as CI, so what passes locally passes upstream.
+
 ## Build targets
 - `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
 - `make decompme TARGET=path/to/nonmatchings/source.s` uploads the target function to a new decomp.me scratch.

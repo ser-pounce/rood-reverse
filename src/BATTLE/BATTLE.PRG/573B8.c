@@ -9,14 +9,20 @@ extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
 typedef struct {
-    int unk0;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     int unk4;
     int unk8;
     int unkC;
 } D_800EB9B8_t2;
 
 typedef struct {
-    int unk0;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     int unk4;
     int unk8;
     int unkC;
@@ -104,7 +110,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05EC);
 void func_800C06E0(void)
 {
     if (D_800EB9B8 != NULL) {
-        ((u_char*)D_800EB9B8)[0] = 0;
+        D_800EB9B8->unk0 = 0;
     }
 }
 
@@ -117,7 +123,7 @@ void func_800C0700(D_800EB9B8_t2* arg0)
 void func_800C0738(void)
 {
     if (D_800EB9B8 != NULL) {
-        ((u_char*)D_800EB9B8)[0x10] = 0;
+        D_800EB9B8->unk10.unk0 = 0;
     }
 }
 

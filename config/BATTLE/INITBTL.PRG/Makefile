@@ -11,13 +11,11 @@ $(BUILD)/config/BATTLE/INITBTL.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 
-STRUCT_CC ?= cc
-
 $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.h: $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.yaml | $$(@D)/
 	$(ECHO) Encoding struct $@
 	$(VPYTHON) -m tools.dev.encodeStruct $< $@ \
 		--header src/BATTLE/BATTLE.PRG/146C.h \
-		--compiler $(STRUCT_CC) \
+		--compiler mipsel-linux-gnu-gcc \
 		--include include/psx/ \
 		--struct vs_battle_charInitData
 
@@ -25,7 +23,7 @@ $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.yaml: | $$(@D)/
 	$(ECHO) Dumping struct $@
 	$(VPYTHON) -m tools.dev.dumpStruct data/BATTLE/INITBTL.PRG 0x1318 $@ \
 		--header src/BATTLE/BATTLE.PRG/146C.h \
-		--compiler $(STRUCT_CC) \
+		--compiler mipsel-linux-gnu-gcc \
 		--include include/psx/ \
 		--struct vs_battle_charInitData
 

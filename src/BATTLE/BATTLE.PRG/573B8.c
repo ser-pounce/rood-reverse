@@ -5,9 +5,29 @@
 #include "../SLUS_010.40/main.h"
 
 extern u_char D_800E9C30[];
-extern u_char* D_800EB9B8;
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+} D_800EB9B8_t2;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    D_800EB9B8_t2 unk10;
+    int unk20;
+    int unk24;
+    short unk28;
+    short unk2A;
+} D_800EB9B8_t;
+
+extern D_800EB9B8_t* D_800EB9B8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
@@ -84,38 +104,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05EC);
 void func_800C06E0(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8[0] = 0;
+        ((u_char*)D_800EB9B8)[0] = 0;
     }
 }
 
-u_char* func_800C0700(int* arg0)
+void func_800C0700(D_800EB9B8_t2* arg0)
 {
-    register int ptr asm("v1") = (int)D_800EB9B8;
-    register u_char* ret asm("v0") = (u_char*)ptr;
-    int temp_a1;
-    int temp_a2;
-    int temp_a3;
-    register int temp_t0 asm("t0");
-
-    __asm__("" : "+r"(ptr) : : "memory");
-
-    temp_a1 = arg0[0];
-    temp_a2 = arg0[1];
-    temp_a3 = arg0[2];
-    temp_t0 = arg0[3];
-
-    *(int*)(ptr + 0x10) = temp_a1;
-    *(int*)(ptr + 0x14) = temp_a2;
-    *(int*)(ptr + 0x18) = temp_a3;
-    *(int*)(ptr + 0x1C) = temp_t0;
-    *(short*)(ret + 0x2A) = 0;
-    return ret;
+    D_800EB9B8->unk10 = *arg0;
+    D_800EB9B8->unk2A = 0;
 }
 
 void func_800C0738(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8[0x10] = 0;
+        ((u_char*)D_800EB9B8)[0x10] = 0;
     }
 }
 

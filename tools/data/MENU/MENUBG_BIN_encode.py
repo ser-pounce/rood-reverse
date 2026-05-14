@@ -67,7 +67,7 @@ def rle_compress(data: bytes) -> bytes:
 
 
 def repack(input_path: Path, output_path: Path) -> None:
-    pixels, width, height, bitdepth, cluts_before, cluts_after = read_png(input_path)
+    pixels, width, height, bitdepth, cluts_before, cluts_after, _, _ = read_png(input_path)
 
     if (width, height) != (IMAGE_W, IMAGE_H):
         raise ValueError(f"Expected {IMAGE_W}x{IMAGE_H} image, got {width}x{height}")

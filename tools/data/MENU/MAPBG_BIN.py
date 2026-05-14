@@ -24,7 +24,7 @@ def decode(infile: Path, outfile: Path) -> None:
 
 
 def encode(infile: Path, outfile: Path) -> None:
-    pixels, width, height, bitdepth, cluts_before, cluts_after = read_png(infile)
+    pixels, width, height, bitdepth, cluts_before, cluts_after, _, _ = read_png(infile)
 
     if (width, height) != (IMAGE_W, IMAGE_H):
         raise ValueError(f"Expected {IMAGE_W}x{IMAGE_H} image, got {width}x{height}")

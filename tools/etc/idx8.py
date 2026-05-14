@@ -12,7 +12,7 @@ def cmd_to_png(args: argparse.Namespace) -> None:
 
 
 def cmd_to_bin(args: argparse.Namespace) -> None:
-    pixels, width, height, bitdepth, _, _ = read_png(args.input)
+    pixels, width, height, bitdepth, _, _, _, _ = read_png(args.input)
     args.output.write_bytes(pack_pixels(list(pixels), bitdepth))
 
 

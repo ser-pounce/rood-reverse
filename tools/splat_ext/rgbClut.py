@@ -71,7 +71,7 @@ if __name__ == '__main__':
     parser.add_argument('--dat',  action='store_true', help='Write a .dat text file instead of a .o object file')
     args = parser.parse_args()
 
-    pixels, width, height, bitdepth, cluts_before, cluts_after = read_png(args.input)
+    pixels, width, height, bitdepth, cluts_before, cluts_after, _, _ = read_png(args.input)
 
     packed            = pack_pixels(list(pixels), bitdepth)
     clut_bytes_before = encode_cluts(cluts_before)

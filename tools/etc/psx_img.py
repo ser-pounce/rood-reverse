@@ -5,6 +5,7 @@ Covers:
   - PSX RGBA5551 colour conversion
   - Palette encode / decode
   - PNG sPLT chunk helpers
+  - 4bpp / 8bpp / 16bpp PNG read & write
 """
 
 import struct
@@ -14,6 +15,9 @@ from pathlib import Path
 
 Rgba    = tuple[int, int, int, int]
 Palette = list[Rgba]
+
+# Sentinel sPLT chunk name that marks a PNG as 16bpp true-colour (no CLUT).
+_SENTINEL_16BPP = 'tim_16bpp'
 
 
 # ---------------------------------------------------------------------------
@@ -89,6 +93,7 @@ def make_splt_chunk(palette_name: str, palette_entries: Palette) -> bytes:
     Create an sPLT chunk encoding RGBA tuples at 8-bit sample depth.
     Alpha encodes the STP bit: a=255 -> STP=1, a=0 -> STP=0.
     Returns a complete chunk including length, type, data, and CRC.
+    Passing an empty palette_entries list produces a zero-entry sentinel chunk.
     """
     data  = palette_name.encode('latin-1') + b'\x00'  # null-terminated name
     data += b'\x08'                                    # sample depth: 8-bit
@@ -100,13 +105,48 @@ def make_splt_chunk(palette_name: str, palette_entries: Palette) -> bytes:
     return struct.pack('>I', len(data)) + chunk_type + data + struct.pack('>I', crc)
 
 
-def inject_splt_before_iend(png_path: Path, splt_chunks: list[bytes]) -> None:
+def make_text_chunk(keyword: str, text: str) -> bytes:
     """
-    Insert sPLT chunks into a PNG file before the IEND chunk.
+    Create a PNG tEXt chunk (uncompressed Latin-1 keyword/value pair).
+    Returns a complete chunk including length, type, data, and CRC.
+    """
+    chunk_data = keyword.encode('latin-1') + b'\x00' + text.encode('latin-1')
+    chunk_type = b'tEXt'
+    crc        = crc32_chunk(chunk_type, chunk_data)
+    return struct.pack('>I', len(chunk_data)) + chunk_type + chunk_data + struct.pack('>I', crc)
+
+
+def read_text_chunks(png_bytes: bytes) -> dict[str, str]:
+    """
+    Parse all tEXt chunks from raw PNG bytes.
+    Returns a dict mapping keyword -> value (Latin-1 strings).
+    """
+    result: dict[str, str] = {}
+    pos = 8  # skip PNG signature
+    while pos < len(png_bytes):
+        length     = struct.unpack_from('>I', png_bytes, pos)[0]
+        chunk_type = png_bytes[pos + 4:pos + 8]
+        chunk_data = png_bytes[pos + 8:pos + 8 + length]
+        pos += 12 + length
+
+        if chunk_type != b'tEXt':
+            continue
+
+        null_idx         = chunk_data.index(b'\x00')
+        keyword          = chunk_data[:null_idx].decode('latin-1')
+        value            = chunk_data[null_idx + 1:].decode('latin-1')
+        result[keyword]  = value
+
+    return result
+
+
+def inject_chunks_before_iend(png_path: Path, chunks: list[bytes]) -> None:
+    """
+    Insert arbitrary pre-built PNG chunks into a file before the IEND chunk.
 
     Args:
-        png_path:    path to PNG file
-        splt_chunks: complete chunks (length + type + data + CRC)
+        png_path: path to PNG file (modified in place)
+        chunks:   complete chunks (length + type + data + CRC)
     """
     with open(png_path, 'r+b') as f:
         data = f.read()
@@ -115,7 +155,7 @@ def inject_splt_before_iend(png_path: Path, splt_chunks: list[bytes]) -> None:
         raise ValueError('PNG file does not end with IEND chunk')
 
     insert_pos = len(data) - 12
-    for chunk in splt_chunks:
+    for chunk in chunks:
         data = data[:insert_pos] + chunk + data[insert_pos:]
         insert_pos += len(chunk)
 
@@ -137,6 +177,20 @@ def unpack_pixels(pixel_data: bytes, bitdepth: int, n_pixels: int) -> bytes:
         )[:n_pixels]
     else:
         return bytes(pixel_data)
+    
+def decode_16bpp_pixels(data: bytes, width: int, height: int) -> bytes:
+    """Decode packed PSX RGBA5551 words to flat RGBA8888 bytes.
+
+    Returns width * height * 4 bytes, suitable for write_png's 16bpp path.
+    Alpha is always 255 (the STP bit is discarded).
+    """
+    n_pixels = width * height
+    words    = struct.unpack_from(f'<{n_pixels}H', data)
+    out      = bytearray(n_pixels * 4)
+    for i, word in enumerate(words):
+        r, g, b, _ = psx5551_to_rgba(word)
+        out[i * 4:i * 4 + 4] = (r, g, b, 255)
+    return bytes(out)
 
 
 def pack_pixels(pixels: list[int], bitdepth: int) -> bytearray:
@@ -220,16 +274,55 @@ def write_png(
     cluts_before: list[Palette],
     cluts_after:  list[Palette],
     plte_clut:    int = 0,
+    img_rect:     tuple[int, int, int, int] | None = None,
+    clut_rect:    tuple[int, int, int, int] | None = None,
 ) -> None:
     """
-    Write an indexed PNG with PLTE and sPLT chunks encoding all CLUTs.
+    Write a PNG file from PSX image data.
 
-    PLTE is a viewer-friendly copy of the CLUT at index plte_clut in the
-    combined list (cluts_before + cluts_after). sPLT chunks named
-    'clut_before'/'clut_after' are authoritative for re-encoding.
+    For 4bpp / 8bpp images: writes an indexed PNG with PLTE and sPLT chunks.
+      PLTE is a viewer-friendly copy of the CLUT at index plte_clut in the
+      combined list (cluts_before + cluts_after). sPLT chunks named
+      'clut_before'/'clut_after' are authoritative for re-encoding.
+
+    For 16bpp images: `pixels` must be a flat sequence of (R, G, B, A) bytes,
+      i.e. width * height * 4 bytes of RGBA8888. A true-colour RGBA PNG is
+      written, and a zero-entry sentinel sPLT chunk named 'tim_16bpp' is
+      injected so read_png can identify this as 16bpp unambiguously.
+      cluts_before / cluts_after are ignored for 16bpp.
+
+    img_rect:  (x, y, w, h) VRAM rectangle from the TIM image block, stored as
+               the tEXt keyword 'tim_img_rect' with value 'x,y,w,h'.
+               w is in VRAM words, exactly as it appears in the binary.
+    clut_rect: (x, y, w, h) VRAM rectangle from the TIM CLUT block, stored as
+               the tEXt keyword 'tim_clut_rect' with value 'x,y,w,h'.
+               Omitted when there is no CLUT.
+    Both rects are optional; when absent pack_tim.py falls back to zeros.
     """
     import png as png_lib
 
+    if bitdepth == 16:
+        # True-colour RGBA path.
+        n_pixels = width * height
+        if len(pixels) != n_pixels * 4:
+            raise ValueError(
+                f'16bpp pixels must be width*height*4 bytes, '
+                f'got {len(pixels)} (expected {n_pixels * 4})'
+            )
+        rows = [
+            list(pixels[y * width * 4:(y + 1) * width * 4])
+            for y in range(height)
+        ]
+        writer = png_lib.Writer(width=width, height=height, alpha=True, greyscale=False, bitdepth=8)
+        with open(output_path, 'wb') as f:
+            writer.write(f, rows)
+        extra_chunks: list[bytes] = [make_splt_chunk(_SENTINEL_16BPP, [])]
+        if img_rect is not None:
+            extra_chunks.append(make_text_chunk('tim_img_rect', ','.join(map(str, img_rect))))
+        inject_chunks_before_iend(output_path, extra_chunks)
+        return
+
+    # Indexed (4bpp / 8bpp) path.
     all_cluts = cluts_before + cluts_after
 
     if all_cluts:
@@ -239,11 +332,15 @@ def write_png(
                              palette=plte_from_clut(all_cluts[plte_clut]))
         with open(output_path, 'wb') as f:
             img.write_array(f, pixels)
-        splt_chunks = (
+        extra_chunks = (
             [make_splt_chunk('clut_before', clut) for clut in cluts_before] +
             [make_splt_chunk('clut_after',  clut) for clut in cluts_after]
         )
-        inject_splt_before_iend(output_path, splt_chunks)
+        if img_rect is not None:
+            extra_chunks.append(make_text_chunk('tim_img_rect', ','.join(map(str, img_rect))))
+        if clut_rect is not None:
+            extra_chunks.append(make_text_chunk('tim_clut_rect', ','.join(map(str, clut_rect))))
+        inject_chunks_before_iend(output_path, extra_chunks)
     else:
         n_colours    = 1 << bitdepth
         scale        = 255 // (n_colours - 1)
@@ -251,30 +348,79 @@ def write_png(
         img = png_lib.Writer(width=width, height=height, bitdepth=bitdepth, palette=grey_palette)
         with open(output_path, 'wb') as f:
             img.write_array(f, pixels)
+        if img_rect is not None:
+            inject_chunks_before_iend(output_path, [make_text_chunk('tim_img_rect', ','.join(map(str, img_rect)))])
 
 
-def read_png(png_path: Path) -> tuple[bytes, int, int, int, list[Palette], list[Palette]]:
+def _parse_tim_rect(value: str) -> tuple[int, int, int, int] | None:
+    if not value:
+        return None
+    parts = value.split(',')
+    if len(parts) != 4:
+        return None
+    try:
+        return tuple(int(p.strip()) for p in parts)
+    except ValueError:
+        return None
+
+
+def read_png(png_path: Path) -> tuple[bytes, int, int, int, list[Palette], list[Palette], tuple[int, int, int, int] | None, tuple[int, int, int, int] | None]:
     """
-    Read an indexed PNG produced by write_png.
+    Read a PNG produced by write_png.
 
-    Returns (pixels, width, height, bitdepth, cluts_before, cluts_after).
-    sPLT chunks are authoritative; PLTE is ignored.
+    For indexed (4bpp / 8bpp) images:
+      Returns (pixels, width, height, bitdepth, cluts_before, cluts_after, img_rect, clut_rect).
+      sPLT chunks named 'clut_before' / 'clut_after' are authoritative;
+      PLTE is ignored.
+
+    For 16bpp true-colour images (identified by the 'tim_16bpp' sentinel sPLT):
+      Returns (pixels, width, height, 16, [], [], img_rect, clut_rect) where pixels is a flat
+      RGBA8888 byte string of length width * height * 4.
+
+    img_rect and clut_rect are the VRAM rectangles as (x, y, w, h) tuples or None if not stored.
     """
     import png as png_lib
 
-    reader = png_lib.Reader(filename=str(png_path))
+    png_bytes = png_path.read_bytes()
+    text_dict = read_text_chunks(png_bytes)
+
+    # Peek at sPLT chunks first to detect 16bpp before we attempt an indexed read.
+    splt_chunks = read_splt_chunks(png_path)
+    splt_names  = {name for name, _ in splt_chunks}
+
+    if _SENTINEL_16BPP in splt_names:
+        # True-colour path: read raw RGBA rows.
+        reader = png_lib.Reader(bytes=png_bytes)
+        width, height, rows, info = reader.read()
+
+        if not info.get('alpha'):
+            raise ValueError(f'Expected RGBA PNG for 16bpp image: {png_path}')
+
+        img_rect = _parse_tim_rect(text_dict.get('tim_img_rect'))
+        clut_rect = _parse_tim_rect(text_dict.get('tim_clut_rect'))
+
+        pixels = bytes(v for row in rows for v in row)
+        return pixels, width, height, 16, [], [], img_rect, clut_rect
+
+    # Indexed path — unchanged behaviour.
+    reader = png_lib.Reader(bytes=png_bytes)
     width, height, rows, info = reader.read()
 
     bitdepth: int = info.get('bitdepth')
     if bitdepth not in (4, 8):
-        raise ValueError(f'Expected 4-bit or 8-bit indexed PNG, got bitdepth={bitdepth}')
+        raise ValueError(
+            f'Expected 4-bit or 8-bit indexed PNG (or a 16bpp PNG with the '
+            f"'{_SENTINEL_16BPP}' sPLT sentinel), got bitdepth={bitdepth}: {png_path}"
+        )
 
-    pixels      = bytes(idx for row in rows for idx in row)
-    splt_chunks = read_splt_chunks(png_path)
+    img_rect = _parse_tim_rect(text_dict.get('tim_img_rect'))
+    clut_rect = _parse_tim_rect(text_dict.get('tim_clut_rect'))
+
+    pixels       = bytes(idx for row in rows for idx in row)
     cluts_before = [pal for name, pal in splt_chunks if name == 'clut_before']
     cluts_after  = [pal for name, pal in splt_chunks if name == 'clut_after']
 
-    return pixels, width, height, bitdepth, cluts_before, cluts_after
+    return pixels, width, height, bitdepth, cluts_before, cluts_after, img_rect, clut_rect
 
 
 # ---------------------------------------------------------------------------
@@ -288,6 +434,7 @@ def read_splt_chunks(png_path: Path) -> list[tuple[str, Palette]]:
     Returns (name, palette) pairs in chunk order. The name determines layout:
       'clut_before' -> this CLUT precedes the pixel data in the binary
       'clut_after'  -> this CLUT follows the pixel data in the binary
+      'tim_16bpp'   -> sentinel: image is 16bpp true-colour (no CLUT, no entries)
     Only 8-bit-depth sPLT chunks are supported (sample depth == 8).
     """
     with open(png_path, 'rb') as f:

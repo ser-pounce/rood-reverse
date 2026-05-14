@@ -7,7 +7,7 @@ import png
 
 from tools.etc.psx_img import (
     psx5551_to_rgba, rgba_to_psx5551,
-    make_splt_chunk, read_splt_chunks, inject_splt_before_iend,
+    make_splt_chunk, inject_chunks_before_iend,
     crc32_chunk, Palette,
 )
 
@@ -85,7 +85,7 @@ def decode(args: argparse.Namespace) -> None:
         img.write_array(f, rgba_pixels)
 
     # Store CLUTs as sPLT and raw indices as idxD so to-bin is fully self-contained
-    inject_splt_before_iend(args.output, [
+    inject_chunks_before_iend(args.output, [
         make_splt_chunk('clut_0', clut0),
         make_splt_chunk('clut_1', clut1),
         make_idxd_chunk(bytes(indices)),

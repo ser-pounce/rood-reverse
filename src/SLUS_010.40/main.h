@@ -515,7 +515,7 @@ void vs_main_setMonoSound(int);
 int func_80046634(void);
 // BUG: Function seems to be called with 3 and 4 parameters
 // but always reads 4th
-void func_80046C80();
+void vs_main_loadClutTransition();
 void func_80047280(int, int, int, short, int, int);
 void func_800472D0(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);

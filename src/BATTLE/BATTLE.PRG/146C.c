@@ -5477,14 +5477,14 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
 
 void func_8007B378(int arg0, u_short* arg1, int arg2)
 {
-    func_80046C80(arg0, 0, arg1);
-    func_80046C80(arg0, 1, arg1 + 0x100);
-    func_80046C80(arg0, 2, arg1 + 0x200);
+    vs_main_loadClutTransition(arg0, 0, arg1);
+    vs_main_loadClutTransition(arg0, 1, arg1 + 0x100);
+    vs_main_loadClutTransition(arg0, 2, arg1 + 0x200);
 }
 
 void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
 {
-    func_80046C80(arg0, arg1 + 4, arg2, arg3);
+    vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
 }
 
 void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { func_800472D0(arg0, arg1); }

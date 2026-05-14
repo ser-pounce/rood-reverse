@@ -10518,48 +10518,45 @@ void vs_main_resetSound(void)
     D_8005FE84 = 0x100000;
 }
 
-static void func_80046B3C(int duration, int slot, u_short* targetClut)
+static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 {
     int i;
-    u_short g;
-    u_short b;
-    u_short r;
-    struct ColorInfo* p;
 
     for (i = 0; i < 256; ++i) {
-        r = targetClut[i] & 0x1F;
-        g = (targetClut[i] & 0x3E0) >> 5;
-        b = (targetClut[i] & 0x7C00) >> 10;
+        u_short r = sourceClut[i] & 0x1F;
+        u_short g = (sourceClut[i] & 0x3E0) >> 5;
+        u_short b = (sourceClut[i] & 0x7C00) >> 10;
 
-        p = _clutState.slots[slot].colorInfo;
+        struct ColorInfo* colors = _clutState.slots[slot].colorInfo;
 
         if (duration != 0) {
-            p[i].rindex = (r - p[i].r) + 31;
-            p[i].gindex = (g - p[i].g) + 31;
-            p[i].bindex = (b - p[i].b) + 31;
+            colors[i].rindex = (r - colors[i].r) + 31;
+            colors[i].gindex = (g - colors[i].g) + 31;
+            colors[i].bindex = (b - colors[i].b) + 31;
         } else {
-            p[i].r = r;
-            p[i].g = g;
-            p[i].b = b;
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (p[i].a << 15);
+            colors[i].r = r;
+            colors[i].g = g;
+            colors[i].b = b;
+            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
         }
     }
 
     if (duration != 0) {
-        struct clutAnimState_t* p = &_clutState.slots[slot].animState;
-        p->active = 1;
-        p->frame = 0;
-        p->tick = 0;
-        p->speed = duration;
+        struct clutAnimState_t* state = &_clutState.slots[slot].animState;
+        state->active = 1;
+        state->frame = 0;
+        state->tick = 0;
+        state->speed = duration;
     } else {
         _clutState.slots[slot].animState.active = 0;
     }
 }
 
-void func_80046C80(int arg0, int arg1, u_short* arg2, int arg3)
+void vs_main_loadClutTransition(
+    int duration, int slot, u_short* sourceClut, int clutOffset)
 {
     if (_clutState.active != 0) {
-        func_80046B3C(arg0, arg1, arg2 + (arg3 << 4));
+        _loadClutTransition(duration, slot, sourceClut + (clutOffset * 16));
         _clutState.uploadPending = 1;
     }
 }
@@ -10569,7 +10566,7 @@ static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
     int i;
 
     if (_clutState.active != 0) {
-        func_80046C80(arg0, arg1, arg2, arg3);
+        vs_main_loadClutTransition(arg0, arg1, arg2, arg3);
 
         for (i = 0; i < 256; ++i) {
             _clutState.slots[arg1].clutBase[i] = arg2[i];

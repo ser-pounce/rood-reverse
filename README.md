@@ -117,23 +117,8 @@ data/TITLE/
 9. Open a PR
 
 ## Setup
-
-There are two supported ways to set up a dev environment. Pick one.
-
-### Option A — Nix (recommended; works on Linux and macOS)
-
-The flake pins every part of the toolchain to an exact store hash, so the build is reproducible byte-for-byte across machines. This is the only path that works on macOS.
-
-1. Install Nix with flakes enabled (e.g. via the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)).
-2. Optionally install [direnv](https://direnv.net/) — then `direnv allow` in the repo and the shell is set up automatically on `cd`. Without direnv, run `nix develop` to enter the dev shell.
-3. Dump your original disk to `disks/SLUS-01040.bin`.
-4. Run `make -j` to finish installation and perform an initial build.
-
-The first `nix develop` on macOS may take ~30–60 min if the cross-cpp closure isn't in the [rood-reverse cachix](https://app.cachix.org/cache/rood-reverse) yet. Subsequent runs and Linux runs are instant. The cache is read-public — no auth needed.
-
-### Option B — Native Ubuntu (legacy)
-
-Works only on Ubuntu 24.04 (or WSL). Other Linux distros may need additional packages; macOS is not supported via this path.
+The project is mostly self-configuring but requires a minimal amount of setup.
+- Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 24.04 on WSL; depending on your distro you may need additional packages.
 
 | Package                 | Minimum Version |
 |-------------------------|----------------|
@@ -146,13 +131,14 @@ Works only on Ubuntu 24.04 (or WSL). Other Linux distros may need additional pac
 | python3                 | 3.12.3         |
 | python3-venv            | 3.12.3         |
 | rustup                  | 1.26.0         |
-
 - If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`, then log out and back in again
 - Run `rustup default stable` if you do not already have a local rust environment set up
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 
-> **Important:** install `gcc-mipsel-linux-gnu` at exactly major version 12 — newer versions emit subtly different preprocessed output that breaks `make check` even though everything appears to build cleanly. The Nix path pins this for you and uses the same toolchain as CI, so what passes locally passes upstream.
+### Nix (alternative)
+
+A flake is also provided for users on Linux or macOS who prefer a pinned dev shell instead of installing the packages above. With [Nix](https://nixos.org/) (flakes enabled), run `nix develop` in the repo to enter a shell with the full toolchain available, then `make -j` as usual. See [`flake.nix`](flake.nix) for details.
 
 ## Build targets
 - `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 

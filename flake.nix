@@ -85,6 +85,7 @@
               ln -s ${crossBt}/bin/${crossTriplet}-$name $out/bin/mipsel-linux-gnu-$name
             done
             ln -s ${crossGcc}/bin/${crossTriplet}-cpp $out/bin/mipsel-linux-gnu-cpp
+            ln -s ${crossGcc}/bin/${crossTriplet}-gcc $out/bin/mipsel-linux-gnu-gcc
           '';
         in
         {

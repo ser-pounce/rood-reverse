@@ -10561,198 +10561,217 @@ void vs_main_loadClutTransition(
     }
 }
 
-static void func_80046CC8(int arg0, int arg1, u_short* arg2, int arg3)
+static void _loadClutTransitionWithBase(
+    int duration, int slot, u_short* sourceClut, int clutOffset) __attribute__((unused));
+static void _loadClutTransitionWithBase(
+    int duration, int slot, u_short* sourceClut, int clutOffset)
 {
     int i;
 
     if (_clutState.active != 0) {
-        vs_main_loadClutTransition(arg0, arg1, arg2, arg3);
+        vs_main_loadClutTransition(duration, slot, sourceClut, clutOffset);
 
         for (i = 0; i < 256; ++i) {
-            _clutState.slots[arg1].clutBase[i] = arg2[i];
+            _clutState.slots[slot].clutBase[i] = sourceClut[i];
         }
     }
 }
 
-static void func_80046D58(int arg0)
+static void _saveClutBase(int slot) __attribute__((unused));
+static void _saveClutBase(int slot)
 {
     int i;
 
     if (_clutState.active != 0) {
         for (i = 0; i < 256; ++i)
-            _clutState.slots[arg0].clutBase[i] = _clutBuffer[arg0][i];
+            _clutState.slots[slot].clutBase[i] = _clutBuffer[slot][i];
     }
 }
 
-static inline int inline_fn(short arg0, short arg1, short arg2)
+static inline int _weightedLuminance(short g, short b, short r)
 {
-    return arg2 * 2 + (arg0 >> 5) * 3 + (arg1 >> 10);
+    return r * 2 + (g >> 5) * 3 + (b >> 10);
 }
 
-void func_80046DC0(int arg0, int arg1, int arg2, int arg3, short arg4, short arg5)
+static void _transformClutSlot(
+    int mode, int duration, int slot, int rOffset, short gOffset, short bOffset)
 {
     int i;
-    int var_v0;
-    short temp_t0;
-    int var_t3;
-    int var_t1;
-    int var_a0;
-    int tmp;
-    int t4 = (u_short)arg4;
-    int t5 = (u_short)arg5;
-    struct ColorInfo* t2 = _clutState.slots[arg2].colorInfo;
+    int gOffsetU = (u_short)gOffset;
+    int bOffsetU = (u_short)bOffset;
+    struct ColorInfo* colors = _clutState.slots[slot].colorInfo;
 
     for (i = 0; i < 256; ++i) {
-        temp_t0 = _clutState.slots[arg2].clutBase[i];
-        if ((t2[i].r + t2[i].g + t2[i].b + t2[i].a) != 0) {
-            switch (arg0) {
-            case 1:
-                tmp = 1;
-                var_t3 = arg3 + (t2[i].r >> tmp);
-                var_t1 = t4 + (t2[i].g >> tmp);
-                var_a0 = t5 + (t2[i].b >> tmp);
+
+        int r;
+        int g;
+        int b;
+        short baseEntry = _clutState.slots[slot].clutBase[i];
+
+        if ((colors[i].r + colors[i].g + colors[i].b + colors[i].a) != 0) {
+            switch (mode) {
+            case 1: {
+                int rTmp = colors[i].r;
+                int gTmp = colors[i].g;
+                int bTmp = colors[i].b;
+                r = rOffset + rTmp / 2;
+                g = gOffsetU + gTmp / 2;
+                b = bOffsetU + bTmp / 2;
                 break;
+            }
             case 2:
-                var_t3 = arg3 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
-                var_t1 = t4 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
-                var_a0 = t5 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 6;
+                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
+                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
+                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
                 break;
             case 3:
-                var_t3 = arg3 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
-                var_t1 = t4 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
-                var_a0 = t5 + ((t2[i].r * 2) + (t2[i].g * 3) + t2[i].b) / 12;
+                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
+                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
+                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
                 break;
             case 4:
             case 9:
-                var_t3 = arg3 + (temp_t0 & 0x1F);
-                var_t1 = t4 + ((temp_t0 & 0x3E0) >> 5);
-                var_a0 = t5 + ((temp_t0 & 0x7C00) >> 0xA);
+                r = rOffset + (baseEntry & 0x1F);
+                g = gOffsetU + ((baseEntry & 0x3E0) >> 5);
+                b = bOffsetU + ((baseEntry & 0x7C00) >> 10);
                 break;
-            case 5:
-                tmp = 0x1F;
-                var_t3 = arg3 + ((temp_t0 & tmp) >> 1);
-                var_t1 = t4 + ((temp_t0 & 0x3E0) >> 6);
-                var_a0 = t5 + ((temp_t0 & 0x7C00) >> 0xB);
+            case 5: {
+                int tmp = 0x1F;
+                r = rOffset + ((baseEntry & tmp) / 2);
+                g = gOffsetU + ((baseEntry & 0x3E0) >> 5) / 2;
+                b = bOffsetU + ((baseEntry & 0x7C00) >> 10) / 2;
                 break;
+            }
             case 6:
-                var_t3 = arg3
-                       + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
-                var_t1 =
-                    t4 + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
-                var_a0 =
-                    t5 + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 6;
+                r = rOffset
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 6;
+                g = gOffsetU
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 6;
+                b = bOffsetU
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 6;
                 break;
             case 7:
-                var_t3 =
-                    arg3
-                    + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
-                var_t1 =
-                    t4
-                    + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
-                var_a0 =
-                    t5
-                    + inline_fn(temp_t0 & 0x3E0, temp_t0 & 0x7C00, temp_t0 & 0x1F) / 12;
+                r = rOffset
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 12;
+                g = gOffsetU
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 12;
+                b = bOffsetU
+                  + _weightedLuminance(
+                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        / 12;
                 break;
             case 8:
             case 15:
-                var_t3 = temp_t0 & 0x1F;
-                var_t1 = (temp_t0 & 0x3E0) >> 5;
-                var_a0 = (temp_t0 & 0x7C00) >> 0xA;
+                r = baseEntry & 0x1F;
+                g = (baseEntry & 0x3E0) >> 5;
+                b = (baseEntry & 0x7C00) >> 10;
                 break;
             case 11:
-                _clutState.slots[arg2].animState.transitionMode = 0;
+                _clutState.slots[slot].animState.transitionMode = 0;
                 return;
-            case 12:
-                tmp = 0x1F;
-                var_t3 = arg3 - (t2[i].r - tmp);
-                var_t1 = t4 - (t2[i].g - tmp);
-                var_a0 = t5 - (t2[i].b - tmp);
+            case 12: {
+                int tmp = 0x1F;
+                r = rOffset - (colors[i].r - tmp);
+                g = gOffsetU - (colors[i].g - tmp);
+                b = bOffsetU - (colors[i].b - tmp);
                 break;
-            case 13:
-                var_v0 = (temp_t0 & 0x1F) * 3;
-                if (var_v0 < 0) {
-                    var_v0 += 3;
+            }
+            case 13: {
+                int tmp = (baseEntry & 0x1F) * 3;
+                if (tmp < 0) {
+                    tmp += 3;
                 }
-                var_t3 = arg3 + (var_v0 >> 2);
-                var_v0 = ((temp_t0 & 0x3E0) >> 5) * 3;
-                if (var_v0 < 0) {
-                    var_v0 += 3;
+                r = rOffset + (tmp >> 2);
+                tmp = ((baseEntry & 0x3E0) >> 5) * 3;
+                if (tmp < 0) {
+                    tmp += 3;
                 }
-                var_t1 = t4 + (var_v0 >> 2);
-                var_v0 = ((temp_t0 & 0x7C00) >> 0xA) * 3;
-                if (var_v0 < 0) {
-                    var_v0 += 3;
+                g = gOffsetU + (tmp >> 2);
+                tmp = ((baseEntry & 0x7C00) >> 10) * 3;
+                if (tmp < 0) {
+                    tmp += 3;
                 }
-                var_a0 = t5 + (var_v0 >> 2);
+                b = bOffsetU + (tmp >> 2);
                 break;
+            }
             default:
-                var_t3 = t2[i].r + arg3;
-                var_t1 = t2[i].g + t4;
-                var_a0 = t2[i].b + t5;
+                r = colors[i].r + rOffset;
+                g = colors[i].g + gOffsetU;
+                b = colors[i].b + bOffsetU;
                 break;
             }
 
-            if ((short)var_t3 >= 0x20) {
-                var_t3 = 0x1F;
+            if ((short)r > 31) {
+                r = 31;
             }
-            if ((short)var_t1 >= 0x20) {
-                var_t1 = 0x1F;
+            if ((short)g > 31) {
+                g = 31;
             }
-            if ((short)var_a0 >= 0x20) {
-                var_a0 = 0x1F;
+            if ((short)b > 31) {
+                b = 31;
             }
-            if ((var_t3 << 0x10) <= 0) {
-                var_t3 = 0;
+            if ((r << 16) <= 0) {
+                r = 0;
             }
-            if ((var_t1 << 0x10) <= 0) {
-                var_t1 = 0;
+            if ((g << 16) <= 0) {
+                g = 0;
             }
-            if ((var_a0 << 0x10) <= 0) {
-                var_a0 = 0;
+            if ((b << 16) <= 0) {
+                b = 0;
             }
-            if (((var_a0 | (var_t3 | var_t1)) << 0x10) == 0) {
-                var_a0 = 1;
+            if (((b | (r | g)) << 16) == 0) {
+                b = 1;
             }
-            if (arg1 != 0) {
-                t2[i].rindex = ((var_t3 - t2[i].r) + 0x1F);
-                t2[i].gindex = ((var_t1 - t2[i].g) + 0x1F);
-                t2[i].bindex = ((var_a0 - t2[i].b) + 0x1F);
+            if (duration != 0) {
+                colors[i].rindex = ((r - colors[i].r) + 31);
+                colors[i].gindex = ((g - colors[i].g) + 31);
+                colors[i].bindex = ((b - colors[i].b) + 31);
             } else {
-                t2[i].b = var_a0;
-                t2[i].r = var_t3;
-                t2[i].g = var_t1;
-                _clutBuffer[arg2][i] =
-                    var_t3 + (var_t1 << 5) + (var_a0 << 0xA) + (t2[i].a << 0xF);
+                colors[i].b = b;
+                colors[i].r = r;
+                colors[i].g = g;
+                _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
             }
         } else {
-            t2[i].bindex = 0x1F;
-            t2[i].gindex = 0x1F;
-            t2[i].rindex = 0x1F;
+            colors[i].bindex = 31;
+            colors[i].gindex = 31;
+            colors[i].rindex = 31;
         }
     }
-    if (arg1 != 0) {
-        struct clutAnimState_t* p = &_clutState.slots[arg2].animState;
+    if (duration != 0) {
+        struct clutAnimState_t* p = &_clutState.slots[slot].animState;
         p->active = 1;
         p->frame = 0;
         p->tick = 0;
-        p->speed = arg1;
-        p->transitionMode = arg0;
-        if (arg0 == 9) {
-            p->transitionTargetR = arg3;
-            p->transitionTargetG = t4;
-            p->transitionTargetB = t5;
+        p->speed = duration;
+        p->transitionMode = mode;
+        if (mode == 9) {
+            p->transitionTargetR = rOffset;
+            p->transitionTargetG = gOffsetU;
+            p->transitionTargetB = bOffsetU;
         }
     } else {
-        _clutState.slots[arg2].animState.active = 0;
+        _clutState.slots[slot].animState.active = 0;
         _clutState.uploadPending = 1;
     }
 }
 
-void func_80047280(int arg0, int arg1, int arg2, short arg3, int arg4, int arg5)
+void vs_main_transformClutSlot(
+    int mode, int duration, int slot, short rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
         do {
-            func_80046DC0(arg0, arg1, arg2, arg3, arg4, arg5);
+            _transformClutSlot(mode, duration, slot, rOffset, gOffset, bOffset);
         } while (0);
     }
 }
@@ -10767,22 +10786,21 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
     if (_clutState.active != 0) {
         int(*temp_t6)[6] = _clutState.bgColors;
         for (i = 0; i < 5; ++i) {
-            int temp_a1, temp_t1, temp_t2;
-            temp_a1 = _shift_left(arg1[i].unk0);
-            temp_t1 = _shift_left(arg1[i].unk1);
-            temp_t2 = _shift_left(arg1[i].unk2);
+            int r;
+            int g;
+            int b;
+            r = _shift_left(arg1[i].r);
+            g = _shift_left(arg1[i].g);
+            b = _shift_left(arg1[i].b);
 
             if (arg0 != 0) {
-                temp_t6[i][3] =
-                    ((int)(temp_a1 - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][4] =
-                    ((int)(temp_t1 - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][5] =
-                    ((int)(temp_t2 - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][3] = ((int)(r - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][4] = ((int)(g - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
+                temp_t6[i][5] = ((int)(b - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
             } else {
-                temp_t6[i][0] = temp_a1;
-                temp_t6[i][1] = temp_t1;
-                temp_t6[i][2] = temp_t2;
+                temp_t6[i][0] = r;
+                temp_t6[i][1] = g;
+                temp_t6[i][2] = b;
             }
         }
         if (arg0 != 0) {
@@ -10844,19 +10862,19 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             break;
         case 4:
         case 9:
-            var_t1 = (_clutState.unk7F14[i].unk0 + arg2) << 0x10;
-            var_t0 = (_clutState.unk7F14[i].unk1 + arg3) << 0x10;
-            var_a1 = (_clutState.unk7F14[i].unk2 + arg4) << 0x10;
+            var_t1 = (_clutState.unk7F14[i].r + arg2) << 0x10;
+            var_t0 = (_clutState.unk7F14[i].g + arg3) << 0x10;
+            var_a1 = (_clutState.unk7F14[i].b + arg4) << 0x10;
             break;
         case 5:
-            var_t1 = (_clutState.unk7F14[i].unk0 << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.unk7F14[i].unk1 << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.unk7F14[i].unk2 << 0xF) + (arg4 << 0x10);
+            var_t1 = (_clutState.unk7F14[i].r << 0xF) + (arg2 << 0x10);
+            var_t0 = (_clutState.unk7F14[i].g << 0xF) + (arg3 << 0x10);
+            var_a1 = (_clutState.unk7F14[i].b << 0xF) + (arg4 << 0x10);
             break;
         case 6: {
-            int v1 = _clutState.unk7F14[i].unk1;
-            int a0 = _clutState.unk7F14[i].unk2;
-            int v0 = _clutState.unk7F14[i].unk0;
+            int v1 = _clutState.unk7F14[i].g;
+            int a0 = _clutState.unk7F14[i].b;
+            int v0 = _clutState.unk7F14[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -10868,9 +10886,9 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 6 + (arg4 << 0x10);
         } break;
         case 7: {
-            int v1 = _clutState.unk7F14[i].unk1;
-            int a0 = _clutState.unk7F14[i].unk2;
-            int v0 = _clutState.unk7F14[i].unk0;
+            int v1 = _clutState.unk7F14[i].g;
+            int a0 = _clutState.unk7F14[i].b;
+            int v0 = _clutState.unk7F14[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -10882,9 +10900,9 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 12 + (arg4 << 0x10);
         } break;
         case 8:
-            var_t1 = _clutState.unk7F14[i].unk0 << 0x10;
-            var_t0 = _clutState.unk7F14[i].unk1 << 0x10;
-            var_a1 = _clutState.unk7F14[i].unk2 << 0x10;
+            var_t1 = _clutState.unk7F14[i].r << 0x10;
+            var_t0 = _clutState.unk7F14[i].g << 0x10;
+            var_a1 = _clutState.unk7F14[i].b << 0x10;
             break;
         case 11:
             _clutState.bgTransitionMode = 0;
@@ -10977,14 +10995,6 @@ void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-static inline int _shift_left2(int arg0)
-{
-    if (arg0 < 0) {
-        arg0 += 0xFFFF;
-    }
-    return (arg0 >> 0x10) - 0x40;
-}
-
 void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
     char sp10[4];
@@ -11001,9 +11011,9 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 
     temp_t0 = &_clutState.unk7F28[arg1];
     temp_a3 = _clutState.unk7F28[arg1].unk10;
-    temp_a1 = _shift_left(arg2->unk0);
-    temp_t1 = _shift_left(arg2->unk1);
-    temp_t2 = _shift_left(arg2->unk2);
+    temp_a1 = _shift_left(arg2->r);
+    temp_t1 = _shift_left(arg2->g);
+    temp_t2 = _shift_left(arg2->b);
 
     if (arg0 != 0) {
         temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
@@ -11021,21 +11031,11 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
         temp_t0->unk0[3] = arg0;
         return;
     }
+
     temp_t0->unk0[0] = 0;
-
-    v0 = temp_a3[0];
-    if (v0 < 0) {
-        v0 += 0xFFFF;
-    }
-    sp10[0] = (v0 >> 0x10) - 0x40;
-
-    v0 = temp_a3[1];
-    if (v0 < 0) {
-        v0 += 0xFFFF;
-    }
-    sp10[1] = (v0 >> 0x10) - 0x40;
-
-    sp10[2] = _shift_left2(temp_a3[2]);
+    sp10[0] = (temp_a3[0] / 65536) - 64;
+    sp10[1] = (temp_a3[1] / 65536) - 64;
+    sp10[2] = (temp_a3[2] / 65536) - 64;
     sp10[3] = 0;
 
     if (arg1 != 0) {
@@ -11087,22 +11087,22 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
         break;
     case 4:
     case 9:
-        var_a1 = (t1->unk28.unk0 + arg3) << 0x10;
-        var_t0 = (t1->unk28.unk1 + arg4) << 0x10;
-        var_a2 = (t1->unk28.unk2 + arg5) << 0x10;
+        var_a1 = (t1->unk28.r + arg3) << 0x10;
+        var_t0 = (t1->unk28.g + arg4) << 0x10;
+        var_a2 = (t1->unk28.b + arg5) << 0x10;
         break;
     case 5:
         var_t4 = 0x4000;
-        var_a1 = (t1->unk28.unk0 << 0xF) + (arg3 << 0x10);
-        var_t0 = (t1->unk28.unk1 << 0xF) + (arg4 << 0x10);
-        var_a2 = (t1->unk28.unk2 << 0xF) + (arg5 << 0x10);
+        var_a1 = (t1->unk28.r << 0xF) + (arg3 << 0x10);
+        var_t0 = (t1->unk28.g << 0xF) + (arg4 << 0x10);
+        var_a2 = (t1->unk28.b << 0xF) + (arg5 << 0x10);
         break;
     case 6:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.unk1;
-            int a0 = t1->unk28.unk2;
-            int v0 = t1->unk28.unk0;
+            int v1 = t1->unk28.g;
+            int a0 = t1->unk28.b;
+            int v0 = t1->unk28.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -11117,9 +11117,9 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     case 7:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.unk1;
-            int a0 = t1->unk28.unk2;
-            int v0 = t1->unk28.unk0;
+            int v1 = t1->unk28.g;
+            int a0 = t1->unk28.b;
+            int v0 = t1->unk28.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -11133,9 +11133,9 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
         break;
     case 8:
     case 15:
-        var_a1 = t1->unk28.unk0 << 0x10;
-        var_t0 = t1->unk28.unk1 << 0x10;
-        var_a2 = t1->unk28.unk2 << 0x10;
+        var_a1 = t1->unk28.r << 0x10;
+        var_t0 = t1->unk28.g << 0x10;
+        var_a2 = t1->unk28.b << 0x10;
         break;
     case 11:
         t1->unk0[4] = 0;
@@ -11442,19 +11442,20 @@ void func_800483FC(void)
             }
             if (++_clutState.slots[i].animState.frame >= (16 / var_t5)) {
                 if (_clutState.slots[i].animState.transitionMode == 9) {
-                    func_80046DC0(4, _clutState.slots[i].animState.speed, i,
+                    _transformClutSlot(4, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR / 2,
                         _clutState.slots[i].animState.transitionTargetG / 2,
                         _clutState.slots[i].animState.transitionTargetB / 2);
                     _clutState.slots[i].animState.transitionMode = 10;
                 } else if (_clutState.slots[i].animState.transitionMode == 10) {
-                    func_80046DC0(9, _clutState.slots[i].animState.speed, i,
+                    _transformClutSlot(9, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR,
                         _clutState.slots[i].animState.transitionTargetG,
                         _clutState.slots[i].animState.transitionTargetB);
                     _clutState.slots[i].animState.transitionMode = 9;
                 } else if (_clutState.slots[i].animState.transitionMode == 14) {
-                    func_80046DC0(15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
+                    _transformClutSlot(
+                        15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
                     _clutState.slots[i].animState.transitionMode = 15;
                 } else {
                     _clutState.slots[i].animState.active = 0;
@@ -11608,9 +11609,9 @@ void func_80048EC4(void)
     int* var_v1 = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.unk7F14[i].unk0 = var_v1[i];
-        _clutState.unk7F14[i].unk1 = (var_v1[i] & 0xFF00) / 256;
-        _clutState.unk7F14[i].unk2 = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.unk7F14[i].r = var_v1[i];
+        _clutState.unk7F14[i].g = (var_v1[i] & 0xFF00) / 256;
+        _clutState.unk7F14[i].b = (var_v1[i] & 0xFF0000) / 65536;
 
         bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
         bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;

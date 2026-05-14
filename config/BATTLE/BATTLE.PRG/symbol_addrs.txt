@@ -120,6 +120,7 @@ _getCollisionMapDimensions = 0x8008B70C;
 _getMapBounds = 0x8008B744;
 vs_battle_inWorkshop = 0x8008D3D0;
 vs_battle_getCurrentSceneId = 0x8008D400;
+vs_battle_setTimImage = 0x8008D820;
 _getDoorId = 0x8008D880;
 vs_battle_setDoorEntered2 = 0x8008D948;
 vs_battle_getMapCompletion = 0x8008E5F0;

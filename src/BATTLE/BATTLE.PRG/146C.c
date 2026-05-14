@@ -807,7 +807,7 @@ extern signed char D_800F1DC9;
 extern char D_800F1DCA;
 extern char D_800F1DCB;
 extern u_int* D_800F1DCC;
-extern int* D_800F1DD0;
+extern u_long* D_800F1DD0;
 extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
 
@@ -5448,24 +5448,24 @@ void func_8007B104(void) { }
 
 void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4)
 {
-    func_80047280(arg0, arg1, 0, arg2, arg3, arg4);
-    func_80047280(arg0, arg1, 1, arg2, arg3, arg4);
-    func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
 }
 
 void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
 {
-    func_80047280(arg0, arg1, 0, arg2, arg3, arg4);
-    func_80047280(arg0, arg1, 1, arg2, arg3, arg4);
-    func_80047280(arg0, arg1, 2, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
     func_80047FC0(arg0, arg1, 0, arg2, arg3, arg4);
-    func_80047280(arg0, arg1, 0xD, arg2, arg3, arg4);
+    vs_main_transformClutSlot(arg0, arg1, 0xD, arg2, arg3, arg4);
 }
 
 void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
 {
     if (arg2 < 9) {
-        func_80047280(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
+        vs_main_transformClutSlot(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
         func_80047FC0(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
     }
 }
@@ -9860,14 +9860,14 @@ void func_8008A6FC(void)
 
 void _loadZndTims(void* data)
 {
-    func_80103530_t sp10;
-    u_int* timPtrs[4];
+    TIM_IMAGE tim;
+    u_long* timPtrs[4];
     int numTims;
     int i;
-    u_int* dataPtr = data;
+    u_long* dataPtr = data;
     int byteOffset = 0;
     int* sizePtr = (int*)dataPtr;
-    u_int** ptrTableEntry = timPtrs;
+    u_long** ptrTableEntry = timPtrs;
 
     do {
         if (*sizePtr > 0) {
@@ -9886,26 +9886,26 @@ void _loadZndTims(void* data)
     for (i = 0; i < numTims; ++i) {
         byteOffset = *dataPtr++;
 
-        func_8008D820((u_int*)dataPtr, &sp10);
+        vs_battle_setTimImage(dataPtr, &tim);
 
-        if (sp10.unk10 != NULL) {
-            if (sp10.unkC->x >= 768) {
-                int line = sp10.unkC->y;
-                u_short* pixels = sp10.unk10;
+        if (tim.paddr != NULL) {
+            if (tim.prect->x >= 768) {
+                int line = tim.prect->y;
+                u_short* pixels = (u_short*)tim.paddr;
 
-                while (line < (sp10.unkC->y + sp10.unkC->h)) {
+                while (line < (tim.prect->y + tim.prect->h)) {
                     u_int clutIndex = line - 224;
                     if (clutIndex < 4) {
                         func_8008B2E0(
-                            pixels, clutIndex, sp10.unkC->x - 768, sp10.unkC->w);
+                            pixels, clutIndex, tim.prect->x - 768, tim.prect->w);
                     }
                     ++line;
-                    pixels += sp10.unkC->w;
+                    pixels += tim.prect->w;
                 }
             } else {
-                sp10.unkC->x -= 320;
-                sp10.unkC->y += 256;
-                LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+                tim.prect->x -= 320;
+                tim.prect->y += 256;
+                LoadImage(tim.prect, tim.paddr);
             }
         }
         dataPtr += byteOffset >> 2;
@@ -10865,23 +10865,23 @@ void func_8008D710(void)
     }
 }
 
-void func_8008D820(u_int* arg0, func_80103530_t* arg1)
+void vs_battle_setTimImage(u_long* arg0, TIM_IMAGE* tim)
 {
     ++arg0;
-    arg1->unk0 = arg0[0];
+    tim->mode = *arg0;
     ++arg0;
 
-    if (arg1->unk0 & 8) {
-        arg1->unk4 = (RECT*)(arg0 + 1);
-        arg1->unk8 = (u_long*)arg0 + 3;
-        arg0 += arg0[0] >> 2;
+    if (tim->mode & 8) {
+        tim->crect = (RECT*)(arg0 + 1);
+        tim->caddr = (u_long*)arg0 + 3;
+        arg0 += *arg0 >> 2;
     } else {
-        arg1->unk4 = NULL;
-        arg1->unk8 = NULL;
+        tim->crect = NULL;
+        tim->caddr = NULL;
     }
 
-    arg1->unkC = (RECT*)(arg0 + 1);
-    arg1->unk10 = (u_short*)arg0 + 6;
+    tim->prect = (RECT*)(arg0 + 1);
+    tim->paddr = arg0 + 3;
 }
 
 int _getDoorId(int door)
@@ -11549,17 +11549,17 @@ int func_8008EFCC(int arg0)
 int func_8008F0FC(void)
 {
     if ((D_800F1DAC != NULL) && (D_800F1DAC->state == 4)) {
-        func_80103530_t sp10;
+        TIM_IMAGE tim;
 
         *D_800F1DD0 = 0x10;
-        func_8008D820(D_800F1DD0, &sp10);
-        if (sp10.unk10 != NULL) {
-            sp10.unkC->x = (sp10.unkC->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
-            sp10.unkC->y = (char)sp10.unkC->y + ((D_800F1DC8 & 0x10) * 0x10);
-            LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+        vs_battle_setTimImage(D_800F1DD0, &tim);
+        if (tim.paddr != NULL) {
+            tim.prect->x = (tim.prect->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
+            tim.prect->y = (char)tim.prect->y + ((D_800F1DC8 & 0x10) * 0x10);
+            LoadImage(tim.prect, (u_long*)tim.paddr);
         }
-        if (sp10.unk8 != NULL) {
-            vs_main_loadClut((void*)sp10.unk8, 0xE, 0, 0x100);
+        if (tim.caddr != NULL) {
+            vs_main_loadClut((void*)tim.caddr, 0xE, 0, 0x100);
         }
         vs_main_freeCdQueueSlot(D_800F1DAC);
         D_800F1DAC = NULL;

@@ -604,14 +604,6 @@ typedef struct {
 } vs_battle_manualDisplayState_t;
 
 typedef struct {
-    int unk0;
-    RECT* unk4;
-    u_long* unk8;
-    RECT* unkC;
-    u_short* unk10;
-} func_80103530_t;
-
-typedef struct {
     char unk0[0x464];
 } _zndEnemy;
 
@@ -1033,7 +1025,7 @@ void vs_battle_setDoorEntered2(int arg0);
 void func_8008C40C(void);
 void func_8008D594(int);
 void func_8008D5A0(int);
-void func_8008D820(u_int*, func_80103530_t*);
+void vs_battle_setTimImage(u_long*, TIM_IMAGE*);
 int vs_battle_getMapCompletion(void);
 void func_8008E224(int, int);
 int func_8008E470(void);

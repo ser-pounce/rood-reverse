@@ -1015,7 +1015,7 @@ static int func_80104530(int arg0)
 static int func_80104788(int arg0)
 {
 #pragma vsstring(start)
-    static char D_80109610[] = "|>48|000/000\0";
+    static char _buffReels[] = "|>48|000/000\0";
 #pragma vsstring(end)
 
     static char D_8010961C[] = { 1, 10, 100 };
@@ -1073,14 +1073,14 @@ static int func_80104788(int arg0)
     case 2:
         D_80109670 = vs_battle_inventory.misc[D_8010966C - 1].count;
         i = vs_battle_toBCD(D_80109670);
-        D_80109610[8] = (i & 0xF);
+        _buffReels[8] = (i & 0xF);
         i = vs_battle_toBCD(i >> 4);
-        D_80109610[7] = (i & 0xF);
-        D_80109610[6] = (i >> 4);
+        _buffReels[7] = (i & 0xF);
+        _buffReels[6] = (i >> 4);
         for (i = 2; i < 5; ++i) {
-            D_80109610[i] = 0;
+            _buffReels[i] = 0;
         }
-        temp_v0_4 = vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, D_80109610);
+        temp_v0_4 = vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, _buffReels);
         temp_v0_4->state = 5;
         temp_v0_4->targetX = 0;
         D_8010966E = 0;
@@ -1105,19 +1105,19 @@ static int func_80104788(int arg0)
             break;
         }
         for (i = 2; i < 5; ++i) {
-            D_80109610[i] = 0x8F;
+            _buffReels[i] = 0x8F;
         }
-        vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, D_80109610);
+        vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, _buffReels);
         D_8010966A = 5;
         // Fallthrough
     case 5:
         if (vs_main_buttonsPressed.all & 0x70) {
             i = vs_battle_toBCD(D_8010966F);
-            D_80109610[4] = (i & 0xF);
+            _buffReels[4] = (i & 0xF);
             i = vs_battle_toBCD(i >> 4);
-            D_80109610[3] = (i & 0xF);
-            D_80109610[2] = (i >> 4);
-            vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, D_80109610);
+            _buffReels[3] = (i & 0xF);
+            _buffReels[2] = (i >> 4);
+            vs_battle_setMenuItem(0x22, 0, 0x82, 0x7E, 0, _buffReels);
             if (vs_main_buttonsPressed.all & 0x50) {
                 vs_battle_playMenuLeaveSfx();
                 if (vs_main_buttonsPressed.all & 0x10) {

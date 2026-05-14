@@ -20,13 +20,13 @@ typedef struct {
 } _texture_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-} D_80109610_t;
+    short stat;
+    short amount;
+} _buffReels_t;
 
 int _loadRankDis(void);
 int func_80102C54(void);
-int func_8010310C(void);
+int _loadTimeDis(void);
 int _loadAttackDis(void);
 void func_80103748(void);
 int func_801037A0(void);
@@ -130,7 +130,7 @@ int func_80102C54(void)
         ret = _loadAttackDis();
         break;
     case 2:
-        ret = func_8010310C();
+        ret = _loadTimeDis();
         break;
     case 3:
         func_80108E48();
@@ -150,13 +150,13 @@ int func_80102C54(void)
     return ret;
 }
 
-static u_int D_80109878;
+static u_int _buffReelSelection;
 static int D_8010987C;
 static int _clearCount;
 static u_int _score;
 static u_int _mapCompletion;
 static u_int D_8010988C;
-static int D_80109890;
+static int _buffReelIndex;
 static int D_80109894;
 static int D_80109898;
 static int D_8010989C;
@@ -167,10 +167,10 @@ int _loadRankDis(void)
     static vs_main_CdQueueSlot* _rankDataCdSlot;
     static void* _rankData;
 
-    func_80103530_t sp10;
-    int temp_s0;
-    int temp_s1;
-    int temp_v1;
+    TIM_IMAGE tim;
+    int strength;
+    int intelligence;
+    int agility;
     int var_a0;
     int i;
     int mapCompletion;
@@ -185,21 +185,21 @@ int _loadRankDis(void)
     } else if (D_800F1CD8 == 1) {
         if (_rankDataCdSlot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i < 3; ++i) {
-                func_8008D820(_rankData + i * 0x8220, &sp10);
-                if (sp10.unk10 != NULL) {
-                    sp10.unkC->x = 0x340 + i * 0x40;
-                    sp10.unkC->y = 0x100;
-                    sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+                vs_battle_setTimImage(_rankData + i * 0x8220, &tim);
+                if (tim.paddr != NULL) {
+                    tim.prect->x = 0x340 + i * 0x40;
+                    tim.prect->y = 0x100;
+                    tim.prect->h = 0xFF;
+                    LoadImage(tim.prect, (u_long*)tim.paddr);
                 }
                 if (i == 0) {
-                    if (sp10.unk8 != NULL) {
-                        sp10.unk4->x = 0x300;
-                        sp10.unk4->y = 0x1FF;
-                        sp10.unk4->w = 0x80;
-                        sp10.unk4->h = 1;
-                        *sp10.unk8 = 0;
-                        LoadImage(sp10.unk4, sp10.unk8);
+                    if (tim.caddr != NULL) {
+                        tim.crect->x = 0x300;
+                        tim.crect->y = 0x1FF;
+                        tim.crect->w = 0x80;
+                        tim.crect->h = 1;
+                        *tim.caddr = 0;
+                        LoadImage(tim.crect, tim.caddr);
                     }
                 }
             }
@@ -215,20 +215,20 @@ int _loadRankDis(void)
         D_8010989C = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
-        D_80109878 = (rand() & 0xF0) | 8;
-        temp_s0 = _getTotalStrength();
-        temp_s1 = _getTotalIntelligence();
-        temp_v1 = _getTotalAgility();
-        if ((temp_s1 >= temp_s0) && (temp_v1 >= temp_s0)) {
-            D_80109890 = 0;
-        } else if (temp_s0 >= temp_s1) {
-            if (temp_v1 >= temp_s1) {
-                D_80109890 = 1;
+        _buffReelSelection = (rand() & 0xF0) | 8;
+        strength = _getTotalStrength();
+        intelligence = _getTotalIntelligence();
+        agility = _getTotalAgility();
+        if ((intelligence >= strength) && (agility >= strength)) {
+            _buffReelIndex = 0;
+        } else if (strength >= intelligence) {
+            if (agility >= intelligence) {
+                _buffReelIndex = 1;
             } else {
-                D_80109890 = 2;
+                _buffReelIndex = 2;
             }
         } else {
-            D_80109890 = 2;
+            _buffReelIndex = 2;
         }
 
         D_800F1CD8 = 0;
@@ -277,12 +277,12 @@ static int D_801098A4;
 static int D_801098A8;
 static u_short D_801098AC[0xA0];
 
-int func_8010310C(void)
+int _loadTimeDis(void)
 {
     static vs_main_CdQueueSlot* D_80109854;
     static void* D_80109858;
 
-    func_80103530_t sp10;
+    TIM_IMAGE tim;
     int temp_s0;
     int var_a3;
     int i;
@@ -290,27 +290,27 @@ int func_8010310C(void)
     temp_s0 = D_800F1CD8;
     if (temp_s0 == 0) {
         func_8007DFF0(0x1D, 1, 5);
-        D_80109858 = vs_main_allocHeapR(_disFiles[1].size);
+        D_80109858 = vs_main_allocHeapR(_disFiles[timeDis].size);
         D_80109854 = vs_main_allocateCdQueueSlot(&_disFiles[1]);
         vs_main_cdEnqueue(D_80109854, D_80109858);
         ++D_800F1CD8;
     } else if (temp_s0 == 1) {
         if (D_80109854->state == 4) {
-            func_8008D820(D_80109858, &sp10);
-            if (sp10.unk10 != NULL) {
-                sp10.unkC->x = 0x340;
-                sp10.unkC->y = 0x100;
-                sp10.unkC->h = 0xFF;
-                LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+            vs_battle_setTimImage(D_80109858, &tim);
+            if (tim.paddr != NULL) {
+                tim.prect->x = 0x340;
+                tim.prect->y = 0x100;
+                tim.prect->h = 0xFF;
+                LoadImage(tim.prect, (u_long*)tim.paddr);
             }
-            if (sp10.unk8 != NULL) {
-                sp10.unk4->x = 0x300;
-                sp10.unk4->y = 0x1FF;
-                sp10.unk4->w = 0xA0;
-                sp10.unk4->h = temp_s0;
-                *sp10.unk8 = 0;
-                LoadImage(sp10.unk4, sp10.unk8);
-                vs_main_memcpy(D_801098AC, sp10.unk8, 0x140U);
+            if (tim.caddr != NULL) {
+                tim.crect->x = 0x300;
+                tim.crect->y = 0x1FF;
+                tim.crect->w = 0xA0;
+                tim.crect->h = temp_s0;
+                *tim.caddr = 0;
+                LoadImage(tim.crect, tim.caddr);
+                vs_main_memcpy(D_801098AC, tim.caddr, 0x140U);
             }
             vs_main_freeCdQueueSlot(D_80109854);
             func_80103748();
@@ -378,23 +378,23 @@ int _loadAttackDis(void)
     } else if (D_800F1CD8 == 1) {
         if (_attackDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
-            func_80103530_t sp10;
+            TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
-                func_8008D820(_attackDisData + i * 0x8220, &sp10);
-                if (sp10.unk10 != NULL) {
-                    sp10.unkC->x = 0x340 + i * 0x40;
-                    sp10.unkC->y = 0x100;
-                    sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+                vs_battle_setTimImage(_attackDisData + i * 0x8220, &tim);
+                if (tim.paddr != NULL) {
+                    tim.prect->x = 0x340 + i * 0x40;
+                    tim.prect->y = 0x100;
+                    tim.prect->h = 0xFF;
+                    LoadImage(tim.prect, (u_long*)tim.paddr);
                 }
                 if (i == 0) {
-                    if (sp10.unk8 != NULL) {
-                        sp10.unk4->x = 0x300;
-                        sp10.unk4->y = 0x1FF;
-                        sp10.unk4->w = 0xA0;
-                        sp10.unk4->h = 1;
-                        sp10.unk8[0] = 0;
-                        LoadImage(sp10.unk4, sp10.unk8);
+                    if (tim.caddr != NULL) {
+                        tim.crect->x = 0x300;
+                        tim.crect->y = 0x1FF;
+                        tim.crect->w = 0xA0;
+                        tim.crect->h = 1;
+                        tim.caddr[0] = 0;
+                        LoadImage(tim.crect, tim.caddr);
                     }
                 }
             }
@@ -408,7 +408,7 @@ int _loadAttackDis(void)
         D_8010989C = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
-        D_80109878 = 0;
+        _buffReelSelection = 0;
         D_800F1CD8 = 0;
         return 1;
     }
@@ -588,19 +588,34 @@ static u_char D_801095D0[] = { 0x3, 0x1B, 0x1C, 0x1D, 0x2, 0x1B, 0x1E, 0, 0x2, 0
     0, 0x2, 0x20, 0x21, 0, 0x2, 0x42, 0x43, 0, 0x2, 0x23, 0x24, 0, 0x2, 0x1C, 0x1F, 0,
     0x2, 0x2C, 0x1C, 0, 0x2, 0x37, 0x38, 0, 0x1, 0x1E, 0, 0, 0x1, 0x3B, 0, 0, 0x1, 0x39,
     0, 0, 0x1, 0x21, 0, 0, 0x1, 0x2A, 0, 0, 0x1, 0x1F, 0, 0, 0x2, 0x3C, 0x41, 0 };
-static D_80109610_t D_80109610[][16] = {
-    { { 0x10, 0x5 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0xE, 0x1 }, { 0x10, 0x4 },
-        { 0xF, 0x1 }, { 0x11, 0x2 }, { 0x10, 0x3 }, { 0xD, 0x2 }, { 0x11, 0x1 },
-        { 0x10, 0x4 }, { 0x10, 0x4 }, { 0xD, 0x3 }, { 0x10, 0x3 }, { 0x11, 0x2 },
-        { 0xD, 0x1 } },
-    { { 0x11, 0x1 }, { 0x10, 0x4 }, { 0xF, 0x1 }, { 0x10, 0x3 }, { 0x10, 0x5 },
-        { 0x10, 0x4 }, { 0xF, 0x2 }, { 0xD, 0x1 }, { 0x10, 0x4 }, { 0x11, 0x2 },
-        { 0xE, 0x1 }, { 0xF, 0x3 }, { 0x10, 0x4 }, { 0xF, 0x2 }, { 0x10, 0x3 },
-        { 0x10, 0x3 } },
-    { { 0x10, 0x4 }, { 0xF, 0x1 }, { 0xE, 0x2 }, { 0x10, 0x4 }, { 0x11, 0x2 },
-        { 0xE, 0x1 }, { 0x11, 0x1 }, { 0x10, 0x3 }, { 0xE, 0x3 }, { 0x10, 0x4 },
-        { 0x10, 0x3 }, { 0x10, 0x5 }, { 0xE, 0x2 }, { 0x11, 0x2 }, { 0x10, 0x3 },
-        { 0xD, 0x1 } }
+
+enum BuffReelStats {
+    buffReelStatStr = 13,
+    buffReelStatAgi,
+    buffReelStatInt,
+    buffReelStatHp,
+    buffReelStatMp
+};
+
+static _buffReels_t _buffReels[][16] = {
+    { { buffReelStatHp, 5 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
+        { buffReelStatAgi, 1 }, { buffReelStatHp, 4 }, { buffReelStatInt, 1 },
+        { buffReelStatMp, 2 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
+        { buffReelStatMp, 1 }, { buffReelStatHp, 4 }, { buffReelStatHp, 4 },
+        { buffReelStatStr, 3 }, { buffReelStatHp, 3 }, { buffReelStatMp, 2 },
+        { buffReelStatStr, 1 } },
+    { { buffReelStatMp, 1 }, { buffReelStatHp, 4 }, { buffReelStatInt, 1 },
+        { buffReelStatHp, 3 }, { buffReelStatHp, 5 }, { buffReelStatHp, 4 },
+        { buffReelStatInt, 2 }, { buffReelStatStr, 1 }, { buffReelStatHp, 4 },
+        { buffReelStatMp, 2 }, { buffReelStatAgi, 1 }, { buffReelStatInt, 3 },
+        { buffReelStatHp, 4 }, { buffReelStatInt, 2 }, { buffReelStatHp, 3 },
+        { buffReelStatHp, 3 } },
+    { { buffReelStatHp, 4 }, { buffReelStatInt, 1 }, { buffReelStatAgi, 2 },
+        { buffReelStatHp, 4 }, { buffReelStatMp, 2 }, { buffReelStatAgi, 1 },
+        { buffReelStatMp, 1 }, { buffReelStatHp, 3 }, { buffReelStatAgi, 3 },
+        { buffReelStatHp, 4 }, { buffReelStatHp, 3 }, { buffReelStatHp, 5 },
+        { buffReelStatAgi, 2 }, { buffReelStatMp, 2 }, { buffReelStatHp, 3 },
+        { buffReelStatStr, 1 } }
 };
 
 static int D_801099EC;
@@ -610,7 +625,7 @@ int func_8010384C(void)
 {
     static int D_80109864;
 
-    int temp_a0;
+    int amount;
     int temp_a2_2;
     int temp_v1;
 
@@ -628,7 +643,7 @@ int func_8010384C(void)
     }
 
     if (D_801098A0 == 0) {
-        D_80109878 = (D_80109878 + (D_8010988C >> 3)) & 0xFF;
+        _buffReelSelection = (_buffReelSelection + (D_8010988C >> 3)) & 0xFF;
         if ((D_8010989C - 0x110) > 0) {
             if (D_8010988C == 8) {
                 vs_main_playSfxDefault(0x7E, 0x74);
@@ -666,8 +681,8 @@ int func_8010384C(void)
         if (temp_a2_2 > 0) {
             func_801064D4(0xD6, 0xBB, temp_a2_2, D_8010989C);
         }
-        temp_v1 = D_80109878 + (D_8010988C >> 3);
-        D_80109878 = temp_v1 & 0xFF;
+        temp_v1 = _buffReelSelection + (D_8010988C >> 3);
+        _buffReelSelection = temp_v1 & 0xFF;
         if (D_8010988C >= 9) {
             --D_8010988C;
         }
@@ -693,22 +708,23 @@ int func_8010384C(void)
         func_8010540C(0xA0, 0x9A, 8 - D_80109864);
         func_801060A8(0x82, 0xBE, 8 - D_80109864, 3);
         if (D_80109864 >= 8) {
-            temp_a0 = D_80109610[D_80109890][(char)D_80109878 >> 4].unk2;
-            switch ((short)(D_80109610[D_80109890][(char)D_80109878 >> 4].unk0 - 0xD)) {
+            amount = _buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].amount;
+            switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].stat
+                            - 13)) {
             case 0:
-                _raiseMaxStrength(temp_a0);
+                _raiseMaxStrength(amount);
                 break;
             case 1:
-                _raiseMaxAgility(temp_a0);
+                _raiseMaxAgility(amount);
                 break;
             case 2:
-                _raiseMaxIntelligence(temp_a0);
+                _raiseMaxIntelligence(amount);
                 break;
             case 3:
-                _raiseMaxHP(temp_a0);
+                _raiseMaxHP(amount);
                 break;
             case 4:
-                _raiseMaxMP(temp_a0);
+                _raiseMaxMP(amount);
                 break;
             }
             func_8007E0A8(0x1D, 3, 5);
@@ -2010,24 +2026,24 @@ int _loadIqDis(void)
     } else if (D_800F1CD8 == 1) {
         if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
-            func_80103530_t sp10;
+            TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
-                func_8008D820(_iqDisData + i * 0x8220, &sp10);
-                if (sp10.unk10 != NULL) {
-                    sp10.unkC->x = 0x340 + i * 0x40;
-                    sp10.unkC->y = 0x100;
-                    sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+                vs_battle_setTimImage(_iqDisData + i * 0x8220, &tim);
+                if (tim.paddr != NULL) {
+                    tim.prect->x = 0x340 + i * 0x40;
+                    tim.prect->y = 0x100;
+                    tim.prect->h = 0xFF;
+                    LoadImage(tim.prect, (u_long*)tim.paddr);
                 }
                 if (i == 0) {
-                    if (sp10.unk8 != NULL) {
-                        sp10.unk4->x = 0x300;
-                        sp10.unk4->y = 0x1FF;
-                        sp10.unk4->w = 0xA0;
-                        sp10.unk4->h = 1;
-                        sp10.unk8[0] = 0;
-                        LoadImage(sp10.unk4, sp10.unk8);
-                        vs_main_memcpy(D_801098AC, sp10.unk8, 0x140);
+                    if (tim.caddr != NULL) {
+                        tim.crect->x = 0x300;
+                        tim.crect->y = 0x1FF;
+                        tim.crect->w = 0xA0;
+                        tim.crect->h = 1;
+                        tim.caddr[0] = 0;
+                        LoadImage(tim.crect, tim.caddr);
+                        vs_main_memcpy(D_801098AC, tim.caddr, 0x140);
                     }
                 }
             }
@@ -2051,7 +2067,7 @@ int _loadIqDis(void)
         D_8010989C = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
-        D_80109878 = 0;
+        _buffReelSelection = 0;
         D_800F1CD8 = 0;
         func_80108E38();
         return 1;
@@ -2075,7 +2091,7 @@ int _loadEscDis(void)
     static vs_main_CdQueueSlot* _escDisCdSLot;
     static void* _escDisData;
 
-    func_80103530_t sp10;
+    TIM_IMAGE tim;
     int i;
 
     if (D_800F1CD8 == 0) {
@@ -2087,21 +2103,24 @@ int _loadEscDis(void)
     } else if (D_800F1CD8 == 1) {
         if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
-                func_8008D820(_escDisData + i * 0x8220, &sp10);
-                if (sp10.unk10 != NULL) {
-                    sp10.unkC->x = 0x340 + i * 0x40;
-                    sp10.unkC->y = 0x100;
-                    sp10.unkC->h = 0xFF;
-                    LoadImage(sp10.unkC, (u_long*)sp10.unk10);
+
+                vs_battle_setTimImage(_escDisData + i * 0x8220, &tim);
+
+                if (tim.paddr != NULL) {
+                    tim.prect->x = 832 + i * 64;
+                    tim.prect->y = 256;
+                    tim.prect->h = 255;
+                    LoadImage(tim.prect, (u_long*)tim.paddr);
                 }
-                if ((i == 0) && (sp10.unk8 != NULL)) {
-                    sp10.unk4->x = 0x300;
-                    sp10.unk4->y = 0x1FF;
-                    sp10.unk4->w = 0xA0;
-                    sp10.unk4->h = 1;
-                    *sp10.unk8 = 0;
-                    LoadImage(sp10.unk4, sp10.unk8);
-                    vs_main_memcpy(D_801098AC, sp10.unk8, 0x140U);
+
+                if ((i == 0) && (tim.caddr != NULL)) {
+                    tim.crect->x = 768;
+                    tim.crect->y = 511;
+                    tim.crect->w = 160;
+                    tim.crect->h = 1;
+                    *tim.caddr = 0;
+                    LoadImage(tim.crect, tim.caddr);
+                    vs_main_memcpy(D_801098AC, tim.caddr, sizeof D_801098AC);
                 }
             }
             vs_main_freeCdQueueSlot(_escDisCdSLot);
@@ -2114,7 +2133,7 @@ int _loadEscDis(void)
         D_8010989C = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
-        D_80109878 = 0;
+        _buffReelSelection = 0;
         D_800F1CD8 = 0;
         return 1;
     }

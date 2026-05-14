@@ -349,9 +349,9 @@ typedef struct {
 } vs_main_artsStatus_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
+    char r;
+    char g;
+    char b;
     char unk3;
 } D_8005DC6C_t;
 
@@ -516,7 +516,7 @@ int func_80046634(void);
 // BUG: Function seems to be called with 3 and 4 parameters
 // but always reads 4th
 void vs_main_loadClutTransition();
-void func_80047280(int, int, int, short, int, int);
+void vs_main_transformClutSlot(int, int, int, short, int, int);
 void func_800472D0(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);
 void func_800478E0(int, int, int, int, int);

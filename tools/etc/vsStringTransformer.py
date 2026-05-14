@@ -8,8 +8,11 @@ def encode_c_string_literal(s):
     return '{' + byte_array + '}'
 
 def encode_c_char_literal(s):
+    # s includes the surrounding single quotes
+    # evaluate to a Python string of length 1 and encode it
     encoded = encode_raw(eval(s))
     if len(encoded) != 1:
+        # unexpected; fall back to full list
         return '{' + ', '.join(str(b) for b in encoded) + '}'
     return str(encoded[0])
 
@@ -29,6 +32,7 @@ def process_vsstring_block(block):
 
     block = sized_array_re.sub(sized_array_replacer, block)
 
+    # match C string literals \"...\" and character literals '\''...\''
     string_literal_re = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"')
     char_literal_re = re.compile(r"'([^'\\]*(?:\\.[^'\\]*)*)'")
 
@@ -36,8 +40,10 @@ def process_vsstring_block(block):
         return encode_c_string_literal(match.group(0))
 
     def char_replacer(match):
+        # encode character literal without braces
         return encode_c_char_literal(match.group(0))
 
+    # replace string literals first, then character literals
     block = string_literal_re.sub(string_replacer, block)
     block = char_literal_re.sub(char_replacer, block)
     return block

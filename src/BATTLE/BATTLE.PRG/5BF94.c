@@ -1911,7 +1911,7 @@ void func_800CA9C0(void* arg0)
     vs_battle_menuState.currentState = 0x3F;
     vs_battle_rMemzero(&D_800F4E98, sizeof(D_800F4E98));
     vs_battle_rMemzero(&vs_battle_textBoxes[0], sizeof(vs_battle_textBoxes[0]));
-    vs_battle_rMemzero(D_800F4E70, sizeof(D_800F4E70));
+    vs_battle_rMemzero(vs_battle_submenuStates, sizeof(vs_battle_submenuStates));
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
     vs_battle_drawImage(0x340, arg0, 0xE00040);
@@ -1930,7 +1930,8 @@ void func_800CAB40(void)
         func_800FAEBC(2);
     } else {
         vs_battle_menuState.currentState = vs_battle_menuState.returnState;
-        D_800F4E70[vs_battle_menuState.returnState & 0xF] = vs_battle_menuState.unk2;
+        vs_battle_submenuStates[vs_battle_menuState.returnState & 0xF] =
+            vs_battle_menuState.unk2;
     }
     if (D_800F4FDB == 0) {
         func_8007DFF0(0x1A, 3, 6);

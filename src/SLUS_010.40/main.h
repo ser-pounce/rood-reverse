@@ -262,7 +262,7 @@ typedef struct {
     char introState;
     char unkAC[9];
     char unkB5;
-    char unkB6;
+    char menuFSubmenu;
     char unkB7;
     char unkB8;
     char unkB9;
@@ -276,10 +276,10 @@ typedef struct {
     char unkC1;
     char unkC2;
     char unkC3;
-    u_char unkC4;
-    char unkC5;
-    char unkC6;
-    char unkC7;
+    u_char timeTrialBoss;
+    char timeTrialMins;
+    char timeTrialSecs;
+    char timeTrialMs;
     char unkC8;
     char unkC9;
     char unkCA;

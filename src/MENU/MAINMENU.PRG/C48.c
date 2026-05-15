@@ -320,7 +320,7 @@ void vs_mainMenu_exec(int arg0)
     int selectedMenu;
     int temp_s5;
     int state;
-    char* temp_s3;
+    char* submenuState;
     int temp_v1;
     vs_battle_menuState_t* menuState = &vs_battle_menuState;
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
@@ -334,7 +334,7 @@ void vs_mainMenu_exec(int arg0)
     vs_mainMenu_armor = inventory->armor;
     vs_mainMenu_gems = inventory->gems;
 
-    temp_s3 = &D_800F4E70[arg0 & 0xF];
+    submenuState = &vs_battle_submenuStates[arg0 & 0xF];
     temp_s5 = vs_battle_loadMenuPrg(arg0);
     selectedMenu = arg0 & 0x3F;
 
@@ -344,27 +344,27 @@ void vs_mainMenu_exec(int arg0)
         } else if (D_800F4EA0 & 0x200) {
             if (temp_s5 != 0) {
                 if (selectedMenu == 15) {
-                    var_s4 = vs_menuF_exec(temp_s3);
+                    var_s4 = vs_menuF_exec(submenuState);
                 } else if (selectedMenu == 3) {
-                    var_s4 = vs_menu2_skillUnlock(temp_s3);
+                    var_s4 = vs_menu2_skillUnlock(submenuState);
                 } else if (selectedMenu == 14) {
-                    var_s4 = func_80108C6C(temp_s3);
+                    var_s4 = func_80108C6C(submenuState);
                 } else if (selectedMenu == 8) {
-                    var_s4 = vs_menu8_execRename(temp_s3);
+                    var_s4 = vs_menu8_execRename(submenuState);
                 } else if (selectedMenu == 13) {
-                    var_s4 = vs_menuC_exec(temp_s3);
+                    var_s4 = vs_menuC_exec(submenuState);
                 } else if (selectedMenu == 12) {
-                    var_s4 = vs_menuB_exec(temp_s3);
+                    var_s4 = vs_menuB_exec(submenuState);
                 } else if (selectedMenu == 7 && (D_800F4EA0 & 0x400)) {
-                    var_s4 = vs_menu7_saveContainerMenu(temp_s3);
+                    var_s4 = vs_menu7_saveContainerMenu(submenuState);
                 } else if (selectedMenu == 7 && vs_main_stateFlags.gameOver == 1) {
-                    var_s4 = vs_menu7_gameOver(temp_s3);
+                    var_s4 = vs_menu7_gameOver(submenuState);
                 } else {
                     D_800F4EA0 = 0;
                 }
             }
         } else {
-            temp_v1 = *temp_s3;
+            temp_v1 = *submenuState;
             switch (temp_v1) {
             case 0:
                 if (!(arg0 & 0x40)) {
@@ -393,7 +393,7 @@ void vs_mainMenu_exec(int arg0)
                     func_80100414(-2, 0x80);
                     menuItem->targetX = 0x140;
                 }
-                *temp_s3 = 1;
+                *submenuState = 1;
                 break;
             case 1:
                 state = menuItem->state;
@@ -409,11 +409,11 @@ void vs_mainMenu_exec(int arg0)
                     menuItem->targetX = 0xB4;
                     menuItem->selected = state;
                 }
-                *temp_s3 = 3;
+                *submenuState = 3;
                 // Fallthrough
             default:
                 if (temp_s5 != 0) {
-                    var_s4 = _submenuEntrypoints[selectedMenu - 1](temp_s3);
+                    var_s4 = _submenuEntrypoints[selectedMenu - 1](submenuState);
                 }
                 break;
             }

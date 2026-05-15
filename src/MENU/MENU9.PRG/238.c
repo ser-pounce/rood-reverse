@@ -54,18 +54,11 @@ typedef struct {
     short unk6;
     short selected;
     short animationState;
-    char unlocked;
-    char unkD;
-    char unkE;
-    char unkF;
-    short unk10;
-    short unk12;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
+    u_char unlocked;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
+    char name[28];
 } _monBinData_t;
 
 extern void* D_1F800000[];
@@ -1680,7 +1673,7 @@ void func_80105F00(int arg0)
         }
         if (enemy->unlocked != 0) {
             menuItem =
-                vs_battle_setMenuItem(0, s6, var_s1, 0xC8, 0, (char*)&enemy->unk10);
+                vs_battle_setMenuItem(0, s6, var_s1, 0xC8, 0, enemy->name);
         } else {
             menuItem = vs_battle_setMenuItem(
                 0, s6, var_s1, 0xC8, 0, (char*)&_miscInfo[_miscInfo[3]]);
@@ -1739,7 +1732,7 @@ void func_801061F8(int arg0, int arg1)
     if (D_8010A45C == 0) {
         temp_s2 = (8 - arg0) * 0x10;
         func_800C9078(vs_battle_setMenuItem(
-            0, temp_s2 + 0xB8, 0xA6, 0x100, 0, (char*)&_monBinData[D_8010A450].unk12));
+            0, temp_s2 + 0xB8, 0xA6, 0x100, 0, &_monBinData[D_8010A450].name[2]));
         vs_battle_getMenuItem(0)->state = 0;
         temp_s4 = arg0 * 0x10;
         scratch = (void**)getScratchAddr(0);

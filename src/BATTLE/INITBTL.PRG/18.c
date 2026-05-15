@@ -410,7 +410,7 @@ void func_800FA6B8(void)
     vs_battle_doorEntered = -1;
     D_800F1BA4 = 0;
     D_800F1BB6 = 0;
-    D_800F1CD8 = 0;
+    _submenuState = 0;
     vs_battle_sceneBuffer = NULL;
     D_800F1CD6 = 1;
     D_800F1CD4 = 8;

@@ -1063,7 +1063,7 @@ extern void* D_800F1CBC;
 extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
-extern int D_800F1CD8;
+extern int _submenuState;
 extern int D_800F1CE0[8];
 extern char vs_battle_executeAbilityType;
 extern char D_800F51C1;

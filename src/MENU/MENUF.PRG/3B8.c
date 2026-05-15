@@ -24,15 +24,15 @@ typedef struct {
     short amount;
 } _buffReels_t;
 
-static int _loadRankDis(void);
+static int _initCongratulationsScreen(void);
 static int _initMenu(void);
-static int _loadTimeDis(void);
-static int _loadAttackDis(void);
+static int _initTimeAttackEnd(void);
+static int _initTimeAttackStart(void);
 static void func_80103748(void);
 static int _execMenu(void);
-static int func_8010384C(void);
-static int func_80103D88(void);
-static int func_8010412C(void);
+static int _renderCongratulationsScreen(void);
+static int _renderTimeAttackEnd(void);
+static int _renderTimeAttackStart(void);
 static void func_8010459C(int arg0, int arg1, int arg2);
 static void func_80104650(int arg0, int arg1, int arg2);
 static void func_801046F8(int arg0, int arg1, int arg2);
@@ -62,12 +62,12 @@ static void func_801064D4(int, int, int, int);
 static void func_8010664C(int, int, int, char*);
 static void func_80106A80(int, int, int, char*);
 static void func_80107140(int, int, int, char*, int);
-static int _loadIqDis(void);
-static int func_80107D4C(void);
-static int _loadEscDis(void);
-static int func_80107FC0(void);
-static int func_801080E4(void);
-static int func_801083AC(void);
+static int _initCubePuzzleStart(void);
+static int _initCubePuzzleEnd(void);
+static int _initCubePuzzleQuit(void);
+static int _renderCubePuzzleStart(void);
+static int _renderCubePuzzleEnd(void);
+static int _renderCubePuzzleQuit(void);
 static void func_801084F4(int arg0, int arg1);
 static void func_80108564(int arg0, int arg1);
 static void func_801085D4(int arg0, int arg1, int arg2);
@@ -122,15 +122,15 @@ int _initMenu(void)
 {
     int ret;
 
-    switch (vs_main_stateFlags.unkB6) {
+    switch (vs_main_stateFlags.menuFSubmenu) {
     case 0:
-        ret = _loadRankDis();
+        ret = _initCongratulationsScreen();
         break;
     case 1:
-        ret = _loadAttackDis();
+        ret = _initTimeAttackStart();
         break;
     case 2:
-        ret = _loadTimeDis();
+        ret = _initTimeAttackEnd();
         break;
     case 3:
         func_80108E48();
@@ -138,13 +138,13 @@ int _initMenu(void)
         ret = 1;
         break;
     case 4:
-        ret = _loadIqDis();
+        ret = _initCubePuzzleStart();
         break;
     case 5:
-        ret = func_80107D4C();
+        ret = _initCubePuzzleEnd();
         break;
     case 6:
-        ret = _loadEscDis();
+        ret = _initCubePuzzleQuit();
         break;
     }
     return ret;
@@ -159,32 +159,26 @@ static u_int D_8010988C;
 static int _buffReelIndex;
 static int D_80109894;
 static int D_80109898;
-static int D_8010989C;
+static int _screenTimer;
 static int D_801098A0;
 
-int _loadRankDis(void)
+int _initCongratulationsScreen(void)
 {
     static vs_main_CdQueueSlot* _rankDataCdSlot;
     static void* _rankData;
 
-    TIM_IMAGE tim;
-    int strength;
-    int intelligence;
-    int agility;
-    int var_a0;
     int i;
-    int mapCompletion;
-    u_int chestsOpened;
 
-    if (D_800F1CD8 == 0) {
+    if (_submenuState == 0) {
         func_8007DFF0(0x1D, 3, 5);
         _rankData = vs_main_allocHeapR(_disFiles[rankDis].size);
         _rankDataCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[rankDis]);
         vs_main_cdEnqueue(_rankDataCdSlot, _rankData);
-        ++D_800F1CD8;
-    } else if (D_800F1CD8 == 1) {
+        ++_submenuState;
+    } else if (_submenuState == 1) {
         if (_rankDataCdSlot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i < 3; ++i) {
+                TIM_IMAGE tim;
                 vs_battle_setTimImage(_rankData + i * 0x8220, &tim);
                 if (tim.paddr != NULL) {
                     tim.prect->x = 0x340 + i * 0x40;
@@ -205,20 +199,28 @@ int _loadRankDis(void)
             }
             vs_main_freeCdQueueSlot(_rankDataCdSlot);
             func_80103748();
-            ++D_800F1CD8;
+            ++_submenuState;
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
+        int strength;
+        int intelligence;
+        int agility;
+        int mapCompletion;
+        u_int chestsOpened;
+
         func_80045000(2, 0x7F, 0);
         vs_main_freeHeapR(_rankData);
         D_80109894 = 0;
         D_80109898 = 0;
-        D_8010989C = 0;
+        _screenTimer = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
         _buffReelSelection = (rand() & 0xF0) | 8;
+
         strength = _getTotalStrength();
         intelligence = _getTotalIntelligence();
         agility = _getTotalAgility();
+
         if ((intelligence >= strength) && (agility >= strength)) {
             _buffReelIndex = 0;
         } else if (strength >= intelligence) {
@@ -231,7 +233,7 @@ int _loadRankDis(void)
             _buffReelIndex = 2;
         }
 
-        D_800F1CD8 = 0;
+        _submenuState = 0;
         func_80108E48();
         _clearCount = vs_main_stateFlags.clearCount;
 
@@ -242,10 +244,11 @@ int _loadRankDis(void)
         mapCompletion = 0;
 
         for (i = 0; i < 16; ++i) {
-            for (var_a0 = 0; var_a0 < 32; ++var_a0) {
+            int flag;
+            for (flag = 0; flag < 32; ++flag) {
                 int v = 1;
                 if (vs_main_mapStatus.roomFlags[i] & vs_battle_mapCompletionFlags[i]
-                    & (v << var_a0)) {
+                    & (v << flag)) {
                     ++mapCompletion;
                 }
             }
@@ -265,7 +268,9 @@ int _loadRankDis(void)
         if (vs_main_scoredata.openedChestCount < chestsOpened) {
             vs_main_scoredata.openedChestCount = chestsOpened;
         }
+
         _mapCompletion = (mapCompletion * 100) / 361;
+
         _calculateScore();
         _determineRank();
         return 1;
@@ -273,143 +278,145 @@ int _loadRankDis(void)
     return 0;
 }
 
-static int D_801098A4;
-static int D_801098A8;
-static u_short D_801098AC[0xA0];
+static int _newTimeSlot;
+static int _timeTrialTime;
+static u_short _timBuf[160];
 
-int _loadTimeDis(void)
+int _initTimeAttackEnd(void)
 {
-    static vs_main_CdQueueSlot* D_80109854;
-    static void* D_80109858;
+    static vs_main_CdQueueSlot* cdSlot;
+    static void* timData;
 
-    TIM_IMAGE tim;
-    int temp_s0;
-    int var_a3;
     int i;
+    int state = _submenuState;
 
-    temp_s0 = D_800F1CD8;
-    if (temp_s0 == 0) {
+    if (state == 0) {
         func_8007DFF0(0x1D, 1, 5);
-        D_80109858 = vs_main_allocHeapR(_disFiles[timeDis].size);
-        D_80109854 = vs_main_allocateCdQueueSlot(&_disFiles[1]);
-        vs_main_cdEnqueue(D_80109854, D_80109858);
-        ++D_800F1CD8;
-    } else if (temp_s0 == 1) {
-        if (D_80109854->state == 4) {
-            vs_battle_setTimImage(D_80109858, &tim);
+        timData = vs_main_allocHeapR(_disFiles[timeDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[1]);
+        vs_main_cdEnqueue(cdSlot, timData);
+        ++_submenuState;
+    } else if (state == 1) {
+        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+            TIM_IMAGE tim;
+            vs_battle_setTimImage(timData, &tim);
             if (tim.paddr != NULL) {
-                tim.prect->x = 0x340;
-                tim.prect->y = 0x100;
-                tim.prect->h = 0xFF;
+                tim.prect->x = 832;
+                tim.prect->y = 256;
+                tim.prect->h = 255;
                 LoadImage(tim.prect, (u_long*)tim.paddr);
             }
             if (tim.caddr != NULL) {
-                tim.crect->x = 0x300;
-                tim.crect->y = 0x1FF;
-                tim.crect->w = 0xA0;
-                tim.crect->h = temp_s0;
-                *tim.caddr = 0;
+                tim.crect->x = 768;
+                tim.crect->y = 511;
+                tim.crect->w = 160;
+                tim.crect->h = 1;
+                tim.caddr[0] = 0;
                 LoadImage(tim.crect, tim.caddr);
-                vs_main_memcpy(D_801098AC, tim.caddr, 0x140U);
+                vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
             }
-            vs_main_freeCdQueueSlot(D_80109854);
+            vs_main_freeCdQueueSlot(cdSlot);
             func_80103748();
-            ++D_800F1CD8;
+            ++_submenuState;
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
         func_80045000(2, 0x7F, 0);
-        D_801098A8 = (vs_main_stateFlags.unkC5 << 0x10) | (vs_main_stateFlags.unkC6 << 8)
-                   | vs_main_stateFlags.unkC7;
-        if (D_801098A8 == 0) {
-            D_801098A8 = 0x3B3B63;
+        _timeTrialTime = (vs_main_stateFlags.timeTrialMins << 0x10) | (vs_main_stateFlags.timeTrialSecs << 8)
+                   | vs_main_stateFlags.timeTrialMs;
+        if (_timeTrialTime == 0) {
+            _timeTrialTime = (59 << 16) | (59 << 8) | 99;
         }
 
         for (i = 0; i < 3; ++i) {
-            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time)
-                < D_801098A8) {
+            int record;
+
+            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].time)
+                < _timeTrialTime) {
                 continue;
             }
-            for (var_a3 = 2; i < var_a3; --var_a3) {
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+            
+            for (record = 2; i < record; --record) {
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
                     .time = vs_main_scoredata
-                                .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                                .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
                                 .time;
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
                     .round =
                     vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
                         .round;
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3]
+                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
                     .difficulty =
                     vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.unkC4][var_a3 - 1]
+                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
                         .difficulty;
             }
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].time =
-                D_801098A8;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i].round =
+
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].time =
+                _timeTrialTime;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].round =
                 vs_main_stateFlags.clearCount;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][i]
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
                 .difficulty = vs_main_stateFlags.difficulty;
             break;
         }
-        D_801098A4 = i;
-        D_8010989C = 0;
+        _newTimeSlot = i;
+        _screenTimer = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
-        D_800F1CD8 = 0;
-        vs_main_freeHeapR(D_80109858);
+        _submenuState = 0;
+        vs_main_freeHeapR(timData);
         return 1;
     }
     return 0;
 }
 
-int _loadAttackDis(void)
+int _initTimeAttackStart(void)
 {
-    static vs_main_CdQueueSlot* _attackDisCdSlot;
-    static void* _attackDisData;
+    static vs_main_CdQueueSlot* cdSlot;
+    static void* timData;
 
-    if (D_800F1CD8 == 0) {
+    if (_submenuState == 0) {
         func_8007DFF0(0x1D, 2, 5);
-        _attackDisData = vs_main_allocHeapR(_disFiles[attackDis].size);
-        _attackDisCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
-        vs_main_cdEnqueue(_attackDisCdSlot, _attackDisData);
-        ++D_800F1CD8;
-    } else if (D_800F1CD8 == 1) {
-        if (_attackDisCdSlot->state == vs_main_CdQueueStateLoaded) {
+        timData = vs_main_allocHeapR(_disFiles[attackDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
+        vs_main_cdEnqueue(cdSlot, timData);
+        ++_submenuState;
+    } else if (_submenuState == 1) {
+        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
-                vs_battle_setTimImage(_attackDisData + i * 0x8220, &tim);
+                vs_battle_setTimImage(timData + i * 0x8220, &tim);
                 if (tim.paddr != NULL) {
-                    tim.prect->x = 0x340 + i * 0x40;
-                    tim.prect->y = 0x100;
-                    tim.prect->h = 0xFF;
+                    tim.prect->x = 832 + i * 64;
+                    tim.prect->y = 256;
+                    tim.prect->h = 255;
                     LoadImage(tim.prect, (u_long*)tim.paddr);
                 }
                 if (i == 0) {
                     if (tim.caddr != NULL) {
-                        tim.crect->x = 0x300;
-                        tim.crect->y = 0x1FF;
-                        tim.crect->w = 0xA0;
+                        tim.crect->x = 768;
+                        tim.crect->y = 511;
+                        tim.crect->w = 160;
                         tim.crect->h = 1;
                         tim.caddr[0] = 0;
                         LoadImage(tim.crect, tim.caddr);
                     }
                 }
             }
-            vs_main_freeCdQueueSlot(_attackDisCdSlot);
-            ++D_800F1CD8;
+            vs_main_freeCdQueueSlot(cdSlot);
+            ++_submenuState;
         }
     } else {
-        vs_main_freeHeapR(_attackDisData);
+        vs_main_freeHeapR(timData);
         D_80109894 = 0;
         D_80109898 = 0;
-        D_8010989C = 0;
+        _screenTimer = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
-        D_800F1CD8 = 0;
+        _submenuState = 0;
         return 1;
     }
     return 0;
@@ -417,8 +424,8 @@ int _loadAttackDis(void)
 
 void func_80103748(void)
 {
-    if ((D_8005E040 != 7) && (((D_8005E040 - 0x1F) < 9) || ((D_8005E040 - 0x2D) < 5))) {
-        vs_main_loadMusicSlot(D_8005E040 + 0x64, 2);
+    if ((D_8005E040 != 7) && (((D_8005E040 - 31) < 9) || ((D_8005E040 - 45) < 5))) {
+        vs_main_loadMusicSlot(D_8005E040 + 100, 2);
     } else {
         vs_main_loadMusicSlot(0x80, 2);
     }
@@ -428,27 +435,27 @@ int _execMenu(void)
 {
     int ret;
 
-    switch (vs_main_stateFlags.unkB6) {
+    switch (vs_main_stateFlags.menuFSubmenu) {
     case 0:
-        ret = func_8010384C();
+        ret = _renderCongratulationsScreen();
         break;
     case 1:
-        ret = func_8010412C();
+        ret = _renderTimeAttackStart();
         break;
     case 2:
-        ret = func_80103D88();
+        ret = _renderTimeAttackEnd();
         break;
     case 3:
         ret = 1;
         break;
     case 4:
-        ret = func_80107FC0();
+        ret = _renderCubePuzzleStart();
         break;
     case 5:
-        ret = func_801080E4();
+        ret = _renderCubePuzzleEnd();
         break;
     case 6:
-        ret = func_801083AC();
+        ret = _renderCubePuzzleQuit();
         break;
     }
     // BUG: potential garbage
@@ -621,41 +628,37 @@ static _buffReels_t _buffReels[][16] = {
 static int D_801099EC;
 static int D_801099F0;
 
-int func_8010384C(void)
+int _renderCongratulationsScreen(void)
 {
     static int D_80109864;
 
-    int amount;
-    int temp_a2_2;
-    int temp_v1;
-
     if (D_801098A0 != 3) {
-        if (D_8010989C == 0xD0) {
+        if (_screenTimer == 208) {
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
         }
-        func_80104B8C(0xA0, 0x28, D_8010989C);
-        func_80104DBC(0xA0, 0x50, D_8010989C - 0x20, D_801098A0);
-        func_8010516C(0xA0, 0x66, D_8010989C - 0x70, D_801098A0);
-        func_801053B0(0xA0, 0x8A, D_8010989C - 0xC0);
-        func_8010540C(0xA0, 0x9A, D_8010989C - 0xD0);
-        func_801060A8(0x82, 0xBE, D_8010989C - 0x110, D_801098A0);
+        func_80104B8C(160, 40, _screenTimer);
+        func_80104DBC(160, 80, _screenTimer - 32, D_801098A0);
+        func_8010516C(160, 102, _screenTimer - 112, D_801098A0);
+        func_801053B0(160, 138, _screenTimer - 192);
+        func_8010540C(160, 154, _screenTimer - 208);
+        func_801060A8(130, 190, _screenTimer - 272, D_801098A0);
     }
 
     if (D_801098A0 == 0) {
         _buffReelSelection = (_buffReelSelection + (D_8010988C >> 3)) & 0xFF;
-        if ((D_8010989C - 0x110) > 0) {
+        if ((_screenTimer - 272) > 0) {
             if (D_8010988C == 8) {
                 vs_main_playSfxDefault(0x7E, 0x74);
                 vs_main_playSfxDefault(0x7E, 0x75);
             }
-            if (D_8010988C < 0x30) {
-                if (D_8010989C >= 0x121) {
+            if (D_8010988C < 48) {
+                if (_screenTimer > 288) {
                     ++D_8010988C;
-                    func_801064D4(0xD6, 0xBB, D_8010988C, D_8010989C);
+                    func_801064D4(0xD6, 0xBB, D_8010988C, _screenTimer);
                 }
             } else {
-                if ((vs_main_buttonsPressed.all & PADRright) || D_8010989C >= 0x819) {
+                if ((vs_main_buttonsPressed.all & PADRright) || _screenTimer > 2072) {
                     if (vs_main_buttonsPressed.all & PADRright) {
                         vs_main_playSfxDefault(0x7E, 0x76);
                     }
@@ -666,27 +669,32 @@ int func_8010384C(void)
                     func_80045C74(0x7E, 0x74, -0x10, 0x30);
                     func_80045C74(0x7E, 0x75, -0x10, 0x30);
                 }
-                func_801064D4(0xD6, 0xBB, 0x30, D_8010989C);
+                func_801064D4(0xD6, 0xBB, 0x30, _screenTimer);
             }
         } else if (vs_main_buttonsPressed.all & PADRright) {
             func_80045D64(0x7E, 0);
-            D_8010989C = 0x110;
+            _screenTimer = 272;
             D_801099EC = 0;
             D_801099F0 = 0;
             D_80109894 = _mapCompletion;
             D_80109898 = _score;
         }
     } else if (D_801098A0 == 1) {
-        temp_a2_2 = 0x30 - D_80109864;
+        int temp_v1;
+        int temp_a2_2 = 48 - D_80109864;
         if (temp_a2_2 > 0) {
-            func_801064D4(0xD6, 0xBB, temp_a2_2, D_8010989C);
+            func_801064D4(0xD6, 0xBB, temp_a2_2, _screenTimer);
         }
+
         temp_v1 = _buffReelSelection + (D_8010988C >> 3);
         _buffReelSelection = temp_v1 & 0xFF;
+        
         if (D_8010988C >= 9) {
             --D_8010988C;
         }
-        temp_v1 = temp_v1 & 0xF;
+        
+        temp_v1 &= 0xF;
+        
         if ((temp_v1 == 8) && (D_8010988C == temp_v1)) {
             func_80045D64(0x7E, 0x74);
             func_80045D64(0x7E, 0x75);
@@ -696,19 +704,21 @@ int func_8010384C(void)
             D_80109864 = 0;
         }
     } else if (D_801098A0 == 2) {
-        if ((vs_main_buttonsPressed.all & PADRright) || (D_80109864 >= 451)) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (D_80109864 > 450)) {
             D_801098A0 = 3;
             D_80109864 = 0;
         }
     } else {
-        func_80104B8C(0xA0, 0x28, 8 - D_80109864);
-        func_80104C40(0xA0, 0x50, 8 - D_80109864, 3);
-        func_80105020(0xA0, 0x66, 8 - D_80109864, 3);
-        func_801053B0(0xA0, 0x8A, 8 - D_80109864);
-        func_8010540C(0xA0, 0x9A, 8 - D_80109864);
-        func_801060A8(0x82, 0xBE, 8 - D_80109864, 3);
+
+        func_80104B8C(160, 40, 8 - D_80109864);
+        func_80104C40(160, 80, 8 - D_80109864, 3);
+        func_80105020(160, 102, 8 - D_80109864, 3);
+        func_801053B0(160, 138, 8 - D_80109864);
+        func_8010540C(160, 154, 8 - D_80109864);
+        func_801060A8(130, 190, 8 - D_80109864, 3);
+
         if (D_80109864 >= 8) {
-            amount = _buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].amount;
+            int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].amount;
             switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].stat
                             - 13)) {
             case 0:
@@ -733,11 +743,11 @@ int func_8010384C(void)
         }
     }
     ++D_80109864;
-    ++D_8010989C;
+    ++_screenTimer;
     return 0;
 }
 
-int func_80103D88(void)
+int _renderTimeAttackEnd(void)
 {
     int var_v0;
 
@@ -751,66 +761,66 @@ int func_80103D88(void)
     func_80104914(var_v0 >> 8);
     D_8010988C = (D_8010988C + 0x40) & 0xFFF;
     if (D_801098A0 == 0) {
-        if (D_8010989C == 0x30) {
+        if (_screenTimer == 0x30) {
             vs_main_playSfxDefault(0x7E, 0x72);
         }
-        if (D_8010989C == 0x60) {
+        if (_screenTimer == 0x60) {
             func_80045D64(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
-        func_8010559C(0xA0, 0x34, D_8010989C);
-        func_8010581C(0x10, 0xA4, D_8010989C - 0x20);
-        func_801056E8(0x10, 0x90, D_8010989C - 0x60);
-        if (D_801098A4 == 0) {
-            func_801059B8(0x46, 0xB8, D_8010989C - 0x80);
+        func_8010559C(0xA0, 0x34, _screenTimer);
+        func_8010581C(0x10, 0xA4, _screenTimer - 0x20);
+        func_801056E8(0x10, 0x90, _screenTimer - 0x60);
+        if (_newTimeSlot == 0) {
+            func_801059B8(0x46, 0xB8, _screenTimer - 0x80);
         }
-        if ((D_8010989C == 0x80) && (D_801098A4 == 0)) {
+        if ((_screenTimer == 0x80) && (_newTimeSlot == 0)) {
             vs_main_playSfxDefault(0x7E, 0x76);
         }
-        if (D_8010989C == 0xA0) {
+        if (_screenTimer == 0xA0) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
-        if (D_8010989C == 0xA8) {
+        if (_screenTimer == 0xA8) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
-        if (D_8010989C == 0xB0) {
+        if (_screenTimer == 0xB0) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
-        func_80105B30(0x130, 0x90, 0, D_8010989C - 0xA0);
-        func_80105B30(0x130, 0x90, 1, D_8010989C - 0xA8);
-        func_80105B30(0x130, 0x90, 2, D_8010989C - 0xB0);
-        ++D_8010989C;
-        if ((vs_main_buttonsPressed.all & 0x20) || (D_8010989C >= 0xC0)) {
+        func_80105B30(0x130, 0x90, 0, _screenTimer - 0xA0);
+        func_80105B30(0x130, 0x90, 1, _screenTimer - 0xA8);
+        func_80105B30(0x130, 0x90, 2, _screenTimer - 0xB0);
+        ++_screenTimer;
+        if ((vs_main_buttonsPressed.all & 0x20) || (_screenTimer >= 0xC0)) {
             func_80045D64(0x7E, 0);
-            D_8010989C = 0;
+            _screenTimer = 0;
             ++D_801098A0;
         }
     } else if (D_801098A0 == 1) {
         func_8010559C(0xA0, 0x34, 0x40);
         func_80105790(0x10, 0xA4, 0x40);
         func_8010564C(0x10, 0x90, 0x40);
-        if (D_801098A4 == 0) {
+        if (_newTimeSlot == 0) {
             func_801059B8(0x46, 0xB8, 0x40);
         }
         func_801059FC(0x130, 0x90, 0x40);
-        ++D_8010989C;
-        if ((vs_main_buttonsPressed.all & PADRright) || (D_8010989C >= 0x1C2)) {
+        ++_screenTimer;
+        if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer >= 0x1C2)) {
             if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, 5);
             }
             ++D_801098A0;
-            D_8010989C = 7;
+            _screenTimer = 7;
         }
     } else if (D_801098A0 == 2) {
-        func_8010559C(0xA0, 0x34, D_8010989C);
-        func_80105790(0x10, 0xA4, D_8010989C);
-        func_8010564C(0x10, 0x90, D_8010989C);
-        if (D_801098A4 == 0) {
-            func_801059B8(0x46, 0xB8, D_8010989C);
+        func_8010559C(0xA0, 0x34, _screenTimer);
+        func_80105790(0x10, 0xA4, _screenTimer);
+        func_8010564C(0x10, 0x90, _screenTimer);
+        if (_newTimeSlot == 0) {
+            func_801059B8(0x46, 0xB8, _screenTimer);
         }
-        func_801059FC(0x130, 0x90, D_8010989C);
-        if (D_8010989C > 0) {
-            --D_8010989C;
+        func_801059FC(0x130, 0x90, _screenTimer);
+        if (_screenTimer > 0) {
+            --_screenTimer;
         } else {
             ++D_801098A0;
         }
@@ -829,38 +839,38 @@ static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
 static P_CODE D_8010972C[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
     { 0x80, 0x60, 0x40 } };
 
-int func_8010412C(void)
+int _renderTimeAttackStart(void)
 {
     int temp_v1_2;
     int var_a3;
 
     if (D_801098A0 == 0) {
-        if ((D_8010989C == ((D_8010989C / 15) * 0xF)) && (D_8010989C < 0x2E)) {
+        if ((_screenTimer == ((_screenTimer / 15) * 0xF)) && (_screenTimer < 0x2E)) {
             vs_main_playSfxDefault(0x7E, 0x7A);
             vs_main_playSfxDefault(0x7E, 0x7B);
             vs_main_playSfxDefault(0x7E, 0x7C);
         }
-        func_8010459C(0xA0, 0x30, D_8010989C);
-        func_80104650(0xA0, 0x5C, D_8010989C - 0xF);
-        func_801046F8(0xA0, 0x78, D_8010989C - 0x1E);
-        func_801047D4(0xA0, 0x9C, D_8010989C - 0x2D);
-        ++D_8010989C;
+        func_8010459C(0xA0, 0x30, _screenTimer);
+        func_80104650(0xA0, 0x5C, _screenTimer - 0xF);
+        func_801046F8(0xA0, 0x78, _screenTimer - 0x1E);
+        func_801047D4(0xA0, 0x9C, _screenTimer - 0x2D);
+        ++_screenTimer;
         if (vs_main_buttonsPressed.all & 0x20) {
             D_801098A0 = 2;
-            D_8010989C = 0;
-        } else if (D_8010989C >= 0x5A) {
+            _screenTimer = 0;
+        } else if (_screenTimer >= 0x5A) {
             D_801098A0 = 1;
-            D_8010989C = 8;
+            _screenTimer = 8;
         }
     } else if (D_801098A0 == 1) {
-        --D_8010989C;
-        func_8010459C(0xA0, 0x30, D_8010989C);
-        func_80104650(0xA0, 0x5C, D_8010989C);
-        func_801046F8(0xA0, 0x78, D_8010989C);
-        func_801047D4(0xA0, 0x9C, D_8010989C);
-        if ((vs_main_buttonsPressed.all & 0x20) || (D_8010989C == 0)) {
+        --_screenTimer;
+        func_8010459C(0xA0, 0x30, _screenTimer);
+        func_80104650(0xA0, 0x5C, _screenTimer);
+        func_801046F8(0xA0, 0x78, _screenTimer);
+        func_801047D4(0xA0, 0x9C, _screenTimer);
+        if ((vs_main_buttonsPressed.all & 0x20) || (_screenTimer == 0)) {
             D_801098A0 = 2;
-            D_8010989C = 0;
+            _screenTimer = 0;
         }
     } else if (D_801098A0 == 2) {
         func_8007C36C(4);
@@ -874,8 +884,8 @@ int func_8010412C(void)
         func_8007DD50(1);
         ++D_801098A0;
     } else if (D_801098A0 == 3) {
-        temp_v1_2 = D_8010989C / 15;
-        if (D_8010989C == (temp_v1_2 * 0xF)) {
+        temp_v1_2 = _screenTimer / 15;
+        if (_screenTimer == (temp_v1_2 * 0xF)) {
             switch (temp_v1_2) {
             case 0:
             case 1:
@@ -891,33 +901,33 @@ int func_8010412C(void)
                 break;
             }
         }
-        if (D_8010989C >= 0x2D) {
-            if (D_8010989C == 0x2D) {
+        if (_screenTimer >= 0x2D) {
+            if (_screenTimer == 0x2D) {
                 func_8007DE2C(1);
                 func_8007DDB8(&D_801096F0[1]);
                 func_8007DDD4(&D_80109720[0]);
-            } else if (D_8010989C == 0x2E) {
+            } else if (_screenTimer == 0x2E) {
                 func_8007DE2C(0);
-            } else if (D_8010989C == 0x37) {
+            } else if (_screenTimer == 0x37) {
                 func_8007DDD4(&D_80109720[2]);
-            } else if (D_8010989C == 0x3C) {
+            } else if (_screenTimer == 0x3C) {
                 func_8007DDB8(&D_801096F0[0]);
             }
-            var_a3 = 0x68 - D_8010989C;
+            var_a3 = 0x68 - _screenTimer;
             if (var_a3 < 0x2D) {
                 var_a3 = 0x2D;
             }
             func_8010489C(0xA0, 0x78, var_a3);
         } else {
-            var_a3 = D_8010989C % 15;
+            var_a3 = _screenTimer % 15;
             if (var_a3 > 7) {
                 var_a3 = 7;
             }
             var_a3 = D_801096D0[var_a3];
-            func_8010489C(var_a3 + 0xA0, 0x78, D_8010989C);
+            func_8010489C(var_a3 + 0xA0, 0x78, _screenTimer);
         }
-        ++D_8010989C;
-        if (D_8010989C >= 0x3E) {
+        ++_screenTimer;
+        if (_screenTimer >= 0x3E) {
             ++D_801098A0;
         }
     } else if (D_801098A0 == 4) {
@@ -959,7 +969,7 @@ void func_80104650(int arg0, int arg1, int arg2)
         arg0 -= (D_801091D8[84].w + 0x18) >> 1;
         func_80105C34(arg0, arg1, 0x54, arg2);
         new_var = arg0 + 0xC;
-        func_80105DD8(new_var + D_801091D8[84].w, arg1 - 1, vs_main_stateFlags.unkC4 + 1,
+        func_80105DD8(new_var + D_801091D8[84].w, arg1 - 1, vs_main_stateFlags.timeTrialBoss + 1,
             arg2, 0x7FF4);
     }
 }
@@ -970,9 +980,9 @@ void func_801046F8(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        if (vs_main_stateFlags.unkC4 != 6) {
-            func_80105C34(arg0 - (D_801091D8[vs_main_stateFlags.unkC4 + 0x55].w >> 1),
-                arg1, vs_main_stateFlags.unkC4 + 0x55, arg2);
+        if (vs_main_stateFlags.timeTrialBoss != 6) {
+            func_80105C34(arg0 - (D_801091D8[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1),
+                arg1, vs_main_stateFlags.timeTrialBoss + 0x55, arg2);
         } else {
             arg0 -= (D_801091D8[91].w + D_801091D8[93].w) >> 1;
             func_80105C34(arg0, arg1, 0x5B, arg2);
@@ -994,7 +1004,7 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].w, arg1 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][0].time, 0);
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0].time, 0);
     }
 }
 
@@ -1018,10 +1028,10 @@ void func_80104914(int arg0)
 
     for (i = 0; i < 32; ++i) {
 
-        var_a1_2 = D_801098AC[0x80 + i];
+        var_a1_2 = _timBuf[0x80 + i];
 
-        var_a1 = ((D_801098AC[0x20 + i] & 0x1F) * arg0)
-               + ((D_801098AC[0x60 + i] & 0x1F) * (0x10 - arg0));
+        var_a1 = ((_timBuf[0x20 + i] & 0x1F) * arg0)
+               + ((_timBuf[0x60 + i] & 0x1F) * (0x10 - arg0));
 
         if (var_a1 < 0) {
             var_a1 += 0xF;
@@ -1029,8 +1039,8 @@ void func_80104914(int arg0)
 
         new_var2 = (var_a1 >> 4) & 0x1F;
 
-        var_a2 = ((D_801098AC[0x20 + i] & 0x3E0) * arg0)
-               + ((D_801098AC[0x60 + i] & 0x3E0) * (0x10 - arg0));
+        var_a2 = ((_timBuf[0x20 + i] & 0x3E0) * arg0)
+               + ((_timBuf[0x60 + i] & 0x3E0) * (0x10 - arg0));
 
         if (var_a2 < 0) {
             var_a2 += 0xF;
@@ -1038,8 +1048,8 @@ void func_80104914(int arg0)
 
         new_var4 = new_var2 | ((var_a2 >> 4) & 0x3E0);
 
-        var_a1_2 = ((D_801098AC[0x20 + i] & 0x7C00) * arg0)
-                 + ((D_801098AC[0x60 + i] & 0x7C00) * (0x10 - arg0));
+        var_a1_2 = ((_timBuf[0x20 + i] & 0x7C00) * arg0)
+                 + ((_timBuf[0x60 + i] & 0x7C00) * (0x10 - arg0));
 
         if (var_a1_2 < 0) {
             var_a1_2 += 0xF;
@@ -1047,11 +1057,11 @@ void func_80104914(int arg0)
 
         new_var3 = (var_a1_2 >> 4) & 0x7C00;
 
-        D_801098AC[0x80 + i] = (new_var4 | new_var3) | (D_801098AC[0x20 + i] & 0x8000);
+        _timBuf[0x80 + i] = (new_var4 | new_var3) | (_timBuf[0x20 + i] & 0x8000);
     }
 
     setRECT(&sp10, 0x300, 0x1FF, 0xA0, 1);
-    LoadImage(&sp10, (u_long*)D_801098AC);
+    LoadImage(&sp10, (u_long*)_timBuf);
 }
 
 void func_80104A50(int arg0)
@@ -1067,10 +1077,10 @@ void func_80104A50(int arg0)
 
     for (i = 0; i < 32; ++i) {
 
-        var_a1_2 = D_801098AC[0x80 + i];
+        var_a1_2 = _timBuf[0x80 + i];
 
-        var_a1 = ((D_801098AC[0x60 + i] & 0x1F) * arg0)
-               + ((D_801098AC[0x40 + i] & 0x1F) * (0x10 - arg0));
+        var_a1 = ((_timBuf[0x60 + i] & 0x1F) * arg0)
+               + ((_timBuf[0x40 + i] & 0x1F) * (0x10 - arg0));
 
         if (var_a1 < 0) {
             var_a1 += 0xF;
@@ -1078,8 +1088,8 @@ void func_80104A50(int arg0)
 
         new_var2 = (var_a1 >> 4) & 0x1F;
 
-        var_a2 = ((D_801098AC[0x60 + i] & 0x3E0) * arg0)
-               + ((D_801098AC[0x40 + i] & 0x3E0) * (0x10 - arg0));
+        var_a2 = ((_timBuf[0x60 + i] & 0x3E0) * arg0)
+               + ((_timBuf[0x40 + i] & 0x3E0) * (0x10 - arg0));
 
         if (var_a2 < 0) {
             var_a2 += 0xF;
@@ -1087,8 +1097,8 @@ void func_80104A50(int arg0)
 
         new_var4 = new_var2 | ((var_a2 >> 4) & 0x3E0);
 
-        var_a1_2 = ((D_801098AC[0x60 + i] & 0x7C00) * arg0)
-                 + ((D_801098AC[0x40 + i] & 0x7C00) * (0x10 - arg0));
+        var_a1_2 = ((_timBuf[0x60 + i] & 0x7C00) * arg0)
+                 + ((_timBuf[0x40 + i] & 0x7C00) * (0x10 - arg0));
 
         if (var_a1_2 < 0) {
             var_a1_2 += 0xF;
@@ -1096,30 +1106,30 @@ void func_80104A50(int arg0)
 
         new_var3 = (var_a1_2 >> 4) & 0x7C00;
 
-        D_801098AC[0x80 + i] = (new_var4 | new_var3) | (D_801098AC[0x60 + i] & 0x8000);
+        _timBuf[0x80 + i] = (new_var4 | new_var3) | (_timBuf[0x60 + i] & 0x8000);
     }
 
     setRECT(&sp10, 0x300, 0x1FF, 0xA0, 1);
-    LoadImage(&sp10, (u_long*)D_801098AC);
+    LoadImage(&sp10, (u_long*)_timBuf);
 }
 
 void func_80104B8C(int arg0, int arg1, int arg2)
 {
-    static P_CODE D_80109738[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-        { 0x80, 0x60, 0x40 } };
+    static P_CODE D_80109738[] = { { 128, 96, 64 }, { 200, 180, 160 },
+        { 128, 96, 64 } };
 
     if (arg2 < 0) {
         arg2 = 0;
     }
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
     if (arg2 > 0) {
         D_80109738[0].code = arg2;
         D_80109738[1].code = arg2;
         arg0 -= (D_801091D8[22].w + D_801091D8[23].w) >> 1;
-        func_80106A80(arg0, arg1, 0x16, (char*)D_80109738);
-        func_80106A80(arg0 + D_801091D8[22].w, arg1, 0x17, (char*)(D_80109738 + 1));
+        func_80106A80(arg0, arg1, 22, (char*)D_80109738);
+        func_80106A80(arg0 + D_801091D8[22].w, arg1, 23, (char*)(D_80109738 + 1));
     }
 }
 
@@ -1363,19 +1373,19 @@ void func_8010540C(int arg0, int arg1, int arg2)
 
 void func_8010559C(int arg0, int arg1, int arg2)
 {
-    static P_CODE D_80109774[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+    static P_CODE D_80109774[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     if (arg2 < 0) {
         arg2 = 0;
     }
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
     if (arg2 > 0) {
         D_80109774[0].code = arg2;
         arg0 -= (D_801091D8[70].w + D_801091D8[71].w) >> 1;
-        func_80106A80(arg0, arg1, 0x46, (char*)D_80109774);
-        func_80106A80(arg0 + D_801091D8[70].w, arg1, 0x47, (char*)D_80109774);
+        func_80106A80(arg0, arg1, 70, (char*)D_80109774);
+        func_80106A80(arg0 + D_801091D8[70].w, arg1, 71, (char*)D_80109774);
     }
 }
 
@@ -1392,13 +1402,13 @@ void func_8010564C(int arg0, int arg1, int arg2)
     if (arg2 <= 0) {
         return;
     }
-    if (D_801098A8 < 0x1E00) {
+    if (_timeTrialTime < 0x1E00) {
         var_a2 = 0;
-    } else if (D_801098A8 <= 0xFFFF) {
+    } else if (_timeTrialTime <= 0xFFFF) {
         var_a2 = 1;
-    } else if (D_801098A8 <= 0x11DFF) {
+    } else if (_timeTrialTime <= 0x11DFF) {
         var_a2 = 2;
-    } else if (D_801098A8 <= 0x1FFFF) {
+    } else if (_timeTrialTime <= 0x1FFFF) {
         var_a2 = 3;
     } else {
         var_a2 = 4;
@@ -1424,13 +1434,13 @@ void func_801056E8(int arg0, int arg1, int arg2)
 
     arg3 = arg0 + (arg2 * 8);
 
-    if (D_801098A8 < 0x1E00) {
+    if (_timeTrialTime < 0x1E00) {
         arg2 = 0;
-    } else if (D_801098A8 <= 0xFFFF) {
+    } else if (_timeTrialTime <= 0xFFFF) {
         arg2 = 1;
-    } else if (D_801098A8 <= 0x11DFF) {
+    } else if (_timeTrialTime <= 0x11DFF) {
         arg2 = 2;
-    } else if (D_801098A8 <= 0x1FFFF) {
+    } else if (_timeTrialTime <= 0x1FFFF) {
         arg2 = 3;
     } else {
         arg2 = 4;
@@ -1449,7 +1459,7 @@ void func_80105790(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
         arg0 += D_801091D8[72].w;
-        func_80105F6C(arg0, arg1 + 2, arg2, D_801098A8, 0);
+        func_80105F6C(arg0, arg1 + 2, arg2, _timeTrialTime, 0);
     }
 }
 
@@ -1469,9 +1479,9 @@ void func_8010581C(int arg0, int arg1, int arg2)
         func_80105C34(arg0, arg1, 0x48, arg2);
         arg0 += D_801091D8[72].w;
         if (arg2 >= 0x10) {
-            int a0 = (D_801098A8 >> 0x10) & 0xFF;
-            int a1 = (D_801098A8 >> 8) & 0xFF;
-            int a2 = D_801098A8 & 0xFF;
+            int a0 = (_timeTrialTime >> 0x10) & 0xFF;
+            int a1 = (_timeTrialTime >> 8) & 0xFF;
+            int a2 = _timeTrialTime & 0xFF;
             temp_a3 = ((a0 * 0x1770) + (a1 * 100)) + a2;
             var_a3 = temp_a3;
             var_a3 = ((*(new_var4 = &var_a3)) * (arg2 - 0x10)) / 48;
@@ -1516,12 +1526,12 @@ void func_801059FC(int arg0, int arg1, int arg2)
 
     for (i = 0; i < 3; ++i) {
         var_s3 = 0x7FF2;
-        temp_v0 = D_801098A4 == i;
+        temp_v0 = _newTimeSlot == i;
         if (temp_v0 != 0) {
             var_s3 = 0x7FF8;
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.unkC4 * 3 + i]
+            vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
                 .time,
             temp_v0);
         func_80105DD8((arg0 - D_801091D8[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B,
@@ -1540,14 +1550,14 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
     if (arg3 >= 0x41) {
         arg3 = 0x40;
     }
-    temp_t1 = D_801098A4 == arg2;
+    temp_t1 = _newTimeSlot == arg2;
     var_s3 = 0x7FF2;
     if (temp_t1 != 0) {
         var_s3 = 0x7FF8;
     }
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.unkC4][arg2].time,
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][arg2].time,
         temp_t1);
     func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
@@ -2003,7 +2013,7 @@ void func_80107698(int arg0, int arg1, int arg2)
 static short D_801099F4;
 static short D_801099F6;
 
-int _loadIqDis(void)
+int _initCubePuzzleStart(void)
 {
     static vs_main_CdQueueSlot* _iqDisCdSlot;
     static void* _iqDisData;
@@ -2011,19 +2021,19 @@ int _loadIqDis(void)
     vs_battle_room* room;
     short* var_a0;
 
-    if (D_800F1CD8 == 0) {
+    if (_submenuState == 0) {
         func_8007DFF0(0x1D, 2, 5);
         _iqDisData = vs_main_allocHeapR(_disFiles[iqDis].size);
         _iqDisCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[iqDis]);
         vs_main_cdEnqueue(_iqDisCdSlot, _iqDisData);
-        ++D_800F1CD8;
+        ++_submenuState;
         if (0) {
         wat:
             D_801099F4 = var_a0[2];
             D_801099F6 = var_a0[3];
             goto wat2;
         }
-    } else if (D_800F1CD8 == 1) {
+    } else if (_submenuState == 1) {
         if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
@@ -2043,7 +2053,7 @@ int _loadIqDis(void)
                         tim.crect->h = 1;
                         tim.caddr[0] = 0;
                         LoadImage(tim.crect, tim.caddr);
-                        vs_main_memcpy(D_801098AC, tim.caddr, 0x140);
+                        vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
                     }
                 }
             }
@@ -2058,24 +2068,24 @@ int _loadIqDis(void)
             }
         wat2:
             vs_main_freeCdQueueSlot(_iqDisCdSlot);
-            ++D_800F1CD8;
+            ++_submenuState;
         }
     } else {
         vs_main_freeHeapR(_iqDisData);
         D_80109894 = 0;
         D_80109898 = 0;
-        D_8010989C = 0;
+        _screenTimer = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
-        D_800F1CD8 = 0;
+        _submenuState = 0;
         func_80108E38();
         return 1;
     }
     return 0;
 }
 
-int func_80107D4C(void)
+int _initCubePuzzleEnd(void)
 {
     if (vs_main_stateFlags.unkA3 != 0) {
         vs_main_stateFlags.unkA2 = 0x3B;
@@ -2083,10 +2093,10 @@ int func_80107D4C(void)
         vs_main_stateFlags.unkA3 = 0;
         vs_main_stateFlags.unkA0 = 0x63;
     }
-    return _loadIqDis();
+    return _initCubePuzzleStart();
 }
 
-int _loadEscDis(void)
+int _initCubePuzzleQuit(void)
 {
     static vs_main_CdQueueSlot* _escDisCdSLot;
     static void* _escDisData;
@@ -2094,13 +2104,13 @@ int _loadEscDis(void)
     TIM_IMAGE tim;
     int i;
 
-    if (D_800F1CD8 == 0) {
+    if (_submenuState == 0) {
         func_8007DFF0(0x1D, 1, 5);
         _escDisData = vs_main_allocHeapR(_disFiles[escDis].size);
         _escDisCdSLot = vs_main_allocateCdQueueSlot(&_disFiles[escDis]);
         vs_main_cdEnqueue(_escDisCdSLot, _escDisData);
-        ++D_800F1CD8;
-    } else if (D_800F1CD8 == 1) {
+        ++_submenuState;
+    } else if (_submenuState == 1) {
         if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
@@ -2120,55 +2130,55 @@ int _loadEscDis(void)
                     tim.crect->h = 1;
                     *tim.caddr = 0;
                     LoadImage(tim.crect, tim.caddr);
-                    vs_main_memcpy(D_801098AC, tim.caddr, sizeof D_801098AC);
+                    vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
                 }
             }
             vs_main_freeCdQueueSlot(_escDisCdSLot);
-            ++D_800F1CD8;
+            ++_submenuState;
         }
     } else {
         vs_main_freeHeapR(_escDisData);
         D_80109894 = 0;
         D_80109898 = 0;
-        D_8010989C = 0;
+        _screenTimer = 0;
         D_801098A0 = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
-        D_800F1CD8 = 0;
+        _submenuState = 0;
         return 1;
     }
     return 0;
 }
 
-int func_80107FC0(void)
+int _renderCubePuzzleStart(void)
 {
     if (D_801098A0 != 0) {
         return 0;
     }
-    if (D_8010989C == 0) {
+    if (_screenTimer == 0) {
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
-    if (D_8010989C == 0x1E) {
+    if (_screenTimer == 0x1E) {
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    func_801085D4(0xA0, 0x40, D_8010989C);
-    func_8010873C(0x80, 0x74, D_8010989C - 0xF);
-    func_80108784(0xC0, 0x90, D_8010989C - 0x1E);
-    func_801064D4(0xD6, 0xBB, D_8010989C - 0x1E, D_8010989C);
+    func_801085D4(0xA0, 0x40, _screenTimer);
+    func_8010873C(0x80, 0x74, _screenTimer - 0xF);
+    func_80108784(0xC0, 0x90, _screenTimer - 0x1E);
+    func_801064D4(0xD6, 0xBB, _screenTimer - 0x1E, _screenTimer);
 
-    if (D_8010989C < 0x7FFF) {
-        ++D_8010989C;
+    if (_screenTimer < 0x7FFF) {
+        ++_screenTimer;
     }
 
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (D_8010989C >= 0x4E) {
+        if (_screenTimer >= 0x4E) {
             func_80045D64(0x7E, 0);
             func_8007E0A8(0x1D, 2, 5);
             return 1;
         }
         func_80045D64(0x7E, 0);
-        D_8010989C = 0x4E;
+        _screenTimer = 0x4E;
     }
 
     return 0;
@@ -2178,7 +2188,7 @@ static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
 static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
     7000, 8000, 9000, 10000, 20000 };
 
-int func_801080E4(void)
+int _renderCubePuzzleEnd(void)
 {
     int temp_s0;
     int var_v0;
@@ -2207,31 +2217,31 @@ int func_801080E4(void)
                 temp_s0 = 0;
             }
         }
-        if (D_8010989C == 0x10) {
+        if (_screenTimer == 0x10) {
             vs_main_playSfxDefault(0x7E, 0x72);
         }
-        if (D_8010989C == 0x40) {
+        if (_screenTimer == 0x40) {
             func_80045D64(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
-        if (D_8010989C == 0x43) {
+        if (_screenTimer == 0x43) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
-        if (D_8010989C == 0x4B) {
+        if (_screenTimer == 0x4B) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
-        if (D_8010989C == 0x5A) {
+        if (_screenTimer == 0x5A) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
-        func_8010887C(0x58, 0x40, D_8010989C);
-        func_80108688(0xA0, 0x64, D_8010989C - 0x4B);
-        func_8010880C(0xA0, 0x7C, D_8010989C - 0x5A, temp_s0);
-        func_801064D4(0xD6, 0xBB, D_8010989C - 0x5A, D_8010989C);
-        if (D_8010989C < 32767) {
-            ++D_8010989C;
+        func_8010887C(0x58, 0x40, _screenTimer);
+        func_80108688(0xA0, 0x64, _screenTimer - 0x4B);
+        func_8010880C(0xA0, 0x7C, _screenTimer - 0x5A, temp_s0);
+        func_801064D4(0xD6, 0xBB, _screenTimer - 0x5A, _screenTimer);
+        if (_screenTimer < 32767) {
+            ++_screenTimer;
         }
         if (vs_main_buttonsPressed.all & PADRright) {
-            if (D_8010989C >= 0x8A) {
+            if (_screenTimer >= 0x8A) {
                 func_80045D64(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
                 vs_main_scoredata.enemyKillStreak += D_8010978C[temp_s0];
@@ -2239,13 +2249,13 @@ int func_801080E4(void)
                 return 1;
             }
             func_80045D64(0x7E, 0);
-            D_8010989C = 0x8A;
+            _screenTimer = 0x8A;
         }
     }
     return 0;
 }
 
-int func_801083AC(void)
+int _renderCubePuzzleQuit(void)
 {
     int var_v0;
 
@@ -2258,26 +2268,26 @@ int func_801083AC(void)
     if (D_801098A0 != 0) {
         return 0;
     }
-    if (D_8010989C == 0) {
+    if (_screenTimer == 0) {
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
-    if (D_8010989C == 0xF) {
+    if (_screenTimer == 0xF) {
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
-    func_801084F4(0x40, D_8010989C);
-    func_80108564(0x64, D_8010989C - 0xF);
-    func_801064D4(0xD6, 0xBB, D_8010989C - 0xF, D_8010989C);
-    if (D_8010989C < 0x7FFF) {
-        ++D_8010989C;
+    func_801084F4(0x40, _screenTimer);
+    func_80108564(0x64, _screenTimer - 0xF);
+    func_801064D4(0xD6, 0xBB, _screenTimer - 0xF, _screenTimer);
+    if (_screenTimer < 0x7FFF) {
+        ++_screenTimer;
     }
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (D_8010989C >= 0x3F) {
+        if (_screenTimer >= 0x3F) {
             func_80045D64(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
             func_80108E40();
             return 1;
         }
-        D_8010989C = 0x3F;
+        _screenTimer = 0x3F;
         func_80045D64(0x7E, 0);
     }
     return 0;

@@ -312,7 +312,7 @@ extern char D_800F4E6B;
 extern int* vs_battle_rowTypeBuf;
 extern char D_800F4E88;
 extern char* vs_battle_stringBuf;
-extern char D_800F4E70[16];
+extern char vs_battle_submenuStates[16];
 extern char D_800F4E90;
 extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;

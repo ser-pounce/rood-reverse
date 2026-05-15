@@ -1,10 +1,10 @@
 _disFiles = 0x80102AE0;
 vs_menuF_exec = 0x80102BB8;
-_loadRankDis = 0x80102D10;
-_loadTimeDis = 0x8010310C; // allow_duplicated:True
-_loadAttackDis = 0x80103530;
-_loadIqDis = 0x80107A8C;
-_loadEscDis = 0x80107D98;
+_initCongratulationsScreen = 0x80102D10;
+_initTimeAttackEnd = 0x8010310C; // allow_duplicated:True
+_initTimeAttackStart = 0x80103530;
+_initCubePuzzleStart = 0x80107A8C;
+_initCubePuzzleQuit = 0x80107D98;
 _calculateScore = 0x80108AB0;
 _getTotalStrength = 0x80108EA8;
 _getTotalIntelligence = 0x80108EC8;

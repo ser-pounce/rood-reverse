@@ -1,5 +1,5 @@
 _disFiles = 0x80102AE0;
-func_80102BB8 = 0x80102BB8;
+vs_menuF_exec = 0x80102BB8;
 _loadRankDis = 0x80102D10;
 _loadTimeDis = 0x8010310C; // allow_duplicated:True
 _loadAttackDis = 0x80103530;

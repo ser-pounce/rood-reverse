@@ -344,7 +344,7 @@ void vs_mainMenu_exec(int arg0)
         } else if (D_800F4EA0 & 0x200) {
             if (temp_s5 != 0) {
                 if (selectedMenu == 15) {
-                    var_s4 = func_80102BB8(temp_s3);
+                    var_s4 = vs_menuF_exec(temp_s3);
                 } else if (selectedMenu == 3) {
                     var_s4 = vs_menu2_skillUnlock(temp_s3);
                 } else if (selectedMenu == 14) {

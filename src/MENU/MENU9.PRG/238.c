@@ -356,7 +356,7 @@ int vs_menu9_exec(char* state)
 }
 
 static void _determineCharacterRank(void);
-void _setScoreFlags(void);
+void _setTitleFlags(void);
 void _calculateScore(void);
 
 static int _0;
@@ -377,7 +377,7 @@ static int D_8010A45C;
 static u_long _score;
 static u_short _characterRank;
 static u_short _clearCount;
-static u_short D_8010A468;
+static u_short _openedChestCount;
 static u_short _mapCompletion;
 static vs_main_CdQueueSlot* _monBinCdQueueSlot;
 static _monBinData_t* _monBinData;
@@ -414,11 +414,11 @@ int _initData(void)
         }
     }
 
-    D_8010A468 = 0;
+    _openedChestCount = 0;
 
     for (i = 0; i < 64; ++i) {
-        if (vs_main_stateFlags.unk3C0[i] != 0) {
-            ++D_8010A468;
+        if (vs_main_stateFlags.chestsOpened[i] != 0) {
+            ++_openedChestCount;
         }
     }
 
@@ -427,13 +427,13 @@ int _initData(void)
     if (_mapCompletion > vs_main_scoredata.mapCompletion) {
         vs_main_scoredata.mapCompletion = _mapCompletion;
     }
-    if (D_8010A468 > vs_main_scoredata.unk98) {
-        vs_main_scoredata.unk98 = D_8010A468;
+    if (_openedChestCount > vs_main_scoredata.openedChestCount) {
+        vs_main_scoredata.openedChestCount = _openedChestCount;
     }
 
     vs_main_memcpy(D_8010A480, (void*)0x1F800034, sizeof D_8010A480);
     vs_main_memcpy(D_8010A490, (void*)0x1F800054, sizeof D_8010A490);
-    _setScoreFlags();
+    _setTitleFlags();
     _calculateScore();
     _determineCharacterRank();
 
@@ -1407,7 +1407,7 @@ void func_801056B8(void)
         row->selected = 0;
         row->animationState = 0;
         row->unk3 = 0;
-        if (vs_main_scoredata.flags & ((new_var = 1) << i)) {
+        if (vs_main_scoredata.titles & ((new_var = 1) << i)) {
             row->unk1 = 1;
             row->title = (char*)&_titleText[_titleText[i]];
             row->description = (char*)&_titleDescriptions[_titleDescriptions[i]];
@@ -2072,7 +2072,7 @@ void _determineCharacterRank(void)
     int flag;
 
     for (i = 0, titleCount = 0, flag = 1; i < 16; ++i) {
-        if (vs_main_scoredata.flags & (flag << i)) {
+        if (vs_main_scoredata.titles & (flag << i)) {
             ++titleCount;
         }
     }
@@ -2086,36 +2086,36 @@ void _determineCharacterRank(void)
     }
 }
 
-void _setScoreFlags(void)
+void _setTitleFlags(void)
 {
     int i;
 
     if (_clearCount != 0) {
-        vs_main_scoredata.flags |= 1;
+        vs_main_scoredata.titles |= 1;
     }
-    if (vs_main_scoredata.unk98 >= 0x34) {
-        vs_main_scoredata.flags |= 4;
+    if (vs_main_scoredata.openedChestCount >= 52) {
+        vs_main_scoredata.titles |= 1 << 2;
     }
     if (vs_main_scoredata.mapCompletion > 360) {
-        vs_main_scoredata.flags |= 8;
+        vs_main_scoredata.titles |= 1 << 3;
     }
-    if (vs_main_stateFlags.unkCC != 0) {
-        vs_main_scoredata.flags |= 0x10;
+    if (vs_main_stateFlags.damascusGolemDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 4;
     }
-    if (vs_main_stateFlags.unkCD != 0) {
-        vs_main_scoredata.flags |= 0x20;
+    if (vs_main_stateFlags.damascusCrabDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 5;
     }
-    if (vs_main_stateFlags.unkCE != 0) {
-        vs_main_scoredata.flags |= 0x40;
+    if (vs_main_stateFlags.ravanaDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 6;
     }
-    if (vs_main_stateFlags.unkCF != 0) {
-        vs_main_scoredata.flags |= 0x80;
+    if (vs_main_stateFlags.dragonZombieDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 7;
     }
-    if (vs_main_stateFlags.unkD0 != 0) {
-        vs_main_scoredata.flags |= 0x100;
+    if (vs_main_stateFlags.deathAndOgreZombieDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 8;
     }
-    if (vs_main_stateFlags.unkD1 != 0) {
-        vs_main_scoredata.flags |= 0x200;
+    if (vs_main_stateFlags.asuraDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 9;
     }
 
     for (i = 0; i < 8; ++i) {
@@ -2125,40 +2125,40 @@ void _setScoreFlags(void)
     }
 
     if (i == 8) {
-        vs_main_scoredata.flags |= 0x400;
+        vs_main_scoredata.titles |= 1 << 10;
     }
 
     if (vs_main_scoredata.maxChain >= 30) {
-        vs_main_scoredata.flags |= 0x800;
+        vs_main_scoredata.titles |= 1 << 11;
     }
 
     if (vs_main_stateFlags.goldKeyObtained != 0) {
-        vs_main_scoredata.flags |= 0x1000;
+        vs_main_scoredata.titles |= 1 << 12;
     }
 
     if (vs_main_stateFlags.chestKeyObtained != 0) {
-        vs_main_scoredata.flags |= 0x2000;
+        vs_main_scoredata.titles |= 1 << 13;
     }
 
-    for (i = 0xB8; i < 0xE0; ++i) {
+    for (i = 184; i < 224; ++i) {
         if (!vs_main_skills[i].unlocked) {
             break;
         }
     }
 
-    if (i == 0xE0) {
-        vs_main_scoredata.flags |= 0x4000;
+    if (i == 224) {
+        vs_main_scoredata.titles |= 1 << 14;
     }
 
-    for (i = 0x16; i < 0x36; ++i) {
-        if (((i != 0x21) && (i != 0x24) && (i != 0x26) && (i != 0x27)
+    for (i = 22; i < 54; ++i) {
+        if (((i != 33) && (i != 36) && (i != 38) && (i != 39)
                 && !vs_main_skills[i].unlocked)) {
             break;
         }
     }
 
-    if (i == 0x36) {
-        vs_main_scoredata.flags |= 0x8000;
+    if (i == 54) {
+        vs_main_scoredata.titles |= 1 << 15;
     }
 
     for (i = 0; i < 6; ++i) {
@@ -2168,7 +2168,7 @@ void _setScoreFlags(void)
     }
 
     if (i == 6) {
-        vs_main_scoredata.flags |= 0x100000;
+        vs_main_scoredata.titles |= 1 << 20;
     }
 
     for (i = 0; i < 10; ++i) {
@@ -2177,18 +2177,18 @@ void _setScoreFlags(void)
         }
     }
 
-    if (i == 0xA) {
-        vs_main_scoredata.flags |= 0x200000;
+    if (i == 10) {
+        vs_main_scoredata.titles |= 1 << 21;
     }
 
     for (i = 0; i < 9; ++i) {
         if (vs_main_scoredata.weaponAttacks[i + 1] >= 500) {
-            vs_main_scoredata.flags |= 1 << (i + 0x16);
+            vs_main_scoredata.titles |= 1 << (i + 22);
         }
     }
 
     if (vs_main_scoredata.weaponAttacks[0] >= 500) {
-        vs_main_scoredata.flags |= 0x80000000;
+        vs_main_scoredata.titles |= 1 << 31;
     }
 }
 

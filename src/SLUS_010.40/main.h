@@ -153,7 +153,7 @@ typedef struct {
 } vs_trialScore_t;
 
 typedef struct {
-    int flags;
+    int titles;
     u_short enemyKills[6];
     int unk10;
     u_short weaponAttacks[10];
@@ -163,7 +163,7 @@ typedef struct {
     u_int unk8C;
     u_int completionTimeMinutes;
     u_int mapCompletion;
-    u_int unk98;
+    u_int openedChestCount;
     int unk9C[26];
     u_int streakScore;
     u_int enemyKillStreak;
@@ -284,12 +284,12 @@ typedef struct {
     char unkC9;
     char unkCA;
     char unkCB;
-    char unkCC;
-    char unkCD;
-    char unkCE;
-    char unkCF;
-    char unkD0;
-    char unkD1;
+    char damascusGolemDefeated;
+    char damascusCrabDefeated;
+    char ravanaDefeated;
+    char dragonZombieDefeated;
+    char deathAndOgreZombieDefeated;
+    char asuraDefeated;
     char unkD2[51];
     char doorEntered;
     char unk106[22];
@@ -335,7 +335,7 @@ typedef struct {
     /* 0x39E */ char cattleyaSigilUsed;
     /* 0x39F */ char mandrakeSigilUsed;
     char unk3A8[32];
-    char unk3C0[64];
+    char chestsOpened[64];
     char unk400[64];
 } vs_main_flags_t;
 

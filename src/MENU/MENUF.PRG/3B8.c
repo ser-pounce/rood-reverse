@@ -24,84 +24,84 @@ typedef struct {
     short amount;
 } _buffReels_t;
 
-int _loadRankDis(void);
-int func_80102C54(void);
-int _loadTimeDis(void);
-int _loadAttackDis(void);
-void func_80103748(void);
-int func_801037A0(void);
-int func_8010384C(void);
-int func_80103D88(void);
-int func_8010412C(void);
-void func_8010459C(int arg0, int arg1, int arg2);
-void func_80104650(int arg0, int arg1, int arg2);
-void func_801046F8(int arg0, int arg1, int arg2);
-void func_801047D4(int arg0, int arg1, int arg2);
-void func_8010489C(int arg0, int arg1, int arg2);
-void func_80104914(int);
-void func_80104B8C(int arg0, int arg1, int arg2);
-void func_80104C40(int arg0, int arg1, int arg2, int arg3);
-void func_80104DBC(int arg0, int arg1, int arg2, int arg3);
-void func_80105020(int arg0, int arg1, int arg2, int arg3);
-void func_8010516C(int arg0, int arg1, int arg2, int arg3);
-void func_801053B0(int arg0, int arg1, int arg2);
-void func_8010540C(int arg0, int arg1, int arg2);
-void func_8010559C(int arg0, int arg1, int arg2);
-void func_8010564C(int arg0, int arg1, int arg2);
-void func_801056E8(int arg0, int arg1, int arg2);
-void func_80105790(int, int, int);
-void func_8010581C(int, int, int);
-void func_801059B8(int arg0, int arg1, int arg2);
-void func_801059FC(int arg0, int arg1, int arg2);
-void func_80105B30(int arg0, int arg1, int arg2, int arg3);
-void func_80105C34(int, int, int, int);
-void func_80105DD8(int, int, int, int, int);
-void func_80105F6C(int, int, int, int, int);
+static int _loadRankDis(void);
+static int _initMenu(void);
+static int _loadTimeDis(void);
+static int _loadAttackDis(void);
+static void func_80103748(void);
+static int _execMenu(void);
+static int func_8010384C(void);
+static int func_80103D88(void);
+static int func_8010412C(void);
+static void func_8010459C(int arg0, int arg1, int arg2);
+static void func_80104650(int arg0, int arg1, int arg2);
+static void func_801046F8(int arg0, int arg1, int arg2);
+static void func_801047D4(int arg0, int arg1, int arg2);
+static void func_8010489C(int arg0, int arg1, int arg2);
+static void func_80104914(int);
+static void func_80104B8C(int arg0, int arg1, int arg2);
+static void func_80104C40(int arg0, int arg1, int arg2, int arg3);
+static void func_80104DBC(int arg0, int arg1, int arg2, int arg3);
+static void func_80105020(int arg0, int arg1, int arg2, int arg3);
+static void func_8010516C(int arg0, int arg1, int arg2, int arg3);
+static void func_801053B0(int arg0, int arg1, int arg2);
+static void func_8010540C(int arg0, int arg1, int arg2);
+static void func_8010559C(int arg0, int arg1, int arg2);
+static void func_8010564C(int arg0, int arg1, int arg2);
+static void func_801056E8(int arg0, int arg1, int arg2);
+static void func_80105790(int, int, int);
+static void func_8010581C(int, int, int);
+static void func_801059B8(int arg0, int arg1, int arg2);
+static void func_801059FC(int arg0, int arg1, int arg2);
+static void func_80105B30(int arg0, int arg1, int arg2, int arg3);
+static void func_80105C34(int, int, int, int);
+static void func_80105DD8(int, int, int, int, int);
+static void func_80105F6C(int, int, int, int, int);
 void func_801060A8(int, int, int, int);
-void func_801064D4(int, int, int, int);
-void func_8010664C(int, int, int, char*);
-void func_80106A80(int, int, int, char*);
-void func_80107140(int, int, int, char*, int);
-int _loadIqDis(void);
-int func_80107D4C(void);
-int _loadEscDis(void);
-int func_80107FC0(void);
-int func_801080E4(void);
-int func_801083AC(void);
-void func_801084F4(int arg0, int arg1);
-void func_80108564(int arg0, int arg1);
-void func_801085D4(int arg0, int arg1, int arg2);
-void func_80108688(int arg0, int arg1, int arg2);
-void func_8010873C(int arg0, int arg1, int arg2);
-void func_80108784(int arg0, int arg1, int arg2);
-void func_8010880C(int arg0, int arg1, int arg2, int arg3);
-void func_8010887C(int arg0, int arg1, int arg2);
-void _calculateScore(void);
-void func_80108E38(void);
-void func_80108E40(void);
-void func_80108A0C(void);
-int _getTotalStrength(void);
-int _getTotalIntelligence(void);
-int _getTotalAgility(void);
-void func_80108E48(void);
-void _nop(void);
-void _raiseMaxStrength(int amount);
-void _raiseMaxIntelligence(int amount);
-void _raiseMaxAgility(int amount);
-void _raiseMaxHP(int amount);
-void _raiseMaxMP(int amount);
+static void func_801064D4(int, int, int, int);
+static void func_8010664C(int, int, int, char*);
+static void func_80106A80(int, int, int, char*);
+static void func_80107140(int, int, int, char*, int);
+static int _loadIqDis(void);
+static int func_80107D4C(void);
+static int _loadEscDis(void);
+static int func_80107FC0(void);
+static int func_801080E4(void);
+static int func_801083AC(void);
+static void func_801084F4(int arg0, int arg1);
+static void func_80108564(int arg0, int arg1);
+static void func_801085D4(int arg0, int arg1, int arg2);
+static void func_80108688(int arg0, int arg1, int arg2);
+static void func_8010873C(int arg0, int arg1, int arg2);
+static void func_80108784(int arg0, int arg1, int arg2);
+static void func_8010880C(int arg0, int arg1, int arg2, int arg3);
+static void func_8010887C(int arg0, int arg1, int arg2);
+static void _calculateScore(void);
+static void func_80108E38(void);
+static void func_80108E40(void);
+static void _determineRank(void);
+static int _getTotalStrength(void);
+static int _getTotalIntelligence(void);
+static int _getTotalAgility(void);
+static void func_80108E48(void);
+static void _nop(void);
+static void _raiseMaxStrength(int amount);
+static void _raiseMaxIntelligence(int amount);
+static void _raiseMaxAgility(int amount);
+static void _raiseMaxHP(int amount);
+static void _raiseMaxMP(int amount);
 
-int func_80102BB8(char* arg0)
+int vs_menuF_exec(char* arg0)
 {
     switch (*arg0) {
     case 0:
         *arg0 = 1;
         // Fallthrough
     case 1:
-        *arg0 += (func_80102C54() != 0);
+        *arg0 += (_initMenu() != 0);
         break;
     case 2:
-        if (func_801037A0() != 0) {
+        if (_execMenu() != 0) {
             *arg0 = 0;
             return 1;
         }
@@ -118,7 +118,7 @@ static vs_main_CdFile const _disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE 
     { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
     { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
-int func_80102C54(void)
+int _initMenu(void)
 {
     int ret;
 
@@ -151,7 +151,7 @@ int func_80102C54(void)
 }
 
 static u_int _buffReelSelection;
-static int D_8010987C;
+static int _rank;
 static int _clearCount;
 static u_int _score;
 static u_int _mapCompletion;
@@ -174,7 +174,7 @@ int _loadRankDis(void)
     int var_a0;
     int i;
     int mapCompletion;
-    u_int var_v1;
+    u_int chestsOpened;
 
     if (D_800F1CD8 == 0) {
         func_8007DFF0(0x1D, 3, 5);
@@ -251,23 +251,23 @@ int _loadRankDis(void)
             }
         }
 
-        var_v1 = 0;
+        chestsOpened = 0;
 
         for (i = 0; i < 64; ++i) {
-            if (vs_main_stateFlags.unk3C0[i] != 0) {
-                ++var_v1;
+            if (vs_main_stateFlags.chestsOpened[i] != 0) {
+                ++chestsOpened;
             }
         }
 
         if (vs_main_scoredata.mapCompletion < mapCompletion) {
             vs_main_scoredata.mapCompletion = mapCompletion;
         }
-        if (vs_main_scoredata.unk98 < var_v1) {
-            vs_main_scoredata.unk98 = var_v1;
+        if (vs_main_scoredata.openedChestCount < chestsOpened) {
+            vs_main_scoredata.openedChestCount = chestsOpened;
         }
         _mapCompletion = (mapCompletion * 100) / 361;
         _calculateScore();
-        func_80108A0C();
+        _determineRank();
         return 1;
     }
     return 0;
@@ -424,7 +424,7 @@ void func_80103748(void)
     }
 }
 
-int func_801037A0(void)
+int _execMenu(void)
 {
     int ret;
 
@@ -1346,17 +1346,17 @@ void func_8010540C(int arg0, int arg1, int arg2)
     var_a0 = 0;
     if (arg2 > 0) {
         D_8010976C[0].code = arg2;
-        for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
-            var_a0 += D_801091D8[D_801095D0[i + 1 + (D_8010987C * 4)]].w;
+        for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
+            var_a0 += D_801091D8[D_801095D0[i + 1 + (_rank * 4)]].w;
         }
 
         var_a0 /= 2;
         arg0 -= var_a0;
-        for (i = 0; i < D_801095D0[D_8010987C * 4]; ++i) {
+        for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
             int new_var2 = 1;
-            func_80106A80(arg0, arg1, D_801095D0[i + (D_8010987C * 4 + new_var2)],
+            func_80106A80(arg0, arg1, D_801095D0[i + (_rank * 4 + new_var2)],
                 (char*)&D_8010976C[0]);
-            arg0 += D_801091D8[D_801095D0[i + (D_8010987C * 4 + new_var2)]].w;
+            arg0 += D_801091D8[D_801095D0[i + (_rank * 4 + new_var2)]].w;
         }
     }
 }
@@ -2423,27 +2423,27 @@ void func_8010887C(int arg0, int arg1, int arg2)
     }
 }
 
-void func_80108A0C(void)
+void _determineRank(void)
 {
-    static short D_801097EC[16] = { 16, 12, 8 };
-    static u_int D_8010980C[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
+    static short titleThresholds[16] = { 16, 12, 8 };
+    static u_int rankScores[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
         24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
         1000000, 500000, 0 };
 
-    int var_a2;
+    int unlockedTitles;
     int i;
-    int a1;
+    int flag;
 
-    for (i = 0, var_a2 = 0, a1 = 1; i < 16; ++i) {
-        if (vs_main_scoredata.flags & (a1 << i)) {
-            ++var_a2;
+    for (i = 0, unlockedTitles = 0, flag = 1; i < 16; ++i) {
+        if (vs_main_scoredata.titles & (flag << i)) {
+            ++unlockedTitles;
         }
     }
 
     for (i = 0; i < 16; ++i) {
-        if (var_a2 >= D_801097EC[i]) {
-            if (_score >= D_8010980C[i]) {
-                D_8010987C = i;
+        if (unlockedTitles >= titleThresholds[i]) {
+            if (_score >= rankScores[i]) {
+                _rank = i;
                 return;
             }
         }

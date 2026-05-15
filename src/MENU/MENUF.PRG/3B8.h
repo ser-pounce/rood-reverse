@@ -1,3 +1,3 @@
 #pragma once
 
-int func_80102BB8(char* arg0);
+int vs_menuF_exec(char* arg0);

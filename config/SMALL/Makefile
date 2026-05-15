@@ -37,6 +37,14 @@ $(BUILD)/data/SMALL/IQ.DIS: $(BUILD)/assets/SMALL/IQ.DIS/
 	echo Converting $<
 	$(VPYTHON) -m tools.data.SMALL.IQ_DIS $< $@
 
+$(BUILD)/assets/SMALL/MON.BIN.yaml:
+	echo Converting data/SMALL/MON.BIN
+	$(VPYTHON) -m tools.data.SMALL.MON_BIN data/SMALL/MON.BIN $@
+
+$(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yaml
+	echo Converting $<
+	$(VPYTHON) -m tools.data.SMALL.MON_BIN $< $@
+
 $(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := true
 
 helpfiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14
@@ -47,3 +55,4 @@ scenefiles := DUMMY $(scenefiles:%=SCEN0%)
 
 TARGETS += $(helpfiles:%=%0) $(helpfiles:%=%1) $(scenefiles:%=$(BUILD)/data/SMALL/%.ARM)
 TARGETS += $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END ESC IQ RANK TIME $(ENDSCR))
+TARGETS += $(BUILD)/data/SMALL/MON.BIN

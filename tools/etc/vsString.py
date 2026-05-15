@@ -41,7 +41,7 @@ table = [
     '', '', '', '', '', '', '', '',         # 0xD0
     '', '', '', '', '', '', '', '',
     '', '', '', '', '', '\f', '▼', '\0',    # 0xE0
-    '\n', '', '', '', '', '|a', '|b', '|c',
+    '\n', '', '', '', '|m', '|a', '|b', '|c',
     '|d', '|e', '|g', '|h', '|i', '|j', '|k', '|l', # 0xF0
     '|!', '|♪', '|>', '|f', '', '|x', '|#', '|$',
 ]
@@ -410,6 +410,7 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # as it's the only common symbol not represented in the default text table.
 
 # String functions, 1-byte operand
+# 0xEC -> |mn|: Probably related to JP font table as well
 # 0xED - 
 # 0xF7 -> |a-ln|: Font table for Japanese, partially implemented, won't be needed when JP font is complete
 # 0xF8 -> |!n|: Sets the text speed to n, where 0 = instantaneous
@@ -439,7 +440,7 @@ def decode(s, jpTable=False):
                 jp_char = jp_tables[table_index][s[i + 1]]
                 result += jp_char
                 i += 2
-            case 0xF8 | 0xF9 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
+            case 0xEC | 0xF8 | 0xF9 | 0xFA | 0xFB | 0xFD | 0xFE | 0xFF:
                 result += f"{table[s[i]]}{s[i + 1]}|"
                 i += 2
             case _:

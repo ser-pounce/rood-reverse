@@ -20,7 +20,7 @@ from pathlib import Path
 
 import yaml
 
-from tools.data.SMALL.generic_DIS import dump_file
+from tools.data.SMALL.generic_DIS import dump_file, encode_tim_from_png
 
 SPLIT_OFFSET  = 0x10440
 TABLE_ENTRIES = 64
@@ -46,22 +46,78 @@ def dump_table(chunk: bytes, stem: str, output_dir: Path) -> None:
     print(f"  Written: {out_path}  ({len(records)} entries)")
 
 
+def encode_table(table_path: Path) -> bytes:
+    """Encode a YAML table file to binary."""
+    with open(table_path, 'r', encoding='utf-8') as f:
+        records = yaml.safe_load(f)
+    
+    if not isinstance(records, list) or len(records) != TABLE_ENTRIES:
+        raise ValueError(f"Table must have exactly {TABLE_ENTRIES} entries, got {len(records) if isinstance(records, list) else 'not a list'}")
+    
+    table_bytes = bytearray()
+    for record in records:
+        values = tuple(record.get(k, 0) for k in ENTRY_KEYS)
+        table_bytes.extend(struct.pack(ENTRY_FMT, *values))
+    
+    return bytes(table_bytes)
+
+
+def encode_iq(input_dir: Path, output_path: Path) -> None:
+    """Encode PNGs and table YAML back to IQ file."""
+    # Find PNG files
+    png_files = sorted(input_dir.glob('*.png'))
+    if not png_files:
+        raise ValueError(f"No PNG files found in {input_dir}")
+    
+    # Encode TIM chain
+    tim_data = b''
+    for png_file in png_files:
+        tim_bytes = encode_tim_from_png(png_file)
+        tim_data += tim_bytes
+    
+    # Find and encode table
+    table_file = None
+    for f in input_dir.glob('*_table.yaml'):
+        table_file = f
+        break
+    
+    if table_file is None:
+        raise ValueError(f"No *_table.yaml found in {input_dir}")
+    
+    table_data = encode_table(table_file)
+    
+    # Write IQ file
+    output_path.write_bytes(tim_data + table_data)
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <input> <output_dir>")
+        print(f"Usage: {sys.argv[0]} <input> <output>")
+        print("  If input is .IQ, output is directory for PNGs + YAML table")
+        print("  If input is a directory, output is .IQ file (stitched from PNGs + YAML)")
         sys.exit(1)
 
     input_path = Path(sys.argv[1])
-    output_dir = Path(sys.argv[2])
+    output_path = Path(sys.argv[2])
 
-    if not output_dir.is_dir():
-        print(f"Error: output directory does not exist: {output_dir}")
+    if input_path.suffix.lower() == '.iq' or (not input_path.is_dir() and not input_path.suffix.lower() == '.png'):
+        # IQ to PNGs + YAML
+        data = input_path.read_bytes()
+        if len(data) <= SPLIT_OFFSET:
+            print(f"Error: file is only {len(data)} bytes; expected more than 0x{SPLIT_OFFSET:X}.")
+            sys.exit(1)
+        
+        if not output_path.exists():
+            output_path.mkdir(parents=True, exist_ok=True)
+        elif not output_path.is_dir():
+            print(f"Error: output must be a directory for IQ dump: {output_path}")
+            sys.exit(1)
+        
+        dump_file(input_path, output_path, data=data[:SPLIT_OFFSET])
+        dump_table(data[SPLIT_OFFSET:], input_path.stem, output_path)
+    elif input_path.is_dir():
+        # PNGs + YAML to IQ
+        encode_iq(input_path, output_path)
+    else:
+        print(f"Error: unsupported input type: {input_path}")
         sys.exit(1)
-
-    data = input_path.read_bytes()
-    if len(data) <= SPLIT_OFFSET:
-        print(f"Error: file is only {len(data)} bytes; expected more than 0x{SPLIT_OFFSET:X}.")
-        sys.exit(1)
-
-    dump_file(input_path, output_dir, data=data[:SPLIT_OFFSET])
-    dump_table(data[SPLIT_OFFSET:], input_path.stem, output_dir)

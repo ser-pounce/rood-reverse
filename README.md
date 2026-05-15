@@ -95,6 +95,7 @@ data/SMALL/
     END.DIS
     ENDSCR00 - ENDSCR15.DIS
     ESC.DIS
+    IQ.DIS
     RANK.DIS
     TIME.DIS
 

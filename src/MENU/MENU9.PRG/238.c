@@ -1672,8 +1672,7 @@ void func_80105F00(int arg0)
             D_80109899 = func_800FFCDC(D_80109899, ((var_s1 - 8) << 0x10) | 0x30);
         }
         if (enemy->unlocked != 0) {
-            menuItem =
-                vs_battle_setMenuItem(0, s6, var_s1, 0xC8, 0, enemy->name);
+            menuItem = vs_battle_setMenuItem(0, s6, var_s1, 0xC8, 0, enemy->name);
         } else {
             menuItem = vs_battle_setMenuItem(
                 0, s6, var_s1, 0xC8, 0, (char*)&_miscInfo[_miscInfo[3]]);

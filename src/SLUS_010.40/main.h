@@ -91,7 +91,7 @@ typedef struct {
 typedef struct {
     int currentMusicSlot;
     u_int unk4;
-    int unk8;
+    u_int unk8;
     void* currentMusicData;
     char musicIds[4];
     u_int unk14[4];

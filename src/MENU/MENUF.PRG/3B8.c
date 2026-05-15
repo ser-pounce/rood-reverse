@@ -164,40 +164,44 @@ static int D_801098A0;
 
 int _initCongratulationsScreen(void)
 {
-    static vs_main_CdQueueSlot* _rankDataCdSlot;
-    static void* _rankData;
+    static vs_main_CdQueueSlot* cdSlot;
+    static void* timData;
 
     int i;
 
     if (_submenuState == 0) {
+
         func_8007DFF0(0x1D, 3, 5);
-        _rankData = vs_main_allocHeapR(_disFiles[rankDis].size);
-        _rankDataCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[rankDis]);
-        vs_main_cdEnqueue(_rankDataCdSlot, _rankData);
+
+        timData = vs_main_allocHeapR(_disFiles[rankDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[rankDis]);
+
+        vs_main_cdEnqueue(cdSlot, timData);
         ++_submenuState;
+
     } else if (_submenuState == 1) {
-        if (_rankDataCdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i < 3; ++i) {
                 TIM_IMAGE tim;
-                vs_battle_setTimImage(_rankData + i * 0x8220, &tim);
+                vs_battle_setTimImage(timData + i * 0x8220, &tim);
                 if (tim.paddr != NULL) {
-                    tim.prect->x = 0x340 + i * 0x40;
-                    tim.prect->y = 0x100;
-                    tim.prect->h = 0xFF;
-                    LoadImage(tim.prect, (u_long*)tim.paddr);
+                    tim.prect->x = 832 + i * 64;
+                    tim.prect->y = 256;
+                    tim.prect->h = 255;
+                    LoadImage(tim.prect, tim.paddr);
                 }
                 if (i == 0) {
                     if (tim.caddr != NULL) {
-                        tim.crect->x = 0x300;
-                        tim.crect->y = 0x1FF;
-                        tim.crect->w = 0x80;
+                        tim.crect->x = 768;
+                        tim.crect->y = 511;
+                        tim.crect->w = 128;
                         tim.crect->h = 1;
-                        *tim.caddr = 0;
+                        tim.caddr[0] = 0;
                         LoadImage(tim.crect, tim.caddr);
                     }
                 }
             }
-            vs_main_freeCdQueueSlot(_rankDataCdSlot);
+            vs_main_freeCdQueueSlot(cdSlot);
             func_80103748();
             ++_submenuState;
         }
@@ -209,7 +213,7 @@ int _initCongratulationsScreen(void)
         u_int chestsOpened;
 
         func_80045000(2, 0x7F, 0);
-        vs_main_freeHeapR(_rankData);
+        vs_main_freeHeapR(timData);
         D_80109894 = 0;
         D_80109898 = 0;
         _screenTimer = 0;
@@ -304,7 +308,7 @@ int _initTimeAttackEnd(void)
                 tim.prect->x = 832;
                 tim.prect->y = 256;
                 tim.prect->h = 255;
-                LoadImage(tim.prect, (u_long*)tim.paddr);
+                LoadImage(tim.prect, tim.paddr);
             }
             if (tim.caddr != NULL) {
                 tim.crect->x = 768;
@@ -321,8 +325,9 @@ int _initTimeAttackEnd(void)
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
         func_80045000(2, 0x7F, 0);
-        _timeTrialTime = (vs_main_stateFlags.timeTrialMins << 0x10) | (vs_main_stateFlags.timeTrialSecs << 8)
-                   | vs_main_stateFlags.timeTrialMs;
+        _timeTrialTime = (vs_main_stateFlags.timeTrialMins << 0x10)
+                       | (vs_main_stateFlags.timeTrialSecs << 8)
+                       | vs_main_stateFlags.timeTrialMs;
         if (_timeTrialTime == 0) {
             _timeTrialTime = (59 << 16) | (59 << 8) | 99;
         }
@@ -330,32 +335,38 @@ int _initTimeAttackEnd(void)
         for (i = 0; i < 3; ++i) {
             int record;
 
-            if ((vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].time)
+            if ((vs_main_scoredata
+                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+                        .time)
                 < _timeTrialTime) {
                 continue;
             }
-            
+
             for (record = 2; i < record; --record) {
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
-                    .time = vs_main_scoredata
-                                .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
-                                .time;
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
+                vs_main_scoredata
+                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
+                    .time =
+                    vs_main_scoredata
+                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
+                        .time;
+                vs_main_scoredata
+                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
                     .round =
                     vs_main_scoredata
                         .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
                         .round;
-                vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
+                vs_main_scoredata
+                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
                     .difficulty =
                     vs_main_scoredata
                         .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
                         .difficulty;
             }
 
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].time =
-                _timeTrialTime;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i].round =
-                vs_main_stateFlags.clearCount;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+                .time = _timeTrialTime;
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+                .round = vs_main_stateFlags.clearCount;
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
                 .difficulty = vs_main_stateFlags.difficulty;
             break;
@@ -392,7 +403,7 @@ int _initTimeAttackStart(void)
                     tim.prect->x = 832 + i * 64;
                     tim.prect->y = 256;
                     tim.prect->h = 255;
-                    LoadImage(tim.prect, (u_long*)tim.paddr);
+                    LoadImage(tim.prect, tim.paddr);
                 }
                 if (i == 0) {
                     if (tim.caddr != NULL) {
@@ -424,8 +435,9 @@ int _initTimeAttackStart(void)
 
 void func_80103748(void)
 {
-    if ((D_8005E040 != 7) && (((D_8005E040 - 31) < 9) || ((D_8005E040 - 45) < 5))) {
-        vs_main_loadMusicSlot(D_8005E040 + 100, 2);
+    if ((vs_main_soundData.unk8 != 7)
+        && (((vs_main_soundData.unk8 - 31) < 9) || ((vs_main_soundData.unk8 - 45) < 5))) {
+        vs_main_loadMusicSlot(vs_main_soundData.unk8 + 100, 2);
     } else {
         vs_main_loadMusicSlot(0x80, 2);
     }
@@ -688,13 +700,13 @@ int _renderCongratulationsScreen(void)
 
         temp_v1 = _buffReelSelection + (D_8010988C >> 3);
         _buffReelSelection = temp_v1 & 0xFF;
-        
+
         if (D_8010988C >= 9) {
             --D_8010988C;
         }
-        
+
         temp_v1 &= 0xF;
-        
+
         if ((temp_v1 == 8) && (D_8010988C == temp_v1)) {
             func_80045D64(0x7E, 0x74);
             func_80045D64(0x7E, 0x75);
@@ -969,8 +981,8 @@ void func_80104650(int arg0, int arg1, int arg2)
         arg0 -= (D_801091D8[84].w + 0x18) >> 1;
         func_80105C34(arg0, arg1, 0x54, arg2);
         new_var = arg0 + 0xC;
-        func_80105DD8(new_var + D_801091D8[84].w, arg1 - 1, vs_main_stateFlags.timeTrialBoss + 1,
-            arg2, 0x7FF4);
+        func_80105DD8(new_var + D_801091D8[84].w, arg1 - 1,
+            vs_main_stateFlags.timeTrialBoss + 1, arg2, 0x7FF4);
     }
 }
 
@@ -981,8 +993,9 @@ void func_801046F8(int arg0, int arg1, int arg2)
     }
     if (arg2 > 0) {
         if (vs_main_stateFlags.timeTrialBoss != 6) {
-            func_80105C34(arg0 - (D_801091D8[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1),
-                arg1, vs_main_stateFlags.timeTrialBoss + 0x55, arg2);
+            func_80105C34(
+                arg0 - (D_801091D8[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1), arg1,
+                vs_main_stateFlags.timeTrialBoss + 0x55, arg2);
         } else {
             arg0 -= (D_801091D8[91].w + D_801091D8[93].w) >> 1;
             func_80105C34(arg0, arg1, 0x5B, arg2);
@@ -1004,7 +1017,9 @@ void func_801047D4(int arg0, int arg1, int arg2)
         arg0++;
         new_var = arg0 + 0xB;
         func_80105F6C(new_var + D_801091D8[95].w, arg1 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0].time, 0);
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0]
+                .time,
+            0);
     }
 }
 
@@ -1115,8 +1130,7 @@ void func_80104A50(int arg0)
 
 void func_80104B8C(int arg0, int arg1, int arg2)
 {
-    static P_CODE D_80109738[] = { { 128, 96, 64 }, { 200, 180, 160 },
-        { 128, 96, 64 } };
+    static P_CODE D_80109738[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (arg2 < 0) {
         arg2 = 0;
@@ -1531,7 +1545,8 @@ void func_801059FC(int arg0, int arg1, int arg2)
             var_s3 = 0x7FF8;
         }
         func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
-            vs_main_scoredata.bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
+            vs_main_scoredata
+                .bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
                 .time,
             temp_v0);
         func_80105DD8((arg0 - D_801091D8[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B,
@@ -1557,7 +1572,8 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
     }
 
     func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][arg2].time,
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][arg2]
+            .time,
         temp_t1);
     func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);

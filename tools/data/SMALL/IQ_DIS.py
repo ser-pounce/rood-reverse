@@ -43,8 +43,6 @@ def dump_table(chunk: bytes, stem: str, output_dir: Path) -> None:
     with open(out_path, 'w', encoding='utf-8') as f:
         yaml.dump(records, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
-    print(f"  Written: {out_path}  ({len(records)} entries)")
-
 
 def encode_table(table_path: Path) -> bytes:
     """Encode a YAML table file to binary."""

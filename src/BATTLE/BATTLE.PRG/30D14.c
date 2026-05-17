@@ -2,30 +2,105 @@
 #include "30D14.h"
 #include "146C.h"
 #include "../SLUS_010.40/main.h"
+#include <libetc.h>
 
+int func_8009998C(vs_battle_objectData*);
+int func_8009A0B8(vs_battle_objectData*);
+int _loadWep(vs_battle_objectData*);
+int func_8009AC84(vs_battle_objectData*);
+int _loadShp(vs_battle_objectData*);
+int func_8009BE5C(vs_battle_objectData*);
+int _loadSeq(vs_battle_objectData*);
+int func_8009D270(vs_battle_objectData*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 
+extern u_char D_800E8F2A;
 extern char D_800E8F2C;
 extern char D_800E8FC0;
+extern int D_800E8FC4;
 extern char D_800F4448[];
+extern int D_800F457C;
+extern int D_800F4580;
+extern int D_800F45D8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
-int vs_battle_getEmptyModelDataSlot(void)
+int vs_battle_getEmptyObjectDataSlot(void)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        if (D_800F2310[i].unk0 == 0) {
+        if (vs_battle_objectDataSlots[i].unk0 == 0) {
             return i;
         }
     }
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", vs_battle_populateModelDataSlot);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", vs_battle_populateDataSlot);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009967C);
+int vs_battle_processObjectDataQueue(void)
+{
+    int i;
+    int ret;
+    vs_battle_objectData* slot = vs_battle_objectDataSlots;
+
+    D_800F4580 = VSync(1);
+
+    switch (slot->unk0) {
+    case 0:
+        return 0;
+    case 1:
+        ret = func_8009AC84(slot);
+        break;
+    case 3:
+        ret = func_8009A0B8(slot);
+        break;
+    case 7:
+        ret = func_8009BE5C(slot);
+        break;
+    case 2:
+        ret = _loadShp(slot);
+        break;
+    case 4:
+        ret = _loadWep(slot);
+        break;
+    case 6:
+        ret = func_8009998C(slot);
+        break;
+    case 8:
+        ret = _loadSeq(slot);
+        break;
+    case 9:
+        ret = func_8009D270(slot);
+        break;
+    default:
+        return -1;
+    }
+
+    D_800F4580 = VSync(1) - D_800F4580;
+
+    if (D_800E8F2A == 2) {
+        if (D_800E8FC4 < D_800F4580) {
+            D_800E8FC4 = D_800F4580;
+            D_800F45D8 = slot->unk0;
+            D_800F457C = D_800E8F2A;
+        }
+    }
+
+    if (ret == -1) {
+        return 1;
+    }
+
+    for (i = 1; i < 15; ++i) {
+        vs_main_memcpy(&vs_battle_objectDataSlots[i - 1], &vs_battle_objectDataSlots[i],
+            sizeof vs_battle_objectDataSlots[i]);
+    }
+
+    vs_battle_objectDataSlots[i - 1].unk0 = 0;
+
+    return ret < 0 ? -1 : 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099854);
 
@@ -45,7 +120,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A028);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A0B8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A2E8);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadWep);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
@@ -55,7 +130,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC24);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC84);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AEA0);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadShp);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009BD90);
 
@@ -70,7 +145,7 @@ void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
     arg0->unk4 += (long)arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009C3D8);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadSeq);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009CAEC);
 

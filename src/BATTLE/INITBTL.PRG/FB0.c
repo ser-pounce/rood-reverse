@@ -38,7 +38,7 @@ void func_800FA7B0(void)
     D_800E8FC0 = 0;
 
     for (i = 0; i < 16; ++i) {
-        D_800F2310[i].unk0 = 0;
+        vs_battle_objectDataSlots[i].unk0 = 0;
     }
 
     for (i = 0; i < 12; ++i) {

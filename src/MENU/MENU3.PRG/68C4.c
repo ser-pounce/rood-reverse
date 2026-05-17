@@ -42,7 +42,7 @@ int func_801090C4(int arg0, int arg1, int arg2)
         ++D_800E8F28;
         break;
     case 1:
-        if ((func_8009967C() == 0) && (temp_s1->unk5B8 == temp_s0)) {
+        if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->unk5B8 == temp_s0)) {
             func_800FA2CC();
             ++D_800E8F28;
         }
@@ -90,7 +90,7 @@ int func_80109320(int a0)
 
 void func_80109344(int wepId, int arg1)
 {
-    vs_battle_modelData sp10;
+    vs_battle_objectData sp10;
     int var_a2;
     int var_a3;
 
@@ -109,6 +109,6 @@ void func_80109344(int wepId, int arg1)
         sp10.actorId = 0;
         sp10.unk11 = var_a3;
         sp10.material = arg1;
-        vs_battle_populateModelDataSlot(&sp10);
+        vs_battle_populateDataSlot(&sp10);
     }
 }

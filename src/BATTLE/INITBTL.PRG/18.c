@@ -106,7 +106,7 @@ void _loadSystemDat(void)
 
 void func_800F9AB0(void) { }
 
-int func_800F9AB8(void) { return vs_battle_getEmptyModelDataSlot(); }
+int func_800F9AB8(void) { return vs_battle_getEmptyObjectDataSlot(); }
 
 void func_800CB660(int);
 
@@ -172,7 +172,7 @@ void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    vs_battle_modelData_flags sp20;
+    vs_battle_objectData_flags sp20;
 
     sp20.unk0_0 = 4;
     sp20.unk0_16 = 2;
@@ -265,7 +265,7 @@ void func_800F9CCC(void)
     func_800F9AB0();
 
     while (func_800F9AB8() != 0) {
-        func_8009967C();
+        vs_battle_processObjectDataQueue();
         vs_main_gametimeUpdate(0);
     }
 }

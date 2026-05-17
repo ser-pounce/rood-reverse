@@ -71,8 +71,8 @@ void func_800FA568(void) { }
 
 int func_800FA570(void)
 {
-    func_8009967C();
-    return vs_battle_getEmptyModelDataSlot();
+    vs_battle_processObjectDataQueue();
+    return vs_battle_getEmptyObjectDataSlot();
 }
 
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)

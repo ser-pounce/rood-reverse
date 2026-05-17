@@ -22,7 +22,7 @@ int func_8010BA58(int arg0)
         ++D_800E8F28;
         break;
     case 1:
-        if (func_8009967C() == 0) {
+        if (vs_battle_processObjectDataQueue() == 0) {
             func_800FA2CC();
             D_800E8F28 = 0;
             return 0;

@@ -203,7 +203,7 @@ void vs_menu9_LoadZudFile(int id)
 
 int vs_menu9_parseZudFile(void)
 {
-    vs_battle_modelData sp10;
+    vs_battle_objectData slot;
 
     if (_zudCdSlot != NULL) {
         if (_zudCdSlot->state != vs_main_CdQueueStateLoaded) {
@@ -213,68 +213,68 @@ int vs_menu9_parseZudFile(void)
         vs_main_freeCdQueueSlot(_zudCdSlot);
         _zudCdSlot = NULL;
 
-        sp10.unk0 = 2;
-        sp10.unk1 = 1;
-        sp10.dataAddr = _zudData->shpOffset + (u_long)_zudData;
-        sp10.modelId = _zudData->characterId;
-        sp10.unk4 = _zudBuffer;
-        sp10.actorId = 0xFF;
-        sp10.unk13 = D_8010A4B4 & 1;
-        sp10.material = _zudData->defaultMaterial;
-        vs_battle_populateModelDataSlot(&sp10);
+        slot.unk0 = 2;
+        slot.unk1 = 1;
+        slot.dataAddr = _zudData->shpOffset + (u_long)_zudData;
+        slot.modelId = _zudData->characterId;
+        slot.unk4 = _zudBuffer;
+        slot.actorId = 0xFF;
+        slot.unk13 = D_8010A4B4 & 1;
+        slot.material = _zudData->defaultMaterial;
+        vs_battle_populateDataSlot(&slot);
 
         if (D_8010A4B0 != 0) {
-            sp10.unk0 = 1;
-            sp10.unk1 = 16;
-            sp10.modelId = D_8010A20C[D_8010A4B0];
-            sp10.unk4 = _zudBuffer + 0x1900;
-            sp10.actorId = 1;
-            sp10.unk11 = 0xFC;
-            sp10.unk13 = 0;
-            vs_battle_populateModelDataSlot(&sp10);
+            slot.unk0 = 1;
+            slot.unk1 = 16;
+            slot.modelId = D_8010A20C[D_8010A4B0];
+            slot.unk4 = _zudBuffer + 0x1900;
+            slot.actorId = 1;
+            slot.unk11 = 0xFC;
+            slot.unk13 = 0;
+            vs_battle_populateDataSlot(&slot);
         } else {
 
             if (_zudData->weapon != 0) {
-                sp10.unk0 = 4;
-                sp10.unk1 = 2;
-                sp10.dataAddr = _zudData->weaponWepOffset + (u_long)_zudData;
-                sp10.modelId = _zudData->weapon;
-                sp10.unk4 = _zudBuffer + 0x1900;
-                sp10.actorId = 1;
-                sp10.unk11 = 0xF0;
-                sp10.material = _zudData->weaponMaterial;
-                vs_battle_populateModelDataSlot(&sp10);
+                slot.unk0 = 4;
+                slot.unk1 = 2;
+                slot.dataAddr = _zudData->weaponWepOffset + (u_long)_zudData;
+                slot.modelId = _zudData->weapon;
+                slot.unk4 = _zudBuffer + 0x1900;
+                slot.actorId = 1;
+                slot.unk11 = 0xF0;
+                slot.material = _zudData->weaponMaterial;
+                vs_battle_populateDataSlot(&slot);
             }
 
             if (_zudData->shield != 0) {
-                sp10.unk0 = 4;
-                sp10.unk1 = 3;
-                sp10.dataAddr = _zudData->shieldWepOffset + (u_long)_zudData;
-                sp10.modelId = _zudData->shield;
-                sp10.unk4 = _zudBuffer + 0x1EE8;
-                sp10.actorId = 1;
-                sp10.unk11 = 0xF1;
-                sp10.material = _zudData->shieldMaterial;
-                vs_battle_populateModelDataSlot(&sp10);
+                slot.unk0 = 4;
+                slot.unk1 = 3;
+                slot.dataAddr = _zudData->shieldWepOffset + (u_long)_zudData;
+                slot.modelId = _zudData->shield;
+                slot.unk4 = _zudBuffer + 0x1EE8;
+                slot.actorId = 1;
+                slot.unk11 = 0xF1;
+                slot.material = _zudData->shieldMaterial;
+                vs_battle_populateDataSlot(&slot);
             }
         }
 
         if (_zudData->battleSeqLen != 0) {
-            sp10.unk0 = 8;
-            sp10.unk1 = 1;
-            sp10.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
-            sp10.actorId = 0;
-            sp10.modelId = _zudData->unk2;
-            vs_battle_populateModelDataSlot(&sp10);
+            slot.unk0 = 8;
+            slot.unk1 = 1;
+            slot.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
+            slot.actorId = 0;
+            slot.modelId = _zudData->unk2;
+            vs_battle_populateDataSlot(&slot);
         }
 
         if (_zudData->commonSeqLen != 0) {
-            sp10.unk0 = 8;
-            sp10.unk1 = 1;
-            sp10.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
-            sp10.actorId = 0;
-            sp10.modelId = 0;
-            vs_battle_populateModelDataSlot(&sp10);
+            slot.unk0 = 8;
+            slot.unk1 = 1;
+            slot.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
+            slot.actorId = 0;
+            slot.modelId = 0;
+            vs_battle_populateDataSlot(&slot);
         }
         return 1;
     }
@@ -283,9 +283,9 @@ int vs_menu9_parseZudFile(void)
         return 0;
     }
 
-    func_8009967C();
+    vs_battle_processObjectDataQueue();
 
-    if (vs_battle_getEmptyModelDataSlot() == 0) {
+    if (vs_battle_getEmptyObjectDataSlot() == 0) {
         vs_main_freeHeapR(_zudData);
         _zudData = NULL;
     }

@@ -95,7 +95,7 @@ void func_800F9A24(int arg0)
 
 void func_800F9A78(int arg0)
 {
-    vs_battle_modelData sp10;
+    vs_battle_objectData sp10;
     D_800F4538_t* temp_s0;
     D_800F4538_t* temp_s2;
     int i;
@@ -112,7 +112,7 @@ void func_800F9A78(int arg0)
     sp10.actorId = 0xFF;
     sp10.unk13 = temp_s2->unk10;
     sp10.material = 0;
-    vs_battle_populateModelDataSlot(&sp10);
+    vs_battle_populateDataSlot(&sp10);
 
     if (temp_s2->unk17FD >= 2) {
         temp_s0 = D_800F4538[temp_s2->unk17FD];
@@ -126,7 +126,7 @@ void func_800F9A78(int arg0)
         sp10.unk11 = 0xFC;
         sp10.unk13 = temp_s2->unk10;
         sp10.material = 0;
-        vs_battle_populateModelDataSlot(&sp10);
+        vs_battle_populateDataSlot(&sp10);
     }
     for (i = 0; i < 2; ++i) {
         temp_s0 = D_800F4588[(temp_s2->unkF * 2) + i];
@@ -140,11 +140,11 @@ void func_800F9A78(int arg0)
             sp10.actorId = 1;
             sp10.unk11 = temp_s0->unkC;
             sp10.material = ((u_int)temp_s0->unk8 >> 0xC) & 0xF;
-            vs_battle_populateModelDataSlot(&sp10);
+            vs_battle_populateDataSlot(&sp10);
         }
     }
 
-    while (func_8009967C() != 0)
+    while (vs_battle_processObjectDataQueue() != 0)
         ;
 
     temp_s3->unk5D4 = temp_s2->unk5D4;
@@ -409,12 +409,12 @@ void func_800FA2CC(void)
 
 void func_800FA3FC(int arg0)
 {
-    vs_battle_modelData sp10;
+    vs_battle_objectData sp10;
 
     func_8009CC20(0, 0);
     sp10.unk0 = 7;
     sp10.unk1 = 0;
     sp10.modelId = arg0;
     sp10.actorId = 0;
-    vs_battle_populateModelDataSlot(&sp10);
+    vs_battle_populateDataSlot(&sp10);
 }

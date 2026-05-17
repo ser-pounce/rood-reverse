@@ -5,7 +5,7 @@ typedef struct {
     u_int unk0_8 : 8;
     u_int unk0_16 : 8;
     u_int unk0_24 : 8;
-} vs_battle_modelData_flags;
+} vs_battle_objectData_flags;
 
 typedef struct {
     char unk0;
@@ -13,12 +13,12 @@ typedef struct {
     short modelId;
     void* unk4;
     u_long dataAddr;
-    vs_battle_modelData_flags unkC;
+    vs_battle_objectData_flags unkC;
     char actorId;
     char unk11;
     char material;
     char unk13;
-} vs_battle_modelData;
+} vs_battle_objectData;
 
 int vs_battle_clamp(short arg0, int arg1, int arg2);
 void func_80091314(int);
@@ -43,10 +43,10 @@ void func_80095B70(int);
 void func_8009722C(void);
 void func_80098160(int);
 void func_80098194(int);
-int vs_battle_getEmptyModelDataSlot(void);
+int vs_battle_getEmptyObjectDataSlot(void);
 void func_80098B38(int, int);
-int vs_battle_populateModelDataSlot(vs_battle_modelData*);
-int func_8009967C(void);
+int vs_battle_populateDataSlot(vs_battle_objectData*);
+int vs_battle_processObjectDataQueue(void);
 void func_8009CC20(int, int);
 void func_8009CE9C(int);
 int func_8009CFA0(void);
@@ -64,4 +64,4 @@ void func_800A0768(int, char*);
 void func_800A07FC(int, void*);
 void func_800A0A1C(int, int);
 
-extern vs_battle_modelData D_800F2310[16];
+extern vs_battle_objectData vs_battle_objectDataSlots[16];

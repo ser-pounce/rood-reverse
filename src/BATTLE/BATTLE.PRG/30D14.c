@@ -11,9 +11,19 @@ extern char D_800F4448[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800995B0);
+int vs_battle_getEmptyModelDataSlot(void)
+{
+    int i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800995E8);
+    for (i = 0; i < 16; ++i) {
+        if (D_800F2310[i].unk0 == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", vs_battle_populateModelDataSlot);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009967C);
 

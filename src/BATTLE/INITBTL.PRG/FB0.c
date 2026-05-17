@@ -4,17 +4,6 @@
 #include <libgte.h>
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-} D_800F2310_t;
-
-typedef struct {
     short unk0;
     short unk2;
     short unk4;
@@ -29,7 +18,6 @@ extern char D_800E8F2C;
 extern char D_800E8F2D;
 extern short D_800E8F30[][2];
 extern char D_800E8FC0;
-extern D_800F2310_t D_800F2310[16];
 extern char D_800F2450[];
 extern int D_800F4528[];
 extern void* D_800F45E0[];

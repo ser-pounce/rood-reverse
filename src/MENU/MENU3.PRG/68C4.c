@@ -90,7 +90,7 @@ int func_80109320(int a0)
 
 void func_80109344(int wepId, int arg1)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
     int var_a2;
     int var_a3;
 
@@ -109,6 +109,6 @@ void func_80109344(int wepId, int arg1)
         sp10.actorId = 0;
         sp10.unk11 = var_a3;
         sp10.material = arg1;
-        func_800995E8(&sp10);
+        vs_battle_populateModelDataSlot(&sp10);
     }
 }

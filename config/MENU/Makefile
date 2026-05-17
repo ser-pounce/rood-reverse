@@ -55,7 +55,7 @@ $(BUILD)/data/MENU/GAMEOVER.BIN: $(BUILD)/assets/MENU/GAMEOVER.BIN.png
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.GAMEOVER_BIN $< $@
 
-$(BUILD)/data/MENU/MENUA.PRG:
+$(BUILD)/data/MENU/MENUA.PRG: | $$(@D)/
 	$(ECHO) Touching empty file $@
 	$(TOUCH) $@
 

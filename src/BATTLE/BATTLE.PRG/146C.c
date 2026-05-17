@@ -568,7 +568,7 @@ void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
-    int, int, int, int, int, int, func_8007C8F8_t_flags*, int);
+    int, int, int, int, int, int, vs_battle_modelData_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -4348,9 +4348,9 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int arg0, int actorId, func_8007C8F8_t_flags* arg2, int material)
+    int arg0, int actorId, vs_battle_modelData_flags* arg2, int material)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
     int i;
     int var_v1_2;
     vs_battle_actor_dat2* temp_v0;
@@ -4392,8 +4392,8 @@ vs_battle_actor* func_800765B0(
         sp10.unk11 = var_v1_2 >> 8;
         sp10.material = material;
         sp10.unk13 = arg2->unk0_8 >> 4;
-        func_800995E8(&sp10);
-        while (func_800995B0() != 0) {
+        vs_battle_populateModelDataSlot(&sp10);
+        while (vs_battle_getEmptyModelDataSlot() != 0) {
             func_8009967C();
             vs_main_gametimeUpdate(0);
         }
@@ -4702,9 +4702,9 @@ void func_80076F24(
 }
 
 int func_80077078(
-    vs_battle_actor* arg0, int arg1, int wepId, func_8007C8F8_t_flags* arg3, int arg4)
+    vs_battle_actor* arg0, int arg1, int wepId, vs_battle_modelData_flags* arg3, int arg4)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.unk0 = 1;
     sp10.unk1 = arg1;
@@ -4719,24 +4719,24 @@ int func_80077078(
     }
     sp10.unk13 = 0;
     sp10.material = 2;
-    return func_800995E8(&sp10);
+    return vs_battle_populateModelDataSlot(&sp10);
 }
 
 void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.unk0 = 7;
     sp10.unk1 = arg1;
     sp10.modelId = 0;
     sp10.actorId = 0;
-    func_800995E8(&sp10);
+    vs_battle_populateModelDataSlot(&sp10);
 }
 
 void func_80077130(
     vs_battle_actor* actor, int actorId, int wepId, int isShield, int material)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     if (wepId != 0xFF) {
         int temp_s0 = (actorId * 2) + isShield;
@@ -4753,26 +4753,26 @@ void func_80077130(
                 sp10.unk11 = 0xF1;
             }
             sp10.material = material;
-            func_800995E8(&sp10);
+            vs_battle_populateModelDataSlot(&sp10);
         }
     }
 }
 
 void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     if (((arg2 != 0) || (arg1 >= 2)) && ((arg1 < 2) || ((arg3 & 3) == 1))) {
         sp10.unk0 = 7;
         sp10.unk1 = arg1;
         sp10.modelId = arg0[37];
         sp10.actorId = 0;
-        func_800995E8(&sp10);
+        vs_battle_populateModelDataSlot(&sp10);
     }
 }
 
 vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, vs_battle_modelData_flags* arg6, int arg7)
 {
     int i;
     vs_battle_actor_dat* temp_v0;
@@ -4841,12 +4841,12 @@ void func_800773BC(
 }
 
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, vs_battle_modelData_flags* arg6, int arg7)
 {
     vs_battle_actor* temp_v0 = (vs_battle_actor*)func_80077240(
         arg0, arg1, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, arg6, arg7);
     if (temp_v0 != NULL) {
-        while (func_800995B0() != 0) {
+        while (vs_battle_getEmptyModelDataSlot() != 0) {
             func_8009967C();
             vs_main_gametimeUpdate(0);
         }
@@ -5098,7 +5098,7 @@ void func_80078748(void)
     D_800F19CC_t2* temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
     if ((func_800CB45C() == 0)
         && ((func_800A0BE0(temp_s0->unk4.unk0) & 0x08000100) == 0x08000100)
-        && (func_800995B0() == 0) && (func_800CEEBC() != 0)) {
+        && (vs_battle_getEmptyModelDataSlot() == 0) && (func_800CEEBC() != 0)) {
         func_800704B0();
     }
 }
@@ -6130,15 +6130,15 @@ int func_8007C8F0(void) { return 0; }
 
 int func_8007C8F8(int arg0)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.modelId = arg0;
     sp10.unk0 = 1;
     sp10.unk1 = 0;
-    return func_800995E8(&sp10) + 1;
+    return vs_battle_populateModelDataSlot(&sp10) + 1;
 }
 
-int func_8007C928(u_int arg0, int arg1, func_8007C8F8_t_flags* arg2)
+int func_8007C928(u_int arg0, int arg1, vs_battle_modelData_flags* arg2)
 {
     int _[6] __attribute__((unused));
     vs_battle_actor_dat* temp_v0;
@@ -6201,38 +6201,38 @@ void func_8007CAA4(int arg0)
 
 void func_8007CB84(int arg0, int wepId)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
     sp10.modelId = wepId;
     sp10.actorId = 1;
-    func_800995E8(&sp10);
+    vs_battle_populateModelDataSlot(&sp10);
 }
 
 void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
 
 void func_8007CBDC(int arg0, int wepId, int arg2)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
     sp10.modelId = wepId;
     sp10.actorId = 2;
     sp10.unk11 = arg2;
-    func_800995E8((func_8007C8F8_t*)&sp10);
+    vs_battle_populateModelDataSlot((vs_battle_modelData*)&sp10);
 }
 
 void func_8007CC18(int arg0, int wepId, int arg2)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     sp10.unk1 = arg0;
     sp10.unk0 = 9;
     sp10.modelId = wepId;
     sp10.unk11 = arg2;
-    func_800995E8(&sp10);
+    vs_battle_populateModelDataSlot(&sp10);
 }
 
 void func_8007CC4C(int arg0) { func_8009D208(arg0); }
@@ -6241,7 +6241,7 @@ void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 
-int func_8007CCAC(void) { return func_800995B0(); }
+int func_8007CCAC(void) { return vs_battle_getEmptyModelDataSlot(); }
 
 void vs_battle_setNearClip(int arg0)
 {

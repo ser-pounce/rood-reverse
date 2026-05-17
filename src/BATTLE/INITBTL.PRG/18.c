@@ -106,7 +106,7 @@ void _loadSystemDat(void)
 
 void func_800F9AB0(void) { }
 
-int func_800F9AB8(void) { return func_800995B0(); }
+int func_800F9AB8(void) { return vs_battle_getEmptyModelDataSlot(); }
 
 void func_800CB660(int);
 
@@ -172,7 +172,7 @@ void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    func_8007C8F8_t_flags sp20;
+    vs_battle_modelData_flags sp20;
 
     sp20.unk0_0 = 4;
     sp20.unk0_16 = 2;

@@ -919,7 +919,7 @@ void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 void func_80076F24(
     int id, vs_battle_charInitData* arg1, int arg2, int arg3, int arg4, int arg5);
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, func_8007C8F8_t_flags* arg6, int arg7);
+    int shieldWepId, int shieldMaterial, vs_battle_modelData_flags* arg6, int arg7);
 void func_80077EC4(void);
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
 int func_8007BD8C(int);
@@ -967,7 +967,7 @@ void func_8007C4AC(int, int, int);
 void func_8007C580(D_80061068_t*, int, int);
 void func_8007C654(D_80061068_t*, int, int);
 void func_8007C8A4(int, int);
-int func_8007C928(u_int arg0, int arg1, func_8007C8F8_t_flags* arg2);
+int func_8007C928(u_int arg0, int arg1, vs_battle_modelData_flags* arg2);
 void func_8007CA20(int, int, int);
 void func_8007CAA4(int);
 void func_8007CB84(int, int wepId);

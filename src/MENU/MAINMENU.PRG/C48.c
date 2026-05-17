@@ -69,10 +69,10 @@ void vs_mainMenu_initInventory(void)
 
 void func_800FA568(void) { }
 
-void func_800FA570(void)
+int func_800FA570(void)
 {
     func_8009967C();
-    func_800995B0();
+    return vs_battle_getEmptyModelDataSlot();
 }
 
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)

@@ -203,7 +203,7 @@ void vs_menu9_LoadZudFile(int id)
 
 int vs_menu9_parseZudFile(void)
 {
-    func_8007C8F8_t sp10;
+    vs_battle_modelData sp10;
 
     if (_zudCdSlot != NULL) {
         if (_zudCdSlot->state != vs_main_CdQueueStateLoaded) {
@@ -221,7 +221,7 @@ int vs_menu9_parseZudFile(void)
         sp10.actorId = 0xFF;
         sp10.unk13 = D_8010A4B4 & 1;
         sp10.material = _zudData->defaultMaterial;
-        func_800995E8(&sp10);
+        vs_battle_populateModelDataSlot(&sp10);
 
         if (D_8010A4B0 != 0) {
             sp10.unk0 = 1;
@@ -231,7 +231,7 @@ int vs_menu9_parseZudFile(void)
             sp10.actorId = 1;
             sp10.unk11 = 0xFC;
             sp10.unk13 = 0;
-            func_800995E8(&sp10);
+            vs_battle_populateModelDataSlot(&sp10);
         } else {
 
             if (_zudData->weapon != 0) {
@@ -243,7 +243,7 @@ int vs_menu9_parseZudFile(void)
                 sp10.actorId = 1;
                 sp10.unk11 = 0xF0;
                 sp10.material = _zudData->weaponMaterial;
-                func_800995E8(&sp10);
+                vs_battle_populateModelDataSlot(&sp10);
             }
 
             if (_zudData->shield != 0) {
@@ -255,7 +255,7 @@ int vs_menu9_parseZudFile(void)
                 sp10.actorId = 1;
                 sp10.unk11 = 0xF1;
                 sp10.material = _zudData->shieldMaterial;
-                func_800995E8(&sp10);
+                vs_battle_populateModelDataSlot(&sp10);
             }
         }
 
@@ -265,7 +265,7 @@ int vs_menu9_parseZudFile(void)
             sp10.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
             sp10.actorId = 0;
             sp10.modelId = _zudData->unk2;
-            func_800995E8(&sp10);
+            vs_battle_populateModelDataSlot(&sp10);
         }
 
         if (_zudData->commonSeqLen != 0) {
@@ -274,7 +274,7 @@ int vs_menu9_parseZudFile(void)
             sp10.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
             sp10.actorId = 0;
             sp10.modelId = 0;
-            func_800995E8(&sp10);
+            vs_battle_populateModelDataSlot(&sp10);
         }
         return 1;
     }
@@ -285,7 +285,7 @@ int vs_menu9_parseZudFile(void)
 
     func_8009967C();
 
-    if (func_800995B0() == 0) {
+    if (vs_battle_getEmptyModelDataSlot() == 0) {
         vs_main_freeHeapR(_zudData);
         _zudData = NULL;
     }

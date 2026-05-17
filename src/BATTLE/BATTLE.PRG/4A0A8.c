@@ -916,7 +916,7 @@ int func_800B7574(u_char* arg0, short arg1)
     sp10[2] = arg0[7];
     sp10[3] = arg0[8];
     func_8007C928(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        vs_battle_getShort(arg0 + 3), (func_8007C8F8_t_flags*)(sp10));
+        vs_battle_getShort(arg0 + 3), (vs_battle_modelData_flags*)(sp10));
     return 0;
 }
 

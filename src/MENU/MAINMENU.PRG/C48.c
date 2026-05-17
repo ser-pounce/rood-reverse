@@ -440,8 +440,7 @@ void vs_mainMenu_exec(int arg0)
 void func_800FAEBC(int arg0)
 {
 #pragma vsstring(start)
-    // Fixed size to force truncation of final (junk) byte
-    static char D_80102060[8] = "MISC\00000|!0|";
+    static char D_80102060[] = "MISC\00000|0xF8|";
 #pragma vsstring(end)
 
     int j;

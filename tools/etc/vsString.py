@@ -458,9 +458,11 @@ def encode_raw(s, jpTable=False):
         if s[i] == '|':
             end = s.find('|', i + 3)
             if end == -1:
-                print(s)
                 raise ValueError("Unterminated control")
-            result.extend([table.index(s[i:i+2]), int(s[i+2:end].strip())])
+            if s[i+1] == '0':
+                result.append(int(s[i+1:end], 16))
+            else:
+                result.extend([table.index(s[i:i+2]), int(s[i+2:end].strip())])
             i = end + 1
         elif s[i:i+3] == "Lv.":
             result.append(table.index("Lv."))

@@ -204,6 +204,89 @@ def pack_pixels(pixels: list[int], bitdepth: int) -> bytearray:
         return bytearray(pixels)
 
 
+def decode_raw_image(
+    input_path: Path,
+    output_path: Path,
+    width: int,
+    height: int,
+    bitdepth: int,
+) -> None:
+    """Decode a raw packed grayscale image into a PNG.
+
+    Supports 4bpp and 8bpp raw input. For 4bpp, each byte contains two
+    4-bit pixel indices. The output PNG is always 8-bit grayscale.
+    """
+    import png as png_lib
+
+    raw = input_path.read_bytes()
+    expected_len = width * height // (8 // bitdepth)
+    if len(raw) != expected_len:
+        raise ValueError(
+            f"Input file must be exactly {expected_len} bytes for {width}x{height} {bitdepth}bpp data, got {len(raw)}"
+        )
+
+    if bitdepth == 8:
+        pixels = raw
+    elif bitdepth == 4:
+        pixels = bytearray(width * height)
+        for i, value in enumerate(raw):
+            hi = (value >> 4) & 0x0F
+            lo = value & 0x0F
+            pixels[i * 2]     = lo * 17
+            pixels[i * 2 + 1] = hi * 17
+    else:
+        raise ValueError(f"Unsupported bitdepth for raw image decode: {bitdepth}")
+
+    rows = [pixels[y * width:(y + 1) * width] for y in range(height)]
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = png_lib.Writer(width=width, height=height, greyscale=True, bitdepth=8)
+    with open(output_path, 'wb') as f:
+        writer.write(f, rows)
+
+
+def encode_raw_image(
+    input_path: Path,
+    output_path: Path,
+    width: int,
+    height: int,
+    bitdepth: int,
+) -> None:
+    """Encode an 8-bit grayscale PNG into a raw packed image file."""
+    import png as png_lib
+
+    reader = png_lib.Reader(filename=str(input_path))
+    img_width, img_height, rows, info = reader.read()
+
+    if not info.get('greyscale'):
+        raise ValueError(f"Expected grayscale PNG, got greyscale={info.get('greyscale')}")
+    if info.get('alpha'):
+        raise ValueError("Expected grayscale PNG without alpha")
+    if info.get('bitdepth') != 8:
+        raise ValueError(f"Expected 8-bit grayscale PNG, got bitdepth={info.get('bitdepth')}")
+
+    if (img_width, img_height) != (width, height):
+        raise ValueError(f"Expected {width}x{height} image, got {img_width}x{img_height}")
+
+    grayscale = [v for row in rows for v in row]
+    if len(grayscale) != width * height:
+        raise ValueError(f"Unexpected pixel count: {len(grayscale)}")
+
+    if bitdepth == 8:
+        raw = bytes(grayscale)
+    elif bitdepth == 4:
+        raw = bytearray(width * height // 2)
+        for i in range(0, len(grayscale), 2):
+            lo = min(15, max(0, (grayscale[i + 1] * 15 + 127) // 255))
+            hi = min(15, max(0, (grayscale[i] * 15 + 127) // 255))
+            raw[i // 2] = (lo << 4) | hi
+    else:
+        raise ValueError(f"Unsupported bitdepth for raw image encode: {bitdepth}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_bytes(raw)
+
+
 # ---------------------------------------------------------------------------
 # Image encode / decode
 # ---------------------------------------------------------------------------

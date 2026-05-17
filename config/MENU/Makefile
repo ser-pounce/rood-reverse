@@ -39,10 +39,18 @@ $(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
 
 $(BUILD)/assets/MENU/MENUBG.BIN.png: data/MENU/MENUBG.BIN
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN_dump $< $@
+	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN $< $@
 
 $(BUILD)/data/MENU/MENUBG.BIN: $(BUILD)/assets/MENU/MENUBG.BIN.png
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN_encode $< $@
+	$(VPYTHON) -m tools.data.MENU.MENUBG_BIN $< $@
 
-TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, ITEMNAME ITEMHELP MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+$(BUILD)/assets/MENU/GAMEOVER.BIN.png: data/MENU/GAMEOVER.BIN
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.GAMEOVER_BIN $< $@
+
+$(BUILD)/data/MENU/GAMEOVER.BIN: $(BUILD)/assets/MENU/GAMEOVER.BIN.png
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.MENU.GAMEOVER_BIN $< $@
+
+TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

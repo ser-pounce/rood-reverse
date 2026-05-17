@@ -3232,7 +3232,7 @@ static int _displayGameOverScreen(int init)
         prim[0] = (*nextPrim & 0xFFFFFF) | 0x04000000;
         prim[1] = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
         prim[3] = vs_getXY(0, 0);
-        prim[4] = vs_getWH(0x140, 0xF0);
+        prim[4] = vs_getWH(320, 240);
         prim[2] = vs_getRGB0Raw(primTileSemiTrans, (color1 + 128) * 0x020202);
         *nextPrim = ((u_long)prim << 8) >> 8;
         D_1F800000[0] = prim + 5;
@@ -3310,17 +3310,21 @@ static int _displayGameOverScreen(int init)
     prim = vs_battle_setSprite(color1, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 0, 52);
+
     prim = vs_battle_setSprite(color1, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 32, 53);
+    
     prim =
         vs_battle_setSprite(color2 | 256, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 64, 54);
+    
     prim =
         vs_battle_setSprite(color3 | 256, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 96, 54);
+    
     return 0;
 }
 

@@ -4708,7 +4708,7 @@ int func_80077078(
 
     sp10.unk0 = 1;
     sp10.unk1 = arg1;
-    sp10.wepId = wepId;
+    sp10.modelId = wepId;
     sp10.unkC = *arg3;
     sp10.unk4 = arg0->unk44;
     if (arg4 & 0x80) {
@@ -4728,7 +4728,7 @@ void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
 
     sp10.unk0 = 7;
     sp10.unk1 = arg1;
-    sp10.wepId = 0;
+    sp10.modelId = 0;
     sp10.actorId = 0;
     func_800995E8(&sp10);
 }
@@ -4744,7 +4744,7 @@ void func_80077130(
         if (wepId != 0) {
             sp10.unk0 = 3;
             sp10.unk1 = temp_s0;
-            sp10.wepId = wepId;
+            sp10.modelId = wepId;
             sp10.unk4 = actor->unk48[isShield];
             sp10.actorId = actorId;
             if (isShield == 0) {
@@ -4765,7 +4765,7 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
     if (((arg2 != 0) || (arg1 >= 2)) && ((arg1 < 2) || ((arg3 & 3) == 1))) {
         sp10.unk0 = 7;
         sp10.unk1 = arg1;
-        sp10.wepId = arg0[37];
+        sp10.modelId = arg0[37];
         sp10.actorId = 0;
         func_800995E8(&sp10);
     }
@@ -6132,7 +6132,7 @@ int func_8007C8F8(int arg0)
 {
     func_8007C8F8_t sp10;
 
-    sp10.wepId = arg0;
+    sp10.modelId = arg0;
     sp10.unk0 = 1;
     sp10.unk1 = 0;
     return func_800995E8(&sp10) + 1;
@@ -6205,7 +6205,7 @@ void func_8007CB84(int arg0, int wepId)
 
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
-    sp10.wepId = wepId;
+    sp10.modelId = wepId;
     sp10.actorId = 1;
     func_800995E8(&sp10);
 }
@@ -6218,7 +6218,7 @@ void func_8007CBDC(int arg0, int wepId, int arg2)
 
     sp10.unk0 = 7;
     sp10.unk1 = arg0;
-    sp10.wepId = wepId;
+    sp10.modelId = wepId;
     sp10.actorId = 2;
     sp10.unk11 = arg2;
     func_800995E8((func_8007C8F8_t*)&sp10);
@@ -6230,7 +6230,7 @@ void func_8007CC18(int arg0, int wepId, int arg2)
 
     sp10.unk1 = arg0;
     sp10.unk0 = 9;
-    sp10.wepId = wepId;
+    sp10.modelId = wepId;
     sp10.unk11 = arg2;
     func_800995E8(&sp10);
 }

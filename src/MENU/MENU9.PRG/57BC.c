@@ -12,11 +12,11 @@ int func_80107FBC(int arg0)
 
     switch (temp_s0) {
     case 0:
-        func_8010812C(arg0);
+        vs_menu9_LoadZudFile(arg0);
         ++D_800E8F28;
         break;
     case 1:
-        if (func_8010823C() != temp_s0) {
+        if (vs_menu9_parseZudFile() != temp_s0) {
             ++D_800E8F28;
         }
         break;
@@ -34,7 +34,7 @@ void func_80108098(void)
 {
     func_8009CFB0(1);
     func_8009CFB0(0x10);
-    func_801084E4();
+    vs_menu9_freeZudFile();
 }
 
 void func_801080C8(void)

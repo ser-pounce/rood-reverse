@@ -6,26 +6,26 @@
 #include "build/src/include/lbas.h"
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    short unk6;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-} D_8010A4A8_t;
+    u_char characterId;
+    u_char weapon;
+    u_char unk2;
+    u_char weaponMaterial;
+    u_char shield;
+    u_char shieldMaterial;
+    u_char defaultMaterial;
+    u_long shpOffset;
+    int shpLen;
+    u_long weaponWepOffset;
+    int wepLen;
+    u_long shieldWepOffset;
+    int shieldWepLen;
+    u_long commonSeqOffset;
+    int commonSeqLen;
+    u_long battleSeqOffset;
+    int battleSeqLen;
+} _zudData_t;
 
-static int D_80109904[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
+static int _zudLbas[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z009U16_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z013U15_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z009U03_ZUD_LBA, VS_Z048U10_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z009U01_ZUD_LBA,
@@ -90,7 +90,7 @@ static int D_80109904[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_Z
     VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z040U02_ZUD_LBA, VS_Z009U04_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA };
-static int D_80109D04[] = { VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
+static int _zudSizes[] = { VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE, VS_Z009U16_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z013U15_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z009U03_ZUD_SIZE, VS_Z048U10_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z009U01_ZUD_SIZE,
@@ -163,25 +163,27 @@ static char D_8010A104[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 static char D_8010A204[] = { 30, 31, 32, 33, 172, 173 };
 static char D_8010A20C[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
 
-static vs_main_CdQueueSlot* D_8010A4A4;
-static D_8010A4A8_t* D_8010A4A8;
-static void* D_8010A4AC;
+static vs_main_CdQueueSlot* _zudCdSlot;
+static _zudData_t* _zudData;
+static void* _zudBuffer;
 static int D_8010A4B0;
 static int D_8010A4B4;
 
-void func_8010812C(int id)
+void vs_menu9_LoadZudFile(int id)
 {
     static int D_8010A4A0;
 
     vs_main_CdFile cdFile;
     int i;
 
-    cdFile.lba = D_80109904[id];
+    cdFile.lba = _zudLbas[id];
     D_8010A4A0 = id;
-    cdFile.size = D_80109D04[id];
-    D_8010A4A4 = vs_main_allocateCdQueueSlot(&cdFile);
-    D_8010A4A8 = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueuePriority(D_8010A4A4, D_8010A4A8);
+    cdFile.size = _zudSizes[id];
+    _zudCdSlot = vs_main_allocateCdQueueSlot(&cdFile);
+    _zudData = vs_main_allocHeapR(cdFile.size);
+
+    vs_main_cdEnqueuePriority(_zudCdSlot, _zudData);
+
     D_8010A4B4 = D_8010A104[id];
     D_8010A4B0 = 0;
 
@@ -193,99 +195,108 @@ void func_8010812C(int id)
     }
 
     if (D_8010A4B0 != 0) {
-        D_8010A4AC = vs_main_allocHeap(0x3200);
+        _zudBuffer = vs_main_allocHeap(0x3200);
     } else {
-        D_8010A4AC = vs_main_allocHeap(0x24D0);
+        _zudBuffer = vs_main_allocHeap(0x24D0);
     }
 }
 
-int func_8010823C(void)
+int vs_menu9_parseZudFile(void)
 {
     func_8007C8F8_t sp10;
-    int temp_s0;
 
-    if (D_8010A4A4 != NULL) {
-        temp_s0 = D_8010A4A4->state;
-        if (temp_s0 != 4) {
+    if (_zudCdSlot != NULL) {
+        if (_zudCdSlot->state != vs_main_CdQueueStateLoaded) {
             return 1;
         }
-        vs_main_freeCdQueueSlot(D_8010A4A4);
-        D_8010A4A4 = NULL;
+
+        vs_main_freeCdQueueSlot(_zudCdSlot);
+        _zudCdSlot = NULL;
+
         sp10.unk0 = 2;
         sp10.unk1 = 1;
-        sp10.unk8 = D_8010A4A8->unk8 + (long)D_8010A4A8;
-        sp10.wepId = D_8010A4A8->unk0;
-        sp10.unk4 = D_8010A4AC;
+        sp10.dataAddr = _zudData->shpOffset + (u_long)_zudData;
+        sp10.modelId = _zudData->characterId;
+        sp10.unk4 = _zudBuffer;
         sp10.actorId = 0xFF;
         sp10.unk13 = D_8010A4B4 & 1;
-        sp10.material = D_8010A4A8->unk6;
+        sp10.material = _zudData->defaultMaterial;
         func_800995E8(&sp10);
+
         if (D_8010A4B0 != 0) {
             sp10.unk0 = 1;
-            sp10.unk1 = 0x10;
-            sp10.wepId = D_8010A20C[D_8010A4B0];
-            sp10.unk4 = D_8010A4AC + 0x1900;
+            sp10.unk1 = 16;
+            sp10.modelId = D_8010A20C[D_8010A4B0];
+            sp10.unk4 = _zudBuffer + 0x1900;
             sp10.actorId = 1;
             sp10.unk11 = 0xFC;
             sp10.unk13 = 0;
             func_800995E8(&sp10);
         } else {
-            if (D_8010A4A8->unk1 != 0) {
-                sp10.unk0 = temp_s0;
+
+            if (_zudData->weapon != 0) {
+                sp10.unk0 = 4;
                 sp10.unk1 = 2;
-                sp10.unk8 = D_8010A4A8->unk10 + (long)D_8010A4A8;
-                sp10.wepId = D_8010A4A8->unk1;
-                sp10.unk4 = D_8010A4AC + 0x1900;
+                sp10.dataAddr = _zudData->weaponWepOffset + (u_long)_zudData;
+                sp10.modelId = _zudData->weapon;
+                sp10.unk4 = _zudBuffer + 0x1900;
                 sp10.actorId = 1;
                 sp10.unk11 = 0xF0;
-                sp10.material = D_8010A4A8->unk3;
+                sp10.material = _zudData->weaponMaterial;
                 func_800995E8(&sp10);
             }
-            if (D_8010A4A8->unk4 != 0) {
-                sp10.unk0 = temp_s0;
+
+            if (_zudData->shield != 0) {
+                sp10.unk0 = 4;
                 sp10.unk1 = 3;
-                sp10.unk8 = D_8010A4A8->unk18 + (long)D_8010A4A8;
-                sp10.wepId = D_8010A4A8->unk4;
-                sp10.unk4 = D_8010A4AC + 0x1EE8;
+                sp10.dataAddr = _zudData->shieldWepOffset + (u_long)_zudData;
+                sp10.modelId = _zudData->shield;
+                sp10.unk4 = _zudBuffer + 0x1EE8;
                 sp10.actorId = 1;
                 sp10.unk11 = 0xF1;
-                sp10.material = D_8010A4A8->unk5;
+                sp10.material = _zudData->shieldMaterial;
                 func_800995E8(&sp10);
             }
         }
-        if (D_8010A4A8->unk2C != 0) {
+
+        if (_zudData->battleSeqLen != 0) {
             sp10.unk0 = 8;
             sp10.unk1 = 1;
-            sp10.unk8 = D_8010A4A8->unk28 + (long)D_8010A4A8;
+            sp10.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
             sp10.actorId = 0;
-            sp10.wepId = D_8010A4A8->unk2;
+            sp10.modelId = _zudData->unk2;
             func_800995E8(&sp10);
         }
-        if (D_8010A4A8->unk24 != 0) {
+
+        if (_zudData->commonSeqLen != 0) {
             sp10.unk0 = 8;
             sp10.unk1 = 1;
-            sp10.unk8 = D_8010A4A8->unk20 + (long)D_8010A4A8;
+            sp10.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
             sp10.actorId = 0;
-            sp10.wepId = 0;
+            sp10.modelId = 0;
             func_800995E8(&sp10);
         }
         return 1;
     }
-    if (D_8010A4A8 == NULL) {
+
+    if (_zudData == NULL) {
         return 0;
     }
+
     func_8009967C();
+
     if (func_800995B0() == 0) {
-        vs_main_freeHeapR(D_8010A4A8);
-        D_8010A4A8 = NULL;
+        vs_main_freeHeapR(_zudData);
+        _zudData = NULL;
     }
+
     return 1;
 }
 
-void func_801084E4(void)
+void vs_menu9_freeZudFile(void)
 {
-    vs_main_freeHeapR(D_8010A4AC);
-    D_8010A4AC = NULL;
+    vs_main_freeHeapR(_zudBuffer);
+    _zudBuffer = NULL;
 }
 
 void func_80108514(void) { }

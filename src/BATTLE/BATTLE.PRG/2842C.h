@@ -10,9 +10,9 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    short wepId;
+    short modelId;
     void* unk4;
-    int unk8;
+    u_long dataAddr;
     func_8007C8F8_t_flags unkC;
     char actorId;
     char unk11;

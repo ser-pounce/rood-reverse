@@ -3314,17 +3314,17 @@ static int _displayGameOverScreen(int init)
     prim = vs_battle_setSprite(color1, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 32, 53);
-    
+
     prim =
         vs_battle_setSprite(color2 | 256, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 64, 54);
-    
+
     prim =
         vs_battle_setSprite(color3 | 256, vs_getXY(112, 160), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);
     prim[4] = vs_getRGB0(primTile, 0, 96, 54);
-    
+
     return 0;
 }
 

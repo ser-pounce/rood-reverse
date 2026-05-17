@@ -37,4 +37,4 @@ _clearCount = 0x8010A466;
 _mapCompletion = 0x8010A46A;
 _monBinCdQueueSlot = 0x8010A46C;
 _monBinData = 0x8010A470;
-_enemyNames = 0x8010A474;
+_enemyDescriptions = 0x8010A474;

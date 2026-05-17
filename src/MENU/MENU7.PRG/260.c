@@ -150,10 +150,10 @@ typedef struct {
 } primBuf_t;
 
 typedef struct {
-    u_long locationCluts[2][128];
+    u_short locationCluts[2][256];
     char unk400[7][32];
     char unk4E0[22][128];
-    char unkFE0[0x20];
+    char unkFE0[32];
     u_short textTable[0x800];
     saveFileInfo_t saveFileInfo[5];
     struct DIRENTRY _dirEntBuf;
@@ -1588,7 +1588,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
     int var2;
     int uvClut;
     int slotState;
-    u_long* locationClut;
+    void* locationClut;
     int new_var;
 
     if (element->selected != 0) {

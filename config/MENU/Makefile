@@ -29,13 +29,15 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
+.PRECIOUS: $(BUILD)/assets/MENU/%.SYD.yaml
+
 $(BUILD)/assets/MENU/%.SYD.yaml: | $$(@D)/
 	$(ECHO) Converting data/MENU/$*.SYD
-	$(VPYTHON) -m tools.data.MENU.$*_SYD_dump data/MENU/$*.SYD $@
+	$(VPYTHON) -m tools.data.MENU.$*_SYD data/MENU/$*.SYD $@
 
 $(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.$*_SYD_encode $< $@
+	$(VPYTHON) -m tools.data.MENU.$*_SYD $< $@
 
 $(BUILD)/assets/MENU/MENUBG.BIN.png: data/MENU/MENUBG.BIN
 	$(ECHO) Converting $<
@@ -53,4 +55,8 @@ $(BUILD)/data/MENU/GAMEOVER.BIN: $(BUILD)/assets/MENU/GAMEOVER.BIN.png
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.GAMEOVER_BIN $< $@
 
-TARGETS += $(addprefix $(BUILD)/data/MENU/, $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+$(BUILD)/data/MENU/MENUA.PRG:
+	$(ECHO) Touching empty file $@
+	$(TOUCH) $@
+
+TARGETS += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

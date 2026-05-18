@@ -39,19 +39,5 @@ jobs:
       - name: Build dev shell
         run: nix develop -c true
 
-      - name: Verify cross-cpp is on PATH and matches expected major version
-        run: |
-          nix develop -c bash -c '
-            set -e
-            which mipsel-linux-gnu-cpp
-            ver=$(mipsel-linux-gnu-cpp --version | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -1)
-            major=${ver%%.*}
-            echo "cpp version: $ver"
-            if [ "$major" != "12" ]; then
-              echo "ERROR: expected gcc 12.x cross-cpp (matching codegen depends on it); got $ver" >&2
-              exit 1
-            fi
-          '
-
-      - name: Format check
-        run: nix develop -c make -n format >/dev/null 2>&1 && nix develop -c bash -c 'find src include -name "*.c" -o -name "*.h" | xargs clang-format --dry-run --Werror' || echo "format target not wired or no C files; skipping"
+      - name: make check
+        run: nix develop -c make check

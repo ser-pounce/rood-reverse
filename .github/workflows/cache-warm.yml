@@ -1,0 +1,42 @@
+name: cache-warm
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - flake.nix
+      - flake.lock
+
+jobs:
+  cache-warm:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: aarch64-darwin
+            runner: macos-latest
+          - system: x86_64-darwin
+            runner: macos-13
+    name: cache-warm (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+            experimental-features = nix-command flakes
+
+      - name: Push to rood-reverse cachix
+        uses: cachix/cachix-action@v15
+        with:
+          name: rood-reverse
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build dev shell
+        run: nix build --print-out-paths .#devShells.${{ matrix.system }}.default

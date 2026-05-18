@@ -136,6 +136,10 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 
+### Nix (alternative)
+
+A flake is also provided for users on Linux or macOS who prefer a pinned dev shell instead of installing the packages above. With [Nix](https://nixos.org/) (flakes enabled), run `nix develop` in the repo to enter a shell with the full toolchain available, then `make -j` as usual. See [`flake.nix`](flake.nix) for details.
+
 ## Build targets
 - `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
 - `make decompme TARGET=path/to/nonmatchings/source.s` uploads the target function to a new decomp.me scratch.

@@ -17,21 +17,6 @@ def encode_c_char_literal(s):
     return str(encoded[0])
 
 def process_vsstring_block(block):
-    sized_array_re = re.compile(
-        r'(char\s+\w+\s*\[\s*(\d+)\s*\]\s*=\s*)'
-        r'("(?:[^"\\]|\\.)*")'
-    )
-
-    def sized_array_replacer(match):
-        prefix, size_str, literal = match.group(1), match.group(2), match.group(3)
-        encoded = encode_raw(eval(literal))
-        size = int(size_str)
-        truncated = list(encoded[:size])
-        byte_array = ', '.join(str(b) for b in truncated)
-        return f'{prefix}{{{byte_array}}}'
-
-    block = sized_array_re.sub(sized_array_replacer, block)
-
     # match C string literals \"...\" and character literals '\''...\''
     string_literal_re = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"')
     char_literal_re = re.compile(r"'([^'\\]*(?:\\.[^'\\]*)*)'")

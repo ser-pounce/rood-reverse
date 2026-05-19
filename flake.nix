@@ -9,9 +9,8 @@
   };
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.nixpkgs-gcc12.url = "github:NixOS/nixpkgs/nixos-24.11";
 
-  outputs = { self, nixpkgs, nixpkgs-gcc12 }:
+  outputs = { self, nixpkgs }:
     let
       systems = [
         "aarch64-darwin"
@@ -20,10 +19,10 @@
       ];
 
       forAllSystems = f:
-        nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system} nixpkgs-gcc12.legacyPackages.${system});
+        nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
-      devShells = forAllSystems (pkgs: pkgsGcc12:
+      devShells = forAllSystems (pkgs:
         let
           oldGccVersion = "0.17";
 
@@ -77,15 +76,19 @@
 
           crossPkgs = pkgs.pkgsCross.mipsel-linux-gnu;
           crossBt = crossPkgs.buildPackages.binutils;
-          crossGcc = pkgsGcc12.pkgsCross.mipsel-linux-gnu.buildPackages.gcc12.cc;
           crossTriplet = crossPkgs.stdenv.targetPlatform.config;
+          clang = pkgs.llvmPackages_18.clang-unwrapped;
+          mipselCpp = pkgs.writeShellScriptBin "mipsel-linux-gnu-cpp" ''
+            exec ${clang}/bin/clang --target=${crossTriplet} -nostdinc "$@"
+          '';
+          mipselGcc = pkgs.writeShellScriptBin "mipsel-linux-gnu-gcc" ''
+            exec ${clang}/bin/clang --target=${crossTriplet} -nostdinc "$@"
+          '';
           mipselLinuxGnuBin = pkgs.runCommand "mipsel-linux-gnu-toolchain-aliases" { } ''
             mkdir -p $out/bin
             for name in as ld ar nm objdump objcopy ranlib readelf size strip strings addr2line c++filt elfedit; do
               ln -s ${crossBt}/bin/${crossTriplet}-$name $out/bin/mipsel-linux-gnu-$name
             done
-            ln -s ${crossGcc}/bin/${crossTriplet}-cpp $out/bin/mipsel-linux-gnu-cpp
-            ln -s ${crossGcc}/bin/${crossTriplet}-gcc $out/bin/mipsel-linux-gnu-gcc
           '';
         in
         {
@@ -99,10 +102,13 @@
               setupOldGcc
               crossBt
               mipselLinuxGnuBin
+              mipselCpp
+              mipselGcc
             ];
 
             shellHook = ''
               setup-old-gcc "''$PWD"
+              rustup show active-toolchain >/dev/null 2>&1 || rustup default stable
               p="${crossBt}/bin/${crossTriplet}"
               export PATH="${mipselLinuxGnuBin}/bin:''$PATH"
               export MAKEFLAGS="AS=''$p-as LD=''$p-ld AR=''$p-ar NM=''$p-nm OBJDUMP=''$p-objdump OBJCOPY=''$p-objcopy RANLIB=''$p-ranlib READELF=''$p-readelf SIZE=''$p-size ''$MAKEFLAGS"

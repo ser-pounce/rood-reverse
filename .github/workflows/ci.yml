@@ -12,8 +12,12 @@ concurrency:
 
 jobs:
   nix-build:
-    name: nix-build
-    runs-on: ubuntu-latest
+    name: nix-build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,5 +43,5 @@ jobs:
       - name: Build dev shell
         run: nix develop -c true
 
-      - name: make check
-        run: nix develop -c make check
+      - name: make format
+        run: nix develop -c bash -lc 'make format && git diff --exit-code'

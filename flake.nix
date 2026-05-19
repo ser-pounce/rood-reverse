@@ -79,10 +79,10 @@
           crossTriplet = crossPkgs.stdenv.targetPlatform.config;
           clang = pkgs.llvmPackages_18.clang-unwrapped;
           mipselCpp = pkgs.writeShellScriptBin "mipsel-linux-gnu-cpp" ''
-            exec ${clang}/bin/clang --target=${crossTriplet} -nostdinc "$@"
+            exec ${clang}/bin/clang -E --target=${crossTriplet} -D_LANGUAGE_C -fdollars-in-identifiers -nostdinc "$@"
           '';
           mipselGcc = pkgs.writeShellScriptBin "mipsel-linux-gnu-gcc" ''
-            exec ${clang}/bin/clang --target=${crossTriplet} -nostdinc "$@"
+            exec ${clang}/bin/clang --target=${crossTriplet} -D_LANGUAGE_C -fdollars-in-identifiers -nostdinc "$@"
           '';
           mipselLinuxGnuBin = pkgs.runCommand "mipsel-linux-gnu-toolchain-aliases" { } ''
             mkdir -p $out/bin

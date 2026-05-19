@@ -1,10 +1,7 @@
 #include "build/src/include/lbas.h"
 #include "main.h"
 
-#define mkCdFile(file)                                                                   \
-    {                                                                                    \
-        file##_LBA, file##_SIZE                                                          \
-    }
+#define mkCdFile(file) { file##_LBA, file##_SIZE }
 
 vs_main_CdFile vs_main_zndFiles[] = { mkCdFile(VS_ZONE000_ZND), mkCdFile(VS_ZONE001_ZND),
     mkCdFile(VS_ZONE002_ZND), mkCdFile(VS_ZONE003_ZND), mkCdFile(VS_ZONE004_ZND),

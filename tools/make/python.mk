@@ -6,4 +6,5 @@ BUILDDEPS += $(VPYTHON)
 $(VPYTHON): requirements.txt
 	$(ECHO) Installing virtual python environment to $(VPYDIR)
 	$(PYTHON) -m venv $(VPYDIR)
-	$(VPYTHON) -m pip install --quiet -r requirements.txt $(PYTHONDEPS)
+	$(VPYTHON) -m pip install --quiet -r requirements.txt
+	$(TOUCH) $@

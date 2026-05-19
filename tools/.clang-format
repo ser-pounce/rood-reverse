@@ -5,4 +5,5 @@ SortIncludes: Never
 AlignOperands: AlignAfterOperator
 BreakBeforeBinaryOperators: NonAssignment
 BreakStringLiterals: false
+SkipMacroDefinitionBody: true
 ...

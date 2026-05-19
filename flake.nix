@@ -33,14 +33,22 @@
               inherit hash;
             };
 
-          oldGccArchives = {
-            "2.7.2-cdk" = oldGccRelease "gcc-2.7.2-cdk-macos.tar.gz"
-              "sha256-Q/499Eut0j1XB1rcBqsXfZgLHinwOSpUJuifZSyDLRo=";
-            "2.7.2-psx" = oldGccRelease "gcc-2.7.2-psx-macos.tar.gz"
-              "sha256-QoCJRmHJeSvBn1yXDCg9NTgZN/tE5HmpHQwETJX80gg=";
-            "2.8.1-psx" = oldGccRelease "gcc-2.8.1-psx-macos.tar.gz"
-              "sha256-urDG6h85RXPVqrvdezfjas7rg8UiFB2Uaoep9YwZnqA=";
-          };
+          oldGccArchives =
+            if pkgs.stdenv.hostPlatform.isDarwin then {
+              "2.7.2-cdk" = oldGccRelease "gcc-2.7.2-cdk-macos.tar.gz"
+                "sha256-Q/499Eut0j1XB1rcBqsXfZgLHinwOSpUJuifZSyDLRo=";
+              "2.7.2-psx" = oldGccRelease "gcc-2.7.2-psx-macos.tar.gz"
+                "sha256-QoCJRmHJeSvBn1yXDCg9NTgZN/tE5HmpHQwETJX80gg=";
+              "2.8.1-psx" = oldGccRelease "gcc-2.8.1-psx-macos.tar.gz"
+                "sha256-urDG6h85RXPVqrvdezfjas7rg8UiFB2Uaoep9YwZnqA=";
+            } else {
+              "2.7.2-cdk" = oldGccRelease "gcc-2.7.2-cdk.tar.gz"
+                "sha256-QrsN+W2xGptdLiPXi9yWJ5H0AEYoDT02Dak/5e728Ls=";
+              "2.7.2-psx" = oldGccRelease "gcc-2.7.2-psx.tar.gz"
+                "sha256-UApFmzSF6IWo0wLKwjwqRjLzkA4DoJFT9hkGmf1yNXE=";
+              "2.8.1-psx" = oldGccRelease "gcc-2.8.1-psx.tar.gz"
+                "sha256-9vbog5QtTTKJ0EgjbGcuce1BDlRqquj/ZVlS8VZ+G+A=";
+            };
 
           setupOldGcc = pkgs.writeShellApplication {
             name = "setup-old-gcc";

@@ -106,7 +106,7 @@
               p="${crossBt}/bin/${crossTriplet}"
               export PATH="${mipselLinuxGnuBin}/bin:''$PATH"
               export MAKEFLAGS="AS=''$p-as LD=''$p-ld AR=''$p-ar NM=''$p-nm OBJDUMP=''$p-objdump OBJCOPY=''$p-objcopy RANLIB=''$p-ranlib READELF=''$p-readelf SIZE=''$p-size ''$MAKEFLAGS"
-              echo "Run: make check"
+              echo "Run: make check -j"
             '';
           };
         });

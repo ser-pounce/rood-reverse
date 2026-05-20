@@ -32,11 +32,12 @@ jobs:
             accept-flake-config = true
             experimental-features = nix-command flakes
 
-      - name: Push to rood-reverse cachix
-        uses: cachix/cachix-action@v15
-        with:
-          name: rood-reverse
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-
       - name: Build dev shell
-        run: nix build --print-out-paths .#devShells.${{ matrix.system }}.default
+        run: nix build --print-out-paths .#devShells.${{ matrix.system }}.default > "$RUNNER_TEMP/dev-shell-paths"
+
+      - name: Push to rood-reverse cachix
+        env:
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+        run: |
+          mapfile -t paths < "$RUNNER_TEMP/dev-shell-paths"
+          nix shell nixpkgs#cachix -c cachix push rood-reverse "${paths[@]}"

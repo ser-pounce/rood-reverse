@@ -1,0 +1,31 @@
+build/src/MENU/MAINMENU.PRG/C48.o: src/MENU/MAINMENU.PRG/C48.c \
+ src/include/common.h include/psx/stddef.h src/MENU/MAINMENU.PRG/C48.h \
+ src/MENU/MAINMENU.PRG/../../SLUS_010.40/main.h \
+ src/MENU/MAINMENU.PRG/../../SLUS_010.40/25AC.h include/psx/sys/types.h \
+ src/MENU/MAINMENU.PRG/../../SLUS_010.40/D_80061068_t.h \
+ src/MENU/MAINMENU.PRG/../../SLUS_010.40/../BATTLE/BATTLE.PRG/func_8006B57C_t.h \
+ include/psx/libgte.h include/psx/libgpu.h \
+ src/MENU/MAINMENU.PRG/../../BATTLE/BATTLE.PRG/5BF94.h \
+ src/MENU/MAINMENU.PRG/../../BATTLE/BATTLE.PRG/146C.h \
+ src/MENU/MAINMENU.PRG/../../BATTLE/BATTLE.PRG/2842C.h \
+ src/MENU/MAINMENU.PRG/2D10.h src/MENU/MAINMENU.PRG/58EC.h \
+ src/MENU/MAINMENU.PRG/../MENUD.PRG/234.h \
+ src/include/../BATTLE/BATTLE.PRG/30D14.h \
+ src/include/../BATTLE/BATTLE.PRG/44F14.h \
+ src/include/../BATTLE/BATTLE.PRG/573B8.h \
+ src/MENU/MAINMENU.PRG/../MENU0.PRG/84.h \
+ src/MENU/MAINMENU.PRG/../MENU1.PRG/30.h \
+ src/MENU/MAINMENU.PRG/../MENU2.PRG/64.h \
+ src/MENU/MAINMENU.PRG/../MENU2.PRG/143C.h \
+ src/MENU/MAINMENU.PRG/../MENU3.PRG/16C.h \
+ src/MENU/MAINMENU.PRG/../MENU4.PRG/120.h \
+ src/MENU/MAINMENU.PRG/../MENU5.PRG/4D8.h \
+ src/MENU/MAINMENU.PRG/../MENU7.PRG/260.h \
+ src/MENU/MAINMENU.PRG/../MENU8.PRG/88.h \
+ src/MENU/MAINMENU.PRG/../MENU8.PRG/21A0.h \
+ src/MENU/MAINMENU.PRG/../MENU9.PRG/238.h \
+ src/MENU/MAINMENU.PRG/../MENUB.PRG/260.h \
+ src/MENU/MAINMENU.PRG/../MENUC.PRG/168.h \
+ src/MENU/MAINMENU.PRG/../MENUE.PRG/494.h \
+ src/MENU/MAINMENU.PRG/../MENUF.PRG/3B8.h src/include/gpu.h \
+ src/include/vs_string.h include/psx/libetc.h include/psx/limits.h

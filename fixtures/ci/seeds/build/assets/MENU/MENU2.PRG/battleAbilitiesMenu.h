@@ -1,0 +1,43 @@
+#pragma once
+
+enum battleAbilitiesMenu_offsets_e {
+    VS_battleAbilitiesMenu_OFFSET_breakArtUnlock = 18,
+    VS_battleAbilitiesMenu_OFFSET_dagger = 53,
+    VS_battleAbilitiesMenu_OFFSET_sword = 57,
+    VS_battleAbilitiesMenu_OFFSET_greatSword = 60,
+    VS_battleAbilitiesMenu_OFFSET_axeAndMace = 66,
+    VS_battleAbilitiesMenu_OFFSET_greatAxe = 72,
+    VS_battleAbilitiesMenu_OFFSET_staff = 77,
+    VS_battleAbilitiesMenu_OFFSET_heavyMace = 80,
+    VS_battleAbilitiesMenu_OFFSET_polearm = 86,
+    VS_battleAbilitiesMenu_OFFSET_crossbow = 90,
+    VS_battleAbilitiesMenu_OFFSET_bareHands = 95,
+    VS_battleAbilitiesMenu_OFFSET_unknown0 = 101,
+    VS_battleAbilitiesMenu_OFFSET_select = 103,
+    VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock = 116,
+    VS_battleAbilitiesMenu_OFFSET_chainAbilities = 150,
+    VS_battleAbilitiesMenu_OFFSET_defenseAbilities = 158,
+    VS_battleAbilitiesMenu_OFFSET_allAbilitiesUnlocked = 167,
+    VS_battleAbilitiesMenu_OFFSET_unknown1 = 193,
+};
+
+enum battleAbilitiesMenu_indices_e {
+    VS_battleAbilitiesMenu_INDEX_breakArtUnlock = 0,
+    VS_battleAbilitiesMenu_INDEX_dagger = 1,
+    VS_battleAbilitiesMenu_INDEX_sword = 2,
+    VS_battleAbilitiesMenu_INDEX_greatSword = 3,
+    VS_battleAbilitiesMenu_INDEX_axeAndMace = 4,
+    VS_battleAbilitiesMenu_INDEX_greatAxe = 5,
+    VS_battleAbilitiesMenu_INDEX_staff = 6,
+    VS_battleAbilitiesMenu_INDEX_heavyMace = 7,
+    VS_battleAbilitiesMenu_INDEX_polearm = 8,
+    VS_battleAbilitiesMenu_INDEX_crossbow = 9,
+    VS_battleAbilitiesMenu_INDEX_bareHands = 10,
+    VS_battleAbilitiesMenu_INDEX_unknown0 = 11,
+    VS_battleAbilitiesMenu_INDEX_select = 12,
+    VS_battleAbilitiesMenu_INDEX_battleAbilityUnlock = 13,
+    VS_battleAbilitiesMenu_INDEX_chainAbilities = 14,
+    VS_battleAbilitiesMenu_INDEX_defenseAbilities = 15,
+    VS_battleAbilitiesMenu_INDEX_allAbilitiesUnlocked = 16,
+    VS_battleAbilitiesMenu_INDEX_unknown1 = 17,
+};

@@ -45,3 +45,6 @@ jobs:
 
       - name: make format
         run: nix develop -c bash -lc 'make format && git diff --exit-code'
+
+      - name: CI smoke build (fixture + golden hashes)
+        run: nix develop -c bash -lc 'make ci-smoke'

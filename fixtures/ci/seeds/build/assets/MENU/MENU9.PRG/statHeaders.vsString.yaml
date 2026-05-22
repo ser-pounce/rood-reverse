@@ -1,0 +1,23 @@
+gamesCompleted: Games Completed
+minCompletionTime: Record Completion Time
+chestCount: Current Chest Count
+maxChestCount: Chest Count Highscore
+mapCompletion: Current Map Completion
+maxMapCompletion: Map Completion Highscore
+maxChain: Chain Ability Highscore
+humanKills: 'Kill List:  Human'
+beastKills: '            Beast'
+undeadKills: '            Undead'
+phantomKills: '            Phantom'
+dragonKills: '            Dragon'
+evilKills: '            Evil'
+daggerUsage: 'Weapon Usage: Dagger'
+swordUsage: '              Sword'
+greatSwordUsage: '              Great Sword'
+axeMaceUsage: '              Axe & Mace'
+greatAxeUsage: '              Great Axe'
+staffUsage: '              Staff'
+heavyMaceUsage: '              Heavy Mace'
+polearmUsage: '              Polearm'
+crossbowUsage: '              Crossbow'
+unarmedUsage: '              Unarmed'

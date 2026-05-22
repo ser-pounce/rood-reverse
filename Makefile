@@ -18,7 +18,7 @@ BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)
 INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,assemble compile link permuter python shell vsstring)
+				$(patsubst %,tools/make/%.mk,assemble ci compile link permuter python shell vsstring)
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__

@@ -1,0 +1,37 @@
+line0: ''
+line1: ''
+line2: ''
+emptyChest: Nothing in the treasure chest.▼
+selectItems: Choose the item(s) you want to take.
+optionYes: 'YES'
+optionNo: 'NO'
+itemsRemaining: |-
+  There are still some items here.
+  Leave anyway?
+invalidDiscard: You cannot discard |$0|.▼
+discardAllConfirm: Discard all items?
+disassemble: DISASSEMBLE
+disassembleInfo: |-
+  Disassemble equipment to separate the
+  components.
+organize: ORGANIZE
+organizeInfo: |-
+  Organize duplicate items to increase
+  your maximum carrying capacity.
+organizeInventory: ORGANIZE INVENTORY
+organizeInventoryInfo: Open the Items menu to organize your inventory.
+disassembleConfirm: Disassemble |$0|?
+organizeConfirm: Organize |$0|?
+equip: EQUIP
+equipInfo: Choose items to equip.
+setup: SETUP
+setupInfo: Build, disassemble, or repair your equipment.
+itemUseProhibited: You cannot use items here.
+weapons: WEAPONS
+blades: BLADES
+grips: GRIPS
+shields: SHIELDS
+armor: ARMOR
+gems: GEMS
+misc: MISC
+options: OPTIONS

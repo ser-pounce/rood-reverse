@@ -1,0 +1,199 @@
+warlock: WARLOCK    (ATT)
+warlockDesc: A list of spells that deal damage.
+warlockLocked: |-
+  Ashley has yet to learn
+  any Warlock (attack) spells.
+shaman: SHAMAN     (REC)
+shamanDesc: |-
+  A list of spells that cure status
+  abnormalities or restore HP.
+shamanLocked: |-
+  Ashley has yet to learn
+  any Shaman (recovery) spells.
+sorcerer: SORCERER   (AID)
+sorcererDesc: |-
+  A list of spells that cause status abnormalities
+  in foes or otherwise aid Ashley in battle.
+sorcererLocked: |-
+  Ashley has yet to learn
+  any Sorcerer (aid) spells.
+enchanter: ENCHANTER  (AFF)
+enchanterDesc: |-
+  A list of spells that change the elemental
+  affinities of equipment.
+enchanterLocked: |-
+  Ashley has yet to learn any
+  Enchanter (affinity) spells.
+warlockSpellDescs:
+- |-
+  Physical Attack; Conjuration; Single Target.
+  Strikes enemies with an explosive shockwave.
+- |-
+  Air Affinity; Conjuration; Single Target.
+  Shoots out arrows of lightning.
+- |-
+  Fire Affinity; Conjuration; Single Target.
+  Pummels enemies with balls of fire.
+- |-
+  Earth Affinity; Conjuration; Single Target.
+  Showers enemies with volcanic debris.
+- |-
+  Water Affinity; Conjuration; Single Target.
+  Engulfs enemies with freezing water blast.
+- |-
+  Light Affinity; Conjuration; Single Target.
+  Summons a spirit of light to attack enemies.
+- |-
+  Dark Affinity; Conjuration; Single Target.
+  Afflicts enemies with crippling pain.
+- |-
+  Light Affinity; Evocation; Multiple Targets.
+  Exorcise undead foes.
+- |-
+  Dark Affinity; Evocation; Multiple Targets.
+  Forbidden spell of instant death.
+- |-
+  Physical Attack; Evocation; Multiple Targets.
+  A highly focused, devastating blast.
+- |-
+  Air Affinity; Evocation; Multiple Targets.
+  Calls down a great bolt from the heavens.
+- |-
+  Fire Affinity; Evocation; Multiple Targets.
+  Wreaths target in flames.
+- |-
+  Earth Affinity; Evocation; Multiple Targets.
+  Creates crushing gravity warp around target.
+- |-
+  Water Affinity; Evocation; Multiple Targets.
+  Super-freezes air around target.
+- |-
+  Light Affinity; Evocation; Multiple Targets.
+  Pierces enemies with focused rays of light.
+- |-
+  Dark Affinity; Evocation; Multiple Targets.
+  Rains meteors down on the target.
+- |-
+  Dark Affinity; Evocation; Single Target.
+  Steals HP from enemies.
+- |-
+  Dark Affinity; Evocation; Single Target.
+  Steals MP from enemies.
+shamanSpellDescs:
+- |-
+  Light Affinity; Evocation; Single Target.
+  Restores target's HP.
+- |-
+  Light Affinity; Evocation; Single Target.
+  Cures "Paralysis."
+- |-
+  Light Affinity; Evocation; Single Target.
+  Cures "Poison."
+- |-
+  Light Affinity; Evocation; Single Target.
+  Cures "Curse."
+- |-
+  Light Affinity; Evocation; Single Target.
+  Cures all status abnormalities.
+- |-
+  Light Affinity; Evocation; Single Target.
+  Recharges HP over a short period of time.
+sorcererSpellDescs:
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily increases target's strength.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily decreases target's strength.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily increases target's intelligence.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily decreases target's intelligence.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily increases target's agility.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily decreases target's agility.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily strengthens target's equipment.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily weakens target's equipments.
+- |-
+  Support Magic; Evocation; Single Target.
+  Temporarily prevents target from casting spells.
+- |-
+  Support Magic; Evocation; Single Target.
+  Nullifies the next spell cast on target.
+- |-
+  Support Magic; Evocation; Single Target.
+  Casts "Paralysis" on target.
+- |-
+  Support Magic; Evocation; Single Target.
+  Casts "Poison" on target.
+- |-
+  Support Magic; Evocation; Single Target.
+  Casts "Curse" on target.
+- |-
+  Support Magic; Evocation.
+  Freezes the room's Cloudstones in place.
+- |-
+  Support Magic; Evocation; Single Target.
+  Nullifies any spell currently affecting target.
+- |-
+  Support Magic; Evocation; Treasure Chest.
+  Opens treasure chests locked with magic.
+- |-
+  Support Magic; Evocation; Multiple Traps.
+  Reveals all traps in the room.
+- |-
+  Support Magic; Evocation; Single Target.
+  Analyzes enemies' parameters and stats.
+enchanterSpellDescs:
+- |-
+  Air affinity; Evocation; Single Target.
+  Temporarily strengthens weapon's air affinity.
+- |-
+  Fire affinity; Evocation; Single Target.
+  Temporarily strengthens weapon's fire affinity.
+- |-
+  Earth affinity; Evocation; Single Target.
+  Temporarily strengthens weapon's earth affinity.
+- |-
+  Water affinity; Evocation; Single Target.
+  Temporarily strengthens weapon's water affinity.
+- |-
+  Air affinity; Evocation; Single Target.
+  Temporarily strengthens armor's air affinity.
+- |-
+  Fire affinity; Evocation; Single Target.
+  Temporarily strengthens armor's fire affinity.
+- |-
+  Earth affinity; Evocation; Single Target.
+  Temporarily strengthens armor's earth affinity.
+- |-
+  Water affinity; Evocation; Single Target.
+  Temporarily strengthens armor's water affinity.
+warlockSpells:
+- Solid Shock
+- Lightning Bolt
+- Fireball
+- Vulcan Lance
+- Aqua Blast
+- Spirit Surge
+- Dark Chant
+- Exorcism
+- Banish
+- Explosion
+- Thunderburst
+- Flame Sphere
+- Gaea Strike
+- Avalanche
+- Radial Surge
+- Meteor
+- Drain Heart
+- Drain Mind

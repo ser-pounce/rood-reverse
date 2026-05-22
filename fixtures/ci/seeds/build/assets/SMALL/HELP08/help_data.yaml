@@ -1,0 +1,106 @@
+strings:
+- This section explains Defense Abilities.
+- '|>6|'
+- 'The following topics are covered:'
+- '|>6|'
+- ' 1. Defense Abilities'
+- ' 2. Acquiring Defense Abilities'
+- ' 3. Assigning Defense Abilities'
+- ' 4. Using Defense Abilities'
+- '|>6|'
+- '|f2|★|f0|Please refer to the software manual for'
+- '  complete descriptions of these game features.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|1. Defense Abilities|f0|'
+- ' -Defense Abilities are special defensive'
+- '  techniques triggered when you press the'
+- '     ,    , or the    |f1|button|f0| at the exact time'
+- '  an opponent''s attack strikes Ashley.'
+- ' -In order to use Defense Abilities, you must'
+- '  assign buttons to them under the Battle'
+- '  Abilities menu.'
+- '|>6|'
+- '|f1|2. Acquiring Defense Abilities|f0|'
+- ' -As Ashley uses Battle Abilities, he will gain'
+- '  Experience Points towards acquiring new'
+- '  Abilities.'
+- ' -When Ashley accumulates enough experience,'
+- '  you may choose new techniques from a list of'
+- '  the Chain and Defense Abilities Ashley has yet'
+- '  to learn.'
+- '|>6|'
+- ' |f2|★|f0|Every successful use of a Chain or Defense'
+- '   Ability earns one Experience Point.'
+- '|>6|'
+- ' |f2|★|f0|See the "Chain Abilities" section for a'
+- '   detailed explanation of Chain Abilities.'
+- '|>6|'
+- ' -You can confirm the number of Experience Points'
+- '  needed to learn the next technique under the'
+- '  Battle Ability menu.'
+- ' -You will not be able to learn or use any Battle'
+- '  Abilities before defeating the first boss.'
+- '|>6|'
+- '|f1|3. Assigning Defense Abilities|f0|'
+- ' -Choose "Defense Abilities" under the Battle'
+- '  Abilities menu to see a list of available'
+- '  techniques.'
+- ' -With this list displayed, select the Ability'
+- '  you wish to use with the cursor and press'
+- '  the    ,   ,or the    buttons.'
+- ' -An icon indicating the assigned button will'
+- '  appear next to the Ability you selected.'
+- '  Press this button to use the Defense Ability'
+- '  in battle.'
+- '|>6|'
+- '|f1|4. Using Defense Abilities|f0|'
+- ' -Press the assigned button at the exact moment'
+- '  Ashley is hit by an opponent''s attack or'
+- '  offensive magic to trigger a Defense Ability.'
+- ' -When Ashley lands a hit on an opponent, an'
+- '  exclamation mark appears over his head.'
+- '|>6|'
+- '       Press the Defense Ability button at the'
+- '       exact moment this mark appears!'
+- '|>6|'
+- ' |f2|★|f0|Defense Abilities are ineffective against'
+- '   certain attacks and types of offensive magic.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Defense Abilities section.
+sprites:
+- position: {x: 125, y: 650}
+  file: sprite_000.png
+- position: {x: 112, y: 221}
+  file: sprite_000.png
+- position: {x: 41, y: 221}
+  file: sprite_001.png
+- position: {x: 12, y: 221}
+  file: sprite_002.png
+- position: {x: 12, y: 812}
+  file: sprite_003.png
+- position: {x: 60, y: 650}
+  file: sprite_001.png
+- position: {x: 36, y: 650}
+  file: sprite_002.png
+lines:
+- start: {x: 101, y: 442}
+  end: {x: 228, y: 442}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 169}
+  end: {x: 294, y: 169}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 175}
+  end: {x: 294, y: 175}
+  color: {r: 0, g: 128, b: 255}

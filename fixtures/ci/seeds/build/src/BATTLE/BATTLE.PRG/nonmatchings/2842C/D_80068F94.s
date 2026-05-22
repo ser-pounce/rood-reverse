@@ -1,0 +1,12 @@
+.section .rodata
+
+nonmatching D_80068F94
+
+dlabel D_80068F94
+    /* 794 80068F94 FEFFF0FF */ .word 0xFFF0FFFE
+    /* 798 80068F98 F2FFF0FF */ .word 0xFFF0FFF2
+    /* 79C 80068F9C 0000EBFF */ .word 0xFFEB0000
+    /* 7A0 80068FA0 F9FFEBFF */ .word 0xFFEBFFF9
+    /* 7A4 80068FA4 0300F5FF */ .word 0xFFF50003
+    /* 7A8 80068FA8 0300F5FF */ .word 0xFFF50003
+enddlabel D_80068F94

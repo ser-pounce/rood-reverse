@@ -1,0 +1,572 @@
+.section .rodata
+nonmatching D_80040A14
+
+dlabel D_80040A14
+    /* 31214 80040A14 */ .byte 0x00
+    /* 31215 80040A15 */ .byte 0x01
+    /* 31216 80040A16 */ .byte 0x01
+    /* 31217 80040A17 */ .byte 0x02
+    /* 31218 80040A18 */ .byte 0x03
+    /* 31219 80040A19 */ .byte 0x03
+    /* 3121A 80040A1A */ .byte 0x04
+    /* 3121B 80040A1B */ .byte 0x05
+    /* 3121C 80040A1C */ .byte 0x05
+    /* 3121D 80040A1D */ .byte 0x06
+    /* 3121E 80040A1E */ .byte 0x07
+    /* 3121F 80040A1F */ .byte 0x07
+    /* 31220 80040A20 */ .byte 0x08
+    /* 31221 80040A21 */ .byte 0x08
+    /* 31222 80040A22 */ .byte 0x09
+    /* 31223 80040A23 */ .byte 0x0A
+    /* 31224 80040A24 */ .byte 0x0A
+    /* 31225 80040A25 */ .byte 0x0B
+    /* 31226 80040A26 */ .byte 0x0C
+    /* 31227 80040A27 */ .byte 0x0C
+    /* 31228 80040A28 */ .byte 0x0D
+    /* 31229 80040A29 */ .byte 0x0E
+    /* 3122A 80040A2A */ .byte 0x0E
+    /* 3122B 80040A2B */ .byte 0x0F
+    /* 3122C 80040A2C */ .byte 0x0F
+    /* 3122D 80040A2D */ .byte 0x10
+    /* 3122E 80040A2E */ .byte 0x11
+    /* 3122F 80040A2F */ .byte 0x11
+    /* 31230 80040A30 */ .byte 0x12
+    /* 31231 80040A31 */ .byte 0x13
+    /* 31232 80040A32 */ .byte 0x13
+    /* 31233 80040A33 */ .byte 0x14
+    /* 31234 80040A34 */ .byte 0x15
+    /* 31235 80040A35 */ .byte 0x15
+    /* 31236 80040A36 */ .byte 0x16
+    /* 31237 80040A37 */ .byte 0x16
+    /* 31238 80040A38 */ .byte 0x17
+    /* 31239 80040A39 */ .byte 0x18
+    /* 3123A 80040A3A */ .byte 0x18
+    /* 3123B 80040A3B */ .byte 0x19
+    /* 3123C 80040A3C */ .byte 0x1A
+    /* 3123D 80040A3D */ .byte 0x1A
+    /* 3123E 80040A3E */ .byte 0x1B
+    /* 3123F 80040A3F */ .byte 0x1B
+    /* 31240 80040A40 */ .byte 0x1C
+    /* 31241 80040A41 */ .byte 0x1D
+    /* 31242 80040A42 */ .byte 0x1D
+    /* 31243 80040A43 */ .byte 0x1E
+    /* 31244 80040A44 */ .byte 0x1F
+    /* 31245 80040A45 */ .byte 0x1F
+    /* 31246 80040A46 */ .byte 0x20
+    /* 31247 80040A47 */ .byte 0x21
+    /* 31248 80040A48 */ .byte 0x21
+    /* 31249 80040A49 */ .byte 0x22
+    /* 3124A 80040A4A */ .byte 0x22
+    /* 3124B 80040A4B */ .byte 0x23
+    /* 3124C 80040A4C */ .byte 0x24
+    /* 3124D 80040A4D */ .byte 0x24
+    /* 3124E 80040A4E */ .byte 0x25
+    /* 3124F 80040A4F */ .byte 0x26
+    /* 31250 80040A50 */ .byte 0x26
+    /* 31251 80040A51 */ .byte 0x27
+    /* 31252 80040A52 */ .byte 0x27
+    /* 31253 80040A53 */ .byte 0x28
+    /* 31254 80040A54 */ .byte 0x29
+    /* 31255 80040A55 */ .byte 0x29
+    /* 31256 80040A56 */ .byte 0x2A
+    /* 31257 80040A57 */ .byte 0x2B
+    /* 31258 80040A58 */ .byte 0x2B
+    /* 31259 80040A59 */ .byte 0x2C
+    /* 3125A 80040A5A */ .byte 0x2C
+    /* 3125B 80040A5B */ .byte 0x2D
+    /* 3125C 80040A5C */ .byte 0x2E
+    /* 3125D 80040A5D */ .byte 0x2E
+    /* 3125E 80040A5E */ .byte 0x2F
+    /* 3125F 80040A5F */ .byte 0x30
+    /* 31260 80040A60 */ .byte 0x30
+    /* 31261 80040A61 */ .byte 0x31
+    /* 31262 80040A62 */ .byte 0x31
+    /* 31263 80040A63 */ .byte 0x32
+    /* 31264 80040A64 */ .byte 0x33
+    /* 31265 80040A65 */ .byte 0x33
+    /* 31266 80040A66 */ .byte 0x34
+    /* 31267 80040A67 */ .byte 0x35
+    /* 31268 80040A68 */ .byte 0x35
+    /* 31269 80040A69 */ .byte 0x36
+    /* 3126A 80040A6A */ .byte 0x36
+    /* 3126B 80040A6B */ .byte 0x37
+    /* 3126C 80040A6C */ .byte 0x38
+    /* 3126D 80040A6D */ .byte 0x38
+    /* 3126E 80040A6E */ .byte 0x39
+    /* 3126F 80040A6F */ .byte 0x3A
+    /* 31270 80040A70 */ .byte 0x3A
+    /* 31271 80040A71 */ .byte 0x3B
+    /* 31272 80040A72 */ .byte 0x3B
+    /* 31273 80040A73 */ .byte 0x3C
+    /* 31274 80040A74 */ .byte 0x3D
+    /* 31275 80040A75 */ .byte 0x3D
+    /* 31276 80040A76 */ .byte 0x3E
+    /* 31277 80040A77 */ .byte 0x3E
+    /* 31278 80040A78 */ .byte 0x3F
+    /* 31279 80040A79 */ .byte 0x40
+    /* 3127A 80040A7A */ .byte 0x40
+    /* 3127B 80040A7B */ .byte 0x41
+    /* 3127C 80040A7C */ .byte 0x41
+    /* 3127D 80040A7D */ .byte 0x42
+    /* 3127E 80040A7E */ .byte 0x43
+    /* 3127F 80040A7F */ .byte 0x43
+    /* 31280 80040A80 */ .byte 0x44
+    /* 31281 80040A81 */ .byte 0x45
+    /* 31282 80040A82 */ .byte 0x45
+    /* 31283 80040A83 */ .byte 0x46
+    /* 31284 80040A84 */ .byte 0x46
+    /* 31285 80040A85 */ .byte 0x47
+    /* 31286 80040A86 */ .byte 0x48
+    /* 31287 80040A87 */ .byte 0x48
+    /* 31288 80040A88 */ .byte 0x49
+    /* 31289 80040A89 */ .byte 0x49
+    /* 3128A 80040A8A */ .byte 0x4A
+    /* 3128B 80040A8B */ .byte 0x4B
+    /* 3128C 80040A8C */ .byte 0x4B
+    /* 3128D 80040A8D */ .byte 0x4C
+    /* 3128E 80040A8E */ .byte 0x4C
+    /* 3128F 80040A8F */ .byte 0x4D
+    /* 31290 80040A90 */ .byte 0x4E
+    /* 31291 80040A91 */ .byte 0x4E
+    /* 31292 80040A92 */ .byte 0x4F
+    /* 31293 80040A93 */ .byte 0x4F
+    /* 31294 80040A94 */ .byte 0x50
+    /* 31295 80040A95 */ .byte 0x51
+    /* 31296 80040A96 */ .byte 0x51
+    /* 31297 80040A97 */ .byte 0x52
+    /* 31298 80040A98 */ .byte 0x52
+    /* 31299 80040A99 */ .byte 0x53
+    /* 3129A 80040A9A */ .byte 0x54
+    /* 3129B 80040A9B */ .byte 0x54
+    /* 3129C 80040A9C */ .byte 0x55
+    /* 3129D 80040A9D */ .byte 0x55
+    /* 3129E 80040A9E */ .byte 0x56
+    /* 3129F 80040A9F */ .byte 0x57
+    /* 312A0 80040AA0 */ .byte 0x57
+    /* 312A1 80040AA1 */ .byte 0x58
+    /* 312A2 80040AA2 */ .byte 0x58
+    /* 312A3 80040AA3 */ .byte 0x59
+    /* 312A4 80040AA4 */ .byte 0x5A
+    /* 312A5 80040AA5 */ .byte 0x5A
+    /* 312A6 80040AA6 */ .byte 0x5B
+    /* 312A7 80040AA7 */ .byte 0x5B
+    /* 312A8 80040AA8 */ .byte 0x5C
+    /* 312A9 80040AA9 */ .byte 0x5C
+    /* 312AA 80040AAA */ .byte 0x5D
+    /* 312AB 80040AAB */ .byte 0x5E
+    /* 312AC 80040AAC */ .byte 0x5E
+    /* 312AD 80040AAD */ .byte 0x5F
+    /* 312AE 80040AAE */ .byte 0x5F
+    /* 312AF 80040AAF */ .byte 0x60
+    /* 312B0 80040AB0 */ .byte 0x61
+    /* 312B1 80040AB1 */ .byte 0x61
+    /* 312B2 80040AB2 */ .byte 0x62
+    /* 312B3 80040AB3 */ .byte 0x62
+    /* 312B4 80040AB4 */ .byte 0x63
+    /* 312B5 80040AB5 */ .byte 0x63
+    /* 312B6 80040AB6 */ .byte 0x64
+    /* 312B7 80040AB7 */ .byte 0x65
+    /* 312B8 80040AB8 */ .byte 0x65
+    /* 312B9 80040AB9 */ .byte 0x66
+    /* 312BA 80040ABA */ .byte 0x66
+    /* 312BB 80040ABB */ .byte 0x67
+    /* 312BC 80040ABC */ .byte 0x67
+    /* 312BD 80040ABD */ .byte 0x68
+    /* 312BE 80040ABE */ .byte 0x69
+    /* 312BF 80040ABF */ .byte 0x69
+    /* 312C0 80040AC0 */ .byte 0x6A
+    /* 312C1 80040AC1 */ .byte 0x6A
+    /* 312C2 80040AC2 */ .byte 0x6B
+    /* 312C3 80040AC3 */ .byte 0x6B
+    /* 312C4 80040AC4 */ .byte 0x6C
+    /* 312C5 80040AC5 */ .byte 0x6D
+    /* 312C6 80040AC6 */ .byte 0x6D
+    /* 312C7 80040AC7 */ .byte 0x6E
+    /* 312C8 80040AC8 */ .byte 0x6E
+    /* 312C9 80040AC9 */ .byte 0x6F
+    /* 312CA 80040ACA */ .byte 0x6F
+    /* 312CB 80040ACB */ .byte 0x70
+    /* 312CC 80040ACC */ .byte 0x71
+    /* 312CD 80040ACD */ .byte 0x71
+    /* 312CE 80040ACE */ .byte 0x72
+    /* 312CF 80040ACF */ .byte 0x72
+    /* 312D0 80040AD0 */ .byte 0x73
+    /* 312D1 80040AD1 */ .byte 0x73
+    /* 312D2 80040AD2 */ .byte 0x74
+    /* 312D3 80040AD3 */ .byte 0x75
+    /* 312D4 80040AD4 */ .byte 0x75
+    /* 312D5 80040AD5 */ .byte 0x76
+    /* 312D6 80040AD6 */ .byte 0x76
+    /* 312D7 80040AD7 */ .byte 0x77
+    /* 312D8 80040AD8 */ .byte 0x77
+    /* 312D9 80040AD9 */ .byte 0x78
+    /* 312DA 80040ADA */ .byte 0x78
+    /* 312DB 80040ADB */ .byte 0x79
+    /* 312DC 80040ADC */ .byte 0x7A
+    /* 312DD 80040ADD */ .byte 0x7A
+    /* 312DE 80040ADE */ .byte 0x7B
+    /* 312DF 80040ADF */ .byte 0x7B
+    /* 312E0 80040AE0 */ .byte 0x7C
+    /* 312E1 80040AE1 */ .byte 0x7C
+    /* 312E2 80040AE2 */ .byte 0x7D
+    /* 312E3 80040AE3 */ .byte 0x7D
+    /* 312E4 80040AE4 */ .byte 0x7E
+    /* 312E5 80040AE5 */ .byte 0x7E
+    /* 312E6 80040AE6 */ .byte 0x7F
+    /* 312E7 80040AE7 */ .byte 0x80
+    /* 312E8 80040AE8 */ .byte 0x80
+    /* 312E9 80040AE9 */ .byte 0x81
+    /* 312EA 80040AEA */ .byte 0x81
+    /* 312EB 80040AEB */ .byte 0x82
+    /* 312EC 80040AEC */ .byte 0x82
+    /* 312ED 80040AED */ .byte 0x83
+    /* 312EE 80040AEE */ .byte 0x83
+    /* 312EF 80040AEF */ .byte 0x84
+    /* 312F0 80040AF0 */ .byte 0x84
+    /* 312F1 80040AF1 */ .byte 0x85
+    /* 312F2 80040AF2 */ .byte 0x85
+    /* 312F3 80040AF3 */ .byte 0x86
+    /* 312F4 80040AF4 */ .byte 0x87
+    /* 312F5 80040AF5 */ .byte 0x87
+    /* 312F6 80040AF6 */ .byte 0x88
+    /* 312F7 80040AF7 */ .byte 0x88
+    /* 312F8 80040AF8 */ .byte 0x89
+    /* 312F9 80040AF9 */ .byte 0x89
+    /* 312FA 80040AFA */ .byte 0x8A
+    /* 312FB 80040AFB */ .byte 0x8A
+    /* 312FC 80040AFC */ .byte 0x8B
+    /* 312FD 80040AFD */ .byte 0x8B
+    /* 312FE 80040AFE */ .byte 0x8C
+    /* 312FF 80040AFF */ .byte 0x8C
+    /* 31300 80040B00 */ .byte 0x8D
+    /* 31301 80040B01 */ .byte 0x8D
+    /* 31302 80040B02 */ .byte 0x8E
+    /* 31303 80040B03 */ .byte 0x8E
+    /* 31304 80040B04 */ .byte 0x8F
+    /* 31305 80040B05 */ .byte 0x90
+    /* 31306 80040B06 */ .byte 0x90
+    /* 31307 80040B07 */ .byte 0x91
+    /* 31308 80040B08 */ .byte 0x91
+    /* 31309 80040B09 */ .byte 0x92
+    /* 3130A 80040B0A */ .byte 0x92
+    /* 3130B 80040B0B */ .byte 0x93
+    /* 3130C 80040B0C */ .byte 0x93
+    /* 3130D 80040B0D */ .byte 0x94
+    /* 3130E 80040B0E */ .byte 0x94
+    /* 3130F 80040B0F */ .byte 0x95
+    /* 31310 80040B10 */ .byte 0x95
+    /* 31311 80040B11 */ .byte 0x96
+    /* 31312 80040B12 */ .byte 0x96
+    /* 31313 80040B13 */ .byte 0x97
+    /* 31314 80040B14 */ .byte 0x97
+    /* 31315 80040B15 */ .byte 0x98
+    /* 31316 80040B16 */ .byte 0x98
+    /* 31317 80040B17 */ .byte 0x99
+    /* 31318 80040B18 */ .byte 0x99
+    /* 31319 80040B19 */ .byte 0x9A
+    /* 3131A 80040B1A */ .byte 0x9A
+    /* 3131B 80040B1B */ .byte 0x9B
+    /* 3131C 80040B1C */ .byte 0x9B
+    /* 3131D 80040B1D */ .byte 0x9C
+    /* 3131E 80040B1E */ .byte 0x9C
+    /* 3131F 80040B1F */ .byte 0x9D
+    /* 31320 80040B20 */ .byte 0x9D
+    /* 31321 80040B21 */ .byte 0x9E
+    /* 31322 80040B22 */ .byte 0x9E
+    /* 31323 80040B23 */ .byte 0x9F
+    /* 31324 80040B24 */ .byte 0x9F
+    /* 31325 80040B25 */ .byte 0xA0
+    /* 31326 80040B26 */ .byte 0xA0
+    /* 31327 80040B27 */ .byte 0xA1
+    /* 31328 80040B28 */ .byte 0xA1
+    /* 31329 80040B29 */ .byte 0xA2
+    /* 3132A 80040B2A */ .byte 0xA2
+    /* 3132B 80040B2B */ .byte 0xA3
+    /* 3132C 80040B2C */ .byte 0xA3
+    /* 3132D 80040B2D */ .byte 0xA4
+    /* 3132E 80040B2E */ .byte 0xA4
+    /* 3132F 80040B2F */ .byte 0xA5
+    /* 31330 80040B30 */ .byte 0xA5
+    /* 31331 80040B31 */ .byte 0xA6
+    /* 31332 80040B32 */ .byte 0xA6
+    /* 31333 80040B33 */ .byte 0xA7
+    /* 31334 80040B34 */ .byte 0xA7
+    /* 31335 80040B35 */ .byte 0xA8
+    /* 31336 80040B36 */ .byte 0xA8
+    /* 31337 80040B37 */ .byte 0xA9
+    /* 31338 80040B38 */ .byte 0xA9
+    /* 31339 80040B39 */ .byte 0xAA
+    /* 3133A 80040B3A */ .byte 0xAA
+    /* 3133B 80040B3B */ .byte 0xAA
+    /* 3133C 80040B3C */ .byte 0xAB
+    /* 3133D 80040B3D */ .byte 0xAB
+    /* 3133E 80040B3E */ .byte 0xAC
+    /* 3133F 80040B3F */ .byte 0xAC
+    /* 31340 80040B40 */ .byte 0xAD
+    /* 31341 80040B41 */ .byte 0xAD
+    /* 31342 80040B42 */ .byte 0xAE
+    /* 31343 80040B43 */ .byte 0xAE
+    /* 31344 80040B44 */ .byte 0xAF
+    /* 31345 80040B45 */ .byte 0xAF
+    /* 31346 80040B46 */ .byte 0xB0
+    /* 31347 80040B47 */ .byte 0xB0
+    /* 31348 80040B48 */ .byte 0xB1
+    /* 31349 80040B49 */ .byte 0xB1
+    /* 3134A 80040B4A */ .byte 0xB2
+    /* 3134B 80040B4B */ .byte 0xB2
+    /* 3134C 80040B4C */ .byte 0xB2
+    /* 3134D 80040B4D */ .byte 0xB3
+    /* 3134E 80040B4E */ .byte 0xB3
+    /* 3134F 80040B4F */ .byte 0xB4
+    /* 31350 80040B50 */ .byte 0xB4
+    /* 31351 80040B51 */ .byte 0xB5
+    /* 31352 80040B52 */ .byte 0xB5
+    /* 31353 80040B53 */ .byte 0xB6
+    /* 31354 80040B54 */ .byte 0xB6
+    /* 31355 80040B55 */ .byte 0xB7
+    /* 31356 80040B56 */ .byte 0xB7
+    /* 31357 80040B57 */ .byte 0xB8
+    /* 31358 80040B58 */ .byte 0xB8
+    /* 31359 80040B59 */ .byte 0xB8
+    /* 3135A 80040B5A */ .byte 0xB9
+    /* 3135B 80040B5B */ .byte 0xB9
+    /* 3135C 80040B5C */ .byte 0xBA
+    /* 3135D 80040B5D */ .byte 0xBA
+    /* 3135E 80040B5E */ .byte 0xBB
+    /* 3135F 80040B5F */ .byte 0xBB
+    /* 31360 80040B60 */ .byte 0xBC
+    /* 31361 80040B61 */ .byte 0xBC
+    /* 31362 80040B62 */ .byte 0xBC
+    /* 31363 80040B63 */ .byte 0xBD
+    /* 31364 80040B64 */ .byte 0xBD
+    /* 31365 80040B65 */ .byte 0xBE
+    /* 31366 80040B66 */ .byte 0xBE
+    /* 31367 80040B67 */ .byte 0xBF
+    /* 31368 80040B68 */ .byte 0xBF
+    /* 31369 80040B69 */ .byte 0xC0
+    /* 3136A 80040B6A */ .byte 0xC0
+    /* 3136B 80040B6B */ .byte 0xC0
+    /* 3136C 80040B6C */ .byte 0xC1
+    /* 3136D 80040B6D */ .byte 0xC1
+    /* 3136E 80040B6E */ .byte 0xC2
+    /* 3136F 80040B6F */ .byte 0xC2
+    /* 31370 80040B70 */ .byte 0xC3
+    /* 31371 80040B71 */ .byte 0xC3
+    /* 31372 80040B72 */ .byte 0xC3
+    /* 31373 80040B73 */ .byte 0xC4
+    /* 31374 80040B74 */ .byte 0xC4
+    /* 31375 80040B75 */ .byte 0xC5
+    /* 31376 80040B76 */ .byte 0xC5
+    /* 31377 80040B77 */ .byte 0xC6
+    /* 31378 80040B78 */ .byte 0xC6
+    /* 31379 80040B79 */ .byte 0xC7
+    /* 3137A 80040B7A */ .byte 0xC7
+    /* 3137B 80040B7B */ .byte 0xC7
+    /* 3137C 80040B7C */ .byte 0xC8
+    /* 3137D 80040B7D */ .byte 0xC8
+    /* 3137E 80040B7E */ .byte 0xC9
+    /* 3137F 80040B7F */ .byte 0xC9
+    /* 31380 80040B80 */ .byte 0xC9
+    /* 31381 80040B81 */ .byte 0xCA
+    /* 31382 80040B82 */ .byte 0xCA
+    /* 31383 80040B83 */ .byte 0xCB
+    /* 31384 80040B84 */ .byte 0xCB
+    /* 31385 80040B85 */ .byte 0xCC
+    /* 31386 80040B86 */ .byte 0xCC
+    /* 31387 80040B87 */ .byte 0xCC
+    /* 31388 80040B88 */ .byte 0xCD
+    /* 31389 80040B89 */ .byte 0xCD
+    /* 3138A 80040B8A */ .byte 0xCE
+    /* 3138B 80040B8B */ .byte 0xCE
+    /* 3138C 80040B8C */ .byte 0xCE
+    /* 3138D 80040B8D */ .byte 0xCF
+    /* 3138E 80040B8E */ .byte 0xCF
+    /* 3138F 80040B8F */ .byte 0xD0
+    /* 31390 80040B90 */ .byte 0xD0
+    /* 31391 80040B91 */ .byte 0xD1
+    /* 31392 80040B92 */ .byte 0xD1
+    /* 31393 80040B93 */ .byte 0xD1
+    /* 31394 80040B94 */ .byte 0xD2
+    /* 31395 80040B95 */ .byte 0xD2
+    /* 31396 80040B96 */ .byte 0xD3
+    /* 31397 80040B97 */ .byte 0xD3
+    /* 31398 80040B98 */ .byte 0xD3
+    /* 31399 80040B99 */ .byte 0xD4
+    /* 3139A 80040B9A */ .byte 0xD4
+    /* 3139B 80040B9B */ .byte 0xD5
+    /* 3139C 80040B9C */ .byte 0xD5
+    /* 3139D 80040B9D */ .byte 0xD5
+    /* 3139E 80040B9E */ .byte 0xD6
+    /* 3139F 80040B9F */ .byte 0xD6
+    /* 313A0 80040BA0 */ .byte 0xD7
+    /* 313A1 80040BA1 */ .byte 0xD7
+    /* 313A2 80040BA2 */ .byte 0xD7
+    /* 313A3 80040BA3 */ .byte 0xD8
+    /* 313A4 80040BA4 */ .byte 0xD8
+    /* 313A5 80040BA5 */ .byte 0xD9
+    /* 313A6 80040BA6 */ .byte 0xD9
+    /* 313A7 80040BA7 */ .byte 0xD9
+    /* 313A8 80040BA8 */ .byte 0xDA
+    /* 313A9 80040BA9 */ .byte 0xDA
+    /* 313AA 80040BAA */ .byte 0xDB
+    /* 313AB 80040BAB */ .byte 0xDB
+    /* 313AC 80040BAC */ .byte 0xDB
+    /* 313AD 80040BAD */ .byte 0xDC
+    /* 313AE 80040BAE */ .byte 0xDC
+    /* 313AF 80040BAF */ .byte 0xDC
+    /* 313B0 80040BB0 */ .byte 0xDD
+    /* 313B1 80040BB1 */ .byte 0xDD
+    /* 313B2 80040BB2 */ .byte 0xDE
+    /* 313B3 80040BB3 */ .byte 0xDE
+    /* 313B4 80040BB4 */ .byte 0xDE
+    /* 313B5 80040BB5 */ .byte 0xDF
+    /* 313B6 80040BB6 */ .byte 0xDF
+    /* 313B7 80040BB7 */ .byte 0xE0
+    /* 313B8 80040BB8 */ .byte 0xE0
+    /* 313B9 80040BB9 */ .byte 0xE0
+    /* 313BA 80040BBA */ .byte 0xE1
+    /* 313BB 80040BBB */ .byte 0xE1
+    /* 313BC 80040BBC */ .byte 0xE1
+    /* 313BD 80040BBD */ .byte 0xE2
+    /* 313BE 80040BBE */ .byte 0xE2
+    /* 313BF 80040BBF */ .byte 0xE3
+    /* 313C0 80040BC0 */ .byte 0xE3
+    /* 313C1 80040BC1 */ .byte 0xE3
+    /* 313C2 80040BC2 */ .byte 0xE4
+    /* 313C3 80040BC3 */ .byte 0xE4
+    /* 313C4 80040BC4 */ .byte 0xE4
+    /* 313C5 80040BC5 */ .byte 0xE5
+    /* 313C6 80040BC6 */ .byte 0xE5
+    /* 313C7 80040BC7 */ .byte 0xE6
+    /* 313C8 80040BC8 */ .byte 0xE6
+    /* 313C9 80040BC9 */ .byte 0xE6
+    /* 313CA 80040BCA */ .byte 0xE7
+    /* 313CB 80040BCB */ .byte 0xE7
+    /* 313CC 80040BCC */ .byte 0xE7
+    /* 313CD 80040BCD */ .byte 0xE8
+    /* 313CE 80040BCE */ .byte 0xE8
+    /* 313CF 80040BCF */ .byte 0xE8
+    /* 313D0 80040BD0 */ .byte 0xE9
+    /* 313D1 80040BD1 */ .byte 0xE9
+    /* 313D2 80040BD2 */ .byte 0xEA
+    /* 313D3 80040BD3 */ .byte 0xEA
+    /* 313D4 80040BD4 */ .byte 0xEA
+    /* 313D5 80040BD5 */ .byte 0xEB
+    /* 313D6 80040BD6 */ .byte 0xEB
+    /* 313D7 80040BD7 */ .byte 0xEB
+    /* 313D8 80040BD8 */ .byte 0xEC
+    /* 313D9 80040BD9 */ .byte 0xEC
+    /* 313DA 80040BDA */ .byte 0xEC
+    /* 313DB 80040BDB */ .byte 0xED
+    /* 313DC 80040BDC */ .byte 0xED
+    /* 313DD 80040BDD */ .byte 0xEE
+    /* 313DE 80040BDE */ .byte 0xEE
+    /* 313DF 80040BDF */ .byte 0xEE
+    /* 313E0 80040BE0 */ .byte 0xEF
+    /* 313E1 80040BE1 */ .byte 0xEF
+    /* 313E2 80040BE2 */ .byte 0xEF
+    /* 313E3 80040BE3 */ .byte 0xF0
+    /* 313E4 80040BE4 */ .byte 0xF0
+    /* 313E5 80040BE5 */ .byte 0xF0
+    /* 313E6 80040BE6 */ .byte 0xF1
+    /* 313E7 80040BE7 */ .byte 0xF1
+    /* 313E8 80040BE8 */ .byte 0xF1
+    /* 313E9 80040BE9 */ .byte 0xF2
+    /* 313EA 80040BEA */ .byte 0xF2
+    /* 313EB 80040BEB */ .byte 0xF2
+    /* 313EC 80040BEC */ .byte 0xF3
+    /* 313ED 80040BED */ .byte 0xF3
+    /* 313EE 80040BEE */ .byte 0xF3
+    /* 313EF 80040BEF */ .byte 0xF4
+    /* 313F0 80040BF0 */ .byte 0xF4
+    /* 313F1 80040BF1 */ .byte 0xF4
+    /* 313F2 80040BF2 */ .byte 0xF5
+    /* 313F3 80040BF3 */ .byte 0xF5
+    /* 313F4 80040BF4 */ .byte 0xF5
+    /* 313F5 80040BF5 */ .byte 0xF6
+    /* 313F6 80040BF6 */ .byte 0xF6
+    /* 313F7 80040BF7 */ .byte 0xF6
+    /* 313F8 80040BF8 */ .byte 0xF7
+    /* 313F9 80040BF9 */ .byte 0xF7
+    /* 313FA 80040BFA */ .byte 0xF7
+    /* 313FB 80040BFB */ .byte 0xF8
+    /* 313FC 80040BFC */ .byte 0xF8
+    /* 313FD 80040BFD */ .byte 0xF8
+    /* 313FE 80040BFE */ .byte 0xF9
+    /* 313FF 80040BFF */ .byte 0xF9
+    /* 31400 80040C00 */ .byte 0xF9
+    /* 31401 80040C01 */ .byte 0xFA
+    /* 31402 80040C02 */ .byte 0xFA
+    /* 31403 80040C03 */ .byte 0xFA
+    /* 31404 80040C04 */ .byte 0xFB
+    /* 31405 80040C05 */ .byte 0xFB
+    /* 31406 80040C06 */ .byte 0xFB
+    /* 31407 80040C07 */ .byte 0xFC
+    /* 31408 80040C08 */ .byte 0xFC
+    /* 31409 80040C09 */ .byte 0xFC
+    /* 3140A 80040C0A */ .byte 0xFD
+    /* 3140B 80040C0B */ .byte 0xFD
+    /* 3140C 80040C0C */ .byte 0xFD
+    /* 3140D 80040C0D */ .byte 0xFE
+    /* 3140E 80040C0E */ .byte 0xFE
+    /* 3140F 80040C0F */ .byte 0xFE
+    /* 31410 80040C10 */ .byte 0xFF
+    /* 31411 80040C11 */ .byte 0xFF
+    /* 31412 80040C12 */ .byte 0xFF
+    /* 31413 80040C13 */ .byte 0xFF
+    /* 31414 80040C14 */ .byte 0xFF
+    /* 31415 80040C15 */ .byte 0x00
+    /* 31416 80040C16 */ .byte 0x00
+    /* 31417 80040C17 */ .byte 0x00
+enddlabel D_80040A14
+
+
+.section .text
+/* Generated by spimdisasm 1.40.3 */
+
+nonmatching ratan2, 0x90
+
+glabel ratan2
+    /* 31B7C 8004137C 25308500 */  or         $a2, $a0, $a1
+    /* 31B80 80041380 2000C010 */  beqz       $a2, .L80041404
+    /* 31B84 80041384 21180000 */   addu      $v1, $zero, $zero
+    /* 31B88 80041388 0200A104 */  bgez       $a1, .L80041394
+    /* 31B8C 8004138C 2140A000 */   addu      $t0, $a1, $zero
+    /* 31B90 80041390 23400500 */  negu       $t0, $a1
+  .L80041394:
+    /* 31B94 80041394 02008104 */  bgez       $a0, .L800413A0
+    /* 31B98 80041398 21388000 */   addu      $a3, $a0, $zero
+    /* 31B9C 8004139C 23380400 */  negu       $a3, $a0
+  .L800413A0:
+    /* 31BA0 800413A0 2A100701 */  slt        $v0, $t0, $a3
+    /* 31BA4 800413A4 0A004010 */  beqz       $v0, .L800413D0
+    /* 31BA8 800413A8 00020624 */   addiu     $a2, $zero, 0x200
+    /* 31BAC 800413AC 401A0800 */  sll        $v1, $t0, 9
+    /* 31BB0 800413B0 1A006700 */  div        $zero, $v1, $a3
+    /* 31BB4 800413B4 12180000 */  mflo       $v1
+    /* 31BB8 800413B8 0480023C */  lui        $v0, %hi(D_80040A14)
+    /* 31BBC 800413BC 140A4224 */  addiu      $v0, $v0, %lo(D_80040A14)
+    /* 31BC0 800413C0 21106200 */  addu       $v0, $v1, $v0
+    /* 31BC4 800413C4 00004390 */  lbu        $v1, 0x0($v0)
+    /* 31BC8 800413C8 FB040108 */  j          .L800413EC
+    /* 31BCC 800413CC 2318C300 */   subu      $v1, $a2, $v1
+  .L800413D0:
+    /* 31BD0 800413D0 401A0700 */  sll        $v1, $a3, 9
+    /* 31BD4 800413D4 1A006800 */  div        $zero, $v1, $t0
+    /* 31BD8 800413D8 12180000 */  mflo       $v1
+    /* 31BDC 800413DC 0480023C */  lui        $v0, %hi(D_80040A14)
+    /* 31BE0 800413E0 140A4224 */  addiu      $v0, $v0, %lo(D_80040A14)
+    /* 31BE4 800413E4 21106200 */  addu       $v0, $v1, $v0
+    /* 31BE8 800413E8 00004390 */  lbu        $v1, 0x0($v0)
+  .L800413EC:
+    /* 31BEC 800413EC 02000511 */  beq        $t0, $a1, .L800413F8
+    /* 31BF0 800413F0 00040624 */   addiu     $a2, $zero, 0x400
+    /* 31BF4 800413F4 2318C300 */  subu       $v1, $a2, $v1
+  .L800413F8:
+    /* 31BF8 800413F8 0200E410 */  beq        $a3, $a0, .L80041404
+    /* 31BFC 800413FC 40180300 */   sll       $v1, $v1, 1
+    /* 31C00 80041400 23180300 */  negu       $v1, $v1
+  .L80041404:
+    /* 31C04 80041404 0800E003 */  jr         $ra
+    /* 31C08 80041408 21106000 */   addu      $v0, $v1, $zero
+endlabel ratan2

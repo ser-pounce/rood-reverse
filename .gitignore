@@ -4,6 +4,8 @@
 .vscode
 base
 build
+!fixtures/ci/seeds/build/
+!fixtures/ci/seeds/build/**
 config/*.xml
 data/*
 disks/*

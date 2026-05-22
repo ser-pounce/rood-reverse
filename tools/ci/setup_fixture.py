@@ -2,6 +2,7 @@
 """Prepare data/ and build/ seeds for CI smoke (synthetic zero-filled inputs)."""
 from __future__ import annotations
 
+import hashlib
 import shutil
 import sys
 from pathlib import Path
@@ -11,6 +12,8 @@ FIXTURE = ROOT / "fixtures" / "ci"
 MANIFEST = FIXTURE / "data-manifest.tsv"
 SEEDS = FIXTURE / "seeds" / "build"
 DATA_SEEDS = FIXTURE / "data"
+MARKER = FIXTURE / ".installed"
+
 SPLAT_INPUTS = (
     "SLUS_010.40",
     "BATTLE/BATTLE.PRG",
@@ -36,6 +39,25 @@ SPLAT_INPUTS = (
 )
 
 
+def _manifest_fingerprint() -> str:
+    h = hashlib.sha256()
+    h.update(MANIFEST.read_bytes())
+    for p in sorted(SEEDS.rglob("*")):
+        if p.is_file():
+            h.update(str(p.relative_to(SEEDS)).encode())
+            h.update(str(p.stat().st_size).encode())
+    return h.hexdigest()
+
+
+def _already_installed() -> bool:
+    if not MARKER.is_file():
+        return False
+    link_ld = ROOT / "build" / "config" / "BATTLE" / "BATTLE.PRG" / "link.ld"
+    if not link_ld.is_file():
+        return False
+    return MARKER.read_text().strip() == _manifest_fingerprint()
+
+
 def read_manifest() -> list[tuple[str, int]]:
     rows: list[tuple[str, int]] = []
     for line in MANIFEST.read_text().splitlines():
@@ -53,7 +75,6 @@ def write_zeros(data_root: Path, rows: list[tuple[str, int]]) -> None:
             continue
         out = data_root / rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        # Deterministic filler (not retail game bytes).
         out.write_bytes(bytes([i & 0xFF for i in range(size)]))
 
 
@@ -67,17 +88,12 @@ def copy_seeds() -> None:
         dst = ROOT / "build" / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
+    # Keep splat from re-splitting against synthetic data/ (sha1 mismatch).
     for link_d in (ROOT / "build" / "config").rglob("link.d"):
         link_d.touch()
-    lbas = ROOT / "build" / "src" / "include" / "lbas.h"
-    if lbas.is_file():
-        lbas.touch()
-    for lba in (ROOT / "build" / "config").glob("*_LBA.txt"):
-        lba.touch()
 
 
 def _install_data_fixture(data_root: Path) -> None:
-    """Install frozen PRG stubs; asset pipelines use seeded build/assets/."""
     if DATA_SEEDS.is_dir():
         for src in DATA_SEEDS.rglob("*"):
             if not src.is_file():
@@ -88,14 +104,6 @@ def _install_data_fixture(data_root: Path) -> None:
             shutil.copy2(src, dst)
         return
     write_zeros(data_root, [(p, size) for p, size in read_manifest() if p in SPLAT_INPUTS])
-
-
-def _touch_tree(root: Path) -> None:
-    if not root.is_dir():
-        return
-    for f in root.rglob("*"):
-        if f.is_file():
-            f.touch()
 
 
 def touch_disk_config() -> None:
@@ -111,12 +119,15 @@ def main() -> int:
     if not MANIFEST.is_file():
         print(f"error: missing {MANIFEST}", file=sys.stderr)
         return 1
+    if _already_installed():
+        print("CI fixture already installed")
+        return 0
     copy_seeds()
     data_root = ROOT / "data"
     data_root.mkdir(parents=True, exist_ok=True)
     _install_data_fixture(data_root)
-    _touch_tree(ROOT / "build" / "assets")
     touch_disk_config()
+    MARKER.write_text(_manifest_fingerprint() + "\n")
     print("CI fixture ready")
     return 0
 

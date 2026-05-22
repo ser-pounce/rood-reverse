@@ -15,5 +15,7 @@ include/labels.inc
 include/macro.inc
 nonmatchings
 objdiff.json
+fixtures/ci/.installed
+fixtures/ci/seeds/**/*.log
 tools/.sysdeps
 tools/python

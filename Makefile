@@ -60,8 +60,12 @@ commit-check remake: MAKEFLAGS += --no-print-directory
 include $(INCMAKEFILES)
 
 $(BUILDDEPS):   | tools/.sysdeps
+ifndef ROOD_CI
 $(DISKCONFIG):  | $(BUILDDEPS)
 $(BINARY_DEPS): | $(DISKCONFIG)
+else
+$(BINARY_DEPS): | tools/.sysdeps
+endif
 
 ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)
 include $(BINARY_DEPS)

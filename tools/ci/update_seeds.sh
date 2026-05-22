@@ -17,13 +17,7 @@ while IFS= read -r -d '' f; do
   rel="${f#"$root"/}"
   mkdir -p "$seeds/$(dirname "$rel")"
   cp -a "$f" "$seeds/$rel"
-done < <(find "$build/config" -name link.d -print0)
-
-while IFS= read -r -d '' f; do
-  rel="${f#"$root"/}"
-  mkdir -p "$seeds/$(dirname "$rel")"
-  cp -a "$f" "$seeds/$rel"
-done < <(find "$build/config" -name '*_LBA.txt' -print0)
+done < <(find "$build/config" -type f ! -name '*.log' -print0)
 
 while IFS= read -r -d '' f; do
   rel="${f#"$root"/}"

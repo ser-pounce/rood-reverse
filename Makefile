@@ -64,7 +64,7 @@ ifndef ROOD_CI
 $(DISKCONFIG):  | $(BUILDDEPS)
 $(BINARY_DEPS): | $(DISKCONFIG)
 else
-$(BINARY_DEPS): | tools/.sysdeps
+$(BINARY_DEPS): | $(BUILDDEPS)
 endif
 
 ifeq ($(filter $(SKIPSPLAT),$(MAKECMDGOALS)),)

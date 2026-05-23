@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "fixtures" / "ci"
 MANIFEST = FIXTURE / "data-manifest.tsv"
-SEEDS = FIXTURE / "seeds" / "build"
+SEEDS = FIXTURE / "seeds"
 DATA_SEEDS = FIXTURE / "data"
 MARKER = FIXTURE / ".installed"
 
@@ -81,11 +81,13 @@ def write_zeros(data_root: Path, rows: list[tuple[str, int]]) -> None:
 def copy_seeds() -> None:
     if not SEEDS.is_dir():
         raise FileNotFoundError(f"missing {SEEDS} — run make ci-fixture-seeds")
+    # Seeds mirror project-root subtrees: fixtures/ci/seeds/{build,include}/...
+    # → ROOT/{build,include}/...
     for src in SEEDS.rglob("*"):
         if not src.is_file():
             continue
         rel = src.relative_to(SEEDS)
-        dst = ROOT / "build" / rel
+        dst = ROOT / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
     # Keep splat from re-splitting against synthetic data/ (sha1 mismatch).

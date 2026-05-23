@@ -33,6 +33,14 @@ if [[ -d "$build/assets" ]]; then
   done < <(find "$build/assets" -type f -print0)
 fi
 
+# Splat writes these to include/ at split time; CI-smoke skips splat, so seed them.
+mkdir -p "$seeds/include"
+for f in gte_macros.inc include_asm.h labels.inc macro.inc; do
+  src="$root/include/$f"
+  [[ -f "$src" ]] || continue
+  cp -a "$src" "$seeds/include/$f"
+done
+
 data_seeds="$root/fixtures/ci/data"
 rm -rf "$data_seeds"
 mkdir -p "$data_seeds"

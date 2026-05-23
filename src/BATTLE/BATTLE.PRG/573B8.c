@@ -77,9 +77,50 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_copyAlig
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0214);
+__asm__("glabel func_800C0214;"
+        "lui      $v1, 0x1F80;"
+        "addu     $a2, $a0, $zero;"
+        "li       $a0, 0x80;"
+        "lw       $a3, 0x8($v1);"
+        "alabel func_800C0224;"
+        "lui      $t1, 0xE100;"
+        "j        .L800C0234;"
+        "or       $t1, 0xC;"
+        "endlabel func_800C0214;"
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_setSprite);
+        "glabel vs_battle_setSprite;"
+        "addu       $t1, $zero, $zero;"
+        ".L800C0234:;"
+        "lw         $t0, ($a3);"
+        "lui        $v1, 0x1F80;"
+        "lui        $t2, 0x500;"
+        "lw         $v0, ($v1);"
+        "sll        $t0, 8;"
+        "srl        $t0, 8;"
+        "or         $t0, $t2;"
+        "and        $t3, $a0, 0xFF;"
+        "sll        $t4, $t3, 8;"
+        "or         $t2, $t3, $t4;"
+        "sll        $t3, 16;"
+        "or         $t2, $t3;"
+        "srl        $t3, $a0, 7;"
+        "and        $t3, 0x2;"
+        "addu       $t3, 100;"
+        "sll        $t3, 24;"
+        "or         $t2, $t3;"
+        "sll        $t3, $v0, 8;"
+        "srl        $t3, 8;"
+        "addiu      $t4, $v0, 0x18;"
+        "sw         $t0, ($v0);"
+        "sw         $t1, 0x4($v0);"
+        "sw         $t2, 0x8($v0);"
+        "sw         $a1, 0xC($v0);"
+        "sw         $zero, 0x10($v0);"
+        "sw         $a2, 0x14($v0);"
+        "sw         $t3, ($a3);"
+        "j          $ra;"
+        "sw         $t4, ($v1);"
+        "endlabel vs_battle_setSprite;");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02A8);
 

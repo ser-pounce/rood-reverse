@@ -1,5 +1,6 @@
 #include "common.h"
 #include "30D14.h"
+#include "3A1A0.h"
 #include "146C.h"
 #include "../SLUS_010.40/main.h"
 #include <libetc.h>
@@ -198,7 +199,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E228);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E2E0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E480);
+int func_8009E480(void) 
+{
+    if (D_800F4538[0]->unk5B8 == 0x63) {
+        return 1;
+    }
+    return D_800F4538[0]->unk5B8 == 0xC7;
+}
+
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E4B0);
 

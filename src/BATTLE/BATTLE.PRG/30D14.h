@@ -25,7 +25,6 @@ typedef struct {
 
 extern void* D_800F4538[];
 extern D_800F4578_t* D_800F4578;
-extern void* D_800F4588[];
 extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
 extern char D_800F49DC;

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../BATTLE.PRG/146C.h"
 #include "../BATTLE.PRG/30D14.h"
+#include "../BATTLE.PRG/3A1A0.h"
 #include <libgte.h>
 
 typedef struct {
@@ -20,7 +21,6 @@ extern short D_800E8F30[][2];
 extern char D_800E8FC0;
 extern char D_800F2450[];
 extern int D_800F4528[];
-extern void* D_800F45E0[];
 extern void* D_800F4620[];
 extern D_800F46A8_t D_800F46A8[];
 extern void* D_800F4768;

@@ -14,7 +14,12 @@ DIFFFLAGS    ?= -s
 MKDIRFLAGS   ?= -p
 RMFLAGS      ?= -Rf
 
-SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) $(RUSTUP)
+SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(FORMAT) $(RUSTUP)
+# Docker is only needed to build the period GCCs from their Dockerfiles.
+# In nix (and CI) the cc1 binaries come prebuilt via setup-old-gcc.
+ifndef ROOD_CI
+SYSDEPS      += $(DOCKER)
+endif
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m

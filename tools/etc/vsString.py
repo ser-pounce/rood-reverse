@@ -425,6 +425,9 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # 0xFE -> |#n|: Inserts decimal integer argument n
 # 0xFF -> |$n|: Inserts string argument n
 
+# |0xn| is a "virtual" opcode of sorts intended for injecting raw values into an encoded string,
+# for example when junk data like truncated opcodes need to be matched.
+
 def decode(s, jpTable=False):
     baseTable = jp_table_0 if jpTable else table
     result = ""

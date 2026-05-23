@@ -83,17 +83,38 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_setSprit
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02A8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playSfx10);
+__asm__("glabel vs_battle_playSfx10;"
+        "j         .L800C02FC;"
+        "li        $a1, 10;"
+        "endlabel  vs_battle_playSfx10;"
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playInvalidSfx);
+        "glabel vs_battle_playInvalidSfx;"
+        "j         .L800C02FC;"
+        "li        $a1, 7;"
+        "endlabel  vs_battle_playInvalidSfx;"
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuLeaveSfx);
+        "glabel vs_battle_playMenuLeaveSfx;"
+        "j         .L800C02FC;"
+        "li        $a1, 6;"
+        "endlabel  vs_battle_playMenuLeaveSfx;"
 
-INCLUDE_ASM(
-    "build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuSelectSfx);
+        "glabel vs_battle_playMenuSelectSfx;"
+        "j         .L800C02FC;"
+        "li        $a1, 5;"
+        "endlabel  vs_battle_playMenuSelectSfx;"
 
-INCLUDE_ASM(
-    "build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_playMenuChangeSfx);
+        "glabel vs_battle_playMenuChangeSfx;"
+        "li       $a1, 0x4;"
+        ".L800C02FC:;"
+        "addu     $sp, -0x8;"
+        "sw       $ra, ($sp);"
+        "jal      vs_main_playSfxDefault;"
+        "li       $a0, 0x7E;"
+        "lw       $ra, ($sp);"
+        ".nop;"
+        "j        $ra;"
+        "addu     $sp, 0x8;"
+        "endlabel vs_battle_playMenuChangeSfx;");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
 

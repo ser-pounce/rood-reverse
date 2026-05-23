@@ -3,6 +3,7 @@
 #include "146C.h"
 #include "../SLUS_010.40/main.h"
 #include <libetc.h>
+#include <memory.h>
 
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);

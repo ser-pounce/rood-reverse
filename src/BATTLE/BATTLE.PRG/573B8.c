@@ -73,7 +73,16 @@ void func_800C00E8(int arg0, void* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0150);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_copyAligned);
+__asm__("glabel vs_battle_copyAligned;"
+        "and       $t0, $a2, 0x7;"
+        "beqz      $t0, vs_battle_memcpy;"
+        "lh        $t0, ($a1);"
+        "addu      $a1, 2;"
+        "sh        $t0, ($a0);"
+        "addu      $a0, 2;"
+        "j         vs_battle_copyAligned;"
+        "add       $a2, -2;"
+        "endlabel vs_battle_copyAligned;");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
 

@@ -16,15 +16,6 @@ typedef struct {
     char unk11;
 } D_800F4590_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    u_short unk8_0 : 1;
-    u_short unk8_1 : 15;
-} D_800F4578_t;
-
-extern void* D_800F4538[];
-extern D_800F4578_t* D_800F4578;
 extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
 extern char D_800F49DC;

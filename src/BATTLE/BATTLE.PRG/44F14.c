@@ -1,8 +1,7 @@
 #include "common.h"
 #include "44F14.h"
+#include "3A1A0.h"
 #include "../../SLUS_010.40/main.h"
-
-extern void* D_800F4538[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AD714);
 

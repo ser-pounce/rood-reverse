@@ -6,6 +6,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/30D14.h"
+#include "../../BATTLE/BATTLE.PRG/3A1A0.h"
 #include "../../BATTLE/BATTLE.PRG/4A0A8.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
@@ -1927,9 +1928,9 @@ static void func_80106274(int arg0)
             return;
         }
         if (D_8010A5C4 != 0) {
-            temp_s1 = ((u_short*)D_800F4538[1])[0x32B];
+            temp_s1 = D_800F4538[1]->unk656;
             p->unk10 = ((-rsin(0xB00) * step) >> 8) * temp_s1;
-            p->unk14.unk0 = -(((u_short*)D_800F4538[1])[0x31F] << 0xB);
+            p->unk14.unk0 = -(D_800F4538[1]->unk63E << 0xB);
             p->unk14.unk4 = ((rcos(0xB00) * step) >> 8) * temp_s1;
             temp_s1_2 = temp_s1 * 4;
             temp_lo = rcos(0xB00) * temp_s1_2;

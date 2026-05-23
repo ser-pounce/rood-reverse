@@ -21,8 +21,6 @@ typedef struct {
     int unk16C;
 } D_800F45E0_t;
 
-extern D_800F45E0_t* D_800F45E0[];
-
 typedef struct {
     char unk0_0;
     char unk0_8;
@@ -101,9 +99,13 @@ typedef struct {
     int unk5E0;
     int unk5E4;
     int unk5E8;
-    int unk5EC[0x17];
+    u_char unk5EC[0x52];
+    u_short unk63E;
+    u_char unk640[8];
     int unk648;
-    int unk64C[0x25];
+    u_char unk64C[10];
+    u_short unk656;
+    u_char unk658[0x88];
     u_char unk6E0;
     u_char unk6E1;
     u_char unk6E2;
@@ -145,4 +147,7 @@ void func_800A35A8(void);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 
+extern func_800A2C48_t* D_800F4538[];
+extern func_800A2C48_t* D_800F4578;
 extern func_800A2C48_t* D_800F4588[];
+extern D_800F45E0_t* D_800F45E0[];

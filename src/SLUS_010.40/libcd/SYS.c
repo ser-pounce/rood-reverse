@@ -1,10 +1,20 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdStatus);
+typedef void (*CdlCB)(unsigned char, unsigned char*);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdMode);
+extern unsigned char D_80032208;
+extern unsigned char D_80032214[];
+extern unsigned char D_80032218;
+extern unsigned char D_80032219;
+extern int D_80032204;
+extern CdlCB D_800321FC;
+extern CdlCB D_80032200;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdLastCom);
+int CdStatus(void) { return D_80032208; }
+
+int CdMode(void) { return D_80032218; }
+
+int CdLastCom(void) { return D_80032219; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdLastPos);
 

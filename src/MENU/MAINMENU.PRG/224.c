@@ -119,10 +119,10 @@ void func_800F9CB0(void)
     sp18 |= new_var;
     sp18 |= 0x10000000;
 
-    if (D_800F4578 == NULL) {
+    if (D_800F4538[16] == NULL) {
         func_8009F940(1, 1, &sp18, sp10);
     } else {
-        D_800F4578->unk8_0 = 0;
+        D_800F4538[16]->unk8_0 = 0;
     }
     sp10[0] = 0;
     sp10[1] = 0;
@@ -236,47 +236,39 @@ int func_800F9EB8(void* arg0)
 
 int func_800FA188(int arg0, int arg1, int* arg2)
 {
-    D_800F45E0_t* temp_v1;
-    D_800F45E0_t** var_t0;
-    int temp_a3;
     int i;
-    int var_t2;
-    int ret;
+    int var_t2 = 0;
+    int ret = 0;
+    D_800F45E0_t** var_t0 = D_800F45E0;
 
-    var_t2 = 0;
-    ret = 0;
-    var_t0 = D_800F45E0;
     for (i = 0; i < 16; ++i) {
-        temp_v1 = var_t0[i];
-        if (temp_v1 != 0) {
-            temp_a3 = temp_v1->unk8;
-            if (!(temp_a3 & 1) && !(temp_v1->unk8 & 0xF00) && (temp_v1->unk1A == 0)
-                && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
-                if ((temp_v1->unk16C & 0x30) == 0x20) {
-                    ret = 1;
-                } else {
-                    var_t2 -= 0x80;
-                }
+        D_800F45E0_t* temp_v1 = var_t0[i];
+        if ((var_t0[i] != 0)
+            && ((((!var_t0[i]->unk8_0) && (!temp_v1->unk9.u1.unk0_0))
+                    && (temp_v1->unk1A == 0))
+                && (temp_v1->unk5C == arg0))
+            && (temp_v1->unk5E == arg1)) {
+            if ((temp_v1->unk6C[8][0] & 0x30) == 0x20) {
+                ret = 1;
+            } else {
+                var_t2 -= 0x80;
             }
         }
     }
+
     *arg2 = var_t2;
     return ret;
 }
 
 int func_800FA238(int arg0, int arg1, int arg2)
 {
-    D_800F45E0_t* temp_v1;
-    D_800F45E0_t** var_t0;
     int i;
-    int new_var;
-
-    var_t0 = D_800F45E0;
-    new_var = arg2 + 0x80;
+    D_800F45E0_t** var_t0 = D_800F45E0;
+    int new_var = arg2 + 0x80;
 
     for (i = 0; i < 16; ++i) {
-        temp_v1 = var_t0[i];
-        if ((var_t0[i]) && (!(var_t0[i]->unk8 & 1)) && (!(temp_v1->unk8 & 0xF00))
+        D_800F45E0_t* temp_v1 = var_t0[i];
+        if (var_t0[i] && !var_t0[i]->unk8_0 && !temp_v1->unk9.u1.unk0_0
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
             && (temp_v1->unk1E >= arg2) && (new_var >= temp_v1->unk1E)) {
             return 1;

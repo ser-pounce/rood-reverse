@@ -2,23 +2,56 @@
 #include "func_8006EBF8_t.h"
 
 typedef struct {
-    int unk0;
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
     int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
+    char unk8_0 : 1;
+    char unk8_1 : 1;
+    char unk8_2 : 1;
+    char unk8_3 : 1;
+    char unk8_4 : 1;
+    char unk8_5 : 3;
+    union {
+        struct {
+            u_char unk0_0 : 4;
+            u_char unk0_4 : 1;
+            u_char unk0_5 : 3;
+        } u0;
+        struct {
+            u_char unk0_0 : 4;
+            u_char unk0_4 : 4;
+        } u1;
+    } unk9;
+    u_char unkA_0 : 7;
+    u_char unkA_7 : 1;
+    u_char unkB_0 : 4;
+    u_char unkB_4 : 4;
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
     int unk14;
     short unk18;
     short unk1A;
     short unk1C;
     short unk1E;
-    int unk20[15];
+    short unk20;
+    short unk22;
+    int unk24[14];
     char unk5C;
     char unk5D;
     char unk5E;
     char unk5F;
-    char unk60[0x10C];
-    int unk16C;
+    int unk60;
+    int unk64;
+    int unk68;
+    int unk6C[42][8];
 } D_800F45E0_t;
 
 typedef struct {
@@ -64,12 +97,20 @@ typedef struct {
     u_char unk12;
     u_char unk13;
     int unk14;
-    int unk18;
+    short unk18;
+    short unk1A;
     short unk1C;
     short unk1E;
     short unk20;
     short unk22;
-    int unk24[18];
+    int unk24[14];
+    char unk5C;
+    char unk5D;
+    char unk5E;
+    char unk5F;
+    int unk60;
+    int unk64;
+    int unk68;
     int unk6C[42][8];
     int unk5AC;
     u_char unk5B0;
@@ -86,7 +127,8 @@ typedef struct {
     u_char unk5BB;
     short unk5BC;
     short unk5BE;
-    int unk5C0;
+    u_short unk5C0;
+    u_short unk5C2;
     int unk5C4;
     int unk5C8;
     char unk5CC;
@@ -148,6 +190,5 @@ void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 
 extern func_800A2C48_t* D_800F4538[];
-extern func_800A2C48_t* D_800F4578;
 extern func_800A2C48_t* D_800F4588[];
 extern D_800F45E0_t* D_800F45E0[];

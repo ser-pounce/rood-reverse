@@ -1373,19 +1373,18 @@ int func_800B8764(u_char* arg0, short arg1)
 
 int func_800B8788(u_char* arg0, short arg1)
 {
-    char sp10[24];
+    D_800F4538_unk58_2 sp10[6];
 
-    sp10[0] = arg0[7];
-    sp10[1] = arg0[8];
-    sp10[2] = arg0[9];
+    sp10[0].unk0 = arg0[7];
+    sp10[0].unk1 = arg0[8];
+    sp10[0].unk2 = arg0[9];
 
-    if (sp10[0] | sp10[1] | sp10[2]) {
-        sp10[8] = arg0[3];
-        sp10[9] = arg0[4];
-        sp10[10] = arg0[5];
-        sp10[11] = arg0[6];
-        func_8009F940(
-            func_800BFE50(vs_battle_getShort(arg0 + 1)), 1, (int*)(sp10 + 8), sp10);
+    if (sp10[0].unk0 | sp10[0].unk1 | sp10[0].unk2) {
+        sp10[2].unk0 = arg0[3];
+        sp10[2].unk1 = arg0[4];
+        sp10[2].unk2 = arg0[5];
+        sp10[2].unk3 = arg0[6];
+        func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
         func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0, 0, 0);
     }

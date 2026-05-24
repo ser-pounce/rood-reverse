@@ -1,4 +1,5 @@
 #pragma once
+#include "3A1A0.h"
 #include <libgte.h>
 
 typedef struct {
@@ -38,16 +39,17 @@ void func_8009EFEC(char, SVECTOR*, int);
 void func_8009F298(char, SVECTOR*, int);
 void func_8009F530(int);
 int func_8009F8DC(int);
+void func_8009F940(int, int, D_800F4538_unk58_2*, D_800F4538_unk58_2*);
 void func_8009F990(int, char*);
 void func_8009FB64(VECTOR*);
-void func_8009FBD8(int, int);
+int func_8009FBD8(int, int);
 void func_8009FC60(int, int, SVECTOR*, int);
 void func_8009FF08(int, int, int, int);
 void func_8009FFA8(int, int);
 int func_800A01C8(int, int, int, int);
 void func_800A0204(int, int, int, int);
 void func_800A0618(int, int, int, int);
-void func_800A0768(int, char*);
+int func_800A0768(int, D_800F4538_unk58_2*);
 void func_800A0870(int);
 void func_800A087C(int actorId, int);
 void func_800A09D8(int, int);

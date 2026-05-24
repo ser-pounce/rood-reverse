@@ -2,6 +2,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/D_80061068_t.h"
 #include "2842C.h"
+#include "3A1A0.h"
 
 typedef struct {
     short width;
@@ -1015,7 +1016,7 @@ void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 void func_8008A6FC(void);
 int vs_battle_getSkillFlags(int, int);
-void func_8008B430(char*, int);
+void func_8008B430(D_800F4538_unk58_2*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int func_8008B808(int, int, int, int);

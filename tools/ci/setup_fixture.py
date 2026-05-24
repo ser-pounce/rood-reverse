@@ -52,7 +52,8 @@ def copy_seeds() -> None:
         rel = src.relative_to(SEEDS)
         dst = ROOT / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
+        shutil.copy(src, dst)  # content only — mtime defaults to now so make
+        dst.touch()             # treats seeds as fresh relative to sources.
 
 
 def render_asm_stubs() -> None:

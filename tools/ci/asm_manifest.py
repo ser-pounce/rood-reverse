@@ -232,16 +232,49 @@ def build_manifest() -> int:
     return 0
 
 
+_INCLUDE_ASM_RE = re.compile(r"INCLUDE_ASM\(\s*\"[^\"]+\"\s*,\s*(\w+)\s*\)")
+
+
+def _active_include_asm_names() -> set[str]:
+    """Scan src/**/*.c for INCLUDE_ASM(folder, funcX) macros — return funcX set.
+
+    After a contributor decompiles funcX (drops the INCLUDE_ASM, adds a C body),
+    the manifest may still list funcX as a nonmatching .s, but rendering its
+    stub would create a duplicate-symbol conflict with the new C definition.
+    Skip stubs for any glabel whose name isn't in this set.
+    """
+    names: set[str] = set()
+    src = ROOT / "src"
+    if not src.is_dir():
+        return names
+    for c in src.rglob("*.c"):
+        for m in _INCLUDE_ASM_RE.finditer(c.read_text()):
+            names.add(m.group(1))
+    return names
+
+
 def render_stubs() -> int:
     if not MANIFEST.is_file():
         print(f"error: missing {MANIFEST}", file=sys.stderr)
         return 1
     files = json.loads(MANIFEST.read_text())
+    active = _active_include_asm_names()
+    skipped = 0
     for rel, ops in files.items():
+        # If this file is a per-function nonmatching stub for a glabel that
+        # no longer has an active INCLUDE_ASM in src/, skip it — the C body
+        # already defines the symbol; rendering would cause a link collision.
+        if "nonmatchings" in rel.split("/"):
+            glabels = [op["name"] for op in ops
+                       if op.get("op") == "label" and op.get("kind") == "glabel"]
+            if glabels and not any(name in active for name in glabels):
+                skipped += 1
+                continue
         out = ROOT / rel
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render(ops))
-    print(f"rendered {len(files)} stub .s files from {MANIFEST}")
+    rendered = len(files) - skipped
+    print(f"rendered {rendered} stub .s files from {MANIFEST} ({skipped} skipped — decompiled)")
     return 0
 
 

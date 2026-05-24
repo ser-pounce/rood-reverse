@@ -6,7 +6,7 @@
 int func_8010BA58(int arg0)
 {
     int _[6] __attribute__((unused));
-    func_800A2C48_t* new_var = D_800F4538[0];
+    D_800F4538_t* new_var = D_800F4538[0];
 
     if (arg0 == 1) {
         func_8009AA84(1);

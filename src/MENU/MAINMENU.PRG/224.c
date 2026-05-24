@@ -307,7 +307,7 @@ void func_800FA2CC(void)
     }
 
     temp_s1->unk5B8 = i_2;
-    temp_s1->unk5AC = temp_s1->unk5AC & 0xFFEFFFFF;
+    temp_s1->unk5AC_20 = 0;
     temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
     temp_s1->unk6E3 = D_800F49DC;
     temp_s0 = temp_s1->unkC54;

@@ -76,6 +76,11 @@ def render_undefined_bundle() -> None:
     undefined_bundle.render_stubs()
 
 
+def render_link_d() -> None:
+    import link_d_generator
+    link_d_generator.cmd_render()
+
+
 def touch_disk_config() -> None:
     cfg = ROOT / "config" / "SLUS-01040.xml"
     cfg.parent.mkdir(parents=True, exist_ok=True)
@@ -95,6 +100,7 @@ def main() -> int:
     render_yaml_bundle()
     render_undefined_bundle()
     copy_seeds()
+    render_link_d()
     touch_disk_config()
     MARKER.write_text("ok\n")
     print("CI fixture ready (stubs + seeds installed)")

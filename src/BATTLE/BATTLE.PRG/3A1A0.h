@@ -76,7 +76,11 @@ typedef struct {
     u_int unk5AC_18 : 1;
     u_int unk5AC_19 : 1;
     u_int unk5AC_20 : 1;
-    u_int unk5AC_21 : 11;
+    u_int unk5AC_21 : 1;
+    u_int unk5AC_22 : 1;
+    u_int unk5AC_23 : 1;
+    u_int unk5AC_24 : 1;
+    u_int unk5AC_25 : 7;
     u_char unk5B0;
     u_char unk5B1;
     u_char unk5B2;
@@ -203,7 +207,11 @@ typedef struct {
     u_int unk5AC_18 : 1;
     u_int unk5AC_19 : 1;
     u_int unk5AC_20 : 1;
-    u_int unk5AC_21 : 11;
+    u_int unk5AC_21 : 1;
+    u_int unk5AC_22 : 1;
+    u_int unk5AC_23 : 1;
+    u_int unk5AC_24 : 1;
+    u_int unk5AC_25 : 7;
     u_char unk5B0;
     u_char unk5B1;
     u_char unk5B2;

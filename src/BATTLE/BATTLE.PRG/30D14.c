@@ -353,7 +353,12 @@ void func_800A0870(int arg0) { D_800E8FC0 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A087C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A09D8);
+void func_800A09D8(int arg0, int arg1)
+{
+    if (D_800F4538[arg0] != NULL) {
+        D_800F4538[arg0]->unk5AC_24 = arg1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0A1C);
 

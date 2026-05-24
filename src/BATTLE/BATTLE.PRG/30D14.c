@@ -214,7 +214,12 @@ int func_8009E480(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E4B0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E5C4);
+void func_8009E5C4(int arg0)
+{
+    if ((D_800F4538[arg0]->unk5B8 != 0x63) && (D_800F4538[arg0]->unk5B8 != 0xC7)) {
+        func_8009E700(arg0, 1);
+    }
+}
 
 void func_8009E700(int, int);
 

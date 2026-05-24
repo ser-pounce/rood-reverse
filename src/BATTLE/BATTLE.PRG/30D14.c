@@ -270,7 +270,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F8DC);
 void func_8009F940(int arg0, int arg1, D_800F4538_unk58_2* arg2, D_800F4538_unk58_2* arg3)
 {
     D_800F4538_t* temp_t0 = D_800F4538[arg0];
-    
+
     if (temp_t0 != NULL) {
         temp_t0->unk17FD = arg1;
         if (arg1 != 0) {
@@ -286,7 +286,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F9F4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FB64);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FBD8);
+int func_8009FBD8(int arg0, int arg1)
+{
+    int _[2] __attribute__((unused));
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+
+    if (temp_a0 == NULL) {
+        return -1;
+    }
+
+    if (arg1 == -1) {
+        temp_a0->unk6E5 = 0xD;
+    } else {
+        temp_a0->unk6E5 = arg1;
+    }
+
+    return 0;
+}
 
 int func_8009FC20(int arg0, int* arg1)
 {

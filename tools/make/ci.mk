@@ -8,7 +8,8 @@ CI_BINARIES    := $(BINTARGETS)
 
 .NOTPARALLEL: ci-smoke
 
-SKIPSPLAT += ci-smoke ci-fixture-manifest ci-fixture-asm-manifest
+SKIPSPLAT += ci-smoke ci-fixture-manifest ci-fixture-asm-manifest \
+             tools/.sysdeps tools/python/.requirements.stamp
 
 # Refresh the data-size manifest (paths + sizes only, no content).
 ci-fixture-manifest:

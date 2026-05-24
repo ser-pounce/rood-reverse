@@ -17,7 +17,6 @@ What we do, in order:
 from __future__ import annotations
 
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -26,7 +25,8 @@ FIXTURE = ROOT / "fixtures" / "ci"
 DATA_MANIFEST = FIXTURE / "data-manifest.tsv"
 SEEDS = FIXTURE / "seeds"
 MARKER = FIXTURE / ".installed"
-ASM_TOOL = ROOT / "tools" / "ci" / "asm_manifest.py"
+
+sys.path.insert(0, str(ROOT / "tools" / "ci"))
 
 
 def write_data() -> None:
@@ -57,7 +57,18 @@ def copy_seeds() -> None:
 
 
 def render_asm_stubs() -> None:
-    subprocess.run([sys.executable, str(ASM_TOOL), "--render"], check=True)
+    import asm_manifest
+    asm_manifest.render_stubs()
+
+
+def render_png_stubs() -> None:
+    import png_manifest
+    png_manifest.render_stubs()
+
+
+def render_yaml_bundle() -> None:
+    import yaml_bundle
+    yaml_bundle.render_stubs()
 
 
 def touch_disk_config() -> None:
@@ -75,6 +86,8 @@ def main() -> int:
         return 1
     write_data()
     render_asm_stubs()
+    render_png_stubs()
+    render_yaml_bundle()
     copy_seeds()
     touch_disk_config()
     MARKER.write_text("ok\n")

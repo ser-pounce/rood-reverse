@@ -1,7 +1,7 @@
 CI_FIXTURE     := fixtures/ci
 CI_DATA        := $(CI_FIXTURE)/data-manifest.tsv
 CI_ASM         := $(CI_FIXTURE)/asm-manifest.json
-CI_SETUP       := $(VPYTHON) tools/ci/setup_fixture.py
+CI_SETUP        = $(VPYTHON) tools/ci/setup_fixture.py
 CI_BINARIES    := $(BINTARGETS)
 
 .PHONY: ci-smoke ci-fixture-manifest ci-fixture-asm-manifest

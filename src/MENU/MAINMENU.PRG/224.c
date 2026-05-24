@@ -85,7 +85,7 @@ void func_800F9A78(int arg0)
 
 void func_800F9CB0(void)
 {
-    char sp10[3];
+    D_800F4538_unk58_2 sp10;
     int new_var;
     int sp18;
     D_800F453C_t* temp_s0;
@@ -106,9 +106,9 @@ void func_800F9CB0(void)
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk8_0 = 0;
     temp_s0->unk8_15 = 0;
-    sp10[0] = -1;
-    sp10[1] = -1;
-    sp10[2] = -1;
+    sp10.unk0 = -1;
+    sp10.unk1 = -1;
+    sp10.unk2 = -1;
     // BUG: reads junk
     sp18 &= 0xFFFFFF00;
     sp18 |= 2;
@@ -120,14 +120,14 @@ void func_800F9CB0(void)
     sp18 |= 0x10000000;
 
     if (D_800F4538[16] == NULL) {
-        func_8009F940(1, 1, &sp18, sp10);
+        func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);
     } else {
         D_800F4538[16]->unk8_0 = 0;
     }
-    sp10[0] = 0;
-    sp10[1] = 0;
-    sp10[2] = 0;
-    func_800A0768(1, sp10);
+    sp10.unk0 = 0;
+    sp10.unk1 = 0;
+    sp10.unk2 = 0;
+    func_800A0768(1, &sp10);
     func_800A07FC(1, 0);
     temp_s0->unk640[2] &= 0xFFFEFFFF;
 }
@@ -195,19 +195,19 @@ int func_800F9EB8(void* arg0)
 
     if (temp_s1->unk17FD != 0) {
         int* p = (int*)0x1F800000;
-        new_var2 = (temp_s1->unk6F7 * 4) + 0xC0;
+        new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
-        temp_s1->unk1C += temp_s1->unk6F4;
-        temp_s1->unk1E += temp_s1->unk6F5;
-        temp_s1->unk20 += temp_s1->unk6F6;
+        temp_s1->unk1C += temp_s1->unk6F4.unk0;
+        temp_s1->unk1E += temp_s1->unk6F4.unk1;
+        temp_s1->unk20 += temp_s1->unk6F4.unk2;
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
         p = (int*)0x1F800000;
-        new_var3 = (temp_s1->unk6F7 * 4) + 0xC0;
+        new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
-        temp_s1->unk1C -= temp_s1->unk6F4;
-        temp_s1->unk1E -= temp_s1->unk6F5;
-        temp_s1->unk20 -= temp_s1->unk6F6;
+        temp_s1->unk1C -= temp_s1->unk6F4.unk0;
+        temp_s1->unk1E -= temp_s1->unk6F4.unk1;
+        temp_s1->unk20 -= temp_s1->unk6F4.unk2;
     }
 
     if (temp_s1->unk9_4) {
@@ -219,13 +219,13 @@ int func_800F9EB8(void* arg0)
         D_800F4588_t* temp_a0 = D_800F4588[v];
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
             D_800F4538_t2* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
-            temp_s0->unk14 -= temp_s1->unk6F4;
-            temp_s0->unk18 -= temp_s1->unk6F5;
-            temp_s0->unk1C -= temp_s1->unk6F6;
+            temp_s0->unk14 -= temp_s1->unk6F4.unk0;
+            temp_s0->unk18 -= temp_s1->unk6F4.unk1;
+            temp_s0->unk1C -= temp_s1->unk6F4.unk2;
             func_800B217C(temp_a0, temp_s0);
-            temp_s0->unk14 += temp_s1->unk6F4;
-            temp_s0->unk18 += temp_s1->unk6F5;
-            temp_s0->unk1C += temp_s1->unk6F6;
+            temp_s0->unk14 += temp_s1->unk6F4.unk0;
+            temp_s0->unk18 += temp_s1->unk6F4.unk1;
+            temp_s0->unk1C += temp_s1->unk6F4.unk2;
         }
     }
 

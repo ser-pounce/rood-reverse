@@ -160,7 +160,6 @@ int func_800F9EB8(void* arg0)
     int _[2];
     int i;
     func_800A2C48_t* temp_a0;
-    int* temp_s0;
     func_800A2C48_t* temp_s1;
     int new_var2;
     int new_var3;
@@ -220,14 +219,14 @@ int func_800F9EB8(void* arg0)
         int v = i + 2;
         temp_a0 = D_800F4588[v];
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
-            temp_s0 = temp_s1->unk6C[temp_a0->unkD];
-            temp_s0[5] -= temp_s1->unk6F4;
-            temp_s0[6] -= temp_s1->unk6F5;
-            temp_s0[7] -= temp_s1->unk6F6;
+            func_800A2C48_t2* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
+            temp_s0->unk14 -= temp_s1->unk6F4;
+            temp_s0->unk18 -= temp_s1->unk6F5;
+            temp_s0->unk1C -= temp_s1->unk6F6;
             func_800B217C(temp_a0, temp_s0);
-            temp_s0[5] += temp_s1->unk6F4;
-            temp_s0[6] += temp_s1->unk6F5;
-            temp_s0[7] += temp_s1->unk6F6;
+            temp_s0->unk14 += temp_s1->unk6F4;
+            temp_s0->unk18 += temp_s1->unk6F5;
+            temp_s0->unk1C += temp_s1->unk6F6;
         }
     }
 
@@ -248,7 +247,7 @@ int func_800FA188(int arg0, int arg1, int* arg2)
                     && (temp_v1->unk1A == 0))
                 && (temp_v1->unk5C == arg0))
             && (temp_v1->unk5E == arg1)) {
-            if ((temp_v1->unk6C[8][0] & 0x30) == 0x20) {
+            if (temp_v1->unk6C[8].unk0_4 == 2) {
                 ret = 1;
             } else {
                 var_t2 -= 0x80;
@@ -308,7 +307,7 @@ void func_800FA2CC(void)
     }
 
     temp_s1->unk5B8 = i_2;
-    temp_s1->unk5AC = temp_s1->unk5AC & 0xFFEFFFFF;
+    temp_s1->unk5AC_20 = 0;
     temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
     temp_s1->unk6E3 = D_800F49DC;
     temp_s0 = temp_s1->unkC54;

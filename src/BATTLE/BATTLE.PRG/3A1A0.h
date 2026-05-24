@@ -9,6 +9,23 @@ typedef struct {
 } func_80089888_t;
 
 typedef struct {
+    u_char unk0_0 : 3;
+    u_char unk0_3 : 1;
+    u_char unk0_4 : 2;
+    u_char unk0_7 : 2;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+} func_800A2C48_t2;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -58,8 +75,14 @@ typedef struct {
     int unk60;
     int unk64;
     int unk68;
-    int unk6C[42][8];
-    int unk5AC;
+    func_800A2C48_t2 unk6C[42];
+    u_int unk5AC_0 : 15;
+    u_int unk5AC_15 : 1;
+    u_int unk5AC_16 : 2;
+    u_int unk5AC_18 : 1;
+    u_int unk5AC_19 : 1;
+    u_int unk5AC_20 : 1;
+    u_int unk5AC_21 : 11;
     u_char unk5B0;
     u_char unk5B1;
     u_char unk5B2;
@@ -99,7 +122,8 @@ typedef struct {
     u_char unk6E1;
     u_char unk6E2;
     u_char unk6E3;
-    short unk6E4;
+    u_char unk6E4;
+    u_char unk6E5;
     short unk6E6;
     short unk6E8[6];
     signed char unk6F4;
@@ -116,7 +140,14 @@ typedef struct {
     int unk1198[0x199];
     u_char unk17FC;
     u_char unk17FD;
-    u_char unk1800[0x4A];
+    u_char unk17FE;
+    u_char unk17FF;
+    u_char unk1800[0x40];
+    short unk1840;
+    short unk1842;
+    short unk1844;
+    u_char unk1846;
+    u_char unk1847;
     u_char unk1848;
     u_char unk1849;
     u_char unk184A;

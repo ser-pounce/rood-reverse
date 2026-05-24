@@ -18,7 +18,11 @@ $(BUILD)/assets/SMALL/%.obj: | $$(@D)/
 
 ENDSCR := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
 
-$(BUILD)/assets/SMALL/%.DIS/ $(BUILD)/assets/SMALL/%.DIS.png:
+$(BUILD)/assets/SMALL/%.DIS.png:
+	echo Converting data/SMALL/$*.DIS
+	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
+
+$(BUILD)/assets/SMALL/%.DIS/:
 	echo Converting data/SMALL/$*.DIS
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
 

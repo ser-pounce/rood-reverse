@@ -19722,14 +19722,6 @@
    "size": 196
   }
  ],
- "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_8009F898.s": [
-  {
-   "op": "label",
-   "kind": "glabel",
-   "name": "func_8009F898",
-   "size": 68
-  }
- ],
  "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_8009F8DC.s": [
   {
    "op": "label",
@@ -19874,14 +19866,6 @@
    "size": 76
   }
  ],
- "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A07B4.s": [
-  {
-   "op": "label",
-   "kind": "glabel",
-   "name": "func_800A07B4",
-   "size": 72
-  }
- ],
  "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A07FC.s": [
   {
    "op": "label",
@@ -19896,14 +19880,6 @@
    "kind": "glabel",
    "name": "func_800A087C",
    "size": 348
-  }
- ],
- "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A09D8.s": [
-  {
-   "op": "label",
-   "kind": "glabel",
-   "name": "func_800A09D8",
-   "size": 68
   }
  ],
  "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A0A1C.s": [
@@ -19928,14 +19904,6 @@
    "kind": "glabel",
    "name": "func_800A0AFC",
    "size": 96
-  }
- ],
- "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A0B5C.s": [
-  {
-   "op": "label",
-   "kind": "glabel",
-   "name": "func_800A0B5C",
-   "size": 68
   }
  ],
  "build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14/func_800A0BE0.s": [

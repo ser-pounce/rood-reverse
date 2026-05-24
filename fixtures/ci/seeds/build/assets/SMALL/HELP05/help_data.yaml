@@ -1,0 +1,70 @@
+strings:
+- This section explains RISK and its effects.
+- '|>6|'
+- 'The following topics are covered:'
+- '|>6|'
+- ' 1. Effect on chance to hit and evade'
+- ' 2. Effect on damage'
+- ' 3. Effect on critical hits'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|1. Effect on Chance to Hit and Evade|f0|'
+- ' -As RISK increases, Ashley''s chance to hit'
+- '  with normal attacks (armed and unarmed),'
+- '  targeted spells, and Break Arts decreases.'
+- ' -Ashley''s chances to evade also decline as'
+- '  RISK increases.'
+- ' -As RISK decreases, Ashley''s chance to hit'
+- '  and evade improves, returning to normal when'
+- '  RISK is zero.'
+- '|>6|'
+- '|f1|2.Effect on Damage|f0|'
+- ' -As RISK increases, so does the amount of'
+- '  damage Ashley receives from enemy attacks.'
+- ' -As RISK decreases, damage received drops,'
+- '  returning to normal when RISK is zero.'
+- ' -Note that HP recovery spells like "Heal" are'
+- '  more effective when Ashley''s RISK is high.'
+- '|>6|'
+- '|f1|3. Effect on Critical Hits|f0|'
+- ' -As RISK increases, so does Ashley''s chance'
+- '  of landing a critical hit.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the RISK Effects section.
+sprites: []
+lines:
+- start: {x: 264, y: 299}
+  end: {x: 11, y: 299}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 252, y: 286}
+  end: {x: 11, y: 286}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 13, y: 351}
+  end: {x: 264, y: 351}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 12, y: 338}
+  end: {x: 276, y: 338}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 13, y: 182}
+  end: {x: 264, y: 182}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 14, y: 169}
+  end: {x: 252, y: 169}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 14, y: 156}
+  end: {x: 258, y: 156}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 117}
+  end: {x: 294, y: 117}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 294, y: 123}
+  end: {x: 6, y: 123}
+  color: {r: 0, g: 128, b: 255}

@@ -1,0 +1,180 @@
+strings:
+- This section explains the Area Map.
+- '|>6|'
+- 'The following topics are covered:'
+- '|>6|'
+- ' 1. Area Map Controls'
+- ' 2. Using Area Map'
+- '|>6|'
+- '|f2|★|f0|Please refer to the software manual for'
+- '  complete descriptions of these game features.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|1. Area Map Controls'
+- '|>6|'
+- ' |f1|Directional Buttons/left stick|f0|'
+- '      -Shifting the screen'
+- '|>6|'
+- '|>6|'
+- ' |f1|Right stick|f0|  -Rotates the map'
+- '|>6|'
+- '    |f1|SELECT button|f0| -Turns on/off|>6|the|>6|menu|>6|display'
+- '    |f1|START button|f0|  -Highlights first room visited'
+- '|>6|'
+- '    |f1|button|f0|  -Lists the areas previously visited'
+- '|>6|'
+- ' |f2|★|f0|To view another Area Map, select the area'
+- '   from the list and press the    |f1|button|f0|.'
+- '|>6|'
+- '    |f1|button|f0|  -Cancel'
+- '    |f1|button|f0|  -Not used'
+- '    |f1|button|f0|  -Exits the Menu screen'
+- '|>6|'
+- '    |f1|button|f0|  -Shifts room'
+- '    |f1|button|f0|  -Shifts room'
+- '|>6|'
+- '    |f1|button|f0|  -Press and use directional buttons/'
+- '             left stick to rotate the map'
+- '    |f1|button|f0|  -Press and use directional buttons/'
+- '             left stick to zoom in or out.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- ' |f1|2. Using Area Map|f0|'
+- '|>6|'
+- ' -Select "Map" on the Menu screen to see'
+- '  Ashley''s current location.'
+- '  All the rooms previously visited are shown'
+- '  here as well.'
+- '|>6|'
+- ' -The direction the Area Map faces is the'
+- '  same as when the "Map" menu was opened.'
+- ' -Pressing |f1|L2 button|f0| and |f1|directional buttons|f0|'
+- '  rotates the map, though it will not change'
+- '  Ashley''s view of the room when you close the'
+- '  map.'
+- '|>6|'
+- ' -Room names appear on the bottom of the screen.'
+- '  Saved games also display the name of the room'
+- '  in which the game was saved.'
+- ' -Many icons shown on the map may contain'
+- '  information necessary to progress through'
+- '  the game.'
+- '|>6|'
+- ' |f1|Icons|f0|'
+- '|>6|'
+- '        |f1|Ashley Icon|f0|'
+- '        Indicates Ashley''s current location.'
+- '|>6|'
+- '        |f1|Exit Icon|f0|'
+- '        Indicates exits to other areas.'
+- '        The area names are also shown.'
+- '|>6|'
+- '        |f1|Save Icon|f0|'
+- '        Indicates that the room has a Save Point.'
+- '|>6|'
+- '        |f1|Container Icon|f0|'
+- '        Indicates that the room has a Container'
+- '        in which to store equipment and items.'
+- '|>6|'
+- '        |f1|Workshop Icon|f0|'
+- '        Indicates that the room is an equipment'
+- '        workshop.'
+- '|>6|'
+- ' |f2|★|f0|If a room has more than one icon, each icon'
+- '   will be shown briefly, one at a time.'
+- '|>6|'
+- '|>6|'
+- ' |f1|Map Exits|f0|'
+- '|>6|'
+- '       |f1|White Marker|f0|'
+- '       Indicates room exits.'
+- '|>6|'
+- '       |f1|Red Blinking Marker|f0|'
+- '       Indicates where Ashley entered the room.'
+- '|>6|'
+- '       |f1|Locked Icon|f0|'
+- '       Indicates locked doors and names of the'
+- '       required keys/sigils.'
+- '|>6|'
+- '       |f1|Unlockable Icon|f0|'
+- '       Indicates that you possess the key/sigil'
+- '       required to unlock this door.'
+- '|>6|'
+- ' |f2|★|f0|If you don''t know where to use a newly-'
+- '   acquired key or sigil, check the Area map!'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Area Map section.
+sprites:
+- position: {x: 185, y: 338}
+  file: sprite_000.png
+- position: {x: 0, y: 1030}
+  file: sprite_001.png
+- position: {x: 6, y: 978}
+  file: sprite_002.png
+- position: {x: 18, y: 938}
+  file: sprite_003.png
+- position: {x: 24, y: 886}
+  file: sprite_004.png
+- position: {x: 24, y: 845}
+  file: sprite_005.png
+- position: {x: 0, y: 1287}
+  file: sprite_006.png
+- position: {x: 12, y: 1235}
+  file: sprite_007.png
+- position: {x: 30, y: 1202}
+  file: sprite_008.png
+  animation:
+    frameMask: '0000111100001111'
+    frameDuration: 4
+    repeat: 1
+    currentFrame: 0
+    timer: 0
+    isActive: 0
+- position: {x: 30, y: 1163}
+  file: sprite_009.png
+- position: {x: 6, y: 481}
+  file: sprite_010.png
+- position: {x: 6, y: 455}
+  file: sprite_011.png
+- position: {x: 6, y: 429}
+  file: sprite_012.png
+- position: {x: 6, y: 416}
+  file: sprite_013.png
+- position: {x: 6, y: 390}
+  file: sprite_014.png
+- position: {x: 6, y: 377}
+  file: sprite_015.png
+- position: {x: 6, y: 364}
+  file: sprite_016.png
+- position: {x: 6, y: 299}
+  file: sprite_000.png
+- position: {x: 6, y: 263}
+  file: sprite_017.png
+- position: {x: 6, y: 275}
+  file: sprite_018.png
+- position: {x: 6, y: 195}
+  file: sprite_019.png
+lines:
+- start: {x: 18, y: 1365}
+  end: {x: 270, y: 1365}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 18, y: 1352}
+  end: {x: 258, y: 1352}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 533}
+  end: {x: 294, y: 533}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 539}
+  end: {x: 294, y: 539}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 149}
+  end: {x: 294, y: 149}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 143}
+  end: {x: 294, y: 143}
+  color: {r: 0, g: 128, b: 255}

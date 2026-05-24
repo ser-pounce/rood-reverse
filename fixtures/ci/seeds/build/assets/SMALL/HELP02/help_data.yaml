@@ -1,0 +1,170 @@
+strings:
+- This section explains the difference between
+- Battle Mode and Normal Mode.
+- '|>6|'
+- 'The following topics are covered:'
+- '|>6|'
+- ' 1. Stance and Movement'
+- ' 2. Controls'
+- ' 3. Mode Effects'
+- ' 4. Mode and Magic'
+- '|>6|'
+- '|f2|★|f0|Please refer to the software manual for'
+- '  complete descriptions of these functions.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|1. Stance and Movement|f0|'
+- ' -The greatest difference between Battle Mode'
+- '  and Normal Mode is Ashley''s readiness'
+- '  for battle.'
+- '|>6|'
+- ' |f1|Normal Mode|f0|'
+- '|>6|'
+- ' -Because Ashley does not have his sword and'
+- '  shield readied in Normal Mode, he can use'
+- '  both hands. This allows gripping (hanging'
+- '  from ledges and stairs) and climbing'
+- '  (climbing up obstacles).'
+- '  Normal Mode is the primary mode used for'
+- '  exploring rooms.'
+- '|>6|'
+- ' |f1|Battle Mode|f0|'
+- '|>6|'
+- ' -If Ashley is in Normal Mode, he cannot'
+- '  use his shield or make attacks, even if'
+- '  his sword and shield are equipped.'
+- '  To attack or use his shield, Ashley must'
+- '  switch to Battle Mode.'
+- '  Battle Mode is the mode used for combat.'
+- '|>6|'
+- ' |f2|★|f0|When Ashley switches to Battle Mode,'
+- '                will appear flashing in the'
+- '   top right corner of the screen.'
+- '   Ashley''s profile, in the bottom left of the'
+- '   screen, will also change.'
+- '|>6|'
+- '           Normal Mode         Battle Mode'
+- '|>6|'
+- ' |f2|★|f0|No matter which mode he is in,'
+- '   Ashley can always use Defense Abilities,'
+- '   magic, and items.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|2. Controls|f0|'
+- ' -In Normal Mode, Ashley can manipulate'
+- '  (push, carry, place) the cubes he finds.'
+- '  He can also grip and climb over obstacles.'
+- ' -Ashley cannot manipulate cubes when he is'
+- '  in Battle Mode, nor can he grip or climb.'
+- '|>6|'
+- ' |f2|★|f0|Ashley is able to run and jump in either'
+- '   mode, as well as perform basic actions like'
+- '   opening doors and chests.'
+- '|>6|'
+- ' |f2|★|f0|Please refer to the software manual for a'
+- '   complete description of these modes. Also'
+- '   see "Basic Controls" in the Quick Manual.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|3. Mode Effects|f0|'
+- ' -When Ashley is in Normal Mode, he recovers'
+- '  HP and MP at a slightly faster rate. His'
+- '  RISK gauge also decreases faster, helping'
+- '  get rid of RISK built up by attacking and'
+- '  using Chain Abilities.'
+- ' -Using weapons and shields in battle increases'
+- '  their PP (Phantom Points). PP slowly decrease'
+- '  when Ashley is in Battle Mode.'
+- '  However, they will not decrease while he'
+- '  is in Normal Mode.'
+- ' -Switch between Battle Mode and Normal Mode for'
+- '  the best tactical advantage.'
+- '|>6|'
+- ' |f2|★|f0|See "RISK Effects" for a detailed description'
+- '   of RISK.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|4. Mode and Magic|f0|'
+- ' -Equipping armor helps prevent damage from'
+- '  both physical and magical attacks.'
+- ' -By equipping strong armor, you can greatly'
+- '  improve Ashley''s resistance to magic.'
+- '  While this reduces damage from magic attacks,'
+- '  it also reduces the effects of beneficial'
+- '  healing magic.'
+- ' -Unequip Ashley''s armor for best results when'
+- '  using healing magic.'
+- '|>6|'
+- ' |f2|★|f0|Note that shield bonuses also apply when'
+- '   Ashley is in Battle Mode, further reducing'
+- '   the effects of healing magic.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Game Modes section.
+sprites:
+- position: {x: 144, y: 572}
+  file: sprite_000.png
+- position: {x: 36, y: 572}
+  file: sprite_001.png
+- position: {x: 18, y: 523}
+  file: sprite_002.png
+lines:
+- start: {x: 20, y: 793}
+  end: {x: 258, y: 793}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 20, y: 819}
+  end: {x: 168, y: 819}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 19, y: 806}
+  end: {x: 276, y: 806}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 1144}
+  end: {x: 294, y: 1144}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 294, y: 1150}
+  end: {x: 6, y: 1150}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 12, y: 1053}
+  end: {x: 120, y: 1053}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 13, y: 1040}
+  end: {x: 252, y: 1040}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 120, y: 936}
+  end: {x: 192, y: 936}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 897}
+  end: {x: 294, y: 897}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 903}
+  end: {x: 294, y: 903}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 676}
+  end: {x: 294, y: 676}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 294, y: 682}
+  end: {x: 6, y: 682}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 19, y: 650}
+  end: {x: 120, y: 650}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 19, y: 637}
+  end: {x: 258, y: 637}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 19, y: 624}
+  end: {x: 198, y: 624}
+  color: {r: 255, g: 0, b: 0}
+- start: {x: 6, y: 182}
+  end: {x: 294, y: 182}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 188}
+  end: {x: 294, y: 188}
+  color: {r: 0, g: 128, b: 255}

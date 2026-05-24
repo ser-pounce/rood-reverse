@@ -1,0 +1,85 @@
+strings:
+- This section explains the Simple Map.
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|Viewing the Simple Map|f0|'
+- '|>6|'
+- ' -The map shown on the lower right side of the'
+- '  screen represents the room in which Ashley is'
+- '  currently standing.'
+- ' -When you change the camera angle with the '
+- '  |f1|L1 button and R1 button|f0|, the Simple Map'
+- '  rotates as well.'
+- ' -Adjacent rooms that have been visited'
+- '  previously are also shown next to the current'
+- '  room.'
+- ' -Colored markers on map walls show the location'
+- '  of exits and other room features.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '     |f1|White Marker|f0|'
+- '     Indicates room exits.'
+- '|>6|'
+- '     |f1|Red Blinking Marker|f0|'
+- '     Indicates where Ashley entered the room.'
+- '|>6|'
+- '     |f1|Blue Marker|f0|'
+- '     Indicates an exit to another area.'
+- '|>6|'
+- '     |f1|Lock Marker|f0|'
+- '     Indicates door locked with a key or sigil.'
+- '     Once the door is unlocked, the marker'
+- '     disappears.'
+- '|>6|'
+- ' |f2|★|f0|Open "Simple Map" under the Options menu and'
+- '   select "Frame" to have the Simple Map''s frame'
+- '   flicker red when in Battle Mode.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Simple Map section.
+sprites:
+- position: {x: 15, y: 420}
+  file: sprite_000.png
+- position: {x: 18, y: 383}
+  file: sprite_001.png
+- position: {x: 18, y: 344}
+  file: sprite_002.png
+  animation:
+    frameMask: '0000111100001111'
+    frameDuration: 4
+    repeat: 1
+    currentFrame: 0
+    timer: 0
+    isActive: 0
+- position: {x: 18, y: 305}
+  file: sprite_003.png
+- position: {x: 160, y: 261}
+  file: sprite_002.png
+  animation:
+    frameMask: '0000111100001111'
+    frameDuration: 4
+    repeat: 1
+    currentFrame: 0
+    timer: 0
+    isActive: 0
+- position: {x: 102, y: 227}
+  file: sprite_004.png
+lines:
+- start: {x: 6, y: 39}
+  end: {x: 294, y: 39}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 45}
+  end: {x: 294, y: 45}
+  color: {r: 0, g: 128, b: 255}

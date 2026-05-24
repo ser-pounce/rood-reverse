@@ -1,0 +1,285 @@
+strings:
+- This section explains status abnormalities.
+- '|>6|'
+- '|f2|★|f0|Please refer to the software manual for'
+- '  complete descriptions of these game features.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|Status Abnormalities|f0|'
+- '  "Effect": the effect of a status abnormality.'
+- '  "Remedy": how to cure the effect of a status'
+- '            abnormality.'
+- '|>6|'
+- ' |f1|Status Abnormalities Affecting Attributes|f0|'
+- '|>6|'
+- '    |f1|STR-down|f0|'
+- '    Effect:Strength temporarily decreased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|STR-up|f0|'
+- '    Effect:Strength temporarily increased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|INT-down|f0|'
+- '    Effect:Intelligence temporarily decreased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|INT-up|f0|'
+- '    Effect:Intelligence temporarily increased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|AGL-down|f0|'
+- '    Effect:Agility temporarily decreased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|AGL-up|f0|'
+- '    Effect:Agility temporarily increased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '|>6|'
+- ' |f1|Status Abnormalities Affecting Actions|f0|'
+- '|>6|'
+- '    |f1|Quicken|f0|'
+- '    Effect:Movement speed increased.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|Silent|f0|'
+- '    Effect:Cannot cast spells.'
+- '    Remedy:-Be the target of a spell'
+- '           -Move to a different room'
+- '|>6|'
+- '    |f1|Paralysis|f0|'
+- '    Effect:Physical attacks and Break Arts'
+- '           cannot be used temporarily.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Clearance"'
+- '           -Use "Yggdrasil''s Tears"'
+- '|>6|'
+- '    |f1|Poison|f0|'
+- '    Effect:HP decrease over time.'
+- '    Remedy:-Cast "Antidote"'
+- '           -Use "Faerie Chortle"'
+- '|>6|'
+- '    |f1|Numbness|f0|'
+- '    Effect:Battle abilities cannot be used'
+- '           temporarily.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Receive damage'
+- '           -Cast "Clearance"'
+- '           -Use "Spirit Orison"'
+- '|>6|'
+- '    |f1|Curse|f0|'
+- '    Effect:STR, INT, and AGL decreased.'
+- '    Remedy:-Cast "Blessing"'
+- '           -Use "Angelic Paean"'
+- '|>6|'
+- '    |f1|Regeneration|f0|'
+- '    Effect:HP recovery speed increases.'
+- '    Remedy:-Be the target of a spell'
+- '           -Move to a different room'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|Magic Ward|f0|'
+- '    Effect:Nullifies the next spell cast'
+- '           on Ashley.'
+- '    Remedy:-Be the target of a spell'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|Item Ability Decrease|f0|'
+- '    Effect:Weapon and armor temporarily'
+- '           weakened.'
+- '    Remedy:-Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '    |f1|Item Ability Increase|f0|'
+- '    Effect:Weapon and armor temporarily'
+- '           strengthened.'
+- '    Remedy:-Unequip affected items'
+- '           -Wait for duration of effect'
+- '           -Cast "Dispel"'
+- '|>6|'
+- '|>6|'
+- ' |f1|Status Abnormalities Affecting Affinity|f0|'
+- '|>6|'
+- '       |f1|Attach Air|f0|'
+- '       Effect:Weapon''s air affinity increases'
+- '              and its earth affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Attach Fire|f0|'
+- '       Effect:Weapon''s fire affinity increases'
+- '              and its water affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Attach Earth|f0|'
+- '       Effect:Weapon''s earth affinity increases'
+- '              and its air affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Attach Water|f0|'
+- '       Effect:Weapon''s water affinity increases'
+- '              and its fire affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Resist Air|f0|'
+- '       Effect:Armor''s air affinity increases'
+- '              and its earth affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Resist Fire|f0|'
+- '       Effect:Armor''s fire affinity increases'
+- '              and its water affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Resist Earth|f0|'
+- '       Effect:Armor''s earth affinity increases'
+- '              and its air affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '       |f1|Resist Water|f0|'
+- '       Effect:Armor''s water affinity increases'
+- '              and its fire affinity decreases.'
+- '       Remedy:-Wait for duration of effect'
+- '              -Cast "Dispel"'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|f1|Incompatible Status Abnormalities|f0|'
+- '|>6|'
+- ' -While it is possible to have multiple status'
+- '  abnormalities, some are incompatible and cannot'
+- '  be in effect concurrently.'
+- '|>6|'
+- ' |f1|Attributes|f0|'
+- '    ←→'
+- '|>6|'
+- ' |f1|Actions|f0|'
+- '    ←→         ←→'
+- '|>6|'
+- ' |f1|Affinity|f0|'
+- '       ←→'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Status section.
+sprites:
+- position: {x: 192, y: 2275}
+  file: sprite_000.png
+- position: {x: 150, y: 2275}
+  file: sprite_001.png
+- position: {x: 108, y: 2275}
+  file: sprite_002.png
+- position: {x: 66, y: 2275}
+  file: sprite_003.png
+- position: {x: 192, y: 2249}
+  file: sprite_004.png
+- position: {x: 108, y: 2249}
+  file: sprite_005.png
+- position: {x: 150, y: 2249}
+  file: sprite_006.png
+- position: {x: 66, y: 2249}
+  file: sprite_007.png
+- position: {x: 6, y: 2249}
+  file: sprite_008.png
+- position: {x: 24, y: 2249}
+  file: sprite_009.png
+- position: {x: 126, y: 2210}
+  file: sprite_010.png
+- position: {x: 84, y: 2210}
+  file: sprite_011.png
+- position: {x: 48, y: 2210}
+  file: sprite_012.png
+- position: {x: 168, y: 2171}
+  file: sprite_013.png
+- position: {x: 144, y: 2171}
+  file: sprite_014.png
+- position: {x: 120, y: 2171}
+  file: sprite_015.png
+- position: {x: 96, y: 2171}
+  file: sprite_016.png
+- position: {x: 48, y: 2171}
+  file: sprite_017.png
+- position: {x: 72, y: 2171}
+  file: sprite_018.png
+- position: {x: 6, y: 2210}
+  file: sprite_019.png
+- position: {x: 6, y: 2171}
+  file: sprite_020.png
+- position: {x: 6, y: 1976}
+  file: sprite_000.png
+- position: {x: 6, y: 1898}
+  file: sprite_001.png
+- position: {x: 6, y: 1820}
+  file: sprite_002.png
+- position: {x: 6, y: 1742}
+  file: sprite_003.png
+- position: {x: 6, y: 1664}
+  file: sprite_004.png
+- position: {x: 6, y: 1586}
+  file: sprite_006.png
+- position: {x: 6, y: 1508}
+  file: sprite_005.png
+- position: {x: 6, y: 1430}
+  file: sprite_007.png
+- position: {x: 6, y: 1300}
+  file: sprite_009.png
+- position: {x: 6, y: 1222}
+  file: sprite_008.png
+- position: {x: 6, y: 1144}
+  file: sprite_021.png
+- position: {x: 6, y: 1066}
+  file: sprite_012.png
+- position: {x: 6, y: 1001}
+  file: sprite_020.png
+- position: {x: 6, y: 897}
+  file: sprite_010.png
+- position: {x: 6, y: 832}
+  file: sprite_019.png
+- position: {x: 6, y: 741}
+  file: sprite_022.png
+- position: {x: 6, y: 676}
+  file: sprite_023.png
+- position: {x: 6, y: 611}
+  file: sprite_011.png
+- position: {x: 6, y: 507}
+  file: sprite_013.png
+- position: {x: 6, y: 442}
+  file: sprite_014.png
+- position: {x: 6, y: 377}
+  file: sprite_015.png
+- position: {x: 6, y: 312}
+  file: sprite_016.png
+- position: {x: 6, y: 247}
+  file: sprite_018.png
+- position: {x: 6, y: 182}
+  file: sprite_017.png
+lines:
+- start: {x: 6, y: 2067}
+  end: {x: 294, y: 2067}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 294, y: 2073}
+  end: {x: 6, y: 2073}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 78}
+  end: {x: 294, y: 78}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 84}
+  end: {x: 294, y: 84}
+  color: {r: 0, g: 128, b: 255}

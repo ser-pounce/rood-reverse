@@ -1,0 +1,113 @@
+setup: SETUP
+assembleWeapons: ASSEMBLE WEAPONS
+assembleWeaponsDesc: Combine a blade and a grip to create a weapon.
+attachGems: ATTACH GEMS
+attachGemsDesc: Attach gems to weapons and shields.
+disassemble: DISASSEMBLE
+disassembleDesc: |-
+  Disassemble weapons or shields to separate
+  their components.
+rename: RENAME
+renameDesc: Rename your weapon.
+repair: REPAIR
+repairDesc: |-
+  Repairs all of your equipment, restoring
+  Damage Points (DP) to full.
+combine: COMBINE
+combineDesc: |-
+  Fuse component pieces to create new blades,
+  shields, or armor.
+assemble: ASSEMBLE
+assembleBlade: 'ASSEMBLE: Blade'
+assembleGrip: 'ASSEMBLE: Grip'
+assembleGem: 'ASSEMBLE: Gem'
+assembleName: 'ASSEMBLE: Name'
+invalidGrip: |-
+  This grip cannot be assembled
+  with the selected blade.
+invalidBlade: |-
+  This blade cannot be assembled
+  with the selected grip.
+invalidBladeMaterial: |-
+  Blades of this material cannot
+  be altered at this workshop.
+invalidShieldMaterial: |-
+  Shields of this material cannot
+  be altered at this workshop.
+invalidArmorMaterial: |-
+  Armor of this material cannot
+  be altered at this workshop.
+chooseWeaponRename: Choose a weapon to rename.
+renamePrompt: Rename this weapon?
+noGems: No gems attached to this shield.
+chooseWeaponDisassemble: Choose a weapon to disassemble.
+chooseShieldDisassemble: Choose a shield to disassemble.
+weapons: WEAPONS
+attachGemsWeapons: |-
+  Attach gems to weapons.
+  Number of attachable gems varies by grip.
+shields: SHIELDS
+attachGemsShields: ATTACH gems to shields.
+attachWeapon: 'ATTACH: Weapon'
+attachShield: 'ATTACH: Shield'
+optionYes: 'YES'
+optionNo: 'NO'
+cancel: Cancel setup
+disassembleWeaponDesc: Disassemble weapons into component pieces.
+disassembleShieldDesc: Disassemble shields into component pieces.
+disassembleWeaponConfirm: Disassemble this weapon?
+weaponEquippedWarn: |-
+  This weapon is currently equipped.
+  Remove and disassemble this weapon?
+disassembleWeapon: 'DISASSEMBLE: Weapon'
+disassembleShield: 'DISASSEMBLE: Shield'
+disassembleShieldPrompt: Disassemble this shield?
+shieldEquippedWarn: |-
+  The shield is currently equipped.
+  Remove and disassemble this shield?
+repairConfirm: Repair all equipment?
+repairComplete: All equipment repaired.▼
+line47: ''
+line48: ''
+oneItem: Only one item of this category is listed.
+notInWorkshop: This command can only be used at a workshop.
+weaponsFull: You cannot carry any more weapons.
+noWeapons: |-
+  No weapons in possession.
+  Renaming cannot be done.
+noItems: No items listed under this category.
+selectBladeToAssemble: Select a blade.
+selectGrip: Select a grip.
+selectGem: Select a gem.
+pressOk: Press <OK> when setup is finished.
+weaponGemSlots: 'Number of gems attachable to this weapon: |#0|.'
+weaponNoGemSlots: Gems cannot be attached to this weapon.
+shieldGemSlots: 'Number of gems attachable to this shield: |#0|.'
+shieldNoGemSlots: Gems cannot be attached to this shield.
+weapon: Weapon
+blades: BLADES
+bladesDesc: Select a blade.
+grips: GRIPS
+gripsDesc: Select a grip.
+gems: GEMS
+gemsDesc: Select a gem.
+attachmentConfirm: Complete attachment?
+blade: BLADE
+shield: SHIELD
+armor: ARMOR
+combineBlades: Combine blades.
+combineShields: Combine shields.
+combineArmorDesc: Combine armor.
+selectBladeToCombine: Select a blade.
+selectShield: Select a shield.
+selectArmor: Select a piece of armor.
+newBlade: New Blade
+newShield: New Shield
+newArmor: New Armor
+combineBlade: 'COMBINE: Blade'
+combineShield: 'COMBINE: Shield'
+combineArmor: 'COMBINE: Armor'
+cancelCombine: CANCEL COMBINE
+cancelCombineConfirm: |-
+  This will undo setup and unequip item.
+  Proceed with combination?

@@ -1,0 +1,113 @@
+strings:
+- This section explains the effects of hit location
+- damage.
+- '|>6|'
+- 'The following topics are covered:'
+- '|>6|'
+- ' 1. Hit location damage'
+- ' 2. DYING status'
+- ' 3. Remedying hit location damage effects'
+- '|>6|'
+- '|f2|★|f0|Please refer to the software manual for'
+- '  complete descriptions of these game features.'
+- '|>6|'
+- '|>6|'
+- '|f1|1. Hit Location Damage|f0|'
+- ' -Ashley and many of his opponents in the game'
+- '  have "hit locations." Each location''s health'
+- '  is calculated separately.'
+- ' -You can check each location''s health status'
+- '  in the Status menu.'
+- '|>6|'
+- '        |f1|EXCELLENT|f0| Excellent condition'
+- '        |f1|GOOD|f0|      Good condition'
+- '        |f1|AVERAGE|f0|   Normal condition'
+- '        |f1|BAD|f0|       Badly damaged'
+- '        |f1|DYING|f0|     Critically injured'
+- '|>6|'
+- '  Ashley''s profile (limb gauge) on the bottom'
+- '  left changes color with his condition.'
+- '|>6|'
+- '|>6|'
+- '                        →'
+- '|>6|'
+- '  The condition readings are meant as a battle'
+- '  aid, and do not affect Ashley''s performance.'
+- '  However, negative side-effects will occur when'
+- '  a hit location is DYING.'
+- '|>6|'
+- '|f1|2. DYING Status|f0|'
+- ' -When a hit location is DYING, special status'
+- '  abnormalities are triggered that dramatically'
+- '  reduce Ashley''s performance.'
+- '|>6|'
+- '   Location:|f1|Right Arm|f0|'
+- '   Effect  :|f1|Attack 50%|f0|'
+- '            Damage dealt by regular attacks and'
+- '            Break Arts decreases.'
+- '|>6|'
+- '   Location:|f1|Left Arm|f0|'
+- '   Effect  :|f1|Parry 50%|f0|'
+- '            Chance to parry attacks decreases.'
+- '|>6|'
+- '   Location:|f1|Head|f0|'
+- '   Effect  :|f1|Silent|f0|'
+- '            Unable to cast spells.'
+- '|>6|'
+- '   Location:|f1|Body|f0|'
+- '   Effect  :|f1|RISK 200%|f0|'
+- '            RISK accumulates while the targeting'
+- '            sphere is open and only recovers'
+- '            at the Battle Mode rate while Ashley'
+- '            is in Normal Mode.'
+- '|>6|'
+- '   Location:|f1|Legs|f0|'
+- '   Effect  :|f1|Move 50%|f0|'
+- '            Reduces movement speed.'
+- '|>6|'
+- '|f2|★|f0|Of these effects, only the MOVE 50% status'
+- '  abnormality applies to Ashley''s foes.'
+- '  However, if he reduces a foe''s hit location'
+- '  to DYING, Ashley can disable some opponent'
+- '  special attacks.'
+- '|>6|'
+- '|f1|3. Remedying Hit Location Damage Effects|f0|'
+- ' -These status abnormalities are removed when'
+- '  the DYING hit location is healed to BAD or'
+- '  better condition.'
+- ' -Hit locations heal when Ashley uses magic or'
+- '  items to recover HP.  Use healing items or'
+- '  magic to remedy these status abnormalities.'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- '|>6|'
+- This ends the Damage Effects section.
+sprites:
+- position: {x: 78, y: 370}
+  file: sprite_000.png
+- position: {x: 36, y: 315}
+  file: sprite_001.png
+- position: {x: 36, y: 302}
+  file: sprite_002.png
+- position: {x: 36, y: 289}
+  file: sprite_003.png
+- position: {x: 36, y: 276}
+  file: sprite_004.png
+- position: {x: 36, y: 263}
+  file: sprite_005.png
+- position: {x: 180, y: 370}
+  file: sprite_006.png
+lines:
+- start: {x: 294, y: 156}
+  end: {x: 6, y: 156}
+  color: {r: 0, g: 128, b: 255}
+- start: {x: 6, y: 162}
+  end: {x: 294, y: 162}
+  color: {r: 0, g: 128, b: 255}

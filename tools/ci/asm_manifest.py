@@ -215,20 +215,92 @@ def render(ops: list[dict[str, Any]]) -> str:
     return "\n".join(out)
 
 
+def _binary_from_path(rel_s: str) -> str | None:
+    """`build/src/SLUS_010.40/.../foo.s` → `SLUS_010.40`.
+    `build/src/MENU/MENU0.PRG/.../foo.s` → `MENU/MENU0.PRG`.
+
+    The binary name maps directly to the linked .elf at build/data/<bin>.elf,
+    which is the authoritative source for post-link symbol bytes."""
+    parts = rel_s.split("/")
+    if len(parts) < 4 or parts[0] != "build" or parts[1] != "src":
+        return None
+    if len(parts) >= 5 and parts[3].endswith(".PRG"):
+        return f"{parts[2]}/{parts[3]}"
+    return parts[2]
+
+
+def _load_elf_symbol_bytes(elf_path: Path) -> dict[str, bytes]:
+    """Walk the linked .elf, return {symbol: bytes} for every named non-zero
+    symbol. Hashes anchored here survive linker fixups (jump-target patches,
+    relocations) — same bytes seen by the verifier post-build."""
+    try:
+        from elftools.elf.elffile import ELFFile  # type: ignore
+    except ImportError:
+        return {}
+    out: dict[str, bytes] = {}
+    try:
+        with elf_path.open("rb") as f:
+            elf = ELFFile(f)
+            symtab = elf.get_section_by_name(".symtab")
+            if symtab is None:
+                return out
+            secs = [elf.get_section(i) for i in range(elf.num_sections())]
+            for sym in symtab.iter_symbols():
+                if not sym.name or sym["st_size"] == 0:
+                    continue
+                if sym.name in out:
+                    continue
+                sec_idx = sym["st_shndx"]
+                if not isinstance(sec_idx, int) or sec_idx >= len(secs):
+                    continue
+                sec = secs[sec_idx]
+                if sec is None or not hasattr(sec, "data"):
+                    continue
+                off = sym["st_value"] - sec["sh_addr"]
+                data = sec.data()
+                if off < 0 or off + sym["st_size"] > len(data):
+                    continue
+                out[sym.name] = bytes(data[off:off + sym["st_size"]])
+    except Exception:
+        pass
+    return out
+
+
 def build_manifest() -> int:
+    import hashlib
     if not BUILD.is_dir():
         print(f"error: missing {BUILD} — run `make check` first", file=sys.stderr)
         return 1
+    elf_cache: dict[str, dict[str, bytes]] = {}
     files: dict[str, list[dict[str, Any]]] = {}
+    total_hashed = 0
     for p in sorted(BUILD.rglob("*.s")):
         rel = p.relative_to(ROOT).as_posix()
         try:
-            files[rel] = parse_s(p)
+            ops = parse_s(p)
+            binary = _binary_from_path(rel)
+            if binary is not None:
+                if binary not in elf_cache:
+                    elf_path = ROOT / "build" / "data" / f"{binary}.elf"
+                    elf_cache[binary] = (
+                        _load_elf_symbol_bytes(elf_path) if elf_path.is_file() else {}
+                    )
+                sym_bytes = elf_cache[binary]
+                for op in ops:
+                    if op.get("op") != "label":
+                        continue
+                    b = sym_bytes.get(op.get("name", ""))
+                    if b is None:
+                        continue
+                    op["sha256"] = hashlib.sha256(b).hexdigest()
+                    total_hashed += 1
+            files[rel] = ops
         except Exception as e:
             print(f"warn: failed to parse {rel}: {e}", file=sys.stderr)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(json.dumps(files, indent=1) + "\n")
-    print(f"wrote {MANIFEST} ({len(files)} files, {sum(len(v) for v in files.values())} ops)")
+    print(f"wrote {MANIFEST} ({len(files)} files, "
+          f"{sum(len(v) for v in files.values())} ops, {total_hashed} hashes)")
     return 0
 
 

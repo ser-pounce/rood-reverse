@@ -60,7 +60,6 @@ void func_8009F314(int, void*, int);
 void func_8009F940(int, int, int*, char*);
 void func_8009FD5C(int);
 void func_8009FE74(int);
-void func_800A0768(int, char*);
 void func_800A07FC(int, void*);
 void func_800A0A1C(int, int);
 

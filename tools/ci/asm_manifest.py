@@ -193,6 +193,30 @@ def parse_s(path: Path) -> list[dict[str, Any]]:
     return ops
 
 
+def _emit_bytes(hexstr: str, size: int) -> list[str]:
+    """Emit `.byte 0xXX, 0xXX, ...` lines (16 bytes per line for readability).
+
+    `size` is the parser's byte-count for this label's contribution; .o
+    symbol sizes can run longer when the assembler folds alignment padding
+    into the symbol extent. We truncate to `size` so the section layout
+    matches what splat originally produced (the parser already captured
+    explicit `.align` ops separately). Falls back to `.zero size` when no
+    bytes are recorded — the .elf bytes for that label will diverge from
+    retail, which is fine as long as no PRG-hash-verified function depends
+    on it."""
+    if not hexstr:
+        return [f".zero 0x{size:X}"]
+    raw = bytes.fromhex(hexstr)[:size]
+    if len(raw) < size:
+        # Manifest under-recorded — pad with zeros so layout stays consistent.
+        raw = raw + b"\x00" * (size - len(raw))
+    lines: list[str] = []
+    for i in range(0, len(raw), 16):
+        chunk = raw[i:i + 16]
+        lines.append(".byte " + ", ".join(f"0x{b:02X}" for b in chunk))
+    return lines
+
+
 def render(ops: list[dict[str, Any]]) -> str:
     out: list[str] = ['.include "macro.inc"', ""]
     for op in ops:
@@ -204,7 +228,7 @@ def render(ops: list[dict[str, Any]]) -> str:
         elif k == "label":
             out.append(f"{op['kind']} {op['name']}")
             if op["size"] > 0:
-                out.append(f".zero 0x{op['size']:X}")
+                out.extend(_emit_bytes(op.get("bytes", ""), op["size"]))
             if op["kind"] == "glabel":
                 out.append(f"endlabel {op['name']}")
             elif op["kind"] == "dlabel":
@@ -266,52 +290,92 @@ def _load_elf_symbol_bytes(elf_path: Path) -> dict[str, bytes]:
     return out
 
 
-def build_manifest() -> int:
-    import hashlib
+def _build_symbol_bytes_per_binary(o_root: Path) -> dict[str, dict[str, bytes]]:
+    """Walk a build/src tree, return {binary_name: {symbol: bytes}}.
+
+    Used to source retail bytes for per-symbol manifest entries — the bytes
+    come from a `make check`-validated build (locally, against the real disk),
+    so they're guaranteed retail-byte-accurate."""
+    try:
+        from elftools.elf.elffile import ELFFile  # type: ignore
+    except ImportError:
+        return {}
+    out: dict[str, dict[str, bytes]] = {}
+    if not o_root.is_dir():
+        return out
+    for o in o_root.rglob("*.o"):
+        rel = o.relative_to(o_root).as_posix()
+        parts = rel.split("/")
+        if len(parts) >= 2 and parts[1].endswith(".PRG"):
+            binary = f"{parts[0]}/{parts[1]}"
+        else:
+            binary = parts[0]
+        sym_map = out.setdefault(binary, {})
+        try:
+            with o.open("rb") as f:
+                elf = ELFFile(f)
+                symtab = elf.get_section_by_name(".symtab")
+                if symtab is None:
+                    continue
+                secs = [elf.get_section(i) for i in range(elf.num_sections())]
+                for sym in symtab.iter_symbols():
+                    if not sym.name or sym["st_size"] == 0:
+                        continue
+                    if sym.name in sym_map:
+                        continue
+                    sec_idx = sym["st_shndx"]
+                    if not isinstance(sec_idx, int) or sec_idx >= len(secs):
+                        continue
+                    sec = secs[sec_idx]
+                    if sec is None or not hasattr(sec, "data"):
+                        continue
+                    off = sym["st_value"] - sec["sh_addr"]
+                    data = sec.data()
+                    if off < 0 or off + sym["st_size"] > len(data):
+                        continue
+                    sym_map[sym.name] = bytes(data[off:off + sym["st_size"]])
+        except Exception:
+            continue
+    return out
+
+
+def build_manifest(bytes_from: Path | None = None) -> int:
+    """Build the asm-manifest. If bytes_from is given, attach retail-byte
+    content per label so render() can emit `.byte` instead of `.zero` —
+    making the linked .elf byte-stable across decomp transitions.
+
+    Without bytes_from, fall back to layout-only (stubs render as .zero N,
+    .elf bytes drift on decomp — the old behavior)."""
     if not BUILD.is_dir():
         print(f"error: missing {BUILD} — run `make check` first", file=sys.stderr)
         return 1
-    # Only attach sha256 for symbols whose function is NOT currently stubbed.
-    # A stubbed function's .elf bytes are `.zero N` — meaningless to hash, and
-    # attaching such a hash would later break verification if the function
-    # gets decompiled upstream (the new C body produces real bytes that won't
-    # match the stored stub hash). Functions whose hash is absent are simply
-    # not verified — the cost of fixture stability across upstream decomps.
-    active = _active_include_asm_names()
-    elf_cache: dict[str, dict[str, bytes]] = {}
+    sym_by_binary: dict[str, dict[str, bytes]] = (
+        _build_symbol_bytes_per_binary(bytes_from) if bytes_from else {}
+    )
     files: dict[str, list[dict[str, Any]]] = {}
-    total_hashed = 0
+    total_with_bytes = 0
     for p in sorted(BUILD.rglob("*.s")):
         rel = p.relative_to(ROOT).as_posix()
         try:
             ops = parse_s(p)
             binary = _binary_from_path(rel)
-            if binary is not None:
-                if binary not in elf_cache:
-                    elf_path = ROOT / "build" / "data" / f"{binary}.elf"
-                    elf_cache[binary] = (
-                        _load_elf_symbol_bytes(elf_path) if elf_path.is_file() else {}
-                    )
-                sym_bytes = elf_cache[binary]
-                for op in ops:
-                    if op.get("op") != "label":
-                        continue
-                    name = op.get("name", "")
-                    # Skip stubs — their bytes are .zero N, not retail.
-                    if op.get("kind") == "glabel" and name in active:
-                        continue
-                    b = sym_bytes.get(name)
-                    if b is None:
-                        continue
-                    op["sha256"] = hashlib.sha256(b).hexdigest()
-                    total_hashed += 1
+            sym_bytes = sym_by_binary.get(binary or "", {}) if binary else {}
+            for op in ops:
+                if op.get("op") != "label":
+                    continue
+                b = sym_bytes.get(op.get("name", ""))
+                if b is None:
+                    continue
+                op["bytes"] = b.hex()
+                total_with_bytes += 1
             files[rel] = ops
         except Exception as e:
             print(f"warn: failed to parse {rel}: {e}", file=sys.stderr)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(json.dumps(files, indent=1) + "\n")
     print(f"wrote {MANIFEST} ({len(files)} files, "
-          f"{sum(len(v) for v in files.values())} ops, {total_hashed} hashes)")
+          f"{sum(len(v) for v in files.values())} ops, "
+          f"{total_with_bytes} labels with bytes)")
     return 0
 
 
@@ -365,10 +429,14 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--build", action="store_true", help="Scan build/src, write manifest.")
     p.add_argument("--render", action="store_true", help="Read manifest, write stub .s files.")
+    p.add_argument("--bytes-from", type=Path, default=None,
+                   help="(--build) Walk this build/src tree for retail per-symbol bytes "
+                        "to attach to manifest labels. Source must be a `make check`-"
+                        "validated build (real disk) so bytes are retail-accurate.")
     args = p.parse_args()
     if args.build == args.render:
         p.error("specify exactly one of --build / --render")
-    return build_manifest() if args.build else render_stubs()
+    return build_manifest(args.bytes_from) if args.build else render_stubs()
 
 
 if __name__ == "__main__":

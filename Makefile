@@ -47,7 +47,6 @@ check: $$(TARGETS)
 
 commit-check: format
 	$(MAKE) remake
-	$(MAKE) ci-fixture-asm-manifest-with-hashes
 	$(MAKE) objdiff
 
 clean:

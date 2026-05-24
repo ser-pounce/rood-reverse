@@ -89,19 +89,38 @@ def verify() -> int:
     files = json.loads(ASM_MANIFEST.read_text())
     active = _active_include_asm_names()
 
-    # Bucket entries-with-hash by target binary, filtering stubbed funcs out.
+    # Bucket entries by target binary. For each glabel:
+    #   - still INCLUDE_ASM'd in src/ (stubbed)  -> skip; bytes are .zero N
+    #   - decompiled (no INCLUDE_ASM) with sha256 -> verify
+    #   - decompiled WITHOUT sha256              -> FAIL (manifest stale —
+    #     someone added a C body without running `make commit-check` to
+    #     anchor the hash to a passing `make check`)
     by_binary: dict[str, list[dict]] = {}
     total_hashed = 0
+    unhashed_decompiled: list[str] = []
     for rel, ops in files.items():
         binary = _binary_from_manifest_path(rel)
         if binary is None:
             continue
+        # splat's matchings/ are reference disassembly for already-decompiled
+        # functions (informational, not compiled). Skip — only nonmatchings/
+        # are part of the decomp byte-match contract.
+        in_nonmatchings = "nonmatchings" in rel.split("/")
         for op in ops:
-            if op.get("op") != "label" or "sha256" not in op:
+            if op.get("op") != "label":
+                continue
+            name = op.get("name", "")
+            if op.get("kind") == "glabel" and name in active:
+                continue          # stubbed — bytes are placeholder, don't verify
+            if "sha256" not in op:
+                # Decompiled glabel in nonmatchings/ without a hash means
+                # someone added a C body without running `make commit-check`
+                # to anchor the hash. Otherwise (matchings/, dlabel, etc.) the
+                # missing hash is benign.
+                if in_nonmatchings and op.get("kind") == "glabel":
+                    unhashed_decompiled.append(f"{binary}:{name}")
                 continue
             total_hashed += 1
-            if op.get("kind") == "glabel" and op["name"] in active:
-                continue          # function still stubbed
             by_binary.setdefault(binary, []).append(op)
 
     if total_hashed == 0:
@@ -134,8 +153,16 @@ def verify() -> int:
                 )
             checked += 1
 
-    print(f"verified {checked} decompiled symbols against asm-manifest hashes "
-          f"({total_hashed - checked} stubbed, skipped)")
+    print(f"verified {checked} decompiled symbols against asm-manifest hashes")
+
+    if unhashed_decompiled:
+        print(f"\n{len(unhashed_decompiled)} decompiled function(s) missing "
+              f"sha256 in asm-manifest — run `make commit-check` to anchor "
+              f"the hash to a passing `make check` byte-match:", file=sys.stderr)
+        for n in unhashed_decompiled[:20]:
+            print(f"  {n}", file=sys.stderr)
+        if len(unhashed_decompiled) > 20:
+            print(f"  ... {len(unhashed_decompiled) - 20} more", file=sys.stderr)
 
     if missing:
         print(f"\n{len(missing)} symbol(s) missing from .elf:", file=sys.stderr)
@@ -150,7 +177,7 @@ def verify() -> int:
         if len(mismatches) > 20:
             print(f"  ... {len(mismatches) - 20} more", file=sys.stderr)
         return 1
-    if missing:
+    if missing or unhashed_decompiled:
         return 1
     return 0
 

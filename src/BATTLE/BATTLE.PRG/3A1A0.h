@@ -9,6 +9,23 @@ typedef struct {
 } func_80089888_t;
 
 typedef struct {
+    u_char unk0_0 : 3;
+    u_char unk0_3 : 1;
+    u_char unk0_4 : 2;
+    u_char unk0_7 : 2;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+} func_800A2C48_t2;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -58,7 +75,7 @@ typedef struct {
     int unk60;
     int unk64;
     int unk68;
-    int unk6C[42][8];
+    func_800A2C48_t2 unk6C[42];
     int unk5AC;
     u_char unk5B0;
     u_char unk5B1;

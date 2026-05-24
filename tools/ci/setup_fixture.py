@@ -71,6 +71,11 @@ def render_yaml_bundle() -> None:
     yaml_bundle.render_stubs()
 
 
+def render_undefined_bundle() -> None:
+    import undefined_bundle
+    undefined_bundle.render_stubs()
+
+
 def touch_disk_config() -> None:
     cfg = ROOT / "config" / "SLUS-01040.xml"
     cfg.parent.mkdir(parents=True, exist_ok=True)
@@ -88,6 +93,7 @@ def main() -> int:
     render_asm_stubs()
     render_png_stubs()
     render_yaml_bundle()
+    render_undefined_bundle()
     copy_seeds()
     touch_disk_config()
     MARKER.write_text("ok\n")

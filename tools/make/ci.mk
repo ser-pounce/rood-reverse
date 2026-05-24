@@ -22,6 +22,6 @@ ci-fixture-asm-manifest:
 # "Build doesn't break" smoke: render stub .s from the asm manifest, write
 # synthetic data/, copy linker/include seeds, link every PRG under ROOD_CI=1.
 ci-smoke:
-	$(CI_SETUP)
 	$(MAKE) ROOD_CI=1 tools/.sysdeps tools/python/.requirements.stamp
+	$(CI_SETUP)
 	$(MAKE) ROOD_CI=1 $(CI_BINARIES) -j

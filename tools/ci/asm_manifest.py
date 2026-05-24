@@ -271,6 +271,13 @@ def build_manifest() -> int:
     if not BUILD.is_dir():
         print(f"error: missing {BUILD} — run `make check` first", file=sys.stderr)
         return 1
+    # Only attach sha256 for symbols whose function is NOT currently stubbed.
+    # A stubbed function's .elf bytes are `.zero N` — meaningless to hash, and
+    # attaching such a hash would later break verification if the function
+    # gets decompiled upstream (the new C body produces real bytes that won't
+    # match the stored stub hash). Functions whose hash is absent are simply
+    # not verified — the cost of fixture stability across upstream decomps.
+    active = _active_include_asm_names()
     elf_cache: dict[str, dict[str, bytes]] = {}
     files: dict[str, list[dict[str, Any]]] = {}
     total_hashed = 0
@@ -289,7 +296,11 @@ def build_manifest() -> int:
                 for op in ops:
                     if op.get("op") != "label":
                         continue
-                    b = sym_bytes.get(op.get("name", ""))
+                    name = op.get("name", "")
+                    # Skip stubs — their bytes are .zero N, not retail.
+                    if op.get("kind") == "glabel" and name in active:
+                        continue
+                    b = sym_bytes.get(name)
                     if b is None:
                         continue
                     op["sha256"] = hashlib.sha256(b).hexdigest()

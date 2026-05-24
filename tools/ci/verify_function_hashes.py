@@ -88,27 +88,6 @@ def verify() -> int:
         return 1
     files = json.loads(ASM_MANIFEST.read_text())
     active = _active_include_asm_names()
-    # --- DEBUG (temporary): diagnose CI vs local active-set discrepancy ---
-    import platform
-    print(f"DEBUG platform: {platform.system()} {platform.machine()} py{sys.version_info[:2]}")
-    print(f"DEBUG ROOT={ROOT}")
-    src = ROOT / "src"
-    print(f"DEBUG src.is_dir()={src.is_dir()} cwd={Path.cwd()}")
-    c_files = sorted(src.rglob("*.c")) if src.is_dir() else []
-    print(f"DEBUG .c files scanned: {len(c_files)}")
-    print(f"DEBUG active total: {len(active)}")
-    for n in ("func_8009F858", "func_8009FC20", "func_800A01C8", "func_800A0ABC",
-              "func_8009F794", "func_8009F898"):
-        print(f"DEBUG  active[{n}] = {n in active}")
-    target = ROOT / "src" / "BATTLE" / "BATTLE.PRG" / "30D14.c"
-    if target.is_file():
-        t = target.read_text()
-        print(f"DEBUG 30D14.c len={len(t)} matches={sum(1 for _ in _INCLUDE_ASM_RE.finditer(t))}")
-        # Slice around the first failing func.
-        idx = t.find("func_8009F858")
-        if idx >= 0:
-            print(f"DEBUG 30D14.c near F858 [{idx-60}:{idx+60}]={t[max(0,idx-60):idx+60]!r}")
-    # --- END DEBUG ---
 
     # Bucket entries-with-hash by target binary, filtering stubbed funcs out.
     by_binary: dict[str, list[dict]] = {}

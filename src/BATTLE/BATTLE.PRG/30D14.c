@@ -242,7 +242,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F794);
 
 int func_8009F858(int arg0)
 {
-    func_800A2C48_t* temp_a0 = D_800F45E0[arg0];
+    D_800F4588_t* temp_a0 = D_800F45E0[arg0];
 
     if (temp_a0 == NULL) {
         return -1;
@@ -255,7 +255,15 @@ int func_8009F858(int arg0)
     return temp_a0->unk6C[8].unk1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F898);
+void func_8009F898(int arg0, int arg1, int arg2)
+{
+    D_800F4588_t* temp_a0 = D_800F4588[arg0 * 2];
+
+    if (temp_a0 != NULL) {
+        temp_a0->unk5C0 = arg2;
+        temp_a0->unk8_6 = arg1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F8DC);
 
@@ -272,7 +280,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FBD8);
 int func_8009FC20(int arg0, int* arg1)
 {
     int _[2] __attribute__((unused));
-    func_800A2C48_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 == NULL) {
         return -1;
@@ -314,7 +322,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0104);
 
 int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
 {
-    func_800A2C48_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 == NULL) {
         return -1;
@@ -353,7 +361,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0A74);
 
 void func_800A0ABC(int arg0)
 {
-    func_800A2C48_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
     if (temp_a0 != NULL) {
         temp_a0->unk1840 = 0;
         temp_a0->unk1846 = 0;
@@ -365,7 +373,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0AFC);
 
 void func_800A0B5C(int arg0, int arg1, int arg2)
 {
-    func_800A2C48_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 == NULL) {
         return;
@@ -375,7 +383,7 @@ void func_800A0B5C(int arg0, int arg1, int arg2)
         arg1 = 1;
     }
     temp_a0->unk5C2 = arg1;
-    
+
     if (arg2 < 0) {
         arg2 = 1;
     }
@@ -384,7 +392,7 @@ void func_800A0B5C(int arg0, int arg1, int arg2)
 
 void func_800A0BA0(int arg0, int* arg1, int* arg2)
 {
-    func_800A2C48_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
     if (temp_a0 != 0) {
         *arg1 = temp_a0->unk5C2;
         *arg2 = temp_a0->unk5C0;

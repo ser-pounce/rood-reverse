@@ -12,7 +12,7 @@ void func_800F9A24(int arg0)
 {
     func_800F9A78(arg0);
     func_800F9CB0();
-    D_800F453C->unk8_23 = 1;
+    D_800F4538[1]->unkA_7 = 1;
     func_800A0204(1, 1, 0, 0);
 }
 
@@ -88,10 +88,10 @@ void func_800F9CB0(void)
     D_800F4538_unk58_2 sp10;
     int new_var;
     int sp18;
-    D_800F453C_t* temp_s0;
+    D_800F4538_t* temp_s0;
     int i;
 
-    temp_s0 = D_800F453C;
+    temp_s0 = D_800F4538[1];
 
     for (i = 0; i < 2; ++i) {
         if (D_800F4590[i] != NULL) {
@@ -100,12 +100,12 @@ void func_800F9CB0(void)
     }
 
     func_8009D468(1, i);
-    temp_s0->unkC[8] = 0;
-    temp_s0->unkC[9] = 0;
-    temp_s0->unkC[0xA] = 0;
+    temp_s0->unk1C = 0;
+    temp_s0->unk1E = 0;
+    temp_s0->unk20 = 0;
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk8_0 = 0;
-    temp_s0->unk8_15 = 0;
+    temp_s0->unk9_7 = 0;
     sp10.unk0 = -1;
     sp10.unk1 = -1;
     sp10.unk2 = -1;
@@ -129,7 +129,7 @@ void func_800F9CB0(void)
     sp10.unk2 = 0;
     func_800A0768(1, &sp10);
     func_800A07FC(1, 0);
-    temp_s0->unk640[2] &= 0xFFFEFFFF;
+    temp_s0->unk648_16 = 0;
 }
 
 void func_800F9E0C(void)
@@ -218,14 +218,14 @@ int func_800F9EB8(void* arg0)
         int v = i + 2;
         D_800F4588_t* temp_a0 = D_800F4588[v];
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
-            D_800F4538_t2* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
-            temp_s0->unk14 -= temp_s1->unk6F4.unk0;
-            temp_s0->unk18 -= temp_s1->unk6F4.unk1;
-            temp_s0->unk1C -= temp_s1->unk6F4.unk2;
+            MATRIX* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
+            temp_s0->t[0] -= temp_s1->unk6F4.unk0;
+            temp_s0->t[1] -= temp_s1->unk6F4.unk1;
+            temp_s0->t[2] -= temp_s1->unk6F4.unk2;
             func_800B217C(temp_a0, temp_s0);
-            temp_s0->unk14 += temp_s1->unk6F4.unk0;
-            temp_s0->unk18 += temp_s1->unk6F4.unk1;
-            temp_s0->unk1C += temp_s1->unk6F4.unk2;
+            temp_s0->t[0] += temp_s1->unk6F4.unk0;
+            temp_s0->t[1] += temp_s1->unk6F4.unk1;
+            temp_s0->t[2] += temp_s1->unk6F4.unk2;
         }
     }
 

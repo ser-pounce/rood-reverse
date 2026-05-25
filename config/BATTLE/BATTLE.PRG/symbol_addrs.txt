@@ -1148,6 +1148,7 @@ vs_battle_menu9CursorMemory = 0x800F1BF0;
 vs_battle_roomData = 0x800F1BF8; // size:0xC4
 _submenuState = 0x800F1CD8;
 vs_battle_objectDataSlots = 0x800F2310;
+D_800F4538 = 0x800F4538; // size:0x44
 _mpdClearedSection = 0x800F4BAC;
 _mpdRoomDoorSection = 0x800F4BE8;
 vs_battle_textBoxStatuses = 0x800F4C00;

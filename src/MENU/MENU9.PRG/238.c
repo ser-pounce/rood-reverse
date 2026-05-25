@@ -490,7 +490,7 @@ int _handleMenu(void)
         func_801080C8();
         D_8010A444 = 0x150;
         D_8010A44E = 0x6B;
-        D_8010A44C = D_800F453C->unk656;
+        D_8010A44C = D_800F4538[1]->unk656;
         D_8010A430.vx = 0xF40;
         D_8010A430.vy = 0xE47;
         D_8010A430.vz = 0;
@@ -855,9 +855,9 @@ int _handleMenu(void)
                                       + vs_battle_menu9CursorMemory.encyclopaediaRow]
                               .unk0)
             == 0) {
-            int temp_v1_4 = D_800F453C->unk656;
+            int temp_v1_4 = D_800F4538[1]->unk656;
             D_8010A44C = temp_v1_4;
-            D_8010A44E = D_800F453C->unk63E;
+            D_8010A44E = D_800F4538[1]->unk63E;
             D_8010A444 = (temp_v1_4 << 0x10) >> 0xE;
             if (D_8010A444 < 0x280) {
                 D_8010A444 = 0x280;
@@ -1087,9 +1087,9 @@ int _handleMenu(void)
                                       + vs_battle_menu9CursorMemory.encyclopaediaRow]
                               .unk0)
             == 0) {
-            int temp_v1_10 = D_800F453C->unk656;
+            int temp_v1_10 = D_800F4538[1]->unk656;
             D_8010A44C = temp_v1_10;
-            D_8010A44E = D_800F453C->unk63E;
+            D_8010A44E = D_800F4538[1]->unk63E;
             D_8010A444 = (temp_v1_10 << 0x10) >> 0xE;
             if (D_8010A444 < 0x280) {
                 D_8010A444 = 0x280;

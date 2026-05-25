@@ -78,7 +78,9 @@ typedef struct {
     char unk8_7 : 1;
     u_char unk9_0 : 4;
     u_char unk9_4 : 1;
-    u_char unk9_5 : 3;
+    u_char unk9_5 : 1;
+    u_char unk9_6 : 1;
+    u_char unk9_7 : 1;
     u_char unkA_0 : 7;
     u_char unkA_7 : 1;
     u_char unkB_0 : 4;

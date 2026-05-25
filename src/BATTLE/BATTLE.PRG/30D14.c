@@ -472,7 +472,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FE74);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FF08);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FFA8);
+int func_8009FFA8(int arg0, int arg1)
+{
+    int _[2] __attribute__((unused));
+
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    int temp_v1 = temp_a0->unk12;
+
+    if (temp_v1 == 0xFF) {
+        return -2;
+    }
+
+    if ((temp_v1 > 16) || (D_800F4538[temp_v1]->unk0 == 0)) {
+        return -1;
+    }
+
+    temp_a0->unk9_5 = 0;
+    // BUG: no return value, in practice it isn't read by the only caller.
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0024);
 

@@ -289,7 +289,29 @@ void func_8009D854(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D88C);
+void func_8009D88C(int arg0)
+{
+    int i;
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+
+    if (temp_a0 == NULL) {
+        return;
+    }
+
+    for (i = 0; i < 2; ++i) {
+        D_800F4588_t* temp_v1 = D_800F4588[(temp_a0->unkF * 2) + i];
+        if ((temp_v1 != NULL) && (temp_v1->unkD != 0)) {
+            if (temp_v1->unk8_4) {
+                temp_v1->unk11 = 0x40;
+                temp_v1->unk12 = 0x40;
+            } else {
+                temp_v1->unk11 = 0;
+                temp_v1->unk12 = 0;
+            }
+            temp_v1->unk13 = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D934);
 

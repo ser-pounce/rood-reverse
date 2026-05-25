@@ -178,7 +178,21 @@ int func_80099FA8(func_8009AC24_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A028);
+void* func_8009A028(int* arg0, void* arg1, int arg2)
+{
+    if (arg0 == NULL) {
+        arg0 = vs_main_allocHeap(arg2);
+    }
+
+    memcpy(arg0, arg1, arg2);
+
+    arg0[12] += (u_long)arg0;
+    arg0[13] += (u_long)arg0;
+    arg0[14] += (u_long)arg0;
+    arg0[15] += (u_long)arg0;
+
+    return arg0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A0B8);
 

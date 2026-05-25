@@ -237,10 +237,10 @@ int func_800FA188(int arg0, int arg1, int* arg2)
     int i;
     int var_t2 = 0;
     int ret = 0;
-    D_800F4588_t** var_t0 = D_800F45E0;
+    D_800F45E0_t** var_t0 = D_800F45E0;
 
     for (i = 0; i < 16; ++i) {
-        D_800F4588_t* temp_v1 = var_t0[i];
+        D_800F45E0_t* temp_v1 = var_t0[i];
         if ((var_t0[i] != 0)
             && ((((!var_t0[i]->unk8_0) && (!temp_v1->unk9_0)) && (temp_v1->unk1A == 0))
                 && (temp_v1->unk5C == arg0))
@@ -260,11 +260,11 @@ int func_800FA188(int arg0, int arg1, int* arg2)
 int func_800FA238(int arg0, int arg1, int arg2)
 {
     int i;
-    D_800F4588_t** var_t0 = D_800F45E0;
+    D_800F45E0_t** var_t0 = D_800F45E0;
     int new_var = arg2 + 0x80;
 
     for (i = 0; i < 16; ++i) {
-        D_800F4588_t* temp_v1 = var_t0[i];
+        D_800F45E0_t* temp_v1 = var_t0[i];
         if (var_t0[i] && !var_t0[i]->unk8_0 && !temp_v1->unk9_0
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
             && (temp_v1->unk1E >= arg2) && (new_var >= temp_v1->unk1E)) {

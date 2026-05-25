@@ -40,6 +40,20 @@ typedef struct {
 } D_800F4538_unk58_2;
 
 typedef struct {
+    int unk0;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    u_short unk8;
+    u_short unkA;
+    u_short unkC;
+    u_short unkE;
+    u_short unk10;
+    u_short unk12;
+} D_800F4538_unk1864;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -134,7 +148,12 @@ typedef struct {
     u_short unk63E;
     u_char unk640[8];
     int unk648;
-    u_char unk64C[10];
+    u_char unk64C;
+    u_char unk64D;
+    u_short unk64E;
+    u_short unk650;
+    u_short unk652;
+    u_short unk654;
     u_short unk656;
     u_char unk658[0x88];
     u_char unk6E0;
@@ -177,7 +196,9 @@ typedef struct {
     u_short unk184C;
     u_short unk184E;
     u_int unk1850;
-    u_char unk1854[0x28];
+    u_char unk1854[0x10];
+    D_800F4538_unk1864 unk1864;
+    int unk1868;
     int unk187C;
 } D_800F4538_t;
 
@@ -276,7 +297,12 @@ typedef struct {
     u_short unk63E;
     u_char unk640[8];
     int unk648;
-    u_char unk64C[10];
+    u_char unk64C;
+    u_char unk64D;
+    u_short unk64E;
+    u_short unk650;
+    u_short unk652;
+    u_short unk654;
     u_short unk656;
     u_char unk658[0x88];
     u_char unk6E0;
@@ -319,7 +345,9 @@ typedef struct {
     u_short unk184C;
     u_short unk184E;
     u_int unk1850;
-    u_char unk1854[0x28];
+    u_char unk1854[0x10];
+    D_800F4538_unk1864 unk1864;
+    int unk1868;
     int unk187C;
 } D_800F4588_t;
 

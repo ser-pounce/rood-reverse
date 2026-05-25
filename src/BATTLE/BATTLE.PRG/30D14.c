@@ -3,6 +3,7 @@
 #include "3A1A0.h"
 #include "146C.h"
 #include "../SLUS_010.40/main.h"
+#include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
 
@@ -507,7 +508,17 @@ void func_800A0ABC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0AFC);
+void func_800A0AFC(int arg0, int arg1, int arg2)
+{
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    if (temp_a0 != NULL) {
+        temp_a0->unk5BA = arg1 / ONE;
+        temp_a0->unk5B9 = arg2 / ONE;
+        if (arg1 >= arg2) {
+            temp_a0->unk5B9 = 0xFF;
+        }
+    }
+}
 
 void func_800A0B5C(int arg0, int arg1, int arg2)
 {

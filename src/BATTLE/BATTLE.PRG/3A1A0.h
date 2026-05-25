@@ -101,13 +101,14 @@ typedef struct {
     short unk24;
     short unk26;
     int unk28[12];
-    D_800F4538_unk58 unk58;
+    D_800F4538_unk58_2 unk58;
     int unk5C;
     int unk60;
     int unk64;
     int unk68;
     D_800F4538_t2 unk6C[42];
-    u_int unk5AC_0 : 9;
+    u_int unk5AC_0 : 8;
+    u_int unk5AC_8 : 1;
     u_int unk5AC_9 : 1;
     u_int unk5AC_10 : 1;
     u_int unk5AC_11 : 1;
@@ -246,7 +247,7 @@ typedef struct {
     short unk24;
     short unk26;
     int unk28[12];
-    D_800F4538_unk58 unk58;
+    D_800F4538_unk58_2 unk58;
     char unk5C;
     char unk5D;
     char unk5E;
@@ -255,7 +256,8 @@ typedef struct {
     int unk64;
     int unk68;
     D_800F4538_t2 unk6C[42];
-    u_int unk5AC_0 : 9;
+    u_int unk5AC_0 : 8;
+    u_int unk5AC_8 : 1;
     u_int unk5AC_9 : 1;
     u_int unk5AC_10 : 1;
     u_int unk5AC_11 : 1;

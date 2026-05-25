@@ -51,6 +51,7 @@ int func_800A01C8(int, int, int, int);
 void func_800A0204(int, int, int, int);
 void func_800A0618(int, int, int, int);
 int func_800A0768(int, D_800F4538_unk58_2*);
+int func_800A07FC(int, D_800F4538_unk58_2*);
 void func_800A0870(int);
 void func_800A087C(int actorId, int);
 void func_800A09D8(int, int);

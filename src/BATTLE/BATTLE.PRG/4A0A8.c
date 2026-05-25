@@ -1212,13 +1212,13 @@ int func_800B810C(u_char* arg0)
 
 int func_800B81A0(u_char* arg0, short arg1)
 {
-    u_char sp10[4];
+    D_800F4538_unk58_2 sp10;
 
-    sp10[0] = arg0[3];
-    sp10[1] = arg0[4];
-    sp10[2] = arg0[5];
+    sp10.unk0 = arg0[3];
+    sp10.unk1 = arg0[4];
+    sp10.unk2 = arg0[5];
 
-    if (sp10[0] | sp10[1] | sp10[2]) {
+    if (sp10.unk0 | sp10.unk1 | sp10.unk2) {
         func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
     } else {
         func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0);

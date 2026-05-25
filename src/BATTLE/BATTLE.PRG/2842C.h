@@ -58,7 +58,6 @@ void func_8009E634(void*, int);
 void func_8009F314(int, void*, int);
 void func_8009FD5C(int);
 void func_8009FE74(int);
-void func_800A07FC(int, void*);
 void func_800A0A1C(int, int);
 
 extern vs_battle_objectData vs_battle_objectDataSlots[16];

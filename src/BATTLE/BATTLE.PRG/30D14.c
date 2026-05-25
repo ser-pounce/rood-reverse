@@ -6,6 +6,14 @@
 #include <libetc.h>
 #include <memory.h>
 
+typedef struct {
+    u_char unk0;
+    signed char unk1;
+    short unk2;
+    int unk4;
+    int unk8;
+} func_8009AC24_t;
+
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
@@ -131,7 +139,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AA84);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC24);
+int func_8009AC24(func_8009AC24_t* arg0)
+{
+    int i;
+
+    for (i = 0; i < 17; ++i) {
+        if ((i != arg0->unk1)
+            && ((D_800F4538[i] != NULL) && (D_800F4538[i]->unk6E6 == arg0->unk2))) {
+            arg0->unk8 = i;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC84);
 

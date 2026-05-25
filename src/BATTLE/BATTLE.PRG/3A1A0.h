@@ -143,7 +143,7 @@ typedef struct {
     u_char unk6E3;
     u_char unk6E4;
     u_char unk6E5;
-    short unk6E6;
+    u_short unk6E6;
     short unk6E8;
     short unk6EA;
     int unk6EC;
@@ -285,7 +285,7 @@ typedef struct {
     u_char unk6E3;
     u_char unk6E4;
     u_char unk6E5;
-    short unk6E6;
+    u_short unk6E6;
     short unk6E8;
     short unk6EA;
     int unk6EC;

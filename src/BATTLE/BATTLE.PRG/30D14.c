@@ -1,7 +1,8 @@
 #include "common.h"
+#include "146C.h"
 #include "30D14.h"
 #include "3A1A0.h"
-#include "146C.h"
+#include "44F14.h"
 #include "../SLUS_010.40/main.h"
 #include <libgte.h>
 #include <libetc.h>
@@ -621,7 +622,32 @@ int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0204);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0618);
+int func_800A0618(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800F4538_t* temp_s0;
+
+    int v0 = func_800A0204(arg0, arg1, 0, arg2);
+
+    if (v0 < 0) {
+        return v0;
+    }
+
+    if (arg3 == 0) {
+        return 0;
+    }
+
+    arg3 -= vs_gametime_tickspeed / 2;
+    temp_s0 = D_800F4538[arg0];
+
+    if (arg3 > 0) {
+        temp_s0->unk5B2 = arg3;
+        func_800AFA28(temp_s0, &temp_s0->unkC54, 1);
+    }
+
+    temp_s0->unk5B2 = 1;
+
+    return 0;
+}
 
 void func_800A06B8(D_800F4538_t* arg0, int arg1)
 {

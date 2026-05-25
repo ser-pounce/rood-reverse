@@ -363,10 +363,10 @@ extern D_800F569C_t* D_800F569C;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
-void func_800C513C(int arg0)
+void func_800C513C(int arg0, int arg1)
 {
     if (!(arg0 & 0xF0)) {
-        func_8009FE74(arg0);
+        func_8009FE74(arg0, arg1);
     }
 }
 

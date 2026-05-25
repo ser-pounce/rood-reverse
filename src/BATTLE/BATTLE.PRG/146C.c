@@ -707,7 +707,6 @@ void func_8009E070(int, short*, int);
 int func_8009E480(void);
 u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
-void func_8009F990(int, char*);
 
 extern int D_80068C1C[];
 extern char D_800E8184[];

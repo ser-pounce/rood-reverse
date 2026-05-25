@@ -29,6 +29,7 @@ int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int func_8009D270(vs_battle_objectData*);
 void func_8009E700(int, int);
+void func_8009F9F4(int, u_char*);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
@@ -356,7 +357,18 @@ void func_8009F940(int arg0, int arg1, D_800F4538_unk58_2* arg2, D_800F4538_unk5
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F990);
+void func_8009F990(int arg0, u_char* arg1)
+{
+    int i;
+
+    if (arg0 == -1) {
+        for (i = 0; i < 17; ++i) {
+            func_8009F9F4(i, arg1);
+        }
+    } else {
+        func_8009F9F4(arg0, arg1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F9F4);
 

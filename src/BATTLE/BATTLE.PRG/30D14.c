@@ -12,6 +12,11 @@ typedef struct {
     short unk2;
     int unk4;
     int unk8;
+    int unkC;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
 } func_8009AC24_t;
 
 int func_8009998C(vs_battle_objectData*);
@@ -117,7 +122,20 @@ int vs_battle_processObjectDataQueue(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099854);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099900);
+int func_80099900(func_8009AC24_t* arg0)
+{
+    int i;
+
+    for (i = 0; i < 16; ++i) {
+        if ((i != arg0->unk1)
+            && ((D_800F45E0[i] != NULL)
+                && (D_800F45E0[i]->unk6C[8].unk0_0 == arg0->unk10))) {
+            arg0->unk8 = i;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_80099960(void* arg0) { vs_main_memcpy(&D_800F4448, arg0, 0xE0); }
 

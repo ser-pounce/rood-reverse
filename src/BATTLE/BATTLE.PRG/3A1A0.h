@@ -98,12 +98,11 @@ typedef struct {
     short unk1E;
     short unk20;
     short unk22;
-    int unk24[13];
+    short unk24;
+    short unk26;
+    int unk28[12];
     D_800F4538_unk58 unk58;
-    char unk5C;
-    char unk5D;
-    char unk5E;
-    char unk5F;
+    int unk5C;
     int unk60;
     int unk64;
     int unk68;
@@ -244,7 +243,9 @@ typedef struct {
     short unk1E;
     short unk20;
     short unk22;
-    int unk24[13];
+    short unk24;
+    short unk26;
+    int unk28[12];
     D_800F4538_unk58 unk58;
     char unk5C;
     char unk5D;
@@ -356,7 +357,7 @@ typedef struct {
     int unk187C;
 } D_800F4588_t;
 
-void func_800A1108(int, func_8006EBF8_t*);
+int func_800A1108(int, void*);
 void func_800A36E0(int, char, func_8006EBF8_t*);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);

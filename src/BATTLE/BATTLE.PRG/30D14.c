@@ -20,6 +20,11 @@ typedef struct {
     u_char unk13;
 } func_8009AC24_t;
 
+typedef struct {
+    u_char unk0[0x1FE0];
+    u_short unk1FE0;
+} D_800F2458_t;
+
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
@@ -43,6 +48,8 @@ extern char D_800E8FC0;
 extern int D_800E8FC4;
 extern u_char D_800E9090[];
 extern u_char D_800F244F[];
+extern D_800F2458_t D_800F2458;
+extern VECTOR D_800F4438;
 extern char D_800F4448[];
 extern int D_800F457C;
 extern int D_800F4580;
@@ -397,7 +404,18 @@ void func_8009F990(int arg0, u_char* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F9F4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FB64);
+void func_8009FB64(VECTOR* arg0)
+{
+    int i;
+
+    D_800F4438 = *arg0;
+
+    for (i = 0; i < 17; ++i) {
+        if (D_800F4538[i] != NULL) {
+            D_800F4538[i]->unk183C = D_800F2458.unk1FE0;
+        }
+    }
+}
 
 int func_8009FBD8(int arg0, int arg1)
 {

@@ -190,7 +190,9 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0x40];
+    u_char unk1800[0x3C];
+    short unk183C;
+    short unk183E;
     short unk1840;
     short unk1842;
     short unk1844;
@@ -340,7 +342,9 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0x40];
+    u_char unk1800[0x3C];
+    short unk183C;
+    short unk183E;
     short unk1840;
     short unk1842;
     short unk1844;

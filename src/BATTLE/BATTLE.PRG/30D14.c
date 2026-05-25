@@ -39,6 +39,7 @@ void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
 void func_800AB2AC(int);
+void func_800AD494(D_800F4538_t*, int, int*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
 
@@ -344,7 +345,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EE9C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EFEC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F298);
+void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
+{
+    int sp10;
+
+    func_8009EFEC(arg0, arg1, arg2);
+    if (arg2 == 1) {
+        func_800AD494(D_800F4538[arg0], 0xFE, &sp10);
+        if (sp10 != 0) {
+            func_800A01C8((int)arg0, 0xFE, 8, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F314);
 

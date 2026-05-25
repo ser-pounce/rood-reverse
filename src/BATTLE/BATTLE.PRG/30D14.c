@@ -430,7 +430,14 @@ void func_800A09D8(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0A1C);
+void func_800A0A1C(int arg0, int arg1)
+{
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    if (D_800F4538[arg0] != NULL) {
+        temp_a0->unk5AC_9 = arg1;
+        temp_a0->unk5AC_11 = arg1 >> 1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0A74);
 

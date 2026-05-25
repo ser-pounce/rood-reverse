@@ -87,7 +87,11 @@ typedef struct {
     D_800F4538_t2 unk6C[42];
     u_int unk5AC_0 : 9;
     u_int unk5AC_9 : 1;
-    u_int unk5AC_10 : 5;
+    u_int unk5AC_10 : 1;
+    u_int unk5AC_11 : 1;
+    u_int unk5AC_12 : 1;
+    u_int unk5AC_13 : 1;
+    u_int unk5AC_14 : 1;
     u_int unk5AC_15 : 1;
     u_int unk5AC_16 : 2;
     u_int unk5AC_18 : 1;
@@ -224,7 +228,11 @@ typedef struct {
     D_800F4538_t2 unk6C[42];
     u_int unk5AC_0 : 9;
     u_int unk5AC_9 : 1;
-    u_int unk5AC_10 : 5;
+    u_int unk5AC_10 : 1;
+    u_int unk5AC_11 : 1;
+    u_int unk5AC_12 : 1;
+    u_int unk5AC_13 : 1;
+    u_int unk5AC_14 : 1;
     u_int unk5AC_15 : 1;
     u_int unk5AC_16 : 2;
     u_int unk5AC_18 : 1;

@@ -112,7 +112,9 @@ typedef struct {
     u_char unk67;
     int unk68;
     D_800F4538_t2 unk6C[42];
-    u_int unk5AC_0 : 8;
+    u_int unk5AC_0 : 4;
+    u_int unk5AC_4 : 2;
+    u_int unk5AC_6 : 2;
     u_int unk5AC_8 : 1;
     u_int unk5AC_9 : 1;
     u_int unk5AC_10 : 1;

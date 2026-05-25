@@ -32,6 +32,7 @@ void func_8009E700(int, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
+int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
 
 extern u_char D_800E8F2A;
@@ -327,7 +328,20 @@ void func_8009F898(int arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F8DC);
+int func_8009F8DC(int arg0)
+{
+    int temp_s2;
+    int temp_v0;
+    int temp_s1;
+    D_800F4538_unkC54* s0 = &D_800F4538[arg0]->unkC54;
+
+    temp_s1 = s0->unk542;
+    temp_s2 = s0->unk544;
+    temp_v0 = func_800AD714(D_800F4538[arg0], s0, 3);
+    s0->unk542 = temp_s1;
+    s0->unk544 = temp_s2;
+    return temp_v0;
+}
 
 void func_8009F940(int arg0, int arg1, D_800F4538_unk58_2* arg2, D_800F4538_unk58_2* arg3)
 {

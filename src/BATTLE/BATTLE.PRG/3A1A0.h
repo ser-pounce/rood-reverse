@@ -54,6 +54,15 @@ typedef struct {
 } D_800F4538_unk1864;
 
 typedef struct {
+    u_char unk0[0x540];
+    u_short unk540;
+    u_short unk542;
+    int unk544;
+    int unk548;
+    int unk54C;
+} D_800F4538_unkC54;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -174,11 +183,9 @@ typedef struct {
     D_800F4538_unk58_2 unk6F8;
     int unk6FC;
     int unk700;
-    u_char unk704[0x550];
-    u_char unkC54[0x540];
-    short unk1194;
-    short unk1196;
-    int unk1198[0x199];
+    D_800F4538_unkC54 unk704;
+    D_800F4538_unkC54 unkC54;
+    u_char unk11A4[0x658];
     u_char unk17FC;
     u_char unk17FD;
     u_char unk17FE;
@@ -323,11 +330,9 @@ typedef struct {
     D_800F4538_unk58_2 unk6F8;
     int unk6FC;
     int unk700;
-    u_char unk704[0x550];
-    u_char unkC54[0x540];
-    short unk1194;
-    short unk1196;
-    int unk1198[0x199];
+    D_800F4538_unkC54 unk704;
+    D_800F4538_unkC54 unkC54;
+    u_char unk11A4[0x658];
     u_char unk17FC;
     u_char unk17FD;
     u_char unk17FE;

@@ -56,6 +56,6 @@ void func_800A09D8(int, int);
 int func_800A0A74(int);
 void func_800A0AFC(int, int, int);
 u_int func_800A0BE0(int actorId);
-void func_800A1178(int, int, MATRIX*, long*);
+int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3);
 void func_800A1280(int, int, SVECTOR*, int);
 int func_800A13EC(int, int, int*, int);

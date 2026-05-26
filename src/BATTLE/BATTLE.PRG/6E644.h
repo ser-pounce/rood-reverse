@@ -6,6 +6,7 @@ void func_800D78F0(void);
 void func_800DC638(void);
 int func_800DEC88(void*);
 void func_800E527C(int, int, int);
+void func_800E4C28(int, int, int, int);
 int func_800E5154(void);
 void func_800E5998(void);
 void func_800E6158(void);

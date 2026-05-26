@@ -1781,8 +1781,8 @@ static void _drawScreen(void)
     int* p;
 
     xOffset = (128 - _animationStep);
-    z = D_800F453C->unkC[0x325];
-    x = D_800F453C->unkC[0x319];
+    z = D_800F4538[1]->unk656;
+    x = D_800F4538[1]->unk63E;
     p = (int*)D_1F800000 + 13;
     p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;
     p[5] = -(x << 0xB);

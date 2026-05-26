@@ -1,34 +1,6 @@
 #include "common.h"
+#include "30D14.h"
 #include "3A1A0.h"
-
-typedef struct {
-    u_char unk0[8];
-    u_int unk8_0 : 24;
-    u_int unk8_24 : 4;
-    u_int unk8_28 : 4;
-    u_char unkC[0x03];
-    u_char unkF;
-    u_char unk10[0x5DC];
-    u_char unk5EC[0xF4];
-    u_char unk6E0;
-    u_char unk6E4[0x111C];
-    u_char unk17FD;
-} func_800A2C48_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    char unk8_0 : 1;
-    char unk8_1 : 1;
-    char unk8_2 : 6;
-    char unk9;
-    char unkA;
-    char unkB;
-    int unkC;
-    int unk10[360];
-    short unk5B0;
-    char unk5B2;
-} func_800A4828_t;
 
 typedef struct {
     u_char unk00[0x1E];
@@ -40,19 +12,6 @@ typedef struct {
     u_char unk5F;
 } struct_800A3C00;
 
-typedef struct {
-    u_char unk0[0x0F];
-    u_char unkF;
-    u_int unk10[1550];
-    u_char unk1848;
-    u_char unk1849;
-    u_char unk184A;
-    u_char unk184B;
-    u_short unk184C;
-    u_short unk184E;
-    u_int unk1850;
-} func_800A525C_t;
-
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
@@ -61,17 +20,15 @@ void func_800B28A8(void*, MATRIX*, int);
 short func_8008DD0C(int arg0, int arg1);
 void func_800A3C34(u_char, u_char, short, u_int);
 
-extern void* D_800F4538[];
-
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
-void func_800A2C48(func_800A2C48_t* arg0)
+void func_800A2C48(D_800F4538_t* arg0)
 {
     func_800A9C54(arg0->unkF, &arg0->unk5EC, 0);
     arg0->unk6E0 = 0;
-    arg0->unk8_24 = 4u;
+    arg0->unkB_0 = 4;
     func_800A29A0(arg0);
-    if (arg0->unk17FD >= 2U) {
+    if (arg0->unk17FD >= 2) {
         func_800A2C48(D_800F4538[arg0->unk17FD]);
     }
 }
@@ -128,7 +85,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A47C4);
 
 void func_800A4828(int arg0, MATRIX* arg1)
 {
-    func_800A4828_t* temp_s1 = D_800F4538[arg0];
+    D_800F4538_t* temp_s1 = D_800F4538[arg0];
     int temp_s0 = temp_s1->unk8_1;
     temp_s1->unk8_1 = 0;
     temp_s1->unk5B2 = 1;
@@ -150,7 +107,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A51A0);
 
-void func_800A525C(func_800A525C_t* arg0)
+void func_800A525C(D_800F4538_t* arg0)
 {
     arg0->unk1848 = 1;
     if (arg0->unkF == 0) {

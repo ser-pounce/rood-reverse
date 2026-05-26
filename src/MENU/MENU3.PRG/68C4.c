@@ -12,12 +12,11 @@ void func_80109344(int, int);
 int func_801090C4(int arg0, int arg1, int arg2)
 {
     int _[6] __attribute__((unused));
-    D_800F453C_t* temp_s1;
+    D_800F4538_t* temp_s1;
     int i;
     int temp_s0;
-    void* temp_s0_2;
 
-    temp_s1 = D_800F453C;
+    temp_s1 = D_800F4538[1];
     temp_s0 = D_800E8F28;
 
     switch (temp_s0) {
@@ -48,14 +47,13 @@ int func_801090C4(int arg0, int arg1, int arg2)
         }
         break;
     case 2:
-        temp_s0_2 = (char*)temp_s1 + 0xC54;
         func_800F9E0C();
         func_800F9A78(0);
         func_800F9CB0();
-        temp_s1->unk8_23 = 0;
+        temp_s1->unkA_7 = 0;
         func_800A0204(1, 1, 0, 0);
-        func_800AFA28(temp_s1, temp_s0_2, 1);
-        vs_main_memcpy(temp_s1 + 1, temp_s0_2, 0x550);
+        func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
+        vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);
 
         for (i = 0; i < 2; ++i) {
             if (D_800F4590[i] != NULL) {

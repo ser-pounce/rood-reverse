@@ -8,88 +8,11 @@
 #include "../BATTLE/BATTLE.PRG/4A0A8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 
-typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    int unk4;
-    int unk8;
-    char unkC;
-    u_char unkD;
-    char unkE;
-    char unkF;
-    char unk10;
-    char unk11;
-    char unk12;
-    char unk13;
-    int unk14;
-    int unk18;
-    short unk1C;
-    short unk1E;
-    short unk20;
-    short unk22;
-    int unk24[18];
-    int unk6C[42][8];
-    int unk5AC;
-    char unk5B0;
-    char unk5B1;
-    char unk5B2;
-    char unk5B3;
-    char unk5B4;
-    char unk5B5;
-    char unk5B6;
-    char unk5B7;
-    char unk5B8;
-    char unk5B9;
-    char unk5BA;
-    char unk5BB;
-    short unk5BC;
-    short unk5BE;
-    int unk5C0;
-    int unk5C4;
-    int unk5C8;
-    char unk5CC;
-    char unk5CD;
-    short unk5CE;
-    int unk5D0;
-    int unk5D4;
-    void* unk5D8;
-    int unk5DC;
-    int unk5E0[0x1A];
-    int unk648;
-    int unk64C[0x25];
-    char unk6E0;
-    char unk6E1;
-    char unk6E2;
-    char unk6E3;
-    short unk6E4;
-    short unk6E6;
-    short unk6E8[6];
-    signed char unk6F4;
-    signed char unk6F5;
-    signed char unk6F6;
-    char unk6F7;
-    int unk6F8;
-    int unk6FC;
-    int unk700;
-    char unk704[0x550];
-    char unkC54[0x540];
-    short unk1194;
-    short unk1196;
-    int unk1198[0x199];
-    char unk17FC;
-    u_char unk17FD;
-    short unk17FE;
-    int unk1800[0x1F];
-    int unk187C;
-} D_800F4538_t;
-
 void func_800F9A24(int arg0)
 {
     func_800F9A78(arg0);
     func_800F9CB0();
-    D_800F453C->unk8_23 = 1;
+    D_800F4538[1]->unkA_7 = 1;
     func_800A0204(1, 1, 0, 0);
 }
 
@@ -129,7 +52,7 @@ void func_800F9A78(int arg0)
         vs_battle_populateDataSlot(&sp10);
     }
     for (i = 0; i < 2; ++i) {
-        temp_s0 = D_800F4588[(temp_s2->unkF * 2) + i];
+        D_800F4588_t* temp_s0 = D_800F4588[(temp_s2->unkF * 2) + i];
         if (temp_s0 != 0) {
             temp_v0 = vs_main_allocHeap(0x5E8);
             sp10.unk0 = 4;
@@ -139,7 +62,7 @@ void func_800F9A78(int arg0)
             sp10.unk4 = temp_v0;
             sp10.actorId = 1;
             sp10.unk11 = temp_s0->unkC;
-            sp10.material = ((u_int)temp_s0->unk8 >> 0xC) & 0xF;
+            sp10.material = temp_s0->unk9_4;
             vs_battle_populateDataSlot(&sp10);
         }
     }
@@ -162,13 +85,13 @@ void func_800F9A78(int arg0)
 
 void func_800F9CB0(void)
 {
-    char sp10[3];
+    D_800F4538_unk58_2 sp10;
     int new_var;
     int sp18;
-    D_800F453C_t* temp_s0;
+    D_800F4538_t* temp_s0;
     int i;
 
-    temp_s0 = D_800F453C;
+    temp_s0 = D_800F4538[1];
 
     for (i = 0; i < 2; ++i) {
         if (D_800F4590[i] != NULL) {
@@ -177,15 +100,15 @@ void func_800F9CB0(void)
     }
 
     func_8009D468(1, i);
-    temp_s0->unkC[8] = 0;
-    temp_s0->unkC[9] = 0;
-    temp_s0->unkC[0xA] = 0;
+    temp_s0->unk1C = 0;
+    temp_s0->unk1E = 0;
+    temp_s0->unk20 = 0;
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk8_0 = 0;
-    temp_s0->unk8_15 = 0;
-    sp10[0] = -1;
-    sp10[1] = -1;
-    sp10[2] = -1;
+    temp_s0->unk9_7 = 0;
+    sp10.unk0 = -1;
+    sp10.unk1 = -1;
+    sp10.unk2 = -1;
     // BUG: reads junk
     sp18 &= 0xFFFFFF00;
     sp18 |= 2;
@@ -196,17 +119,17 @@ void func_800F9CB0(void)
     sp18 |= new_var;
     sp18 |= 0x10000000;
 
-    if (D_800F4578 == NULL) {
-        func_8009F940(1, 1, &sp18, sp10);
+    if (D_800F4538[16] == NULL) {
+        func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);
     } else {
-        D_800F4578->unk8_0 = 0;
+        D_800F4538[16]->unk8_0 = 0;
     }
-    sp10[0] = 0;
-    sp10[1] = 0;
-    sp10[2] = 0;
-    func_800A0768(1, sp10);
+    sp10.unk0 = 0;
+    sp10.unk1 = 0;
+    sp10.unk2 = 0;
+    func_800A0768(1, &sp10);
     func_800A07FC(1, 0);
-    temp_s0->unk640[2] &= 0xFFFEFFFF;
+    temp_s0->unk648_16 = 0;
 }
 
 void func_800F9E0C(void)
@@ -236,8 +159,6 @@ int func_800F9EB8(void* arg0)
 {
     int _[2];
     int i;
-    D_800F4538_t* temp_a0;
-    int* temp_s0;
     D_800F4538_t* temp_s1;
     int new_var2;
     int new_var3;
@@ -251,7 +172,7 @@ int func_800F9EB8(void* arg0)
         return -1;
     }
 
-    if (temp_s1->unk8 & 1) {
+    if (temp_s1->unk8_0) {
         return -1;
     }
 
@@ -259,7 +180,7 @@ int func_800F9EB8(void* arg0)
     temp_s1->unk5B2 =
         ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
 
-    if (temp_s1->unk8 & 4) {
+    if (temp_s1->unk8_2) {
         func_800AB4F0(temp_s1);
         func_800AF6E8(temp_s1);
     } else {
@@ -274,37 +195,37 @@ int func_800F9EB8(void* arg0)
 
     if (temp_s1->unk17FD != 0) {
         int* p = (int*)0x1F800000;
-        new_var2 = (temp_s1->unk6F7 * 4) + 0xC0;
+        new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
-        temp_s1->unk1C += temp_s1->unk6F4;
-        temp_s1->unk1E += temp_s1->unk6F5;
-        temp_s1->unk20 += temp_s1->unk6F6;
+        temp_s1->unk1C += temp_s1->unk6F4.unk0;
+        temp_s1->unk1E += temp_s1->unk6F4.unk1;
+        temp_s1->unk20 += temp_s1->unk6F4.unk2;
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
         p = (int*)0x1F800000;
-        new_var3 = (temp_s1->unk6F7 * 4) + 0xC0;
+        new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
-        temp_s1->unk1C -= temp_s1->unk6F4;
-        temp_s1->unk1E -= temp_s1->unk6F5;
-        temp_s1->unk20 -= temp_s1->unk6F6;
+        temp_s1->unk1C -= temp_s1->unk6F4.unk0;
+        temp_s1->unk1E -= temp_s1->unk6F4.unk1;
+        temp_s1->unk20 -= temp_s1->unk6F4.unk2;
     }
 
-    if (temp_s1->unk8 & 0x1000) {
+    if (temp_s1->unk9_4) {
         return -2;
     }
 
     for (i = 0; i < 2; ++i) {
         int v = i + 2;
-        temp_a0 = D_800F4588[v];
-        if ((temp_a0 != 0) && (temp_a0->unk8 & 0x10)) {
-            temp_s0 = temp_s1->unk6C[temp_a0->unkD];
-            temp_s0[5] -= temp_s1->unk6F4;
-            temp_s0[6] -= temp_s1->unk6F5;
-            temp_s0[7] -= temp_s1->unk6F6;
+        D_800F4588_t* temp_a0 = D_800F4588[v];
+        if ((temp_a0 != 0) && temp_a0->unk8_4) {
+            MATRIX* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
+            temp_s0->t[0] -= temp_s1->unk6F4.unk0;
+            temp_s0->t[1] -= temp_s1->unk6F4.unk1;
+            temp_s0->t[2] -= temp_s1->unk6F4.unk2;
             func_800B217C(temp_a0, temp_s0);
-            temp_s0[5] += temp_s1->unk6F4;
-            temp_s0[6] += temp_s1->unk6F5;
-            temp_s0[7] += temp_s1->unk6F6;
+            temp_s0->t[0] += temp_s1->unk6F4.unk0;
+            temp_s0->t[1] += temp_s1->unk6F4.unk1;
+            temp_s0->t[2] += temp_s1->unk6F4.unk2;
         }
     }
 
@@ -313,47 +234,38 @@ int func_800F9EB8(void* arg0)
 
 int func_800FA188(int arg0, int arg1, int* arg2)
 {
-    D_800F45E0_t* temp_v1;
-    D_800F45E0_t** var_t0;
-    int temp_a3;
     int i;
-    int var_t2;
-    int ret;
+    int var_t2 = 0;
+    int ret = 0;
+    D_800F45E0_t** var_t0 = D_800F45E0;
 
-    var_t2 = 0;
-    ret = 0;
-    var_t0 = D_800F45E0;
     for (i = 0; i < 16; ++i) {
-        temp_v1 = var_t0[i];
-        if (temp_v1 != 0) {
-            temp_a3 = temp_v1->unk8;
-            if (!(temp_a3 & 1) && !(temp_v1->unk8 & 0xF00) && (temp_v1->unk1A == 0)
-                && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
-                if ((temp_v1->unk16C & 0x30) == 0x20) {
-                    ret = 1;
-                } else {
-                    var_t2 -= 0x80;
-                }
+        D_800F45E0_t* temp_v1 = var_t0[i];
+        if ((var_t0[i] != 0)
+            && ((((!var_t0[i]->unk8_0) && (!temp_v1->unk9_0)) && (temp_v1->unk1A == 0))
+                && (temp_v1->unk5C == arg0))
+            && (temp_v1->unk5E == arg1)) {
+            if (temp_v1->unk6C[8].unk0_4 == 2) {
+                ret = 1;
+            } else {
+                var_t2 -= 0x80;
             }
         }
     }
+
     *arg2 = var_t2;
     return ret;
 }
 
 int func_800FA238(int arg0, int arg1, int arg2)
 {
-    D_800F45E0_t* temp_v1;
-    D_800F45E0_t** var_t0;
     int i;
-    int new_var;
-
-    var_t0 = D_800F45E0;
-    new_var = arg2 + 0x80;
+    D_800F45E0_t** var_t0 = D_800F45E0;
+    int new_var = arg2 + 0x80;
 
     for (i = 0; i < 16; ++i) {
-        temp_v1 = var_t0[i];
-        if ((var_t0[i]) && (!(var_t0[i]->unk8 & 1)) && (!(temp_v1->unk8 & 0xF00))
+        D_800F45E0_t* temp_v1 = var_t0[i];
+        if (var_t0[i] && !var_t0[i]->unk8_0 && !temp_v1->unk9_0
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
             && (temp_v1->unk1E >= arg2) && (new_var >= temp_v1->unk1E)) {
             return 1;
@@ -368,40 +280,38 @@ void func_800FA2CC(void)
     u_short* sp10;
     int i;
     int i_2;
-    char* temp_s0;
     D_800F4538_t* temp_s1;
 
     temp_s1 = D_800F4538[0];
 
     for (i = 0; i < 2; ++i) {
-        D_800F4538_t* var_a0 = D_800F4588[i];
+        D_800F4588_t* var_a0 = D_800F4588[i];
         if (var_a0 != 0) {
-            if (temp_s1->unk8 & 0x800000) {
+            if (temp_s1->unkA_7) {
                 var_a0->unk11 = 0x40;
-                var_a0->unk8 |= 0x10;
+                var_a0->unk8_4 = 1;
             } else {
                 var_a0->unk11 = 0;
             }
         }
     }
 
-    func_8009E634(temp_s1, i);
+    func_8009E634(temp_s1);
 
     i_2 = 1;
-    if (temp_s1->unk8 & 0x800000) {
+    if (temp_s1->unkA_7) {
         i_2 = 0x65;
     }
 
     temp_s1->unk5B8 = i_2;
-    temp_s1->unk5AC = temp_s1->unk5AC & 0xFFEFFFFF;
+    temp_s1->unk5AC_20 = 0;
     temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
     temp_s1->unk6E3 = D_800F49DC;
-    temp_s0 = temp_s1->unkC54;
     temp_s1->unk5BC = *sp10;
-    func_800AD008(temp_s1, temp_s0);
-    func_800AFA28(temp_s1, temp_s0, 1);
-    vs_main_memcpy(temp_s1->unk704, temp_s0, 0x550U);
-    temp_s1->unk1194 = 0;
+    func_800AD008(temp_s1, &temp_s1->unkC54);
+    func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
+    vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);
+    temp_s1->unkC54.unk540 = 0;
     temp_s1->unk6E0 = 0;
     temp_s1->unk5CD = 0;
     temp_s1->unk5CC = 0;

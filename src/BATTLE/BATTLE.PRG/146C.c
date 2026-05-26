@@ -707,7 +707,6 @@ void func_8009E070(int, short*, int);
 int func_8009E480(void);
 u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
-void func_8009F990(int, char*);
 
 extern int D_80068C1C[];
 extern char D_800E8184[];
@@ -10113,17 +10112,17 @@ void func_8008B390(int arg0, int* arg1)
     }
 }
 
-void func_8008B430(char* arg0, int arg1)
+void func_8008B430(D_800F4538_unk58_2* arg0, int arg1)
 {
-    if ((arg0[0] == 0) && (arg0[1] == 0) && (arg0[2] == 0) && (arg1 == 0)) {
+    if ((arg0->unk0 == 0) && (arg0->unk1 == 0) && (arg0->unk2 == 0) && (arg1 == 0)) {
         D_800F1BB6 = 0;
         return;
     }
     D_800F1BB0.unk6 = 1;
     D_800F1BB0.unk4 = arg1;
-    D_800F1BB0.unk0 = arg0[0];
-    D_800F1BB0.unk1 = arg0[1];
-    D_800F1BB0.unk2 = arg0[2];
+    D_800F1BB0.unk0 = arg0->unk0;
+    D_800F1BB0.unk1 = arg0->unk1;
+    D_800F1BB0.unk2 = arg0->unk2;
 }
 
 void func_8008B4B0(void) { D_800F1BB6 = 0; }

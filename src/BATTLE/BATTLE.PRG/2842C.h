@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
+    signed char unk1;
     short modelId;
     void* unk4;
     u_long dataAddr;
@@ -51,17 +51,11 @@ void func_8009CC20(int, int);
 void func_8009CE9C(int);
 int func_8009CFA0(void);
 void func_8009CFB0(int);
-void func_8009D208(int);
 void func_8009D468(int, int);
 void func_8009D854(int);
 void func_8009E5C4(int);
-void func_8009E634(void*, int);
 void func_8009F314(int, void*, int);
-void func_8009F940(int, int, int*, char*);
 void func_8009FD5C(int);
-void func_8009FE74(int);
-void func_800A0768(int, char*);
-void func_800A07FC(int, void*);
 void func_800A0A1C(int, int);
 
 extern vs_battle_objectData vs_battle_objectDataSlots[16];

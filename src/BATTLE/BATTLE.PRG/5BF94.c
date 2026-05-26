@@ -2,6 +2,7 @@
 #include "5BF94.h"
 #include "146C.h"
 #include "2842C.h"
+#include "30D14.h"
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
@@ -233,7 +234,6 @@ typedef struct {
     u_char* unk18;
 } func_800D6CF_t;
 
-int func_800A0BE0(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -363,10 +363,10 @@ extern D_800F569C_t* D_800F569C;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
-void func_800C513C(int arg0)
+void func_800C513C(int arg0, int arg1)
 {
     if (!(arg0 & 0xF0)) {
-        func_8009FE74(arg0);
+        func_8009FE74(arg0, arg1);
     }
 }
 

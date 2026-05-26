@@ -137,39 +137,6 @@ typedef struct {
 } vs_battle_stringContext_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8_0 : 1;
-    int unk8_1 : 14;
-    int unk8_15 : 1;
-    int unk8_16 : 7;
-    int unk8_23 : 1;
-    int unk8_24 : 8;
-    u_short unkC[722];
-    char unk5B0_0 : 4;
-    char unk5B0_4 : 1;
-    char unk5B0_5 : 3;
-    char unk5B1;
-    char unk5B2;
-    char unk5B3;
-    char unk5B4;
-    char unk5B5;
-    char unk5B6;
-    char unk5B7;
-    char unk5B8;
-    char unk5B9;
-    char unk5BA;
-    char unk5BB;
-    char unk5BC[130];
-    u_short unk63E;
-    int unk640[5];
-    u_short unk654;
-    u_short unk656;
-    int unk658[42];
-    int unk704;
-} D_800F453C_t;
-
-typedef struct {
     u_short unk0;
     char unk2;
     char unk3;
@@ -307,7 +274,6 @@ extern char D_800EC270[];
 extern char vs_battle_chainAbilityOffsets[];
 extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;
-extern D_800F453C_t* D_800F453C;
 extern char D_800F4E6B;
 extern int* vs_battle_rowTypeBuf;
 extern char D_800F4E88;

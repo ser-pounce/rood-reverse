@@ -10997,7 +10997,7 @@ void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
 {
-    char sp10[4];
+    D_800F4538_unk58_2 sp10;
     D_8005DC80_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -11033,15 +11033,15 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
     }
 
     temp_t0->unk0[0] = 0;
-    sp10[0] = (temp_a3[0] / 65536) - 64;
-    sp10[1] = (temp_a3[1] / 65536) - 64;
-    sp10[2] = (temp_a3[2] / 65536) - 64;
-    sp10[3] = 0;
+    sp10.unk0 = (temp_a3[0] / 65536) - 64;
+    sp10.unk1 = (temp_a3[1] / 65536) - 64;
+    sp10.unk2 = (temp_a3[2] / 65536) - 64;
+    sp10.unk3 = 0;
 
     if (arg1 != 0) {
-        func_800A0768(arg1 - 1, sp10);
+        func_800A0768(arg1 - 1, &sp10);
     } else {
-        func_8008B430(sp10, temp_t0->unk6[3] >> 2);
+        func_8008B430(&sp10, temp_t0->unk6[3] >> 2);
     }
 }
 
@@ -11055,7 +11055,7 @@ static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
 
 void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    char sp10[4];
+    D_800F4538_unk58_2 sp10;
     short var_t4;
     int var_a1;
     int var_a2;
@@ -11198,24 +11198,24 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
             var_v1 = t2[0] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10[0] = var_v0 - 0x40;
+        sp10.unk0 = var_v0 - 0x40;
         var_v0 = t2[1] >> 0x10;
         if (t2[1] < 0) {
             var_v1 = t2[1] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10[1] = var_v0 - 0x40;
+        sp10.unk1 = var_v0 - 0x40;
         var_v0 = t2[2] >> 0x10;
         if (t2[2] < 0) {
             var_v1 = t2[2] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10[2] = var_v0 - 0x40;
-        sp10[3] = 0;
+        sp10.unk2 = var_v0 - 0x40;
+        sp10.unk3 = 0;
         if (arg2 != 0) {
-            func_800A0768(arg2 - 1, sp10);
+            func_800A0768(arg2 - 1, &sp10);
         } else {
-            func_8008B430(sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
+            func_8008B430(&sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
         }
     }
 }
@@ -11287,7 +11287,7 @@ void func_80047FFC(void)
 
 void func_800481C0(void)
 {
-    char sp18[4];
+    D_800F4538_unk58_2 sp18;
     int i;
     int var_v0;
     D_8005DC80_t* p = _clutState.unk7F28;
@@ -11303,24 +11303,24 @@ void func_800481C0(void)
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18[0] = (var_v0 >> 16) - 0x40;
+            sp18.unk0 = (var_v0 >> 16) - 0x40;
             var_v0 = a2[1];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18[1] = (var_v0 >> 16) - 0x40;
+            sp18.unk1 = (var_v0 >> 16) - 0x40;
             var_v0 = a2[2];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18[2] = (var_v0 >> 16) - 0x40;
-            sp18[3] = 0;
+            sp18.unk2 = (var_v0 >> 16) - 0x40;
+            sp18.unk3 = 0;
 
             if (i != 0) {
-                func_800A0768(i - 1, sp18);
+                func_800A0768(i - 1, &sp18);
             } else {
                 p[0].unk6[3] += p[0].unk6[4];
-                func_8008B430(sp18, p[0].unk6[3] >> 2);
+                func_8008B430(&sp18, p[0].unk6[3] >> 2);
             }
             ++p[i].unk0[1];
             if (p[i].unk0[1] >= (p[i].unk0[3] * 2)) {

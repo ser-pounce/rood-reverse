@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
+    signed char unk1;
     short modelId;
     void* unk4;
     u_long dataAddr;

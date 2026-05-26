@@ -1,9 +1,11 @@
 #include "common.h"
 #include "146C.h"
 #include "30D14.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "../SLUS_010.40/main.h"
+#include "../SLUS_010.40/32154.h"
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
@@ -221,7 +223,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC84);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadShp);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009BD90);
+int func_8009BD90(vs_battle_objectData* arg0)
+{
+    D_800F4538_t* temp_v1;
+    int var_a2;
+    int t1 = D_800F4538[arg0->unk1]->unk6E6;
+    for (var_a2 = (arg0->unk1 >= 2) * 2; var_a2 < 17; ++var_a2) {
+        if (var_a2 != arg0->unk1) {
+            temp_v1 = D_800F4538[var_a2];
+            if ((temp_v1 != NULL) && (temp_v1->unk6E6 == t1)) {
+                if ((arg0->modelId == 0 && temp_v1->unk5D4 != 0)
+                    || (arg0->modelId != 0 && temp_v1->unk5B1 == arg0->modelId)) {
+                    arg0->dataAddr = var_a2;
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009BE5C);
 
@@ -347,7 +367,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E070);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E180);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E228);
+int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
+{
+    SVECTOR sp10;
+    int var_s0;
+    int var_v1;
+
+    if (arg1 == NULL) {
+        return 0;
+    }
+
+    var_s0 = arg1->vx - arg0->unk1C;
+    var_s0 = var_s0 * var_s0;
+    var_v1 = arg1->vz - arg0->unk20;
+
+    if (var_s0 < 0) {
+        var_s0 = -var_s0;
+    }
+
+    var_v1 = var_v1 * var_v1;
+
+    if (var_v1 < 0) {
+        var_v1 = -var_v1;
+    }
+
+    var_s0 = vs_gte_rsqrt(var_s0 + var_v1);
+    func_800A1AF8(arg0->unkF, 0, &sp10, 0);
+    return ratan2(arg1->vy - sp10.vy, var_s0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E2E0);
 
@@ -399,7 +446,33 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F314);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F530);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F794);
+int func_8009F794(D_800F45E0_t* arg0)
+{
+    D_800F45E0_t* temp_v1;
+    int temp_v1_2;
+    int var_a3;
+    int i;
+    int var_t0;
+    int t1;
+
+    var_a3 = -0x7530;
+    var_t0 = -1;
+    t1 = *(int*)&arg0->unk5C;
+
+    for (i = 0; i < 16; ++i) {
+        temp_v1 = D_800F45E0[i];
+        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && (temp_v1->unk1A == 0)
+            && !(temp_v1->unk6C[8].unk0_3) && (temp_v1->unk12 == 0xFF)
+            && (t1 == *(int*)&temp_v1->unk5C)) {
+            temp_v1_2 = temp_v1->unk1E;
+            if ((arg0->unk1E >= temp_v1_2) && (var_a3 < temp_v1_2)) {
+                var_a3 = temp_v1_2;
+                var_t0 = i;
+            }
+        }
+    }
+    return var_t0;
+}
 
 int func_8009F858(int arg0)
 {

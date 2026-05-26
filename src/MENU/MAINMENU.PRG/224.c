@@ -296,7 +296,7 @@ void func_800FA2CC(void)
         }
     }
 
-    func_8009E634(temp_s1, i);
+    func_8009E634(temp_s1);
 
     i_2 = 1;
     if (temp_s1->unkA_7) {

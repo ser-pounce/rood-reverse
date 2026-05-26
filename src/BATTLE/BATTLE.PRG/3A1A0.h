@@ -111,7 +111,10 @@ typedef struct {
     short unk26;
     int unk28[12];
     D_800F4538_unk58_2 unk58;
-    int unk5C;
+    u_char unk5C;
+    u_char unk5D;
+    u_char unk5E;
+    u_char unk5F;
     int unk60;
     u_char unk64;
     u_char unk65;

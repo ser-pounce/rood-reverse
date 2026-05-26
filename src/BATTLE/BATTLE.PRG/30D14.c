@@ -4,6 +4,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
+#include "6E644.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/32154.h"
 #include <libgte.h>
@@ -417,7 +418,43 @@ void func_8009E5C4(int arg0)
 
 void func_8009E614(int arg0) { func_8009E700(arg0, 6); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E634);
+void func_8009E634(D_800F4538_t* arg0)
+{
+    int temp_v1_2;
+    int var_a0;
+    int var_a2;
+    int var_a3;
+
+    var_a0 = 1;
+
+    if (arg0->unkF == 0) {
+        if ((arg0->unk5B8 - 0x4F) >= 4U) {
+            if (((arg0->unk5B8 - 0x47) >= 4U) && (arg0->unk5B8 != 0x4C)) {
+                return;
+            }
+        } else {
+            var_a0 = 2;
+        }
+
+        temp_v1_2 = arg0->unk26 + 0x200;
+        temp_v1_2 &= 0xFFF;
+        temp_v1_2 /= 1024;
+
+        var_a2 = 0;
+        var_a3 = 0;
+
+        if (temp_v1_2 < 2) {
+            var_a0 = -var_a0;
+        }
+
+        if (temp_v1_2 & 1) {
+            var_a2 = var_a0;
+        } else {
+            var_a3 = var_a0;
+        }
+        func_800E4C28(arg0->unk5C + var_a2, arg0->unk5E + var_a3, var_a2, var_a3);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E700);
 

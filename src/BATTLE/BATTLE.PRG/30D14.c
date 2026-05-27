@@ -29,6 +29,15 @@ typedef struct {
     u_short unk1FE0;
 } D_800F2458_t;
 
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    int unk8;
+} func_800A0024_t;
+
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
@@ -42,6 +51,7 @@ void func_8009F9F4(int, u_char*);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
+int func_800A6EE8(short*, int, int, int);
 void func_800AB2AC(int);
 void func_800AD494(D_800F4538_t*, int, int*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
@@ -711,7 +721,41 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0024);
+int func_800A0024(int arg0, func_800A0024_t* arg1)
+{
+    D_800F45E0_t* temp_s0;
+    int var_v0_2;
+
+    // BUG: Check performed on garbage
+    if (temp_s0 == 0) {
+        return -1;
+    }
+
+    temp_s0 = D_800F45E0[arg0];
+
+    if (temp_s0->unk12 != 0xFF) {
+        return -1;
+    }
+
+    if ((temp_s0->unk6C[8].unk0_3)) {
+        return -1;
+    }
+
+    if (temp_s0->unk1A != 0) {
+        return -1;
+    }
+
+    *(int*)&arg1->unk0 = *(int*)&temp_s0->unk5C;
+    arg1->unk3 = temp_s0->unk6C[8].unk2;
+    var_v0_2 = func_800A6EE8(&temp_s0->unk1C, 0, 0, 0) - temp_s0->unk1E;
+    if (var_v0_2 < 0) {
+        var_v0_2 += 0x7F;
+    }
+    arg1->unk1 = var_v0_2 >> 7;
+    arg1->unk4 = *(int*)&temp_s0->unk1C;
+    arg1->unk8 = *(int*)&temp_s0->unk20;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A0104);
 

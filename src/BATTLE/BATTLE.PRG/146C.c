@@ -604,7 +604,7 @@ short _getDefenseGemBuff(vs_skill_t*, vs_battle_actor2*, int);
 int _doesAttackHit(
     vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 int func_8007F434(void);
-int func_8007F4B0(int arg0, u_char* arg1);
+int _hitPrerequisiteCanApplyEffect(int arg0, u_char* arg1);
 int _getEnemyClass(u_char*);
 void func_80080000(vs_skill_t*, _hitEntity_t*, short);
 void func_800801E0(vs_skill_t*, _hitEntity_t*, short);
@@ -7206,12 +7206,12 @@ int func_8007F434(void)
     return vs_main_getRand(100) < (var_s0 + 20);
 }
 
-int func_8007F4B0(int arg0, u_char* arg1)
+int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 {
-    int* temp_a0 = D_8004EECC[arg0];
+    int* params = vs_main_statusEffectParams[debuff];
     vs_battle_actor2* temp_a1 = vs_battle_actors[*arg1]->unk3C;
 
-    if ((!(temp_a0[0] & temp_a1->unk944)) && (!(temp_a0[3] & temp_a1->unk948))) {
+    if ((!(params[0] & temp_a1->unk944)) && (!(params[3] & temp_a1->unk948))) {
         return 0;
     }
     return 1;
@@ -7219,80 +7219,80 @@ int func_8007F4B0(int arg0, u_char* arg1)
 
 int _getEnemyClass(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->enemyClass; }
 
-int func_8007F548(
+int _hitPrerequisiteNever0(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
-int func_8007F550(
+int _hitPrerequisiteAlways0(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
-int func_8007F558(
+int _hitPrerequisiteAlways1(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
-int func_8007F560(
+int _hitPrerequisiteAlways2(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
-int func_8007F568(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteUndead(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return _getEnemyClass(arg1) == 2;
+    return _getEnemyClass(arg1) == enemyClassUndead;
 }
 
-int func_8007F58C(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteNotUndead(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return _getEnemyClass(arg1) != 2;
+    return _getEnemyClass(arg1) != enemyClassUndead;
 }
 
-int func_8007F5B0(
+int _hitPrerequisiteNever1(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
-int func_8007F5B8(
+int _hitPrerequisiteNever2(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
-int func_8007F5C0(
+int _hitPrerequisiteNever3(
     vs_skill_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
-int func_8007F5C8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyStrDown(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(5, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(5, arg1) == 0;
 }
 
-int func_8007F5E8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyIntDown(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(7, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(7, arg1) == 0;
 }
 
-int func_8007F608(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyAglDown(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(9, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(9, arg1) == 0;
 }
 
-int _hasEquipment0(vs_skill_t* arg0, u_char* arg1)
+int _hitPrerequisiteCanApplyEquipDown(vs_skill_t* arg0, u_char* arg1)
 {
     int i;
     int hasEquipment;
     vs_battle_actor2* actor;
 
-    if (func_8007F4B0(19, arg1) != 0) {
+    if (_hitPrerequisiteCanApplyEffect(19, arg1) != 0) {
         return 0;
     }
 
@@ -7320,33 +7320,33 @@ int _hasEquipment0(vs_skill_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int func_8007F6D8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyHalfMove(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(4, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(4, arg1) == 0;
 }
 
-int func_8007F6F8(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyStrUp(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(6, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(6, arg1) == 0;
 }
 
-int func_8007F718(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyIntUp(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(8, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(8, arg1) == 0;
 }
 
-int func_8007F738(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyAglUp(vs_skill_t* arg0 __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(10, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(10, arg1) == 0;
 }
 
-int _hasEquipment1(vs_skill_t* arg0, u_char* arg1)
+int _hitPrerequisiteCanApplyEquipUp(vs_skill_t* arg0, u_char* arg1)
 {
     int i;
     int hasEquipment;
     vs_battle_actor2* actor;
 
-    if (func_8007F4B0(20, arg1) != 0) {
+    if (_hitPrerequisiteCanApplyEffect(20, arg1) != 0) {
         return 0;
     }
 
@@ -7374,85 +7374,93 @@ int _hasEquipment1(vs_skill_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int func_8007F808(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyQuicken(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(11, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(11, arg1) == 0;
 }
 
-int func_8007F828(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplySilence(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(12, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(12, arg1) == 0;
 }
 
-int func_8007F848(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyMagicWard(
+    vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(18, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(18, arg1) == 0;
 }
 
-int func_8007F868(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyRegen(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(17, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(17, arg1) == 0;
 }
 
-int func_8007F888(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyParalysis(
+    vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(13, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(13, arg1) == 0;
 }
 
-int func_8007F8A8(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyPoison(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(14, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(14, arg1) == 0;
 }
 
-int func_8007F8C8(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyNumbness(
+    vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(15, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(15, arg1) == 0;
 }
 
-int func_8007F8E8(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyCurse(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(16, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(16, arg1) == 0;
 }
 
-int _hasBlade0(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAirAttackUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if ((func_8007F4B0(21, arg1) == 0)
+    if ((_hitPrerequisiteCanApplyEffect(21, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hasBlade1(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyFireAttackUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if ((func_8007F4B0(22, arg1) == 0)
+    if ((_hitPrerequisiteCanApplyEffect(22, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hasBlade2(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyEarthAttackUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if ((func_8007F4B0(23, arg1) == 0)
+    if ((_hitPrerequisiteCanApplyEffect(23, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hasBlade3(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyWaterAttackUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if ((func_8007F4B0(24, arg1) == 0)
+    if ((_hitPrerequisiteCanApplyEffect(24, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hasArmor0(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAirDefenseUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if (func_8007F4B0(25, arg1) == 0) {
+    if (_hitPrerequisiteCanApplyEffect(25, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
@@ -7474,9 +7482,10 @@ int _hasArmor0(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int _hasArmor1(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyFireDefenseUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if (func_8007F4B0(26, arg1) == 0) {
+    if (_hitPrerequisiteCanApplyEffect(26, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
@@ -7497,9 +7506,10 @@ int _hasArmor1(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int _hasArmor2(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyEarthDefenseUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if (func_8007F4B0(27, arg1) == 0) {
+    if (_hitPrerequisiteCanApplyEffect(27, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
@@ -7520,9 +7530,10 @@ int _hasArmor2(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int _hasArmor3(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyWaterDefenseUp(
+    vs_skill_t* skill __attribute__((unused)), u_char* arg1)
 {
-    if (func_8007F4B0(28, arg1) == 0) {
+    if (_hitPrerequisiteCanApplyEffect(28, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
@@ -7544,32 +7555,35 @@ int _hasArmor3(vs_skill_t* skill __attribute__((unused)), u_char* arg1)
     return 0;
 }
 
-int func_8007FD08(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyBanish(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    return func_8007F4B0(29, arg1) == 0;
+    return _hitPrerequisiteCanApplyEffect(29, arg1) == 0;
 }
 
-int func_8007FD28(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyExorcise(
+    vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    if ((func_8007F4B0(30, arg1) == 0) && (_getEnemyClass(arg1) == 2)) {
+    if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
+        && (_getEnemyClass(arg1) == enemyClassUndead)) {
         return 1;
     }
     return 0;
 }
 
-int func_8007FD74(vs_skill_t* skill __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyDrain(vs_skill_t* skill __attribute__((unused)), char* arg1)
 {
-    if ((func_8007F4B0(30, arg1) == 0) && (_getEnemyClass(arg1) != 2)) {
+    if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
+        && (_getEnemyClass(arg1) != enemyClassUndead)) {
         return 1;
     }
     return 0;
 }
 
-int func_8007FDC0(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused0(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
 
-int func_8007FDC8(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused1(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
 
-int func_8007FDD0(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused2(vs_skill_t* skill __attribute__((unused)), char* arg1) { }
 
 int _canPerformAttack(vs_skill_t* skill, char* arg1, int hitNumber)
 {
@@ -7921,7 +7935,7 @@ int func_80081020(int arg0, _hitEntity_t* arg1)
 
     var_a3 = 0;
     var_t1 = 0;
-    temp_a1 = D_8004EECC[arg0];
+    temp_a1 = vs_main_statusEffectParams[arg0];
     temp_a2 = vs_battle_actors[arg1->actorId]->unk3C;
 
     if (temp_a2->unk957 != 0x80) {
@@ -7939,7 +7953,7 @@ int func_80081020(int arg0, _hitEntity_t* arg1)
 int func_800810CC(int arg0, _hitEntity_t* arg1)
 {
     int ret = 0;
-    int* new_var = D_8004EECC[arg0];
+    int* new_var = vs_main_statusEffectParams[arg0];
     if (vs_battle_actors[arg1->actorId]->unk3C->unk957 != 0x80) {
         ret = new_var[0] & vs_battle_actors[arg1->actorId]->unk3C->unk948;
         arg1->unk18 |= ret;
@@ -8952,7 +8966,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_a2 = temp_s3->bodyParts[i].hp;
                 break;
             }
-            if (!(temp_s3->unk948 & D_8004EECC[D_800E8200[i]][0])) {
+            if (!(temp_s3->unk948 & vs_main_statusEffectParams[D_800E8200[i]][0])) {
                 var_v1 = var_a2 << 0x10;
                 var_v1 = 0x10000 < var_v1;
                 if (!var_v1) {

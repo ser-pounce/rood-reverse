@@ -58,6 +58,8 @@ enum skillTypes {
     skillTypeTrap
 };
 
+enum enemyClasses { enemyClassUndead = 2 };
+
 typedef struct {
     char id;
     char unk1;
@@ -406,7 +408,7 @@ extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_titleScreenCount;
 extern vs_main_CdFile vs_main_zndFiles[256];
 extern char vs_main_locationZoneMapIds[];
-extern int D_8004EECC[][4];
+extern int vs_main_statusEffectParams[][4];
 extern char D_8004FCCC[];
 extern char D_8004FDD0[];
 extern u_short vs_main_artsPointsRequirements[][4];

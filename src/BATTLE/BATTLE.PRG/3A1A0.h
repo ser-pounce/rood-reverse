@@ -221,7 +221,13 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0x3C];
+    u_char unk1800[0xD];
+    u_char unk180D;
+    u_char unk180E;
+    u_char unk180F;
+    u_char unk1810;
+    u_char unk1811;
+    u_char unk1812[0x2A];
     short unk183C;
     short unk183E;
     short unk1840;

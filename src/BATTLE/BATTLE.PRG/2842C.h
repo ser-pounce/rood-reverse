@@ -48,7 +48,7 @@ void func_80098B38(int, int);
 int vs_battle_populateDataSlot(vs_battle_objectData*);
 int vs_battle_processObjectDataQueue(void);
 void func_8009CC20(int, int);
-void func_8009CE9C(int);
+int func_8009CE9C(u_int arg0);
 int func_8009CFA0(void);
 void func_8009CFB0(int);
 void func_8009D468(int, int);

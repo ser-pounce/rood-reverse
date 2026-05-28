@@ -450,7 +450,7 @@ typedef struct {
     u_char unk65;
     u_char unk66;
     u_char unk67;
-    int unk68;
+    D_800F4538_unk68* unk68;
     D_800F4538_t2 unk6C[42];
     u_int unk5AC_0 : 4;
     u_int unk5AC_4 : 2;

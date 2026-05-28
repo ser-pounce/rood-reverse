@@ -38,6 +38,17 @@ typedef struct {
     int unk8;
 } func_800A0024_t;
 
+typedef struct {
+    u_char unk0;
+    signed char unk1;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    int unk8;
+    int unkC;
+    u_char unk10;
+} func_80099D6C_t;
+
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
@@ -59,6 +70,7 @@ void func_800AB2AC(int);
 void func_800AD494(D_800F4538_t*, int, int*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
+void func_800E68A0(D_800F45E0_t*);
 
 extern u_char D_800E8F2A;
 extern char D_800E8F2C;
@@ -173,7 +185,51 @@ void func_80099960(void* arg0) { vs_main_memcpy(&D_800F4448, arg0, 0xE0); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009998C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099D6C);
+int func_80099D6C(int arg0)
+{
+    func_80099D6C_t sp10;
+    D_800F45E0_t* temp_s0;
+    int i;
+    int found;
+
+    if (arg0 >= 16) {
+        return -1;
+    }
+
+    temp_s0 = D_800F45E0[arg0];
+
+    if (temp_s0 == NULL) {
+        return -1;
+    }
+
+    if (temp_s0->unk0 == 0) {
+        return -1;
+    }
+
+    sp10.unk1 = arg0;
+    sp10.unk10 = temp_s0->unk6C[8].unk0_0;
+
+    for (i = 0; i < 16; ++i) {
+        func_80099D6C_t* a2 = &sp10;
+        if ((i != a2->unk1) && (D_800F45E0[i] != NULL)
+            && (D_800F45E0[i]->unk6C[8].unk0_0 == a2->unk10)) {
+            a2->unk8 = i;
+            found = 1;
+            goto exit;
+        }
+    }
+
+    found = 0;
+
+exit:
+    if (!found) {
+        vs_main_freeHeap(temp_s0->unk68);
+    }
+
+    func_800E68A0(temp_s0);
+    D_800F45E0[arg0] = NULL;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099E7C);
 

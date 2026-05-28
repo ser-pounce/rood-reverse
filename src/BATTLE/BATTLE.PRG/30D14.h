@@ -32,7 +32,7 @@ void func_8009D934(int, int, int);
 void func_8009DBDC(int, int);
 void func_8009DC38(int);
 void func_8009DC8C(int);
-void func_8009DD00(char, SVECTOR*, int);
+void func_8009DD00(int, SVECTOR*, int);
 void func_8009E2E0(char, SVECTOR*, int);
 void func_8009E634(D_800F4538_t*);
 void func_8009EC9C(char, SVECTOR*, int, int);

@@ -46,6 +46,8 @@ int _loadShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int func_8009D270(vs_battle_objectData*);
+int func_8009E180(D_800F4538_t*);
+int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
 void func_8009F9F4(int, u_char*);
 void func_8009FD38(D_800F4538_t* arg0);
@@ -363,13 +365,45 @@ void func_8009DC38(int arg0)
         func_8009DC8C(arg0);
         temp_s0->unk1A = 0;
         temp_s0->unk18 = 0;
-        temp_s0->unk28[3] = 0;
+        temp_s0->unk34 = 0;
     }
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009DC8C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009DD00);
+void func_8009DD00(int arg0, SVECTOR* arg1, int arg2)
+{
+    int _[2];
+    D_800F4538_t* temp_s0;
+    int temp_v0;
+    int var_a1;
+
+    temp_s0 = D_800F4538[arg0];
+    if (temp_s0 != NULL) {
+        temp_s0->unk3E = func_8009E180(temp_s0);
+        temp_s0->unk18 = 0xA;
+        if (temp_s0->unk63C >= 0x81U) {
+            temp_s0->unk18 = 0x14;
+        }
+
+        temp_v0 = func_8009E228(temp_s0, arg1);
+
+        if (temp_v0 >= -0xE4) {
+            var_a1 = 0x49;
+            if (temp_v0 >= 0xAC) {
+                var_a1 = 0x4A;
+                if ((temp_v0 >= 0x301) && (arg2 == 0) && (temp_s0->unk6E6 == 0x28)) {
+                    var_a1 = 0x4E;
+                }
+            }
+        } else {
+            var_a1 = 0x48;
+        }
+
+        func_800A0204(arg0, var_a1, 0, 6);
+        func_8009FD38(temp_s0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009DDF4);
 
@@ -717,7 +751,7 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
     *(int*)&temp_a0->unk20 = 0;
     temp_a0->unk1A = 0;
     *(int*)&temp_a0->unk24 = 0;
-    temp_a0->unk28[0] = 0;
+    temp_a0->unk28 = 0;
     temp_a0->unk18 = 0;
     temp_a0->unk9_5 = 1;
 }

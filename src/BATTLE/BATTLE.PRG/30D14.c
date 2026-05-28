@@ -48,6 +48,7 @@ int _loadSeq(vs_battle_objectData*);
 int func_8009D270(vs_battle_objectData*);
 void func_8009E700(int, int);
 void func_8009F9F4(int, u_char*);
+void func_8009FD38(D_800F4538_t* arg0);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
@@ -634,20 +635,39 @@ int func_8009FC20(int arg0, int* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009FC60);
-
-typedef struct {
-    char unk0[0x63C];
-    u_short unk63C;
-    char unk63E[0x11BC];
-    short unk17FA;
-} func_8009FD38_t;
-
-void func_8009FD38(func_8009FD38_t* arg0)
+int func_8009FC60(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
-    arg0->unk17FA = 30;
+    int _[2] __attribute__((unused));
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (temp_s0 == NULL) {
+        return -1;
+    }
+
+    if (func_800A152C(arg0, 2, 3) < 0) {
+        return -2;
+    }
+
+    temp_s0->unk17FC = arg1;
+    if (arg2 == NULL) {
+        temp_s0->unk17F4.vx = temp_s0->unk16;
+        temp_s0->unk17F4.vy = temp_s0->unk14;
+    } else {
+        temp_s0->unk17F4 = *arg2;
+    }
+    if (arg3 == -1) {
+        func_8009FD38(temp_s0);
+    } else {
+        temp_s0->unk17F4.pad = arg3;
+    }
+    return 0;
+}
+
+void func_8009FD38(D_800F4538_t* arg0)
+{
+    arg0->unk17F4.pad = 30;
     if (arg0->unk63C > 128) {
-        arg0->unk17FA = 20;
+        arg0->unk17F4.pad = 20;
     }
 }
 

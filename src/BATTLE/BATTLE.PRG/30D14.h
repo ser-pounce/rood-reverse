@@ -45,7 +45,7 @@ void func_8009F940(int, int, D_800F4538_unk58_2*, D_800F4538_unk58_2*);
 void func_8009F990(int, u_char*);
 void func_8009FB64(VECTOR*);
 int func_8009FBD8(int, int);
-void func_8009FC60(int, int, SVECTOR*, int);
+int func_8009FC60(int, int, SVECTOR*, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);

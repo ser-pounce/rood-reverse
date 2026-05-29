@@ -70,6 +70,13 @@ typedef struct {
 } D_800F4538_unk68;
 
 typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+} D_800F4538_unk64;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -124,10 +131,7 @@ typedef struct {
     u_char unk5E;
     u_char unk5F;
     int unk60;
-    u_char unk64;
-    u_char unk65;
-    u_char unk66;
-    u_char unk67;
+    D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
     MATRIX unk6C[42];
     u_int unk5AC_0 : 4;
@@ -215,7 +219,8 @@ typedef struct {
     int unk700;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x650];
+    u_char unk11A4[0x280];
+    u_char unk1424[0x3D0];
     SVECTOR unk17F4;
     u_char unk17FC;
     u_char unk17FD;
@@ -446,10 +451,7 @@ typedef struct {
     char unk5E;
     char unk5F;
     int unk60;
-    u_char unk64;
-    u_char unk65;
-    u_char unk66;
-    u_char unk67;
+    D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
     D_800F4538_t2 unk6C[42];
     u_int unk5AC_0 : 4;

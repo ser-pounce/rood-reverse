@@ -370,10 +370,10 @@ void func_800C513C(int arg0, int arg1)
     }
 }
 
-void func_800C5164(int arg0)
+void func_800C5164(int arg0, int arg1, int arg2)
 {
     if (!(arg0 & 0xF0)) {
-        func_8009FD5C(arg0);
+        func_8009FD5C(arg0, arg1, arg2);
     }
 }
 

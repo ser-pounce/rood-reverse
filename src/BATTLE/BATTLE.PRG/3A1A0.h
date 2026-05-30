@@ -190,7 +190,8 @@ typedef struct {
     u_char unk5EC[0x50];
     u_short unk63C;
     u_short unk63E;
-    u_char unk640[8];
+    u_char unk640[6];
+    u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;
     u_int unk648_17 : 15;

@@ -1478,7 +1478,61 @@ void func_800A11D8(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
     *arg3 = *(u_long*)p;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A1280);
+int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
+{
+    long sp10;
+    long sp14;
+    long sp18;
+    int var_v0;
+    int v1;
+
+    if (arg1 == 0xFB) {
+        short* new_var;
+        unsigned int new_var2;
+        D_800F4538_t* temp_a1 = D_800F4538[arg0];
+
+        if (temp_a1 == NULL) {
+            D_800F45E0_t* temp_v1 = D_800F45E0[arg0];
+            if (temp_v1 == NULL) {
+                return -1;
+            }
+            arg2->vx = temp_v1->unk1C;
+            arg2->vz = temp_v1->unk20;
+            arg2->vy = temp_v1->unk1E - 0xC0;
+        } else {
+            if (temp_a1->unkB_0) {
+                return -1;
+            }
+            arg2->vx = temp_a1->unk1C;
+            arg2->vz = temp_a1->unk20;
+            arg2->vy = temp_a1->unk1E - temp_a1->unk646;
+        }
+
+        SetRotMatrix((MATRIX*)0x1F800014);
+        SetTransMatrix((MATRIX*)0x1F800014);
+        arg2->vz = RotTransPers(arg2, &sp10, &sp14, &sp18);
+        arg2->vx = sp10;
+        new_var = &((short*)(&sp10))[1];
+        new_var2 = *new_var;
+        arg2->vy = new_var2;
+
+        return 0;
+    }
+
+    var_v0 = func_800A152C(arg0, arg1, 0);
+    sp14 = var_v0;
+
+    if (var_v0 < 0) {
+        return var_v0;
+    }
+
+    v1 = func_800A141C(arg0, var_v0, (int*)arg2, arg3);
+    sp14 = v1;
+    if (v1 < 0) {
+        return v1;
+    }
+    return 0;
+}
 
 int func_800A13EC(int arg0, int arg1, int* arg2, int arg3)
 {

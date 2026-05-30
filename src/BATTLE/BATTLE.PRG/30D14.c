@@ -763,7 +763,49 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EA14);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EC9C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EE9C);
+void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
+{
+    int _[3] __attribute__((unused));
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (temp_s0->unkA_7
+        && ((temp_s0->unkF == 0)
+            || (!temp_s0->unkA_5 && (temp_s0->unkA_0 != 2) && (temp_s0->unkA_0 != 3)))) {
+        int temp_v0;
+        int var_a1;
+        int var_s1;
+
+        if (temp_s0->unk63C < 0x80) {
+            temp_s0->unk3E = func_8009E180(temp_s0, arg1);
+            temp_s0->unk18 = 4;
+            var_s1 = 8;
+        } else {
+            var_s1 = 4;
+        }
+
+        temp_v0 = func_8009E228(temp_s0, arg1);
+        var_a1 = 0x4F;
+
+        if (temp_v0 >= -0xE4) {
+            var_a1 = 0x50;
+            if (temp_v0 >= 0xAC) {
+                var_a1 = 0x51;
+            }
+        }
+
+        func_800A0204(arg0, var_a1, 0, var_s1);
+        func_8009FD38(temp_s0);
+    }
+
+    if (temp_s0->unkF == 0) {
+        if (temp_s0->unkA_0 != 3) {
+            temp_s0->unkA_0 = 0;
+        }
+        temp_s0->unk11 = 0;
+    }
+
+    func_8006C84C(arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EFEC);
 

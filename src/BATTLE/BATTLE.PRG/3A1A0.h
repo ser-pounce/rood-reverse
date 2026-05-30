@@ -95,7 +95,9 @@ typedef struct {
     u_char unk9_5 : 1;
     u_char unk9_6 : 1;
     u_char unk9_7 : 1;
-    u_char unkA_0 : 7;
+    u_char unkA_0 : 3;
+    u_char unkA_3 : 2;
+    u_char unkA_5 : 2;
     u_char unkA_7 : 1;
     u_char unkB_0 : 4;
     u_char unkB_4 : 4;
@@ -134,7 +136,8 @@ typedef struct {
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
     MATRIX unk6C[42];
-    u_int unk5AC_0 : 4;
+    u_int unk5AC_0 : 3;
+    u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;
     u_int unk5AC_8 : 1;

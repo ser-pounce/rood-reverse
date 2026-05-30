@@ -980,18 +980,18 @@ int func_800B770C(u_char* arg0, short arg1)
 
 int func_800B77DC(u_char* arg0, short arg1)
 {
-    char sp10[4];
+    D_800F4538_unk64 sp10;
     int var_a0;
 
-    sp10[0] = arg0[3];
-    sp10[1] = arg0[4];
-    sp10[2] = arg0[5];
-    sp10[3] = arg0[6];
+    sp10.unk0 = arg0[3];
+    sp10.unk1 = arg0[4];
+    sp10.unk2 = arg0[5];
+    sp10.unk3 = arg0[6];
     var_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     if (var_a0 == 0x2001) {
         var_a0 = -1;
     }
-    func_8009F990(var_a0, sp10);
+    func_8009F990(var_a0, &sp10);
     return 0;
 }
 

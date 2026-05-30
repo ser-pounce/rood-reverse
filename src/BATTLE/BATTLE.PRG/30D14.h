@@ -42,7 +42,7 @@ void func_8009F298(int, SVECTOR*, int);
 void func_8009F530(int);
 int func_8009F8DC(int);
 void func_8009F940(int, int, D_800F4538_unk58_2*, D_800F4538_unk58_2*);
-void func_8009F990(int, u_char*);
+void func_8009F990(int, D_800F4538_unk64*);
 void func_8009FB64(VECTOR*);
 int func_8009FBD8(int, int);
 int func_8009FC60(int, int, SVECTOR*, int);

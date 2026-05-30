@@ -3543,7 +3543,7 @@ void func_80073898(void)
 
 void func_800738E4(void)
 {
-    char sp10[4];
+    D_800F4538_unk64 sp10;
     int i;
 
     func_8008D594(0);
@@ -3564,8 +3564,8 @@ void func_800738E4(void)
         return;
     }
 
-    sp10[0] = 0;
-    func_8009F990(-1, sp10);
+    sp10.unk0 = 0;
+    func_8009F990(-1, &sp10);
 
     for (i = 0; i < 16; ++i) {
         func_8009D7E8(i, 0);

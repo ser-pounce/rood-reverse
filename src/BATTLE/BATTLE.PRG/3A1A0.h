@@ -223,7 +223,10 @@ typedef struct {
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
     u_char unk11A4[0x280];
-    u_char unk1424[0x3D0];
+    u_char unk1424[0x3C0];
+    D_800F4538_unk64 unk17E4;
+    D_800F4538_unk64 unk17E8;
+    u_char unk17EC[8];
     SVECTOR unk17F4;
     u_char unk17FC;
     u_char unk17FD;

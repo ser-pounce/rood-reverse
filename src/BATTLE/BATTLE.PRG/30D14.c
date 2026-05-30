@@ -60,7 +60,7 @@ int func_8009D270(vs_battle_objectData*);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
-void func_8009F9F4(int, u_char*);
+void func_8009F9F4(int, D_800F4538_unk64*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
@@ -68,6 +68,7 @@ int func_800A152C(int, int, int);
 int func_800A6EE8(short*, int, int, int);
 void func_800AB2AC(int);
 void func_800AD494(D_800F4538_t*, int, int*);
+void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800E68A0(D_800F45E0_t*);
@@ -907,7 +908,7 @@ void func_8009F940(int arg0, int arg1, D_800F4538_unk58_2* arg2, D_800F4538_unk5
     }
 }
 
-void func_8009F990(int arg0, u_char* arg1)
+void func_8009F990(int arg0, D_800F4538_unk64* arg1)
 {
     int i;
 
@@ -920,7 +921,58 @@ void func_8009F990(int arg0, u_char* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F9F4);
+void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
+{
+    int temp_a2;
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (temp_s0 == NULL) {
+        return;
+    }
+
+    temp_a2 = arg1->unk0;
+
+    if (temp_a2 == 0) {
+        temp_s0->unk17E4.unk1 = 0;
+        temp_s0->unk17E4.unk2 = 0;
+    } else if (temp_a2 == 1) {
+        if (arg1->unk3 == 0) {
+            temp_s0->unk17E4 = *arg1;
+        } else {
+            int sp10;
+            int sp14;
+            int temp_v1;
+
+            temp_s0->unk17E8 = *arg1;
+            temp_s0->unk17E4.unk3 = arg1->unk3;
+            temp_v1 = temp_s0->unk17E4.unk0;
+
+            if (temp_v1 == 0) {
+                func_800AD62C(arg0, &sp10, &sp14, arg0);
+                temp_s0->unk17E4.unk1 = sp10;
+                temp_s0->unk17E4.unk2 = sp14;
+            } else if (temp_v1 == temp_a2) {
+                func_800AD62C(arg0, &sp10, &sp14, arg0);
+                if (temp_s0->unk17E4.unk1 == 0) {
+                    temp_s0->unk17E4.unk1 = sp10;
+                }
+                if (temp_s0->unk17E4.unk2 == 0) {
+                    temp_s0->unk17E4.unk2 = sp14;
+                }
+            } else if (temp_v1 == 2) {
+                temp_s0->unk17E4.unk1 = 0x80;
+                temp_s0->unk17E4.unk2 = temp_a2;
+            }
+            if (arg1->unk1 == 0) {
+                temp_s0->unk17E4.unk1 = 0;
+            }
+            if (arg1->unk2 == 0) {
+                temp_s0->unk17E4.unk2 = 0;
+            }
+        }
+    }
+    temp_s0->unk17E4.unk0 = arg1->unk0;
+}
 
 void func_8009FB64(VECTOR* arg0)
 {

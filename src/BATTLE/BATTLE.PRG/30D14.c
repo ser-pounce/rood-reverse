@@ -1265,7 +1265,42 @@ int func_800A07FC(int arg0, D_800F4538_unk58_2* arg1)
 
 void func_800A0870(int arg0) { D_800E8FC0 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_800A087C);
+void func_800A087C(int actorId, int arg1)
+{
+    D_800F4538_t* temp_t0 = D_800F4538[actorId];
+
+    if (temp_t0 == NULL) {
+        D_800F45E0_t* temp_a0 = D_800F45E0[actorId];
+        if (temp_a0 != NULL) {
+            temp_a0->unk8_0 = (arg1 & 1) ^ 1;
+            temp_a0->unk8_1 = arg1 >> 1;
+        }
+    } else {
+        D_800F4588_t* temp_a2;
+        int new_var;
+
+        temp_t0->unk8_0 = (arg1 & 1) ^ 1;
+        temp_t0->unk8_1 = arg1 >> 1;
+        temp_t0->unk8_2 = arg1 >> 2;
+        temp_t0->unk9_7 = arg1 >> 6;
+
+        temp_a2 = D_800F4588[actorId * 2];
+        new_var = (arg1 >> 11) & 1;
+        if (temp_a2 != NULL) {
+            temp_a2->unk8_4 = new_var;
+        }
+
+        temp_a2 = D_800F4588[actorId * 2 + 1];
+        new_var = (arg1 >> 12) & 1;
+        if (temp_a2 != NULL) {
+            temp_a2->unk8_4 = new_var;
+        }
+
+        if (temp_t0->unk17FD >= 2) {
+            func_800A087C(temp_t0->unk17FD, arg1);
+        }
+    }
+}
 
 void func_800A09D8(int arg0, int arg1)
 {

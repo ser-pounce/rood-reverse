@@ -100,7 +100,8 @@ typedef struct {
     u_char unkA_5 : 2;
     u_char unkA_7 : 1;
     u_char unkB_0 : 4;
-    u_char unkB_4 : 4;
+    u_char unkB_3 : 3;
+    u_char unkB_4 : 1;
     u_char unkC;
     u_char unkD;
     u_char unkE;

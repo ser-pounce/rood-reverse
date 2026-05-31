@@ -503,7 +503,21 @@ void func_8009DC38(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009DC8C);
+void func_8009DC8C(int arg0)
+{
+    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+
+    if (temp_a3 == NULL) {
+        return;
+    }
+    
+    temp_a3->unk11 = 0;
+    temp_a3->unkA_0 = 0;
+    temp_a3->unk5AC_20 = 0;
+    temp_a3->unkB_3 = 0;
+    temp_a3->unkA_3 = 0;
+    temp_a3->unk9_6 = 0;
+}
 
 void func_8009DD00(int arg0, SVECTOR* arg1, int arg2)
 {

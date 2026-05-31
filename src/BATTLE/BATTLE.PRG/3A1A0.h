@@ -288,8 +288,7 @@ typedef struct {
     int unk14;
     short unk18;
     short unk1A;
-    short unk1C;
-    short unk1E;
+    void* unk1C;
     short unk20;
     short unk22;
     short unk24;

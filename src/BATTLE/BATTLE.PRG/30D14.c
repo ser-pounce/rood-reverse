@@ -41,13 +41,18 @@ typedef struct {
 typedef struct {
     u_char unk0;
     signed char unk1;
-    u_char unk2;
-    u_char unk3;
+    short unk2;
     int unk4;
     int unk8;
     int unkC;
     u_char unk10;
 } func_80099D6C_t;
+
+typedef struct {
+    int unk0;
+    short unk4;
+    u_char unk6;
+} D_800F4770_t;
 
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
@@ -85,6 +90,7 @@ extern char D_800F4448[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
+extern D_800F4770_t D_800F4770[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
@@ -274,7 +280,53 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadWep);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AA84);
+int func_8009AA84(int arg0)
+{
+    func_80099D6C_t sp10;
+    int i;
+    D_800F4588_t* temp_s0 = D_800F4588[arg0];
+
+    if ((temp_s0 == NULL) || (temp_s0->unk0 == 0)) {
+        return -1;
+    }
+
+    if (temp_s0->unk8_0) {
+        sp10.unk1 = arg0;
+        sp10.unk2 = temp_s0->unkE;
+
+        if (arg0 >= 4) {
+            int var_v0;
+            func_80099D6C_t* a3 = &sp10;
+
+            for (i = 0; i < 20; ++i) {
+                if ((i != a3->unk1) && ((D_800F4588[i] != NULL))
+                    && ((D_800F4588[i]->unk8_0) || (a3->unk1 < 4))
+                    && (D_800F4588[i]->unkE == a3->unk2)) {
+                    a3->unk8 = i;
+                    var_v0 = 1;
+                    goto exit;
+                }
+            }
+
+            var_v0 = 0;
+        exit:
+            if (var_v0 == 0) {
+                vs_main_freeHeap(temp_s0->unk1C);
+            }
+        } else {
+            vs_main_freeHeap(temp_s0->unk1C);
+        }
+    }
+
+    --D_800F4770[temp_s0->unkF].unk6;
+
+    if (temp_s0->unk8_5) {
+        --D_800F4770[temp_s0->unkF + 1].unk6;
+    }
+
+    D_800F4588[arg0] = NULL;
+    return 0;
+}
 
 int func_8009AC24(func_8009AC24_t* arg0)
 {

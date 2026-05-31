@@ -23,7 +23,7 @@ extern char D_800F49DC;
 
 u_char func_80099514(u_int, int, int);
 int func_80099D6C(int);
-void func_8009AA84(int);
+int func_8009AA84(int);
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
 int func_8009D208(int);
 void func_8009D7E8(int, int);

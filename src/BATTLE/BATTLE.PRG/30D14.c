@@ -7,6 +7,7 @@
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/32154.h"
+#include "build/src/include/lbas.h"
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
@@ -61,7 +62,7 @@ int func_8009AC84(vs_battle_objectData*);
 int _loadShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
-int func_8009D270(vs_battle_objectData*);
+int _loadEtmFile(vs_battle_objectData*);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -141,7 +142,7 @@ int vs_battle_processObjectDataQueue(void)
         ret = _loadSeq(slot);
         break;
     case 9:
-        ret = func_8009D270(slot);
+        ret = _loadEtmFile(slot);
         break;
     default:
         return -1;
@@ -426,7 +427,73 @@ int func_8009D208(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D270);
+extern u_short _etmLbaOffsets[];
+extern u_char _etmFileSectorSizes[];
+extern u_char _loadEtmState;
+extern u_short* _etmData;
+extern vs_main_CdFile _etmFile;
+extern vs_main_CdQueueSlot* _etmFileCdSlot;
+
+int _loadEtmFile(vs_battle_objectData* arg0)
+{
+    RECT rect;
+    int fileSize;
+    int temp_a0;
+    int h;
+
+    switch (_loadEtmState) {
+    default:
+        _loadEtmState = 1;
+        temp_a0 = _etmFileSectorSizes[arg0->modelId];
+        if (temp_a0 == 0) {
+            _loadEtmState = 0;
+            return -2;
+        } else {
+            fileSize = temp_a0 << 0xB;
+            _etmData = vs_main_allocHeapR(fileSize);
+            if (_etmData == NULL) {
+                return -2;
+            }
+
+            _etmFile.lba = _etmLbaOffsets[arg0->modelId] + VS_E001_ETM_LBA;
+            _etmFile.size = fileSize;
+            _etmFileCdSlot = vs_main_allocateCdQueueSlot(&_etmFile);
+            vs_main_cdEnqueue(_etmFileCdSlot, _etmData);
+        }
+        // fallthrough
+    case 1:
+        if (_etmFileCdSlot->state != 4) {
+            return -1;
+        }
+
+        vs_main_freeCdQueueSlot(_etmFileCdSlot);
+
+        if (D_800F244F[arg0->unk1] != 0) {
+            if (func_8007E0A8(D_800F244F[arg0->unk1], 1, 4) == 0) {
+                return -3;
+            }
+            D_800F244F[arg0->unk1] = 0;
+        }
+
+        if (func_8007DFF0(arg0->unk11, 1U, 4) == 0) {
+            return -2;
+        }
+
+        D_800F244F[arg0->unk1] = arg0->unk11;
+        ++_etmData;
+        h = *_etmData;
+        ++_etmData;
+        setRECT(&rect, (arg0->unk11 & 0xF) << 6, 256, 64, h);
+        LoadImage(&rect, (void*)_etmData);
+        _loadEtmState = 2;
+        return -1;
+
+    case 2:
+        vs_main_freeHeapR(_etmData - 2);
+        _loadEtmState = 0;
+        return 0;
+    }
+}
 
 void func_8009D458(void) { }
 
@@ -742,6 +809,7 @@ int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
     return ratan2(arg1->vy - sp10.vy, var_s0);
 }
 
+// https://decomp.me/scratch/eQWuH
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E2E0);
 
 int func_8009E480(void)

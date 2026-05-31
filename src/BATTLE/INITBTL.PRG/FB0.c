@@ -16,7 +16,7 @@ extern char D_800E8F29;
 extern char D_800E8F2A;
 extern char D_800E8F2B;
 extern char D_800E8F2C;
-extern char D_800E8F2D;
+extern char _loadEtmState;
 extern short D_800E8F30[][2];
 extern char D_800E8FC0;
 extern char D_800F2450[];
@@ -93,7 +93,7 @@ void func_800FA7B0(void)
     D_800F4528[1] = 0;
     D_800F4528[2] = 0;
     D_800E8F2B = 0;
-    D_800E8F2D = 0;
+    _loadEtmState = 0;
     D_800E8FC0 = 0;
     D_800E8F29 = 0;
     D_800E8F28 = 0;

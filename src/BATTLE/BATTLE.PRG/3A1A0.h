@@ -114,10 +114,7 @@ typedef struct {
     u_short unk16;
     short unk18;
     short unk1A;
-    short unk1C;
-    short unk1E;
-    short unk20;
-    short unk22;
+    SVECTOR unk1C;
     short unk24;
     short unk26;
     int unk28;

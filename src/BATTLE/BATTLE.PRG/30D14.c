@@ -510,7 +510,7 @@ void func_8009DC8C(int arg0)
     if (temp_a3 == NULL) {
         return;
     }
-    
+
     temp_a3->unk11 = 0;
     temp_a3->unkA_0 = 0;
     temp_a3->unk5AC_20 = 0;
@@ -679,7 +679,39 @@ void func_8009E070(int arg0, SVECTOR* arg1, int arg2)
     temp_s0->unk6E0 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E180);
+int func_8009E180(D_800F4538_t* arg0, SVECTOR* arg1)
+{
+    int temp_a0;
+    int temp_a1;
+    int var_v1;
+    int var_v0;
+
+    if (arg1 == NULL) {
+        return 0;
+    }
+
+    temp_a1 = arg1->vx - arg0->unk1C.vx;
+    temp_a0 = arg1->vz - arg0->unk1C.vz;
+
+    if ((temp_a1 == 0) && (temp_a0 == 0)) {
+        var_v1 = arg0->unk26;
+    } else {
+        var_v1 = (0xC00 - ratan2(temp_a0, temp_a1)) & 0xFFF;
+    }
+
+    var_v1 -= arg0->unk26;
+
+    if (var_v1 >= 0x801) {
+        var_v0 = var_v1 - 0x1000;
+    } else {
+        var_v0 = var_v1;
+        if (var_v1 < -0x800) {
+            var_v0 = var_v1 + 0x1000;
+        }
+    }
+
+    return var_v0;
+}
 
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
 {
@@ -691,9 +723,9 @@ int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
         return 0;
     }
 
-    var_s0 = arg1->vx - arg0->unk1C;
+    var_s0 = arg1->vx - arg0->unk1C.vx;
     var_s0 = var_s0 * var_s0;
-    var_v1 = arg1->vz - arg0->unk20;
+    var_v1 = arg1->vz - arg0->unk1C.vz;
 
     if (var_s0 < 0) {
         var_s0 = -var_s0;
@@ -1200,8 +1232,8 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
         temp_a0->unk12 = arg1;
         temp_a0->unk13 = arg2;
     }
-    *(int*)&temp_a0->unk1C = 0;
-    *(int*)&temp_a0->unk20 = 0;
+    *(int*)&temp_a0->unk1C.vx = 0;
+    *(int*)&temp_a0->unk1C.vz = 0;
     temp_a0->unk1A = 0;
     *(int*)&temp_a0->unk24 = 0;
     temp_a0->unk28 = 0;
@@ -1512,8 +1544,8 @@ int func_800A1108(int arg0, void* arg1)
     }
 
     ((int*)arg1)[0] = *(int*)&var_v1->unk5C;
-    ((int*)arg1)[1] = *(int*)&var_v1->unk1C;
-    ((int*)arg1)[2] = *(int*)&var_v1->unk20;
+    ((int*)arg1)[1] = *(int*)&var_v1->unk1C.vx;
+    ((int*)arg1)[2] = *(int*)&var_v1->unk1C.vz;
     ((u_short*)arg1)[5] = var_v1->unk26;
     return 0;
 }
@@ -1569,9 +1601,9 @@ int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
             if (temp_a1->unkB_0) {
                 return -1;
             }
-            arg2->vx = temp_a1->unk1C;
-            arg2->vz = temp_a1->unk20;
-            arg2->vy = temp_a1->unk1E - temp_a1->unk646;
+            arg2->vx = temp_a1->unk1C.vx;
+            arg2->vz = temp_a1->unk1C.vz;
+            arg2->vy = temp_a1->unk1C.vy - temp_a1->unk646;
         }
 
         SetRotMatrix((MATRIX*)0x1F800014);

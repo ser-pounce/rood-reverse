@@ -100,9 +100,9 @@ void func_800F9CB0(void)
     }
 
     func_8009D468(1, i);
-    temp_s0->unk1C = 0;
-    temp_s0->unk1E = 0;
-    temp_s0->unk20 = 0;
+    temp_s0->unk1C.vx = 0;
+    temp_s0->unk1C.vy = 0;
+    temp_s0->unk1C.vz = 0;
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk8_0 = 0;
     temp_s0->unk9_7 = 0;
@@ -197,17 +197,17 @@ int func_800F9EB8(void* arg0)
         int* p = (int*)0x1F800000;
         new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
-        temp_s1->unk1C += temp_s1->unk6F4.unk0;
-        temp_s1->unk1E += temp_s1->unk6F4.unk1;
-        temp_s1->unk20 += temp_s1->unk6F4.unk2;
+        temp_s1->unk1C.vx += temp_s1->unk6F4.unk0;
+        temp_s1->unk1C.vy += temp_s1->unk6F4.unk1;
+        temp_s1->unk1C.vz += temp_s1->unk6F4.unk2;
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
         p = (int*)0x1F800000;
         new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
-        temp_s1->unk1C -= temp_s1->unk6F4.unk0;
-        temp_s1->unk1E -= temp_s1->unk6F4.unk1;
-        temp_s1->unk20 -= temp_s1->unk6F4.unk2;
+        temp_s1->unk1C.vx -= temp_s1->unk6F4.unk0;
+        temp_s1->unk1C.vy -= temp_s1->unk6F4.unk1;
+        temp_s1->unk1C.vz -= temp_s1->unk6F4.unk2;
     }
 
     if (temp_s1->unk9_4) {

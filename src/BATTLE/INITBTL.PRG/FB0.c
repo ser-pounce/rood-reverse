@@ -13,7 +13,7 @@ typedef struct {
 } D_800F46A8_t;
 
 extern char D_800E8F29;
-extern char D_800E8F2A;
+extern char _loadShp2State;
 extern char D_800E8F2B;
 extern char D_800E8F2C;
 extern char _loadEtmState;
@@ -97,7 +97,7 @@ void func_800FA7B0(void)
     D_800E8FC0 = 0;
     D_800E8F29 = 0;
     D_800E8F28 = 0;
-    D_800E8F2A = 0;
+    _loadShp2State = 0;
     D_800E8F2C = 0;
     sp10.vx = 0x1000;
     sp10.vy = 0x1000;

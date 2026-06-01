@@ -58,7 +58,7 @@ typedef struct {
 int func_8009998C(vs_battle_objectData*);
 int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
-int func_8009AC84(vs_battle_objectData*);
+int _loadShp2(vs_battle_objectData*);
 int _loadShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
@@ -79,11 +79,17 @@ int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800E68A0(D_800F45E0_t*);
 
-extern u_char D_800E8F2A;
+extern u_short D_800E8660[];
+extern u_char _shpFileSectorSizes[];
+extern u_char _loadShp2State;
 extern char D_800E8F2C;
 extern char D_800E8FC0;
 extern int D_800E8FC4;
 extern u_char D_800E9090[];
+extern void* _shpData;
+extern int _shpAllocated;
+extern vs_main_CdFile _shpFile;
+extern vs_main_CdQueueSlot* _shpCdSlot;
 extern u_char D_800F244F[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
@@ -121,7 +127,7 @@ int vs_battle_processObjectDataQueue(void)
     case 0:
         return 0;
     case 1:
-        ret = func_8009AC84(slot);
+        ret = _loadShp2(slot);
         break;
     case 3:
         ret = func_8009A0B8(slot);
@@ -150,11 +156,11 @@ int vs_battle_processObjectDataQueue(void)
 
     D_800F4580 = VSync(1) - D_800F4580;
 
-    if (D_800E8F2A == 2) {
+    if (_loadShp2State == 2) {
         if (D_800E8FC4 < D_800F4580) {
             D_800E8FC4 = D_800F4580;
             D_800F45D8 = slot->unk0;
-            D_800F457C = D_800E8F2A;
+            D_800F457C = _loadShp2State;
         }
     }
 
@@ -343,7 +349,87 @@ int func_8009AC24(func_8009AC24_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009AC84);
+int _loadShp2(vs_battle_objectData* arg0)
+{
+    int shpData;
+    int found;
+    int i;
+    int shpFileSize;
+
+    switch (_loadShp2State) {
+    case 0:
+        if (arg0->modelId == 0x7F) {
+            _shpAllocated = 0;
+            break;
+        }
+
+        for (i = 0; i < 17; ++i) {
+            if ((i != arg0->unk1) && ((D_800F4538[i] != NULL))
+                && (D_800F4538[i]->unk6E6 == arg0->modelId)) {
+                arg0->dataAddr = i;
+                found = 1;
+                goto exit;
+            }
+        }
+        found = 0;
+    exit:
+        if (found != 0) {
+            _shpAllocated = 0;
+            break;
+        }
+        _shpAllocated = 1;
+        // Fallthrough
+
+    default:
+        shpFileSize = _shpFileSectorSizes[arg0->modelId];
+
+        if (shpFileSize == 0) {
+            arg0->modelId = 0;
+            shpFileSize = _shpFileSectorSizes[0];
+        }
+
+        shpFileSize <<= 0xB;
+        _shpData = vs_main_allocHeapR(shpFileSize);
+        arg0->dataAddr = (u_long)_shpData;
+
+        if (_shpData == NULL) {
+            return -2;
+        }
+
+        _loadShp2State = 1;
+        _shpFile.lba = D_800E8660[arg0->modelId] + 0x17318;
+        _shpFile.size = shpFileSize;
+        _shpCdSlot = vs_main_allocateCdQueueSlot(&_shpFile);
+
+        vs_main_cdEnqueue(_shpCdSlot, (void*)arg0->dataAddr);
+    case 1:
+        if (_shpCdSlot->state != 4) {
+            return -1;
+        }
+
+        vs_main_freeCdQueueSlot(_shpCdSlot);
+        _loadShp2State = 2;
+
+        return -1;
+
+    case 2:
+        break;
+    }
+
+    shpData = _loadShp(arg0);
+
+    if (shpData == -1) {
+        return -1;
+    }
+
+    if (_shpAllocated != 0) {
+        _shpAllocated = 0;
+        vs_main_freeHeapR(_shpData);
+    }
+
+    _loadShp2State = 0;
+    return shpData;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadShp);
 

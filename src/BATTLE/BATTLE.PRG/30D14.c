@@ -56,13 +56,13 @@ typedef struct {
 } D_800F4770_t;
 
 int func_8009998C(vs_battle_objectData*);
-int func_8009A0B8(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
-int _loadShp2(vs_battle_objectData*);
+int _parseWep(vs_battle_objectData*);
 int _loadShp(vs_battle_objectData*);
+int _parseShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
-int _loadEtmFile(vs_battle_objectData*);
+int _loadEtm(vs_battle_objectData*);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -79,9 +79,11 @@ int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800E68A0(D_800F45E0_t*);
 
-extern u_short D_800E8660[];
+extern u_short _shpLbaOffsets[];
+extern u_short D_800E8D00[];
+extern u_char _wepFileSectorOffsets[];
 extern u_char _shpFileSectorSizes[];
-extern u_char _loadShp2State;
+extern u_char _loadShpState;
 extern char D_800E8F2C;
 extern char D_800E8FC0;
 extern int D_800E8FC4;
@@ -90,6 +92,10 @@ extern void* _shpData;
 extern int _shpAllocated;
 extern vs_main_CdFile _shpFile;
 extern vs_main_CdQueueSlot* _shpCdSlot;
+extern void* _wepFileData;
+extern int _wepFileLoaded;
+extern vs_main_CdFile _wepFile;
+extern vs_main_CdQueueSlot* _wepCdSlot;
 extern u_char D_800F244F[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
@@ -127,19 +133,19 @@ int vs_battle_processObjectDataQueue(void)
     case 0:
         return 0;
     case 1:
-        ret = _loadShp2(slot);
+        ret = _loadShp(slot);
         break;
     case 3:
-        ret = func_8009A0B8(slot);
+        ret = _loadWep(slot);
         break;
     case 7:
         ret = func_8009BE5C(slot);
         break;
     case 2:
-        ret = _loadShp(slot);
+        ret = _parseShp(slot);
         break;
     case 4:
-        ret = _loadWep(slot);
+        ret = _parseWep(slot);
         break;
     case 6:
         ret = func_8009998C(slot);
@@ -148,7 +154,7 @@ int vs_battle_processObjectDataQueue(void)
         ret = _loadSeq(slot);
         break;
     case 9:
-        ret = _loadEtmFile(slot);
+        ret = _loadEtm(slot);
         break;
     default:
         return -1;
@@ -156,11 +162,11 @@ int vs_battle_processObjectDataQueue(void)
 
     D_800F4580 = VSync(1) - D_800F4580;
 
-    if (_loadShp2State == 2) {
+    if (_loadShpState == 2) {
         if (D_800E8FC4 < D_800F4580) {
             D_800E8FC4 = D_800F4580;
             D_800F45D8 = slot->unk0;
-            D_800F457C = _loadShp2State;
+            D_800F457C = _loadShpState;
         }
     }
 
@@ -281,9 +287,82 @@ void* func_8009A028(int* arg0, void* arg1, int arg2)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A0B8);
+int _loadWep(vs_battle_objectData* arg0)
+{
+    int wepData;
+    int found;
+    int wepFileSize;
+    int i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadWep);
+    if ((arg0->modelId == 0) || (arg0->modelId >= 0x80)) {
+        return 0;
+    }
+
+    switch (_loadShpState) {
+    case 0:
+        for (i = 0; i < 20; ++i) {
+            if ((i != arg0->unk1) && (D_800F4588[i] != NULL)
+                && ((D_800F4588[i]->unk8_0) || (arg0->unk1 < 4))
+                && (D_800F4588[i]->unkE == arg0->modelId)) {
+                arg0->dataAddr = i;
+                found = 1;
+                goto exit;
+            }
+        }
+        found = 0;
+    exit:
+        if (found != 0) {
+            _wepFileLoaded = 0;
+            break;
+        }
+
+        _wepFileLoaded = 1;
+        // Fallthrough
+
+    default:
+        wepFileSize = _wepFileSectorOffsets[arg0->modelId];
+        wepFileSize <<= 0xB;
+        _wepFileData = vs_main_allocHeapR(wepFileSize);
+        arg0->dataAddr = (u_long)_wepFileData;
+
+        if (_wepFileData == NULL) {
+            return -2;
+        }
+        
+        _loadShpState = 1;
+        _wepFile.lba = D_800E8D00[arg0->modelId] + VS_01_WEP_LBA;
+        _wepFile.size = wepFileSize;
+        _wepCdSlot = vs_main_allocateCdQueueSlot(&_wepFile);
+        vs_main_cdEnqueue(_wepCdSlot, (void*)arg0->dataAddr);
+        // Fallthrough
+
+    case 1:
+        if (_wepCdSlot->state != 4) {
+            return -1;
+        }
+        vs_main_freeCdQueueSlot(_wepCdSlot);
+        _loadShpState = 2;
+        return -1;
+    case 2:
+        break;
+    }
+
+    wepData = _parseWep(arg0);
+
+    if (wepData == -1) {
+        return -1;
+    }
+
+    if (_wepFileLoaded != 0) {
+        _wepFileLoaded = 0;
+        vs_main_freeHeapR(_wepFileData);
+    }
+
+    _loadShpState = 0;
+    return wepData;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _parseWep);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
@@ -349,14 +428,14 @@ int func_8009AC24(func_8009AC24_t* arg0)
     return 0;
 }
 
-int _loadShp2(vs_battle_objectData* arg0)
+int _loadShp(vs_battle_objectData* arg0)
 {
     int shpData;
     int found;
     int i;
     int shpFileSize;
 
-    switch (_loadShp2State) {
+    switch (_loadShpState) {
     case 0:
         if (arg0->modelId == 0x7F) {
             _shpAllocated = 0;
@@ -396,8 +475,8 @@ int _loadShp2(vs_battle_objectData* arg0)
             return -2;
         }
 
-        _loadShp2State = 1;
-        _shpFile.lba = D_800E8660[arg0->modelId] + 0x17318;
+        _loadShpState = 1;
+        _shpFile.lba = _shpLbaOffsets[arg0->modelId] + VS_00_SHP_LBA;
         _shpFile.size = shpFileSize;
         _shpCdSlot = vs_main_allocateCdQueueSlot(&_shpFile);
 
@@ -408,7 +487,7 @@ int _loadShp2(vs_battle_objectData* arg0)
         }
 
         vs_main_freeCdQueueSlot(_shpCdSlot);
-        _loadShp2State = 2;
+        _loadShpState = 2;
 
         return -1;
 
@@ -416,7 +495,7 @@ int _loadShp2(vs_battle_objectData* arg0)
         break;
     }
 
-    shpData = _loadShp(arg0);
+    shpData = _parseShp(arg0);
 
     if (shpData == -1) {
         return -1;
@@ -427,11 +506,11 @@ int _loadShp2(vs_battle_objectData* arg0)
         vs_main_freeHeapR(_shpData);
     }
 
-    _loadShp2State = 0;
+    _loadShpState = 0;
     return shpData;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _loadShp);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _parseShp);
 
 int func_8009BD90(vs_battle_objectData* arg0)
 {
@@ -520,7 +599,7 @@ extern u_short* _etmData;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
 
-int _loadEtmFile(vs_battle_objectData* arg0)
+int _loadEtm(vs_battle_objectData* arg0)
 {
     RECT rect;
     int fileSize;

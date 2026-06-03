@@ -40,20 +40,22 @@ typedef struct {
 } func_800A0024_t;
 
 typedef struct {
-    u_char unk0;
-    signed char unk1;
-    short unk2;
-    int unk4;
-    int unk8;
-    int unkC;
-    u_char unk10;
-} func_80099D6C_t;
-
-typedef struct {
     int unk0;
     short unk4;
     u_char unk6;
 } D_800F4770_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_short unk4;
+    u_char unk6;
+} D_800F46A8_t;
+
+typedef struct {
+    u_char unk0[0x30];
+    int* unk30;
+} func_8004644C_t;
 
 int func_8009998C(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
@@ -84,6 +86,10 @@ extern u_short D_800E8D00[];
 extern u_char _wepFileSectorOffsets[];
 extern u_char _shpFileSectorSizes[];
 extern u_char _loadShpState;
+extern u_short _etmLbaOffsets[];
+extern u_char _etmFileSectorSizes[];
+extern u_char _loadEtmState;
+extern u_short* _etmData;
 extern char D_800E8F2C;
 extern char D_800E8FC0;
 extern int D_800E8FC4;
@@ -96,6 +102,8 @@ extern void* _wepFileData;
 extern int _wepFileLoaded;
 extern vs_main_CdFile _wepFile;
 extern vs_main_CdQueueSlot* _wepCdSlot;
+extern vs_main_CdFile _etmFile;
+extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern u_char D_800F244F[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
@@ -103,6 +111,7 @@ extern char D_800F4448[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
+extern D_800F46A8_t D_800F46A8[];
 extern D_800F4770_t D_800F4770[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
@@ -207,7 +216,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009998C);
 
 int func_80099D6C(int arg0)
 {
-    func_80099D6C_t sp10;
+    vs_battle_objectData sp10;
     D_800F45E0_t* temp_s0;
     int i;
     int found;
@@ -227,13 +236,13 @@ int func_80099D6C(int arg0)
     }
 
     sp10.unk1 = arg0;
-    sp10.unk10 = temp_s0->unk6C[8].unk0_0;
+    sp10.actorId = temp_s0->unk6C[8].unk0_0;
 
     for (i = 0; i < 16; ++i) {
-        func_80099D6C_t* a2 = &sp10;
+        vs_battle_objectData* a2 = &sp10;
         if ((i != a2->unk1) && (D_800F45E0[i] != NULL)
-            && (D_800F45E0[i]->unk6C[8].unk0_0 == a2->unk10)) {
-            a2->unk8 = i;
+            && (D_800F45E0[i]->unk6C[8].unk0_0 == a2->actorId)) {
+            a2->dataAddr = i;
             found = 1;
             goto exit;
         }
@@ -328,7 +337,7 @@ int _loadWep(vs_battle_objectData* arg0)
         if (_wepFileData == NULL) {
             return -2;
         }
-        
+
         _loadShpState = 1;
         _wepFile.lba = D_800E8D00[arg0->modelId] + VS_01_WEP_LBA;
         _wepFile.size = wepFileSize;
@@ -368,7 +377,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
 int func_8009AA84(int arg0)
 {
-    func_80099D6C_t sp10;
+    vs_battle_objectData sp10;
     int i;
     D_800F4588_t* temp_s0 = D_800F4588[arg0];
 
@@ -378,17 +387,17 @@ int func_8009AA84(int arg0)
 
     if (temp_s0->unk8_0) {
         sp10.unk1 = arg0;
-        sp10.unk2 = temp_s0->unkE;
+        sp10.modelId = temp_s0->unkE;
 
         if (arg0 >= 4) {
             int var_v0;
-            func_80099D6C_t* a3 = &sp10;
+            vs_battle_objectData* a3 = &sp10;
 
             for (i = 0; i < 20; ++i) {
                 if ((i != a3->unk1) && ((D_800F4588[i] != NULL))
                     && ((D_800F4588[i]->unk8_0) || (a3->unk1 < 4))
-                    && (D_800F4588[i]->unkE == a3->unk2)) {
-                    a3->unk8 = i;
+                    && (D_800F4588[i]->unkE == a3->modelId)) {
+                    a3->dataAddr = i;
                     var_v0 = 1;
                     goto exit;
                 }
@@ -532,6 +541,7 @@ int func_8009BD90(vs_battle_objectData* arg0)
     return 0;
 }
 
+// https://decomp.me/scratch/wJjuU
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009BE5C);
 
 void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
@@ -578,7 +588,81 @@ int func_8009CE9C(u_int arg0)
 
 int func_8009CFA0(void) { return D_800E8F2C + 1; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009CFB0);
+int func_8009CFB0(int arg0)
+{
+    func_8009AC24_t sp10;
+    D_800F4538_t* temp_s1;
+    int i;
+
+    if (arg0 >= 0x11) {
+        return -1;
+    }
+
+    temp_s1 = D_800F4538[arg0];
+
+    if (temp_s1 == NULL) {
+        return -1;
+    }
+
+    if (temp_s1->unk6E6 != 0x7F) {
+        func_8009AC24_t* a2;
+        int var_v0;
+        sp10.unk1 = arg0;
+        sp10.unk2 = temp_s1->unk6E6;
+        a2 = &sp10;
+
+        for (i = 0; i < 17; ++i) {
+            if ((i != a2->unk1) && ((D_800F4538[i] != NULL))
+                && (D_800F4538[i]->unk6E6 == a2->unk2)) {
+                a2->unk8 = i;
+                var_v0 = 1;
+                goto exit;
+            }
+        }
+
+        if (i >= 17) {
+            var_v0 = 0;
+        }
+    exit:
+        if (var_v0 == 0) {
+            func_8004644C(0x180, ((func_8004644C_t*)temp_s1->unk68)->unk30, 0);
+            vs_main_freeHeap(temp_s1->unk68);
+            vs_main_freeHeap(temp_s1->unk5D0);
+        }
+
+        if (temp_s1->unk5D4 != 0) {
+            for (i = 0; i < 17; ++i) {
+                if ((i != arg0) && ((D_800F4538[i] != NULL))
+                    && (D_800F4538[i]->unk5D4 == temp_s1->unk5D4)) {
+                    goto exit2;
+                }
+            }
+            if (i >= 17) {
+                vs_main_freeHeap(temp_s1->unk5D4);
+            }
+        }
+    exit2:
+
+        func_8009CC20(arg0, 0);
+
+        if (arg0 < 10) {
+            func_8009AA84(arg0 * 2);
+            func_8009AA84(arg0 * 2 | 1);
+        }
+
+        if (temp_s1->unk5B0_5) {
+            for (i = 0; i < (temp_s1->unk8_4 + 1); ++i) {
+                --D_800F46A8[temp_s1->unk5BB + i].unk6;
+            }
+
+            if (temp_s1->unk5BB == 20) {
+                func_8007E0A8(31, 1, 4);
+            }
+        }
+    }
+    D_800F4538[arg0] = NULL;
+    return 0;
+}
 
 int func_8009D208(int arg0)
 {
@@ -591,13 +675,6 @@ int func_8009D208(int arg0)
     }
     return 0;
 }
-
-extern u_short _etmLbaOffsets[];
-extern u_char _etmFileSectorSizes[];
-extern u_char _loadEtmState;
-extern u_short* _etmData;
-extern vs_main_CdFile _etmFile;
-extern vs_main_CdQueueSlot* _etmFileCdSlot;
 
 int _loadEtm(vs_battle_objectData* arg0)
 {

@@ -99,13 +99,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A51A0);
 
 void func_800A525C(D_800F4538_t* arg0)
 {
-    arg0->unk1848 = 1;
+    arg0->unk1848.unk0 = 1;
     if (arg0->unkF == 0) {
-        arg0->unk1848 = 0;
+        arg0->unk1848.unk0 = 0;
     }
-    arg0->unk184C = 0;
-    arg0->unk1850 = 0;
-    arg0->unk184E = 0;
+    arg0->unk1848.unk4 = 0;
+    arg0->unk1848.unk8 = 0;
+    arg0->unk1848.unk6 = 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A5280);

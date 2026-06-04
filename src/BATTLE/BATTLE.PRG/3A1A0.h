@@ -77,6 +77,19 @@ typedef struct {
 } D_800F4538_unk64;
 
 typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_short unk4;
+    u_short unk6;
+    u_int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+} D_800F4538_unk1848;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -117,8 +130,10 @@ typedef struct {
     short unk24;
     short unk26;
     int unk28;
-    int unk2C;
-    int unk30;
+    short unk2C;
+    short unk2E;
+    short unk30;
+    short unk32;
     int unk34;
     int unk38;
     u_short unk3C;
@@ -133,7 +148,8 @@ typedef struct {
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
     MATRIX unk6C[42];
-    u_int unk5AC_0 : 3;
+    u_int unk5AC_0 : 2;
+    u_int unk5AC_2 : 1;
     u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;
@@ -175,7 +191,8 @@ typedef struct {
     u_short unk5C0;
     u_short unk5C2;
     int unk5C4;
-    int unk5C8;
+    u_short unk5C8;
+    u_short unk5CA;
     char unk5CC;
     char unk5CD;
     short unk5CE;
@@ -211,7 +228,9 @@ typedef struct {
     u_short unk6E6;
     short unk6E8;
     short unk6EA;
-    int unk6EC;
+    short unk6EC;
+    u_char unk6EE;
+    u_char unk6EF;
     u_char unk6F0;
     u_char unk6F1;
     u_char unk6F2;
@@ -228,18 +247,21 @@ typedef struct {
     D_800F4538_unk64 unk17E8;
     u_char unk17EC[8];
     SVECTOR unk17F4;
-    u_char unk17FC;
+    signed char unk17FC;
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0xD];
-    u_char unk180D;
-    u_char unk180E;
-    u_char unk180F;
-    u_char unk1810;
-    u_char unk1811;
-    u_char unk1812;
-    u_char unk1813;
+    u_char unk1800[0xC];
+    u_int unk180C_0 : 4;
+    u_int unk180C_4 : 4;
+    u_int unk180D : 8;
+    u_int unk180E : 8;
+    u_int unk180F : 8;
+    u_int unk1810_0 : 4;
+    u_int unk1810_4 : 4;
+    u_int unk1811 : 8;
+    u_int unk1812 : 8;
+    u_int unk1813 : 8;
     short unk1814;
     short unk1816;
     short unk1818;
@@ -252,14 +274,11 @@ typedef struct {
     short unk1844;
     u_char unk1846;
     u_char unk1847;
-    u_char unk1848;
-    u_char unk1849;
-    u_char unk184A;
-    u_char unk184B;
-    u_short unk184C;
-    u_short unk184E;
-    u_int unk1850;
-    u_char unk1854[0x10];
+    D_800F4538_unk1848 unk1848;
+    u_char unk1860;
+    u_char unk1861;
+    u_char unk1862;
+    u_char unk1863;
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;

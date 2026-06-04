@@ -110,6 +110,7 @@ extern vs_main_CdQueueSlot* _wepCdSlot;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern u_char D_800F244F[];
+extern u_char D_800F2450[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
@@ -746,7 +747,79 @@ void func_8009D458(void) { }
 
 void func_8009D460(void) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D468);
+void func_8009D468(int arg0, int arg1)
+{
+    D_800F4538_unk64 sp10;
+    int var_a2;
+    D_800F4538_unk1864* s0;
+    D_800F4538_t* temp_s1 = D_800F4538[arg0];
+
+    if (temp_s1 != NULL) {
+        temp_s1->unk2C = 0x1000;
+        temp_s1->unk2E = 0x1000;
+        temp_s1->unk30 = 0x1000;
+        temp_s1->unk17FC = -2;
+        temp_s1->unk11 = 0;
+        temp_s1->unk5C8 = 0;
+        temp_s1->unk18 = 0;
+        *(int*)&temp_s1->unk24 = 0;
+        temp_s1->unk28 = 0;
+        temp_s1->unk1A = 0;
+        temp_s1->unk16 = 0;
+        temp_s1->unk14 = 0;
+        temp_s1->unkA_0 = 0;
+        temp_s1->unk5AC_0 = 0;
+        temp_s1->unkB_0 = 0;
+        temp_s1->unkB_3 = 0;
+        func_8009FD38(temp_s1);
+        if (D_800F2450[D_800E8F2C] != 0) {
+            func_800AB098(temp_s1, 0, 0);
+            func_800AB098(temp_s1, 1, 0);
+        }
+        temp_s1->unk1800[2] = 0;
+        temp_s1->unk180C_0 = 0;
+        temp_s1->unk5AC_21 = 0;
+        temp_s1->unk1810_0 = 0;
+        temp_s1->unk5AC_22 = 0;
+        func_800A07FC(arg0, NULL);
+        if (temp_s1->unk17FD == 1) {
+            temp_s1->unk17FD = 0;
+        }
+        temp_s1->unk9_7 = 1;
+        sp10.unk0 = 0;
+        func_8009F990(arg0, &sp10);
+        temp_s1->unk5BE = 4;
+        temp_s1->unk17FF = 0;
+        temp_s1->unk64.unk0 = 0;
+        temp_s1->unk1860 = 0;
+        temp_s1->unkC_0 = 0;
+        temp_s1->unkC_4 = 0;
+        temp_s1->unkA_3 = 0;
+        temp_s1->unk9_6 = 0;
+        temp_s1->unk5AC_3 = 0;
+        temp_s1->unk9_0 = 0;
+        var_a2 = 0x62;
+        if (arg0 == 0) {
+            var_a2 = 1;
+        }
+        func_800A0204(arg0, var_a2, 0, 0);
+        temp_s1->unk6E0 = 0;
+        temp_s1->unk6EC = 0;
+        temp_s1->unk6EE = 0;
+        temp_s1->unk6EF = 0;
+        temp_s1->unk1846 = 0;
+        temp_s1->unk5AC_24 = 0;
+        temp_s1->unk8_0 = 1;
+        temp_s1->unk8_1 = 1;
+        temp_s1->unk8_2 = 1;
+        temp_s1->unk5AC_15 = 0;
+        s0 = &temp_s1->unk1864;
+        memset(s0, 0, sizeof *s0);
+        s0->unkC = temp_s1->unk64E;
+        s0->unkE = temp_s1->unk650;
+        memset(&temp_s1->unk1848, 0, sizeof temp_s1->unk1848);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009D6F4);
 

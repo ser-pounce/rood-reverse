@@ -100,7 +100,8 @@ typedef struct {
     u_char unkB_0 : 4;
     u_char unkB_3 : 3;
     u_char unkB_4 : 1;
-    u_char unkC;
+    u_char unkC_0 : 4;
+    u_char unkC_4 : 4;
     u_char unkD;
     u_char unkE;
     u_char unkF;
@@ -181,13 +182,8 @@ typedef struct {
     void* unk5D0;
     void* unk5D4;
     void* unk5D8;
-    int unk5DC;
-    int unk5E0;
-    int unk5E4;
-    int unk5E8;
-    int unk5EC;
-    int unk5F0;
-    u_short unk5F4[0x24];
+    void* unk5DC[16];
+    u_char unk61C[0x20];
     u_short unk63C;
     u_short unk63E;
     u_char unk640[6];

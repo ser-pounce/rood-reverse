@@ -57,6 +57,7 @@ typedef struct {
     int* unk30;
 } func_8004644C_t;
 
+void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
 int _loadWep(vs_battle_objectData*);
 int _parseWep(vs_battle_objectData*);
@@ -74,6 +75,8 @@ void func_8009FD38(D_800F4538_t* arg0);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
+void func_800A2C48(D_800F4538_t*);
+void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
 int func_800A91DC(int, int, int);
 void func_800AB2AC(int);
@@ -1170,7 +1173,124 @@ void func_8009E634(D_800F4538_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E700);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EA14);
+void func_8009EA14(int arg0, SVECTOR* arg1)
+{
+    SVECTOR sp10;
+    D_800F4538_t* temp_s1;
+    int temp_a0;
+    int temp_a1;
+    int var_s0;
+    int temp_v1;
+    int temp_v1_2;
+    int var_s4;
+    int var_v1;
+    int var_v1_2;
+    u_int var_v0;
+
+    // var_s4 = saved_reg_s4;
+
+    temp_s1 = D_800F4538[arg0];
+
+    if (temp_s1 != NULL) {
+
+        var_s0 = 0x5B;
+
+        if (!(temp_s1->unk5AC_3 << 3)) {
+            if (arg0 == 0) {
+
+                var_v1 = 0;
+
+                if (arg1 != NULL) {
+
+                    var_s0 = arg1->vx - temp_s1->unk1C.vx;
+                    var_s0 *= var_s0;
+                    temp_v1 = arg1->vz - temp_s1->unk1C.vz;
+
+                    if (var_s0 < 0) {
+                        var_s0 = -var_s0;
+                    }
+
+                    var_v1_2 = temp_v1 * temp_v1;
+
+                    if (var_v1_2 < 0) {
+                        var_v1_2 = -var_v1_2;
+                    }
+
+                    var_s0 = vs_gte_rsqrt(var_s0 + var_v1_2);
+                    func_800A1AF8(temp_s1->unkF, 0, &sp10, 0);
+                    var_v1 = ratan2(arg1->vy - sp10.vy, var_s0);
+                }
+
+                var_s0 = 0x45;
+
+                if (var_v1 >= -0xE4) {
+                    var_s0 = 0x44;
+                    if (var_v1 < 0xAC) {
+                        goto block_11;
+                    }
+                }
+            } else {
+            block_11:
+                temp_v1_2 = 0;
+
+                if (arg1 != NULL) {
+
+                    temp_a1 = arg1->vx - temp_s1->unk1C.vx;
+                    temp_a0 = arg1->vz - temp_s1->unk1C.vz;
+
+                    if ((temp_a1 == 0) && (temp_a0 == 0)) {
+                        temp_v1_2 = temp_s1->unk26;
+                    } else {
+                        temp_v1_2 = (0xC00 - ratan2(temp_a0, temp_a1)) & 0xFFF;
+                    }
+
+                    temp_v1_2 = temp_v1_2 - temp_s1->unk26;
+
+                    if (temp_v1_2 > 0x800) {
+                        temp_v1_2 = temp_v1_2 - 0x1000;
+                    } else {
+                        if (temp_v1_2 < -0x800) {
+                            temp_v1_2 = temp_v1_2 + 0x1000;
+                        }
+                    }
+                }
+
+                var_v0 = temp_v1_2 + 0x200;
+                var_s0 = 0x40;
+
+                if (var_v0 >= 0x801) {
+                    var_s0 = 0x42;
+                }
+            }
+        }
+
+        if (temp_s1->unkA_3 == 2) {
+            if (temp_s1->unkC_0) {
+                func_8008C49C(temp_s1->unkC_0 - 2, -1);
+                temp_s1->unkC_0 = 0;
+            }
+            var_s0 = 0x3B;
+        } else {
+            if (temp_s1->unkB_0 == 3) {
+                func_800A2C48(temp_s1);
+            }
+            temp_s1->unk18 = 0;
+            if (temp_s1->unkF == 0) {
+                temp_s1->unk11 = 0;
+                temp_s1->unkA_3 = 0;
+                temp_s1->unk9_6 = 0;
+                temp_s1->unkA_0 = 0;
+                var_s4 = 0;
+            } else {
+                var_s4 = 8;
+            }
+        }
+        func_800A525C(temp_s1);
+        temp_s1->unk6E3 = 0xFF;
+        func_800A0204(arg0, var_s0, 0, var_s4);
+        func_8009FD38(temp_s1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009EC9C);
 

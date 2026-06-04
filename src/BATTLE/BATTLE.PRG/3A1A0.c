@@ -14,7 +14,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
 void func_800A2C48(D_800F4538_t* arg0)
 {
-    func_800A9C54(arg0->unkF, &arg0->unk5EC, 0);
+    func_800A9C54(arg0->unkF, &arg0->unk5DC[4], 0);
     arg0->unk6E0 = 0;
     arg0->unkB_0 = 4;
     func_800A29A0(arg0);

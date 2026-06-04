@@ -68,12 +68,14 @@ int _loadEtm(vs_battle_objectData*);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
+int func_8009F794(D_800F45E0_t* arg0);
 void func_8009F9F4(int, D_800F4538_unk64*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
 int func_800A6EE8(short*, int, int, int);
+int func_800A91DC(int, int, int);
 void func_800AB2AC(int);
 void func_800AD494(D_800F4538_t*, int, int*);
 void func_800AD62C(int, int*, int*, int);
@@ -1233,7 +1235,69 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F314);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009F530);
+void func_8009F530(int arg0)
+{
+    D_800F4538_t* temp_v0_2;
+    int temp_s4;
+    int temp_v0;
+    int i;
+    D_800F45E0_t* temp_s0 = D_800F45E0[arg0];
+
+    temp_s0->unk6C[8].unk0_3 = 1;
+    temp_s4 = func_800A91DC(temp_s0->unk5C, temp_s0->unk5E, 0);
+    temp_v0 = func_8009F794(temp_s0);
+
+    if (temp_v0 != -1) {
+        D_800F45E0_t* temp_s1 = D_800F45E0[temp_v0];
+        temp_s1->unk36 = 0;
+        temp_s1->unk1A = 0xFC;
+        func_800E68A0(temp_s1);
+
+        if (temp_s1->unk6C[8].unk0_4 == 2) {
+            func_800E68A0(temp_s1);
+        }
+
+        for (i = 0; i < 16; ++i) {
+            temp_s0 = D_800F45E0[i];
+            if ((temp_s0 != NULL) && (temp_s0 != temp_s1) && !(temp_s0->unk8_0)) {
+                temp_s0->unk6C[8].unk3 = 0xFF;
+                if ((temp_s0->unk1A == 0) && !(temp_s0->unk6C[8].unk0_3)
+                    && (temp_s0->unk12 == 0xFF) && (temp_s0->unk5C == temp_s1->unk5C)
+                    && (temp_s0->unk5D == temp_s1->unk5D)
+                    && (temp_s0->unk5E == temp_s1->unk5E)
+                    && (temp_s0->unk1E <= temp_s1->unk1E)) {
+                    temp_s0->unk6C[8].unk3 = temp_v0;
+                }
+            }
+        }
+    }
+
+    i = 0;
+
+    while ((temp_v0_2 = func_800A3C00(D_800F45E0[temp_s4], i))) {
+
+        if ((temp_v0_2->unkA_0) != 3) {
+            temp_v0_2->unk34 = 0;
+            temp_v0_2->unk38 = 0;
+            temp_v0_2->unkA_0 = 3;
+            if (temp_v0_2->unkF != 0) {
+                temp_v0_2->unk181A = 1;
+                temp_v0_2->unk1814 = temp_v0_2->unk5C;
+                temp_v0_2->unk1818 = temp_v0_2->unk5E;
+            }
+            temp_v0_2->unk11 = 4;
+        }
+
+        i = temp_v0_2->unkF + 1;
+        temp_v0_2->unkA_3 = 0;
+        temp_v0_2->unk9_6 = 0;
+        temp_v0_2->unk5AC_28 = 0;
+
+        if (i == 1) {
+            i = 2;
+        }
+    }
+}
 
 int func_8009F794(D_800F45E0_t* arg0)
 {

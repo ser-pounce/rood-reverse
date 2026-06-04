@@ -152,7 +152,8 @@ typedef struct {
     u_int unk5AC_22 : 1;
     u_int unk5AC_23 : 1;
     u_int unk5AC_24 : 1;
-    u_int unk5AC_25 : 7;
+    u_int unk5AC_25 : 3;
+    u_int unk5AC_28 : 4;
     u_char unk5B0_0 : 4;
     u_char unk5B0_4 : 1;
     u_char unk5B0_5 : 1;
@@ -241,7 +242,13 @@ typedef struct {
     u_char unk180F;
     u_char unk1810;
     u_char unk1811;
-    u_char unk1812[0x2A];
+    u_char unk1812;
+    u_char unk1813;
+    short unk1814;
+    short unk1816;
+    short unk1818;
+    short unk181A;
+    u_char unk181C[0x20];
     short unk183C;
     short unk183E;
     short unk1840;
@@ -452,10 +459,22 @@ typedef struct {
     short unk22;
     short unk24;
     short unk26;
-    int unk28[12];
+    int unk28;
+    int unk2C;
+    int unk30;
+    short unk34;
+    short unk36;
+    int unk38;
+    int unk3C;
+    int unk40;
+    int unk44;
+    int unk48;
+    int unk4C;
+    int unk50;
+    int unk54;
     D_800F4538_unk58_2 unk58;
     char unk5C;
-    char unk5D;
+    volatile char unk5D; // dear god why
     char unk5E;
     char unk5F;
     int unk60;
@@ -574,6 +593,7 @@ void func_800A36E0(int, char, func_8006EBF8_t*);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
 void func_800A35A8(void);
+D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 

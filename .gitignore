@@ -3,6 +3,9 @@
 .direnv
 .vscode
 build
+!fixtures/ci/seeds/build/
+!fixtures/ci/seeds/build/**
+fixtures/ci/.installed
 config/*.xml
 data/
 disks/

@@ -1,0 +1,1127 @@
+{
+ "build/assets/MENU/GAMEOVER.BIN.png": {
+  "bd": 8,
+  "h": 128,
+  "na": 0,
+  "nb": 0,
+  "w": 96
+ },
+ "build/assets/MENU/MAPBG.BIN.png": {
+  "bd": 8,
+  "h": 240,
+  "na": 0,
+  "nb": 1,
+  "w": 320
+ },
+ "build/assets/MENU/MENUBG.BIN.png": {
+  "bd": 8,
+  "h": 240,
+  "na": 0,
+  "nb": 1,
+  "w": 192
+ },
+ "build/assets/MENU/SPMCIMG.BIN.png": {
+  "bd": 8,
+  "h": 256,
+  "na": 0,
+  "nb": 0,
+  "w": 448
+ },
+ "build/assets/SLUS_010.40/_nowLoading.rgba16Header.img.png": {
+  "bd": 8,
+  "h": 20,
+  "na": 0,
+  "nb": 0,
+  "w": 126
+ },
+ "build/assets/SMALL/ATTACK.DIS/0000.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/ATTACK.DIS/0001.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/END.DIS/0000.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/END.DIS/0001.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/END.DIS/0002.png": {
+  "bd": 4,
+  "cr": [
+   256,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   512,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/ENDSCR00.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR01.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR02.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR03.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR04.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR05.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR06.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR07.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR08.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR09.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR10.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR11.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR12.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR13.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR14.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ENDSCR15.DIS.png": {
+  "bd": 16,
+  "h": 224,
+  "ir": [
+   0,
+   0,
+   320,
+   224
+  ],
+  "w": 320
+ },
+ "build/assets/SMALL/ESC.DIS.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/HELP01/sprite_000.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_001.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_002.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_003.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_004.png": {
+  "bd": 8,
+  "h": 30,
+  "na": 0,
+  "nb": 0,
+  "w": 30
+ },
+ "build/assets/SMALL/HELP01/sprite_005.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_006.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_007.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_008.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP01/sprite_009.png": {
+  "bd": 8,
+  "h": 10,
+  "na": 0,
+  "nb": 0,
+  "w": 12
+ },
+ "build/assets/SMALL/HELP01/sprite_010.png": {
+  "bd": 8,
+  "h": 10,
+  "na": 0,
+  "nb": 0,
+  "w": 12
+ },
+ "build/assets/SMALL/HELP01/sprite_011.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 38
+ },
+ "build/assets/SMALL/HELP01/sprite_012.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 26
+ },
+ "build/assets/SMALL/HELP02/sprite_000.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 38
+ },
+ "build/assets/SMALL/HELP02/sprite_001.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 26
+ },
+ "build/assets/SMALL/HELP02/sprite_002.png": {
+  "bd": 8,
+  "h": 10,
+  "na": 0,
+  "nb": 0,
+  "w": 74
+ },
+ "build/assets/SMALL/HELP03/sprite_000.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_001.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_002.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_003.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_004.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_005.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_006.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_007.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 32
+ },
+ "build/assets/SMALL/HELP03/sprite_008.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_009.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_010.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_011.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_012.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_013.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_014.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_015.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_016.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_017.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_018.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_019.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_020.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_021.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_022.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP03/sprite_023.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP04/sprite_000.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 38
+ },
+ "build/assets/SMALL/HELP04/sprite_001.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP04/sprite_002.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP04/sprite_003.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP04/sprite_004.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP04/sprite_005.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP04/sprite_006.png": {
+  "bd": 8,
+  "h": 40,
+  "na": 0,
+  "nb": 0,
+  "w": 38
+ },
+ "build/assets/SMALL/HELP07/sprite_000.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP07/sprite_001.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP07/sprite_002.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP07/sprite_003.png": {
+  "bd": 8,
+  "h": 34,
+  "na": 0,
+  "nb": 0,
+  "w": 24
+ },
+ "build/assets/SMALL/HELP08/sprite_000.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP08/sprite_001.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP08/sprite_002.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP08/sprite_003.png": {
+  "bd": 8,
+  "h": 34,
+  "na": 0,
+  "nb": 0,
+  "w": 24
+ },
+ "build/assets/SMALL/HELP10/sprite_000.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_001.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_002.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_003.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_004.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_005.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP10/sprite_006.png": {
+  "bd": 8,
+  "h": 72,
+  "na": 0,
+  "nb": 0,
+  "w": 72
+ },
+ "build/assets/SMALL/HELP10/sprite_007.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP12/sprite_000.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 8
+ },
+ "build/assets/SMALL/HELP12/sprite_001.png": {
+  "bd": 8,
+  "h": 4,
+  "na": 0,
+  "nb": 0,
+  "w": 4
+ },
+ "build/assets/SMALL/HELP12/sprite_002.png": {
+  "bd": 8,
+  "h": 4,
+  "na": 0,
+  "nb": 0,
+  "w": 4
+ },
+ "build/assets/SMALL/HELP12/sprite_003.png": {
+  "bd": 8,
+  "h": 4,
+  "na": 0,
+  "nb": 0,
+  "w": 4
+ },
+ "build/assets/SMALL/HELP12/sprite_004.png": {
+  "bd": 8,
+  "h": 66,
+  "na": 0,
+  "nb": 0,
+  "w": 100
+ },
+ "build/assets/SMALL/HELP13/sprite_000.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_001.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 42
+ },
+ "build/assets/SMALL/HELP13/sprite_002.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 44
+ },
+ "build/assets/SMALL/HELP13/sprite_003.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 22
+ },
+ "build/assets/SMALL/HELP13/sprite_004.png": {
+  "bd": 8,
+  "h": 8,
+  "na": 0,
+  "nb": 0,
+  "w": 18
+ },
+ "build/assets/SMALL/HELP13/sprite_005.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_006.png": {
+  "bd": 8,
+  "h": 24,
+  "na": 0,
+  "nb": 0,
+  "w": 40
+ },
+ "build/assets/SMALL/HELP13/sprite_007.png": {
+  "bd": 8,
+  "h": 24,
+  "na": 0,
+  "nb": 0,
+  "w": 26
+ },
+ "build/assets/SMALL/HELP13/sprite_008.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_009.png": {
+  "bd": 8,
+  "h": 4,
+  "na": 0,
+  "nb": 0,
+  "w": 4
+ },
+ "build/assets/SMALL/HELP13/sprite_010.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_011.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_012.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_013.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_014.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_015.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_016.png": {
+  "bd": 8,
+  "h": 16,
+  "na": 0,
+  "nb": 0,
+  "w": 16
+ },
+ "build/assets/SMALL/HELP13/sprite_017.png": {
+  "bd": 8,
+  "h": 10,
+  "na": 0,
+  "nb": 0,
+  "w": 12
+ },
+ "build/assets/SMALL/HELP13/sprite_018.png": {
+  "bd": 8,
+  "h": 10,
+  "na": 0,
+  "nb": 0,
+  "w": 12
+ },
+ "build/assets/SMALL/HELP13/sprite_019.png": {
+  "bd": 8,
+  "h": 30,
+  "na": 0,
+  "nb": 0,
+  "w": 30
+ },
+ "build/assets/SMALL/HELP14/sprite_000.png": {
+  "bd": 8,
+  "h": 34,
+  "na": 0,
+  "nb": 0,
+  "w": 24
+ },
+ "build/assets/SMALL/IQ.DIS/0000.png": {
+  "bd": 4,
+  "cr": [
+   256,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   512,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/IQ.DIS/0001.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/RANK.DIS/0000.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/RANK.DIS/0001.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   496,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   256,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/RANK.DIS/0002.png": {
+  "bd": 4,
+  "cr": [
+   256,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   512,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/SMALL/TIME.DIS.png": {
+  "bd": 4,
+  "cr": [
+   0,
+   480,
+   16,
+   16
+  ],
+  "h": 256,
+  "ir": [
+   768,
+   0,
+   64,
+   256
+  ],
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/TITLE/TITLE.PRG/_debugFont.rgbClut.img.png": {
+  "bd": 4,
+  "h": 154,
+  "na": 0,
+  "nb": 0,
+  "w": 256
+ },
+ "build/assets/TITLE/TITLE.PRG/_fontTable.rgbClut.img.png": {
+  "bd": 4,
+  "h": 220,
+  "na": 16,
+  "nb": 0,
+  "w": 256
+ },
+ "build/assets/TITLE/TITLE.PRG/_fontTable1.rgbClut.img.png": {
+  "bd": 4,
+  "h": 220,
+  "na": 16,
+  "nb": 0,
+  "w": 256
+ },
+ "build/assets/TITLE/TITLE.PRG/_menuCopyright.rgba16.img.png": {
+  "bd": 8,
+  "h": 24,
+  "na": 0,
+  "nb": 0,
+  "w": 180
+ },
+ "build/assets/TITLE/TITLE.PRG/_saveMenuBg.rgbClut.img.png": {
+  "bd": 8,
+  "h": 240,
+  "na": 0,
+  "nb": 1,
+  "w": 192
+ },
+ "build/assets/TITLE/TITLE.PRG/_titleScreenBg.rgba16Compressed.img.png": {
+  "bd": 8,
+  "h": 576,
+  "na": 0,
+  "nb": 0,
+  "w": 544
+ },
+ "build/assets/TITLE/TITLE.PRG/_uiTable.rgbClut.img.png": {
+  "bd": 4,
+  "h": 480,
+  "na": 0,
+  "nb": 16,
+  "w": 256
+ },
+ "build/assets/TITLE/TITLE.PRG/developer.rgbClut.img.png": {
+  "bd": 4,
+  "h": 13,
+  "na": 2,
+  "nb": 0,
+  "w": 128
+ },
+ "build/assets/TITLE/TITLE.PRG/publisher.rgbClut.img.png": {
+  "bd": 4,
+  "h": 48,
+  "na": 0,
+  "nb": 1,
+  "w": 256
+ }
+}

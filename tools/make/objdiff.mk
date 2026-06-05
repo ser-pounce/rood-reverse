@@ -3,7 +3,9 @@ OBJDIFFFLAGS ?= report generate
 
 .PHONY: objdiff objdiff.json
 
+ifndef ROOD_CI
 BUILDDEPS += $(OBJDIFF)
+endif
 SKIPSPLAT += objdiff
 
 objdiff: progress.json

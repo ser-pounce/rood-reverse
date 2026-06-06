@@ -14,7 +14,7 @@ typedef struct {
     void* unk4;
     u_long dataAddr;
     vs_battle_objectData_flags unkC;
-    char actorId;
+    u_char actorId;
     char unk11;
     char material;
     char unk13;

@@ -111,11 +111,12 @@ typedef struct {
     u_char unk9_7 : 1;
     u_char unkA_0 : 3;
     u_char unkA_3 : 2;
-    u_char unkA_5 : 2;
+    u_char unkA_5 : 1;
+    u_char unkA_6 : 1;
     u_char unkA_7 : 1;
     u_char unkB_0 : 4;
-    u_char unkB_3 : 3;
-    u_char unkB_4 : 1;
+    u_char unkB_4 : 3;
+    u_char unkB_7 : 1;
     u_char unkC_0 : 4;
     u_char unkC_4 : 4;
     u_char unkD;
@@ -127,8 +128,8 @@ typedef struct {
     u_char unk13;
     u_short unk14;
     u_short unk16;
-    short unk18;
-    short unk1A;
+    u_short unk18;
+    u_short unk1A;
     SVECTOR unk1C;
     short unk24;
     short unk26;
@@ -137,8 +138,7 @@ typedef struct {
     short unk2E;
     short unk30;
     short unk32;
-    short unk34;
-    short unk36;
+    int unk34;
     int unk38;
     u_short unk3C;
     u_short unk3E;
@@ -165,7 +165,8 @@ typedef struct {
     u_int unk5AC_13 : 1;
     u_int unk5AC_14 : 1;
     u_int unk5AC_15 : 1;
-    u_int unk5AC_16 : 2;
+    u_int unk5AC_16 : 1;
+    u_int unk5AC_17 : 1;
     u_int unk5AC_18 : 1;
     u_int unk5AC_19 : 1;
     u_int unk5AC_20 : 1;
@@ -175,7 +176,8 @@ typedef struct {
     u_int unk5AC_24 : 1;
     u_int unk5AC_25 : 3;
     u_int unk5AC_28 : 4;
-    u_char unk5B0_0 : 4;
+    u_char unk5B0_0 : 3;
+    u_char unk5B0_3 : 1;
     u_char unk5B0_4 : 1;
     u_char unk5B0_5 : 1;
     u_char unk5B0_6 : 2;
@@ -255,7 +257,8 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0xC];
+    short unk1800;
+    u_char unk1802[0xA];
     u_int unk180C_0 : 4;
     u_int unk180C_4 : 4;
     u_int unk180D : 8;

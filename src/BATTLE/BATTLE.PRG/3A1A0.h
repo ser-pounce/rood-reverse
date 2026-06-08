@@ -291,9 +291,9 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
-    int unk4;
+    u_short unk2;
+    u_short unk4;
+    u_short unk6;
     char unk8_0 : 4;
     char unk8_4 : 1;
     char unk8_5 : 1;

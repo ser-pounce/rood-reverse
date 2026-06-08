@@ -292,22 +292,29 @@ typedef struct {
 } D_800F4538_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    u_short unk2;
-    u_short unk4;
-    u_short unk6;
-    char unk8_0 : 4;
-    char unk8_4 : 1;
-    char unk8_5 : 1;
-    char unk8_6 : 1;
-    char unk8_7 : 1;
+    u_char unk0[0x30];
+    int texturesOffset;
+    int vertexGroupsOffset;
+    int verticesOffset;
+    int polygonsOffset;
+} _wepModelOffsets;
+
+typedef struct {
+    u_char nBones;
+    u_char nVertexGroups;
+    u_short nTriangles;
+    u_short nQuads;
+    u_short nOther;
+    u_char actorId : 4;
+    u_char unk8_4 : 1;
+    u_char unk8_5 : 1;
+    u_char unk8_6 : 1;
+    u_char unk8_7 : 1;
     u_char unk9_0 : 4;
     u_char unk9_4 : 4;
     u_char unkA_0 : 7;
     u_char unkA_7 : 1;
-    u_char unkB_0 : 4;
-    u_char unkB_4 : 4;
+    u_char nClutColors;
     u_char unkC;
     u_char unkD;
     u_char unkE;
@@ -319,7 +326,7 @@ typedef struct {
     int unk14;
     short unk18;
     short unk1A;
-    void* unk1C;
+    _wepModelOffsets* offsets;
     short unk20;
     short unk22;
     short unk24;
@@ -336,7 +343,11 @@ typedef struct {
     u_char unk66;
     u_char unk67;
     int unk68;
-    D_800F4538_t2 unk6C[42];
+    u_char unk6C[0x34];
+    u_char unkA0[4][8];
+    u_char unkC0[7][0x80];
+    u_char unk440[0x40];
+    u_char unk480[0x12C];
     u_int unk5AC_0 : 4;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;

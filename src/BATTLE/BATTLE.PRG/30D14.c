@@ -64,6 +64,14 @@ typedef struct {
     int unkC;
 } D_800E8FB4_t;
 
+typedef struct {
+    u_char unk0[0x30];
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+} _wepModelData;
+
 void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
 void func_80099E7C(void*, int, int, int, int);
@@ -135,6 +143,12 @@ extern int D_800F4580;
 extern int D_800F45D8;
 extern D_800F46A8_t D_800F46A8[];
 extern D_800F4770_t D_800F4770[];
+extern u_char D_800E8F29;
+extern void* D_800F229C;
+extern _wepModelData* D_800F4620;
+extern _wepModelData* D_800F4624;
+
+void func_8009A98C(int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
@@ -500,7 +514,237 @@ int _loadWep(vs_battle_objectData* arg0)
     return wepData;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", _parseWep);
+int _parseWep(vs_battle_objectData* arg0)
+{
+    u_char* data; /* parse cursor walking the weapon-model file */
+    u_char* cmd;
+    u_char* p;
+    D_800F4588_t* model;
+    _wepModelData* buf;
+    _wepModelData* dst;
+    RECT rect;
+    int i;
+    int j;
+    int n;
+    int found;
+    int texW;
+    int w;
+    int clutX;
+    int off;
+    int blk; /* block-copy unit size, then reused as the clut command count */
+    int blkBytes; /* blk * 2: bytes copied per block */
+    int size; /* model-data byte size, then reused for the texture-format marker byte */
+    int texV; /* 0xE0 texture VRAM-Y: the clut V-offset, also stored to rect.y */
+
+    model = D_800F4588[arg0->unk1];
+    data = (u_char*)arg0->dataAddr;
+
+    if (D_800E8F29 == 0) {
+        if (model == NULL) {
+            D_800F4588[arg0->unk1] = arg0->unk4;
+            model = D_800F4588[arg0->unk1];
+            if (model == NULL) {
+                return -2;
+            }
+            memset(model, 0, 0x5E8);
+            model->unkF = 0xFF;
+        }
+
+        if ((u_char)model->unk0 != 0) {
+            return -3;
+        }
+
+        if ((u_int)data >= 0x14) {
+            goto search;
+        }
+    copySlot:
+        /* copy model from an already-loaded slot */
+        vs_main_memcpy(model, D_800F4588[(int)data], 0x5E8);
+        if (model->unkF != 0xFF) {
+            D_800F4770[model->unkF].unk6++;
+            if (model->unk8_5) {
+                D_800F4770[model->unkF + 1].unk6++;
+            }
+        }
+        if (arg0->unk1 < 4) {
+            data = model->unk1C;
+            if (arg0->unk1 < 2) {
+                buf = (&D_800F4620)[arg0->unk1];
+                model->unk1C = buf;
+            } else {
+                buf = vs_main_allocHeap(0x800);
+                model->unk1C = buf;
+            }
+            vs_main_memcpy(buf, data, 0x800);
+            /* dst doubles as the relocation delta for the copied pointers */
+            dst = (_wepModelData*)((int)buf - (int)data);
+            buf->unk30 += (int)dst;
+            buf->unk34 += (int)dst;
+            buf->unk38 += (int)dst;
+            buf->unk3C += (int)dst;
+        }
+        model->unk10 = arg0->unk11 + (arg0->actorId * 2) + 0x10;
+        goto finalize;
+    search:
+        for (j = 0; j < 0x14; j++) {
+            if (j != arg0->unk1) {
+                D_800F4588_t* other = D_800F4588[j];
+                if ((other != NULL) && ((other->unk8_0) || (arg0->unk1 < 4))
+                    && (other->unkE == arg0->modelId)) {
+                    arg0->dataAddr = j;
+                    found = 1;
+                    goto haveFound;
+                }
+            }
+        }
+        found = 0;
+    haveFound:
+        if (found) {
+            data = (u_char*)arg0->dataAddr;
+            goto copySlot;
+        }
+        model->unkE = (u_char)arg0->modelId;
+    } else {
+        if (D_800E8F29 == 1) {
+            data = D_800F229C;
+            texV = 0xE0; /* clut V offset; also lands in rect.y on the parse path */
+            goto clut;
+        }
+    }
+
+parse:
+    data += 4;
+    *(int*)&model->unk0 = *(int*)data;
+    *(int*)&model->unk4 = *(int*)(data + 4);
+    data += 8;
+    size = *(int*)data;
+    data += 4;
+    buf = NULL;
+    if (arg0->unk1 == 0) {
+        buf = D_800F4620;
+    } else if (arg0->unk1 == 1) {
+        buf = D_800F4624;
+    }
+    dst = buf;
+    if (dst == NULL) {
+        dst = vs_main_allocHeap(size);
+    }
+    memcpy(dst, data, size);
+    dst->unk30 += (int)dst;
+    dst->unk34 += (int)dst;
+    dst->unk38 += (int)dst;
+    dst->unk3C += (int)dst;
+    model->unk1C = dst;
+    if (dst == NULL) {
+        return -2;
+    }
+    data += size;
+    data += 5;
+    texW = data[0];
+    texW <<= 1;
+    data += 2;
+    /* size is reused here for the 1-byte texture-format marker */
+    size = data[0];
+    data += 1;
+    if (texW < 0x41) {
+        model->unk8_5 = 0;
+        for (i = 0; i < 0x14; i++) {
+            if (D_800F4770[i].unk6 == 0) {
+                D_800F4770[i].unk6 = 1;
+                break;
+            }
+        }
+        if (i == 0x14) {
+            return -2;
+        }
+    } else {
+        model->unk8_5 = 1;
+        for (i = 0; i < 0x14; i += 2) {
+            if ((D_800F4770[i].unk6 == 0) && (D_800F4770[i + 1].unk6 == 0)) {
+                D_800F4770[i].unk6 = 1;
+                D_800F4770[i + 1].unk6 = 1;
+                break;
+            }
+        }
+        if (i >= 0x14) {
+            return -2;
+        }
+    }
+    model->unkF = i;
+    model->unk10 = arg0->unk11 + (arg0->actorId * 2) + 0x10;
+    if (size == 0x60) {
+        w = 0x20;
+        blk = 0x40;
+        model->unk8_7 = 1;
+        *((u_char*)model + 0xB) = size;
+    } else {
+        w = 0x10;
+        blk = 0x20;
+        model->unk8_7 = 0;
+        *((u_char*)model + 0xB) = 0x30;
+    }
+    vs_main_memcpy((u_char*)model + 0x440, data, w * 2);
+    data += w * 2;
+    i = 0;
+    blkBytes = blk * 2;
+    off = 0xC0;
+    for (; i < 7; i++) {
+        vs_main_memcpy((u_char*)model + off, data, blkBytes);
+        data += blkBytes;
+        off += 0x80;
+    }
+    clutX = ((model->unkF >> 1) << 6) + ((model->unkF & 1) << 5);
+    rect.w = (u_int)texW >> 1;
+    texV = 0xE0; /* same 0xE0 register the clut path adds to V coords */
+    rect.y = texV;
+    rect.h = 0x20;
+    rect.x = clutX;
+    LoadImage(&rect, data);
+    data += texW << 5;
+    D_800E8F29 = 1;
+    D_800F229C = data;
+    return -1;
+
+clut:
+    /* blk holds the clut command count here (reused after the block copy) */
+    blk = model->unk6 + model->unk2 + model->unk4;
+    cmd = (u_char*)((_wepModelData*)model->unk1C)->unk3C;
+    clutX = (model->unkF & 1) << 6;
+    for (n = 0; n < blk; n++) {
+        int cnt = 4;
+        int k;
+        if (*cmd == 0x24) {
+            cmd += 0xA;
+            cnt = 3;
+        } else {
+            cmd += 0xC;
+        }
+        k = 0;
+        if (cnt != 0) {
+            p = cmd + 1;
+            do {
+                k++;
+                *cmd += clutX;
+                cmd += 2;
+                *p += texV;
+                p += 2;
+            } while (k < cnt);
+        }
+    }
+    memcpy((u_char*)model + 0xA0, data, (u_char)model->unk0 * 8);
+
+finalize:
+    func_8009A98C(arg0->unk1, (u_char)arg0->material);
+    model->unk11 = 0x40;
+    model->unk8_4 = 0;
+    model->unk8_6 = 0;
+    model->unk13 = 0;
+    model->unk8_0 = arg0->actorId;
+    model->unkC = arg0->unk11;
+    model->unkD = func_800A152C(arg0->actorId, arg0->unk11, 0);
+    D_800E8F29 = 0;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 

@@ -1281,7 +1281,7 @@ void vs_battle_loadGim(int id, int arg1)
     int i;
 
     if (D_800EB9BC == NULL) {
-        var_s0 = vs_main_allocHeapR(sizeof(gim_t[3]));
+        var_s0 = vs_main_allocHeapR(sizeof *var_s0 * 3);
         D_800EB9BC = var_s0;
         var_s0->data = vs_main_allocHeapR((char)_gimLbas[id] << 0xB);
 
@@ -1909,9 +1909,9 @@ void func_800CA9C0(void* arg0)
     func_800CA97C();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
     vs_battle_menuState.currentState = 0x3F;
-    vs_battle_rMemzero(&D_800F4E98, sizeof(D_800F4E98));
-    vs_battle_rMemzero(&vs_battle_textBoxes[0], sizeof(vs_battle_textBoxes[0]));
-    vs_battle_rMemzero(vs_battle_submenuStates, sizeof(vs_battle_submenuStates));
+    vs_battle_rMemzero(&D_800F4E98, sizeof D_800F4E98);
+    vs_battle_rMemzero(&vs_battle_textBoxes[0], sizeof vs_battle_textBoxes[0]);
+    vs_battle_rMemzero(vs_battle_submenuStates, sizeof vs_battle_submenuStates);
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
     vs_battle_drawImage(0x340, arg0, 0xE00040);

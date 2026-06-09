@@ -8244,10 +8244,10 @@ static void _initRand(void)
 
     srand(1);
 
-    for (i = 0; i < (int)(sizeof(randArr) / sizeof(randArr[0])); ++i) {
+    for (i = 0; i < (int)(sizeof randArr / sizeof randArr[0]); ++i) {
         randArr[i] = rand();
     }
-    randIndex = (sizeof(randArr) / sizeof(randArr[0])) - 1;
+    randIndex = (sizeof randArr / sizeof randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
@@ -8256,7 +8256,7 @@ int vs_main_getRand(int max)
     int var_a0;
     int var_v0;
 
-    var_v0 = randArr[randIndex] * (sizeof(randArr) / sizeof(randArr[0]));
+    var_v0 = randArr[randIndex] * (sizeof randArr / sizeof randArr[0]);
 
     if (var_v0 < 0) {
         var_v0 += 0x7FFF;
@@ -8482,7 +8482,7 @@ static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)
         port->actData[0] = 0x40;
         port->actData[1] = 0;
     }
-    PadSetAct(portID, port->actData, sizeof(port->actData));
+    PadSetAct(portID, port->actData, sizeof port->actData);
     PadSetActAlign(portID, _actParams);
 }
 
@@ -8542,7 +8542,7 @@ void vs_main_padConnect(int portID, char padBuf[34])
         port->connected = 0;
     }
     if (port->connected == 0) {
-        PadSetAct(portID, port->actData, sizeof(port->actData));
+        PadSetAct(portID, port->actData, sizeof port->actData);
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
             _padResetDefaults(portID, padBuf);

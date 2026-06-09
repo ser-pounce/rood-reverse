@@ -8,8 +8,8 @@ typedef struct {
 } vs_battle_objectData_flags;
 
 typedef struct {
-    char unk0;
-    signed char unk1;
+    u_char dataType;
+    signed char index;
     short modelId;
     void* unk4;
     u_long dataAddr;

@@ -93,6 +93,15 @@ typedef struct {
 } D_800F4538_unk1848;
 
 typedef struct {
+    u_char unk0[0x30];
+    int texturesOffset;
+    int vertexGroupsOffset;
+    int verticesOffset;
+    int polygonsOffset;
+    u_char unk40[0x7C0];
+} _wepModelOffsets;
+
+typedef struct {
     char unk0;
     char unk1;
     char unk2;
@@ -292,14 +301,6 @@ typedef struct {
 } D_800F4538_t;
 
 typedef struct {
-    u_char unk0[0x30];
-    int texturesOffset;
-    int vertexGroupsOffset;
-    int verticesOffset;
-    int polygonsOffset;
-} _wepModelOffsets;
-
-typedef struct {
     u_char nBones;
     u_char nVertexGroups;
     u_short nTriangles;
@@ -307,7 +308,7 @@ typedef struct {
     u_short nOther;
     u_char actorId : 4;
     u_char unk8_4 : 1;
-    u_char unk8_5 : 1;
+    u_char isWideTexture : 1;
     u_char unk8_6 : 1;
     u_char unk8_7 : 1;
     u_char unk9_0 : 4;
@@ -317,8 +318,8 @@ typedef struct {
     u_char nClutColors;
     u_char unkC;
     u_char unkD;
-    u_char unkE;
-    u_char unkF;
+    u_char modelId;
+    u_char texSlot;
     u_char unk10;
     u_char unk11;
     u_char unk12;
@@ -396,64 +397,7 @@ typedef struct {
     int unk5DC;
     int unk5E0;
     int unk5E4;
-    int unk5E8;
-    u_char unk5EC[0x52];
-    u_short unk63E;
-    u_char unk640[8];
-    int unk648;
-    u_char unk64C;
-    u_char unk64D;
-    u_short unk64E;
-    u_short unk650;
-    u_short unk652;
-    u_short unk654;
-    u_short unk656;
-    u_char unk658[0x88];
-    u_char unk6E0;
-    u_char unk6E1;
-    u_char unk6E2;
-    u_char unk6E3;
-    u_char unk6E4;
-    u_char unk6E5;
-    u_short unk6E6;
-    short unk6E8;
-    short unk6EA;
-    int unk6EC;
-    u_char unk6F0;
-    u_char unk6F1;
-    u_char unk6F2;
-    u_char unk6F3;
-    D_800F4538_unk58 unk6F4;
-    D_800F4538_unk58_2 unk6F8;
-    int unk6FC;
-    int unk700;
-    D_800F4538_unkC54 unk704;
-    D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x658];
-    u_char unk17FC;
-    u_char unk17FD;
-    u_char unk17FE;
-    u_char unk17FF;
-    u_char unk1800[0x3C];
-    short unk183C;
-    short unk183E;
-    short unk1840;
-    short unk1842;
-    short unk1844;
-    u_char unk1846;
-    u_char unk1847;
-    u_char unk1848;
-    u_char unk1849;
-    u_char unk184A;
-    u_char unk184B;
-    u_short unk184C;
-    u_short unk184E;
-    u_int unk1850;
-    u_char unk1854[0x10];
-    D_800F4538_unk1864 unk1864;
-    int unk1868;
-    int unk187C;
-} D_800F4588_t;
+} vs_battle_wepModels_t;
 
 typedef struct {
     u_char unk0[0x3C];
@@ -640,6 +584,6 @@ D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 
-extern D_800F4538_t* D_800F4538[];
-extern D_800F4588_t* D_800F4588[];
-extern D_800F45E0_t* D_800F45E0[];
+extern D_800F4538_t* D_800F4538[17];
+extern vs_battle_wepModels_t* vs_battle_wepModels[20];
+extern D_800F45E0_t* D_800F45E0[16];

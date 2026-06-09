@@ -400,10 +400,10 @@ void func_800FA35C(void)
 void func_800FA6B8(void)
 {
     vs_main_bzero(D_800F1CE0, 0x20);
-    vs_main_bzero(&vs_battle_roomData, sizeof(vs_battle_roomData));
+    vs_main_bzero(&vs_battle_roomData, sizeof vs_battle_roomData);
     vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
     vs_main_bzero(&vs_battle_menu9CursorMemory, sizeof vs_battle_menu9CursorMemory);
-    vs_main_bzero(&vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
+    vs_main_bzero(&vs_battle_manualDisplayState, sizeof vs_battle_manualDisplayState);
     D_800F1BA8 = vs_main_allocHeap(0x800);
     D_800F1BAC = vs_main_allocHeap(sizeof *D_800F1BAC);
     D_800F1CBC = vs_main_allocHeap(0x80);

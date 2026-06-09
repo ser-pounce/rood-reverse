@@ -213,8 +213,8 @@ int vs_menu9_parseZudFile(void)
         vs_main_freeCdQueueSlot(_zudCdSlot);
         _zudCdSlot = NULL;
 
-        slot.unk0 = 2;
-        slot.unk1 = 1;
+        slot.dataType = 2;
+        slot.index = 1;
         slot.dataAddr = _zudData->shpOffset + (u_long)_zudData;
         slot.modelId = _zudData->characterId;
         slot.unk4 = _zudBuffer;
@@ -224,8 +224,8 @@ int vs_menu9_parseZudFile(void)
         vs_battle_populateDataSlot(&slot);
 
         if (D_8010A4B0 != 0) {
-            slot.unk0 = 1;
-            slot.unk1 = 16;
+            slot.dataType = 1;
+            slot.index = 16;
             slot.modelId = D_8010A20C[D_8010A4B0];
             slot.unk4 = _zudBuffer + 0x1900;
             slot.actorId = 1;
@@ -235,8 +235,8 @@ int vs_menu9_parseZudFile(void)
         } else {
 
             if (_zudData->weapon != 0) {
-                slot.unk0 = 4;
-                slot.unk1 = 2;
+                slot.dataType = 4;
+                slot.index = 2;
                 slot.dataAddr = _zudData->weaponWepOffset + (u_long)_zudData;
                 slot.modelId = _zudData->weapon;
                 slot.unk4 = _zudBuffer + 0x1900;
@@ -247,8 +247,8 @@ int vs_menu9_parseZudFile(void)
             }
 
             if (_zudData->shield != 0) {
-                slot.unk0 = 4;
-                slot.unk1 = 3;
+                slot.dataType = 4;
+                slot.index = 3;
                 slot.dataAddr = _zudData->shieldWepOffset + (u_long)_zudData;
                 slot.modelId = _zudData->shield;
                 slot.unk4 = _zudBuffer + 0x1EE8;
@@ -260,8 +260,8 @@ int vs_menu9_parseZudFile(void)
         }
 
         if (_zudData->battleSeqLen != 0) {
-            slot.unk0 = 8;
-            slot.unk1 = 1;
+            slot.dataType = 8;
+            slot.index = 1;
             slot.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
             slot.actorId = 0;
             slot.modelId = _zudData->unk2;
@@ -269,8 +269,8 @@ int vs_menu9_parseZudFile(void)
         }
 
         if (_zudData->commonSeqLen != 0) {
-            slot.unk0 = 8;
-            slot.unk1 = 1;
+            slot.dataType = 8;
+            slot.index = 1;
             slot.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
             slot.actorId = 0;
             slot.modelId = 0;

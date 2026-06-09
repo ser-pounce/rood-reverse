@@ -219,8 +219,7 @@ static u_long* _helpAssets;
 static int _initMenuState(void)
 {
     if (vs_main_settings.cursorMemory == 0) {
-        vs_main_bzero(
-            &vs_battle_manualDisplayState, sizeof(vs_battle_manualDisplayState));
+        vs_main_bzero(&vs_battle_manualDisplayState, sizeof vs_battle_manualDisplayState);
     }
     func_8007DFF0(0x1D, 3, 5);
     _showMenuState = 0;

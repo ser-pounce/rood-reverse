@@ -86,27 +86,27 @@ int func_80109320(int a0)
     return a0 & 1;
 }
 
-void func_80109344(int wepId, int arg1)
+void func_80109344(int wepId, int material)
 {
-    vs_battle_objectData sp10;
-    int var_a2;
+    vs_battle_objectData objData;
+    int index;
     int var_a3;
 
     if (wepId != 0) {
-        var_a2 = 0;
+        index = 0;
         if (wepId < 0x60) {
             var_a3 = 0xF0;
         } else {
-            var_a2 = 1;
+            index = 1;
             var_a3 = 0xF1;
         }
-        sp10.unk0 = 3;
-        sp10.unk1 = var_a2;
-        sp10.modelId = wepId;
-        sp10.unk4 = vs_battle_characterState->unk48[var_a2];
-        sp10.actorId = 0;
-        sp10.unk11 = var_a3;
-        sp10.material = arg1;
-        vs_battle_populateDataSlot(&sp10);
+        objData.dataType = 3;
+        objData.index = index;
+        objData.modelId = wepId;
+        objData.unk4 = vs_battle_characterState->unk48[index];
+        objData.actorId = 0;
+        objData.unk11 = var_a3;
+        objData.material = material;
+        vs_battle_populateDataSlot(&objData);
     }
 }

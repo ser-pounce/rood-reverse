@@ -975,7 +975,7 @@ void func_8007CAA4(int);
 void func_8007CB84(int, int wepId);
 void func_8007CBBC(int);
 void func_8007CBDC(int, int, int);
-void func_8007CC18(int, int, int);
+void vs_battle_loadEtm(int, int, int);
 void func_8007CC4C(int);
 void func_8007CC6C(int);
 int func_8007CCAC(void);

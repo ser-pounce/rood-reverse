@@ -1347,7 +1347,8 @@ int func_800B860C(u_char* arg0, short arg1)
         func_8007CBDC(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     case 2:
-        func_8007CC18(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        vs_battle_loadEtm(
+            arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     }
     return 0;

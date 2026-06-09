@@ -27,8 +27,8 @@ void func_800F9A78(int arg0)
 
     temp_s2 = D_800F4538[arg0];
     temp_s3 = vs_main_allocHeap(0x1900);
-    sp10.unk0 = 2;
-    sp10.unk1 = 1;
+    sp10.dataType = 2;
+    sp10.index = 1;
     sp10.modelId = temp_s2->unk6E6;
     sp10.dataAddr = arg0;
     sp10.unk4 = temp_s3;
@@ -40,8 +40,8 @@ void func_800F9A78(int arg0)
     if (temp_s2->unk17FD >= 2) {
         temp_s0 = D_800F4538[temp_s2->unk17FD];
         temp_v0 = vs_main_allocHeap(0x1900);
-        sp10.unk0 = 2;
-        sp10.unk1 = 0x10;
+        sp10.dataType = 2;
+        sp10.index = 16;
         sp10.modelId = temp_s0->unk6E6;
         sp10.dataAddr = temp_s2->unk17FD;
         sp10.unk4 = temp_v0;
@@ -52,12 +52,12 @@ void func_800F9A78(int arg0)
         vs_battle_populateDataSlot(&sp10);
     }
     for (i = 0; i < 2; ++i) {
-        D_800F4588_t* temp_s0 = D_800F4588[(temp_s2->unkF * 2) + i];
+        vs_battle_wepModels_t* temp_s0 = vs_battle_wepModels[(temp_s2->unkF * 2) + i];
         if (temp_s0 != 0) {
-            temp_v0 = vs_main_allocHeap(0x5E8);
-            sp10.unk0 = 4;
-            sp10.unk1 = i + 2;
-            sp10.modelId = temp_s0->unkE;
+            temp_v0 = vs_main_allocHeap(sizeof *temp_s0);
+            sp10.dataType = 4;
+            sp10.index = i + 2;
+            sp10.modelId = temp_s0->modelId;
             sp10.dataAddr = arg0 * 2 + i;
             sp10.unk4 = temp_v0;
             sp10.actorId = 1;
@@ -138,8 +138,8 @@ void func_800F9E0C(void)
     void* temp_s1;
 
     temp_s1 = D_800F4538[1];
-    sp10[0] = D_800F4588[2];
-    sp10[1] = D_800F4588[3];
+    sp10[0] = vs_battle_wepModels[2];
+    sp10[1] = vs_battle_wepModels[3];
     func_8009CFB0(1);
     vs_main_freeHeap(temp_s1);
     temp_s1 = D_800F4538[16];
@@ -216,7 +216,7 @@ int func_800F9EB8(void* arg0)
 
     for (i = 0; i < 2; ++i) {
         int v = i + 2;
-        D_800F4588_t* temp_a0 = D_800F4588[v];
+        vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[v];
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
             MATRIX* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
             temp_s0->t[0] -= temp_s1->unk6F4.unk0;
@@ -285,7 +285,7 @@ void func_800FA2CC(void)
     temp_s1 = D_800F4538[0];
 
     for (i = 0; i < 2; ++i) {
-        D_800F4588_t* var_a0 = D_800F4588[i];
+        vs_battle_wepModels_t* var_a0 = vs_battle_wepModels[i];
         if (var_a0 != 0) {
             if (temp_s1->unkA_7) {
                 var_a0->unk11 = 0x40;
@@ -322,8 +322,8 @@ void func_800FA3FC(int arg0)
     vs_battle_objectData sp10;
 
     func_8009CC20(0, 0);
-    sp10.unk0 = 7;
-    sp10.unk1 = 0;
+    sp10.dataType = 7;
+    sp10.index = 0;
     sp10.modelId = arg0;
     sp10.actorId = 0;
     vs_battle_populateDataSlot(&sp10);

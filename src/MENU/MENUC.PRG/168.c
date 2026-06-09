@@ -4439,7 +4439,7 @@ static vs_battle_inventoryBlade* _combineBlades(vs_battle_inventoryBlade* first,
     _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
     _bladeCombinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
 
-    vs_main_memcpy(result, first, sizeof(*result));
+    vs_main_memcpy(result, first, sizeof *result);
 
     result->material = _materialResults[(first->material - 3) * 500 + first->category * 50
                                         + (second->material - 3) * 10 + second->category];

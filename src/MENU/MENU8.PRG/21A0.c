@@ -603,7 +603,7 @@ static int func_801049A0(int arg0)
             temp_s0 = &vs_battle_inventory.weapons[D_80105F2E];
             if (temp_v0_10 == 1) {
                 vs_main_playSfxDefault(0x7E, 0xD);
-                vs_battle_rMemcpy(temp_s0->name, _nameBuffer, sizeof(_nameBuffer));
+                vs_battle_rMemcpy(temp_s0->name, _nameBuffer, sizeof _nameBuffer);
                 if (temp_s0->isEquipped != 0) {
                     vs_battle_equipWeapon(temp_s0);
                 }

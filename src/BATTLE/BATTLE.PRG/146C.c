@@ -1738,10 +1738,10 @@ void _dropLoot(vs_battle_actor* enemy)
     int i;
 
     vs_battle_actor2* temp_s2 = enemy->unk3C;
-    vs_battle_lootListNode* lootList = vs_main_allocHeapR(sizeof(vs_battle_lootListNode));
+    vs_battle_lootListNode* lootList = vs_main_allocHeapR(sizeof *lootList);
 
     if (lootList != NULL) {
-        vs_main_bzero(lootList, sizeof(vs_battle_lootListNode));
+        vs_main_bzero(lootList, sizeof *lootList);
         lootList->actorId |= _dropWeaponRand(&lootList->loot.weapon, &temp_s2->weapon);
         lootList->actorId |= _dropShieldRand(&lootList->loot.shield, &temp_s2->shield);
         lootList->actorId |=
@@ -4347,17 +4347,17 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int arg0, int actorId, vs_battle_objectData_flags* arg2, int material)
+    int index, int actorId, vs_battle_objectData_flags* arg2, int material)
 {
-    vs_battle_objectData sp10;
+    vs_battle_objectData objData;
     int i;
     int var_v1_2;
     vs_battle_actor_dat2* temp_v0;
 
-    if (arg0 == 0xFF) {
+    if (index == 0xFF) {
         for (i = 2; i < 16; ++i) {
             if (vs_battle_actors[i] == NULL) {
-                arg0 = i;
+                index = i;
                 break;
             }
         }
@@ -4367,7 +4367,7 @@ vs_battle_actor* func_800765B0(
         }
     }
 
-    if (vs_battle_actors[arg0] == NULL) {
+    if (vs_battle_actors[index] == NULL) {
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
         vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         temp_v0->unk0.unk0.unk3C = &temp_v0->unk0.unk50;
@@ -4375,31 +4375,31 @@ vs_battle_actor* func_800765B0(
         temp_v0->unk0.unk0.unk18 = 0xFE;
         temp_v0->unk0.unk0.unk1C = 0x10;
         temp_v0->unk0.unk0.unk40 = 0;
-        temp_v0->unk0.unk0.id = arg0;
+        temp_v0->unk0.unk0.id = index;
         temp_v0->unk0.unk0.next = NULL;
         temp_v0->unk0.unk0.unk26 = 0;
-        sp10.unk0 = 6;
-        sp10.unk1 = arg0;
-        sp10.unkC = *arg2;
-        sp10.unkC.unk0_8 &= 1;
+        objData.dataType = 6;
+        objData.index = index;
+        objData.unkC = *arg2;
+        objData.unkC.unk0_8 &= 1;
         var_v1_2 = actorId;
-        sp10.unk4 = temp_v0->unk0.unk0.unk44;
-        sp10.actorId = actorId;
+        objData.unk4 = temp_v0->unk0.unk0.unk44;
+        objData.actorId = actorId;
         if (actorId < 0) {
             var_v1_2 = actorId + 0xFF;
         }
-        sp10.unk11 = var_v1_2 >> 8;
-        sp10.material = material;
-        sp10.unk13 = arg2->unk0_8 >> 4;
-        vs_battle_populateDataSlot(&sp10);
+        objData.unk11 = var_v1_2 >> 8;
+        objData.material = material;
+        objData.unk13 = arg2->unk0_8 >> 4;
+        vs_battle_populateDataSlot(&objData);
         while (vs_battle_getEmptyObjectDataSlot() != 0) {
             vs_battle_processObjectDataQueue();
             vs_main_gametimeUpdate(0);
         }
-        vs_battle_actors[arg0] = &temp_v0->unk0.unk0;
-        func_8007647C(arg0, actorId);
+        vs_battle_actors[index] = &temp_v0->unk0.unk0;
+        func_8007647C(index, actorId);
         func_800E6178(&temp_v0->unk0.unk0, -1);
-        func_800A087C(arg0, 0x1846);
+        func_800A087C(index, 0x1846);
         return &temp_v0->unk0.unk0;
     }
     return NULL;
@@ -4700,13 +4700,13 @@ void func_80076F24(
     func_80076784(id, temp_s4, arg1, arg5);
 }
 
-int func_80077078(vs_battle_actor* arg0, int arg1, int wepId,
+int func_80077078(vs_battle_actor* arg0, int index, int wepId,
     vs_battle_objectData_flags* arg3, int arg4)
 {
     vs_battle_objectData sp10;
 
-    sp10.unk0 = 1;
-    sp10.unk1 = arg1;
+    sp10.dataType = 1;
+    sp10.index = index;
     sp10.modelId = wepId;
     sp10.unkC = *arg3;
     sp10.unk4 = arg0->unk44;
@@ -4725,8 +4725,8 @@ void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
 {
     vs_battle_objectData sp10;
 
-    sp10.unk0 = 7;
-    sp10.unk1 = arg1;
+    sp10.dataType = 7;
+    sp10.index = arg1;
     sp10.modelId = 0;
     sp10.actorId = 0;
     vs_battle_populateDataSlot(&sp10);
@@ -4741,8 +4741,8 @@ void func_80077130(
         int temp_s0 = (actorId * 2) + isShield;
         func_8009AA84(temp_s0);
         if (wepId != 0) {
-            sp10.unk0 = 3;
-            sp10.unk1 = temp_s0;
+            sp10.dataType = 3;
+            sp10.index = temp_s0;
             sp10.modelId = wepId;
             sp10.unk4 = actor->unk48[isShield];
             sp10.actorId = actorId;
@@ -4762,8 +4762,8 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
     vs_battle_objectData sp10;
 
     if (((arg2 != 0) || (arg1 >= 2)) && ((arg1 < 2) || ((arg3 & 3) == 1))) {
-        sp10.unk0 = 7;
-        sp10.unk1 = arg1;
+        sp10.dataType = 7;
+        sp10.index = arg1;
         sp10.modelId = arg0[37];
         sp10.actorId = 0;
         vs_battle_populateDataSlot(&sp10);
@@ -6132,8 +6132,8 @@ int func_8007C8F8(int arg0)
     vs_battle_objectData sp10;
 
     sp10.modelId = arg0;
-    sp10.unk0 = 1;
-    sp10.unk1 = 0;
+    sp10.dataType = 1;
+    sp10.index = 0;
     return vs_battle_populateDataSlot(&sp10) + 1;
 }
 
@@ -6200,38 +6200,38 @@ void func_8007CAA4(int arg0)
 
 void func_8007CB84(int arg0, int wepId)
 {
-    vs_battle_objectData sp10;
+    vs_battle_objectData objData;
 
-    sp10.unk0 = 7;
-    sp10.unk1 = arg0;
-    sp10.modelId = wepId;
-    sp10.actorId = 1;
-    vs_battle_populateDataSlot(&sp10);
+    objData.dataType = 7;
+    objData.index = arg0;
+    objData.modelId = wepId;
+    objData.actorId = 1;
+    vs_battle_populateDataSlot(&objData);
 }
 
 void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
 
 void func_8007CBDC(int arg0, int wepId, int arg2)
 {
-    vs_battle_objectData sp10;
+    vs_battle_objectData objData;
 
-    sp10.unk0 = 7;
-    sp10.unk1 = arg0;
-    sp10.modelId = wepId;
-    sp10.actorId = 2;
-    sp10.unk11 = arg2;
-    vs_battle_populateDataSlot((vs_battle_objectData*)&sp10);
+    objData.dataType = 7;
+    objData.index = arg0;
+    objData.modelId = wepId;
+    objData.actorId = 2;
+    objData.unk11 = arg2;
+    vs_battle_populateDataSlot(&objData);
 }
 
-void func_8007CC18(int arg0, int wepId, int arg2)
+void vs_battle_loadEtm(int arg0, int wepId, int arg2)
 {
-    vs_battle_objectData sp10;
+    vs_battle_objectData objData;
 
-    sp10.unk1 = arg0;
-    sp10.unk0 = 9;
-    sp10.modelId = wepId;
-    sp10.unk11 = arg2;
-    vs_battle_populateDataSlot(&sp10);
+    objData.dataType = 9;
+    objData.index = arg0;
+    objData.modelId = wepId;
+    objData.unk11 = arg2;
+    vs_battle_populateDataSlot(&objData);
 }
 
 void func_8007CC4C(int arg0) { func_8009D208(arg0); }

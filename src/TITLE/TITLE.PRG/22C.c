@@ -330,20 +330,20 @@ static int _readSaveFileInfo(int id)
         if (file == -1) {
             continue;
         }
-        bytesRead = read(file, saveInfo, sizeof(saveInfo));
+        bytesRead = read(file, saveInfo, sizeof saveInfo);
         close(file);
-        if (bytesRead != sizeof(saveInfo)) {
+        if (bytesRead != sizeof saveInfo) {
             continue;
         }
         _decode(saveInfo[3].key, &saveInfo[3].unk4.base.slotState,
-            sizeof(saveFileInfo_t) - sizeof(int));
+            sizeof saveInfo[3] - sizeof(int));
         if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
-            _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof(saveInfo[3]));
+            _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof saveInfo[3]);
             return 0;
         }
     }
 
-    memset(&_saveFileInfo[id - 1], 0, sizeof(_saveFileInfo[id - 1]));
+    memset(&_saveFileInfo[id - 1], 0, sizeof _saveFileInfo[id - 1]);
     return 1;
 }
 
@@ -397,7 +397,7 @@ static int _initSaveFileInfo(int port)
         _memcardFiles[i] = (void*)fileNo;
     }
 
-    memset(_saveFileInfo, 0, sizeof(saveFileInfo_t) * 5);
+    memset(_saveFileInfo, 0, sizeof *_saveFileInfo * 5);
     tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
     if (tempFilesDeleted & 0x80) {
         return 1;
@@ -415,7 +415,7 @@ static int _initSaveFileInfo(int port)
                 if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
                     continue;
                 }
-                memset(&_saveFileInfo[fileNo - 1], 0, sizeof(saveFileInfo_t));
+                memset(&_saveFileInfo[fileNo - 1], 0, sizeof _saveFileInfo[fileNo - 1]);
                 _saveFileInfo[fileNo - 1].unk4.base.slotState = slotStateTemporary;
             } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                 slotsAvailable += (file->size + 0x1FFF) >> 13;
@@ -587,20 +587,20 @@ static int _applyLoadedSaveFile(int verifyOnly)
         return 0;
     }
 
-    _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof(vs_main_stateFlags));
-    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof(vs_main_skillsLearned));
-    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof(vs_main_mapStatus));
-    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof(vs_main_settings));
-    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof(D_80060068));
-    _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof(vs_battle_inventory));
+    _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof vs_main_stateFlags);
+    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof vs_main_skillsLearned);
+    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
+    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof vs_main_settings);
+    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
+    _rMemcpy(&vs_battle_inventory, spmcimg[1].unk7C8, sizeof vs_battle_inventory);
     _rMemcpy(
-        &vs_main_inventoryIndices, spmcimg[1].unk16C8, sizeof(vs_main_inventoryIndices));
-    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof(D_80061068));
-    _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof(vs_main_scoredata));
+        &vs_main_inventoryIndices, spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
+    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
+    _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof vs_main_scoredata);
     D_80060064 = s4->unk1898;
-    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof(D_80061078));
+    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof D_80061078);
     spmcimg2 = &vs_main_artsStatus;
-    _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof(vs_main_artsStatus));
+    _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
     vs_main_gametime.t = spmcimg[1].unk180.stats.gameTime.t;
     func_80042CA0();
     vs_main_setMonoSound(vs_main_settings.monoSound);
@@ -626,12 +626,12 @@ static void _packageGameSaveData(int targetFile)
     vs_main_gametime.all = 0;
     vs_main_settings.menuFlags &= 0xFFDF;
     vs_main_stateFlags.puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1;
-    memset(savedata, 0, sizeof(*savedata));
+    memset(savedata, 0, sizeof *savedata);
     ((char*)&savedata->fileInfo.key)[0] = 0x53;
     ((char*)&savedata->fileInfo.key)[1] = 0x43;
     ((char*)&savedata->fileInfo.key)[2] = 0x11;
     ((char*)&savedata->fileInfo.key)[3] = 3;
-    _rMemcpy(&savedata->fileInfo.unk4, s0, sizeof(savedata->fileInfo.unk4));
+    _rMemcpy(&savedata->fileInfo.unk4, s0, sizeof savedata->fileInfo.unk4);
     savedata->fileInfo.unk4.unk20[3] += (targetFile << 8);
 
     if (vs_main_gametime.t.h == 100) {
@@ -646,15 +646,15 @@ static void _packageGameSaveData(int targetFile)
     }
     savedata3->fileInfo.unk4.unk20[15] = 0;
     _rMemcpy(savedata3->fileInfo.unk60, _mcData->unk400[targetFile],
-        sizeof(savedata->fileInfo.unk60));
-    _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof(savedata->unk80));
+        sizeof savedata->fileInfo.unk60);
+    _rMemcpy(savedata3->unk80, _mcData->unk4E0[targetFile], sizeof savedata->unk80);
 
     if (vs_main_settings.slotState == 0) {
         vs_main_settings.slotState = _keystreamBits(0x20);
         if (vs_main_settings.slotState < 3) {
             vs_main_settings.slotState = 0x17385CA9;
         }
-        memset(&savedata2->containerData, 0, sizeof(savedata2->containerData));
+        memset(&savedata2->containerData, 0, sizeof savedata2->containerData);
     }
 
     vs_main_settings.key = _keystreamBits(0x20);
@@ -685,27 +685,27 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.unk12 = vs_main_settings.unk1A;
     s5->stats.saveLocation = 0x30;
     s5->stats.mapCompletion = 0;
-    memset(&vs_battle_inventory.misc, 0, sizeof(vs_battle_inventory.misc));
-    memset(&vs_main_inventoryIndices.misc, 0, sizeof(vs_main_inventoryIndices.misc));
+    memset(&vs_battle_inventory.misc, 0, sizeof vs_battle_inventory.misc);
+    memset(&vs_main_inventoryIndices.misc, 0, sizeof vs_main_inventoryIndices.misc);
     memset(&savedata2->containerData.misc, 0,
         sizeof savedata2->containerData.misc / 4); // Why / 4?
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
-    _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof(savedata->unk200));
-    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof(savedata->unk640));
-    _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof(savedata->mapStatus));
-    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof(savedata->unk6A8));
-    _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof(savedata->unk6C8));
-    _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof(savedata->unk7C8));
-    _rMemcpy(savedata->unk16C8, &vs_main_inventoryIndices, sizeof(savedata->unk16C8));
-    _rMemcpy(&savedata->unk1778, &D_80061068, sizeof(savedata->unk1778));
-    _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof(savedata->unk1784));
+    _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof savedata->unk200);
+    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof savedata->unk640);
+    _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
+    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof savedata->unk6A8);
+    _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof savedata->unk6C8);
+    _rMemcpy(savedata->unk7C8, &vs_battle_inventory, sizeof savedata->unk7C8);
+    _rMemcpy(savedata->unk16C8, &vs_main_inventoryIndices, sizeof savedata->unk16C8);
+    _rMemcpy(&savedata->unk1778, &D_80061068, sizeof savedata->unk1778);
+    _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof savedata->unk1784);
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
-        sizeof(savedata->containerData));
+        sizeof savedata->containerData);
     savedata->unk1898 = D_80060064;
-    _rMemcpy(savedata->unk189C, D_80061078, sizeof(savedata->unk189C));
-    _rMemcpy(&savedata->artsStatus, &vs_main_artsStatus, sizeof(savedata->artsStatus));
+    _rMemcpy(savedata->unk189C, D_80061078, sizeof savedata->unk189C);
+    _rMemcpy(&savedata->artsStatus, &vs_main_artsStatus, sizeof savedata->artsStatus);
 
     for (i = 0; i < 92; ++i) {
         var_a0 = 0;
@@ -1318,7 +1318,7 @@ static void _initFileMenu(void)
     _fileProgressCounter = 0;
     _fileMenuScreenFade = 0;
     _fileProgressTarget = 384;
-    memset(_fileMenuElements, 0, sizeof(_fileMenuElements));
+    memset(_fileMenuElements, 0, sizeof _fileMenuElements);
 }
 
 static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
@@ -1328,7 +1328,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
     u_int c;
 
     element = &_fileMenuElements[id];
-    memset(element, 0, sizeof(*element));
+    memset(element, 0, sizeof *element);
     element->state = 1;
     element->slotId = -1;
     *(int*)&element->x = xy;
@@ -1361,7 +1361,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
 
 static void _clearFileMenuElement(int id)
 {
-    memset(&_fileMenuElements[id], 0, sizeof(fileMenuElements_t));
+    memset(&_fileMenuElements[id], 0, sizeof _fileMenuElements[id]);
 }
 
 static int _fileMenuElementsActive(void)
@@ -2644,7 +2644,7 @@ static int _showSaveFilesMenu(int initPort)
     case save:
         val = fileSlot + page;
         _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saving);
-        _rMemcpy(&settingsBackup, &vs_main_settings, sizeof(settingsBackup));
+        _rMemcpy(&settingsBackup, &vs_main_settings, sizeof settingsBackup);
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
         if (_containerDataEmpty != 0) {
@@ -2667,22 +2667,23 @@ static int _showSaveFilesMenu(int initPort)
                     *(int*)&vs_main_settings =
                         (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(&_saveFileInfo[saveId], 0, sizeof(saveFileInfo_t));
+                memset(&_saveFileInfo[saveId], 0, sizeof _saveFileInfo[saveId]);
                 _saveFileInfo[saveId].unk4.base.slotState = slotStateTemporary;
                 _fileMenuElements[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
                 _fileProgressCounter = 0;
-                _rMemcpy(&vs_main_settings, &settingsBackup, sizeof(vs_main_settings));
+                _rMemcpy(&vs_main_settings, &settingsBackup, sizeof vs_main_settings);
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saveFailed);
             } else {
                 _dataNotSaved = 0;
                 _fileProgressCounter = -16;
-                _rMemcpy(&_saveFileInfo[saveId], _spmcimg + sizeof(saveFileInfo_t) * 3,
-                    sizeof(saveFileInfo_t));
+                _rMemcpy(&_saveFileInfo[saveId],
+                    _spmcimg + sizeof _saveFileInfo[saveId] * 3,
+                    sizeof _saveFileInfo[saveId]);
                 _decode(_saveFileInfo[saveId].key,
                     &_saveFileInfo[saveId].unk4.base.slotState,
-                    sizeof(saveFileInfo_t) - sizeof(int));
+                    sizeof _saveFileInfo[saveId] - sizeof(int));
                 _fileMenuElements[saveId + 5].saveLocation =
                     _saveFileInfo[saveId].unk4.stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
@@ -2802,7 +2803,7 @@ static int _selectSaveMemoryCard(int initPort)
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
-            memset(_saveFileInfo, 0, sizeof(*_saveFileInfo) * 5);
+            memset(_saveFileInfo, 0, sizeof *_saveFileInfo * 5);
             for (i = 14; i >= 0; --i) {
                 _memcardFiles[i] = NULL;
             }
@@ -2913,7 +2914,7 @@ static int _showSaveMenu(int initState)
     case init:
         if (*(int*)&vs_main_settings & 0x10) {
             memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
-                sizeof(((savedata_t*)_spmcimg + 1)->containerData));
+                sizeof((savedata_t*)_spmcimg + 1)->containerData);
             state = initSlot1;
         } else if (_fileMenuElementsActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnavailable) {
@@ -3050,7 +3051,7 @@ static int _showSaveMenu(int initState)
             if (state == eraseContainerData) {
                 _containerDataEmpty = 1;
                 memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
-                    sizeof(((savedata_t*)_spmcimg + 1)->containerData));
+                    sizeof((savedata_t*)_spmcimg + 1)->containerData);
             }
             state = initSlot1;
         }
@@ -3199,7 +3200,7 @@ static int _saveFileExists(void)
         } while (memCardState == memcardEventPending);
 
         if (memCardState == memcardEventIoEnd) {
-            _rMemcpy(filename, _memcardFilenameTemplate, sizeof(filename));
+            _rMemcpy(filename, _memcardFilenameTemplate, sizeof filename);
 
             filename[2] = i + '/';
             filename[20] = '?';
@@ -3821,7 +3822,7 @@ static void _copyTitleBgData(void)
     p = data;
 
 #ifndef MENUBGSZ
-#define MENUBGSZ 222932 * sizeof(int)
+#define MENUBGSZ 222932 * sizeof int
 #endif
 
     for (; i < MENUBGSZ / sizeof(int);) {
@@ -4545,7 +4546,7 @@ static void _initEnvironment(void)
 
     vibrationOn = vs_main_settings.vibrationOn;
     monoSound = vs_main_settings.monoSound;
-    memset(&vs_main_settings, 0, sizeof(vs_main_settings));
+    memset(&vs_main_settings, 0, sizeof vs_main_settings);
     vs_main_settings.menuFlags = 0x2D8;
     vs_main_settings.information = 1;
     vs_main_settings.simpleMap = 3;
@@ -4561,7 +4562,7 @@ static void _initEnvironment(void)
     vs_main_settings.vibrationOn = vibrationOn != 0;
     vs_main_setMonoSound(vs_main_settings.monoSound);
     vs_sound_setCdVol(0x7F);
-    memset(&vs_main_inventoryIndices, 0, sizeof(vs_main_inventoryIndices));
+    memset(&vs_main_inventoryIndices, 0, sizeof vs_main_inventoryIndices);
     vs_main_stateFlags.difficulty = 1;
     vs_main_stateFlags.puzzleMode = 1;
 }
@@ -4956,13 +4957,13 @@ static void _initGameData(void)
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(vs_main_skillsLearned, _skillsLearned, sizeof(_skillsLearned));
-    vs_main_bzero(&vs_main_mapStatus, sizeof(vs_main_mapStatus));
-    vs_main_bzero(&vs_main_gametime, sizeof(vs_main_gametime));
-    vs_main_bzero(&vs_main_scoredata, sizeof(vs_main_scoredata));
+    vs_main_memcpy(vs_main_skillsLearned, _skillsLearned, sizeof _skillsLearned);
+    vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
+    vs_main_bzero(&vs_main_gametime, sizeof vs_main_gametime);
+    vs_main_bzero(&vs_main_scoredata, sizeof vs_main_scoredata);
     D_80060064 = 0;
-    vs_main_bzero(D_80061078, sizeof(D_80061078));
-    vs_main_bzero(&vs_main_artsStatus, sizeof(vs_main_artsStatus));
+    vs_main_bzero(D_80061078, sizeof D_80061078);
+    vs_main_bzero(&vs_main_artsStatus, sizeof vs_main_artsStatus);
 
     for (i = 0; i < 8; ++i) {
         for (j = 0; j < 3; ++j) {
@@ -4973,11 +4974,11 @@ static void _initGameData(void)
     }
 
     for (i = 0; i < 1; ++i) {
-        vs_main_bzero((char*)&D_80060068 + i * sizeof(D_80060068), 0x50);
+        vs_main_bzero((char*)&D_80060068 + i * sizeof D_80060068, 0x50);
     }
 
-    vs_main_bzero(&D_80061068, sizeof(D_80061068));
-    vs_main_memcpy(&vs_battle_inventory, D_80074C24, sizeof(vs_battle_inventory));
+    vs_main_bzero(&D_80061068, sizeof D_80061068);
+    vs_main_memcpy(&vs_battle_inventory, D_80074C24, sizeof vs_battle_inventory);
 
     vs_gametime_tickspeed = 2;
     D_80061068.unk4_8 = 4;

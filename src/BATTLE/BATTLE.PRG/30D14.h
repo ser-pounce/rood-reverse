@@ -17,8 +17,18 @@ typedef struct {
     char unk11;
 } D_800F4590_t;
 
+typedef struct {
+    short tpage;
+    short clut0;
+    short clut1;
+    u_char refCount;
+} vs_battle_texInfo_t;
+
 extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
+extern _wepModelOffsets* vs_battle_commonWepBuffs[];
+extern vs_battle_texInfo_t D_800F46A8[];
+extern vs_battle_texInfo_t vs_battle_wepTextures[20];
 extern char D_800F49DC;
 
 u_char func_80099514(u_int, int, int);

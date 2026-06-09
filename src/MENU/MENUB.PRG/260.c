@@ -2257,7 +2257,7 @@ static int disassembleItem(int itemIndex)
         }
 
         vs_battle_rMemcpy(&D_8010A6A4[D_8010A684], &_lootList[1],
-            (_lootListCount - 1) * sizeof(_lootListItem));
+            (_lootListCount - 1) * sizeof _lootList[1]);
 
         if (disassembleItemCategory != itemCategoryWeapon) {
             vs_battle_inventoryShield* shield = &_inventory->shields[i];

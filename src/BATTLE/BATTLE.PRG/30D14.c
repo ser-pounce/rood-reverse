@@ -8,6 +8,7 @@
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
+#include "gpu.h"
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
@@ -40,19 +41,6 @@ typedef struct {
 } func_800A0024_t;
 
 typedef struct {
-    int unk0;
-    short unk4;
-    u_char unk6;
-} D_800F4770_t;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_short unk4;
-    u_char unk6;
-} D_800F46A8_t;
-
-typedef struct {
     u_char unk0[0x30];
     int* unk30;
 } func_8004644C_t;
@@ -75,6 +63,7 @@ int _parseShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
+void func_8009A98C(int, int);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -105,6 +94,7 @@ extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
 extern u_short D_800E8D00[];
 extern u_char _loadShpState;
+extern u_char D_800E8F29;
 extern u_char D_800E8F2C;
 extern u_char _loadEtmState;
 extern u_char D_800E8FA8[];
@@ -125,6 +115,7 @@ extern vs_main_CdQueueSlot* _shpCdSlot;
 extern u_short* _etmData;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
+extern void* D_800F229C;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
 extern D_800F2458_t D_800F2458;
@@ -133,15 +124,7 @@ extern char D_800F4448[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
-extern D_800F46A8_t D_800F46A8[];
-extern D_800F4770_t D_800F4770[];
-extern u_char D_800E8F29;
-extern void* D_800F229C;
-extern _wepModelOffsets* D_800F4620;
-extern _wepModelOffsets* D_800F4624;
 extern u_int D_800F49E0;
-
-void func_8009A98C(int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099514);
 
@@ -150,7 +133,7 @@ int vs_battle_getEmptyObjectDataSlot(void)
     int i;
 
     for (i = 0; i < 16; ++i) {
-        if (vs_battle_objectDataSlots[i].unk0 == 0) {
+        if (vs_battle_objectDataSlots[i].dataType == 0) {
             return i;
         }
     }
@@ -167,7 +150,7 @@ int vs_battle_processObjectDataQueue(void)
 
     D_800F4580 = VSync(1);
 
-    switch (slot->unk0) {
+    switch (slot->dataType) {
     case 0:
         return 0;
     case 1:
@@ -203,7 +186,7 @@ int vs_battle_processObjectDataQueue(void)
     if (_loadShpState == 2) {
         if (D_800E8FC4 < D_800F4580) {
             D_800E8FC4 = D_800F4580;
-            D_800F45D8 = slot->unk0;
+            D_800F45D8 = slot->dataType;
             D_800F457C = _loadShpState;
         }
     }
@@ -217,7 +200,7 @@ int vs_battle_processObjectDataQueue(void)
             sizeof vs_battle_objectDataSlots[i]);
     }
 
-    vs_battle_objectDataSlots[i - 1].unk0 = 0;
+    vs_battle_objectDataSlots[i - 1].dataType = 0;
 
     return ret < 0 ? -1 : 1;
 }
@@ -252,11 +235,11 @@ int func_8009998C(vs_battle_objectData* arg0)
     D_800F45E0_t* s1;
     D_800E8FB4_t* temp_v1_2;
 
-    if (D_800F45E0[arg0->unk1] != NULL) {
+    if (D_800F45E0[arg0->index] != NULL) {
         return -3;
     }
 
-    s1 = D_800F45E0[arg0->unk1] = arg0->unk4;
+    s1 = D_800F45E0[arg0->index] = arg0->unk4;
 
     if (s1 == NULL) {
         return -2;
@@ -265,7 +248,7 @@ int func_8009998C(vs_battle_objectData* arg0)
     memset(s1, 0, 0x178);
 
     for (i = 0; i < 16; ++i) {
-        if ((i != arg0->unk1) && (D_800F45E0[i] != NULL)
+        if ((i != arg0->index) && (D_800F45E0[i] != NULL)
             && (D_800F45E0[i]->unk6C[8].unk0_0 == arg0->actorId)) {
             arg0->dataAddr = i;
             var_v0_2 = 1;
@@ -299,7 +282,7 @@ exit:
 
     var_s0 = &s1->unk6C[6];
 
-    s1->unkF = arg0->unk1;
+    s1->unkF = arg0->index;
     s1->unk6C[8].unk0_0 = arg0->actorId;
 
     vs_main_memcpy(var_s0, (s1->unk6C[8].unk0_0 << 5) + D_800F4448, sizeof *var_s0);
@@ -325,13 +308,13 @@ exit:
     s1->unk1C = (s1->unk5C << 7) + 0x40;
     s1->unk20 = (s1->unk5E << 7) + 0x40;
     s1->unk1E = func_800A6EE8(&s1->unk1C, 0, 0, 1) - (arg0->unk13 << 7);
-    func_800A0104(arg0->unk1, arg0->material);
+    func_800A0104(arg0->index, arg0->material);
     func_800E6898(s1);
     s1->unk6C[8].unk0_4 = 0;
 
     if (s1->unk6C[8].unk0_0 >= 5) {
 
-        for (j = 0; j < arg0->unk1; ++j) {
+        for (j = 0; j < arg0->index; ++j) {
             temp_a0 = D_800F45E0[j];
             if ((temp_a0 != NULL) && (*(int*)&temp_a0->unk5C == *(int*)&s1->unk5C)
                 && (temp_a0->unk1E == (s1->unk1E + 0x80))
@@ -371,12 +354,12 @@ int func_80099D6C(int arg0)
         return -1;
     }
 
-    sp10.unk1 = arg0;
+    sp10.index = arg0;
     sp10.actorId = temp_s0->unk6C[8].unk0_0;
 
     for (i = 0; i < 16; ++i) {
         vs_battle_objectData* a2 = &sp10;
-        if ((i != a2->unk1) && (D_800F45E0[i] != NULL)
+        if ((i != a2->index) && (D_800F45E0[i] != NULL)
             && (D_800F45E0[i]->unk6C[8].unk0_0 == a2->actorId)) {
             a2->dataAddr = i;
             found = 1;
@@ -405,9 +388,9 @@ int func_80099FA8(func_8009AC24_t* arg0)
 
     for (i = 0; i < 20; ++i) {
         if (i != temp_a3) {
-            D_800F4588_t* temp_v1 = D_800F4588[i];
+            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[i];
             if ((temp_v1 != NULL) && ((temp_v1->actorId) || (temp_a3 < 4))
-                && (temp_v1->unkE == arg0->unk2)) {
+                && (temp_v1->modelId == arg0->unk2)) {
                 arg0->unk8 = i;
                 return 1;
             }
@@ -446,9 +429,9 @@ int _loadWep(vs_battle_objectData* arg0)
     switch (_loadShpState) {
     case 0:
         for (i = 0; i < 20; ++i) {
-            if ((i != arg0->unk1) && (D_800F4588[i] != NULL)
-                && ((D_800F4588[i]->actorId) || (arg0->unk1 < 4))
-                && (D_800F4588[i]->unkE == arg0->modelId)) {
+            if ((i != arg0->index) && (vs_battle_wepModels[i] != NULL)
+                && ((vs_battle_wepModels[i]->actorId) || (arg0->index < 4))
+                && (vs_battle_wepModels[i]->modelId == arg0->modelId)) {
                 arg0->dataAddr = i;
                 found = 1;
                 goto exit;
@@ -509,7 +492,7 @@ int _loadWep(vs_battle_objectData* arg0)
 
 int _parseWep(vs_battle_objectData* objectData)
 {
-    u_char* cmd;
+    u_char* pData;
     _wepModelOffsets* buf;
     _wepModelOffsets* dst;
     RECT rect;
@@ -518,24 +501,27 @@ int _parseWep(vs_battle_objectData* objectData)
     int n;
     u_int texW;
     int w;
-    int clutX;
-    int blk; /* block-copy unit size, then reused as the clut command count */
+    int texU;
+    int count; /* block-copy unit size, then reused as the primitives count */
     int size; /* model-data byte size, then reused for the texture-format marker byte */
     int texV; /* 0xE0 texture VRAM-Y: the clut V-offset, also stored to rect.y */
 
-    D_800F4588_t* model = D_800F4588[objectData->unk1];
+    vs_battle_wepModels_t* model = vs_battle_wepModels[objectData->index];
+
     u_char* data =
         (u_char*)objectData->dataAddr; /* parse cursor walking the weapon-model file */
 
     if (D_800E8F29 == 0) {
         if (model == NULL) {
-            D_800F4588[objectData->unk1] = objectData->unk4;
-            model = D_800F4588[objectData->unk1];
+            vs_battle_wepModels[objectData->index] = objectData->unk4;
+            model = vs_battle_wepModels[objectData->index];
+
             if (model == NULL) {
                 return -2;
             }
-            memset(model, 0, 0x5E8);
-            model->unkF = 0xFF;
+
+            memset(model, 0, sizeof *model);
+            model->texSlot = 0xFF;
         }
 
         if (model->nBones != 0) {
@@ -545,23 +531,28 @@ int _parseWep(vs_battle_objectData* objectData)
         if ((u_long)data < 0x14) {
         copySlot:
             /* copy model from an already-loaded slot */
-            vs_main_memcpy(model, D_800F4588[(u_long)data], 0x5E8);
-            if (model->unkF != 0xFF) {
-                D_800F4770[model->unkF].unk6++;
-                if (model->unk8_5) {
-                    D_800F4770[model->unkF + 1].unk6++;
+            vs_main_memcpy(model, vs_battle_wepModels[(u_long)data], sizeof *model);
+
+            if (model->texSlot != 0xFF) {
+                ++vs_battle_wepTextures[model->texSlot].refCount;
+                if (model->isWideTexture) {
+                    ++vs_battle_wepTextures[model->texSlot + 1].refCount;
                 }
             }
-            if (objectData->unk1 < 4) {
+
+            if (objectData->index < 4) {
                 data = (void*)model->offsets;
-                if (objectData->unk1 < 2) {
-                    buf = (&D_800F4620)[objectData->unk1];
+
+                if (objectData->index < 2) {
+                    buf = vs_battle_commonWepBuffs[objectData->index];
                     model->offsets = buf;
                 } else {
-                    buf = vs_main_allocHeap(0x800);
+                    buf = vs_main_allocHeap(sizeof *buf);
                     model->offsets = buf;
                 }
-                vs_main_memcpy(buf, data, 0x800);
+
+                vs_main_memcpy(buf, data, sizeof *buf);
+
                 /* dst doubles as the relocation delta for the copied pointers */
                 dst = (_wepModelOffsets*)((u_long)buf - (u_long)data);
                 buf->texturesOffset += (u_long)dst;
@@ -569,8 +560,11 @@ int _parseWep(vs_battle_objectData* objectData)
                 buf->verticesOffset += (u_long)dst;
                 buf->polygonsOffset += (u_long)dst;
             }
+
             model->unk10 = objectData->unk11 + (objectData->actorId * 2) + 0x10;
-            func_8009A98C(objectData->unk1, objectData->material);
+
+            func_8009A98C(objectData->index, objectData->material);
+
             model->unk11 = 0x40;
             model->unk8_4 = 0;
             model->unk8_6 = 0;
@@ -579,14 +573,15 @@ int _parseWep(vs_battle_objectData* objectData)
             model->unkC = objectData->unk11;
             model->unkD = func_800A152C(objectData->actorId, objectData->unk11, 0);
             D_800E8F29 = 0;
+
             return 0;
         } else {
             int found;
-            for (j = 0; j < 0x14; j++) {
-                if (j != objectData->unk1) {
-                    D_800F4588_t* other = D_800F4588[j];
-                    if ((other != NULL) && ((other->actorId) || (objectData->unk1 < 4))
-                        && (other->unkE == objectData->modelId)) {
+            for (j = 0; j < 20; j++) {
+                if (j != objectData->index) {
+                    vs_battle_wepModels_t* other = vs_battle_wepModels[j];
+                    if ((other != NULL) && ((other->actorId) || (objectData->index < 4))
+                        && (other->modelId == objectData->modelId)) {
                         objectData->dataAddr = j;
                         found = 1;
                         goto haveFound;
@@ -599,12 +594,12 @@ int _parseWep(vs_battle_objectData* objectData)
                 data = (u_char*)objectData->dataAddr;
                 goto copySlot;
             }
-            model->unkE = objectData->modelId;
+            model->modelId = objectData->modelId;
         }
     } else if (D_800E8F29 == 1) {
         data = D_800F229C;
         texV = 0xE0; /* clut V offset; also lands in rect.y on the parse path */
-        goto clut;
+        goto fixPrims;
     }
 
     data += 4;
@@ -617,10 +612,10 @@ int _parseWep(vs_battle_objectData* objectData)
     data += 4;
     buf = NULL;
 
-    if (objectData->unk1 == 0) {
-        buf = D_800F4620;
-    } else if (objectData->unk1 == 1) {
-        buf = D_800F4624;
+    if (objectData->index == 0) {
+        buf = vs_battle_commonWepBuffs[0];
+    } else if (objectData->index == 1) {
+        buf = vs_battle_commonWepBuffs[1];
     }
 
     dst = buf;
@@ -650,45 +645,45 @@ int _parseWep(vs_battle_objectData* objectData)
     data += 2;
 
     /* size is reused here for the 1-byte texture-format marker */
-    size = *data;
-    ++data;
+    size = *data++;
 
     if ((int)texW < 65) {
-        model->unk8_5 = 0;
-        for (i = 0; i < 0x14; i++) {
-            if (D_800F4770[i].unk6 == 0) {
-                D_800F4770[i].unk6 = 1;
+        model->isWideTexture = 0;
+        for (i = 0; i < 20; i++) {
+            if (vs_battle_wepTextures[i].refCount == 0) {
+                vs_battle_wepTextures[i].refCount = 1;
                 break;
             }
         }
-        if (i == 0x14) {
+        if (i == 20) {
             return -2;
         }
     } else {
-        model->unk8_5 = 1;
-        for (i = 0; i < 0x14; i += 2) {
-            if ((D_800F4770[i].unk6 == 0) && (D_800F4770[i + 1].unk6 == 0)) {
-                D_800F4770[i].unk6 = 1;
-                D_800F4770[i + 1].unk6 = 1;
+        model->isWideTexture = 1;
+        for (i = 0; i < 20; i += 2) {
+            if ((vs_battle_wepTextures[i].refCount == 0)
+                && (vs_battle_wepTextures[i + 1].refCount == 0)) {
+                vs_battle_wepTextures[i].refCount = 1;
+                vs_battle_wepTextures[i + 1].refCount = 1;
                 break;
             }
         }
-        if (i >= 0x14) {
+        if (i >= 20) {
             return -2;
         }
     }
 
-    model->unkF = i;
-    model->unk10 = objectData->unk11 + (objectData->actorId * 2) + 0x10;
+    model->texSlot = i;
+    model->unk10 = objectData->unk11 + (objectData->actorId * 2) + 16;
 
     if (size == 96) {
         w = 32;
-        blk = 64;
+        count = 64;
         model->unk8_7 = 1;
         model->nClutColors = 96;
     } else {
         w = 16;
-        blk = 32;
+        count = 32;
         model->unk8_7 = 0;
         model->nClutColors = 48;
     }
@@ -698,14 +693,14 @@ int _parseWep(vs_battle_objectData* objectData)
     data += w * 2;
 
     for (i = 0; i < 7; i++) {
-        vs_main_memcpy(model->unkC0[i], data, blk * 2);
-        data += blk * 2;
+        vs_main_memcpy(model->unkC0[i], data, count * 2);
+        data += count * 2;
     }
 
-    clutX = ((model->unkF >> 1) << 6) + ((model->unkF & 1) << 5);
+    texU = (model->texSlot / 2) * 64 + (model->texSlot & 1) * 32;
     texV = 0xE0; /* same 0xE0 register the clut path adds to V coords */
 
-    setRECT(&rect, clutX, texV, texW / 2, 32);
+    setRECT(&rect, texU, texV, texW / 2, 32);
     LoadImage(&rect, (void*)data);
 
     data += texW * 32;
@@ -714,30 +709,31 @@ int _parseWep(vs_battle_objectData* objectData)
 
     return -1;
 
-clut:
-    /* blk holds the clut command count here (reused after the block copy) */
-    blk = model->nOther + model->nTriangles + model->nQuads;
-    cmd = (void*)model->offsets->polygonsOffset;
-    clutX = (model->unkF & 1) << 6;
+fixPrims:
+    count = model->nOther + model->nTriangles + model->nQuads;
+    pData = (void*)model->offsets->polygonsOffset;
+    texU = (model->texSlot & 1) * 64;
 
-    for (n = 0; n < blk; n++) {
-        int cnt = 4;
+    for (n = 0; n < count; n++) {
+        int vertices = 4;
         int k;
-        if (*cmd == 0x24) {
-            cmd += 10;
-            cnt = 3;
+
+        if (*pData == primPolyFT3) {
+            pData += 10;
+            vertices = 3;
         } else {
-            cmd += 12;
+            pData += 12;
         }
 
-        for (k = 0; k < cnt; cmd += 2, ++k) {
-            cmd[0] += clutX;
-            cmd[1] += texV;
+        // Fixup prim uv0 for some reason
+        for (k = 0; k < vertices; pData += 2, ++k) {
+            pData[0] += texU;
+            pData[1] += texV;
         }
     }
 
     memcpy(model->unkA0, data, model->nBones * 8);
-    func_8009A98C(objectData->unk1, objectData->material);
+    func_8009A98C(objectData->index, objectData->material);
 
     model->unk11 = 0x40;
     model->unk8_4 = 0;
@@ -753,28 +749,28 @@ clut:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
 
-int func_8009AA84(int arg0)
+int func_8009AA84(int index)
 {
-    vs_battle_objectData sp10;
+    vs_battle_objectData objData;
     int i;
-    D_800F4588_t* temp_s0 = D_800F4588[arg0];
+    vs_battle_wepModels_t* model = vs_battle_wepModels[index];
 
-    if ((temp_s0 == NULL) || (temp_s0->nBones == 0)) {
+    if ((model == NULL) || (model->nBones == 0)) {
         return -1;
     }
 
-    if (temp_s0->actorId) {
-        sp10.unk1 = arg0;
-        sp10.modelId = temp_s0->unkE;
+    if (model->actorId) {
+        objData.index = index;
+        objData.modelId = model->modelId;
 
-        if (arg0 >= 4) {
+        if (index >= 4) {
             int var_v0;
-            vs_battle_objectData* a3 = &sp10;
+            vs_battle_objectData* a3 = &objData;
 
             for (i = 0; i < 20; ++i) {
-                if ((i != a3->unk1) && ((D_800F4588[i] != NULL))
-                    && ((D_800F4588[i]->actorId) || (a3->unk1 < 4))
-                    && (D_800F4588[i]->unkE == a3->modelId)) {
+                if ((i != a3->index) && ((vs_battle_wepModels[i] != NULL))
+                    && ((vs_battle_wepModels[i]->actorId) || (a3->index < 4))
+                    && (vs_battle_wepModels[i]->modelId == a3->modelId)) {
                     a3->dataAddr = i;
                     var_v0 = 1;
                     goto exit;
@@ -784,20 +780,20 @@ int func_8009AA84(int arg0)
             var_v0 = 0;
         exit:
             if (var_v0 == 0) {
-                vs_main_freeHeap(temp_s0->offsets);
+                vs_main_freeHeap(model->offsets);
             }
         } else {
-            vs_main_freeHeap(temp_s0->offsets);
+            vs_main_freeHeap(model->offsets);
         }
     }
 
-    --D_800F4770[temp_s0->unkF].unk6;
+    --vs_battle_wepTextures[model->texSlot].refCount;
 
-    if (temp_s0->unk8_5) {
-        --D_800F4770[temp_s0->unkF + 1].unk6;
+    if (model->isWideTexture) {
+        --vs_battle_wepTextures[model->texSlot + 1].refCount;
     }
 
-    D_800F4588[arg0] = NULL;
+    vs_battle_wepModels[index] = NULL;
     return 0;
 }
 
@@ -830,7 +826,7 @@ int _loadShp(vs_battle_objectData* arg0)
         }
 
         for (i = 0; i < 17; ++i) {
-            if ((i != arg0->unk1) && ((D_800F4538[i] != NULL))
+            if ((i != arg0->index) && ((D_800F4538[i] != NULL))
                 && (D_800F4538[i]->unk6E6 == arg0->modelId)) {
                 arg0->dataAddr = i;
                 found = 1;
@@ -903,9 +899,9 @@ int func_8009BD90(vs_battle_objectData* arg0)
 {
     D_800F4538_t* temp_v1;
     int var_a2;
-    int t1 = D_800F4538[arg0->unk1]->unk6E6;
-    for (var_a2 = (arg0->unk1 >= 2) * 2; var_a2 < 17; ++var_a2) {
-        if (var_a2 != arg0->unk1) {
+    int t1 = D_800F4538[arg0->index]->unk6E6;
+    for (var_a2 = (arg0->index >= 2) * 2; var_a2 < 17; ++var_a2) {
+        if (var_a2 != arg0->index) {
             temp_v1 = D_800F4538[var_a2];
             if ((temp_v1 != NULL) && (temp_v1->unk6E6 == t1)) {
                 if ((arg0->modelId == 0 && temp_v1->unk5D4 != 0)
@@ -1030,7 +1026,7 @@ int func_8009CFB0(int arg0)
 
         if (temp_s1->unk5B0_5) {
             for (i = 0; i < (temp_s1->unk8_4 + 1); ++i) {
-                --D_800F46A8[temp_s1->unk5BB + i].unk6;
+                --D_800F46A8[temp_s1->unk5BB + i].refCount;
             }
 
             if (temp_s1->unk5BB == 20) {
@@ -1054,28 +1050,28 @@ int func_8009D208(int arg0)
     return 0;
 }
 
-int _loadEtm(vs_battle_objectData* arg0)
+int _loadEtm(vs_battle_objectData* objdata)
 {
     RECT rect;
     int fileSize;
-    int temp_a0;
+    int sectorSize;
     int h;
 
     switch (_loadEtmState) {
     default:
         _loadEtmState = 1;
-        temp_a0 = _etmFileSectorSizes[arg0->modelId];
-        if (temp_a0 == 0) {
+        sectorSize = _etmFileSectorSizes[objdata->modelId];
+        if (sectorSize == 0) {
             _loadEtmState = 0;
             return -2;
         } else {
-            fileSize = temp_a0 << 0xB;
+            fileSize = sectorSize << 0xB;
             _etmData = vs_main_allocHeapR(fileSize);
             if (_etmData == NULL) {
                 return -2;
             }
 
-            _etmFile.lba = _etmLbaOffsets[arg0->modelId] + VS_E001_ETM_LBA;
+            _etmFile.lba = _etmLbaOffsets[objdata->modelId] + VS_E001_ETM_LBA;
             _etmFile.size = fileSize;
             _etmFileCdSlot = vs_main_allocateCdQueueSlot(&_etmFile);
             vs_main_cdEnqueue(_etmFileCdSlot, _etmData);
@@ -1088,22 +1084,22 @@ int _loadEtm(vs_battle_objectData* arg0)
 
         vs_main_freeCdQueueSlot(_etmFileCdSlot);
 
-        if (D_800F244F[arg0->unk1] != 0) {
-            if (func_8007E0A8(D_800F244F[arg0->unk1], 1, 4) == 0) {
+        if (D_800F244F[objdata->index] != 0) {
+            if (func_8007E0A8(D_800F244F[objdata->index], 1, 4) == 0) {
                 return -3;
             }
-            D_800F244F[arg0->unk1] = 0;
+            D_800F244F[objdata->index] = 0;
         }
 
-        if (func_8007DFF0(arg0->unk11, 1U, 4) == 0) {
+        if (func_8007DFF0(objdata->unk11, 1, 4) == 0) {
             return -2;
         }
 
-        D_800F244F[arg0->unk1] = arg0->unk11;
+        D_800F244F[objdata->index] = objdata->unk11;
         ++_etmData;
         h = *_etmData;
         ++_etmData;
-        setRECT(&rect, (arg0->unk11 & 0xF) << 6, 256, 64, h);
+        setRECT(&rect, (objdata->unk11 & 0xF) << 6, 256, 64, h);
         LoadImage(&rect, (void*)_etmData);
         _loadEtmState = 2;
         return -1;
@@ -1227,7 +1223,7 @@ void func_8009D88C(int arg0)
     }
 
     for (i = 0; i < 2; ++i) {
-        D_800F4588_t* temp_v1 = D_800F4588[(temp_a0->unkF * 2) + i];
+        vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[(temp_a0->unkF * 2) + i];
         if ((temp_v1 != NULL) && (temp_v1->unkD != 0)) {
             if (temp_v1->unk8_4) {
                 temp_v1->unk11 = 0x40;
@@ -1257,7 +1253,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
         temp_s0->unkA_7 = arg1;
 
         for (i = 0; i < 2; ++i) {
-            D_800F4588_t* temp_v1 = D_800F4588[(arg0 * 2) + i];
+            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[(arg0 * 2) + i];
             if (temp_v1 != NULL) {
                 if (arg1 != 0) {
                     temp_v1->unk11 = 0x40;
@@ -1987,7 +1983,7 @@ int func_8009F858(int arg0)
 
 void func_8009F898(int arg0, int arg1, int arg2)
 {
-    D_800F4588_t* temp_a0 = D_800F4588[arg0 * 2];
+    vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[arg0 * 2];
 
     if (temp_a0 != NULL) {
         temp_a0->unk5C0 = arg2;
@@ -2444,7 +2440,7 @@ void func_800A087C(int actorId, int arg1)
             temp_a0->unk8_1 = arg1 >> 1;
         }
     } else {
-        D_800F4588_t* temp_a2;
+        vs_battle_wepModels_t* temp_a2;
         int new_var;
 
         temp_t0->unk8_0 = (arg1 & 1) ^ 1;
@@ -2452,13 +2448,13 @@ void func_800A087C(int actorId, int arg1)
         temp_t0->unk8_2 = arg1 >> 2;
         temp_t0->unk9_7 = arg1 >> 6;
 
-        temp_a2 = D_800F4588[actorId * 2];
+        temp_a2 = vs_battle_wepModels[actorId * 2];
         new_var = (arg1 >> 11) & 1;
         if (temp_a2 != NULL) {
             temp_a2->unk8_4 = new_var;
         }
 
-        temp_a2 = D_800F4588[actorId * 2 + 1];
+        temp_a2 = vs_battle_wepModels[actorId * 2 + 1];
         new_var = (arg1 >> 12) & 1;
         if (temp_a2 != NULL) {
             temp_a2->unk8_4 = new_var;
@@ -2604,12 +2600,12 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk12 != 0xFF) {
             D_800F49E0 |= 0x400;
         }
-        if ((D_800F4588[temp_a1->unkF * 2] != NULL)
-            && (D_800F4588[temp_a1->unkF * 2]->unk8_4)) {
+        if ((vs_battle_wepModels[temp_a1->unkF * 2] != NULL)
+            && (vs_battle_wepModels[temp_a1->unkF * 2]->unk8_4)) {
             D_800F49E0 |= 0x800;
         }
-        if (((D_800F4588 + 1)[temp_a1->unkF * 2] != NULL)
-            && ((D_800F4588 + 1)[temp_a1->unkF * 2]->unk8_4)) {
+        if (((vs_battle_wepModels + 1)[temp_a1->unkF * 2] != NULL)
+            && ((vs_battle_wepModels + 1)[temp_a1->unkF * 2]->unk8_4)) {
             D_800F49E0 |= 0x1000;
         }
         a2 = 0x1000000;

@@ -19,13 +19,7 @@ typedef struct {
 } D_800EB9B8_t2;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
+    D_800EB9B8_t2 unk0;
     D_800EB9B8_t2 unk10;
     int unk20;
     short unk24;
@@ -190,14 +184,15 @@ void func_800C05B4(void)
 
 void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int arg3)
 {
-    *(D_800EB9B8_t2*)D_800EB9B8 = *arg0;
+    D_800EB9B8->unk0 = *arg0;
+
     if (arg0->unk0 != 1) {
         D_800EB9B8->unk24 = 0;
         D_800EB9B8->unk28 = 0;
     }
 
     if (D_800EB9AC != 0) {
-        D_800EB9B8->unk0 |= 0x80;
+        D_800EB9B8->unk0.unk0 |= 0x80;
         D_800EB9B8->unk10.unk0 = arg1->unk0;
         D_800EB9AC = 0;
         return;
@@ -206,6 +201,7 @@ void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int ar
     D_800EB9B8->unk38 = 0;
     D_800EB9B8->unk3C = 0;
     D_800EB9B8->unk2A = 0xF;
+
     if (arg1 != NULL) {
         D_800EB9B8->unk10 = *arg1;
         D_800EB9B8->unk10.unk0 |= 0x80;
@@ -220,7 +216,7 @@ void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int ar
 void func_800C06E0(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8->unk0 = 0;
+        D_800EB9B8->unk0.unk0 = 0;
     }
 }
 

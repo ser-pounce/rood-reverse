@@ -4391,15 +4391,20 @@ vs_battle_actor* func_800765B0(
         objData.unk11 = var_v1_2 >> 8;
         objData.material = material;
         objData.unk13 = arg2->unk0_8 >> 4;
+
         vs_battle_populateDataSlot(&objData);
+
         while (vs_battle_getEmptyObjectDataSlot() != 0) {
             vs_battle_processObjectDataQueue();
             vs_main_gametimeUpdate(0);
         }
+
         vs_battle_actors[index] = &temp_v0->unk0.unk0;
+
         func_8007647C(index, actorId);
         func_800E6178(&temp_v0->unk0.unk0, -1);
         func_800A087C(index, 0x1846);
+
         return &temp_v0->unk0.unk0;
     }
     return NULL;
@@ -6198,12 +6203,12 @@ void func_8007CAA4(int arg0)
     }
 }
 
-void func_8007CB84(int arg0, int wepId)
+void func_8007CB84(int index, int wepId)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 7;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.actorId = 1;
     vs_battle_populateDataSlot(&objData);
@@ -6211,24 +6216,24 @@ void func_8007CB84(int arg0, int wepId)
 
 void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
 
-void func_8007CBDC(int arg0, int wepId, int arg2)
+void func_8007CBDC(int index, int wepId, int arg2)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 7;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.actorId = 2;
     objData.unk11 = arg2;
     vs_battle_populateDataSlot(&objData);
 }
 
-void vs_battle_loadEtm(int arg0, int wepId, int arg2)
+void vs_battle_loadEtm(int index, int wepId, int arg2)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 9;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.unk11 = arg2;
     vs_battle_populateDataSlot(&objData);

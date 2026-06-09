@@ -1190,6 +1190,7 @@ _wepFileData = 0x800F2288;
 _wepFileLoaded = 0x800F228C;
 _wepFile = 0x800F2290;
 _wepCdSlot = 0x800F2298;
+_wepFileEpilog = 0x800F229C;
 _shpData = 0x800F22A0;
 _shpAllocated = 0x800F22A4;
 _shpFile = 0x800F22A8;

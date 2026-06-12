@@ -92,6 +92,11 @@ void func_800C0FA8(func_800C0FA8_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     RotMatrix_gte(&arg1->unk0, arg2);
 }
 
+int func_800C1034(func_800C0FA8_t* arg0, u_short* arg1);
+int func_800C110C(func_800C0FA8_t* arg0, u_short* arg1, int arg2);
+int func_800C123C(func_800C0FA8_t* arg0, u_short* arg1, int arg2);
+int func_800C1384(func_800C0FA8_t* arg0, u_short* arg1, int arg2);
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1034);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C110C);
@@ -100,7 +105,43 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C123C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1564);
+int func_800C1564(func_800C0FA8_t* arg0, u_short* arg1)
+{
+    u_int saved_unk4;
+    int ret;
+
+    saved_unk4 = *(u_int*)arg0->unk4;
+    ret = 0;
+
+    switch (*(u_char*)arg0) {
+    case 1:
+        ret = func_800C1034(arg0, arg1);
+        break;
+    case 2:
+        ((u_char*)arg0->unk4)[1] <<= 1;
+        ret = func_800C110C(arg0, arg1, 1);
+        break;
+    case 3:
+        ret = func_800C110C(arg0, arg1, 0);
+        break;
+    case 4:
+        ret = func_800C123C(arg0, arg1, 0);
+        break;
+    case 5:
+        ((u_char*)arg0->unk4)[3] = (saved_unk4 >> 24) + 0x80;
+        ret = func_800C123C(arg0, arg1, 1);
+        break;
+    case 6:
+        ret = func_800C1384(arg0, arg1, 1);
+        break;
+    case 7:
+        ret = func_800C1384(arg0, arg1, 0);
+        break;
+    }
+
+    *(u_int*)arg0->unk4 = saved_unk4;
+    return ret;
+}
 
 void func_800C58F8(int); /* extern */
 

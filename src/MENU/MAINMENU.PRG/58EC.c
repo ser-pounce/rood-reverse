@@ -11,7 +11,7 @@
 
 typedef struct {
     char text[14];
-    char unk14;
+    char disabled;
     char x;
 } textHeader_t;
 
@@ -543,11 +543,11 @@ void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
     }
 }
 
-void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int arg3)
+void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int disabled)
 {
     vs_mainMenu_isLevelledSpell = 1;
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);
-    _textHeaders[index].unk14 = arg3;
+    _textHeaders[index].disabled = disabled;
     _textHeaders[index].x = x;
 }
 
@@ -581,7 +581,7 @@ void func_80100164(void)
         for (var_s1 = 0; var_s1 < 2; ++var_s1) {
             vs_battle_renderTextRawColor(_textHeaders[var_s1].text,
                 ((temp_s2 + _textHeaders[var_s1].x) & 0xFFFF) | 0xA00000,
-                0x808080 >> _textHeaders[var_s1].unk14, NULL);
+                0x808080 >> _textHeaders[var_s1].disabled, NULL);
         }
 
         temp_t1 = temp_s2 & 0xFFFF;

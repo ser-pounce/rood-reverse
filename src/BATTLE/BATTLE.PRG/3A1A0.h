@@ -9,7 +9,7 @@ typedef struct {
 } func_80089888_t;
 
 typedef struct {
-    u_char unk0_0 : 3;
+    u_char actorId : 3;
     u_char unk0_3 : 1;
     u_char unk0_4 : 2;
     u_char unk0_7 : 2;
@@ -310,7 +310,7 @@ typedef struct {
     u_char unk8_4 : 1;
     u_char isWideTexture : 1;
     u_char unk8_6 : 1;
-    u_char unk8_7 : 1;
+    u_char isDoubleClut : 1;
     u_char unk9_0 : 4;
     u_char unk9_4 : 4;
     u_char unkA_0 : 7;
@@ -345,8 +345,8 @@ typedef struct {
     u_char unk67;
     int unk68;
     u_char unk6C[0x34];
-    u_char unkA0[4][8];
-    u_char unkC0[7][0x80];
+    u_char unkBoneInfo[4][8];
+    u_short palettes[7][64];
     u_char unk440[0x40];
     u_char unk480[0x12C];
     u_int unk5AC_0 : 4;

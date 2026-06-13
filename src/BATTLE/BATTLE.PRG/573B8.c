@@ -19,21 +19,27 @@ typedef struct {
 } D_800EB9B8_t2;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
+    D_800EB9B8_t2 unk0;
     D_800EB9B8_t2 unk10;
     int unk20;
-    int unk24;
+    short unk24;
+    short unk26;
     short unk28;
     short unk2A;
+    char unk2C;
+    char unk2D;
+    u_char unk2E;
+    char unk2F;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+    int unk40;
+    int unk44;
 } D_800EB9B8_t;
 
 extern D_800EB9B8_t* D_800EB9B8;
+extern u_char D_800EB9AC;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
@@ -176,12 +182,41 @@ void func_800C05B4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C05EC);
+void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int arg3)
+{
+    D_800EB9B8->unk0 = *arg0;
+
+    if (arg0->unk0 != 1) {
+        D_800EB9B8->unk24 = 0;
+        D_800EB9B8->unk28 = 0;
+    }
+
+    if (D_800EB9AC != 0) {
+        D_800EB9B8->unk0.unk0 |= 0x80;
+        D_800EB9B8->unk10.unk0 = arg1->unk0;
+        D_800EB9AC = 0;
+        return;
+    }
+
+    D_800EB9B8->unk38 = 0;
+    D_800EB9B8->unk3C = 0;
+    D_800EB9B8->unk2A = 0xF;
+
+    if (arg1 != NULL) {
+        D_800EB9B8->unk10 = *arg1;
+        D_800EB9B8->unk10.unk0 |= 0x80;
+        D_800EB9B8->unk2E = arg2;
+        D_800EB9B8->unk44 = arg3;
+        return;
+    }
+
+    D_800EB9B8->unk10.unk0 = 0;
+}
 
 void func_800C06E0(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8->unk0 = 0;
+        D_800EB9B8->unk0.unk0 = 0;
     }
 }
 

@@ -14,19 +14,6 @@
 #include <memory.h>
 
 typedef struct {
-    u_char unk0;
-    signed char unk1;
-    short unk2;
-    int unk4;
-    int unk8;
-    int unkC;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-} func_8009AC24_t;
-
-typedef struct {
     u_char unk0[0x1FE0];
     u_short unk1FE0;
 } D_800F2458_t;
@@ -63,7 +50,7 @@ int _parseShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
-void func_8009A98C(int, int);
+void func_8009A98C(int index, int material);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -115,7 +102,7 @@ extern vs_main_CdQueueSlot* _shpCdSlot;
 extern u_short* _etmData;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
-extern void* D_800F229C;
+extern void* _wepFileEpilog;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
 extern D_800F2458_t D_800F2458;
@@ -227,15 +214,15 @@ int vs_battle_processObjectDataQueue(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099854);
 
-int func_80099900(func_8009AC24_t* arg0)
+int func_80099900(vs_battle_objectData* arg0)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        if ((i != arg0->unk1)
+        if ((i != arg0->index)
             && ((D_800F45E0[i] != NULL)
-                && (D_800F45E0[i]->unk6C[8].unk0_0 == arg0->unk10))) {
-            arg0->unk8 = i;
+                && (D_800F45E0[i]->unk6C[8].actorId == arg0->actorId))) {
+            arg0->dataAddr = i;
             return 1;
         }
     }
@@ -269,7 +256,7 @@ int func_8009998C(vs_battle_objectData* arg0)
 
     for (i = 0; i < 16; ++i) {
         if ((i != arg0->index) && (D_800F45E0[i] != NULL)
-            && (D_800F45E0[i]->unk6C[8].unk0_0 == arg0->actorId)) {
+            && (D_800F45E0[i]->unk6C[8].actorId == arg0->actorId)) {
             arg0->dataAddr = i;
             var_v0_2 = 1;
             goto exit;
@@ -303,15 +290,15 @@ exit:
     var_s0 = &s1->unk6C[6];
 
     s1->unkF = arg0->index;
-    s1->unk6C[8].unk0_0 = arg0->actorId;
+    s1->unk6C[8].actorId = arg0->actorId;
 
-    vs_main_memcpy(var_s0, (s1->unk6C[8].unk0_0 << 5) + D_800F4448, sizeof *var_s0);
+    vs_main_memcpy(var_s0, (s1->unk6C[8].actorId << 5) + D_800F4448, sizeof *var_s0);
     vs_main_loadClut((void*)var_s0, 0xD, s1->unkF * 0x10, 0x10);
 
     s1->unk6C[8].unk3 = 0xFF;
     s1->unk12 = 0xFF;
 
-    if (s1->unk6C[8].unk0_0 == 1) {
+    if (s1->unk6C[8].actorId == 1) {
         s1->unk6C[8].unk1 = arg0->unk11;
     }
 
@@ -332,14 +319,14 @@ exit:
     func_800E6898(s1);
     s1->unk6C[8].unk0_4 = 0;
 
-    if (s1->unk6C[8].unk0_0 >= 5) {
+    if (s1->unk6C[8].actorId > 4) {
 
         for (j = 0; j < arg0->index; ++j) {
             temp_a0 = D_800F45E0[j];
             if ((temp_a0 != NULL) && (*(int*)&temp_a0->unk5C == *(int*)&s1->unk5C)
                 && (temp_a0->unk1E == (s1->unk1E + 0x80))
-                && (temp_a0->unk6C[8].unk0_0 >= 5)) {
-                if (temp_a0->unk6C[8].unk0_0 != s1->unk6C[8].unk0_0) {
+                && (temp_a0->unk6C[8].actorId > 4)) {
+                if (temp_a0->unk6C[8].actorId != s1->unk6C[8].actorId) {
                     s1->unk6C[8].unk0_4 = 1;
                 } else {
                     s1->unk6C[8].unk0_4 = 2;
@@ -375,12 +362,12 @@ int func_80099D6C(int arg0)
     }
 
     sp10.index = arg0;
-    sp10.actorId = temp_s0->unk6C[8].unk0_0;
+    sp10.actorId = temp_s0->unk6C[8].actorId;
 
     for (i = 0; i < 16; ++i) {
         vs_battle_objectData* a2 = &sp10;
         if ((i != a2->index) && (D_800F45E0[i] != NULL)
-            && (D_800F45E0[i]->unk6C[8].unk0_0 == a2->actorId)) {
+            && (D_800F45E0[i]->unk6C[8].actorId == a2->actorId)) {
             a2->dataAddr = i;
             found = 1;
             goto exit;
@@ -401,17 +388,17 @@ exit:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_80099E7C);
 
-int func_80099FA8(func_8009AC24_t* arg0)
+int func_80099FA8(vs_battle_objectData* objData)
 {
     int i;
-    int temp_a3 = arg0->unk1;
+    int index = objData->index;
 
     for (i = 0; i < 20; ++i) {
-        if (i != temp_a3) {
-            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[i];
-            if ((temp_v1 != NULL) && ((temp_v1->actorId) || (temp_a3 < 4))
-                && (temp_v1->modelId == arg0->unk2)) {
-                arg0->unk8 = i;
+        if (i != index) {
+            vs_battle_wepModels_t* model = vs_battle_wepModels[i];
+            if ((model != NULL) && (model->actorId || (index < 4))
+                && (model->modelId == objData->modelId)) {
+                objData->dataAddr = i;
                 return 1;
             }
         }
@@ -548,7 +535,7 @@ int _parseWep(vs_battle_objectData* objectData)
             return -3;
         }
 
-        if ((u_long)data < 0x14) {
+        if ((u_long)data < 20) {
         copySlot:
             /* copy model from an already-loaded slot */
             vs_main_memcpy(model, vs_battle_wepModels[(u_long)data], sizeof *model);
@@ -617,7 +604,7 @@ int _parseWep(vs_battle_objectData* objectData)
             model->modelId = objectData->modelId;
         }
     } else if (D_800E8F29 == 1) {
-        data = D_800F229C;
+        data = _wepFileEpilog;
         texV = 0xE0; /* clut V offset; also lands in rect.y on the parse path */
         goto fixPrims;
     }
@@ -699,12 +686,12 @@ int _parseWep(vs_battle_objectData* objectData)
     if (size == 96) {
         w = 32;
         count = 64;
-        model->unk8_7 = 1;
+        model->isDoubleClut = 1;
         model->nClutColors = 96;
     } else {
         w = 16;
         count = 32;
-        model->unk8_7 = 0;
+        model->isDoubleClut = 0;
         model->nClutColors = 48;
     }
 
@@ -713,7 +700,7 @@ int _parseWep(vs_battle_objectData* objectData)
     data += w * 2;
 
     for (i = 0; i < 7; i++) {
-        vs_main_memcpy(model->unkC0[i], data, count * 2);
+        vs_main_memcpy(model->palettes[i], data, count * 2);
         data += count * 2;
     }
 
@@ -725,7 +712,7 @@ int _parseWep(vs_battle_objectData* objectData)
 
     data += texW * 32;
     D_800E8F29 = 1;
-    D_800F229C = data;
+    _wepFileEpilog = data;
 
     return -1;
 
@@ -752,7 +739,7 @@ fixPrims:
         }
     }
 
-    memcpy(model->unkA0, data, model->nBones * 8);
+    memcpy(model->unkBoneInfo, data, model->nBones * 8);
     func_8009A98C(objectData->index, objectData->material);
 
     model->unk11 = 0x40;
@@ -817,14 +804,14 @@ int func_8009AA84(int index)
     return 0;
 }
 
-int func_8009AC24(func_8009AC24_t* arg0)
+int func_8009AC24(vs_battle_objectData* arg0)
 {
     int i;
 
     for (i = 0; i < 17; ++i) {
-        if ((i != arg0->unk1)
-            && ((D_800F4538[i] != NULL) && (D_800F4538[i]->unk6E6 == arg0->unk2))) {
-            arg0->unk8 = i;
+        if ((i != arg0->index)
+            && ((D_800F4538[i] != NULL) && (D_800F4538[i]->unk6E6 == arg0->modelId))) {
+            arg0->dataAddr = i;
             return 1;
         }
     }
@@ -984,7 +971,7 @@ int func_8009CFA0(void) { return D_800E8F2C + 1; }
 
 int func_8009CFB0(int arg0)
 {
-    func_8009AC24_t sp10;
+    vs_battle_objectData sp10;
     D_800F4538_t* temp_s1;
     int i;
 
@@ -999,16 +986,16 @@ int func_8009CFB0(int arg0)
     }
 
     if (temp_s1->unk6E6 != 0x7F) {
-        func_8009AC24_t* a2;
+        vs_battle_objectData* a2;
         int var_v0;
-        sp10.unk1 = arg0;
-        sp10.unk2 = temp_s1->unk6E6;
+        sp10.index = arg0;
+        sp10.modelId = temp_s1->unk6E6;
         a2 = &sp10;
 
         for (i = 0; i < 17; ++i) {
-            if ((i != a2->unk1) && ((D_800F4538[i] != NULL))
-                && (D_800F4538[i]->unk6E6 == a2->unk2)) {
-                a2->unk8 = i;
+            if ((i != a2->index) && ((D_800F4538[i] != NULL))
+                && (D_800F4538[i]->unk6E6 == a2->modelId)) {
+                a2->dataAddr = i;
                 var_v0 = 1;
                 goto exit;
             }
@@ -1243,16 +1230,16 @@ void func_8009D88C(int arg0)
     }
 
     for (i = 0; i < 2; ++i) {
-        vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[(temp_a0->unkF * 2) + i];
-        if ((temp_v1 != NULL) && (temp_v1->unkD != 0)) {
-            if (temp_v1->unk8_4) {
-                temp_v1->unk11 = 0x40;
-                temp_v1->unk12 = 0x40;
+        vs_battle_wepModels_t* model = vs_battle_wepModels[temp_a0->unkF * 2 + i];
+        if ((model != NULL) && (model->unkD != 0)) {
+            if (model->unk8_4) {
+                model->unk11 = 0x40;
+                model->unk12 = 0x40;
             } else {
-                temp_v1->unk11 = 0;
-                temp_v1->unk12 = 0;
+                model->unk11 = 0;
+                model->unk12 = 0;
             }
-            temp_v1->unk13 = 0;
+            model->unk13 = 0;
         }
     }
 }
@@ -1273,7 +1260,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
         temp_s0->unkA_7 = arg1;
 
         for (i = 0; i < 2; ++i) {
-            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[(arg0 * 2) + i];
+            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[arg0 * 2 + i];
             if (temp_v1 != NULL) {
                 if (arg1 != 0) {
                     temp_v1->unk11 = 0x40;
@@ -1994,7 +1981,7 @@ int func_8009F858(int arg0)
         return -1;
     }
 
-    if (temp_a0->unk6C[8].unk0_0 != 1) {
+    if (temp_a0->unk6C[8].actorId != 1) {
         return -1;
     }
 
@@ -2003,11 +1990,11 @@ int func_8009F858(int arg0)
 
 void func_8009F898(int arg0, int arg1, int arg2)
 {
-    vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[arg0 * 2];
+    vs_battle_wepModels_t* model = vs_battle_wepModels[arg0 * 2];
 
-    if (temp_a0 != NULL) {
-        temp_a0->unk5C0 = arg2;
-        temp_a0->unk8_6 = arg1;
+    if (model != NULL) {
+        model->unk5C0 = arg2;
+        model->unk8_6 = arg1;
     }
 }
 
@@ -2460,7 +2447,7 @@ void func_800A087C(int actorId, int arg1)
             temp_a0->unk8_1 = arg1 >> 1;
         }
     } else {
-        vs_battle_wepModels_t* temp_a2;
+        vs_battle_wepModels_t* model;
         int new_var;
 
         temp_t0->unk8_0 = (arg1 & 1) ^ 1;
@@ -2468,16 +2455,16 @@ void func_800A087C(int actorId, int arg1)
         temp_t0->unk8_2 = arg1 >> 2;
         temp_t0->unk9_7 = arg1 >> 6;
 
-        temp_a2 = vs_battle_wepModels[actorId * 2];
+        model = vs_battle_wepModels[actorId * 2];
         new_var = (arg1 >> 11) & 1;
-        if (temp_a2 != NULL) {
-            temp_a2->unk8_4 = new_var;
+        if (model != NULL) {
+            model->unk8_4 = new_var;
         }
 
-        temp_a2 = vs_battle_wepModels[actorId * 2 + 1];
+        model = vs_battle_wepModels[actorId * 2 + 1];
         new_var = (arg1 >> 12) & 1;
-        if (temp_a2 != NULL) {
-            temp_a2->unk8_4 = new_var;
+        if (model != NULL) {
+            model->unk8_4 = new_var;
         }
 
         if (temp_t0->unk17FD >= 2) {

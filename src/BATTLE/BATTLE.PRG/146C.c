@@ -616,7 +616,7 @@ int func_80081020(int, _hitEntity_t*);
 int func_800810CC(int, _hitEntity_t*);
 short func_80081148(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
 short _calculateDamage(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
-int func_8008574C(u_int, vs_battle_actor2*, int);
+int _getSkillCost(u_int, vs_battle_actor2*, int);
 void func_80085008(_hitEntity_t*);
 void func_80085390(
     vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
@@ -4391,15 +4391,20 @@ vs_battle_actor* func_800765B0(
         objData.unk11 = var_v1_2 >> 8;
         objData.material = material;
         objData.unk13 = arg2->unk0_8 >> 4;
+
         vs_battle_populateDataSlot(&objData);
+
         while (vs_battle_getEmptyObjectDataSlot() != 0) {
             vs_battle_processObjectDataQueue();
             vs_main_gametimeUpdate(0);
         }
+
         vs_battle_actors[index] = &temp_v0->unk0.unk0;
+
         func_8007647C(index, actorId);
         func_800E6178(&temp_v0->unk0.unk0, -1);
         func_800A087C(index, 0x1846);
+
         return &temp_v0->unk0.unk0;
     }
     return NULL;
@@ -5173,13 +5178,13 @@ int func_80078828(int arg0)
 
         if (arg0 != 0) {
             if (temp_s1->unk4.unk0 == 0) {
-                if (!(func_8008574C(vs_main_settings.mappedChainAbilities[arg0 - 1],
+                if (!(_getSkillCost(vs_main_settings.mappedChainAbilities[arg0 - 1],
                           vs_battle_characterState->unk3C, 0)
                         & 0xFF000000)) {
                     ret = 0;
                 }
             } else {
-                if (!(func_8008574C(vs_main_settings.mappedDefenseAbilities[arg0 - 1],
+                if (!(_getSkillCost(vs_main_settings.mappedDefenseAbilities[arg0 - 1],
                           vs_battle_characterState->unk3C, 0)
                         & 0xFF000000)) {
                     ret = 0;
@@ -6198,12 +6203,12 @@ void func_8007CAA4(int arg0)
     }
 }
 
-void func_8007CB84(int arg0, int wepId)
+void func_8007CB84(int index, int wepId)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 7;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.actorId = 1;
     vs_battle_populateDataSlot(&objData);
@@ -6211,24 +6216,24 @@ void func_8007CB84(int arg0, int wepId)
 
 void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
 
-void func_8007CBDC(int arg0, int wepId, int arg2)
+void func_8007CBDC(int index, int wepId, int arg2)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 7;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.actorId = 2;
     objData.unk11 = arg2;
     vs_battle_populateDataSlot(&objData);
 }
 
-void vs_battle_loadEtm(int arg0, int wepId, int arg2)
+void vs_battle_loadEtm(int index, int wepId, int arg2)
 {
     vs_battle_objectData objData;
 
     objData.dataType = 9;
-    objData.index = arg0;
+    objData.index = index;
     objData.modelId = wepId;
     objData.unk11 = arg2;
     vs_battle_populateDataSlot(&objData);
@@ -9032,15 +9037,27 @@ void func_80085718(_hitEntity_t* arg0)
     arg0->unk1C.value = 0;
 }
 
-int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2)
+/**
+ * Retrieves a compound value of the skill type, cost, and whether
+ * the actor can pay the cost.
+ *
+ * @param id
+ * @param actor
+ * @param arg2
+ * @return Packed integer:
+ *         - bits 31-24 = bool requirements met
+ *         - bits 23-16 = enum skill type
+ *         - bits 15-0  = int cost
+ */
+int _getSkillCost(u_int id, vs_battle_actor2* actor, int arg2)
 {
-    int var_v1;
+    int requirementsMet;
     int skillType;
     int cost;
     vs_skill_t* skill;
     int statValue;
 
-    skill = &vs_main_skills[arg0];
+    skill = &vs_main_skills[id];
     cost = skill->cost;
     skillType = skill->type;
 
@@ -9084,7 +9101,7 @@ int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2)
 
     if (skillType == skillTypeAbility) {
         if (D_800F19CC->unk4 >= 10) {
-            if ((arg0 - 22) < 18) {
+            if ((id - 22) < 18) {
                 cost += (D_800F19CC->unk4 * D_800F19CC->unk4) / 10;
             }
         }
@@ -9094,13 +9111,13 @@ int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2)
             --cost;
         }
         statValue -= cost;
-        var_v1 = 1;
+        requirementsMet = 1;
     } else {
         if (skillType == skillTypeAbility) {
             statValue = 0;
-            var_v1 = 1;
+            requirementsMet = 1;
         } else {
-            var_v1 = 0;
+            requirementsMet = 0;
         }
     }
 
@@ -9120,12 +9137,13 @@ int func_8008574C(u_int arg0, vs_battle_actor2* actor, int arg2)
             break;
         }
     }
-    return (var_v1 << 0x18) + (skillType << 0x10) + cost;
+
+    return (requirementsMet << 24) + (skillType << 16) + cost;
 }
 
 void func_80085978(int arg0, int arg1)
 {
-    func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0);
+    _getSkillCost(arg0, vs_battle_actors[arg1]->unk3C, 0);
 }
 
 void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
@@ -9189,7 +9207,7 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
     sp10.unk4C[0].unk8C = 0;
     sp10.unk4C[0].unk4C.unk.unk1 = arg3;
     func_80085B10(arg0, arg4, &sp10, 0);
-    return func_8008574C(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
+    return _getSkillCost(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
@@ -9835,7 +9853,7 @@ int vs_battle_getSkillFlags(int arg0, int id)
     temp_s1 = vs_battle_actors[arg0]->unk3C;
     ret = temp_s1->unk954 != 0;
 
-    if (!(func_8008574C(id, temp_s1, 0) & 0xFF000000)) {
+    if (!(_getSkillCost(id, temp_s1, 0) & 0xFF000000)) {
         ret |= 2;
     }
 

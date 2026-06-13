@@ -1,37 +1,42 @@
-#include "common.h"
+#include "84.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
 #include "build/assets/MENU/MENU0.PRG/base.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../SLUS_010.40/main.h"
 #include <libetc.h>
 
 static signed char _MPCostTextBuffer[16];
 
+/**
+ * Prints the MP cost of a spell using skill data.
+ * @param id Skill ID. Value can be negated to indicate a variable cost spell.
+ */
 static void _setMPCost(int id)
 {
     int flags;
     int i;
     int cost;
-    int var_s2 = 0;
+    int variableCost = 0;
 
     if (id < 0) {
-        var_s2 = 1;
+        variableCost = 1;
         id = -id;
     }
 
     flags = vs_battle_getSkillFlags(0, id);
     vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
+
     cost = vs_main_skills[id].cost;
     _MPCostTextBuffer[15] = NULL;
 
     i = 15;
 
-    if (var_s2 != 0) {
+    if (variableCost != 0) {
         i = 13;
         _MPCostTextBuffer[14] = '-';
         _MPCostTextBuffer[13] = '[';
@@ -41,24 +46,30 @@ static void _setMPCost(int id)
         cost = vs_battle_toBCD(cost);
         _MPCostTextBuffer[--i] = (cost & 0xF) + '0';
         cost >>= 4;
-        if (var_s2 != 0) {
+        if (variableCost != 0) {
             _MPCostTextBuffer[--i] = '[';
         }
     } while (cost != 0);
 
     _MPCostTextBuffer[--i] = '#';
+
     vs_mainmenu_setAbilityCost(
-        0, &_MPCostTextBuffer[i], var_s2 * 4 + 72, (flags >> 1) & 1);
+        0, &_MPCostTextBuffer[i], variableCost * 4 + 72, (flags >> 1) & 1);
 }
 
 static char _MPCostDirectTextBuffer[16];
 
-static void _setMPCostDirect(int costDecimal, int arg1)
+/** Prints the MP cost of a spell.
+ * @param costDecimal
+ * @param disabled
+ */
+static void _setMPCostDirect(int costDecimal, int disabled)
 {
     int cost;
     int i;
 
-    vs_mainmenu_setAbilityCost(1, "MP", 8, arg1);
+    vs_mainmenu_setAbilityCost(1, "MP", 8, disabled);
+
     cost = costDecimal;
     i = 15;
     _MPCostDirectTextBuffer[15] = 0;
@@ -70,7 +81,8 @@ static void _setMPCostDirect(int costDecimal, int arg1)
     } while (cost != 0);
 
     _MPCostDirectTextBuffer[--i] = '#';
-    vs_mainmenu_setAbilityCost(0, &_MPCostDirectTextBuffer[i], 72, arg1);
+
+    vs_mainmenu_setAbilityCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
 }
 
 static u_short _baseStrings[] = {

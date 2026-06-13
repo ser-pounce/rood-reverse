@@ -140,7 +140,27 @@ int vs_battle_getEmptyObjectDataSlot(void)
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", vs_battle_populateDataSlot);
+int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
+{
+    int i;
+    int slot;
+    vs_battle_objectData* dst;
+
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_objectDataSlots[i].dataType == 0) {
+            slot = i;
+            goto found;
+        }
+    }
+    slot = -1;
+found:
+    if (slot == -1) {
+        return -1;
+    }
+    dst = &vs_battle_objectDataSlots[slot];
+    *dst = *objectData;
+    return slot;
+}
 
 int vs_battle_processObjectDataQueue(void)
 {

@@ -35,7 +35,7 @@ void func_800FFF38(int arg0, int arg1);
 void func_800FFFBC(int arg0, int arg1);
 int vs_mainMenu_renderIntColor(int, int, int, u_long*);
 void vs_mainmenu_setInformationMessage(char*);
-void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int);
+void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int disabled);
 void vs_mainMenu_drawRowIcon(int, int, int);
 void func_80100164(void);
 void vs_mainMenu_drawButtonUiBackground(int x, int y, int w, int h);

@@ -135,6 +135,7 @@ _adjustDpPp = 0x800802C4;
 vs_battle_getEquippedShieldDp = 0x8008381C;
 _getRisk = 0x800838BC;
 _calculateDamage = 0x800838EC;
+_getSkillCost = 0x8008574C;
 _loadMpdLbas = 0x80088CE4;
 _loadZndEnemies = 0x80088D40;
 _loadZnd = 0x80088E08;

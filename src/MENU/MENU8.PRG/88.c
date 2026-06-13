@@ -591,7 +591,7 @@ int vs_menu8_exec(char* state)
             }
         } else {
             if (vs_main_stateFlags.puzzleModeDisabled != 0) {
-                if (func_801008B0() == 6) {
+                if (vs_mainMenu_getConfirmedRow() == 6) {
                     func_800C8E04(1);
                     D_800F514C = 0xB;
                 } else if (vs_main_settings.information != 0) {

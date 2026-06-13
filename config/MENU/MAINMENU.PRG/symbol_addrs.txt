@@ -60,6 +60,7 @@ vs_mainmenu_setAbilityCost = 0x80100100;
 vs_mainMenu_drawButtonUiBackground = 0x80100344;
 vs_mainMenu_unpackMenubg = 0x8010044C;
 vs_mainmenu_setMenuRows = 0x801005E0;
+vs_mainMenu_getConfirmedRow = 0x801008B0;
 vs_mainmenu_getSelectedRow = 0x801008C8;
 _weaponTitleSubmaxThresholds = 0x80102014;
 _weaponTitleMaxThresholds = 0x8010202C;

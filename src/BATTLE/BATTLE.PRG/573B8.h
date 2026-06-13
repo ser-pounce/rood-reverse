@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);

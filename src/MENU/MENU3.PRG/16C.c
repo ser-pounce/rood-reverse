@@ -2831,12 +2831,14 @@ static int func_80108088(int arg0)
         }
         break;
     }
+
     if (state == 2) {
         menuItem = vs_battle_setMenuItem(0x1F, 0xB4, 0x12, 0x8C, 8,
             (char*)&_menuText[_menuText[VS_menuText_INDEX_equipWeapon
-                                        + func_801008B0()]]);
+                                        + vs_mainMenu_getConfirmedRow()]]);
         menuItem->selected = 1;
     }
+
     return 0;
 }
 

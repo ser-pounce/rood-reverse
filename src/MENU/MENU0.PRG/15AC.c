@@ -110,7 +110,7 @@ static int _teleportMenu(int init)
             }
             state = returnIfReady;
         } else {
-            i = teleportCosts[func_801008B0()];
+            i = teleportCosts[vs_mainMenu_getConfirmedRow()];
             _setMPCostDirect(i, currentMp < i);
         }
         break;
@@ -143,9 +143,9 @@ static int _teleportMenu(int init)
 }
 
 /**
- * Draws header when magic menu is invoked from the shortcut screen
+ * Draws header
  */
-static void _drawMagicMenuHeader(void)
+static void _setMenuHeader(void)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -161,7 +161,6 @@ static void _drawMagicMenuHeader(void)
 /**
  * Module entrypoint.
  *
- * @param state
  * @return Returns 1 if menu is exiting for any reason, 0 otherwise
  */
 int vs_menu0_exec(char* state)
@@ -172,16 +171,16 @@ int vs_menu0_exec(char* state)
         initSubmenu,
         handleSubmenu,
         initWarlockMenu,
-        handleWarlockSelection,
+        warlockMenu,
         initShamanMenu,
-        handleShamanSelection,
+        shamanMenu,
         initSorcererMenu,
-        handleSorcererSelection,
+        sorcererMenu,
         initEnchanterMenu,
-        handleEnchanterSelection,
-        handleTeleportSelection,
+        enchanterMenu,
+        teleportMenu,
         exitToMainMenu,
-        executeArt,
+        executeMagic,
         exit
     };
 
@@ -196,8 +195,11 @@ int vs_menu0_exec(char* state)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
+
         vs_mainMenu_initTextBox();
+
         i = vs_battle_shortcutInvoked;
+
         if (i != 0) {
             enum shortcutMagicMenu { warlock = 1, shaman, sorcerer, enchanter };
             vs_battle_setMenuItem(i + 9, 0x140, 0x22, 0x8C, 8,
@@ -205,25 +207,26 @@ int vs_menu0_exec(char* state)
                 ->selected = 1;
             switch (i) {
             case warlock:
-                *state = handleWarlockSelection;
+                *state = warlockMenu;
                 _warlockMagicMenu(1);
                 break;
             case shaman:
-                *state = handleShamanSelection;
+                *state = shamanMenu;
                 _shamanMagicMenu(1);
                 break;
             case sorcerer:
-                *state = handleSorcererSelection;
+                *state = sorcererMenu;
                 _sorcererMagicMenu(1);
                 break;
             case enchanter:
-                *state = handleEnchanterSelection;
+                *state = enchanterMenu;
                 _enchanterMagicMenu(1);
                 break;
             }
             break;
         }
         // Fallthrough
+
     case initSubmenu:
         for (i = 0; i < 4; ++i) {
             menuStrings[i * 2] =
@@ -231,6 +234,7 @@ int vs_menu0_exec(char* state)
             menuStrings[i * 2 + 1] =
                 (char*)&_magicStrings[_magicStrings[i * 3 + VS_magic_INDEX_warlockDesc]];
             rowTypes[i] = 0;
+
             if (vs_battle_spellClassUnlocked(i) == 0) {
                 rowTypes[i] |= 1;
                 menuStrings[i * 2 + 1] =
@@ -267,45 +271,51 @@ int vs_menu0_exec(char* state)
         }
 
         j = vs_main_settings.cursorMemory;
+
         if (*state != handleShortcut) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(i, 0x105, menuStrings, rowTypes);
+
+        vs_mainmenu_setMenuRows(i, (1 << 8) | 5, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = j;
         *state = handleSubmenu;
+
         break;
+
     case handleSubmenu:
         selectedRow = vs_mainmenu_getSelectedRow();
         i = selectedRow + 1;
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             enum magicSubMenu { warlock, shaman, sorcerer, enchanter, teleport };
             switch (selectedRow) {
             case warlock:
-                *state = handleWarlockSelection;
+                *state = warlockMenu;
                 _warlockMagicMenu(1);
                 break;
             case shaman:
-                *state = handleShamanSelection;
+                *state = shamanMenu;
                 _shamanMagicMenu(1);
                 break;
             case sorcerer:
-                *state = handleSorcererSelection;
+                *state = sorcererMenu;
                 _sorcererMagicMenu(1);
                 break;
             case enchanter:
-                *state = handleEnchanterSelection;
+                *state = enchanterMenu;
                 _enchanterMagicMenu(1);
                 break;
             case teleport:
-                *state = handleTeleportSelection;
+                *state = teleportMenu;
                 _teleportMenu(1);
                 break;
             }
         } else {
-            if (i == -2) {
+            if (i == menuSelectionQuit) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 *state = exit;
             } else {
@@ -313,24 +323,30 @@ int vs_menu0_exec(char* state)
                 *state = exitToMainMenu;
             }
         }
+
         break;
+
     case initWarlockMenu:
-        _drawMagicMenuHeader();
+        _setMenuHeader();
         vs_battle_setMenuItem(
             0xA, 0x140, 0x22, 0x7E, 8, (char*)(_magicStrings + VS_magic_OFFSET_warlock))
             ->selected = 1;
         _warlockMagicMenu(2);
-        *state = handleWarlockSelection;
+
+        *state = warlockMenu;
         break;
-    case handleWarlockSelection:
+
+    case warlockMenu:
         i = _warlockMagicMenu(0);
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 6;
-            *state = executeArt;
+            *state = executeMagic;
         } else {
             if (i == -2) {
                 *state = exit;
@@ -338,24 +354,30 @@ int vs_menu0_exec(char* state)
                 *state = initSubmenu;
             }
         }
+
         break;
+
     case initShamanMenu:
-        _drawMagicMenuHeader();
+        _setMenuHeader();
         vs_battle_setMenuItem(
             11, 320, 34, 0x7E, 8, (char*)(_magicStrings + VS_magic_OFFSET_shaman))
             ->selected = 1;
         _shamanMagicMenu(2);
-        *state = handleShamanSelection;
+
+        *state = shamanMenu;
         break;
-    case handleShamanSelection:
+
+    case shamanMenu:
         i = _shamanMagicMenu(0);
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 8;
-            *state = executeArt;
+            *state = executeMagic;
         } else {
             if (i == -2) {
                 *state = exit;
@@ -363,24 +385,30 @@ int vs_menu0_exec(char* state)
                 *state = initSubmenu;
             }
         }
+
         break;
+
     case initSorcererMenu:
-        _drawMagicMenuHeader();
+        _setMenuHeader();
         vs_battle_setMenuItem(
             12, 320, 34, 0x7E, 8, (char*)(_magicStrings + VS_magic_OFFSET_sorcerer))
             ->selected = 1;
         _sorcererMagicMenu(2);
-        *state = handleSorcererSelection;
+
+        *state = sorcererMenu;
         break;
-    case handleSorcererSelection:
+
+    case sorcererMenu:
         i = _sorcererMagicMenu(0);
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 10;
-            *state = executeArt;
+            *state = executeMagic;
         } else {
             if (i == -2) {
                 *state = exit;
@@ -388,24 +416,30 @@ int vs_menu0_exec(char* state)
                 *state = initSubmenu;
             }
         }
+
         break;
+
     case initEnchanterMenu:
-        _drawMagicMenuHeader();
+        _setMenuHeader();
         vs_battle_setMenuItem(
             13, 320, 34, 0x7E, 8, (char*)(_magicStrings + VS_magic_OFFSET_enchanter))
             ->selected = 1;
         _enchanterMagicMenu(2);
-        *state = handleEnchanterSelection;
+
+        *state = enchanterMenu;
         break;
-    case handleEnchanterSelection:
+
+    case enchanterMenu:
         i = _enchanterMagicMenu(0);
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
             vs_battle_executeAbilityType = 12;
-            *state = executeArt;
+            *state = executeMagic;
         } else {
             if (i == -2) {
                 *state = exit;
@@ -413,8 +447,10 @@ int vs_menu0_exec(char* state)
                 *state = initSubmenu;
             }
         }
+
         break;
-    case handleTeleportSelection:
+
+    case teleportMenu:
         i = _teleportMenu(0);
 
         if (i == 0) {
@@ -432,16 +468,21 @@ int vs_menu0_exec(char* state)
                 *state = initSubmenu;
             }
         }
+
         break;
+
     case exitToMainMenu:
         vs_mainMenu_dismissTextBox();
         vs_mainMenu_setNextMenuAction(menuActionNone);
+
         if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
         }
+
         break;
-    case executeArt:
+
+    case executeMagic:
         if (vs_mainmenu_ready() != 0) {
             D_800F4E98.unk2 = 7;
             vs_battle_menuState.returnState = vs_battle_menuState.currentState;
@@ -449,15 +490,19 @@ int vs_menu0_exec(char* state)
             *state = none;
             return 1;
         }
+
         break;
+
     case exit:
         vs_mainMenu_dismissTextBox();
         vs_mainMenu_setNextMenuAction(menuActionNone);
+
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 1;
             *state = none;
             return 1;
         }
+
         break;
     }
     return 0;

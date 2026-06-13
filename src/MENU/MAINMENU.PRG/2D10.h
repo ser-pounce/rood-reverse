@@ -12,6 +12,12 @@ enum vs_mainMenu_menuACctions {
     menuActionInfo
 };
 
+enum vs_mainMenu_menuSelection {
+    menuSelectionConfirm,
+    menuSelectionBack = 0xFFFF,
+    menuSelectionQuit = -2
+};
+
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
 void func_800FDEBC(void);
@@ -52,7 +58,7 @@ void vs_mainMenu_drawButtonUiBackground(int x, int y, int w, int h);
 void func_80100414(int, int);
 void vs_mainmenu_setMenuRows(int rowCount, int, char* strings[], int rowtypes[]);
 int func_80100814(void);
-int func_801008B0(void);
+int vs_mainMenu_getConfirmedRow(void);
 int vs_mainmenu_getSelectedRow(void);
 void func_80100A5C(void);
 void func_80101118(int);

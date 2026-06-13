@@ -4015,7 +4015,7 @@ static int _combineTopMenu(int arg0)
         }
         break;
     case 1:
-        vs_mainMenu_printInformation(func_801008B0(), D_801023D0);
+        vs_mainMenu_printInformation(vs_mainMenu_getConfirmedRow(), D_801023D0);
         selectedRow = vs_mainmenu_getSelectedRow();
         i = selectedRow + 1;
         if (i != 0) {
@@ -4126,7 +4126,7 @@ int vs_menuC_exec(char* state)
         }
         break;
     case 3:
-        vs_mainMenu_printInformation(func_801008B0(), D_801023D0);
+        vs_mainMenu_printInformation(vs_mainMenu_getConfirmedRow(), D_801023D0);
         selectedRow = vs_mainmenu_getSelectedRow();
         i = selectedRow + 1;
         if (i != 0) {

@@ -1,10 +1,10 @@
-_setAbilityCost = 0x80102864;
+_setRiskCost = 0x80102864;
 _initAbilityMenu = 0x80102928;
 _mapAbility = 0x80102B5C;
 _abilityMenu = 0x80102CAC;
 _chainAbilityMenu = 0x801034FC;
 _defenseAbilityMenu = 0x80103670;
-_drawPointsRemaining = 0x801037E4;
+_setNextAbilityUnlockPointsRemaining = 0x801037E4;
 vs_menu2_exec = 0x801038D4;
 _breakArtUnlocked = 0x80103C3C;
 _getAbilityDescription = 0x80103DD8;

@@ -56,9 +56,8 @@ static void _setMPCost(int id)
 
 static char _MPCostDirectTextBuffer[16];
 
-/** Prints the MP cost of a spell.
- * @param costDecimal
- * @param disabled
+/**
+ * Prints the MP cost of a spell.
  */
 void _setMPCostDirect(int costDecimal, int disabled)
 {
@@ -158,7 +157,7 @@ static char _0[5] __attribute__((unused));
  * - 1 = initialize for main menu
  * - 2 = initialize for shortcut
  * - 0 = Process menu
- * @return The selected row, -1 if user cancelled, 0 otherwise
+ * @return The selected row, negative if user cancelled, 0 otherwise.
  */
 int _warlockMagicMenu(u_int initShortcutInvoked)
 {
@@ -258,7 +257,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
             vs_mainMenu_setNextMenuAction(menuActionNone);
             state = returnIfReady;
         } else {
-            i = _availableWarlockSpells[func_801008B0()];
+            i = _availableWarlockSpells[vs_mainMenu_getConfirmedRow()];
             for (rowCount = 0; rowCount < 7; ++rowCount) {
                 if (i == levelledSpells[rowCount]) {
                     if (vs_main_skills[i + 1].unlocked) {
@@ -507,7 +506,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfReady;
         } else {
-            _setMPCost(_availableShamanSpells[func_801008B0()]);
+            _setMPCost(_availableShamanSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfReady:
@@ -608,7 +607,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfready;
         } else {
-            _setMPCost(_availableSorcererSpells[func_801008B0()]);
+            _setMPCost(_availableSorcererSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfready:
@@ -706,7 +705,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfready;
         } else {
-            _setMPCost(_availableEnchanterSpells[func_801008B0()]);
+            _setMPCost(_availableEnchanterSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfready:

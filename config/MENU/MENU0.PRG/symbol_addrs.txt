@@ -6,5 +6,5 @@ _shamanMagicMenu = 0x80103464;
 _sorcererMagicMenu = 0x801037A8;
 _enchanterMagicMenu = 0x80103AEC;
 _teleportMenu = 0x80103E30;
-_drawMagicMenuHeader = 0x80104254;
+_setMenuHeader = 0x80104254;
 vs_menu0_exec = 0x801042C8;

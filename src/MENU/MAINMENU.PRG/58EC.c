@@ -789,7 +789,7 @@ int func_80100814(void)
     return (_selectedRow + D_801023DE) | ((_selectedRow + (D_801023DD * 10)) << 8);
 }
 
-int func_801008B0(void) { return _selectedRow + D_801023DE; }
+int vs_mainMenu_getConfirmedRow(void) { return _selectedRow + D_801023DE; }
 
 int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != NULL ? -1 : _selectedRow; }
 

@@ -3976,7 +3976,7 @@ int vs_menu7_dataMenu(char* state)
             }
         } else {
             if (((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0))
-                && (func_801008B0() == 0)) {
+                && (vs_mainMenu_getConfirmedRow() == 0)) {
                 func_800C8E04(1);
                 D_800F514C = 11;
             } else {

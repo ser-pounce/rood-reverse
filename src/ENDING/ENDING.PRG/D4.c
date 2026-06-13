@@ -259,7 +259,25 @@ void* _insertTpage(int arg0, int arg1)
     return tpage;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A9C0);
+void func_8006A9C0(int* arg0)
+{
+    RECT rect;
+    short* p = (short*)(arg0 + 2);
+
+    if (arg0[1] & 8) {
+        rect.x = p[2];
+        rect.y = p[3];
+        rect.w = p[4];
+        rect.h = p[5];
+        LoadImage(&rect, (u_long*)(arg0 + 5));
+        p = (short*)((char*)arg0 + (arg0[2] + 8));
+    }
+    rect.x = p[2];
+    rect.y = p[3];
+    rect.w = p[4];
+    rect.h = p[5];
+    LoadImage(&rect, (u_long*)((char*)p + 0xC));
+}
 
 void func_8006AA6C(void)
 {

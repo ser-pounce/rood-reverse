@@ -88,11 +88,23 @@ u_short _magicStrings[] = {
 u_short _teleportationStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
+typedef struct {
+    u_int unk0_0 : 9;
+    u_int unk0_9 : 7;
+    u_int unk0_16 : 5;
+    u_int unk0_21 : 3;
+    u_int unk0_24 : 5;
+    u_int unk0_29 : 3;
+} savePointData_t;
 
 /**
  * Encapsulates teleport target information.
- * Bits 0-15: location ID
- *
+ * Bits 0-9: Room ID
+ * Bits 10-16: unused
+ * Bits 16-21:
+ * Bits 21-24: unused
+ * Bits 24-29:
+ * Bits 29-32: unused
  */
 int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
     0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
@@ -115,11 +127,11 @@ int _getTeleportCost(int targetSavePointId)
     int j;
     int cost;
     int closestSavePointId;
-    int locationId = vs_battle_getCurrentRoomId();
+    int roomId = vs_battle_getCurrentRoomId();
 
     do {
         for (i = 0; i < 48; ++i) {
-            if ((_savePointData[i] & 0xFFFF) == locationId) {
+            if ((_savePointData[i] & 0xFFFF) == roomId) {
                 break;
             }
         }
@@ -147,7 +159,16 @@ static char _availableWarlockSpells[18];
 static u_char D_8010694A;
 static char _0[5] __attribute__((unused));
 
-int _warlockMagicMenu(u_int initCursorMemory)
+/**
+ * Displays and manages Warlock magic menu.
+ *
+ * @param initShortcutInvoked
+ * - 1 = initialize for main menu
+ * - 2 = initialize for shortcut
+ * - 0 = Process menu
+ * @return The selected row, -1 if user cancelled, 0 otherwise
+ */
+int _warlockMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady, levelledSpell };
 
@@ -166,8 +187,8 @@ int _warlockMagicMenu(u_int initCursorMemory)
     int rowCount;
     int i;
 
-    if (initCursorMemory) {
-        shortcutInvoked = (initCursorMemory ^ 2) < 1;
+    if (initShortcutInvoked) {
+        shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
         func_800FA92C(0, 1);
         state = init;
         return 0;
@@ -406,7 +427,16 @@ int _warlockMagicMenu(u_int initCursorMemory)
 static char _availableShamanSpells[6];
 static char _1[2];
 
-int _shamanMagicMenu(u_int initCursorMemory)
+/**
+ * Displays and manages Shaman magic menu.
+ *
+ * @param initShortcutInvoked
+ * - 1 = initialize for main menu
+ * - 2 = initialize for shortcut
+ * - 0 = Process menu
+ * @return The selected row, -1 if user cancelled, 0 otherwise
+ */
+int _shamanMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady };
 
@@ -420,8 +450,8 @@ int _shamanMagicMenu(u_int initCursorMemory)
     int rowCount;
     int skillId;
 
-    if (initCursorMemory != 0) {
-        shortcutInvoked = (initCursorMemory ^ 2) < 1;
+    if (initShortcutInvoked != 0) {
+        shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
         func_800FA92C(1, 1);
         state = init;
         return 0;
@@ -498,7 +528,16 @@ int _shamanMagicMenu(u_int initCursorMemory)
 static char _availableSorcererSpells[18];
 static char _3[6];
 
-int _sorcererMagicMenu(u_int initCursorMemory)
+/**
+ * Displays and manages Sorcerer magic menu.
+ *
+ * @param initShortcutInvoked
+ * - 1 = initialize for main menu
+ * - 2 = initialize for shortcut
+ * - 0 = Process menu
+ * @return The selected row, -1 if user cancelled, 0 otherwise
+ */
+int _sorcererMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfready };
 
@@ -512,8 +551,8 @@ int _sorcererMagicMenu(u_int initCursorMemory)
     int rowCount;
     int skillId;
 
-    if (initCursorMemory != 0) {
-        shortcutInvoked = (initCursorMemory ^ 2) < 1;
+    if (initShortcutInvoked != 0) {
+        shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
         func_800FA92C(2, 1);
         state = init;
         return 0;
@@ -589,7 +628,16 @@ int _sorcererMagicMenu(u_int initCursorMemory)
 
 static char _availableEnchanterSpells[8];
 
-int _enchanterMagicMenu(u_int initCursorMemory)
+/**
+ * Displays and manages Enchanter magic menu.
+ *
+ * @param initShortcutInvoked
+ * - 1 = initialize for main menu
+ * - 2 = initialize for shortcut
+ * - 0 = Process menu
+ * @return The selected row, -1 if user cancelled, 0 otherwise
+ */
+int _enchanterMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfready };
     static int state;
@@ -602,8 +650,8 @@ int _enchanterMagicMenu(u_int initCursorMemory)
     int rowCount;
     int skillId;
 
-    if (initCursorMemory != 0) {
-        shortcutInvoked = (initCursorMemory ^ 2) < 1;
+    if (initShortcutInvoked != 0) {
+        shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
         func_800FA92C(3, 1);
         state = init;
         return 0;

@@ -7,6 +7,17 @@
 #include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
 
+/**
+ * Displays and manages Teleport menu.
+ *
+ * @param init 0 = Process menu, initialize otherwise
+ * @return Packed teleport info
+ *   Bits 0 - 9: Destination room id
+ *   Bits 10 - 14:
+ *   Bits 14 - 19:
+ *   Bits 19 - 32: Teleport cost
+ * Negative values for user cancellation, 0 otherwise
+ */
 static int _teleportMenu(int init)
 {
     enum state { initTeleport, handleInput, returnIfReady };
@@ -131,6 +142,9 @@ static int _teleportMenu(int init)
     return 0;
 }
 
+/**
+ * Draws header when magic menu is invoked from the shortcut screen
+ */
 static void _drawMagicMenuHeader(void)
 {
     vs_battle_menuItem_t* menuItem;
@@ -144,6 +158,12 @@ static void _drawMagicMenuHeader(void)
     func_800FFBC8();
 }
 
+/**
+ * Module entrypoint.
+ *
+ * @param state
+ * @return Returns 1 if menu is exiting for any reason, 0 otherwise
+ */
 int vs_menu0_exec(char* state)
 {
     enum state {
@@ -396,9 +416,11 @@ int vs_menu0_exec(char* state)
         break;
     case handleTeleportSelection:
         i = _teleportMenu(0);
+
         if (i == 0) {
             break;
         }
+
         if (i > 0) {
             D_800F4E98.unk2 = 0xA;
             D_800F4E98.executeAbility.s32 = i - 1;

@@ -1,13 +1,10 @@
 #include "84.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
-#include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/SLUS_010.40/main.h"
-#include "build/assets/MENU/MENU0.PRG/base.h"
+#include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
-#include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include <libetc.h>
 
 static signed char _MPCostTextBuffer[16];
@@ -63,7 +60,7 @@ static char _MPCostDirectTextBuffer[16];
  * @param costDecimal
  * @param disabled
  */
-static void _setMPCostDirect(int costDecimal, int disabled)
+void _setMPCostDirect(int costDecimal, int disabled)
 {
     int cost;
     int i;
@@ -85,23 +82,34 @@ static void _setMPCostDirect(int costDecimal, int disabled)
     vs_mainmenu_setAbilityCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
 }
 
-static u_short _baseStrings[] = {
-#include "build/assets/MENU/MENU0.PRG/base.vsString"
+u_short _magicStrings[] = {
+#include "build/assets/MENU/MENU0.PRG/magic.vsString"
 };
-static u_short _teleportationStrings[] = {
+u_short _teleportationStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
 
-static int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C,
-    0x070C0028, 0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111,
-    0x0C030098, 0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C,
-    0x000400CF, 0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147,
-    0x0904014F, 0x010300A2, 0x150C00A3, 0x030200D0, 0x060600D1, 0x1007008B, 0x010400AB,
-    0x05020055, 0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+/**
+ * Encapsulates teleport target information.
+ * Bits 0-15: location ID
+ *
+ */
+int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
+    0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
+    0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
+    0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
+    0x010300A2, 0x150C00A3, 0x030200D0, 0x060600D1, 0x1007008B, 0x010400AB, 0x05020055,
+    0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-    0x00000000, 0x00000000 };
+    0x00000000 };
 
-static int _getTeleportCost(int targetSavePointId)
+/**
+ * Calculates MP cost of teleporting to a save point
+ *
+ * @param targetSavePointId
+ * @return cost
+ */
+int _getTeleportCost(int targetSavePointId)
 {
     int i;
     int j;
@@ -131,14 +139,15 @@ static int _getTeleportCost(int targetSavePointId)
             4, 4, 4, 4, 4, 0 };
         cost += savePointCosts[j];
     }
+
     return cost;
 }
 
 static char _availableWarlockSpells[18];
 static u_char D_8010694A;
-static char _0[5];
+static char _0[5] __attribute__((unused));
 
-static int _warlockMagicMenu(u_int initCursorMemory)
+int _warlockMagicMenu(u_int initCursorMemory)
 {
     enum state { init, handleInput, returnIfReady, levelledSpell };
 
@@ -177,10 +186,10 @@ static int _warlockMagicMenu(u_int initCursorMemory)
             int skillId = vs_battle_warlockSpellIds[i];
             if (vs_main_skills[skillId].unlocked) {
                 menuStrings[rowCount * 2] =
-                    (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_warlockSpells]];
-                menuStrings[rowCount * 2 + 1] =
-                    (char*)&_baseStrings[_baseStrings[i
-                                                      + VS_base_INDEX_warlockSpellDescs]];
+                    (char*)&_magicStrings[_magicStrings[i
+                                                        + VS_magic_INDEX_warlockSpells]];
+                menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
+                    [_magicStrings[i + VS_magic_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
@@ -397,7 +406,7 @@ static int _warlockMagicMenu(u_int initCursorMemory)
 static char _availableShamanSpells[6];
 static char _1[2];
 
-static int _shamanMagicMenu(u_int initCursorMemory)
+int _shamanMagicMenu(u_int initCursorMemory)
 {
     enum state { init, handleInput, returnIfReady };
 
@@ -432,7 +441,7 @@ static int _shamanMagicMenu(u_int initCursorMemory)
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
             menuStrings[rowCount * 2 + 1] =
-                (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_shamanSpellDescs]];
+                (char*)&_magicStrings[_magicStrings[i + VS_magic_INDEX_shamanSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getSkillFlags(0, skillId) != 0) {
                 rowTypes[rowCount] |= 1;
@@ -486,12 +495,13 @@ static int _shamanMagicMenu(u_int initCursorMemory)
     return 0;
 }
 
-static char _availableSorcereSpells[18];
+static char _availableSorcererSpells[18];
 static char _3[6];
 
-static int _sorcererMagicMenu(u_int initCursorMemory)
+int _sorcererMagicMenu(u_int initCursorMemory)
 {
     enum state { init, handleInput, returnIfready };
+
     static int state;
     static int selectedRow;
     static int shortcutInvoked;
@@ -522,12 +532,13 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
             menuStrings[rowCount * 2 + 1] =
-                (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_sorcererSpellDescs]];
+                (char*)&_magicStrings[_magicStrings[i
+                                                    + VS_magic_INDEX_sorcererSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getSkillFlags(0, skillId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableSorcereSpells[rowCount] = skillId;
+            _availableSorcererSpells[rowCount] = skillId;
             ++rowCount;
         }
 
@@ -556,7 +567,7 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
-                    selectedRow = _availableSorcereSpells[selectedRow - 1];
+                    selectedRow = _availableSorcererSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_800FFBA8();
@@ -564,7 +575,7 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
             }
             state = returnIfready;
         } else {
-            _setMPCost(_availableSorcereSpells[func_801008B0()]);
+            _setMPCost(_availableSorcererSpells[func_801008B0()]);
         }
         break;
     case returnIfready:
@@ -578,7 +589,7 @@ static int _sorcererMagicMenu(u_int initCursorMemory)
 
 static char _availableEnchanterSpells[8];
 
-static int _enchanterMagicMenu(u_int initCursorMemory)
+int _enchanterMagicMenu(u_int initCursorMemory)
 {
     enum state { init, handleInput, returnIfready };
     static int state;
@@ -610,8 +621,8 @@ static int _enchanterMagicMenu(u_int initCursorMemory)
                 continue;
             }
             menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
-            menuStrings[rowCount * 2 + 1] =
-                (char*)&_baseStrings[_baseStrings[i + VS_base_INDEX_enchanterSpellDescs]];
+            menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
+                [_magicStrings[i + VS_magic_INDEX_enchanterSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getSkillFlags(0, skillId) != 0) {
                 rowTypes[rowCount] |= 1;
@@ -665,434 +676,4 @@ static int _enchanterMagicMenu(u_int initCursorMemory)
     return 0;
 }
 
-static u_char _availableSavePoints[48];
-static u_short _teleportCosts[48];
-static int _selectedRow;
-static int _currentMp;
-static char _state;
-
-static int _teleportMenu(int init)
-{
-    enum state { initTeleport, handleInput, returnIfReady };
-
-    char* menuStrings[96];
-    int rowTypes[48];
-    int nearestSavePoint;
-    int i;
-    int rowCount;
-    int savePointState;
-
-    if (init != 0) {
-        func_800FA92C(4, 1);
-        _state = initTeleport;
-        _currentMp = vs_battle_characterState->unk3C->currentMP;
-        return 0;
-    }
-    switch (_state) {
-    case initTeleport:
-        if (vs_mainmenu_ready() == 0) {
-            break;
-        }
-        rowCount = 0;
-        for (i = 0; i < 48; ++i) {
-            savePointState = vs_main_stateFlags.savePointStates[i];
-            if (savePointState == 0) {
-                continue;
-            }
-            menuStrings[2 * rowCount] =
-                (char*)(&_teleportationStrings[_teleportationStrings
-                        [i * 2 + VS_teleportation_INDEX_locations]]);
-            menuStrings[(rowCount * 2) + 1] =
-                (char*)(&_teleportationStrings[_teleportationStrings
-                        [i * 2 + VS_teleportation_INDEX_locations + 1]]);
-            _teleportCosts[rowCount] = _getTeleportCost(i);
-            rowTypes[rowCount] =
-                (savePointState == 2) | (_currentMp < _teleportCosts[rowCount]);
-            if (_teleportCosts[rowCount] == 15) {
-                rowTypes[rowCount] |= 4;
-                nearestSavePoint = rowCount;
-            }
-            if (savePointState == 2) {
-                menuStrings[(rowCount * 2) + 1] =
-                    (char*)(_teleportationStrings
-                            + VS_teleportation_OFFSET_teleportationDisabled);
-            }
-            _availableSavePoints[rowCount] = i;
-            ++rowCount;
-        }
-
-        if (D_800F4EA0 & 0xB7) {
-            for (i = 0; i < 48; ++i) {
-                rowTypes[i] |= 1;
-            }
-        }
-        if ((rowCount < 9) || (nearestSavePoint < 8)) {
-            D_800F4EE8.unk0[0x16] = nearestSavePoint;
-            D_800F4EE8.unk0[0x17] = 0;
-        } else if (nearestSavePoint >= (rowCount - 7)) {
-            D_800F4EE8.unk0[0x16] = nearestSavePoint - (rowCount - 8);
-            D_800F4EE8.unk0[0x17] = rowCount - 8;
-        } else {
-            D_800F4EE8.unk0[0x16] = 3;
-            D_800F4EE8.unk0[0x17] = nearestSavePoint - 3;
-        }
-        savePointState = vs_main_settings.cursorMemory;
-        vs_main_settings.cursorMemory = 1;
-        vs_mainmenu_setMenuRows(rowCount, 0x20B, menuStrings, rowTypes);
-        _state = handleInput;
-        vs_main_settings.cursorMemory = savePointState;
-        break;
-
-    case handleInput:
-        _selectedRow = vs_mainmenu_getSelectedRow() + 1;
-        if (_selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
-            if (_selectedRow == (-1)) {
-                vs_mainMenu_clearMenuExcept(0);
-            } else {
-                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
-            }
-            _state = returnIfReady;
-        } else {
-            i = _teleportCosts[func_801008B0()];
-            _setMPCostDirect(i, _currentMp < i);
-        }
-        break;
-
-    case returnIfReady:
-        if (vs_mainmenu_ready() != 0) {
-            if (_selectedRow > 0) {
-                int v1;
-                int v0;
-                int a0;
-                int a2 = _availableSavePoints[_selectedRow - 1];
-                i = _savePointData[a2] + 1;
-                v1 = i & 0x1FF;
-                init = ~0x3E00;
-                v0 = (rowCount & ~0x1FF) | v1;
-                v1 = (i >> 7) & 0x3E00;
-                v0 &= init;
-                v0 |= v1;
-                a0 = (i >> 0x18) & 0x1F;
-                a0 <<= 0xE;
-                v1 = _teleportCosts[_selectedRow - 1] << 0x13;
-                v0 &= 0x3FFF;
-                return v0 | a0 | v1;
-            }
-            return _selectedRow;
-        }
-        break;
-    }
-    return 0;
-}
-
-static void _drawMagicMenuHeader(void)
-{
-    vs_battle_menuItem_t* menuItem;
-
-    menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
-        (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);
-    menuItem->state = 2;
-    menuItem->targetX = 180;
-    menuItem->selected = 1;
-    func_800FFA88(2);
-    func_800FFBC8();
-}
-
-int vs_menu0_exec(char* state)
-{
-    enum state {
-        none,
-        handleShortcut = 3,
-        initSubmenu,
-        handleSubmenu,
-        initWarlockMenu,
-        handleWarlockSelection,
-        initShamanMenu,
-        handleShamanSelection,
-        initSorcererMenu,
-        handleSorcererSelection,
-        initEnchanterMenu,
-        handleEnchanterSelection,
-        handleTeleportSelection,
-        exitToMainMenu,
-        executeArt,
-        exit
-    };
-    char* menuStrings[10];
-    int rowTypes[5];
-    int selectedRow;
-    int j;
-    int i;
-
-    switch (*state) {
-    case handleShortcut:
-        if (vs_mainmenu_ready() == 0) {
-            break;
-        }
-        func_800FFBC8();
-        i = vs_battle_shortcutInvoked;
-        if (i != 0) {
-            enum shortcutMagicMenu { warlock = 1, shaman, sorcerer, enchanter };
-            vs_battle_setMenuItem(i + 9, 0x140, 0x22, 0x8C, 8,
-                (char*)&_baseStrings[_baseStrings[(i * 3) - 3]])
-                ->selected = 1;
-            switch (i) {
-            case warlock:
-                *state = handleWarlockSelection;
-                _warlockMagicMenu(1);
-                break;
-            case shaman:
-                *state = handleShamanSelection;
-                _shamanMagicMenu(1);
-                break;
-            case sorcerer:
-                *state = handleSorcererSelection;
-                _sorcererMagicMenu(1);
-                break;
-            case enchanter:
-                *state = handleEnchanterSelection;
-                _enchanterMagicMenu(1);
-                break;
-            }
-            break;
-        }
-        // Fallthrough
-    case initSubmenu:
-        for (i = 0; i < 4; ++i) {
-            menuStrings[i * 2] =
-                (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlock]];
-            menuStrings[i * 2 + 1] =
-                (char*)&_baseStrings[_baseStrings[i * 3 + VS_base_INDEX_warlockDesc]];
-            rowTypes[i] = 0;
-            if (vs_battle_spellClassUnlocked(i) == 0) {
-                rowTypes[i] |= 1;
-                menuStrings[i * 2 + 1] =
-                    (char*)&_baseStrings[_baseStrings[i * 3
-                                                      + VS_base_INDEX_warlockLocked]];
-            }
-        }
-
-        if (vs_main_stateFlags.unkB5 != 0) {
-            for (j = 0; j < 48; ++j) {
-                if (vs_main_stateFlags.savePointStates[j] != 0) {
-                    break;
-                }
-            }
-
-            menuStrings[i * 2] =
-                (char*)(_teleportationStrings + VS_teleportation_OFFSET_teleportation);
-
-            menuStrings[i * 2 + 1] =
-                (func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)
-                    ? (char*)(_teleportationStrings
-                              + VS_teleportation_OFFSET_teleportationDisabled)
-                    : (char*)(_teleportationStrings
-                              + VS_teleportation_OFFSET_teleportationDesc);
-
-            if ((func_8008A4FC() != 0) && (vs_main_stateFlags.unkB5 == 2)) {
-                menuStrings[i * 2 + 1] =
-                    (char*)(_teleportationStrings
-                            + VS_teleportation_OFFSET_teleportationDisabled);
-            }
-
-            rowTypes[i++] =
-                ((j == 48) || (vs_main_stateFlags.unkB5 == 2) || (func_8008A4FC() == 0));
-        }
-
-        j = vs_main_settings.cursorMemory;
-        if (*state != handleShortcut) {
-            vs_main_settings.cursorMemory = 1;
-        }
-        vs_mainmenu_setMenuRows(i, 0x105, menuStrings, rowTypes);
-        vs_main_settings.cursorMemory = j;
-        *state = handleSubmenu;
-        break;
-    case handleSubmenu:
-        selectedRow = vs_mainmenu_getSelectedRow();
-        i = selectedRow + 1;
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            enum magicSubMenu { warlock, shaman, sorcerer, enchanter, teleport };
-            switch (selectedRow) {
-            case warlock:
-                *state = handleWarlockSelection;
-                _warlockMagicMenu(1);
-                break;
-            case shaman:
-                *state = handleShamanSelection;
-                _shamanMagicMenu(1);
-                break;
-            case sorcerer:
-                *state = handleSorcererSelection;
-                _sorcererMagicMenu(1);
-                break;
-            case enchanter:
-                *state = handleEnchanterSelection;
-                _enchanterMagicMenu(1);
-                break;
-            case teleport:
-                *state = handleTeleportSelection;
-                _teleportMenu(1);
-                break;
-            }
-        } else {
-            if (i == -2) {
-                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                *state = exit;
-            } else {
-                vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                *state = exitToMainMenu;
-            }
-        }
-        break;
-    case initWarlockMenu:
-        _drawMagicMenuHeader();
-        vs_battle_setMenuItem(
-            0xA, 0x140, 0x22, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_warlock))
-            ->selected = 1;
-        _warlockMagicMenu(2);
-        *state = handleWarlockSelection;
-        break;
-    case handleWarlockSelection:
-        i = _warlockMagicMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 6;
-            *state = executeArt;
-        } else {
-            if (i == -2) {
-                *state = exit;
-            } else {
-                *state = initSubmenu;
-            }
-        }
-        break;
-    case initShamanMenu:
-        _drawMagicMenuHeader();
-        vs_battle_setMenuItem(
-            11, 320, 34, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_shaman))
-            ->selected = 1;
-        _shamanMagicMenu(2);
-        *state = handleShamanSelection;
-        break;
-    case handleShamanSelection:
-        i = _shamanMagicMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 8;
-            *state = executeArt;
-        } else {
-            if (i == -2) {
-                *state = exit;
-            } else {
-                *state = initSubmenu;
-            }
-        }
-        break;
-    case initSorcererMenu:
-        _drawMagicMenuHeader();
-        vs_battle_setMenuItem(
-            12, 320, 34, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_sorcerer))
-            ->selected = 1;
-        _sorcererMagicMenu(2);
-        *state = handleSorcererSelection;
-        break;
-    case handleSorcererSelection:
-        i = _sorcererMagicMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 10;
-            *state = executeArt;
-        } else {
-            if (i == -2) {
-                *state = exit;
-            } else {
-                *state = initSubmenu;
-            }
-        }
-        break;
-    case initEnchanterMenu:
-        _drawMagicMenuHeader();
-        vs_battle_setMenuItem(
-            13, 320, 34, 0x7E, 8, (char*)(_baseStrings + VS_base_OFFSET_enchanter))
-            ->selected = 1;
-        _enchanterMagicMenu(2);
-        *state = handleEnchanterSelection;
-        break;
-    case handleEnchanterSelection:
-        i = _enchanterMagicMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 12;
-            *state = executeArt;
-        } else {
-            if (i == -2) {
-                *state = exit;
-            } else {
-                *state = initSubmenu;
-            }
-        }
-        break;
-    case handleTeleportSelection:
-        i = _teleportMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i > 0) {
-            D_800F4E98.unk2 = 0xA;
-            D_800F4E98.executeAbility.s32 = i - 1;
-            *state = exit;
-        } else {
-            if (i == -2) {
-                *state = exit;
-            } else {
-                *state = initSubmenu;
-            }
-        }
-        break;
-    case exitToMainMenu:
-        func_800FFBA8();
-        func_800FFA88(0);
-        if (vs_mainmenu_ready() != 0) {
-            *state = none;
-            return 1;
-        }
-        break;
-    case executeArt:
-        if (vs_mainmenu_ready() != 0) {
-            D_800F4E98.unk2 = 7;
-            vs_battle_menuState.returnState = vs_battle_menuState.currentState;
-            vs_battle_menuState.currentState = 1;
-            *state = none;
-            return 1;
-        }
-        break;
-    case exit:
-        func_800FFBA8();
-        func_800FFA88(0);
-        if (vs_mainmenu_ready() != 0) {
-            vs_battle_menuState.currentState = 1;
-            *state = none;
-            return 1;
-        }
-        break;
-    }
-    return 0;
-}
+static const int _ = 0 __attribute__((unused));

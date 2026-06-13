@@ -11,7 +11,7 @@
 #include "../BATTLE/BATTLE.PRG/573B8.h"
 #include "../BATTLE/BATTLE.PRG/5BF94.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include "../MENU0.PRG/84.h"
+#include "../MENU0.PRG/15AC.h"
 #include "../MENU1.PRG/30.h"
 #include "../MENU2.PRG/64.h"
 #include "../MENU2.PRG/143C.h"

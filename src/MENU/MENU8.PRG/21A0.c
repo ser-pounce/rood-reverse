@@ -129,7 +129,8 @@ static void _renameMenu(int arg0)
     vs_mainmenu_drawButton(3, (-arg0 + 16), 50, 0);
     vs_mainmenu_drawButton(1, (-arg0 + 16), 66, 0);
     vs_mainmenu_drawButton(0, (-arg0 + 16), 82, 0);
-    var_s1 = (void*)func_800C0214(0x100010, ((-arg0 + 16) & 0xFFFF) | 0x220000);
+    var_s1 =
+        (void*)vs_battle_setSpriteDefault(0x100010, ((-arg0 + 16) & 0xFFFF) | 0x220000);
     var_s1[4] = 0x37FB70B0;
     var_s1 += 6;
     D_80105EEC[D_80105DB2] = 8;
@@ -199,10 +200,11 @@ static void _renameMenu(int arg0)
         j = (D_80105DB1 >> 2);
         vs_battle_renderTextRawColor("1", 0x330098, temp_s3, 0);
         vs_battle_renderTextRawColor("L", 0x330092, temp_s3, 0);
-        func_800C0214(0x100010, (136 - j) | 0x300000)[4] = (lineColor0 << 0x10) | 0x3000;
+        vs_battle_setSpriteDefault(0x100010, (136 - j) | 0x300000)[4] =
+            (lineColor0 << 0x10) | 0x3000;
         vs_battle_renderTextRawColor("1", 0x330124, temp_s3, 0);
         vs_battle_renderTextRawColor("R", 0x33011E, temp_s3, 0);
-        func_800C0214(0x100010, (j + 0x128) | 0x300000)[4] =
+        vs_battle_setSpriteDefault(0x100010, (j + 0x128) | 0x300000)[4] =
             (lineColor0 << 0x10) | 0x3010;
         a1 = D_1F800000[2];
         var_s1 = D_1F800000[0];
@@ -652,7 +654,7 @@ int vs_menu8_execRename(char* state)
     case 0:
         D_80105F2E = vs_battle_stringBuf[1];
         _charTable = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
-        func_800FFBA8();
+        vs_mainMenu_dismissTextBox();
         v1 = vs_char_space;
         i = 19;
         var_v0 = &_stringBuf[i];
@@ -687,7 +689,7 @@ int vs_menu8_execRename(char* state)
         if (func_801049A0(0) != 0) {
             vs_mainMenu_menuItemFlyoutRight(0xA);
             vs_mainMenu_menuItemFlyoutLeft(0);
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             *state = 3;
         }
         break;

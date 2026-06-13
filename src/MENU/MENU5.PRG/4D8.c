@@ -66,11 +66,11 @@ void _drawIcon(int id, int x, int y);
 void func_80102CD8(int arg0)
 {
     if (arg0 != 0) {
-        func_800FFA88(2);
+        vs_mainMenu_setNextMenuAction(menuActionMenu);
         D_801022D6 = 0;
         return;
     }
-    func_800FFA88(0);
+    vs_mainMenu_setNextMenuAction(menuActionNone);
     D_801022D6 = 1;
 }
 
@@ -79,7 +79,8 @@ void func_80102D1C(int arg0, int arg1, int arg2, u_long* arg3)
     if (arg3 == 0) {
         arg3 = D_1F800000[2];
     }
-    func_800C0224(0x80, arg1, 0x100010, arg3)[4] = ((arg0 + 4) * 0x10) | 0x37FD8000;
+    vs_battle_setSpriteDefaultTexPage(0x80, arg1, 0x100010, arg3)[4] =
+        ((arg0 + 4) * 0x10) | 0x37FD8000;
     D_1F800000[0][-4] = (int)(arg2 | 0x64000000);
 }
 
@@ -131,7 +132,7 @@ int func_80102ED8(void)
     if (row < -1) {
         vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
-        func_800FA92C(D_800F4EE8.unk0[0], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[0], 1);
     }
 
     return row;
@@ -246,7 +247,7 @@ int vs_menu5_exec(char* state)
             func_800CB654(0);
             D_800EB9B0 = 0;
             func_8008A4DC(1);
-            func_800FFA88(0);
+            vs_mainMenu_setNextMenuAction(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             D_80108D30 = 10;
             *state = 8;

@@ -50,7 +50,7 @@ typedef struct {
     short initialX;
     short y;
     short targetX;
-    short unk1A;
+    short targetY;
     char text[28];
     int unk38;
     char* subText;

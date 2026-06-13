@@ -723,10 +723,10 @@ void func_80103E24(int arg0, int arg1)
                 temp_v0->icon = i + 0x18;
                 continue;
             } else {
-                var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
+                var_v1 = vs_battle_setSpriteDefault(0x100010, temp_s0 | 0x100000);
             }
         } else {
-            var_v1 = func_800C0224(
+            var_v1 = vs_battle_setSpriteDefaultTexPage(
                 0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1] - 3);
         }
 
@@ -1246,7 +1246,7 @@ int func_80105008(int arg0)
         D_80109A84 = 0;
         func_800FDD78();
         vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
     }
 
     temp_v0 = D_80109958[D_80109A4B](var_s0);
@@ -1258,7 +1258,7 @@ int func_80105008(int arg0)
         D_80109A7C = 1;
         D_80109A81 = 0;
         D_80109A7D = 1;
-        func_800FFA88(2);
+        vs_mainMenu_setNextMenuAction(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
         D_801022D5 = D_801024B8 != 9;
         func_801013F8(1);
@@ -2436,7 +2436,7 @@ loop_1:
 
     switch (D_80109A68) { /* switch 1 */
     case 0:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         /* fallthrough */
     case 1:
         temp_s1 = vs_main_allocHeapR(0x6C00);
@@ -2850,7 +2850,7 @@ loop_1:
                 vs_battle_playMenuSelectSfx();
                 switch (D_80109A60[temp_s3]) {
                 case 1:
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                     func_80106948(var_s4, _getContainerIndicesOffset(var_s4,
                                               vs_menuD_containerData)[D_80109A6C - 1]
                                               - 1);
@@ -2858,7 +2858,7 @@ loop_1:
                     D_80109A68 = 4;
                     break;
                 case 2:
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                     vs_mainMenu_clearMenuExcept(0);
                     D_80109A68 = 10;
                     break;
@@ -2878,7 +2878,7 @@ loop_1:
                     D_80109A68 = 0xB;
                     break;
                 case 5:
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                     _displaySortMenu(var_s4 + 1);
                     D_80109A68 = 0xC;
                     break;
@@ -2887,7 +2887,7 @@ loop_1:
             }
             vs_battle_playMenuLeaveSfx();
             if (temp_s3 == -2) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
                 return -2;
             }
             D_80109A68 = 0;
@@ -2930,7 +2930,7 @@ loop_1:
     case 11:
         temp_s3 = _discardMenu(0);
         if (temp_s3 != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             func_800FA854(0x28);
             vs_mainMenu_clearMenuExcept(0);
             if (temp_s3 == -2) {
@@ -2978,7 +2978,7 @@ loop_1:
     case 15:
         temp_s3 = func_801072B0(0);
         if (temp_s3 != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             if (temp_s3 < 0) {
                 if (temp_s3 == -2) {
                     return -2;
@@ -3137,7 +3137,7 @@ int func_80108C6C(char* arg0)
     switch (*arg0) {
     case 0:
         vs_mainMenu_loadItemNames(1);
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         func_80103D50(0);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkC430.data,
             &vs_menu_inventoryStorage->unkFB0,

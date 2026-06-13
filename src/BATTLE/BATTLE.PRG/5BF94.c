@@ -1599,7 +1599,7 @@ void func_800C97BC(void)
 
 void _renderDigit(int arg0, int xy, int digit, u_long* prim)
 {
-    u_long* temp_v0 = func_800C0224(
+    u_long* temp_v0 = vs_battle_setSpriteDefaultTexPage(
         0x80, xy + ((arg0 & 2) << 0x10), (0x05CA0576 >> (arg0 * 4)) & 0xF000F, prim);
     temp_v0[4] = 0x37F40B20;
     if (arg0 != 2) {
@@ -1678,7 +1678,7 @@ void _drawStatBar(int colorIndex, int current, int max)
             xy += (u_short)-7 | ((u_short)-2 << 0x10);
         }
         vs_battle_renderValue(1, xy, current, NULL);
-        func_800C0224(0x180, D_800EBBEC[colorIndex] - D_800EB9B0,
+        vs_battle_setSpriteDefaultTexPage(0x180, D_800EBBEC[colorIndex] - D_800EB9B0,
             D_800EBBFC[colorIndex] | 0x90000, prim)[4] =
             D_800EBC00[colorIndex] | 0x37F60000;
     }
@@ -1703,8 +1703,8 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
             var_s1 = 0x10 - arg1;
         }
 
-        temp_a0 =
-            func_800C0224(0x80, arg2 | 0x80000, var_s1 | 0x100000, D_1F800000[1] - 1);
+        temp_a0 = vs_battle_setSpriteDefaultTexPage(
+            0x80, arg2 | 0x80000, var_s1 | 0x100000, D_1F800000[1] - 1);
 
         temp_a0[4] = (var_s2 | (((0x0F0F906A >> arg0) & 1) ? 0x37F90000 : 0x37F80000));
 
@@ -1724,8 +1724,8 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
                 var_s2 = v0 - var_s1;
             }
 
-            func_800C0224(0x80, arg2 | 0x80000, var_s1 | 0x80000, D_1F800000[1] - 1)[4] =
-                var_s2 | 0x37FF0000;
+            vs_battle_setSpriteDefaultTexPage(0x80, arg2 | 0x80000, var_s1 | 0x80000,
+                D_1F800000[1] - 1)[4] = var_s2 | 0x37FF0000;
         }
     }
 }
@@ -1815,7 +1815,8 @@ void func_800C9F88(void) { D_800EBC78 = 1; }
 
 void func_800C9F98(int arg0, int arg1)
 {
-    u_long* temp_v0 = func_800C0224(arg1, arg0, 0x60006, D_1F800000[2]);
+    u_long* temp_v0 =
+        vs_battle_setSpriteDefaultTexPage(arg1, arg0, 0x60006, D_1F800000[2]);
     temp_v0[1] = 0xE1000017;
     temp_v0[4] = 0x373D80C0;
 }
@@ -1845,7 +1846,7 @@ void func_800C9FE8(void)
                 func_800C9F98(
                     ((temp_s3 + D_800EBC98[i]) & 0xFFFF) | (D_800EBC98[i + 4] << 0x10),
                     temp_v0);
-                temp_v0_2 = func_800C0224(temp_v0,
+                temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     ((temp_s3 + D_800EBCA0[i]) & 0xFFFF) | (D_800EBCA0[i + 4] << 0x10),
                     D_800EBCA8[i], D_1F800000[2]);
                 temp_v0_2[1] = 0xE1000017;
@@ -1853,8 +1854,8 @@ void func_800C9FE8(void)
             }
         }
 
-        func_800C0224(0x180, ((temp_s3 + 0x48) & 0xFFFF) | 0x660000, 0x1E001E,
-            D_1F800000[2])[4] = 0x37FBA0B8;
+        vs_battle_setSpriteDefaultTexPage(0x180, ((temp_s3 + 0x48) & 0xFFFF) | 0x660000,
+            0x1E001E, D_1F800000[2])[4] = 0x37FBA0B8;
         temp_s3 = (0xA0 - temp_s3);
 
         for (i = 0; i < 4; ++i) {
@@ -1863,15 +1864,15 @@ void func_800C9FE8(void)
                 func_800C9F98(
                     ((temp_s3 + D_800EBCC0[i]) & 0xFFFF) | (D_800EBCC0[i + 4] << 0x10),
                     temp_v0);
-                temp_v0_2 = func_800C0224(temp_v0,
+                temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     (((temp_s3 + D_800EBCC8[i]) - 2) & 0xFFFF)
                         | (D_800EBCC8[i + 4] << 0x10),
                     D_800EBCD0[i], D_1F800000[2]);
                 temp_v0_2[1] = 0xE1000017;
                 temp_v0_2[4] = D_800EBCE0[i] | 0x373D0000;
             }
-            func_800C0224(0x80, temp_s3 + D_800EBC88[3 - i], 0x100010, D_1F800000[2])[4] =
-                (((3 - i) * 0x10) | 0x37FB8000);
+            vs_battle_setSpriteDefaultTexPage(0x80, temp_s3 + D_800EBC88[3 - i], 0x100010,
+                D_1F800000[2])[4] = (((3 - i) * 0x10) | 0x37FB8000);
         }
     }
     D_800EBC78 = 0;
@@ -2463,8 +2464,9 @@ void func_800CCD00(int arg0, u_long* arg1)
 
 int vs_battle_drawCursor(int animStep, int position)
 {
-    func_800C0224(D_800EC270[animStep], (((position * 0x10) + 0xA) << 0x10) | 0xB4,
-        0x100010, D_1F800000[2])[4] = 0x37F83020;
+    vs_battle_setSpriteDefaultTexPage(D_800EC270[animStep],
+        (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, D_1F800000[2])[4] =
+        0x37F83020;
     return (animStep + 1) & 0xF;
 }
 
@@ -2553,7 +2555,8 @@ int vs_battle_dismissTextBox(int id)
 void func_800CD0FC(int arg0, u_int arg1)
 {
     if (arg1 < 3) {
-        func_800C0214(D_800EC2CC[arg1], (arg0 << 0x10) | 0xA)[4] = D_800EC2D8[arg1];
+        vs_battle_setSpriteDefault(D_800EC2CC[arg1], (arg0 << 0x10) | 0xA)[4] =
+            D_800EC2D8[arg1];
     }
 }
 

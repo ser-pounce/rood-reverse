@@ -407,7 +407,7 @@ static int _chainAbilityMenu(int arg0)
     int skill;
 
     if (arg0 != 0) {
-        func_800FA92C(0, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(0, 1);
         state = 0;
         return 0;
     }
@@ -452,7 +452,7 @@ static int _defenseAbilityMenu(int arg0)
     int skill;
 
     if (arg0 != 0) {
-        func_800FA92C(1, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(1, 1);
         state = 0;
         return 0;
     }
@@ -554,7 +554,7 @@ int vs_menu2_exec(char* state)
             break;
         }
 
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
 
         if (vs_battle_shortcutInvoked != 0) {
             int type = vs_battle_shortcutInvoked - 7;
@@ -647,16 +647,16 @@ int vs_menu2_exec(char* state)
         }
         break;
     case exitToMainMenu:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
         }
         break;
     case exitToBattle:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 3;
             *state = none;

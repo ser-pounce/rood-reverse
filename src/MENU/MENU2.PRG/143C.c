@@ -227,7 +227,7 @@ static int _battleAbilityUnlocked(int arg0)
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 state = reinit;
             } else {
-                func_800FA92C(i - 1, 0);
+                vs_mainMenu_flyoutMenuRightAndHoistSelection(i - 1, 0);
                 state += i;
             }
         }
@@ -343,7 +343,7 @@ int vs_menu2_skillUnlock(char* state)
 
     switch (*state) {
     case init:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         // Fallthrough
     case breakArtInit:
         *state = abilityInit;

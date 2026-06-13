@@ -321,10 +321,10 @@ int D_801022D8 = 0;
 char D_801022DC = 0;
 static short D_801022DE = -4;
 static short D_801022E0 = 128;
-static char D_801022E2 = 0;
-static char D_801022E3 = 0;
+static char _menuActionCurrent = 0;
+static char _menuActionNext = 0;
 
-void func_800FFA88(int arg0) { D_801022E3 = arg0; }
+void vs_mainMenu_setNextMenuAction(int action) { _menuActionNext = action; }
 
 void func_800FFA94(void)
 {
@@ -339,11 +339,11 @@ void func_800FFA94(void)
     u_long* temp_v0;
     int temp_s0;
 
-    temp_s0 = D_801022E2;
+    temp_s0 = _menuActionCurrent;
     var_a1 = D_801022E4;
-    if (temp_s0 != D_801022E3) {
+    if (temp_s0 != _menuActionNext) {
         if (var_a1 == 0) {
-            D_801022E2 = D_801022E3;
+            _menuActionCurrent = _menuActionNext;
             return;
         }
         var_a1 -= 2;
@@ -375,15 +375,15 @@ void vs_mainMenu_deactivateMenuItem(int arg0)
     item->state = 0;
 }
 
-void func_800FFBA8(void) { vs_battle_dismissTextBox(7); }
+void vs_mainMenu_dismissTextBox(void) { vs_battle_dismissTextBox(7); }
 
-void func_800FFBC8(void)
+void vs_mainMenu_initTextBox(void)
 {
     if (vs_main_settings.information != 0) {
         func_800C8E04(2);
-        return;
+    } else {
+        vs_mainMenu_dismissTextBox();
     }
-    func_800FFBA8();
 }
 
 void vs_mainmenu_setInformationMessage(char* arg0)
@@ -403,8 +403,8 @@ void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
     if (data == NULL) {
         data = D_1F800000[2];
     }
-    func_800C0224(0x80, (x & 0xFFFF) | (y << 0x10), 0x100010, data)[4] =
-        ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
+    vs_battle_setSpriteDefaultTexPage(0x80, (x & 0xFFFF) | (y << 0x10), 0x100010,
+        data)[4] = ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
 }
 
 int func_800FFCDC(u_int arg0, int arg1)
@@ -414,7 +414,8 @@ int func_800FFCDC(u_int arg0, int arg1)
     u_long* temp_a1;
 
     temp_s0 = arg0 >> (D_801022D5 * 8);
-    temp_a1 = func_800C0224(D_800EC270[temp_s0], arg1, 0x100010, D_1F800000[2]);
+    temp_a1 = vs_battle_setSpriteDefaultTexPage(
+        D_800EC270[temp_s0], arg1, 0x100010, D_1F800000[2]);
 
     if (D_801022D5 == 0) {
         var_a0 = 0x37F83020;
@@ -481,7 +482,7 @@ void func_800FFE98(int arg0, int arg1, int arg2, u_long* arg3)
 
     do {
         ++i;
-        func_800C0224((i * 8) | 0x100, arg1, 0x10010, arg3)[4] = arg2;
+        vs_battle_setSpriteDefaultTexPage((i * 8) | 0x100, arg1, 0x10010, arg3)[4] = arg2;
         arg1 += arg0 << 0x10;
         arg2 += arg0 << 8;
     } while (i < 16);
@@ -492,7 +493,7 @@ void func_800FFF38(int arg0, int arg1)
     u_long* temp_a1;
     int new_var2;
 
-    temp_a1 = func_800C0214(0x70007, arg1);
+    temp_a1 = vs_battle_setSpriteDefault(0x70007, arg1);
     new_var2 = (((arg0 / 3) * 8) + 0xD8) | ((((arg0 % 3) * 8) + 0xC8) << 8);
     if (arg0 == 2) {
         temp_a1[4] = new_var2 | 0x37FA0000;
@@ -503,7 +504,7 @@ void func_800FFF38(int arg0, int arg1)
 
 void func_800FFFBC(int arg0, int arg1)
 {
-    func_800C0214(0x100010, arg1)[4] = (0x60 - (arg0 * 0x10)) | 0x37FD8000;
+    vs_battle_setSpriteDefault(0x100010, arg1)[4] = (0x60 - (arg0 * 0x10)) | 0x37FD8000;
 }
 
 void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
@@ -527,7 +528,7 @@ void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
     arg0 = (arg0 - 1) & 0xFF;
 
     if (var_a0 == 0) {
-        temp_v0 = func_800C0224(
+        temp_v0 = vs_battle_setSpriteDefaultTexPage(
             0x40 << v1, (arg1 & 0xFFFF) | (arg2 << 0x10), 0x100010, D_1F800000[2] + 1);
         temp_v0[4] = D_8010237C[arg0] | 0x37FE0000;
         if (arg0 >= 0x17) {
@@ -679,6 +680,17 @@ static char D_801023DE = 0;
 static char D_801023DF = 0;
 static u_short D_801023E0 = 0;
 
+/**
+ * Initialises multiple menu rows
+ *
+ * @param rowCount
+ * @param arg1 Packed values
+ * - Bits 0-3:
+ * - Bits 4-7:
+ * - Bits 8-12:
+ * @param strings Pairs of strings for the menu and info text box
+ * @param rowTypes Packed flags to set row styles
+ */
 void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTypes)
 {
     int temp_v1_2;
@@ -1101,13 +1113,13 @@ void func_801013F8(int arg0)
     } else {
         i = 0x100010;
     }
-    func_800C0214(0x100010, i - temp_s5)[4] = var_s4 | 0x3000;
+    vs_battle_setSpriteDefault(0x100010, i - temp_s5)[4] = var_s4 | 0x3000;
 
     i = 0x1100A2;
     if (arg0 != 0) {
         i = 0x60124;
     }
-    func_800C0214(0x100010, i + temp_s5)[4] = var_s4 | 0x3010;
+    vs_battle_setSpriteDefault(0x100010, i + temp_s5)[4] = var_s4 | 0x3010;
 }
 
 void func_8010154C(vs_battle_menuItem_t* arg0)
@@ -1163,8 +1175,8 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         }
         if (i == 0x28) {
             var_s2 = temp_s7 - 2;
-            func_800C0224(0x80, ((arg0->y + var_s3) << 0x10) | 0x7E, 0x100010,
-                var_s2)[4] = ((temp_fp * 0x10) | 0x37F93000);
+            vs_battle_setSpriteDefaultTexPage(0x80, ((arg0->y + var_s3) << 0x10) | 0x7E,
+                0x100010, var_s2)[4] = ((temp_fp * 0x10) | 0x37F93000);
         }
     } else {
         for (i = 0; i < 32; ++i) {
@@ -1173,7 +1185,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
             }
         }
         if (i == 0x20) {
-            func_800C0224(0x80,
+            vs_battle_setSpriteDefaultTexPage(0x80,
                 ((arg0->initialX - 0xE) & 0xFFFF) | ((arg0->y + var_s3) << 0x10),
                 0x100010, temp_s7 - 2)[4] = (int)((temp_fp * 0x10) | 0x37F93000);
         }
@@ -1338,7 +1350,7 @@ void func_80101970(void)
                 }
             } else {
                 origin = menuItem->y;
-                target = menuItem->unk1A;
+                target = menuItem->targetY;
                 if (origin != target) {
                     for (j = 1; j < 16; ++j) {
                         if ((target + vs_battle_rowAnimationSteps[j]) >= origin) {

@@ -1,0 +1,193 @@
+
+Discarded input sections
+
+ .reginfo       0x00000000       0x18 build/src/MENU/MENU0.PRG/84.o
+ .MIPS.abiflags
+                0x00000000       0x18 build/src/MENU/MENU0.PRG/84.o
+ .pdr           0x00000000       0xe0 build/src/MENU/MENU0.PRG/84.o
+ .gnu.attributes
+                0x00000000       0x10 build/src/MENU/MENU0.PRG/84.o
+ .reginfo       0x00000000       0x18 build/src/MENU/MENU0.PRG/15AC.o
+ .MIPS.abiflags
+                0x00000000       0x18 build/src/MENU/MENU0.PRG/15AC.o
+ .pdr           0x00000000       0x60 build/src/MENU/MENU0.PRG/15AC.o
+ .gnu.attributes
+                0x00000000       0x10 build/src/MENU/MENU0.PRG/15AC.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD build/src/MENU/MENU0.PRG/84.o
+LOAD build/src/MENU/MENU0.PRG/15AC.o
+                0x00004211                        __romPos = 0x0
+                0x80033674                        _gp = 0x80033674
+                0x00000000                        _0_ROM_START = __romPos
+                0x80102800                        _0_VRAM = ADDR (._0)
+
+._0             0x80102800     0x4211 load address 0x00000000
+ FILL mask 0x00000000
+                0x80102800                        _0_RODATA_START = .
+ build/src/MENU/MENU0.PRG/84.o(.rodata)
+ .rodata        0x80102800       0x30 build/src/MENU/MENU0.PRG/84.o
+ build/src/MENU/MENU0.PRG/15AC.o(.rodata)
+ .rodata        0x80102830       0x54 build/src/MENU/MENU0.PRG/15AC.o
+                0x80102884                        . = ALIGN (., 0x1)
+                0x80102884                        _0_RODATA_END = .
+                0x00000084                        _0_RODATA_SIZE = ABSOLUTE ((_0_RODATA_END - _0_RODATA_START))
+                0x80102884                        _0_TEXT_START = .
+ build/src/MENU/MENU0.PRG/84.o(.text)
+ .text          0x80102884     0x15ac build/src/MENU/MENU0.PRG/84.o
+                0x801029b8                _setMPCostDirect
+                0x80102a68                _getTeleportCost
+                0x80102b08                _warlockMagicMenu
+                0x80103464                _shamanMagicMenu
+                0x801037a8                _sorcererMagicMenu
+                0x80103aec                _enchanterMagicMenu
+ build/src/MENU/MENU0.PRG/15AC.o(.text)
+ .text          0x80103e30      0xc28 build/src/MENU/MENU0.PRG/15AC.o
+                0x801042c8                vs_menu0_exec
+                0x80104a58                        . = ALIGN (., 0x1)
+                0x80104a58                        _0_TEXT_END = .
+                0x000021d4                        _0_TEXT_SIZE = ABSOLUTE ((_0_TEXT_END - _0_TEXT_START))
+                0x80104a58                        _0_DATA_START = .
+ build/src/MENU/MENU0.PRG/84.o(.data)
+ .data          0x80104a58     0x1e90 build/src/MENU/MENU0.PRG/84.o
+                0x80104a58                _magicStrings
+                0x80105d94                _teleportationStrings
+                0x801067dc                _savePointData
+ build/src/MENU/MENU0.PRG/15AC.o(.data)
+ .data          0x801068e8        0x0 build/src/MENU/MENU0.PRG/15AC.o
+                0x801068e8                        . = ALIGN (., 0x1)
+                0x801068e8                        _0_DATA_END = .
+                0x00001e90                        _0_DATA_SIZE = ABSOLUTE ((_0_DATA_END - _0_DATA_START))
+                0x801068e8                        _0_BSS_START = .
+ build/src/MENU/MENU0.PRG/84.o(.bss)
+ .bss           0x801068e8       0x90 build/src/MENU/MENU0.PRG/84.o
+                0x801068e8                state.11
+                0x801068ec                selectedRow.12
+                0x801068f0                shortcutInvoked.13
+                0x801068f4                state.16
+                0x801068f8                selectedRow.17
+                0x801068fc                shortcutInvoked.18
+                0x80106900                state.21
+                0x80106904                selectedRow.22
+                0x80106908                shortcutInvoked.23
+                0x8010690c                state.26
+                0x80106910                selectedRow.27
+                0x80106914                shortcutInvoked.28
+                0x80106918                _MPCostTextBuffer
+                0x80106928                _MPCostDirectTextBuffer
+                0x80106938                _availableWarlockSpells
+                0x8010694b                _0
+                0x80106950                _availableShamanSpells
+                0x80106956                _1
+                0x80106958                _availableSorcererSpells
+                0x8010696a                _3
+                0x80106970                _availableEnchanterSpells
+ build/src/MENU/MENU0.PRG/15AC.o(.bss)
+ .bss           0x80106978       0x99 build/src/MENU/MENU0.PRG/15AC.o
+                0x80106978                availableSavePoints.2
+                0x801069a8                teleportCosts.3
+                0x80106a08                selectedRow.4
+                0x80106a0c                currentMp.5
+                0x80106a10                state.6
+                0x80106a11                        . = ALIGN (., 0x1)
+                0x80106a11                        _0_BSS_END = .
+                0x00000129                        _0_BSS_SIZE = ABSOLUTE ((_0_BSS_END - _0_BSS_START))
+                0x00004211                        __romPos = (__romPos + SIZEOF (._0))
+                0x00004211                        __romPos = ALIGN (__romPos, 0x1)
+                0x80106a11                        . = ALIGN (., 0x1)
+                0x00004211                        _0_ROM_END = __romPos
+                0x80106a11                        _0_VRAM_END = .
+
+/DISCARD/
+ *(*)
+                0x8007c874                        vs_battle_getCurrentRoomId = 0x8007c874
+                0x8008a4fc                        func_8008A4FC = 0x8008a4fc
+                0x8008a5d0                        vs_battle_getSkillFlags = 0x8008a5d0
+                0x800c0224                        vs_battle_setSpriteDefaultTexPage = 0x800c0224
+                0x800c02e0                        vs_battle_playInvalidSfx = 0x800c02e0
+                0x800c02e8                        vs_battle_playMenuLeaveSfx = 0x800c02e8
+                0x800c02f0                        vs_battle_playMenuSelectSfx = 0x800c02f0
+                0x800c02f8                        vs_battle_playMenuChangeSfx = 0x800c02f8
+                0x800c6828                        vs_battle_renderTextRaw = 0x800c6828
+                0x800c8e5c                        vs_battle_setMenuItem = 0x800c8e5c
+                0x800caeac                        vs_battle_spellClassUnlocked = 0x800caeac
+                0x800ccc54                        vs_battle_toBCD = 0x800ccc54
+                0x800fa8a0                        vs_mainMenu_menuItemFlyoutRight = 0x800fa8a0
+                0x800fa8e0                        vs_mainMenu_clearMenuExcept = 0x800fa8e0
+                0x800fa92c                        vs_mainMenu_flyoutMenuRightAndHoistSelection = 0x800fa92c
+                0x800fa9d0                        vs_mainmenu_ready = 0x800fa9d0
+                0x800ffa88                        vs_mainMenu_setNextMenuAction = 0x800ffa88
+                0x800ffba8                        vs_mainMenu_dismissTextBox = 0x800ffba8
+                0x800ffbc8                        vs_mainMenu_initTextBox = 0x800ffbc8
+                0x80100100                        vs_mainmenu_setAbilityCost = 0x80100100
+                0x801005e0                        vs_mainmenu_setMenuRows = 0x801005e0
+                0x801008b0                        func_801008B0 = 0x801008b0
+                0x801008c8                        vs_mainmenu_getSelectedRow = 0x801008c8
+                0x8004b9dc                        vs_main_skills = 0x8004b9dc
+                0x8004b9f8                        D_8004B9F8 = 0x8004b9f8
+                0x8005dfdc                        vs_main_buttonRepeat = 0x8005dfdc
+                0x8005e1d0                        vs_main_buttonsPressed = 0x8005e1d0
+                0x80060020                        vs_main_settings = 0x80060020
+                0x80061598                        vs_main_stateFlags = 0x80061598
+                0x800eb9dc                        vs_battle_menuStrings = 0x800eb9dc
+                0x800ebd70                        vs_battle_warlockSpellIds = 0x800ebd70
+                0x800ebd84                        vs_battle_shamanSpellIds = 0x800ebd84
+                0x800ebd8c                        vs_battle_sorcererSpellIds = 0x800ebd8c
+                0x800ebda0                        vs_battle_enchanterSpellIds = 0x800ebda0
+                0x800ec270                        D_800EC270 = 0x800ec270
+                0x800f19fc                        vs_battle_characterState = 0x800f19fc
+                0x800f4e6a                        vs_battle_shortcutInvoked = 0x800f4e6a
+                0x800f4e98                        D_800F4E98 = 0x800f4e98
+                0x800f4ea0                        D_800F4EA0 = 0x800f4ea0
+                0x800f4ee8                        D_800F4EE8 = 0x800f4ee8
+                0x800f51c0                        vs_battle_menuState = 0x800f51c0
+                0x800f51c2                        vs_battle_executeAbilityType = 0x800f51c2
+                0x801022d4                        vs_mainMenu_isLevelledSpell = 0x801022d4
+                0x80102800                        D_80102800 = 0x80102800
+                0x80102818                        jtbl_80102818 = 0x80102818
+                0x80102830                        jtbl_80102830 = 0x80102830
+                0x80102870                        jtbl_80102870 = 0x80102870
+                0x80104a58                        D_80104A58 = 0x80104a58
+                0x80104af8                        D_80104AF8 = 0x80104af8
+                0x80104b64                        D_80104B64 = 0x80104b64
+                0x80104bec                        D_80104BEC = 0x80104bec
+                0x80104c8e                        D_80104C8E = 0x80104c8e
+                0x80105d94                        D_80105D94 = 0x80105d94
+                0x80105e5a                        D_80105E5A = 0x80105e5a
+                0x80105e68                        D_80105E68 = 0x80105e68
+                0x80105eb4                        D_80105EB4 = 0x80105eb4
+                0x801067dc                        D_801067DC = 0x801067dc
+                0x8010689c                        D_8010689C = 0x8010689c
+                0x801068cc                        D_801068CC = 0x801068cc
+                0x801068d4                        D_801068D4 = 0x801068d4
+                0x801068e8                        D_801068E8 = 0x801068e8
+                0x801068ec                        D_801068EC = 0x801068ec
+                0x801068f0                        D_801068F0 = 0x801068f0
+                0x801068f4                        D_801068F4 = 0x801068f4
+                0x801068f8                        D_801068F8 = 0x801068f8
+                0x801068fc                        D_801068FC = 0x801068fc
+                0x80106900                        D_80106900 = 0x80106900
+                0x80106904                        D_80106904 = 0x80106904
+                0x80106908                        D_80106908 = 0x80106908
+                0x8010690c                        D_8010690C = 0x8010690c
+                0x80106910                        D_80106910 = 0x80106910
+                0x80106914                        D_80106914 = 0x80106914
+                0x80106918                        D_80106918 = 0x80106918
+                0x80106928                        D_80106928 = 0x80106928
+                0x80106938                        D_80106938 = 0x80106938
+                0x8010694a                        D_8010694A = 0x8010694a
+                0x80106950                        D_80106950 = 0x80106950
+                0x80106958                        D_80106958 = 0x80106958
+                0x80106970                        D_80106970 = 0x80106970
+                0x80106978                        D_80106978 = 0x80106978
+                0x801069a8                        D_801069A8 = 0x801069a8
+                0x80106a08                        D_80106A08 = 0x80106a08
+                0x80106a0c                        D_80106A0C = 0x80106a0c
+                0x80106a10                        D_80106A10 = 0x80106a10
+OUTPUT(build/data/MENU/MENU0.PRG.elf elf32-tradlittlemips)

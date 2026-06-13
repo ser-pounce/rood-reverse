@@ -2,6 +2,16 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
+enum vs_mainMenu_menuACctions {
+    menuActionNone,
+    menuActionCommand,
+    menuActionMenu,
+    menuActionNum,
+    menuActionWarning,
+    menuActionHelp,
+    menuActionInfo
+};
+
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
 void func_800FDEBC(void);
@@ -19,14 +29,14 @@ int func_800FF348(void);
 int vs_mainMenu_getSelectedItemAction(void);
 void vs_mainMenu_processItemActionMenu(void);
 void vs_mainMenu_printInformation(int, int);
-void func_800FFA88(int);
+void vs_mainMenu_setNextMenuAction(int);
 void func_800FFA94(void);
 void func_800FFB68(int);
 void vs_mainMenu_deactivateMenuItem(int);
 int vs_mainMenu_findItem(int category, int id);
-void func_800FFBA8(void);
+void vs_mainMenu_dismissTextBox(void);
 void vs_mainMenu_rebuildInventory(int);
-void func_800FFBC8(void);
+void vs_mainMenu_initTextBox(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(u_int, int);
 int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);

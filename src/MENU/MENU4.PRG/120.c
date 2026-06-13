@@ -647,8 +647,9 @@ static void func_80103AC8(void)
     }
 
     for (i = 0; i < 3; ++i) {
-        func_800C0224(0x180, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
-            D_800EBBFC[i] | 0x90000, temp_s4)[4] = D_800EBC00[i] | 0x37F60000;
+        vs_battle_setSpriteDefaultTexPage(0x180,
+            D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13), D_800EBBFC[i] | 0x90000,
+            temp_s4)[4] = D_800EBC00[i] | 0x37F60000;
     }
     temp_s2 += 0xFFF80000;
     i = actor->unk956_1 * 256;
@@ -738,11 +739,12 @@ static void func_80103FEC(vs_battle_actor2* arg0, int arg1)
             temp_s2 = temp_a0 - (arg1 - new_var);
             temp_s1 = ((temp_v1 * new_var) + 144) << new_var;
             if (i >= new_var) {
-                func_800C0224(128, ((temp_s2 + 8) & 0xFFFF) | temp_s1, 0x80008,
-                    D_1F800000[1] - 2)[4] = ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
+                vs_battle_setSpriteDefaultTexPage(128, ((temp_s2 + 8) & 0xFFFF) | temp_s1,
+                    0x80008, D_1F800000[1] - 2)[4] =
+                    ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
             }
             // Nasty match hack
-            arg0 = (vs_battle_actor2*)func_800C0224(
+            arg0 = (vs_battle_actor2*)vs_battle_setSpriteDefaultTexPage(
                 0x80, (temp_s2 & 0xFFFF) | temp_s1, 0x100010, D_1F800000[1] - 2);
 
             ((u_long*)arg0)[4] =
@@ -1222,7 +1224,7 @@ static int _equipmentDetailScreen(int row)
         D_801080B8 = 0;
         func_800CB654(1);
         _setActiveRow(_selectedEquipmentRow);
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         _equipmentDetailSelectedElement = 9;
         _equipmentDetailAnimStep = 0;
         _equipmentDetailState = init;
@@ -1503,7 +1505,7 @@ static int _equipmentDetailScreen(int row)
         if (vs_main_buttonsPressed.all & PADRdown) {
             _initEquipmentScreen(_selectedActor - 1);
             _exitEquipmentDetail(1);
-            func_800FFA88(2);
+            vs_mainMenu_setNextMenuAction(menuActionMenu);
             return _selectedEquipmentRow + 1;
         }
         D_801023E3 = 1;
@@ -1899,7 +1901,7 @@ int vs_menu4_exec(char* state)
         D_1F800000[23] = 0;
         _xPos = 0xB00;
         _yPos = 0;
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         _selectedElement = 0;
         D_80102544 = 0;
         _printSelectedLocationCondition();
@@ -2244,7 +2246,7 @@ int vs_menu4_exec(char* state)
         *(D_80108198_t*)&D_1F800000[5] = D_80108198;
         *var_a0 = D_801081B8;
         func_8008A4DC(1);
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800F9E0C();
         func_80100414(-2, 128);
@@ -2257,7 +2259,7 @@ int vs_menu4_exec(char* state)
         _drawHitLocationStatuses(0);
         func_80103AC8();
         func_800FFB68(0);
-        func_800FFBA8();
+        vs_mainMenu_dismissTextBox();
         if (animWait <= 0) {
             if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 *state = none;
@@ -2270,7 +2272,7 @@ int vs_menu4_exec(char* state)
         _drawHitLocationStatuses(0);
         func_80103AC8();
         func_800FFB68(0);
-        func_800FFBA8();
+        vs_mainMenu_dismissTextBox();
         if (animWait <= 0) {
             if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
                 vs_battle_menuState.currentState = 5;

@@ -254,7 +254,7 @@ void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id)
     }
 }
 
-void func_800FA92C(int arg0, int arg1)
+void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1)
 {
     vs_battle_menuItem_t* menuItem;
     int i;
@@ -266,7 +266,7 @@ void func_800FA92C(int arg0, int arg1)
     menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
     menuItem->state = 4;
     menuItem->targetX = 180;
-    menuItem->unk1A = (arg1 * 16) + 18;
+    menuItem->targetY = (arg1 * 16) + 18;
     if (menuItem->unk2 == 0) {
         menuItem->unk2 = 1;
     }
@@ -384,7 +384,7 @@ void vs_mainMenu_exec(int arg0)
                     || (selectedMenu == 9)) {
                     func_800FFB68(1);
                 }
-                func_800FFA88(2);
+                vs_mainMenu_setNextMenuAction(menuActionMenu);
                 vs_mainMenu_clearMenuExcept(selectedMenu - 1);
                 menuItem->state = 2;
                 menuItem->targetX = 0xB4;
@@ -419,14 +419,14 @@ void vs_mainMenu_exec(int arg0)
             }
         }
     } else {
-        func_800FFA88(1);
+        vs_mainMenu_setNextMenuAction(menuActionCommand);
         state = func_800C930C(0);
         if (state != 0) {
             if (state > 0) {
                 state |= 0x40;
             } else {
                 state = 0x1F;
-                func_800FFA88(0);
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             menuState->currentState = state;
         }
@@ -455,7 +455,7 @@ void func_800FAEBC(int arg0)
     vs_battle_menuItem_t* temp_v0;
 
     if (arg0 != 0) {
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         if (arg0 & 1) {
             D_80102456 = 1;
         }
@@ -537,7 +537,7 @@ void func_800FAEBC(int arg0)
                 } else {
                     vs_battle_playMenuLeaveSfx();
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                    func_800FFBA8();
+                    vs_mainMenu_dismissTextBox();
                     D_80102450 = -1;
                     D_80102454 = 4;
                 }
@@ -546,7 +546,7 @@ void func_800FAEBC(int arg0)
             D_80102450 = vs_mainmenu_getSelectedRow() + 1;
             if (D_80102450 != 0) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
                 if (D_80102450 > 0) {
                     D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
                     D_800F4E98.executeAbility.s16[0] = D_80102410[D_80102450 - 1];

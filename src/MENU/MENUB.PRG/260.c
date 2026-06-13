@@ -80,11 +80,11 @@ static void func_80102B14(int arg0, int arg1)
                 menuItem->icon = i + 24;
                 continue;
             } else {
-                var_v1 = func_800C0214(0x100010, temp_s0 | 0x100000);
+                var_v1 = vs_battle_setSpriteDefault(0x100010, temp_s0 | 0x100000);
             }
         } else {
-            var_v1 =
-                func_800C0224(0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1]);
+            var_v1 = vs_battle_setSpriteDefaultTexPage(
+                0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1]);
         }
         var_v1[4] = (0x78 + i * 0x10) | 0x8000 | (i == temp_s4 ? 0x37FD0000 : 0x37FE0000);
     }
@@ -603,7 +603,7 @@ static int _invokeDetailsPageHandler(int selection)
         _exitToBattle = 0;
         func_800FDD78();
         vs_battle_getMenuItem(31)->unkE = selectedMenuItem & 0xFF;
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
     }
 
     handlerResult = detailsPageHandlers[currentDetailsPageCategory](selectedMenuItem);
@@ -616,7 +616,7 @@ static int _invokeDetailsPageHandler(int selection)
         D_8010A6BF = 0;
         _statusButtonFlyin = 1;
         D_8010A50C = 0;
-        func_800FFA88(2);
+        vs_mainMenu_setNextMenuAction(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
         D_801022D5 = D_801024B8 != 9;
         func_801013F8(1);
@@ -1792,7 +1792,7 @@ static int _itemNavigation(int arg0)
 
                 switch (availableActions[i]) {
                 case searchItem:
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                     vs_mainMenu_clearMenuExcept(3);
                     state = search;
                     break;
@@ -1812,7 +1812,7 @@ static int _itemNavigation(int arg0)
                     state = discard;
                     break;
                 case sortItems:
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                     _sortItems(itemCategory + 1);
                     state = sort;
                     break;
@@ -1824,7 +1824,7 @@ static int _itemNavigation(int arg0)
                     vs_mainMenu_clearMenuExcept(3);
                     return -2;
                 }
-                func_800FFBC8();
+                vs_mainMenu_initTextBox();
                 state = none;
             }
         }
@@ -1848,7 +1848,7 @@ static int _itemNavigation(int arg0)
     case discard:
         i = _discardMenu(0);
         if (i != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             func_800FA854(0x28);
             vs_mainMenu_clearMenuExcept(3);
             if (i == -2) {
@@ -2001,7 +2001,7 @@ static int _topLevelMenuTransition(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_800FFB68(1);
-            func_800FFA88(2);
+            vs_mainMenu_setNextMenuAction(menuActionMenu);
             menuItem = vs_battle_setMenuItem(3, 320, 18, 0x7E, 8,
                 (char*)&vs_battle_menuStrings
                     [vs_battle_menuStrings[VS_menuStrings_INDEX_items]]);
@@ -2041,13 +2041,13 @@ static int _topLevelMenuTransition(int arg0)
             func_80106274(2);
             state = 3;
             if (vs_main_settings.information == 0) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
             }
         }
         break;
     case 3:
         func_800FFB68(0);
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             D_8010A6B0 = 1;
             D_8010A6B2 = 1;
@@ -2241,7 +2241,7 @@ static int disassembleItem(int itemIndex)
                 state = disassemble;
             }
             if (vs_main_settings.information == 0) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
             }
             break;
         }
@@ -2446,7 +2446,7 @@ static int _consolidateMiscItems(int lootIndex)
             }
             var_v0 = 0;
             if (vs_main_settings.information == 0) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
             }
             break;
         }
@@ -3115,7 +3115,7 @@ int _discardItems(int init)
             vs_mainMenu_menuItemFlyoutRight(30);
             vs_mainMenu_menuItemFlyoutRight(31);
             if (vs_main_settings.information == 0) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
             }
             if ((D_8010A692 == 0) && !(vs_main_buttonsPressed.all & PADRdown)) {
                 int var_v1;
@@ -3167,7 +3167,7 @@ static int _organizeInventory(_lootListItem* loot)
     vs_battle_menuItem_t* menuItem;
 
     if (loot != NULL) {
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         itemCategory = loot->itemCategory;
         state = 0;
         selectedRow = 0;
@@ -3268,7 +3268,7 @@ int _processLootMenu(int init)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         state = 1;
         // Fallthrough
     case 1:
@@ -3527,7 +3527,7 @@ int vs_menuB_exec(char* state)
                     (char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
                 *state = 4;
             } else {
-                func_800FFBC8();
+                vs_mainMenu_initTextBox();
                 *state = 2;
             }
         }

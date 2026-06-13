@@ -3684,7 +3684,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 vs_battle_menuItem_t* menuItem;
                 _initMemcard(1);
                 func_800FFB68(1);
-                func_800FFA88(2);
+                vs_mainMenu_setNextMenuAction(menuActionMenu);
                 menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
                 menuItem->state = 2;
@@ -3848,8 +3848,8 @@ int vs_menu7_saveContainerMenu(char* state)
         *state = 15;
         break;
     case 15:
-        func_800FFA88(0);
-        func_800FFBA8();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissTextBox();
         func_800FFB68(0);
         if (vs_mainmenu_ready() != 0) {
             _shutdownMemcard();
@@ -4026,15 +4026,15 @@ int vs_menu7_dataMenu(char* state)
         break;
 
     case 11:
-        func_800FFA88(0);
-        func_800FFBA8();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissTextBox();
         func_800FFB68(0);
         *state = 13;
         break;
 
     case 12:
-        func_800FFA88(0);
-        func_800FFBA8();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissTextBox();
         func_800FFB68(0);
         *state = 14;
         break;

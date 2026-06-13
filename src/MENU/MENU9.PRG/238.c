@@ -100,10 +100,10 @@ static char D_80109874[] = "NO\0";
 void func_80102A38(int arg0)
 {
     if (arg0 != 0) {
-        func_800FFA88(2);
+        vs_mainMenu_setNextMenuAction(menuActionMenu);
         D_801022D6 = 0;
     } else {
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         D_801022D6 = 1;
     }
 }
@@ -159,8 +159,9 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
         } else {
             var_s0 = temp_v1 - var_s0;
         }
-        func_800C0224(0x80, (arg0->initialX - 0xE) | ((arg0->y + var_s0) << 0x10),
-            0x100010, temp_s7 - 1)[4] = (temp_fp * 0x10) | 0x37F93000;
+        vs_battle_setSpriteDefaultTexPage(0x80,
+            (arg0->initialX - 0xE) | ((arg0->y + var_s0) << 0x10), 0x100010,
+            temp_s7 - 1)[4] = (temp_fp * 0x10) | 0x37F93000;
     }
 
     i = arg0->initialX + 6;
@@ -258,7 +259,7 @@ int _getSelectedRow(void)
     if (row < -1) {
         vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
-        func_800FA92C(D_800F4EE8.unk0[2], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[2], 1);
     }
     return row;
 }
@@ -325,7 +326,7 @@ int vs_menu9_exec(char* state)
             func_800CB654(0);
             D_800EB9B0 = 0;
             func_8008A4DC(1);
-            func_800FFA88(0);
+            vs_mainMenu_setNextMenuAction(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             *state = 7;
         }
@@ -547,7 +548,7 @@ int _handleMenu(void)
         func_80104AF8();
         return D_8010A440;
     case 4:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         func_801056B8();
         D_8010A220 = 0;
         ++_menuState;
@@ -598,7 +599,7 @@ int _handleMenu(void)
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
-            func_800FFBA8();
+            vs_mainMenu_dismissTextBox();
             ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
@@ -624,7 +625,7 @@ int _handleMenu(void)
         --D_8010A220;
         break;
     case 7:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         func_80106780();
         D_8010A220 = 0;
         ++_menuState;
@@ -675,7 +676,7 @@ int _handleMenu(void)
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
-            func_800FFBA8();
+            vs_mainMenu_dismissTextBox();
             ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
@@ -701,7 +702,7 @@ int _handleMenu(void)
         --D_8010A220;
         break;
     case 10:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         func_80106F9C();
         ++_menuState;
         break;
@@ -719,7 +720,7 @@ int _handleMenu(void)
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
-            func_800FFBA8();
+            vs_mainMenu_dismissTextBox();
             func_80107090();
             ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
@@ -757,7 +758,7 @@ int _handleMenu(void)
         if (_monBinCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_monBinCdQueueSlot);
             _enemyDescriptions = (u_short*)(_monBinData + 150);
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             func_80105D8C();
             D_8010A220 = 0;
             ++_menuState;
@@ -819,7 +820,7 @@ int _handleMenu(void)
             }
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
             vs_main_playSfxDefault(0x7E, 6);
-            func_800FFBA8();
+            vs_mainMenu_dismissTextBox();
             ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
@@ -891,7 +892,7 @@ int _handleMenu(void)
             ++_menuState;
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                func_800FFBA8();
+                vs_mainMenu_dismissTextBox();
                 D_8010A440 = 1;
             } else {
                 D_8010A440 = 0;

@@ -184,8 +184,8 @@ static int _drawArtsList(int typeCursorMem)
                 vs_mainMenu_clearMenuExcept(1);
             } else {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             state = 2;
         } else {
@@ -266,8 +266,8 @@ static int _drawWeaponTypeList(int init)
         if (selectedRow != 0) {
             if (selectedRow == selectionBack) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(1);
             }
@@ -291,8 +291,8 @@ static void _setMenuTitle(void)
     menuItem->state = 2;
     menuItem->targetX = 180;
     menuItem->selected = 1;
-    func_800FFA88(2);
-    func_800FFBC8();
+    vs_mainMenu_setNextMenuAction(menuActionMenu);
+    vs_mainMenu_initTextBox();
 }
 
 int vs_menu1_exec(char* state)
@@ -316,7 +316,7 @@ int vs_menu1_exec(char* state)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         weaponType = vs_battle_characterState->equippedWeaponCategory;
         // Fallthrough
     case artsInit:
@@ -365,8 +365,8 @@ int vs_menu1_exec(char* state)
         break;
     }
     case exitToMainMenu:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
@@ -382,8 +382,8 @@ int vs_menu1_exec(char* state)
         }
         break;
     case exit:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 2;
             *state = none;

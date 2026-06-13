@@ -13,8 +13,8 @@
  * @param init 0 = Process menu, initialize otherwise
  * @return Packed teleport info
  *   Bits 0 - 9: Destination room id
- *   Bits 10 - 14:
- *   Bits 14 - 19:
+ *   Bits 10 - 14: Value from savePointData bits 16-21
+ *   Bits 14 - 19: Value from savePointData bits 24-29
  *   Bits 19 - 32: Teleport cost
  * Negative values for user cancellation, 0 otherwise
  */
@@ -36,7 +36,7 @@ static int _teleportMenu(int init)
     int savePointState;
 
     if (init != 0) {
-        func_800FA92C(4, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(4, 1);
         state = initTeleport;
         currentMp = vs_battle_characterState->unk3C->currentMP;
         return 0;
@@ -92,7 +92,7 @@ static int _teleportMenu(int init)
         }
         savePointState = vs_main_settings.cursorMemory;
         vs_main_settings.cursorMemory = 1;
-        vs_mainmenu_setMenuRows(rowCount, 0x20B, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 11, menuStrings, rowTypes);
         state = handleInput;
         vs_main_settings.cursorMemory = savePointState;
         break;
@@ -105,8 +105,8 @@ static int _teleportMenu(int init)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             state = returnIfReady;
         } else {
@@ -154,8 +154,8 @@ static void _drawMagicMenuHeader(void)
     menuItem->state = 2;
     menuItem->targetX = 180;
     menuItem->selected = 1;
-    func_800FFA88(2);
-    func_800FFBC8();
+    vs_mainMenu_setNextMenuAction(menuActionMenu);
+    vs_mainMenu_initTextBox();
 }
 
 /**
@@ -196,7 +196,7 @@ int vs_menu0_exec(char* state)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         i = vs_battle_shortcutInvoked;
         if (i != 0) {
             enum shortcutMagicMenu { warlock = 1, shaman, sorcerer, enchanter };
@@ -434,8 +434,8 @@ int vs_menu0_exec(char* state)
         }
         break;
     case exitToMainMenu:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
@@ -451,8 +451,8 @@ int vs_menu0_exec(char* state)
         }
         break;
     case exit:
-        func_800FFBA8();
-        func_800FFA88(0);
+        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 1;
             *state = none;

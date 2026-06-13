@@ -88,14 +88,6 @@ u_short _magicStrings[] = {
 u_short _teleportationStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
-typedef struct {
-    u_int unk0_0 : 9;
-    u_int unk0_9 : 7;
-    u_int unk0_16 : 5;
-    u_int unk0_21 : 3;
-    u_int unk0_24 : 5;
-    u_int unk0_29 : 3;
-} savePointData_t;
 
 /**
  * Encapsulates teleport target information.
@@ -189,7 +181,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
     if (initShortcutInvoked) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
-        func_800FA92C(0, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(0, 1);
         state = init;
         return 0;
     }
@@ -251,7 +243,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
                     if ((selectedRow == levelledSpells[rowCount])
                         && (vs_main_skills[selectedRow + 1].unlocked)) {
-                        func_800FA92C(D_800F4EE8.unk0[0xE], 2);
+                        vs_mainMenu_flyoutMenuRightAndHoistSelection(
+                            D_800F4EE8.unk0[0xE], 2);
                         vs_mainMenu_isLevelledSpell = 1;
                         state = levelledSpell;
                     }
@@ -261,8 +254,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 }
             }
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FFBA8();
-            func_800FFA88(0);
+            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_setNextMenuAction(menuActionNone);
             state = returnIfReady;
         } else {
             i = _availableWarlockSpells[func_801008B0()];
@@ -313,8 +306,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
             vs_battle_playMenuLeaveSfx();
             vs_mainMenu_isLevelledSpell = 0;
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            func_800FFBA8();
-            func_800FFA88(0);
+            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_setNextMenuAction(menuActionNone);
             selectedRow = -2;
             state = returnIfReady;
             break;
@@ -331,8 +324,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 vs_battle_playMenuSelectSfx();
                 vs_mainMenu_isLevelledSpell = 0;
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
                 state = returnIfReady;
                 selectedRow += i;
                 break;
@@ -365,7 +358,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 int v;
                 vs_battle_renderTextRaw(
                     spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)func_800C0224(D_800EC270[D_8010694A],
+                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(D_800EC270[D_8010694A],
                     (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[4] = 0x37FD70C0;
 
@@ -379,14 +372,14 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
             } else if (level < rowCount) {
                 vs_battle_renderTextRaw(
                     spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)func_800C0224(
+                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(
                     0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[4] = 0x37FE70C0;
             } else {
                 var_s7_2 = 1;
                 vs_battle_renderTextRaw(
                     spellLevels[4], (0x66 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)func_800C0224(
+                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(
                     0, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
                 var_t3[1] = 0x64602000;
                 var_t3[4] = 0x37FE70C0;
@@ -403,7 +396,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 var_t3[-15] = var_t3[-15] | 0x02000000;
             }
         }
-        var_t3 = (int*)func_800C0224(0x80, 0x640050, 0x100010, temp_s6);
+        var_t3 =
+            (int*)vs_battle_setSpriteDefaultTexPage(0x80, 0x640050, 0x100010, temp_s6);
         var_t3[4] = 0x37FD3050;
         var_t3 += 6;
         var_t3[0] = (*temp_s6 & 0xFFFFFF) | 0x09000000;
@@ -452,7 +446,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
-        func_800FA92C(1, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(1, 1);
         state = init;
         return 0;
     }
@@ -508,8 +502,8 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableShamanSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             state = returnIfReady;
         } else {
@@ -553,7 +547,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
-        func_800FA92C(2, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(2, 1);
         state = init;
         return 0;
     }
@@ -609,8 +603,8 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableSorcererSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             state = returnIfready;
         } else {
@@ -652,7 +646,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
-        func_800FA92C(3, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(3, 1);
         state = init;
         return 0;
     }
@@ -707,8 +701,8 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableEnchanterSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                func_800FFBA8();
-                func_800FFA88(0);
+                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_setNextMenuAction(menuActionNone);
             }
             state = returnIfready;
         } else {

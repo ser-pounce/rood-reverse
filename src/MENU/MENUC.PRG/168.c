@@ -365,7 +365,7 @@ static int _leaveItemSlotSelection(int arg0)
         vs_mainMenu_drawDpPpbars(4);
     }
 
-    func_800FFA88(2);
+    vs_mainMenu_setNextMenuAction(menuActionMenu);
 
     return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
 }
@@ -668,7 +668,7 @@ static void _initMenuHeader(int arg0)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 4;
     menuItem->targetX = 155;
-    menuItem->unk1A = 18;
+    menuItem->targetY = 18;
 }
 
 static char _availableItems[64];
@@ -1435,7 +1435,7 @@ static int _assembleMenu(int arg0)
             vs_battle_stringBuf[0] = 0;
             vs_battle_stringBuf[1] = _combiningItem;
             _assembleBladeMenuHeader(4);
-            func_800FFA88(2);
+            vs_mainMenu_setNextMenuAction(menuActionMenu);
             return 1;
         }
         break;
@@ -1598,7 +1598,7 @@ static int _attachGemsMenu(int arg0)
             menuItem = vs_battle_getMenuItem(selectedRow + 9);
             menuItem->state = 4;
             menuItem->targetX = 155;
-            menuItem->unk1A = 18;
+            menuItem->targetY = 18;
             state = 3;
         }
         break;
@@ -1819,7 +1819,7 @@ static int _attachGemsMenu(int arg0)
         switch (itemInfo) {
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1851,7 +1851,7 @@ static int _attachGemsTopMenu(int arg0)
 
     if (arg0 != 0) {
         noForceCursorMemory = 1;
-        func_800FA92C(1, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(1, 1);
         state = 0;
         return 0;
     }
@@ -1906,7 +1906,7 @@ static int _attachGemsTopMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             _addMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _addMenuTitle(11, VS_MENU12_BIN_OFFSET_attachGems);
             state = 0;
@@ -2009,7 +2009,7 @@ static int _disassembleMenu(int arg0)
         menuItem = vs_battle_getMenuItem(selectedRow + 9);
         menuItem->state = 4;
         menuItem->targetX = 155;
-        menuItem->unk1A = 18;
+        menuItem->targetY = 18;
         state = 3;
         break;
     case 3:
@@ -2113,7 +2113,7 @@ static int _disassembleTopMenu(int arg0)
 
     if (arg0 != 0) {
         forceNoCursorMemory = 1;
-        func_800FA92C(2, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(2, 1);
         state = 0;
         return 0;
     }
@@ -2171,7 +2171,7 @@ static int _disassembleTopMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             _addMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _addMenuTitle(12, VS_MENU12_BIN_OFFSET_disassemble);
             state = 0;
@@ -2246,7 +2246,7 @@ static int _renameWeaponMenu(int arg0)
         menuItem = vs_battle_getMenuItem(selectedRow + 9);
         menuItem->state = 4;
         menuItem->targetX = 155;
-        menuItem->unk1A = 18;
+        menuItem->targetY = 18;
         state = 3;
         break;
     case 3:
@@ -2301,7 +2301,7 @@ static int _renameWeaponMenu(int arg0)
             D_801022D5 = 0;
             vs_battle_stringBuf[0] = 1;
             vs_battle_stringBuf[1] = _combiningItem;
-            func_800FFA88(2);
+            vs_mainMenu_setNextMenuAction(menuActionMenu);
             return 1;
         }
         break;
@@ -2320,7 +2320,7 @@ static int _repairMenu(int arg0)
     int new_var;
 
     if (arg0 != 0) {
-        func_800FA92C(4, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(4, 1);
         state = 0;
         return 0;
     }
@@ -2348,7 +2348,7 @@ static int _repairMenu(int arg0)
                 vs_battle_playMenuLeaveSfx();
                 return -2;
             }
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             vs_mainMenu_menuItemFlyoutRight(14);
             state = 4;
         }
@@ -2440,7 +2440,7 @@ static int _repairMenu(int arg0)
             if (vs_main_buttonsPressed.all & PADRup) {
                 return -2;
             }
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             state = 4;
         }
         break;
@@ -2947,7 +2947,7 @@ static int _combineBladeMenu(int arg0)
         switch (temp_v0_2) {
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -3446,7 +3446,7 @@ static int _combineShieldMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
 
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -3915,7 +3915,7 @@ static int _combineArmorMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
 
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_drawDpPpbars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -3984,7 +3984,7 @@ static int _combineTopMenu(int arg0)
 
     if (arg0 != 0) {
         forceNoCursorMemory = 1;
-        func_800FA92C(5, 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(5, 1);
         state = 0;
         return 0;
     }
@@ -4047,7 +4047,7 @@ static int _combineTopMenu(int arg0)
         break;
     case 5:
         if (vs_mainmenu_ready() != 0) {
-            func_800FFBC8();
+            vs_mainMenu_initTextBox();
             _addMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _addMenuTitle(15, VS_MENU12_BIN_OFFSET_combine);
             state = 0U;
@@ -4178,9 +4178,9 @@ int vs_menuC_exec(char* state)
                 *state = 0xA;
                 if (i == 1) {
                     vs_battle_menuState.currentState = 8;
-                    func_800FFBA8();
+                    vs_mainMenu_dismissTextBox();
                 } else {
-                    func_800FFBC8();
+                    vs_mainMenu_initTextBox();
                 }
             } else {
                 *state = 0xB;
@@ -4241,7 +4241,7 @@ int vs_menuC_exec(char* state)
         }
         break;
     case 10:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         if (vs_mainmenu_ready() != 0) {
             *state = 1;
         }

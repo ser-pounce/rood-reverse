@@ -92,16 +92,16 @@ __asm__("glabel vs_battle_copyAligned;"
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
 
-__asm__("glabel func_800C0214;"
+__asm__("glabel vs_battle_setSpriteDefault;"
         "lui      $v1, 0x1F80;"
         "addu     $a2, $a0, $zero;"
         "li       $a0, 0x80;"
         "lw       $a3, 0x8($v1);"
-        "alabel func_800C0224;"
+        "alabel vs_battle_setSpriteDefaultTexPage;"
         "lui      $t1, 0xE100;"
         "j        .L800C0234;"
         "or       $t1, 0xC;"
-        "endlabel func_800C0214;"
+        "endlabel vs_battle_setSpriteDefault;"
 
         "glabel vs_battle_setSprite;"
         "addu       $t1, $zero, $zero;"

@@ -12,7 +12,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
 void func_800FA854(int arg0);
 void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id);
 int vs_mainmenu_ready(void);
-void func_800FA92C(int arg0, int arg1);
+void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1);
 void vs_mainMenu_exec(int);
 void func_800FAEBC(int);
 void func_800FBB8C(int arg0);

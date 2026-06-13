@@ -9811,17 +9811,19 @@ void func_8008A4DC(int arg0)
 int func_8008A4FC(void)
 {
     func_8006EBF8_t sp10;
-    _mpdRoomSection9* temp_v0;
     u_int temp_a2;
     u_int temp_v0_2;
     u_int var_a2;
     int var_a0;
     int var_a1;
     func_8006EBF8_t_fields* s0;
+
     func_800A1108(0, &sp10);
+
     temp_v0_2 = func_800A0BE0(0);
     temp_a2 = temp_v0_2 & 0x70000;
     s0 = &sp10.unk0.unk0.fields;
+
     if (temp_a2 != 0) {
         var_a0 = 0;
         var_a1 = 0;
@@ -9831,14 +9833,12 @@ int func_8008A4FC(void)
         var_a1 = s0->unk0_16;
         var_a2 = s0->unk0_8;
     }
-    if (func_8008B764(var_a0, var_a1, var_a2)->unk0_16 & 1) {
-        if (!(temp_v0_2 & 0x504000)) {
-            temp_v0 = func_8008D438(s0->unk0_0, s0->unk0_16, s0->unk0_8);
-            if (temp_v0 != 0) {
-                if (temp_v0->unk6 == 0x10) {
-                    return temp_v0->unkA;
-                }
-            }
+
+    if ((func_8008B764(var_a0, var_a1, var_a2)->unk0_16 & 1)
+        && (!(temp_v0_2 & 0x504000))) {
+        _mpdRoomSection9* room = func_8008D438(s0->unk0_0, s0->unk0_16, s0->unk0_8);
+        if ((room != NULL) && (room->unk6 == 16)) {
+            return room->unkA;
         }
     }
     return 0;

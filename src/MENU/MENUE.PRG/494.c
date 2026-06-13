@@ -65,11 +65,11 @@ static void func_80102C94(int arg0) __attribute__((unused));
 void func_80102C94(int arg0)
 {
     if (arg0 != 0) {
-        func_800FFA88(2);
+        vs_mainMenu_setNextMenuAction(menuActionMenu);
         D_801022D6 = 0;
         return;
     }
-    func_800FFA88(0);
+    vs_mainMenu_setNextMenuAction(menuActionNone);
     D_801022D6 = 1;
 }
 
@@ -111,7 +111,7 @@ static int _getSelectedRow(void)
         return row;
     }
     if (row >= 0) {
-        func_800FA92C(D_800F4EE8.unk0[4], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[4], 1);
     }
     return row;
 }
@@ -180,7 +180,7 @@ int vs_menuE_exec(char* state)
         func_800CB654(0);
         D_800EB9B0 = 0;
         func_8008A4DC(1);
-        func_800FFA88(0);
+        vs_mainMenu_setNextMenuAction(menuActionNone);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         *state = shutDown;
         break;
@@ -268,7 +268,7 @@ static int _showMenu(void)
         ++_showMenuState;
         break;
     case initMenu:
-        func_800FFBC8();
+        vs_mainMenu_initTextBox();
         _topMenu(1);
         ++_showMenuState;
         break;
@@ -303,7 +303,7 @@ static int _showMenu(void)
         }
         vs_battle_manualDisplayState.currentManual =
             D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
-        func_800FFBA8();
+        vs_mainMenu_dismissTextBox();
         break;
     case loadSubMenu:
         cdState = _helpAssetsCdQueue->state;

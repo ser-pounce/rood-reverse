@@ -253,7 +253,8 @@ typedef struct {
     D_800F4538_unk58 unk6F4;
     D_800F4538_unk58_2 unk6F8;
     int unk6FC;
-    int unk700;
+    short unk700;
+    short unk702;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
     u_char unk11A4[0x280];

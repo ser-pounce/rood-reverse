@@ -3,11 +3,11 @@
 #include "3A1A0.h"
 
 void func_800AA698(void);
-void func_800AA984();
+void func_800AA984(int, short, int);
 void func_800AAA88(void);
 void func_800AA290(int, u_char*, int, int);
 void func_800AA490(int, u_char*, int, u_short);
-int func_800A6EE8(short*, int, int, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8D64);
 
@@ -25,17 +25,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9530);
 
 void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
 {
-    D_800F4538_t* actor;
     int angle;
 
-    actor = D_800F4538[arg0];
+    D_800F4538_t* actor = D_800F4538[arg0];
+
     if (arg2 == 0 && arg3 == 0) {
+
         func_800AA290(arg0, arg1, -1, 0);
+        
         angle = arg1[3];
         angle <<= 4;
         angle %= 0x1000;
         angle -= actor->unk26;
+        
         func_800AA984(arg0, (short)angle, 0);
+        
         actor->unk5AC_0 = 0;
         actor->unk5C = arg1[0];
         actor->unk5D = arg1[1];
@@ -46,22 +50,26 @@ void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
         } else {
             actor->unk5C6 = arg3;
         }
+
         if (arg2 == -1) {
             actor->unk5C4 = actor->unk5C2;
         } else {
             actor->unk5C4 = arg2;
         }
+        
         func_800AA490(arg0, arg1, -1, actor->unk5C6);
-        *(short*)((char*)actor + 0x5EC) = (arg1[0] << 7) + 0x40;
-        *(short*)((char*)actor + 0x5F0) = (arg1[2] << 7) + 0x40;
-        *(short*)((char*)actor + 0x5EE) =
-            func_800A6EE8((short*)((char*)actor + 0x5EC), 0, 0, 1);
+        
+        actor->unk5EC.vx = (arg1[0] * 128) + 64;
+        actor->unk5EC.vz = (arg1[2] * 128) + 64;
+        actor->unk5EC.vy = func_800A6EE8(&actor->unk5EC, 0, 0, 1);
         angle = 0x8000;
+        
         if (arg1[3] == 0xFF) {
-            *(u_short*)((char*)actor + 0x5F2) = angle;
+            actor->unk5EC.pad = angle;
         } else {
-            *(u_short*)((char*)actor + 0x5F2) = arg1[3] << 4;
+            actor->unk5EC.pad = arg1[3] * 16;
         }
+        
         actor->unk5AC_0 = 1;
         actor->unk5AC_2 = 0;
     }
@@ -101,7 +109,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA620);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA698);
 
-void func_800AA82C(int arg0, short arg1) { func_800AA984(arg0, arg1); }
+void func_800AA82C(int arg0, short arg1, int arg2) { func_800AA984(arg0, arg1, arg2); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA850);
 

@@ -220,8 +220,9 @@ typedef struct {
     void* unk5D0;
     void* unk5D4;
     void* unk5D8;
-    void* unk5DC[16];
-    u_char unk61C[0x20];
+    void* unk5DC[4];
+    SVECTOR unk5EC;
+    u_char unk5F4[0x48];
     u_short unk63C;
     u_short unk63E;
     u_char unk640[6];

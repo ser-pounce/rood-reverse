@@ -407,6 +407,9 @@ extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_titleScreenCount;
 extern vs_main_CdFile vs_main_zndFiles[256];
+/**
+ * 512 pairs of zone and map IDs.
+ */
 extern char vs_main_locationZoneMapIds[];
 extern int vs_main_statusEffectParams[][4];
 extern char D_8004FCCC[];

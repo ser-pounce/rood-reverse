@@ -916,7 +916,14 @@ int func_8006C84C(int);
 void func_8006CDD8(func_8006CE70_t*);
 void func_8006CE50(void);
 void func_8006CE70(func_8006CE70_t*);
+
+/**
+ * Retrieves room ID, only used for teleporting.
+ *
+ * @return Unique room ID from 0-511.
+ */
 int vs_battle_getCurrentRoomId(void);
+
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 void func_80076F24(
     int id, vs_battle_charInitData* arg1, int arg2, int arg3, int arg4, int arg5);
@@ -1016,6 +1023,14 @@ int func_80089104(void);
 void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 void func_8008A6FC(void);
+/**
+ *
+ *
+ * @return Packed value
+ * - Bit 0:
+ * - Bit 1: Requirements not met (i.e. insufficient HP/MP/Risk)
+ * - Bit 2: Skill locked
+ */
 int vs_battle_getSkillFlags(int, int);
 void func_8008B430(D_800F4538_unk58_2*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);

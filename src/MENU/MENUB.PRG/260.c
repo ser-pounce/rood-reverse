@@ -2995,7 +2995,7 @@ static void _displayCurrentLoot(int x)
         }
         temp_v1_3 = loot->state;
         if (temp_v1_3 == 2) {
-            menuItem->unk2 = 0x18;
+            menuItem->backgroundWidth = 0x18;
         }
         if (temp_v1_3 > 2) {
             menuItem->initialX += (temp_v1_3 - 3) * 7;

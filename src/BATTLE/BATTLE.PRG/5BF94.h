@@ -32,7 +32,7 @@ enum vs_battle_menuItem_fadeEffect {
 typedef struct {
     char state;
     u_char w;
-    char unk2;
+    char backgroundWidth;
     char unk3;
     char animationState;
     char fadeEffect;
@@ -183,9 +183,19 @@ int func_800C4794(SVECTOR*);
 int func_800C58F8(void*);
 int vs_battle_setTextBox(int, char*);
 int vs_battle_selectTextBox(u_char);
-void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long*);
 char* vs_battle_printf(char*, char*);
-void vs_battle_renderTextRaw(char const* text, int xy, void*);
+
+/**
+ * Renders ASCII text and chains it to the provided OT.
+ */
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, void* nextPrim);
+
+/**
+ * Same as vs_battle_renderTextRawColor, except color is predefined as gray midpoint
+ * (0x808080).
+ */
+void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim);
+
 int vs_battle_printVariableWidthFontChar(u_int, int, int, u_long*);
 void func_800C7210(int arg0);
 void vs_battle_loadGim(int, int);
@@ -194,9 +204,19 @@ void func_800C86AC(void);
 int vs_battle_loadMenuPrg(int arg0);
 void func_800C8E04(int);
 int vs_battle_uiGradientStop(u_int, u_int, int);
-vs_battle_menuItem_t* vs_battle_getMenuItem(int id);
+
+/**
+ * Gets menu row element.
+ */
+vs_battle_menuItem_t* vs_battle_getMenuItem(int row);
+
+/**
+ * Initializes a menu row element.
+ *
+ * @return The populated row.
+ */
 vs_battle_menuItem_t* vs_battle_setMenuItem(
-    int id, int initialX, int y, int arg3, int arg4, char* text);
+    int row, int x, int y, int w, int backgroundWidth, char* text);
 void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);
@@ -206,7 +226,14 @@ int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart*);
 void func_800CAB40(void);
 int func_800CABE0(int);
-int vs_battle_spellClassUnlocked(int);
+
+/**
+ * Determines whether the selected spell class is available
+ *
+ * @param spellClass Class from 0-3
+ * @return Bool
+ */
+int vs_battle_isSpellClassUnlocked(int spellClass);
 int vs_battle_chainAbilitiesUnlocked(int);
 void func_800CB23C(void);
 void func_800CB660(int arg0);
@@ -225,7 +252,15 @@ void func_800CB654(int);
 void func_800CB7DC(void);
 void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(void* dest, void const* src, int size);
-int vs_battle_toBCD(int);
+
+/**
+ * Converts the lowest decimal digit to BCD.
+ *
+ * @return Packed value
+ * - Bits 0-3: Lowest decimal digit from 0-9
+ * - Bits 4+: value / 10
+ */
+int vs_battle_toBCD(int value);
 int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);

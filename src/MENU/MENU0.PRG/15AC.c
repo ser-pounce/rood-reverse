@@ -143,7 +143,7 @@ static int _teleportMenu(int init)
 }
 
 /**
- * Draws header
+ * Draws header when cancelling back before casting.
  */
 static void _setMenuHeader(void)
 {
@@ -235,7 +235,7 @@ int vs_menu0_exec(char* state)
                 (char*)&_magicStrings[_magicStrings[i * 3 + VS_magic_INDEX_warlockDesc]];
             rowTypes[i] = 0;
 
-            if (vs_battle_spellClassUnlocked(i) == 0) {
+            if (vs_battle_isSpellClassUnlocked(i) == 0) {
                 rowTypes[i] |= 1;
                 menuStrings[i * 2 + 1] =
                     (char*)&_magicStrings[_magicStrings[i * 3

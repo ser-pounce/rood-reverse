@@ -803,7 +803,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
 
     temp_a1 = *((int*)(&(&D_801023D4[(D_801023DE + arg0) * 0x40])[14]));
     menuItem->unk7 = temp_a1 & 1;
-    menuItem->unk2 = menuItem->unk2 + ((temp_a1 & 2) * 0xC);
+    menuItem->backgroundWidth = menuItem->backgroundWidth + ((temp_a1 & 2) * 0xC);
     temp_v1 = (temp_a1 >> 3) & 1;
     menuItem->unkB = temp_v1;
     menuItem->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
@@ -1130,7 +1130,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
     int sp10;
     u_int sp14;
     int sp18;
-    int sp1C;
+    int backgroundWidth;
     int temp_v1;
     int temp_fp;
     int temp_v1_2;
@@ -1154,7 +1154,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
     sp10 = arg0->w;
     sp18 = arg0->animationState;
     temp_fp = arg0->fadeEffect - 1;
-    sp1C = arg0->unk2;
+    backgroundWidth = arg0->backgroundWidth;
 
     if (vs_main_frameBuf != D_80102408) {
         ++D_80102409;
@@ -1217,9 +1217,10 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
             }
             var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
             var_s2[1] = 0xE1000220;
-            var_s2[2] = (vs_battle_uiGradientStop(8 - sp18, sp1C, var_s3) | 0x52000000);
+            var_s2[2] = (vs_battle_uiGradientStop(8 - sp18, backgroundWidth, var_s3)
+                         | 0x52000000);
             var_s2[3] = var_s5;
-            var_s2[4] = vs_battle_uiGradientStop(sp18, sp1C, var_s3);
+            var_s2[4] = vs_battle_uiGradientStop(sp18, backgroundWidth, var_s3);
             var_s2[5] = ((var_s5 + sp10 - 1) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10);
             var_s2[6] = 0xE1000020;
             temp_v0_3 = (u_long)var_s2 << 8;

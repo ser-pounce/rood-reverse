@@ -140,7 +140,7 @@ void func_80102A7C(vs_battle_menuItem_t* arg0)
     sp10 = arg0->w;
     sp18 = arg0->animationState;
     temp_fp = arg0->fadeEffect - 1;
-    sp1C = arg0->unk2;
+    sp1C = arg0->backgroundWidth;
 
     if (vs_main_frameBuf != D_8010851C) {
         ++D_8010851D;

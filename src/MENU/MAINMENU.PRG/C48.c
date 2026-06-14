@@ -267,8 +267,8 @@ void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1)
     menuItem->state = 4;
     menuItem->targetX = 180;
     menuItem->targetY = (arg1 * 16) + 18;
-    if (menuItem->unk2 == 0) {
-        menuItem->unk2 = 1;
+    if (menuItem->backgroundWidth == 0) {
+        menuItem->backgroundWidth = 1;
     }
 }
 

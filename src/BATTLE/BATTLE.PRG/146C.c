@@ -9040,16 +9040,12 @@ void func_80085718(_hitEntity_t* arg0)
 /**
  * Retrieves a compound value of the skill type, cost, and whether
  * the actor can pay the cost.
- *
- * @param id
- * @param actor
- * @param arg2
  * @return Packed integer:
  *         - bits 31-24 = bool requirements met
  *         - bits 23-16 = enum skill type
  *         - bits 15-0  = int cost
  */
-int _getSkillCost(u_int id, vs_battle_actor2* actor, int arg2)
+int _getSkillCost(u_int skillId, vs_battle_actor2* actor, int updateStat)
 {
     int requirementsMet;
     int skillType;
@@ -9057,7 +9053,7 @@ int _getSkillCost(u_int id, vs_battle_actor2* actor, int arg2)
     vs_skill_t* skill;
     int statValue;
 
-    skill = &vs_main_skills[id];
+    skill = &vs_main_skills[skillId];
     cost = skill->cost;
     skillType = skill->type;
 
@@ -9101,7 +9097,7 @@ int _getSkillCost(u_int id, vs_battle_actor2* actor, int arg2)
 
     if (skillType == skillTypeAbility) {
         if (D_800F19CC->unk4 >= 10) {
-            if ((id - 22) < 18) {
+            if ((skillId - 22) < 18) {
                 cost += (D_800F19CC->unk4 * D_800F19CC->unk4) / 10;
             }
         }
@@ -9121,7 +9117,7 @@ int _getSkillCost(u_int id, vs_battle_actor2* actor, int arg2)
         }
     }
 
-    if (arg2 != 0) {
+    if (updateStat != 0) {
         switch (skillType) {
         case skillTypeSpell:
             actor->currentMP = statValue;
@@ -9844,33 +9840,30 @@ int func_8008A4FC(void)
     return 0;
 }
 
-int vs_battle_getSkillFlags(int arg0, int id)
+int vs_battle_getSkillFlags(int actorId, int id)
 {
-    vs_battle_actor2* temp_s1;
-    int ret;
     vs_skill_t* skill = &vs_main_skills[id];
+    vs_battle_actor2* actor = vs_battle_actors[actorId]->unk3C;
+    int ret = actor->unk954 != 0;
 
-    temp_s1 = vs_battle_actors[arg0]->unk3C;
-    ret = temp_s1->unk954 != 0;
-
-    if (!(_getSkillCost(id, temp_s1, 0) & 0xFF000000)) {
+    if (!(_getSkillCost(id, actor, 0) & 0xFF000000)) {
         ret |= 2;
     }
 
-    if (arg0 == 0) {
-        if (!((skill->unlocked << 15) & 0x8000)) {
-            ret |= 4;
-        }
+    if ((actorId == 0) && (!(skill->unlocked << 15))) {
+        ret |= 4;
     }
+
     if (id < 141) {
-        if (temp_s1->unk948 & 0x1000) {
+        if (actor->unk948 & 0x1000) {
             ret |= 4;
         }
     } else if (id < 224) {
-        if (vs_battle_actors[arg0]->unk20 == 0) {
+        if (vs_battle_actors[actorId]->unk20 == 0) {
             ret |= 4;
         }
-        if (temp_s1->unk948 & 0x2000) {
+
+        if (actor->unk948 & 0x2000) {
             ret |= 4;
         }
     }

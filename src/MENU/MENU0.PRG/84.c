@@ -5,6 +5,7 @@
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
+#include "gpu.h"
 #include <libetc.h>
 
 static signed char _MPCostTextBuffer[16];
@@ -296,7 +297,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         u_long* temp_s6;
         int level;
         int var_s7_2;
-        int* var_t3;
+        u_long* var_t3;
 
         i = D_800F4EE8.unk0[0xC];
         rowCount = D_800F4EE8.unk0[0xD];
@@ -352,13 +353,15 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         temp_s6 = D_1F800000[1] - 1;
 
         for (level = 0; level < 4; ++level) {
+
             var_s7_2 = 0;
+
             if (i >= level) {
                 int v;
                 vs_battle_renderTextRaw(
-                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(D_800EC270[D_8010694A],
-                    (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                    spellLevels[level], (99 + level * 32) | vs_getXY(0, 103), NULL);
+                var_t3 = vs_battle_setSpriteDefaultTexPage(D_800EC270[D_8010694A],
+                    (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
                 var_t3[4] = 0x37FD70C0;
 
                 v = D_8010694A;
@@ -370,23 +373,25 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 }
             } else if (level < rowCount) {
                 vs_battle_renderTextRaw(
-                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(
-                    0x40, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, NULL);
+                var_t3 = vs_battle_setSpriteDefaultTexPage(0x40,
+                    (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
                 var_t3[4] = 0x37FE70C0;
             } else {
                 var_s7_2 = 1;
                 vs_battle_renderTextRaw(
-                    spellLevels[4], (0x66 + level * 0x20) | 0x670000, 0);
-                var_t3 = (int*)vs_battle_setSpriteDefaultTexPage(
-                    0, (0x60 + level * 0x20) | 0x640000, 0x100020, temp_s6);
+                    spellLevels[4], (0x66 + level * 0x20) | 0x670000, NULL);
+                var_t3 = vs_battle_setSpriteDefaultTexPage(
+                    0, (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
                 var_t3[1] = 0x64602000;
                 var_t3[4] = 0x37FE70C0;
             }
+
             var_t3[-3] = (u_short)var_t3[-3] | 0x37F50000;
             var_t3[-5] = var_t3[-5] | 0x02000000;
             var_t3[-8] = (u_short)var_t3[-8] | 0x37F50000;
             var_t3[-10] = var_t3[-10] | 0x02000000;
+
             if (var_s7_2 != 0) {
                 var_t3[-12] = _get_mode(0, 0, 0x2C);
             } else {
@@ -395,10 +400,12 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 var_t3[-15] = var_t3[-15] | 0x02000000;
             }
         }
-        var_t3 =
-            (int*)vs_battle_setSpriteDefaultTexPage(0x80, 0x640050, 0x100010, temp_s6);
+        var_t3 = vs_battle_setSpriteDefaultTexPage(
+            128, vs_getXY(80, 100), vs_getWH(16, 16), temp_s6);
         var_t3[4] = 0x37FD3050;
+
         var_t3 += 6;
+
         var_t3[0] = (*temp_s6 & 0xFFFFFF) | 0x09000000;
         var_t3[1] = 0x2C808080;
         var_t3[2] = 0x6400E0;
@@ -409,8 +416,10 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         var_t3[7] = 0x405F;
         var_t3[8] = 0x7400F0;
         var_t3[9] = 0x404F;
+
         *temp_s6 = ((u_int)var_t3 << 8) >> 8;
         D_1F800000[0] = (u_long*)var_t3 + 10;
+
         break;
     }
     }

@@ -403,9 +403,9 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C64D0);
 INCLUDE_ASM(
     "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);
 
-void vs_battle_renderTextRaw(char const* text, int xy, void* arg2)
+void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim)
 {
-    vs_battle_renderTextRawColor(text, xy, vs_getRGB(128, 128, 128), arg2);
+    vs_battle_renderTextRawColor(text, xy, vs_getRGB(128, 128, 128), nextPrim);
 }
 
 #pragma vsstring(start)
@@ -1388,17 +1388,17 @@ void func_800C8E04(int arg0)
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
 vs_battle_menuItem_t* vs_battle_setMenuItem(
-    int id, int x, int y, int w, int arg4, char* text)
+    int row, int x, int y, int w, int backgroundWidth, char* text)
 {
     vs_battle_menuItem_t* menuItem;
     vs_battle_menuItem_t* var_a0;
     int i;
     u_int c;
 
-    menuItem = &vs_battle_menuItems[id];
+    menuItem = &vs_battle_menuItems[row];
     menuItem->state = 1;
     menuItem->w = w;
-    menuItem->unk2 = arg4;
+    menuItem->backgroundWidth = backgroundWidth;
 
     vs_battle_rMemzero(&menuItem->animationState, 0x3C);
 
@@ -1407,6 +1407,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     menuItem->y = y;
 
     for (i = 0; i < 31;) {
+
         c = *text++;
         if (c == vs_char_spacing) {
             var_a0->text[i++] = c;
@@ -1417,8 +1418,10 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
         } else if (c >= vs_char_nonPrinting) {
             continue;
         }
+
         var_a0->text[i++] = c;
     }
+
     return menuItem;
 }
 
@@ -1473,7 +1476,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
     y = arg0->animationState;
     temp_s6 = *(void**)0x1F800008 + 8;
     sp10 = arg0->w;
-    temp_s5 = arg0->unk2;
+    temp_s5 = arg0->backgroundWidth;
     text = arg0->text;
 
     if (arg0->state != 0) {
@@ -1513,7 +1516,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
         var_s2 = vs_battle_uiGradientStop(y, temp_s5, 0x80);
 
         if (temp_s5 & 7) {
-            arg0->unk2 = (temp_s5 + 1) & 0xF;
+            arg0->backgroundWidth = (temp_s5 + 1) & 0xF;
         }
 
         if (y != 0) {
@@ -1779,7 +1782,7 @@ int func_800C9EB8(int arg0)
     case 1:
     case 2:
     case 3:
-        if (vs_battle_spellClassUnlocked((0x3021 >> (arg0 * 4)) & 0xF) == 0) {
+        if (vs_battle_isSpellClassUnlocked((0x3021 >> (arg0 * 4)) & 0xF) == 0) {
             return 0;
         }
         if (temp_s0 & 0xB7) {
@@ -2035,7 +2038,7 @@ int func_800CACD0(int menuState, int arg1)
     return 0;
 }
 
-int vs_battle_spellClassUnlocked(int spellClass)
+int vs_battle_isSpellClassUnlocked(int spellClass)
 {
     int i;
 
@@ -2087,7 +2090,7 @@ int _validateShortcutSelection(int shortcut)
     case 2:
     case 3:
     case 4:
-        noneUnlocked = vs_battle_spellClassUnlocked(shortcut - 1) == 0;
+        noneUnlocked = vs_battle_isSpellClassUnlocked(shortcut - 1) == 0;
         menuState = 1;
         break;
     case 5:
@@ -2429,7 +2432,7 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size)
     } while (size != 0);
 }
 
-int vs_battle_toBCD(int arg0) { return (arg0 % 10) | ((arg0 / 10) * 16); }
+int vs_battle_toBCD(int value) { return (value % 10) | ((value / 10) * 16); }
 
 u_int vs_battle_keystreamBits(int value)
 {

@@ -1901,7 +1901,7 @@ void _draw_door(int arg0, int arg1, int door)
     func_80107A9C(var_s1, D_80108E48 + 8, 0xC2, D_80108E48 + 8);
     temp_v0 =
         vs_battle_setMenuItem(0, 0xC2, D_80108E48, 0x80, 0, (char*)&_doors[_doors[door]]);
-    temp_v0->unk2 = 0x10;
+    temp_v0->backgroundWidth = 0x10;
     D_80108E48 -= 16;
     func_800C9078(temp_v0);
     vs_battle_getMenuItem(0)->state = 0;
@@ -2070,7 +2070,7 @@ void _draw_connecting_maps(int arg0, int arg1, int mapId)
     }
     temp_v0 = vs_battle_setMenuItem(
         0, 0xB2, D_80108E48, 0x90, 0, (char*)&_connectingMaps[_connectingMaps[mapId]]);
-    temp_v0->unk2 = 8;
+    temp_v0->backgroundWidth = 8;
     D_80108E48 -= 16;
     func_800C9078(temp_v0);
     vs_battle_getMenuItem(0)->state = 0;

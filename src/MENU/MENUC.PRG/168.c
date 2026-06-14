@@ -2283,7 +2283,7 @@ static int _renameWeaponMenu(int arg0)
             case 1:
                 vs_battle_playMenuSelectSfx();
                 vs_mainMenu_clearMenuExcept(10);
-                vs_battle_getMenuItem(10)->unk2 = i;
+                vs_battle_getMenuItem(10)->backgroundWidth = i;
                 state = 6;
                 break;
             case 2:

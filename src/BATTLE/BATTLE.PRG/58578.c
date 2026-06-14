@@ -56,13 +56,6 @@ typedef struct {
 } D_800EB9B8_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    char unk4[4];
-    u_short unk8[4];
-} func_800C0FA8_t;
-
-typedef struct {
     u_int unk0 : 8;
     u_int unk1 : 8;
     u_int unk2 : 8;
@@ -72,14 +65,12 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    func_800C1564_flags unk4;
-    u_char unk8;
-    u_char unk9;
-    u_char unkA;
-    u_char unkB;
-    int unkC;
+    short unk2;
+    union {
+        func_800C1564_flags flags;
+        u_char values[4];
+    } unk4;
+    u_short unk8[4];
     u_char unk10;
     u_char unk11;
     u_char unk12;
@@ -104,7 +95,7 @@ extern D_800EB9B8_t* D_800EB9B8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0D78);
 
-void func_800C0FA8(func_800C0FA8_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
+void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
 {
     int temp_v0;
     int i;
@@ -112,10 +103,10 @@ void func_800C0FA8(func_800C0FA8_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
 
     for (i = 0; i < 3; ++i) {
         arg1->unk10[i] = arg0->unk8[i];
-        arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4[i]);
+        arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 
-    arg1->unk0.vx = arg0->unk4[3] * 0x10;
+    arg1->unk0.vx = arg0->unk4.values[3] * 0x10;
     arg1->unk0.vy = -arg0->unk2;
     arg1->unk0.vz = 0;
 
@@ -132,7 +123,7 @@ int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     int term;
     int i;
 
-    func_800C0FA8((func_800C0FA8_t*)arg0, &work, &matrix);
+    func_800C0FA8(arg0, &work, &matrix);
 
     {
         char* ptr;
@@ -154,11 +145,11 @@ int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     sum = 0;
     ApplyMatrixSV(&matrix, &work.unk0, (SVECTOR*)((char*)&work + 8));
     if (arg2 != 0) {
-        ((SVECTOR*)&work.unk8)->vy -= arg0->unk4.unk1 << 4;
+        ((SVECTOR*)&work.unk8)->vy -= arg0->unk4.flags.unk1 << 4;
     }
 
     {
-        if (!((u_short)(-((SVECTOR*)&work.unk8)->vy) > (arg0->unk4.unk1 << 5))) {
+        if (!((u_short)(-((SVECTOR*)&work.unk8)->vy) > (arg0->unk4.flags.unk1 << 5))) {
             char* base;
             int offset2;
             int offset;
@@ -187,7 +178,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
 
 int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
 {
-    func_800C1564_flags saved_unk4 = arg0->unk4;
+    func_800C1564_flags saved_unk4 = arg0->unk4.flags;
     int ret = 0;
 
     switch (arg0->unk0) {
@@ -195,7 +186,7 @@ int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
         ret = func_800C1034(arg0, arg1);
         break;
     case 2:
-        arg0->unk4.unk1 <<= 1;
+        arg0->unk4.flags.unk1 <<= 1;
         ret = func_800C110C(arg0, arg1, 1);
         break;
     case 3:
@@ -205,7 +196,7 @@ int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
         ret = func_800C123C(arg0, arg1, 0);
         break;
     case 5:
-        arg0->unk4.unk3 = saved_unk4.unk3 + 0x80;
+        arg0->unk4.flags.unk3 = saved_unk4.unk3 + 0x80;
         ret = func_800C123C(arg0, arg1, 1);
         break;
     case 6:
@@ -216,7 +207,7 @@ int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
         break;
     }
 
-    arg0->unk4 = saved_unk4;
+    arg0->unk4.flags = saved_unk4;
     return ret;
 }
 

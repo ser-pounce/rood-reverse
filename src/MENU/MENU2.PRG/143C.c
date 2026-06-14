@@ -18,11 +18,11 @@ static u_short _battleAbilityMenuStrings[] = {
  *
  * @param init 1 = Display message, 0 = check if information message has been closed.
  * @return
- * - When init = 1:
- *  1 if all arts for the current weapon are already unlocked, or if the kills
- *  requirements are not met for the next art, 0 otherwise.
- * - When init = 0:
- *  1 if the information message was closed due to user action or timeout, 0 othwerwise.
+ * - init != 0: 1 if all arts for the current weapon are already unlocked, or if the
+ * requirements are not met for the next art, 0 otherwise.
+ * 
+ * - init == 0: 1 if the information message was closed due to user action or 
+ * timeout, 0 othwerwise.
  */
 static int _breakArtUnlocked(int init)
 {
@@ -116,7 +116,11 @@ static char* _getAbilityDescription(int abilityId)
 /**
  * Manages and displays the ability unlocked notification.
  *
- * @return Returns 1 if the notification has been displayed and closed, 0 otherwise.
+ * @return - initialize != 0: 1 if all abilities have been unlocked, 
+ * or the requirements for the next ability have not yet been met.
+ * 
+ * - initialize == 0: 1 if the notification has been displayed
+ * and closed, 0 otherwise.
  */
 static int _battleAbilityUnlocked(int initialize)
 {

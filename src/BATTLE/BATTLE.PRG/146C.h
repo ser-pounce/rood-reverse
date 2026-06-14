@@ -1019,8 +1019,9 @@ int func_80089104(void);
 void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 void func_8008A6FC(void);
+
 /**
- *
+ * Retrieve skill availability info.
  *
  * @return Packed value
  * - Bit 0:

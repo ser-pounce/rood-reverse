@@ -11,21 +11,27 @@ static u_short _battleAbilityMenuStrings[] = {
 #include "build/assets/MENU/MENU2.PRG/battleAbilitiesMenu.vsString"
 };
 
+/**
+ * Displays the unlock message.
+ * 
+ * @param init 1 = Display message, 0 = check if information message has been closed.
+ * @return 
+ * - When init = 1:
+ *  1 if all arts for the current weapon are already unlocked, or if the kills
+ *  requirements are not met for the next art, 0 otherwise.
+ * - When init = 0:
+ *  1 if the information message was closed due to user action or timeout, 0 othwerwise.
+ */
 static int _breakArtUnlocked(int init)
 {
     static char messageTimeout;
     static char _[15] __attribute__((unused));
 
-    int weaponCategoryMod;
-    int skillId;
-    int weaponCategory;
-    u_char(*new_var)[12];
-
     if (init != 0) {
-
-        weaponCategory = vs_battle_characterState->equippedWeaponCategory;
-        weaponCategoryMod = weaponCategory;
-        new_var = &vs_main_artsStatus.artsLearned;
+        int skillId;
+        int weaponCategory = vs_battle_characterState->equippedWeaponCategory;
+        int weaponCategoryMod = weaponCategory;
+        u_char(*new_var)[12] = &vs_main_artsStatus.artsLearned;
         weaponCategoryMod %= 10;
         skillId = (*new_var)[weaponCategoryMod];
 
@@ -39,13 +45,16 @@ static int _breakArtUnlocked(int init)
         }
 
         func_800C8E04(3);
+        
         vs_main_artsStatus.artsLearned[weaponCategoryMod] = skillId + 1;
         skillId = 184 + ((weaponCategory - 1) * 4) + skillId;
         vs_battle_stringContext.strings[0] =
             (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponCategory]];
         vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
+        
         vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
+        
         vs_main_skills[skillId].unlocked = 1;
         messageTimeout = 120;
 
@@ -55,6 +64,7 @@ static int _breakArtUnlocked(int init)
         }
         --messageTimeout;
     }
+
     return 0;
 }
 

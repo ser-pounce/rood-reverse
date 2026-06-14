@@ -1,7 +1,8 @@
 #include "common.h"
 #include <rand.h>
-#include "44F14.h"
+#include "146C.h"
 #include "3A1A0.h"
+#include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AD714);
@@ -12,55 +13,59 @@ void func_800AE474(void) { }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE47C);
 
-void func_800AE4FC(void* arg0, int arg1)
+void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
 {
     D_800F4538_t* actor;
     int temp;
-    int a0;
     int sp[2];
-    int type;
+    int type = arg1;
 
-    type = arg1;
-    if (((D_800F4538_t*)arg0)->unk1C.vy < 0xBB8) {
-        actor = D_800F4538[((D_800F4538_t*)arg0)->unkF];
-        if (actor->unk17E4.unk0 == 2) {
-            sp[0] = 0x80;
-            sp[1] = 0;
-        } else {
-            if ((*((int*)&actor->unk4 + 1) & 0x3F9F00) != 0x8000) {
-                func_800A1280(
-                    ((D_800F4538_t*)arg0)->unkF, 0xFF, (SVECTOR*)&actor->unk6FC, 0);
-            }
-            temp = vs_main_computeSfxPan(actor->unk6FC, actor->unk700);
-            sp[0] = temp >> 0x10;
-            if (actor->unk17E4.unk1 != 0) {
-                sp[0] = actor->unk17E4.unk1;
-            }
-            sp[1] = temp & 0xFFFF;
-            if (actor->unk17E4.unk2 != 0) {
-                sp[1] = actor->unk17E4.unk2;
-            }
+    if (arg0->unk1C.vy >= 0xBB8) {
+        return;
+    }
+
+    actor = D_800F4538[arg0->unkF];
+
+    if (actor->unk17E4.unk0 == 2) {
+        sp[0] = 0x80;
+        sp[1] = 0;
+    } else {
+        if ((*((int*)&actor->unk0.unk4 + 1) & 0x3F9F00) != 0x8000) {
+            func_800A1280(arg0->unkF, 0xFF, &actor->unk6FC, 0);
         }
-        if (sp[1] != 0) {
-            if (type == 8) {
-                func_8006CD60(
-                    *(u_int**)((char*)((D_800F4538_t*)arg0)->unk68 + 0x30), sp[0], sp[1]);
-                return;
-            }
-            a0 = 0x180;
-            if (type == 4) {
-                a0 = 0x7E;
-                func_800461CC(a0, *(u_int**)((char*)((D_800F4538_t*)arg0)->unk68 + 0x30),
-                    rand() % 4 + 4, sp[0], sp[1]);
-            } else {
-                func_800461CC(a0, *(u_int**)((char*)((D_800F4538_t*)arg0)->unk68 + 0x30),
-                    type, sp[0], sp[1]);
-            }
+
+        temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
+        sp[0] = temp >> 0x10;
+
+        if (actor->unk17E4.unk1 != 0) {
+            sp[0] = actor->unk17E4.unk1;
         }
+
+        sp[1] = temp & 0xFFFF;
+
+        if (actor->unk17E4.unk2 != 0) {
+            sp[1] = actor->unk17E4.unk2;
+        }
+    }
+
+    if (sp[1] == 0) {
+        return;
+    }
+
+    if (type == 8) {
+        func_8006CD60(*(u_int**)((char*)arg0->unk68 + 0x30), sp[0], sp[1]);
+    } else if (type == 4) {
+        func_800461CC(
+            0x7E, *(u_int**)((char*)arg0->unk68 + 0x30), rand() % 4 + 4, sp[0], sp[1]);
+    } else {
+        func_800461CC(0x180, *(u_int**)((char*)arg0->unk68 + 0x30), type, sp[0], sp[1]);
     }
 }
 
-void func_800AE68C(int arg0, int arg1) { func_800AE4FC(D_800F4538[arg0], arg1 + 4); }
+void func_800AE68C(int arg0, int arg1)
+{
+    func_800AE4FC(&D_800F4538[arg0]->unk0, arg1 + 4);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE6C0);
 

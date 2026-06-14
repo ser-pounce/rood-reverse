@@ -50,7 +50,7 @@ int func_801090C4(int arg0, int arg1, int arg2)
         func_800F9E0C();
         func_800F9A78(0);
         func_800F9CB0();
-        temp_s1->unkA_7 = 0;
+        temp_s1->unk0.unkA_7 = 0;
         func_800A0204(1, 1, 0, 0);
         func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
         vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);

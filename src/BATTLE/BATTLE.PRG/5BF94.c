@@ -1953,7 +1953,7 @@ int func_800CABE0(int arg0)
         var_a0 |= 4;
     }
 
-    if (!(vs_battle_characterState->unk44->unk8 & 0x800000)) {
+    if (!(vs_battle_characterState->unk44->unkA_7)) {
         var_a0 |= 8;
     }
 

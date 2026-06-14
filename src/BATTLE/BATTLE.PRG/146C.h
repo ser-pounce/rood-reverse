@@ -447,13 +447,6 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    char unkC[0x16C];
-} vs_battle_actor3;
-
-typedef struct {
     short unk0;
     char unk2_0 : 4;
     char unk2_4 : 4;
@@ -552,7 +545,7 @@ typedef struct vs_battle_actor {
     int unk38;
     vs_battle_actor2* unk3C;
     int unk40;
-    vs_battle_actor3* unk44;
+    D_800F4538_unk0* unk44;
     vs_battle_actor4* unk48[2];
 } vs_battle_actor;
 
@@ -561,7 +554,10 @@ typedef struct {
         vs_battle_actor unk0;
         vs_battle_actor2 unk50;
     } unk0;
-    vs_battle_actor3 unk9B4;
+    D_800F4538_unk0 unk9B4;
+    int unk16C;
+    int unk170;
+    int unk174;
 } vs_battle_actor_dat2;
 
 typedef struct {

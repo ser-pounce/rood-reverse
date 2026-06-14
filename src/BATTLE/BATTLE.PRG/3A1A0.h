@@ -160,7 +160,12 @@ typedef struct {
     int unk60;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
-    MATRIX unk6C[42];
+    MATRIX unk6C[8];
+} D_800F4538_unk0;
+
+typedef struct {
+    D_800F4538_unk0 unk0;
+    MATRIX unk16C[34];
     u_int unk5AC_0 : 2;
     u_int unk5AC_2 : 1;
     u_int unk5AC_3 : 1;
@@ -252,9 +257,7 @@ typedef struct {
     u_char unk6F3;
     D_800F4538_unk58 unk6F4;
     D_800F4538_unk58_2 unk6F8;
-    int unk6FC;
-    short unk700;
-    short unk702;
+    SVECTOR unk6FC;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
     u_char unk11A4[0x280];

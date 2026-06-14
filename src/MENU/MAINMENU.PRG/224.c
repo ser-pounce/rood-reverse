@@ -12,7 +12,7 @@ void func_800F9A24(int arg0)
 {
     func_800F9A78(arg0);
     func_800F9CB0();
-    D_800F4538[1]->unkA_7 = 1;
+    D_800F4538[1]->unk0.unkA_7 = 1;
     func_800A0204(1, 1, 0, 0);
 }
 
@@ -33,7 +33,7 @@ void func_800F9A78(int arg0)
     sp10.dataAddr = arg0;
     sp10.unk4 = temp_s3;
     sp10.actorId = 0xFF;
-    sp10.unk13 = temp_s2->unk10;
+    sp10.unk13 = temp_s2->unk0.unk10;
     sp10.material = 0;
     vs_battle_populateDataSlot(&sp10);
 
@@ -47,12 +47,13 @@ void func_800F9A78(int arg0)
         sp10.unk4 = temp_v0;
         sp10.actorId = 1;
         sp10.unk11 = 0xFC;
-        sp10.unk13 = temp_s2->unk10;
+        sp10.unk13 = temp_s2->unk0.unk10;
         sp10.material = 0;
         vs_battle_populateDataSlot(&sp10);
     }
     for (i = 0; i < 2; ++i) {
-        vs_battle_wepModels_t* temp_s0 = vs_battle_wepModels[(temp_s2->unkF * 2) + i];
+        vs_battle_wepModels_t* temp_s0 =
+            vs_battle_wepModels[(temp_s2->unk0.unkF * 2) + i];
         if (temp_s0 != 0) {
             temp_v0 = vs_main_allocHeap(sizeof *temp_s0);
             sp10.dataType = 4;
@@ -72,7 +73,7 @@ void func_800F9A78(int arg0)
 
     temp_s3->unk5D4 = temp_s2->unk5D4;
 
-    if (temp_s2->unkF == 0) {
+    if (temp_s2->unk0.unkF == 0) {
         temp_s3->unk5D8 = vs_main_allocHeap(0x7800);
         func_8009C378(temp_s3->unk5D8, temp_s2->unk5D8);
     } else {
@@ -100,12 +101,12 @@ void func_800F9CB0(void)
     }
 
     func_8009D468(1, i);
-    temp_s0->unk1C.vx = 0;
-    temp_s0->unk1C.vy = 0;
-    temp_s0->unk1C.vz = 0;
+    temp_s0->unk0.unk1C.vx = 0;
+    temp_s0->unk0.unk1C.vy = 0;
+    temp_s0->unk0.unk1C.vz = 0;
     temp_s0->unk5B0_4 = 0;
-    temp_s0->unk8_0 = 0;
-    temp_s0->unk9_7 = 0;
+    temp_s0->unk0.unk8_0 = 0;
+    temp_s0->unk0.unk9_7 = 0;
     sp10.unk0 = -1;
     sp10.unk1 = -1;
     sp10.unk2 = -1;
@@ -122,7 +123,7 @@ void func_800F9CB0(void)
     if (D_800F4538[16] == NULL) {
         func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);
     } else {
-        D_800F4538[16]->unk8_0 = 0;
+        D_800F4538[16]->unk0.unk8_0 = 0;
     }
     sp10.unk0 = 0;
     sp10.unk1 = 0;
@@ -168,11 +169,11 @@ int func_800F9EB8(void* arg0)
         return -1;
     }
 
-    if (temp_s1->unk0 == 0) {
+    if (temp_s1->unk0.unk0 == 0) {
         return -1;
     }
 
-    if (temp_s1->unk8_0) {
+    if (temp_s1->unk0.unk8_0) {
         return -1;
     }
 
@@ -180,7 +181,7 @@ int func_800F9EB8(void* arg0)
     temp_s1->unk5B2 =
         ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
 
-    if (temp_s1->unk8_2) {
+    if (temp_s1->unk0.unk8_2) {
         func_800AB4F0(temp_s1);
         func_800AF6E8(temp_s1);
     } else {
@@ -197,20 +198,20 @@ int func_800F9EB8(void* arg0)
         int* p = (int*)0x1F800000;
         new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
-        temp_s1->unk1C.vx += temp_s1->unk6F4.unk0;
-        temp_s1->unk1C.vy += temp_s1->unk6F4.unk1;
-        temp_s1->unk1C.vz += temp_s1->unk6F4.unk2;
+        temp_s1->unk0.unk1C.vx += temp_s1->unk6F4.unk0;
+        temp_s1->unk0.unk1C.vy += temp_s1->unk6F4.unk1;
+        temp_s1->unk0.unk1C.vz += temp_s1->unk6F4.unk2;
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
         p = (int*)0x1F800000;
         new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
-        temp_s1->unk1C.vx -= temp_s1->unk6F4.unk0;
-        temp_s1->unk1C.vy -= temp_s1->unk6F4.unk1;
-        temp_s1->unk1C.vz -= temp_s1->unk6F4.unk2;
+        temp_s1->unk0.unk1C.vx -= temp_s1->unk6F4.unk0;
+        temp_s1->unk0.unk1C.vy -= temp_s1->unk6F4.unk1;
+        temp_s1->unk0.unk1C.vz -= temp_s1->unk6F4.unk2;
     }
 
-    if (temp_s1->unk9_4) {
+    if (temp_s1->unk0.unk9_4) {
         return -2;
     }
 
@@ -218,7 +219,7 @@ int func_800F9EB8(void* arg0)
         int v = i + 2;
         vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[v];
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
-            MATRIX* temp_s0 = &temp_s1->unk6C[temp_a0->unkD];
+            MATRIX* temp_s0 = &temp_s1->unk0.unk6C[temp_a0->unkD];
             temp_s0->t[0] -= temp_s1->unk6F4.unk0;
             temp_s0->t[1] -= temp_s1->unk6F4.unk1;
             temp_s0->t[2] -= temp_s1->unk6F4.unk2;
@@ -287,7 +288,7 @@ void func_800FA2CC(void)
     for (i = 0; i < 2; ++i) {
         vs_battle_wepModels_t* var_a0 = vs_battle_wepModels[i];
         if (var_a0 != 0) {
-            if (temp_s1->unkA_7) {
+            if (temp_s1->unk0.unkA_7) {
                 var_a0->unk11 = 0x40;
                 var_a0->unk8_4 = 1;
             } else {
@@ -299,7 +300,7 @@ void func_800FA2CC(void)
     func_8009E634(temp_s1);
 
     i_2 = 1;
-    if (temp_s1->unkA_7) {
+    if (temp_s1->unk0.unkA_7) {
         i_2 = 0x65;
     }
 

@@ -124,7 +124,62 @@ void func_800C0FA8(func_800C0FA8_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1034);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C110C);
+int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
+{
+    func_800C0FA8_t2 work;
+    MATRIX matrix;
+    int sum;
+    int term;
+    int i;
+
+    func_800C0FA8((func_800C0FA8_t*)arg0, &work, &matrix);
+
+    {
+        char* ptr;
+        char* base;
+        int offset;
+
+        i = 0;
+        ptr = (char*)&work;
+        base = ptr;
+        offset = 0x10;
+        while (i < 3) {
+            *(short*)ptr = *arg1++ - *(u_short*)(base + offset);
+            offset += 2;
+            i++;
+            ptr += 2;
+        }
+    }
+
+    sum = 0;
+    ApplyMatrixSV(&matrix, &work.unk0, (SVECTOR*)((char*)&work + 8));
+    if (arg2 != 0) {
+        ((SVECTOR*)&work.unk8)->vy -= arg0->unk4.unk1 << 4;
+    }
+
+    {
+        if (!((u_short)(-((SVECTOR*)&work.unk8)->vy) > (arg0->unk4.unk1 << 5))) {
+            char* base;
+            int offset2;
+            int offset;
+
+            i = 0;
+            base = (char*)&work;
+            offset2 = 0x18;
+            offset = 8;
+            while (i < 3) {
+                term = (*(short*)(base + offset) * *(short*)(base + offset2)) >> 12;
+                sum += term * term;
+                offset2 += 4;
+                offset += 4;
+                i += 2;
+            }
+
+            sum = (u_int)(sum >> 16) < 1;
+        }
+    }
+    return sum;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C123C);
 

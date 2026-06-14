@@ -593,13 +593,13 @@ int vs_menu8_exec(char* state)
         } else {
             if (vs_main_stateFlags.puzzleModeDisabled != 0) {
                 if (vs_mainMenu_getConfirmedRow() == 6) {
-                    func_800C8E04(1);
-                    D_800F514C = 0xB;
+                    vs_battle_initInformationTextBox(1);
+                    vs_battle_textBoxes[7].state = 0xB;
                 } else if (vs_main_settings.information != 0) {
-                    func_800C8E04(2);
-                    D_800F514C = 0xB;
+                    vs_battle_initInformationTextBox(2);
+                    vs_battle_textBoxes[7].state = 0xB;
                 } else {
-                    D_800F514C = 0;
+                    vs_battle_textBoxes[7].state = 0;
                 }
             }
             break;

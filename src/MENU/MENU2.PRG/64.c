@@ -162,7 +162,6 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
 
 /**
  * Maps the selected ability to the desired joypad button
- *
  */
 static void _mapAbility(int abilityType, int button, int abilityId)
 {
@@ -598,6 +597,7 @@ static int _defenseAbilityMenu(int arg0)
 
 /**
  * Prints kills needed to unlock the next Ability
+ *
  * @param row Effectively the count of already unlocked abilities
  */
 static void _setNextAbilityUnlockPointsRemaining(int row)
@@ -731,7 +731,7 @@ int vs_menu2_exec(char* state)
                 vs_main_settings.cursorMemory = 1;
             }
 
-            vs_mainmenu_setMenuRows(2, (1 << 8) | (1 << 4) | 7, menuStrings, rowTypes);
+            vs_mainmenu_setMenuRows(2, menuRowInfo(7, 1, 1), menuStrings, rowTypes);
 
             vs_main_settings.cursorMemory = val;
             *state = selectType;

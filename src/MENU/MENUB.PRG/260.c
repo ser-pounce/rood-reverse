@@ -1050,7 +1050,7 @@ static int _discardMenu(int arg0)
         discardType = (arg0 >> 0x10);
         itemCategory = (arg0 >> 8);
         selectedItem = arg0;
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                     [discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]]);
@@ -1060,7 +1060,7 @@ static int _discardMenu(int arg0)
 
     switch (state) {
     case init:
-        if ((D_800F5130 >> 0x1E) & 1) {
+        if (vs_battle_textBoxes[7].unk0.done) {
             if (vs_mainmenu_ready() != 0) {
                 state = ((discardType & 1) + 1);
             }
@@ -2219,7 +2219,7 @@ static int disassembleItem(int itemIndex)
             disassembleItemCategory == 0
                 ? _inventory->weapons[i].name
                 : vs_mainMenu_itemNames[_inventory->shields[i].base.id];
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&_menuText[VS_menuText_OFFSET_disassembleConfirm]);
         state = waitInit;
@@ -2423,7 +2423,7 @@ static int _consolidateMiscItems(int lootIndex)
         menuItem->state = 2;
         menuItem->targetX = 194;
         vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[itemId];
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&_menuText[VS_menuText_OFFSET_organizeConfirm]);
         state = 3;
@@ -3100,7 +3100,7 @@ int _discardItems(int init)
             31, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetX = 0xC2;
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             D_8010A6B8 == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
                             : (char*)(&_menuText[VS_menuText_OFFSET_itemsRemaining]));
@@ -3141,7 +3141,7 @@ int _discardItems(int init)
         return state - 3;
     case 6:
         vs_battle_stringContext.strings[0] = itemName;
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&_menuText[VS_menuText_OFFSET_invalidDiscard]);
         state = 7;
@@ -3523,7 +3523,7 @@ int vs_menuB_exec(char* state)
         if (vs_mainMenu_loadItemNames(0) != 0) {
             D_8010A6B2 = 1;
             if (_lootListCount == 0) {
-                func_800C8E04(1);
+                vs_battle_initInformationTextBox(1);
                 vs_mainmenu_setInformationMessage(
                     (char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
                 *state = 4;
@@ -3548,7 +3548,7 @@ int vs_menuB_exec(char* state)
         }
         break;
     case 4:
-        if ((D_800F5130 >> 0x1E) & 1) {
+        if (vs_battle_textBoxes[7].unk0.done) {
             if (vs_main_buttonsPressed.pad[0].low != 0) {
                 *state = 5;
             }

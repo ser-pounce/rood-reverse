@@ -23,6 +23,8 @@ void func_80101F38(void);
  */
 void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[]);
 
+#define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
+
 extern char D_80102410[64];
 extern int D_80102450;
 extern char D_80102454;

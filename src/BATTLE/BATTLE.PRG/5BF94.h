@@ -202,7 +202,14 @@ void vs_battle_loadGim(int, int);
 void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
 int vs_battle_loadMenuPrg(int arg0);
-void func_800C8E04(int);
+
+/**
+ * Initializes textbox ID 7
+ *
+ * @param flags
+ */
+void vs_battle_initInformationTextBox(int flags);
+
 int vs_battle_uiGradientStop(u_int, u_int, int);
 
 /**
@@ -321,8 +328,6 @@ extern D_800F4EE8_t D_800F4EE8;
 extern char D_800F4FDA;
 extern char D_800F4FDB;
 extern vs_battle_textBox vs_battle_textBoxes[];
-extern u_int D_800F5130;
-extern short D_800F514C;
 extern u_char D_800F5210;
 extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;

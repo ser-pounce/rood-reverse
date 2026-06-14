@@ -3671,7 +3671,7 @@ int vs_menu7_saveContainerMenu(char* state)
         vs_menu_inventoryStorage = vs_main_allocHeapR(sizeof *vs_menu_inventoryStorage);
         vs_battle_rMemzero(vs_menu_inventoryStorage, sizeof *vs_menu_inventoryStorage);
         func_800FBD80(16);
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         _promptYesNo(5);
         vs_mainmenu_setInformationMessage(
             (char*)&_containerStrings[VS_container_OFFSET_checkContainer]);
@@ -3783,7 +3783,7 @@ int vs_menu7_saveContainerMenu(char* state)
         if (_initMemcard(0) != 0) {
             option = vs_battle_menuState.returnState;
             if (option != 0) {
-                func_800C8E04(1);
+                vs_battle_initInformationTextBox(1);
                 if (option == 1) {
                     _promptYesNo(1);
                     vs_mainmenu_setInformationMessage(
@@ -3808,7 +3808,7 @@ int vs_menu7_saveContainerMenu(char* state)
         option = _showSaveMenu(0);
         if (option != 0) {
             if ((_dataNotSaved == 0) && (option < 0)) {
-                func_800C8E04(1);
+                vs_battle_initInformationTextBox(1);
                 _promptYesNo(1);
                 vs_mainmenu_setInformationMessage(
                     (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
@@ -3977,10 +3977,10 @@ int vs_menu7_dataMenu(char* state)
         } else {
             if (((D_800F4E6B != 0) && (vs_main_stateFlags.unkA7 != 0))
                 && (vs_mainMenu_getConfirmedRow() == 0)) {
-                func_800C8E04(1);
-                D_800F514C = 11;
+                vs_battle_initInformationTextBox(1);
+                vs_battle_textBoxes[7].state = 11;
             } else {
-                D_800F514C = 0;
+                vs_battle_textBoxes[7].state = 0;
             }
         }
         break;

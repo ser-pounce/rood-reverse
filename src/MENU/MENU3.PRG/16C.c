@@ -1045,7 +1045,7 @@ static int func_80104788(int arg0)
         D_8010966D = arg0 >> 0x10;
         D_8010966B = arg0 >> 8;
         D_8010966C = arg0;
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[D_8010966D + 0x22A]]);
         D_8010966A = 0;
@@ -1054,7 +1054,7 @@ static int func_80104788(int arg0)
 
     switch (D_8010966A) {
     case 0:
-        if ((D_800F5130 >> 0x1E) & 1) {
+        if (vs_battle_textBoxes[7].unk0.done) {
             if (vs_mainmenu_ready() != 0) {
                 D_8010966A = ((D_8010966D & 1) + 1);
             }

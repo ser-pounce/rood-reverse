@@ -303,13 +303,13 @@ void vs_mainMenu_printInformation(int arg0, int arg1)
                 && (vs_main_buttonsState & (PADLup | PADLdown))) {
                 return;
             }
-            func_800C8E04(1);
-            D_800F514C = 0xB;
+            vs_battle_initInformationTextBox(1);
+            vs_battle_textBoxes[7].state = 0xB;
         } else if (vs_main_settings.information != 0) {
-            func_800C8E04(2);
-            D_800F514C = 0xB;
+            vs_battle_initInformationTextBox(2);
+            vs_battle_textBoxes[7].state = 0xB;
         } else {
-            D_800F514C = 0;
+            vs_battle_textBoxes[7].state = 0;
         }
     }
 }
@@ -383,7 +383,7 @@ void vs_mainMenu_dismissTextBox(void) { vs_battle_dismissTextBox(7); }
 void vs_mainMenu_initTextBox(void)
 {
     if (vs_main_settings.information != 0) {
-        func_800C8E04(2);
+        vs_battle_initInformationTextBox(2);
     } else {
         vs_mainMenu_dismissTextBox();
     }

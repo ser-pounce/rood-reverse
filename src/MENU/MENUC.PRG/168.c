@@ -131,7 +131,7 @@ static int _confirmationPrompt(int arg0)
     int action = 0;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         selectedOption = 0;
         state = 0;
         return 0;
@@ -198,7 +198,7 @@ static int _confirmCombine(int arg0)
     int action = 0;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         cancelCombinePos = arg0;
         selectedOption = 0;
         state = 0;
@@ -1039,7 +1039,7 @@ static int _assembleMenu(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         _pushSelectionHistory(5);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         _combiningItem = vs_mainMenu_getFirstEmptyItemSlot(0, NULL);
@@ -1525,7 +1525,7 @@ static int _attachGemsMenu(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         isShield = arg0 - 1;
         state = 0;
         return 0;
@@ -1937,7 +1937,7 @@ static int _disassembleMenu(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         isShield = arg0 - 1;
         state = 0;
         return 0;
@@ -2195,7 +2195,7 @@ static int _renameWeaponMenu(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_chooseWeaponRename]);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -2354,7 +2354,7 @@ static int _repairMenu(int arg0)
         }
         break;
     case 2:
-        func_800C8E04(3);
+        vs_battle_initInformationTextBox(3);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairComplete]);
 
@@ -4133,7 +4133,7 @@ int vs_menuC_exec(char* state)
             if (i < 0) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 if (i == -2) {
-                    D_800F514C = 0;
+                    vs_battle_textBoxes[7].state = 0;
                     *state = 0xB;
                 } else {
                     vs_battle_menuState.currentState = vs_battle_menuState.returnState;

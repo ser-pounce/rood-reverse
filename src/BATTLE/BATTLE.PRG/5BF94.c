@@ -1380,9 +1380,9 @@ int vs_battle_loadMenuPrg(int arg0)
     return 0;
 }
 
-void func_800C8E04(int arg0)
+void vs_battle_initInformationTextBox(int flags)
 {
-    vs_battle_initTextBox(7, (arg0 << 8) | 4, 0, 1, 0, 4, 0, 0);
+    vs_battle_initTextBox(7, (flags << 8) | 4, 0, 1, 0, 4, 0, 0);
 }
 
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
@@ -2213,7 +2213,7 @@ int func_800CB45C(void)
 {
     if (D_800EB9D8 != NULL) {
 
-        if (!((D_800F5130 >> 0x1E) & 1)) {
+        if (!vs_battle_textBoxes[7].unk0.done) {
             return 1;
         }
 
@@ -2552,6 +2552,7 @@ int vs_battle_dismissTextBox(int id)
         }
         return -1;
     }
+
     return 0;
 }
 

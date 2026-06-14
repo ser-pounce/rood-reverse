@@ -1716,7 +1716,7 @@ int _discardMenu(int arg0)
         discardType = arg0 >> 0x10;
         itemCategory = (arg0 >> 0xC) & 0xF;
         selectedItem = arg0 - 1;
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                     [discardType + VS_ITEMHELP_BIN_INDEX_discardConfirm]]);
@@ -1726,7 +1726,7 @@ int _discardMenu(int arg0)
     switch (state) {
     case init:
         var_v0 = 0;
-        if ((D_800F5130 >> 0x1E) & 1) {
+        if (vs_battle_textBoxes[7].unk0.done) {
             if (vs_mainmenu_ready() != 0) {
                 state = ((discardType & 1) + 1);
             }
@@ -2327,7 +2327,7 @@ int func_801072B0(int arg0)
     int temp_s0;
 
     if (arg0 != 0) {
-        func_800C8E04(1);
+        vs_battle_initInformationTextBox(1);
         D_80109A7D = 5;
         D_801023E3 = 0;
         D_80109A58 = 0;

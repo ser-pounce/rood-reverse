@@ -505,6 +505,7 @@ int func_800455AC(int, int, int);
 int func_8004550C(int);
 void func_80045DC0(void);
 void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec);
+int vs_main_computeSfxPan(int coords, int z);
 void func_80045BFC(int arg0, int arg1, int arg2, char arg3);
 void func_80045C74(int arg0, int arg1, int arg2, char arg3);
 void func_80045CEC(int, int, int, char);

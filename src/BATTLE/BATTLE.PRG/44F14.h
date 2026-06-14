@@ -1,6 +1,7 @@
 #pragma once
 #include "30D14.h"
 
+void func_8006CD60(u_int*, int, int);
 void func_800AE4FC(void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(void*);

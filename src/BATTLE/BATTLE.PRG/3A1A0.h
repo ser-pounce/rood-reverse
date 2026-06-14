@@ -205,7 +205,8 @@ typedef struct {
     short unk5BE;
     u_short unk5C0;
     u_short unk5C2;
-    int unk5C4;
+    u_short unk5C4;
+    u_short unk5C6;
     u_short unk5C8;
     u_short unk5CA;
     char unk5CC;

@@ -3,6 +3,7 @@
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
 #include "gpu.h"
@@ -27,7 +28,7 @@ static void _setMPCost(int id)
     }
 
     flags = vs_battle_getSkillFlags(0, id);
-    vs_mainmenu_setAbilityCost(1, "MP", 8, (flags >> 1) & 1);
+    vs_mainmenu_setSkillCost(1, "MP", 8, (flags >> 1) & 1);
 
     cost = vs_main_skills[id].cost;
     _MPCostTextBuffer[15] = NULL;
@@ -51,7 +52,7 @@ static void _setMPCost(int id)
 
     _MPCostTextBuffer[--i] = '#';
 
-    vs_mainmenu_setAbilityCost(
+    vs_mainmenu_setSkillCost(
         0, &_MPCostTextBuffer[i], variableCost * 4 + 72, (flags >> 1) & 1);
 }
 
@@ -65,7 +66,7 @@ void _setMPCostDirect(int costDecimal, int disabled)
     int cost;
     int i;
 
-    vs_mainmenu_setAbilityCost(1, "MP", 8, disabled);
+    vs_mainmenu_setSkillCost(1, "MP", 8, disabled);
 
     cost = costDecimal;
     i = 15;
@@ -79,7 +80,7 @@ void _setMPCostDirect(int costDecimal, int disabled)
 
     _MPCostDirectTextBuffer[--i] = '#';
 
-    vs_mainmenu_setAbilityCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
+    vs_mainmenu_setSkillCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
 }
 
 u_short _magicStrings[] = {
@@ -221,7 +222,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(rowCount, 0x207, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 7, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
         state = handleInput;
         break;
@@ -244,7 +245,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                     if ((selectedRow == levelledSpells[rowCount])
                         && (vs_main_skills[selectedRow + 1].unlocked)) {
                         vs_mainMenu_flyoutMenuRightAndHoistSelection(
-                            D_800F4EE8.unk0[0xE], 2);
+                            D_800F4EE8.cursorMemories[14], 2);
                         vs_mainMenu_isLevelledSpell = 1;
                         state = levelledSpell;
                     }
@@ -286,9 +287,9 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 i = 4;
             }
         }
-        D_800F4EE8.unk0[0xD] = i;
-        if (D_800F4EE8.unk0[0xC] >= i) {
-            D_800F4EE8.unk0[0xC] = i - 1;
+        D_800F4EE8.cursorMemories[13] = i;
+        if (D_800F4EE8.cursorMemories[12] >= i) {
+            D_800F4EE8.cursorMemories[12] = i - 1;
         }
         D_8010694A = 0;
         state = 4;
@@ -299,8 +300,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         int var_s7_2;
         u_long* var_t3;
 
-        i = D_800F4EE8.unk0[0xC];
-        rowCount = D_800F4EE8.unk0[0xD];
+        i = D_800F4EE8.cursorMemories[12];
+        rowCount = D_800F4EE8.cursorMemories[13];
 
         if (vs_main_buttonsPressed.all & PADRup) {
             vs_battle_playMenuLeaveSfx();
@@ -343,9 +344,9 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 --i;
             }
         }
-        if (i != D_800F4EE8.unk0[0xC]) {
+        if (i != D_800F4EE8.cursorMemories[0xC]) {
             vs_battle_playMenuChangeSfx();
-            D_800F4EE8.unk0[0xC] = i;
+            D_800F4EE8.cursorMemories[0xC] = i;
         }
 
         _setMPCost(selectedRow + i);
@@ -492,7 +493,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
         if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(rowCount, 0x208, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 8, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
         state = handleInput;
         break;
@@ -593,7 +594,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
         if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(rowCount, 0x209, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 9, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
         state = handleInput;
         break;
@@ -691,7 +692,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
         if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
-        vs_mainmenu_setMenuRows(rowCount, 0x20A, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 10, menuStrings, rowTypes);
         vs_main_settings.cursorMemory = i;
         state = handleInput;
         break;

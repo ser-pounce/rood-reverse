@@ -169,8 +169,8 @@ static void _setSubMenu(int id, char** menuText, u_int rowType, int arg3)
 
 static int _getItemIndex(int itemCategory, int index)
 {
-    D_800F4EE8.unk0[(itemCategory + 30) * 2] = 0;
-    D_800F4EE8.unk0[(itemCategory + 30) * 2 + 1] = index;
+    D_800F4EE8.cursorMemories[(itemCategory + 30) * 2] = 0;
+    D_800F4EE8.cursorMemories[(itemCategory + 30) * 2 + 1] = index;
     return vs_mainMenu_inventoryIndices[itemCategory][index];
 }
 
@@ -1370,7 +1370,8 @@ static void func_8010537C(int arg0)
             menuItem->state = 1;
             menuItem->initialX = menuItem->targetX;
         }
-        menuItem->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
+        menuItem->selected =
+            (i ^ (D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] + 0x14)) == 0;
     }
 }
 

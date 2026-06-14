@@ -105,7 +105,7 @@ typedef struct {
 } vs_battle_textBox;
 
 typedef struct {
-    char unk0[0x34];
+    char cursorMemories[52];
     char unk34[6];
     struct {
         char itemCategory;

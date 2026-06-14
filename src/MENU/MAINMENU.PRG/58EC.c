@@ -50,8 +50,8 @@ void vs_mainMenu_initSortUi(int rowCount, int arg1, char** strings, int* rowType
     if (arg1 == 4) {
         i = 1;
     } else if ((vs_main_settings.cursorMemory != 0) && (arg1 != 3)) {
-        i = D_800F4EE8.unk0[arg1 * 2];
-        var_a2 = D_800F4EE8.unk0[arg1 * 2 + 1];
+        i = D_800F4EE8.cursorMemories[arg1 * 2];
+        var_a2 = D_800F4EE8.cursorMemories[arg1 * 2 + 1];
     }
     temp_v1_2 = rowCount - 7;
     if (temp_v1_2 < 0) {
@@ -173,8 +173,8 @@ void vs_mainMenu_processItemActionMenu(void)
             if (vs_main_buttonsPressed.all & PADRup) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
-                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
+                D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
                 _selectedItemAction = -3;
                 return;
             }
@@ -184,8 +184,8 @@ void vs_mainMenu_processItemActionMenu(void)
                     menuItem->selected = 1;
                     vs_main_freeHeapR(D_801022C8);
                     D_801022C8 = NULL;
-                    D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
-                    D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                    D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
+                    D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
                     _selectedItemAction = temp_s6;
                     return;
                 }
@@ -197,8 +197,8 @@ void vs_mainMenu_processItemActionMenu(void)
             if (vs_main_buttonsPressed.all & PADRdown) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.unk0[D_801022D0 * 2] = _selectedItemAction;
-                D_800F4EE8.unk0[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
+                D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
                 _selectedItemAction = -2;
                 return;
             }
@@ -324,7 +324,10 @@ static short D_801022E0 = 128;
 static char _menuActionCurrent = 0;
 static char _menuActionNext = 0;
 
-void vs_mainMenu_setNextMenuAction(int action) { _menuActionNext = action; }
+void vs_mainMenu_setNextMenuAction(enum vs_mainMenu_menuActions action)
+{
+    _menuActionNext = action;
+}
 
 void func_800FFA94(void)
 {
@@ -544,12 +547,12 @@ void vs_mainMenu_drawRowIcon(int arg0, int arg1, int arg2)
     }
 }
 
-void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int disabled)
+void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled)
 {
     vs_mainMenu_isLevelledSpell = 1;
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);
     _textHeaders[index].disabled = disabled;
-    _textHeaders[index].x = x;
+    _textHeaders[index].x = xOffset;
 }
 
 void func_80100164(void)
@@ -674,77 +677,63 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
 char D_801023D0 = 0;
 u_short* D_801023D4 = NULL;
 static int _selectedRow = 0;
-static u_char D_801023DC = 0;
-static char D_801023DD = 0;
-static char D_801023DE = 0;
-static char D_801023DF = 0;
-static u_short D_801023E0 = 0;
+static u_char _subMenuId = 0;
+static char _subMenuRowInfo = 0;
+static char _subMenuPage = 0;
+static char _menuRowYOffset = 0;
+static u_short _subMenuRowCount = 0;
 
-/**
- * Initialises multiple menu rows
- *
- * @param rowCount
- * @param arg1 Packed values
- * - Bits 0-3:
- * - Bits 4-7:
- * - Bits 8-12:
- * @param strings Pairs of strings for the menu and info text box
- * @param rowTypes Packed flags to set row styles
- */
-void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTypes)
+void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[])
 {
     int temp_v1_2;
-    int i;
     int var_v0;
-    int temp_a0;
     u_int var_a0;
-    int var_a2;
 
-    i = 0;
-    var_a2 = 0;
-    temp_a0 = arg1 & 0xFF;
-    D_801023DF = (arg1 >> 0xC);
-    D_801023DC = temp_a0;
-    arg1 = (arg1 >> 8) & 0xF;
+    int i = 0;
+    int page = 0;
+    int subMenuId = rowInfo & 0xFF;
+    _menuRowYOffset = (rowInfo >> 0xC);
+    _subMenuId = subMenuId;
+    rowInfo = (rowInfo >> 8) & 0xF;
 
     if (vs_main_settings.cursorMemory != 0) {
-        i = D_800F4EE8.unk0[temp_a0 * 2];
-        var_a2 = D_800F4EE8.unk0[temp_a0 * 2 + 1];
+        i = D_800F4EE8.cursorMemories[subMenuId * 2];
+        page = D_800F4EE8.cursorMemories[subMenuId * 2 + 1];
     }
 
-    temp_v1_2 = 0xA;
-    temp_v1_2 = rowCount - temp_v1_2 + arg1;
+    temp_v1_2 = 10;
+    temp_v1_2 = rowCount - temp_v1_2 + rowInfo;
 
     if (temp_v1_2 < 0) {
-        i += var_a2;
-        var_a2 = 0;
+        i += page;
+        page = 0;
         if (i >= rowCount) {
             i = 0;
         }
     } else {
-        if (temp_v1_2 < var_a2) {
-            if ((i + var_a2) >= rowCount) {
+        if (temp_v1_2 < page) {
+            if ((i + page) >= rowCount) {
                 i = 0;
-                var_a2 = 0;
+                page = 0;
             } else {
-                i += var_a2 - temp_v1_2;
-                var_a2 = temp_v1_2;
+                i += page - temp_v1_2;
+                page = temp_v1_2;
             }
         }
 
-        var_v0 = var_a2 < temp_v1_2;
+        var_v0 = page < temp_v1_2;
 
-        if ((var_a2 > 0) && (i == 0)) {
+        if ((page > 0) && (i == 0)) {
             i = 1;
-            var_a2 -= 1;
-            var_v0 = var_a2 < temp_v1_2;
+            page -= 1;
+            var_v0 = page < temp_v1_2;
         }
 
         if (var_v0 != 0) {
             var_a0 = rowCount << 7;
-            if (i == (9 - arg1)) {
+            if (i == (9 - rowInfo)) {
                 i -= 1;
-                var_a2 += 1;
+                page += 1;
                 ;
             }
         }
@@ -752,9 +741,9 @@ void vs_mainmenu_setMenuRows(int rowCount, int arg1, char** strings, int* rowTyp
 
     _selectedRow = i;
 
-    D_801023DE = var_a2;
-    D_801023E0 = rowCount;
-    D_801023DD = arg1;
+    _subMenuPage = page;
+    _subMenuRowCount = rowCount;
+    _subMenuRowInfo = rowInfo;
     D_801023D0 = 0;
     D_801023D4 = vs_main_allocHeapR(rowCount << 7);
 
@@ -784,12 +773,12 @@ int func_80100814(void)
 {
     vs_main_freeHeapR(D_801023D4);
     D_801023D4 = NULL;
-    D_800F4EE8.unk0[D_801023DC * 2] = _selectedRow;
-    D_800F4EE8.unk0[D_801023DC * 2 + 1] = D_801023DE;
-    return (_selectedRow + D_801023DE) | ((_selectedRow + (D_801023DD * 10)) << 8);
+    D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
+    D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
+    return (_selectedRow + _subMenuPage) | ((_selectedRow + (_subMenuRowInfo * 10)) << 8);
 }
 
-int vs_mainMenu_getConfirmedRow(void) { return _selectedRow + D_801023DE; }
+int vs_mainMenu_getConfirmedRow(void) { return _selectedRow + _subMenuPage; }
 
 int vs_mainmenu_getSelectedRow(void) { return D_801023D4 != NULL ? -1 : _selectedRow; }
 
@@ -797,18 +786,18 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
 {
     int temp_a1;
     int temp_v1;
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(arg0 + (D_801023DD * 0xA),
-        arg1, ((arg0 + D_801023DD) * 0x10) + 0x12, D_801023DF + 0x7E, 0,
-        (char*)&D_801023D4[(D_801023DE + arg0) * 0x40]);
+    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(arg0 + (_subMenuRowInfo * 0xA),
+        arg1, ((arg0 + _subMenuRowInfo) * 0x10) + 0x12, _menuRowYOffset + 0x7E, 0,
+        (char*)&D_801023D4[(_subMenuPage + arg0) * 0x40]);
 
-    temp_a1 = *((int*)(&(&D_801023D4[(D_801023DE + arg0) * 0x40])[14]));
+    temp_a1 = *((int*)(&(&D_801023D4[(_subMenuPage + arg0) * 0x40])[14]));
     menuItem->unk7 = temp_a1 & 1;
     menuItem->backgroundWidth = menuItem->backgroundWidth + ((temp_a1 & 2) * 0xC);
     temp_v1 = (temp_a1 >> 3) & 1;
     menuItem->unkB = temp_v1;
     menuItem->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
     menuItem->icon = (temp_a1 >> 0x1A);
-    if ((arg0 == 0) && (D_801023DE != 0)) {
+    if ((arg0 == 0) && (_subMenuPage != 0)) {
         menuItem->fadeEffect = 1;
     }
     arg0 = (temp_a1 >> 9) & 0x7F;
@@ -835,7 +824,7 @@ void func_80100A5C(void)
     int temp_s5;
     vs_battle_menuItem_t* menuItem;
 
-    if (D_801023E0 == 0) {
+    if (_subMenuRowCount == 0) {
         if (D_801023D4 != NULL) {
             vs_main_freeHeapR(D_801023D4);
             D_801023D4 = NULL;
@@ -847,21 +836,21 @@ void func_80100A5C(void)
         menuItem = func_801008F0(D_801023D0, 0x140);
         menuItem->state = 2;
         ++D_801023D0;
-        menuItem->targetX = 0xC2 - D_801023DF;
-        if (D_801023D0 == D_801023E0) {
+        menuItem->targetX = 0xC2 - _menuRowYOffset;
+        if (D_801023D0 == _subMenuRowCount) {
             D_801023D0 = 0x10;
         }
-        if (D_801023D0 == (0xA - D_801023DD)) {
-            if ((D_801023D0 + D_801023DE) < D_801023E0) {
+        if (D_801023D0 == (0xA - _subMenuRowInfo)) {
+            if ((D_801023D0 + _subMenuPage) < _subMenuRowCount) {
                 menuItem->fadeEffect = 2;
             }
             D_801023D0 = 0x10;
         }
     } else {
 
-        menuItem = vs_battle_getMenuItem(_selectedRow + (D_801023DD * 10));
+        menuItem = vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 10));
         vs_mainmenu_setInformationMessage(
-            (char*)(D_801023D4 + (((_selectedRow + D_801023DE) << 6) + 16)));
+            (char*)(D_801023D4 + (((_selectedRow + _subMenuPage) << 6) + 16)));
 
         switch (D_801023D0) {
         case 16:
@@ -871,14 +860,14 @@ void func_80100A5C(void)
             }
             return;
         case 17:
-            temp_s6 = _selectedRow + D_801023DE;
-            temp_s5 = D_801023DE;
+            temp_s6 = _selectedRow + _subMenuPage;
+            temp_s5 = _subMenuPage;
             if (vs_main_buttonsPressed.all & 0x10) {
                 vs_battle_playMenuLeaveSfx();
                 vs_main_freeHeapR(D_801023D4);
                 D_801023D4 = NULL;
-                D_800F4EE8.unk0[D_801023DC * 2] = _selectedRow;
-                D_800F4EE8.unk0[D_801023DC * 2 + 1] = D_801023DE;
+                D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
+                D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                 _selectedRow = -3;
                 return;
             }
@@ -888,8 +877,8 @@ void func_80100A5C(void)
                     vs_battle_playMenuSelectSfx();
                     vs_main_freeHeapR(D_801023D4);
                     D_801023D4 = NULL;
-                    D_800F4EE8.unk0[D_801023DC * 2] = _selectedRow;
-                    D_800F4EE8.unk0[D_801023DC * 2 + 1] = D_801023DE;
+                    D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
+                    D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                     _selectedRow = temp_s6;
                     return;
                 }
@@ -900,83 +889,84 @@ void func_80100A5C(void)
                 vs_battle_playMenuLeaveSfx();
                 vs_main_freeHeapR(D_801023D4);
                 D_801023D4 = NULL;
-                D_800F4EE8.unk0[D_801023DC * 2] = _selectedRow;
-                D_800F4EE8.unk0[D_801023DC * 2 + 1] = D_801023DE;
+                D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
+                D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                 _selectedRow = -2;
                 return;
             }
             if (vs_main_buttonRepeat & 0x1000) {
-                if (D_801023E0 <= (10 - D_801023DD)) {
+                if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
                     if (_selectedRow == 0) {
-                        _selectedRow = D_801023E0 - 1;
+                        _selectedRow = _subMenuRowCount - 1;
                     } else {
                         --_selectedRow;
                     }
-                } else if (D_801023DE == 0) {
+                } else if (_subMenuPage == 0) {
                     if (_selectedRow == 0) {
                         if (vs_main_buttonsPressed.all & 0x1000) {
-                            _selectedRow = 9 - D_801023DD;
-                            D_801023DE = D_801023DD + (D_801023E0 + 0xF6);
+                            _selectedRow = 9 - _subMenuRowInfo;
+                            _subMenuPage = _subMenuRowInfo + (_subMenuRowCount + 0xF6);
                         }
                     } else {
                         --_selectedRow;
                     }
                 } else if (_selectedRow == 1) {
-                    --D_801023DE;
+                    --_subMenuPage;
                 } else {
                     --_selectedRow;
                 }
             }
             if (vs_main_buttonRepeat & 0x4000) {
-                if (D_801023E0 <= (10 - D_801023DD)) {
-                    if (_selectedRow == (D_801023E0 - 1)) {
+                if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
+                    if (_selectedRow == (_subMenuRowCount - 1)) {
                         _selectedRow = 0;
                     } else {
                         ++_selectedRow;
                     }
-                } else if (D_801023DE == (D_801023E0 + (D_801023DD - 10))) {
-                    if (_selectedRow == (9 - D_801023DD)) {
+                } else if (_subMenuPage == (_subMenuRowCount + (_subMenuRowInfo - 10))) {
+                    if (_selectedRow == (9 - _subMenuRowInfo)) {
                         if (vs_main_buttonsPressed.all & 0x4000) {
                             _selectedRow = 0;
-                            D_801023DE = 0;
+                            _subMenuPage = 0;
                         }
                     } else {
                         ++_selectedRow;
                     }
-                } else if (_selectedRow == (8 - D_801023DD)) {
-                    ++D_801023DE;
+                } else if (_selectedRow == (8 - _subMenuRowInfo)) {
+                    ++_subMenuPage;
                 } else {
                     ++_selectedRow;
                 }
             }
-            if (temp_s6 != (_selectedRow + D_801023DE)) {
+            if (temp_s6 != (_selectedRow + _subMenuPage)) {
                 vs_battle_playMenuChangeSfx();
 
-                if (D_801023DE != temp_s5) {
-                    char unksp10[D_801023E0];
-                    for (i = 0; i < D_801023E0; ++i) {
+                if (_subMenuPage != temp_s5) {
+                    char unksp10[_subMenuRowCount];
+                    for (i = 0; i < _subMenuRowCount; ++i) {
                         unksp10[i] = 0;
                     }
-                    var_s1 = D_801023E0;
-                    temp_v1 = 10 - D_801023DD;
+                    var_s1 = _subMenuRowCount;
+                    temp_v1 = 10 - _subMenuRowInfo;
                     if (temp_v1 < var_s1) {
                         var_s1 = temp_v1;
                     }
 
                     for (i = 0; i < var_s1; ++i) {
                         unksp10[i + temp_s5] =
-                            vs_battle_getMenuItem(i + (D_801023DD * 10))->animationState;
+                            vs_battle_getMenuItem(i + (_subMenuRowInfo * 10))
+                                ->animationState;
                     }
                     for (i = 0;;) {
-                        menuItem = func_801008F0(i, 0xC2 - D_801023DF);
-                        menuItem->animationState = unksp10[i + D_801023DE];
+                        menuItem = func_801008F0(i, 0xC2 - _menuRowYOffset);
+                        menuItem->animationState = unksp10[i + _subMenuPage];
                         i += 1;
 
-                        if (i == D_801023E0) {
+                        if (i == _subMenuRowCount) {
                             break;
                         }
-                        if (i == (10 - D_801023DD)) {
-                            if ((i + D_801023DE) < D_801023E0) {
+                        if (i == (10 - _subMenuRowInfo)) {
+                            if ((i + _subMenuPage) < _subMenuRowCount) {
                                 menuItem->fadeEffect = 2;
                             }
                             break;
@@ -984,10 +974,10 @@ void func_80100A5C(void)
                     }
                 }
             }
-            vs_battle_getMenuItem(_selectedRow + (D_801023DD * 0xA))->selected = 1;
+            vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 0xA))->selected = 1;
             D_801023E2 = func_800FFCDC((u_int)D_801023E2,
-                (0xB4 - D_801023DF)
-                    | ((((_selectedRow + D_801023DD) * 0x10) + 0xA) << 0x10));
+                (0xB4 - _menuRowYOffset)
+                    | ((((_selectedRow + _subMenuRowInfo) * 0x10) + 0xA) << 0x10));
             break;
         }
     }

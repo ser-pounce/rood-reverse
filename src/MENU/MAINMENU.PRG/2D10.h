@@ -2,7 +2,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
-enum vs_mainMenu_menuACctions {
+enum vs_mainMenu_menuActions {
     menuActionNone,
     menuActionCommand,
     menuActionMenu,
@@ -35,13 +35,29 @@ int func_800FF348(void);
 int vs_mainMenu_getSelectedItemAction(void);
 void vs_mainMenu_processItemActionMenu(void);
 void vs_mainMenu_printInformation(int, int);
-void vs_mainMenu_setNextMenuAction(int);
+
+/**
+ * Sets the text at the very top of the menu.
+ * Text is automatically animated replaced with a slide animation
+ * off the top of the screen.
+ */
+void vs_mainMenu_setNextMenuAction(enum vs_mainMenu_menuActions action);
 void func_800FFA94(void);
 void func_800FFB68(int);
 void vs_mainMenu_deactivateMenuItem(int);
 int vs_mainMenu_findItem(int category, int id);
+
+/**
+ * Dismisses text box ID 7, used for the information
+ * display at the bottom of the screen.
+ */
 void vs_mainMenu_dismissTextBox(void);
 void vs_mainMenu_rebuildInventory(int);
+
+/**
+ * Initializes text box ID 7, used for the information
+ * display at the bottom of the screen.
+ */
 void vs_mainMenu_initTextBox(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
 int func_800FFCDC(u_int, int);
@@ -51,14 +67,28 @@ void func_800FFF38(int arg0, int arg1);
 void func_800FFFBC(int arg0, int arg1);
 int vs_mainMenu_renderIntColor(int, int, int, u_long*);
 void vs_mainmenu_setInformationMessage(char*);
-void vs_mainmenu_setAbilityCost(int index, char const* text, int x, int disabled);
+
+/**
+ * Populates one of two elements for displaying skill costs.
+ *
+ * @param index 0 is intended for the cost type, 1 for the value.
+ * @param disabled Displays value in gray.
+ */
+void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled);
 void vs_mainMenu_drawRowIcon(int, int, int);
 void func_80100164(void);
 void vs_mainMenu_drawButtonUiBackground(int x, int y, int w, int h);
 void func_80100414(int, int);
-void vs_mainmenu_setMenuRows(int rowCount, int, char* strings[], int rowtypes[]);
 int func_80100814(void);
+
+/**
+ * Retrieve row confirmed by the user.
+ */
 int vs_mainMenu_getConfirmedRow(void);
+
+/**
+ * Retrieve currently selected row.
+ */
 int vs_mainmenu_getSelectedRow(void);
 void func_80100A5C(void);
 void func_80101118(int);

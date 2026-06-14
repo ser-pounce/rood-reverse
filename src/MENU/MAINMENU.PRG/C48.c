@@ -212,9 +212,9 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 }
 
-void vs_mainMenu_menuItemFlyoutLeft(int arg0)
+void vs_mainMenu_menuItemFlyoutLeft(int row)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0 + 32);
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row + 32);
     if (menuItem->state != 0) {
         menuItem->state = 5;
         menuItem->targetX = -menuItem->w;
@@ -232,11 +232,9 @@ void func_800FA854(int arg0)
     }
 }
 
-void vs_mainMenu_menuItemFlyoutRight(int arg0)
+void vs_mainMenu_menuItemFlyoutRight(int row)
 {
-    vs_battle_menuItem_t* menuItem;
-
-    menuItem = vs_battle_getMenuItem(arg0);
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row);
     if (menuItem->state != 0) {
         menuItem->state = 2;
         menuItem->targetX = 320;
@@ -254,19 +252,20 @@ void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id)
     }
 }
 
-void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1)
+void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset)
 {
     vs_battle_menuItem_t* menuItem;
     int i;
 
-    for (i = arg1 * 10; i < 30; ++i) {
+    for (i = offset * 10; i < 30; ++i) {
         vs_mainMenu_menuItemFlyoutRight(i);
     }
 
-    menuItem = vs_battle_getMenuItem(arg0 + (arg1 * 10));
+    menuItem = vs_battle_getMenuItem(row + (offset * 10));
     menuItem->state = 4;
     menuItem->targetX = 180;
-    menuItem->targetY = (arg1 * 16) + 18;
+    menuItem->targetY = (offset * 16) + 18;
+
     if (menuItem->backgroundWidth == 0) {
         menuItem->backgroundWidth = 1;
     }
@@ -274,10 +273,8 @@ void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1)
 
 int vs_mainmenu_ready(void)
 {
-    vs_battle_menuItem_t* menuItem;
     int i;
-
-    menuItem = vs_battle_getMenuItem(0);
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(0);
 
     for (i = 0; i < 40; ++i) {
         if (menuItem->state > 1) {
@@ -523,7 +520,7 @@ void func_800FAEBC(int arg0)
             } else {
                 vs_main_settings.cursorMemory = 1;
             }
-            vs_mainmenu_setMenuRows(var_s5, 0x19224, temp_s7, temp_fp);
+            vs_mainmenu_setMenuRows(var_s5, (25 << 12) | (2 << 8) | 36, temp_s7, temp_fp);
             vs_main_settings.cursorMemory = i;
         }
         vs_main_freeHeapR(temp_s6);

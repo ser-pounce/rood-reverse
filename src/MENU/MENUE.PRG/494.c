@@ -86,14 +86,14 @@ static void _setMenuRows(int rowCount, int highlightedRow, char** strings)
     rowTypes[rowCount - 1] |= 4;
 
     if ((rowCount < 9) || (highlightedRow < 8)) {
-        D_800F4EE8.unk0[4] = highlightedRow;
-        D_800F4EE8.unk0[5] = 0;
+        D_800F4EE8.cursorMemories[4] = highlightedRow;
+        D_800F4EE8.cursorMemories[5] = 0;
     } else if (highlightedRow >= (rowCount - 8)) {
-        D_800F4EE8.unk0[4] = highlightedRow - (rowCount - 9);
-        D_800F4EE8.unk0[5] = rowCount - 9;
+        D_800F4EE8.cursorMemories[4] = highlightedRow - (rowCount - 9);
+        D_800F4EE8.cursorMemories[5] = rowCount - 9;
     } else {
-        D_800F4EE8.unk0[4] = 4;
-        D_800F4EE8.unk0[5] = highlightedRow - 4;
+        D_800F4EE8.cursorMemories[4] = 4;
+        D_800F4EE8.cursorMemories[5] = highlightedRow - 4;
     }
     cursor = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
@@ -111,7 +111,7 @@ static int _getSelectedRow(void)
         return row;
     }
     if (row >= 0) {
-        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[4], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.cursorMemories[4], 1);
     }
     return row;
 }
@@ -302,7 +302,7 @@ static int _showMenu(void)
             vs_main_cdEnqueue(_helpTextCdQueue, _helpText);
         }
         vs_battle_manualDisplayState.currentManual =
-            D_800F4EE8.unk0[4] + D_800F4EE8.unk0[5];
+            D_800F4EE8.cursorMemories[4] + D_800F4EE8.cursorMemories[5];
         vs_mainMenu_dismissTextBox();
         break;
     case loadSubMenu:

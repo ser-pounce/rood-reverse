@@ -6,13 +6,41 @@
 enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 
 void vs_mainMenu_initInventory(void);
-void vs_mainMenu_menuItemFlyoutRight(int arg0);
-void vs_mainMenu_menuItemFlyoutLeft(int arg0);
+
+/**
+ * Dismisses the specified row towards the left.
+ */
+void vs_mainMenu_menuItemFlyoutLeft(int row);
+
+/**
+ * Dismisses the specified row towards the right.
+ */
+void vs_mainMenu_menuItemFlyoutRight(int row);
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
 void func_800FA854(int arg0);
+
+/**
+ * Clears entire menu except for the specified row.
+ *
+ * @param id Can be set to vs_mainMenu_menuItemIds_none to indicate that
+ * all rows are to be cleared.
+ */
 void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id);
+
+/**
+ * Indicates when the menu is at rest.
+ *
+ * @return Boolean true / false.
+ */
 int vs_mainmenu_ready(void);
-void vs_mainMenu_flyoutMenuRightAndHoistSelection(int arg0, int arg1);
+
+/**
+ * Invokes vs_mainMenu_menuItemFlyoutRight for all rows >= offset,
+ * with the exception of row which is hoisted to the top of the menu.
+ *
+ * @param offset 0, 1, or 2 to indicate row 0, 10, or 20 respectively.
+ */
+void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset);
 void vs_mainMenu_exec(int);
 void func_800FAEBC(int);
 void func_800FBB8C(int arg0);

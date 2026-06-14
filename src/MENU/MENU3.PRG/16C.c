@@ -72,7 +72,7 @@ static void func_80102A3C(int arg0, int arg1)
     vs_battle_menuItem_t* temp_v0;
     int new_var;
 
-    temp_s4 = (D_800F4EE8.unk0[58] - 1) & 7;
+    temp_s4 = (D_800F4EE8.cursorMemories[58] - 1) & 7;
     if (arg0 == 4) {
         func_801013F8(0);
     }
@@ -159,8 +159,8 @@ static void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
 
 static int func_80102D30(int arg0, int arg1)
 {
-    D_800F4EE8.unk0[(arg0 + 0x1E) * 2] = 0;
-    D_800F4EE8.unk0[(arg0 + 0x1E) * 2 + 1] = arg1;
+    D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] = 0;
+    D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2 + 1] = arg1;
     return *(vs_mainMenu_inventoryIndices[arg0] + arg1);
 }
 
@@ -1368,7 +1368,8 @@ static void func_80105314(int arg0)
             temp_v0->state = 1;
             temp_v0->initialX = temp_v0->targetX;
         }
-        temp_v0->selected = (i ^ (D_800F4EE8.unk0[(arg0 + 0x1E) * 2] + 0x14)) == 0;
+        temp_v0->selected =
+            (i ^ (D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] + 0x14)) == 0;
     }
 }
 

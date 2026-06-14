@@ -790,8 +790,8 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
 
 int func_80104114(int arg0, int arg1)
 {
-    D_800F4EE8.unk0[(arg0 + 0x51) * 2] = 0;
-    D_800F4EE8.unk0[(arg0 + 0x51) * 2 + 1] = arg1;
+    D_800F4EE8.cursorMemories[(arg0 + 0x51) * 2] = 0;
+    D_800F4EE8.cursorMemories[(arg0 + 0x51) * 2 + 1] = arg1;
     return _getContainerIndicesOffset(arg0, vs_menuD_containerData)[arg1];
 }
 
@@ -2310,7 +2310,7 @@ void func_801071D8(int arg0)
             temp_v0->state = 1;
             temp_v0->initialX = temp_v0->targetX;
         }
-        temp_v0_2 = i ^ (D_800F4EE8.unk0[(arg0 + 81) * 2] + 20);
+        temp_v0_2 = i ^ (D_800F4EE8.cursorMemories[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
     }
 }
@@ -2922,8 +2922,8 @@ loop_1:
             }
             D_800F4EE8.unkA0[0] = (var_s4 + 1) & 7;
             temp_v0_18 = (var_s4 + 0x51) * 2;
-            D_800F4EE8.unk0[temp_v0_18] = temp_s3;
-            D_800F4EE8.unk0[temp_v0_18 + 1] = temp_s2;
+            D_800F4EE8.cursorMemories[temp_v0_18] = temp_s3;
+            D_800F4EE8.cursorMemories[temp_v0_18 + 1] = temp_s2;
             D_80109A68 = 1;
         }
         break;

@@ -10,6 +10,19 @@ typedef struct {
 
 void func_80101F38(void);
 
+/**
+ * Initialises multiple menu rows
+ *
+ * @param rowCount
+ * @param rowInfo Packed values
+ * - Bits 0-7: Submenu identifier for cursor history
+ * - Bits 8-11: X offset in menu rows
+ * - Bits 12-31: Y negative offset in pixels
+ * @param strings Pairs of strings for the menu and info text box.
+ * @param rowTypes Packed row style flags.
+ */
+void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[]);
+
 extern char D_80102410[64];
 extern int D_80102450;
 extern char D_80102454;

@@ -236,14 +236,14 @@ void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
     }
 
     if ((arg0 < 9) || (arg1 < 8)) {
-        D_800F4EE8.unk0[2] = arg1;
-        D_800F4EE8.unk0[3] = 0;
+        D_800F4EE8.cursorMemories[2] = arg1;
+        D_800F4EE8.cursorMemories[3] = 0;
     } else if (arg1 >= (arg0 - 8)) {
-        D_800F4EE8.unk0[2] = arg1 - (arg0 - 9);
-        D_800F4EE8.unk0[3] = arg0 - 9;
+        D_800F4EE8.cursorMemories[2] = arg1 - (arg0 - 9);
+        D_800F4EE8.cursorMemories[3] = arg0 - 9;
     } else {
-        D_800F4EE8.unk0[2] = 4;
-        D_800F4EE8.unk0[3] = arg1 - 4;
+        D_800F4EE8.cursorMemories[2] = 4;
+        D_800F4EE8.cursorMemories[3] = arg1 - 4;
     }
     temp_s1 = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
@@ -259,7 +259,7 @@ int _getSelectedRow(void)
     if (row < -1) {
         vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
-        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[2], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.cursorMemories[2], 1);
     }
     return row;
 }
@@ -525,7 +525,7 @@ int _handleMenu(void)
         } else {
             D_8010A440 = 0;
         }
-        D_800F1BF7 = D_800F4EE8.unk0[2] + D_800F4EE8.unk0[3];
+        D_800F1BF7 = D_800F4EE8.cursorMemories[2] + D_800F4EE8.cursorMemories[3];
         vs_battle_dismissTextBox(0);
         ++_menuState;
         break;

@@ -1,6 +1,7 @@
 #include "30.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "build/assets/MENU/MENU1.PRG/strings.h"
@@ -18,7 +19,7 @@ static void _setHPCost(int id)
     int cost;
 
     flags = vs_battle_getSkillFlags(0, id);
-    vs_mainmenu_setAbilityCost(1, "HP", 8, (flags >> 1) & 1);
+    vs_mainmenu_setSkillCost(1, "HP", 8, (flags >> 1) & 1);
 
     cost = vs_main_skills[id].cost;
     _digitBuffer[15] = 0;
@@ -34,7 +35,7 @@ static void _setHPCost(int id)
     --i;
     _digitBuffer[i] = '#';
 
-    vs_mainmenu_setAbilityCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
+    vs_mainmenu_setSkillCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
 /**
@@ -307,7 +308,7 @@ static int _weaponCategoriesMenu(int initialize)
             }
         }
 
-        vs_mainmenu_setMenuRows(10, (2 << 8) | (1 << 4) | 6, menuStrings, rowTypes);
+        vs_mainmenu_setMenuRows(10, (2 << 8) | 22, menuStrings, rowTypes);
 
         state = waitForSelection;
         break;

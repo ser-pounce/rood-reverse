@@ -109,14 +109,14 @@ void func_80102D90(int rowCount, int arg1, char** strings)
     arg1 &= 0x7F;
 
     if ((rowCount < 9) || (arg1 < 8)) {
-        D_800F4EE8.unk0[0] = arg1;
-        D_800F4EE8.unk0[1] = 0;
+        D_800F4EE8.cursorMemories[0] = arg1;
+        D_800F4EE8.cursorMemories[1] = 0;
     } else if (arg1 >= (rowCount - 8)) {
-        D_800F4EE8.unk0[0] = arg1 - (rowCount - 9);
-        D_800F4EE8.unk0[1] = rowCount - 9;
+        D_800F4EE8.cursorMemories[0] = arg1 - (rowCount - 9);
+        D_800F4EE8.cursorMemories[1] = rowCount - 9;
     } else {
-        D_800F4EE8.unk0[0] = 4;
-        D_800F4EE8.unk0[1] = arg1 - 4;
+        D_800F4EE8.cursorMemories[0] = 4;
+        D_800F4EE8.cursorMemories[1] = arg1 - 4;
     }
 
     cursorMemory = vs_main_settings.cursorMemory;
@@ -132,7 +132,7 @@ int func_80102ED8(void)
     if (row < -1) {
         vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
-        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.unk0[0], 1);
+        vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.cursorMemories[0], 1);
     }
 
     return row;

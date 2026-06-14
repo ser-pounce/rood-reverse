@@ -4,6 +4,7 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "vs_string.h"
 #include <libetc.h>
@@ -18,7 +19,7 @@ static void _setRiskCost(int id)
     int i;
     int cost;
 
-    vs_mainmenu_setAbilityCost(1, "RISK", 8, 0);
+    vs_mainmenu_setSkillCost(1, "RISK", 8, 0);
 
     cost = vs_main_skills[id].cost;
     stringBuffer[15] = 0;
@@ -35,7 +36,7 @@ static void _setRiskCost(int id)
     --i;
     stringBuffer[i] = '#';
 
-    vs_mainmenu_setAbilityCost(0, &stringBuffer[i], 72, 0);
+    vs_mainmenu_setSkillCost(0, &stringBuffer[i], 72, 0);
 }
 
 u_short _battleAbilityStrings[] = {
@@ -74,8 +75,8 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
     _selectedAbilityType = abilityType;
 
     if (vs_main_settings.cursorMemory != 0) {
-        i = D_800F4EE8.unk0[abilityType * 2];
-        j = D_800F4EE8.unk0[abilityType * 2 + 1];
+        i = D_800F4EE8.cursorMemories[abilityType * 2];
+        j = D_800F4EE8.cursorMemories[abilityType * 2 + 1];
     }
 
     abilitiesOverflowCount = abilityCount - 8;
@@ -357,8 +358,8 @@ static int _abilityMenu(void)
             vs_main_freeHeapR(_abilityText);
 
             _abilityText = NULL;
-            D_800F4EE8.unk0[_selectedAbilityType * 2] = _highlightedAbility;
-            D_800F4EE8.unk0[_selectedAbilityType * 2 + 1] = _firstAbility;
+            D_800F4EE8.cursorMemories[_selectedAbilityType * 2] = _highlightedAbility;
+            D_800F4EE8.cursorMemories[_selectedAbilityType * 2 + 1] = _firstAbility;
 
             return 1;
         }

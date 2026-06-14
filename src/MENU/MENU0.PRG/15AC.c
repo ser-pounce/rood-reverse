@@ -3,6 +3,7 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
@@ -81,14 +82,14 @@ static int _teleportMenu(int init)
             }
         }
         if ((rowCount < 9) || (nearestSavePoint < 8)) {
-            D_800F4EE8.unk0[0x16] = nearestSavePoint;
-            D_800F4EE8.unk0[0x17] = 0;
+            D_800F4EE8.cursorMemories[22] = nearestSavePoint;
+            D_800F4EE8.cursorMemories[23] = 0;
         } else if (nearestSavePoint >= (rowCount - 7)) {
-            D_800F4EE8.unk0[0x16] = nearestSavePoint - (rowCount - 8);
-            D_800F4EE8.unk0[0x17] = rowCount - 8;
+            D_800F4EE8.cursorMemories[22] = nearestSavePoint - (rowCount - 8);
+            D_800F4EE8.cursorMemories[23] = rowCount - 8;
         } else {
-            D_800F4EE8.unk0[0x16] = 3;
-            D_800F4EE8.unk0[0x17] = nearestSavePoint - 3;
+            D_800F4EE8.cursorMemories[22] = 3;
+            D_800F4EE8.cursorMemories[23] = nearestSavePoint - 3;
         }
         savePointState = vs_main_settings.cursorMemory;
         vs_main_settings.cursorMemory = 1;

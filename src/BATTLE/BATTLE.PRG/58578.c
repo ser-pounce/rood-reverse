@@ -79,14 +79,12 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0;
-    int unk8;
-    int unkC;
+    SVECTOR unk8;
     short unk10[4];
     short unk18[4];
 } func_800C0FA8_t2;
 
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
-int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C58F8(int);
@@ -126,48 +124,48 @@ int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     func_800C0FA8(arg0, &work, &matrix);
 
     {
-        char* ptr;
-        char* base;
+        short* ptr;
+        void* base;
         int offset;
 
         i = 0;
-        ptr = (char*)&work;
-        base = ptr;
+        ptr = (short*)&work;
+        base = &work;
         offset = 0x10;
-        while (i < 3) {
-            *(short*)ptr = *arg1++ - *(u_short*)(base + offset);
+
+        for (; i < 3; ++i) {
+            *ptr = *arg1++ - *(u_short*)(base + offset);
             offset += 2;
-            i++;
-            ptr += 2;
+            ++ptr;
         }
     }
 
     sum = 0;
-    ApplyMatrixSV(&matrix, &work.unk0, (SVECTOR*)((char*)&work + 8));
+
+    ApplyMatrixSV(&matrix, &work.unk0, &work.unk8);
+
     if (arg2 != 0) {
-        ((SVECTOR*)&work.unk8)->vy -= arg0->unk4.flags.unk1 << 4;
+        work.unk8.vy -= arg0->unk4.flags.unk1 << 4;
     }
 
-    {
-        if (!((u_short)(-((SVECTOR*)&work.unk8)->vy) > (arg0->unk4.flags.unk1 << 5))) {
-            char* base;
-            int offset2;
-            int offset;
+    if (!((u_short)-work.unk8.vy > (arg0->unk4.flags.unk1 << 5))) {
+        char* base;
+        int offset2;
+        int offset;
 
-            i = 0;
-            base = (char*)&work;
-            offset2 = 0x18;
-            offset = 8;
-            while (i < 3) {
-                term = (*(short*)(base + offset) * *(short*)(base + offset2)) >> 12;
-                sum += term * term;
-                offset2 += 4;
-                offset += 4;
-                i += 2;
-            }
+        i = 0;
+        base = (char*)&work;
+        offset2 = 0x18;
+        offset = 8;
 
-            sum = (u_int)(sum >> 16) < 1;
+        for (; i < 3; i += 2) {
+            term = (*(short*)(base + offset) * *(short*)(base + offset2)) >> 12;
+            sum += term * term;
+            offset2 += 4;
+            offset += 4;
         }
+
+        sum = (sum >> 16) < 1u;
     }
     return sum;
 }

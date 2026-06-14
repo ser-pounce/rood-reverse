@@ -32,18 +32,18 @@ void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
     if (arg2 == 0 && arg3 == 0) {
 
         func_800AA290(arg0, arg1, -1, 0);
-        
+
         angle = arg1[3];
         angle <<= 4;
         angle %= 0x1000;
-        angle -= actor->unk26;
-        
+        angle -= actor->unk0.unk26;
+
         func_800AA984(arg0, (short)angle, 0);
-        
+
         actor->unk5AC_0 = 0;
-        actor->unk5C = arg1[0];
-        actor->unk5D = arg1[1];
-        actor->unk5E = arg1[2];
+        actor->unk0.unk5C = arg1[0];
+        actor->unk0.unk5D = arg1[1];
+        actor->unk0.unk5E = arg1[2];
     } else {
         if (arg3 == -1) {
             actor->unk5C6 = actor->unk5C0;
@@ -56,20 +56,20 @@ void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
         } else {
             actor->unk5C4 = arg2;
         }
-        
+
         func_800AA490(arg0, arg1, -1, actor->unk5C6);
-        
+
         actor->unk5EC.vx = (arg1[0] * 128) + 64;
         actor->unk5EC.vz = (arg1[2] * 128) + 64;
         actor->unk5EC.vy = func_800A6EE8(&actor->unk5EC, 0, 0, 1);
         angle = 0x8000;
-        
+
         if (arg1[3] == 0xFF) {
             actor->unk5EC.pad = angle;
         } else {
             actor->unk5EC.pad = arg1[3] * 16;
         }
-        
+
         actor->unk5AC_0 = 1;
         actor->unk5AC_2 = 0;
     }

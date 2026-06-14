@@ -1606,7 +1606,7 @@ int func_8009E4B0(int arg0)
         return 1;
     }
 
-    if (!(temp_a1->unkC54.unk548 & 0x10000)) {
+    if (!temp_a1->unkC54.unk548_16) {
         int temp_a0 = temp_a1->unk5B8;
         if (temp_a0 >= 100) {
             temp_a0 -= 100;
@@ -2598,10 +2598,10 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk0.unk9_7) {
             D_800F49E0 |= 0x40;
         }
-        if (temp_a1->unkC54.unk548 & 0x10000) {
+        if (temp_a1->unkC54.unk548_16) {
             D_800F49E0 |= 0x08000080;
         }
-        if (temp_a1->unkC54.unk548 & 0x20000) {
+        if (temp_a1->unkC54.unk548_17) {
             D_800F49E0 |= 0x100;
         }
         if (temp_a1->unk5AC_4 << 4) {

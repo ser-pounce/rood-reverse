@@ -61,7 +61,10 @@ typedef struct {
     u_short unk540;
     u_short unk542;
     int unk544;
-    int unk548;
+    int unk548_0 : 16;
+    int unk548_16 : 1;
+    int unk548_17 : 1;
+    int unk548_18 : 14;
     int unk54C;
 } D_800F4538_unkC54;
 

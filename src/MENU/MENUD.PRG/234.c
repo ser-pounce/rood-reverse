@@ -742,11 +742,11 @@ void func_80103F64(int arg0)
 
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 3;
-    menuItem->targetX = 0x12;
+    menuItem->targetPosition0 = 0x12;
 
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 2;
-    menuItem->targetX = 0x9B;
+    menuItem->targetPosition0 = 0x9B;
     menuItem->selected = 1;
     menuItem->subText = NULL;
     menuItem->unk7 = 0;
@@ -758,12 +758,12 @@ void func_80103FD4(int arg0)
 
     menuItem = vs_battle_getMenuItem(0x1F);
     menuItem->state = 2;
-    menuItem->targetX = 0x10;
+    menuItem->targetPosition0 = 0x10;
     menuItem->w = 0xA4;
 
     menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 3;
-    menuItem->targetX = 0x12;
+    menuItem->targetPosition0 = 0x12;
 }
 
 static void func_80104034(int arg0, int arg1)
@@ -785,7 +785,7 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
     menuItem->icon = (arg2 >> 0x1A);
     menuItem->material = (arg2 >> 0x10) & 7;
     vs_mainmenu_setInformationMessage(arg1[1]);
-    vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
+    vs_battle_getMenuItem(0x1F)->itemPage = arg3 + 1;
 }
 
 int func_80104114(int arg0, int arg1)
@@ -867,7 +867,7 @@ int _weaponNavigation(int weaponIndex)
         if (D_80109A31 < 10) {
             ++D_80109A31;
             if (D_80109A31 < 6) {
-                vs_mainMenu_initSetWeaponGemMenu(D_80109A31,
+                vs_mainMenu_initWeaponDetailsMenu(D_80109A31,
                     vs_menuD_containerData->indices.weapons[_selectedWeapon], 1);
             }
             break;
@@ -889,7 +889,7 @@ int _weaponNavigation(int weaponIndex)
 
                 func_80104078(D_80109A32, text, rowId, selectedWeapon);
                 for (i = 1; i < 6; ++i) {
-                    vs_mainMenu_initSetWeaponGemMenu(
+                    vs_mainMenu_initWeaponDetailsMenu(
                         i, vs_menuD_containerData->indices.weapons[selectedWeapon], 0);
                 }
             }
@@ -1245,7 +1245,7 @@ int func_80105008(int arg0)
         D_80109A81 = 1;
         D_80109A84 = 0;
         func_800FDD78();
-        vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
+        vs_battle_getMenuItem(0x1F)->itemPage = var_s0 & 0xFF;
         vs_mainMenu_setNextMenuAction(menuActionNone);
     }
 
@@ -1759,7 +1759,7 @@ int _discardMenu(int arg0)
 
         menuItem = vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, countTemplate);
         menuItem->state = 5;
-        menuItem->targetX = 0;
+        menuItem->targetPosition0 = 0;
         discardStep = 0;
         discardCount = 0;
         state = clearTemplate;
@@ -2308,7 +2308,7 @@ void func_801071D8(int arg0)
         vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->initialX = temp_v0->targetX;
+            temp_v0->initialX = temp_v0->targetPosition0;
         }
         temp_v0_2 = i ^ (D_800F4EE8.cursorMemories[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
@@ -2668,7 +2668,7 @@ loop_1:
                     temp_v0_11->initialX = (u_short)temp_v0_11->initialX - 0x18;
                 }
                 temp_v0_11->state = 2;
-                temp_v0_11->targetX = 0xB4;
+                temp_v0_11->targetPosition0 = 0xB4;
             }
             D_80109A68 = 1;
         }
@@ -3054,7 +3054,7 @@ int func_801089BC(int arg0)
             vs_battle_setMenuItem(D_80109A70 + 0xA, 0x140, (D_80109A70 * 0x10) + 0x22,
                 0x7E, 0, (char*)&_menuText[_menuText[D_80109A70 * 2 + 12]]);
         temp_v0_2->state = 2;
-        temp_v0_2->targetX = 0xC2;
+        temp_v0_2->targetPosition0 = 0xC2;
         ++D_80109A70;
         break;
     case 2:

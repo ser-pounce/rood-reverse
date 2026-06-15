@@ -153,7 +153,7 @@ static void _setMenuHeader(void)
     menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);
     menuItem->state = 2;
-    menuItem->targetX = 180;
+    menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
     vs_mainMenu_setNextMenuAction(menuActionMenu);
     vs_mainMenu_initTextBox();

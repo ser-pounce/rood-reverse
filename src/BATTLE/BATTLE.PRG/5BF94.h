@@ -23,10 +23,15 @@ enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_drainMind = 0x5F
 };
 
-enum vs_battle_menuItem_fadeEffect {
+enum vs_battle_menuItemfadeEffect {
     menuItem_fadeEffect_none,
     menuItem_fadeEffect_fadeTop,
     menuItem_fadeEffect_fadeBottom
+};
+
+enum vs_battle_menuItemTransition {
+    menuItemTransition_toLeft = 2,
+    menuItemTransition_toTop
 };
 
 typedef struct {
@@ -44,13 +49,13 @@ typedef struct {
     char unkB;
     char material;
     char itemState;
-    u_short unkE;
+    u_short itemPage;
     u_short unk10;
     u_short unk12;
     short initialX;
     short y;
-    short targetX;
-    short targetY;
+    short targetPosition0;
+    short targetPosition1;
     char text[28];
     int unk38;
     char* subText;

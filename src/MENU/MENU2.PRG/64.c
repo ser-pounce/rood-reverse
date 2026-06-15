@@ -234,7 +234,7 @@ static int _abilityMenu(void)
             (_abilityMenuState * 16) + 50, 0x7E, 0,
             (char*)&_abilityText[(_firstAbility + _abilityMenuState) * 64]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
 
         if ((_abilityMenuState == init) && (_firstAbility != 0)) {
             menuItem->fadeEffect = 1;

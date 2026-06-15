@@ -106,33 +106,41 @@ static void func_80102A3C(int arg0, int arg1)
     }
 }
 
-static void func_80102B78(int arg0)
+/**
+ * Hoists the item category and selected item to the top of the menu
+ * during the start of the status view transition animation.
+ */
+static void _statusViewStartTransition(int selectedItem)
 {
     vs_battle_menuItem_t* menuItem;
 
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
     menuItem = vs_battle_getMenuItem(31);
-    menuItem->state = 3;
-    menuItem->targetX = 18;
+    menuItem->state = menuItemTransition_toTop;
+    menuItem->targetPosition0 = 18;
 
-    menuItem = vs_battle_getMenuItem(arg0);
-    menuItem->state = 2;
-    menuItem->targetX = 155;
+    menuItem = vs_battle_getMenuItem(selectedItem);
+    menuItem->state = menuItemTransition_toLeft;
+    menuItem->targetPosition0 = 155;
     menuItem->selected = 1;
     menuItem->subText = NULL;
 }
 
-static void func_80102BE4(int arg0)
+/**
+ * Slides the item category to the left and the selected item
+ * to the top.
+ */
+static void _statusViewContinueTransition(int selectedItem)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(0x1F);
-    menuItem->state = 2;
-    menuItem->targetX = 16;
+    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
+    menuItem->state = menuItemTransition_toLeft;
+    menuItem->targetPosition0 = 16;
     menuItem->w = 164;
 
-    menuItem = vs_battle_getMenuItem(arg0);
-    menuItem->state = 3;
-    menuItem->targetX = 18;
+    menuItem = vs_battle_getMenuItem(selectedItem);
+    menuItem->state = menuItemTransition_toTop;
+    menuItem->targetPosition0 = 18;
 }
 
 static u_short _menuText[] = {
@@ -142,493 +150,676 @@ static u_short _menuText[] = {
 static int D_80109564 = 0;
 static int D_80109568 = 0;
 
-static void func_80102C44(int arg0, int arg1)
+static void func_80102C44(int selectedItem, int arg1)
 {
     D_80109568 = 1;
     D_80109712 = 0;
     D_80109713 = 0;
-    func_80102BE4(arg0);
+    _statusViewContinueTransition(selectedItem);
     vs_mainMenu_drawClassAffinityType(arg1);
     vs_mainMenu_renderEquipStats(1);
 }
 
-static void func_80102C94(int arg0, char** arg1, u_int arg2, int arg3)
+/**
+ * Updates the UI after a new page is selected with L1 / R1
+ */
+static void _switchItemStatusPage(int row, char* text[], u_int rowType, int page)
 {
-    vs_battle_menuItem_t* temp_v0;
+    vs_battle_menuItem_t* menuItem;
 
     vs_battle_playMenuChangeSfx();
-    temp_v0 = vs_battle_setMenuItem(arg0, 0x9B, 0x12, 0xA5, 0, arg1[0]);
-    temp_v0->selected = 1;
-    temp_v0->icon = (arg2 >> 0x1A);
-    temp_v0->material = (arg2 >> 0x10) & 7;
-    vs_mainmenu_setInformationMessage(arg1[1]);
-    vs_battle_getMenuItem(0x1F)->unkE = arg3 + 1;
+
+    menuItem = vs_battle_setMenuItem(row, 155, 18, 165, 0, text[0]);
+    menuItem->selected = 1;
+    menuItem->icon = (rowType >> 0x1A);
+    menuItem->material = (rowType >> 0x10) & 7;
+
+    vs_mainmenu_setInformationMessage(text[1]);
+    vs_battle_getMenuItem(31)->itemPage = page + 1;
 }
 
-static int func_80102D30(int arg0, int arg1)
+/**
+ * Combined method for setting the cursor memory and mapping the
+ * item ID to a row index.
+ */
+static int _setCursorMemoryAndGetIndex(int itemCategory, int itemId)
 {
-    D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] = 0;
-    D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2 + 1] = arg1;
-    return *(vs_mainMenu_inventoryIndices[arg0] + arg1);
+    D_800F4EE8.cursorMemories[(itemCategory + 30) * 2] = 0;
+    D_800F4EE8.cursorMemories[(itemCategory + 30) * 2 + 1] = itemId;
+    return vs_mainMenu_inventoryIndices[itemCategory][itemId];
 }
 
 static char D_80109714;
 static char D_80109715;
 static char D_80109716;
 static char D_80109717;
-static int D_80109718;
+static int _menuButtonPressed;
 
-static void func_80102D7C(int arg0)
+/**
+ * Restores items view.
+ *
+ * @param clearDpPp Set to 1 if status view has DP and PP bars
+ */
+static void _exitStatusView(int clearDpPp)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     vs_mainMenu_menuItemFlyoutLeft(-1);
     vs_mainMenu_drawClassAffinityType(-1);
     vs_mainMenu_renderEquipStats(2);
+
     D_80109717 = 2;
-    D_80109718 = vs_main_buttonsPressed.all & 0x10;
-    if (arg0 != 0) {
+    _menuButtonPressed = vs_main_buttonsPressed.all & PADRup;
+
+    if (clearDpPp != 0) {
         vs_mainMenu_drawDpPpbars(4);
     }
 }
 
-static int func_80102DEC(int arg0)
+/**
+ * Manages and displays the status view for weapons.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _weaponStatusView(int itemInfo)
 {
-    static char D_8010964C;
-    static char D_8010964D;
-    static char D_8010964E;
-    static u_char D_8010964F;
-    static char D_80109650;
+    enum state { init, initWeapon, manageInput, returnMenuReady };
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
+    static char state;
+    static char initRow;
+    static char itemRow;
+    static u_char itemIndex;
+    static char _;
+
+    char* menuText[2];
+    int rowType;
+    int newIndex;
     int i;
 
-    if (arg0 != 0) {
-        D_8010964E = arg0 >> 8;
-        D_8010964F = arg0 - 1;
-        func_80102B78(D_8010964E);
-        D_80109650 = 0;
-        D_8010964D = 0;
-        D_8010964C = 0;
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        _ = 0;
+        initRow = 0;
+        state = init;
+
         return 0;
     }
 
-    switch (D_8010964C) {
-    case 0:
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            func_80102C44(D_8010964E, 7);
-            vs_mainMenu_setUiWeaponStats(vs_main_inventoryIndices.weapons[D_8010964F]);
+            func_80102C44(itemRow, 7);
+            vs_mainMenu_setUiWeaponStats(vs_main_inventoryIndices.weapons[itemIndex]);
             vs_mainMenu_drawDpPpbars(3);
-            D_8010964C = 1;
+            state = initWeapon;
         }
         break;
-    case 1:
-        if (D_8010964D < 0xA) {
-            if (++D_8010964D < 6) {
-                vs_mainMenu_initSetWeaponGemMenu(
-                    D_8010964D, vs_main_inventoryIndices.weapons[D_8010964F], 1);
+
+    case initWeapon:
+        if (initRow < 10) {
+            if (++initRow < 6) {
+                vs_mainMenu_initWeaponDetailsMenu(
+                    initRow, vs_main_inventoryIndices.weapons[itemIndex], 1);
                 return 0;
             }
             break;
         }
-        D_8010964C = 2;
+
+        state = manageInput;
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(1);
-            D_8010964C = 3;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(1);
+            state = 3;
             break;
         }
-        temp_v0_2 = _statusViewSwitchItem(0, D_8010964F);
-        if (temp_v0_2 != D_8010964F) {
-            D_8010964F = temp_v0_2;
-            temp_v0_3 = func_80102D30(0, temp_v0_2);
-            vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[temp_v0_3 - 1], sp10,
-                &sp18, vs_battle_stringBuf);
+
+        newIndex = _statusViewSwitchItem(0, itemIndex);
+
+        if (newIndex != itemIndex) {
+            int weaponToDisplay;
+
+            itemIndex = newIndex;
+            weaponToDisplay = _setCursorMemoryAndGetIndex(0, newIndex);
+
+            vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[weaponToDisplay - 1],
+                menuText, &rowType, vs_battle_stringBuf);
+
             do {
-                vs_mainMenu_setUiWeaponStats(temp_v0_3);
-                func_80102C94(D_8010964E, sp10, sp18, temp_v0_2);
+                vs_mainMenu_setUiWeaponStats(weaponToDisplay);
+                _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+
                 for (i = 1; i < 6; ++i) {
-                    vs_mainMenu_initSetWeaponGemMenu(
-                        i, vs_main_inventoryIndices.weapons[temp_v0_2], 0);
+                    vs_mainMenu_initWeaponDetailsMenu(
+                        i, vs_main_inventoryIndices.weapons[newIndex], 0);
                 }
             } while (0);
         }
         break;
-    case 3:
+
+    case returnMenuReady:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
-static int func_80103034(int arg0)
+/**
+ * Manages and displays the status view for blades.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _bladeStatusView(int itemInfo)
 {
-    static char D_80109651;
-    static char D_80109652;
-    static char D_80109653;
-    static u_char D_80109654;
+    enum state { init, wait, manageInput, returnMenuReady };
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
+    static char state;
+    static char animationTimer;
+    static char itemRow;
+    static u_char itemIndex;
 
-    if (arg0 != 0) {
-        D_80109653 = arg0 >> 8;
-        D_80109654 = arg0 - 1;
-        func_80102B78(D_80109653);
-        D_80109652 = 10;
-        D_80109651 = 0;
+    char* meunText[2];
+    int rowType;
+    int newIndex;
+
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        animationTimer = 10;
+        state = init;
+
         return 0;
     }
 
-    switch (D_80109651) {
-    case 0:
-        if ((D_80109651 == 0) && (vs_mainmenu_ready() != 0)) {
-            func_80102C44(D_80109653, 3);
-            vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[D_80109654]);
+    switch (state) {
+    case init:
+        if ((state == 0) && (vs_mainmenu_ready() != 0)) {
+            func_80102C44(itemRow, 3);
+            vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[itemIndex]);
             vs_mainMenu_drawDpPpbars(3);
-            D_80109651 = 1;
+            state = wait;
         }
         break;
-    case 1:
-        if (D_80109652 != 0) {
-            --D_80109652;
+
+    case wait:
+        if (animationTimer != 0) {
+            --animationTimer;
         } else {
-            D_80109651 = 2;
+            state = manageInput;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(1);
-            D_80109651 = 3;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(1);
+            state = returnMenuReady;
             break;
         }
-        temp_v0_2 = _statusViewSwitchItem(1, (int)D_80109654);
-        if (temp_v0_2 != D_80109654) {
-            D_80109654 = temp_v0_2;
-            temp_v0_3 = func_80102D30(1, temp_v0_2);
-            vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[temp_v0_3 - 1], sp10,
-                &sp18, vs_battle_stringBuf);
-            vs_mainMenu_setUiBladeStats(temp_v0_3);
-            func_80102C94(D_80109653, sp10, sp18, temp_v0_2);
+
+        newIndex = _statusViewSwitchItem(1, (int)itemIndex);
+
+        if (newIndex != itemIndex) {
+            int bladeToDisplay;
+
+            itemIndex = newIndex;
+            bladeToDisplay = _setCursorMemoryAndGetIndex(1, newIndex);
+
+            vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[bladeToDisplay - 1],
+                meunText, &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setUiBladeStats(bladeToDisplay);
+            _switchItemStatusPage(itemRow, meunText, rowType, newIndex);
         }
         break;
-    case 3:
+
+    case returnMenuReady:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
-static int func_80103220(int arg0)
+/**
+ * Manages and displays the status view for grips.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _gripStatusView(int itemInfo)
 {
-    static char* D_8010956C = "X     0";
+    enum state { init, wait, manageInput, returnMenuReady };
 
-    static char D_80109655;
-    static char D_80109656;
-    static char D_80109657;
-    static u_char D_80109658;
-    static char D_80109659;
+    static char* gemSlotCountBuf = "X     0";
+
+    static char state;
+    static char animationTimer;
+    static char itemRow;
+    static u_char itemIndex;
+    static char _;
 
     char* menuText[2];
     int rowType;
-    int temp_v0_2;
-    int temp_v0_3;
 
-    if (arg0 != 0) {
-        D_80109657 = arg0 >> 8;
-        D_80109658 = arg0 - 1;
-        func_80102B78(D_80109657);
-        D_80109659 = 0;
-        D_80109656 = 0;
-        D_80109655 = 0;
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        _ = 0;
+        animationTimer = 0;
+        state = init;
+
         return 0;
     }
 
-    switch (D_80109655) {
-    case 0:
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            func_80102C44(D_80109657, 4);
-            vs_mainMenu_setUiGripStats(vs_main_inventoryIndices.grips[D_80109658]);
-            D_80109655 = 1;
+            func_80102C44(itemRow, 4);
+            vs_mainMenu_setUiGripStats(vs_main_inventoryIndices.grips[itemIndex]);
+            state = wait;
         }
         break;
-    case 1:
-        if (D_80109656 < 10) {
-            D_80109656 = (D_80109656 + 1);
+
+    case wait:
+        if (animationTimer < 10) {
+            ++animationTimer;
         } else {
-            D_80109655 = 2;
+            state = manageInput;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(0);
-            D_80109655 = 3;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(0);
+            state = returnMenuReady;
         } else {
-            temp_v0_2 = _statusViewSwitchItem(2, D_80109658);
-            if (temp_v0_2 != D_80109658) {
-                D_80109658 = temp_v0_2;
-                temp_v0_3 = func_80102D30(2, temp_v0_2);
-                vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[temp_v0_3 - 1], menuText,
-                    &rowType, vs_battle_stringBuf);
-                vs_mainMenu_setUiGripStats(temp_v0_3);
-                func_80102C94(D_80109657, menuText, rowType, temp_v0_2);
+            int newIndex = _statusViewSwitchItem(2, itemIndex);
+
+            if (newIndex != itemIndex) {
+                int gripToDisplay;
+                itemIndex = newIndex;
+                gripToDisplay = _setCursorMemoryAndGetIndex(2, newIndex);
+
+                vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[gripToDisplay - 1],
+                    menuText, &rowType, vs_battle_stringBuf);
+
+                vs_mainMenu_setUiGripStats(gripToDisplay);
+                _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
             }
         }
+
         // BUG: rodata .write
-        D_8010956C[6] =
-            vs_battle_inventory.grips[vs_main_inventoryIndices.grips[D_80109658] - 1]
+        gemSlotCountBuf[6] =
+            vs_battle_inventory.grips[vs_main_inventoryIndices.grips[itemIndex] - 1]
                 .gemSlots
             + '0';
+
         vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
-        vs_battle_renderTextRaw(D_8010956C, 0x240118, NULL);
+        vs_battle_renderTextRaw(gemSlotCountBuf, vs_getXY(280, 36), NULL);
+
         break;
+
     case 3:
         return vs_mainmenu_ready();
     }
     return 0;
 }
 
-static int func_80103460(int arg0)
+/**
+ * Manages and displays the status view for shields.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _shieldStatusView(int itemInfo)
 {
-    static char D_8010965A;
-    static char D_8010965B;
-    static char D_8010965C;
-    static u_char D_8010965D;
-    static char D_8010965E;
+    enum state { init, initShield, manageInput, returnMenuReady };
+
+    static char state;
+    static char initRow;
+    static char itemRow;
+    static u_char itemIndex;
+    static char _;
 
     char* menuText[2];
     int rowType;
-    int temp_v0_2;
+    int newIndex;
     int i;
 
-    if (arg0 != 0) {
-        D_8010965C = arg0 >> 8;
-        D_8010965D = arg0 - 1;
-        func_80102B78(D_8010965C);
-        D_8010965E = 0;
-        D_8010965B = 0;
-        D_8010965A = 0;
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        _ = 0;
+        initRow = 0;
+        state = init;
+
         return 0;
     }
 
-    switch (D_8010965A) {
-    case 0:
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            func_80102C44(D_8010965C, 7);
-            vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[D_8010965D]);
+            func_80102C44(itemRow, 7);
+            vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[itemIndex]);
             vs_mainMenu_drawDpPpbars(3);
-            D_8010965A = 1;
+
+            state = initShield;
         }
         break;
-    case 1:
-        if (D_8010965B < 10) {
-            ++D_8010965B;
-            if (D_8010965B < 4) {
+
+    case initShield:
+        if (initRow < 10) {
+
+            ++initRow;
+
+            if (initRow < 4) {
                 vs_mainMenu_initSetShieldGemMenu(
-                    D_8010965B, vs_main_inventoryIndices.shields[D_8010965D], 1);
+                    initRow, vs_main_inventoryIndices.shields[itemIndex], 1);
             }
             break;
         }
+
         if (vs_mainmenu_ready() != 0) {
-            D_8010965A = 2;
+            state = manageInput;
         }
+
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(1);
-            D_8010965A = 3;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(1);
+            state = returnMenuReady;
             break;
         }
-        temp_v0_2 = _statusViewSwitchItem(3, D_8010965D);
-        if (temp_v0_2 != D_8010965D) {
-            D_8010965D = temp_v0_2;
-            i = func_80102D30(3, temp_v0_2);
+
+        newIndex = _statusViewSwitchItem(3, itemIndex);
+
+        if (newIndex != itemIndex) {
+            itemIndex = newIndex;
+            i = _setCursorMemoryAndGetIndex(3, newIndex);
+
             vs_mainMenu_initUiShield(&vs_battle_inventory.shields[i - 1], menuText,
                 &rowType, vs_battle_stringBuf);
+
             vs_mainMenu_setShieldStats(i);
-            func_80102C94(D_8010965C, menuText, rowType, temp_v0_2);
+            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             for (i = 1; i < 4; ++i) {
                 vs_mainMenu_initSetShieldGemMenu(
-                    i, vs_main_inventoryIndices.shields[temp_v0_2], 0);
+                    i, vs_main_inventoryIndices.shields[newIndex], 0);
             }
         }
+
         break;
-    case 3:
+
+    case returnMenuReady:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
-static int func_801036BC(int arg0)
+/**
+ * Manages and displays the status view for armor.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _armorStatusView(int itemInfo)
 {
-    static char D_8010965F;
-    static char D_80109660;
-    static char D_80109661;
-    static u_char D_80109662;
+    enum state { init, wait, manageInput, returnMenuReady };
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
+    static char status;
+    static char animationTimer;
+    static char itemRow;
+    static u_char itemIndex;
 
-    if (arg0 != 0) {
-        D_80109661 = arg0 >> 8;
-        D_80109662 = arg0 - 1;
-        func_80102B78(D_80109661);
-        D_80109660 = 0xA;
-        D_8010965F = 0;
+    char* menuText[2];
+    int rowType;
+    int newIndex;
+
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        animationTimer = 10;
+        status = 0;
+
         return 0;
     }
 
-    switch (D_8010965F) {
+    switch (status) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            func_80102C44(D_80109661, 7);
-            vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[D_80109662]);
-            if (vs_battle_inventory.armor[vs_main_inventoryIndices.armor[D_80109662] - 1]
+            func_80102C44(itemRow, 7);
+            vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[itemIndex]);
+            if (vs_battle_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
                     .category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
             }
-            D_8010965F = 1;
+
+            status = wait;
         }
         break;
-    case 1:
-        if (D_80109660 != 0) {
-            --D_80109660;
+
+    case wait:
+        if (animationTimer != 0) {
+            --animationTimer;
         } else {
-            D_8010965F = 2;
+            status = manageInput;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(1);
-            D_8010965F = 3;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(1);
+            status = returnMenuReady;
+
             break;
         }
-        temp_v0_2 = _statusViewSwitchItem(4, D_80109662);
-        if (temp_v0_2 != D_80109662) {
-            D_80109662 = temp_v0_2;
-            temp_v0_3 = func_80102D30(4, temp_v0_2);
-            vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[temp_v0_3 - 1], sp10,
-                &sp18, vs_battle_stringBuf);
-            vs_mainMenu_setArmorStats(temp_v0_3);
-            func_80102C94(D_80109661, sp10, sp18, temp_v0_2);
+
+        newIndex = _statusViewSwitchItem(4, itemIndex);
+
+        if (newIndex != itemIndex) {
+            int armorToDisplay;
+
+            itemIndex = newIndex;
+            armorToDisplay = _setCursorMemoryAndGetIndex(4, newIndex);
+
+            vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[armorToDisplay - 1],
+                menuText, &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setArmorStats(armorToDisplay);
+            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+
             return 0;
         }
+
         break;
-    case 3:
+
+    case returnMenuReady:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
-static int func_801038E4(int arg0)
+/**
+ * Manages and displays the status view for gems.
+ *
+ * @param itemInfo Packed value
+ * - Bits 0-7: Inventory index
+ * - Bits 8+: Row in current view
+ * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
+ */
+static int _gemStatusView(int itemInfo)
 {
-    static char D_80109663;
-    static char D_80109664;
-    static char D_80109665;
-    static u_char D_80109666;
+    enum state { init, wait, manageInput, returnMenuReady };
 
-    char* sp10[2];
-    int sp18;
-    int temp_v0_2;
-    int temp_v0_3;
+    static char state;
+    static char animationTimer;
+    static char itemRow;
+    static u_char itemIndex;
 
-    if (arg0 != 0) {
-        D_80109665 = arg0 >> 8;
-        D_80109666 = arg0 - 1;
-        func_80102B78(D_80109665);
-        D_80109664 = 0xA;
-        D_80109663 = 0;
+    char* menuText[2];
+    int rowType;
+    int newIndex;
+
+    if (itemInfo != 0) {
+        itemRow = itemInfo >> 8;
+        itemIndex = (itemInfo - 1) & 0xFF;
+
+        _statusViewStartTransition(itemRow);
+
+        animationTimer = 10;
+        state = init;
+
         return 0;
     }
-    switch (D_80109663) {
-    case 0:
+
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            func_80102C44(D_80109665, 3);
-            vs_mainMenu_setGemStats(vs_main_inventoryIndices.gems[D_80109666]);
-            D_80109663 = 1;
+            func_80102C44(itemRow, 3);
+            vs_mainMenu_setGemStats(vs_main_inventoryIndices.gems[itemIndex]);
+
+            state = wait;
         }
         break;
-    case 1:
-        if (D_80109664 != 0) {
-            D_80109664 -= 1;
+
+    case wait:
+        if (animationTimer != 0) {
+            --animationTimer;
         } else {
-            D_80109663 = 2;
+            state = manageInput;
         }
         break;
-    case 2:
-        if (vs_main_buttonsPressed.all & 0x50) {
-            func_80102D7C(0);
-            D_80109663 = 3;
-            D_80109718 = vs_main_buttonsPressed.all & 0x10;
+
+    case manageInput:
+        if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+            _exitStatusView(0);
+
+            state = returnMenuReady;
+            _menuButtonPressed = vs_main_buttonsPressed.all & PADRup;
+
             break;
         }
-        temp_v0_2 = _statusViewSwitchItem(5, D_80109666);
-        if (temp_v0_2 != D_80109666) {
-            D_80109666 = temp_v0_2;
-            temp_v0_3 = func_80102D30(5, temp_v0_2);
-            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[temp_v0_3 - 1], sp10, &sp18,
-                vs_battle_stringBuf);
-            vs_mainMenu_setGemStats(temp_v0_3);
-            func_80102C94(D_80109665, sp10, sp18, temp_v0_2);
+
+        newIndex = _statusViewSwitchItem(5, itemIndex);
+
+        if (newIndex != itemIndex) {
+            int gemToDisplay;
+
+            itemIndex = newIndex;
+            gemToDisplay = _setCursorMemoryAndGetIndex(5, newIndex);
+
+            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[gemToDisplay - 1], menuText,
+                &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setGemStats(gemToDisplay);
+            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+
             return 0;
         }
+
         break;
-    case 3:
+
+    case returnMenuReady:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
-static int func_80103AD0(int arg0)
+/**
+ * Invokes the status view for the selected item category.
+ *
+ * @param itemInfo Packed value:
+ * - Bits 0-3: Item category
+ * - Bits 4+: Page to display
+ * @return int
+ */
+static int _itemStatusView(int itemInfo)
 {
-    static int (*D_80109570[])(int) = { func_80102DEC, func_80103034, func_80103220,
-        func_80103460, func_801036BC, func_801038E4 };
+    static int (*_statusViewDispatchers[])(int) = { _weaponStatusView, _bladeStatusView,
+        _gripStatusView, _shieldStatusView, _armorStatusView, _gemStatusView };
 
-    static u_char D_80109667;
+    static u_char itemCategory;
 
-    int var_s0 = 0;
+    int page = 0;
     int new_var;
-    if (arg0 != 0) {
-        var_s0 = arg0 >> 4;
-        D_80109667 = arg0 & 0xF;
+
+    if (itemInfo != 0) {
+        page = itemInfo >> 4;
+        itemCategory = itemInfo & 0xF;
         D_80109717 = 1;
-        D_80109718 = 0;
+        _menuButtonPressed = 0;
+
         func_800FDD78();
-        vs_battle_getMenuItem(0x1F)->unkE = var_s0 & 0xFF;
+        vs_battle_getMenuItem(31)->itemPage = page & 0xFF;
         vs_mainMenu_setNextMenuAction(menuActionNone);
     }
-    var_s0 = D_80109570[D_80109667](var_s0);
-    new_var = var_s0 != 0;
+
+    page = _statusViewDispatchers[itemCategory](page);
+    new_var = page != 0;
+
     if (new_var) {
-        if (D_80109718 == 0) {
+        if (_menuButtonPressed == 0) {
             D_80109712 = 1;
             D_80109717 = 0;
             D_80109713 = 1;
             D_80109568 = 0;
+
             vs_mainMenu_setNextMenuAction(menuActionMenu);
-            return var_s0;
+
+            return page;
         }
+
         return -2;
     }
+
     if (vs_mainmenu_ready() != 0) {
+
         D_801022D5 = D_801024B8 != 9;
+
         func_801013F8(1);
         func_800FDEBC();
     }
-    return var_s0;
+
+    return page;
 }
 
-static int func_80103BE4(int arg0, vs_battle_uiWeapon* weapon)
+/**
+ * Facilitates sorting by mapping stat types to a numerical value.
+ */
+static int _getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
 {
-    switch (arg0) {
+    switch (stat) {
     case 0:
         return -weapon->blade.category;
     case 1:
@@ -652,16 +843,19 @@ static int func_80103BE4(int arg0, vs_battle_uiWeapon* weapon)
     case 10:
         return weapon->currentAgility;
     default:
-        if (arg0 >= 0x11) {
-            return weapon->classAffinityCurrent.affinity[0][arg0 - 0x11];
+        if (stat >= 17) {
+            return weapon->classAffinityCurrent.affinity[0][stat - 17];
         }
-        return weapon->classAffinityCurrent.class[0][arg0 - 0xB];
+        return weapon->classAffinityCurrent.class[0][stat - 11];
     }
 }
 
-static void _getWeaponStat(int arg0)
+/**
+ * Sorts weapons by the selected stat.
+ */
+static void _sortWeapons(int stat)
 {
-    vs_battle_uiWeapon sp10;
+    vs_battle_uiWeapon weapon;
     char sp1A8[8];
     int temp_v0;
     int i;
@@ -680,8 +874,8 @@ static void _getWeaponStat(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
-                temp_v0 = func_80103BE4(arg0, &sp10);
+                vs_battle_applyWeapon(&weapon, &new_var2[temp_s0 - 1]);
+                temp_v0 = _getWeaponStatValue(stat, &weapon);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
                 }
@@ -695,8 +889,8 @@ static void _getWeaponStat(int arg0)
         for (i = 0; i < 8; ++i) {
             temp_s0 = new_var[i];
             if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&sp10, &new_var2[temp_s0 - 1]);
-                if (func_80103BE4(arg0, &sp10) == var_s3) {
+                vs_battle_applyWeapon(&weapon, &new_var2[temp_s0 - 1]);
+                if (_getWeaponStatValue(stat, &weapon) == var_s3) {
                     sp1A8[var_s4++] = temp_s0;
                     new_var[i] = 0;
                 }
@@ -996,7 +1190,7 @@ static int func_80104530(int arg0)
                 vs_battle_playMenuSelectSfx();
                 switch (D_80109669) {
                 case 0:
-                    _getWeaponStat(D_80109588[i]);
+                    _sortWeapons(D_80109588[i]);
                     break;
                 case 3:
                     func_80103F00(D_801095A8[i]);
@@ -1090,7 +1284,7 @@ static int func_80104788(int arg0)
         }
         temp_v0_4 = vs_battle_setMenuItem(0x22, -0x7E, 0x82, 0x7E, 0, _buffReels);
         temp_v0_4->state = 5;
-        temp_v0_4->targetX = 0;
+        temp_v0_4->targetPosition0 = 0;
         D_8010966E = 0;
         D_8010966F = 0U;
         D_8010966A = 4U;
@@ -1373,7 +1567,7 @@ static void func_80105314(int arg0)
         temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->initialX = temp_v0->targetX;
+            temp_v0->initialX = temp_v0->targetPosition0;
         }
         temp_v0->selected =
             (i ^ (D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] + 0x14)) == 0;
@@ -1422,7 +1616,7 @@ loop_1:
                 temp_v0->initialX -= 0x18;
             }
             temp_v0->state = 2;
-            temp_v0->targetX = 0xB4;
+            temp_v0->targetPosition0 = 0xB4;
         }
         func_8010296C(1);
         D_80109714 = 0;
@@ -1530,7 +1724,7 @@ loop_1:
                         vs_battle_playMenuSelectSfx();
                         var_s1 = func_80100814();
                         vs_battle_getMenuItem(var_s1 >> 8)->itemState = 0;
-                        func_80103AD0(var_s4 | ((var_s1 + 1) * 0x10));
+                        _itemStatusView(var_s4 | ((var_s1 + 1) * 0x10));
                         D_80109711 = 0;
                         state = 7;
                         break;
@@ -1620,7 +1814,7 @@ loop_1:
                 temp_v0_9->initialX -= 0x18;
             }
             temp_v0_9->state = 2;
-            temp_v0_9->targetX = 0xB4;
+            temp_v0_9->targetPosition0 = 0xB4;
         }
         state = 5;
         /* fallthrough */
@@ -1674,7 +1868,7 @@ loop_1:
         }
         break;
     case 7:
-        i = func_80103AD0(0);
+        i = _itemStatusView(0);
         if (i == 0) {
             break;
         }
@@ -1690,7 +1884,7 @@ loop_1:
                 temp_v0_14->initialX -= 0x18;
             }
             temp_v0_14->state = 2;
-            temp_v0_14->targetX = 0xB4;
+            temp_v0_14->targetPosition0 = 0xB4;
         }
         state = 1;
         break;
@@ -1979,7 +2173,7 @@ static void func_8010659C(int arg0)
             temp_v0 = vs_battle_setMenuItem(D_80109764 + 0x14, 0x140,
                 (D_80109764 * 0x10) + 0x12, 0x97, 0, _itemsText + (D_80109764 << 7));
             temp_v0->state = 2;
-            temp_v0->targetX = 0xA9;
+            temp_v0->targetPosition0 = 0xA9;
             temp_s0 = ((_itemsText_t*)_itemsText)[D_80109764].menuRowFlags;
             temp_v0->unk7 = temp_s0 & 1;
             temp_v0->icon = (temp_s0 >> 0x1A);
@@ -2759,7 +2953,7 @@ static int func_80108088(int arg0)
         menuItem = vs_battle_setMenuItem(
             0x1F, 0x140, 0x12, 0x7E, 8, (char*)&_menuText[VS_menuText_OFFSET_equip]);
         menuItem->state = 2;
-        menuItem->targetX = 0xB4;
+        menuItem->targetPosition0 = 0xB4;
         menuItem->selected = 1;
         state = 1;
         // Fallthrough
@@ -2822,7 +3016,7 @@ static int func_80108088(int arg0)
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 state = 3;
             } else {
-                func_80102B78(selectedRow - 1 + 10);
+                _statusViewStartTransition(selectedRow - 1 + 10);
                 state = 4;
             }
         }
@@ -2835,7 +3029,7 @@ static int func_80108088(int arg0)
     case 4:
         if (vs_mainmenu_ready() != 0) {
             D_80109568 = 1;
-            func_80102BE4(selectedRow + 9);
+            _statusViewContinueTransition(selectedRow + 9);
             D_80109712 = 0;
             D_80109713 = 0;
             func_80108010(selectedRow);

@@ -142,7 +142,7 @@ void vs_mainMenu_processItemActionMenu(void)
     if (D_801022C4 < 10) {
         menuItem = func_800FF388(D_801022C4, -194);
         menuItem->state = 5;
-        menuItem->targetX = 0;
+        menuItem->targetPosition0 = 0;
         ++D_801022C4;
         if (D_801022C4 == _itemActionCount) {
             D_801022C4 = 16;
@@ -836,7 +836,7 @@ void func_80100A5C(void)
         menuItem = func_801008F0(D_801023D0, 0x140);
         menuItem->state = 2;
         ++D_801023D0;
-        menuItem->targetX = 0xC2 - _menuRowYOffset;
+        menuItem->targetPosition0 = 0xC2 - _menuRowYOffset;
         if (D_801023D0 == _subMenuRowCount) {
             D_801023D0 = 0x10;
         }
@@ -1272,7 +1272,7 @@ void func_80101970(void)
             break;
         case 2:
             origin = menuItem->initialX;
-            target = menuItem->targetX;
+            target = menuItem->targetPosition0;
             if (origin < target) {
                 origin += 32;
                 if (target < origin) {
@@ -1303,7 +1303,7 @@ void func_80101970(void)
             break;
         case 3:
             origin = menuItem->y;
-            target = menuItem->targetX;
+            target = menuItem->targetPosition0;
             if (origin < target) {
                 for (j = 1; j < 16; ++j) {
                     if (origin >= (target - vs_battle_rowAnimationSteps[j])) {
@@ -1328,7 +1328,7 @@ void func_80101970(void)
             break;
         case 4:
             origin = menuItem->initialX;
-            target = menuItem->targetX;
+            target = menuItem->targetPosition0;
             if (origin != target) {
                 for (j = 1; j < 16; ++j) {
                     if ((target + vs_battle_rowAnimationSteps[j]) >= origin) {
@@ -1341,7 +1341,7 @@ void func_80101970(void)
                 }
             } else {
                 origin = menuItem->y;
-                target = menuItem->targetY;
+                target = menuItem->targetPosition1;
                 if (origin != target) {
                     for (j = 1; j < 16; ++j) {
                         if ((target + vs_battle_rowAnimationSteps[j]) >= origin) {
@@ -1357,7 +1357,7 @@ void func_80101970(void)
             break;
         case 5:
             origin = menuItem->initialX;
-            target = menuItem->targetX;
+            target = menuItem->targetPosition0;
             if (target < origin) {
                 origin -= 32;
                 if (origin < target) {
@@ -1403,7 +1403,7 @@ void func_80101970(void)
                 vs_mainMenu_renderIntColorDefault(menuItem->unk10, temp_s0, temp_s3);
                 if ((menuItem->y == 18) && (menuItem->initialX < 96)) {
                     vs_mainMenu_renderIntColorDefault(
-                        menuItem->unkE, origin + 32, temp_s3);
+                        menuItem->itemPage, origin + 32, temp_s3);
                     vs_battle_renderTextRaw("-", origin, temp_s3);
                 }
             } else {

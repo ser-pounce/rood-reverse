@@ -32,7 +32,7 @@ static void _addMenuTitle(int id, int textTableOffset)
     menuItem = vs_battle_setMenuItem(
         id, 320, y, 140, 8, (char*)&vs_mainMenu_menu12Text[textTableOffset]);
     menuItem->state = 2;
-    menuItem->targetX = 180;
+    menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
 }
 
@@ -88,7 +88,7 @@ static void _initMenuItem(int textOffset, int icon)
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
         32, -164, 18, 164, 8, (char*)&vs_mainMenu_menu12Text[textOffset]);
     menuItem->state = 5;
-    menuItem->targetX = 16;
+    menuItem->targetPosition0 = 16;
     menuItem->selected = 1;
     menuItem->icon = icon;
 
@@ -145,7 +145,7 @@ static int _confirmationPrompt(int arg0)
                 (char*)&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[state + VS_MENU12_BIN_INDEX_optionYes]]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         ++state;
         break;
     case 2:
@@ -217,7 +217,7 @@ static int _confirmCombine(int arg0)
         menuItem = vs_battle_setMenuItem(
             state + 29, 320, (state * 16) + 130, 320 - 194, 0, (char*)text);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         ++state;
         break;
     case 3:
@@ -456,7 +456,7 @@ static void _navigateItemsList(int arg0)
                 (_itemsListState * 16) + 18, 151, 0,
                 (char*)&_itemsList[_itemsListState * 64]);
             menuItem->state = 2;
-            menuItem->targetX = 169;
+            menuItem->targetPosition0 = 169;
             itemInfo = *(int*)&_itemsList[_itemsListState * 64 + 14];
             menuItem->unk7 = itemInfo & 1;
             menuItem->icon = (itemInfo >> 0x1A);
@@ -667,8 +667,8 @@ static void _initMenuHeader(int arg0)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 4;
-    menuItem->targetX = 155;
-    menuItem->targetY = 18;
+    menuItem->targetPosition0 = 155;
+    menuItem->targetPosition1 = 18;
 }
 
 static char _availableItems[64];
@@ -1089,13 +1089,13 @@ static int _assembleMenu(int arg0)
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_weapon]);
         menuItem->state = 2;
         menuItem->selected = 1;
-        menuItem->targetX = 155;
+        menuItem->targetPosition0 = 155;
         menuItem = vs_battle_setMenuItem(11, 327, 34, 158, 0,
             bladeToAssemble == 0
                 ? (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_blades]
                 : vs_mainMenu_itemNames[blade->id]);
         menuItem->state = 2;
-        menuItem->targetX = 162;
+        menuItem->targetPosition0 = 162;
         if (bladeToAssemble != 0) {
             menuItem->icon = blade->category;
             menuItem->material = blade->material;
@@ -1109,7 +1109,7 @@ static int _assembleMenu(int arg0)
                                             .id]);
         menuItem->state = 2;
         menuItem->unkA = gripToAssemble == 0;
-        menuItem->targetX = 0xA2;
+        menuItem->targetPosition0 = 0xA2;
         if (gripToAssemble != 0) {
             menuItem->icon = grip->category + 0xA;
         } else {
@@ -1122,7 +1122,7 @@ static int _assembleMenu(int arg0)
                 v == 0 ? (char*)(vs_mainMenu_menu12Text + 0x421)
                        : vs_mainMenu_itemNames[vs_battle_inventory.gems[v - 1].id]);
             menuItem->state = 2;
-            menuItem->targetX = 0xA9;
+            menuItem->targetPosition0 = 0xA9;
             if (v != 0) {
                 menuItem->icon = 0x16;
             } else {
@@ -1449,7 +1449,7 @@ static void _addGemSelector(int arg0 __attribute__((unused)), int arg1)
         vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18, 320 - 169, 0,
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
-    temp_v0->targetX = 169;
+    temp_v0->targetPosition0 = 169;
     temp_v0->unkA = 1;
 }
 
@@ -1594,11 +1594,11 @@ static int _attachGemsMenu(int arg0)
             menuItem = vs_battle_getMenuItem(0);
             menuItem->state = 2;
             menuItem->w = 164;
-            menuItem->targetX = 16;
+            menuItem->targetPosition0 = 16;
             menuItem = vs_battle_getMenuItem(selectedRow + 9);
             menuItem->state = 4;
-            menuItem->targetX = 155;
-            menuItem->targetY = 18;
+            menuItem->targetPosition0 = 155;
+            menuItem->targetPosition1 = 18;
             state = 3;
         }
         break;
@@ -1651,7 +1651,7 @@ static int _attachGemsMenu(int arg0)
                     vs_mainMenu_initSetShieldGemMenu(D_8010BC21, _combiningItem + 1, 1);
             } else {
                 menuItem =
-                    vs_mainMenu_initSetWeaponGemMenu(D_8010BC21, _combiningItem + 1, 1);
+                    vs_mainMenu_initWeaponDetailsMenu(D_8010BC21, _combiningItem + 1, 1);
             }
             if (menuItem != NULL) {
                 if (menuItem->unk7 != 0) {
@@ -1792,7 +1792,7 @@ static int _attachGemsMenu(int arg0)
                 }
                 menuItem = vs_battle_setMenuItem(10, 320, 18, 137, 0, menuText[0]);
                 menuItem->state = 2;
-                menuItem->targetX = 155;
+                menuItem->targetPosition0 = 155;
                 menuItem->selected = 1;
                 i = rowTypes[0];
                 menuItem->icon = i >> 0x1A;
@@ -2005,11 +2005,11 @@ static int _disassembleMenu(int arg0)
         menuItem = vs_battle_getMenuItem(0);
         menuItem->state = 2;
         menuItem->w = 164;
-        menuItem->targetX = 16;
+        menuItem->targetPosition0 = 16;
         menuItem = vs_battle_getMenuItem(selectedRow + 9);
         menuItem->state = 4;
-        menuItem->targetX = 155;
-        menuItem->targetY = 18;
+        menuItem->targetPosition0 = 155;
+        menuItem->targetPosition1 = 18;
         state = 3;
         break;
     case 3:
@@ -2037,7 +2037,7 @@ static int _disassembleMenu(int arg0)
             if (isShield != 0) {
                 vs_mainMenu_initSetShieldGemMenu(D_8010BC3D, _combiningItem + 1, 1);
             } else {
-                vs_mainMenu_initSetWeaponGemMenu(D_8010BC3D, _combiningItem + 1, 1);
+                vs_mainMenu_initWeaponDetailsMenu(D_8010BC3D, _combiningItem + 1, 1);
             }
             break;
         }
@@ -2242,11 +2242,11 @@ static int _renameWeaponMenu(int arg0)
         menuItem = vs_battle_getMenuItem(0);
         menuItem->state = 2;
         menuItem->w = 164;
-        menuItem->targetX = 16;
+        menuItem->targetPosition0 = 16;
         menuItem = vs_battle_getMenuItem(selectedRow + 9);
         menuItem->state = 4;
-        menuItem->targetX = 155;
-        menuItem->targetY = 18;
+        menuItem->targetPosition0 = 155;
+        menuItem->targetPosition1 = 18;
         state = 3;
         break;
     case 3:
@@ -2266,7 +2266,7 @@ static int _renameWeaponMenu(int arg0)
     case 4:
         if (D_8010BC49 < 5) {
             ++D_8010BC49;
-            vs_mainMenu_initSetWeaponGemMenu(D_8010BC49, _combiningItem + 1, 1);
+            vs_mainMenu_initWeaponDetailsMenu(D_8010BC49, _combiningItem + 1, 1);
             return 0;
         }
         _confirmationPrompt(1);
@@ -2505,7 +2505,7 @@ static vs_battle_menuItem_t* _initItemRow(int itemType, int index)
 
     menuItem = _setItemRow(itemType, index);
     menuItem->state = 2;
-    menuItem->targetX = 155;
+    menuItem->targetPosition0 = 155;
     menuItem->initialX = 320;
 
     return menuItem;
@@ -2762,7 +2762,7 @@ static int _combineBladeMenu(int arg0)
                 var_s1 == 0 ? (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_blade]
                             : vs_mainMenu_itemNames[blade->id]);
             menuItem->state = 2;
-            menuItem->targetX = 169;
+            menuItem->targetPosition0 = 169;
             if (var_s1 == 0) {
                 menuItem->unkA = 1;
             } else {
@@ -3250,7 +3250,7 @@ static int _combineShieldMenu(int arg0)
                         ? (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_shield]
                         : vs_mainMenu_itemNames[shield0->base.id]));
             temp_v0->state = 2;
-            temp_v0->targetX = 0xA9;
+            temp_v0->targetPosition0 = 0xA9;
             if (temp_s1 == 0) {
                 temp_v0->unkA = 1;
             } else {
@@ -3728,7 +3728,7 @@ static int _combineArmorMenu(int arg0)
                 var_s1 == 0 ? (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_armor]
                             : vs_mainMenu_itemNames[armor->id]);
             temp_v0->state = 2;
-            temp_v0->targetX = 169;
+            temp_v0->targetPosition0 = 169;
 
             if (var_s1 == 0) {
                 temp_v0->unkA = 1;

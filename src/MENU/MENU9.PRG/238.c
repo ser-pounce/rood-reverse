@@ -270,7 +270,7 @@ void func_80102F64(char* arg0)
 
     temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 9, arg0);
     temp_v0->state = 2;
-    temp_v0->targetX = 0xB4;
+    temp_v0->targetPosition0 = 0xB4;
     temp_v0->selected = 1;
     temp_v0->unkA = 1;
 }
@@ -1947,7 +1947,7 @@ void func_80107090(void)
         if (p->animationState == 0) {
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
             menuItem->state = 2;
-            menuItem->targetX = 0x140;
+            menuItem->targetPosition0 = 0x140;
         } else {
             p->animationState = -1;
         }
@@ -1984,7 +1984,7 @@ void func_80107120(int arg0)
                     i, 0x140, 0x32 + i * 0x10, 0x88, 0, var_s1->title);
                 temp_s2->unk7 = var_s1->unk3;
                 temp_s2->state = 2;
-                temp_s2->targetX = 0xC2;
+                temp_s2->targetPosition0 = 0xC2;
             }
         } else if (vs_battle_getMenuItem(i)->state == 1) {
             ++var_s7;

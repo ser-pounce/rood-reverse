@@ -1,6 +1,6 @@
 vs_menuD_initUiWeapon = 0x80102A34;
 vs_menuD_initUiShield = 0x80102BB0;
-_getContainerIndicesOffset = 0x80102C94;
+_getContainerIndicesOffset = 0x80102C94; // allow_duplicated:True
 _getContainerItemIndex = 0x80102CD0;
 _setContainerItemIndex = 0x80102D28;
 _initContainerObject = 0x80102D80;

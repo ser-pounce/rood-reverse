@@ -217,7 +217,7 @@ void vs_mainMenu_menuItemFlyoutLeft(int row)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row + 32);
     if (menuItem->state != 0) {
         menuItem->state = 5;
-        menuItem->targetX = -menuItem->w;
+        menuItem->targetPosition0 = -menuItem->w;
     }
 }
 
@@ -237,7 +237,7 @@ void vs_mainMenu_menuItemFlyoutRight(int row)
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row);
     if (menuItem->state != 0) {
         menuItem->state = 2;
-        menuItem->targetX = 320;
+        menuItem->targetPosition0 = 320;
     }
 }
 
@@ -263,8 +263,8 @@ void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset)
 
     menuItem = vs_battle_getMenuItem(row + (offset * 10));
     menuItem->state = 4;
-    menuItem->targetX = 180;
-    menuItem->targetY = (offset * 16) + 18;
+    menuItem->targetPosition0 = 180;
+    menuItem->targetPosition1 = (offset * 16) + 18;
 
     if (menuItem->backgroundWidth == 0) {
         menuItem->backgroundWidth = 1;
@@ -384,11 +384,11 @@ void vs_mainMenu_exec(int arg0)
                 vs_mainMenu_setNextMenuAction(menuActionMenu);
                 vs_mainMenu_clearMenuExcept(selectedMenu - 1);
                 menuItem->state = 2;
-                menuItem->targetX = 0xB4;
+                menuItem->targetPosition0 = 0xB4;
                 menuItem->selected = 1;
                 if (selectedMenu == 5) {
                     func_80100414(-2, 0x80);
-                    menuItem->targetX = 0x140;
+                    menuItem->targetPosition0 = 0x140;
                 }
                 *submenuState = 1;
                 break;
@@ -398,12 +398,12 @@ void vs_mainMenu_exec(int arg0)
                     break;
                 }
                 menuItem->state = 3;
-                menuItem->targetX = 0x12;
+                menuItem->targetPosition0 = 0x12;
                 if (selectedMenu == 5) {
                     menuItem = vs_battle_setMenuItem(
                         4, 0x140, 0x12, 0x8C, 8, vs_battle_characterState->unk3C->name);
                     menuItem->state = 2;
-                    menuItem->targetX = 0xB4;
+                    menuItem->targetPosition0 = 0xB4;
                     menuItem->selected = state;
                 }
                 *submenuState = 3;
@@ -465,7 +465,7 @@ void func_800FAEBC(int arg0)
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[3]]);
         temp_v0->state = 2;
         temp_v0->selected = 1;
-        temp_v0->targetX = 0xB4;
+        temp_v0->targetPosition0 = 0xB4;
         temp_v0->unk7 = (D_800F4EA0 & 7) != 0;
         D_80102454 = 1;
         vs_mainMenu_loadItemNames(1);
@@ -474,7 +474,7 @@ void func_800FAEBC(int arg0)
         if ((vs_mainmenu_ready() != 0) && (vs_mainMenu_loadItemNames(0) != 0)) {
             temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 8, D_80102060);
             temp_v0->state = 2;
-            temp_v0->targetX = 0xB4;
+            temp_v0->targetPosition0 = 0xB4;
             temp_v0->selected = 1;
             D_80102454 = 2;
         }
@@ -801,18 +801,26 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     int var_s0;
 
     var_s1 = 1;
+
     if (arg0 != 0) {
+
         if (arg0 > 0) {
             D_801024B9 = 3;
             func_800FBB8C(arg0);
         }
+
         D_801020F4 = arg0;
         D_801020F8 = 10;
+
         return;
     }
+
     var_s0 = D_801024B9;
+
     if (D_801020F4 > 0) {
+
         var_s1 = -vs_battle_rowAnimationSteps[D_801020F8];
+
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed.all & PADRleft) {
@@ -829,9 +837,11 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
             var_s1 = (D_801020F8 - 10) * 24;
         }
     }
+
     if (var_s1 <= 0) {
         func_800FB3C8(var_s1);
     }
+
     D_801024B9 = var_s0;
 }
 
@@ -880,14 +890,18 @@ void func_800FBD80(int arg0)
     }
 }
 
-// arg0: 0 = render, 1 = slide in, 2 = slide out
-void vs_mainMenu_renderEquipStats(int arg0)
+/**
+ * Prints the stats on the lower right of the screen.
+ *
+ * @param animate 1 = slide in, 2 = slide out
+ */
+void vs_mainMenu_renderEquipStats(int animate)
 {
     static char const* rangeRiskStr[] = { "#RANGE", "#RISK" };
     static char const* statStr[] = { "#STRENGTH", "#INTELLIGENCE", "#AGILITY", NULL,
         "#ATTACK/STR", "#ATTACK/INT", "#AGILITY", NULL, "#DEFENSE/STR", "#DEFENSE/INT",
         "#AGILITY" };
-    static char D_80102130 = 0;
+    static char statsAnimation = 0;
     static u_char D_80102131 = 0;
 
     int valuesKnown;
@@ -903,17 +917,17 @@ void vs_mainMenu_renderEquipStats(int arg0)
     actor = vs_battle_actors[D_80102488[3]]->unk3C;
     temp_s4 = D_1F800000[1] - 6;
 
-    if (arg0 != 0) {
-        if (D_80102130 != arg0) {
-            D_80102130 = arg0;
-            D_80102131 = 0xF - (arg0 * 4);
+    if (animate != 0) {
+        if (statsAnimation != animate) {
+            statsAnimation = animate;
+            D_80102131 = 15 - (animate * 4);
         }
         return;
     }
 
     valuesKnown = vs_mainMenu_strIntAgi[3];
 
-    if (D_80102130 == 1) {
+    if (statsAnimation == 1) {
         if (D_80102131 != 0) {
             position += vs_battle_rowAnimationSteps[D_80102131];
             --D_80102131;

@@ -33,7 +33,7 @@ vs_mainMenu_getSelectedItemAction
 vs_mainmenu_getSelectedRow
 vs_mainMenu_initItem
 vs_mainMenu_initSetShieldGemMenu
-vs_mainMenu_initSetWeaponGemMenu
+vs_mainMenu_initWeaponDetailsMenu
 vs_mainMenu_initSortUi
 vs_mainMenu_initTextBox
 vs_mainMenu_initUiArmor

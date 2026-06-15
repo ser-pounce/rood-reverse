@@ -97,10 +97,10 @@ static void _initMenuItem(int menuItemId)
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
     menuItem = vs_battle_getMenuItem(31);
     menuItem->state = 3;
-    menuItem->targetX = 18;
+    menuItem->targetPosition0 = 18;
     menuItem = vs_battle_getMenuItem(menuItemId);
     menuItem->state = 2;
-    menuItem->targetX = 155;
+    menuItem->targetPosition0 = 155;
     menuItem->selected = 1;
     menuItem->subText = NULL;
 }
@@ -111,11 +111,11 @@ static void _transitionToSubMenu(int id)
 
     menuItem = vs_battle_getMenuItem(31);
     menuItem->state = 2;
-    menuItem->targetX = 16;
+    menuItem->targetPosition0 = 16;
     menuItem->w = 164;
     menuItem = vs_battle_getMenuItem(id);
     menuItem->state = 3;
-    menuItem->targetX = 18;
+    menuItem->targetPosition0 = 18;
 }
 
 static u_short _menuText[] = {
@@ -164,7 +164,7 @@ static void _setSubMenu(int id, char** menuText, u_int rowType, int arg3)
     temp_v0->icon = rowType >> 0x1A;
     temp_v0->material = (rowType >> 0x10) & 7;
     vs_mainmenu_setInformationMessage(menuText[1]);
-    vs_battle_getMenuItem(31)->unkE = arg3 + 1;
+    vs_battle_getMenuItem(31)->itemPage = arg3 + 1;
 }
 
 static int _getItemIndex(int itemCategory, int index)
@@ -227,7 +227,7 @@ static int _weaponDetailsPage(int selectedMenuItem)
         if (row < 10) {
             ++row;
             if (row < 6) {
-                vs_mainMenu_initSetWeaponGemMenu(
+                vs_mainMenu_initWeaponDetailsMenu(
                     row, vs_main_inventoryIndices.weapons[selectedWeapon], 1);
             }
             break;
@@ -252,7 +252,7 @@ static int _weaponDetailsPage(int selectedMenuItem)
 
                 _setSubMenu(menuItemId, text, rowType, weaponPage);
                 for (i = 1; i < 6; ++i) {
-                    vs_mainMenu_initSetWeaponGemMenu(
+                    vs_mainMenu_initWeaponDetailsMenu(
                         i, vs_main_inventoryIndices.weapons[weaponPage], 0);
                 }
             }
@@ -602,7 +602,7 @@ static int _invokeDetailsPageHandler(int selection)
         D_8010A6BF = 1;
         _exitToBattle = 0;
         func_800FDD78();
-        vs_battle_getMenuItem(31)->unkE = selectedMenuItem & 0xFF;
+        vs_battle_getMenuItem(31)->itemPage = selectedMenuItem & 0xFF;
         vs_mainMenu_setNextMenuAction(menuActionNone);
     }
 
@@ -1091,7 +1091,7 @@ static int _discardMenu(int arg0)
         }
         menuItem = vs_battle_setMenuItem(34, -126, 130, 0x7E, 0, countTemplate);
         menuItem->state = 5;
-        menuItem->targetX = 0;
+        menuItem->targetPosition0 = 0;
         discardStep = 0;
         discardCount = 0;
         state = clearTemplate;
@@ -1368,7 +1368,7 @@ static void func_8010537C(int arg0)
         menuItem = vs_battle_getMenuItem(i);
         if (menuItem->state == 2) {
             menuItem->state = 1;
-            menuItem->initialX = menuItem->targetX;
+            menuItem->initialX = menuItem->targetPosition0;
         }
         menuItem->selected =
             (i ^ (D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] + 0x14)) == 0;
@@ -1429,7 +1429,7 @@ static int _itemNavigation(int arg0)
                 menuItem->initialX -= 24;
             }
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
         }
         _setFlyinState(1);
         menuTitleAnimationStep = 0;
@@ -1606,7 +1606,7 @@ static int _itemNavigation(int arg0)
                 menuItem->initialX -= 24;
             }
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
         }
         state = waitInit;
         /* fallthrough */
@@ -1675,7 +1675,7 @@ static int _itemNavigation(int arg0)
                 menuItem->initialX -= 24;
             }
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
         }
         state = init;
         break;
@@ -2007,7 +2007,7 @@ static int _topLevelMenuTransition(int arg0)
                 (char*)&vs_battle_menuStrings
                     [vs_battle_menuStrings[VS_menuStrings_INDEX_items]]);
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
             menuItem->selected = 1;
             state = 1;
         }
@@ -2207,14 +2207,14 @@ static int disassembleItem(int itemIndex)
         menuItem = vs_battle_setMenuItem(
             0x1E, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
-        menuItem->targetX = 0xC2;
+        menuItem->targetPosition0 = 0xC2;
         state = initOptionNo;
         break;
     case initOptionNo:
         menuItem = vs_battle_setMenuItem(
             0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
-        menuItem->targetX = 0xC2;
+        menuItem->targetPosition0 = 0xC2;
         vs_battle_stringContext.strings[0] =
             disassembleItemCategory == 0
                 ? _inventory->weapons[i].name
@@ -2414,14 +2414,14 @@ static int _consolidateMiscItems(int lootIndex)
         menuItem = vs_battle_setMenuItem(
             30, 320, 146, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         state = 2;
         break;
     case 2:
         menuItem = vs_battle_setMenuItem(
             31, 320, 162, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[itemId];
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
@@ -3092,14 +3092,14 @@ int _discardItems(int init)
         menuItem = vs_battle_setMenuItem(
             30, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
-        menuItem->targetX = 0xC2;
+        menuItem->targetPosition0 = 0xC2;
         state = 1;
         break;
     case 1:
         menuItem = vs_battle_setMenuItem(
             31, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
-        menuItem->targetX = 0xC2;
+        menuItem->targetPosition0 = 0xC2;
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
             D_8010A6B8 == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
@@ -3189,7 +3189,7 @@ static int _organizeInventory(_lootListItem* loot)
             menuItem = vs_battle_setMenuItem(30, 0x140, 0x92, 0x7E, 0,
                 (char*)&_menuText[_menuText[(availableAction + 4) * 2]]);
             menuItem->state = 2;
-            menuItem->targetX = 0xC2;
+            menuItem->targetPosition0 = 0xC2;
         }
         return 0;
     }
@@ -3199,7 +3199,7 @@ static int _organizeInventory(_lootListItem* loot)
         menuItem = vs_battle_setMenuItem(31, 0x140, 0xA2, 0x7E, 0,
             (char*)&_menuText[VS_menuText_OFFSET_organizeInventory]);
         menuItem->state = 2;
-        menuItem->targetX = 0xC2;
+        menuItem->targetPosition0 = 0xC2;
         state = 1;
         break;
     case 1:

@@ -128,7 +128,7 @@ static int _weaponArtsMenu(int typeCursorMem)
         menuItem = vs_battle_setMenuItem(
             10, 320, 34, 0x7E, 8, (char*)&_strings[_strings[(weaponType - 1) * 3]]);
         menuItem->state = 2;
-        menuItem->targetX = 180;
+        menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
         menuItem->icon = typeCursorMem;
         state = init;
@@ -274,7 +274,7 @@ static int _weaponCategoriesMenu(int initialize)
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
             10, 320, 34, 0x7E, 8, (char*)&_strings[VS_strings_OFFSET_viewArts]);
         menuItem->state = 2;
-        menuItem->targetX = 180;
+        menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
         state = init;
         return 0;
@@ -348,7 +348,7 @@ static void _setMenuHeader(void)
             [vs_battle_menuStrings[VS_menuStrings_INDEX_breakArts]]);
 
     menuItem->state = 2;
-    menuItem->targetX = 180;
+    menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
 
     vs_mainMenu_setNextMenuAction(menuActionMenu);

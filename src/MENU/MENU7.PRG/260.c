@@ -3464,7 +3464,7 @@ static int _promptYesNo(int initParams)
         menuItem = vs_battle_setMenuItem(0x1E, 320, 146, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         state = init;
         selectedOption = (initParams - 1) & 1;
         cancelWithMenuButton = initParams >> 2;
@@ -3475,7 +3475,7 @@ static int _promptYesNo(int initParams)
         menuItem = vs_battle_setMenuItem(0x1F, 320, 162, 0x7E, 0,
             (char*)&_containerStrings[VS_container_OFFSET_noOption]);
         menuItem->state = 2;
-        menuItem->targetX = 194;
+        menuItem->targetPosition0 = 194;
         state = animWait;
         break;
     case animWait:
@@ -3688,7 +3688,7 @@ int vs_menu7_saveContainerMenu(char* state)
                 menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
                 menuItem->state = 2;
-                menuItem->targetX = 180;
+                menuItem->targetPosition0 = 180;
                 menuItem->selected = 1;
                 *state = 2;
             } else {

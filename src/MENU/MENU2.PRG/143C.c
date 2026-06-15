@@ -223,7 +223,7 @@ static int _battleAbilityUnlocked(int initialize)
                 (char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_chainAbilities]);
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
             menuItem->selected = 1;
             state = chainOnly;
             break;
@@ -233,7 +233,7 @@ static int _battleAbilityUnlocked(int initialize)
                 (char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             menuItem->state = 2;
-            menuItem->targetX = 180;
+            menuItem->targetPosition0 = 180;
             menuItem->selected = 1;
             state = defenseOnly;
             break;

@@ -52,7 +52,7 @@ void vs_mainMenu_renderEquipStats(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
 void vs_mainMenu_drawDpPpbars(int);
 void vs_mainMenu_setUiWeapon(vs_battle_uiWeapon*, char**, int*, char*);
-vs_battle_menuItem_t* vs_mainMenu_initSetWeaponGemMenu(int, int, int);
+vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int, int, int);
 vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int, int, int);
 void vs_mainMenu_initUiWeapon(
     vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);

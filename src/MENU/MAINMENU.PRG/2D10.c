@@ -15,7 +15,7 @@
 
 extern u_long* D_1F800000[];
 
-vs_battle_menuItem_t* vs_mainMenu_initSetWeaponGemMenu(int row, int index, int flyIn)
+vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int row, int index, int flyIn)
 {
     char* menuText[2];
     int rowType;
@@ -63,7 +63,7 @@ vs_battle_menuItem_t* vs_mainMenu_initSetWeaponGemMenu(int row, int index, int f
         if (flyIn & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;
-            menuItem->targetX = initialX;
+            menuItem->targetPosition0 = initialX;
         }
         menuItem->icon = (u_int)rowType >> 0x1A;
         menuItem->material = ((u_int)rowType >> 16) & 7;
@@ -108,7 +108,7 @@ vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int row, int index, int f
         if (flyIn & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;
-            menuItem->targetX = 320 - var_s0;
+            menuItem->targetPosition0 = 320 - var_s0;
         }
         menuItem->icon = 0x16;
     }

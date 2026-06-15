@@ -125,7 +125,7 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
     _abilityCount = abilityCount;
     _abilityMenuState = 0;
 
-    _abilityText = vs_main_allocHeapR(abilityCount << 7);
+    _abilityText = vs_main_allocHeapR(abilityCount * 128);
 
     for (i = 0; i < abilityCount; ++i) {
 

@@ -422,7 +422,7 @@ static int _battleAbilityUnlocked(int initialize)
  */
 int vs_menu2_skillUnlock(char* state)
 {
-    enum state { init, breakArtInit, breakArtUnlock, abilityInit, abilityUnlock, reinit };
+    enum state { init, breakArtInit, breakArtUnlock, abilityInit, abilityUnlock, exit };
 
     switch (*state) {
     case init:
@@ -431,7 +431,7 @@ int vs_menu2_skillUnlock(char* state)
     case breakArtInit:
         *state = abilityInit;
 
-        if ((D_800F4E88 != 0) && (_breakArtUnlocked(1) == 0)) {
+        if ((vs_battle_unlockedBreakArt != 0) && (_breakArtUnlocked(1) == 0)) {
             *state = breakArtUnlock;
         }
 
@@ -444,24 +444,28 @@ int vs_menu2_skillUnlock(char* state)
         break;
 
     case abilityInit:
-        *state = reinit;
-        if ((D_800F4FDA != 0) && (_battleAbilityUnlocked(1) == 0)) {
+        *state = exit;
+
+        if ((vs_battle_unlockedBattleAbility != 0) && (_battleAbilityUnlocked(1) == 0)) {
             *state = abilityUnlock;
         }
+
         break;
 
     case abilityUnlock:
         if (_battleAbilityUnlocked(0) != 0) {
             *state = abilityInit;
         }
+
         break;
 
-    case reinit:
+    case exit:
         if (vs_battle_dismissTextBox(7) == 0) {
             *state = init;
             return 1;
         }
         break;
     }
+
     return 0;
 }

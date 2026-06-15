@@ -2151,10 +2151,10 @@ void func_800CB1C0(int arg0)
     D_800F4EA0 |= 0x400;
 }
 
-void func_800CB208(int art, int battleAbility)
+void _setArtAndAbilityToUnlock(int art, int battleAbility)
 {
-    D_800F4E88 = art;
-    D_800F4FDA = battleAbility;
+    vs_battle_unlockedBreakArt = art;
+    vs_battle_unlockedBattleAbility = battleAbility;
     func_800CACD0(3, 2);
 }
 

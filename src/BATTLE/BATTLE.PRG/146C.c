@@ -3036,7 +3036,7 @@ void func_8006FA20(void)
     temp_v0_2 = _isArtOrAbilityUnlocked();
     _cameraMode = 14;
     func_8006C39C();
-    func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+    _setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
 }
 
 void func_8006FB48(void)
@@ -5569,7 +5569,7 @@ void func_8007B63C(void)
     temp_v0_2 = _isArtOrAbilityUnlocked();
     _cameraMode = 6;
     func_8007B410();
-    func_800CB208(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+    _setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
 }
 
 void func_8007B764(void)

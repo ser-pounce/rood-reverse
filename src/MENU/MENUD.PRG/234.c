@@ -1352,7 +1352,7 @@ static void _sortWeaponsByStat(int stat)
     vs_battle_memcpy(targetIndices, &sortedIndices, sizeof sortedIndices);
 }
 
-static int _getShieldStat(int arg0, vs_battle_uiShield* shield)
+static int _getShieldStatValue(int arg0, vs_battle_uiShield* shield)
 {
     switch (arg0) {
     case 1:
@@ -1405,7 +1405,7 @@ static void _sortShieldsByStat(int arg0)
             if (temp_s0 != 0) {
                 vs_menuD_initUiShield(
                     &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
-                temp_v0 = _getShieldStat(arg0, &sp10);
+                temp_v0 = _getShieldStatValue(arg0, &sp10);
                 if (var_s3 < temp_v0) {
                     var_s3 = temp_v0;
                 }
@@ -1421,7 +1421,7 @@ static void _sortShieldsByStat(int arg0)
             if (temp_s0 != 0) {
                 vs_menuD_initUiShield(
                     &sp10, &temp_s5[temp_s0 - 1], &vs_menuD_containerData->data);
-                if (_getShieldStat(arg0, &sp10) == var_s3) {
+                if (_getShieldStatValue(arg0, &sp10) == var_s3) {
                     sp178[var_s4++] = temp_s0;
                     temp_s6[i] = 0;
                 }
@@ -1522,7 +1522,7 @@ static int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
     }
 }
 
-static void _copyEquipmentStats(vs_battle_uiEquipment* item, int type, int index)
+static void _sortEquipment(vs_battle_uiEquipment* item, int type, int index)
 {
     switch (type) {
     case itemCategoryBlade:
@@ -1543,7 +1543,7 @@ static void _copyEquipmentStats(vs_battle_uiEquipment* item, int type, int index
     }
 }
 
-static void _sortEquipmentByStat(int arg0, int arg1)
+static void _copyEquipmentByStat(int arg0, int arg1)
 {
     vs_battle_uiEquipment sp10;
     int temp_v0;
@@ -1568,7 +1568,7 @@ static void _sortEquipmentByStat(int arg0, int arg1)
             for (i = 0; i < temp_s5; ++i) {
                 temp_s0 = temp_s7[i];
                 if (temp_s0 != 0) {
-                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
+                    _sortEquipment(&sp10, arg0, temp_s0 - 1);
                     temp_v0 = _getEquipmentStat(arg1, &sp10);
                     if (var_s4 < temp_v0) {
                         var_s4 = temp_v0;
@@ -1583,7 +1583,7 @@ static void _sortEquipmentByStat(int arg0, int arg1)
             for (i = 0; i < temp_s5; ++i) {
                 temp_s0 = temp_s7[i];
                 if (temp_s0 != 0) {
-                    _copyEquipmentStats(&sp10, arg0, temp_s0 - 1);
+                    _sortEquipment(&sp10, arg0, temp_s0 - 1);
                     if (_getEquipmentStat(arg1, &sp10) == var_s4) {
                         sp40[var_s6++] = temp_s0;
                         temp_s7[i] = 0;
@@ -1659,7 +1659,7 @@ static int _displaySortMenu(int arg0)
                     _sortItemsByStat(D_801099D0[i]);
                     break;
                 default:
-                    _sortEquipmentByStat(D_80109A4D, D_801099DC[D_80109A4D][i]);
+                    _copyEquipmentByStat(D_80109A4D, D_801099DC[D_80109A4D][i]);
                     break;
                 }
             } else {

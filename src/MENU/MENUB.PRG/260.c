@@ -704,7 +704,7 @@ static void _sortWeaponsByStat(int stat)
     vs_battle_memcpy(indices, sortedIndices, sizeof sortedIndices);
 }
 
-static int _getShieldStat(int stat, vs_battle_uiShield* shield)
+static int _getShieldStatValue(int stat, vs_battle_uiShield* shield)
 {
     switch (stat) {
     case 1:
@@ -755,7 +755,7 @@ static void _sortShieldsByStat(int stat)
             if (index != 0) {
                 int value;
                 vs_battle_applyShield(&shield, &shields[index - 1]);
-                value = _getShieldStat(stat, &shield);
+                value = _getShieldStatValue(stat, &shield);
                 if (maxValue < value) {
                     maxValue = value;
                 }
@@ -770,7 +770,7 @@ static void _sortShieldsByStat(int stat)
             index = shieldIndices[i];
             if (index != 0) {
                 vs_battle_applyShield(&shield, &shields[index - 1]);
-                if (_getShieldStat(stat, &shield) == maxValue) {
+                if (_getShieldStatValue(stat, &shield) == maxValue) {
                     sortedIndices[sortedIndex++] = index;
                     shieldIndices[i] = 0;
                 }
@@ -869,7 +869,7 @@ static int _getEquipmentStat(int stat, vs_battle_uiEquipment* item)
     }
 }
 
-void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int index)
+void _sortEquipment(vs_battle_uiEquipment* equipment, int itemCategory, int index)
 {
     switch (itemCategory) {
     case itemCategoryBlade:
@@ -887,7 +887,7 @@ void _copyEquipmentStats(vs_battle_uiEquipment* equipment, int itemCategory, int
     }
 }
 
-static void _sortEquipmentByStat(int itemCategory, int stat)
+static void _copyEquipmentByStat(int itemCategory, int stat)
 {
     vs_battle_uiEquipment equipment;
 
@@ -906,7 +906,7 @@ static void _sortEquipmentByStat(int itemCategory, int stat)
                 index = indices[i];
                 if (index != 0) {
                     int value;
-                    _copyEquipmentStats(&equipment, itemCategory, index - 1);
+                    _sortEquipment(&equipment, itemCategory, index - 1);
                     value = _getEquipmentStat(stat, &equipment);
                     if (maxValue < value) {
                         maxValue = value;
@@ -921,7 +921,7 @@ static void _sortEquipmentByStat(int itemCategory, int stat)
             for (i = 0; i < capacity; ++i) {
                 index = indices[i];
                 if (index != 0) {
-                    _copyEquipmentStats(&equipment, itemCategory, index - 1);
+                    _sortEquipment(&equipment, itemCategory, index - 1);
                     if (_getEquipmentStat(stat, &equipment) == maxValue) {
                         sortedIndices[sortedIndex++] = index;
                         indices[i] = 0;
@@ -996,7 +996,7 @@ static int _sortItems(int selectedCategory)
                     _sortMiscByStat(miscSortStats[i]);
                     break;
                 default:
-                    _sortEquipmentByStat(
+                    _copyEquipmentByStat(
                         itemCategory, equipmentSortStats[itemCategory][i]);
                     break;
                 }

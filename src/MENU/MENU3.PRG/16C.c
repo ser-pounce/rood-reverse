@@ -17,6 +17,7 @@
 #include "gpu.h"
 #include <memory.h>
 #include <libetc.h>
+#include <limits.h>
 
 extern void* D_1F800000[];
 
@@ -815,7 +816,9 @@ static int _itemStatusView(int itemInfo)
 }
 
 /**
- * Facilitates sorting by mapping stat types to a numerical value.
+ * Maps a numerical value to a weapon stat.
+ *
+ * @param stat Must be in the range 0-24
  */
 static int _getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
 {
@@ -855,54 +858,68 @@ static int _getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
  */
 static void _sortWeapons(int stat)
 {
-    vs_battle_uiWeapon weapon;
-    char sp1A8[8];
-    int temp_v0;
+    vs_battle_uiWeapon uiWeapon;
+    char sortedIndices[8];
     int i;
-    int var_s3;
-    int var_s4;
-    int temp_s0;
-    vs_battle_inventoryWeapon* new_var2 = vs_battle_inventory.weapons;
-    char* new_var = vs_main_inventoryIndices.weapons;
+    int sortedPos;
 
-    vs_battle_rMemzero(sp1A8, 8);
-    var_s4 = 0;
+    vs_battle_inventoryWeapon* weapon = vs_battle_inventory.weapons;
+    char* indices = vs_main_inventoryIndices.weapons;
+
+    vs_battle_rMemzero(sortedIndices, 8);
+
+    sortedPos = 0;
 
     while (1) {
-        var_s3 = 0x80000000;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&weapon, &new_var2[temp_s0 - 1]);
-                temp_v0 = _getWeaponStatValue(stat, &weapon);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            index = indices[i];
+
+            if (index != 0) {
+                int value;
+
+                vs_battle_applyWeapon(&uiWeapon, &weapon[index - 1]);
+
+                value = _getWeaponStatValue(stat, &uiWeapon);
+
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyWeapon(&weapon, &new_var2[temp_s0 - 1]);
-                if (_getWeaponStatValue(stat, &weapon) == var_s3) {
-                    sp1A8[var_s4++] = temp_s0;
-                    new_var[i] = 0;
+            index = indices[i];
+
+            if (index != 0) {
+
+                vs_battle_applyWeapon(&uiWeapon, &weapon[index - 1]);
+
+                if (_getWeaponStatValue(stat, &uiWeapon) == maxValue) {
+                    sortedIndices[sortedPos++] = index;
+                    indices[i] = 0;
                 }
             }
         }
     }
-    vs_battle_memcpy(new_var, sp1A8, 8);
+
+    vs_battle_memcpy(indices, sortedIndices, 8);
 }
 
-static int _getShieldStat(int arg0, vs_battle_uiShield* shield)
+/**
+ * Maps a numerical value to a shield stat.
+ *
+ * @param stat Must be in the disjoint range 0-10 | 27-43
+ */
+static int _getShieldStatValue(int stat, vs_battle_uiShield* shield)
 {
-    switch (arg0) {
+    switch (stat) {
     case 1:
         return -shield->base.material;
     case 4:
@@ -920,219 +937,265 @@ static int _getShieldStat(int arg0, vs_battle_uiShield* shield)
     case 10:
         return shield->currentAgility;
     default:
-        if (arg0 < 33) {
-            return shield->classAffinityCurrent.class[0][arg0 - 27];
+        if (stat < 33) {
+            return shield->classAffinityCurrent.class[0][stat - 27];
         }
-        if (arg0 >= 40) {
-            return shield->types[arg0 - 39];
+
+        if (stat > 39) {
+            return shield->types[stat - 39];
         }
-        return shield->classAffinityCurrent.affinity[0][arg0 - 33];
+
+        return shield->classAffinityCurrent.affinity[0][stat - 33];
     }
 }
 
-static void func_80103F00(int arg0)
+/**
+ * Sorts shields by the selected stat.
+ */
+static void _sortShields(int stat)
 {
-    vs_battle_uiShield shield;
-    char sp1A8[8];
-    int temp_v0;
+    vs_battle_uiShield uiShield;
+    char sortedIndices[8];
     int i;
-    int var_s3;
-    int var_s4;
-    int temp_s0;
-    vs_battle_inventoryShield* new_var2 = &vs_battle_inventory.shields[0];
-    char* new_var = vs_main_inventoryIndices.shields;
+    int sortedPos;
 
-    vs_battle_rMemzero(sp1A8, sizeof sp1A8);
-    var_s4 = 0;
+    vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[0];
+    char* indices = vs_main_inventoryIndices.shields;
+
+    vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
+
+    sortedPos = 0;
 
     while (1) {
-        var_s3 = 0x80000000;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyShield(&shield, &new_var2[temp_s0 - 1]);
-                temp_v0 = _getShieldStat(arg0, &shield);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            int value;
+            index = indices[i];
+
+            if (index != 0) {
+
+                vs_battle_applyShield(&uiShield, &shield[index - 1]);
+
+                value = _getShieldStatValue(stat, &uiShield);
+
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 8; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                vs_battle_applyShield(&shield, &new_var2[temp_s0 - 1]);
-                if (_getShieldStat(arg0, &shield) == var_s3) {
-                    sp1A8[var_s4++] = temp_s0;
-                    new_var[i] = 0;
+            index = indices[i];
+
+            if (index != 0) {
+
+                vs_battle_applyShield(&uiShield, &shield[index - 1]);
+
+                if (_getShieldStatValue(stat, &uiShield) == maxValue) {
+                    sortedIndices[sortedPos++] = index;
+                    indices[i] = 0;
                 }
             }
         }
     }
-    vs_battle_memcpy(new_var, sp1A8, 8);
+
+    vs_battle_memcpy(indices, sortedIndices, 8);
 }
 
-static int func_8010406C(int arg0, vs_battle_inventoryMisc* arg1)
+/**
+ * Maps a numerical value to a misc item stat.
+ *
+ * @param stat 0 = ID, count otherwise.
+ */
+static int _getMiscStatValue(int stat, vs_battle_inventoryMisc* misc)
 {
-    if (arg0 == 0) {
-        return -arg1->id;
+    if (stat == 0) {
+        return -misc->id;
     }
-    return arg1->count;
+    return misc->count;
 }
 
-static void func_8010408C(int arg0)
+/**
+ * Sorts misc items by the selected stat.
+ */
+static void _sortMisc(int stat)
 {
-    char sp10[0x40];
-    int temp_v0;
+    char sortedIndices[64];
     int i;
-    int var_s3;
-    int var_s4;
-    int temp_s0;
-    vs_battle_inventoryMisc* new_var2 = vs_battle_inventory.misc;
-    char* new_var = vs_main_inventoryIndices.misc;
+    int sortedPos;
 
-    vs_battle_rMemzero(sp10, 0x40);
-    var_s4 = 0;
+    vs_battle_inventoryMisc* misc = vs_battle_inventory.misc;
+    char* indices = vs_main_inventoryIndices.misc;
+
+    vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
+    sortedPos = 0;
 
     while (1) {
-        var_s3 = 0x80000000;
+        int index;
+        int maxValue = -INT_MAX - 1;
 
         for (i = 0; i < 0x40; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                temp_v0 = func_8010406C(arg0, &new_var2[temp_s0 - 1]);
-                if (var_s3 < temp_v0) {
-                    var_s3 = temp_v0;
+            index = indices[i];
+
+            if (index != 0) {
+                int value = _getMiscStatValue(stat, &misc[index - 1]);
+
+                if (maxValue < value) {
+                    maxValue = value;
                 }
             }
         }
 
-        if (var_s3 == 0x80000000) {
+        if (maxValue == -INT_MAX - 1) {
             break;
         }
 
         for (i = 0; i < 0x40; ++i) {
-            temp_s0 = new_var[i];
-            if (temp_s0 != 0) {
-                if (func_8010406C(arg0, &new_var2[temp_s0 - 1]) == var_s3) {
-                    sp10[var_s4++] = temp_s0;
-                    new_var[i] = 0;
-                }
+            index = indices[i];
+
+            if ((index != 0) && (_getMiscStatValue(stat, &misc[index - 1]) == maxValue)) {
+                sortedIndices[sortedPos++] = index;
+                indices[i] = 0;
             }
         }
     }
-    vs_battle_memcpy(new_var, sp10, 0x40);
+
+    vs_battle_memcpy(indices, sortedIndices, sizeof sortedIndices);
 }
 
-static int func_801041CC(int arg0, vs_battle_uiEquipment* arg1)
+/**
+ * Maps a numerical value to an equipment stat.
+ *
+ * @param stat Must be in the range 0-42
+ */
+static int _getEquipmentStat(int stat, vs_battle_uiEquipment* equipment)
 {
-    switch (arg0) {
+    switch (stat) {
     case 0:
-        return -arg1->category;
+        return -equipment->category;
     case 1:
-        return -arg1->material;
+        return -equipment->material;
     case 2:
-        return arg1->range.range;
+        return equipment->range.range;
     case 3:
-        return -arg1->damageType;
+        return -equipment->damageType;
     case 4:
-        return arg1->currentDp;
+        return equipment->currentDp;
     case 5:
-        return arg1->maxDp;
+        return equipment->maxDp;
     case 6:
-        return arg1->currentPp;
+        return equipment->currentPp;
     case 7:
-        return arg1->maxPp;
+        return equipment->maxPp;
     case 8:
-        return arg1->strength;
+        return equipment->strength;
     case 9:
-        return arg1->intelligence;
+        return equipment->intelligence;
     case 10:
-        return arg1->agility;
+        return equipment->agility;
     default:
-        if (arg0 >= 0x1B) {
-            arg0 -= 0x10;
+        if (stat >= 27) {
+            stat -= 16;
         }
-        if (arg0 < 0x11) {
-            return *(((signed char*)&arg1->gemSlots) + arg0);
+
+        if (stat < 17) {
+            return equipment->classes[stat - 11];
         }
-        if (arg0 >= 0x18) {
-            return *(((signed char*)&arg1->strength) + arg0);
+
+        if (stat > 23) {
+            return equipment->types[stat - 23];
         }
-        return *(((signed char*)&arg1->index) + arg0);
+
+        return equipment->affinities[stat - 17];
     }
 }
 
-static void func_801042C4(vs_battle_uiEquipment* arg0, int arg1, int arg2)
+/**
+ * Copies equipment for the selected category.
+ */
+static void _copyEquipment(
+    vs_battle_uiEquipment* equipment, int itemCategory, int itemIndex)
 {
-    switch (arg1) {
-    case 1:
-        vs_battle_copyInventoryBladeStats(arg0, &vs_battle_inventory.blades[arg2]);
+    switch (itemCategory) {
+    case itemCategoryBlade:
+        vs_battle_copyInventoryBladeStats(
+            equipment, &vs_battle_inventory.blades[itemIndex]);
         return;
-    case 2:
-        vs_battle_copyInventoryGripStats(arg0, &vs_battle_inventory.grips[arg2]);
+    case itemCategoryGrip:
+        vs_battle_copyInventoryGripStats(
+            equipment, &vs_battle_inventory.grips[itemIndex]);
         return;
-    case 4:
-        vs_battle_copyInventoryArmorStats(arg0, &vs_battle_inventory.armor[arg2]);
+    case itemCategoryArmor:
+        vs_battle_copyInventoryArmorStats(
+            equipment, &vs_battle_inventory.armor[itemIndex]);
         return;
-    case 5:
-        vs_battle_copyInventoryGemStats(arg0, &vs_battle_inventory.gems[arg2]);
+    case itemCategoryGem:
+        vs_battle_copyInventoryGemStats(equipment, &vs_battle_inventory.gems[itemIndex]);
         return;
     }
 }
 
-static void _copyEquipmentStats(int arg0, int arg1)
+/**
+ * Sorts equipment by the selected stat.
+ */
+static void _sortEquipment(int itemCategory, int stat)
 {
-    vs_battle_uiEquipment sp10;
-    int temp_v0;
+    vs_battle_uiEquipment uiEquipment;
     int i;
-    int var_s3;
-    int var_s5;
-    char* temp_s6;
-    int temp_s0;
-    int temp_s4;
-
-    var_s5 = 0;
-    temp_s4 = vs_mainMenu_inventoryItemCapacities[arg0];
+    int sortedPos = 0;
+    int capacity = vs_mainMenu_inventoryItemCapacities[itemCategory];
     {
-        char spVLA[temp_s4];
-        temp_s6 = vs_mainMenu_inventoryIndices[arg0];
-        vs_battle_rMemzero(spVLA, temp_s4);
+        char sortedIndices[capacity];
+        char* indices = vs_mainMenu_inventoryIndices[itemCategory];
+
+        vs_battle_rMemzero(sortedIndices, capacity);
 
         while (1) {
-            var_s3 = 0x80000000;
-            for (i = 0; i < temp_s4; ++i) {
-                temp_s0 = temp_s6[i];
-                if (temp_s0 != 0) {
-                    func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    temp_v0 = func_801041CC(arg1, &sp10);
-                    if (var_s3 < temp_v0) {
-                        var_s3 = temp_v0;
+            int index;
+            int maxValue = -INT_MAX - 1;
+
+            for (i = 0; i < capacity; ++i) {
+                index = indices[i];
+
+                if (index != 0) {
+                    int value;
+
+                    _copyEquipment(&uiEquipment, itemCategory, index - 1);
+
+                    value = _getEquipmentStat(stat, &uiEquipment);
+
+                    if (maxValue < value) {
+                        maxValue = value;
                     }
                 }
             }
 
-            if (var_s3 == 0x80000000) {
+            if (maxValue == -INT_MAX - 1) {
                 break;
             }
 
-            for (i = 0; i < temp_s4; ++i) {
-                temp_s0 = temp_s6[i];
-                if (temp_s0 != 0) {
-                    func_801042C4(&sp10, arg0, temp_s0 - 1);
-                    if (func_801041CC(arg1, &sp10) == var_s3) {
-                        spVLA[var_s5++] = temp_s0;
-                        temp_s6[i] = 0;
+            for (i = 0; i < capacity; ++i) {
+                index = indices[i];
+
+                if (index != 0) {
+
+                    _copyEquipment(&uiEquipment, itemCategory, index - 1);
+
+                    if (_getEquipmentStat(stat, &uiEquipment) == maxValue) {
+                        sortedIndices[sortedPos++] = index;
+                        indices[i] = 0;
                     }
                 }
             }
         }
-        vs_battle_memcpy(temp_s6, spVLA, temp_s4);
+
+        vs_battle_memcpy(indices, sortedIndices, capacity);
     }
 }
 
@@ -1193,13 +1256,13 @@ static int func_80104530(int arg0)
                     _sortWeapons(D_80109588[i]);
                     break;
                 case 3:
-                    func_80103F00(D_801095A8[i]);
+                    _sortShields(D_801095A8[i]);
                     break;
                 case 6:
-                    func_8010408C(D_801095E8[i]);
+                    _sortMisc(D_801095E8[i]);
                     break;
                 default:
-                    _copyEquipmentStats(D_80109669, D_801095F4[D_80109669][i]);
+                    _sortEquipment(D_80109669, D_801095F4[D_80109669][i]);
                     break;
                 }
             } else {

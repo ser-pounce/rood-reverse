@@ -1062,7 +1062,7 @@ static int _discardMenu(int arg0)
     case init:
         if (vs_battle_textBoxes[7].unk0.done) {
             if (vs_mainmenu_ready() != 0) {
-                state = ((discardType & 1) + 1);
+                state = ((discardType & 1) + discardOneInit);
             }
         }
         break;
@@ -1193,7 +1193,7 @@ static int _discardMenu(int arg0)
         if ((a0 != discardStep) || (a2 != discardCount)) {
             vs_battle_playMenuChangeSfx();
         }
-        func_800C7210(5);
+        vs_battle_setFontStyle(5);
         i = vs_battle_toBCD(discardCount);
         vs_battle_printVariableWidthFontChar(i & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
         i = vs_battle_toBCD(i >> 4);

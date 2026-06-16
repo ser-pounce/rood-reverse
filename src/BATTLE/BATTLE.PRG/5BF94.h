@@ -201,8 +201,12 @@ void vs_battle_renderTextRawColor(char const* text, int xy, int color, void* nex
  */
 void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim);
 
-int vs_battle_printVariableWidthFontChar(u_int, int, int, u_long*);
-void func_800C7210(int arg0);
+/**
+ * Renders a glyph from the font table at the specified location.
+ * @return Glyph width
+ */
+int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot);
+void vs_battle_setFontStyle(int arg0);
 void vs_battle_loadGim(int, int);
 void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
@@ -317,7 +321,7 @@ extern char vs_battle_warlockSpellIds[];
 extern char vs_battle_shamanSpellIds[];
 extern char vs_battle_sorcererSpellIds[];
 extern char vs_battle_enchanterSpellIds[];
-extern char D_800EC270[];
+extern char vs_battle_cursorBrightnessAnimation[];
 extern char vs_battle_chainAbilityOffsets[];
 extern char vs_battle_defenseAbilityOffsets[];
 extern char vs_battle_shortcutInvoked;

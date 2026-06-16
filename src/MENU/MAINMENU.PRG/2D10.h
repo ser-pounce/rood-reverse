@@ -103,7 +103,7 @@ extern char vs_mainMenu_inventoryItemCapacities[];
 extern char* vs_mainMenu_inventoryIndices[];
 extern int D_801021A0[];
 extern int vs_mainMenu_mainCursorXY[];
-extern char D_80102214[];
+extern char vs_mainMenu_miscItemToSkillMap[];
 extern char (*vs_mainMenu_itemNames)[24];
 extern char D_801022C4;
 extern char D_801022D5;

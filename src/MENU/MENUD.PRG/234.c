@@ -1862,7 +1862,7 @@ int _discardMenu(int arg0)
         if ((a0 != discardStep) || (a2 != discardCount)) {
             vs_battle_playMenuChangeSfx();
         }
-        func_800C7210(5);
+        vs_battle_setFontStyle(5);
         temp_v0_7 = vs_battle_toBCD(discardCount);
         vs_battle_printVariableWidthFontChar(
             temp_v0_7 & 0xF, 0x42, 0x82, D_1F800000[2] - 3);

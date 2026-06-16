@@ -75,6 +75,7 @@ D_8010213D = 0x8010213D;
 vs_mainMenu_weaponHands = 0x80102140;
 vs_mainMenu_equipmentDetailNavigationMap = 0x8010214C;
 vs_mainMenu_mainCursorXY = 0x801021C4;
+vs_mainMenu_miscItemToSkillMap = 0x80102214;
 vs_mainMenu_itemNames = 0x8010229C;
 vs_mainMenu_inventoryItemCapacities = 0x801022A0;
 vs_mainMenu_inventoryIndices = 0x801022A8;

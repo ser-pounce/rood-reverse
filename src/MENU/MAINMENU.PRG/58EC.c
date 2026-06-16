@@ -411,23 +411,23 @@ void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
         data)[4] = ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
 }
 
-int func_800FFCDC(u_int arg0, int arg1)
+int func_800FFCDC(u_int arg0, int xy)
 {
     int var_a0;
-    int temp_s0;
-    u_long* temp_a1;
-
-    temp_s0 = arg0 >> (D_801022D5 * 8);
-    temp_a1 = vs_battle_setSpriteDefaultTexPage(
-        D_800EC270[temp_s0], arg1, 0x100010, D_1F800000[2]);
+    int temp_s0 = arg0 >> (D_801022D5 * 8);
+    u_long* temp_a1 =
+        vs_battle_setSpriteDefaultTexPage(vs_battle_cursorBrightnessAnimation[temp_s0],
+            xy, vs_getWH(16, 16), D_1F800000[2]);
 
     if (D_801022D5 == 0) {
         var_a0 = 0x37F83020;
     } else {
         var_a0 = 0x37FA3020;
     }
+
     temp_a1[4] = var_a0;
     D_801022D5 = 0;
+
     return (temp_s0 + 1) & 0xF;
 }
 

@@ -361,7 +361,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 int v;
                 vs_battle_renderTextRaw(
                     spellLevels[level], (99 + level * 32) | vs_getXY(0, 103), NULL);
-                var_t3 = vs_battle_setSpriteDefaultTexPage(D_800EC270[D_8010694A],
+                var_t3 = vs_battle_setSpriteDefaultTexPage(
+                    vs_battle_cursorBrightnessAnimation[D_8010694A],
                     (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
                 var_t3[4] = 0x37FD70C0;
 

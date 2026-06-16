@@ -495,7 +495,7 @@ void func_800FAEBC(int arg0)
             vs_mainMenu_setUiItem(
                 temp_s0, &temp_s7[i * 2], temp_fp - -i, temp_s6 + i * 96);
             if (temp_s0->id < 0x1CA) {
-                var_a0 = D_80102214[temp_s0->id - 0x143];
+                var_a0 = vs_mainMenu_miscItemToSkillMap[temp_s0->id - 0x143];
                 if ((var_a0 - 0x6A) < 0x1C) {
                     for (j = 0; j < 3; ++j) {
                         if (vs_main_skills[var_a0].unlocked) {
@@ -769,7 +769,7 @@ void func_800FB3C8(int arg0)
         i = D_801020D4[i_2];
         if (i == 0xFB) {
             ++i_2;
-            func_800C7210(D_801020D4[i_2] + 4);
+            vs_battle_setFontStyle(D_801020D4[i_2] + 4);
         } else {
             arg0 = vs_battle_printVariableWidthFontChar(i, arg0, 0x30, temp_s4 - 4);
         }

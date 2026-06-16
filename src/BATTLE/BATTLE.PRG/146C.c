@@ -9840,13 +9840,13 @@ int func_8008A4FC(void)
     return 0;
 }
 
-int vs_battle_getSkillFlags(int actorId, int id)
+int vs_battle_getSkillFlags(int actorId, int skillId)
 {
-    vs_skill_t* skill = &vs_main_skills[id];
+    vs_skill_t* skill = &vs_main_skills[skillId];
     vs_battle_actor2* actor = vs_battle_actors[actorId]->unk3C;
     int ret = actor->unk954 != 0;
 
-    if (!(_getSkillCost(id, actor, 0) & 0xFF000000)) {
+    if (!(_getSkillCost(skillId, actor, 0) & 0xFF000000)) {
         ret |= 2;
     }
 
@@ -9854,11 +9854,11 @@ int vs_battle_getSkillFlags(int actorId, int id)
         ret |= 4;
     }
 
-    if (id < 141) {
+    if (skillId < 141) {
         if (actor->unk948 & 0x1000) {
             ret |= 4;
         }
-    } else if (id < 224) {
+    } else if (skillId < 224) {
         if (vs_battle_actors[actorId]->unk20 == 0) {
             ret |= 4;
         }

@@ -1028,7 +1028,7 @@ void func_8008A6FC(void);
  * - Bit 1: Requirements not met (i.e. insufficient HP/MP/Risk)
  * - Bit 2: Skill locked
  */
-int vs_battle_getSkillFlags(int, int);
+int vs_battle_getSkillFlags(int actorId, int skillId);
 void func_8008B430(D_800F4538_unk58_2*, int);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);

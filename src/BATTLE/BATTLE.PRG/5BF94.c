@@ -645,7 +645,7 @@ int vs_battle_getTextLineLength(char* str)
     }
 }
 
-int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* arg3)
+int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot)
 {
     int glyphRow;
     u_int glyphCol;
@@ -656,8 +656,8 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ar
     }
 
     glyphId += _fontTable * 0xBD;
-    sprite = vs_battle_setSprite(
-        _fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, arg3 + 3);
+    sprite =
+        vs_battle_setSprite(_fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, ot + 3);
     sprite[1] = 0xE100002D;
     glyphRow = glyphId / 21;
     glyphCol = glyphId % 21;
@@ -666,7 +666,7 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ar
     return x + vs_battle_characterWidths[glyphId];
 }
 
-void func_800C7210(int arg0)
+void vs_battle_setFontStyle(int arg0)
 {
     _fontTable = 0;
     _fontBrightness = 384;
@@ -1490,7 +1490,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
             var_v0 = arg0->unk7 * 3;
         }
 
-        func_800C7210(var_v0 + 4);
+        vs_battle_setFontStyle(var_v0 + 4);
 
         temp_v1 = arg0->initialX;
         var_s2 = temp_v1 + 6;
@@ -2467,7 +2467,7 @@ void func_800CCD00(int arg0, u_long* arg1)
 
 int vs_battle_drawCursor(int animStep, int position)
 {
-    vs_battle_setSpriteDefaultTexPage(D_800EC270[animStep],
+    vs_battle_setSpriteDefaultTexPage(vs_battle_cursorBrightnessAnimation[animStep],
         (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, D_1F800000[2])[4] =
         0x37F83020;
     return (animStep + 1) & 0xF;

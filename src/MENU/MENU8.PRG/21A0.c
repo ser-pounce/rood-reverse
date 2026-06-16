@@ -163,7 +163,7 @@ static void _renameMenu(int arg0)
     }
 
     D_1F800000[0] = var_s1;
-    func_800C7210(4);
+    vs_battle_setFontStyle(4);
     for (i = 0; i < 4; ++i) {
         commandString =
             (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];

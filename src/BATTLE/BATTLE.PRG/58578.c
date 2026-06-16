@@ -170,7 +170,54 @@ int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     return sum;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C123C);
+int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2)
+{
+    func_800C0FA8_t2 work;
+    MATRIX matrix;
+    int temp1;
+    int temp2;
+    int divisor;
+    int radius;
+
+    func_800C0FA8(arg0, &work, &matrix);
+
+    {
+        int i;
+        void* ptr;
+        void* base;
+        int offset;
+
+        i = 0;
+        ptr = &work;
+        base = ptr;
+        offset = 0x10;
+
+        do {
+            *(short*)ptr = *arg1++ - *(u_short*)(base + offset);
+            offset += 2;
+            ptr += 2;
+            ++i;
+        } while ((radius = i) < 3);
+    }
+
+    ApplyMatrixSV(&matrix, &work.unk0, &work.unk8);
+
+    if (arg2 != 0) {
+        work.unk8.vy -= arg0->unk4.flags.unk1 << 5;
+    }
+
+    if (!((u_short)-work.unk8.vy > (arg0->unk4.flags.unk1 << 5))) {
+        divisor = -(((int)work.unk8.vy << 16) >> 13) / arg0->unk4.flags.unk1;
+        temp1 = (work.unk8.vx * work.unk18[0]) >> 12;
+        temp2 = ((radius = work.unk8.vz) * work.unk18[2]) >> 12;
+        radius = 0x100 - divisor;
+
+        if ((temp1 * temp1 + temp2 * temp2) < (radius * radius)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
 

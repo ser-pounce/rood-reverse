@@ -30,7 +30,7 @@ void vs_mainMenu_initItem(int, int);
 int vs_mainMenu_ensureItemNamesLoaded(void);
 int vs_mainMenu_getItemCount(int itemCategory, vs_battle_inventory_t* inventory);
 int vs_mainMenu_getFirstEmptyItemSlot(int, vs_battle_inventory_t*);
-void vs_mainMenu_initSortUi(int, int, char**, int*);
+void vs_mainMenu_initSortUi(int count, int subMenuId, char* menuText[], int rowTypes[]);
 int func_800FF348(void);
 int vs_mainMenu_getSelectedItemAction(void);
 void vs_mainMenu_processItemActionMenu(void);

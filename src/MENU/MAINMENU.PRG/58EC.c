@@ -22,11 +22,11 @@ extern u_long* D_1F800000[];
 static char D_801022C4 = 0;
 static u_short* D_801022C8 = NULL;
 static int _selectedItemAction = 0;
-static char D_801022D0 = 0;
+static char _sortSubMenuId = 0;
 static char _itemActionCount = 0;
 static char _itemActionListOffset = 0;
 
-void vs_mainMenu_initSortUi(int rowCount, int arg1, char** strings, int* rowTypes)
+void vs_mainMenu_initSortUi(int rowCount, int subMenuId, char* menuText[], int rowTypes[])
 {
     int temp_v1_2;
     int i;
@@ -45,13 +45,13 @@ void vs_mainMenu_initSortUi(int rowCount, int arg1, char** strings, int* rowType
         }
     }
 
-    D_801022D0 = arg1;
+    _sortSubMenuId = subMenuId;
 
-    if (arg1 == 4) {
+    if (subMenuId == 4) {
         i = 1;
-    } else if ((vs_main_settings.cursorMemory != 0) && (arg1 != 3)) {
-        i = D_800F4EE8.cursorMemories[arg1 * 2];
-        var_a2 = D_800F4EE8.cursorMemories[arg1 * 2 + 1];
+    } else if ((vs_main_settings.cursorMemory != 0) && (subMenuId != 3)) {
+        i = D_800F4EE8.cursorMemories[subMenuId * 2];
+        var_a2 = D_800F4EE8.cursorMemories[subMenuId * 2 + 1];
     }
     temp_v1_2 = rowCount - 7;
     if (temp_v1_2 < 0) {
@@ -90,14 +90,14 @@ void vs_mainMenu_initSortUi(int rowCount, int arg1, char** strings, int* rowType
         char* s;
         *((int*)(&(&D_801022C8[i * 64])[14])) = rowTypes[i];
 
-        if (strings[i * 2] != NULL) {
-            vs_battle_copyAligned(&D_801022C8[i * 64], strings[i * 2], 0x1A);
+        if (menuText[i * 2] != NULL) {
+            vs_battle_copyAligned(&D_801022C8[i * 64], menuText[i * 2], 0x1A);
             D_801022C8[(i * 64) + 13] = 0xE7E7;
         } else {
             D_801022C8[i * 64] = 0xE7E7;
         }
 
-        s = strings[i * 2 + 1];
+        s = menuText[i * 2 + 1];
         if (s != NULL) {
             D_801022C8[(i * 64) + 16] = 0xF8;
             vs_battle_copyAligned(&D_801022C8[(i * 64) + 17], s, 0x5C);
@@ -173,8 +173,8 @@ void vs_mainMenu_processItemActionMenu(void)
             if (vs_main_buttonsPressed.all & PADRup) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
-                D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                D_800F4EE8.cursorMemories[_sortSubMenuId * 2] = _selectedItemAction;
+                D_800F4EE8.cursorMemories[_sortSubMenuId * 2 + 1] = _itemActionListOffset;
                 _selectedItemAction = -3;
                 return;
             }
@@ -184,8 +184,9 @@ void vs_mainMenu_processItemActionMenu(void)
                     menuItem->selected = 1;
                     vs_main_freeHeapR(D_801022C8);
                     D_801022C8 = NULL;
-                    D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
-                    D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                    D_800F4EE8.cursorMemories[_sortSubMenuId * 2] = _selectedItemAction;
+                    D_800F4EE8.cursorMemories[_sortSubMenuId * 2 + 1] =
+                        _itemActionListOffset;
                     _selectedItemAction = temp_s6;
                     return;
                 }
@@ -197,8 +198,8 @@ void vs_mainMenu_processItemActionMenu(void)
             if (vs_main_buttonsPressed.all & PADRdown) {
                 vs_main_freeHeapR(D_801022C8);
                 D_801022C8 = NULL;
-                D_800F4EE8.cursorMemories[D_801022D0 * 2] = _selectedItemAction;
-                D_800F4EE8.cursorMemories[D_801022D0 * 2 + 1] = _itemActionListOffset;
+                D_800F4EE8.cursorMemories[_sortSubMenuId * 2] = _selectedItemAction;
+                D_800F4EE8.cursorMemories[_sortSubMenuId * 2 + 1] = _itemActionListOffset;
                 _selectedItemAction = -2;
                 return;
             }

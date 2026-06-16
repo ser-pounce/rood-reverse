@@ -1,16 +1,16 @@
 #include "common.h"
-#include "../MAINMENU.PRG/278.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../MAINMENU.PRG/58EC.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../BATTLE/BATTLE.PRG/2842C.h"
-#include "../../BATTLE/BATTLE.PRG/30D14.h"
-#include "../../BATTLE/BATTLE.PRG/3A1A0.h"
-#include "../../BATTLE/BATTLE.PRG/44F14.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/BATTLE/BATTLE.PRG/2842C.h"
+#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
+#include "src/BATTLE/BATTLE.PRG/44F14.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/ITEMHELP.BIN.h"
 #include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include "vs_string.h"
@@ -1199,81 +1199,102 @@ static void _sortEquipment(int itemCategory, int stat)
     }
 }
 
-static int func_80104530(int arg0)
+/**
+ * Dispatches category-based sort.
+ *
+ * @return The stat used for sorting, negative if user cancelled, 0 otherwise.
+ */
+static int _sortItems(int initItemCategory)
 {
-    static u_char D_80109588[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21, 22, 23 };
-    static u_char D_801095A0[] = { 0, 8, 9, 10, 24, 25, 26 };
-    static u_char D_801095A8[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30,
+    enum state { init, sort };
+
+    static u_char weaponSortStats[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23 };
+    static u_char bladeSortStats[] = { 0, 8, 9, 10, 24, 25, 26 };
+    static u_char gripSortStats[] = { 1, 4, 5, 6, 7, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30,
         31, 32, 33, 34, 35, 36, 37, 38, 39 };
-    static u_char D_801095C0[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30, 31,
-        32, 33, 34, 35, 36, 37, 38, 39 };
-    static u_char D_801095D8[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-        38, 39 };
-    static u_char D_801095E8[] = { 0, 56 };
-    static u_char D_801095EC[] = { 24, 24, 7, 24, 23, 16, 2 };
-    static u_char* D_801095F4[] = { D_80109588, D_80109588, D_801095A0, D_801095A8,
-        D_801095C0, D_801095D8, D_801095E8 };
+    static u_char shieldSortStats[] = { 0, 1, 4, 5, 8, 9, 10, 40, 41, 42, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 39 };
+    static u_char equipmentSortStats[] = { 8, 9, 10, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+        36, 37, 38, 39 };
+    static u_char miscSortStats[] = { 0, 56 };
 
-    static u_char D_80109668;
-    static u_char D_80109669;
+    static u_char sortStatSizes[] = { sizeof weaponSortStats, sizeof weaponSortStats,
+        sizeof bladeSortStats, sizeof gripSortStats, sizeof shieldSortStats,
+        sizeof equipmentSortStats, sizeof miscSortStats };
 
-    char* sp10[48];
-    int spD0[24];
+    static u_char* sortStats[] = { weaponSortStats, weaponSortStats, bladeSortStats,
+        gripSortStats, shieldSortStats, equipmentSortStats, miscSortStats };
+
+    static u_char state;
+    static u_char itemCategory;
+
+    char* menuText[48];
+    int rowTypes[24];
     int i;
-    u_char* temp;
 
-    if (arg0 != 0) {
-        D_80109669 = arg0 - 1;
-        D_80109668 = 0;
+    if (initItemCategory != 0) {
+        itemCategory = initItemCategory - 1;
+        state = init;
+
         return 0;
     }
-    switch (D_80109668) {
-    case 0:
+
+    switch (state) {
+    case init:
         if (vs_mainmenu_ready() != 0) {
-            temp = D_801095F4[D_80109669];
-            for (i = 0; i < D_801095EC[D_80109669]; ++i) {
-                sp10[i * 2] =
-                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp[i] * 2
-                                                                      + 0x1B6]];
-                sp10[i * 2 + 1] =
-                    (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[temp[i] * 2
-                                                                      + 0x1B7]];
-                spD0[i] = 0;
+            u_char* categoryStats = sortStats[itemCategory];
+
+            for (i = 0; i < sortStatSizes[itemCategory]; ++i) {
+                menuText[i * 2] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [categoryStats[i] * 2 + VS_ITEMHELP_BIN_INDEX_sortRange - 4]];
+                menuText[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
+                        [categoryStats[i] * 2 + VS_ITEMHELP_BIN_INDEX_sortRangeDesc - 4]];
+                rowTypes[i] = 0;
             }
-            vs_mainMenu_initSortUi(i, D_80109669 + 0x2D, sp10, spD0);
-            D_80109668 = 1;
+
+            vs_mainMenu_initSortUi(i, itemCategory + 45, menuText, rowTypes);
+
+            state = 1;
         }
         break;
-    case 1:
+
+    case sort:
         vs_mainMenu_processItemActionMenu();
+
         i = vs_mainMenu_getSelectedItemAction();
+
         if ((i + 1) != 0) {
             if (i >= 0) {
                 vs_battle_playMenuSelectSfx();
-                switch (D_80109669) {
-                case 0:
-                    _sortWeapons(D_80109588[i]);
+
+                switch (itemCategory) {
+                case itemCategoryWeapon:
+                    _sortWeapons(weaponSortStats[i]);
                     break;
-                case 3:
-                    _sortShields(D_801095A8[i]);
+
+                case itemCategoryShield:
+                    _sortShields(gripSortStats[i]);
                     break;
-                case 6:
-                    _sortMisc(D_801095E8[i]);
+
+                case itemCategoryMisc:
+                    _sortMisc(miscSortStats[i]);
                     break;
+
                 default:
-                    _sortEquipment(D_80109669, D_801095F4[D_80109669][i]);
+                    _sortEquipment(itemCategory, sortStats[itemCategory][i]);
                     break;
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();
             }
+
             return i + 1;
         }
-        break;
-    default:
+
         break;
     }
+
     return 0;
 }
 
@@ -2087,7 +2108,7 @@ loop_1:
                     break;
                 case 5:
                     vs_mainMenu_initTextBox();
-                    func_80104530(var_s4 + 1);
+                    _sortItems(var_s4 + 1);
                     state = 12;
                     break;
                 }
@@ -2130,7 +2151,7 @@ loop_1:
         }
         break;
     case 12:
-        i = func_80104530(0);
+        i = _sortItems(0);
         if (i != 0) {
             func_800FA854(0x28);
             vs_mainMenu_clearMenuExcept(3);

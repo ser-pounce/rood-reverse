@@ -2845,7 +2845,7 @@ loop_1:
         vs_mainMenu_processItemActionMenu();
         temp_s3 = vs_mainMenu_getSelectedItemAction() + 1;
         if (temp_s3 != 0) {
-            func_800FA854(0x28);
+            vs_mainMenu_flyoutLeftExcept(0x28);
             if (temp_s3 > 0) {
                 vs_battle_playMenuSelectSfx();
                 switch (D_80109A60[temp_s3]) {
@@ -2931,7 +2931,7 @@ loop_1:
         temp_s3 = _discardMenu(0);
         if (temp_s3 != 0) {
             vs_mainMenu_initTextBox();
-            func_800FA854(0x28);
+            vs_mainMenu_flyoutLeftExcept(0x28);
             vs_mainMenu_clearMenuExcept(0);
             if (temp_s3 == -2) {
                 return -2;
@@ -2942,7 +2942,7 @@ loop_1:
     case 12:
         temp_s3 = _displaySortMenu(0);
         if (temp_s3 != 0) {
-            func_800FA854(0x28);
+            vs_mainMenu_flyoutLeftExcept(0x28);
             vs_mainMenu_clearMenuExcept(0);
             if (temp_s3 == -2) {
                 return -2;

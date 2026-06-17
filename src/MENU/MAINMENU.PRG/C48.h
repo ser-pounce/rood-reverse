@@ -8,16 +8,21 @@ enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 void vs_mainMenu_initInventory(void);
 
 /**
- * Dismisses the specified row towards the left.
+ * Dismisses the specified row to the left.
  */
 void vs_mainMenu_menuItemFlyoutLeft(int row);
 
 /**
- * Dismisses the specified row towards the right.
+ * Dismisses the specified row to the right.
  */
 void vs_mainMenu_menuItemFlyoutRight(int row);
+
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
-void func_800FA854(int arg0);
+
+/**
+ * Dismisses all but one row to the left.
+ */
+void vs_mainMenu_flyoutLeftExcept(int row);
 
 /**
  * Clears entire menu except for the specified row.

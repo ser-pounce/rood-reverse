@@ -221,12 +221,12 @@ void vs_mainMenu_menuItemFlyoutLeft(int row)
     }
 }
 
-void func_800FA854(int arg0)
+void vs_mainMenu_flyoutLeftExcept(int row)
 {
     int i;
 
     for (i = 0; i < 8; ++i) {
-        if (i != arg0) {
+        if (i != row) {
             vs_mainMenu_menuItemFlyoutLeft(i);
         }
     }

@@ -1789,7 +1789,7 @@ static int _itemNavigation(int arg0)
         if (i != 0) {
             if (i > 0) {
                 vs_battle_playMenuSelectSfx();
-                func_800FA854(0x28);
+                vs_mainMenu_flyoutLeftExcept(0x28);
 
                 switch (availableActions[i]) {
                 case searchItem:
@@ -1820,7 +1820,7 @@ static int _itemNavigation(int arg0)
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();
-                func_800FA854(0x28);
+                vs_mainMenu_flyoutLeftExcept(0x28);
                 if (i == -2) {
                     vs_mainMenu_clearMenuExcept(3);
                     return -2;
@@ -1850,7 +1850,7 @@ static int _itemNavigation(int arg0)
         i = _discardMenu(0);
         if (i != 0) {
             vs_mainMenu_initTextBox();
-            func_800FA854(0x28);
+            vs_mainMenu_flyoutLeftExcept(0x28);
             vs_mainMenu_clearMenuExcept(3);
             if (i == -2) {
                 return -2;
@@ -1861,7 +1861,7 @@ static int _itemNavigation(int arg0)
     case sort:
         i = _sortItems(0);
         if (i != 0) {
-            func_800FA854(0x28);
+            vs_mainMenu_flyoutLeftExcept(0x28);
             vs_mainMenu_clearMenuExcept(3);
             if (i == -2) {
                 return -2;

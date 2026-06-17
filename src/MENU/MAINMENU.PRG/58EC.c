@@ -300,15 +300,22 @@ void vs_mainMenu_printInformation(int arg0, int arg1)
 {
     if (arg1 >= 16) {
         if (vs_battle_rowTypeBuf[arg0] & 1) {
+
             if ((vs_main_settings.information == 0)
                 && (vs_main_buttonsState & (PADLup | PADLdown))) {
                 return;
             }
+
             vs_battle_initInformationTextBox(1);
-            vs_battle_textBoxes[7].state = 0xB;
+
+            vs_battle_textBoxes[7].state = 11;
+
         } else if (vs_main_settings.information != 0) {
+
             vs_battle_initInformationTextBox(2);
-            vs_battle_textBoxes[7].state = 0xB;
+
+            vs_battle_textBoxes[7].state = 11;
+
         } else {
             vs_battle_textBoxes[7].state = 0;
         }

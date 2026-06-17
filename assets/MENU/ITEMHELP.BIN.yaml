@@ -666,7 +666,7 @@ cannotDiscardEquipped:
 line665:
 cannotDiscard:
 useItem:
-line668:
+useItemDesc:
 searchItem:
 searchItemDesc:
 discardItem:
@@ -676,4 +676,4 @@ discardAllDesc:
 sortItem:
 sortItemDesc:
 invalidSearch:
-line678:
+cannotUse:

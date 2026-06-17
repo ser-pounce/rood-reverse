@@ -1079,8 +1079,6 @@ extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern int _submenuState;
 extern int D_800F1CE0[8];
-extern char vs_battle_executeAbilityType;
-extern char D_800F51C1;
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;
 extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];

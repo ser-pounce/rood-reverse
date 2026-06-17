@@ -346,7 +346,7 @@ int vs_menu0_exec(char* state)
 
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 6;
+            vs_battle_menuState.executeAbilityType = 6;
             *state = executeMagic;
         } else {
             if (i == -2) {
@@ -377,7 +377,7 @@ int vs_menu0_exec(char* state)
 
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 8;
+            vs_battle_menuState.executeAbilityType = 8;
             *state = executeMagic;
         } else {
             if (i == -2) {
@@ -408,7 +408,7 @@ int vs_menu0_exec(char* state)
 
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 10;
+            vs_battle_menuState.executeAbilityType = 10;
             *state = executeMagic;
         } else {
             if (i == -2) {
@@ -439,7 +439,7 @@ int vs_menu0_exec(char* state)
 
         if (i > 0) {
             D_800F4E98.executeAbility.s32 = i;
-            vs_battle_executeAbilityType = 12;
+            vs_battle_menuState.executeAbilityType = 12;
             *state = executeMagic;
         } else {
             if (i == -2) {

@@ -35,7 +35,7 @@ void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id);
 /**
  * Indicates when the menu is at rest.
  *
- * @return Boolean true / false.
+ * @return true / false.
  */
 int vs_mainmenu_ready(void);
 

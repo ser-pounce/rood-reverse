@@ -1935,7 +1935,7 @@ void func_800CAB40(void)
     } else {
         vs_battle_menuState.currentState = vs_battle_menuState.returnState;
         vs_battle_submenuStates[vs_battle_menuState.returnState & 0xF] =
-            vs_battle_menuState.unk2;
+            vs_battle_menuState.executeAbilityType;
     }
     if (D_800F4FDB == 0) {
         func_8007DFF0(0x1A, 3, 6);

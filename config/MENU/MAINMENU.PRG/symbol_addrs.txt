@@ -95,6 +95,7 @@ vs_mainMenu_shields = 0x8010246C;
 vs_mainMenu_weapons = 0x80102470;
 _itemNamesCdQueueSlot = 0x80102478;
 _itemNamesLoading = 0x8010247C;
+vs_mainMenu_currentUiItem = 0x801024A1;
 vs_mainMenu_menu12Text = 0x801024A4;
 vs_mainMenu_strIntAgi = 0x801024A8;
 vs_mainMenu_equipmentStats = 0x801024C0;

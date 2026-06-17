@@ -15,9 +15,9 @@ void func_80101F38(void);
  *
  * @param rowCount
  * @param rowInfo Packed values
- * - Bits 0-7: Submenu identifier for cursor history
- * - Bits 8-11: X offset in menu rows
- * - Bits 12-31: Y negative offset in pixels
+ * - Bits 0-3: Submenu identifier for cursor history
+ * - Bits 4-7: X offset in menu rows
+ * - Bits 8+: Y negative offset in pixels
  * @param strings Pairs of strings for the menu and info text box.
  * @param rowTypes Packed row style flags.
  */
@@ -44,7 +44,7 @@ extern short D_80102488[4];
 extern char D_80102490[8];
 extern short D_80102498[];
 extern char D_801024A0;
-extern char D_801024A1;
+extern char vs_mainMenu_currentUiItem;
 extern u_short* vs_mainMenu_menu12Text;
 extern short vs_mainMenu_strIntAgi[8];
 extern u_char D_801024B8;

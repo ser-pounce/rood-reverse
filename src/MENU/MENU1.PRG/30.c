@@ -411,7 +411,7 @@ int vs_menu1_exec(char* state)
                 _weaponCategoriesMenu(1);
             } else {
                 D_800F4E98.executeAbility.s32 = selectedRow;
-                vs_battle_executeAbilityType = 5;
+                vs_battle_menuState.executeAbilityType = 5;
                 *state = executeArt;
             }
         } else if (selectedRow != menuSelectionQuit) {

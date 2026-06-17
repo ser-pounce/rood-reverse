@@ -366,7 +366,7 @@ void vs_mainMenu_setUiWeaponStats(int index)
         vs_mainMenu_strIntAgi[6] = weapon->baseAgility;
     }
     vs_mainMenu_equipmentSubtype = 1;
-    D_801024A1 = index;
+    vs_mainMenu_currentUiItem = index;
     func_800FBB8C(7);
 }
 
@@ -383,7 +383,7 @@ void vs_mainMenu_setUiBladeStats(int index)
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
     vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
     vs_mainMenu_equipmentSubtype = 2;
-    D_801024A1 = index;
+    vs_mainMenu_currentUiItem = index;
     func_800FBB8C(3);
 }
 
@@ -397,7 +397,7 @@ void vs_mainMenu_setUiGripStats(int arg0)
     }
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     vs_mainMenu_equipmentSubtype = 4;
-    D_801024A1 = arg0;
+    vs_mainMenu_currentUiItem = arg0;
     func_800FBB8C(4);
 }
 
@@ -432,7 +432,7 @@ void vs_mainMenu_setShieldStats(int index)
         vs_mainMenu_strIntAgi[6] = shield->baseAgility;
     }
     vs_mainMenu_equipmentSubtype = 8;
-    D_801024A1 = index;
+    vs_mainMenu_currentUiItem = index;
     func_800FBB8C(7);
 }
 
@@ -470,7 +470,7 @@ void vs_mainMenu_setArmorStats(int index)
     } else {
         vs_mainMenu_equipmentSubtype = 0x10;
     }
-    D_801024A1 = index;
+    vs_mainMenu_currentUiItem = index;
     func_800FBB8C(7);
 }
 
@@ -487,7 +487,7 @@ void vs_mainMenu_setGemStats(int arg0)
     vs_mainMenu_setStrIntAgi(
         temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
     vs_mainMenu_equipmentSubtype = 0x40;
-    D_801024A1 = arg0;
+    vs_mainMenu_currentUiItem = arg0;
     func_800FBB8C(3);
 }
 
@@ -500,7 +500,7 @@ char* func_800FD93C(int arg0)
     vs_battle_inventoryWeapon* weapon;
 
     menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
-    weaponId = D_801024A1;
+    weaponId = vs_mainMenu_currentUiItem;
     weapon = &vs_mainMenu_weapons[weaponId - 1];
 
     switch (arg0) {
@@ -534,7 +534,7 @@ char* func_800FD93C(int arg0)
         break;
     }
     vs_mainMenu_equipmentSubtype = 1;
-    D_801024A1 = weaponId;
+    vs_mainMenu_currentUiItem = weaponId;
     vs_battle_getMenuItem(arg0 + 0xA)->selected = 1;
     return menuText[1];
 }
@@ -544,8 +544,8 @@ char* func_800FDB04(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setUiBlade(
-        &vs_mainMenu_blades[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setUiBlade(&vs_mainMenu_blades[vs_mainMenu_currentUiItem - 1], menuText,
+        &rowType, vs_battle_stringBuf);
     return menuText[1];
 }
 
@@ -554,8 +554,8 @@ char* func_800FDB60(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setUiGrip(
-        &vs_mainMenu_grips[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setUiGrip(&vs_mainMenu_grips[vs_mainMenu_currentUiItem - 1], menuText,
+        &rowType, vs_battle_stringBuf);
     return menuText[1];
 }
 
@@ -568,8 +568,8 @@ char* func_800FDBAC(int arg0)
     vs_battle_inventoryShield* shield;
 
     menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
-    shield = &vs_mainMenu_shields[D_801024A1 - 1];
-    temp_s2 = D_801024A1;
+    shield = &vs_mainMenu_shields[vs_mainMenu_currentUiItem - 1];
+    temp_s2 = vs_mainMenu_currentUiItem;
 
     if (arg0 == 0) {
         vs_mainMenu_initUiShield(shield, menuText, &rowType, vs_battle_stringBuf);
@@ -587,7 +587,7 @@ char* func_800FDBAC(int arg0)
         }
     }
     vs_mainMenu_equipmentSubtype = 8;
-    D_801024A1 = temp_s2;
+    vs_mainMenu_currentUiItem = temp_s2;
     vs_battle_getMenuItem(arg0 + 10)->selected = 1;
     return menuText[1];
 }
@@ -597,8 +597,8 @@ char* func_800FDCD0(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_initUiArmor(
-        &vs_mainMenu_armor[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    vs_mainMenu_initUiArmor(&vs_mainMenu_armor[vs_mainMenu_currentUiItem - 1], menuText,
+        &rowType, vs_battle_stringBuf);
     return menuText[1];
 }
 
@@ -607,8 +607,8 @@ char* func_800FDD24(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setUiGem(
-        &vs_mainMenu_gems[D_801024A1 - 1], menuText, &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setUiGem(&vs_mainMenu_gems[vs_mainMenu_currentUiItem - 1], menuText,
+        &rowType, vs_battle_stringBuf);
     return menuText[1];
 }
 
@@ -647,17 +647,19 @@ int func_800FDD88(int arg0)
     case 10:
     case 11:
     case 12:
-        if ((subType & 8) && (D_801024A1 != 0)) {
-            var_a0 = (arg0 - 10) < vs_mainMenu_shields[D_801024A1 - 1].base.gemSlots;
+        if ((subType & 8) && (vs_mainMenu_currentUiItem != 0)) {
+            var_a0 = (arg0 - 10)
+                   < vs_mainMenu_shields[vs_mainMenu_currentUiItem - 1].base.gemSlots;
             break;
         }
         // Fallthrough
     case 13:
     case 14:
-        if ((subType & 1) && (D_801024A1 != 0)) {
+        if ((subType & 1) && (vs_mainMenu_currentUiItem != 0)) {
             var_a0 = (arg0 - 12)
-                   < vs_mainMenu_grips[vs_mainMenu_weapons[D_801024A1 - 1].grip - 1]
-                         .gemSlots;
+                   < vs_mainMenu_grips
+                         [vs_mainMenu_weapons[vs_mainMenu_currentUiItem - 1].grip - 1]
+                             .gemSlots;
         }
         break;
     case 15:
@@ -740,23 +742,23 @@ void func_800FDEBC(void)
             D_801024B8 = vs_mainMenu_equipmentDetailNavigationMap[var_s2][var_s3 - 1];
         }
     }
-    if (D_80102211 == D_801024A1) {
+    if (D_80102211 == vs_mainMenu_currentUiItem) {
         if (i != D_801024B8) {
             vs_battle_playMenuChangeSfx();
         }
     } else {
-        D_80102211 = D_801024A1;
+        D_80102211 = vs_mainMenu_currentUiItem;
     }
     for (i = 11; i < 16; ++i) {
         vs_battle_getMenuItem(i)->selected = 0;
     }
     if (vs_mainMenu_equipmentSubtype & 1) {
         vs_mainMenu_drawDpPpbars(0xB);
-        vs_mainMenu_setUiWeaponStats(D_801024A1);
+        vs_mainMenu_setUiWeaponStats(vs_mainMenu_currentUiItem);
     }
     if (vs_mainMenu_equipmentSubtype & 8) {
         vs_mainMenu_drawDpPpbars(0xB);
-        vs_mainMenu_setShieldStats(D_801024A1);
+        vs_mainMenu_setShieldStats(vs_mainMenu_currentUiItem);
     }
     if (vs_mainMenu_equipmentSubtype & 0x10) {
         vs_mainMenu_drawDpPpbars(9);

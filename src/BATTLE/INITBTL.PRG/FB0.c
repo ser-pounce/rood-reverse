@@ -86,7 +86,7 @@ void func_800FA7B0(void)
     _loadEtmState = 0;
     D_800E8FC0 = 0;
     D_800E8F29 = 0;
-    D_800E8F28 = 0;
+    vs_battle_loadObjectDataState = 0;
     _loadShpState = 0;
     D_800E8F2C = 0;
     sp10.vx = 0x1000;

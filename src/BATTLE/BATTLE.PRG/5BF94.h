@@ -42,7 +42,7 @@ typedef struct {
     char animationState;
     char fadeEffect;
     char selected;
-    char unk7;
+    char unselectable;
     char unk8;
     char icon;
     char unkA;

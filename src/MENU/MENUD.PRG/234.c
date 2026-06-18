@@ -749,7 +749,7 @@ void func_80103F64(int arg0)
     menuItem->targetPosition0 = 0x9B;
     menuItem->selected = 1;
     menuItem->subText = NULL;
-    menuItem->unk7 = 0;
+    menuItem->unselectable = 0;
 }
 
 void func_80103FD4(int arg0)

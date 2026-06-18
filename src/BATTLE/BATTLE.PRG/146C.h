@@ -1055,7 +1055,7 @@ int func_8008F234(void);
 void vs_battle_exec(void);
 
 extern int vs_battle_mapCompletionFlags[];
-extern char D_800E8F28;
+extern char vs_battle_loadObjectDataState;
 extern _zoneContext_t _zoneContext;
 extern D_800F18E8_t D_800F18E8;
 extern vs_battle_lootListNode* _lootListHead;

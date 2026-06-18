@@ -8,23 +8,23 @@
 
 int func_80107FBC(int arg0)
 {
-    int temp_s0 = D_800E8F28;
+    int temp_s0 = vs_battle_loadObjectDataState;
 
     switch (temp_s0) {
     case 0:
         vs_menu9_LoadZudFile(arg0);
-        ++D_800E8F28;
+        ++vs_battle_loadObjectDataState;
         break;
     case 1:
         if (vs_menu9_parseZudFile() != temp_s0) {
-            ++D_800E8F28;
+            ++vs_battle_loadObjectDataState;
         }
         break;
     case 2:
         func_800F9CB0();
         D_800F4538[1]->unk0.unkA_7 = 1;
         func_800A0204(1, 1, 0, 0);
-        D_800E8F28 = 0;
+        vs_battle_loadObjectDataState = 0;
         return 0;
     }
     return 1;

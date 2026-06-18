@@ -427,7 +427,7 @@ static void _populateItemsList(int count, char** text, int* rowTypes)
 
     j = rowTypes[0];
     menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsList);
-    menuItem->unk7 = j & 1;
+    menuItem->unselectable = j & 1;
     menuItem->icon = j >> 26;
     menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
@@ -458,7 +458,7 @@ static void _navigateItemsList(int arg0)
             menuItem->state = 2;
             menuItem->targetPosition0 = 169;
             itemInfo = *(int*)&_itemsList[_itemsListState * 64 + 14];
-            menuItem->unk7 = itemInfo & 1;
+            menuItem->unselectable = itemInfo & 1;
             menuItem->icon = (itemInfo >> 0x1A);
             v0 = (itemInfo >> 9) & 0x7F;
             if (v0 != 0) {
@@ -498,7 +498,7 @@ static void _navigateItemsList(int arg0)
                 return;
             }
             if (vs_main_buttonsPressed.all & PADRright) {
-                if (menuItem->unk7 != 0) {
+                if (menuItem->unselectable != 0) {
                     vs_battle_playInvalidSfx();
                 } else {
                     vs_main_freeHeapR(_itemsList);
@@ -578,7 +578,7 @@ static void _navigateItemsList(int arg0)
                         v0 = _itemsListWindow;
                         v0 = i + _itemsListWindow;
                         itemInfo = *(int*)&_itemsList[v0 * 64 + 14];
-                        menuItem->unk7 = itemInfo & 1;
+                        menuItem->unselectable = itemInfo & 1;
                         menuItem->icon = (itemInfo >> 0x1A);
                         v1 = (itemInfo >> 9) & 0x7F;
                         if (v1 != 0) {
@@ -1654,7 +1654,7 @@ static int _attachGemsMenu(int arg0)
                     vs_mainMenu_initWeaponDetailsMenu(D_8010BC21, _combiningItem + 1, 1);
             }
             if (menuItem != NULL) {
-                if (menuItem->unk7 != 0) {
+                if (menuItem->unselectable != 0) {
                     _addGemSelector(D_8010BC21 - ((1 - isShield) * 2), D_8010BC21);
                     break;
                 }

@@ -1982,7 +1982,7 @@ void func_80107120(int arg0)
             if (!(--var_s1->animationState)) {
                 temp_s2 = vs_battle_setMenuItem(
                     i, 0x140, 0x32 + i * 0x10, 0x88, 0, var_s1->title);
-                temp_s2->unk7 = var_s1->unk3;
+                temp_s2->unselectable = var_s1->unk3;
                 temp_s2->state = 2;
                 temp_s2->targetPosition0 = 0xC2;
             }

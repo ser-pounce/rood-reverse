@@ -2977,7 +2977,7 @@ static void _displayCurrentLoot(int x)
         }
         }
         menuItem->animationState = animationStateBuf[i + _lootListOffset];
-        menuItem->unk7 = loot->state == 0;
+        menuItem->unselectable = loot->state == 0;
 
         if (loot->unk2 != 0) {
             menuItem->initialX -= loot->unk2 * 48;

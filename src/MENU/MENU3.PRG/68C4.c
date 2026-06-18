@@ -7,50 +7,58 @@
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 
 int func_80109320(int);
-void func_80109344(int, int);
+void _populateDataSlot(int wepId, int material);
 
-int func_801090C4(int arg0, int arg1, int arg2)
+int _loadObjectData(int category, int wepId, int material)
 {
     int _[6] __attribute__((unused));
-    D_800F4538_t* temp_s1;
     int i;
-    int temp_s0;
+    D_800F4538_t* temp_s1 = D_800F4538[1];
+    int temp_s0 = vs_battle_loadObjectDataState;
 
-    temp_s1 = D_800F4538[1];
-    temp_s0 = D_800E8F28;
-
-    switch (temp_s0) {
+    switch (vs_battle_loadObjectDataState) {
     case 0:
-        if (arg0 == 0) {
+        if (category == 0) {
+
             func_8009AA84(1);
-            if ((i = arg1 != 0) && (func_80109320(temp_s1->unk5B1) != 0)) {
+
+            if ((i = wepId) && func_80109320(temp_s1->unk5B1)) {
                 func_8009AA84(0);
-                func_800FA3FC(0xA);
+                func_800FA3FC(10);
             }
         } else {
-            if (arg0 != temp_s1->unk5B1) {
-                func_800FA3FC(arg0);
+            if (category != temp_s1->unk5B1) {
+                func_800FA3FC(category);
             }
+
             func_8009AA84(0);
-            if ((D_800F4594 != 0) && (func_80109320(arg0) != 0)) {
+
+            if (D_800F4594 && func_80109320(category)) {
                 func_8009AA84(1);
             }
         }
-        func_80109344(arg1, arg2);
+
+        _populateDataSlot(wepId, material);
         func_8009D934(1, 0, 1);
-        ++D_800E8F28;
+
+        ++vs_battle_loadObjectDataState;
         break;
+
     case 1:
         if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->unk5B8 == temp_s0)) {
             func_800FA2CC();
-            ++D_800E8F28;
+
+            ++vs_battle_loadObjectDataState;
         }
         break;
+
     case 2:
         func_800F9E0C();
         func_800F9A78(0);
         func_800F9CB0();
+
         temp_s1->unk0.unkA_7 = 0;
+
         func_800A0204(1, 1, 0, 0);
         func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
         vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);
@@ -62,51 +70,60 @@ int func_801090C4(int arg0, int arg1, int arg2)
         }
 
         func_8009D934(1, 1, 1);
-        ++D_800E8F28;
+
+        ++vs_battle_loadObjectDataState;
         break;
+
     case 3:
-        if (temp_s1->unk5B8 == 0x65) {
-            D_800E8F28 = 0;
+        if (temp_s1->unk5B8 == 101) {
+            vs_battle_loadObjectDataState = 0;
             return 0;
         }
+
         break;
     }
     return 1;
 }
 
-int func_80109320(int a0)
+int func_80109320(int category)
 {
-    int v0;
-    if (a0 < 3) {
+    if (category < 3) {
         return 0;
     }
-    if (a0 == 8) {
+
+    if (category == 8) {
         return 1;
     }
-    return a0 & 1;
+
+    return category & 1;
 }
 
-void func_80109344(int wepId, int material)
+void _populateDataSlot(int wepId, int material)
 {
     vs_battle_objectData objData;
     int index;
     int var_a3;
 
-    if (wepId != 0) {
-        index = 0;
-        if (wepId < 0x60) {
-            var_a3 = 0xF0;
-        } else {
-            index = 1;
-            var_a3 = 0xF1;
-        }
-        objData.dataType = 3;
-        objData.index = index;
-        objData.modelId = wepId;
-        objData.unk4 = vs_battle_characterState->unk48[index];
-        objData.actorId = 0;
-        objData.unk11 = var_a3;
-        objData.material = material;
-        vs_battle_populateDataSlot(&objData);
+    if (wepId == 0) {
+        return;
     }
+
+    index = 0;
+
+    if (wepId < 96) {
+        var_a3 = 240;
+    } else {
+        index = 1;
+        var_a3 = 241;
+    }
+
+    objData.dataType = 3;
+    objData.index = index;
+    objData.modelId = wepId;
+    objData.unk4 = vs_battle_characterState->unk48[index];
+    objData.actorId = 0;
+    objData.unk11 = var_a3;
+    objData.material = material;
+
+    vs_battle_populateDataSlot(&objData);
 }

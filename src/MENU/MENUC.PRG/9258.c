@@ -14,19 +14,19 @@ int func_8010BA58(int arg0)
         return 0;
     }
 
-    switch (D_800E8F28) {
+    switch (vs_battle_loadObjectDataState) {
     case 0:
         if (new_var->unk5B1 == 10) {
             return 0;
         }
         func_8009AA84(0);
         func_800FA3FC(10);
-        ++D_800E8F28;
+        ++vs_battle_loadObjectDataState;
         break;
     case 1:
         if (vs_battle_processObjectDataQueue() == 0) {
             func_800FA2CC();
-            D_800E8F28 = 0;
+            vs_battle_loadObjectDataState = 0;
             return 0;
         }
         break;

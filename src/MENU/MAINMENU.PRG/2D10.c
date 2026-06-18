@@ -59,7 +59,7 @@ vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int row, int index, int 
         initialX = 320 - xOffset;
         menuItem = vs_battle_setMenuItem(
             menuItemId, initialX, (row * 16) + 18, xOffset, 0, menuText[0]);
-        menuItem->unk7 = menuText[1] == NULL;
+        menuItem->unselectable = menuText[1] == NULL;
         if (flyIn & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;
@@ -104,7 +104,7 @@ vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int row, int index, int f
     if (var_s0 != 0) {
         menuItem = vs_battle_setMenuItem(
             row + 10, 0x140 - var_s0, (row * 16) + 18, var_s0, 0, (char*)sp18[0]);
-        menuItem->unk7 = sp18[1] == 0;
+        menuItem->unselectable = sp18[1] == 0;
         if (flyIn & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;

@@ -1480,14 +1480,14 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
     text = arg0->text;
 
     if (arg0->state != 0) {
-        if (((arg0->selected | arg0->unkB) != 0) && (arg0->unk7 == 0)) {
+        if (((arg0->selected | arg0->unkB) != 0) && (arg0->unselectable == 0)) {
             y = 8;
         }
 
         var_v0 = arg0->unkA;
 
         if (var_v0 == 0) {
-            var_v0 = arg0->unk7 * 3;
+            var_v0 = arg0->unselectable * 3;
         }
 
         vs_battle_setFontStyle(var_v0 + 4);

@@ -375,7 +375,7 @@ void vs_mainMenu_exec(int arg0)
                     vs_battle_setMenuItem(selectedMenu - 1, 0x140, 0x12, 0x8C, 8,
                         (char*)&vs_battle_menuStrings[vs_battle_menuStrings[selectedMenu
                                                                             - 1]])
-                        ->unk7 = state;
+                        ->unselectable = state;
                 }
                 if (((selectedMenu - 4) < 2U) || (selectedMenu == 7)
                     || (selectedMenu == 9)) {
@@ -466,7 +466,7 @@ void func_800FAEBC(int arg0)
         temp_v0->state = 2;
         temp_v0->selected = 1;
         temp_v0->targetPosition0 = 0xB4;
-        temp_v0->unk7 = (D_800F4EA0 & 7) != 0;
+        temp_v0->unselectable = (D_800F4EA0 & 7) != 0;
         D_80102454 = 1;
         vs_mainMenu_loadItemNames(1);
         break;

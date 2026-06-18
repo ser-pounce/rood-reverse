@@ -121,7 +121,7 @@ vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
         vs_battle_setMenuItem(arg0 + 0x20, arg1, ((arg0 + D_801024A0) * 0x10) + 0x12,
             0x7E, 0, (char*)&D_801022C8[(_itemActionListOffset + arg0) * 0x40]);
     int v = *((int*)&D_801022C8[(_itemActionListOffset + arg0) * 0x40 + 14]);
-    temp_v0->unk7 = v & 1;
+    temp_v0->unselectable = v & 1;
     if ((arg0 == 0) && (_itemActionListOffset != 0)) {
         temp_v0->fadeEffect = 1;
     }
@@ -180,7 +180,7 @@ void vs_mainMenu_processItemActionMenu(void)
             }
 
             if (vs_main_buttonsPressed.all & PADRright) {
-                if (menuItem->unk7 == 0) {
+                if (menuItem->unselectable == 0) {
                     menuItem->selected = 1;
                     vs_main_freeHeapR(D_801022C8);
                     D_801022C8 = NULL;
@@ -799,7 +799,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
         (char*)&D_801023D4[(_subMenuPage + arg0) * 0x40]);
 
     temp_a1 = *((int*)(&(&D_801023D4[(_subMenuPage + arg0) * 0x40])[14]));
-    menuItem->unk7 = temp_a1 & 1;
+    menuItem->unselectable = temp_a1 & 1;
     menuItem->backgroundWidth = menuItem->backgroundWidth + ((temp_a1 & 2) * 0xC);
     temp_v1 = (temp_a1 >> 3) & 1;
     menuItem->unkB = temp_v1;
@@ -880,7 +880,7 @@ void func_80100A5C(void)
                 return;
             }
             if (vs_main_buttonsPressed.all & 0x20) {
-                if (menuItem->unk7 == 0) {
+                if (menuItem->unselectable == 0) {
                     menuItem->selected = 1;
                     vs_battle_playMenuSelectSfx();
                     vs_main_freeHeapR(D_801023D4);
@@ -1057,7 +1057,7 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* menuItem, u_long* 
     i = menuItem->unkA * 16;
 
     if (menuItem->unkA == 0) {
-        i = menuItem->unk7 * 48;
+        i = menuItem->unselectable * 48;
     }
 
     var_s2 = (((arg0 & 0x1FF) % 21) * 0xC) | (((arg0 & 0x1FF) / 21) * 0xC00)

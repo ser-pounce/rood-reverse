@@ -1134,7 +1134,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int arg2)
     if (var_s1 != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
             row + 20, 320 - var_s1, (row * 16) + 18, var_s1, 0, sp18[0]);
-        menuItem->unk7 = sp18[1] == 0;
+        menuItem->unselectable = sp18[1] == 0;
         if (arg2 & 1) {
             menuItem->initialX = 320;
             menuItem->state = 2;
@@ -1173,7 +1173,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int arg2)
     if (var_s0 != 0) {
         meuItem = vs_battle_setMenuItem(
             row + 20, 320 - var_s0, (row * 16) + 18, var_s0, 0, sp18[0]);
-        meuItem->unk7 = sp18[1] == 0;
+        meuItem->unselectable = sp18[1] == 0;
         if (arg2 & 1) {
             meuItem->initialX = 320;
             meuItem->state = 2;

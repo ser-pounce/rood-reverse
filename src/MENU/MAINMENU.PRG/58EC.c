@@ -1111,12 +1111,15 @@ void func_801013F8(int arg0)
     } else {
         i = 0x100010;
     }
+
     vs_battle_setSpriteDefault(0x100010, i - temp_s5)[4] = var_s4 | 0x3000;
 
     i = 0x1100A2;
+
     if (arg0 != 0) {
         i = 0x60124;
     }
+
     vs_battle_setSpriteDefault(0x100010, i + temp_s5)[4] = var_s4 | 0x3010;
 }
 

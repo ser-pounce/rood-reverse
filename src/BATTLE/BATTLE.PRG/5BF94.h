@@ -113,9 +113,15 @@ typedef struct {
     char cursorMemories[52];
     char unk34[6];
     struct {
-        char itemCategory;
+        char currentItemCategory;
         char unk1;
-        short unk2[8];
+        union {
+            struct {
+                u_char index;
+                u_char page;
+            } cursor;
+            u_short value;
+        } unk2[8];
     } unk3A;
     char unk4C[4];
     char unk50;

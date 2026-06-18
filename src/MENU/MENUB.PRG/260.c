@@ -63,7 +63,7 @@ static void func_80102B14(int arg0, int arg1)
 {
     int i;
 
-    int temp_s4 = (D_800F4EE8.unk3A.itemCategory - 1) & 7;
+    int temp_s4 = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
     if (arg0 == 4) {
         func_801013F8(0);
@@ -1443,7 +1443,7 @@ static int _itemNavigation(int arg0)
         return 0;
     }
 
-    itemCategory = (D_800F4EE8.unk3A.itemCategory - 1) & itemCategoryManage;
+    itemCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & itemCategoryManage;
     indices = vs_mainMenu_inventoryIndices[itemCategory];
 
     switch (state) {
@@ -1579,9 +1579,9 @@ static int _itemNavigation(int arg0)
                 itemCategory = (itemCategory + 1) & 7;
             }
 
-            if (itemCategory != ((D_800F4EE8.unk3A.itemCategory - 1) & 7)) {
+            if (itemCategory != ((D_800F4EE8.unk3A.currentItemCategory - 1) & 7)) {
                 vs_battle_playMenuChangeSfx();
-                D_800F4EE8.unk3A.itemCategory = (itemCategory + 1) & 7;
+                D_800F4EE8.unk3A.currentItemCategory = (itemCategory + 1) & 7;
                 if (state == 2) {
                     if (noItems == 0) {
                         func_80100814();
@@ -1841,8 +1841,8 @@ static int _itemNavigation(int arg0)
         } else {
             itemCategory = 0;
         }
-        D_800F4EE8.unk3A.itemCategory = (itemCategory + 1) & 7;
-        (&D_800F4EE8.unk3A)->unk2[itemCategory] =
+        D_800F4EE8.unk3A.currentItemCategory = (itemCategory + 1) & 7;
+        (&D_800F4EE8.unk3A)->unk2[itemCategory].value =
             vs_mainMenu_findItem(itemCategory, i - 1) - 1;
         state = init;
         break;
@@ -1992,7 +1992,7 @@ static int _topLevelMenuTransition(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        D_800F4EE8.unk3A.itemCategory = arg0;
+        D_800F4EE8.unk3A.currentItemCategory = arg0;
         D_8010A6B0 = 0;
         D_8010A6B2 = 0;
         state = 0;
@@ -2070,7 +2070,7 @@ static int _topLevelMenuTransition(int arg0)
     }
 
     if ((menuTitleAnimationStep != 0) && (D_8010A6BF == 0)) {
-        int itemCategory = (D_800F4EE8.unk3A.itemCategory - 1) & 7;
+        int itemCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
         vs_battle_menuItem_t* menuItem =
             vs_battle_setMenuItem(0x1F, stepValue + 0xB4, 0x22, 0x8C, 8,
                 (char*)&_menuText[_menuText[itemCategory + VS_menuText_INDEX_weapons]]);

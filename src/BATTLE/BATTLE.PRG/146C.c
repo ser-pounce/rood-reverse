@@ -930,7 +930,7 @@ void func_80069FC4(int arg0, int arg1)
             temp_v0->totalIntelligence = temp_s1->totalIntelligence;
             temp_v0->totalAgility = temp_s1->totalAgility;
             for (i = 0; i < 6; ++i) {
-                temp_v0->limbHp[i] = temp_s1->bodyParts[i].hp;
+                temp_v0->limbHp[i] = temp_s1->limbs[i].hp;
             }
 
             temp_v0->unk20 = temp_s1->unk948;
@@ -1455,8 +1455,7 @@ void vs_battle_equipShield(vs_battle_inventoryShield* shield)
 
 void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
 {
-    vs_battle_applyArmor(
-        &vs_battle_characterState->unk3C->bodyParts[bodyPart].armor, armor);
+    vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[bodyPart].armor, armor);
     vs_battle_nop0(vs_battle_characterState->unk3C);
     func_8006B214();
     func_8006B2D4();
@@ -1747,9 +1746,9 @@ void _dropLoot(vs_battle_actor* enemy)
         lootList->actorId |=
             _dropAccessoryRand(&lootList->loot.accessory, &temp_s2->accessory);
         for (i = 0; i < 6; ++i) {
-            if (temp_s2->bodyParts[i].armor.armor.id != 0) {
+            if (temp_s2->limbs[i].armor.armor.id != 0) {
                 lootList->actorId |=
-                    _dropArmorRand(lootList->loot.armor, &temp_s2->bodyParts[i].armor);
+                    _dropArmorRand(lootList->loot.armor, &temp_s2->limbs[i].armor);
             }
         }
 
@@ -4512,30 +4511,30 @@ void func_80076784(
     _applyAccessoryStats(&actor->accessory, &init->accessory);
 
     for (i = 0; i < 6; ++i) {
-        actor->bodyParts[i].hp = actor->bodyParts[i].maxHp = init->armor[i].hp;
-        actor->bodyParts[i].agilityDefenseBonus = init->armor[i].agilityDefenseBonus;
+        actor->limbs[i].hp = actor->limbs[i].maxHp = init->armor[i].hp;
+        actor->limbs[i].agilityDefenseBonus = init->armor[i].agilityDefenseBonus;
 
         j = func_800A152C(arg0, i, 2);
 
         if (j >= 0) {
-            actor->bodyParts[i].unk5 = j;
-            actor->bodyParts[i].nameIndex = func_800A1648(arg0, j, 0);
+            actor->limbs[i].unk5 = j;
+            actor->limbs[i].nameIndex = func_800A1648(arg0, j, 0);
         } else {
-            actor->bodyParts[i].nameIndex = 0;
-            actor->bodyParts[i].unk5 = 0;
+            actor->limbs[i].nameIndex = 0;
+            actor->limbs[i].unk5 = 0;
         }
 
-        actor->bodyParts[i].chainEvasion = init->armor[i].chainEvasion;
+        actor->limbs[i].chainEvasion = init->armor[i].chainEvasion;
 
         for (j = 0; j < 4; ++j) {
-            actor->bodyParts[i].types[j] = init->armor[i].unk4[j];
+            actor->limbs[i].types[j] = init->armor[i].unk4[j];
         }
 
         for (j = 0; j < 7; ++j) {
-            actor->bodyParts[i].affinities[j] = init->armor[i].unk8[j];
+            actor->limbs[i].affinities[j] = init->armor[i].unk8[j];
         }
 
-        _applyArmorStats(&actor->bodyParts[i].armor, &init->armor[i].unk20);
+        _applyArmorStats(&actor->limbs[i].armor, &init->armor[i].unk20);
     }
 
     vs_battle_nop0(actor);
@@ -5934,7 +5933,7 @@ void func_8007C28C(int arg0)
             temp_a1->currentHP = temp_a1->maxHP;
             temp_a1->currentMP = temp_a1->maxMP;
             for (i = 0; i < 6; ++i) {
-                temp_a1->bodyParts[i].hp = temp_a1->bodyParts[i].maxHp;
+                temp_a1->limbs[i].hp = temp_a1->limbs[i].maxHp;
             }
             func_80086754(0x7FFFFFFF, temp_a1);
             D_800F5160 = 0;
@@ -6667,16 +6666,16 @@ void _calculateArmorClassAffinity(vs_battle_actor2* arg0, int arg1)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        u_short v = arg0->bodyParts[arg1].armor.armor.classes[i];
-        arg0->bodyParts[arg1].armor.classAffinityCurrent.class[1][i] = v;
-        arg0->bodyParts[arg1].armor.classAffinityCurrent.class[0][i] = v;
+        u_short v = arg0->limbs[arg1].armor.armor.classes[i];
+        arg0->limbs[arg1].armor.classAffinityCurrent.class[1][i] = v;
+        arg0->limbs[arg1].armor.classAffinityCurrent.class[0][i] = v;
     }
 
     for (i = 0; i < 7; ++i) {
-        u_short v = arg0->bodyParts[arg1].armor.armor.affinities[i];
-        arg0->bodyParts[arg1].armor.classAffinityCurrent.affinity[1][i] = v;
-        arg0->bodyParts[arg1].armor.classAffinityCurrent.affinity[0][i] =
-            v + arg0->bodyParts[arg1].armor.unk88[i];
+        u_short v = arg0->limbs[arg1].armor.armor.affinities[i];
+        arg0->limbs[arg1].armor.classAffinityCurrent.affinity[1][i] = v;
+        arg0->limbs[arg1].armor.classAffinityCurrent.affinity[0][i] =
+            v + arg0->limbs[arg1].armor.unk88[i];
     }
 }
 
@@ -6982,8 +6981,8 @@ int _getAgilityDifference(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t*
     int targetActorValue = targetActor->agility + targetActor->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        sourceActorValue += sourceActor->bodyParts[i].armor.currentAgility;
-        targetActorValue += targetActor->bodyParts[i].armor.currentAgility;
+        sourceActorValue += sourceActor->limbs[i].armor.currentAgility;
+        targetActorValue += targetActor->limbs[i].armor.currentAgility;
     }
 
     if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
@@ -6997,7 +6996,7 @@ int _getAgilityDifference(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t*
     }
 
     sourceActorValue = sourceActorValue * (100 - sourceActor->risk) / 100;
-    targetActorValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetActorValue += targetActor->limbs[targetBodyPart].agilityDefenseBonus;
     targetActorValue = targetActorValue * (100 - targetActor->risk) / 100;
     agiDiff = sourceActorValue - targetActorValue;
     agiDiff += 100;
@@ -7033,8 +7032,8 @@ int _getIntelligenceDifference(vs_skill_t* skill, _hitEntity_t* source,
     int targetActorValue = targetActor->intelligence + targetActor->accessory.currentInt;
 
     for (i = 0; i < 6; ++i) {
-        sourceActorValue += sourceActor->bodyParts[i].armor.currentInt;
-        targetActorValue += targetActor->bodyParts[i].armor.currentInt;
+        sourceActorValue += sourceActor->limbs[i].armor.currentInt;
+        targetActorValue += targetActor->limbs[i].armor.currentInt;
     }
 
     if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
@@ -7048,7 +7047,7 @@ int _getIntelligenceDifference(vs_skill_t* skill, _hitEntity_t* source,
     }
 
     sourceActorValue = (sourceActorValue * (100 - sourceActor->risk)) / 100;
-    targetActorValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetActorValue += targetActor->limbs[targetBodyPart].agilityDefenseBonus;
     targetActorValue = (targetActorValue * (100 - targetActor->risk) / 100);
     targetActorValue = targetActorValue * targetActor->currentHP / targetActor->maxHP;
     intDiff = sourceActorValue - targetActorValue;
@@ -7085,8 +7084,8 @@ int _getAgilityDifference2(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t
     int targetValue = targetActor->agility + targetActor->accessory.currentAgility;
 
     for (i = 0; i < 6; ++i) {
-        sourceValue += sourceActor->bodyParts[i].armor.currentAgility;
-        targetValue += targetActor->bodyParts[i].armor.currentAgility;
+        sourceValue += sourceActor->limbs[i].armor.currentAgility;
+        targetValue += targetActor->limbs[i].armor.currentAgility;
     }
 
     if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
@@ -7100,7 +7099,7 @@ int _getAgilityDifference2(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t
     }
 
     sourceValue = (sourceValue * (100 - sourceActor->risk)) / 100;
-    targetValue += targetActor->bodyParts[targetBodyPart].agilityDefenseBonus;
+    targetValue += targetActor->limbs[targetBodyPart].agilityDefenseBonus;
     targetValue = targetValue * (100 - targetActor->risk) / 100;
     agiDiff = sourceValue - targetValue;
     v = agiDiff + 130;
@@ -7143,7 +7142,7 @@ int _getChainEvasionModifier(vs_skill_t* arg0 __attribute__((unused)),
 
     rate = ((255
                 - vs_battle_actors[target->actorId]
-                      ->unk3C->bodyParts[target->targetedBodyPart]
+                      ->unk3C->limbs[target->targetedBodyPart]
                       .chainEvasion)
                * 100)
          / 255;
@@ -7305,7 +7304,7 @@ int _hitPrerequisiteCanApplyEquipDown(vs_skill_t* arg0, u_char* arg1)
     actor = vs_battle_actors[*arg1]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (actor->bodyParts[i].armor.armor.id != 0) {
+        if (actor->limbs[i].armor.armor.id != 0) {
             hasEquipment = 1;
         }
     }
@@ -7359,7 +7358,7 @@ int _hitPrerequisiteCanApplyEquipUp(vs_skill_t* arg0, u_char* arg1)
     actor = vs_battle_actors[*arg1]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (actor->bodyParts[i].armor.armor.id != 0) {
+        if (actor->limbs[i].armor.armor.id != 0) {
             hasEquipment = 1;
         }
     }
@@ -7471,7 +7470,7 @@ int _hitPrerequisiteCanApplyAirDefenseUp(
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].armor.armor.id != 0) {
+            if (actor->limbs[i].armor.armor.id != 0) {
                 hasArmor = 1;
             }
         }
@@ -7496,7 +7495,7 @@ int _hitPrerequisiteCanApplyFireDefenseUp(
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].armor.armor.id != 0) {
+            if (actor->limbs[i].armor.armor.id != 0) {
                 hasArmor = 1;
             }
         }
@@ -7520,7 +7519,7 @@ int _hitPrerequisiteCanApplyEarthDefenseUp(
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].armor.armor.id != 0) {
+            if (actor->limbs[i].armor.armor.id != 0) {
                 hasArmor = 1;
             }
         }
@@ -7544,7 +7543,7 @@ int _hitPrerequisiteCanApplyWaterDefenseUp(
         vs_battle_actor2* actor = vs_battle_actors[*arg1]->unk3C;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].armor.armor.id != 0) {
+            if (actor->limbs[i].armor.armor.id != 0) {
                 hasArmor = 1;
             }
         }
@@ -7700,13 +7699,13 @@ void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
         limbs = 0;
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].maxHp != 0) {
+            if (actor->limbs[i].maxHp != 0) {
                 ++limbs;
             }
         }
 
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].maxHp != 0) {
+            if (actor->limbs[i].maxHp != 0) {
                 _armorDpAdjustmentAmounts[i] = baseValue / limbs;
                 entity->unk20.s16[i][0] += _armorDpAdjustmentAmounts[i];
             }
@@ -7738,17 +7737,16 @@ void func_800801E0(vs_skill_t* skill, _hitEntity_t* entity, short arg2)
     vs_battle_actor2* actor = vs_battle_actors[entity->actorId]->unk3C;
 
     for (i = 0; i < 6; ++i) {
-        if (actor->bodyParts[i].maxHp != 0) {
-            limbDamageTaken += actor->bodyParts[i].maxHp - actor->bodyParts[i].hp;
+        if (actor->limbs[i].maxHp != 0) {
+            limbDamageTaken += actor->limbs[i].maxHp - actor->limbs[i].hp;
         }
     }
 
     if (limbDamageTaken != 0) {
         for (i = 0; i < 6; ++i) {
-            if (actor->bodyParts[i].maxHp != 0) {
-                int temp_lo =
-                    (arg2 * (actor->bodyParts[i].maxHp - actor->bodyParts[i].hp))
-                    / limbDamageTaken;
+            if (actor->limbs[i].maxHp != 0) {
+                int temp_lo = (arg2 * (actor->limbs[i].maxHp - actor->limbs[i].hp))
+                            / limbDamageTaken;
                 _armorDpAdjustmentAmounts[i] = temp_lo;
                 entity->unk20.s16[i][0] =
                     entity->unk20.s16[i][0] + ((temp_lo << 0x10) >> 0xF);
@@ -7780,10 +7778,10 @@ void _adjustDpPp(
 
     for (i = 0; i < 6; ++i) {
         if (_armorDpAdjustmentAmounts[i] != 0) {
-            if (target->bodyParts[i].armor.currentDp >= _armorDpAdjustmentAmounts[i]) {
-                target->bodyParts[i].armor.currentDp -= _armorDpAdjustmentAmounts[i];
+            if (target->limbs[i].armor.currentDp >= _armorDpAdjustmentAmounts[i]) {
+                target->limbs[i].armor.currentDp -= _armorDpAdjustmentAmounts[i];
             } else {
-                target->bodyParts[i].armor.currentDp = 0;
+                target->limbs[i].armor.currentDp = 0;
             }
         }
     }
@@ -8917,17 +8915,17 @@ void func_80085008(_hitEntity_t* arg0)
     temp_s3 = vs_battle_actors[arg0->actorId]->unk3C;
     switch (arg0->unk1C.fields.unk1C_0) {
     case 2:
-        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp + arg0->unk20.s32[temp_s3->unk34];
-        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp + arg0->unk20.s32[temp_s3->unk35];
+        var_a2 = temp_s3->limbs[temp_s3->unk34].hp + arg0->unk20.s32[temp_s3->unk34];
+        var_a1 = temp_s3->limbs[temp_s3->unk35].hp + arg0->unk20.s32[temp_s3->unk35];
         break;
     case 3:
     case 1:
-        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp - arg0->unk20.s32[temp_s3->unk34];
-        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp - arg0->unk20.s32[temp_s3->unk35];
+        var_a2 = temp_s3->limbs[temp_s3->unk34].hp - arg0->unk20.s32[temp_s3->unk34];
+        var_a1 = temp_s3->limbs[temp_s3->unk35].hp - arg0->unk20.s32[temp_s3->unk35];
         break;
     default:
-        var_a2 = temp_s3->bodyParts[temp_s3->unk34].hp;
-        var_a1 = temp_s3->bodyParts[temp_s3->unk35].hp;
+        var_a2 = temp_s3->limbs[temp_s3->unk34].hp;
+        var_a1 = temp_s3->limbs[temp_s3->unk35].hp;
         break;
     }
     if (!(temp_s3->unk948 & 0x10)) {
@@ -8961,14 +8959,14 @@ void func_80085008(_hitEntity_t* arg0)
         for (i = 0; i < 4; ++i) {
             switch (arg0->unk1C.fields.unk1C_0) {
             case 2:
-                var_a2 = temp_s3->bodyParts[i].hp + arg0->unk20.s32[i];
+                var_a2 = temp_s3->limbs[i].hp + arg0->unk20.s32[i];
                 break;
             case 3:
             case 1:
-                var_a2 = temp_s3->bodyParts[i].hp - arg0->unk20.s32[i];
+                var_a2 = temp_s3->limbs[i].hp - arg0->unk20.s32[i];
                 break;
             default:
-                var_a2 = temp_s3->bodyParts[i].hp;
+                var_a2 = temp_s3->limbs[i].hp;
                 break;
             }
             if (!(temp_s3->unk948 & vs_main_statusEffectParams[D_800E8200[i]][0])) {
@@ -9232,11 +9230,11 @@ void func_80086EF4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
     }
 
     for (i = 0; i < 6; ++i) {
-        if (arg0->bodyParts[i].armor.armor.id != 0) {
-            arg0->bodyParts[i].armor.classAffinityCurrent.affinity[0][arg1] += arg3;
-            arg0->bodyParts[i].armor.classAffinityCurrent.affinity[0][arg2] -= arg3;
-            arg0->bodyParts[i].armor.unk88[arg1] = arg3;
-            arg0->bodyParts[i].armor.unk88[arg2] = -arg3;
+        if (arg0->limbs[i].armor.armor.id != 0) {
+            arg0->limbs[i].armor.classAffinityCurrent.affinity[0][arg1] += arg3;
+            arg0->limbs[i].armor.classAffinityCurrent.affinity[0][arg2] -= arg3;
+            arg0->limbs[i].armor.unk88[arg1] = arg3;
+            arg0->limbs[i].armor.unk88[arg2] = -arg3;
         }
     }
 }

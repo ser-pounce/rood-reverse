@@ -1763,7 +1763,7 @@ int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
     return var_a2;
 }
 
-int vs_battle_getHitLocationStatus(vs_battle_uiEquipment_bodyPart* limb)
+int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb* limb)
 {
     int maxHp = limb->maxHp;
 

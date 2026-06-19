@@ -417,7 +417,7 @@ typedef struct {
     short types[4];
     short affinities[8];
     vs_battle_uiArmor armor; // 0x18
-} vs_battle_uiEquipment_bodyPart;
+} vs_battle_uiEquipment_limb;
 
 typedef struct {
     vs_battle_uiEquipment accessory;
@@ -493,7 +493,7 @@ typedef struct {
     vs_battle_uiWeapon weapon; // 0x3C
     vs_battle_uiShield shield; // 1C4
     vs_battle_uiAccessory accessory; // 328
-    vs_battle_uiEquipment_bodyPart bodyParts[6]; // 388
+    vs_battle_uiEquipment_limb limbs[6]; // 388
     vs_battle_actor_unk8C0 armor[6][4];
     char unk920[6][6];
     int unk944;

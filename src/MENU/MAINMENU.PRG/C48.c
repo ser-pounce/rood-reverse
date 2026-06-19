@@ -54,10 +54,10 @@ void vs_mainMenu_initInventory(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        if (actor->bodyParts[i].armor.index != 0) {
+        if (actor->limbs[i].armor.index != 0) {
             vs_battle_copyUiArmorStats(
-                &vs_battle_inventory.armor[actor->bodyParts[i].armor.index - 1],
-                &actor->bodyParts[i].armor);
+                &vs_battle_inventory.armor[actor->limbs[i].armor.index - 1],
+                &actor->limbs[i].armor);
         }
     }
 

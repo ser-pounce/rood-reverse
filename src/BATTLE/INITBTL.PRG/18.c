@@ -137,15 +137,15 @@ void func_800F9AD8(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->bodyParts[i].hp = s1->bodyParts[i].hp;
-        temp_s0->bodyParts[i].maxHp = s1->bodyParts[i].maxHp;
+        temp_s0->limbs[i].hp = s1->limbs[i].hp;
+        temp_s0->limbs[i].maxHp = s1->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_s0->bodyParts[i].types[j] = s1->bodyParts[i].types[j];
+            temp_s0->limbs[i].types[j] = s1->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_s0->bodyParts[i].affinities[j] = s1->bodyParts[i].affinities[j];
+            temp_s0->limbs[i].affinities[j] = s1->limbs[i].affinities[j];
         }
     }
 
@@ -237,11 +237,11 @@ void func_800F9CCC(void)
     }
 
     for (i = 0; i < 6; ++i) {
-        vs_battle_applyArmor(&vs_battle_characterState->unk3C->bodyParts[i].armor, NULL);
+        vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor, NULL);
 
         for (j = 0; j < 16; ++j) {
             if (vs_battle_inventory.armor[j].bodyPart == i + 1) {
-                vs_battle_applyArmor(&vs_battle_characterState->unk3C->bodyParts[i].armor,
+                vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor,
                     &vs_battle_inventory.armor[j]);
             }
         }

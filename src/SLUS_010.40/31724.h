@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 #include <libgte.h>
 
 void func_8004140C(MATRIX*, VECTOR*);

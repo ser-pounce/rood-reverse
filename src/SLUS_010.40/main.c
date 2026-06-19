@@ -8431,16 +8431,15 @@ void func_80042CB0(void)
     var_t3 = 0;
 
     for (i = 0; i < 6; ++i) {
-        temp_t5->unk0.bodyParts[i].hp = temp_t0->bodyParts[i].hp;
-        temp_t5->unk0.bodyParts[i].maxHp = temp_t0->bodyParts[i].maxHp;
+        temp_t5->unk0.limbs[i].hp = temp_t0->limbs[i].hp;
+        temp_t5->unk0.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk0.bodyParts[i].types[j] = temp_t0->bodyParts[i].types[j];
+            temp_t5->unk0.limbs[i].types[j] = temp_t0->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk0.bodyParts[i].affinities[j] =
-                temp_t0->bodyParts[i].affinities[j];
+            temp_t5->unk0.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
         }
     }
 

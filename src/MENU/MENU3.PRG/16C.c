@@ -74,7 +74,7 @@ static int _statusViewSwitchItem(int itemCategory, int currentItem)
 /**
  * Handles the display of the item categories at the top of the screen.
  */
-static void _animateItemCategoryBar(int animationStep, int hideSecondaryTitle)
+static void _animateItemCategoryBar(int animationStep, int itemCategoryIconOnTop)
 {
     int temp_s0;
     int temp_s4;
@@ -95,7 +95,7 @@ static void _animateItemCategoryBar(int animationStep, int hideSecondaryTitle)
 
         temp_s0 = (((i + 1) & 7) * 0x10) + 0x20;
 
-        if (i == temp_s4 && hideSecondaryTitle == 1) {
+        if (i == temp_s4 && itemCategoryIconOnTop == 1) {
 
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
 
@@ -156,17 +156,17 @@ static u_short _menuText[] = {
 #include "build/assets/MENU/MENU3.PRG/menuText.vsString"
 };
 
-static int D_80109564 = 0;
-static int D_80109568 = 0;
+static int _ashleyYOffset = 0;
+static int _ashleyRenderState = 0;
 
-static void func_80102C44(int selectedItem, int arg1)
+static void func_80102C44(int selectedItem, int classAffinityType)
 {
-    D_80109568 = 1;
+    _ashleyRenderState = 1;
     _itemCategoryIconsEnabled = 0;
     _statusCommandState = 0;
 
     _continueMenuTransition(selectedItem);
-    vs_mainMenu_drawClassAffinityType(arg1);
+    vs_mainMenu_drawClassAffinityType(classAffinityType);
     vs_mainMenu_renderEquipStats(1);
 }
 
@@ -204,7 +204,7 @@ static int _setCursorMemoryAndGetIndex(int itemCategory, int itemId)
 static char _secondaryTitleAnimationStep;
 static char _itemCategoryIconsAnimationStep;
 static char _statusCommandAnimationStep;
-static char _hideSecondaryTitle;
+static char _selectedItemCategoryIconOnTop;
 static int _menuButtonPressed;
 
 /**
@@ -220,7 +220,7 @@ static void _exitStatusView(int clearDpPp)
     vs_mainMenu_drawClassAffinityType(-1);
     vs_mainMenu_renderEquipStats(2);
 
-    _hideSecondaryTitle = 2;
+    _selectedItemCategoryIconOnTop = 2;
     _menuButtonPressed = vs_main_buttonsPressed.all & PADRup;
 
     if (clearDpPp != 0) {
@@ -789,7 +789,7 @@ static int _itemStatusView(int itemInfo)
     if (itemInfo != 0) {
         page = itemInfo >> 4;
         itemCategory = itemInfo & 0xF;
-        _hideSecondaryTitle = 1;
+        _selectedItemCategoryIconOnTop = 1;
         _menuButtonPressed = 0;
 
         func_800FDD78();
@@ -803,9 +803,9 @@ static int _itemStatusView(int itemInfo)
     if (new_var) {
         if (_menuButtonPressed == 0) {
             _itemCategoryIconsEnabled = 1;
-            _hideSecondaryTitle = 0;
+            _selectedItemCategoryIconOnTop = 0;
             _statusCommandState = 1;
-            D_80109568 = 0;
+            _ashleyRenderState = 0;
 
             vs_mainMenu_setNextMenuAction(menuActionMenu);
 
@@ -1767,7 +1767,11 @@ static int _populateItemRows(
     return textOffset;
 }
 
-static void func_80105314(int arg0)
+/**
+ * @brief Waits for MAINMENU handling and restores saved
+ * cursor position.
+ */
+static void _restoreItemMenu(int itemCategory)
 {
     int i;
 
@@ -1777,11 +1781,14 @@ static void func_80105314(int arg0)
 
     for (i = 20; i < 40; ++i) {
         vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
+
         if (menuItem->state == 2) {
             menuItem->state = 1;
             menuItem->initialX = menuItem->targetPosition0;
         }
-        menuItem->selected = (i ^ (D_800F4EE8.cursorMemories[(arg0 + 30) * 2] + 20)) == 0;
+
+        menuItem->selected =
+            (i ^ (D_800F4EE8.cursorMemories[(itemCategory + 30) * 2] + 20)) == 0;
     }
 }
 
@@ -1903,7 +1910,7 @@ loop_1:
             vs_mainmenu_setMenuRows(rowCount, var_a1_2, menuText, rowTypes);
 
             if (state == 0) {
-                func_80105314(itemCategory);
+                _restoreItemMenu(itemCategory);
             }
 
             vs_main_settings.cursorMemory = i;
@@ -1984,7 +1991,7 @@ loop_1:
 
                 vs_main_settings.cursorMemory = i;
 
-                func_80105314(itemCategory);
+                _restoreItemMenu(itemCategory);
 
                 _statusCommandState = 1;
                 D_801023E3 = 0;
@@ -2447,7 +2454,7 @@ static char* _itemsText;
 static int _selectedItemRow;
 static u_char state;
 static char _menuRowCount;
-static char D_80109766;
+static char _itemsFirstRow;
 static char _equippedItem;
 
 /**
@@ -2461,7 +2468,7 @@ static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
     u_short* text;
 
     _menuRowCount = count;
-    D_80109766 = 0;
+    _itemsFirstRow = 0;
     _selectedItemRow = 0;
     state = 1;
 
@@ -2567,7 +2574,7 @@ static void _processEquipSubMenu(int hasSfx)
         return;
     }
 
-    temp_s6 = D_80109766;
+    temp_s6 = _itemsFirstRow;
     temp_s4 = _selectedItemRow + temp_s6;
 
     menuItem = vs_battle_getMenuItem(_selectedItemRow + 20);
@@ -2631,12 +2638,12 @@ static void _processEquipSubMenu(int hasSfx)
         }
 
         if (vs_main_buttonRepeat & PADLup) {
-            if (_menuRowCount < 7 || D_80109766 == 0) {
+            if (_menuRowCount < 7 || _itemsFirstRow == 0) {
                 if (_selectedItemRow != 0) {
                     --_selectedItemRow;
                 }
             } else if (_selectedItemRow == 2) {
-                --D_80109766;
+                --_itemsFirstRow;
             } else {
                 --_selectedItemRow;
             }
@@ -2647,21 +2654,21 @@ static void _processEquipSubMenu(int hasSfx)
                 if (_selectedItemRow < (_menuRowCount - 1)) {
                     ++_selectedItemRow;
                 }
-            } else if (D_80109766 == (_menuRowCount - 6)) {
+            } else if (_itemsFirstRow == (_menuRowCount - 6)) {
                 if (_selectedItemRow < 5) {
                     ++_selectedItemRow;
                 }
             } else if (_selectedItemRow == 4) {
-                ++D_80109766;
+                ++_itemsFirstRow;
             } else {
                 ++_selectedItemRow;
             }
         }
 
-        if (temp_s4 != (_selectedItemRow + D_80109766)) {
+        if (temp_s4 != (_selectedItemRow + _itemsFirstRow)) {
             vs_battle_playMenuChangeSfx();
 
-            if (D_80109766 != temp_s6) {
+            if (_itemsFirstRow != temp_s6) {
                 char buf[_menuRowCount];
                 for (i = 0; i < _menuRowCount; ++i) {
                     buf[i] = 0;
@@ -2677,9 +2684,10 @@ static void _processEquipSubMenu(int hasSfx)
 
                 for (i = 1;;) {
                     menuItem = vs_battle_setMenuItem(i + 0x14, 0xA9, 0x12 + i * 0x10,
-                        0x97, 0, _itemsText + ((i + D_80109766) << 7));
-                    menuItem->animationState = buf[i + D_80109766];
-                    temp_s0 = ((_itemsText_t*)_itemsText)[i + D_80109766].menuRowFlags;
+                        0x97, 0, _itemsText + ((i + _itemsFirstRow) << 7));
+                    menuItem->animationState = buf[i + _itemsFirstRow];
+                    temp_s0 =
+                        ((_itemsText_t*)_itemsText)[i + _itemsFirstRow].menuRowFlags;
                     menuItem->unselectable = temp_s0 & 1;
                     menuItem->icon = temp_s0 >> 0x1A;
 
@@ -2694,20 +2702,20 @@ static void _processEquipSubMenu(int hasSfx)
                         break;
                     }
                     if (i == 6) {
-                        if ((D_80109766 + 6) < _menuRowCount) {
+                        if ((_itemsFirstRow + 6) < _menuRowCount) {
                             menuItem->fadeEffect = 2;
                         }
                         break;
                     }
                 }
 
-                if (D_80109766 != 0) {
+                if (_itemsFirstRow != 0) {
                     vs_battle_getMenuItem(0x15)->fadeEffect = 1;
                 }
             }
 
-            temp_s0 =
-                ((_itemsText_t*)_itemsText)[_selectedItemRow + D_80109766].menuRowFlags;
+            temp_s0 = ((_itemsText_t*)_itemsText)[_selectedItemRow + _itemsFirstRow]
+                          .menuRowFlags;
             _equippedItem = (temp_s0 >> 0x13) & 0x7F;
         }
 
@@ -3482,7 +3490,7 @@ static int _equipMenu(int initialize)
     if (initialize != 0) {
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
-        _hideSecondaryTitle = 1;
+        _selectedItemCategoryIconOnTop = 1;
         state = init;
 
         return 0;
@@ -3507,7 +3515,7 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        _hideSecondaryTitle = 1;
+        _selectedItemCategoryIconOnTop = 1;
 
         for (i = 0; i < 8; ++i) {
             for (j = 0; j < 2; ++j) {
@@ -3568,7 +3576,7 @@ static int _equipMenu(int initialize)
         }
 
         if (selectedRow < 0) {
-            _hideSecondaryTitle = -selectedRow;
+            _selectedItemCategoryIconOnTop = -selectedRow;
 
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
@@ -3592,7 +3600,7 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        D_80109568 = 1;
+        _ashleyRenderState = 1;
 
         _continueMenuTransition(selectedRow + 9);
 
@@ -3616,9 +3624,9 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        D_80109568 = 0;
+        _ashleyRenderState = 0;
         _itemCategoryIconsEnabled = 1;
-        _hideSecondaryTitle = 2;
+        _selectedItemCategoryIconOnTop = 2;
         _statusCommandState = 1;
         state = init;
 
@@ -3635,77 +3643,92 @@ static int _equipMenu(int initialize)
     return 0;
 }
 
-static void func_80108518(int arg0)
+enum ashleyRenderMode {
+    ashleyRenderModeRender,
+    ashleyRenderModeInit,
+    ashleyRenderModeRestore
+};
+
+/**
+ * Responsible for rendering 3D model.
+ *
+ * @param mode
+ * - ashleyRenderModeInit Called when entering menu
+ *
+ * - ashleyRenderModeRender Called each frame while in menu
+ *
+ * - ashleyRenderModeRestore Called when leaving menu
+ */
+static void _renderAshley(int mode)
 {
-    static int D_80109644 = 0;
-    static char D_80109648 = 0;
+    static int render = 0;
+    static char skipFrame = 0;
 
     static int projectionDistanceBackup;
     static int _[3] __attribute__((unused));
     static vs_unk_gfx_t2 D_801096BC;
     static vs_unk_gfx_t D_801096DC;
 
-    int temp_lo;
-    int temp_lo_2;
-    int temp_s1_2;
-    int var_s2;
+    int yOffset;
     vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
 
-    switch (arg0) {
-    case 0:
+    switch (mode) {
+    case ashleyRenderModeRender:
+        yOffset = _ashleyYOffset;
 
-        var_s2 = D_80109564;
-
-        switch (D_80109568) {
+        switch (_ashleyRenderState) {
         case 0:
-            if (var_s2 < 10) {
-                ++var_s2;
-                D_80109564 = var_s2;
+            if (yOffset < 10) {
+                ++yOffset;
+                _ashleyYOffset = yOffset;
             }
 
-            var_s2 = 0x80 - vs_battle_rowAnimationSteps[10 - var_s2];
+            yOffset = 128 - vs_battle_rowAnimationSteps[10 - yOffset];
             break;
 
         case 1:
-            if (var_s2 > 0) {
-                --var_s2;
-                D_80109564 = var_s2;
+            if (yOffset > 0) {
+                --yOffset;
+                _ashleyYOffset = yOffset;
             }
-            var_s2 = vs_battle_rowAnimationSteps[var_s2];
+            yOffset = vs_battle_rowAnimationSteps[yOffset];
             break;
 
         case 2:
-            if (var_s2 < 10) {
-                ++var_s2;
-                D_80109564 = var_s2;
+            if (yOffset < 10) {
+                ++yOffset;
+                _ashleyYOffset = yOffset;
             } else {
-                D_80109568 = 0;
+                _ashleyRenderState = 0;
             }
 
-            var_s2 = vs_battle_rowAnimationSteps[10 - var_s2] + 128;
+            yOffset = vs_battle_rowAnimationSteps[10 - yOffset] + 128;
             break;
 
         case 3:
-            if (var_s2 > 0) {
-                --var_s2;
-                D_80109564 = var_s2;
+            if (yOffset > 0) {
+                --yOffset;
+                _ashleyYOffset = yOffset;
             }
 
-            var_s2 = 0x260 - var_s2 * 0x30;
+            yOffset = 608 - yOffset * 48;
             break;
         }
 
-        if (D_80109648 != 0) {
-            D_80109648 = 0;
+        if (skipFrame != 0) {
+            skipFrame = 0;
             return;
         }
 
-        if (D_80109644 != 0) {
+        if (render != 0) {
+            int temp_s1_2;
+            int temp_lo;
+            int temp_lo_2;
             int temp_s1 = D_800F4538[1]->unk656;
 
-            p->unk10 = ((-rsin(0xB00) * var_s2) >> 8) * temp_s1;
+            p->unk10 = ((-rsin(0xB00) * yOffset) >> 8) * temp_s1;
             p->unk14.unk0 = -(D_800F4538[1]->unk63E << 0xB);
-            p->unk14.unk4 = ((rcos(0xB00) * var_s2) >> 8) * temp_s1;
+            p->unk14.unk4 = ((rcos(0xB00) * yOffset) >> 8) * temp_s1;
 
             temp_s1_2 = temp_s1 * 4;
             temp_lo = rcos(0xB00) * temp_s1_2;
@@ -3726,12 +3749,12 @@ static void func_80108518(int arg0)
         }
         break;
 
-    case 1:
-        if (D_80109644 == 0) {
-            D_80109564 = 0;
-            D_80109568 = 2;
-            D_80109648 = arg0;
-            D_80109644 = arg0;
+    case ashleyRenderModeInit:
+        if (render == 0) {
+            _ashleyYOffset = 0;
+            _ashleyRenderState = 2;
+            skipFrame = 1;
+            render = 1;
             projectionDistanceBackup = vs_main_projectionDistance;
 
             vs_battle_setProjectionDistance(512);
@@ -3750,8 +3773,8 @@ static void func_80108518(int arg0)
         }
         break;
 
-    case 2:
-        if (D_80109644 != 0) {
+    case ashleyRenderModeRestore:
+        if (render != 0) {
 
             func_800F9E0C();
             func_80100414(-4, 0x80);
@@ -3759,7 +3782,7 @@ static void func_80108518(int arg0)
 
             p[-1].unk14 = D_801096BC;
             *p = D_801096DC;
-            D_80109644 = 0;
+            render = 0;
         }
 
         break;
@@ -3797,7 +3820,7 @@ int vs_menu3_exec(char* state)
         _secondaryTitleAnimationStep = 0;
         _itemCategoryIconsAnimationStep = 0;
         _statusCommandAnimationStep = 0;
-        _hideSecondaryTitle = 0;
+        _selectedItemCategoryIconOnTop = 0;
 
         if (vs_mainMenu_itemNames == NULL) {
             vs_mainMenu_loadItemNames(1);
@@ -3813,7 +3836,7 @@ int vs_menu3_exec(char* state)
 
         D_800EB9B0 = 0x200000;
 
-        func_80108518(1);
+        _renderAshley(1);
         _itemsTopLevelHandler(D_80109649 + 1);
 
         D_80109649 = 0;
@@ -3846,7 +3869,7 @@ int vs_menu3_exec(char* state)
                 break;
 
             case 2:
-                D_80109568 = 3;
+                _ashleyRenderState = 3;
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
@@ -3869,7 +3892,7 @@ int vs_menu3_exec(char* state)
 
                 D_800EB9B0 = 0;
 
-                func_80108518(2);
+                _renderAshley(2);
 
                 break;
             }
@@ -3886,7 +3909,7 @@ int vs_menu3_exec(char* state)
 
                 D_800EB9B0 = 0;
 
-                func_80108518(2);
+                _renderAshley(2);
             }
         }
         break;
@@ -3903,7 +3926,7 @@ int vs_menu3_exec(char* state)
             }
 
             _itemCategoryIconsEnabled = 1;
-            _hideSecondaryTitle = 0;
+            _selectedItemCategoryIconOnTop = 0;
             _statusCommandState = 1;
 
             _itemsTopLevelHandler(1);
@@ -3915,7 +3938,7 @@ int vs_menu3_exec(char* state)
 
     case 7:
         if (vs_mainmenu_ready()) {
-            func_80108518(2);
+            _renderAshley(2);
 
             *state = 8;
             temp_a1 = vs_battle_menuState.currentState;
@@ -3943,9 +3966,9 @@ int vs_menu3_exec(char* state)
             _secondaryTitleAnimationStep = 0;
             _itemCategoryIconsAnimationStep = 0;
             _statusCommandAnimationStep = 0;
-            _hideSecondaryTitle = 0;
+            _selectedItemCategoryIconOnTop = 0;
 
-            func_80108518(1);
+            _renderAshley(1);
             _itemsTopLevelHandler(1);
 
             *state = itemsTop;
@@ -3972,7 +3995,7 @@ int vs_menu3_exec(char* state)
 
         D_800EB9B0 = 0;
 
-        func_80108518(2);
+        _renderAshley(2);
 
         D_80109710 = 10;
         *state = 11;
@@ -4034,7 +4057,7 @@ int vs_menu3_exec(char* state)
         row = (10 - _secondaryTitleAnimationStep) << 5;
     }
 
-    if ((_secondaryTitleAnimationStep != 0) && (_hideSecondaryTitle == 0)) {
+    if ((_secondaryTitleAnimationStep != 0) && (_selectedItemCategoryIconOnTop == 0)) {
         vs_battle_menuItem_t* menuitem;
 
         category = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
@@ -4049,7 +4072,7 @@ int vs_menu3_exec(char* state)
         }
     }
 
-    func_80108518(0);
+    _renderAshley(0);
 
     if (_itemCategoryIconsEnabled) {
         if (_itemCategoryIconsAnimationStep < 4) {
@@ -4059,7 +4082,8 @@ int vs_menu3_exec(char* state)
         --_itemCategoryIconsAnimationStep;
     }
 
-    _animateItemCategoryBar(_itemCategoryIconsAnimationStep, _hideSecondaryTitle);
+    _animateItemCategoryBar(
+        _itemCategoryIconsAnimationStep, _selectedItemCategoryIconOnTop);
 
     if (_statusCommandState) {
         if (_statusCommandAnimationStep < 10) {

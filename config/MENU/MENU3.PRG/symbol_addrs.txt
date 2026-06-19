@@ -37,6 +37,7 @@ _equipShieldMenu = 0x80107620;
 _equipArmorMenu = 0x80107B14;
 _dispatchEquipMenu = 0x80108010;
 _equipMenu = 0x80108088;
+_renderAshley = 0x80108518;
 vs_menu3_exec = 0x80108970;
 _loadObjectData = 0x801090C4;
 _populateDataSlot = 0x80109344;

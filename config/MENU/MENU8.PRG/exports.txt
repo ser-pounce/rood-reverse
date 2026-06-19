@@ -1,1 +1,2 @@
 vs_menu8_exec
+vs_menu8_execRename

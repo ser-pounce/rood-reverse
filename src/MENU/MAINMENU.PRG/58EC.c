@@ -833,25 +833,34 @@ void func_80100A5C(void)
     vs_battle_menuItem_t* menuItem;
 
     if (_subMenuRowCount == 0) {
+
         if (D_801023D4 != NULL) {
             vs_main_freeHeapR(D_801023D4);
             D_801023D4 = NULL;
         }
+
         _selectedRow = -2;
         return;
     }
+
     if (D_801023D0 < 0xAU) {
+
         menuItem = func_801008F0(D_801023D0, 0x140);
+
         menuItem->state = 2;
         ++D_801023D0;
         menuItem->targetPosition0 = 0xC2 - _menuRowYOffset;
+
         if (D_801023D0 == _subMenuRowCount) {
             D_801023D0 = 0x10;
         }
+
         if (D_801023D0 == (0xA - _subMenuRowInfo)) {
+
             if ((D_801023D0 + _subMenuPage) < _subMenuRowCount) {
                 menuItem->fadeEffect = 2;
             }
+
             D_801023D0 = 0x10;
         }
     } else {
@@ -862,46 +871,61 @@ void func_80100A5C(void)
 
         switch (D_801023D0) {
         case 16:
-            if (vs_mainmenu_ready() != 0) {
+            if (vs_mainmenu_ready()) {
                 D_801023D0 = 0x11;
-                return;
             }
             return;
+
         case 17:
             temp_s6 = _selectedRow + _subMenuPage;
             temp_s5 = _subMenuPage;
+
             if (vs_main_buttonsPressed.all & 0x10) {
                 vs_battle_playMenuLeaveSfx();
                 vs_main_freeHeapR(D_801023D4);
+
                 D_801023D4 = NULL;
                 D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
                 D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                 _selectedRow = -3;
+
                 return;
             }
+
             if (vs_main_buttonsPressed.all & 0x20) {
                 if (menuItem->unselectable == 0) {
+
                     menuItem->selected = 1;
+
                     vs_battle_playMenuSelectSfx();
                     vs_main_freeHeapR(D_801023D4);
+
                     D_801023D4 = NULL;
                     D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
                     D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                     _selectedRow = temp_s6;
+
                     return;
                 }
+
                 vs_battle_playInvalidSfx();
             }
+
             menuItem->selected = 0;
+
             if (vs_main_buttonsPressed.all & 0x40) {
+
                 vs_battle_playMenuLeaveSfx();
                 vs_main_freeHeapR(D_801023D4);
+
                 D_801023D4 = NULL;
                 D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
                 D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
                 _selectedRow = -2;
+
                 return;
             }
+
             if (vs_main_buttonRepeat & 0x1000) {
                 if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
                     if (_selectedRow == 0) {
@@ -924,6 +948,7 @@ void func_80100A5C(void)
                     --_selectedRow;
                 }
             }
+
             if (vs_main_buttonRepeat & 0x4000) {
                 if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
                     if (_selectedRow == (_subMenuRowCount - 1)) {
@@ -946,7 +971,9 @@ void func_80100A5C(void)
                     ++_selectedRow;
                 }
             }
+
             if (temp_s6 != (_selectedRow + _subMenuPage)) {
+
                 vs_battle_playMenuChangeSfx();
 
                 if (_subMenuPage != temp_s5) {
@@ -982,7 +1009,9 @@ void func_80100A5C(void)
                     }
                 }
             }
+
             vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 0xA))->selected = 1;
+
             D_801023E2 = func_800FFCDC((u_int)D_801023E2,
                 (0xB4 - _menuRowYOffset)
                     | ((((_selectedRow + _subMenuRowInfo) * 0x10) + 0xA) << 0x10));

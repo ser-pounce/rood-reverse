@@ -24,6 +24,16 @@
 #include <abs.h>
 
 typedef struct {
+    /* 0x0 */ u_long* unk0;
+    /* 0x4 */ u_char unk4;
+    /* 0x5 */ u_char unk5;
+    /* 0x6 */ short unk6;
+} func_800D5780_t;
+
+void func_800D5700(func_800D5780_t*);
+void func_800D5738(func_800D5780_t*);
+
+typedef struct {
     u_short unk0;
     char unk2;
     char unk3;
@@ -3612,7 +3622,22 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5700);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5738);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5780);
+int func_800D5780(func_800D5780_t* arg0)
+{
+    if (arg0->unk6 + 1 >= arg0->unk5) {
+        return 0;
+    }
+    arg0->unk6++;
+    switch (arg0->unk4) {
+    case 1:
+        func_800D5700(arg0);
+        break;
+    case 0xD:
+        func_800D5738(arg0);
+        break;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D57FC);
 

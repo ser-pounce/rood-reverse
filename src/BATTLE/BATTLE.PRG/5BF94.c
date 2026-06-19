@@ -3587,7 +3587,12 @@ int func_800D5150(D_800F53B8_t* arg0 __attribute__((unused)))
 
 u_char func_800D5170(D_800F53B8_t* arg0) { return arg0->unkC[arg0->unkA++]; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5198);
+u_short func_800D5198(D_800F53B8_t* arg0)
+{
+    u_char lo = func_800D5170(arg0);
+    u_char hi = func_800D5170(arg0);
+    return lo | (hi << 8);
+}
 
 int func_800D51D8(D_800F53B8_t* arg0)
 {

@@ -154,7 +154,9 @@ typedef struct {
     int unk38;
     u_short unk3C;
     u_short unk3E;
-    int unk40[6];
+    u_short unk40;
+    u_short unk42;
+    int unk44[5];
     D_800F4538_unk58_2 unk58;
     u_char unk5C;
     u_char unk5D;

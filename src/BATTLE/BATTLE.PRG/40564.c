@@ -115,7 +115,44 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA850);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA8D0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA984);
+void func_800AA984(int arg0, short arg1, int arg2)
+{
+    D_800F4538_t* a;
+    int m;
+    int speed;
+    short sum;
+
+    a = D_800F4538[arg0];
+    if (a != NULL) {
+        m = arg1;
+        a->unk0.unk3E = m;
+        a->unk0.unk3C = 0;
+        a->unk0.unk40 = 0;
+        if (arg2 == 0) {
+            a->unk0.unk18 = 0;
+        recenter:
+            sum = (u_short)a->unk0.unk26 + a->unk0.unk3E;
+            a->unk0.unk26 = sum;
+            a->unk0.unk26 = sum % 4096;
+            return;
+        }
+        if (arg2 == -1) {
+            if (m < 0) {
+                m = -m;
+            }
+            speed = m * a->unk5C0;
+            a->unk0.unk18 = speed / 4096;
+            if (speed & 0xFFF) {
+                a->unk0.unk18 = (speed / 4096) + 1;
+            }
+            if (a->unk0.unk18 == 0) {
+                goto recenter;
+            }
+            return;
+        }
+        a->unk0.unk18 = arg2;
+    }
+}
 
 void func_800AAA68(void) { func_800AAA88(); }
 

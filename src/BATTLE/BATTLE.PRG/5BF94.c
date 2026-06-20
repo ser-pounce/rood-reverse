@@ -3361,7 +3361,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2888);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2904);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2970);
+void func_800D2970(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+{
+    arg2->vx = arg0->vx + arg1->vx;
+    arg2->vy = arg0->vy + arg1->vy;
+    arg2->vz = arg0->vz + arg1->vz;
+}
 
 void _addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2)
 {
@@ -3630,7 +3635,11 @@ void* func_800D5550(u_short* arg0, int arg1)
     return (char*)arg0 + v[2];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5564);
+void* func_800D5564(u_short* arg0, int arg1, int arg2)
+{
+    u_short* v = (u_short*)func_800D5550(arg0, arg1) + arg2 * 2;
+    return (char*)arg0 + v[3];
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D55A4);
 

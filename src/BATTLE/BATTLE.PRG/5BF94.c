@@ -1750,7 +1750,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
 int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
 {
     int i;
-    int temp_v1 = (u_int)arg0->unk948 >> 5;
+    int temp_v1 = (u_int)arg0->statuses >> 5;
     int var_a2 = temp_v1 & 0xFFFF;
     temp_v1 >>= 16;
 
@@ -1981,11 +1981,11 @@ int func_800CABE0(int arg0)
         ret |= 0x40;
     }
 
-    if (actor->unk948 & 0x1001) {
+    if (actor->statuses & (vsBattleStatusRegen | vsBattleStatusStrDown)) {
         ret |= 0x80;
     }
 
-    if (actor->unk948 & 0x2000) {
+    if (actor->statuses & vsBattleStatusWard) {
         ret |= 0x100;
     }
 

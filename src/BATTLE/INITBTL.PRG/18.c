@@ -130,7 +130,7 @@ void func_800F9AD8(void)
     temp_s0->risk = s1->risk;
     temp_s0->unk954 = s1->flags;
 
-    func_80086FA8(s1->unk1C, temp_s0);
+    func_80086FA8(s1->statuses, temp_s0);
 
     for (i = 0; i < 8; ++i) {
         temp_s0->unk94C[i] = s1->unk20[i];

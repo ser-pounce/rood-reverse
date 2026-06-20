@@ -768,32 +768,40 @@ static void func_80103AC8(void)
     _drawStatBar(i | 2, actor->risk, 100, temp_s2 | 10);
 }
 
-static void _drawStatusIndicator(int colorIndex, int xy, int arg2)
+/**
+ * Status represented as a colored square.
+ *
+ * @param subdued Final color shifted right by this amount, in practice either 0 or 1.
+ */
+void _drawStatusIndicator(int colorIndex, int xy, int subdued)
 {
     u_int color;
-    u_long* temp_a0;
+    u_long* prim;
     u_long* temp_t1;
 
     temp_t1 = D_1F800000[2];
-    temp_a0 = D_1F800000[0];
-    color = D_800EBC54[colorIndex] >> arg2;
-    temp_a0[0] = (*temp_t1 & 0xFFFFFF) | 0x06000000;
-    temp_a0[1] = color | (primTile << 24);
-    temp_a0[2] = xy;
-    temp_a0[3] = vs_getWH(7, 7);
-    temp_a0[4] = (color * 2) | (primTile << 24);
-    temp_a0[5] = xy + vs_getXY(1, 1);
-    temp_a0[6] = vs_getWH(5, 5);
-    *temp_t1 = ((u_long)temp_a0 << 8) >> 8;
-    D_1F800000[0] = temp_a0 + 7;
+    prim = D_1F800000[0];
+    color = D_800EBC54[colorIndex] >> subdued;
+    prim[0] = (*temp_t1 & 0xFFFFFF) | 0x06000000;
+    prim[1] = color | (primTile << 24);
+    prim[2] = xy;
+    prim[3] = vs_getWH(7, 7);
+    prim[4] = (color * 2) | (primTile << 24);
+    prim[5] = xy + vs_getXY(1, 1);
+    prim[6] = vs_getWH(5, 5);
+    *temp_t1 = ((u_long)prim << 8) >> 8;
+    D_1F800000[0] = prim + 7;
 }
 
+/**
+ * Draws the lines extending from the model to the limb name.
+ */
 static void _drawLimbLeaderLine(
     int limb, int xy, int arg2 __attribute__((unused)), int opaque)
 {
     int temp_t2;
     int temp_v0;
-    u_long* temp_a2;
+    u_long* prim;
     u_long* temp_t0;
     int x;
 
@@ -801,7 +809,7 @@ static void _drawLimbLeaderLine(
     temp_t2 = limb * 16 + 42;
     limb = ((xy >> 16) - temp_t2);
 
-    temp_a2 = D_1F800000[0];
+    prim = D_1F800000[0];
     temp_t0 = D_1F800000[1];
 
     x = (short)xy;
@@ -812,19 +820,19 @@ static void _drawLimbLeaderLine(
 
     limb = (limb * 3) >> 1;
 
-    temp_a2[0] = (temp_t0[-1] & 0xFFFFFF) | 0x08000000;
-    temp_a2[1] = 0xE1000000;
-    temp_a2[2] = opaque;
-    temp_a2[3] = xy;
+    prim[0] = (temp_t0[-1] & 0xFFFFFF) | 0x08000000;
+    prim[1] = 0xE1000000;
+    prim[2] = opaque;
+    prim[3] = xy;
     temp_v0 = ((x + ((limb * 2) / 3)) & 0xFFFF) | (temp_t2 << 0x10);
-    temp_a2[4] = temp_v0;
-    temp_a2[5] = (temp_t0[-1] & 0xFFFFFF) | 0x03000000;
-    temp_a2[6] = opaque;
-    temp_a2[7] = temp_v0;
-    temp_a2[8] = (temp_t2 << 0x10) | 216;
-    temp_t0[-1] = (((u_long)temp_a2 << 8) >> 8);
-    temp_a2 += 9;
-    D_1F800000[0] = temp_a2;
+    prim[4] = temp_v0;
+    prim[5] = (temp_t0[-1] & 0xFFFFFF) | 0x03000000;
+    prim[6] = opaque;
+    prim[7] = temp_v0;
+    prim[8] = (temp_t2 << 0x10) | 216;
+    temp_t0[-1] = (((u_long)prim << 8) >> 8);
+    prim += 9;
+    D_1F800000[0] = prim;
 }
 
 /**
@@ -833,39 +841,37 @@ static void _drawLimbLeaderLine(
  */
 static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
 {
-    int temp_a0;
-    int y;
-    int temp_s2;
-    u_int flags;
-    int temp_v1;
     int i;
-    int var_s3;
 
-    flags = vs_battle_getStatusFlags(actor);
-    var_s3 = 0;
+    u_int flags = vs_battle_getStatusFlags(actor);
+    int statusCount = 0;
 
     for (i = 0; i < 32; ++i) {
 
-        temp_a0 = var_s3 & 7;
+        int column = statusCount & 7;
 
         if ((flags >> i) & 1) {
+            int x;
+            int y;
             int new_var = 16;
-            temp_v1 = var_s3 >> 3;
-            ++var_s3;
-            temp_a0 *= 16;
-            temp_s2 = temp_a0 - (animationStep - new_var);
-            y = ((temp_v1 * new_var) + 144) << new_var;
+            int row = statusCount >> 3;
+            ++statusCount;
+            column *= 16;
+            x = column - (animationStep - new_var);
+            y = ((row * new_var) + 144) << new_var;
 
             if (i >= new_var) {
-                vs_battle_setSpriteDefaultTexPage(128, ((temp_s2 + 8) & 0xFFFF) | y,
-                    vs_getWH(8, 8), D_1F800000[1] - 2)[4] =
+                // Effect up / down arrow
+                vs_battle_setSpriteDefaultTexPage(
+                    128, ((x + 8) & 0xFFFF) | y, vs_getWH(8, 8), D_1F800000[1] - 2)[4] =
                     ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
             }
 
             // Nasty match hack
             actor = (vs_battle_actor2*)vs_battle_setSpriteDefaultTexPage(
-                0x80, (temp_s2 & 0xFFFF) | y, vs_getWH(16, 16), D_1F800000[1] - 2);
+                0x80, (x & 0xFFFF) | y, vs_getWH(16, 16), D_1F800000[1] - 2);
 
+            // 0x0F0F906A = Flags for toggling the icon palette
             ((u_long*)actor)[4] =
                 (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
         }
@@ -1125,9 +1131,9 @@ static int _renderLimbUi(int init)
             limbStatus = vs_battle_getLimbStatus(limb);
 
             _drawStatusIndicator(limbStatus,
-                (vs_battle_rowAnimationSteps[step] + 216) | ((36 + i * 16) << 16), NULL);
+                (vs_battle_rowAnimationSteps[step] + 216) | ((36 + i * 16) << 16), 0);
             vs_battle_renderTextRaw(_limbStatuses[limbStatus],
-                (vs_battle_rowAnimationSteps[step] + 224) | ((34 + i * 16) << 16), NULL);
+                (vs_battle_rowAnimationSteps[step] + 224) | ((34 + i * 16) << 16), 0);
 
             if (step < 8) {
                 func_800A13EC(1, limb->unk5, lineXy, 0);

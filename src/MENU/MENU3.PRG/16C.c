@@ -1867,7 +1867,7 @@ loop_1:
                 rowTypes[i] = vs_main_stateFlags.introState < 3;
             }
 
-            if (vs_battle_characterState->unk3C->unk948 & 0x80000) {
+            if (vs_battle_characterState->unk3C->statuses & 0x80000) {
                 for (i = 0; i < 2; ++i) {
                     menuText[i * 2 + 1] =
                         (char*)&_menuText[VS_menuText_OFFSET_equipmentTarnished];

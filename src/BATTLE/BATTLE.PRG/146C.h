@@ -461,6 +461,61 @@ typedef struct {
     u_char unk3;
 } vs_battle_actor2_flags;
 
+/*
+Flags for statuses
+0x00000020 str down
+0x00000040 str up
+0x00000080 int down
+0x00000100 int up
+0x00000200 agi down
+0x00000400 agi up
+0x00000800 quicken
+0x00001000 silent
+0x00002000 paralysis
+0x00004000 poison
+0x00008000 numbness
+0x00010000 curse
+0x00020000 Regenaration
+0x00040000 magic ward
+0x00080000 equip down
+0x00100000 equip up
+0x00200000 air atk up
+0x00400000 fire atk up
+0x00800000 earth atk up
+0x01000000 water atk up
+0x02000000 air def up
+0x04000000 fire def up
+0x08000000 earth def up
+0x10000000 water def up
+*/
+
+enum vs_battle_statuses {
+    vsBattleStatusStrDown = 1 << 0,
+    vsBattleStatusStrUp = 1 << 1,
+    vsBattleStatusIntDown = 1 << 2,
+    vsBattleStatusIntUp = 1 << 3,
+    vsBattleStatusAgiDown = 1 << 4,
+    vsBattleStatusAgiUp = 1 << 5,
+    vsBattleStatusQuicken = 1 << 6,
+    vsBattleStatusSilent = 1 << 7,
+    vsBattleStatusParalysis = 1 << 8,
+    vsBattleStatusPoison = 1 << 9,
+    vsBattleStatusNumbness = 1 << 10,
+    vsBattleStatusCurse = 1 << 11,
+    vsBattleStatusRegen = 1 << 12,
+    vsBattleStatusWard = 1 << 13,
+    vsBattleStatusEquDown = 1 << 14,
+    vsBattleStatusEquUp = 1 << 15,
+    vsBattleStatusAirAtkUp = 1 << 16,
+    vsBattleStatusFireAtkUp = 1 << 17,
+    vsBattleStatusEarthAtkUp = 1 << 18,
+    vsBattleStatusWaterAtkUp = 1 << 19,
+    vsBattleStatusAirDefUp = 1 << 20,
+    vsBattleStatusFireDefUp = 1 << 21,
+    vsBattleStatusEarthDefUp = 1 << 22,
+    vsBattleStatusWaterDefUp = 1 << 23
+};
+
 typedef struct {
     char name[24];
     short currentHP;
@@ -497,7 +552,7 @@ typedef struct {
     vs_battle_actor_unk8C0 armor[6][4];
     char unk920[6][6];
     int unk944;
-    int unk948;
+    int statuses;
     u_char unk94C[8];
     u_short unk954;
     u_char unk956_0 : 1;

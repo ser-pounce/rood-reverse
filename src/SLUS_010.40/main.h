@@ -198,7 +198,7 @@ typedef struct {
     short totalAgility;
     short risk;
     u_short flags;
-    int unk1C;
+    int statuses;
     char unk20[8];
     D_80060068_t2 limbs[6];
     int unk7C;

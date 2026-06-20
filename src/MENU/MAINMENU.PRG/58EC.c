@@ -814,7 +814,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
     } else if (arg0 <= 102) {
         menuItem->itemState = arg0 - 100;
     } else {
-        menuItem->subText = vs_battle_hitlocations[arg0 - 103];
+        menuItem->subText = vs_battle_limbNames[arg0 - 103];
     }
     menuItem->material = (temp_a1 >> 0x10) & 7;
     menuItem->unk12 = (temp_a1 >> 0x13) & 0x7F;

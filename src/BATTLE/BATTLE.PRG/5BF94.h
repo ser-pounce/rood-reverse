@@ -244,6 +244,12 @@ int func_800C930C(int);
 void func_800C97BC(void);
 int vs_battle_renderValue(int, int, int, u_long*);
 void vs_battle_drawStatBar(int, int, u_long*, int);
+
+/**
+ * Retrieves the status effects currently applied.
+ *
+ * @return Packed bits.
+ */
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb*);
 void func_800CAB40(void);
@@ -307,7 +313,7 @@ void func_800CF920(void);
 int vs_battle_getTextLineLength(char* str);
 
 extern u_short vs_battle_menuStrings[];
-extern char* vs_battle_hitlocations[];
+extern char* vs_battle_limbNames[];
 extern char vs_battle_characterWidths[];
 extern u_short vs_battle_statusStrings[];
 extern char D_800EB9AE;

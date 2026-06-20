@@ -2774,8 +2774,10 @@ int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
 int func_800A13EC(int arg0, int arg1, int* arg2, int arg3)
 {
     int var_v0 = func_800A141C(arg0, arg1, arg2, arg3);
+
     if (var_v0 < 0) {
         return var_v0;
     }
+
     return 0;
 }

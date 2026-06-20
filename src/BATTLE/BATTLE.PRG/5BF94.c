@@ -1752,11 +1752,11 @@ int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
     int i;
     int temp_v1 = (u_int)arg0->unk948 >> 5;
     int var_a2 = temp_v1 & 0xFFFF;
-    temp_v1 >>= 0x10;
+    temp_v1 >>= 16;
 
     for (i = 0; i < 8; ++i) {
         if ((temp_v1 >> i) & 1) {
-            var_a2 |= D_800EBC68[i] << 0x10;
+            var_a2 |= D_800EBC68[i] << 16;
         }
     }
 

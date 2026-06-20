@@ -28,10 +28,14 @@ typedef struct {
     /* 0x4 */ u_char unk4;
     /* 0x5 */ u_char unk5;
     /* 0x6 */ short unk6;
+    /* 0x8 */ char unk8[2];
+    /* 0xA */ short unkA;
+    /* 0xC */ int unkC;
 } func_800D5780_t;
 
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
+int func_800D12D8(int);
 
 typedef struct {
     u_short unk0;
@@ -3630,9 +3634,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5564);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D55A4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5700);
+void func_800D5700(func_800D5780_t* arg0)
+{
+    u_long* base = arg0->unk0;
+    arg0->unkC = (base[arg0->unk6] >> 20) & 0x3F;
+    arg0->unkA = ((u_char*)&base[arg0->unk6])[1];
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5738);
+void func_800D5738(func_800D5780_t* arg0)
+{
+    arg0->unkA = func_800D12D8((arg0->unk0[arg0->unk6 * 2 + 1] >> 4) & 0x1F);
+}
 
 int func_800D5780(func_800D5780_t* arg0)
 {

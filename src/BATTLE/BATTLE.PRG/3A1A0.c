@@ -9,6 +9,15 @@ void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(u_char, u_char, short, u_int);
+short func_8008DC7C(int, int);
+short func_8008DA24(int, int);
+u_int* func_800A8D64(SVECTOR*, int);
+int func_800B13CC(int, int, int);
+int func_800A92B8(int, int);
+int func_800A9378(int, int, int, int);
+
+extern u_int* D_800F49F0;
+extern u_char D_800E9278[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
 
@@ -118,7 +127,70 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A69B4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6AA0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6EE8);
+int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
+{
+    SVECTOR sp;
+    u_int* ent;
+    int x;
+    int z;
+    int h;
+    int r;
+    int los;
+
+    x = arg1 + arg0->vx;
+    z = arg2 + arg0->vz;
+    sp.vx = x;
+    sp.vz = z;
+    ent = func_800A8D64(&sp, 0);
+    if (ent != NULL) {
+        D_800F49F0 = ent;
+        if (arg3 == 0) {
+            h = func_8008DC7C(x, z);
+        } else {
+            h = func_8008DA24(x, z);
+        }
+        if (h >= 0) {
+            h <<= 17;
+            h >>= 17;
+            if (arg3 == 2) {
+                r = func_800B13CC(x / 128, z / 128, arg0->vy);
+            } else {
+                r = func_800A92B8(x / 128, z / 128);
+            }
+            if (r != 0) {
+                h = r;
+            }
+            if ((*ent >> 17) & 1) {
+                if (h >= 0) {
+                    h = 0xBB8;
+                    if (arg3 == 3) {
+                        los = D_800E9278[*ent & 0x1F];
+                        if (los == 0x14) {
+                            h = 0;
+                        }
+                    }
+                }
+            }
+            if (arg3 != 2 && arg3 != 4) {
+                los = func_800A9378(x, arg0->vy, z, 0);
+                r = h;
+                if (los != 0) {
+                    if (los < h) {
+                        h = los;
+                    }
+                }
+                if (arg3 == 3 && h < arg0->vy - 0x40) {
+                    h = r;
+                }
+            }
+            return h;
+        }
+    }
+    if (arg3 == 3) {
+        return arg0->vy;
+    }
+    return -0xBB8;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
 

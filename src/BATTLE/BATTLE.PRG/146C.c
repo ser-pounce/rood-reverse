@@ -2108,7 +2108,8 @@ void func_8006CDB8(int arg0) { func_8009D854(arg0); }
 
 void func_8006CDD8(func_8006CE70_t* arg0)
 {
-    _mpdRoomSection9* temp_v0 = func_8008D438(arg0->unk0 / 128, arg0->unk4 / 128, 0);
+    _mpdRoomSection9* temp_v0 =
+        func_8008D438((short)arg0->unk0 / 128, arg0->unk4 / 128, 0);
     if (temp_v0 != NULL) {
         func_8008DEAC(temp_v0, 1);
         func_800E68EC(temp_v0->unk0, temp_v0->unk2);

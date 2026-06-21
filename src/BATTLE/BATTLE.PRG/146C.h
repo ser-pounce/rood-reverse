@@ -927,10 +927,9 @@ typedef struct func_800D4910_t {
 } func_800D4910_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
+    int unk0;
     short unk4;
-    u_short unk6;
+    short unk6;
 } func_8006CE70_t;
 
 void func_80069C6C(int);

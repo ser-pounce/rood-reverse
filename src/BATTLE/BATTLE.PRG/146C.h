@@ -556,7 +556,7 @@ typedef struct {
     u_char unk94C[8];
     u_short unk954;
     u_char unk956_0 : 1;
-    u_char unk956_1 : 1;
+    u_char isAnalyzed : 1;
     u_char unk956_2 : 6;
     u_char unk957;
     vs_battle_uiMisc miscItem;

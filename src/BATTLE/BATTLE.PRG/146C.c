@@ -4500,7 +4500,7 @@ void func_80076784(
     actor->unk35 = init->unk31;
     actor->unk36 = init->unk32;
     actor->unk956_0 = 0;
-    actor->unk956_1 = 0;
+    actor->isAnalyzed = 0;
     vs_battle_applyWeaponStats(&actor->weapon, &init->weapon);
     actor->currentRange = actor->weapon.range.range + actor->reach;
     actor->unk39 = actor->weapon.range.unk1 + actor->reach;
@@ -8377,7 +8377,7 @@ int func_80083D7C(vs_skill_t* arg0 __attribute__((unused)),
 {
     func_80081020(0x1D, arg2);
     if (arg4 != 0) {
-        vs_battle_actors[arg2->actorId]->unk3C->unk956_1 = 1;
+        vs_battle_actors[arg2->actorId]->unk3C->isAnalyzed = 1;
     }
 }
 

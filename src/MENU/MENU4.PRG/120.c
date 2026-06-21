@@ -683,12 +683,15 @@ static void _drawStatBar(int index, int current, int max, int xy)
         index & 0xFF, ((current + max) - 1) / max, D_1F800000[1] - 3, xy);
 }
 
-static void func_80103AC8(void)
+/**
+ * Renders HP / MP / Risk stats of current actor.
+ */
+static void _renderBasicStats(void)
 {
     int i;
-    int temp_s2;
+    int y;
     vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
-    u_long* temp_s4 = D_1F800000[1] - 3;
+    u_long* insertBefore = D_1F800000[1] - 3;
 
     switch (D_801080B8) {
     case 0:
@@ -696,7 +699,9 @@ static void func_80103AC8(void)
     case 1:
         if (D_801080B9 == 0) {
             if (D_801080BA == 0) {
+
                 func_800CB654(0);
+
                 D_801080B8 = 0;
             } else {
                 --D_801080BA;
@@ -706,6 +711,7 @@ static void func_80103AC8(void)
             actor = vs_battle_actors[D_801080A4 - 1]->unk3C;
         }
         break;
+
     case 2:
         if (D_801080B9 != 0) {
             --D_801080B9;
@@ -716,6 +722,7 @@ static void func_80103AC8(void)
             --D_801080BA;
         }
         break;
+
     case 3:
         if (D_801080B9 < 4) {
             ++D_801080B9;
@@ -723,6 +730,7 @@ static void func_80103AC8(void)
             D_801080B8 = 0;
         }
         break;
+
     case 4:
         if (D_800EB9B0 == 0x200000) {
             if (D_801080BA == 0) {
@@ -733,39 +741,51 @@ static void func_80103AC8(void)
         }
         break;
     }
+
     if (D_801080B9 == 0) {
         return;
     }
 
-    temp_s2 = ((D_801080B9 * 8) - 0x16) << 0x10;
-    if (actor->unk956_1) {
-        i = vs_battle_renderValue(0, temp_s2 | 66, actor->maxHP, temp_s4);
-        vs_battle_renderValue(2, i, 0, temp_s4);
-        vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, temp_s4);
-        i = vs_battle_renderValue(0, temp_s2 | 136, actor->maxMP, temp_s4);
-        vs_battle_renderValue(2, i, 0, temp_s4);
-        vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentMP, temp_s4);
-        temp_s2 += 0xF0000;
-        vs_battle_renderValue(1, temp_s2 | 64, actor->risk, temp_s4);
-        temp_s2 += 0x10000;
+    y = ((D_801080B9 * 8) - 22) << 16;
+
+    if (actor->isAnalyzed) {
+
+        i = vs_battle_renderValue(0, y | 66, actor->maxHP, insertBefore);
+        vs_battle_renderValue(2, i, 0, insertBefore);
+        vs_battle_renderValue(1, i + 0xFFFEFFF9, actor->currentHP, insertBefore);
+
+        i = vs_battle_renderValue(0, y | 136, actor->maxMP, insertBefore);
+        vs_battle_renderValue(2, i, 0, insertBefore);
+        vs_battle_renderValue(1, i + vs_getXY(-7, -2), actor->currentMP, insertBefore);
+
+        y += 15 << 16;
+
+        vs_battle_renderValue(1, y | 64, actor->risk, insertBefore);
+
+        y += 1 << 16;
     } else {
-        _renderUnknownValue(temp_s2 | 66, 1, temp_s4);
-        _renderUnknownValue(temp_s2 | 136, 1, temp_s4);
-        temp_s2 += 0x100000;
-        _renderUnknownValue(temp_s2 | 64, 0, temp_s4);
+        _renderUnknownValue(y | 66, 1, insertBefore);
+        _renderUnknownValue(y | 136, 1, insertBefore);
+
+        y += 16 << 16;
+
+        _renderUnknownValue(y | 64, 0, insertBefore);
     }
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSpriteDefaultTexPage(0x180,
-            D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13), D_800EBBFC[i] | 0x90000,
-            temp_s4)[4] = D_800EBC00[i] | 0x37F60000;
+        vs_battle_setSpriteDefaultTexPage(384, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
+            D_800EBBFC[i] | 0x90000, insertBefore)[4] = D_800EBC00[i] | 0x37F60000;
     }
-    temp_s2 += 0xFFF80000;
-    i = actor->unk956_1 * 256;
-    _drawStatBar(i, actor->currentHP, actor->maxHP, temp_s2 | 10);
-    _drawStatBar(i | 1, actor->currentMP, actor->maxMP, temp_s2 | 80);
-    temp_s2 += 0x40000;
-    _drawStatBar(i | 2, actor->risk, 100, temp_s2 | 10);
+
+    y += -8 << 16;
+    i = actor->isAnalyzed * 256;
+
+    _drawStatBar(i, actor->currentHP, actor->maxHP, y | 10);
+    _drawStatBar(i | 1, actor->currentMP, actor->maxMP, y | 80);
+
+    y += 4 << 16;
+
+    _drawStatBar(i | 2, actor->risk, 100, y | 10);
 }
 
 /**
@@ -861,19 +881,22 @@ static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
             y = ((row * new_var) + 144) << new_var;
 
             if (i >= new_var) {
-                // Effect up / down arrow
+                // Element indicator
                 vs_battle_setSpriteDefaultTexPage(
                     128, ((x + 8) & 0xFFFF) | y, vs_getWH(8, 8), D_1F800000[1] - 2)[4] =
-                    ((((i & 3) * 8) + 0x3068) | 0x37FF0000);
+                    ((((i & 3) * 8) + 0x3068) | (getClut(1008, 223) << 16));
             }
 
             // Nasty match hack
             actor = (vs_battle_actor2*)vs_battle_setSpriteDefaultTexPage(
-                0x80, (x & 0xFFFF) | y, vs_getWH(16, 16), D_1F800000[1] - 2);
+                128, (x & 0xFFFF) | y, vs_getWH(16, 16), D_1F800000[1] - 2);
 
             // 0x0F0F906A = Flags for toggling the icon palette
             ((u_long*)actor)[4] =
-                (D_800EBC14[i] | (((0x0F0F906A >> i) & 1) ? 0x37F90000 : 0x37F80000));
+                (vs_batle_statusIconTexOffsets[i]
+                    | (((0x0F0F906A >> i) & 1) ? (getClut(912, 223) << 16)
+                                               : (getClut(896, 223) << 16)));
+            // 0x37F90000 : 0x37F80000
         }
     }
 }
@@ -1852,7 +1875,7 @@ static int _equipmentScreen(int element)
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
-        temp_s5 = (temp_s6->unk956_1 == 0) & (_selectedActor != 1); // Disable row
+        temp_s5 = (temp_s6->isAnalyzed == 0) & (_selectedActor != 1); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
         rowTypes[0] |= temp_s5 | new_var;
@@ -2139,7 +2162,7 @@ static void _drawScreen(void)
     _drawMenuBackground();
     _fadeScreenLeft();
     _renderLimbUi(0);
-    func_80103AC8();
+    _renderBasicStats();
 }
 
 /**
@@ -2302,7 +2325,7 @@ int vs_menu4_exec(char* state)
         var_s5 = 0;
 
         if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->unk3C->unk956_1) {
+            || vs_battle_actors[_selectedActor - 1]->unk3C->isAnalyzed) {
             var_s5 = 1;
         }
 
@@ -2512,7 +2535,7 @@ int vs_menu4_exec(char* state)
         var_s5 = 0;
 
         if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->unk3C->unk956_1) {
+            || vs_battle_actors[_selectedActor - 1]->unk3C->isAnalyzed) {
             var_s5 = 1;
         }
 
@@ -2695,7 +2718,7 @@ int vs_menu4_exec(char* state)
         _renderLimbUi(-2);
         _renderLimbUi(0);
         _initEquipmentScreen(0);
-        func_80103AC8();
+        _renderBasicStats();
         vs_battle_setProjectionDistance(D_80108188);
 
         new_var2 = 13;
@@ -2717,7 +2740,7 @@ int vs_menu4_exec(char* state)
 
     case quitToMenu:
         _renderLimbUi(0);
-        func_80103AC8();
+        _renderBasicStats();
         func_800FFB68(0);
         vs_mainMenu_dismissTextBox();
 
@@ -2733,7 +2756,7 @@ int vs_menu4_exec(char* state)
 
     case quitToBattle:
         _renderLimbUi(0);
-        func_80103AC8();
+        _renderBasicStats();
         func_800FFB68(0);
         vs_mainMenu_dismissTextBox();
 

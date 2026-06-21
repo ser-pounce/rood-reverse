@@ -242,7 +242,14 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
 void func_800C9078(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);
-int vs_battle_renderValue(int, int, int, u_long*);
+
+/**
+ * Renders a digit or symbol from the battle digits.
+ *
+ * @param font 0 = small, 1 = large, 2 = symbols
+ * @return int
+ */
+int vs_battle_renderValue(int font, int xy, int value, u_long* before);
 void vs_battle_drawStatBar(int, int, u_long*, int);
 
 /**
@@ -326,7 +333,7 @@ extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];
 extern char D_800EBBFC[];
 extern char D_800EBC00[];
-extern u_short D_800EBC14[];
+extern u_short vs_batle_statusIconTexOffsets[];
 extern u_int D_800EBC54[];
 extern char vs_battle_animationIndices[];
 extern char vs_battle_warlockSpellIds[];

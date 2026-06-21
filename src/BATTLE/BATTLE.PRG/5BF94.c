@@ -1614,29 +1614,31 @@ void func_800C97BC(void)
     }
 }
 
-void _renderDigit(int arg0, int xy, int digit, u_long* prim)
+void _renderDigit(int font, int xy, int digit, u_long* before)
 {
     u_long* temp_v0 = vs_battle_setSpriteDefaultTexPage(
-        0x80, xy + ((arg0 & 2) << 0x10), (0x05CA0576 >> (arg0 * 4)) & 0xF000F, prim);
+        128, xy + ((font & 2) << 0x10), (0x05CA0576 >> (font * 4)) & 0xF000F, before);
+
     temp_v0[4] = 0x37F40B20;
-    if (arg0 != 2) {
-        ((short*)temp_v0)[8] = ((((digit * 2) + 0x40) * (arg0 + 3)) - 0xC0);
+
+    if (font != 2) {
+        ((short*)temp_v0)[8] = ((((digit * 2) + 64) * (font + 3)) - 192);
     }
 }
 
-int vs_battle_renderValue(int arg0, int xy, int value, u_long* prim)
+int vs_battle_renderValue(int font, int xy, int value, u_long* before)
 {
     int new_var;
 
-    if (prim == NULL) {
-        prim = D_1F800000[1] - 4;
+    if (before == NULL) {
+        before = D_1F800000[1] - 4;
     }
 
     do {
         value = vs_battle_toBCD(value);
-        _renderDigit(arg0, xy, value & 0xF, prim);
+        _renderDigit(font, xy, value & 0xF, before);
         new_var = xy - 5;
-        xy = new_var - arg0;
+        xy = new_var - font;
         value >>= 4;
     } while (value != 0);
 
@@ -1709,7 +1711,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
 
     if ((arg0 != 0xFF) && (D_800EB9B0 == 0)) {
 
-        var_s2 = D_800EBC14[arg0];
+        var_s2 = vs_batle_statusIconTexOffsets[arg0];
         arg2 = (arg2 * 0x10) + 0xA0;
 
         if (arg1 < 0) {

@@ -2067,7 +2067,7 @@ int func_8006C84C(int arg0)
     return 1;
 }
 
-void func_8006CA20(int arg0)
+void func_8006CA20(int arg0, func_8006CE70_t* arg1)
 {
     int temp_v1;
     D_800F19CC_t2* temp_s0;

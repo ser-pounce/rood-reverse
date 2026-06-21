@@ -935,6 +935,8 @@ typedef struct {
 
 void func_80069C6C(int);
 void func_8006CDB8(int);
+void func_8006CA20(int, func_8006CE70_t*);
+void func_8006CB04(int, func_8006CE70_t*);
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_battle_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_battle_inventoryGrip*);

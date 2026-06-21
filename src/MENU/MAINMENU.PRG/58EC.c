@@ -803,7 +803,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
     menuItem->backgroundWidth = menuItem->backgroundWidth + ((temp_a1 & 2) * 0xC);
     temp_v1 = (temp_a1 >> 3) & 1;
     menuItem->unkB = temp_v1;
-    menuItem->unkA = temp_v1 | ((temp_a1 >> 2) & 1);
+    menuItem->fontColor = temp_v1 | ((temp_a1 >> 2) & 1);
     menuItem->icon = (temp_a1 >> 0x1A);
     if ((arg0 == 0) && (_subMenuPage != 0)) {
         menuItem->fadeEffect = 1;
@@ -1083,9 +1083,9 @@ int func_80101268(u_int arg0, int arg1, vs_battle_menuItem_t* menuItem, u_long* 
         } while (0);
     }
 
-    i = menuItem->unkA * 16;
+    i = menuItem->fontColor * 16;
 
-    if (menuItem->unkA == 0) {
+    if (menuItem->fontColor == 0) {
         i = menuItem->unselectable * 48;
     }
 

@@ -1100,7 +1100,7 @@ static int _assembleMenu(int arg0)
             menuItem->icon = blade->category;
             menuItem->material = blade->material;
         } else {
-            menuItem->unkA = 1;
+            menuItem->fontColor = 1;
         }
         menuItem = vs_battle_setMenuItem(0xC, 0x147, 0x32, 0x9E, 0,
             gripToAssemble == 0
@@ -1108,12 +1108,12 @@ static int _assembleMenu(int arg0)
                 : vs_mainMenu_itemNames[vs_battle_inventory.grips[gripToAssemble - 1]
                                             .id]);
         menuItem->state = 2;
-        menuItem->unkA = gripToAssemble == 0;
+        menuItem->fontColor = gripToAssemble == 0;
         menuItem->targetPosition0 = 0xA2;
         if (gripToAssemble != 0) {
             menuItem->icon = grip->category + 0xA;
         } else {
-            menuItem->unkA = 1;
+            menuItem->fontColor = 1;
         }
 
         for (i = 0; i < gemSlots; ++i) {
@@ -1126,7 +1126,7 @@ static int _assembleMenu(int arg0)
             if (v != 0) {
                 menuItem->icon = 0x16;
             } else {
-                menuItem->unkA = 1;
+                menuItem->fontColor = 1;
             }
         }
         state = 2;
@@ -1179,7 +1179,7 @@ static int _assembleMenu(int arg0)
                         itemSlot < 3 ? 162 : 169, (itemSlot * 16) + 18, 151, 0,
                         (char*)&vs_mainMenu_menu12Text[itemInfo]);
                     menuItem->selected = 1;
-                    menuItem->unkA = 1;
+                    menuItem->fontColor = 1;
                     _setUiStats(bladeToAssemble, gripToAssemble);
                     break;
                 }
@@ -1450,7 +1450,7 @@ static void _addGemSelector(int arg0 __attribute__((unused)), int arg1)
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
     temp_v0->targetPosition0 = 169;
-    temp_v0->unkA = 1;
+    temp_v0->fontColor = 1;
 }
 
 static int _attachGems(char* gems, int isShield)
@@ -2764,7 +2764,7 @@ static int _combineBladeMenu(int arg0)
             menuItem->state = 2;
             menuItem->targetPosition0 = 169;
             if (var_s1 == 0) {
-                menuItem->unkA = 1;
+                menuItem->fontColor = 1;
             } else {
                 _setBladeMenuItem(menuItem, blade);
             }
@@ -2788,7 +2788,7 @@ static int _combineBladeMenu(int arg0)
                             (temp_v0_2 * 16) + 18, 151, 0,
                             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_blade]);
                         menuItem->selected = 1;
-                        menuItem->unkA = 1;
+                        menuItem->fontColor = 1;
                         var_s1 = _combinedBlade.id;
                         menuItem = _setItemRow(0, var_s1);
                         if (var_s1 != 0) {
@@ -3252,7 +3252,7 @@ static int _combineShieldMenu(int arg0)
             temp_v0->state = 2;
             temp_v0->targetPosition0 = 0xA9;
             if (temp_s1 == 0) {
-                temp_v0->unkA = 1;
+                temp_v0->fontColor = 1;
             } else {
                 _setShieldMenuItem(temp_v0, shield0);
             }
@@ -3277,7 +3277,7 @@ static int _combineShieldMenu(int arg0)
                             (temp_s2 * 0x10) + 0x12, 0x97, 0,
                             (char*)(vs_mainMenu_menu12Text + 0x439));
                         temp_v0->selected = 1;
-                        temp_v0->unkA = 1;
+                        temp_v0->fontColor = 1;
                         var_s1 = D_8010BD14.base.id;
                         temp_v0 = _setItemRow(1, var_s1);
                         if (var_s1 != 0) {
@@ -3731,7 +3731,7 @@ static int _combineArmorMenu(int arg0)
             temp_v0->targetPosition0 = 169;
 
             if (var_s1 == 0) {
-                temp_v0->unkA = 1;
+                temp_v0->fontColor = 1;
             } else {
                 _setArmorMenuItem(temp_v0, armor);
             }
@@ -3756,7 +3756,7 @@ static int _combineArmorMenu(int arg0)
                             (temp_v0_2 * 16) + 18, 151, 0,
                             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_armor]);
                         temp_v0->selected = 1;
-                        temp_v0->unkA = 1;
+                        temp_v0->fontColor = 1;
                         var_s1 = D_8010BD54.id;
                         temp_a0 = _setItemRow(2, var_s1);
                         if (var_s1 != 0) {

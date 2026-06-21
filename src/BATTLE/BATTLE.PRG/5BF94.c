@@ -1496,7 +1496,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
             y = 8;
         }
 
-        var_v0 = arg0->unkA;
+        var_v0 = arg0->fontColor;
 
         if (var_v0 == 0) {
             var_v0 = arg0->unselectable * 3;

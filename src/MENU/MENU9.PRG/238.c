@@ -272,7 +272,7 @@ void func_80102F64(char* arg0)
     temp_v0->state = 2;
     temp_v0->targetPosition0 = 0xB4;
     temp_v0->selected = 1;
-    temp_v0->unkA = 1;
+    temp_v0->fontColor = 1;
 }
 
 void func_80102FB8(void) { vs_mainMenu_clearMenuExcept(8); }
@@ -1471,7 +1471,7 @@ void func_8010579C(int arg0)
         }
         menuItem = vs_battle_setMenuItem(0, row->y, var_s3, 0xC8, 0, row->title);
         if (row->unk1 == 0) {
-            menuItem->unkA = 3;
+            menuItem->fontColor = 3;
         }
         menuItem->animationState = row->animationState;
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
@@ -1681,7 +1681,7 @@ void func_80105F00(int arg0)
         } else {
             menuItem = vs_battle_setMenuItem(
                 0, s6, var_s1, 0xC8, 0, (char*)&_miscInfo[_miscInfo[3]]);
-            menuItem->unkA = 3;
+            menuItem->fontColor = 3;
         }
         menuItem->animationState = enemy->animationState;
         if ((i == 0) && (cursorMem->encyclopaediaPage != 0)) {

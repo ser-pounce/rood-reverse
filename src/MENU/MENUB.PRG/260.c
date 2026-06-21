@@ -2972,7 +2972,7 @@ static void _displayCurrentLoot(int x)
             menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
                 vs_mainMenu_itemNames[misc->id]);
             menuItem->unk10 = misc->count;
-            menuItem->unkA = (misc->id < 0x1CA) ^ 1;
+            menuItem->fontColor = (misc->id < 0x1CA) ^ 1;
             break;
         }
         }

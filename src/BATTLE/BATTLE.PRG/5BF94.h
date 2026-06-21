@@ -45,7 +45,7 @@ typedef struct {
     char unselectable;
     char unk8;
     char icon;
-    char unkA;
+    char fontColor;
     char unkB;
     char material;
     char itemState;

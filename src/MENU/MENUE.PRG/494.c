@@ -125,7 +125,7 @@ void func_80102E48(char* text)
     menuItem->state = 2;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
-    menuItem->unkA = 1;
+    menuItem->fontColor = 1;
 }
 
 static void func_80102E9C(void) __attribute__((unused));

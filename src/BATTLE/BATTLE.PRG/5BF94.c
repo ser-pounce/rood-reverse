@@ -58,7 +58,10 @@ typedef struct {
     u_short unk2;
     short unk4;
     short unk6;
-    int unk8;
+    union {
+        int s32;
+        short s16[2];
+    } unk8;
 } D_800F53B8_t3_2;
 
 typedef struct {
@@ -3694,9 +3697,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6298);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6310);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6388);
+void func_800D6388(D_800F53B8_t* arg0)
+{
+    if (arg0->unkD1C.unk18.unk0 == 4) {
+        func_8006CB04((u_char)arg0->unkD1C.unk18.unk4, NULL);
+    } else {
+        func_8006CB04(
+            arg0->unkD1C.unk18.unk8.s16[1], (func_8006CE70_t*)&arg0->unkD1C.unk18.unk4);
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D63D0);
+void func_800D63D0(D_800F53B8_t* arg0)
+{
+    if (arg0->unkD1C.unk0.unk0 == 4) {
+        func_8006CA20((u_char)arg0->unkD1C.unk0.unk4, NULL);
+    } else {
+        func_8006CA20(
+            arg0->unkD1C.unk0.unk8.s16[1], (func_8006CE70_t*)&arg0->unkD1C.unk0.unk4);
+    }
+}
 
 void func_800D6418(D_800F53B8_t* arg0)
 {

@@ -520,32 +520,41 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
 
 static int _xPos = 0;
 static int _yPos = 0;
-static int D_801080A4 = 0;
+static int _previousActor = 0;
 static int _selectedActor = 0;
 static int _drawBackgroundFirst = 0;
 static int _fadeScreen = 0;
 static int _animationStep = 0;
-static char D_801080B8 = 0;
-static char D_801080B9 = 0;
-static char D_801080BA = 0;
-static char D_801080BB = 0;
+static char _renderBasicStatsState = 0;
+static char _basicStatsAnimState = 0;
+static char _basicStatsAnimDelay = 0;
+static char _initializedActor = 0;
 
-static void _initEquipmentScreen(int arg0)
+/**
+ * Resets values.
+ *
+ * @param arg0
+ */
+static void _initEquipmentScreen(int actor)
 {
-    if (arg0 == 0) {
-        D_801080B8 = 1;
-        D_801080BA = 4;
-    } else if (D_801080BB == 0) {
+    if (actor == 0) {
+        _renderBasicStatsState = 1;
+        _basicStatsAnimDelay = 4;
+    } else if (_initializedActor == 0) {
         func_800CB654(1);
-        D_801080B8 = 4;
-        D_801080BA = 4;
+        _renderBasicStatsState = 4;
+        _basicStatsAnimDelay = 4;
     } else {
-        D_801080B8 = 2;
-        D_801080BA = 4;
+        _renderBasicStatsState = 2;
+        _basicStatsAnimDelay = 4;
     }
-    D_801080BB = arg0;
+
+    _initializedActor = actor;
 }
 
+/**
+ * Determines the next actor for L1 / R1 navigation.
+ */
 static int _getNextValidActor(int currentActor, int targetActor)
 {
     int temp_a0;
@@ -565,31 +574,55 @@ static int _getNextValidActor(int currentActor, int targetActor)
     return currentActor;
 }
 
-static char D_801080BC = 0;
+static char _delayScreenUpdate = 0;
 
-static int func_80103744(int arg0)
+/**
+ * Slides to the next or previous actor.
+ *
+ * @param init Packed value
+ *
+ * - Bits 0-3: Target actor
+ *
+ * - Bit 4: 1 == forward, 0 == reverse
+ * @return True if animation complete.
+ */
+static int _switchCurrentActor(int init)
 {
-    static u_int D_801080C0 = 0;
+    enum state {
+        menuLoaded,
+        menuLoading,
+        animateForward,
+        menuLoadedReverse,
+        menuLoadingReverse,
+        animateReverse,
+        complete
+    };
 
-    if (arg0 != 0) {
+    static u_int state = menuLoaded;
+
+    if (init != 0) {
         if (_selectedActor == 0) {
-            D_801080C0 = 1;
+            state = menuLoading;
         } else {
             vs_battle_playSfx10();
-            D_801080C0 = 0;
+            state = menuLoaded;
         }
-        if (arg0 & 0x10) {
-            D_801080C0 += 3;
+
+        if (init & 0x10) {
+            state += 3;
         }
-        _selectedActor = arg0 & 0xF;
+
+        _selectedActor = init & 0xF;
+
         vs_battle_setMenuItem(
-            4, 180, 18, 0x8C, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
+            4, 180, 18, 140, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
             ->selected = 1;
+
         return 0;
     }
 
-    switch (D_801080C0) {
-    case 0:
+    switch (state) {
+    case menuLoaded:
         if (_animationStep < 160) {
             _drawBackgroundFirst = 1;
             _animationStep += 32;
@@ -599,88 +632,117 @@ static int func_80103744(int arg0)
             func_800F9E0C();
         }
         // Fallthrough
-    case 1:
+
+    case menuLoading:
         _fadeScreen = 1;
+
         func_800F9A24(_selectedActor - 1);
-        D_801080BC = 1;
+
+        _delayScreenUpdate = 1;
         _animationStep = -160;
-        D_801080C0 = 2;
+        state = animateForward;
+
         break;
-    case 2:
+
+    case animateForward:
         if (_animationStep < 0) {
             _animationStep += 32;
             break;
         }
+
         _fadeScreen = 0;
-        D_801080C0 = 6;
+        state = complete;
+
         return 1;
-    case 3:
+
+    case menuLoadedReverse:
         if (_animationStep >= -159) {
             _fadeScreen = 1;
             _animationStep -= 32;
             break;
         }
+
         func_800F9E0C();
-    case 4:
+        // Fallthrough
+
+    case menuLoadingReverse:
         _fadeScreen = 0;
+
         func_800F9A24(_selectedActor - 1);
-        D_801080BC = 1;
+
+        _delayScreenUpdate = 1;
         _animationStep = 160;
-        D_801080C0 = 5;
+        state = animateReverse;
+
         break;
-    case 5:
+
+    case animateReverse:
         if (_animationStep > 0) {
             _drawBackgroundFirst = 1;
             _animationStep -= 32;
             break;
         }
+
         _drawBackgroundFirst = 0;
-        D_801080C0 = 6;
+        state = complete;
         return 1;
-    case 6:
+
+    case complete:
         return 1;
     }
+
     return 0;
 }
 
-static void _renderUnknownValue(int x, int withMax, u_long* nextPrim)
+/**
+ * Used for the stats of unanalyzed enemies.
+ *
+ * @param withMax Optionally appends "· ???" for values with a maximum.
+ */
+static void _renderUnknownValue(int xy, int withMax, u_long* before)
 {
     int i;
 
     if (withMax != 0) {
         for (i = 0; i < 3; ++i) {
-            vs_battle_setSprite(128, x, vs_getWH(6, 9), nextPrim)[4] =
+            vs_battle_setSprite(128, xy, vs_getWH(6, 9), before)[4] =
                 vs_getUV0Clut(228, 0, 832, 223);
-            x -= 5;
+            xy -= 5;
         }
-        vs_battle_renderValue(2, x, 0, nextPrim);
-        x -= 7;
+        vs_battle_renderValue(2, xy, 0, before);
+        xy -= 7;
     }
 
-    x += 0xFFFF0000;
+    xy += -1 << 16;
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSprite(128, x, vs_getWH(7, 10), nextPrim)[4] =
+        vs_battle_setSprite(128, xy, vs_getWH(7, 10), before)[4] =
             vs_getUV0Clut(234, 0, 832, 223);
-        x -= 6;
+        xy -= 6;
     }
 }
 
-static void _drawStatBar(int index, int current, int max, int xy)
+/**
+ * Renders a single bar
+ *
+ * @param colorIndex High byte indicates if enemy has been analyzed,
+ * if not then the bar is rendered as if it were full.
+ */
+static void _renderStatBar(int colorIndex, int current, int max, int xy)
 {
     if (max == 0) {
         current = 0;
         max = 1;
     }
 
-    if ((index >> 8) == 0) {
+    if ((colorIndex >> 8) == 0) {
         current = max;
     }
 
     current <<= 6;
 
-    vs_battle_drawStatBar(
-        index & 0xFF, ((current + max) - 1) / max, D_1F800000[1] - 3, xy);
+    vs_battle_renderStatBar(
+        colorIndex & 0xFF, ((current + max) - 1) / max, D_1F800000[1] - 3, xy);
 }
 
 /**
@@ -693,60 +755,58 @@ static void _renderBasicStats(void)
     vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
     u_long* insertBefore = D_1F800000[1] - 3;
 
-    switch (D_801080B8) {
+    switch (_renderBasicStatsState) {
     case 0:
         break;
     case 1:
-        if (D_801080B9 == 0) {
-            if (D_801080BA == 0) {
-
+        if (_basicStatsAnimState == 0) {
+            if (_basicStatsAnimDelay == 0) {
                 func_800CB654(0);
-
-                D_801080B8 = 0;
+                _renderBasicStatsState = 0;
             } else {
-                --D_801080BA;
+                --_basicStatsAnimDelay;
             }
         } else {
-            --D_801080B9;
-            actor = vs_battle_actors[D_801080A4 - 1]->unk3C;
+            --_basicStatsAnimState;
+            actor = vs_battle_actors[_previousActor - 1]->unk3C;
         }
         break;
 
     case 2:
-        if (D_801080B9 != 0) {
-            --D_801080B9;
-            actor = vs_battle_actors[D_801080A4 - 1]->unk3C;
-        } else if (D_801080BA == 0) {
-            D_801080B8 = 3;
+        if (_basicStatsAnimState != 0) {
+            --_basicStatsAnimState;
+            actor = vs_battle_actors[_previousActor - 1]->unk3C;
+        } else if (_basicStatsAnimDelay == 0) {
+            _renderBasicStatsState = 3;
         } else {
-            --D_801080BA;
+            --_basicStatsAnimDelay;
         }
         break;
 
     case 3:
-        if (D_801080B9 < 4) {
-            ++D_801080B9;
+        if (_basicStatsAnimState < 4) {
+            ++_basicStatsAnimState;
         } else {
-            D_801080B8 = 0;
+            _renderBasicStatsState = 0;
         }
         break;
 
     case 4:
         if (D_800EB9B0 == 0x200000) {
-            if (D_801080BA == 0) {
-                D_801080B8 = 3;
+            if (_basicStatsAnimDelay == 0) {
+                _renderBasicStatsState = 3;
             } else {
-                --D_801080BA;
+                --_basicStatsAnimDelay;
             }
         }
         break;
     }
 
-    if (D_801080B9 == 0) {
+    if (_basicStatsAnimState == 0) {
         return;
     }
 
-    y = ((D_801080B9 * 8) - 22) << 16;
+    y = ((_basicStatsAnimState * 8) - 22) << 16;
 
     if (actor->isAnalyzed) {
 
@@ -773,19 +833,20 @@ static void _renderBasicStats(void)
     }
 
     for (i = 0; i < 3; ++i) {
-        vs_battle_setSpriteDefaultTexPage(384, D_800EBBEC[i] + ((D_801080B9 - 4) << 0x13),
-            D_800EBBFC[i] | 0x90000, insertBefore)[4] = D_800EBC00[i] | 0x37F60000;
+        vs_battle_setSpriteDefaultTexPage(384,
+            D_800EBBEC[i] + ((_basicStatsAnimState - 4) << 0x13), D_800EBBFC[i] | 0x90000,
+            insertBefore)[4] = D_800EBC00[i] | 0x37F60000;
     }
 
     y += -8 << 16;
-    i = actor->isAnalyzed * 256;
+    i = actor->isAnalyzed << 8;
 
-    _drawStatBar(i, actor->currentHP, actor->maxHP, y | 10);
-    _drawStatBar(i | 1, actor->currentMP, actor->maxMP, y | 80);
+    _renderStatBar(i, actor->currentHP, actor->maxHP, y | 10);
+    _renderStatBar(i | 1, actor->currentMP, actor->maxMP, y | 80);
 
     y += 4 << 16;
 
-    _drawStatBar(i | 2, actor->risk, 100, y | 10);
+    _renderStatBar(i | 2, actor->risk, 100, y | 10);
 }
 
 /**
@@ -909,12 +970,12 @@ static u_char _selectedElement;
  */
 static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
 {
-    static char D_801080C4 = 0;
-    static char _activeStatusModifiers[32];
-    static u_char _selectedStatusModifier;
-    static u_char _statusModifierCount;
-    static char _0[2];
-    static vs_battle_actor2* _statusModifersCurrentTarget;
+    static char animationState = 0;
+    static char activeStatusModifiers[32];
+    static u_char selectedStatusModifier;
+    static u_char statusModifierCount;
+    static char _[2] __attribute__((unused));
+    static vs_battle_actor2* statusModifersCurrentTarget;
 
     int yPos;
     int xPos;
@@ -927,26 +988,26 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
             return 1;
         }
 
-        _statusModifersCurrentTarget = actor;
-        _statusModifierCount = 0;
+        statusModifersCurrentTarget = actor;
+        statusModifierCount = 0;
 
         for (yPos = 0; yPos < 32; ++yPos) {
             if ((xPos >> yPos) & 1) {
-                _activeStatusModifiers[_statusModifierCount++] = yPos;
+                activeStatusModifiers[statusModifierCount++] = yPos;
             }
         }
 
         if (arg1 == 0) {
-            if (_selectedStatusModifier >= _statusModifierCount) {
-                _selectedStatusModifier = _statusModifierCount - 1;
+            if (selectedStatusModifier >= statusModifierCount) {
+                selectedStatusModifier = statusModifierCount - 1;
             }
         } else if (_selectedElement == 11) {
-            _selectedStatusModifier = 0;
+            selectedStatusModifier = 0;
         } else {
-            if (_statusModifierCount < 8) {
-                _selectedStatusModifier = _statusModifierCount - 1;
+            if (statusModifierCount < 8) {
+                selectedStatusModifier = statusModifierCount - 1;
             } else {
-                _selectedStatusModifier = 7;
+                selectedStatusModifier = 7;
             }
         }
 
@@ -998,7 +1059,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
             return 0;
         }
 
-        yPos = _selectedStatusModifier;
+        yPos = selectedStatusModifier;
 
         if (vs_main_buttonRepeat & PADLup) {
             if (yPos < 8) {
@@ -1010,10 +1071,10 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
         }
 
         if (vs_main_buttonRepeat & PADLdown) {
-            if ((_statusModifierCount >= 8) && (yPos < 8)) {
+            if ((statusModifierCount >= 8) && (yPos < 8)) {
                 yPos += 8;
-                if (yPos >= _statusModifierCount) {
-                    yPos = _statusModifierCount - 1;
+                if (yPos >= statusModifierCount) {
+                    yPos = statusModifierCount - 1;
                 }
             }
         }
@@ -1026,30 +1087,31 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
 
         if (vs_main_buttonRepeat & PADLright) {
 
-            if (((yPos & 7) == 7) || (yPos == _statusModifierCount - 1)) {
+            if (((yPos & 7) == 7) || (yPos == statusModifierCount - 1)) {
                 vs_battle_playMenuChangeSfx();
                 _selectedElement = 6;
                 return 1;
             }
 
-            if (++yPos >= _statusModifierCount) {
-                yPos = _statusModifierCount - 1;
+            if (++yPos >= statusModifierCount) {
+                yPos = statusModifierCount - 1;
             }
         }
 
-        if (yPos != _selectedStatusModifier) {
+        if (yPos != selectedStatusModifier) {
             vs_battle_playMenuChangeSfx();
-            _selectedStatusModifier = yPos;
+            selectedStatusModifier = yPos;
         }
     }
 
-    vs_mainmenu_setInformationMessage((char*)&_statusStrings[_statusStrings
-            [_activeStatusModifiers[_selectedStatusModifier] + VS_status_INDEX_strDown]]);
+    vs_mainmenu_setInformationMessage((
+        char*)&_statusStrings[_statusStrings[activeStatusModifiers[selectedStatusModifier]
+                                             + VS_status_INDEX_strDown]]);
 
     if (arg1 != 0) {
-        D_801080C4 = func_800FFCDC(
-            D_801080C4, (((_selectedStatusModifier & 7) * 16) + 2)
-                            | ((((_selectedStatusModifier >> 3) * 16) + 136) << 0x10));
+        animationState = func_800FFCDC(
+            animationState, (((selectedStatusModifier & 7) * 16) + 2)
+                                | ((((selectedStatusModifier >> 3) * 16) + 136) << 0x10));
         D_801022D5 = 1;
     }
 
@@ -1095,8 +1157,8 @@ static int _renderLimbUi(int init)
 {
     static char state = 0;
     static u_char tempSelectedActor = 0;
-    static char _1[8];
-    static int _limbAnimSteps[6];
+    static char _[8] __attribute__((unused));
+    static int limbAnimSteps[6];
 
     int lineXy[2];
     vs_battle_actor2* actor;
@@ -1128,7 +1190,7 @@ static int _renderLimbUi(int init)
             tempSelectedActor = _selectedActor - 1;
             func_800FBD80(tempSelectedActor);
             for (i = 0; i < 6; ++i) {
-                _limbAnimSteps[i] = 12 + i;
+                limbAnimSteps[i] = 12 + i;
             }
             state = 1;
         }
@@ -1141,12 +1203,12 @@ static int _renderLimbUi(int init)
         break;
 
     case _renderLimbUiInit:
-        _renderStatusIcons(actor, vs_battle_rowAnimationSteps[_limbAnimSteps[0]]);
+        _renderStatusIcons(actor, vs_battle_rowAnimationSteps[limbAnimSteps[0]]);
 
         for (i = 0; i < limbCount; ++i) {
 
             limb = &actor->limbs[i];
-            step = _limbAnimSteps[i];
+            step = limbAnimSteps[i];
 
             vs_battle_renderTextRaw(vs_battle_limbNames[limb->nameIndex],
                 (vs_battle_rowAnimationSteps[step] + 216) | ((34 + i * 16) << 16), NULL);
@@ -1166,7 +1228,7 @@ static int _renderLimbUi(int init)
             limbStatus = 0;
 
             if (step != 0) {
-                _limbAnimSteps[i] = step - 1;
+                limbAnimSteps[i] = step - 1;
             } else {
                 limbStatus = 1;
             }
@@ -1215,23 +1277,23 @@ static int _renderLimbUi(int init)
         break;
 
     case 3:
-        _renderStatusIcons(actor, _limbAnimSteps[0] << 5);
+        _renderStatusIcons(actor, limbAnimSteps[0] << 5);
 
         for (i = 0; i < limbCount; ++i) {
-            if (_limbAnimSteps[i] < 8) {
+            if (limbAnimSteps[i] < 8) {
 
                 limb = &actor->limbs[i];
-                ++_limbAnimSteps[i];
+                ++limbAnimSteps[i];
 
                 vs_battle_renderTextRaw(vs_battle_limbNames[limb->nameIndex],
-                    ((_limbAnimSteps[i] << 5) + 216) | ((34 + i * 16) << 16), 0);
+                    ((limbAnimSteps[i] << 5) + 216) | ((34 + i * 16) << 16), 0);
 
                 limbStatus = vs_battle_getLimbStatus(limb);
 
                 _drawStatusIndicator(limbStatus,
-                    ((_limbAnimSteps[i] << 5) + 216) | ((36 + i * 16) << 16), 0);
+                    ((limbAnimSteps[i] << 5) + 216) | ((36 + i * 16) << 16), 0);
                 vs_battle_renderTextRaw(_limbStatuses[limbStatus],
-                    ((_limbAnimSteps[i] << 5) + 224) | ((34 + i * 16) << 16), 0);
+                    ((limbAnimSteps[i] << 5) + 224) | ((34 + i * 16) << 16), 0);
             } else {
                 state = 0;
             }
@@ -1456,7 +1518,7 @@ static int _equipmentDetailScreen(int row)
 
     if (row != 0) {
         _selectedEquipmentRow = row - 1;
-        D_801080B8 = 0;
+        _renderBasicStatsState = 0;
 
         func_800CB654(1);
         _setActiveRow(_selectedEquipmentRow);
@@ -1475,8 +1537,8 @@ static int _equipmentDetailScreen(int row)
 
     switch (state) {
     case init:
-        if (D_801080B9 != 0) {
-            --D_801080B9;
+        if (_basicStatsAnimState != 0) {
+            --_basicStatsAnimState;
         }
 
         if (vs_mainmenu_ready() == 0) {
@@ -1518,11 +1580,11 @@ static int _equipmentDetailScreen(int row)
                 128 - vs_battle_rowAnimationSteps[10 - _equipmentDetailRowToRender];
 
             if (_equipmentDetailRowToRender < 6) {
-                if (D_801080B9 != 0) {
-                    --D_801080B9;
+                if (_basicStatsAnimState != 0) {
+                    --_basicStatsAnimState;
                 }
 
-                D_801080B8 = 0;
+                _renderBasicStatsState = 0;
 
                 func_800CB654(1);
 
@@ -1828,7 +1890,7 @@ static int _equipmentScreen(int element)
 
     static char _equipmentScreenState;
     static u_char _timer;
-    static char _2[2];
+    static char _[2] __attribute__((unused));
 
     char* rowStrings[18];
     int rowTypes[9];
@@ -1964,15 +2026,15 @@ static int _equipmentScreen(int element)
 
             if (vs_main_buttonsPressed.all & PADR1) {
                 i = _getNextValidActor(i, 1);
-                temp_s5 = 17;
+                temp_s5 = 1 | (1 << 4);
             }
 
             if (i != (_selectedActor - 1)) {
 
-                D_801080A4 = _selectedActor;
+                _previousActor = _selectedActor;
 
                 _initEquipmentScreen(i);
-                func_80103744(i + temp_s5);
+                _switchCurrentActor(i + temp_s5);
                 func_80100814();
                 vs_mainMenu_clearMenuExcept(4);
 
@@ -1982,7 +2044,7 @@ static int _equipmentScreen(int element)
         break;
 
     case waitChangeActor:
-        if (func_80103744(0) != 0) {
+        if (_switchCurrentActor(0)) {
             _equipmentScreenState = waitActorInit;
         }
         break;
@@ -2153,8 +2215,8 @@ static void _drawScreen(void)
 
     func_8007ACB0();
 
-    if (D_801080BC != 0) {
-        --D_801080BC;
+    if (_delayScreenUpdate) {
+        --_delayScreenUpdate;
     } else {
         func_800F9EB8(p - 8);
     }
@@ -2202,8 +2264,8 @@ static void _renderSelectedLimbStats(void)
     _renderLimbUi(_selectedElement + 0x81);
 }
 
-static char D_801081EE;
-static char _4[24];
+static char _selectedStatRow;
+static char _[24] __attribute__((unused));
 
 /**
  * Module entrypoint.
@@ -2232,10 +2294,10 @@ int vs_menu4_exec(char* state)
         0x0009000A, 0x000B0D09 };
 
     static int animWait = 0;
-    static int _screenEnabled = 0;
+    static int screenEnabled = 0;
     static int D_80108134 = 0;
     static int D_80108188;
-    static char _3[12];
+    static char _[12] __attribute__((unused));
     static D_80108198_t D_80108198;
     static D_801081B8_t D_801081B8;
     static u_char _animationIndex;
@@ -2252,7 +2314,7 @@ int vs_menu4_exec(char* state)
 
     switch (*state) {
     case init:
-        _screenEnabled = 0;
+        screenEnabled = 0;
         _animationIndex = 10;
 
         if (vs_mainMenu_itemNames == NULL) {
@@ -2271,14 +2333,14 @@ int vs_menu4_exec(char* state)
         _drawBackgroundFirst = 0;
         _fadeScreen = 0;
         _selectedActor = 0;
-        D_801080A4 = 0;
-        D_801080B8 = 0;
-        D_801080B9 = 0;
-        D_801080BB = 0;
+        _previousActor = 0;
+        _renderBasicStatsState = 0;
+        _basicStatsAnimState = 0;
+        _initializedActor = 0;
 
-        func_80103744(1);
+        _switchCurrentActor(1);
 
-        _screenEnabled = 1;
+        screenEnabled = 1;
         animWait = 1;
         D_80108188 = vs_main_projectionDistance;
 
@@ -2330,7 +2392,7 @@ int vs_menu4_exec(char* state)
         }
 
         if (animWait != 0) {
-            if (func_80103744(0) != 0) {
+            if (_switchCurrentActor(0)) {
 
                 animWait = 0;
 
@@ -2394,7 +2456,7 @@ int vs_menu4_exec(char* state)
                         _renderSelectedLimbStats();
                         vs_mainMenu_drawClassAffinityType(6);
 
-                        D_801081EE = 0;
+                        _selectedStatRow = 0;
                         animWait = 10;
                         *state = 9;
                         break;
@@ -2517,12 +2579,12 @@ int vs_menu4_exec(char* state)
 
             if (userInput != (_selectedActor - 1)) {
 
-                D_801080A4 = _selectedActor;
+                _previousActor = _selectedActor;
 
                 _renderLimbUi(-2);
                 vs_mainMenu_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
-                func_80103744(userInput + limbs);
+                _switchCurrentActor(userInput + limbs);
 
                 animWait = 1;
             }
@@ -2540,7 +2602,7 @@ int vs_menu4_exec(char* state)
         }
 
         if (animWait != 0) {
-            if (func_80103744(0) != 0) {
+            if (_switchCurrentActor(0)) {
 
                 _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->unk3C, 0);
 
@@ -2585,12 +2647,12 @@ int vs_menu4_exec(char* state)
 
             if (userInput != (_selectedActor - 1)) {
 
-                D_801080A4 = _selectedActor;
+                _previousActor = _selectedActor;
 
                 _renderLimbUi(-2);
                 vs_mainMenu_renderEquipStats(2);
                 _initEquipmentScreen(userInput);
-                func_80103744(userInput + limbs);
+                _switchCurrentActor(userInput + limbs);
 
                 animWait = 1;
 
@@ -2667,7 +2729,7 @@ int vs_menu4_exec(char* state)
                 }
             }
 
-            userInput = D_801081EE;
+            userInput = _selectedStatRow;
             limbs = 11 - D_801024B9 * 4;
 
             if (userInput >= limbs) {
@@ -2687,9 +2749,9 @@ int vs_menu4_exec(char* state)
                 userInput -= limbs;
             }
 
-            if (userInput != D_801081EE) {
+            if (userInput != _selectedStatRow) {
                 vs_battle_playMenuChangeSfx();
-                D_801081EE = userInput;
+                _selectedStatRow = userInput;
             }
 
             vs_mainmenu_setInformationMessage((char*)&_statusStrings
@@ -2734,7 +2796,7 @@ int vs_menu4_exec(char* state)
 
         D_800EB9AE = 0;
         animWait = 8;
-        _screenEnabled = 0;
+        screenEnabled = 0;
         ++*state;
         break;
 
@@ -2772,7 +2834,7 @@ int vs_menu4_exec(char* state)
         break;
     }
 
-    if (_screenEnabled != 0) {
+    if (screenEnabled != 0) {
         _drawScreen();
     }
 

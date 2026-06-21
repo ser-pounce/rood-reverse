@@ -1058,7 +1058,7 @@ void vs_mainMenu_drawDpPpbars(int arg0)
                 if (var_s0 == 0) {
                     var_s0 = 1;
                 }
-                vs_battle_drawStatBar(0, (((_currentDp << 6) + var_s0) - 1) / var_s0,
+                vs_battle_renderStatBar(0, (((_currentDp << 6) + var_s0) - 1) / var_s0,
                     temp_s2, temp_s1 | 0xA);
             }
             if (D_8010213D & 2) {
@@ -1066,7 +1066,7 @@ void vs_mainMenu_drawDpPpbars(int arg0)
                 if (var_s0 == 0) {
                     var_s0 = 1;
                 }
-                vs_battle_drawStatBar(1, (((_currentPp << 6) + var_s0) - 1) / var_s0,
+                vs_battle_renderStatBar(1, (((_currentPp << 6) + var_s0) - 1) / var_s0,
                     temp_s2, temp_s1 | 0x50);
             }
         }

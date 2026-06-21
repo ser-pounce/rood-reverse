@@ -250,7 +250,11 @@ void func_800C97BC(void);
  * @return int
  */
 int vs_battle_renderValue(int font, int xy, int value, u_long* before);
-void vs_battle_drawStatBar(int, int, u_long*, int);
+
+/**
+ * Renders HP / MP / Risk bars
+ */
+void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
 
 /**
  * Retrieves the status effects currently applied.

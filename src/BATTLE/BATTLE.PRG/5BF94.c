@@ -1643,7 +1643,7 @@ int vs_battle_renderValue(int font, int xy, int value, u_long* before)
     return xy;
 }
 
-void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
+void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
 {
     int rgb0;
     u_int rgb1;
@@ -1656,7 +1656,7 @@ void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
          | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
          | ((((w * 0x9E) + ((rgb1 >> 16) * (0x40 - w))) >> 6) << 16);
 
-    primBuf[0] = (*nextPrim & 0xFFFFFF) | (w == 0 ? 0x03000000 : 0x0D000000);
+    primBuf[0] = (*before & 0xFFFFFF) | (w == 0 ? 0x03000000 : 0x0D000000);
     primBuf[1] = vs_getRGB0(primTile, 0x00, 0x28, 0x40);
     primBuf[2] = xy;
     primBuf[3] = 0x50042;
@@ -1673,17 +1673,17 @@ void vs_battle_drawStatBar(int colorIndex, int w, u_long* nextPrim, int xy)
     rgb1 = w;
     primBuf[12] = xy + rgb1;
     primBuf[13] = vs_getTpage(0, 0, 0, 0, 0);
-    *nextPrim = ((u_long)primBuf << 8) >> 8;
+    *before = ((u_long)primBuf << 8) >> 8;
     D_1F800000[0] = primBuf + 14;
 }
 
-void _drawStatBar(int colorIndex, int current, int max)
+void _renderStatBar(int colorIndex, int current, int max)
 {
     u_long* prim = D_1F800000[1] - 3;
     int xy = D_800EBBDC[colorIndex] - D_800EB9B0;
 
     if (max != 0) {
-        vs_battle_drawStatBar(colorIndex, (((current << 6) + max) - 1) / max, prim, xy);
+        vs_battle_renderStatBar(colorIndex, (((current << 6) + max) - 1) / max, prim, xy);
         if (colorIndex & 2) {
             xy += 54 | (3 << 0x10);
             if (colorIndex == 3) {

@@ -111,7 +111,59 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     RotMatrix_gte(&arg1->unk0, arg2);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1034);
+int func_800C1034(func_800C1564_t* arg0, u_short* arg1)
+{
+    func_800C0FA8_t2 work;
+    MATRIX matrix;
+    int sum;
+    int term;
+    int i;
+
+    func_800C0FA8(arg0, &work, &matrix);
+
+    {
+        void* ptr;
+        void* base;
+        int offset;
+
+        i = 0;
+        ptr = &work;
+        base = ptr;
+        offset = 0x10;
+
+        do {
+            *(short*)ptr = *arg1++ - *(u_short*)(base + offset);
+            offset += 2;
+            ++i;
+            ptr += 2;
+        } while (i < 3);
+    }
+
+    ApplyMatrixSV(&matrix, &work.unk0, &work.unk8);
+
+    sum = 0;
+
+    {
+        char* base;
+        int offset2;
+        int offset;
+
+        i = 0;
+        base = (char*)&work;
+        offset2 = 0x18;
+        offset = 8;
+
+        do {
+            term = (*(short*)(base + offset) * *(short*)(base + offset2)) >> 12;
+            sum += term * term;
+            offset2 += 2;
+            offset += 2;
+            ++i;
+        } while (i < 3);
+    }
+
+    return (sum >> 16) < 1u;
+}
 
 int func_800C110C(func_800C1564_t* arg0, u_short* arg1, int arg2)
 {

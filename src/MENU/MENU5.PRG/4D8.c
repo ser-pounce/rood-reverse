@@ -22,7 +22,7 @@
 extern u_long* D_1F800000[];
 
 static int _loadArmFile(void);
-static int func_80103684(void);
+static int _menuManager(void);
 static void _snapMapToRoom(vs_battle_scene* scene, int roomId);
 static void _scaleRoomVertices(vs_battle_scene* scene, int factor);
 static int _getCurrentRoomIndex(vs_battle_scene* scene);
@@ -30,12 +30,12 @@ static void _updateRoomIndex(int searchForward);
 static void _setCenterpoint(vs_battle_scene* scene, int roomId);
 static void _smoothMapToCenterpoint(vs_battle_scene* scene);
 static void func_801042B0(void);
-static void func_80104384(void);
+static void _setCamera(void);
 static int func_8010451C(int arg0);
 static void func_801046B0(vs_battle_scene* arg0);
 static int _drawRoom(int arg0, void* arg1, int arg2, int arg3);
-static void func_80106178(MATRIX* arg0, short arg1);
-static void func_801061EC(MATRIX* arg0, short arg1);
+static void _buildYawMatrix(MATRIX* arg0, short arg1);
+static void _buildPitchMatrix(MATRIX* arg0, short arg1);
 static void _darkenBackground(void);
 static void _applyPalingScreenEffect(void);
 
@@ -68,9 +68,12 @@ static void renderMapLabels(void);
 static int func_8010839C(int arg0, int arg1, int arg2);
 static void _renderIcon(int id, int x, int y);
 
-static void func_80102CD8(int arg0)
+/**
+ * Sets or clears the action at the top of the menu.
+ */
+static void _setNextAction(int display)
 {
-    if (arg0 != 0) {
+    if (display != 0) {
         vs_mainMenu_setNextMenuAction(menuActionMenu);
         D_801022D6 = 0;
         return;
@@ -98,46 +101,56 @@ static void _renderDefaultIcon(int id, int xy, int brightness, u_long* nextPrim)
 
 static int D_801083F8 = -1;
 
-static void func_80102D90(int rowCount, int arg1, char** strings)
+/**
+ * Sets up the map selection menu.
+ */
+static void _configureMapMenu(int rowCount, int currentMap, char* menuText[])
 {
     int rowTypes[rowCount];
     int i;
     int cursorMemory;
 
     if (D_801083F8 == -1) {
-        D_801083F8 = arg1;
+        D_801083F8 = currentMap;
     }
 
     for (i = 0; i < rowCount; ++i) {
         rowTypes[i] = 0;
     }
 
-    if (!(arg1 & 0x80)) {
+    if (!(currentMap & 0x80)) {
         if (D_801083F8 < rowCount) {
             rowTypes[D_801083F8] |= 4;
         }
     }
 
-    arg1 &= 0x7F;
+    currentMap &= 0x7F;
 
-    if ((rowCount < 9) || (arg1 < 8)) {
-        D_800F4EE8.cursorMemories[0] = arg1;
+    if ((rowCount < 9) || (currentMap < 8)) {
+        D_800F4EE8.cursorMemories[0] = currentMap;
         D_800F4EE8.cursorMemories[1] = 0;
-    } else if (arg1 >= (rowCount - 8)) {
-        D_800F4EE8.cursorMemories[0] = arg1 - (rowCount - 9);
+    } else if (currentMap >= (rowCount - 8)) {
+        D_800F4EE8.cursorMemories[0] = currentMap - (rowCount - 9);
         D_800F4EE8.cursorMemories[1] = rowCount - 9;
     } else {
         D_800F4EE8.cursorMemories[0] = 4;
-        D_800F4EE8.cursorMemories[1] = arg1 - 4;
+        D_800F4EE8.cursorMemories[1] = currentMap - 4;
     }
 
     cursorMemory = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
-    vs_mainmenu_setMenuRows(rowCount, 0x100, strings, rowTypes);
+
+    vs_mainmenu_setMenuRows(rowCount, 256, menuText, rowTypes);
+
     vs_main_settings.cursorMemory = cursorMemory;
 }
 
-static int func_80102ED8(void)
+/**
+ * Processes user input in the map selection menu.
+ *
+ * @return Negative if user cancels, or the selected row.
+ */
+static int _mapSelection(void)
 {
     int row = vs_mainmenu_getSelectedRow();
 
@@ -160,7 +173,11 @@ static void _setMenuItemMapName(char* mapName, char arg1)
     menuItem->unkA = arg1;
 }
 
-static void func_80102F8C(void) { vs_mainMenu_clearMenuExcept(5); }
+/**
+ * Clears all rows except the title, unused.
+ */
+static void _clearMenu(void) __attribute__((unused));
+static void _clearMenu(void) { vs_mainMenu_clearMenuExcept(5); }
 
 static void _menuReady(void) { vs_mainmenu_ready(); }
 
@@ -200,97 +217,125 @@ static int _loadMapBackground(int arg0)
 
 int vs_menu5_exec(char* state)
 {
-    static int D_80108D30;
-    static int D_80108D34;
+    enum state { init = 3 };
+
+    static int armfileLoadDelay;
+    static int armFileLoaded;
     static int D_80108D38;
-    static u_long* D_80108D3C;
+    static u_long* menuBgBackup;
     static int _ __attribute__((unused));
-    static RECT D_80108D44[2];
+    static RECT menuBgBackRects[2];
 
     switch (*state) {
-    case 3:
+    case init:
         D_801083F8 = -1;
-        D_80108D3C = vs_main_allocHeapR(0xB600);
-        D_80108D44[0].x = 0x300;
-        D_80108D44[0].y = 0xE3;
-        D_80108D44[0].w = 0x100;
-        D_80108D44[0].h = 1;
-        (&D_80108D44[1])->x = 0x2A0;
-        (&D_80108D44[1])->y = 0x100;
-        (&D_80108D44[1])->w = 0x60;
-        (&D_80108D44[1])->h = 0xF0;
-        StoreImage(&D_80108D44[0], D_80108D3C);
-        StoreImage(&D_80108D44[1], D_80108D3C + 0x80);
+        menuBgBackup = vs_main_allocHeapR(0xB600);
+        menuBgBackRects[0].x = 768;
+        menuBgBackRects[0].y = 227;
+        menuBgBackRects[0].w = 256;
+        menuBgBackRects[0].h = 1;
+        (&menuBgBackRects[1])->x = 672;
+        (&menuBgBackRects[1])->y = 256;
+        (&menuBgBackRects[1])->w = 96;
+        (&menuBgBackRects[1])->h = 240;
+
+        StoreImage(&menuBgBackRects[0], menuBgBackup);
+        StoreImage(&menuBgBackRects[1], menuBgBackup + 128);
         _loadMapBackground(1);
+
         *state = 4;
         break;
+
     case 4:
         if (_loadMapBackground(0) == 0) {
             break;
         }
+
         *state = 5;
+
         func_800FFB68(1);
-        D_80108D30 = 8;
-        D_80108D34 = 0;
+
+        armfileLoadDelay = 8;
+        armFileLoaded = 0;
         // Fallthrough
+
     case 5:
-        if (D_80108D34 == 0) {
-            D_80108D34 = _loadArmFile();
+        if (armFileLoaded == 0) {
+            armFileLoaded = _loadArmFile();
         }
-        if (D_80108D30 != 0) {
-            --D_80108D30;
+
+        if (armfileLoadDelay != 0) {
+            --armfileLoadDelay;
             break;
-        } else if (D_80108D34 != 0) {
+        } else if (armFileLoaded) {
             func_8008A4DC(0);
             func_800CB654(1);
+
             D_800EB9B0 = 0x200000;
             *state = 6;
         } else {
             break;
         }
+
         // Fallthrough
+
     case 6:
         *state += vs_mainmenu_ready();
         break;
+
     case 7:
-        D_80108D38 = func_80103684();
+        D_80108D38 = _menuManager();
+
         if (D_80108D38 != 0) {
             func_80100414(-4, 0x80);
             func_800CB654(0);
+
             D_800EB9B0 = 0;
+
             func_8008A4DC(1);
             vs_mainMenu_setNextMenuAction(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            D_80108D30 = 10;
+
+            armfileLoadDelay = 10;
             *state = 8;
         }
+
         break;
+
     case 8:
         func_800FFB68(0);
         *state = 9;
         break;
+
     case 9:
         if (D_801022D8 == 0) {
-            D_80108D44[0].x = 0x280;
-            D_80108D44[0].y = 0x100;
-            D_80108D44[0].w = 0x20;
-            D_80108D44[0].h = 0xF0;
-            (&D_80108D44[1])->x = 0x300;
-            (&D_80108D44[1])->y = 0x100;
-            (&D_80108D44[1])->w = 0x20;
-            (&D_80108D44[1])->h = 0xF0;
-            ClearImage(D_80108D44, 0, 0, 0);
-            ClearImage(&D_80108D44[1], 0, 0, 0);
-            vs_main_loadClut((u_short*)D_80108D3C, 3, 0, 0x100);
-            vs_battle_drawImage(0x010002A0, D_80108D3C + 0x80, 0xF00060);
+
+            menuBgBackRects[0].x = 640;
+            menuBgBackRects[0].y = 256;
+            menuBgBackRects[0].w = 32;
+            menuBgBackRects[0].h = 240;
+
+            (&menuBgBackRects[1])->x = 768;
+            (&menuBgBackRects[1])->y = 256;
+            (&menuBgBackRects[1])->w = 32;
+            (&menuBgBackRects[1])->h = 240;
+
+            ClearImage(menuBgBackRects, 0, 0, 0);
+            ClearImage(&menuBgBackRects[1], 0, 0, 0);
+            vs_main_loadClut((u_short*)menuBgBackup, 3, 0, 0x100);
+            vs_battle_drawImage(0x010002A0, menuBgBackup + 0x80, 0xF00060);
+
             *state = 10;
         }
         break;
+
     case 10:
         if (D_80108D38 == 2) {
             vs_battle_menuState.currentState = 6;
         }
-        vs_main_freeHeapR(D_80108D3C);
+
+        vs_main_freeHeapR(menuBgBackup);
+
         D_801022D6 = 0;
         *state = 0;
         return 1;
@@ -335,21 +380,24 @@ vs_main_CdFile const _sceneArmFiles[] = { { VS_DUMMY_ARM_LBA, VS_DUMMY_ARM_SIZE 
 
 int const D_80102C00[] = { 0x00404040, 0x00505050, 0x00606060, 0x00707070, 0x00808080,
     0x00808080, 0x00808080, 0x00808080, 0x00808080, 0x00808080, 0x00808080, 0x00808080,
-    0x00707070, 0x00606060, 0x00505050, 0x00404040, 0x006B4100, 0x006C8219, 0x00663040,
-    0x00203840, 0x00330500, 0x00262801, 0x00200808, 0x00081010 };
+    0x00707070, 0x00606060, 0x00505050, 0x00404040 };
+
+// Junk?
+int const D_80102C40[] = { 0x006B4100, 0x006C8219, 0x00663040, 0x00203840, 0x00330500,
+    0x00262801, 0x00200808, 0x00081010 };
 
 u_short _mapNames[] = {
 #include "build/assets/MENU/MENU5.PRG/mapNames.vsString"
 };
 
-static int D_80108D60;
+static int _menuState;
 static int _currentRoomIndex;
 static int D_80108D68;
-static int D_80108D6C;
+static int _menuFramesCounter;
 static int _geomOffsetX;
 static int _geomOffsetY;
 static int _isCurrentScene;
-static int D_80108D7C;
+static int _cameraDistance;
 static int _currentScene;
 static int D_80108D84;
 static int _isPaling;
@@ -360,8 +408,8 @@ static vs_battle_roomName* _roomNamesTable;
 static short _menuCommandsState;
 static short D_80108D9E;
 static short _1[2] __attribute__((unused));
-static short D_80108DA4[4];
-static short D_80108DAC[4];
+static SVECTOR _cameraAngles;
+static SVECTOR _cameraPos;
 static SVECTOR _centerPoint;
 static vs_main_CdQueueSlot* _sceneCdQueueSlot;
 static void* D_80108DC0;
@@ -390,12 +438,12 @@ static int _loadArmFile(void)
         D_80108D8C = 0;
         D_80108D94 = 0;
 
-        vs_main_bzero(D_80108DA4, sizeof D_80108DA4);
-        vs_main_bzero(D_80108DAC, sizeof D_80108DAC);
+        vs_main_bzero(&_cameraAngles, sizeof _cameraAngles);
+        vs_main_bzero(&_cameraPos, sizeof _cameraPos);
 
-        D_80108DA4[0] = 568;
+        _cameraAngles.vx = 568;
         _currentRoomIndex = 0;
-        D_80108DA4[2] = D_80108DA4[1] = 2048 - *(u_short*)getScratchAddr(22);
+        _cameraAngles.vz = _cameraAngles.vy = 2048 - *(u_short*)getScratchAddr(22);
 
         _currentScene = vs_battle_getCurrentSceneId();
 
@@ -406,13 +454,13 @@ static int _loadArmFile(void)
         paling = vs_main_stateFlags.mapPaling[_currentScene];
 
         D_80108D90 = _currentScene;
-        D_80108D60 = 0;
+        _menuState = 0;
         D_80108D68 = 128;
-        D_80108D6C = 0;
+        _menuFramesCounter = 0;
         _geomOffsetX = -384;
         _geomOffsetY = 0;
         D_80108E44 = 1;
-        D_80108D7C = 768;
+        _cameraDistance = ONE * 3 / 16;
         _menuCommandsState = 5;
         D_80108D9E = 0;
         _isPaling = paling;
@@ -445,8 +493,22 @@ static int _loadArmFile(void)
     return 1;
 }
 
-static int func_80103684(void)
+/**
+ * Processes most of the menu's logic including input.
+ *
+ * @return int
+ */
+static int _menuManager(void)
 {
+    enum state {
+        init,
+        processInput,
+        displayMapMenu,
+        quit,
+        initNewMap,
+        waitForMapAnimation
+    };
+
     int var_s2;
     int roomIndex;
     int new_var2;
@@ -466,30 +528,30 @@ static int func_80103684(void)
         func_80100414(0x7FE, (D_80108D68 + 0x80) / 2);
     }
 
-    if (D_80108D60 != 1) {
+    if (_menuState != 1) {
         _menuCommandsState = 5;
     }
 
-    switch (D_80108D60) {
-    case 0:
+    switch (_menuState) {
+    case init:
         if (D_80108D68 > 32) {
             D_80108D68 -= 16;
             _geomOffsetX += 64;
         } else {
             vs_battle_initTextBox(0, 0, 60, 224, 16, 1, 60, 224);
             vs_battle_setTextBox(0, _roomNamesTable[_currentRoomIndex].name);
-            ++D_80108D60;
+            ++_menuState;
         }
 
         func_801042B0();
         break;
 
-    case 1:
+    case processInput:
         var_s2 = 0;
 
         if (D_80108D8C != D_80108D94) {
             D_80108D94 = D_80108D8C;
-            func_80102CD8(D_80108D8C == 0);
+            _setNextAction(D_80108D8C == 0);
         }
 
         if (vs_main_buttonsPressed.all & PADRright) {
@@ -497,11 +559,11 @@ static int func_80103684(void)
 
             vs_main_playSfxDefault(0x7E, 5);
 
-            D_80108D60 = 2;
+            _menuState = displayMapMenu;
 
             if (D_80108D94 != 0) {
                 D_80108D94 = 0;
-                func_80102CD8(1);
+                _setNextAction(1);
             }
 
             func_8010451C(1);
@@ -514,7 +576,7 @@ static int func_80103684(void)
                 D_80108E44 = 2;
             }
 
-            D_80108D60 = 3;
+            _menuState = quit;
 
             vs_battle_dismissTextBox(0);
 
@@ -530,23 +592,23 @@ static int func_80103684(void)
                 var_s2 = 3;
 
                 if ((vs_main_stickPosBuf.lStickX - 128) < -64) {
-                    D_80108DA4[1] -= 64;
+                    _cameraAngles.vy -= 64;
                 } else if ((vs_main_stickPosBuf.lStickX - 128) > 64) {
-                    D_80108DA4[1] += 64;
+                    _cameraAngles.vy += 64;
                 }
 
                 if ((vs_main_stickPosBuf.lStickY - 128) < -64) {
-                    D_80108DA4[0] += 64;
+                    _cameraAngles.vx += 64;
                 } else if ((vs_main_stickPosBuf.lStickY - 128) > 64) {
-                    D_80108DA4[0] -= 64;
+                    _cameraAngles.vx -= 64;
                 }
 
-                if (D_80108DA4[0] >= 0) {
-                    if (D_80108DA4[0] > 1024) {
-                        D_80108DA4[0] = 1024;
+                if (_cameraAngles.vx >= 0) {
+                    if (_cameraAngles.vx > 1024) {
+                        _cameraAngles.vx = 1024;
                     }
                 } else {
-                    D_80108DA4[0] = 0;
+                    _cameraAngles.vx = 0;
                 }
 
             } else {
@@ -560,34 +622,34 @@ static int func_80103684(void)
                         || (rstickY = vs_main_stickPosBuf.rStickY - 128,
                             ABS(rstickY) > 64)) {
                         if ((vs_main_stickPosBuf.rStickX - 128) < -64) {
-                            D_80108DA4[1] -= 64;
+                            _cameraAngles.vy -= 64;
                         } else if ((vs_main_stickPosBuf.rStickX - 128) > 64) {
-                            D_80108DA4[1] += 64;
+                            _cameraAngles.vy += 64;
                         }
                         if ((vs_main_stickPosBuf.rStickY - 128) < -64) {
-                            D_80108DA4[0] += 64;
+                            _cameraAngles.vx += 64;
                         } else if ((vs_main_stickPosBuf.rStickY - 128) > 64) {
-                            D_80108DA4[0] -= 64;
+                            _cameraAngles.vx -= 64;
                         }
-                        if (D_80108DA4[0] < 0) {
-                            D_80108DA4[0] = 0;
+                        if (_cameraAngles.vx < 0) {
+                            _cameraAngles.vx = 0;
                             // dummy assignment to break deduplication optimization around
                             // line 184
-                        } else if ((lStickX = D_80108DA4[0]) > 1024) {
-                            D_80108DA4[0] = 1024;
+                        } else if ((lStickX = _cameraAngles.vx) > 1024) {
+                            _cameraAngles.vx = 1024;
                         }
                     } else {
                         if (vs_main_buttonsPreviousState & PADLleft) {
-                            D_80108DA4[1] -= 64;
+                            _cameraAngles.vy -= 64;
                         } else if (vs_main_buttonsPreviousState & PADLright) {
-                            D_80108DA4[1] += 64;
+                            _cameraAngles.vy += 64;
                         }
                         if ((vs_main_buttonsPreviousState & PADLdown)
-                            && (D_80108DA4[0] > 0)) {
-                            D_80108DA4[0] -= 64;
+                            && (_cameraAngles.vx > 0)) {
+                            _cameraAngles.vx -= 64;
                         } else if ((vs_main_buttonsPreviousState & PADLup)
-                                   && (D_80108DA4[0] < 1024)) {
-                            D_80108DA4[0] += 64;
+                                   && (_cameraAngles.vx < 1024)) {
+                            _cameraAngles.vx += 64;
                         }
                     }
                 } else if (vs_main_buttonsPreviousState & PADR2) {
@@ -601,32 +663,33 @@ static int func_80103684(void)
                             ABS(rstickY) > 64)) {
 
                         if ((vs_main_stickPosBuf.rStickY - 128) < -0x40) {
-                            D_80108D7C -= 16;
+                            _cameraDistance -= ONE / 256;
                         } else if ((vs_main_stickPosBuf.rStickY - 128) > 64) {
-                            D_80108D7C += 16;
+                            _cameraDistance += ONE / 256;
                         }
 
-                        if (D_80108D7C < 512) {
-                            D_80108D7C = 512;
-                        } else if (D_80108D7C > 1024) {
-                            D_80108D7C = 1024;
+                        if (_cameraDistance < ONE / 8) {
+                            _cameraDistance = ONE / 8;
+                        } else if (_cameraDistance > ONE / 4) {
+                            _cameraDistance = ONE / 4;
                         }
 
                     } else {
-                        if (vs_main_buttonsPreviousState & PADLup && (D_80108D7C > 512)) {
-                            D_80108D7C -= 16;
+                        if (vs_main_buttonsPreviousState & PADLup
+                            && (_cameraDistance > ONE / 8)) {
+                            _cameraDistance -= ONE / 256;
                         } else if ((vs_main_buttonsPreviousState & PADLdown)
-                                   && (D_80108D7C < 1024)) {
-                            D_80108D7C += 16;
+                                   && (_cameraDistance < ONE / 4)) {
+                            _cameraDistance += ONE / 256;
                         }
                     }
                 } else if (vs_main_buttonsPreviousState & PADstart) {
 
                     _geomOffsetX = 0;
                     _geomOffsetY = 0;
-                    D_80108D7C = 0x300;
-                    D_80108DA4[0] = 0x238;
-                    D_80108DA4[1] = 0x800 - *(u_short*)getScratchAddr(22);
+                    _cameraDistance = ONE * 3 / 16;
+                    _cameraAngles.vx = 0x238;
+                    _cameraAngles.vy = 0x800 - *(u_short*)getScratchAddr(22);
                     _currentRoomIndex = _getCurrentRoomIndex(vs_battle_sceneBuffer);
 
                     _snapMapToRoom(vs_battle_sceneBuffer, _currentRoomIndex);
@@ -705,7 +768,7 @@ static int func_80103684(void)
         func_801042B0();
         break;
 
-    case 2:
+    case displayMapMenu:
         func_801042B0();
 
         D_80108D84 = new_var2 = func_8010451C(0);
@@ -714,13 +777,13 @@ static int func_80103684(void)
             break;
         } else if (new_var2 == -3) {
 
-            D_80108D60 = 3;
+            _menuState = quit;
             D_80108E44 = 2;
 
             vs_battle_dismissTextBox(0);
 
         } else if (new_var2 == -2) {
-            D_80108D60 = 1;
+            _menuState = processInput;
 
             _setMenuItemMapName(
                 (char*)&_mapNames[_mapNames[_currentScene]], _currentScene == D_80108D90);
@@ -728,7 +791,7 @@ static int func_80103684(void)
 
             _isPaling = vs_main_stateFlags.mapPaling[_currentScene];
             _currentScene = D_80108DC4[new_var2];
-            D_80108D60 = 4;
+            _menuState = initNewMap;
 
             D_80108DC0 = vs_main_allocHeapR(_sceneArmFiles[_currentScene].size);
             _sceneCdQueueSlot =
@@ -737,7 +800,7 @@ static int func_80103684(void)
         }
         break;
 
-    case 3:
+    case quit:
         D_80108D9E = 2;
 
         if (D_80108D68 >= 128) {
@@ -753,10 +816,11 @@ static int func_80103684(void)
         func_801042B0();
         break;
 
-    case 4:
+    case initNewMap:
         _geomOffsetX += 64;
 
-        if ((_sceneCdQueueSlot->state == 4) && (_geomOffsetX >= 0x180)) {
+        if ((_sceneCdQueueSlot->state == vs_main_CdQueueStateLoaded)
+            && (_geomOffsetX >= 384)) {
 
             _isPaling = 0;
 
@@ -782,24 +846,24 @@ static int func_80103684(void)
 
             _geomOffsetX = -384;
             _geomOffsetY = 0;
-            D_80108D60 = 5;
+            _menuState = waitForMapAnimation;
         }
 
         func_801042B0();
         break;
 
-    case 5:
+    case waitForMapAnimation:
         _geomOffsetX += 64;
 
         if (_geomOffsetX >= 0) {
-            D_80108D60 = 1;
+            _menuState = processInput;
         }
 
         func_801042B0();
         break;
     }
 
-    ++D_80108D6C;
+    ++_menuFramesCounter;
 
     _smoothMapToCenterpoint(vs_battle_sceneBuffer);
 
@@ -845,7 +909,7 @@ static void func_801042B0(void)
         return;
     }
 
-    func_80104384();
+    _setCamera();
     _darkenBackground();
 
     if (_isPaling == 0) {
@@ -853,50 +917,29 @@ static void func_801042B0(void)
     }
 }
 
-static void func_80104384(void)
+/**
+ * Applies the current camera values.
+ */
+static void _setCamera(void)
 {
     SVECTOR sp10;
     MATRIX sp18;
     MATRIX sp38;
-    int temp_s0;
-    int temp_v1;
-    int var_v0;
-    short* new_var;
 
-    temp_s0 = rsin(D_80108DA4[1]);
-    temp_v1 = rcos(D_80108DA4[0]);
-    new_var = D_80108DAC;
-    temp_s0 *= D_80108D7C;
-    if (temp_s0 < 0) {
-        temp_s0 += 0xFFF;
-    }
-    var_v0 = (temp_s0 >> 0xC) * temp_v1;
-    if (var_v0 < 0) {
-        var_v0 += 0xFFF;
-    }
-    D_80108DAC[0] = var_v0 >> 0xC;
-    temp_s0 = rcos(D_80108DA4[1]);
-    temp_v1 = rcos(D_80108DA4[0]);
-    temp_s0 *= -D_80108D7C;
-    if (temp_s0 < 0) {
-        temp_s0 += 0xFFF;
-    }
-    var_v0 = (temp_s0 >> 0xC) * temp_v1;
-    if (var_v0 < 0) {
-        var_v0 += 0xFFF;
-    }
-    D_80108DAC[2] = var_v0 >> 0xC;
-    var_v0 = rsin(D_80108DA4[0]) * -D_80108D7C;
-    if (var_v0 < 0) {
-        var_v0 += 0xFFF;
-    }
-    D_80108DAC[1] = var_v0 >> 0xC;
-    func_80106178(&sp18, D_80108DA4[1]);
-    func_801061EC(&sp38, D_80108DA4[0]);
+    _cameraPos.vx =
+        (((rsin(_cameraAngles.vy) * _cameraDistance) / ONE) * rcos(_cameraAngles.vx))
+        / ONE;
+    _cameraPos.vz =
+        (((rcos(_cameraAngles.vy) * -_cameraDistance) / ONE) * rcos(_cameraAngles.vx))
+        / ONE;
+    _cameraPos.vy = (rsin(_cameraAngles.vx) * -_cameraDistance) / ONE;
+
+    _buildYawMatrix(&sp18, _cameraAngles.vy);
+    _buildPitchMatrix(&sp38, _cameraAngles.vx);
     func_80041C68(&sp38, &sp18);
-    sp10.vx = -new_var[0];
-    sp10.vy = -new_var[1];
-    sp10.vz = -new_var[2];
+
+    applyVector(&sp10, _cameraPos.vx, _cameraPos.vy, _cameraPos.vz, = -);
+
     ApplyMatrix(&sp18, &sp10, (VECTOR*)sp38.t);
     SetRotMatrix(&sp18);
     SetTransMatrix(&sp38);
@@ -938,11 +981,11 @@ static int func_8010451C(int arg0)
         if (D_80108D90 == 0) {
             var_a1 = 0x80;
         }
-        func_80102D90(var_a0, var_a1, sp10);
+        _configureMapMenu(var_a0, var_a1, sp10);
         ++D_80108D54;
         break;
     case 1:
-        D_80108D58 = func_80102ED8();
+        D_80108D58 = _mapSelection();
         if (D_80108D58 == -1) {
             break;
         }
@@ -970,7 +1013,7 @@ typedef struct {
     short x;
     short y;
     short type;
-    short doorId;
+    short id;
 } mapLabel;
 
 static int D_80108E54[4][2];
@@ -1030,9 +1073,11 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         var_s1[i][2] = v0;
         v0 -= 0x40;
         var_s1[i][3] = sp38;
+
         if (v0 >= 0x7BF) {
             return 0;
         }
+
         roomData += 8;
     }
     if (roomIndex == _currentRoomIndex) {
@@ -1044,19 +1089,24 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         colorIn.g = 0x40;
         colorIn.b = 0x80;
     }
+
     var_s3 = roomData;
     var_s3 += 4;
     elementCount = *(int*)roomData;
     polyG3 = *(void**)getScratchAddr(0);
 
     for (i = 0; i < elementCount; ++i) {
+
         sp38 = var_s1[var_s3[0]][2];
+
         if (sp38 < var_s1[var_s3[1]][2]) {
             sp38 = var_s1[var_s3[1]][2];
         }
+
         if (sp38 < var_s1[var_s3[2]][2]) {
             sp38 = var_s1[var_s3[2]][2];
         }
+
         setPolyG3(polyG3);
         polyG3->x0 = var_s1[var_s3[0]][0];
         polyG3->x1 = var_s1[var_s3[1]][0];
@@ -1064,13 +1114,18 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         polyG3->y0 = var_s1[var_s3[0]][1];
         polyG3->y1 = var_s1[var_s3[1]][1];
         polyG3->y2 = var_s1[var_s3[2]][1];
+
         DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
         setRGB0(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
+
         DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut0);
         setRGB1(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
+
         DpqColor(&colorIn, var_s1[var_s3[2]][3], &colorOut0);
         setRGB2(polyG3, colorOut0.r, colorOut0.g, colorOut0.b);
+
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG3++);
+
         var_s3 += 4;
     }
 
@@ -1080,15 +1135,19 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
 
     for (i = 0; i < elementCount; ++i) {
         sp38 = var_s1[var_s3[0]][2];
+
         if (sp38 < var_s1[var_s3[1]][2]) {
             sp38 = var_s1[var_s3[1]][2];
         }
+
         if (sp38 < var_s1[var_s3[2]][2]) {
             sp38 = var_s1[var_s3[2]][2];
         }
+
         if (sp38 < var_s1[var_s3[3]][2]) {
             sp38 = var_s1[var_s3[3]][2];
         }
+
         setPolyG4(polyG4);
         polyG4->x0 = var_s1[var_s3[0]][0];
         polyG4->x1 = var_s1[var_s3[1]][0];
@@ -1098,15 +1157,21 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         polyG4->y1 = var_s1[var_s3[1]][1];
         polyG4->y2 = var_s1[var_s3[3]][1];
         polyG4->y3 = var_s1[var_s3[2]][1];
+
         DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
         setRGB0(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+
         DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut0);
         setRGB1(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+
         DpqColor(&colorIn, var_s1[var_s3[3]][3], &colorOut0);
         setRGB2(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+
         DpqColor(&colorIn, var_s1[var_s3[2]][3], &colorOut0);
         setRGB3(polyG4, colorOut0.r, colorOut0.g, colorOut0.b);
+
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, polyG4++);
+
         var_s3 += 4;
     }
 
@@ -1118,53 +1183,68 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
     for (i = 0; i < elementCount; ++i) {
         long scratch = 0;
         sp38 = var_s1[var_s3[0]][2] - 1;
+
         if (sp38 < var_s1[var_s3[1]][2]) {
             sp38 = var_s1[var_s3[1]][2] - 1;
         }
+
         colorIn.g = 0x80;
         colorIn.r = 0;
         colorIn.b = 0xFF;
+
         DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
         DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut1);
 
         setLineG2(lineG2);
         setSemiTrans(lineG2, 1);
+
         lineG2->x0 = var_s1[var_s3[0]][0] - 1;
         lineG2->x1 = var_s1[var_s3[1]][0] - 1;
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
         setSemiTrans(lineG2, 1);
+
         lineG2->x0 = var_s1[var_s3[0]][0];
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1] - 1;
         lineG2->y1 = var_s1[var_s3[1]][1] - 1;
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
         setSemiTrans(lineG2, 1);
+
         lineG2->x0 = var_s1[var_s3[0]][0] + 1;
         lineG2->x1 = var_s1[var_s3[1]][0] + 1;
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         setLineG2(lineG2);
         setSemiTrans(lineG2, 1);
+
         lineG2->x0 = var_s1[var_s3[0]][0];
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1] + 1;
         lineG2->y1 = var_s1[var_s3[1]][1] + 1;
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         if (roomIndex == _currentRoomIndex) {
@@ -1176,43 +1256,57 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
         }
 
         setLineG2(lineG2);
+
         lineG2->x0 = var_s1[var_s3[0]][0];
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)(0x1f800000 + scratch))[1] + sp38, lineG2++);
 
         var_s3 += 4;
     }
+
     elementCount = *(int*)var_s3;
     var_s3 += 4;
 
     for (i = 0; i < elementCount; ++i, var_s3 += 4) {
+
         sp38 = var_s1[var_s3[0]][2] - 1;
+
         if (sp38 < var_s1[var_s3[1]][2]) {
             sp38 = var_s1[var_s3[1]][2] - 1;
         }
+
         if (roomIndex == _currentRoomIndex) {
             colorIn.g = 0xFF;
         } else {
             colorIn.g = 0x40;
         }
+
         colorIn.r = 0;
         colorIn.b = 0x80;
+
         DpqColor(&colorIn, var_s1[var_s3[0]][3], &colorOut0);
         DpqColor(&colorIn, var_s1[var_s3[1]][3], &colorOut1);
+
         setLineG2(lineG2);
+
         do {
             setSemiTrans(lineG2, 1);
         } while (0);
+
         lineG2->x0 = var_s1[var_s3[0]][0];
         lineG2->x1 = var_s1[var_s3[1]][0];
         lineG2->y0 = var_s1[var_s3[0]][1];
         lineG2->y1 = var_s1[var_s3[1]][1];
+
         setRGB0(lineG2, colorOut0.r, colorOut0.g, colorOut0.b);
         setRGB1(lineG2, colorOut1.r, colorOut1.g, colorOut1.b);
+
         AddPrim(((int**)getScratchAddr(0))[1] + sp38, lineG2++);
     }
 
@@ -1221,11 +1315,15 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
     var_s3 += 4;
 
     for (i = 0; i < elementCount; ++i, var_s3 += 4) {
+
         sp3C = 0;
         *(void**)getScratchAddr(0) = tile;
+
         if ((var_s3[3] != 0) && (func_8010839C(var_s3[3], arg2, arg3) != 0)
             && (roomIndex == _currentRoomIndex)) {
+
             func_80107630(var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE, var_s3[3]);
+
             tile = *(void**)getScratchAddr(0);
             sp3C = 1;
         }
@@ -1237,7 +1335,7 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                 _addMapLabel(var_s1[var_s3[0]][0], var_s1[var_s3[0]][1], 1, var_s3[1]);
 
                 if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
-                    if (D_80108D6C & 0x10) {
+                    if (_menuFramesCounter & 0x10) {
                         colorIn.r = 0xFF;
                         colorIn.g = 0;
                         colorIn.b = 0x80;
@@ -1253,7 +1351,7 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
 
             if ((roomIndex == _currentRoomIndex) && (var_s3[2] == 0)) {
                 if ((roomIndex == _isCurrentScene) && (i == vs_battle_doorEntered)) {
-                    if (D_80108D6C & 0x10) {
+                    if (_menuFramesCounter & 0x10) {
                         colorIn.r = 0xFF;
                         colorIn.g = 0;
                         colorIn.b = 0x80;
@@ -1266,64 +1364,84 @@ static int _drawRoom(int roomIndex, void* roomData, int arg2, int arg3)
                     sp3C = 1;
                 }
             }
+
             j = 0;
+
             if ((var_s3[2] & 0xB) && (roomIndex == _isCurrentScene)) {
                 sp28[j++] = 0;
             }
+
             if ((var_s3[2] & 2) && (roomIndex == _currentRoomIndex)) {
                 sp28[j++] = 1;
             }
+
             if ((var_s3[2] & 8) && (roomIndex == _currentRoomIndex)) {
                 sp28[j++] = 2;
                 sp28[j++] = 1;
                 sp28[j++] = 3;
             }
+
             if ((var_s3[2] & 0x10) && (roomIndex == _currentRoomIndex)) {
                 sp28[j++] = 3;
             }
+
             if (j > 0) {
+
                 colorIn.r = 0xA0;
                 colorIn.g = 0xA0;
                 colorIn.b = 0;
                 sp3C = 1;
-                switch (sp28[(D_80108D6C >> 5) % j]) {
+
+                switch (sp28[(_menuFramesCounter >> 5) % j]) {
                 case 0:
                     _renderDefaultIcon(0,
                         ((var_s1[var_s3[0]][0] - 8) & 0xFFFF)
                             | ((var_s1[var_s3[0]][1] << 16) + 0xFFF80000),
-                        *((D_80108D6C & 0xF) + (new_var = D_80102C00)),
+                        *((_menuFramesCounter & 0xF) + (new_var = D_80102C00)),
                         ((void**)getScratchAddr(0))[1] + 32);
                     break;
+
                 case 1:
                     _renderIcon(2, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
                     break;
+
                 case 2:
                     _renderIcon(1, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
                     break;
+
                 case 3:
                     _renderIcon(3, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 0xE);
                     break;
                 }
             }
+
             tile = *(void**)getScratchAddr(0);
+
             if (sp3C != 0) {
                 int** s2;
                 sp38 = var_s1[var_s3[0]][2] - 1;
+
                 setTile(tile);
                 setXY0(tile, var_s1[var_s3[0]][0] - 1, var_s1[var_s3[0]][1]);
                 setWH(tile, 3, 1);
                 setRGB0(tile, colorIn.r, colorIn.g, colorIn.b);
+
                 AddPrim(((int**)getScratchAddr(0))[1] + sp38, tile++);
+
                 setTile(tile);
                 setXY0(tile, var_s1[var_s3[0]][0], var_s1[var_s3[0]][1] - 1);
                 setWH(tile, 1, 3);
                 setRGB0(tile, colorIn.r, colorIn.g, colorIn.b);
+
                 s2 = ((int**)getScratchAddr(0));
+
                 AddPrim(s2[1] + sp38, tile++);
             }
         }
     }
+
     *(void**)getScratchAddr(0) = tile;
+
     return 1;
 }
 
@@ -1572,7 +1690,7 @@ static void _scaleRoomVertices(vs_battle_scene* scene, int factor)
     }
 }
 
-static void func_80106178(MATRIX* arg0, short arg1)
+static void _buildYawMatrix(MATRIX* arg0, short arg1)
 {
     int temp_s0 = rsin(-arg1);
     int temp_v0 = rcos(-arg1);
@@ -1588,7 +1706,7 @@ static void func_80106178(MATRIX* arg0, short arg1)
     arg0->m[2][2] = temp_v0;
 }
 
-static void func_801061EC(MATRIX* arg0, short arg1)
+static void _buildPitchMatrix(MATRIX* arg0, short arg1)
 {
     int temp_s0 = rsin(arg1);
     int temp_v0 = rcos(arg1);
@@ -1712,28 +1830,30 @@ static void _applyPalingScreenEffect(void)
         setSemiTrans(sprt, 1);
         setRGB0(sprt, 128, 128, 128);
 
-        v = D_80108D6C;
+        v = _menuFramesCounter;
         new_var = (void**)getScratchAddr(0);
 
         if (y & 1) {
-            x = rsin((D_80108D6C + y) << 6);
+            x = rsin((_menuFramesCounter + y) << 6);
             if (x < 0) {
                 x += 127;
             }
             x = x >> 7;
         } else {
-            x = rsin((D_80108D6C + y) << 6);
+            x = rsin((_menuFramesCounter + y) << 6);
             if (x < 0) {
                 x += 127;
             }
             x = -(x >> 7);
         }
+
         setXY0(sprt, x, y);
         setWH(sprt, 192, 1);
         setUV0(sprt, 0, y);
         setClut(sprt, 0, 0);
 
         AddPrim(new_var[1] + 0x20, sprt++);
+
         new_var[0] = (void*)sprt;
 
         if (vs_main_frameBuf != 0) {
@@ -1748,14 +1868,14 @@ static void _applyPalingScreenEffect(void)
         setRGB0(sprt, 128, 128, 128);
 
         if (y & 1) {
-            x = rsin((D_80108D6C + y) << 6);
+            x = rsin((_menuFramesCounter + y) << 6);
             if (x < 0) {
                 x += 127;
             }
             x = (x >> 7) + 192;
         } else {
             int offset;
-            x = rsin((D_80108D6C + y) << 6);
+            x = rsin((_menuFramesCounter + y) << 6);
             offset = x >> 7;
             if (x < 0) {
                 offset = (x + 127) >> 7;
@@ -1768,6 +1888,7 @@ static void _applyPalingScreenEffect(void)
         setUV0(sprt, 0, y);
 
         AddPrim(new_var[1] + 0x20, sprt++);
+
         new_var[0] = (void*)sprt;
 
         if (vs_main_frameBuf != 0) {
@@ -1958,7 +2079,7 @@ static void _drawUIControls(void)
 
         _insertTPage(7, getTPage(2, 0, 192, 0));
 
-        func_80107B10(0x3E, 0xB8, D_80108DA4[1]);
+        func_80107B10(0x3E, 0xB8, _cameraAngles.vy);
 
     } else {
         vs_battle_renderTextRawColor("JAMMING", vs_getXY(uiXOffset + 28, 18),
@@ -1996,17 +2117,17 @@ static void _renderIcon(int id, int x, int y)
     scratch[0] = poly;
 }
 
-static void func_80107630(int x, int y, int arg2)
+static void func_80107630(int x, int y, int id)
 {
     RECT* rect0;
     RECT* rect1;
     int temp;
     void** new_var = (void**)getScratchAddr(0);
     POLY_FT4* poly = new_var[0];
+    int s6 = (id - 1);
 
-    int s6 = (arg2 - 1);
-    arg2 = vs_main_stateFlags.unk33F[arg2] & 1;
-    rect0 = &D_80108D04[arg2];
+    id = vs_main_stateFlags.unk33F[id] & 1;
+    rect0 = &D_80108D04[id];
 
     setPolyFT4(poly);
     setShadeTex(poly, 1);
@@ -2018,10 +2139,11 @@ static void func_80107630(int x, int y, int arg2)
     setClut(poly, 976, 223);
 
     temp = s6 & 0x7F;
+
     AddPrim(new_var[1] + 28, poly++);
 
     y += rect0->h;
-    rect1 = &D_80108D14[arg2];
+    rect1 = &D_80108D14[id];
 
     setPolyFT4(poly);
     setShadeTex(poly, 1);
@@ -2033,7 +2155,9 @@ static void func_80107630(int x, int y, int arg2)
     setClut(poly, 864, 223);
 
     AddPrim(new_var[1] + 28, poly++);
+
     new_var[0] = poly;
+
     _addMapLabel(x, y, 0, temp);
 }
 
@@ -2167,8 +2291,8 @@ static void func_80107B10(int arg0, int arg1, int arg2)
         AddPrim(new_var3[1] + 0x18, poly++);
     }
 
-    func_8010800C(arg0, arg1, 0xF, 0xF, (arg2 - D_80108DA4[2]) + 0x200);
-    func_8010800C(D_80108E54[0][0], D_80108E54[0][1], 0xF, 0x11, arg2 - D_80108DA4[2]);
+    func_8010800C(arg0, arg1, 0xF, 0xF, (arg2 - _cameraAngles.vz) + 0x200);
+    func_8010800C(D_80108E54[0][0], D_80108E54[0][1], 0xF, 0x11, arg2 - _cameraAngles.vz);
 
     setPolyFT4(poly);
     setSemiTrans(poly, 1);
@@ -2261,12 +2385,12 @@ static void _renderConnectingMapName(int x, int y, int mapId)
     vs_battle_getMenuItem(0)->state = 0;
 }
 
-static void _addMapLabel(int x, int y, int type, int doorId)
+static void _addMapLabel(int x, int y, int type, int labelId)
 {
     _mapLabels[_mapLabelCount].x = x;
     _mapLabels[_mapLabelCount].y = y;
     _mapLabels[_mapLabelCount].type = type;
-    _mapLabels[_mapLabelCount].doorId = doorId;
+    _mapLabels[_mapLabelCount].id = labelId;
     ++_mapLabelCount;
 }
 
@@ -2280,14 +2404,13 @@ static void renderMapLabels(void)
 
     for (i = 0; i < _mapLabelCount; ++i) {
         if (_mapLabels[i].type == 0) {
-            _renderDoorName(_mapLabels[i].x, _mapLabels[i].y, _mapLabels[i].doorId);
+            _renderDoorName(_mapLabels[i].x, _mapLabels[i].y, _mapLabels[i].id);
         }
     }
 
     for (i = 0; i < _mapLabelCount; ++i) {
         if (_mapLabels[i].type != 0) {
-            _renderConnectingMapName(
-                _mapLabels[i].x, _mapLabels[i].y, _mapLabels[i].doorId);
+            _renderConnectingMapName(_mapLabels[i].x, _mapLabels[i].y, _mapLabels[i].id);
         }
     }
 }

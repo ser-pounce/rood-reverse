@@ -226,7 +226,7 @@ static int _loadMapBackground(int arg0)
         if (slot->state == 4) {
             vs_main_freeCdQueueSlot(slot);
             vs_main_loadClut(buf, 3, 0, 256);
-            vs_battle_drawImage(vs_getXY(640, 256), buf + 256, vs_getWH(160, 240));
+            vs_battle_renderImage(vs_getXY(640, 256), buf + 256, vs_getWH(160, 240));
             func_80100414(-4, 0x80);
             state = 1;
         }
@@ -347,7 +347,7 @@ int vs_menu5_exec(char* state)
             ClearImage(menuBgBackRects, 0, 0, 0);
             ClearImage(&menuBgBackRects[1], 0, 0, 0);
             vs_main_loadClut((u_short*)menuBgBackup, 3, 0, 0x100);
-            vs_battle_drawImage(0x010002A0, menuBgBackup + 0x80, 0xF00060);
+            vs_battle_renderImage(0x010002A0, menuBgBackup + 0x80, 0xF00060);
 
             *state = 10;
         }

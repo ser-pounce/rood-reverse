@@ -673,12 +673,12 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
 
     if (((vs_battle_menuState.currentState & 0x3F) == 7) && (D_800F4EA0 & 0x200)
         && (vs_main_stateFlags.gameOver == 1)) {
-        vs_battle_drawImage(vs_getXY(640, 511), data, vs_getWH(256, 1));
+        vs_battle_renderImage(vs_getXY(640, 511), data, vs_getWH(256, 1));
     } else {
         vs_main_loadClut((u_short*)data, 3, 0, 256);
     }
 
-    vs_battle_drawImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));
+    vs_battle_renderImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));
     func_80100414(-4, 0x80);
 }
 

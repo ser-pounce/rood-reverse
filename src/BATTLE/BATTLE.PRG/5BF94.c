@@ -1279,7 +1279,7 @@ void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
             }
         }
     }
-    vs_battle_drawImage(
+    vs_battle_renderImage(
         (x + (vs_main_frameBuf * 320)) | (_y << 0x10), buf, width | (height << 0x10));
     DrawSync(0);
     vs_main_freeHeapR(buf);
@@ -1932,9 +1932,9 @@ void func_800CA9C0(void* arg0)
     vs_battle_rMemzero(vs_battle_submenuStates, sizeof vs_battle_submenuStates);
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
-    vs_battle_drawImage(0x340, arg0, 0xE00040);
-    vs_battle_drawImage(0x380, arg0 + 0x7000, 0xE00040);
-    vs_battle_drawImage(0x4203C0, arg0 + 0xE000, 0x9E0040);
+    vs_battle_renderImage(0x340, arg0, 0xE00040);
+    vs_battle_renderImage(0x380, arg0 + 0x7000, 0xE00040);
+    vs_battle_renderImage(0x4203C0, arg0 + 0xE000, 0x9E0040);
     DrawSync(0);
     ClearOTag(D_800F51B8, 0x22);
 }
@@ -2487,7 +2487,7 @@ int vs_battle_drawCursor(int animStep, int position)
     return (animStep + 1) & 0xF;
 }
 
-void vs_battle_drawImage(int xy, void* buffer, int wh)
+void vs_battle_renderImage(int xy, void* buffer, int wh)
 {
     extern int D_800EC280;
     extern RECT D_800F51D0[];

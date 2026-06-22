@@ -1,17 +1,17 @@
-#include "common.h"
-#include "../SLUS_010.40/sfx.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "260.h"
+#include "src/SLUS_010.40/sfx.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU7.PRG/container.h"
-#include "gpu.h"
 #include "build/assets/MENU/MCMAN.BIN.h"
-#include "vs_string.h"
 #include "build/src/include/lbas.h"
+#include "vs_string.h"
+#include "gpu.h"
 #include <memory.h>
 #include <libapi.h>
 #include <sys/file.h>
@@ -184,7 +184,7 @@ static void _resetMemcardEvents(int type)
     }
 }
 
-static void _drawImage(int xy, void* arg1, int wh)
+static void _renderImage(int xy, void* arg1, int wh)
 {
     RECT rect;
 
@@ -989,7 +989,7 @@ static int _initMemcard(int init)
     case none:
         if (_initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(_initMemcardCdQueueSlot);
-            _drawImage(vs_getXY(800, 256), _spmcimg, vs_getWH(224, 256));
+            _renderImage(vs_getXY(800, 256), _spmcimg, vs_getWH(224, 256));
             _initMemcardState = queueReady;
         }
         return 0;
@@ -1100,7 +1100,7 @@ static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
     _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id], 0xC);
 }
 
-static void _drawInteger(int xy, u_int value, u_int placeDivisor)
+static void _renderInteger(int xy, u_int value, u_int placeDivisor)
 {
     do {
         _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
@@ -1198,7 +1198,7 @@ void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
         xy += 6;
     } while (placeDivisor != 0);
     _drawSaveInfoUI(xy + 1, vs_uiids_dot);
-    _drawInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
+    _renderInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
 }
 
 static int _selectCursorXy;
@@ -1663,7 +1663,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             } else {
                 locationClut = _mcData->locationCluts[0];
             }
-            _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
+            _renderImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
             if (location < 0) {
                 uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (element->x - 64) | y;
@@ -1679,9 +1679,9 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 var_a3 = (((8 - element->outertextBlendFactor) << 19) | 0x90);
                 _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
             }
-            _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
+            _renderImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
             _drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
-            _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
+            _renderInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->unk4.base.slotState;
             if (slotState == slotStateUnavailable) {
                 _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_inUse),
@@ -1705,18 +1705,18 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 var1 = saveInfo->unk4.stats.mapCompletion;
 
                 if (var1 == 100) {
-                    _drawInteger(y | 192, 100, 100);
+                    _renderInteger(y | 192, 100, 100);
                     _drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
                 } else {
-                    _drawInteger(y | 192, var1, 10);
+                    _renderInteger(y | 192, var1, 10);
                     _drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
                 }
                 _drawSaveInfoUI(y | 217, vs_uiids_save);
                 _drawSaveInfoUI(y | 239, vs_uiids_colon);
-                _drawInteger(y | 242, saveInfo->unk4.stats.saveCount, 1000);
+                _renderInteger(y | 242, saveInfo->unk4.stats.saveCount, 1000);
                 _drawSaveInfoUI(y | 267, vs_uiids_clear);
                 _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->unk4.stats.clearCount, 10);
+                _renderInteger(y | 296, saveInfo->unk4.stats.clearCount, 10);
                 y += 13 << 16;
                 if (saveInfo->unk4.stats.clearCount != 0) {
                     _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
@@ -1725,14 +1725,14 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 _drawSaveInfoUI(y | 240, vs_uiids_time);
                 var1 = saveInfo->unk4.stats.gameTime.t.h;
                 if (var1 == 100) {
-                    _drawInteger(y | 263, var1, 100);
+                    _renderInteger(y | 263, var1, 100);
                 } else {
-                    _drawInteger(y | 268, var1, 10);
+                    _renderInteger(y | 268, var1, 10);
                 }
                 _drawSaveInfoUI(y | 279, vs_uiids_colon);
-                _drawInteger(y | 282, saveInfo->unk4.stats.gameTime.t.m, 10);
+                _renderInteger(y | 282, saveInfo->unk4.stats.gameTime.t.m, 10);
                 _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->unk4.stats.gameTime.t.s, 10);
+                _renderInteger(y | 296, saveInfo->unk4.stats.gameTime.t.s, 10);
                 _drawHPMP(y | 88, statTypeHP, saveInfo->unk4.stats.currentHP,
                     saveInfo->unk4.stats.maxHP);
                 _drawHPMP(y | 158, statTypeMP, saveInfo->unk4.stats.currentMP,
@@ -3156,8 +3156,8 @@ static int _initGameOver(int arg0)
     case 0:
         if (queueSlot->state == 4) {
             vs_main_freeCdQueueSlot(queueSlot);
-            vs_battle_drawImage(vs_getXY(832, 256), gameOverBin, vs_getWH(24, 128));
-            vs_battle_drawImage(vs_getXY(832, 384), _menuItemTextClut, vs_getWH(48, 1));
+            vs_battle_renderImage(vs_getXY(832, 256), gameOverBin, vs_getWH(24, 128));
+            vs_battle_renderImage(vs_getXY(832, 384), _menuItemTextClut, vs_getWH(48, 1));
             state = 1;
         }
         return 0;
@@ -3306,7 +3306,7 @@ static int _displayGameOverScreen(int init)
 
     _setMenuItemClut(clut[0], blendFactor1, _menuItemTextClut[0], _menuItemTextClut[3]);
     _setMenuItemClut(clut[1], blendFactor2, _menuItemTextClut[0], _menuItemTextClut[3]);
-    vs_battle_drawImage(vs_getXY(832, 384), &clut, vs_getWH(32, 1));
+    vs_battle_renderImage(vs_getXY(832, 384), &clut, vs_getWH(32, 1));
 
     prim = vs_battle_setSprite(color1, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
     prim[1] = vs_getTpage(832, 256, clut4Bit, semiTransparencyHalf, ditheringOff);

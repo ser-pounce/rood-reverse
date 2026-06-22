@@ -6,7 +6,9 @@ MKPSXISO       ?= $(PSXISOBUILD)/Release/mkpsxiso
 DUMPSXISOFLAGS ?= -x data -s $(DISKCONFIG)
 MKPSXISOFLAGS  ?= -q -lba -noisogen
 
+ifndef ROOD_CI
 BUILDDEPS  += $(DUMPSXISO)
+endif
 PYTHONDEPS += pandas
 
 $(DISKCONFIG): | $(DISKIMAGE)

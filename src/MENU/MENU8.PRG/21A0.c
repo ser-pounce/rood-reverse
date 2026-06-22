@@ -10,15 +10,16 @@
 #include "gpu.h"
 #include <libetc.h>
 
-static u_char D_80105F2E;
+static u_char weaponId;
 static char _1 __attribute__((unused));
-static char D_80105F30;
+static char _showRenameInterface;
 static u_char _animStep;
 static char _2[2] __attribute__((unused));
 static char* _charTable;
 static char _3[8] __attribute__((unused));
 static char _stringBuf[20];
 
+// Purpose unclear.
 static char D_80105DB0 = 0;
 
 static int _insertDeleteHandler(int bufPos)
@@ -109,15 +110,15 @@ static int _copyNormalizedString(char* stringBuf)
     return 0;
 }
 
-static char D_80105DB1 = 0;
-static u_char D_80105DB2 = 0;
-static u_short _renameMenuStrings[] = {
+static char _nameNavIconAnim = 0;
+static u_char _selectedControllerAction = 0;
+static u_short _renderRenameMenuStrings[] = {
 #include "build/assets/MENU/MENU8.PRG/rename.vsString"
 };
 
 extern u_long* D_1F800000[];
 
-static void _renameMenu(int arg0)
+static void _renderRenameMenu(int xOffset)
 {
     static int _backgroundHexCoords[] = { vs_getXY(216, 72), vs_getXY(142, 180),
         vs_getXY(112, 72), vs_getXY(112, 224), vs_getXY(216, 72), vs_getXY(216, 224),
@@ -125,155 +126,155 @@ static void _renameMenu(int arg0)
         vs_getXY(216, 224), vs_getXY(320, 224), vs_getXY(216, 72), vs_getXY(320, 72),
         vs_getXY(290, 180), vs_getXY(320, 224) };
 
-    static char D_80105EE8[] = { vs_char_terminator, vs_char_terminator,
+    static char namePlaceHolder[] = { vs_char_terminator, vs_char_terminator,
         vs_char_terminator, vs_char_terminator };
-    static char D_80105EEC[8] = { 0 };
+    static char _controllerActionAnimationCounters[8] = { 0 };
+    // Seemingly no purpose, perhaps an unimplemented animation
     static char D_80105EF4 = 0;
 
     u_int* sp18;
-    int lineColor0;
-    int lineColor1;
+    int x;
+    int y;
     int j;
     int i;
     char* commandString;
-    u_long* var_s1;
-    int temp_s0_2;
-    int temp_s3;
+    u_long* prim;
+    int counter;
 
     sp18 = (u_int*)D_1F800000[1] - 1;
 
-    vs_mainmenu_drawButton(3, (-arg0 + 16), 50, 0);
-    vs_mainmenu_drawButton(1, (-arg0 + 16), 66, 0);
-    vs_mainmenu_drawButton(0, (-arg0 + 16), 82, 0);
+    vs_mainmenu_drawButton(3, (-xOffset + 16), 50, 0);
+    vs_mainmenu_drawButton(1, (-xOffset + 16), 66, 0);
+    vs_mainmenu_drawButton(0, (-xOffset + 16), 82, 0);
+    prim = vs_battle_setSpriteDefault(
+        vs_getWH(16, 16), ((-xOffset + 16) & 0xFFFF) | (34 << 16));
+    prim[4] = vs_getUV0Clut(176, 112, 944, 223);
 
-    var_s1 = vs_battle_setSpriteDefault(
-        vs_getWH(16, 16), ((-arg0 + 16) & 0xFFFF) | (34 << 16));
-    var_s1[4] = vs_getUV0Clut(176, 112, 944, 223);
+    prim += 6;
 
-    var_s1 += 6;
-
-    D_80105EEC[D_80105DB2] = 8;
-    D_80105DB2 = 0;
+    _controllerActionAnimationCounters[_selectedControllerAction] = 8;
+    _selectedControllerAction = 0;
 
     for (i = 1; i < 5; ++i) {
 
-        temp_s0_2 = D_80105EEC[i];
+        counter = _controllerActionAnimationCounters[i];
 
-        if (D_80105EEC[i] != 0) {
-            --D_80105EEC[i];
+        if (_controllerActionAnimationCounters[i] != 0) {
+            --_controllerActionAnimationCounters[i];
         }
 
-        lineColor0 = vs_battle_uiGradientStop(8 - temp_s0_2, 0, 128) | 0x50000000;
-        lineColor1 = vs_battle_uiGradientStop(temp_s0_2, 0, 128);
+        x = vs_battle_uiGradientStop(8 - counter, 0, 128) | 0x50000000;
+        y = vs_battle_uiGradientStop(counter, 0, 128);
 
         for (j = 0; j < 12; ++j) {
             int v1;
 
-            var_s1[0] = (*sp18 & 0xFFFFFF) | 0x06000000;
-            var_s1[1] = vs_getTpage(0, 0, 0, 0, 1);
-            var_s1[2] = lineColor0;
-            var_s1[3] = ((-arg0) & 0xFFFF) | (j + 20 + i * 16) << 16;
-            var_s1[4] = lineColor1;
+            prim[0] = (*sp18 & 0xFFFFFF) | 0x06000000;
+            prim[1] = vs_getTpage(0, 0, 0, 0, 1);
+            prim[2] = x;
+            prim[3] = ((-xOffset) & 0xFFFF) | (j + 20 + i * 16) << 16;
+            prim[4] = y;
 
             v1 = j - 96;
 
-            var_s1[5] = ((-arg0 - v1) & 0xFFFF) | (j + 20 + i * 16) << 16;
-            var_s1[6] = vs_getTpage(0, 0, 0, 0, 0);
+            prim[5] = ((-xOffset - v1) & 0xFFFF) | (j + 20 + i * 16) << 16;
+            prim[6] = vs_getTpage(0, 0, 0, 0, 0);
 
-            *sp18 = ((u_long)var_s1 << 8) >> 8;
+            *sp18 = ((u_long)prim << 8) >> 8;
 
-            var_s1 += 7;
+            prim += 7;
         }
     }
 
-    D_1F800000[0] = var_s1;
+    D_1F800000[0] = prim;
 
     vs_battle_setFontStyle(4);
 
     for (i = 0; i < 4; ++i) {
 
-        commandString =
-            (char*)&_renameMenuStrings[_renameMenuStrings[VS_rename_INDEX_insert - i]];
-        lineColor0 = 40;
+        commandString = (char*)&_renderRenameMenuStrings
+            [_renderRenameMenuStrings[VS_rename_INDEX_insert - i]];
+        x = 40;
 
         while ((j = *commandString++) != vs_char_terminator) {
             vs_battle_printVariableWidthFontChar(
-                j, lineColor0 - arg0, 84 - (i * 16), D_1F800000[1] - 5);
+                j, x - xOffset, 84 - (i * 16), D_1F800000[1] - 5);
 
-            lineColor0 += 6;
+            x += 6;
         }
     }
 
-    vs_battle_setMenuItem(0x1D, arg0 + 0x9C, 0x30, 0xA4, 0, D_80105EE8)->selected = 1;
+    vs_battle_setMenuItem(29, xOffset + 156, 48, 164, 0, namePlaceHolder)->selected = 1;
 
     for (j = 0; j < 20; ++j) {
-        temp_s0_2 = _stringBuf[j];
+        counter = _stringBuf[j];
 
-        if (temp_s0_2 != vs_char_space) {
+        if (counter != vs_char_space) {
 
             int new_var3 = (j * 6 + 0xA2);
 
             vs_battle_printVariableWidthFontChar(
-                temp_s0_2, arg0 + new_var3, 0x30, D_1F800000[2] - 2);
+                counter, xOffset + new_var3, 0x30, D_1F800000[2] - 2);
         }
     }
-    if (arg0 == 0) {
+
+    if (xOffset == 0) {
         u_long* a1;
 
-        temp_s3 = 0x404040;
-        lineColor0 = 0x37F9;
+        int color = vs_getRGB888(64, 64, 64);
+        x = 0x37F9;
 
-        if ((D_80105DB0 != 0) || (D_80105DB1 != 0xB)) {
+        if ((D_80105DB0 != 0) || (_nameNavIconAnim != 11)) {
 
-            temp_s3 = vs_getRGB888(128, 128, 128);
-            ++D_80105DB1;
-            --lineColor0;
+            color = vs_getRGB888(128, 128, 128);
+            ++_nameNavIconAnim;
+            --x;
 
-            if (D_80105DB1 >= 0xC) {
-                D_80105DB1 = 0;
+            if (_nameNavIconAnim > 11) {
+                _nameNavIconAnim = 0;
             }
         }
 
         D_80105DB0 = 0;
-        j = (D_80105DB1 >> 2);
+        j = (_nameNavIconAnim >> 2);
 
-        vs_battle_renderTextRawColor("1", vs_getXY(152, 51), temp_s3, 0);
-        vs_battle_renderTextRawColor("L", vs_getXY(146, 51), temp_s3, 0);
+        vs_battle_renderTextRawColor("1", vs_getXY(152, 51), color, 0);
+        vs_battle_renderTextRawColor("L", vs_getXY(146, 51), color, 0);
         vs_battle_setSpriteDefault(vs_getWH(16, 16), (136 - j) | (48 << 16))[4] =
-            (lineColor0 << 0x10) | vs_getUV(0, 48);
-        vs_battle_renderTextRawColor("1", vs_getXY(292, 51), temp_s3, 0);
-        vs_battle_renderTextRawColor("R", vs_getXY(286, 51), temp_s3, 0);
+            (x << 0x10) | vs_getUV(0, 48);
+        vs_battle_renderTextRawColor("1", vs_getXY(292, 51), color, 0);
+        vs_battle_renderTextRawColor("R", vs_getXY(286, 51), color, 0);
         vs_battle_setSpriteDefault(vs_getWH(16, 16), (j + 296) | (48 << 16))[4] =
-            (lineColor0 << 0x10) | vs_getUV(16, 48);
+            (x << 0x10) | vs_getUV(16, 48);
 
         a1 = D_1F800000[2];
-        var_s1 = D_1F800000[0];
+        prim = D_1F800000[0];
 
-        var_s1[0] = ((u_long)a1[0] & 0xFFFFFF) | 0x09000000;
-        var_s1[1] = vs_getTpage(0, 0, 0, 0, 1);
-        var_s1[2] = vs_getRGB0(primPolyG4, 0, 0, 0);
-        var_s1[3] = vs_getRGB888(208, 0, 30);
-        var_s1[4] = 0;
-        var_s1[5] = vs_getRGB888(232, 0, 32);
-        var_s1[6] = 0xC0A080;
-        var_s1[7] = vs_getRGB888(232, 0, 46);
-        var_s1[8] = 0;
-        var_s1[9] = vs_getRGB888(0, 1, 30);
+        prim[0] = ((u_long)a1[0] & 0xFFFFFF) | 0x09000000;
+        prim[1] = vs_getTpage(0, 0, 0, 0, 1);
+        prim[2] = vs_getRGB0(primPolyG4, 0, 0, 0);
+        prim[3] = vs_getRGB888(208, 0, 30);
+        prim[4] = 0;
+        prim[5] = vs_getRGB888(232, 0, 32);
+        prim[6] = 0xC0A080;
+        prim[7] = vs_getRGB888(232, 0, 46);
+        prim[8] = 0;
+        prim[9] = vs_getRGB888(0, 1, 30);
 
-        D_1F800000[2][0] = ((u_long)var_s1 << 8) >> 8;
-        D_1F800000[0] = var_s1 + 10;
+        D_1F800000[2][0] = ((u_long)prim << 8) >> 8;
+        D_1F800000[0] = prim + 10;
 
-        if (++D_80105EF4 >= 0xC) {
+        if (++D_80105EF4 >= 12) {
             D_80105EF4 = 0;
         }
     }
 
-    commandString = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
+    commandString = (char*)(_renderRenameMenuStrings + VS_rename_OFFSET_charTable);
 
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 14; ++j) {
 
-            int temp_s8 = (arg0 + 0x82);
+            int temp_s8 = (xOffset + 0x82);
 
             vs_battle_printVariableWidthFontChar(commandString[i * 15 + j],
                 temp_s8 + j * 12, (i * 16) + 78, D_1F800000[2] - 2);
@@ -281,21 +282,21 @@ static void _renameMenu(int arg0)
     }
 
     for (j = 0; j < 16; j += 4) {
-        var_s1 = D_1F800000[0];
+        prim = D_1F800000[0];
 
-        var_s1[0] = (*sp18 & 0xFFFFFF) | 0x09000000;
-        var_s1[1] = vs_getTpage(0, 0, 0, 0, 1);
-        var_s1[2] = vs_getRGB0(primPolyG4, 0, 65, 107);
-        var_s1[3] = arg0 + _backgroundHexCoords[j];
-        var_s1[4] = vs_getRGB888(0, 5, 51);
-        var_s1[5] = arg0 + _backgroundHexCoords[j + 1];
-        var_s1[6] = vs_getRGB888(0, 5, 51);
-        var_s1[7] = arg0 + _backgroundHexCoords[j + 2];
-        var_s1[8] = vs_getRGB888(0, 5, 51);
-        var_s1[9] = arg0 + _backgroundHexCoords[j + 3];
+        prim[0] = (*sp18 & 0xFFFFFF) | 0x09000000;
+        prim[1] = vs_getTpage(0, 0, 0, 0, 1);
+        prim[2] = vs_getRGB0(primPolyG4, 0, 65, 107);
+        prim[3] = xOffset + _backgroundHexCoords[j];
+        prim[4] = vs_getRGB888(0, 5, 51);
+        prim[5] = xOffset + _backgroundHexCoords[j + 1];
+        prim[6] = vs_getRGB888(0, 5, 51);
+        prim[7] = xOffset + _backgroundHexCoords[j + 2];
+        prim[8] = vs_getRGB888(0, 5, 51);
+        prim[9] = xOffset + _backgroundHexCoords[j + 3];
 
-        *sp18 = ((u_long)var_s1 << 8) >> 8;
-        D_1F800000[0] = (u_long*)(var_s1 + 10);
+        *sp18 = ((u_long)prim << 8) >> 8;
+        D_1F800000[0] = (u_long*)(prim + 10);
     }
 }
 
@@ -335,7 +336,7 @@ static int _highlightCharSelection(int arg0, int column, int row)
     return func_800FFCDC(arg0, (x + 112) | ((y + 66) << 16));
 }
 
-static int _confirmScreen(int init)
+static int _confirmationScreen(int init)
 {
     static char cursorState = 0;
     static int _0[] __attribute__((unused)) = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
@@ -355,10 +356,10 @@ static int _confirmScreen(int init)
     case 0:
     case 1:
     case 2: {
-        vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(state + 20, 320,
-            (state * 16) + 128, 0x7E, 0,
-            (char*)&_renameMenuStrings[_renameMenuStrings[state
-                                                          + VS_rename_INDEX_optionYes]]);
+        vs_battle_menuItem_t* menuItem =
+            vs_battle_setMenuItem(state + 20, 320, (state * 16) + 128, 0x7E, 0,
+                (char*)&_renderRenameMenuStrings
+                    [_renderRenameMenuStrings[state + VS_rename_INDEX_optionYes]]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
         ++state;
@@ -411,61 +412,76 @@ static int _confirmScreen(int init)
     return 0;
 }
 
-static void func_8010493C(int arg0)
+/**
+ * Used both when selecting the controller buttons with the cursor,
+ * and when selecting the row on the confirmation screen.
+ */
+static void _updateMenuSelection(int row)
 {
     int i;
 
-    if (arg0 < 4) {
-        D_80105DB2 = arg0 + 1;
+    if (row < 4) {
+        _selectedControllerAction = row + 1;
     }
 
     for (i = 4; i < 9; ++i) {
-        vs_battle_getMenuItem(i + 29)->selected = i == arg0;
+        vs_battle_getMenuItem(i + 29)->selected = i == row;
     }
 }
 
-static int func_801049A0(int arg0)
+static int _renameMenuInput(int initialize)
 {
+    enum state {
+        init,
+        state1,
+        state2,
+        leaveRenameScreen,
+        initConfirmationScreen,
+        confirmationScreen,
+        returnToRenameScreen
+    };
+
     static char _nameBuffer[24];
-    static char D_80105F28;
-    static char D_80105F29;
+    static char state;
+    static char _cursorAnimState;
     static char _charTableColumn;
     static char _charTableRow;
     static u_char currentPos;
     static char D_80105F2D __attribute__((unused));
-    int temp_v0_10;
+    int selectedRow;
     int var_a1;
     int var_s1;
-    vs_battle_inventoryWeapon* temp_s0;
+    vs_battle_inventoryWeapon* weapon;
 
-    if (arg0 != 0) {
+    if (initialize != 0) {
         _charTableColumn = 0;
         _charTableRow = 0;
         currentPos = 0;
         D_80105F2D = 0;
-        D_80105F29 = 8;
-        D_80105F28 = 0;
+        _cursorAnimState = 8;
+        state = init;
 
         return 0;
     }
 
-    switch (D_80105F28) {
-    case 0:
-        if (D_80105F29 != 0) {
-            --D_80105F29;
+    switch (state) {
+    case init:
+        // _cursorAnimState miused as a delay
+        if (_cursorAnimState != 0) {
+            --_cursorAnimState;
         } else {
-            D_80105F28 = 2;
+            state = 2;
         }
         break;
 
     case 1:
         currentPos = _insertDeleteHandler(currentPos);
 
-        if (vs_main_buttonsPressed.all & (1 << 11)) {
+        if (vs_main_buttonsPressed.all & PADstart) {
             vs_battle_playMenuSelectSfx();
-            func_8010493C(255);
+            _updateMenuSelection(255);
 
-            D_80105F28 = 3;
+            state = leaveRenameScreen;
             break;
         }
 
@@ -489,7 +505,7 @@ static int func_801049A0(int arg0)
         if (vs_main_buttonsPressed.all & (1 << 13)) {
 
             vs_battle_playMenuChangeSfx();
-            func_8010493C(255);
+            _updateMenuSelection(255);
 
             if (var_s1 == 3) {
                 var_s1 = 1;
@@ -498,7 +514,7 @@ static int func_801049A0(int arg0)
             }
 
             _charTableRow = var_s1;
-            D_80105F28 = 2;
+            state = 2;
 
             break;
         }
@@ -508,8 +524,8 @@ static int func_801049A0(int arg0)
             switch (var_s1) {
             case 0:
                 vs_battle_playMenuSelectSfx();
-                func_8010493C(255);
-                D_80105F28 = 3;
+                _updateMenuSelection(255);
+                state = 3;
                 break;
 
             case 1:
@@ -543,7 +559,7 @@ static int func_801049A0(int arg0)
                 break;
             }
 
-            if (D_80105F28 != 1) {
+            if (state != 1) {
                 break;
             }
 
@@ -575,9 +591,9 @@ static int func_801049A0(int arg0)
             _charTableRow = var_s1;
         }
 
-        func_8010493C(var_s1);
+        _updateMenuSelection(var_s1);
 
-        D_80105F29 = func_800FFCDC(D_80105F29, ((var_s1 * 16) + 28) << 16);
+        _cursorAnimState = func_800FFCDC(_cursorAnimState, ((var_s1 * 16) + 28) << 16);
         break;
 
     case 2:
@@ -585,7 +601,7 @@ static int func_801049A0(int arg0)
 
         if (vs_main_buttonsPressed.all & (1 << 11)) {
             vs_battle_playMenuSelectSfx();
-            D_80105F28 = 3;
+            state = 3;
             break;
         }
 
@@ -628,7 +644,7 @@ static int func_801049A0(int arg0)
         if (vs_main_buttonRepeat & (1 << 14)) {
             if (_charTableRow == 8) {
                 if (vs_main_buttonsPressed.all & (1 << 14)) {
-                    _charTableRow = D_80105F28 != 2;
+                    _charTableRow = state != 2;
                 }
             } else {
                 ++_charTableRow;
@@ -647,7 +663,7 @@ static int func_801049A0(int arg0)
                         _charTableRow = 3;
                     }
 
-                    D_80105F28 = 1;
+                    state = 1;
                     break;
                 }
             } else {
@@ -671,15 +687,15 @@ static int func_801049A0(int arg0)
 
         break;
 
-    case 3:
-        func_8010493C(0);
+    case leaveRenameScreen:
+        _updateMenuSelection(0);
 
-        D_80105F30 = 0;
-        D_80105F28 = 4;
+        _showRenameInterface = 0;
+        state = initConfirmationScreen;
         break;
 
-    case 4:
-        if (_animStep != 0xA) {
+    case initConfirmationScreen:
+        if (_animStep != 10) {
             break;
         }
 
@@ -687,7 +703,7 @@ static int func_801049A0(int arg0)
             vs_battle_rMemcpy(_nameBuffer,
                 vs_mainMenu_itemNames
                     + vs_battle_inventory
-                          .blades[vs_battle_inventory.weapons[D_80105F2E].blade - 1]
+                          .blades[vs_battle_inventory.weapons[weaponId].blade - 1]
                           .id,
                 0x18);
         }
@@ -697,67 +713,68 @@ static int func_801049A0(int arg0)
         vs_battle_stringContext.strings[0] = _nameBuffer;
 
         vs_battle_printf(vs_battle_stringBuf,
-            (char*)(_renameMenuStrings + VS_rename_OFFSET_confirmPrompt));
+            (char*)(_renderRenameMenuStrings + VS_rename_OFFSET_confirmPrompt));
 
         vs_mainmenu_setInformationMessage(vs_battle_stringBuf);
-        _confirmScreen(1);
+        _confirmationScreen(1);
 
-        D_80105F28 = 5;
+        state = confirmationScreen;
         break;
 
-    case 5:
-        temp_v0_10 = _confirmScreen(0);
+    case confirmationScreen:
+        selectedRow = _confirmationScreen(0);
 
-        if (temp_v0_10 == 0) {
+        if (selectedRow == 0) {
             break;
         }
 
         vs_battle_dismissTextBox(7);
 
-        if (temp_v0_10 == 2) {
+        if (selectedRow == 2) {
             vs_battle_playMenuLeaveSfx();
-            D_80105F30 = 1;
-            D_80105F28 = 6;
+            _showRenameInterface = 1;
+            state = returnToRenameScreen;
             break;
         }
 
-        temp_s0 = &vs_battle_inventory.weapons[D_80105F2E];
+        weapon = &vs_battle_inventory.weapons[weaponId];
 
-        if (temp_v0_10 == 1) {
+        if (selectedRow == 1) {
             vs_main_playSfxDefault(0x7E, 0xD);
-            vs_battle_rMemcpy(temp_s0->name, _nameBuffer, sizeof _nameBuffer);
+            vs_battle_rMemcpy(weapon->name, _nameBuffer, sizeof _nameBuffer);
 
-            if (temp_s0->isEquipped != 0) {
-                vs_battle_equipWeapon(temp_s0);
+            if (weapon->isEquipped != 0) {
+                vs_battle_equipWeapon(weapon);
             }
         } else {
             vs_battle_playMenuLeaveSfx();
 
-            if (temp_s0->name[0] == 0xE7) {
-                vs_battle_rMemcpy(temp_s0->name,
+            if (weapon->name[0] == vs_char_terminator) {
+                vs_battle_rMemcpy(weapon->name,
                     vs_mainMenu_itemNames
-                        + vs_battle_inventory.blades[temp_s0->blade - 1].id,
-                    0x18);
+                        + vs_battle_inventory.blades[weapon->blade - 1].id,
+                    sizeof weapon->name);
             }
         }
 
         return 1;
 
-    case 6:
+    case returnToRenameScreen:
         if (_animStep == 0) {
             _charTableColumn = 0;
             _charTableRow = 0;
-            D_80105F28 = 2;
+            state = 2;
         }
         break;
     }
 
-    if (D_80105F28 == 2) {
-        D_80105F29 = _highlightCharSelection(D_80105F29, _charTableColumn, _charTableRow);
+    if (state == 2) {
+        _cursorAnimState =
+            _highlightCharSelection(_cursorAnimState, _charTableColumn, _charTableRow);
     }
 
-    if (((D_80105F28 - 1)) < 2U) {
-        _highlightSelection((currentPos * 6) + 0xA1, 0x30, 8, 0xC);
+    if (((state - 1)) < 2U) {
+        _highlightSelection((currentPos * 6) + 161, 48, 8, 12);
     }
 
     return 0;
@@ -775,8 +792,8 @@ int vs_menu8_execRename(char* state)
 
     switch (*state) {
     case 0:
-        D_80105F2E = vs_battle_stringBuf[1];
-        _charTable = (char*)(_renameMenuStrings + VS_rename_OFFSET_charTable);
+        weaponId = vs_battle_stringBuf[1];
+        _charTable = (char*)(_renderRenameMenuStrings + VS_rename_OFFSET_charTable);
 
         vs_mainMenu_dismissTextBox();
 
@@ -789,7 +806,7 @@ int vs_menu8_execRename(char* state)
         }
 
         if (vs_battle_stringBuf[0] == 1) {
-            var_v1 = vs_battle_inventory.weapons[D_80105F2E].name;
+            var_v1 = vs_battle_inventory.weapons[weaponId].name;
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;
                 if (c == vs_char_terminator) {
@@ -804,20 +821,20 @@ int vs_menu8_execRename(char* state)
             }
         }
 
-        D_80105F30 = 0;
+        _showRenameInterface = 0;
         _animStep = 10;
         *state = 1;
         break;
 
     case 1:
-        func_801049A0(1);
+        _renameMenuInput(1);
 
-        D_80105F30 = currentState;
+        _showRenameInterface = 1;
         *state = 2;
         break;
 
     case 2:
-        if (func_801049A0(0) != 0) {
+        if (_renameMenuInput(0) != 0) {
             vs_mainMenu_menuItemFlyoutRight(0xA);
             vs_mainMenu_menuItemFlyoutLeft(0);
             vs_mainMenu_initTextBox();
@@ -835,14 +852,14 @@ int vs_menu8_execRename(char* state)
         break;
     }
 
-    if (D_80105F30 != 0) {
+    if (_showRenameInterface != 0) {
         if (_animStep != 0) {
             --_animStep;
         }
-        _renameMenu(vs_battle_rowAnimationSteps[_animStep]);
+        _renderRenameMenu(vs_battle_rowAnimationSteps[_animStep]);
     } else if (_animStep < 10) {
         ++_animStep;
-        _renameMenu(_animStep << 5);
+        _renderRenameMenu(_animStep << 5);
     }
 
     return 0;

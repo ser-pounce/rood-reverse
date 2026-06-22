@@ -225,7 +225,13 @@ int vs_battle_loadMenuPrg(int arg0);
  */
 void vs_battle_initInformationTextBox(int flags);
 
-int vs_battle_uiGradientStop(u_int, u_int, int);
+/**
+ * Lerps between two predefined colors, used for menu item backgrounds.
+ *
+ * @param gradient Lerp weight from 0-8
+ * @param colorIndex Valid indices are 0-8, 16, and 24
+ */
+int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness);
 
 /**
  * Gets menu row element.

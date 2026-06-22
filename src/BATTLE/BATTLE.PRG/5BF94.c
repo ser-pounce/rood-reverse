@@ -1437,6 +1437,12 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     return menuItem;
 }
 
+/**
+ * Lerps between two colors.
+ *
+ * @param brightness Color multiplier
+ * @param blendFactor Proportion of color0 to color1
+ */
 u_int _lerpColor(u_int color0, u_int color1, int brightness, int blendFactor)
 {
     u_int i;
@@ -1454,19 +1460,20 @@ u_int _lerpColor(u_int color0, u_int color1, int brightness, int blendFactor)
     return ret;
 }
 
-int vs_battle_uiGradientStop(u_int arg0, u_int arg1, int arg2)
+int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
 {
-    u_int var_a0;
-    u_int var_v0;
+    u_int color0;
+    u_int color1;
 
-    if (arg1 < 9) {
-        var_a0 = _lerpColor(0x6B4100, 0x6C8219, 0x80, arg1);
-        var_v0 = _lerpColor(0x330500, 0x262801, 0x80, arg1);
+    if (colorIndex < 9) {
+        color0 = _lerpColor(0x6B4100, 0x6C8219, 0x80, colorIndex);
+        color1 = _lerpColor(0x330500, 0x262801, 0x80, colorIndex);
     } else {
-        var_a0 = D_800EBBB8[((arg1 >> 3) - 2)];
-        var_v0 = D_800EBBC0[((arg1 >> 3) - 2)];
+        color0 = D_800EBBB8[((colorIndex >> 3) - 2)];
+        color1 = D_800EBBC0[((colorIndex >> 3) - 2)];
     }
-    return _lerpColor(var_a0, var_v0, arg2, arg0);
+
+    return _lerpColor(color0, color1, brightness, gradient);
 }
 
 void func_800C9078(vs_battle_menuItem_t* arg0)

@@ -1,8 +1,9 @@
-#include "build/assets/MENU/MENU8.PRG/menu.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
+#include "88.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "build/assets/MENU/MENU8.PRG/menu.h"
 
 static u_short _menuStrings[] = {
 #include "build/assets/MENU/MENU8.PRG/menu.vsString"

@@ -1144,7 +1144,7 @@ static int _renderRoom(int roomIndex, void* roomData, int arg2, int arg3)
 
         roomData += 8;
     }
-    
+
     if (roomIndex == _currentRoomIndex) {
         colorIn.r = 0;
         colorIn.g = 0x80;

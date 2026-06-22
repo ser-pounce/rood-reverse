@@ -46,16 +46,14 @@ all: check
 check: $$(TARGETS)
 
 commit-check: format
-	$(MAKE) remake
-	$(MAKE) objdiff
+	$(MAKE) --no-print-directory remake
+	$(MAKE) --no-print-directory objdiff
 
 clean:
 	$(RM) $(RMFLAGS) $(BUILD) nonmatchings
 
 remake: clean
-	$(MAKE)
-
-commit-check remake: MAKEFLAGS += --no-print-directory
+	$(MAKE) --no-print-directory
 
 include $(INCMAKEFILES)
 

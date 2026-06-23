@@ -40,7 +40,7 @@ typedef struct {
     char selected;
     char unk1;
     char animationState;
-    char unk3;
+    char disabled;
     short y;
     short rowIndex;
     char* title;
@@ -287,7 +287,7 @@ void _menuReady(void) __attribute__((unused));
 void _menuReady(void) { vs_mainmenu_ready(); }
 
 int _initData(void);
-int _handleMenu(void);
+int _menuInput(void);
 
 /**
  * Module entrypoint.
@@ -340,7 +340,7 @@ int vs_menu9_exec(char* state)
         break;
 
     case 6:
-        D_8010A21C = _handleMenu();
+        D_8010A21C = _menuInput();
 
         if (D_8010A21C != 0) {
 
@@ -385,14 +385,14 @@ void _calculateScore(void);
 
 static int _0;
 static _gazetteRow _gazetteRows[32];
-static SVECTOR D_8010A430;
+static SVECTOR _cameraAngles;
 static int D_8010A438;
 static int _menuState;
 static int D_8010A440;
-static int D_8010A444;
+static int _cameraDistance;
 static int D_8010A448;
 static u_short D_8010A44C;
-static short D_8010A44E;
+static short _cameraHeightOffset;
 static short _selectedEnemy;
 static short D_8010A452;
 static int D_8010A454;
@@ -509,17 +509,17 @@ static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$0
     "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
 
 void func_80104AF8(void);
-void func_80104B40(void);
-int _initStringsAndGetSelectedRow(int arg0);
+void _setEnemyDescription(void);
+int _topMenu(int arg0);
 void func_8010552C(int arg0);
 void func_801056B8(void);
 void func_8010579C(int arg0);
 void func_80105D8C(void);
 void func_80105F00(int arg0);
 void func_801061F8(int arg0, int arg1);
-void func_80106780(void);
+void _setStatText(void);
 void func_80106808(int);
-void func_80106F9C(void);
+void _printBossRushMenuRow(void);
 void func_80107090(void);
 void func_80107120(int);
 void func_80107A98(int arg0);
@@ -527,7 +527,7 @@ int func_80107FBC(short);
 void func_801080C8(void);
 void func_80108098(void);
 
-int _handleMenu(void)
+int _menuInput(void)
 {
     static int D_8010A220;
 
@@ -538,7 +538,7 @@ int _handleMenu(void)
     };
 
     int _[8] __attribute__((unused));
-    vs_battle_textBox* temp_v0;
+    vs_battle_textBox* textBox;
     _gazetteRow* var_s0;
     int lStickX;
     int lStickY;
@@ -547,35 +547,45 @@ int _handleMenu(void)
     switch (_menuState) {
     case init:
         func_80100414(0x7FF, 0x80);
+
         ++_menuState;
         break;
+
     case initData:
         func_800F9A24(0);
         func_801080C8();
-        D_8010A444 = 0x150;
-        D_8010A44E = 0x6B;
+
+        _cameraDistance = 0x150;
+        _cameraHeightOffset = 0x6B;
         D_8010A44C = D_800F4538[1]->unk656;
-        D_8010A430.vx = 0xF40;
-        D_8010A430.vy = 0xE47;
-        D_8010A430.vz = 0;
+        _cameraAngles.vx = 0xF40;
+        _cameraAngles.vy = 0xE47;
+        _cameraAngles.vz = 0;
+
         vs_battle_initTextBox(0, 0, 0xB, 0xF8, 0x10, 1, 0xB, 0xF8);
         vs_battle_setTextBox(0, (char*)&_rankText[_rankText[_characterRank]]);
-        _initStringsAndGetSelectedRow(1);
+        _topMenu(1);
+
         D_8010A220 = 0;
         ++_menuState;
         break;
+
     case handleInput:
         func_8010552C(D_8010A220);
+
         if (D_8010A220 < 8) {
-            temp_v0 = vs_battle_getTextBox(0);
-            temp_v0->y -= 6;
-            temp_v0->yIndent -= 6;
+            textBox = vs_battle_getTextBox(0);
+            textBox->y -= 6;
+            textBox->yIndent -= 6;
             ++D_8010A220;
         }
-        selectedRow = _initStringsAndGetSelectedRow(0);
+
+        selectedRow = _topMenu(0);
+
         if (selectedRow == -1) {
             return 0;
         }
+
         if (selectedRow == -3) {
             D_8010A440 = 2;
         } else if (selectedRow == -2) {
@@ -583,77 +593,108 @@ int _handleMenu(void)
         } else if (selectedRow == 3) {
             _monBinData = vs_main_allocHeapR(_monBinFile.size);
             _monBinCdQueueSlot = vs_main_allocateCdQueueSlot(&_monBinFile);
+
             vs_main_cdEnqueue(_monBinCdQueueSlot, _monBinData);
+
             D_8010A440 = 0;
         } else {
             D_8010A440 = 0;
         }
+
         D_800F1BF7 = D_800F4EE8.cursorMemories[2] + D_800F4EE8.cursorMemories[3];
+
         vs_battle_dismissTextBox(0);
+
         ++_menuState;
         break;
+
     case 3:
         func_8010552C(D_8010A220);
+
         if (D_8010A220 > 0) {
-            temp_v0 = vs_battle_getTextBox(0);
-            if (temp_v0 != NULL) {
-                temp_v0->y += 6;
-                temp_v0->yIndent += 6;
+
+            textBox = vs_battle_getTextBox(0);
+
+            if (textBox != NULL) {
+                textBox->y += 6;
+                textBox->yIndent += 6;
             }
+
             --D_8010A220;
             break;
         }
+
         func_800F9E0C();
+
         if (D_8010A440 == 0) {
             _menuState = (D_800F1BF7 * 3) + 4;
             break;
         }
+
         func_80104AF8();
+
         return D_8010A440;
+
     case 4:
         vs_mainMenu_initTextBox();
         func_801056B8();
+
         D_8010A220 = 0;
         ++_menuState;
         break;
+
     case 5:
         if ((vs_battle_menu9CursorMemory.titleRow == 0)
             && (vs_battle_menu9CursorMemory.titlePage == 0)
             && (vs_main_buttonsPressed.all & PADLup)) {
+
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             vs_battle_menu9CursorMemory.titlePage = 0x18;
             vs_battle_menu9CursorMemory.titleRow = 7;
+
         } else if ((vs_battle_menu9CursorMemory.titleRow == 7)
-                   && (vs_battle_menu9CursorMemory.titlePage == 0x18)
+                   && (vs_battle_menu9CursorMemory.titlePage == 24)
                    && (vs_main_buttonsPressed.all & PADLdown)) {
+
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             vs_battle_menu9CursorMemory.titlePage = 0;
             vs_battle_menu9CursorMemory.titleRow = 0;
+
         } else {
             if (vs_main_buttonRepeat & PADLup) {
                 if (vs_battle_menu9CursorMemory.titleRow >= 2) {
+
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     --vs_battle_menu9CursorMemory.titleRow;
+
                 } else {
                     if (vs_battle_menu9CursorMemory.titlePage != 0) {
+
                         --vs_battle_menu9CursorMemory.titlePage;
                         vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+
                     } else if (vs_battle_menu9CursorMemory.titleRow != 0) {
+
                         --vs_battle_menu9CursorMemory.titleRow;
                         vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                     }
                 }
             } else if (vs_main_buttonRepeat & PADLdown) {
                 if (vs_battle_menu9CursorMemory.titleRow >= 6U) {
+
                     if (vs_battle_menu9CursorMemory.titlePage < 0x18U) {
+
                         ++vs_battle_menu9CursorMemory.titlePage;
                         vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
+
                     } else {
                         if (vs_battle_menu9CursorMemory.titleRow < 7) {
+
                             ++vs_battle_menu9CursorMemory.titleRow;
                             vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
                         }
                     }
+
                 } else {
                     ++vs_battle_menu9CursorMemory.titleRow;
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
@@ -661,61 +702,84 @@ int _handleMenu(void)
             }
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
+
             ++_menuState;
+
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
                 D_8010A440 = 0;
             }
         }
+
         func_8010579C(D_8010A220);
+
         if (D_8010A220 < 8) {
             ++D_8010A220;
         }
+
         break;
+
     case 6:
         func_8010579C(D_8010A220);
+
         if (D_8010A220 <= 0) {
             if (D_8010A440 == 0) {
                 _menuState = 1;
                 break;
             }
+
             func_80104AF8();
+
             return 2;
         }
+
         --D_8010A220;
         break;
+
     case 7:
         vs_mainMenu_initTextBox();
-        func_80106780();
+        _setStatText();
+
         D_8010A220 = 0;
         ++_menuState;
         break;
+
     case 8:
         if ((vs_battle_menu9CursorMemory.recordTimeRow == 0)
             && (vs_battle_menu9CursorMemory.recordTimePage == 0)
             && (vs_main_buttonsPressed.all & PADLup)) {
+
             vs_main_playSfxDefault(0x7E, 4);
             vs_battle_menu9CursorMemory.recordTimePage = 0xF;
             vs_battle_menu9CursorMemory.recordTimeRow = 7;
+
         } else if ((vs_battle_menu9CursorMemory.recordTimeRow == 7)
                    && (vs_battle_menu9CursorMemory.recordTimePage == 0xF)
                    && (vs_main_buttonsPressed.all & PADLdown)) {
+
             vs_main_playSfxDefault(0x7E, 4);
             vs_battle_menu9CursorMemory.recordTimePage = 0;
             vs_battle_menu9CursorMemory.recordTimeRow = 0;
+
         } else {
             if (vs_main_buttonRepeat & PADLup) {
                 if (vs_battle_menu9CursorMemory.recordTimeRow >= 2) {
+
                     vs_main_playSfxDefault(0x7E, 4);
                     --vs_battle_menu9CursorMemory.recordTimeRow;
+
                 } else {
                     if (vs_battle_menu9CursorMemory.recordTimePage != 0) {
+
                         --vs_battle_menu9CursorMemory.recordTimePage;
                         vs_main_playSfxDefault(0x7E, 4);
+
                     } else if (vs_battle_menu9CursorMemory.recordTimeRow != 0) {
+
                         --vs_battle_menu9CursorMemory.recordTimeRow;
                         vs_main_playSfxDefault(0x7E, 4);
                     }
@@ -723,10 +787,13 @@ int _handleMenu(void)
             } else if (vs_main_buttonRepeat & PADLdown) {
                 if (vs_battle_menu9CursorMemory.recordTimeRow >= 6) {
                     if (vs_battle_menu9CursorMemory.recordTimePage < 0xF) {
+
                         ++vs_battle_menu9CursorMemory.recordTimePage;
                         vs_main_playSfxDefault(0x7E, 4);
+
                     } else {
                         if (vs_battle_menu9CursorMemory.recordTimeRow < 7) {
+
                             ++vs_battle_menu9CursorMemory.recordTimeRow;
                             vs_main_playSfxDefault(0x7E, 4);
                         }
@@ -738,22 +805,29 @@ int _handleMenu(void)
             }
         }
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
+
             ++_menuState;
+
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
                 D_8010A440 = 0;
             }
         }
+
         func_80106808(D_8010A220);
+
         if (D_8010A220 < 8) {
             ++D_8010A220;
         }
         break;
+
     case 9:
         func_80106808(D_8010A220);
+
         if (D_8010A220 <= 0) {
             if (D_8010A440 == 0) {
                 _menuState = 1;
@@ -762,29 +836,40 @@ int _handleMenu(void)
             func_80104AF8();
             return 2;
         }
+
         --D_8010A220;
         break;
+
     case 10:
         vs_mainMenu_initTextBox();
-        func_80106F9C();
+        _printBossRushMenuRow();
+
         ++_menuState;
         break;
+
     case 11:
         if (vs_main_buttonRepeat & PADLup) {
+
             vs_main_playSfxDefault(0x7E, 4);
+
             vs_battle_menu9CursorMemory.gazettePage =
                 (vs_battle_menu9CursorMemory.gazettePage - 1) & 7;
         } else {
             if (vs_main_buttonRepeat & PADLdown) {
+
                 vs_main_playSfxDefault(0x7E, 4);
+
                 vs_battle_menu9CursorMemory.gazettePage =
                     (vs_battle_menu9CursorMemory.gazettePage + 1) & 7;
             }
         }
+
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
             func_80107090();
+
             ++_menuState;
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
@@ -792,17 +877,22 @@ int _handleMenu(void)
                 D_8010A440 = 0;
             }
         }
+
         func_80107120(D_8010A220);
+
         if (D_8010A220 < 8) {
             ++D_8010A220;
         }
         break;
+
     case 12:
         func_80107120(D_8010A220);
+
         if (D_8010A220 > 0) {
             --D_8010A220;
             break;
         }
+
         for (D_8010A220 = 0, var_s0 = _gazetteRows; D_8010A220 < 8;
              ++D_8010A220, ++var_s0) {
             if (var_s0->animationState == 0) {
@@ -811,36 +901,49 @@ int _handleMenu(void)
         }
 
         D_8010A220 = 0;
+
         if (D_8010A440 == 0) {
             _menuState = 1;
             break;
         }
+
         func_80104AF8();
         return 2;
+
     case 13:
         if (_monBinCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+
             vs_main_freeCdQueueSlot(_monBinCdQueueSlot);
+
             _enemyDescriptions = (u_short*)(_monBinData + 150);
+
             vs_mainMenu_initTextBox();
             func_80105D8C();
+
             D_8010A220 = 0;
             ++_menuState;
         }
         break;
+
     case 14:
         if ((vs_battle_menu9CursorMemory.encyclopaediaRow == 0)
             && (vs_battle_menu9CursorMemory.encyclopaediaPage == 0)
             && (vs_main_buttonsPressed.all & PADLup)) {
+
             vs_main_playSfxDefault(0x7E, 4);
             vs_battle_menu9CursorMemory.encyclopaediaPage = 0x46;
             vs_battle_menu9CursorMemory.encyclopaediaRow = 7;
+
         } else if ((vs_battle_menu9CursorMemory.encyclopaediaRow == 7)
                    && (vs_battle_menu9CursorMemory.encyclopaediaPage == 0x46)
                    && (vs_main_buttonsPressed.all & PADLdown)) {
+
             vs_main_playSfxDefault(0x7E, 4);
             vs_battle_menu9CursorMemory.encyclopaediaPage = 0;
             vs_battle_menu9CursorMemory.encyclopaediaRow = 0;
+
         } else if (vs_main_buttonRepeat & PADLup) {
+
             if (vs_battle_menu9CursorMemory.encyclopaediaRow > 1) {
                 vs_main_playSfxDefault(0x7E, 4);
                 --vs_battle_menu9CursorMemory.encyclopaediaRow;
@@ -851,13 +954,17 @@ int _handleMenu(void)
                 --vs_battle_menu9CursorMemory.encyclopaediaRow;
                 vs_main_playSfxDefault(0x7E, 4);
             }
+
         } else if (vs_main_buttonRepeat & PADLdown) {
             if (vs_battle_menu9CursorMemory.encyclopaediaRow >= 6) {
                 if (vs_battle_menu9CursorMemory.encyclopaediaPage < 0x46) {
+
                     ++vs_battle_menu9CursorMemory.encyclopaediaPage;
                     vs_main_playSfxDefault(0x7E, 4);
+
                 } else {
                     if (vs_battle_menu9CursorMemory.encyclopaediaRow < 7) {
+
                         ++vs_battle_menu9CursorMemory.encyclopaediaRow;
                         vs_main_playSfxDefault(0x7E, 4);
                     }
@@ -872,82 +979,108 @@ int _handleMenu(void)
                             + vs_battle_menu9CursorMemory.encyclopaediaRow]
                     .unlocked
                 != 0) {
+
                 vs_main_playSfxDefault(0x7E, 5);
                 func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                           + vs_battle_menu9CursorMemory.encyclopaediaRow]
                                   .unk0);
+
                 ++_menuState;
                 D_8010A440 = 2;
+
             } else {
                 vs_main_playSfxDefault(0x7E, 7);
             }
+
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
+
             ++_menuState;
+
             if (vs_main_buttonsPressed.all & PADRup) {
                 D_8010A440 = 1;
             } else {
                 D_8010A440 = 0;
             }
         }
+
         func_80105F00(D_8010A220);
+
         if (D_8010A220 < 8) {
             ++D_8010A220;
         }
+
         break;
+
     case 15:
         func_80105F00(D_8010A220);
+
         if (D_8010A220 <= 0) {
+
             if (D_8010A440 == 2) {
                 _menuState = 0x13;
                 break;
             }
+
             if (D_8010A440 != 1) {
                 vs_main_freeHeapR(_monBinData);
                 _menuState = 1;
                 break;
             }
+
             vs_main_freeHeapR(_monBinData);
             func_80104AF8();
             return 2;
         }
+
         --D_8010A220;
         break;
+
     case 19:
         if (func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                       + vs_battle_menu9CursorMemory.encyclopaediaRow]
                               .unk0)
             == 0) {
+
             int temp_v1_4 = D_800F4538[1]->unk656;
             D_8010A44C = temp_v1_4;
-            D_8010A44E = D_800F4538[1]->unk63E;
-            D_8010A444 = (temp_v1_4 << 0x10) >> 0xE;
-            if (D_8010A444 < 0x280) {
-                D_8010A444 = 0x280;
-            } else if (D_8010A444 > 0x1800) {
-                D_8010A444 = 0x1800;
+            _cameraHeightOffset = D_800F4538[1]->unk63E;
+            _cameraDistance = (temp_v1_4 << 0x10) >> 0xE;
+
+            if (_cameraDistance < 0x280) {
+                _cameraDistance = 0x280;
+            } else if (_cameraDistance > 0x1800) {
+                _cameraDistance = 0x1800;
             }
-            D_8010A430.vy = 0x100;
+
+            _cameraAngles.vy = 0x100;
             D_8010A448 = 0;
-            D_8010A430.vx = 0;
-            D_8010A430.vz = 0;
+            _cameraAngles.vx = 0;
+            _cameraAngles.vz = 0;
             _selectedEnemy = vs_battle_menu9CursorMemory.encyclopaediaPage
                            + vs_battle_menu9CursorMemory.encyclopaediaRow;
-            func_80104B40();
+
+            _setEnemyDescription();
             func_80102A38(D_8010A45C == 0);
+
             ++_menuState;
-            break;
         }
         break;
+
     case 20:
         if (_monBinData[_selectedEnemy].unkD != _selectedEnemy) {
             D_8010A438 = (D_8010A438 + 1) & 0xF;
+
             func_80107A98(0);
             func_80107A98(1);
         }
+
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+
             vs_main_playSfxDefault(0x7E, 6);
+
             if (D_8010A45C != 0) {
                 func_80102A38(1);
             }
@@ -967,24 +1100,29 @@ int _handleMenu(void)
 
         if ((lStickX = vs_main_stickPosBuf.lStickX - 0x80, ABS(lStickX) > 0x40)
             || (lStickY = vs_main_stickPosBuf.lStickY - 0x80, ABS(lStickY) > 0x40)) {
+
             D_8010A454 = 0x202020;
+
             if (lStickX < -0x40) {
-                D_8010A430.vy -= 0x40;
+                _cameraAngles.vy -= 0x40;
             } else if (lStickX > 0x40) {
-                D_8010A430.vy += 0x40;
+                _cameraAngles.vy += 0x40;
             }
 
             if ((vs_main_stickPosBuf.lStickY - 0x80) < -0x40) {
-                D_8010A430.vx += 0x40;
+                _cameraAngles.vx += 0x40;
             } else if ((vs_main_stickPosBuf.lStickY - 0x80) > 0x40) {
-                D_8010A430.vx -= 0x40;
+                _cameraAngles.vx -= 0x40;
             }
-            if (D_8010A430.vx < 0) {
-                D_8010A430.vx = 0;
+
+            if (_cameraAngles.vx < 0) {
+                _cameraAngles.vx = 0;
             }
-            if (D_8010A430.vx > 0x400) {
-                D_8010A430.vx = 0x400;
+
+            if (_cameraAngles.vx > 0x400) {
+                _cameraAngles.vx = 0x400;
             }
+
         } else {
             if (vs_main_buttonsPreviousState & PADL2) {
                 int rStickX;
@@ -994,38 +1132,46 @@ int _handleMenu(void)
                 if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
                     || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
                         ABS(rStickY) > 0x40)) {
+
                     if (rStickX < -0x40) {
-                        D_8010A430.vy -= 0x40;
+                        _cameraAngles.vy -= 0x40;
                     } else if (rStickX > 0x40) {
-                        D_8010A430.vy += 0x40;
+                        _cameraAngles.vy += 0x40;
                     }
+
                     if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
-                        D_8010A430.vx += 0x40;
+                        _cameraAngles.vx += 0x40;
                     } else if ((vs_main_stickPosBuf.rStickY - 0x80) > 0x40) {
-                        D_8010A430.vx -= 0x40;
+                        _cameraAngles.vx -= 0x40;
                     }
-                    if (D_8010A430.vx < 0) {
-                        D_8010A430.vx = 0;
+
+                    if (_cameraAngles.vx < 0) {
+                        _cameraAngles.vx = 0;
                     }
-                    if (D_8010A430.vx > 0x400) {
-                        D_8010A430.vx = 0x400;
+
+                    if (_cameraAngles.vx > 0x400) {
+                        _cameraAngles.vx = 0x400;
                     }
+
                 } else {
                     if (vs_main_buttonsPreviousState & PADLup) {
-                        D_8010A430.vx += 0x40;
+                        _cameraAngles.vx += 0x40;
                     } else if (vs_main_buttonsPreviousState & PADLdown) {
-                        D_8010A430.vx -= 0x40;
+                        _cameraAngles.vx -= 0x40;
                     }
+
                     if (vs_main_buttonsPreviousState & PADLright) {
-                        D_8010A430.vy = D_8010A430.vy + 0x40;
+                        _cameraAngles.vy = _cameraAngles.vy + 0x40;
                     } else if (vs_main_buttonsPreviousState & PADLleft) {
-                        D_8010A430.vy = D_8010A430.vy - 0x40;
+                        _cameraAngles.vy = _cameraAngles.vy - 0x40;
                     }
-                    if (D_8010A430.vx < 0) {
-                        D_8010A430.vx = 0;
+
+                    if (_cameraAngles.vx < 0) {
+                        _cameraAngles.vx = 0;
                     }
-                    if (D_8010A430.vx > 0x400) {
-                        D_8010A430.vx = 0x400;
+
+                    if (_cameraAngles.vx > 0x400) {
+                        _cameraAngles.vx = 0x400;
                     }
                 }
 
@@ -1033,27 +1179,31 @@ int _handleMenu(void)
                 int rStickX;
                 int rStickY;
                 D_8010A458 = 0x202020;
+
                 if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
                     || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
                         ABS(rStickY) > 0x40)) {
+
                     if ((vs_main_stickPosBuf.rStickY - 0x80) < -0x40) {
-                        D_8010A444 -= 4;
+                        _cameraDistance -= 4;
                     } else if ((vs_main_stickPosBuf.rStickY - 0x80) > 0x40) {
-                        D_8010A444 += 4;
+                        _cameraDistance += 4;
                     }
+
                 } else {
                     if (vs_main_buttonsPreviousState & PADLup) {
-                        D_8010A444 -= 0x40;
+                        _cameraDistance -= 0x40;
                     } else if (vs_main_buttonsPreviousState & PADLdown) {
-                        D_8010A444 += 0x40;
+                        _cameraDistance += 0x40;
                     }
                 }
-                if (D_8010A444 >= 0x280) {
-                    if (D_8010A444 > 0x1800) {
-                        D_8010A444 = 0x1800;
+
+                if (_cameraDistance >= 0x280) {
+                    if (_cameraDistance > 0x1800) {
+                        _cameraDistance = 0x1800;
                     }
                 } else {
-                    D_8010A444 = 0x280;
+                    _cameraDistance = 0x280;
                 }
             }
         }
@@ -1061,120 +1211,158 @@ int _handleMenu(void)
             func_80102A38(D_8010A45C);
             D_8010A45C ^= 1;
         }
+
         if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
+
             if (vs_main_buttonsPressed.all & (PADL1 | PADR1)) {
                 D_8010A452 = 0;
             }
+
             if (vs_main_buttonRepeat & 8) {
                 if (D_8010A452 == 0) {
                     if (_monBinData[_selectedEnemy].unkE != _selectedEnemy) {
+
                         vs_main_playSfxDefault(0x7E, 0xB);
+
                         _selectedEnemy = _monBinData[_selectedEnemy].unkE;
                         D_8010A448 = 8;
-                        func_80104B40();
+
+                        _setEnemyDescription();
                     }
                 }
                 D_8010A452 = (D_8010A452 + 1) & 3;
             }
+
             if (vs_main_buttonRepeat & PADL1) {
                 if (D_8010A452 == 0) {
                     if (_monBinData[_selectedEnemy].unkD != _selectedEnemy) {
+
                         vs_main_playSfxDefault(0x7E, 0xB);
+
                         _selectedEnemy = _monBinData[_selectedEnemy].unkD;
                         D_8010A448 = 4;
-                        func_80104B40();
+
+                        _setEnemyDescription();
                     }
                 }
+
                 D_8010A452 = (D_8010A452 + 1) & 3;
             }
         }
+
         func_801061F8(D_8010A220, 0);
+
         if (D_8010A220 < 8) {
-            temp_v0 = vs_battle_getTextBox(0);
-            temp_v0->x -= 0x10;
-            temp_v0->xIndent -= 0x10;
+            textBox = vs_battle_getTextBox(0);
+            textBox->x -= 0x10;
+            textBox->xIndent -= 0x10;
             ++D_8010A220;
         }
+
         if (vs_main_buttonsReleased & D_8010A448) {
+
             if (D_8010A448 == 8) {
                 D_8010A448 = 1;
             } else {
                 D_8010A448 = 2;
             }
+
             D_8010A458 = 0x202020;
             D_8010A454 = 0x202020;
             _menuState = 0x19;
         }
         break;
+
     case 21:
         D_8010A458 = 0x202020;
         D_8010A454 = 0x202020;
+
         func_801061F8(D_8010A220, 0);
+
         if (D_8010A220 > 0) {
-            temp_v0 = vs_battle_getTextBox(0);
-            if (temp_v0 != NULL) {
-                temp_v0->x += 0x10;
-                temp_v0->xIndent += 0x10;
+
+            textBox = vs_battle_getTextBox(0);
+
+            if (textBox != NULL) {
+                textBox->x += 0x10;
+                textBox->xIndent += 0x10;
             }
             --D_8010A220;
             break;
         }
+
         func_80108098();
+
         if (D_8010A440 != 0) {
             vs_main_freeHeapR(_monBinData);
             func_80104AF8();
             return 2;
         }
+
         _selectedEnemy = vs_battle_menu9CursorMemory.encyclopaediaPage
                        + vs_battle_menu9CursorMemory.encyclopaediaRow;
+
         vs_mainmenu_setInformationMessage(
             (char*)&_enemyDescriptions[_enemyDescriptions[_selectedEnemy]]);
+
         _menuState = 0xE;
         break;
+
     case 25:
         func_80107A98(2);
         func_80107A98(3);
         func_801061F8(D_8010A220, D_8010A448);
+
         if (D_8010A220 > 0) {
             --D_8010A220;
             break;
         }
+
         func_80108098();
         func_80107FBC(_monBinData[_selectedEnemy].unk0);
+
         ++_menuState;
         break;
+
     case 26:
         func_80107A98(2);
         func_80107A98(3);
         func_801061F8(D_8010A220, 3);
+
         if (func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                       + vs_battle_menu9CursorMemory.encyclopaediaRow]
                               .unk0)
             == 0) {
+
             int temp_v1_10 = D_800F4538[1]->unk656;
             D_8010A44C = temp_v1_10;
-            D_8010A44E = D_800F4538[1]->unk63E;
-            D_8010A444 = (temp_v1_10 << 0x10) >> 0xE;
-            if (D_8010A444 < 0x280) {
-                D_8010A444 = 0x280;
-            } else if (D_8010A444 >= 0x1801) {
-                D_8010A444 = 0x1800;
+            _cameraHeightOffset = D_800F4538[1]->unk63E;
+            _cameraDistance = (temp_v1_10 << 0x10) >> 0xE;
+
+            if (_cameraDistance < 0x280) {
+                _cameraDistance = 0x280;
+            } else if (_cameraDistance >= 0x1801) {
+                _cameraDistance = 0x1800;
             }
             ++_menuState;
         }
         break;
+
     case 27:
         func_80107A98(2);
         func_80107A98(3);
         func_801061F8(D_8010A220, 3 - D_8010A448);
+
         if (D_8010A220 < 8) {
-            D_8010A220 += 1;
+            ++D_8010A220;
         } else {
             D_8010A448 = 0;
             _menuState = 0x14;
         }
+
         break;
     }
+
     return 0;
 }
 
@@ -1184,148 +1372,147 @@ void func_80104AF8(void)
     vs_main_memcpy((void*)getScratchAddr(21), D_8010A490, sizeof D_8010A490);
 }
 
-void func_80104B40(void)
+/**
+ * Set's the current enemy description or a generic message if the enemy
+ * hasn't been defeated.
+ */
+void _setEnemyDescription(void)
 {
     if (_monBinData[_selectedEnemy].unlocked != 0) {
         vs_mainmenu_setInformationMessage(
             (char*)&_enemyDescriptions[_enemyDescriptions[_selectedEnemy]]);
     } else {
-        vs_mainmenu_setInformationMessage((char*)&_miscInfo[_miscInfo[2]]);
+        vs_mainmenu_setInformationMessage(
+            (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_enemyNotDefeated]]);
     }
 }
 
-int _initStringsAndGetSelectedRow(int arg0)
+/**
+ * Handles input for the top level menu.
+ *
+ * @return -1 if initializing or user exits, selected row otherwise.
+ */
+int _topMenu(int initialize)
 {
-    static int D_8010A224;
-    static int _selectedRow;
+    static int state;
+    static int selectedRow;
 
-    char* sp10[8];
+    char* menuText[8];
     int i;
 
-    if (arg0 != 0) {
-        D_8010A224 = 0;
-        _selectedRow = 0;
+    if (initialize != 0) {
+        state = 0;
+        selectedRow = 0;
     }
 
-    switch (D_8010A224) {
+    switch (state) {
     case 0:
         for (i = 0; i < 4; ++i) {
-            sp10[i * 2] = (char*)&_menuText[_menuText[i]];
-            sp10[i * 2 + 1] = NULL;
+            menuText[i * 2] = (char*)&_menuText[_menuText[i]];
+            menuText[i * 2 + 1] = NULL;
         }
-        _setRows(4, D_800F1BF7, sp10);
-        ++D_8010A224;
+
+        _setRows(4, D_800F1BF7, menuText);
+
+        ++state;
         break;
+
     case 1:
-        _selectedRow = _getSelectedRow();
-        if (_selectedRow == -1) {
+        selectedRow = _getSelectedRow();
+
+        if (selectedRow == -1) {
             break;
         }
-        return _selectedRow;
+
+        return selectedRow;
     }
+
     return -1;
 }
 
-void func_80104E90(MATRIX* arg0, short arg1);
-void func_80104F04(MATRIX* arg0, short arg1);
+void _buildYawMatrix(MATRIX* arg0, short arg1);
+void _buildPitchMatrix(MATRIX* arg0, short arg1);
 
-void func_80104CBC(MATRIX* arg0)
+/**
+ * Updates the camera with the adjusted parameters.
+ */
+void _buildCameraMatrix(MATRIX* cameraMatrix)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
-    MATRIX sp20;
-    int trig0;
-    int trig1;
-    int trig2;
-    int var_v0;
-    int* scratch;
+    SVECTOR negLookAt;
+    SVECTOR lookAt;
+    MATRIX pitchMatrix;
+    int angle0;
+    int angle1;
+    int angle2;
+    long* scratch;
 
-    trig0 = rsin(D_8010A430.vy);
-    trig1 = rcos(D_8010A430.vx);
-    trig0 *= D_8010A444;
-    if (trig0 < 0) {
-        trig0 += 0xFFF;
-    }
+    angle0 = (angle1 = rsin(_cameraAngles.vy));
+    angle1 = rcos(_cameraAngles.vx);
+    lookAt.vx = (((angle0 * _cameraDistance) / ONE) * angle1) / ONE;
 
-    var_v0 = (trig0 >> 0xC) * trig1;
-    if (var_v0 < 0) {
-        var_v0 += 0xFFF;
-    }
+    angle0 = rcos(_cameraAngles.vy);
+    angle1 = rcos(_cameraAngles.vx);
+    lookAt.vz = (((angle0 * -_cameraDistance) / ONE) * angle1) / ONE;
 
-    sp18.vx = var_v0 >> 0xC;
-    trig0 = rcos(D_8010A430.vy);
-    trig1 = rcos(D_8010A430.vx);
-    trig0 *= -D_8010A444;
-    if (trig0 < 0) {
-        trig0 += 0xFFF;
-    }
+    angle2 = rsin(_cameraAngles.vx) * -_cameraDistance;
+    lookAt.vy = (angle2 / ONE) - (_cameraHeightOffset / 2);
 
-    var_v0 = (trig0 >> 0xC) * trig1;
-    if (var_v0 < 0) {
-        var_v0 += 0xFFF;
-    }
+    scratch = (long*)getScratchAddr(0);
+    scratch[13] = lookAt.vx * ONE;
+    scratch[14] = lookAt.vy * ONE;
+    scratch[15] = lookAt.vz * ONE;
+    scratch[21] = _cameraAngles.vx;
+    scratch[22] = _cameraAngles.vy;
+    scratch[23] = _cameraAngles.vz;
 
-    sp18.vz = var_v0 >> 0xC;
-    trig2 = rsin(D_8010A430.vx) * -D_8010A444;
-    if (trig2 < 0) {
-        trig2 += 0xFFF;
-    }
+    _buildYawMatrix(cameraMatrix, _cameraAngles.vy);
+    _buildPitchMatrix(&pitchMatrix, _cameraAngles.vx);
+    func_80041C68(&pitchMatrix, cameraMatrix);
 
-    sp18.vy = (trig2 >> 0xC) - (D_8010A44E / 2);
+    applyVector(&negLookAt, lookAt.vx, lookAt.vy, lookAt.vz, = -);
 
-    scratch = (int*)getScratchAddr(0);
-    scratch[13] = sp18.vx << 0xC;
-    scratch[14] = (sp18.vy << 0x10) >> 4;
-    scratch[15] = sp18.vz << 0xC;
-    scratch[21] = D_8010A430.vx;
-    scratch[22] = D_8010A430.vy;
-    scratch[23] = D_8010A430.vz;
-
-    func_80104E90(arg0, D_8010A430.vy);
-    func_80104F04(&sp20, D_8010A430.vx);
-    func_80041C68(&sp20, arg0);
-
-    sp10.vx = -sp18.vx;
-    sp10.vy = -sp18.vy;
-    sp10.vz = -sp18.vz;
-
-    ApplyMatrix(arg0, &sp10, (VECTOR*)&arg0->t);
+    ApplyMatrix(cameraMatrix, &negLookAt, (VECTOR*)&cameraMatrix->t);
 }
 
-void func_80104E90(MATRIX* arg0, short arg1)
+/**
+ * Updates camera yaw angle.
+ */
+void _buildYawMatrix(MATRIX* cameraMatrix, short angle)
 {
-    int sine = rsin(-arg1);
-    int cosine = rcos(-arg1);
-    arg0->m[0][0] = cosine;
-    arg0->m[0][1] = 0;
-    arg0->m[0][2] = -sine;
-    arg0->m[1][0] = 0;
-    arg0->m[1][1] = 0x1000;
-    arg0->m[1][2] = 0;
-    arg0->m[2][0] = sine;
-    arg0->m[2][1] = 0;
-    arg0->m[2][2] = cosine;
+    int sine = rsin(-angle);
+    int cosine = rcos(-angle);
+
+    cameraMatrix->m[0][0] = cosine;
+    cameraMatrix->m[0][1] = 0;
+    cameraMatrix->m[0][2] = -sine;
+    cameraMatrix->m[1][0] = 0;
+    cameraMatrix->m[1][1] = ONE;
+    cameraMatrix->m[1][2] = 0;
+    cameraMatrix->m[2][0] = sine;
+    cameraMatrix->m[2][1] = 0;
+    cameraMatrix->m[2][2] = cosine;
 }
 
-void func_80104F04(MATRIX* arg0, short arg1)
+/**
+ * Updates camera pitch angle.
+ */
+void _buildPitchMatrix(MATRIX* pitchMatrix, short angle)
 {
-    int temp_s0;
-    int temp_v0;
+    int sine = rsin(angle);
+    int cosine = rcos(angle);
 
-    temp_s0 = rsin(arg1);
-    temp_v0 = rcos(arg1);
-    arg0->m[0][0] = 0x1000;
-    arg0->m[0][1] = 0;
-    arg0->m[0][2] = 0;
-    arg0->m[1][0] = 0;
-    arg0->m[1][1] = temp_v0;
-    arg0->m[1][2] = -temp_s0;
-    arg0->m[2][0] = 0;
-    arg0->m[2][1] = temp_s0;
-    arg0->m[2][2] = temp_v0;
+    pitchMatrix->m[0][0] = ONE;
+    pitchMatrix->m[0][1] = 0;
+    pitchMatrix->m[0][2] = 0;
+    pitchMatrix->m[1][0] = 0;
+    pitchMatrix->m[1][1] = cosine;
+    pitchMatrix->m[1][2] = -sine;
+    pitchMatrix->m[2][0] = 0;
+    pitchMatrix->m[2][1] = sine;
+    pitchMatrix->m[2][2] = cosine;
 }
 
-void func_80104F74(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_80104F74(int arg0, int arg1, int arg2, int arg3, int color)
 {
     int i;
     int var_s7;
@@ -1337,23 +1524,29 @@ void func_80104F74(int arg0, int arg1, int arg2, int arg3, int arg4)
     line = scratch[0];
 
     for (i = arg1, var_s7 = arg2; i < ((arg1 + arg3) - 1); ++i, --var_s7) {
-
         setLineG2(line);
         setXY2(line, arg0, i, (arg0 + var_s7) - 1, i);
-        setRGB0(line, D_80102820[arg4].r0, D_80102820[arg4].g0, D_80102820[arg4].b0);
-        setRGB1(line, D_80102830[arg4].r0, D_80102830[arg4].g0, D_80102830[arg4].b0);
+        setRGB0(line, D_80102820[color].r0, D_80102820[color].g0, D_80102820[color].b0);
+        setRGB1(line, D_80102830[color].r0, D_80102830[color].g0, D_80102830[color].b0);
+
         AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
     }
+
     arg0 += 2;
     arg1 += 2;
     poly = (POLY_F4*)line;
+
     setPolyF4(poly);
     setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
         (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
     setRGB0(poly, 0, 0, 0);
+
     scratch = (void**)getScratchAddr(0);
+
     AddPrim(scratch[1] + 0x1C, poly++);
+
     scratch[0] = (void*)poly;
+
     _insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
@@ -1440,7 +1633,7 @@ void func_8010552C(int arg0)
     sp20.x = 0x80 - ((8 - arg0) << 5);
     sp20.y = 0xF0;
     vs_battle_setGeomOffset(&sp20);
-    func_80104CBC(&spA8);
+    _buildCameraMatrix(&spA8);
     func_800F9EB8(&spA8);
     vs_battle_setGeomOffset(&sp18);
     sprintf(sp28, "#%ld", _score);
@@ -1467,7 +1660,7 @@ void func_801056B8(void)
         row->rowIndex = i + 1;
         row->selected = 0;
         row->animationState = 0;
-        row->unk3 = 0;
+        row->disabled = 0;
         if (vs_main_scoredata.titles & ((new_var = 1) << i)) {
             row->unk1 = 1;
             row->title = (char*)&_titleText[_titleText[i]];
@@ -1781,6 +1974,7 @@ void func_801061F8(int arg0, int arg1)
     if (arg0 < 8) {
         func_80106528();
     }
+
     if (arg1 != 3) {
         vs_battle_getGeomOffset(&sp50);
         if (arg1 == 2) {
@@ -1790,25 +1984,34 @@ void func_801061F8(int arg0, int arg1)
         }
         sp58.y = 0x68;
         vs_battle_setGeomOffset(&sp58);
-        func_80104CBC(&sp30);
+        _buildCameraMatrix(&sp30);
         func_800F9EB8(&sp30);
         vs_battle_setGeomOffset(&sp50);
     }
+
     if (arg1 > 0) {
         arg0 = 8;
     }
+
     if (D_8010A45C == 0) {
         temp_s2 = (8 - arg0) * 0x10;
+
         func_800C9078(vs_battle_setMenuItem(
             0, temp_s2 + 0xB8, 0xA6, 0x100, 0, &_monBinData[_selectedEnemy].name[2]));
         vs_battle_getMenuItem(0)->state = 0;
+
         temp_s4 = arg0 * 0x10;
         scratch = (void**)getScratchAddr(0);
+
         vs_mainmenu_drawButton(6, temp_s4 - 0x78, 0xF, scratch[1] + 0x18);
+
         temp_s0 = (temp_s4 - 0x64) & 0xFFFF;
+
         vs_battle_renderTextRawColor(
             "ROTATION", temp_s0 | 0x120000, D_8010A458, scratch[1] + 0x18);
+
         temp_s6 = temp_s4 - 0x70;
+
         func_80104F74(temp_s6, 0x12, 0x60, 0xC, 3);
         vs_mainmenu_drawButton(7, temp_s4 - 0x78, 0x22, scratch[1] + 0x18);
         vs_battle_renderTextRawColor(
@@ -1830,45 +2033,56 @@ void func_80106528(void)
     POLY_G4* poly = scratch[0];
 
     setPolyG4(poly);
-    setXY4(poly, 0, 0, 0x40, 0, 0, 0xF0, 0x40, 0xF0);
-    setRGB0(poly, 0x80, 0x80, 0x80);
+    setXY4(poly, 0, 0, 64, 0, 0, 240, 64, 240);
+    setRGB0(poly, 128, 128, 128);
     setRGB1(poly, 0, 0, 0);
-    setRGB2(poly, 0x80, 0x80, 0x80);
+    setRGB2(poly, 128, 128, 128);
     setRGB3(poly, 0, 0, 0);
     setSemiTrans(poly, 1);
+
     AddPrim(scratch[1] + 0x20, poly++);
+
     setPolyG4(poly);
-    setXY4(poly, 0x100, 0, 0x140, 0, 0x100, 0xF0, 0x140, 0xF0);
+    setXY4(poly, 256, 0, 320, 0, 256, 240, 320, 240);
     setRGB0(poly, 0, 0, 0);
-    setRGB1(poly, 0x80, 0x80, 0x80);
+    setRGB1(poly, 128, 128, 128);
     setRGB2(poly, 0, 0, 0);
-    setRGB3(poly, 0x80, 0x80, 0x80);
+    setRGB3(poly, 128, 128, 128);
     setSemiTrans(poly, 1);
-    AddPrim(scratch[1] + 0x20, poly++);
+
+    AddPrim(scratch[1] + 32, poly++);
+
     scratch[0] = poly;
+
     _insertTPage(8, getTPage(0, 2, 0, 0));
 }
 
-void _vsStrcpyWithNewline(u_char* arg0, u_char* arg1)
+void _strcpy(u_char* dest, u_char* src)
 {
-    while (*arg1 != vs_char_terminator) {
-        *arg0++ = *arg1++;
+    while (*src != vs_char_terminator) {
+        *dest++ = *src++;
     }
-    *arg0 = *arg1;
+
+    *dest = *src;
 }
 
-void _vsStrcat(char* arg0, char* arg1)
+void _strcat(char* dest, char* src)
 {
-    while (*arg0 != vs_char_terminator) {
-        ++arg0;
+    while (*dest != vs_char_terminator) {
+        ++dest;
     }
-    while (*arg1 != vs_char_terminator) {
-        *arg0++ = *arg1++;
+
+    while (*src != vs_char_terminator) {
+        *dest++ = *src++;
     }
-    *arg0 = *arg1;
+
+    *dest = *src;
 }
 
-void func_80106780(void)
+/**
+ * Sets the rows for the Gazette screen.
+ */
+void _setStatText(void)
 {
     int i;
     _gazetteRow* p;
@@ -1880,7 +2094,7 @@ void func_80106780(void)
         p->animationState = 0;
         p->rowIndex = i + 1;
         p->selected = 0;
-        p->unk3 = 0;
+        p->disabled = 0;
         p->unk1 = 1;
     }
 }
@@ -1888,22 +2102,31 @@ void func_80106780(void)
 // https://decomp.me/scratch/Xo8T1
 INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
 
+/**
+ * Prints an integer in VS string encoding.
+ */
 void _toVsStringInt(char* buf, int value)
 {
     int len;
     int i;
+
     buf++;
     buf--;
+
     sprintf(buf, "%d", value);
     len = strlen(buf);
 
     for (i = 0; i < len; ++i) {
-        buf[i] -= 0x30;
+        buf[i] -= '0';
     }
+
     buf += len;
-    *buf = -0x19;
+    *buf = vs_char_terminator;
 }
 
+/**
+ * Same as _toVsStringInt but appends a %.
+ */
 void _toVsStringPercent(char* buf, int value)
 {
 
@@ -1914,16 +2137,21 @@ void _toVsStringPercent(char* buf, int value)
     buf--;
 
     sprintf(buf, "%d", value);
-
     len = strlen(buf);
+
     for (i = 0; i < len; ++i) {
-        buf[i] -= 0x30;
+        buf[i] -= '0';
     }
+
     buf += len;
+
     *((D_8010989C_t*)buf) = D_8010989C;
 }
 
-void func_80106DE0(char* buf, int rank, int totalSeconds)
+/**
+ * Prints the best time, prepended with the game "round".
+ */
+void _printFastestClearTime(char* buf, int rounds, int totalSeconds)
 {
     int len;
     int i;
@@ -1932,7 +2160,8 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
     char* str;
 
     if (_clearCount == 0) {
-        _vsStrcpyWithNewline((u_char*)buf, (u_char*)&_miscInfo[_miscInfo[0]]);
+        _strcpy(
+            (u_char*)buf, (u_char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_noneClear]]);
         return;
     }
 
@@ -1947,38 +2176,43 @@ void func_80106DE0(char* buf, int rank, int totalSeconds)
 
     *buf = vs_char_R;
     str = buf + 1;
-    sprintf(str, "%d", rank + 1);
+
+    sprintf(str, "%d", rounds + 1);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
-        str[i] -= 0x30;
+        str[i] -= '0';
     }
 
     str = &str[len];
-    *str++ = (u_char)vs_char_spacing;
+    *str++ = vs_char_spacing;
     *str++ = 12;
 
     sprintf(str, "%02d", minutes);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
-        str[i] -= 0x30;
+        str[i] -= '0';
     }
 
     str = &str[len];
-    *str++ = (u_char)vs_char_colon;
+    *str++ = vs_char_colon;
+
     sprintf(str, "%02d", seconds);
     len = strlen(str);
 
     for (i = 0; i < len; ++i) {
-        str[i] -= 0x30;
+        str[i] -= '0';
     }
 
     str += len;
-    *str = (u_char)vs_char_terminator;
+    *str = vs_char_terminator;
 }
 
-void func_80106F9C(void)
+/**
+ * Sets the menu rows for the boss rush screen.
+ */
+void _printBossRushMenuRow(void)
 {
     int i;
     _gazetteRow* row;
@@ -1986,11 +2220,12 @@ void func_80106F9C(void)
     for (i = 0, row = _gazetteRows; i < 8; ++i, ++row) {
         row->y = 194;
         if ((vs_main_scoredata.bossTimeTrialScores[i][0].time) == 0x800000) {
-            row->unk3 = 1;
-            row->title = (char*)&_miscInfo[_miscInfo[4]];
-            row->description = (char*)&_miscInfo[_miscInfo[5]];
+            row->disabled = 1;
+            row->title = (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_noneBossRush]];
+            row->description =
+                (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_noneBossRushDesc]];
         } else {
-            row->unk3 = 0;
+            row->disabled = 0;
             row->title = (char*)&_timeAttacks[_timeAttacks[i]];
             row->description =
                 (char*)&_timeAttackDescriptions[_timeAttackDescriptions[i]];
@@ -2045,7 +2280,7 @@ void func_80107120(int arg0)
             if (!(--var_s1->animationState)) {
                 temp_s2 = vs_battle_setMenuItem(
                     i, 0x140, 0x32 + i * 0x10, 0x88, 0, var_s1->title);
-                temp_s2->unselectable = var_s1->unk3;
+                temp_s2->unselectable = var_s1->disabled;
                 temp_s2->state = 2;
                 temp_s2->targetPosition0 = 0xC2;
             }
@@ -2115,7 +2350,7 @@ void func_80107120(int arg0)
     func_801051AC((arg0 * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
 
     if ((var_s7 == 8) && (arg0 == var_s7)) {
-        if (sp3C->unk3 != 0) {
+        if (sp3C->disabled != 0) {
             vs_battle_renderTextRawColor(
                 "$--:--:--", vs_getXY(88, 158), vs_getRGB(80, 80, 80), r[1] + 0x1C);
         } else {

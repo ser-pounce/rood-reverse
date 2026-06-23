@@ -22,6 +22,9 @@ static char _stringBuf[20];
 // Purpose unclear.
 static char D_80105DB0 = 0;
 
+/**
+ * Manages character insertion and deletion.
+ */
 static int _insertDeleteHandler(int bufPos)
 {
     int previousPos;
@@ -80,6 +83,11 @@ static int _insertDeleteHandler(int bufPos)
     return bufPos;
 }
 
+/**
+ * Copies the current name buffer, trimming spaces from the end.
+ *
+ * @return 1 if the final string is empty, 0 otherwise.
+ */
 static int _copyNormalizedString(char* stringBuf)
 {
     int pos;
@@ -118,6 +126,11 @@ static u_short _renderRenameMenuStrings[] = {
 
 extern u_long* D_1F800000[];
 
+/**
+ * Renders all UI elements.
+ *
+ * @param xOffset Used during animation, 0 normally.
+ */
 static void _renderRenameMenu(int xOffset)
 {
     static int _backgroundHexCoords[] = { vs_getXY(216, 72), vs_getXY(142, 180),
@@ -300,6 +313,9 @@ static void _renderRenameMenu(int xOffset)
     }
 }
 
+/**
+ * Draws the cursor box at the specified location.
+ */
 static void _highlightSelection(int x, int y, int w, int h)
 {
     u_long* temp_t0;
@@ -323,7 +339,12 @@ static void _highlightSelection(int x, int y, int w, int h)
     D_1F800000[0] = temp_t0 + 10;
 }
 
-static int _highlightCharSelection(int arg0, int column, int row)
+/**
+ * Highlights the currently selected character.
+ *
+ * @return The new cursor animation state.
+ */
+static int _highlightCharSelection(int cursorState, int column, int row)
 {
     int x;
     int y;
@@ -333,9 +354,14 @@ static int _highlightCharSelection(int arg0, int column, int row)
 
     _highlightSelection(x + 128, y + 76, 10, 18);
 
-    return func_800FFCDC(arg0, (x + 112) | ((y + 66) << 16));
+    return func_800FFCDC(cursorState, (x + 112) | ((y + 66) << 16));
 }
 
+/**
+ * Manages input during the confirmation screen.
+ *
+ * @return Positive row if selected, 0 otherwise.
+ */
 static int _confirmationScreen(int init)
 {
     static char cursorState = 0;
@@ -380,6 +406,7 @@ static int _confirmationScreen(int init)
             for (i = 0; i < 3; ++i) {
                 vs_mainMenu_menuItemFlyoutRight(i + 20);
             }
+
             if (vs_main_buttonsPressed.all & PADRdown) {
                 selectedRow = 1;
             }
@@ -429,6 +456,11 @@ static void _updateMenuSelection(int row)
     }
 }
 
+/**
+ * Input handling for the rename screen.
+ *
+ * @return 1 if the rename is complete or cancelled, 0 otherwise.
+ */
 static int _renameMenuInput(int initialize)
 {
     enum state {
@@ -780,6 +812,11 @@ static int _renameMenuInput(int initialize)
     return 0;
 }
 
+/**
+ * Module entrypoint.
+ *
+ * @return Always 0, no handling for terminating main menu.
+ */
 int vs_menu8_execRename(char* state)
 {
     int i;

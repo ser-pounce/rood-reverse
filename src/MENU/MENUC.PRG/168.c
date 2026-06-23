@@ -2506,7 +2506,7 @@ static vs_battle_menuItem_t* _initItemRow(int itemType, int index)
     menuItem = _setItemRow(itemType, index);
     menuItem->state = 2;
     menuItem->targetPosition0 = 155;
-    menuItem->initialX = 320;
+    menuItem->x = 320;
 
     return menuItem;
 }
@@ -4077,7 +4077,7 @@ int vs_menuC_exec(char* state)
         }
         func_80100414(0x7FE, 0x80);
         menuItem = vs_battle_getMenuItem(0);
-        if ((menuItem->state != 1) || (menuItem->initialX != 180)) {
+        if ((menuItem->state != 1) || (menuItem->x != 180)) {
             _addMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
         }
         *state = 2;

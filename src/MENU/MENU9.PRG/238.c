@@ -1,18 +1,18 @@
 #include "common.h"
-#include "../MAINMENU.PRG/278.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../MAINMENU.PRG/58EC.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../SLUS_010.40/sfx.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/2842C.h"
-#include "../../BATTLE/BATTLE.PRG/2EA3C.h"
-#include "../../BATTLE/BATTLE.PRG/30D14.h"
-#include "../../BATTLE/BATTLE.PRG/40564.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/sfx.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/2842C.h"
+#include "src/BATTLE/BATTLE.PRG/2EA3C.h"
+#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/40564.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU9.PRG/menuText.h"
 #include "build/assets/MENU/MENU9.PRG/rankText.h"
 #include "build/assets/MENU/MENU9.PRG/titleText.h"
@@ -22,15 +22,15 @@
 #include "build/assets/MENU/MENU9.PRG/timeAttacks.h"
 #include "build/assets/MENU/MENU9.PRG/timeAttackDescriptions.h"
 #include "build/assets/MENU/MENU9.PRG/miscInfo.h"
+#include "build/src/include/lbas.h"
+#include "insertTPage.h"
+#include "vs_string.h"
+#include "gpu.h"
 #include <libetc.h>
 #include <stdio.h>
 #include <strings.h>
 #include <libgpu.h>
 #include <abs.h>
-#include "insertTPage.h"
-#include "vs_string.h"
-#include "gpu.h"
-#include "build/src/include/lbas.h"
 
 typedef struct {
     char unk0[4];
@@ -65,37 +65,6 @@ extern void* D_1F800000[];
 
 static char D_8010851C = 0;
 static char D_8010851D = 0;
-static u_short _menuText[] = {
-#include "build/assets/MENU/MENU9.PRG/menuText.vsString"
-};
-static u_short _rankText[] = {
-#include "build/assets/MENU/MENU9.PRG/rankText.vsString"
-};
-static u_short _titleText[] = {
-#include "build/assets/MENU/MENU9.PRG/titleText.vsString"
-};
-static u_short _titleDescriptions[] = {
-#include "build/assets/MENU/MENU9.PRG/titleDescriptions.vsString"
-};
-static u_short _statHeaders[] = {
-#include "build/assets/MENU/MENU9.PRG/statHeaders.vsString"
-};
-static u_short _statDescriptions[] = {
-#include "build/assets/MENU/MENU9.PRG/statDescriptions.vsString"
-};
-static u_short _timeAttacks[] = {
-#include "build/assets/MENU/MENU9.PRG/timeAttacks.vsString"
-};
-static u_short _timeAttackDescriptions[] = {
-#include "build/assets/MENU/MENU9.PRG/timeAttackDescriptions.vsString"
-};
-static u_short _miscInfo[] = {
-#include "build/assets/MENU/MENU9.PRG/miscInfo.vsString"
-};
-#pragma vsstring(start)
-static char D_80109870[] = "YES\0";
-static char D_80109874[] = "NO\0";
-#pragma vsstring(end)
 
 void func_80102A38(int arg0)
 {
@@ -108,180 +77,223 @@ void func_80102A38(int arg0)
     }
 }
 
-void func_80102A7C(vs_battle_menuItem_t* arg0)
+void func_80102A7C(vs_battle_menuItem_t* menuItem)
 {
-    int sp10;
+    int w;
     int sp14;
     int sp18;
     int sp1C;
     int temp_fp;
     char temp_v1_2;
-    int var_a0;
+    int brightness;
     int var_s0;
     int i;
-    u_long* var_s2;
-    u_char* temp_s1;
+    u_long* prim;
+    u_char* menuText;
     u_int temp_a0;
-    u_int var_s4;
-    u_long* temp_s7;
-    int temp_v1;
+    u_int xy;
+    u_long* before;
+    int state;
     int s5;
 
-    temp_s1 = arg0->text;
-
+    menuText = menuItem->text;
     sp14 = 0;
+
     if (vs_main_frameBuf == 0) {
         sp14 = 0x140;
     }
 
-    var_s4 = *(int*)&arg0->initialX;
-    temp_s7 = D_1F800000[2] + 8;
-
-    sp10 = arg0->w;
-    sp18 = arg0->animationState;
-    temp_fp = arg0->fadeEffect - 1;
-    sp1C = arg0->backgroundWidth;
+    xy = *(int*)&menuItem->x;
+    before = D_1F800000[2] + 8;
+    w = menuItem->w;
+    sp18 = menuItem->animationState;
+    temp_fp = menuItem->fadeEffect - 1;
+    sp1C = menuItem->backgroundWidth;
 
     if (vs_main_frameBuf != D_8010851C) {
+
         ++D_8010851D;
         D_8010851C = vs_main_frameBuf;
-        if (D_8010851D >= 0xC) {
+
+        if (D_8010851D >= 12) {
             D_8010851D = 0;
         }
     }
 
-    temp_v1 = arg0->state;
+    state = menuItem->state;
 
-    if ((temp_v1 == 1) && (arg0->initialX < 0x80U)) {
+    if ((state == 1) && (menuItem->x < 0x80U)) {
+
         var_s0 = D_8010851D >> 2;
+
         if (temp_fp == 0) {
             var_s0 = var_s0 - 5;
         } else {
-            var_s0 = temp_v1 - var_s0;
+            var_s0 = state - var_s0;
         }
-        vs_battle_setSpriteDefaultTexPage(0x80,
-            (arg0->initialX - 0xE) | ((arg0->y + var_s0) << 0x10), 0x100010,
-            temp_s7 - 1)[4] = (temp_fp * 0x10) | 0x37F93000;
+
+        vs_battle_setSpriteDefaultTexPage(128,
+            (menuItem->x - 14) | ((menuItem->y + var_s0) << 0x10), vs_getWH(16, 16),
+            before - 1)[4] = (temp_fp << 4) | vs_getUV0Clut(0, 48, 912, 223);
     }
 
-    i = arg0->initialX + 6;
-    while ((var_s0 = *temp_s1++) != 0xFF) {
-        if (var_s0 == 0xFA) {
-            i += *temp_s1++;
+    i = menuItem->x + 6;
+
+    while ((var_s0 = *menuText++) != vs_char_printString) {
+        if (var_s0 == vs_char_spacing) {
+            i += *menuText++;
         } else {
-            i = func_80101268(var_s0 | (temp_fp << 0x1F), i, arg0, temp_s7);
+            i = func_80101268(var_s0 | (temp_fp << 0x1F), i, menuItem, before);
         }
     }
-    if (sp10 == 0) {
+
+    if (w == 0) {
         return;
     }
 
-    var_s2 = D_1F800000[0];
+    prim = D_1F800000[0];
+
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
+
         if (temp_fp == 0) {
             var_s0 = s5 + 0x20;
         } else {
             var_s0 = s5;
             var_s0 = 0x78 - s5;
         }
-        var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
-        var_s2[1] = 0xE1000220;
-        var_s2[2] = vs_battle_uiGradientStop(8 - sp18, sp1C, var_s0) | 0x52000000;
-        var_s2[3] = var_s4;
-        var_s2[4] = vs_battle_uiGradientStop(sp18, sp1C, var_s0);
-        var_s2[5] = ((var_s4 + sp10 - 1) & 0xFFFF) | ((var_s4 >> 0x10) << 0x10);
-        var_s2[6] = 0xE1000020;
-        *temp_s7 = ((u_long)var_s2 << 8) >> 8;
-        var_s2 += 7;
-        var_s4 += 0x10000;
+
+        prim[0] = (*before & 0xFFFFFF) | (6 << 24);
+        prim[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        prim[2] = vs_battle_uiGradientStop(8 - sp18, sp1C, var_s0)
+                | vs_getRGB0(primLineG2SemiTrans, 0, 0, 0);
+        prim[3] = xy;
+        prim[4] = vs_battle_uiGradientStop(sp18, sp1C, var_s0);
+        prim[5] = ((xy + w - 1) & 0xFFFF) | ((xy >> 0x10) << 0x10);
+        prim[6] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+
+        *before = ((u_long)prim << 8) >> 8;
+        prim += 7;
+        xy += 1 << 16;
     }
 
-    D_1F800000[0] = var_s2;
+    D_1F800000[0] = prim;
+
     if (temp_fp == 0) {
-        func_800CCCB8(temp_s7, 0x60000000,
-            ((var_s4 + 2) & 0xFFFF) | ((var_s4 >> 0x10) << 0x10), sp10 | 0x20000);
+        func_800CCCB8(before, 0x60000000, ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10),
+            w | 0x20000);
     }
 
     if (sp18 != 0) {
-        arg0->animationState = sp18 - 1;
+        menuItem->animationState = sp18 - 1;
     }
 
-    var_s4 = var_s4 + 0xFFF40000;
-    sp10 |= 0x10000;
-    var_s0 = ((arg0->initialX < 0x80) ^ 1) << 7;
+    xy = xy + (-12 << 16);
+    w |= 0x10000;
+    var_s0 = (menuItem->x >= 128) << 7;
 
     for (i = 0; i < 12; ++i) {
+
         if (temp_fp == 0) {
-            var_a0 = 0x78 - i * 8;
+            brightness = 120 - i * 8;
         } else {
-            var_a0 = i * 8 + 0x20;
+            brightness = i * 8 + 32;
         }
-        var_s2 = vs_battle_setSprite(var_a0, var_s4, sp10, temp_s7);
-        temp_v1_2 = var_s4 - var_s0;
-        temp_a0 = var_s4 >> 0x10;
-        var_s4 += 0x10000;
-        var_s2[1] = ((u_int)(sp14 + var_s0) >> 6) | 0xE1000120;
-        var_s2[4] = temp_v1_2 | (temp_a0 << 8);
+
+        prim = vs_battle_setSprite(brightness, xy, w, before);
+
+        temp_v1_2 = xy - var_s0;
+        temp_a0 = xy >> 0x10;
+        xy += 1 << 16;
+
+        prim[1] = ((u_int)(sp14 + var_s0) >> 6)
+                | vs_getTpage(
+                    0, 0, semiTransparencySubtract, semiTransparencyFull, ditheringOff);
+        prim[4] = temp_v1_2 | (temp_a0 << 8);
     }
 }
 
-void func_80102E10(int arg0, int arg1, char** arg2, int arg3)
+/**
+ * Stores the current cursor position and page and sets
+ * the next menu rows.
+ */
+void _setRows(int rowCount, int absoluteRow, char* text[])
 {
-    int sp10[arg0];
+    int rowTypes[rowCount];
     int i;
-    char temp_s1;
+    char cursorBackup;
 
-    for (i = 0; i < arg0; ++i) {
-        sp10[i] = 0;
+    for (i = 0; i < rowCount; ++i) {
+        rowTypes[i] = 0;
     }
 
-    if ((arg0 < 9) || (arg1 < 8)) {
-        D_800F4EE8.cursorMemories[2] = arg1;
+    if ((rowCount < 9) || (absoluteRow < 8)) {
+        D_800F4EE8.cursorMemories[2] = absoluteRow;
         D_800F4EE8.cursorMemories[3] = 0;
-    } else if (arg1 >= (arg0 - 8)) {
-        D_800F4EE8.cursorMemories[2] = arg1 - (arg0 - 9);
-        D_800F4EE8.cursorMemories[3] = arg0 - 9;
+    } else if (absoluteRow >= (rowCount - 8)) {
+        D_800F4EE8.cursorMemories[2] = absoluteRow - (rowCount - 9);
+        D_800F4EE8.cursorMemories[3] = rowCount - 9;
     } else {
         D_800F4EE8.cursorMemories[2] = 4;
-        D_800F4EE8.cursorMemories[3] = arg1 - 4;
+        D_800F4EE8.cursorMemories[3] = absoluteRow - 4;
     }
-    temp_s1 = vs_main_settings.cursorMemory;
+
+    cursorBackup = vs_main_settings.cursorMemory;
     vs_main_settings.cursorMemory = 1;
-    vs_mainmenu_setMenuRows(arg0, 0x101, arg2, sp10);
-    vs_main_settings.cursorMemory = temp_s1;
+
+    vs_mainmenu_setMenuRows(rowCount, menuRowInfo(1, 0, 1), text, rowTypes);
+
+    vs_main_settings.cursorMemory = cursorBackup;
 }
 
+/**
+ * Hoists the selected row to the top, or clears the menu on cancellation.
+ */
 int _getSelectedRow(void)
 {
-    int row;
+    int row = vs_mainmenu_getSelectedRow();
 
-    row = vs_mainmenu_getSelectedRow();
     if (row < -1) {
         vs_mainMenu_clearMenuExcept(5);
     } else if (row >= 0) {
         vs_mainMenu_flyoutMenuRightAndHoistSelection(D_800F4EE8.cursorMemories[2], 1);
     }
+
     return row;
 }
 
-void func_80102F64(char* arg0)
+/**
+ * Unused, possibly copied from another menu.
+ */
+void _setMenuRow10(char* text) __attribute__((unused));
+void _setMenuRow10(char* text)
 {
-    vs_battle_menuItem_t* temp_v0;
-
-    temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 9, arg0);
-    temp_v0->state = 2;
-    temp_v0->targetPosition0 = 0xB4;
-    temp_v0->selected = 1;
-    temp_v0->fontColor = 1;
+    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
+    menuItem->state = menuItemTransition_toLeft;
+    menuItem->targetPosition0 = 180;
+    menuItem->selected = 1;
+    menuItem->fontColor = 1;
 }
 
-void func_80102FB8(void) { vs_mainMenu_clearMenuExcept(8); }
+/**
+ * Unused, possibly copied from another menu.
+ */
+void _clearMenuExceptRow8(void) __attribute__((unused));
+void _clearMenuExceptRow8(void) { vs_mainMenu_clearMenuExcept(8); }
 
+/**
+ * Unused, possibly copied from another menu.
+ */
+void _menuReady(void) __attribute__((unused));
 void _menuReady(void) { vs_mainmenu_ready(); }
 
 int _initData(void);
 int _handleMenu(void);
 
+/**
+ * Module entrypoint.
+ *
+ * @return 1 if menu is closing, 0 otherwise.
+ */
 int vs_menu9_exec(char* state)
 {
     static int D_8010A214;
@@ -301,47 +313,65 @@ int vs_menu9_exec(char* state)
         _initDataComplete = 0;
         *state = initData;
         break;
+
     case initData:
         if (_initDataComplete == 0) {
             _initDataComplete = _initData();
         }
+
         if (D_8010A214 != 0) {
-            D_8010A214 -= 1;
-            break;
-        } else if (_initDataComplete == 0) {
+            --D_8010A214;
             break;
         }
+
+        if (_initDataComplete == 0) {
+            break;
+        }
+
         func_8008A4DC(0);
         func_800CB654(1);
+
         D_800EB9B0 = 0x200000;
         *state = waitMenuReady;
         // Fallthrough
+
     case waitMenuReady:
         *state += vs_mainmenu_ready();
         break;
+
     case 6:
         D_8010A21C = _handleMenu();
+
         if (D_8010A21C != 0) {
+
             func_80100414(-4, 0x80);
             func_800CB654(0);
+
             D_800EB9B0 = 0;
+
             func_8008A4DC(1);
             vs_mainMenu_setNextMenuAction(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
+
             *state = 7;
         }
         break;
+
     case 7:
         func_800FFB68(0);
         *state = 8;
         break;
+
     case 8:
         if (D_801022D8 == 0) {
+
             if (D_8010A21C == 2) {
                 vs_battle_menuState.currentState = 9;
             }
+
             D_801022D6 = 0;
             *state = 0;
+
             return 1;
         }
         break;
@@ -441,6 +471,39 @@ static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B }, { 0x19, 0x82, 0x6C },
 
 static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33 }, { 0x01, 0x28, 0x26 },
     { 0x08, 0x08, 0x20 }, { 0x10, 0x10, 0x08 } };
+
+static u_short _menuText[] = {
+#include "build/assets/MENU/MENU9.PRG/menuText.vsString"
+};
+static u_short _rankText[] = {
+#include "build/assets/MENU/MENU9.PRG/rankText.vsString"
+};
+static u_short _titleText[] = {
+#include "build/assets/MENU/MENU9.PRG/titleText.vsString"
+};
+static u_short _titleDescriptions[] = {
+#include "build/assets/MENU/MENU9.PRG/titleDescriptions.vsString"
+};
+static u_short _statHeaders[] = {
+#include "build/assets/MENU/MENU9.PRG/statHeaders.vsString"
+};
+static u_short _statDescriptions[] = {
+#include "build/assets/MENU/MENU9.PRG/statDescriptions.vsString"
+};
+static u_short _timeAttacks[] = {
+#include "build/assets/MENU/MENU9.PRG/timeAttacks.vsString"
+};
+static u_short _timeAttackDescriptions[] = {
+#include "build/assets/MENU/MENU9.PRG/timeAttackDescriptions.vsString"
+};
+static u_short _miscInfo[] = {
+#include "build/assets/MENU/MENU9.PRG/miscInfo.vsString"
+};
+
+#pragma vsstring(start)
+static char _yesString[] = "YES\0";
+static char _noString[] = "NO\0";
+#pragma vsstring(end)
 
 static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$00:40:00",
     "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
@@ -1150,7 +1213,7 @@ int _initStringsAndGetSelectedRow(int arg0)
             sp10[i * 2] = (char*)&_menuText[_menuText[i]];
             sp10[i * 2 + 1] = NULL;
         }
-        func_80102E10(4, D_800F1BF7, sp10, i);
+        _setRows(4, D_800F1BF7, sp10);
         ++D_8010A224;
         break;
     case 1:

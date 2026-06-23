@@ -1179,7 +1179,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         sp14 = 0x140;
     }
 
-    var_s5 = *(int*)&arg0->initialX;
+    var_s5 = *(int*)&arg0->x;
     temp_s7 = D_1F800000[2] + 2;
     sp10 = arg0->w;
     sp18 = arg0->animationState;
@@ -1197,7 +1197,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
     var_s3 = D_80102409 >> 2;
     var_s3 = temp_fp == 0 ? var_s3 - 5 : 1 - var_s3;
 
-    if (arg0->initialX == 0) {
+    if (arg0->x == 0) {
         for (i = 32; i < 40; ++i) {
             if (vs_battle_getMenuItem(i)->state >= 2) {
                 break;
@@ -1216,12 +1216,12 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         }
         if (i == 0x20) {
             vs_battle_setSpriteDefaultTexPage(0x80,
-                ((arg0->initialX - 0xE) & 0xFFFF) | ((arg0->y + var_s3) << 0x10),
-                0x100010, temp_s7 - 2)[4] = (int)((temp_fp * 0x10) | 0x37F93000);
+                ((arg0->x - 0xE) & 0xFFFF) | ((arg0->y + var_s3) << 0x10), 0x100010,
+                temp_s7 - 2)[4] = (int)((temp_fp * 0x10) | 0x37F93000);
         }
     }
 
-    temp_v1 = arg0->initialX;
+    temp_v1 = arg0->x;
 
     i = temp_v1 + 6;
     if (arg0->icon != 0) {
@@ -1273,7 +1273,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         var_s5 = var_s5 + 0xFFF40000;
 
         sp10 |= 0x10000;
-        var_s3 = ((arg0->initialX < 0x80) ^ 1) << 7;
+        var_s3 = ((arg0->x < 0x80) ^ 1) << 7;
 
         for (i = 0; i < 12; ++i) {
             var_s2 = vs_battle_setSprite(
@@ -1311,7 +1311,7 @@ void func_80101970(void)
         case 1:
             break;
         case 2:
-            origin = menuItem->initialX;
+            origin = menuItem->x;
             target = menuItem->targetPosition0;
             if (origin < target) {
                 origin += 32;
@@ -1336,7 +1336,7 @@ void func_80101970(void)
                     }
                 }
             }
-            menuItem->initialX = origin;
+            menuItem->x = origin;
             if (origin == target) {
                 menuItem->state = 1;
             }
@@ -1367,7 +1367,7 @@ void func_80101970(void)
             }
             break;
         case 4:
-            origin = menuItem->initialX;
+            origin = menuItem->x;
             target = menuItem->targetPosition0;
             if (origin != target) {
                 for (j = 1; j < 16; ++j) {
@@ -1375,9 +1375,9 @@ void func_80101970(void)
                         break;
                     }
                 }
-                menuItem->initialX = vs_battle_rowAnimationSteps[j - 1] + target;
-                if (menuItem->w < (320 - menuItem->initialX)) {
-                    menuItem->w = (64 - menuItem->initialX);
+                menuItem->x = vs_battle_rowAnimationSteps[j - 1] + target;
+                if (menuItem->w < (320 - menuItem->x)) {
+                    menuItem->w = (64 - menuItem->x);
                 }
             } else {
                 origin = menuItem->y;
@@ -1396,7 +1396,7 @@ void func_80101970(void)
             }
             break;
         case 5:
-            origin = menuItem->initialX;
+            origin = menuItem->x;
             target = menuItem->targetPosition0;
             if (target < origin) {
                 origin -= 32;
@@ -1416,7 +1416,7 @@ void func_80101970(void)
                     origin = target - vs_battle_rowAnimationSteps[j - 1];
                 }
             }
-            menuItem->initialX = origin;
+            menuItem->x = origin;
             if (origin == target) {
                 if (origin < 0) {
                     menuItem->state = 0;
@@ -1431,17 +1431,17 @@ void func_80101970(void)
             temp_s3 = D_1F800000[2] + 2;
             if (j != 0) {
                 if (menuItem->w == 126) {
-                    var_v1 = menuItem->initialX + 116;
+                    var_v1 = menuItem->x + 116;
                     origin = var_v1 | ((menuItem->y + 1) << 0x10);
                 } else {
-                    var_v1 = (((menuItem->initialX * 19) >> 4) + 96) & 0xFFFF;
+                    var_v1 = (((menuItem->x * 19) >> 4) + 96) & 0xFFFF;
                     origin = var_v1 | ((menuItem->y + 1) << 0x10);
                 }
                 vs_mainMenu_renderIntColorDefault(j, origin, temp_s3);
                 temp_s0 = origin - 30;
                 vs_battle_renderTextRaw("/", temp_s0, temp_s3);
                 vs_mainMenu_renderIntColorDefault(menuItem->unk10, temp_s0, temp_s3);
-                if ((menuItem->y == 18) && (menuItem->initialX < 96)) {
+                if ((menuItem->y == 18) && (menuItem->x < 96)) {
                     vs_mainMenu_renderIntColorDefault(
                         menuItem->itemPage, origin + 32, temp_s3);
                     vs_battle_renderTextRaw("-", origin, temp_s3);
@@ -1450,12 +1450,11 @@ void func_80101970(void)
                 j = menuItem->unk10;
                 if (j != 0) {
                     vs_battle_renderValue(0,
-                        ((menuItem->initialX + menuItem->w) - 16)
-                            | ((menuItem->y + 3) << 0x10),
+                        ((menuItem->x + menuItem->w) - 16) | ((menuItem->y + 3) << 0x10),
                         j, temp_s3);
                 }
             }
-            if (menuItem->initialX < 320) {
+            if (menuItem->x < 320) {
                 if (menuItem->fadeEffect != 0) {
                     func_8010154C(menuItem);
                 } else {
@@ -1464,24 +1463,22 @@ void func_80101970(void)
                 j = menuItem->itemState;
                 if (j != 0) {
                     func_800FFFBC(
-                        j - 1, (menuItem->initialX - 24) | ((menuItem->y - 3) << 0x10));
+                        j - 1, (menuItem->x - 24) | ((menuItem->y - 3) << 0x10));
                 }
             }
             j = menuItem->unk8;
             if (j != 0) {
-                vs_mainmenu_drawButton(
-                    j - 1, menuItem->initialX + 5, menuItem->y - 2, NULL);
+                vs_mainmenu_drawButton(j - 1, menuItem->x + 5, menuItem->y - 2, NULL);
             }
             j = menuItem->icon;
             if (j != 0) {
                 vs_mainMenu_drawRowIcon(
                     (menuItem->fadeEffect << 0x10) | (menuItem->selected << 8) | j,
-                    menuItem->initialX, menuItem->y - 2);
+                    menuItem->x, menuItem->y - 2);
             }
             j = menuItem->material;
             if (j != 0) {
-                func_800FFF38(
-                    j - 1, (menuItem->initialX + 13) | ((menuItem->y - 3) << 0x10));
+                func_800FFF38(j - 1, (menuItem->x + 13) | ((menuItem->y - 3) << 0x10));
             }
         }
     }

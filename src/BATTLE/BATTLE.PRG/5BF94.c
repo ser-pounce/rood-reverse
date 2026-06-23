@@ -1415,7 +1415,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     vs_battle_rMemzero(&menuItem->animationState, 0x3C);
 
     var_a0 = menuItem;
-    menuItem->initialX = x;
+    menuItem->x = x;
     menuItem->y = y;
 
     for (i = 0; i < 31;) {
@@ -1511,7 +1511,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
 
         vs_battle_setFontStyle(var_v0 + 4);
 
-        temp_v1 = arg0->initialX;
+        temp_v1 = arg0->x;
         var_s2 = temp_v1 + 6;
 
         if ((arg0->icon - 1) < 0x17u) {
@@ -1542,7 +1542,7 @@ void func_800C9078(vs_battle_menuItem_t* arg0)
             arg0->animationState = y - 1;
         }
 
-        x = *(int*)&arg0->initialX;
+        x = *(int*)&arg0->x;
         y = x >> 0x10;
         x &= 0xFFFF;
         func_800CCCB8(temp_s6 + 1, 0x60000000, ((x + 2) & 0xFFFF) | ((y + 2) << 0x10),

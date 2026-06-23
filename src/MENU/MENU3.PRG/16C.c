@@ -99,7 +99,7 @@ static void _animateItemCategoryBar(int animationStep, int itemCategoryIconOnTop
 
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
 
-            if (temp_s0 >= (menuItem->initialX - 12)) {
+            if (temp_s0 >= (menuItem->x - 12)) {
                 menuItem->icon = i + 24;
                 continue;
             }
@@ -1784,7 +1784,7 @@ static void _restoreItemMenu(int itemCategory)
 
         if (menuItem->state == 2) {
             menuItem->state = 1;
-            menuItem->initialX = menuItem->targetPosition0;
+            menuItem->x = menuItem->targetPosition0;
         }
 
         menuItem->selected =
@@ -1823,9 +1823,9 @@ loop_1:
     if (initialize != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
 
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
             menuItem->state = 2;
             menuItem->targetPosition0 = 180;
@@ -2072,9 +2072,9 @@ loop_1:
     case 4: {
         vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
 
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
 
             menuItem->state = 2;
@@ -2162,9 +2162,9 @@ loop_1:
         _secondaryTitleEnabled = 1;
         menuItem = vs_battle_getMenuItem(3);
 
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
             menuItem->state = 2;
             menuItem->targetPosition0 = 180;

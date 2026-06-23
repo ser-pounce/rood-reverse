@@ -719,7 +719,7 @@ void func_80103E24(int arg0, int arg1)
 
         if ((i == temp_s4) && (arg1 == 1)) {
             temp_v0 = vs_battle_getMenuItem(0x1F);
-            if (temp_s0 >= (temp_v0->initialX - 0xC)) {
+            if (temp_s0 >= (temp_v0->x - 0xC)) {
                 temp_v0->icon = i + 0x18;
                 continue;
             } else {
@@ -2308,7 +2308,7 @@ void func_801071D8(int arg0)
         vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
-            temp_v0->initialX = temp_v0->targetPosition0;
+            temp_v0->x = temp_v0->targetPosition0;
         }
         temp_v0_2 = i ^ (D_800F4EE8.cursorMemories[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
@@ -2663,9 +2663,9 @@ loop_1:
             }
             D_80109A7B = 1;
             temp_v0_11 = vs_battle_getMenuItem(0);
-            if (temp_v0_11->initialX >= 0xB5) {
-                if (temp_v0_11->initialX >= 0xCD) {
-                    temp_v0_11->initialX = (u_short)temp_v0_11->initialX - 0x18;
+            if (temp_v0_11->x >= 0xB5) {
+                if (temp_v0_11->x >= 0xCD) {
+                    temp_v0_11->x = (u_short)temp_v0_11->x - 0x18;
                 }
                 temp_v0_11->state = 2;
                 temp_v0_11->targetPosition0 = 0xB4;

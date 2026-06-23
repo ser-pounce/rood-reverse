@@ -52,7 +52,7 @@ typedef struct {
     u_short itemPage;
     u_short unk10;
     u_short unk12;
-    short initialX;
+    short x;
     short y;
     short targetPosition0;
     short targetPosition1;

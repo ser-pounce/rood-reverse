@@ -76,7 +76,7 @@ static void func_80102B14(int arg0, int arg1)
         int temp_s0 = (((i + 1) & 7) * 16) + 32;
         if (i == temp_s4 && arg1 == 1) {
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
-            if (temp_s0 >= (menuItem->initialX - 12)) {
+            if (temp_s0 >= (menuItem->x - 12)) {
                 menuItem->icon = i + 24;
                 continue;
             } else {
@@ -1368,7 +1368,7 @@ static void func_8010537C(int arg0)
         menuItem = vs_battle_getMenuItem(i);
         if (menuItem->state == 2) {
             menuItem->state = 1;
-            menuItem->initialX = menuItem->targetPosition0;
+            menuItem->x = menuItem->targetPosition0;
         }
         menuItem->selected =
             (i ^ (D_800F4EE8.cursorMemories[(arg0 + 0x1E) * 2] + 0x14)) == 0;
@@ -1424,9 +1424,9 @@ static int _itemNavigation(int arg0)
 
     if (arg0 != 0) {
         menuItem = vs_battle_getMenuItem(3);
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
             menuItem->state = 2;
             menuItem->targetPosition0 = 180;
@@ -1601,9 +1601,9 @@ static int _itemNavigation(int arg0)
         break;
     case 4:
         menuItem = vs_battle_getMenuItem(3);
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
             menuItem->state = 2;
             menuItem->targetPosition0 = 180;
@@ -1670,9 +1670,9 @@ static int _itemNavigation(int arg0)
         _menuTitleFlyin = 1;
         menuItem = vs_battle_getMenuItem(3);
 
-        if (menuItem->initialX > 180) {
-            if (menuItem->initialX > 204) {
-                menuItem->initialX -= 24;
+        if (menuItem->x > 180) {
+            if (menuItem->x > 204) {
+                menuItem->x -= 24;
             }
             menuItem->state = 2;
             menuItem->targetPosition0 = 180;
@@ -2980,7 +2980,7 @@ static void _displayCurrentLoot(int x)
         menuItem->unselectable = loot->state == 0;
 
         if (loot->unk2 != 0) {
-            menuItem->initialX -= loot->unk2 * 48;
+            menuItem->x -= loot->unk2 * 48;
             ++loot->unk2;
             if (loot->unk2 == 4) {
                 menuItem->animationState = 0;
@@ -2999,7 +2999,7 @@ static void _displayCurrentLoot(int x)
             menuItem->backgroundWidth = 0x18;
         }
         if (temp_v1_3 > 2) {
-            menuItem->initialX += (temp_v1_3 - 3) * 7;
+            menuItem->x += (temp_v1_3 - 3) * 7;
         }
         ++i;
         ++loot;

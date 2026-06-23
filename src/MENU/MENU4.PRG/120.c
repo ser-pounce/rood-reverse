@@ -1412,7 +1412,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
         menuItem->unselectable = menuText[1] == 0;
 
         if (init & 1) {
-            menuItem->initialX = 320;
+            menuItem->x = 320;
             menuItem->state = 2;
             menuItem->targetPosition0 = 320 - xOffset;
         }
@@ -1456,7 +1456,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
         meuItem->unselectable = menuText[1] == 0;
 
         if (init & 1) {
-            meuItem->initialX = 320;
+            meuItem->x = 320;
             meuItem->state = 2;
             meuItem->targetPosition0 = 320 - gemSlot;
         }
@@ -2054,7 +2054,7 @@ static int _equipmentScreen(int element)
 
             menuItem = vs_battle_getMenuItem(4);
 
-            if (menuItem->initialX >= 181) {
+            if (menuItem->x >= 181) {
                 menuItem->state = 2;
                 menuItem->targetPosition0 = 180;
                 menuItem->selected = 1;

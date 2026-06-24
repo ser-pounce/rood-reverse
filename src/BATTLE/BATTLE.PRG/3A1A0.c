@@ -2,6 +2,14 @@
 #include "30D14.h"
 #include "3A1A0.h"
 
+typedef struct {
+    int unk0;
+    int pad04[5];
+    D_800F4538_t* unk18;
+    short unk1C[18];
+    int unk40;
+} D_1F8003BC_t;
+
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
@@ -15,8 +23,11 @@ u_int* func_800A8D64(SVECTOR*, int);
 int func_800B13CC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
+int func_800A8E84(D_800F4538_t*, SVECTOR*);
 
 extern u_int* D_800F49F0;
+extern u_short D_800F49F4;
+extern u_char D_800F49F8;
 extern u_char D_800E9278[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
@@ -198,4 +209,88 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A7524);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A8B34);
+int func_800A8B34(SVECTOR* arg0, int arg1)
+{
+    D_1F8003BC_t* sb = (D_1F8003BC_t*)0x1F8003BC;
+    D_800F4538_t* actor = sb->unk18;
+    int limit = sb->unk1C[arg1 & 7];
+    u_int* ent;
+    int h;
+    int elev2;
+    int gx;
+    int gz;
+    int r;
+    int los;
+    int diff;
+    int q;
+
+    if (*(int*)((u_char*)actor + 0x5AC) & 0x600) {
+        return 0;
+    }
+
+    gx = arg0->vx / 128;
+    gz = arg0->vz / 128;
+    elev2 = func_8008DD0C(arg0->vx, arg0->vz);
+    elev2 <<= 17;
+    elev2 >>= 17;
+    if (limit + sb->unk0 < elev2) {
+        return 0xFF;
+    }
+
+    ent = func_800A8D64(arg0, 0);
+    if (ent == NULL) {
+        return 0xFF;
+    }
+
+    h = func_8008DC7C(arg0->vx, arg0->vz);
+    if (h < 0) {
+        return 0xFF;
+    }
+    h <<= 17;
+    h >>= 17;
+
+    r = func_800A92B8(gx, gz);
+    if (r != 0) {
+        h = r;
+    }
+
+    if ((*ent >> 17) & 1) {
+        if (h >= 0) {
+            h = 0xBB8;
+        }
+    }
+
+    if (h - actor->unk0.unk1C.vy < -0x17F) {
+        return 0xFF;
+    }
+
+    los = func_800A9378(arg0->vx, limit, arg0->vz, 0);
+    if (los == 0) {
+        arg0->pad = 0;
+    } else {
+        arg0->pad = D_800F49F4;
+        h = los;
+    }
+    arg0->pad |= D_800F49F8 << 8;
+
+    if (sb->unk0 < elev2 - h) {
+        return 0xFF;
+    }
+    if (h < sb->unk40 + limit) {
+        return 0xFF;
+    }
+    if (func_800A8E84(actor, arg0) == 0) {
+        return 0xFF;
+    }
+
+    arg0->vy = h;
+    diff = h - limit;
+    q = diff / 64;
+    if (q >= 0) {
+        return 0;
+    }
+    if (diff & 0x3F) {
+        q--;
+    }
+    return -q;
+}

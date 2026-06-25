@@ -483,8 +483,7 @@ typedef struct {
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;
     u_int unk5AC_8 : 1;
-    u_int unk5AC_9 : 1;
-    u_int unk5AC_10 : 1;
+    u_int unk5AC_9 : 2;
     u_int unk5AC_11 : 1;
     u_int unk5AC_12 : 1;
     u_int unk5AC_13 : 1;

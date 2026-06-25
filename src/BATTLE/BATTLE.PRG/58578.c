@@ -383,66 +383,64 @@ void func_800C20B4(void)
                 goto state_3;
             }
             goto check_row;
-        state_2:
-            {
-                int value;
-                value = *valuePtr;
-                if (value < 0xA0) {
-                    newValue = value - 0x20;
+        state_2: {
+            int value;
+            value = *valuePtr;
+            if (value < 0xA0) {
+                newValue = value - 0x20;
+                goto store_value;
+            } else {
+                int j;
+                j = 0;
+                while (1) {
+                    if ((vs_battle_rowAnimationSteps[j] + 0xF8) >= value) {
+                        break;
+                    }
+                    ++j;
+                    if (j >= 0x10) {
+                        break;
+                    }
+                }
+
+                if (j != 0) {
+                    newValue = vs_battle_rowAnimationSteps[j - 1] + 0xF8;
                     goto store_value;
                 } else {
-                    int j;
-                    j = 0;
-                    while (1) {
-                        if ((vs_battle_rowAnimationSteps[j] + 0xF8) >= value) {
-                            break;
-                        }
-                        ++j;
-                        if (j >= 0x10) {
-                            break;
-                        }
-                    }
-
-                    if (j != 0) {
-                        newValue = vs_battle_rowAnimationSteps[j - 1] + 0xF8;
-                        goto store_value;
-                    } else {
-                        *valuePtr = 0xF8;
-                        row->unk0 = 1;
-                        goto check_row;
-                    }
+                    *valuePtr = 0xF8;
+                    row->unk0 = 1;
+                    goto check_row;
                 }
             }
+        }
 
-        state_3:
-            {
-                int value;
-                value = *valuePtr;
-                if (value >= 0xA0) {
-                    newValue = value + 0x20;
+        state_3: {
+            int value;
+            value = *valuePtr;
+            if (value >= 0xA0) {
+                newValue = value + 0x20;
+            } else {
+                int j;
+                j = 0;
+                value += 4;
+                while (1) {
+                    if (value >= (-((int)vs_battle_rowAnimationSteps[j]))) {
+                        break;
+                    }
+                    ++j;
+                    if (j >= 0x10) {
+                        break;
+                    }
+                }
+
+                if (j != 0) {
+                    value = -vs_battle_rowAnimationSteps[j - 1];
                 } else {
-                    int j;
-                    j = 0;
-                    value += 4;
-                    while (1) {
-                        if (value >= (-((int)vs_battle_rowAnimationSteps[j]))) {
-                            break;
-                        }
-                        ++j;
-                        if (j >= 0x10) {
-                            break;
-                        }
-                    }
-
-                    if (j != 0) {
-                        value = -vs_battle_rowAnimationSteps[j - 1];
-                    } else {
-                        value = 0;
-                        row->unk0 = 1;
-                    }
-                    newValue = value - 4;
+                    value = 0;
+                    row->unk0 = 1;
                 }
+                newValue = value - 4;
             }
+        }
 
         store_value:
             *valuePtr = newValue;

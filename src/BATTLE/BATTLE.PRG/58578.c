@@ -5,6 +5,28 @@
 #include <stddef.h>
 
 typedef struct {
+    char unk0;
+    char unk1;
+    char unk2;
+    char unk3;
+    short unk4;
+    char unk6;
+    char unk7;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+    char unk10;
+    char unk11;
+    char unk12;
+    char unk13;
+} D_800EB9B8_unk990;
+
+typedef struct {
     int unk0;
     int unk4;
     int unk8;
@@ -31,28 +53,7 @@ typedef struct {
     short unk3C;
     short unk3E;
     int unk40[0x254];
-    struct {
-        char unk0;
-        char unk1;
-        char unk2;
-        char unk3;
-        char unk4;
-        char unk5;
-        char unk6;
-        char unk7;
-        char unk8;
-        char unk9;
-        char unkA;
-        char unkB;
-        char unkC;
-        char unkD;
-        char unkE;
-        char unkF;
-        char unk10;
-        char unk11;
-        char unk12;
-        char unk13;
-    } unk990[24];
+    D_800EB9B8_unk990 unk990[24];
 } D_800EB9B8_t;
 
 typedef struct {
@@ -87,9 +88,11 @@ typedef struct {
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
+void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C58F8(int);
 
 extern D_800EB9B8_t* D_800EB9B8;
+extern u_char vs_battle_rowAnimationSteps[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0D78);
 
@@ -356,7 +359,106 @@ int func_800C1D84(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1DC4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C20B4);
+void func_800C20B4(void)
+{
+    int i;
+    int newValue;
+    D_800EB9B8_unk990* row;
+    short* valuePtr;
+
+    i = 0;
+    row = D_800EB9B8->unk990;
+    valuePtr = &D_800EB9B8->unk990[0].unk4;
+    do {
+        int state;
+        state = row->unk0;
+        if (state != 0) {
+            if (state == 2) {
+                goto state_2;
+            }
+            if (state < 3) {
+                goto check_row;
+            }
+            if (state == 3) {
+                goto state_3;
+            }
+            goto check_row;
+        state_2:
+            {
+                int value;
+                value = *valuePtr;
+                if (value < 0xA0) {
+                    newValue = value - 0x20;
+                    goto store_value;
+                } else {
+                    int j;
+                    j = 0;
+                    while (1) {
+                        if ((vs_battle_rowAnimationSteps[j] + 0xF8) >= value) {
+                            break;
+                        }
+                        ++j;
+                        if (j >= 0x10) {
+                            break;
+                        }
+                    }
+
+                    if (j != 0) {
+                        newValue = vs_battle_rowAnimationSteps[j - 1] + 0xF8;
+                        goto store_value;
+                    } else {
+                        *valuePtr = 0xF8;
+                        row->unk0 = 1;
+                        goto check_row;
+                    }
+                }
+            }
+
+        state_3:
+            {
+                int value;
+                value = *valuePtr;
+                if (value >= 0xA0) {
+                    newValue = value + 0x20;
+                } else {
+                    int j;
+                    j = 0;
+                    value += 4;
+                    while (1) {
+                        if (value >= (-((int)vs_battle_rowAnimationSteps[j]))) {
+                            break;
+                        }
+                        ++j;
+                        if (j >= 0x10) {
+                            break;
+                        }
+                    }
+
+                    if (j != 0) {
+                        value = -vs_battle_rowAnimationSteps[j - 1];
+                    } else {
+                        value = 0;
+                        row->unk0 = 1;
+                    }
+                    newValue = value - 4;
+                }
+            }
+
+        store_value:
+            *valuePtr = newValue;
+
+        check_row:
+            if (((u_int)(*valuePtr + 0x7E)) < 0x1BE) {
+                func_800C1DC4(row);
+            } else {
+                row->unk0 = 0;
+            }
+        }
+        ++i;
+        valuePtr = (short*)((char*)valuePtr + sizeof(D_800EB9B8_unk990));
+        ++row;
+    } while (i < 24);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2254);
 

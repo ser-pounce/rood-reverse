@@ -2856,7 +2856,7 @@ void vs_battle_applyCameraState(void)
     vs_battle_setCameraLookAt(&cameraLookAt);
     vs_battle_setCameraPosition(&cameraPos);
     if (D_800F4BA4->unk168.unk0 != 0) {
-        func_8007AC94(D_800F4BA4->unk168.unk2);
+        vs_battle_setCameraRoll(D_800F4BA4->unk168.unk2);
         D_800F4BA4->unk168.unk0 = 0;
     }
     if (D_800F4BA4->unk174.unk0 != 0) {

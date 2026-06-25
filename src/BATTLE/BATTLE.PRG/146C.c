@@ -3574,7 +3574,7 @@ void func_800738E4(void)
 
     func_80093A14();
     vs_battle_setFarClip(0x1000, 1);
-    func_8007AC94(0);
+    vs_battle_setCameraRoll(0);
     func_8007BD8C(0);
     if (vs_main_soundData.unk4 == 0xFFFF) {
         if (D_800F18AC != 0) {
@@ -4890,7 +4890,7 @@ void func_80077EC4(void)
     vs_battle_initialiseCameraFromSpherical(
         &_camera.t2.position, &_camera.t2.lookAt, -1, -1);
     _camera.t2.farClip = 0x1000;
-    _camera.t2.unk5C = 0;
+    _camera.t2.roll = 0;
     _camera.t2.yaw = 0;
     _camera.t2.pitch = 0;
 }
@@ -5412,9 +5412,9 @@ void vs_battle_setCameraLookAt(VECTOR* inLookAt)
     _camera.t2.lookAt.vz = inLookAt->vz;
 }
 
-void func_8007AC94(int arg0) { _camera.t2.unk5C = arg0; }
+void vs_battle_setCameraRoll(int arg0) { _camera.t2.roll = arg0; }
 
-int func_8007ACA0(void) { return _camera.t2.unk5C & 0xFFF; }
+int vs_battle_getCameraRoll(void) { return _camera.t2.roll & 0xFFF; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 

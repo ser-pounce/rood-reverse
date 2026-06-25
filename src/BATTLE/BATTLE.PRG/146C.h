@@ -722,7 +722,7 @@ typedef struct {
     /* 0x10 */ VECTOR lookAt;
     /* 0x20 */ int pitch;
     /* 0x24 */ int yaw;
-    /* 0x28 */ int unk5C;
+    /* 0x28 */ int roll;
     /* 0x2C */ int unk60;
     /* 0x30 */ int farClip;
 } camera_t2;
@@ -984,7 +984,7 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
 void func_80077EC4(void);
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
 int func_8007BD8C(int);
-void func_8007AC94(int arg0);
+void vs_battle_setCameraRoll(int arg0);
 void func_8007ACB0(void);
 void func_8007B0FC(void);
 void func_8007B104(void);

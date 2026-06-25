@@ -466,11 +466,11 @@ int _initData(void)
 
 static const vs_main_CdFile _monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 
-static const P_CODE D_80102820[] = { { 0x00, 0x41, 0x6B }, { 0x19, 0x82, 0x6C },
-    { 0x40, 0x30, 0x66 }, { 0x40, 0x38, 0x20 } };
+static const P_CODE _colorStops0[] = { { 0, 65, 107 }, { 25, 130, 108 }, { 64, 48, 102 },
+    { 64, 56, 32 } };
 
-static const P_CODE D_80102830[] = { { 0x00, 0x05, 0x33 }, { 0x01, 0x28, 0x26 },
-    { 0x08, 0x08, 0x20 }, { 0x10, 0x10, 0x08 } };
+static const P_CODE _colorStops1[] = { { 0, 5, 51 }, { 1, 40, 38 }, { 8, 8, 32 },
+    { 16, 16, 8 } };
 
 static u_short _menuText[] = {
 #include "build/assets/MENU/MENU9.PRG/menuText.vsString"
@@ -511,7 +511,7 @@ static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$0
 void func_80104AF8(void);
 void _setEnemyDescription(void);
 int _topMenu(int arg0);
-void func_8010552C(int arg0);
+void _renderTopMenu(int arg0);
 void func_801056B8(void);
 void func_8010579C(int arg0);
 void func_80105D8C(void);
@@ -520,7 +520,7 @@ void func_801061F8(int arg0, int arg1);
 void _setStatText(void);
 void func_80106808(int);
 void _printRecordTimeMenuRow(void);
-void func_80107090(void);
+void _leaveRecordTime(void);
 void func_80107120(int);
 void func_80107A98(int arg0);
 int func_80107FBC(short);
@@ -571,7 +571,7 @@ int _menuInput(void)
         break;
 
     case topMenu:
-        func_8010552C(D_8010A220);
+        _renderTopMenu(D_8010A220);
 
         if (D_8010A220 < 8) {
             textBox = vs_battle_getTextBox(0);
@@ -609,7 +609,7 @@ int _menuInput(void)
         break;
 
     case 3:
-        func_8010552C(D_8010A220);
+        _renderTopMenu(D_8010A220);
 
         if (D_8010A220 > 0) {
 
@@ -876,7 +876,7 @@ int _menuInput(void)
 
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
-            func_80107090();
+            _leaveRecordTime();
 
             ++_menuState;
 
@@ -1447,40 +1447,39 @@ void _buildPitchMatrix(MATRIX* arg0, short arg1);
  */
 void _buildCameraMatrix(MATRIX* cameraMatrix)
 {
-    SVECTOR negLookAt;
-    SVECTOR lookAt;
+    SVECTOR negPosition;
+    SVECTOR position;
     MATRIX pitchMatrix;
     int angle0;
     int angle1;
     int angle2;
-    long* scratch;
+    camera_t* camera;
 
     angle0 = (angle1 = rsin(_cameraAngles.vy));
     angle1 = rcos(_cameraAngles.vx);
-    lookAt.vx = (((angle0 * _cameraDistance) / ONE) * angle1) / ONE;
+    position.vx = (((angle0 * _cameraDistance) / ONE) * angle1) / ONE;
 
     angle0 = rcos(_cameraAngles.vy);
     angle1 = rcos(_cameraAngles.vx);
-    lookAt.vz = (((angle0 * -_cameraDistance) / ONE) * angle1) / ONE;
+    position.vz = (((angle0 * -_cameraDistance) / ONE) * angle1) / ONE;
 
     angle2 = rsin(_cameraAngles.vx) * -_cameraDistance;
-    lookAt.vy = (angle2 / ONE) - (_cameraHeightOffset / 2);
+    position.vy = (angle2 / ONE) - (_cameraHeightOffset / 2);
 
-    scratch = (long*)getScratchAddr(0);
-    scratch[13] = lookAt.vx * ONE;
-    scratch[14] = lookAt.vy * ONE;
-    scratch[15] = lookAt.vz * ONE;
-    scratch[21] = _cameraAngles.vx;
-    scratch[22] = _cameraAngles.vy;
-    scratch[23] = _cameraAngles.vz;
+    camera = (camera_t*)getScratchAddr(0);
+    setVector(
+        &camera->t2.position, position.vx * ONE, position.vy * ONE, position.vz * ONE);
+    camera->t2.pitch = _cameraAngles.vx;
+    camera->t2.yaw = _cameraAngles.vy;
+    camera->t2.roll = _cameraAngles.vz;
 
     _buildYawMatrix(cameraMatrix, _cameraAngles.vy);
     _buildPitchMatrix(&pitchMatrix, _cameraAngles.vx);
     func_80041C68(&pitchMatrix, cameraMatrix);
 
-    applyVector(&negLookAt, lookAt.vx, lookAt.vy, lookAt.vz, = -);
+    applyVector(&negPosition, position.vx, position.vy, position.vz, = -);
 
-    ApplyMatrix(cameraMatrix, &negLookAt, (VECTOR*)&cameraMatrix->t);
+    ApplyMatrix(cameraMatrix, &negPosition, (VECTOR*)&cameraMatrix->t);
 }
 
 /**
@@ -1521,7 +1520,10 @@ void _buildPitchMatrix(MATRIX* pitchMatrix, short angle)
     pitchMatrix->m[2][2] = cosine;
 }
 
-void func_80104F74(int arg0, int arg1, int arg2, int arg3, int color)
+/**
+ * The trapezeoid behind the "Rotation" and "Zoom" commands.
+ */
+void _renderCommandsBg(int x, int y, int w, int h, int color)
 {
     int i;
     int var_s7;
@@ -1532,22 +1534,23 @@ void func_80104F74(int arg0, int arg1, int arg2, int arg3, int color)
 
     line = scratch[0];
 
-    for (i = arg1, var_s7 = arg2; i < ((arg1 + arg3) - 1); ++i, --var_s7) {
+    for (i = y, var_s7 = w; i < ((y + h) - 1); ++i, --var_s7) {
         setLineG2(line);
-        setXY2(line, arg0, i, (arg0 + var_s7) - 1, i);
-        setRGB0(line, D_80102820[color].r0, D_80102820[color].g0, D_80102820[color].b0);
-        setRGB1(line, D_80102830[color].r0, D_80102830[color].g0, D_80102830[color].b0);
+        setXY2(line, x, i, (x + var_s7) - 1, i);
+        setRGB0(
+            line, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
+        setRGB1(
+            line, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
 
         AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
     }
 
-    arg0 += 2;
-    arg1 += 2;
+    x += 2;
+    y += 2;
     poly = (POLY_F4*)line;
 
     setPolyF4(poly);
-    setXY4(poly, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
-        (arg0 + arg2) - arg3, (arg1 + arg3) - 1);
+    setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - h, (y + h) - 1);
     setRGB0(poly, 0, 0, 0);
 
     scratch = (void**)getScratchAddr(0);
@@ -1559,7 +1562,10 @@ void func_80104F74(int arg0, int arg1, int arg2, int arg3, int color)
     _insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
-void func_801051AC(int arg0, int arg1, int arg2, int arg3, int arg4)
+/**
+ * The quads behind "Score" and "Risk Breaker Rank".
+ */
+void _renderGradientQuad(int x, int y, int w, int h, int color)
 {
     char b1;
     char g0;
@@ -1571,63 +1577,80 @@ void func_801051AC(int arg0, int arg1, int arg2, int arg3, int arg4)
     POLY_F4* polyF4;
     void** scratch = (void**)0x1F800000;
 
-    int a3 = (arg0 + arg2) - 1;
-    int a2 = (arg1 + arg3) - 1;
+    int a3 = (x + w) - 1;
+    int a2 = (y + h) - 1;
 
     polyG4 = scratch[0];
     setPolyG4(polyG4);
-    r0 = D_80102820[arg4].r0;
-    g0 = D_80102820[arg4].g0;
-    b0 = D_80102820[arg4].b0;
-    r1 = D_80102830[arg4].r0;
-    g1 = D_80102830[arg4].g0;
-    b1 = D_80102830[arg4].b0;
+    r0 = _colorStops0[color].r0;
+    g0 = _colorStops0[color].g0;
+    b0 = _colorStops0[color].b0;
+    r1 = _colorStops1[color].r0;
+    g1 = _colorStops1[color].g0;
+    b1 = _colorStops1[color].b0;
 
-    setXY4(polyG4, arg0, arg1, a3, arg1, arg0, a2, a3, a2);
+    setXY4(polyG4, x, y, a3, y, x, a2, a3, a2);
     setRGB0(polyG4, r0, g0, b0);
     setRGB1(polyG4, r1, g1, b1);
     setRGB2(polyG4, r0, g0, b0);
     setRGB3(polyG4, r1, g1, b1);
+
     AddPrim(scratch[1] + 0x1C, polyG4++);
 
-    arg0 += 2;
-    arg1 += 2;
+    x += 2;
+    y += 2;
+
     polyF4 = (POLY_F4*)polyG4;
     setPolyF4(polyF4);
-    setXY4(polyF4, arg0, arg1, (arg0 + arg2) - 1, arg1, arg0, (arg1 + arg3) - 1,
-        (arg0 + arg2) - 1, (arg1 + arg3) - 1);
+    setXY4(polyF4, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
     setRGB0(polyF4, 0, 0, 0);
+
     AddPrim(scratch[1] + 0x1C, polyF4++);
+
     scratch[0] = polyF4;
+
     _insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
-void func_8010539C(int arg0)
+/**
+ * The black footer background on the top menu
+ * (replaced by an info box on other screens).
+ */
+void _renderFooterBg(int x)
 {
     POLY_F4* polyF4;
     void** scratch = (void**)getScratchAddr(0);
     POLY_G4* polyG4 = scratch[0];
 
     setPolyG4(polyG4);
-    setXY4(polyG4, 0, arg0, 0x140, arg0, 0, arg0 + 8, 0x140, arg0 + 8);
+    setXY4(polyG4, 0, x, 320, x, 0, x + 8, 320, x + 8);
     setRGB0(polyG4, 0, 0, 0);
     setRGB1(polyG4, 0, 0, 0);
-    setRGB2(polyG4, 0x80, 0x80, 0x80);
-    setRGB3(polyG4, 0x80, 0x80, 0x80);
+    setRGB2(polyG4, 128, 128, 128);
+    setRGB3(polyG4, 128, 128, 128);
     setSemiTrans(polyG4, 1);
+
     AddPrim(scratch[1] + 0x1C, polyG4++);
+
     polyF4 = (POLY_F4*)polyG4;
+
     setPolyF4(polyF4);
-    setXY4(polyF4, 0, arg0 + 8, 0x140, arg0 + 8, 0, 0xF0, 0x140, 0xF0);
+    setXY4(polyF4, 0, x + 8, 320, x + 8, 0, 240, 320, 240);
     setRGB0(polyF4, 0, 0, 0);
+
     AddPrim(scratch[1] + 0x1C, polyF4++);
+
     scratch[0] = polyF4;
+
     _insertTPage(7, getTPage(0, 2, 0, 0));
 }
 
 void func_80106528(void);
 
-void func_8010552C(int arg0)
+/**
+ * Bundles camera update and non-menu UI elements.
+ */
+void _renderTopMenu(int animStep)
 {
     vs_battle_geomOffset sp18;
     vs_battle_geomOffset sp20;
@@ -1635,27 +1658,36 @@ void func_8010552C(int arg0)
     MATRIX spA8;
     void** scratch;
 
-    if (arg0 < 8) {
+    if (animStep < 8) {
         func_80106528();
     }
+
     vs_battle_getGeomOffset(&sp18);
-    sp20.x = 0x80 - ((8 - arg0) << 5);
+
+    sp20.x = 0x80 - ((8 - animStep) << 5);
     sp20.y = 0xF0;
+
     vs_battle_setGeomOffset(&sp20);
     _buildCameraMatrix(&spA8);
     func_800F9EB8(&spA8);
     vs_battle_setGeomOffset(&sp18);
+
     sprintf(sp28, "#%ld", _score);
+
     scratch = (void**)getScratchAddr(0);
-    vs_battle_renderTextRawColor("SCORE", (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0x100000,
-        0x808080, scratch[1] + 0x1C);
-    vs_battle_renderTextRawColor(
-        sp28, ((arg0 * 0x10) & 0xFFFF) | 0x100000, 0x808080, scratch[1] + 0x1C);
-    func_801051AC((arg0 * 0x10) - 0x80, 0x10, 0x88, 0xC, 2);
+
+    vs_battle_renderTextRawColor("SCORE", (((animStep * 16) - 120) & 0xFFFF) | (16 << 16),
+        vs_getRGB888(128, 128, 128), scratch[1] + 0x1C);
+    vs_battle_renderTextRawColor(sp28, ((animStep * 16) & 0xFFFF) | (16 << 16),
+        vs_getRGB888(128, 128, 128), scratch[1] + 0x1C);
+
+    _renderGradientQuad((animStep * 16) - 128, 16, 136, 12, 2);
     vs_battle_renderTextRawColor("RISK   BREAKER   RANK",
-        (((arg0 * 0x10) - 0x78) & 0xFFFF) | 0xB80000, 0x808080, scratch[1] + 0x1C);
-    func_801051AC((arg0 * 0x10) - 0x80, 0xB8, 0x88, 0xC, 1);
-    func_8010539C(0xEC - (arg0 * 6));
+        (((animStep * 16) - 120) & 0xFFFF) | (184 << 16), vs_getRGB888(128, 128, 128),
+        scratch[1] + 0x1C);
+
+    _renderGradientQuad((animStep * 16) - 128, 184, 136, 12, 1);
+    _renderFooterBg(236 - (animStep * 6));
 }
 
 void func_801056B8(void)
@@ -2021,18 +2053,18 @@ void func_801061F8(int arg0, int arg1)
 
         temp_s6 = temp_s4 - 0x70;
 
-        func_80104F74(temp_s6, 0x12, 0x60, 0xC, 3);
+        _renderCommandsBg(temp_s6, 0x12, 0x60, 0xC, 3);
         vs_mainmenu_drawButton(7, temp_s4 - 0x78, 0x22, scratch[1] + 0x18);
         vs_battle_renderTextRawColor(
             "ZOOM", temp_s0 | 0x240000, D_8010A454, scratch[1] + 0x18);
-        func_80104F74(temp_s6, 0x24, 0x4E, 0xC, 3);
+        _renderCommandsBg(temp_s6, 0x24, 0x4E, 0xC, 3);
         sprintf(sp60, "NO.   %03d/%03d", _selectedEnemy + 1, 78);
         vs_battle_renderTextRawColor(
             sp60, ((temp_s4 - 0x78) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
-        func_801051AC(temp_s4 - 0x80, 0xA0, 0x64, 0xC, 2);
+        _renderGradientQuad(temp_s4 - 0x80, 0xA0, 0x64, 0xC, 2);
         vs_battle_renderTextRawColor(enemyClassName[_monBinData[_selectedEnemy].unk2],
             ((temp_s2 + 0xBC) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
-        func_801051AC(temp_s2 + 0xB4, 0x9B, 0x8C, 0x1A, 1);
+        _renderGradientQuad(temp_s2 + 0xB4, 0x9B, 0x8C, 0x1A, 1);
     }
 }
 
@@ -2245,7 +2277,7 @@ void _printRecordTimeMenuRow(void)
     }
 }
 
-void func_80107090(void)
+void _leaveRecordTime(void)
 {
     int i;
     _gazetteRow* p = _gazetteRows;
@@ -2323,7 +2355,7 @@ void func_80107120(int arg0)
     p = ((void**)0x1F800000);
     vs_battle_renderTextRawColor(
         "PLAYER TIME", vs_getXY((arg0 * 0x10) - 0x78, 0x20), 0x808080, p[1] + 0x1C);
-    func_801051AC((arg0 * 0x10) - 0x80, 0x20, 0x60, 0xC, 1);
+    _renderGradientQuad((arg0 * 0x10) - 0x80, 0x20, 0x60, 0xC, 1);
     vs_battle_renderTextRawColor(
         "1ST", vs_getXY((arg0 * 0x10) - 0x68, 0x32), 0x808080, p[1] + 0x1C);
     vs_battle_renderTextRawColor(
@@ -2353,11 +2385,11 @@ void func_80107120(int arg0)
         }
     }
 
-    func_801051AC((arg0 * 0x10) - 0x70, 0x32, 0x80, 0x54, 2);
+    _renderGradientQuad((arg0 * 0x10) - 0x70, 0x32, 0x80, 0x54, 2);
     r = ((void**)0x1F800000);
     vs_battle_renderTextRawColor("REFERENCE TIME", vs_getXY(arg0 * 16 - 0x78, 0x8C),
         vs_getRGB(128, 128, 128), r[1] + 0x1C);
-    func_801051AC((arg0 * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
+    _renderGradientQuad((arg0 * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
 
     if ((var_s7 == 8) && (arg0 == var_s7)) {
         if (sp3C->disabled != 0) {
@@ -2368,7 +2400,7 @@ void func_80107120(int arg0)
                 vs_getXY(88, 158), vs_getRGB(128, 128, 128), r[1] + 0x1C);
         }
     }
-    func_801051AC((arg0 * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
+    _renderGradientQuad((arg0 * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
 }
 
 void _determineCharacterRank(void)

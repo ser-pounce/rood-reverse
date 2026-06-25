@@ -388,7 +388,7 @@ static _gazetteRow _gazetteRows[32];
 static SVECTOR _cameraAngles;
 static int D_8010A438;
 static int _menuState;
-static int D_8010A440;
+static int _nextState;
 static int _cameraDistance;
 static int D_8010A448;
 static u_short D_8010A44C;
@@ -519,7 +519,7 @@ void func_80105F00(int arg0);
 void func_801061F8(int arg0, int arg1);
 void _setStatText(void);
 void func_80106808(int);
-void _printBossRushMenuRow(void);
+void _printRecordTimeMenuRow(void);
 void func_80107090(void);
 void func_80107120(int);
 void func_80107A98(int arg0);
@@ -534,7 +534,7 @@ int _menuInput(void)
     enum state {
         init,
         initData,
-        handleInput,
+        topMenu,
     };
 
     int _[8] __attribute__((unused));
@@ -570,7 +570,7 @@ int _menuInput(void)
         ++_menuState;
         break;
 
-    case handleInput:
+    case topMenu:
         func_8010552C(D_8010A220);
 
         if (D_8010A220 < 8) {
@@ -587,18 +587,18 @@ int _menuInput(void)
         }
 
         if (selectedRow == -3) {
-            D_8010A440 = 2;
+            _nextState = 2;
         } else if (selectedRow == -2) {
-            D_8010A440 = 1;
+            _nextState = 1;
         } else if (selectedRow == 3) {
             _monBinData = vs_main_allocHeapR(_monBinFile.size);
             _monBinCdQueueSlot = vs_main_allocateCdQueueSlot(&_monBinFile);
 
             vs_main_cdEnqueue(_monBinCdQueueSlot, _monBinData);
 
-            D_8010A440 = 0;
+            _nextState = 0;
         } else {
-            D_8010A440 = 0;
+            _nextState = 0;
         }
 
         D_800F1BF7 = D_800F4EE8.cursorMemories[2] + D_800F4EE8.cursorMemories[3];
@@ -626,14 +626,14 @@ int _menuInput(void)
 
         func_800F9E0C();
 
-        if (D_8010A440 == 0) {
+        if (_nextState == 0) {
             _menuState = (D_800F1BF7 * 3) + 4;
             break;
         }
 
         func_80104AF8();
 
-        return D_8010A440;
+        return _nextState;
 
     case 4:
         vs_mainMenu_initTextBox();
@@ -709,9 +709,9 @@ int _menuInput(void)
             ++_menuState;
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                D_8010A440 = 1;
+                _nextState = 1;
             } else {
-                D_8010A440 = 0;
+                _nextState = 0;
             }
         }
 
@@ -727,7 +727,7 @@ int _menuInput(void)
         func_8010579C(D_8010A220);
 
         if (D_8010A220 <= 0) {
-            if (D_8010A440 == 0) {
+            if (_nextState == 0) {
                 _menuState = 1;
                 break;
             }
@@ -754,6 +754,7 @@ int _menuInput(void)
             && (vs_main_buttonsPressed.all & PADLup)) {
 
             vs_main_playSfxDefault(0x7E, 4);
+
             vs_battle_menu9CursorMemory.recordTimePage = 0xF;
             vs_battle_menu9CursorMemory.recordTimeRow = 7;
 
@@ -762,6 +763,7 @@ int _menuInput(void)
                    && (vs_main_buttonsPressed.all & PADLdown)) {
 
             vs_main_playSfxDefault(0x7E, 4);
+
             vs_battle_menu9CursorMemory.recordTimePage = 0;
             vs_battle_menu9CursorMemory.recordTimeRow = 0;
 
@@ -770,17 +772,20 @@ int _menuInput(void)
                 if (vs_battle_menu9CursorMemory.recordTimeRow >= 2) {
 
                     vs_main_playSfxDefault(0x7E, 4);
+
                     --vs_battle_menu9CursorMemory.recordTimeRow;
 
                 } else {
                     if (vs_battle_menu9CursorMemory.recordTimePage != 0) {
 
                         --vs_battle_menu9CursorMemory.recordTimePage;
+
                         vs_main_playSfxDefault(0x7E, 4);
 
                     } else if (vs_battle_menu9CursorMemory.recordTimeRow != 0) {
 
                         --vs_battle_menu9CursorMemory.recordTimeRow;
+
                         vs_main_playSfxDefault(0x7E, 4);
                     }
                 }
@@ -789,17 +794,20 @@ int _menuInput(void)
                     if (vs_battle_menu9CursorMemory.recordTimePage < 0xF) {
 
                         ++vs_battle_menu9CursorMemory.recordTimePage;
+
                         vs_main_playSfxDefault(0x7E, 4);
 
                     } else {
                         if (vs_battle_menu9CursorMemory.recordTimeRow < 7) {
 
                             ++vs_battle_menu9CursorMemory.recordTimeRow;
+
                             vs_main_playSfxDefault(0x7E, 4);
                         }
                     }
                 } else {
                     ++vs_battle_menu9CursorMemory.recordTimeRow;
+
                     vs_main_playSfxDefault(0x7E, 4);
                 }
             }
@@ -812,9 +820,9 @@ int _menuInput(void)
             ++_menuState;
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                D_8010A440 = 1;
+                _nextState = 1;
             } else {
-                D_8010A440 = 0;
+                _nextState = 0;
             }
         }
 
@@ -829,7 +837,7 @@ int _menuInput(void)
         func_80106808(D_8010A220);
 
         if (D_8010A220 <= 0) {
-            if (D_8010A440 == 0) {
+            if (_nextState == 0) {
                 _menuState = 1;
                 break;
             }
@@ -842,7 +850,7 @@ int _menuInput(void)
 
     case 10:
         vs_mainMenu_initTextBox();
-        _printBossRushMenuRow();
+        _printRecordTimeMenuRow();
 
         ++_menuState;
         break;
@@ -871,10 +879,11 @@ int _menuInput(void)
             func_80107090();
 
             ++_menuState;
+
             if (vs_main_buttonsPressed.all & PADRup) {
-                D_8010A440 = 1;
+                _nextState = 1;
             } else {
-                D_8010A440 = 0;
+                _nextState = 0;
             }
         }
 
@@ -902,7 +911,7 @@ int _menuInput(void)
 
         D_8010A220 = 0;
 
-        if (D_8010A440 == 0) {
+        if (_nextState == 0) {
             _menuState = 1;
             break;
         }
@@ -986,7 +995,7 @@ int _menuInput(void)
                                   .unk0);
 
                 ++_menuState;
-                D_8010A440 = 2;
+                _nextState = 2;
 
             } else {
                 vs_main_playSfxDefault(0x7E, 7);
@@ -1000,9 +1009,9 @@ int _menuInput(void)
             ++_menuState;
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                D_8010A440 = 1;
+                _nextState = 1;
             } else {
-                D_8010A440 = 0;
+                _nextState = 0;
             }
         }
 
@@ -1019,12 +1028,12 @@ int _menuInput(void)
 
         if (D_8010A220 <= 0) {
 
-            if (D_8010A440 == 2) {
-                _menuState = 0x13;
+            if (_nextState == 2) {
+                _menuState = 19;
                 break;
             }
 
-            if (D_8010A440 != 1) {
+            if (_nextState != 1) {
                 vs_main_freeHeapR(_monBinData);
                 _menuState = 1;
                 break;
@@ -1089,9 +1098,9 @@ int _menuInput(void)
 
             if (vs_main_buttonsPressed.all & PADRup) {
                 vs_mainMenu_dismissTextBox();
-                D_8010A440 = 1;
+                _nextState = 1;
             } else {
-                D_8010A440 = 0;
+                _nextState = 0;
             }
         }
 
@@ -1293,7 +1302,7 @@ int _menuInput(void)
 
         func_80108098();
 
-        if (D_8010A440 != 0) {
+        if (_nextState != 0) {
             vs_main_freeHeapR(_monBinData);
             func_80104AF8();
             return 2;
@@ -2212,7 +2221,7 @@ void _printFastestClearTime(char* buf, int rounds, int totalSeconds)
 /**
  * Sets the menu rows for the boss rush screen.
  */
-void _printBossRushMenuRow(void)
+void _printRecordTimeMenuRow(void)
 {
     int i;
     _gazetteRow* row;
@@ -2245,7 +2254,7 @@ void func_80107090(void)
         if (p->animationState == 0) {
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
             menuItem->state = 2;
-            menuItem->targetPosition0 = 0x140;
+            menuItem->targetPosition0 = 320;
         } else {
             p->animationState = -1;
         }
@@ -2257,6 +2266,7 @@ void func_80107120(int arg0)
     char* difficulty[] __attribute__((unused)) = { "EASY", "NORMAL" };
     int difficultyColors[]
         __attribute__((unused)) = { vs_getRGB(0, 128, 128), vs_getRGB(128, 128, 0) };
+
     char sp28[16];
     int sp38;
     _gazetteRow* sp3C;

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "58578.h"
+#include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include <stddef.h>
 
@@ -89,10 +90,8 @@ int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
-void func_800C58F8(int);
 
 extern D_800EB9B8_t* D_800EB9B8;
-extern u_char vs_battle_rowAnimationSteps[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0D78);
 
@@ -361,101 +360,73 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1DC4);
 
 void func_800C20B4(void)
 {
-    int i;
-    int newValue;
-    D_800EB9B8_unk990* row;
-    short* valuePtr;
+    int temp_a0;
+    int var_s3;
+    int var_v1;
+    D_800EB9B8_unk990* var_s1 = D_800EB9B8->unk990;
+    short* var_s0 = &D_800EB9B8->unk990[0].unk4;
 
-    i = 0;
-    row = D_800EB9B8->unk990;
-    valuePtr = &D_800EB9B8->unk990[0].unk4;
-    do {
-        int state;
-        state = row->unk0;
-        if (state != 0) {
-            if (state == 2) {
-                goto state_2;
-            }
-            if (state < 3) {
-                goto check_row;
-            }
-            if (state == 3) {
-                goto state_3;
-            }
-            goto check_row;
-        state_2: {
-            int value;
-            value = *valuePtr;
-            if (value < 0xA0) {
-                newValue = value - 0x20;
-                goto store_value;
-            } else {
-                int j;
-                j = 0;
-                while (1) {
-                    if ((vs_battle_rowAnimationSteps[j] + 0xF8) >= value) {
-                        break;
-                    }
-                    ++j;
-                    if (j >= 0x10) {
+    for (var_s3 = 0; var_s3 < 24; ++var_s3, var_s0 += 10, ++var_s1) {
+        int v1 = var_s1->unk0;
+
+        if (v1 == 0) {
+            continue;
+        }
+
+        switch (v1) {
+        case 0:
+            break;
+        case 2:
+            temp_a0 = *var_s0;
+
+            if (temp_a0 >= 160) {
+                for (var_v1 = 0; var_v1 < 16; ++var_v1) {
+                    if ((vs_battle_rowAnimationSteps[var_v1] + 0xF8) >= temp_a0) {
                         break;
                     }
                 }
 
-                if (j != 0) {
-                    newValue = vs_battle_rowAnimationSteps[j - 1] + 0xF8;
-                    goto store_value;
+                if (var_v1 != 0) {
+                    *var_s0 = vs_battle_rowAnimationSteps[var_v1 - 1] + 0xF8;
                 } else {
-                    *valuePtr = 0xF8;
-                    row->unk0 = 1;
-                    goto check_row;
+                    *var_s0 = 0xF8;
+                    var_s1->unk0 = 1;
                 }
-            }
-        }
-
-        state_3: {
-            int value;
-            value = *valuePtr;
-            if (value >= 0xA0) {
-                newValue = value + 0x20;
             } else {
-                int j;
-                j = 0;
-                value += 4;
-                while (1) {
-                    if (value >= (-((int)vs_battle_rowAnimationSteps[j]))) {
-                        break;
-                    }
-                    ++j;
-                    if (j >= 0x10) {
+                *var_s0 = temp_a0 - 0x20;
+            }
+            break;
+
+        case 3:
+            temp_a0 = *var_s0;
+
+            if (temp_a0 >= 0xA0) {
+                *var_s0 = temp_a0 + 0x20;
+            } else {
+                for (var_v1 = 0; var_v1 < 16; ++var_v1) {
+                    if ((temp_a0 + 4) >= -vs_battle_rowAnimationSteps[var_v1]) {
                         break;
                     }
                 }
 
-                if (j != 0) {
-                    value = -vs_battle_rowAnimationSteps[j - 1];
+                if (var_v1 != 0) {
+                    temp_a0 = -vs_battle_rowAnimationSteps[var_v1 - 1];
                 } else {
-                    value = 0;
-                    row->unk0 = 1;
+                    temp_a0 = 0;
+                    var_s1->unk0 = 1;
                 }
-                newValue = value - 4;
+
+                *var_s0 = temp_a0 - 4;
             }
+            break;
         }
 
-        store_value:
-            *valuePtr = newValue;
-
-        check_row:
-            if (((u_int)(*valuePtr + 0x7E)) < 0x1BE) {
-                func_800C1DC4(row);
-            } else {
-                row->unk0 = 0;
-            }
+        if ((*var_s0 + 0x7E) < 0x1BEU) {
+            func_800C1DC4(var_s1);
+        } else {
+            var_s1->unk0 = 0;
         }
-        ++i;
-        valuePtr = (short*)((char*)valuePtr + sizeof(D_800EB9B8_unk990));
-        ++row;
-    } while (i < 24);
+    }
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2254);

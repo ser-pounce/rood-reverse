@@ -177,10 +177,22 @@ typedef struct {
 } D_800F569C_t2;
 
 typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4[4];
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t1;
+
+typedef struct {
     char unk0[0xC];
-    int unkC[4];
+    u_char* unkC[4];
     char unk1C[0x70];
-    int unk8C;
+    func_800D0B30_t1* unk8C;
     char* unk90;
     char unk94[0x1C];
     u_short* unkB0;
@@ -192,21 +204,6 @@ typedef struct {
     int unkC8;
     int unkCC;
 } D_800F569C_t;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} func_800D0B30_t1;
 
 typedef struct {
     int unk0;
@@ -2760,7 +2757,7 @@ int func_800CED60(void)
             func_800CF484(4, var_s1);
             break;
         case 4:
-            if (D_800F569C->unk8C != 0) {
+            if (D_800F569C->unk8C != NULL) {
                 func_800D1104(var_s1->unk14_16);
             }
 
@@ -3226,14 +3223,14 @@ void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
     if (arg0->unk0 & 1) {
-        _lerpSvector(arg0->unk14, D_800F5330[arg0->unk6], &arg2->unk8);
+        _lerpSvector(arg0->unk14, D_800F5330[arg0->unk4[2]], &arg2->unk8);
         arg1->vx += arg2->unk8.vx;
         arg1->vy = arg1->vy + arg2->unk8.vy;
         arg1->vz += arg2->unk8.vz;
         RotMatrix_gte(arg1, &arg2->unk48);
-        _lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
+        _lerpVector(arg0->unk20, D_800F5330[arg0->unk4[0]], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
-        _lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
+        _lerpVector(arg0->unk2C, D_800F5330[arg0->unk4[3]], &arg2->unk20);
         func_8004140C(&arg2->unk48, &arg2->unk20);
         return;
     }
@@ -3270,15 +3267,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1104);
 
-u_char func_800D118C(int arg0, int arg1)
-{
-    func_800D0B30_t1* temp = (func_800D0B30_t1*)D_800F569C->unk8C;
-    int idx;
-
-    if (arg0 != 0 && temp->unk0 >= arg0) {
-        idx = arg0 - 1;
-        return ((u_char*)D_800F569C->unkC[idx])[arg1 % ((u_char*)temp)[(long)(idx + 4)]];
+int func_800D118C(int arg0, int arg1) 
+{    
+    func_800D0B30_t1* temp_a2 = D_800F569C->unk8C;
+    
+    if (arg0 != 0) {
+        if (temp_a2->unk0 >= arg0) {
+            return D_800F569C->unkC[arg0 - 1][arg1 % temp_a2->unk4[arg0 - 1]];
+        }
     }
+
     return 0;
 }
 

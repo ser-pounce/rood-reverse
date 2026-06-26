@@ -41,7 +41,7 @@ typedef struct {
     char unk1;
     char animationState;
     char disabled;
-    short y;
+    short x;
     short rowIndex;
     char* title;
     char* description;
@@ -512,7 +512,7 @@ void func_80104AF8(void);
 void _setEnemyDescription(void);
 int _topMenu(int arg0);
 void _renderTopMenu(int arg0);
-void func_801056B8(void);
+void _setTitleRows(void);
 void func_8010579C(int arg0);
 void func_80105D8C(void);
 void func_80105F00(int arg0);
@@ -637,7 +637,7 @@ int _menuInput(void)
 
     case 4:
         vs_mainMenu_initTextBox();
-        func_801056B8();
+        _setTitleRows();
 
         D_8010A220 = 0;
         ++_menuState;
@@ -1690,26 +1690,32 @@ void _renderTopMenu(int animStep)
     _renderFooterBg(236 - (animStep * 6));
 }
 
-void func_801056B8(void)
+/**
+ * Configures the text and row status for the titles submenu.
+ */
+void _setTitleRows(void)
 {
     int i;
     _gazetteRow* row;
     int new_var;
 
     for (i = 0, row = _gazetteRows; i < 32; ++i, ++row) {
-        row->y = 60;
+
+        row->x = 60;
         row->rowIndex = i + 1;
         row->selected = 0;
         row->animationState = 0;
         row->disabled = 0;
+
         if (vs_main_scoredata.titles & ((new_var = 1) << i)) {
             row->unk1 = 1;
             row->title = (char*)&_titleText[_titleText[i]];
             row->description = (char*)&_titleDescriptions[_titleDescriptions[i]];
         } else {
             row->unk1 = 0;
-            row->title = (char*)&_miscInfo[_miscInfo[0]];
-            row->description = (char*)&_miscInfo[_miscInfo[1]];
+            row->title = (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_noneClear]];
+            row->description =
+                (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_conditionsNotMet]];
         }
     }
 }
@@ -1725,7 +1731,7 @@ static u_int _characterRankPointThresholds[] = { 100000000, 75000000, 60000000, 
     32000000, 24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
     1000000, 500000, 0 };
 
-void func_80105A0C(int arg0, int arg1, int arg2, int arg3);
+void _renderTitleNo(int arg0, int arg1, int enemyNo, int arg3);
 
 void func_8010579C(int arg0)
 {
@@ -1756,112 +1762,129 @@ void func_8010579C(int arg0)
     row = &_gazetteRows[vs_battle_menu9CursorMemory.titlePage];
 
     for (i = 0; i < 8; ++i, ++row) {
-        int var_s3 = (arg0 * 0x17) - 0x10;
-        if ((0x38 + i * 0x10) < var_s3) {
-            var_s3 = (0x38 + i * 0x10);
+
+        int y = (arg0 * 23) - 16;
+
+        if ((56 + i * 16) < y) {
+            y = (56 + i * 16);
         }
+
         if (row->selected != 0) {
             if (arg0 == 8) {
-                D_80109898 = func_800FFCDC(
-                    D_80109898, ((row->y - 12) & 0xFFFF) | ((var_s3 - 8) << 0x10));
+                D_80109898 =
+                    func_800FFCDC(D_80109898, ((row->x - 12) & 0xFFFF) | ((y - 8) << 16));
             }
         }
-        menuItem = vs_battle_setMenuItem(0, row->y, var_s3, 0xC8, 0, row->title);
+
+        menuItem = vs_battle_setMenuItem(0, row->x, y, 200, 0, row->title);
+
         if (row->unk1 == 0) {
             menuItem->fontColor = 3;
         }
         menuItem->animationState = row->animationState;
+
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
             menuItem->fadeEffect = 1;
         }
+
         if ((i == 7) && (vs_battle_menu9CursorMemory.titlePage != 24)) {
             menuItem->fadeEffect = 2;
         }
-        func_80105A0C(row->y - 14, var_s3, row->rowIndex, menuItem->fadeEffect & 1);
+
+        _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->fadeEffect & 1);
+
         if ((menuItem->fadeEffect != 0) && (arg0 == 8)) {
             func_80102A7C(menuItem);
         } else {
             func_800C9078(menuItem);
         }
     }
+
     vs_battle_getMenuItem(0)->state = 0;
 }
 
-void func_80105A0C(int arg0, int arg1, int arg2, int arg3)
+/**
+ * Renders a title index.
+ *
+ * @param dimmed Renders the digit with a lower brightness.
+ * De facto reserved for the first title when the window doesn't
+ * start at index 01.
+ */
+void _renderTitleNo(int x, int y, int titleNo, int dimmed)
 {
     char digits[2];
     int i;
     POLY_FT4* poly;
 
-    sprintf(digits, "%02d", arg2);
-    arg0 += 0x13;
+    sprintf(digits, "%02d", titleNo);
+
+    x += 19;
     poly = *(void**)0x1F800000;
 
-    for (i = 1; i >= 0; --i, arg0 -= 5) {
+    for (i = 1; i >= 0; --i, x -= 5) {
+
         setPolyFT4(poly);
-        poly->x0 = arg0;
-        poly->y0 = arg1 - 4;
-        poly->x1 = arg0 + 6;
-        poly->y1 = arg1 - 4;
-        poly->x2 = arg0;
-        poly->y2 = arg1 + 6;
-        poly->x3 = arg0 + 6;
-        poly->y3 = arg1 + 6;
+        setXY4(poly, x, y - 4, x + 6, y - 4, x, y + 6, x + 6, y + 6);
         setcode(poly, (getcode(poly) | 0x02) & 0xFE);
-        poly->u0 = (digits[i] - 0x30) * 6;
-        poly->v0 = 0;
-        poly->u1 = ((digits[i] - 0x30) * 6) + 6;
-        poly->v1 = 0;
-        poly->u2 = (digits[i] - 0x30) * 6;
-        poly->v2 = 0xA;
-        poly->u3 = ((digits[i] - 0x30) * 6) + 6;
-        poly->v3 = 0xA;
-        if (arg3 != 0) {
-            poly->tpage = 0x2C;
-            poly->r0 = 0x20;
-            poly->g0 = 0x20;
-            poly->b0 = 0x20;
-            poly->clut = 0x37F7;
-        } else {
-            poly->tpage = 0xC;
-            poly->r0 = 0x80;
-            poly->g0 = 0x80;
-            poly->b0 = 0x80;
-            poly->clut = 0x37F4;
-        }
-        AddPrim(*(void**)0x1F800008, poly++);
-    }
-    *(void**)0x1F800000 = poly;
-}
 
-void func_80105BCC(int arg0, int arg1, int arg2, int arg3)
-{
-    char sp10[2];
-    int i;
-    POLY_FT4* poly;
+        setUV4(poly, (digits[i] - 48) * 6, 0, ((digits[i] - 48) * 6) + 6, 0,
+            (digits[i] - 48) * 6, 10, ((digits[i] - 48) * 6) + 6, 10);
 
-    sprintf(sp10, "%03d", arg2);
-    arg0 += 0x18;
-    poly = *(void**)getScratchAddr(0);
-
-    for (i = 2; i >= 0; --i, arg0 -= 5) {
-        setPolyFT4(poly);
-        setXY4(
-            poly, arg0, arg1 - 4, arg0 + 6, arg1 - 4, arg0, arg1 + 6, arg0 + 6, arg1 + 6);
-        setcode(poly, (getcode(poly) | 0x02) & 0xFE);
-        setUV4(poly, (sp10[i] - 0x30) * 6, 0, ((sp10[i] - 0x30) * 6) + 6, 0,
-            (sp10[i] - 0x30) * 6, 0xA, ((sp10[i] - 0x30) * 6) + 6, 0xA);
-        if (arg3 != 0) {
+        if (dimmed != 0) {
             setTPage(poly, 0, 1, 768, 0);
-            setRGB0(poly, 0x20, 0x20, 0x20);
+            setRGB0(poly, 32, 32, 32);
             setClut(poly, 880, 223);
         } else {
             setTPage(poly, 0, 0, 768, 0);
-            setRGB0(poly, 0x80, 0x80, 0x80);
+            setRGB0(poly, 128, 128, 128);
             setClut(poly, 832, 223);
         }
+
+        AddPrim(*(void**)0x1F800008, poly++);
+    }
+
+    *(void**)0x1F800000 = poly;
+}
+
+/**
+ * Renders the enemy index.
+ *
+ * @param dimmed Renders the digit with a lower brightness.
+ * De facto reserved for the first enemy when the window doesn't
+ * start at index 01.
+ */
+void _renderEnemyNo(int x, int y, int enemyNo, int dimmed)
+{
+    char digits[2];
+    int i;
+    POLY_FT4* poly;
+
+    sprintf(digits, "%03d", enemyNo);
+
+    x += 0x18;
+    poly = *(void**)getScratchAddr(0);
+
+    for (i = 2; i >= 0; --i, x -= 5) {
+
+        setPolyFT4(poly);
+        setXY4(poly, x, y - 4, x + 6, y - 4, x, y + 6, x + 6, y + 6);
+        setcode(poly, (getcode(poly) | 0x02) & 0xFE);
+        setUV4(poly, (digits[i] - 48) * 6, 0, ((digits[i] - 48) * 6) + 6, 0,
+            (digits[i] - 48) * 6, 10, ((digits[i] - 48) * 6) + 6, 10);
+
+        if (dimmed != 0) {
+            setTPage(poly, 0, 1, 768, 0);
+            setRGB0(poly, 32, 32, 32);
+            setClut(poly, 880, 223);
+        } else {
+            setTPage(poly, 0, 0, 768, 0);
+            setRGB0(poly, 128, 128, 128);
+            setClut(poly, 832, 223);
+        }
+
         AddPrim(*(void**)getScratchAddr(2), poly++);
     }
+
     *(void**)getScratchAddr(0) = poly;
 }
 
@@ -1987,7 +2010,7 @@ void func_80105F00(int arg0)
         if ((i == 7) && (cursorMem->encyclopaediaPage != 0x46)) {
             menuItem->fadeEffect = menuItem_fadeEffect_fadeBottom;
         }
-        func_80105BCC(s6 - 0xE, var_s1, cursorMem->encyclopaediaPage + i + 1,
+        _renderEnemyNo(s6 - 0xE, var_s1, cursorMem->encyclopaediaPage + i + 1,
             menuItem->fadeEffect & 1);
         if ((menuItem->fadeEffect != 0) && (arg0 == 8)) {
             func_80102A7C(menuItem);
@@ -2129,7 +2152,7 @@ void _setStatText(void)
     _gazetteRow* p;
 
     for (i = 0, p = _gazetteRows; i < 23; ++i, ++p) {
-        p->y = 16;
+        p->x = 16;
         p->title = (void*)&_statHeaders[_statHeaders[i]];
         p->description = (void*)&_statDescriptions[_statDescriptions[i]];
         p->animationState = 0;
@@ -2259,7 +2282,7 @@ void _printRecordTimeMenuRow(void)
     _gazetteRow* row;
 
     for (i = 0, row = _gazetteRows; i < 8; ++i, ++row) {
-        row->y = 194;
+        row->x = 194;
         if ((vs_main_scoredata.bossTimeTrialScores[i][0].time) == 0x800000) {
             row->disabled = 1;
             row->title = (char*)&_miscInfo[_miscInfo[VS_miscInfo_INDEX_noneBossRush]];
@@ -2277,6 +2300,9 @@ void _printRecordTimeMenuRow(void)
     }
 }
 
+/**
+ *  Row animation when leaving record time menu.
+ */
 void _leaveRecordTime(void)
 {
     int i;

@@ -166,7 +166,7 @@ typedef struct {
     u_int completionTimeMinutes;
     u_int mapCompletion;
     u_int openedChestCount;
-    int unk9C[26];
+    int enemyKillFlags[26];
     u_int streakScore;
     u_int enemyKillStreak;
     char killStreakEnemyClass;

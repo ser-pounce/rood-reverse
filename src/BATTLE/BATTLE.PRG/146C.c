@@ -1779,7 +1779,7 @@ void _dropLoot(vs_battle_actor* enemy)
 
 void _updateEnemyKills(vs_battle_actor* enemy)
 {
-    u_int temp_t1 = enemy->unk1A;
+    u_int temp_t1 = enemy->subType;
 
     if (enemy->unk3C != NULL) {
         if (enemy->unk1C == 4) {
@@ -1803,8 +1803,9 @@ void _updateEnemyKills(vs_battle_actor* enemy)
             }
         }
     }
+
     if (temp_t1 < 256) {
-        vs_main_scoredata.unk9C[temp_t1 >> 5] |= 1 << (temp_t1 & 0x1F);
+        vs_main_scoredata.enemyKillFlags[temp_t1 / 32] |= 1 << (temp_t1 % 32);
     }
 }
 
@@ -4581,7 +4582,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
 
     temp_s1->id = id;
     temp_s1->unk18 = arg1;
-    temp_s1->unk1A = 0;
+    temp_s1->subType = 0;
     temp_s1->unk2A = arg2;
     temp_s1->unk2B = arg3;
     temp_s1->unk20 = 0;
@@ -4660,7 +4661,7 @@ void func_80076F24(
     temp_s0->id = id;
     temp_s4 = temp_s0->unk3C;
     temp_s0->unk18 = arg1->unk2;
-    temp_s0->unk1A = arg1->unk0;
+    temp_s0->subType = arg1->subType;
     temp_s0->unk2A = arg2;
     temp_s0->unk2B = arg3;
     temp_s0->unk20 = 0;

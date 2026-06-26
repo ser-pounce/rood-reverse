@@ -578,7 +578,7 @@ typedef struct vs_battle_actor {
     /* 0x10 */ } unk10;
     int unk14;
     u_short unk18;
-    u_short unk1A;
+    u_short subType;
     u_short unk1C;
     char unk1E;
     char unk1F;
@@ -884,7 +884,7 @@ typedef struct {
 } _armorIntermediateInit;
 
 typedef struct {
-    u_short unk0;
+    u_short subType;
     char unk2;
     u_int reach : 5;
     u_int unk3_5 : 3;

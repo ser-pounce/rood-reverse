@@ -3267,10 +3267,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1104);
 
-int func_800D118C(int arg0, int arg1) 
-{    
+int func_800D118C(int arg0, int arg1)
+{
     func_800D0B30_t1* temp_a2 = D_800F569C->unk8C;
-    
+
     if (arg0 != 0) {
         if (temp_a2->unk0 >= arg0) {
             return D_800F569C->unkC[arg0 - 1][arg1 % temp_a2->unk4[arg0 - 1]];

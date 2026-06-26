@@ -1,7 +1,7 @@
 .PRECIOUS: $(BUILD)/assets/%.vsString.yaml
-$(BUILD)/assets/%.vsString.yaml: assets/%.yaml | $$(@D)/
-	$(ECHO) Extracting data/$*
-	$(VPYTHON) -m tools.etc.vsString_dumpTable data/$* assets/$*.yaml $@
+$(BUILD)/assets/%.BIN.vsString.yaml: assets/%.BIN.yaml | $$(@D)/
+	$(ECHO) Extracting data/$*.BIN
+	$(VPYTHON) -m tools.etc.vsString_dumpTable data/$*.BIN $< $@
 
 $(BUILD)/%.vsString $(BUILD)/%.h $(BUILD)/%.vsString.bin &: $(BUILD)/%.vsString.yaml | $$(@D)/
 	$(ECHO) Converting $<

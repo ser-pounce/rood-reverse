@@ -1,8 +1,7 @@
-#include "common.h"
 #include "592C.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/2842C.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "build/src/include/lbas.h"
 
 typedef struct {
@@ -169,15 +168,15 @@ static void* _zudBuffer;
 static int D_8010A4B0;
 static int D_8010A4B4;
 
-void vs_menu9_LoadZudFile(int id)
+void vs_menu9_loadZudFile(int id)
 {
-    static int D_8010A4A0;
+    static int zudId;
 
     vs_main_CdFile cdFile;
     int i;
 
     cdFile.lba = _zudLbas[id];
-    D_8010A4A0 = id;
+    zudId = id;
     cdFile.size = _zudSizes[id];
     _zudCdSlot = vs_main_allocateCdQueueSlot(&cdFile);
     _zudData = vs_main_allocHeapR(cdFile.size);
@@ -299,4 +298,5 @@ void vs_menu9_freeZudFile(void)
     _zudBuffer = NULL;
 }
 
-void func_80108514(void) { }
+static void _nop(void) __attribute__((unused));
+static void _nop(void) { }

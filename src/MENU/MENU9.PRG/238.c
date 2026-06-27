@@ -1,4 +1,6 @@
 #include "common.h"
+#include "238.h"
+#include "57BC.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/sfx.h"
@@ -31,31 +33,6 @@
 #include <strings.h>
 #include <libgpu.h>
 #include <abs.h>
-
-typedef struct {
-    char selected;
-    char unk1;
-    char animationState;
-    char disabled;
-    short x;
-    short rowIndex;
-    char* title;
-    char* description;
-} _gazetteRow;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    short killFlagsOffset;
-    short killFlagsCount;
-    short selected;
-    short animationState;
-    u_char unlocked;
-    u_char prev;
-    u_char next;
-    u_char unkF;
-    char name[28];
-} _monBinData_t;
 
 extern void* D_1F800000[];
 
@@ -378,6 +355,31 @@ int vs_menu9_exec(char* state)
     return 0;
 }
 
+typedef struct {
+    char selected;
+    char unk1;
+    char animationState;
+    char disabled;
+    short x;
+    short rowIndex;
+    char* title;
+    char* description;
+} _gazetteRow;
+
+typedef struct {
+    short zudId;
+    short unk2;
+    short killFlagsOffset;
+    short killFlagsCount;
+    short selected;
+    short animationState;
+    u_char unlocked;
+    u_char prev;
+    u_char next;
+    u_char unkF;
+    char name[28];
+} _monBinData_t;
+
 static void _determineCharacterRank(void);
 void _setTitleFlags(void);
 void _calculateScore(void);
@@ -529,9 +531,6 @@ void _printBossRushMenuRow(void);
 void _leaveBossRushMenu(void);
 void _renderBossRushRecords(int);
 void _renderEnemyNavigation(int arg0);
-int func_80107FBC(short);
-void func_801080C8(void);
-void func_80108098(void);
 
 int _menuInput(void)
 {
@@ -996,9 +995,10 @@ int _menuInput(void)
                 != 0) {
 
                 vs_main_playSfxDefault(0x7E, 5);
-                func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
-                                          + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                                  .unk0);
+                vs_menu9_loadZud(
+                    _monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
+                                + vs_battle_menu9CursorMemory.encyclopaediaRow]
+                        .zudId);
 
                 ++_menuState;
                 _nextState = 2;
@@ -1054,9 +1054,9 @@ int _menuInput(void)
         break;
 
     case 19:
-        if (func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
-                                      + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                              .unk0)
+        if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
+                                         + vs_battle_menu9CursorMemory.encyclopaediaRow]
+                                 .zudId)
             == 0) {
 
             int temp_v1_4 = D_800F4538[1]->cameraDistance;
@@ -1307,7 +1307,7 @@ int _menuInput(void)
             break;
         }
 
-        func_80108098();
+        vs_menu9_freeZud();
 
         if (_nextState != 0) {
             vs_main_freeHeapR(_monBinData);
@@ -1334,8 +1334,8 @@ int _menuInput(void)
             break;
         }
 
-        func_80108098();
-        func_80107FBC(_monBinData[_selectedEnemy].unk0);
+        vs_menu9_freeZud();
+        vs_menu9_loadZud(_monBinData[_selectedEnemy].zudId);
 
         ++_menuState;
         break;
@@ -1345,9 +1345,9 @@ int _menuInput(void)
         _renderEnemyNavigation(3);
         _renderEnemyDetailScreen(menuAnimState, 3);
 
-        if (func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
-                                      + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                              .unk0)
+        if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
+                                         + vs_battle_menu9CursorMemory.encyclopaediaRow]
+                                 .zudId)
             == 0) {
 
             int temp_v1_10 = D_800F4538[1]->cameraDistance;

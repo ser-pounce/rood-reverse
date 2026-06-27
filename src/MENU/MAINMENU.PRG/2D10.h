@@ -60,7 +60,7 @@ void vs_mainMenu_rebuildInventory(int);
  */
 void vs_mainMenu_initTextBox(void);
 void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
-int func_800FFCDC(u_int, int);
+int vs_mainMenu_renderCursor(u_int, int);
 int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);
 void vs_mainMenu_renderIntColorDefault(int, int, u_long*);
 void func_800FFF38(int arg0, int arg1);
@@ -107,7 +107,7 @@ extern char vs_mainMenu_miscItemToSkillMap[];
 extern char (*vs_mainMenu_itemNames)[24];
 extern char D_801022C4;
 extern char D_801022D5;
-extern char D_801022D6;
+extern char vs_mainMenu_hideMenu;
 extern int D_801022D8;
 extern char D_801022DC;
 extern char D_801023D0;

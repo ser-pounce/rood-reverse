@@ -12,7 +12,7 @@ func_800FDD78
 func_800FDEBC
 func_800FF348
 func_800FFB68
-func_800FFCDC
+vs_mainMenu_renderCursor
 func_80100414
 func_80100814
 func_80100A5C

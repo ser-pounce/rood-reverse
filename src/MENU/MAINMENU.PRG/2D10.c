@@ -819,7 +819,7 @@ void func_800FDEBC(void)
             i += 7;
         }
     }
-    D_80102210 = func_800FFCDC(D_80102210, i);
+    D_80102210 = vs_mainMenu_renderCursor(D_80102210, i);
     D_8010214A = 0;
 }
 

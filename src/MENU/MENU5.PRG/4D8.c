@@ -93,12 +93,12 @@ static void _setNextAction(int display)
 {
     if (display != 0) {
         vs_mainMenu_setNextMenuAction(menuActionMenu);
-        D_801022D6 = 0;
+        vs_mainMenu_hideMenu = 0;
         return;
     }
 
     vs_mainMenu_setNextMenuAction(menuActionNone);
-    D_801022D6 = 1;
+    vs_mainMenu_hideMenu = 1;
 }
 
 /**
@@ -360,7 +360,7 @@ int vs_menu5_exec(char* state)
 
         vs_main_freeHeapR(menuBgBackup);
 
-        D_801022D6 = 0;
+        vs_mainMenu_hideMenu = 0;
         *state = 0;
         return 1;
     }
@@ -2253,7 +2253,7 @@ static void _renderDoorName(int x, int y, int doorId)
 
     _mapLabelY -= 16;
 
-    func_800C9078(menuItem);
+    vs_battle_renderMenuItem(menuItem);
     vs_battle_getMenuItem(0)->state = 0;
 }
 
@@ -2436,7 +2436,7 @@ static void _renderConnectingMapName(int x, int y, int mapId)
 
     _mapLabelY -= 16;
 
-    func_800C9078(menuItem);
+    vs_battle_renderMenuItem(menuItem);
     vs_battle_getMenuItem(0)->state = 0;
 }
 

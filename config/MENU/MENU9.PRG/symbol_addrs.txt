@@ -1,5 +1,6 @@
 _monBinFile = 0x80102818;
 D_80102840 = 0x80102840; // type:asciz size:0x58
+_renderFadedMenuItem = 0x80102A7C;
 _getSelectedRow = 0x80102F0C;
 _menuReady = 0x80102FD8;
 vs_menu9_exec = 0x80102FF8;
@@ -8,6 +9,7 @@ _menuInput = 0x8010337C; // allow_duplicated:True
 _initStringsAndGetSelectedRow = 0x80104BD0;
 _vsStrcpy = 0x801066F0;
 _vsStrcat = 0x80106724;
+_renderBossRushDetails = 0x80106808;
 _toVsStringInt = 0x80106CEC;
 _toVsStringPercent = 0x80106D5C;
 _printFastestClearTime = 0x80106DE0;

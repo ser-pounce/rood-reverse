@@ -245,7 +245,7 @@ vs_battle_menuItem_t* vs_battle_getMenuItem(int row);
  */
 vs_battle_menuItem_t* vs_battle_setMenuItem(
     int row, int x, int y, int w, int backgroundWidth, char* text);
-void func_800C9078(vs_battle_menuItem_t*);
+void vs_battle_renderMenuItem(vs_battle_menuItem_t*);
 int func_800C930C(int);
 void func_800C97BC(void);
 

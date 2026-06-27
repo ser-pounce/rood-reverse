@@ -1553,8 +1553,8 @@ static int _discardMenu(int params)
         vs_battle_printVariableWidthFontChar(i & 0xF, 60, 130, D_1F800000[2] - 12);
         vs_battle_printVariableWidthFontChar(i >> 4, 54, 130, D_1F800000[2] - 12);
 
-        cursorBrightness =
-            func_800FFCDC(cursorBrightness, (54 - (discardStep * 6)) | (114 << 16));
+        cursorBrightness = vs_mainMenu_renderCursor(
+            cursorBrightness, (54 - (discardStep * 6)) | (114 << 16));
 
         break;
 
@@ -2727,7 +2727,7 @@ static void _processEquipSubMenu(int hasSfx)
             i -= 0xE;
         }
 
-        D_80109620 = func_800FFCDC(D_80109620, i);
+        D_80109620 = vs_mainMenu_renderCursor(D_80109620, i);
         break;
     }
 }
@@ -3724,10 +3724,10 @@ static void _renderAshley(int mode)
             int temp_s1_2;
             int temp_lo;
             int temp_lo_2;
-            int temp_s1 = D_800F4538[1]->unk656;
+            int temp_s1 = D_800F4538[1]->cameraDistance;
 
             p->unk10 = ((-rsin(0xB00) * yOffset) >> 8) * temp_s1;
-            p->unk14.unk0 = -(D_800F4538[1]->unk63E << 0xB);
+            p->unk14.unk0 = -(D_800F4538[1]->cameraHeightOffset << 0xB);
             p->unk14.unk4 = ((rcos(0xB00) * yOffset) >> 8) * temp_s1;
 
             temp_s1_2 = temp_s1 * 4;

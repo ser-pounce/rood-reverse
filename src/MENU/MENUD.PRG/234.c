@@ -1871,7 +1871,8 @@ int _discardMenu(int arg0)
             temp_v0_7 & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
         vs_battle_printVariableWidthFontChar(
             temp_v0_7 >> 4, 0x36, 0x82, D_1F800000[2] - 3);
-        D_80109A07 = func_800FFCDC(D_80109A07, (0x36 - (discardStep * 6)) | 0x720000);
+        D_80109A07 =
+            vs_mainMenu_renderCursor(D_80109A07, (0x36 - (discardStep * 6)) | 0x720000);
         break;
     case discardMultipleConfirm:
         if (vs_mainmenu_ready() != 0) {
@@ -3083,7 +3084,7 @@ int func_801089BC(int arg0)
         vs_battle_renderTextRawColor("OK", 0x4200C8,
             ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101, D_1F800000[1] - 3);
         v = 0x1A;
-        D_80109A2D = func_800FFCDC(
+        D_80109A2D = vs_mainMenu_renderCursor(
             D_80109A2D, (((var_s1 * 0x10) - (((var_s1 * 2) & 4) - v)) << 0x10) | 0xB4);
         if (vs_main_buttonRepeat & 0x1000) {
             var_s1 += 2;

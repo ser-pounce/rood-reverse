@@ -33,10 +33,6 @@
 #include <abs.h>
 
 typedef struct {
-    char unk0[4];
-} D_8010989C_t;
-
-typedef struct {
     char selected;
     char unk1;
     char animationState;
@@ -63,27 +59,30 @@ typedef struct {
 
 extern void* D_1F800000[];
 
-static char D_8010851C = 0;
-static char D_8010851D = 0;
-
-void func_80102A38(int arg0)
+/**
+ * Hides or shows the menu action at the very top of the menu.
+ */
+void _toggleMenuAction(int enable)
 {
-    if (arg0 != 0) {
+    if (enable != 0) {
         vs_mainMenu_setNextMenuAction(menuActionMenu);
-        D_801022D6 = 0;
+        vs_mainMenu_hideMenu = 0;
     } else {
         vs_mainMenu_setNextMenuAction(menuActionNone);
-        D_801022D6 = 1;
+        vs_mainMenu_hideMenu = 1;
     }
 }
 
-void func_80102A7C(vs_battle_menuItem_t* menuItem)
+void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 {
+    static char _previousFrameBuf = 0;
+    static char _navigationAnimState = 0;
+
     int w;
-    int sp14;
-    int sp18;
-    int sp1C;
-    int temp_fp;
+    int frameBuf;
+    int animState;
+    int bgWidth;
+    int fadeEffect;
     char temp_v1_2;
     int brightness;
     int var_s0;
@@ -97,26 +96,26 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
     int s5;
 
     menuText = menuItem->text;
-    sp14 = 0;
+    frameBuf = 0;
 
     if (vs_main_frameBuf == 0) {
-        sp14 = 0x140;
+        frameBuf = 320;
     }
 
     xy = *(int*)&menuItem->x;
     before = D_1F800000[2] + 8;
     w = menuItem->w;
-    sp18 = menuItem->animationState;
-    temp_fp = menuItem->fadeEffect - 1;
-    sp1C = menuItem->backgroundWidth;
+    animState = menuItem->animationState;
+    fadeEffect = menuItem->fadeEffect - 1;
+    bgWidth = menuItem->backgroundWidth;
 
-    if (vs_main_frameBuf != D_8010851C) {
+    if (vs_main_frameBuf != _previousFrameBuf) {
 
-        ++D_8010851D;
-        D_8010851C = vs_main_frameBuf;
+        ++_navigationAnimState;
+        _previousFrameBuf = vs_main_frameBuf;
 
-        if (D_8010851D >= 12) {
-            D_8010851D = 0;
+        if (_navigationAnimState >= 12) {
+            _navigationAnimState = 0;
         }
     }
 
@@ -124,9 +123,9 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
 
     if ((state == 1) && (menuItem->x < 0x80U)) {
 
-        var_s0 = D_8010851D >> 2;
+        var_s0 = _navigationAnimState >> 2;
 
-        if (temp_fp == 0) {
+        if (fadeEffect == 0) {
             var_s0 = var_s0 - 5;
         } else {
             var_s0 = state - var_s0;
@@ -134,7 +133,7 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
 
         vs_battle_setSpriteDefaultTexPage(128,
             (menuItem->x - 14) | ((menuItem->y + var_s0) << 0x10), vs_getWH(16, 16),
-            before - 1)[4] = (temp_fp << 4) | vs_getUV0Clut(0, 48, 912, 223);
+            before - 1)[4] = (fadeEffect << 4) | vs_getUV0Clut(0, 48, 912, 223);
     }
 
     i = menuItem->x + 6;
@@ -143,7 +142,7 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
         if (var_s0 == vs_char_spacing) {
             i += *menuText++;
         } else {
-            i = func_80101268(var_s0 | (temp_fp << 0x1F), i, menuItem, before);
+            i = func_80101268(var_s0 | (fadeEffect << 0x1F), i, menuItem, before);
         }
     }
 
@@ -155,36 +154,36 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
 
-        if (temp_fp == 0) {
-            var_s0 = s5 + 0x20;
+        if (fadeEffect == 0) {
+            var_s0 = s5 + 32;
         } else {
             var_s0 = s5;
-            var_s0 = 0x78 - s5;
+            var_s0 = 120 - s5;
         }
 
         prim[0] = (*before & 0xFFFFFF) | (6 << 24);
         prim[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-        prim[2] = vs_battle_uiGradientStop(8 - sp18, sp1C, var_s0)
+        prim[2] = vs_battle_uiGradientStop(8 - animState, bgWidth, var_s0)
                 | vs_getRGB0(primLineG2SemiTrans, 0, 0, 0);
         prim[3] = xy;
-        prim[4] = vs_battle_uiGradientStop(sp18, sp1C, var_s0);
+        prim[4] = vs_battle_uiGradientStop(animState, bgWidth, var_s0);
         prim[5] = ((xy + w - 1) & 0xFFFF) | ((xy >> 0x10) << 0x10);
         prim[6] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOff);
 
         *before = ((u_long)prim << 8) >> 8;
         prim += 7;
-        xy += 1 << 16;
+        xy += vs_getXY(0, 1);
     }
 
     D_1F800000[0] = prim;
 
-    if (temp_fp == 0) {
+    if (fadeEffect == 0) {
         func_800CCCB8(before, 0x60000000, ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10),
             w | 0x20000);
     }
 
-    if (sp18 != 0) {
-        menuItem->animationState = sp18 - 1;
+    if (animState != 0) {
+        menuItem->animationState = animState - 1;
     }
 
     xy = xy + (-12 << 16);
@@ -193,7 +192,7 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
 
     for (i = 0; i < 12; ++i) {
 
-        if (temp_fp == 0) {
+        if (fadeEffect == 0) {
             brightness = 120 - i * 8;
         } else {
             brightness = i * 8 + 32;
@@ -205,7 +204,7 @@ void func_80102A7C(vs_battle_menuItem_t* menuItem)
         temp_a0 = xy >> 0x10;
         xy += 1 << 16;
 
-        prim[1] = ((u_int)(sp14 + var_s0) >> 6)
+        prim[1] = ((u_int)(frameBuf + var_s0) >> 6)
                 | vs_getTpage(
                     0, 0, semiTransparencySubtract, semiTransparencyFull, ditheringOff);
         prim[4] = temp_v1_2 | (temp_a0 << 8);
@@ -296,9 +295,9 @@ int _menuInput(void);
  */
 int vs_menu9_exec(char* state)
 {
-    static int D_8010A214;
+    static int initDelay;
     static int _initDataComplete;
-    static int D_8010A21C;
+    static int _selectedRow;
 
     enum state {
         init = 3,
@@ -309,7 +308,7 @@ int vs_menu9_exec(char* state)
     switch (*state) {
     case init:
         func_800FFB68(1);
-        D_8010A214 = 8;
+        initDelay = 8;
         _initDataComplete = 0;
         *state = initData;
         break;
@@ -319,8 +318,8 @@ int vs_menu9_exec(char* state)
             _initDataComplete = _initData();
         }
 
-        if (D_8010A214 != 0) {
-            --D_8010A214;
+        if (initDelay != 0) {
+            --initDelay;
             break;
         }
 
@@ -340,9 +339,9 @@ int vs_menu9_exec(char* state)
         break;
 
     case 6:
-        D_8010A21C = _menuInput();
+        _selectedRow = _menuInput();
 
-        if (D_8010A21C != 0) {
+        if (_selectedRow != 0) {
 
             func_80100414(-4, 0x80);
             func_800CB654(0);
@@ -365,11 +364,11 @@ int vs_menu9_exec(char* state)
     case 8:
         if (D_801022D8 == 0) {
 
-            if (D_8010A21C == 2) {
+            if (_selectedRow == 2) {
                 vs_battle_menuState.currentState = 9;
             }
 
-            D_801022D6 = 0;
+            vs_mainMenu_hideMenu = 0;
             *state = 0;
 
             return 1;
@@ -383,21 +382,26 @@ static void _determineCharacterRank(void);
 void _setTitleFlags(void);
 void _calculateScore(void);
 
-static int _0;
+static int _0 __attribute__((unused));
 static _gazetteRow _gazetteRows[32];
 static SVECTOR _cameraAngles;
-static int D_8010A438;
+static int _enemyNavigationState;
 static int _menuState;
 static int _nextState;
 static int _cameraDistance;
-static int D_8010A448;
-static u_short D_8010A44C;
+static int _buttonHeld;
+
+/**
+ * Never read.
+ */
+static u_short _initCameraDistance;
+
 static short _cameraHeightOffset;
 static short _selectedEnemy;
-static short D_8010A452;
-static int D_8010A454;
-static int D_8010A458;
-static int D_8010A45C;
+static short _enemySkipDelay;
+static int _zoomColor;
+static int _rotationColor;
+static int _hideUi;
 static u_long _score;
 static u_short _characterRank;
 static u_short _clearCount;
@@ -406,9 +410,9 @@ static u_short _mapCompletion;
 static vs_main_CdQueueSlot* _monBinCdQueueSlot;
 static _monBinData_t* _monBinData;
 static u_short* _enemyDescriptions;
-static int _1[2];
-static char D_8010A480[16];
-static char D_8010A490[16];
+static int _1[2] __attribute__((unused));
+static VECTOR _cameraPositionBackup;
+static VECTOR _cameraAnglesBackup;
 
 int _initData(void)
 {
@@ -420,7 +424,7 @@ int _initData(void)
     }
 
     _menuState = 0;
-    D_8010A45C = 0;
+    _hideUi = 0;
 
     if (vs_main_settings.cursorMemory == 0) {
         vs_main_bzero(&vs_battle_menu9CursorMemory, sizeof vs_battle_menu9CursorMemory);
@@ -455,8 +459,10 @@ int _initData(void)
         vs_main_scoredata.openedChestCount = _openedChestCount;
     }
 
-    vs_main_memcpy(D_8010A480, (void*)0x1F800034, sizeof D_8010A480);
-    vs_main_memcpy(D_8010A490, (void*)0x1F800054, sizeof D_8010A490);
+    vs_main_memcpy(&_cameraPositionBackup, &((camera_t*)getScratchAddr(0))->t2.position,
+        sizeof _cameraPositionBackup);
+    vs_main_memcpy(&_cameraAnglesBackup, &((camera_t*)getScratchAddr(0))->t2.pitch,
+        sizeof _cameraAnglesBackup);
     _setTitleFlags();
     _calculateScore();
     _determineCharacterRank();
@@ -508,28 +514,28 @@ static char _noString[] = "NO\0";
 static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$00:40:00",
     "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
 
-void func_80104AF8(void);
+void _restoreCamera(void);
 void _setEnemyDescription(void);
 int _topMenu(int arg0);
 void _renderTopMenu(int arg0);
 void _setTitleRows(void);
-void func_8010579C(int arg0);
+void _renderTitleMenu(int arg0);
 void _initEnemyList(void);
 void _renderEnemyMenu(int arg0);
 void _renderEnemyDetailScreen(int arg0, int arg1);
 void _setStatText(void);
-void func_80106808(int);
-void _printRecordTimeMenuRow(void);
-void _leaveRecordTime(void);
-void _renderBossRussRecords(int);
-void func_80107A98(int arg0);
+void _renderBossRushDetails(int);
+void _printBossRushMenuRow(void);
+void _leaveBossRushMenu(void);
+void _renderBossRushRecords(int);
+void _renderEnemyNavigation(int arg0);
 int func_80107FBC(short);
 void func_801080C8(void);
 void func_80108098(void);
 
 int _menuInput(void)
 {
-    static int _enemyMenuAnimState;
+    static int menuAnimState;
 
     enum state {
         init,
@@ -557,7 +563,7 @@ int _menuInput(void)
 
         _cameraDistance = 0x150;
         _cameraHeightOffset = 0x6B;
-        D_8010A44C = D_800F4538[1]->unk656;
+        _initCameraDistance = D_800F4538[1]->cameraDistance;
         _cameraAngles.vx = 0xF40;
         _cameraAngles.vy = 0xE47;
         _cameraAngles.vz = 0;
@@ -566,18 +572,18 @@ int _menuInput(void)
         vs_battle_setTextBox(0, (char*)&_rankText[_rankText[_characterRank]]);
         _topMenu(1);
 
-        _enemyMenuAnimState = 0;
+        menuAnimState = 0;
         ++_menuState;
         break;
 
     case topMenu:
-        _renderTopMenu(_enemyMenuAnimState);
+        _renderTopMenu(menuAnimState);
 
-        if (_enemyMenuAnimState < 8) {
+        if (menuAnimState < 8) {
             textBox = vs_battle_getTextBox(0);
             textBox->y -= 6;
             textBox->yIndent -= 6;
-            ++_enemyMenuAnimState;
+            ++menuAnimState;
         }
 
         selectedRow = _topMenu(0);
@@ -609,9 +615,9 @@ int _menuInput(void)
         break;
 
     case 3:
-        _renderTopMenu(_enemyMenuAnimState);
+        _renderTopMenu(menuAnimState);
 
-        if (_enemyMenuAnimState > 0) {
+        if (menuAnimState > 0) {
 
             textBox = vs_battle_getTextBox(0);
 
@@ -620,7 +626,7 @@ int _menuInput(void)
                 textBox->yIndent += 6;
             }
 
-            --_enemyMenuAnimState;
+            --menuAnimState;
             break;
         }
 
@@ -631,7 +637,7 @@ int _menuInput(void)
             break;
         }
 
-        func_80104AF8();
+        _restoreCamera();
 
         return _nextState;
 
@@ -639,7 +645,7 @@ int _menuInput(void)
         vs_mainMenu_initTextBox();
         _setTitleRows();
 
-        _enemyMenuAnimState = 0;
+        menuAnimState = 0;
         ++_menuState;
         break;
 
@@ -715,36 +721,36 @@ int _menuInput(void)
             }
         }
 
-        func_8010579C(_enemyMenuAnimState);
+        _renderTitleMenu(menuAnimState);
 
-        if (_enemyMenuAnimState < 8) {
-            ++_enemyMenuAnimState;
+        if (menuAnimState < 8) {
+            ++menuAnimState;
         }
 
         break;
 
     case 6:
-        func_8010579C(_enemyMenuAnimState);
+        _renderTitleMenu(menuAnimState);
 
-        if (_enemyMenuAnimState <= 0) {
+        if (menuAnimState <= 0) {
             if (_nextState == 0) {
                 _menuState = 1;
                 break;
             }
 
-            func_80104AF8();
+            _restoreCamera();
 
             return 2;
         }
 
-        --_enemyMenuAnimState;
+        --menuAnimState;
         break;
 
     case 7:
         vs_mainMenu_initTextBox();
         _setStatText();
 
-        _enemyMenuAnimState = 0;
+        menuAnimState = 0;
         ++_menuState;
         break;
 
@@ -826,31 +832,31 @@ int _menuInput(void)
             }
         }
 
-        func_80106808(_enemyMenuAnimState);
+        _renderBossRushDetails(menuAnimState);
 
-        if (_enemyMenuAnimState < 8) {
-            ++_enemyMenuAnimState;
+        if (menuAnimState < 8) {
+            ++menuAnimState;
         }
         break;
 
     case 9:
-        func_80106808(_enemyMenuAnimState);
+        _renderBossRushDetails(menuAnimState);
 
-        if (_enemyMenuAnimState <= 0) {
+        if (menuAnimState <= 0) {
             if (_nextState == 0) {
                 _menuState = 1;
                 break;
             }
-            func_80104AF8();
+            _restoreCamera();
             return 2;
         }
 
-        --_enemyMenuAnimState;
+        --menuAnimState;
         break;
 
     case 10:
         vs_mainMenu_initTextBox();
-        _printRecordTimeMenuRow();
+        _printBossRushMenuRow();
 
         ++_menuState;
         break;
@@ -876,7 +882,7 @@ int _menuInput(void)
 
             vs_main_playSfxDefault(0x7E, 6);
             vs_mainMenu_dismissTextBox();
-            _leaveRecordTime();
+            _leaveBossRushMenu();
 
             ++_menuState;
 
@@ -887,36 +893,36 @@ int _menuInput(void)
             }
         }
 
-        _renderBossRussRecords(_enemyMenuAnimState);
+        _renderBossRushRecords(menuAnimState);
 
-        if (_enemyMenuAnimState < 8) {
-            ++_enemyMenuAnimState;
+        if (menuAnimState < 8) {
+            ++menuAnimState;
         }
         break;
 
     case 12:
-        _renderBossRussRecords(_enemyMenuAnimState);
+        _renderBossRushRecords(menuAnimState);
 
-        if (_enemyMenuAnimState > 0) {
-            --_enemyMenuAnimState;
+        if (menuAnimState > 0) {
+            --menuAnimState;
             break;
         }
 
-        for (_enemyMenuAnimState = 0, var_s0 = _gazetteRows; _enemyMenuAnimState < 8;
-             ++_enemyMenuAnimState, ++var_s0) {
+        for (menuAnimState = 0, var_s0 = _gazetteRows; menuAnimState < 8;
+             ++menuAnimState, ++var_s0) {
             if (var_s0->animationState == 0) {
-                vs_mainMenu_deactivateMenuItem(_enemyMenuAnimState);
+                vs_mainMenu_deactivateMenuItem(menuAnimState);
             }
         }
 
-        _enemyMenuAnimState = 0;
+        menuAnimState = 0;
 
         if (_nextState == 0) {
             _menuState = 1;
             break;
         }
 
-        func_80104AF8();
+        _restoreCamera();
         return 2;
 
     case 13:
@@ -929,7 +935,7 @@ int _menuInput(void)
             vs_mainMenu_initTextBox();
             _initEnemyList();
 
-            _enemyMenuAnimState = 0;
+            menuAnimState = 0;
             ++_menuState;
         }
         break;
@@ -1015,18 +1021,18 @@ int _menuInput(void)
             }
         }
 
-        _renderEnemyMenu(_enemyMenuAnimState);
+        _renderEnemyMenu(menuAnimState);
 
-        if (_enemyMenuAnimState < 8) {
-            ++_enemyMenuAnimState;
+        if (menuAnimState < 8) {
+            ++menuAnimState;
         }
 
         break;
 
     case 15:
-        _renderEnemyMenu(_enemyMenuAnimState);
+        _renderEnemyMenu(menuAnimState);
 
-        if (_enemyMenuAnimState <= 0) {
+        if (menuAnimState <= 0) {
 
             if (_nextState == 2) {
                 _menuState = 19;
@@ -1040,11 +1046,11 @@ int _menuInput(void)
             }
 
             vs_main_freeHeapR(_monBinData);
-            func_80104AF8();
+            _restoreCamera();
             return 2;
         }
 
-        --_enemyMenuAnimState;
+        --menuAnimState;
         break;
 
     case 19:
@@ -1053,9 +1059,9 @@ int _menuInput(void)
                               .unk0)
             == 0) {
 
-            int temp_v1_4 = D_800F4538[1]->unk656;
-            D_8010A44C = temp_v1_4;
-            _cameraHeightOffset = D_800F4538[1]->unk63E;
+            int temp_v1_4 = D_800F4538[1]->cameraDistance;
+            _initCameraDistance = temp_v1_4;
+            _cameraHeightOffset = D_800F4538[1]->cameraHeightOffset;
             _cameraDistance = (temp_v1_4 << 0x10) >> 0xE;
 
             if (_cameraDistance < 0x280) {
@@ -1065,14 +1071,14 @@ int _menuInput(void)
             }
 
             _cameraAngles.vy = 0x100;
-            D_8010A448 = 0;
+            _buttonHeld = 0;
             _cameraAngles.vx = 0;
             _cameraAngles.vz = 0;
             _selectedEnemy = vs_battle_menu9CursorMemory.encyclopaediaPage
                            + vs_battle_menu9CursorMemory.encyclopaediaRow;
 
             _setEnemyDescription();
-            func_80102A38(D_8010A45C == 0);
+            _toggleMenuAction(_hideUi == 0);
 
             ++_menuState;
         }
@@ -1080,18 +1086,18 @@ int _menuInput(void)
 
     case 20:
         if (_monBinData[_selectedEnemy].prev != _selectedEnemy) {
-            D_8010A438 = (D_8010A438 + 1) & 0xF;
+            _enemyNavigationState = (_enemyNavigationState + 1) & 0xF;
 
-            func_80107A98(0);
-            func_80107A98(1);
+            _renderEnemyNavigation(0);
+            _renderEnemyNavigation(1);
         }
 
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_main_playSfxDefault(0x7E, 6);
 
-            if (D_8010A45C != 0) {
-                func_80102A38(1);
+            if (_hideUi != 0) {
+                _toggleMenuAction(1);
             }
 
             ++_menuState;
@@ -1104,13 +1110,13 @@ int _menuInput(void)
             }
         }
 
-        D_8010A458 = 0x808080;
-        D_8010A454 = 0x808080;
+        _rotationColor = vs_getRGB888(128, 128, 128);
+        _zoomColor = vs_getRGB888(128, 128, 128);
 
         if ((lStickX = vs_main_stickPosBuf.lStickX - 0x80, ABS(lStickX) > 0x40)
             || (lStickY = vs_main_stickPosBuf.lStickY - 0x80, ABS(lStickY) > 0x40)) {
 
-            D_8010A454 = 0x202020;
+            _zoomColor = vs_getRGB888(32, 32, 32);
 
             if (lStickX < -0x40) {
                 _cameraAngles.vy -= 0x40;
@@ -1136,7 +1142,7 @@ int _menuInput(void)
             if (vs_main_buttonsPreviousState & PADL2) {
                 int rStickX;
                 int rStickY;
-                D_8010A454 = 0x202020;
+                _zoomColor = vs_getRGB888(32, 32, 32);
 
                 if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
                     || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
@@ -1187,7 +1193,7 @@ int _menuInput(void)
             } else if (vs_main_buttonsPreviousState & PADR2) {
                 int rStickX;
                 int rStickY;
-                D_8010A458 = 0x202020;
+                _rotationColor = vs_getRGB888(32, 32, 32);
 
                 if ((rStickX = vs_main_stickPosBuf.rStickX - 0x80, ABS(rStickX) > 0x40)
                     || (rStickY = vs_main_stickPosBuf.rStickY - 0x80,
@@ -1216,79 +1222,80 @@ int _menuInput(void)
                 }
             }
         }
+
         if (vs_main_buttonsPressed.all & PADselect) {
-            func_80102A38(D_8010A45C);
-            D_8010A45C ^= 1;
+            _toggleMenuAction(_hideUi);
+            _hideUi ^= 1;
         }
 
         if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
 
             if (vs_main_buttonsPressed.all & (PADL1 | PADR1)) {
-                D_8010A452 = 0;
+                _enemySkipDelay = 0;
             }
 
-            if (vs_main_buttonRepeat & 8) {
-                if (D_8010A452 == 0) {
+            if (vs_main_buttonRepeat & PADR1) {
+                if (_enemySkipDelay == 0) {
                     if (_monBinData[_selectedEnemy].next != _selectedEnemy) {
 
                         vs_main_playSfxDefault(0x7E, 11);
 
                         _selectedEnemy = _monBinData[_selectedEnemy].next;
-                        D_8010A448 = 8;
+                        _buttonHeld = PADR1;
 
                         _setEnemyDescription();
                     }
                 }
-                D_8010A452 = (D_8010A452 + 1) & 3;
+                _enemySkipDelay = (_enemySkipDelay + 1) & 3;
             }
 
             if (vs_main_buttonRepeat & PADL1) {
-                if (D_8010A452 == 0) {
+                if (_enemySkipDelay == 0) {
                     if (_monBinData[_selectedEnemy].prev != _selectedEnemy) {
 
                         vs_main_playSfxDefault(0x7E, 11);
 
                         _selectedEnemy = _monBinData[_selectedEnemy].prev;
-                        D_8010A448 = 4;
+                        _buttonHeld = PADL1;
 
                         _setEnemyDescription();
                     }
                 }
 
-                D_8010A452 = (D_8010A452 + 1) & 3;
+                _enemySkipDelay = (_enemySkipDelay + 1) & 3;
             }
         }
 
-        _renderEnemyDetailScreen(_enemyMenuAnimState, 0);
+        _renderEnemyDetailScreen(menuAnimState, 0);
 
-        if (_enemyMenuAnimState < 8) {
+        if (menuAnimState < 8) {
             textBox = vs_battle_getTextBox(0);
             textBox->x -= 0x10;
             textBox->xIndent -= 0x10;
-            ++_enemyMenuAnimState;
+            ++menuAnimState;
         }
 
-        if (vs_main_buttonsReleased & D_8010A448) {
+        if (vs_main_buttonsReleased & _buttonHeld) {
 
-            if (D_8010A448 == 8) {
-                D_8010A448 = 1;
+            if (_buttonHeld == PADR1) {
+                _buttonHeld = 1;
             } else {
-                D_8010A448 = 2;
+                _buttonHeld = 2;
             }
 
-            D_8010A458 = 0x202020;
-            D_8010A454 = 0x202020;
+            _rotationColor = vs_getRGB888(32, 32, 32);
+            _zoomColor = vs_getRGB888(32, 32, 32);
             _menuState = 0x19;
         }
         break;
 
     case 21:
-        D_8010A458 = 0x202020;
-        D_8010A454 = 0x202020;
+        _rotationColor = vs_getRGB888(32, 32, 32);
+        _zoomColor = vs_getRGB888(32, 32, 32);
 
-        _renderEnemyDetailScreen(_enemyMenuAnimState, 0);
+        _renderEnemyDetailScreen(menuAnimState, 0);
 
-        if (_enemyMenuAnimState > 0) {
+        if (menuAnimState > 0) {
 
             textBox = vs_battle_getTextBox(0);
 
@@ -1296,7 +1303,7 @@ int _menuInput(void)
                 textBox->x += 0x10;
                 textBox->xIndent += 0x10;
             }
-            --_enemyMenuAnimState;
+            --menuAnimState;
             break;
         }
 
@@ -1304,7 +1311,7 @@ int _menuInput(void)
 
         if (_nextState != 0) {
             vs_main_freeHeapR(_monBinData);
-            func_80104AF8();
+            _restoreCamera();
             return 2;
         }
 
@@ -1318,12 +1325,12 @@ int _menuInput(void)
         break;
 
     case 25:
-        func_80107A98(2);
-        func_80107A98(3);
-        _renderEnemyDetailScreen(_enemyMenuAnimState, D_8010A448);
+        _renderEnemyNavigation(2);
+        _renderEnemyNavigation(3);
+        _renderEnemyDetailScreen(menuAnimState, _buttonHeld);
 
-        if (_enemyMenuAnimState > 0) {
-            --_enemyMenuAnimState;
+        if (menuAnimState > 0) {
+            --menuAnimState;
             break;
         }
 
@@ -1334,18 +1341,18 @@ int _menuInput(void)
         break;
 
     case 26:
-        func_80107A98(2);
-        func_80107A98(3);
-        _renderEnemyDetailScreen(_enemyMenuAnimState, 3);
+        _renderEnemyNavigation(2);
+        _renderEnemyNavigation(3);
+        _renderEnemyDetailScreen(menuAnimState, 3);
 
         if (func_80107FBC(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                       + vs_battle_menu9CursorMemory.encyclopaediaRow]
                               .unk0)
             == 0) {
 
-            int temp_v1_10 = D_800F4538[1]->unk656;
-            D_8010A44C = temp_v1_10;
-            _cameraHeightOffset = D_800F4538[1]->unk63E;
+            int temp_v1_10 = D_800F4538[1]->cameraDistance;
+            _initCameraDistance = temp_v1_10;
+            _cameraHeightOffset = D_800F4538[1]->cameraHeightOffset;
             _cameraDistance = (temp_v1_10 << 0x10) >> 0xE;
 
             if (_cameraDistance < 0x280) {
@@ -1358,14 +1365,14 @@ int _menuInput(void)
         break;
 
     case 27:
-        func_80107A98(2);
-        func_80107A98(3);
-        _renderEnemyDetailScreen(_enemyMenuAnimState, 3 - D_8010A448);
+        _renderEnemyNavigation(2);
+        _renderEnemyNavigation(3);
+        _renderEnemyDetailScreen(menuAnimState, 3 - _buttonHeld);
 
-        if (_enemyMenuAnimState < 8) {
-            ++_enemyMenuAnimState;
+        if (menuAnimState < 8) {
+            ++menuAnimState;
         } else {
-            D_8010A448 = 0;
+            _buttonHeld = 0;
             _menuState = 0x14;
         }
 
@@ -1375,10 +1382,15 @@ int _menuInput(void)
     return 0;
 }
 
-void func_80104AF8(void)
+/**
+ * Resets the camera back to the stored view.
+ */
+void _restoreCamera(void)
 {
-    vs_main_memcpy((void*)getScratchAddr(13), D_8010A480, sizeof D_8010A480);
-    vs_main_memcpy((void*)getScratchAddr(21), D_8010A490, sizeof D_8010A490);
+    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.position, &_cameraPositionBackup,
+        sizeof _cameraPositionBackup);
+    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.pitch, &_cameraAnglesBackup,
+        sizeof _cameraAnglesBackup);
 }
 
 /**
@@ -1645,7 +1657,7 @@ void _renderFooterBg(int x)
     _insertTPage(7, getTPage(0, 2, 0, 0));
 }
 
-void func_80106528(void);
+void _renderScreenEdgeFade(void);
 
 /**
  * Bundles camera update and non-menu UI elements.
@@ -1659,7 +1671,7 @@ void _renderTopMenu(int animStep)
     void** scratch;
 
     if (animStep < 8) {
-        func_80106528();
+        _renderScreenEdgeFade();
     }
 
     vs_battle_getGeomOffset(&sp18);
@@ -1720,21 +1732,24 @@ void _setTitleRows(void)
     }
 }
 
-static char D_80109898 = 0;
-static char D_80109899 = 0;
-#pragma vsstring(start)
-static D_8010989C_t D_8010989C = { "%\0" };
-#pragma vsstring(end)
-static char D_801098A0 = 0;
-static short _characterRankTitleThresholds[16] = { 16, 12, 8 };
-static u_int _characterRankPointThresholds[] = { 100000000, 75000000, 60000000, 40000000,
-    32000000, 24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
-    1000000, 500000, 0 };
-
+/**
+ * Renders a title index.
+ *
+ * @param dimmed Renders the digit with a lower brightness.
+ * De facto reserved for the first title when the window doesn't
+ * start at index 01.
+ */
 void _renderTitleNo(int arg0, int arg1, int enemyNo, int arg3);
 
-void func_8010579C(int arg0)
+/**
+ * Manages the title selection menu and its animation.
+ *
+ * @param animState Value from 0-8, incremented or decremented linearly.
+ */
+void _renderTitleMenu(int animState)
 {
+    static char cursorAnimState = 0;
+
     int i;
     vs_battle_menuItem_t* menuItem;
 
@@ -1763,16 +1778,16 @@ void func_8010579C(int arg0)
 
     for (i = 0; i < 8; ++i, ++row) {
 
-        int y = (arg0 * 23) - 16;
+        int y = (animState * 23) - 16;
 
         if ((56 + i * 16) < y) {
             y = (56 + i * 16);
         }
 
         if (row->selected != 0) {
-            if (arg0 == 8) {
-                D_80109898 =
-                    func_800FFCDC(D_80109898, ((row->x - 12) & 0xFFFF) | ((y - 8) << 16));
+            if (animState == 8) {
+                cursorAnimState = vs_mainMenu_renderCursor(
+                    cursorAnimState, vs_getXY_2(row->x - 12, y - 8));
             }
         }
 
@@ -1784,32 +1799,25 @@ void func_8010579C(int arg0)
         menuItem->animationState = row->animationState;
 
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
-            menuItem->fadeEffect = 1;
+            menuItem->fadeEffect = menuItem_fadeEffect_fadeTop;
         }
 
         if ((i == 7) && (vs_battle_menu9CursorMemory.titlePage != 24)) {
-            menuItem->fadeEffect = 2;
+            menuItem->fadeEffect = menuItem_fadeEffect_fadeBottom;
         }
 
         _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->fadeEffect & 1);
 
-        if ((menuItem->fadeEffect != 0) && (arg0 == 8)) {
-            func_80102A7C(menuItem);
+        if ((menuItem->fadeEffect != menuItem_fadeEffect_none) && (animState == 8)) {
+            _renderFadedMenuItem(menuItem);
         } else {
-            func_800C9078(menuItem);
+            vs_battle_renderMenuItem(menuItem);
         }
     }
 
     vs_battle_getMenuItem(0)->state = 0;
 }
 
-/**
- * Renders a title index.
- *
- * @param dimmed Renders the digit with a lower brightness.
- * De facto reserved for the first title when the window doesn't
- * start at index 01.
- */
 void _renderTitleNo(int x, int y, int titleNo, int dimmed)
 {
     char digits[2];
@@ -1949,6 +1957,8 @@ void _initEnemyList(void)
  */
 void _renderEnemyMenu(int animState)
 {
+    static char D_80109899 = 0;
+
     int i;
     int sp18;
     int selectedRow = vs_battle_menu9CursorMemory.encyclopaediaPage
@@ -2004,7 +2014,7 @@ void _renderEnemyMenu(int animState)
         x = 60;
 
         if ((enemy->selected != 0) && (animState == 8)) {
-            D_80109899 = func_800FFCDC(D_80109899, ((y - 8) << 0x10) | 48);
+            D_80109899 = vs_mainMenu_renderCursor(D_80109899, ((y - 8) << 0x10) | 48);
         }
 
         if (enemy->unlocked != 0) {
@@ -2029,9 +2039,9 @@ void _renderEnemyMenu(int animState)
             x - 14, y, cursorMem->encyclopaediaPage + i + 1, menuItem->fadeEffect & 1);
 
         if ((menuItem->fadeEffect != 0) && (animState == 8)) {
-            func_80102A7C(menuItem);
+            _renderFadedMenuItem(menuItem);
         } else {
-            func_800C9078(menuItem);
+            vs_battle_renderMenuItem(menuItem);
         }
     }
 
@@ -2056,7 +2066,7 @@ void _renderEnemyDetailScreen(int animState, int state)
     void** scratch;
 
     if (animState < 8) {
-        func_80106528();
+        _renderScreenEdgeFade();
     }
 
     if (state != 3) {
@@ -2081,10 +2091,10 @@ void _renderEnemyDetailScreen(int animState, int state)
         animState = 8;
     }
 
-    if (D_8010A45C == 0) {
+    if (_hideUi == 0) {
         temp_s2 = (8 - animState) * 16;
 
-        func_800C9078(vs_battle_setMenuItem(
+        vs_battle_renderMenuItem(vs_battle_setMenuItem(
             0, temp_s2 + 184, 166, 256, 0, &_monBinData[_selectedEnemy].name[2]));
         vs_battle_getMenuItem(0)->state = 0;
 
@@ -2096,14 +2106,14 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s0 = (temp_s4 - 100) & 0xFFFF;
 
         vs_battle_renderTextRawColor(
-            "ROTATION", temp_s0 | 0x120000, D_8010A458, scratch[1] + 24);
+            "ROTATION", temp_s0 | 0x120000, _rotationColor, scratch[1] + 24);
 
         temp_s6 = temp_s4 - 112;
 
         _renderCommandsBg(temp_s6, 18, 96, 12, 3);
         vs_mainmenu_drawButton(7, temp_s4 - 120, 34, scratch[1] + 24);
         vs_battle_renderTextRawColor(
-            "ZOOM", temp_s0 | 0x240000, D_8010A454, scratch[1] + 24);
+            "ZOOM", temp_s0 | (36 << 16), _zoomColor, scratch[1] + 24);
         _renderCommandsBg(temp_s6, 36, 78, 12, 3);
         sprintf(sp60, "NO.   %03d/%03d", _selectedEnemy + 1, 78);
         vs_battle_renderTextRawColor(
@@ -2115,7 +2125,10 @@ void _renderEnemyDetailScreen(int animState, int state)
     }
 }
 
-void func_80106528(void)
+/**
+ * Draws a semitransparent gradient on the left and right edges of the screen.
+ */
+void _renderScreenEdgeFade(void)
 {
     void** scratch = (void**)0x1F800000;
     POLY_G4* poly = scratch[0];
@@ -2188,7 +2201,7 @@ void _setStatText(void)
 }
 
 // https://decomp.me/scratch/Xo8T1
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", func_80106808);
+INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", _renderBossRushDetails);
 
 /**
  * Prints an integer in VS string encoding.
@@ -2217,6 +2230,12 @@ void _toVsStringInt(char* buf, int value)
  */
 void _toVsStringPercent(char* buf, int value)
 {
+    typedef struct {
+        char data[4];
+    } percent_t;
+#pragma vsstring(start)
+    static percent_t percent = { "%\0" };
+#pragma vsstring(end)
 
     int len;
     int i;
@@ -2233,7 +2252,7 @@ void _toVsStringPercent(char* buf, int value)
 
     buf += len;
 
-    *((D_8010989C_t*)buf) = D_8010989C;
+    *((percent_t*)buf) = percent;
 }
 
 /**
@@ -2300,7 +2319,7 @@ void _printFastestClearTime(char* buf, int rounds, int totalSeconds)
 /**
  * Sets the menu rows for the boss rush screen.
  */
-void _printRecordTimeMenuRow(void)
+void _printBossRushMenuRow(void)
 {
     int i;
     _gazetteRow* row;
@@ -2327,7 +2346,7 @@ void _printRecordTimeMenuRow(void)
 /**
  *  Row animation when leaving record time menu.
  */
-void _leaveRecordTime(void)
+void _leaveBossRushMenu(void)
 {
     int i;
     _gazetteRow* p = _gazetteRows;
@@ -2344,10 +2363,12 @@ void _leaveRecordTime(void)
 }
 
 /**
- * @brief Renders the boss selection menu and currently selected boss records.
+ * Renders the boss selection menu and currently selected boss records.
  */
-void _renderBossRussRecords(int selected)
+void _renderBossRushRecords(int selected)
 {
+    static char D_801098A0 = 0;
+
     char* difficulty[] __attribute__((unused)) = { "EASY", "NORMAL" };
     int difficultyColors[]
         __attribute__((unused)) = { vs_getRGB(0, 128, 128), vs_getRGB(128, 128, 0) };
@@ -2404,7 +2425,7 @@ void _renderBossRussRecords(int selected)
             menuItem->selected = 1;
             var_fp = (((sp38 * 0x10) + 0x2A) << 0x10) | 0xB6;
 
-            D_801098A0 = func_800FFCDC(D_801098A0, var_fp);
+            D_801098A0 = vs_mainMenu_renderCursor(D_801098A0, var_fp);
 
             sp3C = var_s1;
 
@@ -2467,8 +2488,16 @@ void _renderBossRussRecords(int selected)
     _renderGradientQuad((selected * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
 }
 
+/**
+ * Calculates the rank based on the number of titles unlocked.
+ */
 void _determineCharacterRank(void)
 {
+    static short _characterRankTitleThresholds[16] = { 16, 12, 8 };
+    static u_int _characterRankPointThresholds[] = { 100000000, 75000000, 60000000,
+        40000000, 32000000, 24000000, 16000000, 12000000, 8000000, 5000000, 4000000,
+        3000000, 2000000, 1000000, 500000, 0 };
+
     int i;
     int titleCount;
     int flag;
@@ -2488,6 +2517,9 @@ void _determineCharacterRank(void)
     }
 }
 
+/**
+ * Checks game conditions and updates the unlocked titles
+ */
 void _setTitleFlags(void)
 {
     int i;
@@ -2495,27 +2527,35 @@ void _setTitleFlags(void)
     if (_clearCount != 0) {
         vs_main_scoredata.titles |= 1;
     }
+
     if (vs_main_scoredata.openedChestCount >= 52) {
         vs_main_scoredata.titles |= 1 << 2;
     }
+
     if (vs_main_scoredata.mapCompletion > 360) {
         vs_main_scoredata.titles |= 1 << 3;
     }
+
     if (vs_main_stateFlags.damascusGolemDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 4;
     }
+
     if (vs_main_stateFlags.damascusCrabDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 5;
     }
+
     if (vs_main_stateFlags.ravanaDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 6;
     }
+
     if (vs_main_stateFlags.dragonZombieDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 7;
     }
+
     if (vs_main_stateFlags.deathAndOgreZombieDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 8;
     }
+
     if (vs_main_stateFlags.asuraDefeated != 0) {
         vs_main_scoredata.titles |= 1 << 9;
     }
@@ -2594,7 +2634,13 @@ void _setTitleFlags(void)
     }
 }
 
-void func_80107A98(int arg0)
+/**
+ * Renders the L1 / R1 controls.
+ *
+ * @param direction 0 == left, 1 == right, 2 == left transitioning, 3 == right
+ * transitioning
+ */
+void _renderEnemyNavigation(int direction)
 {
     int x;
     int clut;
@@ -2602,43 +2648,59 @@ void func_80107A98(int arg0)
     void** scratch;
     int new_var;
 
-    if (D_8010A45C == 0) {
+    if (_hideUi == 0) {
+
         clut = getClut(896, 223);
-        if (arg0 >= 2) {
-            arg0 -= 2;
+
+        if (direction >= 2) {
+            direction -= 2;
             clut = getClut(912, 223);
         }
-        if (arg0 != 0) {
-            vs_battle_renderTextRawColor("#R1", 0x62011E, 0x808080, NULL);
-            if (D_8010A438 < 9) {
-                x = (D_8010A438 >> 1) + 0x120;
+
+        if (direction != 0) {
+            vs_battle_renderTextRawColor(
+                "#R1", vs_getXY(286, 98), vs_getRGB888(128, 128, 128), NULL);
+
+            if (_enemyNavigationState < 9) {
+                x = (_enemyNavigationState >> 1) + 288;
             } else {
-                x = -(D_8010A438 >> 2) + 0x126;
+                x = -(_enemyNavigationState >> 2) + 294;
             }
         } else {
-            vs_battle_renderTextRawColor("L1", 0x620022, 0x808080, NULL);
-            if (D_8010A438 < 9) {
-                new_var = 0x20;
-                x = new_var - (D_8010A438 >> 1);
+            vs_battle_renderTextRawColor(
+                "L1", vs_getXY(34, 98), vs_getRGB888(128, 128, 128), NULL);
+
+            if (_enemyNavigationState < 9) {
+                new_var = 32;
+                x = new_var - (_enemyNavigationState >> 1);
             } else {
-                x = (D_8010A438 >> 2) + 0x1A;
+                x = (_enemyNavigationState >> 2) + 26;
             }
         }
+
         x -= 8;
         scratch = (void**)getScratchAddr(0);
         poly = scratch[0];
+
         setPolyFT4(poly);
-        setXY4(poly, x, 0x60, x + 0x10, 0x60, x, 0x70, x + 0x10, 0x70);
-        setUV4(poly, arg0 * 0x10, 0x30, (arg0 * 0x10) + 0x10, 0x30, arg0 * 0x10, 0x40,
-            (arg0 * 0x10) + 0x10, 0x40);
+        setXY4(poly, x, 96, x + 16, 96, x, 112, x + 16, 112);
+        setUV4(poly, direction * 16, 48, (direction * 16) + 16, 48, direction * 16, 64,
+            (direction * 16) + 16, 64);
         setTPage(poly, 0, 0, 768, 0);
         poly->clut = clut;
         setShadeTex(poly, 1);
+
         AddPrim(scratch[1], poly++);
+
         scratch[0] = poly;
     }
 }
 
+/**
+ * Determines the game score based on kills, attacks, boss rush scores
+ * and other criteria.
+ *
+ */
 void _calculateScore(void)
 {
     short classPoints[6] = { 20, 20, 40, 80, 100, 60 };

@@ -1109,7 +1109,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
                                              + VS_status_INDEX_strDown]]);
 
     if (arg1 != 0) {
-        animationState = func_800FFCDC(
+        animationState = vs_mainMenu_renderCursor(
             animationState, (((selectedStatusModifier & 7) * 16) + 2)
                                 | ((((selectedStatusModifier >> 3) * 16) + 136) << 0x10));
         D_801022D5 = 1;
@@ -1732,8 +1732,8 @@ static int _equipmentDetailScreen(int row)
                 menuItem->icon = i;
                 _equipmentDetailSelectedElement = 9;
                 D_801022D5 = 0;
-                _cursorAnimState =
-                    func_800FFCDC(_cursorAnimState, vs_mainMenu_mainCursorXY[0]);
+                _cursorAnimState = vs_mainMenu_renderCursor(
+                    _cursorAnimState, vs_mainMenu_mainCursorXY[0]);
                 D_801023E3 = 1;
 
                 func_801013F8(1);
@@ -1849,7 +1849,7 @@ static int _equipmentDetailScreen(int row)
         }
 
         D_801022D5 = _equipmentDetailSelectedElement != 9;
-        _cursorAnimState = func_800FFCDC(_cursorAnimState, i);
+        _cursorAnimState = vs_mainMenu_renderCursor(_cursorAnimState, i);
 
         if (vs_main_buttonsPressed.all & PADRup) {
             _exitEquipmentDetail(1);
@@ -2196,8 +2196,8 @@ static void _drawScreen(void)
 {
     int temp_lo_5;
     int xOffset = (128 - _animationStep);
-    int z = D_800F4538[1]->unk656;
-    int x = D_800F4538[1]->unk63E;
+    int z = D_800F4538[1]->cameraDistance;
+    int x = D_800F4538[1]->cameraHeightOffset;
     int* p = (int*)D_1F800000 + 13;
 
     p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;
@@ -2546,7 +2546,8 @@ int vs_menu4_exec(char* state)
                     }
 
                     D_801022D5 = (userInput < _getLimbCount(_selectedActor - 1)) ^ 1;
-                    D_80108134 = func_800FFCDC(D_80108134, D_801080C8[userInput]);
+                    D_80108134 =
+                        vs_mainMenu_renderCursor(D_80108134, D_801080C8[userInput]);
 
                     if (userInput != _selectedElement) {
 
@@ -2759,7 +2760,8 @@ int vs_menu4_exec(char* state)
                                     + (limbs != 3 ? VS_status_INDEX_physicalDefense
                                                   : VS_status_INDEX_bluntDefense)]]);
 
-            D_80108134 = func_800FFCDC(D_80108134, ((userInput * 16) + 50) << 16);
+            D_80108134 =
+                vs_mainMenu_renderCursor(D_80108134, ((userInput * 16) + 50) << 16);
         }
         break;
 

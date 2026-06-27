@@ -290,7 +290,8 @@ void vs_mainMenu_processItemActionMenu(void)
 
             menuItem = vs_battle_getMenuItem(_selectedItemAction + 32);
             menuItem->selected = 1;
-            D_801022D3 = func_800FFCDC((u_int)D_801022D3, (menuItem->y - 8) << 0x10);
+            D_801022D3 =
+                vs_mainMenu_renderCursor((u_int)D_801022D3, (menuItem->y - 8) << 0x10);
             break;
         }
     }
@@ -324,7 +325,7 @@ void vs_mainMenu_printInformation(int arg0, int arg1)
 
 static char vs_mainMenu_isLevelledSpell = 0;
 static char D_801022D5 = 0;
-static char D_801022D6 = 0;
+static char vs_mainMenu_hideMenu = 0;
 int D_801022D8 = 0;
 char D_801022DC = 0;
 static short D_801022DE = -4;
@@ -418,7 +419,7 @@ void vs_mainmenu_drawButton(int index, int x, int y, u_long* data)
         data)[4] = ((index & 3) * 0x10) | ((((index & 4) * 4) + 0x80) << 8) | 0x37FB0000;
 }
 
-int func_800FFCDC(u_int arg0, int xy)
+int vs_mainMenu_renderCursor(u_int arg0, int xy)
 {
     int var_a0;
     int temp_s0 = arg0 >> (D_801022D5 * 8);
@@ -1012,7 +1013,7 @@ void func_80100A5C(void)
 
             vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 0xA))->selected = 1;
 
-            D_801023E2 = func_800FFCDC((u_int)D_801023E2,
+            D_801023E2 = vs_mainMenu_renderCursor((u_int)D_801023E2,
                 (0xB4 - _menuRowYOffset)
                     | ((((_selectedRow + _subMenuRowInfo) * 0x10) + 0xA) << 0x10));
             break;
@@ -1426,7 +1427,7 @@ void func_80101970(void)
             }
             break;
         }
-        if (D_801022D6 == 0) {
+        if (vs_mainMenu_hideMenu == 0) {
             j = menuItem->unk12;
             temp_s3 = D_1F800000[2] + 2;
             if (j != 0) {
@@ -1458,7 +1459,7 @@ void func_80101970(void)
                 if (menuItem->fadeEffect != 0) {
                     func_8010154C(menuItem);
                 } else {
-                    func_800C9078(menuItem);
+                    vs_battle_renderMenuItem(menuItem);
                 }
                 j = menuItem->itemState;
                 if (j != 0) {

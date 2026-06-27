@@ -354,7 +354,7 @@ static int _highlightCharSelection(int cursorState, int column, int row)
 
     _highlightSelection(x + 128, y + 76, 10, 18);
 
-    return func_800FFCDC(cursorState, (x + 112) | ((y + 66) << 16));
+    return vs_mainMenu_renderCursor(cursorState, (x + 112) | ((y + 66) << 16));
 }
 
 /**
@@ -625,7 +625,8 @@ static int _renameMenuInput(int initialize)
 
         _updateMenuSelection(var_s1);
 
-        _cursorAnimState = func_800FFCDC(_cursorAnimState, ((var_s1 * 16) + 28) << 16);
+        _cursorAnimState =
+            vs_mainMenu_renderCursor(_cursorAnimState, ((var_s1 * 16) + 28) << 16);
         break;
 
     case 2:

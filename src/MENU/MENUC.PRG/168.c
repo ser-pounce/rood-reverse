@@ -609,7 +609,7 @@ static void _navigateItemsList(int arg0)
             if (_itemsListSelection == 0) {
                 i -= 14;
             }
-            D_8010BB2E = func_800FFCDC(D_8010BB2E, i);
+            D_8010BB2E = vs_mainMenu_renderCursor(D_8010BB2E, i);
             break;
         }
     }
@@ -1305,7 +1305,7 @@ static int _assembleMenu(int arg0)
                     i += 0xFFFC0000;
                 }
 
-                D_8010BB54 = func_800FFCDC(D_8010BB54, i);
+                D_8010BB54 = vs_mainMenu_renderCursor(D_8010BB54, i);
 
             } else {
                 return _leaveAssembleMenu();
@@ -1739,7 +1739,7 @@ static int _attachGemsMenu(int arg0)
                         if (itemInfo == gemSlots) {
                             i += 0xFFFC0000;
                         }
-                        D_8010BB56 = func_800FFCDC(D_8010BB56, i);
+                        D_8010BB56 = vs_mainMenu_renderCursor(D_8010BB56, i);
                     }
                 }
             } else {
@@ -2885,7 +2885,7 @@ static int _combineBladeMenu(int arg0)
                 if (i_2 == 3) {
                     var_s1 += 0xFFFC0000;
                 }
-                D_8010BB74 = func_800FFCDC(D_8010BB74, var_s1);
+                D_8010BB74 = vs_mainMenu_renderCursor(D_8010BB74, var_s1);
                 break;
             }
             return _leaveItemSlotSelection(1);
@@ -3377,7 +3377,7 @@ static int _combineShieldMenu(int arg0)
                 if (temp_s2 == 3) {
                     var_s1 += 0xFFFC0000;
                 }
-                D_8010BB75 = func_800FFCDC(D_8010BB75, var_s1);
+                D_8010BB75 = vs_mainMenu_renderCursor(D_8010BB75, var_s1);
                 break;
             }
             return _leaveItemSlotSelection(1);
@@ -3851,7 +3851,7 @@ static int _combineArmorMenu(int arg0)
                 if (i_2 == 3) {
                     var_s1 += 0xFFFC0000;
                 }
-                D_8010BB76 = func_800FFCDC(D_8010BB76, var_s1);
+                D_8010BB76 = vs_mainMenu_renderCursor(D_8010BB76, var_s1);
                 break;
             }
             return _leaveItemSlotSelection(1);

@@ -229,7 +229,7 @@ typedef struct {
     SVECTOR unk5EC;
     u_char unk5F4[0x48];
     u_short unk63C;
-    u_short unk63E;
+    u_short cameraHeightOffset;
     u_char unk640[6];
     u_short unk646;
     u_int unk648_0 : 16;
@@ -241,7 +241,7 @@ typedef struct {
     u_short unk650;
     u_short unk652;
     u_short unk654;
-    u_short unk656;
+    u_short cameraDistance;
     u_char unk658[0x54];
     int unk6AC[8];
     u_short unk6CC[8];

@@ -66,11 +66,11 @@ void func_80102C94(int arg0)
 {
     if (arg0 != 0) {
         vs_mainMenu_setNextMenuAction(menuActionMenu);
-        D_801022D6 = 0;
+        vs_mainMenu_hideMenu = 0;
         return;
     }
     vs_mainMenu_setNextMenuAction(menuActionNone);
-    D_801022D6 = 1;
+    vs_mainMenu_hideMenu = 1;
 }
 
 static void _setMenuRows(int rowCount, int highlightedRow, char** strings)
@@ -195,7 +195,7 @@ int vs_menuE_exec(char* state)
         if (menuResult == 2) {
             vs_battle_menuState.currentState = 10;
         }
-        D_801022D6 = 0;
+        vs_mainMenu_hideMenu = 0;
         *state = none;
         return 1;
     }

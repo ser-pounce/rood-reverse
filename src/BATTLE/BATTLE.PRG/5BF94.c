@@ -1473,7 +1473,7 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
     return _lerpColor(color0, color1, brightness, gradient);
 }
 
-void func_800C9078(vs_battle_menuItem_t* arg0)
+void vs_battle_renderMenuItem(vs_battle_menuItem_t* arg0)
 {
     int sp10;
     int temp_v1;
@@ -1609,7 +1609,7 @@ void func_800C97BC(void)
         }
         if ((var_s0 >= 0x1F) || (temp_s1 == 0)) {
             for (i = 0; i < 10; ++i) {
-                func_800C9078(var_s2);
+                vs_battle_renderMenuItem(var_s2);
                 ++var_s2;
             }
         }

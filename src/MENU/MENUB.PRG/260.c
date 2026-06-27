@@ -1199,7 +1199,8 @@ static int _discardMenu(int arg0)
         i = vs_battle_toBCD(i >> 4);
         vs_battle_printVariableWidthFontChar(i & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
         vs_battle_printVariableWidthFontChar(i >> 4, 0x36, 0x82, D_1F800000[2] - 3);
-        D_8010A5C3 = func_800FFCDC(D_8010A5C3, (54 - (discardStep * 6)) | (114 << 0x10));
+        D_8010A5C3 = vs_mainMenu_renderCursor(
+            D_8010A5C3, (54 - (discardStep * 6)) | (114 << 0x10));
         break;
     case discardMultipleConfirm:
         if (vs_mainmenu_ready() != 0) {
@@ -1929,9 +1930,9 @@ static void func_80106274(int arg0)
             return;
         }
         if (D_8010A5C4 != 0) {
-            temp_s1 = D_800F4538[1]->unk656;
+            temp_s1 = D_800F4538[1]->cameraDistance;
             p->unk10 = ((-rsin(0xB00) * step) >> 8) * temp_s1;
-            p->unk14.unk0 = -(D_800F4538[1]->unk63E << 0xB);
+            p->unk14.unk0 = -(D_800F4538[1]->cameraHeightOffset << 0xB);
             p->unk14.unk4 = ((rcos(0xB00) * step) >> 8) * temp_s1;
             temp_s1_2 = temp_s1 * 4;
             temp_lo = rcos(0xB00) * temp_s1_2;
@@ -3381,7 +3382,7 @@ int _processLootMenu(int init)
                 vs_battle_playMenuChangeSfx();
             }
             _populateLootItem(_selectedLoot + _lootListOffset);
-            D_8010A5EA = func_800FFCDC(
+            D_8010A5EA = vs_mainMenu_renderCursor(
                 D_8010A5EA, (((_selectedLoot * 0x10) + 0x2A) << 0x10) | 0xA);
         }
         break;

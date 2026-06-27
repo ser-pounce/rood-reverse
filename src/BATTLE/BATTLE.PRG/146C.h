@@ -720,10 +720,7 @@ typedef struct {
 typedef struct {
     /* 0x00 */ VECTOR position;
     /* 0x10 */ VECTOR lookAt;
-    /* 0x20 */ int pitch;
-    /* 0x24 */ int yaw;
-    /* 0x28 */ int roll;
-    /* 0x2C */ int unk60;
+    /* 0x20 */ VECTOR angles;
     /* 0x30 */ int farClip;
 } camera_t2;
 
@@ -784,26 +781,6 @@ typedef struct {
     char dropRate;
     short index;
 } vs_battle_shieldIntermediate;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-} vs_unk_gfx_t2;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    vs_unk_gfx_t2 unk14;
-} vs_unk_gfx_t;
 
 typedef struct {
     u_char titlePage;

@@ -1085,7 +1085,7 @@ static void _sortMisc(int stat)
  *
  * @param stat Must be in the range 0-42
  */
-static int _getEquipmentStat(int stat, vs_battle_uiEquipment* equipment)
+static int _getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
 {
     switch (stat) {
     case 0:
@@ -1179,7 +1179,7 @@ static void _sortEquipment(int itemCategory, int stat)
 
                     _copyEquipment(&uiEquipment, itemCategory, index - 1);
 
-                    value = _getEquipmentStat(stat, &uiEquipment);
+                    value = _getEquipmentStatValue(stat, &uiEquipment);
 
                     if (maxValue < value) {
                         maxValue = value;
@@ -1198,7 +1198,7 @@ static void _sortEquipment(int itemCategory, int stat)
 
                     _copyEquipment(&uiEquipment, itemCategory, index - 1);
 
-                    if (_getEquipmentStat(stat, &uiEquipment) == maxValue) {
+                    if (_getEquipmentStatValue(stat, &uiEquipment) == maxValue) {
                         sortedIndices[sortedPos++] = index;
                         indices[i] = 0;
                     }
@@ -1338,7 +1338,6 @@ static int _discardMenu(int params)
     };
 
     static char discardTemplate[] = "|>48|000/000\0";
-
     static char discardSteps[] = { 1, 10, 100 };
     static char cursorBrightness = 0;
 
@@ -1384,6 +1383,7 @@ static int _discardMenu(int params)
 
     case discardOneInit:
         for (i = 0; i < 2; ++i) {
+
             menuText[i * 2] = (char*)&vs_mainMenu_itemHelp
                 [vs_mainMenu_itemHelp[i + VS_ITEMHELP_BIN_INDEX_confirmYes]];
             menuText[i * 2 + 1] = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
@@ -1419,12 +1419,10 @@ static int _discardMenu(int params)
         discardStep = 0;
         discardCount = 0;
         state = clearTemplate;
-
         break;
 
     case discardOne:
         vs_mainMenu_processItemActionMenu();
-
         i = vs_mainMenu_getSelectedItemAction() + 1;
 
         if (i != 0) {
@@ -1584,16 +1582,13 @@ static int _discardMenu(int params)
 
         if (i != 0) {
             if (i == 1) {
-                int count;
                 vs_main_playSfxDefault(0x7E, 0x1C);
 
-                count = vs_battle_inventory.misc[selectedItem - 1].count;
-
-                if (count == discardCount) {
+                if (vs_battle_inventory.misc[selectedItem - 1].count == discardCount) {
                     vs_mainMenu_initItem(itemCategory, selectedItem);
                 } else {
                     vs_battle_inventory.misc[selectedItem - 1].count =
-                        count - discardCount;
+                        vs_battle_inventory.misc[selectedItem - 1].count - discardCount;
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();
@@ -1615,26 +1610,26 @@ static int _discardMenu(int params)
  *
  * @return 0 if no parent weapon exists.
  */
-static int _getParentWeaponIndex(int itemCategory, int itemIndex)
+static int _getParentWeaponIndex(int itemCategory, int index)
 {
-    int index = 0;
+    int parentIndex = 0;
 
     if (itemCategory == itemCategoryBlade) {
-        index = vs_battle_inventory.blades[itemIndex].assembledWeaponIndex;
+        parentIndex = vs_battle_inventory.blades[index].assembledWeaponIndex;
     }
 
     if (itemCategory == itemCategoryGrip) {
-        index = vs_battle_inventory.grips[itemIndex].assembledWeaponIndex;
+        parentIndex = vs_battle_inventory.grips[index].assembledWeaponIndex;
     }
 
     if (itemCategory == itemCategoryGem) {
-        index = vs_battle_inventory.gems[itemIndex].setItemIndex;
-        if (index & gemTargetShield) {
-            index = 0;
+        parentIndex = vs_battle_inventory.gems[index].setItemIndex;
+        if (parentIndex & gemTargetShield) {
+            parentIndex = 0;
         }
     }
 
-    return index;
+    return parentIndex;
 }
 
 /**
@@ -1669,15 +1664,15 @@ static char _miscSkills[64];
 static int _populateItemRows(
     int itemCategory, char* menuText[], int rowTypes[], char* textBuf)
 {
-    int parentItem;
-    int rowType;
     int i;
     char* indices = vs_mainMenu_inventoryIndices[itemCategory];
-    int textOffset = 0;
+    int count = 0;
 
     for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory];
-         ++textOffset, ++i, textBuf += 96) {
+         ++count, ++i, textBuf += 96) {
 
+        int parentItem;
+        int rowType;
         int index = indices[i];
 
         if (index == 0) {
@@ -1690,41 +1685,50 @@ static int _populateItemRows(
         switch (itemCategory) {
         case itemCategoryWeapon:
             vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+                &menuText[count * 2], &rowTypes[i], textBuf);
+
             if (vs_battle_inventory.weapons[index].isEquipped != 0) {
                 rowType = 0xCA00;
             }
             break;
+
         case itemCategoryBlade:
             vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+                &menuText[count * 2], &rowTypes[i], textBuf);
             break;
+
         case itemCategoryGrip:
-            vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+            vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[index], &menuText[count * 2],
+                &rowTypes[i], textBuf);
             break;
+
         case itemCategoryShield:
             vs_mainMenu_initUiShield(&vs_battle_inventory.shields[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+                &menuText[count * 2], &rowTypes[i], textBuf);
+
             if (vs_battle_inventory.shields[index].isEquipped != 0) {
                 rowType = 0xCA00;
             }
             break;
+
         case itemCategoryArmor:
             vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+                &menuText[count * 2], &rowTypes[i], textBuf);
+
             if (vs_battle_inventory.armor[index].bodyPart != 0) {
                 rowType = 0xCA00;
             }
             break;
+
         case itemCategoryGem:
-            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[index], &menuText[count * 2],
+                &rowTypes[i], textBuf);
             break;
+
         case itemCategoryMisc: {
             u_int skillId;
-            vs_mainMenu_setUiItem(&vs_battle_inventory.misc[index],
-                &menuText[textOffset * 2], &rowTypes[i], textBuf);
+            vs_mainMenu_setUiItem(&vs_battle_inventory.misc[index], &menuText[count * 2],
+                &rowTypes[i], textBuf);
 
             skillId =
                 vs_mainMenu_miscItemToSkillMap[vs_battle_inventory.misc[index].id - 323];
@@ -1738,7 +1742,7 @@ static int _populateItemRows(
                 }
             }
 
-            _miscSkills[textOffset] = skillId;
+            _miscSkills[count] = skillId;
             break;
         }
         }
@@ -1764,7 +1768,7 @@ static int _populateItemRows(
         rowTypes[i] |= rowType;
     }
 
-    return textOffset;
+    return count;
 }
 
 /**
@@ -1797,11 +1801,11 @@ static void _restoreItemMenu(int itemCategory)
  *
  * @return int
  */
-static int _itemsTopLevelHandler(int initialize)
+static int _itemNavigation(int initialize)
 {
     enum state { init };
 
-    static char D_80109674[8];
+    static char availableActions[8];
     static char state;
     static char noItems;
     static char D_8010967E;
@@ -2199,7 +2203,7 @@ loop_1:
             }
 
             ++rowCount;
-            D_80109674[rowCount] = 1;
+            availableActions[rowCount] = 1;
         }
 
         if (((char)(itemCategory - 1) < 2) || (itemCategory == 5)) {
@@ -2218,7 +2222,7 @@ loop_1:
             }
 
             ++rowCount;
-            D_80109674[rowCount] = 2;
+            availableActions[rowCount] = 2;
         }
 
         rowType = 0;
@@ -2270,7 +2274,7 @@ loop_1:
 
         vs_battle_rowTypeBuf[rowCount] = rowType;
         ++rowCount;
-        D_80109674[rowCount] = 3;
+        availableActions[rowCount] = 3;
 
         if (itemCategory == 6) {
 
@@ -2286,7 +2290,7 @@ loop_1:
             }
 
             ++rowCount;
-            D_80109674[rowCount] = 4;
+            availableActions[rowCount] = 4;
         }
 
         menuText[rowCount * 2] =
@@ -2295,7 +2299,7 @@ loop_1:
             (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_sortItemDesc];
 
         ++rowCount;
-        D_80109674[rowCount] = 5;
+        availableActions[rowCount] = 5;
 
         vs_mainMenu_initSortUi(
             rowCount, itemCategory + 38, menuText, vs_battle_rowTypeBuf);
@@ -2319,7 +2323,7 @@ loop_1:
 
                 vs_battle_playMenuSelectSfx();
 
-                switch (D_80109674[temp_s3_5]) {
+                switch (availableActions[temp_s3_5]) {
                 case 1:
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
@@ -3664,13 +3668,13 @@ static void _renderAshley(int mode)
     static int render = 0;
     static char skipFrame = 0;
 
-    static int projectionDistanceBackup;
+    static int projectionDistance;
     static int _[3] __attribute__((unused));
-    static vs_unk_gfx_t2 D_801096BC;
-    static vs_unk_gfx_t D_801096DC;
+    static MATRIX viewMatrixBackup;
+    static camera_t2 cameraBackup;
 
     int yOffset;
-    vs_unk_gfx_t* p = (vs_unk_gfx_t*)&D_1F800000[13];
+    camera_t2* camera = &((camera_t*)&D_1F800000)->t2;
 
     switch (mode) {
     case ashleyRenderModeRender:
@@ -3721,28 +3725,26 @@ static void _renderAshley(int mode)
         }
 
         if (render != 0) {
-            int temp_s1_2;
-            int temp_lo;
-            int temp_lo_2;
-            int temp_s1 = D_800F4538[1]->cameraDistance;
+            int scaledDistance;
+            int offsetX;
+            int offsetZ;
+            int cameraDistance = D_800F4538[1]->cameraDistance;
 
-            p->unk10 = ((-rsin(0xB00) * yOffset) >> 8) * temp_s1;
-            p->unk14.unk0 = -(D_800F4538[1]->cameraHeightOffset << 0xB);
-            p->unk14.unk4 = ((rcos(0xB00) * yOffset) >> 8) * temp_s1;
+            setVector(&camera->lookAt, ((-rsin(0xB00) * yOffset) >> 8) * cameraDistance,
+                -(D_800F4538[1]->cameraHeightOffset << 0xB),
+                ((rcos(0xB00) * yOffset) >> 8) * cameraDistance);
 
-            temp_s1_2 = temp_s1 * 4;
-            temp_lo = rcos(0xB00) * temp_s1_2;
+            scaledDistance = cameraDistance * 4;
+            offsetX = rcos(0xB00) * scaledDistance;
 
-            p->unk0 = p->unk10 + temp_lo;
-            p->unk4 = p->unk14.unk0;
+            camera->position.vx = camera->lookAt.vx + offsetX;
+            camera->position.vy = camera->lookAt.vy;
 
-            temp_lo_2 = rsin(0xB00) * temp_s1_2;
+            offsetZ = rsin(0xB00) * scaledDistance;
 
-            p->unk14.unkC = 0;
-            p->unk14.unk10 = 0;
-            p->unk14.unk14 = 0;
-            p->unk14.unk1C = 0x1000;
-            p->unk8 = p->unk14.unk4 + temp_lo_2;
+            setVector(&camera->angles, 0, 0, 0);
+            camera->farClip = 0x1000;
+            camera->position.vz = camera->lookAt.vz + offsetZ;
 
             func_8007ACB0();
             func_800F9EB8(&D_1F800000[5]);
@@ -3755,17 +3757,14 @@ static void _renderAshley(int mode)
             _ashleyRenderState = 2;
             skipFrame = 1;
             render = 1;
-            projectionDistanceBackup = vs_main_projectionDistance;
+            projectionDistance = vs_main_projectionDistance;
 
             vs_battle_setProjectionDistance(512);
 
-            D_801096BC = p[-1].unk14;
-            D_801096DC = *p;
-
-            p->unk14.unkC = 0;
-            p->unk14.unk10 = 0;
-            p->unk14.unk14 = 0;
-            p->unk14.unk1C = 0x1000;
+            viewMatrixBackup = ((camera_t*)((void*)camera - 0x34))->viewMatrix;
+            cameraBackup = *camera;
+            setVector(&camera->angles, 0, 0, 0);
+            camera->farClip = 0x1000;
 
             func_8007ACB0();
             func_80100414(0x7FE, 0x80);
@@ -3778,10 +3777,10 @@ static void _renderAshley(int mode)
 
             func_800F9E0C();
             func_80100414(-4, 0x80);
-            vs_battle_setProjectionDistance(projectionDistanceBackup);
+            vs_battle_setProjectionDistance(projectionDistance);
 
-            p[-1].unk14 = D_801096BC;
-            *p = D_801096DC;
+            ((camera_t*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;
+            *camera = cameraBackup;
             render = 0;
         }
 
@@ -3837,7 +3836,7 @@ int vs_menu3_exec(char* state)
         D_800EB9B0 = 0x200000;
 
         _renderAshley(1);
-        _itemsTopLevelHandler(D_80109649 + 1);
+        _itemNavigation(D_80109649 + 1);
 
         D_80109649 = 0;
         *state = loadItemNamesWait;
@@ -3852,7 +3851,7 @@ int vs_menu3_exec(char* state)
         // Fallthrough
 
     case itemsTop:
-        row = _itemsTopLevelHandler(0);
+        row = _itemNavigation(0);
 
         if (row == 0) {
             break;
@@ -3929,7 +3928,7 @@ int vs_menu3_exec(char* state)
             _selectedItemCategoryIconOnTop = 0;
             _statusCommandState = 1;
 
-            _itemsTopLevelHandler(1);
+            _itemNavigation(1);
 
             *state = itemsTop;
         }
@@ -3969,7 +3968,7 @@ int vs_menu3_exec(char* state)
             _selectedItemCategoryIconOnTop = 0;
 
             _renderAshley(1);
-            _itemsTopLevelHandler(1);
+            _itemNavigation(1);
 
             *state = itemsTop;
         }

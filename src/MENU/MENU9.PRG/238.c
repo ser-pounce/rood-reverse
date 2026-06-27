@@ -463,7 +463,7 @@ int _initData(void)
 
     vs_main_memcpy(&_cameraPositionBackup, &((camera_t*)getScratchAddr(0))->t2.position,
         sizeof _cameraPositionBackup);
-    vs_main_memcpy(&_cameraAnglesBackup, &((camera_t*)getScratchAddr(0))->t2.pitch,
+    vs_main_memcpy(&_cameraAnglesBackup, &((camera_t*)getScratchAddr(0))->t2.angles.vx,
         sizeof _cameraAnglesBackup);
     _setTitleFlags();
     _calculateScore();
@@ -1389,7 +1389,7 @@ void _restoreCamera(void)
 {
     vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.position, &_cameraPositionBackup,
         sizeof _cameraPositionBackup);
-    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.pitch, &_cameraAnglesBackup,
+    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.angles.vx, &_cameraAnglesBackup,
         sizeof _cameraAnglesBackup);
 }
 
@@ -1481,9 +1481,9 @@ void _buildCameraMatrix(MATRIX* cameraMatrix)
     camera = (camera_t*)getScratchAddr(0);
     setVector(
         &camera->t2.position, position.vx * ONE, position.vy * ONE, position.vz * ONE);
-    camera->t2.pitch = _cameraAngles.vx;
-    camera->t2.yaw = _cameraAngles.vy;
-    camera->t2.roll = _cameraAngles.vz;
+    camera->t2.angles.vx = _cameraAngles.vx;
+    camera->t2.angles.vy = _cameraAngles.vy;
+    camera->t2.angles.vz = _cameraAngles.vz;
 
     _buildYawMatrix(cameraMatrix, _cameraAngles.vy);
     _buildPitchMatrix(&pitchMatrix, _cameraAngles.vx);

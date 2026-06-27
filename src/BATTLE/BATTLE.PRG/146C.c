@@ -4891,9 +4891,9 @@ void func_80077EC4(void)
     vs_battle_initialiseCameraFromSpherical(
         &_camera.t2.position, &_camera.t2.lookAt, -1, -1);
     _camera.t2.farClip = 0x1000;
-    _camera.t2.roll = 0;
-    _camera.t2.yaw = 0;
-    _camera.t2.pitch = 0;
+    _camera.t2.angles.vz = 0;
+    _camera.t2.angles.vy = 0;
+    _camera.t2.angles.vx = 0;
 }
 
 void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
@@ -5334,11 +5334,11 @@ int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
 
     yaw = ratan2(toCameraNorm.vx, toCameraNorm.vz);
     yaw = (yaw + 0x1000) % ONE;
-    _camera.t2.yaw = yaw;
+    _camera.t2.angles.vy = yaw;
     pitch = ratan2(
         toCameraNorm.vy, SquareRoot12((toCameraNorm.vx * toCameraNorm.vx) / ONE
                                       + (toCameraNorm.vz * toCameraNorm.vz) / ONE));
-    _camera.t2.pitch = pitch;
+    _camera.t2.angles.vx = pitch;
 
     if (arg0 != NULL) {
         arg0->values.yaw = yaw;
@@ -5413,9 +5413,9 @@ void vs_battle_setCameraLookAt(VECTOR* inLookAt)
     _camera.t2.lookAt.vz = inLookAt->vz;
 }
 
-void vs_battle_setCameraRoll(int arg0) { _camera.t2.roll = arg0; }
+void vs_battle_setCameraRoll(int arg0) { _camera.t2.angles.vz = arg0; }
 
-int vs_battle_getCameraRoll(void) { return _camera.t2.roll & 0xFFF; }
+int vs_battle_getCameraRoll(void) { return _camera.t2.angles.vz & 0xFFF; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
@@ -9720,7 +9720,7 @@ void func_80089DC0(int arg0)
     _clampPositionToZoneBounds(&sp20, &lookAt);
 
     _camera.t2.lookAt = lookAt;
-    _camera.t2.yaw = vs_battle_cameraCurrentSpherical.values.yaw;
+    _camera.t2.angles.vy = vs_battle_cameraCurrentSpherical.values.yaw;
 
     _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     func_800A1108(0, &sp40);
@@ -10566,7 +10566,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
 
     if (vs_battle_roomData.section11 != 0) {
         func_8008C40C();
-        v = ((_camera.t2.yaw + 0x900) & 0xFFF) >> 9;
+        v = ((_camera.t2.angles.vy + 0x900) & 0xFFF) >> 9;
         var_a1 = vs_battle_roomData.section11;
         len = vs_battle_roomData.header.section11Len;
         for (i = 0; i < len;) {

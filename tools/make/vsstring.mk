@@ -1,4 +1,5 @@
-.PRECIOUS: $(BUILD)/assets/%.vsString.yaml
+.PRECIOUS: $(BUILD)/assets/%.vsString.yaml $(BUILD)/assets/%.BIN.vsString.yaml
+
 $(BUILD)/assets/%.BIN.vsString.yaml: assets/%.BIN.yaml | $$(@D)/
 	$(ECHO) Extracting data/$*.BIN
 	$(VPYTHON) -m tools.etc.vsString_dumpTable data/$*.BIN $< $@

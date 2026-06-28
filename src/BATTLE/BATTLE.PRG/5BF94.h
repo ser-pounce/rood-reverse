@@ -50,7 +50,7 @@ typedef struct {
     char material;
     char itemState;
     u_short itemPage;
-    u_short unk10;
+    u_short count;
     u_short unk12;
     short x;
     short y;

@@ -115,3 +115,13 @@ static void _continueMenuTransition(int id)
     menuItem->state = menuItemTransition_toTop;
     menuItem->targetPosition0 = 18;
 }
+
+#ifdef _ITEMMENU
+static u_short _menuText[] = {
+#include "build/assets/MENU/MENU3.PRG/menuText.vsString"
+};
+#else
+static u_short _menuText[] = {
+#include "build/assets/MENU/MENUB.PRG/menuText.vsString"
+};
+#endif

@@ -10,20 +10,16 @@
 #include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 
+#define _ITEMMENU
+
 extern void* D_1F800000[];
 
-#include "src/MENU/toggleUi.h"
+#include "src/MENU/_toggleUi.h"
 #include "src/MENU/items0.h"
-
-static u_short _menuText[] = {
-#include "build/assets/MENU/MENU3.PRG/menuText.vsString"
-};
-
 #include "src/MENU/items1.h"
 
 static char _miscSkills[64];
 
-#define _ITEMMENU
 #include "src/MENU/items2.h"
 
 typedef struct {
@@ -1496,17 +1492,16 @@ int vs_menu3_exec(char* state)
     }
 
     if ((_secondaryTitleAnimationStep != 0) && (_selectedItemCategoryIconOnTop == 0)) {
-        vs_battle_menuItem_t* menuitem;
 
-        category = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
+        int category = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
-        menuitem = vs_battle_setMenuItem(
+        vs_battle_menuItem_t* menuitem = vs_battle_setMenuItem(
             31, row + 180, 34, 140, 8, (char*)&_menuText[_menuText[category]]);
         menuitem->selected = 1;
 
         if (category != 7) {
             menuitem->unk12 = vs_mainMenu_inventoryItemCapacities[category];
-            menuitem->unk10 = vs_mainMenu_getItemCount(category, 0);
+            menuitem->count = vs_mainMenu_getItemCount(category, 0);
         }
     }
 

@@ -811,7 +811,7 @@ vs_battle_menuItem_t* func_801008F0(int arg0, int arg1)
     }
     arg0 = (temp_a1 >> 9) & 0x7F;
     if (arg0 <= 100) {
-        menuItem->unk10 = arg0;
+        menuItem->count = arg0;
     } else if (arg0 <= 102) {
         menuItem->itemState = arg0 - 100;
     } else {
@@ -1441,14 +1441,14 @@ void func_80101970(void)
                 vs_mainMenu_renderIntColorDefault(j, origin, temp_s3);
                 temp_s0 = origin - 30;
                 vs_battle_renderTextRaw("/", temp_s0, temp_s3);
-                vs_mainMenu_renderIntColorDefault(menuItem->unk10, temp_s0, temp_s3);
+                vs_mainMenu_renderIntColorDefault(menuItem->count, temp_s0, temp_s3);
                 if ((menuItem->y == 18) && (menuItem->x < 96)) {
                     vs_mainMenu_renderIntColorDefault(
                         menuItem->itemPage, origin + 32, temp_s3);
                     vs_battle_renderTextRaw("-", origin, temp_s3);
                 }
             } else {
-                j = menuItem->unk10;
+                j = menuItem->count;
                 if (j != 0) {
                     vs_battle_renderValue(0,
                         ((menuItem->x + menuItem->w) - 16) | ((menuItem->y + 3) << 0x10),

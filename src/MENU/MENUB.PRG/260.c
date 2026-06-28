@@ -12,10 +12,6 @@
 
 #include "src/MENU/items0.h"
 
-static u_short _menuText[] = {
-#include "build/assets/MENU/MENUB.PRG/menuText.vsString"
-};
-
 enum lootItemState {
     lootStateNone,
     lootStateCopied,
@@ -32,47 +28,49 @@ typedef struct {
     char state;
 } _lootListItem;
 
-static char D_8010A504 = 0;
+static char _animationStateBufIndex = 0;
 static char _controlsEnabled = 0;
 
 static _lootListItem* _lootList;
-static _lootListItem* D_8010A6A4;
+static _lootListItem* _lootListWorkingCopy;
 static vs_battle_inventory_t* _inventory;
 static vs_battle_inventory_t* _inventoryBackup;
-static char D_8010A6B0;
+static char _showInventory;
 static u_char _inventoryCapacityFlyinTimer;
-static char D_8010A6B2;
+static char _showLoot;
 static u_char _lootLeftEdge;
 static char _selectedLoot;
 static u_char _lootListOffset;
 static u_char _lootListCount;
 static char D_8010A6B7;
-static char D_8010A6B8;
+static char _lootClaimed;
 
 #include "src/MENU/items1.h"
-#include "src/MENU/toggleUi.h"
+#include "src/MENU/_toggleUi.h"
 #include "src/MENU/items2.h"
 #include "src/MENU/_renderAshley.h"
 
-static int _topLevelMenuTransition(int arg0)
+static int _topLevelMenuTransition(int category)
 {
+    enum state { init };
+
     static char state;
     static char D_8010A681;
 
     int stepValue;
     vs_battle_menuItem_t* menuItem;
 
-    if (arg0 != 0) {
-        D_800F4EE8.unk3A.currentItemCategory = arg0;
-        D_8010A6B0 = 0;
-        D_8010A6B2 = 0;
-        state = 0;
+    if (category != 0) {
+        D_800F4EE8.unk3A.currentItemCategory = category;
+        _showInventory = 0;
+        _showLoot = 0;
+        state = init;
         return 0;
     }
 
     switch (state) {
-    case 0:
-        if (vs_mainmenu_ready() == 0) {
+    case init:
+        if (!vs_mainmenu_ready()) {
             break;
         }
 
@@ -96,7 +94,7 @@ static int _topLevelMenuTransition(int arg0)
         _statusCommandAnimationStep = 0;
         _selectedItemCategoryIconOnTop = 0;
 
-        if (vs_mainmenu_ready() == 0) {
+        if (!vs_mainmenu_ready()) {
             break;
         }
 
@@ -144,8 +142,8 @@ static int _topLevelMenuTransition(int arg0)
         vs_mainMenu_setNextMenuAction(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
-            D_8010A6B0 = 1;
-            D_8010A6B2 = 1;
+            _showInventory = 1;
+            _showLoot = 1;
             return 1;
         }
 
@@ -175,7 +173,7 @@ static int _topLevelMenuTransition(int arg0)
 
         if (itemCategory != 7) {
             menuItem->unk12 = vs_mainMenu_inventoryItemCapacities[itemCategory];
-            menuItem->unk10 = vs_mainMenu_getItemCount(itemCategory, NULL);
+            menuItem->count = vs_mainMenu_getItemCount(itemCategory, NULL);
         }
     }
 
@@ -232,7 +230,7 @@ static int _disassembleItem(int itemIndex)
 
     static char state;
     static char D_8010A683;
-    static char D_8010A684;
+    static char lootCount;
     static u_char targetItemIndex;
     static char disassembleItemCategory;
     static char _ __attribute__((unused));
@@ -242,10 +240,11 @@ static int _disassembleItem(int itemIndex)
 
     if (itemIndex != 0) {
 
-        vs_battle_memcpy(D_8010A6A4, _lootList, 0x280);
+        vs_battle_memcpy(
+            _lootListWorkingCopy, _lootList, 160 * sizeof *_lootListWorkingCopy);
 
-        D_8010A6B2 = 0;
-        D_8010A684 = _lootListCount;
+        _showLoot = 0;
+        lootCount = _lootListCount;
         targetItemIndex = itemIndex - 1;
         disassembleItemCategory = _lootList[targetItemIndex].itemCategory;
         _selectedLoot = 0;
@@ -256,7 +255,7 @@ static int _disassembleItem(int itemIndex)
         return 0;
     }
 
-    i = D_8010A6A4[targetItemIndex].itemIndex;
+    i = _lootListWorkingCopy[targetItemIndex].itemIndex;
 
     switch (state) {
     case init:
@@ -266,7 +265,7 @@ static int _disassembleItem(int itemIndex)
 
         vs_battle_rMemzero(_lootList, 0x280);
 
-        _lootList->itemCategory = D_8010A6A4[targetItemIndex].itemCategory;
+        _lootList->itemCategory = _lootListWorkingCopy[targetItemIndex].itemCategory;
         _lootList->itemIndex = i;
         _lootList->state = lootStateNoIndent;
 
@@ -307,7 +306,7 @@ static int _disassembleItem(int itemIndex)
         }
 
         _lootLeftEdge = 10;
-        D_8010A6B2 = 1;
+        _showLoot = 1;
         state = initOptionYes;
         break;
 
@@ -339,13 +338,13 @@ static int _disassembleItem(int itemIndex)
         break;
 
     case processCommand:
-        vs_battle_getMenuItem(D_8010A683 + 30)->selected = 1;
+        vs_battle_getMenuItem(30 + D_8010A683)->selected = 1;
         vs_battle_getMenuItem(31 - D_8010A683)->selected = 0;
 
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             vs_mainMenu_menuItemFlyoutRight(30);
             vs_mainMenu_menuItemFlyoutRight(31);
-            D_8010A6B2 = 0;
+            _showLoot = 0;
             if ((D_8010A683 != 0) || (vs_main_buttonsPressed.all & PADRdown)) {
                 vs_battle_playMenuLeaveSfx();
                 state = finalize;
@@ -372,7 +371,7 @@ static int _disassembleItem(int itemIndex)
             break;
         }
 
-        vs_battle_rMemcpy(&D_8010A6A4[D_8010A684], &_lootList[1],
+        vs_battle_rMemcpy(&_lootListWorkingCopy[lootCount], &_lootList[1],
             (_lootListCount - 1) * sizeof _lootList[1]);
 
         if (disassembleItemCategory != itemCategoryWeapon) {
@@ -398,10 +397,10 @@ static int _disassembleItem(int itemIndex)
             }
         }
 
-        D_8010A684 = _lootListCount + (D_8010A684 + 0xFE);
+        lootCount = _lootListCount + (lootCount + 254);
 
-        for (i = targetItemIndex; i < D_8010A684; ++i) {
-            D_8010A6A4[i] = D_8010A6A4[i + 1];
+        for (i = targetItemIndex; i < lootCount; ++i) {
+            _lootListWorkingCopy[i] = _lootListWorkingCopy[i + 1];
         }
         // Fallthrough
 
@@ -410,13 +409,14 @@ static int _disassembleItem(int itemIndex)
             break;
         }
 
-        _lootListCount = D_8010A684;
+        _lootListCount = lootCount;
 
-        vs_battle_memcpy(_lootList, D_8010A6A4, 0x280);
+        vs_battle_memcpy(
+            _lootList, _lootListWorkingCopy, 160 * sizeof *_lootListWorkingCopy);
         _updateLootList();
 
         _lootLeftEdge = 10;
-        D_8010A6B2 = 1;
+        _showLoot = 1;
         state = leave;
         break;
 
@@ -432,10 +432,10 @@ static int _disassembleItem(int itemIndex)
 
 static int _consolidateMiscItems(int lootIndex)
 {
-    static char D_8010A5CA = 0;
+    static char cursorMemory = 0;
 
-    static u_short D_8010A688;
-    static u_short D_8010A68A;
+    static u_short totalCount;
+    static u_short amountToAdd;
     static u_short itemId;
     static char state;
     static char D_8010A68F;
@@ -450,10 +450,11 @@ static int _consolidateMiscItems(int lootIndex)
 
     if (lootIndex != 0) {
 
-        vs_battle_memcpy(D_8010A6A4, _lootList, 0x280);
+        vs_battle_memcpy(
+            _lootListWorkingCopy, _lootList, 160 * sizeof *_lootListWorkingCopy);
         vs_battle_memcpy(_inventoryBackup, _inventory, sizeof *_inventory);
 
-        D_8010A6B2 = 0;
+        _showLoot = 0;
         lootCount = _lootListCount;
         itemId = _inventory->misc[_lootList[lootIndex - 1].itemIndex].id;
         _selectedLoot = 0;
@@ -467,25 +468,25 @@ static int _consolidateMiscItems(int lootIndex)
     case 0:
         if (_lootLeftEdge == 6) {
 
-            D_8010A68A = 0;
+            amountToAdd = 0;
             item = vs_battle_inventory.misc;
 
             for (i = 0; i < 64; ++i, ++item) {
                 if (item->id == itemId) {
-                    int v0 = D_8010A68A + 100;
+                    int v0 = amountToAdd + 100;
                     v0 -= item->count;
-                    D_8010A68A = v0;
+                    amountToAdd = v0;
                 }
             }
 
-            D_8010A688 = 0;
+            totalCount = 0;
 
             for (i = 0; i < _lootListCount; ++i) {
                 if (_lootList[i].itemCategory == itemCategoryMisc) {
                     item = &_inventory->misc[_lootList[i].itemIndex];
                     if (item->id == itemId) {
 
-                        D_8010A688 += item->count;
+                        totalCount += item->count;
 
                         vs_battle_rMemzero(item, sizeof *item);
 
@@ -501,7 +502,7 @@ static int _consolidateMiscItems(int lootIndex)
 
             _lootListCount = 0;
 
-            while (D_8010A688 != 0) {
+            while (totalCount != 0) {
 
                 for (i = 0; i < 64; ++i) {
                     if (_inventory->misc[i].id == 0) {
@@ -518,29 +519,29 @@ static int _consolidateMiscItems(int lootIndex)
                 loot->itemIndex = i;
                 loot->unk2 = 0;
                 _inventory->misc[i].id = itemId;
-                loot->state = D_8010A68A != 0;
+                loot->state = amountToAdd != 0;
 
                 if (loot->state != lootStateNone) {
-                    if (D_8010A68A > 100) {
+                    if (amountToAdd > 100) {
                         _inventory->misc[i].count = 100;
-                        D_8010A688 -= 100;
-                        D_8010A68A -= 100;
+                        totalCount -= 100;
+                        amountToAdd -= 100;
                     } else {
-                        _inventory->misc[i].count = D_8010A68A;
-                        D_8010A688 = D_8010A688 - D_8010A68A;
-                        D_8010A68A = 0;
+                        _inventory->misc[i].count = amountToAdd;
+                        totalCount = totalCount - amountToAdd;
+                        amountToAdd = 0;
                     }
-                } else if (D_8010A688 > 100) {
+                } else if (totalCount > 100) {
                     _inventory->misc[i].count = 100;
-                    D_8010A688 -= 100;
+                    totalCount -= 100;
                 } else {
-                    _inventory->misc[i].count = D_8010A688;
-                    D_8010A688 = 0;
+                    _inventory->misc[i].count = totalCount;
+                    totalCount = 0;
                 }
             }
 
             _lootLeftEdge = 10;
-            D_8010A6B2 = 1;
+            _showLoot = 1;
             state = 1;
         }
         break;
@@ -580,7 +581,7 @@ static int _consolidateMiscItems(int lootIndex)
             vs_mainMenu_menuItemFlyoutRight(30);
             vs_mainMenu_menuItemFlyoutRight(31);
 
-            D_8010A6B2 = 0;
+            _showLoot = 0;
 
             if ((D_8010A68F != 0) || (vs_main_buttonsPressed.all & PADRdown)) {
                 vs_battle_playMenuLeaveSfx();
@@ -604,7 +605,7 @@ static int _consolidateMiscItems(int lootIndex)
             D_8010A68F = 1 - D_8010A68F;
         }
 
-        D_8010A5CA = vs_battle_drawCursor(D_8010A5CA, D_8010A68F + 8);
+        cursorMemory = vs_battle_drawCursor(cursorMemory, D_8010A68F + 8);
         break;
 
     case 5:
@@ -613,9 +614,9 @@ static int _consolidateMiscItems(int lootIndex)
         }
 
         for (i = 0; i < lootCount; ++i) {
-            if (D_8010A6A4[i].itemCategory == 6) {
+            if (_lootListWorkingCopy[i].itemCategory == 6) {
 
-                item = &_inventoryBackup->misc[D_8010A6A4[i].itemIndex];
+                item = &_inventoryBackup->misc[_lootListWorkingCopy[i].itemIndex];
 
                 if (item->id == itemId) {
 
@@ -624,7 +625,7 @@ static int _consolidateMiscItems(int lootIndex)
                     --lootCount;
 
                     for (j = i; j < lootCount; ++j) {
-                        D_8010A6A4[j] = D_8010A6A4[j + 1];
+                        _lootListWorkingCopy[j] = _lootListWorkingCopy[j + 1];
                     }
                     --i;
                 }
@@ -642,7 +643,7 @@ static int _consolidateMiscItems(int lootIndex)
                 break;
             }
 
-            loot = &D_8010A6A4[lootCount++];
+            loot = &_lootListWorkingCopy[lootCount++];
             loot->itemCategory = itemCategoryMisc;
             loot->itemIndex = j;
             loot->unk2 = 0;
@@ -658,11 +659,11 @@ static int _consolidateMiscItems(int lootIndex)
 
             _lootListCount = lootCount;
 
-            vs_battle_memcpy(_lootList, D_8010A6A4, sizeof *_lootList * 160);
+            vs_battle_memcpy(_lootList, _lootListWorkingCopy, sizeof *_lootList * 160);
             vs_battle_memcpy(_inventory, _inventoryBackup, sizeof *_inventory);
 
             _lootLeftEdge = 10;
-            D_8010A6B2 = 1;
+            _showLoot = 1;
             state = 7;
         }
         break;
@@ -1097,7 +1098,7 @@ static void _displayCurrentLoot(int x)
 
     for (i = 0; i < 8; ++i) {
         menuItem = vs_battle_getMenuItem(i + 32);
-        animationStateBuf[i + D_8010A504] = menuItem->animationState;
+        animationStateBuf[i + _animationStateBufIndex] = menuItem->animationState;
         menuItem->state = 0;
     }
 
@@ -1113,56 +1114,56 @@ static void _displayCurrentLoot(int x)
         case itemCategoryWeapon: {
             vs_battle_inventoryWeapon* weapon = &_inventory->weapons[index];
             vs_battle_inventoryBlade* blade = &_inventory->blades[weapon->blade - 1];
-            menuItem = vs_battle_setMenuItem(
-                32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0, weapon->name);
+            menuItem =
+                vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0, weapon->name);
             menuItem->icon = blade->category;
             menuItem->material = blade->material;
             break;
         }
         case itemCategoryBlade: {
             vs_battle_inventoryBlade* blade2 = &_inventory->blades[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
-                vs_mainMenu_itemNames[blade2->id]);
+            menuItem = vs_battle_setMenuItem(
+                32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[blade2->id]);
             menuItem->icon = blade2->category;
             menuItem->material = blade2->material;
             break;
         }
         case itemCategoryGrip: {
             vs_battle_inventoryGrip* grip = &_inventory->grips[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
-                vs_mainMenu_itemNames[grip->id]);
+            menuItem = vs_battle_setMenuItem(
+                32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[grip->id]);
             menuItem->icon = grip->category + 10;
             break;
         }
         case itemCategoryShield: {
             vs_battle_inventoryShield* shield = &_inventory->shields[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
+            menuItem = vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0,
                 vs_mainMenu_itemNames[shield->base.id]);
-            menuItem->icon = 0xF;
+            menuItem->icon = 15;
             menuItem->material = shield->base.material;
             break;
         }
         case itemCategoryArmor: {
             vs_battle_inventoryArmor* armor = &_inventory->armor[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
-                vs_mainMenu_itemNames[armor->id]);
+            menuItem = vs_battle_setMenuItem(
+                32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[armor->id]);
             menuItem->icon = armor->category + 0xE;
             menuItem->material = armor->material;
             break;
         }
         case itemCategoryGem: {
             vs_battle_inventoryGem* gem = &_inventory->gems[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
-                vs_mainMenu_itemNames[gem->id]);
+            menuItem = vs_battle_setMenuItem(
+                32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[gem->id]);
             menuItem->icon = 22;
             break;
         }
         case itemCategoryMisc: {
             vs_battle_inventoryMisc* misc = &_inventory->misc[index];
-            menuItem = vs_battle_setMenuItem(32 + i, 0x18 - x, 0x32 + i * 0x10, 0x98, 0,
-                vs_mainMenu_itemNames[misc->id]);
-            menuItem->unk10 = misc->count;
-            menuItem->fontColor = (misc->id < 0x1CA) ^ 1;
+            menuItem = vs_battle_setMenuItem(
+                32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[misc->id]);
+            menuItem->count = misc->count;
+            menuItem->fontColor = (misc->id < 458) ^ 1;
             break;
         }
         }
@@ -1202,7 +1203,7 @@ static void _displayCurrentLoot(int x)
         ++loot;
     }
 
-    D_8010A504 = _lootListOffset;
+    _animationStateBufIndex = _lootListOffset;
 }
 
 static void _populateLootItem(int lootIndex)
@@ -1255,7 +1256,7 @@ static void _populateLootItem(int lootIndex)
     vs_battle_memcpy(&vs_battle_inventory, _inventoryBackup, sizeof vs_battle_inventory);
 }
 
-int _discardItems(int init)
+static int _discardItems(int init)
 {
     static char cursorAnimStep = 0;
 
@@ -1277,7 +1278,7 @@ int _discardItems(int init)
             return 0;
         }
 
-        if ((D_8010A6B8 == 0) && (D_800EB9C8 != NULL)) {
+        if ((_lootClaimed == 0) && (D_800EB9C8 != NULL)) {
             state = 5;
             return 0;
         }
@@ -1310,8 +1311,8 @@ int _discardItems(int init)
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
-            D_8010A6B8 == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
-                            : (char*)(&_menuText[VS_menuText_OFFSET_itemsRemaining]));
+            _lootClaimed == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
+                              : (char*)(&_menuText[VS_menuText_OFFSET_itemsRemaining]));
         state = 2;
         break;
 
@@ -1336,7 +1337,7 @@ int _discardItems(int init)
                 int var_v1;
                 vs_main_playSfxDefault(0x7E, 0x1C);
                 var_v1 = 1;
-                if (D_8010A6B8 == 0) {
+                if (_lootClaimed == 0) {
                     var_v1 = 2;
                 }
                 return var_v1;
@@ -1482,12 +1483,25 @@ static int _organizeInventory(_lootListItem* loot)
 
 static void _setKeyFlag(int arg0);
 
-int _processLootMenu(int init)
+int _processLootMenu(int initialize)
 {
-    static char D_8010A5EA = 0;
+    enum state {
+        init,
+        processInput,
+        discard,
+        organize,
+        topMenu,
+        dissasemble,
+        consolidateItems,
+        waitForInput,
+        waitForTopMenu,
+        updateLoot
+    };
+
+    static char cursorMemory = 0;
 
     static char state;
-    static char D_8010A69D;
+    static char updateLootDelay;
 
     _lootListItem* loot;
     int lootIndex;
@@ -1495,24 +1509,24 @@ int _processLootMenu(int init)
     int i;
     int var_v0_4;
 
-    if (init != 0) {
+    if (initialize != 0) {
         _selectedLoot = 0;
-        state = 0;
+        state = init;
         return 0;
     }
 
     switch (state) {
-    case 0:
+    case init:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
 
         vs_mainMenu_initTextBox();
 
-        state = 1;
+        state = processInput;
         // Fallthrough
 
-    case 1:
+    case processInput:
         _controlsEnabled = 1;
 
         if (vs_main_buttonsPressed.all & PADRdown) {
@@ -1523,12 +1537,12 @@ int _processLootMenu(int init)
 
             _discardItems(1);
 
-            state = 2;
+            state = discard;
             break;
 
         } else if (vs_main_buttonsPressed.all & PADRleft) {
 
-            temp_s2 = D_8010A6B8;
+            temp_s2 = _lootClaimed;
 
             for (i = 0; i < _lootListCount; ++i) {
 
@@ -1547,15 +1561,15 @@ int _processLootMenu(int init)
                     }
 
                     loot->unk2 = 1;
-                    ++D_8010A6B8;
+                    ++_lootClaimed;
                 }
             }
 
-            if (temp_s2 != D_8010A6B8) {
+            if (temp_s2 != _lootClaimed) {
 
                 vs_main_playSfxDefault(0x7E, 0xD);
 
-                state = 9;
+                state = updateLoot;
                 break;
             }
 
@@ -1574,7 +1588,7 @@ int _processLootMenu(int init)
 
                 _organizeInventory(loot);
 
-                state = 3;
+                state = organize;
             } else {
 
                 vs_main_playSfxDefault(0x7E, 0xD);
@@ -1592,9 +1606,9 @@ int _processLootMenu(int init)
                     loot->itemIndex, _inventory);
 
                 loot->unk2 = 1;
-                D_8010A69D = 3;
-                ++D_8010A6B8;
-                state = 9;
+                updateLootDelay = 3;
+                ++_lootClaimed;
+                state = updateLoot;
             }
         } else {
             i = lootIndex;
@@ -1655,30 +1669,30 @@ int _processLootMenu(int init)
 
             _populateLootItem(_selectedLoot + _lootListOffset);
 
-            D_8010A5EA = vs_mainMenu_renderCursor(
-                D_8010A5EA, (((_selectedLoot * 0x10) + 0x2A) << 0x10) | 0xA);
+            cursorMemory = vs_mainMenu_renderCursor(
+                cursorMemory, (((_selectedLoot * 0x10) + 0x2A) << 0x10) | 0xA);
         }
         break;
 
-    case 2:
+    case discard:
         i = _discardItems(0);
 
         if (i != 0) {
             if (i < 0) {
-                state = 8;
+                state = waitForTopMenu;
             } else {
                 return i;
             }
         }
         break;
 
-    case 3:
+    case organize:
         i = _organizeInventory(NULL);
 
         if (i != 0) {
 
             if (i < 0) {
-                state = 0;
+                state = init;
                 break;
             }
 
@@ -1687,61 +1701,70 @@ int _processLootMenu(int init)
             switch (i) {
             case 1:
                 _topLevelMenuTransition(_lootList[temp_s2].itemCategory + 1);
-                state = 4;
+
+                state = topMenu;
                 break;
 
             case 2:
                 _disassembleItem(temp_s2 + 1);
-                state = 5;
+
+                state = dissasemble;
                 break;
 
             case 3:
                 _consolidateMiscItems(temp_s2 + 1);
-                state = 6;
+
+                state = consolidateItems;
                 break;
             }
         }
 
         break;
 
-    case 4:
+    case topMenu:
         var_v0_4 = _topLevelMenuTransition(0);
+
         if (var_v0_4 != 0) {
-            state = 8;
+            state = waitForTopMenu;
         }
+
         break;
 
-    case 5:
+    case dissasemble:
         var_v0_4 = _disassembleItem(0);
+
         if (var_v0_4 != 0) {
-            state = 8;
+            state = waitForTopMenu;
         }
+
         break;
 
-    case 6:
+    case consolidateItems:
         var_v0_4 = _consolidateMiscItems(0);
+
         if (var_v0_4 != 0) {
-            state = 8;
+            state = waitForTopMenu;
         }
+
         break;
 
-    case 7:
+    case waitForInput:
         if (vs_main_buttonsPressed.all == 0) {
             break;
         }
         // Fallthrough
 
-    case 8:
+    case waitForTopMenu:
         if (_lootLeftEdge == 0) {
             _controlsEnabled = 1;
-            state = 0;
+            state = init;
             _updateLootList();
         }
         break;
 
-    case 9:
-        if (D_8010A69D != 0) {
-            D_8010A69D = (D_8010A69D - 1);
+    case updateLoot:
+        if (updateLootDelay != 0) {
+            --updateLootDelay;
         } else {
 
             while (1) {
@@ -1756,6 +1779,7 @@ int _processLootMenu(int init)
                 }
 
                 --_lootListCount;
+
                 for (; i < _lootListCount; ++i) {
                     _lootList[i] = _lootList[i + 1];
                 }
@@ -1769,9 +1793,9 @@ int _processLootMenu(int init)
 
                 _discardItems(1);
 
-                state = 2;
+                state = discard;
             } else {
-                state = 0;
+                state = init;
             }
         }
         break;
@@ -1784,11 +1808,11 @@ int _processLootMenu(int init)
 
 int vs_menuB_exec(char* state)
 {
-    static char D_8010A69E;
+    static char _0 __attribute__((unused));
     static char _ __attribute__((unused));
 
     int i;
-    void* temp_v0;
+    void* buf;
 
     D_8010A6B7 = 0;
 
@@ -1802,24 +1826,26 @@ int vs_menuB_exec(char* state)
             vs_mainMenu_rebuildInventory(i);
         }
 
-        temp_v0 = vs_main_allocHeapR(0x2300);
+        buf = vs_main_allocHeapR(
+            sizeof *_inventory + sizeof *_inventoryBackup + sizeof *_lootList * 160 * 2);
 
-        _inventory = temp_v0;
-        _inventoryBackup = temp_v0 + sizeof *_inventory;
-        _lootList = temp_v0 + sizeof *_inventory + sizeof *_inventoryBackup;
-        D_8010A6A4 = temp_v0 + 0x2080;
-        D_8010A6B8 = 0;
+        _inventory = buf;
+        _inventoryBackup = buf + sizeof *_inventory;
+        _lootList = buf + sizeof *_inventory + sizeof *_inventoryBackup;
+        _lootListWorkingCopy =
+            buf + sizeof *_inventory + sizeof *_inventoryBackup + sizeof *_lootList * 160;
+        _lootClaimed = 0;
         _lootListCount = 0;
         _lootListOffset = 0;
-        D_8010A69E = 0;
+        _0 = 0;
 
         vs_mainMenu_loadItemNames(1);
         _applyAllLootLists(D_800EB9C4);
 
         _controlsEnabled = 0;
-        D_8010A6B0 = 1;
+        _showInventory = 1;
         _inventoryCapacityFlyinTimer = 10;
-        D_8010A6B2 = 0;
+        _showLoot = 0;
         _lootLeftEdge = 10;
         *state = 1;
         break;
@@ -1827,7 +1853,7 @@ int vs_menuB_exec(char* state)
     case 1:
         if (vs_mainMenu_loadItemNames(0) != 0) {
 
-            D_8010A6B2 = 1;
+            _showLoot = 1;
 
             if (_lootListCount == 0) {
 
@@ -1874,8 +1900,8 @@ int vs_menuB_exec(char* state)
         break;
 
     case 5:
-        D_8010A6B0 = 0;
-        D_8010A6B2 = 0;
+        _showInventory = 0;
+        _showLoot = 0;
 
         if ((vs_battle_dismissTextBox(7) != 0)
             || (vs_mainMenu_ensureItemNamesLoaded() == 0)) {
@@ -1892,7 +1918,7 @@ int vs_menuB_exec(char* state)
         return 1;
     }
 
-    if (D_8010A6B0 != 0) {
+    if (_showInventory != 0) {
         if (_inventoryCapacityFlyinTimer != 0) {
             --_inventoryCapacityFlyinTimer;
         }
@@ -1908,7 +1934,7 @@ int vs_menuB_exec(char* state)
         _displayInventoryCapacities(i);
     }
 
-    if (D_8010A6B2 != 0) {
+    if (_showLoot != 0) {
         if (_lootLeftEdge != 0) {
             --_lootLeftEdge;
         }
@@ -1925,7 +1951,7 @@ int vs_menuB_exec(char* state)
         _displayCurrentLoot(i);
 
         if (D_8010A6B7 & 0xF) {
-            vs_battle_getMenuItem(D_8010A6B7 + 0x1F)->selected = 1;
+            vs_battle_getMenuItem(D_8010A6B7 + 31)->selected = 1;
         }
     }
 

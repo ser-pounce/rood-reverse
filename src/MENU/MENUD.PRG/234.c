@@ -3246,13 +3246,13 @@ int func_80108C6C(char* arg0)
                         }
                     }
                     menuItem->unk12 = 0x40;
-                    menuItem->unk10 = i;
+                    menuItem->count = i;
                 } else {
                     menuItem->unk12 =
                         D_80109A7A != 0
                             ? vs_mainMenu_inventoryItemCapacities[itemCategory]
                             : _containerItemCapacities[itemCategory];
-                    menuItem->unk10 =
+                    menuItem->count =
                         _countContainerItems(itemCategory, &vs_menuD_containerData->data);
                 }
             }

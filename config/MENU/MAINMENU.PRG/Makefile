@@ -1,8 +1,11 @@
 $(BUILD)/data/MENU/MAINMENU.PRG: private FIXUP = $(call pad,+1)
-
+	
 mainmenu_LDLIBS := $(patsubst %,$(BUILD)/data/MENU/MENU%.PRG.elf,0 1 2 3 4 5 7 8 9 E)
 $(BUILD)/data/MENU/MAINMENU.PRG: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDLIBS += $(mainmenu_LDLIBS)
+
+$(BUILD)/data/MENU/MAINMENU.PRG.elf: LDFLAGS += \
+	--retain-symbols-file=config/MENU/MAINMENU.PRG/exports.txt
 
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.1-psx

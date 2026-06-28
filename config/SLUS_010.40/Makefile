@@ -2,6 +2,9 @@ $(BUILD)/data/SLUS_010.40: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000
 
+$(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
+	--retain-symbols-file=config/SLUS_010.40/exports.txt
+
 $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.o: MASFLAGS += --expand-div
 

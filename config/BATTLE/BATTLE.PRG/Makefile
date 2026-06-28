@@ -4,6 +4,9 @@ buildDir   := $(BUILD)/src/$(battle.prg)
 $(BUILD)/data/$(battle.prg): LDFLAGS += \
 	--defsym=_camera=0x1F800000
 
+$(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
+	--retain-symbols-file=config/BATTLE/BATTLE.PRG/exports.txt
+
 $(buildDir)/%.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.o: ASFLAGS += -no-pad-sections
 

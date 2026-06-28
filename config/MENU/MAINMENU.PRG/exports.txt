@@ -65,3 +65,4 @@ vs_mainMenu_setUiItem
 vs_mainMenu_setUiWeaponStats
 vs_mainMenu_unequipAllWeapons
 vs_mainMenu_unequipShield
+vs_mainMenu_isLevelledSpell

@@ -1,9 +1,7 @@
-D_8004B9F8
-D_80060021
-D_80060148
 memset
 rcos
 rsin
+vs_battle_inventory
 vs_main_allocHeapR
 vs_main_artsPointsRequirements 
 vs_main_artsStatus
@@ -11,6 +9,7 @@ vs_main_battleAbilitiesPointsRequirements
 vs_main_buttonRepeat
 vs_main_buttonsPressed
 vs_main_buttonsState
+vs_main_frameBuf
 vs_main_freeHeapR
 vs_main_inventoryIndices
 vs_main_memcpy
@@ -19,4 +18,4 @@ vs_main_projectionDistance
 vs_main_settings
 vs_main_skills
 vs_main_stateFlags
-vs_battle_inventory
+vs_main_stickPosBuf

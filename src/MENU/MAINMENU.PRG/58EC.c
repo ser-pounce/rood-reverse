@@ -19,7 +19,7 @@ extern textHeader_t _textHeaders[2];
 
 extern u_long* D_1F800000[];
 
-static char D_801022C4 = 0;
+char D_801022C4 = 0;
 static u_short* D_801022C8 = NULL;
 static int _selectedItemAction = 0;
 static char _sortSubMenuId = 0;

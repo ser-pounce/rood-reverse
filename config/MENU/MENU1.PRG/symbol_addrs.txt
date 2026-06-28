@@ -1,6 +1,0 @@
-_setHPCost = 0x80102830;
-_setNextArtUnlockPointsRemaining = 0x80102914;
-_weaponArtsMenu = 0x80102A4C;
-_weaponCategoriesMenu = 0x80102F68; // allow_duplicated:True
-_setMenuHeader = 0x801031FC;
-vs_menu1_exec = 0x80103270;

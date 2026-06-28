@@ -10,5 +10,6 @@ $(BINTARGETS) $(BINTARGETS:=.elf):
 $(BINTARGETS): private LDFLAGS += --oformat=binary -e 0x0 $(addprefix -R,$(LDLIBS))
 $(BINTARGETS): $(BUILD)/data/%: $(BUILD)/data/%.elf
 
-$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all
+$(BINTARGETS:=.elf): private OUTPUT_OPTION += 2>/dev/null
+$(BINTARGETS:=.elf): private LDFLAGS += --unresolved-symbols=ignore-all --noinhibit-exe
 $(BINTARGETS:=.elf): | $$(@D)/

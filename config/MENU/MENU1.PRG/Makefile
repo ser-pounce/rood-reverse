@@ -3,7 +3,7 @@ menu1_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG M
 $(BUILD)/data/MENU/MENU1.PRG: $(menu1_LDLIBS)
 $(BUILD)/data/MENU/MENU1.PRG: LDLIBS += $(menu1_LDLIBS)
 
-$(BUILD)/data/MENU/MENU1.PRG.elf: LDFLAGS += -r \
+$(BUILD)/data/MENU/MENU1.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/MENU/MENU1.PRG/exports.txt
 
 $(BUILD)/data/MENU/MENU1.PRG $(BUILD)/data/MENU/MENU1.PRG.elf: LDSCRIPT := link.ld

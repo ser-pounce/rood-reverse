@@ -637,6 +637,7 @@ VectorNormalSS = 0x80041ABC;
 vs_gte_rsqrt = 0x80041B94;
 SquareRoot12 = 0x80041BF0;
 CompMatrixLV = 0x80041C60;
+func_80041C68 = 0x80041C68;
 _displayLoadingScreen = 0x800420BC;
 vs_main_resetGame = 0x80042364;
 vs_main_jumpToBattle = 0x80042420;

@@ -45,6 +45,7 @@ vs_mainMenu_getConfirmedRow
 vs_mainMenu_getItemCount
 vs_mainMenu_getSelectedItemAction
 vs_mainmenu_getSelectedRow
+vs_mainMenu_hideMenu
 vs_mainMenu_initItem
 vs_mainMenu_initSetShieldGemMenu
 vs_mainMenu_initSortUi

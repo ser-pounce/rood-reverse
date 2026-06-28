@@ -13,15 +13,15 @@ static int _getParentWeaponIndex(int itemCategory, int index)
     int parentIndex = 0;
 
     if (itemCategory == itemCategoryBlade) {
-        parentIndex = vs_battle_inventory.blades[index].assembledWeaponIndex;
+        parentIndex = vs_main_inventory.blades[index].assembledWeaponIndex;
     }
 
     if (itemCategory == itemCategoryGrip) {
-        parentIndex = vs_battle_inventory.grips[index].assembledWeaponIndex;
+        parentIndex = vs_main_inventory.grips[index].assembledWeaponIndex;
     }
 
     if (itemCategory == itemCategoryGem) {
-        parentIndex = vs_battle_inventory.gems[index].setItemIndex;
+        parentIndex = vs_main_inventory.gems[index].setItemIndex;
         if (parentIndex & gemTargetShield) {
             parentIndex = 0;
         }
@@ -41,7 +41,7 @@ static int _getParentShieldIndex(int itemCategory, int itemIndex)
 
     if (itemCategory == itemCategoryGem) {
 
-        index = vs_battle_inventory.gems[itemIndex].setItemIndex;
+        index = vs_main_inventory.gems[itemIndex].setItemIndex;
 
         if (!(index & gemTargetShield)) {
             index = 0;
@@ -80,54 +80,54 @@ static int _populateItemRows(
 
         switch (itemCategory) {
         case itemCategoryWeapon:
-            vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[index],
+            vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[index],
                 &menuText[count * 2], &rowTypes[i], textBuf);
 
-            if (vs_battle_inventory.weapons[index].isEquipped != 0) {
+            if (vs_main_inventory.weapons[index].isEquipped != 0) {
                 rowType = 0xCA00;
             }
             break;
 
         case itemCategoryBlade:
-            vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[index],
-                &menuText[count * 2], &rowTypes[i], textBuf);
+            vs_mainMenu_setUiBlade(&vs_main_inventory.blades[index], &menuText[count * 2],
+                &rowTypes[i], textBuf);
             break;
 
         case itemCategoryGrip:
-            vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[index], &menuText[count * 2],
+            vs_mainMenu_setUiGrip(&vs_main_inventory.grips[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
             break;
 
         case itemCategoryShield:
-            vs_mainMenu_initUiShield(&vs_battle_inventory.shields[index],
+            vs_mainMenu_initUiShield(&vs_main_inventory.shields[index],
                 &menuText[count * 2], &rowTypes[i], textBuf);
 
-            if (vs_battle_inventory.shields[index].isEquipped != 0) {
+            if (vs_main_inventory.shields[index].isEquipped != 0) {
                 rowType = 0xCA00;
             }
             break;
 
         case itemCategoryArmor:
-            vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index],
-                &menuText[count * 2], &rowTypes[i], textBuf);
+            vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index], &menuText[count * 2],
+                &rowTypes[i], textBuf);
 
-            if (vs_battle_inventory.armor[index].limb != 0) {
+            if (vs_main_inventory.armor[index].limb != 0) {
                 rowType = 0xCA00;
             }
             break;
 
         case itemCategoryGem:
-            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[index], &menuText[count * 2],
+            vs_mainMenu_setUiGem(&vs_main_inventory.gems[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
             break;
 
         case itemCategoryMisc: {
             u_int skillId;
-            vs_mainMenu_setUiItem(&vs_battle_inventory.misc[index], &menuText[count * 2],
+            vs_mainMenu_setUiItem(&vs_main_inventory.misc[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
 #ifdef _ITEMMENU
             skillId =
-                vs_mainMenu_miscItemToSkillMap[vs_battle_inventory.misc[index].id - 323];
+                vs_mainMenu_miscItemToSkillMap[vs_main_inventory.misc[index].id - 323];
 
             if ((skillId - 106) < 28) {
                 int j;
@@ -148,7 +148,7 @@ static int _populateItemRows(
 
         if (parentItem != 0) {
             rowType = 0xCA00;
-            if (vs_battle_inventory.weapons[parentItem - 1].isEquipped == 0) {
+            if (vs_main_inventory.weapons[parentItem - 1].isEquipped == 0) {
                 rowType = 0xCC00;
             }
         }
@@ -157,7 +157,7 @@ static int _populateItemRows(
 
         if (parentItem != 0) {
             rowType = 0xCA00;
-            if (vs_battle_inventory.shields[parentItem - 1].isEquipped == 0) {
+            if (vs_main_inventory.shields[parentItem - 1].isEquipped == 0) {
                 rowType = 0xCC00;
             }
         }
@@ -582,16 +582,16 @@ loop_1:
             var_a1_2 = indices[rowCount - 1];
 
             if ((itemCategory == itemCategoryMisc)
-                && (vs_battle_inventory.misc[row - 1].id
-                    == vs_battle_inventory.misc[var_a1_2 - 1].id)) {
+                && (vs_main_inventory.misc[row - 1].id
+                    == vs_main_inventory.misc[var_a1_2 - 1].id)) {
 
-                vs_battle_inventory.misc[var_a1_2 - 1].count +=
-                    vs_battle_inventory.misc[row - 1].count;
+                vs_main_inventory.misc[var_a1_2 - 1].count +=
+                    vs_main_inventory.misc[row - 1].count;
 
-                if (vs_battle_inventory.misc[var_a1_2 - 1].count > 100) {
-                    vs_battle_inventory.misc[row - 1].count =
-                        vs_battle_inventory.misc[var_a1_2 - 1].count - 100;
-                    vs_battle_inventory.misc[var_a1_2 - 1].count = 100;
+                if (vs_main_inventory.misc[var_a1_2 - 1].count > 100) {
+                    vs_main_inventory.misc[row - 1].count =
+                        vs_main_inventory.misc[var_a1_2 - 1].count - 100;
+                    vs_main_inventory.misc[var_a1_2 - 1].count = 100;
                 } else {
 #ifdef _ITEMMENU
                     vs_mainMenu_initItem(6, row);
@@ -662,7 +662,7 @@ loop_1:
             sp310[0] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_useItem];
             sp310[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_useItemDesc];
 
-            if (vs_battle_inventory.misc[index].id > 457) {
+            if (vs_main_inventory.misc[index].id > 457) {
                 *vs_battle_rowTypeBuf = 1;
                 sp310[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_cannotUse];
             } else if (vs_battle_getSkillFlags(0, _miscSkills[selectedRow - 1]) & 2) {
@@ -729,16 +729,16 @@ loop_1:
 
         switch (itemCategory) {
         case itemCategoryWeapon:
-            rowType = vs_battle_inventory.weapons[index].isEquipped != 0;
+            rowType = vs_main_inventory.weapons[index].isEquipped != 0;
             break;
         case itemCategoryShield:
-            rowType = vs_battle_inventory.shields[index].isEquipped != 0;
+            rowType = vs_main_inventory.shields[index].isEquipped != 0;
             break;
         case itemCategoryArmor:
-            rowType = vs_battle_inventory.armor[index].limb != 0;
+            rowType = vs_main_inventory.armor[index].limb != 0;
             break;
         case itemCategoryMisc:
-            if (vs_battle_inventory.misc[index].id > 457) {
+            if (vs_main_inventory.misc[index].id > 457) {
                 rowType = 3;
             }
             break;
@@ -748,7 +748,7 @@ loop_1:
 
         if (var_a1_2 != 0) {
             rowType = 1;
-            if (vs_battle_inventory.weapons[var_a1_2 - 1].isEquipped == 0) {
+            if (vs_main_inventory.weapons[var_a1_2 - 1].isEquipped == 0) {
                 rowType = 2;
             }
         }
@@ -757,7 +757,7 @@ loop_1:
 
         if (var_a1_2 != 0) {
             rowType = 1;
-            if (vs_battle_inventory.shields[var_a1_2 - 1].isEquipped == 0) {
+            if (vs_main_inventory.shields[var_a1_2 - 1].isEquipped == 0) {
                 rowType = 2;
             }
         }
@@ -779,7 +779,7 @@ loop_1:
             sp310[rowCount * 2 + 1] =
                 (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_discardAllDesc];
 
-            if (vs_battle_inventory.misc[index].id > 457) {
+            if (vs_main_inventory.misc[index].id > 457) {
                 sp310[rowCount * 2 + 1] =
                     (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_cannotDiscard];
                 vs_battle_rowTypeBuf[rowCount] = 1;
@@ -838,7 +838,7 @@ loop_1:
                     D_800F4E98.executeAbility.s16[0] =
                         (short)_miscSkills[selectedRow - 1];
                     D_800F4E98.executeAbility.s16[1] =
-                        (short)vs_battle_inventory.misc[D_800F5210].id;
+                        (short)vs_main_inventory.misc[D_800F5210].id;
 
                     return 3;
 
@@ -854,7 +854,7 @@ loop_1:
                     rowCount = indices[selectedRow - 1] | (itemCategory << 8);
 
                     if ((itemCategory == itemCategoryMisc)
-                        && (vs_battle_inventory.misc[indices[selectedRow - 1] - 1].count
+                        && (vs_main_inventory.misc[indices[selectedRow - 1] - 1].count
                             >= 2)) {
                         rowCount |= 0x10000;
                     }

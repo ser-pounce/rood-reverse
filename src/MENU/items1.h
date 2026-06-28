@@ -161,7 +161,7 @@ static int _weaponStatusView(int itemInfo)
             itemIndex = newIndex;
             weaponToDisplay = _getItemIndex(0, newIndex);
 
-            vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[weaponToDisplay - 1],
+            vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[weaponToDisplay - 1],
                 menuText, &rowType, vs_battle_stringBuf);
 
             do {
@@ -249,7 +249,7 @@ static int _bladeStatusView(int itemInfo)
             itemIndex = newIndex;
             bladeToDisplay = _getItemIndex(1, newIndex);
 
-            vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[bladeToDisplay - 1],
+            vs_mainMenu_setUiBlade(&vs_main_inventory.blades[bladeToDisplay - 1],
                 meunText, &rowType, vs_battle_stringBuf);
             vs_mainMenu_setUiBladeStats(bladeToDisplay);
             _switchItemStatusPage(itemRow, meunText, rowType, newIndex);
@@ -328,7 +328,7 @@ static int _gripStatusView(int itemInfo)
                 itemIndex = newIndex;
                 gripToDisplay = _getItemIndex(2, newIndex);
 
-                vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[gripToDisplay - 1],
+                vs_mainMenu_setUiGrip(&vs_main_inventory.grips[gripToDisplay - 1],
                     menuText, &rowType, vs_battle_stringBuf);
 
                 vs_mainMenu_setUiGripStats(gripToDisplay);
@@ -338,7 +338,7 @@ static int _gripStatusView(int itemInfo)
 
         // BUG: rodata .write
         gemSlotCountBuf[6] =
-            vs_battle_inventory.grips[vs_main_inventoryIndices.grips[itemIndex] - 1]
+            vs_main_inventory.grips[vs_main_inventoryIndices.grips[itemIndex] - 1]
                 .gemSlots
             + '0';
 
@@ -431,7 +431,7 @@ static int _shieldStatusView(int itemInfo)
             itemIndex = newIndex;
             i = _getItemIndex(3, newIndex);
 
-            vs_mainMenu_initUiShield(&vs_battle_inventory.shields[i - 1], menuText,
+            vs_mainMenu_initUiShield(&vs_main_inventory.shields[i - 1], menuText,
                 &rowType, vs_battle_stringBuf);
 
             vs_mainMenu_setShieldStats(i);
@@ -490,7 +490,7 @@ static int _armorStatusView(int itemInfo)
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
             vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[itemIndex]);
-            if (vs_battle_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
+            if (vs_main_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
                     .category
                 != 7) {
                 vs_mainMenu_drawDpPpbars(1);
@@ -524,7 +524,7 @@ static int _armorStatusView(int itemInfo)
             itemIndex = newIndex;
             armorToDisplay = _getItemIndex(4, newIndex);
 
-            vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[armorToDisplay - 1],
+            vs_mainMenu_initUiArmor(&vs_main_inventory.armor[armorToDisplay - 1],
                 menuText, &rowType, vs_battle_stringBuf);
             vs_mainMenu_setArmorStats(armorToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
@@ -610,7 +610,7 @@ static int _gemStatusView(int itemInfo)
             itemIndex = newIndex;
             gemToDisplay = _getItemIndex(5, newIndex);
 
-            vs_mainMenu_setUiGem(&vs_battle_inventory.gems[gemToDisplay - 1], menuText,
+            vs_mainMenu_setUiGem(&vs_main_inventory.gems[gemToDisplay - 1], menuText,
                 &rowType, vs_battle_stringBuf);
             vs_mainMenu_setGemStats(gemToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
@@ -733,7 +733,7 @@ static void _sortWeapons(int stat)
     int i;
     int sortedPos;
 
-    vs_battle_inventoryWeapon* weapon = vs_battle_inventory.weapons;
+    vs_main_inventoryWeapon* weapon = vs_main_inventory.weapons;
     char* indices = vs_main_inventoryIndices.weapons;
 
     vs_battle_rMemzero(sortedIndices, 8);
@@ -829,7 +829,7 @@ static void _sortShields(int stat)
     int i;
     int sortedPos;
 
-    vs_battle_inventoryShield* shield = &vs_battle_inventory.shields[0];
+    vs_main_inventoryShield* shield = &vs_main_inventory.shields[0];
     char* indices = vs_main_inventoryIndices.shields;
 
     vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
@@ -883,7 +883,7 @@ static void _sortShields(int stat)
  *
  * @param stat 0 = ID, count otherwise.
  */
-static int _getMiscStatValue(int stat, vs_battle_inventoryMisc* misc)
+static int _getMiscStatValue(int stat, vs_main_inventoryMisc* misc)
 {
     if (stat == 0) {
         return -misc->id;
@@ -900,7 +900,7 @@ static void _sortMisc(int stat)
     int i;
     int sortedPos;
 
-    vs_battle_inventoryMisc* misc = vs_battle_inventory.misc;
+    vs_main_inventoryMisc* misc = vs_main_inventory.misc;
     char* indices = vs_main_inventoryIndices.misc;
 
     vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
@@ -995,18 +995,16 @@ static void _copyEquipment(
     switch (itemCategory) {
     case itemCategoryBlade:
         vs_battle_copyInventoryBladeStats(
-            equipment, &vs_battle_inventory.blades[itemIndex]);
+            equipment, &vs_main_inventory.blades[itemIndex]);
         return;
     case itemCategoryGrip:
-        vs_battle_copyInventoryGripStats(
-            equipment, &vs_battle_inventory.grips[itemIndex]);
+        vs_battle_copyInventoryGripStats(equipment, &vs_main_inventory.grips[itemIndex]);
         return;
     case itemCategoryArmor:
-        vs_battle_copyInventoryArmorStats(
-            equipment, &vs_battle_inventory.armor[itemIndex]);
+        vs_battle_copyInventoryArmorStats(equipment, &vs_main_inventory.armor[itemIndex]);
         return;
     case itemCategoryGem:
-        vs_battle_copyInventoryGemStats(equipment, &vs_battle_inventory.gems[itemIndex]);
+        vs_battle_copyInventoryGemStats(equipment, &vs_main_inventory.gems[itemIndex]);
         return;
     }
 }
@@ -1256,7 +1254,7 @@ static int _discardMenu(int params)
         break;
 
     case discardMultipleInit:
-        maxAmount = vs_battle_inventory.misc[selectedItem - 1].count;
+        maxAmount = vs_main_inventory.misc[selectedItem - 1].count;
 
         i = vs_battle_toBCD(maxAmount);
 
@@ -1443,11 +1441,11 @@ static int _discardMenu(int params)
             if (i == 1) {
                 vs_main_playSfxDefault(0x7E, 0x1C);
 
-                if (vs_battle_inventory.misc[selectedItem - 1].count == discardCount) {
+                if (vs_main_inventory.misc[selectedItem - 1].count == discardCount) {
                     vs_mainMenu_initItem(itemCategory, selectedItem);
                 } else {
-                    vs_battle_inventory.misc[selectedItem - 1].count =
-                        vs_battle_inventory.misc[selectedItem - 1].count - discardCount;
+                    vs_main_inventory.misc[selectedItem - 1].count =
+                        vs_main_inventory.misc[selectedItem - 1].count - discardCount;
                 }
             } else {
                 vs_battle_playMenuLeaveSfx();

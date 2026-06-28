@@ -12,6 +12,8 @@ D_800F4EA0
 D_800F4EE8
 D_800F5210
 func_8007ACB0
+func_8007DFF0
+func_8007E0A8
 func_8008A4DC
 func_8008A4FC
 func_8008E7BC
@@ -31,6 +33,7 @@ vs_battle_applyWeapon
 vs_battle_chainAbilitiesUnlocked
 vs_battle_chainAbilityOffsets
 vs_battle_characterState
+vs_battle_copyAligned
 vs_battle_copyInventoryArmorStats
 vs_battle_copyInventoryBladeStats
 vs_battle_copyInventoryGemStats
@@ -53,6 +56,7 @@ vs_battle_getCurrentRoomId
 vs_battle_getCurrentSceneId
 vs_battle_getGeomOffset
 vs_battle_getLimbStatus
+vs_battle_getMapCompletion
 vs_battle_getMenuItem
 vs_battle_getSkillFlags
 vs_battle_getStatusFlags
@@ -61,6 +65,7 @@ vs_battle_initInformationTextBox
 vs_battle_initSceneAndGetRoomNames
 vs_battle_initTextBox
 vs_battle_isSpellClassUnlocked
+vs_battle_keystreamBits
 vs_battle_limbNames
 vs_battle_loadObjectDataState
 vs_battle_mapStickDeadZone
@@ -82,6 +87,7 @@ vs_battle_renderStatBar
 vs_battle_renderTextRaw
 vs_battle_renderTextRawColor
 vs_battle_renderValue
+vs_battle_rMemcpy
 vs_battle_rMemzero
 vs_battle_roomData
 vs_battle_rowAnimationSteps
@@ -107,3 +113,4 @@ vs_battle_toBCD
 vs_battle_unlockedBattleAbility
 vs_battle_unlockedBreakArt
 vs_battle_warlockSpellIds
+D_800F4E6B

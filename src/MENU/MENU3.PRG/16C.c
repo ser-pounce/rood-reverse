@@ -358,7 +358,7 @@ static int _equipAccessoryMenu(int initialize)
 
         for (i = 0; i < 16; ++i) {
             index = vs_main_inventoryIndices.armor[i];
-            if (index && (vs_battle_inventory.armor[index - 1].limb == 7)) {
+            if (index && (vs_main_inventory.armor[index - 1].limb == 7)) {
                 break;
             }
         }
@@ -390,7 +390,7 @@ static int _equipAccessoryMenu(int initialize)
         hasAccessory = 0;
 
         for (i = 0; i < 16; ++i) {
-            if (vs_battle_inventory.armor[i].limb == 7) {
+            if (vs_main_inventory.armor[i].limb == 7) {
                 hasAccessory = 1;
             }
         }
@@ -411,9 +411,9 @@ static int _equipAccessoryMenu(int initialize)
 
                     index = vs_main_inventoryIndices.armor[i];
 
-                    if (index && (vs_battle_inventory.armor[index - 1].limb == 7)) {
+                    if (index && (vs_main_inventory.armor[index - 1].limb == 7)) {
 
-                        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index - 1],
+                        vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
                             (char**)menuText, rowTypes, textBuf);
 
                         rowTypes[0] |= index << 19;
@@ -427,10 +427,10 @@ static int _equipAccessoryMenu(int initialize)
 
                 index = vs_main_inventoryIndices.armor[i];
 
-                if ((index != 0) && (vs_battle_inventory.armor[index - 1].category == 7)
-                    && (vs_battle_inventory.armor[index - 1].limb == 0)) {
+                if ((index != 0) && (vs_main_inventory.armor[index - 1].category == 7)
+                    && (vs_main_inventory.armor[index - 1].limb == 0)) {
 
-                    vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index - 1],
+                    vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
                         (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                         textBuf + rowCount * 96);
 
@@ -464,12 +464,12 @@ static int _equipAccessoryMenu(int initialize)
             state = waitMenuReady;
         } else {
             if (equippedAccessory) {
-                vs_battle_inventory.armor[equippedAccessory - 1].limb = 0;
+                vs_main_inventory.armor[equippedAccessory - 1].limb = 0;
             }
 
             if (selectedAccessory != 1) {
-                vs_battle_inventoryArmor* armor =
-                    &vs_battle_inventory.armor[_equippedItem - 1];
+                vs_main_inventoryArmor* armor =
+                    &vs_main_inventory.armor[_equippedItem - 1];
                 armor->limb = 7;
 
                 vs_battle_equipAccessory(armor);
@@ -512,13 +512,12 @@ static int _equipWeaponMenu(int initialize)
 
     int i;
     int index;
-    vs_battle_inventoryWeapon* weapon;
+    vs_main_inventoryWeapon* weapon;
 
     if (initialize != 0) {
         for (i = 0; i < 8; ++i) {
             index = vs_main_inventoryIndices.weapons[i];
-            if ((index != 0)
-                && (vs_battle_inventory.weapons[index - 1].isEquipped != 0)) {
+            if ((index != 0) && (vs_main_inventory.weapons[index - 1].isEquipped != 0)) {
                 break;
             }
         }
@@ -550,7 +549,7 @@ static int _equipWeaponMenu(int initialize)
         hasWeapon = 0;
 
         for (i = 0; i < 8; ++i) {
-            if (vs_battle_inventory.weapons[i].isEquipped != 0) {
+            if (vs_main_inventory.weapons[i].isEquipped != 0) {
                 hasWeapon = 1;
             }
         }
@@ -570,9 +569,9 @@ static int _equipWeaponMenu(int initialize)
                     index = vs_main_inventoryIndices.weapons[i];
 
                     if ((index != 0)
-                        && (vs_battle_inventory.weapons[index - 1].isEquipped != 0)) {
+                        && (vs_main_inventory.weapons[index - 1].isEquipped != 0)) {
 
-                        vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[index - 1],
+                        vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[index - 1],
                             (char**)menuText, rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
@@ -588,8 +587,8 @@ static int _equipWeaponMenu(int initialize)
 
                 if (index != 0) {
 
-                    vs_battle_inventoryWeapon* weapon =
-                        &vs_battle_inventory.weapons[index - 1];
+                    vs_main_inventoryWeapon* weapon =
+                        &vs_main_inventory.weapons[index - 1];
 
                     if (weapon->isEquipped == 0) {
 
@@ -635,12 +634,12 @@ static int _equipWeaponMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_battle_inventoryBlade* blade;
+                vs_main_inventoryBlade* blade;
 
-                weapon = &vs_battle_inventory.weapons[_equippedItem - 1];
+                weapon = &vs_main_inventory.weapons[_equippedItem - 1];
                 weapon->isEquipped = 1;
 
-                blade = &vs_battle_inventory.blades[weapon->blade - 1];
+                blade = &vs_main_inventory.blades[weapon->blade - 1];
                 category = blade->category;
                 wepId = blade->wepId;
                 material = blade->material;
@@ -696,7 +695,7 @@ static int _equipShieldMenu(int initialize)
         for (i = 0; i < 8; ++i) {
             index = vs_main_inventoryIndices.shields[i];
 
-            if (index && vs_battle_inventory.shields[index - 1].isEquipped) {
+            if (index && vs_main_inventory.shields[index - 1].isEquipped) {
                 break;
             }
         }
@@ -729,7 +728,7 @@ static int _equipShieldMenu(int initialize)
         hasShield = 0;
 
         for (i = 0; i < 8; ++i) {
-            if (vs_battle_inventory.shields[i].isEquipped != 0) {
+            if (vs_main_inventory.shields[i].isEquipped != 0) {
                 hasShield = 1;
             }
         }
@@ -749,9 +748,9 @@ static int _equipShieldMenu(int initialize)
                     index = vs_main_inventoryIndices.shields[i];
 
                     if ((index != 0)
-                        && (vs_battle_inventory.shields[index - 1].isEquipped != 0)) {
+                        && (vs_main_inventory.shields[index - 1].isEquipped != 0)) {
 
-                        vs_mainMenu_initUiShield(&vs_battle_inventory.shields[index - 1],
+                        vs_mainMenu_initUiShield(&vs_main_inventory.shields[index - 1],
                             (char**)menuText, rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
@@ -764,8 +763,8 @@ static int _equipShieldMenu(int initialize)
             for (i = 0; i < count; ++i) {
                 index = vs_main_inventoryIndices.shields[i];
                 if (index != 0) {
-                    if (vs_battle_inventory.shields[index - 1].isEquipped == 0) {
-                        vs_mainMenu_initUiShield(&vs_battle_inventory.shields[index - 1],
+                    if (vs_main_inventory.shields[index - 1].isEquipped == 0) {
+                        vs_mainMenu_initUiShield(&vs_main_inventory.shields[index - 1],
                             (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                             textBuf + rowCount * 96);
                         rowTypes[rowCount] |= index << 0x13;
@@ -808,8 +807,8 @@ static int _equipShieldMenu(int initialize)
                 material = 0;
             } else {
                 vs_battle_actor2* actor;
-                vs_battle_inventoryShield* shield =
-                    &vs_battle_inventory.shields[_equippedItem - 1];
+                vs_main_inventoryShield* shield =
+                    &vs_main_inventory.shields[_equippedItem - 1];
                 shield->isEquipped = 1;
 
                 actor = vs_battle_characterState->unk3C;
@@ -873,7 +872,7 @@ static int _equipArmorMenu(int initBodyPart)
             index = vs_main_inventoryIndices.armor[i];
 
             if ((index != 0)
-                && (vs_battle_inventory.armor[index - 1].limb == initBodyPart)) {
+                && (vs_main_inventory.armor[index - 1].limb == initBodyPart)) {
                 break;
             }
         }
@@ -908,7 +907,7 @@ static int _equipArmorMenu(int initBodyPart)
         hasArmor = 0;
 
         for (i = 0; i < 16; ++i) {
-            if (vs_battle_inventory.armor[i].limb == bodyPart) {
+            if (vs_main_inventory.armor[i].limb == bodyPart) {
                 hasArmor = 1;
             }
         }
@@ -928,9 +927,9 @@ static int _equipArmorMenu(int initBodyPart)
                     index = vs_main_inventoryIndices.armor[i];
 
                     if ((index != 0)
-                        && (vs_battle_inventory.armor[index - 1].limb == bodyPart)) {
+                        && (vs_main_inventory.armor[index - 1].limb == bodyPart)) {
 
-                        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index - 1],
+                        vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
                             (char**)menuText, rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
@@ -945,11 +944,11 @@ static int _equipArmorMenu(int initBodyPart)
                 index = vs_main_inventoryIndices.armor[i];
 
                 if ((index != 0)
-                    && (vs_battle_inventory.armor[index - 1].category
+                    && (vs_main_inventory.armor[index - 1].category
                         == bodyPartCategories[bodyPart])
-                    && (vs_battle_inventory.armor[index - 1].limb == 0)) {
+                    && (vs_main_inventory.armor[index - 1].limb == 0)) {
 
-                    vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[index - 1],
+                    vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
                         (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                         textBuf + rowCount * 0x60);
 
@@ -985,13 +984,13 @@ static int _equipArmorMenu(int initBodyPart)
             state = 3;
         } else {
             if (armorIndex != 0) {
-                vs_battle_inventory.armor[armorIndex - 1].limb = 0;
+                vs_main_inventory.armor[armorIndex - 1].limb = 0;
             }
             if (selectedArmor == 1) {
                 vs_battle_equipArmor(bodyPart - 1, NULL);
             } else {
-                vs_battle_inventoryArmor* armor =
-                    &vs_battle_inventory.armor[_equippedItem - 1];
+                vs_main_inventoryArmor* armor =
+                    &vs_main_inventory.armor[_equippedItem - 1];
                 armor->limb = bodyPart;
 
                 vs_battle_equipArmor(bodyPart - 1, armor);
@@ -1062,8 +1061,8 @@ static int _equipMenu(int initialize)
     int j;
     int i;
     vs_battle_menuItem_t* menuItem;
-    vs_battle_inventoryShield* shield;
-    vs_battle_inventoryWeapon* weapon;
+    vs_main_inventoryShield* shield;
+    vs_main_inventoryWeapon* weapon;
 
     if (initialize != 0) {
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1103,7 +1102,7 @@ static int _equipMenu(int initialize)
             rowTypes[i] = 0;
         }
 
-        weapon = vs_battle_inventory.weapons;
+        weapon = vs_main_inventory.weapons;
 
         for (j = 0; j < 8; ++j, ++weapon) {
             if (weapon->isEquipped != 0) {
@@ -1112,7 +1111,7 @@ static int _equipMenu(int initialize)
             }
         }
 
-        shield = vs_battle_inventory.shields;
+        shield = vs_main_inventory.shields;
 
         for (j = 0; j < 8; ++j, ++shield) {
             if (shield->isEquipped != 0) {
@@ -1122,7 +1121,7 @@ static int _equipMenu(int initialize)
         }
 
         for (i = 2; i < 8; ++i) {
-            vs_battle_inventoryArmor* armor = vs_battle_inventory.armor;
+            vs_main_inventoryArmor* armor = vs_main_inventory.armor;
 
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->limb) == i) {

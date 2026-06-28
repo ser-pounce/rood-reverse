@@ -2420,11 +2420,11 @@ int vs_battle_decreaseMiscCount(int miscId)
 
     for (i = 0; i < 64; ++i) {
         int miscIndex = (D_800F5210 + i) & 0x3F;
-        if (vs_battle_inventory.misc[miscIndex].id == miscId) {
-            int count = vs_battle_inventory.misc[miscIndex].count - 1;
-            vs_battle_inventory.misc[miscIndex].count = count;
+        if (vs_main_inventory.misc[miscIndex].id == miscId) {
+            int count = vs_main_inventory.misc[miscIndex].count - 1;
+            vs_main_inventory.misc[miscIndex].count = count;
             if (count == 0) {
-                vs_battle_inventory.misc[miscIndex].id = 0;
+                vs_main_inventory.misc[miscIndex].id = 0;
             }
             return 1;
         }

@@ -393,7 +393,7 @@ static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
 static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
 {
     char* menuText[2];
-    vs_battle_inventoryArmor armor;
+    vs_main_inventoryArmor armor;
     int rowType[2];
 
     vs_battle_copyUiAccessoryStats(&armor, arg0);
@@ -1374,11 +1374,11 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
     int gemSlots = weapon->grip.gemSlots;
 
     if (row == 1) {
-        vs_battle_inventoryBlade blade;
+        vs_main_inventoryBlade blade;
         vs_battle_copyUiBladeStats(&blade, &weapon->blade);
         vs_mainMenu_setUiBlade(&blade, menuText, &rowType, vs_battle_stringBuf);
     } else if (row == 2) {
-        vs_battle_inventoryGrip grip;
+        vs_main_inventoryGrip grip;
         vs_battle_copyUiGripStats(&grip, &weapon->grip);
         vs_mainMenu_setUiGrip(&grip, menuText, &rowType, vs_battle_stringBuf);
     } else {
@@ -1392,7 +1392,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
             rowType = 0x58000000;
 
             if (weapon->gems[xOffset].id != 0) {
-                vs_battle_inventoryGem gem;
+                vs_main_inventoryGem gem;
                 vs_battle_copyUiGemStats(&gem, &weapon->gems[xOffset]);
                 vs_mainMenu_setUiGem(&gem, menuText, &rowType, vs_battle_stringBuf);
             }
@@ -1438,7 +1438,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
         rowType = 0x58000000;
 
         if (shield->gems[gemSlot].id != 0) {
-            vs_battle_inventoryGem gem;
+            vs_main_inventoryGem gem;
             vs_battle_copyUiGemStats(&gem, &shield->gems[gemSlot]);
             vs_mainMenu_setUiGem(&gem, menuText, &rowType, vs_battle_stringBuf);
         }
@@ -1500,7 +1500,7 @@ static int _equipmentDetailScreen(int row)
     static char _equipmentDetailSelectedElement;
 
     char* sp18[2];
-    vs_battle_inventoryArmor armor;
+    vs_main_inventoryArmor armor;
     u_int sp48;
     int limbs;
     int equipmentCount;
@@ -1895,7 +1895,7 @@ static int _equipmentScreen(int element)
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
-    vs_battle_inventoryArmor sp3E0;
+    vs_main_inventoryArmor sp3E0;
     int rowCount;
     int limbCount;
     int rowType;
@@ -1944,7 +1944,7 @@ static int _equipmentScreen(int element)
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < rowCount; ++i, ++limbs) {
-            vs_battle_inventoryArmor* p = &sp3E0;
+            vs_main_inventoryArmor* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
 
             if ((i - 2) < limbCount) {

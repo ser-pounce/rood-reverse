@@ -1229,6 +1229,7 @@ _textBoxSelectionPending = 0x800F4C60;
 _fontTable = 0x800F4CB9;
 _fontBrightness = 0x800F4CBC;
 vs_battle_shortcutInvoked = 0x800F4E6A;
+D_800F4E6B = 0x800F4E6B;
 vs_battle_submenuStates = 0x800F4E70;
 vs_battle_rowTypeBuf = 0x800F4E84;
 vs_battle_unlockedBreakArt = 0x800F4E88;

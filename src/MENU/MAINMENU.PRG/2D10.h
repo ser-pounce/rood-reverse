@@ -23,13 +23,13 @@ void func_800FDD78(void);
 void func_800FDEBC(void);
 enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
 int vs_mainMenu_copyItem(
-    int arg0, vs_battle_inventory_t* arg1, int arg2, vs_battle_inventory_t* arg3);
+    int arg0, vs_main_inventory_t* arg1, int arg2, vs_main_inventory_t* arg3);
 void vs_mainMenu_unequipAllWeapons(void);
 void vs_mainMenu_unequipShield(void);
 void vs_mainMenu_initItem(int, int);
 int vs_mainMenu_ensureItemNamesLoaded(void);
-int vs_mainMenu_getItemCount(int itemCategory, vs_battle_inventory_t* inventory);
-int vs_mainMenu_getFirstEmptyItemSlot(int, vs_battle_inventory_t*);
+int vs_mainMenu_getItemCount(int itemCategory, vs_main_inventory_t* inventory);
+int vs_mainMenu_getFirstEmptyItemSlot(int, vs_main_inventory_t*);
 void vs_mainMenu_initSortUi(int count, int subMenuId, char* menuText[], int rowTypes[]);
 int func_800FF348(void);
 int vs_mainMenu_getSelectedItemAction(void);

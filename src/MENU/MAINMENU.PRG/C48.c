@@ -45,25 +45,25 @@ void vs_mainMenu_initInventory(void)
 
     if (actor->weapon.index != 0) {
         vs_battle_copyUiWeaponStats(
-            &vs_battle_inventory.weapons[actor->weapon.index - 1], &actor->weapon);
+            &vs_main_inventory.weapons[actor->weapon.index - 1], &actor->weapon);
     }
 
     if (actor->shield.index != 0) {
         vs_battle_copyUiShieldStats(
-            &vs_battle_inventory.shields[actor->shield.index - 1], &actor->shield);
+            &vs_main_inventory.shields[actor->shield.index - 1], &actor->shield);
     }
 
     for (i = 0; i < 6; ++i) {
         if (actor->limbs[i].armor.index != 0) {
             vs_battle_copyUiArmorStats(
-                &vs_battle_inventory.armor[actor->limbs[i].armor.index - 1],
+                &vs_main_inventory.armor[actor->limbs[i].armor.index - 1],
                 &actor->limbs[i].armor);
         }
     }
 
     if (actor->accessory.index != 0) {
         vs_battle_copyUiAccessoryStats(
-            &vs_battle_inventory.armor[actor->accessory.index - 1], &actor->accessory);
+            &vs_main_inventory.armor[actor->accessory.index - 1], &actor->accessory);
     }
 }
 
@@ -322,7 +322,7 @@ void vs_mainMenu_exec(int arg0)
     vs_battle_menuState_t* menuState = &vs_battle_menuState;
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
     int var_s4 = 0;
-    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+    vs_main_inventory_t* inventory = &vs_main_inventory;
 
     vs_mainMenu_weapons = inventory->weapons;
     vs_mainMenu_blades = inventory->blades;
@@ -448,7 +448,7 @@ void func_800FAEBC(int arg0)
     int temp_v0_3;
     u_int var_a0;
     void* temp_s6;
-    vs_battle_inventoryMisc* temp_s0;
+    vs_main_inventoryMisc* temp_s0;
     vs_battle_menuItem_t* temp_v0;
 
     if (arg0 != 0) {
@@ -491,7 +491,7 @@ void func_800FAEBC(int arg0)
             if (temp_v0_3 == 0) {
                 break;
             }
-            temp_s0 = &vs_battle_inventory.misc[temp_v0_3 - 1];
+            temp_s0 = &vs_main_inventory.misc[temp_v0_3 - 1];
             vs_mainMenu_setUiItem(
                 temp_s0, &temp_s7[i * 2], temp_fp - -i, temp_s6 + i * 96);
             if (temp_s0->id < 0x1CA) {
@@ -548,7 +548,7 @@ void func_800FAEBC(int arg0)
                     D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
                     D_800F4E98.executeAbility.s16[0] = D_80102410[D_80102450 - 1];
                     D_800F4E98.executeAbility.s16[1] =
-                        vs_battle_inventory.misc[D_800F5210].id;
+                        vs_main_inventory.misc[D_800F5210].id;
                 }
                 D_80102454 = 4;
             }

@@ -33,7 +33,7 @@ segments:
   - start: 0x0
     type: code
     vram: 0x800F9800
-    align: 4
+    align: 1
     subsegments:
       - [0x224, c]
       - [0xC48, c]

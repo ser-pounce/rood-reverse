@@ -60,19 +60,18 @@ void vs_mainMenu_setUiWeapon(vs_battle_uiWeapon*, char**, int*, char*);
 vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int, int, int);
 vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int, int, int);
 void vs_mainMenu_initUiWeapon(
-    vs_battle_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);
-void vs_mainMenu_setUiBlade(vs_battle_inventoryBlade*, char**, int*, char*);
-void vs_mainMenu_setUiGrip(vs_battle_inventoryGrip*, char**, int*, char*);
+    vs_main_inventoryWeapon* arg0, char** arg1, int* arg2, char* arg3);
+void vs_mainMenu_setUiBlade(vs_main_inventoryBlade*, char**, int*, char*);
+void vs_mainMenu_setUiGrip(vs_main_inventoryGrip*, char**, int*, char*);
 void vs_mainMenu_initUiShield(
-    vs_battle_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
+    vs_main_inventoryShield* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setUiShield(vs_battle_uiShield*, char**, int*, char*);
 void vs_mainMenu_setUiArmor(vs_battle_uiArmor*, char**, int*, char*);
 void vs_mainMenu_initUiArmor(
-    vs_battle_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3);
-void vs_mainMenu_setUiGem(
-    vs_battle_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
+    vs_main_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3);
+void vs_mainMenu_setUiGem(vs_main_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
 void vs_mainMenu_setUiItem(
-    vs_battle_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
+    vs_main_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
 void vs_mainMenu_setUiBladeStats(int);
 void vs_mainMenu_setUiGripStats(int);
 void vs_mainMenu_setShieldStats(int);

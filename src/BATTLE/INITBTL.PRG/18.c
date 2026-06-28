@@ -183,14 +183,12 @@ void func_800F9CCC(void)
     bladeIndex = 0;
 
     for (i = 0; i < 8; ++i) {
-        if (vs_battle_inventory.weapons[i].isEquipped != 0) {
+        if (vs_main_inventory.weapons[i].isEquipped != 0) {
             bladeIndex = i + 1;
             bladeWepId =
-                vs_battle_inventory.blades[vs_battle_inventory.weapons[i].blade - 1]
-                    .wepId;
+                vs_main_inventory.blades[vs_main_inventory.weapons[i].blade - 1].wepId;
             bladeMaterial =
-                vs_battle_inventory.blades[vs_battle_inventory.weapons[i].blade - 1]
-                    .material;
+                vs_main_inventory.blades[vs_main_inventory.weapons[i].blade - 1].material;
         }
     }
 
@@ -198,10 +196,10 @@ void func_800F9CCC(void)
     shieldIndex = 0;
 
     for (i = 0; i < 8; ++i) {
-        if (vs_battle_inventory.shields[i].isEquipped != 0) {
+        if (vs_main_inventory.shields[i].isEquipped != 0) {
             shieldIndex = i + 1;
-            shieldWepId = vs_battle_inventory.shields[i].base.wepId;
-            shieldMaterial = vs_battle_inventory.shields[i].base.material;
+            shieldWepId = vs_main_inventory.shields[i].base.wepId;
+            shieldMaterial = vs_main_inventory.shields[i].base.material;
         }
     }
 
@@ -211,7 +209,7 @@ void func_800F9CCC(void)
     func_80076F24(0, &D_800FAB18, 0x10, 0, 0x80, 0);
     if (bladeIndex != 0) {
         vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon,
-            &vs_battle_inventory.weapons[bladeIndex - 1]);
+            &vs_main_inventory.weapons[bladeIndex - 1]);
     } else {
         vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, NULL);
     }
@@ -231,7 +229,7 @@ void func_800F9CCC(void)
 
     if (shieldIndex != 0) {
         vs_battle_applyShield(&vs_battle_characterState->unk3C->shield,
-            &vs_battle_inventory.shields[shieldIndex - 1]);
+            &vs_main_inventory.shields[shieldIndex - 1]);
     } else {
         vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, NULL);
     }
@@ -240,9 +238,9 @@ void func_800F9CCC(void)
         vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor, NULL);
 
         for (j = 0; j < 16; ++j) {
-            if (vs_battle_inventory.armor[j].limb == i + 1) {
+            if (vs_main_inventory.armor[j].limb == i + 1) {
                 vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor,
-                    &vs_battle_inventory.armor[j]);
+                    &vs_main_inventory.armor[j]);
             }
         }
     }
@@ -250,9 +248,9 @@ void func_800F9CCC(void)
     vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, NULL);
 
     for (i = 0; i < 16; ++i) {
-        if (vs_battle_inventory.armor[i].limb == 7) {
-            vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory,
-                &vs_battle_inventory.armor[i]);
+        if (vs_main_inventory.armor[i].limb == 7) {
+            vs_battle_applyAccessory(
+                &vs_battle_characterState->unk3C->accessory, &vs_main_inventory.armor[i]);
         }
     }
 

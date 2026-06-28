@@ -537,7 +537,7 @@ int _removeActorAtIndex(u_int, int);
 void _applyAccessoryStats(vs_battle_uiAccessory*, _accessoryIntermediate*);
 void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_copyUiEquipmentStats(
-    vs_battle_inventoryArmor*, vs_battle_uiEquipment* equipment);
+    vs_main_inventoryArmor*, vs_battle_uiEquipment* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
 void _updateEnemyKills(vs_battle_actor*);
@@ -1193,10 +1193,10 @@ void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
 }
 
 void vs_battle_copyInventoryBladeStats(
-    vs_battle_uiEquipment* target, vs_battle_inventoryBlade* source)
+    vs_battle_uiEquipment* target, vs_main_inventoryBlade* source)
 {
     int i;
-    vs_battle_inventoryBlade* tempBlade;
+    vs_main_inventoryBlade* tempBlade;
 
     target->id = source->id;
     target->subId = source->subId;
@@ -1230,7 +1230,7 @@ void vs_battle_copyInventoryBladeStats(
 }
 
 void vs_battle_copyInventoryGripStats(
-    vs_battle_uiEquipment* target, vs_battle_inventoryGrip* source)
+    vs_battle_uiEquipment* target, vs_main_inventoryGrip* source)
 {
     int i;
 
@@ -1249,10 +1249,10 @@ void vs_battle_copyInventoryGripStats(
 }
 
 void vs_battle_copyInventoryArmorStats(
-    vs_battle_uiEquipment* target, vs_battle_inventoryArmor* source)
+    vs_battle_uiEquipment* target, vs_main_inventoryArmor* source)
 {
     int i;
-    vs_battle_inventoryArmor* tempArmor;
+    vs_main_inventoryArmor* tempArmor;
 
     target->id = source->id;
     target->subId = source->subId;
@@ -1286,7 +1286,7 @@ void vs_battle_copyInventoryArmorStats(
 }
 
 void vs_battle_copyInventoryGemStats(
-    vs_battle_uiEquipment* target, vs_battle_inventoryGem* source)
+    vs_battle_uiEquipment* target, vs_main_inventoryGem* source)
 {
     int i;
 
@@ -1307,7 +1307,7 @@ void vs_battle_copyInventoryGemStats(
     }
 }
 
-void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon* source)
+void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_main_inventoryWeapon* source)
 {
     int i;
 
@@ -1318,18 +1318,18 @@ void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon
         tempWeapon->index = source->index;
         if (source->blade != 0) {
             vs_battle_copyInventoryBladeStats(
-                &tempWeapon->blade, &vs_battle_inventory.blades[source->blade - 1]);
-            tempWeapon->material = vs_battle_inventory.blades[source->blade - 1].material;
+                &tempWeapon->blade, &vs_main_inventory.blades[source->blade - 1]);
+            tempWeapon->material = vs_main_inventory.blades[source->blade - 1].material;
         }
         if (source->grip != 0) {
             vs_battle_copyInventoryGripStats(
-                &tempWeapon->grip, &vs_battle_inventory.grips[source->grip - 1]);
+                &tempWeapon->grip, &vs_main_inventory.grips[source->grip - 1]);
         }
 
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
                 vs_battle_copyInventoryGemStats(
-                    &tempWeapon->gems[i], &vs_battle_inventory.gems[source->gems[i] - 1]);
+                    &tempWeapon->gems[i], &vs_main_inventory.gems[source->gems[i] - 1]);
             }
         }
 
@@ -1341,7 +1341,7 @@ void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon
     vs_main_freeHeapR(tempWeapon);
 }
 
-void vs_battle_applyShield(vs_battle_uiShield* target, vs_battle_inventoryShield* source)
+void vs_battle_applyShield(vs_battle_uiShield* target, vs_main_inventoryShield* source)
 {
     int i;
 
@@ -1355,7 +1355,7 @@ void vs_battle_applyShield(vs_battle_uiShield* target, vs_battle_inventoryShield
         for (i = 0; i < 3; ++i) {
             if (source->gems[i] != 0) {
                 vs_battle_copyInventoryGemStats(&tempShield->gems[i],
-                    &vs_battle_inventory.gems[(source->gems[i] & 0x7F) - 1]);
+                    &vs_main_inventory.gems[(source->gems[i] & 0x7F) - 1]);
             }
         }
     }
@@ -1363,7 +1363,7 @@ void vs_battle_applyShield(vs_battle_uiShield* target, vs_battle_inventoryShield
     vs_main_freeHeapR(tempShield);
 }
 
-void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_battle_inventoryArmor* source)
+void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_main_inventoryArmor* source)
 {
     _armorIntermediate* tempArmor = vs_main_allocHeapR(sizeof *tempArmor);
     vs_main_bzero(tempArmor, sizeof *tempArmor);
@@ -1378,7 +1378,7 @@ void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_battle_inventoryArmor* s
 }
 
 void vs_battle_applyAccessory(
-    vs_battle_uiAccessory* target, vs_battle_inventoryArmor* source)
+    vs_battle_uiAccessory* target, vs_main_inventoryArmor* source)
 {
     _accessoryIntermediate* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     vs_main_bzero(temp_v0, sizeof *temp_v0);
@@ -1420,7 +1420,7 @@ void func_8006B2D4(void)
     }
 }
 
-void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
+void vs_battle_equipWeapon(vs_main_inventoryWeapon* weapon)
 {
     vs_battle_actor2* temp_a0;
 
@@ -1431,7 +1431,7 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
         vs_battle_characterState->equippedWeaponCategory = 10;
     } else {
         vs_battle_characterState->equippedWeaponCategory =
-            vs_battle_inventory.blades[weapon->blade - 1].category;
+            vs_main_inventory.blades[weapon->blade - 1].category;
     }
 
     temp_a0 = vs_battle_characterState->unk3C;
@@ -1445,7 +1445,7 @@ void vs_battle_equipWeapon(vs_battle_inventoryWeapon* weapon)
     func_8006B270();
 }
 
-void vs_battle_equipShield(vs_battle_inventoryShield* shield)
+void vs_battle_equipShield(vs_main_inventoryShield* shield)
 {
     vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, shield);
     vs_battle_nop0(vs_battle_characterState->unk3C);
@@ -1453,7 +1453,7 @@ void vs_battle_equipShield(vs_battle_inventoryShield* shield)
     func_8006B2D4();
 }
 
-void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
+void vs_battle_equipArmor(int bodyPart, vs_main_inventoryArmor* armor)
 {
     vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[bodyPart].armor, armor);
     vs_battle_nop0(vs_battle_characterState->unk3C);
@@ -1461,7 +1461,7 @@ void vs_battle_equipArmor(int bodyPart, vs_battle_inventoryArmor* armor)
     func_8006B2D4();
 }
 
-void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory)
+void vs_battle_equipAccessory(vs_main_inventoryArmor* accessory)
 {
     vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, accessory);
     vs_battle_nop0(vs_battle_characterState->unk3C);
@@ -1470,10 +1470,10 @@ void vs_battle_equipAccessory(vs_battle_inventoryArmor* accessory)
 }
 
 void vs_battle_copyUiBladeStats(
-    vs_battle_inventoryBlade* target, vs_battle_uiEquipment* source)
+    vs_main_inventoryBlade* target, vs_battle_uiEquipment* source)
 {
     int i;
-    vs_battle_inventoryBlade* tempBlade;
+    vs_main_inventoryBlade* tempBlade;
 
     target->id = source->id;
     target->subId = source->subId;
@@ -1505,7 +1505,7 @@ void vs_battle_copyUiBladeStats(
 }
 
 void vs_battle_copyUiGripStats(
-    vs_battle_inventoryGrip* target, vs_battle_uiEquipment* source)
+    vs_main_inventoryGrip* target, vs_battle_uiEquipment* source)
 {
     int i;
 
@@ -1522,8 +1522,7 @@ void vs_battle_copyUiGripStats(
     }
 }
 
-void vs_battle_copyUiGemStats(
-    vs_battle_inventoryGem* target, vs_battle_uiEquipment* source)
+void vs_battle_copyUiGemStats(vs_main_inventoryGem* target, vs_battle_uiEquipment* source)
 {
     int i;
 
@@ -1544,10 +1543,10 @@ void vs_battle_copyUiGemStats(
 }
 
 void vs_battle_copyUiEquipmentStats(
-    vs_battle_inventoryArmor* target, vs_battle_uiEquipment* source)
+    vs_main_inventoryArmor* target, vs_battle_uiEquipment* source)
 {
     int i;
-    vs_battle_inventoryArmor* tempArmor;
+    vs_main_inventoryArmor* tempArmor;
 
     target->id = source->id;
     target->subId = source->subId;
@@ -1579,7 +1578,7 @@ void vs_battle_copyUiEquipmentStats(
 }
 
 void vs_battle_copyUiWeaponStats(
-    vs_battle_inventoryWeapon* target, vs_battle_uiWeapon* source)
+    vs_main_inventoryWeapon* target, vs_battle_uiWeapon* source)
 {
     int i;
 
@@ -1587,13 +1586,13 @@ void vs_battle_copyUiWeaponStats(
         source->blade.currentDp = source->currentDp;
         source->blade.currentPp = source->currentPp;
         vs_battle_copyUiBladeStats(
-            &vs_battle_inventory.blades[target->blade - 1], &source->blade);
+            &vs_main_inventory.blades[target->blade - 1], &source->blade);
         vs_battle_copyUiGripStats(
-            &vs_battle_inventory.grips[target->grip - 1], &source->grip);
+            &vs_main_inventory.grips[target->grip - 1], &source->grip);
         for (i = 0; i < 3; ++i) {
             if (source->gems[i].id != 0) {
                 vs_battle_copyUiGemStats(
-                    &vs_battle_inventory.gems[target->gems[i] - 1], &source->gems[i]);
+                    &vs_main_inventory.gems[target->gems[i] - 1], &source->gems[i]);
             }
         }
 
@@ -1604,7 +1603,7 @@ void vs_battle_copyUiWeaponStats(
 }
 
 void vs_battle_copyUiShieldStats(
-    vs_battle_inventoryShield* target, vs_battle_uiShield* source)
+    vs_main_inventoryShield* target, vs_battle_uiShield* source)
 {
     int i;
 
@@ -1615,14 +1614,13 @@ void vs_battle_copyUiShieldStats(
         for (i = 0; i < 3; ++i) {
             if (source->gems[i].id != 0) {
                 vs_battle_copyUiGemStats(
-                    &vs_battle_inventory.gems[target->gems[i] - 1], &source->gems[i]);
+                    &vs_main_inventory.gems[target->gems[i] - 1], &source->gems[i]);
             }
         }
     }
 }
 
-void vs_battle_copyUiArmorStats(
-    vs_battle_inventoryArmor* target, vs_battle_uiArmor* source)
+void vs_battle_copyUiArmorStats(vs_main_inventoryArmor* target, vs_battle_uiArmor* source)
 {
     if (source->armor.id != 0) {
         source->armor.currentDp = source->currentDp;
@@ -1631,7 +1629,7 @@ void vs_battle_copyUiArmorStats(
 }
 
 void vs_battle_copyUiAccessoryStats(
-    vs_battle_inventoryArmor* target, vs_battle_uiAccessory* source)
+    vs_main_inventoryArmor* target, vs_battle_uiAccessory* source)
 {
     if (source->accessory.id != 0) {
         vs_battle_copyUiEquipmentStats(target, &source->accessory);
@@ -6745,7 +6743,7 @@ int vs_battle_itemIdIsInInventory(int id)
             switch (i) {
             case 0:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.blades[i].id == id) {
+                    if (vs_main_inventory.blades[i].id == id) {
                         ret = 1;
                         break;
                     }
@@ -6753,7 +6751,7 @@ int vs_battle_itemIdIsInInventory(int id)
                 break;
             case 1:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.grips[i].id == id) {
+                    if (vs_main_inventory.grips[i].id == id) {
                         ret = 1;
                         break;
                     }
@@ -6761,7 +6759,7 @@ int vs_battle_itemIdIsInInventory(int id)
                 break;
             case 2:
                 for (i = 0; i < 16; ++i) {
-                    if (vs_battle_inventory.armor[i].id == id) {
+                    if (vs_main_inventory.armor[i].id == id) {
                         ret = 1;
                         break;
                     }
@@ -6769,7 +6767,7 @@ int vs_battle_itemIdIsInInventory(int id)
                 break;
             case 4:
                 for (i = 0; i < 48; ++i) {
-                    if (vs_battle_inventory.gems[i].id == id) {
+                    if (vs_main_inventory.gems[i].id == id) {
                         ret = 1;
                         break;
                     }
@@ -6779,9 +6777,9 @@ int vs_battle_itemIdIsInInventory(int id)
             case 6:
             case 7:
                 for (i = 0; i < 64; ++i) {
-                    if ((vs_battle_inventory.misc[i].id == id)
-                        && (vs_battle_inventory.misc[i].count != 0)) {
-                        ret = vs_battle_inventory.misc[i].count;
+                    if ((vs_main_inventory.misc[i].id == id)
+                        && (vs_main_inventory.misc[i].count != 0)) {
+                        ret = vs_main_inventory.misc[i].count;
                         break;
                     }
                 }

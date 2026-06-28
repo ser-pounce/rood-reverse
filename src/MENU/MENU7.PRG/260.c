@@ -96,7 +96,7 @@ typedef struct {
     char mapStatus[0x48];
     vs_main_settings_t settings;
     D_80060068_t unk6C8;
-    vs_battle_inventory_t inventory;
+    vs_main_inventory_t inventory;
     vs_main_inventoryIndices_t unk16C8;
     D_80061068_t unk1778;
     vs_main_scoredata_t scoreData;
@@ -617,7 +617,7 @@ static int _applyLoadedSaveFile(int write)
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
     _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
-    _rMemcpy(&vs_battle_inventory, &spmcimg[1].inventory, sizeof vs_battle_inventory);
+    _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
     _rMemcpy(
         &vs_main_inventoryIndices, &spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
@@ -721,7 +721,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
     _rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof savedata->unk6C8);
-    _rMemcpy(&savedata->inventory, &vs_battle_inventory, sizeof savedata->inventory);
+    _rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
     _rMemcpy(&savedata->unk16C8, &vs_main_inventoryIndices, sizeof savedata->unk16C8);
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof savedata->unk1778);
     _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
@@ -3559,7 +3559,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->weapons[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryWeapon* weapon = &target->weapons[i];
+            vs_main_inventoryWeapon* weapon = &target->weapons[i];
             vs_battle_copyAligned(
                 weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
             weapon->index = i + 1;
@@ -3577,7 +3577,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->blades[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryBlade* blade = &target->blades[i];
+            vs_main_inventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
             if (blade->assembledWeaponIndex != 0) {
@@ -3590,7 +3590,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->grips[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryGrip* grip = &target->grips[i];
+            vs_main_inventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
             if (grip->assembledWeaponIndex != 0) {
@@ -3603,7 +3603,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->shields[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryShield* shield = &target->shields[i];
+            vs_main_inventoryShield* shield = &target->shields[i];
             vs_battle_copyAligned(
                 shield, &source->shields[sourceIndex - 1], sizeof *shield);
             shield->index = i + 1;
@@ -3618,7 +3618,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->armor[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryArmor* armor = &target->armor[i];
+            vs_main_inventoryArmor* armor = &target->armor[i];
             vs_battle_copyAligned(armor, &source->armor[sourceIndex - 1], sizeof *armor);
             armor->index = i + 1;
         }
@@ -3627,7 +3627,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 192; ++i) {
         sourceIndex = toCopy->gems[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryGem* gem = &target->gems[i];
+            vs_main_inventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
             gem->index = i + 1;
             if (gem->setItemIndex != 0) {
@@ -3645,7 +3645,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 256; ++i) {
         sourceIndex = toCopy->misc[i];
         if (sourceIndex != 0) {
-            vs_battle_inventoryMisc* item = &target->misc[i];
+            vs_main_inventoryMisc* item = &target->misc[i];
             vs_battle_rMemcpy(item, &source->misc[sourceIndex - 1], sizeof *item);
             item->index = i + 1;
         }
@@ -3762,7 +3762,7 @@ int vs_menu7_saveContainerMenu(char* state)
         }
         break;
     case 7:
-        vs_battle_memcpy(vs_menu_inventoryStorage->unk0, &vs_battle_inventory,
+        vs_battle_memcpy(vs_menu_inventoryStorage->unk0, &vs_main_inventory,
             sizeof vs_menu_inventoryStorage->unk0);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof vs_menu_inventoryStorage->unkF00);
@@ -3833,7 +3833,7 @@ int vs_menu7_saveContainerMenu(char* state)
         char v0 = (*(int*)&vs_main_settings);
         char v1 = D_80102578 & 1;
         *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
-        vs_battle_memcpy(&vs_battle_inventory, vs_menu_inventoryStorage->unk0,
+        vs_battle_memcpy(&vs_main_inventory, vs_menu_inventoryStorage->unk0,
             sizeof vs_menu_inventoryStorage->unk0);
         vs_battle_memcpy(&vs_main_inventoryIndices, &vs_menu_inventoryStorage->unkF00,
             sizeof vs_menu_inventoryStorage->unkF00);

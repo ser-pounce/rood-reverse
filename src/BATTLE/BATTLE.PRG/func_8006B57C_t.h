@@ -32,7 +32,7 @@ typedef struct {
     u_short material;
     char assembledWeaponIndex;
     char index;
-} vs_battle_inventoryBlade;
+} vs_main_inventoryBlade;
 
 typedef struct {
     u_short id;
@@ -45,7 +45,7 @@ typedef struct {
     signed char types[4];
     u_short assembledWeaponIndex;
     u_short index;
-} vs_battle_inventoryGrip;
+} vs_main_inventoryGrip;
 
 typedef struct {
     u_short id;
@@ -59,7 +59,7 @@ typedef struct {
     signed char affinities[8];
     u_short setItemIndex;
     short index;
-} vs_battle_inventoryGem;
+} vs_main_inventoryGem;
 
 typedef struct {
     char index;
@@ -68,7 +68,7 @@ typedef struct {
     char isEquipped;
     u_char gems[4];
     char name[24];
-} vs_battle_inventoryWeapon;
+} vs_main_inventoryWeapon;
 
 typedef struct {
     u_char id;
@@ -89,30 +89,30 @@ typedef struct {
     u_short material;
     u_char limb;
     u_char index;
-} vs_battle_inventoryArmor;
+} vs_main_inventoryArmor;
 
 typedef struct {
     char index;
     char isEquipped;
     short unk2;
-    vs_battle_inventoryArmor base;
+    vs_main_inventoryArmor base;
     u_char gems[4]; // 0x2C
-} vs_battle_inventoryShield;
+} vs_main_inventoryShield;
 
 typedef struct {
     u_short id;
     char count;
     char index;
-} vs_battle_inventoryMisc;
+} vs_main_inventoryMisc;
 
 typedef struct {
-    vs_battle_inventoryWeapon weapons[32];
-    vs_battle_inventoryShield shields[32];
-    vs_battle_inventoryBlade blades[64];
-    vs_battle_inventoryGrip grips[64];
-    vs_battle_inventoryArmor armor[64];
-    vs_battle_inventoryGem gems[192];
-    vs_battle_inventoryMisc misc[256];
+    vs_main_inventoryWeapon weapons[32];
+    vs_main_inventoryShield shields[32];
+    vs_main_inventoryBlade blades[64];
+    vs_main_inventoryGrip grips[64];
+    vs_main_inventoryArmor armor[64];
+    vs_main_inventoryGem gems[192];
+    vs_main_inventoryMisc misc[256];
     // 0x3C00
 } vs_menu_containerData;
 
@@ -170,9 +170,9 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryBlade blade;
-    vs_battle_inventoryGrip grip;
-    vs_battle_inventoryGem gems[3];
+    vs_main_inventoryBlade blade;
+    vs_main_inventoryGrip grip;
+    vs_main_inventoryGem gems[3];
     char name[24];
 } vs_battle_lootedWeapon;
 
@@ -181,7 +181,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryBlade blade;
+    vs_main_inventoryBlade blade;
 } vs_battle_lootedBlade;
 
 typedef struct {
@@ -189,7 +189,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryGrip grip;
+    vs_main_inventoryGrip grip;
 } vs_battle_lootedGrip;
 
 typedef struct {
@@ -197,8 +197,8 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryArmor shield;
-    vs_battle_inventoryGem gems[3];
+    vs_main_inventoryArmor shield;
+    vs_main_inventoryGem gems[3];
 } vs_battle_lootedShield;
 
 typedef struct {
@@ -206,7 +206,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryArmor armor;
+    vs_main_inventoryArmor armor;
 } vs_battle_lootedArmor;
 
 typedef struct {
@@ -214,7 +214,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryArmor accessory;
+    vs_main_inventoryArmor accessory;
 } vs_battle_lootedAccessory;
 
 typedef struct {
@@ -222,7 +222,7 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_battle_inventoryGem gem;
+    vs_main_inventoryGem gem;
 } vs_battle_lootedGem;
 
 typedef struct {

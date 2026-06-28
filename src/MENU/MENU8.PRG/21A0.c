@@ -483,7 +483,7 @@ static int _renameMenuInput(int initialize)
     int selectedRow;
     int var_a1;
     int var_s1;
-    vs_battle_inventoryWeapon* weapon;
+    vs_main_inventoryWeapon* weapon;
 
     if (initialize != 0) {
         _charTableColumn = 0;
@@ -735,8 +735,8 @@ static int _renameMenuInput(int initialize)
         if (_copyNormalizedString(_nameBuffer) != 0) {
             vs_battle_rMemcpy(_nameBuffer,
                 vs_mainMenu_itemNames
-                    + vs_battle_inventory
-                          .blades[vs_battle_inventory.weapons[weaponId].blade - 1]
+                    + vs_main_inventory
+                          .blades[vs_main_inventory.weapons[weaponId].blade - 1]
                           .id,
                 0x18);
         }
@@ -770,7 +770,7 @@ static int _renameMenuInput(int initialize)
             break;
         }
 
-        weapon = &vs_battle_inventory.weapons[weaponId];
+        weapon = &vs_main_inventory.weapons[weaponId];
 
         if (selectedRow == 1) {
             vs_main_playSfxDefault(0x7E, 0xD);
@@ -785,7 +785,7 @@ static int _renameMenuInput(int initialize)
             if (weapon->name[0] == vs_char_terminator) {
                 vs_battle_rMemcpy(weapon->name,
                     vs_mainMenu_itemNames
-                        + vs_battle_inventory.blades[weapon->blade - 1].id,
+                        + vs_main_inventory.blades[weapon->blade - 1].id,
                     sizeof weapon->name);
             }
         }
@@ -844,7 +844,7 @@ int vs_menu8_execRename(char* state)
         }
 
         if (vs_battle_stringBuf[0] == 1) {
-            var_v1 = vs_battle_inventory.weapons[weaponId].name;
+            var_v1 = vs_main_inventory.weapons[weaponId].name;
             for (i = 0; i < 20; ++i) {
                 int c = *var_v1++;
                 if (c == vs_char_terminator) {

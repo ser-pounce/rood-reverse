@@ -1,9 +1,14 @@
-MENU7 := MENU/MENU7.PRG
+menu7_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
 
-$(BUILD)/config/$(MENU7)/link.d: $(patsubst %,config/%/symbol_addrs.txt,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
+$(BUILD)/data/MENU/MENU7.PRG: $(menu7_LDLIBS)
+$(BUILD)/data/MENU/MENU7.PRG: LDLIBS += $(menu7_LDLIBS)
+$(BUILD)/data/MENU/MENU7.PRG: LDFLAGS += \
+	--defsym=D_1F800000=0x1F800000
 
-$(BUILD)/data/$(MENU7).elf: LDFLAGS += \
-	--retain-symbols-file=config/$(MENU7)/exports.txt
+$(BUILD)/data/MENU/MENU7.PRG.elf: LDFLAGS += -r \
+	--retain-symbols-file=config/MENU/MENU7.PRG/exports.txt
 
-$(BUILD)/src/$(MENU7)/260.o: ASFLAGS += -no-pad-sections
-$(BUILD)/src/$(MENU7)/260.o: CC1VER := 2.8.1-psx
+$(BUILD)/data/MENU/MENU7.PRG $(BUILD)/data/MENU/MENU7.PRG.elf: LDSCRIPT := link.ld
+
+$(BUILD)/src/MENU/MENU7.PRG/260.o: ASFLAGS += -no-pad-sections
+$(BUILD)/src/MENU/MENU7.PRG/260.o: CC1VER := 2.8.1-psx

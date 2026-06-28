@@ -33,8 +33,8 @@ static char _controlsEnabled = 0;
 
 static _lootListItem* _lootList;
 static _lootListItem* _lootListWorkingCopy;
-static vs_battle_inventory_t* _inventory;
-static vs_battle_inventory_t* _inventoryBackup;
+static vs_main_inventory_t* _inventory;
+static vs_main_inventory_t* _inventoryBackup;
 static char _showInventory;
 static u_char _inventoryCapacityFlyinTimer;
 static char _showLoot;
@@ -271,7 +271,7 @@ static int _disassembleItem(int itemIndex)
 
         if (disassembleItemCategory != itemCategoryWeapon) {
 
-            vs_battle_inventoryShield* shield = &_inventory->shields[i];
+            vs_main_inventoryShield* shield = &_inventory->shields[i];
             _lootList[1].itemCategory = itemCategoryShield;
             _lootList[1].itemIndex = i;
             _lootList[1].state = lootStateIndent1;
@@ -286,7 +286,7 @@ static int _disassembleItem(int itemIndex)
                 }
             }
         } else {
-            vs_battle_inventoryWeapon* weapon = &_inventory->weapons[i];
+            vs_main_inventoryWeapon* weapon = &_inventory->weapons[i];
             _lootList[1].itemCategory = itemCategoryBlade;
             _lootList[1].itemIndex = weapon->blade - 1;
             _lootList[1].state = lootStateIndent2;
@@ -375,7 +375,7 @@ static int _disassembleItem(int itemIndex)
             (_lootListCount - 1) * sizeof _lootList[1]);
 
         if (disassembleItemCategory != itemCategoryWeapon) {
-            vs_battle_inventoryShield* shield = &_inventory->shields[i];
+            vs_main_inventoryShield* shield = &_inventory->shields[i];
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 int gem = shield->gems[i];
                 if (gem != 0) {
@@ -384,7 +384,7 @@ static int _disassembleItem(int itemIndex)
                 }
             }
         } else {
-            vs_battle_inventoryWeapon* weapon = &_inventory->weapons[i];
+            vs_main_inventoryWeapon* weapon = &_inventory->weapons[i];
             _inventory->blades[weapon->blade - 1].assembledWeaponIndex = 0;
             _inventory->grips[weapon->grip - 1].assembledWeaponIndex = 0;
 
@@ -445,7 +445,7 @@ static int _consolidateMiscItems(int lootIndex)
     int i;
     int j;
     int var_v0;
-    vs_battle_inventoryMisc* item;
+    vs_main_inventoryMisc* item;
     vs_battle_menuItem_t* menuItem;
 
     if (lootIndex != 0) {
@@ -469,7 +469,7 @@ static int _consolidateMiscItems(int lootIndex)
         if (_lootLeftEdge == 6) {
 
             amountToAdd = 0;
-            item = vs_battle_inventory.misc;
+            item = vs_main_inventory.misc;
 
             for (i = 0; i < 64; ++i, ++item) {
                 if (item->id == itemId) {
@@ -678,10 +678,10 @@ static int _consolidateMiscItems(int lootIndex)
     return 0;
 }
 
-static int _copyBladeToInventory(vs_battle_inventoryBlade* source, int weapon)
+static int _copyBladeToInventory(vs_main_inventoryBlade* source, int weapon)
 {
     int index = 1;
-    vs_battle_inventoryBlade* blade = _inventory->blades;
+    vs_main_inventoryBlade* blade = _inventory->blades;
 
     while (blade->id != 0) {
         ++blade;
@@ -698,10 +698,10 @@ static int _copyBladeToInventory(vs_battle_inventoryBlade* source, int weapon)
     return index;
 }
 
-static int _copyGripToInventory(vs_battle_inventoryGrip* source, int weaponIndex)
+static int _copyGripToInventory(vs_main_inventoryGrip* source, int weaponIndex)
 {
     int index = 1;
-    vs_battle_inventoryGrip* grip = _inventory->grips;
+    vs_main_inventoryGrip* grip = _inventory->grips;
 
     while (grip->id != 0) {
         ++grip;
@@ -718,10 +718,10 @@ static int _copyGripToInventory(vs_battle_inventoryGrip* source, int weaponIndex
     return index;
 }
 
-static int _copyGemToInventory(vs_battle_inventoryGem* source, int item)
+static int _copyGemToInventory(vs_main_inventoryGem* source, int item)
 {
     int index = 1;
-    vs_battle_inventoryGem* gem = _inventory->gems;
+    vs_main_inventoryGem* gem = _inventory->gems;
 
     while (gem->id != 0) {
         ++gem;
@@ -741,7 +741,7 @@ static int _copyGemToInventory(vs_battle_inventoryGem* source, int item)
 static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
 {
     int i;
-    vs_battle_inventoryWeapon* slot = _inventory->weapons;
+    vs_main_inventoryWeapon* slot = _inventory->weapons;
     int index = 1;
 
     while (slot->blade != 0) {
@@ -767,10 +767,10 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
     return index;
 }
 
-static int _copyArmorToInventory(vs_battle_inventoryArmor* source)
+static int _copyArmorToInventory(vs_main_inventoryArmor* source)
 {
     int index = 1;
-    vs_battle_inventoryArmor* armor = _inventory->armor;
+    vs_main_inventoryArmor* armor = _inventory->armor;
 
     while (armor->id != 0) {
         ++armor;
@@ -790,7 +790,7 @@ static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 {
     int i;
 
-    vs_battle_inventoryShield* shield = _inventory->shields;
+    vs_main_inventoryShield* shield = _inventory->shields;
     int index = 1;
 
     while (shield->base.id != 0) {
@@ -818,7 +818,7 @@ static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 static int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
 {
     int index = 1;
-    vs_battle_inventoryMisc* item = _inventory->misc;
+    vs_main_inventoryMisc* item = _inventory->misc;
 
     while (item->id != 0) {
         ++index;
@@ -840,7 +840,7 @@ static void _updateLootList(void)
     _lootListItem* loot = _lootList;
 
     for (i = 0; i < _lootListCount; ++i, ++loot) {
-        loot->state = vs_mainMenu_copyItem(loot->itemCategory, &vs_battle_inventory,
+        loot->state = vs_mainMenu_copyItem(loot->itemCategory, &vs_main_inventory,
                           loot->itemIndex, _inventory)
                    != 0;
     }
@@ -885,8 +885,8 @@ static char* _itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "AR
 static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
 {
     int i;
-    vs_battle_inventoryShield* shield;
-    vs_battle_inventoryWeapon* weapon;
+    vs_main_inventoryShield* shield;
+    vs_main_inventoryWeapon* weapon;
 
     int category = arg1->itemCategory;
     int count = 0;
@@ -1112,8 +1112,8 @@ static void _displayCurrentLoot(int x)
 
         switch (loot->itemCategory) {
         case itemCategoryWeapon: {
-            vs_battle_inventoryWeapon* weapon = &_inventory->weapons[index];
-            vs_battle_inventoryBlade* blade = &_inventory->blades[weapon->blade - 1];
+            vs_main_inventoryWeapon* weapon = &_inventory->weapons[index];
+            vs_main_inventoryBlade* blade = &_inventory->blades[weapon->blade - 1];
             menuItem =
                 vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0, weapon->name);
             menuItem->icon = blade->category;
@@ -1121,7 +1121,7 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryBlade: {
-            vs_battle_inventoryBlade* blade2 = &_inventory->blades[index];
+            vs_main_inventoryBlade* blade2 = &_inventory->blades[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[blade2->id]);
             menuItem->icon = blade2->category;
@@ -1129,14 +1129,14 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGrip: {
-            vs_battle_inventoryGrip* grip = &_inventory->grips[index];
+            vs_main_inventoryGrip* grip = &_inventory->grips[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[grip->id]);
             menuItem->icon = grip->category + 10;
             break;
         }
         case itemCategoryShield: {
-            vs_battle_inventoryShield* shield = &_inventory->shields[index];
+            vs_main_inventoryShield* shield = &_inventory->shields[index];
             menuItem = vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0,
                 vs_mainMenu_itemNames[shield->base.id]);
             menuItem->icon = 15;
@@ -1144,7 +1144,7 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryArmor: {
-            vs_battle_inventoryArmor* armor = &_inventory->armor[index];
+            vs_main_inventoryArmor* armor = &_inventory->armor[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[armor->id]);
             menuItem->icon = armor->category + 0xE;
@@ -1152,14 +1152,14 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGem: {
-            vs_battle_inventoryGem* gem = &_inventory->gems[index];
+            vs_main_inventoryGem* gem = &_inventory->gems[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[gem->id]);
             menuItem->icon = 22;
             break;
         }
         case itemCategoryMisc: {
-            vs_battle_inventoryMisc* misc = &_inventory->misc[index];
+            vs_main_inventoryMisc* misc = &_inventory->misc[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[misc->id]);
             menuItem->count = misc->count;
@@ -1212,48 +1212,48 @@ static void _populateLootItem(int lootIndex)
     int rowType;
     int itemIndex = _lootList[lootIndex].itemIndex;
 
-    vs_battle_memcpy(_inventoryBackup, &vs_battle_inventory, sizeof *_inventoryBackup);
-    vs_battle_memcpy(&vs_battle_inventory, _inventory, sizeof vs_battle_inventory);
+    vs_battle_memcpy(_inventoryBackup, &vs_main_inventory, sizeof *_inventoryBackup);
+    vs_battle_memcpy(&vs_main_inventory, _inventory, sizeof vs_main_inventory);
 
     switch (_lootList[lootIndex].itemCategory) {
     case itemCategoryWeapon:
-        vs_mainMenu_initUiWeapon(&vs_battle_inventory.weapons[itemIndex], menuText,
+        vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[itemIndex], menuText,
             &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryBlade:
-        vs_mainMenu_setUiBlade(&vs_battle_inventory.blades[itemIndex], menuText, &rowType,
+        vs_mainMenu_setUiBlade(&vs_main_inventory.blades[itemIndex], menuText, &rowType,
             vs_battle_stringBuf);
         break;
 
     case itemCategoryGrip:
-        vs_mainMenu_setUiGrip(&vs_battle_inventory.grips[itemIndex], menuText, &rowType,
-            vs_battle_stringBuf);
+        vs_mainMenu_setUiGrip(
+            &vs_main_inventory.grips[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryShield:
-        vs_mainMenu_initUiShield(&vs_battle_inventory.shields[itemIndex], menuText,
+        vs_mainMenu_initUiShield(&vs_main_inventory.shields[itemIndex], menuText,
             &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryArmor:
-        vs_mainMenu_initUiArmor(&vs_battle_inventory.armor[itemIndex], menuText, &rowType,
-            vs_battle_stringBuf);
+        vs_mainMenu_initUiArmor(
+            &vs_main_inventory.armor[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryGem:
-        vs_mainMenu_setUiGem(&vs_battle_inventory.gems[itemIndex], menuText, &rowType,
-            vs_battle_stringBuf);
+        vs_mainMenu_setUiGem(
+            &vs_main_inventory.gems[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryMisc:
-        vs_mainMenu_setUiItem(&vs_battle_inventory.misc[itemIndex], menuText, &rowType,
-            vs_battle_stringBuf);
+        vs_mainMenu_setUiItem(
+            &vs_main_inventory.misc[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
     }
 
     vs_mainmenu_setInformationMessage(menuText[1]);
-    vs_battle_memcpy(&vs_battle_inventory, _inventoryBackup, sizeof vs_battle_inventory);
+    vs_battle_memcpy(&vs_main_inventory, _inventoryBackup, sizeof vs_main_inventory);
 }
 
 static int _discardItems(int init)
@@ -1549,7 +1549,7 @@ int _processLootMenu(int initialize)
                 loot = &_lootList[i];
 
                 if (vs_mainMenu_copyItem(loot->itemCategory | copyItemFlagsWrite,
-                        &vs_battle_inventory, loot->itemIndex, _inventory)
+                        &vs_main_inventory, loot->itemIndex, _inventory)
                     != 0) {
                     if (loot->itemCategory == itemCategoryMisc) {
 
@@ -1602,7 +1602,7 @@ int _processLootMenu(int initialize)
                     }
                 }
 
-                vs_mainMenu_copyItem(loot->itemCategory | 0x10, &vs_battle_inventory,
+                vs_mainMenu_copyItem(loot->itemCategory | 0x10, &vs_main_inventory,
                     loot->itemIndex, _inventory);
 
                 loot->unk2 = 1;

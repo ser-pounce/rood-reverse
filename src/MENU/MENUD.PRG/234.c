@@ -20,7 +20,7 @@ int func_80106C64(int, char**, int*, char*);
 
 extern u_long* D_1F800000[];
 
-void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon* source,
+void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_main_inventoryWeapon* source,
     vs_menu_containerData* container)
 {
     int i;
@@ -56,7 +56,7 @@ void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_battle_inventoryWeapon
     vs_main_freeHeapR(temp);
 }
 
-void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_battle_inventoryShield* source,
+void vs_menuD_initUiShield(vs_battle_uiShield* target, vs_main_inventoryShield* source,
     vs_menu_containerData* container)
 {
     int i;
@@ -127,7 +127,7 @@ static void _initContainerObject(
 
     switch (itemCategory) {
     case itemCategoryWeapon: {
-        vs_battle_inventoryWeapon* weapon = &container->weapons[index];
+        vs_main_inventoryWeapon* weapon = &container->weapons[index];
 
         _initContainerObject(1, weapon->blade - 1, container);
         _initContainerObject(2, weapon->grip - 1, container);
@@ -144,19 +144,19 @@ static void _initContainerObject(
         break;
     }
     case itemCategoryBlade: {
-        vs_battle_inventoryBlade* blade = &container->blades[index];
+        vs_main_inventoryBlade* blade = &container->blades[index];
         vs_battle_rMemzero(blade, sizeof *blade);
         blade->index = index + 1;
         break;
     }
     case itemCategoryGrip: {
-        vs_battle_inventoryGrip* grip = &container->grips[index];
+        vs_main_inventoryGrip* grip = &container->grips[index];
         vs_battle_rMemzero(grip, sizeof *grip);
         grip->index = index + 1;
         break;
     }
     case itemCategoryShield: {
-        vs_battle_inventoryShield* shield = &container->shields[index];
+        vs_main_inventoryShield* shield = &container->shields[index];
 
         for (i = 0; i < 3; ++i) {
             int gem = shield->gems[i];
@@ -170,19 +170,19 @@ static void _initContainerObject(
         break;
     }
     case itemCategoryArmor: {
-        vs_battle_inventoryArmor* armor = &container->armor[index];
+        vs_main_inventoryArmor* armor = &container->armor[index];
         vs_battle_rMemzero(armor, sizeof *armor);
         armor->index = index + 1;
         break;
     }
     case itemCategoryGem: {
-        vs_battle_inventoryGem* gem = &container->gems[index];
+        vs_main_inventoryGem* gem = &container->gems[index];
         vs_battle_rMemzero(gem, sizeof *gem);
         gem->index = index + 1;
         break;
     }
     case itemCategoryMisc: {
-        vs_battle_inventoryMisc* item = &container->misc[index];
+        vs_main_inventoryMisc* item = &container->misc[index];
         vs_battle_rMemzero(item, sizeof *item);
         item->index = index + 1;
         break;
@@ -302,8 +302,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
 
     switch (itemCategory) {
     case itemCategoryWeapon: {
-        vs_battle_inventoryWeapon* source = &sourceContainer->weapons[sourceSlot];
-        vs_battle_inventoryWeapon* target = &targetContainer->weapons[targetSlot];
+        vs_main_inventoryWeapon* source = &sourceContainer->weapons[sourceSlot];
+        vs_main_inventoryWeapon* target = &targetContainer->weapons[targetSlot];
 
         if (((itemCount != 32)
                 && (_countContainerItems(itemCategoryBlade, targetContainer) != 64))
@@ -346,8 +346,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryBlade: {
-        vs_battle_inventoryBlade* source = &sourceContainer->blades[sourceSlot];
-        vs_battle_inventoryBlade* target = &targetContainer->blades[targetSlot];
+        vs_main_inventoryBlade* source = &sourceContainer->blades[sourceSlot];
+        vs_main_inventoryBlade* target = &targetContainer->blades[targetSlot];
 
         if (itemCount == 64) {
             break;
@@ -363,8 +363,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryGrip: {
-        vs_battle_inventoryGrip* source = &sourceContainer->grips[sourceSlot];
-        vs_battle_inventoryGrip* target = &targetContainer->grips[targetSlot];
+        vs_main_inventoryGrip* source = &sourceContainer->grips[sourceSlot];
+        vs_main_inventoryGrip* target = &targetContainer->grips[targetSlot];
 
         if (itemCount == 64) {
             break;
@@ -380,8 +380,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryShield: {
-        vs_battle_inventoryShield* source = &sourceContainer->shields[sourceSlot];
-        vs_battle_inventoryShield* target = &targetContainer->shields[targetSlot];
+        vs_main_inventoryShield* source = &sourceContainer->shields[sourceSlot];
+        vs_main_inventoryShield* target = &targetContainer->shields[targetSlot];
 
         if (itemCount == 32) {
             break;
@@ -418,8 +418,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryArmor: {
-        vs_battle_inventoryArmor* source = &sourceContainer->armor[sourceSlot];
-        vs_battle_inventoryArmor* target = &targetContainer->armor[targetSlot];
+        vs_main_inventoryArmor* source = &sourceContainer->armor[sourceSlot];
+        vs_main_inventoryArmor* target = &targetContainer->armor[targetSlot];
 
         if (itemCount == 64) {
             break;
@@ -434,8 +434,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryGem: {
-        vs_battle_inventoryGem* source = &sourceContainer->gems[sourceSlot];
-        vs_battle_inventoryGem* target = &targetContainer->gems[targetSlot];
+        vs_main_inventoryGem* source = &sourceContainer->gems[sourceSlot];
+        vs_main_inventoryGem* target = &targetContainer->gems[targetSlot];
 
         if (itemCount == 192) {
             break;
@@ -451,8 +451,8 @@ static int _copyContainerItem(int itemCategory, vs_menu_containerData* targetCon
         break;
     }
     case itemCategoryMisc: {
-        vs_battle_inventoryMisc* target = targetContainer->misc;
-        vs_battle_inventoryMisc* source = &sourceContainer->misc[sourceSlot];
+        vs_main_inventoryMisc* target = targetContainer->misc;
+        vs_main_inventoryMisc* source = &sourceContainer->misc[sourceSlot];
 
         subItemCount = source->count;
 
@@ -558,7 +558,7 @@ static void _copyInventoryToContainer(void)
 {
     int i;
 
-    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+    vs_main_inventory_t* inventory = &vs_main_inventory;
     vs_menu_container* container = &vs_menu_inventoryStorage->unk105B0;
 
     vs_battle_rMemzero(&container->data, sizeof container->data);
@@ -596,7 +596,7 @@ static void _copyContainerToInventory(void)
     int i;
 
     vs_menu_container* container = &vs_menu_inventoryStorage->unk105B0;
-    vs_battle_inventory_t* inventory = &vs_battle_inventory;
+    vs_main_inventory_t* inventory = &vs_main_inventory;
 
     for (i = 0; i < 7; ++i) {
         int j;
@@ -1131,7 +1131,7 @@ int _armorNavigation(int arg0)
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A45, 7);
             vs_mainMenu_setArmorStats(vs_menuD_containerData->indices.armor[D_80109A46]);
-            if (vs_battle_inventory
+            if (vs_main_inventory
                     .armor[vs_menuD_containerData->indices.armor[D_80109A46] - 1]
                     .category
                 != 7) {
@@ -1309,7 +1309,7 @@ static void _sortWeaponsByStat(int stat)
     int sortedIndex;
     int sourceIndex;
 
-    vs_battle_inventoryWeapon* sourceWeapons = vs_menuD_containerData->data.weapons;
+    vs_main_inventoryWeapon* sourceWeapons = vs_menuD_containerData->data.weapons;
     u_short* targetIndices =
         _getContainerIndicesOffset(itemCategoryWeapon, vs_menuD_containerData);
     vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
@@ -1391,7 +1391,7 @@ static void _sortShieldsByStat(int arg0)
     int var_s3;
     int temp_s0;
 
-    vs_battle_inventoryShield* temp_s5 = vs_menuD_containerData->data.shields;
+    vs_main_inventoryShield* temp_s5 = vs_menuD_containerData->data.shields;
     u_short* temp_s6 = _getContainerIndicesOffset(3, vs_menuD_containerData);
     int var_s4 = 0;
 
@@ -1431,7 +1431,7 @@ static void _sortShieldsByStat(int arg0)
     vs_battle_memcpy(temp_s6, &sp178, sizeof sp178);
 }
 
-static int _getItemStat(int arg0, vs_battle_inventoryMisc* item)
+static int _getItemStat(int arg0, vs_main_inventoryMisc* item)
 {
     if (arg0 == 0) {
         return -item->id;
@@ -1448,7 +1448,7 @@ static void _sortItemsByStat(int arg0)
     int var_s5;
     int temp_s0;
     u_short* temp_s7;
-    vs_battle_inventoryMisc* item;
+    vs_main_inventoryMisc* item;
 
     item = vs_menuD_containerData->data.misc;
     temp_s7 = _getContainerIndicesOffset(6, vs_menuD_containerData);
@@ -1952,7 +1952,7 @@ void func_80106504(void)
 int _getWeaponsubItemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryWeapon* temp = &vs_menuD_containerData->data.weapons[arg0];
+    vs_main_inventoryWeapon* temp = &vs_menuD_containerData->data.weapons[arg0];
     int count = 0;
 
     for (i = 0; i < vs_menuD_containerData->data.grips[temp->grip - 1].gemSlots; ++i) {
@@ -1964,7 +1964,7 @@ int _getWeaponsubItemCount(int arg0)
 int _getShieldsubItemCount(int arg0)
 {
     int i;
-    vs_battle_inventoryShield* shield = &vs_menuD_containerData->data.shields[arg0];
+    vs_main_inventoryShield* shield = &vs_menuD_containerData->data.shields[arg0];
     int count = 0;
 
     for (i = 0; i < shield->base.gemSlots; ++i) {

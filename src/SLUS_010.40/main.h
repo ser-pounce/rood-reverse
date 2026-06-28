@@ -370,14 +370,14 @@ typedef struct {
 } vs_main_mapStatus_t;
 
 typedef struct {
-    vs_battle_inventoryWeapon weapons[8];
-    vs_battle_inventoryShield shields[8]; // 0x100
-    vs_battle_inventoryBlade blades[16]; // 0x280
-    vs_battle_inventoryGrip grips[16]; // 0x540
-    vs_battle_inventoryArmor armor[16]; // 0x640
-    vs_battle_inventoryGem gems[48]; // 0x8C0
-    vs_battle_inventoryMisc misc[64]; // 0xE00
-} vs_battle_inventory_t;
+    vs_main_inventoryWeapon weapons[8];
+    vs_main_inventoryShield shields[8]; // 0x100
+    vs_main_inventoryBlade blades[16]; // 0x280
+    vs_main_inventoryGrip grips[16]; // 0x540
+    vs_main_inventoryArmor armor[16]; // 0x640
+    vs_main_inventoryGem gems[48]; // 0x8C0
+    vs_main_inventoryMisc misc[64]; // 0xE00
+} vs_main_inventory_t;
 
 typedef struct {
     char unk0;
@@ -452,7 +452,7 @@ extern int vs_main_startState;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern vs_battle_inventory_t vs_battle_inventory;
+extern vs_main_inventory_t vs_main_inventory;
 extern D_80061068_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];

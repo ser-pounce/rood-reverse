@@ -66,8 +66,6 @@ confirm-reset:
 %/:
 	$(MKDIR) $(MKDIRFLAGS) $(@D)
 
-pad = @$(TRUNCATE) -s $1 $@
-
 .SUFFIXES:
 %: %,v
 %: RCS/%,v

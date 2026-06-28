@@ -4,7 +4,7 @@ mainmenu_LDLIBS := $(patsubst %,$(BUILD)/data/MENU/MENU%.PRG.elf,0 1 2 3 4 5 7 8
 $(BUILD)/data/MENU/MAINMENU.PRG: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDLIBS += $(mainmenu_LDLIBS)
 
-$(BUILD)/data/MENU/MAINMENU.PRG.elf: LDFLAGS += \
+$(BUILD)/data/MENU/MAINMENU.PRG.elf: LDFLAGS += -r \
 	--retain-symbols-file=config/MENU/MAINMENU.PRG/exports.txt
 
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections

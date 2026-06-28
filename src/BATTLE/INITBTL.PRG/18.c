@@ -240,7 +240,7 @@ void func_800F9CCC(void)
         vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor, NULL);
 
         for (j = 0; j < 16; ++j) {
-            if (vs_battle_inventory.armor[j].bodyPart == i + 1) {
+            if (vs_battle_inventory.armor[j].limb == i + 1) {
                 vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor,
                     &vs_battle_inventory.armor[j]);
             }
@@ -250,7 +250,7 @@ void func_800F9CCC(void)
     vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, NULL);
 
     for (i = 0; i < 16; ++i) {
-        if (vs_battle_inventory.armor[i].bodyPart == 7) {
+        if (vs_battle_inventory.armor[i].limb == 7) {
             vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory,
                 &vs_battle_inventory.armor[i]);
         }

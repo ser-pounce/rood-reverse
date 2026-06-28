@@ -2260,7 +2260,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                     vs_mainMenu_initUiArmor(
                         &vs_menuD_containerData->data.armor[itemIndex], &text[i * 2],
                         &rowTypes[i], c);
-                    if (vs_menuD_containerData->data.armor[itemIndex].bodyPart != 0) {
+                    if (vs_menuD_containerData->data.armor[itemIndex].limb != 0) {
                         rowType = 0xCA00;
                     }
                     break;
@@ -2690,7 +2690,7 @@ loop_1:
             temp_s2 = 0x4A;
             break;
         case 4:
-            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].bodyPart;
+            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].limb;
             temp_s2 = 0x4A;
             break;
         case 6:
@@ -2793,7 +2793,7 @@ loop_1:
             temp_s0 = vs_menuD_containerData->data.shields[temp_s3].isEquipped != 0;
             break;
         case 4:
-            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].bodyPart != 0;
+            temp_s0 = vs_menuD_containerData->data.armor[temp_s3].limb != 0;
             break;
         case 6:
             if (vs_menuD_containerData->data.misc[temp_s3].id >= 0x1CA) {

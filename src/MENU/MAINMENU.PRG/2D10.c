@@ -445,7 +445,7 @@ void vs_mainMenu_setArmorStats(int index)
 
     vs_mainMenu_resetStats();
     if (index != 0) {
-        u_int temp_a0 = vs_mainMenu_armor[index - 1].bodyPart - 1;
+        u_int temp_a0 = vs_mainMenu_armor[index - 1].limb - 1;
         if (temp_a0 < 5) {
             armor = &vs_battle_characterState->unk3C->limbs[temp_a0].armor;
         } else {

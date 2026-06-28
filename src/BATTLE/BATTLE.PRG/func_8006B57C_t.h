@@ -87,7 +87,7 @@ typedef struct {
     signed char classes[8];
     signed char affinities[8];
     u_short material;
-    u_char bodyPart;
+    u_char limb;
     u_char index;
 } vs_battle_inventoryArmor;
 

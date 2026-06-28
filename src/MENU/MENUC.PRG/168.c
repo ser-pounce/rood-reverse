@@ -2424,8 +2424,8 @@ static int _repairMenu(int arg0)
                     } else {
                         armor->currentPp = 0;
                     }
-                    if (armor->bodyPart != 0) {
-                        vs_battle_equipArmor(armor->bodyPart - 1, armor);
+                    if (armor->limb != 0) {
+                        vs_battle_equipArmor(armor->limb - 1, armor);
                     }
                 }
             }
@@ -3525,7 +3525,7 @@ static void _initCombineArmor(int arg0)
     }
 
     armor = &D_8010BD54;
-    armor->bodyPart = 0;
+    armor->limb = 0;
 
     vs_mainMenu_resetStats();
 
@@ -3613,7 +3613,7 @@ static int _initUiArmor(int arg0)
                                 [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
                             vs_battle_rowTypeBuf[var_s4] |= 1;
                         }
-                        if (var_s2->bodyPart != 0) {
+                        if (var_s2->limb != 0) {
                             vs_battle_rowTypeBuf[var_s4] |= 0xCA00;
                         }
                         _availableItems[var_s4] = itemId;
@@ -3662,7 +3662,7 @@ static void _setArmorMenuItem(
 {
     menuItem->icon = armor->category + 14;
     menuItem->material = armor->material;
-    menuItem->itemState = armor->bodyPart != 0;
+    menuItem->itemState = armor->limb != 0;
 }
 
 static int _combineArmorMenu(int arg0)
@@ -3892,7 +3892,7 @@ static int _combineArmorMenu(int arg0)
         var_s1 = 0;
 
         for (i = 0; i < 2; ++i) {
-            var_s1 |= vs_battle_inventory.armor[D_8010BD7C[i] - 1].bodyPart;
+            var_s1 |= vs_battle_inventory.armor[D_8010BD7C[i] - 1].limb;
         }
         if (var_s1 == 0) {
             var_a0_2 =
@@ -3922,10 +3922,10 @@ static int _combineArmorMenu(int arg0)
             vs_mainMenu_menuItemFlyoutLeft(0);
             for (i = 0; i < 2; ++i) {
                 armor = &vs_battle_inventory.armor[D_8010BD7C[i] - 1];
-                var_s1 = armor->bodyPart;
+                var_s1 = armor->limb;
                 if (var_s1 != 0) {
                     vs_battle_equipArmor(var_s1 - 1, NULL);
-                    armor->bodyPart = 0;
+                    armor->limb = 0;
                 }
                 vs_mainMenu_initItem(4, D_8010BD7C[i]);
             }

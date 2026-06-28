@@ -115,7 +115,7 @@ vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int row, int index, int f
     return menuItem;
 }
 
-static char vs_mainMenu_weaponHands[] = { 0, 0, 1, 0, 1, 0, 1, 1, 1, 0 };
+char vs_mainMenu_weaponHands[] = { 0, 0, 1, 0, 1, 0, 1, 1, 1, 0 };
 
 void vs_mainMenu_setUiWeapon(
     vs_battle_uiWeapon* weapon, char** text, int* rowTypes, char* buf)

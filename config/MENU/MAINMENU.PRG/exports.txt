@@ -1,3 +1,9 @@
+D_801022C4
+D_801022D5
+D_801022D8
+D_801023D0
+D_801023E3
+D_801024B8
 func_800F9A24
 func_800F9A78
 func_800F9CB0
@@ -15,7 +21,9 @@ func_80100414
 func_80100814
 func_80100A5C
 func_801013F8
+vs_mainMenu_armor
 vs_mainMenu_clearMenuExcept
+vs_mainMenu_currentUiItem
 vs_mainMenu_dismissTextBox
 vs_mainmenu_drawButton
 vs_mainMenu_drawButtonUiBackground
@@ -23,6 +31,8 @@ vs_mainMenu_drawClassAffinityType
 vs_mainMenu_drawDpPpbars
 vs_mainMenu_drawRowIcon
 vs_mainMenu_ensureItemNamesLoaded
+vs_mainMenu_equipmentStats
+vs_mainMenu_equipmentSubtype
 vs_mainMenu_findItem
 vs_mainMenu_flyoutLeftExcept
 vs_mainMenu_flyoutMenuRightAndHoistSelection
@@ -38,10 +48,15 @@ vs_mainMenu_initUiArmor
 vs_mainMenu_initUiShield
 vs_mainMenu_initUiWeapon
 vs_mainMenu_initWeaponDetailsMenu
+vs_mainMenu_inventoryIndices
+vs_mainMenu_inventoryItemCapacities
 vs_mainMenu_isLevelledSpell
+vs_mainMenu_itemHelp
+vs_mainMenu_itemNames
 vs_mainMenu_loadItemNames
 vs_mainMenu_menuItemFlyoutLeft
 vs_mainMenu_menuItemFlyoutRight
+vs_mainMenu_miscItemToSkillMap
 vs_mainMenu_printInformation
 vs_mainMenu_processItemActionMenu
 vs_mainmenu_ready
@@ -66,3 +81,4 @@ vs_mainMenu_setUiItem
 vs_mainMenu_setUiWeaponStats
 vs_mainMenu_unequipAllWeapons
 vs_mainMenu_unequipShield
+vs_mainMenu_weaponHands

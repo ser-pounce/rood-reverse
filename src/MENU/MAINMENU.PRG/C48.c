@@ -345,7 +345,7 @@ void vs_mainMenu_exec(int arg0)
                 } else if (selectedMenu == 3) {
                     var_s4 = vs_menu2_skillUnlock(submenuState);
                 } else if (selectedMenu == 14) {
-                    var_s4 = func_80108C6C(submenuState);
+                    var_s4 = vs_menuD_exec(submenuState);
                 } else if (selectedMenu == 8) {
                     var_s4 = vs_menu8_execRename(submenuState);
                 } else if (selectedMenu == 13) {

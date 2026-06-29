@@ -40,7 +40,9 @@ vs_battle_actors
 vs_battle_animationIndices
 vs_battle_applyAccessory
 vs_battle_applyShield
+vs_battle_applyShieldStats
 vs_battle_applyWeapon
+vs_battle_applyWeaponStats
 vs_battle_chainAbilitiesUnlocked
 vs_battle_chainAbilityOffsets
 vs_battle_characterState

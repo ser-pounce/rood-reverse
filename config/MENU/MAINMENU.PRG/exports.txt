@@ -27,6 +27,7 @@ func_80100A5C
 func_80101268
 func_801013F8
 vs_mainMenu_armor
+vs_mainMenu_blades
 vs_mainMenu_clearMenuExcept
 vs_mainMenu_copyItem
 vs_mainMenu_currentUiItem
@@ -44,11 +45,13 @@ vs_mainMenu_equipmentSubtype
 vs_mainMenu_findItem
 vs_mainMenu_flyoutLeftExcept
 vs_mainMenu_flyoutMenuRightAndHoistSelection
+vs_mainMenu_gems
 vs_mainMenu_getConfirmedRow
 vs_mainMenu_getFirstEmptyItemSlot
 vs_mainMenu_getItemCount
 vs_mainMenu_getSelectedItemAction
 vs_mainmenu_getSelectedRow
+vs_mainMenu_grips
 vs_mainMenu_hideMenu
 vs_mainMenu_initItem
 vs_mainMenu_initSetShieldGemMenu
@@ -97,8 +100,10 @@ vs_mainMenu_setUiItem
 vs_mainMenu_setUiShield
 vs_mainMenu_setUiWeapon
 vs_mainMenu_setUiWeaponStats
+vs_mainMenu_shields
 vs_mainMenu_strIntAgi
 vs_mainMenu_unequipAllWeapons
 vs_mainMenu_unequipShield
 vs_mainMenu_weaponHands
+vs_mainMenu_weapons
 vs_menu_inventoryStorage

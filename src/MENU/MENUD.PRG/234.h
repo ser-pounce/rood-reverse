@@ -1,7 +1,7 @@
 #pragma once
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 
-int func_80108C6C(char*);
+int vs_menuD_exec(char*);
 void vs_menuD_initUiWeapon(
     vs_battle_uiWeapon*, vs_main_inventoryWeapon*, vs_menu_containerData*);
 void vs_menuD_initUiShield(

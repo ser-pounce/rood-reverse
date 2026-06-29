@@ -1,3 +1,4 @@
+_submenuState
 D_800EB9AE
 D_800EB9AF
 D_800EB9B0
@@ -17,6 +18,15 @@ D_800F4EA0
 D_800F4EE8
 D_800F5210
 func_8007ACB0
+func_8007C36C
+func_8007DD50
+func_8007DDAC
+func_8007DDB8
+func_8007DDD4
+func_8007DDF8
+func_8007DE2C
+func_8007DE44
+func_8007DE5C
 func_8007DFF0
 func_8007E0A8
 func_8008A4DC
@@ -123,6 +133,7 @@ vs_battle_setSpriteDefault
 vs_battle_setSpriteDefaultTexPage
 vs_battle_setStateFlag
 vs_battle_setTextBox
+vs_battle_setTimImage
 vs_battle_shamanSpellIds
 vs_battle_shortcutInvoked
 vs_battle_sorcererSpellIds

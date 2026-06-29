@@ -24,13 +24,18 @@ func_80041C68
 func_80042CA0
 func_80042CB0
 func_800438C8
+func_80045000
 func_8004552C
+func_80045BFC
+func_80045C74
+func_80045D64
 LoadImage
 LoadImage2
 memset
 nextfile
 open
 OpenEvent
+rand
 rcos
 read
 rename
@@ -62,6 +67,7 @@ vs_main_buttonsState
 vs_main_bzero
 vs_main_cdEnqueue
 vs_main_cdEnqueuePriority
+vs_main_clearMusicLoadQueue
 vs_main_enableReset
 vs_main_drawEnv
 vs_main_frameBuf
@@ -74,6 +80,8 @@ vs_main_inventory
 vs_main_inventoryIndices
 vs_main_jumpToBattle
 vs_main_loadClut
+vs_main_loadMusicSlot
+vs_battle_mapCompletionFlags
 vs_main_mapStatus
 vs_main_materialModifiers
 vs_main_memcpy
@@ -85,6 +93,7 @@ vs_main_setMonoSound
 vs_main_settings
 vs_main_skills
 vs_main_skillsLearned
+vs_main_soundData
 vs_main_stateFlags
 vs_main_stickPosBuf
 write

@@ -4,6 +4,7 @@ $(BUILD)/data/MENU/MENUB.PRG: $(menu9_LDLIBS)
 $(BUILD)/data/MENU/MENUB.PRG: LDLIBS += $(menu9_LDLIBS)
 $(BUILD)/data/MENU/MENUB.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
+$(BUILD)/data/MENU/MENUB.PRG $(BUILD)/data/MENU/MENUB.PRG.elf: LDSCRIPT := link.ld
 
 $(BUILD)/data/MENU/MENUB.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/MENU/MENUB.PRG/exports.txt

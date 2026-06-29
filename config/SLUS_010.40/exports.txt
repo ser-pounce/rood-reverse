@@ -41,8 +41,10 @@ SetFarColor
 SetFogNear
 SetRotMatrix
 SetTransMatrix
+sprintf
 StoreImage
 strcpy
+strlen
 TestEvent
 vs_main_allocateCdQueueSlot
 vs_main_allocHeap
@@ -53,9 +55,11 @@ vs_main_battleAbilitiesPointsRequirements
 vs_main_buttonRepeat
 vs_main_buttonsPressed
 vs_main_buttonsPreviousState
+vs_main_buttonsReleased
 vs_main_buttonsState
 vs_main_bzero
 vs_main_cdEnqueue
+vs_main_cdEnqueuePriority
 vs_main_enableReset
 vs_main_frameBuf
 vs_main_freeCdQueueSlot

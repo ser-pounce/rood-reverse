@@ -13,4 +13,4 @@ $(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o,2D10 C48): CC1FLAGS += -Wno-unin
 $(BUILD)/config/MENU/MAINMENU.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
-	$(patsubst %,config/MENU/MENU%.PRG/symbol_addrs.txt,0 1 2 3 4 5 7 8 9 B C D E F)
+	$(patsubst %,config/MENU/MENU%.PRG/symbol_addrs.txt,B C D E F)

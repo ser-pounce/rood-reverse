@@ -24,6 +24,7 @@ func_800FFB68
 func_80100414
 func_80100814
 func_80100A5C
+func_80101268
 func_801013F8
 vs_mainMenu_armor
 vs_mainMenu_clearMenuExcept

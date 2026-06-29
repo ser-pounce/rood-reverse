@@ -19,12 +19,17 @@ func_8008A4DC
 func_8008A4FC
 func_8008E7BC
 func_8009AA84
+func_8009CFB0
 func_8009D934
+func_8009F940
 func_800A0204
+func_800A087C
 func_800A0BE0
 func_800A13EC
+func_800AD008
 func_800AFA28
 func_800CB654
+func_800CCCB8
 vs_batle_statusIconTexOffsets
 vs_battle_actors
 vs_battle_animationIndices
@@ -55,6 +60,7 @@ vs_battle_equipShield
 vs_battle_equipWeapon
 vs_battle_getCurrentRoomId
 vs_battle_getCurrentSceneId
+vs_battle_getEmptyObjectDataSlot
 vs_battle_getGeomOffset
 vs_battle_getLimbStatus
 vs_battle_getMapCompletion
@@ -62,6 +68,7 @@ vs_battle_getMenuItem
 vs_battle_getSkillFlags
 vs_battle_getStatusFlags
 vs_battle_getTextBox
+vs_battle_getTextLineLength
 vs_battle_initInformationTextBox
 vs_battle_initSceneAndGetRoomNames
 vs_battle_initTextBox
@@ -69,8 +76,10 @@ vs_battle_isSpellClassUnlocked
 vs_battle_keystreamBits
 vs_battle_limbNames
 vs_battle_loadObjectDataState
+vs_battle_mapCompletionFlags
 vs_battle_mapStickDeadZone
 vs_battle_memcpy
+vs_battle_menu9CursorMemory
 vs_battle_menuState
 vs_battle_menuStrings
 vs_battle_playInvalidSfx

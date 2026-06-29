@@ -26,6 +26,7 @@ func_80042CB0
 func_800438C8
 func_8004552C
 LoadImage
+LoadImage2
 memset
 nextfile
 open
@@ -36,6 +37,7 @@ rename
 RotTransPers
 rsin
 SetDispMask
+SetDrawArea
 SetDrawStp
 SetFarColor
 SetFogNear
@@ -61,6 +63,7 @@ vs_main_bzero
 vs_main_cdEnqueue
 vs_main_cdEnqueuePriority
 vs_main_enableReset
+vs_main_drawEnv
 vs_main_frameBuf
 vs_main_freeCdQueueSlot
 vs_main_freeHeap

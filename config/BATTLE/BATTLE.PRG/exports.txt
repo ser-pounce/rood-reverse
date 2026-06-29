@@ -84,6 +84,7 @@ vs_battle_isSpellClassUnlocked
 vs_battle_keystreamBits
 vs_battle_limbNames
 vs_battle_loadObjectDataState
+vs_battle_manualDisplayState
 vs_battle_mapCompletionFlags
 vs_battle_mapStickDeadZone
 vs_battle_memcpy

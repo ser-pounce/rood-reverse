@@ -11,11 +11,6 @@ options:
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
     - config/SLUS_010.40/symbol_addrs.txt
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-    - config/MENU/MENUB.PRG/symbol_addrs.txt
-    - config/MENU/MENUC.PRG/symbol_addrs.txt
-    - config/MENU/MENUD.PRG/symbol_addrs.txt
-    - config/MENU/MENUE.PRG/symbol_addrs.txt
-    - config/MENU/MENUF.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MAINMENU.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MAINMENU.PRG/undefined_syms_auto.txt
   subalign: 4

@@ -7,6 +7,7 @@ D_800EBC54
 D_800F4538
 D_800F4590
 D_800F4594
+D_800F4E6B
 D_800F4E98
 D_800F4EA0
 D_800F4EE8
@@ -110,7 +111,7 @@ vs_battle_stringBuf
 vs_battle_stringContext
 vs_battle_textBoxes
 vs_battle_toBCD
+vs_battle_uiGradientStop
 vs_battle_unlockedBattleAbility
 vs_battle_unlockedBreakArt
 vs_battle_warlockSpellIds
-D_800F4E6B

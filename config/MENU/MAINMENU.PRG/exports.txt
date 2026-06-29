@@ -57,7 +57,6 @@ vs_mainMenu_initUiWeapon
 vs_mainMenu_initWeaponDetailsMenu
 vs_mainMenu_inventoryIndices
 vs_mainMenu_inventoryItemCapacities
-vs_menu_inventoryStorage
 vs_mainMenu_isLevelledSpell
 vs_mainMenu_itemHelp
 vs_mainMenu_itemNames
@@ -97,3 +96,4 @@ vs_mainMenu_strIntAgi
 vs_mainMenu_unequipAllWeapons
 vs_mainMenu_unequipShield
 vs_mainMenu_weaponHands
+vs_menu_inventoryStorage

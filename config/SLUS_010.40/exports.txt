@@ -23,6 +23,7 @@ firstfile
 func_80041C68
 func_80042CA0
 func_80042CB0
+func_800438C8
 func_8004552C
 LoadImage
 memset

@@ -76,6 +76,7 @@ vs_main_freeHeap
 vs_main_freeHeapR
 vs_main_freeMusic
 vs_main_gametime
+vs_gametime_tickspeed
 vs_main_inventory
 vs_main_inventoryIndices
 vs_main_jumpToBattle
@@ -85,6 +86,7 @@ vs_battle_mapCompletionFlags
 vs_main_mapStatus
 vs_main_materialModifiers
 vs_main_memcpy
+vs_overlay_slots
 vs_main_playSfxDefault
 vs_main_projectionDistance
 vs_main_resetGame

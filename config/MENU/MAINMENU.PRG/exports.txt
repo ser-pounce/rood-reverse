@@ -15,6 +15,7 @@ func_800F9E0C
 func_800F9EB8
 func_800FA2CC
 func_800FA3FC
+func_800FAEBC
 func_800FBB8C
 func_800FBD80
 func_800FDD78
@@ -42,6 +43,7 @@ vs_mainMenu_ensureItemNamesLoaded
 vs_mainMenu_equipmentDetailNavigationMap
 vs_mainMenu_equipmentStats
 vs_mainMenu_equipmentSubtype
+vs_mainMenu_exec
 vs_mainMenu_findItem
 vs_mainMenu_flyoutLeftExcept
 vs_mainMenu_flyoutMenuRightAndHoistSelection
@@ -53,6 +55,7 @@ vs_mainMenu_getSelectedItemAction
 vs_mainmenu_getSelectedRow
 vs_mainMenu_grips
 vs_mainMenu_hideMenu
+vs_mainMenu_initInventory
 vs_mainMenu_initItem
 vs_mainMenu_initSetShieldGemMenu
 vs_mainMenu_initSortUi
@@ -104,6 +107,7 @@ vs_mainMenu_shields
 vs_mainMenu_strIntAgi
 vs_mainMenu_unequipAllWeapons
 vs_mainMenu_unequipShield
+vs_mainMenu_unpackMenubg
 vs_mainMenu_weaponHands
 vs_mainMenu_weapons
 vs_menu_inventoryStorage

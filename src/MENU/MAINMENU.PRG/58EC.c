@@ -324,8 +324,8 @@ void vs_mainMenu_printInformation(int arg0, int arg1)
 }
 
 char vs_mainMenu_isLevelledSpell = 0;
-static char D_801022D5 = 0;
-static char vs_mainMenu_hideMenu = 0;
+char D_801022D5 = 0;
+char vs_mainMenu_hideMenu = 0;
 int D_801022D8 = 0;
 char D_801022DC = 0;
 static short D_801022DE = -4;

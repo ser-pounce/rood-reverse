@@ -28,6 +28,7 @@ func_80101268
 func_801013F8
 vs_mainMenu_armor
 vs_mainMenu_clearMenuExcept
+vs_mainMenu_copyItem
 vs_mainMenu_currentUiItem
 vs_mainMenu_deactivateMenuItem
 vs_mainMenu_dismissTextBox
@@ -72,6 +73,7 @@ vs_mainmenu_ready
 vs_mainMenu_rebuildInventory
 vs_mainMenu_renderCursor
 vs_mainMenu_renderEquipStats
+vs_mainMenu_renderIntColor
 vs_mainMenu_resetStats
 vs_mainMenu_setArmorStats
 vs_mainMenu_setDpPp

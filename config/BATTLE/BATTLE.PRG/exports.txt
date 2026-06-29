@@ -1,5 +1,8 @@
 D_800EB9AE
+D_800EB9AF
 D_800EB9B0
+D_800EB9C4
+D_800EB9C8
 D_800EBBEC
 D_800EBBFC
 D_800EBC00
@@ -17,6 +20,7 @@ func_8007DFF0
 func_8007E0A8
 func_8008A4DC
 func_8008A4FC
+func_8008A6FC
 func_8008E7BC
 func_8009AA84
 func_8009CFB0
@@ -111,6 +115,7 @@ vs_battle_setRoomsUnk0
 vs_battle_setSprite
 vs_battle_setSpriteDefault
 vs_battle_setSpriteDefaultTexPage
+vs_battle_setStateFlag
 vs_battle_setTextBox
 vs_battle_shamanSpellIds
 vs_battle_shortcutInvoked

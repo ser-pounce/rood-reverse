@@ -72,6 +72,7 @@ vs_main_inventoryIndices
 vs_main_jumpToBattle
 vs_main_loadClut
 vs_main_mapStatus
+vs_main_materialModifiers
 vs_main_memcpy
 vs_main_playSfxDefault
 vs_main_projectionDistance

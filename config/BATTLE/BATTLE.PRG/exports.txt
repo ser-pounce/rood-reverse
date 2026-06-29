@@ -76,6 +76,7 @@ vs_battle_getTextLineLength
 vs_battle_initInformationTextBox
 vs_battle_initSceneAndGetRoomNames
 vs_battle_initTextBox
+vs_battle_inWorkshop
 vs_battle_isSpellClassUnlocked
 vs_battle_keystreamBits
 vs_battle_limbNames
@@ -84,6 +85,7 @@ vs_battle_mapCompletionFlags
 vs_battle_mapStickDeadZone
 vs_battle_memcpy
 vs_battle_menu9CursorMemory
+vs_battle_menuItems
 vs_battle_menuState
 vs_battle_menuStrings
 vs_battle_playInvalidSfx

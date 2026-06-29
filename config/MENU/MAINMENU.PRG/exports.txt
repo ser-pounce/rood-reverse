@@ -45,6 +45,7 @@ vs_mainMenu_findItem
 vs_mainMenu_flyoutLeftExcept
 vs_mainMenu_flyoutMenuRightAndHoistSelection
 vs_mainMenu_getConfirmedRow
+vs_mainMenu_getFirstEmptyItemSlot
 vs_mainMenu_getItemCount
 vs_mainMenu_getSelectedItemAction
 vs_mainmenu_getSelectedRow
@@ -64,6 +65,7 @@ vs_mainMenu_itemHelp
 vs_mainMenu_itemNames
 vs_mainMenu_loadItemNames
 vs_mainMenu_mainCursorXY
+vs_mainMenu_menu12Text
 vs_mainMenu_menuItemFlyoutLeft
 vs_mainMenu_menuItemFlyoutRight
 vs_mainMenu_miscItemToSkillMap

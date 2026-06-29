@@ -7,11 +7,6 @@ options:
   src_path: src/MENU/MENUC.PRG
   asset_path: build/assets/MENU/MENUC.PRG
   ld_script_path: build/config/MENU/MENUC.PRG/link.ld
-  symbol_addrs_path: 
-    - config/MENU/MENUC.PRG/symbol_addrs.txt
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-    - config/MENU/MAINMENU.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/MENU/MENUC.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MENUC.PRG/undefined_syms_auto.txt
   subalign: 4

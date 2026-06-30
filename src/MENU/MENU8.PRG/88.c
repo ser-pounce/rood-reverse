@@ -486,7 +486,7 @@ static int _vibrationOptionMenu(int init)
     return 0;
 }
 
-int vs_menu8_exec(char* state)
+int vs_menu8_exec(u_char* state)
 {
     enum state {
         none,

@@ -124,6 +124,7 @@ int vs_battle_getEmptyObjectDataSlot(void)
             return i;
         }
     }
+
     return -1;
 }
 
@@ -139,11 +140,14 @@ int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
             goto found;
         }
     }
+
     slot = -1;
+
 found:
     if (slot == -1) {
         return -1;
     }
+
     dst = &vs_battle_objectDataSlots[slot];
     *dst = *objectData;
     return slot;

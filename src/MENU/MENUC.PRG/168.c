@@ -4289,7 +4289,7 @@ static int _combineTopMenu(int arg0)
     return 0;
 }
 
-int vs_menuC_exec(char* state)
+int vs_menuC_exec(u_char* state)
 {
     static char D_8010BC7F;
 

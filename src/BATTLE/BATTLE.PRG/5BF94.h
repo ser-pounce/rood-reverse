@@ -30,8 +30,10 @@ enum vs_battle_menuItemfadeEffect {
 };
 
 enum vs_battle_menuItemTransition {
+    menuItemTransition_none = 0,
     menuItemTransition_toLeft = 2,
-    menuItemTransition_toTop
+    menuItemTransition_toTop,
+    menuItemTransition_offScreenLeft = 5
 };
 
 typedef struct {

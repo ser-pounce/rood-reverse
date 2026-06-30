@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 
 typedef struct {
     u_int unk0_0 : 8;

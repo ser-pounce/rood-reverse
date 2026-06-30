@@ -1,18 +1,19 @@
-#include <stddef.h>
 #include "278.h"
-#include "../BATTLE/BATTLE.PRG/2842C.h"
-#include "../BATTLE/BATTLE.PRG/30D14.h"
-#include "../BATTLE/BATTLE.PRG/3A1A0.h"
-#include "../BATTLE/BATTLE.PRG/40564.h"
-#include "../BATTLE/BATTLE.PRG/44F14.h"
-#include "../BATTLE/BATTLE.PRG/4A0A8.h"
-#include "../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/2842C.h"
+#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
+#include "src/BATTLE/BATTLE.PRG/40564.h"
+#include "src/BATTLE/BATTLE.PRG/44F14.h"
+#include "src/BATTLE/BATTLE.PRG/4A0A8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 
 void func_800F9A24(int arg0)
 {
     func_800F9A78(arg0);
     func_800F9CB0();
+
     D_800F4538[1]->unk0.unkA_7 = 1;
+
     func_800A0204(1, 1, 0, 0);
 }
 
@@ -35,6 +36,7 @@ void func_800F9A78(int arg0)
     sp10.actorId = 0xFF;
     sp10.unk13 = temp_s2->unk0.unk10;
     sp10.material = 0;
+
     vs_battle_populateDataSlot(&sp10);
 
     if (temp_s2->unk17FD >= 2) {
@@ -49,8 +51,10 @@ void func_800F9A78(int arg0)
         sp10.unk11 = 0xFC;
         sp10.unk13 = temp_s2->unk0.unk10;
         sp10.material = 0;
+
         vs_battle_populateDataSlot(&sp10);
     }
+
     for (i = 0; i < 2; ++i) {
         vs_battle_wepModels_t* temp_s0 =
             vs_battle_wepModels[(temp_s2->unk0.unkF * 2) + i];
@@ -75,10 +79,12 @@ void func_800F9A78(int arg0)
 
     if (temp_s2->unk0.unkF == 0) {
         temp_s3->unk5D8 = vs_main_allocHeap(0x7800);
+
         func_8009C378(temp_s3->unk5D8, temp_s2->unk5D8);
     } else {
         temp_s3->unk5D8 = temp_s2->unk5D8;
     }
+
     temp_s3->unk5B1 = temp_s2->unk5B1;
     temp_s3->unk5B4 = temp_s2->unk5B4;
     temp_s3->unk5B5 = temp_s2->unk5B5;
@@ -101,6 +107,7 @@ void func_800F9CB0(void)
     }
 
     func_8009D468(1, i);
+
     temp_s0->unk0.unk1C.vx = 0;
     temp_s0->unk0.unk1C.vy = 0;
     temp_s0->unk0.unk1C.vz = 0;
@@ -110,6 +117,7 @@ void func_800F9CB0(void)
     sp10.unk0 = -1;
     sp10.unk1 = -1;
     sp10.unk2 = -1;
+
     // BUG: reads junk
     sp18 &= 0xFFFFFF00;
     sp18 |= 2;
@@ -125,11 +133,14 @@ void func_800F9CB0(void)
     } else {
         D_800F4538[16]->unk0.unk8_0 = 0;
     }
+
     sp10.unk0 = 0;
     sp10.unk1 = 0;
     sp10.unk2 = 0;
+
     func_800A0768(1, &sp10);
     func_800A07FC(1, 0);
+
     temp_s0->unk648_16 = 0;
 }
 
@@ -141,17 +152,22 @@ void func_800F9E0C(void)
     temp_s1 = D_800F4538[1];
     sp10[0] = vs_battle_wepModels[2];
     sp10[1] = vs_battle_wepModels[3];
+
     func_8009CFB0(1);
     vs_main_freeHeap(temp_s1);
+
     temp_s1 = D_800F4538[16];
-    if (temp_s1 != 0) {
+
+    if (temp_s1 != NULL) {
         func_8009CFB0(0x10);
         vs_main_freeHeap(temp_s1);
     }
-    if (sp10[0] != 0) {
+
+    if (sp10[0] != NULL) {
         vs_main_freeHeap(sp10[0]);
     }
-    if (sp10[1] != 0) {
+
+    if (sp10[1] != NULL) {
         vs_main_freeHeap(sp10[1]);
     }
 }
@@ -178,6 +194,7 @@ int func_800F9EB8(void* arg0)
     }
 
     func_800AECA0(arg0);
+
     temp_s1->unk5B2 =
         ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
 
@@ -198,17 +215,19 @@ int func_800F9EB8(void* arg0)
         int* p = (int*)0x1F800000;
         new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
-        temp_s1->unk0.unk1C.vx += temp_s1->unk6F4.unk0;
-        temp_s1->unk0.unk1C.vy += temp_s1->unk6F4.unk1;
-        temp_s1->unk0.unk1C.vz += temp_s1->unk6F4.unk2;
+
+        applyVector(&temp_s1->unk0.unk1C, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
+            temp_s1->unk6F4.unk2, +=);
+
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
+
         p = (int*)0x1F800000;
         new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
-        temp_s1->unk0.unk1C.vx -= temp_s1->unk6F4.unk0;
-        temp_s1->unk0.unk1C.vy -= temp_s1->unk6F4.unk1;
-        temp_s1->unk0.unk1C.vz -= temp_s1->unk6F4.unk2;
+
+        applyVector(&temp_s1->unk0.unk1C, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
+            temp_s1->unk6F4.unk2, -=);
     }
 
     if (temp_s1->unk0.unk9_4) {
@@ -218,12 +237,16 @@ int func_800F9EB8(void* arg0)
     for (i = 0; i < 2; ++i) {
         int v = i + 2;
         vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[v];
+
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
             MATRIX* temp_s0 = &temp_s1->unk0.unk6C[temp_a0->unkD];
+
             temp_s0->t[0] -= temp_s1->unk6F4.unk0;
             temp_s0->t[1] -= temp_s1->unk6F4.unk1;
             temp_s0->t[2] -= temp_s1->unk6F4.unk2;
+
             func_800B217C(temp_a0, temp_s0);
+
             temp_s0->t[0] += temp_s1->unk6F4.unk0;
             temp_s0->t[1] += temp_s1->unk6F4.unk1;
             temp_s0->t[2] += temp_s1->unk6F4.unk2;
@@ -266,6 +289,7 @@ int func_800FA238(int arg0, int arg1, int arg2)
 
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* temp_v1 = var_t0[i];
+
         if (var_t0[i] && !var_t0[i]->unk8_0 && !temp_v1->unk9_0
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
             && (temp_v1->unk1E >= arg2) && (new_var >= temp_v1->unk1E)) {
@@ -287,6 +311,7 @@ void func_800FA2CC(void)
 
     for (i = 0; i < 2; ++i) {
         vs_battle_wepModels_t* var_a0 = vs_battle_wepModels[i];
+
         if (var_a0 != 0) {
             if (temp_s1->unk0.unkA_7) {
                 var_a0->unk11 = 0x40;
@@ -300,6 +325,7 @@ void func_800FA2CC(void)
     func_8009E634(temp_s1);
 
     i_2 = 1;
+
     if (temp_s1->unk0.unkA_7) {
         i_2 = 0x65;
     }
@@ -309,9 +335,11 @@ void func_800FA2CC(void)
     temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
     temp_s1->unk6E3 = D_800F49DC;
     temp_s1->unk5BC = *sp10;
+
     func_800AD008(temp_s1, &temp_s1->unkC54);
     func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
     vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);
+
     temp_s1->unkC54.unk540 = 0;
     temp_s1->unk6E0 = 0;
     temp_s1->unk5CD = 0;
@@ -323,9 +351,11 @@ void func_800FA3FC(int arg0)
     vs_battle_objectData sp10;
 
     func_8009CC20(0, 0);
+
     sp10.dataType = 7;
     sp10.index = 0;
     sp10.modelId = arg0;
     sp10.actorId = 0;
+
     vs_battle_populateDataSlot(&sp10);
 }

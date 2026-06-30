@@ -239,7 +239,7 @@ static int _loadMapBackground(int arg0)
     }
 }
 
-int vs_menu5_exec(char* state)
+int vs_menu5_exec(u_char* state)
 {
     enum state { init = 3 };
 

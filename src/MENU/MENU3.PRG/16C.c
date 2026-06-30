@@ -1225,7 +1225,7 @@ static int _equipMenu(int initialize)
 /**
  * Module entrypoint
  */
-int vs_menu3_exec(char* state)
+int vs_menu3_exec(u_char* state)
 {
     enum state {
         none,

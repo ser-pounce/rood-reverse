@@ -1,40 +1,35 @@
-#include "common.h"
 #include "C48.h"
 #include "2D10.h"
 #include "58EC.h"
-#include "../SLUS_010.40/main.h"
-#include "../MENUD.PRG/234.h"
-#include "../BATTLE/BATTLE.PRG/146C.h"
-#include "../BATTLE/BATTLE.PRG/2842C.h"
-#include "../BATTLE/BATTLE.PRG/30D14.h"
-#include "../BATTLE/BATTLE.PRG/44F14.h"
-#include "../BATTLE/BATTLE.PRG/573B8.h"
-#include "../BATTLE/BATTLE.PRG/5BF94.h"
-#include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include "../MENU0.PRG/15AC.h"
-#include "../MENU1.PRG/30.h"
-#include "../MENU2.PRG/64.h"
-#include "../MENU2.PRG/143C.h"
-#include "../MENU3.PRG/16C.h"
-#include "../MENU4.PRG/120.h"
-#include "../MENU5.PRG/4D8.h"
-#include "../MENU7.PRG/260.h"
-#include "../MENU8.PRG/88.h"
-#include "../MENU8.PRG/21A0.h"
-#include "../MENU9.PRG/238.h"
-#include "../MENUB.PRG/260.h"
-#include "../MENUC.PRG/168.h"
-#include "../MENUD.PRG/234.h"
-#include "../MENUE.PRG/494.h"
-#include "../MENUF.PRG/3B8.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/MENU/MENUD.PRG/234.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/2842C.h"
+#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/44F14.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "src/MENU/MENU0.PRG/15AC.h"
+#include "src/MENU/MENU1.PRG/30.h"
+#include "src/MENU/MENU2.PRG/64.h"
+#include "src/MENU/MENU2.PRG/143C.h"
+#include "src/MENU/MENU3.PRG/16C.h"
+#include "src/MENU/MENU4.PRG/120.h"
+#include "src/MENU/MENU5.PRG/4D8.h"
+#include "src/MENU/MENU7.PRG/260.h"
+#include "src/MENU/MENU8.PRG/88.h"
+#include "src/MENU/MENU8.PRG/21A0.h"
+#include "src/MENU/MENU9.PRG/238.h"
+#include "src/MENU/MENUB.PRG/260.h"
+#include "src/MENU/MENUC.PRG/168.h"
+#include "src/MENU/MENUD.PRG/234.h"
+#include "src/MENU/MENUE.PRG/494.h"
+#include "src/MENU/MENUF.PRG/3B8.h"
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>
 #include <limits.h>
-
-int func_800FA238(int arg0, int arg1, int arg2);
-void func_800FA3FC(int arg0);
-void func_800FB3C8(int);
 
 extern u_long* D_1F800000[];
 
@@ -67,9 +62,15 @@ void vs_mainMenu_initInventory(void)
     }
 }
 
-void func_800FA568(void) { }
+static void _nop(void) __attribute__((unused));
+static void _nop(void) { }
 
-int func_800FA570(void)
+/**
+ * Processes the object queue in the hope of finding a free slot.
+ * Unused.
+ */
+int _getNextEmptyObjectDataSlot(void) __attribute__((unused));
+int _getNextEmptyObjectDataSlot(void)
 {
     vs_battle_processObjectDataQueue();
     return vs_battle_getEmptyObjectDataSlot();
@@ -190,6 +191,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 
     subMaxRank = 0;
+
     for (i = 0; i < 11; ++i) {
         if (subMaxParam < _weaponTitleSubmaxThresholds[i]) {
             subMaxRank = i;
@@ -198,6 +200,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 
     maxRank = 0;
+
     for (i = 0; i < 3; ++i) {
         if (maxParam < _weaponTitleMaxThresholds[i]) {
             maxRank = i;
@@ -215,8 +218,9 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
 void vs_mainMenu_menuItemFlyoutLeft(int row)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row + 32);
-    if (menuItem->state != 0) {
-        menuItem->state = 5;
+
+    if (menuItem->state != menuItemTransition_none) {
+        menuItem->state = menuItemTransition_offScreenLeft;
         menuItem->targetPosition0 = -menuItem->w;
     }
 }
@@ -235,8 +239,9 @@ void vs_mainMenu_flyoutLeftExcept(int row)
 void vs_mainMenu_menuItemFlyoutRight(int row)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row);
-    if (menuItem->state != 0) {
-        menuItem->state = 2;
+
+    if (menuItem->state != menuItemTransition_none) {
+        menuItem->state = menuItemTransition_toLeft;
         menuItem->targetPosition0 = 320;
     }
 }
@@ -290,7 +295,9 @@ int func_800FAA20(void)
     static int D_80102034 = 0;
 
     int temp_s0 = ++D_80102034;
+
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
+
     return temp_s0 == 5;
 }
 
@@ -298,19 +305,23 @@ int func_800FAA5C(int arg0)
 {
     if (arg0 & 0x40) {
         vs_battle_menuState.currentState = 0;
+
         func_800C930C(1);
+
         return 0;
     }
+
     if (D_800F4FDB == 0) {
         func_8007E0A8(0x1A, 3, 6);
     }
-    vs_battle_menuState.currentState = 0x7F;
+
+    vs_battle_menuState.currentState = 127;
     return 1;
 }
 
 void vs_mainMenu_exec(int arg0)
 {
-    static int (*_submenuEntrypoints[])(char*) = { vs_menu0_exec, vs_menu1_exec,
+    static int (*_submenuEntrypoints[])(u_char*) = { vs_menu0_exec, vs_menu1_exec,
         vs_menu2_exec, vs_menu3_exec, vs_menu4_exec, vs_menu5_exec, vs_menu7_dataMenu,
         vs_menu8_exec, vs_menu9_exec, vs_menuE_exec };
 
@@ -318,7 +329,6 @@ void vs_mainMenu_exec(int arg0)
     int temp_s5;
     int state;
     char* submenuState;
-    int temp_v1;
     vs_battle_menuState_t* menuState = &vs_battle_menuState;
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
     int var_s4 = 0;
@@ -361,70 +371,91 @@ void vs_mainMenu_exec(int arg0)
                 }
             }
         } else {
-            temp_v1 = *submenuState;
-            switch (temp_v1) {
+
+            switch (*submenuState) {
             case 0:
                 if (!(arg0 & 0x40)) {
+
                     state = 0;
+
                     if (selectedMenu == 1) {
                         state = (D_800F4EA0 & 0xB7) != 0;
                     }
+
                     if (selectedMenu == 2) {
                         state = (D_800F4EA0 & 0x15F) != 0;
                     }
-                    vs_battle_setMenuItem(selectedMenu - 1, 0x140, 0x12, 0x8C, 8,
+
+                    vs_battle_setMenuItem(selectedMenu - 1, 320, 18, 140, 8,
                         (char*)&vs_battle_menuStrings[vs_battle_menuStrings[selectedMenu
                                                                             - 1]])
                         ->unselectable = state;
                 }
+
                 if (((selectedMenu - 4) < 2U) || (selectedMenu == 7)
                     || (selectedMenu == 9)) {
                     func_800FFB68(1);
                 }
+
                 vs_mainMenu_setNextMenuAction(menuActionMenu);
                 vs_mainMenu_clearMenuExcept(selectedMenu - 1);
-                menuItem->state = 2;
-                menuItem->targetPosition0 = 0xB4;
+
+                menuItem->state = menuItemTransition_toLeft;
+                menuItem->targetPosition0 = 180;
                 menuItem->selected = 1;
+
                 if (selectedMenu == 5) {
-                    func_80100414(-2, 0x80);
-                    menuItem->targetPosition0 = 0x140;
+
+                    func_80100414(-2, 128);
+
+                    menuItem->targetPosition0 = 320;
                 }
+
                 *submenuState = 1;
                 break;
+
             case 1:
                 state = menuItem->state;
-                if (state != temp_v1) {
+
+                if (state != 1) {
                     break;
                 }
-                menuItem->state = 3;
-                menuItem->targetPosition0 = 0x12;
+
+                menuItem->state = menuItemTransition_toTop;
+                menuItem->targetPosition0 = 18;
+
                 if (selectedMenu == 5) {
                     menuItem = vs_battle_setMenuItem(
-                        4, 0x140, 0x12, 0x8C, 8, vs_battle_characterState->unk3C->name);
+                        4, 320, 18, 140, 8, vs_battle_characterState->unk3C->name);
                     menuItem->state = 2;
                     menuItem->targetPosition0 = 0xB4;
                     menuItem->selected = state;
                 }
+
                 *submenuState = 3;
                 // Fallthrough
+
             default:
                 if (temp_s5 != 0) {
                     var_s4 = _submenuEntrypoints[selectedMenu - 1](submenuState);
                 }
+
                 break;
             }
         }
     } else {
         vs_mainMenu_setNextMenuAction(menuActionCommand);
+
         state = func_800C930C(0);
+
         if (state != 0) {
             if (state > 0) {
                 state |= 0x40;
             } else {
-                state = 0x1F;
+                state = 31;
                 vs_mainMenu_setNextMenuAction(menuActionNone);
             }
+
             menuState->currentState = state;
         }
     }

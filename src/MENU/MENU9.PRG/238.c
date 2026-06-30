@@ -270,7 +270,7 @@ int _menuInput(void);
  *
  * @return 1 if menu is closing, 0 otherwise.
  */
-int vs_menu9_exec(char* state)
+int vs_menu9_exec(u_char* state)
 {
     static int initDelay;
     static int _initDataComplete;

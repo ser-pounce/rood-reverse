@@ -2272,7 +2272,7 @@ static char _[24] __attribute__((unused));
  *
  * @return 1 if user exited, 0 otherwise.
  */
-int vs_menu4_exec(char* state)
+int vs_menu4_exec(u_char* state)
 {
     enum state {
         none,

@@ -3329,7 +3329,7 @@ static int _displayGameOverScreen(int init)
     return 0;
 }
 
-int vs_menu7_gameOver(char* state)
+int vs_menu7_gameOver(u_char* state)
 {
     enum state {
         init,
@@ -3654,7 +3654,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     vs_main_freeHeapR(targetIndices);
 }
 
-int vs_menu7_saveContainerMenu(char* state)
+int vs_menu7_saveContainerMenu(u_char* state)
 {
     enum state {
         init,
@@ -3894,7 +3894,7 @@ static void _drawPlayTime(void)
     vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
 }
 
-int vs_menu7_dataMenu(char* state)
+int vs_menu7_dataMenu(u_char* state)
 {
     enum state {
         none = 0,

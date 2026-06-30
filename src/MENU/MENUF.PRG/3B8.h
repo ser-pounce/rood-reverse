@@ -1,3 +1,3 @@
 #pragma once
 
-int vs_menuF_exec(char* arg0);
+int vs_menuF_exec(u_char* arg0);

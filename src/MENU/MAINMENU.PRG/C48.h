@@ -5,6 +5,9 @@
 
 enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 
+/**
+ * Initializes the inventory with Ashley's current equipment.
+ */
 void vs_mainMenu_initInventory(void);
 
 /**
@@ -17,15 +20,26 @@ void vs_mainMenu_menuItemFlyoutLeft(int row);
  */
 void vs_mainMenu_menuItemFlyoutRight(int row);
 
+/**
+ * Ranks the two top class and affinity values.
+ *
+ * @return Packed value:
+ *
+ * - Bits 0-7: The rank from 0-10 of the second highest stat.
+ *
+ * - Bits 8-15: The rank from 0-3 of the highest stat.
+ *
+ * - Bits 16+: The highest stat identifier, where 0-5 == class, 6-12 == affinity.
+ */
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
 
 /**
- * Dismisses all but one row to the left.
+ * Dismisses all to the left but one row.
  */
 void vs_mainMenu_flyoutLeftExcept(int row);
 
 /**
- * Clears entire menu except for the specified row.
+ * Clears entire menu except for the specified row using vs_mainMenu_menuItemFlyoutRight.
  *
  * @param id Can be set to vs_mainMenu_menuItemIds_none to indicate that
  * all rows are to be cleared.

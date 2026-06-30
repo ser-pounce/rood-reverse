@@ -1806,7 +1806,7 @@ int _processLootMenu(int initialize)
     return 0;
 }
 
-int vs_menuB_exec(char* state)
+int vs_menuB_exec(u_char* state)
 {
     static char _0 __attribute__((unused));
     static char _ __attribute__((unused));

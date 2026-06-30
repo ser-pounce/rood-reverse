@@ -3113,7 +3113,7 @@ int func_801089BC(int arg0)
 
 #define vs_getXY_4(x, y) (((x)) + ((y) << 16))
 
-int vs_menuD_exec(char* arg0)
+int vs_menuD_exec(u_char* arg0)
 {
     static u_int D_80109A74;
     static char D_80109A78;

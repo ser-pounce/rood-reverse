@@ -644,7 +644,7 @@ static void _setNextAbilityUnlockPointsRemaining(int row)
  *
  * @return Returns 1 if menu is exiting for any reason, 0 otherwise
  */
-int vs_menu2_exec(char* state)
+int vs_menu2_exec(u_char* state)
 {
     enum state {
         none,

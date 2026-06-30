@@ -139,7 +139,7 @@ static u_short _menuText[] = {
 
 static u_short _0 __attribute__((unused)) = 0x0380;
 
-int vs_menuE_exec(char* state)
+int vs_menuE_exec(u_char* state)
 {
     enum state { none, init = 3, initMenu, waitReady, showMenu, shutDown, exit };
 

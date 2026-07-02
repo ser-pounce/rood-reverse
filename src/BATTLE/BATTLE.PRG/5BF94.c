@@ -1618,13 +1618,13 @@ void func_800C97BC(void)
 
 void _renderDigit(int font, int xy, int digit, u_long* before)
 {
-    u_long* temp_v0 = vs_battle_setSpriteDefaultTexPage(
+    u_long* prim = vs_battle_setSpriteDefaultTexPage(
         128, xy + ((font & 2) << 0x10), (0x05CA0576 >> (font * 4)) & 0xF000F, before);
 
-    temp_v0[4] = 0x37F40B20;
+    prim[4] = vs_getUV0Clut(32, 11, 832, 223);
 
     if (font != 2) {
-        ((short*)temp_v0)[8] = ((((digit * 2) + 64) * (font + 3)) - 192);
+        ((short*)prim)[8] = ((((digit * 2) + 64) * (font + 3)) - 192);
     }
 }
 
@@ -1638,7 +1638,9 @@ int vs_battle_renderValue(int font, int xy, int value, u_long* before)
 
     do {
         value = vs_battle_toBCD(value);
+
         _renderDigit(font, xy, value & 0xF, before);
+
         new_var = xy - 5;
         xy = new_var - font;
         value >>= 4;

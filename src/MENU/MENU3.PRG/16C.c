@@ -528,7 +528,7 @@ static int _equipWeaponMenu(int initialize)
 
         vs_mainMenu_setUiWeaponStats(index);
         vs_mainMenu_drawClassAffinityType(7);
-        vs_mainMenu_drawDpPpbars(3);
+        vs_mainMenu_renderDpPpBars(3);
         vs_mainMenu_renderEquipStats(1);
 
         state = init;
@@ -620,7 +620,7 @@ static int _equipWeaponMenu(int initialize)
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         vs_mainMenu_menuItemFlyoutLeft(-1);
         vs_mainMenu_drawClassAffinityType(-1);
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
         vs_mainMenu_renderEquipStats(2);
 
         if (selectedWeapon < 0) {
@@ -706,7 +706,7 @@ static int _equipShieldMenu(int initialize)
 
         vs_mainMenu_setShieldStats(index);
         vs_mainMenu_drawClassAffinityType(7);
-        vs_mainMenu_drawDpPpbars(3);
+        vs_mainMenu_renderDpPpBars(3);
         vs_mainMenu_renderEquipStats(1);
 
         state = init;
@@ -793,7 +793,7 @@ static int _equipShieldMenu(int initialize)
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         vs_mainMenu_menuItemFlyoutLeft(-1);
         vs_mainMenu_drawClassAffinityType(-1);
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
         vs_mainMenu_renderEquipStats(2);
 
         if (selectedShield < 0) {
@@ -885,7 +885,7 @@ static int _equipArmorMenu(int initBodyPart)
 
         vs_mainMenu_setArmorStats(index);
         vs_mainMenu_drawClassAffinityType(7);
-        vs_mainMenu_drawDpPpbars(1);
+        vs_mainMenu_renderDpPpBars(1);
         vs_mainMenu_renderEquipStats(1);
 
         state = init;
@@ -977,7 +977,7 @@ static int _equipArmorMenu(int initBodyPart)
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         vs_mainMenu_menuItemFlyoutLeft(-1);
         vs_mainMenu_drawClassAffinityType(-1);
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
         vs_mainMenu_renderEquipStats(2);
 
         if (selectedArmor < 0) {

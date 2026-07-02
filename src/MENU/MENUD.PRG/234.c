@@ -805,7 +805,7 @@ void func_80104170(int arg0)
     D_80109A81 = 2;
     D_80109A84 = vs_main_buttonsPressed.all & PADRup;
     if (arg0 != 0) {
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
     }
 }
 
@@ -859,7 +859,7 @@ int _weaponNavigation(int weaponIndex)
             func_80104034(D_80109A32, 7);
             vs_mainMenu_setUiWeaponStats(
                 vs_menuD_containerData->indices.weapons[_selectedWeapon]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             D_80109A30 = animate;
         }
         break;
@@ -930,7 +930,7 @@ int _bladeNavigation(int bladeIndex)
             func_80104034(D_80109A37, 3);
             vs_mainMenu_setUiBladeStats(
                 vs_menuD_containerData->indices.blades[D_80109A38]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             D_80109A35 = animate;
         }
         break;
@@ -1061,7 +1061,7 @@ int _shieldNavigation(int arg0)
             func_80104034(D_80109A40, 7);
             vs_mainMenu_setShieldStats(
                 vs_menuD_containerData->indices.shields[D_80109A41]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             D_80109A3E = 1;
         }
         break;
@@ -1135,7 +1135,7 @@ int _armorNavigation(int arg0)
                     .armor[vs_menuD_containerData->indices.armor[D_80109A46] - 1]
                     .category
                 != 7) {
-                vs_mainMenu_drawDpPpbars(1);
+                vs_mainMenu_renderDpPpBars(1);
             }
             D_80109A43 = 1;
         }
@@ -1260,9 +1260,9 @@ int func_80105008(int arg0)
         D_80109A7D = 1;
         vs_mainMenu_setNextMenuAction(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
-        D_801022D5 = D_801024B8 != 9;
+        D_801022D5 = vs_mainMenu_selectedUiElement != 9;
         func_801013F8(1);
-        func_800FDEBC();
+        vs_mainMenu_renderStatusView();
     }
     return temp_v0;
 }

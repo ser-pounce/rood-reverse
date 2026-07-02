@@ -47,7 +47,7 @@ extern char D_801024A0;
 extern char vs_mainMenu_currentUiItem;
 extern u_short* vs_mainMenu_menu12Text;
 extern short vs_mainMenu_strIntAgi[8];
-extern u_char D_801024B8;
+extern u_char vs_mainMenu_selectedUiElement;
 extern char D_801024B9;
 extern short vs_mainMenu_equipmentStats[64];
 extern u_short* vs_mainMenu_itemHelp;

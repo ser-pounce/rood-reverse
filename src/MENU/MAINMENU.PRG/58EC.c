@@ -1517,7 +1517,7 @@ void func_80101F38(void)
     func_80100164();
     vs_mainMenu_drawClassAffinityType(0);
     vs_mainMenu_renderEquipStats(0);
-    vs_mainMenu_drawDpPpbars(0);
+    vs_mainMenu_renderDpPpBars(0);
 }
 
 // Some kind of junk
@@ -1549,7 +1549,7 @@ char D_801024A0 = 0;
 char vs_mainMenu_currentUiItem = 0;
 u_short* vs_mainMenu_menu12Text = NULL;
 short vs_mainMenu_strIntAgi[8] = { 0 };
-u_char D_801024B8 = 0;
+u_char vs_mainMenu_selectedUiElement = 0;
 char D_801024B9 = 0;
 static char _3[0] = { 0 };
 short vs_mainMenu_equipmentStats[64] = { 0 };

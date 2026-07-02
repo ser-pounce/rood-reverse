@@ -192,7 +192,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
     vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
     func_800FBB8C(3);
-    vs_mainMenu_drawDpPpbars(11);
+    vs_mainMenu_renderDpPpBars(11);
 }
 
 /**
@@ -210,7 +210,7 @@ static void _drawGripInfo(vs_battle_uiEquipment* grip)
 
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
     func_800FBB8C(4);
-    vs_mainMenu_drawDpPpbars(8);
+    vs_mainMenu_renderDpPpBars(8);
 }
 
 /**
@@ -229,7 +229,7 @@ static void _drawGemInfo(vs_battle_uiEquipment* gem)
 
     vs_mainMenu_setStrIntAgi(gem->strength, gem->intelligence, gem->agility, 1);
     func_800FBB8C(3);
-    vs_mainMenu_drawDpPpbars(8);
+    vs_mainMenu_renderDpPpBars(8);
 }
 
 /**
@@ -330,7 +330,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
             _initGemInfo(&weapon->gems[row - 3], menuText, &rowType);
             _drawGemInfo(&weapon->gems[row - 3]);
         } else {
-            vs_mainMenu_drawDpPpbars(8);
+            vs_mainMenu_renderDpPpBars(8);
             vs_mainMenu_resetStats();
         }
         break;
@@ -362,7 +362,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
             _initGemInfo(&shield->gems[row - 1], (char**)&menuText, &rowType);
             _drawGemInfo(&shield->gems[row - 1]);
         } else {
-            vs_mainMenu_drawDpPpbars(8);
+            vs_mainMenu_renderDpPpBars(8);
             vs_mainMenu_resetStats();
         }
     }
@@ -1479,7 +1479,7 @@ static void _exitEquipmentDetail(int clearDpPp)
     vs_mainMenu_renderEquipStats(2);
 
     if (clearDpPp != 0) {
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
     }
 }
 
@@ -1549,21 +1549,21 @@ static int _equipmentDetailScreen(int row)
 
         switch (_selectedEquipmentRow) {
         case 0:
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             _drawWeaponInfo(&actor->weapon);
             break;
 
         case 1:
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             _drawShieldInfo(&actor->shield);
             break;
 
         default:
             if ((_selectedEquipmentRow - 2) < limbs) {
-                vs_mainMenu_drawDpPpbars(1);
+                vs_mainMenu_renderDpPpBars(1);
                 _drawArmorInfo(&actor->limbs[_selectedEquipmentRow - 2].armor);
             } else {
-                vs_mainMenu_drawDpPpbars(0);
+                vs_mainMenu_renderDpPpBars(0);
                 _drawAccessoryInfo(&actor->accessory);
             }
             break;
@@ -1667,7 +1667,7 @@ static int _equipmentDetailScreen(int row)
 
                 switch (var_s2) {
                 case 0:
-                    vs_mainMenu_drawDpPpbars(0xB);
+                    vs_mainMenu_renderDpPpBars(11);
                     _drawWeaponInfo(&actor->weapon);
 
                     for (i = 1; i < 6; ++i) {
@@ -1681,7 +1681,7 @@ static int _equipmentDetailScreen(int row)
                     break;
 
                 case 1:
-                    vs_mainMenu_drawDpPpbars(0xB);
+                    vs_mainMenu_renderDpPpBars(11);
                     _drawShieldInfo(&actor->shield);
 
                     for (i = 1; i < 4; ++i) {
@@ -1695,12 +1695,14 @@ static int _equipmentDetailScreen(int row)
 
                 default:
                     if ((var_s2 - 2) < limbs) {
-                        vs_mainMenu_drawDpPpbars(9);
+                        vs_mainMenu_renderDpPpBars(
+                            renderDpPpBarsTargetDp | renderDpPpBarsStatStatic);
                         _drawArmorInfo(&actor->limbs[var_s2 - 2].armor);
                         vs_mainMenu_setUiArmor(&actor->limbs[var_s2 - 2].armor, sp18,
                             &sp48, vs_battle_stringBuf);
                     } else {
-                        vs_mainMenu_drawDpPpbars(8);
+                        vs_mainMenu_renderDpPpBars(
+                            renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
                         _drawAccessoryInfo((vs_battle_uiAccessory*)&actor->accessory);
                         vs_battle_copyUiAccessoryStats(&armor, &actor->accessory);
                         vs_mainMenu_initUiArmor(&armor, sp18, &sp48, vs_battle_stringBuf);
@@ -1751,7 +1753,7 @@ static int _equipmentDetailScreen(int row)
 
         switch (_selectedEquipmentRow) {
         case 0:
-            vs_mainMenu_drawDpPpbars(11);
+            vs_mainMenu_renderDpPpBars(11);
             _drawWeaponInfo(&actor->weapon);
 
             newSelection = _updateEquipmentDetailSelection(
@@ -1760,7 +1762,7 @@ static int _equipmentDetailScreen(int row)
             break;
 
         case 1:
-            vs_mainMenu_drawDpPpbars(11);
+            vs_mainMenu_renderDpPpBars(11);
             _drawShieldInfo(&actor->shield);
 
             newSelection = _updateEquipmentDetailSelection(
@@ -1774,7 +1776,7 @@ static int _equipmentDetailScreen(int row)
                 var_a0_5 = 9;
             }
 
-            vs_mainMenu_drawDpPpbars(var_a0_5);
+            vs_mainMenu_renderDpPpBars(var_a0_5);
             newSelection = _updateEquipmentDetailSelection(
                 previousSelection, ((_selectedEquipmentRow - 2) < limbs) << 6);
 

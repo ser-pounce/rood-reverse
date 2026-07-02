@@ -4,7 +4,7 @@ D_801022D5
 D_801022D8
 D_801023D0
 D_801023E3
-D_801024B8
+vs_mainMenu_selectedUiElement
 D_801024B9
 D_80102544
 D_80102578
@@ -19,7 +19,7 @@ func_800FAEBC
 func_800FBB8C
 func_800FBD80
 func_800FDD78
-func_800FDEBC
+vs_mainMenu_renderStatusView
 func_800FF348
 func_800FFB68
 func_80100414
@@ -37,7 +37,7 @@ vs_mainMenu_dismissTextBox
 vs_mainmenu_drawButton
 vs_mainMenu_drawButtonUiBackground
 vs_mainMenu_drawClassAffinityType
-vs_mainMenu_drawDpPpbars
+vs_mainMenu_renderDpPpBars
 vs_mainMenu_drawRowIcon
 vs_mainMenu_ensureItemNamesLoaded
 vs_mainMenu_equipmentDetailNavigationMap

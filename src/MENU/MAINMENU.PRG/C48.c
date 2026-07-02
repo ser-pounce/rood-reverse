@@ -1019,7 +1019,7 @@ void vs_mainMenu_renderEquipStats(int animate)
     }
 }
 
-static u_short D_80102132 = 0;
+static u_short dpPpBarAnimState = 0;
 static u_short _currentDp = 0;
 static u_short _maxDp = 0;
 static u_short _currentPp = 0;
@@ -1033,72 +1033,84 @@ void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
     _maxDp = (maxDp + 99) / 100;
 }
 
-void vs_mainMenu_drawDpPpbars(int arg0)
+void vs_mainMenu_renderDpPpBars(int flags)
 {
-    static char D_8010213C = 1;
-    static char D_8010213D = 0;
+    static char state = 1;
+    static char target = 0;
 
-    int temp_s1;
-    void* temp_s2 = D_1F800000[1] - 3;
+    void* before = D_1F800000[1] - 3;
 
-    if (arg0 != 0) {
-        D_8010213C = arg0 >> 2;
-        if (!(D_8010213C & 1)) {
-            D_8010213D = arg0 & 3;
+    if (flags != 0) {
+
+        state = flags >> 2;
+
+        if (!(state & 1)) {
+            target = flags & 3;
         }
     } else {
-        int var_s0 = D_80102132;
+        int temp = dpPpBarAnimState;
 
-        switch (D_8010213C) {
+        switch (state) {
         case 0:
-            if (var_s0 < 5) {
-                ++D_80102132;
+            if (temp < 5) {
+                ++dpPpBarAnimState;
             }
             break;
+
         case 1:
-            if (var_s0 != 0) {
-                --D_80102132;
+            if (temp != 0) {
+                --dpPpBarAnimState;
             }
             break;
+
         case 2:
-            D_80102132 = 5;
+            dpPpBarAnimState = 5;
             break;
         }
 
-        if (D_80102132 != 0) {
+        if (dpPpBarAnimState != 0) {
 
-            temp_s1 = ((D_80102132 * 8) - 8) << 0x10;
+            int temp_s1 = ((dpPpBarAnimState * 8) - 8) << 0x10;
 
-            if (D_8010213D & 1) {
-                vs_battle_renderTextRaw("DP", (temp_s1 + 0xFFFF0000) | 0xA, temp_s2);
-                var_s0 = vs_battle_renderValue(0, temp_s1 | 0x42, _maxDp, temp_s2);
-                vs_battle_renderValue(2, var_s0, 0, temp_s2);
-                vs_battle_renderValue(1, var_s0 + 0xFFFEFFF9, _currentDp, temp_s2);
-            }
-            if (D_8010213D & 2) {
-                vs_battle_renderTextRaw("PP", (temp_s1 + 0xFFFF0000) | 0x50, temp_s2);
-                var_s0 = vs_battle_renderValue(0, temp_s1 | 0x88, _maxPp, temp_s2);
-                vs_battle_renderValue(2, var_s0, 0, temp_s2);
-                vs_battle_renderValue(1, var_s0 + 0xFFFEFFF9, _currentPp, temp_s2);
+            if (target & 1) {
+                vs_battle_renderTextRaw("DP", (temp_s1 + vs_getXY(0, -1)) | 10, before);
+
+                temp = vs_battle_renderValue(0, temp_s1 | 66, _maxDp, before);
+                vs_battle_renderValue(2, temp, 0, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentDp, before);
             }
 
-            temp_s1 = temp_s1 + 0x80000;
+            if (target & 2) {
+                vs_battle_renderTextRaw("PP", (temp_s1 + vs_getXY(0, -1)) | 80, before);
 
-            if (D_8010213D & 1) {
-                var_s0 = _maxDp;
-                if (var_s0 == 0) {
-                    var_s0 = 1;
+                temp = vs_battle_renderValue(0, temp_s1 | 136, _maxPp, before);
+                vs_battle_renderValue(2, temp, 0, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentPp, before);
+            }
+
+            temp_s1 += 8 << 16;
+
+            if (target & 1) {
+
+                temp = _maxDp;
+
+                if (temp == 0) {
+                    temp = 1;
                 }
-                vs_battle_renderStatBar(0, (((_currentDp << 6) + var_s0) - 1) / var_s0,
-                    temp_s2, temp_s1 | 0xA);
+
+                vs_battle_renderStatBar(
+                    0, (((_currentDp << 6) + temp) - 1) / temp, before, temp_s1 | 10);
             }
-            if (D_8010213D & 2) {
-                var_s0 = _maxPp;
-                if (var_s0 == 0) {
-                    var_s0 = 1;
+            if (target & 2) {
+
+                temp = _maxPp;
+
+                if (temp == 0) {
+                    temp = 1;
                 }
-                vs_battle_renderStatBar(1, (((_currentPp << 6) + var_s0) - 1) / var_s0,
-                    temp_s2, temp_s1 | 0x50);
+
+                vs_battle_renderStatBar(
+                    1, (((_currentPp << 6) + temp) - 1) / temp, before, temp_s1 | 80);
             }
         }
     }

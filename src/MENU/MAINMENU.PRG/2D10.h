@@ -20,7 +20,7 @@ enum vs_mainMenu_menuSelection {
 
 int vs_mainMenu_loadItemNames(int);
 void func_800FDD78(void);
-void func_800FDEBC(void);
+void vs_mainMenu_renderStatusView(void);
 enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
 int vs_mainMenu_copyItem(
     int arg0, vs_main_inventory_t* arg1, int arg2, vs_main_inventory_t* arg3);

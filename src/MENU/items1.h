@@ -83,7 +83,7 @@ static void _exitStatusView(int clearDpPp)
     _exitToBattle = vs_main_buttonsPressed.all & PADRup;
 
     if (clearDpPp != 0) {
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
     }
 }
 
@@ -128,7 +128,7 @@ static int _weaponStatusView(int itemInfo)
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
             vs_mainMenu_setUiWeaponStats(vs_main_inventoryIndices.weapons[itemIndex]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             state = initWeapon;
         }
         break;
@@ -221,7 +221,7 @@ static int _bladeStatusView(int itemInfo)
         if ((state == 0) && (vs_mainmenu_ready() != 0)) {
             _initMenuLayout(itemRow, 3);
             vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[itemIndex]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             state = wait;
         }
         break;
@@ -394,7 +394,7 @@ static int _shieldStatusView(int itemInfo)
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
             vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[itemIndex]);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
 
             state = initShield;
         }
@@ -493,7 +493,7 @@ static int _armorStatusView(int itemInfo)
             if (vs_main_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
                     .category
                 != 7) {
-                vs_mainMenu_drawDpPpbars(1);
+                vs_mainMenu_renderDpPpBars(1);
             }
 
             status = wait;
@@ -637,7 +637,7 @@ static int _gemStatusView(int itemInfo)
  */
 static int _itemStatusDispatcher(int itemInfo)
 {
-    static int (*_statusViewDispatchers[])(int) = { _weaponStatusView, _bladeStatusView,
+    static int (*_statusViewDispatch[])(int) = { _weaponStatusView, _bladeStatusView,
         _gripStatusView, _shieldStatusView, _armorStatusView, _gemStatusView };
 
     static u_char itemCategory;
@@ -656,7 +656,7 @@ static int _itemStatusDispatcher(int itemInfo)
         vs_mainMenu_setNextMenuAction(menuActionNone);
     }
 
-    page = _statusViewDispatchers[itemCategory](page);
+    page = _statusViewDispatch[itemCategory](page);
     new_var = page != 0;
 
     if (new_var) {
@@ -676,10 +676,10 @@ static int _itemStatusDispatcher(int itemInfo)
 
     if (vs_mainmenu_ready() != 0) {
 
-        D_801022D5 = D_801024B8 != 9;
+        D_801022D5 = vs_mainMenu_selectedUiElement != 9;
 
         func_801013F8(1);
-        func_800FDEBC();
+        vs_mainMenu_renderStatusView();
     }
 
     return page;

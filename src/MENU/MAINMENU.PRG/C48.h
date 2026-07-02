@@ -69,7 +69,27 @@ void vs_mainMenu_setStrIntAgi(int, int, int, int);
 void func_800FBD80(int);
 void vs_mainMenu_renderEquipStats(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
-void vs_mainMenu_drawDpPpbars(int);
+
+enum vs_mainMenu_renderDpPpBarsTarget {
+    renderDpPpBarsTargetNone,
+    renderDpPpBarsTargetDp,
+    renderDpPpBarsTargetPp,
+    renderDpPpBarsTargetBoth
+};
+
+enum vs_mainMenu_renderDpPpBarsState {
+    renderDpPpBarsStatSlideIn = 0 << 2,
+    renderDpPpBarsStatSlideOut = 1 << 2,
+    renderDpPpBarsStatStatic = 2 << 2
+};
+
+/**
+ * Renders and optionally animates the DP and PP bars.
+ *
+ * @param flags Composed of either or both of vs_mainMenu_renderDpPpBarsTarget,
+ * and one of vs_mainMenu_renderDpPpBarsState.
+ */
+void vs_mainMenu_renderDpPpBars(int flags);
 void vs_mainMenu_setUiWeapon(vs_battle_uiWeapon*, char**, int*, char*);
 vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int, int, int);
 vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int, int, int);

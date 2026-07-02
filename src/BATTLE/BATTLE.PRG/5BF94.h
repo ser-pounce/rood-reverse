@@ -255,7 +255,8 @@ void func_800C97BC(void);
  * Renders a digit or symbol from the battle digits.
  *
  * @param font 0 = small, 1 = large, 2 = symbols
- * @return int
+ * @param before Can be NULL, in which case the pointer at (scratchpad + 4)[1] is used.
+ * @return The position immediately to the left of the rendered value.
  */
 int vs_battle_renderValue(int font, int xy, int value, u_long* before);
 

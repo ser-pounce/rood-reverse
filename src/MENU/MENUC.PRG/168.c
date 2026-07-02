@@ -121,7 +121,7 @@ static void _initMenuItem(int textOffset, int icon)
         a0 = 1;
     }
 
-    vs_mainMenu_drawDpPpbars(a0);
+    vs_mainMenu_renderDpPpBars(a0);
     vs_mainMenu_renderEquipStats(1);
 }
 
@@ -377,7 +377,7 @@ static int _leaveItemSlotSelection(int arg0)
     if (arg0 != 0) {
         vs_mainMenu_drawClassAffinityType(-1);
         vs_mainMenu_renderEquipStats(2);
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
     }
 
     vs_mainMenu_setNextMenuAction(menuActionMenu);
@@ -685,7 +685,7 @@ static void _setUiStats(int arg0, int arg1)
     }
 
     func_800FBB8C(7);
-    vs_mainMenu_drawDpPpbars(11);
+    vs_mainMenu_renderDpPpBars(11);
 }
 
 static void _assembleBladeMenuHeader(int arg0)
@@ -910,7 +910,7 @@ static int _assembleGripMenu(int params)
         break;
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
-        vs_mainMenu_drawDpPpbars(8);
+        vs_mainMenu_renderDpPpBars(8);
 
         if (itemId != 0) {
             vs_mainMenu_setUiGripStats((int)itemId);
@@ -1013,7 +1013,7 @@ static int _attachGem(int params)
         break;
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
-        vs_mainMenu_drawDpPpbars(8);
+        vs_mainMenu_renderDpPpBars(8);
         if (itemId != 0) {
             vs_mainMenu_setGemStats(itemId);
         } else {
@@ -1461,7 +1461,7 @@ static int _assembleMenu(int arg0)
             vs_battle_playMenuSelectSfx();
             vs_mainMenu_clearMenuExcept(10);
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             state = 8;
             break;
         case 2:
@@ -1673,7 +1673,7 @@ static int _attachGemsMenu(int arg0)
                 attachedGems = weapon->gems;
             }
             vs_mainMenu_drawClassAffinityType(7);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             vs_mainMenu_renderEquipStats(1);
 
             *(int*)D_8010BC28 = 0;
@@ -1825,7 +1825,7 @@ static int _attachGemsMenu(int arg0)
                     }
                 }
                 func_800FBB8C(7);
-                vs_mainMenu_drawDpPpbars(11);
+                vs_mainMenu_renderDpPpBars(11);
                 if (isShield != 0) {
                     vs_mainMenu_setShieldStats(var_s2);
                     vs_mainMenu_initUiShield(shield, menuText, rowTypes, textBuf);
@@ -1864,7 +1864,7 @@ static int _attachGemsMenu(int arg0)
             vs_main_playSfxDefault(0x7E, 0x18);
             vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_menuItemFlyoutLeft(0);
             return 1;
@@ -2068,7 +2068,7 @@ static int _disassembleMenu(int arg0)
             vs_mainMenu_setUiWeaponStats(selectedItem);
         }
         vs_mainMenu_drawClassAffinityType(7);
-        vs_mainMenu_drawDpPpbars(3);
+        vs_mainMenu_renderDpPpBars(3);
         D_8010BC3D = 0;
         state = 4;
         break;
@@ -2101,7 +2101,7 @@ static int _disassembleMenu(int arg0)
             break;
         }
         vs_mainMenu_drawClassAffinityType(-1);
-        vs_mainMenu_drawDpPpbars(4);
+        vs_mainMenu_renderDpPpBars(4);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         vs_mainMenu_menuItemFlyoutLeft(0);
 
@@ -2299,7 +2299,7 @@ static int _renameWeaponMenu(int arg0)
             _combiningItem = itemId - 1;
             vs_mainMenu_setUiWeaponStats(itemId);
             vs_mainMenu_drawClassAffinityType(7);
-            vs_mainMenu_drawDpPpbars(3);
+            vs_mainMenu_renderDpPpBars(3);
             D_8010BC49 = 0;
             state = 4;
         }
@@ -2319,7 +2319,7 @@ static int _renameWeaponMenu(int arg0)
         i = _confirmationPrompt(0);
         if (i != 0) {
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             switch (i) {
             case 1:
                 vs_battle_playMenuSelectSfx();
@@ -3067,7 +3067,7 @@ static int _combineBladeMenu(int arg0)
             vs_main_playSfxDefault(0x7E, 0x18);
             vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_menuItemFlyoutLeft(0);
 
@@ -3662,7 +3662,7 @@ static int _combineShieldMenu(int arg0)
             vs_main_playSfxDefault(0x7E, 0x18);
             vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_menuItemFlyoutLeft(0);
 
@@ -4149,7 +4149,7 @@ static int _combineArmorMenu(int arg0)
 
             vs_mainMenu_initTextBox();
             vs_mainMenu_drawClassAffinityType(-1);
-            vs_mainMenu_drawDpPpbars(4);
+            vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_menuItemFlyoutLeft(0);
             for (i = 0; i < 2; ++i) {

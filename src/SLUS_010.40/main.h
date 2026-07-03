@@ -211,7 +211,7 @@ typedef struct {
     int unkDC[9];
 } D_80060068_t;
 
-enum itemIdentifiers { chamomileSigil = 0x1D2 };
+enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
 typedef struct {
     char clearCount;

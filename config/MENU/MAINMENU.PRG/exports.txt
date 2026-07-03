@@ -99,7 +99,7 @@ vs_mainMenu_setUiBladeStats
 vs_mainMenu_setUiGem
 vs_mainMenu_setUiGrip
 vs_mainMenu_setUiGripStats
-vs_mainMenu_setUiItem
+vs_mainMenu_setUMisc
 vs_mainMenu_setUiShield
 vs_mainMenu_setUiWeapon
 vs_mainMenu_setUiWeaponStats

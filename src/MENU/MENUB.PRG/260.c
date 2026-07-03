@@ -1247,7 +1247,7 @@ static void _populateLootItem(int lootIndex)
         break;
 
     case itemCategoryMisc:
-        vs_mainMenu_setUiItem(
+        vs_mainMenu_setUMisc(
             &vs_main_inventory.misc[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
     }

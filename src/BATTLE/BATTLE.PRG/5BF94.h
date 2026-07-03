@@ -68,7 +68,7 @@ typedef struct {
     char currentState;
     char returnState;
     char executeAbilityType;
-    char unk3;
+    char loading;
     vs_main_CdQueueSlot* cdQueue;
 } vs_battle_menuState_t;
 

@@ -104,7 +104,7 @@ void vs_mainMenu_setUiArmor(vs_battle_uiArmor*, char**, int*, char*);
 void vs_mainMenu_initUiArmor(
     vs_main_inventoryArmor* arg0, char** arg1, int* arg2, char* arg3);
 void vs_mainMenu_setUiGem(vs_main_inventoryGem* arg0, char** arg1, int* arg2, void* arg3);
-void vs_mainMenu_setUiItem(
+void vs_mainMenu_setUMisc(
     vs_main_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3);
 void vs_mainMenu_setUiBladeStats(int);
 void vs_mainMenu_setUiGripStats(int);

@@ -1337,7 +1337,7 @@ int vs_battle_loadMenuPrg(int arg0)
         u_int fileData;
 
         _loadedSubMenu = subMenu;
-        state->unk3 = 1;
+        state->loading = 1;
 
         if (vs_battle_shortcutInvoked != 5) {
             fileData = _menuLbas[subMenu];
@@ -1358,12 +1358,16 @@ int vs_battle_loadMenuPrg(int arg0)
         vs_main_cdEnqueue(state->cdQueue, overlaySlot);
     }
 
-    if (state->unk3 == 0) {
+    if (state->loading == 0) {
         if (_menuBgUnpackedBuf != NULL) {
+
             vs_main_freeHeapR(_menuBgUnpackedBuf);
+
             _menuBgUnpackedBuf = NULL;
+
             vs_mainMenu_initInventory();
         }
+
         return 1;
     }
 
@@ -1371,10 +1375,12 @@ int vs_battle_loadMenuPrg(int arg0)
 
         vs_main_freeCdQueueSlot(state->cdQueue);
         vs_main_wait();
-        state->unk3 = 0;
+
+        state->loading = 0;
 
         if (D_800F4FDB != 0) {
             if (vs_battle_shortcutInvoked == 5) {
+
                 func_800FAEBC(1);
                 return 0;
             }
@@ -1386,6 +1392,7 @@ int vs_battle_loadMenuPrg(int arg0)
             vs_mainMenu_unpackMenubg(_menuBgUnpackedBuf);
         }
     }
+
     return 0;
 }
 

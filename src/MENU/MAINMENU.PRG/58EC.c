@@ -1616,8 +1616,8 @@ static int _1 __attribute__((unused)) = 0x38B1F8F8;
 // partly due to non-zero garbage
 char D_80102410[64] = { 0 };
 int D_80102450 = 0;
-char D_80102454 = 0;
-char D_80102455 = 0;
+char _func_800FAEBC_state = 0;
+char _noItems = 0;
 char D_80102456 = 0;
 vs_main_inventoryGem* vs_mainMenu_gems = NULL;
 vs_menu_inventoryStorage_t* vs_menu_inventoryStorage = NULL;

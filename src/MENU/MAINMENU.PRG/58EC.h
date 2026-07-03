@@ -27,8 +27,8 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
 
 extern char D_80102410[64];
 extern int D_80102450;
-extern char D_80102454;
-extern char D_80102455;
+extern char _func_800FAEBC_state;
+extern char _noItems;
 extern char D_80102456;
 extern vs_main_inventoryGem* vs_mainMenu_gems;
 extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;

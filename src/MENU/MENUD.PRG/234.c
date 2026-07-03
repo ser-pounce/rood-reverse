@@ -2186,7 +2186,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
                 }
                 break;
             case 6:
-                vs_mainMenu_setUiItem(
+                vs_mainMenu_setUMisc(
                     &container->misc[itemIndex], &text[i * 2], &rowTypes[i], c);
                 break;
             }
@@ -2213,7 +2213,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
 
                 --itemIndex;
 
-                vs_mainMenu_setUiItem(
+                vs_mainMenu_setUMisc(
                     &vs_menuD_containerData->data.misc[itemIndex], t, r, c);
                 ++itemCount;
                 ++j;

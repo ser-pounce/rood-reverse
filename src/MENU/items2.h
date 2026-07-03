@@ -123,7 +123,7 @@ static int _populateItemRows(
 
         case itemCategoryMisc: {
             u_int skillId;
-            vs_mainMenu_setUiItem(&vs_main_inventory.misc[index], &menuText[count * 2],
+            vs_mainMenu_setUMisc(&vs_main_inventory.misc[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
 #ifdef _ITEMMENU
             skillId =

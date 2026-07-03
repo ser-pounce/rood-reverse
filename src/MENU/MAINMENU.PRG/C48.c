@@ -26,6 +26,8 @@
 #include "src/MENU/MENUD.PRG/234.h"
 #include "src/MENU/MENUE.PRG/494.h"
 #include "src/MENU/MENUF.PRG/3B8.h"
+#include "build/assets/MENU/ITEMHELP.BIN.h"
+#include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>
@@ -326,12 +328,12 @@ void vs_mainMenu_exec(int arg0)
         vs_menu8_exec, vs_menu9_exec, vs_menuE_exec };
 
     int selectedMenu;
-    int temp_s5;
+    int menuLoaded;
     int state;
     char* submenuState;
     vs_battle_menuState_t* menuState = &vs_battle_menuState;
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
-    int var_s4 = 0;
+    int submenuReturn = 0;
     vs_main_inventory_t* inventory = &vs_main_inventory;
 
     vs_mainMenu_weapons = inventory->weapons;
@@ -342,30 +344,30 @@ void vs_mainMenu_exec(int arg0)
     vs_mainMenu_gems = inventory->gems;
 
     submenuState = &vs_battle_submenuStates[arg0 & 0xF];
-    temp_s5 = vs_battle_loadMenuPrg(arg0);
+    menuLoaded = vs_battle_loadMenuPrg(arg0);
     selectedMenu = arg0 & 0x3F;
 
     if (selectedMenu != 0) {
         if (selectedMenu == 31) {
-            var_s4 = func_800FAA20();
+            submenuReturn = func_800FAA20();
         } else if (D_800F4EA0 & 0x200) {
-            if (temp_s5 != 0) {
+            if (menuLoaded) {
                 if (selectedMenu == 15) {
-                    var_s4 = vs_menuF_exec(submenuState);
+                    submenuReturn = vs_menuF_exec(submenuState);
                 } else if (selectedMenu == 3) {
-                    var_s4 = vs_menu2_skillUnlock(submenuState);
+                    submenuReturn = vs_menu2_skillUnlock(submenuState);
                 } else if (selectedMenu == 14) {
-                    var_s4 = vs_menuD_exec(submenuState);
+                    submenuReturn = vs_menuD_exec(submenuState);
                 } else if (selectedMenu == 8) {
-                    var_s4 = vs_menu8_execRename(submenuState);
+                    submenuReturn = vs_menu8_execRename(submenuState);
                 } else if (selectedMenu == 13) {
-                    var_s4 = vs_menuC_exec(submenuState);
+                    submenuReturn = vs_menuC_exec(submenuState);
                 } else if (selectedMenu == 12) {
-                    var_s4 = vs_menuB_exec(submenuState);
+                    submenuReturn = vs_menuB_exec(submenuState);
                 } else if (selectedMenu == 7 && (D_800F4EA0 & 0x400)) {
-                    var_s4 = vs_menu7_saveContainerMenu(submenuState);
+                    submenuReturn = vs_menu7_saveContainerMenu(submenuState);
                 } else if (selectedMenu == 7 && vs_main_stateFlags.gameOver == 1) {
-                    var_s4 = vs_menu7_gameOver(submenuState);
+                    submenuReturn = vs_menu7_gameOver(submenuState);
                 } else {
                     D_800F4EA0 = 0;
                 }
@@ -436,8 +438,8 @@ void vs_mainMenu_exec(int arg0)
                 // Fallthrough
 
             default:
-                if (temp_s5 != 0) {
-                    var_s4 = _submenuEntrypoints[selectedMenu - 1](submenuState);
+                if (menuLoaded) {
+                    submenuReturn = _submenuEntrypoints[selectedMenu - 1](submenuState);
                 }
 
                 break;
@@ -460,7 +462,7 @@ void vs_mainMenu_exec(int arg0)
         }
     }
 
-    if ((var_s4 == 0) || (func_800FAA5C(menuState->currentState) == 0)) {
+    if ((submenuReturn == 0) || (func_800FAA5C(menuState->currentState) == 0)) {
         func_80101F38();
     }
 }
@@ -468,135 +470,176 @@ void vs_mainMenu_exec(int arg0)
 void func_800FAEBC(int arg0)
 {
 #pragma vsstring(start)
-    static char D_80102060[] = "MISC\00000|0xF8|";
+    static char misc[] = "MISC\00000|0xF8|";
 #pragma vsstring(end)
 
     int j;
     int i;
-    int var_s5;
-    int* temp_fp;
-    char** temp_s7;
-    int temp_v0_3;
-    u_int var_a0;
-    void* temp_s6;
-    vs_main_inventoryMisc* temp_s0;
-    vs_battle_menuItem_t* temp_v0;
+    int rowCount;
+    int* rowTypes;
+    char** menuText;
+    void* buf;
+    vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
         vs_mainMenu_initTextBox();
+
         if (arg0 & 1) {
             D_80102456 = 1;
         }
-        D_80102454 = 0;
+
+        _func_800FAEBC_state = 0;
         return;
     }
-    switch (D_80102454) {
-    case 0:
-        temp_v0 = vs_battle_setMenuItem(0, 0x140, 0x12, 0x8C, 8,
-            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[3]]);
-        temp_v0->state = 2;
-        temp_v0->selected = 1;
-        temp_v0->targetPosition0 = 0xB4;
-        temp_v0->unselectable = (D_800F4EA0 & 7) != 0;
-        D_80102454 = 1;
-        vs_mainMenu_loadItemNames(1);
-        break;
-    case 1:
-        if ((vs_mainmenu_ready() != 0) && (vs_mainMenu_loadItemNames(0) != 0)) {
-            temp_v0 = vs_battle_setMenuItem(0xA, 0x140, 0x22, 0x8C, 8, D_80102060);
-            temp_v0->state = 2;
-            temp_v0->targetPosition0 = 0xB4;
-            temp_v0->selected = 1;
-            D_80102454 = 2;
-        }
-        break;
-    case 2:
-        temp_s6 = vs_main_allocHeapR(0x1B00U);
-        var_s5 = 0;
-        vs_mainMenu_rebuildInventory(6);
-        temp_fp = temp_s6 + 0x1800;
-        temp_s7 = temp_s6 + 0x1900;
 
-        for (i = 0; i < 64; ++i, ++var_s5) {
-            temp_v0_3 = vs_main_inventoryIndices.misc[i];
-            if (temp_v0_3 == 0) {
+    switch (_func_800FAEBC_state) {
+    case 0:
+        menuItem = vs_battle_setMenuItem(0, 320, 18, 140, 8,
+            (char*)&vs_battle_menuStrings
+                [vs_battle_menuStrings[VS_menuStrings_INDEX_items]]);
+        menuItem->state = menuItemStateSlideX;
+        menuItem->selected = 1;
+        menuItem->targetPosition0 = 180;
+        menuItem->unselectable = (D_800F4EA0 & 7) != 0;
+        _func_800FAEBC_state = 1;
+
+        vs_mainMenu_loadItemNames(1);
+
+        break;
+
+    case 1:
+        if (!vs_mainmenu_ready() || !vs_mainMenu_loadItemNames(0)) {
+            break;
+        }
+
+        menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 8, misc);
+        menuItem->state = menuItemStateSlideX;
+        menuItem->targetPosition0 = 180;
+        menuItem->selected = 1;
+        _func_800FAEBC_state = 2;
+        break;
+
+    case 2:
+        buf = vs_main_allocHeapR(0x1B00U);
+        rowCount = 0;
+
+        vs_mainMenu_rebuildInventory(6);
+
+        rowTypes = buf + 0x1800;
+        menuText = buf + 0x1900;
+
+        for (i = 0; i < 64; ++i, ++rowCount) {
+
+            vs_main_inventoryMisc* misc;
+            int index = vs_main_inventoryIndices.misc[i];
+
+            if (index == 0) {
                 break;
             }
-            temp_s0 = &vs_main_inventory.misc[temp_v0_3 - 1];
-            vs_mainMenu_setUiItem(
-                temp_s0, &temp_s7[i * 2], temp_fp - -i, temp_s6 + i * 96);
-            if (temp_s0->id < 0x1CA) {
-                var_a0 = vs_mainMenu_miscItemToSkillMap[temp_s0->id - 0x143];
-                if ((var_a0 - 0x6A) < 0x1C) {
+
+            misc = &vs_main_inventory.misc[index - 1];
+
+            vs_mainMenu_setUMisc(misc, &menuText[i * 2], rowTypes - -i, buf + i * 96);
+
+            if (misc->id < bronzeKey) {
+
+                u_int skill = vs_mainMenu_miscItemToSkillMap[misc->id - 323];
+
+                if ((skill - 106) < 28) {
                     for (j = 0; j < 3; ++j) {
-                        if (vs_main_skills[var_a0].unlocked) {
-                            ++var_a0;
+                        if (vs_main_skills[skill].unlocked) {
+                            ++skill;
                         }
                     }
                 }
-                D_80102410[i] = var_a0;
+                D_80102410[i] = skill;
             }
-            if ((D_800F4EA0 & 7) || (temp_s0->id >= 0x1CA)
+
+            if ((D_800F4EA0 & 7) || (misc->id >= bronzeKey)
                 || (vs_battle_getSkillFlags(0, D_80102410[i]) & 2)) {
-                temp_fp[i] |= 1;
+                rowTypes[i] |= 1;
             }
         }
-        D_80102455 = var_s5 == 0;
-        if (D_80102455 != 0) {
-            vs_mainmenu_setInformationMessage((char*)&vs_mainMenu_itemHelp[0x33E3]);
+
+        _noItems = rowCount == 0;
+
+        if (_noItems != 0) {
+            vs_mainmenu_setInformationMessage(
+                (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noItemsInCategory]);
         } else {
+
             i = vs_main_settings.cursorMemory;
+
             if (D_80102456 != 0) {
                 D_80102456 = 0;
             } else {
                 vs_main_settings.cursorMemory = 1;
             }
-            vs_mainmenu_setMenuRows(var_s5, (25 << 12) | (2 << 8) | 36, temp_s7, temp_fp);
+
+            vs_mainmenu_setMenuRows(
+                rowCount, (25 << 12) | (2 << 8) | 36, menuText, rowTypes);
+
             vs_main_settings.cursorMemory = i;
         }
-        vs_main_freeHeapR(temp_s6);
-        D_80102454 = 3;
+
+        vs_main_freeHeapR(buf);
+
+        _func_800FAEBC_state = 3;
         break;
+
     case 3:
-        if (D_80102455 != 0) {
-            if (vs_main_buttonsPressed.all & 0x70) {
-                if (vs_main_buttonsPressed.all & 0x20) {
+        if (_noItems != 0) {
+            if (vs_main_buttonsPressed.all & (PADRup | PADRright | PADRdown)) {
+                if (vs_main_buttonsPressed.all & PADRright) {
+
                     vs_battle_playInvalidSfx();
+
                 } else {
+
                     vs_battle_playMenuLeaveSfx();
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                     vs_mainMenu_dismissTextBox();
+
                     D_80102450 = -1;
-                    D_80102454 = 4;
+                    _func_800FAEBC_state = 4;
                 }
             }
         } else {
             D_80102450 = vs_mainmenu_getSelectedRow() + 1;
+
             if (D_80102450 != 0) {
+
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissTextBox();
+
                 if (D_80102450 > 0) {
                     D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
                     D_800F4E98.executeAbility.s16[0] = D_80102410[D_80102450 - 1];
                     D_800F4E98.executeAbility.s16[1] =
                         vs_main_inventory.misc[D_800F5210].id;
                 }
-                D_80102454 = 4;
+
+                _func_800FAEBC_state = 4;
             }
         }
         break;
+
     case 4:
-        if ((vs_mainmenu_ready() != 0) && (vs_mainMenu_ensureItemNamesLoaded() != 0)) {
-            if (D_80102450 > 0) {
-                D_800F4E98.unk2 = 8;
-            }
-            vs_battle_menuState.currentState = 0x3F;
-            D_800F4E98.unk0 = 2;
-            return;
+        if (!vs_mainmenu_ready() || !vs_mainMenu_ensureItemNamesLoaded()) {
+            break;
         }
-        break;
+
+        if (D_80102450 > 0) {
+            D_800F4E98.unk2 = 8;
+        }
+
+        vs_battle_menuState.currentState = 0x3F;
+        D_800F4E98.unk0 = 2;
+        return;
     }
+
     func_80101F38();
+
     return;
 }
 

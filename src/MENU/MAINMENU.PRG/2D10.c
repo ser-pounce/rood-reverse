@@ -311,14 +311,15 @@ void vs_mainMenu_setUiGem(vs_main_inventoryGem* arg0, char** arg1, int* arg2, vo
     *arg2 = 0x58000000;
 }
 
-void vs_mainMenu_setUiItem(
-    vs_main_inventoryMisc* arg0, char** arg1, int* arg2, void* arg3)
+void vs_mainMenu_setUMisc(
+    vs_main_inventoryMisc* misc, char** menuText, int* rowType, void* description)
 {
     vs_battle_memcpy(
-        arg3, vs_mainMenu_itemHelp + (arg0->id + vs_mainMenu_itemHelp)[-140], 96);
-    arg1[0] = vs_mainMenu_itemNames[arg0->id];
-    arg1[1] = arg3;
-    *arg2 = arg0->count << 9;
+        description, vs_mainMenu_itemHelp + vs_mainMenu_itemHelp[misc->id - 140], 96);
+
+    menuText[0] = vs_mainMenu_itemNames[misc->id];
+    menuText[1] = description;
+    *rowType = misc->count << 9;
 }
 
 void vs_mainMenu_resetStats(void)

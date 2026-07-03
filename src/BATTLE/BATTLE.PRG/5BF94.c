@@ -1409,7 +1409,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
     menuItem->w = w;
     menuItem->backgroundWidth = backgroundWidth;
 
-    vs_battle_rMemzero(&menuItem->animationState, 0x3C);
+    vs_battle_rMemzero(&menuItem->gradientState, 0x3C);
 
     var_a0 = menuItem;
     menuItem->x = x;
@@ -1473,97 +1473,95 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
     return _lerpColor(color0, color1, brightness, gradient);
 }
 
-void vs_battle_renderMenuItem(vs_battle_menuItem_t* arg0)
+void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
 {
-    int sp10;
-    int temp_v1;
-    int x;
-    int var_s1;
-    int var_s2;
-    int y;
-    char* var_s0;
-    u_long* temp_s6;
-    int temp_s5;
-    int var_v0;
-    u_long* temp_v1_2;
-    char* text;
-    char** v;
 
-    y = arg0->animationState;
-    temp_s6 = *(void**)0x1F800008 + 8;
-    sp10 = arg0->w;
-    temp_s5 = arg0->backgroundWidth;
-    text = arg0->text;
+    int y = menuItem->gradientState;
+    u_long* scratch = *(void**)0x1F800008 + 8;
+    int w = menuItem->w;
+    int bgWidth = menuItem->backgroundWidth;
+    char* text = menuItem->text;
 
-    if (arg0->state != 0) {
-        if (((arg0->selected | arg0->unkB) != 0) && (arg0->unselectable == 0)) {
+    if (menuItem->state != 0) {
+        int temp_v1;
+        int x;
+        int c;
+        int var_s2;
+        char* pText;
+        int color;
+        u_long* prim;
+        char** v;
+
+        if ((menuItem->selected | menuItem->invertGradient) && !menuItem->unselectable) {
             y = 8;
         }
 
-        var_v0 = arg0->fontColor;
+        color = menuItem->fontColor;
 
-        if (var_v0 == 0) {
-            var_v0 = arg0->unselectable * 3;
+        if (color == 0) {
+            color = menuItem->unselectable * 3;
         }
 
-        vs_battle_setFontStyle(var_v0 + 4);
+        vs_battle_setFontStyle(color + 4);
 
-        temp_v1 = arg0->x;
+        temp_v1 = menuItem->x;
         var_s2 = temp_v1 + 6;
 
-        if ((arg0->icon - 1) < 0x17u) {
-            var_s2 = temp_v1 + 0x16;
+        if ((menuItem->rowIcon - 1) < 23u) {
+            var_s2 = temp_v1 + 22;
         }
 
-        var_s1 = text[0];
-        var_s0 = text + 1;
+        c = text[0];
+        pText = text + 1;
 
-        while (var_s1 != 0xFF) {
-            if (var_s1 == 0xFA) {
-                var_s2 += *var_s0++;
+        while (c != 0xFF) {
+            if (c == vs_char_spacing) {
+                var_s2 += *pText++;
             } else {
                 var_s2 = vs_battle_printVariableWidthFontChar(
-                    var_s1, var_s2, arg0->y, temp_s6 - 3);
+                    c, var_s2, menuItem->y, scratch - 3);
             }
-            var_s1 = *var_s0++;
+            c = *pText++;
         }
 
-        var_s1 = vs_battle_uiGradientStop(8 - y, temp_s5, 0x80);
-        var_s2 = vs_battle_uiGradientStop(y, temp_s5, 0x80);
+        c = vs_battle_uiGradientStop(8 - y, bgWidth, 128);
+        var_s2 = vs_battle_uiGradientStop(y, bgWidth, 128);
 
-        if (temp_s5 & 7) {
-            arg0->backgroundWidth = (temp_s5 + 1) & 0xF;
+        if (bgWidth & 7) {
+            menuItem->backgroundWidth = (bgWidth + 1) & 0xF;
         }
 
         if (y != 0) {
-            arg0->animationState = y - 1;
+            menuItem->gradientState = y - 1;
         }
 
-        x = *(int*)&arg0->x;
+        x = *(int*)&menuItem->x;
         y = x >> 0x10;
         x &= 0xFFFF;
-        func_800CCCB8(temp_s6 + 1, 0x60000000, ((x + 2) & 0xFFFF) | ((y + 2) << 0x10),
-            sp10 | 0xC0000);
-        temp_v1_2 = *(void**)0x1F800000;
 
-        temp_v1_2[0] = ((*temp_s6 & 0xFFFFFF) | 0x0A000000);
-        temp_v1_2[1] = 0xE1000200;
-        temp_v1_2[2] = (var_s1 | 0x38000000);
-        temp_v1_2[3] = (x | (y << 0x10));
-        temp_v1_2[4] = var_s2;
-        temp_v1_2[5] = (((x + sp10) & 0xFFFF) | (y << 0x10));
-        temp_v1_2[6] = var_s1;
-        temp_v1_2[7] = (x | ((y + 0xC) << 0x10));
-        temp_v1_2[8] = var_s2;
-        temp_v1_2[9] = (((x + sp10) & 0xFFFF) | ((y + 0xC) << 0x10));
-        temp_v1_2[10] = 0xE1000000;
+        func_800CCCB8(scratch + 1, 0x60000000, vs_getXY_2(x + 2, y + 2), w | 0xC0000);
 
-        *temp_s6 = (u_int)((u_long)temp_v1_2 << 8) >> 8;
-        *(void**)0x1F800000 = temp_v1_2 + 11;
+        prim = *(void**)0x1F800000;
 
-        v = (char**)&arg0->subText;
+        prim[0] = ((*scratch & 0xFFFFFF) | 0x0A000000);
+        prim[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        prim[2] = vs_getRGB0Raw(primPolyG4, c);
+        prim[3] = (x | (y << 0x10));
+        prim[4] = var_s2;
+        prim[5] = (((x + w) & 0xFFFF) | (y << 0x10));
+        prim[6] = c;
+        prim[7] = (x | ((y + 12) << 0x10));
+        prim[8] = var_s2;
+        prim[9] = (((x + w) & 0xFFFF) | ((y + 12) << 0x10));
+        prim[10] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
+        ;
+
+        *scratch = (u_int)((u_long)prim << 8) >> 8;
+        *(void**)0x1F800000 = prim + 11;
+
+        v = &menuItem->subText;
         if (*v != NULL) {
-            vs_battle_renderTextRaw(*v, (x - 10) | ((y + 1) << 0x10), temp_s6);
+            vs_battle_renderTextRaw(*v, (x - 10) | ((y + 1) << 0x10), scratch);
         }
     }
 }

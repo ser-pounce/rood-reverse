@@ -720,7 +720,7 @@ void func_80103E24(int arg0, int arg1)
         if ((i == temp_s4) && (arg1 == 1)) {
             temp_v0 = vs_battle_getMenuItem(0x1F);
             if (temp_s0 >= (temp_v0->x - 0xC)) {
-                temp_v0->icon = i + 0x18;
+                temp_v0->rowIcon = i + 0x18;
                 continue;
             } else {
                 var_v1 = vs_battle_setSpriteDefault(0x100010, temp_s0 | 0x100000);
@@ -782,7 +782,7 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_playMenuChangeSfx();
     menuItem = vs_battle_setMenuItem(arg0, 0x9B, 0x12, 0xA5, 0, arg1[0]);
     menuItem->selected = 1;
-    menuItem->icon = (arg2 >> 0x1A);
+    menuItem->rowIcon = (arg2 >> 0x1A);
     menuItem->material = (arg2 >> 0x10) & 7;
     vs_mainmenu_setInformationMessage(arg1[1]);
     vs_battle_getMenuItem(0x1F)->itemPage = arg3 + 1;
@@ -1023,7 +1023,7 @@ int _gripNavigation(int arg0)
                              .grips[vs_menuD_containerData->indices.grips[D_80109A3C] - 1]
                              .gemSlots
                          + 0x30);
-        vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
+        vs_mainMenu_renderMenuRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(D_80109954, 0x240118, NULL);
         break;
     case 3:
@@ -1260,7 +1260,7 @@ int func_80105008(int arg0)
         D_80109A7D = 1;
         vs_mainMenu_setNextMenuAction(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
-        D_801022D5 = vs_mainMenu_selectedUiElement != 9;
+        vs_menu_cursorColor = vs_mainMenu_selectedUiElement != 9;
         func_801013F8(1);
         vs_mainMenu_renderStatusView();
     }
@@ -2505,7 +2505,7 @@ loop_1:
                     if ((temp_s0 != 0) && (vs_mainmenu_ready() != 0)) {
                         vs_battle_playMenuSelectSfx();
                         temp_s0 = func_80100814();
-                        vs_battle_getMenuItem(temp_s0 >> 8)->itemState = 0;
+                        vs_battle_getMenuItem(temp_s0 >> 8)->outsetIcon = 0;
                         func_80105008(var_s4 | ((temp_s0 + s6) * 0x10));
                         D_80109A7B = 0;
                         D_80109A68 = 7;
@@ -3245,13 +3245,12 @@ int vs_menuD_exec(u_char* arg0)
                             break;
                         }
                     }
-                    menuItem->unk12 = 0x40;
+                    menuItem->max = 64;
                     menuItem->count = i;
                 } else {
-                    menuItem->unk12 =
-                        D_80109A7A != 0
-                            ? vs_mainMenu_inventoryItemCapacities[itemCategory]
-                            : _containerItemCapacities[itemCategory];
+                    menuItem->max = D_80109A7A != 0
+                                      ? vs_mainMenu_inventoryItemCapacities[itemCategory]
+                                      : _containerItemCapacities[itemCategory];
                     menuItem->count =
                         _countContainerItems(itemCategory, &vs_menuD_containerData->data);
                 }
@@ -3286,12 +3285,12 @@ int vs_menuD_exec(u_char* arg0)
     if (D_80109A80 != 0) {
         int s3;
         i = 0x10 - i;
-        vs_mainMenu_drawButtonUiBackground(i, 0x26, 0x90, 0xA);
-        vs_mainMenu_drawButtonUiBackground(i, 0x36, 0x48, 0xA);
+        vs_mainmenu_renderButtonUiBackground(i, 0x26, 0x90, 0xA);
+        vs_mainmenu_renderButtonUiBackground(i, 0x36, 0x48, 0xA);
         temp_s0 = i - 8;
-        vs_mainmenu_drawButton(1, temp_s0, 0x24, NULL);
-        vs_mainmenu_drawButton(0, i + 0x40, 0x24, NULL);
-        vs_mainmenu_drawButton(3, temp_s0, 0x34, NULL);
+        vs_mainmenu_renderButton(1, temp_s0, 0x24, NULL);
+        vs_mainmenu_renderButton(0, i + 0x40, 0x24, NULL);
+        vs_mainmenu_renderButton(3, temp_s0, 0x34, NULL);
         s3 = (i + 0xC) & 0xFFFF;
         vs_battle_renderTextRawColor(
             "STATUS", s3 | 0x260000, 0x202020 << (D_80109A7D & 3), NULL);

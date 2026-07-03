@@ -39,7 +39,7 @@ static void _setMenuTitle(int id, int textTableOffset)
 
     menuItem = vs_battle_setMenuItem(
         id, 320, y, 140, 8, (char*)&vs_mainMenu_menu12Text[textTableOffset]);
-    menuItem->state = menuItemTransition_toLeft;
+    menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
 }
@@ -105,7 +105,7 @@ static void _initMenuItem(int textOffset, int icon)
     menuItem->state = 5;
     menuItem->targetPosition0 = 16;
     menuItem->selected = 1;
-    menuItem->icon = icon;
+    menuItem->rowIcon = icon;
 
     vs_mainMenu_resetStats();
     a0 = 7;
@@ -443,7 +443,7 @@ static void _populateItemsList(int count, char** text, int* rowTypes)
     j = rowTypes[0];
     menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsList);
     menuItem->unselectable = j & 1;
-    menuItem->icon = j >> 26;
+    menuItem->rowIcon = j >> 26;
     menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
     _rowInfoUnused = (j >> 19) & 0x7F;
@@ -474,10 +474,10 @@ static void _navigateItemsList(int arg0)
             menuItem->targetPosition0 = 169;
             itemInfo = *(int*)&_itemsList[_itemsListState * 64 + 14];
             menuItem->unselectable = itemInfo & 1;
-            menuItem->icon = (itemInfo >> 0x1A);
+            menuItem->rowIcon = (itemInfo >> 0x1A);
             v0 = (itemInfo >> 9) & 0x7F;
             if (v0 != 0) {
-                menuItem->itemState = v0 - 100;
+                menuItem->outsetIcon = v0 - 100;
             }
             menuItem->material = (itemInfo >> 0x10) & 7;
             ++_itemsListState;
@@ -601,23 +601,23 @@ static void _navigateItemsList(int arg0)
 
                     for (i = 1; i < itemInfo; ++i) {
                         menuItem = vs_battle_getMenuItem(i + 20);
-                        unksp18[i + previousWindow] = menuItem->animationState;
+                        unksp18[i + previousWindow] = menuItem->gradientState;
                     }
 
                     for (i = 1;;) {
                         int v0;
                         menuItem = vs_battle_setMenuItem(i + 20, 169, i * 16 + 18, 151, 0,
                             (char*)&_itemsList[(i + _itemsListWindow) * 64]);
-                        menuItem->animationState = *(unksp18 + (i + _itemsListWindow));
+                        menuItem->gradientState = *(unksp18 + (i + _itemsListWindow));
                         v0 = _itemsListWindow;
                         v0 = i + _itemsListWindow;
                         itemInfo = *(int*)&_itemsList[v0 * 64 + 14];
                         menuItem->unselectable = itemInfo & 1;
-                        menuItem->icon = (itemInfo >> 0x1A);
+                        menuItem->rowIcon = (itemInfo >> 0x1A);
                         v1 = (itemInfo >> 9) & 0x7F;
 
                         if (v1 != 0) {
-                            menuItem->itemState = v1 - 0x64;
+                            menuItem->outsetIcon = v1 - 0x64;
                         }
 
                         menuItem->material = (itemInfo >> 0x10) & 7;
@@ -700,7 +700,7 @@ static void _assembleBladeMenuHeader(int arg0)
     menuItem = vs_battle_setMenuItem(32, 16, 18, 164, 8,
         (char*)(&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[arg0 + VS_MENU12_BIN_INDEX_assemble]]));
-    menuItem->icon = 24;
+    menuItem->rowIcon = 24;
     menuItem->selected = 1;
     if (arg0 == 0) {
         _setUiStats(new_var, new_var2);
@@ -1141,7 +1141,7 @@ static int _assembleMenu(int arg0)
         menuItem->state = 2;
         menuItem->targetPosition0 = 162;
         if (bladeToAssemble != 0) {
-            menuItem->icon = blade->category;
+            menuItem->rowIcon = blade->category;
             menuItem->material = blade->material;
         } else {
             menuItem->fontColor = 1;
@@ -1154,7 +1154,7 @@ static int _assembleMenu(int arg0)
         menuItem->fontColor = gripToAssemble == 0;
         menuItem->targetPosition0 = 0xA2;
         if (gripToAssemble != 0) {
-            menuItem->icon = grip->category + 0xA;
+            menuItem->rowIcon = grip->category + 0xA;
         } else {
             menuItem->fontColor = 1;
         }
@@ -1167,7 +1167,7 @@ static int _assembleMenu(int arg0)
             menuItem->state = 2;
             menuItem->targetPosition0 = 0xA9;
             if (v != 0) {
-                menuItem->icon = 0x16;
+                menuItem->rowIcon = 0x16;
             } else {
                 menuItem->fontColor = 1;
             }
@@ -1474,7 +1474,7 @@ static int _assembleMenu(int arg0)
         break;
     case 8:
         if (vs_mainmenu_ready() != 0) {
-            D_801022D5 = 0;
+            vs_menu_cursorColor = 0;
             vs_battle_stringBuf[0] = 0;
             vs_battle_stringBuf[1] = _combiningItem;
             _assembleBladeMenuHeader(4);
@@ -1653,7 +1653,7 @@ static int _attachGemsMenu(int arg0)
             if (isShield != 0) {
                 var_a2 = 27;
             }
-            menuItem->icon = var_a2;
+            menuItem->rowIcon = var_a2;
 
             _copyMenuItem(0, 32);
             _copyMenuItem(selectedRow + 9, 10);
@@ -1838,7 +1838,7 @@ static int _attachGemsMenu(int arg0)
                 menuItem->targetPosition0 = 155;
                 menuItem->selected = 1;
                 i = rowTypes[0];
-                menuItem->icon = i >> 0x1A;
+                menuItem->rowIcon = i >> 0x1A;
                 menuItem->material = (i >> 0x10) & 7;
                 D_8010BC21 = 0;
                 state = 4;
@@ -2057,7 +2057,7 @@ static int _disassembleMenu(int arg0)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        vs_battle_getMenuItem(0)->icon = isShield != 0 ? 27 : 24;
+        vs_battle_getMenuItem(0)->rowIcon = isShield != 0 ? 27 : 24;
         _copyMenuItem(0, 0x20);
         _copyMenuItem(selectedRow + 9, 10);
         selectedItem = _availableItems[selectedRow];
@@ -2292,7 +2292,7 @@ static int _renameWeaponMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_getMenuItem(0)->icon = 24;
+            vs_battle_getMenuItem(0)->rowIcon = 24;
             _copyMenuItem(0, 32);
             _copyMenuItem(selectedRow + 9, 10);
             itemId = _availableItems[selectedRow];
@@ -2339,7 +2339,7 @@ static int _renameWeaponMenu(int arg0)
         break;
     case 6:
         if (vs_mainmenu_ready() != 0) {
-            D_801022D5 = 0;
+            vs_menu_cursorColor = 0;
             vs_battle_stringBuf[0] = 1;
             vs_battle_stringBuf[1] = _combiningItem;
             vs_mainMenu_setNextMenuAction(menuActionMenu);
@@ -2736,11 +2736,11 @@ static void _setBladeMenuItem(
 {
     int assembledWeapon;
 
-    menuItem->icon = blade->category;
+    menuItem->rowIcon = blade->category;
     menuItem->material = blade->material;
     assembledWeapon = blade->assembledWeaponIndex;
     if (assembledWeapon != 0) {
-        menuItem->itemState =
+        menuItem->outsetIcon =
             vs_main_inventory.weapons[assembledWeapon - 1].isEquipped == 0 ? 2 : 1;
     }
 }
@@ -3336,9 +3336,9 @@ static int _selectShields(int arg0)
 static void _setShieldMenuItem(
     vs_battle_menuItem_t* menuItem, vs_main_inventoryShield* shield)
 {
-    menuItem->icon = 15;
+    menuItem->rowIcon = 15;
     menuItem->material = shield->base.material;
-    menuItem->itemState = shield->isEquipped != 0;
+    menuItem->outsetIcon = shield->isEquipped != 0;
 }
 
 static int _combineShieldMenu(int arg0)
@@ -3892,9 +3892,9 @@ static int _initUiArmor(int arg0)
 static void _setArmorMenuItem(
     vs_battle_menuItem_t* menuItem, vs_main_inventoryArmor* armor)
 {
-    menuItem->icon = armor->category + 14;
+    menuItem->rowIcon = armor->category + 14;
     menuItem->material = armor->material;
-    menuItem->itemState = armor->limb != 0;
+    menuItem->outsetIcon = armor->limb != 0;
 }
 
 static int _combineArmorMenu(int arg0)

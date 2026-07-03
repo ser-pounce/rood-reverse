@@ -1112,7 +1112,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
         animationState = vs_mainMenu_renderCursor(
             animationState, (((selectedStatusModifier & 7) * 16) + 2)
                                 | ((((selectedStatusModifier >> 3) * 16) + 136) << 0x10));
-        D_801022D5 = 1;
+        vs_menu_cursorColor = 1;
     }
 
     return 0;
@@ -1313,7 +1313,7 @@ static void _setActiveRow(int row)
     vs_mainMenu_menuItemFlyoutRight(4);
 
     menuItem = vs_battle_getMenuItem(row + 10);
-    menuItem->state = menuItemTransition_toLeft;
+    menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 155;
     menuItem->selected = 1;
     menuItem->subText = NULL;
@@ -1345,7 +1345,7 @@ static void _animateEquipmentDetailTransition(int selectedRow)
         icon = 27;
     }
 
-    menuItem->icon = icon;
+    menuItem->rowIcon = icon;
 
     menuItem = vs_battle_getMenuItem(selectedRow + 10);
     menuItem->state = 3;
@@ -1417,7 +1417,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
             menuItem->targetPosition0 = 320 - xOffset;
         }
 
-        menuItem->icon = rowType >> 26;
+        menuItem->rowIcon = rowType >> 26;
         menuItem->material = ((rowType & 0xFFFF0000) >> 16) & 7;
     }
 }
@@ -1461,7 +1461,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
             meuItem->targetPosition0 = 320 - gemSlot;
         }
 
-        meuItem->icon = 22;
+        meuItem->rowIcon = 22;
     }
 }
 
@@ -1713,7 +1713,7 @@ static int _equipmentDetailScreen(int row)
 
                 menuItem = vs_battle_setMenuItem(var_s2 + 10, 155, 18, 165, 0, sp18[0]);
                 menuItem->selected = 1;
-                menuItem->icon = (sp48 >> 0x1A);
+                menuItem->rowIcon = (sp48 >> 0x1A);
                 menuItem->material = ((sp48 & 0xFFFF0000) >> 16) & 7;
 
                 vs_mainmenu_setInformationMessage(sp18[1]);
@@ -1731,9 +1731,9 @@ static int _equipmentDetailScreen(int row)
                     i = 0x1B;
                 }
 
-                menuItem->icon = i;
+                menuItem->rowIcon = i;
                 _equipmentDetailSelectedElement = 9;
-                D_801022D5 = 0;
+                vs_menu_cursorColor = 0;
                 _cursorAnimState = vs_mainMenu_renderCursor(
                     _cursorAnimState, vs_mainMenu_mainCursorXY[0]);
                 D_801023E3 = 1;
@@ -1850,7 +1850,7 @@ static int _equipmentDetailScreen(int row)
             i += 7;
         }
 
-        D_801022D5 = _equipmentDetailSelectedElement != 9;
+        vs_menu_cursorColor = _equipmentDetailSelectedElement != 9;
         _cursorAnimState = vs_mainMenu_renderCursor(_cursorAnimState, i);
 
         if (vs_main_buttonsPressed.all & PADRup) {
@@ -2547,7 +2547,8 @@ int vs_menu4_exec(u_char* state)
                         }
                     }
 
-                    D_801022D5 = (userInput < _getLimbCount(_selectedActor - 1)) ^ 1;
+                    vs_menu_cursorColor =
+                        (userInput < _getLimbCount(_selectedActor - 1)) ^ 1;
                     D_80108134 =
                         vs_mainMenu_renderCursor(D_80108134, D_801080C8[userInput]);
 
@@ -2593,7 +2594,7 @@ int vs_menu4_exec(u_char* state)
             }
         }
 
-        D_801022D5 = (_selectedElement < _getLimbCount(_selectedActor - 1)) ^ 1;
+        vs_menu_cursorColor = (_selectedElement < _getLimbCount(_selectedActor - 1)) ^ 1;
         break;
 
     case 6:
@@ -2854,8 +2855,8 @@ int vs_menu4_exec(u_char* state)
 
         userInput = vs_battle_rowAnimationSteps[_animationIndex];
 
-        vs_mainMenu_drawButtonUiBackground(16 - userInput, 38, 88, 10);
-        vs_mainmenu_drawButton(1, 8 - userInput, 36, 0);
+        vs_mainmenu_renderButtonUiBackground(16 - userInput, 38, 88, 10);
+        vs_mainmenu_renderButton(1, 8 - userInput, 36, 0);
         vs_battle_renderTextRawColor(
             "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
     }

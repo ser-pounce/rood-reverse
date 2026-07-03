@@ -63,7 +63,7 @@ static void _renderItemCategory(int animationStep, int highlightSelected)
             vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
 
             if (x >= (menuItem->x - 12)) {
-                menuItem->icon = i + 24;
+                menuItem->rowIcon = i + 24;
                 continue;
             }
 
@@ -91,11 +91,11 @@ static void _startMenuTransition(int id)
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
     menuItem = vs_battle_getMenuItem(31);
-    menuItem->state = menuItemTransition_toTop;
+    menuItem->state = menuItemStateSlideY;
     menuItem->targetPosition0 = 18;
 
     menuItem = vs_battle_getMenuItem(id);
-    menuItem->state = menuItemTransition_toLeft;
+    menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 155;
     menuItem->selected = 1;
     menuItem->subText = NULL;
@@ -107,12 +107,12 @@ static void _startMenuTransition(int id)
 static void _continueMenuTransition(int id)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
-    menuItem->state = menuItemTransition_toLeft;
+    menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 16;
     menuItem->w = 164;
 
     menuItem = vs_battle_getMenuItem(id);
-    menuItem->state = menuItemTransition_toTop;
+    menuItem->state = menuItemStateSlideY;
     menuItem->targetPosition0 = 18;
 }
 

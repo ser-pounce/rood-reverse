@@ -2031,11 +2031,11 @@ static void _drawUIControls(void)
         int index = uiXOffset;
         void** s1 = (void**)0x1F800000;
 
-        vs_mainmenu_drawButton(4, index + 8, 15, s1[1] + 24);
-        vs_mainmenu_drawButton(5, uiXOffset + 64, 15, s1[1] + 24);
-        vs_mainmenu_drawButton(6, uiXOffset + 8, 33, s1[1] + 24);
-        vs_mainmenu_drawButton(7, uiXOffset + 8, 52, s1[1] + 24);
-        vs_mainmenu_drawButton(2, uiXOffset + 8, 70, s1[1] + 24);
+        vs_mainmenu_renderButton(4, index + 8, 15, s1[1] + 24);
+        vs_mainmenu_renderButton(5, uiXOffset + 64, 15, s1[1] + 24);
+        vs_mainmenu_renderButton(6, uiXOffset + 8, 33, s1[1] + 24);
+        vs_mainmenu_renderButton(7, uiXOffset + 8, 52, s1[1] + 24);
+        vs_mainmenu_renderButton(2, uiXOffset + 8, 70, s1[1] + 24);
 
         switch (_menuCommandsState) {
         case 0: {

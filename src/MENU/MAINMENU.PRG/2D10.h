@@ -59,12 +59,10 @@ void vs_mainMenu_rebuildInventory(int);
  * display at the bottom of the screen.
  */
 void vs_mainMenu_initTextBox(void);
-void vs_mainmenu_drawButton(int index, int x, int y, u_long* data);
+void vs_mainmenu_renderButton(int index, int x, int y, u_long* data);
 int vs_mainMenu_renderCursor(u_int, int);
 int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);
 void vs_mainMenu_renderIntColorDefault(int, int, u_long*);
-void func_800FFF38(int arg0, int arg1);
-void func_800FFFBC(int arg0, int arg1);
 int vs_mainMenu_renderIntColor(int, int, int, u_long*);
 void vs_mainmenu_setInformationMessage(char*);
 
@@ -75,9 +73,9 @@ void vs_mainmenu_setInformationMessage(char*);
  * @param disabled Displays value in gray.
  */
 void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled);
-void vs_mainMenu_drawRowIcon(int, int, int);
+void vs_mainMenu_renderMenuRowIcon(int, int, int);
 void func_80100164(void);
-void vs_mainMenu_drawButtonUiBackground(int x, int y, int w, int h);
+void vs_mainmenu_renderButtonUiBackground(int x, int y, int w, int h);
 void func_80100414(int, int);
 int func_80100814(void);
 
@@ -106,10 +104,9 @@ extern int vs_mainMenu_mainCursorXY[];
 extern char vs_mainMenu_miscItemToSkillMap[];
 extern char (*vs_mainMenu_itemNames)[24];
 extern char D_801022C4;
-extern char D_801022D5;
+extern char vs_menu_cursorColor;
 extern char vs_mainMenu_hideMenu;
 extern int D_801022D8;
 extern char D_801022DC;
 extern char D_801023D0;
-extern u_short* D_801023D4;
 extern char D_801023E3;

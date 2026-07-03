@@ -7,7 +7,7 @@ int func_800BFE50(u_short);
 void func_800C00E8(int, void*);
 
 /**
- * Same as vs_battle_setSpriteDefault, but the next
+ * Same as vs_battle_setSpriteDefaultTexPage, but the next
  * chained primitive is read from 0x1F800008 and
  * brightness is set to midpoint (0x80) and transparency is disabled.
  *
@@ -16,7 +16,7 @@ void func_800C00E8(int, void*);
 u_long* vs_battle_setSpriteDefault(int wh, int xy);
 
 /**
- * Same as vs_battle_setSpriteDefaultTexPage, but presets the
+ * Same as vs_battle_setSprite, but presets the
  * texpage command to 0xE100000C i.e. x offset 768
  *
  * @return Primitive pointer at 0x1F800000

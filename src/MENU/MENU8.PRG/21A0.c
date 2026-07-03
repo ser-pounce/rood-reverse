@@ -156,9 +156,9 @@ static void _renderRenameMenu(int xOffset)
 
     sp18 = (u_int*)D_1F800000[1] - 1;
 
-    vs_mainmenu_drawButton(3, (-xOffset + 16), 50, 0);
-    vs_mainmenu_drawButton(1, (-xOffset + 16), 66, 0);
-    vs_mainmenu_drawButton(0, (-xOffset + 16), 82, 0);
+    vs_mainmenu_renderButton(3, (-xOffset + 16), 50, 0);
+    vs_mainmenu_renderButton(1, (-xOffset + 16), 66, 0);
+    vs_mainmenu_renderButton(0, (-xOffset + 16), 82, 0);
     prim = vs_battle_setSpriteDefault(
         vs_getWH(16, 16), ((-xOffset + 16) & 0xFFFF) | (34 << 16));
     prim[4] = vs_getUV0Clut(176, 112, 944, 223);

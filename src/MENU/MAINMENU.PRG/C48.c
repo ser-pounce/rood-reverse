@@ -219,8 +219,8 @@ void vs_mainMenu_menuItemFlyoutLeft(int row)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row + 32);
 
-    if (menuItem->state != menuItemTransition_none) {
-        menuItem->state = menuItemTransition_offScreenLeft;
+    if (menuItem->state != menuItemStateInactive) {
+        menuItem->state = menuItemStateDismiss;
         menuItem->targetPosition0 = -menuItem->w;
     }
 }
@@ -240,8 +240,8 @@ void vs_mainMenu_menuItemFlyoutRight(int row)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row);
 
-    if (menuItem->state != menuItemTransition_none) {
-        menuItem->state = menuItemTransition_toLeft;
+    if (menuItem->state != menuItemStateInactive) {
+        menuItem->state = menuItemStateSlideX;
         menuItem->targetPosition0 = 320;
     }
 }
@@ -400,7 +400,7 @@ void vs_mainMenu_exec(int arg0)
                 vs_mainMenu_setNextMenuAction(menuActionMenu);
                 vs_mainMenu_clearMenuExcept(selectedMenu - 1);
 
-                menuItem->state = menuItemTransition_toLeft;
+                menuItem->state = menuItemStateSlideX;
                 menuItem->targetPosition0 = 180;
                 menuItem->selected = 1;
 
@@ -421,7 +421,7 @@ void vs_mainMenu_exec(int arg0)
                     break;
                 }
 
-                menuItem->state = menuItemTransition_toTop;
+                menuItem->state = menuItemStateSlideY;
                 menuItem->targetPosition0 = 18;
 
                 if (selectedMenu == 5) {
@@ -785,8 +785,8 @@ void func_800FB3C8(int arg0)
         func_800CCD00(0xE1000200, temp_s4);
     }
 
-    vs_mainMenu_drawButtonUiBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
-    vs_mainmenu_drawButton(1, arg0 + 0x10, 0x2E, temp_s4 - 1);
+    vs_mainmenu_renderButtonUiBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
+    vs_mainmenu_renderButton(1, arg0 + 0x10, 0x2E, temp_s4 - 1);
 
     arg0 = (arg0 & 0xFFFF) + 0x22;
 

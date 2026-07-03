@@ -82,7 +82,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     xy = *(int*)&menuItem->x;
     before = D_1F800000[2] + 8;
     w = menuItem->w;
-    animState = menuItem->animationState;
+    animState = menuItem->gradientState;
     fadeEffect = menuItem->fadeEffect - 1;
     bgWidth = menuItem->backgroundWidth;
 
@@ -160,7 +160,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     }
 
     if (animState != 0) {
-        menuItem->animationState = animState - 1;
+        menuItem->gradientState = animState - 1;
     }
 
     xy = xy + (-12 << 16);
@@ -244,7 +244,7 @@ void _setMenuRow10(char* text) __attribute__((unused));
 void _setMenuRow10(char* text)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
-    menuItem->state = menuItemTransition_toLeft;
+    menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
     menuItem->fontColor = 1;
@@ -1796,7 +1796,7 @@ void _renderTitleMenu(int animState)
         if (row->unk1 == 0) {
             menuItem->fontColor = 3;
         }
-        menuItem->animationState = row->animationState;
+        menuItem->gradientState = row->animationState;
 
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
             menuItem->fadeEffect = menuItem_fadeEffect_fadeTop;
@@ -2025,7 +2025,7 @@ void _renderEnemyMenu(int animState)
             menuItem->fontColor = 3;
         }
 
-        menuItem->animationState = enemy->animationState;
+        menuItem->gradientState = enemy->animationState;
 
         if ((i == 0) && (cursorMem->encyclopaediaPage != 0)) {
             menuItem->fadeEffect = menuItem_fadeEffect_fadeTop;
@@ -2101,7 +2101,7 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s4 = animState * 16;
         scratch = (void**)getScratchAddr(0);
 
-        vs_mainmenu_drawButton(6, temp_s4 - 120, 15, scratch[1] + 24);
+        vs_mainmenu_renderButton(6, temp_s4 - 120, 15, scratch[1] + 24);
 
         temp_s0 = (temp_s4 - 100) & 0xFFFF;
 
@@ -2111,7 +2111,7 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s6 = temp_s4 - 112;
 
         _renderCommandsBg(temp_s6, 18, 96, 12, 3);
-        vs_mainmenu_drawButton(7, temp_s4 - 120, 34, scratch[1] + 24);
+        vs_mainmenu_renderButton(7, temp_s4 - 120, 34, scratch[1] + 24);
         vs_battle_renderTextRawColor(
             "ZOOM", temp_s0 | (36 << 16), _zoomColor, scratch[1] + 24);
         _renderCommandsBg(temp_s6, 36, 78, 12, 3);

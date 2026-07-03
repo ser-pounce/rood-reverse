@@ -29,37 +29,38 @@ enum vs_battle_menuItemfadeEffect {
     menuItem_fadeEffect_fadeBottom
 };
 
-enum vs_battle_menuItemTransition {
-    menuItemTransition_none = 0,
-    menuItemTransition_toLeft = 2,
-    menuItemTransition_toTop,
-    menuItemTransition_offScreenLeft = 5
+enum vs_battle_menuItemState {
+    menuItemStateInactive,
+    menuItemStateIdle,
+    menuItemStateSlideX,
+    menuItemStateSlideY,
+    menuItemStateSlideXY,
+    menuItemStateDismiss = 5
 };
 
 typedef struct {
-    char state;
+    u_char state;
     u_char w;
-    char backgroundWidth;
-    char unk3;
-    char animationState;
-    char fadeEffect;
-    char selected;
-    char unselectable;
-    char unk8;
-    char icon;
-    char fontColor;
-    char unkB;
-    char material;
-    char itemState;
+    u_char backgroundWidth;
+    u_char _ __attribute__((unused));
+    u_char gradientState;
+    u_char fadeEffect;
+    u_char selected;
+    u_char unselectable;
+    u_char buttonId;
+    u_char rowIcon;
+    u_char fontColor;
+    u_char invertGradient;
+    u_char material;
+    u_char outsetIcon;
     u_short itemPage;
     u_short count;
-    u_short unk12;
+    u_short max;
     short x;
     short y;
     short targetPosition0;
     short targetPosition1;
-    char text[28];
-    int unk38;
+    char text[32];
     char* subText;
 } vs_battle_menuItem_t;
 

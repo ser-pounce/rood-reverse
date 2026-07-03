@@ -43,7 +43,6 @@ static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
     int i;
     int j;
     vs_battle_menuItem_t* menuItem;
-    u_short* text;
 
     _menuRowCount = count;
     _itemsFirstRow = 0;
@@ -55,6 +54,7 @@ static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
     _itemsText = vs_main_allocHeapR(count * 128);
 
     for (i = 0; i < count; ++i) {
+        u_short* text;
 
         ((_itemsText_t*)_itemsText)[i].menuRowFlags = rowTypes[i];
 
@@ -89,8 +89,8 @@ static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
     j = rowTypes[0];
     menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsText);
     menuItem->unselectable = j & 1;
-    menuItem->icon = j >> 0x1A;
-    menuItem->material = (j >> 0x10) & 7;
+    menuItem->rowIcon = j >> 26;
+    menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
     _equippedItem = (j >> 19) & 0x7F;
 }
@@ -132,10 +132,10 @@ static void _processEquipSubMenu(int hasSfx)
         menuItem->targetPosition0 = 0xA9;
         temp_s0 = ((_itemsText_t*)_itemsText)[state].menuRowFlags;
         menuItem->unselectable = temp_s0 & 1;
-        menuItem->icon = (temp_s0 >> 0x1A);
+        menuItem->rowIcon = (temp_s0 >> 0x1A);
 
         if (((temp_s0 >> 9) & 0x7F) != 0) {
-            menuItem->itemState = ((temp_s0 >> 9) & 0x7F) - 100;
+            menuItem->outsetIcon = ((temp_s0 >> 9) & 0x7F) - 100;
         }
 
         menuItem->material = (temp_s0 >> 0x10) & 7;
@@ -257,20 +257,20 @@ static void _processEquipSubMenu(int hasSfx)
                     temp_s0 = 6;
                 }
                 for (i = 1; i < temp_s0; ++i) {
-                    buf[i + temp_s6] = vs_battle_getMenuItem(i + 0x14)->animationState;
+                    buf[i + temp_s6] = vs_battle_getMenuItem(i + 0x14)->gradientState;
                 }
 
                 for (i = 1;;) {
                     menuItem = vs_battle_setMenuItem(i + 0x14, 0xA9, 0x12 + i * 0x10,
                         0x97, 0, _itemsText + ((i + _itemsFirstRow) << 7));
-                    menuItem->animationState = buf[i + _itemsFirstRow];
+                    menuItem->gradientState = buf[i + _itemsFirstRow];
                     temp_s0 =
                         ((_itemsText_t*)_itemsText)[i + _itemsFirstRow].menuRowFlags;
                     menuItem->unselectable = temp_s0 & 1;
-                    menuItem->icon = temp_s0 >> 0x1A;
+                    menuItem->rowIcon = temp_s0 >> 0x1A;
 
                     if (((temp_s0 >> 9) & 0x7F) != 0) {
-                        menuItem->itemState = ((temp_s0 >> 9) & 0x7F) - 0x64;
+                        menuItem->outsetIcon = ((temp_s0 >> 9) & 0x7F) - 0x64;
                     }
 
                     menuItem->material = (temp_s0 >> 0x10) & 7;
@@ -294,7 +294,7 @@ static void _processEquipSubMenu(int hasSfx)
 
             temp_s0 = ((_itemsText_t*)_itemsText)[_selectedItemRow + _itemsFirstRow]
                           .menuRowFlags;
-            _equippedItem = (temp_s0 >> 0x13) & 0x7F;
+            _equippedItem = (temp_s0 >> 19) & 0x7F;
         }
 
         vs_battle_getMenuItem(_selectedItemRow + 0x14)->selected = 1;
@@ -1081,7 +1081,7 @@ static int _equipMenu(int initialize)
 
         menuItem = vs_battle_setMenuItem(
             31, 320, 18, 126, 8, (char*)&_menuText[VS_menuText_OFFSET_equip]);
-        menuItem->state = menuItemTransition_toLeft;
+        menuItem->state = menuItemStateSlideX;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
         state = initMenu;
@@ -1499,7 +1499,7 @@ int vs_menu3_exec(u_char* state)
         menuitem->selected = 1;
 
         if (category != 7) {
-            menuitem->unk12 = vs_mainMenu_inventoryItemCapacities[category];
+            menuitem->max = vs_mainMenu_inventoryItemCapacities[category];
             menuitem->count = vs_mainMenu_getItemCount(category, 0);
         }
     }
@@ -1529,8 +1529,8 @@ int vs_menu3_exec(u_char* state)
     }
 
     if (_statusCommandAnimationStep != 0) {
-        vs_mainMenu_drawButtonUiBackground(16 - row, 38, 88, 10);
-        vs_mainmenu_drawButton(1, 8 - row, 36, NULL);
+        vs_mainmenu_renderButtonUiBackground(16 - row, 38, 88, 10);
+        vs_mainmenu_renderButton(1, 8 - row, 36, NULL);
         vs_battle_renderTextRawColor("STATUS", vs_getXY(28 - row, 38),
             vs_getRGB888(32, 32, 32) << _statusCommandState, NULL);
     }

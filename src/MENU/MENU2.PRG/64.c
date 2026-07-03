@@ -278,30 +278,30 @@ static int _abilityMenu(void)
                     ability = _unlockedChainAbilities[i];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        vs_mainmenu_drawButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        vs_mainmenu_drawButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        vs_mainmenu_drawButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
                     }
                 } else {
 
                     ability = _unlockedDefenseAbilities[i];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        vs_mainmenu_drawButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        vs_mainmenu_drawButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        vs_mainmenu_drawButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
                     }
                 }
             }
@@ -312,30 +312,30 @@ static int _abilityMenu(void)
                     ability = _unlockedChainAbilities[i + _firstAbility];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        vs_mainmenu_drawButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        vs_mainmenu_drawButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        vs_mainmenu_drawButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
                     }
                 } else {
 
                     ability = _unlockedDefenseAbilities[i + _firstAbility];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        vs_mainmenu_drawButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        vs_mainmenu_drawButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        vs_mainmenu_drawButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
                     }
                 }
             }
@@ -431,13 +431,13 @@ static int _abilityMenu(void)
 
                 for (i = 0; i < ability; ++i) {
                     abilityBuf[i + previousFirstAbility] =
-                        vs_battle_getMenuItem(i + 20)->animationState;
+                        vs_battle_getMenuItem(i + 20)->gradientState;
                 }
 
                 for (i = 0;;) {
                     menuItem = vs_battle_setMenuItem(i + 20, 194, i * 16 + 50, 0x7E, 0,
                         (char*)(_abilityText + ((_firstAbility + i) << 6)));
-                    menuItem->animationState = abilityBuf[i + _firstAbility];
+                    menuItem->gradientState = abilityBuf[i + _firstAbility];
 
                     if ((i == 0) && (_firstAbility != 0)) {
                         menuItem->fadeEffect = 1;

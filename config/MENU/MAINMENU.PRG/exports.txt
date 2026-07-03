@@ -1,6 +1,6 @@
 D_801021A0
 D_801022C4
-D_801022D5
+vs_menu_cursorColor
 D_801022D8
 D_801023D0
 D_801023E3
@@ -34,11 +34,11 @@ vs_mainMenu_copyItem
 vs_mainMenu_currentUiItem
 vs_mainMenu_deactivateMenuItem
 vs_mainMenu_dismissTextBox
-vs_mainmenu_drawButton
-vs_mainMenu_drawButtonUiBackground
+vs_mainmenu_renderButton
+vs_mainmenu_renderButtonUiBackground
 vs_mainMenu_drawClassAffinityType
 vs_mainMenu_renderDpPpBars
-vs_mainMenu_drawRowIcon
+vs_mainMenu_renderMenuRowIcon
 vs_mainMenu_ensureItemNamesLoaded
 vs_mainMenu_equipmentDetailNavigationMap
 vs_mainMenu_equipmentStats

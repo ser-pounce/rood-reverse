@@ -130,7 +130,7 @@ static int _weaponArtsMenu(int typeCursorMem)
         menuItem->state = 2;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
-        menuItem->icon = typeCursorMem;
+        menuItem->rowIcon = typeCursorMem;
         state = init;
         return 0;
     }

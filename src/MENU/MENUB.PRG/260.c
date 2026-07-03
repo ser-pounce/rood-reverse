@@ -28,7 +28,7 @@ typedef struct {
     char state;
 } _lootListItem;
 
-static char _animationStateBufIndex = 0;
+static char _gradientStateIndex = 0;
 static char _controlsEnabled = 0;
 
 static _lootListItem* _lootList;
@@ -172,7 +172,7 @@ static int _topLevelMenuTransition(int category)
         menuItem->selected = 1;
 
         if (itemCategory != 7) {
-            menuItem->unk12 = vs_mainMenu_inventoryItemCapacities[itemCategory];
+            menuItem->max = vs_mainMenu_inventoryItemCapacities[itemCategory];
             menuItem->count = vs_mainMenu_getItemCount(itemCategory, NULL);
         }
     }
@@ -202,8 +202,8 @@ static int _topLevelMenuTransition(int category)
     }
 
     if (_statusCommandAnimationStep != 0) {
-        vs_mainMenu_drawButtonUiBackground(0x10 - stepValue, 0x26, 0x58, 10);
-        vs_mainmenu_drawButton(1, 8 - stepValue, 0x24, NULL);
+        vs_mainmenu_renderButtonUiBackground(0x10 - stepValue, 0x26, 0x58, 10);
+        vs_mainmenu_renderButton(1, 8 - stepValue, 0x24, NULL);
         vs_battle_renderTextRawColor("STATUS", ((0x1C - stepValue) & 0xFFFF) | 0x260000,
             0x202020 << _statusCommandState, NULL);
     }
@@ -996,11 +996,11 @@ void _displayInventoryCapacities(int edgeX)
 
     buttonBgPos = edgeX + 184;
 
-    vs_mainMenu_drawButtonUiBackground(buttonBgPos, 112, 112, 10);
-    vs_mainMenu_drawButtonUiBackground(buttonBgPos, 128, 64, 10);
+    vs_mainmenu_renderButtonUiBackground(buttonBgPos, 112, 112, 10);
+    vs_mainmenu_renderButtonUiBackground(buttonBgPos, 128, 64, 10);
     vs_battle_renderTextRawColor("GET", (edgeX + 196) | (112 << 16),
         vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
-    vs_mainmenu_drawButton(2, edgeX + 176, 110, NULL);
+    vs_mainmenu_renderButton(2, edgeX + 176, 110, NULL);
 
     str = "ALL";
     xy = (edgeX + 252) | (112 << 16);
@@ -1012,10 +1012,10 @@ void _displayInventoryCapacities(int edgeX)
     }
 
     vs_battle_renderTextRawColor(str, xy, var_a2, NULL);
-    vs_mainmenu_drawButton(1, edgeX + 232, 110, NULL);
+    vs_mainmenu_renderButton(1, edgeX + 232, 110, NULL);
     vs_battle_renderTextRawColor("END", (edgeX + 196) | (128 << 16),
         vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
-    vs_mainmenu_drawButton(3, edgeX + 176, 126, NULL);
+    vs_mainmenu_renderButton(3, edgeX + 176, 126, NULL);
 }
 
 static int _droppableUnderCurrentDifficulty(int arg0)
@@ -1085,7 +1085,7 @@ static void _applyAllLootLists(vs_battle_lootListNode* node)
 
 static void _displayCurrentLoot(int x)
 {
-    char animationStateBuf[256];
+    char gradientStates[256];
     int i;
     int index;
     int temp_v1_3;
@@ -1094,11 +1094,11 @@ static void _displayCurrentLoot(int x)
     int count = _lootListCount;
     _lootListItem* loot = &_lootList[_lootListOffset];
 
-    vs_battle_rMemzero(&animationStateBuf, sizeof animationStateBuf);
+    vs_battle_rMemzero(&gradientStates, sizeof gradientStates);
 
     for (i = 0; i < 8; ++i) {
         menuItem = vs_battle_getMenuItem(i + 32);
-        animationStateBuf[i + _animationStateBufIndex] = menuItem->animationState;
+        gradientStates[i + _gradientStateIndex] = menuItem->gradientState;
         menuItem->state = 0;
     }
 
@@ -1116,7 +1116,7 @@ static void _displayCurrentLoot(int x)
             vs_main_inventoryBlade* blade = &_inventory->blades[weapon->blade - 1];
             menuItem =
                 vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0, weapon->name);
-            menuItem->icon = blade->category;
+            menuItem->rowIcon = blade->category;
             menuItem->material = blade->material;
             break;
         }
@@ -1124,7 +1124,7 @@ static void _displayCurrentLoot(int x)
             vs_main_inventoryBlade* blade2 = &_inventory->blades[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[blade2->id]);
-            menuItem->icon = blade2->category;
+            menuItem->rowIcon = blade2->category;
             menuItem->material = blade2->material;
             break;
         }
@@ -1132,14 +1132,14 @@ static void _displayCurrentLoot(int x)
             vs_main_inventoryGrip* grip = &_inventory->grips[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[grip->id]);
-            menuItem->icon = grip->category + 10;
+            menuItem->rowIcon = grip->category + 10;
             break;
         }
         case itemCategoryShield: {
             vs_main_inventoryShield* shield = &_inventory->shields[index];
             menuItem = vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0,
                 vs_mainMenu_itemNames[shield->base.id]);
-            menuItem->icon = 15;
+            menuItem->rowIcon = 15;
             menuItem->material = shield->base.material;
             break;
         }
@@ -1147,7 +1147,7 @@ static void _displayCurrentLoot(int x)
             vs_main_inventoryArmor* armor = &_inventory->armor[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[armor->id]);
-            menuItem->icon = armor->category + 0xE;
+            menuItem->rowIcon = armor->category + 0xE;
             menuItem->material = armor->material;
             break;
         }
@@ -1155,7 +1155,7 @@ static void _displayCurrentLoot(int x)
             vs_main_inventoryGem* gem = &_inventory->gems[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[gem->id]);
-            menuItem->icon = 22;
+            menuItem->rowIcon = 22;
             break;
         }
         case itemCategoryMisc: {
@@ -1168,14 +1168,14 @@ static void _displayCurrentLoot(int x)
         }
         }
 
-        menuItem->animationState = animationStateBuf[i + _lootListOffset];
+        menuItem->gradientState = gradientStates[i + _lootListOffset];
         menuItem->unselectable = loot->state == 0;
 
         if (loot->unk2 != 0) {
             menuItem->x -= loot->unk2 * 48;
             ++loot->unk2;
             if (loot->unk2 == 4) {
-                menuItem->animationState = 0;
+                menuItem->gradientState = 0;
             }
         }
 
@@ -1203,7 +1203,7 @@ static void _displayCurrentLoot(int x)
         ++loot;
     }
 
-    _animationStateBufIndex = _lootListOffset;
+    _gradientStateIndex = _lootListOffset;
 }
 
 static void _populateLootItem(int lootIndex)

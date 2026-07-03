@@ -65,7 +65,7 @@ vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsMenu(int row, int index, int 
             menuItem->state = 2;
             menuItem->targetPosition0 = x;
         }
-        menuItem->icon = (u_int)rowType >> 0x1A;
+        menuItem->rowIcon = (u_int)rowType >> 0x1A;
         menuItem->material = ((u_int)rowType >> 16) & 7;
     }
 
@@ -110,7 +110,7 @@ vs_battle_menuItem_t* vs_mainMenu_initSetShieldGemMenu(int row, int index, int f
             menuItem->state = 2;
             menuItem->targetPosition0 = 320 - var_s0;
         }
-        menuItem->icon = 0x16;
+        menuItem->rowIcon = 0x16;
     }
     return menuItem;
 }
@@ -720,7 +720,7 @@ void vs_mainMenu_renderStatusView(void)
     static char D_80102210 = 0;
     static char D_80102211 = 0;
 
-    char* var_s4;
+    char* infoMsg;
     u_int selectedElement = vs_mainMenu_selectedUiElement;
     int direction = 0;
     int i = selectedElement;
@@ -794,25 +794,25 @@ void vs_mainMenu_renderStatusView(void)
     }
 
     if (vs_mainMenu_selectedUiElement < 2) {
-        var_s4 = (char*)&vs_mainMenu_itemHelp
+        infoMsg = (char*)&vs_mainMenu_itemHelp
             [vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_INDEX_phantomPointsDesc
                                   - vs_mainMenu_selectedUiElement]];
     } else if (vs_mainMenu_selectedUiElement < 9) {
         switch (D_801024B9) {
         case 0:
-            var_s4 = (char*)&vs_mainMenu_itemHelp
+            infoMsg = (char*)&vs_mainMenu_itemHelp
                 [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                       + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
             break;
 
         case 1:
-            var_s4 = (char*)&vs_mainMenu_itemHelp
+            infoMsg = (char*)&vs_mainMenu_itemHelp
                 [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                       + VS_ITEMHELP_BIN_INDEX_dragonClassDesc]];
             break;
 
         case 2:
-            var_s4 = (char*)&vs_mainMenu_itemHelp
+            infoMsg = (char*)&vs_mainMenu_itemHelp
                 [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                       + VS_ITEMHELP_BIN_INDEX_lightAffinityDesc]];
             break;
@@ -822,23 +822,23 @@ void vs_mainMenu_renderStatusView(void)
         if (vs_mainMenu_selectedUiElement < 15) {
             for (i = 0; i < 7; ++i) {
                 if ((vs_mainMenu_equipmentSubtype >> i) & 1) {
-                    var_s4 = statusViewDispatch[i](vs_mainMenu_selectedUiElement - 9);
+                    infoMsg = statusViewDispatch[i](vs_mainMenu_selectedUiElement - 9);
                 }
             }
         } else if (vs_mainMenu_selectedUiElement == 15) {
-            var_s4 = (char*)(vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_OFFSET_line657);
+            infoMsg = (char*)(vs_mainMenu_itemHelp + VS_ITEMHELP_BIN_OFFSET_line657);
         } else {
-            var_s4 = (char*)&vs_mainMenu_itemHelp
+            infoMsg = (char*)&vs_mainMenu_itemHelp
                 [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                       + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
             if (vs_mainMenu_selectedUiElement >= 18) {
                 if (vs_mainMenu_equipmentSubtype & 7) {
-                    var_s4 = (char*)&vs_mainMenu_itemHelp
+                    infoMsg = (char*)&vs_mainMenu_itemHelp
                         [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                               + VS_ITEMHELP_BIN_INDEX_line640]];
                 }
                 if (vs_mainMenu_equipmentSubtype & 0x18) {
-                    var_s4 = (char*)&vs_mainMenu_itemHelp
+                    infoMsg = (char*)&vs_mainMenu_itemHelp
                         [vs_mainMenu_itemHelp[vs_mainMenu_selectedUiElement
                                               + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
                 }
@@ -846,11 +846,11 @@ void vs_mainMenu_renderStatusView(void)
         }
     }
 
-    vs_mainmenu_setInformationMessage(var_s4);
+    vs_mainmenu_setInformationMessage(infoMsg);
 
     i = D_801021A0[vs_mainMenu_selectedUiElement];
 
-    if (vs_mainMenu_selectedUiElement == 0xF) {
+    if (vs_mainMenu_selectedUiElement == 15) {
         i += D_8010214A << 0x14;
     }
 

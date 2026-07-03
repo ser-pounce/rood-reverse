@@ -40,7 +40,7 @@ static void _switchItemStatusPage(int row, char* text[], u_int rowType, int page
 
     menuItem = vs_battle_setMenuItem(row, 155, 18, 165, 0, text[0]);
     menuItem->selected = 1;
-    menuItem->icon = (rowType >> 0x1A);
+    menuItem->rowIcon = (rowType >> 0x1A);
     menuItem->material = (rowType >> 0x10) & 7;
 
     vs_mainmenu_setInformationMessage(text[1]);
@@ -342,7 +342,7 @@ static int _gripStatusView(int itemInfo)
                 .gemSlots
             + '0';
 
-        vs_mainMenu_drawRowIcon(0x116, 0x100, 0x20);
+        vs_mainMenu_renderMenuRowIcon(0x116, 0x100, 0x20);
         vs_battle_renderTextRaw(gemSlotCountBuf, vs_getXY(280, 36), NULL);
 
         break;
@@ -676,7 +676,7 @@ static int _itemStatusDispatcher(int itemInfo)
 
     if (vs_mainmenu_ready() != 0) {
 
-        D_801022D5 = vs_mainMenu_selectedUiElement != 9;
+        vs_menu_cursorColor = vs_mainMenu_selectedUiElement != 9;
 
         func_801013F8(1);
         vs_mainMenu_renderStatusView();

@@ -413,7 +413,7 @@ loop_1:
 
                         row = func_80100814();
 
-                        vs_battle_getMenuItem(row >> 8)->itemState = 0;
+                        vs_battle_getMenuItem(row >> 8)->outsetIcon = 0;
                         _itemStatusDispatcher(itemCategory | ((row + offset) << 4));
 #undef offset
                         _secondaryTitleEnabled = 0;

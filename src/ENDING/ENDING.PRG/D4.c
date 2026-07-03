@@ -14,7 +14,7 @@ typedef struct {
 } func_8006DF70_t;
 
 typedef struct {
-    int unk0;
+    void (*unk0)(void);
     int unk4;
     short unk8;
     short unkA;
@@ -53,8 +53,8 @@ extern int _illustLbas[];
 extern int _illustSizes[];
 extern char D_800DB876;
 extern char D_800DBAA8[];
-extern D_800DBB88_t D_800DBB88;
-extern D_800DBB88_t D_800DBBB8;
+extern D_800DBB88_t D_800DBB88[];
+extern D_800DBB88_t D_800DBBB8[];
 extern signed char D_800DC188;
 extern signed char D_800DC189;
 extern signed char D_800DC18A;
@@ -282,53 +282,42 @@ void func_8006A9C0(int* arg0)
 
 void func_8006AA6C(void)
 {
-    D_800DBB88_t* var_v1;
-    short temp_v0;
     short i;
-
-    var_v1 = &D_800DBB88;
-    i = 0;
-    do {
+    D_800DBB88_t* var_v1 = D_800DBB88;
+    for (i = 0; i < 32; ++i, var_v1 += 4) {
         var_v1->unk8 = 0;
-        temp_v0 = i + 1;
-        i = temp_v0;
-        var_v1 += 4;
-    } while (temp_v0 < 0x20);
+    }
 }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
 
+D_800DBB88_t* func_8006AB44(void (*arg0)(void)) __attribute__((noreturn));
 D_800DBB88_t* func_8006AB44(void (*arg0)(void))
 {
-    D_800DBB88_t* var_v1;
-    short temp_v0;
     short i;
+    D_800DBB88_t* var_v1 = D_800DBBB8;
 
-    var_v1 = &D_800DBBB8;
-    i = 1;
-    do {
+    for (i = 1; i < 32; ++i, var_v1 += 4) {
         if (var_v1->unk8 == 0) {
-            var_v1->unk0 = (int)arg0;
+            var_v1->unk0 = arg0;
             var_v1->unk8 = 1;
             var_v1->unkA = 0;
             return var_v1;
         }
-        temp_v0 = i + 1;
-        i = temp_v0;
-        var_v1 += 4;
-    } while (temp_v0 < 0x20);
-    SystemError(0x4D, 0x64);
+    }
+
+    SystemError('M', 100);
 }
 
-D_800DBB88_t* func_8006ABBC(int arg0)
+D_800DBB88_t* func_8006ABBC(void (*arg0)(void))
 {
-    if (D_800DBB88.unk8 == 0) {
-        D_800DBB88.unk0 = arg0;
-        D_800DBB88.unk8 = 1;
-        D_800DBB88.unkA = 0;
-        return &D_800DBB88;
+    if (D_800DBB88[0].unk8 == 0) {
+        D_800DBB88[0].unk0 = arg0;
+        D_800DBB88[0].unk8 = 1;
+        D_800DBB88[0].unkA = 0;
+        return D_800DBB88;
     }
-    return 0;
+    return NULL;
 }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);

@@ -11,3 +11,4 @@ $(BUILD)/data/MENU/ENDING.PRG.elf: LDFLAGS += \
 
 $(BUILD)/src/ENDING/ENDING.PRG/D4.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/ENDING/ENDING.PRG/D4.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/ENDING/ENDING.PRG/D4.o: CC1FLAGS += -Wno-return-type

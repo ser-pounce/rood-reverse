@@ -27,7 +27,7 @@ void func_8006A888(void);
 void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
-void func_8006AB44(void (*)(void));
+D_800DBB88_t* func_8006AB44(void (*)(void));
 void func_8006B760(void);
 void func_8006B884(void);
 void func_8006B910(void);
@@ -54,6 +54,7 @@ extern int _illustSizes[];
 extern char D_800DB876;
 extern char D_800DBAA8[];
 extern D_800DBB88_t D_800DBB88;
+extern D_800DBB88_t D_800DBBB8;
 extern signed char D_800DC188;
 extern signed char D_800DC189;
 extern signed char D_800DC18A;
@@ -297,7 +298,27 @@ void func_8006AA6C(void)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AB44);
+D_800DBB88_t* func_8006AB44(void (*arg0)(void))
+{
+    D_800DBB88_t* var_v1;
+    short temp_v0;
+    short i;
+
+    var_v1 = &D_800DBBB8;
+    i = 1;
+    do {
+        if (var_v1->unk8 == 0) {
+            var_v1->unk0 = (int)arg0;
+            var_v1->unk8 = 1;
+            var_v1->unkA = 0;
+            return var_v1;
+        }
+        temp_v0 = i + 1;
+        i = temp_v0;
+        var_v1 += 4;
+    } while (temp_v0 < 0x20);
+    SystemError(0x4D, 0x64);
+}
 
 D_800DBB88_t* func_8006ABBC(int arg0)
 {

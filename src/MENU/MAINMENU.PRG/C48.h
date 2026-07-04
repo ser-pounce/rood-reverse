@@ -114,6 +114,10 @@ void vs_mainMenu_setGemStats(int);
 void vs_mainMenu_resetStats(void);
 void vs_mainMenu_unpackMenubg(u_int*);
 
-extern char vs_mainMenu_weaponHands[];
+extern vs_main_inventoryGem* vs_mainMenu_gems;
 extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
-extern char D_80102578;
+extern vs_main_inventoryGrip* vs_mainMenu_grips;
+extern vs_main_inventoryBlade* vs_mainMenu_blades;
+extern vs_main_inventoryArmor* vs_mainMenu_armor;
+extern vs_main_inventoryShield* vs_mainMenu_shields;
+extern vs_main_inventoryWeapon* vs_mainMenu_weapons;

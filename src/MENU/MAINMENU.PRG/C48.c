@@ -33,6 +33,14 @@
 #include <libetc.h>
 #include <limits.h>
 
+vs_main_inventoryGem* vs_mainMenu_gems;
+vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
+vs_main_inventoryGrip* vs_mainMenu_grips;
+vs_main_inventoryBlade* vs_mainMenu_blades;
+vs_main_inventoryArmor* vs_mainMenu_armor;
+vs_main_inventoryShield* vs_mainMenu_shields;
+vs_main_inventoryWeapon* vs_mainMenu_weapons;
+
 extern u_long* D_1F800000[];
 
 void vs_mainMenu_initInventory(void)
@@ -472,6 +480,14 @@ void func_800FAEBC(int arg0)
 #pragma vsstring(start)
     static char misc[] = "MISC\00000|0xF8|";
 #pragma vsstring(end)
+
+    static int _0 __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
+    static char D_80102410[64];
+    static int D_80102450;
+    static char _func_800FAEBC_state;
+    static char _noItems;
+    static char D_80102456;
+    static char _1 __attribute__((unused));
 
     int j;
     int i;

@@ -12,6 +12,7 @@ options:
   undefined_funcs_auto_path: build/config/MENU/MAINMENU.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/MENU/MAINMENU.PRG/undefined_syms_auto.txt
   subalign: 4
+  auto_link_sections: [.rodata, .data, .bss]
 
 segments:
   - start: 0x0

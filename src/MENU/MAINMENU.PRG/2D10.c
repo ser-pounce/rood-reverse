@@ -956,6 +956,10 @@ void vs_mainMenu_initItem(int itemCategory, int index)
 
 int vs_mainMenu_loadItemNames(int arg0)
 {
+    static int bss_2; // Garbage, patched in MAINMENU_PRG.py
+    static vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
+    static char _itemNamesLoading;
+
     vs_main_CdFile cdFile;
 
     if (arg0 != 0) {

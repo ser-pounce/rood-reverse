@@ -1,6 +1,7 @@
 mainmenu_LDLIBS := $(patsubst %,$(BUILD)/data/MENU/MENU%.PRG.elf,0 1 2 3 4 5 7 8 9 B C D E F) \
 	$(BUILD)/data/SLUS_010.40.elf $(BUILD)/data/BATTLE/BATTLE.PRG.elf
 
+$(BUILD)/data/MENU/MAINMENU.PRG: FIXUP = $(VPYTHON) -m tools.data.MENU.MAINMENU_PRG $@
 $(BUILD)/data/MENU/MAINMENU.PRG: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDLIBS += $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDFLAGS += \

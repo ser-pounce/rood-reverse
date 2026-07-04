@@ -9,13 +9,11 @@
 #include "vs_string.h"
 #include <libetc.h>
 
-typedef struct {
+typedef struct textHeader_t {
     char text[14];
     char disabled;
     char x;
 } textHeader_t;
-
-extern textHeader_t _textHeaders[2];
 
 extern u_long* D_1F800000[];
 
@@ -25,6 +23,27 @@ static int _selectedItemAction = 0;
 static char _sortSubMenuId = 0;
 static char _itemActionCount = 0;
 static char _itemActionListOffset = 0;
+
+char _rangeRiskData[8];
+short D_80102488[4];
+char D_80102490[8];
+short D_80102498[4];
+
+char D_801024A0;
+char vs_mainMenu_currentUiItem;
+char bss_7[2];
+u_short* vs_mainMenu_menu12Text;
+short vs_mainMenu_strIntAgi[8];
+u_char vs_mainMenu_selectedUiElement;
+char D_801024B9;
+char bss_3[6];
+short vs_mainMenu_equipmentStats[64];
+u_short* vs_mainMenu_itemHelp;
+char D_80102544;
+char vs_mainMenu_equipmentSubtype;
+char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
+textHeader_t _textHeaders[2];
+char D_80102578;
 
 void vs_mainMenu_initSortUi(int rowCount, int subMenuId, char* menuText[], int rowTypes[])
 {
@@ -1607,45 +1626,3 @@ void func_80101F38(void)
     vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_renderDpPpBars(0);
 }
-
-// Some kind of junk
-static u_short _0 __attribute__((unused)) = 0xF800;
-static int _1 __attribute__((unused)) = 0x38B1F8F8;
-
-// Below might actually be .bss but matching is not trivial,
-// partly due to non-zero garbage
-char D_80102410[64] = { 0 };
-int D_80102450 = 0;
-char _func_800FAEBC_state = 0;
-char _noItems = 0;
-char D_80102456 = 0;
-vs_main_inventoryGem* vs_mainMenu_gems = NULL;
-vs_menu_inventoryStorage_t* vs_menu_inventoryStorage = NULL;
-vs_main_inventoryGrip* vs_mainMenu_grips = NULL;
-vs_main_inventoryBlade* vs_mainMenu_blades = NULL;
-vs_main_inventoryArmor* vs_mainMenu_armor = NULL;
-vs_main_inventoryShield* vs_mainMenu_shields = NULL;
-vs_main_inventoryWeapon* vs_mainMenu_weapons = NULL;
-static int _2 = 0x0000D200; // Garbage
-vs_main_CdQueueSlot* _itemNamesCdQueueSlot = NULL;
-char _itemNamesLoading = 0;
-char _rangeRiskData[8] = { 0 };
-short D_80102488[4] = { 0 };
-char D_80102490[8] = { 0 };
-short D_80102498[4] = { 0 };
-char D_801024A0 = 0;
-char vs_mainMenu_currentUiItem = 0;
-u_short* vs_mainMenu_menu12Text = NULL;
-short vs_mainMenu_strIntAgi[8] = { 0 };
-u_char vs_mainMenu_selectedUiElement = 0;
-char D_801024B9 = 0;
-static char _3[0] = { 0 };
-short vs_mainMenu_equipmentStats[64] = { 0 };
-u_short* vs_mainMenu_itemHelp = 0;
-char D_80102544 = 0;
-char vs_mainMenu_equipmentSubtype = 0;
-static char _4 = 0;
-static char _5 = 0xF8; // More garbage
-static char _6[14] = { 0 };
-static textHeader_t _textHeaders[2] = { { { 0 } } };
-char D_80102578 = 0;
